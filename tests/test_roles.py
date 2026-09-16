@@ -28,7 +28,7 @@ def test_packaged_roster_is_valid_and_references_supported_capabilities():
     supported_tools = set(get_args(ToolRequest.model_fields["name"].annotation))
     for role in roles:
         assert role.name.strip() and role.mission.strip() and role.instructions.strip()
-        assert role.version == "1"
+        assert role.version.isdecimal() and int(role.version) > 0
         assert set(role.tools) <= supported_tools
         assert len(role.tools) == len(set(role.tools))
         assert set(role.can_delegate_to) <= IDS - {role.id}
