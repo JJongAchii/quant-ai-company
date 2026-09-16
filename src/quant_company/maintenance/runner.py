@@ -29,6 +29,7 @@ INSTRUCTIONS = (
     "may be described in design_only proposals for human review; never implement them or deploy. "
     "Return AgentDecision with status=complete, no tools/delegations/messages/memories/follow_up, "
     "and exactly one artifact whose content is JSON matching the supplied schema. "
+    "Artifact source_ids may be empty or cite only the exact non-omitted evidence keys supplied below. "
     "Do not claim tests or code changes have executed. Do not include credentials or personal data.\n"
 )
 
@@ -66,8 +67,15 @@ class Maintainer:
         decision = response.decision
         if (decision.status != "complete" or len(decision.artifacts) != 1
                 or decision.tools or decision.delegations or decision.messages or decision.memories
-                or decision.follow_up or decision.artifacts[0].source_ids):
+                or decision.follow_up):
             raise ValueError("invalid_maintenance_proposal")
+        # The artifact is a transport envelope, not a company research artifact. A real model may
+        # cite the supplied observation on it as well as inside Finding.evidence_keys.
+        evidence = payload.get("observations", []) + payload.get("history", {}).get("evidence", [])
+        known = {item["key"] for item in evidence if not item.get("omitted")}
+        known.update(payload.get("evidence_references", []))
+        if not set(decision.artifacts[0].source_ids) <= known:
+            raise ValueError("unknown_maintenance_artifact_source")
         if SECRET.search(decision.artifacts[0].content):
             raise ValueError("possible_secret_in_maintenance_proposal")
         return schema.model_validate_json(decision.artifacts[0].content)
