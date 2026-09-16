@@ -51,6 +51,7 @@ x-temporal-env: &temporal-env
 services:
   caddy:
     <<: *runtime
+    profiles: [https]
     image: ${CADDY_IMAGE:-caddy:2-alpine}
     environment:
       COMPANY_DOMAIN: ${COMPANY_DOMAIN:-office.example.invalid}
@@ -123,6 +124,20 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+
+  slack-socket:
+    <<: *app
+    command: [quant-company, slack-socket]
+    environment:
+      <<: *db-env
+      SLACK_TEAM_ID: ${SLACK_TEAM_ID:-CONFIGURE}
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+      SLACK_CREDENTIALS_FILE: /run/secrets/slack_credentials
+    secrets: [database_password, slack_credentials]
+    networks: [core, service_egress]
+    mem_limit: 256m
+    cpus: 0.5
 
   worker:
     <<: *app

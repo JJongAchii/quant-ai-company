@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Reviewable single-host Quant Company office. No resource is created by generating this file.",
+  "Description": "Single-host Quant Company with outbound Slack Socket Mode by default; public HTTP ingress is opt-in.",
   "Parameters": {
     "AvailabilityZone": {
       "Type": "String",
@@ -29,6 +29,15 @@
       "Type": "String",
       "AllowedPattern": "^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$",
       "Description": "Globally unique private bucket name."
+    },
+    "EnableHttpsIngress": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "Explicitly open TCP 80/443 for the optional https Compose profile. Socket Mode does not require this."
     }
   },
   "Resources": {
@@ -65,19 +74,35 @@
               ]
             },
             {
-              "Protocol": "tcp",
-              "FromPort": 80,
-              "ToPort": 80,
-              "Cidrs": [
-                "0.0.0.0/0"
+              "Fn::If": [
+                "HttpsIngressEnabled",
+                {
+                  "Protocol": "tcp",
+                  "FromPort": 80,
+                  "ToPort": 80,
+                  "Cidrs": [
+                    "0.0.0.0/0"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
               ]
             },
             {
-              "Protocol": "tcp",
-              "FromPort": 443,
-              "ToPort": 443,
-              "Cidrs": [
-                "0.0.0.0/0"
+              "Fn::If": [
+                "HttpsIngressEnabled",
+                {
+                  "Protocol": "tcp",
+                  "FromPort": 443,
+                  "ToPort": 443,
+                  "Cidrs": [
+                    "0.0.0.0/0"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
               ]
             }
           ]
@@ -216,6 +241,16 @@
     },
     "RetentionNotice": {
       "Value": "Host, static IP and backup bucket are retained on stack deletion. Review and remove retained resources explicitly to end billing."
+    }
+  },
+  "Conditions": {
+    "HttpsIngressEnabled": {
+      "Fn::Equals": [
+        {
+          "Ref": "EnableHttpsIngress"
+        },
+        "true"
+      ]
     }
   }
 }

@@ -15,7 +15,7 @@ from pathlib import Path, PurePosixPath
 from uuid import uuid4
 
 DEPLOY = Path(__file__).resolve().parent
-APP_SERVICES = ("worker", "dispatch", "api", "codex-runtime")
+APP_SERVICES = ("slack-socket", "worker", "dispatch", "api", "codex-runtime")
 
 
 def config_values(path: Path) -> dict[str, str]:

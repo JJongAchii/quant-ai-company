@@ -20,6 +20,8 @@ def main() -> None:
     parser.add_argument("--bucket", required=True)
     parser.add_argument("--blueprint", default="ubuntu_24_04")
     parser.add_argument("--bundle", default="medium_3_0")
+    parser.add_argument("--enable-https-ingress", action="store_true",
+                        help="Explicitly open public 80/443 for optional HTTPS transport")
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args()
     cidr = ipaddress.ip_network(args.ssh_cidr, strict=True)
@@ -35,12 +37,15 @@ def main() -> None:
         "--stack-name", args.stack, "--no-fail-on-empty-changeset", "--parameter-overrides",
         f"AvailabilityZone={args.zone}", f"BlueprintId={args.blueprint}", f"BundleId={args.bundle}",
         f"KeyPairName={args.key_pair}", f"SshCidr={args.ssh_cidr}", f"BackupBucketName={args.bucket}",
+        f"EnableHttpsIngress={str(args.enable_https_ingress).lower()}",
     ]
     print(json.dumps({
         "mode": "apply" if args.apply else "preview-only",
         "expected_account": args.account_id,
         "creates": ["one Lightsail instance", "one static IPv4", "one private S3 backup bucket"],
-        "exposes": ["22/tcp only from operator /32", "80/tcp and 443/tcp public"],
+        "exposes": ["22/tcp only from operator /32"]
+        + (["80/tcp and 443/tcp public"] if args.enable_https_ingress else []),
+        "https_ingress_enabled": args.enable_https_ingress,
         "retains_on_delete": ["instance", "static IP", "backup bucket"],
         "command_argv": command,
         "before_apply": "Verify regional blueprint/bundle and current price. No account call occurs in preview.",
