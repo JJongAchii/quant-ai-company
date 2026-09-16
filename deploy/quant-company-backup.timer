@@ -1,11 +1,10 @@
 [Unit]
-Description=Daily Quant Company off-host backup
+Description=Daily Quant Company backup, approximately 03:10 KST
 
 [Timer]
-OnCalendar=*-*-* 19:30:00 UTC
-RandomizedDelaySec=300
+OnCalendar=*-*-* 18:10:00 UTC
+RandomizedDelaySec=5min
 Persistent=true
-Unit=quant-company-backup.service
 
 [Install]
 WantedBy=timers.target
