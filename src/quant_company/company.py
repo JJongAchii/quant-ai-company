@@ -323,7 +323,8 @@ class Company:
                     "Do not infer executable capabilities or proven expertise from role names.\n"
                     "Propose only the typed AgentDecision. You cannot run code, trade, send Slack, or approve yourself.\n"
                     "Use tools to obtain evidence; never claim a tool/experiment was run without its receipt.\n"
-                    "Source IDs must come from approved_sources. Synthetic sources are test fixtures, not market evidence.\n"
+                    "Source IDs must come from approved_sources. Copy each ID verbatim; never shorten or reconstruct it. "
+                    "Synthetic sources are test fixtures, not market evidence.\n"
                     "Delegate directly to authorized peers when needed. Await child results before completing.\n"
                     "Don't repeat completed delegations. Keep discussion bounded and produce a useful artifact.\n"
                     "When your task requests an artifact, completion must include your own entry in artifacts. "
@@ -391,13 +392,19 @@ class Company:
         if request.name in LAKE_TOOLS:
             result = query_lake(self.settings.company_lake_uri, request.name, arguments)
             if result.get("ok"):
-                source_id = "lake:" + fingerprint([str(project_id), result])
+                # Compact references are easier for employees to copy than a 64-character hash.
+                # The complete object identity remains in the receipt; collisions fail closed below.
+                source_id = "lake:" + fingerprint([str(project_id), result])[:24]
                 content = json.dumps(result, ensure_ascii=False)
                 uri = result["data"].get("source", {}).get("uri", self.settings.company_lake_uri)
                 title = f"{request.name}: {arguments.get('dataset', 'catalog')}"
                 conn.execute("""INSERT INTO sources(id,title,uri,content,available_at,project_id,approved,synthetic)
                     VALUES (%s,%s,%s,%s,now(),%s,true,false) ON CONFLICT (id) DO NOTHING""",
                              (source_id, title, uri, content, project_id))
+                matching = conn.execute("""SELECT id FROM sources WHERE id=%s AND project_id=%s
+                    AND content=%s AND approved AND NOT synthetic""", (source_id, project_id, content)).fetchone()
+                if not matching:
+                    raise PolicyError("Lake source identifier collision")
                 result["source_id"] = source_id
             return result
         if request.name == "calculate":

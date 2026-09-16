@@ -97,3 +97,15 @@ def test_lake_turn_cannot_queue_multiple_scans(company):
             {"name": "lake_describe", "arguments": {"dataset": "krx_etf"}},
             {"name": "lake_describe", "arguments": {"dataset": "us_prices"}},
         ])
+
+
+def test_compact_lake_id_collision_cannot_reuse_another_project_source(company, monkeypatch):
+    monkeypatch.setattr("quant_company.company.fingerprint", lambda value: "a" * 64)
+    monkeypatch.setattr("quant_company.company.query_lake", lambda *args: {
+        "ok": True, "data": {"source": {"uri": "s3://example/qdata/clean/krx_etf.parquet"}},
+    })
+    complete_with_tool(company, "collision-first", "owner-one")
+    with pytest.raises(PolicyError, match="identifier collision"):
+        complete_with_tool(company, "collision-second", "owner-two")
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM sources WHERE id LIKE 'lake:%'").fetchone()["n"] == 1
