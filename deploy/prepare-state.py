@@ -52,6 +52,8 @@ def main() -> None:
     # File bind-mounts preserve host ownership/mode. Files are readable inside only the
     # explicitly authorized containers; the host secrets directory itself is root-only.
     create_file(state / "secrets/temporal_api_key", "REPLACE_TEMPORAL_API_KEY\n", 0o444)
+    # Optional lake access is disabled until COMPANY_LAKE_URI and this read-only profile are set.
+    create_file(state / "secrets/lake_read_credentials", "", 0o444)
     deploy = Path(__file__).parent
     create_file(state / "secrets/slack-credentials.json",
                 (deploy / "slack-credentials.example.json").read_text(), 0o444)

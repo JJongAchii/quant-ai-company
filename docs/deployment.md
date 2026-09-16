@@ -105,6 +105,12 @@ Docker 설치는 [공식 Ubuntu 절차](https://docs.docker.com/engine/install/u
 커밋된 `services/quant-company` 디렉터리와 `uv.lock`을 `/opt/quant-company/current`에
 배치한다. 다음 명령의 작업 디렉터리는 이 서비스 디렉터리다.
 
+데이터 조회를 포함한 릴리스는 `deploy/qdata-source.json`에 고정한 quant-data 커밋의
+`git archive --format=tar`를 별도 `qdata/` 빌드 디렉터리에 푼다. 전송 전에 manifest의
+SHA-256과 비교한다. `QDATA_BUILD_CONTEXT`에는 그 절대 경로, `QDATA_COMMIT`에는 해당
+40자리 커밋을 기록한다. Docker는 이 추가 빌드 컨텍스트의 패키지 소스만 설치한다.
+EC2의 수집 코드나 데이터 파일을 배포·변경하지 않는다.
+
 ```bash
 python3 deploy/prepare-state.py
 sudo python3 deploy/prepare-state.py --apply
@@ -123,6 +129,20 @@ sudo ln -s /var/lib/quant-company/config/runtime.env deploy/.env
 | `operator_token`, `model_runtime_token` | 최초 준비 시 난수 생성; API와 모델 token 분리 |
 | `temporal_api_key` | 실제 namespace API key로 교체 |
 | `slack-credentials.json` | 네 역할의 app ID/bot user ID/bot token/app token 입력; signing secret은 HTTP에서만 필요 |
+| `lake_read_credentials` | 데이터 읽기를 켤 때만 전용 IAM 사용자의 `[default]` INI 프로필 입력 |
+
+### S3 데이터 읽기 연결
+
+`COMPANY_LAKE_URI=s3://insight-invest-datalake/qdata`와 위 파일을 함께 설정한다.
+`quant-company-lake-read`에는 [읽기 정책](../deploy/lake-read-policy.json)만 부여한다.
+이는 `qdata/clean/` 목록·객체 읽기만 허용한다. 자격증명 파일은 root 소유, 0444이며
+부모 secrets 디렉터리는 0700이다. 회사 worker만 이 파일을 마운트한다. 모델 컨테이너에는
+데이터 자격증명을 넣지 않는다. 키 갱신 시 파일을 교체하고 worker를 다시 생성한다.
+
+데이터 담당은 `lake_catalog`, `lake_describe`, `lake_sample`을 사용한다. 한 번에 한 조회,
+18초 제한, 최대 20행·8열·8MiB 읽기를 적용한다. 전체 커버리지·종목별 결측 검사는 별도
+연구 작업이다. 조회 영수증에는 qdata 커밋·객체 URI·ETag·조회 시각을 저장한다. 현재 버킷의
+객체 버전이 없으면 이 정보만으로 과거 원본의 재다운로드를 보장할 수 없다.
 
 현재 Temporal namespace는 `quant-company.d2y48`, endpoint는
 `quant-company.d2y48.tmprl.cloud:7233`다. AWS 서울 단일 리전·On-Demand·7일 보관이며,

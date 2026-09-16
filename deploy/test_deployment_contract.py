@@ -64,6 +64,20 @@ def test_compose_https_is_explicit_opt_in():
     assert {port["published"] for port in caddy["ports"]} == {"80", "443"}
 
 
+def test_lake_credentials_are_mounted_only_in_worker():
+    services = compose_config()["services"]
+    for name, service in services.items():
+        mounted = {item["source"] for item in service.get("secrets", [])}
+        assert ("lake_read_credentials" in mounted) == (name == "worker")
+    worker = services["worker"]
+    assert worker["environment"]["AWS_SHARED_CREDENTIALS_FILE"] == "/run/secrets/lake_read_credentials"
+    assert "AWS_SECRET_ACCESS_KEY" not in worker["environment"]
+    policy = json.loads((DEPLOY / "lake-read-policy.json").read_text())
+    actions = {action for item in policy["Statement"] for action in
+               (item["Action"] if isinstance(item["Action"], list) else [item["Action"]])}
+    assert actions == {"s3:GetObject", "s3:ListBucket", "s3:GetBucketLocation"}
+
+
 def test_two_gib_candidate_leaves_host_memory_without_changing_service_boundaries():
     base = compose_config()["services"]
     candidate = compose_config(extra_env=DEPLOY / "lightsail-2gb.env.example")["services"]

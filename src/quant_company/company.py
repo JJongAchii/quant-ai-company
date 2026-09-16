@@ -9,6 +9,7 @@ from psycopg.types.json import Jsonb
 from .config import Settings
 from .contracts import AgentDecision, ProviderRequest, ProviderResponse, Role
 from .db import Database
+from .lake_tools import LAKE_TOOLS, query_lake
 from .tools import calculate
 
 
@@ -38,7 +39,7 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     by_id = {role.id: role for role in roles}
     if len(by_id) != len(roles):
         raise ValueError("Duplicate role IDs")
-    allowed_tools = {"calculate", "knowledge_search", "read_source"}
+    allowed_tools = {"calculate", "knowledge_search", "read_source"} | LAKE_TOOLS
     for role in roles:
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
@@ -72,6 +73,15 @@ class Company:
                 "knowledge_search": "Approved registered sources only; not internet or data-lake search.",
                 "read_source": "Approved registered source content only; not arbitrary URLs or local files.",
                 "calculate": "Bounded numeric arithmetic; not arbitrary code or backtests.",
+                "data_lake": {
+                    "enabled": bool(self.settings.company_lake_uri),
+                    "uri": self.settings.company_lake_uri or None,
+                    "employee": "data",
+                    "operations": "lake_catalog {} lists datasets; lake_describe {dataset} reads date bounds; "
+                                  "lake_sample {dataset, columns?, limit?} reads at most 20 physical sample rows.",
+                    "scope": "Read-only metadata and bounded samples; no arbitrary SQL, full scans or backtests. "
+                             "Data questions require fresh tool receipts. Delegate to data when not authorized.",
+                },
                 "external_web_search": False,
                 "research_worker_submission": False,
                 "strategy_code_execution": False,
@@ -378,6 +388,18 @@ class Company:
 
     def _tool(self, conn, project_id, request):
         arguments = request.arguments
+        if request.name in LAKE_TOOLS:
+            result = query_lake(self.settings.company_lake_uri, request.name, arguments)
+            if result.get("ok"):
+                source_id = "lake:" + fingerprint([str(project_id), result])
+                content = json.dumps(result, ensure_ascii=False)
+                uri = result["data"].get("source", {}).get("uri", self.settings.company_lake_uri)
+                title = f"{request.name}: {arguments.get('dataset', 'catalog')}"
+                conn.execute("""INSERT INTO sources(id,title,uri,content,available_at,project_id,approved,synthetic)
+                    VALUES (%s,%s,%s,%s,now(),%s,true,false) ON CONFLICT (id) DO NOTHING""",
+                             (source_id, title, uri, content, project_id))
+                result["source_id"] = source_id
+            return result
         if request.name == "calculate":
             if set(arguments) != {"expression"}:
                 raise PolicyError("calculate requires expression only")
@@ -447,6 +469,8 @@ class Company:
             for action in decision.tools:
                 if action.name not in role.tools:
                     raise PolicyError(f"Unauthorized tool: {action.name}")
+            if sum(action.name in LAKE_TOOLS for action in decision.tools) > 1:
+                raise PolicyError("At most one lake query is allowed per turn")
             if decision.follow_up and not now() < decision.follow_up.at <= now() + timedelta(days=30):
                 raise PolicyError("Follow-up must be in the next 30 days")
             if decision.say.strip():

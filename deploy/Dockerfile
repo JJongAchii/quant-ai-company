@@ -6,14 +6,18 @@ RUN npm install --global --omit=dev @openai/codex@0.154.0 \
 FROM ghcr.io/astral-sh/uv:0.11.28@sha256:0f36cb9361a3346885ca3677e3767016687b5a170c1a6b88465ec14aefec90aa AS uv-dist
 FROM python:3.12-slim-bookworm@sha256:782412e85d0f0984994c290652577d4018aff08145c85b262bb63dc0c7522254 AS app
 ARG RELEASE_COMMIT=unqualified
+ARG QDATA_COMMIT=unqualified
 LABEL org.opencontainers.image.revision=$RELEASE_COMMIT
+LABEL org.quant-company.qdata-revision=$QDATA_COMMIT
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
-    UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PATH=/app/.venv/bin:$PATH
+    UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PATH=/app/.venv/bin:$PATH QDATA_CODE_COMMIT=$QDATA_COMMIT
 COPY --from=uv-dist /uv /usr/local/bin/uv
 WORKDIR /app
+COPY --from=qdata pyproject.toml README.md /quant-data/
+COPY --from=qdata src /quant-data/src
 COPY pyproject.toml uv.lock ./
 COPY src ./src
-RUN uv sync --frozen --no-dev --no-editable \
+RUN uv sync --frozen --no-dev --no-editable --extra lake \
     && groupadd --gid 10001 company \
     && useradd --uid 10001 --gid 10001 --create-home company
 COPY deploy/entrypoint.py /app/entrypoint.py

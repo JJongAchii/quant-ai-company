@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     model_provider: str = "codex"
     model_runtime_url: str = "http://codex:8081"
     model_runtime_token: SecretStr = SecretStr("")
+    company_lake_uri: str = Field(default="", pattern=r"^(|s3://[a-z0-9][a-z0-9.-]+/[A-Za-z0-9_/-]+)$")
     slack_team_id: str = ""
     slack_allowed_users: list[str] = Field(default_factory=list)
     slack_allowed_channels: list[str] = Field(default_factory=list)

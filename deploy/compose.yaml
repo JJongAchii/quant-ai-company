@@ -23,8 +23,11 @@ x-app: &app
     context: ..
     dockerfile: deploy/Dockerfile
     target: app
+    additional_contexts:
+      qdata: ${QDATA_BUILD_CONTEXT:-../../../quant-data}
     args:
       RELEASE_COMMIT: ${RELEASE_COMMIT:-unqualified}
+      QDATA_COMMIT: ${QDATA_COMMIT:-unqualified}
   volumes:
     - ${STATE_DIR:-/var/lib/quant-company}/config/roles.json:/etc/quant-company/roles.json:ro
   depends_on:
@@ -38,6 +41,7 @@ x-db-env: &db-env
   DATABASE_NAME: ${DATABASE_NAME:-quant_company}
   ROLES_FILE: /etc/quant-company/roles.json
   MODEL_PROVIDER: codex
+  COMPANY_LAKE_URI: ${COMPANY_LAKE_URI:-}
   COMPANY_MAX_DAILY_TURNS: ${COMPANY_MAX_DAILY_TURNS:-100}
   COMPANY_MAX_TASK_TURNS: ${COMPANY_MAX_TASK_TURNS:-8}
   COMPANY_MAX_DEPTH: ${COMPANY_MAX_DEPTH:-3}
@@ -147,7 +151,9 @@ services:
       <<: [*db-env, *temporal-env]
       MODEL_RUNTIME_URL: http://codex-runtime:8080
       MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
-    secrets: [database_password, temporal_api_key, model_runtime_token]
+      AWS_SHARED_CREDENTIALS_FILE: /run/secrets/lake_read_credentials
+      AWS_DEFAULT_REGION: ap-northeast-2
+    secrets: [database_password, temporal_api_key, model_runtime_token, lake_read_credentials]
     networks: [core, model, service_egress]
     mem_limit: ${WORKER_MEMORY_LIMIT:-384m}
     cpus: 0.75
@@ -176,8 +182,11 @@ services:
       context: ..
       dockerfile: deploy/Dockerfile
       target: codex
+      additional_contexts:
+        qdata: ${QDATA_BUILD_CONTEXT:-../../../quant-data}
       args:
         RELEASE_COMMIT: ${RELEASE_COMMIT:-unqualified}
+        QDATA_COMMIT: ${QDATA_COMMIT:-unqualified}
     environment:
       CODEX_HOME: /state/auth
       CODEX_BIN: codex
@@ -223,3 +232,5 @@ secrets:
     file: ${STATE_DIR:-/var/lib/quant-company}/secrets/temporal_api_key
   slack_credentials:
     file: ${STATE_DIR:-/var/lib/quant-company}/secrets/slack-credentials.json
+  lake_read_credentials:
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/lake_read_credentials
