@@ -1,8 +1,8 @@
 # AWS Lightsail 운영 준비와 복구
 
-이 문서는 **배포할 수 있도록 준비한 설정과 실행 절차**다. 실제 Slack 앱 4개와 Temporal Cloud
-namespace·서비스 계정의 연결을 확인했다. AWS 자원 생성과 서버 로그인은 아직 수행하지 않았다.
-Docker daemon이 없어 컨테이너 실행·컨테이너 내 Codex 인증·서버 재부팅·S3 복원은 미검증이다.
+2026-09-16, 승인받은 **AWS 서울 Lightsail 2GB에 배포했다**. 실제 Slack 앱 4개와 Temporal Cloud를
+연결하고 서버의 공식 Codex 인증, 네 직원 합성 협업, 호스트 재부팅과 S3 복원을 확인했다.
+검증 범위와 미실행 항목은 [배포 영수증](../../../docs/work/quant-ai-company/AWS-DEPLOYMENT-VALIDATION.json)에 남긴다.
 
 ## 1. 처음 사용할 구성
 
@@ -13,7 +13,9 @@ Linux Lightsail 한 대에서 API, Slack Socket 수신기, worker, dispatcher, P
 Socket 수신기가 Slack에 인증된 outbound WebSocket 연결을 유지한다. Caddy는 선택 기능이다.
 [Slack Socket Mode](https://docs.slack.dev/apis/events-api/using-socket-mode/) 운영 workflow는 Temporal Cloud를 사용한다. 직원 10명 중 총괄·금융전략·
 국내연구·데이터만 활성화하며, Codex는 한 번에 한 작업을 처리한다. 무거운 계산·학습은
-이 서버의 업무가 아니다. 2GB 후보는 아직 부하 검증을 통과하지 않았으며, 결과를 보고 용량을 정한다.
+이 서버의 업무가 아니다. 2GB에서 네 직원·8회 모델 호출의 합성 협업을 완료했다. 약 4분간
+가용 메모리는 최소 1072.5 MiB, Codex 컨테이너 peak는 177.6 MiB, OOM kill은 0이었다.
+장시간 운영·큰 문서·더 많은 동시 작업의 용량은 별도로 측정한다.
 
 ### 2GB 자격검증 후보
 
@@ -49,8 +51,8 @@ postgres 사용자로 실행하며, 앱용 `company` 계정에는 superuser 권�
 ## 2. 계정과 입력값
 
 - AWS: 기존 EC2/Insight-Invest가 있는 계정의 account ID, 리전/가용 영역, Lightsail SSH key
-  pair, SSH 허용 공인 IPv4. 같은 AWS 계정에 별도 회사용 자원을 준비한다. 현재 읽기 조회에서는
-  Lightsail key pair가 없었으므로 이미 존재하는 로컬 공개키를 Lightsail에 등록하는 단계가 필요하다.
+  pair, SSH 허용 공인 IPv4. 같은 AWS 계정의 별도 회사용 자원이다. 실제 호스트에는 전용 RSA
+  공개키 `quant-company-operator`를 등록했다. 개인 SSH 비밀키는 서버에 복사하지 않는다.
 - 새 전용 Slack: workspace/team ID, 허용 사용자·채널 ID, 네 앱 각각의 bot token과
   `connections:write` 권한을 가진 app-level token(`xapp-…`).
 - DNS·ACME 이메일·signing secret은 선택 HTTP 연결에서만 필요하다.
@@ -96,7 +98,9 @@ python3 deploy/provision.py \
 
 Docker Engine/Compose v2+, Python 3, AWS CLI를 설치한 Ubuntu 호스트가 필요하다.
 Docker 설치는 [공식 Ubuntu 절차](https://docs.docker.com/engine/install/ubuntu/)를 따른다.
-자동 설치 스크립트나 전체 Quant 레포·데이터 레이크 동기화는 포함하지 않았다.
+[bootstrap-host.sh](../deploy/bootstrap-host.sh)는 전용 Ubuntu 24.04 호스트에 Docker 공식 apt
+패키지와 서명을 검증한 AWS CLI v2를 설치한다. Ubuntu 기본 apt에는 `awscli` 후보가 없었다.
+전체 Quant 레포·데이터 레이크는 동기화하지 않고 커밋된 서비스 디렉터리만 전송한다.
 
 커밋된 `services/quant-company` 디렉터리와 `uv.lock`을 `/opt/quant-company/current`에
 배치한다. 다음 명령의 작업 디렉터리는 이 서비스 디렉터리다.
@@ -147,8 +151,9 @@ sudo docker compose --env-file deploy/.env -f deploy/compose.yaml build api code
 
 Python 의존성은 committed `uv.lock`과 `uv sync --frozen`으로 설치하고, Codex CLI는
 `@openai/codex@0.154.0` 및 빌드 시 버전 검사로 고정한다. Python/Node/Caddy의 기본 image
-태그는 준비용이다. 실제 자격 검증 때 사용할 image digest를 기록·고정하고 동일 이미지를
-배포한다. Docker daemon이 없는 이 개발 환경에서는 image pull/build를 검증하지 못했다.
+이미지는 실제 Linux 빌드에서 확인한 digest로 고정했다. PostgreSQL도 영속 `runtime.env`의
+`POSTGRES_IMAGE`에 digest를 기록했다. 애플리케이션 이미지는 exact commit 태그와 실제 image ID를
+함께 기록한다. 선택 HTTPS Caddy 이미지는 이번 배포에서 사용하거나 검증하지 않았다.
 
 ## 5. Codex 로그인과 서비스 시작
 
@@ -227,12 +232,12 @@ sudo bash deploy/backup.sh --s3-uri s3://example-quant-company-backups/company/ 
 ```
 
 호스트 AWS profile에는 [백업용 정책 예시](../deploy/backup-policy.example.json)의 버킷·prefix
-범위만 부여한다. IAM identity와 자격증명은 자동 생성하지 않는다. 백업을 위한 root 계정
-key나 포괄적인 관리자 key를 호스트에 넣지 않는다.
+범위만 부여한다. 이번 승인된 설치에서 `quant-company-backup` IAM 사용자와 prefix 한정 정책을
+생성했다. 자격증명은 호스트 `/root/.aws/credentials`(0600)에만 설치하며 컨테이너에 전달하지 않는다.
 
 `quant-company-backup.service`와 `.timer`를 `/etc/systemd/system/`에 배치하고
-`backup.env.example`을 `/etc/quant-company/backup.env`로 설정한 뒤 timer를 활성화한다.
-기본 일정은 19:30 UTC(다음 날 04:30 KST), 최대 5분 지연이다. 백업 중 Slack 연결에 짧은
+`backup.env.example`을 `/var/lib/quant-company/config/backup.env`로 설정한 뒤 timer를 활성화한다.
+기본 일정은 18:10 UTC(다음 날 03:10 KST), 최대 5분 지연이다. 백업 중 Slack 연결에 짧은
 중단이 생길 수 있다. 재접속 및 누락 가능 구간 확인도 복구 검증에 포함한다. 이 단일 호스트 구성은 무중단 고가용성이 아니다. timer 실패와 디스크
 용량을 운영자가 확인한다. S3 lifecycle은 30일이며 로컬 백업은 자동 삭제하지 않으므로
 외부 복사·복원 확인 후 용량을 관리한다.
@@ -264,10 +269,10 @@ sudo bash deploy/restore.sh --archive /path/company-backup.tar.gz --database res
 - 호스트 재부팅 후 볼륨·역할·기억 보존, quota/auth 오류 시 업무 보존과 대기.
 - 맥북을 종료한 상태에서 휴대폰의 요청 → 직원 간 위임 → 결과 수신.
 - 외부 백업으로 새 DB에 복원하고 pending/uncertain 효과를 중복 실행하지 않는 복구.
-- 메모리·디스크·회사 공용 한도 측정 후 4GB 유지 여부 결정.
+- 메모리·디스크·회사 공용 한도 측정 후 증설 필요 여부 결정. 비용 증가는 측정 결과와 함께 먼저 제시한다.
 
-현재 완료한 것은 role/schema 검사, 기본 Socket/선택 HTTPS Compose 설정 파싱,
-공개 포트 opt-in·네트워크·secret 경계 검사, 백업 시 Socket 수신기 정지·재개 순서 검사,
-archive 무결성/경로 검사와 기존 DB 복원 거부 검사다. 정지·재개 검사는 명령 모형을 사용했으며,
-실제 WebSocket 연결·컨테이너 정지 시험은 통합 검증에서 수행해야 한다. 이는 서버에 배포됐다는
-증거가 아니다. 실제 수행 기록은 통합 검증 receipt에 별도로 남긴다.
+정적 검사와 실제 서버 검증을 구별한다. 실제 검사에는 Linux 이미지 빌드, 제한된 Codex 호출,
+네 직원 협업, 동일 요청 재사용, 호스트 재부팅 전후 예약 업무, 실제 writer 정지·재개 백업,
+S3 다운로드와 새 DB 복원, 컨테이너 권한·공개 포트·메모리 측정이 포함된다.
+실제 사용자 Slack 왕복도 확인했다. 맥북 완전 종료, 장시간 부하, 전체 호스트 유실 후 재구축은
+각각 별도 인수다.

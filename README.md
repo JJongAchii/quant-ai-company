@@ -4,9 +4,11 @@
 사용자의 기존 Codex 구독으로 모델을 실행합니다. AWS 단일 서버와 Temporal Cloud에 배치하는
 구성이며, 기본 Slack 연결은 도메인이 필요 없는 Socket Mode입니다.
 
-현재는 **외부 연결 확인 및 AWS 배포 준비 단계**입니다. 실제 Slack 앱 4개의 인증·Socket 연결·
-지정 채널 접근과 Temporal Cloud의 테스트 업무·worker 재시작·이력 재생을 확인했습니다.
-AWS 상시 호스트, 서버 Codex 인증, 실제 Slack 업무 왕복과 맥북 종료 인수는 남아 있습니다.
+현재는 **AWS 서울 Lightsail 2GB에 배포한 첫 운영 서비스**입니다. 서버의 공식 Codex 구독 인증,
+실제 모델을 사용한 네 직원의 합성 협업, 예약 업무의 호스트 재부팅 복구, S3 백업 복원을 확인했습니다.
+실제 사용자의 Slack 요청과 네 직원 계정의 답변 게시도 확인했습니다. 맥북을 완전히 종료한
+휴대폰 인수와 장시간 운영 검증은 남아 있습니다.
+[AWS 배포 검증](../../docs/work/quant-ai-company/AWS-DEPLOYMENT-VALIDATION.json),
 [구현 검증](../../docs/work/quant-ai-company/IMPLEMENTATION-VALIDATION.json),
 [Slack 연결](../../docs/work/quant-ai-company/SLACK-CONNECTION.json),
 [Temporal 연결](../../docs/work/quant-ai-company/TEMPORAL-CONNECTION.json)에 증거를 구분합니다.
@@ -27,6 +29,7 @@ flowchart LR
 - 총괄이 업무를 나누고, 국내연구 직원이 데이터 직원에게 직접 위임할 수 있습니다.
   내부 업무 전달은 DB에 기록되고 각 직원의 Slack 계정으로 대화가 게시됩니다.
 - 역할별 임무·도구·위임 권한을 검증합니다. 모델은 구조화된 제안을 반환하고 서비스가 적용합니다.
+  직원은 내부 저장 안내에 그치지 않고 Slack 답변에 실제 결과를 포함하도록 지시받습니다.
 - 프로젝트·업무·대화·출처·산출물·기억을 영속 저장합니다. 검토한 기억만 같은 사용자의 다른
   프로젝트에 공유할 수 있습니다. 제안 단계 기억이 자동으로 사실이 되지 않습니다.
 - 같은 요청은 같은 업무로 식별합니다. 구독 한도에 도달하면 업무를 보존하고 기다립니다.
@@ -70,8 +73,9 @@ flowchart LR
 
 [AWS 설치·복구 안내](docs/deployment.md)와 [Slack 설정](docs/slack-setup.md)을 사용합니다.
 기존 EC2·Insight-Invest가 있는 `default` 프로필의 서울 리전에서 별도 Lightsail **2GB·월 $12**를
-먼저 검증하는 안입니다. 아직 구매하지 않았고, 해당 용량에서 실행 안정성을 측정하지 않았습니다.
-기존 4GB 설정은 비교 기준으로 남아 있습니다. 기존 데이터 수집 EC2의 일정·수명주기는 유지합니다.
+생성을 승인받아 운영합니다. 약 4분간의 합성 협업 측정에서 호스트 가용 메모리는 최소 1072.5 MiB였고,
+메모리 부족으로 종료된 컨테이너는 없었습니다. 이는 동시 모델 작업 1개의 짧은 검사이며 장시간 부하
+보장은 아닙니다. 기존 4GB 설정은 비교 기준으로 남아 있습니다.
 
 ```bash
 uv sync --frozen
@@ -118,7 +122,8 @@ REAL_CODEX_COMPANY=1 uv run pytest -q tests/test_temporal.py::test_live_codex_co
 - `/v1/tasks/{id}/retry`는 운영자가 이전 영수증을 확인한 `reconciliation_note`가 필요합니다.
   재시도는 새 호출이므로 구독 사용량을 다시 소비할 수 있습니다. 이전 기록은 보존합니다.
 - DB와 Codex 영수증을 함께 백업합니다. 복원 스크립트는 새 `restore_*` DB만 만들고 기존 DB를
-  덮어쓰지 않습니다. 실제 S3 복원·호스트 재부팅 인수는 배포 환경에서 이어서 확인해야 합니다.
+  덮어쓰지 않습니다. 실제 S3에서 내려받아 두 프로젝트·업무·대화·산출물이 같은지 확인했습니다.
+  일일 백업 timer는 한국 시간 03:10에 시작하며 최대 5분 지연됩니다.
 - 단일 서버는 장애 시 복구 중단이 있습니다. 맥북 종료 후 동작하는 실제 인수는 클라우드 연결
   후 수행합니다. 구독 한도나 프로세스 health만으로 서비스 가용성을 보장하지 않습니다.
 
