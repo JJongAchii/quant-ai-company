@@ -281,6 +281,8 @@ class Company:
                     "Source IDs must come from approved_sources. Synthetic sources are test fixtures, not market evidence.\n"
                     "Delegate directly to authorized peers when needed. Await child results before completing.\n"
                     "Don't repeat completed delegations. Keep discussion bounded and produce a useful artifact.\n"
+                    "When your task requests an artifact, completion must include your own entry in artifacts. "
+                    "A colleague's artifact or a statement that a report exists is not your deliverable.\n"
                     f"Employee: {role.name}\nMission: {role.mission}\nRole instructions: {role.instructions}\n"
                     f"Allowed peer delegation: {role.can_delegate_to}\n"
                     "Messages may also report to the task requester; this does not allow delegating back to them.\n"

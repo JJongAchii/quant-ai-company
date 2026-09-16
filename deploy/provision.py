@@ -11,6 +11,7 @@ from pathlib import Path
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--profile", default="default")
     parser.add_argument("--region", default="ap-northeast-2")
     parser.add_argument("--zone", required=True)
     parser.add_argument("--account-id", required=True)
@@ -32,7 +33,7 @@ def main() -> None:
     if not re.fullmatch(re.escape(args.region) + "[a-z]", args.zone):
         parser.error("--zone must belong to --region")
     command = [
-        "aws", "--region", args.region, "cloudformation", "deploy",
+        "aws", "--profile", args.profile, "--region", args.region, "cloudformation", "deploy",
         "--template-file", str(Path(__file__).with_name("lightsail.json")),
         "--stack-name", args.stack, "--no-fail-on-empty-changeset", "--parameter-overrides",
         f"AvailabilityZone={args.zone}", f"BlueprintId={args.blueprint}", f"BundleId={args.bundle}",
@@ -42,6 +43,7 @@ def main() -> None:
     print(json.dumps({
         "mode": "apply" if args.apply else "preview-only",
         "expected_account": args.account_id,
+        "aws_profile": args.profile,
         "creates": ["one Lightsail instance", "one static IPv4", "one private S3 backup bucket"],
         "exposes": ["22/tcp only from operator /32"]
         + (["80/tcp and 443/tcp public"] if args.enable_https_ingress else []),
@@ -53,7 +55,8 @@ def main() -> None:
     if not args.apply:
         return
     account = subprocess.check_output(
-        ["aws", "--region", args.region, "sts", "get-caller-identity", "--query", "Account", "--output", "text"],
+        ["aws", "--profile", args.profile, "--region", args.region, "sts", "get-caller-identity",
+         "--query", "Account", "--output", "text"],
         text=True,
     ).strip()
     if account != args.account_id:
