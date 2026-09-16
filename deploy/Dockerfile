@@ -1,10 +1,10 @@
 # Build targets: app and codex. Release builds require the committed uv.lock.
-FROM node:22-bookworm-slim AS codex-dist
+FROM node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5 AS codex-dist
 RUN npm install --global --omit=dev @openai/codex@0.154.0 \
     && codex --version | grep -Fx 'codex-cli 0.154.0'
 
-FROM ghcr.io/astral-sh/uv:0.11.28 AS uv-dist
-FROM python:3.12-slim-bookworm AS app
+FROM ghcr.io/astral-sh/uv:0.11.28@sha256:0f36cb9361a3346885ca3677e3767016687b5a170c1a6b88465ec14aefec90aa AS uv-dist
+FROM python:3.12-slim-bookworm@sha256:782412e85d0f0984994c290652577d4018aff08145c85b262bb63dc0c7522254 AS app
 ARG RELEASE_COMMIT=unqualified
 LABEL org.opencontainers.image.revision=$RELEASE_COMMIT
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
