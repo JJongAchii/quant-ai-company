@@ -12,7 +12,9 @@ LABEL org.quant-company.qdata-revision=$QDATA_COMMIT
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
     UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PATH=/app/.venv/bin:$PATH QDATA_CODE_COMMIT=$QDATA_COMMIT
 COPY --from=uv-dist /uv /usr/local/bin/uv
-WORKDIR /app
+# Preserve the two-level relative qdata path recorded in uv.lock.
+WORKDIR /opt/company
+RUN ln -s /opt/company /app
 COPY --from=qdata pyproject.toml README.md /quant-data/
 COPY --from=qdata src /quant-data/src
 COPY pyproject.toml uv.lock ./
@@ -20,7 +22,7 @@ COPY src ./src
 RUN uv sync --frozen --no-dev --no-editable --extra lake \
     && groupadd --gid 10001 company \
     && useradd --uid 10001 --gid 10001 --create-home company
-COPY deploy/entrypoint.py /app/entrypoint.py
+COPY deploy/entrypoint.py /opt/company/entrypoint.py
 USER 10001:10001
 ENTRYPOINT ["python", "/app/entrypoint.py"]
 CMD ["quant-company", "serve", "--host", "0.0.0.0", "--port", "8000"]
