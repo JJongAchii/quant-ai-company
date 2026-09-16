@@ -12,6 +12,8 @@
 [구현 검증](../../docs/work/quant-ai-company/IMPLEMENTATION-VALIDATION.json),
 [Slack 연결](../../docs/work/quant-ai-company/SLACK-CONNECTION.json),
 [Temporal 연결](../../docs/work/quant-ai-company/TEMPORAL-CONNECTION.json)에 증거를 구분합니다.
+배포 후 운영 정보 전달 보완은 [추가 검증](../../docs/work/quant-ai-company/RUNTIME-CONTEXT-VALIDATION.json)에,
+현재 업무 범위와 후속 구현 순서는 [다음 단계](../../docs/work/quant-ai-company/NEXT-STEPS.md)에 기록합니다.
 
 ## 동작
 
