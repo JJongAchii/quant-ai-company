@@ -1,0 +1,209 @@
+name: quant-company
+
+x-runtime: &runtime
+  restart: unless-stopped
+  init: true
+  user: "10001:10001"
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m,mode=1777
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  pids_limit: 128
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+x-app: &app
+  <<: *runtime
+  image: quant-company:${RELEASE_COMMIT:-unqualified}
+  build:
+    context: ..
+    dockerfile: deploy/Dockerfile
+    target: app
+    args:
+      RELEASE_COMMIT: ${RELEASE_COMMIT:-unqualified}
+  volumes:
+    - ${STATE_DIR:-/var/lib/quant-company}/config/roles.json:/etc/quant-company/roles.json:ro
+  depends_on:
+    postgres:
+      condition: service_healthy
+  stop_grace_period: 360s
+
+x-db-env: &db-env
+  DATABASE_PASSWORD_FILE: /run/secrets/database_password
+  DATABASE_USER: company
+  DATABASE_NAME: ${DATABASE_NAME:-quant_company}
+  ROLES_FILE: /etc/quant-company/roles.json
+  MODEL_PROVIDER: codex
+  COMPANY_MAX_DAILY_TURNS: ${COMPANY_MAX_DAILY_TURNS:-100}
+  COMPANY_MAX_TASK_TURNS: ${COMPANY_MAX_TASK_TURNS:-8}
+  COMPANY_MAX_DEPTH: ${COMPANY_MAX_DEPTH:-3}
+
+x-temporal-env: &temporal-env
+  TEMPORAL_ADDRESS: ${TEMPORAL_ADDRESS:-configure.tmprl.cloud:7233}
+  TEMPORAL_NAMESPACE: ${TEMPORAL_NAMESPACE:-configure.namespace}
+  TEMPORAL_TLS: "true"
+  TEMPORAL_API_KEY_FILE: /run/secrets/temporal_api_key
+
+services:
+  caddy:
+    <<: *runtime
+    image: ${CADDY_IMAGE:-caddy:2-alpine}
+    environment:
+      COMPANY_DOMAIN: ${COMPANY_DOMAIN:-office.example.invalid}
+      ACME_EMAIL: ${ACME_EMAIL:-owner@example.invalid}
+    ports:
+      - "80:8080"
+      - "443:8443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${STATE_DIR:-/var/lib/quant-company}/caddy/data:/data
+      - ${STATE_DIR:-/var/lib/quant-company}/caddy/config:/config
+    networks: [edge]
+    mem_limit: 128m
+    cpus: 0.25
+    depends_on: [api]
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, "http://127.0.0.1:8081/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:16.15-bookworm}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: quant_company
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/database_admin_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    secrets: [database_admin_password, database_password]
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/postgres:/var/lib/postgresql/data
+      - ./init-database.sh:/docker-entrypoint-initdb.d/10-company.sh:ro
+    networks: [core]
+    # Entrypoint starts as root to initialize/chown PGDATA, then switches to postgres.
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 512m
+    cpus: 0.75
+    shm_size: 128m
+    stop_grace_period: 60s
+    command: [postgres, -c, shared_buffers=128MB, -c, max_connections=40]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging:
+      driver: local
+      options: {max-size: "10m", max-file: "3"}
+
+  api:
+    <<: *app
+    command: [quant-company, serve, --host, 0.0.0.0, --port, "8000"]
+    environment:
+      <<: *db-env
+      OPERATOR_TOKEN_FILE: /run/secrets/operator_token
+      SLACK_TEAM_ID: ${SLACK_TEAM_ID:-CONFIGURE}
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+      SLACK_CREDENTIALS_FILE: /run/secrets/slack_credentials
+    secrets: [database_password, operator_token, slack_credentials]
+    # Operator endpoints are reachable through an SSH tunnel, not through Caddy.
+    ports: ["127.0.0.1:8000:8000"]
+    networks: [edge, core]
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  worker:
+    <<: *app
+    command: [quant-company, worker]
+    environment:
+      <<: [*db-env, *temporal-env]
+      MODEL_RUNTIME_URL: http://codex-runtime:8080
+      MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
+    secrets: [database_password, temporal_api_key, model_runtime_token]
+    networks: [core, model, service_egress]
+    mem_limit: 384m
+    cpus: 0.75
+    depends_on:
+      postgres: {condition: service_healthy}
+      codex-runtime: {condition: service_healthy}
+
+  dispatch:
+    <<: *app
+    command: [quant-company, dispatch]
+    environment:
+      <<: [*db-env, *temporal-env]
+      SLACK_TEAM_ID: ${SLACK_TEAM_ID:-CONFIGURE}
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+      SLACK_CREDENTIALS_FILE: /run/secrets/slack_credentials
+    secrets: [database_password, temporal_api_key, slack_credentials]
+    networks: [core, service_egress]
+    mem_limit: 256m
+    cpus: 0.5
+
+  codex-runtime:
+    <<: *runtime
+    image: quant-company-codex:${RELEASE_COMMIT:-unqualified}
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      target: codex
+      args:
+        RELEASE_COMMIT: ${RELEASE_COMMIT:-unqualified}
+    environment:
+      CODEX_HOME: /state/auth
+      CODEX_BIN: codex
+      CODEX_JOBS_DIR: /state/jobs
+      CODEX_TIMEOUT_SECONDS: "300"
+      WEB_CONCURRENCY: "1"
+      WORKERS: "1"
+      MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
+    secrets: [model_runtime_token]
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/codex/auth:/state/auth
+      - ${STATE_DIR:-/var/lib/quant-company}/codex/jobs:/state/jobs
+    networks: [model, model_egress]
+    mem_limit: 1g
+    cpus: 1.0
+    stop_grace_period: 360s
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
+networks:
+  edge: {}
+  core:
+    internal: true
+  model:
+    internal: true
+  service_egress: {}
+  model_egress: {}
+
+secrets:
+  database_admin_password:
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/database_admin_password
+  database_password:
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/database_password
+  operator_token:
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/operator_token
+  model_runtime_token:
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/model_runtime_token
+  temporal_api_key:
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/temporal_api_key
+  slack_credentials:
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/slack-credentials.json

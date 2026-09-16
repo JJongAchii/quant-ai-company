@@ -1,0 +1,23 @@
+{
+	admin off
+	email {$ACME_EMAIL}
+	http_port 8080
+	https_port 8443
+}
+
+{$COMPANY_DOMAIN} {
+	@slack path /slack/events/*
+	handle @slack {
+		reverse_proxy api:8000
+	}
+	handle /healthz {
+		reverse_proxy api:8000
+	}
+	handle {
+		respond "Not found" 404
+	}
+}
+
+http://:8081 {
+	respond /healthz 200
+}

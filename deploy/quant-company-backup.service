@@ -1,0 +1,14 @@
+[Unit]
+Description=Quant Company consistent database and receipt backup to S3
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=root
+UMask=0077
+WorkingDirectory=/opt/quant-company/current
+EnvironmentFile=/etc/quant-company/backup.env
+ExecStart=/usr/bin/python3 /opt/quant-company/current/deploy/state_backup.py backup --apply
+TimeoutStartSec=20min

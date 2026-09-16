@@ -1,0 +1,13 @@
+**
+!pyproject.toml
+!uv.lock
+!src/
+!src/**
+!deploy/
+!deploy/Dockerfile
+!deploy/entrypoint.py
+**/__pycache__/
+**/*.pyc
+**/.env*
+**/secrets/
+**/auth.json
