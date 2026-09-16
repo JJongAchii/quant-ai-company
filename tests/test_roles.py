@@ -38,7 +38,7 @@ def test_packaged_roster_is_valid_and_references_supported_capabilities():
 
 def test_roster_round_trip_to_typed_artifact(tmp_path):
     roles = load_roles()
-    root = Path(__file__).resolve().parents[3]
+    root = Path(__file__).resolve().parents[1]
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
     assert len(commit) == 40
     artifact = tmp_path / "roster-qualified.json"
