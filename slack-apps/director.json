@@ -5,7 +5,7 @@
   },
   "features": {
     "bot_user": {
-      "display_name": "Quant 총괄",
+      "display_name": "quant-director",
       "always_online": true
     },
     "app_home": {

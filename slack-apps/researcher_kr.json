@@ -5,7 +5,7 @@
   },
   "features": {
     "bot_user": {
-      "display_name": "Quant 국내시장 연구",
+      "display_name": "quant-researcher_kr",
       "always_online": true
     },
     "app_home": {

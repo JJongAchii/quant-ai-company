@@ -4,9 +4,12 @@
 사용자의 기존 Codex 구독으로 모델을 실행합니다. AWS 단일 서버와 Temporal Cloud에 배치하는
 구성이며, 기본 Slack 연결은 도메인이 필요 없는 Socket Mode입니다.
 
-현재는 **로컬 구현·검증 및 배포 준비 단계**입니다. AWS 상시 서비스와 실제 Slack 앱은
-아직 연결하지 않았습니다. 수행한 검사와 미실행 인수는
-[검증 기록](../../docs/work/quant-ai-company/IMPLEMENTATION-VALIDATION.json)에서 구분합니다.
+현재는 **외부 연결 확인 및 AWS 배포 준비 단계**입니다. 실제 Slack 앱 4개의 인증·Socket 연결·
+지정 채널 접근과 Temporal Cloud의 테스트 업무·worker 재시작·이력 재생을 확인했습니다.
+AWS 상시 호스트, 서버 Codex 인증, 실제 Slack 업무 왕복과 맥북 종료 인수는 남아 있습니다.
+[구현 검증](../../docs/work/quant-ai-company/IMPLEMENTATION-VALIDATION.json),
+[Slack 연결](../../docs/work/quant-ai-company/SLACK-CONNECTION.json),
+[Temporal 연결](../../docs/work/quant-ai-company/TEMPORAL-CONNECTION.json)에 증거를 구분합니다.
 
 ## 동작
 
@@ -52,7 +55,7 @@ flowchart LR
 
 ## Slack에서 사용하는 방식
 
-1. 새 스레드에서 `@총괄 국내 월간 리밸런싱 아이디어를 검토해줘`라고 요청합니다.
+1. 새 스레드에서 `@quant-director 국내 월간 리밸런싱 아이디어를 검토해줘`라고 요청합니다.
 2. 같은 스레드의 일반 질문은 추가 업무로 들어갑니다.
 3. `수정: 이번에는 ETF만 대상으로 해줘` 또는 `변경:`은 지시 버전을 올립니다.
    이전 실행 결과의 신규 반영을 막고 진행 중 모델 호출에 취소를 전달합니다.
@@ -66,8 +69,9 @@ flowchart LR
 ## 시작할 때
 
 [AWS 설치·복구 안내](docs/deployment.md)와 [Slack 설정](docs/slack-setup.md)을 사용합니다.
-기존 EC2·Insight-Invest가 있는 `default` 프로필의 서울 리전에서 별도 Lightsail 4GB를
-준비하는 안입니다. 기존 데이터 수집 EC2의 일정·수명주기는 유지합니다.
+기존 EC2·Insight-Invest가 있는 `default` 프로필의 서울 리전에서 별도 Lightsail **2GB·월 $12**를
+먼저 검증하는 안입니다. 아직 구매하지 않았고, 해당 용량에서 실행 안정성을 측정하지 않았습니다.
+기존 4GB 설정은 비교 기준으로 남아 있습니다. 기존 데이터 수집 EC2의 일정·수명주기는 유지합니다.
 
 ```bash
 uv sync --frozen

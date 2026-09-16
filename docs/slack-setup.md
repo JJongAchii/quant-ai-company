@@ -43,4 +43,14 @@ From a manifest**로 각 파일을 적용하고 workspace에 설치합니다. �
 4. 같은 스레드에서 `상태`, 이어서 `수정: ...`를 보내 새 지시가 반영되는지 확인합니다.
 5. 프로세스 재시작, 맥북 종료 후 휴대폰 왕복, 외부 백업 복원을 인수 기록에 남깁니다.
 
-설정 파일과 테스트는 준비됐지만 실제 workspace에서 이 절차를 실행한 상태는 아닙니다.
+## 현재 연결 상태 — 2026-09-16
+
+`Achii's Quant Research` (`T0C1YRDRPNF`)에 네 앱을 설치했습니다. 허용 사용자는 본인
+`U0C250E23NW`, 지정 채널은 `새-채널` (`C0C1Q8D0B6K`)입니다.
+앱 표시명은 한국어이며, Slack의 bot 이름 제약에 맞춰 bot 계정은 `quant-director`,
+`quant-financial_strategist`, `quant-researcher_kr`, `quant-data`로 생성했습니다.
+
+네 앱 모두 `auth.test`, 실제 Socket Mode 연결, 지정 채널의 `conversations.history` 접근을
+확인했습니다. token은 Git 밖의 권한 0600 파일에 보관했습니다. 아직 회사 서비스의 실제 메시지
+왕복이나 AWS 상시 구동을 검증한 것은 아닙니다. 위 첫 연결 확인의 나머지는 서버 배포 후 수행합니다.
+[실제 연결 증거](../../../docs/work/quant-ai-company/SLACK-CONNECTION.json)

@@ -5,7 +5,7 @@
   },
   "features": {
     "bot_user": {
-      "display_name": "Quant 금융전략",
+      "display_name": "quant-financial_strategist",
       "always_online": true
     },
     "app_home": {

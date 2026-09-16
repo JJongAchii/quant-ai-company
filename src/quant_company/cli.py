@@ -15,7 +15,7 @@ def manifests(company, base_url, output, transport="socket"):
             continue
         value = {
             "display_information": {"name": "Quant " + role.name, "description": role.mission[:140]},
-            "features": {"bot_user": {"display_name": "Quant " + role.name, "always_online": True},
+            "features": {"bot_user": {"display_name": "quant-" + role.id, "always_online": True},
                          "app_home": {"home_tab_enabled": False, "messages_tab_enabled": True,
                                       "messages_tab_read_only_enabled": False}},
             "oauth_config": {"scopes": {"bot": ["app_mentions:read", "chat:write", "channels:history",

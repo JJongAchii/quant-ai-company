@@ -19,11 +19,13 @@ backup = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(backup)
 
 
-def compose_config(*profiles):
+def compose_config(*profiles, extra_env=None):
     if not shutil.which("docker"):
         pytest.skip("Docker Compose CLI is not installed")
     command = ["docker", "compose", "--env-file", str(DEPLOY / ".env.example"), "-f",
                str(DEPLOY / "compose.yaml")]
+    if extra_env:
+        command += ["--env-file", str(extra_env)]
     for profile in profiles:
         command += ["--profile", profile]
     result = subprocess.run(command + ["config", "--format", "json"],
@@ -60,6 +62,17 @@ def test_compose_https_is_explicit_opt_in():
     caddy = compose_config("https")["services"]["caddy"]
     assert caddy["profiles"] == ["https"]
     assert {port["published"] for port in caddy["ports"]} == {"80", "443"}
+
+
+def test_two_gib_candidate_leaves_host_memory_without_changing_service_boundaries():
+    base = compose_config()["services"]
+    candidate = compose_config(extra_env=DEPLOY / "lightsail-2gb.env.example")["services"]
+    assert set(candidate) == set(base)
+    # Static admission check only; real RSS/OOM and execution checks are still required.
+    assert sum(int(service["mem_limit"]) for service in candidate.values()) <= 1664 * 1024 * 1024
+    for name, service in candidate.items():
+        for boundary in ("networks", "secrets", "volumes", "ports", "read_only", "security_opt"):
+            assert service.get(boundary) == base[name].get(boundary)
 
 
 def resolve_cf(node, parameters, conditions):

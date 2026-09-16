@@ -89,11 +89,11 @@ services:
     # Entrypoint starts as root to initialize/chown PGDATA, then switches to postgres.
     security_opt: [no-new-privileges:true]
     pids_limit: 128
-    mem_limit: 512m
+    mem_limit: ${POSTGRES_MEMORY_LIMIT:-512m}
     cpus: 0.75
     shm_size: 128m
     stop_grace_period: 60s
-    command: [postgres, -c, shared_buffers=128MB, -c, max_connections=40]
+    command: [postgres, -c, "shared_buffers=${POSTGRES_SHARED_BUFFERS:-128MB}", -c, max_connections=40]
     healthcheck:
       # TCP excludes the socket-only temporary server used during first-time initialization.
       test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
@@ -118,7 +118,7 @@ services:
     # Operator endpoints are reachable through an SSH tunnel, not through Caddy.
     ports: ["127.0.0.1:8000:8000"]
     networks: [edge, core]
-    mem_limit: 256m
+    mem_limit: ${API_MEMORY_LIMIT:-256m}
     cpus: 0.5
     healthcheck:
       test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3)"]
@@ -137,7 +137,7 @@ services:
       SLACK_CREDENTIALS_FILE: /run/secrets/slack_credentials
     secrets: [database_password, slack_credentials]
     networks: [core, service_egress]
-    mem_limit: 256m
+    mem_limit: ${SLACK_MEMORY_LIMIT:-256m}
     cpus: 0.5
 
   worker:
@@ -149,7 +149,7 @@ services:
       MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
     secrets: [database_password, temporal_api_key, model_runtime_token]
     networks: [core, model, service_egress]
-    mem_limit: 384m
+    mem_limit: ${WORKER_MEMORY_LIMIT:-384m}
     cpus: 0.75
     depends_on:
       postgres: {condition: service_healthy}
@@ -166,7 +166,7 @@ services:
       SLACK_CREDENTIALS_FILE: /run/secrets/slack_credentials
     secrets: [database_password, temporal_api_key, slack_credentials]
     networks: [core, service_egress]
-    mem_limit: 256m
+    mem_limit: ${DISPATCH_MEMORY_LIMIT:-256m}
     cpus: 0.5
 
   codex-runtime:
@@ -191,7 +191,7 @@ services:
       - ${STATE_DIR:-/var/lib/quant-company}/codex/auth:/state/auth
       - ${STATE_DIR:-/var/lib/quant-company}/codex/jobs:/state/jobs
     networks: [model, model_egress]
-    mem_limit: 1g
+    mem_limit: ${CODEX_MEMORY_LIMIT:-1g}
     cpus: 1.0
     stop_grace_period: 360s
     healthcheck:

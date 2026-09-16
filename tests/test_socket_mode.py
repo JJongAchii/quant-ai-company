@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import re
 from types import SimpleNamespace
 
 import pytest
@@ -104,3 +105,14 @@ def test_sdk_logger_does_not_expose_tokens_or_socket_tickets():
                                "Failed %s wss://slack.example/path?ticket=secret", ("xapp-123-secret",), None)
     assert RedactSlackSecrets().filter(record)
     assert "secret" not in record.getMessage()
+
+
+def test_manifest_bot_names_obey_slack_character_rules_with_korean_role_names(test_roles, tmp_path):
+    # Slack rejects Unicode and spaces in features.bot_user.display_name.
+    # https://docs.slack.dev/reference/app-manifest/
+    test_roles["director"].name = "총괄"
+    manifests(SimpleNamespace(roles=test_roles), None, tmp_path)
+    for path in tmp_path.glob("*.json"):
+        manifest = json.loads(path.read_text())
+        assert re.fullmatch(r"[a-z0-9_.-]{1,80}", manifest["features"]["bot_user"]["display_name"])
+    assert json.loads((tmp_path / "director.json").read_text())["display_information"]["name"] == "Quant 총괄"

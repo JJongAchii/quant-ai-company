@@ -1,17 +1,30 @@
 # AWS Lightsail 운영 준비와 복구
 
-이 문서는 **배포할 수 있도록 준비한 설정과 실행 절차**다. 이번 변경에서 AWS 리소스,
-Slack 앱, Temporal Cloud namespace를 만들거나 서버에 로그인하지 않았다. Docker daemon이
-없어 컨테이너 실행·컨테이너 내 Codex 인증·서버 재부팅·S3 복원은 아직 검증하지 못했다.
+이 문서는 **배포할 수 있도록 준비한 설정과 실행 절차**다. 실제 Slack 앱 4개와 Temporal Cloud
+namespace·서비스 계정의 연결을 확인했다. AWS 자원 생성과 서버 로그인은 아직 수행하지 않았다.
+Docker daemon이 없어 컨테이너 실행·컨테이너 내 Codex 인증·서버 재부팅·S3 복원은 미검증이다.
 
 ## 1. 처음 사용할 구성
 
-Linux Lightsail 4GB 한 대에서 API, Slack Socket 수신기, worker, dispatcher, PostgreSQL 16,
-격리된 Codex 실행기를 운영한다. 기본 Slack 연결에는 도메인과 공개 HTTP endpoint가 필요 없다.
+Linux Lightsail 한 대에서 API, Slack Socket 수신기, worker, dispatcher, PostgreSQL 16,
+격리된 Codex 실행기를 운영한다. 비용 검토 후 첫 자격검증 후보는 **2GB·월 $12**다.
+기존 4GB 기본 설정의 메모리 한도 합계는 2GB를 넘으므로 그대로 2GB에 적용하지 않는다.
+기본 Slack 연결에는 도메인과 공개 HTTP endpoint가 필요 없다.
 Socket 수신기가 Slack에 인증된 outbound WebSocket 연결을 유지한다. Caddy는 선택 기능이다.
 [Slack Socket Mode](https://docs.slack.dev/apis/events-api/using-socket-mode/) 운영 workflow는 Temporal Cloud를 사용한다. 직원 10명 중 총괄·금융전략·
 국내연구·데이터만 활성화하며, Codex는 한 번에 한 작업을 처리한다. 무거운 계산·학습은
-이 서버의 업무가 아니다. 4GB는 시작용 자원 예산이며 부하 검증 뒤 유지/증설을 정한다.
+이 서버의 업무가 아니다. 2GB 후보는 아직 부하 검증을 통과하지 않았으며, 결과를 보고 용량을 정한다.
+
+### 2GB 자격검증 후보
+
+[메모리 설정](../deploy/lightsail-2gb.env.example)을 영속 `runtime.env`에 반영한다. Socket Mode
+여섯 서비스의 메모리 한도 합계는 1664 MiB다. 명목 2 GiB 중 384 MiB를 호스트용으로 남기는
+정적 설정이며, 실제 사용 가능 메모리와 안정성을 보장하지 않는다. 기본 4GB 설정은 별도로 유지한다.
+임시 Compose override 대신 영속 환경 파일을 사용하므로 재시작·백업·복원에도 같은 한도가 적용된다.
+
+첫 Linux 호스트에서 image build, Codex sandbox, 네 직원의 업무 왕복, 최대 메모리/OOM,
+worker·호스트 재시작을 측정한다. 이 설정에는 선택 HTTPS profile을 포함하지 않는다.
+1GB 이하의 운영 가능성은 확인하지 않았다. 비용을 올리는 증설은 측정 결과와 새 비용을 제시한 뒤 정한다.
 
 | 프로세스 | 연결 | 영속 상태·권한 |
 |---|---|---|
@@ -62,12 +75,13 @@ S3 백업 버킷을 정의한다. 기본 inbound 규칙은 operator `/32`의 SSH
 python3 deploy/provision.py \
   --account-id 123456789012 --region ap-northeast-2 --zone ap-northeast-2a \
   --key-pair quant-company --ssh-cidr 192.0.2.1/32 \
-  --bucket example-quant-company-backups
+  --bucket example-quant-company-backups --bundle small_3_0
 ```
 
 실제 생성 전 `aws lightsail get-blueprints`와 `get-bundles --no-include-inactive`로
-리전의 Ubuntu blueprint·4GB bundle·현재 가격을 확인한다. 2026-09-16 읽기 조회에서는
-`ubuntu_24_04`와 Linux `medium_3_0`이 활성 상태였고, 해당 bundle은 4GB·2 vCPU·월 $24였다.
+리전의 Ubuntu blueprint·bundle·현재 가격을 확인한다. 2026-09-16 읽기 조회에서는
+`ubuntu_24_04`, Linux `small_3_0`(2GB·월 $12), `medium_3_0`(4GB·월 $24)가 활성 상태였다.
+`provision.py`의 기존 기본값은 4GB이므로 2GB 후보에는 위 `--bundle small_3_0`을 명시한다.
 생성할 시점에는 같은 계정·리전에서 가격과 가용성을 다시 확인한다.
 자원·가격 검토 후 같은 명령에 `--apply`를 추가하면 실제 비용이 발생한다. apply는
 `sts get-caller-identity`의 account가 지정한 값과 같을 때만 CloudFormation을 실행한다.
@@ -105,6 +119,22 @@ sudo ln -s /var/lib/quant-company/config/runtime.env deploy/.env
 | `operator_token`, `model_runtime_token` | 최초 준비 시 난수 생성; API와 모델 token 분리 |
 | `temporal_api_key` | 실제 namespace API key로 교체 |
 | `slack-credentials.json` | 네 역할의 app ID/bot user ID/bot token/app token 입력; signing secret은 HTTP에서만 필요 |
+
+현재 Temporal namespace는 `quant-company.d2y48`, endpoint는
+`quant-company.d2y48.tmprl.cloud:7233`다. AWS 서울 단일 리전·On-Demand·7일 보관이며,
+`quant-company-runtime` 서비스 계정은 계정 Read-Only / 해당 namespace Write 권한을 가진다.
+Developer 요금제의 월 최소 금액은 $0이고 사용량은 별도다. $150 체험 크레딧과 최초 키는
+2026-12-15에 만료되므로 그 전에 요금·키 갱신을 검토한다. replica·Provisioned·Fairness는 켜지 않았다.
+
+클라우드 연결을 다시 확인할 때 아래 검사는 합성 업무 하나와 activity 두 번을 실행한다.
+회사 workflow의 timer, worker 재시작과 이력 재생을 확인하며 모델·Slack·DB를 호출하지 않는다.
+이미 이 검사는 개발 맥에서 통과했다. AWS 호스트 인수와는 별도다.
+
+```bash
+uv run python scripts/check_temporal_cloud.py \
+  --address quant-company.d2y48.tmprl.cloud:7233 --namespace quant-company.d2y48 \
+  --api-key-file /secure/path/temporal_api_key --evidence .local/temporal-cloud-check.json
+```
 
 호스트의 secrets 디렉터리는 root만 접근한다. 개별 파일은 명시적으로 마운트된 컨테이너의
 비 root 프로세스가 읽을 수 있도록 준비한다. 단일 호스트 Compose의 secret 파일은 별도의
