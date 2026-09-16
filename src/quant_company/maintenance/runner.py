@@ -179,12 +179,18 @@ class Maintainer:
             elif finding.evaluation.mode == "design_only":
                 if payload["changes"] != design_document(job):
                     raise ValueError("design_document_changed")
+            if "ci_started_at" not in payload:
+                # A budgeted prompt comparison may span days before publication. Its age is not CI wait time.
+                payload["ci_started_at"] = datetime.now(UTC).isoformat()
+                self.store.save(job_id, "publish", payload=payload)
             receipt = await asyncio.to_thread(self.github.publish, job, payload)
+            receipt["ci_started_at"] = payload["ci_started_at"]
             self.store.save(job_id, "ci", receipt=receipt)
         elif job["state"] == "ci":
             receipt["ci"] = await asyncio.to_thread(self.github.ci, receipt)
             state = {"passed": "pr", "failed": "blocked", "pending": "ci"}[receipt["ci"]["state"]]
-            if state == "ci" and datetime.now(UTC) - job["created_at"] > timedelta(hours=24):
+            ci_started = datetime.fromisoformat(receipt["ci_started_at"]) if receipt.get("ci_started_at") else job["created_at"]
+            if state == "ci" and datetime.now(UTC) - ci_started > timedelta(hours=24):
                 self.store.save(job_id, "blocked", receipt=receipt, error="ci_timeout_requires_review")
             else:
                 self.store.save(job_id, state, receipt=receipt,

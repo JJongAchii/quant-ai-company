@@ -1,5 +1,6 @@
 import asyncio
 import json
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
 
@@ -124,6 +125,25 @@ async def test_failed_ci_blocks_pr_and_does_not_loop(company):
     with company.db.transaction() as conn:
         case = conn.execute("SELECT * FROM maintenance_jobs WHERE kind='repair'").fetchone()
     assert case["state"] == "blocked" and case["error"] == "ci_failed_requires_review"
+
+
+@pytest.mark.integration
+async def test_ci_timeout_starts_after_a_multiday_evaluation_not_at_case_creation(company):
+    runner = make_maintainer(company, ci_state="pending")
+    for _ in range(2):
+        await runner.tick()
+    with company.db.transaction() as conn:
+        conn.execute("UPDATE maintenance_jobs SET created_at=now()-interval '2 days' WHERE kind='repair'")
+    await runner.tick()  # Publish after the long budget wait.
+    await runner.tick()
+    case = runner.store.next_job()
+    assert case["state"] == "ci" and case["error"] is None
+    case["receipt"]["ci_started_at"] = (datetime.now(UTC)-timedelta(hours=25)).isoformat()
+    runner.store.save(case["id"], "ci", receipt=case["receipt"])
+    await runner.tick()
+    with company.db.transaction() as conn:
+        case = conn.execute("SELECT * FROM maintenance_jobs WHERE kind='repair'").fetchone()
+    assert case["state"] == "blocked" and case["error"] == "ci_timeout_requires_review"
 
 
 @pytest.mark.integration
