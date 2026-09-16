@@ -37,7 +37,7 @@ postgres 사용자로 실행하며, 앱용 `company` 계정에는 superuser 권�
 
 - AWS: 기존 EC2/Insight-Invest가 있는 계정의 account ID, 리전/가용 영역, Lightsail SSH key
   pair, SSH 허용 공인 IPv4. 같은 AWS 계정에 별도 회사용 자원을 준비한다. 현재 읽기 조회에서는
-  Lightsail key pair가 없었으므로 생성 전에 공개키 등록 또는 키 준비가 필요하다.
+  Lightsail key pair가 없었으므로 이미 존재하는 로컬 공개키를 Lightsail에 등록하는 단계가 필요하다.
 - 새 전용 Slack: workspace/team ID, 허용 사용자·채널 ID, 네 앱 각각의 bot token과
   `connections:write` 권한을 가진 app-level token(`xapp-…`).
 - DNS·ACME 이메일·signing secret은 선택 HTTP 연결에서만 필요하다.
@@ -66,8 +66,9 @@ python3 deploy/provision.py \
 ```
 
 실제 생성 전 `aws lightsail get-blueprints`와 `get-bundles --no-include-inactive`로
-리전의 Ubuntu blueprint·4GB bundle·현재 가격을 확인한다. 기본 `ubuntu_24_04`와
-`medium_3_0`은 검토할 시작값이며, 여기서 가용성을 확인했다고 주장하지 않는다.
+리전의 Ubuntu blueprint·4GB bundle·현재 가격을 확인한다. 2026-09-16 읽기 조회에서는
+`ubuntu_24_04`와 Linux `medium_3_0`이 활성 상태였고, 해당 bundle은 4GB·2 vCPU·월 $24였다.
+생성할 시점에는 같은 계정·리전에서 가격과 가용성을 다시 확인한다.
 자원·가격 검토 후 같은 명령에 `--apply`를 추가하면 실제 비용이 발생한다. apply는
 `sts get-caller-identity`의 account가 지정한 값과 같을 때만 CloudFormation을 실행한다.
 
@@ -132,10 +133,14 @@ sudo docker compose --env-file deploy/.env -f deploy/compose.yaml run --rm --no-
   -c 'cli_auth_credentials_store="file"' -c 'forced_login_method="chatgpt"' login --device-auth
 sudo docker compose --env-file deploy/.env -f deploy/compose.yaml run --rm --no-deps \
   --entrypoint codex codex-runtime login status
-sudo docker compose --env-file deploy/.env -f deploy/compose.yaml up -d postgres
+sudo docker compose --env-file deploy/.env -f deploy/compose.yaml up -d --wait postgres
 sudo docker compose --env-file deploy/.env -f deploy/compose.yaml run --rm --no-deps api quant-company migrate
 sudo docker compose --env-file deploy/.env -f deploy/compose.yaml up -d
 ```
+
+PostgreSQL은 TCP health가 준비될 때까지 기다린 뒤 migration을 실행한다. 초기화 중의
+임시 Unix socket 서버를 준비 완료로 오인하지 않도록 health probe에 TCP 주소를 지정했다.
+[공식 PostgreSQL image의 초기화 동작](https://github.com/docker-library/postgres/blob/master/docker-entrypoint.sh)
 
 `login status`가 ChatGPT 인증인지 확인한다. API key로 자동 전환하는 경로는 제공하지 않는다.
 Linux의 Codex read-only sandbox가 호스트 kernel/seccomp 환경에서 동작하는지도 실제 작은
