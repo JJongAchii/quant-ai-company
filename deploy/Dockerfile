@@ -27,6 +27,14 @@ USER 10001:10001
 ENTRYPOINT ["python", "/app/entrypoint.py"]
 CMD ["quant-company", "serve", "--host", "0.0.0.0", "--port", "8000"]
 
+FROM app AS maintenance
+USER root
+# Only the fixed GitHub App JWT signer invokes this binary; candidate code is never executed here.
+RUN apt-get update && apt-get install --yes --no-install-recommends openssl \
+    && rm -rf /var/lib/apt/lists/*
+USER 10001:10001
+CMD ["quant-company", "maintenance", "--config", "/etc/quant-company/maintenance.json"]
+
 FROM app AS codex
 USER root
 COPY --from=codex-dist /usr/local/bin/node /usr/local/bin/node

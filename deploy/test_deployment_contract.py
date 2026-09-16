@@ -64,6 +64,21 @@ def test_compose_https_is_explicit_opt_in():
     assert {port["published"] for port in caddy["ports"]} == {"80", "443"}
 
 
+def test_maintenance_is_opt_in_and_keeps_git_credentials_out_of_models():
+    assert "maintenance" not in compose_config()["services"]
+    services = compose_config("maintenance")["services"]
+    maintenance = services["maintenance"]
+    assert maintenance["read_only"] and maintenance["user"] == "10001:10001"
+    assert not maintenance.get("ports") and not maintenance.get("privileged", False)
+    assert set(maintenance["networks"]) == {"core", "model", "service_egress"}
+    assert "lake_read_credentials" not in {s["source"] for s in maintenance["secrets"]}
+    assert "slack_credentials" not in {s["source"] for s in maintenance["secrets"]}
+    assert all("docker.sock" not in mount["source"] for mount in maintenance["volumes"])
+    for name, service in services.items():
+        secrets = {s["source"] for s in service.get("secrets", [])}
+        assert ("maintenance_github_key" in secrets) == (name == "maintenance")
+
+
 def test_lake_credentials_are_mounted_only_in_worker():
     services = compose_config()["services"]
     for name, service in services.items():

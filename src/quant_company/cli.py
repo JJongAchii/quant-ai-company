@@ -64,6 +64,9 @@ def main():
     sub.add_parser("dispatch")
     sub.add_parser("slack-socket")
     sub.add_parser("demo")
+    maintenance = sub.add_parser("maintenance")
+    maintenance.add_argument("--config", type=Path, required=True)
+    sub.add_parser("maintenance-status")
     slack = sub.add_parser("slack-manifests")
     slack.add_argument("--transport", choices=["socket", "http"], default="socket")
     slack.add_argument("--base-url")
@@ -94,3 +97,15 @@ def main():
         asyncio.run(socket_main(settings))
     elif args.command == "demo":
         asyncio.run(demo(settings))
+    elif args.command == "maintenance":
+        from .maintenance.policy import MaintenanceConfig
+        from .maintenance.runner import run_maintenance
+
+        config = MaintenanceConfig.model_validate_json(args.config.read_text())
+        asyncio.run(run_maintenance(Company(settings), config))
+    elif args.command == "maintenance-status":
+        with Company(settings).db.transaction() as conn:
+            exists = conn.execute("SELECT to_regclass('maintenance_jobs') AS name").fetchone()
+            rows = [] if not exists["name"] else conn.execute("""SELECT id,kind,state,problem_key,
+                receipt,error,created_at,updated_at FROM maintenance_jobs ORDER BY created_at DESC LIMIT 50""").fetchall()
+        print(json.dumps(rows, default=str, ensure_ascii=False, indent=2))
