@@ -107,5 +107,9 @@ def main():
         with Company(settings).db.transaction() as conn:
             exists = conn.execute("SELECT to_regclass('maintenance_jobs') AS name").fetchone()
             rows = [] if not exists["name"] else conn.execute("""SELECT id,kind,state,problem_key,
+                payload->'finding'->>'category' AS category,
+                payload->'finding'->>'title' AS title,
+                payload->'finding'->'evaluation'->>'mode' AS evaluation_mode,
+                payload->'evaluation' AS evaluation,
                 receipt,error,created_at,updated_at FROM maintenance_jobs ORDER BY created_at DESC LIMIT 50""").fetchall()
         print(json.dumps(rows, default=str, ensure_ascii=False, indent=2))

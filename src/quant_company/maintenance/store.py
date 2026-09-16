@@ -1,13 +1,12 @@
-import json
 from datetime import UTC, datetime, timedelta
 from importlib.resources import files
 from uuid import NAMESPACE_URL, uuid4, uuid5
 
 from psycopg.types.json import Jsonb
 
-from ..company import as_json
 from ..contracts import ProviderRequest
-from .policy import SECRET, MaintenanceConfig, Triage
+from .observation import review_snapshot, safe_rows
+from .policy import MaintenanceConfig, Triage, digest
 
 
 class Deferred(Exception):
@@ -27,6 +26,8 @@ class Store:
     def collect(self):
         """Anti-join by identity: a late commit with an older timestamp cannot fall behind a cursor."""
         with self.db.transaction() as conn:
+            conn.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+            conn.execute("SET LOCAL statement_timeout='5s'")
             control = conn.execute("SELECT * FROM maintenance_control WHERE id=1 FOR UPDATE").fetchone()
             if control["next_observe_at"] > datetime.now(UTC):
                 return None
@@ -37,7 +38,7 @@ class Store:
                 return None
             rows = conn.execute("""
                 SELECT 'message:'||m.id::text AS key, m.project_id, m.task_id, m.author,
-                       m.kind, left(m.text,2500) AS text, m.created_at
+                       m.kind, left(m.text,1500) AS text, m.created_at
                 FROM messages m JOIN projects p ON p.id=m.project_id
                 WHERE p.owner_user=ANY(%s) AND m.author NOT LIKE 'maintenance%%'
                   AND m.kind IN ('human','answer','delegation','peer','instruction','tool','status')
@@ -47,22 +48,20 @@ class Store:
             events = conn.execute("""
                 SELECT 'event:'||e.id::text AS key,e.project_id,e.kind,e.detail,e.created_at
                 FROM events e JOIN projects p ON p.id=e.project_id
-                WHERE p.owner_user=ANY(%s) AND e.kind='turn_blocked'
+                WHERE p.owner_user=ANY(%s) AND e.kind IN ('turn_blocked','task_blocked')
                   AND NOT EXISTS (SELECT 1 FROM maintenance_observations o WHERE o.key='event:'||e.id::text)
                 ORDER BY e.id LIMIT 4
                 """, (self.config.allowed_owners,)).fetchall()
-            rows = as_json(rows + events)
+            rows = safe_rows(rows + events)
             if not rows:
                 return None
-            # Omit whole suspect observations; never treat redaction as exhaustive secret detection.
-            for row in rows:
-                if SECRET.search(json.dumps(row)):
-                    key = row["key"]
-                    row.clear()
-                    row.update(key=key, omitted="possible_secret; operator review required")
+            review, replay_inputs, review_digest = review_snapshot(
+                conn, self.company, self.config.allowed_owners, datetime.now(UTC))
+            payload = {"observations": rows, "review": review, "review_digest": review_digest,
+                       "replay_inputs": replay_inputs, "owners": self.config.allowed_owners}
             job_id = str(uuid4())
             conn.execute("INSERT INTO maintenance_jobs(id,kind,state,payload) VALUES (%s,'triage','triage',%s)",
-                         (job_id, Jsonb({"observations": rows})))
+                         (job_id, Jsonb(payload)))
             for row in rows:
                 conn.execute("INSERT INTO maintenance_observations(key,job_id,body) VALUES (%s,%s,%s)",
                              (row["key"], job_id, Jsonb(row)))
@@ -71,8 +70,14 @@ class Store:
     def next_job(self):
         with self.db.transaction() as conn:
             return conn.execute("""SELECT * FROM maintenance_jobs
-                WHERE state IN ('triage','patch','publish','ci','pr')
+                WHERE state IN ('triage','patch','design','evaluate','publish','ci','pr')
                 ORDER BY updated_at,id LIMIT 1""").fetchone()
+
+    def check_authorization(self, job):
+        # A paused historical review must not keep using an owner's records after access is revoked.
+        owners = set(job["payload"].get("owners", []))
+        if not owners or not owners <= set(self.config.allowed_owners) & set(self.company.settings.slack_allowed_users):
+            raise ValueError("review_owner_authorization_changed")
 
     def save(self, job_id, state, *, payload=None, receipt=None, error=None):
         with self.db.transaction() as conn:
@@ -83,17 +88,30 @@ class Store:
 
     def finish_triage(self, job, result: Triage):
         finding = result.finding
-        known = {item["key"] for item in job["payload"]["observations"] if not item.get("omitted")}
+        context = job["payload"]
+        evidence = {item["key"]: item for item in context["observations"]
+                    + context.get("review", {}).get("evidence", []) if not item.get("omitted")}
+        known = set(evidence)
         if finding and not set(finding.evidence_keys) <= known:
             raise ValueError("unknown_or_omitted_evidence")
+        if finding and not {case.request_key for case in finding.evaluation.cases} <= (
+            set(context.get("replay_inputs", {})) & set(finding.evidence_keys)
+        ):
+            raise ValueError("replay_case_requires_cited_recorded_request")
         with self.db.transaction() as conn:
             if finding:
                 case_id = str(uuid5(NAMESPACE_URL, "quant-company-maintenance:" + finding.problem_key))
-                payload = {"finding": finding.model_dump(), "observations": [item for item in
-                           job["payload"]["observations"] if item["key"] in finding.evidence_keys]}
+                inputs = {case.request_key: context["replay_inputs"][case.request_key]
+                          for case in finding.evaluation.cases}
+                payload = {"finding": finding.model_dump(), "observations": [evidence[key] for key in finding.evidence_keys],
+                           "snapshot": context["snapshot"], "review": context.get("review", {}),
+                           "review_digest": context.get("review_digest"), "owners": context["owners"],
+                           "replay_inputs": inputs, "replay_inputs_digest": digest(inputs),
+                           "evaluation_plan_digest": digest(finding.evaluation.model_dump())}
+                state = "design" if finding.evaluation.mode == "design_only" else "patch"
                 conn.execute("""INSERT INTO maintenance_jobs(id,kind,state,problem_key,payload)
-                    VALUES (%s,'repair','patch',%s,%s) ON CONFLICT (problem_key) DO NOTHING""",
-                             (case_id, finding.problem_key, Jsonb(payload)))
+                    VALUES (%s,'repair',%s,%s,%s) ON CONFLICT (problem_key) DO NOTHING""",
+                             (case_id, state, finding.problem_key, Jsonb(payload)))
                 # A resolved/failed case does not restart itself from its own discussion or CI failure.
                 # Preserve repeated evidence separately in the triage receipt, linked to the same case.
                 receipt = {"case_id": case_id, "reason": result.reason,
@@ -103,7 +121,7 @@ class Store:
             conn.execute("UPDATE maintenance_jobs SET state='done',receipt=%s,updated_at=now() WHERE id=%s",
                          (Jsonb(receipt), job["id"]))
 
-    def prepare_call(self, job, phase, prompt):
+    def prepare_call(self, job, phase, prompt, *, model=None):
         call_id = f"maint-{job['id']}-{phase}"
         with self.db.transaction() as conn:
             call = conn.execute("SELECT * FROM maintenance_calls WHERE id=%s", (call_id,)).fetchone()
@@ -128,7 +146,7 @@ class Store:
             if (usage["reserved"] >= self.company.settings.company_max_daily_turns
                     or count["n"] >= self.config.max_daily_calls):
                 raise Deferred("daily_model_budget")
-            model = self.company.roles["engineer"].model
+            model = model or self.company.roles["engineer"].model
             request = ProviderRequest(request_id=call_id, model=model, prompt=prompt)
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             return conn.execute("""INSERT INTO maintenance_calls(id,job_id,request) VALUES (%s,%s,%s)
@@ -158,8 +176,11 @@ class Store:
                     continue
                 message_id = str(uuid5(NAMESPACE_URL, f"maintenance-pr:{job['id']}:{project_id}"))
                 if not conn.execute("SELECT 1 FROM messages WHERE id=%s", (message_id,)).fetchone():
+                    mode = job["payload"]["finding"]["evaluation"]["mode"]
+                    summary = ("조직·행동 개선의 검토용 설계 PR을 만들었습니다. 효과는 아직 미검증입니다. "
+                               if mode == "design_only" else "수정안의 검증을 확인하고 검토용 PR을 만들었습니다. ")
                     self.company._message(conn, project, None, "director", "maintenance",
-                                          "[개선 담당] 수정안의 CI를 확인하고 검토용 PR을 만들었습니다. "
+                                          "[개선 담당] " + summary +
                                           f"{receipt['pr']['url']}\n운영 반영은 검토 후 진행합니다.",
                                           message_id=message_id)
             state = "pr_open" if receipt["pr"]["state"] == "open" else "closed"

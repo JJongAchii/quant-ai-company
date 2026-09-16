@@ -46,6 +46,8 @@ class ModelFixture:
                 "problem": "The bounded sum helper returns a subtraction result.",
                 "reproduction": "Call bounded_sum(3, 2) and observe the fixture result of 1.",
                 "expected": "The helper must return the sum of both arguments.",
+                "category": "platform_defect", "hypothesis": "The arithmetic operator is incorrect.",
+                "evaluation": {"mode": "regression", "success_criterion": "The regression fails on base and passes after repair."},
                 "evidence_keys": [data["observations"][0]["key"]], "paths": [SOURCE],
             }}
         else:
@@ -197,9 +199,12 @@ def test_patch_requires_exact_context_and_independent_regression():
 
 
 @pytest.mark.integration
-async def test_temporal_maintenance_workflow_history_replays(company, tmp_path):
+async def test_temporal_maintenance_workflow_history_replays(company):
     runner = make_maintainer(company)
-    async with await WorkflowEnvironment.start_local(download_dest_dir=str(tmp_path), ui=False) as env:
+    # Reuse only the executable, as the company workflow tests do; each server/history remains isolated.
+    cache = Path(".local/temporal")
+    cache.mkdir(parents=True, exist_ok=True)
+    async with await WorkflowEnvironment.start_local(download_dest_dir=str(cache.resolve()), ui=False) as env:
         queue = "maintenance-test-" + uuid4().hex
         async with Worker(env.client, task_queue=queue, workflows=[MaintenanceWorkflow], activities=[runner.tick]):
             handle = await env.client.start_workflow(MaintenanceWorkflow.run, 0.05, id=queue, task_queue=queue)

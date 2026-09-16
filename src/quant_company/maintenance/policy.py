@@ -4,7 +4,7 @@ import re
 from pathlib import Path, PurePosixPath
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from ..contracts import StrictModel
 
@@ -35,6 +35,44 @@ class MaintenanceConfig(StrictModel):
     enabled: bool = False
 
 
+class Expectations(StrictModel):
+    """Observable decision properties, not a model's opinion of its own answer quality."""
+
+    status: Literal["complete", "continue", "wait"] | None = None
+    delegates: list[str] | None = Field(default=None, max_length=4)
+    tools: list[str] | None = Field(default=None, max_length=3)
+    min_artifacts: int | None = Field(default=None, ge=1, le=3)
+    source_ids: list[str] | None = Field(default=None, min_length=1, max_length=20)
+
+    @model_validator(mode="after")
+    def measurable(self):
+        if all(value is None for value in self.model_dump().values()):
+            raise ValueError("at_least_one_observable_expectation_required")
+        return self
+
+
+class ReplayCase(StrictModel):
+    purpose: Literal["target", "control"]
+    request_key: str = Field(pattern=r"^turn:[a-f0-9-]{36}$")
+    expected: Expectations
+
+
+class EvaluationPlan(StrictModel):
+    mode: Literal["regression", "prompt_replay", "documentation", "design_only"]
+    success_criterion: str = Field(min_length=10, max_length=1500)
+    cases: list[ReplayCase] = Field(default_factory=list, max_length=2)
+
+    @model_validator(mode="after")
+    def paired_replay(self):
+        if self.mode == "prompt_replay":
+            if ({case.purpose for case in self.cases} != {"target", "control"}
+                    or len({case.request_key for case in self.cases}) != 2):
+                raise ValueError("distinct_target_and_control_required")
+        elif self.cases:
+            raise ValueError("replay_cases_only_for_prompt_changes")
+        return self
+
+
 class Finding(StrictModel):
     problem_key: str = Field(pattern=r"^[a-z0-9][a-z0-9_-]{4,100}$")
     title: str = Field(min_length=5, max_length=160)
@@ -42,7 +80,16 @@ class Finding(StrictModel):
     reproduction: str = Field(min_length=10, max_length=2000)
     expected: str = Field(min_length=10, max_length=2000)
     evidence_keys: list[str] = Field(min_length=1, max_length=20)
-    paths: list[str] = Field(min_length=1, max_length=4)
+    category: Literal["platform_defect", "bot_behavior", "collaboration", "organization"]
+    hypothesis: str = Field(min_length=10, max_length=2000)
+    evaluation: EvaluationPlan
+    paths: list[str] = Field(default_factory=list, max_length=4)
+
+    @model_validator(mode="after")
+    def repair_or_design(self):
+        if bool(self.paths) != (self.evaluation.mode != "design_only"):
+            raise ValueError("repair_requires_paths_design_uses_generated_document")
+        return self
 
 
 class Triage(StrictModel):
@@ -72,7 +119,8 @@ def writable(path: str, *, new=False) -> bool:
         return False
     relative = path[len(ROOT):]
     if new:
-        return bool(re.fullmatch(r"tests/test_maintenance_regression_[a-z0-9_]+\.py", relative))
+        return bool(re.fullmatch(r"tests/test_maintenance_regression_[a-z0-9_]+\.py", relative)
+                    or re.fullmatch(r"docs/improvements/[a-f0-9-]{36}\.md", relative))
     if relative.startswith("docs/"):
         return relative.endswith(".md") and relative not in {"docs/deployment.md", "docs/codex-runtime.md"}
     if not relative.startswith("src/quant_company/"):
