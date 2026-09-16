@@ -127,6 +127,29 @@ def test_provision_preview_never_calls_aws(tmp_path, https_enabled):
     )
 
 
+def test_apply_refuses_to_create_resources_without_registered_ssh_key(monkeypatch):
+    spec = importlib.util.spec_from_file_location("company_provision", DEPLOY / "provision.py")
+    provision = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(provision)
+    monkeypatch.setattr(sys, "argv", ["provision.py", "--apply", "--zone", "ap-northeast-2a",
+        "--account-id", "123456789012", "--key-pair", "missing-key", "--ssh-cidr", "192.0.2.1/32",
+        "--bucket", "example-bucket"])
+    calls = []
+
+    def read(command, **kwargs):
+        calls.append(command)
+        if "sts" in command:
+            return "123456789012\n"
+        raise subprocess.CalledProcessError(254, command)
+
+    monkeypatch.setattr(provision.subprocess, "check_output", read)
+    monkeypatch.setattr(provision.subprocess, "run", lambda command, **kwargs: calls.append(command))
+    with pytest.raises(subprocess.CalledProcessError):
+        provision.main()
+    assert any("get-key-pair" in command for command in calls)
+    assert not any("cloudformation" in command for command in calls)
+
+
 def test_restore_refuses_live_database_before_external_calls(tmp_path):
     result = subprocess.run(
         [sys.executable, str(DEPLOY / "state_backup.py"), "restore", "--env-file",

@@ -61,6 +61,13 @@ def main() -> None:
     ).strip()
     if account != args.account_id:
         raise SystemExit("AWS account mismatch; no resources created")
+    key_name = subprocess.check_output(
+        ["aws", "--profile", args.profile, "--region", args.region, "lightsail", "get-key-pair",
+         "--key-pair-name", args.key_pair, "--query", "keyPair.name", "--output", "text"],
+        text=True,
+    ).strip()
+    if key_name != args.key_pair:
+        raise SystemExit("Lightsail SSH key pair mismatch; no resources created")
     subprocess.run(command, check=True)
 
 
