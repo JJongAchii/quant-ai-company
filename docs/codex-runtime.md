@@ -64,6 +64,10 @@ The envelope is private to the CLI boundary; it does not change the HTTP model.
 Invalid/empty decisions, non-finite JSON, duplicate JSON keys, naive follow-up
 timestamps and invalid token units are rejected. Usage counts remain integer
 tokens; follow-up times preserve timezone offsets. No financial metrics are read.
+Codex `item.completed` entries of type `error` are diagnostic messages and are
+discarded. They do not authorize success: a zero exit code, exactly one
+`turn.completed`, no `turn.failed` or top-level `error`, and a validated final decision are still
+required. Executable tool items remain blocked even when diagnostic items occur.
 
 Requests are limited to 512 KiB; CLI stdout to 1 MiB and stderr to 64 KiB. The CLI
 version, configuration and login probes each have a 15-second limit. The configuration

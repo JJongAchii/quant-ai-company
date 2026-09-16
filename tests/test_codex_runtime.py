@@ -67,14 +67,22 @@ def event(value):
     print(json.dumps(value), flush=True)
 event({'type': 'thread.started', 'thread_id': 'test-thread'})
 event({'type': 'turn.started'})
+for index, message in enumerate(control.get('diagnostics', [])):
+    event({'type': 'item.completed', 'item': {'id': f'diagnostic-{index}', 'type': 'error', 'message': message}})
 decision = control.get('decision', {'say': '검토 결과를 저장했습니다.', 'status': 'complete',
     'follow_up': {'at': '2026-09-17T09:00:00+09:00', 'instruction': 'Review the new source.'}})
 if mode == 'tool':
     event({'type': 'item.started', 'item': {'type': 'command_execution', 'command': 'unsafe'}})
+if control.get('tool_type'):
+    event({'type': 'item.completed', 'item': {'id': 'tool-1', 'type': control['tool_type']}})
 if mode == 'nonfinite':
     decision = {'say': '', 'status': 'continue', 'tools': [{'name': 'calculate', 'arguments': {'x': float('nan')}}]}
 event({'type': 'item.completed', 'item': {'id': 'i1', 'type': 'agent_message',
     'text': json.dumps({'decision_json': json.dumps(decision)})}})
+if control.get('failed_event'):
+    event({'type': 'turn.failed', 'error': {'message': 'Failed after an intermediate message'}})
+if control.get('top_level_error'):
+    event({'type': 'error', 'message': 'Unknown protocol failure after an intermediate message'})
 if mode != 'incomplete':
     event({'type': 'turn.completed', 'usage': control.get('usage', {'input_tokens': 12, 'output_tokens': 7})})
 '''
@@ -167,6 +175,42 @@ async def test_changed_input_reuses_no_inference(fake_codex, request_model):
         await runner.run(request_model.model_copy(update={"prompt": "changed request"}))
     assert caught.value.code == "uncertain"
     assert len(calls()) == 1
+
+
+async def test_diagnostic_error_items_allow_valid_completion_without_leaking_messages(fake_codex, request_model):
+    config, configure, calls = fake_codex
+    configure(diagnostics=['Optional metadata unavailable SECRET-DIAGNOSTIC', 'Optional integration disabled'])
+    runner = runner_for(config)
+    result = await runner.run(request_model)
+    assert result.decision.status == "complete"
+    assert result.usage == {"input_tokens": 12, "output_tokens": 7}
+    assert await runner_for(config).run(request_model) == result
+    assert len(calls()) == 1
+    assert "SECRET-DIAGNOSTIC" not in (config.jobs_dir / "turn-01.json").read_text()
+
+
+@pytest.mark.parametrize("control,code", [
+    ({"mode": "incomplete"}, "uncertain"),
+    ({"failed_event": True}, "invalid_output"),
+    ({"top_level_error": True}, "invalid_output"),
+    ({"decision": {"say": "", "status": "complete"}}, "invalid_output"),
+    ({"diagnostics": [None]}, "invalid_output"),
+])
+async def test_diagnostics_cannot_replace_a_valid_successful_turn(fake_codex, request_model, control, code):
+    config, configure, _ = fake_codex
+    configure(**{"diagnostics": ['Optional diagnostic: usage limit metadata unavailable'], **control})
+    with pytest.raises(ProviderFault) as caught:
+        await runner_for(config).run(request_model)
+    assert caught.value.code == code
+
+
+@pytest.mark.parametrize("tool_type", ["command_execution", "file_change", "mcp_tool_call", "web_search"])
+async def test_diagnostics_do_not_allow_executable_tool_items(fake_codex, request_model, tool_type):
+    config, configure, _ = fake_codex
+    configure(diagnostics=['Optional diagnostic'], tool_type=tool_type)
+    with pytest.raises(ProviderFault) as caught:
+        await runner_for(config).run(request_model)
+    assert caught.value.code == "uncertain"
 
 
 async def test_child_environment_and_cli_capabilities_are_restricted(fake_codex, request_model):

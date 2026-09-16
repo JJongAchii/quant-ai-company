@@ -247,7 +247,12 @@ def parse_result(request: ProviderRequest, process: ProcessResult, quota_retry_s
         items = [event["item"] for event in events if event.get("type", "").startswith("item.")]
         if any(not isinstance(item, dict) for item in items):
             raise ValueError("Invalid item")
-        if any(item.get("type") not in ("agent_message", "reasoning", "todo_list") for item in items):
+        # Codex emits non-executing diagnostic ErrorItem messages inside an
+        # otherwise successful turn. They are distinct from terminal
+        # turn.failed events and from command/file/MCP/web tool items.
+        if any(item.get("type") == "error" and not isinstance(item.get("message"), str) for item in items):
+            raise ValueError("Invalid diagnostic error item")
+        if any(item.get("type") not in ("agent_message", "reasoning", "todo_list", "error") for item in items):
             raise ProviderFault("uncertain", "Codex reported an unexpected tool action; operator review is required.")
         if process.returncode != 0 or not completed:
             # Do not classify prompt/output text or stderr as a quota denial. A
@@ -267,8 +272,8 @@ def parse_result(request: ProviderRequest, process: ProcessResult, quota_retry_s
             raise ProviderFault("uncertain", "Codex did not confirm a complete turn; reconcile this request.")
         if len(completed) != 1:
             raise ValueError("Ambiguous completion")
-        if any(event.get("type") == "turn.failed" for event in events):
-            raise ValueError("Conflicting terminal events")
+        if failed:
+            raise ValueError("Conflicting terminal or top-level error events")
         messages = [event["item"]["text"] for event in events
                     if event.get("type") == "item.completed" and event["item"].get("type") == "agent_message"]
         if not messages:
