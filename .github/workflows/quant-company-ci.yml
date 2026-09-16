@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main, 'quant-ai-company', 'maintenance/**']
+    branches: [main, 'maintenance/**']
 
 permissions:
   contents: read
@@ -35,6 +35,8 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 2
       - uses: astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff # v6
         with:
           enable-cache: false
@@ -42,6 +44,9 @@ jobs:
         run: uv sync --frozen
       - name: Lint
         run: uv run --frozen ruff check .
+      - name: Regression reproduces on base
+        if: startsWith(github.head_ref || github.ref_name, 'maintenance/')
+        run: uv run --frozen python scripts/check_maintenance_regression.py
       - name: PostgreSQL, Temporal and service regression tests
         run: >-
           uv run --frozen pytest -q -m 'not live'

@@ -53,6 +53,33 @@ x-temporal-env: &temporal-env
   TEMPORAL_API_KEY_FILE: /run/secrets/temporal_api_key
 
 services:
+  maintenance:
+    <<: *app
+    profiles: [maintenance]
+    image: quant-company-maintenance:${RELEASE_COMMIT:-unqualified}
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      target: maintenance
+      additional_contexts:
+        qdata: ${QDATA_BUILD_CONTEXT:-../../quant-data}
+      args:
+        RELEASE_COMMIT: ${RELEASE_COMMIT:-unqualified}
+        QDATA_COMMIT: ${QDATA_COMMIT:-unqualified}
+    command: [quant-company, maintenance, --config, /etc/quant-company/maintenance.json]
+    environment:
+      <<: [*db-env, *temporal-env]
+      MODEL_RUNTIME_URL: http://codex-runtime:8080
+      MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/config/roles.json:/etc/quant-company/roles.json:ro
+      - ${STATE_DIR:-/var/lib/quant-company}/config/maintenance.json:/etc/quant-company/maintenance.json:ro
+    secrets: [database_password, model_runtime_token, temporal_api_key, maintenance_github_key]
+    networks: [core, model, service_egress]
+    mem_limit: ${MAINTENANCE_MEMORY_LIMIT:-128m}
+    cpus: 0.25
+
   caddy:
     <<: *runtime
     profiles: [https]
@@ -220,6 +247,8 @@ networks:
   model_egress: {}
 
 secrets:
+  maintenance_github_key:
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/maintenance_github_key
   database_admin_password:
     file: ${STATE_DIR:-/var/lib/quant-company}/secrets/database_admin_password
   database_password:

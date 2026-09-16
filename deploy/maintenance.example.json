@@ -1,0 +1,12 @@
+{
+  "repository": "JJongAchii/quant-ai-company",
+  "base": "main",
+  "app_id": 1,
+  "installation_id": 1,
+  "private_key_file": "/run/secrets/maintenance_github_key",
+  "allowed_owners": ["REPLACE_WITH_AUTHORIZED_SLACK_USER_ID"],
+  "max_daily_calls": 6,
+  "poll_seconds": 300,
+  "observe_seconds": 600,
+  "enabled": false
+}

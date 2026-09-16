@@ -1,5 +1,8 @@
 # Quant Company
 
+정본 저장소: [JJongAchii/quant-ai-company](https://github.com/JJongAchii/quant-ai-company) (비공개).
+기존 `quant-workspace`에서 코드 이력을 보존해 분리했습니다. [이관 기록](docs/REPOSITORY-MIGRATION.json).
+
 **Slack에서 일하고, 업무·담당자·기억을 서버에 보존하는 퀀트 연구 조직의 첫 서비스입니다.**
 사용자의 기존 Codex 구독으로 모델을 실행합니다. AWS 단일 서버와 Temporal Cloud에 배치하는
 구성이며, 기본 Slack 연결은 도메인이 필요 없는 Socket Mode입니다.
@@ -150,3 +153,15 @@ REAL_CODEX_COMPANY=1 uv run pytest -q tests/test_temporal.py::test_live_codex_co
 
 코드 경계는 [INTERFACES](INTERFACES.md), 모델 실행은 [Codex runtime](docs/codex-runtime.md),
 전체 조직 확장은 [설계·인수 명세](docs/project/BUILD-AND-ACCEPTANCE.md)를 참고하세요.
+
+## 개선 BOT — 검토용 구현
+
+회사에 저장된 대화·오류와 최근 30일의 업무·위임 기록을 살펴보고, BOT 행동·협업·조직의 개선
+가설을 만듭니다. 코드 수정은 회귀 검증, 직원 지침 수정은 고정된 문제/정상 요청의 전후 비교를 거쳐
+draft PR로 제안합니다. 큰 구조 변경은 효과 미검증인 설계 PR로 남깁니다.
+기존 구독 실행기를 쓰고 사용자 업무·회사 공통 예산 안에서 처리합니다.
+CI를 통과한 PR은 원래 Slack 스레드에 총괄 계정의 `[개선 담당]` 알림으로 연결합니다.
+
+**운영 활성화 전입니다.** 자동 merge·배포 기능은 없습니다. 실제 GitHub App 설치와 구독 기반
+첫 수정 PR, 서버의 추가 메모리 확인은 검토 후 연결합니다. 현재 네 직원의 운영과 구별합니다.
+범위와 연결 방법은 [개선 BOT 운영](docs/maintenance.md)을 보세요.

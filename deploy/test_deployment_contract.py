@@ -64,6 +64,21 @@ def test_compose_https_is_explicit_opt_in():
     assert {port["published"] for port in caddy["ports"]} == {"80", "443"}
 
 
+def test_maintenance_is_opt_in_and_keeps_git_credentials_out_of_models():
+    assert "maintenance" not in compose_config()["services"]
+    services = compose_config("maintenance")["services"]
+    maintenance = services["maintenance"]
+    assert maintenance["read_only"] and maintenance["user"] == "10001:10001"
+    assert not maintenance.get("ports") and not maintenance.get("privileged", False)
+    assert set(maintenance["networks"]) == {"core", "model", "service_egress"}
+    assert "lake_read_credentials" not in {s["source"] for s in maintenance["secrets"]}
+    assert "slack_credentials" not in {s["source"] for s in maintenance["secrets"]}
+    assert all("docker.sock" not in mount["source"] for mount in maintenance["volumes"])
+    for name, service in services.items():
+        secrets = {s["source"] for s in service.get("secrets", [])}
+        assert ("maintenance_github_key" in secrets) == (name == "maintenance")
+
+
 def test_lake_credentials_are_mounted_only_in_worker():
     services = compose_config()["services"]
     for name, service in services.items():
@@ -230,10 +245,17 @@ def test_config_refuses_secrets_that_would_enter_backup(tmp_path):
         backup.config_values(config)
 
 
-def test_backup_pauses_socket_ingress_until_snapshot_is_complete(tmp_path, monkeypatch):
+@pytest.mark.parametrize("maintenance_running", [False, True])
+def test_backup_pauses_socket_ingress_until_snapshot_is_complete(tmp_path, monkeypatch, maintenance_running):
     state = tmp_path / "state"
     (state / "config").mkdir(parents=True)
     (state / "config/roles.json").write_text("[]")
+    maintenance = json.loads((DEPLOY / "maintenance.example.json").read_text())
+    maintenance["allowed_owners"] = ["UHUMAN"]
+    maintenance["enabled"] = maintenance_running
+    (state / "config/maintenance.json").write_text(json.dumps(maintenance))
+    (state / "secrets").mkdir()
+    (state / "secrets/maintenance_github_key").write_text("private fixture; must never enter backup")
     (state / "codex/jobs").mkdir(parents=True)
     (state / "codex/jobs/receipt.json").write_text('{"state":"completed"}')
     env_file = state / "config/runtime.env"
@@ -249,8 +271,8 @@ def test_backup_pauses_socket_ingress_until_snapshot_is_complete(tmp_path, monke
         return SimpleNamespace(returncode=0)
 
     monkeypatch.setattr(backup, "run", record)
-    monkeypatch.setattr(backup.subprocess, "check_output",
-                        lambda *args, **kwargs: "postgres\nslack-socket\napi\n")
+    monkeypatch.setattr(backup.subprocess, "check_output", lambda *args, **kwargs:
+                        "postgres\nslack-socket\napi\n" + ("maintenance\n" if maintenance_running else ""))
     backup.backup(args, cfg, ["docker", "compose"], state)
     stop = next(i for i, command in enumerate(calls) if "stop" in command)
     dump = next(i for i, command in enumerate(calls) if "pg_dump" in command)
@@ -258,6 +280,22 @@ def test_backup_pauses_socket_ingress_until_snapshot_is_complete(tmp_path, monke
     assert stop < dump < resume
     assert "slack-socket" in calls[stop] and "slack-socket" in calls[resume]
     assert "worker" not in calls[resume]  # Previously stopped processes stay stopped.
+    assert ("maintenance" in calls[stop]) == ("maintenance" in calls[resume]) == maintenance_running
+    recovered = tmp_path / "recovered"
+    recovered.mkdir()
+    manifest = backup.unpack(next((state / "backups").glob("*.tar.gz")), recovered)
+    assert json.loads((recovered / "maintenance.json").read_text()) == maintenance
+    assert "maintenance.json" in manifest["files"] and not any("secrets" in path for path in manifest["files"])
+
+
+def test_backup_rejects_private_material_in_maintenance_configuration(tmp_path):
+    config = json.loads((DEPLOY / "maintenance.example.json").read_text())
+    config["allowed_owners"] = ["UHUMAN"]
+    path = tmp_path / "maintenance.json"
+    config["private_key"] = "must stay in the separate secret file"
+    path.write_text(json.dumps(config))
+    with pytest.raises(ValueError, match="unrecognized fields"):
+        backup.maintenance_config_values(path)
 
 
 def test_socket_credentials_example_covers_active_role_contract():

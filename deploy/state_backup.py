@@ -15,7 +15,7 @@ from pathlib import Path, PurePosixPath
 from uuid import uuid4
 
 DEPLOY = Path(__file__).resolve().parent
-APP_SERVICES = ("slack-socket", "worker", "dispatch", "api", "codex-runtime")
+APP_SERVICES = ("slack-socket", "maintenance", "worker", "dispatch", "api", "codex-runtime")
 
 
 def config_values(path: Path) -> dict[str, str]:
@@ -41,6 +41,28 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def maintenance_config_values(path: Path) -> dict:
+    """Host-side allowlist: this script runs with system Python, without the application installed."""
+    values = json.loads(path.read_text())
+    allowed = {"repository", "base", "app_id", "installation_id", "private_key_file", "allowed_owners",
+               "max_daily_calls", "poll_seconds", "observe_seconds", "enabled"}
+    if not isinstance(values, dict) or not set(values) <= allowed:
+        raise ValueError("Maintenance backup config contains unrecognized fields")
+    if (values.get("repository") != "JJongAchii/quant-ai-company" or values.get("base") != "main"
+            or values.get("private_key_file") != "/run/secrets/maintenance_github_key"
+            or type(values.get("enabled")) is not bool):
+        raise ValueError("Maintenance backup config is not the reviewed public configuration")
+    owners = values.get("allowed_owners")
+    if not isinstance(owners, list) or not owners or any(
+        not isinstance(owner, str) or not re.fullmatch(r"U[A-Z0-9]+", owner) for owner in owners
+    ):
+        raise ValueError("Maintenance backup owners must be Slack user IDs")
+    for key in ("app_id", "installation_id", "max_daily_calls", "poll_seconds", "observe_seconds"):
+        if type(values.get(key)) is not int or values[key] <= 0:
+            raise ValueError("Maintenance backup identifiers and limits must be positive integers")
+    return values
+
+
 def run(command: list[str], **kwargs):
     return subprocess.run(command, check=True, **kwargs)
 
@@ -52,7 +74,7 @@ def unpack(archive: Path, destination: Path) -> dict:
     with tarfile.open(archive, "r:gz") as bundle:
         for member in bundle.getmembers():
             path = PurePosixPath(member.name)
-            allowed = member.name in {"manifest.json", "database.dump", "roles.json", "runtime.env"} or (
+            allowed = member.name in {"manifest.json", "database.dump", "roles.json", "runtime.env", "maintenance.json"} or (
                 len(path.parts) > 1 and path.parts[0] == "jobs"
             )
             if (not allowed or path.is_absolute() or ".." in path.parts or not member.isfile()
@@ -104,6 +126,11 @@ def backup(args, cfg: dict[str, str], compose: list[str], state: Path) -> None:
                                "--dbname", cfg.get("DATABASE_NAME", "quant_company")], stdout=output)
             shutil.copyfile(state / "config/roles.json", staging / "roles.json")
             shutil.copyfile(args.env_file, staging / "runtime.env")
+            maintenance_config = state / "config/maintenance.json"
+            if maintenance_config.exists():
+                # Private key contents are never part of a backup.
+                validated = maintenance_config_values(maintenance_config)
+                (staging / "maintenance.json").write_text(json.dumps(validated, indent=2) + "\n")
             jobs = state / "codex/jobs"
             if any(path.is_symlink() for path in jobs.rglob("*")):
                 raise ValueError("Model receipt tree contains an unexpected symbolic link")
@@ -182,7 +209,8 @@ def main() -> None:
                           "restore_behavior": "create new restore_* database; leave live config/receipts alone"}))
         return
     os.umask(0o077)
-    compose = ["docker", "compose", "--env-file", str(args.env_file), "-f", str(DEPLOY / "compose.yaml")]
+    compose = ["docker", "compose", "--profile", "maintenance", "--env-file", str(args.env_file),
+               "-f", str(DEPLOY / "compose.yaml")]
     # One local backup/restore process at a time. Locking never occurs in preview mode.
     import fcntl
     state.mkdir(parents=True, exist_ok=True)
