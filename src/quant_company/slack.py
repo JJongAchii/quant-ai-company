@@ -24,7 +24,7 @@ class SlackIngress:
 
     def verify(self, role: str, body: bytes, timestamp: str, signature: str, at=None):
         credential = self.credentials.get(role)
-        if not credential:
+        if not credential or not credential.get("signing_secret"):
             raise PolicyError("Slack employee is not configured")
         if len(body) > 262144:
             raise PolicyError("Slack body too large")

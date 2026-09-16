@@ -8,7 +8,7 @@ CREATE TABLE projects (
 CREATE TABLE tasks (
  id uuid PRIMARY KEY, project_id uuid NOT NULL REFERENCES projects(id),
  parent_id uuid REFERENCES tasks(id), agent text NOT NULL, instruction text NOT NULL,
- revision integer NOT NULL, depth integer NOT NULL DEFAULT 0,
+ revision integer NOT NULL, depth integer NOT NULL DEFAULT 0, priority integer NOT NULL DEFAULT 0,
  status text NOT NULL DEFAULT 'pending', turn_count integer NOT NULL DEFAULT 0,
  result text, error text, created_at timestamptz NOT NULL DEFAULT now()
 );

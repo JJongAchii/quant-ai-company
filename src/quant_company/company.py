@@ -100,20 +100,24 @@ class Company:
         conn.execute("UPDATE tasks SET turn_count=%s,status='pending' WHERE id=%s", (sequence, task["id"]))
         return turn_id
 
-    def _new_task(self, conn, project, agent, instruction, parent=None, task_id=None, due_at=None):
+    def _new_task(self, conn, project, agent, instruction, parent=None, task_id=None, due_at=None, priority=None,
+                  status_only=False):
         self.role(agent)
         depth = parent["depth"] + 1 if parent else 0
         if depth > self.settings.company_max_depth:
             raise PolicyError("Delegation depth exhausted")
-        count = conn.execute("SELECT count(*) AS n FROM tasks WHERE project_id=%s", (project["id"],)).fetchone()
-        if count["n"] >= self.settings.company_max_project_tasks:
+        count = conn.execute("SELECT count(*) AS n FROM tasks WHERE project_id=%s AND turn_count>0",
+                             (project["id"],)).fetchone()
+        if not status_only and count["n"] >= self.settings.company_max_project_tasks:
             raise PolicyError("Project task limit exhausted")
         task_id = task_id or str(uuid4())
-        task = conn.execute("""INSERT INTO tasks(id,project_id,parent_id,agent,instruction,revision,depth)
-            VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING *""",
+        priority = priority if priority is not None else (parent["priority"] + 10 if parent else 0)
+        task = conn.execute("""INSERT INTO tasks(id,project_id,parent_id,agent,instruction,revision,depth,priority)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s) RETURNING *""",
                             (task_id, project["id"], parent["id"] if parent else None,
-                             agent, instruction, project["revision"], depth)).fetchone()
-        self._new_turn(conn, task, due_at)
+                             agent, instruction, project["revision"], depth, priority)).fetchone()
+        if not status_only:
+            self._new_turn(conn, task, due_at)
         return task
 
     def ingest(self, *, event_key: str, text: str, owner: str, agent: str = "director",
@@ -156,7 +160,8 @@ class Company:
                 conn.execute("""UPDATE outbox SET status='stale' WHERE project_id=%s
                     AND status='pending' AND revision<%s""", (project_id, project["revision"]))
                 self._event(conn, "project_revised", {"revision": project["revision"], "by": owner}, project_id)
-            task = self._new_task(conn, project, agent, text, task_id=stable("task:" + event_key))
+            task = self._new_task(conn, project, agent, text, task_id=stable("task:" + event_key),
+                                  status_only=status_only)
             conn.execute("INSERT INTO inbound(event_key,project_id,task_id,payload_digest) VALUES (%s,%s,%s,%s)",
                          (event_key, project_id, task["id"], digest))
             self._message(conn, project, task["id"], owner, "human", text)
@@ -169,7 +174,6 @@ class Company:
                 pause = conn.execute("SELECT paused_until,reason FROM runtime_control WHERE id=1").fetchone()
                 if pause["paused_until"] and pause["paused_until"] > now():
                     summary += f"\n모델 작업 대기: {pause['reason']} ({pause['paused_until'].isoformat()}까지)"
-                conn.execute("UPDATE turns SET status='completed' WHERE task_id=%s", (task["id"],))
                 conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (summary, task["id"]))
                 self._message(conn, project, task["id"], agent, "status", summary)
             self._event(conn, "task_created", {"task_id": task["id"], "agent": agent}, project_id)
@@ -207,10 +211,32 @@ class Company:
                                (project["id"], project["owner_user"])).fetchall()
         artifacts = conn.execute("""SELECT id,title,left(content,2500) AS excerpt,source_ids,revision FROM artifacts
             WHERE project_id=%s ORDER BY created_at DESC LIMIT 5""", (project["id"],)).fetchall()
-        return as_json({"project": {key: project[key] for key in ["id", "instruction", "revision"]},
-                        "task": {key: task[key] for key in ["id", "agent", "instruction", "depth"]},
-                        "messages": messages, "child_results": children,
-                        "approved_sources": sources, "verified_memories": memories, "recent_artifacts": artifacts})
+        context = as_json({"project": {key: project[key] for key in ["id", "instruction", "revision"]},
+                           "task": {key: task[key] for key in ["id", "agent", "instruction", "depth"]},
+                           "messages": messages, "child_results": children,
+                           "approved_sources": sources, "verified_memories": memories, "recent_artifacts": artifacts,
+                           "context_truncated": False})
+        # The DB keeps full evidence. Explicitly bounded excerpts keep an old busy project from
+        # exhausting the model context or subscription on every turn.
+        for child in context["child_results"]:
+            for key, limit in [("instruction", 1000), ("result", 3500)]:
+                if child.get(key) and len(child[key]) > limit:
+                    child[key] = child[key][:limit] + " [excerpt; full content remains in project records]"
+                    context["context_truncated"] = True
+        while len(json.dumps(context, ensure_ascii=False)) > 68000:
+            for key, minimum in [("messages", 3), ("recent_artifacts", 0), ("verified_memories", 0),
+                                 ("approved_sources", 0), ("child_results", 0)]:
+                if len(context[key]) > minimum:
+                    context[key].pop(0)
+                    context["context_truncated"] = True
+                    break
+            else:
+                # Three remaining messages can each contain a large source/tool response.
+                for message in context["messages"]:
+                    message["text"] = message["text"][:3000] + " [excerpt]"
+                context["context_truncated"] = True
+                break
+        return context
 
     def prepare_turn(self, turn_id: str) -> dict:
         with self.db.transaction() as conn:
@@ -230,6 +256,10 @@ class Company:
                 return {"state": "defer", "seconds": max(1, (pause["paused_until"] - now()).total_seconds())}
             if turn["due_at"] > now():
                 return {"state": "defer", "seconds": max(1, (turn["due_at"] - now()).total_seconds())}
+            if task["priority"] > 0 and conn.execute("""SELECT 1 FROM turns t JOIN tasks k ON k.id=t.task_id
+                JOIN projects p ON p.id=k.project_id WHERE t.status IN ('queued','waiting') AND t.due_at<=now()
+                AND k.priority<%s AND k.revision=p.revision LIMIT 1""", (task["priority"],)).fetchone():
+                return {"state": "defer", "seconds": 2, "reason": "higher_priority_request"}
             if turn["status"] != "running":
                 conn.execute("INSERT INTO daily_usage(day,reserved) VALUES (CURRENT_DATE,0) ON CONFLICT DO NOTHING")
                 usage = conn.execute("SELECT * FROM daily_usage WHERE day=CURRENT_DATE FOR UPDATE").fetchone()
@@ -390,7 +420,7 @@ class Company:
                               task["agent"])
             if decision.follow_up:
                 self._new_task(conn, project, task["agent"], decision.follow_up.instruction,
-                               task_id=stable("follow-up:" + turn_id), due_at=decision.follow_up.at)
+                               task_id=stable("follow-up:" + turn_id), due_at=decision.follow_up.at, priority=100)
             status = {"complete": "completed", "continue": "pending", "wait": "waiting"}[decision.status]
             conn.execute("UPDATE tasks SET status=%s,result=%s,error=NULL WHERE id=%s",
                          (status, decision.say if status == "completed" else None, task["id"]))
@@ -404,7 +434,9 @@ class Company:
                 self._wake_parent(conn, task, project)
             return {"state": "completed", "task_status": status, "duplicate": False}
 
-    def retry_task(self, task_id: str, owner: str | None = None):
+    def retry_task(self, task_id: str, owner: str | None = None, *, reconciliation_note: str = ""):
+        if not 1 <= len(reconciliation_note.strip()) <= 1000:
+            raise PolicyError("Retry requires an operator reconciliation note for the previous attempt")
         with self.db.transaction() as conn:
             task = conn.execute("SELECT * FROM tasks WHERE id=%s", (task_id,)).fetchone()
             if not task:
@@ -416,13 +448,15 @@ class Company:
                 parent = conn.execute("SELECT status FROM tasks WHERE id=%s", (task["parent_id"],)).fetchone()
                 if parent["status"] != "waiting":
                     raise PolicyError("Parent already consumed blocked result; create a fresh request")
-            self._event(conn, "operator_retry", {"task_id": task_id, "previous_error": task["error"]}, project["id"])
+            self._event(conn, "operator_retry", {"task_id": task_id, "previous_error": task["error"],
+                                                  "reconciliation_note": reconciliation_note}, project["id"])
             return {"turn_id": self._new_turn(conn, task)}
 
     def pending_starts(self):
         with self.db.transaction() as conn:
-            return as_json(conn.execute("""SELECT id FROM turns WHERE NOT workflow_started AND status='queued'
-                ORDER BY created_at LIMIT 50""").fetchall())
+            return as_json(conn.execute("""SELECT t.id FROM turns t JOIN tasks k ON k.id=t.task_id
+                WHERE NOT t.workflow_started AND t.status='queued'
+                ORDER BY k.priority,t.created_at LIMIT 50""").fetchall())
 
     def mark_started(self, turn_id):
         with self.db.transaction() as conn:

@@ -8,21 +8,24 @@ from .company import Company
 from .config import Settings
 
 
-def manifests(company, base_url, output):
+def manifests(company, base_url, output, transport="socket"):
     output.mkdir(parents=True, exist_ok=True)
     for role in company.roles.values():
         if not role.active:
             continue
         value = {
             "display_information": {"name": "Quant " + role.name, "description": role.mission[:140]},
-            "features": {"bot_user": {"display_name": "Quant " + role.name, "always_online": True}},
+            "features": {"bot_user": {"display_name": "Quant " + role.name, "always_online": True},
+                         "app_home": {"home_tab_enabled": False, "messages_tab_enabled": True,
+                                      "messages_tab_read_only_enabled": False}},
             "oauth_config": {"scopes": {"bot": ["app_mentions:read", "chat:write", "channels:history",
                                                     "groups:history", "im:history", "im:write"]}},
-            "settings": {"event_subscriptions": {"request_url": base_url.rstrip("/") + "/slack/events/" + role.id,
-                                                   "bot_events": ["app_mention", "message.channels", "message.groups", "message.im"]},
+            "settings": {"event_subscriptions": {"bot_events": ["app_mention", "message.channels", "message.groups", "message.im"]},
                          "interactivity": {"is_enabled": False}, "org_deploy_enabled": False,
-                         "socket_mode_enabled": False, "token_rotation_enabled": False},
+                         "socket_mode_enabled": transport == "socket", "token_rotation_enabled": False},
         }
+        if transport == "http":
+            value["settings"]["event_subscriptions"]["request_url"] = base_url.rstrip("/") + "/slack/events/" + role.id
         (output / f"{role.id}.json").write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
 
 
@@ -59,9 +62,11 @@ def main():
     serve.add_argument("--port", type=int, default=8000)
     sub.add_parser("worker")
     sub.add_parser("dispatch")
+    sub.add_parser("slack-socket")
     sub.add_parser("demo")
     slack = sub.add_parser("slack-manifests")
-    slack.add_argument("--base-url", required=True)
+    slack.add_argument("--transport", choices=["socket", "http"], default="socket")
+    slack.add_argument("--base-url")
     slack.add_argument("--output", type=Path, default=Path(".local/slack-manifests"))
     args = parser.parse_args()
     settings = Settings()
@@ -80,8 +85,12 @@ def main():
 
         asyncio.run(dispatch_main(settings))
     elif args.command == "slack-manifests":
-        if not args.base_url.startswith("https://"):
+        if args.transport == "http" and not (args.base_url or "").startswith("https://"):
             parser.error("Slack public callback URL must use HTTPS")
-        manifests(Company(settings), args.base_url, args.output)
+        manifests(Company(settings), args.base_url, args.output, args.transport)
+    elif args.command == "slack-socket":
+        from .socket_mode import socket_main
+
+        asyncio.run(socket_main(settings))
     elif args.command == "demo":
         asyncio.run(demo(settings))

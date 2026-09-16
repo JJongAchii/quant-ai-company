@@ -123,3 +123,18 @@ def test_operator_api_requires_secret(company, credentials):
     result = client.post("/v1/requests", headers=headers, json={"request_id": "test", "text": "Research"})
     assert result.status_code == 200
     assert client.get("/v1/projects", headers=headers).json()[0]["id"] == result.json()["project_id"]
+
+
+def test_status_request_works_without_inference_during_quota_pause(company, credentials):
+    client = TestClient(create_app(company.settings, company, credentials))
+    raw, headers = signed(event(credentials), credentials["director"])
+    project_id = client.post("/slack/events/director", content=raw, headers=headers).json()["project_id"]
+    with company.db.transaction() as conn:
+        conn.execute("UPDATE runtime_control SET paused_until=now()+interval '1 hour',reason='quota' WHERE id=1")
+    raw, headers = signed(event(credentials, text="상태", ts="101.001", thread_ts="100.001", type="message"),
+                           credentials["director"])
+    assert client.post("/slack/events/director", content=raw, headers=headers).status_code == 200
+    state = company.project_state(project_id)
+    status = next(message for message in state["messages"] if message["kind"] == "status")
+    assert "quota" in status["text"]
+    assert all(turn["attempts"] == 0 for turn in state["turns"])

@@ -28,6 +28,10 @@ class MemoryReview(StrictModel):
     share: bool = False
 
 
+class RetryInput(StrictModel):
+    reconciliation_note: str = Field(min_length=1, max_length=1000)
+
+
 def create_app(settings: Settings | None = None, company: Company | None = None,
                credentials: dict | None = None) -> FastAPI:
     settings = settings or Settings()
@@ -93,8 +97,8 @@ def create_app(settings: Settings | None = None, company: Company | None = None,
                               text=value.text, agent=value.agent, project_id=project_id, revise=True)
 
     @app.post("/v1/tasks/{task_id}/retry", dependencies=[Depends(operator)])
-    def retry(task_id: str):
-        return company.retry_task(task_id)
+    def retry(task_id: str, value: RetryInput):
+        return company.retry_task(task_id, reconciliation_note=value.reconciliation_note)
 
     @app.post("/v1/sources", dependencies=[Depends(operator)])
     def source(value: SourceInput):

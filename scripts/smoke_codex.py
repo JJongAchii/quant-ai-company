@@ -33,16 +33,17 @@ async def main():
                                      'All action lists must be empty and follow_up null. Do not call any tools.')
     evidence = {"checked_at": datetime.now(UTC).isoformat(), "model": args.model,
                 "code_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
-                "request_id": args.request_id, "real_subscription_call": True,
+                "request_id": args.request_id, "real_subscription_call_attempted": True,
                 "slack_connected": False, "remote_server_tested": False}
     try:
         result = await client.run(request)
         replay = await client.run(request)
         assert result == replay
         assert result.decision.say == "연결 확인 완료"
-        evidence.update(status="passed", result=result.model_dump(mode="json"), replay_equal=True)
+        evidence.update(status="passed", model_turn_completed=True,
+                        result=result.model_dump(mode="json"), replay_equal=True)
     except ProviderFault as exc:
-        evidence.update(status="not_passed", fault_code=exc.code, message=exc.message,
+        evidence.update(status="not_passed", model_turn_completed=False, fault_code=exc.code, message=exc.message,
                         retry_after_seconds=exc.retry_after_seconds)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n")

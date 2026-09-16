@@ -22,15 +22,21 @@ researcher_kr, data. `roles.json` is a JSON array of `Role` objects, packaged in
 
 ## Company service
 
-- `quant-company migrate`, `serve`, `worker`, `dispatch`, `demo`, `slack-manifests` commands.
+- `quant-company migrate`, `serve`, `worker`, `dispatch`, `slack-socket`, `demo`, `slack-manifests` commands.
 - ASGI factory `quant_company.api:create_app`.
 - Environment: DATABASE_URL, OPERATOR_TOKEN, MODEL_PROVIDER=codex|fixture,
   MODEL_RUNTIME_URL, MODEL_RUNTIME_TOKEN, SLACK_TEAM_ID, SLACK_ALLOWED_USERS (JSON list),
   SLACK_ALLOWED_CHANNELS (JSON list), SLACK_CREDENTIALS_FILE (JSON object by role ID),
   TEMPORAL_ADDRESS, TEMPORAL_NAMESPACE, TEMPORAL_API_KEY (optional), TEMPORAL_TLS,
   COMPANY_MAX_DAILY_TURNS=100, COMPANY_MAX_TASK_TURNS=8, COMPANY_MAX_DEPTH=3.
-- Slack credentials: `{role_id: {app_id, bot_user_id, bot_token, signing_secret}}`.
-- `/slack/events/{role_id}` verifies the role-specific signature before parsing.
+- Slack credentials: `{role_id: {app_id, bot_user_id, bot_token, app_token, signing_secret}}`.
+  `app_token` with `connections:write` is required for Socket Mode; `signing_secret` is required only for HTTP.
+- Default transport is Socket Mode: `slack-socket` maintains authenticated outbound WebSockets with
+  the official Slack SDK. Workspace/user/channel/app checks and DB commit precede the envelope ACK.
+  Duplicate deliveries share the same inbox key as HTTP. No public domain/port is required.
+- Optional `/slack/events/{role_id}` verifies the role-specific signature before parsing.
+- `slack-manifests --output DIR` defaults to Socket Mode. Optional HTTP mode requires
+  `--transport http --base-url https://...`. Never create/install apps automatically.
 - `/healthz`; authenticated `/v1/agents`, `/v1/projects`, `/v1/projects/{id}`,
   `/v1/requests`, `/v1/projects/{id}/revise`, `/v1/tasks/{id}/retry`.
 - Temporal workflow IDs are stable turn IDs. PostgreSQL owns company task state and inbox/outbox;
@@ -41,8 +47,14 @@ researcher_kr, data. `roles.json` is a JSON array of `Role` objects, packaged in
 
 ## Deployment
 
-Single AWS Lightsail host with Caddy, service, worker/dispatcher, PostgreSQL and isolated Codex
+Single AWS Lightsail host with service, Slack socket receiver, worker/dispatcher, PostgreSQL and isolated Codex
 runtime. Temporal Cloud in production; local Temporal dev server is for development only.
+Caddy is an optional `https` Compose profile. Default Lightsail ingress allows only the configured
+SSH IPv4 /32. HTTP/HTTPS port opening must be an explicit deployment option.
 Secrets/config are operator-provided local files, excluded from Git and images. Use separate
 model/core container networks; do not mount Docker socket. DB is not published to the internet.
 AWS resources are prepared as reviewable templates/scripts; do not create any resources.
+
+Transport revision (2026-09-16): user has no domain and asks to reuse the AWS account serving
+EC2/Insight-Invest. Socket Mode is an implementation choice within the approved persistent Slack
+company contract; it removes the domain prerequisite without changing bot identity or task semantics.

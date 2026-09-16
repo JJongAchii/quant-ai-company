@@ -171,3 +171,82 @@ def test_permissions_and_task_budget_rollback_entire_proposal(company):
 def test_database_migration_is_repeatable(company):
     company.db.migrate()
     assert company.db.health()
+
+
+def test_status_remains_available_when_project_budget_is_exhausted(company):
+    company.settings.company_max_project_tasks = 1
+    req = company.ingest(event_key="full", text="Work", owner="user")
+    for index in range(3):
+        company.ingest(event_key=f"status-{index}", text="상태", owner="user",
+                        project_id=req["project_id"], status_only=True)
+    state = company.project_state(req["project_id"])
+    assert len(state["turns"]) == 1
+    assert sum(task["turn_count"] == 0 and task["status"] == "completed" for task in state["tasks"]) == 3
+    with pytest.raises(PolicyError, match="task limit"):
+        company.ingest(event_key="extra-work", text="More work", owner="user", project_id=req["project_id"])
+
+
+def test_blocked_retry_preserves_operator_reconciliation_and_prior_receipt(company):
+    req = company.ingest(event_key="ambiguous", text="Work", owner="user")
+    old = queued_turns(company, req["project_id"])[0]
+    company.prepare_turn(old)
+    company.block_turn(old, "uncertain")
+    with pytest.raises(PolicyError, match="reconciliation"):
+        company.retry_task(req["task_id"])
+    retried = company.retry_task(req["task_id"], reconciliation_note="Reviewed old runtime receipt; no accepted output")
+    assert retried["turn_id"] != old
+    state = company.project_state(req["project_id"])
+    assert next(turn for turn in state["turns"] if turn["id"] == old)["status"] == "blocked"
+    assert any(event["detail"].get("reconciliation_note") for event in state["events"])
+
+
+async def test_loop_budget_blocks_child_and_resumes_parent_with_failure(company):
+    company.settings.company_max_task_turns = 2
+    req = company.ingest(event_key="limited-child", text="Research", owner="user")
+    parent_turn = queued_turns(company, req["project_id"])[0]
+    company.prepare_turn(parent_turn)
+    company.commit_turn(parent_turn, ProviderResponse(request_id=parent_turn, decision=AgentDecision(
+        say="Request data", status="wait", delegations=[{"agent": "data", "instruction": "Check data"}])))
+    for _ in range(2):
+        child_turn = queued_turns(company, req["project_id"])[0]
+        company.prepare_turn(child_turn)
+        company.commit_turn(child_turn, ProviderResponse(request_id=child_turn,
+                            decision=AgentDecision(say="Still thinking", status="continue")))
+    state = company.project_state(req["project_id"])
+    child = next(task for task in state["tasks"] if task["agent"] == "data")
+    parent = next(task for task in state["tasks"] if task["agent"] == "director")
+    assert child["status"] == "blocked"
+    assert parent["status"] == "pending"
+    parent_context = company.prepare_turn(queued_turns(company, req["project_id"])[0])["request"]["prompt"]
+    assert '"error": "task_turn_limit"' in parent_context
+
+
+def test_only_human_review_can_share_memory_across_own_projects(company):
+    req = company.ingest(event_key="original-memory", text="First", owner="user")
+    company.put_source(source_id="public", title="Public fixture", uri="fixture://public", content="test",
+                        available_at=now(), approved=True, synthetic=True)
+    turn = queued_turns(company, req["project_id"])[0]
+    company.prepare_turn(turn)
+    company.commit_turn(turn, completed(turn, memories=[{"text": "Reviewed lesson", "source_ids": ["public"]}]))
+    memory_id = company.project_state(req["project_id"])["memories"][0]["id"]
+    company.review_memory(memory_id, True, "human", share=True)
+    for owner, expected in [("user", True), ("different-owner", False)]:
+        new = company.ingest(event_key="memory-" + owner, text="Next", owner=owner)
+        prompt = company.prepare_turn(queued_turns(company, new["project_id"])[0])["request"]["prompt"]
+        assert ("Reviewed lesson" in prompt) == expected
+
+
+def test_human_work_precedes_background_and_busy_context_is_bounded(company):
+    background = company.ingest(event_key="background", text="Background", owner="user")
+    background_turn = queued_turns(company, background["project_id"])[0]
+    with company.db.transaction() as conn:
+        conn.execute("UPDATE tasks SET priority=100 WHERE id=%s", (background["task_id"],))
+    human = company.ingest(event_key="human", text="New human request", owner="user")
+    assert company.prepare_turn(background_turn)["reason"] == "higher_priority_request"
+    for index in range(20):
+        company.ingest(event_key=f"long-{index}", text="Source discussion " + "x" * 9000, owner="user",
+                        project_id=human["project_id"])
+    human_turn = queued_turns(company, human["project_id"])[0]
+    prompt = company.prepare_turn(human_turn)["request"]["prompt"]
+    assert len(prompt) < 90000
+    assert json.loads(prompt.split("TASK DATA JSON:\n")[1])["context_truncated"]
