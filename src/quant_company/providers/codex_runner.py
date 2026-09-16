@@ -216,7 +216,9 @@ def cli_command(config: RunnerConfig, request: ProviderRequest, work_dir: Path, 
         "project_doc_max_bytes=0", "project_doc_fallback_filenames=[]", 'history.persistence="none"',
         "hide_agent_reasoning=true", "show_raw_agent_reasoning=false", "features.skip_host_skill_discovery=true",
         "memories.generate_memories=false", "memories.use_memories=false",
-        f"projects.{json.dumps(str(work_dir))}.trust_level=\"untrusted\"",
+        # The strict override validator accepts the dynamic path in a TOML
+        # table, not as a quoted segment of a dotted override key.
+        f"projects={{ {json.dumps(str(work_dir))} = {{ trust_level=\"untrusted\" }} }}",
     ]
     overrides.extend(f"features.{name}=false" for name in DISABLED_FEATURES)
     for override in overrides:
@@ -339,12 +341,32 @@ class CodexRunner:
         except (ValueError, TypeError, KeyError, AttributeError, ValidationError):
             raise ProviderFault("uncertain", "The request receipt cannot be verified; operator review is required.") from None
 
-    async def _preflight(self, work_dir: Path, env: dict[str, str]) -> None:
+    async def _configuration_preflight(self, request: ProviderRequest, work_dir: Path, env: dict[str, str]) -> None:
+        # Two deliberate stop conditions: there is no prompt and the schema
+        # path does not exist. The pinned CLI validates config before rejecting
+        # empty stdin, before any model session can start. Never send the task.
+        missing_schema = work_dir / ".configuration-probe-missing.schema.json"
+        if missing_schema.exists():
+            raise ProviderFault("unavailable", "The configuration probe directory is not clean.")
+        try:
+            probe = await self.process.run(
+                cli_command(self.config, request, work_dir, missing_schema), cwd=work_dir, env=env,
+                stdin=b"", timeout_seconds=15,
+                max_stdout_bytes=MAX_STDERR_BYTES, max_stderr_bytes=MAX_STDERR_BYTES,
+            )
+        except ProviderFault:
+            raise ProviderFault("unavailable", "Codex configuration could not be validated before execution.") from None
+        if (probe.returncode != 1 or probe.stdout.strip()
+                or probe.stderr.strip() != b"No prompt provided via stdin."):
+            raise ProviderFault("unavailable", "Codex rejected its required execution configuration.")
+
+    async def _preflight(self, request: ProviderRequest, work_dir: Path, env: dict[str, str]) -> None:
         options = dict(cwd=work_dir, env=env, timeout_seconds=15,
                        max_stdout_bytes=MAX_STDERR_BYTES, max_stderr_bytes=MAX_STDERR_BYTES)
         version = await self.process.run([self.config.codex_bin, "--version"], **options)
         if version.returncode != 0 or version.stdout.decode(errors="replace").strip() != f"codex-cli {SUPPORTED_CLI_VERSION}":
             raise ProviderFault("unavailable", f"The runtime requires the validated Codex CLI {SUPPORTED_CLI_VERSION}.")
+        await self._configuration_preflight(request, work_dir, env)
         login = await self.process.run(
             [self.config.codex_bin, "login", "status", "-c", 'forced_login_method="chatgpt"'], **options,
         )
@@ -382,7 +404,7 @@ class CodexRunner:
                 raise ProviderFault("auth", "The configured Codex authentication directory is unavailable.")
             with tempfile.TemporaryDirectory(prefix=".turn-", dir=directory) as temporary:
                 work_dir = Path(temporary).resolve()
-                await self._preflight(work_dir, env)
+                await self._preflight(request, work_dir, env)
                 schema = work_dir / "decision.schema.json"
                 atomic_json(schema, CLI_OUTPUT_SCHEMA)
                 receipt = {"version": 1, "request_id": request.request_id, "input_digest": digest,

@@ -22,7 +22,7 @@ FAULT_MESSAGES = {
 
 
 class RuntimeClient:
-    def __init__(self, base_url: str, token: str, timeout_seconds: float = 330, *,
+    def __init__(self, base_url: str, token: str, timeout_seconds: float = 360, *,
                  transport: httpx.AsyncBaseTransport | None = None):
         if not token or not math.isfinite(timeout_seconds) or timeout_seconds <= 0:
             raise ValueError("Runtime token and positive finite timeout are required")

@@ -40,7 +40,8 @@ explicit cancellation targets an in-process task. **One worker is required.**
 
 The child gets only `PATH`, `HOME`, `LANG`, `LC_ALL`, `TZ`, `CODEX_HOME` and
 `NO_COLOR`. User config/rules are ignored, the working directory is temporary
-and untrusted, project instructions are disabled, and the CLI uses a read-only
+and set untrusted using a top-level `projects={...}` TOML override (the pinned
+CLI rejects a quoted path in a dotted override key). Project instructions are disabled, and the CLI uses a read-only
 sandbox. Shell, hooks, apps, plugins, MCP configuration, browser/computer,
 subagents, host skills, memory generation and web search are disabled. No
 dangerous sandbox or hook-trust bypass is used. Container isolation remains
@@ -52,7 +53,7 @@ necessary: CLI configuration is not a substitute for withholding host secrets.
 All POST routes require `Authorization: Bearer <MODEL_RUNTIME_TOKEN>`.
 
 ```python
-client = RuntimeClient(base_url, token, timeout_seconds=330)
+client = RuntimeClient(base_url, token, timeout_seconds=360)
 result = await client.run(provider_request)
 status = await client.cancel(provider_request.request_id)
 ```
@@ -65,7 +66,11 @@ timestamps and invalid token units are rejected. Usage counts remain integer
 tokens; follow-up times preserve timezone offsets. No financial metrics are read.
 
 Requests are limited to 512 KiB; CLI stdout to 1 MiB and stderr to 64 KiB. The CLI
-version and login probes each have a 15-second limit. Raw stdout/stderr and
+version, configuration and login probes each have a 15-second limit. The configuration
+probe uses all required restrictions, a nonexistent output-schema path, and empty
+stdin. It must receive the pinned CLI's explicit empty-input rejection with no
+JSON events before a `running` receipt can be written. Configuration errors are
+therefore reported as `unavailable` without claiming inference started. Raw stdout/stderr and
 prompt text are not written into receipts or returned as error messages. The
 typed result itself can contain project information and must be protected.
 
@@ -112,12 +117,15 @@ execution across lost storage or remote provider failures.
 ```sh
 uv run pytest -q tests/test_codex_runtime.py
 uv run ruff check src/quant_company/providers tests/test_codex_runtime.py
+CODEX_CONFIG_PROBE=1 uv run pytest -q tests/test_codex_config_probe.py
 ```
 
 The tests run a real subprocess containing a fake Codex executable, including
 process-tree cleanup, quota, malformed output, orphan detection, typed time/JSON
 contracts and HTTP-to-durable-result replay. They do not call a model or validate
-live subscription capacity. The integrating thread must run the explicitly
+live subscription capacity. The opt-in configuration test runs the actual local
+CLI with an empty authentication directory, no prompt and a missing schema; it
+does not run inference. The integrating thread must run the explicitly
 authorized real Codex smoke with the committed code before calling the live
 provider qualified. Production AWS/Slack connectivity remains a separate check.
 

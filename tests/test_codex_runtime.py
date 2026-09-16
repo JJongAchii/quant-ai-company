@@ -31,6 +31,11 @@ if '--version' in sys.argv:
 if 'login' in sys.argv:
     print(control.get('login', 'Logged in using ChatGPT'), file=sys.stderr)
     sys.exit(control.get('login_exit', 0))
+schema = Path(sys.argv[sys.argv.index('--output-schema') + 1])
+if not schema.exists():
+    assert sys.stdin.read() == ''
+    print(control.get('config_error', 'No prompt provided via stdin.'), file=sys.stderr)
+    sys.exit(1)
 with (base / 'calls.jsonl').open('a') as stream:
     stream.write(json.dumps({'args': sys.argv[1:], 'environment': dict(os.environ),
                             'stdin': sys.stdin.read()}) + '\n')
@@ -210,6 +215,17 @@ async def test_auth_or_cli_mismatch_prevents_inference(fake_codex, request_model
     assert "SECRET" not in str(caught.value)
     assert not calls()
     assert not (config.jobs_dir / "turn-01.json").exists()
+
+
+async def test_config_failure_does_not_mark_running_or_call_model(fake_codex, request_model):
+    config, configure, calls = fake_codex
+    configure(config_error='Error loading config.toml: unknown configuration field SECRET-PATH')
+    with pytest.raises(ProviderFault) as caught:
+        await runner_for(config).run(request_model)
+    assert caught.value.code == "unavailable"
+    assert "SECRET" not in str(caught.value)
+    assert not (config.jobs_dir / "turn-01.json").exists()
+    assert not calls()
 
 
 @pytest.mark.parametrize("mode,code", [
