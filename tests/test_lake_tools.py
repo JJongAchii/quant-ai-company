@@ -100,6 +100,7 @@ def test_lake_turn_cannot_queue_multiple_scans(company):
 
 
 def test_compact_lake_id_collision_cannot_reuse_another_project_source(company, monkeypatch):
+    company.roles["data"].tools.append("lake_describe")
     monkeypatch.setattr("quant_company.company.fingerprint", lambda value: "a" * 64)
     monkeypatch.setattr("quant_company.company.query_lake", lambda *args: {
         "ok": True, "data": {"source": {"uri": "s3://example/qdata/clean/krx_etf.parquet"}},
