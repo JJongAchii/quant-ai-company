@@ -216,6 +216,10 @@ class Company:
                            "messages": messages, "child_results": children,
                            "approved_sources": sources, "verified_memories": memories, "recent_artifacts": artifacts,
                            "context_truncated": False})
+        context["task"]["requester"] = (
+            conn.execute("SELECT agent FROM tasks WHERE id=%s", (task["parent_id"],)).fetchone()["agent"]
+            if task["parent_id"] else None
+        )
         # The DB keeps full evidence. Explicitly bounded excerpts keep an old busy project from
         # exhausting the model context or subscription on every turn.
         for child in context["child_results"]:
@@ -278,7 +282,9 @@ class Company:
                     "Delegate directly to authorized peers when needed. Await child results before completing.\n"
                     "Don't repeat completed delegations. Keep discussion bounded and produce a useful artifact.\n"
                     f"Employee: {role.name}\nMission: {role.mission}\nRole instructions: {role.instructions}\n"
-                    f"Allowed peer delegation: {role.can_delegate_to}\nAllowed tools: {role.tools}\n"
+                    f"Allowed peer delegation: {role.can_delegate_to}\n"
+                    "Messages may also report to the task requester; this does not allow delegating back to them.\n"
+                    f"Allowed tools: {role.tools}\n"
                     f"Remaining task turns: {self.settings.company_max_task_turns - task['turn_count']}\n"
                     "TASK DATA JSON:\n" + json.dumps(context, ensure_ascii=False)
                 )
@@ -386,9 +392,17 @@ class Company:
             if turn["status"] != "running":
                 raise PolicyError("Turn is not running")
             role = self.role(task["agent"])
-            for action in [*decision.delegations, *decision.messages]:
+            for action in decision.delegations:
                 if action.agent not in role.can_delegate_to:
                     raise PolicyError(f"Unauthorized peer: {action.agent}")
+                self.role(action.agent)
+            message_peers = set(role.can_delegate_to)
+            if task["parent_id"]:
+                message_peers.add(conn.execute("SELECT agent FROM tasks WHERE id=%s",
+                                               (task["parent_id"],)).fetchone()["agent"])
+            for action in decision.messages:
+                if action.agent not in message_peers:
+                    raise PolicyError(f"Unauthorized message recipient: {action.agent}")
                 self.role(action.agent)
             for action in [*decision.artifacts, *decision.memories]:
                 self._check_sources(conn, project["id"], action.source_ids)

@@ -173,6 +173,24 @@ def test_database_migration_is_repeatable(company):
     assert company.db.health()
 
 
+def test_child_can_report_to_requester_without_authority_to_delegate_upwards(company):
+    company.roles["data"] = company.roles["data"].model_copy(update={"can_delegate_to": []})
+    req = company.ingest(event_key="report-up", text="Verify evidence", owner="user")
+    parent = queued_turns(company, req["project_id"])[0]
+    company.prepare_turn(parent)
+    company.commit_turn(parent, ProviderResponse(request_id=parent, decision=AgentDecision(
+        say="Request evidence", status="wait", delegations=[{"agent": "data", "instruction": "Read source"}])))
+    child = queued_turns(company, req["project_id"])[0]
+    prepared = company.prepare_turn(child)
+    assert json.loads(prepared["request"]["prompt"].split("TASK DATA JSON:\n")[1])["task"]["requester"] == "director"
+    with pytest.raises(PolicyError, match="Unauthorized peer"):
+        company.commit_turn(child, ProviderResponse(request_id=child, decision=AgentDecision(
+            say="Delegate upwards", status="wait", delegations=[{"agent": "director", "instruction": "Do my job"}])))
+    company.commit_turn(child, completed(child, messages=[{"agent": "director", "text": "Evidence read"}]))
+    state = company.project_state(req["project_id"])
+    assert any(message["author"] == "data" and message["recipient"] == "director" for message in state["messages"])
+
+
 def test_status_remains_available_when_project_budget_is_exhausted(company):
     company.settings.company_max_project_tasks = 1
     req = company.ingest(event_key="full", text="Work", owner="user")
