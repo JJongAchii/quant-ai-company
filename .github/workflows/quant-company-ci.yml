@@ -1,0 +1,51 @@
+name: Quant Company CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, 'quant-ai-company', 'maintenance/**']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quant-company-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  service:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: company_test
+          POSTGRES_PASSWORD: disposable_ci_password
+          POSTGRES_DB: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U company_test -d postgres"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql://company_test:disposable_ci_password@127.0.0.1:5432/postgres
+      UV_PYTHON: '3.12'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff # v6
+        with:
+          enable-cache: false
+      - name: Install core dependencies
+        run: uv sync --frozen
+      - name: Lint
+        run: uv run --frozen ruff check .
+      - name: PostgreSQL, Temporal and service regression tests
+        run: >-
+          uv run --frozen pytest -q -m 'not live'
+          tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py
+
+# No repository/production secrets, model calls, deployments or PR write token.
+# qdata integration is separately pinned and verified; core tests need no private checkout.

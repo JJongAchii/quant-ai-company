@@ -12,11 +12,11 @@ LABEL org.quant-company.qdata-revision=$QDATA_COMMIT
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
     UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PATH=/app/.venv/bin:$PATH QDATA_CODE_COMMIT=$QDATA_COMMIT
 COPY --from=uv-dist /uv /usr/local/bin/uv
-# Preserve the two-level relative qdata path recorded in uv.lock.
+# Preserve the sibling qdata path recorded in uv.lock.
 WORKDIR /opt/company
 RUN ln -s /opt/company /app
-COPY --from=qdata pyproject.toml README.md /quant-data/
-COPY --from=qdata src /quant-data/src
+COPY --from=qdata pyproject.toml README.md /opt/quant-data/
+COPY --from=qdata src /opt/quant-data/src
 COPY pyproject.toml uv.lock ./
 COPY src ./src
 RUN uv sync --frozen --no-dev --no-editable --extra lake \

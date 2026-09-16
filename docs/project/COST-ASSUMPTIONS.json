@@ -1,0 +1,100 @@
+{
+  "as_of": "2026-09-16",
+  "kind": "illustrative_budget_not_measured_usage",
+  "fx": 1500,
+  "billable_input_tokens_per_call": 20000,
+  "billable_output_tokens_per_call": 3000,
+  "models": [
+    {
+      "name": "Luna",
+      "share": 0.2,
+      "input": 0.2,
+      "output": 1.2
+    },
+    {
+      "name": "Terra",
+      "share": 0.35,
+      "input": 2,
+      "output": 12
+    },
+    {
+      "name": "Sol",
+      "share": 0.25,
+      "input": 4,
+      "output": 20
+    },
+    {
+      "name": "Astra_or_Fable",
+      "share": 0.1,
+      "input": 10,
+      "output": 50
+    },
+    {
+      "name": "Opus",
+      "share": 0.1,
+      "input": 5,
+      "output": 25
+    }
+  ],
+  "weighted_input_usd_million": 3.24,
+  "weighted_output_usd_million": 16.939999999999998,
+  "per_call_usd": 0.11562,
+  "scenarios": [
+    {
+      "name": "pilot",
+      "calls_day": 50,
+      "infra_low": 80,
+      "infra_high": 140,
+      "tools_low": 10,
+      "tools_high": 30,
+      "llm_usd": 173.43,
+      "llm_krw": 260145,
+      "total_low_krw": 408270,
+      "total_high_krw": 528270
+    },
+    {
+      "name": "standard",
+      "calls_day": 200,
+      "infra_low": 200,
+      "infra_high": 350,
+      "tools_low": 30,
+      "tools_high": 100,
+      "llm_usd": 693.72,
+      "llm_krw": 1040580,
+      "total_low_krw": 1398705,
+      "total_high_krw": 1728705
+    },
+    {
+      "name": "intensive",
+      "calls_day": 1000,
+      "infra_low": 300,
+      "infra_high": 600,
+      "tools_low": 100,
+      "tools_high": 300,
+      "llm_usd": 3468.6,
+      "llm_krw": 5202900,
+      "total_low_krw": 5816025,
+      "total_high_krw": 6566025
+    }
+  ],
+  "slack_human_seats": 1,
+  "slack_monthly_usd_per_seat": 8.75,
+  "taxes_included": false,
+  "cache_discount_included": false,
+  "discount_credits_included": false,
+  "excluded": [
+    "initial_development_labor",
+    "premium_market_data",
+    "live_trading_infrastructure",
+    "new_cloud_gpu",
+    "existing_collector_cost",
+    "local_worker_electricity"
+  ],
+  "sources": {
+    "openai": "https://developers.openai.com/api/docs/pricing",
+    "anthropic": "https://platform.claude.com/docs/en/about-claude/pricing",
+    "infrastructure": "https://aws.amazon.com/lightsail/pricing/",
+    "temporal": "https://temporal.io/pricing",
+    "slack": "https://slack.com/pricing"
+  }
+}

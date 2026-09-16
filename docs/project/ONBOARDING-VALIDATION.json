@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-09-16T04:35:16.236833+00:00",
+  "scope": "Slack onboarding, Temporal Cloud onboarding and process recovery, 2GB static deployment candidate",
+  "baseCommit": "5bdce6000cc3e1c4f860b4e2f23e6a9faae899f5",
+  "priorImplementationEvidence": "IMPLEMENTATION-VALIDATION.json",
+  "checks": {
+    "slackAppsInstalled": 4,
+    "slackAuthAndLiveSockets": "passed",
+    "slackChannelAccess": "passed_all_four",
+    "temporalCloudWorkflow": "passed",
+    "temporalCloudWorkerProcessRestart": "passed",
+    "temporalHistoryReplay": "passed",
+    "pytest": {
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    "ruff": "passed_changed_python_files",
+    "compose2gbStaticBudgetMiB": 1664
+  },
+  "notVerified": [
+    "AWS Linux image build and runtime",
+    "2GB measured peak memory and OOM behavior",
+    "server-side Codex authentication",
+    "end-to-end persistent Slack company request",
+    "Mac-off acceptance",
+    "AWS host reboot",
+    "S3 backup restore"
+  ],
+  "awsPurchaseStatus": "pending_user_cost_decision",
+  "fileDigests": {
+    "services/quant-company/src/quant_company/cli.py": "8e3279c43a50237d9053da6a1d46152111b03fe2e98371a079866fd1330a372b",
+    "services/quant-company/tests/test_socket_mode.py": "2b43c296c6f6c7221a69f0ef5c95abe68fe0800ae1f81f98fb0f738d2439d01e",
+    "services/quant-company/deploy/compose.yaml": "119e25674b5af240da9ccb4dad91d63a8cc767c55846184840825cb8cde89b36",
+    "services/quant-company/deploy/lightsail-2gb.env.example": "17989968622b3146d1e4e3214be9292ea9126b5725e0b514d1b54b5e7b8bb84b",
+    "services/quant-company/deploy/test_deployment_contract.py": "4611583af91e9d6889eddd536c1d3d04026fd0203a439f8ccb79a23104eb67af",
+    "services/quant-company/scripts/check_temporal_cloud.py": "35faaa2e72d252fe4c3a7c33face0b83c80526bd1dd6290e4e4d2a71e3f187de",
+    "services/quant-company/src/quant_company/workflow.py": "4d66cfe2dc230162ace5841baad61464cad74546dc2b3a2a46a42573a5cefab9",
+    "services/quant-company/slack-apps/researcher_kr.json": "67dc4432ef7dee39364ef82e29846f9bfc937ee88dd3997611f1d9a55ae72b73",
+    "services/quant-company/slack-apps/director.json": "3e71adc179df3bc54ef039cf127a0f1e02f281b98f06620e965f1f1ed97bbece",
+    "services/quant-company/slack-apps/data.json": "78edcc9051805abbe2dcd02079bb527f648c5c482076f6c870f3d38988182174",
+    "services/quant-company/slack-apps/financial_strategist.json": "cfecb62ea410359e8efac197c948b715c2c888990893c27a5f48ae1378439b98",
+    "services/quant-company/README.md": "10f6db31f4e7967850054fb255281a6b468007ca0acec1cdee0bada7a6186d3b",
+    "services/quant-company/docs/slack-setup.md": "d9712c57461beb23dc7b8db7dd00684d658fdce146888784b1978e147f0e20ff",
+    "services/quant-company/docs/deployment.md": "9eb4c3b6f50c6dd31f65b07056d81fcf36dfa7c29da819400c5f8f7696ac516c",
+    "docs/work/quant-ai-company/AWS-DEPLOYMENT-PLAN.md": "710d58e8115fe92ff0f083634d32c0d277fde52e0992ca7be6b307567ef8516f",
+    "docs/work/quant-ai-company/MINIMUM-SERVER.md": "aa65e16eb7b352eb3e180f7e890191431bea645c3f7fa6481c0461d2be3a069a",
+    "docs/work/quant-ai-company/SLACK-CONNECTION.json": "92a1f0cd0d3c784e51a51d9a29bff57f7f9cc60a83280c73eeb1c06779d77fd8",
+    "docs/work/quant-ai-company/TEMPORAL-CONNECTION.json": "0e19be3ead7a665beff33ccb09fb37f39266e9d875941b20563b028aa68a341c"
+  },
+  "evidence": {
+    "evidence/slack-live-auth-sockets.json": "81b31b56aca8b064c3c86852786276c75204aad7d28f70131955570ffffa97b6",
+    "evidence/slack-channel-access.json": "c877e6334f2a2793582022a31552168f40c6cb77b3c20d2fe3f738abc0f3e403",
+    "evidence/temporal-cloud-connection.json": "d9f4979f653e6def4bad7fa6b3cf0f2ca83c33e632185a83bb99cce955243a11",
+    "evidence/temporal-cloud-process-restart.json": "75c224d70a3ba4437d1c5d39ce3494e1332621b077198713bb55f2076d0bca4e",
+    "evidence/lightsail-2gb-static-config.json": "534fa373557cce28557fe0446a60826cf7b7d965638427bba72a97fa801d7e2d",
+    "evidence/onboarding-regressions.xml": "eab975860a151b0f438a3fbe7b17b15acffc6a901c9119cd6326f8d077e72ecf"
+  },
+  "secretsInEvidence": false
+}

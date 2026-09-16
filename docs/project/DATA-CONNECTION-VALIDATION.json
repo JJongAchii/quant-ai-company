@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-16T06:57:27.537280+00:00",
+  "status": "deployed_and_slack_user_request_verified_after_source_reference_repair",
+  "approval": "DATA-CONNECTION-APPROVAL.json",
+  "imageCodeCommit": "05cacb7bbf8bf84f46d3b0d7c8ef30736c68eb9f",
+  "qdataCodeCommit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "qdataSourceManifest": "../../../services/quant-company/deploy/qdata-source.json",
+  "scope": "Bounded read-only inventory, Parquet metadata and physical samples from the existing published clean S3 mirror; no collector changes or strategy execution.",
+  "connection": {
+    "uri": "s3://insight-invest-datalake/qdata",
+    "iamUser": "quant-company-lake-read",
+    "allowedPrefix": "qdata/clean/",
+    "consumer": "qdata.api.dataset_catalog and qdata.api.inspect_dataset",
+    "credentialMount": "worker only; model container has no data credentials",
+    "newPaidResources": false,
+    "newIamReadIdentity": true
+  },
+  "observations": {
+    "catalogDatasets": 38,
+    "catalogBytes": 13778812775,
+    "krxEtf": {
+      "dateBounds": {
+        "date": {
+          "statistics_complete": true,
+          "min": "2012-01-02T00:00:00",
+          "max": "2026-09-15T00:00:00",
+          "null_count": 0
+        }
+      },
+      "rowCount": 1672355,
+      "readerBytes": 65544,
+      "source": {
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf.parquet",
+        "size_bytes": 78323674,
+        "last_modified": "2026-09-15T11:04:52+00:00",
+        "etag": "\"ad7798b6acf4c9e4b7298dff3f0125f5\"",
+        "version_id": null
+      }
+    },
+    "cryptoDataset": {
+      "name": "binance_usdtm_klines",
+      "dateBounds": {
+        "event_time": {
+          "statistics_complete": true,
+          "min": "2020-01-07T00:00:00+00:00",
+          "max": "2025-06-30T23:00:00+00:00",
+          "null_count": 0
+        },
+        "available_at": {
+          "statistics_complete": true,
+          "min": "2020-01-07T01:00:00+00:00",
+          "max": "2025-07-01T00:00:00+00:00",
+          "null_count": 0
+        },
+        "retrieved_at": {
+          "statistics_complete": true,
+          "min": "2026-08-26T04:55:54.239348+00:00",
+          "max": "2026-08-26T05:17:59.760289+00:00",
+          "null_count": 0
+        }
+      }
+    },
+    "usPrices": {
+      "dateRangeVerified": false,
+      "result": {
+        "ok": false,
+        "error": "inspection_limit_or_invalid_request",
+        "detail": "Parquet footer exceeds the 2 MiB inspection budget"
+      }
+    }
+  },
+  "checks": {
+    "tests": {
+      "data-connection-regressions.xml": {
+        "tests": 62,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "data-connection-final-checks.xml": {
+        "tests": 26,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "qdata-catalog-regressions.xml": {
+        "tests": 36,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      "lake-source-reference-regressions.xml": {
+        "tests": 47,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "postChangeMemoryProfileAdmission": "1 passed; unchanged 1664 MiB total",
+    "localPostgres": "dedicated disposable tests; stopped after checks",
+    "linuxQueries": {
+      "successful": 4,
+      "boundedRefusals": 1,
+      "result": "success and refusal paths observed; no full-scan fallback"
+    },
+    "realModel": {
+      "provider": "codex subscription",
+      "turns": 5,
+      "roles": [
+        "data",
+        "director"
+      ],
+      "sourceReceipts": 2,
+      "completed": true,
+      "slackPosts": 0,
+      "elapsedSeconds": 93.02,
+      "initialImageCodeCommit": "7dc9ed32ce1a34bb14a3616b029a4f60e4786f22"
+    },
+    "deployment": {
+      "postgresRecreated": false,
+      "databaseMigration": false,
+      "activeTasksBefore": 0,
+      "allContainersRunning": true,
+      "anyOomKilled": false,
+      "rolesSha256": "b34a1e51a04395a178959d04e432ffc7225b25a686928d6fcce3b9bd1dd921ad",
+      "runtimeConfigSha256": "cf2c90d14505b2543fea8b8b8c317876cfa593dba9e2797df3ae82c305456803"
+    }
+  },
+  "memory": {
+    "server": "existing Lightsail 2GB",
+    "totalContainerLimitsBytes": 1744830464,
+    "workerLimitBytes": 402653184,
+    "workerObservedPeakBytes": 313782272,
+    "codexLimitBytes": 536870912,
+    "codexObservedPeakBytes": 197566464,
+    "hostAvailableAfter": "1054596 kB",
+    "reason": "256 MiB probe touched the memory ceiling; redistributed 128 MiB from Codex to worker, keeping total server size and container budget unchanged.",
+    "observationScope": "Since latest deployment, including original-request repair and the subsequent user coverage question visible in Slack.",
+    "memoryLimitEvents": {
+      "postgres": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+      "api": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+      "worker": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+      "dispatch": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+      "slack-socket": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+      "codex-runtime": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    }
+  },
+  "slackAcceptance": {
+    "status": "verified_after_operator_repair",
+    "channel": "C0C1Q8D0B6K",
+    "threadTs": "1789540754.262119",
+    "projectId": "c0306a4b-5c5e-5195-a12b-b8eff0de56ba",
+    "user": "U0C250E23NW",
+    "firstAttempt": {
+      "dataTask": "blocked_invalid_source_id",
+      "directorAnswer": "correct dates and full source IDs verified from actual receipts",
+      "evidence": "evidence/aws-lake-slack-attempt1.json"
+    },
+    "repair": {
+      "method": "operator-labelled continuation of original user Slack request; previous blocked task preserved",
+      "rootTaskId": "90af0b35-9f02-58f2-8e80-2afc2e318b0e",
+      "tasks": [
+        {
+          "id": "90af0b35-9f02-58f2-8e80-2afc2e318b0e",
+          "agent": "director",
+          "status": "completed"
+        },
+        {
+          "id": "b9b39b37-2aa7-5dc8-b838-e3b250c1dc11",
+          "agent": "data",
+          "status": "completed"
+        }
+      ],
+      "modelTurns": 4,
+      "artifacts": 2,
+      "elapsedSeconds": 68.703,
+      "newSourceIds": [
+        "lake:47a0afa6fa6b36167dd89412"
+      ],
+      "allCapturedOutboxRowsDeliveredAndReadBackFromExpectedBots": true,
+      "capturedOutboxRows": 12
+    },
+    "subsequentUserRequest": "User independently asked about missing coverage in the same Slack thread; that is separate from the completed period-query acceptance."
+  },
+  "implementationRepair": "First Linux build rejected /app/../../quant-data lock path. Corrected image working directory while preserving /app compatibility; rebuilt committed images before deployment.",
+  "limits": [
+    "Metadata ranges are dataset-wide and do not establish per-instrument completeness, trading calendars or point-in-time publication availability.",
+    "Samples are first physical rows, not latest or representative rows.",
+    "us_prices footer exceeds the 2 MiB guard; its range remains unverified.",
+    "Crypto data event_time stops at 2025-06-30; it is not current live coverage or proof of intraday/HFT suitability.",
+    "No immutable multi-object snapshot or S3 VersionId was available; ETag is object identity metadata, not a newly computed content digest.",
+    "Internet/literature retrieval, financial specialist qualification, committed code execution on 3070, training/backtesting and trading remain subsequent work.",
+    "Mac fully powered-off phone acceptance and long-duration soak remain unverified.",
+    "An operator resumed this observed source-ID failure. The change reduces copy difficulty but does not prove all future model responses succeed or implement general automatic error repair."
+  ],
+  "evidence": {
+    "evidence/aws-lake-read-identity.json": "09a007bfff33236ff124c839aa974ee6aa78cf7a0f5b3d30957d48bbe341a08d",
+    "evidence/data-connection-regressions.xml": "c7f82288980fb25dc360ad98c7672355197e896c14dc9af319d06fa372b11791",
+    "evidence/data-connection-final-checks.xml": "a8aee721559e55321a137c6f7d40bb2e4586d0d31bbfae04e9609bf51312b402",
+    "evidence/qdata-catalog-regressions.xml": "195ca5a2ab98aa98653b57b76bff23ab423de2cd6d019dfd2eae86549e76ba5c",
+    "evidence/lake_catalog-local.json": "e8708594aa5c8cb98756bb644887a74db81d9bd977e3c3fc215421f15476a4e2",
+    "evidence/lake_describe-local.json": "ff9a5ff4e4184b4f55db40381561128d94092b8aaeb4461b815682d0c8aaed4d",
+    "evidence/lake_sample-local.json": "9f203714468f27740da26ca58a8c4552de003fe40209681eb7e6e18073db693c",
+    "evidence/linux-lake-qualification-256m.json": "e308cc22e6dd42499cd6f800dbea3b336dc78aff66180af5b59e8f3965165ed9",
+    "evidence/linux-lake-qualification.json": "38cfdf855e16d1b73c7b3027d6831b609c375289024d198978c410257d247fd8",
+    "evidence/aws-lake-deploy.json": "add7428ee356a26e9ac798a1c6797070da4a2aaa3e2569c01d6d0158208a07f8",
+    "evidence/aws-lake-model-qualification.json": "6377d795cad35571014b1d52778c6b3049b572f936508dd623d63cfcc6628b7a",
+    "evidence/aws-lake-memory.json": "3d94542371c2b24291677a509343e2e252ed083f7b46f7465cee9003356016cc",
+    "evidence/aws-lake-initial-deploy.json": "107f65968e576927b0032e84314255cfb1c6356f6bde4879f177b0687dded019",
+    "evidence/aws-lake-slack-attempt1.json": "6615b5471295e0f4994c2789d16f714741f4a4488b0771490c7501551b58dcd8",
+    "evidence/aws-lake-slack-attempt1-readback.json": "eb1314d83ed154d6e39655e244c344975988e9ca3d6ba59efa92cd0cfd3c2de5",
+    "evidence/aws-lake-slack-repair.json": "8648e9493624ec930f30d189eba2c6cac0ae199f3a808f86945d69f3860433ec",
+    "evidence/aws-lake-slack-readback.json": "60f401f0ecf32ab6b1d76859f0f9b38d6d2721968234874b65760ac7e6f5fc24",
+    "evidence/aws-lake-final-runtime.json": "00d071935cfa15583e8e94368e0e0793c57aeebecb1a013c092530fd82182301",
+    "evidence/lake-source-reference-regressions.xml": "c2ac861a0af1e0b0ea18c437a9529c2df9d4b4262b8fbe22b00745398c4db361"
+  },
+  "secretsInEvidence": false,
+  "sourceReferenceRepair": {
+    "rootCause": "Specialist omitted the tail of a 64-character source hash while creating its artifact; source validation rejected it.",
+    "change": "New lake source IDs use 24 hexadecimal characters; project/content/approval collision checks and exact-copy instructions preserve strict source validation. Old references and failed task stay unchanged.",
+    "oldTaskOverwritten": false,
+    "permissionOrSourceValidationBypass": false,
+    "automaticFutureRecoveryImplemented": false
+  }
+}

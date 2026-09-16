@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "approvalMessageId": "msg_01a0a8ca-1a4b-7a10-9a88-f0df88d137bf",
+  "sourceThreadId": "01a0a76d-f29d-7802-928d-22a321d144b5",
+  "sourceTimestamp": "2026-09-16T05:56:52.427Z",
+  "userText": "그래 진행해",
+  "source": "Current conversation response_item; original rollout line 4481 and resumed rollout line 26 contain the same user message ID.",
+  "approvedProposal": "기존 EC2→S3 데이터를 회사 BOT이 실제로 조회하도록 연결: 보유 데이터 종류·기간·최신 날짜 조사, 읽기 전용 권한·조회 도구 연결, Slack에서 실제 자료 기반 답변 검증.",
+  "implementationScope": "기존 insight-invest-datalake/qdata/clean 미러의 읽기 전용 IAM, qdata 소비자 API의 크기 제한 메타데이터·표본 조회 추가, 기존 회사 서비스 연결·테스트·배포. EC2 수집·발행 및 원본 데이터는 변경하지 않는다.",
+  "notIncluded": ["신규 유료 데이터·API·서버 증설", "전략 실험·학습·백테스트·실거래", "5090 실행"]
+}

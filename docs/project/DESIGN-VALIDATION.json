@@ -1,0 +1,361 @@
+{
+  "checkedAt": "2026-09-16T04:34:11.771418+00:00",
+  "scope": "design-document-structure-and-implementation-linkage",
+  "contractSchemaErrors": [],
+  "localLinks": [
+    {
+      "from": "docs/work/quant-ai-company/ARCHITECTURE.md",
+      "target": "../../../services/quant-company/README.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/ARCHITECTURE.md",
+      "target": "SPECIALISTS.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/ARCHITECTURE.md",
+      "target": "BUILD-AND-ACCEPTANCE.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/ARCHITECTURE.md",
+      "target": "../../adr/0009-persistent-quant-ai-company.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/ARCHITECTURE.md",
+      "target": "CODEX-SUBSCRIPTION.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/ARCHITECTURE.md",
+      "target": "MINIMUM-SERVER.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/ARCHITECTURE.md",
+      "target": "SPECIALISTS.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/ARCHITECTURE.md",
+      "target": "CODEX-SUBSCRIPTION.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/ARCHITECTURE.md",
+      "target": "BUILD-AND-ACCEPTANCE.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/SPECIALISTS.md",
+      "target": "../../../services/quant-company/docs/financial-specialist.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/SPECIALISTS.md",
+      "target": "ARCHITECTURE.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/BUILD-AND-ACCEPTANCE.md",
+      "target": "IMPLEMENTATION-VALIDATION.json",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/BUILD-AND-ACCEPTANCE.md",
+      "target": "../../../services/quant-company/README.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/BUILD-AND-ACCEPTANCE.md",
+      "target": "ARCHITECTURE.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/BUILD-AND-ACCEPTANCE.md",
+      "target": "SPECIALISTS.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/BUILD-AND-ACCEPTANCE.md",
+      "target": "CODEX-SUBSCRIPTION.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/BUILD-AND-ACCEPTANCE.md",
+      "target": "MINIMUM-SERVER.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/CODEX-SUBSCRIPTION.md",
+      "target": "../../../services/quant-company/docs/codex-runtime.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/CODEX-SUBSCRIPTION.md",
+      "target": "IMPLEMENTATION-VALIDATION.json",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/CODEX-SUBSCRIPTION.md",
+      "target": "COST-ESTIMATE.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/CODEX-SUBSCRIPTION.md",
+      "target": "ARCHITECTURE.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/CODEX-SUBSCRIPTION.md",
+      "target": "MINIMUM-SERVER.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/COST-ESTIMATE.md",
+      "target": "COST-ASSUMPTIONS.json",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/COST-ESTIMATE.md",
+      "target": "CODEX-SUBSCRIPTION.md",
+      "exists": true
+    },
+    {
+      "from": "docs/adr/0009-persistent-quant-ai-company.md",
+      "target": "../work/quant-ai-company/ARCHITECTURE.md",
+      "exists": true
+    },
+    {
+      "from": "docs/adr/0009-persistent-quant-ai-company.md",
+      "target": "../work/quant-ai-company/MINIMUM-SERVER.md",
+      "exists": true
+    },
+    {
+      "from": "docs/adr/0009-persistent-quant-ai-company.md",
+      "target": "../work/quant-ai-company/BUILD-AND-ACCEPTANCE.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/MINIMUM-SERVER.md",
+      "target": "AWS-DEPLOYMENT-PLAN.md",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/AWS-DEPLOYMENT-PLAN.md",
+      "target": "../../../services/quant-company/deploy/lightsail-2gb.env.example",
+      "exists": true
+    },
+    {
+      "from": "docs/work/quant-ai-company/AWS-DEPLOYMENT-PLAN.md",
+      "target": "../../../services/quant-company/docs/slack-setup.md",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/README.md",
+      "target": "../../docs/work/quant-ai-company/IMPLEMENTATION-VALIDATION.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/README.md",
+      "target": "../../docs/work/quant-ai-company/SLACK-CONNECTION.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/README.md",
+      "target": "../../docs/work/quant-ai-company/TEMPORAL-CONNECTION.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/README.md",
+      "target": "docs/financial-specialist.md",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/README.md",
+      "target": "docs/deployment.md",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/README.md",
+      "target": "docs/slack-setup.md",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/README.md",
+      "target": "slack-apps/",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/README.md",
+      "target": "deploy/compose.yaml",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/README.md",
+      "target": "INTERFACES.md",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/README.md",
+      "target": "docs/codex-runtime.md",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/README.md",
+      "target": "../../docs/work/quant-ai-company/BUILD-AND-ACCEPTANCE.md",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/slack-setup.md",
+      "target": "../slack-apps/director.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/slack-setup.md",
+      "target": "../slack-apps/financial_strategist.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/slack-setup.md",
+      "target": "../slack-apps/researcher_kr.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/slack-setup.md",
+      "target": "../slack-apps/data.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/slack-setup.md",
+      "target": "../../../docs/work/quant-ai-company/SLACK-CONNECTION.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/deployment.md",
+      "target": "../deploy/lightsail-2gb.env.example",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/deployment.md",
+      "target": "../deploy/lightsail.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/deployment.md",
+      "target": "../deploy/backup.sh",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/deployment.md",
+      "target": "../deploy/backup-policy.example.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/financial-specialist.md",
+      "target": "../src/quant_company/roles.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/financial-specialist.md",
+      "target": "../evals/financial-cases.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/financial-specialist.md",
+      "target": "../evals/source-catalog.json",
+      "exists": true
+    },
+    {
+      "from": "services/quant-company/docs/financial-specialist.md",
+      "target": "../evals/README.md",
+      "exists": true
+    }
+  ],
+  "requirementTermsPresent": {
+    "slack": true,
+    "mac_independence": true,
+    "financial_specialist": true,
+    "domestic": true,
+    "global": true,
+    "crypto": true,
+    "high_frequency": true,
+    "durability": true,
+    "models": true,
+    "peer_collaboration": true,
+    "steering": true,
+    "gpu_policy": true
+  },
+  "acceptanceScenarioCount": 25,
+  "runtimeImplemented": true,
+  "runtimeScenariosExecuted": true,
+  "slackConnected": true,
+  "cloudDeployed": false,
+  "contractState": "approved",
+  "errors": [],
+  "documentDigests": {
+    "docs/work/quant-ai-company/ARCHITECTURE.md": "93d0323ef3b9d735fdd747ac29227be9c918e6dff2497cecb65ea395c787ee31",
+    "docs/work/quant-ai-company/SPECIALISTS.md": "22f19f905b51d976572c455f411fe62effe87fb39796b99022f294b6f7358ebc",
+    "docs/work/quant-ai-company/BUILD-AND-ACCEPTANCE.md": "de8752041258e28a921a75d1ee7f0c9f46341f4fc93395b0c65ae1f7db66cad2",
+    "docs/work/quant-ai-company/CODEX-SUBSCRIPTION.md": "28b3d1077e5c26005f2f4be801185ec03abc91e7755b15d0e105b331f27e0a28",
+    "docs/work/quant-ai-company/COST-ESTIMATE.md": "ef578d2b986ffd7e89fe42e6087c03041810313dad96cce811733c453b8ce1e5",
+    "docs/adr/0009-persistent-quant-ai-company.md": "e25290c414cde7a627168edb26525ffbc30a75cd6e9f64dba4bc42bea899f8b3",
+    "docs/work/quant-ai-company/INTENT-v1.json": "2efeb7331d2f95ca768d3ce8b4831e3660c513d21f0347e907e9ca5e616c3d09",
+    "docs/work/quant-ai-company/COST-ASSUMPTIONS.json": "e387ffeac8668f839afd73377eeea2641a5a0cba7260c0f2dfb7b2510e96a8df",
+    "docs/work/quant-ai-company/MINIMUM-SERVER.md": "aa65e16eb7b352eb3e180f7e890191431bea645c3f7fa6481c0461d2be3a069a",
+    "docs/work/quant-ai-company/AWS-DEPLOYMENT-PLAN.md": "710d58e8115fe92ff0f083634d32c0d277fde52e0992ca7be6b307567ef8516f",
+    "services/quant-company/README.md": "10f6db31f4e7967850054fb255281a6b468007ca0acec1cdee0bada7a6186d3b",
+    "services/quant-company/docs/slack-setup.md": "d9712c57461beb23dc7b8db7dd00684d658fdce146888784b1978e147f0e20ff",
+    "services/quant-company/docs/deployment.md": "9eb4c3b6f50c6dd31f65b07056d81fcf36dfa7c29da819400c5f8f7696ac516c",
+    "services/quant-company/docs/financial-specialist.md": "b85ab493bc7b1beec7d57f83d1a9500e9e4222dcc8fe19fe1657b638e1b6be26"
+  },
+  "codexReadOnlyCheck": {
+    "cliVersion": "0.154.0",
+    "authType": "chatgpt",
+    "planType": "pro",
+    "modelIds": [
+      "gpt-6-astra",
+      "gpt-5.6-sol",
+      "gpt-5.6-terra",
+      "gpt-5.6-luna",
+      "gpt-5.5"
+    ],
+    "modelTurnStarted": false,
+    "remoteLoginTested": false,
+    "slackIntegrationTested": false,
+    "scope": "Initial metadata-only check; later real model calls are in IMPLEMENTATION-VALIDATION.json"
+  },
+  "minimumServerBudgetCheck": {
+    "temporal_low_usd": 3.729,
+    "temporal_high_usd": 9.658,
+    "hetzner_infrastructure_usd": [
+      18.72,
+      27.65
+    ],
+    "hetzner_with_slack_usd": [
+      27.47,
+      36.4
+    ],
+    "lightsail4gb_with_slack_usd": [
+      39.48,
+      48.41
+    ],
+    "lightsail2gb_with_slack_free_usd": [
+      18.73,
+      27.66
+    ],
+    "lightsail2gb_runtime_qualified": false
+  },
+  "allOperationalScenariosAccepted": false,
+  "implementationEvidence": "IMPLEMENTATION-VALIDATION.json",
+  "initialVerificationAt": "2026-09-16T02:19:25.615945+00:00",
+  "revalidationScope": "Current document digests, relative links, 2GB cost candidate, Slack/Temporal integration status; prior unchanged architecture and specialist checks retained.",
+  "slackConnectionScope": "Four app auth/socket handshakes/channel access; end-to-end company runtime not run",
+  "temporalCloudConnected": true,
+  "integrationEvidence": [
+    "SLACK-CONNECTION.json",
+    "TEMPORAL-CONNECTION.json"
+  ]
+}

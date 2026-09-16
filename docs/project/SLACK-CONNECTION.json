@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-09-16",
+  "status": "aws_persistent_company_roundtrip_verified",
+  "source": "User-provided Slack workspace/channel URL",
+  "workspaceId": "T0C1YRDRPNF",
+  "channelIds": [
+    "C0C1Q8D0B6K"
+  ],
+  "canonicalUrl": "https://app.slack.com/client/T0C1YRDRPNF/C0C1Q8D0B6K",
+  "urlQueryParametersStored": false,
+  "workspaceName": "Achii's Quant Research",
+  "allowedUserIds": [
+    "U0C250E23NW"
+  ],
+  "transport": "socket_mode",
+  "activeRoles": [
+    "director",
+    "financial_strategist",
+    "researcher_kr",
+    "data"
+  ],
+  "localConfig": "services/quant-company/.local/onboarding/runtime.env",
+  "localConfigMode": "0600",
+  "validation": {
+    "settingsParse": "passed",
+    "workspaceChannelMatch": "passed",
+    "slackWorkspaceAccess": "passed",
+    "slackAppManagement": "authenticated",
+    "appInstallation": "complete",
+    "socketConnection": "passed_short_lived_live_handshake",
+    "actualMessageRoundtrip": "passed_real_owner_four_employee_apps",
+    "ownerIdentity": "confirmed_in_workspace_profile",
+    "channelAccess": "all_four_apps_conversations.history_ok",
+    "socketAuthentication": "all_four_apps_real_websocket_handshake_passed",
+    "runtimeSocketIngress": "passed_aws_host",
+    "sameThreadFollowup": "passed",
+    "explicitRevisionOverSlack": "not_run_followup_omitted_revision_prefix"
+  },
+  "existingImplementationEvidence": "docs/work/quant-ai-company/IMPLEMENTATION-VALIDATION.json",
+  "nextSteps": [
+    "Perform Mac fully powered-off phone acceptance.",
+    "Use a message beginning 수정: to verify explicit Slack revision; previous synthetic/local revision tests remain separate."
+  ],
+  "channelNames": {
+    "C0C1Q8D0B6K": "새-채널"
+  },
+  "apps": {
+    "director": {
+      "appId": "A0C1ZF715K5",
+      "created": true,
+      "installed": true,
+      "botUserId": "U0C23PPKR5L",
+      "authTest": "passed",
+      "botCredentialStored": true,
+      "appCredentialStored": true,
+      "appTokenScopes": [
+        "connections:write"
+      ],
+      "channelMembershipConfirmed": true,
+      "channelAccessVerifiedAt": "2026-09-16T04:18:51.088003+00:00",
+      "channelId": "C0C1Q8D0B6K"
+    },
+    "financial_strategist": {
+      "appId": "A0C23QHH66S",
+      "created": true,
+      "installed": true,
+      "botCredentialStored": true,
+      "appCredentialStored": true,
+      "appTokenScopes": [
+        "connections:write"
+      ],
+      "botUserId": "U0C29D5DLMS",
+      "authTest": "passed",
+      "channelMembershipConfirmed": true,
+      "channelId": "C0C1Q8D0B6K",
+      "channelAccessVerifiedAt": "2026-09-16T04:18:51.088003+00:00"
+    },
+    "researcher_kr": {
+      "appId": "A0C1ZGDU9M1",
+      "created": true,
+      "installed": true,
+      "botCredentialStored": true,
+      "appCredentialStored": true,
+      "appTokenScopes": [
+        "connections:write"
+      ],
+      "botUserId": "U0C1QCBD9L7",
+      "authTest": "passed",
+      "channelMembershipConfirmed": true,
+      "channelId": "C0C1Q8D0B6K",
+      "channelAccessVerifiedAt": "2026-09-16T04:18:51.088003+00:00"
+    },
+    "data": {
+      "appId": "A0C211J5KE1",
+      "created": true,
+      "installed": true,
+      "botCredentialStored": true,
+      "appCredentialStored": true,
+      "appTokenScopes": [
+        "connections:write"
+      ],
+      "botUserId": "U0C1ZH42C7M",
+      "authTest": "passed",
+      "channelMembershipConfirmed": true,
+      "channelAccessVerifiedAt": "2026-09-16T04:18:51.088003+00:00",
+      "channelId": "C0C1Q8D0B6K"
+    }
+  },
+  "updatedAt": "2026-09-16T05:24:47.820833+00:00",
+  "evidence": [
+    "evidence/slack-live-auth-sockets.json",
+    "evidence/slack-channel-access.json",
+    "evidence/aws-slack-company.json",
+    "evidence/aws-slack-followup.json"
+  ]
+}

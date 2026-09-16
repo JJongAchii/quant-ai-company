@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-09-16T04:35:16.236833+00:00",
+  "status": "cloud_connection_and_worker_restart_verified_host_deployment_pending",
+  "plan": {
+    "name": "Developer",
+    "monthlyMinimumUSD": 0,
+    "actionUSDPerMillion": 50,
+    "supportPercentOfUsage": 10,
+    "activeStorageUSDPerGBHour": 0.042,
+    "retainedStorageUSDPerGBHour": 0.00105,
+    "verifiedFrom": "authenticated Temporal Cloud Billing Plan UI",
+    "balanceDisplayedUSD": 0,
+    "trialCreditsUSD": 150,
+    "trialExpiryDate": "2026-12-15",
+    "paidPlanUpgradePerformed": false
+  },
+  "namespace": {
+    "name": "quant-company.d2y48",
+    "provider": "AWS",
+    "region": "ap-northeast-2",
+    "retentionDays": 7,
+    "apiKeyAuthentication": true,
+    "status": "ACTIVE",
+    "address": "quant-company.d2y48.tmprl.cloud:7233",
+    "capacityMode": "On-Demand",
+    "replicas": 0,
+    "fairnessEnabled": false
+  },
+  "validation": {
+    "cloudConnection": "passed",
+    "workflowRoundTrip": "passed_synthetic_no_model",
+    "awsHostDeployment": "not_run",
+    "workerRestart": "passed",
+    "historyReplay": "passed",
+    "evidence": "evidence/temporal-cloud-process-restart.json",
+    "processRestart": "passed_two_distinct_processes"
+  },
+  "authorizationEvidence": "User: 지금 띄워놓은 temporal cloud 에서 어떻게 하면 될지 너가 이어서 해봐. 회원가입만 해놓은 상태야",
+  "serviceAccount": {
+    "name": "quant-company-runtime",
+    "id": "8441555b86814d9da84201c00bbddb5c",
+    "accountRole": "Read-Only",
+    "namespacePermissions": {
+      "quant-company.d2y48": "Write"
+    },
+    "keyName": "quant-company-runtime-20260916",
+    "keyExpiryDate": "2026-12-15",
+    "secretStored": true,
+    "secretStorage": "service .local/onboarding/temporal_api_key, ignored, mode 0600"
+  },
+  "nextSteps": [
+    "Deploy the same credentials to the approved AWS host secret store.",
+    "Finish server-side Codex authentication and run the real Slack company round trip.",
+    "Review trial expiry and rotate the API key before 2026-12-15."
+  ]
+}

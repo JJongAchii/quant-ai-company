@@ -6,14 +6,14 @@
 
 현재는 **AWS 서울 Lightsail 2GB에 배포한 첫 운영 서비스**입니다. 서버의 공식 Codex 구독 인증,
 실제 모델을 사용한 네 직원의 합성 협업, 예약 업무의 호스트 재부팅 복구, S3 백업 복원을 확인했습니다.
-실제 사용자의 Slack 요청과 네 직원 계정의 답변 게시도 확인했습니다. 맥북을 완전히 종료한
-휴대폰 인수와 장시간 운영 검증은 남아 있습니다.
-[AWS 배포 검증](../../docs/work/quant-ai-company/AWS-DEPLOYMENT-VALIDATION.json),
-[구현 검증](../../docs/work/quant-ai-company/IMPLEMENTATION-VALIDATION.json),
-[Slack 연결](../../docs/work/quant-ai-company/SLACK-CONNECTION.json),
-[Temporal 연결](../../docs/work/quant-ai-company/TEMPORAL-CONNECTION.json)에 증거를 구분합니다.
-배포 후 운영 정보 전달 보완은 [추가 검증](../../docs/work/quant-ai-company/RUNTIME-CONTEXT-VALIDATION.json)에,
-현재 업무 범위와 후속 구현 순서는 [다음 단계](../../docs/work/quant-ai-company/NEXT-STEPS.md)에 기록합니다.
+실제 사용자의 Slack 요청과 네 직원 계정의 답변 게시도 확인했습니다. 업무 실행·Slack 연결·DB·
+Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장시간 운영 검증은 계속합니다.
+[AWS 배포 검증](docs/project/AWS-DEPLOYMENT-VALIDATION.json),
+[구현 검증](docs/project/IMPLEMENTATION-VALIDATION.json),
+[Slack 연결](docs/project/SLACK-CONNECTION.json),
+[Temporal 연결](docs/project/TEMPORAL-CONNECTION.json)에 증거를 구분합니다.
+배포 후 운영 정보 전달 보완은 [추가 검증](docs/project/RUNTIME-CONTEXT-VALIDATION.json)에,
+현재 업무 범위와 후속 구현 순서는 [다음 단계](docs/project/NEXT-STEPS.md)에 기록합니다.
 데이터 연결은 실제 사용자 Slack 요청으로 확인했습니다. 첫 시도의 출처 ID 누락을 수정하고
 같은 스레드에서 재조회·직원 산출물·총괄 답변 게시까지 검증했습니다. 이전 실패 기록은 보존합니다.
 
@@ -59,7 +59,7 @@ flowchart LR
 공통 도구는 `calculate`, `knowledge_search`, `read_source`입니다. 데이터 담당에는
 `lake_catalog`, `lake_describe`, `lake_sample`을 추가했습니다. 기존 EC2가 발행하는 S3 미러를
 읽어 데이터 목록·날짜 범위·스키마·최대 20행 샘플을 확인합니다. 조회 결과는 출처·객체 식별자·
-조회 시각과 함께 해당 프로젝트에 저장합니다. [데이터 연결 검증](../../docs/work/quant-ai-company/DATA-CONNECTION-VALIDATION.json)에
+조회 시각과 함께 해당 프로젝트에 저장합니다. [데이터 연결 검증](docs/project/DATA-CONNECTION-VALIDATION.json)에
 실제 실행 범위와 한계를 기록합니다. 인터넷 검색, 전략 코드 실행, 3070 제출, 세 연구팀의
 실제 실험, 실거래 연결은 후속 구현입니다.
 
@@ -149,4 +149,4 @@ REAL_CODEX_COMPANY=1 uv run pytest -q tests/test_temporal.py::test_live_codex_co
   후 수행합니다. 구독 한도나 프로세스 health만으로 서비스 가용성을 보장하지 않습니다.
 
 코드 경계는 [INTERFACES](INTERFACES.md), 모델 실행은 [Codex runtime](docs/codex-runtime.md),
-전체 조직 확장은 [설계·인수 명세](../../docs/work/quant-ai-company/BUILD-AND-ACCEPTANCE.md)를 참고하세요.
+전체 조직 확장은 [설계·인수 명세](docs/project/BUILD-AND-ACCEPTANCE.md)를 참고하세요.

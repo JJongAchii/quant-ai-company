@@ -1,0 +1,24 @@
+{
+  "runId": "quant-company-bootstrap-20260916",
+  "builderId": "deployment_roles",
+  "buildStage": "research",
+  "domain": "personal",
+  "worktree": "/Users/achii/quant-ws/quant-company-deploy",
+  "objectiveDigest": "bcc7cd98d468",
+  "objectivePath": "docs/work/quant-ai-company/INTENT-v1.json",
+  "approvedDesignPath": "services/quant-company/INTERFACES.md",
+  "approvedDesignDigest": "c0651ed11828e503e105ad1b4da78499b2019418497664fba412baf4c593c449",
+  "approvalMessageId": "msg_01a0a7c8-f0bf-7821-b99b-d17e83b1367e",
+  "confirmationPrereg": "not-applicable: standalone company infrastructure, no strategy experiment",
+  "qualificationCommand": "uv run pytest -q tests/test_roles.py",
+  "acceptance": "All roster entries parse with shared Role schema and peer/tool references valid; deployment Compose config resolves using placeholders; shell scripts pass shell parser; document Docker/remote checks unavailable separately.",
+  "ownershipBase": "services/quant-company",
+  "rules": "Modify owned slice only in dedicated worktree; no descendants or contract/status changes. No actual financial performance runs.",
+  "implementationKind": "infrastructure-service; no strategy research or performance run",
+  "integratedBuilderCommits": [
+    "cf59407",
+    "b44a0da",
+    "62bba90"
+  ],
+  "integrationEvidence": "IMPLEMENTATION-VALIDATION.json"
+}

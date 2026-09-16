@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-16T05:48:22.795761+00:00",
+  "status": "deployed_and_bounded_actual_model_check_passed",
+  "imageCodeCommit": "e097ae9a523e811459b941dfe3b7d7686c7bc4e6",
+  "previousDeploymentEvidence": "AWS-DEPLOYMENT-VALIDATION.json",
+  "rootCause": "Role model IDs selected the provider request but were absent from the employee prompt and registered sources.",
+  "change": "Service-generated allowlisted runtime configuration is included in each newly prepared request. Previously persisted requests remain unchanged.",
+  "checks": {
+    "regressions": {
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "database": "Disposable local PostgreSQL; stopped after checks",
+    "ruff": "passed_changed_python_files",
+    "configuredModelPairsInActualAnswer": {
+      "director": true,
+      "financial_strategist": true,
+      "researcher_kr": true,
+      "data": true
+    },
+    "actualModelProvider": "codex",
+    "actualModelRequest": "gpt-6-astra",
+    "actualModelTurns": 1,
+    "knowledgeSearchCalls": 0,
+    "delegations": 0,
+    "slackPosts": 0,
+    "containersRunningAndHealthyWhereProbed": true,
+    "existingTasksActiveBeforeUpgrade": 0,
+    "newAwsResources": false,
+    "databaseMigration": false
+  },
+  "registeredSourcesAtCheck": [
+    {
+      "approved": true,
+      "synthetic": true,
+      "count": 1
+    }
+  ],
+  "fileDigests": {
+    "services/quant-company/src/quant_company/company.py": "f43603867b59c01a1d41b22998a8531b0601ce73f2062aaef0fc89c1766bfd65",
+    "services/quant-company/tests/test_runtime_context.py": "52722da3c1fe492be7612eb660a7de05e040301b448012f0ae423524b07329a5",
+    "services/quant-company/tests/test_roles.py": "8d482d01a58e10a009c6fd62fd0ed6d40cd5faa8c3b20faa9f005da8fd37e3fa",
+    "services/quant-company/src/quant_company/roles.json": "f8ff1b5647da6a9631d4487b5c5ca9c48e5b715bf4a855d8a0585a061a114e3a",
+    "services/quant-company/README.md": "9473ddbda7a21f827ff8b4361b7e82da3ed0f211bc85872230862596c446d776",
+    "docs/adr/0010-company-runtime-context.md": "4d4ec8a58d290a1c0fee22d0dd790541c62ce796b91475425356cdebd0bc0da5",
+    "docs/work/quant-ai-company/NEXT-STEPS.md": "766ba25c1edc1a07a0c849d2565cc0a641e5cffd2d75b4225840f8765f426d87"
+  },
+  "evidence": {
+    "evidence/aws-runtime-context-deploy.json": "a2050483ed86e59a1dc0a3158ccccd99e9540fd39b035d41da31f1e50eadecaa",
+    "evidence/aws-runtime-context-answer.json": "9c0f3f780aba6499bf62b49717c4f5317bc42f09d09fc4818e91c1a6aa374d40",
+    "evidence/runtime-context-regressions.xml": "8bda193d2f41c38d08efcc60fd5d0f5dc907d94189b2af01bd5209f64cb0ee10"
+  },
+  "notVerified": [
+    "User-originated repeat of this model question over Slack after the repair; actual model verification used an internal project without Slack delivery.",
+    "Mac fully powered-off phone acceptance and long-duration soak.",
+    "Natural-language revision classification, real financial knowledge qualification, internet/data-lake retrieval and research-worker execution are subsequent work."
+  ],
+  "secretsInEvidence": false
+}

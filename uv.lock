@@ -2470,7 +2470,7 @@ wheels = [
 [[package]]
 name = "qdata"
 version = "0.2.0"
-source = { directory = "../../quant-data" }
+source = { directory = "../quant-data" }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "click" },
@@ -2560,7 +2560,7 @@ requires-dist = [
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2,<4" },
     { name = "pydantic", specifier = ">=2.10,<3" },
     { name = "pydantic-settings", specifier = ">=2.7,<3" },
-    { name = "qdata", extras = ["s3"], marker = "extra == 'lake'", directory = "../../quant-data" },
+    { name = "qdata", extras = ["s3"], marker = "extra == 'lake'", directory = "../quant-data" },
     { name = "slack-sdk", specifier = ">=3.38,<4" },
     { name = "temporalio", specifier = ">=1.9,<2" },
     { name = "uvicorn", specifier = ">=0.34,<1" },

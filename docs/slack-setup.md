@@ -53,4 +53,4 @@ From a manifest**로 각 파일을 적용하고 workspace에 설치합니다. �
 네 앱 모두 `auth.test`, 실제 Socket Mode 연결, 지정 채널의 `conversations.history` 접근을
 확인했습니다. token은 Git 밖의 권한 0600 파일에 보관했습니다. 아직 회사 서비스의 실제 메시지
 왕복이나 AWS 상시 구동을 검증한 것은 아닙니다. 위 첫 연결 확인의 나머지는 서버 배포 후 수행합니다.
-[실제 연결 증거](../../../docs/work/quant-ai-company/SLACK-CONNECTION.json)
+[실제 연결 증거](project/SLACK-CONNECTION.json)

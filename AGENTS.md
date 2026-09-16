@@ -1,7 +1,7 @@
 # Quant Company service
 
-This is the independent, subscription-first company runtime. It lives in the isolated meta
-worktree as a separately installable Python package. Existing research repos are read-only
+This is the independent, subscription-first company runtime. Its source of truth is the private JJongAchii/quant-ai-company repository.
+Work in an isolated qws attachment; the package/CLI name remains quant-company. Existing research repos are read-only
 integration targets until a particular research task is authorized.
 
 - Python 3.11+, FastAPI, PostgreSQL, Temporal. Production never uses an in-memory task queue.

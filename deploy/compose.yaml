@@ -24,7 +24,7 @@ x-app: &app
     dockerfile: deploy/Dockerfile
     target: app
     additional_contexts:
-      qdata: ${QDATA_BUILD_CONTEXT:-../../../quant-data}
+      qdata: ${QDATA_BUILD_CONTEXT:-../../quant-data}
     args:
       RELEASE_COMMIT: ${RELEASE_COMMIT:-unqualified}
       QDATA_COMMIT: ${QDATA_COMMIT:-unqualified}
@@ -183,7 +183,7 @@ services:
       dockerfile: deploy/Dockerfile
       target: codex
       additional_contexts:
-        qdata: ${QDATA_BUILD_CONTEXT:-../../../quant-data}
+        qdata: ${QDATA_BUILD_CONTEXT:-../../quant-data}
       args:
         RELEASE_COMMIT: ${RELEASE_COMMIT:-unqualified}
         QDATA_COMMIT: ${QDATA_COMMIT:-unqualified}

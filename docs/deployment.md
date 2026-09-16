@@ -2,7 +2,7 @@
 
 2026-09-16, 승인받은 **AWS 서울 Lightsail 2GB에 배포했다**. 실제 Slack 앱 4개와 Temporal Cloud를
 연결하고 서버의 공식 Codex 인증, 네 직원 합성 협업, 호스트 재부팅과 S3 복원을 확인했다.
-검증 범위와 미실행 항목은 [배포 영수증](../../../docs/work/quant-ai-company/AWS-DEPLOYMENT-VALIDATION.json)에 남긴다.
+검증 범위와 미실행 항목은 [배포 영수증](project/AWS-DEPLOYMENT-VALIDATION.json)에 남긴다.
 
 ## 1. 처음 사용할 구성
 
@@ -102,7 +102,7 @@ Docker 설치는 [공식 Ubuntu 절차](https://docs.docker.com/engine/install/u
 패키지와 서명을 검증한 AWS CLI v2를 설치한다. Ubuntu 기본 apt에는 `awscli` 후보가 없었다.
 전체 Quant 레포·데이터 레이크는 동기화하지 않고 커밋된 서비스 디렉터리만 전송한다.
 
-커밋된 `services/quant-company` 디렉터리와 `uv.lock`을 `/opt/quant-company/current`에
+독립 저장소의 커밋된 파일과 `uv.lock`을 `/opt/quant-company/current`에
 배치한다. 다음 명령의 작업 디렉터리는 이 서비스 디렉터리다.
 
 데이터 조회를 포함한 릴리스는 `deploy/qdata-source.json`에 고정한 quant-data 커밋의

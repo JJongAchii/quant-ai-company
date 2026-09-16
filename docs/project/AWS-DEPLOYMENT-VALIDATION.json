@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-16T05:24:47.821345+00:00",
+  "status": "deployed_bounded_qualification_passed_acceptance_remaining",
+  "approval": "AWS-CREATION-APPROVAL.json",
+  "imageCodeCommit": "c7fbd62a4ee27e6f8fd8ab166804620a400f874b",
+  "roleConfigSourceCommit": "e8cba6cedc35cfeee29c3390483fe89560bc91b9",
+  "host": {
+    "provider": "AWS Lightsail",
+    "region": "ap-northeast-2",
+    "name": "quant-company-host",
+    "bundle": "small_3_0",
+    "memoryGiB": 2,
+    "monthlyInstanceUsd": 12,
+    "staticIpAttached": true
+  },
+  "checks": {
+    "cloudFormation": "CREATE_COMPLETE",
+    "linuxImageBuild": "passed",
+    "officialServerChatgptAuth": "passed",
+    "realCodexCallAndSameRequestReplay": "passed",
+    "fourEmployeeCloudCompany": "passed_4_tasks_8_turns_4_artifacts",
+    "peerDelegationAndServiceTools": "passed",
+    "hostRebootAndDurableTimer": "passed_single_task_single_turn",
+    "postRebootCachedResponse": "passed_equal_original_and_receipt_unchanged",
+    "actualSlackOwnerRequest": "passed_four_apps_eight_posted_messages",
+    "sameThreadUserFollowup": "passed_self_contained_three_role_summary",
+    "s3EncryptedBackupAndSeparateDownload": "passed",
+    "restoreToNewDatabase": "passed_two_full_project_states_equal",
+    "dailyBackupService": "passed_manual_execution_exit_0_timer_enabled",
+    "operatorApiUnauthorizedRequest": "401",
+    "databaseAppSuperuser": "false",
+    "modelContainerSecrets": "no_slack_database_aws_credentials",
+    "regressions": {
+      "tests": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 4
+    },
+    "ruff": "passed_all_service_files",
+    "regressionSkipReasons": [
+      "Real PostgreSQL required: set TEST_DATABASE_URL to a disposable test cluster"
+    ]
+  },
+  "capacity": {
+    "sampleCount": 49,
+    "start": "2026-09-16T05:03:29.442715+00:00",
+    "end": "2026-09-16T05:07:34.884211+00:00",
+    "hostTotalMiB": 1907.8,
+    "hostMinimumAvailableMiB": 1072.5,
+    "swapTotalMiB": 0.0,
+    "containerPeakMiB": {
+      "quant-company-dispatch-1": 63.1,
+      "quant-company-worker-1": 84.7,
+      "quant-company-slack-socket-1": 51.2,
+      "quant-company-codex-runtime-1": 177.6,
+      "quant-company-api-1": 66.4,
+      "quant-company-postgres-1": 34.2
+    },
+    "cgroupOomKillCounts": {
+      "quant-company-dispatch-1": 0,
+      "quant-company-worker-1": 0,
+      "quant-company-slack-socket-1": 0,
+      "quant-company-codex-runtime-1": 0,
+      "quant-company-api-1": 0,
+      "quant-company-postgres-1": 0
+    },
+    "observation": "Bounded synthetic four-employee collaboration, no long soak or financial workload; sampler ended during intentional reboot."
+  },
+  "operatingLimits": {
+    "modelConcurrency": 1,
+    "dailyModelTurns": 100,
+    "taskTurns": 8,
+    "delegationDepth": 3,
+    "projectTasks": 40,
+    "activeEmployees": 4,
+    "tradingEnabled": false,
+    "paidApiFallback": false
+  },
+  "notVerified": [
+    "Mac fully powered-off phone acceptance",
+    "Explicit 수정: Slack revision (the actual follow-up omitted the prefix and remained revision 1); synthetic/local cancellation and revision tests are separate",
+    "Long-duration soak, concurrent inference, large research data workloads",
+    "Financial expertise qualification or real strategy performance",
+    "Full lost-host reconstruction, credential recovery and automatic failover"
+  ],
+  "initialDeploymentRepairs": [
+    "Missing Lightsail key was corrected before successful reprovisioning; dedicated RSA key imported and a key-existence preflight added.",
+    "Ubuntu 24.04 apt had no awscli candidate; official signed AWS CLI v2 installer verified and installed.",
+    "PostgreSQL parent bind-directory traversal was fixed to 0711; actual PGDATA remains postgres-owned 0700.",
+    "Initial Slack replies referred to internal artifacts; role configuration version 2 requires self-contained user-visible results, verified by the user follow-up."
+  ],
+  "fileDigests": {
+    "services/quant-company/deploy/Dockerfile": "2d759c378e2404bc87d800a256a8d1f2b9560a7f5c796afb5d162f8e76a0f93d",
+    "services/quant-company/deploy/compose.yaml": "119e25674b5af240da9ccb4dad91d63a8cc767c55846184840825cb8cde89b36",
+    "services/quant-company/deploy/bootstrap-host.sh": "6aeca0c9166a5410cff54802930ddc065c40ee099b951a1c717f4c40516725a8",
+    "services/quant-company/deploy/aws-cli-signing-key.asc": "279541b6dd1c831a260ee0f9fb71d63bbcc14ebc4bf62c605336e86c11d4eefb",
+    "services/quant-company/deploy/prepare-state.py": "d17b8598d4843263797624cb853018d0b654d4717a0b78a282697bce24845e84",
+    "services/quant-company/deploy/provision.py": "c64ccf4ba0c89d28ce1eadf99218d151ef64ffdc31a309e7c079468b12fcf2e2",
+    "services/quant-company/deploy/state_backup.py": "965e37e74234b3def9852d8955f8f6d96ae502e80fd626e6a257b7d9c526e272",
+    "services/quant-company/deploy/quant-company-backup.service": "b7f7814ec64ada939e3f4d622f24664bf487703cf09b5de5521ff53a90ba7613",
+    "services/quant-company/deploy/quant-company-backup.timer": "00abc63668fe4342ebbded19023a4edb69165c83e2972ab01adf71c2c21201f8",
+    "services/quant-company/deploy/backup-policy.example.json": "e0786c9c60034637f65c13b50e8c634ac6fb39c9bdc9eceeebb65b8bae232a9e",
+    "services/quant-company/deploy/lightsail-2gb.env.example": "17989968622b3146d1e4e3214be9292ea9126b5725e0b514d1b54b5e7b8bb84b",
+    "services/quant-company/src/quant_company/roles.json": "f8ff1b5647da6a9631d4487b5c5ca9c48e5b715bf4a855d8a0585a061a114e3a",
+    "services/quant-company/README.md": "d262ffbf8f2b93409fd1a32a24edb94be8fa0a6eaa80d3247d5ba45599364af6",
+    "services/quant-company/docs/deployment.md": "54862895b84cb723a994dfe522b37f0dea4d8feaa23182323e03ea587cd7d76a",
+    "docs/work/quant-ai-company/SLACK-CONNECTION.json": "5dc67455de4020955cb5801786de90f2883987991e88ada017dc20b7ae1ae1d7",
+    "docs/work/quant-ai-company/AWS-CREATION-APPROVAL.json": "5ba0b654476ef881528b90a788621c9e635616288ba834d35acfdf179fbe496d",
+    "docs/work/quant-ai-company/AWS-DEPLOYMENT-PLAN.md": "4780b852b083c895258664ffccaeedf5f61cc0affddc27e2367b8f67675497ff",
+    "docs/work/quant-ai-company/MINIMUM-SERVER.md": "3e7c3bac6ecc6cdab46b667eed368d80a8f555c43e2796f99dd30938f6d95381"
+  },
+  "evidence": {
+    "evidence/aws-backup-identity.json": "54b7c3731570a44cb6baa43ce828e96544967c88f1b29323888c75621ae843bc",
+    "evidence/aws-backup-timer.json": "80ad2015696878127ceaf301b141347e99938aae7392eb54fd243e63b93d373c",
+    "evidence/aws-backup.json": "6035152dc1c92f9e35e9917ef4ab55e3e5392b0a57392cb6275eda2489628787",
+    "evidence/aws-codex-after-reboot.json": "62b40ccb6eb58cdc8a0cfaf6757d438e8f446393e6090461c6d3d4dc4ae7998b",
+    "evidence/aws-codex-smoke.json": "a9f6cc19b08393e0ff5e594d7d051def445f1e9292053c4a0c8a8de4666af3b0",
+    "evidence/aws-company-collaboration.json": "e9ccd4188b049128453d45d2e3d820a92c8351c754eb2f287620ff922b4757a5",
+    "evidence/aws-container-boundaries.json": "f2416a1b157bc1e768400bdd79c0e709d1159ca3f97b90122c4549ec9b08c417",
+    "evidence/aws-created-resources.json": "6845f2d1d9addfd9abe59918cdaf454f7a1d87360537bb8dcd771d9ddeb0202f",
+    "evidence/aws-final-state.json": "b7feb792cbda5b46754bbb2d79d569660756de4a05452e830e64f2c8934786e2",
+    "evidence/aws-host-reboot.json": "e737be59e04a2e95118be08e62282ef7114e485fe29af36756ac044c8f5aa300",
+    "evidence/aws-initial-creation-repair.json": "9d9048f1bf5ac54a6ebbb6e08709530b6a40d3f66fa8c5e2295fab6dd775f39a",
+    "evidence/aws-memory-samples.json": "b52b095d486e92dbc5ec85beff695c107f6e3ed556c002f5ea2b70b8498f1c86",
+    "evidence/aws-memory-summary.json": "2772c625fec38beaed5609cc1860d593e2a9e5637f5c5a2be301b77679e32a00",
+    "evidence/aws-restore-validation.json": "f06c45df2a5e76826af72c5ead8af69052dda1b2defc6aa12a1ee7c2507a3757",
+    "evidence/aws-role-config.json": "50acaaf4d1d636313572a99dd1c339e05a465f174822754039431be09a731a52",
+    "evidence/aws-slack-company.json": "2fd970bba0907ff3b2bf77eaf3cba8490aa5cc1569b2dd2aa99f7f4e1ccb105e",
+    "evidence/aws-slack-followup.json": "abe2ca807d04c822779a264d0a67fc2750becd50091e002914159d88b95ebb90",
+    "evidence/aws-ssh-key.json": "5dd320635bee65fe762df0b1b645bac708c6aa44b7cc351fec402d467537ac9c",
+    "evidence/aws-deployment-regressions.xml": "91ad02c705a56ce28cd9f2b818230d1bde1dcf8956e80ac74373c0c384a45332"
+  },
+  "secretsInEvidence": false,
+  "priorEvidence": [
+    "IMPLEMENTATION-VALIDATION.json",
+    "ONBOARDING-VALIDATION.json",
+    "TEMPORAL-CONNECTION.json"
+  ]
+}

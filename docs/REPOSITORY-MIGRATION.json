@@ -1,0 +1,20 @@
+{
+  "sourceRepository": "JJongAchii/quant-workspace",
+  "sourceCommit": "905a47b83d5ab48df35e9a4ba4f4645dd7601556",
+  "sourcePrefix": "services/quant-company",
+  "splitCommit": "78cab16c8a80adaab53ffadc07dfc06947ed1bc6",
+  "destinationRepository": "JJongAchii/quant-ai-company",
+  "historyMethod": "git subtree split; service commits retained with rewritten SHAs",
+  "productionCommitInSourceRepository": "05cacb7bbf8bf84f46d3b0d7c8ef30736c68eb9f",
+  "productionChanged": false,
+  "qdataCommit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "maintenanceBotActive": false,
+  "identicalExtractedTree": "42ebdecbacfb10bbc1757a3dab3a74182a3b696a",
+  "standaloneValidation": {
+    "tests": "115 passed, 1 skipped, 1 deselected",
+    "postgres": "real disposable local",
+    "temporal": "real local",
+    "models": "fixtures; live tests excluded",
+    "lint": "passed"
+  }
+}

@@ -1,0 +1,292 @@
+{
+  "checkedAt": "2026-09-16T02:18:40.109877+00:00",
+  "scope": "first-service-local-validation-and-AWS-deployment-preparation",
+  "objectiveDigest": "bcc7cd98d468",
+  "testedCodeCommit": "256cf45b9050e4a70f4507f9aab0e4d0a677cae5",
+  "status": "local-qualified-external-acceptance-pending",
+  "automatedTests": {
+    "tests": 100,
+    "passed": 99,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "skipReason": "Real subscription test is opt-in and ran separately",
+    "command": "CODEX_CONFIG_PROBE=1 uv run pytest -q tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py --junitxml=.local/pytest-final.xml",
+    "evidence": "evidence/pytest.xml"
+  },
+  "realCodexConnection": {
+    "status": "passed",
+    "model": "gpt-5.6-luna",
+    "officialChatGPTLogin": true,
+    "sameRequestReplayEqual": true,
+    "evidence": "evidence/codex-connection.json"
+  },
+  "realCompanyCollaboration": {
+    "status": "passed",
+    "postgres": "14.17 local real server",
+    "temporal": "1.32.0 local dev server",
+    "roles": [
+      "data",
+      "director",
+      "financial_strategist",
+      "researcher_kr"
+    ],
+    "tasks": 4,
+    "turns": 8,
+    "artifacts": 4,
+    "allTasksCompleted": true,
+    "modelOverride": "gpt-5.6-luna for all four roles",
+    "tools": [
+      "tool:calculate",
+      "tool:read_source"
+    ],
+    "slackConnected": false,
+    "financialExpertiseQualified": false,
+    "evidence": "evidence/codex-company.json",
+    "command": "REAL_CODEX_COMPANY=1 uv run pytest -q tests/test_temporal.py::test_live_codex_company_producer_consumer"
+  },
+  "observedAndFixed": [
+    {
+      "issue": "CLI strict config rejected dynamic dotted project override",
+      "fix": "TOML table override and actual CLI no-inference config preflight",
+      "commit": "8bb4274"
+    },
+    {
+      "issue": "CLI diagnostic item.error warnings were treated as tool actions",
+      "fix": "Diagnostic item classification; terminal failures and actual tools remain blocked",
+      "commit": "5e14591"
+    },
+    {
+      "issue": "Task requester report rejected by delegation ACL",
+      "fix": "Allow a child to message its requester without upward delegation authority",
+      "commit": "0f2dfe7",
+      "evidence": "evidence/codex-company-attempt1.json"
+    },
+    {
+      "issue": "One model treated a colleague artifact as its requested deliverable; only three of four artifacts",
+      "fix": "Explicit own-artifact completion instruction; final same four-artifact acceptance passed",
+      "commit": "256cf45",
+      "evidence": "evidence/codex-company-attempt2.json",
+      "limitation": "Prompt guidance is not a deterministic task-specific deliverable completeness validator"
+    }
+  ],
+  "otherChecks": {
+    "ruff": "passed",
+    "cfnLint": "passed",
+    "composeDefaultAndHttpsProfiles": "passed",
+    "pythonWheelAndSourceBuild": "passed",
+    "packagedSchemaRolesAndRuntime": "present",
+    "workflowReplay": "7 fixture workflow histories replayed",
+    "workerRestart": "pending timer resumed after worker shutdown/restart",
+    "codexProcessCancellation": "POSIX process group cancellation tested"
+  },
+  "environments": {
+    "localPython": "3.12.13",
+    "postgresLocal": "14.17",
+    "postgresProductionConfigured": "16.15, container not yet run",
+    "codexCli": "0.154.0",
+    "fixtureRoleTests": "synthetic; no expertise or strategy claim"
+  },
+  "awsReadOnly": {
+    "profile": "default",
+    "region": "ap-northeast-2",
+    "accountSuffix": "2347",
+    "existingInsightStack": "UPDATE_COMPLETE",
+    "existingCollector": "t4g.large/stopped",
+    "linuxBundle": "medium_3_0",
+    "monthlyInstanceUSD": 24,
+    "bundleActive": true,
+    "ubuntu_24_04Active": true,
+    "lightsailKeyPairs": 0,
+    "existingPublicSSHKeyAvailable": true,
+    "resourcesCreated": false
+  },
+  "notRun": [
+    "real Slack Socket Mode connection and per-bot posting",
+    "AWS resource creation and Linux Docker build/run",
+    "server Codex device authentication",
+    "Temporal Cloud namespace connection",
+    "Mac shutdown / phone-only acceptance",
+    "host restart and external S3 restore drill",
+    "actual financial specialist qualification",
+    "global and crypto team activation and research execution",
+    "3070 compute submission/integration",
+    "live/paper trading and high availability"
+  ],
+  "deploymentBlocker": "Development Docker daemon did not become available; image build/Linux sandbox remain unqualified. AWS, Slack, Temporal and server login setup are not completed.",
+  "serviceFileDigests": {
+    "services/quant-company/.dockerignore": "07e85b53c4e38fc45a6b3b55ea902f258679f5eb5a994e9b6c16a526be552267",
+    "services/quant-company/.gitignore": "0ead819cd436e9dbd517b209a3bafcdad67f8b9fd626ce41ea62e51b9d397932",
+    "services/quant-company/AGENTS.md": "eccad049d9a838adf3e33fcd357b859873556e0d49f58e64b42fba9a5b82514b",
+    "services/quant-company/INTERFACES.md": "2615d6267139fa0dc3fda3f7dda5da5b1e369c3165a9add357d5ab1ac7c48325",
+    "services/quant-company/deploy/.env.example": "1e3b2cfe0ef50e27f3f50866e14af0e015d5c8efdf575c398cbb62fe3f868cf0",
+    "services/quant-company/deploy/Caddyfile": "6bd1607c9ecbf2962acadba1f5c2fa18ada8e9c3a3c1d1cf865254f6c9ed58c4",
+    "services/quant-company/deploy/Dockerfile": "d991e1aecc9e75e92c1dcd20b7afb0b8e2dff573e6acd38d8526b2a5263b0d28",
+    "services/quant-company/deploy/backup-policy.example.json": "e0786c9c60034637f65c13b50e8c634ac6fb39c9bdc9eceeebb65b8bae232a9e",
+    "services/quant-company/deploy/backup.env.example": "c06c1cc44c9ba59d0ff8b35d5ec8f00023fc3380f37134cb60cf6edd933a94ec",
+    "services/quant-company/deploy/backup.sh": "e2029ec23a0bcc7403c2b8b78d94dbbca46b2d904993b23f5fbce489cf31a000",
+    "services/quant-company/deploy/compose.yaml": "4ef92139a5b7d2ce31e08d794629b16d43e6288870e99347254df76ada0991ff",
+    "services/quant-company/deploy/entrypoint.py": "ac53962ff2b80220d63658806cf550527a04bf4e61aa6f41ac8616ead090ed41",
+    "services/quant-company/deploy/init-database.sh": "5a46e4c2fa2b4f7bace2ca4ee770cc6b01c5c7af5bf3d6d2c66a43c1600e131b",
+    "services/quant-company/deploy/lightsail.json": "18b16968512053cab5210d15763c32c4f492604aed0ca953405d98c2e362a3f5",
+    "services/quant-company/deploy/prepare-state.py": "6b235a440f4dd050ef07c70cf9203f739de60878e268b19609f923299c7a3262",
+    "services/quant-company/deploy/provision.py": "d51eba7fe501298f3fc037b588740ce2943819d9a50cdab316d7234aecf72d48",
+    "services/quant-company/deploy/quant-company-backup.service": "bc4feccbb7c7d34bd7d3a5f5c8cc3dd667fc9e78094563c97460d45652861b88",
+    "services/quant-company/deploy/quant-company-backup.timer": "bbc0ffdb875af8d8238b9528eab65da929767d9278cd1d9b64ff3da00514c421",
+    "services/quant-company/deploy/restore.sh": "46d4d626d602e4f054284091cf17191b0370428876ffffd32e894a0020f98aa5",
+    "services/quant-company/deploy/slack-credentials.example.json": "fdfd8e238a153ca6da72c6d106e8dd7fa353c5fbe3b586fec049b4425d23efd6",
+    "services/quant-company/deploy/state_backup.py": "965e37e74234b3def9852d8955f8f6d96ae502e80fd626e6a257b7d9c526e272",
+    "services/quant-company/deploy/test_deployment_contract.py": "eaf9c0a15251a777b3023fb543796826a57c7cabf5f1852d944df6d53603ae6f",
+    "services/quant-company/docs/codex-runtime.md": "77e39f241847e618f50e18d324a77a2ed8a93828cfdfc7b58bd3e881d5dce0c1",
+    "services/quant-company/docs/deployment.md": "bc18151a108f4699bb136d385126b3fdc77fcd1f68f22b9ae46742437da657be",
+    "services/quant-company/docs/financial-specialist.md": "b85ab493bc7b1beec7d57f83d1a9500e9e4222dcc8fe19fe1657b638e1b6be26",
+    "services/quant-company/evals/README.md": "33ca9891270a66d81ccc2c92831115fe8a6fca9f407d09535577dbece627a6c3",
+    "services/quant-company/evals/financial-cases.json": "e52ab8d6d0ba5992fd2ac916e9bcba3058e2eae46715b87fed3bcd23092a124f",
+    "services/quant-company/evals/source-catalog.json": "ea1062638baef660464f8728d5b8b8014caf33693224b40e34fafe6d42301467",
+    "services/quant-company/evals/test_financial_fixtures.py": "35b512927ba4df932003414a830a01bbd3e76afe45396d6e8f9cdc56c5c4aeee",
+    "services/quant-company/pyproject.toml": "b0dd54909979cd30a4a9186bc5d3d874a90fa3b3811fc85b7a6fffbb3c776810",
+    "services/quant-company/scripts/smoke_codex.py": "b12df94a60b31394919225ed01cb57df4cfbe399bd91ba280fc7014cf63b8950",
+    "services/quant-company/slack-apps/data.json": "e39f6001dc56715cf5355ca7545c78376865ef9d2267b30ba9b0d5f200a82dc7",
+    "services/quant-company/slack-apps/director.json": "226afe0d3c718763330f62222162659f1276c1552a4bd73efe845c509a39f49d",
+    "services/quant-company/slack-apps/financial_strategist.json": "c5b29bc90cbec684cc748937c951d7559c953b7d154db9ba0b98e5ef0079dc07",
+    "services/quant-company/slack-apps/researcher_kr.json": "0ce79cbda0682d44de7bbac49eaec134f5c62824cf6b0e89e94fc4524ce6c604",
+    "services/quant-company/src/quant_company/__init__.py": "e106c3c09ab6bbc43727ec132984da9a3388718f7be12530a151773b8beb526d",
+    "services/quant-company/src/quant_company/api.py": "53921bcb71ad8791639a023694de3c5cc0691e4b233589380741654caee2dabd",
+    "services/quant-company/src/quant_company/cli.py": "3a27281a4563bc242453c47ad0ed5c3b845f364aacca0e2f35cd0d52ced3a9b1",
+    "services/quant-company/src/quant_company/company.py": "1f5a6d8ec57556aed60890f921c5d73d8bd3eff5c2eeb850dab14570b83810fb",
+    "services/quant-company/src/quant_company/config.py": "47b8da74a116e94a69329b59e0a4d346761aee0800081fa6643e65aa0c0dc547",
+    "services/quant-company/src/quant_company/contracts.py": "92e91d41c39c9bbf3935459685f8b59bbf03ac496f0eab12c734190cb030f170",
+    "services/quant-company/src/quant_company/db.py": "c6d09fe97b768043975a331493bc19aa651f6638a443a0fca4b4770c51a5e8d9",
+    "services/quant-company/src/quant_company/execution.py": "bf5883c16f9f7b4ec91b9937030937e8fb0c54592ee94d7900c97b935112f719",
+    "services/quant-company/src/quant_company/providers/__init__.py": "a289dd8ab63e6c5a35d2274e98232e30023cdf5806200e98f6b61c30c685f6ae",
+    "services/quant-company/src/quant_company/providers/client.py": "2ca4f9d5ecd21c687fe7b30e07f5d2ea13ba922097705a48c42ff82af502d213",
+    "services/quant-company/src/quant_company/providers/codex_runner.py": "d4ffc4d34b0602801a91cdc5e5224f57826f6659c0188e05c61a13c9a8ed0fa3",
+    "services/quant-company/src/quant_company/providers/codex_runtime.py": "505fc1e3bd7feed39bfa1fadd5cbb13b446e5ea16fc6383e02d8f4341d9b2332",
+    "services/quant-company/src/quant_company/roles.json": "8ee6cac5b3c5bf4e129473c565748fd0fb4be090d369cb950baa8585e697a47b",
+    "services/quant-company/src/quant_company/runtime.py": "e585efa4f0eef44c0b9a3c5a5409be27ffeb075ee77bf4489c099ec755f53882",
+    "services/quant-company/src/quant_company/schema.sql": "2625e691eb0e07fcb451e711aca4015687cdd84c45d2533653ecc4e653eaf880",
+    "services/quant-company/src/quant_company/slack.py": "66e9845a0bea71fd963f612001b448a5ff544cccfc4e95b8eaaadabdca8afc1c",
+    "services/quant-company/src/quant_company/socket_mode.py": "421763c9200bf02a45ea1cd81408979a502484b3ab72b0d8bbccd93a5e61854d",
+    "services/quant-company/src/quant_company/tools.py": "1187a4fdc25fc38b29fffeac153d33e658c0450ff7134bc2dab57baf3ca05aec",
+    "services/quant-company/src/quant_company/workflow.py": "4d66cfe2dc230162ace5841baad61464cad74546dc2b3a2a46a42573a5cefab9",
+    "services/quant-company/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "services/quant-company/tests/conftest.py": "65ca2bccb06cb09ce32ce3a701c09cf3d026d9a16ee72fd6ca42326e96486e1d",
+    "services/quant-company/tests/test_codex_config_probe.py": "3108ee418699330bfe3f9823307eba9cb839a52968377c7ddcb2f6156f98a854",
+    "services/quant-company/tests/test_codex_runtime.py": "e1bf80cf99d9ae1cf2763689b8d7bf1aeb0d73aa9155e2ebaf128f09d46e0cf0",
+    "services/quant-company/tests/test_company.py": "5ca5f6bd2176a1014a44e16e5c0b6dd526f72dbc5d75dac7b4ae444e9536506e",
+    "services/quant-company/tests/test_roles.py": "660965fcadaf56746fc13a96dc9ae5e85dcec7ba0b737821033197f1205ced13",
+    "services/quant-company/tests/test_slack.py": "9c7f91bfd0dd1f42f009423de3886cd745b33564963db53b96fd520ba7dd10af",
+    "services/quant-company/tests/test_socket_mode.py": "70e32b338f92814289cc032e420b5fe72e1c84907c56ff3ac43eea5da110cf0c",
+    "services/quant-company/tests/test_temporal.py": "6cd9ae8f43a12e31eaa660c03002a0f254047d54dd01ad91507c7e9678513fa2",
+    "services/quant-company/uv.lock": "30bf98f7392013600e80dac59caea2170a1e414da24c6a48da1f6b170e0c0d1c"
+  },
+  "evidenceDigests": {
+    "codex-connection.json": "da20ad91305a5578397ea6270ef36f3399f2f00a645c13964de53f2309e27b0a",
+    "codex-company.json": "70e5d8ccd8fed0a8a466981b83486781215123fc7b49b2a37f54c7ab3c1b37ce",
+    "codex-company-attempt1.json": "caa268d20248b6659ea8f4ea4cb2293ba75a45238ff43d23fae26f590898e554",
+    "codex-company-attempt2.json": "d57044267f4b0d9b4b6103e4c89cbdc0946a3646d873c3ec59841ce2e1c4cb14",
+    "pytest.xml": "e6a420f1d51e3c310d7593c33df05712d45dcf7b86ca7fe07facfbe61d4e3495"
+  },
+  "operationalAcceptance": {
+    "A01": {
+      "status": "pending",
+      "localEvidence": "Four app manifests; no installed Slack identities"
+    },
+    "A02": {
+      "status": "partial",
+      "localEvidence": "Real Codex researcher_kr -> data delegation; all four tasks complete in PostgreSQL/Temporal; no Slack mirror acceptance"
+    },
+    "A03": {
+      "status": "partial",
+      "localEvidence": "Signed HTTP fixture and DB revision/owner tests; real Slack conversation pending"
+    },
+    "A04": {
+      "status": "not_run",
+      "reason": "AWS/Slack not connected; Mac shutdown acceptance pending"
+    },
+    "A05": {
+      "status": "partial",
+      "localEvidence": "Worker shutdown/restart with pending Temporal timer; provider process-group cancellation tests; host/crash deployment pending"
+    },
+    "A06": {
+      "status": "partial",
+      "localEvidence": "Real DB concurrent duplicate ingress, multi-app fixtures, Socket replay"
+    },
+    "A07": {
+      "status": "partial",
+      "localEvidence": "Bot echo/subtype ignored in local Slack fixtures"
+    },
+    "A08": {
+      "status": "partial",
+      "localEvidence": "Revision fencing and explicit provider cancellation; in-flight network sends carry revision labels"
+    },
+    "A09": {
+      "status": "partial",
+      "localEvidence": "Human priority and model-free status tests; production latency not measured"
+    },
+    "A10": {
+      "status": "partial",
+      "localEvidence": "Mock Slack 429 retry and ambiguous errors retained; no actual outage/recovery drill"
+    },
+    "A11": {
+      "status": "local_pass",
+      "localEvidence": "Real PostgreSQL atomic daily reservations under concurrent requests"
+    },
+    "A12": {
+      "status": "partial",
+      "localEvidence": "Real cached Codex replay and injected orphan/timeout/cancellation tests; end-to-end network-loss drill pending"
+    },
+    "A13": {
+      "status": "partial",
+      "localEvidence": "Durable reviewed memory and same-owner sharing across projects; server restart not tested"
+    },
+    "A14": {
+      "status": "not_run",
+      "reason": "Synthetic arithmetic/source fixtures are not a financial model qualification exam"
+    },
+    "A15": {
+      "status": "not_implemented",
+      "reason": "Source review exists; automatic claim correction propagation/invalidation is a later slice"
+    },
+    "A16": {
+      "status": "partial",
+      "localEvidence": "Future available_at relative to current clock, source scope, project owner filters; historical as-of research and model hindsight not qualified"
+    },
+    "A17": {
+      "status": "not_run",
+      "reason": "Ten roles defined; global/crypto and other six roles inactive"
+    },
+    "A18": {
+      "status": "partial",
+      "localEvidence": "Persisted follow-up code and timer restart path; external data-triggered commitments pending"
+    },
+    "A19": {
+      "status": "not_run",
+      "reason": "3070 compute adapter not implemented"
+    },
+    "A20": {
+      "status": "not_run",
+      "reason": "Remote experiment submission/reconciliation not implemented"
+    },
+    "A21": {
+      "status": "not_run",
+      "reason": "No strategy/research experiment was executed"
+    },
+    "A22": {
+      "status": "not_run",
+      "reason": "No HFT simulator or trading execution was deployed"
+    },
+    "A23": {
+      "status": "deferred_by_design",
+      "reason": "First deployment is one host, not high availability"
+    },
+    "A24": {
+      "status": "partial",
+      "localEvidence": "Backup archive integrity, safe target DB rules and quiesce mock tests; real pg_restore/S3 drill pending"
+    },
+    "A25": {
+      "status": "partial",
+      "localEvidence": "Seven fixture histories replayed with current workflow code; rolling version upgrade/rollback untested"
+    }
+  }
+}
