@@ -1,4 +1,7 @@
 -- Additive migration, safe with existing v1 records and rollback to the previous service.
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS clarification text;
+ALTER TABLE tasks ADD COLUMN IF NOT EXISTS kind text NOT NULL DEFAULT 'work';
+CREATE INDEX IF NOT EXISTS task_routing_queue ON tasks(project_id,created_at,id) WHERE kind='routing';
 CREATE TABLE IF NOT EXISTS company_policy (
  id integer PRIMARY KEY CHECK(id=1), revision integer NOT NULL DEFAULT 0,
  remove_company_daily_limit boolean NOT NULL DEFAULT false,

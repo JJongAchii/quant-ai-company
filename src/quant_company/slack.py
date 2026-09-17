@@ -101,10 +101,14 @@ class SlackIngress:
         if revise:
             text = text.split(":", 1)[1].strip()
             target = "director"
+        from .task_control import immediate
+
         result = self.company.ingest(
             event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}",
             text=text, owner=user, agent=target, channel=channel, thread_ts=thread_ts, revise=revise,
             status_only=text.strip().lower() in {"상태", "진행 상황", "status"},
+            interpret=target == 'director' and not revise,
+            control_action=immediate(text) if target == 'director' and not revise else None,
         )
         return {"ok": True, **result}
 
@@ -123,8 +127,14 @@ class SlackOutbox:
 
     def claim(self):
         with self.company.db.transaction() as conn:
-            row = conn.execute("""SELECT * FROM outbox WHERE status='pending' AND next_at<=now()
-                ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1""").fetchone()
+            row = conn.execute("""SELECT o.* FROM outbox o JOIN messages m ON m.id=o.id
+                LEFT JOIN tasks k ON k.id=m.task_id JOIN projects p ON p.id=o.project_id
+                WHERE o.status='pending' AND o.next_at<=now() AND
+                (m.kind IN ('control','maintenance','status') OR
+                 ((p.status='active' OR k.kind='answer') AND NOT EXISTS
+                  (SELECT 1 FROM tasks r WHERE r.project_id=o.project_id AND r.kind='routing'
+                   AND r.status NOT IN ('completed','superseded'))))
+                ORDER BY o.created_at FOR UPDATE OF o SKIP LOCKED LIMIT 1""").fetchone()
             if not row:
                 return None
             project = conn.execute("SELECT revision FROM projects WHERE id=%s", (row["project_id"],)).fetchone()

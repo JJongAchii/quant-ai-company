@@ -12,7 +12,7 @@ ROOT = ""
 WORKFLOW = ".github/workflows/quant-company-ci.yml"
 PROTECTED = {
     "api.py", "cli.py", "config.py", "contracts.py", "db.py", "schema.sql", "slack.py", "socket_mode.py",
-    "system_state.py", "owner_controls.py", "state_schema.sql",
+    "system_state.py", "owner_controls.py", "state_schema.sql", "task_control.py",
 }
 SECRET = re.compile(
     r"(?:AKIA|ASIA)[A-Z0-9]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|"

@@ -28,7 +28,8 @@ class ArtifactDraft(StrictModel):
 
 class ToolRequest(StrictModel):
     name: Literal["calculate", "knowledge_search", "read_source", "lake_catalog", "lake_describe", "lake_sample",
-                  "company_history", "maintenance_review", "maintenance_status", "system_status", "repository_read"]
+                  "company_history", "maintenance_review", "maintenance_status", "system_status", "repository_read",
+                  "task_control"]
     arguments: dict[str, Any]
 
 
