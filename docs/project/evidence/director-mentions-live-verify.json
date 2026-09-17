@@ -1,0 +1,111 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-17 06:22:28.214835+00:00",
+  "code_commit": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+  "operator_acceptance": true,
+  "new_slack_ingress": false,
+  "scenario": "[운영자 알림 기능 검증: 자동 테스트 입력] calculate 도구로 7+5를 한 번 계산해 주세요. 도구를 호출하는 첫 턴의 say에는 운영 검증 계산을 확인 중이라고 한 줄 안내하세요. 계산 결과를 받은 뒤에는 도구·위임 없이 최종 답변을 완료하세요. 최종 답변에는 운영 검증 완료, 계산 결과, 총괄의 최종 결과·확인 요청에는 요청자를 태그하고 중간 진행에는 태그하지 않는다는 안내를 간결하게 포함하세요. 금융 연구는 요청하지 않습니다.",
+  "project_id": "32aa8d56-18fd-5c4b-ad39-0ac10e60e5ac",
+  "task_id": "25d13ca6-253f-55e2-962a-095123759666",
+  "channel": "C0C1Q8D0B6K",
+  "thread_ts": "1789623896.494609",
+  "turns": [
+    {
+      "id": "e83b8c0b-56fe-5963-bb21-ddfd3dd594dc",
+      "status": "completed",
+      "response": {
+        "usage": {
+          "input_tokens": 32747,
+          "output_tokens": 52,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 0
+        },
+        "decision": {
+          "say": "운영 검증 계산을 확인 중입니다.",
+          "tools": [
+            {
+              "name": "calculate",
+              "arguments": {
+                "expression": "7+5"
+              }
+            }
+          ],
+          "status": "continue",
+          "memories": [],
+          "messages": [],
+          "artifacts": [],
+          "follow_up": null,
+          "delegations": []
+        },
+        "provider": "codex",
+        "thread_id": "01a0ae06-fdcd-7571-8f44-151ce3a7f47d",
+        "request_id": "e83b8c0b-56fe-5963-bb21-ddfd3dd594dc"
+      }
+    },
+    {
+      "id": "d804ef9d-d62c-536b-9219-e884e9ea8971",
+      "status": "completed",
+      "response": {
+        "usage": {
+          "input_tokens": 32962,
+          "output_tokens": 80,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 0
+        },
+        "decision": {
+          "say": "운영 검증 완료: calculate 반환 결과는 7+5=12입니다.\n현재 알림 설정에 따라 총괄의 최종 결과·확인 요청에는 서버가 요청자를 태그하고, 중간 진행에는 태그하지 않습니다.",
+          "tools": [],
+          "status": "complete",
+          "memories": [],
+          "messages": [],
+          "artifacts": [],
+          "follow_up": null,
+          "delegations": []
+        },
+        "provider": "codex",
+        "thread_id": "01a0ae07-18ce-7993-8e8c-37f5b08035d9",
+        "request_id": "d804ef9d-d62c-536b-9219-e884e9ea8971"
+      }
+    }
+  ],
+  "tool_receipt": {
+    "request": {
+      "name": "calculate",
+      "arguments": {
+        "expression": "7+5"
+      }
+    },
+    "receipt": {
+      "expression": "7+5",
+      "result": "12",
+      "tool": "decimal-calculator-v1"
+    }
+  },
+  "deliveries": [
+    {
+      "id": "72f69303-4bbe-4009-9b1e-f5ed2e9f50d8",
+      "text": "운영 검증 계산을 확인 중입니다.",
+      "status": "delivered",
+      "sent_ts": "1789626095.569159"
+    },
+    {
+      "id": "63c41a1f-8185-4f83-a738-2b9632585f04",
+      "text": "<@U0C250E23NW>\n운영 검증 완료: calculate 반환 결과는 7+5=12입니다.\n현재 알림 설정에 따라 총괄의 최종 결과·확인 요청에는 서버가 요청자를 태그하고, 중간 진행에는 태그하지 않습니다.",
+      "status": "delivered",
+      "sent_ts": "1789626102.840479"
+    }
+  ],
+  "slack_readback": [
+    {
+      "ts": "1789626095.569159",
+      "user": "U0C23PPKR5L",
+      "text": "[지시 v2] 운영 검증 계산을 확인 중입니다."
+    },
+    {
+      "ts": "1789626102.840479",
+      "user": "U0C23PPKR5L",
+      "text": "[지시 v2] <@U0C250E23NW>\n운영 검증 완료: calculate 반환 결과는 7+5=12입니다.\n현재 알림 설정에 따라 총괄의 최종 결과·확인 요청에는 서버가 요청자를 태그하고, 중간 진행에는 태그하지 않습니다."
+    }
+  ],
+  "scope": "Real Codex calculation progress and final answer; owner mention verified by Slack readback. Clarification, blockers and maintenance notifications covered by PostgreSQL regression tests. No device push notification or read acknowledgement verified."
+}

@@ -1,0 +1,9 @@
+{
+  "operator_acceptance": true,
+  "new_slack_ingress": false,
+  "request": {
+    "project_id": "32aa8d56-18fd-5c4b-ad39-0ac10e60e5ac",
+    "task_id": "25d13ca6-253f-55e2-962a-095123759666",
+    "duplicate": false
+  }
+}
