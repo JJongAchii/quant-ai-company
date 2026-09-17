@@ -129,6 +129,39 @@ async def test_budget_wait_is_reported_once_without_increasing_the_cap(company):
 
 
 @pytest.mark.integration
+@pytest.mark.parametrize('reason', ['company_work_has_priority', 'daily_model_budget'])
+async def test_resumed_review_reports_completion_instead_of_its_previous_wait(company, reason):
+    company.settings.company_max_daily_turns = 100
+    maintenance = runner(company)
+    project, receipt, _, _ = invoke(company, 'maintenance_review')
+    await maintenance.tick()
+    if reason == 'company_work_has_priority':
+        human = company.ingest(event_key='priority-task', text='Answer this first', owner='UHUMAN')
+    else:
+        with company.db.transaction() as conn:
+            conn.execute('UPDATE daily_usage SET reserved=100')
+    assert await maintenance.tick() == {'state': 'deferred', 'reason': reason}
+    if reason == 'company_work_has_priority':
+        turn = queued_turns(company, human['project_id'])[0]
+        company.prepare_turn(turn)
+        company.commit_turn(turn, ProviderResponse(request_id=turn, provider='fixture', decision=AgentDecision(
+            say='Priority request completed', status='complete')))
+    else:
+        with company.db.transaction() as conn:
+            conn.execute('UPDATE daily_usage SET reserved=0')
+    assert (await maintenance.tick())['state'] == 'advanced'
+    with company.db.transaction() as conn:
+        value = status(conn, company, company._project(conn, project['project_id']))['requests'][0]
+        assert value['state'] == 'done' and value['error'] is None
+        notices = conn.execute("SELECT text FROM outbox WHERE project_id=%s AND text LIKE '[개선 담당]%%'",
+                               (project['project_id'],)).fetchall()
+        assert sum('점검을 마쳤습니다' in n['text'] for n in notices) == 1
+        assert any('대기' in n['text'] for n in notices)  # Earlier wait notice remains historical evidence.
+        assert conn.execute('SELECT count(*) AS n FROM maintenance_calls WHERE job_id=%s',
+                            (receipt['request_id'],)).fetchone()['n'] == 1
+
+
+@pytest.mark.integration
 async def test_validation_failure_and_revision_change_are_not_silent(company):
     maintenance = runner(company)
     project, receipt, _, _ = invoke(company, "maintenance_review")

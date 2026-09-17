@@ -236,6 +236,26 @@ async def test_current_and_historical_states_are_distinct_citable_and_owner_scop
 
 
 @pytest.mark.integration
+async def test_already_invalidated_finding_completes_without_a_stale_wait_reason(company):
+    runner = make_maintainer(company)
+    await runner.tick()
+    with company.db.transaction() as conn:
+        case = conn.execute("SELECT * FROM maintenance_jobs WHERE kind='repair'").fetchone()
+        job = conn.execute("SELECT * FROM maintenance_jobs WHERE kind='triage'").fetchone()
+        assess(conn, case_id=case['id'], disposition='invalidated', reason='Original hypothesis disproved',
+               evidence={'request_digest': digest(job['payload'])})
+        conn.execute("UPDATE maintenance_jobs SET state='triage',error='daily_model_budget' WHERE id=%s",
+                     (job['id'],))
+    runner.store.finish_triage(job, Triage(finding=case['payload']['finding'], reason='No new failure'))
+    with company.db.transaction() as conn:
+        current = conn.execute('SELECT * FROM maintenance_jobs WHERE id=%s', (job['id'],)).fetchone()
+        assert current['state'] == 'done' and current['error'] is None
+        assert current['receipt']['reason'] == 'No new failure after case assessment.'
+        assert conn.execute('SELECT payload FROM maintenance_jobs WHERE id=%s',
+                            (case['id'],)).fetchone()['payload'] == case['payload']
+
+
+@pytest.mark.integration
 @pytest.mark.parametrize('drift', ['code', 'configuration'])
 async def test_drift_archives_original_requests_and_rechecks_before_patch(company, drift):
     runner = make_maintainer(company)
