@@ -147,6 +147,10 @@
     {
       "path": "docs/project/evidence/conversation-finance-server-http.json",
       "sha256": "1baa6b08572e93171bdebd799be5cd87153839752676e8a83e6f3e6938dcbc62"
+    },
+    {
+      "path": "docs/project/evidence/conversation-finance-system-verification.json",
+      "sha256": "7f2a2397fa5a70cb04db32d161665e702707e6a2c3ff1f1b8f8941ea35386f82"
     }
   ]
 }
