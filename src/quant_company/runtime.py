@@ -32,13 +32,14 @@ def make_worker(client, company, executor=None):
 
 
 async def dispatch_once(client, company):
-    if company.settings.company_staff_development_enabled:
+    if company.settings.company_staff_development_enabled and not getattr(company, "_staff_workflow_started", False):
         try:
             await client.start_workflow(StaffDevelopmentWorkflow.run, id="company-staff-development-v1",
                                         task_queue=company.settings.temporal_task_queue,
                                         id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
         except WorkflowAlreadyStartedError:
             pass
+        company._staff_workflow_started = True
     turns = await asyncio.to_thread(company.pending_starts)
     for turn in turns:
         try:
