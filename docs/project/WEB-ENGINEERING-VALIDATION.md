@@ -30,7 +30,7 @@
   원문 URL·해시와 산출물 해시를 기록한다. 실행 스크립트는 `scripts/qualify_web_research.py`다.
 - [로컬 검사 영수증](evidence/web-engineering-local-tests.json): 전체 295개 통과, 명시적 skip 1개와
   live 검사 제외 1개. 이후 CI 로그 수집 경로를 보완하고 관련 14개 검사를 통과했다.
-- [설계 결정](../adr/0022-web-research-and-engineering-maintenance.md),
+- [설계 결정](../adr/0023-web-research-and-engineering-maintenance.md),
   [도구 동작과 한계](../web-research.md), [개선 BOT 운영](../maintenance.md).
 
 ## 운영 반영 시
