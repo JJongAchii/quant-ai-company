@@ -1,0 +1,38 @@
+{
+  "before_commit": "73642d846a5a558e8be2adc2ef9b88999d569b32",
+  "fixed_commit": "9e652b297a85ba3cd3aed360ac8c2bf7439036ea",
+  "observed_host_roles": {
+    "uid": 0,
+    "gid": 0,
+    "mode": "0444"
+  },
+  "failure": "Existing atomic replacement changed the root-owned mounted roles file to 0600, preventing UID 10001 services from reading it.",
+  "reproduced_cases": [
+    "normal cutover",
+    "rollback after unhealthy candidate",
+    "interrupted cutover recovery"
+  ],
+  "reproduction_summary": "3 failed, 4 deselected in 0.07s",
+  "local_tests": {
+    "tests": 26,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "log_sha256": {
+    "release-permissions-before.log": "177526b2c2d3a61da391b5f3c17489904f29e1906216442adaa96427da00fc7c",
+    "release-permissions-after.xml": "770322c5d64fe4d7b6e65fccf971680a390a79215b30e15ad68c45d135f315c3"
+  },
+  "ci": {
+    "conclusion": "success",
+    "headSha": "9e652b297a85ba3cd3aed360ac8c2bf7439036ea",
+    "startedAt": "2026-09-17T06:40:08Z",
+    "status": "completed",
+    "updatedAt": "2026-09-17T06:41:54Z",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35190845838",
+    "pytest_summary": [
+      "2026-09-17T06:41:51.1056485Z 307 passed, 1 skipped, 1 deselected, 2 warnings in 76.48s (0:01:16)"
+    ]
+  },
+  "scope": "Filesystem integration tests and observed production permissions; no intentional production failure was performed."
+}

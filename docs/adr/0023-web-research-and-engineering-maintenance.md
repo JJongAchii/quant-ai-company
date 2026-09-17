@@ -1,6 +1,6 @@
 # Web research and engineering maintenance
 
-Status: implemented and locally validated; production rollout pending. User request: PR #16 must actually enable external research, and the maintenance BOT must investigate, implement and verify improvements rather than stop at a design proposal.
+Status: deployed and production web research validated on 2026-09-17 at `0e96fe8d0197ea8278f53e095482f6c75eeae603`. User request: PR #16 must actually enable external research, and the maintenance BOT must investigate, implement and verify improvements rather than stop at a design proposal.
 
 ## Decision
 
@@ -15,4 +15,4 @@ The maintenance service distinguishes explicit feature requests from diagnosis a
 - A maintenance feature request can inspect missing implementation context, add a module and meaningful regression, consume failed-CI diagnostics, and produce a passing candidate without replacing the goal with a design document.
 - Native shell/MCP/app execution, credential access, deployment-policy edits, self-approval and automatic paid fallback remain outside the maintenance candidate executor.
 
-The [acceptance record](../project/WEB-ENGINEERING-VALIDATION.md) distinguishes deterministic tests, simulated model/GitHub transport and actual subscription/network execution. Slack dispatch and production rollout are not included in this acceptance. Documentation CI alone is not completion.
+The [acceptance record](../project/WEB-ENGINEERING-VALIDATION.md) distinguishes deterministic tests, simulated model/GitHub transport and actual production subscription/network execution. The owner-approved rollout includes the runtime, active-role web tools and a repair preserving mounted configuration permissions during maintenance cutover and rollback. Production acceptance used the operator API and existing Temporal workers, fetched three originals and completed a cited Korean answer; it did not dispatch Slack messages. A new maintenance-generated code PR and deployment were not live-tested in this acceptance. Documentation CI alone is not completion.

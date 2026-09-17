@@ -1,0 +1,346 @@
+{
+  "state": "passed",
+  "commit": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+  "checked_at": "2026-09-17T06:50:21.325984+00:00",
+  "containers": [
+    {
+      "name": "/quant-company-postgres-1",
+      "revision": null,
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restarts": 0
+    },
+    {
+      "name": "/quant-company-api-1",
+      "revision": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restarts": 0
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "revision": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restarts": 0
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "revision": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restarts": 0
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "revision": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restarts": 0
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "revision": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restarts": 0
+    },
+    {
+      "name": "/quant-company-maintenance-1",
+      "revision": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restarts": 0
+    }
+  ],
+  "maintenance": {
+    "code_commit": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+    "enabled": true,
+    "max_investigation_rounds": 4,
+    "max_patch_attempts": 3,
+    "workflow_status": "RUNNING",
+    "heartbeat_at": "2026-09-17 06:48:01.365869+00:00",
+    "max_daily_calls": 0
+  },
+  "release_timer": "active",
+  "backup_timer": "active",
+  "roles_mode": "0o444",
+  "roles_sha256": "ec34636378586e157910aec73ee74ab6f598e67a41f39ee6c52cbee821da867a",
+  "live_request": {
+    "project_id": "833cbd07-6092-52f5-8c22-d072a00d4d01",
+    "task_id": "df8a293d-6626-562c-b1b1-a2622cb4493d",
+    "duplicate": false
+  },
+  "slack_dispatched": false,
+  "sources": [
+    {
+      "id": "web:758aa20d991c4e5dbd44e5f1",
+      "uri": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+      "original_sha256": "40244e21742f3cd12cb086947510240e6335b073edc810dda6658da3151eca40",
+      "retrieved_at": "2026-09-17T06:47:48.859885+00:00"
+    },
+    {
+      "id": "web:153c504c649dcb3ad456fe2f",
+      "uri": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a1.htm",
+      "original_sha256": "9b2eae67c4df3c4a191ebcaa7ad847fe06f5af2361a7af332ed9a1308e6b6bfa",
+      "retrieved_at": "2026-09-17T06:47:49.253475+00:00"
+    },
+    {
+      "id": "web:6e704fa780b93000576d46fb",
+      "uri": "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20260916.htm",
+      "original_sha256": "4c029d281984f40b791178cfb07932e87d5ae5dbf43c0e9a799ac67e9b49e7ee",
+      "retrieved_at": "2026-09-17T06:47:49.651897+00:00"
+    }
+  ],
+  "runtime_facts": {
+    "code_commit": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+    "roles_digest": "35820ece4500a83480c55d736876dfeb4f9786f27e7ac0d9af2d000e609ceed0",
+    "config_digest": "57d55a90d568222826b9128f1bec8eea450f81932399c46b46e573341ea4440c",
+    "configuration": {
+      "model_provider": "codex",
+      "model_id_meaning": "Configured model IDs sent with requests; not provider-side model attestation.",
+      "employees": [
+        {
+          "id": "director",
+          "name": "총괄",
+          "active": true,
+          "model": "gpt-6-astra",
+          "version": "6",
+          "tools": [
+            "calculate",
+            "knowledge_search",
+            "read_source",
+            "company_history",
+            "maintenance_review",
+            "maintenance_status",
+            "system_status",
+            "repository_read",
+            "finance_search",
+            "finance_read",
+            "web_search",
+            "web_read"
+          ],
+          "can_delegate_to": [
+            "financial_strategist",
+            "researcher_kr",
+            "data"
+          ]
+        },
+        {
+          "id": "financial_strategist",
+          "name": "금융전략",
+          "active": true,
+          "model": "gpt-6-astra",
+          "version": "4",
+          "tools": [
+            "calculate",
+            "knowledge_search",
+            "read_source",
+            "finance_search",
+            "finance_read",
+            "web_search",
+            "web_read"
+          ],
+          "can_delegate_to": [
+            "researcher_kr",
+            "data"
+          ]
+        },
+        {
+          "id": "researcher_kr",
+          "name": "국내시장 연구",
+          "active": true,
+          "model": "gpt-5.6-sol",
+          "version": "4",
+          "tools": [
+            "calculate",
+            "knowledge_search",
+            "read_source",
+            "finance_search",
+            "finance_read",
+            "web_search",
+            "web_read"
+          ],
+          "can_delegate_to": [
+            "financial_strategist",
+            "data"
+          ]
+        },
+        {
+          "id": "researcher_global",
+          "name": "글로벌시장 연구",
+          "active": false,
+          "model": "gpt-5.6-sol",
+          "version": "2",
+          "tools": [
+            "calculate",
+            "knowledge_search",
+            "read_source"
+          ],
+          "can_delegate_to": [
+            "financial_strategist",
+            "data",
+            "engineer"
+          ]
+        },
+        {
+          "id": "researcher_crypto",
+          "name": "가상자산 연구",
+          "active": false,
+          "model": "gpt-5.6-sol",
+          "version": "2",
+          "tools": [
+            "calculate",
+            "knowledge_search",
+            "read_source"
+          ],
+          "can_delegate_to": [
+            "financial_strategist",
+            "data",
+            "engineer"
+          ]
+        },
+        {
+          "id": "data",
+          "name": "데이터",
+          "active": true,
+          "model": "gpt-5.6-terra",
+          "version": "6",
+          "tools": [
+            "calculate",
+            "knowledge_search",
+            "read_source",
+            "lake_catalog",
+            "lake_describe",
+            "lake_sample",
+            "finance_search",
+            "finance_read",
+            "web_search",
+            "web_read"
+          ],
+          "can_delegate_to": []
+        },
+        {
+          "id": "engineer",
+          "name": "퀀트 개발",
+          "active": false,
+          "model": "gpt-5.6-sol",
+          "version": "2",
+          "tools": [
+            "calculate",
+            "knowledge_search",
+            "read_source"
+          ],
+          "can_delegate_to": [
+            "data",
+            "operations"
+          ]
+        },
+        {
+          "id": "validator",
+          "name": "독립 검증",
+          "active": false,
+          "model": "gpt-6-astra",
+          "version": "2",
+          "tools": [
+            "calculate",
+            "knowledge_search",
+            "read_source"
+          ],
+          "can_delegate_to": [
+            "data"
+          ]
+        },
+        {
+          "id": "risk",
+          "name": "포트폴리오·리스크",
+          "active": false,
+          "model": "gpt-6-astra",
+          "version": "2",
+          "tools": [
+            "calculate",
+            "knowledge_search",
+            "read_source"
+          ],
+          "can_delegate_to": [
+            "financial_strategist",
+            "data",
+            "validator"
+          ]
+        },
+        {
+          "id": "operations",
+          "name": "플랫폼 운영",
+          "active": false,
+          "model": "gpt-5.6-terra",
+          "version": "2",
+          "tools": [
+            "calculate",
+            "knowledge_search",
+            "read_source"
+          ],
+          "can_delegate_to": []
+        }
+      ],
+      "capabilities": {
+        "system_status": "Director only: {}. Shared current GitHub, deployed process/configuration, case corrections and scoped verification receipts. Check before claiming a current gap.",
+        "repository_read": "Director only: {query?: short keywords, path?: repository path, commit?: SHA, start_line?: int, line_count?: 1..200}. Read/search exact cached company source, tests and docs. No Git writes or credentials. Missing/old snapshot means unknown.",
+        "owner_daily_limits": "Authenticated Slack owner commands: '전체 일일 한도 해제', '회사 공통 한도 해제', '개선BOT 한도 해제'. Deterministic, no model call. Optional '해제하고 <diagnosis request>' also queues a review. A question or quoted command does not change policy.",
+        "knowledge_search": "{query: string}, no other arguments. Approved stored sources only; not internet search.",
+        "web_search": "{query: string, limit?: 1..8}. Live external search using the Codex subscription. Results are unverified candidates; read relevant originals with web_read before citing.",
+        "web_read": "{url: public HTTPS URL}. Read a public HTML/text original. Returns a project source_id, original URL, content, links, retrieval time, nullable publication metadata and content hash. Read further text using read_source and next_offset. Failures are not evidence.",
+        "finance_search": "{query: short keywords}. Search a small curated official-document catalog, not the entire web. Returns candidates, not verified/read sources.",
+        "finance_read": "{document_id: exact catalog ID} OR {url: HTTPS URL on allowed official host}. Fetch one HTML original per turn. Hosts: regulation.krx.co.kr, www.finra.org, www.investor.gov, www.federalreserve.gov, www.bis.org. Receipt includes source_id, URL, publisher, jurisdiction, retrieved_at, nullable published_at, original hash, content and next_offset. Failed fetches are not evidence. No PDF or login/paywall bypass.",
+        "conversation_control": "Same-thread owner followups to the director are interpreted before old results can publish. Questions preserve work; amendments supersede old work; ambiguity asks one question and holds work. Explicit 중단해, 이어서 진행해, 상태 use no model. Controls apply to this thread only. In-flight Slack deliveries may already arrive.",
+        "owner_mentions": "The server mentions the thread owner on the director's final answer, clarification/blocker, maintenance review request and final application result. Progress, delegation and employee messages do not notify the owner. Do not write Slack mention syntax yourself. For a question requiring the owner's answer or approval, put the question in say and finish with status=complete; do not continue tools, delegation or scheduled work while awaiting that answer.",
+        "company_history": "Director only: {query?: string, limit?: 1..20}. Reads the owner's recorded requests/results in authorized Slack channels over the last 30 days. Use for past requests, not knowledge_search. Returns a citable source and truncation flags.",
+        "maintenance_review": "Director only: {}. Queues the current human request for the maintenance service. It reports progress, budget waits, results or blockers to this thread. A returned request_id proves receipt, not completion. No merge/deploy approval is granted.",
+        "maintenance_status": "Director only: {}. Reads real maintenance status and requests for this thread. TASK DATA maintenance is a current snapshot. The maintainer is a background service, not an employee in can_delegate_to. Do not ask users to paste stored history.",
+        "read_source": "{source_id, offset?: nonnegative int}. Read 12000 characters of a registered source; next_offset identifies remaining text. Use web_read for a new public URL.",
+        "calculate": "Bounded numeric arithmetic; not arbitrary code or backtests.",
+        "data_lake": {
+          "enabled": true,
+          "uri": "s3://insight-invest-datalake/qdata",
+          "employee": "data",
+          "operations": "lake_catalog {} lists datasets; lake_describe {dataset} reads date bounds; lake_sample {dataset, columns?, limit?} reads at most 20 physical sample rows.",
+          "scope": "Read-only metadata and bounded samples; no arbitrary SQL, full scans or backtests. Data questions require fresh tool receipts. Delegate to data when not authorized."
+        },
+        "external_web_search": true,
+        "research_worker_submission": false,
+        "strategy_code_execution": false,
+        "live_trading": false,
+        "paid_api_fallback": false,
+        "maintenance_approval": "In a thread containing a delivered maintenance PR notice, the authorized owner can say 반영해 or PR #N 반영해. Slack records approval for that exact candidate without a model call. The maintenance service checks and merges it; code changes go to the host release worker. Use application receipts for completion; never claim success from the user's approval alone."
+      },
+      "limits": {
+        "daily_model_turns": null,
+        "daily_limit_meaning": "null means no service daily quota; subscription quotas still apply.",
+        "task_turns": 8,
+        "delegation_depth": 3,
+        "project_model_tasks": 40
+      },
+      "maintenance": {
+        "enabled": true,
+        "daily_model_call_cap": null
+      }
+    }
+  },
+  "temporary_image_cleanup": {
+    "removed_unused_task_images": [
+      "quant-company:73642d846a5a558e8be2adc2ef9b88999d569b32",
+      "quant-company-codex:73642d846a5a558e8be2adc2ef9b88999d569b32",
+      "quant-company-maintenance:73642d846a5a558e8be2adc2ef9b88999d569b32"
+    ],
+    "free_disk_before_bytes": 3902341120,
+    "free_disk_after_bytes": 5721481216,
+    "retained_active_release": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+    "retained_previous_release": "380e5a24b89f48beeedff1cf7c9f97b870ed702f"
+  }
+}
