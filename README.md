@@ -17,6 +17,10 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 [Temporal 연결](docs/project/TEMPORAL-CONNECTION.json)에 증거를 구분합니다.
 배포 후 운영 정보 전달 보완은 [추가 검증](docs/project/RUNTIME-CONTEXT-VALIDATION.json)에,
 현재 업무 범위와 후속 구현 순서는 [다음 단계](docs/project/NEXT-STEPS.md)에 기록합니다.
+자연어 지시 변경·공식자료 읽기는 운영에 반영했습니다. 별도 운영자 테스트 스레드에서 실제
+구독 모델의 네 직원 협업, 중간 지시 변경, 원문·S3 메타데이터 조회와 최종 Slack 답변을 확인했습니다.
+[후속 운영 인수](docs/project/CONVERSATION-FINANCE-VALIDATION.json)에 자동 테스트 입력과
+실제 모델·Slack 결과를 구분합니다. 회사의 새 코드·설계·검증 기록은 이 저장소에서만 관리합니다.
 데이터 연결은 실제 사용자 Slack 요청으로 확인했습니다. 첫 시도의 출처 ID 누락을 수정하고
 같은 스레드에서 재조회·직원 산출물·총괄 답변 게시까지 검증했습니다. 이전 실패 기록은 보존합니다.
 

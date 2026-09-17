@@ -1,0 +1,14 @@
+{
+  "removed_preview_image_tags": [
+    "quant-company:d1817ab5617a9d1d64117fbf6fe4a9203ab05b64",
+    "quant-company-codex:d1817ab5617a9d1d64117fbf6fe4a9203ab05b64",
+    "quant-company-maintenance:d1817ab5617a9d1d64117fbf6fe4a9203ab05b64"
+  ],
+  "current_release": "bebe87d2db24c3a8526bf879bbf0d078986a40c6",
+  "scope": "Only this session unused preview image tags and unused build cache; no state, backups, containers or deployed/rollback image tags removed",
+  "free_bytes_before": 7044571136,
+  "free_bytes_after": 17600040960,
+  "build_cache_result": [
+    "Total:\t10.6GB"
+  ]
+}
