@@ -173,3 +173,60 @@ def test_search_respects_company_budget(company):
     assert exc.value.code == "busy"
     with company.db.transaction() as conn:
         assert conn.execute("SELECT count(*) AS n FROM web_requests").fetchone()["n"] == 0
+
+
+async def test_multiple_queries_share_budget_and_deduplicate_one_turn(company):
+    company.roles['director'].tools.append('web_search')
+    request = company.ingest(event_key='web-batch', text='Compare two current sources', owner='user')
+    turn = queued_turns(company, request['project_id'])[0]
+    company.prepare_turn(turn)
+    response = ProviderResponse(request_id=turn, decision=AgentDecision(status='continue', say='', tools=[
+        {'name': 'web_search', 'arguments': {'query': query}} for query in ['first', 'second', 'first']]))
+
+    class Provider:
+        calls = []
+
+        async def run(self, request):
+            self.calls.append(request.request_id)
+            return candidates(request.request_id)
+
+    provider = Provider()
+    await prefetch(company, turn, response, provider)
+    assert len(provider.calls) == len(set(provider.calls)) == 2
+    with company.db.transaction() as conn:
+        assert conn.execute('SELECT reserved FROM daily_usage').fetchone()['reserved'] == 3
+        assert conn.execute('SELECT count(*) AS n FROM web_requests').fetchone()['n'] == 2
+
+
+async def test_revision_change_cancels_child_search_without_registering_evidence(company):
+    import asyncio
+
+    company.roles['director'].tools.append('web_search')
+    request = company.ingest(event_key='web-cancel', text='Find current evidence', owner='user')
+    turn = queued_turns(company, request['project_id'])[0]
+    started = asyncio.Event()
+
+    class Provider:
+        cancelled = []
+        child = None
+
+        async def run(self, request):
+            if request.web_search:
+                self.child = request.request_id
+                started.set()
+                await asyncio.Event().wait()
+            return ProviderResponse(request_id=request.request_id, decision=AgentDecision(
+                say='', status='continue', tools=[{'name': 'web_search', 'arguments': {'query': 'latest'}}]))
+
+        async def cancel(self, identity):
+            self.cancelled.append(identity)
+
+    provider = Provider()
+    task = asyncio.create_task(TurnExecutor(company, provider).execute(turn))
+    await asyncio.wait_for(started.wait(), 5)
+    with company.db.transaction() as conn:
+        conn.execute('UPDATE projects SET revision=revision+1 WHERE id=%s', (request['project_id'],))
+    assert await asyncio.wait_for(task, 5) == {'state': 'stale'}
+    assert provider.child in provider.cancelled
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM sources WHERE id LIKE 'web:%%'").fetchone()['n'] == 0

@@ -43,7 +43,13 @@ The child gets only `PATH`, `HOME`, `LANG`, `LC_ALL`, `TZ`, `CODEX_HOME` and
 and set untrusted using a top-level `projects={...}` TOML override (the pinned
 CLI rejects a quoted path in a dotted override key). Project instructions are disabled, and the CLI uses a read-only
 sandbox. Shell, hooks, apps, plugins, MCP configuration, browser/computer,
-subagents, host skills, memory generation and web search are disabled. No
+subagents, host skills and memory generation are disabled. Ordinary employee and maintenance proposal
+turns also disable native web search. A service-authorized `ProviderRequest.web_search=true` enables
+live search and its code-mode bridge for a separate durable, budgeted discovery call.
+CLI 0.154.0 needs all three bridge flags (`code_mode`, `code_mode_host`, `code_mode_only`)
+for the configured Responses Lite models; `web_search="live"` alone exposes no usable search.
+The event parser accepts only completed native search items in that scope, including the pinned
+CLI's duplicate item/call ID transport quirk. Other executable event types remain rejected. No
 dangerous sandbox or hook-trust bypass is used. Container isolation remains
 necessary: CLI configuration is not a substitute for withholding host secrets.
 

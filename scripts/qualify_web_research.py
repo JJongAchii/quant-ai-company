@@ -4,6 +4,7 @@ import argparse
 import asyncio
 import json
 import os
+import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
@@ -31,6 +32,9 @@ async def qualify(output):
     connection['dbname'] = database
     report = {'started_at': datetime.now(UTC).isoformat(), 'state': 'failed', 'live_codex': True,
               'live_web': True, 'slack_dispatched': False, 'turns': []}
+    report['code_commit'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+    report['uncommitted_code'] = bool(subprocess.check_output(
+        ['git', 'diff', 'HEAD', '--', 'src', 'scripts/qualify_web_research.py'], text=True))
     try:
         company = Company(Settings(database_url=make_conninfo(**connection), company_max_task_turns=8,
                                    company_max_daily_turns=16))
@@ -59,7 +63,9 @@ async def qualify(output):
             sources = conn.execute("SELECT id,title,uri,metadata FROM sources WHERE id LIKE 'web:%%'").fetchall()
             artifacts = conn.execute('SELECT title,content,source_ids FROM artifacts').fetchall()
             tasks = conn.execute('SELECT agent,status,error FROM tasks').fetchall()
+            answers = conn.execute("SELECT text FROM messages WHERE kind='answer' ORDER BY created_at").fetchall()
         report.update(web_requests=calls, sources=sources, artifacts=artifacts, tasks=tasks,
+                      answers=answers,
                       completed_at=datetime.now(UTC).isoformat())
         native = any(row['operation'] == 'web_search' and (row['receipt'] or {}).get('search_events') for row in calls)
         source_ids = {s['id'] for s in sources}

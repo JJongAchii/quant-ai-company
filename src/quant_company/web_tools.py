@@ -98,7 +98,7 @@ def prepare(company, turn_id, decision):
                     VALUES (%s,%s,%s,%s,%s) RETURNING *""",
                                      (identity, turn_id, action.name, Jsonb(args),
                                       Jsonb(provider_request) if provider_request else None)).fetchone()
-            if saved["receipt"] is None:
+            if saved["receipt"] is None and not any(item["id"] == identity for item in pending):
                 pending.append(saved)
         return pending
 

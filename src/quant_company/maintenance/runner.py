@@ -170,7 +170,7 @@ class Maintainer:
                 self.store.save(job_id, "triage", payload=payload)
             round_number = payload.get("investigation_round", 0)
             inspected = payload.get("investigation_evidence", [])[-4:]
-            external = payload.get("investigation_external", [])[-4:]
+            external = [item for item in payload.get("investigation_external", []) if not item.get("omitted")][-4:]
             result = await self.propose(job, "triage" + (f"-i{round_number}" if round_number else ""), {
                 "observations": payload["observations"], "editable_paths": payload["snapshot"]["paths"],
                 "history": payload.get("review", {}),
