@@ -1,6 +1,7 @@
 """Authenticated Slack approval -> durable, exact-candidate application. No model calls."""
 
 import re
+from decimal import Decimal
 from uuid import NAMESPACE_URL, uuid5
 
 import httpx
@@ -25,7 +26,7 @@ def notify(company, conn, project, identity, text):
                          message_id=message_id)
 
 
-def accept_approval(company, *, text, owner, channel, thread_ts, event_key):
+def accept_approval(company, *, text, owner, channel, thread_ts, event_key, event_ts=None):
     recognized, number = approval_command(text)
     if not recognized:
         return None
@@ -42,8 +43,14 @@ def accept_approval(company, *, text, owner, channel, thread_ts, event_key):
               SELECT 1 FROM jsonb_array_elements(j.payload->'observations') x
               WHERE x->>'project_id'=%s) ORDER BY j.created_at DESC""", (str(project["id"]),)).fetchall()
         # Only a PR actually announced in this thread can be approved implicitly.
-        jobs = [j for j in jobs if conn.execute("SELECT 1 FROM outbox WHERE id=%s AND status='delivered'", (
-            str(uuid5(NAMESPACE_URL, f"maintenance-pr:{j['id']}:{project['id']}")),)).fetchone()]
+        announced = []
+        for job in jobs:
+            notice = conn.execute("SELECT sent_ts FROM outbox WHERE id=%s AND status='delivered'", (
+                str(uuid5(NAMESPACE_URL, f"maintenance-pr:{job['id']}:{project['id']}")),)).fetchone()
+            if notice and (event_ts is None or (notice['sent_ts'] is not None
+                                               and Decimal(notice['sent_ts']) < Decimal(event_ts))):
+                announced.append(job)
+        jobs = announced
         if number:
             jobs = [j for j in jobs if j["receipt"]["pr"]["number"] == number]
         else:

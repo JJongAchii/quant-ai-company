@@ -25,7 +25,7 @@ def pending(company, *, project=None, number=3):
         message_id = str(uuid5(NAMESPACE_URL, f'maintenance-pr:{identity}:{project}'))
         company._message(conn, company._project(conn, project), None, 'director', 'maintenance',
                          'Review PR', message_id=message_id)
-        conn.execute("UPDATE outbox SET status='delivered' WHERE id=%s", (message_id,))
+        conn.execute("UPDATE outbox SET status='delivered',sent_ts='1.2' WHERE id=%s", (message_id,))
     return identity, project
 
 
@@ -73,6 +73,20 @@ def test_two_prs_require_target_and_other_thread_cannot_approve(company):
     with company.db.transaction() as conn:
         row = conn.execute('SELECT job_id FROM maintenance_applications').fetchone()
         assert str(row['job_id']) == second
+
+
+@pytest.mark.integration
+def test_delayed_slack_approval_cannot_select_pr_announced_after_it(company):
+    first, project = pending(company)
+    second, _ = pending(company, project=project, number=4)
+    with company.db.transaction() as conn:
+        notice = str(uuid5(NAMESPACE_URL, f'maintenance-pr:{second}:{project}'))
+        conn.execute("UPDATE outbox SET sent_ts='3.3' WHERE id=%s", (notice,))
+    result = accept_approval(company, text='반영해', owner='UHUMAN', channel='CQUANT', thread_ts='1.1',
+                             event_key='slack:TTEST:CQUANT:2.2:director', event_ts='2.2')
+    assert result['maintenance_approval'] == 'approved'
+    with company.db.transaction() as conn:
+        assert str(conn.execute('SELECT job_id FROM maintenance_applications').fetchone()['job_id']) == first
 
 
 class Merger:

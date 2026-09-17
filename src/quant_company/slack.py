@@ -86,7 +86,7 @@ class SlackIngress:
 
             approval = accept_approval(
                 self.company, text=text, owner=user, channel=channel, thread_ts=thread_ts,
-                event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}")
+                event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", event_ts=timestamp)
             if approval is not None:
                 return {"ok": True, **approval}
         revise = text.startswith(("수정:", "변경:", "revise:"))
