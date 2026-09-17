@@ -6,7 +6,8 @@ from uuid import uuid4
 import pytest
 from psycopg.types.json import Jsonb
 
-from quant_company.company import PolicyError
+from quant_company.company import Company, PolicyError
+from quant_company.config import Settings
 from quant_company.contracts import AgentDecision, ProviderResponse, ToolRequest
 from quant_company.maintenance.applications import accept_approval
 from quant_company.maintenance.requests import status
@@ -190,3 +191,27 @@ def test_existing_case_reports_its_pr_in_request_thread_before_approval_is_possi
     result = accept_approval(company, **kwargs)
     assert result["maintenance_approval"] == "approved"
     assert accept_approval(company, **kwargs)["duplicate"]
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize("service_name", ["worker", "maintenance"])
+def test_deployed_consumers_receive_same_owner_and_channel_scope_as_ingress(company, tmp_path, monkeypatch, service_name):
+    from deploy.test_deployment_contract import compose_config
+
+    runner(company)
+    env = tmp_path / "scope.env"
+    env.write_text('SLACK_ALLOWED_USERS=["UHUMAN"]\nSLACK_ALLOWED_CHANNELS=["CQUANT"]\n')
+    services = compose_config("maintenance", extra_env=env)["services"]
+    environment = services[service_name]["environment"]
+    for key in ("SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS"):
+        assert environment.get(key) == services["slack-socket"]["environment"][key]
+        monkeypatch.setenv(key, environment[key])
+    deployed = Company(Settings(database_url=company.settings.database_url), company.roles)
+    project = company.ingest(event_key="deployed-scope", owner="UHUMAN", text="Scope acceptance",
+                             channel="CQUANT", thread_ts="88.99")
+    with company.db.transaction() as conn:
+        task = conn.execute("SELECT * FROM tasks WHERE id=%s", (project["task_id"],)).fetchone()
+        receipt = deployed._tool(conn, project["project_id"], ToolRequest(name="maintenance_review", arguments={}), task=task)
+        assert receipt["accepted"] and receipt["service"]["enabled"]
+    # Sharing the public allowlists must not give these consumers Slack posting credentials.
+    assert "slack_credentials" not in {item["source"] for item in services[service_name]["secrets"]}

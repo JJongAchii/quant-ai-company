@@ -72,6 +72,7 @@ services:
       MODEL_RUNTIME_URL: http://codex-runtime:8080
       MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
       SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
     volumes:
       - ${STATE_DIR:-/var/lib/quant-company}/config/roles.json:/etc/quant-company/roles.json:ro
       - ${STATE_DIR:-/var/lib/quant-company}/config/maintenance.json:/etc/quant-company/maintenance.json:ro
@@ -180,6 +181,8 @@ services:
       MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
       AWS_SHARED_CREDENTIALS_FILE: /run/secrets/lake_read_credentials
       AWS_DEFAULT_REGION: ap-northeast-2
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
     secrets: [database_password, temporal_api_key, model_runtime_token, lake_read_credentials]
     networks: [core, model, service_egress]
     mem_limit: ${WORKER_MEMORY_LIMIT:-384m}
