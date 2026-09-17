@@ -232,12 +232,21 @@ def cli_prompt(request: ProviderRequest) -> bytes:
         "Produce one company AgentDecision. You have no execution tools. Propose only service tools "
         "from the contract; never claim you executed them. Return an object with exactly one string "
         "field decision_json. That string must contain a JSON object satisfying this schema:\n"
-        f"{schema}\n\nCompany task follows:\n{request.prompt}"
+        f"{schema}\n"
+        "Decision status rules, including cross-field constraints not expressed in JSON Schema: "
+        "Any tools require status=continue. Any delegations require status=wait. "
+        "status=wait requires at least one new delegation; do not use it just because a background "
+        "service is queued or budget-limited. After a maintenance request is accepted, report its "
+        "actual receipt/state with status=complete and no tools/delegations when no more lookup is needed. "
+        "This completes your dispatch/reporting task, not the maintenance analysis. "
+        "Completion needs nonempty say or an artifact.\n\n"
+        f"Company task follows:\n{request.prompt}"
     ).encode()
 
 
 def parse_result(request: ProviderRequest, process: ProcessResult, quota_retry_seconds: int) -> ProviderResponse:
     """Only a completed turn and valid typed final message can commit success."""
+    phase = "events"
     try:
         events = [strict_json(line) for line in process.stdout.splitlines() if line.strip()]
         if any(not isinstance(event, dict) for event in events):
@@ -278,10 +287,15 @@ def parse_result(request: ProviderRequest, process: ProcessResult, quota_retry_s
                     if event.get("type") == "item.completed" and event["item"].get("type") == "agent_message"]
         if not messages:
             raise ValueError("Missing final message")
+        phase = "envelope"
         envelope = strict_json(messages[-1])
         if not isinstance(envelope, dict) or set(envelope) != {"decision_json"}:
             raise ValueError("Missing decision envelope")
-        decision = AgentDecision.model_validate(strict_json(envelope["decision_json"]))
+        phase = "decision_json"
+        decision_value = strict_json(envelope["decision_json"])
+        phase = "decision_contract"
+        decision = AgentDecision.model_validate(decision_value)
+        phase = "usage"
         usage = completed[0].get("usage", {})
         if not isinstance(usage, dict):
             raise ValueError("Invalid usage")
@@ -292,16 +306,35 @@ def parse_result(request: ProviderRequest, process: ProcessResult, quota_retry_s
                 if type(value) is not int or not 0 <= value <= 2**53:
                     raise ValueError("Invalid token count")
                 token_usage[key] = value
+        phase = "thread_id"
         thread_ids = [event.get("thread_id") for event in events if event.get("type") == "thread.started"]
         thread_id = thread_ids[0] if thread_ids else None
         if thread_id is not None and (not isinstance(thread_id, str) or not re.fullmatch(r"[\w-]{1,128}", thread_id)):
             raise ValueError("Invalid thread ID")
+        phase = "response"
         result = ProviderResponse(request_id=request.request_id, decision=decision, thread_id=thread_id,
                                   usage=token_usage)
         json.dumps(result.model_dump(mode="json"), allow_nan=False)
         return result
-    except (ValueError, TypeError, KeyError, AttributeError, ValidationError):
-        raise ProviderFault("invalid_output", "Codex output did not satisfy the company decision contract.") from None
+    except (ValueError, TypeError, KeyError, AttributeError, ValidationError) as error:
+        # Only fixed service-owned labels enter the durable fault receipt. Never
+        # include model text, arbitrary field names, validation input or stderr.
+        reason = "invalid_shape"
+        rules = {
+            "Delegation requires waiting for child results": "delegation_requires_wait",
+            "Tool results must be examined in another turn": "tools_require_continue",
+            "Waiting requires a concrete delegation": "wait_requires_delegation",
+            "Completion requires a result": "empty_completion",
+            "Follow-up time must include a timezone": "follow_up_requires_timezone",
+        }
+        if isinstance(error, ValidationError):
+            for item in error.errors(include_url=False, include_input=False):
+                detail = str(item.get("ctx", {}).get("error", ""))
+                if detail in rules:
+                    reason = rules[detail]
+                    break
+        raise ProviderFault("invalid_output", "Codex output did not satisfy the company decision contract "
+                            f"({phase}:{reason}).") from None
 
 
 class CodexRunner:
