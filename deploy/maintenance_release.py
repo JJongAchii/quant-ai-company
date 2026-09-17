@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Root-owned release executor. No daemon on the Mac, Docker socket in a bot, or model shell."""
 
+import ast
 import fcntl
 import importlib.util
 import io
@@ -77,8 +78,9 @@ def unpack(data, target):
 
 def validate_tree(previous, target):
     # Load the policy from the installed release, never the candidate. No third-party dependencies.
-    protected = {'api.py', 'cli.py', 'config.py', 'contracts.py', 'db.py', 'schema.sql', 'slack.py', 'socket_mode.py',
-                 'system_state.py', 'owner_controls.py', 'state_schema.sql'}
+    protected = {'api.py', 'cli.py', 'config.py', 'db.py', 'schema.sql', 'socket_mode.py',
+                 'owner_controls.py', 'state_schema.sql', 'web_fetch.py', 'finance_sources.py', 'maintenance/policy.py',
+                 'maintenance/github.py', 'maintenance/applications.py', 'maintenance/releases.py', 'maintenance/schema.sql'}
 
     def inventory(root):
         output = {}
@@ -102,15 +104,29 @@ def validate_tree(previous, target):
                   and name not in {'docs/deployment.md', 'docs/codex-runtime.md'})
         is_test = re.fullmatch(r'tests/test_maintenance_regression_[a-z0-9_]+\.py', name)
         module = name.removeprefix('src/quant_company/')
-        is_code = (name.startswith('src/quant_company/') and '/' not in module and module not in protected
+        is_code = (name.startswith('src/quant_company/') and module not in protected and not module.startswith('providers/')
                    and (module.endswith('.py') or module == 'roles.json'))
-        if not (is_doc or is_test or (is_code and name in before)):
+        if not (is_doc or is_test or is_code):
             raise ValueError('release_protected_file_changed')
         if module == 'roles.json':
             def fixed(data):
-                return [{k: v for k, v in r.items() if k not in {'mission', 'instructions'}} for r in json.loads(data)]
+                return [{k: v for k, v in r.items() if k not in {'mission', 'instructions', 'tools'}} for r in json.loads(data)]
             if fixed(before[name]) != fixed(after[name]):
                 raise ValueError('release_role_permissions_changed')
+            old, new = json.loads(before[name]), json.loads(after[name])
+            if [r.get('tools', []) for r in old] != [r.get('tools', []) for r in new]:
+                if not any(p.startswith('src/') and p.endswith('.py') and before.get(p) != content for p, content in after.items()):
+                    raise ValueError('release_tool_registration_requires_code')
+                tree = ast.parse(after['src/quant_company/contracts.py'])
+                tool = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == 'ToolRequest')
+                field = next(node for node in tool.body if isinstance(node, ast.AnnAssign)
+                             and isinstance(node.target, ast.Name) and node.target.id == 'name')
+                values = field.annotation.slice
+                literals = values.elts if isinstance(values, ast.Tuple) else [values]
+                if not all(isinstance(v, ast.Constant) and isinstance(v.value, str) for v in literals):
+                    raise ValueError('release_explicit_tool_contract_required')
+                if any(not set(r.get('tools', [])) <= {v.value for v in literals} for r in new):
+                    raise ValueError('release_unknown_tool')
 
 
 def health(commit, postgres_id):
@@ -203,13 +219,15 @@ def execute(item):
         values = {'RELEASE_COMMIT': commit, 'QDATA_COMMIT': qcommit, 'QDATA_BUILD_CONTEXT': str(target/'qdata')}
         lines = [s for s in oldenv.decode().splitlines() if s.split('=', 1)[0] not in values]
         atomic(envfile, ('\n'.join(lines+[k+'='+v for k, v in values.items()])+'\n').encode())
-        # Preserve deployed model/permission overrides; replace only the approved prompts.
+        # Preserve deployed model/activation overrides; apply reviewed prompts and code-backed tool registrations.
         roles = json.loads(oldroles)
         original = {r['id']: r for r in json.loads((previous/'src/quant_company/roles.json').read_text())}
         candidate = {r['id']: r for r in json.loads((target/'src/quant_company/roles.json').read_text())}
         for role in roles:
-            for key in ['mission', 'instructions']:
-                if candidate[role['id']][key] != original[role['id']][key]:
+            for key in ['mission', 'instructions', 'tools']:
+                if candidate[role['id']].get(key) != original[role['id']].get(key):
+                    if key == 'tools' and role.get(key) != original[role['id']].get(key):
+                        raise ValueError('release_tool_override_requires_review')
                     role[key] = candidate[role['id']][key]
         atomic(rolesfile, json.dumps(roles, ensure_ascii=False).encode())
         link(target)

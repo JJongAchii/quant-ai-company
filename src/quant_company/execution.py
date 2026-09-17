@@ -58,7 +58,14 @@ class TurnExecutor:
         if prepared["state"] != "ready":
             return prepared
         request = ProviderRequest.model_validate(prepared["request"])
-        task = asyncio.create_task(self.provider.run(request))
+        async def infer_and_read():
+            from .web_tools import prefetch
+
+            response = await self.provider.run(request)
+            await prefetch(self.company, turn_id, response, self.provider)
+            return response
+
+        task = asyncio.create_task(infer_and_read())
         try:
             while not task.done():
                 await asyncio.wait({task}, timeout=1)
@@ -67,6 +74,10 @@ class TurnExecutor:
                 if not await asyncio.to_thread(self.company.is_current, turn_id):
                     with contextlib.suppress(ProviderFault, asyncio.TimeoutError):
                         await asyncio.wait_for(self.provider.cancel(turn_id), timeout=10)
+                    from .web_tools import cancel_pending
+
+                    with contextlib.suppress(ProviderFault, asyncio.TimeoutError):
+                        await asyncio.wait_for(cancel_pending(self.company, turn_id, self.provider), timeout=10)
                     task.cancel()
                     with contextlib.suppress(asyncio.CancelledError):
                         await task

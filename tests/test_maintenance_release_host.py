@@ -138,3 +138,33 @@ def test_interrupted_cutover_recovers_previous_release(tmp_path, monkeypatch):
     assert current.resolve() == previous and (state/'config/runtime.env').read_bytes() == oldenv
     assert reports[-1]['state'] == 'rolled_back'
     assert not any('build' in args for _, args in commands)
+
+
+def test_new_tool_module_and_registration_pass_both_review_boundaries(tmp_path):
+    from quant_company.maintenance.policy import Patch, apply_patch
+
+    role_path = 'src/quant_company/roles.json'
+    contract_path = 'src/quant_company/contracts.py'
+    module_path = 'src/quant_company/new_capability.py'
+    contract = 'from typing import Literal\nclass ToolRequest:\n    name: Literal["calculate"]\n'
+    roles = [{'id': 'director', 'active': True, 'model': 'unchanged', 'version': '1',
+              'mission': 'Analyze', 'instructions': 'Use evidence', 'tools': ['calculate'], 'can_delegate_to': []}]
+    originals = {role_path: json.dumps(roles), contract_path: contract}
+    roles[0]['tools'].append('new_capability')
+    changes = apply_patch(Patch(summary='Implement a declared tool with a consumer regression', edits=[
+        {'path': contract_path, 'old': 'Literal["calculate"]', 'new': 'Literal["calculate", "new_capability"]'},
+        {'path': module_path, 'old': '', 'new': 'def run():\n    return {"ok": True}\n'},
+        {'path': role_path, 'old': originals[role_path], 'new': json.dumps(roles)},
+        {'path': 'tests/test_maintenance_regression_abc.py', 'old': '', 'new': 'def test_new():\n    assert True\n'},
+    ]), originals, 'abc', new_paths=[module_path])
+    previous, target = tmp_path / 'before', tmp_path / 'after'
+    for root, files in [(previous, originals), (target, {**originals, **changes})]:
+        for name, content in files.items():
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content)
+    release.validate_tree(previous, target)
+    roles[0]['model'] = 'unauthorized-model'
+    (target / role_path).write_text(json.dumps(roles))
+    with pytest.raises(ValueError, match='release_role_permissions_changed'):
+        release.validate_tree(previous, target)

@@ -95,13 +95,13 @@ class GitHub:
             item = snapshot["entries"].get(path)
             if not item or item["type"] != "blob" or item["mode"] != "100644" or not writable(path):
                 raise ValueError("protected_or_unknown_path")
-            if item.get("size", 0) > 65000:
+            if item.get("size", 0) > 100000:
                 raise ValueError("source_file_too_large")
             blob = self.request("GET", "/git/blobs/" + item["sha"])
             if blob["encoding"] != "base64":
                 raise ValueError("unsupported_blob_encoding")
             output[path] = base64.b64decode(blob["content"]).decode("utf-8")
-        if sum(map(len, output.values())) > 65000:
+        if sum(map(len, output.values())) > 300000:
             raise ValueError("source_context_too_large")
         return output
 
@@ -153,6 +153,8 @@ class GitHub:
 
     def publish(self, job, payload):
         branch = "maintenance/" + str(job["id"])
+        if payload.get("patch_attempt", 1) > 1:
+            branch += "-a" + str(payload["patch_attempt"])
         base = payload["snapshot"]
         current = self.request("GET", "/git/ref/heads/" + quote(self.config.base, safe=""))
         if current["object"]["sha"] != base["commit"]:
@@ -195,7 +197,7 @@ class GitHub:
         if run["status"] != "completed":
             return {"state": "pending"}
         if run["conclusion"] != "success":
-            return {"state": "failed", "run_id": run["id"], "url": run["html_url"]}
+            return {"state": "failed", "run_id": run["id"], "attempt": run["run_attempt"], "url": run["html_url"]}
         jobs = self.request("GET", f"/actions/runs/{run['id']}/attempts/{run['run_attempt']}/jobs")["jobs"]
         service = [job for job in jobs if job["name"] == "service"]
         if len(service) != 1 or service[0]["conclusion"] != "success":
@@ -206,6 +208,49 @@ class GitHub:
         if not required <= steps:
             raise ValueError("required_ci_steps_missing_or_skipped")
         return {"state": "passed", "run_id": run["id"], "attempt": run["run_attempt"], "url": run["html_url"]}
+
+    def ci_failure(self, receipt):
+        from .investigation import feedback_text
+
+        ci = receipt["ci"]
+        run = self.request("GET", f"/actions/runs/{ci['run_id']}")
+        if run["head_sha"] != receipt["head"] or run["head_branch"] != receipt["branch"]:
+            raise ValueError("ci_feedback_head_mismatch")
+        jobs = self.request("GET", f"/actions/runs/{ci['run_id']}/attempts/{ci['attempt']}/jobs")["jobs"]
+        service = [job for job in jobs if job["name"] == "service"]
+        if len(service) != 1:
+            raise ValueError("ci_feedback_service_job_missing")
+        job = service[0]
+        steps = [{"name": step["name"], "conclusion": step.get("conclusion")} for step in job["steps"]]
+        path = f"https://api.github.com/repos/{self.config.repository}/actions/jobs/{job['id']}/logs"
+        def read_log(stream):
+            if stream.status_code != 200:
+                raise GitHubError("ci_log_download_failed")
+            tail, size = bytearray(), 0
+            for chunk in stream.iter_bytes():
+                size += len(chunk)
+                if size > 8 * 1024 * 1024:
+                    raise GitHubError("ci_log_too_large")
+                tail.extend(chunk)
+                del tail[:-80000]
+            return feedback_text(tail.decode("utf-8", errors="replace"))
+
+        with httpx.Client(timeout=30, transport=self.transport, follow_redirects=False, trust_env=False) as client:
+            with client.stream("GET", path, headers={"Authorization": "Bearer " + self.token()}) as response:
+                if response.status_code == 302:
+                    url = httpx.URL(response.headers["location"])
+                    if (url.scheme != "https" or url.userinfo or not url.host
+                            or not url.host.endswith((".blob.core.windows.net", ".actions.githubusercontent.com"))):
+                        raise ValueError("unexpected_ci_log_host")
+                    path = str(url)
+                elif response.status_code == 200:
+                    return {"head": receipt["head"], "steps": steps, "log_excerpt": read_log(response)}
+                else:
+                    raise GitHubError("ci_log_unavailable")
+            # A signed blob URL authenticates itself; never forward the installation token.
+            with client.stream("GET", path) as stream:
+                log = read_log(stream)
+        return {"head": receipt["head"], "steps": steps, "log_excerpt": log}
 
     def pull_request(self, job):
         receipt, payload = job["receipt"], job["payload"]
@@ -242,6 +287,9 @@ class GitHub:
                 f"\n\n## Evidence references\n\n{evidence}\n\n## Validation\n\n"
                 f"[CI run]({receipt['ci']['url']}) on `{receipt['head']}`.\n"
                 f"Base `{receipt['base']}`; patch digest `{payload['patch_digest']}`.\n\n"
+                f"Candidate attempt: `{payload.get('patch_attempt', 1)}`; prior attempts: "
+                f"`{len(payload.get('candidate_attempts', []))}`. "
+                "The original functional criterion is unchanged across candidate repairs.\n\n"
                 "Model-generated change; human review required. No merge or deployment was performed. "
                 "Source conversations stay in the company database; summaries may still require redaction.\n")
         if SECRET.search(body):

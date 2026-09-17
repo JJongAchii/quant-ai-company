@@ -162,6 +162,10 @@ class Store:
             review, inputs, history_digest = review_snapshot(conn, self.company, payload["owners"], datetime.now(UTC))
             payload.update(snapshot=snapshot, diagnosis=diagnosis, diagnostic_revision=revision,
                            review=review, replay_inputs=inputs, review_digest=history_digest)
+            payload.pop("investigation_evidence", None)
+            payload.pop("investigation_requests", None)
+            payload.pop("investigation_round", None)
+            payload.pop("investigation_external", None)
             conn.execute("UPDATE maintenance_jobs SET payload=%s,error=NULL,updated_at=now() WHERE id=%s",
                          (Jsonb(payload), job["id"]))
         return True
@@ -173,6 +177,11 @@ class Store:
                     + context.get("review", {}).get("evidence", []) if not item.get("omitted")}
         diagnostic = context.get("diagnosis", {})
         current_keys = {r["key"] for r in diagnostic.get("source_files", [])}
+        investigated = context.get("investigation_evidence", [])
+        evidence.update({r["key"]: r for r in investigated})
+        current_keys.update(r["key"] for r in investigated)
+        external = context.get("investigation_external", [])
+        evidence.update({r["key"]: r for r in external})
         if diagnostic:
             evidence[diagnostic["key"]] = {"key": diagnostic["key"], "scope_digest": diagnostic["scope_digest"]}
             evidence.update({r["key"]: r for r in diagnostic["source_files"]})
@@ -188,7 +197,7 @@ class Store:
             validate_replay_plan(finding, context.get("replay_inputs", {}))
             if not current_keys.intersection(finding.evidence_keys):
                 raise ValueError("finding_requires_current_implementation_evidence")
-            if not set(finding.evidence_keys) - current_keys:
+            if not set(finding.evidence_keys) - current_keys - {r["key"] for r in external}:
                 raise ValueError("finding_requires_recorded_failure_evidence")
         with self.db.transaction() as conn:
             if finding:
@@ -207,7 +216,9 @@ class Store:
                             conn.execute("UPDATE maintenance_jobs SET state='done',error=NULL,receipt=%s,updated_at=now() WHERE id=%s",
                                          (Jsonb({"case_id": str(existing["id"]), "reason": "No new failure after case assessment."}), job["id"]))
                             return
-                    if existing["state"] == "superseded" or truth["disposition"] in {"resolved", "invalidated"}:
+                    design_upgrade = (existing["payload"].get("finding", {}).get("evaluation", {}).get("mode") == "design_only"
+                                      and finding.evaluation.mode == "regression")
+                    if existing["state"] == "superseded" or truth["disposition"] in {"resolved", "invalidated"} or design_upgrade:
                         predecessor = str(existing["id"])
                         problem_key += "@" + digest([diagnostic["scope_digest"], finding.evidence_keys])[:16]
                 case_id = str(uuid5(NAMESPACE_URL, "quant-company-maintenance:" + problem_key))
@@ -219,9 +230,12 @@ class Store:
                            "replay_inputs": inputs, "replay_inputs_digest": digest(inputs),
                            "evaluation_plan_digest": digest(finding.evaluation.model_dump())}
                 payload.update(diagnosis=diagnostic, diagnostic_revision=context.get("diagnostic_revision", 0),
-                               predecessor=predecessor, citation_normalization=context.get("citation_normalization"))
+                               predecessor=predecessor, citation_normalization=context.get("citation_normalization"),
+                               investigation_evidence=investigated,
+                               investigation_external=external,
+                               investigation_requests=context.get("investigation_requests", []))
                 payload.update({key: context[key] for key in
-                                ("request_project_id", "request_task_id", "request_revision") if key in context})
+                                ("request_project_id", "request_task_id", "request_revision", "instruction") if key in context})
                 existing = conn.execute("SELECT payload->'owners' AS owners FROM maintenance_jobs WHERE problem_key=%s",
                                         (problem_key,)).fetchone()
                 if existing and set(existing["owners"]) != set(context["owners"]):
@@ -239,7 +253,7 @@ class Store:
             conn.execute("UPDATE maintenance_jobs SET state='done',error=NULL,receipt=%s,updated_at=now() WHERE id=%s",
                          (Jsonb(receipt), job["id"]))
 
-    def prepare_call(self, job, phase, prompt, *, model=None):
+    def prepare_call(self, job, phase, prompt, *, model=None, web_search=False):
         revision = job["payload"].get("diagnostic_revision", 0)
         call_id = f"maint-{job['id']}" + (f"-r{revision}" if revision else "") + f"-{phase}"
         with self.db.transaction() as conn:
@@ -269,7 +283,7 @@ class Store:
                     or (limits["maintenance"] is not None and count["n"] >= limits["maintenance"])):
                 raise Deferred("daily_model_budget")
             model = model or self.company.roles["engineer"].model
-            request = ProviderRequest(request_id=call_id, model=model, prompt=prompt)
+            request = ProviderRequest(request_id=call_id, model=model, prompt=prompt, web_search=web_search)
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             return conn.execute("""INSERT INTO maintenance_calls(id,job_id,request) VALUES (%s,%s,%s)
                 RETURNING *""", (call_id, job["id"], Jsonb(request.model_dump()))).fetchone()

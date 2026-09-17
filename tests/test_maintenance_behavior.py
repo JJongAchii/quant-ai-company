@@ -78,6 +78,7 @@ class BehaviorModel:
                     "evaluation": {"mode": "design_only" if self.design else "prompt_replay", "cases": cases,
                                    "success_criterion": "Target passes after the change and the known-good control stays passing."},
                     "paths": [] if self.design else [ROLE_PATH],
+                    "blocking_decisions": ["Owner must choose the new role activation and model budget."] if self.design else [],
                     "evidence_keys": ([case["request_key"] for case in cases] if cases else [data["observations"][0]["key"]])
                                      + [data["current_implementation"]["key"]],
                 }}

@@ -122,3 +122,33 @@ def test_ci_recheck_blocks_new_failure_before_pr():
     github.ci = lambda receipt: {"state": "failed"}
     with pytest.raises(ValueError, match="ci_no_longer_passed"):
         github.pull_request(job())
+
+
+@pytest.mark.parametrize('problem', [None, 'moved_head', 'unsafe_redirect'])
+def test_ci_repair_feedback_uses_exact_attempt_and_redacts_log_credentials(problem):
+    downloads = []
+    def handler(request):
+        if request.url.path.endswith('/runs/20'):
+            return httpx.Response(200, json={'head_sha': ('d' if problem == 'moved_head' else 'c') * 40,
+                                            'head_branch': 'maintenance/fixture'})
+        if request.url.path.endswith('/runs/20/attempts/2/jobs'):
+            return httpx.Response(200, json={'jobs': [{'id': 30, 'name': 'service', 'steps': [
+                {'name': 'Regression reproduces on base', 'conclusion': 'success'},
+                {'name': 'PostgreSQL, Temporal and service regression tests', 'conclusion': 'failure'}]}]})
+        if request.url.path.endswith('/jobs/30/logs'):
+            host = 'private.invalid' if problem == 'unsafe_redirect' else 'fixture.blob.core.windows.net'
+            return httpx.Response(302, headers={'Location': f'https://{host}/log'})
+        assert request.url.host == 'fixture.blob.core.windows.net'
+        assert 'authorization' not in request.headers
+        downloads.append(request)
+        return httpx.Response(200, text='AssertionError: expected total\nBearer ' + 'x' * 30)
+    receipt = {**job()['receipt'], 'ci': {'run_id': 20, 'attempt': 2, 'state': 'failed'}}
+    if problem:
+        with pytest.raises(ValueError, match='ci_feedback_head_mismatch|unexpected_ci_log_host'):
+            client(handler).ci_failure(receipt)
+        assert not downloads
+    else:
+        feedback = client(handler).ci_failure(receipt)
+        assert 'AssertionError' in feedback['log_excerpt'] and '[redacted]' in feedback['log_excerpt']
+        assert 'x' * 30 not in feedback['log_excerpt']
+        assert len(downloads) == 1

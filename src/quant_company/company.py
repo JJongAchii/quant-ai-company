@@ -43,7 +43,7 @@ def load_roles(settings: Settings) -> dict[str, Role]:
         raise ValueError("Duplicate role IDs")
     allowed_tools = {"calculate", "knowledge_search", "read_source", "company_history",
                      "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
-                     "finance_search", "finance_read"} | LAKE_TOOLS
+                     "finance_search", "finance_read", "web_search", "web_read"} | LAKE_TOOLS
     for role in roles:
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
@@ -85,7 +85,12 @@ class Company:
                                       "'회사 공통 한도 해제', '개선BOT 한도 해제'. Deterministic, no model call. "
                                       "Optional '해제하고 <diagnosis request>' also queues a review. "
                                       "A question or quoted command does not change policy.",
-                "knowledge_search": "Approved registered sources only; not conversation history, internet or data-lake search.",
+                "knowledge_search": "{query: string}, no other arguments. Approved stored sources only; not internet search.",
+                "web_search": "{query: string, limit?: 1..8}. Live external search using the Codex subscription. "
+                              "Results are unverified candidates; read relevant originals with web_read before citing.",
+                "web_read": "{url: public HTTPS URL}. Read a public HTML/text original. Returns a project source_id, "
+                            "original URL, content, links, retrieval time, nullable publication metadata and content hash. "
+                            "Read further text using read_source and next_offset. Failures are not evidence.",
                 "finance_search": "{query: short keywords}. Search a small curated official-document catalog, "
                                   "not the entire web. Returns candidates, not verified/read sources.",
                 "finance_read": "{document_id: exact catalog ID} OR {url: HTTPS URL on allowed official host}. "
@@ -112,8 +117,8 @@ class Company:
                 "maintenance_status": "Director only: {}. Reads real maintenance status and requests for this thread. "
                                       "TASK DATA maintenance is a current snapshot. The maintainer is a background "
                                       "service, not an employee in can_delegate_to. Do not ask users to paste stored history.",
-                "read_source": "{source_id, offset?: nonnegative integer}. Read up to 12000 characters of a stored "
-                               "source, with next_offset. Never an arbitrary URL or local file.",
+                "read_source": "{source_id, offset?: nonnegative int}. Read 12000 characters of a registered source; "
+                               "next_offset identifies remaining text. Use web_read for a new public URL.",
                 "calculate": "Bounded numeric arithmetic; not arbitrary code or backtests.",
                 "data_lake": {
                     "enabled": bool(self.settings.company_lake_uri),
@@ -124,7 +129,8 @@ class Company:
                     "scope": "Read-only metadata and bounded samples; no arbitrary SQL, full scans or backtests. "
                              "Data questions require fresh tool receipts. Delegate to data when not authorized.",
                 },
-                "external_web_search": False,
+                "external_web_search": self.settings.company_web_enabled and any(
+                    role.active and "web_search" in role.tools for role in self.roles.values()),
                 "research_worker_submission": False,
                 "strategy_code_execution": False,
                 "live_trading": False,
@@ -512,6 +518,10 @@ class Company:
             from .finance_sources import register, search
 
             return search(arguments) if request.name == 'finance_search' else register(conn, project_id, turn_id, request)
+        if request.name in {"web_search", "web_read"}:
+            from .web_tools import result
+
+            return result(conn, project_id, turn_id, request)
         if request.name in {"company_history", "maintenance_review", "maintenance_status", "system_status", "repository_read"}:
             from .maintenance.requests import tool
 
@@ -550,17 +560,17 @@ class Company:
                 AND (title ILIKE %s OR content ILIKE %s) ORDER BY id LIMIT 5""",
                                         (project_id, "%" + arguments["query"] + "%",
                                          "%" + arguments["query"] + "%")).fetchall())
-        if not {'source_id'} <= set(arguments) <= {'source_id', 'offset'}:
+        if not {"source_id"} <= set(arguments) <= {"source_id", "offset"}:
             raise PolicyError("read_source requires source_id and optional offset")
-        offset = arguments.get('offset', 0)
+        offset = arguments.get("offset", 0)
         if type(offset) is not int or not 0 <= offset <= 100000:
-            raise PolicyError('Invalid source offset')
+            raise PolicyError("Invalid source offset")
         self._check_sources(conn, project_id, [arguments["source_id"]])
         row = as_json(conn.execute("""SELECT id,title,uri,substring(content FROM %s FOR 12000) AS content,
             length(content) AS total_characters,metadata,available_at,synthetic FROM sources WHERE id=%s""",
-                                  (offset + 1, arguments['source_id'])).fetchone())
-        row['offset'] = offset
-        row['next_offset'] = offset + 12000 if row['total_characters'] > offset + 12000 else None
+                                  (offset + 1, arguments["source_id"])).fetchone())
+        row["offset"] = offset
+        row["next_offset"] = offset + 12000 if row["total_characters"] > offset + 12000 else None
         return row
 
     def _wake_parent(self, conn, task, project):
@@ -573,6 +583,30 @@ class Company:
             AND status NOT IN ('completed','blocked','superseded')""", (parent["id"],)).fetchone()["n"]
         if not remaining:
             self._new_turn(conn, parent)
+
+    def validate_decision(self, conn, project, task, decision):
+        role = self.role(task["agent"])
+        for action in decision.delegations:
+            if action.agent not in role.can_delegate_to:
+                raise PolicyError(f"Unauthorized peer: {action.agent}")
+            self.role(action.agent)
+        message_peers = set(role.can_delegate_to)
+        if task["parent_id"]:
+            message_peers.add(conn.execute("SELECT agent FROM tasks WHERE id=%s",
+                                           (task["parent_id"],)).fetchone()["agent"])
+        for action in decision.messages:
+            if action.agent not in message_peers:
+                raise PolicyError(f"Unauthorized message recipient: {action.agent}")
+            self.role(action.agent)
+        for action in [*decision.artifacts, *decision.memories]:
+            self._check_sources(conn, project["id"], action.source_ids)
+        for action in decision.tools:
+            if action.name not in role.tools:
+                raise PolicyError(f"Unauthorized tool: {action.name}")
+        if sum(action.name in LAKE_TOOLS for action in decision.tools) > 1:
+            raise PolicyError("At most one lake query is allowed per turn")
+        if decision.follow_up and not now() < decision.follow_up.at <= now() + timedelta(days=30):
+            raise PolicyError("Follow-up must be in the next 30 days")
 
     def commit_turn(self, turn_id: str, response: ProviderResponse) -> dict:
         if response.request_id != turn_id:
@@ -589,7 +623,8 @@ class Company:
             project = self._project(conn, task["project_id"])
             turn = conn.execute("SELECT * FROM turns WHERE id=%s FOR UPDATE", (turn_id,)).fetchone()
             if turn["status"] == "completed":
-                if fingerprint(turn["response"]) != fingerprint(response.model_dump(mode="json")):
+                previous = ProviderResponse.model_validate(turn["response"]).model_dump(mode="json")
+                if fingerprint(previous) != fingerprint(response.model_dump(mode="json")):
                     raise PolicyError("Completed turn cannot be replaced")
                 return {"state": "completed", "duplicate": True}
             if task["revision"] != project["revision"] or turn["status"] == "stale":
@@ -603,28 +638,7 @@ class Company:
                 return {'state': 'defer', 'seconds': hold_delay(conn, project), 'reason': 'owner_input_or_project_pause'}
             if task['kind'] == 'routing':
                 return commit_routing(conn, self, project, task, turn, response)
-            role = self.role(task["agent"])
-            for action in decision.delegations:
-                if action.agent not in role.can_delegate_to:
-                    raise PolicyError(f"Unauthorized peer: {action.agent}")
-                self.role(action.agent)
-            message_peers = set(role.can_delegate_to)
-            if task["parent_id"]:
-                message_peers.add(conn.execute("SELECT agent FROM tasks WHERE id=%s",
-                                               (task["parent_id"],)).fetchone()["agent"])
-            for action in decision.messages:
-                if action.agent not in message_peers:
-                    raise PolicyError(f"Unauthorized message recipient: {action.agent}")
-                self.role(action.agent)
-            for action in [*decision.artifacts, *decision.memories]:
-                self._check_sources(conn, project["id"], action.source_ids)
-            for action in decision.tools:
-                if action.name not in role.tools:
-                    raise PolicyError(f"Unauthorized tool: {action.name}")
-            if sum(action.name in LAKE_TOOLS for action in decision.tools) > 1:
-                raise PolicyError("At most one lake query is allowed per turn")
-            if decision.follow_up and not now() < decision.follow_up.at <= now() + timedelta(days=30):
-                raise PolicyError("Follow-up must be in the next 30 days")
+            self.validate_decision(conn, project, task, decision)
             final = task["agent"] == "director" and not task["parent_id"] and decision.status == "complete"
             # Maintenance owns the eventual result notification; its intake acknowledgement is progress.
             if final and conn.execute("SELECT to_regclass('maintenance_jobs') AS name").fetchone()["name"]:

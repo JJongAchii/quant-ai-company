@@ -1,0 +1,23 @@
+{
+  "scope": "Real PostgreSQL 14 and Temporal; Codex subprocess fixture, simulated GitHub/HTTP. Engineering fixture really executes pytest on before/after candidates. No live model in automated pytest suite.",
+  "full_suite_commit": "425cabcfe93bd60638a00c23fe62ccf469998081",
+  "results": {
+    "web-engineering-tests": {
+      "tests": 296,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "junit_sha256": "1e3dc2bd617e9e24ea3b08e16169bbb9b67d2ca5689173e3e0e8061a03d9a8fe"
+    },
+    "web-engineering-ci-feedback-tests": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "18f1b642e235543371515b1fea7a7adc786a980c8ab772eb0bcf5289a2a56196"
+    }
+  },
+  "command": "uv run --frozen pytest -q -m 'not live' tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py",
+  "deselected": 1,
+  "lint": "ruff passed"
+}
