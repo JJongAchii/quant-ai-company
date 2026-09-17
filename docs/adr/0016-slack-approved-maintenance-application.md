@@ -19,6 +19,8 @@ maintenance tick은 승인 처리를 우선한다. PR head·파일 내용·허�
 운영 커밋 위에 병합할 수 있다. draft를 ready로 바꾸고 정확한 head로 병합한다.
 병합 intent를 먼저 저장하며 응답 유실/재시작 시 조회로 대사한다. 불확실한 병합을 반복하지 않는다.
 GitHub의 병합과 DB는 분산 트랜잭션이 아니며, base 이동 경쟁은 병합 부모 확인으로 탐지해 배포를 막는다.
+실제 인수에서 `PR.base.sha`는 main 갱신 후에도 이전 값을 반환했다. 현재 기준 커밋은
+`git/ref/heads/main`에서 읽고 문서 원본 blob 및 병합 부모로 검증한다.
 
 문서·설계 PR은 병합 후 완료한다. 실행 코드·역할 지침 변경은 `deploy_pending`으로 넘긴다.
 host의 systemd timer(60초)가 DB의 승인된 release만 가져온다. 설치된 release의 고정 실행기로

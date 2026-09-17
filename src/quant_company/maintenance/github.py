@@ -226,8 +226,8 @@ class GitHub:
                 raise ValueError("approved_patch_content_changed")
         requires_deployment = any(p.startswith("src/") for p in changes)
         base = self.request("GET", "/git/ref/heads/main")["object"]["sha"]
-        if base != pr["base"]["sha"]:
-            raise ValueError("pr_base_not_current")
+        # PR.base.sha can retain the original base snapshot after main advances. The live ref,
+        # unchanged document blobs, and eventual merge parents are the authoritative checks.
         if base != saved["base"]:
             # Unchanged documentation can survive an unrelated operator release. Executable code
             # must be retested on its new base, not silently approved with old integration evidence.
@@ -248,7 +248,7 @@ class GitHub:
         saved = job["receipt"]
         number = saved["pr"]["number"]
         pr = self.request("GET", f"/pulls/{number}")
-        if (pr["head"]["sha"] != saved["head"] or pr["base"]["sha"] != receipt["validated_base"]
+        if (pr["head"]["sha"] != saved["head"] or pr["base"]["ref"] != self.config.base
                 or self.request("GET", "/git/ref/heads/main")["object"]["sha"] != receipt["validated_base"]):
             raise ValueError("approved_refs_moved_before_merge")
         if pr["draft"]:

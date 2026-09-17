@@ -169,14 +169,18 @@ def test_github_does_not_merge_changed_content_and_reconciles_lost_response(draf
                     'state': 'closed' if merged else 'open', 'draft': draft, 'node_id': 'PR_fixture', 'changed_files': 1,
                     'mergeable': True, 'merged': merged, 'merge_commit_sha': 'd'*40, 'html_url': 'https://github.com/test'})
         if path.endswith('/git/ref/heads/main'):
-            return httpx.Response(200, json={'object': {'sha': 'a'*40}})
+            # Actual GitHub acceptance: PR.base.sha still names the original a... snapshot.
+            return httpx.Response(200, json={'object': {'sha': 'e'*40}})
+        if path.endswith('/contents/docs/example.md'):
+            assert request.url.params['ref'] == 'e'*40
+            return httpx.Response(200, json={'sha': blob_sha('old')})
         if path.endswith('/merge'):
             assert json.loads(request.content)['sha'] == 'c'*40
             writes.append(path)
             merged = True
             raise httpx.ReadTimeout('Lost successful merge response', request=request)
         if path.endswith('/git/commits/'+'d'*40):
-            return httpx.Response(200, json={'sha': 'd'*40, 'parents': [{'sha': 'a'*40}, {'sha': 'c'*40}]})
+            return httpx.Response(200, json={'sha': 'd'*40, 'parents': [{'sha': 'e'*40}, {'sha': 'c'*40}]})
         raise AssertionError(path)
 
     github = GitHub(config(), transport=httpx.MockTransport(handler))
