@@ -191,6 +191,29 @@ def test_maintainer_can_improve_procedures_but_cannot_edit_its_examination():
     assert not writable("src/quant_company/staff/playbooks/../../cases.py")
 
 
+def test_failed_exercise_is_collected_once_without_a_slack_project(staff_company):
+    from quant_company.maintenance.store import Store
+
+    from .test_maintenance import config
+
+    store = StaffStore(staff_company)
+    identity = store.enqueue("data", "UHUMAN")
+    ready = store.prepare()
+    store.commit(identity, reply(ready["request"], answer={}))
+    maintainer = Store(staff_company, config())
+    maintainer.initialize()
+    job = maintainer.collect()
+    assert job
+    with staff_company.db.transaction() as conn:
+        item = conn.execute("SELECT payload FROM maintenance_jobs WHERE id=%s", (job,)).fetchone()["payload"]
+        assert len(item["observations"]) == 1
+        assert item["observations"][0]["run_id"] == identity
+        conn.execute("UPDATE maintenance_jobs SET state='done'")
+        conn.execute("UPDATE maintenance_control SET next_observe_at=now()")
+        assert conn.execute("SELECT count(*) AS n FROM projects").fetchone()["n"] == 0
+    assert maintainer.collect() is None
+
+
 def test_specialist_procedure_replay_binds_original_digest_and_changes_only_candidate(company):
     from quant_company.maintenance.evaluation import PACK_PREFIX, replay_pack
 

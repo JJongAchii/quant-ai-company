@@ -52,6 +52,19 @@ def test_host_rejects_protected_or_symlink_changes_before_build(tmp_path):
         release.validate_tree(previous, target)
 
 
+def test_host_accepts_procedures_but_rejects_grader_changes(tmp_path):
+    previous, target = tmp_path/'old', tmp_path/'new'
+    relative = 'src/quant_company/staff/playbooks/data.md'
+    for root in [previous, target]:
+        (root/relative).parent.mkdir(parents=True)
+        (root/relative).write_text('old procedure')
+    (target/relative).write_text('reviewed procedure')
+    release.validate_tree(previous, target)
+    (target/'src/quant_company/staff/cases.py').write_text('altered exam oracle')
+    with pytest.raises(ValueError, match='protected_file'):
+        release.validate_tree(previous, target)
+
+
 def fixture_host(tmp_path, monkeypatch, *, fail_health=False):
     state = tmp_path/'state'
     (state/'config').mkdir(parents=True)
