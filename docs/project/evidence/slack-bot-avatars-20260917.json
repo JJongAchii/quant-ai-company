@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-17T08:20:53.166262+00:00",
+  "workspace_id": "T0C1YRDRPNF",
+  "generator": "built-in image_gen",
+  "changed_surface": "Existing Slack app icons only",
+  "verification": "App Basic Information reload and Slack conversations.replies bot_profile.icons from an existing four-employee thread",
+  "messages_posted": 0,
+  "assets": [
+    {
+      "role": "director",
+      "app_id": "A0C1ZF715K5",
+      "bot_user_id": "U0C23PPKR5L",
+      "name": "Quant 총괄",
+      "asset": "slack-apps/avatars/director.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "sha256": "1ccebfb6852af652ac9a21f627a7d38c7adae6fea4fc3a765eb4297fe1fc178a",
+      "slack_icons": {
+        "image_36": "https://avatars.slack-edge.com/2026-09-17/12079420521379_03e6dfa5cfddf368c9d1_36.png",
+        "image_48": "https://avatars.slack-edge.com/2026-09-17/12079420521379_03e6dfa5cfddf368c9d1_48.png",
+        "image_72": "https://avatars.slack-edge.com/2026-09-17/12079420521379_03e6dfa5cfddf368c9d1_72.png"
+      },
+      "slack_updated": 1789632945,
+      "app_settings_survived_reload": true,
+      "live_message_profile_matched": true
+    },
+    {
+      "role": "financial_strategist",
+      "app_id": "A0C23QHH66S",
+      "bot_user_id": "U0C29D5DLMS",
+      "name": "Quant 금융전략",
+      "asset": "slack-apps/avatars/financial_strategist.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "sha256": "775d09c3b621272278aee97329a88a72fe4906efcbc2726da4b5c4aa35473ee9",
+      "slack_icons": {
+        "image_36": "https://avatars.slack-edge.com/2026-09-17/12080841756181_41ef26ce89c584958152_36.png",
+        "image_48": "https://avatars.slack-edge.com/2026-09-17/12080841756181_41ef26ce89c584958152_48.png",
+        "image_72": "https://avatars.slack-edge.com/2026-09-17/12080841756181_41ef26ce89c584958152_72.png"
+      },
+      "slack_updated": 1789633044,
+      "app_settings_survived_reload": true,
+      "live_message_profile_matched": true
+    },
+    {
+      "role": "researcher_kr",
+      "app_id": "A0C1ZGDU9M1",
+      "bot_user_id": "U0C1QCBD9L7",
+      "name": "Quant 국내시장 연구",
+      "asset": "slack-apps/avatars/researcher_kr.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "sha256": "a161cdf899595e4f3f26067f67205d9f6ea98cc1afb010864f57cfcae29331dc",
+      "slack_icons": {
+        "image_36": "https://avatars.slack-edge.com/2026-09-17/12087599223553_c287d4a2a04186c7b74a_36.png",
+        "image_48": "https://avatars.slack-edge.com/2026-09-17/12087599223553_c287d4a2a04186c7b74a_48.png",
+        "image_72": "https://avatars.slack-edge.com/2026-09-17/12087599223553_c287d4a2a04186c7b74a_72.png"
+      },
+      "slack_updated": 1789633119,
+      "app_settings_survived_reload": true,
+      "live_message_profile_matched": true
+    },
+    {
+      "role": "data",
+      "app_id": "A0C211J5KE1",
+      "bot_user_id": "U0C1ZH42C7M",
+      "name": "Quant 데이터",
+      "asset": "slack-apps/avatars/data.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "sha256": "5fc31b8cd38b0a1379ddee490dffbd80cfc1ee9b70f2a4b150a855688dcc3f44",
+      "slack_icons": {
+        "image_36": "https://avatars.slack-edge.com/2026-09-17/12114031900096_296f0c5d23717a35d79b_36.png",
+        "image_48": "https://avatars.slack-edge.com/2026-09-17/12114031900096_296f0c5d23717a35d79b_48.png",
+        "image_72": "https://avatars.slack-edge.com/2026-09-17/12114031900096_296f0c5d23717a35d79b_72.png"
+      },
+      "slack_updated": 1789633195,
+      "app_settings_survived_reload": true,
+      "live_message_profile_matched": true
+    }
+  ]
+}
