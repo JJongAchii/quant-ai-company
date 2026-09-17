@@ -1,0 +1,12 @@
+{
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "channel": "C0C2B9EUEGM",
+  "thread_ts": "1789633942.673909",
+  "receipt": {
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "task_id": "c31924ce-12bc-5b6b-aa39-c6f7b2fe916c",
+    "duplicate": false
+  },
+  "new_slack_ingress": false,
+  "runtime_commit": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6"
+}
