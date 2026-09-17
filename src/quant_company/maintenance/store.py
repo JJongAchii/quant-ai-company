@@ -85,7 +85,9 @@ class Store:
                   AND NOT EXISTS (SELECT 1 FROM maintenance_observations o WHERE o.key='event:'||e.id::text)
                 ORDER BY e.id LIMIT 4
                 """, (self.config.allowed_owners, self.company.settings.slack_allowed_channels)).fetchall()
-            rows = safe_rows(rows + events)
+            from ..staff.store import maintenance_observations
+
+            rows = safe_rows(rows + events + maintenance_observations(conn, self.config.allowed_owners, unseen=True))
             if not rows:
                 return None
             review, replay_inputs, review_digest = review_snapshot(

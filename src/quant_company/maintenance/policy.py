@@ -16,6 +16,7 @@ PROTECTED = {
     "owner_controls.py", "state_schema.sql", "web_fetch.py", "finance_sources.py",
     "maintenance/policy.py", "maintenance/github.py", "maintenance/applications.py",
     "maintenance/releases.py", "maintenance/schema.sql",
+    "staff/cases.py", "staff/store.py", "staff/runner.py", "staff/workflow.py", "staff/schema.sql", "staff/packs.py",
 }
 SECRET = re.compile(
     r"(?:AKIA|ASIA)[A-Z0-9]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|"
@@ -160,6 +161,8 @@ def writable(path: str, *, new=False) -> bool:
     if not relative.startswith("src/quant_company/"):
         return False
     module = relative.removeprefix("src/quant_company/")
+    if module.startswith("staff/playbooks/"):
+        return module.endswith(".md") and len(PurePosixPath(module).parts) == 3
     return (module not in PROTECTED and not module.startswith("providers/")
             and (module.endswith(".py") or module == "roles.json"))
 

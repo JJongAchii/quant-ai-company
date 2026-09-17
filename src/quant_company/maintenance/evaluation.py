@@ -6,6 +6,17 @@ from ..contracts import ProviderRequest, Role
 from .policy import SECRET, EvaluationPlan, Finding, digest
 
 ROLE_PATH = "src/quant_company/roles.json"
+PACK_PREFIX = "src/quant_company/staff/playbooks/"
+
+
+def pack_employee(paths):
+    from ..staff.packs import STAFF
+
+    if len(paths) == 1 and paths[0].startswith(PACK_PREFIX) and paths[0].endswith(".md"):
+        employee = paths[0][len(PACK_PREFIX):-3]
+        if employee in STAFF and employee != "maintainer":
+            return employee
+    return None
 
 
 def employee_context(request):
@@ -21,13 +32,16 @@ def validate_replay_plan(finding, inputs):
     """Reject impossible criteria before spending a patch or replay model call."""
     if finding.evaluation.mode != "prompt_replay":
         return
-    if finding.paths != [ROLE_PATH]:
+    specialist = pack_employee(finding.paths)
+    if finding.paths != [ROLE_PATH] and not specialist:
         raise ValueError("prompt_replay_requires_role_instructions_only")
     agents = set()
     for case in finding.evaluation.cases:
         saved = inputs[case.request_key]
         runtime, context = employee_context(saved["request"])
         agents.add(saved["agent"])
+        if specialist and saved["agent"] != specialist:
+            raise ValueError("replay_specialist_employee_mismatch")
         role = next((r for r in runtime["employees"] if r["id"] == saved["agent"]), None)
         if not role or not role["active"]:
             raise ValueError("replay_role_unavailable")
@@ -60,6 +74,9 @@ def role_block(role):
 
 
 def replay_material(payload, case, variant):
+    specialist = pack_employee(list(payload["changes"]))
+    if specialist:
+        return replay_pack(payload, case, variant, specialist)
     before = {role["id"]: Role.model_validate(role) for role in json.loads(payload["originals"][ROLE_PATH])}
     after = {role["id"]: Role.model_validate(role) for role in json.loads(payload["changes"][ROLE_PATH])}
     changed = [key for key in before if before[key] != after[key]]
@@ -94,6 +111,35 @@ def replay_material(payload, case, variant):
     return prompt, request.model, original, runtime, context
 
 
+def replay_pack(payload, case, variant, employee):
+    from ..staff.packs import pack_content, render_pack
+
+    path = PACK_PREFIX + employee + ".md"
+    saved = payload["replay_inputs"][case.request_key]
+    request = ProviderRequest.model_validate(saved["request"])
+    runtime, context = employee_context(saved["request"])
+    before = pack_content(employee, payload["originals"][path])
+    after = pack_content(employee, payload["changes"][path])
+    entry = next((r for r in runtime["employees"] if r["id"] == employee), None)
+    prefix, separator, rest = request.prompt.partition("RUNTIME CONFIG JSON:\n")
+    original = render_pack(before)
+    if (saved["agent"] != employee or not entry or entry.get("specialist_pack_digest") != before["digest"]
+            or not entry["active"] or entry["model"] != request.model or prefix.count(original) != 1):
+        raise ValueError("recorded_specialist_pack_or_model_mismatch")
+    role = Role(id=employee, name=employee, mission="Frozen specialist replay", instructions="Frozen request",
+                model=entry["model"], tools=entry["tools"], can_delegate_to=entry["can_delegate_to"], active=True)
+    if variant == "candidate":
+        # Configuration facts in this dry replay must describe the candidate pack too.
+        entry["specialist_pack_digest"] = after["digest"]
+        prompt = (prefix.replace(original, render_pack(after), 1) + separator +
+                  json.dumps(runtime, ensure_ascii=False) + "\nTASK DATA JSON:\n" + json.dumps(context, ensure_ascii=False))
+    else:
+        prompt = request.prompt
+    if SECRET.search(prompt):
+        raise ValueError("possible_secret_in_replay_input")
+    return prompt, request.model, role, runtime, context
+
+
 def validate_candidate(payload):
     finding = verify_plan(payload)
     paths = set(payload["changes"])
@@ -102,7 +148,7 @@ def validate_candidate(payload):
         if not any(p.startswith("src/quant_company/") and p.endswith(".py") for p in paths):
             raise ValueError("regression_requires_runtime_code_not_role_prompts")
     elif mode == "prompt_replay":
-        if paths != {ROLE_PATH}:
+        if paths != {ROLE_PATH} and not pack_employee(list(paths)):
             raise ValueError("prompt_replay_cannot_validate_runtime_code_changes")
         for case in finding.evaluation.cases:
             replay_material(payload, case, "candidate")
