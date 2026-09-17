@@ -39,7 +39,8 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     by_id = {role.id: role for role in roles}
     if len(by_id) != len(roles):
         raise ValueError("Duplicate role IDs")
-    allowed_tools = {"calculate", "knowledge_search", "read_source"} | LAKE_TOOLS
+    allowed_tools = {"calculate", "knowledge_search", "read_source", "company_history",
+                     "maintenance_review", "maintenance_status"} | LAKE_TOOLS
     for role in roles:
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
@@ -70,7 +71,16 @@ class Company:
                 for role in self.roles.values()
             ],
             "capabilities": {
-                "knowledge_search": "Approved registered sources only; not internet or data-lake search.",
+                "knowledge_search": "Approved registered sources only; not conversation history, internet or data-lake search.",
+                "company_history": "Director only: {query?: string, limit?: 1..20}. Reads the owner's recorded "
+                                   "requests/results in authorized Slack channels over the last 30 days. "
+                                   "Use for past requests, not knowledge_search. Returns a citable source and truncation flags.",
+                "maintenance_review": "Director only: {}. Queues the current human request for the maintenance "
+                                      "service. It reports progress, budget waits, results or blockers to this thread. "
+                                      "A returned request_id proves receipt, not completion. No merge/deploy approval is granted.",
+                "maintenance_status": "Director only: {}. Reads real maintenance status and requests for this thread. "
+                                      "TASK DATA maintenance is a current snapshot. The maintainer is a background "
+                                      "service, not an employee in can_delegate_to. Do not ask users to paste stored history.",
                 "read_source": "Approved registered source content only; not arbitrary URLs or local files.",
                 "calculate": "Bounded numeric arithmetic; not arbitrary code or backtests.",
                 "data_lake": {
@@ -265,6 +275,10 @@ class Company:
             conn.execute("SELECT agent FROM tasks WHERE id=%s", (task["parent_id"],)).fetchone()["agent"]
             if task["parent_id"] else None
         )
+        if task["agent"] == "director":
+            from .maintenance.requests import status
+
+            context["maintenance"] = status(conn, self, project)
         # The DB keeps full evidence. Explicitly bounded excerpts keep an old busy project from
         # exhausting the model context or subscription on every turn.
         for child in context["child_results"]:
@@ -393,8 +407,14 @@ class Company:
             if not row:
                 raise PolicyError(f"Unavailable or unapproved source: {source_id}")
 
-    def _tool(self, conn, project_id, request):
+    def _tool(self, conn, project_id, request, *, task=None):
         arguments = request.arguments
+        if request.name in {"company_history", "maintenance_review", "maintenance_status"}:
+            from .maintenance.requests import tool
+
+            if not task or task["agent"] != "director":
+                raise PolicyError("Company history and maintenance tools require the director")
+            return tool(conn, self, task, request)
         if request.name in LAKE_TOOLS:
             result = query_lake(self.settings.company_lake_uri, request.name, arguments)
             if result.get("ok"):
@@ -503,7 +523,7 @@ class Company:
                 conn.execute("INSERT INTO memories(id,project_id,agent,text,source_ids) VALUES (%s,%s,%s,%s,%s)",
                              (str(uuid4()), project["id"], task["agent"], action.text, Jsonb(action.source_ids)))
             for action in decision.tools:
-                result = self._tool(conn, project["id"], action)
+                result = self._tool(conn, project["id"], action, task=task)
                 self._message(conn, project, task["id"], "tool:" + action.name, "tool",
                               json.dumps({"request": action.model_dump(), "receipt": result}, ensure_ascii=False),
                               task["agent"])

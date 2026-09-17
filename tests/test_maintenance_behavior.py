@@ -232,6 +232,44 @@ def test_invented_replay_inputs_are_not_accepted(company):
         store.finish_triage(job, Triage(finding=finding, reason="Both requests must be cited"))
 
 
+@pytest.mark.integration
+async def test_observer_history_is_not_mistaken_for_employee_input_and_impossible_plan_stops_before_patch(company):
+    runner = runner_with_recorded_requests(company)
+    # A later thread is visible to the observer but was never in the target employee's recorded input.
+    later = company.ingest(event_key="later-observer-only", owner="UHUMAN", text="LATER_OBSERVER_ONLY",
+                           channel="CQUANT", thread_ts="later")
+    with company.db.transaction() as conn:
+        conn.execute("UPDATE turns SET status='completed' WHERE task_id=%s", (later["task_id"],))
+        review, inputs, _ = review_snapshot(conn, company, ["UHUMAN"], datetime.now(UTC))
+    target = next(row for row in review["evidence"] if row.get("kind") == "replay_input" and "target" in row["text"])
+    assert "LATER_OBSERVER_ONLY" in json.dumps(review)
+    assert "LATER_OBSERVER_ONLY" not in json.dumps(target["employee_context"])
+    assert target["employee_context"]["message_count"] == 1
+    assert target["employee_context"]["approved_sources"] == []
+    control = next(row for row in review["evidence"] if row.get("kind") == "replay_input" and "control" in row["text"])
+    runner.store.collect()
+    job = runner.store.next_job()
+    job["payload"]["snapshot"] = runner.github.snapshot()
+    finding = {
+        "problem_key": "director_history_evidence_ignored", "title": "Impossible historical context repair",
+        "problem": "The employee allegedly ignored evidence that only the observer has.",
+        "reproduction": "Replay the saved employee request with its actual context.",
+        "expected": "Require an observer message ID as if it were an approved employee source.",
+        "category": "bot_behavior", "hypothesis": "Fixture deliberately reproduces the production misdiagnosis.",
+        "paths": [ROLE_PATH], "evidence_keys": [target["key"], control["key"]],
+        "evaluation": {"mode": "prompt_replay", "success_criterion": "Fixture impossible output must be rejected early.",
+                       "cases": [{"purpose": "target", "request_key": target["key"],
+                                  "expected": {"status": "complete", "source_ids": ["message:observer-only"]}},
+                                 {"purpose": "control", "request_key": control["key"], "expected": {"status": "complete"}}]},
+    }
+    with pytest.raises(ValueError, match="replay_expectation_requires_unknown_source"):
+        runner.store.finish_triage(job, Triage(finding=finding, reason="Fixture of the actual invalid criterion"))
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM maintenance_jobs WHERE kind='repair'").fetchone()["n"] == 0
+        assert conn.execute("SELECT count(*) AS n FROM maintenance_calls").fetchone()["n"] == 0
+    assert not runner.provider.requests and inputs
+
+
 def test_evaluator_rejects_unauthorized_actions_even_when_primary_expectation_passes(test_roles):
     response = AgentDecision(say="Unauthorized delegation", status="wait",
                              delegations=[{"agent": "outsider", "instruction": "Do the work"}])

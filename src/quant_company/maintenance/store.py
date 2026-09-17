@@ -4,7 +4,9 @@ from uuid import NAMESPACE_URL, uuid4, uuid5
 
 from psycopg.types.json import Jsonb
 
+from ..company import as_json
 from ..contracts import ProviderRequest
+from .evaluation import validate_replay_plan
 from .observation import review_snapshot, safe_rows
 from .policy import MaintenanceConfig, Triage, digest
 
@@ -22,6 +24,37 @@ class Store:
         with self.db.transaction() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(71350220)")
             conn.execute(files("quant_company.maintenance").joinpath("schema.sql").read_text())
+        self.heartbeat()
+
+    def heartbeat(self):
+        with self.db.transaction() as conn:
+            conn.execute("UPDATE maintenance_control SET runtime=%s WHERE id=1", (Jsonb(as_json({
+                "enabled": self.config.enabled, "allowed_owners": self.config.allowed_owners,
+                "max_daily_calls": self.config.max_daily_calls, "poll_seconds": self.config.poll_seconds,
+                "heartbeat_at": datetime.now(UTC),
+            })),))
+
+    def prepare_review(self, job):
+        """Freeze owner history when the durable request is picked up, before model analysis."""
+        with self.db.transaction() as conn:
+            conn.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+            conn.execute("SET LOCAL statement_timeout='5s'")
+            payload = dict(job["payload"])
+            review, inputs, review_digest = review_snapshot(
+                conn, self.company, payload["owners"], datetime.now(UTC))
+            # The explicit request is included even if the bounded recent-history sample omits it.
+            request = conn.execute("""SELECT 'message:'||id::text AS key,project_id,task_id,author,kind,text,created_at
+                FROM messages WHERE task_id=%s AND kind IN ('human','instruction') ORDER BY created_at LIMIT 1""",
+                                   (payload["request_task_id"],)).fetchone()
+            if not request:
+                raise ValueError("review_requires_recorded_human_request")
+            payload.update(review=review, replay_inputs=inputs, review_digest=review_digest,
+                           observations=safe_rows([request]))
+            conn.execute("UPDATE maintenance_jobs SET state='triage',payload=%s,error=NULL,updated_at=now() WHERE id=%s",
+                         (Jsonb(payload), job["id"]))
+            for row in payload["observations"] + review["evidence"]:
+                conn.execute("""INSERT INTO maintenance_observations(key,job_id,body) VALUES (%s,%s,%s)
+                    ON CONFLICT DO NOTHING""", (row["key"], job["id"], Jsonb(row)))
 
     def collect(self):
         """Anti-join by identity: a late commit with an older timestamp cannot fall behind a cursor."""
@@ -34,24 +67,24 @@ class Store:
             conn.execute("UPDATE maintenance_control SET next_observe_at=%s WHERE id=1",
                          (datetime.now(UTC) + timedelta(seconds=self.config.observe_seconds),))
             # Bound the backlog. Do not consume records until a triage job is durable.
-            if conn.execute("SELECT 1 FROM maintenance_jobs WHERE state='triage' LIMIT 1").fetchone():
+            if conn.execute("SELECT 1 FROM maintenance_jobs WHERE state IN ('review','triage') LIMIT 1").fetchone():
                 return None
             rows = conn.execute("""
                 SELECT 'message:'||m.id::text AS key, m.project_id, m.task_id, m.author,
                        m.kind, left(m.text,1500) AS text, m.created_at
                 FROM messages m JOIN projects p ON p.id=m.project_id
-                WHERE p.owner_user=ANY(%s) AND m.author NOT LIKE 'maintenance%%'
+                WHERE p.owner_user=ANY(%s) AND (p.channel=ANY(%s) OR p.channel LIKE 'D%%') AND m.author NOT LIKE 'maintenance%%'
                   AND m.kind IN ('human','answer','delegation','peer','instruction','tool','status')
                   AND NOT EXISTS (SELECT 1 FROM maintenance_observations o WHERE o.key='message:'||m.id::text)
                 ORDER BY m.created_at,m.id LIMIT 16
-                """, (self.config.allowed_owners,)).fetchall()
+                """, (self.config.allowed_owners, self.company.settings.slack_allowed_channels)).fetchall()
             events = conn.execute("""
                 SELECT 'event:'||e.id::text AS key,e.project_id,e.kind,e.detail,e.created_at
                 FROM events e JOIN projects p ON p.id=e.project_id
-                WHERE p.owner_user=ANY(%s) AND e.kind IN ('turn_blocked','task_blocked')
+                WHERE p.owner_user=ANY(%s) AND (p.channel=ANY(%s) OR p.channel LIKE 'D%%') AND e.kind IN ('turn_blocked','task_blocked')
                   AND NOT EXISTS (SELECT 1 FROM maintenance_observations o WHERE o.key='event:'||e.id::text)
                 ORDER BY e.id LIMIT 4
-                """, (self.config.allowed_owners,)).fetchall()
+                """, (self.config.allowed_owners, self.company.settings.slack_allowed_channels)).fetchall()
             rows = safe_rows(rows + events)
             if not rows:
                 return None
@@ -70,14 +103,23 @@ class Store:
     def next_job(self):
         with self.db.transaction() as conn:
             return conn.execute("""SELECT * FROM maintenance_jobs
-                WHERE state IN ('triage','patch','design','evaluate','publish','ci','pr')
-                ORDER BY updated_at,id LIMIT 1""").fetchone()
+                WHERE state IN ('review','triage','patch','design','evaluate','publish','ci','pr')
+                ORDER BY (payload ? 'request_project_id') DESC,updated_at,id LIMIT 1""").fetchone()
 
     def check_authorization(self, job):
         # A paused historical review must not keep using an owner's records after access is revoked.
         owners = set(job["payload"].get("owners", []))
         if not owners or not owners <= set(self.config.allowed_owners) & set(self.company.settings.slack_allowed_users):
             raise ValueError("review_owner_authorization_changed")
+        if job["payload"].get("request_project_id"):
+            from .requests import permitted
+
+            with self.db.transaction() as conn:
+                project = self.company._project(conn, job["payload"]["request_project_id"], lock=False)
+            if not permitted(self.company, project) or project["owner_user"] not in owners:
+                raise ValueError("review_owner_authorization_changed")
+            if project["revision"] != job["payload"]["request_revision"]:
+                raise ValueError("review_revision_changed")
 
     def save(self, job_id, state, *, payload=None, receipt=None, error=None):
         with self.db.transaction() as conn:
@@ -98,6 +140,8 @@ class Store:
             set(context.get("replay_inputs", {})) & set(finding.evidence_keys)
         ):
             raise ValueError("replay_case_requires_cited_recorded_request")
+        if finding:
+            validate_replay_plan(finding, context.get("replay_inputs", {}))
         with self.db.transaction() as conn:
             if finding:
                 case_id = str(uuid5(NAMESPACE_URL, "quant-company-maintenance:" + finding.problem_key))
@@ -108,6 +152,12 @@ class Store:
                            "review_digest": context.get("review_digest"), "owners": context["owners"],
                            "replay_inputs": inputs, "replay_inputs_digest": digest(inputs),
                            "evaluation_plan_digest": digest(finding.evaluation.model_dump())}
+                payload.update({key: context[key] for key in
+                                ("request_project_id", "request_task_id", "request_revision") if key in context})
+                existing = conn.execute("SELECT payload->'owners' AS owners FROM maintenance_jobs WHERE problem_key=%s",
+                                        (finding.problem_key,)).fetchone()
+                if existing and set(existing["owners"]) != set(context["owners"]):
+                    raise ValueError("case_owner_scope_mismatch")
                 state = "design" if finding.evaluation.mode == "design_only" else "patch"
                 conn.execute("""INSERT INTO maintenance_jobs(id,kind,state,problem_key,payload)
                     VALUES (%s,'repair',%s,%s,%s) ON CONFLICT (problem_key) DO NOTHING""",
@@ -170,6 +220,8 @@ class Store:
             # Report as the existing director, clearly attributed to the maintenance process.
             # The dedicated kind is excluded from observation to prevent self-generated loops.
             projects = {item["project_id"] for item in job["payload"]["observations"] if item.get("project_id")}
+            if job["payload"].get("request_project_id"):
+                projects.add(job["payload"]["request_project_id"])
             for project_id in sorted(projects):
                 project = self.company._project(conn, project_id)
                 if project["owner_user"] not in self.config.allowed_owners:
@@ -186,3 +238,32 @@ class Store:
             state = "pr_open" if receipt["pr"]["state"] == "open" else "closed"
             conn.execute("UPDATE maintenance_jobs SET state=%s,receipt=%s,error=NULL,updated_at=now() WHERE id=%s",
                          (state, Jsonb(receipt), job["id"]))
+
+    def report_reviews(self):
+        from .requests import permitted, progress_text, report, service
+
+        # One notice per distinct durable state, including terminal failure/no-finding and budget waits.
+        with self.db.transaction() as conn:
+            jobs = conn.execute("""SELECT * FROM maintenance_jobs WHERE kind='review'
+                ORDER BY COALESCE(receipt->>'last_report_scan_at',''),created_at LIMIT 50""").fetchall()
+            for job in jobs:
+                conn.execute("UPDATE maintenance_jobs SET receipt=jsonb_set(receipt,'{last_report_scan_at}',%s) WHERE id=%s",
+                             (Jsonb(datetime.now(UTC).isoformat()), job["id"]))
+                project = self.company._project(conn, job["payload"]["request_project_id"])
+                owner = project["owner_user"]
+                if (not permitted(self.company, project) or owner not in self.config.allowed_owners
+                        or project["revision"] != job["payload"]["request_revision"]):
+                    continue
+                value = report(conn, job, owner)
+                identity = str(uuid5(NAMESPACE_URL, "maintenance-review-notice:" + digest(value)))
+                if conn.execute("SELECT 1 FROM messages WHERE id=%s", (identity,)).fetchone():
+                    continue
+                self.company._message(conn, project, None, "director", "maintenance",
+                                      "[개선 담당] " + progress_text(value, service(conn, self.company, owner)),
+                                      message_id=identity)
+                if value.get("pr"):
+                    pr_id = str(uuid5(NAMESPACE_URL, f"maintenance-pr:{value['case_id']}:{project['id']}"))
+                    if not conn.execute("SELECT 1 FROM messages WHERE id=%s", (pr_id,)).fetchone():
+                        self.company._message(conn, project, None, "director", "maintenance",
+                                              "[개선 담당] 진단에 연결된 PR: " + value["pr"]["url"] +
+                                              "\n내용과 검증 범위를 검토한 뒤 반영 여부를 결정해 주세요.", message_id=pr_id)
