@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS maintenance_control (
  id integer PRIMARY KEY CHECK (id=1), next_observe_at timestamptz NOT NULL DEFAULT now()
 );
 INSERT INTO maintenance_control(id) VALUES (1) ON CONFLICT DO NOTHING;
+-- Public service facts only. GitHub credentials stay in the maintenance process.
+ALTER TABLE maintenance_control ADD COLUMN IF NOT EXISTS runtime jsonb NOT NULL DEFAULT '{}';
 -- Bounded look-back diagnostics over the existing company records.
 CREATE INDEX IF NOT EXISTS maintenance_turn_history ON turns(created_at);
 CREATE INDEX IF NOT EXISTS maintenance_task_history ON tasks(created_at);

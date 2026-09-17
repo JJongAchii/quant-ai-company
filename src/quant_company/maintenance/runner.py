@@ -30,6 +30,11 @@ INSTRUCTIONS = (
     "Return AgentDecision with status=complete, no tools/delegations/messages/memories/follow_up, "
     "and exactly one artifact whose content is JSON matching the supplied schema. "
     "Artifact source_ids may be empty or cite only the exact non-omitted evidence keys supplied below. "
+    "Your observation/history is NOT the employee's context. Read each replay_input.employee_context before "
+    "claiming an employee ignored available data. Missing history/tools is an integration gap, not a prompt defect. "
+    "For missing capabilities use design_only, not a prompt patch that pretends the capability exists. "
+    "Observer message:/turn: keys are not employee approved source IDs; replay source expectations must be "
+    "present in that saved employee_context.approved_sources. Later replies cannot be expected in earlier input. "
     "Do not claim tests or code changes have executed. Do not include credentials or personal data.\n"
 )
 
@@ -83,13 +88,16 @@ class Maintainer:
     async def step(self, job):
         self.store.check_authorization(job)
         payload, receipt, job_id = job["payload"], job["receipt"], str(job["id"])
-        if job["state"] == "triage":
+        if job["state"] == "review":
+            self.store.prepare_review(job)
+        elif job["state"] == "triage":
             if "snapshot" not in payload:
                 payload["snapshot"] = await asyncio.to_thread(self.github.snapshot)
                 self.store.save(job_id, "triage", payload=payload)
             result = await self.propose(job, "triage", {
                 "observations": payload["observations"], "editable_paths": payload["snapshot"]["paths"],
                 "history": payload.get("review", {}),
+                "requested_diagnosis": payload.get("instruction"),
                 "instructions": "Identify at most one evidenced improvement to employee behavior, collaboration, "
                 "organization or runtime. Counts and repeated delegations are diagnostic signals, not proof of defects. "
                 "Give a causal hypothesis and freeze a testable success criterion BEFORE seeing or writing a patch. "
@@ -114,13 +122,18 @@ class Maintainer:
                 payload["originals"] = await asyncio.to_thread(
                     self.github.read_files, payload["snapshot"], payload["finding"]["paths"])
                 self.store.save(job_id, "patch", payload=payload)
-            test_path = ROOT + "tests/test_maintenance_regression_" + job_id.replace("-", "") + ".py"
+            mode = payload["finding"]["evaluation"]["mode"]
+            test_path = (ROOT + "tests/test_maintenance_regression_" + job_id.replace("-", "") + ".py"
+                         if mode == "regression" else None)
             plan = await self.propose(job, "patch", {
                 "finding": payload["finding"], "evidence_references": [item["key"] for item in payload["observations"]],
                 "source_files": payload["originals"], "required_new_test_path": test_path,
                 "instructions": "Make minimal exact text replacements. Each nonempty old string must "
-                "occur exactly once in the supplied file. New files are allowed only at required_new_test_path "
-                "with empty old. Python changes require a meaningful regression test reproducing the defect. "
+                "occur exactly once in the supplied file. When required_new_test_path is null, add NO files or tests; "
+                "prompt_replay changes ONLY the selected employee mission/instructions in roles.json, "
+                "and uses the frozen recorded-request replay, not a new Python test. "
+                "For regression mode only, new files are allowed at required_new_test_path with empty old. "
+                "Python changes require a meaningful regression test reproducing the defect. "
                 "Do not weaken existing tests. Tests will run in isolated CI; do not execute anything here. "
                 "If the supplied files cannot support a repair, return no proposal rather than inventing context.",
             }, Patch)
@@ -223,6 +236,7 @@ class Maintainer:
 
     @activity.defn(name="company_maintenance_tick")
     async def tick(self):
+        self.store.heartbeat()
         if not self.config.enabled:
             return {"state": "disabled"}
         # Session-scoped lock covers external effects without holding a transaction open.
@@ -257,7 +271,10 @@ class Maintainer:
                     self.store.save(job["id"], "blocked", error=code)
                 return {"state": "blocked", "reason": code}
             finally:
-                lock.execute("SELECT pg_advisory_unlock(71350221)")
+                try:
+                    self.store.report_reviews()
+                finally:
+                    lock.execute("SELECT pg_advisory_unlock(71350221)")
 
 
 async def run_maintenance(company, config):

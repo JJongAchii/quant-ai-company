@@ -39,9 +39,13 @@ def accept_approval(company, *, text, owner, channel, thread_ts, event_key, even
         if not project or owner not in company.settings.slack_allowed_users:
             return None
         jobs = conn.execute("""SELECT j.* FROM maintenance_jobs j WHERE j.kind='repair'
-            AND j.receipt ? 'pr' AND EXISTS (
+            AND j.receipt ? 'pr' AND (EXISTS (
               SELECT 1 FROM jsonb_array_elements(j.payload->'observations') x
-              WHERE x->>'project_id'=%s) ORDER BY j.created_at DESC""", (str(project["id"]),)).fetchall()
+              WHERE x->>'project_id'=%s) OR EXISTS (
+              SELECT 1 FROM maintenance_jobs r WHERE r.kind='review'
+                AND r.payload->>'request_project_id'=%s AND r.payload->'owners'=%s
+                AND r.receipt->>'case_id'=j.id::text)) ORDER BY j.created_at DESC""",
+                            (str(project["id"]), str(project["id"]), Jsonb([owner]))).fetchall()
         # Only a PR actually announced in this thread can be approved implicitly.
         announced = []
         for job in jobs:

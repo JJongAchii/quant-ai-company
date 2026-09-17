@@ -8,6 +8,41 @@ from .policy import SECRET, EvaluationPlan, Finding, digest
 ROLE_PATH = "src/quant_company/roles.json"
 
 
+def employee_context(request):
+    """Read exactly the context persisted for this employee, not the observer's newer history."""
+    try:
+        runtime_text, task_text = request["prompt"].split("RUNTIME CONFIG JSON:\n", 1)[1].split("\nTASK DATA JSON:\n", 1)
+        return json.loads(runtime_text), json.loads(task_text)
+    except (KeyError, ValueError, TypeError) as exc:
+        raise ValueError("recorded_employee_context_unavailable") from exc
+
+
+def validate_replay_plan(finding, inputs):
+    """Reject impossible criteria before spending a patch or replay model call."""
+    if finding.evaluation.mode != "prompt_replay":
+        return
+    if finding.paths != [ROLE_PATH]:
+        raise ValueError("prompt_replay_requires_role_instructions_only")
+    agents = set()
+    for case in finding.evaluation.cases:
+        saved = inputs[case.request_key]
+        runtime, context = employee_context(saved["request"])
+        agents.add(saved["agent"])
+        role = next((r for r in runtime["employees"] if r["id"] == saved["agent"]), None)
+        if not role or not role["active"]:
+            raise ValueError("replay_role_unavailable")
+        if case.expected.source_ids and not set(case.expected.source_ids) <= {
+            source["id"] for source in context["approved_sources"]
+        }:
+            raise ValueError("replay_expectation_requires_unknown_source")
+        if case.expected.tools and not set(case.expected.tools) <= set(role["tools"]):
+            raise ValueError("replay_expectation_requires_unauthorized_tool")
+        if case.expected.delegates and not set(case.expected.delegates) <= set(role["can_delegate_to"]):
+            raise ValueError("replay_expectation_requires_unauthorized_delegation")
+    if len(agents) != 1:
+        raise ValueError("prompt_replay_requires_same_employee")
+
+
 def verify_plan(payload):
     finding = Finding.model_validate(payload["finding"])
     if digest(finding.evaluation.model_dump()) != payload.get("evaluation_plan_digest"):
@@ -16,6 +51,7 @@ def verify_plan(payload):
         raise ValueError("replay_inputs_changed")
     if payload.get("review_digest") and digest(payload["review"]) != payload["review_digest"]:
         raise ValueError("review_evidence_changed")
+    validate_replay_plan(finding, payload.get("replay_inputs", {}))
     return finding
 
 
