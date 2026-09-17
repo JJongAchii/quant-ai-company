@@ -11,7 +11,7 @@ from ..contracts import StrictModel
 ROOT = ""
 WORKFLOW = ".github/workflows/quant-company-ci.yml"
 PROTECTED = {
-    "api.py", "config.py", "contracts.py", "db.py", "schema.sql", "slack.py", "socket_mode.py",
+    "api.py", "cli.py", "config.py", "contracts.py", "db.py", "schema.sql", "slack.py", "socket_mode.py",
 }
 SECRET = re.compile(
     r"(?:AKIA|ASIA)[A-Z0-9]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|"

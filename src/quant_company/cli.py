@@ -67,6 +67,10 @@ def main():
     maintenance = sub.add_parser("maintenance")
     maintenance.add_argument("--config", type=Path, required=True)
     sub.add_parser("maintenance-status")
+    release = sub.add_parser("maintenance-release")
+    release.add_argument("action", choices=["next", "archive", "activity", "finish"])
+    release.add_argument("--id")
+    release.add_argument("--config", type=Path, default=Path("/etc/quant-company/maintenance.json"))
     slack = sub.add_parser("slack-manifests")
     slack.add_argument("--transport", choices=["socket", "http"], default="socket")
     slack.add_argument("--base-url")
@@ -113,3 +117,7 @@ def main():
                 payload->'evaluation' AS evaluation,
                 receipt,error,created_at,updated_at FROM maintenance_jobs ORDER BY created_at DESC LIMIT 50""").fetchall()
         print(json.dumps(rows, default=str, ensure_ascii=False, indent=2))
+    elif args.command == "maintenance-release":
+        from .maintenance.releases import command
+
+        command(Company(settings), args.action, args.id, args.config)

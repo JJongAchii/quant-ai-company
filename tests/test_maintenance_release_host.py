@@ -1,0 +1,140 @@
+import importlib.util
+import io
+import json
+import tarfile
+from pathlib import Path
+from uuid import uuid4
+
+import pytest
+
+spec = importlib.util.spec_from_file_location('maintenance_release', Path(__file__).parents[1]/'deploy/maintenance_release.py')
+release = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(release)
+
+
+def archive(files):
+    stream = io.BytesIO()
+    with tarfile.open(fileobj=stream, mode='w:gz') as bundle:
+        for path, content in files.items():
+            data = content.encode()
+            info = tarfile.TarInfo('repository/'+path)
+            info.size = len(data)
+            bundle.addfile(info, io.BytesIO(data))
+    return stream.getvalue()
+
+
+@pytest.mark.parametrize('path', ['../../outside', '/outside'])
+def test_archive_traversal_never_writes_outside_release(tmp_path, path):
+    data = archive({path: 'injected'})
+    if path.startswith('/'):
+        # The producer already adds a prefix; explicitly exercise an absolute member.
+        stream = io.BytesIO()
+        with tarfile.open(fileobj=stream, mode='w:gz') as tar:
+            member = tarfile.TarInfo(path)
+            tar.addfile(member)
+        data = stream.getvalue()
+    with pytest.raises(ValueError):
+        release.unpack(data, tmp_path/'release')
+    assert not (tmp_path/'outside').exists()
+
+
+def test_host_rejects_protected_or_symlink_changes_before_build(tmp_path):
+    previous, target = tmp_path/'old', tmp_path/'new'
+    for root in [previous, target]:
+        (root/'deploy').mkdir(parents=True)
+        (root/'deploy/Dockerfile').write_text('original')
+    (target/'deploy/Dockerfile').write_text('unapproved root command')
+    with pytest.raises(ValueError, match='protected_file'):
+        release.validate_tree(previous, target)
+    (target/'deploy/Dockerfile').unlink()
+    (target/'deploy/Dockerfile').symlink_to(previous/'deploy/Dockerfile')
+    with pytest.raises(ValueError, match='symlink'):
+        release.validate_tree(previous, target)
+
+
+def fixture_host(tmp_path, monkeypatch, *, fail_health=False):
+    state = tmp_path/'state'
+    (state/'config').mkdir(parents=True)
+    root = tmp_path/'opt'
+    previous = root/'releases'/('a'*40)
+    previous.mkdir(parents=True)
+    (previous/'qdata').mkdir()
+    (previous/'qdata/pinned.py').write_text('original qdata')
+    roles = [{'id': 'director', 'model': 'repo-model', 'mission': 'old', 'instructions': 'old'}]
+    files = {'src/quant_company/roles.json': json.dumps(roles), 'deploy/Dockerfile': 'trusted',
+             'deploy/qdata-source.json': json.dumps({'commit': 'b'*40}), 'src/quant_company/tools.py': 'old code'}
+    for name, content in files.items():
+        path = previous/name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content)
+    files['src/quant_company/tools.py'] = 'new code'
+    roles[0]['mission'] = 'new mission'
+    files['src/quant_company/roles.json'] = json.dumps(roles)
+    deployed = [{**roles[0], 'model': 'operator-model', 'mission': 'old'}]
+    (state/'config/roles.json').write_text(json.dumps(deployed))
+    oldenv = b'RELEASE_COMMIT='+b'a'*40+b'\nCUSTOM_VALUE=keep\n'
+    (state/'config/runtime.env').write_bytes(oldenv)
+    current = root/'current'
+    current.symlink_to(previous)
+    monkeypatch.setattr(release, 'STATE', state)
+    monkeypatch.setattr(release, 'CURRENT', current)
+    commands, reports, backups = [], [], []
+    monkeypatch.setattr(release, 'compose', lambda root, *args, **kw: commands.append((root, args)))
+    monkeypatch.setattr(release, 'run', lambda *a, **kw: b'[{"Id":"unchanged-postgres"}]')
+    monkeypatch.setattr(release, 'take_backup', lambda *args: backups.append(args))
+
+    def health(commit, postgres):
+        assert postgres == 'unchanged-postgres'
+        if fail_health and commit == 'c'*40:
+            raise ValueError('release_service_unhealthy')
+        return {'healthy_services': 7, 'postgres_recreated': False}
+
+    def protocol(action, identity=None, data=None):
+        if action == 'archive':
+            return archive(files)
+        if action == 'activity':
+            return {'active': 0, 'outbox': 0}
+        assert action == 'finish'
+        reports.append(data)
+        return data
+
+    monkeypatch.setattr(release, 'health', health)
+    monkeypatch.setattr(release.time, 'sleep', lambda seconds: None)
+    monkeypatch.setattr(release, 'protocol', protocol)
+    return state, current, previous, commands, reports, backups, oldenv
+
+
+@pytest.mark.parametrize('failed', [False, True])
+def test_real_files_cutover_or_rollback_preserves_overrides_and_db(tmp_path, monkeypatch, failed):
+    state, current, previous, commands, reports, backups, oldenv = fixture_host(tmp_path, monkeypatch, fail_health=failed)
+    item = {'id': str(uuid4()), 'commit': 'c'*40}
+    release.execute(item)
+    assert len(backups) == 1
+    assert reports[-1]['state'] == ('rolled_back' if failed else 'complete')
+    assert all('postgres' not in args for _, args in commands)
+    roles = json.loads((state/'config/roles.json').read_text())
+    assert roles[0]['model'] == 'operator-model'
+    if failed:
+        assert current.resolve() == previous and (state/'config/runtime.env').read_bytes() == oldenv
+        assert roles[0]['mission'] == 'old'
+    else:
+        assert current.resolve().name == 'c'*40 and roles[0]['mission'] == 'new mission'
+    count = len(commands)
+    release.execute(item)  # A lost DB acknowledgement is reconciled without a second cutover.
+    assert len(commands) == count
+
+
+def test_interrupted_cutover_recovers_previous_release(tmp_path, monkeypatch):
+    state, current, previous, commands, reports, _, oldenv = fixture_host(tmp_path, monkeypatch)
+    identity = str(uuid4())
+    records = state/'releases'
+    records.mkdir()
+    (records/(identity+'.env')).write_bytes(oldenv)
+    (records/(identity+'.roles')).write_bytes((state/'config/roles.json').read_bytes())
+    (records/(identity+'.json')).write_text(json.dumps({'commit': 'c'*40, 'previous': str(previous),
+                        'postgres_id': 'unchanged-postgres', 'state': 'cutover'}))
+    (state/'config/runtime.env').write_text('interrupted config')
+    release.execute({'id': identity, 'commit': 'c'*40})
+    assert current.resolve() == previous and (state/'config/runtime.env').read_bytes() == oldenv
+    assert reports[-1]['state'] == 'rolled_back'
+    assert not any('build' in args for _, args in commands)
