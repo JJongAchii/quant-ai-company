@@ -1,0 +1,257 @@
+{
+  "source_commit": "73642d846a5a558e8be2adc2ef9b88999d569b32",
+  "runtime_commit": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+  "runtime_checked_at": "2026-09-17T06:43:33.368111+00:00",
+  "roles": [
+    {
+      "id": "director",
+      "source_model": "gpt-6-astra",
+      "runtime_model": "gpt-6-astra",
+      "source_active": true,
+      "runtime_active": true,
+      "source_version": "6",
+      "runtime_version": "5",
+      "source_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "company_history",
+        "maintenance_review",
+        "maintenance_status",
+        "system_status",
+        "repository_read",
+        "finance_search",
+        "finance_read",
+        "web_search",
+        "web_read"
+      ],
+      "runtime_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "company_history",
+        "maintenance_review",
+        "maintenance_status",
+        "system_status",
+        "repository_read",
+        "finance_search",
+        "finance_read"
+      ],
+      "source_instructions_sha256": "3be60a45a987a020387228a75dc3a30370948e5e086c984cd58eb1c178812d69",
+      "runtime_instructions_sha256": "923655022da7798df5c636a318a3b1fd06b26f13837b0c8ed938cdc8df15c921"
+    },
+    {
+      "id": "financial_strategist",
+      "source_model": "gpt-6-astra",
+      "runtime_model": "gpt-6-astra",
+      "source_active": true,
+      "runtime_active": true,
+      "source_version": "4",
+      "runtime_version": "3",
+      "source_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_search",
+        "finance_read",
+        "web_search",
+        "web_read"
+      ],
+      "runtime_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_search",
+        "finance_read"
+      ],
+      "source_instructions_sha256": "bb7d8349a6b977587fcfe94a8fc7c81f04cfaf3934f31002a9a3ff323098d49e",
+      "runtime_instructions_sha256": "7ce64017e5025b08ddd8872a144d5c1d8cbf8a51a0c544fef06abdb493943242"
+    },
+    {
+      "id": "researcher_kr",
+      "source_model": "gpt-5.6-sol",
+      "runtime_model": "gpt-5.6-sol",
+      "source_active": true,
+      "runtime_active": true,
+      "source_version": "4",
+      "runtime_version": "3",
+      "source_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_search",
+        "finance_read",
+        "web_search",
+        "web_read"
+      ],
+      "runtime_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_search",
+        "finance_read"
+      ],
+      "source_instructions_sha256": "e1660709caebfb209dedfbd5a0fe79ca691334161a67f3fde503ac69cd703d4e",
+      "runtime_instructions_sha256": "9b965b8412c22aed7c1389e2d2029e1a043eb8f88b9960d26b44593822ea541f"
+    },
+    {
+      "id": "researcher_global",
+      "source_model": "gpt-5.6-sol",
+      "runtime_model": "gpt-5.6-sol",
+      "source_active": false,
+      "runtime_active": false,
+      "source_version": "2",
+      "runtime_version": "2",
+      "source_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "runtime_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "source_instructions_sha256": "647ab72ba181ab44777830f8eeff5387012f8cc9d7ff0799d5015b563c14a457",
+      "runtime_instructions_sha256": "647ab72ba181ab44777830f8eeff5387012f8cc9d7ff0799d5015b563c14a457"
+    },
+    {
+      "id": "researcher_crypto",
+      "source_model": "gpt-5.6-sol",
+      "runtime_model": "gpt-5.6-sol",
+      "source_active": false,
+      "runtime_active": false,
+      "source_version": "2",
+      "runtime_version": "2",
+      "source_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "runtime_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "source_instructions_sha256": "52c045a89a455b5ebef0d6fa4ab5b7788dee009597e9f2edd6fee8f1bb6a4866",
+      "runtime_instructions_sha256": "52c045a89a455b5ebef0d6fa4ab5b7788dee009597e9f2edd6fee8f1bb6a4866"
+    },
+    {
+      "id": "data",
+      "source_model": "gpt-5.6-terra",
+      "runtime_model": "gpt-5.6-terra",
+      "source_active": true,
+      "runtime_active": true,
+      "source_version": "6",
+      "runtime_version": "5",
+      "source_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "lake_catalog",
+        "lake_describe",
+        "lake_sample",
+        "finance_search",
+        "finance_read",
+        "web_search",
+        "web_read"
+      ],
+      "runtime_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "lake_catalog",
+        "lake_describe",
+        "lake_sample",
+        "finance_search",
+        "finance_read"
+      ],
+      "source_instructions_sha256": "cb8eeb8c4421d64bddc37b9659b38dd55f6c013dd7bd3757b5b9e176b2a674d6",
+      "runtime_instructions_sha256": "4730186874fe1b513231c9867052475cdb14886b646cd418038ac1482ff62723"
+    },
+    {
+      "id": "engineer",
+      "source_model": "gpt-5.6-sol",
+      "runtime_model": "gpt-5.6-sol",
+      "source_active": false,
+      "runtime_active": false,
+      "source_version": "2",
+      "runtime_version": "2",
+      "source_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "runtime_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "source_instructions_sha256": "0b120986f9a001960c15d2fc385f71f6c508ed7f64250aa3acd2f59e056070f5",
+      "runtime_instructions_sha256": "0b120986f9a001960c15d2fc385f71f6c508ed7f64250aa3acd2f59e056070f5"
+    },
+    {
+      "id": "validator",
+      "source_model": "gpt-6-astra",
+      "runtime_model": "gpt-6-astra",
+      "source_active": false,
+      "runtime_active": false,
+      "source_version": "2",
+      "runtime_version": "2",
+      "source_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "runtime_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "source_instructions_sha256": "cc188ea621e4496a636df75c0fdd2be2ba3c0df3e5f4044b0b31bc2be3d546ed",
+      "runtime_instructions_sha256": "cc188ea621e4496a636df75c0fdd2be2ba3c0df3e5f4044b0b31bc2be3d546ed"
+    },
+    {
+      "id": "risk",
+      "source_model": "gpt-6-astra",
+      "runtime_model": "gpt-6-astra",
+      "source_active": false,
+      "runtime_active": false,
+      "source_version": "2",
+      "runtime_version": "2",
+      "source_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "runtime_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "source_instructions_sha256": "559eb45911c16feaed5601fb833766028042022448e8de117bbe5578c38e8201",
+      "runtime_instructions_sha256": "559eb45911c16feaed5601fb833766028042022448e8de117bbe5578c38e8201"
+    },
+    {
+      "id": "operations",
+      "source_model": "gpt-5.6-terra",
+      "runtime_model": "gpt-5.6-terra",
+      "source_active": false,
+      "runtime_active": false,
+      "source_version": "2",
+      "runtime_version": "2",
+      "source_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "runtime_tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "source_instructions_sha256": "c4b4ffb1eadf1470a5231839196d808a2bd54698e7313d42af3064ee3d037c43",
+      "runtime_instructions_sha256": "c4b4ffb1eadf1470a5231839196d808a2bd54698e7313d42af3064ee3d037c43"
+    }
+  ]
+}

@@ -1,0 +1,455 @@
+{
+  "checked_at": "2026-09-17T06:43:33.368111+00:00",
+  "loaded_code_commit": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+  "roles": [
+    {
+      "id": "director",
+      "name": "총괄",
+      "mission": "사용자의 목표를 실행 가능한 업무로 나누고 담당자·우선순위·결과를 연결한다.",
+      "model": "gpt-6-astra",
+      "active": true,
+      "version": "5",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "company_history",
+        "maintenance_review",
+        "maintenance_status",
+        "system_status",
+        "repository_read",
+        "finance_search",
+        "finance_read"
+      ],
+      "can_delegate_to": [
+        "financial_strategist",
+        "researcher_kr",
+        "data"
+      ],
+      "instructions_sha256": "923655022da7798df5c636a318a3b1fd06b26f13837b0c8ed938cdc8df15c921",
+      "instructions_characters": 4143
+    },
+    {
+      "id": "financial_strategist",
+      "name": "금융전략",
+      "mission": "경제·금융 개념과 제도·상품 구조를 연결하고 연구의 경제적 설명·반례를 검토한다.",
+      "model": "gpt-6-astra",
+      "active": true,
+      "version": "3",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_search",
+        "finance_read"
+      ],
+      "can_delegate_to": [
+        "researcher_kr",
+        "data"
+      ],
+      "instructions_sha256": "7ce64017e5025b08ddd8872a144d5c1d8cbf8a51a0c544fef06abdb493943242",
+      "instructions_characters": 3203
+    },
+    {
+      "id": "researcher_kr",
+      "name": "국내시장 연구",
+      "mission": "국내 일·월 주기 아이디어를 측정 가능한 가설·자료 요구·실험 계획으로 구체화한다.",
+      "model": "gpt-5.6-sol",
+      "active": true,
+      "version": "3",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_search",
+        "finance_read"
+      ],
+      "can_delegate_to": [
+        "financial_strategist",
+        "data"
+      ],
+      "instructions_sha256": "9b965b8412c22aed7c1389e2d2029e1a043eb8f88b9960d26b44593822ea541f",
+      "instructions_characters": 2720
+    },
+    {
+      "id": "researcher_global",
+      "name": "글로벌시장 연구",
+      "mission": "글로벌 일·월 주기 연구의 국가·통화·거래일·자산 간 정합성을 설계한다.",
+      "model": "gpt-5.6-sol",
+      "active": false,
+      "version": "2",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "can_delegate_to": [
+        "financial_strategist",
+        "data",
+        "engineer"
+      ],
+      "instructions_sha256": "647ab72ba181ab44777830f8eeff5387012f8cc9d7ff0799d5015b563c14a457",
+      "instructions_characters": 1893
+    },
+    {
+      "id": "researcher_crypto",
+      "name": "가상자산 연구",
+      "mission": "가상자산 일·중빈도·고빈도 아이디어의 데이터·체결·시장 구조 요구를 구분한다.",
+      "model": "gpt-5.6-sol",
+      "active": false,
+      "version": "2",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "can_delegate_to": [
+        "financial_strategist",
+        "data",
+        "engineer"
+      ],
+      "instructions_sha256": "52c045a89a455b5ebef0d6fa4ab5b7788dee009597e9f2edd6fee8f1bb6a4866",
+      "instructions_characters": 1928
+    },
+    {
+      "id": "data",
+      "name": "데이터",
+      "mission": "자료의 출처·가용 시점·스키마·단위를 확인하고 확인 가능한 데이터 계약을 작성한다.",
+      "model": "gpt-5.6-terra",
+      "active": true,
+      "version": "5",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "lake_catalog",
+        "lake_describe",
+        "lake_sample",
+        "finance_search",
+        "finance_read"
+      ],
+      "can_delegate_to": [],
+      "instructions_sha256": "4730186874fe1b513231c9867052475cdb14886b646cd418038ac1482ff62723",
+      "instructions_characters": 3932
+    },
+    {
+      "id": "engineer",
+      "name": "퀀트 개발",
+      "mission": "승인된 명세를 구현 가능한 인터페이스·코드 산출물·검증 계획으로 바꾼다.",
+      "model": "gpt-5.6-sol",
+      "active": false,
+      "version": "2",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "can_delegate_to": [
+        "data",
+        "operations"
+      ],
+      "instructions_sha256": "0b120986f9a001960c15d2fc385f71f6c508ed7f64250aa3acd2f59e056070f5",
+      "instructions_characters": 1922
+    },
+    {
+      "id": "validator",
+      "name": "독립 검증",
+      "mission": "구현·연구 주장과 증거의 일치 및 인과적 타당성을 독립적으로 검토한다.",
+      "model": "gpt-6-astra",
+      "active": false,
+      "version": "2",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "can_delegate_to": [
+        "data"
+      ],
+      "instructions_sha256": "cc188ea621e4496a636df75c0fdd2be2ba3c0df3e5f4044b0b31bc2be3d546ed",
+      "instructions_characters": 1940
+    },
+    {
+      "id": "risk",
+      "name": "포트폴리오·리스크",
+      "mission": "계좌 전체의 노출·손실 가능성·구성 제약·유동성 가정을 정리한다.",
+      "model": "gpt-6-astra",
+      "active": false,
+      "version": "2",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "can_delegate_to": [
+        "financial_strategist",
+        "data",
+        "validator"
+      ],
+      "instructions_sha256": "559eb45911c16feaed5601fb833766028042022448e8de117bbe5578c38e8201",
+      "instructions_characters": 1901
+    },
+    {
+      "id": "operations",
+      "name": "플랫폼 운영",
+      "mission": "업무·데이터·인증·복구 상태를 근거와 함께 설명하고 운영 대응안을 작성한다.",
+      "model": "gpt-5.6-terra",
+      "active": false,
+      "version": "2",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "can_delegate_to": [],
+      "instructions_sha256": "c4b4ffb1eadf1470a5231839196d808a2bd54698e7313d42af3064ee3d037c43",
+      "instructions_characters": 1885
+    }
+  ],
+  "capabilities": {
+    "external_web_search": false,
+    "research_worker_submission": false,
+    "strategy_code_execution": false,
+    "live_trading": false
+  },
+  "scope": "Read-only production configuration and aggregate records; counts are not skill scores; no model calls or research execution.",
+  "sources": [
+    {
+      "kind": "company_operations",
+      "synthetic": false,
+      "approved": true,
+      "global_scope": false,
+      "count": 22
+    },
+    {
+      "kind": "lake_metadata",
+      "synthetic": false,
+      "approved": true,
+      "global_scope": false,
+      "count": 11
+    },
+    {
+      "kind": "official_read",
+      "synthetic": false,
+      "approved": true,
+      "global_scope": false,
+      "count": 2
+    },
+    {
+      "kind": "other",
+      "synthetic": true,
+      "approved": true,
+      "global_scope": true,
+      "count": 1
+    }
+  ],
+  "memories": [],
+  "work_counts": [
+    {
+      "agent": "data",
+      "status": "blocked",
+      "count": 1
+    },
+    {
+      "agent": "data",
+      "status": "completed",
+      "count": 7
+    },
+    {
+      "agent": "data",
+      "status": "superseded",
+      "count": 1
+    },
+    {
+      "agent": "director",
+      "status": "blocked",
+      "count": 1
+    },
+    {
+      "agent": "director",
+      "status": "completed",
+      "count": 30
+    },
+    {
+      "agent": "director",
+      "status": "superseded",
+      "count": 1
+    },
+    {
+      "agent": "financial_strategist",
+      "status": "completed",
+      "count": 6
+    },
+    {
+      "agent": "financial_strategist",
+      "status": "superseded",
+      "count": 1
+    },
+    {
+      "agent": "researcher_kr",
+      "status": "completed",
+      "count": 3
+    },
+    {
+      "agent": "researcher_kr",
+      "status": "superseded",
+      "count": 1
+    }
+  ],
+  "artifact_counts": [
+    {
+      "agent": "data",
+      "count": 6
+    },
+    {
+      "agent": "director",
+      "count": 15
+    },
+    {
+      "agent": "financial_strategist",
+      "count": 3
+    },
+    {
+      "agent": "researcher_kr",
+      "count": 3
+    }
+  ],
+  "verification_scopes": [
+    {
+      "id": "operator-acceptance:director-mentions-v1",
+      "feature": "director_owner_mentions",
+      "scope": "Real Codex calculation progress and final answer; owner mention verified by Slack readback. Clarification, blockers and maintenance notifications covered by PostgreSQL regression tests. No device push notification or read acknowledgement verified.",
+      "created_at": "2026-09-17 06:22:28.226608+00:00"
+    },
+    {
+      "id": "operator-host-release:380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "feature": "host_release",
+      "scope": "Actual host container labels/health, loaded role/config digests and both disabled daily quotas; not general behavioral or rollback proof.",
+      "created_at": "2026-09-17 06:20:58.760913+00:00"
+    },
+    {
+      "id": "operator-acceptance:conversation-finance-v1",
+      "feature": "conversation_finance",
+      "scope": "Operator-provided live amendment classified as amend; superseded old tasks; four employees used real official HTML and existing lake metadata; four artifacts and Slack delivery read back. No new human signed ingress, broad interpretation accuracy, general web search, research execution or financial exam claim.",
+      "created_at": "2026-09-17 05:56:30.214348+00:00"
+    },
+    {
+      "id": "operator-host-release:bebe87d2db24c3a8526bf879bbf0d078986a40c6",
+      "feature": "host_release",
+      "scope": "Actual host container labels/health, loaded role/config digests and both disabled daily quotas; not general behavioral or rollback proof.",
+      "created_at": "2026-09-17 05:44:50.912498+00:00"
+    },
+    {
+      "id": "operator-host-release:85f8620493103b5d9e188af5a775598dcc31d311",
+      "feature": "host_release",
+      "scope": "Actual host container labels/health, loaded role/config digests and both disabled daily quotas; not general behavioral or rollback proof.",
+      "created_at": "2026-09-17 04:46:59.361859+00:00"
+    },
+    {
+      "id": "operator-host-release:bcb4f70ec164f12b5feb1d4608d2ee784e52a7af",
+      "feature": "host_release",
+      "scope": "Actual host container labels/health, loaded role/config digests and both disabled daily quotas; not general behavioral or rollback proof.",
+      "created_at": "2026-09-17 04:31:10.852390+00:00"
+    },
+    {
+      "id": "operator-host-release:ababd0827948854dcba109f0533f87df6899ceca",
+      "feature": "host_release",
+      "scope": "Actual host container labels/health, loaded role/config digests and both disabled daily quotas; not general behavioral or rollback proof.",
+      "created_at": "2026-09-17 04:05:15.918089+00:00"
+    },
+    {
+      "id": "operator-host-release:a89aa4ba28c67cf58ca9b16a7621e260566dbfa1",
+      "feature": "host_release",
+      "scope": "Actual host container labels/health, loaded role/config digests and both disabled daily quotas; not general behavioral or rollback proof.",
+      "created_at": "2026-09-17 03:50:37.427206+00:00"
+    }
+  ],
+  "maintenance_states": [
+    {
+      "kind": "repair",
+      "state": "applied",
+      "count": 1
+    },
+    {
+      "kind": "repair",
+      "state": "blocked",
+      "count": 2
+    },
+    {
+      "kind": "repair",
+      "state": "pr_open",
+      "count": 1
+    },
+    {
+      "kind": "review",
+      "state": "done",
+      "count": 4
+    },
+    {
+      "kind": "triage",
+      "state": "done",
+      "count": 12
+    }
+  ],
+  "maintenance_models": [
+    {
+      "model": "gpt-5.6-sol",
+      "calls": 20,
+      "recorded_responses": 20
+    }
+  ],
+  "recent_models": [
+    {
+      "agent": "data",
+      "requested_model": "gpt-5.6-terra",
+      "recorded_provider": "codex",
+      "recorded_responses": 21
+    },
+    {
+      "agent": "director",
+      "requested_model": "gpt-6-astra",
+      "recorded_provider": "codex",
+      "recorded_responses": 46
+    },
+    {
+      "agent": "financial_strategist",
+      "requested_model": "gpt-6-astra",
+      "recorded_provider": "codex",
+      "recorded_responses": 10
+    },
+    {
+      "agent": "researcher_kr",
+      "requested_model": "gpt-5.6-sol",
+      "recorded_provider": "codex",
+      "recorded_responses": 7
+    }
+  ],
+  "host_release": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+  "containers": [
+    {
+      "name": "/quant-company-api-1",
+      "code_commit": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "started_at": "2026-09-17T06:19:46.993503572Z",
+      "running": true
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "code_commit": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "started_at": "2026-09-17T06:20:23.023882596Z",
+      "running": true
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "code_commit": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "started_at": "2026-09-17T06:19:46.79367418Z",
+      "running": true
+    },
+    {
+      "name": "/quant-company-maintenance-1",
+      "code_commit": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "started_at": "2026-09-17T06:20:21.289504257Z",
+      "running": true
+    }
+  ],
+  "maintenance_enabled": true
+}
