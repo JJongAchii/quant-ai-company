@@ -204,7 +204,7 @@ class Store:
                             datetime.fromisoformat(evidence[k]["created_at"]) > datetime.fromisoformat(truth["created_at"])
                             for k in finding.evidence_keys if k not in current_keys and evidence[k].get("created_at"))
                         if not fresh_failure:
-                            conn.execute("UPDATE maintenance_jobs SET state='done',receipt=%s WHERE id=%s",
+                            conn.execute("UPDATE maintenance_jobs SET state='done',error=NULL,receipt=%s,updated_at=now() WHERE id=%s",
                                          (Jsonb({"case_id": str(existing["id"]), "reason": "No new failure after case assessment."}), job["id"]))
                             return
                     if existing["state"] == "superseded" or truth["disposition"] in {"resolved", "invalidated"}:
@@ -236,7 +236,7 @@ class Store:
                            "evidence_keys": finding.evidence_keys}
             else:
                 receipt = {"reason": result.reason}
-            conn.execute("UPDATE maintenance_jobs SET state='done',receipt=%s,updated_at=now() WHERE id=%s",
+            conn.execute("UPDATE maintenance_jobs SET state='done',error=NULL,receipt=%s,updated_at=now() WHERE id=%s",
                          (Jsonb(receipt), job["id"]))
 
     def prepare_call(self, job, phase, prompt, *, model=None):
