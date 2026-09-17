@@ -1,0 +1,10 @@
+{
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "source_id": "operator:etf-pilot-b01-blocker-20260918",
+  "receipt": {
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "task_id": "4bd99541-9426-5cb8-a442-35a5deb5c58d",
+    "duplicate": false
+  },
+  "new_slack_ingress": false
+}

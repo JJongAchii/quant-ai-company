@@ -1,6 +1,6 @@
 # 첫 회사 연구: 국내상장 ETF 월간 파일럿
 
-상태: **실제 직원 준비·보완 업무 완료, discovery brief 사용자 승인 기록 완료, 3070 실행 준비 중**. 전략 성과는 미측정이다.
+상태: **승인 명세로 3070 기준선 실행을 시도했고, 보유 ETF의 가격·종료 현금흐름 근거 부재로 차단됐다**. 전체기간 성과와 후보 성과는 미측정이다.
 
 - [연구 스레드](https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789633942673909)
 - 회사 프로젝트: `9aac0de4-2b97-5195-a720-287d324234f3`
@@ -43,6 +43,10 @@ lake-surveyor가 조회한 결과를 운영자가 공급한 것이다. 데이터
 - `evidence/research-center-preparation-verified-20260918.json`: DB 산출물과 Slack 실제 readback.
 - `evidence/research-pilot-approval-20260918.json`: 실제 사용자 승인 원문과 명세 digest.
 - `evidence/research-pilot-approval-runtime-20260918.json`: 회사 DB의 승인 이벤트·출처 및 Slack 전달 확인.
+- `evidence/research-pilot-execution-blocked-20260918.json`: 실제 3070 차단 원인·identity·원천 대조와 공식 공시 확인.
+- `evidence/research-pilot-result-dispatch-20260918.json`: 차단 결과의 총괄·데이터·국내연구 검토 접수.
+- `evidence/research-pilot-artifact-verification-20260918.json`: 회수한 38개 artifact digest와 승인·실행 identity 대조. 독립 누수 감사는 아니다.
+- `evidence/research-pilot-result-verified-20260918.json`: 실제 3개 검토 작업·3개 artifact·7개 Codex turn·9개 Slack 게시 readback과 총괄 최종 태그.
 
 ## 실제 인수 결과
 
@@ -62,9 +66,61 @@ stress 비용 후 절대 CAGR, ADV20, meta/profile 구분, M1/M2/M3 및 종료 �
 통합본에서도 해당 정정을 확인했다. 이는 한 실제 사례의 수정 확인이며 일반적인 오류 자동
 탐지·전문성 인증 또는 자율 연구 완주가 아니다.
 
-과학 실행 0회, 독립 누수 감사·성과 HTML 리포트는 아직 없다. 승인된
+승인된
 `quant-lab` 연구 명세 커밋은 `8f2403986463714c1cf39ac748ce39d7b8395faa`다.
 문서 SHA-256: `0a4ce1555e4e040d5af6977ce72be2878594c39d160e453de20d5a4cd7911cf6`.
 원본 제안 문서는 수정하지 않고 별도 `APPROVAL.json`으로 승인 상태를 기록한다.
 회사 프로젝트에도 `operator_discovery_approved` 이벤트와 실제 승인 출처
-`operator:etf-discovery-approved-20260918`을 등록했다. 구현·3070 qualification·개발 실행·회수·감사·보고를 진행한다.
+`operator:etf-discovery-approved-20260918`을 등록했다. 이후 구현·3070 qualification·기준선 실행·회수까지 수행했으며, 아래 데이터 차단을 확인했다.
+
+## 승인 후 실제 실행 결과
+
+- 실행 코드: `c736cb2075405f708e2aae448c8107122b99a2d1`.
+- 호스트: `worker` / `DESKTOP-5T00NAF` / RTX 3070. 다른 작업과 분리한 checkout에서 실행했다.
+- 초기 warmup qualification과 고정 코드·config 재qualification은 모두 성공했다. 각 단계는
+  2012–2013년만 읽었고 성과를 계산하지 않았다. 최종 워커 인과성·회계 검사 19개가 통과했다.
+- 개발 입력은 S3 원천 ETag와 제한된 snapshot SHA-256으로 고정했다. 모든 실행 결과는
+  rsync로 회수했다. qdata/S3 원본을 수정하지 않았다.
+- 기준선 B01을 1회 시도했으나 전체기간 성과 산출 전에 차단됐다. 성과를 산출한 실행은 0회,
+  후보 실행은 0회다. 부분기간 CAGR도 계산하거나 저장하지 않았다.
+
+최초 평가 불가일은 **2015-02-23**이다. 보유 8종목
+`091200`, `104580`, `105020`, `161520`, `161530`, `161540`, `161550`, `166060`은
+승인 개발 snapshot에서 2015-02-17이 최종 관측일이다. 문제 날짜에 다른 ETF 166행은 존재한다.
+가격·메타 원천 대조에서 조인 손실이나 전체시장 휴장일 누락으로 설명되지 않았다.
+원본 `blocker.json`은 직전 실제 주문·미체결과 code/config/host identity를 보존한다.
+해당 output에는 `start.json`, `run_meta.yaml`, `blocker.json`만 있고 성과 계열·objective는 없다.
+
+진단용으로 확인한 [ARIRANG 4종의 공식 안내](https://www.plusetf.co.kr/customer/notice/detail?n=17204)는
+2월 23일 상장폐지, 3월 4일 해지상환금 지급을 예정했다.
+[TIGER 브릭스의 KRX 공시](https://kind.krx.co.kr/external/2015/01/07/000083/20150107000172/68629.htm)는
+같은 상장폐지일과 2월 24일 지급을 예정했다. 이는 **5종목의 공지된 일정** 확인이며,
+8종목 모두의 실제 지급액·확정 지급일 검증이 아니다. 이 공시를 backtest 입력으로 추가하지 않았다.
+마지막 종가로 일괄 현금화할 근거도 확보하지 못했다.
+
+승인 명세의 "근거 있는 평가·청산 처리가 없으면 해당 실행은 차단한다" 조건을 적용했다.
+결과는 `blocked / unmeasured`이며 `no-candidate`, 경제적 기준 미달 또는 전략 손실 판정이 아니다.
+완료된 성과 artifact가 없어 D2 독립 누수 감사와 성과 HTML 차트는 생성하지 않았다.
+이는 19개 구현 검사가 독립 연구 감사나 전략 적격성을 대신한다는 뜻이 아니다.
+
+## 재개 조건과 검증의 한계
+
+해당 종목의 식별 연속성·종료 사건, 거래정지 기간의 근거 있는 평가, 실제 주당 환매금액과
+지급일, 조정가격 단위와 현금 정산의 일관성을 확보해야 한다. 이 입력과 처리 코드를 고정해
+qualification을 다시 통과한 뒤 같은 기준선부터 재개한다. 유니버스·기간을 바꾸는 경우에는
+새 범위 승인이 필요하다. 현재 연구 입력과 qdata 원본은 그대로 유지했다.
+
+연구 레포의 전체 `make gate`는 무관한 `strategies/scalerank/v03/uv.lock` 최신성 검사에서
+막혔다. root lock 검사·파일럿 ruff·인과성 검사는 통과했다. 레포 규약이 허용하는 명시적
+`--no-verify`로 연구 브랜치만 전송했고 원인과 로그를 연구 증거에 남겼다.
+전체 gate 통과나 main 병합·운영 배포로 표시하지 않는다.
+
+차단 증거를 회사 공통 source로 등록해 실제 총괄·데이터·국내연구가 검토했다.
+3개 작업과 3개 artifact, 실제 Codex turn 7개가 완료됐고 9개 게시를 Slack에서 다시 읽어
+본문과 직원 identity를 대조했다. 총괄의 최종 답변에는 소유자 태그가 붙었다.
+[같은 스레드의 최종 보고](https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789687609496389?thread_ts=1789633942.673909&cid=C0C2B9EUEGM).
+이 검토는 제공된 실행 증거를 읽고 연구 상태·재개 조건을 대조한 것이며,
+직원들이 원천 레이크나 공시를 다시 조회한 독립 감사로 표시하지 않는다.
+
+연구 코드·근거는 [quant-lab PR #16](https://github.com/JJongAchii/quant-lab/pull/16),
+회사 협업·인수 기록은 [quant-ai-company PR #30](https://github.com/JJongAchii/quant-ai-company/pull/30)에 있다.
