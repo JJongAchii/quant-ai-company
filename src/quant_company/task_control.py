@@ -30,7 +30,7 @@ def immediate(text):
 
 
 def waiting_router(conn, project_id):
-    return conn.execute("""SELECT id FROM tasks WHERE project_id=%s AND kind='routing'
+    return conn.execute("""SELECT id,status FROM tasks WHERE project_id=%s AND kind='routing'
         AND status NOT IN ('completed','superseded') ORDER BY created_at,id LIMIT 1""", (project_id,)).fetchone()
 
 
@@ -39,6 +39,12 @@ def held(conn, project, task):
     if task['kind'] == 'routing':
         return bool(router and router['id'] != task['id'])
     return bool(router) or (project['status'] != 'active' and task['kind'] != 'answer')
+
+
+def hold_delay(conn, project):
+    router = waiting_router(conn, project['id'])
+    # Resolution/resume creates fresh work immediately. Dormant old turns need no busy polling.
+    return 1800 if project['status'] != 'active' or (router and router['status'] == 'blocked') else 15
 
 
 def routing_prompt(conn, task, project):

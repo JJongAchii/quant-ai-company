@@ -128,7 +128,7 @@ def test_ambiguity_holds_work_and_reply_resolves_with_saved_question(company):
     old = turn_for(company, first['task_id'])
     question = submit(company, 'unclear', '그건 빼줘', first['project_id'])
     route(company, question, 'clarify', question='어떤 항목을 제외할까요?')
-    assert company.prepare_turn(old)['state'] == 'defer'
+    assert company.prepare_turn(old)['seconds'] == 1800  # No fast polling while waiting for the owner.
     reply = submit(company, 'clarify-reply', '주식 ETF를 제외해줘', first['project_id'])
     route(company, reply, 'amend')
     state = company.project_state(first['project_id'])

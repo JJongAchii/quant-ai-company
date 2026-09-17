@@ -2,6 +2,11 @@
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS clarification text;
 ALTER TABLE tasks ADD COLUMN IF NOT EXISTS kind text NOT NULL DEFAULT 'work';
 CREATE INDEX IF NOT EXISTS task_routing_queue ON tasks(project_id,created_at,id) WHERE kind='routing';
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS metadata jsonb NOT NULL DEFAULT '{}';
+CREATE TABLE IF NOT EXISTS finance_fetches (
+ turn_id uuid PRIMARY KEY REFERENCES turns(id), request_digest text NOT NULL,
+ result jsonb NOT NULL, original_html text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
 CREATE TABLE IF NOT EXISTS company_policy (
  id integer PRIMARY KEY CHECK(id=1), revision integer NOT NULL DEFAULT 0,
  remove_company_daily_limit boolean NOT NULL DEFAULT false,
