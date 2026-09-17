@@ -113,14 +113,15 @@ async def test_durable_pipeline_to_pr_and_slack_outbox_once(company):
     with company.db.transaction() as conn:
         case = conn.execute("SELECT * FROM maintenance_jobs WHERE kind='repair'").fetchone()
         assert case["state"] == "pr_open"
-        assert conn.execute("SELECT count(*) AS n FROM outbox WHERE text LIKE '[개선 담당]%%'").fetchone()["n"] == 1
+        notices = conn.execute("SELECT text FROM outbox WHERE text LIKE '%%[개선 담당]%%'").fetchall()
+        assert len(notices) == 1 and notices[0]['text'].startswith('<@UHUMAN>')
         assert conn.execute("SELECT reserved FROM daily_usage").fetchone()["reserved"] == 2
         conn.execute("UPDATE maintenance_control SET next_observe_at=now()")
     # Own notification must not create another observation/job or another external write.
     assert runner.store.collect() is None
     runner.store.finish_pr(case, case["receipt"])
     with company.db.transaction() as conn:
-        assert conn.execute("SELECT count(*) AS n FROM outbox WHERE text LIKE '[개선 담당]%%'").fetchone()["n"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM outbox WHERE text LIKE '%%[개선 담당]%%'").fetchone()["n"] == 1
 
 
 @pytest.mark.integration

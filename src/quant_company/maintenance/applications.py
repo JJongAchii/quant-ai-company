@@ -19,11 +19,11 @@ def approval_command(text):
     return (True, int(match[1]) if match[1] else None) if match else (False, None)
 
 
-def notify(company, conn, project, identity, text):
+def notify(company, conn, project, identity, text, *, notify_owner=False):
     message_id = str(uuid5(NAMESPACE_URL, "maintenance-application:" + identity))
     if not conn.execute("SELECT 1 FROM messages WHERE id=%s", (message_id,)).fetchone():
         company._message(conn, project, None, "director", "maintenance", "[개선 담당] " + text,
-                         message_id=message_id)
+                         message_id=message_id, notify_owner=notify_owner)
 
 
 def accept_approval(company, *, text, owner, channel, thread_ts, event_key, event_ts=None):
@@ -63,7 +63,8 @@ def accept_approval(company, *, text, owner, channel, thread_ts, event_key, even
         if not jobs:
             return None
         if len(jobs) != 1:
-            notify(company, conn, project, event_key, "검토할 PR이 여러 개입니다. ‘PR 번호 반영해’로 대상을 지정해 주세요.")
+            notify(company, conn, project, event_key, "검토할 PR이 여러 개입니다. ‘PR 번호 반영해’로 대상을 지정해 주세요.",
+                   notify_owner=True)
             return {"maintenance_approval": "ambiguous"}
         job = jobs[0]
         old = conn.execute("SELECT * FROM maintenance_applications WHERE job_id=%s", (job["id"],)).fetchone()
@@ -120,7 +121,7 @@ class Applications:
                     text = (f"PR #{pr} 반영을 완료하지 못했습니다. {reason}. "
                             + ("이전 서버 버전으로 복구했습니다." if state == "rolled_back"
                                else "승인 기록과 진행 결과를 보존했습니다. 운영자 확인이 필요합니다."))
-                notify(self.company, conn, project, str(application["id"]) + ":" + state, text)
+                notify(self.company, conn, project, str(application["id"]) + ":" + state, text, notify_owner=True)
 
     def advance(self):
         with self.company.db.transaction() as conn:

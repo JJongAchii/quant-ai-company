@@ -306,7 +306,7 @@ class Store:
                     self.company._message(conn, project, None, "director", "maintenance",
                                           "[개선 담당] " + summary +
                                           f"{receipt['pr']['url']}\n운영 반영은 검토 후 진행합니다.",
-                                          message_id=message_id)
+                                          message_id=message_id, notify_owner=True)
             state = "pr_open" if receipt["pr"]["state"] == "open" else "closed"
             conn.execute("UPDATE maintenance_jobs SET state=%s,receipt=%s,error=NULL,updated_at=now() WHERE id=%s",
                          (state, Jsonb(receipt), job["id"]))
@@ -332,10 +332,14 @@ class Store:
                     continue
                 self.company._message(conn, project, None, "director", "maintenance",
                                       "[개선 담당] " + progress_text(value, service(conn, self.company, owner)),
-                                      message_id=identity)
+                                      message_id=identity,
+                                      notify_owner=(value['state'] == 'blocked' or
+                                                    (value['state'] in {'done', 'applied', 'closed'}
+                                                     and not value.get('error'))))
                 if value.get("pr"):
                     pr_id = str(uuid5(NAMESPACE_URL, f"maintenance-pr:{value['case_id']}:{project['id']}"))
                     if not conn.execute("SELECT 1 FROM messages WHERE id=%s", (pr_id,)).fetchone():
                         self.company._message(conn, project, None, "director", "maintenance",
                                               "[개선 담당] 진단에 연결된 PR: " + value["pr"]["url"] +
-                                              "\n내용과 검증 범위를 검토한 뒤 반영 여부를 결정해 주세요.", message_id=pr_id)
+                                              "\n내용과 검증 범위를 검토한 뒤 반영 여부를 결정해 주세요.", message_id=pr_id,
+                                              notify_owner=value['state'] == 'pr_open' and not value.get('error'))

@@ -1,6 +1,8 @@
 import hashlib
 import json
+import re
 from datetime import UTC, datetime, timedelta
+from html import escape
 from importlib.resources import files
 from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 
@@ -95,6 +97,12 @@ class Company:
                                         "can publish. Questions preserve work; amendments supersede old work; ambiguity "
                                         "asks one question and holds work. Explicit 중단해, 이어서 진행해, 상태 use no model. "
                                         "Controls apply to this thread only. In-flight Slack deliveries may already arrive.",
+                "owner_mentions": "The server mentions the thread owner on the director's final answer, "
+                                  "clarification/blocker, maintenance review request and final application result. "
+                                  "Progress, delegation and employee messages do not notify the owner. "
+                                  "Do not write Slack mention syntax yourself. For a question requiring the owner's "
+                                  "answer or approval, put the question in say and finish with status=complete; "
+                                  "do not continue tools, delegation or scheduled work while awaiting that answer.",
                 "company_history": "Director only: {query?: string, limit?: 1..20}. Reads the owner's recorded "
                                    "requests/results in authorized Slack channels over the last 30 days. "
                                    "Use for past requests, not knowledge_search. Returns a citable source and truncation flags.",
@@ -153,16 +161,27 @@ class Company:
             raise PolicyError("Project not found or not accessible")
         return project
 
-    def _message(self, conn, project, task_id, author, kind, text, recipient=None, message_id=None):
+    def _message(self, conn, project, task_id, author, kind, text, recipient=None, message_id=None,
+                 *, notify_owner=False):
         message_id = message_id or str(uuid4())
         conn.execute("""INSERT INTO messages(id,project_id,task_id,revision,author,recipient,kind,text)
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
                      (message_id, project["id"], task_id, project["revision"], author, recipient, kind, text))
         if project["channel"] and author in self.roles:
+            # Persist the rendered text now: delayed progress must not turn into a completion ping.
+            owner = project["owner_user"]
+            mention = (notify_owner and author == "director" and recipient is None
+                       and owner in self.settings.slack_allowed_users and re.fullmatch(r"[UW][A-Z0-9]+", owner))
+            rendered = re.sub(r"<@" + re.escape(owner) + r"(?:\|[^<>]*)?>", "", text).lstrip() if mention else text
+            # Keep ordinary links/formatting; only the server may create notification tokens.
+            rendered = re.sub(r"<(?:@[^<>]+|!(?:here|channel|everyone)(?:\|[^<>]*)?|!subteam\^[^<>]+)>",
+                              lambda match: escape(match[0], quote=False), rendered)
+            if mention:
+                rendered = f"<@{owner}>\n{rendered}"
             conn.execute("""INSERT INTO outbox(id,project_id,revision,agent,channel,thread_ts,text)
                 VALUES (%s,%s,%s,%s,%s,%s,%s)""",
                          (message_id, project["id"], project["revision"], author,
-                          project["channel"], project["thread_ts"], text))
+                          project["channel"], project["thread_ts"], rendered))
 
     def _new_turn(self, conn, task, due_at=None):
         sequence = task["turn_count"] + 1
@@ -172,7 +191,8 @@ class Company:
                         task["project_id"])
             project = self._project(conn, task["project_id"])
             self._message(conn, project, task["id"], task["agent"], "status",
-                          "업무별 실행 횟수에 도달해 확인을 기다립니다. 지금까지의 결과는 보존했습니다.")
+                          "업무별 실행 횟수에 도달해 확인을 기다립니다. 지금까지의 결과는 보존했습니다.",
+                          notify_owner=not task["parent_id"])
             self._wake_parent(conn, task, project)
             return None
         turn_id = stable(f"turn:{task['id']}:{sequence}")
@@ -472,7 +492,8 @@ class Company:
                 return
             conn.execute("UPDATE tasks SET status='blocked',error=%s WHERE id=%s", (reason, task["id"]))
             self._message(conn, project, task["id"], task["agent"], "status",
-                          f"업무가 확인 대기 상태입니다. 사유: {reason}. 작업 기록은 보존했습니다.")
+                          f"업무가 확인 대기 상태입니다. 사유: {reason}. 작업 기록은 보존했습니다.",
+                          notify_owner=not task["parent_id"])
             self._event(conn, "turn_blocked", {"turn_id": turn_id, "reason": reason}, project["id"])
             self._wake_parent(conn, task, project)
 
@@ -604,8 +625,20 @@ class Company:
                 raise PolicyError("At most one lake query is allowed per turn")
             if decision.follow_up and not now() < decision.follow_up.at <= now() + timedelta(days=30):
                 raise PolicyError("Follow-up must be in the next 30 days")
-            if decision.say.strip():
-                self._message(conn, project, task["id"], task["agent"], "answer", decision.say)
+            final = task["agent"] == "director" and not task["parent_id"] and decision.status == "complete"
+            # Maintenance owns the eventual result notification; its intake acknowledgement is progress.
+            if final and conn.execute("SELECT to_regclass('maintenance_jobs') AS name").fetchone()["name"]:
+                final = not conn.execute("""SELECT 1 FROM maintenance_jobs WHERE kind='review'
+                    AND payload->>'request_task_id'=%s LIMIT 1""", (str(task["id"]),)).fetchone()
+            say = decision.say
+            if final and not say.strip():
+                say = "\n\n".join(a.title + "\n" + a.content +
+                                  ("\n출처: " + ", ".join(a.source_ids) if a.source_ids else "")
+                                  for a in decision.artifacts)
+                if len(say) > 6000:
+                    say = say[:5900] + "\n(일부 생략. 전체 결과는 이 업무의 산출물 기록에 보관했습니다.)"
+            if say.strip():
+                self._message(conn, project, task["id"], task["agent"], "answer", say, notify_owner=final)
             for action in decision.messages:
                 self._message(conn, project, task["id"], task["agent"], "peer", action.text, action.agent)
             for index, action in enumerate(decision.delegations):
