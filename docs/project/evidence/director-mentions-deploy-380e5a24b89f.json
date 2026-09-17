@@ -1,0 +1,123 @@
+{
+  "recorded_at": "2026-09-17T06:20:24.304988+00:00",
+  "release": {
+    "release_commit": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+    "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "release": "/opt/quant-company/releases/380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+    "archive_sha256": {
+      "service": "ebddcf3bda636df4192c9dfdca70647a2ac50b8f193b026aa3fbc013657ceb6f",
+      "qdata": "8bb50549a923f3ec39bb1e6ffce2ac182ed41d368275614e55f60686707a138c"
+    }
+  },
+  "previous_release": "/opt/quant-company/releases/bebe87d2db24c3a8526bf879bbf0d078986a40c6",
+  "active_work_before": {
+    "tasks": 0,
+    "outbox": 0
+  },
+  "backup_status": "Result=success\nExecMainStatus=0\n",
+  "postgres_recreated": false,
+  "roles_sha256": "7beae53d2959284c77ba0220416408956bdda359846ce849c90f8010cc81a73d",
+  "maintenance_enabled": true,
+  "containers": {
+    "postgres": {
+      "id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+      "image": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "memory_limit_bytes": 268435456,
+      "state": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "revision": null,
+      "secret_mount_names": [
+        "database_admin_password",
+        "database_password"
+      ]
+    },
+    "api": {
+      "id": "84dcde516318075abe786563b2a85930b099816fd8e20ddc5050c3dd99051f41",
+      "image": "sha256:28747ccf96218db580ea913c69d417ede5c68afcc74405871bded0f3643c7b40",
+      "memory_limit_bytes": 134217728,
+      "state": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "revision": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "secret_mount_names": [
+        "database_password",
+        "operator_token",
+        "slack_credentials"
+      ]
+    },
+    "worker": {
+      "id": "d4d6f0f61abd66a3dfad4dfba77315725823ffdcf6dd4e0e6ac875f55ab1c41d",
+      "image": "sha256:28747ccf96218db580ea913c69d417ede5c68afcc74405871bded0f3643c7b40",
+      "memory_limit_bytes": 402653184,
+      "state": "running",
+      "health": null,
+      "oom_killed": false,
+      "revision": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "secret_mount_names": [
+        "database_password",
+        "lake_read_credentials",
+        "model_runtime_token",
+        "temporal_api_key"
+      ]
+    },
+    "dispatch": {
+      "id": "1e23ab62965391ab3ba8045e8816705848249ec154eb076aa5d3c6000ecb1c3c",
+      "image": "sha256:28747ccf96218db580ea913c69d417ede5c68afcc74405871bded0f3643c7b40",
+      "memory_limit_bytes": 201326592,
+      "state": "running",
+      "health": null,
+      "oom_killed": false,
+      "revision": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "secret_mount_names": [
+        "database_password",
+        "slack_credentials",
+        "temporal_api_key"
+      ]
+    },
+    "slack-socket": {
+      "id": "35da6319ce127a6cd7038c7cf3c85ee6c2e76741e0decceebed3340f376a3bbf",
+      "image": "sha256:28747ccf96218db580ea913c69d417ede5c68afcc74405871bded0f3643c7b40",
+      "memory_limit_bytes": 201326592,
+      "state": "running",
+      "health": null,
+      "oom_killed": false,
+      "revision": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "secret_mount_names": [
+        "database_password",
+        "slack_credentials"
+      ]
+    },
+    "codex-runtime": {
+      "id": "466cfd423672fcf949c483cad6d713a74676affad0b1569fbe9b2a351774e0bb",
+      "image": "sha256:61639d90d59503ce0a63882cebef4a116964b9e98e03fff65b6c9d0930e1a36b",
+      "memory_limit_bytes": 536870912,
+      "state": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "revision": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "secret_mount_names": [
+        "model_runtime_token"
+      ]
+    },
+    "maintenance": {
+      "id": "24f47902069bf2cea1c5f9c72df4d3463534ea6e98845cdbf9a9240cd0e72dbc",
+      "image": "sha256:ddb71723505b59b4474d4da81388670171f4e87f0265aed1e30fe34b61dd6173",
+      "memory_limit_bytes": 134217728,
+      "state": "running",
+      "health": null,
+      "oom_killed": false,
+      "revision": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "secret_mount_names": [
+        "database_password",
+        "maintenance_github_key",
+        "model_runtime_token",
+        "temporal_api_key"
+      ]
+    }
+  },
+  "daily_limits": {
+    "company": null,
+    "maintenance": null
+  }
+}

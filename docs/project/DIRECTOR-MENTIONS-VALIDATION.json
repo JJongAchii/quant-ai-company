@@ -1,0 +1,78 @@
+{
+  "status": "deployed_and_verified",
+  "recorded_at": "2026-09-17 06:22:28.214835+00:00",
+  "user_request": "총괄 BOT은 최종적인 결론이나 결과가 나왔을 때나 나의 확인이 필요할 때 나를 태그해서 답변하도록 해줘.",
+  "repository": "JJongAchii/quant-ai-company",
+  "implementation_pr": "https://github.com/JJongAchii/quant-ai-company/pull/21",
+  "deployed_commit": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+  "ci_source_tree_matches_deployed": true,
+  "behavior": {
+    "mention": "해당 스레드의 허용된 요청자 한 명",
+    "notify": [
+      "총괄 최종 답변·결과",
+      "명확화 질문·운영자 확인이 필요한 중단",
+      "개선 PR 검토 요청",
+      "개선 점검·적용의 최종 결과"
+    ],
+    "quiet": [
+      "중간 진행",
+      "직원 간 메시지·위임",
+      "일반 상태 조회",
+      "접수·승인 기록 안내",
+      "자동 재시도·예산 대기"
+    ],
+    "delivery": "서버가 DB에 발신 본문을 기록할 때 태그 확정. 같은 발신 ID로 재시도하며 불확실한 발신은 자동 반복하지 않음."
+  },
+  "tests": {
+    "local_targeted_passed": 86,
+    "local_and_github_full_passed": 282,
+    "skipped": 1,
+    "live_deselected": 1,
+    "ci_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35188883162",
+    "scope": "실제 PostgreSQL·Temporal, 모델과 Slack HTTP는 테스트 대역. 실제 모델·Slack은 아래 운영 검증으로 별도 확인."
+  },
+  "production": {
+    "services_running": 7,
+    "oom_killed": false,
+    "database_recreated": false,
+    "backup_result": "Result=success\nExecMainStatus=0\n",
+    "resources": "기존 서울 Lightsail 2GB와 기존 구독·서비스 구성을 사용. 새 유료 리소스 없음."
+  },
+  "live_acceptance": {
+    "operator_supplied_scenario": true,
+    "new_signed_human_slack_ingress": false,
+    "real_codex_turns": 2,
+    "real_slack_messages": 2,
+    "progress_owner_mention": false,
+    "final_owner_mentions": 1,
+    "slack_result": "https://achiisquantresearch.slack.com/archives/C0C1Q8D0B6K/p1789626102840479",
+    "scope": "Real Codex calculation progress and final answer; owner mention verified by Slack readback. Clarification, blockers and maintenance notifications covered by PostgreSQL regression tests. No device push notification or read acknowledgement verified."
+  },
+  "repository_boundary": {
+    "new_company_records": "quant-ai-company only",
+    "quant_workspace_checkpoint": "24d5f418b4a380d448cd7b3c955e9936f6b7b017",
+    "quant_workspace_modified": false
+  },
+  "evidence": [
+    {
+      "path": "docs/project/evidence/director-mentions-ci.json",
+      "sha256": "53efb37ec6b5dfb325e793a41a3ab45ec0b59e2dfd994320bf01928fb2b3027f"
+    },
+    {
+      "path": "docs/project/evidence/director-mentions-deploy-380e5a24b89f.json",
+      "sha256": "201e364846c5d34f44996bd3eb3fa2ba1c0f09df4550d9850b1f41a7f574d960"
+    },
+    {
+      "path": "docs/project/evidence/director-mentions-host-380e5a24b89f.json",
+      "sha256": "b702a3ed03be5b63177f32df5c8d71eb4d94d1d6cb2fed9bae3fe0eea3800f11"
+    },
+    {
+      "path": "docs/project/evidence/director-mentions-live-start.json",
+      "sha256": "2ba49376009259261279869e16c931badb37a389a1c71581e80a4e0286b38732"
+    },
+    {
+      "path": "docs/project/evidence/director-mentions-live-verify.json",
+      "sha256": "9368766c17c0a25a75cfd1a2867fe86a18f8bb3b6a123807837daf7d3e082432"
+    }
+  ]
+}

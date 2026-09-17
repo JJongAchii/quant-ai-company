@@ -1,0 +1,87 @@
+{
+  "commit": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+  "containers": [
+    {
+      "name": "/quant-company-postgres-1",
+      "revision": null,
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 268435456
+    },
+    {
+      "name": "/quant-company-api-1",
+      "revision": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 134217728
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "revision": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 402653184
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "revision": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 201326592
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "revision": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 201326592
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "revision": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 536870912
+    },
+    {
+      "name": "/quant-company-maintenance-1",
+      "revision": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 134217728
+    }
+  ],
+  "maintenance_daily_cap": null,
+  "checked_at": "2026-09-17T06:20:56.561995+00:00",
+  "free_memory_kib": 976932,
+  "free_disk_bytes": 12402458624,
+  "root_disk_bytes": 61285326848,
+  "runtime_readback": {
+    "code_commit": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+    "roles_digest": "32c1cbe06275722faf11b75761b92ef63eefca16598f0e214a429332629e9da3",
+    "config_digest": "f8571bc2baa5c0ce504911a1acfa1a688852588b6cc9609a5a0c9e318c0ca60f",
+    "daily_limits": {
+      "company": null,
+      "maintenance": null
+    }
+  },
+  "temporal": {
+    "status": "RUNNING",
+    "run_id": "01a0ac98-38de-77d7-89a6-ce727e529933"
+  },
+  "release_timer_enabled": "enabled"
+}
