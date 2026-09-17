@@ -75,7 +75,7 @@ def current_system(conn, company, owners):
         fresh = datetime.now(UTC) - row["checked_at"] < timedelta(minutes=15)
         repo = {"state": "unknown" if row["metadata"].get("refresh_error") else "observed" if fresh else "stale", "commit": row["commit"],
                 "checked_at": str(row["checked_at"]), **row["metadata"]}
-    applications, corrections = [], []
+    applications, corrections, jobs = [], [], []
     if conn.execute("SELECT to_regclass('maintenance_jobs') AS name").fetchone()["name"]:
         applications = conn.execute("""SELECT a.id,a.job_id,a.state,a.head,a.receipt,a.error,a.updated_at,
             j.receipt->'pr' AS pr FROM maintenance_applications a JOIN maintenance_jobs j ON j.id=a.job_id
@@ -85,9 +85,16 @@ def current_system(conn, company, owners):
         corrections = conn.execute("""SELECT DISTINCT ON (a.case_id) a.* FROM finding_assessments a
             JOIN maintenance_jobs j ON j.id=a.case_id WHERE j.payload->'owners' <@ %s::jsonb
             ORDER BY a.case_id,a.created_at DESC LIMIT 12""", (Jsonb(owners),)).fetchall()
+        jobs = conn.execute("""SELECT id,kind,state,error,updated_at,
+            payload->'snapshot'->>'commit' AS diagnostic_commit,receipt->>'case_id' AS case_id
+            FROM maintenance_jobs WHERE payload->'owners' <@ %s::jsonb
+            ORDER BY updated_at DESC LIMIT 10""", (Jsonb(owners),)).fetchall()
     checks = conn.execute("""SELECT * FROM system_verifications ORDER BY created_at DESC LIMIT 12""").fetchall()
     result = as_json({"repository": repo, "runtime": runtime, "applications": applications,
-                      "assessments": corrections, "verifications": checks})
+                      "assessments": corrections, "verifications": checks,
+                      "maintenance_jobs": {"observed_at": datetime.now(UTC).isoformat(), "records": jobs,
+                                           "scope": "Latest 10 live DB states for these owners. Historical tool messages are not current state. "
+                                                    "Triage before a scheduled tick is not proof that automatic resumption is missing."}})
     for check in result["verifications"]:
         check["matches_running_version"] = (check["code_commit"] == runtime["code_commit"]
                                             and check["config_digest"] == runtime["config_digest"])
@@ -147,7 +154,7 @@ def diagnosis_context(conn, company, owners, snapshot, instruction):
     if not row:
         raise ValueError("current_repository_evidence_required")
     files = row["files"]
-    priority = ["src/quant_company/company.py", "src/quant_company/maintenance/requests.py",
+    priority = ["src/quant_company/maintenance/store.py", "src/quant_company/company.py", "src/quant_company/maintenance/requests.py",
                 "src/quant_company/maintenance/runner.py", "src/quant_company/owner_controls.py",
                 "src/quant_company/system_state.py", "tests/test_system_state.py",
                 "docs/adr/0018-current-system-evidence-and-owner-controls.md", "docs/project/NEXT-STEPS.md"]
@@ -157,9 +164,11 @@ def diagnosis_context(conn, company, owners, snapshot, instruction):
     for path in dict.fromkeys(priority + ranked):
         if path not in files or total >= 54000:
             continue
-        content = files[path][:min(6000, 54000-total)]
+        start = max(0, files[path].find("    def bind_diagnosis(")) if path.endswith("maintenance/store.py") else 0
+        content = files[path][start:start + min(6000, 54000-total)]
         records.append({"key": f"code:{snapshot['commit']}:{path}", "path": path,
                         "blob": snapshot["entries"][path]["sha"], "content": content,
+                        "start_line": files[path].count("\n", 0, start) + 1,
                         "excerpted": len(content) != len(files[path])})
         total += len(content)
     scope = digest([snapshot["commit"], system["runtime"]["config_digest"], system["runtime"]["roles_digest"],
