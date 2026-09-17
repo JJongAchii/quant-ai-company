@@ -12,6 +12,7 @@ ROOT = ""
 WORKFLOW = ".github/workflows/quant-company-ci.yml"
 PROTECTED = {
     "api.py", "cli.py", "config.py", "contracts.py", "db.py", "schema.sql", "slack.py", "socket_mode.py",
+    "system_state.py", "owner_controls.py", "state_schema.sql",
 }
 SECRET = re.compile(
     r"(?:AKIA|ASIA)[A-Z0-9]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|"
@@ -28,8 +29,8 @@ class MaintenanceConfig(StrictModel):
     installation_id: int = Field(gt=0)
     private_key_file: Path
     allowed_owners: list[str] = Field(min_length=1)
-    # Shared with the company's total budget; this is an additional, smaller cap.
-    max_daily_calls: int = Field(default=6, ge=1, le=12)
+    # Zero disables the additional daily quota. Subscription backoff still applies.
+    max_daily_calls: int = Field(default=0, ge=0, le=10000)
     poll_seconds: int = Field(default=300, ge=30, le=3600)
     observe_seconds: int = Field(default=600, ge=60, le=86400)
     enabled: bool = False

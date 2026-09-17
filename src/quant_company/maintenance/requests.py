@@ -31,29 +31,44 @@ def service(conn, company, owner):
         seconds=max(1200, config.get("poll_seconds", 300) * 3)))
     used = conn.execute("SELECT count(*) AS n FROM maintenance_calls WHERE created_at>=CURRENT_DATE").fetchone()["n"]
     next_day = conn.execute("SELECT (CURRENT_DATE+1)::timestamptz AS reset").fetchone()["reset"]
+    from ..owner_controls import effective_limits
+
+    limits = effective_limits(conn, company, config.get("max_daily_calls"))
     return as_json({"enabled": bool(config.get("enabled")), "worker_recently_seen": fresh,
                     "heartbeat_at": heartbeat, "poll_seconds": config.get("poll_seconds"),
-                    "daily_model_calls": used, "daily_model_call_cap": config.get("max_daily_calls"),
-                    "budget_resets_at": next_day, "approval_required_for_application": True})
+                    "daily_model_calls": used, "daily_model_call_cap": limits["maintenance"],
+                    "company_daily_model_call_cap": limits["company"], "policy_revision": limits["revision"],
+                    "budget_resets_at": next_day if limits["maintenance"] or limits["company"] else None,
+                    "approval_required_for_application": True})
 
 
 def report(conn, job, owner):
     """Follow a diagnostic's recorded case, never infer completion from the triage state."""
     current = job
-    if job["receipt"].get("case_id"):
+    visited = set()
+    while (next_id := current["receipt"].get("recheck_id") or current["receipt"].get("case_id")):
+        if next_id in visited or len(visited) >= 6:
+            return {"request_id": str(job["id"]), "state": "blocked", "error": "case_link_requires_review"}
+        visited.add(next_id)
         linked = conn.execute("SELECT * FROM maintenance_jobs WHERE id=%s AND payload->'owners'=%s",
-                              (job["receipt"]["case_id"], Jsonb([owner]))).fetchone()
+                              (next_id, Jsonb([owner]))).fetchone()
         if not linked:
             return {"request_id": str(job["id"]), "state": "blocked", "error": "case_owner_scope_mismatch"}
         current = linked
     finding = current["payload"].get("finding", {})
+    from ..system_state import assessment
+
+    truth = assessment(conn, current["id"])
     result = {"request_id": str(job["id"]), "case_id": str(current["id"]),
               "state": current["state"], "error": current["error"],
               "title": finding.get("title"), "problem": finding.get("problem"),
               "hypothesis": finding.get("hypothesis"), "evaluation_mode": finding.get("evaluation", {}).get("mode"),
               "evidence_keys": finding.get("evidence_keys", []),
-              "reason": job["receipt"].get("reason"), "pr": current["receipt"].get("pr"),
-              "created_at": job["created_at"]}
+              "reason": current["receipt"].get("reason") or job["receipt"].get("reason"), "pr": current["receipt"].get("pr"),
+              "created_at": job["created_at"], "assessment": truth,
+              "finding_is_current_fact": truth["disposition"] == "reproduced"}
+    if truth["disposition"] in {"invalidated", "resolved"}:
+        result["historical_finding"] = {k: result.pop(k) for k in ("problem", "hypothesis")}
     if SECRET.search(json.dumps(result, default=str)):
         return {"request_id": str(job["id"]), "state": "blocked", "error": "report_contains_possible_secret"}
     return as_json(result)
@@ -151,18 +166,35 @@ def tool(conn, company, task, request):
         raise PolicyError("Owner or channel is not authorized for company records")
     if request.name == "company_history":
         result = history(conn, company, project, request.arguments)
+    elif request.name == "repository_read":
+        from ..system_state import repository_read
+
+        result = repository_read(conn, request.arguments)
+    elif request.name == "system_status":
+        from ..system_state import current_system
+
+        if request.arguments:
+            raise PolicyError("system_status takes no arguments")
+        result = current_system(conn, company, [project["owner_user"]])
     else:
         if request.arguments:
             raise PolicyError("maintenance_review and maintenance_status take no arguments")
         result = (submit(conn, company, project, task) if request.name == "maintenance_review"
                   else status(conn, company, project))
-    content = json.dumps(result, ensure_ascii=False)
-    identity = "company:" + digest([str(project["id"]), request.name, result])[:24]
-    conn.execute("""INSERT INTO sources(id,title,uri,content,available_at,approved,project_id,synthetic)
-        VALUES (%s,%s,%s,%s,now(),true,%s,false) ON CONFLICT DO NOTHING""",
-                 (identity, request.name, "company://records/" + identity, content, project["id"]))
+    identity = record_source(conn, project, request.name, result)
     result["source_id"] = identity
     return result
+
+
+def record_source(conn, project, name, result):
+    content = json.dumps(result, ensure_ascii=False)
+    if SECRET.search(content):
+        raise PolicyError("Company evidence contains a possible secret")
+    identity = "company:" + digest([str(project["id"]), name, result])[:24]
+    conn.execute("""INSERT INTO sources(id,title,uri,content,available_at,approved,project_id,synthetic)
+        VALUES (%s,%s,%s,%s,now(),true,%s,false) ON CONFLICT DO NOTHING""",
+                 (identity, name, "company://records/" + identity, content, project["id"]))
+    return identity
 
 
 def progress_text(value, runtime):

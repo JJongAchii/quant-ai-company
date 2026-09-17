@@ -58,8 +58,9 @@ def maintenance_config_values(path: Path) -> dict:
     ):
         raise ValueError("Maintenance backup owners must be Slack user IDs")
     for key in ("app_id", "installation_id", "max_daily_calls", "poll_seconds", "observe_seconds"):
-        if type(values.get(key)) is not int or values[key] <= 0:
-            raise ValueError("Maintenance backup identifiers and limits must be positive integers")
+        minimum = 0 if key == "max_daily_calls" else 1
+        if type(values.get(key)) is not int or values[key] < minimum:
+            raise ValueError("Maintenance backup identifiers must be positive and daily limits nonnegative")
     return values
 
 

@@ -1,0 +1,224 @@
+"""Real database/ingress tests; model and GitHub outputs are explicitly fixtures."""
+
+import io
+import tarfile
+from concurrent.futures import ThreadPoolExecutor
+
+import pytest
+from fastapi.testclient import TestClient
+from psycopg.types.json import Jsonb
+
+from quant_company.api import create_app
+from quant_company.company import Company, PolicyError
+from quant_company.maintenance.github import GitHub, blob_sha
+from quant_company.maintenance.policy import Triage, digest, writable
+from quant_company.maintenance.requests import report
+from quant_company.owner_controls import effective_limits, parse_daily_limit_command
+from quant_company.system_state import assess, current_system, readable, repository_read
+
+from .conftest import queued_turns
+from .test_maintenance import SOURCE, config, make_maintainer
+from .test_slack import event, signed
+
+
+@pytest.mark.parametrize("text", ['"전체 한도 해제"', '> 전체 한도 해제', '전체 한도 해제?',
+                                  '개선BOT 한도 해제 가능해?', '회사 공통 한도 없애도 돼?', '한도 없애줘'])
+def test_questions_quotes_and_ambiguous_scopes_are_not_commands(text):
+    assert parse_daily_limit_command(text) is None
+
+
+@pytest.mark.integration
+def test_signed_owner_command_works_with_exhausted_quota_once_and_survives_restart(company, credentials):
+    runner = make_maintainer(company)
+    company.settings.company_max_daily_turns = 100
+    runner.config.max_daily_calls = 6
+    runner.store.heartbeat()
+    with company.db.transaction() as conn:
+        conn.execute("INSERT INTO daily_usage(day,reserved) VALUES(CURRENT_DATE,1000)")
+        conn.execute("UPDATE runtime_control SET paused_until=now()+interval '1 hour',reason='quota'")
+    client = TestClient(create_app(company.settings, company, credentials))
+    raw, headers = signed(event(credentials, text="<@UBOT0> 전체 일일 한도 해제"), credentials["director"])
+    result = client.post('/slack/events/director', content=raw, headers=headers).json()
+    assert result["owner_control"]
+    assert client.post('/slack/events/director', content=raw, headers=headers).json()["duplicate"]
+    assert not company.project_state(result["project_id"])["turns"]
+    with company.db.transaction() as conn:
+        receipt = conn.execute("SELECT receipt FROM policy_commands").fetchone()["receipt"]
+        assert receipt["before"] == {"revision": 0, "company": 100, "maintenance": 6}
+        assert effective_limits(conn, Company(company.settings, company.roles), 6) == receipt["after"] == {
+            "revision": 1, "company": None, "maintenance": None}
+        assert conn.execute("SELECT paused_until>now() AS paused FROM runtime_control").fetchone()["paused"]
+        assert conn.execute("SELECT count(*) AS n FROM maintenance_calls").fetchone()["n"] == 0
+        assert conn.execute("SELECT count(*) AS n FROM outbox WHERE text LIKE '일일 호출 정책%%'").fetchone()["n"] == 1
+
+
+@pytest.mark.integration
+def test_concurrent_controls_merge_both_scopes_without_lost_update(company):
+    make_maintainer(company)
+    texts = ['회사 공통 100회 한도 해제', '개선BOT 한도 해제']
+    def apply(item):
+        index, text = item
+        return company.ingest(event_key=f'control-{index}', text=text, owner='UHUMAN', channel='CQUANT',
+                              thread_ts=f'control-{index}', daily_limit_command=parse_daily_limit_command(text))
+    with ThreadPoolExecutor(2) as executor:
+        list(executor.map(apply, enumerate(texts)))
+    with company.db.transaction() as conn:
+        assert effective_limits(conn, company, 6) == {"revision": 2, "company": None, "maintenance": None}
+        assert conn.execute("SELECT count(*) AS n FROM policy_commands").fetchone()["n"] == 2
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize('overrides', [{"user": "UOTHER"}, {"channel": "COTHER"}, {"bot_id": "BBOT"}])
+def test_unauthorized_slack_cannot_change_policy(company, credentials, overrides):
+    make_maintainer(company)
+    client = TestClient(create_app(company.settings, company, credentials))
+    raw, headers = signed(event(credentials, text="<@UBOT0> 전체 일일 한도 해제", **overrides), credentials['director'])
+    assert client.post('/slack/events/director', content=raw, headers=headers).json()['ignored']
+    with company.db.transaction() as conn:
+        assert effective_limits(conn, company)["revision"] == 0
+
+
+@pytest.mark.integration
+def test_compound_control_tracks_queued_diagnosis_separately(company):
+    make_maintainer(company)
+    text = '개선 BOT 한도 해제하고 다른 스레드의 개선점을 확인해줘'
+    result = company.ingest(event_key='compound', text=text, owner='UHUMAN', channel='CQUANT', thread_ts='compound',
+                            daily_limit_command=parse_daily_limit_command(text))
+    with company.db.transaction() as conn:
+        receipt = conn.execute("SELECT receipt FROM policy_commands").fetchone()['receipt']
+        assert receipt['state'] == 'applied' and receipt['diagnosis']['accepted']
+        assert conn.execute("SELECT state FROM maintenance_jobs WHERE id=%s", (receipt['diagnosis']['request_id'],)).fetchone()['state'] == 'review'
+        assert conn.execute("SELECT status FROM tasks WHERE id=%s", (result['task_id'],)).fetchone()['status'] == 'completed'
+        assert not queued_turns(company, result['project_id'])
+
+
+@pytest.mark.integration
+async def test_no_service_daily_quota_but_subscription_pause_and_task_limits_remain(company):
+    runner = make_maintainer(company)
+    with company.db.transaction() as conn:
+        conn.execute("INSERT INTO daily_usage(day,reserved) VALUES(CURRENT_DATE,10000)")
+    assert (await runner.tick())['state'] == 'advanced'
+    assert len(runner.provider.requests) == 1  # Maintenance can pass the old 6/100 gate.
+    request = company.ingest(event_key='after-100', text='Direct answer', owner='UHUMAN')
+    turn = queued_turns(company, request['project_id'])[0]
+    assert company.prepare_turn(turn)['state'] == 'ready'
+    with company.db.transaction() as conn:
+        conn.execute("UPDATE runtime_control SET paused_until=now()+interval '1 hour',reason='quota'")
+    assert company.prepare_turn(turn)['state'] == 'defer'
+    assert company.settings.company_max_task_turns == 8 and company.settings.company_max_depth == 3
+
+
+def test_repository_read_boundary_is_broader_than_patch_boundary_and_checks_exact_blobs():
+    path = 'src/quant_company/config.py'
+    assert readable(path) and not writable(path)
+    for forbidden in ['../config.py', '/etc/passwd', 'deploy/.env', 'secrets/key.py', 'src/../oops.py']:
+        assert not readable(forbidden)
+    body = b'VALUE = 0\n'
+    bundle = io.BytesIO()
+    with tarfile.open(fileobj=bundle, mode='w:gz') as archive:
+        for name, content in [(path, body), ('deploy/.env', b'never-read'), ('src/link.py', b'')]:
+            item = tarfile.TarInfo('root/' + name)
+            if name.endswith('link.py'):
+                item.type, item.linkname = tarfile.SYMTYPE, '/etc/passwd'
+                archive.addfile(item)
+            else:
+                item.size = len(content)
+                archive.addfile(item, io.BytesIO(content))
+    github = GitHub(config())
+    github.archive = lambda _: bundle.getvalue()
+    snapshot = {'commit': 'a'*40, 'entries': {path: {'sha': blob_sha(body.decode()), 'mode': '100644', 'type': 'blob'}}}
+    files, coverage = github.read_repository(snapshot)
+    assert files == {path: body.decode()} and 'src/link.py' in coverage['omitted_paths']
+    snapshot['entries'][path]['sha'] = 'b'*40
+    with pytest.raises(ValueError, match='digest_mismatch'):
+        github.read_repository(snapshot)
+
+
+@pytest.mark.integration
+async def test_current_and_historical_states_are_distinct_citable_and_owner_scoped(company):
+    runner = make_maintainer(company)
+    await runner.tick()
+    with company.db.transaction() as conn:
+        case = conn.execute("SELECT * FROM maintenance_jobs WHERE kind='repair'").fetchone()
+        original = digest(case['payload'])
+        assess(conn, case_id=case['id'], disposition='invalidated', reason='Saved input did not contain claimed history',
+               evidence={'turn': 'actual-original-input', 'commit': 'a'*40})
+        value = report(conn, case, 'UHUMAN')
+        assert 'problem' not in value and not value['finding_is_current_fact']
+        assert value['historical_finding']['problem']
+        assert digest(conn.execute('SELECT payload FROM maintenance_jobs WHERE id=%s', (case['id'],)).fetchone()['payload']) == original
+        company.settings.company_code_commit = 'b'*40
+        value = current_system(conn, company, ['UHUMAN'])
+        assert value['repository']['commit'] == 'a'*40 and value['runtime']['code_commit'] == 'b'*40
+        assert value['assessments'][0]['disposition'] == 'invalidated'
+        assert current_system(conn, company, ['UOTHER'])['assessments'] == []
+        read = repository_read(conn, {'path': SOURCE, 'commit': 'a'*40, 'line_count': 1})
+        assert read['truncated'] and read['records'][0]['blob'] == 'd'*40
+        assert repository_read(conn, {'query': 'bounded_sum'})['records']
+        assert repository_read(conn, {'path': 'src/quant_company/missing.py'})['state'] == 'unknown'
+        with pytest.raises(PolicyError):
+            repository_read(conn, {'path': '../secret'})
+        conn.execute("UPDATE repository_evidence SET checked_at=now()-interval '1 day'")
+        assert current_system(conn, company, ['UHUMAN'])['repository']['state'] == 'stale'
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize('drift', ['code', 'configuration'])
+async def test_drift_archives_original_requests_and_rechecks_before_patch(company, drift):
+    runner = make_maintainer(company)
+    await runner.tick()
+    with company.db.transaction() as conn:
+        before = conn.execute('SELECT id,request FROM maintenance_calls ORDER BY id').fetchall()
+        case = conn.execute("SELECT * FROM maintenance_jobs WHERE kind='repair'").fetchone()
+    if drift == 'code':
+        old = runner.github.snapshot()
+        runner.github.snapshot = lambda: {**old, 'commit': 'f'*40}
+    else:
+        company.settings.company_max_depth = 2
+    await runner.tick()
+    assert runner.github.published == 0 and len(runner.provider.requests) == 1
+    with company.db.transaction() as conn:
+        assert conn.execute('SELECT id,request FROM maintenance_calls ORDER BY id').fetchall() == before
+        assert conn.execute('SELECT state FROM maintenance_jobs WHERE id=%s', (case['id'],)).fetchone()['state'] == 'superseded'
+        assert conn.execute('SELECT payload FROM maintenance_revisions WHERE job_id=%s', (case['id'],)).fetchone()['payload'] == case['payload']
+        assert conn.execute("SELECT 1 FROM maintenance_jobs WHERE payload->>'predecessor'=%s", (str(case['id']),)).fetchone()
+
+
+@pytest.mark.integration
+async def test_reserved_triage_input_is_not_reused_after_rebind(company):
+    runner = make_maintainer(company)
+    runner.store.collect()
+    job = runner.store.next_job()
+    original = runner.store.prepare_call(job, 'triage', 'immutable old request')
+    await runner.tick()
+    with company.db.transaction() as conn:
+        saved = conn.execute('SELECT request FROM maintenance_calls WHERE id=%s', (original['id'],)).fetchone()
+        assert saved['request'] == original['request']
+        assert conn.execute('SELECT count(*) AS n FROM maintenance_revisions').fetchone()['n'] == 1
+        assert len(runner.provider.requests) == 1 and '-r1-triage' in runner.provider.requests[0].request_id
+
+
+@pytest.mark.integration
+async def test_finding_without_current_evidence_is_rejected(company):
+    runner = make_maintainer(company)
+    await runner.tick()
+    with company.db.transaction() as conn:
+        case = conn.execute("SELECT * FROM maintenance_jobs WHERE kind='repair'").fetchone()
+    finding = dict(case['payload']['finding'])
+    finding['evidence_keys'] = [k for k in finding['evidence_keys'] if not k.startswith(('code:', 'system:'))]
+    with pytest.raises(ValueError, match='current_implementation_evidence'):
+        runner.store.finish_triage(case, Triage(finding=finding, reason='Missing implementation citation'))
+
+
+@pytest.mark.integration
+async def test_live_verification_never_transfers_silently_to_another_version(company):
+    runner = make_maintainer(company)
+    runner.refresh_repository()
+    with company.db.transaction() as conn:
+        runtime = current_system(conn, company, ['UHUMAN'])['runtime']
+        conn.execute("""INSERT INTO system_verifications(id,feature,code_commit,config_digest,scope,evidence)
+            VALUES ('fixture','slack_approval',%s,%s,'Document merge only',%s)""",
+                     (runtime['code_commit'], runtime['config_digest'], Jsonb({'application': 'fixture'})))
+        assert current_system(conn, company, ['UHUMAN'])['verifications'][0]['matches_running_version']
+        company.settings.company_code_commit = 'f'*40
+        assert not current_system(conn, company, ['UHUMAN'])['verifications'][0]['matches_running_version']

@@ -88,6 +88,15 @@ class Maintainer:
     async def step(self, job):
         self.store.check_authorization(job)
         payload, receipt, job_id = job["payload"], job["receipt"], str(job["id"])
+        if job["state"] in {"triage", "patch", "design", "evaluate", "publish"}:
+            from ..system_state import diagnosis_context
+
+            snapshot = await asyncio.to_thread(self.refresh_repository)
+            with self.company.db.transaction() as conn:
+                diagnosis = diagnosis_context(conn, self.company, payload["owners"], snapshot,
+                                              payload.get("instruction", ""))
+            if not self.store.bind_diagnosis(job, snapshot, diagnosis):
+                return
         if job["state"] == "review":
             self.store.prepare_review(job)
         elif job["state"] == "triage":
@@ -97,8 +106,14 @@ class Maintainer:
             result = await self.propose(job, "triage", {
                 "observations": payload["observations"], "editable_paths": payload["snapshot"]["paths"],
                 "history": payload.get("review", {}),
+                "current_implementation": payload["diagnosis"],
+                "evidence_references": [payload["diagnosis"]["key"]] + [r["key"] for r in payload["diagnosis"]["source_files"]],
                 "requested_diagnosis": payload.get("instruction"),
-                "instructions": "Identify at most one evidenced improvement to employee behavior, collaboration, "
+                "instructions": "Read current_implementation FIRST. Cite at least one exact system: or code: key "
+                "as well as historical failure evidence. Do not re-propose existing functionality. "
+                "Distinguish implemented, deployed, enabled and verified. Honor invalidated/resolved assessments. "
+                "Partial/omitted files and stale/unknown data cannot establish a missing feature. "
+                "Identify at most one evidenced improvement to employee behavior, collaboration, "
                 "organization or runtime. Counts and repeated delegations are diagnostic signals, not proof of defects. "
                 "Give a causal hypothesis and freeze a testable success criterion BEFORE seeing or writing a patch. "
                 "For a reproducible runtime repair use regression mode; CI must fail on base and pass on candidate. "
@@ -234,6 +249,27 @@ class Maintainer:
             receipt["pr"] = await asyncio.to_thread(self.github.pull_request, job)
             self.store.finish_pr(job, receipt)
 
+    def refresh_repository(self):
+        from ..system_state import record_repository
+
+        try:
+            snapshot = self.github.snapshot()
+            with self.company.db.transaction() as conn:
+                cached = conn.execute("SELECT files,metadata FROM repository_evidence WHERE commit=%s",
+                                      (snapshot["commit"],)).fetchone()
+            files, coverage = ((cached["files"], cached["metadata"].get("coverage")) if cached else
+                               self.github.read_repository(snapshot))
+            metadata = self.github.current_metadata(snapshot)
+        except (GitHubError, httpx.HTTPError):
+            with self.company.db.transaction() as conn:
+                conn.execute("""UPDATE repository_evidence SET metadata=metadata || '{"refresh_error":"github_unavailable"}'
+                    WHERE commit=(SELECT commit FROM repository_evidence ORDER BY checked_at DESC LIMIT 1)""")
+            raise Deferred("current_repository_unavailable") from None
+        metadata["coverage"] = coverage
+        with self.company.db.transaction() as conn:
+            record_repository(conn, snapshot, files, metadata)
+        return snapshot
+
     @activity.defn(name="company_maintenance_tick")
     async def tick(self):
         self.store.heartbeat()
@@ -256,11 +292,13 @@ class Maintainer:
                 self.store.collect()
                 job = self.store.next_job()
                 if not job:
+                    await asyncio.to_thread(self.refresh_repository)
                     return {"state": "idle"}
                 await self.step(job)
                 return {"state": "advanced", "job_id": str(job["id"])}
             except Deferred as exc:
-                self.store.save(job["id"], job["state"], error=str(exc))
+                if job:
+                    self.store.save(job["id"], job["state"], error=str(exc))
                 return {"state": "deferred", "reason": str(exc)}
             except (ValueError, GitHubError, httpx.HTTPError) as exc:
                 # Validation exceptions may embed input text. Persist a short class/code, never raw output.

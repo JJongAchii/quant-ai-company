@@ -49,7 +49,7 @@ class ModelFixture:
                 "expected": "The helper must return the sum of both arguments.",
                 "category": "platform_defect", "hypothesis": "The arithmetic operator is incorrect.",
                 "evaluation": {"mode": "regression", "success_criterion": "The regression fails on base and passes after repair."},
-                "evidence_keys": [data["observations"][0]["key"]], "paths": [SOURCE],
+                "evidence_keys": [data["observations"][0]["key"], data["current_implementation"]["key"]], "paths": [SOURCE],
             }}
         else:
             output = {"summary": "Use addition and add a regression for unequal operands", "edits": [
@@ -68,7 +68,14 @@ class GitHubFixture:
         self.published, self.prs, self.ci_state = 0, 0, ci_state
 
     def snapshot(self):
-        return {"commit": "a" * 40, "tree": "b" * 40, "paths": [SOURCE], "entries": {}}
+        return {"commit": "a" * 40, "tree": "b" * 40, "paths": [SOURCE],
+                "entries": {SOURCE: {"sha": "d" * 40, "type": "blob", "mode": "100644"}}}
+
+    def read_repository(self, snapshot):
+        return {SOURCE: ORIGINAL}, {"read_files": 1, "omitted_paths": []}
+
+    def current_metadata(self, snapshot):
+        return {"repository": "test-only-fixture", "pull_requests": [], "ci": []}
 
     def read_files(self, snapshot, paths):
         assert paths == [SOURCE]

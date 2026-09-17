@@ -10,7 +10,8 @@ ARG QDATA_COMMIT=unqualified
 LABEL org.opencontainers.image.revision=$RELEASE_COMMIT
 LABEL org.quant-company.qdata-revision=$QDATA_COMMIT
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
-    UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PATH=/app/.venv/bin:$PATH QDATA_CODE_COMMIT=$QDATA_COMMIT
+    UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PATH=/app/.venv/bin:$PATH QDATA_CODE_COMMIT=$QDATA_COMMIT \
+    COMPANY_CODE_COMMIT=$RELEASE_COMMIT
 COPY --from=uv-dist /uv /usr/local/bin/uv
 # Preserve the sibling qdata path recorded in uv.lock.
 WORKDIR /opt/company

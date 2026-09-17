@@ -22,8 +22,9 @@ class Database:
                 versions = conn.execute("SELECT version FROM schema_version ORDER BY version").fetchall()
                 if versions != [{"version": 1}]:
                     raise RuntimeError("Unrecognized database schema version; explicit migration required")
-                return
-            conn.execute(files("quant_company").joinpath("schema.sql").read_text())
+            else:
+                conn.execute(files("quant_company").joinpath("schema.sql").read_text())
+            conn.execute(files("quant_company").joinpath("state_schema.sql").read_text())
 
     def health(self) -> bool:
         with self.transaction() as conn:
