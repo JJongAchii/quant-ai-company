@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-09-17T07:54:47.197337+00:00",
+  "operation": "unused Docker build cache older than 1 hour only",
+  "free_before_bytes": 1463549952,
+  "free_after_bytes": 7617667072,
+  "preserved_current_and_previous_images": [
+    "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6",
+    "0e96fe8d0197ea8278f53e095482f6c75eeae603"
+  ],
+  "prune_summary": "Total:\t7.351GB"
+}
