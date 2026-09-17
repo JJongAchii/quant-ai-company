@@ -77,7 +77,8 @@ def unpack(data, target):
 
 def validate_tree(previous, target):
     # Load the policy from the installed release, never the candidate. No third-party dependencies.
-    protected = {'api.py', 'cli.py', 'config.py', 'contracts.py', 'db.py', 'schema.sql', 'slack.py', 'socket_mode.py'}
+    protected = {'api.py', 'cli.py', 'config.py', 'contracts.py', 'db.py', 'schema.sql', 'slack.py', 'socket_mode.py',
+                 'system_state.py', 'owner_controls.py', 'state_schema.sql'}
 
     def inventory(root):
         output = {}

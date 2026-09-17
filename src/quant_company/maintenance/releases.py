@@ -61,4 +61,11 @@ def command(company, action, identity, config_path):
             return
         receipt["deployment"] = report
         Applications(company, config, github).save(application, report["state"], receipt, report.get("error"))
+        from ..system_state import record_verification
+
+        with company.db.transaction() as conn:
+            record_verification(conn, company, identity="host-release:" + identity, feature="host_release",
+                                scope="Host container health after application; not a functional or rollback test.",
+                                evidence={key: report[key] for key in
+                                          ("commit", "state", "healthy_services", "postgres_recreated", "error") if key in report})
         print(json.dumps({"state": report["state"], "application_id": identity}))

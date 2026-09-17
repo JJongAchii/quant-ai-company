@@ -40,7 +40,7 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     if len(by_id) != len(roles):
         raise ValueError("Duplicate role IDs")
     allowed_tools = {"calculate", "knowledge_search", "read_source", "company_history",
-                     "maintenance_review", "maintenance_status"} | LAKE_TOOLS
+                     "maintenance_review", "maintenance_status", "system_status", "repository_read"} | LAKE_TOOLS
     for role in roles:
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
@@ -59,8 +59,10 @@ class Company:
             raise PolicyError(f"Inactive or unknown employee: {name}")
         return role
 
-    def runtime_context(self) -> dict:
+    def runtime_context(self, conn=None) -> dict:
         """Allowlisted configuration facts, never a dump of settings or credentials."""
+        from .owner_controls import effective_limits
+
         return {
             "snapshot_at": now().isoformat(),
             "model_provider": self.settings.model_provider,
@@ -71,6 +73,15 @@ class Company:
                 for role in self.roles.values()
             ],
             "capabilities": {
+                "system_status": "Director only: {}. Shared current GitHub, deployed process/configuration, "
+                                 "case corrections and scoped verification receipts. Check before claiming a current gap.",
+                "repository_read": "Director only: {query?: short keywords, path?: repository path, commit?: SHA, "
+                                   "start_line?: int, line_count?: 1..200}. Read/search exact cached company source, "
+                                   "tests and docs. No Git writes or credentials. Missing/old snapshot means unknown.",
+                "owner_daily_limits": "Authenticated Slack owner commands: '전체 일일 한도 해제', "
+                                      "'회사 공통 한도 해제', '개선BOT 한도 해제'. Deterministic, no model call. "
+                                      "Optional '해제하고 <diagnosis request>' also queues a review. "
+                                      "A question or quoted command does not change policy.",
                 "knowledge_search": "Approved registered sources only; not conversation history, internet or data-lake search.",
                 "company_history": "Director only: {query?: string, limit?: 1..20}. Reads the owner's recorded "
                                    "requests/results in authorized Slack channels over the last 30 days. "
@@ -105,7 +116,9 @@ class Company:
                 ),
             },
             "limits": {
-                "daily_model_turns": self.settings.company_max_daily_turns,
+                "daily_model_turns": (self.settings.company_max_daily_turns or None) if conn is None else
+                    effective_limits(conn, self)["company"],
+                "daily_limit_meaning": "null means no service daily quota; subscription quotas still apply.",
                 "task_turns": self.settings.company_max_task_turns,
                 "delegation_depth": self.settings.company_max_depth,
                 "project_model_tasks": self.settings.company_max_project_tasks,
@@ -177,16 +190,26 @@ class Company:
 
     def ingest(self, *, event_key: str, text: str, owner: str, agent: str = "director",
                project_id: str | None = None, channel: str | None = None, thread_ts: str | None = None,
-               revise: bool = False, status_only: bool = False) -> dict:
+               revise: bool = False, status_only: bool = False, daily_limit_command: dict | None = None) -> dict:
         self.role(agent)
         if not text.strip() or len(text) > 10000:
             raise PolicyError("Instruction must contain 1–10000 characters")
         digest = fingerprint([text, owner, agent, project_id, channel, thread_ts, revise, status_only])
+        prior_ingress_digest = digest
+        if daily_limit_command is not None:
+            from .owner_controls import parse_daily_limit_command
+
+            if daily_limit_command != parse_daily_limit_command(text) or agent != "director":
+                raise PolicyError("Invalid owner command")
+            digest = fingerprint([digest, daily_limit_command])
+            status_only = True
         with self.db.transaction() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s,0))", (event_key,))
             old = conn.execute("SELECT * FROM inbound WHERE event_key=%s", (event_key,)).fetchone()
             if old:
-                if old["payload_digest"] != digest:
+                if old["payload_digest"] != digest and not (
+                    daily_limit_command is not None and old["payload_digest"] == prior_ingress_digest
+                ):
                     raise PolicyError("Request ID was already used for different content")
                 return as_json({"project_id": old["project_id"], "task_id": old["task_id"], "duplicate": True})
             if project_id is None and channel and thread_ts:
@@ -220,7 +243,11 @@ class Company:
             conn.execute("INSERT INTO inbound(event_key,project_id,task_id,payload_digest) VALUES (%s,%s,%s,%s)",
                          (event_key, project_id, task["id"], digest))
             self._message(conn, project, task["id"], owner, "human", text)
-            if status_only:
+            if daily_limit_command is not None:
+                from .owner_controls import apply_daily_limit_command
+
+                apply_daily_limit_command(conn, self, project, task, event_key, text, daily_limit_command)
+            elif status_only:
                 rows = conn.execute("""SELECT agent,status,count(*) AS n FROM tasks WHERE project_id=%s AND id<>%s
                     GROUP BY agent,status ORDER BY agent,status""", (project_id, task["id"])).fetchall()
                 summary = "현재 업무 현황\n" + ("\n".join(
@@ -276,9 +303,16 @@ class Company:
             if task["parent_id"] else None
         )
         if task["agent"] == "director":
-            from .maintenance.requests import status
+            from .maintenance.requests import permitted, record_source, status
+            from .system_state import current_system
 
             context["maintenance"] = status(conn, self, project)
+            if permitted(self, project):
+                system = current_system(conn, self, [project["owner_user"]])
+                identity = record_source(conn, project, "system_status", system)
+                context["system"] = {**system, "source_id": identity}
+                context["approved_sources"].append({"id": identity, "title": "Current system evidence",
+                                                     "uri": "company://records/" + identity, "synthetic": False})
         # The DB keeps full evidence. Explicitly bounded excerpts keep an old busy project from
         # exhausting the model context or subscription on every turn.
         for child in context["child_results"]:
@@ -326,7 +360,10 @@ class Company:
             if turn["status"] != "running":
                 conn.execute("INSERT INTO daily_usage(day,reserved) VALUES (CURRENT_DATE,0) ON CONFLICT DO NOTHING")
                 usage = conn.execute("SELECT * FROM daily_usage WHERE day=CURRENT_DATE FOR UPDATE").fetchone()
-                if usage["reserved"] >= self.settings.company_max_daily_turns:
+                from .owner_controls import effective_limits
+
+                cap = effective_limits(conn, self)["company"]
+                if cap is not None and usage["reserved"] >= cap:
                     return {"state": "defer", "seconds": 3600, "reason": "daily_turn_budget"}
                 conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             if not turn["request"]:
@@ -354,7 +391,7 @@ class Company:
                     "Messages may also report to the task requester; this does not allow delegating back to them.\n"
                     f"Allowed tools: {role.tools}\n"
                     f"Remaining task turns: {self.settings.company_max_task_turns - task['turn_count']}\n"
-                    "RUNTIME CONFIG JSON:\n" + json.dumps(self.runtime_context(), ensure_ascii=False) + "\n"
+                    "RUNTIME CONFIG JSON:\n" + json.dumps(self.runtime_context(conn), ensure_ascii=False) + "\n"
                     "TASK DATA JSON:\n" + json.dumps(context, ensure_ascii=False)
                 )
                 request = ProviderRequest(request_id=turn_id, model=role.model, prompt=prompt)
@@ -409,7 +446,7 @@ class Company:
 
     def _tool(self, conn, project_id, request, *, task=None):
         arguments = request.arguments
-        if request.name in {"company_history", "maintenance_review", "maintenance_status"}:
+        if request.name in {"company_history", "maintenance_review", "maintenance_status", "system_status", "repository_read"}:
             from .maintenance.requests import tool
 
             if not task or task["agent"] != "director":

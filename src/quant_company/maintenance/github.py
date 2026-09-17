@@ -2,8 +2,10 @@
 
 import base64
 import hashlib
+import io
 import json
 import subprocess
+import tarfile
 import time
 from datetime import UTC, datetime
 from urllib.parse import quote
@@ -102,6 +104,52 @@ class GitHub:
         if sum(map(len, output.values())) > 65000:
             raise ValueError("source_context_too_large")
         return output
+
+    def read_repository(self, snapshot):
+        """Broader read permission than patch permission; no extraction or candidate execution."""
+        from ..system_state import readable
+
+        output, omitted, total = {}, [], 0
+        with tarfile.open(fileobj=io.BytesIO(self.archive(snapshot["commit"])), mode="r:gz") as archive:
+            for member in archive:
+                path = member.name.partition("/")[2]
+                if not readable(path):
+                    continue
+                entry = snapshot["entries"].get(path)
+                if (not member.isfile() or not entry or entry["type"] != "blob" or entry["mode"] != "100644"
+                        or member.size > 100000 or total + member.size > 2000000):
+                    omitted.append(path)
+                    continue
+                content = archive.extractfile(member).read().decode("utf-8")
+                if blob_sha(content) != entry["sha"]:
+                    raise ValueError("repository_blob_digest_mismatch")
+                if SECRET.search(content):
+                    omitted.append(path)
+                    continue
+                output[path] = content
+                total += member.size
+        return output, {"read_files": len(output), "read_bytes": total, "omitted_paths": omitted,
+                        "boundary": "allowlisted text only; no credentials, binaries, links or arbitrary repository"}
+
+    def current_metadata(self, snapshot):
+        from ..system_state import readable
+
+        prs = self.request("GET", "/pulls?state=all&sort=updated&direction=desc&per_page=15")
+        runs = self.request("GET", "/actions/runs?per_page=15")["workflow_runs"]
+        commit = self.request("GET", "/commits/" + snapshot["commit"] + "?per_page=30")
+        changes = [{"path": f["filename"], "blob": f["sha"], "status": f["status"],
+                    "patch_excerpt": f.get("patch", "")[:1200]}
+                   for f in commit.get("files", []) if readable(f["filename"])
+                   and not SECRET.search(f.get("patch", ""))][:8]
+        return {"repository": self.config.repository, "branch": self.config.base,
+                "pull_requests": [{"number": p["number"], "title": p["title"], "state": p["state"],
+                                   "head": p["head"]["sha"], "merged_at": p.get("merged_at"),
+                                   "merge_commit": p.get("merge_commit_sha"), "url": p["html_url"]} for p in prs],
+                "ci": [{"head": r["head_sha"], "status": r["status"], "conclusion": r["conclusion"],
+                        "event": r["event"], "url": r["html_url"]} for r in runs],
+                "commit_changes": {"commit": snapshot["commit"], "parents": [p["sha"] for p in commit["parents"]],
+                                   "files": changes, "coverage": "At most 8 safe patch excerpts from the first 30 changed files; not a complete diff."},
+                "coverage_note": "Latest 15 PRs and CI runs (human and bot); absence from this window is unknown."}
 
     def publish(self, job, payload):
         branch = "maintenance/" + str(job["id"])

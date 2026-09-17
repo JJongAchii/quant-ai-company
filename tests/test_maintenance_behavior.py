@@ -23,7 +23,11 @@ class RoleGitHub(GitHubFixture):
         self.changes = None
 
     def snapshot(self):
-        return {"commit": "a" * 40, "tree": "b" * 40, "paths": [ROLE_PATH], "entries": {}}
+        return {"commit": "a" * 40, "tree": "b" * 40, "paths": [ROLE_PATH],
+                "entries": {ROLE_PATH: {"sha": "d" * 40, "type": "blob", "mode": "100644"}}}
+
+    def read_repository(self, snapshot):
+        return {ROLE_PATH: self.original}, {"read_files": 1, "omitted_paths": []}
 
     def read_files(self, snapshot, paths):
         assert paths == [ROLE_PATH]
@@ -74,7 +78,8 @@ class BehaviorModel:
                     "evaluation": {"mode": "design_only" if self.design else "prompt_replay", "cases": cases,
                                    "success_criterion": "Target passes after the change and the known-good control stays passing."},
                     "paths": [] if self.design else [ROLE_PATH],
-                    "evidence_keys": [case["request_key"] for case in cases] if cases else [data["observations"][0]["key"]],
+                    "evidence_keys": ([case["request_key"] for case in cases] if cases else [data["observations"][0]["key"]])
+                                     + [data["current_implementation"]["key"]],
                 }}
             else:
                 assert request.request_id.endswith("-patch")
@@ -152,6 +157,7 @@ async def test_regressed_control_or_nonreproduced_target_never_publishes(company
 
 @pytest.mark.integration
 async def test_behavior_evaluation_yields_to_humans_and_uses_shared_daily_budget(company):
+    company.settings.company_max_daily_turns = 100
     runner = runner_with_recorded_requests(company)
     for _ in range(2):
         await runner.tick()
@@ -245,7 +251,7 @@ async def test_observer_history_is_not_mistaken_for_employee_input_and_impossibl
     assert "LATER_OBSERVER_ONLY" in json.dumps(review)
     assert "LATER_OBSERVER_ONLY" not in json.dumps(target["employee_context"])
     assert target["employee_context"]["message_count"] == 1
-    assert target["employee_context"]["approved_sources"] == []
+    assert all(s["title"] == "Current system evidence" for s in target["employee_context"]["approved_sources"])
     control = next(row for row in review["evidence"] if row.get("kind") == "replay_input" and "control" in row["text"])
     runner.store.collect()
     job = runner.store.next_job()

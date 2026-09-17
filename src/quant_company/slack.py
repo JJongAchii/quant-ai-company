@@ -83,6 +83,14 @@ class SlackIngress:
         text = re.sub(r"<@[A-Z0-9]+>", "", text).strip()
         if target == "director":
             from .maintenance.applications import accept_approval
+            from .owner_controls import parse_daily_limit_command
+
+            command = parse_daily_limit_command(text)
+            if command:
+                result = self.company.ingest(
+                    event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,
+                    owner=user, agent=target, channel=channel, thread_ts=thread_ts, daily_limit_command=command)
+                return {"ok": True, "owner_control": True, **result}
 
             approval = accept_approval(
                 self.company, text=text, owner=user, channel=channel, thread_ts=thread_ts,

@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-17T03:11:41.511646+00:00",
+  "scope": "Read-only diagnosis and proposed design; no production or budget change",
+  "repository": {
+    "committed_at": "2026-09-17T02:17:03Z",
+    "message": "Merge pull request #11 from JJongAchii/quant-ai-company\n\nfix: clarify background task status and record safe output failure causes",
+    "sha": "ae7517c5fbe79db92c1c19396a60711ecac120e1"
+  },
+  "deployedCommit": "ae7517c5fbe79db92c1c19396a60711ecac120e1",
+  "deploymentCheckedAt": "2026-09-17T03:06:47.117967+00:00",
+  "pausedReviewSnapshots": {
+    "checked_at": "2026-09-17T03:08:50.802767+00:00",
+    "jobs": [
+      {
+        "id": "6f807a00-d68e-5f94-98b9-40d18aa2ec77",
+        "kind": "repair",
+        "state": "blocked",
+        "error": "prompt_replay_cannot_validate_runtime_code_changes",
+        "snapshot_commit": "b0ce21ccbc2221c9bf5550793137f83ce94d2f49",
+        "history_as_of": "2026-09-17 01:11:42.883734+00:00",
+        "model_call_reserved": true
+      },
+      {
+        "id": "f9e1ca16-4a04-57c7-925a-33e347d82b10",
+        "kind": "review",
+        "state": "triage",
+        "error": null,
+        "snapshot_commit": null,
+        "history_as_of": "2026-09-17 03:08:00.473263+00:00",
+        "model_call_reserved": false
+      },
+      {
+        "id": "82bc171b-b429-5cef-854c-b9df58c0a853",
+        "kind": "review",
+        "state": "triage",
+        "error": "daily_model_budget",
+        "snapshot_commit": "2842ab33c4f43c25058fdd3073854ce070b37db9",
+        "history_as_of": "2026-09-17 02:02:51.763226+00:00",
+        "model_call_reserved": false
+      }
+    ]
+  },
+  "recordedApplications": [
+    {
+      "id": "66955a54-6d12-5d05-a2ac-5bdd250e7a4e",
+      "state": "complete",
+      "head": "52b9afad6090fca6f0c2add1edc771847b3c6d68",
+      "merge_commit": "b0ce21ccbc2221c9bf5550793137f83ce94d2f49",
+      "requires_deployment": "false"
+    }
+  ],
+  "sourceFindings": [
+    {
+      "path": "src/quant_company/maintenance/github.py",
+      "function": "snapshot",
+      "fact": "Fetches exact commit and tree; triage receives editable paths, not related current implementation bodies."
+    },
+    {
+      "path": "src/quant_company/maintenance/github.py",
+      "function": "read_files",
+      "fact": "Reading is restricted by writable(path), coupling diagnostic reading to repair permissions."
+    },
+    {
+      "path": "src/quant_company/maintenance/runner.py",
+      "function": "step",
+      "fact": "Reads implementation files in patch after selecting a finding; existing payload snapshot is not refreshed at triage resumption."
+    },
+    {
+      "path": "src/quant_company/maintenance/requests.py",
+      "function": "history/status/report",
+      "fact": "History returns human/instruction requests and task results. Status reports thread cases; no cross-project repository/deployment/verification reconciliation or invalidation is supplied."
+    },
+    {
+      "path": "src/quant_company/maintenance/store.py",
+      "function": "finish_triage",
+      "fact": "Unique problem_key reuses a case without recording a new occurrence/version; repeated findings can point at historical blocked/applied states."
+    },
+    {
+      "path": "src/quant_company/maintenance/policy.py",
+      "function": "MaintenanceConfig",
+      "fact": "Maintenance cap defaults to 6/day and schema accepts 1..12; director has no owner policy-change tool."
+    }
+  ],
+  "limits": [
+    "Code inspection identifies missing evidence paths; it does not prove every incorrect model answer has one causal explanation.",
+    "No model call, live experiment, GitHub merge, server release or budget change was performed for this diagnosis.",
+    "ADR-0018 is a proposed implementation design, not implemented behavior."
+  ]
+}

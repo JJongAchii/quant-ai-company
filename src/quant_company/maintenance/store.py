@@ -128,11 +128,55 @@ class Store:
                          (state, Jsonb(payload) if payload is not None else None,
                           Jsonb(receipt) if receipt is not None else None, error, job_id))
 
+    def bind_diagnosis(self, job, snapshot, diagnosis):
+        """Freeze each diagnostic revision; never overwrite a reserved request or replay input."""
+        payload = job["payload"]
+        previous = payload.get("diagnosis")
+        if previous and previous["scope_digest"] == diagnosis["scope_digest"]:
+            return True
+        with self.db.transaction() as conn:
+            revision = payload.get("diagnostic_revision", 0)
+            reserved = conn.execute("SELECT 1 FROM maintenance_calls WHERE job_id=%s LIMIT 1", (job["id"],)).fetchone()
+            if previous or payload.get("snapshot") or reserved:
+                conn.execute("""INSERT INTO maintenance_revisions(job_id,revision,payload,receipt,reason)
+                    VALUES (%s,%s,%s,%s,'current_evidence_changed') ON CONFLICT DO NOTHING""",
+                             (job["id"], revision, Jsonb(payload), Jsonb(job["receipt"])))
+                revision += 1
+            if revision > 3:
+                raise ValueError("evidence_churn_requires_review")
+            if job["state"] != "triage":
+                # A patch/evaluation belongs to its old inputs. Re-diagnose in a linked new job.
+                identity = str(uuid5(NAMESPACE_URL, f"maintenance-recheck:{job['id']}:{diagnosis['scope_digest']}"))
+                replacement = {key: payload[key] for key in ("owners", "observations", "review", "review_digest",
+                               "replay_inputs", "request_project_id", "request_task_id", "request_revision", "instruction")
+                               if key in payload}
+                replacement.update(predecessor=str(job["id"]), diagnostic_revision=revision)
+                requested = "request_project_id" in replacement
+                conn.execute("""INSERT INTO maintenance_jobs(id,kind,state,payload) VALUES (%s,%s,%s,%s)
+                    ON CONFLICT DO NOTHING""", (identity, "review" if requested else "triage",
+                                                 "review" if requested else "triage", Jsonb(replacement)))
+                conn.execute("""UPDATE maintenance_jobs SET state='superseded',
+                    receipt=receipt || %s,error='current_evidence_changed',updated_at=now() WHERE id=%s""",
+                             (Jsonb({"recheck_id": identity}), job["id"]))
+                return False
+            review, inputs, history_digest = review_snapshot(conn, self.company, payload["owners"], datetime.now(UTC))
+            payload.update(snapshot=snapshot, diagnosis=diagnosis, diagnostic_revision=revision,
+                           review=review, replay_inputs=inputs, review_digest=history_digest)
+            conn.execute("UPDATE maintenance_jobs SET payload=%s,error=NULL,updated_at=now() WHERE id=%s",
+                         (Jsonb(payload), job["id"]))
+        return True
+
     def finish_triage(self, job, result: Triage):
         finding = result.finding
         context = job["payload"]
         evidence = {item["key"]: item for item in context["observations"]
                     + context.get("review", {}).get("evidence", []) if not item.get("omitted")}
+        diagnostic = context.get("diagnosis", {})
+        current_keys = {r["key"] for r in diagnostic.get("source_files", [])}
+        if diagnostic:
+            evidence[diagnostic["key"]] = {"key": diagnostic["key"], "scope_digest": diagnostic["scope_digest"]}
+            evidence.update({r["key"]: r for r in diagnostic["source_files"]})
+            current_keys.add(diagnostic["key"])
         known = set(evidence)
         if finding and not set(finding.evidence_keys) <= known:
             raise ValueError("unknown_or_omitted_evidence")
@@ -142,9 +186,31 @@ class Store:
             raise ValueError("replay_case_requires_cited_recorded_request")
         if finding:
             validate_replay_plan(finding, context.get("replay_inputs", {}))
+            if not current_keys.intersection(finding.evidence_keys):
+                raise ValueError("finding_requires_current_implementation_evidence")
+            if not set(finding.evidence_keys) - current_keys:
+                raise ValueError("finding_requires_recorded_failure_evidence")
         with self.db.transaction() as conn:
             if finding:
-                case_id = str(uuid5(NAMESPACE_URL, "quant-company-maintenance:" + finding.problem_key))
+                problem_key = finding.problem_key
+                existing = conn.execute("SELECT * FROM maintenance_jobs WHERE problem_key=%s", (problem_key,)).fetchone()
+                predecessor = None
+                if existing:
+                    from ..system_state import assessment
+
+                    truth = assessment(conn, existing["id"])
+                    if truth["disposition"] in {"resolved", "invalidated"}:
+                        fresh_failure = any(
+                            datetime.fromisoformat(evidence[k]["created_at"]) > datetime.fromisoformat(truth["created_at"])
+                            for k in finding.evidence_keys if k not in current_keys and evidence[k].get("created_at"))
+                        if not fresh_failure:
+                            conn.execute("UPDATE maintenance_jobs SET state='done',receipt=%s WHERE id=%s",
+                                         (Jsonb({"case_id": str(existing["id"]), "reason": "No new failure after case assessment."}), job["id"]))
+                            return
+                    if existing["state"] == "superseded" or truth["disposition"] in {"resolved", "invalidated"}:
+                        predecessor = str(existing["id"])
+                        problem_key += "@" + digest([diagnostic["scope_digest"], finding.evidence_keys])[:16]
+                case_id = str(uuid5(NAMESPACE_URL, "quant-company-maintenance:" + problem_key))
                 inputs = {case.request_key: context["replay_inputs"][case.request_key]
                           for case in finding.evaluation.cases}
                 payload = {"finding": finding.model_dump(), "observations": [evidence[key] for key in finding.evidence_keys],
@@ -152,16 +218,18 @@ class Store:
                            "review_digest": context.get("review_digest"), "owners": context["owners"],
                            "replay_inputs": inputs, "replay_inputs_digest": digest(inputs),
                            "evaluation_plan_digest": digest(finding.evaluation.model_dump())}
+                payload.update(diagnosis=diagnostic, diagnostic_revision=context.get("diagnostic_revision", 0),
+                               predecessor=predecessor)
                 payload.update({key: context[key] for key in
                                 ("request_project_id", "request_task_id", "request_revision") if key in context})
                 existing = conn.execute("SELECT payload->'owners' AS owners FROM maintenance_jobs WHERE problem_key=%s",
-                                        (finding.problem_key,)).fetchone()
+                                        (problem_key,)).fetchone()
                 if existing and set(existing["owners"]) != set(context["owners"]):
                     raise ValueError("case_owner_scope_mismatch")
                 state = "design" if finding.evaluation.mode == "design_only" else "patch"
                 conn.execute("""INSERT INTO maintenance_jobs(id,kind,state,problem_key,payload)
                     VALUES (%s,'repair',%s,%s,%s) ON CONFLICT (problem_key) DO NOTHING""",
-                             (case_id, state, finding.problem_key, Jsonb(payload)))
+                             (case_id, state, problem_key, Jsonb(payload)))
                 # A resolved/failed case does not restart itself from its own discussion or CI failure.
                 # Preserve repeated evidence separately in the triage receipt, linked to the same case.
                 receipt = {"case_id": case_id, "reason": result.reason,
@@ -172,7 +240,8 @@ class Store:
                          (Jsonb(receipt), job["id"]))
 
     def prepare_call(self, job, phase, prompt, *, model=None):
-        call_id = f"maint-{job['id']}-{phase}"
+        revision = job["payload"].get("diagnostic_revision", 0)
+        call_id = f"maint-{job['id']}" + (f"-r{revision}" if revision else "") + f"-{phase}"
         with self.db.transaction() as conn:
             call = conn.execute("SELECT * FROM maintenance_calls WHERE id=%s", (call_id,)).fetchone()
             if call and call["response"]:
@@ -193,8 +262,11 @@ class Store:
             conn.execute("INSERT INTO daily_usage(day,reserved) VALUES (CURRENT_DATE,0) ON CONFLICT DO NOTHING")
             usage = conn.execute("SELECT reserved FROM daily_usage WHERE day=CURRENT_DATE FOR UPDATE").fetchone()
             count = conn.execute("SELECT count(*) AS n FROM maintenance_calls WHERE created_at>=CURRENT_DATE").fetchone()
-            if (usage["reserved"] >= self.company.settings.company_max_daily_turns
-                    or count["n"] >= self.config.max_daily_calls):
+            from ..owner_controls import effective_limits
+
+            limits = effective_limits(conn, self.company, self.config.max_daily_calls)
+            if ((limits["company"] is not None and usage["reserved"] >= limits["company"])
+                    or (limits["maintenance"] is not None and count["n"] >= limits["maintenance"])):
                 raise Deferred("daily_model_budget")
             model = model or self.company.roles["engineer"].model
             request = ProviderRequest(request_id=call_id, model=model, prompt=prompt)

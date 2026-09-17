@@ -112,6 +112,7 @@ def test_history_is_citable_and_filters_owner_channels_and_secrets(company):
 
 @pytest.mark.integration
 async def test_budget_wait_is_reported_once_without_increasing_the_cap(company):
+    company.settings.company_max_daily_turns = 100
     maintenance = runner(company, max_daily_calls=1)
     project, receipt, _, _ = invoke(company, "maintenance_review")
     await maintenance.tick()
