@@ -154,7 +154,7 @@ REAL_CODEX_COMPANY=1 uv run pytest -q tests/test_temporal.py::test_live_codex_co
 코드 경계는 [INTERFACES](INTERFACES.md), 모델 실행은 [Codex runtime](docs/codex-runtime.md),
 전체 조직 확장은 [설계·인수 명세](docs/project/BUILD-AND-ACCEPTANCE.md)를 참고하세요.
 
-## 개선 BOT — 검토용 구현
+## 개선 BOT — 운영 중
 
 회사에 저장된 대화·오류와 최근 30일의 업무·위임 기록을 살펴보고, BOT 행동·협업·조직의 개선
 가설을 만듭니다. 코드 수정은 회귀 검증, 직원 지침 수정은 고정된 문제/정상 요청의 전후 비교를 거쳐
@@ -162,6 +162,10 @@ draft PR로 제안합니다. 큰 구조 변경은 효과 미검증인 설계 PR�
 기존 구독 실행기를 쓰고 사용자 업무·회사 공통 예산 안에서 처리합니다.
 CI를 통과한 PR은 원래 Slack 스레드에 총괄 계정의 `[개선 담당]` 알림으로 연결합니다.
 
-**운영 활성화 전입니다.** 자동 merge·배포 기능은 없습니다. 실제 GitHub App 설치와 구독 기반
-첫 수정 PR, 서버의 추가 메모리 확인은 검토 후 연결합니다. 현재 네 직원의 운영과 구별합니다.
-범위와 연결 방법은 [개선 BOT 운영](docs/maintenance.md)을 보세요.
+기존 AWS 서버에서 실행 중이며, 실제 문서 PR 생성과 Slack 승인 후 병합·완료 알림을 확인했습니다.
+PR 알림 스레드에서 소유자가 `반영해`라고 승인하면 해당 커밋을 검사해 병합하고, 실행 코드 변경이면
+서버 배포를 이어갑니다. 총괄에게 개선 진단을 요청하거나 보관 이력·진행 상태를 조회할 수 있습니다.
+범위와 검증 한계는 [개선 BOT 운영](docs/maintenance.md)을 보세요.
+
+아침 정기 시황 브리핑과 요청형 시장 분석 BOT은 [후속 로드맵](docs/project/NEXT-STEPS.md)에
+등록했습니다. 두 기능의 구현·활성화는 추후 진행합니다.
