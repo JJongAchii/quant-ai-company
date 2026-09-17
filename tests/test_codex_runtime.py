@@ -288,6 +288,45 @@ async def test_failed_result_stays_terminal_after_restart(fake_codex, request_mo
     assert "SECRET" not in (config.jobs_dir / "turn-01.json").read_text()
 
 
+@pytest.mark.parametrize("decision,reason", [
+    ({"say": "SECRET-RAW", "status": "wait"}, "wait_requires_delegation"),
+    ({"say": "SECRET-RAW", "status": "complete", "tools": [
+        {"name": "maintenance_status", "arguments": {}}]}, "tools_require_continue"),
+    ({"say": "SECRET-RAW", "status": "complete", "delegations": [
+        {"agent": "data", "instruction": "SECRET-RAW"}]}, "delegation_requires_wait"),
+    ({"say": "", "status": "complete"}, "empty_completion"),
+    ({"say": "SECRET-RAW", "status": "complete", "SECRET-FIELD": "SECRET-RAW"}, "invalid_shape"),
+])
+async def test_invalid_decision_receipt_preserves_safe_cause_without_retry(
+        fake_codex, request_model, decision, reason):
+    config, configure, calls = fake_codex
+    configure(decision=decision)
+    for _ in range(2):
+        with pytest.raises(ProviderFault) as caught:
+            await runner_for(config).run(request_model)
+        assert caught.value.code == "invalid_output"
+        assert f"decision_contract:{reason}" in caught.value.message
+    receipt_text = (config.jobs_dir / "turn-01.json").read_text()
+    receipt = json.loads(receipt_text)
+    assert receipt["state"] == "failed" and "result" not in receipt
+    assert "SECRET" not in receipt_text
+    assert len(calls()) == 1
+
+
+@pytest.mark.parametrize("decision", [
+    {"say": "진단 접수를 요청합니다.", "status": "continue", "tools": [
+        {"name": "maintenance_review", "arguments": {}}]},
+    {"say": "진단은 접수됐고 호출 한도로 대기합니다. 분석 완료는 아닙니다.", "status": "complete"},
+])
+async def test_background_review_dispatch_accepts_continue_then_report_completion(
+        fake_codex, request_model, decision):
+    config, configure, _ = fake_codex
+    configure(decision=decision)
+    response = await runner_for(config).run(request_model)
+    assert response.decision.status == decision["status"]
+    assert json.loads((config.jobs_dir / "turn-01.json").read_text())["state"] == "complete"
+
+
 @pytest.mark.parametrize("decision", [
     {"say": "", "status": "complete"},
     {"say": "Done", "status": "wait"},
