@@ -234,6 +234,11 @@ class Maintainer:
                 return {"state": "busy"}
             job = None
             try:
+                from .applications import Applications
+
+                application = await asyncio.to_thread(Applications(self.company, self.config, self.github).advance)
+                if application is not None:
+                    return application
                 self.store.collect()
                 job = self.store.next_job()
                 if not job:

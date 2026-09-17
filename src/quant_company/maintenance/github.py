@@ -1,6 +1,7 @@
 """Privileged Git broker. It never executes candidate code or exposes credentials to a model."""
 
 import base64
+import hashlib
 import json
 import subprocess
 import time
@@ -10,6 +11,11 @@ from urllib.parse import quote
 import httpx
 
 from .policy import SECRET, WORKFLOW, MaintenanceConfig, writable
+
+
+def blob_sha(content):
+    data = content.encode()
+    return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
 
 
 class GitHubError(Exception):
@@ -200,3 +206,89 @@ class GitHub:
         except (GitHubError, httpx.HTTPError):
             raise GitHubError("pr_write_requires_reconciliation") from None
         return {"url": pr["html_url"], "number": pr["number"], "state": pr["state"]}
+
+    def validate_application(self, job):
+        saved, payload = job["receipt"], job["payload"]
+        pr = self.request("GET", f"/pulls/{saved['pr']['number']}")
+        if (pr["head"]["sha"] != saved["head"] or pr["head"]["ref"] != saved["branch"]
+                or pr["head"]["repo"]["full_name"] != self.config.repository
+                or pr["base"]["ref"] != self.config.base or pr["state"] != "open"):
+            raise ValueError("approved_pr_changed_or_closed")
+        changes = payload["changes"]
+        files = self.request("GET", f"/pulls/{saved['pr']['number']}/files?per_page=100")
+        if len(files) != len(changes) or pr["changed_files"] != len(files):
+            raise ValueError("approved_patch_file_set_changed")
+        for item in files:
+            path = item["filename"]
+            if (path not in changes or item["status"] not in {"added", "modified"}
+                    or not writable(path, new=item["status"] == "added")
+                    or item["sha"] != blob_sha(changes[path])):
+                raise ValueError("approved_patch_content_changed")
+        requires_deployment = any(p.startswith("src/") for p in changes)
+        base = self.request("GET", "/git/ref/heads/main")["object"]["sha"]
+        if base != pr["base"]["sha"]:
+            raise ValueError("pr_base_not_current")
+        if base != saved["base"]:
+            # Unchanged documentation can survive an unrelated operator release. Executable code
+            # must be retested on its new base, not silently approved with old integration evidence.
+            if requires_deployment:
+                raise ValueError("code_base_moved_retest_required")
+            for path, original in payload["originals"].items():
+                current = self.request("GET", "/contents/" + quote(path, safe="/") + "?ref=" + base)
+                if current["sha"] != blob_sha(original):
+                    raise ValueError("documentation_base_changed")
+        ci = self.ci(saved)
+        if ci["state"] == "pending" or pr.get("mergeable") is None:
+            return None
+        if ci["state"] != "passed" or not pr["mergeable"]:
+            raise ValueError("approved_ci_or_mergeability_failed")
+        return {"validated_base": base, "ci": ci, "requires_deployment": requires_deployment}
+
+    def merge_application(self, job, receipt):
+        saved = job["receipt"]
+        number = saved["pr"]["number"]
+        pr = self.request("GET", f"/pulls/{number}")
+        if (pr["head"]["sha"] != saved["head"] or pr["base"]["sha"] != receipt["validated_base"]
+                or self.request("GET", "/git/ref/heads/main")["object"]["sha"] != receipt["validated_base"]):
+            raise ValueError("approved_refs_moved_before_merge")
+        if pr["draft"]:
+            result = self._http("POST", "/graphql", self.token(), data={
+                "query": "mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{isDraft}}}",
+                "variables": {"id": pr["node_id"]}})
+            if result.get("errors") or result["data"]["markPullRequestReadyForReview"]["pullRequest"]["isDraft"]:
+                raise GitHubError("pr_ready_failed")
+        try:
+            self.request("PUT", f"/pulls/{number}/merge", data={"sha": saved["head"], "merge_method": "merge"})
+        except (GitHubError, httpx.HTTPError):
+            # A lost acknowledgement may conceal a successful merge. Read back; never retry PUT.
+            pass
+        return self.reconcile_application(job, receipt)
+
+    def reconcile_application(self, job, receipt):
+        pr = self.request("GET", f"/pulls/{job['receipt']['pr']['number']}")
+        if not pr.get("merged") or pr["head"]["sha"] != job["receipt"]["head"]:
+            raise GitHubError("merge_not_confirmed_requires_reconciliation")
+        commit = self.request("GET", "/git/commits/" + pr["merge_commit_sha"])
+        if [p["sha"] for p in commit["parents"]] != [receipt["validated_base"], job["receipt"]["head"]]:
+            raise GitHubError("merge_parents_changed_requires_review")
+        return {"merge_commit": commit["sha"], "pr_url": pr["html_url"]}
+
+    def archive(self, commit):
+        # API redirect contains a temporary download URL; it never reaches logs or model context.
+        with httpx.Client(timeout=60, trust_env=False, transport=self.transport) as client:
+            response = client.get(f"https://api.github.com/repos/{self.config.repository}/tarball/{commit}",
+                                  headers={"Authorization": "Bearer " + self.token()})
+            if response.status_code != 302:
+                raise GitHubError("archive_redirect_failed")
+            url = httpx.URL(response.headers["location"])
+            if url.scheme != "https" or url.host != "codeload.github.com":
+                raise GitHubError("unexpected_archive_host")
+            with client.stream("GET", url) as stream:
+                if stream.status_code != 200:
+                    raise GitHubError("archive_download_failed")
+                data = bytearray()
+                for chunk in stream.iter_bytes():
+                    data.extend(chunk)
+                    if len(data) > 8 * 1024 * 1024:
+                        raise GitHubError("archive_too_large")
+        return bytes(data)

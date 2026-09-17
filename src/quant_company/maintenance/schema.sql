@@ -23,3 +23,12 @@ INSERT INTO maintenance_control(id) VALUES (1) ON CONFLICT DO NOTHING;
 -- Bounded look-back diagnostics over the existing company records.
 CREATE INDEX IF NOT EXISTS maintenance_turn_history ON turns(created_at);
 CREATE INDEX IF NOT EXISTS maintenance_task_history ON tasks(created_at);
+
+-- Human approval is bound to one immutable candidate, independently of model turns.
+CREATE TABLE IF NOT EXISTS maintenance_applications (
+ id uuid PRIMARY KEY, job_id uuid NOT NULL UNIQUE REFERENCES maintenance_jobs(id),
+ project_id uuid NOT NULL REFERENCES projects(id), owner_user text NOT NULL,
+ event_key text NOT NULL UNIQUE, approval_text text NOT NULL, head text NOT NULL,
+ state text NOT NULL DEFAULT 'approved', receipt jsonb NOT NULL DEFAULT '{}', error text,
+ created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);

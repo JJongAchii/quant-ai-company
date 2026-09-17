@@ -87,6 +87,12 @@ class Company:
                 "strategy_code_execution": False,
                 "live_trading": False,
                 "paid_api_fallback": False,
+                "maintenance_approval": (
+                    "In a thread containing a delivered maintenance PR notice, the authorized owner can say "
+                    "반영해 or PR #N 반영해. Slack records approval for that exact candidate without a model call. "
+                    "The maintenance service checks and merges it; code changes go to the host release worker. "
+                    "Use application receipts for completion; never claim success from the user's approval alone."
+                ),
             },
             "limits": {
                 "daily_model_turns": self.settings.company_max_daily_turns,

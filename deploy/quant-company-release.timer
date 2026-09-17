@@ -1,0 +1,10 @@
+[Unit]
+Description=Check approved Quant Company releases
+
+[Timer]
+OnBootSec=90s
+OnUnitInactiveSec=60s
+Unit=quant-company-release.service
+
+[Install]
+WantedBy=timers.target

@@ -81,6 +81,14 @@ class SlackIngress:
                 return {"ok": True, "ignored": True}
             target = "director"
         text = re.sub(r"<@[A-Z0-9]+>", "", text).strip()
+        if target == "director":
+            from .maintenance.applications import accept_approval
+
+            approval = accept_approval(
+                self.company, text=text, owner=user, channel=channel, thread_ts=thread_ts,
+                event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}")
+            if approval is not None:
+                return {"ok": True, **approval}
         revise = text.startswith(("수정:", "변경:", "revise:"))
         if revise:
             text = text.split(":", 1)[1].strip()

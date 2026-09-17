@@ -1,0 +1,12 @@
+[Unit]
+Description=Apply human-approved Quant Company maintenance releases
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/quant-company/current/deploy/maintenance_release.py
+TimeoutStartSec=25min
+UMask=0077
+NoNewPrivileges=true
