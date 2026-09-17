@@ -1,0 +1,22 @@
+{
+  "createdAt": "2026-09-16T04:45:31.631000+00:00",
+  "checkedAt": "2026-09-16T04:48:01.624624+00:00",
+  "stack": "quant-company",
+  "stackStatus": "CREATE_COMPLETE",
+  "instance": {
+    "name": "quant-company-host",
+    "bundle": "small_3_0",
+    "ramGiB": 2.0,
+    "vcpus": 2,
+    "blueprint": "ubuntu_24_04",
+    "region": "ap-northeast-2",
+    "publicIPv4": "15.165.137.122",
+    "staticIPv4": true,
+    "state": "running"
+  },
+  "backupUri": "s3://quant-company-061039802347-backups/company/",
+  "instanceMonthlyUSD": 12,
+  "sshRestrictedToOperatorIPv4": true,
+  "runtimeDeployed": false,
+  "secretsIncluded": false
+}

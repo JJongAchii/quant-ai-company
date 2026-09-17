@@ -1,0 +1,660 @@
+{
+  "sourceRepository": "JJongAchii/quant-workspace",
+  "sourceCommit": "24d5f418b4a380d448cd7b3c955e9936f6b7b017",
+  "destinationRepository": "JJongAchii/quant-ai-company",
+  "reason": "User identified company work records still being added to quant-workspace after separation. Consolidate company documents and evidence here.",
+  "historicalContentsUnchanged": true,
+  "qwsContractLocation": "Original frozen INTENT/STATUS/EVENTS stay in quant-workspace; no further company records will be added there.",
+  "files": [
+    {
+      "sourcePath": "docs/work/quant-ai-company/BEHAVIOR-MAINTENANCE-VALIDATION.json",
+      "destinationPath": "docs/project/BEHAVIOR-MAINTENANCE-VALIDATION.json",
+      "sha256": "4c07489b09f5e9aa0db3d5942865b94f02ab35cb3c40457ea99abc51fe0f049a"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/CURRENT-SYSTEM-VALIDATION.json",
+      "destinationPath": "docs/project/CURRENT-SYSTEM-VALIDATION.json",
+      "sha256": "928ef8bf40d7ccd9ee2609f2a1daa0477dce543b7b770d32f3c4db19a43efda2"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/FUTURE-MARKET-BOTS-ROADMAP.json",
+      "destinationPath": "docs/project/FUTURE-MARKET-BOTS-ROADMAP.json",
+      "sha256": "a317494aa6c6918da967e897a985e288ad0154022f6a44fad53fbbfcc0914c21"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/GITHUB-AND-MAINTENANCE.md",
+      "destinationPath": "docs/project/GITHUB-AND-MAINTENANCE.md",
+      "sha256": "0344f42343a6f71efd8575d6edf44bf6fe0b5ceee009c330fa12912d8ddcdce2"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/MAINTENANCE-ACTIVATION-VALIDATION.json",
+      "destinationPath": "docs/project/MAINTENANCE-ACTIVATION-VALIDATION.json",
+      "sha256": "7fcc701ddb35137f580f779e692e9d29d16c66dc61c9f975159dcf309f487ab0"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/MAINTENANCE-APPLICATION-VALIDATION.json",
+      "destinationPath": "docs/project/MAINTENANCE-APPLICATION-VALIDATION.json",
+      "sha256": "fd0d415965d9aea557c7baae1b58d93a3c7344459e7dac9baa65bd4c77aa0460"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/MAINTENANCE-REVIEW-VALIDATION.json",
+      "destinationPath": "docs/project/MAINTENANCE-REVIEW-VALIDATION.json",
+      "sha256": "8c236fe505c5b48ca9c3ee511486bbd3b3e316ff226d4e94af72ea2f2274216f"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/REPOSITORY-MAINTENANCE-VALIDATION.json",
+      "destinationPath": "docs/project/REPOSITORY-MAINTENANCE-VALIDATION.json",
+      "sha256": "0b59d24ba7967d083f5a51b146e41b8b306788c21e3b65a76febcd36f77b6522"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-backup-identity.json",
+      "destinationPath": "docs/project/evidence/aws-backup-identity.json",
+      "sha256": "54b7c3731570a44cb6baa43ce828e96544967c88f1b29323888c75621ae843bc"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-backup-timer.json",
+      "destinationPath": "docs/project/evidence/aws-backup-timer.json",
+      "sha256": "80ad2015696878127ceaf301b141347e99938aae7392eb54fd243e63b93d373c"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-backup.json",
+      "destinationPath": "docs/project/evidence/aws-backup.json",
+      "sha256": "6035152dc1c92f9e35e9917ef4ab55e3e5392b0a57392cb6275eda2489628787"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-codex-after-reboot.json",
+      "destinationPath": "docs/project/evidence/aws-codex-after-reboot.json",
+      "sha256": "62b40ccb6eb58cdc8a0cfaf6757d438e8f446393e6090461c6d3d4dc4ae7998b"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-codex-smoke.json",
+      "destinationPath": "docs/project/evidence/aws-codex-smoke.json",
+      "sha256": "a9f6cc19b08393e0ff5e594d7d051def445f1e9292053c4a0c8a8de4666af3b0"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-company-collaboration.json",
+      "destinationPath": "docs/project/evidence/aws-company-collaboration.json",
+      "sha256": "e9ccd4188b049128453d45d2e3d820a92c8351c754eb2f287620ff922b4757a5"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-container-boundaries.json",
+      "destinationPath": "docs/project/evidence/aws-container-boundaries.json",
+      "sha256": "f2416a1b157bc1e768400bdd79c0e709d1159ca3f97b90122c4549ec9b08c417"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-created-resources.json",
+      "destinationPath": "docs/project/evidence/aws-created-resources.json",
+      "sha256": "6845f2d1d9addfd9abe59918cdaf454f7a1d87360537bb8dcd771d9ddeb0202f"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-deployment-regressions.xml",
+      "destinationPath": "docs/project/evidence/aws-deployment-regressions.xml",
+      "sha256": "91ad02c705a56ce28cd9f2b818230d1bde1dcf8956e80ac74373c0c384a45332"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-final-state.json",
+      "destinationPath": "docs/project/evidence/aws-final-state.json",
+      "sha256": "b7feb792cbda5b46754bbb2d79d569660756de4a05452e830e64f2c8934786e2"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-host-reboot.json",
+      "destinationPath": "docs/project/evidence/aws-host-reboot.json",
+      "sha256": "e737be59e04a2e95118be08e62282ef7114e485fe29af36756ac044c8f5aa300"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-initial-creation-repair.json",
+      "destinationPath": "docs/project/evidence/aws-initial-creation-repair.json",
+      "sha256": "9d9048f1bf5ac54a6ebbb6e08709530b6a40d3f66fa8c5e2295fab6dd775f39a"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-lake-deploy.json",
+      "destinationPath": "docs/project/evidence/aws-lake-deploy.json",
+      "sha256": "add7428ee356a26e9ac798a1c6797070da4a2aaa3e2569c01d6d0158208a07f8"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-lake-final-runtime.json",
+      "destinationPath": "docs/project/evidence/aws-lake-final-runtime.json",
+      "sha256": "00d071935cfa15583e8e94368e0e0793c57aeebecb1a013c092530fd82182301"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-lake-initial-deploy.json",
+      "destinationPath": "docs/project/evidence/aws-lake-initial-deploy.json",
+      "sha256": "107f65968e576927b0032e84314255cfb1c6356f6bde4879f177b0687dded019"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-lake-memory.json",
+      "destinationPath": "docs/project/evidence/aws-lake-memory.json",
+      "sha256": "3d94542371c2b24291677a509343e2e252ed083f7b46f7465cee9003356016cc"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-lake-model-qualification.json",
+      "destinationPath": "docs/project/evidence/aws-lake-model-qualification.json",
+      "sha256": "6377d795cad35571014b1d52778c6b3049b572f936508dd623d63cfcc6628b7a"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-lake-read-identity.json",
+      "destinationPath": "docs/project/evidence/aws-lake-read-identity.json",
+      "sha256": "09a007bfff33236ff124c839aa974ee6aa78cf7a0f5b3d30957d48bbe341a08d"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-lake-slack-attempt1-readback.json",
+      "destinationPath": "docs/project/evidence/aws-lake-slack-attempt1-readback.json",
+      "sha256": "eb1314d83ed154d6e39655e244c344975988e9ca3d6ba59efa92cd0cfd3c2de5"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-lake-slack-attempt1.json",
+      "destinationPath": "docs/project/evidence/aws-lake-slack-attempt1.json",
+      "sha256": "6615b5471295e0f4994c2789d16f714741f4a4488b0771490c7501551b58dcd8"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-lake-slack-readback.json",
+      "destinationPath": "docs/project/evidence/aws-lake-slack-readback.json",
+      "sha256": "60f401f0ecf32ab6b1d76859f0f9b38d6d2721968234874b65760ac7e6f5fc24"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-lake-slack-repair.json",
+      "destinationPath": "docs/project/evidence/aws-lake-slack-repair.json",
+      "sha256": "8648e9493624ec930f30d189eba2c6cac0ae199f3a808f86945d69f3860433ec"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-memory-samples.json",
+      "destinationPath": "docs/project/evidence/aws-memory-samples.json",
+      "sha256": "b52b095d486e92dbc5ec85beff695c107f6e3ed556c002f5ea2b70b8498f1c86"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-memory-summary.json",
+      "destinationPath": "docs/project/evidence/aws-memory-summary.json",
+      "sha256": "2772c625fec38beaed5609cc1860d593e2a9e5637f5c5a2be301b77679e32a00"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-restore-validation.json",
+      "destinationPath": "docs/project/evidence/aws-restore-validation.json",
+      "sha256": "f06c45df2a5e76826af72c5ead8af69052dda1b2defc6aa12a1ee7c2507a3757"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-role-config.json",
+      "destinationPath": "docs/project/evidence/aws-role-config.json",
+      "sha256": "50acaaf4d1d636313572a99dd1c339e05a465f174822754039431be09a731a52"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-runtime-context-answer.json",
+      "destinationPath": "docs/project/evidence/aws-runtime-context-answer.json",
+      "sha256": "9c0f3f780aba6499bf62b49717c4f5317bc42f09d09fc4818e91c1a6aa374d40"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-runtime-context-deploy.json",
+      "destinationPath": "docs/project/evidence/aws-runtime-context-deploy.json",
+      "sha256": "a2050483ed86e59a1dc0a3158ccccd99e9540fd39b035d41da31f1e50eadecaa"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-slack-company.json",
+      "destinationPath": "docs/project/evidence/aws-slack-company.json",
+      "sha256": "2fd970bba0907ff3b2bf77eaf3cba8490aa5cc1569b2dd2aa99f7f4e1ccb105e"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-slack-followup.json",
+      "destinationPath": "docs/project/evidence/aws-slack-followup.json",
+      "sha256": "abe2ca807d04c822779a264d0a67fc2750becd50091e002914159d88b95ebb90"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/aws-ssh-key.json",
+      "destinationPath": "docs/project/evidence/aws-ssh-key.json",
+      "sha256": "5dd320635bee65fe762df0b1b645bac708c6aa44b7cc351fec402d467537ac9c"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/codex-company-attempt1.json",
+      "destinationPath": "docs/project/evidence/codex-company-attempt1.json",
+      "sha256": "caa268d20248b6659ea8f4ea4cb2293ba75a45238ff43d23fae26f590898e554"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/codex-company-attempt2.json",
+      "destinationPath": "docs/project/evidence/codex-company-attempt2.json",
+      "sha256": "d57044267f4b0d9b4b6103e4c89cbdc0946a3646d873c3ec59841ce2e1c4cb14"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/codex-company.json",
+      "destinationPath": "docs/project/evidence/codex-company.json",
+      "sha256": "70e5d8ccd8fed0a8a466981b83486781215123fc7b49b2a37f54c7ab3c1b37ce"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/codex-connection.json",
+      "destinationPath": "docs/project/evidence/codex-connection.json",
+      "sha256": "da20ad91305a5578397ea6270ef36f3399f2f00a645c13964de53f2309e27b0a"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-build-cache-recovery.json",
+      "destinationPath": "docs/project/evidence/current-system-build-cache-recovery.json",
+      "sha256": "2d666e3cf1fc00b3a3bc21749c3e2cf766b886713061fa18e33d01afd15ba5b3"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-citation-resume.json",
+      "destinationPath": "docs/project/evidence/current-system-citation-resume.json",
+      "sha256": "443df0865cd40a3ceb32e7033172eec42da5d18ac96790f077e3c34a8494071b"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-completed-stale-wait.json",
+      "destinationPath": "docs/project/evidence/current-system-completed-stale-wait.json",
+      "sha256": "2eb2077b1b13e90235d27837e0865640581b4a045195a7bf09252585bf61473e"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-completed-wait-correction.json",
+      "destinationPath": "docs/project/evidence/current-system-completed-wait-correction.json",
+      "sha256": "53fc8db3c2e7ab6c24c7671555b14aede4c0fd0de5d6c62830b9747718575764"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-director-a89aa4ba28c6.json",
+      "destinationPath": "docs/project/evidence/current-system-director-a89aa4ba28c6.json",
+      "sha256": "0c42ad9a5db4bb1666d529188b0a27b22d810a4aa70b061571d3d492640e7c31"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-final-review-tick.json",
+      "destinationPath": "docs/project/evidence/current-system-final-review-tick.json",
+      "sha256": "4796036a56a2d22cd285f87db8936c4c894030b18c2c5415a579815e2e50dca5"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-first-review-tick.json",
+      "destinationPath": "docs/project/evidence/current-system-first-review-tick.json",
+      "sha256": "d6fefb166ea730df9882c9353d612f0c3ae20f76999eb6e740a0c16bc075d52f"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-github.json",
+      "destinationPath": "docs/project/evidence/current-system-github.json",
+      "sha256": "716ebe0ee359699dc6161bc50ed802ead93546fca134c9bb35c600aa8ca74e6d"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-host-85f862049310.json",
+      "destinationPath": "docs/project/evidence/current-system-host-85f862049310.json",
+      "sha256": "0b347274ac54156ae9c2f0bf316daad34771739698f04d8f2978f15f8751d962"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-host-a89aa4ba28c6.json",
+      "destinationPath": "docs/project/evidence/current-system-host-a89aa4ba28c6.json",
+      "sha256": "e6dbbf006ebc1fb54bd93215beb3402c4e9ceae18fc7df67e05c22eaeedbe87b"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-host-ababd0827948.json",
+      "destinationPath": "docs/project/evidence/current-system-host-ababd0827948.json",
+      "sha256": "1ef1a154eb4d6543187cd70006eaf35d3dec4be278dde303ff29bcd1b536b660"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-host-bcb4f70ec164.json",
+      "destinationPath": "docs/project/evidence/current-system-host-bcb4f70ec164.json",
+      "sha256": "f796810d612b0685764626e1639d698784a73a3d048086498d1190353abbb42f"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-input-budget-resume.json",
+      "destinationPath": "docs/project/evidence/current-system-input-budget-resume.json",
+      "sha256": "e2c6513624aa0b924afbf44eeba6a39a7708aab944553e6f01226ae408344f34"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-input-size-reproduction.json",
+      "destinationPath": "docs/project/evidence/current-system-input-size-reproduction.json",
+      "sha256": "03d8de9269fda74a1f0b979d33a0a51cdc1739a10d525d88b7d74daa3845c6fd"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-live-refresh.json",
+      "destinationPath": "docs/project/evidence/current-system-live-refresh.json",
+      "sha256": "20c31a6645bddd3dd47bdcaf036bc2ecb00f615ee57f5c338a3da1f9cf51192f"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-live-replay.json",
+      "destinationPath": "docs/project/evidence/current-system-live-replay.json",
+      "sha256": "cda8862a1b409f593584012c72b2395d7a56566ec4f4d7d39ea605e8ebcb8471"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-live-status.json",
+      "destinationPath": "docs/project/evidence/current-system-live-status.json",
+      "sha256": "d97013506f0a561179d08f6d465b0b60ce30b9ba0aafc699c292f7e4bea3cf11"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-live-tick.json",
+      "destinationPath": "docs/project/evidence/current-system-live-tick.json",
+      "sha256": "5ed2512bd8d76f06adf8e64933104b7a9fda8848dd6abbf4cbdf9ec91eb91c0b"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-maintenance-rejected-proposal.json",
+      "destinationPath": "docs/project/evidence/current-system-maintenance-rejected-proposal.json",
+      "sha256": "473456acc36aaa41e113ca005f3d8bef7c180da4e5fa1a7fd84db9b7b5c332c9"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-merged-before-deployment.json",
+      "destinationPath": "docs/project/evidence/current-system-merged-before-deployment.json",
+      "sha256": "9c86b37004e699c13dcae5f225e4bbc10caa9fcd08bf3a62e79753e0156b410b"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-resume.json",
+      "destinationPath": "docs/project/evidence/current-system-resume.json",
+      "sha256": "e2c6513624aa0b924afbf44eeba6a39a7708aab944553e6f01226ae408344f34"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-review-bcb4f70ec164.json",
+      "destinationPath": "docs/project/evidence/current-system-review-bcb4f70ec164.json",
+      "sha256": "f870f367b5924b9d9a11407cd29a3cc43bb9444d51ca8126b8996ca317ef2903"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-review-final.json",
+      "destinationPath": "docs/project/evidence/current-system-review-final.json",
+      "sha256": "5d2f8857b0a263d507aaa7279dc51300550200538d726cac6189fc25f7afbb68"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-slack-readback.json",
+      "destinationPath": "docs/project/evidence/current-system-slack-readback.json",
+      "sha256": "f50bdd1416ab5bd6d52d3a4b5c4ebe8d7b21a7e1ad0eb40c52f4caaf140681b0"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-status-bcb4f70ec164.json",
+      "destinationPath": "docs/project/evidence/current-system-status-bcb4f70ec164.json",
+      "sha256": "6b31c7cc165bcd6e1815c1ee014cc2a7b69005316155e8f21fc1f7679605ab20"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/current-system-tests.json",
+      "destinationPath": "docs/project/evidence/current-system-tests.json",
+      "sha256": "006ff34a08b5ab63e6186011a18fc87b6b0d72214ec34b6495a3e00df7e4828f"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/data-connection-final-checks.xml",
+      "destinationPath": "docs/project/evidence/data-connection-final-checks.xml",
+      "sha256": "a8aee721559e55321a137c6f7d40bb2e4586d0d31bbfae04e9609bf51312b402"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/data-connection-regressions.xml",
+      "destinationPath": "docs/project/evidence/data-connection-regressions.xml",
+      "sha256": "c7f82288980fb25dc360ad98c7672355197e896c14dc9af319d06fa372b11791"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/lake-source-reference-regressions.xml",
+      "destinationPath": "docs/project/evidence/lake-source-reference-regressions.xml",
+      "sha256": "c2ac861a0af1e0b0ea18c437a9529c2df9d4b4262b8fbe22b00745398c4db361"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/lake_catalog-local.json",
+      "destinationPath": "docs/project/evidence/lake_catalog-local.json",
+      "sha256": "e8708594aa5c8cb98756bb644887a74db81d9bd977e3c3fc215421f15476a4e2"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/lake_describe-local.json",
+      "destinationPath": "docs/project/evidence/lake_describe-local.json",
+      "sha256": "ff9a5ff4e4184b4f55db40381561128d94092b8aaeb4461b815682d0c8aaed4d"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/lake_sample-local.json",
+      "destinationPath": "docs/project/evidence/lake_sample-local.json",
+      "sha256": "9f203714468f27740da26ca58a8c4552de003fe40209681eb7e6e18073db693c"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/lightsail-2gb-static-config.json",
+      "destinationPath": "docs/project/evidence/lightsail-2gb-static-config.json",
+      "sha256": "534fa373557cce28557fe0446a60826cf7b7d965638427bba72a97fa801d7e2d"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/linux-lake-qualification-256m.json",
+      "destinationPath": "docs/project/evidence/linux-lake-qualification-256m.json",
+      "sha256": "e308cc22e6dd42499cd6f800dbea3b336dc78aff66180af5b59e8f3965165ed9"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/linux-lake-qualification.json",
+      "destinationPath": "docs/project/evidence/linux-lake-qualification.json",
+      "sha256": "38cfdf855e16d1b73c7b3027d6831b609c375289024d198978c410257d247fd8"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-activation.json",
+      "destinationPath": "docs/project/evidence/maintenance-activation.json",
+      "sha256": "b8e316868a5f13c9b99b1a91688106e74b6080e700e42d32f2027430f82c52b9"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-application-before-base-fix.json",
+      "destinationPath": "docs/project/evidence/maintenance-application-before-base-fix.json",
+      "sha256": "9c2c663fd91d5007c3a6998d5fb3ffa7caa9a5f4cea114475876501f08836ac3"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-application-completion.json",
+      "destinationPath": "docs/project/evidence/maintenance-application-completion.json",
+      "sha256": "45e60e6825c8b2aed496a6a4b0e87a27870993ad2372bce6edd0b82b0adfe2c7"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-application-github.json",
+      "destinationPath": "docs/project/evidence/maintenance-application-github.json",
+      "sha256": "a015b9a1f8fcf7aad846c16862d596a170da17a3ff9b91a42f410c08b543feae"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-application-replay.json",
+      "destinationPath": "docs/project/evidence/maintenance-application-replay.json",
+      "sha256": "2d46d7f5dbe535bca308be9b186ed7ff6d011394cbade0aa2335eb3b7f4d8e3f"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-application-runtime.json",
+      "destinationPath": "docs/project/evidence/maintenance-application-runtime.json",
+      "sha256": "d46371d9eaee6463c9142021dd540c049f8e02254ae47394236c41db8d7e745c"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-approved-pr-application.json",
+      "destinationPath": "docs/project/evidence/maintenance-approved-pr-application.json",
+      "sha256": "4f68b8159b9933da4d9d095889d9eca980398510381880168a64ef6ec254915f"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-backup-restore.json",
+      "destinationPath": "docs/project/evidence/maintenance-backup-restore.json",
+      "sha256": "8582bf26c08559938d944dd2e320103070a97e6ffc8dc72f4f4631573fe3c88b"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-capacity.json",
+      "destinationPath": "docs/project/evidence/maintenance-capacity.json",
+      "sha256": "f524c5315811cc4b700ab80e69882149c7050286447cf03a5bb842caf71f4627"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-citation-reconciliation.json",
+      "destinationPath": "docs/project/evidence/maintenance-citation-reconciliation.json",
+      "sha256": "fd845cb1e7adccefb8557c46768ef243cd5ef8cfac3c7e2a4dbc048bbd41cc93"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-commissioning-input.json",
+      "destinationPath": "docs/project/evidence/maintenance-commissioning-input.json",
+      "sha256": "2aa0940fd8d41a2627f6b3e0f58138148c2eed74608311552c759b143540e887"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-commissioning-ticks.jsonl",
+      "destinationPath": "docs/project/evidence/maintenance-commissioning-ticks.jsonl",
+      "sha256": "9c7e35153bbfe6e2dac2f8a5070bd52d16fef437df9b48458f0e51c5020fe24c"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-first-pr.json",
+      "destinationPath": "docs/project/evidence/maintenance-first-pr.json",
+      "sha256": "30a6fb2c87da89237cdbdbe052b7f636ad87fb5e9b1efb98f29321b08440cdf3"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-github-app.json",
+      "destinationPath": "docs/project/evidence/maintenance-github-app.json",
+      "sha256": "61945644c509b0a706bfa25b7560a01a3eb1b83099608b3fec54c27ae29acc1f"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-live-base-validation.json",
+      "destinationPath": "docs/project/evidence/maintenance-live-base-validation.json",
+      "sha256": "8117cd5c2a7e8136e8f3f2712c472c382a676fbd86eedfdf8403c3c4acaa7a2f"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-replay-after-backup.json",
+      "destinationPath": "docs/project/evidence/maintenance-replay-after-backup.json",
+      "sha256": "d205ed5bf4fc5678ccf9384d4dd0afb973c098fcf6a590dc02cdf3feef29ef3a"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-github.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-github.json",
+      "sha256": "395e2331b6b7524dbf91e6dcb371bbb7b505a9f7ca4b86ced5c5ff692c54da51"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-history-probe.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-history-probe.json",
+      "sha256": "a04d9f57aea848f665eabede328e23f33c55fa6e00df1c674d1a719aa169b184"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-live-before-contract-fix.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-live-before-contract-fix.json",
+      "sha256": "84f4754324ae6c4475346a0d14be565812dd3d18a332b153cbc7d6a9df0de1a7"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-live-before-output-retry.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-live-before-output-retry.json",
+      "sha256": "aa7757c6463620ff0277ae9822e3edab33ff54fa7fb536317ed5d1040fa9b895"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-live-before-scope-fix.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-live-before-scope-fix.json",
+      "sha256": "0dfc3646d34f0f389149feeffc5cca0350570b98abc370b6fa00c1b39c796ee1"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-live-retry-contract.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-live-retry-contract.json",
+      "sha256": "7ccdd897b77587944cbef2cca204c3c36b8f88723cacb2abc32b1223bdbbd5ec"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-live-retry-output.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-live-retry-output.json",
+      "sha256": "bf0ea17b91adbb13eab10a45efd602a22afc5563da6e4d6098e07ba5ad2204d2"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-live-retry.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-live-retry.json",
+      "sha256": "3540953cf146d6ee38b01c588817cd998f258d439b9beae53d32cc09703cba6f"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-live-start.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-live-start.json",
+      "sha256": "49d7f2534f2e55862cdb0fa302e420af2740a2988905b068df5283e6d221cd09"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-live-status.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-live-status.json",
+      "sha256": "acd061437a914bd237588cb81a7c090cee1ccc8a181b14d29ee17024d3c8debd"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-live-tick.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-live-tick.json",
+      "sha256": "86719b4616c0259f2aa8d6e4a17d0581a7919f4c212aff8fdb5a7f9165d3c774"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-probe-incident.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-probe-incident.json",
+      "sha256": "c526a66a83634dd8ee48185f169f4d55e3200fd2cfb003efd611745626999bff"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-runtime-before-contract-fix.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-runtime-before-contract-fix.json",
+      "sha256": "5980ebf4833ecea6bc07d2a1cde23792b2cd12abd1aa2ecf789c26d3fa2a5d1a"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-review-runtime.json",
+      "destinationPath": "docs/project/evidence/maintenance-review-runtime.json",
+      "sha256": "173cd2c23e97e2a29ed4529a916e8acccb9878b1b80616624b5ab343e8712332"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-runtime-status.json",
+      "destinationPath": "docs/project/evidence/maintenance-runtime-status.json",
+      "sha256": "682307cc3af1e1189d5d573897638f34954845b6e443c96d063862cd65909c0f"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-service-deploy-2842ab33c4f4.json",
+      "destinationPath": "docs/project/evidence/maintenance-service-deploy-2842ab33c4f4.json",
+      "sha256": "b026983848b8c50dc35aad6a919401a77a3c586bf4d564d23cbfdb6316982705"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-service-deploy-3a1af96aaa12.json",
+      "destinationPath": "docs/project/evidence/maintenance-service-deploy-3a1af96aaa12.json",
+      "sha256": "e24695e4b852c982ac35f7771162cfb63e7bae13616c4266bb1489ffa677d538"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-service-deploy-74abe276dc7a.json",
+      "destinationPath": "docs/project/evidence/maintenance-service-deploy-74abe276dc7a.json",
+      "sha256": "dd5cb258d486c6d8c8ae84f0811575da9e1feced7f9639dd210083131e54379a"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-service-deploy-85f862049310.json",
+      "destinationPath": "docs/project/evidence/maintenance-service-deploy-85f862049310.json",
+      "sha256": "b4a9fc875dbfb2b5ad000d5a6aebce46e34ecdd2c975df1f1f4df885c5b2d835"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-service-deploy-92d66f56d50e.json",
+      "destinationPath": "docs/project/evidence/maintenance-service-deploy-92d66f56d50e.json",
+      "sha256": "50d37c6690eaeb2923590d9de21559b8b0ae61b690576afd2ca957b70126e70e"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-service-deploy-a89aa4ba28c6.json",
+      "destinationPath": "docs/project/evidence/maintenance-service-deploy-a89aa4ba28c6.json",
+      "sha256": "8037c933d59af4cf8fecb8952e7bd953a30d5c7b98aad25656a6ece019438c76"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-service-deploy-ababd0827948.json",
+      "destinationPath": "docs/project/evidence/maintenance-service-deploy-ababd0827948.json",
+      "sha256": "bc42b771106ba2b25805f0e29ad4a005d1a972ee44b761131f9c86d11f51b4dd"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-service-deploy-ae7517c5fbe7.json",
+      "destinationPath": "docs/project/evidence/maintenance-service-deploy-ae7517c5fbe7.json",
+      "sha256": "d2ce6303e810120fa3841c1410dedc06be671c10f436cd9c81039b28329f77e3"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-service-deploy-bcb4f70ec164.json",
+      "destinationPath": "docs/project/evidence/maintenance-service-deploy-bcb4f70ec164.json",
+      "sha256": "aa6bcba9aabd2e8a563edbf4cd5df9f3630553e24e60992a7949a4e13ab319a5"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-service-deploy-d1230a6bcc17.json",
+      "destinationPath": "docs/project/evidence/maintenance-service-deploy-d1230a6bcc17.json",
+      "sha256": "6ff2b290f8f0f3630412bf1db995bfee4b40b0860da9a6f9a1250c31f2032cb8"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-service-deploy.json",
+      "destinationPath": "docs/project/evidence/maintenance-service-deploy.json",
+      "sha256": "611e1f29cb424c9407e2c289b895d8cc015b4013e2cab703d9a229fb11c3443e"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-service-health.json",
+      "destinationPath": "docs/project/evidence/maintenance-service-health.json",
+      "sha256": "97826f93d23903450de5fd9de8bfe917c07a68111598187c587b19d15d73c458"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/maintenance-thread-diagnosis.json",
+      "destinationPath": "docs/project/evidence/maintenance-thread-diagnosis.json",
+      "sha256": "a3a7e2c75b6651a1d8aeb7ff843e9838f4d74e6d9d51cfc1c31c1853e963d7b7"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/onboarding-regressions.xml",
+      "destinationPath": "docs/project/evidence/onboarding-regressions.xml",
+      "sha256": "eab975860a151b0f438a3fbe7b17b15acffc6a901c9119cd6326f8d077e72ecf"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/pytest.xml",
+      "destinationPath": "docs/project/evidence/pytest.xml",
+      "sha256": "e6a420f1d51e3c310d7593c33df05712d45dcf7b86ca7fe07facfbe61d4e3495"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/qdata-catalog-regressions.xml",
+      "destinationPath": "docs/project/evidence/qdata-catalog-regressions.xml",
+      "sha256": "195ca5a2ab98aa98653b57b76bff23ab423de2cd6d019dfd2eae86549e76ba5c"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/runtime-context-regressions.xml",
+      "destinationPath": "docs/project/evidence/runtime-context-regressions.xml",
+      "sha256": "8bda193d2f41c38d08efcc60fd5d0f5dc907d94189b2af01bd5209f64cb0ee10"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/slack-channel-access.json",
+      "destinationPath": "docs/project/evidence/slack-channel-access.json",
+      "sha256": "c877e6334f2a2793582022a31552168f40c6cb77b3c20d2fe3f738abc0f3e403"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/slack-live-auth-sockets.json",
+      "destinationPath": "docs/project/evidence/slack-live-auth-sockets.json",
+      "sha256": "81b31b56aca8b064c3c86852786276c75204aad7d28f70131955570ffffa97b6"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/temporal-cloud-connection.json",
+      "destinationPath": "docs/project/evidence/temporal-cloud-connection.json",
+      "sha256": "d9f4979f653e6def4bad7fa6b3cf0f2ca83c33e632185a83bb99cce955243a11"
+    },
+    {
+      "sourcePath": "docs/work/quant-ai-company/evidence/temporal-cloud-process-restart.json",
+      "destinationPath": "docs/project/evidence/temporal-cloud-process-restart.json",
+      "sha256": "75c224d70a3ba4437d1c5d39ce3494e1332621b077198713bb55f2076d0bca4e"
+    }
+  ]
+}

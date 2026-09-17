@@ -1,0 +1,55 @@
+{
+  "latestDailyServiceBackup": {
+    "backup": "/var/lib/quant-company/backups/company-20260916T052154Z-2bb2bbe7.tar.gz",
+    "sha256": "7d3c5162be79a4048a344b9b8f37fd404f4fb5902d13874eb60d4a2f1f9335a6",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260916T052154Z-2bb2bbe7.tar.gz",
+    "release_commit": "c7fbd62a4ee27e6f8fd8ab166804620a400f874b",
+    "secrets_included": false
+  },
+  "containers": [
+    {
+      "name": "quant-company-dispatch-1",
+      "status": "running",
+      "health": null,
+      "oomKilled": false,
+      "restartCount": 0
+    },
+    {
+      "name": "quant-company-worker-1",
+      "status": "running",
+      "health": null,
+      "oomKilled": false,
+      "restartCount": 0
+    },
+    {
+      "name": "quant-company-slack-socket-1",
+      "status": "running",
+      "health": null,
+      "oomKilled": false,
+      "restartCount": 0
+    },
+    {
+      "name": "quant-company-codex-runtime-1",
+      "status": "running",
+      "health": "healthy",
+      "oomKilled": false,
+      "restartCount": 0
+    },
+    {
+      "name": "quant-company-api-1",
+      "status": "running",
+      "health": "healthy",
+      "oomKilled": false,
+      "restartCount": 0
+    },
+    {
+      "name": "quant-company-postgres-1",
+      "status": "running",
+      "health": "healthy",
+      "oomKilled": false,
+      "restartCount": 0
+    }
+  ],
+  "authDirectoryMode": "0o700",
+  "backupCredentialsMode": "0o600"
+}

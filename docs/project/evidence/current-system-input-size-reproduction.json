@@ -1,0 +1,14 @@
+{
+  "job_id": "f9e1ca16-4a04-57c7-925a-33e347d82b10",
+  "failure": "ValidationError",
+  "snapshot": "a89aa4ba28c67cf58ca9b16a7621e260566dbfa1",
+  "original_prompt_characters": 129323,
+  "provider_limit": 90000,
+  "bounded_prompt_characters": 87618,
+  "full_payload_digest": "a119f1cc33a7ad76d931489e3841990b8f3eea915e5aa39b7a8a7976609cf2a9",
+  "bounded_prompt_digest": "b9d7e37a4640ee8b633207a6bc0f4aa3fc398fe7a6597c64fa3cccae217ee9d5",
+  "source_paths_retained": 11,
+  "original_source_paths": 11,
+  "model_called": false,
+  "original_database_payload_changed": false
+}

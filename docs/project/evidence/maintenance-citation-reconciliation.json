@@ -1,0 +1,13 @@
+{
+  "job_id": "d9814fcf-5a57-4884-ab92-c1413c3afa70",
+  "reason": "operator verified supplied envelope citation after ADR-0015 validator correction",
+  "original_error": "invalid_maintenance_proposal",
+  "original_model_call_id": "maint-d9814fcf-5a57-4884-ab92-c1413c3afa70-triage",
+  "original_response_digest": "c1121256ff200beac3ba7ad7653769a09f094233384feff007dcda9c3ccebeba",
+  "model_recalled": false,
+  "previous_base": "da3b7e1cd9ad44cf0338509ce361cb489506b5b6",
+  "reviewed_base": "74abe276dc7a4165a750222eb192adb7a32a7f36",
+  "unchanged_selected_files": {
+    "docs/maintenance.md": "b5744786e4b967acbeed19dc2c1e1b740e599948"
+  }
+}

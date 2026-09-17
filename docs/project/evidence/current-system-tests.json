@@ -1,0 +1,47 @@
+{
+  "pr": 12,
+  "head": "a8f8bdea767c0a6c1a3ddfcb019f456fde136725",
+  "run_id": 35179164141,
+  "result": [
+    "2026-09-17T03:43:57.0130815Z 233 passed, 1 skipped, 1 deselected, 2 warnings in 62.25s (0:01:02)"
+  ],
+  "local_full_suite_before_redelivery_regression": "232 passed, 1 skipped, 1 deselected",
+  "latest_focused": "30 passed",
+  "live_boundary": "CI uses real PostgreSQL/local Temporal, simulated model and Slack/GitHub effects; no live Codex.",
+  "mergedCommit": "a89aa4ba28c67cf58ca9b16a7621e260566dbfa1",
+  "mergedMainRun": 35179342107,
+  "mergedMainResults": [
+    "service\tPostgreSQL, Temporal and service regression tests\t2026-09-17T03:46:39.9813270Z 233 passed, 1 skipped, 1 deselected, 2 warnings in 57.36s"
+  ],
+  "inputBudgetFix": {
+    "pr": 13,
+    "run_id": 35180166298,
+    "head": "f6b5c9ccadaea9947d5f76dd03f2ad02a3610a43",
+    "mergeCommit": "ababd0827948854dcba109f0533f87df6899ceca",
+    "results": [
+      "service\tPostgreSQL, Temporal and service regression tests\t2026-09-17T03:59:57.7162346Z 234 passed, 1 skipped, 1 deselected, 2 warnings in 57.80s"
+    ],
+    "local_focused": "64 passed"
+  },
+  "currentJobsAndCitations": {
+    "pr": 14,
+    "run_id": 35181143169,
+    "head": "c29e6fb404ff26798cab7f05c9147eb087d88ad0",
+    "mergeCommit": "bcb4f70ec164f12b5feb1d4608d2ee784e52a7af",
+    "results": [
+      "service\tPostgreSQL, Temporal and service regression tests\t2026-09-17T04:15:19.0186210Z 236 passed, 1 skipped, 1 deselected, 2 warnings in 57.36s"
+    ],
+    "local_focused": "66 passed"
+  },
+  "completionWaitFix": {
+    "pr": 15,
+    "run_id": 35182706362,
+    "head": "5c64d090d34ab74e86c3f038ae1b20ac5df7b4c6",
+    "mergeCommit": "85f8620493103b5d9e188af5a775598dcc31d311",
+    "results": [
+      "service\tPostgreSQL, Temporal and service regression tests\t2026-09-17T04:40:28.1675786Z 239 passed, 1 skipped, 1 deselected, 2 warnings in 60.86s (0:01:00)"
+    ],
+    "local_focused": "54 passed",
+    "regression_before_fix": "3 failed as expected"
+  }
+}

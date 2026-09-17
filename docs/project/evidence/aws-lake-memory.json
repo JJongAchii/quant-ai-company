@@ -1,0 +1,77 @@
+{
+  "recorded_at": "2026-09-16T06:38:56.917726+00:00",
+  "containers": {
+    "postgres": {
+      "running": true,
+      "oom_killed": false,
+      "memory_limit": 268435456,
+      "metrics": {
+        "memory.current": "65605632",
+        "memory.peak": "135176192",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.max": "268435456"
+      }
+    },
+    "api": {
+      "running": true,
+      "oom_killed": false,
+      "memory_limit": 134217728,
+      "metrics": {
+        "memory.current": "59125760",
+        "memory.peak": "121880576",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.max": "134217728"
+      }
+    },
+    "worker": {
+      "running": true,
+      "oom_killed": false,
+      "memory_limit": 402653184,
+      "metrics": {
+        "memory.current": "110387200",
+        "memory.peak": "211619840",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.max": "402653184"
+      }
+    },
+    "dispatch": {
+      "running": true,
+      "oom_killed": false,
+      "memory_limit": 201326592,
+      "metrics": {
+        "memory.current": "59875328",
+        "memory.peak": "60436480",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.max": "201326592"
+      }
+    },
+    "slack-socket": {
+      "running": true,
+      "oom_killed": false,
+      "memory_limit": 201326592,
+      "metrics": {
+        "memory.current": "48578560",
+        "memory.peak": "49070080",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.max": "201326592"
+      }
+    },
+    "codex-runtime": {
+      "running": true,
+      "oom_killed": false,
+      "memory_limit": 536870912,
+      "metrics": {
+        "memory.current": "150745088",
+        "memory.peak": "195145728",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.max": "536870912"
+      }
+    }
+  },
+  "host": {
+    "MemTotal": "1953552 kB",
+    "MemAvailable": "1105244 kB",
+    "SwapTotal": "0 kB",
+    "SwapFree": "0 kB"
+  }
+}

@@ -1,0 +1,229 @@
+{
+  "recordedAt": "2026-09-16T05:47:11.302112+00:00",
+  "imageCodeCommit": "e097ae9a523e811459b941dfe3b7d7686c7bc4e6",
+  "kind": "actual_model_internal_project_no_slack_send",
+  "question": "너 포함 현재 활성 담당자들이 사용하는 LLM 모델명을 알려줘. 지금 가능한 업무와 외부 인터넷 조회·실제 백테스트 가능 여부도 간단히 설명해줘. 추가 위임 없이 답해줘.",
+  "projectId": "dccaf973-9075-5000-9cb3-2648bd8ac5a4",
+  "taskId": "b7aa0091-fd07-5ed3-bc71-a3bda0a66428",
+  "taskCount": 1,
+  "turnCount": 1,
+  "taskStatuses": [
+    "completed"
+  ],
+  "outboxCount": 0,
+  "runtimeContext": {
+    "snapshot_at": "2026-09-16T05:46:55.314044+00:00",
+    "model_provider": "codex",
+    "model_id_meaning": "Configured model IDs sent with requests; not provider-side model attestation.",
+    "employees": [
+      {
+        "id": "director",
+        "name": "총괄",
+        "active": true,
+        "model": "gpt-6-astra",
+        "version": "2",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source"
+        ],
+        "can_delegate_to": [
+          "financial_strategist",
+          "researcher_kr",
+          "data"
+        ]
+      },
+      {
+        "id": "financial_strategist",
+        "name": "금융전략",
+        "active": true,
+        "model": "gpt-6-astra",
+        "version": "2",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source"
+        ],
+        "can_delegate_to": [
+          "researcher_kr",
+          "data"
+        ]
+      },
+      {
+        "id": "researcher_kr",
+        "name": "국내시장 연구",
+        "active": true,
+        "model": "gpt-5.6-sol",
+        "version": "2",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source"
+        ],
+        "can_delegate_to": [
+          "financial_strategist",
+          "data"
+        ]
+      },
+      {
+        "id": "researcher_global",
+        "name": "글로벌시장 연구",
+        "active": false,
+        "model": "gpt-5.6-sol",
+        "version": "2",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source"
+        ],
+        "can_delegate_to": [
+          "financial_strategist",
+          "data",
+          "engineer"
+        ]
+      },
+      {
+        "id": "researcher_crypto",
+        "name": "가상자산 연구",
+        "active": false,
+        "model": "gpt-5.6-sol",
+        "version": "2",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source"
+        ],
+        "can_delegate_to": [
+          "financial_strategist",
+          "data",
+          "engineer"
+        ]
+      },
+      {
+        "id": "data",
+        "name": "데이터",
+        "active": true,
+        "model": "gpt-5.6-terra",
+        "version": "2",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source"
+        ],
+        "can_delegate_to": []
+      },
+      {
+        "id": "engineer",
+        "name": "퀀트 개발",
+        "active": false,
+        "model": "gpt-5.6-sol",
+        "version": "2",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source"
+        ],
+        "can_delegate_to": [
+          "data",
+          "operations"
+        ]
+      },
+      {
+        "id": "validator",
+        "name": "독립 검증",
+        "active": false,
+        "model": "gpt-6-astra",
+        "version": "2",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source"
+        ],
+        "can_delegate_to": [
+          "data"
+        ]
+      },
+      {
+        "id": "risk",
+        "name": "포트폴리오·리스크",
+        "active": false,
+        "model": "gpt-6-astra",
+        "version": "2",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source"
+        ],
+        "can_delegate_to": [
+          "financial_strategist",
+          "data",
+          "validator"
+        ]
+      },
+      {
+        "id": "operations",
+        "name": "플랫폼 운영",
+        "active": false,
+        "model": "gpt-5.6-terra",
+        "version": "2",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source"
+        ],
+        "can_delegate_to": []
+      }
+    ],
+    "capabilities": {
+      "knowledge_search": "Approved registered sources only; not internet or data-lake search.",
+      "read_source": "Approved registered source content only; not arbitrary URLs or local files.",
+      "calculate": "Bounded numeric arithmetic; not arbitrary code or backtests.",
+      "external_web_search": false,
+      "research_worker_submission": false,
+      "strategy_code_execution": false,
+      "live_trading": false,
+      "paid_api_fallback": false
+    },
+    "limits": {
+      "daily_model_turns": 100,
+      "task_turns": 8,
+      "delegation_depth": 3,
+      "project_model_tasks": 40
+    }
+  },
+  "turns": [
+    {
+      "model": "gpt-6-astra",
+      "status": "completed",
+      "error": null,
+      "response": {
+        "usage": {
+          "input_tokens": 9756,
+          "output_tokens": 248,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 0
+        },
+        "decision": {
+          "say": "현재 활성 담당자와 설정된 LLM 모델은 다음과 같습니다.\n\n- 총괄(저): gpt-6-astra\n- 금융전략: gpt-6-astra\n- 국내시장 연구: gpt-5.6-sol\n- 데이터: gpt-5.6-terra\n\n가능한 업무는 승인된 등록 자료 검색·열람, 제한된 수치 계산, 자료에 근거한 경제 가정·검증 질문 정리, 연구 계획 및 보고서 작성입니다.\n\n외부 인터넷 조회는 불가능합니다. 실제 백테스트도 불가능하며, 코드 실행·모델 학습·실거래·유료 API 대체 호출은 지원하지 않습니다. 백테스트 설계와 제공된 결과의 검토는 가능합니다.\n\n위 모델명은 현재 서비스가 요청에 사용하는 설정 ID이며, 제공자 측 실제 실행 모델을 인증한 정보는 아닙니다. 추가 위임 없이 현재 설정을 기준으로 답했습니다.",
+          "tools": [],
+          "status": "complete",
+          "memories": [],
+          "messages": [],
+          "artifacts": [],
+          "follow_up": null,
+          "delegations": []
+        },
+        "provider": "codex",
+        "thread_id": "01a0a8c1-01d7-70e0-be84-b4dbc5836853",
+        "request_id": "01ec54b3-1d8e-5860-b1e9-048492375795"
+      }
+    }
+  ],
+  "registeredSources": [
+    {
+      "approved": true,
+      "synthetic": true,
+      "count": 1
+    }
+  ]
+}

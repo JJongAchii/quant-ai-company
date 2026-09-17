@@ -1,0 +1,145 @@
+{
+  "services": [
+    {
+      "name": "/quant-company-dispatch-1",
+      "image": "quant-company:c7fbd62a4ee27e6f8fd8ab166804620a400f874b",
+      "imageId": "sha256:38104607a360bf08f10ff58f62476bd2fa0021a0bc4fc44e5c652abf7ed179f3",
+      "user": "10001:10001",
+      "readOnly": true,
+      "memoryLimit": 201326592,
+      "privileged": false,
+      "capDrop": [
+        "ALL"
+      ],
+      "ports": {},
+      "mountDestinations": [
+        "/etc/quant-company/roles.json",
+        "/run/secrets/database_password",
+        "/run/secrets/slack_credentials",
+        "/run/secrets/temporal_api_key"
+      ],
+      "health": null,
+      "restartCount": 0,
+      "oomKilled": false
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "image": "quant-company:c7fbd62a4ee27e6f8fd8ab166804620a400f874b",
+      "imageId": "sha256:38104607a360bf08f10ff58f62476bd2fa0021a0bc4fc44e5c652abf7ed179f3",
+      "user": "10001:10001",
+      "readOnly": true,
+      "memoryLimit": 268435456,
+      "privileged": false,
+      "capDrop": [
+        "ALL"
+      ],
+      "ports": {},
+      "mountDestinations": [
+        "/etc/quant-company/roles.json",
+        "/run/secrets/database_password",
+        "/run/secrets/model_runtime_token",
+        "/run/secrets/temporal_api_key"
+      ],
+      "health": null,
+      "restartCount": 0,
+      "oomKilled": false
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "image": "quant-company:c7fbd62a4ee27e6f8fd8ab166804620a400f874b",
+      "imageId": "sha256:38104607a360bf08f10ff58f62476bd2fa0021a0bc4fc44e5c652abf7ed179f3",
+      "user": "10001:10001",
+      "readOnly": true,
+      "memoryLimit": 201326592,
+      "privileged": false,
+      "capDrop": [
+        "ALL"
+      ],
+      "ports": {},
+      "mountDestinations": [
+        "/etc/quant-company/roles.json",
+        "/run/secrets/database_password",
+        "/run/secrets/slack_credentials"
+      ],
+      "health": null,
+      "restartCount": 0,
+      "oomKilled": false
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "image": "quant-company-codex:c7fbd62a4ee27e6f8fd8ab166804620a400f874b",
+      "imageId": "sha256:e4c5b822a15bf4150122d253cee9b4b729058506621e2f87b34433a0424fe661",
+      "user": "10001:10001",
+      "readOnly": true,
+      "memoryLimit": 671088640,
+      "privileged": false,
+      "capDrop": [
+        "ALL"
+      ],
+      "ports": {},
+      "mountDestinations": [
+        "/state/auth",
+        "/state/jobs",
+        "/run/secrets/model_runtime_token"
+      ],
+      "health": "healthy",
+      "restartCount": 0,
+      "oomKilled": false
+    },
+    {
+      "name": "/quant-company-api-1",
+      "image": "quant-company:c7fbd62a4ee27e6f8fd8ab166804620a400f874b",
+      "imageId": "sha256:38104607a360bf08f10ff58f62476bd2fa0021a0bc4fc44e5c652abf7ed179f3",
+      "user": "10001:10001",
+      "readOnly": true,
+      "memoryLimit": 134217728,
+      "privileged": false,
+      "capDrop": [
+        "ALL"
+      ],
+      "ports": {
+        "8000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "8000"
+          }
+        ]
+      },
+      "mountDestinations": [
+        "/etc/quant-company/roles.json",
+        "/run/secrets/database_password",
+        "/run/secrets/operator_token",
+        "/run/secrets/slack_credentials"
+      ],
+      "health": "healthy",
+      "restartCount": 0,
+      "oomKilled": false
+    },
+    {
+      "name": "/quant-company-postgres-1",
+      "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "imageId": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "user": "",
+      "readOnly": false,
+      "memoryLimit": 268435456,
+      "privileged": false,
+      "capDrop": null,
+      "ports": {},
+      "mountDestinations": [
+        "/docker-entrypoint-initdb.d/10-company.sh",
+        "/run/secrets/database_admin_password",
+        "/run/secrets/database_password",
+        "/var/lib/postgresql/data"
+      ],
+      "health": "healthy",
+      "restartCount": 0,
+      "oomKilled": false
+    }
+  ],
+  "unauthenticatedOperatorStatus": 401,
+  "apiHealth": {
+    "ok": true
+  },
+  "databaseAppRole": "company:false:false:false",
+  "dockerEnabled": "enabled"
+}

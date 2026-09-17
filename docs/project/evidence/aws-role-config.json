@@ -1,0 +1,8 @@
+{
+  "sourceCommit": "e8cba6cedc35cfeee29c3390483fe89560bc91b9",
+  "roleConfigSha256": "f8ff1b5647da6a9631d4487b5c5ca9c48e5b715bf4a855d8a0585a061a114e3a",
+  "version": "2",
+  "reason": "First Slack test showed replies referring to inaccessible internal artifacts; require actual results in the user-visible reply.",
+  "imageCodeCommit": "c7fbd62a4ee27e6f8fd8ab166804620a400f874b",
+  "serviceBoundariesChanged": false
+}

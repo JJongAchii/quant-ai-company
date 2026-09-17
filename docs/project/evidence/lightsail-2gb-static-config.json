@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-09-16T04:34:11.771418+00:00",
+  "scope": "compose-rendering-and-static-memory-budget-only",
+  "serviceMemoryLimitsBytes": {
+    "api": 134217728,
+    "codex-runtime": 671088640,
+    "dispatch": 201326592,
+    "postgres": 268435456,
+    "slack-socket": 201326592,
+    "worker": 268435456
+  },
+  "totalServiceLimitMiB": 1664,
+  "nominalHostRemainderMiB": 384,
+  "runtimeQualified": false,
+  "awsResourcesCreated": false,
+  "codexPeakMemoryMeasured": false,
+  "purchaseStatus": "pending_user_cost_decision"
+}

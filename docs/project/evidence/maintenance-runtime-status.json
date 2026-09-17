@@ -1,0 +1,171 @@
+{
+  "recorded_at": "2026-09-17T00:05:41.442973+00:00",
+  "workflow": {
+    "id": "company-maintenance-v1",
+    "run_id": "01a0ac98-38de-77d7-89a6-ce727e529933",
+    "status": "RUNNING",
+    "task_queue": "quant-company-maintenance",
+    "start_time": "2026-09-16 23:40:52.318515+00:00",
+    "events": [
+      1,
+      5,
+      6,
+      7,
+      10,
+      11,
+      12,
+      5,
+      6,
+      7,
+      17,
+      18,
+      5,
+      6,
+      7,
+      10,
+      11,
+      12,
+      5,
+      6,
+      7,
+      17,
+      18,
+      5,
+      8,
+      5,
+      6,
+      7,
+      10,
+      11,
+      12,
+      5,
+      6,
+      7,
+      17,
+      18,
+      5,
+      6,
+      7,
+      10,
+      11,
+      12,
+      5,
+      6,
+      7,
+      17
+    ]
+  },
+  "jobs": [
+    {
+      "id": "281fa59e-c759-4d07-a66a-df8103a2c42a",
+      "kind": "triage",
+      "state": "done",
+      "problem_key": null,
+      "error": null,
+      "title": null,
+      "mode": null,
+      "receipt": {
+        "reason": "관찰된 검색 인자 오류는 단일 요청에서 발생했고 이후 올바른 형식으로 재요청되어 처리되었습니다. 모델 설정 질문의 차단 기록도 서로 다른 프로젝트에 속하며 원래 요청·응답 맥락과 재현 자료가 없어 원인을 확정할 수 없습니다. 정상적인 프로젝트별 연구·역할 확인 기록을 전사적 플랫폼 결함으로 일반화할 근거도 부족하므로 이번 검토에서는 개선 사항을 제안하지 않습니다."
+      },
+      "created_at": "2026-09-16 23:40:52.461622+00:00",
+      "updated_at": "2026-09-16 23:41:13.358859+00:00"
+    },
+    {
+      "id": "d9814fcf-5a57-4884-ab92-c1413c3afa70",
+      "kind": "triage",
+      "state": "done",
+      "problem_key": null,
+      "error": null,
+      "title": null,
+      "mode": null,
+      "receipt": {
+        "reason": "운영자가 실제 활성 상태와 문서의 구체적 불일치를 직접 제시했으므로 문서 개선 근거는 충분하다. 범위는 한 프로젝트의 기존 문서 정정으로 제한하며, 실행·배포 완료나 플랫폼 전역 결함으로 확대하지 않는다.",
+        "case_id": "168c2f7f-e272-5c3b-9453-4dab63680b81",
+        "evidence_keys": [
+          "message:d4b7c8dd-68c4-407d-ba88-065e337407d9"
+        ]
+      },
+      "created_at": "2026-09-16 23:45:55.375672+00:00",
+      "updated_at": "2026-09-16 23:59:11.524416+00:00"
+    },
+    {
+      "id": "168c2f7f-e272-5c3b-9453-4dab63680b81",
+      "kind": "repair",
+      "state": "pr_open",
+      "problem_key": "maintenance_status_documentation_stale",
+      "error": null,
+      "title": "유지보수 문서의 현재 상태가 실제 운영 활성화 상태와 불일치",
+      "mode": "documentation",
+      "receipt": {
+        "ci": {
+          "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35164656792",
+          "state": "passed",
+          "run_id": 35164656792,
+          "attempt": 1
+        },
+        "pr": {
+          "url": "https://github.com/JJongAchii/quant-ai-company/pull/3",
+          "state": "open",
+          "number": 3
+        },
+        "base": "74abe276dc7a4165a750222eb192adb7a32a7f36",
+        "head": "52b9afad6090fca6f0c2add1edc771847b3c6d68",
+        "tree": "75c903f29fee7a11ae80374efaa3a45d83fbe1c9",
+        "branch": "maintenance/168c2f7f-e272-5c3b-9453-4dab63680b81",
+        "ci_started_at": "2026-09-16T23:59:33.738313+00:00"
+      },
+      "created_at": "2026-09-16 23:59:11.524416+00:00",
+      "updated_at": "2026-09-17 00:02:12.682957+00:00"
+    }
+  ],
+  "calls": [
+    {
+      "id": "maint-281fa59e-c759-4d07-a66a-df8103a2c42a-triage",
+      "model": "gpt-5.6-sol",
+      "completed": true,
+      "provider": "codex",
+      "error": null,
+      "due_at": "2026-09-16 23:40:54.813338+00:00"
+    },
+    {
+      "id": "maint-d9814fcf-5a57-4884-ab92-c1413c3afa70-triage",
+      "model": "gpt-5.6-sol",
+      "completed": true,
+      "provider": "codex",
+      "error": null,
+      "due_at": "2026-09-16 23:45:57.659102+00:00"
+    },
+    {
+      "id": "maint-168c2f7f-e272-5c3b-9453-4dab63680b81-patch",
+      "model": "gpt-5.6-sol",
+      "completed": true,
+      "provider": "codex",
+      "error": null,
+      "due_at": "2026-09-16 23:59:13.116935+00:00"
+    }
+  ],
+  "observations": 34,
+  "usage": [],
+  "maintenance_outbox": [
+    {
+      "id": "bc9f6593-532f-5571-9379-09c64fc6b035",
+      "status": "delivered",
+      "sent_ts": "1789603333.811519",
+      "project_id": "8407d46c-2663-53c1-8310-a75c2743ac7b",
+      "channel": "C0C1Q8D0B6K",
+      "thread_ts": "1789602298.217159"
+    }
+  ],
+  "container": {
+    "id": "f6238fc5bea886d3879451fd50c78ae6e607fb9e87bb98fdcb4cdbbd74eb2587",
+    "running": true,
+    "oom_killed": false,
+    "restarts": 0
+  },
+  "memory": [
+    {
+      "memory": "61.11MiB / 128MiB",
+      "cpu": "0.00%"
+    }
+  ]
+}

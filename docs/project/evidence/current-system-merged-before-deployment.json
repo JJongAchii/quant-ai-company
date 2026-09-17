@@ -1,0 +1,19 @@
+{
+  "commit": "ababd0827948854dcba109f0533f87df6899ceca",
+  "coverage": {
+    "boundary": "allowlisted text only; no credentials, binaries, links or arbitrary repository",
+    "read_bytes": 704824,
+    "read_files": 88,
+    "omitted_paths": [
+      "deploy/prepare-state.py",
+      "deploy/provision.py",
+      "deploy/state_backup.py",
+      "tests/test_runtime_context.py"
+    ]
+  },
+  "runtime": {
+    "code_commit": "a89aa4ba28c67cf58ca9b16a7621e260566dbfa1",
+    "roles_digest": "ae8520ea3b423a3fdd886218c187556fa69939649d8308c3404e98dec5a59df7",
+    "config_digest": "974883cf209537eb03114ee09893cc0c46a947fe5030d547c8a2c14e7a504f4f"
+  }
+}

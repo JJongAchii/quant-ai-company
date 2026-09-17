@@ -1,0 +1,85 @@
+{
+  "commit": "ababd0827948854dcba109f0533f87df6899ceca",
+  "containers": [
+    {
+      "name": "/quant-company-postgres-1",
+      "revision": null,
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 268435456
+    },
+    {
+      "name": "/quant-company-api-1",
+      "revision": "ababd0827948854dcba109f0533f87df6899ceca",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 134217728
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "revision": "ababd0827948854dcba109f0533f87df6899ceca",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 402653184
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "revision": "ababd0827948854dcba109f0533f87df6899ceca",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 201326592
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "revision": "ababd0827948854dcba109f0533f87df6899ceca",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 201326592
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "revision": "ababd0827948854dcba109f0533f87df6899ceca",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 536870912
+    },
+    {
+      "name": "/quant-company-maintenance-1",
+      "revision": "ababd0827948854dcba109f0533f87df6899ceca",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 134217728
+    }
+  ],
+  "maintenance_daily_cap": null,
+  "checked_at": "2026-09-17T04:05:13.647533+00:00",
+  "free_memory_kib": 967356,
+  "runtime_readback": {
+    "code_commit": "ababd0827948854dcba109f0533f87df6899ceca",
+    "roles_digest": "ae8520ea3b423a3fdd886218c187556fa69939649d8308c3404e98dec5a59df7",
+    "config_digest": "974883cf209537eb03114ee09893cc0c46a947fe5030d547c8a2c14e7a504f4f",
+    "daily_limits": {
+      "company": null,
+      "maintenance": null
+    }
+  },
+  "temporal": {
+    "status": "RUNNING",
+    "run_id": "01a0ac98-38de-77d7-89a6-ce727e529933"
+  },
+  "release_timer_enabled": "enabled"
+}

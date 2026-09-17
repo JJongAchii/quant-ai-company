@@ -1,0 +1,205 @@
+{
+  "checked_at": "2026-09-17T02:09:42.294923+00:00",
+  "mode": "status",
+  "task": {
+    "id": "4948ea1c-d95b-5ddf-905e-81e7a91d8ee4",
+    "agent": "director",
+    "status": "blocked",
+    "error": "invalid_output"
+  },
+  "tool_receipts": [
+    {
+      "tool": "maintenance_status",
+      "receipt": {
+        "service": {
+          "enabled": true,
+          "worker_recently_seen": true,
+          "heartbeat_at": "2026-09-17 02:00:11.469551+00:00",
+          "poll_seconds": 300,
+          "daily_model_calls": 6,
+          "daily_model_call_cap": 6,
+          "budget_resets_at": "2026-09-18 00:00:00+00:00",
+          "approval_required_for_application": true
+        },
+        "requests": [
+          {
+            "request_id": "82bc171b-b429-5cef-854c-b9df58c0a853",
+            "case_id": "82bc171b-b429-5cef-854c-b9df58c0a853",
+            "state": "review",
+            "error": null,
+            "title": null,
+            "problem": null,
+            "hypothesis": null,
+            "evaluation_mode": null,
+            "evidence_keys": [],
+            "reason": null,
+            "pr": null,
+            "created_at": "2026-09-17 02:01:34.400037+00:00"
+          },
+          {
+            "request_id": "6f807a00-d68e-5f94-98b9-40d18aa2ec77",
+            "case_id": "6f807a00-d68e-5f94-98b9-40d18aa2ec77",
+            "state": "blocked",
+            "error": "prompt_replay_cannot_validate_runtime_code_changes",
+            "title": "과거 요청 개선 진단에서 제공된 이력 증거를 활용하지 않음",
+            "problem": "사용자가 지금까지의 요청에서 개선점을 찾아 달라고 했고 회사 실행 문맥에 이전 요청과 답변의 증거가 포함되어 있었지만, director는 검색 결과가 0건이라는 이유로 실제 이력을 확인할 수 없다고 답했습니다. 그 결과 이미 제공된 여러 요청 사례를 근거로 개선점을 제시하지 못하고 사용자에게 자료를 다시 보내 달라고 요청했습니다.",
+            "hypothesis": "director 지침이 knowledge_search 결과를 우선하고 현재 실행 문맥에 포함된 history/evidence를 진단 자료로 취급하는 기준을 충분히 명시하지 않아, 빈 검색 결과가 제공 이력 전체의 부재로 잘못 해석된 것으로 보입니다.",
+            "evaluation_mode": "prompt_replay",
+            "evidence_keys": [
+              "turn:10e51059-b948-57fd-8fed-499e1e045683",
+              "message:77154687-e0bb-4e6f-8f6b-fcde0a0b7803",
+              "message:07df4034-67ce-46ee-8a72-17f73eafe9c5",
+              "turn:2d3453f5-3716-5f57-ba37-707a45cc4f8a",
+              "message:8201332d-828c-4b52-b8d7-c16b05b94dec"
+            ],
+            "reason": null,
+            "pr": null,
+            "created_at": "2026-09-17 01:12:19.158354+00:00"
+          }
+        ],
+        "truncated": false,
+        "scope": "This thread's requests and observed cases; bounded to 10 and 16000 characters. A hypothesis is not a proven cause.",
+        "source_id": "company:855b5c7db48047dd92ba28b6"
+      }
+    },
+    {
+      "tool": "maintenance_review",
+      "receipt": {
+        "accepted": true,
+        "request_id": "82bc171b-b429-5cef-854c-b9df58c0a853",
+        "state": "queued",
+        "service": {
+          "enabled": true,
+          "worker_recently_seen": true,
+          "heartbeat_at": "2026-09-17 02:00:11.469551+00:00",
+          "poll_seconds": 300,
+          "daily_model_calls": 6,
+          "daily_model_call_cap": 6,
+          "budget_resets_at": "2026-09-18 00:00:00+00:00",
+          "approval_required_for_application": true
+        },
+        "next": "Maintenance reports to this thread without another user message. Receipt is not analysis completion.",
+        "source_id": "company:7e6bf208f26fa31757110683"
+      }
+    }
+  ],
+  "notices": [
+    {
+      "id": "8d25411e-8760-42f7-8083-ac6059fa22f9",
+      "author": "director",
+      "kind": "status",
+      "text": "업무가 확인 대기 상태입니다. 사유: proposal_rejected:Owner or channel is not authorized for company records. 작업 기록은 보존했습니다.",
+      "delivery": "delivered",
+      "sent_ts": "1789609832.807609"
+    },
+    {
+      "id": "040e3f53-187a-4124-b217-08deaaf82b40",
+      "author": "director",
+      "kind": "answer",
+      "text": "현재 설정에는 개선BOT과 이력 조회 기능이 있습니다. 앞서 기능이 없다고 안내하고 기록을 다시 보내 달라고 한 답변을 정정합니다.\n\n현재 개선BOT 기록에 올라온 문제는 ‘제공된 요청·답변 이력을 활용하지 않고, 검색 결과가 없다는 이유로 자료 재전송을 요청한 것’입니다. 지침 부족이라는 원인 설명은 아직 가설입니다.\n\n기존 검토는 실행 코드 변경을 대화 재현 방식으로 검증할 수 없어 차단된 상태입니다. 오늘 모델 호출 한도도 6/6회에 도달했으며, 초기화 예정은 9월 18일 00:00 UTC입니다. 전체 과거 요청 진단이나 수정 반영이 완료된 상태는 아닙니다.\n\n다음 단계로 이번 요청의 개선BOT 검토 접수와 최신 진행 상태 조회를 요청합니다. 앞선 이력 조회의 권한 거절은 우회하지 않겠습니다.",
+      "delivery": "delivered",
+      "sent_ts": "1789610495.562669"
+    },
+    {
+      "id": "0afb4d6e-177a-4e2a-a5a7-198f6dc4dcf1",
+      "author": "director",
+      "kind": "status",
+      "text": "업무가 확인 대기 상태입니다. 사유: invalid_output. 작업 기록은 보존했습니다.",
+      "delivery": "delivered",
+      "sent_ts": "1789610525.663149"
+    },
+    {
+      "id": "799c4b80-ac48-501c-a3b3-ae048cfdbe0a",
+      "author": "director",
+      "kind": "maintenance",
+      "text": "[개선 담당] 진단 요청 82bc171b: 대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다. 진행 상태와 결과를 이 스레드에 보고합니다.",
+      "delivery": "delivered",
+      "sent_ts": "1789610572.951229"
+    },
+    {
+      "id": "be63e9a8-9876-5683-997c-e36cb25aa808",
+      "author": "director",
+      "kind": "maintenance",
+      "text": "[개선 담당] 진단 요청 82bc171b: 모델 호출 한도로 대기 중입니다. 예산 초기화: 2026-09-18 00:00:00+00:00. 요청은 보존되어 자동 재개됩니다.",
+      "delivery": "delivered",
+      "sent_ts": "1789610875.757769"
+    },
+    {
+      "id": "4a1dbf97-5018-598b-b9fd-083afb7a01d8",
+      "author": "director",
+      "kind": "maintenance",
+      "text": "[개선 담당] 진단 요청 82bc171b: 일시 대기 중입니다 (company_work_has_priority). 같은 작업을 이어가며 결과를 이 스레드에 보고합니다.",
+      "delivery": "delivered",
+      "sent_ts": "1789610937.140669"
+    },
+    {
+      "id": "b574a9a8-a4e1-4f23-9107-a60768be4c59",
+      "author": "director",
+      "kind": "status",
+      "text": "업무가 확인 대기 상태입니다. 사유: invalid_output. 작업 기록은 보존했습니다.",
+      "delivery": "delivered",
+      "sent_ts": "1789610954.664869"
+    }
+  ],
+  "maintenance": {
+    "service": {
+      "enabled": true,
+      "worker_recently_seen": true,
+      "heartbeat_at": "2026-09-17 02:08:55.789140+00:00",
+      "poll_seconds": 300,
+      "daily_model_calls": 6,
+      "daily_model_call_cap": 6,
+      "budget_resets_at": "2026-09-18 00:00:00+00:00",
+      "approval_required_for_application": true
+    },
+    "requests": [
+      {
+        "request_id": "82bc171b-b429-5cef-854c-b9df58c0a853",
+        "case_id": "82bc171b-b429-5cef-854c-b9df58c0a853",
+        "state": "triage",
+        "error": "company_work_has_priority",
+        "title": null,
+        "problem": null,
+        "hypothesis": null,
+        "evaluation_mode": null,
+        "evidence_keys": [],
+        "reason": null,
+        "pr": null,
+        "created_at": "2026-09-17 02:01:34.400037+00:00"
+      },
+      {
+        "request_id": "6f807a00-d68e-5f94-98b9-40d18aa2ec77",
+        "case_id": "6f807a00-d68e-5f94-98b9-40d18aa2ec77",
+        "state": "blocked",
+        "error": "prompt_replay_cannot_validate_runtime_code_changes",
+        "title": "과거 요청 개선 진단에서 제공된 이력 증거를 활용하지 않음",
+        "problem": "사용자가 지금까지의 요청에서 개선점을 찾아 달라고 했고 회사 실행 문맥에 이전 요청과 답변의 증거가 포함되어 있었지만, director는 검색 결과가 0건이라는 이유로 실제 이력을 확인할 수 없다고 답했습니다. 그 결과 이미 제공된 여러 요청 사례를 근거로 개선점을 제시하지 못하고 사용자에게 자료를 다시 보내 달라고 요청했습니다.",
+        "hypothesis": "director 지침이 knowledge_search 결과를 우선하고 현재 실행 문맥에 포함된 history/evidence를 진단 자료로 취급하는 기준을 충분히 명시하지 않아, 빈 검색 결과가 제공 이력 전체의 부재로 잘못 해석된 것으로 보입니다.",
+        "evaluation_mode": "prompt_replay",
+        "evidence_keys": [
+          "turn:10e51059-b948-57fd-8fed-499e1e045683",
+          "message:77154687-e0bb-4e6f-8f6b-fcde0a0b7803",
+          "message:07df4034-67ce-46ee-8a72-17f73eafe9c5",
+          "turn:2d3453f5-3716-5f57-ba37-707a45cc4f8a",
+          "message:8201332d-828c-4b52-b8d7-c16b05b94dec"
+        ],
+        "reason": null,
+        "pr": null,
+        "created_at": "2026-09-17 01:12:19.158354+00:00"
+      }
+    ],
+    "truncated": false,
+    "scope": "This thread's requests and observed cases; bounded to 10 and 16000 characters. A hypothesis is not a proven cause."
+  },
+  "usage": {
+    "calls_today": 6
+  },
+  "director_tools": [
+    "calculate",
+    "knowledge_search",
+    "read_source",
+    "company_history",
+    "maintenance_review",
+    "maintenance_status"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "checked_at": "2026-09-17T01:20:55.312763+00:00",
+  "repository": "JJongAchii/quant-ai-company",
+  "pull_requests": [
+    {
+      "number": 3,
+      "url": "https://github.com/JJongAchii/quant-ai-company/pull/3",
+      "state": "closed",
+      "merged": true,
+      "merged_at": "2026-09-17T01:08:27Z",
+      "head": "52b9afad6090fca6f0c2add1edc771847b3c6d68",
+      "merge_commit": "b0ce21ccbc2221c9bf5550793137f83ce94d2f49",
+      "merged_by": {
+        "login": "achii-quant-company-maintainer[bot]",
+        "type": "Bot"
+      }
+    },
+    {
+      "number": 4,
+      "url": "https://github.com/JJongAchii/quant-ai-company/pull/4",
+      "state": "closed",
+      "merged": true,
+      "merged_at": "2026-09-17T00:43:31Z",
+      "head": "19246983d9636c7721c6d34a8d6dc0eb976f90ae",
+      "merge_commit": "a61822cf356d6b59c9238242c23bc1b95aa367ba",
+      "merged_by": {
+        "login": "JJongAchii",
+        "type": "User"
+      }
+    },
+    {
+      "number": 5,
+      "url": "https://github.com/JJongAchii/quant-ai-company/pull/5",
+      "state": "closed",
+      "merged": true,
+      "merged_at": "2026-09-17T00:50:32Z",
+      "head": "4f8014e0749ed556be65e5453c9322dfd481b185",
+      "merge_commit": "3a1af96aaa1233bbdf881a5ecf0d5dbbd4fd6b62",
+      "merged_by": {
+        "login": "JJongAchii",
+        "type": "User"
+      }
+    },
+    {
+      "number": 6,
+      "url": "https://github.com/JJongAchii/quant-ai-company/pull/6",
+      "state": "closed",
+      "merged": true,
+      "merged_at": "2026-09-17T01:02:01Z",
+      "head": "dec8e73ea3f8a827e6cb37f6d386a84acbd98d9d",
+      "merge_commit": "92d66f56d50e4a6c56a756e442f6a4575c5dbe58",
+      "merged_by": {
+        "login": "JJongAchii",
+        "type": "User"
+      }
+    },
+    {
+      "number": 7,
+      "url": "https://github.com/JJongAchii/quant-ai-company/pull/7",
+      "state": "closed",
+      "merged": true,
+      "merged_at": "2026-09-17T01:16:47Z",
+      "head": "72e699779ef050010b789beea4df08d6976c4b65",
+      "merge_commit": "5229c8194fc0c4fa4dbe8e3d26ace3ed7c3866e8",
+      "merged_by": {
+        "login": "JJongAchii",
+        "type": "User"
+      }
+    }
+  ],
+  "deployed_commit_ci": {
+    "id": 35168949693,
+    "html_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35168949693",
+    "head_sha": "92d66f56d50e4a6c56a756e442f6a4575c5dbe58",
+    "status": "completed",
+    "conclusion": "success"
+  }
+}

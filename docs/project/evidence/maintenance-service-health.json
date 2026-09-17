@@ -1,0 +1,89 @@
+{
+  "recorded_at": "2026-09-16T23:31:34.029946+00:00",
+  "api_health": {
+    "ok": true
+  },
+  "codex_authenticated": true,
+  "containers": [
+    {
+      "service": "api",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0,
+      "revision": "da3b7e1cd9ad44cf0338509ce361cb489506b5b6"
+    },
+    {
+      "service": "worker",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0,
+      "revision": "da3b7e1cd9ad44cf0338509ce361cb489506b5b6"
+    },
+    {
+      "service": "dispatch",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0,
+      "revision": "da3b7e1cd9ad44cf0338509ce361cb489506b5b6"
+    },
+    {
+      "service": "slack-socket",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0,
+      "revision": "da3b7e1cd9ad44cf0338509ce361cb489506b5b6"
+    },
+    {
+      "service": "codex-runtime",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0,
+      "revision": "da3b7e1cd9ad44cf0338509ce361cb489506b5b6"
+    },
+    {
+      "service": "postgres",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0,
+      "revision": null
+    }
+  ],
+  "stats": [
+    {
+      "service": "quant-company-worker-1",
+      "memory": "72.87MiB / 384MiB",
+      "cpu": "0.00%"
+    },
+    {
+      "service": "quant-company-dispatch-1",
+      "memory": "56.2MiB / 192MiB",
+      "cpu": "2.46%"
+    },
+    {
+      "service": "quant-company-slack-socket-1",
+      "memory": "47.39MiB / 192MiB",
+      "cpu": "0.05%"
+    },
+    {
+      "service": "quant-company-api-1",
+      "memory": "57.74MiB / 128MiB",
+      "cpu": "0.15%"
+    },
+    {
+      "service": "quant-company-codex-runtime-1",
+      "memory": "38.35MiB / 512MiB",
+      "cpu": "0.16%"
+    },
+    {
+      "service": "quant-company-postgres-1",
+      "memory": "40.54MiB / 256MiB",
+      "cpu": "2.31%"
+    }
+  ],
+  "meminfo": [
+    "MemTotal:        1953552 kB",
+    "MemAvailable:    1077768 kB",
+    "SwapTotal:             0 kB",
+    "SwapFree:              0 kB"
+  ]
+}

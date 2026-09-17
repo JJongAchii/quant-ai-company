@@ -1,0 +1,22 @@
+{
+  "replay_of_same_slack_event": true,
+  "result": {
+    "maintenance_approval": "complete",
+    "application_id": "66955a54-6d12-5d05-a2ac-5bdd250e7a4e",
+    "duplicate": true
+  },
+  "before": {
+    "maintenance_applications": 1,
+    "messages": 109,
+    "outbox": 51,
+    "maintenance_calls": 7
+  },
+  "after": {
+    "maintenance_applications": 1,
+    "messages": 109,
+    "outbox": 51,
+    "maintenance_calls": 7
+  },
+  "github_write_attempts": 0,
+  "model_calls_added": 0
+}

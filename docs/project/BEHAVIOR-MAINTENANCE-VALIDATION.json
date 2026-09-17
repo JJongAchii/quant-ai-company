@@ -1,0 +1,78 @@
+{
+  "dateKst": "2026-09-17",
+  "scope": "Extend the existing maintenance BOT to diagnose employee behavior and collaboration history, compare bounded role-prompt changes, and publish review-only organizational design proposals.",
+  "repository": "JJongAchii/quant-ai-company",
+  "branch": "quant-ai-company",
+  "commit": "137495c5c6951971b991ab81cb3c6c25232c4d28",
+  "implementationCommit": "2690a4571e2f499aeff0e881452d75e18af18d76",
+  "pullRequest": "https://github.com/JJongAchii/quant-ai-company/pull/1",
+  "ci": {
+    "runId": 35158142926,
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35158142926",
+    "headSha": "137495c5c6951971b991ab81cb3c6c25232c4d28",
+    "state": "completed",
+    "conclusion": "success",
+    "passed": 160,
+    "skipped": 1,
+    "deselected": 1,
+    "warnings": 2,
+    "lint": "passed",
+    "durationSeconds": 40.12
+  },
+  "localChecks": {
+    "lint": "passed",
+    "diffWhitespace": "passed",
+    "fullSuiteBeforeFinalTwoCases": {
+      "passed": 157,
+      "skipped": 1,
+      "deselected": 1,
+      "failed": 1,
+      "failure": "Temporal ephemeral executable startup exceeded five seconds. A prior run also had download failures; these were environment setup failures, not assertion failures."
+    },
+    "temporalRepair": {
+      "change": "Reuse the same cached SDK executable as existing Temporal tests; keep each server and history isolated.",
+      "targetedRecheckPassed": 1
+    },
+    "finalAffectedSuite": {
+      "command": "uv run --frozen pytest -q tests/test_maintenance.py tests/test_maintenance_behavior.py",
+      "passed": 32,
+      "failed": 0
+    }
+  },
+  "verifiedPaths": [
+    "Owner-scoped 30-day creation cohorts, status/retry aggregates, delegation edges, bounded evidence and secret-pattern omission",
+    "Frozen evaluation criteria and recorded-request digests checked before patch and replay",
+    "Same-model, same-context paired prompt responses with target improvement and control preservation required",
+    "Failed and inconclusive comparisons prevent publication",
+    "Restart after durable response but before checkpoint reuses the same response without a new model call",
+    "Human-work priority, shared company budget and revoked-owner checks",
+    "Organizational proposals create generated document-only PRs and explicitly unverified Slack outbox notices",
+    "Documentation evaluation cannot validate runtime or role changes",
+    "Regression gate runs the same cases on exact parent and candidate, rejecting errors, skips, removed cases and unchanged failures",
+    "CI timeout starts at candidate publication, allowing a budgeted evaluation to span multiple days"
+  ],
+  "testClassification": {
+    "postgresql": "real disposable local databases and CI service",
+    "temporal": "real ephemeral server and workflow history replay",
+    "regressionComparison": "real temporary Git repositories and pytest subprocesses",
+    "model": "scripted fixtures; no actual subscription replay was invoked",
+    "githubBroker": "HTTP fixtures; this implementation PR was published by the main coding session",
+    "slack": "durable outbox assertions; no maintenance message was sent to live Slack"
+  },
+  "limitations": [
+    "Paired replay checks two saved requests once per version and only explicit decision properties; it does not establish broad quality, financial expertise or statistical improvement.",
+    "The history counts are diagnostic signals, not quality scores or causal proof.",
+    "Whole-company conversation replay and autonomous organization/permission/model reconfiguration are not implemented; those changes become design-review proposals."
+  ],
+  "notRun": [
+    "Actual subscribed-model before/after comparison",
+    "GitHub App installation and an actual BOT-generated PR",
+    "Live maintenance Slack round trip",
+    "Production maintenance profile activation and additional memory measurement"
+  ],
+  "productionChanged": false,
+  "automaticMergeOrDeployment": false,
+  "additionalPaidResources": false,
+  "maintenanceDailyModelCap": 6,
+  "companyDailyModelCap": 100
+}

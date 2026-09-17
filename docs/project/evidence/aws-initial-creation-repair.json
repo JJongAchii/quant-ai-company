@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-09-16T04:45:17.845187+00:00",
+  "initialFailure": "Operator key registration failed; execution sequencing erroneously continued into CloudFormation apply",
+  "instanceCreated": false,
+  "bucketCreated": false,
+  "resourceReconciliation": "Lightsail instance absent and S3 NoSuchBucket confirmed despite preassigned CF physical bucket name",
+  "failedStack": "delete requested",
+  "repair": "OpenSSH RSA text imported successfully; provision.py now verifies key registration before creating any resource",
+  "regressionTestsPassed": 3
+}

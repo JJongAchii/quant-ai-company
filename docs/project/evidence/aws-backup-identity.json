@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-09-16T04:53:51.985483+00:00",
+  "userName": "quant-company-backup",
+  "userArn": "arn:aws:iam::061039802347:user/quant-company-backup",
+  "policy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "ListBackupPrefix",
+        "Effect": "Allow",
+        "Action": [
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::quant-company-061039802347-backups"
+        ],
+        "Condition": {
+          "StringLike": {
+            "s3:prefix": [
+              "company/*",
+              "company/"
+            ]
+          }
+        }
+      },
+      {
+        "Sid": "WriteReadCompanyBackups",
+        "Effect": "Allow",
+        "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:GetObjectVersion",
+          "s3:AbortMultipartUpload"
+        ],
+        "Resource": [
+          "arn:aws:s3:::quant-company-061039802347-backups/company/*"
+        ]
+      }
+    ]
+  },
+  "policySha256": "0590fd3ba93c509010155c5247182dc29e7a20519be3f8e83e03bcae328a1c7e",
+  "accessKeySuffix": "UD5W",
+  "hostFile": "/root/.aws/credentials",
+  "hostMode": "0600",
+  "containerCredentialsMounted": false,
+  "localRecoveryCopy": "ignored-0600",
+  "consoleLoginCreated": false
+}

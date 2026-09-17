@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "restoredDatabase": "restore_drill_20260916",
+  "downloadedFromS3": true,
+  "liveDatabaseUnchanged": true,
+  "knownProjectStateEquality": {
+    "18666fcc-cd8f-5c12-9cbc-4ab49a4d2f33": true,
+    "d62241c2-9d1b-52f8-8a82-a9a5c2f9fa8b": true
+  },
+  "restoredRowCounts": {
+    "artifacts": 4,
+    "daily_usage": 1,
+    "events": 11,
+    "inbound": 2,
+    "memories": 0,
+    "messages": 17,
+    "outbox": 0,
+    "projects": 2,
+    "runtime_control": 1,
+    "schema_version": 1,
+    "sources": 1,
+    "tasks": 5,
+    "turns": 9
+  }
+}

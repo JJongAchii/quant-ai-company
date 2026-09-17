@@ -1,0 +1,168 @@
+{
+  "workflow": {
+    "status": "RUNNING",
+    "run_id": "01a0ac98-38de-77d7-89a6-ce727e529933"
+  },
+  "applications": [
+    {
+      "id": "66955a54-6d12-5d05-a2ac-5bdd250e7a4e",
+      "head": "52b9afad6090fca6f0c2add1edc771847b3c6d68",
+      "state": "complete",
+      "receipt": {
+        "ci": {
+          "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35164656792",
+          "state": "passed",
+          "run_id": 35164656792,
+          "attempt": 1
+        },
+        "pr_url": "https://github.com/JJongAchii/quant-ai-company/pull/3",
+        "pr_number": 3,
+        "merge_commit": "b0ce21ccbc2221c9bf5550793137f83ce94d2f49",
+        "validated_base": "92d66f56d50e4a6c56a756e442f6a4575c5dbe58",
+        "requires_deployment": false
+      },
+      "error": null,
+      "event_key": "slack:T0C1YRDRPNF:C0C1Q8D0B6K:1789606489.679629:director",
+      "approval_text": "반영해"
+    }
+  ],
+  "notices": [
+    {
+      "id": "bc9f6593-532f-5571-9379-09c64fc6b035",
+      "text": "[개선 담당] 수정안의 검증을 확인하고 검토용 PR을 만들었습니다. https://github.com/JJongAchii/quant-ai-company/pull/3\n운영 반영은 검토 후 진행합니다.",
+      "status": "delivered",
+      "sent_ts": "1789603333.811519"
+    },
+    {
+      "id": "07d1d6aa-da26-5623-bd69-e4607ccb7386",
+      "text": "[개선 담당] PR #3 (52b9afad6090) 반영 승인을 기록했습니다. 검사 후 병합하고, 실행 코드 변경이면 서버에 배포한 뒤 결과를 알려드리겠습니다.",
+      "status": "delivered",
+      "sent_ts": "1789606551.990109"
+    },
+    {
+      "id": "f274a68b-e055-5fd0-b135-12dfa781e0d7",
+      "text": "[개선 담당] PR #3의 승인은 이미 기록되어 있습니다. 현재 상태: 검사 대기.",
+      "status": "delivered",
+      "sent_ts": "1789606596.346689"
+    },
+    {
+      "id": "aedcc07a-52d3-5f0d-a171-4bfd78ce7aa8",
+      "text": "[개선 담당] PR #3 반영을 완료하지 못했습니다. 검사 또는 적용 단계에서 확인이 필요한 문제가 발생했습니다. 승인 기록과 진행 결과를 보존했습니다. 운영자 확인이 필요합니다.",
+      "status": "delivered",
+      "sent_ts": "1789606599.783899"
+    },
+    {
+      "id": "54f1a5f3-370a-567b-8a32-ff6cdfd7f0f3",
+      "text": "[개선 담당] PR #3 병합 완료. 문서 변경을 저장소에 반영했습니다. 서버 재배포는 필요하지 않습니다. 커밋: b0ce21ccbc22",
+      "status": "delivered",
+      "sent_ts": "1789607310.363989"
+    }
+  ],
+  "current_release": "2842ab33c4f43c25058fdd3073854ce070b37db9",
+  "authorization_scopes": {
+    "api": {
+      "users": [
+        "U0C250E23NW"
+      ],
+      "channels": [
+        "C0C1Q8D0B6K"
+      ]
+    },
+    "worker": {
+      "users": [
+        "U0C250E23NW"
+      ],
+      "channels": [
+        "C0C1Q8D0B6K"
+      ]
+    },
+    "maintenance": {
+      "users": [
+        "U0C250E23NW"
+      ],
+      "channels": [
+        "C0C1Q8D0B6K"
+      ]
+    },
+    "slack-socket": {
+      "users": [
+        "U0C250E23NW"
+      ],
+      "channels": [
+        "C0C1Q8D0B6K"
+      ]
+    }
+  },
+  "scope_matches_ingress": true,
+  "checked_at": "2026-09-17T02:06:58.431433+00:00",
+  "release_timer_enabled": "enabled",
+  "release_timer_active": "active",
+  "release_service_result": [
+    "Result=success",
+    "ExecMainStatus=0"
+  ],
+  "containers": [
+    {
+      "name": "/quant-company-postgres-1",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0,
+      "health": "healthy",
+      "revision": null
+    },
+    {
+      "name": "/quant-company-api-1",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0,
+      "health": "healthy",
+      "revision": "2842ab33c4f43c25058fdd3073854ce070b37db9"
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0,
+      "health": null,
+      "revision": "2842ab33c4f43c25058fdd3073854ce070b37db9"
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0,
+      "health": null,
+      "revision": "2842ab33c4f43c25058fdd3073854ce070b37db9"
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0,
+      "health": null,
+      "revision": "2842ab33c4f43c25058fdd3073854ce070b37db9"
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0,
+      "health": "healthy",
+      "revision": "2842ab33c4f43c25058fdd3073854ce070b37db9"
+    },
+    {
+      "name": "/quant-company-maintenance-1",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 1,
+      "health": null,
+      "revision": "2842ab33c4f43c25058fdd3073854ce070b37db9"
+    }
+  ],
+  "live_archive_validation": {
+    "sha256": "170fc68a1313ffb9a32ceb77cbd29cb3011be7fce45216ca4fccfa80c8827cc8",
+    "bytes": 471853,
+    "matches_deployed_protected_files": true,
+    "deployed_candidate_during_probe": false
+  }
+}

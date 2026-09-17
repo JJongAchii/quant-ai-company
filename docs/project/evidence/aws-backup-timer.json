@@ -1,0 +1,9 @@
+{
+  "unitValidationExit": 0,
+  "status": "NextElapseUSecRealtime=Wed 2026-09-16 18:10:28 UTC\nActiveState=active\nUnitFileState=enabled\nExecStart={ path=/usr/bin/python3 ; argv[]=/usr/bin/python3 /opt/quant-company/current/deploy/state_backup.py backup --env-file /var/lib/quant-company/config/runtime.env --apply ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }\nEnvironment=AWS_DEFAULT_REGION=ap-northeast-2\nEnvironmentFiles=/var/lib/quant-company/config/backup.env (ignore_errors=no)\n",
+  "scheduledKst": "03:10 + up to 5 minutes",
+  "serviceManuallyExecuted": true,
+  "backupScriptAndActualS3Restore": "passed",
+  "serviceExecutionExit": 0,
+  "serviceExecutionStatus": "Result=success\nExecMainStartTimestamp=Wed 2026-09-16 05:21:54 UTC\nExecMainExitTimestamp=Wed 2026-09-16 05:22:05 UTC\nExecMainStatus=0\n"
+}

@@ -1,0 +1,9 @@
+{
+  "result": {
+    "project_id": "afac8444-0802-5be4-bdd3-70ca30c77ff0",
+    "task_id": "39783522-ed77-550c-a535-6d0038d145ed",
+    "duplicate": false
+  },
+  "operator_replay": true,
+  "new_slack_ingress": false
+}

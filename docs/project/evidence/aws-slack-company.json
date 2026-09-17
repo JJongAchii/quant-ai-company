@@ -1,0 +1,511 @@
+{
+  "status": "passed",
+  "checks": {
+    "fourTasksCompleted": true,
+    "allOutboxDelivered": true,
+    "allPostedTimestampsInSlack": true,
+    "fourDistinctSlackAppsPosted": true,
+    "realOwnerInbound": true
+  },
+  "projectId": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+  "threadTs": "1789535620.735079",
+  "channel": "C0C1Q8D0B6K",
+  "ownerUser": "U0C250E23NW",
+  "slackApiOk": true,
+  "messages": [
+    {
+      "ts": "1789535620.735079",
+      "user": "U0C250E23NW",
+      "text": "<@U0C23PPKR5L> 금융전략·국내연구·데이터 담당과 연결 점검을 해줘. 실제 연구 없이 각 담당자의 역할을 한 줄씩 확인하고 결과\n  를 정리해줘"
+    },
+    {
+      "ts": "1789535636.168179",
+      "user": "U0C23PPKR5L",
+      "bot_id": "B0C3035TX24",
+      "app_id": "A0C1ZF715K5",
+      "text": "[지시 v1] 금융전략·국내연구·데이터 담당에게 각자의 역할을 한 줄로 확인하도록 요청합니다. 실제 연구 없이 응답을 기다린 뒤 연결 점검 결과를 정리하겠습니다."
+    },
+    {
+      "ts": "1789535637.756619",
+      "user": "U0C23PPKR5L",
+      "bot_id": "B0C3035TX24",
+      "app_id": "A0C1ZF715K5",
+      "text": "[지시 v1] 연결 점검입니다. 실제 연구나 도구 사용 없이 금융전략 담당으로서 자신의 역할을 한 줄로 확인하고, 그 문장을 결과 아티팩트로 제출하세요. 응답 수신을 연결 확인의 근거로 삼겠습니다."
+    },
+    {
+      "ts": "1789535639.303419",
+      "user": "U0C23PPKR5L",
+      "bot_id": "B0C3035TX24",
+      "app_id": "A0C1ZF715K5",
+      "text": "[지시 v1] 연결 점검입니다. 실제 연구나 도구 사용 없이 국내연구 담당으로서 자신의 역할을 한 줄로 확인하고, 그 문장을 결과 아티팩트로 제출하세요. 응답 수신을 연결 확인의 근거로 삼겠습니다."
+    },
+    {
+      "ts": "1789535640.850959",
+      "user": "U0C23PPKR5L",
+      "bot_id": "B0C3035TX24",
+      "app_id": "A0C1ZF715K5",
+      "text": "[지시 v1] 연결 점검입니다. 실제 연구나 도구 사용 없이 데이터 담당으로서 자신의 역할을 한 줄로 확인하고, 그 문장을 결과 아티팩트로 제출하세요. 응답 수신을 연결 확인의 근거로 삼겠습니다."
+    },
+    {
+      "ts": "1789535643.580969",
+      "user": "U0C29D5DLMS",
+      "bot_id": "B0C27LXML3B",
+      "app_id": "A0C23QHH66S",
+      "text": "[지시 v1] 금융전략 담당입니다. 경제·금융 개념을 제도·상품 구조와 연결하고, 연구의 경제적 설명과 반례를 검토합니다."
+    },
+    {
+      "ts": "1789535648.659919",
+      "user": "U0C1ZH42C7M",
+      "bot_id": "B0C304WK6QG",
+      "app_id": "A0C211J5KE1",
+      "text": "[지시 v1] 연결 점검 응답을 제출합니다."
+    },
+    {
+      "ts": "1789535655.971259",
+      "user": "U0C1QCBD9L7",
+      "bot_id": "B0C304CHA3A",
+      "app_id": "A0C1ZGDU9M1",
+      "text": "[지시 v1] 국내연구 담당 역할을 한 줄로 확인해 결과 아티팩트로 제출합니다."
+    },
+    {
+      "ts": "1789535668.963149",
+      "user": "U0C23PPKR5L",
+      "bot_id": "B0C3035TX24",
+      "app_id": "A0C1ZF715K5",
+      "text": "[지시 v1] 세 담당자 모두 응답하여 연결 점검을 완료했습니다. 각 담당자가 제출한 역할 확인을 결과 아티팩트로 정리했습니다. 실제 연구는 수행하지 않았습니다."
+    }
+  ],
+  "outbox": [
+    {
+      "id": "76907b74-ed42-4004-b5d6-610d9c0d5a91",
+      "agent": "director",
+      "status": "delivered",
+      "sent_ts": "1789535636.168179",
+      "error": null
+    },
+    {
+      "id": "86076734-ccb4-45eb-bf01-ccd9c9a674a5",
+      "agent": "director",
+      "status": "delivered",
+      "sent_ts": "1789535637.756619",
+      "error": null
+    },
+    {
+      "id": "4bc53a87-3899-487d-b9d0-c439a13b3c04",
+      "agent": "director",
+      "status": "delivered",
+      "sent_ts": "1789535639.303419",
+      "error": null
+    },
+    {
+      "id": "3ae26757-84a8-4906-b300-3dda623ed318",
+      "agent": "director",
+      "status": "delivered",
+      "sent_ts": "1789535640.850959",
+      "error": null
+    },
+    {
+      "id": "78806fc8-33d8-40a9-97fd-0b562b679262",
+      "agent": "financial_strategist",
+      "status": "delivered",
+      "sent_ts": "1789535643.580969",
+      "error": null
+    },
+    {
+      "id": "433823cb-2e48-425b-8ddc-ed6e3822e7b1",
+      "agent": "data",
+      "status": "delivered",
+      "sent_ts": "1789535648.659919",
+      "error": null
+    },
+    {
+      "id": "16e04bc7-5600-4008-87fa-1eb07b8bea67",
+      "agent": "researcher_kr",
+      "status": "delivered",
+      "sent_ts": "1789535655.971259",
+      "error": null
+    },
+    {
+      "id": "1ca2b07b-6964-48bb-8ed7-eae67ea7d86b",
+      "agent": "director",
+      "status": "delivered",
+      "sent_ts": "1789535668.963149",
+      "error": null
+    }
+  ],
+  "state": {
+    "project": {
+      "id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+      "title": "금융전략·국내연구·데이터 담당과 연결 점검을 해줘. 실제 연구 없이 각 담당자의 역할을 한 줄씩 확인하고 결과\n  를 정리해줘",
+      "instruction": "금융전략·국내연구·데이터 담당과 연결 점검을 해줘. 실제 연구 없이 각 담당자의 역할을 한 줄씩 확인하고 결과\n  를 정리해줘",
+      "owner_user": "U0C250E23NW",
+      "channel": "C0C1Q8D0B6K",
+      "thread_ts": "1789535620.735079",
+      "revision": 1,
+      "status": "active",
+      "created_at": "2026-09-16 05:13:41.225368+00:00",
+      "updated_at": "2026-09-16 05:13:41.225368+00:00"
+    },
+    "tasks": [
+      {
+        "id": "b12b7c8b-40ee-5677-bcd0-6a9ad048562b",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "parent_id": null,
+        "agent": "director",
+        "instruction": "금융전략·국내연구·데이터 담당과 연결 점검을 해줘. 실제 연구 없이 각 담당자의 역할을 한 줄씩 확인하고 결과\n  를 정리해줘",
+        "revision": 1,
+        "depth": 0,
+        "priority": 0,
+        "status": "completed",
+        "turn_count": 2,
+        "result": "세 담당자 모두 응답하여 연결 점검을 완료했습니다. 각 담당자가 제출한 역할 확인을 결과 아티팩트로 정리했습니다. 실제 연구는 수행하지 않았습니다.",
+        "error": null,
+        "created_at": "2026-09-16 05:13:41.225368+00:00"
+      },
+      {
+        "id": "5c1707ea-2616-5f1b-90ad-c7378ebbf482",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "parent_id": "b12b7c8b-40ee-5677-bcd0-6a9ad048562b",
+        "agent": "researcher_kr",
+        "instruction": "연결 점검입니다. 실제 연구나 도구 사용 없이 국내연구 담당으로서 자신의 역할을 한 줄로 확인하고, 그 문장을 결과 아티팩트로 제출하세요. 응답 수신을 연결 확인의 근거로 삼겠습니다.",
+        "revision": 1,
+        "depth": 1,
+        "priority": 10,
+        "status": "completed",
+        "turn_count": 1,
+        "result": "국내연구 담당 역할을 한 줄로 확인해 결과 아티팩트로 제출합니다.",
+        "error": null,
+        "created_at": "2026-09-16 05:13:54.632531+00:00"
+      },
+      {
+        "id": "7d86b78e-0ec3-55bd-83a4-cd2465403f65",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "parent_id": "b12b7c8b-40ee-5677-bcd0-6a9ad048562b",
+        "agent": "financial_strategist",
+        "instruction": "연결 점검입니다. 실제 연구나 도구 사용 없이 금융전략 담당으로서 자신의 역할을 한 줄로 확인하고, 그 문장을 결과 아티팩트로 제출하세요. 응답 수신을 연결 확인의 근거로 삼겠습니다.",
+        "revision": 1,
+        "depth": 1,
+        "priority": 10,
+        "status": "completed",
+        "turn_count": 1,
+        "result": "금융전략 담당입니다. 경제·금융 개념을 제도·상품 구조와 연결하고, 연구의 경제적 설명과 반례를 검토합니다.",
+        "error": null,
+        "created_at": "2026-09-16 05:13:54.632531+00:00"
+      },
+      {
+        "id": "ab90cac1-3b7e-5e44-a6c2-e1267bb0589e",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "parent_id": "b12b7c8b-40ee-5677-bcd0-6a9ad048562b",
+        "agent": "data",
+        "instruction": "연결 점검입니다. 실제 연구나 도구 사용 없이 데이터 담당으로서 자신의 역할을 한 줄로 확인하고, 그 문장을 결과 아티팩트로 제출하세요. 응답 수신을 연결 확인의 근거로 삼겠습니다.",
+        "revision": 1,
+        "depth": 1,
+        "priority": 10,
+        "status": "completed",
+        "turn_count": 1,
+        "result": "연결 점검 응답을 제출합니다.",
+        "error": null,
+        "created_at": "2026-09-16 05:13:54.632531+00:00"
+      }
+    ],
+    "messages": [
+      {
+        "id": "f27b9bfe-ee2e-4d9b-85a5-c7849a469bb5",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "b12b7c8b-40ee-5677-bcd0-6a9ad048562b",
+        "revision": 1,
+        "author": "U0C250E23NW",
+        "recipient": null,
+        "kind": "human",
+        "text": "금융전략·국내연구·데이터 담당과 연결 점검을 해줘. 실제 연구 없이 각 담당자의 역할을 한 줄씩 확인하고 결과\n  를 정리해줘",
+        "created_at": "2026-09-16 05:13:41.225368+00:00"
+      },
+      {
+        "id": "76907b74-ed42-4004-b5d6-610d9c0d5a91",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "b12b7c8b-40ee-5677-bcd0-6a9ad048562b",
+        "revision": 1,
+        "author": "director",
+        "recipient": null,
+        "kind": "answer",
+        "text": "금융전략·국내연구·데이터 담당에게 각자의 역할을 한 줄로 확인하도록 요청합니다. 실제 연구 없이 응답을 기다린 뒤 연결 점검 결과를 정리하겠습니다.",
+        "created_at": "2026-09-16 05:13:54.632531+00:00"
+      },
+      {
+        "id": "86076734-ccb4-45eb-bf01-ccd9c9a674a5",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "7d86b78e-0ec3-55bd-83a4-cd2465403f65",
+        "revision": 1,
+        "author": "director",
+        "recipient": "financial_strategist",
+        "kind": "delegation",
+        "text": "연결 점검입니다. 실제 연구나 도구 사용 없이 금융전략 담당으로서 자신의 역할을 한 줄로 확인하고, 그 문장을 결과 아티팩트로 제출하세요. 응답 수신을 연결 확인의 근거로 삼겠습니다.",
+        "created_at": "2026-09-16 05:13:54.632531+00:00"
+      },
+      {
+        "id": "4bc53a87-3899-487d-b9d0-c439a13b3c04",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "5c1707ea-2616-5f1b-90ad-c7378ebbf482",
+        "revision": 1,
+        "author": "director",
+        "recipient": "researcher_kr",
+        "kind": "delegation",
+        "text": "연결 점검입니다. 실제 연구나 도구 사용 없이 국내연구 담당으로서 자신의 역할을 한 줄로 확인하고, 그 문장을 결과 아티팩트로 제출하세요. 응답 수신을 연결 확인의 근거로 삼겠습니다.",
+        "created_at": "2026-09-16 05:13:54.632531+00:00"
+      },
+      {
+        "id": "3ae26757-84a8-4906-b300-3dda623ed318",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "ab90cac1-3b7e-5e44-a6c2-e1267bb0589e",
+        "revision": 1,
+        "author": "director",
+        "recipient": "data",
+        "kind": "delegation",
+        "text": "연결 점검입니다. 실제 연구나 도구 사용 없이 데이터 담당으로서 자신의 역할을 한 줄로 확인하고, 그 문장을 결과 아티팩트로 제출하세요. 응답 수신을 연결 확인의 근거로 삼겠습니다.",
+        "created_at": "2026-09-16 05:13:54.632531+00:00"
+      },
+      {
+        "id": "78806fc8-33d8-40a9-97fd-0b562b679262",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "7d86b78e-0ec3-55bd-83a4-cd2465403f65",
+        "revision": 1,
+        "author": "financial_strategist",
+        "recipient": null,
+        "kind": "answer",
+        "text": "금융전략 담당입니다. 경제·금융 개념을 제도·상품 구조와 연결하고, 연구의 경제적 설명과 반례를 검토합니다.",
+        "created_at": "2026-09-16 05:14:02.969974+00:00"
+      },
+      {
+        "id": "433823cb-2e48-425b-8ddc-ed6e3822e7b1",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "ab90cac1-3b7e-5e44-a6c2-e1267bb0589e",
+        "revision": 1,
+        "author": "data",
+        "recipient": null,
+        "kind": "answer",
+        "text": "연결 점검 응답을 제출합니다.",
+        "created_at": "2026-09-16 05:14:07.872648+00:00"
+      },
+      {
+        "id": "16e04bc7-5600-4008-87fa-1eb07b8bea67",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "5c1707ea-2616-5f1b-90ad-c7378ebbf482",
+        "revision": 1,
+        "author": "researcher_kr",
+        "recipient": null,
+        "kind": "answer",
+        "text": "국내연구 담당 역할을 한 줄로 확인해 결과 아티팩트로 제출합니다.",
+        "created_at": "2026-09-16 05:14:15.278384+00:00"
+      },
+      {
+        "id": "1ca2b07b-6964-48bb-8ed7-eae67ea7d86b",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "b12b7c8b-40ee-5677-bcd0-6a9ad048562b",
+        "revision": 1,
+        "author": "director",
+        "recipient": null,
+        "kind": "answer",
+        "text": "세 담당자 모두 응답하여 연결 점검을 완료했습니다. 각 담당자가 제출한 역할 확인을 결과 아티팩트로 정리했습니다. 실제 연구는 수행하지 않았습니다.",
+        "created_at": "2026-09-16 05:14:28.386986+00:00"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": "596ecc56-6d7e-5999-938a-0459a5726c28",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "7d86b78e-0ec3-55bd-83a4-cd2465403f65",
+        "revision": 1,
+        "title": "금융전략 담당 역할 확인",
+        "content": "금융전략 담당은 경제·금융 개념을 제도·상품 구조와 연결하고, 연구의 경제적 설명과 반례를 검토합니다.",
+        "source_ids": [],
+        "digest": "b09e0b76822d69ed2d699dc9c02e70258c743743abd8dee94dcabea201e045c8",
+        "created_at": "2026-09-16 05:14:02.969974+00:00"
+      },
+      {
+        "id": "c1a0f522-86e9-5987-819a-b9ff420543c9",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "ab90cac1-3b7e-5e44-a6c2-e1267bb0589e",
+        "revision": 1,
+        "title": "데이터 담당 역할 확인",
+        "content": "데이터 담당은 자료의 출처·가용 시점·스키마·단위를 확인하고, 검증 가능한 데이터 계약을 작성합니다.",
+        "source_ids": [],
+        "digest": "e45816e8a2e20cf3f989337d2d1d96af17e2060dce77f9bef71a5ff428103397",
+        "created_at": "2026-09-16 05:14:07.872648+00:00"
+      },
+      {
+        "id": "7231e373-6cad-50bd-9703-b99275a5b6d2",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "5c1707ea-2616-5f1b-90ad-c7378ebbf482",
+        "revision": 1,
+        "title": "국내연구 담당 역할 확인",
+        "content": "국내연구 담당은 국내 일·월 주기 아이디어를 반증 가능한 가설, 자료 요구사항, 의사결정 시점·보유기간·비교기준·비용 가정을 포함한 실험 계획으로 구체화합니다.",
+        "source_ids": [],
+        "digest": "760a0061555f52be2a21c60e40b8392b45ef6bf5830c7d753be4c56422e81a61",
+        "created_at": "2026-09-16 05:14:15.278384+00:00"
+      },
+      {
+        "id": "e5ba8c8f-6ffa-5742-bf17-3489b7fc9177",
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "task_id": "b12b7c8b-40ee-5677-bcd0-6a9ad048562b",
+        "revision": 1,
+        "title": "금융전략·국내연구·데이터 연결 점검 결과",
+        "content": "프로젝트 revision 1 연결 점검 완료: 세 담당자의 응답과 역할 확인 아티팩트를 수신했으며, 위임 작업 모두 completed 상태입니다.\n\n- 금융전략: 경제·금융 개념을 제도·상품 구조와 연결하고, 연구의 경제적 설명과 반례를 검토합니다.\n- 국내연구: 국내 일·월 주기 아이디어를 반증 가능한 가설과 자료 요구사항, 의사결정 시점·보유기간·비교기준·비용 가정을 포함한 실험 계획으로 구체화합니다.\n- 데이터: 자료의 출처·가용 시점·스키마·단위를 확인하고, 검증 가능한 데이터 계약을 작성합니다.\n\n확인 범위는 담당자 응답 및 역할 확인이며 실제 연구나 실행 역량 검증은 포함하지 않습니다. 추가 조치 없이 이번 연결 점검을 종료합니다.",
+        "source_ids": [],
+        "digest": "8eab665929a8c311e2a8e87a23412de79559fe4d14293513cc63c2898fd49f38",
+        "created_at": "2026-09-16 05:14:28.386986+00:00"
+      }
+    ],
+    "memories": [],
+    "events": [
+      {
+        "id": 12,
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "kind": "task_created",
+        "detail": {
+          "agent": "director",
+          "task_id": "b12b7c8b-40ee-5677-bcd0-6a9ad048562b"
+        },
+        "created_at": "2026-09-16 05:13:41.225368+00:00"
+      },
+      {
+        "id": 13,
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "kind": "turn_completed",
+        "detail": {
+          "agent": "director",
+          "usage": {
+            "input_tokens": 8762,
+            "output_tokens": 264,
+            "cached_input_tokens": 0,
+            "reasoning_output_tokens": 0
+          },
+          "turn_id": "9f696176-d2bf-5f2b-aeb4-476aef6271c9",
+          "provider": "codex"
+        },
+        "created_at": "2026-09-16 05:13:54.632531+00:00"
+      },
+      {
+        "id": 14,
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "kind": "turn_completed",
+        "detail": {
+          "agent": "financial_strategist",
+          "usage": {
+            "input_tokens": 9192,
+            "output_tokens": 114,
+            "cached_input_tokens": 0,
+            "reasoning_output_tokens": 0
+          },
+          "turn_id": "3febc23a-93a7-5252-8b59-ead7113e0540",
+          "provider": "codex"
+        },
+        "created_at": "2026-09-16 05:14:02.969974+00:00"
+      },
+      {
+        "id": 15,
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "kind": "turn_completed",
+        "detail": {
+          "agent": "data",
+          "usage": {
+            "input_tokens": 8188,
+            "output_tokens": 83,
+            "cached_input_tokens": 0,
+            "reasoning_output_tokens": 0
+          },
+          "turn_id": "d7f7feaf-f74d-5a8b-9f43-e30408320898",
+          "provider": "codex"
+        },
+        "created_at": "2026-09-16 05:14:07.872648+00:00"
+      },
+      {
+        "id": 16,
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "kind": "turn_completed",
+        "detail": {
+          "agent": "researcher_kr",
+          "usage": {
+            "input_tokens": 8321,
+            "output_tokens": 125,
+            "cached_input_tokens": 0,
+            "reasoning_output_tokens": 0
+          },
+          "turn_id": "a09e8379-7c0b-5ecd-bda3-9c7672a48f77",
+          "provider": "codex"
+        },
+        "created_at": "2026-09-16 05:14:15.278384+00:00"
+      },
+      {
+        "id": 17,
+        "project_id": "6e3b88bc-5a27-5717-b7c5-ae4f3ecaa26a",
+        "kind": "turn_completed",
+        "detail": {
+          "agent": "director",
+          "usage": {
+            "input_tokens": 9831,
+            "output_tokens": 302,
+            "cached_input_tokens": 0,
+            "reasoning_output_tokens": 0
+          },
+          "turn_id": "e28faa20-dddb-588a-b676-50c545cb4c37",
+          "provider": "codex"
+        },
+        "created_at": "2026-09-16 05:14:28.386986+00:00"
+      }
+    ],
+    "turns": [
+      {
+        "id": "9f696176-d2bf-5f2b-aeb4-476aef6271c9",
+        "task_id": "b12b7c8b-40ee-5677-bcd0-6a9ad048562b",
+        "sequence": 1,
+        "revision": 1,
+        "status": "completed",
+        "error": null,
+        "due_at": "2026-09-16 05:13:41.232261+00:00",
+        "attempts": 1
+      },
+      {
+        "id": "d7f7feaf-f74d-5a8b-9f43-e30408320898",
+        "task_id": "ab90cac1-3b7e-5e44-a6c2-e1267bb0589e",
+        "sequence": 1,
+        "revision": 1,
+        "status": "completed",
+        "error": null,
+        "due_at": "2026-09-16 05:13:54.642463+00:00",
+        "attempts": 1
+      },
+      {
+        "id": "3febc23a-93a7-5252-8b59-ead7113e0540",
+        "task_id": "7d86b78e-0ec3-55bd-83a4-cd2465403f65",
+        "sequence": 1,
+        "revision": 1,
+        "status": "completed",
+        "error": null,
+        "due_at": "2026-09-16 05:13:54.638000+00:00",
+        "attempts": 1
+      },
+      {
+        "id": "a09e8379-7c0b-5ecd-bda3-9c7672a48f77",
+        "task_id": "5c1707ea-2616-5f1b-90ad-c7378ebbf482",
+        "sequence": 1,
+        "revision": 1,
+        "status": "completed",
+        "error": null,
+        "due_at": "2026-09-16 05:13:54.640278+00:00",
+        "attempts": 1
+      },
+      {
+        "id": "e28faa20-dddb-588a-b676-50c545cb4c37",
+        "task_id": "b12b7c8b-40ee-5677-bcd0-6a9ad048562b",
+        "sequence": 2,
+        "revision": 1,
+        "status": "completed",
+        "error": null,
+        "due_at": "2026-09-16 05:14:15.285952+00:00",
+        "attempts": 1
+      }
+    ]
+  },
+  "roleConfigVersion": "1",
+  "financialQualification": false
+}

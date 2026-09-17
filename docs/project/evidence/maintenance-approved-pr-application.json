@@ -1,0 +1,19 @@
+{
+  "recorded_at": "2026-09-17T00:56:37.777641+00:00",
+  "source_message_id": "a140f130-97e9-4387-be81-936c3f005ef5",
+  "source_received_at": "2026-09-17 00:16:50.541425+00:00",
+  "recovery_of_existing_slack_approval": true,
+  "new_slack_ingress": false,
+  "accepted": {
+    "maintenance_approval": "approved",
+    "application_id": "66955a54-6d12-5d05-a2ac-5bdd250e7a4e",
+    "duplicate": true
+  },
+  "tick": {
+    "state": "blocked",
+    "reason": "pr_base_not_current"
+  },
+  "application": null,
+  "maintenance_model_calls_before": 7,
+  "maintenance_model_calls_after": 7
+}
