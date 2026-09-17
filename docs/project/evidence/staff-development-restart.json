@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-09-17T07:55:41.451017+00:00",
+  "action": "restart existing worker and dispatcher only",
+  "active_work_before": {
+    "work": 0,
+    "staff": 0
+  },
+  "exit_code": 0,
+  "same_temporal_run": true,
+  "unchanged_model_call_count": 3,
+  "preserved_completed_exercises": 2,
+  "no_duplicate_exercises": true
+}

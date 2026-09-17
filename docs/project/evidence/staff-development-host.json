@@ -1,0 +1,31 @@
+{
+  "checked_at": "2026-09-17T07:53:12.544297+00:00",
+  "containers": [
+    {
+      "name": "/quant-company-worker-1",
+      "running": true,
+      "restarts": 0,
+      "oom": false,
+      "commit": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6"
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "running": true,
+      "restarts": 0,
+      "oom": false,
+      "commit": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6"
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "running": true,
+      "restarts": 0,
+      "oom": false,
+      "commit": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6"
+    }
+  ],
+  "timers": [
+    "active",
+    "active"
+  ],
+  "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/root        58G   56G  1.4G  98% /\n"
+}

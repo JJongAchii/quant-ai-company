@@ -1,0 +1,415 @@
+{
+  "code_commit": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6",
+  "staff": {
+    "enabled": true,
+    "schedule": {
+      "timezone": "Asia/Seoul",
+      "after_hour": 3,
+      "daily_exercises": 2,
+      "max_calls_per_exercise": 3,
+      "lower_priority_than_owner_work": true
+    },
+    "roster": [
+      {
+        "employee": "director",
+        "pack_version": "2026-09-17.1",
+        "pack_digest": "8d9ac0554e42c66b33faf1aa4f057eb013fcef09549e64111f4a6c1727ac188a",
+        "families": [
+          "revision_and_deliverables",
+          "execution_authority"
+        ],
+        "operational_active": true
+      },
+      {
+        "employee": "financial_strategist",
+        "pack_version": "2026-09-17.1",
+        "pack_digest": "7bf5e15ea27fc4bc73d987586152a56fabad4acba0f6658158ca4faa73f1be9f",
+        "families": [
+          "cashflow_discounting",
+          "put_call_parity"
+        ],
+        "operational_active": true
+      },
+      {
+        "employee": "data",
+        "pack_version": "2026-09-17.1",
+        "pack_digest": "0ec6d6ae63ae53c9c2a55e09b3413474416cc7bba1d9829b5a5dcd4c5d07b619",
+        "families": [
+          "availability_and_duplicates",
+          "missing_keys_and_coverage"
+        ],
+        "operational_active": true
+      },
+      {
+        "employee": "researcher_kr",
+        "pack_version": "2026-09-17.1",
+        "pack_digest": "b95703a73e22ef9f43bdbf62b965b1dd6f9c2f0fdc828e0acaa594f7f1b15587",
+        "families": [
+          "publication_lag",
+          "overlapping_labels"
+        ],
+        "operational_active": true
+      },
+      {
+        "employee": "maintainer",
+        "pack_version": "2026-09-17.1",
+        "pack_digest": "d6dcabad814a6a796adc08d2de4f8874c4b0987410b75b2191a491e279b8855d",
+        "families": [
+          "stale_diagnosis",
+          "evaluation_integrity"
+        ],
+        "operational_active": null
+      },
+      {
+        "employee": "engineer",
+        "pack_version": "2026-09-17.1",
+        "pack_digest": "04ab1e6db3778cd21fa2704922ebc2be4b7e4d3c3f427c975777817c588273a8",
+        "families": [
+          "unit_conversion",
+          "independent_numerical_controls"
+        ],
+        "operational_active": false
+      },
+      {
+        "employee": "validator",
+        "pack_version": "2026-09-17.1",
+        "pack_digest": "0d67b997df5931ce91c23e417231b3a7e3153b47f723cbcfc92ef8340c7ec390",
+        "families": [
+          "audit_scope_binding",
+          "missing_evidence"
+        ],
+        "operational_active": false
+      },
+      {
+        "employee": "risk",
+        "pack_version": "2026-09-17.1",
+        "pack_digest": "f6990bde545f70b653374c0ba92d576decd59b1459d7da9d18aedf133acedce9",
+        "families": [
+          "gross_net_scenario",
+          "concentration_controls"
+        ],
+        "operational_active": false
+      },
+      {
+        "employee": "researcher_global",
+        "pack_version": "2026-09-17.1",
+        "pack_digest": "77b1d9783eb9c5e47f0a9cf5035f03f3a7204103c73a5cf96249d75f96784c93",
+        "families": [
+          "cross_market_cutoffs",
+          "currency_direction"
+        ],
+        "operational_active": false
+      },
+      {
+        "employee": "researcher_crypto",
+        "pack_version": "2026-09-17.1",
+        "pack_digest": "b32f70250ad114b930a74e3184502883e7533fc373696781af41d54de3822dea",
+        "families": [
+          "event_order_and_latency",
+          "fees_and_funding"
+        ],
+        "operational_active": false
+      },
+      {
+        "employee": "operations",
+        "pack_version": "2026-09-17.1",
+        "pack_digest": "dac56c8c086a1ec1aa52fb5af4f544cd470732553f88d58cfe72159573155769",
+        "families": [
+          "ambiguous_delivery",
+          "recovery_receipts"
+        ],
+        "operational_active": false
+      }
+    ],
+    "recent_exercises": [
+      {
+        "id": "36ce55f1-d1c2-4c8a-bae7-adc46e1a12b6",
+        "employee": "financial_strategist",
+        "state": "completed",
+        "purpose": "scheduled",
+        "model": "gpt-6-astra",
+        "code_commit": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6",
+        "suite_version": "staff-objective-v1",
+        "pack_digest": "7bf5e15ea27fc4bc73d987586152a56fabad4acba0f6658158ca4faa73f1be9f",
+        "family": "cashflow_discounting",
+        "grade": {
+          "model": "gpt-6-astra",
+          "scope": "One synthetic scenario in a known family; not specialist certification or strategy validation.",
+          "checks": {
+            "unique_ids": true,
+            "metric_names": true,
+            "numeric:price": true,
+            "answer_contract": true,
+            "no_missed_defects": true,
+            "no_false_positives": true,
+            "numeric:modified_duration": true
+          },
+          "family": "cashflow_discounting",
+          "provider": "codex",
+          "weaknesses": [],
+          "code_commit": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6",
+          "pack_digest": "7bf5e15ea27fc4bc73d987586152a56fabad4acba0f6658158ca4faa73f1be9f",
+          "objective_passed": true,
+          "explanation_review": "unscored_requires_independent_review"
+        },
+        "error": null,
+        "created_at": "2026-09-17 07:52:22.631338+00",
+        "completed_at": "2026-09-17 07:54:04.025415+00"
+      },
+      {
+        "id": "910e3cda-b060-4da7-8640-05d5fb66cb0b",
+        "employee": "director",
+        "state": "completed",
+        "purpose": "scheduled",
+        "model": "gpt-6-astra",
+        "code_commit": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6",
+        "suite_version": "staff-objective-v1",
+        "pack_digest": "8d9ac0554e42c66b33faf1aa4f057eb013fcef09549e64111f4a6c1727ac188a",
+        "family": "revision_and_deliverables",
+        "grade": {
+          "model": "gpt-6-astra",
+          "scope": "One synthetic scenario in a known family; not specialist certification or strategy validation.",
+          "checks": {
+            "unique_ids": true,
+            "metric_names": true,
+            "answer_contract": true,
+            "no_missed_defects": true,
+            "no_false_positives": true,
+            "numeric:accepted_reports": true
+          },
+          "family": "revision_and_deliverables",
+          "provider": "codex",
+          "weaknesses": [],
+          "code_commit": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6",
+          "pack_digest": "8d9ac0554e42c66b33faf1aa4f057eb013fcef09549e64111f4a6c1727ac188a",
+          "objective_passed": true,
+          "explanation_review": "unscored_requires_independent_review"
+        },
+        "error": null,
+        "created_at": "2026-09-17 07:52:01.557919+00",
+        "completed_at": "2026-09-17 07:52:19.495458+00"
+      }
+    ],
+    "improvement_requests": [],
+    "meaning": "Objective synthetic checks only; explanations unscored unless separately reviewed. Fresh parameters within a finite family bank; not unknown-domain or expert certification. Blocked/quota runs are not competence failures. Do not average different versions/families as proof of improvement. Inactive staff can practice without becoming operational."
+  },
+  "workflow": {
+    "workflow_id": "company-staff-development-v1",
+    "run_id": "01a0ae59-df48-7e9d-84dc-09d96e085a30",
+    "status": "RUNNING"
+  },
+  "state_counts": [
+    {
+      "state": "completed",
+      "n": 2
+    }
+  ],
+  "call_count": 3,
+  "unexpected_provider_completed": 0,
+  "director_acceptance": {
+    "project": {
+      "id": "a1c028bf-70c0-5bf3-98cc-84f0f8026404",
+      "title": "직원 교육 기능의 합성 운영 점검입니다. staff_status 도구를 정확히 한 번 호출해서 현재 교육 일정과 최근 평가 현황을 간단히 정리하고 완료하세요. 평가는 합성 직무 사례이며 전문성 전체 인증은 아니라는 ",
+      "instruction": "직원 교육 기능의 합성 운영 점검입니다. staff_status 도구를 정확히 한 번 호출해서 현재 교육 일정과 최근 평가 현황을 간단히 정리하고 완료하세요. 평가는 합성 직무 사례이며 전문성 전체 인증은 아니라는 범위를 밝혀 주세요. 추가 위임이나 개선 접수는 필요 없습니다.",
+      "owner_user": "U0C250E23NW",
+      "channel": null,
+      "thread_ts": null,
+      "revision": 1,
+      "status": "active",
+      "created_at": "2026-09-17 07:52:28.255358+00:00",
+      "updated_at": "2026-09-17 07:52:28.255358+00:00",
+      "clarification": null
+    },
+    "tasks": [
+      {
+        "id": "dbfb3d0b-3d09-5e8c-a0fb-779c903f2695",
+        "project_id": "a1c028bf-70c0-5bf3-98cc-84f0f8026404",
+        "parent_id": null,
+        "agent": "director",
+        "instruction": "직원 교육 기능의 합성 운영 점검입니다. staff_status 도구를 정확히 한 번 호출해서 현재 교육 일정과 최근 평가 현황을 간단히 정리하고 완료하세요. 평가는 합성 직무 사례이며 전문성 전체 인증은 아니라는 범위를 밝혀 주세요. 추가 위임이나 개선 접수는 필요 없습니다.",
+        "revision": 1,
+        "depth": 0,
+        "priority": 0,
+        "status": "completed",
+        "turn_count": 2,
+        "result": "staff_status 1회 조회 결과를 바탕으로 점검을 완료했습니다.\n\n• 교육은 활성화되어 있으며, 매일 한국시간 03시 이후 일일 2개 과제, 과제당 최대 3회 호출로 설정되어 있습니다. 사용자 업무가 우선입니다.\n• 최근 평가: 총괄의 ‘요청 수정·산출물’ 합성 사례는 완료되어 객관식 검증 항목을 모두 통과했습니다. 설명의 품질은 별도 독립 검토가 필요하며 채점되지 않았습니다. 금융전략의 ‘현금흐름 할인’ 사례는 진행 중으로 아직 성적이 없습니다.\n• 이 평가는 제한된 유형의 합성 직무 사례 점검입니다. 전문성 전체 인증이나 전략 검증이 아니며, 비활성 직원이 연습해도 운영 역할이 활성화되지는 않습니다.",
+        "error": null,
+        "created_at": "2026-09-17 07:52:28.255358+00:00",
+        "kind": "work"
+      }
+    ],
+    "messages": [
+      {
+        "id": "5a1caf8a-d9a1-4c59-907c-035ca9e6f9bb",
+        "project_id": "a1c028bf-70c0-5bf3-98cc-84f0f8026404",
+        "task_id": "dbfb3d0b-3d09-5e8c-a0fb-779c903f2695",
+        "revision": 1,
+        "author": "U0C250E23NW",
+        "recipient": null,
+        "kind": "human",
+        "text": "직원 교육 기능의 합성 운영 점검입니다. staff_status 도구를 정확히 한 번 호출해서 현재 교육 일정과 최근 평가 현황을 간단히 정리하고 완료하세요. 평가는 합성 직무 사례이며 전문성 전체 인증은 아니라는 범위를 밝혀 주세요. 추가 위임이나 개선 접수는 필요 없습니다.",
+        "created_at": "2026-09-17 07:52:28.255358+00:00"
+      },
+      {
+        "id": "3d0fab1a-88b3-4450-8735-de9193735e3b",
+        "project_id": "a1c028bf-70c0-5bf3-98cc-84f0f8026404",
+        "task_id": "dbfb3d0b-3d09-5e8c-a0fb-779c903f2695",
+        "revision": 1,
+        "author": "tool:staff_status",
+        "recipient": "director",
+        "kind": "tool",
+        "text": "{\"request\": {\"name\": \"staff_status\", \"arguments\": {}}, \"receipt\": {\"enabled\": true, \"schedule\": {\"timezone\": \"Asia/Seoul\", \"after_hour\": 3, \"daily_exercises\": 2, \"max_calls_per_exercise\": 3, \"lower_priority_than_owner_work\": true}, \"roster\": [{\"employee\": \"director\", \"pack_version\": \"2026-09-17.1\", \"pack_digest\": \"8d9ac0554e42c66b33faf1aa4f057eb013fcef09549e64111f4a6c1727ac188a\", \"families\": [\"revision_and_deliverables\", \"execution_authority\"], \"operational_active\": true}, {\"employee\": \"financial_strategist\", \"pack_version\": \"2026-09-17.1\", \"pack_digest\": \"7bf5e15ea27fc4bc73d987586152a56fabad4acba0f6658158ca4faa73f1be9f\", \"families\": [\"cashflow_discounting\", \"put_call_parity\"], \"operational_active\": true}, {\"employee\": \"data\", \"pack_version\": \"2026-09-17.1\", \"pack_digest\": \"0ec6d6ae63ae53c9c2a55e09b3413474416cc7bba1d9829b5a5dcd4c5d07b619\", \"families\": [\"availability_and_duplicates\", \"missing_keys_and_coverage\"], \"operational_active\": true}, {\"employee\": \"researcher_kr\", \"pack_version\": \"2026-09-17.1\", \"pack_digest\": \"b95703a73e22ef9f43bdbf62b965b1dd6f9c2f0fdc828e0acaa594f7f1b15587\", \"families\": [\"publication_lag\", \"overlapping_labels\"], \"operational_active\": true}, {\"employee\": \"maintainer\", \"pack_version\": \"2026-09-17.1\", \"pack_digest\": \"d6dcabad814a6a796adc08d2de4f8874c4b0987410b75b2191a491e279b8855d\", \"families\": [\"stale_diagnosis\", \"evaluation_integrity\"], \"operational_active\": null}, {\"employee\": \"engineer\", \"pack_version\": \"2026-09-17.1\", \"pack_digest\": \"04ab1e6db3778cd21fa2704922ebc2be4b7e4d3c3f427c975777817c588273a8\", \"families\": [\"unit_conversion\", \"independent_numerical_controls\"], \"operational_active\": false}, {\"employee\": \"validator\", \"pack_version\": \"2026-09-17.1\", \"pack_digest\": \"0d67b997df5931ce91c23e417231b3a7e3153b47f723cbcfc92ef8340c7ec390\", \"families\": [\"audit_scope_binding\", \"missing_evidence\"], \"operational_active\": false}, {\"employee\": \"risk\", \"pack_version\": \"2026-09-17.1\", \"pack_digest\": \"f6990bde545f70b653374c0ba92d576decd59b1459d7da9d18aedf133acedce9\", \"families\": [\"gross_net_scenario\", \"concentration_controls\"], \"operational_active\": false}, {\"employee\": \"researcher_global\", \"pack_version\": \"2026-09-17.1\", \"pack_digest\": \"77b1d9783eb9c5e47f0a9cf5035f03f3a7204103c73a5cf96249d75f96784c93\", \"families\": [\"cross_market_cutoffs\", \"currency_direction\"], \"operational_active\": false}, {\"employee\": \"researcher_crypto\", \"pack_version\": \"2026-09-17.1\", \"pack_digest\": \"b32f70250ad114b930a74e3184502883e7533fc373696781af41d54de3822dea\", \"families\": [\"event_order_and_latency\", \"fees_and_funding\"], \"operational_active\": false}, {\"employee\": \"operations\", \"pack_version\": \"2026-09-17.1\", \"pack_digest\": \"dac56c8c086a1ec1aa52fb5af4f544cd470732553f88d58cfe72159573155769\", \"families\": [\"ambiguous_delivery\", \"recovery_receipts\"], \"operational_active\": false}], \"recent_exercises\": [{\"id\": \"36ce55f1-d1c2-4c8a-bae7-adc46e1a12b6\", \"employee\": \"financial_strategist\", \"state\": \"running\", \"purpose\": \"scheduled\", \"model\": \"gpt-6-astra\", \"code_commit\": \"9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6\", \"suite_version\": \"staff-objective-v1\", \"pack_digest\": \"7bf5e15ea27fc4bc73d987586152a56fabad4acba0f6658158ca4faa73f1be9f\", \"family\": \"cashflow_discounting\", \"grade\": null, \"error\": null, \"created_at\": \"2026-09-17 07:52:22.631338+00\", \"completed_at\": null}, {\"id\": \"910e3cda-b060-4da7-8640-05d5fb66cb0b\", \"employee\": \"director\", \"state\": \"completed\", \"purpose\": \"scheduled\", \"model\": \"gpt-6-astra\", \"code_commit\": \"9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6\", \"suite_version\": \"staff-objective-v1\", \"pack_digest\": \"8d9ac0554e42c66b33faf1aa4f057eb013fcef09549e64111f4a6c1727ac188a\", \"family\": \"revision_and_deliverables\", \"grade\": {\"model\": \"gpt-6-astra\", \"scope\": \"One synthetic scenario in a known family; not specialist certification or strategy validation.\", \"checks\": {\"unique_ids\": true, \"metric_names\": true, \"answer_contract\": true, \"no_missed_defects\": true, \"no_false_positives\": true, \"numeric:accepted_reports\": true}, \"family\": \"revision_and_deliverables\", \"provider\": \"codex\", \"weaknesses\": [], \"code_commit\": \"9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6\", \"pack_digest\": \"8d9ac0554e42c66b33faf1aa4f057eb013fcef09549e64111f4a6c1727ac188a\", \"objective_passed\": true, \"explanation_review\": \"unscored_requires_independent_review\"}, \"error\": null, \"created_at\": \"2026-09-17 07:52:01.557919+00\", \"completed_at\": \"2026-09-17 07:52:19.495458+00\"}], \"improvement_requests\": [], \"meaning\": \"Objective synthetic checks only; explanations unscored unless separately reviewed. Fresh parameters within a finite family bank; not unknown-domain or expert certification. Blocked/quota runs are not competence failures. Do not average different versions/families as proof of improvement. Inactive staff can practice without becoming operational.\"}}",
+        "created_at": "2026-09-17 07:52:38.022987+00:00"
+      },
+      {
+        "id": "16d03e66-d304-4636-a4c6-337160ea5d4c",
+        "project_id": "a1c028bf-70c0-5bf3-98cc-84f0f8026404",
+        "task_id": "dbfb3d0b-3d09-5e8c-a0fb-779c903f2695",
+        "revision": 1,
+        "author": "director",
+        "recipient": null,
+        "kind": "answer",
+        "text": "staff_status 조회를 한 번 요청해 현재 교육 일정과 최근 평가 현황을 확인하겠습니다. 평가는 합성 직무 사례이며 전문성 전체 인증은 아닙니다.",
+        "created_at": "2026-09-17 07:52:38.022987+00:00"
+      },
+      {
+        "id": "17a25e0e-6380-4fc1-8e6f-4438eab23b32",
+        "project_id": "a1c028bf-70c0-5bf3-98cc-84f0f8026404",
+        "task_id": "dbfb3d0b-3d09-5e8c-a0fb-779c903f2695",
+        "revision": 1,
+        "author": "director",
+        "recipient": null,
+        "kind": "answer",
+        "text": "staff_status 1회 조회 결과를 바탕으로 점검을 완료했습니다.\n\n• 교육은 활성화되어 있으며, 매일 한국시간 03시 이후 일일 2개 과제, 과제당 최대 3회 호출로 설정되어 있습니다. 사용자 업무가 우선입니다.\n• 최근 평가: 총괄의 ‘요청 수정·산출물’ 합성 사례는 완료되어 객관식 검증 항목을 모두 통과했습니다. 설명의 품질은 별도 독립 검토가 필요하며 채점되지 않았습니다. 금융전략의 ‘현금흐름 할인’ 사례는 진행 중으로 아직 성적이 없습니다.\n• 이 평가는 제한된 유형의 합성 직무 사례 점검입니다. 전문성 전체 인증이나 전략 검증이 아니며, 비활성 직원이 연습해도 운영 역할이 활성화되지는 않습니다.",
+        "created_at": "2026-09-17 07:52:49.341781+00:00"
+      }
+    ],
+    "artifacts": [],
+    "memories": [],
+    "events": [
+      {
+        "id": 153,
+        "project_id": "a1c028bf-70c0-5bf3-98cc-84f0f8026404",
+        "kind": "task_created",
+        "detail": {
+          "agent": "director",
+          "task_id": "dbfb3d0b-3d09-5e8c-a0fb-779c903f2695"
+        },
+        "created_at": "2026-09-17 07:52:28.255358+00:00"
+      },
+      {
+        "id": 154,
+        "project_id": "a1c028bf-70c0-5bf3-98cc-84f0f8026404",
+        "kind": "turn_completed",
+        "detail": {
+          "agent": "director",
+          "usage": {
+            "input_tokens": 13247,
+            "output_tokens": 76,
+            "cached_input_tokens": 5888,
+            "reasoning_output_tokens": 0
+          },
+          "turn_id": "e5261ea8-0ddd-51aa-b2e8-b44c6f7f10e6",
+          "provider": "codex"
+        },
+        "created_at": "2026-09-17 07:52:38.022987+00:00"
+      },
+      {
+        "id": 155,
+        "project_id": "a1c028bf-70c0-5bf3-98cc-84f0f8026404",
+        "kind": "turn_completed",
+        "detail": {
+          "agent": "director",
+          "usage": {
+            "input_tokens": 15092,
+            "output_tokens": 220,
+            "cached_input_tokens": 5888,
+            "reasoning_output_tokens": 0
+          },
+          "turn_id": "c33db889-6995-58aa-8591-fb60690ff45f",
+          "provider": "codex"
+        },
+        "created_at": "2026-09-17 07:52:49.341781+00:00"
+      }
+    ],
+    "turns": [
+      {
+        "id": "e5261ea8-0ddd-51aa-b2e8-b44c6f7f10e6",
+        "task_id": "dbfb3d0b-3d09-5e8c-a0fb-779c903f2695",
+        "sequence": 1,
+        "revision": 1,
+        "status": "completed",
+        "error": null,
+        "due_at": "2026-09-17 07:52:28.260086+00:00",
+        "attempts": 1
+      },
+      {
+        "id": "c33db889-6995-58aa-8591-fb60690ff45f",
+        "task_id": "dbfb3d0b-3d09-5e8c-a0fb-779c903f2695",
+        "sequence": 2,
+        "revision": 1,
+        "status": "completed",
+        "error": null,
+        "due_at": "2026-09-17 07:52:38.054960+00:00",
+        "attempts": 1
+      }
+    ]
+  },
+  "packs": [
+    {
+      "employee": "director",
+      "version": "2026-09-17.1",
+      "digest": "8d9ac0554e42c66b33faf1aa4f057eb013fcef09549e64111f4a6c1727ac188a"
+    },
+    {
+      "employee": "financial_strategist",
+      "version": "2026-09-17.1",
+      "digest": "7bf5e15ea27fc4bc73d987586152a56fabad4acba0f6658158ca4faa73f1be9f"
+    },
+    {
+      "employee": "data",
+      "version": "2026-09-17.1",
+      "digest": "0ec6d6ae63ae53c9c2a55e09b3413474416cc7bba1d9829b5a5dcd4c5d07b619"
+    },
+    {
+      "employee": "researcher_kr",
+      "version": "2026-09-17.1",
+      "digest": "b95703a73e22ef9f43bdbf62b965b1dd6f9c2f0fdc828e0acaa594f7f1b15587"
+    },
+    {
+      "employee": "maintainer",
+      "version": "2026-09-17.1",
+      "digest": "d6dcabad814a6a796adc08d2de4f8874c4b0987410b75b2191a491e279b8855d"
+    },
+    {
+      "employee": "engineer",
+      "version": "2026-09-17.1",
+      "digest": "04ab1e6db3778cd21fa2704922ebc2be4b7e4d3c3f427c975777817c588273a8"
+    },
+    {
+      "employee": "validator",
+      "version": "2026-09-17.1",
+      "digest": "0d67b997df5931ce91c23e417231b3a7e3153b47f723cbcfc92ef8340c7ec390"
+    },
+    {
+      "employee": "risk",
+      "version": "2026-09-17.1",
+      "digest": "f6990bde545f70b653374c0ba92d576decd59b1459d7da9d18aedf133acedce9"
+    },
+    {
+      "employee": "researcher_global",
+      "version": "2026-09-17.1",
+      "digest": "77b1d9783eb9c5e47f0a9cf5035f03f3a7204103c73a5cf96249d75f96784c93"
+    },
+    {
+      "employee": "researcher_crypto",
+      "version": "2026-09-17.1",
+      "digest": "b32f70250ad114b930a74e3184502883e7533fc373696781af41d54de3822dea"
+    },
+    {
+      "employee": "operations",
+      "version": "2026-09-17.1",
+      "digest": "dac56c8c086a1ec1aa52fb5af4f544cd470732553f88d58cfe72159573155769"
+    }
+  ]
+}
