@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     # Zero disables our daily quota; provider quotas and bounded task execution remain.
     company_max_daily_turns: int = Field(default=0, ge=0, le=10000)
     company_code_commit: str = "unknown"
+    company_web_enabled: bool = True
     company_max_task_turns: int = Field(default=8, ge=1, le=30)
     company_max_depth: int = Field(default=3, ge=0, le=5)
     company_max_project_tasks: int = Field(default=40, ge=1, le=500)

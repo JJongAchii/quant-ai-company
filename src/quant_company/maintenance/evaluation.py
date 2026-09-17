@@ -99,7 +99,7 @@ def validate_candidate(payload):
     paths = set(payload["changes"])
     mode = finding.evaluation.mode
     if mode == "regression":
-        if ROLE_PATH in paths or not any(p.startswith("src/quant_company/") and p.endswith(".py") for p in paths):
+        if not any(p.startswith("src/quant_company/") and p.endswith(".py") for p in paths):
             raise ValueError("regression_requires_runtime_code_not_role_prompts")
     elif mode == "prompt_replay":
         if paths != {ROLE_PATH}:

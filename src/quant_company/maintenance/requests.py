@@ -64,6 +64,10 @@ def report(conn, job, owner):
               "title": finding.get("title"), "problem": finding.get("problem"),
               "hypothesis": finding.get("hypothesis"), "evaluation_mode": finding.get("evaluation", {}).get("mode"),
               "evidence_keys": finding.get("evidence_keys", []),
+              "investigation_round": current["payload"].get("investigation_round", 0),
+              "candidate_attempt": current["payload"].get("patch_attempt", 1),
+              "prior_attempts": len(current["payload"].get("candidate_attempts", [])),
+              "validation": current["receipt"].get("ci"),
               "reason": current["receipt"].get("reason") or job["receipt"].get("reason"), "pr": current["receipt"].get("pr"),
               "created_at": job["created_at"], "assessment": truth,
               "finding_is_current_fact": truth["disposition"] == "reproduced"}

@@ -109,6 +109,44 @@ def fake_codex(tmp_path):
     return config, configure, calls
 
 
+async def test_scoped_native_search_preserves_observed_events(fake_codex, request_model):
+    config, configure, calls = fake_codex
+    configure(tool_type="web_search")
+    request = request_model.model_copy(update={"web_search": True})
+    response = await runner_for(config).run(request)
+    assert response.web_searches[0].id == "tool-1"
+    assert 'web_search="live"' in calls()[0]["args"]
+    assert 'features.shell_tool=false' in calls()[0]["args"]
+    assert all('features.' + feature + '=true' in calls()[0]['args']
+               for feature in ('code_mode', 'code_mode_host', 'code_mode_only'))
+    assert all('features.' + feature + '=false' in calls()[0]['args']
+               for feature in ('unified_exec', 'apps', 'multi_agent', 'plugins'))
+    assert await runner_for(config).run(request) == response
+    assert len(calls()) == 1
+    with pytest.raises(ProviderFault, match="different input"):
+        await runner_for(config).run(request_model)
+
+
+def test_search_disabled_keeps_legacy_request_identity(request_model):
+    import hashlib
+
+    old = request_model.model_dump(exclude={"web_search"})
+    legacy = hashlib.sha256(json.dumps(old, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
+    assert request_digest(request_model) == legacy
+    assert request_digest(request_model.model_copy(update={"web_search": True})) != legacy
+
+
+def test_pinned_cli_duplicate_web_item_id_is_narrowly_normalized():
+    from quant_company.providers.codex_runner import strict_json
+
+    event = '{"type":"item.completed","item":{"id":"item_2","type":"web_search","id":"exec-abc","query":"latest"}}'
+    assert strict_json(event, cli_web_event=True)['item']['id'] == 'exec-abc'
+    for raw in [event, '{"id":"item_1","id":"exec-abc","type":"agent_message"}',
+                '{"id":"item_1","id":"exec-abc","type":"web_search","query":"one","query":"two"}']:
+        with pytest.raises(ValueError, match='Duplicate JSON key'):
+            strict_json(raw, cli_web_event=raw != event)
+
+
 @pytest.fixture
 def request_model():
     return ProviderRequest(request_id="turn-01", model="gpt-5.6-luna", prompt="Review the source and return a decision.")

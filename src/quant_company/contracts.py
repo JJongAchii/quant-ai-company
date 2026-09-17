@@ -22,14 +22,14 @@ class PeerMessage(StrictModel):
 
 class ArtifactDraft(StrictModel):
     title: str = Field(min_length=1, max_length=200)
-    content: str = Field(min_length=1, max_length=16000)
+    content: str = Field(min_length=1, max_length=60000)
     source_ids: list[str] = Field(default_factory=list, max_length=20)
 
 
 class ToolRequest(StrictModel):
     name: Literal["calculate", "knowledge_search", "read_source", "lake_catalog", "lake_describe", "lake_sample",
                   "company_history", "maintenance_review", "maintenance_status", "system_status", "repository_read",
-                  "task_control", "finance_search", "finance_read"]
+                  "task_control", "finance_search", "finance_read", "web_search", "web_read"]
     arguments: dict[str, Any]
 
 
@@ -77,6 +77,13 @@ class ProviderRequest(StrictModel):
     request_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,80}$")
     model: str = Field(min_length=1, max_length=80)
     prompt: str = Field(min_length=1, max_length=90000)
+    web_search: bool = False
+
+
+class WebSearchEvent(StrictModel):
+    id: str = Field(max_length=200)
+    query: str = Field(default="", max_length=8000)
+    action: dict[str, Any] | None = None
 
 
 class ProviderResponse(StrictModel):
@@ -85,6 +92,7 @@ class ProviderResponse(StrictModel):
     thread_id: str | None = None
     usage: dict[str, Any] = Field(default_factory=dict)
     provider: str = "codex"
+    web_searches: list[WebSearchEvent] = Field(default_factory=list, max_length=40)
 
 
 class ProviderFault(Exception):

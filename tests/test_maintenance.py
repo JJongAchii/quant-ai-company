@@ -127,6 +127,7 @@ async def test_durable_pipeline_to_pr_and_slack_outbox_once(company):
 @pytest.mark.integration
 async def test_failed_ci_blocks_pr_and_does_not_loop(company):
     runner = make_maintainer(company, ci_state="failed")
+    runner.config.max_patch_attempts = 1
     for _ in range(5):
         await runner.tick()
     assert runner.github.published == 1 and runner.github.prs == 0
@@ -209,7 +210,7 @@ def test_owner_filter_daily_budget_and_secret_omission(company):
 
 @pytest.mark.parametrize("path", [
     "/src/quant_company/tools.py", "../quant-data/api.py", "src/../config.py", ".github/workflows/ci.yml",
-    "src/quant_company/config.py", "src/quant_company/maintenance/runner.py", "deploy/compose.yaml",
+    "src/quant_company/config.py", "src/quant_company/maintenance/policy.py", "deploy/compose.yaml",
     "tests/test_company.py", "src/quant_company/../tools.py", "src/quant_company//tools.py",
 ])
 def test_protected_paths(path):

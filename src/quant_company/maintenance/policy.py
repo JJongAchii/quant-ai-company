@@ -1,3 +1,4 @@
+import ast
 import hashlib
 import json
 import re
@@ -11,8 +12,10 @@ from ..contracts import StrictModel
 ROOT = ""
 WORKFLOW = ".github/workflows/quant-company-ci.yml"
 PROTECTED = {
-    "api.py", "cli.py", "config.py", "contracts.py", "db.py", "schema.sql", "slack.py", "socket_mode.py",
-    "system_state.py", "owner_controls.py", "state_schema.sql", "task_control.py", "finance_sources.py",
+    "api.py", "cli.py", "config.py", "db.py", "schema.sql", "socket_mode.py",
+    "owner_controls.py", "state_schema.sql", "web_fetch.py", "finance_sources.py",
+    "maintenance/policy.py", "maintenance/github.py", "maintenance/applications.py",
+    "maintenance/releases.py", "maintenance/schema.sql",
 }
 SECRET = re.compile(
     r"(?:AKIA|ASIA)[A-Z0-9]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|"
@@ -33,6 +36,8 @@ class MaintenanceConfig(StrictModel):
     max_daily_calls: int = Field(default=0, ge=0, le=10000)
     poll_seconds: int = Field(default=300, ge=30, le=3600)
     observe_seconds: int = Field(default=600, ge=60, le=86400)
+    max_investigation_rounds: int = Field(default=4, ge=1, le=8)
+    max_patch_attempts: int = Field(default=3, ge=1, le=5)
     enabled: bool = False
 
 
@@ -81,32 +86,58 @@ class Finding(StrictModel):
     reproduction: str = Field(min_length=10, max_length=2000)
     expected: str = Field(min_length=10, max_length=2000)
     evidence_keys: list[str] = Field(min_length=1, max_length=20)
-    category: Literal["platform_defect", "bot_behavior", "collaboration", "organization"]
+    category: Literal["platform_defect", "feature_request", "bot_behavior", "collaboration", "organization"]
     hypothesis: str = Field(min_length=10, max_length=2000)
     evaluation: EvaluationPlan
-    paths: list[str] = Field(default_factory=list, max_length=4)
+    paths: list[str] = Field(default_factory=list, max_length=8)
+    new_paths: list[str] = Field(default_factory=list, max_length=4)
+    blocking_decisions: list[str] = Field(default_factory=list, max_length=4)
 
     @model_validator(mode="after")
     def repair_or_design(self):
-        if bool(self.paths) != (self.evaluation.mode != "design_only"):
+        if bool(self.paths or self.new_paths) != (self.evaluation.mode != "design_only"):
             raise ValueError("repair_requires_paths_design_uses_generated_document")
+        if self.new_paths and self.evaluation.mode != "regression":
+            raise ValueError("new_modules_require_runtime_regression")
+        return self
+
+
+class CodeQuery(StrictModel):
+    path: str | None = Field(default=None, max_length=250)
+    query: str | None = Field(default=None, min_length=2, max_length=160)
+    start_line: int = Field(default=1, ge=1)
+    line_count: int = Field(default=160, ge=1, le=250)
+
+    @model_validator(mode="after")
+    def needs_target(self):
+        if not self.path and not self.query:
+            raise ValueError("code_inspection_needs_path_or_query")
         return self
 
 
 class Triage(StrictModel):
     finding: Finding | None = None
     reason: str = Field(min_length=1, max_length=1000)
+    inspect: list[CodeQuery] = Field(default_factory=list, max_length=4)
+    research_query: str | None = Field(default=None, min_length=2, max_length=1000)
+    read_urls: list[str] = Field(default_factory=list, max_length=3)
+
+    @model_validator(mode="after")
+    def inspect_before_finding(self):
+        if (self.inspect or self.research_query or self.read_urls) and self.finding:
+            raise ValueError("inspect_before_finalizing_finding")
+        return self
 
 
 class Edit(StrictModel):
     path: str = Field(max_length=250)
-    old: str = Field(max_length=10000)
-    new: str = Field(max_length=10000)
+    old: str = Field(max_length=12000)
+    new: str = Field(max_length=40000)
 
 
 class Patch(StrictModel):
     summary: str = Field(min_length=10, max_length=2000)
-    edits: list[Edit] = Field(min_length=1, max_length=8)
+    edits: list[Edit] = Field(min_length=1, max_length=24)
 
 
 def digest(value) -> str:
@@ -120,23 +151,28 @@ def writable(path: str, *, new=False) -> bool:
         return False
     relative = path[len(ROOT):]
     if new:
-        return bool(re.fullmatch(r"tests/test_maintenance_regression_[a-z0-9_]+\.py", relative)
-                    or re.fullmatch(r"docs/improvements/[a-f0-9-]{36}\.md", relative))
+        if re.fullmatch(r"tests/test_maintenance_regression_[a-z0-9_]+\.py", relative):
+            return True
+        if relative.startswith("docs/"):
+            return relative.endswith(".md") and relative not in {"docs/deployment.md", "docs/codex-runtime.md"}
     if relative.startswith("docs/"):
         return relative.endswith(".md") and relative not in {"docs/deployment.md", "docs/codex-runtime.md"}
     if not relative.startswith("src/quant_company/"):
         return False
     module = relative.removeprefix("src/quant_company/")
-    return ("/" not in module and module not in PROTECTED and module.endswith((".py", "roles.json")))
+    return (module not in PROTECTED and not module.startswith("providers/")
+            and (module.endswith(".py") or module == "roles.json"))
 
 
-def apply_patch(plan: Patch, originals: dict[str, str], case_id: str) -> dict[str, str]:
+def apply_patch(plan: Patch, originals: dict[str, str], case_id: str, *, new_paths=()) -> dict[str, str]:
     """Exact text edits only; no model-selected shell, paths outside the service or file deletion."""
     changes = {}
     required_test = ROOT + "tests/test_maintenance_regression_" + case_id.replace("-", "") + ".py"
     for edit in plan.edits:
         new = edit.path not in originals
-        if not writable(edit.path, new=new) or (new and edit.path != required_test):
+        generated_test = edit.path == required_test
+        if ((not generated_test and not writable(edit.path, new=new))
+                or (new and edit.path not in {*new_paths, required_test})):
             raise ValueError("protected_or_unknown_path")
         text = changes.get(edit.path, originals.get(edit.path, ""))
         if new and edit.path not in changes:
@@ -153,15 +189,42 @@ def apply_patch(plan: Patch, originals: dict[str, str], case_id: str) -> dict[st
     changes = {p: s for p, s in changes.items() if s != originals.get(p)}
     if not changes or sum(len(s.encode()) for s in changes.values()) > 150000:
         raise ValueError("empty_or_oversized_patch")
+    for path, content in changes.items():
+        if path.endswith(".py"):
+            try:
+                ast.parse(content, filename=path)
+            except SyntaxError as exc:
+                raise ValueError("candidate_python_syntax_error") from exc
     if any(p.endswith(".py") and not p.startswith(ROOT + "tests/") for p in changes):
-        if required_test not in changes:
+        if required_test not in changes and required_test not in originals:
             raise ValueError("code_change_requires_new_regression_test")
     role_path = ROOT + "src/quant_company/roles.json"
     if role_path in changes:
         before, after = json.loads(originals[role_path]), json.loads(changes[role_path])
-        # Prompt changes may be proposed; permissions, activation and model spend are operator policy.
+        # A code-backed tool registration is reviewable. Identity, delegation, activation and model spend stay fixed.
         def fixed(roles):
-            return [{k: v for k, v in r.items() if k not in {"mission", "instructions"}} for r in roles]
+            return [{k: v for k, v in r.items() if k not in {"mission", "instructions", "tools"}} for r in roles]
         if fixed(before) != fixed(after):
             raise ValueError("role_permission_or_model_change")
+        if [r["tools"] for r in before] != [r["tools"] for r in after]:
+            if not any(p.endswith(".py") and p.startswith("src/") for p in changes):
+                raise ValueError("role_tools_require_runtime_implementation")
+            from ..contracts import ToolRequest
+
+            allowed = set(ToolRequest.model_fields["name"].annotation.__args__)
+            contract = changes.get("src/quant_company/contracts.py")
+            if contract:
+                parsed = ast.parse(contract)
+                tool = next((node for node in parsed.body if isinstance(node, ast.ClassDef) and node.name == "ToolRequest"), None)
+                field = next((node for node in tool.body if isinstance(node, ast.AnnAssign)
+                              and isinstance(node.target, ast.Name) and node.target.id == "name"), None) if tool else None
+                if not field or not isinstance(field.annotation, ast.Subscript):
+                    raise ValueError("explicit_tool_contract_required")
+                values = field.annotation.slice
+                literals = values.elts if isinstance(values, ast.Tuple) else [values]
+                if not all(isinstance(v, ast.Constant) and isinstance(v.value, str) for v in literals):
+                    raise ValueError("explicit_tool_contract_required")
+                allowed = {v.value for v in literals}
+            if any(not set(r["tools"]) <= allowed for r in after):
+                raise ValueError("role_tool_missing_from_contract")
     return changes
