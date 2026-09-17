@@ -235,6 +235,14 @@ def status(conn, company, owner, employee=None):
         created_at::text,completed_at::text FROM staff_runs WHERE owner_user=%s
         AND (%s::text IS NULL OR employee=%s) ORDER BY created_at DESC,id DESC LIMIT 44""",
                         (owner, employee, employee)).fetchall()
+    improvements = []
+    if conn.execute("SELECT to_regclass('maintenance_jobs') AS name").fetchone()["name"]:
+        improvements = conn.execute("""SELECT id::text,state,error,receipt->'pr' AS pr,
+            payload->'finding'->>'title' AS title,updated_at::text FROM maintenance_jobs
+            WHERE payload->'owners' @> %s::jsonb AND EXISTS(
+                SELECT 1 FROM jsonb_array_elements(payload->'observations') o
+                WHERE o->>'kind'='staff_assessment' AND (%s::text IS NULL OR o->>'author'=%s))
+            ORDER BY updated_at DESC LIMIT 10""", (Jsonb([owner]), employee, employee)).fetchall()
     return {"enabled": company.settings.company_staff_development_enabled,
             "schedule": {"timezone": "Asia/Seoul", "after_hour": company.settings.staff_schedule_hour_kst,
                          "daily_exercises": company.settings.staff_daily_exercises,
@@ -245,6 +253,7 @@ def status(conn, company, owner, employee=None):
                         None if r == "maintainer" else company.roles[r].active} for r in STAFF
                        if (r == employee or employee is None) and (r == "maintainer" or r in company.roles)],
             "recent_exercises": rows,
+            "improvement_requests": improvements,
             "meaning": "Objective synthetic checks only; explanations unscored unless separately reviewed. "
                        "Fresh parameters within a finite family bank; not unknown-domain or expert certification. "
                        "Blocked/quota runs are not competence failures. Do not average different versions/families "

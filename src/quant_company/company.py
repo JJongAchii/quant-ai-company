@@ -85,6 +85,14 @@ class Company:
                 "staff_status": "Director only: {employee?: exact employee id or maintainer}. "
                                 "Reads actual training schedule, versioned synthetic assessments and their limits. "
                                 "No exam keys. A passed exercise is not broad expertise certification.",
+                "staff_development": {
+                    "enabled": self.settings.company_staff_development_enabled,
+                    "daily_exercises": self.settings.staff_daily_exercises,
+                    "max_calls_per_exercise": self.settings.staff_max_calls_per_exercise,
+                    "schedule_hour_kst": self.settings.staff_schedule_hour_kst,
+                    "meaning": "Scheduled objective synthetic practice; actual results require staff_status. "
+                               "Not model weight training, employee activation or general expert certification.",
+                },
                 "system_status": "Director only: {}. Shared current GitHub, deployed process/configuration, "
                                  "case corrections and scoped verification receipts. Check before claiming a current gap.",
                 "repository_read": "Director only: {query?: short keywords, path?: repository path, commit?: SHA, "
