@@ -373,10 +373,10 @@ class Company:
             if task["revision"] != project["revision"] or task["status"] == "superseded":
                 conn.execute("UPDATE turns SET status='stale' WHERE id=%s", (turn_id,))
                 return {"state": "done", "status": "stale"}
-            from .task_control import held
+            from .task_control import held, hold_delay
 
             if held(conn, project, task):
-                return {'state': 'defer', 'seconds': 3, 'reason': 'owner_input_or_project_pause'}
+                return {'state': 'defer', 'seconds': hold_delay(conn, project), 'reason': 'owner_input_or_project_pause'}
             pause = conn.execute("SELECT * FROM runtime_control WHERE id=1").fetchone()
             if pause["paused_until"] and pause["paused_until"] > now():
                 return {"state": "defer", "seconds": max(1, (pause["paused_until"] - now()).total_seconds())}
@@ -576,10 +576,10 @@ class Company:
                 return {"state": "stale"}
             if turn["status"] != "running":
                 raise PolicyError("Turn is not running")
-            from .task_control import commit_routing, held
+            from .task_control import commit_routing, held, hold_delay
 
             if held(conn, project, task):
-                return {'state': 'defer', 'seconds': 3, 'reason': 'owner_input_or_project_pause'}
+                return {'state': 'defer', 'seconds': hold_delay(conn, project), 'reason': 'owner_input_or_project_pause'}
             if task['kind'] == 'routing':
                 return commit_routing(conn, self, project, task, turn, response)
             role = self.role(task["agent"])
