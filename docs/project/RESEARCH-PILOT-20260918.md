@@ -1,6 +1,6 @@
 # 첫 회사 연구: 국내상장 ETF 월간 파일럿
 
-상태: **실제 직원 준비·보완 업무 완료, 새 discovery brief 승인 대기**. 전략 성과는 미측정이다.
+상태: **실제 직원 준비·보완 업무 완료, discovery brief 사용자 승인 기록 완료, 3070 실행 준비 중**. 전략 성과는 미측정이다.
 
 - [연구 스레드](https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789633942673909)
 - 회사 프로젝트: `9aac0de4-2b97-5195-a720-287d324234f3`
@@ -30,7 +30,8 @@ lake-surveyor가 조회한 결과를 운영자가 공급한 것이다. 데이터
 개인 연구 규약을 사용해 운영자가 연결한다. 이를 회사 직원의 자율 실행 기능으로 표시하지 않는다.
 
 연구 명세 제안은 `quant-lab/docs/research/company-kr-etf-pilot/RESEARCH-BRIEF.md`에 있다.
-새 실험의 기간·기준선·비용·목적함수·탐색 예산 승인을 받은 뒤 해당 범위에서 실행한다.
+사용자가 "제안한 명세로 실행"이라고 승인한 기간·기준선·비용·목적함수·탐색 예산을 고정했다.
+실제 승인 원문과 frozen brief digest를 연구 저장소와 회사 증거에 보존했다.
 
 ## 증거
 
@@ -40,6 +41,8 @@ lake-surveyor가 조회한 결과를 운영자가 공급한 것이다. 데이터
 - `evidence/kr-etf-lake-survey-20260918.json`: 가격·메타 조사, 원천 식별자와 한계.
 - `evidence/research-center-brief-correction.json`: 운영자의 공통 명세 보완 요청.
 - `evidence/research-center-preparation-verified-20260918.json`: DB 산출물과 Slack 실제 readback.
+- `evidence/research-pilot-approval-20260918.json`: 실제 사용자 승인 원문과 명세 digest.
+- `evidence/research-pilot-approval-runtime-20260918.json`: 회사 DB의 승인 이벤트·출처 및 Slack 전달 확인.
 
 ## 실제 인수 결과
 
@@ -59,7 +62,9 @@ stress 비용 후 절대 CAGR, ADV20, meta/profile 구분, M1/M2/M3 및 종료 �
 통합본에서도 해당 정정을 확인했다. 이는 한 실제 사례의 수정 확인이며 일반적인 오류 자동
 탐지·전문성 인증 또는 자율 연구 완주가 아니다.
 
-과학 실행 0회, 독립 누수 감사·성과 HTML 리포트는 아직 없다. 다음 조건은 사용자 답변으로
-고정하는 `quant-lab` 연구 명세 커밋 `8f2403986463714c1cf39ac748ce39d7b8395faa`의 승인이다.
+과학 실행 0회, 독립 누수 감사·성과 HTML 리포트는 아직 없다. 승인된
+`quant-lab` 연구 명세 커밋은 `8f2403986463714c1cf39ac748ce39d7b8395faa`다.
 문서 SHA-256: `0a4ce1555e4e040d5af6977ce72be2878594c39d160e453de20d5a4cd7911cf6`.
-그 뒤 구현·3070 qualification·개발 실행·회수·감사·보고를 진행한다.
+원본 제안 문서는 수정하지 않고 별도 `APPROVAL.json`으로 승인 상태를 기록한다.
+회사 프로젝트에도 `operator_discovery_approved` 이벤트와 실제 승인 출처
+`operator:etf-discovery-approved-20260918`을 등록했다. 구현·3070 qualification·개발 실행·회수·감사·보고를 진행한다.

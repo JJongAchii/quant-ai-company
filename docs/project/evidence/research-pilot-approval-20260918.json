@@ -1,0 +1,13 @@
+{
+  "approval_id": "제안한 명세로 실행",
+  "approval_id_basis": "Exact user answer to the quoted brief approval request in this conversation; no provider message UUID is exposed to this session. This is not an invented message ID.",
+  "user_quote": "제안한 명세로 실행",
+  "quoted_request": "국내상장 ETF 월별 전략, 개발기간 2014~2026년 8월, 기준선 1회·후보 최대 3회, 편도 비용 10/30bp, 3070 실행. 보수적 비용 후 절대수익 최대화, 첫 파일럿 최소 기준 연 0% 손익분기. 누수 검증·보고서·정체 종료·데이터 근거 부족 시 차단 포함.",
+  "recorded_at": "2026-09-17T22:56:59.060698+00:00",
+  "brief_commit": "8f2403986463714c1cf39ac748ce39d7b8395faa",
+  "brief_path": "docs/research/company-kr-etf-pilot/RESEARCH-BRIEF.md",
+  "brief_sha256": "0a4ce1555e4e040d5af6977ce72be2878594c39d160e453de20d5a4cd7911cf6",
+  "scientific_execution_approved": true,
+  "execution_machine": "worker",
+  "worker5090_user_requested": false
+}
