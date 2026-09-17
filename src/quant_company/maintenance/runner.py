@@ -1,4 +1,5 @@
 import asyncio
+import copy
 import json
 from datetime import UTC, datetime, timedelta
 
@@ -39,6 +40,36 @@ INSTRUCTIONS = (
 )
 
 
+def proposal_material(payload, schema):
+    """Share a finite provider context budget; retain full evidence and reserved prompts in the DB."""
+    material = copy.deepcopy(payload)
+    header = INSTRUCTIONS + "SCHEMA:\n" + json.dumps(schema.model_json_schema()) + "\nEVIDENCE JSON:\n"
+    while True:
+        prompt = header + json.dumps(material, ensure_ascii=False)
+        if len(prompt) <= 88000:
+            return material, prompt
+        if schema is not Triage:
+            raise ValueError("maintenance_proposal_context_too_large")
+        diagnostic = material.get("current_implementation", {})
+        source_files = diagnostic.get("source_files", [])
+        longest = max(source_files, key=lambda r: len(r.get("content", "")), default={})
+        if len(longest.get("content", "")) > 1000:
+            longest["content"] = longest["content"][:max(1000, len(longest["content"]) // 2)]
+            longest["excerpted"] = True
+        else:
+            # Preserve current configuration/assessments. Omit older history records explicitly.
+            history = material.get("history", {}).get("evidence", [])
+            candidates = [r for r in history if not r.get("omitted")]
+            if not candidates:
+                raise ValueError("maintenance_proposal_context_too_large")
+            oldest = min(candidates, key=lambda r: str(r.get("created_at", "")))
+            key = oldest["key"]
+            oldest.clear()
+            oldest.update(key=key, omitted="shared_provider_context_budget; full record retained in database")
+        material["prompt_excerpted"] = True
+
+
+
 class Maintainer:
     def __init__(self, company, config, *, github=None, provider=None):
         self.company, self.config = company, config
@@ -66,8 +97,7 @@ class Maintainer:
         return response
 
     async def propose(self, job, phase, payload, schema):
-        prompt = INSTRUCTIONS + "SCHEMA:\n" + json.dumps(schema.model_json_schema())
-        prompt += "\nEVIDENCE JSON:\n" + json.dumps(payload, ensure_ascii=False)
+        payload, prompt = proposal_material(payload, schema)
         response = await self.response(job, phase, prompt)
         decision = response.decision
         if (decision.status != "complete" or len(decision.artifacts) != 1
@@ -83,7 +113,10 @@ class Maintainer:
             raise ValueError("unknown_maintenance_artifact_source")
         if SECRET.search(decision.artifacts[0].content):
             raise ValueError("possible_secret_in_maintenance_proposal")
-        return schema.model_validate_json(decision.artifacts[0].content)
+        result = schema.model_validate_json(decision.artifacts[0].content)
+        if schema is Triage and result.finding and not set(result.finding.evidence_keys) <= known:
+            raise ValueError("finding_cites_unavailable_prompt_evidence")
+        return result
 
     async def step(self, job):
         self.store.check_authorization(job)

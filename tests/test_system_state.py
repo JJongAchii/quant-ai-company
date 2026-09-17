@@ -1,6 +1,7 @@
 """Real database/ingress tests; model and GitHub outputs are explicitly fixtures."""
 
 import io
+import json
 import tarfile
 from concurrent.futures import ThreadPoolExecutor
 
@@ -10,15 +11,35 @@ from psycopg.types.json import Jsonb
 
 from quant_company.api import create_app
 from quant_company.company import Company, PolicyError
+from quant_company.contracts import ProviderRequest
 from quant_company.maintenance.github import GitHub, blob_sha
 from quant_company.maintenance.policy import Triage, digest, writable
 from quant_company.maintenance.requests import report
+from quant_company.maintenance.runner import proposal_material
 from quant_company.owner_controls import effective_limits, parse_daily_limit_command
 from quant_company.system_state import assess, current_system, readable, repository_read
 
 from .conftest import queued_turns
 from .test_maintenance import SOURCE, config, make_maintainer
 from .test_slack import event, signed
+
+
+def test_history_and_current_code_share_the_real_provider_input_budget_without_mutating_evidence():
+    # Production shape: ~36k history + ~25k system facts + ~58k source excerpts exceeded 90k.
+    payload = {'observations': [{'key': 'message:original', 'text': 'Keep the explicit owner request'}],
+               'history': {'evidence': [{'key': f'message:{i}', 'text': 'x'*1800,
+                                         'created_at': str(i)} for i in range(20)]},
+               'current_implementation': {'system': {'facts': 'y'*25000},
+                                          'source_files': [{'key': f'code:fixed:{i}', 'blob': 'a'*40,
+                                                            'content': 'z'*5800} for i in range(10)]}}
+    before = digest(payload)
+    material, prompt = proposal_material(payload, Triage)
+    ProviderRequest(request_id='bounded-production-shape', model='fixture', prompt=prompt)
+    assert len(prompt) <= 88000 and len(json.dumps(payload)) > 90000
+    assert material['prompt_excerpted'] and digest(payload) == before
+    assert material['observations'] == payload['observations']
+    assert material['current_implementation']['system'] == payload['current_implementation']['system']
+    assert any(r.get('excerpted') for r in material['current_implementation']['source_files'])
 
 
 @pytest.mark.parametrize("text", ['"전체 한도 해제"', '> 전체 한도 해제', '전체 한도 해제?',
