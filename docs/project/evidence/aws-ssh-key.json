@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-09-16T04:43:40.001576+00:00",
+  "keyPairName": "quant-company-operator",
+  "publicKeyFingerprint": "SHA256:xeZsHknS7aRwcHrDYc+Wi20fxYDHr2njacz1cW8GQo0",
+  "type": "RSA-4096",
+  "localPrivateKeyPath": "/Users/achii/.ssh/quant-company-lightsail-rsa",
+  "privateKeyCopiedToServer": false,
+  "importStatus": "Succeeded",
+  "acceptedFormat": "OpenSSH public key text passed via file:// (not extra base64 encoding)",
+  "initialAttempt": "Rejected extra-base64 input; dependency sequencing bug allowed stack creation before key registration. No instance created; new empty retained bucket requires reconciliation."
+}

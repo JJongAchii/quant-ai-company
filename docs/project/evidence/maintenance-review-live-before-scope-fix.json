@@ -1,0 +1,39 @@
+{
+  "checked_at": "2026-09-17T01:50:43.650547+00:00",
+  "mode": "status",
+  "task": {
+    "id": "4948ea1c-d95b-5ddf-905e-81e7a91d8ee4",
+    "agent": "director",
+    "status": "blocked",
+    "error": "proposal_rejected:Owner or channel is not authorized for company records"
+  },
+  "tool_receipts": [],
+  "notices": [
+    {
+      "id": "8d25411e-8760-42f7-8083-ac6059fa22f9",
+      "author": "director",
+      "kind": "status",
+      "text": "업무가 확인 대기 상태입니다. 사유: proposal_rejected:Owner or channel is not authorized for company records. 작업 기록은 보존했습니다.",
+      "delivery": "delivered",
+      "sent_ts": "1789609832.807609"
+    }
+  ],
+  "maintenance": {
+    "service": {
+      "enabled": false,
+      "reason": "owner_or_channel_not_authorized"
+    },
+    "requests": []
+  },
+  "usage": {
+    "calls_today": 6
+  },
+  "director_tools": [
+    "calculate",
+    "knowledge_search",
+    "read_source",
+    "company_history",
+    "maintenance_review",
+    "maintenance_status"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": 4971681,
+  "slug": "achii-quant-company-maintainer",
+  "name": "Achii Quant Company Maintainer",
+  "html_url": "https://github.com/apps/achii-quant-company-maintainer",
+  "permissions": {
+    "contents": "write",
+    "pull_requests": "write",
+    "actions": "read",
+    "metadata": "read"
+  },
+  "owner": "JJongAchii",
+  "installation_id": 162334154,
+  "repository_selection": "selected",
+  "repositories": [
+    "JJongAchii/quant-ai-company"
+  ],
+  "server_configuration": {
+    "key_installed": true,
+    "key_mode": "0o444",
+    "config": {
+      "repository": "JJongAchii/quant-ai-company",
+      "base": "main",
+      "app_id": 4971681,
+      "installation_id": 162334154,
+      "private_key_file": "/run/secrets/maintenance_github_key",
+      "allowed_owners": [
+        "U0C250E23NW"
+      ],
+      "max_daily_calls": 6,
+      "poll_seconds": 300,
+      "observe_seconds": 600,
+      "enabled": false
+    }
+  }
+}

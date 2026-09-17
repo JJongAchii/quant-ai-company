@@ -1,0 +1,15 @@
+{
+  "candidate": "92d66f56d50e4a6c56a756e442f6a4575c5dbe58",
+  "broker_source_sha256": "cb2591c97ff390582879ffe2ec11b085e52a5ad93fa25660f1b4521fef30b059",
+  "validation": {
+    "validated_base": "92d66f56d50e4a6c56a756e442f6a4575c5dbe58",
+    "ci": {
+      "state": "passed",
+      "run_id": 35164656792,
+      "attempt": 1,
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35164656792"
+    },
+    "requires_deployment": false
+  },
+  "repository_writes": false
+}

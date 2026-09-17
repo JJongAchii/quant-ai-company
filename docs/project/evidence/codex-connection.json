@@ -1,0 +1,33 @@
+{
+  "checked_at": "2026-09-16T02:01:43.916325+00:00",
+  "model": "gpt-5.6-luna",
+  "code_commit": "5e145914f7d01b7f5cd6bea66eaf91be8415db9b",
+  "request_id": "codex-smoke-20260916-05",
+  "real_subscription_call_attempted": true,
+  "slack_connected": false,
+  "remote_server_tested": false,
+  "status": "passed",
+  "model_turn_completed": true,
+  "result": {
+    "request_id": "codex-smoke-20260916-05",
+    "decision": {
+      "say": "연결 확인 완료",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0a7f2-d866-7d31-bcc1-d94e309a24ed",
+    "usage": {
+      "input_tokens": 9236,
+      "cached_input_tokens": 0,
+      "output_tokens": 103,
+      "reasoning_output_tokens": 46
+    },
+    "provider": "codex"
+  },
+  "replay_equal": true
+}

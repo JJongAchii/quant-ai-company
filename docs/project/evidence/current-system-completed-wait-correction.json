@@ -1,0 +1,17 @@
+{
+  "recorded_at": "2026-09-17T04:47:08.884234+00:00",
+  "code_commit": "85f8620493103b5d9e188af5a775598dcc31d311",
+  "job_id": "1e9d1731-8684-4849-b4dc-115be779a1fc",
+  "state": "done",
+  "previous_error": "company_work_has_priority",
+  "previous_updated_at": "2026-09-17 04:34:09.775210+00:00",
+  "payload_digest": "5d67b9f86ab5bdf4df08c1250b73a58127f982b878ccd9f47d666289ad974f6a",
+  "response_digest": "6f9119e9382bf09cb4f7bfb67294f3cc7fa27bf76e2175ea3c42bb089111c462",
+  "call_id": "maint-1e9d1731-8684-4849-b4dc-115be779a1fc-r1-triage",
+  "reason": "PR #15 clears obsolete wait reasons upon completion. Correct this already-completed pre-fix row from its saved successful result; preserve original call, response, payload and previous wait in this audit event.",
+  "after": {
+    "state": "done",
+    "error": null,
+    "original_payload_unchanged": true
+  }
+}

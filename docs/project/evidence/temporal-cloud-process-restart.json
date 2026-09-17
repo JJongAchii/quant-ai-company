@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-09-16T04:33:08.838293+00:00",
+  "baseCommit": "5bdce6000cc3e1c4f860b4e2f23e6a9faae899f5",
+  "scriptSha256": "35faaa2e72d252fe4c3a7c33face0b83c80526bd1dd6290e4e4d2a71e3f187de",
+  "workflowSha256": "4d66cfe2dc230162ace5841baad61464cad74546dc2b3a2a46a42573a5cefab9",
+  "status": "passed",
+  "namespace": "quant-company.d2y48",
+  "address": "quant-company.d2y48.tmprl.cloud:7233",
+  "tls": true,
+  "workflowId": "connection-check-27ee1ed3bd884c5b9c0645f6517df1ad",
+  "runId": "01a0a87d-7473-78da-b33c-a8d5b3dfa51e",
+  "workflowType": "CompanyTurnWorkflow",
+  "activityCalls": 2,
+  "timerRecorded": true,
+  "workerRestart": "passed",
+  "historyReplay": "passed",
+  "workerProcessIds": [
+    54209,
+    54272
+  ],
+  "processRestart": "passed",
+  "executionHost": "local-mac",
+  "modelCalls": 0,
+  "slackMessages": 0,
+  "databaseUsed": false,
+  "awsHostDeployment": "not_run",
+  "macOffAcceptance": "not_run"
+}

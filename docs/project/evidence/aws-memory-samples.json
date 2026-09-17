@@ -1,0 +1,5169 @@
+[
+  {
+    "at": "2026-09-16T05:03:29.442715+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1169996,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63557632",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83206144",
+        "memory.peak": "83390464",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53035008",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "132849664",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52596736",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "24268800",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:03:34.546853+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1148428,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63524864",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83206144",
+        "memory.peak": "83390464",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53039104",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "132849664",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52596736",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "24248320",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:03:39.676305+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1161036,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63746048",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83206144",
+        "memory.peak": "83390464",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53288960",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "132849664",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52596736",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "24498176",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:03:44.786999+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1160536,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63361024",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83468288",
+        "memory.peak": "83468288",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "132849664",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52596736",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "24338432",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:03:49.899228+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1157524,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63848448",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83206144",
+        "memory.peak": "83468288",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "132849664",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52596736",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "26001408",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:03:55.001770+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1155764,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63856640",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83206144",
+        "memory.peak": "83468288",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53039104",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "132849664",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52596736",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "24571904",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:04:00.183767+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1157620,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63860736",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83206144",
+        "memory.peak": "83468288",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53035008",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "137805824",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52600832",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "27316224",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:04:05.289194+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1154900,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63672320",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83206144",
+        "memory.peak": "83468288",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "133033984",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52600832",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "24535040",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:04:10.427885+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1156312,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63660032",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83902464",
+        "memory.peak": "83902464",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "132849664",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52600832",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "24453120",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:04:15.534742+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1152500,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63889408",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83877888",
+        "memory.peak": "83902464",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53542912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "132849664",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52600832",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "24604672",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:04:20.637643+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1158880,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63614976",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83873792",
+        "memory.peak": "83902464",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53538816",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "132849664",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52600832",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "24477696",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:04:25.738254+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1161920,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63868928",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83873792",
+        "memory.peak": "83902464",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "132849664",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52600832",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "24276992",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:04:30.920077+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1150704,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "63942656",
+        "memory.peak": "64176128",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "83873792",
+        "memory.peak": "83902464",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53030912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "145051648",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "52600832",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "24465408",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:04:36.028469+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1124596,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "64692224",
+        "memory.peak": "65191936",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "87416832",
+        "memory.peak": "87871488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53288960",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "168538112",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53407744",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "25014272",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:04:41.133837+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1119092,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "64667648",
+        "memory.peak": "65212416",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "87416832",
+        "memory.peak": "87941120",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53288960",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "168718336",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53424128",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "25911296",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:04:46.233991+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1121468,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "64888832",
+        "memory.peak": "65212416",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "87908352",
+        "memory.peak": "87941120",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53030912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "166760448",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53436416",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "26132480",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:04:51.349178+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1113764,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65314816",
+        "memory.peak": "65843200",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88141824",
+        "memory.peak": "88150016",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "174292992",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53452800",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "26562560",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:04:56.490131+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1112744,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65540096",
+        "memory.peak": "65843200",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "87879680",
+        "memory.peak": "88403968",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53030912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "172847104",
+        "memory.peak": "179728384",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53981184",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "26931200",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:05:01.593531+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1113128,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "66162688",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "87945216",
+        "memory.peak": "88465408",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "172949504",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53600256",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "26636288",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:05:06.708283+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1127248,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "66134016",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "87965696",
+        "memory.peak": "88465408",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "174358528",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53522432",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "26759168",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:05:11.814616+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1105476,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65642496",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88485888",
+        "memory.peak": "88489984",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53030912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "174284800",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "54067200",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "30707712",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:05:16.925952+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1118692,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65613824",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88236032",
+        "memory.peak": "88489984",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "173576192",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53587968",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29089792",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:05:22.078932+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1128752,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "66125824",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88555520",
+        "memory.peak": "88743936",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53030912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "162263040",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53592064",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29204480",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:05:27.180140+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1122212,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65638400",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88547328",
+        "memory.peak": "88817664",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53551104",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "173187072",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53878784",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29487104",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:05:32.281309+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1105136,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65900544",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88301568",
+        "memory.peak": "88821760",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53035008",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "171458560",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53735424",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29372416",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:05:37.383787+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1102380,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65900544",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88563712",
+        "memory.peak": "88825856",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53555200",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "172273664",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53997568",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29044736",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:05:42.519914+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1098200,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65867776",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88244224",
+        "memory.peak": "88829952",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53030912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "170766336",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53886976",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29220864",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:05:47.620860+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1118504,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65638400",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88563712",
+        "memory.peak": "88829952",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "173228032",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53645312",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29315072",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:05:52.760314+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1105664,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65896448",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88576000",
+        "memory.peak": "88834048",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53030912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "172720128",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53649408",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "30482432",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:05:57.872734+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1106180,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65859584",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88772608",
+        "memory.peak": "88834048",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53288960",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "171843584",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53649408",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29573120",
+        "memory.peak": "35135488",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:06:02.981421+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1139340,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65613824",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88276992",
+        "memory.peak": "88834048",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53030912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140824576",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53657600",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29286400",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:06:08.087448+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1152192,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65843200",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88276992",
+        "memory.peak": "88834048",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140820480",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53653504",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29753344",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:06:13.192266+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1152192,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65609728",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88272896",
+        "memory.peak": "88834048",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140820480",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53653504",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29585408",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:06:18.294274+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1151560,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65867776",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88530944",
+        "memory.peak": "88834048",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53542912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140820480",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53653504",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29523968",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:06:23.404065+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1150300,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "66105344",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88498176",
+        "memory.peak": "88834048",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53538816",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140820480",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53653504",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29470720",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:06:28.552147+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1151564,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "65613824",
+        "memory.peak": "66170880",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "88498176",
+        "memory.peak": "88834048",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53276672",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140816384",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53653504",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29286400",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:06:33.637852+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1250700,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53030912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140816384",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53903360",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29278208",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:06:38.726804+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1261012,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53551104",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140816384",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53903360",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29306880",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:06:43.819703+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1267364,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53542912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140816384",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53903360",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29573120",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:06:48.908196+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1273160,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53288960",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140816384",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53891072",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29376512",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:06:53.993989+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1268596,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53288960",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140812288",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53649408",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29278208",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:06:59.083256+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1268608,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53551104",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140812288",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53649408",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29315072",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:07:04.169337+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1260640,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53551104",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "141037568",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53813248",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29327360",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:07:09.254997+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1265588,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53551104",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140902400",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53813248",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29327360",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:07:14.417288+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1185740,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "35950592",
+        "memory.peak": "35950592",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "58789888",
+        "memory.peak": "58789888",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53030912",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140812288",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53649408",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29278208",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:07:19.523396+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1160316,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "58245120",
+        "memory.peak": "58769408",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "62468096",
+        "memory.peak": "62935040",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53293056",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140812288",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53649408",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29470720",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:07:24.632328+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1148092,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "58499072",
+        "memory.peak": "58769408",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "62332928",
+        "memory.peak": "62935040",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53547008",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140812288",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53649408",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29585408",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:07:29.738183+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1138324,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "58494976",
+        "memory.peak": "58769408",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "62332928",
+        "memory.peak": "62935040",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53547008",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140812288",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53649408",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29368320",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T05:07:34.884211+00:00",
+    "memTotalKiB": 1953548,
+    "memAvailableKiB": 1118916,
+    "swapTotalKiB": 0,
+    "swapFreeKiB": 0,
+    "containers": [
+      {
+        "name": "quant-company-dispatch-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "58236928",
+        "memory.peak": "58773504",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "72163328",
+        "memory.peak": "72433664",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53551104",
+        "memory.peak": "53665792",
+        "memory.max": "201326592",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "140812288",
+        "memory.peak": "186261504",
+        "memory.max": "671088640",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-api-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "53649408",
+        "memory.peak": "69656576",
+        "memory.max": "134217728",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "status": "running",
+        "oomKilled": false,
+        "restartCount": 0,
+        "memory.current": "29274112",
+        "memory.peak": "35840000",
+        "memory.max": "268435456",
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    ]
+  }
+]

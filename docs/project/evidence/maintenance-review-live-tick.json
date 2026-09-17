@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-09-17T02:13:41.220268+00:00",
+  "mode": "tick",
+  "operator_accelerated_existing_tick": true,
+  "results": [
+    {
+      "state": "deferred",
+      "reason": "daily_model_budget"
+    },
+    {
+      "state": "deferred",
+      "reason": "daily_model_budget"
+    }
+  ]
+}

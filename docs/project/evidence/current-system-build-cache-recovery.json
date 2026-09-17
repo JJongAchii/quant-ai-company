@@ -1,0 +1,35 @@
+{
+  "recorded_at": "2026-09-17T04:25:22.373190+00:00",
+  "before": {
+    "total_bytes": 61285326848,
+    "available_bytes": 282734592
+  },
+  "current_release": "/opt/quant-company/releases/ababd0827948854dcba109f0533f87df6899ceca",
+  "containers_before": [
+    "c3421d0a05e2 quant-company:ababd0827948854dcba109f0533f87df6899ceca Up 20 minutes",
+    "cfa81463e7c9 quant-company:ababd0827948854dcba109f0533f87df6899ceca Up 20 minutes",
+    "78de6659c3cf quant-company:ababd0827948854dcba109f0533f87df6899ceca Up 20 minutes",
+    "163d27f76f08 quant-company-maintenance:ababd0827948854dcba109f0533f87df6899ceca Up 20 minutes",
+    "e5cbe28cf4d0 quant-company:ababd0827948854dcba109f0533f87df6899ceca Up 20 minutes (healthy)",
+    "a9b2479d38cf quant-company-codex:ababd0827948854dcba109f0533f87df6899ceca Up 20 minutes (healthy)",
+    "da2e97762d38 bb3e1a57e540 Up 23 hours (healthy)"
+  ],
+  "scope": "rebuildable_docker_build_cache_only",
+  "exit_code": 0,
+  "result_tail": " \ttrue \t16.63kB   \tLess than a second ago\no2tlmrpzqnk9c3b0rl67zb2ni               \ttrue \t58.65MB   \tLess than a second ago\nta81s19bvag7b3qujye1z16eo               \ttrue \t13.98MB   \tLess than a second ago\n11zvo1hretod9xqj5z3x6tj5j               \ttrue \t113.5MB   \tLess than a second ago\nTotal:\t32.25GB\n",
+  "error_tail": "",
+  "after": {
+    "total_bytes": 61285326848,
+    "available_bytes": 24606740480
+  },
+  "containers_after": [
+    "c3421d0a05e2 quant-company:ababd0827948854dcba109f0533f87df6899ceca Up 21 minutes",
+    "cfa81463e7c9 quant-company:ababd0827948854dcba109f0533f87df6899ceca Up 21 minutes",
+    "78de6659c3cf quant-company:ababd0827948854dcba109f0533f87df6899ceca Up 21 minutes",
+    "163d27f76f08 quant-company-maintenance:ababd0827948854dcba109f0533f87df6899ceca Up 21 minutes",
+    "e5cbe28cf4d0 quant-company:ababd0827948854dcba109f0533f87df6899ceca Up 21 minutes (healthy)",
+    "a9b2479d38cf quant-company-codex:ababd0827948854dcba109f0533f87df6899ceca Up 21 minutes (healthy)",
+    "da2e97762d38 bb3e1a57e540 Up 23 hours (healthy)"
+  ],
+  "volumes_or_state_deleted": false
+}

@@ -1,0 +1,59 @@
+{
+  "recordedAt": "2026-09-16T05:45:46.856392+00:00",
+  "startedAt": "2026-09-16T05:45:09.028753+00:00",
+  "previousImageCodeCommit": "c7fbd62a4ee27e6f8fd8ab166804620a400f874b",
+  "imageCodeCommit": "e097ae9a523e811459b941dfe3b7d7686c7bc4e6",
+  "activeTasksBeforeUpgrade": 0,
+  "containers": [
+    {
+      "name": "quant-company-api-1",
+      "image": "sha256:4003ecc3c9ef95de67f5dc0e466a3d6384b4aef82b090456b19e193712005b86",
+      "running": true,
+      "health": "healthy",
+      "oomKilled": false,
+      "imageCodeCommit": "e097ae9a523e811459b941dfe3b7d7686c7bc4e6"
+    },
+    {
+      "name": "quant-company-worker-1",
+      "image": "sha256:4003ecc3c9ef95de67f5dc0e466a3d6384b4aef82b090456b19e193712005b86",
+      "running": true,
+      "health": null,
+      "oomKilled": false,
+      "imageCodeCommit": "e097ae9a523e811459b941dfe3b7d7686c7bc4e6"
+    },
+    {
+      "name": "quant-company-dispatch-1",
+      "image": "sha256:4003ecc3c9ef95de67f5dc0e466a3d6384b4aef82b090456b19e193712005b86",
+      "running": true,
+      "health": null,
+      "oomKilled": false,
+      "imageCodeCommit": "e097ae9a523e811459b941dfe3b7d7686c7bc4e6"
+    },
+    {
+      "name": "quant-company-slack-socket-1",
+      "image": "sha256:4003ecc3c9ef95de67f5dc0e466a3d6384b4aef82b090456b19e193712005b86",
+      "running": true,
+      "health": null,
+      "oomKilled": false,
+      "imageCodeCommit": "e097ae9a523e811459b941dfe3b7d7686c7bc4e6"
+    },
+    {
+      "name": "quant-company-codex-runtime-1",
+      "image": "sha256:573bd6ee7313ec117e602432e59aef0059c7de7a2d2ca525caa9828b14e250d4",
+      "running": true,
+      "health": "healthy",
+      "oomKilled": false,
+      "imageCodeCommit": "e097ae9a523e811459b941dfe3b7d7686c7bc4e6"
+    },
+    {
+      "name": "quant-company-postgres-1",
+      "image": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "running": true,
+      "health": "healthy",
+      "oomKilled": false,
+      "imageCodeCommit": null
+    }
+  ],
+  "databaseMigration": false,
+  "externalResourcesCreated": false
+}

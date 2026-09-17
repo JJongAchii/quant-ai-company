@@ -22,3 +22,8 @@ integration targets until a particular research task is authorized.
 
 The root thread owns qws INTENT/STATUS and final integration. Builders do not spawn agents,
 change the contract, or judge research results.
+
+Company code, ADRs, roadmap, acceptance reports and new operational evidence belong in this
+repository only. Do not append company records to quant-workspace. The original qws contract
+and historical evidence there are frozen provenance; read them without duplicating or rewriting
+the contract. New evidence goes under docs/project/evidence, with summaries under docs/project.

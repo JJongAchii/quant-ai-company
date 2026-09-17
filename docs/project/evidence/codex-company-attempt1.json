@@ -1,0 +1,317 @@
+{
+  "checked_at": "2026-09-16T02:07:19.659969+00:00",
+  "code_commit": "ec9812a7798e155408f78424518eacfc32b1901b",
+  "postgres": "real",
+  "temporal": "real-local",
+  "provider": "real-codex-subscription",
+  "model_override": "gpt-5.6-luna",
+  "max_model_turns": 12,
+  "slack": "not-connected",
+  "aws": "not-deployed",
+  "financial_qualification": false,
+  "status": "not_passed",
+  "state": {
+    "project": {
+      "id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+      "title": "실제 연구가 아닌 4명 협업 통신 인수용 합성 과제입니다. 총괄은 financial_strategist와 researcher_kr에게 각각 1회 위임하세요. 금융전략은 calculate로 100*(1+0.05)를 계",
+      "instruction": "실제 연구가 아닌 4명 협업 통신 인수용 합성 과제입니다. 총괄은 financial_strategist와 researcher_kr에게 각각 1회 위임하세요. 금융전략은 calculate로 100*(1+0.05)를 계산하고 반환값을 확인해 합성 예제라고 명시한 짧은 산출물을 남기세요. 국내연구는 data에게 smoke-source를 read_source로 읽고 가용 시점과 합성 여부를 확인하도록 1회 직접 위임한 뒤 결과를 짧은 산출물로 정리하세요. 데이터는 실제 도구 결과를 보고 산출물을 남기세요. 총괄은 자식 두 업무가 끝나면 한 번에 취합하고 완료하세요. 추가 위임, 예약이나 실제 연구는 필요 없습니다. 각 담당자는 산출물을 1개씩 남기고 메시지는 3문장 이내로 쓰세요.",
+      "owner_user": "local-smoke",
+      "channel": null,
+      "thread_ts": null,
+      "revision": 1,
+      "status": "active",
+      "created_at": "2026-09-16 11:07:19.653431+09:00",
+      "updated_at": "2026-09-16 11:07:19.653431+09:00"
+    },
+    "tasks": [
+      {
+        "id": "c041708c-a12b-5e12-9f4b-36e3ab4ea25f",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "parent_id": null,
+        "agent": "director",
+        "instruction": "실제 연구가 아닌 4명 협업 통신 인수용 합성 과제입니다. 총괄은 financial_strategist와 researcher_kr에게 각각 1회 위임하세요. 금융전략은 calculate로 100*(1+0.05)를 계산하고 반환값을 확인해 합성 예제라고 명시한 짧은 산출물을 남기세요. 국내연구는 data에게 smoke-source를 read_source로 읽고 가용 시점과 합성 여부를 확인하도록 1회 직접 위임한 뒤 결과를 짧은 산출물로 정리하세요. 데이터는 실제 도구 결과를 보고 산출물을 남기세요. 총괄은 자식 두 업무가 끝나면 한 번에 취합하고 완료하세요. 추가 위임, 예약이나 실제 연구는 필요 없습니다. 각 담당자는 산출물을 1개씩 남기고 메시지는 3문장 이내로 쓰세요.",
+        "revision": 1,
+        "depth": 0,
+        "priority": 0,
+        "status": "waiting",
+        "turn_count": 1,
+        "result": null,
+        "error": null,
+        "created_at": "2026-09-16 11:07:19.653431+09:00"
+      },
+      {
+        "id": "6c4d591b-fa05-5203-b02a-3b9ae2aac4a3",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "parent_id": "c041708c-a12b-5e12-9f4b-36e3ab4ea25f",
+        "agent": "researcher_kr",
+        "instruction": "data에게 정확히 1회 직접 위임하여 read_source 서비스 도구로 source_id가 smoke-source인 자료를 읽고 가용 시점과 합성 여부를 확인하게 하세요. data의 실제 도구 결과를 바탕으로 짧은 산출물 1개를 작성하고, 메시지는 3문장 이내로 보고하세요. 추가 위임·예약·실제 연구는 하지 마세요.",
+        "revision": 1,
+        "depth": 1,
+        "priority": 10,
+        "status": "waiting",
+        "turn_count": 1,
+        "result": null,
+        "error": null,
+        "created_at": "2026-09-16 11:07:31.142748+09:00"
+      },
+      {
+        "id": "6d686506-74a8-5a6c-8296-9e36c2e09ab7",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "parent_id": "c041708c-a12b-5e12-9f4b-36e3ab4ea25f",
+        "agent": "financial_strategist",
+        "instruction": "calculate 서비스 도구로 100*(1+0.05)를 요청하고 반환값을 확인하세요. 결과가 합성 예제임을 명시한 짧은 산출물 1개를 작성하고, 메시지는 3문장 이내로 보고하세요. 도구를 실행했다고 주장하지 말고 실제 반환 결과만 기록하세요.",
+        "revision": 1,
+        "depth": 1,
+        "priority": 10,
+        "status": "blocked",
+        "turn_count": 2,
+        "result": null,
+        "error": "proposal_rejected:Unauthorized peer: director",
+        "created_at": "2026-09-16 11:07:31.142748+09:00"
+      },
+      {
+        "id": "497c5817-01e6-5491-b705-0c4c0e61fa0d",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "parent_id": "6c4d591b-fa05-5203-b02a-3b9ae2aac4a3",
+        "agent": "data",
+        "instruction": "read_source 서비스 도구로 source_id가 smoke-source인 자료를 정확히 1회 읽고, 반환된 실제 결과에서 가용 시점과 합성 여부를 확인해 보고하세요. 추가 위임·예약·실제 연구는 하지 마세요.",
+        "revision": 1,
+        "depth": 2,
+        "priority": 20,
+        "status": "running",
+        "turn_count": 1,
+        "result": null,
+        "error": null,
+        "created_at": "2026-09-16 11:07:45.488872+09:00"
+      }
+    ],
+    "messages": [
+      {
+        "id": "38eb3cfe-3daf-4409-bc0e-e067c8a7ab1e",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "task_id": "c041708c-a12b-5e12-9f4b-36e3ab4ea25f",
+        "revision": 1,
+        "author": "local-smoke",
+        "recipient": null,
+        "kind": "human",
+        "text": "실제 연구가 아닌 4명 협업 통신 인수용 합성 과제입니다. 총괄은 financial_strategist와 researcher_kr에게 각각 1회 위임하세요. 금융전략은 calculate로 100*(1+0.05)를 계산하고 반환값을 확인해 합성 예제라고 명시한 짧은 산출물을 남기세요. 국내연구는 data에게 smoke-source를 read_source로 읽고 가용 시점과 합성 여부를 확인하도록 1회 직접 위임한 뒤 결과를 짧은 산출물로 정리하세요. 데이터는 실제 도구 결과를 보고 산출물을 남기세요. 총괄은 자식 두 업무가 끝나면 한 번에 취합하고 완료하세요. 추가 위임, 예약이나 실제 연구는 필요 없습니다. 각 담당자는 산출물을 1개씩 남기고 메시지는 3문장 이내로 쓰세요.",
+        "created_at": "2026-09-16 11:07:19.653431+09:00"
+      },
+      {
+        "id": "c8b56505-26d4-4d2b-8f55-91f7882c5c7f",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "task_id": "c041708c-a12b-5e12-9f4b-36e3ab4ea25f",
+        "revision": 1,
+        "author": "director",
+        "recipient": null,
+        "kind": "answer",
+        "text": "두 독립 업무를 위임했습니다. financial_strategist와 researcher_kr의 산출물 및 researcher_kr가 data에 위임한 smoke-source 확인 결과를 기다린 뒤 한 번에 취합하겠습니다.",
+        "created_at": "2026-09-16 11:07:31.142748+09:00"
+      },
+      {
+        "id": "41887ab8-800d-4c59-a097-234a3ad9eedc",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "task_id": "6d686506-74a8-5a6c-8296-9e36c2e09ab7",
+        "revision": 1,
+        "author": "director",
+        "recipient": "financial_strategist",
+        "kind": "delegation",
+        "text": "calculate 서비스 도구로 100*(1+0.05)를 요청하고 반환값을 확인하세요. 결과가 합성 예제임을 명시한 짧은 산출물 1개를 작성하고, 메시지는 3문장 이내로 보고하세요. 도구를 실행했다고 주장하지 말고 실제 반환 결과만 기록하세요.",
+        "created_at": "2026-09-16 11:07:31.142748+09:00"
+      },
+      {
+        "id": "ee27067a-c508-44ec-9d56-ecbcc9d1c092",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "task_id": "6c4d591b-fa05-5203-b02a-3b9ae2aac4a3",
+        "revision": 1,
+        "author": "director",
+        "recipient": "researcher_kr",
+        "kind": "delegation",
+        "text": "data에게 정확히 1회 직접 위임하여 read_source 서비스 도구로 source_id가 smoke-source인 자료를 읽고 가용 시점과 합성 여부를 확인하게 하세요. data의 실제 도구 결과를 바탕으로 짧은 산출물 1개를 작성하고, 메시지는 3문장 이내로 보고하세요. 추가 위임·예약·실제 연구는 하지 마세요.",
+        "created_at": "2026-09-16 11:07:31.142748+09:00"
+      },
+      {
+        "id": "4bb82c88-1a0f-4eab-99f1-7cbcc14167be",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "task_id": "6d686506-74a8-5a6c-8296-9e36c2e09ab7",
+        "revision": 1,
+        "author": "financial_strategist",
+        "recipient": null,
+        "kind": "answer",
+        "text": "합성 예제 계산값 확인을 위해 calculate 서비스 도구를 요청합니다. 반환 결과를 확인한 뒤 산출물로 정리하겠습니다.",
+        "created_at": "2026-09-16 11:07:37.642085+09:00"
+      },
+      {
+        "id": "0384acce-b31d-4511-89c0-f191d9283ec2",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "task_id": "6d686506-74a8-5a6c-8296-9e36c2e09ab7",
+        "revision": 1,
+        "author": "tool:calculate",
+        "recipient": "financial_strategist",
+        "kind": "tool",
+        "text": "{\"request\": {\"name\": \"calculate\", \"arguments\": {\"expression\": \"100*(1+0.05)\"}}, \"receipt\": {\"expression\": \"100*(1+0.05)\", \"result\": \"105.00\", \"tool\": \"decimal-calculator-v1\"}}",
+        "created_at": "2026-09-16 11:07:37.642085+09:00"
+      },
+      {
+        "id": "872f9f24-3d9c-44c4-8411-4c99ee36b12f",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "task_id": "6c4d591b-fa05-5203-b02a-3b9ae2aac4a3",
+        "revision": 1,
+        "author": "researcher_kr",
+        "recipient": null,
+        "kind": "answer",
+        "text": "data에게 smoke-source의 가용 시점과 합성 여부 확인을 위임했습니다. 실제 read_source 결과를 받은 뒤 산출물 1개로 정리하겠습니다.",
+        "created_at": "2026-09-16 11:07:45.488872+09:00"
+      },
+      {
+        "id": "26868c01-f46b-48bc-aece-279a809e8a5c",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "task_id": "497c5817-01e6-5491-b705-0c4c0e61fa0d",
+        "revision": 1,
+        "author": "researcher_kr",
+        "recipient": "data",
+        "kind": "delegation",
+        "text": "read_source 서비스 도구로 source_id가 smoke-source인 자료를 정확히 1회 읽고, 반환된 실제 결과에서 가용 시점과 합성 여부를 확인해 보고하세요. 추가 위임·예약·실제 연구는 하지 마세요.",
+        "created_at": "2026-09-16 11:07:45.488872+09:00"
+      },
+      {
+        "id": "17a6d87d-236e-4e76-8958-93ea01673c28",
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "task_id": "6d686506-74a8-5a6c-8296-9e36c2e09ab7",
+        "revision": 1,
+        "author": "financial_strategist",
+        "recipient": null,
+        "kind": "status",
+        "text": "업무가 확인 대기 상태입니다. 사유: proposal_rejected:Unauthorized peer: director. 작업 기록은 보존했습니다.",
+        "created_at": "2026-09-16 11:07:57.966250+09:00"
+      }
+    ],
+    "artifacts": [],
+    "memories": [],
+    "events": [
+      {
+        "id": 1,
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "kind": "task_created",
+        "detail": {
+          "agent": "director",
+          "task_id": "c041708c-a12b-5e12-9f4b-36e3ab4ea25f"
+        },
+        "created_at": "2026-09-16 11:07:19.653431+09:00"
+      },
+      {
+        "id": 2,
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "kind": "turn_completed",
+        "detail": {
+          "agent": "director",
+          "usage": {
+            "input_tokens": 10494,
+            "output_tokens": 321,
+            "cached_input_tokens": 0,
+            "reasoning_output_tokens": 57
+          },
+          "turn_id": "bda1fc46-153e-5411-abce-c3daee3a2227",
+          "provider": "codex"
+        },
+        "created_at": "2026-09-16 11:07:31.142748+09:00"
+      },
+      {
+        "id": 3,
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "kind": "turn_completed",
+        "detail": {
+          "agent": "financial_strategist",
+          "usage": {
+            "input_tokens": 10765,
+            "output_tokens": 157,
+            "cached_input_tokens": 7936,
+            "reasoning_output_tokens": 76
+          },
+          "turn_id": "4ce6813b-2076-5d7a-84ee-1a212c29215a",
+          "provider": "codex"
+        },
+        "created_at": "2026-09-16 11:07:37.642085+09:00"
+      },
+      {
+        "id": 4,
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "kind": "turn_completed",
+        "detail": {
+          "agent": "researcher_kr",
+          "usage": {
+            "input_tokens": 10849,
+            "output_tokens": 197,
+            "cached_input_tokens": 0,
+            "reasoning_output_tokens": 60
+          },
+          "turn_id": "83925e96-6e39-5546-b167-7dd254b72f33",
+          "provider": "codex"
+        },
+        "created_at": "2026-09-16 11:07:45.488872+09:00"
+      },
+      {
+        "id": 5,
+        "project_id": "5bd7be55-8d4f-5188-a105-d3f7e44551fb",
+        "kind": "turn_blocked",
+        "detail": {
+          "reason": "proposal_rejected:Unauthorized peer: director",
+          "turn_id": "dbbbe59c-5ca9-5eb1-a079-f4023f20a214"
+        },
+        "created_at": "2026-09-16 11:07:57.966250+09:00"
+      }
+    ],
+    "turns": [
+      {
+        "id": "bda1fc46-153e-5411-abce-c3daee3a2227",
+        "task_id": "c041708c-a12b-5e12-9f4b-36e3ab4ea25f",
+        "sequence": 1,
+        "revision": 1,
+        "status": "completed",
+        "error": null,
+        "due_at": "2026-09-16 11:07:19.657490+09:00",
+        "attempts": 1
+      },
+      {
+        "id": "4ce6813b-2076-5d7a-84ee-1a212c29215a",
+        "task_id": "6d686506-74a8-5a6c-8296-9e36c2e09ab7",
+        "sequence": 1,
+        "revision": 1,
+        "status": "completed",
+        "error": null,
+        "due_at": "2026-09-16 11:07:31.146130+09:00",
+        "attempts": 1
+      },
+      {
+        "id": "83925e96-6e39-5546-b167-7dd254b72f33",
+        "task_id": "6c4d591b-fa05-5203-b02a-3b9ae2aac4a3",
+        "sequence": 1,
+        "revision": 1,
+        "status": "completed",
+        "error": null,
+        "due_at": "2026-09-16 11:07:31.146902+09:00",
+        "attempts": 1
+      },
+      {
+        "id": "dbbbe59c-5ca9-5eb1-a079-f4023f20a214",
+        "task_id": "6d686506-74a8-5a6c-8296-9e36c2e09ab7",
+        "sequence": 2,
+        "revision": 1,
+        "status": "blocked",
+        "error": "proposal_rejected:Unauthorized peer: director",
+        "due_at": "2026-09-16 11:07:37.645272+09:00",
+        "attempts": 1
+      },
+      {
+        "id": "aa077ff1-a942-5797-99e4-3439ffa5f48e",
+        "task_id": "497c5817-01e6-5491-b705-0c4c0e61fa0d",
+        "sequence": 1,
+        "revision": 1,
+        "status": "running",
+        "error": null,
+        "due_at": "2026-09-16 11:07:45.491957+09:00",
+        "attempts": 1
+      }
+    ]
+  }
+}

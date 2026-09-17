@@ -1,0 +1,1003 @@
+{
+  "scope": "bounded production maintenance commissioning; not a long soak or research workload",
+  "samples": [
+    {
+      "at": "2026-09-16T23:58:30.274792+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 988332
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.48MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "67.59MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "60.59MiB / 192MiB",
+          "cpu": "3.05%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.7MiB / 192MiB",
+          "cpu": "0.15%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "56.13MiB / 128MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "38.09MiB / 512MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "53.27MiB / 256MiB",
+          "cpu": "0.02%"
+        },
+        {
+          "name": "quant-company-maintenance-run-785ae6c34be6",
+          "memory": "12.43MiB / 128MiB",
+          "cpu": "25.83%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-16T23:58:37.388803+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1000060
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.45MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "67.59MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "60.89MiB / 192MiB",
+          "cpu": "2.46%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.48MiB / 192MiB",
+          "cpu": "0.04%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "48.64MiB / 128MiB",
+          "cpu": "29.51%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "38.06MiB / 512MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "45.01MiB / 256MiB",
+          "cpu": "4.24%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-16T23:58:44.498443+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1014456
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.45MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "67.59MiB / 384MiB",
+          "cpu": "0.01%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "61.15MiB / 192MiB",
+          "cpu": "2.49%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.72MiB / 192MiB",
+          "cpu": "0.09%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "48.64MiB / 128MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "38.3MiB / 512MiB",
+          "cpu": "0.15%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "44.97MiB / 256MiB",
+          "cpu": "2.16%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-16T23:58:51.625973+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1016440
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.45MiB / 128MiB",
+          "cpu": "0.02%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "67.59MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "60.66MiB / 192MiB",
+          "cpu": "2.49%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.97MiB / 192MiB",
+          "cpu": "0.15%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "48.64MiB / 128MiB",
+          "cpu": "0.18%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "38.09MiB / 512MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "44.94MiB / 256MiB",
+          "cpu": "2.22%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-16T23:58:58.761047+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1025168
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.45MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "67.59MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "61.14MiB / 192MiB",
+          "cpu": "2.44%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.72MiB / 192MiB",
+          "cpu": "0.07%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "48.64MiB / 128MiB",
+          "cpu": "0.15%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "38.09MiB / 512MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "44.83MiB / 256MiB",
+          "cpu": "0.02%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-16T23:59:05.914631+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 991564
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.45MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "67.59MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "60.68MiB / 192MiB",
+          "cpu": "1.44%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.48MiB / 192MiB",
+          "cpu": "0.20%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "48.64MiB / 128MiB",
+          "cpu": "0.17%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "38.09MiB / 512MiB",
+          "cpu": "0.18%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "45.79MiB / 256MiB",
+          "cpu": "1.37%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-16T23:59:13.056498+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 942196
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-run-b19b22512493",
+          "memory": "47.52MiB / 128MiB",
+          "cpu": "8.18%"
+        },
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.7MiB / 128MiB",
+          "cpu": "0.05%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.05MiB / 384MiB",
+          "cpu": "0.05%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "61.17MiB / 192MiB",
+          "cpu": "2.42%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.48MiB / 192MiB",
+          "cpu": "0.01%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "48.64MiB / 128MiB",
+          "cpu": "0.15%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "38.3MiB / 512MiB",
+          "cpu": "45.08%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "46.29MiB / 256MiB",
+          "cpu": "8.94%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-16T23:59:20.204989+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 922344
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-run-b19b22512493",
+          "memory": "48.53MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.45MiB / 128MiB",
+          "cpu": "0.05%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.19MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.75MiB / 192MiB",
+          "cpu": "2.42%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.81MiB / 192MiB",
+          "cpu": "0.10%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "48.64MiB / 128MiB",
+          "cpu": "0.15%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "125.7MiB / 512MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "46.61MiB / 256MiB",
+          "cpu": "2.13%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-16T23:59:27.326399+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 913284
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-run-b19b22512493",
+          "memory": "48.53MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.75MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.19MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.74MiB / 192MiB",
+          "cpu": "2.95%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.72MiB / 192MiB",
+          "cpu": "0.07%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "48.64MiB / 128MiB",
+          "cpu": "0.17%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "124.5MiB / 512MiB",
+          "cpu": "1.64%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "46.43MiB / 256MiB",
+          "cpu": "2.43%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-16T23:59:34.449657+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 927620
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-run-b19b22512493",
+          "memory": "48.94MiB / 128MiB",
+          "cpu": "14.32%"
+        },
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.75MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.19MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.5MiB / 192MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.56MiB / 192MiB",
+          "cpu": "0.10%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "48.64MiB / 128MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "98.08MiB / 512MiB",
+          "cpu": "3.70%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "46.5MiB / 256MiB",
+          "cpu": "9.23%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-16T23:59:41.564900+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1006292
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.75MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.19MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.73MiB / 192MiB",
+          "cpu": "2.46%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.8MiB / 192MiB",
+          "cpu": "0.11%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "50.65MiB / 128MiB",
+          "cpu": "0.15%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "98MiB / 512MiB",
+          "cpu": "0.15%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "44.92MiB / 256MiB",
+          "cpu": "2.22%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-16T23:59:48.687853+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1020592
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.75MiB / 128MiB",
+          "cpu": "0.01%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.19MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.98MiB / 192MiB",
+          "cpu": "2.45%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "48.06MiB / 192MiB",
+          "cpu": "0.10%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "50.65MiB / 128MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "98MiB / 512MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "44.99MiB / 256MiB",
+          "cpu": "2.77%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-16T23:59:55.806265+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1020596
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.75MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.19MiB / 384MiB",
+          "cpu": "0.01%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.71MiB / 192MiB",
+          "cpu": "2.49%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "48.05MiB / 192MiB",
+          "cpu": "0.17%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "50.65MiB / 128MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "98MiB / 512MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "45.05MiB / 256MiB",
+          "cpu": "2.26%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-17T00:00:02.921263+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1020192
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.75MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.44MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.74MiB / 192MiB",
+          "cpu": "2.51%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "48.05MiB / 192MiB",
+          "cpu": "0.09%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "50.65MiB / 128MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "98MiB / 512MiB",
+          "cpu": "0.18%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "45.84MiB / 256MiB",
+          "cpu": "0.80%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-17T00:00:10.047357+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1015700
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "60.75MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.94MiB / 384MiB",
+          "cpu": "0.06%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.5MiB / 192MiB",
+          "cpu": "2.47%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.57MiB / 192MiB",
+          "cpu": "0.08%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "50.76MiB / 128MiB",
+          "cpu": "15.07%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "98MiB / 512MiB",
+          "cpu": "0.17%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "45.08MiB / 256MiB",
+          "cpu": "2.48%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-17T00:00:17.167131+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1017124
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "65.84MiB / 128MiB",
+          "cpu": "0.05%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.5MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.97MiB / 192MiB",
+          "cpu": "2.45%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.57MiB / 192MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "50.65MiB / 128MiB",
+          "cpu": "0.15%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "98MiB / 512MiB",
+          "cpu": "0.17%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "44.91MiB / 256MiB",
+          "cpu": "2.28%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-17T00:00:24.281699+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1020576
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "65.78MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.5MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.98MiB / 192MiB",
+          "cpu": "2.48%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.81MiB / 192MiB",
+          "cpu": "0.10%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "50.65MiB / 128MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "98MiB / 512MiB",
+          "cpu": "0.18%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "45.01MiB / 256MiB",
+          "cpu": "2.25%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-17T00:00:31.436453+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1016744
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "65.78MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.5MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.96MiB / 192MiB",
+          "cpu": "2.51%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.81MiB / 192MiB",
+          "cpu": "0.07%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "50.65MiB / 128MiB",
+          "cpu": "0.18%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "98MiB / 512MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "44.94MiB / 256MiB",
+          "cpu": "2.26%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-17T00:00:38.553253+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1014732
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "65.78MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.5MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.95MiB / 192MiB",
+          "cpu": "2.55%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.81MiB / 192MiB",
+          "cpu": "0.12%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "50.65MiB / 128MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "98MiB / 512MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "44.86MiB / 256MiB",
+          "cpu": "2.22%"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-17T00:00:45.708389+00:00",
+      "host_kib": {
+        "MemTotal": 1953552,
+        "MemAvailable": 1013976
+      },
+      "containers": [
+        {
+          "name": "quant-company-maintenance-1",
+          "memory": "65.78MiB / 128MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-worker-1",
+          "memory": "68.5MiB / 384MiB",
+          "cpu": "0.00%"
+        },
+        {
+          "name": "quant-company-dispatch-1",
+          "memory": "58.98MiB / 192MiB",
+          "cpu": "2.43%"
+        },
+        {
+          "name": "quant-company-slack-socket-1",
+          "memory": "47.81MiB / 192MiB",
+          "cpu": "0.14%"
+        },
+        {
+          "name": "quant-company-api-1",
+          "memory": "50.65MiB / 128MiB",
+          "cpu": "0.18%"
+        },
+        {
+          "name": "quant-company-codex-runtime-1",
+          "memory": "98.02MiB / 512MiB",
+          "cpu": "0.16%"
+        },
+        {
+          "name": "quant-company-postgres-1",
+          "memory": "45.08MiB / 256MiB",
+          "cpu": "2.19%"
+        }
+      ]
+    }
+  ],
+  "container_cgroups": {
+    "maintenance": {
+      "oom_killed": false,
+      "restarts": 0,
+      "peak_bytes": 74178560,
+      "memory_events": {
+        "low": "0",
+        "high": "0",
+        "max": "0",
+        "oom": "0",
+        "oom_kill": "0",
+        "oom_group_kill": "0"
+      }
+    },
+    "api": {
+      "oom_killed": false,
+      "restarts": 0,
+      "peak_bytes": 76865536,
+      "memory_events": {
+        "low": "0",
+        "high": "0",
+        "max": "0",
+        "oom": "0",
+        "oom_kill": "0",
+        "oom_group_kill": "0"
+      }
+    },
+    "worker": {
+      "oom_killed": false,
+      "restarts": 0,
+      "peak_bytes": 76251136,
+      "memory_events": {
+        "low": "0",
+        "high": "0",
+        "max": "0",
+        "oom": "0",
+        "oom_kill": "0",
+        "oom_group_kill": "0"
+      }
+    },
+    "dispatch": {
+      "oom_killed": false,
+      "restarts": 0,
+      "peak_bytes": 66793472,
+      "memory_events": {
+        "low": "0",
+        "high": "0",
+        "max": "0",
+        "oom": "0",
+        "oom_kill": "0",
+        "oom_group_kill": "0"
+      }
+    },
+    "slack-socket": {
+      "oom_killed": false,
+      "restarts": 0,
+      "peak_bytes": 53133312,
+      "memory_events": {
+        "low": "0",
+        "high": "0",
+        "max": "0",
+        "oom": "0",
+        "oom_kill": "0",
+        "oom_group_kill": "0"
+      }
+    },
+    "codex-runtime": {
+      "oom_killed": false,
+      "restarts": 0,
+      "peak_bytes": 165466112,
+      "memory_events": {
+        "low": "0",
+        "high": "0",
+        "max": "0",
+        "oom": "0",
+        "oom_kill": "0",
+        "oom_group_kill": "0"
+      }
+    },
+    "postgres": {
+      "oom_killed": false,
+      "restarts": 0,
+      "peak_bytes": 135176192,
+      "memory_events": {
+        "low": "0",
+        "high": "0",
+        "max": "0",
+        "oom": "0",
+        "oom_kill": "0",
+        "oom_group_kill": "0"
+      }
+    }
+  }
+}

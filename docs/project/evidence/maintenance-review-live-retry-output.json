@@ -1,0 +1,9 @@
+{
+  "checked_at": "2026-09-17T02:08:40.024252+00:00",
+  "mode": "retry-output",
+  "same_original_recovery_task": "4948ea1c-d95b-5ddf-905e-81e7a91d8ee4",
+  "preserved_invalid_output_turn": "f8b55900-6ba1-5984-8f5f-999bf2d93b00",
+  "result": {
+    "turn_id": "8af50c34-7daf-52f4-b46b-bbe66d8855d4"
+  }
+}

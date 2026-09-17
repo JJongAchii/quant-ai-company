@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-09-16T04:07:09.569891+00:00",
+  "workspaceId": "T0C1YRDRPNF",
+  "executionHost": "local-mac",
+  "results": [
+    {
+      "role": "director",
+      "appId": "A0C1ZF715K5",
+      "botUserId": "U0C23PPKR5L",
+      "authTest": "passed",
+      "socketHandshake": "passed"
+    },
+    {
+      "role": "financial_strategist",
+      "appId": "A0C23QHH66S",
+      "botUserId": "U0C29D5DLMS",
+      "authTest": "passed",
+      "socketHandshake": "passed"
+    },
+    {
+      "role": "researcher_kr",
+      "appId": "A0C1ZGDU9M1",
+      "botUserId": "U0C1QCBD9L7",
+      "authTest": "passed",
+      "socketHandshake": "passed"
+    },
+    {
+      "role": "data",
+      "appId": "A0C211J5KE1",
+      "botUserId": "U0C1ZH42C7M",
+      "authTest": "passed",
+      "socketHandshake": "passed"
+    }
+  ],
+  "messagesSent": 0,
+  "companyRuntimeStarted": false,
+  "macOffAcceptance": "not_run"
+}

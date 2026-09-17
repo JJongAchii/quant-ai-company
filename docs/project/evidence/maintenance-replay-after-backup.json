@@ -1,0 +1,20 @@
+{
+  "job_id": "168c2f7f-e272-5c3b-9453-4dab63680b81",
+  "after_backup_restart": true,
+  "same_branch_and_head": true,
+  "same_draft_pr": {
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/3",
+    "number": 3,
+    "state": "open"
+  },
+  "same_model_responses_and_notification_count": true,
+  "counts": {
+    "calls": 3,
+    "notifications": 2,
+    "response_digests": {
+      "maint-281fa59e-c759-4d07-a66a-df8103a2c42a-triage": "6dcc0a7f6547c14103af497a1b3de36218fa81be739ebe8cc7c5268314f75d99",
+      "maint-d9814fcf-5a57-4884-ab92-c1413c3afa70-triage": "c1121256ff200beac3ba7ad7653769a09f094233384feff007dcda9c3ccebeba",
+      "maint-168c2f7f-e272-5c3b-9453-4dab63680b81-patch": "9a6febce9b8b44632b76f7450a5f105f96887fdcdc44151cdca39bcd793772c2"
+    }
+  }
+}

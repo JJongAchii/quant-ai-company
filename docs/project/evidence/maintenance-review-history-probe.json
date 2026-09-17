@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-09-17T02:20:30.995619+00:00",
+  "probe_kind": "operator_invoked_deployed_tool_without_model_or_slack_message",
+  "task_id": "4948ea1c-d95b-5ddf-905e-81e7a91d8ee4",
+  "result": {
+    "as_of": "2026-09-17T02:20:30.986385+00:00",
+    "window_days": 30,
+    "truncated": true,
+    "limit": 12,
+    "interpretation": "Recorded requests and current task outcomes, not a quality score or proof that an employee saw other threads. Query with short keywords to inspect omitted older requests.",
+    "source_id": "company:e8a99f7ed749aa1b0627328d",
+    "record_count": 12
+  },
+  "temporary_project_source_removed_in_same_transaction": true,
+  "probe_inserted_company_messages": false,
+  "model_called": false
+}

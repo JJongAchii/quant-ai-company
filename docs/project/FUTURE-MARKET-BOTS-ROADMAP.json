@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-17T02:16:05.151032+00:00",
+  "status": "roadmap_only_merged",
+  "userRequest": "아침마다 전일 금융 시장의 시황이나 세계 경제 상황 또는 주요 뉴스들에 대해 요약해서 알려주는 BOT 이 있으면 좋을 거 같고, 내가 시장현황같은 것들에 대해 요청을 했을때 분석해서 정리해주는 것도 존재하면 좋을 거 같아. 우선 이건 로드맵에만 추가해놔줘 나중에 진행하게",
+  "features": [
+    "아침 정기 시황 브리핑",
+    "요청형 시장 분석"
+  ],
+  "coverage": [
+    "국내 시장",
+    "글로벌 시장",
+    "가상자산",
+    "세계 경제",
+    "주요 뉴스"
+  ],
+  "deferredDecisions": [
+    "발송 시각(KST)·채널·주말 및 휴장일",
+    "상세 범위·직무·모델",
+    "데이터 및 뉴스 제공처·사용 권한·비용",
+    "중복 발송 방지·누락 복구·품질 검증"
+  ],
+  "marketBotImplementationOrActivationPerformed": false,
+  "newPaidResources": false,
+  "pr": {
+    "headRefOid": "0852317e664e9fb133db94c81834440529b57311",
+    "mergeCommit": {
+      "oid": "5a9e77f7b09533cc8f266d19861672c19e5517b3"
+    },
+    "mergedAt": "2026-09-17T02:12:50Z",
+    "number": 10,
+    "state": "MERGED",
+    "title": "docs: add deferred market briefing and analysis roadmap",
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/10"
+  },
+  "checks": {
+    "localDocumentLinksMissing": [],
+    "sourceAndQwsRoadmapMatch": true,
+    "diffCheckPassed": true
+  },
+  "files": {
+    "quant-ai-company/README.md": "a7b689bda5d7ac0fa68ff327878c9aa3374a089129b7c3715c354131b87a12f1",
+    "quant-ai-company/docs/project/NEXT-STEPS.md": "030b47b4b72f91f6b99ad16c9f173f7f512c95d83c912b8505ecff0e0e8e795c",
+    "docs/work/quant-ai-company/NEXT-STEPS.md": "030b47b4b72f91f6b99ad16c9f173f7f512c95d83c912b8505ecff0e0e8e795c"
+  },
+  "filePathsRelativeTo": "qws root"
+}

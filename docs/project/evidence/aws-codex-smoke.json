@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "requestId": "aws-2gb-20260916-smoke-1",
+  "realSubscription": true,
+  "remoteHost": true,
+  "model": "gpt-5.6-luna",
+  "replayEqual": true,
+  "elapsedSeconds": 8.95,
+  "response": {
+    "request_id": "aws-2gb-20260916-smoke-1",
+    "decision": {
+      "say": "연결 확인 완료",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0a898-f275-72c2-8948-cfba75823c35",
+    "usage": {
+      "input_tokens": 6852,
+      "cached_input_tokens": 4864,
+      "output_tokens": 111,
+      "reasoning_output_tokens": 54
+    },
+    "provider": "codex"
+  }
+}

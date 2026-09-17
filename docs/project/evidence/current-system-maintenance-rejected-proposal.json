@@ -1,0 +1,46 @@
+{
+  "calls": [
+    {
+      "id": "maint-f9e1ca16-4a04-57c7-925a-33e347d82b10-r2-triage",
+      "response": {
+        "usage": {
+          "input_tokens": 38302,
+          "output_tokens": 1553,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 482
+        },
+        "decision": {
+          "say": "현재 운영 상태와 과거 실패 기록을 함께 검토해, 한도 해제 뒤에도 요청에 과거 예산 오류가 남는 상태 수명주기 문제 1건을 설계 검토 대상으로 정리했습니다.",
+          "tools": [],
+          "status": "complete",
+          "memories": [],
+          "messages": [],
+          "artifacts": [
+            {
+              "title": "개선BOT 한도 해제 후 대기 요청 상태 정합성 진단",
+              "content": "{\"finding\":{\"problem_key\":\"maintenance_stale_budget_state\",\"title\":\"한도 해제 후에도 기존 진단 요청에 과거 예산 오류가 남음\",\"problem\":\"현재 시스템 근거 system:cacb31e3bbf19a14ae819dfd3cc5a3f9c7d6e4ca3df598cc1f6c728f39100780에서는 회사 공통·개선BOT 일일 한도가 모두 null이고 최신 운영 커밋이 배포되어 있다. 그러나 기존 요청 f9e1ca16-4a04-57c7-925a-33e347d82b10은 최신 상태 조회에서도 triage와 daily_model_budget 오류를 함께 노출한다. 과거 오류와 현재 차단 상태가 구분되지 않아 사용자와 직원이 요청이 자동 재개될지, 별도 조치가 필요한지 확정하기 어렵다. 이는 한도 해제 기능 자체의 부재가 아니라 기존 요청의 상태 전이·표시 정합성 문제다.\",\"reproduction\":\"한도 6/6 상태에서 개선 진단을 접수해 daily_model_budget 오류가 기록된 뒤, 인증된 소유자 명령으로 회사 공통·개선BOT 한도를 해제한다. 이후 maintenance_status를 조회했을 때 서비스 한도는 null인데 같은 요청은 triage 및 daily_model_budget을 계속 표시하는지 확인한다. 제공된 기록에서 이 조합이 관찰된다.\",\"expected\":\"한도가 해제되면 예산 때문에 보류된 요청은 중복 접수 없이 재평가 가능 상태로 전환되어야 한다. 상태 응답은 과거 오류를 이력으로 보존하되 현재 차단 사유와 분리하고, 재개 예정·진행 중·별도 장애 중 하나를 명확히 표시해야 한다.\",\"evidence_keys\":[\"message:337de140-0b02-43aa-8631-a37eaeb4f2de\",\"message:309bb33d-e3e7-4a28-a382-2497e509a676\",\"message:9d1b3ee7-2793-4c8a-91d8-da9f9fb03bb7\"],\"category\":\"platform_defect\",\"hypothesis\":\"예산 제한 해제는 현재 정책값만 변경하지만, 이미 daily_model_budget으로 보류된 유지보수 요청을 다시 예약하거나 오류를 과거 이력으로 전환하는 명시적 상태 전이가 없어서 현재 상태와 과거 오류가 함께 남는 것으로 보인다. 유지보수 실행기와 정책은 보호 영역이므로 구현을 단정하지 않고 설계 검토가 필요하다.\",\"evaluation\":{\"mode\":\"design_only\",\"success_criterion\":\"사람이 검토한 설계 PR이 한도 해제 전후의 요청 상태 전이, 중복 접수 방지, 과거 오류 보존 방식, maintenance_status의 현재 차단 사유 표현을 명시하고, null 한도에서 기존 예산 보류 요청이 자동 재평가되는 수용 시나리오를 정의해야 한다.\",\"cases\":[]},\"paths\":[]},\"reason\":\"한도 해제 명령과 현재 상태 조회는 이미 구현·배포되어 있으므로 재제안하지 않았다. 다만 현재 null 한도와 기존 요청의 daily_model_budget 표시가 동시에 확인되어 상태 수명주기 정합성 개선 근거는 충분하다. 보호된 유지보수 정책 변경이 수반될 수 있어 design_only로 제한한다.\"}",
+              "source_ids": [
+                "system:cacb31e3bbf19a14ae819dfd3cc5a3f9c7d6e4ca3df598cc1f6c728f39100780",
+                "message:337de140-0b02-43aa-8631-a37eaeb4f2de",
+                "message:309bb33d-e3e7-4a28-a382-2497e509a676",
+                "message:9d1b3ee7-2793-4c8a-91d8-da9f9fb03bb7"
+              ]
+            }
+          ],
+          "follow_up": null,
+          "delegations": []
+        },
+        "provider": "codex",
+        "thread_id": "01a0ad8b-a226-7682-bc27-4bbda7f5f52d",
+        "request_id": "maint-f9e1ca16-4a04-57c7-925a-33e347d82b10-r2-triage"
+      },
+      "prompt_chars": 87944
+    }
+  ],
+  "other_failure": {
+    "id": "1e9d1731-8684-4849-b4dc-115be779a1fc",
+    "error": "ValidationError",
+    "created_at": "2026-09-17 04:03:16.829934+00:00",
+    "executed_code": "a89aa4ba28c67cf58ca9b16a7621e260566dbfa1"
+  }
+}

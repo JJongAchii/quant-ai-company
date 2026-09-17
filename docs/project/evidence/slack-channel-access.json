@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-09-16T04:18:51.088003+00:00",
+  "teamId": "T0C1YRDRPNF",
+  "channelId": "C0C1Q8D0B6K",
+  "method": "Slack conversations.history(limit=1) with each installed bot token; content not persisted",
+  "roles": {
+    "director": {
+      "ok": true,
+      "memberAccess": true
+    },
+    "financial_strategist": {
+      "ok": true,
+      "memberAccess": true
+    },
+    "researcher_kr": {
+      "ok": true,
+      "memberAccess": true
+    },
+    "data": {
+      "ok": true,
+      "memberAccess": true
+    }
+  },
+  "messagesSent": 0,
+  "companyRuntimeStarted": false
+}

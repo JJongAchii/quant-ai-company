@@ -1,0 +1,49 @@
+{
+  "scope": "independent repository migration and reviewable maintenance implementation; no operational activation",
+  "repository": "https://github.com/JJongAchii/quant-ai-company",
+  "private": true,
+  "sourcePullRequest": "https://github.com/JJongAchii/quant-workspace/pull/42",
+  "maintenancePullRequest": "https://github.com/JJongAchii/quant-ai-company/pull/1",
+  "maintenanceCommit": "7d19765dcf3515db2dea219929acb5d9235959d1",
+  "dataPullRequest": "https://github.com/JJongAchii/quant-data/pull/47",
+  "dataPullRequestHead": "3c8121ac656d26efa507a706530c0747bcbbc1c7",
+  "sourceDeployedCommit": "05cacb7bbf8bf84f46d3b0d7c8ef30736c68eb9f",
+  "productionChanged": false,
+  "macbookDependency": false,
+  "macbookPowerOffTest": "optional observational record, not a deployment blocker",
+  "mainCI": "passed at 3f7e7bd62ad61290e9d34557039eca25803c8a96",
+  "maintenanceCI": {
+    "status": "passed",
+    "run": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35071243117",
+    "tests": "143 passed, 1 skipped, 1 deselected",
+    "codeCommit": "7d19765dcf3515db2dea219929acb5d9235959d1"
+  },
+  "localChecks": [
+    "115 passed, 1 skipped, 1 deselected: initial standalone service baseline",
+    "40 passed: maintenance, GitHub transport and deployment tests before added regression gate",
+    "1 passed: new opt-in profile and credential boundary check",
+    "3 passed: real Git/Python regression reproduction tests",
+    "ruff passed",
+    "tracked-file secret pattern scan: 119 files, zero findings"
+  ],
+  "testClassification": {
+    "postgres": "real disposable local",
+    "temporal": "real local",
+    "maintenanceModel": "fixture",
+    "maintenanceGitHubTransport": "mock HTTP; real repository and user-created PRs are separately verified",
+    "maintenanceSlack": "outbox only; no live maintenance message sent"
+  },
+  "notRun": [
+    "GitHub App installation/authentication",
+    "real subscription maintenance case through GitHub and Slack",
+    "maintenance server profile activation and memory measurement"
+  ],
+  "privateBranchProtection": {
+    "httpStatus": 403,
+    "reason": "GitHub requires Pro for this private repository feature",
+    "planChanged": false
+  },
+  "policy": "automatic fix, tests and draft PR; human-reviewed operational release",
+  "userRepositoryNameChoice": "quant-ai-company로 해줘",
+  "githubAutoMergeEnabled": false
+}

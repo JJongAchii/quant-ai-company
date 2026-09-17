@@ -1,0 +1,48 @@
+{
+  "iamUserArn": "arn:aws:iam::061039802347:user/quant-company-lake-read",
+  "created": true,
+  "policyFile": "services/quant-company/deploy/lake-read-policy.json",
+  "checks": [
+    {
+      "EvalActionName": "s3:GetObject",
+      "EvalResourceName": "arn:aws:s3:::insight-invest-datalake/qdata/clean/krx_etf.parquet",
+      "EvalDecision": "allowed"
+    },
+    {
+      "EvalActionName": "s3:PutObject",
+      "EvalResourceName": "arn:aws:s3:::insight-invest-datalake/qdata/clean/krx_etf.parquet",
+      "EvalDecision": "implicitDeny"
+    },
+    {
+      "EvalActionName": "s3:DeleteObject",
+      "EvalResourceName": "arn:aws:s3:::insight-invest-datalake/qdata/clean/krx_etf.parquet",
+      "EvalDecision": "implicitDeny"
+    },
+    {
+      "EvalActionName": "s3:GetObject",
+      "EvalResourceName": "arn:aws:s3:::insight-invest-datalake/qdata/raw/krx/example.parquet",
+      "EvalDecision": "implicitDeny"
+    },
+    {
+      "EvalActionName": "s3:GetObject",
+      "EvalResourceName": "arn:aws:s3:::quant-company-061039802347-backups/company/example",
+      "EvalDecision": "implicitDeny"
+    },
+    {
+      "action": "s3:ListBucket",
+      "prefix": "qdata/clean/",
+      "decision": "allowed"
+    },
+    {
+      "action": "s3:ListBucket",
+      "prefix": "qdata/raw/",
+      "decision": "implicitDeny"
+    },
+    {
+      "action": "s3:ListBucket",
+      "prefix": "",
+      "decision": "implicitDeny"
+    }
+  ],
+  "credentialValuesIncluded": false
+}

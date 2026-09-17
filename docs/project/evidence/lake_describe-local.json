@@ -1,0 +1,86 @@
+{
+  "ok": true,
+  "qdata_code_commit": "unqualified",
+  "data": {
+    "dataset": "krx_etf",
+    "source": {
+      "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf.parquet",
+      "size_bytes": 78323674,
+      "last_modified": "2026-09-15T11:04:52+00:00",
+      "etag": "\"ad7798b6acf4c9e4b7298dff3f0125f5\"",
+      "version_id": null
+    },
+    "observed_at": "2026-09-16T06:19:34.432373+00:00",
+    "row_count": 1672355,
+    "columns": [
+      {
+        "name": "date",
+        "type": "timestamp[ms]"
+      },
+      {
+        "name": "ticker",
+        "type": "string"
+      },
+      {
+        "name": "nav",
+        "type": "double"
+      },
+      {
+        "name": "open",
+        "type": "int64"
+      },
+      {
+        "name": "high",
+        "type": "int64"
+      },
+      {
+        "name": "low",
+        "type": "int64"
+      },
+      {
+        "name": "close",
+        "type": "int64"
+      },
+      {
+        "name": "volume",
+        "type": "int64"
+      },
+      {
+        "name": "value",
+        "type": "int64"
+      },
+      {
+        "name": "index_value",
+        "type": "double"
+      },
+      {
+        "name": "chg_pct",
+        "type": "double"
+      },
+      {
+        "name": "adj_factor",
+        "type": "double"
+      },
+      {
+        "name": "adj_close",
+        "type": "double"
+      }
+    ],
+    "date_bounds": {
+      "date": {
+        "statistics_complete": true,
+        "min": "2012-01-02T00:00:00",
+        "max": "2026-09-15T00:00:00",
+        "null_count": 0
+      }
+    },
+    "sample": null,
+    "method": "parquet_footer_statistics",
+    "limitations": [
+      "Bounds are dataset-wide, not per instrument or trading-calendar coverage.",
+      "Observation/trade dates are not publication-availability timestamps.",
+      "ETag is object identity metadata, not a computed content hash."
+    ],
+    "reader_bytes": 65544
+  }
+}

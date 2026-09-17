@@ -1,0 +1,21 @@
+[
+  {
+    "id": "f9e1ca16-4a04-57c7-925a-33e347d82b10",
+    "prior_state": "blocked",
+    "prior_error": "finding_requires_current_implementation_evidence",
+    "prior_payload_digest": "d000153fb5f1fcfcb78dd82d71a40c39a2ecf82dd927d06ab990a1d5550edb85",
+    "model_calls": 1,
+    "release": "bcb4f70ec164f12b5feb1d4608d2ee784e52a7af",
+    "preserved_response_digest": "81c073687dbc8af9c19b94c5643b409143138f8ab255ad328cc2e39fa566a6a0",
+    "resumed": true
+  },
+  {
+    "id": "1e9d1731-8684-4849-b4dc-115be779a1fc",
+    "prior_state": "blocked",
+    "prior_error": "ValidationError",
+    "prior_payload_digest": "fa0bdfd0182faf557ae61e34851976c40b008958e2d4b783f3122f43e156f150",
+    "model_calls": 0,
+    "release": "bcb4f70ec164f12b5feb1d4608d2ee784e52a7af",
+    "resumed": true
+  }
+]

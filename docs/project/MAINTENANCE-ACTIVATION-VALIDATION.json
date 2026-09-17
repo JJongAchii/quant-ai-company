@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-17T00:08:12.831092+00:00",
+  "status": "active_bounded_production_acceptance_passed",
+  "authorization": {
+    "source": "user in this conversation",
+    "quote": "ㄷ그럼 실제 운영 활성화 해볼까나",
+    "newPaidResourcesOrBudgetIncrease": false,
+    "botProductionPolicy": "수정·테스트·PR까지 자동, 운영 반영은 검토 후 진행"
+  },
+  "repository": "JJongAchii/quant-ai-company",
+  "deployedCommit": "74abe276dc7a4165a750222eb192adb7a32a7f36",
+  "qdataCommit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "host": {
+    "service": "existing AWS Lightsail",
+    "region": "ap-northeast-2",
+    "memoryGiB": 2,
+    "macRequiredForOperation": false,
+    "postgresRecreated": false
+  },
+  "githubApp": {
+    "id": 4971681,
+    "installationId": 162334154,
+    "repositories": [
+      "JJongAchii/quant-ai-company"
+    ],
+    "permissions": {
+      "contents": "write",
+      "pull_requests": "write",
+      "actions": "read",
+      "metadata": "read"
+    },
+    "localTemporaryPemRemoved": true,
+    "githubEnforcedMainProtection": false
+  },
+  "runtime": {
+    "workflowId": "company-maintenance-v1",
+    "workflowRunId": "01a0ac98-38de-77d7-89a6-ce727e529933",
+    "configuredModel": "gpt-5.6-sol",
+    "provider": "existing server Codex ChatGPT authentication",
+    "modelApiFallback": false,
+    "pollSeconds": 300,
+    "observeSeconds": 600,
+    "dailyModelCallCap": 6,
+    "dailyCapClock": "database CURRENT_DATE (UTC)",
+    "sharedCompanyDailyCallCap": 100,
+    "humanWorkPriority": true,
+    "automaticMergeOrDeploy": false,
+    "slackNotificationActor": "quant-director, [개선 담당]"
+  },
+  "checks": {
+    "finalReleaseCI": {
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35164196103",
+      "passed": 170,
+      "skipped": 1,
+      "deselected": 1,
+      "lint": "passed"
+    },
+    "firstAutonomousTriage": "completed, insufficient evidence, no repair proposed",
+    "commissioningCase": "168c2f7f-e272-5c3b-9453-4dab63680b81",
+    "operatorSeededCase": true,
+    "newSlackHumanIngressTest": false,
+    "operatorAcceleratedTicks": true,
+    "uniqueCompletedSubscriptionCalls": 3,
+    "candidateMode": "documentation",
+    "candidateChangedFiles": [
+      "docs/maintenance.md"
+    ],
+    "candidateHead": "52b9afad6090fca6f0c2add1edc771847b3c6d68",
+    "candidatePushCI": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35164656792",
+    "draftPR": "https://github.com/JJongAchii/quant-ai-company/pull/3",
+    "prAuthor": "app/achii-quant-company-maintainer",
+    "slackDelivery": "delivered",
+    "s3BackupDownloadAndChecksum": "passed",
+    "restoreIntoSeparateDatabase": "passed, live database not replaced",
+    "maintenanceStopRestartDuringBackup": "passed, container identity retained",
+    "sameBranchPrModelResponsesAndNoticeCountAfterRestart": "passed"
+  },
+  "repairs": [
+    {
+      "issue": "Backup did not include maintenance among writers to pause",
+      "resolution": "Pause/resume maintenance and include validated public maintenance config; exclude private key file",
+      "pr": 1
+    },
+    {
+      "issue": "Valid supplied evidence citation on proposal envelope was rejected",
+      "resolution": "Validate exact supplied non-omitted IDs; keep other decision restrictions",
+      "pr": 2,
+      "responseRecalledToObtainDifferentResult": false,
+      "operatorReconciliation": "evidence/maintenance-citation-reconciliation.json"
+    }
+  ],
+  "capacity": {
+    "scope": "bounded production maintenance commissioning; not a long soak or research workload",
+    "sampleCount": 20,
+    "sampleStart": "2026-09-16T23:58:30.274792+00:00",
+    "sampleEnd": "2026-09-17T00:00:45.708389+00:00",
+    "hostMinimumAvailableMiB": 891.87890625,
+    "maintenancePeakMiB": 70.7421875,
+    "maintenanceLimitMiB": 128,
+    "observedOomKills": 0
+  },
+  "limits": [
+    "First live repair path was a small operator-seeded documentation correction, not a general code-repair or employee-expertise benchmark.",
+    "Prompt replay and complex runtime repairs have CI fixture coverage but were not commissioned live in this activation.",
+    "No long-duration soak, full lost-host reconstruction or financial-strategy workload was run.",
+    "Draft PR #3 remains open for human review; it was not merged or deployed.",
+    "Existing one-server availability and shared subscription capacity limits remain."
+  ],
+  "evidence": {
+    "evidence/maintenance-activation.json": "b8e316868a5f13c9b99b1a91688106e74b6080e700e42d32f2027430f82c52b9",
+    "evidence/maintenance-backup-restore.json": "8582bf26c08559938d944dd2e320103070a97e6ffc8dc72f4f4631573fe3c88b",
+    "evidence/maintenance-capacity.json": "f524c5315811cc4b700ab80e69882149c7050286447cf03a5bb842caf71f4627",
+    "evidence/maintenance-citation-reconciliation.json": "fd845cb1e7adccefb8557c46768ef243cd5ef8cfac3c7e2a4dbc048bbd41cc93",
+    "evidence/maintenance-commissioning-input.json": "2aa0940fd8d41a2627f6b3e0f58138148c2eed74608311552c759b143540e887",
+    "evidence/maintenance-commissioning-ticks.jsonl": "9c7e35153bbfe6e2dac2f8a5070bd52d16fef437df9b48458f0e51c5020fe24c",
+    "evidence/maintenance-first-pr.json": "30a6fb2c87da89237cdbdbe052b7f636ad87fb5e9b1efb98f29321b08440cdf3",
+    "evidence/maintenance-github-app.json": "61945644c509b0a706bfa25b7560a01a3eb1b83099608b3fec54c27ae29acc1f",
+    "evidence/maintenance-replay-after-backup.json": "d205ed5bf4fc5678ccf9384d4dd0afb973c098fcf6a590dc02cdf3feef29ef3a",
+    "evidence/maintenance-runtime-status.json": "682307cc3af1e1189d5d573897638f34954845b6e443c96d063862cd65909c0f",
+    "evidence/maintenance-service-deploy-74abe276dc7a.json": "dd5cb258d486c6d8c8ae84f0811575da9e1feced7f9639dd210083131e54379a",
+    "evidence/maintenance-service-deploy.json": "611e1f29cb424c9407e2c289b895d8cc015b4013e2cab703d9a229fb11c3443e",
+    "evidence/maintenance-service-health.json": "97826f93d23903450de5fd9de8bfe917c07a68111598187c587b19d15d73c458"
+  }
+}

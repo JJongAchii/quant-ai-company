@@ -1,0 +1,57 @@
+{
+  "recorded_at": "2026-09-17T00:03:15.175232+00:00",
+  "release_commit": "74abe276dc7a4165a750222eb192adb7a32a7f36",
+  "backup_archive": "/var/lib/quant-company/backups/company-20260917T000258Z-98399124.tar.gz",
+  "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260917T000258Z-98399124.tar.gz",
+  "archive_sha256": "444e0d3e387aa3397398248318c16933d6d7533a5779d212b658ec67408bc370",
+  "s3_download_sha256_matched": true,
+  "maintenance_config_included": true,
+  "github_private_key_file_included": false,
+  "restored_database": "restore_maintenance_20260917_000313",
+  "restore_cutover_performed": false,
+  "restore_database_removed_after_validation": true,
+  "restored_counts_and_receipts": {
+    "jobs": 3,
+    "completed_calls": 3,
+    "invalid_response_ids": 0,
+    "open_prs": [
+      {
+        "id": "168c2f7f-e272-5c3b-9453-4dab63680b81",
+        "problem_key": "maintenance_status_documentation_stale",
+        "pr": {
+          "url": "https://github.com/JJongAchii/quant-ai-company/pull/3",
+          "state": "open",
+          "number": 3
+        }
+      }
+    ],
+    "notifications": [
+      {
+        "id": "bc9f6593-532f-5571-9379-09c64fc6b035",
+        "status": "delivered",
+        "sent_ts": "1789603333.811519"
+      }
+    ]
+  },
+  "maintenance_container_unchanged": true,
+  "maintenance_running_after": true,
+  "maintenance_backup_events": [
+    {
+      "action": "kill",
+      "time": 1789603379
+    },
+    {
+      "action": "stop",
+      "time": 1789603379
+    },
+    {
+      "action": "die",
+      "time": 1789603379
+    },
+    {
+      "action": "start",
+      "time": 1789603382
+    }
+  ],
+  "restored_files": "/var/lib/quant-company/backups/restored/restore_maintenance_20260917_000313-jr3u818u"
+}

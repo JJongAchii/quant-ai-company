@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-17T02:25:06.427793+00:00",
+  "status": "deployed_real_director_routing_and_durable_budget_wait_verified",
+  "authorization": {
+    "source": "user in this conversation",
+    "quote": "진행해",
+    "scope": "Connect director history, maintenance review/status/result reporting and correct the observed employee-context misdiagnosis",
+    "newPaidResourcesOrBudgetIncrease": false,
+    "newCredentialPermissions": false
+  },
+  "repository": "JJongAchii/quant-ai-company",
+  "deployedCommit": "ae7517c5fbe79db92c1c19396a60711ecac120e1",
+  "qdataCommit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "changes": [
+    "Owner/channel-scoped company_history with project-specific sources and bounded 30-day samples",
+    "Durable human-task-bound maintenance_review and actual maintenance_status; current service facts in director context",
+    "Same-thread, state-idempotent reporting of no findings, candidates, PRs, budget waits and validation blockers",
+    "Saved employee exposure is separate from observer history; impossible replay source/tool/delegation criteria rejected before patch calls",
+    "Prompt changes no longer request Python regression files",
+    "Worker and maintenance consume the same public Slack authorization scope as ingress without Slack token mounts"
+  ],
+  "checks": {
+    "github": {
+      "checked_at": "2026-09-17T02:17:41.378235+00:00",
+      "prs": [
+        {
+          "number": 8,
+          "url": "https://github.com/JJongAchii/quant-ai-company/pull/8",
+          "merged": true,
+          "merged_at": "2026-09-17T01:45:08Z",
+          "head": "480b4c59580ef4e6e16e6298fa91a410d8a24003",
+          "merge_commit": "d1230a6bcc17084f8f03d41987eae4a2e453bdd8"
+        },
+        {
+          "number": 9,
+          "url": "https://github.com/JJongAchii/quant-ai-company/pull/9",
+          "merged": true,
+          "merged_at": "2026-09-17T01:55:24Z",
+          "head": "749732baacee0ac276494c9348e5acdc78dc17ac",
+          "merge_commit": "2842ab33c4f43c25058fdd3073854ce070b37db9"
+        },
+        {
+          "number": 10,
+          "url": "https://github.com/JJongAchii/quant-ai-company/pull/10",
+          "merged": true,
+          "merged_at": "2026-09-17T02:12:50Z",
+          "head": "0852317e664e9fb133db94c81834440529b57311",
+          "merge_commit": "5a9e77f7b09533cc8f266d19861672c19e5517b3"
+        },
+        {
+          "number": 11,
+          "url": "https://github.com/JJongAchii/quant-ai-company/pull/11",
+          "merged": true,
+          "merged_at": "2026-09-17T02:17:03Z",
+          "head": "16c2e29e78882593dc7dba9dece11bd4e84d510a",
+          "merge_commit": "ae7517c5fbe79db92c1c19396a60711ecac120e1"
+        }
+      ],
+      "ci": [
+        {
+          "id": 35171655973,
+          "html_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35171655973",
+          "head_sha": "480b4c59580ef4e6e16e6298fa91a410d8a24003",
+          "status": "completed",
+          "conclusion": "success",
+          "passed": 203,
+          "skipped": 1,
+          "deselected_live": 1,
+          "lint": "passed"
+        },
+        {
+          "id": 35172293096,
+          "html_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35172293096",
+          "head_sha": "749732baacee0ac276494c9348e5acdc78dc17ac",
+          "status": "completed",
+          "conclusion": "success",
+          "passed": 205,
+          "skipped": 1,
+          "deselected_live": 1,
+          "lint": "passed"
+        },
+        {
+          "id": 35173631959,
+          "html_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35173631959",
+          "head_sha": "16c2e29e78882593dc7dba9dece11bd4e84d510a",
+          "status": "completed",
+          "conclusion": "success",
+          "passed": 212,
+          "skipped": 1,
+          "deselected_live": 1,
+          "lint": "passed"
+        }
+      ]
+    },
+    "localSuiteBeforeDeploymentScopeFix": {
+      "passed": 203,
+      "skipped": 1,
+      "liveDeselected": 1
+    },
+    "scopeRegression": "Both real Compose consumer variants failed before the fix and passed after; related subset 28 passed. Scope-fix CI 205 passed, 1 skipped, 1 live deselected and lint passed. Final status/diagnostic CI 212 passed with the same exclusions and lint passed; focused provider suite 53 passed.",
+    "liveDirectorTask": {
+      "id": "4948ea1c-d95b-5ddf-905e-81e7a91d8ee4",
+      "agent": "director",
+      "status": "completed",
+      "error": null
+    },
+    "liveToolNames": [
+      "maintenance_status",
+      "maintenance_review"
+    ],
+    "acceptedReviewId": "82bc171b-b429-5cef-854c-b9df58c0a853",
+    "realCodexRouting": true,
+    "newSlackHumanIngress": false,
+    "operatorReplayedOriginalSlackRequest": true,
+    "originalHumanMessageId": "8fed950e-21ba-440f-a23b-36bac4fdad0d",
+    "sameRecoveryTaskRetriedAfterScopeFix": true,
+    "boundedPostContractChangeRetry": true,
+    "deployedHistoryToolOperatorProbe": {
+      "checked_at": "2026-09-17T02:20:30.995619+00:00",
+      "probe_kind": "operator_invoked_deployed_tool_without_model_or_slack_message",
+      "task_id": "4948ea1c-d95b-5ddf-905e-81e7a91d8ee4",
+      "result": {
+        "as_of": "2026-09-17T02:20:30.986385+00:00",
+        "window_days": 30,
+        "truncated": true,
+        "limit": 12,
+        "interpretation": "Recorded requests and current task outcomes, not a quality score or proof that an employee saw other threads. Query with short keywords to inspect omitted older requests.",
+        "source_id": "company:e8a99f7ed749aa1b0627328d",
+        "record_count": 12
+      },
+      "temporary_project_source_removed_in_same_transaction": true,
+      "probe_inserted_company_messages": false,
+      "model_called": false
+    },
+    "maintenanceBudgetUnchanged": {
+      "dailyCap": 6,
+      "callsToday": 6
+    },
+    "liveReviewState": {
+      "request_id": "82bc171b-b429-5cef-854c-b9df58c0a853",
+      "case_id": "82bc171b-b429-5cef-854c-b9df58c0a853",
+      "state": "triage",
+      "error": "daily_model_budget",
+      "title": null,
+      "problem": null,
+      "hypothesis": null,
+      "evaluation_mode": null,
+      "evidence_keys": [],
+      "reason": null,
+      "pr": null,
+      "created_at": "2026-09-17 02:01:34.400037+00:00"
+    },
+    "budgetResetsAt": "2026-09-18 00:00:00+00:00",
+    "sameThreadWaitNoticeDelivered": true,
+    "directorFinalReplyDelivered": {
+      "messageId": "f66dfcbc-ab0e-45fe-9fe1-8f81a0ce9f50",
+      "sentTs": "1789611765.992229"
+    },
+    "scopeMatchesIngress": true,
+    "temporal": {
+      "status": "RUNNING",
+      "run_id": "01a0ac98-38de-77d7-89a6-ce727e529933"
+    },
+    "configuredHealthChecksPassed": true,
+    "allSevenContainersRunning": true
+  },
+  "limits": [
+    "Live acceptance reprocessed the already-authorized original Slack request with a marked operator replay; it was not a new human Slack event.",
+    "Actual director subscription tool routing, durable review acceptance and delivered budget-wait notice were verified. The new diagnostic model analysis is pending the existing daily limit reset, not claimed complete.",
+    "Completion/no-finding, failure, duplicate, revision, owner/channel boundaries and linked PR approval were tested with real PostgreSQL and simulated model/GitHub/Slack boundaries.",
+    "History remains bounded to authorized stored data over 30 days; diagnostics propose at most one evidenced candidate per review. There is no claim of exhaustive historical review or universally correct causal diagnosis.",
+    "Two post-acceptance director responses were rejected as invalid_output. Their exact causes are unclassified because raw rejected output was not retained. PR #11 adds explicit status rules and safe cause labels; successful recovery does not prove the old cause.",
+    "Concurrent operator probes caused one maintenance-container cgroup OOM restart. The service recovered; probes now run outside that daemon or sequentially. This was not a host-capacity measurement or a claim that no OOM occurred.",
+    "PR creation remains automatic within scope; applying a candidate still requires human approval. No trading, backtest, additional API, new server or model change occurred."
+  ],
+  "evidence": {
+    "evidence/maintenance-review-github.json": "395e2331b6b7524dbf91e6dcb371bbb7b505a9f7ca4b86ced5c5ff692c54da51",
+    "evidence/maintenance-review-history-probe.json": "a04d9f57aea848f665eabede328e23f33c55fa6e00df1c674d1a719aa169b184",
+    "evidence/maintenance-review-live-before-contract-fix.json": "84f4754324ae6c4475346a0d14be565812dd3d18a332b153cbc7d6a9df0de1a7",
+    "evidence/maintenance-review-live-before-output-retry.json": "aa7757c6463620ff0277ae9822e3edab33ff54fa7fb536317ed5d1040fa9b895",
+    "evidence/maintenance-review-live-before-scope-fix.json": "0dfc3646d34f0f389149feeffc5cca0350570b98abc370b6fa00c1b39c796ee1",
+    "evidence/maintenance-review-live-retry-contract.json": "7ccdd897b77587944cbef2cca204c3c36b8f88723cacb2abc32b1223bdbbd5ec",
+    "evidence/maintenance-review-live-retry-output.json": "bf0ea17b91adbb13eab10a45efd602a22afc5563da6e4d6098e07ba5ad2204d2",
+    "evidence/maintenance-review-live-retry.json": "3540953cf146d6ee38b01c588817cd998f258d439b9beae53d32cc09703cba6f",
+    "evidence/maintenance-review-live-start.json": "49d7f2534f2e55862cdb0fa302e420af2740a2988905b068df5283e6d221cd09",
+    "evidence/maintenance-review-live-status.json": "acd061437a914bd237588cb81a7c090cee1ccc8a181b14d29ee17024d3c8debd",
+    "evidence/maintenance-review-live-tick.json": "86719b4616c0259f2aa8d6e4a17d0581a7919f4c212aff8fdb5a7f9165d3c774",
+    "evidence/maintenance-review-probe-incident.json": "c526a66a83634dd8ee48185f169f4d55e3200fd2cfb003efd611745626999bff",
+    "evidence/maintenance-review-runtime-before-contract-fix.json": "5980ebf4833ecea6bc07d2a1cde23792b2cd12abd1aa2ecf789c26d3fa2a5d1a",
+    "evidence/maintenance-review-runtime.json": "173cd2c23e97e2a29ed4529a916e8acccb9878b1b80616624b5ab343e8712332",
+    "evidence/maintenance-service-deploy-2842ab33c4f4.json": "b026983848b8c50dc35aad6a919401a77a3c586bf4d564d23cbfdb6316982705",
+    "evidence/maintenance-service-deploy-3a1af96aaa12.json": "e24695e4b852c982ac35f7771162cfb63e7bae13616c4266bb1489ffa677d538",
+    "evidence/maintenance-service-deploy-74abe276dc7a.json": "dd5cb258d486c6d8c8ae84f0811575da9e1feced7f9639dd210083131e54379a",
+    "evidence/maintenance-service-deploy-92d66f56d50e.json": "50d37c6690eaeb2923590d9de21559b8b0ae61b690576afd2ca957b70126e70e",
+    "evidence/maintenance-service-deploy-ae7517c5fbe7.json": "d2ce6303e810120fa3841c1410dedc06be671c10f436cd9c81039b28329f77e3",
+    "evidence/maintenance-service-deploy-d1230a6bcc17.json": "6ff2b290f8f0f3630412bf1db995bfee4b40b0860da9a6f9a1250c31f2032cb8"
+  }
+}

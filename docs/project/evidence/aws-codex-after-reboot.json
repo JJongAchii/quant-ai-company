@@ -1,0 +1,8 @@
+{
+  "receiptSha256": "2cd4471939222ffdc28018201411b46e6bcb75f01918741e20213b2e0e5240ae",
+  "receiptUnchangedByReplay": true,
+  "originalCompletedAt": 1789534996.6501026,
+  "persistedReceipts": 9,
+  "responseMatchesBeforeReboot": true,
+  "status": "passed"
+}

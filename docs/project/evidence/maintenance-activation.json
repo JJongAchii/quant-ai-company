@@ -1,0 +1,40 @@
+{
+  "recorded_at": "2026-09-16T23:40:42.745716+00:00",
+  "config": {
+    "repository": "JJongAchii/quant-ai-company",
+    "base": "main",
+    "app_id": 4971681,
+    "installation_id": 162334154,
+    "private_key_file": "/run/secrets/maintenance_github_key",
+    "allowed_owners": [
+      "U0C250E23NW"
+    ],
+    "max_daily_calls": 6,
+    "poll_seconds": 300,
+    "observe_seconds": 600,
+    "enabled": true
+  },
+  "broker_probe": {
+    "repository": "JJongAchii/quant-ai-company",
+    "private": true,
+    "base": "da3b7e1cd9ad44cf0338509ce361cb489506b5b6",
+    "readable_editable_paths": 28
+  },
+  "container": {
+    "id": "1bca2ba56d500b72a87a64b6c1af53958e5c148a37298509f8e1ebff3c4d4f85",
+    "image": "sha256:60fd24fe5ef8f62f15049890941bfc4e2ea8e902bf122088eb1ad92f7c3f5301",
+    "running": true,
+    "oom_killed": false,
+    "memory_limit_bytes": 134217728,
+    "restart_policy": {
+      "Name": "unless-stopped",
+      "MaximumRetryCount": 0
+    },
+    "secret_mount_names": [
+      "database_password",
+      "maintenance_github_key",
+      "model_runtime_token",
+      "temporal_api_key"
+    ]
+  }
+}

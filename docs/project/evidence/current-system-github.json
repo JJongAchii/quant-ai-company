@@ -1,0 +1,84 @@
+{
+  "headRefOid": "a8f8bdea767c0a6c1a3ddfcb019f456fde136725",
+  "mergeCommit": {
+    "oid": "a89aa4ba28c67cf58ca9b16a7621e260566dbfa1"
+  },
+  "mergedAt": "2026-09-17T03:45:14Z",
+  "state": "MERGED",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-17T03:43:59Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35179164141/job/105067392596",
+      "name": "service",
+      "startedAt": "2026-09-17T03:42:30Z",
+      "status": "COMPLETED",
+      "workflowName": "Quant Company CI"
+    }
+  ],
+  "url": "https://github.com/JJongAchii/quant-ai-company/pull/12",
+  "followup_input_budget_fix": {
+    "headRefOid": "f6b5c9ccadaea9947d5f76dd03f2ad02a3610a43",
+    "mergeCommit": {
+      "oid": "ababd0827948854dcba109f0533f87df6899ceca"
+    },
+    "mergedAt": "2026-09-17T04:00:49Z",
+    "state": "MERGED",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-09-17T04:00:00Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35180166298/job/105070385244",
+        "name": "service",
+        "startedAt": "2026-09-17T03:58:35Z",
+        "status": "COMPLETED",
+        "workflowName": "Quant Company CI"
+      }
+    ],
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/13"
+  },
+  "followup_current_jobs_and_citations": {
+    "headRefOid": "c29e6fb404ff26798cab7f05c9147eb087d88ad0",
+    "mergeCommit": {
+      "oid": "bcb4f70ec164f12b5feb1d4608d2ee784e52a7af"
+    },
+    "mergedAt": "2026-09-17T04:16:51Z",
+    "state": "MERGED",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-09-17T04:15:21Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35181143169/job/105073337229",
+        "name": "service",
+        "startedAt": "2026-09-17T04:14:00Z",
+        "status": "COMPLETED",
+        "workflowName": "Quant Company CI"
+      }
+    ],
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/14"
+  },
+  "completionWaitFix": {
+    "headRefOid": "5c64d090d34ab74e86c3f038ae1b20ac5df7b4c6",
+    "mergeCommit": {
+      "oid": "85f8620493103b5d9e188af5a775598dcc31d311"
+    },
+    "mergedAt": "2026-09-17T04:41:16Z",
+    "state": "MERGED",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-09-17T04:40:31Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35182706362/job/105078139066",
+        "name": "service",
+        "startedAt": "2026-09-17T04:39:01Z",
+        "status": "COMPLETED",
+        "workflowName": "Quant Company CI"
+      }
+    ],
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/15"
+  }
+}

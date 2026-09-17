@@ -1,0 +1,11 @@
+{
+  "state": "registered",
+  "operator_seeded": true,
+  "slack_human_ingress": false,
+  "channel": "C0C1Q8D0B6K",
+  "thread_ts": "1789602298.217159",
+  "project_id": "8407d46c-2663-53c1-8310-a75c2743ac7b",
+  "task_id": "bf248c55-c83a-5846-a19a-520cc1e3d2b8",
+  "duplicate": false,
+  "request_text": "[운영자 등록 · 개선 BOT 인수 테스트]\n2026-09-17 운영 활성화 후 실제 문서 불일치를 확인했습니다.\n서버 운영 커밋은 da3b7e1cd9ad44cf0338509ce361cb489506b5b6이며, 전용 GitHub App은 JJongAchii/quant-ai-company 저장소 하나에 설치됐습니다. 서버 maintenance 설정 enabled=true, Temporal company-maintenance-v1 RUNNING, 기존 구독을 통한 첫 관찰 분류 1회 완료를 운영자가 확인했습니다.\n그러나 저장소 docs/maintenance.md의 '현재 상태'에는 GitHub App 설치와 운영 서버 profile 활성화를 아직 하지 않았다고 적혀 있습니다. 활성화된 현재 상태와 불일치하는 운영 문서입니다. 이 문서의 현재 상태 안내만 사실에 맞게 고치는 작은 수정안을 검토용 PR로 남기는 경로를 점검합니다. 실제 수정 PR의 전체 인수는 지금 진행 중이며 완료했다고 미리 쓰면 안 됩니다. 다른 정책·권한·역할·모델·예산·배포 설정은 이 인수 요청의 대상이 아닙니다.\n이 스레드는 사용자의 운영 활성화 승인에 따라 운영자가 만든 인수 테스트이며 Slack에서 사람이 직접 입력한 연구 요청이 아닙니다. 코드의 기능 결함이나 금융 성과를 주장하는 시험도 아닙니다. PR 생성 뒤 운영 반영은 검토 후 진행합니다."
+}

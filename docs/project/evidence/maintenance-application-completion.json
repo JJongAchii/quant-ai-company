@@ -1,0 +1,34 @@
+{
+  "checked_at": "2026-09-17T01:08:28.996500+00:00",
+  "same_original_approval": true,
+  "same_original_candidate": true,
+  "tick": {
+    "state": "complete",
+    "application_id": "66955a54-6d12-5d05-a2ac-5bdd250e7a4e"
+  },
+  "application": {
+    "id": "66955a54-6d12-5d05-a2ac-5bdd250e7a4e",
+    "job_id": "168c2f7f-e272-5c3b-9453-4dab63680b81",
+    "event_key": "slack:T0C1YRDRPNF:C0C1Q8D0B6K:1789606489.679629:director",
+    "approval_text": "반영해",
+    "head": "52b9afad6090fca6f0c2add1edc771847b3c6d68",
+    "state": "complete",
+    "receipt": {
+      "ci": {
+        "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35164656792",
+        "state": "passed",
+        "run_id": 35164656792,
+        "attempt": 1
+      },
+      "pr_url": "https://github.com/JJongAchii/quant-ai-company/pull/3",
+      "pr_number": 3,
+      "merge_commit": "b0ce21ccbc2221c9bf5550793137f83ce94d2f49",
+      "validated_base": "92d66f56d50e4a6c56a756e442f6a4575c5dbe58",
+      "requires_deployment": false
+    },
+    "error": null,
+    "created_at": "2026-09-17 00:55:50.506278+00:00"
+  },
+  "maintenance_model_calls_before": 7,
+  "maintenance_model_calls_after": 7
+}

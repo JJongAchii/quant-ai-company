@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-09-17T02:09:18.013721+00:00",
+  "incident": "operator_concurrent_verification_probes_exceeded_maintenance_container_limit",
+  "evidence": [
+    "Sep 17 02:04:44 ip-172-26-2-166 kernel: oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=docker-7a96a70a756106d8ac5a50e9db5978f75f633e91148778f69836340794c18e52.scope,mems_allowed=0,oom_memcg=/system.slice/docker-7a96a70a756106d8ac5a50e9db5978f75f633e91148778f69836340794c18e52.scope,task_memcg=/system.slice/docker-7a96a70a756106d8ac5a50e9db5978f75f633e91148778f69836340794c18e52.scope,task=quant-company,pid=522935,uid=10001",
+    "Sep 17 02:04:44 ip-172-26-2-166 kernel: Memory cgroup out of memory: Killed process 522935 (quant-company) total-vm:621264kB, anon-rss:61112kB, file-rss:34980kB, shmem-rss:0kB, UID:10001 pgtables:388kB oom_score_adj:0",
+    "Sep 17 02:04:44 ip-172-26-2-166 kernel: oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=docker-7a96a70a756106d8ac5a50e9db5978f75f633e91148778f69836340794c18e52.scope,mems_allowed=0,oom_memcg=/system.slice/docker-7a96a70a756106d8ac5a50e9db5978f75f633e91148778f69836340794c18e52.scope,task_memcg=/system.slice/docker-7a96a70a756106d8ac5a50e9db5978f75f633e91148778f69836340794c18e52.scope,task=python,pid=525635,uid=10001",
+    "Sep 17 02:04:44 ip-172-26-2-166 kernel: Memory cgroup out of memory: Killed process 525635 (python) total-vm:111860kB, anon-rss:33776kB, file-rss:21524kB, shmem-rss:0kB, UID:10001 pgtables:256kB oom_score_adj:0"
+  ],
+  "memory_limit_bytes": 134217728,
+  "running": true,
+  "restarts": 1,
+  "host_memory": "               total        used        free      shared  buff/cache   available\nMem:            1907         941         200          42        1013         966\nSwap:              0           0           0\n",
+  "corrective_action": "Live status probe moved to api; Temporal probe to worker; environment scope probe uses standard library only; GitHub archive and bounded maintenance tick use sequential temporary compose run containers. No service memory limit, VM size or budget change."
+}

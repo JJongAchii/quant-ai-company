@@ -1,0 +1,72 @@
+{
+  "checked_at": "2026-09-17T02:17:41.378235+00:00",
+  "prs": [
+    {
+      "number": 8,
+      "url": "https://github.com/JJongAchii/quant-ai-company/pull/8",
+      "merged": true,
+      "merged_at": "2026-09-17T01:45:08Z",
+      "head": "480b4c59580ef4e6e16e6298fa91a410d8a24003",
+      "merge_commit": "d1230a6bcc17084f8f03d41987eae4a2e453bdd8"
+    },
+    {
+      "number": 9,
+      "url": "https://github.com/JJongAchii/quant-ai-company/pull/9",
+      "merged": true,
+      "merged_at": "2026-09-17T01:55:24Z",
+      "head": "749732baacee0ac276494c9348e5acdc78dc17ac",
+      "merge_commit": "2842ab33c4f43c25058fdd3073854ce070b37db9"
+    },
+    {
+      "number": 10,
+      "url": "https://github.com/JJongAchii/quant-ai-company/pull/10",
+      "merged": true,
+      "merged_at": "2026-09-17T02:12:50Z",
+      "head": "0852317e664e9fb133db94c81834440529b57311",
+      "merge_commit": "5a9e77f7b09533cc8f266d19861672c19e5517b3"
+    },
+    {
+      "number": 11,
+      "url": "https://github.com/JJongAchii/quant-ai-company/pull/11",
+      "merged": true,
+      "merged_at": "2026-09-17T02:17:03Z",
+      "head": "16c2e29e78882593dc7dba9dece11bd4e84d510a",
+      "merge_commit": "ae7517c5fbe79db92c1c19396a60711ecac120e1"
+    }
+  ],
+  "ci": [
+    {
+      "id": 35171655973,
+      "html_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35171655973",
+      "head_sha": "480b4c59580ef4e6e16e6298fa91a410d8a24003",
+      "status": "completed",
+      "conclusion": "success",
+      "passed": 203,
+      "skipped": 1,
+      "deselected_live": 1,
+      "lint": "passed"
+    },
+    {
+      "id": 35172293096,
+      "html_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35172293096",
+      "head_sha": "749732baacee0ac276494c9348e5acdc78dc17ac",
+      "status": "completed",
+      "conclusion": "success",
+      "passed": 205,
+      "skipped": 1,
+      "deselected_live": 1,
+      "lint": "passed"
+    },
+    {
+      "id": 35173631959,
+      "html_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35173631959",
+      "head_sha": "16c2e29e78882593dc7dba9dece11bd4e84d510a",
+      "status": "completed",
+      "conclusion": "success",
+      "passed": 212,
+      "skipped": 1,
+      "deselected_live": 1,
+      "lint": "passed"
+    }
+  ]
+}

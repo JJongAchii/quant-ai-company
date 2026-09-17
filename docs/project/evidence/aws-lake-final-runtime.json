@@ -1,0 +1,104 @@
+{
+  "recorded_at": "2026-09-16T06:54:53.904271+00:00",
+  "containers": {
+    "postgres": {
+      "running": true,
+      "oom_killed": false,
+      "memory_limit": 268435456,
+      "metrics": {
+        "memory.current": "65986560",
+        "memory.peak": "135176192",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.max": "268435456"
+      }
+    },
+    "api": {
+      "running": true,
+      "oom_killed": false,
+      "memory_limit": 134217728,
+      "metrics": {
+        "memory.current": "63315968",
+        "memory.peak": "107331584",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.max": "134217728"
+      }
+    },
+    "worker": {
+      "running": true,
+      "oom_killed": false,
+      "memory_limit": 402653184,
+      "metrics": {
+        "memory.current": "212877312",
+        "memory.peak": "313782272",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.max": "402653184"
+      }
+    },
+    "dispatch": {
+      "running": true,
+      "oom_killed": false,
+      "memory_limit": 201326592,
+      "metrics": {
+        "memory.current": "65724416",
+        "memory.peak": "65994752",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.max": "201326592"
+      }
+    },
+    "slack-socket": {
+      "running": true,
+      "oom_killed": false,
+      "memory_limit": 201326592,
+      "metrics": {
+        "memory.current": "50135040",
+        "memory.peak": "52817920",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.max": "201326592"
+      }
+    },
+    "codex-runtime": {
+      "running": true,
+      "oom_killed": false,
+      "memory_limit": 536870912,
+      "metrics": {
+        "memory.current": "184516608",
+        "memory.peak": "197566464",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "memory.max": "536870912"
+      }
+    }
+  },
+  "host": {
+    "MemTotal": "1953552 kB",
+    "MemAvailable": "1054596 kB",
+    "SwapTotal": "0 kB",
+    "SwapFree": "0 kB"
+  },
+  "runtime": {
+    "current_release": "/opt/quant-company/releases/05cacb7bbf8bf84f46d3b0d7c8ef30736c68eb9f",
+    "config_sha256": "cf2c90d14505b2543fea8b8b8c317876cfa593dba9e2797df3ae82c305456803",
+    "roles_sha256": "b34a1e51a04395a178959d04e432ffc7225b25a686928d6fcce3b9bd1dd921ad",
+    "active_roles": [
+      {
+        "id": "director",
+        "version": "2",
+        "model": "gpt-6-astra"
+      },
+      {
+        "id": "financial_strategist",
+        "version": "2",
+        "model": "gpt-6-astra"
+      },
+      {
+        "id": "researcher_kr",
+        "version": "2",
+        "model": "gpt-5.6-sol"
+      },
+      {
+        "id": "data",
+        "version": "4",
+        "model": "gpt-5.6-terra"
+      }
+    ]
+  }
+}
