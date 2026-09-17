@@ -28,6 +28,8 @@ sudo systemctl enable --now quant-company-release.timer
 
 배포 영수증은 회사 DB와 `/var/lib/quant-company/releases/<application-id>.json`에 남는다.
 같은 디렉터리의 이전 env/roles 파일은 root 전용이며 Git·Slack에 올리지 않는다.
+활성 설정을 교체하거나 복구할 때 파일 소유자와 읽기 권한을 보존한다. `roles.json`은
+컨테이너 UID 10001이 읽을 수 있어야 하며, 별도로 저장하는 복구 사본과 영수증은 `0600`이다.
 실패 시 `journalctl -u quant-company-release.service`와 해당 application 오류 코드를 확인한다.
 불확정 병합을 자동으로 다시 시도하지 않는다. 이전 서비스 복구에 실패하면 host journal을
 보존하고 운영자가 복구한다. 이미 병합된 GitHub 커밋을 서버 rollback이 되돌리지는 않는다.

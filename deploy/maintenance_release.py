@@ -35,9 +35,14 @@ def protocol(action, identity=None, data=None):
 
 
 def atomic(path, data):
+    original = path.stat() if path.exists() else None
     temp = path.with_name(path.name + '.release-tmp')
     temp.write_bytes(data)
-    temp.chmod(0o600)
+    # Existing bind-mounted configuration must remain readable by UID 10001.
+    # New journals and saved configuration copies remain root-private.
+    temp.chmod((original.st_mode & 0o777) if original else 0o600)
+    if original:
+        os.chown(temp, original.st_uid, original.st_gid)
     os.replace(temp, path)
 
 

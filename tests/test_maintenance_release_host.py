@@ -72,8 +72,10 @@ def fixture_host(tmp_path, monkeypatch, *, fail_health=False):
     files['src/quant_company/roles.json'] = json.dumps(roles)
     deployed = [{**roles[0], 'model': 'operator-model', 'mission': 'old'}]
     (state/'config/roles.json').write_text(json.dumps(deployed))
+    (state/'config/roles.json').chmod(0o444)  # Root-owned host file is read by UID 10001 containers.
     oldenv = b'RELEASE_COMMIT='+b'a'*40+b'\nCUSTOM_VALUE=keep\n'
     (state/'config/runtime.env').write_bytes(oldenv)
+    (state/'config/runtime.env').chmod(0o600)
     current = root/'current'
     current.symlink_to(previous)
     monkeypatch.setattr(release, 'STATE', state)
@@ -114,6 +116,9 @@ def test_real_files_cutover_or_rollback_preserves_overrides_and_db(tmp_path, mon
     assert all('postgres' not in args for _, args in commands)
     roles = json.loads((state/'config/roles.json').read_text())
     assert roles[0]['model'] == 'operator-model'
+    assert (state/'config/roles.json').stat().st_mode & 0o777 == 0o444
+    assert (state/'config/runtime.env').stat().st_mode & 0o777 == 0o600
+    assert (state/'releases'/(item['id']+'.roles')).stat().st_mode & 0o777 == 0o600
     if failed:
         assert current.resolve() == previous and (state/'config/runtime.env').read_bytes() == oldenv
         assert roles[0]['mission'] == 'old'
@@ -137,6 +142,7 @@ def test_interrupted_cutover_recovers_previous_release(tmp_path, monkeypatch):
     release.execute({'id': identity, 'commit': 'c'*40})
     assert current.resolve() == previous and (state/'config/runtime.env').read_bytes() == oldenv
     assert reports[-1]['state'] == 'rolled_back'
+    assert (state/'config/roles.json').stat().st_mode & 0o777 == 0o444
     assert not any('build' in args for _, args in commands)
 
 
