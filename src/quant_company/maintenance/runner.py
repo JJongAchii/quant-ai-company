@@ -116,6 +116,18 @@ class Maintainer:
         result = schema.model_validate_json(decision.artifacts[0].content)
         if schema is Triage and result.finding and not set(result.finding.evidence_keys) <= known:
             raise ValueError("finding_cites_unavailable_prompt_evidence")
+        if schema is Triage and result.finding:
+            # One artifact transports one finding. Carry over current references the model
+            # explicitly supplied there; never invent a citation or change the saved response.
+            current = set(payload.get("evidence_references", []))
+            added = sorted((set(decision.artifacts[0].source_ids) & current) - set(result.finding.evidence_keys))
+            if added:
+                finding = {**result.finding.model_dump(), "evidence_keys": result.finding.evidence_keys + added}
+                result = schema.model_validate({**result.model_dump(), "finding": finding})
+                job["payload"]["citation_normalization"] = {
+                    "source": "sole_artifact.source_ids", "added": added,
+                    "original_response_digest": digest(response.model_dump(mode="json")),
+                }
         return result
 
     async def step(self, job):
@@ -142,9 +154,14 @@ class Maintainer:
                 "current_implementation": payload["diagnosis"],
                 "evidence_references": [payload["diagnosis"]["key"]] + [r["key"] for r in payload["diagnosis"]["source_files"]],
                 "requested_diagnosis": payload.get("instruction"),
+                "active_diagnosis": {"job_id": job_id, "revision": payload.get("diagnostic_revision", 0),
+                                     "commit": payload["snapshot"]["commit"],
+                                     "state": "this_model_call_is_the_resumed_triage"},
                 "instructions": "Read current_implementation FIRST. Cite at least one exact system: or code: key "
                 "as well as historical failure evidence. Do not re-propose existing functionality. "
                 "Distinguish implemented, deployed, enabled and verified. Honor invalidated/resolved assessments. "
+                "Use system.maintenance_jobs for CURRENT state, not historical status tool messages. "
+                "A scheduled wait is not proof that automatic resumption is absent. "
                 "Partial/omitted files and stale/unknown data cannot establish a missing feature. "
                 "Identify at most one evidenced improvement to employee behavior, collaboration, "
                 "organization or runtime. Counts and repeated delegations are diagnostic signals, not proof of defects. "
@@ -158,7 +175,8 @@ class Maintainer:
                 "evaluation, use design_only with paths=[]: a reviewed design PR, never a claimed completed repair. "
                 "Return finding=null for normal research, one-thread requirements or insufficient evidence. "
                 "Use a stable English problem_key for the root cause so repeated observations join the same case. "
-                "Copy evidence_keys exactly from observations/history. Repair paths must be existing editable paths. "
+                "Copy evidence_keys exactly from observations/history AND current_implementation.key or source_files.key. "
+                "Include the current reference in Finding.evidence_keys itself. Repair paths must be existing editable paths. "
                 "The maintainer and its policies are protected; proposals about them must be design_only.",
             }, Triage)
             if result.finding and not set(result.finding.paths) <= set(payload["snapshot"]["paths"]):

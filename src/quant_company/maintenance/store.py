@@ -219,7 +219,7 @@ class Store:
                            "replay_inputs": inputs, "replay_inputs_digest": digest(inputs),
                            "evaluation_plan_digest": digest(finding.evaluation.model_dump())}
                 payload.update(diagnosis=diagnostic, diagnostic_revision=context.get("diagnostic_revision", 0),
-                               predecessor=predecessor)
+                               predecessor=predecessor, citation_normalization=context.get("citation_normalization"))
                 payload.update({key: context[key] for key in
                                 ("request_project_id", "request_task_id", "request_revision") if key in context})
                 existing = conn.execute("SELECT payload->'owners' AS owners FROM maintenance_jobs WHERE problem_key=%s",

@@ -20,7 +20,7 @@ from quant_company.owner_controls import effective_limits, parse_daily_limit_com
 from quant_company.system_state import assess, current_system, readable, repository_read
 
 from .conftest import queued_turns
-from .test_maintenance import SOURCE, config, make_maintainer
+from .test_maintenance import SOURCE, ModelFixture, config, make_maintainer
 from .test_slack import event, signed
 
 
@@ -40,6 +40,46 @@ def test_history_and_current_code_share_the_real_provider_input_budget_without_m
     assert material['observations'] == payload['observations']
     assert material['current_implementation']['system'] == payload['current_implementation']['system']
     assert any(r.get('excerpted') for r in material['current_implementation']['source_files'])
+
+
+@pytest.mark.integration
+async def test_explicit_current_citation_in_single_artifact_is_carried_into_finding_without_rewriting_response(company):
+    class EnvelopeCitation(ModelFixture):
+        async def run(self, request):
+            response = await super().run(request)
+            artifact = response.decision.artifacts[0]
+            value = json.loads(artifact.content)
+            current = value['finding']['evidence_keys'].pop()
+            artifact.content = json.dumps(value)
+            artifact.source_ids = [current]
+            return response
+    runner = make_maintainer(company)
+    runner.provider = EnvelopeCitation()
+    assert (await runner.tick())['state'] == 'advanced'
+    with company.db.transaction() as conn:
+        case = conn.execute("SELECT payload FROM maintenance_jobs WHERE kind='repair'").fetchone()['payload']
+        saved = conn.execute('SELECT response FROM maintenance_calls').fetchone()['response']
+    current = saved['decision']['artifacts'][0]['source_ids'][0]
+    assert current in case['finding']['evidence_keys']
+    assert case['citation_normalization']['added'] == [current]
+    assert case['citation_normalization']['original_response_digest'] == digest(saved)
+    assert current not in json.loads(saved['decision']['artifacts'][0]['content'])['finding']['evidence_keys']
+
+
+@pytest.mark.integration
+async def test_current_job_state_supersedes_old_status_messages_in_shared_evidence(company):
+    runner = make_maintainer(company)
+    await runner.tick()
+    with company.db.transaction() as conn:
+        case = conn.execute("SELECT id FROM maintenance_jobs WHERE kind='repair'").fetchone()
+        conn.execute("UPDATE maintenance_jobs SET error='daily_model_budget' WHERE id=%s", (case['id'],))
+        before = current_system(conn, company, ['UHUMAN'])['maintenance_jobs']
+        assert any(r['id'] == str(case['id']) and r['error'] == 'daily_model_budget' for r in before['records'])
+        conn.execute("UPDATE maintenance_jobs SET error=NULL WHERE id=%s", (case['id'],))
+        after = current_system(conn, company, ['UHUMAN'])['maintenance_jobs']
+        assert any(r['id'] == str(case['id']) and r['error'] is None for r in after['records'])
+        assert 'Historical tool messages are not current state' in after['scope']
+        assert current_system(conn, company, ['UOTHER'])['maintenance_jobs']['records'] == []
 
 
 @pytest.mark.parametrize("text", ['"전체 한도 해제"', '> 전체 한도 해제', '전체 한도 해제?',
