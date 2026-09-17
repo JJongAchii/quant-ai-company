@@ -122,9 +122,11 @@ def apply(conn, company, project, task, control, *, routed=False):
 
     action = control.action
     before = project['revision']
+    notify_owner = False
     if action == 'status':
         text = status_text(conn, project)
     elif action == 'clarify':
+        notify_owner = True
         if not control.question.strip():
             raise ValueError('clarification_requires_question')
         conn.execute("UPDATE projects SET status='needs_clarification',clarification=%s WHERE id=%s",
@@ -137,6 +139,7 @@ def apply(conn, company, project, task, control, *, routed=False):
                        'revision': before, 'previous_work_preserved': True}, project['id'])
         return {'action': action, 'revision': before, 'state': 'queued'}
     elif action == 'resume' and not project['instruction'].strip():
+        notify_owner = True
         text = '이 스레드에는 재개할 지시가 없습니다. 진행할 업무를 알려주세요.'
     elif action == 'resume' and project['status'] == 'active':
         text = '이 스레드는 중단 상태가 아닙니다. 현재 지시를 유지하며 업무를 중복 생성하지 않았습니다.'
@@ -157,6 +160,7 @@ def apply(conn, company, project, task, control, *, routed=False):
             count = conn.execute('SELECT count(*) AS n FROM tasks WHERE project_id=%s AND turn_count>0',
                                  (project['id'],)).fetchone()['n']
             if count >= company.settings.company_max_project_tasks:
+                notify_owner = True
                 conn.execute("UPDATE projects SET status='paused' WHERE id=%s", (project['id'],))
                 text = '지시는 저장했지만 이 스레드의 업무 수 한도에 도달했습니다. 새 스레드에서 요청하면 이어갈 수 있습니다.'
             else:
@@ -166,7 +170,8 @@ def apply(conn, company, project, task, control, *, routed=False):
                         'new': '이 스레드의 새 업무로 접수했습니다.',
                         'resume': '저장된 지시와 이전 기록을 바탕으로 업무를 재개했습니다.'}[action]
     conn.execute("UPDATE tasks SET kind='control',status='completed',result=%s,error=NULL WHERE id=%s", (text, task['id']))
-    company._message(conn, project, task['id'], 'director', 'status' if action == 'status' else 'control', text)
+    company._message(conn, project, task['id'], 'director', 'status' if action == 'status' else 'control', text,
+                     notify_owner=notify_owner)
     receipt = {'action': action, 'before_revision': before, 'revision': project['revision'], 'state': 'applied'}
     company._event(conn, 'owner_intent_applied', receipt | {'task_id': str(task['id'])}, project['id'])
     return receipt

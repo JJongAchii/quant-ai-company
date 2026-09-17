@@ -113,6 +113,9 @@ def test_approved_merge_routes_docs_or_runtime_and_replay_is_noop(company, deplo
     runner = Applications(company, config(), github)
     assert runner.advance()['state'] == state
     assert runner.advance() is None and github.merges == 1
+    with company.db.transaction() as conn:
+        notices = conn.execute('SELECT text FROM outbox').fetchall()
+    assert sum('<@UHUMAN>' in row['text'] for row in notices) == int(state == 'complete')
 
 
 @pytest.mark.integration
