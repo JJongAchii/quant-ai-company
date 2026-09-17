@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-17T05:53:56.455928+00:00",
+  "status": "passed",
+  "scope": "Approved conversation control, official-document reading and labelled operator collaboration acceptance; not completion of the entire company roadmap",
+  "authorization": {
+    "implementationQuote": "그럼 다음 진행해줘",
+    "repositoryCorrectionQuote": "근데 quant-ai-company 레포를 추가해서 거기서 하고 있음에도  quant-workspace 레포에서는 누가 작업하고 있는거야? 잘못 되고 있는거 같은데",
+    "messageIdentifier": "not exposed by this interface; no identifier fabricated"
+  },
+  "repository": {
+    "name": "JJongAchii/quant-ai-company",
+    "companyRecordsMigrated": 130,
+    "companyRecordsHashesVerified": true,
+    "metaRepositoryUnchanged": true,
+    "metaRepositoryHead": "24d5f418b4a380d448cd7b3c955e9936f6b7b017",
+    "legacyContract": "Read-only provenance in original qws; no additional company checkpoint written there"
+  },
+  "prs": [
+    {
+      "number": 17,
+      "url": "https://github.com/JJongAchii/quant-ai-company/pull/17",
+      "state": "merged"
+    },
+    {
+      "number": 18,
+      "url": "https://github.com/JJongAchii/quant-ai-company/pull/18",
+      "state": "merged"
+    },
+    {
+      "number": 19,
+      "url": "https://github.com/JJongAchii/quant-ai-company/pull/19",
+      "state": "merged"
+    }
+  ],
+  "deployedCommit": "bebe87d2db24c3a8526bf879bbf0d078986a40c6",
+  "ci": {
+    "passed": 273,
+    "skipped": 1,
+    "liveDeselected": 1,
+    "run": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35186414187",
+    "scope": "Real PostgreSQL/Temporal; HTTP and model fixtures"
+  },
+  "officialHttpQualification": {
+    "environment": "Existing Lightsail host, isolated image without secrets or DB",
+    "attempted": 7,
+    "succeeded": 7,
+    "scope": "Real official HTML; no general web/news search"
+  },
+  "liveAcceptance": {
+    "newSignedSlackIngress": false,
+    "inputOrigin": "Operator-supplied labelled acceptance scenario under the existing build approval",
+    "projectId": "32aa8d56-18fd-5c4b-ad39-0ac10e60e5ac",
+    "threadUrl": "https://achiisquantresearch.slack.com/archives/C0C1Q8D0B6K/p1789623896494609",
+    "intentActions": [
+      {
+        "state": "applied",
+        "action": "amend",
+        "task_id": "f28b038d-f396-5d08-894a-758a0c712e8e",
+        "revision": 2,
+        "before_revision": 1
+      }
+    ],
+    "supersededOldTasks": 4,
+    "currentCompletedRoles": [
+      "data",
+      "director",
+      "financial_strategist",
+      "researcher_kr"
+    ],
+    "currentArtifacts": 4,
+    "slackBotIdentities": 4,
+    "configuredModelsInPreparedRequests": [
+      "gpt-5.6-sol",
+      "gpt-5.6-terra",
+      "gpt-6-astra"
+    ],
+    "responseProviders": [
+      "codex"
+    ],
+    "sourceIds": [
+      "finance:3eda7dad7765cca69b4b55ec",
+      "finance:cdedc371cc920a375bdb9053",
+      "lake:95433eb0a8c1e58ff9bfe706",
+      "lake:e0df55740b25bb34c4b79e16"
+    ],
+    "priorEvidenceReuse": "Financial strategist reused successfully read FINRA text after the amendment; original read/source receipts were preserved.",
+    "sourceSupportSpotCheck": "KRX T+2/NAV statements were present in fetched content; FINRA duration, credit and liquidity discussion was present in the read_source page at offset 12000. This is a bounded spot check, not a financial competency exam."
+  },
+  "host": {
+    "containers": 7,
+    "running": true,
+    "oomKilled": false,
+    "freeDiskBytes": 17600118784,
+    "freeMemoryKiB": 863840,
+    "dailyLimits": {
+      "company": null,
+      "maintenance": null
+    },
+    "newPaidResource": false
+  },
+  "limitsOfEvidence": [
+    "Owner control inputs in this acceptance were operator scenarios, not new human Slack messages. Signed ingress, duplicates and authorization were covered by regression tests; actual employee Slack delivery was read back.",
+    "One natural-language amendment was exercised live; broad interpretation accuracy, long-running behavior and financial expertise are not established.",
+    "Catalog search covers seven selected documents; direct reading supports the five allowed publisher hosts. General web/news search, PDF/private documents and maintenance PR #16 broad search scope remain unfinished.",
+    "S3 reads were catalog and metadata only, with no backtest, training, broker order, 3070/5090 submission or performance claim.",
+    "An already in-flight Slack send may still arrive after a change. Existing uncertain-delivery policy remains.",
+    "Market briefing bot remains roadmap-only; global and crypto research roles remain inactive."
+  ],
+  "evidence": [
+    {
+      "path": "docs/project/evidence/conversation-finance-build-cleanup.json",
+      "sha256": "75fb00763763f4d323ad06ae1cc28c7abac4e94e6c9f5449640f364e12fc6771"
+    },
+    {
+      "path": "docs/project/evidence/conversation-finance-ci.json",
+      "sha256": "7fdc99a9b25543faec7136ee22a9f6b21566ec6c62612cb04dc09715f50e5943"
+    },
+    {
+      "path": "docs/project/evidence/conversation-finance-deploy-bebe87d2db24.json",
+      "sha256": "a150a5214c86d9935cde50d0189f3e74250459c614b8b1b732b9f7f1ff5923c3"
+    },
+    {
+      "path": "docs/project/evidence/conversation-finance-host-bebe87d2db24.json",
+      "sha256": "b5f0469fb18951d100e0282385d46bdc52e9893886ec1a231e9739e4dab48a7f"
+    },
+    {
+      "path": "docs/project/evidence/conversation-finance-live-start.json",
+      "sha256": "570c192a97c7b35d763c6d1f46e716c7bb55fc84890196d83bfdb1c20bb13a35"
+    },
+    {
+      "path": "docs/project/evidence/conversation-finance-live-status.json",
+      "sha256": "27046f329e502858954551a299d793f293bcce51b272ac9679b0c82dd5165d00"
+    },
+    {
+      "path": "docs/project/evidence/conversation-finance-live-steer.json",
+      "sha256": "b191a48b2a859e59d9b0ad63135621502bb69f27a2f4660c465f6a6481e406bd"
+    },
+    {
+      "path": "docs/project/evidence/conversation-finance-live-verify.json",
+      "sha256": "ccb9ce4f3477faf7a6b0249fa73fb06d510a344a6593eb7ad74e826e3894fef1"
+    },
+    {
+      "path": "docs/project/evidence/conversation-finance-local-http.json",
+      "sha256": "969a31b1adf5191253af114e74fb58eff729ab853bac6db1873b44a9729e0f80"
+    },
+    {
+      "path": "docs/project/evidence/conversation-finance-server-http.json",
+      "sha256": "1baa6b08572e93171bdebd799be5cd87153839752676e8a83e6f3e6938dcbc62"
+    }
+  ]
+}

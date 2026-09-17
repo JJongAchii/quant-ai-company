@@ -5,8 +5,9 @@
 회사 운영 검증 기록을 여기로 모았습니다. 이후 회사 기록은 quant-workspace에 추가하지 않습니다.
 
 - [현재 사용 범위와 로드맵](NEXT-STEPS.md)
-- [GitHub·개선 담당 운영 기록](GITHUB-AND-MAINTENANCE.md)
-- [현재 시스템·한도 변경 인수](CURRENT-SYSTEM-VALIDATION.json)
+- [대화 제어·공식자료·실제 직원 협업 인수](CONVERSATION-FINANCE-VALIDATION.json)
+- [초기 GitHub·개선 담당 운영 기록](GITHUB-AND-MAINTENANCE.md)
+- [시스템 진단·한도 변경 당시 인수](CURRENT-SYSTEM-VALIDATION.json)
 - [추가 이관 원본·파일 해시](../PROJECT-RECORDS-MIGRATION.json)
 
 ## 과거 증거의 해석

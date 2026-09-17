@@ -1,0 +1,26 @@
+{
+  "scope": "Real PostgreSQL/Temporal; model and HTTP fixtures; live subscription excluded",
+  "pr": {
+    "headRefOid": "7109173198e773a36ea20484e43df8a71f7abbe4",
+    "mergeCommit": {
+      "oid": "bebe87d2db24c3a8526bf879bbf0d078986a40c6"
+    },
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-09-17T05:38:45Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35186414187/job/105089330430",
+        "name": "service",
+        "startedAt": "2026-09-17T05:36:42Z",
+        "status": "COMPLETED",
+        "workflowName": "Quant Company CI"
+      }
+    ],
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/19"
+  },
+  "validation_lines": [
+    "service\tLint\t2026-09-17T05:37:14.5359841Z All checks passed!",
+    "service\tPostgreSQL, Temporal and service regression tests\t2026-09-17T05:38:41.3067049Z 273 passed, 1 skipped, 1 deselected, 2 warnings in 85.54s (0:01:25)"
+  ]
+}
