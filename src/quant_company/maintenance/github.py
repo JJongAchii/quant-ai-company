@@ -223,31 +223,34 @@ class GitHub:
         job = service[0]
         steps = [{"name": step["name"], "conclusion": step.get("conclusion")} for step in job["steps"]]
         path = f"https://api.github.com/repos/{self.config.repository}/actions/jobs/{job['id']}/logs"
+        def read_log(stream):
+            if stream.status_code != 200:
+                raise GitHubError("ci_log_download_failed")
+            tail, size = bytearray(), 0
+            for chunk in stream.iter_bytes():
+                size += len(chunk)
+                if size > 8 * 1024 * 1024:
+                    raise GitHubError("ci_log_too_large")
+                tail.extend(chunk)
+                del tail[:-80000]
+            return feedback_text(tail.decode("utf-8", errors="replace"))
+
         with httpx.Client(timeout=30, transport=self.transport, follow_redirects=False, trust_env=False) as client:
-            response = client.get(path, headers={"Authorization": "Bearer " + self.token()})
-            if response.status_code == 302:
-                url = httpx.URL(response.headers["location"])
-                if (url.scheme != "https" or url.userinfo or not url.host
-                        or not url.host.endswith((".blob.core.windows.net", ".actions.githubusercontent.com"))):
-                    raise ValueError("unexpected_ci_log_host")
-                path = str(url)
-                headers = {}
-            elif response.status_code == 200:
-                return {"head": receipt["head"], "steps": steps, "log_excerpt": feedback_text(response.text)}
-            else:
-                raise GitHubError("ci_log_unavailable")
-            with client.stream("GET", path, headers=headers) as stream:
-                if stream.status_code != 200:
-                    raise GitHubError("ci_log_download_failed")
-                tail, size = bytearray(), 0
-                for chunk in stream.iter_bytes():
-                    size += len(chunk)
-                    if size > 8 * 1024 * 1024:
-                        raise GitHubError("ci_log_too_large")
-                    tail.extend(chunk)
-                    del tail[:-80000]
-        return {"head": receipt["head"], "steps": steps,
-                "log_excerpt": feedback_text(tail.decode("utf-8", errors="replace"))}
+            with client.stream("GET", path, headers={"Authorization": "Bearer " + self.token()}) as response:
+                if response.status_code == 302:
+                    url = httpx.URL(response.headers["location"])
+                    if (url.scheme != "https" or url.userinfo or not url.host
+                            or not url.host.endswith((".blob.core.windows.net", ".actions.githubusercontent.com"))):
+                        raise ValueError("unexpected_ci_log_host")
+                    path = str(url)
+                elif response.status_code == 200:
+                    return {"head": receipt["head"], "steps": steps, "log_excerpt": read_log(response)}
+                else:
+                    raise GitHubError("ci_log_unavailable")
+            # A signed blob URL authenticates itself; never forward the installation token.
+            with client.stream("GET", path) as stream:
+                log = read_log(stream)
+        return {"head": receipt["head"], "steps": steps, "log_excerpt": log}
 
     def pull_request(self, job):
         receipt, payload = job["receipt"], job["payload"]

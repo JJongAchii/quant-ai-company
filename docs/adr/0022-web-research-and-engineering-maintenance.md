@@ -1,6 +1,6 @@
 # Web research and engineering maintenance
 
-Status: implementation in progress. User request: PR #16 must actually enable external research, and the maintenance BOT must investigate, implement and verify improvements rather than stop at a design proposal.
+Status: implemented and locally validated; production rollout pending. User request: PR #16 must actually enable external research, and the maintenance BOT must investigate, implement and verify improvements rather than stop at a design proposal.
 
 ## Decision
 
@@ -15,4 +15,4 @@ The maintenance service distinguishes explicit feature requests from diagnosis a
 - A maintenance feature request can inspect missing implementation context, add a module and meaningful regression, consume failed-CI diagnostics, and produce a passing candidate without replacing the goal with a design document.
 - Native shell/MCP/app execution, credential access, deployment-policy edits, self-approval and automatic paid fallback remain outside the maintenance candidate executor.
 
-Validation receipts will distinguish deterministic tests, mocked network/model responses and actual subscription/network/Slack execution. Documentation CI alone is not completion.
+The [acceptance record](../project/WEB-ENGINEERING-VALIDATION.md) distinguishes deterministic tests, simulated model/GitHub transport and actual subscription/network execution. Slack dispatch and production rollout are not included in this acceptance. Documentation CI alone is not completion.
