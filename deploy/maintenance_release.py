@@ -85,7 +85,8 @@ def validate_tree(previous, target):
     # Load the policy from the installed release, never the candidate. No third-party dependencies.
     protected = {'api.py', 'cli.py', 'config.py', 'db.py', 'schema.sql', 'socket_mode.py',
                  'owner_controls.py', 'state_schema.sql', 'web_fetch.py', 'finance_sources.py', 'maintenance/policy.py',
-                 'maintenance/github.py', 'maintenance/applications.py', 'maintenance/releases.py', 'maintenance/schema.sql'}
+                 'maintenance/github.py', 'maintenance/applications.py', 'maintenance/releases.py', 'maintenance/schema.sql',
+                 'staff/cases.py', 'staff/store.py', 'staff/runner.py', 'staff/workflow.py', 'staff/schema.sql', 'staff/packs.py'}
 
     def inventory(root):
         output = {}
@@ -109,9 +110,11 @@ def validate_tree(previous, target):
                   and name not in {'docs/deployment.md', 'docs/codex-runtime.md'})
         is_test = re.fullmatch(r'tests/test_maintenance_regression_[a-z0-9_]+\.py', name)
         module = name.removeprefix('src/quant_company/')
+        is_procedure = (name.startswith('src/quant_company/staff/playbooks/') and name.endswith('.md')
+                        and len(PurePosixPath(module).parts) == 3)
         is_code = (name.startswith('src/quant_company/') and module not in protected and not module.startswith('providers/')
                    and (module.endswith('.py') or module == 'roles.json'))
-        if not (is_doc or is_test or is_code):
+        if not (is_doc or is_test or is_code or is_procedure):
             raise ValueError('release_protected_file_changed')
         if module == 'roles.json':
             def fixed(data):

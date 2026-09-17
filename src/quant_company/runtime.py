@@ -10,6 +10,8 @@ from .company import Company
 from .config import Settings
 from .execution import TurnExecutor
 from .slack import SlackIngress, SlackOutbox
+from .staff.runner import StaffRunner
+from .staff.workflow import StaffDevelopmentWorkflow
 from .workflow import CompanyTurnWorkflow
 
 
@@ -21,14 +23,23 @@ async def connect(settings: Settings):
 
 def make_worker(client, company, executor=None):
     executor = executor or TurnExecutor(company)
+    staff = StaffRunner(company, executor.provider)
     return Worker(client, task_queue=company.settings.temporal_task_queue,
-                  workflows=[CompanyTurnWorkflow],
-                  activities=[executor.activity_execute, executor.activity_block],
+                  workflows=[CompanyTurnWorkflow, StaffDevelopmentWorkflow],
+                  activities=[executor.activity_execute, executor.activity_block, staff.activity_tick],
                   max_concurrent_activities=1, max_cached_workflows=100,
                   graceful_shutdown_timeout=timedelta(seconds=10))
 
 
 async def dispatch_once(client, company):
+    if company.settings.company_staff_development_enabled and not getattr(company, "_staff_workflow_started", False):
+        try:
+            await client.start_workflow(StaffDevelopmentWorkflow.run, id="company-staff-development-v1",
+                                        task_queue=company.settings.temporal_task_queue,
+                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+        except WorkflowAlreadyStartedError:
+            pass
+        company._staff_workflow_started = True
     turns = await asyncio.to_thread(company.pending_starts)
     for turn in turns:
         try:

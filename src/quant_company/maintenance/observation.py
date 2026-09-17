@@ -108,9 +108,11 @@ def review_snapshot(conn, company, owners, at):
     roster = [{key: getattr(role, key) for key in
                ("id", "mission", "tools", "can_delegate_to", "active", "version")}
               for role in company.roles.values()]
+    from ..staff.store import maintenance_observations
+
     review = as_json({
         "as_of": at, "periods": periods, "roster": roster,
-        "evidence": safe_rows(evidence[:24]) + replay_summaries,
+        "evidence": safe_rows(evidence[:24]) + replay_summaries + maintenance_observations(conn, owners),
         "sampling": {"recent_message_limit": 24, "messages_truncated": len(evidence) > 24,
                      "replay_limit": 6, "replays_truncated": len(requests) > 6,
                      "replay_request_max_bytes": 25000},

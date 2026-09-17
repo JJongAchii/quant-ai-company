@@ -32,6 +32,11 @@ class RetryInput(StrictModel):
     reconciliation_note: str = Field(min_length=1, max_length=1000)
 
 
+class StaffReviewInput(StrictModel):
+    disposition: str = Field(pattern="^(confirmed|disputed)$")
+    note: str = Field(min_length=10, max_length=2000)
+
+
 def create_app(settings: Settings | None = None, company: Company | None = None,
                credentials: dict | None = None) -> FastAPI:
     settings = settings or Settings()
@@ -76,6 +81,23 @@ def create_app(settings: Settings | None = None, company: Company | None = None,
     @app.get("/v1/agents", dependencies=[Depends(operator)])
     def agents():
         return [role.model_dump() for role in company.roles.values()]
+
+    @app.get("/v1/staff", dependencies=[Depends(operator)])
+    def staff_status(employee: str | None = None):
+        from .staff.store import status
+
+        with company.db.transaction() as conn:
+            return status(conn, company, settings.slack_allowed_users[0] if settings.slack_allowed_users else "", employee)
+
+    @app.post("/v1/staff/runs/{run_id}/review", dependencies=[Depends(operator)])
+    def staff_review(run_id: str, value: StaffReviewInput):
+        from .staff.store import StaffStore
+
+        try:
+            StaffStore(company).review(run_id, value.disposition, value.note)
+        except ValueError as exc:
+            raise PolicyError(str(exc)) from exc
+        return {"ok": True}
 
     @app.get("/v1/projects", dependencies=[Depends(operator)])
     def projects():

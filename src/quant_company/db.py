@@ -25,6 +25,7 @@ class Database:
             else:
                 conn.execute(files("quant_company").joinpath("schema.sql").read_text())
             conn.execute(files("quant_company").joinpath("state_schema.sql").read_text())
+            conn.execute(files("quant_company.staff").joinpath("schema.sql").read_text())
 
     def health(self) -> bool:
         with self.transaction() as conn:

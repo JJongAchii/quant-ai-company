@@ -67,6 +67,13 @@ def main():
     maintenance = sub.add_parser("maintenance")
     maintenance.add_argument("--config", type=Path, required=True)
     sub.add_parser("maintenance-status")
+    staff = sub.add_parser("staff")
+    staff.add_argument("action", choices=["status", "enqueue", "tick", "review"])
+    staff.add_argument("--employee")
+    staff.add_argument("--owner")
+    staff.add_argument("--id")
+    staff.add_argument("--disposition", choices=["confirmed", "disputed"])
+    staff.add_argument("--note")
     release = sub.add_parser("maintenance-release")
     release.add_argument("action", choices=["next", "archive", "activity", "finish"])
     release.add_argument("--id")
@@ -117,6 +124,27 @@ def main():
                 payload->'evaluation' AS evaluation,
                 receipt,error,created_at,updated_at FROM maintenance_jobs ORDER BY created_at DESC LIMIT 50""").fetchall()
         print(json.dumps(rows, default=str, ensure_ascii=False, indent=2))
+    elif args.command == "staff":
+        from .staff.runner import StaffRunner
+        from .staff.store import StaffStore, status
+
+        company = Company(settings)
+        owner = args.owner or (settings.slack_allowed_users[0] if settings.slack_allowed_users else "")
+        if args.action == "status":
+            with company.db.transaction() as conn:
+                result = status(conn, company, owner, args.employee)
+        elif args.action == "enqueue":
+            if not args.employee:
+                parser.error("staff enqueue requires --employee")
+            result = {"run_id": StaffStore(company).enqueue(args.employee, owner, identity=args.id)}
+        elif args.action == "review":
+            if not args.id or not args.disposition or not args.note:
+                parser.error("staff review requires --id, --disposition and --note")
+            StaffStore(company).review(args.id, args.disposition, args.note)
+            result = {"ok": True}
+        else:
+            result = asyncio.run(StaffRunner(company).tick(manual=True))
+        print(json.dumps(result, default=str, ensure_ascii=False, indent=2))
     elif args.command == "maintenance-release":
         from .maintenance.releases import command
 

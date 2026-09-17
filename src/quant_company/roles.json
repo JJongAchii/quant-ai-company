@@ -17,7 +17,8 @@
       "finance_search",
       "finance_read",
       "web_search",
-      "web_read"
+      "web_read",
+      "staff_status"
     ],
     "can_delegate_to": [
       "financial_strategist",
@@ -25,7 +26,7 @@
       "data"
     ],
     "active": true,
-    "version": "6"
+    "version": "7"
   },
   {
     "id": "financial_strategist",
@@ -40,14 +41,15 @@
       "finance_search",
       "finance_read",
       "web_search",
-      "web_read"
+      "web_read",
+      "finance_compute"
     ],
     "can_delegate_to": [
       "researcher_kr",
       "data"
     ],
     "active": true,
-    "version": "4"
+    "version": "5"
   },
   {
     "id": "researcher_kr",
@@ -62,14 +64,15 @@
       "finance_search",
       "finance_read",
       "web_search",
-      "web_read"
+      "web_read",
+      "finance_compute"
     ],
     "can_delegate_to": [
       "financial_strategist",
       "data"
     ],
     "active": true,
-    "version": "4"
+    "version": "5"
   },
   {
     "id": "researcher_global",
@@ -80,7 +83,8 @@
     "tools": [
       "calculate",
       "knowledge_search",
-      "read_source"
+      "read_source",
+      "finance_compute"
     ],
     "can_delegate_to": [
       "financial_strategist",
@@ -88,7 +92,7 @@
       "engineer"
     ],
     "active": false,
-    "version": "2"
+    "version": "3"
   },
   {
     "id": "researcher_crypto",
@@ -99,7 +103,8 @@
     "tools": [
       "calculate",
       "knowledge_search",
-      "read_source"
+      "read_source",
+      "finance_compute"
     ],
     "can_delegate_to": [
       "financial_strategist",
@@ -107,7 +112,7 @@
       "engineer"
     ],
     "active": false,
-    "version": "2"
+    "version": "3"
   },
   {
     "id": "data",
@@ -125,11 +130,12 @@
       "finance_search",
       "finance_read",
       "web_search",
-      "web_read"
+      "web_read",
+      "data_quality"
     ],
     "can_delegate_to": [],
     "active": true,
-    "version": "6"
+    "version": "7"
   },
   {
     "id": "engineer",
@@ -140,14 +146,16 @@
     "tools": [
       "calculate",
       "knowledge_search",
-      "read_source"
+      "read_source",
+      "finance_compute",
+      "data_quality"
     ],
     "can_delegate_to": [
       "data",
       "operations"
     ],
     "active": false,
-    "version": "2"
+    "version": "3"
   },
   {
     "id": "validator",
@@ -158,13 +166,15 @@
     "tools": [
       "calculate",
       "knowledge_search",
-      "read_source"
+      "read_source",
+      "finance_compute",
+      "data_quality"
     ],
     "can_delegate_to": [
       "data"
     ],
     "active": false,
-    "version": "2"
+    "version": "3"
   },
   {
     "id": "risk",
@@ -175,7 +185,8 @@
     "tools": [
       "calculate",
       "knowledge_search",
-      "read_source"
+      "read_source",
+      "finance_compute"
     ],
     "can_delegate_to": [
       "financial_strategist",
@@ -183,7 +194,7 @@
       "validator"
     ],
     "active": false,
-    "version": "2"
+    "version": "3"
   },
   {
     "id": "operations",
@@ -198,6 +209,6 @@
     ],
     "can_delegate_to": [],
     "active": false,
-    "version": "2"
+    "version": "3"
   }
 ]
