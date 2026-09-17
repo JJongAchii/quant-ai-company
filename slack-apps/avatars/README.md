@@ -1,0 +1,19 @@
+# Slack 직원 프로필
+
+설치된 네 직원 앱의 프로필 이미지. 같은 세라믹 로봇 스타일에서 배경색·눈·직무 상징으로 구분한다.
+원본 PNG는 각각 1254×1254이며, 작은 Slack 아이콘에서도 얼굴과 역할 색을 알아볼 수 있도록 제작했다.
+
+| 총괄 | 금융전략 | 국내시장 연구 | 데이터 |
+| --- | --- | --- | --- |
+| ![총괄](director.png) | ![금융전략](financial_strategist.png) | ![국내시장 연구](researcher_kr.png) | ![데이터](data.png) |
+| 네이비·금색 / 나침반 | 초록·금색 / 차트 | 파랑·은색 / 돋보기 | 보라·티타늄 / 데이터베이스 |
+
+## 원본과 적용
+
+- 2026-09-17 built-in `image_gen`으로 생성했다. [최종 프롬프트](prompts.json)를 함께 보존한다.
+- Slack App 관리 → 해당 앱 → Basic Information → Display Information → App icon에서 해당 PNG를 업로드한다.
+- 현재 Slack UI에서는 아이콘 업로드가 즉시 저장된다. 새로고침과 기존 메시지의 `bot_profile.icons` 조회로 적용을 확인한다.
+- 앱 이름·설명·권한·토큰·직원 모델·서비스 설정 변경은 필요하지 않다.
+- 개선 서비스는 총괄 앱을 통해 보고한다. 별도 Slack 앱이 없는 직무의 계정 생성·운영 활성화는 이 이미지 변경에 포함하지 않는다.
+
+적용 기록: [Slack 프로필 검증](../../docs/project/evidence/slack-bot-avatars-20260917.json).
