@@ -195,6 +195,7 @@ class Company:
         if not text.strip() or len(text) > 10000:
             raise PolicyError("Instruction must contain 1–10000 characters")
         digest = fingerprint([text, owner, agent, project_id, channel, thread_ts, revise, status_only])
+        prior_ingress_digest = digest
         if daily_limit_command is not None:
             from .owner_controls import parse_daily_limit_command
 
@@ -206,7 +207,9 @@ class Company:
             conn.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s,0))", (event_key,))
             old = conn.execute("SELECT * FROM inbound WHERE event_key=%s", (event_key,)).fetchone()
             if old:
-                if old["payload_digest"] != digest:
+                if old["payload_digest"] != digest and not (
+                    daily_limit_command is not None and old["payload_digest"] == prior_ingress_digest
+                ):
                     raise PolicyError("Request ID was already used for different content")
                 return as_json({"project_id": old["project_id"], "task_id": old["task_id"], "duplicate": True})
             if project_id is None and channel and thread_ts:

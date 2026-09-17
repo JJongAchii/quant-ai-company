@@ -201,6 +201,8 @@ def progress_text(value, runtime):
     state, error = value["state"], value.get("error")
     prefix = f"진단 요청 {value['request_id'][:8]}: "
     if error == "daily_model_budget":
+        if runtime.get("daily_model_call_cap") is None and runtime.get("company_daily_model_call_cap") is None:
+            return prefix + "일일 한도 해제가 적용됐습니다. 저장된 요청을 최신 근거로 재개할 차례를 기다립니다."
         return prefix + f"모델 호출 한도로 대기 중입니다. 예산 초기화: {runtime.get('budget_resets_at')}. 요청은 보존되어 자동 재개됩니다."
     if state == "blocked":
         return prefix + f"검증에서 멈췄습니다 ({error}). 수정 완료가 아닙니다. 근거와 실패 기록을 보존했으며 운영자 확인이 필요합니다."

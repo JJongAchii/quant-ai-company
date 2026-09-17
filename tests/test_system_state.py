@@ -68,6 +68,18 @@ def test_concurrent_controls_merge_both_scopes_without_lost_update(company):
 
 
 @pytest.mark.integration
+def test_redelivery_of_pre_upgrade_conversation_never_reinterprets_it_as_a_new_control(company):
+    make_maintainer(company)
+    text = '전체 일일 한도 해제'
+    args = dict(event_key='historical-event', text=text, owner='UHUMAN', channel='CQUANT', thread_ts='historical')
+    original = company.ingest(**args)
+    duplicate = company.ingest(**args, daily_limit_command=parse_daily_limit_command(text))
+    assert duplicate['duplicate'] and duplicate['task_id'] == original['task_id']
+    with company.db.transaction() as conn:
+        assert conn.execute('SELECT count(*) AS n FROM policy_commands').fetchone()['n'] == 0
+
+
+@pytest.mark.integration
 @pytest.mark.parametrize('overrides', [{"user": "UOTHER"}, {"channel": "COTHER"}, {"bot_id": "BBOT"}])
 def test_unauthorized_slack_cannot_change_policy(company, credentials, overrides):
     make_maintainer(company)
