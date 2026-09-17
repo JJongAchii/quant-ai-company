@@ -1,0 +1,223 @@
+{
+  "state": "complete",
+  "commit": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+  "previous_release": "/opt/quant-company/releases/380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+  "postgres_id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+  "authorization": {
+    "source": "owner conversation",
+    "quote": "진행해",
+    "scope": "Merge PR #22 and deploy reviewed implementation"
+  },
+  "started_at": "2026-09-17T06:45:40.624126+00:00",
+  "active_work_before": {
+    "due_turns": 0,
+    "outbox": 0
+  },
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20260917T064544Z-c2932e21.tar.gz",
+    "sha256": "00c1f1656ff415f5ae4c276f9af443427bc54575b98d3ece5ed582d24a765d46",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260917T064544Z-c2932e21.tar.gz",
+    "release_commit": "380e5a24b89f48beeedff1cf7c9f97b870ed702f",
+    "secrets_included": false
+  },
+  "containers": {
+    "postgres": {
+      "id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+      "image": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "revision": null,
+      "state": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 268435456,
+      "secret_mount_names": [
+        "database_admin_password",
+        "database_password"
+      ]
+    },
+    "codex-runtime": {
+      "id": "c09cd27bb0f74e6691e8cbb3665177a91aae83e00e6644e39fa97c0c50a46de8",
+      "image": "sha256:97351825b6901c05f47635658bb9bc5f6de92fced2d689ad0225f2c89929be5a",
+      "revision": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+      "state": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 536870912,
+      "secret_mount_names": [
+        "model_runtime_token"
+      ]
+    },
+    "api": {
+      "id": "b12434041363e77fab0a7f9df8ecdf81d1fbcf6abc9a5a0512282ad8b12e2234",
+      "image": "sha256:9ac042158d22d173c9336f11facde64488d855ed9e2eae97a06a3c7053700dc9",
+      "revision": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+      "state": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 134217728,
+      "secret_mount_names": [
+        "database_password",
+        "operator_token",
+        "slack_credentials"
+      ]
+    },
+    "worker": {
+      "id": "593ab4bdaf4f55ec745ab7144760706f1adb5dbc3483cdc404fa1dbf3db2b3d5",
+      "image": "sha256:9ac042158d22d173c9336f11facde64488d855ed9e2eae97a06a3c7053700dc9",
+      "revision": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+      "state": "running",
+      "health": null,
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 402653184,
+      "secret_mount_names": [
+        "database_password",
+        "lake_read_credentials",
+        "model_runtime_token",
+        "temporal_api_key"
+      ]
+    },
+    "dispatch": {
+      "id": "71b4c51c86f629e13dc1e8049fdc0fe1d029487253e2d18831619b583274ec5a",
+      "image": "sha256:9ac042158d22d173c9336f11facde64488d855ed9e2eae97a06a3c7053700dc9",
+      "revision": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+      "state": "running",
+      "health": null,
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 201326592,
+      "secret_mount_names": [
+        "database_password",
+        "slack_credentials",
+        "temporal_api_key"
+      ]
+    },
+    "slack-socket": {
+      "id": "17e0e0f8bdc6182ed4cf9e0a342f7835634fb016d4a033aa685463f674929412",
+      "image": "sha256:9ac042158d22d173c9336f11facde64488d855ed9e2eae97a06a3c7053700dc9",
+      "revision": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+      "state": "running",
+      "health": null,
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 201326592,
+      "secret_mount_names": [
+        "database_password",
+        "slack_credentials"
+      ]
+    },
+    "maintenance": {
+      "id": "6c4742e15c07919cd3cbeb7e0b264dbf017fb2153a00b5bc4e45b1a0a11464ec",
+      "image": "sha256:8cc4757ea4601746933b32b32fbf203e2990a6f73586883fd7d88c7dc5d3681e",
+      "revision": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+      "state": "running",
+      "health": null,
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 134217728,
+      "secret_mount_names": [
+        "database_password",
+        "maintenance_github_key",
+        "model_runtime_token",
+        "temporal_api_key"
+      ]
+    }
+  },
+  "runtime": {
+    "code_commit": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+    "web_enabled": true,
+    "roles": [
+      {
+        "id": "director",
+        "model": "gpt-6-astra",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source",
+          "company_history",
+          "maintenance_review",
+          "maintenance_status",
+          "system_status",
+          "repository_read",
+          "finance_search",
+          "finance_read",
+          "web_search",
+          "web_read"
+        ]
+      },
+      {
+        "id": "financial_strategist",
+        "model": "gpt-6-astra",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source",
+          "finance_search",
+          "finance_read",
+          "web_search",
+          "web_read"
+        ]
+      },
+      {
+        "id": "researcher_kr",
+        "model": "gpt-5.6-sol",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source",
+          "finance_search",
+          "finance_read",
+          "web_search",
+          "web_read"
+        ]
+      },
+      {
+        "id": "data",
+        "model": "gpt-5.6-terra",
+        "tools": [
+          "calculate",
+          "knowledge_search",
+          "read_source",
+          "lake_catalog",
+          "lake_describe",
+          "lake_sample",
+          "finance_search",
+          "finance_read",
+          "web_search",
+          "web_read"
+        ]
+      }
+    ],
+    "company_max_daily_turns": 0
+  },
+  "postgres_recreated": false,
+  "completed_at": "2026-09-17T06:46:48.329914+00:00",
+  "roles_sha256": "ec34636378586e157910aec73ee74ab6f598e67a41f39ee6c52cbee821da867a",
+  "release_archive": {
+    "release_commit": "0e96fe8d0197ea8278f53e095482f6c75eeae603",
+    "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "release": "/opt/quant-company/releases/0e96fe8d0197ea8278f53e095482f6c75eeae603",
+    "archive_sha256": {
+      "service": "fb9dcbdef508537b7f071c88c22f7ad55e3068537199b288babe8908a38d9173",
+      "qdata": "8bb50549a923f3ec39bb1e6ffce2ac182ed41d368275614e55f60686707a138c"
+    }
+  },
+  "ci": {
+    "conclusion": "success",
+    "headSha": "9e652b297a85ba3cd3aed360ac8c2bf7439036ea",
+    "startedAt": "2026-09-17T06:40:08Z",
+    "status": "completed",
+    "updatedAt": "2026-09-17T06:41:54Z",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35190845838",
+    "pytest_summary": [
+      "2026-09-17T06:41:51.1056485Z 307 passed, 1 skipped, 1 deselected, 2 warnings in 76.48s (0:01:16)"
+    ]
+  },
+  "pull_requests": [
+    "https://github.com/JJongAchii/quant-ai-company/pull/22",
+    "https://github.com/JJongAchii/quant-ai-company/pull/24"
+  ],
+  "scope": "Owner-approved production rollout. Functional web research acceptance is recorded separately."
+}
