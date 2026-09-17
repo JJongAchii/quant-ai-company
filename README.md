@@ -59,7 +59,10 @@ flowchart LR
 직무, 검증된 출처 검색, 계산 도구, [전문 시험 사례](docs/financial-specialist.md)를 제공합니다.
 방대한 지식 기반을 수집했다거나 실제 금융 전문성 시험을 통과했다는 뜻은 아닙니다.
 
-공통 도구는 `calculate`, `knowledge_search`, `read_source`입니다. 데이터 담당에는
+공통 도구는 `calculate`, `knowledge_search`, `read_source`입니다. 활성 직원에게
+`finance_search`·`finance_read`를 추가해 [선정된 공식 금융자료](docs/official-sources.md)의 후보 검색과
+실제 HTML 원문 읽기를 연결했습니다. 원문·기관·관할·조회 시각을 보존하며, 발행일이 없으면
+확인 불가로 남깁니다. 전체 인터넷·뉴스 검색과 구별합니다. 데이터 담당에는
 `lake_catalog`, `lake_describe`, `lake_sample`을 추가했습니다. 기존 EC2가 발행하는 S3 미러를
 읽어 데이터 목록·날짜 범위·스키마·최대 20행 샘플을 확인합니다. 조회 결과는 출처·객체 식별자·
 조회 시각과 함께 해당 프로젝트에 저장합니다. [데이터 연결 검증](docs/project/DATA-CONNECTION-VALIDATION.json)에

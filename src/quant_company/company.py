@@ -40,7 +40,8 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     if len(by_id) != len(roles):
         raise ValueError("Duplicate role IDs")
     allowed_tools = {"calculate", "knowledge_search", "read_source", "company_history",
-                     "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control"} | LAKE_TOOLS
+                     "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
+                     "finance_search", "finance_read"} | LAKE_TOOLS
     for role in roles:
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
@@ -83,6 +84,13 @@ class Company:
                                       "Optional '해제하고 <diagnosis request>' also queues a review. "
                                       "A question or quoted command does not change policy.",
                 "knowledge_search": "Approved registered sources only; not conversation history, internet or data-lake search.",
+                "finance_search": "{query: short keywords}. Search a small curated official-document catalog, "
+                                  "not the entire web. Returns candidates, not verified/read sources.",
+                "finance_read": "{document_id: exact catalog ID} OR {url: HTTPS URL on allowed official host}. "
+                                "Fetch one HTML original per turn. Hosts: regulation.krx.co.kr, www.finra.org, "
+                                "www.investor.gov, www.federalreserve.gov, www.bis.org. Receipt includes source_id, "
+                                "URL, publisher, jurisdiction, retrieved_at, nullable published_at, original hash, "
+                                "content and next_offset. Failed fetches are not evidence. No PDF or login/paywall bypass.",
                 "conversation_control": "Same-thread owner followups to the director are interpreted before old results "
                                         "can publish. Questions preserve work; amendments supersede old work; ambiguity "
                                         "asks one question and holds work. Explicit 중단해, 이어서 진행해, 상태 use no model. "
@@ -96,7 +104,8 @@ class Company:
                 "maintenance_status": "Director only: {}. Reads real maintenance status and requests for this thread. "
                                       "TASK DATA maintenance is a current snapshot. The maintainer is a background "
                                       "service, not an employee in can_delegate_to. Do not ask users to paste stored history.",
-                "read_source": "Approved registered source content only; not arbitrary URLs or local files.",
+                "read_source": "{source_id, offset?: nonnegative integer}. Read up to 12000 characters of a stored "
+                               "source, with next_offset. Never an arbitrary URL or local file.",
                 "calculate": "Bounded numeric arithmetic; not arbitrary code or backtests.",
                 "data_lake": {
                     "enabled": bool(self.settings.company_lake_uri),
@@ -300,8 +309,8 @@ class Company:
             ORDER BY created_at DESC,id DESC LIMIT 35""", (project["id"],)).fetchall()[::-1]
         children = conn.execute("SELECT agent,instruction,status,result,error FROM tasks WHERE parent_id=%s",
                                 (task["id"],)).fetchall()
-        sources = conn.execute("""SELECT id,title,uri,available_at,synthetic FROM sources WHERE approved
-            AND available_at<=now() AND (project_id IS NULL OR project_id=%s) ORDER BY id LIMIT 50""",
+        sources = conn.execute("""SELECT id,title,uri,available_at,synthetic,metadata FROM sources WHERE approved
+            AND available_at<=now() AND (project_id IS NULL OR project_id=%s) ORDER BY available_at DESC,id LIMIT 50""",
                                (project["id"],)).fetchall()
         memories = conn.execute("""SELECT text,source_ids FROM memories m WHERE status='verified'
             AND (project_id=%s OR (shared AND EXISTS(SELECT 1 FROM projects p
@@ -474,10 +483,14 @@ class Company:
             if not row:
                 raise PolicyError(f"Unavailable or unapproved source: {source_id}")
 
-    def _tool(self, conn, project_id, request, *, task=None):
+    def _tool(self, conn, project_id, request, *, task=None, turn_id=None):
         arguments = request.arguments
         if request.name == 'task_control':
             raise PolicyError('task_control is only available during owner input routing')
+        if request.name in {'finance_search', 'finance_read'}:
+            from .finance_sources import register, search
+
+            return search(arguments) if request.name == 'finance_search' else register(conn, project_id, turn_id, request)
         if request.name in {"company_history", "maintenance_review", "maintenance_status", "system_status", "repository_read"}:
             from .maintenance.requests import tool
 
@@ -516,11 +529,18 @@ class Company:
                 AND (title ILIKE %s OR content ILIKE %s) ORDER BY id LIMIT 5""",
                                         (project_id, "%" + arguments["query"] + "%",
                                          "%" + arguments["query"] + "%")).fetchall())
-        if set(arguments) != {"source_id"}:
-            raise PolicyError("read_source requires source_id only")
+        if not {'source_id'} <= set(arguments) <= {'source_id', 'offset'}:
+            raise PolicyError("read_source requires source_id and optional offset")
+        offset = arguments.get('offset', 0)
+        if type(offset) is not int or not 0 <= offset <= 100000:
+            raise PolicyError('Invalid source offset')
         self._check_sources(conn, project_id, [arguments["source_id"]])
-        return as_json(conn.execute("""SELECT id,title,uri,left(content,12000) AS content,available_at,synthetic
-            FROM sources WHERE id=%s""", (arguments["source_id"],)).fetchone())
+        row = as_json(conn.execute("""SELECT id,title,uri,substring(content FROM %s FOR 12000) AS content,
+            length(content) AS total_characters,metadata,available_at,synthetic FROM sources WHERE id=%s""",
+                                  (offset + 1, arguments['source_id'])).fetchone())
+        row['offset'] = offset
+        row['next_offset'] = offset + 12000 if row['total_characters'] > offset + 12000 else None
+        return row
 
     def _wake_parent(self, conn, task, project):
         if not task["parent_id"]:
@@ -537,6 +557,9 @@ class Company:
         if response.request_id != turn_id:
             raise PolicyError("Provider response belongs to another turn")
         decision = AgentDecision.model_validate(response.decision)
+        from .finance_sources import prefetch
+
+        prefetch(self, turn_id, decision)
         with self.db.transaction() as conn:
             row = conn.execute("SELECT task_id FROM turns WHERE id=%s", (turn_id,)).fetchone()
             if not row:
@@ -598,7 +621,7 @@ class Company:
                 conn.execute("INSERT INTO memories(id,project_id,agent,text,source_ids) VALUES (%s,%s,%s,%s,%s)",
                              (str(uuid4()), project["id"], task["agent"], action.text, Jsonb(action.source_ids)))
             for action in decision.tools:
-                result = self._tool(conn, project["id"], action, task=task)
+                result = self._tool(conn, project["id"], action, task=task, turn_id=turn_id)
                 self._message(conn, project, task["id"], "tool:" + action.name, "tool",
                               json.dumps({"request": action.model_dump(), "receipt": result}, ensure_ascii=False),
                               task["agent"])
