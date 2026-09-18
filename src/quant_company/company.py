@@ -426,6 +426,20 @@ class Company:
                 if child.get(key) and len(child[key]) > limit:
                     child[key] = child[key][:limit] + " [excerpt; full content remains in project records]"
                     context["context_truncated"] = True
+        # Reduce background state before removing any recent messages: even a short
+        # multi-page read can otherwise lose a whole page, not just an excerpt.
+        if "system" in context and len(json.dumps(context, ensure_ascii=False)) > 68000:
+            system = context["system"]
+            context["system"] = {
+                "source_id": system["source_id"], "excerpted": True,
+                "repository": {k: v for k, v in system.get("repository", {}).items()
+                               if k in {"state", "commit", "checked_at", "reason"}},
+                "runtime": {k: v for k, v in system.get("runtime", {}).items()
+                            if k in {"code_commit", "roles_digest", "config_digest"}},
+                "interpretation": "Bounded summary, not a complete status report. Use read_source with "
+                                  "source_id for full evidence. Omitted evidence is unknown, not absent.",
+            }
+            context["context_truncated"] = True
         while len(json.dumps(context, ensure_ascii=False)) > 68000:
             for key, minimum, index in [("messages", 3, 0), ("recent_artifacts", 0, -1),
                                         ("verified_memories", 0, -1), ("approved_sources", 0, -1),
@@ -440,24 +454,11 @@ class Company:
                     context["context_truncated"] = True
                     break
             else:
-                # Summarize background state before cutting the recent evidence being read.
-                if "system" in context:
-                    system = context["system"]
-                    context["system"] = {
-                        "source_id": system["source_id"], "excerpted": True,
-                        "repository": {k: v for k, v in system.get("repository", {}).items()
-                                       if k in {"state", "commit", "checked_at", "reason"}},
-                        "runtime": {k: v for k, v in system.get("runtime", {}).items()
-                                    if k in {"code_commit", "roles_digest", "config_digest"}},
-                        "interpretation": "Bounded summary, not a complete status report. Use read_source with "
-                                          "source_id for full evidence. Omitted evidence is unknown, not absent.",
-                    }
-                if len(json.dumps(context, ensure_ascii=False)) > 68000:
-                    for message in context["messages"]:
-                        if len(message["text"]) > 3000:
-                            message["text"] = message["text"][:3000] + " [excerpt; full content remains in project records]"
-                    for source in context["approved_sources"]:
-                        source.pop("metadata", None)
+                for message in context["messages"]:
+                    if len(message["text"]) > 3000:
+                        message["text"] = message["text"][:3000] + " [excerpt; full content remains in project records]"
+                for source in context["approved_sources"]:
+                    source.pop("metadata", None)
                 context["context_truncated"] = True
                 if len(json.dumps(context, ensure_ascii=False)) > 68000:
                     raise PolicyError("Required task context exceeds the bounded prompt budget")

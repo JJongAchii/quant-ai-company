@@ -2,6 +2,8 @@
 
 import json
 from datetime import timedelta
+from itertools import count
+from uuid import UUID
 
 import pytest
 
@@ -92,7 +94,12 @@ def test_oversized_system_is_a_readable_reference_not_an_unbounded_prompt(compan
     assert len(json.loads(stored["content"])["fixture_facts"]) == 100000
 
 
-def test_large_system_does_not_cut_the_current_two_page_read_receipt(company, monkeypatch):
+@pytest.mark.parametrize("reverse_ids", [False, True])
+def test_large_system_does_not_cut_the_current_two_page_read_receipt(company, monkeypatch, reverse_ids):
+    # Messages committed together share a DB timestamp; UUID tie order must not decide
+    # whether a just-read page survives while reducible background facts consume the budget.
+    ids = count(10000, -1 if reverse_ids else 1)
+    monkeypatch.setattr("quant_company.company.uuid4", lambda: UUID(int=next(ids)))
     monkeypatch.setattr("quant_company.system_state.current_system",
                         lambda *args: {"fixture_facts": "s" * 53000})
     request = company.ingest(event_key="two-pages", owner="UHUMAN", text="Read both pages",
