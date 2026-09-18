@@ -64,6 +64,20 @@ def test_compose_https_is_explicit_opt_in():
     assert {port["published"] for port in caddy["ports"]} == {"80", "443"}
 
 
+def test_claude_profile_is_private_separately_authenticated_and_off_by_default():
+    assert "claude-runtime" not in compose_config()["services"]
+    services = compose_config("claude")["services"]
+    claude = services["claude-runtime"]
+    assert not claude.get("ports") and claude["read_only"] and claude["user"] == "10001:10001"
+    assert set(claude["networks"]) == {"model", "model_egress"}
+    assert {s["source"] for s in claude["secrets"]} == {"model_runtime_token"}
+    assert all("/claude/" in v["source"] for v in claude["volumes"])
+    assert claude["environment"]["CLAUDE_USAGE_CREDITS_DISABLED_CONFIRMED"] == "false"
+    assert services["worker"]["environment"]["COMPANY_STAFF_REVIEW_ENABLED"] == "false"
+    assert not any(k.startswith(("ANTHROPIC_", "SLACK_", "DATABASE_", "AWS_", "TEMPORAL_"))
+                   for k in claude["environment"])
+
+
 def test_maintenance_is_opt_in_and_keeps_git_credentials_out_of_models():
     assert "maintenance" not in compose_config()["services"]
     services = compose_config("maintenance")["services"]
@@ -246,7 +260,9 @@ def test_config_refuses_secrets_that_would_enter_backup(tmp_path):
 
 
 @pytest.mark.parametrize("maintenance_running", [False, True])
-def test_backup_pauses_socket_ingress_until_snapshot_is_complete(tmp_path, monkeypatch, maintenance_running):
+@pytest.mark.parametrize("claude_running", [False, True])
+def test_backup_pauses_socket_ingress_until_snapshot_is_complete(
+        tmp_path, monkeypatch, maintenance_running, claude_running):
     state = tmp_path / "state"
     (state / "config").mkdir(parents=True)
     (state / "config/roles.json").write_text("[]")
@@ -258,6 +274,11 @@ def test_backup_pauses_socket_ingress_until_snapshot_is_complete(tmp_path, monke
     (state / "secrets/maintenance_github_key").write_text("private fixture; must never enter backup")
     (state / "codex/jobs").mkdir(parents=True)
     (state / "codex/jobs/receipt.json").write_text('{"state":"completed"}')
+    if claude_running:
+        (state / "claude/jobs").mkdir(parents=True)
+        (state / "claude/jobs/review.json").write_text('{"state":"complete"}')
+        (state / "claude/auth").mkdir()
+        (state / "claude/auth/credentials.json").write_text('SECRET-DO-NOT-BACKUP')
     env_file = state / "config/runtime.env"
     env_file.write_text("DATABASE_NAME=quant_company\n")
     args = SimpleNamespace(env_file=env_file, s3_uri="s3://example-bucket/company/")
@@ -272,7 +293,8 @@ def test_backup_pauses_socket_ingress_until_snapshot_is_complete(tmp_path, monke
 
     monkeypatch.setattr(backup, "run", record)
     monkeypatch.setattr(backup.subprocess, "check_output", lambda *args, **kwargs:
-                        "postgres\nslack-socket\napi\n" + ("maintenance\n" if maintenance_running else ""))
+                        "postgres\nslack-socket\napi\n" + ("maintenance\n" if maintenance_running else "")
+                        + ("claude-runtime\n" if claude_running else ""))
     backup.backup(args, cfg, ["docker", "compose"], state)
     stop = next(i for i, command in enumerate(calls) if "stop" in command)
     dump = next(i for i, command in enumerate(calls) if "pg_dump" in command)
@@ -281,11 +303,14 @@ def test_backup_pauses_socket_ingress_until_snapshot_is_complete(tmp_path, monke
     assert "slack-socket" in calls[stop] and "slack-socket" in calls[resume]
     assert "worker" not in calls[resume]  # Previously stopped processes stay stopped.
     assert ("maintenance" in calls[stop]) == ("maintenance" in calls[resume]) == maintenance_running
+    assert ("claude-runtime" in calls[stop]) == ("claude-runtime" in calls[resume]) == claude_running
     recovered = tmp_path / "recovered"
     recovered.mkdir()
     manifest = backup.unpack(next((state / "backups").glob("*.tar.gz")), recovered)
     assert json.loads((recovered / "maintenance.json").read_text()) == maintenance
     assert "maintenance.json" in manifest["files"] and not any("secrets" in path for path in manifest["files"])
+    assert ("claude-jobs/review.json" in manifest["files"]) == claude_running
+    assert not any("auth" in path for path in manifest["files"])
 
 
 def test_backup_rejects_private_material_in_maintenance_configuration(tmp_path):

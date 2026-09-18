@@ -29,6 +29,7 @@ def main() -> None:
     directories = {
         "config": (0, 10001, 0o750), "secrets": (0, 0, 0o700),
         "codex/auth": (10001, 10001, 0o700), "codex/jobs": (10001, 10001, 0o700),
+        "claude/auth": (10001, 10001, 0o700), "claude/jobs": (10001, 10001, 0o700),
         "caddy/data": (10001, 10001, 0o700), "caddy/config": (10001, 10001, 0o700),
         # The image owns PGDATA=.../data/pgdata (0700). Its postgres user must
         # traverse this parent after the entrypoint drops root privileges.

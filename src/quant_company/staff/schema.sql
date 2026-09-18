@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS staff_runs (
 );
 CREATE INDEX IF NOT EXISTS staff_runs_queue ON staff_runs(state,next_at);
 CREATE INDEX IF NOT EXISTS staff_runs_owner ON staff_runs(owner_user,employee,created_at);
+ALTER TABLE staff_runs ADD COLUMN IF NOT EXISTS curriculum jsonb NOT NULL DEFAULT '{}';
 CREATE TABLE IF NOT EXISTS staff_calls (
  id text PRIMARY KEY, run_id uuid NOT NULL REFERENCES staff_runs(id), sequence integer NOT NULL,
  request jsonb NOT NULL, response jsonb, tools jsonb NOT NULL DEFAULT '[]',
@@ -29,4 +30,21 @@ CREATE TABLE IF NOT EXISTS staff_reviews (
  id bigserial PRIMARY KEY, run_id uuid NOT NULL REFERENCES staff_runs(id),
  reviewer text NOT NULL, disposition text NOT NULL CHECK(disposition IN ('confirmed','disputed')),
  note text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Held-out comparison inputs stay outside maintenance payloads, prompts and employee retrieval.
+CREATE TABLE IF NOT EXISTS staff_comparisons (
+ job_id uuid PRIMARY KEY, run_id uuid NOT NULL REFERENCES staff_runs(id), owner_user text NOT NULL,
+ employee text NOT NULL, base_commit text NOT NULL, material jsonb NOT NULL, input_digest text NOT NULL,
+ candidate_digest text, results jsonb NOT NULL DEFAULT '{}', created_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Claude commentary is separate from the deterministic answer key and grade.
+CREATE TABLE IF NOT EXISTS staff_independent_reviews (
+ id text PRIMARY KEY, run_id uuid UNIQUE NOT NULL REFERENCES staff_runs(id),
+ state text NOT NULL DEFAULT 'running' CHECK(state IN ('running','completed','blocked')),
+ model text NOT NULL, rubric_version text NOT NULL, source_digest text NOT NULL,
+ request jsonb NOT NULL, input_digest text NOT NULL, schedule_day date NOT NULL,
+ response jsonb, result jsonb, error text, next_at timestamptz NOT NULL DEFAULT now(),
+ created_at timestamptz NOT NULL DEFAULT now(), completed_at timestamptz
 );

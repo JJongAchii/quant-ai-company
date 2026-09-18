@@ -11,7 +11,7 @@ from quant_company.contracts import ProviderFault, ProviderRequest, ProviderResp
 from quant_company.providers.codex_runner import strict_json
 
 FAULT_MESSAGES = {
-    "quota": "Codex subscription allowance is temporarily unavailable.",
+    "quota": "Model subscription allowance is temporarily unavailable.",
     "auth": "The model runtime requires authentication.",
     "busy": "The model runtime is executing another turn.",
     "uncertain": "The model turn requires reconciliation before a replacement call.",
@@ -23,7 +23,7 @@ FAULT_MESSAGES = {
 
 class RuntimeClient:
     def __init__(self, base_url: str, token: str, timeout_seconds: float = 360, *,
-                 transport: httpx.AsyncBaseTransport | None = None):
+                 transport: httpx.AsyncBaseTransport | None = None, expected_provider: str = "codex"):
         if not token or not math.isfinite(timeout_seconds) or timeout_seconds <= 0:
             raise ValueError("Runtime token and positive finite timeout are required")
         url = httpx.URL(base_url)
@@ -33,6 +33,9 @@ class RuntimeClient:
         self.token = token
         self.timeout_seconds = timeout_seconds
         self.transport = transport
+        if expected_provider not in {"codex", "claude"}:
+            raise ValueError("Unknown runtime provider")
+        self.expected_provider = expected_provider
 
     async def cancel(self, request_id: str) -> str:
         if not re.fullmatch(r"[a-zA-Z0-9_-]{1,80}", request_id):
@@ -74,7 +77,7 @@ class RuntimeClient:
                             retry = 0
                         raise ProviderFault(code, FAULT_MESSAGES[code], retry)
                     result = ProviderResponse.model_validate(data)
-                    if result.request_id != request.request_id or result.provider != "codex":
+                    if result.request_id != request.request_id or result.provider != self.expected_provider:
                         raise ValueError("Mismatched provider result")
                     json.dumps(result.model_dump(mode="json"), allow_nan=False)
                     return result

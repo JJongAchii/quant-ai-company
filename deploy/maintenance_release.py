@@ -53,8 +53,16 @@ def link(target):
     os.replace(temp, CURRENT)
 
 
+def services(root):
+    envfile = STATE/'config/runtime.env'
+    enabled = any(line.strip() == 'COMPANY_STAFF_REVIEW_ENABLED=true'
+                  for line in envfile.read_text().splitlines()) if envfile.exists() else False
+    supported = (root/'src/quant_company/providers/claude_runtime.py').is_file()
+    return SERVICES + (['claude-runtime'] if enabled and supported else [])
+
+
 def compose(root, *args, env=None):
-    return run(['docker', 'compose', '--profile', 'maintenance', '--env-file', str(STATE/'config/runtime.env'),
+    return run(['docker', 'compose', '--profile', 'maintenance', '--profile', 'claude', '--env-file', str(STATE/'config/runtime.env'),
                 '-f', str(root/'deploy/compose.yaml'), *args], env=env)
 
 
@@ -86,7 +94,9 @@ def validate_tree(previous, target):
     protected = {'api.py', 'cli.py', 'config.py', 'db.py', 'schema.sql', 'socket_mode.py',
                  'owner_controls.py', 'state_schema.sql', 'web_fetch.py', 'finance_sources.py', 'maintenance/policy.py',
                  'maintenance/github.py', 'maintenance/applications.py', 'maintenance/releases.py', 'maintenance/schema.sql',
-                 'staff/cases.py', 'staff/store.py', 'staff/runner.py', 'staff/workflow.py', 'staff/schema.sql', 'staff/packs.py'}
+                 'staff/cases.py', 'staff/store.py', 'staff/runner.py', 'staff/workflow.py', 'staff/schema.sql', 'staff/packs.py',
+                 'staff/progress.py', 'staff/comparisons.py', 'maintenance/evaluation.py',
+                 'staff/independent_review.py', 'staff/review_contract.py'}
 
     def inventory(root):
         output = {}
@@ -138,7 +148,7 @@ def validate_tree(previous, target):
 
 
 def health(commit, postgres_id):
-    rows = json.loads(run(['docker', 'inspect', *['quant-company-'+s+'-1' for s in ['postgres', *SERVICES]]]))
+    rows = json.loads(run(['docker', 'inspect', *['quant-company-'+s+'-1' for s in ['postgres', *services(CURRENT.resolve())]]]))
     for row in rows:
         state = row['State']
         if not state['Running'] or state['OOMKilled'] or state.get('Health', {}).get('Status', 'healthy') != 'healthy':
@@ -166,7 +176,7 @@ def take_backup(previous, envfile):
     spec.loader.exec_module(backup)
     for key, value in backup.config_values(STATE/'config/backup.env').items():
         os.environ[key] = value
-    command = ['docker', 'compose', '--profile', 'maintenance', '--env-file', str(envfile),
+    command = ['docker', 'compose', '--profile', 'maintenance', '--profile', 'claude', '--env-file', str(envfile),
                '-f', str(previous/'deploy/compose.yaml')]
     backup.backup(SimpleNamespace(env_file=envfile, s3_uri=None), backup.config_values(envfile), command, STATE)
 
@@ -191,7 +201,7 @@ def execute(item):
         atomic(rolesfile, (records/(identity+'.roles')).read_bytes())
         previous = Path(record['previous'])
         link(previous)
-        compose(previous, 'up', '-d', '--no-deps', '--wait', '--wait-timeout', '120', *SERVICES)
+        compose(previous, 'up', '-d', '--no-deps', '--wait', '--wait-timeout', '120', *services(previous))
         stable_health(previous.name, record['postgres_id'])
         record.update(state='rolled_back', error='interrupted_cutover_restored')
         atomic(journal, json.dumps(record).encode())
@@ -207,7 +217,8 @@ def execute(item):
         qcommit = json.loads((target/'deploy/qdata-source.json').read_text())['commit']
         buildenv = {**os.environ, 'RELEASE_COMMIT': commit, 'QDATA_COMMIT': qcommit,
                     'QDATA_BUILD_CONTEXT': str(target/'qdata')}
-        for service in ['api', 'codex-runtime', 'maintenance']:
+        for service in ['api', 'codex-runtime', 'maintenance'] + (
+                ['claude-runtime'] if 'claude-runtime' in services(target) else []):
             compose(target, 'build', service, env=buildenv)
         oldenv, oldroles = envfile.read_bytes(), rolesfile.read_bytes()
         postgres_id = json.loads(run(['docker', 'inspect', 'quant-company-postgres-1']))[0]['Id']
@@ -239,7 +250,7 @@ def execute(item):
                     role[key] = candidate[role['id']][key]
         atomic(rolesfile, json.dumps(roles, ensure_ascii=False).encode())
         link(target)
-        compose(target, 'up', '-d', '--no-deps', '--wait', '--wait-timeout', '120', *SERVICES)
+        compose(target, 'up', '-d', '--no-deps', '--wait', '--wait-timeout', '120', *services(target))
         record.update(state='complete', **stable_health(commit, postgres_id))
         atomic(journal, json.dumps(record).encode())
     except Exception as exc:
@@ -251,7 +262,7 @@ def execute(item):
             atomic(envfile, (records/(identity+'.env')).read_bytes())
             atomic(rolesfile, (records/(identity+'.roles')).read_bytes())
             link(previous)
-            compose(previous, 'up', '-d', '--no-deps', '--wait', '--wait-timeout', '120', *SERVICES)
+            compose(previous, 'up', '-d', '--no-deps', '--wait', '--wait-timeout', '120', *services(previous))
             stable_health(previous.name, record['postgres_id'])
             record.update(state='rolled_back', error=code)
         else:

@@ -201,8 +201,13 @@ class Maintainer:
                 "use prompt_replay with two distinct cited recorded turn keys "
                 "for the SAME employee: one failing target and one already-correct control. Only status, delegation, "
                 "tool and sourced-artifact properties are measurable; do not claim they measure reasoning quality. "
-                "Staff assessment failures are released synthetic practice observations. They can motivate a "
-                "reproducible tool/runtime repair; they are not saved production turn keys for prompt_replay. "
+                "For a staff_assessment failure, use staff_replay to repair exactly one matching employee playbook. "
+                "Set evaluation.staff_run_id to its exact recorded run_id, cases=[], and cite its staff: key. "
+                "The server freezes a released target and two hidden fresh cases, compares base/candidate with "
+                "the same model/tools, and grades objective fields. It does not grade explanations or certify expertise. "
+                "The current model and base procedure must match the failed run; stale failures require new evidence. "
+                "Staff assessment failures can also motivate a reproducible tool/runtime repair; they are not "
+                "saved production turn keys for prompt_replay. "
                 "Never modify staff graders or encode case answers in a procedure. Lacking replay evidence "
                 "requires collecting evidence or a concrete design proposal, not fabricated test results. "
                 "If relevant implementation is missing from this prompt, return inspect requests (path, query, "
@@ -257,6 +262,10 @@ class Maintainer:
                     self.github.read_files, payload["snapshot"], payload["finding"]["paths"])
                 self.store.save(job_id, "patch", payload=payload)
             mode = payload["finding"]["evaluation"]["mode"]
+            if mode == "staff_replay":
+                from ..staff.comparisons import freeze
+
+                freeze(self.company, job)
             test_path = (ROOT + "tests/test_maintenance_regression_" + job_id.replace("-", "") + ".py"
                          if mode == "regression" else None)
             candidate = {**payload["originals"], **payload.get("changes", {})}
@@ -272,6 +281,8 @@ class Maintainer:
                 "occur exactly once in the supplied file. When required_new_test_path is null, add NO files or tests; "
                 "prompt_replay changes ONLY the selected employee mission/instructions in roles.json, "
                 "and uses the frozen recorded-request replay, not a new Python test. "
+                "staff_replay changes ONLY the declared employee playbook. Describe a generalizable procedure "
+                "repair; never include released case answers or IDs. The server's hidden cases are unavailable. "
                 "For regression, new files are allowed at declared new_paths and required_new_test_path with empty old. "
                 "Python changes require a meaningful regression test that fails on base and passes after implementation. "
                 "Test the user's observable behavior, including the consumer path. For a new API/module, assert its "
@@ -299,7 +310,7 @@ class Maintainer:
             if payload["finding"]["evaluation"]["mode"] == "documentation":
                 payload["evaluation"] = {"mode": "documentation", "state": "documentation_review_required",
                                          "scope": "Documentation change only; no behavioral improvement is established."}
-            state = "evaluate" if payload["finding"]["evaluation"]["mode"] == "prompt_replay" else "publish"
+            state = "evaluate" if mode in {"prompt_replay", "staff_replay"} else "publish"
             self.store.save(job_id, state, payload=payload)
         elif job["state"] == "design":
             payload["originals"] = {}
@@ -313,6 +324,11 @@ class Maintainer:
             if digest(payload["changes"]) != payload["patch_digest"]:
                 raise ValueError("persisted_patch_changed")
             plan = verify_plan(payload).evaluation
+            if plan.mode == "staff_replay":
+                from ..staff.comparisons import advance
+
+                await advance(self, job)
+                return
             results = payload.setdefault("replay_results", {})
             # One reserved model response per tick, even when a paired evaluation spans days.
             for case in plan.cases:
@@ -349,6 +365,10 @@ class Maintainer:
                         or evaluation.get("inputs_digest") != payload["replay_inputs_digest"]
                         or evaluation.get("base") != payload["snapshot"]["commit"]):
                     raise ValueError("behavior_evaluation_receipt_required")
+            elif finding.evaluation.mode == "staff_replay":
+                from ..staff.comparisons import verify_receipt
+
+                verify_receipt(self.company, job)
             elif finding.evaluation.mode == "design_only":
                 if payload["changes"] != design_document(job):
                     raise ValueError("design_document_changed")
@@ -384,6 +404,10 @@ class Maintainer:
                         or evaluation.get("inputs_digest") != payload["replay_inputs_digest"]
                         or evaluation.get("base") != receipt["base"]):
                     raise ValueError("behavior_evaluation_receipt_required")
+            elif finding.evaluation.mode == "staff_replay":
+                from ..staff.comparisons import verify_receipt
+
+                verify_receipt(self.company, job)
             elif finding.evaluation.mode == "design_only" and payload["changes"] != design_document(job):
                 raise ValueError("design_document_changed")
             if receipt.get("ci", {}).get("state") != "passed":

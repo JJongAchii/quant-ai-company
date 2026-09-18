@@ -65,6 +65,33 @@ def test_host_accepts_procedures_but_rejects_grader_changes(tmp_path):
         release.validate_tree(previous, target)
 
 
+@pytest.mark.parametrize('name', ['staff/independent_review.py', 'staff/review_contract.py',
+                                  'staff/progress.py', 'staff/comparisons.py', 'maintenance/evaluation.py'])
+def test_host_cannot_rewrite_evaluator_or_promotion_rules(tmp_path, name):
+    previous, target = tmp_path/'old', tmp_path/'new'
+    previous.mkdir()
+    path = target/'src/quant_company'/name
+    path.parent.mkdir(parents=True)
+    path.write_text('altered judge')
+    with pytest.raises(ValueError, match='protected_file'):
+        release.validate_tree(previous, target)
+
+
+def test_optional_claude_follows_installed_code_and_activation(tmp_path, monkeypatch):
+    monkeypatch.setattr(release, 'STATE', tmp_path/'state')
+    env = release.STATE/'config/runtime.env'
+    env.parent.mkdir(parents=True)
+    env.write_text('COMPANY_STAFF_REVIEW_ENABLED=true\n')
+    root = tmp_path/'release'
+    assert 'claude-runtime' not in release.services(root)
+    module = root/'src/quant_company/providers/claude_runtime.py'
+    module.parent.mkdir(parents=True)
+    module.write_text('qualified runtime')
+    assert 'claude-runtime' in release.services(root)
+    env.write_text('COMPANY_STAFF_REVIEW_ENABLED=false\n')
+    assert 'claude-runtime' not in release.services(root)
+
+
 def fixture_host(tmp_path, monkeypatch, *, fail_health=False):
     state = tmp_path/'state'
     (state/'config').mkdir(parents=True)

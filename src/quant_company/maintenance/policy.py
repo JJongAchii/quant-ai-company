@@ -17,6 +17,8 @@ PROTECTED = {
     "maintenance/policy.py", "maintenance/github.py", "maintenance/applications.py",
     "maintenance/releases.py", "maintenance/schema.sql",
     "staff/cases.py", "staff/store.py", "staff/runner.py", "staff/workflow.py", "staff/schema.sql", "staff/packs.py",
+    "staff/progress.py", "staff/comparisons.py", "maintenance/evaluation.py",
+    "staff/independent_review.py", "staff/review_contract.py",
 }
 SECRET = re.compile(
     r"(?:AKIA|ASIA)[A-Z0-9]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|"
@@ -65,12 +67,15 @@ class ReplayCase(StrictModel):
 
 
 class EvaluationPlan(StrictModel):
-    mode: Literal["regression", "prompt_replay", "documentation", "design_only"]
+    mode: Literal["regression", "prompt_replay", "staff_replay", "documentation", "design_only"]
     success_criterion: str = Field(min_length=10, max_length=1500)
     cases: list[ReplayCase] = Field(default_factory=list, max_length=2)
+    staff_run_id: str | None = Field(default=None, pattern=r"^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$")
 
     @model_validator(mode="after")
     def paired_replay(self):
+        if (self.mode == "staff_replay") != (self.staff_run_id is not None):
+            raise ValueError("staff_replay_requires_recorded_failure_run")
         if self.mode == "prompt_replay":
             if ({case.purpose for case in self.cases} != {"target", "control"}
                     or len({case.request_key for case in self.cases}) != 2):
