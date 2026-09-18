@@ -371,11 +371,21 @@ class Company:
 
         messages = conn.execute("""SELECT author,recipient,kind,text,revision FROM messages WHERE project_id=%s
             ORDER BY created_at DESC,id DESC LIMIT 35""", (project["id"],)).fetchall()[::-1]
+        # Only service-produced read receipts identify consumed evidence. Recheck approval,
+        # availability and project ownership below; a historical receipt is not authorization.
+        read_ids = set()
+        for message in messages:
+            if message["kind"] != "tool" or message["author"] != "tool:read_source":
+                continue
+            receipt = json.loads(message["text"])["receipt"]
+            if isinstance(receipt, dict) and isinstance(receipt.get("id"), str):
+                read_ids.add(receipt["id"])
         children = conn.execute("SELECT agent,instruction,status,result,error FROM tasks WHERE parent_id=%s",
                                 (task["id"],)).fetchall()
         sources = conn.execute("""SELECT id,title,uri,available_at,synthetic,metadata FROM sources WHERE approved
-            AND available_at<=now() AND (project_id IS NULL OR project_id=%s) ORDER BY available_at DESC,id LIMIT 50""",
-                               (project["id"],)).fetchall()
+            AND available_at<=now() AND (project_id IS NULL OR project_id=%s)
+            ORDER BY (id=ANY(%s)) DESC,available_at DESC,id LIMIT 50""",
+                               (project["id"], sorted(read_ids))).fetchall()
         memories = conn.execute("""SELECT text,source_ids FROM memories m WHERE status='verified'
             AND (project_id=%s OR (shared AND EXISTS(SELECT 1 FROM projects p
             WHERE p.id=m.project_id AND p.owner_user=%s))) ORDER BY created_at DESC LIMIT 15""",
@@ -403,8 +413,12 @@ class Company:
                 system = current_system(conn, self, [project["owner_user"]])
                 identity = record_source(conn, project, "system_status", system)
                 context["system"] = {**system, "source_id": identity}
-                context["approved_sources"].append({"id": identity, "title": "Current system evidence",
-                                                     "uri": "company://records/" + identity, "synthetic": False})
+                context["approved_sources"].insert(0, {"id": identity, "title": "Current system evidence",
+                                                       "uri": "company://records/" + identity, "synthetic": False})
+                read_ids.add(identity)
+        # Keep explicitly requested, currently approved sources even before the first read.
+        read_ids.update(source["id"] for source in context["approved_sources"]
+                        if source["id"] in task["instruction"])
         # The DB keeps full evidence. Explicitly bounded excerpts keep an old busy project from
         # exhausting the model context or subscription on every turn.
         for child in context["child_results"]:
@@ -413,17 +427,39 @@ class Company:
                     child[key] = child[key][:limit] + " [excerpt; full content remains in project records]"
                     context["context_truncated"] = True
         while len(json.dumps(context, ensure_ascii=False)) > 68000:
-            for key, minimum in [("messages", 3), ("recent_artifacts", 0), ("verified_memories", 0),
-                                 ("approved_sources", 0), ("child_results", 0)]:
+            for key, minimum, index in [("messages", 3, 0), ("recent_artifacts", 0, -1),
+                                        ("verified_memories", 0, -1), ("approved_sources", 0, -1),
+                                        ("child_results", 0, 0)]:
+                if key == "approved_sources":
+                    index = next((i for i in range(len(context[key]) - 1, -1, -1)
+                                  if context[key][i]["id"] not in read_ids), None)
+                    if index is None:
+                        continue
                 if len(context[key]) > minimum:
-                    context[key].pop(0)
+                    context[key].pop(index)
                     context["context_truncated"] = True
                     break
             else:
                 # Three remaining messages can each contain a large source/tool response.
                 for message in context["messages"]:
-                    message["text"] = message["text"][:3000] + " [excerpt]"
+                    if len(message["text"]) > 3000:
+                        message["text"] = message["text"][:3000] + " [excerpt; full content remains in project records]"
+                for source in context["approved_sources"]:
+                    source.pop("metadata", None)
+                if len(json.dumps(context, ensure_ascii=False)) > 68000 and "system" in context:
+                    system = context["system"]
+                    context["system"] = {
+                        "source_id": system["source_id"], "excerpted": True,
+                        "repository": {k: v for k, v in system.get("repository", {}).items()
+                                       if k in {"state", "commit", "checked_at", "reason"}},
+                        "runtime": {k: v for k, v in system.get("runtime", {}).items()
+                                    if k in {"code_commit", "roles_digest", "config_digest"}},
+                        "interpretation": "Bounded summary, not a complete status report. Use read_source with "
+                                          "source_id for full evidence. Omitted evidence is unknown, not absent.",
+                    }
                 context["context_truncated"] = True
+                if len(json.dumps(context, ensure_ascii=False)) > 68000:
+                    raise PolicyError("Required task context exceeds the bounded prompt budget")
                 break
         return context
 
