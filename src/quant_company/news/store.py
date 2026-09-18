@@ -207,7 +207,9 @@ class NewsStore:
             bundle = as_json({"primary_ids": primary, "articles": articles, "events": events,
                               "as_of": datetime.now(UTC), "mode": "publish" if self.company.settings.news_publish_enabled else "preview"})
             identity = "news-" + str(uuid4())
-            request = ProviderRequest(request_id=identity, model=self.company.role("reporter").model, prompt=bounded_prompt(bundle))
+            role = self.company.role("reporter")
+            request = ProviderRequest(request_id=identity, model=role.model, reasoning_effort=role.reasoning_effort,
+                                      prompt=bounded_prompt(bundle))
             conn.execute("INSERT INTO daily_usage(day,reserved) VALUES(CURRENT_DATE,0) ON CONFLICT DO NOTHING")
             used = conn.execute("SELECT reserved FROM daily_usage WHERE day=CURRENT_DATE FOR UPDATE").fetchone()["reserved"]
             cap = effective_limits(conn, self.company)["company"]

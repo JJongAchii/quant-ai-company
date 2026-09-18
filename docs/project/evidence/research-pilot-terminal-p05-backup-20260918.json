@@ -1,0 +1,43 @@
+{
+  "kind": "private-terminal-repair-backup-readback",
+  "recorded_at": "2026-09-18T02:31:01.749506+00:00",
+  "uri": "s3://quant-company-061039802347-backups/company/research/company-kr-etf-pilot/terminal-repair-p05-20260918/ef254400868d911320c599892cf9c665911444a32fa8b734b9a9d5e76ad1b3b5.tar.gz",
+  "sha256": "ef254400868d911320c599892cf9c665911444a32fa8b734b9a9d5e76ad1b3b5",
+  "bytes": 14223652,
+  "readback_sha256": "ef254400868d911320c599892cf9c665911444a32fa8b734b9a9d5e76ad1b3b5",
+  "put_receipt": {
+    "Expiration": "expiry-date=\"Mon, 19 Oct 2026 00:00:00 GMT\", rule-id=\"CompanyBackupRetention\"",
+    "ETag": "\"97b8b28ea7e429905c0d16c64e6900b7\"",
+    "ChecksumSHA256": "7yVEAIaNkRMgxZmJLPnGZZEURKMvqLc0uanV52rRs7U=",
+    "ChecksumType": "FULL_OBJECT",
+    "ServerSideEncryption": "AES256",
+    "VersionId": "vV3BQgjYEhdqyiqrjsV5OWrOuWTe37J4"
+  },
+  "contents": [
+    "labs/company-kr-etf-pilot/output/terminal-reviewed-05",
+    "labs/company-kr-etf-pilot/output/q-baseline-terminal-05",
+    "labs/company-kr-etf-pilot/output/path-baseline-terminal-05",
+    "labs/company-kr-etf-pilot/data/terminal-kind-05",
+    "labs/company-kr-etf-pilot/data/terminal-kind-05-normalized",
+    "labs/company-kr-etf-pilot/data/terminal-nav-05",
+    "labs/company-kr-etf-pilot/data/terminal-dart-05",
+    "labs/company-kr-etf-pilot/data/terminal-unit-141250",
+    "labs/company-kr-etf-pilot/data/terminal-combined-kind-05.json",
+    "labs/company-kr-etf-pilot/data/terminal-combined-nav-05.json",
+    "labs/company-kr-etf-pilot/data/terminal-combined-kind-05r.json",
+    "labs/company-kr-etf-pilot/data/terminal-combined-nav-05r.json",
+    "docs/research/company-kr-etf-pilot/P05-MANIFEST.json",
+    "docs/research/company-kr-etf-pilot/TERMINAL-DOCUMENTARY-REVIEW-P05.json",
+    "docs/research/company-kr-etf-pilot/TERMINAL-PROSPECTUS-P05-SPEC.json",
+    "docs/research/company-kr-etf-pilot/TERMINAL-NAV-P05-SPEC.json",
+    "docs/research/company-kr-etf-pilot/Q04-worker.log",
+    "docs/research/company-kr-etf-pilot/PATH02-worker.log",
+    "docs/research/company-kr-etf-pilot/SEARCH.jsonl",
+    "docs/research/company-kr-etf-pilot/TECHNICAL-BUDGET-AMENDMENT-PROPOSAL.md",
+    "labs/company-kr-etf-pilot/configs/baseline-terminal-05.json"
+  ],
+  "new_bucket_created": false,
+  "archive_includes_secrets": false,
+  "performance_computed": false,
+  "retention": "Existing CompanyBackupRetention lifecycle applies; actual Expiration in the put receipt is not permanent archival."
+}

@@ -72,6 +72,9 @@ def test_frozen_request_restart_tool_roundtrip_and_no_answer_leak(staff_company)
     store = StaffStore(staff_company)
     run_id = store.enqueue("financial_strategist", "UHUMAN")
     ready = store.prepare()
+    assert ready["request"]["reasoning_effort"] == "max"
+    staff_company.roles["financial_strategist"] = staff_company.roles["financial_strategist"].model_copy(
+        update={"reasoning_effort": "high"})
     prompt = ready["request"]["prompt"]
     assert "answer_key" not in prompt and "relative_tolerance" not in prompt
     restarted = StaffStore(Company(staff_company.settings))
@@ -82,6 +85,7 @@ def test_frozen_request_restart_tool_roundtrip_and_no_answer_leak(staff_company)
     assert store.commit(run_id, response)["state"] == "running"
     assert store.commit(run_id, response)["duplicate"]
     second = store.prepare()
+    assert second["request"]["reasoning_effort"] == "max"
     assert second["request"]["request_id"] != ready["request"]["request_id"]
     assert "base_currency_return" in second["request"]["prompt"]
     result = reply(second["request"], answer=oracle_answer(staff_company, run_id))

@@ -1,0 +1,1253 @@
+{
+  "kind": "kofia-historical-nav-source-inspection",
+  "recorded_at": "2026-09-18T00:30:23.519207+00:00",
+  "collector_commit": "3c5fc88",
+  "collector_path": "labs/company-kr-etf-pilot/fetch_terminal_nav.py",
+  "research_manifest_path": "/Users/achii/quant-ws/company-kr-etf-pilot/quant-lab/labs/company-kr-etf-pilot/data/terminal-nav-20260918/evidence.json",
+  "research_manifest_sha256": "f2f092c61f0fb41f43d0d0b0d9b1248fa6318e1a4e2f32c904348883b7572caf",
+  "source_url": "https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/fundann/DISFundStdPrice.xml",
+  "endpoint": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
+  "query_count": 80,
+  "returned_rows": 48,
+  "semantic_sha256": "bc73ce5e1b1a42e455721203e66dafe7d6c5703d5e7a0e44f1c07f34fb326057",
+  "researcher_independent_refetch_values_match": true,
+  "records": [
+    {
+      "ticker": "104580",
+      "query": "Brazil",
+      "reference_date": "20150216",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "삼성KODEX Brazil증권상장지수투자신탁[주식]",
+          "fund_standard_code": "KR5105860229",
+          "company_code": "A01005",
+          "nav": "4478.99",
+          "tax_nav": "4330.77",
+          "reference_date": "20150216"
+        }
+      ],
+      "raw_sha256": "c86228391344635f6552153a9be16b534d028852b42dc6cccd391515ba8d80cc",
+      "rows_sha256": "25cf47a5df99569d687548ac5186a1f446973638ee84ae4c5b21ad32cac6c25b",
+      "retrieved_at": "2026-09-18T00:24:06.098413+00:00"
+    },
+    {
+      "ticker": "104580",
+      "query": "Brazil",
+      "reference_date": "20150217",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "삼성KODEX Brazil증권상장지수투자신탁[주식]",
+          "fund_standard_code": "KR5105860229",
+          "company_code": "A01005",
+          "nav": "4500.97",
+          "tax_nav": "4352.74",
+          "reference_date": "20150217"
+        }
+      ],
+      "raw_sha256": "ff68c111abc0a2cc7aeb4bf216dccbb3261b7fd0943f3028e6fccd46b74f1a46",
+      "rows_sha256": "c3edfde0796c0591f6191701c44ee5767cd68b8254a01246ae3783f750409ebb",
+      "retrieved_at": "2026-09-18T00:24:06.368627+00:00"
+    },
+    {
+      "ticker": "104580",
+      "query": "Brazil",
+      "reference_date": "20150223",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "삼성KODEX Brazil증권상장지수투자신탁[주식]",
+          "fund_standard_code": "KR5105860229",
+          "company_code": "A01005",
+          "nav": "4498.23",
+          "tax_nav": "4350",
+          "reference_date": "20150223"
+        }
+      ],
+      "raw_sha256": "03dc7b74ccea66769b8de19bf2bbed75534728ee0800f23249c36e87529c247b",
+      "rows_sha256": "5431dadf82b65214562f3e6dd2bd3bcc99901a4af00427dfda008ab679ff080e",
+      "retrieved_at": "2026-09-18T00:24:06.660984+00:00"
+    },
+    {
+      "ticker": "104580",
+      "query": "Brazil",
+      "reference_date": "20150224",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "abfc4c5a95a7e0e7c6d7037ab7642d957efbffc6b6e80ea00b9c80c4bd1ef629",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:06.922633+00:00"
+    },
+    {
+      "ticker": "104580",
+      "query": "Brazil",
+      "reference_date": "20150225",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "7dbf2a2aed5bfb6466ec2a79e4efd361b905c9cb808d682630d2c2ada0362516",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:07.198266+00:00"
+    },
+    {
+      "ticker": "104580",
+      "query": "Brazil",
+      "reference_date": "20150226",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "707ec466e7d13689e75e73ca6f0971b4f1ccffe53808deb9f52135e8aa03a3ae",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:07.461021+00:00"
+    },
+    {
+      "ticker": "104580",
+      "query": "Brazil",
+      "reference_date": "20150227",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "10f694c2a55299a99fcbecfd0f65648ddbe73947d041224a49299b1f08a742e9",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:07.724290+00:00"
+    },
+    {
+      "ticker": "104580",
+      "query": "Brazil",
+      "reference_date": "20150302",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "564ebaf5e1da0ff83418be9fd851dfecc057534088e81a67a42042d5016f21f4",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:08.003343+00:00"
+    },
+    {
+      "ticker": "104580",
+      "query": "Brazil",
+      "reference_date": "20150303",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "93de9a055ed5ee9458f1c2c9d05d077bf50a30cef02c81819562ed92c1df9277",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:08.277998+00:00"
+    },
+    {
+      "ticker": "104580",
+      "query": "Brazil",
+      "reference_date": "20150304",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "f69ea480654acaffb2b32f13458f081676918920e3ebc46fe44e4716e7e15c61",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:08.563054+00:00"
+    },
+    {
+      "ticker": "166060",
+      "query": "KODEX주식",
+      "reference_date": "20150216",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "삼성KODEX주식&골드선물(H)혼합자산상장지수투자신탁[혼합자산-파생형]",
+          "fund_standard_code": "KR5105AC4178",
+          "company_code": "A01005",
+          "nav": "8247.81",
+          "tax_nav": "8433.19",
+          "reference_date": "20150216"
+        }
+      ],
+      "raw_sha256": "c9f1c6a90dc4a7903deb19bb7a09a70832f62f4e2eeaa90bb980fe769a8b3aea",
+      "rows_sha256": "a4dd5a298aeccf03bc33507a60c7ce9713b7b95ce11b7d6420f909c00b3d23df",
+      "retrieved_at": "2026-09-18T00:24:08.879992+00:00"
+    },
+    {
+      "ticker": "166060",
+      "query": "KODEX주식",
+      "reference_date": "20150217",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "삼성KODEX주식&골드선물(H)혼합자산상장지수투자신탁[혼합자산-파생형]",
+          "fund_standard_code": "KR5105AC4178",
+          "company_code": "A01005",
+          "nav": "8241.26",
+          "tax_nav": "8426.67",
+          "reference_date": "20150217"
+        }
+      ],
+      "raw_sha256": "9d9ca336caf4dd859ca0eea0b14346596e8ca8cfd9338edbe270e5b1b2070c7a",
+      "rows_sha256": "ac69d7633f12b858cb2d8fe88f731bfc2bcd82e1de847718149a4573ea0308bf",
+      "retrieved_at": "2026-09-18T00:24:09.167107+00:00"
+    },
+    {
+      "ticker": "166060",
+      "query": "KODEX주식",
+      "reference_date": "20150223",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "삼성KODEX주식&골드선물(H)혼합자산상장지수투자신탁[혼합자산-파생형]",
+          "fund_standard_code": "KR5105AC4178",
+          "company_code": "A01005",
+          "nav": "8216.1",
+          "tax_nav": "8401.46",
+          "reference_date": "20150223"
+        }
+      ],
+      "raw_sha256": "e2ac439ca9d055df343ac710a02d8ee95c0a97e24d849405bf1211140ddbe024",
+      "rows_sha256": "83f340d9d04dee1afbbb6de0c2a1903633fc2ead3fe5fc22ac9486eb7d9bc6dc",
+      "retrieved_at": "2026-09-18T00:24:09.447071+00:00"
+    },
+    {
+      "ticker": "166060",
+      "query": "KODEX주식",
+      "reference_date": "20150224",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "6b1bbbf8b62ce6226e9af8cc0f1bf16ec123cd92c2487db1dd129f3aa0543886",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:09.742718+00:00"
+    },
+    {
+      "ticker": "166060",
+      "query": "KODEX주식",
+      "reference_date": "20150225",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "b52f5c097d1d86da3b8472b661273fdd42ab38aaefe7ddef31b4c77fc697c786",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:10.022436+00:00"
+    },
+    {
+      "ticker": "166060",
+      "query": "KODEX주식",
+      "reference_date": "20150226",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "8b98945bf84866f23c6164827f5e01dee722f682613b69f2fe9625e12db07fbf",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:10.290256+00:00"
+    },
+    {
+      "ticker": "166060",
+      "query": "KODEX주식",
+      "reference_date": "20150227",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "b529b4a598b50047779dff3514ef9414a8d74b33698824703f76f789c38fc511",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:10.563163+00:00"
+    },
+    {
+      "ticker": "166060",
+      "query": "KODEX주식",
+      "reference_date": "20150302",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "a61509afb74cdde972d94767ab44829df4c7a416188830759545af5a9db54b3a",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:10.840251+00:00"
+    },
+    {
+      "ticker": "166060",
+      "query": "KODEX주식",
+      "reference_date": "20150303",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "6ab36299d99a5dd6e477fa4f1c521831d06cf66dc12ef32070ea4cd17997811b",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:11.110573+00:00"
+    },
+    {
+      "ticker": "166060",
+      "query": "KODEX주식",
+      "reference_date": "20150304",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "3370c3c1e049502cec43235f4c0d7d64f16e6e17c35bbc5708db93a060b40062",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:11.385091+00:00"
+    },
+    {
+      "ticker": "161530",
+      "query": "ARIRANG조선",
+      "reference_date": "20150216",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG조선운증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3252",
+          "company_code": "A01021",
+          "nav": "3072.13",
+          "tax_nav": "4702.21",
+          "reference_date": "20150216"
+        }
+      ],
+      "raw_sha256": "c06d1c15e0daef74afd20a943f19122cf0affd289693aeeefaf3bbb5612c804a",
+      "rows_sha256": "ed7677cd184b82373e6720d790ab8f2f8aee004e0c7e3583e09dadbc3b40f256",
+      "retrieved_at": "2026-09-18T00:24:11.658971+00:00"
+    },
+    {
+      "ticker": "161530",
+      "query": "ARIRANG조선",
+      "reference_date": "20150217",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG조선운증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3252",
+          "company_code": "A01021",
+          "nav": "3025.15",
+          "tax_nav": "4702.18",
+          "reference_date": "20150217"
+        }
+      ],
+      "raw_sha256": "b329c2383df02e09fbe61d438ea7fa3d05f059a1c0034c972345da714794522f",
+      "rows_sha256": "b77c4534f91dd8d92203942c0f05402602959a65a61bc2cff4f35179a5d805e1",
+      "retrieved_at": "2026-09-18T00:24:11.930089+00:00"
+    },
+    {
+      "ticker": "161530",
+      "query": "ARIRANG조선",
+      "reference_date": "20150223",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG조선운증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3252",
+          "company_code": "A01021",
+          "nav": "3053",
+          "tax_nav": "4701.98",
+          "reference_date": "20150223"
+        }
+      ],
+      "raw_sha256": "af229521de817647b086f6708f2cbdd3ac92a12cf92cfe838417d952321d2ea7",
+      "rows_sha256": "6c126ae98e948c6d3951a6cf82f71ab107c843b7cc27b008cdc3ab5f247edd53",
+      "retrieved_at": "2026-09-18T00:24:12.191019+00:00"
+    },
+    {
+      "ticker": "161530",
+      "query": "ARIRANG조선",
+      "reference_date": "20150224",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG조선운증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3252",
+          "company_code": "A01021",
+          "nav": "3027.09",
+          "tax_nav": "4701.94",
+          "reference_date": "20150224"
+        }
+      ],
+      "raw_sha256": "a7c340620354205614d8593eb8863bfb1df996224c48b2b4cc39721e0ca58cdb",
+      "rows_sha256": "4b39951c2ec2aff7994a27391675b50f923ae0f863b005793e5205da2cdc7ebd",
+      "retrieved_at": "2026-09-18T00:24:12.458503+00:00"
+    },
+    {
+      "ticker": "161530",
+      "query": "ARIRANG조선",
+      "reference_date": "20150225",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG조선운증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3252",
+          "company_code": "A01021",
+          "nav": "2963.76",
+          "tax_nav": "4701.91",
+          "reference_date": "20150225"
+        }
+      ],
+      "raw_sha256": "fa6c65cdcd7618799094a3b3b3e920617147a21b0e73477b952707d1bf085d73",
+      "rows_sha256": "00539bf88b7b74161480ced190399cb9faae63ae92efda9406f838fd81a48a9c",
+      "retrieved_at": "2026-09-18T00:24:12.726483+00:00"
+    },
+    {
+      "ticker": "161530",
+      "query": "ARIRANG조선",
+      "reference_date": "20150226",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG조선운증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3252",
+          "company_code": "A01021",
+          "nav": "3034.28",
+          "tax_nav": "4701.86",
+          "reference_date": "20150226"
+        }
+      ],
+      "raw_sha256": "c71c2dfe80c3f1785a83e993ee5aab5d8fe978f92e178cd8c96cad1bce570221",
+      "rows_sha256": "97d4240cf9cc860526019c52824114c3c2dab19e951db99b07a56bf554c873b9",
+      "retrieved_at": "2026-09-18T00:24:12.993530+00:00"
+    },
+    {
+      "ticker": "161530",
+      "query": "ARIRANG조선",
+      "reference_date": "20150227",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG조선운증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3252",
+          "company_code": "A01021",
+          "nav": "3142.88",
+          "tax_nav": "4701.68",
+          "reference_date": "20150227"
+        }
+      ],
+      "raw_sha256": "6bcfeaf73384fe91d157222587ae8e55d8e80f813581ede8b35df64fa51ecabc",
+      "rows_sha256": "8af29447006fee2fd037c94c5fa142fc4c1214ccdf90c00a6eaf74a6264cdd5e",
+      "retrieved_at": "2026-09-18T00:24:13.261429+00:00"
+    },
+    {
+      "ticker": "161530",
+      "query": "ARIRANG조선",
+      "reference_date": "20150302",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG조선운증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3252",
+          "company_code": "A01021",
+          "nav": "3129.27",
+          "tax_nav": "4701.49",
+          "reference_date": "20150302"
+        }
+      ],
+      "raw_sha256": "2ffe1e0029a18f2be676c780fbf23d71cec19cc56f97be17936fffeed82b63b0",
+      "rows_sha256": "04db407ead8d57bfa6e859b9a6cee7f74f739a9186db668ca33ac8b80626beb8",
+      "retrieved_at": "2026-09-18T00:24:13.552026+00:00"
+    },
+    {
+      "ticker": "161530",
+      "query": "ARIRANG조선",
+      "reference_date": "20150303",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG조선운증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3252",
+          "company_code": "A01021",
+          "nav": "3127.91",
+          "tax_nav": "4701.43",
+          "reference_date": "20150303"
+        }
+      ],
+      "raw_sha256": "0d248b23487123245ff8f196165fc153f0f9959c65430f99e38af807a457a567",
+      "rows_sha256": "86d52e25bb108bcd34741c8ff42ef02c3d0a82d0e8c09c71c4f286236e33fb10",
+      "retrieved_at": "2026-09-18T00:24:13.828730+00:00"
+    },
+    {
+      "ticker": "161530",
+      "query": "ARIRANG조선",
+      "reference_date": "20150304",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "90e152ddf815bfc61540ae94d1c160e8f82af29fbc7d136da5a37f9d3d55c865",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:14.088240+00:00"
+    },
+    {
+      "ticker": "161550",
+      "query": "ARIRANG화학",
+      "reference_date": "20150216",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG화학증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3260",
+          "company_code": "A01021",
+          "nav": "4129.54",
+          "tax_nav": "6306.8",
+          "reference_date": "20150216"
+        }
+      ],
+      "raw_sha256": "2715760a9c09fd23e6db1dea4f1411438e61c923b2c05ad3e890b94e74adcd04",
+      "rows_sha256": "638dd6bba9f05a90d379c91635c73a10777245f6c7e4cdeb49c4b6a2bfc6d90a",
+      "retrieved_at": "2026-09-18T00:24:14.371890+00:00"
+    },
+    {
+      "ticker": "161550",
+      "query": "ARIRANG화학",
+      "reference_date": "20150217",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG화학증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3260",
+          "company_code": "A01021",
+          "nav": "4067.21",
+          "tax_nav": "6306.75",
+          "reference_date": "20150217"
+        }
+      ],
+      "raw_sha256": "2fe525ab1d1121d7b7fc46bceb35950d61b7af9f4bd5e5ac249ba9e6eae9f002",
+      "rows_sha256": "82686660ac68fc19fd7950a25ee822e7cb653cbdf33c2397b70d46ea10e34df1",
+      "retrieved_at": "2026-09-18T00:24:14.645088+00:00"
+    },
+    {
+      "ticker": "161550",
+      "query": "ARIRANG화학",
+      "reference_date": "20150223",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG화학증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3260",
+          "company_code": "A01021",
+          "nav": "4106.09",
+          "tax_nav": "6306.67",
+          "reference_date": "20150223"
+        }
+      ],
+      "raw_sha256": "5c4771eb9390b8412352006a1437a11a829c7e7d5174416dcfc5435c4963d385",
+      "rows_sha256": "cb8e16a6bb96da1d6694262d6412b0a0fc49c57f15dfdc7143284d4d0d3ab229",
+      "retrieved_at": "2026-09-18T00:24:14.911229+00:00"
+    },
+    {
+      "ticker": "161550",
+      "query": "ARIRANG화학",
+      "reference_date": "20150224",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG화학증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3260",
+          "company_code": "A01021",
+          "nav": "4135.61",
+          "tax_nav": "6306.63",
+          "reference_date": "20150224"
+        }
+      ],
+      "raw_sha256": "9a03d6df3e7b50d2e2164b3ba29018711260f393acdbc8c32ef4fcc8bcdc8bf9",
+      "rows_sha256": "5a56fec5a749061aa496f415b057bd6c2a3c042fac73a72e055c2d0a09aa2d4f",
+      "retrieved_at": "2026-09-18T00:24:15.244767+00:00"
+    },
+    {
+      "ticker": "161550",
+      "query": "ARIRANG화학",
+      "reference_date": "20150225",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG화학증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3260",
+          "company_code": "A01021",
+          "nav": "4134.44",
+          "tax_nav": "6306.59",
+          "reference_date": "20150225"
+        }
+      ],
+      "raw_sha256": "b99f864270e8875d6ff321046761a28b6e4b6ed5fe8628751dc4b5f56cc9327d",
+      "rows_sha256": "fef9d1c5de943f26a3a5ee5fecb43a1dc1881461c963cd607fcc1f2f95c9521d",
+      "retrieved_at": "2026-09-18T00:24:15.578637+00:00"
+    },
+    {
+      "ticker": "161550",
+      "query": "ARIRANG화학",
+      "reference_date": "20150226",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG화학증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3260",
+          "company_code": "A01021",
+          "nav": "4255.87",
+          "tax_nav": "6305.69",
+          "reference_date": "20150226"
+        }
+      ],
+      "raw_sha256": "f87d78560f7543b76e5260922a80bb65559a578f445dd1a47b87a95afc3c52e0",
+      "rows_sha256": "c2398cdff77f8f5104077120d9a205936ce124be54599c89b9cfc2162a30d66e",
+      "retrieved_at": "2026-09-18T00:24:15.848050+00:00"
+    },
+    {
+      "ticker": "161550",
+      "query": "ARIRANG화학",
+      "reference_date": "20150227",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG화학증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3260",
+          "company_code": "A01021",
+          "nav": "4302.96",
+          "tax_nav": "6301.1",
+          "reference_date": "20150227"
+        }
+      ],
+      "raw_sha256": "4348684421835292c5fbae84c473328fc83a3d0d2023803bd5e21235b5cb36a5",
+      "rows_sha256": "6ac3b1a47165b97c6c8251ef4a78362413b752c1d1fb9151f7600e98c46c9f90",
+      "retrieved_at": "2026-09-18T00:24:16.122048+00:00"
+    },
+    {
+      "ticker": "161550",
+      "query": "ARIRANG화학",
+      "reference_date": "20150302",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG화학증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3260",
+          "company_code": "A01021",
+          "nav": "4258.18",
+          "tax_nav": "6300.7",
+          "reference_date": "20150302"
+        }
+      ],
+      "raw_sha256": "b72f12fc3ec9d56c9b06651514840e90df5d7c54112e03566c9c2b28382b0789",
+      "rows_sha256": "5269f97e4a9a0ee43d6c78ed1920be04c2dab5b8d0398f02291b10ab09156ff7",
+      "retrieved_at": "2026-09-18T00:24:16.404272+00:00"
+    },
+    {
+      "ticker": "161550",
+      "query": "ARIRANG화학",
+      "reference_date": "20150303",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG화학증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3260",
+          "company_code": "A01021",
+          "nav": "4250.83",
+          "tax_nav": "6287.56",
+          "reference_date": "20150303"
+        }
+      ],
+      "raw_sha256": "b61eaab2f20dc9a5a2b9d73d5441acd4908288eca36b8206ed049012f2528844",
+      "rows_sha256": "d2bd9b4d1e9adf1769195b0177bfce64a4ef3b05d33a211a13982664e38ee832",
+      "retrieved_at": "2026-09-18T00:24:16.691600+00:00"
+    },
+    {
+      "ticker": "161550",
+      "query": "ARIRANG화학",
+      "reference_date": "20150304",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "01d89a2f3b8b73b4a25f91ecd1af0196509e9fdc83e1048ea30600e68853b6bf",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:16.956294+00:00"
+    },
+    {
+      "ticker": "161520",
+      "query": "ARIRANG자동차",
+      "reference_date": "20150216",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG자동차증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3245",
+          "company_code": "A01021",
+          "nav": "7354.22",
+          "tax_nav": "10005.23",
+          "reference_date": "20150216"
+        }
+      ],
+      "raw_sha256": "ef188f8c8d6e21e6f7fab95cde40d45a205bfcc8b71dca8366a4618923127e02",
+      "rows_sha256": "d795329355f025062f9429d0be4b618c1c9301fab45faa0fa5a0e0ef33d8c776",
+      "retrieved_at": "2026-09-18T00:24:17.206903+00:00"
+    },
+    {
+      "ticker": "161520",
+      "query": "ARIRANG자동차",
+      "reference_date": "20150217",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG자동차증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3245",
+          "company_code": "A01021",
+          "nav": "7326.85",
+          "tax_nav": "10005.15",
+          "reference_date": "20150217"
+        }
+      ],
+      "raw_sha256": "8e3a02973f8a11dd4f92be0102477e0f7187abe5afef90d618855ccc0bd61c11",
+      "rows_sha256": "c7b7a576ea8b28dd3589fa51270d23b15c3754e1553d26b7605aef41dc4ba27e",
+      "retrieved_at": "2026-09-18T00:24:17.483190+00:00"
+    },
+    {
+      "ticker": "161520",
+      "query": "ARIRANG자동차",
+      "reference_date": "20150223",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG자동차증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3245",
+          "company_code": "A01021",
+          "nav": "7447.31",
+          "tax_nav": "10004.68",
+          "reference_date": "20150223"
+        }
+      ],
+      "raw_sha256": "f544d3803cfa55004f208ed122c1e638c07e28897babcfc00cf42b23e5fa7f87",
+      "rows_sha256": "a87a6d7da0879b9ea5b86cd74fb82fe4c6d022487ffdb0661efe4b3d77547823",
+      "retrieved_at": "2026-09-18T00:24:17.751981+00:00"
+    },
+    {
+      "ticker": "161520",
+      "query": "ARIRANG자동차",
+      "reference_date": "20150224",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG자동차증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3245",
+          "company_code": "A01021",
+          "nav": "7508.07",
+          "tax_nav": "10004.6",
+          "reference_date": "20150224"
+        }
+      ],
+      "raw_sha256": "4f51be7ad4916f73670d57420ccc286ab11bcace357b90a54947f7b870a806a0",
+      "rows_sha256": "cdfaf67d694b4b8763118aa7c1a6f188859b9958c4b70a87480c977821c0762f",
+      "retrieved_at": "2026-09-18T00:24:18.020731+00:00"
+    },
+    {
+      "ticker": "161520",
+      "query": "ARIRANG자동차",
+      "reference_date": "20150225",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG자동차증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3245",
+          "company_code": "A01021",
+          "nav": "7520.01",
+          "tax_nav": "10005.45",
+          "reference_date": "20150225"
+        }
+      ],
+      "raw_sha256": "f2ae14924543cee4bcdd7ebde52614eb1155084e6eee83d5c1e6d533d9603d43",
+      "rows_sha256": "46f949be1e842d146cd4f809dc4cc78aa7974af0c1d6758e2c045a3c4b231005",
+      "retrieved_at": "2026-09-18T00:24:18.307583+00:00"
+    },
+    {
+      "ticker": "161520",
+      "query": "ARIRANG자동차",
+      "reference_date": "20150226",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG자동차증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3245",
+          "company_code": "A01021",
+          "nav": "7563.67",
+          "tax_nav": "10005.14",
+          "reference_date": "20150226"
+        }
+      ],
+      "raw_sha256": "3c85d3dfa1f1f8e613459d18459f50e5e3c4632ee87c18cab27e4935c124252c",
+      "rows_sha256": "c6a448dca0a2b88c83a7c3732262ef29afefab001697aee3fdef21f8e129e038",
+      "retrieved_at": "2026-09-18T00:24:18.563754+00:00"
+    },
+    {
+      "ticker": "161520",
+      "query": "ARIRANG자동차",
+      "reference_date": "20150227",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG자동차증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3245",
+          "company_code": "A01021",
+          "nav": "7540.68",
+          "tax_nav": "10001.36",
+          "reference_date": "20150227"
+        }
+      ],
+      "raw_sha256": "3836f056590f6d23fb89f28d15f0f8f2ece308b2afdd5a5c5a88fe2e95687679",
+      "rows_sha256": "9fbc97046e618b4a5c2e634ad18394bcd14caaa354a5129b19b26a7dff695575",
+      "retrieved_at": "2026-09-18T00:24:18.837649+00:00"
+    },
+    {
+      "ticker": "161520",
+      "query": "ARIRANG자동차",
+      "reference_date": "20150302",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG자동차증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3245",
+          "company_code": "A01021",
+          "nav": "7416.66",
+          "tax_nav": "10000.15",
+          "reference_date": "20150302"
+        }
+      ],
+      "raw_sha256": "41ebbc9735964b0271682a483e7731397be7fcedd1b87bba44fa269dcb4e9c00",
+      "rows_sha256": "4edad4110c9d3274b24ba66d7047e317169d68a7e75da4c26a5585a6dde216b0",
+      "retrieved_at": "2026-09-18T00:24:19.108736+00:00"
+    },
+    {
+      "ticker": "161520",
+      "query": "ARIRANG자동차",
+      "reference_date": "20150303",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG자동차증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC3245",
+          "company_code": "A01021",
+          "nav": "7417.55",
+          "tax_nav": "9999.75",
+          "reference_date": "20150303"
+        }
+      ],
+      "raw_sha256": "5844366c030851726b26cde70bee245667022d77428dfa220c429585dac18319",
+      "rows_sha256": "d4fb39ff6952952a9b991f9315dd7ad451ba7ef44bf407ede477ef07f09f6b1d",
+      "retrieved_at": "2026-09-18T00:24:19.382533+00:00"
+    },
+    {
+      "ticker": "161520",
+      "query": "ARIRANG자동차",
+      "reference_date": "20150304",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "8d31e83c92a276b894fa03b857610cdff5ec1e8750f203e082c21ce9babcfdfd",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:19.661308+00:00"
+    },
+    {
+      "ticker": "161540",
+      "query": "ARIRANG철강",
+      "reference_date": "20150216",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG철강금속증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC2353",
+          "company_code": "A01021",
+          "nav": "6160.33",
+          "tax_nav": "7623.21",
+          "reference_date": "20150216"
+        }
+      ],
+      "raw_sha256": "5f5af74069504a3025c71f8f3d59d498ad2a4a824a829a08ad25e7a381545e5e",
+      "rows_sha256": "b1e826c8f6d5d25b8895a07308e0d3d075916100f1f33ccd0c27eec54d675bff",
+      "retrieved_at": "2026-09-18T00:24:19.942080+00:00"
+    },
+    {
+      "ticker": "161540",
+      "query": "ARIRANG철강",
+      "reference_date": "20150217",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG철강금속증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC2353",
+          "company_code": "A01021",
+          "nav": "6155.81",
+          "tax_nav": "7623.16",
+          "reference_date": "20150217"
+        }
+      ],
+      "raw_sha256": "fe274147c0516bf4eed560cef6a2092686aad8abf34e194fcf4b7cb7b4307c39",
+      "rows_sha256": "7747a70c6827499462d443471f199a288f94e196697c7ff8bbd09eb63c9f37ae",
+      "retrieved_at": "2026-09-18T00:24:20.203661+00:00"
+    },
+    {
+      "ticker": "161540",
+      "query": "ARIRANG철강",
+      "reference_date": "20150223",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG철강금속증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC2353",
+          "company_code": "A01021",
+          "nav": "6172.33",
+          "tax_nav": "7622.82",
+          "reference_date": "20150223"
+        }
+      ],
+      "raw_sha256": "ef3ca43c868e874853fe8b949fd3533cf502d6a3bc4ea57ede9567536eaa4bd2",
+      "rows_sha256": "880a802f42b2aba2ec3d11d276f9589572844f52515ce2ec42b3bf83bf5cc5c3",
+      "retrieved_at": "2026-09-18T00:24:20.474506+00:00"
+    },
+    {
+      "ticker": "161540",
+      "query": "ARIRANG철강",
+      "reference_date": "20150224",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG철강금속증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC2353",
+          "company_code": "A01021",
+          "nav": "6203.43",
+          "tax_nav": "7624.26",
+          "reference_date": "20150224"
+        }
+      ],
+      "raw_sha256": "88e1a5c527e56952635a92c467294fd1677e22bd9cc0bdb481ab61067f6c04a1",
+      "rows_sha256": "392b4914dbbf1543858e88977cc57fa2f16a9543f9152dbfed485013151b4b2e",
+      "retrieved_at": "2026-09-18T00:24:20.749137+00:00"
+    },
+    {
+      "ticker": "161540",
+      "query": "ARIRANG철강",
+      "reference_date": "20150225",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG철강금속증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC2353",
+          "company_code": "A01021",
+          "nav": "6185.2",
+          "tax_nav": "7624.64",
+          "reference_date": "20150225"
+        }
+      ],
+      "raw_sha256": "b4695e782c309783a0e50e74f4d528985daef01219ec5e104fbf13faa0501809",
+      "rows_sha256": "7b2ca9fbfd9389db1cc043cb8a1964319ac3f86ac81ead56a7b1e8d26f4b2fcd",
+      "retrieved_at": "2026-09-18T00:24:21.033800+00:00"
+    },
+    {
+      "ticker": "161540",
+      "query": "ARIRANG철강",
+      "reference_date": "20150226",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG철강금속증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC2353",
+          "company_code": "A01021",
+          "nav": "6289.76",
+          "tax_nav": "7625.08",
+          "reference_date": "20150226"
+        }
+      ],
+      "raw_sha256": "0848917ab6e6f7f79037cd1873ef5e2a9e3c80da1483b4ce9fd879256e678e18",
+      "rows_sha256": "36608ec073d25abe7638b12b77f949f69c9923d7ab0f969052064f5257822b29",
+      "retrieved_at": "2026-09-18T00:24:21.307649+00:00"
+    },
+    {
+      "ticker": "161540",
+      "query": "ARIRANG철강",
+      "reference_date": "20150227",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG철강금속증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC2353",
+          "company_code": "A01021",
+          "nav": "6338.79",
+          "tax_nav": "7632.64",
+          "reference_date": "20150227"
+        }
+      ],
+      "raw_sha256": "b1831c7c3ea0241068b2d5672a085be14887789c725efb7157b6ea2948f16f2e",
+      "rows_sha256": "692e8a506a10d3e653bb3f58c3212d98e6c96e129577de96fda744ad3e9e9aed",
+      "retrieved_at": "2026-09-18T00:24:21.599485+00:00"
+    },
+    {
+      "ticker": "161540",
+      "query": "ARIRANG철강",
+      "reference_date": "20150302",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG철강금속증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC2353",
+          "company_code": "A01021",
+          "nav": "6219.07",
+          "tax_nav": "7631.55",
+          "reference_date": "20150302"
+        }
+      ],
+      "raw_sha256": "eb2189ad3f7793c751b005048d1cd1f13df96e12a6c1b4fd13c31a6126b60701",
+      "rows_sha256": "416a28215f49abc2c9979f5e3fc81be49a56c95e15bd6ab5e3c563276eb2acb2",
+      "retrieved_at": "2026-09-18T00:24:21.883680+00:00"
+    },
+    {
+      "ticker": "161540",
+      "query": "ARIRANG철강",
+      "reference_date": "20150303",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "한화ARIRANG철강금속증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5213AC2353",
+          "company_code": "A01021",
+          "nav": "6233.88",
+          "tax_nav": "7631.2",
+          "reference_date": "20150303"
+        }
+      ],
+      "raw_sha256": "2f7efaef7d53b2cfc87f5166b49828dd2b24c2999be0076bf25dcebf9e7b5eca",
+      "rows_sha256": "b9c37ede92da2449e8c1e0d14c150ac694bae8f70e74e1323cce2f8eb22d189e",
+      "retrieved_at": "2026-09-18T00:24:22.171499+00:00"
+    },
+    {
+      "ticker": "161540",
+      "query": "ARIRANG철강",
+      "reference_date": "20150304",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "2b60b2288d64355ff810d4e1c3fe9a67682e0a50df3bf65bfa38fb7bff357bba",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:22.433342+00:00"
+    },
+    {
+      "ticker": "091200",
+      "query": "KOSEFIT",
+      "reference_date": "20150216",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "키움KOSEF IT상장지수증권투자신탁(주식)",
+          "fund_standard_code": "KR5206578217",
+          "company_code": "A01014",
+          "nav": "15451.11",
+          "tax_nav": "8072.92",
+          "reference_date": "20150216"
+        }
+      ],
+      "raw_sha256": "d50577f43a374a8157f0b87177939d7c58315d184788cbade305252f0a514246",
+      "rows_sha256": "2be6e53e9f7a45755b444acc2036f84df05c72bff246e68f5028a45831833992",
+      "retrieved_at": "2026-09-18T00:24:22.714612+00:00"
+    },
+    {
+      "ticker": "091200",
+      "query": "KOSEFIT",
+      "reference_date": "20150217",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "키움KOSEF IT상장지수증권투자신탁(주식)",
+          "fund_standard_code": "KR5206578217",
+          "company_code": "A01014",
+          "nav": "15409.57",
+          "tax_nav": "8072.75",
+          "reference_date": "20150217"
+        }
+      ],
+      "raw_sha256": "23299349ba38bf64753fbffa25c29aa4147544c7202728e4a19e199cb1668786",
+      "rows_sha256": "febdf8fe959883e659286cf9f6ae1f16f47f694f46d524374f797bb25d9c3a7a",
+      "retrieved_at": "2026-09-18T00:24:23.006980+00:00"
+    },
+    {
+      "ticker": "091200",
+      "query": "KOSEFIT",
+      "reference_date": "20150223",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "키움KOSEF IT상장지수증권투자신탁(주식)",
+          "fund_standard_code": "KR5206578217",
+          "company_code": "A01014",
+          "nav": "15384.09",
+          "tax_nav": "8071.31",
+          "reference_date": "20150223"
+        }
+      ],
+      "raw_sha256": "dc71d39d3b627eb544395edafeb23121a50c064a5902634a004bd566d8a3f082",
+      "rows_sha256": "dbf543bdc42183cf364121b2c3fe0ac82963b4a6411cd3337d3ed58bab3d2357",
+      "retrieved_at": "2026-09-18T00:24:23.305109+00:00"
+    },
+    {
+      "ticker": "091200",
+      "query": "KOSEFIT",
+      "reference_date": "20150224",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "1eb58f22cbb0bf837239a96983fe91b70487a70f0ec96435523e605f90df7f8a",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:23.598812+00:00"
+    },
+    {
+      "ticker": "091200",
+      "query": "KOSEFIT",
+      "reference_date": "20150225",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "9c3a805a1e22f147dc308e2644ec6b2f3c8b3922760ca747697fadbd08ea02ed",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:23.866378+00:00"
+    },
+    {
+      "ticker": "091200",
+      "query": "KOSEFIT",
+      "reference_date": "20150226",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "8646189b208bb925d2e2323752e9df5ffc4d29ff3d0d87cf2ee78a0aa7efcbd3",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:24.127131+00:00"
+    },
+    {
+      "ticker": "091200",
+      "query": "KOSEFIT",
+      "reference_date": "20150227",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "0d87bf465f5e9faf55ec036526035ba8fb24cb0686b0a65afc44e315361621b9",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:24.399373+00:00"
+    },
+    {
+      "ticker": "091200",
+      "query": "KOSEFIT",
+      "reference_date": "20150302",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "b9c6cd0fa52b9f2debd8f47c16e49b9bf50d57d62f16eb79a979851c488d0640",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:24.686823+00:00"
+    },
+    {
+      "ticker": "091200",
+      "query": "KOSEFIT",
+      "reference_date": "20150303",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "3ffabdf5e507b156fd3a0f51ceba33ccb67eaf778e0938640b57773f591abcc1",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:24.969769+00:00"
+    },
+    {
+      "ticker": "091200",
+      "query": "KOSEFIT",
+      "reference_date": "20150304",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "840faa16e554cee0513afa1b323fe441d393f5fa2ac79e2af1b61629fd29a44f",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:25.251355+00:00"
+    },
+    {
+      "ticker": "105020",
+      "query": "TIGER브릭스",
+      "reference_date": "20150216",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "미래에셋TIGER브릭스증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5225844756",
+          "company_code": "A01048",
+          "nav": "4842.36",
+          "tax_nav": "4605.1",
+          "reference_date": "20150216"
+        }
+      ],
+      "raw_sha256": "16776ef5bbb2bb36806c60e59d8fe18386ba852f390123d963a00e2eead45c34",
+      "rows_sha256": "449fd21d8149e9b4398302153f7cc6a306747ad6cee5359f671ac48e728500b1",
+      "retrieved_at": "2026-09-18T00:24:25.522227+00:00"
+    },
+    {
+      "ticker": "105020",
+      "query": "TIGER브릭스",
+      "reference_date": "20150217",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "미래에셋TIGER브릭스증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5225844756",
+          "company_code": "A01048",
+          "nav": "4917.51",
+          "tax_nav": "4680.25",
+          "reference_date": "20150217"
+        }
+      ],
+      "raw_sha256": "40c8aad59d2a430d04fcfc65c1840ce6fc070e5c2b35eaa140c07b2a16c9bd93",
+      "rows_sha256": "453df1548b9728e3330f572f63e45705a8e8db68e044c6a7522bf3ffe18dbbb1",
+      "retrieved_at": "2026-09-18T00:24:25.797307+00:00"
+    },
+    {
+      "ticker": "105020",
+      "query": "TIGER브릭스",
+      "reference_date": "20150223",
+      "row_count": 1,
+      "rows": [
+        {
+          "fund_name": "미래에셋TIGER브릭스증권상장지수투자신탁(주식)",
+          "fund_standard_code": "KR5225844756",
+          "company_code": "A01048",
+          "nav": "4917.05",
+          "tax_nav": "4679.79",
+          "reference_date": "20150223"
+        }
+      ],
+      "raw_sha256": "f9581d39968d112da77d9bb724a67eed5f9ab6c58242e79a6d92a73c4a90cf37",
+      "rows_sha256": "f3a5d2af79dd038eec8cf572ca0163ff25f3660fa8a9a2c3b12f351f5f7710fa",
+      "retrieved_at": "2026-09-18T00:24:26.065085+00:00"
+    },
+    {
+      "ticker": "105020",
+      "query": "TIGER브릭스",
+      "reference_date": "20150224",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "5eeed1e52d5004052795fb411353e2149177f076e7e03849bd4f2219739383ef",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:26.339569+00:00"
+    },
+    {
+      "ticker": "105020",
+      "query": "TIGER브릭스",
+      "reference_date": "20150225",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "060965058c125195645bb4a58b91a7296c30cfa42f8e5d0c70ff4dbb2a74a17c",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:26.609644+00:00"
+    },
+    {
+      "ticker": "105020",
+      "query": "TIGER브릭스",
+      "reference_date": "20150226",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "bf2df9b65b79f6b87429e9ee16a35029bbcdcfae20f0571932ee6617041e45ae",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:26.905290+00:00"
+    },
+    {
+      "ticker": "105020",
+      "query": "TIGER브릭스",
+      "reference_date": "20150227",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "6ec76229abbe6cf30e26dc4d83d047634477adb4f43745741866c6bc8735fee0",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:27.179316+00:00"
+    },
+    {
+      "ticker": "105020",
+      "query": "TIGER브릭스",
+      "reference_date": "20150302",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "07b7485e614b67afd21594a4d68797b1e9511f5fec997f10bf7a32c1760d0008",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:27.449277+00:00"
+    },
+    {
+      "ticker": "105020",
+      "query": "TIGER브릭스",
+      "reference_date": "20150303",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "c8e2ec6f3419651a8e5dc1bcd04d2129ffe3b167601fdcf0bbfaeb7a641da74a",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:27.732870+00:00"
+    },
+    {
+      "ticker": "105020",
+      "query": "TIGER브릭스",
+      "reference_date": "20150304",
+      "row_count": 0,
+      "rows": [],
+      "raw_sha256": "44fe486b35b77afbae7af4b9d6b1c01db23f94a65311b4ffda53c21fe47b686b",
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "retrieved_at": "2026-09-18T00:24:28.011836+00:00"
+    }
+  ],
+  "performance_computed": false,
+  "original_publication_timestamps_verified": false,
+  "source_limit": "Reference date, valuation date, retrieval timestamp and historical availability are separate. Current historical responses are not immutable original-vintage snapshots. Daily NAV is different from final redemption reference price; no automatic backward fill or cash settlement.",
+  "unit_limit": "Raw NAV is unadjusted and must be linked to documented ETF unit/adjusted-index accounting.",
+  "execution_status": "not yet an executable terminal valuation contract"
+}

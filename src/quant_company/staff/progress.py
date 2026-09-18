@@ -22,14 +22,16 @@ UNMEASURED = {
 
 
 def history(conn, owner, employee):
-    return conn.execute("""SELECT id::text,model,pack_snapshot->>'digest' AS pack_digest,suite_version,
+    return conn.execute("""SELECT id::text,model,role_snapshot->>'reasoning_effort' AS reasoning_effort,
+        pack_snapshot->>'digest' AS pack_digest,suite_version,
         public_case->>'family' AS family,case_digest,state,grade,created_at::text
         FROM staff_runs WHERE owner_user=%s AND employee=%s
         ORDER BY created_at DESC,id DESC LIMIT 200""", (owner, employee)).fetchall()
 
 
-def profile(rows, employee, model, pack_digest):
+def profile(rows, employee, model, pack_digest, reasoning_effort=None):
     current = [r for r in rows if r["model"] == model and r["pack_digest"] == pack_digest
+               and r.get("reasoning_effort") == reasoning_effort
                and r["suite_version"] == SUITE_VERSION]
     families = []
     for family in FAMILIES[employee]:
@@ -57,15 +59,16 @@ def profile(rows, employee, model, pack_digest):
                          "weaknesses": failures[0]["grade"].get("weaknesses", []) if failures else [],
                          "blocked": sum(r["state"] == "blocked" for r in matching),
                          "disputed": sum(r["state"] == "disputed" for r in matching)})
-    return {"employee": employee, "model": model, "pack_digest": pack_digest, "suite_version": SUITE_VERSION,
+    return {"employee": employee, "model": model, "reasoning_effort": reasoning_effort,
+            "pack_digest": pack_digest, "suite_version": SUITE_VERSION,
             "families": families, "unmeasured_requirements": UNMEASURED[employee],
             "explanation_review": "unscored_requires_independent_review", "recheck_passes_required": RECHECK_PASSES,
             "meaning": "Bounded practice evidence for this exact configuration; not expertise or improvement proof."}
 
 
-def development(conn, owner, employee, model):
+def development(conn, owner, employee, model, reasoning_effort=None):
     rows = history(conn, owner, employee)
-    report = profile(rows, employee, model, pack(employee)["digest"])
+    report = profile(rows, employee, model, pack(employee)["digest"], reasoning_effort)
     families = report["families"]
     # At most two consecutive allocations to a family, including blocked calls, preserve breadth.
     last = [r["family"] for r in rows[:2]]

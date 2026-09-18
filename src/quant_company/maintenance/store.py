@@ -259,7 +259,7 @@ class Store:
             conn.execute("UPDATE maintenance_jobs SET state='done',error=NULL,receipt=%s,updated_at=now() WHERE id=%s",
                          (Jsonb(receipt), job["id"]))
 
-    def prepare_call(self, job, phase, prompt, *, model=None, web_search=False):
+    def prepare_call(self, job, phase, prompt, *, model=None, reasoning_effort=None, web_search=False):
         revision = job["payload"].get("diagnostic_revision", 0)
         call_id = f"maint-{job['id']}" + (f"-r{revision}" if revision else "") + f"-{phase}"
         with self.db.transaction() as conn:
@@ -288,8 +288,12 @@ class Store:
             if ((limits["company"] is not None and usage["reserved"] >= limits["company"])
                     or (limits["maintenance"] is not None and count["n"] >= limits["maintenance"])):
                 raise Deferred("daily_model_budget")
-            model = model or self.company.roles["engineer"].model
-            request = ProviderRequest(request_id=call_id, model=model, prompt=prompt, web_search=web_search)
+            if model is None:
+                role = self.company.roles["engineer"]
+                model, reasoning_effort = role.model, role.reasoning_effort
+            # An explicit replay model retains the frozen effort, including legacy None.
+            request = ProviderRequest(request_id=call_id, model=model, reasoning_effort=reasoning_effort,
+                                      prompt=prompt, web_search=web_search)
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             return conn.execute("""INSERT INTO maintenance_calls(id,job_id,request) VALUES (%s,%s,%s)
                 RETURNING *""", (call_id, job["id"], Jsonb(request.model_dump()))).fetchone()

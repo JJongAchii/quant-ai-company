@@ -44,6 +44,8 @@ class StaffModel:
         self.requests = []
 
     async def run(self, request):
+        expected = "high" if "EXERCISE JSON:\n" in request.prompt else "max"
+        assert request.reasoning_effort == expected
         self.requests.append(request)
         if "-staff-" in request.request_id:
             context = json.loads(request.prompt.split("EXERCISE JSON:\n", 1)[1])

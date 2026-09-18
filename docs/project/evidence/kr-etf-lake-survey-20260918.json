@@ -1,0 +1,31 @@
+{
+  "source_id": "operator:kr-etf-lake-survey-20260918",
+  "provenance": "Read-only lake-surveyor tool observations supplied by the Codex operator; not a Slack employee's own full scan",
+  "observed_at": "2026-09-18T07:31:22+09:00",
+  "lake": "s3://insight-invest-datalake/qdata",
+  "access": "qdata.api; final publication statistics read on Mac, no backtest or training",
+  "prices": {"from": "2012-01-02", "through": "2026-09-17", "rows": 1674697, "sessions": 3615, "tickers_ever_observed": 1424, "tickers_latest": 1171, "duplicate_keys": 0, "adj_close_nulls": 0, "nonpositive_close": 0, "zero_volume_rows": 37372, "index_value_nulls": 100695},
+  "meta": {"rows": 1674697, "duplicate_keys": 0, "price_only_keys": 0, "meta_only_keys": 0, "joined_rows": 1674697, "index_kind_unknown": 1281836},
+  "profile": {"from": "2026-07-28", "through": "2026-09-17", "rows": 41868, "snapshots": 36, "latest_tickers": 1171},
+  "bad_traded_ohlc": [
+    {"ticker": "217790", "date": "2017-01-10", "open": 0, "high": 0, "low": 0, "close": 22305, "volume": 32073},
+    {"ticker": "269530", "date": "2022-12-08", "open": 0, "high": 0, "low": 0, "close": 13955, "volume": 4}
+  ],
+  "objects": [
+    {"key": "qdata/clean/krx_etf.parquet", "last_modified_utc": "2026-09-17T11:07:14Z", "bytes": 78540913, "etag": "9c4fb62c8f19a158aee1dff36af37706", "version_id": null},
+    {"key": "qdata/clean/krx_etf_meta.parquet", "last_modified_utc": "2026-09-17T11:07:15Z", "bytes": 24516517, "etag": "2d8776e0c3fbe4e020dc383718239ee5", "version_id": null},
+    {"key": "qdata/clean/krx_etf_profile.parquet", "last_modified_utc": "2026-09-17T11:07:15Z", "bytes": 451989, "etag": "4e5b7567481901edda64831b914c723f", "version_id": null}
+  ],
+  "etag_unchanged_during_final_read": true,
+  "return_basis": "krx_reference_price_adjusted_return; not cash-distribution reinvestment total return",
+  "limitations": [
+    "Historical profile classifications cannot be backfilled from the latest profile.",
+    "253 historically observed tickers absent from the latest date are not all independently confirmed delistings.",
+    "No official external calendar, ISIN reuse, cash distributions, delisting payments or per-row publication-time verification.",
+    "Two OHLC anomalies have not been reconciled with the original source.",
+    "Objects are mutable and unversioned; this receipt is not a recoverable frozen research snapshot.",
+    "No performance calculation, benchmark measurement, liquidity verdict or strategy adoption."
+  ],
+  "qdata_checkout_commit": "050433aad2f06b9cf58a034cf1c3b4952583fcd7",
+  "qdata_worker_commit": "bcc1d825078a3c2b59e7505a72697fdca70ec259"
+}

@@ -98,10 +98,11 @@ class Maintainer:
         self.github = github or GitHub(config)
         self.provider = provider or provider_for(company)
 
-    async def response(self, job, phase, prompt, *, model=None, web_search=False):
+    async def response(self, job, phase, prompt, *, model=None, reasoning_effort=None, web_search=False):
         if SECRET.search(prompt):
             raise ValueError("possible_secret_in_model_input")
-        call = self.store.prepare_call(job, phase, prompt, model=model, web_search=web_search)
+        call = self.store.prepare_call(job, phase, prompt, model=model, reasoning_effort=reasoning_effort,
+                                       web_search=web_search)
         if call["response"]:
             response = ProviderResponse.model_validate(call["response"])
         else:
@@ -336,11 +337,13 @@ class Maintainer:
                     if variant in results.get(case.purpose, {}):
                         continue
                     prompt, model, role, runtime, context = replay_material(payload, case, variant)
-                    response = await self.response(job, f"replay-{case.purpose}-{variant}", prompt, model=model)
+                    effort = payload["replay_inputs"][case.request_key]["request"].get("reasoning_effort")
+                    response = await self.response(job, f"replay-{case.purpose}-{variant}", prompt,
+                                                   model=model, reasoning_effort=effort)
                     checked = score(response.decision, case.expected, role, runtime, context)
                     results.setdefault(case.purpose, {})[variant] = {
                         **checked, "request_id": response.request_id, "response_digest": digest(response.model_dump(mode="json")),
-                        "provider": response.provider, "requested_model": model,
+                        "provider": response.provider, "requested_model": model, "reasoning_effort": effort,
                     }
                     self.store.save(job_id, "evaluate", payload=payload)
                     return

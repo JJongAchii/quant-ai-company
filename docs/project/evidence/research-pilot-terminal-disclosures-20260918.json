@@ -1,0 +1,518 @@
+{
+  "kind": "official-terminal-source-inspection",
+  "recorded_at": "2026-09-18T00:18:29.059767+00:00",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "query_window": [
+    "2014-12-01",
+    "2015-03-31"
+  ],
+  "research_manifest_path": "/Users/achii/quant-ws/company-kr-etf-pilot/quant-lab/labs/company-kr-etf-pilot/data/terminal-20260918/evidence.json",
+  "research_manifest_sha256": "c6f54ebc47a71082248d400b7304caa8a0e43c640e7d1738ad26df606dd9f9dd",
+  "records": [
+    {
+      "ticker": "091200",
+      "disclosures": [
+        {
+          "acptno": "20150216000186",
+          "docNo": "20150216000616",
+          "title": "상장폐지",
+          "nameInListing": "KOSEF IT",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-02-16 13:30",
+          "facts": {
+            "isin": "KR7091200006",
+            "haltDate": "2015-02-17",
+            "delistingDate": "2015-02-23"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/02/16/000186/20150216000616/68051.htm",
+            "rawSha256": "db47be63791974973502c37919c453f202b158086ce106be08f5e43c6fefff5f",
+            "retrievedAt": "2026-09-18T00:16:35.957502+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A091200",
+            "rawSha256": "819f2f7cd11718aabab76c1a4eee5135a21f2a65074e99cfacafa8daca5dd38b",
+            "retrievedAt": "2026-09-18T00:16:35.373924+00:00"
+          }
+        },
+        {
+          "acptno": "20150224000099",
+          "docNo": "20150224000307",
+          "title": "ETF기타시장안내(상장폐지 관련 해지 상환금 지급)",
+          "nameInListing": "KOSEF IT",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-02-24 11:29",
+          "facts": {
+            "paymentBasisDate": "2015.02.23",
+            "paymentDate": "2015.02.24",
+            "totalPaymentSourceText": "307,503,919",
+            "redemptionReferencePriceSourceText": "15,375.19595",
+            "taxReferencePriceSourceText": "8,063.5467",
+            "taxableDistributionSourceText": "146.9467"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/02/24/000099/20150224000307/68629.htm",
+            "rawSha256": "b3d7976cce9bd64b2baaac34ebb55e1e80cf726d7af92d5de5e254fa896b815b",
+            "retrievedAt": "2026-09-18T00:16:36.445459+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A091200",
+            "rawSha256": "819f2f7cd11718aabab76c1a4eee5135a21f2a65074e99cfacafa8daca5dd38b",
+            "retrievedAt": "2026-09-18T00:16:35.373924+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "104580",
+      "disclosures": [
+        {
+          "acptno": "20150216000182",
+          "docNo": "20150216000609",
+          "title": "상장폐지",
+          "nameInListing": "KODEX Brazil",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-02-16 13:31",
+          "facts": {
+            "isin": "KR7104580006",
+            "haltDate": "2015-02-17",
+            "delistingDate": "2015-02-23"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/02/16/000182/20150216000609/68051.htm",
+            "rawSha256": "3f79f59ec34a4fffb0e2cf6c0c9fefc2d3b09156495072cbd714c0fd379b4e44",
+            "retrievedAt": "2026-09-18T00:16:37.144383+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A104580",
+            "rawSha256": "a7e993ceb9252981ee74581cb67eb2a1cee09aecaf0baa3bd3846a9bbb4e7091",
+            "retrievedAt": "2026-09-18T00:16:36.701073+00:00"
+          }
+        },
+        {
+          "acptno": "20150224000098",
+          "docNo": "20150224000291",
+          "title": "ETF기타시장안내(상장폐지 관련 해지 상환금 지급)",
+          "nameInListing": "KODEX Brazil",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-02-24 11:30",
+          "facts": {
+            "paymentBasisDate": "2015.02.23",
+            "paymentDate": "2015.02.24",
+            "totalPaymentSourceText": "1,353,330,286",
+            "redemptionReferencePriceSourceText": "4,511.10095333333",
+            "taxReferencePriceSourceText": "4,362.87509333333",
+            "taxableDistributionSourceText": "0"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/02/24/000098/20150224000291/68629.htm",
+            "rawSha256": "8123788bd67144e28c9a8a7047526f1d3da2b33c3fd35976a2fbf20d9114cbeb",
+            "retrievedAt": "2026-09-18T00:16:37.743737+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A104580",
+            "rawSha256": "a7e993ceb9252981ee74581cb67eb2a1cee09aecaf0baa3bd3846a9bbb4e7091",
+            "retrievedAt": "2026-09-18T00:16:36.701073+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "105020",
+      "disclosures": [
+        {
+          "acptno": "20150216000185",
+          "docNo": "20150216000614",
+          "title": "상장폐지",
+          "nameInListing": "TIGER 브릭스",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-02-16 13:30",
+          "facts": {
+            "isin": "KR7105020002",
+            "haltDate": "2015-02-17",
+            "delistingDate": "2015-02-23"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/02/16/000185/20150216000614/68051.htm",
+            "rawSha256": "a437b57f6bf103d6bd74606751eb9f0db5a29c6f5f7612c98fb50e0ae5f7a2df",
+            "retrievedAt": "2026-09-18T00:16:38.238025+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A105020",
+            "rawSha256": "3e115c6a06250bd731111afa83a98570d2fc3ec1700f2c219a0a6588d726715d",
+            "retrievedAt": "2026-09-18T00:16:37.860142+00:00"
+          }
+        },
+        {
+          "acptno": "20150224000124",
+          "docNo": "20150224000328",
+          "title": "ETF기타시장안내(상장폐지 관련 해지 상환금 지급)",
+          "nameInListing": "TIGER 브릭스",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-02-24 11:29",
+          "facts": {
+            "paymentBasisDate": "2015.02.23",
+            "paymentDate": "2015.02.24",
+            "totalPaymentSourceText": "2,949,335,857",
+            "redemptionReferencePriceSourceText": "4,915.55976166667",
+            "taxReferencePriceSourceText": "4,678.2991",
+            "taxableDistributionSourceText": "0"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/02/24/000124/20150224000328/68629.htm",
+            "rawSha256": "a5e70917752b4cebafa22187be0817bb9bd4406851556d8e28a3bc302076e12a",
+            "retrievedAt": "2026-09-18T00:16:38.757697+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A105020",
+            "rawSha256": "3e115c6a06250bd731111afa83a98570d2fc3ec1700f2c219a0a6588d726715d",
+            "retrievedAt": "2026-09-18T00:16:37.860142+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "161520",
+      "disclosures": [
+        {
+          "acptno": "20150216000159",
+          "docNo": "20150216000605",
+          "title": "상장폐지",
+          "nameInListing": "ARIRANG 자동차",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-02-16 13:31",
+          "facts": {
+            "isin": "KR7161520002",
+            "haltDate": "2015-02-17",
+            "delistingDate": "2015-02-23"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/02/16/000159/20150216000605/68051.htm",
+            "rawSha256": "0bfc8409b3a31b67e7d830c881e83c1ab3c25e8126fa7e472fe5f28ef382c2cc",
+            "retrievedAt": "2026-09-18T00:16:39.545130+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A161520",
+            "rawSha256": "cc2f06d80a3385c8e0b98ae51650ae8335fd9e4571a5ed72da7f86d743161437",
+            "retrievedAt": "2026-09-18T00:16:38.987952+00:00"
+          }
+        },
+        {
+          "acptno": "20150304000179",
+          "docNo": "20150304000775",
+          "title": "ETF기타시장안내(상장폐지 관련 해지 상환금 지급)",
+          "nameInListing": "ARIRANG 자동차",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-03-04 14:17",
+          "facts": {
+            "paymentBasisDate": "2015.03.03",
+            "paymentDate": "2015.03.04",
+            "totalPaymentSourceText": "222,557,208",
+            "redemptionReferencePriceSourceText": "7,418.5736",
+            "taxReferencePriceSourceText": "10,000.7734",
+            "taxableDistributionSourceText": "94.5834"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/03/04/000179/20150304000775/68629.htm",
+            "rawSha256": "304c5b9b40eddcff70009bf052304bd043a4271cff5ded562bc26026a7213607",
+            "retrievedAt": "2026-09-18T00:16:40.264121+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A161520",
+            "rawSha256": "cc2f06d80a3385c8e0b98ae51650ae8335fd9e4571a5ed72da7f86d743161437",
+            "retrievedAt": "2026-09-18T00:16:38.987952+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "161530",
+      "disclosures": [
+        {
+          "acptno": "20150216000119",
+          "docNo": "20150216000480",
+          "title": "상장폐지",
+          "nameInListing": "ARIRANG 조선운송",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-02-16 13:31",
+          "facts": {
+            "isin": "KR7161530001",
+            "delistingDate": "2015-02-23"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/02/16/000119/20150216000480/68051.htm",
+            "rawSha256": "240bdcaf1f9efa51b917d011bf7fff33fca8107511d1a816f1fb79b36148fc71",
+            "retrievedAt": "2026-09-18T00:16:40.799324+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A161530",
+            "rawSha256": "008ccccf951f92421306fb81b9ce027e4e9c1ef6d7cd7c9e174cf4d6ec37824e",
+            "retrievedAt": "2026-09-18T00:16:40.391616+00:00"
+          }
+        },
+        {
+          "acptno": "20150304000248",
+          "docNo": "20150304000793",
+          "title": "ETF기타시장안내(상장폐지 관련 해지 상환금 지급)",
+          "nameInListing": "ARIRANG 조선운송",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-03-04 14:17",
+          "facts": {
+            "paymentBasisDate": "2015.03.03",
+            "paymentDate": "2015.03.04",
+            "totalPaymentSourceText": "782,045,603",
+            "redemptionReferencePriceSourceText": "3,128.182412",
+            "taxReferencePriceSourceText": "4,701.44328",
+            "taxableDistributionSourceText": "9.95328"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/03/04/000248/20150304000793/68629.htm",
+            "rawSha256": "ae63e90b652d69961761b1326fef3775da19553c1ccc41f2c20b1bc3b1ef30cf",
+            "retrievedAt": "2026-09-18T00:16:41.323932+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A161530",
+            "rawSha256": "008ccccf951f92421306fb81b9ce027e4e9c1ef6d7cd7c9e174cf4d6ec37824e",
+            "retrievedAt": "2026-09-18T00:16:40.391616+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "161540",
+      "disclosures": [
+        {
+          "acptno": "20150216000171",
+          "docNo": "20150216000622",
+          "title": "상장폐지",
+          "nameInListing": "ARIRANG 철강금속",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-02-16 13:31",
+          "facts": {
+            "isin": "KR7161540000",
+            "haltDate": "2015-02-17",
+            "delistingDate": "2015-02-23"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/02/16/000171/20150216000622/68051.htm",
+            "rawSha256": "c682d5fbd729cefdc222843cc7053141280ee96dd2d78340830dd34052204107",
+            "retrievedAt": "2026-09-18T00:16:42.006084+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A161540",
+            "rawSha256": "b5e454733fc8c47ecc578f8e6be117de9d08ded7b21aa975c722311b7f32f35b",
+            "retrievedAt": "2026-09-18T00:16:41.560454+00:00"
+          }
+        },
+        {
+          "acptno": "20150304000254",
+          "docNo": "20150304000813",
+          "title": "ETF기타시장안내(상장폐지 관련 해지 상환금 지급)",
+          "nameInListing": "ARIRANG 철강금속",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-03-04 14:16",
+          "facts": {
+            "paymentBasisDate": "2015.03.03",
+            "paymentDate": "2015.03.04",
+            "totalPaymentSourceText": "186,971,456",
+            "redemptionReferencePriceSourceText": "6,232.38186666667",
+            "taxReferencePriceSourceText": "7,629.70203333333",
+            "taxableDistributionSourceText": "90.66203333333"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/03/04/000254/20150304000813/68629.htm",
+            "rawSha256": "ac78d60d3dd54a6d9b9231323e0a277eafe327d9ecec2b7a9fefcad8eeb513e9",
+            "retrievedAt": "2026-09-18T00:16:42.545888+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A161540",
+            "rawSha256": "b5e454733fc8c47ecc578f8e6be117de9d08ded7b21aa975c722311b7f32f35b",
+            "retrievedAt": "2026-09-18T00:16:41.560454+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "161550",
+      "disclosures": [
+        {
+          "acptno": "20150216000143",
+          "docNo": "20150216000503",
+          "title": "상장폐지",
+          "nameInListing": "ARIRANG 화학",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-02-16 13:31",
+          "facts": {
+            "isin": "KR7161550009",
+            "delistingDate": "2015-02-23"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/02/16/000143/20150216000503/68051.htm",
+            "rawSha256": "70061fef1929da5973941dc3c9bc87a44a06227b6364a6efa49bb7950bc65542",
+            "retrievedAt": "2026-09-18T00:16:43.157379+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A161550",
+            "rawSha256": "21f397e0439225eba8e49ded1bb0c0cc3af84a10b0641c744b4eb1b6e305dd12",
+            "retrievedAt": "2026-09-18T00:16:42.741166+00:00"
+          }
+        },
+        {
+          "acptno": "20150304000283",
+          "docNo": "20150304000841",
+          "title": "ETF기타시장안내(상장폐지 관련 해지 상환금 지급)",
+          "nameInListing": "ARIRANG 화학",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-03-04 14:16",
+          "facts": {
+            "paymentBasisDate": "2015.03.03",
+            "paymentDate": "2015.03.04",
+            "totalPaymentSourceText": "425,058,976",
+            "redemptionReferencePriceSourceText": "4,250.58976",
+            "taxReferencePriceSourceText": "6,287.32268",
+            "taxableDistributionSourceText": "52.63268"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/03/04/000283/20150304000841/68629.htm",
+            "rawSha256": "82e6f3413a1138ad5d7d32369e653b9b621310455ace2f154c454c0e1d01ea34",
+            "retrievedAt": "2026-09-18T00:16:43.696229+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A161550",
+            "rawSha256": "21f397e0439225eba8e49ded1bb0c0cc3af84a10b0641c744b4eb1b6e305dd12",
+            "retrievedAt": "2026-09-18T00:16:42.741166+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "ticker": "166060",
+      "disclosures": [
+        {
+          "acptno": "20150216000183",
+          "docNo": "20150216000611",
+          "title": "상장폐지",
+          "nameInListing": "KODEX주식&골드",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-02-16 13:31",
+          "facts": {
+            "isin": "KR7166060004",
+            "haltDate": "2015-02-17",
+            "delistingDate": "2015-02-23"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/02/16/000183/20150216000611/68051.htm",
+            "rawSha256": "783fe20df572bc6d1b2404a80bff5e94e386cb541f1dc3b8d5f6c09ad1f981b5",
+            "retrievedAt": "2026-09-18T00:16:44.481274+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A166060",
+            "rawSha256": "6d151dd9fbc084df048ca85a7d3980ae2b3123f7b9cb2cea43be6f5639438930",
+            "retrievedAt": "2026-09-18T00:16:43.926199+00:00"
+          }
+        },
+        {
+          "acptno": "20150224000100",
+          "docNo": "20150224000300",
+          "title": "ETF기타시장안내(상장폐지 관련 해지 상환금 지급)",
+          "nameInListing": "KODEX주식&골드",
+          "publisherInListing": "유가증권시장본부",
+          "publishedLocalMinuteInListing": "2015-02-24 11:30",
+          "facts": {
+            "paymentBasisDate": "2015.02.23",
+            "paymentDate": "2015.02.24",
+            "totalPaymentSourceText": "821,158,874",
+            "redemptionReferencePriceSourceText": "8,211.58874",
+            "taxReferencePriceSourceText": "8,396.91538",
+            "taxableDistributionSourceText": "0"
+          },
+          "timeLimit": "Listing provides local minute text, not a timezone or seconds.",
+          "unitLimit": "Amounts preserve document labels; currency/per-unit/tax basis and adjusted-unit entitlement are not certified by this parser.",
+          "valuationLimit": "Payment terms do not supply intervening daily valuations. Payment-basis dates are not publication timestamps.",
+          "correctionLineage": "not inferred; all matching disclosures retained",
+          "source": {
+            "url": "https://kind.krx.co.kr/external/2015/02/24/000100/20150224000300/68629.htm",
+            "rawSha256": "9d08e2404caa7a850b893ce6bf0447ca0ff67c5157f4663ee0113db7ed9b4bbc",
+            "retrievedAt": "2026-09-18T00:16:44.957774+00:00"
+          },
+          "listingSource": {
+            "url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtfSub&forward=disclosurebystocktype_etf_sub&currentPageSize=100&pageIndex=1&fromDate=2014-12-01&toDate=2015-03-31&etfIsuSrtCd=A166060",
+            "rawSha256": "6d151dd9fbc084df048ca85a7d3980ae2b3123f7b9cb2cea43be6f5639438930",
+            "retrievedAt": "2026-09-18T00:16:43.926199+00:00"
+          }
+        }
+      ]
+    }
+  ],
+  "status": "Source payment terms recovered for eight ETFs; executable terminal valuation contract not yet qualified.",
+  "performance_computed": false,
+  "tax_limit": "Raw redemption reference prices and taxable distribution fields are distinct; investor-specific net cash receipts are not verified.",
+  "input_originals_modified": false,
+  "committed_collector_refetch": {
+    "path": "labs/company-kr-etf-pilot/data/terminal-confirmed-20260918/evidence.json",
+    "sha256": "5a03fa59d1cc56cc5500ae18476013078712393b2834feef66fc16bc317d0e71",
+    "code_commit": "3c5fc88",
+    "records": 8,
+    "basis": "Collector committed before this refetch. Original preliminary receipt is retained above."
+  }
+}

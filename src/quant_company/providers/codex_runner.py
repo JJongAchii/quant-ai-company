@@ -76,6 +76,9 @@ def strict_json(raw: str | bytes, *, cli_web_event: bool = False) -> Any:
 
 def request_digest(request: ProviderRequest) -> str:
     material = request.model_dump()
+    if request.reasoning_effort is None:
+        # Do not invalidate or replay receipts created before effort was explicit.
+        material.pop("reasoning_effort", None)
     if not request.web_search:
         # Preserve the input digest of pre-search outstanding/cached requests.
         material.pop("web_search", None)
@@ -231,6 +234,8 @@ def cli_command(config: RunnerConfig, request: ProviderRequest, work_dir: Path, 
         # table, not as a quoted segment of a dotted override key.
         f"projects={{ {json.dumps(str(work_dir))} = {{ trust_level=\"untrusted\" }} }}",
     ]
+    if request.reasoning_effort is not None:
+        overrides.append(f"model_reasoning_effort={json.dumps(request.reasoning_effort)}")
     # Responses Lite models expose search through the code-mode bridge. Its
     # capability set still excludes shell, files, apps, MCP and agent spawning.
     bridge = {"code_mode", "code_mode_host", "code_mode_only"} if request.web_search else set()
@@ -476,7 +481,9 @@ class CodexRunner:
                 schema = work_dir / "decision.schema.json"
                 atomic_json(schema, CLI_OUTPUT_SCHEMA)
                 receipt = {"version": 1, "request_id": request.request_id, "input_digest": digest,
-                           "state": "running", "started_at": time.time(), "cli_version": SUPPORTED_CLI_VERSION}
+                           "state": "running", "started_at": time.time(), "cli_version": SUPPORTED_CLI_VERSION,
+                           "requested_execution": {"model": request.model,
+                                                   "reasoning_effort": request.reasoning_effort}}
                 atomic_json(receipt_path, receipt)
                 try:
                     output = await self.process.run(

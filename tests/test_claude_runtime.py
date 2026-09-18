@@ -88,6 +88,22 @@ def runner(config):
     return ClaudeRunner(config, source_environment={"PATH": os.environ["PATH"]})
 
 
+@pytest.mark.parametrize("effort,expected", [(None, "high"), ("max", "max")])
+async def test_review_effort_is_explicit_and_cannot_change_during_retry(fake_claude, effort, expected):
+    config, _, calls = fake_claude
+    frozen = request().model_copy(update={"reasoning_effort": effort})
+    result = await runner(config).run(frozen)
+    args = calls()[0]["args"]
+    assert args[args.index("--effort") + 1] == expected
+    assert result.usage["effort"] == expected
+    assert result.usage["effort_evidence"] == "requested_cli_argument_not_provider_attested"
+    assert await runner(config).run(frozen) == result
+    changed = frozen.model_copy(update={"reasoning_effort": "low"})
+    with pytest.raises(ProviderFault):
+        await runner(config).run(changed)
+    assert len(calls()) == 1
+
+
 async def test_restart_and_private_http_reuse_completed_receipt(fake_claude):
     config, _, calls = fake_claude
     app = create_app(runner=runner(config), token="private")

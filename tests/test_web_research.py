@@ -94,6 +94,7 @@ def test_search_without_observed_native_call_cannot_claim_success():
 
 async def test_search_read_analysis_and_durable_evidence(company, monkeypatch):
     company.roles["director"].tools += ["web_search", "web_read"]
+    company.roles["director"].reasoning_effort = "max"
     monkeypatch.setattr("quant_company.web_tools.fetch", original)
     request = company.ingest(event_key="web-analysis", text="Analyze current Fed policy with latest news", owner="user")
 
@@ -126,6 +127,7 @@ async def test_search_read_analysis_and_durable_evidence(company, monkeypatch):
     assert state["tasks"][0]["status"] == "completed"
     assert state["artifacts"][0]["source_ids"][0].startswith("web:")
     assert sum(call.web_search for call in provider.calls) == 1
+    assert all(call.reasoning_effort == "max" for call in provider.calls)
     with company.db.transaction() as conn:
         rows = conn.execute("SELECT * FROM web_requests ORDER BY created_at").fetchall()
         assert len(rows) == 2 and all(r["completed_at"] for r in rows)

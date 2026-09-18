@@ -1,0 +1,77 @@
+{
+  "kind": "actual-slack-terminal-path02-readback",
+  "checked_at": "2026-09-18T02:40:26.894141+00:00",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "runtime_commit": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+  "tasks": [
+    {
+      "id": "2fdf0116-1a77-5111-8d6a-4b9454c96487",
+      "parent_id": null,
+      "agent": "director",
+      "status": "completed",
+      "result": "운영자 검증 요약(2026-09-18 02:34 UTC)에 따라 정정합니다. P03의 091200·104580·105020 규약 미확보와 종료회계 미구현은 해결됐습니다.\n운영자의 실제 RTX3070 실행에서 12개 ETF 상환을 처리했고, 기본·스트레스 경로 각각 NAV 이벤트 36건과 현금 지급 12건이 반영됐습니다.\n다음 차단점은 GREAT GREEN(138210)의 2015-07-02 보유자산 평가자료 결손입니다. 자료 소실만으로 상장폐지를 판단하지 않았습니다.\n기술 예산은 6/6회 소진됐습니다. 전체기간 성과 완료 0건·후보 실행 0건이며, 수익률 0%가 아니라 미측정입니다.\n새 예산 승인 전 추가 실행은 중단 상태입니다. 종료자료 일괄 보강과 기술 재시도 최대 6회 추가(누적 12회)는 미승인 초안이며 실행 배정하지 않았습니다.\n141250의 1,000좌/1좌 상충과 1좌 해석 근거는 보고서에 보존했습니다. 이번 보고는 운영자 증거 요약이며 총괄의 직접 원문 수집·독립감사·직원 자율 실행을 뜻하지 않습니다.\n다음 결정 대상: [기술 예산 변경 초안](https://github.com/JJongAchii/quant-lab/blob/company-kr-etf-pilot/docs/research/company-kr-etf-pilot/TECHNICAL-BUDGET-AMENDMENT-PROPOSAL.md)의 승인 여부입니다.",
+      "turn_count": 2,
+      "revision": 3
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "c66b0928-f180-5225-81ef-157c60f4498e",
+      "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+      "task_id": "2fdf0116-1a77-5111-8d6a-4b9454c96487",
+      "revision": 3,
+      "title": "국내상장 ETF 종료회계 결과 정정 및 기술 예산 소진 보고",
+      "content": "제공된 read_source 반환문 전체(offset 0, 4,846자, next_offset=null)를 바탕으로 작성했다. 관측 시각은 2026-09-18T02:34:57.058708+00:00이다. 이 보고 완료는 연구 성과 산출 완료를 의미하지 않는다.\n\n정정 및 실제 처리 결과\n기존 P03의 091200·104580·105020 규약 미확보, 식별·지급 해석과 종료회계 미구현은 해결됐다. 과거 보고는 이력으로 남기되 현재 차단 사유로 반복하지 않는다. 운영자가 원문 수집·Git 작업·3070 실행을 수행했다. 실행 호스트는 DESKTOP-5T00NAF / RTX3070, 실행 코드 커밋은 51f589ea5684673e35316fb5c0d7f6698b367674이다. PATH02 기본·스트레스 경로 각각 NAV 이벤트 36건과 현금 지급 12건을 적용해 기존 12개 ETF 상환을 처리했다. 실제 거래나 개인 계좌 입금을 의미하지 않는다.\n\n입력 및 검증 범위\n준비된 기존 보유 종목은 12개, 실제 과거 NAV 행은 56개, 출처 레코드는 101개, SHA 확인 원본 파일은 311개다. 이는 기존에 확인된 12개 결손 대응 범위이며 이후 모든 보유 종목의 종료자료 확보를 뜻하지 않는다. Q04는 코드·설정·레이크·호스트·출처 동일성 및 2012~2013년 워밍업 범위에서 통과했다. 잠재 노출 209개는 목록이며 실제 보유 수나 모든 실행의 일괄 선행조건이 아니다.\n\n현재 차단점과 성과 상태\n다음 실제 보유 결손은 GREAT GREEN(138210)이다. 마지막 관측일은 2015-07-01, 최초 결손일은 2015-07-02다. 시계열에서 사라졌다는 사실만으로 법적 상장폐지를 추론하지 않았다. 기술 실패 누적 6회/승인 한도 6회로 예산을 소진했다. 기준선 성과 시도 1건, 완료 0건, 후보 실행 0건, 과학적 실행 집계 0건이다. 진단 경로 시작 2건과 비용 시나리오 4건은 성과 완료로 집계하지 않는다. 부분기간 지표도 계산하지 않았으며 성과 산출물도 없다. 상태는 blocked/unmeasured다. 수익률 0% 또는 전략 성과 부진으로 해석할 근거가 없다. 봉인 구간은 읽지 않았다.\n\n141250 단위 상충과 해석 한계\n투자설명서는 1,000좌, 동시기 신탁계약은 1좌를 기재해 상충한다. 운영자 요약에 따르면 신탁계약 제8·9·30조와 KRX 상장 단위 및 좌당 NAV 자료가 검토된 1좌 해석을 뒷받침한다. 공식 정정문은 발견되지 않았으므로 문서 상충 자체는 해소됐다고 쓰지 않는다. 5월 8일 지급 확인은 5월 7일 NAV의 증거를 대신하지 않는다. 공통 현금 기준가격은 개인 원천징수 전 문서 기반 추론이며, 개인별 순입금액이나 펀드 비용이 전혀 차감되지 않은 현금이라고 단정하지 않는다. 총괄은 이 원문들을 직접 재수집하거나 독립감사하지 않았다.\n\n검증 기록의 한계\n운영자 요약에는 파일럿 보호 테스트 91개 통과, 실행 커밋의 ruff 통과, 테스트 코드 0fd706a가 기록돼 있다. 실행 커밋과 테스트 코드 식별자를 혼동하지 않는다. P04·P05는 기존 S3 업로드 후 전체 다운로드 SHA256 일치를 확인했으며 보존 종료는 기존 수명주기상 2026-10-19로 영구 보관이 아니다. 완료된 성과 산출물이 없어 독립 누수 감사는 호출되지 않았다. 워밍업 통과는 개발 전체기간 종료자료 충족을 보장하지 않았고, 초기 자료 복구 비용을 과소평가한 데이터 경로 설계 한계가 드러났다.\n\n다음 결정 — 미승인 초안\n종료자료를 발행사·종료일별로 일괄 보강하고 실제 보유 138210을 우선하는 방안과, 기술 실패·재시도 한도를 최대 6회 추가해 기존 6회를 포함한 누적 12회로 변경하는 방안은 DRAFT_NOT_APPROVED다. 승인된 기존 6회 한도가 소진됐기 때문에 재실행에는 새 예산 변경 승인이 필요하다. 과거의 승인·해결 요청을 이번 증액 승인으로 확대하지 않는다. 새 승인 전 추가 실행·실행 배정은 하지 않는다.\n승인 후 절차 초안은 날짜가 확인된 공식자료 확보 → 검토된 버전별 자료 묶음 → 코드 커밋 → 동일성 확인 3070 워밍업 → 회계 경로 → 경로 완결 후 기존 기준선과 승인 후보 순환이다. 후보 상한 3개, 단일 기준선, 2014~2026년 8월 개발기간, 봉인 구간, 10/30bp, 주목표, 유니버스 및 3070 조건은 유지하는 제안이다. 새 유료 API·서버·5090·실주문은 포함하지 않는다.\n초안 링크: https://github.com/JJongAchii/quant-lab/blob/company-kr-etf-pilot/docs/research/company-kr-etf-pilot/TECHNICAL-BUDGET-AMENDMENT-PROPOSAL.md\n연구 기록 링크: https://github.com/JJongAchii/quant-lab/pull/16\n기록 receipt 커밋: 473d9dc. P05 receipt SHA256: ee6ca41ee629de505b586eb055a87866741f53b8f53c5c29c25b6a1a791c706a.",
+      "source_ids": [
+        "operator:etf-terminal-path02-summary-20260918"
+      ],
+      "digest": "146c871011de0b67f7de376a7aa748436231bd2e33a8523e2dfb36f86de6fe42",
+      "created_at": "2026-09-18 02:36:16.963118+00:00"
+    }
+  ],
+  "artifact_digest_comparison": "SHA256 of sorted-key ensure_ascii=False JSON {title,content,source_ids}, matching the stored action and completed decision.",
+  "source_read_decisions": [
+    {
+      "name": "read_source",
+      "arguments": {
+        "offset": 0,
+        "source_id": "operator:etf-terminal-path02-summary-20260918"
+      }
+    }
+  ],
+  "slack_readback": [
+    {
+      "outbox_id": "df726d7a-849f-432d-92b9-27c537d09fa0",
+      "agent": "director",
+      "ts": "1789698912.506629",
+      "user": "U0C23PPKR5L",
+      "text": "[지시 v3] 지정된 운영자 검증 요약을 조회해 기존 보고의 정정 사항과 실행 중단 조건을 확인하겠습니다.",
+      "normalized_body_match": true,
+      "expected_identity_match": true
+    },
+    {
+      "outbox_id": "6519bacb-945b-4fbb-8394-4aa03614cad1",
+      "agent": "director",
+      "ts": "1789698978.280599",
+      "user": "U0C23PPKR5L",
+      "text": "[지시 v3] <@U0C250E23NW>\n운영자 검증 요약(2026-09-18 02:34 UTC)에 따라 정정합니다. P03의 091200·104580·105020 규약 미확보와 종료회계 미구현은 해결됐습니다.\n운영자의 실제 RTX3070 실행에서 12개 ETF 상환을 처리했고, 기본·스트레스 경로 각각 NAV 이벤트 36건과 현금 지급 12건이 반영됐습니다.\n다음 차단점은 GREAT GREEN(138210)의 2015-07-02 보유자산 평가자료 결손입니다. 자료 소실만으로 상장폐지를 판단하지 않았습니다.\n기술 예산은 6/6회 소진됐습니다. 전체기간 성과 완료 0건·후보 실행 0건이며, 수익률 0%가 아니라 미측정입니다.\n새 예산 승인 전 추가 실행은 중단 상태입니다. 종료자료 일괄 보강과 기술 재시도 최대 6회 추가(누적 12회)는 미승인 초안이며 실행 배정하지 않았습니다.\n141250의 1,000좌/1좌 상충과 1좌 해석 근거는 보고서에 보존했습니다. 이번 보고는 운영자 증거 요약이며 총괄의 직접 원문 수집·독립감사·직원 자율 실행을 뜻하지 않습니다.\n다음 결정 대상: [기술 예산 변경 초안](<https://github.com/JJongAchii/quant-lab/blob/company-kr-etf-pilot/docs/research/company-kr-etf-pilot/TECHNICAL-BUDGET-AMENDMENT-PROPOSAL.md>)의 승인 여부입니다.",
+      "normalized_body_match": true,
+      "expected_identity_match": true
+    }
+  ],
+  "body_comparison": "Strip only server instruction-version prefix, HTML-unescape and normalize unlabelled URL wrappers. Compare exact remaining body and actual bot identity.",
+  "final_message_url": "https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789698978280599?thread_ts=1789633942.673909&cid=C0C2B9EUEGM",
+  "verification": {
+    "tasks_completed": 1,
+    "artifacts": 1,
+    "actual_codex_turns": 2,
+    "source_read_calls": 1,
+    "source_read_complete": true,
+    "delivered_slack_posts": 2,
+    "owner_tag_on_actual_final": true,
+    "no_additional_delegation": true,
+    "operator_connected_execution": true,
+    "new_slack_ingress": false,
+    "no_service_deployment_by_this_work": true
+  }
+}

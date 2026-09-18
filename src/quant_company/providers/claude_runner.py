@@ -50,8 +50,10 @@ def environment(config, source):
     return result
 
 
-def command(config):
-    return [config.binary, "-p", "--safe-mode", "--model", REVIEW_MODEL, "--effort", "high",
+def command(config, request):
+    # Requests frozen before explicit effort support used high; never reinterpret their identity.
+    effort = request.reasoning_effort or "high"
+    return [config.binary, "-p", "--safe-mode", "--model", REVIEW_MODEL, "--effort", effort,
             "--tools", "", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
             "--disable-slash-commands", "--setting-sources", "", "--permission-mode", "dontAsk",
             "--permission-prompts", "none", "--no-session-persistence", "--max-turns", "2",
@@ -102,7 +104,8 @@ def parse_result(request, output):
                 raise ValueError("Invalid token count")
             counts[name] = value
         # total_cost_usd is a client-side API-equivalent estimate, not a subscription bill.
-        counts.update(actual_model=REVIEW_MODEL, cli_version=CLI_VERSION, effort="high",
+        counts.update(actual_model=REVIEW_MODEL, cli_version=CLI_VERSION, effort=request.reasoning_effort or "high",
+                      effort_evidence="requested_cli_argument_not_provider_attested",
                       billing_mode="subscription", account_usage_credits_disabled_owner_confirmed=True)
         return ProviderResponse(request_id=request.request_id, provider="claude", usage=counts,
                                 decision=AgentDecision(status="complete", say="독립 설명 검토 완료",
@@ -186,11 +189,13 @@ class ClaudeRunner:
                 # Cancellation can arrive during the asynchronous auth/version preflight.
                 self._cached(path, digest, request.request_id, locked=True)
                 receipt = {"provider": "claude", "request_id": request.request_id, "input_digest": digest,
-                           "state": "running", "started_at": time.time(), "cli_version": CLI_VERSION}
+                           "state": "running", "started_at": time.time(), "cli_version": CLI_VERSION,
+                           "requested_execution": {"model": request.model,
+                                                   "reasoning_effort": request.reasoning_effort or "high"}}
                 atomic_json(path, receipt)
                 self.active[request.request_id] = asyncio.current_task()
                 try:
-                    output = await self.process.run(command(self.config), cwd=cwd, env=env,
+                    output = await self.process.run(command(self.config, request), cwd=cwd, env=env,
                         stdin=request.prompt.encode(), timeout_seconds=self.config.timeout_seconds,
                         max_stdout_bytes=MAX_OUTPUT, max_stderr_bytes=65536)
                     result = parse_result(request, output)
