@@ -133,6 +133,19 @@ async def test_quota_defers_without_affecting_grade_or_new_identity(completed):
     assert IndependentReviewStore(company).prepare()["request"]["request_id"] == calls[0]
 
 
+def test_deferred_previous_day_review_consumes_todays_limit(completed):
+    company, _, _ = completed
+    company.settings.staff_review_daily_limit = 1
+    store = IndependentReviewStore(company)
+    ready = store.prepare()
+    with company.db.transaction() as conn:
+        conn.execute("UPDATE staff_independent_reviews SET schedule_day=schedule_day-1")
+    resumed = store.prepare()
+    assert resumed["request"] == ready["request"]
+    store.commit(response(resumed["request"]))
+    assert store.prepare() == {"state": "idle", "reason": "review_daily_limit"}
+
+
 async def test_staff_loop_runs_review_only_when_exercises_and_owner_work_idle(completed, monkeypatch):
     company, _, _ = completed
     company.settings.company_staff_development_enabled = True

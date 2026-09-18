@@ -41,12 +41,18 @@ class IndependentReviewStore:
                 AND t.due_at<=now() AND k.revision=p.revision AND p.status='active' LIMIT 1""").fetchone()
             if busy:
                 return {"state": "defer", "reason": "owner_work"}
+            today = datetime.now(UTC).astimezone(ZoneInfo("Asia/Seoul")).date()
+            count = conn.execute("SELECT count(*) AS n FROM staff_independent_reviews WHERE schedule_day=%s",
+                                 (today,)).fetchone()["n"]
             row = conn.execute("""SELECT * FROM staff_independent_reviews WHERE state='running'
                 AND next_at<=now() ORDER BY created_at,id LIMIT 1 FOR UPDATE""").fetchone()
+            if row and row["schedule_day"] != today:
+                if count >= settings.staff_review_daily_limit:
+                    return {"state": "idle", "reason": "review_daily_limit"}
+                # A carried-over review consumes today's allowance before inference as well.
+                conn.execute("UPDATE staff_independent_reviews SET schedule_day=%s WHERE id=%s",
+                             (today, row["id"]))
             if row is None:
-                today = datetime.now(UTC).astimezone(ZoneInfo("Asia/Seoul")).date()
-                count = conn.execute("SELECT count(*) AS n FROM staff_independent_reviews WHERE schedule_day=%s",
-                                     (today,)).fetchone()["n"]
                 if count >= settings.staff_review_daily_limit:
                     return {"state": "idle", "reason": "review_daily_limit"}
                 run = conn.execute("""SELECT r.* FROM staff_runs r WHERE r.state='completed'
