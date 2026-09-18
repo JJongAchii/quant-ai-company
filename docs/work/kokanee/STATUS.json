@@ -6,14 +6,26 @@
   "currentIntent": "INTENT-v2.json",
   "deliverables": {
     "DEPLOY": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/hot-news-operating-health.json",
+          "sha256": "87fa7321cc82"
+        }
+      ],
+      "note": "검증된 커밋으로 배포, 기존 역할·인증·DB 보존, 8개 서비스 정상. Temporal 실행과 worker/dispatch 재시작 영수증은 hot-news-restart.json에 기록. backup/release timer 복구.",
+      "status": "verified",
+      "updatedAt": "2026-09-18T16:43:51.358790+00:00"
     },
     "LIVE": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/hot-news-live-slack.json",
+          "sha256": "a5205cbd1121"
+        }
+      ],
+      "note": "실제 뉴스·Socket Mode 입력·원문 답변·재시작 후 Slack 대조 확인. 다음 수집 주기 6/6 및 두 번째 자동 편집은 hot-news-continuity.json. 일반 언론 범위와 구형 검증 토큰 재인증 대기 명시.",
+      "status": "verified",
+      "updatedAt": "2026-09-18T16:46:07.283894+00:00"
     },
     "SLACK": {
       "evidence": [
@@ -29,18 +41,18 @@
     "SOURCES": {
       "evidence": [
         {
-          "path": "docs/project/evidence/hot-news-qualified-sources-server.json",
-          "sha256": "ed25249bbd56"
+          "path": "docs/project/evidence/hot-news-final-image-probe.json",
+          "sha256": "550c88fe728b"
         }
       ],
-      "note": "운영지의 동일 뉴스 코드에서 6개 공식 피드·원문·발행 시각을 확인했다. 일반 언론 커버리지 제한은 문서화. 소스 전용 Python 검사이며 서비스 시작 검증과 구분.",
+      "note": "통합 배포 커밋의 정상 entrypoint에서 6개 공식 피드와 원문·발행 시각 확인. 일반 언론 커버리지 제한 유지.",
       "status": "verified",
-      "updatedAt": "2026-09-18T16:01:53.707809+00:00"
+      "updatedAt": "2026-09-18T16:32:35.443382+00:00"
     }
   },
   "intentDigest": "4df23b420435",
   "schemaVersion": 1,
   "slug": "kokanee",
   "state": "approved",
-  "updatedAt": "2026-09-18T16:01:53.707809+00:00"
+  "updatedAt": "2026-09-18T16:46:07.283894+00:00"
 }

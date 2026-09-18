@@ -1,5 +1,8 @@
 # Reporter 구현과 확인 범위
 
+이 문서는 운영 활성화 전의 역사적 검증 기록이다. 이후 실제 배포·Slack 게시 결과는
+[Reporter 운영 활성화](HOT-NEWS-ACTIVATION.md)에 기록했다.
+
 2026-09-19 KST. `hot-news`의 연속 뉴스 수집·검토·사건별 발송과 **Reporter / @reporter** 앱 설정을
 구현했다. 실제 구독 모델로 원문 기반 게시 후보 생성까지 확인했다.
 **운영 배포, Reporter 앱 설치, 실제 Slack 발신은 수행하지 않았다.**

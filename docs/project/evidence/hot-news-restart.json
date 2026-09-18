@@ -1,0 +1,23 @@
+{
+  "checked_at": "2026-09-18T16:40:28.258109+00:00",
+  "action": "Restart worker and dispatch after all model work and outbox sends completed",
+  "workflows_unchanged": [
+    {
+      "id": "company-news-collection-v1",
+      "run_id": "01a0b55e-f516-74c1-9001-43345fa9d927",
+      "status": "RUNNING",
+      "task_queue": "quant-company-news-collection"
+    },
+    {
+      "id": "company-news-editorial-v1",
+      "run_id": "01a0b55e-f52c-73dd-b0fe-92eb6930c3b0",
+      "status": "RUNNING",
+      "task_queue": "quant-company"
+    }
+  ],
+  "news_roots": 2,
+  "reporter_messages_including_thread": 4,
+  "delivery_ids_timestamps_attempts_unchanged": true,
+  "all_delivery_attempts": 1,
+  "guarantee_limit": "Observed restart without duplicate sends; not exactly-once delivery or crash-during-send qualification."
+}

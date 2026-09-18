@@ -1,0 +1,295 @@
+{
+  "enabled": true,
+  "publish_enabled": true,
+  "channel": "C0C2J1SSX09",
+  "sources": [
+    {
+      "id": "bbc-world",
+      "enabled": false,
+      "last_success": null,
+      "last_attempt": null,
+      "failures": 0,
+      "error": null,
+      "receipt": null
+    },
+    {
+      "id": "bea-releases",
+      "enabled": true,
+      "last_success": "2026-09-18 16:33:54.457808+00:00",
+      "last_attempt": "2026-09-18 16:33:53.180709+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "\"76c81ff39f3bdd1:0\"",
+        "bytes": 88601,
+        "sha256": "446cb4078349673864407af824f8a6f54c1ec9fc54d10d076451ae5c179915f7",
+        "skipped": 6,
+        "modified": "Thu, 03 Sep 2026 12:30:05 GMT",
+        "latest_publication": "2026-09-03 12:30:00+00:00"
+      }
+    },
+    {
+      "id": "ecb-press",
+      "enabled": true,
+      "last_success": "2026-09-18 16:33:55.175632+00:00",
+      "last_attempt": "2026-09-18 16:33:54.648607+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "\"myra-e83eae22\"",
+        "bytes": 5673,
+        "sha256": "979c5611f0a043bb0e21f613b20f667ae2ac2d6938e301724efe89be17f44df0",
+        "skipped": 12,
+        "modified": "",
+        "latest_publication": "2026-09-18 08:00:00+00:00"
+      }
+    },
+    {
+      "id": "fed-press",
+      "enabled": true,
+      "last_success": "2026-09-18 16:33:56.084222+00:00",
+      "last_attempt": "2026-09-18 16:33:55.956712+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "W/\"2a27c06a7e47dd1:0\"",
+        "bytes": 14853,
+        "sha256": "bdb248554aec56ffd75e93baae7b8096ffa7abe199cc8a5d7a2f4bb773541ad5",
+        "skipped": 0,
+        "modified": "Fri, 18 Sep 2026 15:00:17 GMT",
+        "latest_publication": "2026-09-18 15:00:00+00:00"
+      }
+    },
+    {
+      "id": "govuk-fcdo",
+      "enabled": true,
+      "last_success": "2026-09-18 16:33:56.694255+00:00",
+      "last_attempt": "2026-09-18 16:33:56.589486+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "W/\"371be9f444463dd2cb75472f8f8c738d\"",
+        "bytes": 14521,
+        "sha256": "371be9f444463dd2cb75472f8f8c738d8f2f893c46f261e207097daf72a18ad1",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "govuk-trade",
+      "enabled": true,
+      "last_success": "2026-09-18 16:33:57.241064+00:00",
+      "last_attempt": "2026-09-18 16:33:57.159387+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "W/\"187e9c6a770b50124f2a0fcb275d35c0\"",
+        "bytes": 12319,
+        "sha256": "187e9c6a770b50124f2a0fcb275d35c0a09c999fae3b09774bc4809e9282406f",
+        "skipped": 2,
+        "modified": "",
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "govuk-treasury",
+      "enabled": true,
+      "last_success": "2026-09-18 16:33:57.501515+00:00",
+      "last_attempt": "2026-09-18 16:33:57.430964+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "W/\"048726165fa465d788134b72754fa34f\"",
+        "bytes": 12064,
+        "sha256": "048726165fa465d788134b72754fa34fcb84e97421667a205692778da1a3ba3f",
+        "skipped": 3,
+        "modified": "",
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "kbs-world",
+      "enabled": false,
+      "last_success": null,
+      "last_attempt": null,
+      "failures": 0,
+      "error": null,
+      "receipt": null
+    },
+    {
+      "id": "newsis-economy",
+      "enabled": false,
+      "last_success": null,
+      "last_attempt": null,
+      "failures": 0,
+      "error": null,
+      "receipt": null
+    },
+    {
+      "id": "newsis-world",
+      "enabled": false,
+      "last_success": null,
+      "last_attempt": null,
+      "failures": 0,
+      "error": null,
+      "receipt": null
+    }
+  ],
+  "articles": [
+    {
+      "state": "held",
+      "count": 2
+    },
+    {
+      "state": "historical_or_undated",
+      "count": 113
+    },
+    {
+      "state": "ignored",
+      "count": 2
+    },
+    {
+      "state": "queued",
+      "count": 2
+    },
+    {
+      "state": "ready",
+      "count": 1
+    }
+  ],
+  "deliveries": [
+    {
+      "id": "0e1373ae-387b-553a-99ab-b40d33dc7528",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789749361.591839",
+      "created_at": "2026-09-18 16:36:00.199864+00:00"
+    },
+    {
+      "id": "1b380241-ceda-58fc-afe3-a6b8f7aa1c41",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789749363.261359",
+      "created_at": "2026-09-18 16:36:00.199864+00:00"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "news-de05b6ea-43d7-4450-ab4f-16bab39ad2c5",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "queued",
+          "reason": "ECB가 직접 발표한 소비자 기대 통계로, 모든 조사 시계의 기대인플레이션 상승은 통화정책 분석에 중요한 변화다.",
+          "headline": "ECB 8월 소비자 조사, 1년·3년·5년 기대인플레이션 모두 상승"
+        },
+        {
+          "state": "ignored",
+          "reason": "오클라호마 소재 SNB Bancshares와 Bank of Eufaula에 대한 개별 감독조치 종료 공지다. 종료일은 9월 3일이고 발표일은 9월 18일이다. 제공 본문에는 금융시스템 전반이나 감독정책의 중대한 변화를 뒷받침하는 내용이 없어 제외한다.",
+          "headline": ""
+        },
+        {
+          "state": "ignored",
+          "reason": "금융회사 전직 직원 3명의 자금 유용·이해상충·수표 사기 관련 개별 제재다. 제공 본문에 거시경제나 금융시스템 차원의 파급을 보여주는 근거가 없어 주요 뉴스에서 제외한다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "영국의 기업 지원 입장은 확인되지만 구체적인 신규 지원 조치는 제시되지 않았다. 핵심 쟁점인 아르헨티나의 기업·개인 위협과 법적 조치는 영국 정부의 주장만 제공됐다. 해당 조치의 내용·날짜·범위를 확인할 직접 자료와 독립 보도가 없어 보류한다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "9월 17일 영국 대표 연설은 러시아·중국의 이란 전문가패널 임기 갱신 거부권 행사를 주장한다. 중대한 국제안보 사안이지만 제공 자료는 영국 정부 한 출처뿐이다. 안보리 자체 표결 기록이나 두 개 이상의 독립 원보도가 없어 표결 결과와 제재 효력을 확정해 발행할 수 없다. 이란의 핵활동 관련 비판도 별도 근거가 필요하다.",
+          "headline": ""
+        },
+        {
+          "state": "queued",
+          "reason": "영국 정부가 자국의 시리아 지원금 기여 계획을 금액과 연도까지 명시했다. 발행 범위는 자체 지원 약속으로 한정하며, 다른 기관의 결정이나 타국 행위에 관한 주장은 포함하지 않는다.",
+          "headline": "영국, 올해 시리아 회복·취약계층 지원에 9천만 달러 기여 계획 발표"
+        }
+      ],
+      "created_at": "2026-09-18 16:34:55.440565+00:00",
+      "completed_at": "2026-09-18 16:36:00.199864+00:00"
+    }
+  ],
+  "checked_at": "2026-09-18T16:39:19.078439+00:00",
+  "commit": "7528d05d4f3d9dca655ced4622f9c367d0900a5c",
+  "news_messages": [
+    {
+      "id": "1b380241-ceda-58fc-afe3-a6b8f7aa1c41",
+      "project_id": "24d4a5f0-60f0-5a65-b360-d215a7552d96",
+      "status": "delivered",
+      "sent_ts": "1789749363.261359",
+      "thread_ts": null,
+      "attempts": 1,
+      "error": null,
+      "kind": "news",
+      "text": "*[주요 · 세계정세] 영국, 올해 시리아 회복·취약계층 지원에 9천만 달러 기여 계획 발표*\n영국의 케이트 포스터 유엔 차석대사는 2026년 9월 17일 안보리 시리아 회의에서 시리아 정부의 회복 계획과 실향민·취약계층의 필요를 지원하기 위해 올해 9천만 달러를 기여하겠다고 밝혔다. 본문은 향후 기여 약속을 명시하며 집행 완료 여부는 제시하지 않는다.\n*왜 중요한가* 시리아의 회복과 인도적 지원을 위한 영국의 재정 참여 규모를 보여준다. 실제 효과는 자금 집행과 현지 여건에 달려 있다.\n*달라진 점* 9월 17일 공식 발언에서 올해 지원금 기여 계획이 제시됐다. 기존 지원 대비 증액인지 여부는 제공 본문에서 확인되지 않는다.\n<https://www.gov.uk/government/speeches/the-uk-stands-ready-to-support-efforts-in-the-destruction-of-assad-era-chemical-weapons-for-syria-to-emerge-as-a-sovereign-stable-state-uk-statement-a|UK Foreign, Commonwealth &amp; Development Office> · 발표 09-18 03:52 KST\n출처 이용: <https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/|Contains public sector information licensed under the Open Government Licence v3.0>\nReporter의 AI 한국어 요약 · 확인 09-19 01:36 KST"
+    },
+    {
+      "id": "0e1373ae-387b-553a-99ab-b40d33dc7528",
+      "project_id": "f759d9fa-3fc5-5b60-9ad3-f408c029dc1e",
+      "status": "delivered",
+      "sent_ts": "1789749361.591839",
+      "thread_ts": null,
+      "attempts": 1,
+      "error": null,
+      "kind": "news",
+      "text": "*[주요 · 거시경제] ECB 8월 소비자 조사, 1년·3년·5년 기대인플레이션 모두 상승*\nECB가 9월 18일 발표한 2026년 8월 소비자기대조사에서 향후 1년 기대인플레이션 중앙값은 7월 2.9%에서 3.0%로 올랐다. 3년 기대는 2.7%에서 2.9%로, 5년 기대는 2.4%에서 2.5%로 상승했다. 이는 소비자들의 기대를 집계한 수치다.\n*왜 중요한가* 단기뿐 아니라 중장기 물가 기대도 높아져 기대인플레이션 안정 여부를 살피는 데 중요한 자료다. 이 결과만으로 ECB의 향후 금리 결정을 단정할 수는 없다.\n*달라진 점* 새로 발표된 8월 조사에서 7월 대비 1년 기대는 0.1%포인트, 3년 기대는 0.2%포인트, 5년 기대는 0.1%포인트 상승했다.\n<https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html|European Central Bank> · 발표 09-18 17:00 KST\nReporter의 AI 한국어 요약 · 확인 09-19 01:36 KST"
+    },
+    {
+      "id": "a485ec0f-ca52-4d3a-a5c5-eeeca894362b",
+      "project_id": "f759d9fa-3fc5-5b60-9ad3-f408c029dc1e",
+      "status": "delivered",
+      "sent_ts": "1789749447.668049",
+      "thread_ts": "1789749361.591839",
+      "attempts": 1,
+      "error": null,
+      "kind": "answer",
+      "text": "저장된 ECB 원문을 읽고 1년 후 기대인플레이션 수치와 원문 링크를 확인하겠습니다."
+    },
+    {
+      "id": "3e79b067-02a2-477d-ae90-cc6417c3db0a",
+      "project_id": "f759d9fa-3fc5-5b60-9ad3-f408c029dc1e",
+      "status": "delivered",
+      "sent_ts": "1789749456.256359",
+      "thread_ts": "1789749361.591839",
+      "attempts": 1,
+      "error": null,
+      "kind": "answer",
+      "text": "저장된 ECB 원문에 따르면, 2026년 8월 조사에서 향후 1년 기대인플레이션 중앙값은 **3.0%**로, 7월 2.9%보다 0.1%포인트 상승했습니다. 실제 물가상승률이 아닌 소비자 기대치입니다.\n[ECB 원문 · 2026년 9월 18일 발표](https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html)"
+    }
+  ],
+  "news_tasks": [
+    {
+      "id": "3621fc37-c353-5f2e-b7ba-44b075ed67f6",
+      "kind": "work",
+      "status": "completed",
+      "agent": "reporter"
+    }
+  ],
+  "normal_work_due": 0,
+  "workflows": [
+    {
+      "id": "company-news-collection-v1",
+      "run_id": "01a0b55e-f516-74c1-9001-43345fa9d927",
+      "status": "RUNNING",
+      "task_queue": "quant-company-news-collection"
+    },
+    {
+      "id": "company-news-editorial-v1",
+      "run_id": "01a0b55e-f52c-73dd-b0fe-92eb6930c3b0",
+      "status": "RUNNING",
+      "task_queue": "quant-company"
+    }
+  ]
+}
