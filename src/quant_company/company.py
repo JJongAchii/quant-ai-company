@@ -72,6 +72,7 @@ class Company:
         """Allowlisted configuration facts, never a dump of settings or credentials."""
         from .owner_controls import effective_limits
         from .staff.packs import pack
+        from .staff.review_contract import REVIEW_EFFORT, REVIEW_MODEL
         from .staff.tools import TOOL_GUIDE
 
         return {
@@ -86,6 +87,18 @@ class Company:
                  "specialist_pack_digest": pack(role.id)["digest"]}
                 for role in self.roles.values()
             ],
+            "background_model_requests": {
+                "maintainer": ({"model": self.roles["engineer"].model,
+                                "reasoning_effort": self.roles["engineer"].reasoning_effort,
+                                "configuration_source": "engineer role; new maintenance calls use these values"}
+                               if "engineer" in self.roles else None),
+                "independent_explanation_reviewer": {
+                    "model": REVIEW_MODEL, "reasoning_effort": REVIEW_EFFORT,
+                    "enabled": self.settings.company_staff_review_enabled,
+                },
+                "meaning": "Configured for new background requests; frozen historical replays retain their original "
+                           "model and effort. This does not attest daemon health or activate the engineer role.",
+            },
             "capabilities": {
                 **TOOL_GUIDE,
                 "staff_status": "Director only: {employee?: exact employee id or maintainer}. "

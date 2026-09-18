@@ -1,0 +1,11 @@
+{
+  "schema": "research-source-backup-v1",
+  "recorded_at": "2026-09-18T05:00:41.377361+00:00",
+  "uri": "s3://quant-company-061039802347-backups/company/research/company-kr-etf-pilot/terminal-repair-p07-20260918/9a63767d0e6d2bb36583042bb01d068a1daa0a3f2fe9826da3ddd528f984e4ee.tar.gz",
+  "bytes": 557425,
+  "sha256": "9a63767d0e6d2bb36583042bb01d068a1daa0a3f2fe9826da3ddd528f984e4ee",
+  "full_download_verified": true,
+  "retention": "existing backup bucket lifecycle applies; not permanent archival",
+  "research_commit": "9ed2984caa8c7e110d77ddaa6a98b308d62ce8d1",
+  "P07_manifest_sha256": "7596b99493dcad0bd2f9ecce0f1232e2e00e5136ba9e9ca327f82ca6f86f421e"
+}

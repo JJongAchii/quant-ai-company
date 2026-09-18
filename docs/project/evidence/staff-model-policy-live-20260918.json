@@ -1,0 +1,76 @@
+{
+  "schema": "staff-model-policy-live-verification-v1",
+  "recorded_at": "2026-09-18T05:07:14.670023+00:00",
+  "runtime_commit": "6fc05d7d6807dd87d664ea5f26711531b37ce6d7",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "task_id": "85f20507-5ff6-54e4-9285-a7e611bd158e",
+  "task_state": "completed",
+  "actual_codex_calls": 2,
+  "requested_model": "gpt-6-astra",
+  "requested_reasoning_effort": "max",
+  "configured_request_and_completed_cli_receipt_verified": true,
+  "provider_effort_attestation_claimed": false,
+  "requests": [
+    {
+      "id": "b9d6c5dd-99e1-533b-8631-158e08b20d3e",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "prompt_sha256": "8d0f41d85a95e83ffab4f17406a8c638058f4abedecf7cf90bc7edf5222d5ea7"
+    },
+    {
+      "id": "948bc4a9-55ff-5ad0-82db-a93c74c90f87",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "prompt_sha256": "0ee19bdc509bc251b33ca9b0e19237318c305a61240a0c961d347728e1da45c8"
+    }
+  ],
+  "cli_receipts": [
+    {
+      "request_id": "b9d6c5dd-99e1-533b-8631-158e08b20d3e",
+      "input_digest": "11d8a7c814f28395a442fed9b1266abd5c314eb9faf6efb397f82dea8a1658cb",
+      "state": "complete",
+      "cli_version": "0.154.0",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "948bc4a9-55ff-5ad0-82db-a93c74c90f87",
+      "input_digest": "7f69f679bb5507f7c187ba310bb027a705cbfdb06af9f8c7f7cf8c14cd1c4b4f",
+      "state": "complete",
+      "cli_version": "0.154.0",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "b18058a1-1e22-5265-b2ca-f11765ce825d",
+      "title": "직원 모델 정책 대조 및 P07 연구 상태",
+      "source_ids": [
+        "operator:staff-model-policy-p07-20260918",
+        "company:2c6facbb712338e186e7872c"
+      ],
+      "content_sha256": "32129deed32984556cb658987f2566910ce605cef99cca79729b6d0e3139e6b6"
+    }
+  ],
+  "slack_messages": [
+    {
+      "ts": "1789707796.980079",
+      "text": "[지시 v4] 지정된 모델 정책·P07 원문을 처음부터 읽는 요청을 제안합니다. 반환된 근거를 현재 모델·reasoning_effort 설정과 대조해 연구 진행 상태까지 정리하겠습니다.",
+      "bot_user_id": "U0C23PPKR5L"
+    },
+    {
+      "ts": "1789707961.609579",
+      "text": "[지시 v4] <@U0C250E23NW>\n현재 설정과 P07 기록의 직원 10명 모델·effort는 일치합니다. 총괄·금융전략·연구·검증·리스크=Astra max입니다.\n개발=Sol max, 데이터·운영=Terra high입니다. 개선BOT=Sol max는 요청 정책이며, 제공된 자료에서 적용값은 확인되지 않습니다.\n독립 설명검토는 P07 기록상 Opus5 max로 설정됐습니다. 모델·effort 확인 범위는 요청에 사용하는 설정값입니다.\n활성 직원은 총괄·금융전략·국내연구·데이터 4명이며, 나머지 직원은 비활성입니다.\nP07 원문 7건 보강이 기록됐습니다. 다음 연구 단계는 138210 NAV 기준일·공개시점 근거 확보입니다.\n근거: 현재 RUNTIME CONFIG 및 operator:staff-model-policy-p07-20260918.\nP07 원문 보강 후에도 138210 NAV 공개시점 근거가 없어 성과 계산을 재개하지 않았습니다.",
+      "bot_user_id": "U0C23PPKR5L"
+    }
+  ],
+  "final_owner_mentioned": true,
+  "new_slack_ingress": false,
+  "link": "https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789707961609579",
+  "limits": "Verified operator-directed server execution and real Slack readback, not autonomous research or provider reasoning attestation."
+}

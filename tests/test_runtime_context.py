@@ -67,3 +67,16 @@ def test_production_refuses_director_downgrade(tmp_path, change):
     path.write_text(json.dumps(roles))
     with pytest.raises(ValueError, match="flagship model and max"):
         load_roles(Settings(roles_file=path))
+
+
+def test_background_requests_are_visible_without_activating_quant_engineer():
+    company = Company(Settings(company_staff_review_enabled=True))
+    runtime = company.runtime_context()
+    assert not company.roles["engineer"].active
+    background = runtime["background_model_requests"]
+    assert background["maintainer"]["model"] == company.roles["engineer"].model
+    assert background["maintainer"]["reasoning_effort"] == "max"
+    assert background["independent_explanation_reviewer"] == {
+        "model": "claude-opus-5", "reasoning_effort": "max", "enabled": True}
+    company.roles["engineer"].reasoning_effort = "high"
+    assert company.runtime_context()["background_model_requests"]["maintainer"]["reasoning_effort"] == "high"
