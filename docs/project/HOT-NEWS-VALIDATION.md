@@ -3,6 +3,7 @@
 2026-09-19 KST. `hot-news`의 연속 뉴스 수집·검토·사건별 발송과 **Reporter / @reporter** 앱 설정을
 구현했다. 실제 구독 모델로 원문 기반 게시 후보 생성까지 확인했다.
 **운영 배포, Reporter 앱 설치, 실제 Slack 발신은 수행하지 않았다.**
+구현과 검토 대상은 [draft PR #33](https://github.com/JJongAchii/quant-ai-company/pull/33)에 있다.
 
 ## 구현
 
