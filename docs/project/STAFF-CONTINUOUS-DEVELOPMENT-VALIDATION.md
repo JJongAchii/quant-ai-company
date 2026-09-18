@@ -27,8 +27,8 @@
 
 [입력 파일 digest와 검사 영수증](evidence/staff-continuous-development-local.json).
 
-- 서비스 전체: 332 passed, 1 skipped, live 1 deselected. 이후 두 개의 회귀 검사를 추가하고
-  좁은 범위의 보완을 거쳐 최종 관련 검사 49개를 모두 통과했다. 두 집계는 중복되므로 합산하지 않는다.
+- 서비스 전체: 332 passed, 1 skipped, live 1 deselected. 이후 세 개의 회귀 검사를 추가하고
+  좁은 범위의 보완을 거쳐 최종 관련 검사 50개를 모두 통과했다. 두 집계는 중복되므로 합산하지 않는다.
 - 최종 배포 계약·금융 fixture: 22 passed.
 - `uv run ruff check .`, `git diff --check` 통과.
 - skip은 opt-in 로컬 Codex CLI 검사이며, 실제 모델 역량·실서버 배포를 검사했다는 의미가 아니다.

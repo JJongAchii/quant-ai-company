@@ -236,3 +236,11 @@ def test_additive_evaluation_schema_preserves_old_frozen_plan_digest():
                "evaluation": plan, "paths": ["src/quant_company/tools.py"]}
     payload = {"finding": finding, "evaluation_plan_digest": digest(plan), "replay_inputs_digest": digest({})}
     assert verify_plan(payload).evaluation.mode == "regression"
+
+
+def test_malformed_model_run_reference_is_rejected_before_postgres():
+    from quant_company.maintenance.policy import EvaluationPlan
+
+    with pytest.raises(ValueError):
+        EvaluationPlan(mode="staff_replay", staff_run_id="-"*36,
+                       success_criterion="Invalid UUID must not reach PostgreSQL and cause repeated activity retries.")

@@ -69,7 +69,7 @@ class EvaluationPlan(StrictModel):
     mode: Literal["regression", "prompt_replay", "staff_replay", "documentation", "design_only"]
     success_criterion: str = Field(min_length=10, max_length=1500)
     cases: list[ReplayCase] = Field(default_factory=list, max_length=2)
-    staff_run_id: str | None = Field(default=None, pattern=r"^[a-f0-9-]{36}$")
+    staff_run_id: str | None = Field(default=None, pattern=r"^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$")
 
     @model_validator(mode="after")
     def paired_replay(self):
