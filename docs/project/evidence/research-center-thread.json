@@ -1,0 +1,14 @@
+{
+  "channel": "C0C2B9EUEGM",
+  "thread_ts": "1789633942.673909",
+  "url": "https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789633942673909",
+  "client_msg_id": "80e78ae7-5746-4a6b-bc51-84fe6395f9de",
+  "root_text": "[연구 시작] 국내 ETF 월간 전략 파일럿\n\n사용자 요청에 따라 Codex가 생성한 연구 전용 스레드입니다. 총괄·금융전략·국내연구·데이터 담당의 산출물과 실행 상태를 이 스레드에 모읍니다.\n\n진행 순서: 실제 데이터 품질 확인 → 연구 가설·기간·비용·평가 기준 고정 → 3070 워커 실행 → 독립 누수 검증 → 결과 보고서.\n현재 단계: 데이터 검사와 연구 명세 작성. 백테스트 성과는 아직 측정하지 않았습니다.",
+  "authorization_quotes": [
+    "다음 건 진행해서 실제로 한번 수행하도록 해봐 그럼",
+    "research-center 채널에서 스레드 하나 파서 하면 될거같네"
+  ],
+  "registered_by": "Codex operator on explicit user request",
+  "new_slack_ingress": false,
+  "created_at": "2026-09-17T08:32:20.798032+00:00"
+}

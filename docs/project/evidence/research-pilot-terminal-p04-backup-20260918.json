@@ -1,0 +1,31 @@
+{
+  "kind": "private-terminal-repair-backup-readback",
+  "recorded_at": "2026-09-18T02:02:59.243008+00:00",
+  "uri": "s3://quant-company-061039802347-backups/company/research/company-kr-etf-pilot/terminal-repair-p04-20260918/699e0de0ca95494c078f8aa884dfa2b417d5a3e1ec95ec8d81ea772c1a2c459b.tar.gz",
+  "sha256": "699e0de0ca95494c078f8aa884dfa2b417d5a3e1ec95ec8d81ea772c1a2c459b",
+  "bytes": 14668101,
+  "readback_sha256": "699e0de0ca95494c078f8aa884dfa2b417d5a3e1ec95ec8d81ea772c1a2c459b",
+  "put_receipt": {
+    "Expiration": "expiry-date=\"Mon, 19 Oct 2026 00:00:00 GMT\", rule-id=\"CompanyBackupRetention\"",
+    "ETag": "\"95567a7fc3652e5404ed0fe275fa9517\"",
+    "ChecksumSHA256": "aZ4N4MqVSUwHj4qohN+itBfVo+HsleyNgep3LBosRZs=",
+    "ChecksumType": "FULL_OBJECT",
+    "ServerSideEncryption": "AES256",
+    "VersionId": "d7mYRqvlL7pZ_imrUOw61RZY_pPw8ExQ"
+  },
+  "contents": [
+    "labs/company-kr-etf-pilot/output/terminal-reviewed-04",
+    "labs/company-kr-etf-pilot/output/q-baseline-terminal-04",
+    "labs/company-kr-etf-pilot/output/path-baseline-terminal-04",
+    "labs/company-kr-etf-pilot/data/terminal-dart-complete-20260918",
+    "labs/company-kr-etf-pilot/data/terminal-law-review-20260918",
+    "docs/research/company-kr-etf-pilot/P04-MANIFEST.json",
+    "docs/research/company-kr-etf-pilot/TERMINAL-DOCUMENTARY-REVIEW.json",
+    "docs/research/company-kr-etf-pilot/Q03-worker.log",
+    "docs/research/company-kr-etf-pilot/PATH01-worker.log"
+  ],
+  "new_bucket_created": false,
+  "archive_includes_secrets": false,
+  "performance_computed": false,
+  "retention": "Existing CompanyBackupRetention lifecycle applies; Expiration above is the actual deletion bound, not permanent archival."
+}

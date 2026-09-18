@@ -1,0 +1,12 @@
+{
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "source_id": "operator:etf-terminal-partial-inputs-20260918",
+  "receipt": {
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "task_id": "353ab806-3076-533b-a433-e68b321a11b9",
+    "duplicate": false
+  },
+  "new_slack_ingress": false,
+  "observed_at": "2026-09-18T00:54:05.890294+00:00",
+  "source_content_sha256": "b7f04ad23ae904dd748433628fc94718d8b8e3eab3fa2424c6963cbf955aab87"
+}

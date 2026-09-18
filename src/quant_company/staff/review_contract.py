@@ -7,6 +7,7 @@ from pydantic import Field
 from ..contracts import StrictModel
 
 REVIEW_MODEL = "claude-opus-5"
+REVIEW_EFFORT = "max"
 RUBRIC_VERSION = "staff-explanation-review-v1"
 
 

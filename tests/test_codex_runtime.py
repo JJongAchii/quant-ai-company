@@ -130,10 +130,24 @@ async def test_scoped_native_search_preserves_observed_events(fake_codex, reques
 def test_search_disabled_keeps_legacy_request_identity(request_model):
     import hashlib
 
-    old = request_model.model_dump(exclude={"web_search"})
+    old = request_model.model_dump(exclude={"web_search", "reasoning_effort"})
     legacy = hashlib.sha256(json.dumps(old, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
     assert request_digest(request_model) == legacy
     assert request_digest(request_model.model_copy(update={"web_search": True})) != legacy
+    assert request_digest(request_model.model_copy(update={"reasoning_effort": "max"})) != legacy
+
+
+async def test_max_effort_is_explicit_and_bound_to_the_durable_request(fake_codex, request_model):
+    config, _, calls = fake_codex
+    request = request_model.model_copy(update={"model": "gpt-6-astra", "reasoning_effort": "max"})
+    result = await runner_for(config).run(request)
+    assert 'model_reasoning_effort="max"' in calls()[0]["args"]
+    receipt = json.loads((config.jobs_dir / f"{request.request_id}.json").read_text())
+    assert receipt["requested_execution"] == {"model": "gpt-6-astra", "reasoning_effort": "max"}
+    assert await runner_for(config).run(request) == result
+    with pytest.raises(ProviderFault, match="different input"):
+        await runner_for(config).run(request.model_copy(update={"reasoning_effort": "high"}))
+    assert len(calls()) == 1
 
 
 def test_pinned_cli_duplicate_web_item_id_is_narrowly_normalized():

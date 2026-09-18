@@ -9,7 +9,7 @@ from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 from psycopg.types.json import Jsonb
 
 from .config import Settings
-from .contracts import AgentDecision, ProviderRequest, ProviderResponse, Role
+from .contracts import DIRECTOR_MODEL, AgentDecision, ProviderRequest, ProviderResponse, Role
 from .db import Database
 from .lake_tools import LAKE_TOOLS, query_lake
 from .tools import calculate
@@ -41,6 +41,11 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     by_id = {role.id: role for role in roles}
     if len(by_id) != len(roles):
         raise ValueError("Duplicate role IDs")
+    director = by_id.get("director")
+    if not settings.fixture_mode and (
+        director is None or director.model != DIRECTOR_MODEL or director.reasoning_effort != "max"
+    ):
+        raise ValueError("Production director requires the approved flagship model and max reasoning effort")
     allowed_tools = {"calculate", "knowledge_search", "read_source", "company_history",
                      "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
                      "finance_search", "finance_read", "web_search", "web_read",
@@ -69,19 +74,33 @@ class Company:
         """Allowlisted configuration facts, never a dump of settings or credentials."""
         from .owner_controls import effective_limits
         from .staff.packs import pack
+        from .staff.review_contract import REVIEW_EFFORT, REVIEW_MODEL
         from .staff.tools import TOOL_GUIDE
 
         return {
             "snapshot_at": now().isoformat(),
             "model_provider": self.settings.model_provider,
-            "model_id_meaning": "Configured model IDs sent with requests; not provider-side model attestation.",
+            "model_id_meaning": "Configured model IDs and reasoning effort sent with requests; "
+                                "not provider-side model or reasoning attestation.",
             "employees": [
                 {**{key: getattr(role, key) for key in
-                    ["id", "name", "active", "model", "version", "tools", "can_delegate_to"]},
+                    ["id", "name", "active", "model", "reasoning_effort", "version", "tools", "can_delegate_to"]},
                  "specialist_pack_version": pack(role.id)["version"],
                  "specialist_pack_digest": pack(role.id)["digest"]}
                 for role in self.roles.values()
             ],
+            "background_model_requests": {
+                "maintainer": ({"model": self.roles["engineer"].model,
+                                "reasoning_effort": self.roles["engineer"].reasoning_effort,
+                                "configuration_source": "engineer role; new maintenance calls use these values"}
+                               if "engineer" in self.roles else None),
+                "independent_explanation_reviewer": {
+                    "model": REVIEW_MODEL, "reasoning_effort": REVIEW_EFFORT,
+                    "enabled": self.settings.company_staff_review_enabled,
+                },
+                "meaning": "Configured for new background requests; frozen historical replays retain their original "
+                           "model and effort. This does not attest daemon health or activate the engineer role.",
+            },
             "capabilities": {
                 **TOOL_GUIDE,
                 "news_status": "Reporter only: {}. Reads source freshness/failures, frozen editorial reviews and "
@@ -384,7 +403,8 @@ class Company:
             if task["parent_id"] else None
         )
         context["professional_feedback"] = as_json(coaching(
-            conn, project["owner_user"], task["agent"], self.roles[task["agent"]].model))
+            conn, project["owner_user"], task["agent"], self.roles[task["agent"]].model,
+            self.roles[task["agent"]].reasoning_effort))
         if task["agent"] == "director":
             from .maintenance.requests import permitted, record_source, status
             from .system_state import current_system
@@ -494,7 +514,8 @@ class Company:
                         "RUNTIME CONFIG JSON:\n" + json.dumps(self.runtime_context(conn), ensure_ascii=False) + "\n"
                         "TASK DATA JSON:\n" + json.dumps(context, ensure_ascii=False)
                     )
-                request = ProviderRequest(request_id=turn_id, model=role.model, prompt=prompt)
+                request = ProviderRequest(request_id=turn_id, model=role.model,
+                                          reasoning_effort=role.reasoning_effort, prompt=prompt)
                 conn.execute("UPDATE turns SET request=%s WHERE id=%s", (Jsonb(request.model_dump()), turn_id))
             else:
                 request = ProviderRequest.model_validate(turn["request"])

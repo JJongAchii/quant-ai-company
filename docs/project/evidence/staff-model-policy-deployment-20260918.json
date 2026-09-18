@@ -1,0 +1,158 @@
+{
+  "schema": "staff-model-policy-production-deployment-v1",
+  "recorded_at": "2026-09-18T05:01:02.293020+00:00",
+  "release": {
+    "commit": "6fc05d7d6807dd87d664ea5f26711531b37ce6d7",
+    "target": "/opt/quant-company/releases/6fc05d7d6807dd87d664ea5f26711531b37ce6d7",
+    "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "source_archive_sha256": "b82dcf3abac83af7c5123a1e8cd844d13b67214a9e9334708aeed888a94a7299",
+    "qdata_archive_sha256": "8bb50549a923f3ec39bb1e6ffce2ac182ed41d368275614e55f60686707a138c"
+  },
+  "previous_commit": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+  "pending_calls_before": {
+    "turns": 0,
+    "staff": 0,
+    "reviews": 0,
+    "maintenance": 0
+  },
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20260918T045948Z-11bff43e.tar.gz",
+    "sha256": "8dd0b9c2881d45d640b4b4e7ac9104a58388ebd704831a310d8f8f8bd70b1581",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260918T045948Z-11bff43e.tar.gz",
+    "release_commit": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+    "secrets_included": false
+  },
+  "postgres_recreated": false,
+  "roles_sha256": "496db57448c40eccd84ac5b4d4f3c5bbb839d8acf8d3e9c5e463c57fc8565fe3",
+  "roles": [
+    {
+      "id": "director",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": true
+    },
+    {
+      "id": "financial_strategist",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": true
+    },
+    {
+      "id": "researcher_kr",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": true
+    },
+    {
+      "id": "researcher_global",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "researcher_crypto",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "data",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "active": true
+    },
+    {
+      "id": "engineer",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "validator",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "risk",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "operations",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "active": false
+    }
+  ],
+  "services": [
+    {
+      "name": "/quant-company-postgres-1",
+      "image": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "revision": null,
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "image": "sha256:d87be14126299e99963bfbafd10c3fff2271d0cc71654181f1c9a85948fe419b",
+      "revision": "6fc05d7d6807dd87d664ea5f26711531b37ce6d7",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false
+    },
+    {
+      "name": "/quant-company-claude-runtime-1",
+      "image": "sha256:8bab59cd042d79867f38ff2d062170b4abb6ed8c738e5b569a882a6f8779e937",
+      "revision": "6fc05d7d6807dd87d664ea5f26711531b37ce6d7",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false
+    },
+    {
+      "name": "/quant-company-api-1",
+      "image": "sha256:877bca39cfebb599db2efd636c1afb78c69ad62b793e5657cdf30e9393ddeb96",
+      "revision": "6fc05d7d6807dd87d664ea5f26711531b37ce6d7",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "image": "sha256:877bca39cfebb599db2efd636c1afb78c69ad62b793e5657cdf30e9393ddeb96",
+      "revision": "6fc05d7d6807dd87d664ea5f26711531b37ce6d7",
+      "running": true,
+      "health": null,
+      "oom_killed": false
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "image": "sha256:877bca39cfebb599db2efd636c1afb78c69ad62b793e5657cdf30e9393ddeb96",
+      "revision": "6fc05d7d6807dd87d664ea5f26711531b37ce6d7",
+      "running": true,
+      "health": null,
+      "oom_killed": false
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "image": "sha256:877bca39cfebb599db2efd636c1afb78c69ad62b793e5657cdf30e9393ddeb96",
+      "revision": "6fc05d7d6807dd87d664ea5f26711531b37ce6d7",
+      "running": true,
+      "health": null,
+      "oom_killed": false
+    },
+    {
+      "name": "/quant-company-maintenance-1",
+      "image": "sha256:b6552b8f90ae4bc4b728397ac6851b7cd549560067c8ad5b188ccfa97a74ec1e",
+      "revision": "6fc05d7d6807dd87d664ea5f26711531b37ce6d7",
+      "running": true,
+      "health": null,
+      "oom_killed": false
+    }
+  ],
+  "rollback_directory": "/var/lib/quant-company/releases/model-policy-6fc05d7d6807dd87d664ea5f26711531b37ce6d7",
+  "activation": "explicit user-directed operator release; not automatic maintainer merge",
+  "operational_preparation_note": "First operator activation script failed Python syntax parsing before any remote statement executed. Raw-string quoting was corrected and compiled before the successful invocation. No research trial or production mutation occurred in that parse failure."
+}

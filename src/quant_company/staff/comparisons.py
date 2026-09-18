@@ -48,25 +48,30 @@ def freeze(company, job):
         conn.execute("SELECT pg_advisory_xact_lock(71350222)")
         run = source_run(conn, payload)
         employee = run["employee"]
-        original = payload["originals"][PREFIX + employee + ".md"]
-        if (pack_content(employee, original)["digest"] != run["pack_snapshot"]["digest"]
-                or company.roles["engineer" if employee == "maintainer" else employee].model != run["model"]):
-            raise ValueError("staff_replay_base_configuration_changed")
         existing = conn.execute("SELECT * FROM staff_comparisons WHERE job_id=%s", (job["id"],)).fetchone()
         if existing:
             validate_record(existing, payload)
             return
+        original = payload["originals"][PREFIX + employee + ".md"]
+        role = company.roles["engineer" if employee == "maintainer" else employee]
+        if (pack_content(employee, original)["digest"] != run["pack_snapshot"]["digest"]
+                or role.model != run["model"]
+                or role.reasoning_effort != run["role_snapshot"].get("reasoning_effort")):
+            raise ValueError("staff_replay_base_configuration_changed")
         call = conn.execute("SELECT request FROM staff_calls WHERE run_id=%s ORDER BY sequence LIMIT 1",
                             (run["id"],)).fetchone()
         if not call:
             raise ValueError("staff_replay_requires_recorded_request")
+        if call["request"].get("reasoning_effort") != run["role_snapshot"].get("reasoning_effort"):
+            raise ValueError("staff_replay_request_configuration_changed")
         context = json.loads(call["request"]["prompt"].split("EXERCISE JSON:\n", 1)[1])
         cases = [{"purpose": "target", "public": run["public_case"], "key": run["answer_key"],
                   "exposure": "released_practice"}]
         for purpose, variant in (("transfer", run["family_index"]), ("control", 1-run["family_index"])):
             public, key = make_case(employee, str(uuid4()), variant)
             cases.append({"purpose": purpose, "public": public, "key": key, "exposure": "fresh_parameters"})
-        material = {"model": run["model"], "context": context, "base_pack": run["pack_snapshot"],
+        material = {"model": run["model"], "reasoning_effort": call["request"].get("reasoning_effort"),
+                    "context": context, "base_pack": run["pack_snapshot"],
                     "max_calls": min(run["max_calls"], 3), "cases": cases, "suite_version": SUITE_VERSION}
         conn.execute("""INSERT INTO staff_comparisons(job_id,run_id,owner_user,employee,base_commit,material,input_digest)
             VALUES(%s,%s,%s,%s,%s,%s,%s)""", (job["id"], run["id"], run["owner_user"], employee,
@@ -181,7 +186,8 @@ async def advance(runner, job):
                 raise ValueError("staff_comparison_budget_state_invalid")
             prompt = request_prompt(record, payload, case, variant, progress)
             phase = f"staff-{case['purpose']}-{variant}-{len(progress['calls'])+1}"
-            response = await runner.response(job, phase, prompt, model=record["material"]["model"])
+            response = await runner.response(job, phase, prompt, model=record["material"]["model"],
+                                             reasoning_effort=record["material"].get("reasoning_effort"))
             receipts, result = check_response(response.decision, case, record["material"]["context"])
             progress["calls"].append({"request_id": response.request_id,
                                       "response_digest": digest(response.model_dump(mode="json")),

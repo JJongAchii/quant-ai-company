@@ -5,6 +5,9 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+ReasoningEffort = Literal["low", "medium", "high", "xhigh", "max"]
+DIRECTOR_MODEL = "gpt-6-astra"
+
 
 class StrictModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -77,6 +80,8 @@ class AgentDecision(StrictModel):
 class ProviderRequest(StrictModel):
     request_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,80}$")
     model: str = Field(min_length=1, max_length=80)
+    # None preserves already-frozen requests from before explicit effort support.
+    reasoning_effort: ReasoningEffort | None = None
     prompt: str = Field(min_length=1, max_length=90000)
     web_search: bool = False
 
@@ -116,6 +121,7 @@ class Role(StrictModel):
     name: str
     mission: str
     model: str
+    reasoning_effort: ReasoningEffort = "high"
     instructions: str
     tools: list[str]
     can_delegate_to: list[str]

@@ -1,0 +1,26 @@
+{
+  "registration": {
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "source_id": "operator:etf-terminal-repair-authorized-20260918",
+    "message_id": "33daa44f-951a-5f8e-9419-9e292c22c91a",
+    "new_slack_ingress": false,
+    "notice_mentions_owner": false
+  },
+  "outbox": {
+    "id": "33daa44f-951a-5f8e-9419-9e292c22c91a",
+    "agent": "director",
+    "channel": "C0C2B9EUEGM",
+    "thread_ts": "1789633942.673909",
+    "text": "[운영자 실행 연결] 사용자 승인에 따라 종료 ETF 자료 보강을 진행합니다. 첫 8종목의 실제 상환금 지급 공시를 찾았으며, 지급 전 거래정지 기간의 평가가격과 공표시각을 대조하고 있습니다. 같은 문제가 뒤에서 반복되는지 전체 관측 종료 종목도 점검합니다. 공식 자료를 읽는 기술 준비 단계이며 성과를 산출한 재실행은 아직 없습니다.",
+    "status": "delivered",
+    "sent_ts": "1789690418.882499"
+  },
+  "slack_readback": {
+    "channel": "C0C2B9EUEGM",
+    "thread_ts": "1789633942.673909",
+    "ts": "1789690418.882499",
+    "user": "U0C23PPKR5L",
+    "body_match": true,
+    "owner_ping": false
+  }
+}

@@ -600,3 +600,11 @@ def test_registered_license_reaches_actual_outbox_publication(news):
         message = conn.execute("SELECT text FROM outbox").fetchone()["text"]
     assert "<https://example.org/open-license/|Open Government Licence v3.0>" in message
     assert "Reporter의 AI 한국어 요약" in message
+
+
+def test_editor_preserves_configured_effort_and_frozen_request(news):
+    news.company.roles["reporter"] = news.company.roles["reporter"].model_copy(update={"reasoning_effort": "max"})
+    ready_article(news)
+    first = news.prepare_review()["request"]
+    assert first["model"] == "gpt-6-astra" and first["reasoning_effort"] == "max"
+    assert news.prepare_review()["request"] == first

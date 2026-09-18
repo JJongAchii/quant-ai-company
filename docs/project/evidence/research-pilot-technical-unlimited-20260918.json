@@ -1,0 +1,46 @@
+{
+  "schema": "company-research-policy-change-v1",
+  "recorded_at": "2026-09-18T04:24:40.810064+00:00",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "source_id": "operator:etf-technical-unlimited-20260918",
+  "user_quote": "기술 재시도 한도 같은거 제거해버려,,",
+  "approval_id_basis": "Exact latest user instruction in this conversation; provider message UUID and message timestamp are not exposed. recorded_at is processing time, not an invented user-message timestamp.",
+  "qws_intent_digest": "7125d7cedc8b",
+  "approval_evidence_path": "quant-lab/docs/research/company-kr-etf-pilot/APPROVAL-TECHNICAL-UNLIMITED-20260918.json",
+  "approval_evidence_sha256": "8d4603b73f3872efe5f107309bbe614b706100fe0a45c2525873cab85214530c",
+  "effective_args_path": "quant-lab/docs/research/company-kr-etf-pilot/DISCOVERY-ARGS-v2.json",
+  "effective_args_sha256": "029b96d7207a1dfea05248082bbc0ed6484cb044ab4e3154bd9438963982f8b5",
+  "policy": {
+    "maxQualificationAttempts": null,
+    "maxTechnicalRetries": null,
+    "null_semantics": "No count-based stop or request for additional retries. Existing attempt counts remain append-only.",
+    "unchanged_failure_policy": "Retry after repair, new evidence or changed external state."
+  },
+  "technical_failure_episodes_preserved": 7,
+  "prior_six_failures_retained": true,
+  "seventh_failure": "Official supplementary source transfer was incomplete; HTTP/1.0 repair succeeded. No new retry-budget approval requested.",
+  "research_state": {
+    "status": "source-repair-resumed/performance-unmeasured",
+    "official_sources_collected": "138210 delisting/payment notices, historical prospectus, two NAV queries with one actual row, and timing documentation; 30 archived files.",
+    "actual_remaining_issue": "NAV reference-date meaning is not established as publication date. The fund prospectus says next-business-day publication. Do not apply the July2 row as available by July2 close without evidence.",
+    "worker_run_added": false,
+    "performance_completed": 0,
+    "candidate_executions": 0,
+    "P06_path": "quant-lab/docs/research/company-kr-etf-pilot/P06-MANIFEST.json",
+    "P06_sha256": "1d1d6aa103bfc47f3f7663b41cad11d7859dbe15114a06c1bf33712bcb9d66cf"
+  },
+  "unchanged": "Baseline1/candidate3; approved period and costs; objective; sealed window;3070 only. Preserve all earlier attempts.",
+  "supersedes": "operator:etf-terminal-path02-summary-20260918 only for its count-exhaustion stop and request for six more attempts. The proposed six extra was never approved. Current instruction removes the count cap.",
+  "validation": {
+    "workflow_checks": 203,
+    "collector_checks": 21,
+    "skill_schema": "passed",
+    "agent_tools_parity": "passed"
+  },
+  "shared_workflow_commit": "59cb3b4",
+  "pilot_policy_commit": "2da7a87",
+  "collector_commit": "02491c0",
+  "deployment_scope": "Research workflow and current research contract/config changed; no company server software deployment was needed or performed. Operator still bridges source/Git/worker work; do not claim employee autonomous execution.",
+  "research_PR": "https://github.com/JJongAchii/quant-lab/pull/16",
+  "company_PR": "https://github.com/JJongAchii/quant-ai-company/pull/30"
+}

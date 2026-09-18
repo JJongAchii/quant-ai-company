@@ -1,0 +1,91 @@
+{
+  "kind": "actual-slack-technical-policy-readback",
+  "checked_at": "2026-09-18T04:27:38.649232+00:00",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "runtime_commit": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+  "tasks": [
+    {
+      "id": "08077441-d05e-50cf-8223-040cb3d9883b",
+      "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+      "parent_id": null,
+      "agent": "director",
+      "instruction": "[사용자 기술 정책 변경의 실제 승인 기록 — 추가 위임 없이 총괄만 보고] 이 입력은 대화에서 확인한 실제 사용자 지시를 운영자가 전달한 것이며 새 Slack 사용자 발언을 위조한 이벤트가 아니다. read_source로 operator:etf-technical-unlimited-20260918 하나를 offset0부터 읽어라. 완결된 최신 출처이며 옛 원문 추가 검색·위임은 하지 말라. 읽은 뒤 artifact1개와 최종 say6줄 이내를 만들고 status=complete로 종료하라. 사용자 지시로 qualification/기술재시도 횟수 상한이 제거됐고 기존 실패 이력은 보존됨, 일곱 번째 기술 오류도 재승인 없이 수리·수집 성공, 현재 미해결은138210 NAV 공개시점 근거, 성과/후보완료0을 명확히 하라. 예전6/6 중단과 추가6회 승인요청은 폐기된 정책이다. 다시 승인 질문하거나 추가 횟수 제한을 만들어서는 안 된다. 기준선/후보 과학범위와 봉인·3070은 유지한다. 서버 배포나 직원 자율워커 실행을 주장하지 말라. 총괄 최종 사용자 태그는 서버가 처리한다.",
+      "revision": 4,
+      "depth": 0,
+      "priority": 0,
+      "status": "completed",
+      "turn_count": 2,
+      "result": "제공된 최신 기록에 따르면 사용자 승인으로 qualification·기술 재시도 횟수 상한이 제거됐으며, 기존 실패 7건의 이력은 보존됩니다.\n예전 ‘6/6 중단·추가 6회 승인 요청’은 폐기됐습니다. 수리·새 근거·외부 상태 변화 후 재시도하는 원칙은 유지됩니다.\n일곱 번째 자료 전송 오류도 HTTP/1.0 수리 후 재승인 없이 수집에 성공했습니다.\n현재 미해결은 138210 NAV의 실제 공개시점 근거입니다. 다음 단계는 7월 2일 자료를 당일 종가 시점에 이용할 수 있었는지 확인하는 것입니다.\n성과 측정 완료 0건·후보 실행 및 완료 0건이며, 기준선 1개·후보 3개, 승인 기간·비용·목표·봉인 구간·3070 전용 조건은 유지됩니다.\n이번 변경은 연구 절차·계약·설정에 한정되며, 서버 배포나 직원 자율 워커 실행은 수행되지 않았습니다.",
+      "error": null,
+      "created_at": "2026-09-18 04:25:18.080713+00:00",
+      "kind": "work"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "cf8ad683-89d8-5303-a138-2333737c928f",
+      "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+      "task_id": "08077441-d05e-50cf-8223-040cb3d9883b",
+      "revision": 4,
+      "title": "국내상장 ETF 연구: 기술 재시도 정책 변경과 남은 검증",
+      "content": "제공된 read_source 반환 기록 전체(offset 0, next_offset null)를 근거로 작성한 총괄 보고다. 기록 처리시각은 2026-09-18T04:24:40.810064+00:00이며 사용자 발언 시각을 뜻하지 않는다. 이 보고의 완료는 연구 성과 검증 완료를 뜻하지 않는다.\n\n정책: 사용자 승인으로 maxQualificationAttempts와 maxTechnicalRetries가 null로 변경됐다. 이는 횟수에 따른 중단과 추가 재시도 승인 요청의 제거를 뜻한다. 기존 6건을 포함한 기술 실패 7건과 시도 이력은 삭제하지 않고 보존한다. 과거 6/6 소진에 따른 중단 및 추가 6회 승인 요청은 폐기됐다. 수리, 새로운 근거 또는 외부 상태 변화 이후 재시도한다는 원칙은 유지한다.\n\n확인된 진전: 기록에 따르면 일곱 번째 오류는 공식 보강자료 전송 불완전이었으며 HTTP/1.0 수리 후 추가 승인 없이 수집에 성공했다. 138210 상장폐지·지급 공지, 과거 투자설명서, NAV 조회 2건과 실제 행 1건, 시점 설명자료 등 파일 30개가 보관됐다. 이는 자료 보강 결과이며 성과 검증 결과가 아니다.\n\n남은 문제와 다음 단계: 138210 NAV 기준일이 공개일이라는 근거가 확립되지 않았다. 기록은 투자설명서에 익영업일 공개가 명시돼 있다고 보고한다. 따라서 7월 2일 행을 7월 2일 종가까지 이용 가능했다고 처리하지 않는다. 다음 단계는 해당 NAV의 실제 공개시점 근거를 확보해 의사결정 시점의 이용 가능성을 확정하는 것이다. 이번 보고에서 원 금융문서를 새로 검증하거나 추가 작업을 실행한 것은 아니다.\n\n연구 상태: 자료 보강 재개·성과 미측정. 성과 측정 완료 0건, 후보 실행 0건으로 후보 완료도 0건이다. 기준선 1개·후보 3개, 기존 승인 기간·비용·목표, 봉인 구간과 3070 전용 조건을 유지한다.\n\n실행 범위: 기록상 연구 워크플로와 현재 연구 계약·설정이 변경됐다. 회사 서버 소프트웨어 배포는 없었고 새 워커 실행도 추가되지 않았다. 운영자가 자료·Git·워커 작업을 연결하는 구조이며 직원 자율 실행으로 해석하지 않는다.",
+      "source_ids": [],
+      "digest": "b70babfc96dd6c5d1ebe485cb108651d7238f91e49c999f51f7a54a3aedfce27",
+      "created_at": "2026-09-18 04:26:01.190620+00:00"
+    }
+  ],
+  "source_read_decisions": [
+    {
+      "name": "read_source",
+      "arguments": {
+        "offset": 0,
+        "source_id": "operator:etf-technical-unlimited-20260918"
+      }
+    }
+  ],
+  "source_tool_receipt": {
+    "id": "operator:etf-technical-unlimited-20260918",
+    "title": "현재 승인: 기술 재시도 횟수 제한 제거 및 자료 보강 재개",
+    "uri": "company://research/company-kr-etf-pilot/technical-unlimited",
+    "content": "{\"approval_evidence_path\": \"quant-lab/docs/research/company-kr-etf-pilot/APPROVAL-TECHNICAL-UNLIMITED-20260918.json\", \"approval_evidence_sha256\": \"8d4603b73f3872efe5f107309bbe614b706100fe0a45c2525873cab85214530c\", \"approval_id_basis\": \"Exact latest user instruction in this conversation; provider message UUID and message timestamp are not exposed. recorded_at is processing time, not an invented user-message timestamp.\", \"collector_commit\": \"02491c0\", \"company_PR\": \"https://github.com/JJongAchii/quant-ai-company/pull/30\", \"deployment_scope\": \"Research workflow and current research contract/config changed; no company server software deployment was needed or performed. Operator still bridges source/Git/worker work; do not claim employee autonomous execution.\", \"effective_args_path\": \"quant-lab/docs/research/company-kr-etf-pilot/DISCOVERY-ARGS-v2.json\", \"effective_args_sha256\": \"029b96d7207a1dfea05248082bbc0ed6484cb044ab4e3154bd9438963982f8b5\", \"pilot_policy_commit\": \"2da7a87\", \"policy\": {\"maxQualificationAttempts\": null, \"maxTechnicalRetries\": null, \"null_semantics\": \"No count-based stop or request for additional retries. Existing attempt counts remain append-only.\", \"unchanged_failure_policy\": \"Retry after repair, new evidence or changed external state.\"}, \"prior_six_failures_retained\": true, \"project_id\": \"9aac0de4-2b97-5195-a720-287d324234f3\", \"qws_intent_digest\": \"7125d7cedc8b\", \"recorded_at\": \"2026-09-18T04:24:40.810064+00:00\", \"research_PR\": \"https://github.com/JJongAchii/quant-lab/pull/16\", \"research_state\": {\"P06_path\": \"quant-lab/docs/research/company-kr-etf-pilot/P06-MANIFEST.json\", \"P06_sha256\": \"1d1d6aa103bfc47f3f7663b41cad11d7859dbe15114a06c1bf33712bcb9d66cf\", \"actual_remaining_issue\": \"NAV reference-date meaning is not established as publication date. The fund prospectus says next-business-day publication. Do not apply the July2 row as available by July2 close without evidence.\", \"candidate_executions\": 0, \"official_sources_collected\": \"138210 delisting/payment notices, historical prospectus, two NAV queries with one actual row, and timing documentation; 30 archived files.\", \"performance_completed\": 0, \"status\": \"source-repair-resumed/performance-unmeasured\", \"worker_run_added\": false}, \"schema\": \"company-research-policy-change-v1\", \"seventh_failure\": \"Official supplementary source transfer was incomplete; HTTP/1.0 repair succeeded. No new retry-budget approval requested.\", \"shared_workflow_commit\": \"59cb3b4\", \"source_id\": \"operator:etf-technical-unlimited-20260918\", \"supersedes\": \"operator:etf-terminal-path02-summary-20260918 only for its count-exhaustion stop and request for six more attempts. The proposed six extra was never approved. Current instruction removes the count cap.\", \"technical_failure_episodes_preserved\": 7, \"unchanged\": \"Baseline1/candidate3; approved period and costs; objective; sealed window;3070 only. Preserve all earlier attempts.\", \"user_quote\": \"기술 재시도 한도 같은거 제거해버려,,\", \"validation\": {\"agent_tools_parity\": \"passed\", \"collector_checks\": 21, \"skill_schema\": \"passed\", \"workflow_checks\": 203}}",
+    "total_characters": 3076,
+    "metadata": {},
+    "available_at": "2026-09-18 04:24:40.810064+00:00",
+    "synthetic": false,
+    "offset": 0,
+    "next_offset": null
+  },
+  "slack_readback": [
+    {
+      "outbox_id": "2957de36-d0ed-40ec-ae99-3abdfe285651",
+      "ts": "1789705528.187339",
+      "user": "U0C23PPKR5L",
+      "text": "[지시 v4] 지정된 최신 기록을 확인한 뒤 기술 재시도 정책과 연구 진행 상태를 정리하겠습니다.",
+      "normalized_body_match": true,
+      "expected_identity_match": true
+    },
+    {
+      "outbox_id": "2d1803a8-94aa-4944-9cef-ee90c5939b21",
+      "ts": "1789705561.905779",
+      "user": "U0C23PPKR5L",
+      "text": "[지시 v4] <@U0C250E23NW>\n제공된 최신 기록에 따르면 사용자 승인으로 qualification·기술 재시도 횟수 상한이 제거됐으며, 기존 실패 7건의 이력은 보존됩니다.\n예전 ‘6/6 중단·추가 6회 승인 요청’은 폐기됐습니다. 수리·새 근거·외부 상태 변화 후 재시도하는 원칙은 유지됩니다.\n일곱 번째 자료 전송 오류도 HTTP/1.0 수리 후 재승인 없이 수집에 성공했습니다.\n현재 미해결은 138210 NAV의 실제 공개시점 근거입니다. 다음 단계는 7월 2일 자료를 당일 종가 시점에 이용할 수 있었는지 확인하는 것입니다.\n성과 측정 완료 0건·후보 실행 및 완료 0건이며, 기준선 1개·후보 3개, 승인 기간·비용·목표·봉인 구간·3070 전용 조건은 유지됩니다.\n이번 변경은 연구 절차·계약·설정에 한정되며, 서버 배포나 직원 자율 워커 실행은 수행되지 않았습니다.",
+      "normalized_body_match": true,
+      "expected_identity_match": true
+    }
+  ],
+  "final_message_url": "https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789705561905779?thread_ts=1789633942.673909&cid=C0C2B9EUEGM",
+  "verification": {
+    "tasks_completed": 1,
+    "artifacts": 1,
+    "actual_codex_turns": 2,
+    "source_read_calls": 1,
+    "source_read_complete": true,
+    "delivered_slack_posts": 2,
+    "owner_tag_on_actual_final": true,
+    "no_additional_delegation": true,
+    "operator_connected_execution": true,
+    "new_slack_ingress": false,
+    "no_service_deployment_by_this_work": true
+  },
+  "artifact_source_link_limit": "The director artifact has an empty source_ids array. Provenance here is the actual read_source decision and complete tool receipt from this task; this operator verification does not rewrite the artifact or claim its citation array is populated."
+}

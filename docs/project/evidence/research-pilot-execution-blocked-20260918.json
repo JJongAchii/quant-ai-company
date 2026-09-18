@@ -1,0 +1,77 @@
+{
+  "source_id": "operator:etf-pilot-b01-blocker-20260918",
+  "observed_at": "2026-09-17T23:23:23.507680+00:00",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "run_id": "company-kr-etf-pilot-20260918",
+  "status": "blocked",
+  "execution_mode": "operator-assisted worker execution; Slack employees did not execute shell or backtests",
+  "approval_source_id": "operator:etf-discovery-approved-20260918",
+  "scope": "Approved frozen brief, domestic-listed ETF monthly strategy, 2014-01-01 through 2026-08-31; 3070 only",
+  "code_commit": "c736cb2075405f708e2aae448c8107122b99a2d1",
+  "config_digest": "fd328f96e9ecf0bc41c9d51ba2b6c2b6fb6f0b4a257095c8345da8e766189932",
+  "host": "DESKTOP-5T00NAF",
+  "gpu": "NVIDIA GeForce RTX 3070",
+  "lake_id": "krx-etf-9c4fb62c8f19a158aee1dff36af37706-meta-2d8776e0c3fbe4e020dc383718239ee5",
+  "qualification": "Initial warmup qualification and exact code/config requalification succeeded; no performance computed during qualification",
+  "worker_causal_and_accounting_guards_passed": 19,
+  "baseline_attempts": 1,
+  "completed_performance_executions": 0,
+  "candidate_executions": 0,
+  "performance_metrics_available": false,
+  "partial_window_metrics_computed": false,
+  "independent_leak_audit": "not invoked: no completed performance artifact",
+  "first_unvalued_date": "2015-02-23",
+  "last_observed_date": "2015-02-17",
+  "held_tickers_missing": [
+    "091200",
+    "104580",
+    "105020",
+    "161520",
+    "161530",
+    "161540",
+    "161550",
+    "166060"
+  ],
+  "other_etf_rows_same_date": 166,
+  "source_snapshot_manifest_sha256": "8a10e640ca4430f7bcab7085e717f4e29119be0d6a0a2dd86877dd7691ee574e",
+  "local_source_rows_evidence_sha256": "d44aa00335846a20727ef3a0c2635937c72d85917b4838776d26636bb079e24b",
+  "blocker_sha256": "ee879b45595567e1c6dffa896dddd5a1e66a69101f127929689e55952fb6061a",
+  "research_evidence_url": "https://github.com/JJongAchii/quant-lab/blob/company-kr-etf-pilot/docs/research/company-kr-etf-pilot/SOURCE-BLOCKER.json",
+  "official_notices_checked_by_operator": [
+    {
+      "title": "한화 ARIRANG 4개 ETF 자진상장폐지 안내",
+      "url": "https://www.plusetf.co.kr/customer/notice/detail?n=17204",
+      "issuer": "Hanwha Asset Management / PLUS ETF",
+      "notice_date": "2015-01-14",
+      "tickers": [
+        "161520",
+        "161530",
+        "161540",
+        "161550"
+      ],
+      "scheduled_trade_halt": "2015-02-17",
+      "scheduled_delisting": "2015-02-23",
+      "scheduled_termination_basis": "2015-03-03",
+      "scheduled_redemption_payment": "2015-03-04",
+      "actual_payment_amount_verified": false
+    },
+    {
+      "title": "TIGER 브릭스 ETF 상장폐지 안내",
+      "url": "https://kind.krx.co.kr/external/2015/01/07/000083/20150107000172/68629.htm",
+      "issuer": "Mirae Asset / KRX KIND",
+      "notice_date": "2015-01-07",
+      "tickers": [
+        "105020"
+      ],
+      "scheduled_trade_halt": "2015-02-17",
+      "scheduled_delisting": "2015-02-23",
+      "scheduled_termination_basis": "2015-02-23",
+      "scheduled_redemption_payment": "2015-02-24",
+      "actual_payment_amount_verified": false
+    }
+  ],
+  "notice_limit": "These sources establish announced schedules for five instruments, not all eight actual payments or values. They are diagnostic evidence, not newly substituted backtest inputs.",
+  "source_gap": "The fixed lake has no supported valuation or redemption cash-flow contract after these retained holdings disappear. Joining did not drop the rows; it is not a whole-market holiday gap.",
+  "resume_when": "Obtain documented security continuity/termination, valuation during halted periods, actual per-unit redemption amount and payment date, and causal accounting in adjusted units; requalify committed code and inputs before rerunning the same baseline. Scope changes need separate approval.",
+  "instruction": "Treat current outcome as blocked/unmeasured, not no-candidate, strategy loss, or completion. No shortened-window CAGR, forward filling missing closes, last-close cash settlement or retrospective removal of ETFs."
+}

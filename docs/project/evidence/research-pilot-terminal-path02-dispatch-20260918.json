@@ -1,0 +1,11 @@
+{
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "source_id": "operator:etf-terminal-path02-summary-20260918",
+  "receipt": {
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "task_id": "2fdf0116-1a77-5111-8d6a-4b9454c96487",
+    "duplicate": false
+  },
+  "new_slack_ingress": false,
+  "runtime_commit": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3"
+}

@@ -1,0 +1,104 @@
+{
+  "kind": "contemporaneous-fund-nav-rules",
+  "records": [
+    {
+      "ticker": "161520",
+      "source_url": "https://kind.krx.co.kr/external/2014/04/18/000302/20140418000817/%ED%95%9C%ED%99%94ARIRANG%EC%9E%90%EB%8F%99%EC%B0%A8%EC%A6%9D%EA%B6%8C%EC%83%81%EC%9E%A5%EC%A7%80%EC%88%98%ED%88%AC%EC%9E%90%EC%8B%A0%ED%83%81%28%EC%A3%BC%EC%8B%9D%29%28006274%29-20140417.pdf",
+      "raw_path": "labs/company-kr-etf-pilot/data/terminal-rules-20260918/161520-rules.pdf",
+      "sha256": "82f7a0b123c6ff9c8da7b9c3651afd26559583ba01a6a3037f3e69d1755f9935",
+      "retrieved_at": "2026-09-18T00:33:44.753664+00:00",
+      "source_publication_date": "2014-04-18",
+      "effective_date": "2014-04-17",
+      "nav_rule_page_1_based": 17,
+      "article": "제30조",
+      "effective_date_page_1_based": 28,
+      "internal_fund_code": "006274",
+      "rule_summary": "당일공고는 전날 순자산/전날 총좌수. 1좌 기준 소수2자리. 매일공고. 게시장소에 거래소·운용사·판매사/AP가 포함되며 KOFIA 직접열거는 없다.",
+      "observed_historical_publication_timestamp": null,
+      "kr5_code_in_document": false
+    },
+    {
+      "ticker": "161530",
+      "source_url": "https://kind.krx.co.kr/external/2014/04/18/000291/20140418000832/%ED%95%9C%ED%99%94ARIRANG%EC%A1%B0%EC%84%A0%EC%9A%B4%EC%86%A1%EC%A6%9D%EA%B6%8C%EC%83%81%EC%9E%A5%EC%A7%80%EC%88%98%ED%88%AC%EC%9E%90%EC%8B%A0%ED%83%81%28%EC%A3%BC%EC%8B%9D%29%28006275%29-20140417.pdf",
+      "raw_path": "labs/company-kr-etf-pilot/data/terminal-rules-20260918/161530-rules.pdf",
+      "sha256": "dcbe2edcbdb37a0a5d31245b5ffc26e2c38ce6522edaa1183d4871cec11fca73",
+      "retrieved_at": "2026-09-18T00:33:44.855587+00:00",
+      "source_publication_date": "2014-04-18",
+      "effective_date": "2014-04-17",
+      "nav_rule_page_1_based": 17,
+      "article": "제30조",
+      "effective_date_page_1_based": 28,
+      "internal_fund_code": "006275",
+      "rule_summary": "당일공고는 전날 순자산/전날 총좌수. 1좌 기준 소수2자리. 매일공고. 게시장소에 거래소·운용사·판매사/AP가 포함되며 KOFIA 직접열거는 없다.",
+      "observed_historical_publication_timestamp": null,
+      "kr5_code_in_document": false
+    },
+    {
+      "ticker": "161540",
+      "source_url": "https://kind.krx.co.kr/external/2014/04/18/000392/20140418001023/%ED%95%9C%ED%99%94ARIRANG%EC%B2%A0%EA%B0%95%EA%B8%88%EC%86%8D%EC%A6%9D%EA%B6%8C%EC%83%81%EC%9E%A5%EC%A7%80%EC%88%98%ED%88%AC%EC%9E%90%EC%8B%A0%ED%83%81%28%EC%A3%BC%EC%8B%9D%29%28006276%29-20140417.pdf",
+      "raw_path": "labs/company-kr-etf-pilot/data/terminal-rules-20260918/161540-rules.pdf",
+      "sha256": "a965727e6ef839a7966c1074751fe38c1e457fac7d47765cff54aa82bc8eed86",
+      "retrieved_at": "2026-09-18T00:33:44.949393+00:00",
+      "source_publication_date": "2014-04-18",
+      "effective_date": "2014-04-17",
+      "nav_rule_page_1_based": 17,
+      "article": "제30조",
+      "effective_date_page_1_based": 28,
+      "internal_fund_code": "006276",
+      "rule_summary": "당일공고는 전날 순자산/전날 총좌수. 1좌 기준 소수2자리. 매일공고. 게시장소에 거래소·운용사·판매사/AP가 포함되며 KOFIA 직접열거는 없다.",
+      "observed_historical_publication_timestamp": null,
+      "kr5_code_in_document": false
+    },
+    {
+      "ticker": "161550",
+      "source_url": "https://kind.krx.co.kr/external/2014/04/18/000410/20140418001037/%ED%95%9C%ED%99%94ARIRANG%ED%99%94%ED%95%99%EC%A6%9D%EA%B6%8C%EC%83%81%EC%9E%A5%EC%A7%80%EC%88%98%ED%88%AC%EC%9E%90%EC%8B%A0%ED%83%81%28%EC%A3%BC%EC%8B%9D%29%28006277%29-20140417.pdf",
+      "raw_path": "labs/company-kr-etf-pilot/data/terminal-rules-20260918/161550-rules.pdf",
+      "sha256": "5e741c29d6edb4b0260fec75806a5b199a7418cd6019584c3722eb94d9d768df",
+      "retrieved_at": "2026-09-18T00:33:45.025495+00:00",
+      "source_publication_date": "2014-04-18",
+      "effective_date": "2014-04-17",
+      "nav_rule_page_1_based": 17,
+      "article": "제30조",
+      "effective_date_page_1_based": 28,
+      "internal_fund_code": "006277",
+      "rule_summary": "당일공고는 전날 순자산/전날 총좌수. 1좌 기준 소수2자리. 매일공고. 게시장소에 거래소·운용사·판매사/AP가 포함되며 KOFIA 직접열거는 없다.",
+      "observed_historical_publication_timestamp": null,
+      "kr5_code_in_document": false
+    },
+    {
+      "ticker": "166060",
+      "source_url": "https://www.samsungfund.com/fund/download.do?fileSeq=24974&fileNo=1",
+      "raw_path": "labs/company-kr-etf-pilot/data/terminal-rules-20260918/166060-rules.pdf",
+      "sha256": "1423efcfaa39154b903f7cd674d6b20f6cfc22587cb67e18b9081cffa91592a4",
+      "retrieved_at": "2026-09-18T00:33:45.178172+00:00",
+      "source_publication_date": "2012-10-04",
+      "effective_date": "2012-10-04",
+      "nav_rule_page_1_based": 7,
+      "article": "제20조",
+      "rule_summary": "당일공고는 직전일 순자산/직전일 총좌수. 1좌 기준 소수2자리. 매일공고.",
+      "observed_historical_publication_timestamp": null,
+      "subsequent_amendments_checked_by_surveyor": [
+        "29133",
+        "29101",
+        "38663",
+        "38653",
+        "44648",
+        "44643"
+      ],
+      "amendment_limit": "위6개변경표에해당NAV조항변경없음.전체사후정정전수확인은아님."
+    }
+  ],
+  "per_fund_rules_recovered": 5,
+  "per_fund_rules_not_yet_recovered": [
+    "091200",
+    "104580",
+    "105020"
+  ],
+  "historical_actual_publication_times_verified": false,
+  "limits": [
+    "Rules establish publication policy, not observed historical delivery timestamps or unchanged vintages.",
+    "KR5 and KR7 identifier systems require an explicit documented crosswalk.",
+    "The KOFIA name for ARIRANG shipbuilding omits 송; do not claim byte-for-byte fund-name equality."
+  ],
+  "performance_computed": false
+}

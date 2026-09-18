@@ -1,0 +1,95 @@
+{
+  "kind": "operator-terminal-artifact-verification",
+  "recorded_at": "2026-09-18T00:55:08.843562+00:00",
+  "P02": [
+    {
+      "path": "labs/company-kr-etf-pilot/output/terminal-preparation-01/inventory.json",
+      "basis": "preserved artifact",
+      "sha256": "37f1af09dafe34b05c6d50d2482624d219b56385385136982c96e3b65ba7fdb8"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/output/terminal-preparation-01/readiness.json",
+      "basis": "preserved artifact",
+      "sha256": "45437222eca8e270cdff60ec24aa424eb24e6b1eedf7ffdf417b87fc10de0883"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/output/terminal-preparation-01/summary.json",
+      "basis": "preserved artifact",
+      "sha256": "1dcb8cf4897a7acf05e2d3082ca8cd1865a4a5417c573e9d683660288bc00243"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/TERMINAL-SOURCE-CONTRACT.md",
+      "basis": "exact execution commit",
+      "sha256": "6550ceefac74ef5043cddca64a7556d478873789e26328283cd312901065a79b"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/prepare_terminal_inputs.py",
+      "basis": "exact execution commit",
+      "sha256": "25eac9867901f7c47fab72e8ae919d892af709748f8e400f3794382045ffc0d3"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/src/company_kr_etf_pilot/terminal_inputs.py",
+      "basis": "exact execution commit",
+      "sha256": "ca1999b7a19544aecdc5901e8cb85cba1f2b87a7efd5ccf6a80544faf6ae179b"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/src/company_kr_etf_pilot/terminal_sources.py",
+      "basis": "exact execution commit",
+      "sha256": "77b0167d7b6e5e97a079bd73f9b8be297f48d15fd7f92ed7a44a75d6d671fc86"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/tests/test_terminal_inputs.py",
+      "basis": "exact execution commit",
+      "sha256": "64aeae3b95a9a0377acad9af39bf0c7a480a2ea3e8735f90d8693451e5835b28"
+    }
+  ],
+  "P03": [
+    {
+      "path": "labs/company-kr-etf-pilot/output/terminal-partial-03/summary.json",
+      "sha256": "26e41a48e334d37a7b1141c4c16ebe30784b749fc2a042d7d2412857822acc2b",
+      "basis": "preserved artifact"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/output/terminal-partial-03/sources.json",
+      "sha256": "3acec590f33056cac1af660630a053343036e6a15317600f9d6a4bede7af5d54",
+      "basis": "preserved artifact"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/output/terminal-partial-03/held-readiness.json",
+      "sha256": "d9b2aea1f404f9a741d0f3ef7ede6a71ddb99dd450af3a9b3ef67f8a47df3b49",
+      "basis": "preserved artifact"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/output/terminal-partial-03/coverage-readiness.json",
+      "sha256": "699399faad9e4d39c979748a941f4998c2928f1cf045373b52b8bdda097ecce7",
+      "basis": "preserved artifact"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/adapt_terminal_sources.py",
+      "sha256": "7ffedf64c32b3df8446a7da6cb31afee6f08208f4ee11f3c8e633572f0a1ec95",
+      "basis": "exact execution commit"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/src/company_kr_etf_pilot/terminal_adapter.py",
+      "sha256": "a0db1ea156b42e6e8083f5ebfce75a87e8b285c1ac3dbb7f57d07bf41ae7f17f",
+      "basis": "exact execution commit"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/src/company_kr_etf_pilot/terminal_sources.py",
+      "sha256": "e64f738d27f353478c31d304476d046b578e1ec21fa7cd87297edd58e250347a",
+      "basis": "exact execution commit"
+    },
+    {
+      "path": "labs/company-kr-etf-pilot/tests/test_terminal_adapter.py",
+      "sha256": "6550680ef59706c222231abbc2f7624372cccbf6d03568153bfb2c66a2d8ab4a",
+      "basis": "exact execution commit"
+    }
+  ],
+  "P03_manifest_sha256": "dd284a2cd357a6907d4fb07e404a451b0564e5528bd65fadd3edd10abd10481a",
+  "source_files_checked": 69,
+  "source_manifest_errors": [],
+  "original_search_prefix_preserved": true,
+  "scientific_executions": 0,
+  "independent_leak_audit_performed": false,
+  "meaning": "Byte integrity and exact execution-code linkage only; no claim of financial-semantic or performance validity."
+}

@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-09-17T23:26:38.815820+00:00",
+  "check_type": "operator artifact integrity and approved-envelope reconciliation; not an independent leakage audit",
+  "status": "verified",
+  "research_head": "d649b1f1b37d25ead9b403111570af399dccecbf",
+  "execution_commit": "c736cb2075405f708e2aae448c8107122b99a2d1",
+  "research_result_sha256": "9d6712d16720e8d20d95c4d0dc02c8bab60dc4f33127e4b8e1f46703e8a931e4",
+  "search_manifest_sha256": "5e140d431aeef923a977a1d194412ec39a12204f262cca8de1c323c9f4a4c1ef",
+  "artifact_digests_checked": 38,
+  "brief_digest_matches_approval": true,
+  "economic_objective_matches_approval": true,
+  "qualification_and_baseline_identity_matches": true,
+  "execution_code_unchanged_since_run": true,
+  "local_research_worktree_clean": true,
+  "whole_repository_gate_passed": false,
+  "baseline_commands_started": 1,
+  "completed_performance_executions": 0,
+  "candidate_executions": 0,
+  "performance_audit_not_applicable_reason": "No completed performance artifact; discovery stops at the recorded data blocker.",
+  "outcome_axes": {
+    "executionStatus": "blocked",
+    "evidenceValidity": "unmeasured",
+    "scientificOutcome": "unmeasured",
+    "economicOutcome": "unmeasured",
+    "operationalReadiness": "not-assessed"
+  }
+}
