@@ -587,3 +587,16 @@ async def test_probe_never_fetches_disabled_sources(tmp_path, monkeypatch):
     monkeypatch.setattr("quant_company.news.commands.fetch_feed", lambda *_: pytest.fail("disabled feed fetched"))
     result = await command(Settings(news_sources_file=path), "probe")
     assert result["sources"][0]["skipped"] == "source_disabled"
+
+
+def test_registered_license_reaches_actual_outbox_publication(news):
+    spec = source(license_url="https://example.org/open-license/", license_name="Open Government Licence v3.0")
+    news.company.settings.news_sources_file.write_text(json.dumps([spec.model_dump()]))
+    news.sync_sources()
+    ready_article(news, spec)
+    result = news.commit_review(reply(news.prepare_review()["request"]))
+    assert result["items"][0]["state"] == "queued"
+    with news.db.transaction() as conn:
+        message = conn.execute("SELECT text FROM outbox").fetchone()["text"]
+    assert "<https://example.org/open-license/|Open Government Licence v3.0>" in message
+    assert "Reporter의 AI 한국어 요약" in message

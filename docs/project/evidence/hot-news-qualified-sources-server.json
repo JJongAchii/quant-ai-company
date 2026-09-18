@@ -1,0 +1,245 @@
+{
+  "checked_at": "2026-09-18T16:01:00.423135+00:00",
+  "network": "real-public-rss-and-original",
+  "location": "Lightsail application image",
+  "model": "not-called",
+  "slack": "not-called",
+  "sources": [
+    {
+      "source": "fed-press",
+      "feed_url": "https://www.federalreserve.gov/feeds/press_all.xml",
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "W/\"2a27c06a7e47dd1:0\"",
+        "modified": "Fri, 18 Sep 2026 15:00:17 GMT",
+        "sha256": "bdb248554aec56ffd75e93baae7b8096ffa7abe199cc8a5d7a2f4bb773541ad5",
+        "bytes": 14853
+      },
+      "entry_count": 20,
+      "latest_entry": {
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+        "title": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+        "published_at": "2026-09-18 15:00:00+00:00",
+        "updated_at": null
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+        "requested_url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+        "redirects": [],
+        "title": "Federal Reserve Board - Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+        "publisher_host": "www.federalreserve.gov",
+        "retrieved_at": "2026-09-18T16:00:48.081516+00:00",
+        "published_at": null,
+        "publication_time_basis": "unknown",
+        "last_modified": "Fri, 18 Sep 2026 15:00:18 GMT",
+        "content_type": "text/html",
+        "original_sha256": "3bca8140b8d43492adaba7bc339171fefc9330560ac23543ff13e712cd9d0c3b",
+        "original_bytes": 84498,
+        "content_truncated": false,
+        "article_extraction": "article",
+        "article_chars": 547,
+        "excerpt_truncated": false,
+        "publication_time_confirmed": true
+      }
+    },
+    {
+      "source": "ecb-press",
+      "feed_url": "https://www.ecb.europa.eu/rss/press.html",
+      "feed": {
+        "ok": true,
+        "skipped": 12,
+        "etag": "\"myra-e83d95c2\"",
+        "modified": "",
+        "sha256": "979c5611f0a043bb0e21f613b20f667ae2ac2d6938e301724efe89be17f44df0",
+        "bytes": 5673
+      },
+      "entry_count": 3,
+      "latest_entry": {
+        "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html",
+        "title": "ECB Consumer Expectations Survey results – August 2026",
+        "published_at": "2026-09-18 08:00:00+00:00",
+        "updated_at": null
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html",
+        "requested_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html",
+        "redirects": [],
+        "title": "ECB Consumer Expectations Survey results – August 2026",
+        "publisher_host": "www.ecb.europa.eu",
+        "retrieved_at": "2026-09-18T16:00:49.806604+00:00",
+        "published_at": "2026-09-18",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "199cbd7c412f6472338ee0321a41e698da8f839bb356862bc48d702e1a2970bf",
+        "original_bytes": 109104,
+        "content_truncated": false,
+        "article_extraction": "main",
+        "article_chars": 5693,
+        "excerpt_truncated": false,
+        "publication_time_confirmed": true
+      }
+    },
+    {
+      "source": "bea-releases",
+      "feed_url": "https://apps.bea.gov/rss/rss.xml",
+      "feed": {
+        "ok": true,
+        "skipped": 6,
+        "etag": "\"76c81ff39f3bdd1:0\"",
+        "modified": "Thu, 03 Sep 2026 12:30:05 GMT",
+        "sha256": "446cb4078349673864407af824f8a6f54c1ec9fc54d10d076451ae5c179915f7",
+        "bytes": 88601
+      },
+      "entry_count": 42,
+      "latest_entry": {
+        "url": "https://www.bea.gov/news/2026/us-international-trade-goods-and-services-july-2026",
+        "title": "U.S. International Trade in Goods and Services, July 2026",
+        "published_at": "2026-09-03 12:30:00+00:00",
+        "updated_at": null
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.bea.gov/news/2026/us-international-trade-goods-and-services-july-2026",
+        "requested_url": "https://www.bea.gov/news/2026/us-international-trade-goods-and-services-july-2026",
+        "redirects": [],
+        "title": "U.S. International Trade in Goods and Services, July 2026 | U.S. Bureau of Economic Analysis (BEA)",
+        "publisher_host": "www.bea.gov",
+        "retrieved_at": "2026-09-18T16:00:52.325125+00:00",
+        "published_at": null,
+        "publication_time_basis": "unknown",
+        "last_modified": "Fri, 18 Sep 2026 16:00:24 GMT",
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "6f468ec47f9796380ab4142da278c807221031f4aca986f8b83c23204a44c925",
+        "original_bytes": 95329,
+        "content_truncated": false,
+        "article_extraction": "article",
+        "article_chars": 45776,
+        "excerpt_truncated": true,
+        "publication_time_confirmed": true
+      }
+    },
+    {
+      "source": "govuk-fcdo",
+      "feed_url": "https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=foreign-commonwealth-development-office&order=updated-newest",
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "W/\"371be9f444463dd2cb75472f8f8c738d\"",
+        "modified": "",
+        "sha256": "371be9f444463dd2cb75472f8f8c738d8f2f893c46f261e207097daf72a18ad1",
+        "bytes": 14521
+      },
+      "entry_count": 20,
+      "latest_entry": {
+        "url": "https://www.gov.uk/government/news/minister-for-overseas-territories-statement-on-the-falkland-islands-18-september",
+        "title": "Minister for Overseas Territories statement on the Falkland Islands: 18 September",
+        "published_at": null,
+        "updated_at": "2026-09-18 15:21:00+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.gov.uk/government/news/minister-for-overseas-territories-statement-on-the-falkland-islands-18-september",
+        "requested_url": "https://www.gov.uk/government/news/minister-for-overseas-territories-statement-on-the-falkland-islands-18-september",
+        "redirects": [],
+        "title": "Minister for Overseas Territories statement on the Falkland Islands: 18 September - GOV.UK",
+        "publisher_host": "www.gov.uk",
+        "retrieved_at": "2026-09-18T16:00:55.336162+00:00",
+        "published_at": "2026-09-18T16:21:00+01:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "cf644194bca54c14e3c6d487ff1badfdd09695ca8b2d403d9891c8463502b125",
+        "original_bytes": 69870,
+        "content_truncated": false,
+        "article_extraction": "main",
+        "article_chars": 1782,
+        "excerpt_truncated": false,
+        "publication_time_confirmed": true
+      }
+    },
+    {
+      "source": "govuk-treasury",
+      "feed_url": "https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=hm-treasury&order=updated-newest",
+      "feed": {
+        "ok": true,
+        "skipped": 3,
+        "etag": "W/\"048726165fa465d788134b72754fa34f\"",
+        "modified": "",
+        "sha256": "048726165fa465d788134b72754fa34fcb84e97421667a205692778da1a3ba3f",
+        "bytes": 12064
+      },
+      "entry_count": 17,
+      "latest_entry": {
+        "url": "https://www.gov.uk/government/news/uks-250th-banking-hub-opens-in-chepstow-keeping-access-to-cash-and-face-to-face-banking-in-the-town",
+        "title": "UK’s 250th banking hub opens in Chepstow, keeping access to cash and face-to-face banking in the town",
+        "published_at": null,
+        "updated_at": "2026-09-18 13:53:43+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.gov.uk/government/news/uks-250th-banking-hub-opens-in-chepstow-keeping-access-to-cash-and-face-to-face-banking-in-the-town",
+        "requested_url": "https://www.gov.uk/government/news/uks-250th-banking-hub-opens-in-chepstow-keeping-access-to-cash-and-face-to-face-banking-in-the-town",
+        "redirects": [],
+        "title": "UK’s 250th banking hub opens in Chepstow, keeping access to cash and face-to-face banking in the town - GOV.UK",
+        "publisher_host": "www.gov.uk",
+        "retrieved_at": "2026-09-18T16:00:58.119163+00:00",
+        "published_at": "2026-09-18T14:53:43+01:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "b6ee078c1bdf7e799adbe3ffb6d6035bffac67919695024a0bcf94addf2b9e4a",
+        "original_bytes": 74344,
+        "content_truncated": false,
+        "article_extraction": "main",
+        "article_chars": 4922,
+        "excerpt_truncated": false,
+        "publication_time_confirmed": true
+      }
+    },
+    {
+      "source": "govuk-trade",
+      "feed_url": "https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=department-for-business-and-trade&order=updated-newest",
+      "feed": {
+        "ok": true,
+        "skipped": 2,
+        "etag": "W/\"187e9c6a770b50124f2a0fcb275d35c0\"",
+        "modified": "",
+        "sha256": "187e9c6a770b50124f2a0fcb275d35c0a09c999fae3b09774bc4809e9282406f",
+        "bytes": 12319
+      },
+      "entry_count": 18,
+      "latest_entry": {
+        "url": "https://www.gov.uk/government/news/new-creative-trade-forum-to-boost-uk-creative-industries-announced-at-edinburgh-international-festival",
+        "title": "New Creative Trade Forum to boost UK creative industries announced at Edinburgh International Festival",
+        "published_at": null,
+        "updated_at": "2026-08-26 11:35:28+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.gov.uk/government/news/new-creative-trade-forum-to-boost-uk-creative-industries-announced-at-edinburgh-international-festival",
+        "requested_url": "https://www.gov.uk/government/news/new-creative-trade-forum-to-boost-uk-creative-industries-announced-at-edinburgh-international-festival",
+        "redirects": [],
+        "title": "New Creative Trade Forum to boost UK creative industries announced at Edinburgh International Festival - GOV.UK",
+        "publisher_host": "www.gov.uk",
+        "retrieved_at": "2026-09-18T16:01:00.410936+00:00",
+        "published_at": "2026-08-26T12:35:28+01:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "13c070824180b6af581c733a4111472ba502e9c7d0e26ac906a3572a11fc5a4a",
+        "original_bytes": 91721,
+        "content_truncated": false,
+        "article_extraction": "main",
+        "article_chars": 9540,
+        "excerpt_truncated": true,
+        "publication_time_confirmed": true
+      }
+    }
+  ],
+  "commit": "baf2389260738c0e4aec007a4ea33eaab20a0f02",
+  "entrypoint": "Explicit Python for read-only source probe only; not service startup acceptance"
+}

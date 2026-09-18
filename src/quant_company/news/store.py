@@ -263,7 +263,9 @@ class NewsStore:
             ids = [a["id"] for a in saved["bundle"]["articles"]]
             actual = conn.execute("""SELECT a.*,s.config,s.enabled,s.config_digest FROM news_articles a
                 JOIN news_sources s ON s.id=a.source_id WHERE a.id=ANY(%s)""", (ids,)).fetchall()
-            articles = {r["id"]: {**r, "publisher": r["config"]["publisher"]} for r in actual}
+            articles = {r["id"]: {**r, "publisher": r["config"]["publisher"],
+                                   "license_url": r["config"].get("license_url"),
+                                   "license_name": r["config"].get("license_name", "")} for r in actual}
             primary = set(saved["bundle"]["primary_ids"])
             results = []
             for index, item in enumerate(review.items):

@@ -27,14 +27,20 @@
       "updatedAt": "2026-09-18T15:52:03.951537+00:00"
     },
     "SOURCES": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/hot-news-qualified-sources-server.json",
+          "sha256": "ed25249bbd56"
+        }
+      ],
+      "note": "운영지의 동일 뉴스 코드에서 6개 공식 피드·원문·발행 시각을 확인했다. 일반 언론 커버리지 제한은 문서화. 소스 전용 Python 검사이며 서비스 시작 검증과 구분.",
+      "status": "verified",
+      "updatedAt": "2026-09-18T16:01:53.707809+00:00"
     }
   },
   "intentDigest": "4df23b420435",
   "schemaVersion": 1,
   "slug": "kokanee",
   "state": "approved",
-  "updatedAt": "2026-09-18T15:52:03.951537+00:00"
+  "updatedAt": "2026-09-18T16:01:53.707809+00:00"
 }
