@@ -238,6 +238,10 @@ class Store:
                                investigation_requests=context.get("investigation_requests", []))
                 payload.update({key: context[key] for key in
                                 ("request_project_id", "request_task_id", "request_revision", "instruction") if key in context})
+                if finding.evaluation.mode == "staff_replay":
+                    from ..staff.comparisons import source_run
+
+                    source_run(conn, payload)
                 existing = conn.execute("SELECT payload->'owners' AS owners FROM maintenance_jobs WHERE problem_key=%s",
                                         (problem_key,)).fetchone()
                 if existing and set(existing["owners"]) != set(context["owners"]):

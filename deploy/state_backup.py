@@ -15,7 +15,7 @@ from pathlib import Path, PurePosixPath
 from uuid import uuid4
 
 DEPLOY = Path(__file__).resolve().parent
-APP_SERVICES = ("slack-socket", "maintenance", "worker", "dispatch", "api", "codex-runtime")
+APP_SERVICES = ("slack-socket", "maintenance", "worker", "dispatch", "api", "codex-runtime", "claude-runtime")
 
 
 def config_values(path: Path) -> dict[str, str]:
@@ -76,7 +76,7 @@ def unpack(archive: Path, destination: Path) -> dict:
         for member in bundle.getmembers():
             path = PurePosixPath(member.name)
             allowed = member.name in {"manifest.json", "database.dump", "roles.json", "runtime.env", "maintenance.json"} or (
-                len(path.parts) > 1 and path.parts[0] == "jobs"
+                len(path.parts) > 1 and path.parts[0] in {"jobs", "claude-jobs"}
             )
             if (not allowed or path.is_absolute() or ".." in path.parts or not member.isfile()
                     or member.issym() or member.islnk()):
@@ -132,10 +132,15 @@ def backup(args, cfg: dict[str, str], compose: list[str], state: Path) -> None:
                 # Private key contents are never part of a backup.
                 validated = maintenance_config_values(maintenance_config)
                 (staging / "maintenance.json").write_text(json.dumps(validated, indent=2) + "\n")
-            jobs = state / "codex/jobs"
-            if any(path.is_symlink() for path in jobs.rglob("*")):
-                raise ValueError("Model receipt tree contains an unexpected symbolic link")
-            shutil.copytree(jobs, staging / "jobs")
+            for source, destination in (("codex/jobs", "jobs"), ("claude/jobs", "claude-jobs")):
+                jobs = state / source
+                if source == "claude/jobs" and not jobs.exists():
+                    if cfg.get("COMPANY_STAFF_REVIEW_ENABLED") == "true":
+                        raise ValueError("Enabled Claude runtime has no receipt directory")
+                    continue
+                if jobs.is_symlink() or any(path.is_symlink() for path in jobs.rglob("*")):
+                    raise ValueError("Model receipt tree contains an unexpected symbolic link")
+                shutil.copytree(jobs, staging / destination)
         finally:
             if restart:
                 run(compose + ["start", *reversed(restart)])
@@ -210,7 +215,7 @@ def main() -> None:
                           "restore_behavior": "create new restore_* database; leave live config/receipts alone"}))
         return
     os.umask(0o077)
-    compose = ["docker", "compose", "--profile", "maintenance", "--env-file", str(args.env_file),
+    compose = ["docker", "compose", "--profile", "maintenance", "--profile", "claude", "--env-file", str(args.env_file),
                "-f", str(DEPLOY / "compose.yaml")]
     # One local backup/restore process at a time. Locking never occurs in preview mode.
     import fcntl

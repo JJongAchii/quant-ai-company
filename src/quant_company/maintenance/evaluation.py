@@ -59,7 +59,8 @@ def validate_replay_plan(finding, inputs):
 
 def verify_plan(payload):
     finding = Finding.model_validate(payload["finding"])
-    if digest(finding.evaluation.model_dump()) != payload.get("evaluation_plan_digest"):
+    # Hash the exact persisted plan so additive schema defaults do not invalidate older jobs.
+    if digest(payload["finding"]["evaluation"]) != payload.get("evaluation_plan_digest"):
         raise ValueError("evaluation_plan_changed")
     if digest(payload.get("replay_inputs", {})) != payload.get("replay_inputs_digest"):
         raise ValueError("replay_inputs_changed")
@@ -152,6 +153,12 @@ def validate_candidate(payload):
             raise ValueError("prompt_replay_cannot_validate_runtime_code_changes")
         for case in finding.evaluation.cases:
             replay_material(payload, case, "candidate")
+    elif mode == "staff_replay":
+        from ..staff.comparisons import PREFIX, employee_for
+
+        employee = employee_for(payload["finding"])
+        if paths != {PREFIX + employee + ".md"}:
+            raise ValueError("staff_replay_cannot_validate_other_changes")
     elif mode == "documentation":
         if not paths or not all(path.startswith("docs/") and path.endswith(".md") for path in paths):
             raise ValueError("documentation_cannot_validate_runtime_or_prompt_changes")

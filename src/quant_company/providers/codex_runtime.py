@@ -39,7 +39,8 @@ def runner_from_environment() -> CodexRunner:
     return CodexRunner(config)
 
 
-def create_app(*, runner: CodexRunner | None = None, token: str | None = None) -> FastAPI:
+def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
+               runner_factory=None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         yield
@@ -62,7 +63,7 @@ def create_app(*, runner: CodexRunner | None = None, token: str | None = None) -
 
     def get_runner() -> CodexRunner:
         if app.state.runner is None:
-            app.state.runner = runner_from_environment()
+            app.state.runner = (runner_factory or runner_from_environment)()
         return app.state.runner
 
     @app.get("/healthz")

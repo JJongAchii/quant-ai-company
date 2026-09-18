@@ -13,6 +13,7 @@ from ..providers.codex_runner import strict_json
 from ..tools import calculate
 from .cases import FAMILIES, SUITE_VERSION, grade, make_case
 from .packs import STAFF, coaching, pack
+from .progress import development
 from .tools import TOOL_GUIDE, run_tool
 
 ASSESSMENT = (
@@ -42,9 +43,8 @@ class StaffStore:
                 raise ValueError("Exercise identity conflict")
             return str(existing["id"])
         role = self.company.roles["engineer" if employee == "maintainer" else employee]
-        count = conn.execute("SELECT count(*) AS n FROM staff_runs WHERE owner_user=%s AND employee=%s",
-                             (owner, employee)).fetchone()["n"]
-        variant = count % 2
+        curriculum = development(conn, owner, employee, role.model)["next_practice"]
+        variant = curriculum["family_index"]
         public, key = make_case(employee, identity, variant)
         frozen = role.model_dump(mode="json")
         frozen["exercise_tools"] = sorted(set(role.tools) & {"calculate", *TOOL_GUIDE})
@@ -58,11 +58,12 @@ class StaffStore:
             frozen["exercise_tools"] = []
         date = (at or datetime.now(UTC)).astimezone(ZoneInfo("Asia/Seoul")).date() if purpose == "scheduled" else None
         conn.execute("""INSERT INTO staff_runs(id,owner_user,employee,purpose,model,role_snapshot,pack_snapshot,
-            code_commit,suite_version,family_index,public_case,answer_key,case_digest,max_calls,schedule_day)
-            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+            code_commit,suite_version,family_index,public_case,answer_key,case_digest,max_calls,schedule_day,curriculum)
+            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                      (identity, owner, employee, purpose, role.model, Jsonb(frozen), Jsonb(pack(employee)),
                       self.company.settings.company_code_commit, SUITE_VERSION, variant, Jsonb(public), Jsonb(key),
-                      fingerprint([public, key]), self.company.settings.staff_max_calls_per_exercise, date))
+                      fingerprint([public, key]), self.company.settings.staff_max_calls_per_exercise, date,
+                      Jsonb(curriculum)))
         return identity
 
     def enqueue(self, employee, owner, purpose="manual", identity=None):
@@ -130,7 +131,7 @@ class StaffStore:
                         "previous_tool_receipts": [t for c in calls for t in c["tools"]]}
             # Freeze feedback with the first request as part of its input provenance.
             if not calls:
-                material["past_practice_feedback"] = coaching(conn, run["owner_user"], run["employee"])
+                material["past_practice_feedback"] = coaching(conn, run["owner_user"], run["employee"], run["model"])
             else:
                 first = calls[0]["request"]["prompt"].split("EXERCISE JSON:\n", 1)[1]
                 material["past_practice_feedback"] = json.loads(first).get("past_practice_feedback", [])
@@ -232,7 +233,7 @@ def status(conn, company, owner, employee=None):
         raise ValueError("Unknown employee")
     rows = conn.execute("""SELECT id::text,employee,state,purpose,model,code_commit,suite_version,
         pack_snapshot->>'digest' AS pack_digest,public_case->>'family' AS family,grade,error,
-        created_at::text,completed_at::text FROM staff_runs WHERE owner_user=%s
+        curriculum,created_at::text,completed_at::text FROM staff_runs WHERE owner_user=%s
         AND (%s::text IS NULL OR employee=%s) ORDER BY created_at DESC,id DESC LIMIT 44""",
                         (owner, employee, employee)).fetchall()
     improvements = []
@@ -252,7 +253,21 @@ def status(conn, company, owner, employee=None):
                         "families": FAMILIES[r], "operational_active":
                         None if r == "maintainer" else company.roles[r].active} for r in STAFF
                        if (r == employee or employee is None) and (r == "maintainer" or r in company.roles)],
+            "development": [development(conn, owner, r, company.roles["engineer" if r == "maintainer" else r].model)
+                            for r in STAFF if (r == employee or employee is None)
+                            and ("engineer" if r == "maintainer" else r) in company.roles],
             "recent_exercises": rows,
+            "independent_review": {
+                "enabled": company.settings.company_staff_review_enabled,
+                "daily_limit": company.settings.staff_review_daily_limit,
+                "calibration_status": "not_yet_calibrated",
+                "recent": conn.execute("""SELECT v.id,v.run_id::text,r.employee,v.state,v.model,
+                    v.rubric_version,r.state AS source_state,
+                    CASE WHEN r.state='completed' THEN v.result ELSE NULL END AS result,
+                    v.error,v.completed_at::text
+                    FROM staff_independent_reviews v JOIN staff_runs r ON r.id=v.run_id
+                    WHERE r.owner_user=%s AND (%s::text IS NULL OR r.employee=%s)
+                    ORDER BY v.created_at DESC LIMIT 22""", (owner, employee, employee)).fetchall()},
             "improvement_requests": improvements,
             "meaning": "Objective synthetic checks only; explanations unscored unless separately reviewed. "
                        "Fresh parameters within a finite family bank; not unknown-domain or expert certification. "

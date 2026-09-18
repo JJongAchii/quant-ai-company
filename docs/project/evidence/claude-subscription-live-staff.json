@@ -1,0 +1,180 @@
+{
+  "code_commit": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+  "review_enabled": true,
+  "daily_limit": 2,
+  "reviews": [
+    {
+      "id": "review-dc9dc37b-4e46-425b-b4af-13b3f96620cb",
+      "run_id": "dc9dc37b-4e46-425b-b4af-13b3f96620cb",
+      "employee": "researcher_kr",
+      "state": "completed",
+      "error": null,
+      "model": "claude-opus-5",
+      "result": {
+        "grounding": {
+          "assessment": "supported",
+          "explanation": "답변이 인용한 시각과 ID가 케이스 레코드와 정확히 일치하며, 존재하지 않는 값이나 외부 정보를 끌어들이지 않았습니다. 판정 규칙도 케이스에 명시된 문구를 그대로 적용했습니다.",
+          "evidence_quotes": [
+            "feature_available_at > decision_at 는 거부",
+            "\"feature_available_at\": \"2031-02-07T06:56:00+00:00\", \"id\": \"item-4dd0ecc24a\"",
+            "item-18cf80510b는 feature가 04:36 UTC에 가용되어"
+          ]
+        },
+        "reasoning": {
+          "assessment": "supported",
+          "explanation": "세 레코드 모두 decision_at이 06:00 UTC이고, 06:56은 56분 초과, 04:36은 84분 선행으로 산술이 정확하며 거부 2건·적격 1건 집계도 일관됩니다. reject_ids 배열과 eligible_count=1이 서로 모순 없이 맞물립니다.",
+          "evidence_quotes": [
+            "의사결정 시각 06:00 UTC보다 56분 늦어 거부했습니다",
+            "의사결정 시각보다 84분 빠르므로 적격입니다",
+            "\"eligible_count\": 1"
+          ]
+        },
+        "conclusion": "네 개 차원 모두 지지됩니다. 판정 규칙 적용이 정확하고(06:56 > 06:00 인 두 건 거부, 04:36 인 한 건 적격), 분 단위 차이 계산(56분, 84분)과 eligible_count=1, reject_ids 목록이 상호 일관됩니다. 가정과 한계 기술도 과부족 없이 범위를 명확히 하며, 특히 적격 판정된 item-18cf80510b가 scaler/label 시각까지 포함한 검토에서는 달라질 수 있다는 점을 미리 밝힌 것이 적절합니다. 제기할 만한 실질적 오류는 발견되지 않았습니다.",
+        "assumptions": {
+          "assessment": "supported",
+          "explanation": "UTC 값을 변환 없이 그대로 비교한다는 점과 동시각 처리(엄격한 부등호)를 명시했고, 실제로 동시각 사례가 없어 결과에 영향을 주지 않는 무해한 명확화입니다. 합성 데이터라는 케이스 전제도 그대로 반영했습니다.",
+          "evidence_quotes": [
+            "모든 타임스탬프는 제시된 UTC 값을 그대로 비교했고 동시각은 거부 조건(엄격한 >)에 해당하지 않는",
+            "All records and financial values are synthetic",
+            "자료는 합성 입력이며 실제 연구 실행이나 시장 성과를 의미하지 않습니다"
+          ]
+        },
+        "limitations": {
+          "assessment": "supported",
+          "explanation": "scaler/label을 평가하지 않는다는 범위 제한을 밝히고, 적격 판정된 item-18cf80510b가 전체 인과성 검토에서는 뒤집힐 수 있음을 경고한 점이 적절합니다. 실제로 해당 레코드의 scaler_fit_end와 training_label_end가 06:56로 decision_at 이후라 이 경고는 데이터와 부합합니다.",
+          "evidence_quotes": [
+            "scaler_fit_end와 training_label_end의 누수 여부는 평가하지 않았습니다",
+            "적격으로 분류된 기록도 scaler 및 label 시각을 포함한 전체 인과성 검토에서는 별도로 거부될 수 있습니다",
+            "이번 검토는 feature 가용시각만 대상으로 하고 label/scaler는 평가하지 않습니다"
+          ]
+        },
+        "rubric_version": "staff-explanation-review-v1",
+        "calibration_status": "not_yet_calibrated",
+        "objective_grade_unchanged": true
+      },
+      "usage": {
+        "effort": "high",
+        "cli_version": "2.1.275",
+        "actual_model": "claude-opus-5",
+        "billing_mode": "subscription",
+        "input_tokens": 4,
+        "output_tokens": 3325,
+        "cache_read_input_tokens": 8136,
+        "cache_creation_input_tokens": 6457,
+        "account_usage_credits_disabled_owner_confirmed": true
+      },
+      "source_bound": true,
+      "material_keys": [
+        "answer",
+        "case"
+      ],
+      "objective_grade": {
+        "model": "gpt-5.6-sol",
+        "scope": "One synthetic scenario in a known family; not specialist certification or strategy validation.",
+        "checks": {
+          "unique_ids": true,
+          "metric_names": true,
+          "answer_contract": true,
+          "no_missed_defects": true,
+          "no_false_positives": true,
+          "numeric:eligible_count": true
+        },
+        "family": "publication_lag",
+        "provider": "codex",
+        "weaknesses": [],
+        "code_commit": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6",
+        "pack_digest": "b95703a73e22ef9f43bdbf62b965b1dd6f9c2f0fdc828e0acaa594f7f1b15587",
+        "objective_passed": true,
+        "explanation_review": "unscored_requires_independent_review"
+      },
+      "completed_at": "2026-09-18 02:22:10.008666+00:00",
+      "objective_grade_unchanged_from_predeployment": true
+    },
+    {
+      "id": "review-3e880d33-6091-4196-8e3b-3557e904ac90",
+      "run_id": "3e880d33-6091-4196-8e3b-3557e904ac90",
+      "employee": "data",
+      "state": "completed",
+      "error": null,
+      "model": "claude-opus-5",
+      "result": {
+        "grounding": {
+          "assessment": "supported",
+          "explanation": "답변이 인용한 5개 레코드의 필드값·시각·중복 쌍 지정이 사례의 records 및 decision_rule과 정확히 일치하며, 사례에 없는 사실을 추가하지 않았다. 특히 중복 쌍의 '후수집 행'을 타임스탬프에서 추론하지 않고 규칙이 명시적으로 지정한 대로 다룬 점이 정확하다.",
+          "evidence_quotes": [
+            "중복 쌍 item-7b752881fe/item-20417a9403 중 후수집 행 item-20417a9403만 거부",
+            "규칙에 따라 후수집 행으로 지정된 item-20417a9403만 거부했다",
+            "2031-02-03T06:51:00+00:00"
+          ]
+        },
+        "reasoning": {
+          "assessment": "supported",
+          "explanation": "세 건의 거부 사유(중복 후수집, value=null 누락, 가용시각 06:51 > 결정시각 06:00)가 각각 규칙 조항에 대응하고, value=0과 available_at이 결정시각과 동일한 행을 유지한 판단도 '늦으면 거부'라는 엄격 부등호 해석에 부합한다. defect_count=3이 reject_ids 원소 수와 일치하여 '거부한 행 수' 정의를 지킨다.",
+          "evidence_quotes": [
+            "가용시각이 결정시각보다 늦으면 거부",
+            "defect_count는 거부한 행 수(원인 수 아님)",
+            "available_at이 의사결정시각과 같으므로 거부하지 않았다"
+          ]
+        },
+        "conclusion": "네 개 차원 모두 제시된 증거로 뒷받침된다. 거부 목록 3건(item-20417a9403, item-f0c6100f8f, item-7b003d985c)은 결정 규칙의 각 조항에 일대일로 대응하고, 경계 사례 두 건(value=0인 item-db5983054b, 가용시각이 결정시각과 정확히 같은 경우)도 규칙 문언대로 유지 처리되었다. defect_count=3은 '거부한 행 수' 정의 및 목록 길이와 일관되며, 가정과 한계 서술도 사례 범위를 넘지 않는다. 제기할 만한 실질적 오류는 관찰되지 않았다.",
+        "assumptions": {
+          "assessment": "supported",
+          "explanation": "답변이 명시한 가정(제시된 결정 규칙과 후수집 지정의 우선, 합성 데이터)은 사례의 assumptions와 decision_rule에 그대로 근거하며, 이 과제에서 추가로 밝혀야 할 실질적 가정은 보이지 않는다.",
+          "evidence_quotes": [
+            "All records and financial values are synthetic.",
+            "가정: 제시된 결정 규칙과 중복 쌍의 후수집 지정이 우선하며, 모든 레코드와 값은 합성 데이터다"
+          ]
+        },
+        "limitations": {
+          "assessment": "supported",
+          "explanation": "표본 범위(5행)와 수집순서·원천을 검증할 수 없다는 점을 밝혔는데, 이는 두 중복 행의 available_at이 동일하여 실제 수집순서를 데이터로 확인할 수 없다는 실제 제약과 정확히 맞닿아 있다. 과제 결과에 영향을 주는 미공개 한계는 발견되지 않는다.",
+          "evidence_quotes": [
+            "한계: 제공된 5행 표본만 판정했으며, 실제 수집순서·원천 출처·전체 데이터셋의 추가 결함은 확인되지 않았다",
+            "2031-02-03T04:47:00+00:00"
+          ]
+        },
+        "rubric_version": "staff-explanation-review-v1",
+        "calibration_status": "not_yet_calibrated",
+        "objective_grade_unchanged": true
+      },
+      "usage": {
+        "effort": "high",
+        "cli_version": "2.1.275",
+        "actual_model": "claude-opus-5",
+        "billing_mode": "subscription",
+        "input_tokens": 4,
+        "output_tokens": 3249,
+        "cache_read_input_tokens": 8069,
+        "cache_creation_input_tokens": 6341,
+        "account_usage_credits_disabled_owner_confirmed": true
+      },
+      "source_bound": true,
+      "material_keys": [
+        "answer",
+        "case"
+      ],
+      "objective_grade": {
+        "model": "gpt-5.6-terra",
+        "scope": "One synthetic scenario in a known family; not specialist certification or strategy validation.",
+        "checks": {
+          "unique_ids": true,
+          "metric_names": true,
+          "answer_contract": true,
+          "no_missed_defects": true,
+          "no_false_positives": true,
+          "numeric:defect_count": true
+        },
+        "family": "availability_and_duplicates",
+        "provider": "codex",
+        "weaknesses": [],
+        "code_commit": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6",
+        "pack_digest": "0ec6d6ae63ae53c9c2a55e09b3413474416cc7bba1d9829b5a5dcd4c5d07b619",
+        "objective_passed": true,
+        "explanation_review": "unscored_requires_independent_review"
+      },
+      "completed_at": "2026-09-18 02:22:58.841038+00:00",
+      "objective_grade_unchanged_from_predeployment": true
+    }
+  ],
+  "status_review_count": 2
+}

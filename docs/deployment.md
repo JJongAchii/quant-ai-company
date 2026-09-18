@@ -296,3 +296,10 @@ sudo bash deploy/restore.sh --archive /path/company-backup.tar.gz --database res
 S3 다운로드와 새 DB 복원, 컨테이너 권한·공개 포트·메모리 측정이 포함된다.
 실제 사용자 Slack 왕복도 확인했다. 맥북 완전 종료, 장시간 부하, 전체 호스트 유실 후 재구축은
 각각 별도 인수다.
+
+## 선택: Claude 구독 독립 검토
+
+직원 답안의 독립 검토는 [별도 Claude 실행기](claude-runtime.md)의 `claude` profile로 연결한다.
+Claude 인증과 job 영수증은 Codex와 별도 디렉터리에 둔다. 백업은 활성 Claude도 정지하고
+`claude-jobs/` 영수증을 포함하며 인증은 제외한다. 위 2GB 기본 구성의 메모리 합계에는
+이 선택 기능을 포함하지 않으므로 실제 호출 중 용량을 확인한 뒤 활성화한다.

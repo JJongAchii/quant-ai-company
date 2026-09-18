@@ -47,3 +47,15 @@ RUN ln -s /usr/local/lib/node_modules/@openai/codex/bin/codex.js /usr/local/bin/
 USER 10001:10001
 ENV CODEX_BIN=codex CODEX_HOME=/state/auth CODEX_JOBS_DIR=/state/jobs
 CMD ["uvicorn", "quant_company.providers.codex_runtime:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "1"]
+
+# This qualified native distribution targets the existing Linux x86_64 office host.
+FROM node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5 AS claude-dist
+RUN npm install --global --omit=dev @anthropic-ai/claude-code@2.1.275 \
+    && install -m 0755 "$(readlink -f /usr/local/bin/claude)" /claude \
+    && echo '13586f3150a7ca1655f36e1dba759fb404e0f7cf7021d4a3dcd5e6f604e56156  /claude' | sha256sum -c - \
+    && /claude --version | grep -Fx '2.1.275 (Claude Code)'
+
+FROM app AS claude
+COPY --from=claude-dist /claude /usr/local/bin/claude
+ENV CLAUDE_CONFIG_DIR=/state/auth CLAUDE_JOBS_DIR=/state/jobs DISABLE_AUTOUPDATER=1
+CMD ["uvicorn", "quant_company.providers.claude_runtime:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "1"]
