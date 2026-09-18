@@ -12,7 +12,13 @@ from ..company import fingerprint
 from ..contracts import ProviderFault, ProviderRequest
 from ..providers.client import RuntimeClient
 from ..providers.codex_runner import strict_json
-from .review_contract import REVIEW_EFFORT, REVIEW_INSTRUCTIONS, REVIEW_MODEL, RUBRIC_VERSION, IndependentReview
+from .review_contract import (
+    REVIEW_EFFORT,
+    REVIEW_INSTRUCTIONS,
+    REVIEW_MODEL,
+    RUBRIC_VERSION,
+    IndependentReview,
+)
 
 
 def evidence_strings(value):

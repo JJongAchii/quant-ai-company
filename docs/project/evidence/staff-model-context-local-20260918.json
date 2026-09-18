@@ -1,0 +1,15 @@
+{
+  "schema": "staff-model-context-followup-verification-v1",
+  "implementation_commit": "9fe96dc",
+  "reason": "First live director response could not see background maintainer actual settings in runtime context. Expose them from the same loaded role and review constants.",
+  "checks": {
+    "targeted_tests_passed": 29,
+    "ruff": "passed",
+    "previous_full_tests_passed": 385,
+    "new_inference_performed": false
+  },
+  "test_log_sha256": "65b43e8d5a48c2ff2271d5f22b1a9eca4ccd8c58befe5e5f992ac56106763398",
+  "scope": "Allowlisted configuration visibility only. Does not claim health or activate roles.",
+  "followup": "Initial context-only commit failed local/CI import formatting. Corrected the one import block with ruff; ruff check . then passed. The failed candidate was staged for build but not activated.",
+  "failed_ci": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35309721685"
+}
