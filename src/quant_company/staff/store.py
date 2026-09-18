@@ -43,7 +43,7 @@ class StaffStore:
                 raise ValueError("Exercise identity conflict")
             return str(existing["id"])
         role = self.company.roles["engineer" if employee == "maintainer" else employee]
-        curriculum = development(conn, owner, employee, role.model)["next_practice"]
+        curriculum = development(conn, owner, employee, role.model, role.reasoning_effort)["next_practice"]
         variant = curriculum["family_index"]
         public, key = make_case(employee, identity, variant)
         frozen = role.model_dump(mode="json")
@@ -131,11 +131,13 @@ class StaffStore:
                         "previous_tool_receipts": [t for c in calls for t in c["tools"]]}
             # Freeze feedback with the first request as part of its input provenance.
             if not calls:
-                material["past_practice_feedback"] = coaching(conn, run["owner_user"], run["employee"], run["model"])
+                material["past_practice_feedback"] = coaching(
+                    conn, run["owner_user"], run["employee"], run["model"], role.get("reasoning_effort"))
             else:
                 first = calls[0]["request"]["prompt"].split("EXERCISE JSON:\n", 1)[1]
                 material["past_practice_feedback"] = json.loads(first).get("past_practice_feedback", [])
             request = ProviderRequest(request_id=f"staff-{run['id']}-{len(calls)+1}", model=run["model"],
+                                      reasoning_effort=role.get("reasoning_effort"),
                                       prompt=ASSESSMENT + "EXERCISE JSON:\n" + json.dumps(as_json(material), ensure_ascii=False))
             conn.execute("""INSERT INTO staff_calls(id,run_id,sequence,request) VALUES(%s,%s,%s,%s)""",
                          (request.request_id, run["id"], len(calls)+1, Jsonb(request.model_dump())))
@@ -197,6 +199,7 @@ class StaffStore:
                     answer = None
                 result = grade(answer, run["answer_key"])
                 result.update(provider=response.provider, model=run["model"], code_commit=run["code_commit"],
+                              reasoning_effort=run["role_snapshot"].get("reasoning_effort"),
                               pack_digest=run["pack_snapshot"]["digest"], family=run["public_case"]["family"])
                 conn.execute("""UPDATE staff_runs SET state='completed',grade=%s,final_answer=%s,
                     completed_at=now(),error=NULL WHERE id=%s""", (Jsonb(result), Jsonb(answer), run_id))
@@ -253,7 +256,8 @@ def status(conn, company, owner, employee=None):
                         "families": FAMILIES[r], "operational_active":
                         None if r == "maintainer" else company.roles[r].active} for r in STAFF
                        if (r == employee or employee is None) and (r == "maintainer" or r in company.roles)],
-            "development": [development(conn, owner, r, company.roles["engineer" if r == "maintainer" else r].model)
+            "development": [development(conn, owner, r, company.roles["engineer" if r == "maintainer" else r].model,
+                                        company.roles["engineer" if r == "maintainer" else r].reasoning_effort)
                             for r in STAFF if (r == employee or employee is None)
                             and ("engineer" if r == "maintainer" else r) in company.roles],
             "recent_exercises": rows,

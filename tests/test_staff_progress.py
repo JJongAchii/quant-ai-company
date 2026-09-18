@@ -29,15 +29,15 @@ def test_feedback_survives_one_pass_and_curriculum_preserves_breadth(staff):
     families = []
     for _ in range(5):
         with staff.db.transaction() as conn:
-            report = development(conn, "UHUMAN", "data", staff.roles["data"].model)
+            report = development(conn, "UHUMAN", "data", staff.roles["data"].model, staff.roles["data"].reasoning_effort)
             families.append(report["next_practice"]["family"])
         finish(staff)
         if len(families) == 2:  # One pass in the failed family is insufficient.
             with staff.db.transaction() as conn:
-                assert coaching(conn, "UHUMAN", "data", staff.roles["data"].model)[0]["run_id"] == failure
+                assert coaching(conn, "UHUMAN", "data", staff.roles["data"].model, staff.roles["data"].reasoning_effort)[0]["run_id"] == failure
     assert all(len(set(families[i:i+3])) > 1 for i in range(len(families)-2))
     with staff.db.transaction() as conn:
-        assert coaching(conn, "UHUMAN", "data", staff.roles["data"].model) == []
+        assert coaching(conn, "UHUMAN", "data", staff.roles["data"].model, staff.roles["data"].reasoning_effort) == []
         report = status(conn, staff, "UHUMAN", "data")
         assert report["development"][0]["families"][0]["consecutive_fresh_passes"] == 3
         assert report["development"][0]["unmeasured_requirements"]
@@ -51,6 +51,8 @@ def test_evidence_is_not_pooled_across_models_or_procedures(staff):
     with staff.db.transaction() as conn:
         report = development(conn, "UHUMAN", "data", "new-unassessed-model")
         assert all(f["state"] == "unassessed" for f in report["families"])
+        changed_effort = development(conn, "UHUMAN", "data", staff.roles["data"].model, "max")
+        assert all(f["state"] == "unassessed" for f in changed_effort["families"])
     # Duplicate cases, infrastructure failures and disputed rows cannot manufacture a streak.
     from quant_company.staff.cases import FAMILIES, SUITE_VERSION
 
@@ -68,5 +70,5 @@ def test_disputed_failure_does_not_drive_coaching(staff):
     identity = finish(staff, passed=False)
     StaffStore(staff).review(identity, "disputed", "Synthetic fixture: source question is being independently reviewed.")
     with staff.db.transaction() as conn:
-        assert coaching(conn, "UHUMAN", "data", staff.roles["data"].model) == []
-        assert development(conn, "UHUMAN", "data", staff.roles["data"].model)["families"][0]["state"] == "unassessed"
+        assert coaching(conn, "UHUMAN", "data", staff.roles["data"].model, staff.roles["data"].reasoning_effort) == []
+        assert development(conn, "UHUMAN", "data", staff.roles["data"].model, staff.roles["data"].reasoning_effort)["families"][0]["state"] == "unassessed"

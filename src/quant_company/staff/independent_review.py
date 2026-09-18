@@ -65,7 +65,7 @@ class IndependentReviewStore:
                 if fingerprint([run["public_case"], run["answer_key"]]) != run["case_digest"]:
                     return {"state": "blocked", "reason": "case_integrity"}
                 material = {"case": run["public_case"], "answer": run["final_answer"]}
-                request = ProviderRequest(request_id=f"review-{run['id']}", model=REVIEW_MODEL,
+                request = ProviderRequest(request_id=f"review-{run['id']}", model=REVIEW_MODEL, reasoning_effort="max",
                     prompt=REVIEW_INSTRUCTIONS + "\nREVIEW EVIDENCE:\n" + json.dumps(material, ensure_ascii=False,
                                                                                    sort_keys=True))
                 binding = fingerprint([run["case_digest"], run["final_answer"]])

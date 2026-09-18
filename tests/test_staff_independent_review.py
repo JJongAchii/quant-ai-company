@@ -45,6 +45,7 @@ def test_blinded_durable_review_and_advisory_commit(completed):
     store = IndependentReviewStore(company)
     prepared = store.prepare()
     request = prepared["request"]
+    assert request["reasoning_effort"] == "max"
     assert prepared["state"] == "ready" and request == IndependentReviewStore(company).prepare()["request"]
     for forbidden in ("answer_key", "relative_tolerance", "objective_passed", "UHUMAN", "gpt-", "financial_strategist"):
         assert forbidden not in request["prompt"]

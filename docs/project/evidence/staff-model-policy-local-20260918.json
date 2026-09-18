@@ -1,0 +1,147 @@
+{
+  "schema": "staff-model-effort-local-verification-v1",
+  "recorded_at": "2026-09-18T04:53:53.948309+00:00",
+  "user_quote": "응 이어서 진행해. 아 그리고 astra 모델과 같이 성능이 좋은 모델을 써야하는 직원들은 effort는 max로 해서 해. 모두가 max로 해야하는지까지는 모르겠지만 적어도 director는 항상 제일 좋은 모델의 max로 해야함",
+  "approval_basis": "Exact user instruction in this conversation; message UUID is not exposed, so none is invented.",
+  "qws_intent_digest": "216af9758a75",
+  "postgres": "disposable local PostgreSQL, 127.0.0.1:55439, per-test databases",
+  "tests": {
+    "targeted_passed": 137,
+    "full_passed": 385,
+    "full_skipped": 1,
+    "warnings": 2,
+    "lint": "passed",
+    "codex_real_config_probe": "0.154.0; Astra max and Terra high accepted with empty auth and stdin; no inference"
+  },
+  "test_log_sha256": "5340aa70d562c445a20ecc502413e7f836c4289d2212b776f9073b97b273464c",
+  "roles": [
+    {
+      "id": "director",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": true
+    },
+    {
+      "id": "financial_strategist",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": true
+    },
+    {
+      "id": "researcher_kr",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": true
+    },
+    {
+      "id": "researcher_global",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "researcher_crypto",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "data",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "active": true
+    },
+    {
+      "id": "engineer",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "validator",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "risk",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "operations",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "active": false
+    }
+  ],
+  "production_before": {
+    "runtime_commit": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+    "roles": [
+      {
+        "id": "director",
+        "model": "gpt-6-astra",
+        "effort": null,
+        "active": true
+      },
+      {
+        "id": "financial_strategist",
+        "model": "gpt-6-astra",
+        "effort": null,
+        "active": true
+      },
+      {
+        "id": "researcher_kr",
+        "model": "gpt-5.6-sol",
+        "effort": null,
+        "active": true
+      },
+      {
+        "id": "researcher_global",
+        "model": "gpt-5.6-sol",
+        "effort": null,
+        "active": false
+      },
+      {
+        "id": "researcher_crypto",
+        "model": "gpt-5.6-sol",
+        "effort": null,
+        "active": false
+      },
+      {
+        "id": "data",
+        "model": "gpt-5.6-terra",
+        "effort": null,
+        "active": true
+      },
+      {
+        "id": "engineer",
+        "model": "gpt-5.6-sol",
+        "effort": null,
+        "active": false
+      },
+      {
+        "id": "validator",
+        "model": "gpt-6-astra",
+        "effort": null,
+        "active": false
+      },
+      {
+        "id": "risk",
+        "model": "gpt-6-astra",
+        "effort": null,
+        "active": false
+      },
+      {
+        "id": "operations",
+        "model": "gpt-5.6-terra",
+        "effort": null,
+        "active": false
+      }
+    ],
+    "active_turns": []
+  },
+  "provider_model_attestation_claimed": false,
+  "live_inference_validated": false
+}
