@@ -372,7 +372,8 @@ class Company:
             conn.execute("SELECT agent FROM tasks WHERE id=%s", (task["parent_id"],)).fetchone()["agent"]
             if task["parent_id"] else None
         )
-        context["professional_feedback"] = as_json(coaching(conn, project["owner_user"], task["agent"]))
+        context["professional_feedback"] = as_json(coaching(
+            conn, project["owner_user"], task["agent"], self.roles[task["agent"]].model))
         if task["agent"] == "director":
             from .maintenance.requests import permitted, record_source, status
             from .system_state import current_system

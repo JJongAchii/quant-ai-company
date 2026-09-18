@@ -1,0 +1,53 @@
+{
+  "recorded_at": "2026-09-18T00:57:39.586415+00:00",
+  "base_commit": "c03f106285d8bc149b4ca756e557a9024abcdf34",
+  "environment": "Disposable local PostgreSQL; actual Temporal test server; scripted model and GitHub fixtures",
+  "real_external_model_calls": false,
+  "production_deployed": false,
+  "external_provider_enabled": false,
+  "lint": "uv run ruff check .: passed",
+  "diff_check": "git diff --check: passed",
+  "checks": [
+    {
+      "artifact": "staff-continuous-tests.xml",
+      "scope": "Full service suite before final narrowly scoped corrections",
+      "sha256": "753993eba10f0de143791e0f074072db0b1ec0e28d62eee9361c8302fd181bc2",
+      "tests": 333,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1
+    },
+    {
+      "artifact": "staff-continuous-targeted.xml",
+      "scope": "Final staff and maintenance integration checks",
+      "sha256": "72e8e9d14ada3a0686482f9b0112a7141836b8d3b8b6c80914905b3c4c0a15bf",
+      "tests": 49,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "artifact": "staff-continuous-contracts.xml",
+      "scope": "Final deployment and finance fixture contracts",
+      "sha256": "11c7f98ef93b631f9e6ed919f0a36c1db2bfbd39190d6c2e2c832aee29705b69",
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "file_sha256": {
+    "src/quant_company/company.py": "bbfb2d7649c6451bd46ec5f2bfd28a2c83ac6fa657e9ae91baff6ce8c8f55053",
+    "src/quant_company/maintenance/evaluation.py": "40f88e931511732759392d8e7f4e6565a7db5f94b1ac5216a1f99ee16e4752db",
+    "src/quant_company/maintenance/policy.py": "dc08e0c5901d572150c1bf9be40a56eecb308d189ffe592450f21cfee4112a6b",
+    "src/quant_company/maintenance/runner.py": "692eae4c8ea6d5f5b0de1488020ea9e3842b7f379eece24e4b7be64a7565026e",
+    "src/quant_company/maintenance/store.py": "080b00fee9ec6e52993018e7acea96d3eb02be514b85df0edc2d1c4bca93906c",
+    "src/quant_company/staff/comparisons.py": "9dffce3ba6786726b9e3bdcb625091bdcb8b5d0427e0e141bb8800bf7c43cd7d",
+    "src/quant_company/staff/packs.py": "3b8fc8c11465edbea1c8baaeabd962f62ede4a6f016e356befccc39b7b90d7d1",
+    "src/quant_company/staff/progress.py": "fb7331534a371099c41d2adcc872fc847813a74a16af09a3c2be9095e4f67ddc",
+    "src/quant_company/staff/schema.sql": "cf2a2863534fb0b57acaca9f6f36ee9d601ef683be683cb56857ed175ce2d02a",
+    "src/quant_company/staff/store.py": "8277aa9b86df78b466b76b85bd7f70a46806a14ecff82164910e8d9c4b2d0691",
+    "tests/test_staff_comparisons.py": "53d63abd0baaf172b897d49a8dd89a6bd1fb10d480300a6fae3f156e677cbdfd",
+    "tests/test_staff_progress.py": "f6b1595b3344f29e0cf54f5b07612f737e1d8e54540e31063b072a0354cd93fe"
+  }
+}
