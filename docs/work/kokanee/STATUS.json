@@ -1,0 +1,74 @@
+{
+  "approval": {
+    "approvedAt": "2026-09-18T08:26:02.178084+00:00",
+    "id": "chat-20260918-proceed-hot-news"
+  },
+  "currentIntent": "INTENT-v1.json",
+  "deliverables": {
+    "BOT": {
+      "evidence": [
+        {
+          "path": "slack-apps/reporter.json",
+          "sha256": "8c5b2c45d77d"
+        },
+        {
+          "path": "tests/test_news.py",
+          "sha256": "17ca4b7bd508"
+        }
+      ],
+      "note": "Reporter 앱 manifest·스레드 라우팅 구현, 실제 앱 설치는 미수행. daily-brief 미활성.",
+      "status": "verified",
+      "updatedAt": "2026-09-18T15:03:13.146882+00:00"
+    },
+    "PIPELINE": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/hot-news-tests.json",
+          "sha256": "c784ee634cfc"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-live-codex.json",
+          "sha256": "3be0c4fb41ed"
+        }
+      ],
+      "note": "실제 로컬 PostgreSQL·Temporal 복구 및 실제 구독 모델 검토를 확인했다. Slack은 모의 검사이며 운영 미배포다.",
+      "status": "verified",
+      "updatedAt": "2026-09-18T15:03:12.930050+00:00"
+    },
+    "SOURCES": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/hot-news-source-probe.json",
+          "sha256": "a9c42aaa9da8"
+        },
+        {
+          "path": "docs/news.md",
+          "sha256": "65c97aa2f150"
+        }
+      ],
+      "note": "피드 5개 실측 성공, ECB TLS 실패·민간 매체 요약 이용 미확정·유료 API 후보를 구분했다.",
+      "status": "verified",
+      "updatedAt": "2026-09-18T15:03:12.694185+00:00"
+    },
+    "VALIDATION": {
+      "evidence": [
+        {
+          "path": "docs/project/HOT-NEWS-VALIDATION.md",
+          "sha256": "b516a09541c1"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-tests.json",
+          "sha256": "c784ee634cfc"
+        }
+      ],
+      "note": "전체 446 passed·2 skipped, ruff 통과. 실제 소스·구독 모델·모의 Slack·미배포를 분리 기록했다.",
+      "status": "verified",
+      "updatedAt": "2026-09-18T15:03:13.378539+00:00"
+    }
+  },
+  "intentDigest": "660a4605ff96",
+  "schemaVersion": 1,
+  "slug": "kokanee",
+  "state": "approved",
+  "updatedAt": "2026-09-18T15:03:13.378539+00:00"
+}

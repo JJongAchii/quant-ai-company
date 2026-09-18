@@ -1,0 +1,77 @@
+{
+  "checked_at": "2026-09-18T14:45:34.469628+00:00",
+  "state": "passed",
+  "database": "real-disposable-postgresql",
+  "network": "real-public-rss-and-original",
+  "model": "real-codex-subscription",
+  "slack": "not-connected",
+  "deployed": false,
+  "source": "fed-press",
+  "code_commit": "b3a5a8d967387dbfb4809adde32f1f1d9fe87b52",
+  "uncommitted_code": true,
+  "qualification_scope": "One current-feed original, one frozen model call, validated editorial proposal; no live publication.",
+  "input": {
+    "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+    "title": "Federal Reserve issues FOMC statement",
+    "published_at": "2026-09-17 03:00:00+09:00",
+    "rss_sha256": "65b2e5cb0c742062d064003d02d2ca5db7f7f1d7529156fd66ce0cf61b98eff2",
+    "original_ok": true,
+    "original_sha256": "181723f28811803d4132e522a5319f36288a56cea1c341ac114cbf9411683dd6",
+    "original_bytes": 84669,
+    "freshness_window_hours": 72,
+    "resumed_collector_state": "synthetically seeded"
+  },
+  "result": {
+    "state": "completed",
+    "items": [
+      {
+        "state": "held",
+        "headline": "",
+        "reason": "제공된 본문은 연준 웹사이트의 메뉴와 탐색 항목에서 잘려 있으며 FOMC 성명 본문이 없다. 제목·URL·게시 시각만으로는 실제 발표 날짜, 정책금리 결정, 수치 및 정책 방향을 확인할 수 없다. 연준 공식 출처이지만 자체 정책 조치를 확인하는 구절이 없어 성명 본문 확보 전까지 발행을 보류한다."
+      }
+    ]
+  },
+  "calls": [
+    {
+      "id": "news-17ac5229-a3be-4a00-ad62-9e974917aad0",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "held",
+          "reason": "제공된 본문은 연준 웹사이트의 메뉴와 탐색 항목에서 잘려 있으며 FOMC 성명 본문이 없다. 제목·URL·게시 시각만으로는 실제 발표 날짜, 정책금리 결정, 수치 및 정책 방향을 확인할 수 없다. 연준 공식 출처이지만 자체 정책 조치를 확인하는 구절이 없어 성명 본문 확보 전까지 발행을 보류한다.",
+          "headline": ""
+        }
+      ],
+      "response": {
+        "usage": {
+          "input_tokens": 12084,
+          "output_tokens": 280,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 0
+        },
+        "decision": {
+          "say": "제공된 본문에 FOMC 결정 내용이 없어 기사 1건을 보류합니다.",
+          "tools": [],
+          "status": "complete",
+          "memories": [],
+          "messages": [],
+          "artifacts": [
+            {
+              "title": "뉴스 검토 결과",
+              "content": "{\"items\":[{\"disposition\":\"hold\",\"article_ids\":[\"827437924034af93cdc10a18c25c8ae8b2383e4068f6f6a6e6c56e255e6a48c5\"],\"reason\":\"제공된 본문은 연준 웹사이트의 메뉴와 탐색 항목에서 잘려 있으며 FOMC 성명 본문이 없다. 제목·URL·게시 시각만으로는 실제 발표 날짜, 정책금리 결정, 수치 및 정책 방향을 확인할 수 없다. 연준 공식 출처이지만 자체 정책 조치를 확인하는 구절이 없어 성명 본문 확보 전까지 발행을 보류한다.\",\"category\":\"거시경제\",\"verification\":\"insufficient\",\"evidence\":[],\"independent_origins\":[]}]}",
+              "source_ids": []
+            }
+          ],
+          "follow_up": null,
+          "delegations": []
+        },
+        "provider": "codex",
+        "thread_id": "01a0b4fa-e23d-7132-9686-5d4e173c4b06",
+        "request_id": "news-17ac5229-a3be-4a00-ad62-9e974917aad0",
+        "web_searches": []
+      }
+    }
+  ],
+  "outbox_count": 0
+}

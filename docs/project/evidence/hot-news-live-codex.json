@@ -1,0 +1,80 @@
+{
+  "checked_at": "2026-09-18T14:52:58.730520+00:00",
+  "state": "passed",
+  "database": "real-disposable-postgresql",
+  "network": "real-public-rss-and-original",
+  "model": "real-codex-subscription",
+  "slack": "not-connected",
+  "deployed": false,
+  "source": "fed-press",
+  "code_commit": "b3a5a8d967387dbfb4809adde32f1f1d9fe87b52",
+  "uncommitted_code": true,
+  "qualification_scope": "One current-feed original, one frozen model call, validated editorial proposal; no live publication.",
+  "input": {
+    "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+    "title": "Federal Reserve issues FOMC statement",
+    "published_at": "2026-09-17 03:00:00+09:00",
+    "rss_sha256": "65b2e5cb0c742062d064003d02d2ca5db7f7f1d7529156fd66ce0cf61b98eff2",
+    "original_ok": true,
+    "original_sha256": "a95f9f652bd67d351d02c2186fbbe699b4ead72209d55d9ba48b3a9dc30e0b0f",
+    "original_bytes": 84669,
+    "article_extraction": "article",
+    "article_chars": 1055,
+    "excerpt_truncated": false,
+    "freshness_window_hours": 72,
+    "resumed_collector_state": "synthetically seeded"
+  },
+  "result": {
+    "state": "completed",
+    "items": [
+      {
+        "state": "previewed",
+        "headline": "미 연준, 기준금리 0.25%포인트 인상…목표 범위 3.75~4.00%",
+        "reason": "연준이 자체 통화정책 결정을 발표한 공식 성명으로, 결정 일자와 인상 폭, 목표 범위가 본문에 명시돼 있다. 세계 금융 여건에 중요한 정책 변화이며 제공된 기존 사건은 없다."
+      }
+    ]
+  },
+  "calls": [
+    {
+      "id": "news-13daac19-2df2-4728-92ec-9d22e278bd30",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "previewed",
+          "reason": "연준이 자체 통화정책 결정을 발표한 공식 성명으로, 결정 일자와 인상 폭, 목표 범위가 본문에 명시돼 있다. 세계 금융 여건에 중요한 정책 변화이며 제공된 기존 사건은 없다.",
+          "headline": "미 연준, 기준금리 0.25%포인트 인상…목표 범위 3.75~4.00%"
+        }
+      ],
+      "response": {
+        "usage": {
+          "input_tokens": 11100,
+          "output_tokens": 880,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 0
+        },
+        "decision": {
+          "say": "제공된 연준 성명에 근거해 금리 인상 소식 1건을 게재 대상으로 선정했습니다.",
+          "tools": [],
+          "status": "complete",
+          "memories": [],
+          "messages": [],
+          "artifacts": [
+            {
+              "title": "뉴스 검토 결과",
+              "content": "{\"items\":[{\"disposition\":\"publish\",\"article_ids\":[\"827437924034af93cdc10a18c25c8ae8b2383e4068f6f6a6e6c56e255e6a48c5\"],\"reason\":\"연준이 자체 통화정책 결정을 발표한 공식 성명으로, 결정 일자와 인상 폭, 목표 범위가 본문에 명시돼 있다. 세계 금융 여건에 중요한 정책 변화이며 제공된 기존 사건은 없다.\",\"event_id\":null,\"category\":\"거시경제\",\"priority\":\"major\",\"headline\":\"미 연준, 기준금리 0.25%포인트 인상…목표 범위 3.75~4.00%\",\"facts\":\"연준은 2026년 9월 16일 오후 2시(미 동부 일광절약시간) 발표한 성명에서 연방기금금리 목표 범위를 0.25%포인트 올려 3.75~4.00%로 정했다고 밝혔다. 성명은 12대 0으로 승인됐다. 위원회는 인플레이션이 여전히 높은 수준이라고 평가하고, 이번 조치가 물가상승률의 2% 목표 복귀를 앞당기는 데 도움이 될 것이라고 설명했다.\",\"significance\":\"미국의 정책금리 인상은 달러 자금 조달과 국제 금융 여건에 영향을 줄 수 있다. 실제 시장 반응이나 향후 추가 인상 여부는 제공된 성명만으로 확인되지 않는다.\",\"change\":\"신규 사건으로, 9월 16일 결정된 금리 인상 폭과 새 목표 범위를 전달한다.\",\"evidence\":[{\"article_id\":\"827437924034af93cdc10a18c25c8ae8b2383e4068f6f6a6e6c56e255e6a48c5\",\"quote\":\"September 16, 2026\\nFederal Reserve issues FOMC statement\\nFor release at 2:00 p.m. EDT\"},{\"article_id\":\"827437924034af93cdc10a18c25c8ae8b2383e4068f6f6a6e6c56e255e6a48c5\",\"quote\":\"The Federal Open Market Committee approved the following statement for release by a 12 – 0 vote:\"},{\"article_id\":\"827437924034af93cdc10a18c25c8ae8b2383e4068f6f6a6e6c56e255e6a48c5\",\"quote\":\"The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent, in support of the Federal Reserve's dual mandate.\"},{\"article_id\":\"827437924034af93cdc10a18c25c8ae8b2383e4068f6f6a6e6c56e255e6a48c5\",\"quote\":\"Inflation remains elevated. Today's policy action will support a timelier return to the Committee's 2 percent goal.\"}],\"verification\":\"official_action\",\"independent_origins\":[]}]}",
+              "source_ids": []
+            }
+          ],
+          "follow_up": null,
+          "delegations": []
+        },
+        "provider": "codex",
+        "thread_id": "01a0b501-a643-7a10-a097-421550953a75",
+        "request_id": "news-13daac19-2df2-4728-92ec-9d22e278bd30",
+        "web_searches": []
+      }
+    }
+  ],
+  "outbox_count": 0
+}

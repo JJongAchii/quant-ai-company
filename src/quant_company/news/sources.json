@@ -1,0 +1,87 @@
+[
+  {
+    "id": "fed-press",
+    "publisher": "Federal Reserve",
+    "origin_group": "federal-reserve",
+    "kind": "official",
+    "feed_url": "https://www.federalreserve.gov/feeds/press_all.xml",
+    "article_hosts": [
+      "www.federalreserve.gov"
+    ],
+    "enabled": true,
+    "use_for_summary": true,
+    "usage_note": "연준이 제공하는 공개 발표 피드. 자체 정책·통계 발표의 사실 확인과 링크에 사용하며 제3자의 주장을 독립 확인으로 취급하지 않는다.",
+    "poll_seconds": 600
+  },
+  {
+    "id": "ecb-press",
+    "publisher": "European Central Bank",
+    "origin_group": "ecb",
+    "kind": "official",
+    "feed_url": "https://www.ecb.europa.eu/rss/press.html",
+    "article_hosts": [
+      "www.ecb.europa.eu"
+    ],
+    "enabled": true,
+    "use_for_summary": true,
+    "usage_note": "ECB 공식 공개 발표. 사실을 한국어로 요약하고 원문·발표 시각을 명시하며 공식 번역으로 표시하지 않는다.",
+    "poll_seconds": 600
+  },
+  {
+    "id": "bbc-world",
+    "publisher": "BBC News",
+    "origin_group": "bbc",
+    "kind": "media",
+    "feed_url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+    "article_hosts": [
+      "www.bbc.com",
+      "www.bbc.co.uk"
+    ],
+    "enabled": true,
+    "use_for_summary": false,
+    "usage_note": "공개 RSS 연결과 메타데이터 확인용. 자동 요약·Slack 배포 이용 범위 확인 전 본문 수집과 게시 근거 사용은 비활성.",
+    "poll_seconds": 600
+  },
+  {
+    "id": "newsis-world",
+    "publisher": "뉴시스",
+    "origin_group": "newsis",
+    "kind": "media",
+    "feed_url": "https://www.newsis.com/RSS/international.xml",
+    "article_hosts": [
+      "www.newsis.com"
+    ],
+    "enabled": true,
+    "use_for_summary": false,
+    "usage_note": "공식 국제 뉴스 RSS. 자동 요약·Slack 전달 이용 조건 확인 전 메타데이터만 수집. 통신사 재전송의 원 출처를 별도로 검토해야 한다.",
+    "poll_seconds": 600
+  },
+  {
+    "id": "newsis-economy",
+    "publisher": "뉴시스",
+    "origin_group": "newsis",
+    "kind": "media",
+    "feed_url": "https://www.newsis.com/RSS/economy.xml",
+    "article_hosts": [
+      "www.newsis.com"
+    ],
+    "enabled": true,
+    "use_for_summary": false,
+    "usage_note": "공식 경제 뉴스 RSS. 자동 요약·Slack 전달 이용 조건 확인 전 메타데이터만 수집.",
+    "poll_seconds": 600
+  },
+  {
+    "id": "kbs-world",
+    "publisher": "KBS World",
+    "origin_group": "kbs",
+    "kind": "media",
+    "feed_url": "https://world.kbs.co.kr/rss/rss_news.htm?lang=e",
+    "article_hosts": [
+      "world.kbs.co.kr"
+    ],
+    "enabled": true,
+    "use_for_summary": false,
+    "usage_note": "KBS World 영문 뉴스 RSS. 자동 요약·Slack 전달 이용 조건 확인 전 메타데이터만 수집.",
+    "poll_seconds": 600
+  }
+]

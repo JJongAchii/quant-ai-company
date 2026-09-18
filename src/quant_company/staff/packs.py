@@ -12,9 +12,9 @@ STAFF = (
 PACK_VERSION = "2026-09-17.1"
 
 
-@lru_cache(maxsize=11)
+@lru_cache(maxsize=12)
 def pack(employee: str) -> dict:
-    if employee not in STAFF:
+    if employee not in (*STAFF, "reporter"):
         raise ValueError("Unknown specialist")
     text = files("quant_company.staff").joinpath(f"playbooks/{employee}.md").read_text()
     return pack_content(employee, text)

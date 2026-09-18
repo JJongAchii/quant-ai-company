@@ -72,14 +72,17 @@ class SlackIngress:
                 return {"ok": True, "ignored": True}
             target = role
         else:
-            if role != "director" or not event.get("thread_ts"):
+            if role not in {"director", "reporter"} or not event.get("thread_ts"):
                 return {"ok": True, "ignored": True}
             with self.company.db.transaction() as conn:
-                project = conn.execute("SELECT id FROM projects WHERE channel=%s AND thread_ts=%s",
+                project = conn.execute("""SELECT p.id,EXISTS(SELECT 1 FROM news_events n WHERE n.project_id=p.id) AS news
+                    FROM projects p WHERE channel=%s AND thread_ts=%s""",
                                        (channel, thread_ts)).fetchone()
             if not project:
                 return {"ok": True, "ignored": True}
-            target = "director"
+            target = "reporter" if project["news"] else "director"
+            if role != target:
+                return {"ok": True, "ignored": True}
         text = re.sub(r"<@[A-Z0-9]+>", "", text).strip()
         if target == "director":
             from .maintenance.applications import accept_approval
@@ -127,7 +130,7 @@ class SlackOutbox:
 
     def claim(self):
         with self.company.db.transaction() as conn:
-            row = conn.execute("""SELECT o.* FROM outbox o JOIN messages m ON m.id=o.id
+            row = conn.execute("""SELECT o.*,m.kind AS message_kind FROM outbox o JOIN messages m ON m.id=o.id
                 LEFT JOIN tasks k ON k.id=m.task_id JOIN projects p ON p.id=o.project_id
                 WHERE o.status='pending' AND o.next_at<=now() AND
                 (m.kind IN ('control','maintenance','status') OR
@@ -137,6 +140,15 @@ class SlackOutbox:
                 ORDER BY o.created_at FOR UPDATE OF o SKIP LOCKED LIMIT 1""").fetchone()
             if not row:
                 return None
+            if row["message_kind"] == "news":
+                from .news.store import NewsStore
+
+                if not NewsStore(self.company).delivery_allowed(conn, row):
+                    conn.execute("UPDATE outbox SET status='stale',error='news_policy_or_freshness_changed' WHERE id=%s",
+                                 (row["id"],))
+                    return None
+                row["news_broadcast"] = conn.execute("SELECT broadcast FROM news_publications WHERE id=%s",
+                                                    (row["id"],)).fetchone()["broadcast"]
             project = conn.execute("SELECT revision FROM projects WHERE id=%s", (row["project_id"],)).fetchone()
             if row["revision"] != project["revision"]:
                 conn.execute("UPDATE outbox SET status='stale' WHERE id=%s", (row["id"],))
@@ -153,6 +165,9 @@ class SlackOutbox:
         with self.company.db.transaction() as conn:
             conn.execute("""UPDATE outbox SET status=%s,error=%s,next_at=%s,sent_ts=%s WHERE id=%s
                 AND status='sending'""", (status, error, now() + timedelta(seconds=delay), sent_ts, row["id"]))
+            if status == "delivered" and sent_ts and row.get("message_kind") == "news" and not row["thread_ts"]:
+                conn.execute("UPDATE projects SET thread_ts=%s WHERE id=%s AND thread_ts IS NULL",
+                             (sent_ts, row["project_id"]))
 
     async def send_one(self):
         import asyncio
@@ -164,9 +179,14 @@ class SlackOutbox:
         token = self.credentials[row["agent"]]["bot_token"]
         # The stable client_msg_id helps correlation; it is not an exactly-once guarantee.
         body = {"channel": row["channel"], "thread_ts": row["thread_ts"],
-                "text": f"[지시 v{row['revision']}] {row['text']}", "client_msg_id": row["id"],
+                "text": row["text"] if row["agent"] == "reporter" else f"[지시 v{row['revision']}] {row['text']}",
+                "client_msg_id": row["id"],
                 "unfurl_links": False, "unfurl_media": False,
                 "metadata": {"event_type": "quant_company_message", "event_payload": {"id": row["id"]}}}
+        if row["thread_ts"] is None:
+            del body["thread_ts"]
+        elif row.get("news_broadcast"):
+            body["reply_broadcast"] = True
         try:
             async with httpx.AsyncClient(timeout=12, transport=self.transport) as client:
                 response = await client.post("https://slack.com/api/chat.postMessage", json=body,
@@ -182,8 +202,10 @@ class SlackOutbox:
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_server_error")
                 return True
             result = response.json()
-            if result.get("ok"):
+            if result.get("ok") and (row.get("message_kind") != "news" or result.get("ts")):
                 await asyncio.to_thread(self.settle, row, "delivered", sent_ts=result.get("ts"))
+            elif result.get("ok"):
+                await asyncio.to_thread(self.settle, row, "uncertain", error="missing_slack_message_receipt")
             else:
                 error = str(result.get("error", "slack_rejected"))[:100]
                 await asyncio.to_thread(self.settle, row, "blocked", error=error)
