@@ -90,3 +90,25 @@ def test_oversized_system_is_a_readable_reference_not_an_unbounded_prompt(compan
     with company.db.transaction() as conn:
         stored = conn.execute("SELECT content FROM sources WHERE id=%s", (data["system"]["source_id"],)).fetchone()
     assert len(json.loads(stored["content"])["fixture_facts"]) == 100000
+
+
+def test_large_system_does_not_cut_the_current_two_page_read_receipt(company, monkeypatch):
+    monkeypatch.setattr("quant_company.system_state.current_system",
+                        lambda *args: {"fixture_facts": "s" * 53000})
+    request = company.ingest(event_key="two-pages", owner="UHUMAN", text="Read both pages",
+                             channel="CQUANT", thread_ts="two-pages")
+    company.put_source(source_id="two-pages", title="Two pages", uri="fixture://two-pages",
+                       content="e" * 20000, project_id=request["project_id"],
+                       available_at=now(), approved=True, synthetic=True)
+    for offset in (0, 12000):
+        turn, _ = context(company, request["project_id"])
+        company.commit_turn(turn, ProviderResponse(request_id=turn, provider="fixture", decision=AgentDecision(
+            say="Read another page", status="continue",
+            tools=[{"name": "read_source", "arguments": {"source_id": "two-pages", "offset": offset}}])))
+    _, data = context(company, request["project_id"])
+    with company.db.transaction() as conn:
+        originals = conn.execute("SELECT text FROM messages WHERE task_id=%s AND kind='tool'",
+                                 (request["task_id"],)).fetchall()
+    texts = {message["text"] for message in data["messages"]}
+    assert len(originals) == 2 and all(row["text"] in texts for row in originals)
+    assert data["system"]["excerpted"] and len(json.dumps(data, ensure_ascii=False)) <= 68000

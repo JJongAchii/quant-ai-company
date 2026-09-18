@@ -440,13 +440,8 @@ class Company:
                     context["context_truncated"] = True
                     break
             else:
-                # Three remaining messages can each contain a large source/tool response.
-                for message in context["messages"]:
-                    if len(message["text"]) > 3000:
-                        message["text"] = message["text"][:3000] + " [excerpt; full content remains in project records]"
-                for source in context["approved_sources"]:
-                    source.pop("metadata", None)
-                if len(json.dumps(context, ensure_ascii=False)) > 68000 and "system" in context:
+                # Summarize background state before cutting the recent evidence being read.
+                if "system" in context:
                     system = context["system"]
                     context["system"] = {
                         "source_id": system["source_id"], "excerpted": True,
@@ -457,6 +452,12 @@ class Company:
                         "interpretation": "Bounded summary, not a complete status report. Use read_source with "
                                           "source_id for full evidence. Omitted evidence is unknown, not absent.",
                     }
+                if len(json.dumps(context, ensure_ascii=False)) > 68000:
+                    for message in context["messages"]:
+                        if len(message["text"]) > 3000:
+                            message["text"] = message["text"][:3000] + " [excerpt; full content remains in project records]"
+                    for source in context["approved_sources"]:
+                        source.pop("metadata", None)
                 context["context_truncated"] = True
                 if len(json.dumps(context, ensure_ascii=False)) > 68000:
                     raise PolicyError("Required task context exceeds the bounded prompt budget")
