@@ -15,9 +15,12 @@ class ArticlePage(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.stack = []
         self.regions = []
+        self.published_at = None
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        if tag == "meta" and attrs.get("name") == "govuk:first-published-at":
+            self.published_at = attrs.get("content", "")[:100] or None
         ignored = (bool(self.stack and self.stack[-1][1]) or tag in IGNORE
                    or attrs.get("aria-hidden") == "true")
         rank = (3 if "articleBody" in attrs.get("itemprop", "").split() else
@@ -68,6 +71,8 @@ def fetch_original(url):
         page = ArticlePage()
         page.feed(raw.decode(encoding[1] if encoding else "utf-8"))
         content, method = page.article()
+        if page.published_at and receipt.get("publisher_host") == "www.gov.uk":
+            receipt = {**receipt, "published_at": page.published_at, "publication_time_basis": "page_metadata"}
     if len(content) < 120:
         return {**receipt, "ok": False, "content": "", "error": "article_body_not_found"}, raw
     return {**receipt, "content": content[:6000], "content_truncated": len(content) > MAX_TEXT,

@@ -8,7 +8,7 @@ from psycopg.types.json import Jsonb
 from ..company import as_json, fingerprint, stable
 from ..contracts import ProviderRequest
 from ..owner_controls import effective_limits
-from .contracts import load_sources
+from .contracts import NewsSource, load_sources
 from .editor import bounded_prompt, render, validate_review
 from .feeds import timestamp
 
@@ -84,14 +84,17 @@ class NewsStore:
                 horizon = (timedelta(hours=self.company.settings.news_max_age_hours) if source["last_success"]
                            else timedelta(minutes=self.company.settings.news_initial_lookback_minutes))
                 state = "collected" if source["config"]["use_for_summary"] else "discovery_only"
-                if published is None or published < at-horizon or published > at+timedelta(minutes=5):
+                pending_date = (published is None and source["config"].get("undated_publication") == "page_metadata"
+                                and entry["updated_at"] is not None and at-horizon <= entry["updated_at"] <= at+timedelta(minutes=5))
+                if not pending_date and (published is None or published < at-horizon or published > at+timedelta(minutes=5)):
                     state = "historical_or_undated"
                 inserted = conn.execute("""INSERT INTO news_articles(id,source_id,url,title,summary,feed_digest,
-                    published_at,updated_at,source_digest,state) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    published_at,updated_at,source_digest,state,retrieval) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                     ON CONFLICT DO NOTHING RETURNING id""",
                                         (identity, source["id"], entry["url"], entry["title"],
                                          entry["summary"] if source["config"]["use_for_summary"] else "",
-                                         entry["digest"], published, entry["updated_at"], source["config_digest"], state)).fetchone()
+                                         entry["digest"], published, entry["updated_at"], source["config_digest"], state,
+                                         Jsonb({"earliest_publication": (at-horizon).isoformat()}) if pending_date else None)).fetchone()
                 added += bool(inserted)
             metadata = {k: v for k, v in receipt.items() if k != "entries"}
             metadata["latest_publication"] = max((e["published_at"] for e in receipt["entries"]
@@ -118,21 +121,33 @@ class NewsStore:
             return row
 
     def save_original(self, article, receipt):
+        if (article["retrieval"] or {}).get("earliest_publication"):
+            receipt = {"earliest_publication": article["retrieval"]["earliest_publication"], **receipt}
+        source = NewsSource.model_validate(article["config"])
         ok = (receipt.get("ok") and receipt.get("publisher_host") in article["config"]["article_hosts"]
+              and source.allows_article(receipt.get("url", article["url"]))
               and not receipt.get("content_truncated") and len(receipt.get("content", "")) >= 120)
         original_date = timestamp(receipt.get("published_at"))
-        if original_date and abs(original_date-article["published_at"]) > timedelta(days=1):
+        published = article["published_at"]
+        if published is None and receipt.get("ok"):
+            cutoff = timestamp((article["retrieval"] or {}).get("earliest_publication"))
+            if not (original_date and cutoff and cutoff <= original_date <= datetime.now(UTC)+timedelta(minutes=5)):
+                ok = False
+                receipt = {**receipt, "error": "publication_time_unconfirmed_or_old"}
+            else:
+                published = original_date
+        elif published and original_date and abs(original_date-published) > timedelta(days=1):
             ok = False
             receipt = {**receipt, "error": "feed_original_date_conflict"}
         retryable = (receipt.get("error") == "web_network_unavailable"
                      or receipt.get("http_status") in {429, 500, 502, 503, 504})
         failed_state = "collected" if retryable and article["attempts"] < 2 else "fetch_failed"
         with self.db.transaction() as conn:
-            conn.execute("""UPDATE news_articles SET state=%s,content=%s,retrieval=%s,error=%s,
+            conn.execute("""UPDATE news_articles SET state=%s,content=%s,retrieval=%s,error=%s,published_at=%s,
                 next_at=now()+interval '5 minutes' WHERE id=%s AND state='fetching'""",
                          ("ready" if ok else failed_state, receipt.get("content", "")[:6000] if ok else None,
                           Jsonb(as_json({k: v for k, v in receipt.items() if k not in {"content", "links"}})),
-                          None if ok else receipt.get("error", "original_not_usable"), article["id"]))
+                          None if ok else receipt.get("error", "original_not_usable"), published, article["id"]))
 
     def prepare_review(self):
         if not self.authorized():
@@ -169,6 +184,7 @@ class NewsStore:
             articles = [{"id": r["id"], "url": r["url"], "title": r["title"], "content": r["content"],
                          "excerpt_truncated": bool((r["retrieval"] or {}).get("excerpt_truncated")),
                          "published_at": r["published_at"], "publisher": r["config"]["publisher"],
+                         "license_url": r["config"].get("license_url"), "license_name": r["config"].get("license_name", ""),
                          "kind": r["config"]["kind"], "origin_group": r["config"]["origin_group"]} for r in rows]
             for article in articles:
                 existing = conn.execute("""SELECT n.id::text FROM news_events n

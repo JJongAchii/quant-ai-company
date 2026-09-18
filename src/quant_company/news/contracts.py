@@ -1,7 +1,8 @@
 import json
+import posixpath
 from importlib.resources import files
 from typing import Literal
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 from pydantic import Field, field_validator, model_validator
 
@@ -16,6 +17,10 @@ class NewsSource(StrictModel):
     kind: Literal["official", "media"]
     feed_url: str
     article_hosts: list[str] = Field(min_length=1, max_length=8)
+    article_path_prefixes: list[str] = Field(default_factory=list, max_length=8)
+    undated_publication: Literal["reject", "page_metadata"] = "reject"
+    license_url: str | None = None
+    license_name: str = Field(default="", max_length=160)
     poll_seconds: int = Field(default=600, ge=300, le=86400)
     enabled: bool = False
     use_for_summary: bool = False
@@ -32,6 +37,24 @@ class NewsSource(StrictModel):
         if any(urlsplit(public_url("https://" + host)).hostname != host for host in value):
             raise ValueError("Article hosts must be exact public hostnames")
         return value
+
+    @field_validator("license_url")
+    @classmethod
+    def license_is_public(cls, value):
+        return public_url(value) if value else None
+
+    @field_validator("article_path_prefixes")
+    @classmethod
+    def paths_are_explicit(cls, value):
+        if any(not p.startswith("/") or not p.endswith("/") or ".." in p or "%" in p for p in value):
+            raise ValueError("Article prefixes must be absolute directory paths")
+        return value
+
+    def allows_article(self, value):
+        url = urlsplit(public_url(value))
+        path = "/" + posixpath.normpath(unquote(url.path)).lstrip("/")
+        return (url.hostname in self.article_hosts
+                and (not self.article_path_prefixes or any(path.startswith(p) for p in self.article_path_prefixes)))
 
 
 class Evidence(StrictModel):

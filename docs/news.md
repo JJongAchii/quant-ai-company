@@ -3,7 +3,8 @@
 Reporter는 경제·거시경제·국제 정세의 중요한 새 소식을 수집하고, 근거를 검토한 뒤
 `hot-news`에 한국어로 전달하는 별도 Slack 앱이다. 이름은 `Reporter`, 멘션은 `@reporter`,
 소개는 “주요 경제·국제 뉴스를 확인하고 전하는 리포터”다.
-**앱 설치·운영 배포·실제 Slack 발송은 아직 하지 않았다.** [검증 기록](project/HOT-NEWS-VALIDATION.md)을 함께 읽는다.
+구현 자격검증은 [검증 기록](project/HOT-NEWS-VALIDATION.md), 후속 앱 연결과 운영 활성화는
+[활성화 기록](project/HOT-NEWS-ACTIVATION.md)에 구분해 남긴다.
 
 ## 동작
 
@@ -27,6 +28,8 @@ flowchart LR
   동시 실행 1개 한도와 회사 공통 일일 한도를 사용한다. 대기 중인 사용자 업무를 먼저 처리한다.
 - 신규 피드 최초 수집은 최근 120분, 정상 재개 후에는 최근 24시간 자료를 편집 대상으로 삼는다.
   오래되거나 발행 시각이 없거나 5분을 넘겨 미래인 기사는 기록만 한다. 날짜를 현재 시각으로 대체하지 않는다.
+  GOV.UK처럼 수정 시각만 제공하는 등록 피드는 원문의 `govuk:first-published-at`을 추가 확인한다.
+  최초 발행 시각이 허용 기간 밖이면 최근 수정된 문서여도 게시하지 않는다.
 - URL 정규화와 피드 내용 해시로 기사 버전을 구별한다. 동일 사건은 모델이 묶고 최근 사건과 비교한다.
   같은 원문의 변경 버전은 기존 사건의 후속이어야 한다. 재표현만으로 후속 글을 만들지 않는다.
 - 원문은 공개 HTTPS HTML/text만 읽는다. 기사 영역을 먼저 추출하고 최대 6,000자의 근거를 전달한다.
@@ -47,32 +50,36 @@ flowchart LR
 
 ## 실제 소스 조사
 
-2026-09-18 UTC 기준 실측은 [RSS 영수증](project/evidence/hot-news-source-probe.json)에 있다.
-RSS 연결, 원문 추출, 자동 요약·재배포 이용 범위는 각각 다른 상태다.
+초기 후보 조사와 운영 등록은 구분한다. 초기 [RSS 영수증](project/evidence/hot-news-source-probe.json)은
+과거 조사 기록이다. 현재 설정은 아래와 같으며 운영지 원문 검사는 활성화 기록에 남긴다.
 
 | 소스 | 실제 연결 | 본문·게시 근거 상태 |
 |---|---|---|
-| 연준 발표 | RSS 20건, 모두 발행 시각 있음 | FOMC 원문 1건의 추출·실제 구독 모델 검토 확인. 자체 발표 근거로 설정 |
-| ECB 발표 | 로컬 TLS 인증서 검증 실패 | 공식 피드 등록, 원문 경로 미검증. TLS 검증을 끄지 않음 |
-| BBC World | RSS 29건, 모두 발행 시각 있음 | 제목·URL·시각만 저장. 자동 요약·Slack 배포 이용 범위 미확정 |
-| 뉴시스 국제·경제 | RSS 각 100건, 모두 발행 시각 있음 | 제목·URL·시각만 저장. 본문·자동 배포 이용 범위 미확정 |
-| KBS World 영문 | RSS 30건, 모두 발행 시각 있음 | 제목·URL·시각만 저장. 본문·자동 배포 이용 범위 미확정 |
+| 연준 발표 | RSS·원문 확인 | 기관 자체 정책·통계·조치 |
+| ECB 발표 | 운영 서버 RSS 연결 확인; 로컬 인증서 오류 별도 기록 | `/press/pr/`, `/press/govcdec/` 자체 발표만 허용. 연구물·인터뷰·연설 제외 |
+| 미국 BEA | RSS·원문 확인 | GDP·소득·국제수지 등 자체 통계 발표 |
+| 영국 FCDO·재무부·통상부 | 뉴스 전용 Atom·원문 확인 | OGL 공개 발표. 원문 최초 발행 시각 확인, 출처·라이선스·AI 한국어 요약 표시 |
+| BBC World·KBS World | 운영 수집 비활성 | 이용 범위 확정 전 원문·RSS를 자동 조회하지 않음 |
+| 뉴시스 국제·경제 | 운영 수집 비활성 | 자동 수집 제한을 확인해 제외 |
+| 미국 BLS | 로컬·운영 서버 HTTP 403 | 접근 차단을 우회하지 않고 운영 등록 보류 |
 
 연준·ECB는 각 기관이 공개하는 공식 피드 목록을 근거로 등록했다.
 [연준 RSS 안내](https://www.federalreserve.gov/feeds/feeds.htm),
 [ECB RSS 안내](https://www.ecb.europa.eu/home/html/rss.en.html).
-뉴시스 국제·경제와 KBS World 영문 피드는 제공자가 안내하는 주소를 사용한다.
-[뉴시스 RSS](https://www.newsis.com/RSS/),
-[KBS World RSS](https://world.kbs.co.kr/service/about_rss.htm?lang=e).
-피드 안내 자체를 모든 종류의 본문 재사용 허가로 해석하지 않았다.
+이용 근거와 제한은 [ECB 이용 안내](https://www.ecb.europa.eu/services/using-our-site/disclaimer/html/index.en.html),
+[BEA 정책](https://www.bea.gov/about/policies-and-information),
+[GOV.UK 재사용 안내](https://www.gov.uk/help/reuse-govuk-content),
+[뉴시스 이용약관](https://mobile.newsis.com/policy/)을 확인했다.
+GOV.UK의 정부 부처들은 모두 `uk-government` 원천으로 묶으므로 서로 독립인 보도로 계산하지 않는다.
 
 Reuters와 AP는 후보이며, 이 구현에 계약·키·API 연결을 추가하지 않았다.
 Reuters는 AI/RAG 활용용 콘텐츠 제공 경로를, AP는 API의 인증·접근 범위를 안내한다.
 [Reuters AI 콘텐츠](https://reutersagency.com/solutions/ai-training-rag/),
 [AP API 시작 안내](https://api.ap.org/media/v/docs/Getting_Started_API.htm).
 DW·연합뉴스도 사용 경로와 조건 확인 전에는 수집 목록에 넣지 않았다.
-**현재 설정만 켜면 포괄적인 글로벌 뉴스 서비스가 되는 것은 아니다.**
-매체별 이용 범위를 확인하고 원문 추출·독립 원천 판정을 실제 자료로 검사한 뒤 게시 근거를 확장한다.
+현재 범위는 **공식 경제·정책·외교 발표 중심**이며 일반 언론의 전 세계 사건 보도를 포괄하지 않는다.
+Global Voices의 공개 라이선스도 검토했지만 저자 크레딧과 전재 기사 구분을 아직 구현·검증하지 않아
+운영 등록하지 않았다. 매체 원문 추출·독립 원천 판정을 실제 자료로 검사한 뒤 범위를 확장한다.
 유료 계약이나 API 구매는 이루어지지 않았다.
 
 소스 목록은 [sources.json](../src/quant_company/news/sources.json)에 있다.
@@ -101,6 +108,7 @@ NEWS_PUBLISH_ENABLED=false
 NEWS_CHANNEL_ID=C_ACTUAL_HOT_NEWS_ID
 NEWS_OWNER_USER=U_ACTUAL_OWNER_ID
 NEWS_MAX_AGE_HOURS=24
+NEWS_INITIAL_LOOKBACK_MINUTES=120
 ```
 
 패키지와 배포 템플릿의 기본값은 둘 다 false다. 미리보기에서는 검토 결과만 저장하며
@@ -116,7 +124,7 @@ uv run --frozen quant-company slack-manifests --include-reporter --output .local
 uv run --frozen quant-company news probe --output .local/news-sources.json
 ```
 
-`probe`는 실제 공개 피드만 검사하며 DB·모델·Slack은 사용하지 않는다. manifest 생성 역시 앱을
+`probe`는 활성화된 공개 피드만 검사하며 DB·모델·Slack은 사용하지 않는다. 비활성 소스는 조회하지 않는다. manifest 생성 역시 앱을
 설치하지 않는다. 아래 명령은 설정된 DB에 연결하므로 개발용 DB 또는 확인한 운영 환경에서 사용한다.
 `collect`는 피드 1개와 원문 최대 1개, `review`는 편집 검토 최대 1회를 수행한다.
 일상적인 상시 실행은 `worker`·`dispatch`의 Temporal 워크플로가 담당한다.

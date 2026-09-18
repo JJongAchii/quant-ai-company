@@ -523,3 +523,67 @@ def test_large_editorial_batch_preserves_primary_ids_with_bounded_excerpts():
     assert bundle["primary_ids"] == [str(i) for i in range(6)]
     assert all(a["existing_event_id"] in {e["id"] for e in bundle["events"]} for a in bundle["articles"])
     assert any(a.get("excerpt_truncated") for a in bundle["articles"])
+
+
+def test_article_paths_exclude_unqualified_publications_and_redirects(news):
+    spec = source(article_path_prefixes=["/press/"])
+    assert spec.allows_article("https://official.example.org//press/decision")
+    assert not spec.allows_article("https://official.example.org/press/%2e%2e/research/paper")
+    assert parse_feed(feed(spec, suffix="research/paper"), spec) == ([], 1)
+    news.company.settings.news_sources_file.write_text(json.dumps([spec.model_dump()]))
+    news.sync_sources()
+    add_article(news, spec, suffix="press/decision")
+    article = news.claim_article()
+    news.save_original(article, {"ok": True, "content": CONTENT, "publisher_host": "official.example.org",
+                                 "url": "https://official.example.org/research/paper"})
+    assert news.prepare_review() == {"state": "idle"}
+
+
+@pytest.mark.parametrize("original_age,expected", [(5, "ready"), (300, "fetch_failed"), (None, "fetch_failed")])
+def test_updated_only_feed_requires_fresh_original_publication(news, original_age, expected):
+    spec = source(undated_publication="page_metadata")
+    news.company.settings.news_sources_file.write_text(json.dumps([spec.model_dump()]))
+    news.sync_sources()
+    now = datetime.now(UTC)
+    raw = (f'<feed><entry><title>Policy</title><link href="https://official.example.org/policy"/>'
+           f'<updated>{now.isoformat()}</updated></entry></feed>').encode()
+    entries, _ = parse_feed(raw, spec)
+    assert entries[0]["published_at"] is None
+    news.save_feed(news.claim_source(), {"ok": True, "entries": entries})
+    article = news.claim_article()
+    # Network retry must retain the original freshness cutoff.
+    news.save_original(article, {"ok": False, "error": "web_network_unavailable"})
+    with news.db.transaction() as conn:
+        conn.execute("UPDATE news_articles SET next_at=now()")
+    article = news.claim_article()
+    date = (now-timedelta(minutes=original_age)).isoformat() if original_age is not None else None
+    news.save_original(article, {"ok": True, "content": CONTENT, "publisher_host": "official.example.org",
+                                 "published_at": date})
+    with news.db.transaction() as conn:
+        row = conn.execute("SELECT state,published_at FROM news_articles WHERE id=%s", (article["id"],)).fetchone()
+    assert row["state"] == expected
+    assert (row["published_at"] is not None) == (expected == "ready")
+
+
+def test_govuk_first_publication_metadata_is_preserved(monkeypatch):
+    raw = ('<meta name="govuk:updated-at" content="2026-09-18T12:00:00Z">'
+           '<meta name="govuk:first-published-at" content="2026-09-01T10:00:00+01:00">'
+           f'<main>{CONTENT}</main>').encode()
+    monkeypatch.setattr("quant_company.news.originals.fetch", lambda _: (
+        {"ok": True, "content": CONTENT, "content_type": "text/html", "publisher_host": "www.gov.uk"}, raw))
+    receipt, _ = fetch_original("https://www.gov.uk/government/news/example")
+    assert receipt["published_at"] == "2026-09-01T10:00:00+01:00"
+    assert receipt["publication_time_basis"] == "page_metadata"
+
+
+@pytest.mark.asyncio
+async def test_probe_never_fetches_disabled_sources(tmp_path, monkeypatch):
+    from quant_company.news.commands import command
+
+    path = tmp_path / "sources.json"
+    spec = source().model_dump()
+    spec["enabled"] = False
+    path.write_text(json.dumps([spec]))
+    monkeypatch.setattr("quant_company.news.commands.fetch_feed", lambda *_: pytest.fail("disabled feed fetched"))
+    result = await command(Settings(news_sources_file=path), "probe")
+    assert result["sources"][0]["skipped"] == "source_disabled"

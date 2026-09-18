@@ -12,6 +12,9 @@ async def command(settings, action):
     if action == "probe":
         results = []
         for source in load_sources(settings.news_sources_file):
+            if not source.enabled:
+                results.append({"source": source.id, "skipped": "source_disabled", "usage_note": source.usage_note})
+                continue
             receipt = await asyncio.to_thread(fetch_feed, source)
             entries = receipt.pop("entries", [])
             results.append({"source": source.id, "feed_url": source.feed_url, **receipt,

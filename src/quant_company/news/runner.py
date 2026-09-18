@@ -1,6 +1,5 @@
 import asyncio
 import contextlib
-from urllib.parse import urlsplit
 
 from temporalio import activity
 
@@ -30,8 +29,8 @@ class NewsCollector:
         article = await asyncio.to_thread(self.store.claim_article)
         if article:
             # Revalidate URLs against the frozen source registration before fetching original content.
-            if urlsplit(article["url"]).hostname not in article["config"]["article_hosts"]:
-                receipt = {"ok": False, "error": "article_host_changed"}
+            if not NewsSource.model_validate(article["config"]).allows_article(article["url"]):
+                receipt = {"ok": False, "error": "article_url_changed"}
             else:
                 receipt, _ = await asyncio.to_thread(self.article_fetcher, article["url"])
             await asyncio.to_thread(self.store.save_original, article, receipt)

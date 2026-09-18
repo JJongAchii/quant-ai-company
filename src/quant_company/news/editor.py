@@ -107,9 +107,14 @@ def render(item, articles, verified_at):
     if item.change:
         lines.append("*달라진 점* " + escape(item.change, quote=False))
     sources = {e.article_id for e in item.evidence}
+    licenses = set()
     for identity in sorted(sources):
         article = articles[identity]
         published = article["published_at"].astimezone(ZoneInfo("Asia/Seoul")).strftime("%m-%d %H:%M KST")
         lines.append(f"<{escape(article['url'], quote=False)}|{escape(article['publisher'], quote=False)}> · 발표 {published}")
-    lines.append("확인 " + verified_at.astimezone(ZoneInfo("Asia/Seoul")).strftime("%m-%d %H:%M KST"))
+        if article.get("license_url"):
+            licenses.add((article["license_url"], article["license_name"]))
+    for url, name in sorted(licenses):
+        lines.append(f"출처 이용: <{escape(url, quote=False)}|{escape(name, quote=False)}>")
+    lines.append("Reporter의 AI 한국어 요약 · 확인 " + verified_at.astimezone(ZoneInfo("Asia/Seoul")).strftime("%m-%d %H:%M KST"))
     return "\n".join(lines)

@@ -57,8 +57,8 @@ def parse_feed(raw, source):
                          if tag(child) == "link" and child.get("rel", "alternate") == "alternate"), "")
         try:
             url = canonical_url(urljoin(source.feed_url, link))
-            if not link or urlsplit(url).hostname not in source.article_hosts:
-                raise ValueError("article_host_not_allowed")
+            if not link or not source.allows_article(url):
+                raise ValueError("article_url_not_allowed")
             title = clean(values.get("title", ""))[:500]
             if not title:
                 raise ValueError("missing_title")
