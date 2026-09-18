@@ -1,0 +1,85 @@
+{
+  "request": {
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "task_id": "b279778b-9519-53bb-85ea-69ff8a358649",
+    "duplicate": false
+  },
+  "runtime_commit": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+  "background_model_requests": {
+    "maintainer": {
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "configuration_source": "engineer role; new maintenance calls use these values"
+    },
+    "independent_explanation_reviewer": {
+      "model": "claude-opus-5",
+      "reasoning_effort": "max",
+      "enabled": true
+    },
+    "meaning": "Configured for new background requests; frozen historical replays retain their original model and effort. This does not attest daemon health or activate the engineer role."
+  },
+  "employees": [
+    {
+      "id": "director",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": true
+    },
+    {
+      "id": "financial_strategist",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": true
+    },
+    {
+      "id": "researcher_kr",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": true
+    },
+    {
+      "id": "researcher_global",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "researcher_crypto",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "data",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "active": true
+    },
+    {
+      "id": "engineer",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "validator",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "risk",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "active": false
+    },
+    {
+      "id": "operations",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "active": false
+    }
+  ],
+  "recorded_at": "2026-09-18T05:20:25.797967+00:00",
+  "new_slack_ingress": false
+}
