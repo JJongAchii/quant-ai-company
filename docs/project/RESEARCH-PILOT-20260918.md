@@ -49,11 +49,11 @@ Astra max 요청·완료 CLI 5회와 Slack 게시 5개를 확인했다. 근거�
 
 보고 과정에서 같은 출처를 네 번 읽는 실제 결함도 발견했다. 긴 대화에서 최신 출처 ID를
 먼저 삭제해, 읽기 영수증은 있는데 승인 출처 목록에는 없는 상태를 만들었다. 회사 코드
-`e7593d0`에서 오래된 항목부터 줄이고 읽은 출처 ID를 보존하도록 수리했다. 실제 임시
-PostgreSQL의 관련 테스트 62개와 lint가 통과했다. **수정은 PR에 있으며 운영 반영 전**이다.
+`ea20eee`에서 오래된 항목부터 줄이고 읽은 출처 ID와 여러 페이지의 원문 영수증을
+보존하도록 수리했다. 실제 임시 PostgreSQL의 관련 테스트 63개와 lint가 통과했다. **수정은 PR에 있으며 운영 반영 전**이다.
 이미 완료된 P10 보고를 수정 효과로 주장하지 않는다. 상세:
 [ADR-0028](../adr/0028-preserve-consumed-context-evidence.md),
-`evidence/context-evidence-repair-20260918.json`.
+`evidence/context-evidence-repair-20260918.json`, `evidence/context-evidence-pages-20260918.json`.
 
 - [연구 스레드](https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789633942673909)
 - 회사 프로젝트: `9aac0de4-2b97-5195-a720-287d324234f3`
