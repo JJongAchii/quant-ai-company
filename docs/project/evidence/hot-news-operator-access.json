@@ -1,0 +1,47 @@
+{
+  "at": "2026-09-18T15:22:34.302040+00:00",
+  "instance": "quant-company-host",
+  "purpose": "Restore operator access for user-authorized Reporter deployment",
+  "before": {
+    "portStates": [
+      {
+        "fromPort": 22,
+        "toPort": 22,
+        "protocol": "tcp",
+        "state": "open",
+        "cidrs": [
+          "118.219.162.27/32"
+        ],
+        "ipv6Cidrs": [],
+        "cidrListAliases": []
+      }
+    ]
+  },
+  "requested_cidrs": [
+    "118.219.162.27/32",
+    "218.148.52.169/32"
+  ],
+  "after": {
+    "portStates": [
+      {
+        "fromPort": 22,
+        "toPort": 22,
+        "protocol": "tcp",
+        "state": "open",
+        "cidrs": [
+          "118.219.162.27/32",
+          "218.148.52.169/32"
+        ],
+        "ipv6Cidrs": [],
+        "cidrListAliases": []
+      }
+    ]
+  },
+  "ssh_host_identity": {
+    "method": "trust-on-first-use at the instance address returned by authenticated AWS Lightsail API",
+    "aws_host_key_list_empty": true,
+    "algorithm": "ssh-ed25519",
+    "fingerprint": "SHA256:I4FMVaL20Xw7EUuMr7PjlaZGHPCiPyyS5wlNmFxJmwY",
+    "subsequent_connections": "StrictHostKeyChecking=yes with dedicated pinned known-hosts file"
+  }
+}

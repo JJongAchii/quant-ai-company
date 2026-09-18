@@ -1,0 +1,34 @@
+{
+  "approval": {
+    "approvedAt": "2026-09-18T15:19:55.326719+00:00",
+    "id": "chat-20260919-continue-reporter-activation"
+  },
+  "currentIntent": "INTENT-v2.json",
+  "deliverables": {
+    "DEPLOY": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "LIVE": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "SLACK": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "SOURCES": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    }
+  },
+  "intentDigest": "4df23b420435",
+  "schemaVersion": 1,
+  "slug": "kokanee",
+  "state": "approved",
+  "updatedAt": "2026-09-18T15:19:55.326719+00:00"
+}

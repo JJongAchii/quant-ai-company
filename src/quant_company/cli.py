@@ -8,10 +8,10 @@ from .company import Company
 from .config import Settings
 
 
-def manifests(company, base_url, output, transport="socket"):
+def manifests(company, base_url, output, transport="socket", include_reporter=False):
     output.mkdir(parents=True, exist_ok=True)
     for role in company.roles.values():
-        if not role.active:
+        if not role.active and not (include_reporter and role.id == "reporter"):
             continue
         value = {
             "display_information": {"name": "Quant " + role.name, "description": role.mission[:140]},
@@ -24,6 +24,9 @@ def manifests(company, base_url, output, transport="socket"):
                          "interactivity": {"is_enabled": False}, "org_deploy_enabled": False,
                          "socket_mode_enabled": transport == "socket", "token_rotation_enabled": False},
         }
+        if role.id == "reporter":
+            value["display_information"]["name"] = "Reporter"
+            value["features"]["bot_user"]["display_name"] = "reporter"
         if transport == "http":
             value["settings"]["event_subscriptions"]["request_url"] = base_url.rstrip("/") + "/slack/events/" + role.id
         (output / f"{role.id}.json").write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
@@ -63,6 +66,9 @@ def main():
     sub.add_parser("worker")
     sub.add_parser("dispatch")
     sub.add_parser("slack-socket")
+    news = sub.add_parser("news")
+    news.add_argument("action", choices=["status", "collect", "review", "probe"])
+    news.add_argument("--output", type=Path)
     sub.add_parser("demo")
     maintenance = sub.add_parser("maintenance")
     maintenance.add_argument("--config", type=Path, required=True)
@@ -82,6 +88,7 @@ def main():
     slack.add_argument("--transport", choices=["socket", "http"], default="socket")
     slack.add_argument("--base-url")
     slack.add_argument("--output", type=Path, default=Path(".local/slack-manifests"))
+    slack.add_argument("--include-reporter", action="store_true")
     args = parser.parse_args()
     settings = Settings()
     if args.command == "migrate":
@@ -101,7 +108,17 @@ def main():
     elif args.command == "slack-manifests":
         if args.transport == "http" and not (args.base_url or "").startswith("https://"):
             parser.error("Slack public callback URL must use HTTPS")
-        manifests(Company(settings), args.base_url, args.output, args.transport)
+        manifests(Company(settings), args.base_url, args.output, args.transport, args.include_reporter)
+    elif args.command == "news":
+        from .news.commands import command
+
+        result = asyncio.run(command(settings, args.action))
+        rendered = json.dumps(result, default=str, ensure_ascii=False, indent=2) + "\n"
+        if args.output:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(rendered)
+        else:
+            print(rendered)
     elif args.command == "slack-socket":
         from .socket_mode import socket_main
 

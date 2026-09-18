@@ -1,0 +1,171 @@
+[
+  {
+    "id": "fed-press",
+    "publisher": "Federal Reserve",
+    "origin_group": "federal-reserve",
+    "kind": "official",
+    "feed_url": "https://www.federalreserve.gov/feeds/press_all.xml",
+    "article_hosts": [
+      "www.federalreserve.gov"
+    ],
+    "enabled": true,
+    "use_for_summary": true,
+    "usage_note": "연준이 제공하는 공개 발표 피드. 자체 정책·통계 발표의 사실 확인과 링크에 사용하며 제3자의 주장을 독립 확인으로 취급하지 않는다.",
+    "poll_seconds": 600
+  },
+  {
+    "id": "ecb-press",
+    "publisher": "European Central Bank",
+    "origin_group": "ecb",
+    "kind": "official",
+    "feed_url": "https://www.ecb.europa.eu/rss/press.html",
+    "article_hosts": [
+      "www.ecb.europa.eu"
+    ],
+    "enabled": true,
+    "use_for_summary": true,
+    "usage_note": "ECB 자체 발표만 수집. 저자 명시 연구물·인터뷰·연설은 제외. 출처를 표시한 비공식 AI 한국어 요약. https://www.ecb.europa.eu/services/using-our-site/disclaimer/html/index.en.html",
+    "poll_seconds": 600,
+    "article_path_prefixes": [
+      "/press/pr/",
+      "/press/govcdec/"
+    ]
+  },
+  {
+    "id": "bbc-world",
+    "publisher": "BBC News",
+    "origin_group": "bbc",
+    "kind": "media",
+    "feed_url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+    "article_hosts": [
+      "www.bbc.com",
+      "www.bbc.co.uk"
+    ],
+    "enabled": false,
+    "use_for_summary": false,
+    "usage_note": "운영 수집·본문 요약 비활성. 이용 조건과 자동 처리 범위를 확인한 뒤 재검토한다.",
+    "poll_seconds": 600
+  },
+  {
+    "id": "newsis-world",
+    "publisher": "뉴시스",
+    "origin_group": "newsis",
+    "kind": "media",
+    "feed_url": "https://www.newsis.com/RSS/international.xml",
+    "article_hosts": [
+      "www.newsis.com"
+    ],
+    "enabled": false,
+    "use_for_summary": false,
+    "usage_note": "자동 수집·추출 제한이 확인되어 RSS를 포함해 수집 비활성. 별도 허락 없는 운영 수집에 사용하지 않는다. https://mobile.newsis.com/policy/",
+    "poll_seconds": 600
+  },
+  {
+    "id": "newsis-economy",
+    "publisher": "뉴시스",
+    "origin_group": "newsis",
+    "kind": "media",
+    "feed_url": "https://www.newsis.com/RSS/economy.xml",
+    "article_hosts": [
+      "www.newsis.com"
+    ],
+    "enabled": false,
+    "use_for_summary": false,
+    "usage_note": "자동 수집·추출 제한이 확인되어 RSS를 포함해 수집 비활성. 별도 허락 없는 운영 수집에 사용하지 않는다. https://mobile.newsis.com/policy/",
+    "poll_seconds": 600
+  },
+  {
+    "id": "kbs-world",
+    "publisher": "KBS World",
+    "origin_group": "kbs",
+    "kind": "media",
+    "feed_url": "https://world.kbs.co.kr/rss/rss_news.htm?lang=e",
+    "article_hosts": [
+      "world.kbs.co.kr"
+    ],
+    "enabled": false,
+    "use_for_summary": false,
+    "usage_note": "운영 수집·본문 요약 비활성. 이용 조건과 자동 처리 범위를 확인한 뒤 재검토한다.",
+    "poll_seconds": 600
+  },
+  {
+    "id": "bea-releases",
+    "publisher": "U.S. Bureau of Economic Analysis",
+    "origin_group": "bea",
+    "kind": "official",
+    "feed_url": "https://apps.bea.gov/rss/rss.xml",
+    "article_hosts": [
+      "www.bea.gov"
+    ],
+    "article_path_prefixes": [
+      "/news/"
+    ],
+    "enabled": true,
+    "use_for_summary": true,
+    "usage_note": "BEA의 자체 경제통계 발표·정부 작성 텍스트를 사실 확인과 링크에 사용. 외부 저작물과 그림은 제외. https://www.bea.gov/about/policies-and-information",
+    "poll_seconds": 600
+  },
+  {
+    "id": "govuk-fcdo",
+    "publisher": "UK Foreign, Commonwealth & Development Office",
+    "origin_group": "uk-government",
+    "kind": "official",
+    "feed_url": "https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=foreign-commonwealth-development-office&order=updated-newest",
+    "article_hosts": [
+      "www.gov.uk"
+    ],
+    "article_path_prefixes": [
+      "/government/news/",
+      "/government/speeches/"
+    ],
+    "undated_publication": "page_metadata",
+    "enabled": true,
+    "use_for_summary": true,
+    "license_url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+    "license_name": "Contains public sector information licensed under the Open Government Licence v3.0",
+    "usage_note": "GOV.UK OGL v3.0 자체 발표 텍스트. Atom 수정 시각은 발행 시각으로 쓰지 않고 원문 first-published-at을 확인한다. 제3자 저작물·사진 제외. https://www.gov.uk/help/reuse-govuk-content",
+    "poll_seconds": 600
+  },
+  {
+    "id": "govuk-treasury",
+    "publisher": "HM Treasury",
+    "origin_group": "uk-government",
+    "kind": "official",
+    "feed_url": "https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=hm-treasury&order=updated-newest",
+    "article_hosts": [
+      "www.gov.uk"
+    ],
+    "article_path_prefixes": [
+      "/government/news/",
+      "/government/speeches/"
+    ],
+    "undated_publication": "page_metadata",
+    "enabled": true,
+    "use_for_summary": true,
+    "license_url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+    "license_name": "Contains public sector information licensed under the Open Government Licence v3.0",
+    "usage_note": "GOV.UK OGL v3.0 자체 발표 텍스트. Atom 수정 시각은 발행 시각으로 쓰지 않고 원문 first-published-at을 확인한다. 제3자 저작물·사진 제외. https://www.gov.uk/help/reuse-govuk-content",
+    "poll_seconds": 600
+  },
+  {
+    "id": "govuk-trade",
+    "publisher": "UK Department for Business and Trade",
+    "origin_group": "uk-government",
+    "kind": "official",
+    "feed_url": "https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=department-for-business-and-trade&order=updated-newest",
+    "article_hosts": [
+      "www.gov.uk"
+    ],
+    "article_path_prefixes": [
+      "/government/news/",
+      "/government/speeches/"
+    ],
+    "undated_publication": "page_metadata",
+    "enabled": true,
+    "use_for_summary": true,
+    "license_url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+    "license_name": "Contains public sector information licensed under the Open Government Licence v3.0",
+    "usage_note": "GOV.UK OGL v3.0 자체 발표 텍스트. Atom 수정 시각은 발행 시각으로 쓰지 않고 원문 first-published-at을 확인한다. 제3자 저작물·사진 제외. https://www.gov.uk/help/reuse-govuk-content",
+    "poll_seconds": 600
+  }
+]

@@ -27,6 +27,13 @@ class Settings(BaseSettings):
     company_max_daily_turns: int = Field(default=0, ge=0, le=10000)
     company_code_commit: str = "unknown"
     company_web_enabled: bool = True
+    company_news_enabled: bool = False
+    news_publish_enabled: bool = False
+    news_channel_id: str = ""
+    news_owner_user: str = ""
+    news_sources_file: Path | None = None
+    news_max_age_hours: int = Field(default=24, ge=1, le=72)
+    news_initial_lookback_minutes: int = Field(default=120, ge=0, le=1440)
     company_staff_development_enabled: bool = False
     staff_daily_exercises: int = Field(default=2, ge=1, le=6)
     staff_max_calls_per_exercise: int = Field(default=3, ge=1, le=4)

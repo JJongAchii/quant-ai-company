@@ -1,0 +1,90 @@
+{
+  "checked_at": "2026-09-18T15:03:12.433046+00:00",
+  "base_commit": "b3a5a8d967387dbfb4809adde32f1f1d9fe87b52",
+  "uncommitted_code": true,
+  "scope": "Local implementation qualification; not deployed",
+  "command": "uv run --frozen pytest -q tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py --junitxml=.local/hot-news-final-suite.xml",
+  "tests": {
+    "passed": 446,
+    "skipped": [
+      {
+        "test": "tests.test_codex_config_probe::test_real_cli_accepts_required_configuration_without_inference",
+        "reason": "Set CODEX_CONFIG_PROBE=1 for the local CLI probe"
+      },
+      {
+        "test": "tests.test_temporal::test_live_codex_company_producer_consumer",
+        "reason": "Opt-in real Codex subscription test"
+      }
+    ],
+    "failures": 0,
+    "errors": 0,
+    "seconds": 81.537,
+    "junit_sha256": "b30b310488a253756af4ca01d0e3a5bc5a8f2a0b6d06d3fbc6314431e9c5e129",
+    "warnings": [
+      "Existing Starlette httpx deprecation",
+      "Existing anyio BlockingPortal alias deprecation"
+    ]
+  },
+  "database": "Real local PostgreSQL 14, disposable databases",
+  "temporal": "Real local Temporal dev server, history replay, worker restart and separate collector queue",
+  "model_in_pytest": "Fixture; real Codex calls are separately recorded in hot-news-live-codex*.json",
+  "slack": "httpx.MockTransport only; no real messages",
+  "deployment": "Not performed",
+  "lint": {
+    "command": "uv run --frozen ruff check .",
+    "exit_code": 0
+  },
+  "whitespace_check": {
+    "command": "git diff --check",
+    "exit_code": 0
+  },
+  "wheel": {
+    "command": "uv build --wheel --out-dir .local/news-wheel",
+    "sha256": "b6ee953d471d5c53df17ae6fa27f953cb5b9fb25fb14b829a2ec1f245c0033a1",
+    "news_members": [
+      "quant_company/news/__init__.py",
+      "quant_company/news/commands.py",
+      "quant_company/news/contracts.py",
+      "quant_company/news/editor.py",
+      "quant_company/news/feeds.py",
+      "quant_company/news/originals.py",
+      "quant_company/news/runner.py",
+      "quant_company/news/schema.sql",
+      "quant_company/news/sources.json",
+      "quant_company/news/store.py",
+      "quant_company/news/workflow.py"
+    ],
+    "reporter_playbook_present": true
+  },
+  "implementation_file_sha256": {
+    "deploy/.env.example": "ee88bcc484a79228c874fc64ffd073377e9dfdcf40e31c77681be81bf59641d1",
+    "deploy/compose.yaml": "4e98f61129d3bd1ddcbf855576f7554cc98636951224457522b589d80e22cf26",
+    "scripts/qualify_news.py": "18743aeb5dfc4d92e08f11785dbda80bf9e6252effce11fb8335a193305fec7f",
+    "slack-apps/reporter.json": "8c5b2c45d77db898828bc78af068919226cf445e19d7e42fdb3f1e7110a803c6",
+    "src/quant_company/cli.py": "4671d6892c270f9e8a8d1b585b57fc8867016d59937671797caea7bc93f03cc9",
+    "src/quant_company/company.py": "ca7aa2ce48afd68fa0f61474f0530507b778dfe9de41a6df603e88e454df3fa5",
+    "src/quant_company/config.py": "b30e06ff9156a59af4266ba088888da874a262000e5e00edebb6e4e812b6dd1b",
+    "src/quant_company/contracts.py": "3edb50cb5129bfc7338abfbdd0128b3e5aa69ea7cfdb44555640df8212693eff",
+    "src/quant_company/db.py": "064980c58907e2a7ddd12ddbc0adc8ab09c6fb092262b0053fb394cd0e67d614",
+    "src/quant_company/news/__init__.py": "64cfe5081277c5a0db7fa4ac640c9038e589464047cd70a9061e332f780af41a",
+    "src/quant_company/news/commands.py": "fba7a10021438b7ac9aa5d97a00b0a109c499327e8b55461c23da0cb2cd7e84e",
+    "src/quant_company/news/contracts.py": "d5e29359ea206c8ea4e2d921c1f27559046fc67da4cb2bcfe3a9478bdea0a30f",
+    "src/quant_company/news/editor.py": "04cf86aec59ddc4dab6ec48d20659bb00f2d4a2f4f114d28a6b1433420bee649",
+    "src/quant_company/news/feeds.py": "db0e4352c1d60cb37e0dc4808aec8b56b72fbdb3c88d12491ff639c40c993fe2",
+    "src/quant_company/news/originals.py": "9dccc184f0a9748d25f7ffa6c0a14963b5bdc18aa6d7cae744f18d370ac3ed7f",
+    "src/quant_company/news/runner.py": "03a7907e1b464fad041b417d6710d6cc8179819dbdcfd0ef1a8dc44b54fb297b",
+    "src/quant_company/news/schema.sql": "0a83017ae52cd4209e464704ef622dbfc1e73115f0c2efa6dd5dafaef51fedfa",
+    "src/quant_company/news/sources.json": "349072052895b1a6ff373b8ca464dacdd47a698df171e90ec1344ea040dc4973",
+    "src/quant_company/news/store.py": "81ceb4225dadda6c79d1cbccff56274b3c3acb6b42a6e1b45cfbfea2e642f004",
+    "src/quant_company/news/workflow.py": "4d81584a24a6ad0d5fca40f8f454c3a72bf0df1c79a5cbc1f46f5278e850ee1b",
+    "src/quant_company/roles.json": "7d67a912863b12900daaeb64f2660966b5439b794f4fb75be1c7bebcd744d08a",
+    "src/quant_company/runtime.py": "739ad5d89d98c795d755379f08c7af3ee00a5490ffa926aa3220579cd80c9e1b",
+    "src/quant_company/slack.py": "5d8c7d61d9bd42d35c57cc21172824cc3340fe4010fd9dcc081b13fbfb3d076a",
+    "src/quant_company/staff/packs.py": "7ff47a388b57422c598daa9c2badda7f3c33a52895d17ab898c5bb05e9db9047",
+    "src/quant_company/staff/playbooks/reporter.md": "1e61f9d1e3c1d07a133800a535a6c2a3b44fccceeef834f9550aad685762ea02",
+    "tests/test_news.py": "17ca4b7bd508af2548e2b0d5bd730906deac6ef3055cf254b69b37964ea5c75e",
+    "tests/test_news_temporal.py": "d9e39ef0a4addc873059fe277a5d090df446d55fc605fa4ec77d12bcd4f7673c",
+    "tests/test_roles.py": "2388c6f9e3043cd0b5c5e2e7d5d1fc3e0d9896b9e09ab805e26b6bf3085ff504"
+  },
+  "implementation_manifest_sha256": "d8e2a5443a87f19ab4239ae8c5120e1d3c5c7395b4b8cdee0e98f5fa2ec5aa19"
+}

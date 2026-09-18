@@ -44,10 +44,12 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     allowed_tools = {"calculate", "knowledge_search", "read_source", "company_history",
                      "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
                      "finance_search", "finance_read", "web_search", "web_read",
-                     "finance_compute", "data_quality", "staff_status"} | LAKE_TOOLS
+                     "finance_compute", "data_quality", "staff_status", "news_status"} | LAKE_TOOLS
     for role in roles:
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
+    if "reporter" in by_id and settings.company_news_enabled:
+        by_id["reporter"] = by_id["reporter"].model_copy(update={"active": True})
     return by_id
 
 
@@ -82,6 +84,15 @@ class Company:
             ],
             "capabilities": {
                 **TOOL_GUIDE,
+                "news_status": "Reporter only: {}. Reads source freshness/failures, frozen editorial reviews and "
+                               "actual delivery receipts for the configured news owner. Queued is not delivered. "
+                               "Does not change subscriptions, source permissions or publishing settings.",
+                "news_reporting": {
+                    "enabled": self.settings.company_news_enabled,
+                    "publish_enabled": self.settings.news_publish_enabled,
+                    "meaning": "Continuous collection and evidence-based editorial review for hot-news. "
+                               "Separate from a scheduled daily briefing. Source and Slack readiness require actual receipts.",
+                },
                 "staff_status": "Director only: {employee?: exact employee id or maintainer}. "
                                 "Reads actual training schedule, versioned synthetic assessments and their limits. "
                                 "No exam keys. A passed exercise is not broad expertise certification.",
@@ -536,6 +547,14 @@ class Company:
 
     def _tool(self, conn, project_id, request, *, task=None, turn_id=None):
         arguments = request.arguments
+        if request.name == "news_status":
+            from .news.store import NewsStore
+
+            project = self._project(conn, project_id, lock=False)
+            if (arguments or not task or task["agent"] != "reporter"
+                    or project["owner_user"] != self.settings.news_owner_user):
+                raise PolicyError("news_status requires reporter and the configured news owner")
+            return NewsStore(self).status()
         if request.name in {"finance_compute", "data_quality"}:
             from .staff.tools import run_tool
 
