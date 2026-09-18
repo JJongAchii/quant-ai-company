@@ -1,0 +1,91 @@
+{
+  "source_id": "operator:etf-terminal-verified-summary-20260918",
+  "observed_at": "2026-09-18T01:02:01.658055+00:00",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "verified_by": "operator: actual local receipt hashes plus database task/artifact/turn records; not independent performance audit",
+  "approval": "오키 진행해; frozen brief and 3070 scope unchanged",
+  "source_repair": {
+    "payment_notices": 8,
+    "NAV_rows_all_eight": 48,
+    "NAV_rows_five_with_rules": 39,
+    "fund_rules": 5,
+    "code_commit": "592db87b895a5e076d86ac7fcba4f332a3cd373c",
+    "receipt_commit": "0762a4f",
+    "P03_receipt_sha256": "dd284a2cd357a6907d4fb07e404a451b0564e5528bd65fadd3edd10abd10481a",
+    "pilot_tests_passed": 42,
+    "source_manifest_errors": 0,
+    "raw_files_hashed": 221,
+    "private_S3_backups_uploaded_and_readback_verified": true
+  },
+  "current_research_state": {
+    "status": "blocked/unmeasured",
+    "baseline_attempts_total": 1,
+    "baseline_restarts": 0,
+    "completed_performance_runs": 0,
+    "candidate_runs": 0,
+    "technical_failures": "3/6",
+    "no_performance_or_sealed_read": true
+  },
+  "actual_completed_staff_reviews": [
+    {
+      "id": "43da3918-3f0b-53cb-8ba5-c4741d6ac3c8",
+      "role": "researcher_kr",
+      "title": "국내상장 ETF 월간 연구 — 성과 재실행 전 최소 기술단계 독립 설계",
+      "source_ids": [
+        "operator:etf-terminal-partial-inputs-20260918"
+      ],
+      "digest": "a61c0dffedde965b3976c9522886e08e314d9f3dbc249e456135fea33ecd55fe"
+    },
+    {
+      "id": "7a846ef0-13e5-5329-9d43-626af31ccacb",
+      "role": "financial_strategist",
+      "title": "ETF 종료자료 P03 — 상환 기준가격과 개인 원천징수의 구분 검토",
+      "source_ids": [
+        "operator:etf-terminal-partial-inputs-20260918"
+      ],
+      "digest": "25535b79d8f2366568bb5d1890c39ab44ffcc1f28da0c3cd77f3f9443597ca4e"
+    },
+    {
+      "id": "b8be3db0-f940-5e19-aa21-97065dc7bb30",
+      "role": "data",
+      "title": "ETF P03 종목 대응 독립 검토 — 복합 식별자·미해결 항목",
+      "source_ids": [
+        "operator:etf-terminal-partial-inputs-20260918"
+      ],
+      "digest": "41567fc906c56bb3dbaae82a07fc12de626b9dc29991a43772650bb59e330c0f"
+    }
+  ],
+  "review_findings": {
+    "data": "All eight have composite candidate identity mappings; internal review remains. 161530 조선운/조선운송 is an explicitly inferred alias, not exact-name equality. 209 is potential-exposure coverage, not actual holdings or universal pre-execution gate.",
+    "financial_strategist": "166060 common reference price before personal withholding is supported as a derived interpretation of NAV plus withholding clauses; not explicitly asserted by the 2015 notice. Other seven require matching evidence. Exact individual tax rates/broker receipts are not a new discovery condition.",
+    "researcher_kr": "Source rules/units/availability and interpretation/identity must support actual held positions before accounting integration, guards/commit, new 3070 qualification and same baseline restart."
+  },
+  "remaining": {
+    "historical_rules_not_recovered": [
+      "091200",
+      "104580",
+      "105020"
+    ],
+    "internal_work": [
+      "disclosed payment-price basis interpretation",
+      "composite identity review"
+    ],
+    "implementation": "Source adapter exists; simulator terminal NAV/cash accounting integration and requalification are not performed."
+  },
+  "corrections_to_prior_drafts": [
+    "NAV48 rows cover all8, not only5; five-rule subset has39.",
+    "researcher_kr saw shared source responses; own read_source decision not recorded. Do not claim a personal tool execution.",
+    "All three child reviews really completed and left artifacts. Prior director final hit its eight-turn limit and could not consolidate them; this is a reporting limitation, not missing research artifacts."
+  ],
+  "runtime_failure": {
+    "root_task": "353ab806-3076-533b-a433-e68b321a11b9",
+    "director_turn_count": 8,
+    "final_failed_to_consolidate": true,
+    "service_code_changed": false
+  },
+  "links": {
+    "research_PR": "https://github.com/JJongAchii/quant-lab/pull/16",
+    "company_PR": "https://github.com/JJongAchii/quant-ai-company/pull/30"
+  },
+  "resume": "Recover supported historical rule/availability/unit evidence for three funds, finish documented interpretations, integrate supported terminal accounting, guard/commit/requalify on3070, then rerun same baseline. No new scope or identical approval request."
+}

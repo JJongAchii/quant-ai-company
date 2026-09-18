@@ -1,0 +1,130 @@
+{
+  "kind": "source-unit-review",
+  "recorded_at": "2026-09-18T00:48:52.195297+00:00",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "records": [
+    {
+      "ticker": "161520",
+      "source_url": "https://kind.krx.co.kr/external/2014/04/18/000302/20140418000817/%ED%95%9C%ED%99%94ARIRANG%EC%9E%90%EB%8F%99%EC%B0%A8%EC%A6%9D%EA%B6%8C%EC%83%81%EC%9E%A5%EC%A7%80%EC%88%98%ED%88%AC%EC%9E%90%EC%8B%A0%ED%83%81%28%EC%A3%BC%EC%8B%9D%29%28006274%29-20140417.pdf",
+      "raw_sha256": "82f7a0b123c6ff9c8da7b9c3651afd26559583ba01a6a3037f3e69d1755f9935",
+      "unit": "KRW_per_original_ETF_unit",
+      "nav_rule": {
+        "page_1_based": 17,
+        "article": "제30조",
+        "finding": "NAV is stated per one unit in won; calculated from previous-day net assets divided by previous-day units."
+      },
+      "beneficial_interest": {
+        "page_1_based": 4,
+        "article": "제9조",
+        "finding": "One-unit equal rights; principal repayment and profits allocated by unit holdings."
+      },
+      "termination_distribution": {
+        "page_1_based": 18,
+        "article": "제35조",
+        "finding": "Residual assets realized as cash and allocated in proportion to held units."
+      },
+      "payment_gross_net": "unknown",
+      "payment_limit": "The payment notice separately lists reference price, tax reference price, and taxable distribution. This review does not certify personal net cash or infer withholding."
+    },
+    {
+      "ticker": "161530",
+      "source_url": "https://kind.krx.co.kr/external/2014/04/18/000291/20140418000832/%ED%95%9C%ED%99%94ARIRANG%EC%A1%B0%EC%84%A0%EC%9A%B4%EC%86%A1%EC%A6%9D%EA%B6%8C%EC%83%81%EC%9E%A5%EC%A7%80%EC%88%98%ED%88%AC%EC%9E%90%EC%8B%A0%ED%83%81%28%EC%A3%BC%EC%8B%9D%29%28006275%29-20140417.pdf",
+      "raw_sha256": "dcbe2edcbdb37a0a5d31245b5ffc26e2c38ce6522edaa1183d4871cec11fca73",
+      "unit": "KRW_per_original_ETF_unit",
+      "nav_rule": {
+        "page_1_based": 17,
+        "article": "제30조",
+        "finding": "NAV is stated per one unit in won; calculated from previous-day net assets divided by previous-day units."
+      },
+      "beneficial_interest": {
+        "page_1_based": 4,
+        "article": "제9조",
+        "finding": "One-unit equal rights; principal repayment and profits allocated by unit holdings."
+      },
+      "termination_distribution": {
+        "page_1_based": 18,
+        "article": "제35조",
+        "finding": "Residual assets realized as cash and allocated in proportion to held units."
+      },
+      "payment_gross_net": "unknown",
+      "payment_limit": "The payment notice separately lists reference price, tax reference price, and taxable distribution. This review does not certify personal net cash or infer withholding."
+    },
+    {
+      "ticker": "161540",
+      "source_url": "https://kind.krx.co.kr/external/2014/04/18/000392/20140418001023/%ED%95%9C%ED%99%94ARIRANG%EC%B2%A0%EA%B0%95%EA%B8%88%EC%86%8D%EC%A6%9D%EA%B6%8C%EC%83%81%EC%9E%A5%EC%A7%80%EC%88%98%ED%88%AC%EC%9E%90%EC%8B%A0%ED%83%81%28%EC%A3%BC%EC%8B%9D%29%28006276%29-20140417.pdf",
+      "raw_sha256": "a965727e6ef839a7966c1074751fe38c1e457fac7d47765cff54aa82bc8eed86",
+      "unit": "KRW_per_original_ETF_unit",
+      "nav_rule": {
+        "page_1_based": 17,
+        "article": "제30조",
+        "finding": "NAV is stated per one unit in won; calculated from previous-day net assets divided by previous-day units."
+      },
+      "beneficial_interest": {
+        "page_1_based": 4,
+        "article": "제9조",
+        "finding": "One-unit equal rights; principal repayment and profits allocated by unit holdings."
+      },
+      "termination_distribution": {
+        "page_1_based": 18,
+        "article": "제35조",
+        "finding": "Residual assets realized as cash and allocated in proportion to held units."
+      },
+      "payment_gross_net": "unknown",
+      "payment_limit": "The payment notice separately lists reference price, tax reference price, and taxable distribution. This review does not certify personal net cash or infer withholding."
+    },
+    {
+      "ticker": "161550",
+      "source_url": "https://kind.krx.co.kr/external/2014/04/18/000410/20140418001037/%ED%95%9C%ED%99%94ARIRANG%ED%99%94%ED%95%99%EC%A6%9D%EA%B6%8C%EC%83%81%EC%9E%A5%EC%A7%80%EC%88%98%ED%88%AC%EC%9E%90%EC%8B%A0%ED%83%81%28%EC%A3%BC%EC%8B%9D%29%28006277%29-20140417.pdf",
+      "raw_sha256": "5e741c29d6edb4b0260fec75806a5b199a7418cd6019584c3722eb94d9d768df",
+      "unit": "KRW_per_original_ETF_unit",
+      "nav_rule": {
+        "page_1_based": 17,
+        "article": "제30조",
+        "finding": "NAV is stated per one unit in won; calculated from previous-day net assets divided by previous-day units."
+      },
+      "beneficial_interest": {
+        "page_1_based": 4,
+        "article": "제9조",
+        "finding": "One-unit equal rights; principal repayment and profits allocated by unit holdings."
+      },
+      "termination_distribution": {
+        "page_1_based": 18,
+        "article": "제35조",
+        "finding": "Residual assets realized as cash and allocated in proportion to held units."
+      },
+      "payment_gross_net": "unknown",
+      "payment_limit": "The payment notice separately lists reference price, tax reference price, and taxable distribution. This review does not certify personal net cash or infer withholding."
+    },
+    {
+      "ticker": "166060",
+      "source_url": "https://www.samsungfund.com/fund/download.do?fileSeq=24974&fileNo=1",
+      "raw_sha256": "1423efcfaa39154b903f7cd674d6b20f6cfc22587cb67e18b9081cffa91592a4",
+      "unit": "KRW_per_original_ETF_unit",
+      "nav_rule": {
+        "page_1_based": 7,
+        "article": "제20조",
+        "finding": "NAV is stated per one unit in won; calculated from previous-day net assets divided by previous-day units."
+      },
+      "beneficial_interest": {
+        "page_1_based": 5,
+        "article": "제14조",
+        "finding": "One-unit equal rights; principal repayment and profits allocated by unit holdings."
+      },
+      "termination_distribution": {
+        "page_1_based": 19,
+        "article": "제42조",
+        "finding": "Residual assets realized as cash and allocated in proportion to held units."
+      },
+      "payment_gross_net": "unknown",
+      "payment_limit": "The payment notice separately lists reference price, tax reference price, and taxable distribution. This review does not certify personal net cash or infer withholding."
+    }
+  ],
+  "units_not_yet_documented_for": [
+    "091200",
+    "104580",
+    "105020"
+  ],
+  "method": "Read downloaded issuer/KIND trust PDFs with pdftotext; main reviewed 166060/161520, research driver directly checked matching clauses for other Hanwha 3. This is source interpretation, not an independent performance audit.",
+  "performance_computed": false,
+  "source_originals_modified": false
+}

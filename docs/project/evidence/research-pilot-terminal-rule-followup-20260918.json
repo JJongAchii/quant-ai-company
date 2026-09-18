@@ -1,0 +1,37 @@
+{
+  "kind": "bounded-rule-followup",
+  "recorded_at": "2026-09-18T00:51:43.610375+00:00",
+  "gold_prospectus": {
+    "url": "https://www.samsungfund.com/fund/download.do?fileSeq=24975&fileNo=2",
+    "raw_path": "labs/company-kr-etf-pilot/data/terminal-rule-followup-20260918/166060-prospectus-20121004.pdf",
+    "sha256": "e2a7deb8b87018165e59efb620f2010c16bcb84a0ee0d85bb1181f6479ba5c5b",
+    "page_checks": {
+      "30": true,
+      "34": true,
+      "35": true,
+      "49": true
+    },
+    "interpretation": "Document separately describes common fund NAV and investor-level withholding at payment. No direct sentence asserting that a 2015 termination reference price is pre-withholding was found. No 2012 tax rate is applied to 2015 and no personal net credit is inferred."
+  },
+  "brazil_followup": {
+    "surveyor": "terminal_samsung",
+    "period": [
+      2008,
+      2011
+    ],
+    "listing_count": 40,
+    "target_documents_checked": 4,
+    "target_attachment_count": 0,
+    "acptnos": [
+      "20080724U00038",
+      "20090420004633",
+      "20090504000337",
+      "20100721000069"
+    ],
+    "remaining_unsearched": [
+      "direct DART/KOFIA original 2009 registration documents"
+    ],
+    "meaning": "Only inspected paths lacked a full original NAV rule; not a claim of absence across all sources."
+  },
+  "performance_computed": false
+}

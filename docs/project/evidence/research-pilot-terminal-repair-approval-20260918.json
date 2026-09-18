@@ -1,0 +1,26 @@
+{
+  "approval_id": "오키 진행해",
+  "approval_id_basis": "Exact user answer in the current conversation to the preceding proposed terminal-data repair; provider message UUID is not exposed. No synthetic approval identifier.",
+  "user_quote": "오키 진행해",
+  "preceding_proposal": "종료 ETF의 실제 환매금액·지급일과 정지기간 평가 근거를 보강한 뒤 같은 기준선을 재실행하는 것입니다.",
+  "recorded_at": "2026-09-18T00:12:56.706130+00:00",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "parent_approval": "제안한 명세로 실행",
+  "brief_commit": "8f2403986463714c1cf39ac748ce39d7b8395faa",
+  "brief_sha256": "0a4ce1555e4e040d5af6977ce72be2878594c39d160e453de20d5a4cd7911cf6",
+  "intent_digest": "a94e7a8e3977",
+  "authorized_action": "Read-only investigation of historical official terminal valuation/redemption evidence, versioned research supplemental inputs and code repair inside the approved brief, requalification and resumption of the same baseline when supported.",
+  "source_originals_read_only": true,
+  "execution_machine": "worker",
+  "worker5090_user_requested": false,
+  "strategy_envelope_changed": false,
+  "budget_carry_forward": {
+    "technical_failures": 3,
+    "maximum_technical_failures": 6,
+    "completed_scientific_executions": 0,
+    "baseline_command_attempts": 1,
+    "completed_candidate_executions": 0
+  },
+  "source_readiness_before_rerun": true,
+  "stop_condition": "Unsupported valuation, timing, identity, unit or cash-flow data remains an explicit blocker. No invented terminal payment, backward use of future disclosures, historical deletion or shortened research window."
+}

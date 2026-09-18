@@ -1,0 +1,25 @@
+{
+  "kind": "private-terminal-input-backup-readback",
+  "recorded_at": "2026-09-18T00:55:10.895867+00:00",
+  "uri": "s3://quant-company-061039802347-backups/company/research/company-kr-etf-pilot/terminal-inputs-20260918/01a4dd45d58725fc93bcbcba67262a1dd9abb80c36d6e7cceefe60d2e508ac1c.tar.gz",
+  "sha256": "01a4dd45d58725fc93bcbcba67262a1dd9abb80c36d6e7cceefe60d2e508ac1c",
+  "bytes": 3096263,
+  "readback_sha256": "01a4dd45d58725fc93bcbcba67262a1dd9abb80c36d6e7cceefe60d2e508ac1c",
+  "put_receipt": {
+    "Expiration": "expiry-date=\"Mon, 19 Oct 2026 00:00:00 GMT\", rule-id=\"CompanyBackupRetention\"",
+    "ETag": "\"7bbd4fd4bda7754218ae6dcba0d8b032\"",
+    "ChecksumSHA256": "AaTdRdWHJfyTvLy6ZyYqHdmruAw21ufM7v5g0uUIrBw=",
+    "ChecksumType": "FULL_OBJECT",
+    "ServerSideEncryption": "AES256",
+    "VersionId": "26xnZ3g334r3o7SfgkiqMom_IaNh9f7w"
+  },
+  "new_bucket_created": false,
+  "archive_includes_secrets": false,
+  "contents": [
+    "labs/company-kr-etf-pilot/output/terminal-partial-03",
+    "docs/research/company-kr-etf-pilot/P03-MANIFEST.json",
+    "labs/company-kr-etf-pilot/data/terminal-rule-followup-20260918"
+  ],
+  "P02_source_archive_evidence": "research-pilot-terminal-source-backup-20260918.json",
+  "performance_computed": false
+}

@@ -1,0 +1,5 @@
+{
+  "message_id": "0f3de02a-9503-5b09-b590-effdea1ea593",
+  "new_slack_ingress": false,
+  "text": "[운영자 검토 정정] researcher_kr 초안의 「NAV 48행은 이 5종목의 입력 후보」는 범위 오기입니다. 실제 48행은 전체8종목이고, 5규약 종목은39행(한화4×9 + Gold3), 나머지3은각3행입니다. 또한 현재 저장된 turns에서 researcher_kr 본인의 read_source 결정은 없고 financial_strategist가 offset0/12000/24000 읽기를 요청한 결과가 공유문맥에 제공되었습니다. 따라서 「본인이 직접 전체 원문을 read_source로 읽었다」고 단정하지 말고 「공유된 운영자 receipt를 검토했다」로 기록하세요. 총괄 최종artifact는 이 두 정정을 명시하여 기존초안의오기를대체하고, 제공된 자료검토와 직접수집/도구실행을 구분해주세요. 현재검토를새로운실행/재승인으로확장하지마세요."
+}
