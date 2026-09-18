@@ -103,15 +103,9 @@ class Company:
             },
             "capabilities": {
                 **TOOL_GUIDE,
-                "news_status": "Reporter only: {}. Reads source freshness/failures, frozen editorial reviews and "
-                               "actual delivery receipts for the configured news owner. Queued is not delivered. "
-                               "Does not change subscriptions, source permissions or publishing settings.",
-                "news_reporting": {
-                    "enabled": self.settings.company_news_enabled,
-                    "publish_enabled": self.settings.news_publish_enabled,
-                    "meaning": "Continuous collection and evidence-based editorial review for hot-news. "
-                               "Separate from a scheduled daily briefing. Source and Slack readiness require actual receipts.",
-                },
+                "news_status": "Reporter: {}. Read-only news receipts.",
+                "news_reporting": {"enabled": self.settings.company_news_enabled,
+                                   "publish_enabled": self.settings.news_publish_enabled},
                 "staff_status": "Director only: {employee?: exact employee id or maintainer}. "
                                 "Reads actual training schedule, versioned synthetic assessments and their limits. "
                                 "No exam keys. A passed exercise is not broad expertise certification.",
