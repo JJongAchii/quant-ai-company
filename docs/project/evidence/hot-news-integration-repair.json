@@ -1,0 +1,13 @@
+{
+  "recorded_at": "2026-09-18T16:27:55.480374+00:00",
+  "production_parent": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+  "merge": "exact deployed commit only; newer research branch work not integrated",
+  "failure_before_repair": {
+    "tests_failed": 12,
+    "tests_passed": 449,
+    "reason": "Added runtime facts increased recorded fixture requests to 25726/25729 bytes, above the unchanged 25000-byte replay sampling limit."
+  },
+  "repair": "Shorten news capability hints without raising replay input bounds or removing model effort settings.",
+  "targeted_result": "68 passed in 7.99s",
+  "reporter_request": "Model and configured reasoning effort are frozen in the request and reused on recovery."
+}

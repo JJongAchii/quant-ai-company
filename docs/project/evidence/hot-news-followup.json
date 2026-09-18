@@ -1,0 +1,68 @@
+{
+  "checked_at": "2026-09-18T16:38:48.000211+00:00",
+  "project": {
+    "id": "f759d9fa-3fc5-5b60-9ad3-f408c029dc1e",
+    "owner_user": "U0C250E23NW",
+    "thread_ts": "1789749361.591839",
+    "channel": "C0C2J1SSX09"
+  },
+  "turns": [
+    {
+      "id": "7028f84a-f239-5155-953a-19f2938908d9",
+      "status": "completed",
+      "attempts": 1,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider": "codex",
+      "tools": [
+        {
+          "name": "read_source",
+          "arguments": {
+            "source_id": "news:8c22deb1-06e5-55ea-a84a-c9b26783f65a:1ce9119eeb1570c0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "03f8b1f6-ff95-5e5b-95fd-35353e192251",
+      "status": "completed",
+      "attempts": 1,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider": "codex",
+      "tools": []
+    }
+  ],
+  "inbound": [
+    {
+      "event_key": "slack:T0C1YRDRPNF:C0C2J1SSX09:1789749437.775979:reporter",
+      "created_at": "2026-09-18 16:37:18.133953+00:00"
+    }
+  ],
+  "tools": [
+    {
+      "message_id": "622e6787-c357-4455-8914-d8073c5e921e",
+      "request": {
+        "name": "read_source",
+        "arguments": {
+          "source_id": "news:8c22deb1-06e5-55ea-a84a-c9b26783f65a:1ce9119eeb1570c0"
+        }
+      },
+      "receipt_sha256": "76307c2ede40fb4ac3a71a92e9441e31faef4c38308bc59fca9c84000b302a0d",
+      "receipt_keys": [
+        "id",
+        "title",
+        "uri",
+        "content",
+        "total_characters",
+        "metadata",
+        "available_at",
+        "synthetic",
+        "offset",
+        "next_offset"
+      ],
+      "created_at": "2026-09-18 16:37:26.408730+00:00"
+    }
+  ],
+  "input_authorship": "Codex operator via actual authenticated Slack owner UI; not a human evaluation"
+}

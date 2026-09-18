@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-09-18T16:12:08.119013+00:00",
+  "during": "pre-cutover image build",
+  "minimum_free": "0 (100% filesystem use)",
+  "recovered_free": "12 GiB (80% filesystem use)",
+  "actions": [
+    "Removed only this task’s superseded baf2389 candidate image tags and aacb118 app image tag.",
+    "Pruned regenerable unused Docker build cache; kept production container images, state and credential directories."
+  ],
+  "production_cutover_at_event": false,
+  "new_capacity_purchased": false,
+  "postgres_and_services_rechecked": true
+}

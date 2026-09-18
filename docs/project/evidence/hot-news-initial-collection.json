@@ -1,0 +1,210 @@
+{
+  "checked_at": "2026-09-18T16:33:59.790065+00:00",
+  "commit": "7528d05d4f3d9dca655ced4622f9c367d0900a5c",
+  "mode": "operator-triggered initial collection using production collector, no editorial/model/publish calls",
+  "ticks": [
+    {
+      "state": "collected",
+      "added": 42,
+      "source": "bea-releases"
+    },
+    {
+      "state": "collected",
+      "added": 3,
+      "source": "ecb-press",
+      "article_fetched": true
+    },
+    {
+      "state": "collected",
+      "added": 20,
+      "source": "fed-press",
+      "article_fetched": true
+    },
+    {
+      "state": "collected",
+      "added": 20,
+      "source": "govuk-fcdo",
+      "article_fetched": true
+    },
+    {
+      "state": "collected",
+      "added": 18,
+      "source": "govuk-trade",
+      "article_fetched": true
+    },
+    {
+      "state": "collected",
+      "added": 17,
+      "source": "govuk-treasury",
+      "article_fetched": true
+    },
+    {
+      "state": "idle",
+      "article_fetched": true
+    },
+    {
+      "state": "idle",
+      "article_fetched": true
+    },
+    {
+      "state": "idle"
+    }
+  ],
+  "status": {
+    "enabled": true,
+    "publish_enabled": false,
+    "channel": "C0C2J1SSX09",
+    "sources": [
+      {
+        "id": "bbc-world",
+        "enabled": false,
+        "last_success": null,
+        "last_attempt": null,
+        "failures": 0,
+        "error": null,
+        "receipt": null
+      },
+      {
+        "id": "bea-releases",
+        "enabled": true,
+        "last_success": "2026-09-18 16:33:54.457808+00:00",
+        "last_attempt": "2026-09-18 16:33:53.180709+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "\"76c81ff39f3bdd1:0\"",
+          "bytes": 88601,
+          "sha256": "446cb4078349673864407af824f8a6f54c1ec9fc54d10d076451ae5c179915f7",
+          "skipped": 6,
+          "modified": "Thu, 03 Sep 2026 12:30:05 GMT",
+          "latest_publication": "2026-09-03 12:30:00+00:00"
+        }
+      },
+      {
+        "id": "ecb-press",
+        "enabled": true,
+        "last_success": "2026-09-18 16:33:55.175632+00:00",
+        "last_attempt": "2026-09-18 16:33:54.648607+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "\"myra-e83eae22\"",
+          "bytes": 5673,
+          "sha256": "979c5611f0a043bb0e21f613b20f667ae2ac2d6938e301724efe89be17f44df0",
+          "skipped": 12,
+          "modified": "",
+          "latest_publication": "2026-09-18 08:00:00+00:00"
+        }
+      },
+      {
+        "id": "fed-press",
+        "enabled": true,
+        "last_success": "2026-09-18 16:33:56.084222+00:00",
+        "last_attempt": "2026-09-18 16:33:55.956712+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "W/\"2a27c06a7e47dd1:0\"",
+          "bytes": 14853,
+          "sha256": "bdb248554aec56ffd75e93baae7b8096ffa7abe199cc8a5d7a2f4bb773541ad5",
+          "skipped": 0,
+          "modified": "Fri, 18 Sep 2026 15:00:17 GMT",
+          "latest_publication": "2026-09-18 15:00:00+00:00"
+        }
+      },
+      {
+        "id": "govuk-fcdo",
+        "enabled": true,
+        "last_success": "2026-09-18 16:33:56.694255+00:00",
+        "last_attempt": "2026-09-18 16:33:56.589486+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "W/\"371be9f444463dd2cb75472f8f8c738d\"",
+          "bytes": 14521,
+          "sha256": "371be9f444463dd2cb75472f8f8c738d8f2f893c46f261e207097daf72a18ad1",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": null
+        }
+      },
+      {
+        "id": "govuk-trade",
+        "enabled": true,
+        "last_success": "2026-09-18 16:33:57.241064+00:00",
+        "last_attempt": "2026-09-18 16:33:57.159387+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "W/\"187e9c6a770b50124f2a0fcb275d35c0\"",
+          "bytes": 12319,
+          "sha256": "187e9c6a770b50124f2a0fcb275d35c0a09c999fae3b09774bc4809e9282406f",
+          "skipped": 2,
+          "modified": "",
+          "latest_publication": null
+        }
+      },
+      {
+        "id": "govuk-treasury",
+        "enabled": true,
+        "last_success": "2026-09-18 16:33:57.501515+00:00",
+        "last_attempt": "2026-09-18 16:33:57.430964+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "W/\"048726165fa465d788134b72754fa34f\"",
+          "bytes": 12064,
+          "sha256": "048726165fa465d788134b72754fa34fcb84e97421667a205692778da1a3ba3f",
+          "skipped": 3,
+          "modified": "",
+          "latest_publication": null
+        }
+      },
+      {
+        "id": "kbs-world",
+        "enabled": false,
+        "last_success": null,
+        "last_attempt": null,
+        "failures": 0,
+        "error": null,
+        "receipt": null
+      },
+      {
+        "id": "newsis-economy",
+        "enabled": false,
+        "last_success": null,
+        "last_attempt": null,
+        "failures": 0,
+        "error": null,
+        "receipt": null
+      },
+      {
+        "id": "newsis-world",
+        "enabled": false,
+        "last_success": null,
+        "last_attempt": null,
+        "failures": 0,
+        "error": null,
+        "receipt": null
+      }
+    ],
+    "articles": [
+      {
+        "state": "historical_or_undated",
+        "count": 113
+      },
+      {
+        "state": "ready",
+        "count": 7
+      }
+    ],
+    "deliveries": [],
+    "reviews": []
+  }
+}

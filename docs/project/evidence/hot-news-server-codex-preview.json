@@ -1,0 +1,92 @@
+{
+  "checked_at": "2026-09-18T16:34:29.502559+00:00",
+  "commit": "7528d05d4f3d9dca655ced4622f9c367d0900a5c",
+  "database": "disposable real PostgreSQL database on existing server",
+  "runtime": "real isolated Codex subscription runtime",
+  "mode": "preview",
+  "source": "ecb-press",
+  "input": {
+    "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html",
+    "title": "ECB Consumer Expectations Survey results – August 2026",
+    "published_at": "2026-09-18 08:00:00+00:00",
+    "updated_at": null,
+    "digest": "935ad5635283b5d05ab02aae2d68e44c7e8ed857c25104eb441575d6bfa8a448"
+  },
+  "original": {
+    "ok": true,
+    "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html",
+    "requested_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html",
+    "redirects": [],
+    "title": "ECB Consumer Expectations Survey results – August 2026",
+    "publisher_host": "www.ecb.europa.eu",
+    "retrieved_at": "2026-09-18T16:33:54.333335+00:00",
+    "published_at": "2026-09-18",
+    "publication_time_basis": "page_metadata",
+    "last_modified": null,
+    "content_type": "text/html; charset=utf-8",
+    "original_sha256": "2acca826f4bc33cac062f8aa2014c85c2d0aaaa700ffbedbce82731f2a9d5ca4",
+    "original_bytes": 109102,
+    "content_truncated": false,
+    "article_extraction": "main",
+    "article_chars": 5693,
+    "excerpt_truncated": false
+  },
+  "result": {
+    "state": "completed",
+    "items": [
+      {
+        "state": "previewed",
+        "headline": "ECB 8월 조사: 소비자 기대인플레이션 전 기간 상승…1년 후 3.0%",
+        "reason": "ECB가 직접 발표한 소비자 기대조사 통계로, 단기·중장기 기대인플레이션의 동반 상승은 유로지역 통화정책 분석에 중요한 변화다. 제공된 본문에서 수치와 조사 범위를 확인했다."
+      }
+    ]
+  },
+  "reviews": [
+    {
+      "id": "news-5bebc551-3159-4cac-9a2f-3350b3169090",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "previewed",
+          "reason": "ECB가 직접 발표한 소비자 기대조사 통계로, 단기·중장기 기대인플레이션의 동반 상승은 유로지역 통화정책 분석에 중요한 변화다. 제공된 본문에서 수치와 조사 범위를 확인했다.",
+          "headline": "ECB 8월 조사: 소비자 기대인플레이션 전 기간 상승…1년 후 3.0%"
+        }
+      ],
+      "response": {
+        "usage": {
+          "input_tokens": 10603,
+          "output_tokens": 955,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 120
+        },
+        "decision": {
+          "say": "ECB의 8월 소비자 기대인플레이션 상승을 주요 거시경제 뉴스로 선정했습니다.",
+          "tools": [],
+          "status": "complete",
+          "memories": [],
+          "messages": [],
+          "artifacts": [
+            {
+              "title": "뉴스 검토 결과",
+              "content": "{\"items\":[{\"disposition\":\"publish\",\"article_ids\":[\"1ce9119eeb1570c01a5bb1443d568775c787b0d02b8ef9bc5f8045bcc5b65e61\"],\"reason\":\"ECB가 직접 발표한 소비자 기대조사 통계로, 단기·중장기 기대인플레이션의 동반 상승은 유로지역 통화정책 분석에 중요한 변화다. 제공된 본문에서 수치와 조사 범위를 확인했다.\",\"event_id\":null,\"category\":\"거시경제\",\"priority\":\"major\",\"headline\":\"ECB 8월 조사: 소비자 기대인플레이션 전 기간 상승…1년 후 3.0%\",\"facts\":\"ECB가 2026년 9월 18일 발표한 8월 소비자 기대조사에서 기대인플레이션 중앙값은 1년 후 3.0%로 7월 2.9%보다 상승했다. 3년 후는 2.7%에서 2.9%, 5년 후는 2.4%에서 2.5%로 높아졌다. 이 조사는 유로지역 11개국 성인 약 1만9천 명을 대상으로 하는 월간 온라인 조사다. 수치는 소비자의 물가 전망이며 실제 물가상승률이나 ECB의 전망을 뜻하지 않는다.\",\"significance\":\"단기뿐 아니라 중장기 물가 기대도 함께 높아졌다. 이런 상승이 지속된다면 ECB가 물가 안정의 지속성을 평가할 때 고려할 요인이 될 수 있다. 이번 조사만으로 향후 금리 결정을 단정할 수는 없다.\",\"change\":\"신규 8월 조사 결과다. 7월 대비 기대인플레이션 중앙값이 1년 후 0.1%포인트, 3년 후 0.2%포인트, 5년 후 0.1%포인트 상승했다.\",\"evidence\":[{\"article_id\":\"1ce9119eeb1570c01a5bb1443d568775c787b0d02b8ef9bc5f8045bcc5b65e61\",\"quote\":\"Median expectations for inflation over the next 12 months increased to 3.0% from 2.9% in July, while median expectations for inflation three years ahead increased to 2.9% from 2.7% in July and median expectations for inflation five years ahead increased to 2.5% from 2.4% in July.\"},{\"article_id\":\"1ce9119eeb1570c01a5bb1443d568775c787b0d02b8ef9bc5f8045bcc5b65e61\",\"quote\":\"The CES is a monthly online survey of, currently, around 19,000 adult consumers (i.e. aged 18 or over) from 11 euro area countries: Belgium, Germany, Ireland, Greece, Spain, France, Italy, the Netherlands, Austria, Portugal and Finland.\"}],\"verification\":\"official_action\",\"independent_origins\":[]}]}",
+              "source_ids": []
+            }
+          ],
+          "follow_up": null,
+          "delegations": []
+        },
+        "provider": "codex",
+        "thread_id": "01a0b55e-1601-78c3-b886-3624bf9548dc",
+        "request_id": "news-5bebc551-3159-4cac-9a2f-3350b3169090",
+        "web_searches": []
+      }
+    }
+  ],
+  "outbox_count": 0,
+  "freshness_window_hours": 24,
+  "initial_lookback_minutes": 1440,
+  "slack": "not-called",
+  "database_name": "reporter_acceptance_c1d8ac83b17d",
+  "disposable_database_removed_after_receipt": true
+}

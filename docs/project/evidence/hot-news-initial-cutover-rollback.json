@@ -1,0 +1,47 @@
+{
+  "recorded_at": "2026-09-18T16:19:42.859998+00:00",
+  "commit": "0c11a197910a718a9af4fbb617cb8f50d85e7333",
+  "ci": {
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35367480342",
+    "conclusion": "success",
+    "exact_merged_commit": true,
+    "tests": {
+      "passed": 454,
+      "skipped": 1,
+      "deselected_live": 1,
+      "duration_seconds": 129.0,
+      "model_and_slack": "fixtures; separately qualified live below"
+    }
+  },
+  "archive_sha256": "3674d82fcd2dd5a4b6fbaefc6d37efe635f37c92e4e1e6a78266e9ab06f161da",
+  "operator_script_sha256": "ea1af73b8bc54877a49d492b9fafd4901719b89a6ee40571347b9e287cacc963",
+  "phase": "rolled_back_before_migration",
+  "production_changed": false,
+  "error": "Existing deployed roles include reasoning_effort; candidate from main lacked the typed field.",
+  "old_service_health": {
+    "healthy_services": 8,
+    "postgres_recreated": false
+  },
+  "news_posts": 0,
+  "repair": "Merge exact deployed e869eb5 lineage; preserve configured effort and model receipt compatibility.",
+  "operator_journal": {
+    "commit": "0c11a197910a718a9af4fbb617cb8f50d85e7333",
+    "previous": "/opt/quant-company/releases/e869eb5f608254d42da6159ff2932c1af8c2f451",
+    "phase": "rolled_back",
+    "checked_at": 1789748221.2633235,
+    "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "postgres_id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+    "backup": {
+      "backup": "/var/lib/quant-company/backups/company-20260918T162116Z-ad7219c3.tar.gz",
+      "sha256": "a16472a5ffd2f753832dc431ab071a8ab718231ed7c2c64a0d6bc6a54f3300b3",
+      "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260918T162116Z-ad7219c3.tar.gz",
+      "release_commit": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+      "secrets_included": false
+    },
+    "error": "CalledProcessError",
+    "health": {
+      "healthy_services": 8,
+      "postgres_recreated": false
+    }
+  }
+}

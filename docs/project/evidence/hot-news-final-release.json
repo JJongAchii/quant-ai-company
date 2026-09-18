@@ -1,0 +1,54 @@
+{
+  "recorded_at": "2026-09-18T16:32:35.268038+00:00",
+  "commit": "7528d05d4f3d9dca655ced4622f9c367d0900a5c",
+  "merged_main_commit": "ac3bcaf3d3f0e223264e77fcae421ccd86c8e50c",
+  "merged_tree_identical": true,
+  "ci": {
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35368634252",
+    "conclusion": "success",
+    "exact_release_head": true,
+    "tests": {
+      "passed": 461,
+      "skipped": 2,
+      "live_deselected": 1,
+      "duration_seconds": 124.77,
+      "model_and_slack": "fixtures; actual checks recorded separately"
+    }
+  },
+  "archive_sha256": "7664c2d1d2b1a6bc70a38330cb02f12cd2ee6860bfab7c292741299fbea59245",
+  "operator_script_sha256": "407337d0110bdf2cab52e3cd944909ed42f51aa7f44589ae550f37406240b272",
+  "phase": "news_enabled",
+  "preserved_deployed_parent": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+  "configured_preflight": {
+    "database_healthy": true,
+    "roles_loaded": 10,
+    "director_effort": "max"
+  },
+  "operator_journal": {
+    "commit": "7528d05d4f3d9dca655ced4622f9c367d0900a5c",
+    "previous": "/opt/quant-company/releases/e869eb5f608254d42da6159ff2932c1af8c2f451",
+    "phase": "news_enabled",
+    "checked_at": 1789748894.3758593,
+    "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "configured_preflight": {
+      "database_healthy": true,
+      "roles_loaded": 10,
+      "director_effort": "max"
+    },
+    "postgres_id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+    "backup": {
+      "backup": "/var/lib/quant-company/backups/company-20260918T163218Z-dc51d1cb.tar.gz",
+      "sha256": "6086fd230d88ea04e69da1306b21dc5ca1fba83eb5ffc78636b8a129deba99fa",
+      "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260918T163218Z-dc51d1cb.tar.gz",
+      "release_commit": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+      "secrets_included": false
+    },
+    "health": {
+      "healthy_services": 8,
+      "postgres_recreated": false
+    },
+    "existing_roles_preserved": true,
+    "existing_credentials_preserved": true,
+    "enabled_at": 1789749329.8882208
+  }
+}
