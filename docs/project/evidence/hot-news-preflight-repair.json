@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-09-18T16:00:00.148819+00:00",
+  "staged_commit": "baf2389260738c0e4aec007a4ea33eaab20a0f02",
+  "phase": "pre-cutover",
+  "probe_returncode": 2,
+  "observed_error": "python: cannot open /app/entrypoint.py: Permission denied",
+  "cause": "Root operator umask 0077 survived archive extraction as file mode 0600. Docker COPY preserved that mode; container UID 10001 could not read the entrypoint.",
+  "live_service_changed": false,
+  "production_database_migrated": false,
+  "new_news_posted": false,
+  "repair": "Restore read/traverse modes on repository code during release extraction; keep journals, config backups and credential files private.",
+  "regression_before_fix": "test_release_archive_remains_readable_by_container_user_with_private_umask failed on mode 0600",
+  "verification": "Targeted host release and deployment tests plus Ruff; actual container startup must pass before cutover."
+}

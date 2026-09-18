@@ -1,6 +1,7 @@
 import importlib.util
 import io
 import json
+import os
 import tarfile
 from pathlib import Path
 from uuid import uuid4
@@ -21,6 +22,19 @@ def archive(files):
             info.size = len(data)
             bundle.addfile(info, io.BytesIO(data))
     return stream.getvalue()
+
+
+def test_release_archive_remains_readable_by_container_user_with_private_umask(tmp_path):
+    target = tmp_path/'release'
+    original_umask = os.umask(0o077)
+    try:
+        release.unpack(archive({'deploy/entrypoint.py': 'print("startup")', 'src/package/data.json': '{}'}), target)
+    finally:
+        os.umask(original_umask)
+    # Docker COPY keeps source modes; root-only files break the image's UID 10001 entrypoint.
+    assert (target/'deploy/entrypoint.py').stat().st_mode & 0o444 == 0o444
+    assert (target/'src/package/data.json').stat().st_mode & 0o444 == 0o444
+    assert all(path.stat().st_mode & 0o111 == 0o111 for path in [target, target/'deploy', target/'src', target/'src/package'])
 
 
 @pytest.mark.parametrize('path', ['../../outside', '/outside'])
