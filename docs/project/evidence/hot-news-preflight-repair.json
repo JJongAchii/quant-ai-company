@@ -10,5 +10,19 @@
   "new_news_posted": false,
   "repair": "Restore read/traverse modes on repository code during release extraction; keep journals, config backups and credential files private.",
   "regression_before_fix": "test_release_archive_remains_readable_by_container_user_with_private_umask failed on mode 0600",
-  "verification": "Targeted host release and deployment tests plus Ruff; actual container startup must pass before cutover."
+  "verification": "Targeted host release and deployment tests plus Ruff; actual container startup must pass before cutover.",
+  "targeted_verification": {
+    "command": "uv run --frozen pytest -q tests/test_maintenance_release_host.py deploy/test_deployment_contract.py",
+    "passed": 37,
+    "seconds": 2.6,
+    "ruff": "passed"
+  },
+  "fix_pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/34",
+  "fix_merged_commit": "aacb1184912b45ffb2135b299a86367faec2fee7",
+  "publication_attribution_regression": {
+    "observed": "Source license fields were in the model bundle but absent from committed publication rows, so the actual outbox text omitted the notice.",
+    "repair": "Carry current validated source license fields into publication rendering.",
+    "before": "New real-PostgreSQL outbox assertion failed.",
+    "after": "47 news tests and Ruff passed."
+  }
 }
