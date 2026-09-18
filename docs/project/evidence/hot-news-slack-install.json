@@ -1,0 +1,29 @@
+{
+  "app_id": "A0C2V1Q5CCE",
+  "team_id": "T0C1YRDRPNF",
+  "bot_user_id": "U0C2FLSUUMV",
+  "bot_id": "B0C2V3TJ230",
+  "scopes": [
+    "app_mentions:read",
+    "chat:write",
+    "im:write",
+    "channels:history",
+    "groups:history",
+    "im:history"
+  ],
+  "socket_scope": [
+    "connections:write"
+  ],
+  "channel_id": "C0C2J1SSX09",
+  "channel_name": "hot-news",
+  "membership_confirmed": true,
+  "checked_at": "2026-09-18T15:48:02.043510+00:00",
+  "methods": [
+    "Slack manifest creation and OAuth consent in authenticated workspace UI",
+    "Slack auth.test with dedicated bot token",
+    "Slack channel Agents and Apps membership UI",
+    "conversations.history success using dedicated Reporter bot"
+  ],
+  "credential_storage": "Private ignored local file mode 0600 and root-owned server staging file mode 0600 under secrets directory mode 0700",
+  "real_message_posted": false
+}

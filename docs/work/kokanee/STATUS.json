@@ -16,9 +16,15 @@
       "status": "pending"
     },
     "SLACK": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/hot-news-slack-install.json",
+          "sha256": "f0a90345c517"
+        }
+      ],
+      "note": "전용 앱·실제 hot-news 참여·auth.test/history 성공. 토큰은 비공개 운영 경로로 전달.",
+      "status": "verified",
+      "updatedAt": "2026-09-18T15:52:03.951537+00:00"
     },
     "SOURCES": {
       "evidence": [],
@@ -30,5 +36,5 @@
   "schemaVersion": 1,
   "slug": "kokanee",
   "state": "approved",
-  "updatedAt": "2026-09-18T15:19:55.326719+00:00"
+  "updatedAt": "2026-09-18T15:52:03.951537+00:00"
 }

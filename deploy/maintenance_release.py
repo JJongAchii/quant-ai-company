@@ -87,6 +87,13 @@ def unpack(data, target):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 with archive.extractfile(item) as source, path.open('xb') as output:
                     shutil.copyfileobj(source, output)
+                # Docker COPY preserves source modes. The root operator's private umask
+                # must not make repository code unreadable to the image's UID 10001.
+                path.chmod(0o755 if item.mode & 0o111 else 0o644)
+        target.chmod(0o755)
+        for path in target.rglob('*'):
+            if path.is_dir():
+                path.chmod(0o755)
 
 
 def validate_tree(previous, target):
