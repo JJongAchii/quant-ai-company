@@ -1,0 +1,122 @@
+{
+  "conclusion": "success",
+  "headSha": "7e1ab0db7d9d2cd88f18fd11251470fdd97d9c89",
+  "jobs": [
+    {
+      "completedAt": "2026-09-18T02:14:46Z",
+      "conclusion": "success",
+      "databaseId": 105455613421,
+      "name": "service",
+      "startedAt": "2026-09-18T02:12:34Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-09-18T02:12:37Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-09-18T02:12:35Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-18T02:12:53Z",
+          "conclusion": "success",
+          "name": "Initialize containers",
+          "number": 2,
+          "startedAt": "2026-09-18T02:12:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-18T02:12:56Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "number": 3,
+          "startedAt": "2026-09-18T02:12:53Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-18T02:12:57Z",
+          "conclusion": "success",
+          "name": "Run astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff",
+          "number": 4,
+          "startedAt": "2026-09-18T02:12:56Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-18T02:12:58Z",
+          "conclusion": "success",
+          "name": "Install core dependencies",
+          "number": 5,
+          "startedAt": "2026-09-18T02:12:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-18T02:12:59Z",
+          "conclusion": "success",
+          "name": "Lint",
+          "number": 6,
+          "startedAt": "2026-09-18T02:12:58Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-18T02:12:59Z",
+          "conclusion": "skipped",
+          "name": "Regression reproduces on base",
+          "number": 7,
+          "startedAt": "2026-09-18T02:12:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-18T02:14:42Z",
+          "conclusion": "success",
+          "name": "PostgreSQL, Temporal and service regression tests",
+          "number": 8,
+          "startedAt": "2026-09-18T02:12:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-18T02:14:42Z",
+          "conclusion": "success",
+          "name": "Post Run astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff",
+          "number": 14,
+          "startedAt": "2026-09-18T02:14:42Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-18T02:14:43Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "number": 15,
+          "startedAt": "2026-09-18T02:14:42Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-18T02:14:43Z",
+          "conclusion": "success",
+          "name": "Stop containers",
+          "number": 16,
+          "startedAt": "2026-09-18T02:14:43Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-18T02:14:43Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 17,
+          "startedAt": "2026-09-18T02:14:43Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35298392503/job/105455613421"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35298392503",
+  "summary": {
+    "passed": 403,
+    "skipped": 1,
+    "deselected_live": 1,
+    "scope": "service CI; model/CLI is fixture"
+  },
+  "merge_commit": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3"
+}

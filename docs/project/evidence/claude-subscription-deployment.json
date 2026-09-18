@@ -1,0 +1,98 @@
+{
+  "commit": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+  "archive_sha256": "573cba79cf277f6df12835b03a30e055a055835d8e18f388a1d641f5435f03b1",
+  "started_at": "2026-09-18T02:20:24.145016+00:00",
+  "previous_release": "/opt/quant-company/releases/9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6",
+  "owner_authorization": "Existing staff development request, Claude subscription and login completed",
+  "extra_usage_disabled_owner_quote": "꺼져 있음",
+  "active_work_before": {
+    "due_turns": 0,
+    "outbox": 0
+  },
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20260918T022028Z-4fe54668.tar.gz",
+    "sha256": "42dc8d86bf74ac6e5a9eef79721c4a09fdf87af12456b548b4016e71b2843cf4",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260918T022028Z-4fe54668.tar.gz",
+    "release_commit": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6",
+    "secrets_included": false
+  },
+  "containers": {
+    "postgres": {
+      "id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+      "revision": null,
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 268435456
+    },
+    "codex-runtime": {
+      "id": "aeccb94e4166d4fdd0d5164a5a252a25efb99e886ba47c784bb890b503289ed9",
+      "revision": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 536870912
+    },
+    "claude-runtime": {
+      "id": "4aad969921fef0bc5a389d1c01a7026484bd8160322f5a48952dba5ac1735c4c",
+      "revision": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 536870912
+    },
+    "api": {
+      "id": "b7302459209e3bbf233efc2264dc3d2e3e27834d40b2e7135698ccd1eda2e8d5",
+      "revision": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 134217728
+    },
+    "worker": {
+      "id": "1e301b9c02b49d7b83c81694cf23645e928c490d70ff30f87f707aca490ed771",
+      "revision": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 402653184
+    },
+    "dispatch": {
+      "id": "e2a5c385e7ef6eee9588e7cd09129f31119a022db7e1966b8c7fb6dba29cd071",
+      "revision": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 201326592
+    },
+    "slack-socket": {
+      "id": "6d403ffd4a05701b18fa2a95bc3fad26fe0ef75a2186abdf8aafcc7b3b3be6c0",
+      "revision": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 201326592
+    },
+    "maintenance": {
+      "id": "26f937cef7a0ce3f80ec9ad74e36f2e992bad41b8559711709a45e7d5fd30cf2",
+      "revision": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restarts": 0,
+      "memory_limit_bytes": 134217728
+    }
+  },
+  "state": "complete",
+  "postgres_recreated": false,
+  "roles_unchanged": true,
+  "completed_at": "2026-09-18T02:21:31.154253+00:00",
+  "review_daily_limit": 2
+}

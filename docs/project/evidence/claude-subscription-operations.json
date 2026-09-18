@@ -1,0 +1,55 @@
+{
+  "claude_memory_peak_bytes": 216694784,
+  "host_memory_available_bytes_at_observation": 931393536,
+  "services": {
+    "/quant-company-postgres-1": {
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0
+    },
+    "/quant-company-codex-runtime-1": {
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0
+    },
+    "/quant-company-claude-runtime-1": {
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0
+    },
+    "/quant-company-api-1": {
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0
+    },
+    "/quant-company-worker-1": {
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0
+    },
+    "/quant-company-dispatch-1": {
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0
+    },
+    "/quant-company-slack-socket-1": {
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0
+    },
+    "/quant-company-maintenance-1": {
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0
+    }
+  },
+  "rebuildable_old_images_removed": 31,
+  "volumes_or_backups_removed": false,
+  "recorded_at": "2026-09-18T02:25:02.019759+00:00",
+  "scope": "Two actual staff reviews, not a long-duration or maximum-concurrency load test",
+  "backup": {
+    "claude_receipt_files": 2,
+    "authentication_material_included": false,
+    "manifest_release": "9fe9786c46c16d7aed2cf0b5fc1bed08d7e3b3a6"
+  }
+}

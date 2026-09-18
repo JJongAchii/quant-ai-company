@@ -1,0 +1,12 @@
+{
+  "code_commit": "f49d7ea1f3c1cdc76107ee59496c171e21e9f0d3",
+  "cached_from_image_commit": "e2960e44ab294830ec21ec30220ef58953f76b89",
+  "same_results_after_container_recreation": true,
+  "receipt_bytes_unchanged": true,
+  "receipt_sha256": {
+    "review-sanity-e68f85220f16b5c3055e33de09d1d67f": "4e2ebca4086445181df8a274ba000345e95817aba948020343b550ae25bce66e",
+    "review-sanity-8009a1a12787791aafa5e71b9ebac0f2": "6d86ff1813def64fe40be6ac0499615a8ceed58c5903d96687efb10cd832ae4d"
+  },
+  "new_request_ids": 0,
+  "scope": "recovery of two completed arithmetic sanity reviews through the private HTTP runtime"
+}
