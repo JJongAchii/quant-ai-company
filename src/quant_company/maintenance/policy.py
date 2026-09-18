@@ -18,6 +18,7 @@ PROTECTED = {
     "maintenance/releases.py", "maintenance/schema.sql",
     "staff/cases.py", "staff/store.py", "staff/runner.py", "staff/workflow.py", "staff/schema.sql", "staff/packs.py",
     "staff/progress.py", "staff/comparisons.py", "maintenance/evaluation.py",
+    "staff/independent_review.py", "staff/review_contract.py",
 }
 SECRET = re.compile(
     r"(?:AKIA|ASIA)[A-Z0-9]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|"

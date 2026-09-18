@@ -47,6 +47,8 @@ x-db-env: &db-env
   STAFF_DAILY_EXERCISES: ${STAFF_DAILY_EXERCISES:-2}
   STAFF_MAX_CALLS_PER_EXERCISE: ${STAFF_MAX_CALLS_PER_EXERCISE:-3}
   STAFF_SCHEDULE_HOUR_KST: ${STAFF_SCHEDULE_HOUR_KST:-3}
+  COMPANY_STAFF_REVIEW_ENABLED: ${COMPANY_STAFF_REVIEW_ENABLED:-false}
+  STAFF_REVIEW_DAILY_LIMIT: ${STAFF_REVIEW_DAILY_LIMIT:-2}
   COMPANY_MAX_DAILY_TURNS: ${COMPANY_MAX_DAILY_TURNS:-0}
   COMPANY_MAX_TASK_TURNS: ${COMPANY_MAX_TASK_TURNS:-8}
   COMPANY_MAX_DEPTH: ${COMPANY_MAX_DEPTH:-3}
@@ -237,6 +239,39 @@ services:
     networks: [model, model_egress]
     mem_limit: ${CODEX_MEMORY_LIMIT:-1g}
     cpus: 1.0
+    stop_grace_period: 360s
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
+  claude-runtime:
+    <<: *runtime
+    profiles: [claude]
+    image: quant-company-claude:${RELEASE_COMMIT:-unqualified}
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      target: claude
+      additional_contexts:
+        qdata: ${QDATA_BUILD_CONTEXT:-../../quant-data}
+      args:
+        RELEASE_COMMIT: ${RELEASE_COMMIT:-unqualified}
+        QDATA_COMMIT: ${QDATA_COMMIT:-unqualified}
+    environment:
+      CLAUDE_CONFIG_DIR: /state/auth
+      CLAUDE_JOBS_DIR: /state/jobs
+      CLAUDE_USAGE_CREDITS_DISABLED_CONFIRMED: ${CLAUDE_USAGE_CREDITS_DISABLED_CONFIRMED:-false}
+      MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
+    secrets: [model_runtime_token]
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/claude/auth:/state/auth
+      - ${STATE_DIR:-/var/lib/quant-company}/claude/jobs:/state/jobs
+    networks: [model, model_egress]
+    mem_limit: ${CLAUDE_MEMORY_LIMIT:-512m}
+    cpus: 0.75
     stop_grace_period: 360s
     healthcheck:
       test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3)"]

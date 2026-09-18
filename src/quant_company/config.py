@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     staff_daily_exercises: int = Field(default=2, ge=1, le=6)
     staff_max_calls_per_exercise: int = Field(default=3, ge=1, le=4)
     staff_schedule_hour_kst: int = Field(default=3, ge=0, le=23)
+    company_staff_review_enabled: bool = False
+    staff_review_runtime_url: str = "http://claude-runtime:8080"
+    staff_review_daily_limit: int = Field(default=2, ge=1, le=12)
     company_max_task_turns: int = Field(default=8, ge=1, le=30)
     company_max_depth: int = Field(default=3, ge=0, le=5)
     company_max_project_tasks: int = Field(default=40, ge=1, le=500)

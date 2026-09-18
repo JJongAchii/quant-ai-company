@@ -257,6 +257,17 @@ def status(conn, company, owner, employee=None):
                             for r in STAFF if (r == employee or employee is None)
                             and ("engineer" if r == "maintainer" else r) in company.roles],
             "recent_exercises": rows,
+            "independent_review": {
+                "enabled": company.settings.company_staff_review_enabled,
+                "daily_limit": company.settings.staff_review_daily_limit,
+                "calibration_status": "not_yet_calibrated",
+                "recent": conn.execute("""SELECT v.id,v.run_id::text,r.employee,v.state,v.model,
+                    v.rubric_version,r.state AS source_state,
+                    CASE WHEN r.state='completed' THEN v.result ELSE NULL END AS result,
+                    v.error,v.completed_at::text
+                    FROM staff_independent_reviews v JOIN staff_runs r ON r.id=v.run_id
+                    WHERE r.owner_user=%s AND (%s::text IS NULL OR r.employee=%s)
+                    ORDER BY v.created_at DESC LIMIT 22""", (owner, employee, employee)).fetchall()},
             "improvement_requests": improvements,
             "meaning": "Objective synthetic checks only; explanations unscored unless separately reviewed. "
                        "Fresh parameters within a finite family bank; not unknown-domain or expert certification. "

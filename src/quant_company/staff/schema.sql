@@ -38,3 +38,13 @@ CREATE TABLE IF NOT EXISTS staff_comparisons (
  employee text NOT NULL, base_commit text NOT NULL, material jsonb NOT NULL, input_digest text NOT NULL,
  candidate_digest text, results jsonb NOT NULL DEFAULT '{}', created_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- Claude commentary is separate from the deterministic answer key and grade.
+CREATE TABLE IF NOT EXISTS staff_independent_reviews (
+ id text PRIMARY KEY, run_id uuid UNIQUE NOT NULL REFERENCES staff_runs(id),
+ state text NOT NULL DEFAULT 'running' CHECK(state IN ('running','completed','blocked')),
+ model text NOT NULL, rubric_version text NOT NULL, source_digest text NOT NULL,
+ request jsonb NOT NULL, input_digest text NOT NULL, schedule_day date NOT NULL,
+ response jsonb, result jsonb, error text, next_at timestamptz NOT NULL DEFAULT now(),
+ created_at timestamptz NOT NULL DEFAULT now(), completed_at timestamptz
+);

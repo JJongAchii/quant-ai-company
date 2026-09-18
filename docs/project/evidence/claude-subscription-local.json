@@ -1,0 +1,65 @@
+{
+  "recorded_at": "2026-09-18T02:08:19.798516+00:00",
+  "base_commit": "e9b4a02bbd1b15f55209eb8f21b4c475e29a11f1",
+  "checks": {
+    "command": "uv run pytest -q --tb=short -m 'not live' tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py",
+    "tests": 403,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "passed": 402,
+    "deselected_live": 1,
+    "database": "real disposable PostgreSQL 14",
+    "lint": "passed",
+    "diff_check": "passed"
+  },
+  "live_auth_probe": {
+    "auth_method": "claude.ai",
+    "subscription_type": "pro",
+    "model": "claude-opus-5",
+    "tools": [
+      "StructuredOutput"
+    ],
+    "mcp_servers": [],
+    "result": "success",
+    "actual_models": [
+      "claude-opus-5"
+    ],
+    "scope": "official login and CLI protocol only; no database review and no evaluator calibration",
+    "finding": "correct arithmetic received an immaterial assumption concern; rubric tightened before deployment"
+  },
+  "owner_confirmation": {
+    "source": "owner conversation 2026-09-18",
+    "extra_usage_disabled_quote": "꺼져 있음",
+    "login_complete_quote": "로그인 완료"
+  },
+  "implementation_sha256": {
+    "deploy/.env.example": "99e3c9dc833634d222b1233b71941b9bf57bd8329dc7ca86ef8d5fefe49d88e8",
+    "deploy/Dockerfile": "a8c857f8fbd0ddf8682333293d846b6083a42df4b1387ec0bcde24ae95b93dfd",
+    "deploy/compose.yaml": "eccd9db6936c04e1e880582f7ec0ce069eba281e0fb1f4e83d5fcfadbbdc448b",
+    "deploy/maintenance_release.py": "a69ccf26c38e40bf145dd613035d3c868c678a17d2037ba0f3ffa6226f674aff",
+    "deploy/prepare-state.py": "47ff4df0a65767344c3acc3d42c1ec05add940a86946b946d48802e1aeedab17",
+    "deploy/state_backup.py": "eade554679116957ae51927d62ea53a856ca5ec543d918eb5a0faf3ca3d01eab",
+    "deploy/test_deployment_contract.py": "3b6b521f6918ae8ecd74ae2384ef9f8c751ccda027aea170baf445de0655d6fe",
+    "scripts/qualify_claude_review.py": "874aaff2f4a7424b5da183ed84732e05a0ae4a0cf47e68f9ffad578419b5fa31",
+    "src/quant_company/config.py": "4335e04dbd177b316b9ce828e0c0f443397aa3efaf2b658e1cacd7dc525976ab",
+    "src/quant_company/maintenance/policy.py": "1383700813d542e55dbe59c681f0f9be32f3c1148fb1049852ad9de1b6ef293b",
+    "src/quant_company/providers/claude_runner.py": "92a246d2c43fa5dfb9f9a1914e1d4a83c5f391616e84396889148d47155ae9db",
+    "src/quant_company/providers/claude_runtime.py": "ac3a5e95b9b7581af929543148deba43dbe5e5b6cbf4a4d88e94bdf6e742f415",
+    "src/quant_company/providers/client.py": "832dbcf61a37c4930928ddcbe0192fcf996aeea70c52ce20c3875ae9fc9c31b8",
+    "src/quant_company/providers/codex_runtime.py": "8c5697a99c2d7c7dc11cf6682f5aa71045703c664d44d62eb4ae5e0a709c0686",
+    "src/quant_company/staff/independent_review.py": "9197735e5c9eae1d24231e4ad4c198093835fb2c8cedb8ffcb32b8969c817987",
+    "src/quant_company/staff/review_contract.py": "32731e8385725988c85c52b4281885c74772181e05433d4fc1f194f14b28ef57",
+    "src/quant_company/staff/runner.py": "1942cd186d1cbe013e49446cebc5db16db6d938ccba26e78fdca587e021a6929",
+    "src/quant_company/staff/schema.sql": "ae8701287da7ec74fbc74d189a61b0277541eb17dd101de0747dfacd4f1549c1",
+    "src/quant_company/staff/store.py": "d4bb409d52b73e577f0c7d616b08165ef064af39f0655c4ce0317d152086f99b",
+    "tests/test_claude_runtime.py": "1e5fb2408aa8d401dd5d266f82b34d2c75e977eb1992be9e506c7a7e79989e8e",
+    "tests/test_maintenance_release_host.py": "f110efa206b3491e4ff1b26c747b715a8d332500166a336a04d0a70bfc849563",
+    "tests/test_staff_independent_review.py": "ba8250670ba71b0ab4e62b948059f7eb1334b783e22b77cbb0e8042996b2f491"
+  },
+  "limitations": [
+    "Model calls in tests use an explicit fake CLI.",
+    "Expertise improvement and independent evaluator accuracy are not established.",
+    "Production cutover and final live review are recorded separately."
+  ]
+}
