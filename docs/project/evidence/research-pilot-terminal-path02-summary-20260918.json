@@ -1,0 +1,85 @@
+{
+  "source_id": "operator:etf-terminal-path02-summary-20260918",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "observed_at": "2026-09-18T02:34:57.058708+00:00",
+  "verified_by": "Operator: actual source-file hashes, prior immutable artifacts and prior code at each recorded commit, new 3070 receipts, S3 full download SHA-256. Not an independent performance audit.",
+  "old_report_superseded": "P03 gaps for 091200/104580/105020, identity/payment interpretation and missing accounting implementation have been addressed. Preserve the old report as history; do not repeat these as current blockers.",
+  "execution_code_commit": "51f589ea5684673e35316fb5c0d7f6698b367674",
+  "receipt_commit": "473d9dc",
+  "P05_receipt_sha256": "ee6ca41ee629de505b586eb055a87866741f53b8f53c5c29c25b6a1a791c706a",
+  "input_state": {
+    "known_held_tickers_prepared": 12,
+    "source_records": 101,
+    "raw_files_sha_verified": 311,
+    "actual_historical_NAV_rows": 56,
+    "readiness": "ready for the twelve previously documented held gaps, not all future holdings"
+  },
+  "actual_worker_result": {
+    "host": "worker / DESKTOP-5T00NAF / RTX3070",
+    "Q04": "passed exact code/config/lake/host/source identity, warmup2012-2013 only",
+    "PATH02": {
+      "base": {
+        "NAV_events_applied": 36,
+        "cash_payments_applied": 12
+      },
+      "stress": {
+        "NAV_events_applied": 36,
+        "cash_payments_applied": 12
+      }
+    },
+    "next_held_gap": {
+      "ticker": "138210",
+      "name": "GREAT GREEN",
+      "first_missing_date": "2015-07-02",
+      "last_observed_date": "2015-07-01",
+      "legal_delisting_inferred_from_disappearance": false
+    }
+  },
+  "research_state": {
+    "status": "blocked/unmeasured",
+    "reason": "actual held terminal valuation gap and exhausted technical budget",
+    "counts": {
+      "technicalFailureEpisodesTotal": 6,
+      "technicalRetryBudget": 6,
+      "technicalFailuresAddedSinceP04": 2,
+      "normalRequalificationAdded": 1,
+      "scientificExecutionsTotal": 0,
+      "candidateExecutionsTotal": 0,
+      "baselinePerformanceAttempts": 1,
+      "baselinePerformanceCompleted": 0,
+      "diagnosticPathsStarted": 2,
+      "diagnosticCostScenarios": 4
+    },
+    "performance_artifacts_created": false,
+    "partial_period_metrics_computed": false,
+    "sealed_read": false
+  },
+  "interpretation_limits": [
+    "NAV/rules/cash/identity were reviewed and actually integrated. The common cash reference price is a documentary inference before personal withholding; no personal net credit or fund-expense-free cash is asserted.",
+    "141250 prospectus says1000 units while its contemporary trust says1. Trust articles8/9/30 plus KRX listed-unit and per-unit NAV sources support reviewed1-unit interpretation. The discrepancy is preserved; no official erratum was found. May8 payment corroboration is not May7 NAV.",
+    "209 potential exposures are an inventory, not actual holdings or a universal prerequisite.",
+    "Warmup qualification did not establish development-wide terminal coverage; initial data-repair cost was underestimated. This is a data-path design limitation, not evidence of poor strategy returns."
+  ],
+  "validation": {
+    "pilot_guard_tests_passed": 91,
+    "tested_code": "0fd706a",
+    "subsequent_changes": "documentary curation/config pointer, diagnostic wording and removal of stale hard-coded failure count",
+    "ruff_at_execution_commit": "passed",
+    "independent_leak_audit": "not invoked: zero completed performance artifacts",
+    "private_backups": "P04 and P05 uploaded to existing S3 and fully downloaded with matching SHA256",
+    "S3_retention_end": "2026-10-19 existing lifecycle; not permanent archive"
+  },
+  "next_proposal": {
+    "status": "DRAFT_NOT_APPROVED",
+    "change": "Add at most6 technical failures/retries, cumulative cap12 preserving prior6; batch source collection by issuer/end-date instead of only fixing each new gap. Prioritize actual held138210.",
+    "unchanged": "candidate cap3; one baseline definition;2014-2026Aug development;sealed;10/30bp;primary objective;universe;3070. No new paid API/server/5090/live orders.",
+    "permission_reason": "Existing approved six-episode technical cap is exhausted. strategy-discovery says Exhausted technical budget returns blocked. Another execution requires actual user-approved budget amendment, not reconfirmation of the old scope.",
+    "steps": "After new budget approval: dated official facts from frozen inventory -> reviewed versioned source batch -> code commit -> exact-identity3070 warmup qualification -> accounting path -> same baseline and approved candidate loop only when path completes.",
+    "proposal_url": "https://github.com/JJongAchii/quant-lab/blob/company-kr-etf-pilot/docs/research/company-kr-etf-pilot/TECHNICAL-BUDGET-AMENDMENT-PROPOSAL.md"
+  },
+  "roles": "Operator performed source collection/Git/3070 execution; director reads this registered evidence and reports. No autonomous staff shell/worker function or new service deployment is claimed.",
+  "links": {
+    "research_PR": "https://github.com/JJongAchii/quant-lab/pull/16",
+    "company_PR": "https://github.com/JJongAchii/quant-ai-company/pull/30"
+  }
+}
