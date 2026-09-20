@@ -19,13 +19,17 @@
     "LIVE": {
       "evidence": [
         {
-          "path": "docs/project/evidence/hot-news-live-slack.json",
-          "sha256": "a5205cbd1121"
+          "path": "docs/project/evidence/hot-news-quiet-channel-check.json",
+          "sha256": "ce3a84f200b5"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-slack-credential-cleanup.json",
+          "sha256": "89f30688d7c4"
         }
       ],
-      "note": "실제 뉴스·Socket Mode 입력·원문 답변·재시작 후 Slack 대조 확인. 다음 수집 주기 6/6 및 두 번째 자동 편집은 hot-news-continuity.json. 일반 언론 범위와 구형 검증 토큰 재인증 대기 명시.",
+      "note": "9월 21일 실제 DB·Temporal·Slack 읽기와 6개 원문 재조회 확인. 새 기사 유입 부족으로 초기 2건 이후 게시 없음; 글로벌 뉴스 범위는 미충족. 사용자 재인증 후 구형 검증 토큰 교체·새로고침 검증 완료.",
       "status": "verified",
-      "updatedAt": "2026-09-18T16:46:07.283894+00:00"
+      "updatedAt": "2026-09-20T23:58:06.522411+00:00"
     },
     "SLACK": {
       "evidence": [
@@ -54,5 +58,5 @@
   "schemaVersion": 1,
   "slug": "kokanee",
   "state": "approved",
-  "updatedAt": "2026-09-18T16:46:07.283894+00:00"
+  "updatedAt": "2026-09-20T23:58:06.522411+00:00"
 }

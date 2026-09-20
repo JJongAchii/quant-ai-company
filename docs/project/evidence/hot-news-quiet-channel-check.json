@@ -1,0 +1,688 @@
+{
+  "checked_at": "2026-09-20T23:53:43.186598+00:00",
+  "trigger": "Owner reported no new hot-news posts after the initial activation.",
+  "deployed_commit": "7528d05d4f3d9dca655ced4622f9c367d0900a5c",
+  "method": "Read-only production PostgreSQL queries, actual Temporal run histories, real Slack auth.test/conversations.history, and fresh public RSS/original fetches without conditional cache. No new model call or Slack write during this check.",
+  "finding": "Collector/editor workflows are running. No new editorial candidate arrived after 2026-09-18 21:13:42 UTC; that last article was ignored. The six official feeds are too narrow to fulfill broad global-news coverage. Poll success alone is not evidence of fresh news or useful channel coverage.",
+  "enabled": true,
+  "publish_enabled": true,
+  "channel": "C0C2J1SSX09",
+  "sources": [
+    {
+      "id": "bea-releases",
+      "enabled": true,
+      "next_at": "2026-09-20 23:55:11.292777+00:00",
+      "last_attempt": "2026-09-20 23:45:10.498413+00:00",
+      "last_success": "2026-09-20 23:45:11.292777+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": "2026-09-03 12:30:00+00:00"
+      }
+    },
+    {
+      "id": "ecb-press",
+      "enabled": true,
+      "next_at": "2026-09-20 23:55:14.338555+00:00",
+      "last_attempt": "2026-09-20 23:45:13.455209+00:00",
+      "last_success": "2026-09-20 23:45:14.338555+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "\"myra-ece80130\"",
+        "bytes": 5673,
+        "sha256": "979c5611f0a043bb0e21f613b20f667ae2ac2d6938e301724efe89be17f44df0",
+        "skipped": 12,
+        "modified": "",
+        "latest_publication": "2026-09-18 08:00:00+00:00"
+      }
+    },
+    {
+      "id": "fed-press",
+      "enabled": true,
+      "next_at": "2026-09-20 23:55:16.619407+00:00",
+      "last_attempt": "2026-09-20 23:45:16.500710+00:00",
+      "last_success": "2026-09-20 23:45:16.619407+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "govuk-fcdo",
+      "enabled": true,
+      "next_at": "2026-09-20 23:56:20.294511+00:00",
+      "last_attempt": "2026-09-20 23:46:19.087717+00:00",
+      "last_success": "2026-09-20 23:46:20.294511+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "govuk-trade",
+      "enabled": true,
+      "next_at": "2026-09-20 23:56:23.675125+00:00",
+      "last_attempt": "2026-09-20 23:46:22.471657+00:00",
+      "last_success": "2026-09-20 23:46:23.675125+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "govuk-treasury",
+      "enabled": true,
+      "next_at": "2026-09-20 23:56:27.130584+00:00",
+      "last_attempt": "2026-09-20 23:46:25.893402+00:00",
+      "last_success": "2026-09-20 23:46:27.130584+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      }
+    }
+  ],
+  "articles": [
+    {
+      "state": "expired",
+      "count": 2
+    },
+    {
+      "state": "historical_or_undated",
+      "count": 113
+    },
+    {
+      "state": "ignored",
+      "count": 4
+    },
+    {
+      "state": "queued",
+      "count": 2
+    }
+  ],
+  "article_counts_by_source": [
+    {
+      "source_id": "bea-releases",
+      "state": "historical_or_undated",
+      "count": 42,
+      "first_collected": "2026-09-18 16:33:54.474454+00:00",
+      "last_collected": "2026-09-18 16:33:54.474454+00:00",
+      "latest_publication": "2026-09-03 12:30:00+00:00"
+    },
+    {
+      "source_id": "ecb-press",
+      "state": "historical_or_undated",
+      "count": 2,
+      "first_collected": "2026-09-18 16:33:55.186849+00:00",
+      "last_collected": "2026-09-18 16:33:55.186849+00:00",
+      "latest_publication": "2026-09-16 08:00:00+00:00"
+    },
+    {
+      "source_id": "ecb-press",
+      "state": "queued",
+      "count": 1,
+      "first_collected": "2026-09-18 16:33:55.186849+00:00",
+      "last_collected": "2026-09-18 16:33:55.186849+00:00",
+      "latest_publication": "2026-09-18 08:00:00+00:00"
+    },
+    {
+      "source_id": "fed-press",
+      "state": "historical_or_undated",
+      "count": 18,
+      "first_collected": "2026-09-18 16:33:56.106593+00:00",
+      "last_collected": "2026-09-18 16:33:56.106593+00:00",
+      "latest_publication": "2026-09-16 18:00:00+00:00"
+    },
+    {
+      "source_id": "fed-press",
+      "state": "ignored",
+      "count": 2,
+      "first_collected": "2026-09-18 16:33:56.106593+00:00",
+      "last_collected": "2026-09-18 16:33:56.106593+00:00",
+      "latest_publication": "2026-09-18 15:00:00+00:00"
+    },
+    {
+      "source_id": "govuk-fcdo",
+      "state": "expired",
+      "count": 2,
+      "first_collected": "2026-09-18 16:33:56.710839+00:00",
+      "last_collected": "2026-09-18 16:33:56.710839+00:00",
+      "latest_publication": "2026-09-18 15:21:00+00:00"
+    },
+    {
+      "source_id": "govuk-fcdo",
+      "state": "historical_or_undated",
+      "count": 17,
+      "first_collected": "2026-09-18 16:33:56.710839+00:00",
+      "last_collected": "2026-09-18 16:33:56.710839+00:00",
+      "latest_publication": null
+    },
+    {
+      "source_id": "govuk-fcdo",
+      "state": "ignored",
+      "count": 1,
+      "first_collected": "2026-09-18 21:13:42.810735+00:00",
+      "last_collected": "2026-09-18 21:13:42.810735+00:00",
+      "latest_publication": "2026-09-18 21:04:48+00:00"
+    },
+    {
+      "source_id": "govuk-fcdo",
+      "state": "queued",
+      "count": 1,
+      "first_collected": "2026-09-18 16:33:56.710839+00:00",
+      "last_collected": "2026-09-18 16:33:56.710839+00:00",
+      "latest_publication": "2026-09-17 18:52:55+00:00"
+    },
+    {
+      "source_id": "govuk-trade",
+      "state": "historical_or_undated",
+      "count": 18,
+      "first_collected": "2026-09-18 16:33:57.260965+00:00",
+      "last_collected": "2026-09-18 16:33:57.260965+00:00",
+      "latest_publication": null
+    },
+    {
+      "source_id": "govuk-treasury",
+      "state": "historical_or_undated",
+      "count": 16,
+      "first_collected": "2026-09-18 16:33:57.512822+00:00",
+      "last_collected": "2026-09-18 16:33:57.512822+00:00",
+      "latest_publication": null
+    },
+    {
+      "source_id": "govuk-treasury",
+      "state": "ignored",
+      "count": 1,
+      "first_collected": "2026-09-18 16:33:57.512822+00:00",
+      "last_collected": "2026-09-18 16:33:57.512822+00:00",
+      "latest_publication": "2026-09-18 13:53:43+00:00"
+    }
+  ],
+  "last_new_article": {
+    "source_id": "govuk-fcdo",
+    "title": "The United Kingdom stands ready to work with the UN to ensure UN peace operations remain adaptable, effective, and fit for the challenges ahead: UK statement at the UN Security Council",
+    "url": "https://www.gov.uk/government/speeches/the-united-kingdom-stands-ready-to-work-with-the-un-to-ensure-un-peace-operations-remain-adaptable-effective-and-fit-for-the-challenges-ahead-uk-state",
+    "published_at": "2026-09-18 21:04:48+00:00",
+    "updated_at": "2026-09-18 21:04:48+00:00",
+    "collected_at": "2026-09-18 21:13:42.810735+00:00",
+    "state": "ignored",
+    "error": null
+  },
+  "reviews": [
+    {
+      "id": "news-54481df4-3f6e-47e1-a202-c6ac1611006b",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "ignored",
+          "reason": "2026년 9월 18일 영국의 유엔 안보리 연설은 평화유지활동의 정치적 목표, 임무 효율화, 장비·훈련 및 안정적 재원 확보에 대한 지지 입장이다. 제공된 전문에는 신규 자금 지원, 파병, 임무 변경 등 구체적 조치가 없다. 결의 2823호는 올해 앞서 채택된 것으로 언급되며, 유엔 사무총장 검토 보고서도 발간 환영만 제시돼 주요 신규 결정이나 변화의 내용을 확인할 수 없다. 주요 뉴스로 발행할 새 전개가 부족해 제외한다.",
+          "headline": ""
+        }
+      ],
+      "created_at": "2026-09-18 21:16:23.531179+00:00",
+      "completed_at": "2026-09-18 21:16:40.166911+00:00"
+    },
+    {
+      "id": "news-3e522f28-a71b-4b4c-ab2e-f6fa3820d5cb",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "ignored",
+          "reason": "본문은 영국 체프스토의 250번째 공동 은행서비스 거점 개소와 기존 의회 임기 내 최소 350곳 설치 공약의 이행을 소개한다. 지역 주민과 사업체의 현금·대면 금융 접근성에는 의미가 있지만, 새로운 전국 단위 정책이나 중대한 금융시스템 변화는 제시하지 않아 주요 경제·세계 뉴스 발행 대상에서 제외한다.",
+          "headline": ""
+        }
+      ],
+      "created_at": "2026-09-18 16:41:00.389975+00:00",
+      "completed_at": "2026-09-18 16:41:15.279400+00:00"
+    },
+    {
+      "id": "news-de05b6ea-43d7-4450-ab4f-16bab39ad2c5",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "queued",
+          "reason": "ECB가 직접 발표한 소비자 기대 통계로, 모든 조사 시계의 기대인플레이션 상승은 통화정책 분석에 중요한 변화다.",
+          "headline": "ECB 8월 소비자 조사, 1년·3년·5년 기대인플레이션 모두 상승"
+        },
+        {
+          "state": "ignored",
+          "reason": "오클라호마 소재 SNB Bancshares와 Bank of Eufaula에 대한 개별 감독조치 종료 공지다. 종료일은 9월 3일이고 발표일은 9월 18일이다. 제공 본문에는 금융시스템 전반이나 감독정책의 중대한 변화를 뒷받침하는 내용이 없어 제외한다.",
+          "headline": ""
+        },
+        {
+          "state": "ignored",
+          "reason": "금융회사 전직 직원 3명의 자금 유용·이해상충·수표 사기 관련 개별 제재다. 제공 본문에 거시경제나 금융시스템 차원의 파급을 보여주는 근거가 없어 주요 뉴스에서 제외한다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "영국의 기업 지원 입장은 확인되지만 구체적인 신규 지원 조치는 제시되지 않았다. 핵심 쟁점인 아르헨티나의 기업·개인 위협과 법적 조치는 영국 정부의 주장만 제공됐다. 해당 조치의 내용·날짜·범위를 확인할 직접 자료와 독립 보도가 없어 보류한다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "9월 17일 영국 대표 연설은 러시아·중국의 이란 전문가패널 임기 갱신 거부권 행사를 주장한다. 중대한 국제안보 사안이지만 제공 자료는 영국 정부 한 출처뿐이다. 안보리 자체 표결 기록이나 두 개 이상의 독립 원보도가 없어 표결 결과와 제재 효력을 확정해 발행할 수 없다. 이란의 핵활동 관련 비판도 별도 근거가 필요하다.",
+          "headline": ""
+        },
+        {
+          "state": "queued",
+          "reason": "영국 정부가 자국의 시리아 지원금 기여 계획을 금액과 연도까지 명시했다. 발행 범위는 자체 지원 약속으로 한정하며, 다른 기관의 결정이나 타국 행위에 관한 주장은 포함하지 않는다.",
+          "headline": "영국, 올해 시리아 회복·취약계층 지원에 9천만 달러 기여 계획 발표"
+        }
+      ],
+      "created_at": "2026-09-18 16:34:55.440565+00:00",
+      "completed_at": "2026-09-18 16:36:00.199864+00:00"
+    }
+  ],
+  "review_counts": [
+    {
+      "state": "completed",
+      "count": 3,
+      "latest_created": "2026-09-18 21:16:23.531179+00:00",
+      "latest_completed": "2026-09-18 21:16:40.166911+00:00"
+    }
+  ],
+  "deliveries": [
+    {
+      "id": "0e1373ae-387b-553a-99ab-b40d33dc7528",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789749361.591839",
+      "created_at": "2026-09-18 16:36:00.199864+00:00"
+    },
+    {
+      "id": "1b380241-ceda-58fc-afe3-a6b8f7aa1c41",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789749363.261359",
+      "created_at": "2026-09-18 16:36:00.199864+00:00"
+    }
+  ],
+  "delivery_counts": [
+    {
+      "status": "delivered",
+      "count": 2,
+      "latest_created": "2026-09-18 16:36:00.199864+00:00"
+    }
+  ],
+  "runtime_control": [
+    {
+      "paused_until": null,
+      "reason": null
+    }
+  ],
+  "busy_turns": [],
+  "effective_limits": {
+    "revision": 0,
+    "company": null,
+    "maintenance": null
+  },
+  "workflows": [
+    {
+      "id": "company-news-collection-v1",
+      "run_id": "fb235ace-4be4-4037-bbcd-2e62507accfb",
+      "status": "RUNNING",
+      "recent_activity_results": [
+        {
+          "at": "2026-09-20 23:53:01.499756+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-20 23:53:31.658943+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        }
+      ],
+      "activity_failure_count": 0,
+      "recent_failures": []
+    },
+    {
+      "id": "company-news-editorial-v1",
+      "run_id": "5bde5bc8-0770-4754-8356-b180abac7c35",
+      "status": "RUNNING",
+      "recent_activity_results": [
+        {
+          "at": "2026-09-20 23:44:05.970054+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-20 23:49:06.132529+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        }
+      ],
+      "activity_failure_count": 0,
+      "recent_failures": []
+    }
+  ],
+  "fresh_source_probe": {
+    "checked_at": "2026-09-20T23:55:16.087027+00:00",
+    "network": "real-public-rss-and-original",
+    "location": "Lightsail application image",
+    "model": "not-called",
+    "slack": "not-called",
+    "sources": [
+      {
+        "source": "fed-press",
+        "feed_url": "https://www.federalreserve.gov/feeds/press_all.xml",
+        "feed": {
+          "ok": true,
+          "skipped": 0,
+          "etag": "\"2a27c06a7e47dd1:0\"",
+          "modified": "Fri, 18 Sep 2026 15:00:17 GMT",
+          "sha256": "bdb248554aec56ffd75e93baae7b8096ffa7abe199cc8a5d7a2f4bb773541ad5",
+          "bytes": 14853
+        },
+        "entry_count": 20,
+        "latest_entry": {
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+          "title": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+          "published_at": "2026-09-18 15:00:00+00:00",
+          "updated_at": null
+        },
+        "original": {
+          "ok": true,
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+          "requested_url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+          "redirects": [],
+          "title": "Federal Reserve Board - Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+          "publisher_host": "www.federalreserve.gov",
+          "retrieved_at": "2026-09-20T23:55:04.172940+00:00",
+          "published_at": null,
+          "publication_time_basis": "unknown",
+          "last_modified": "Fri, 18 Sep 2026 15:00:18 GMT",
+          "content_type": "text/html",
+          "original_sha256": "dab854ad60f6849247ee051210f10cfd482d5550cb306a6427655c70a36bed11",
+          "original_bytes": 84498,
+          "content_truncated": false,
+          "article_extraction": "article",
+          "article_chars": 547,
+          "excerpt_truncated": false,
+          "publication_time_confirmed": true
+        }
+      },
+      {
+        "source": "ecb-press",
+        "feed_url": "https://www.ecb.europa.eu/rss/press.html",
+        "feed": {
+          "ok": true,
+          "skipped": 12,
+          "etag": "\"myra-ece87fbf\"",
+          "modified": "",
+          "sha256": "979c5611f0a043bb0e21f613b20f667ae2ac2d6938e301724efe89be17f44df0",
+          "bytes": 5673
+        },
+        "entry_count": 3,
+        "latest_entry": {
+          "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html",
+          "title": "ECB Consumer Expectations Survey results – August 2026",
+          "published_at": "2026-09-18 08:00:00+00:00",
+          "updated_at": null
+        },
+        "original": {
+          "ok": true,
+          "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html",
+          "requested_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html",
+          "redirects": [],
+          "title": "ECB Consumer Expectations Survey results – August 2026",
+          "publisher_host": "www.ecb.europa.eu",
+          "retrieved_at": "2026-09-20T23:55:05.294389+00:00",
+          "published_at": "2026-09-18",
+          "publication_time_basis": "page_metadata",
+          "last_modified": null,
+          "content_type": "text/html; charset=utf-8",
+          "original_sha256": "bdff94f7fe45cc8f059f1823386f4a2ffec59c9c3d2666cd32ee06365037c30a",
+          "original_bytes": 109104,
+          "content_truncated": false,
+          "article_extraction": "main",
+          "article_chars": 5693,
+          "excerpt_truncated": false,
+          "publication_time_confirmed": true
+        }
+      },
+      {
+        "source": "bea-releases",
+        "feed_url": "https://apps.bea.gov/rss/rss.xml",
+        "feed": {
+          "ok": true,
+          "skipped": 6,
+          "etag": "\"76c81ff39f3bdd1:0\"",
+          "modified": "Thu, 03 Sep 2026 12:30:05 GMT",
+          "sha256": "446cb4078349673864407af824f8a6f54c1ec9fc54d10d076451ae5c179915f7",
+          "bytes": 88601
+        },
+        "entry_count": 42,
+        "latest_entry": {
+          "url": "https://www.bea.gov/news/2026/us-international-trade-goods-and-services-july-2026",
+          "title": "U.S. International Trade in Goods and Services, July 2026",
+          "published_at": "2026-09-03 12:30:00+00:00",
+          "updated_at": null
+        },
+        "original": {
+          "ok": true,
+          "url": "https://www.bea.gov/news/2026/us-international-trade-goods-and-services-july-2026",
+          "requested_url": "https://www.bea.gov/news/2026/us-international-trade-goods-and-services-july-2026",
+          "redirects": [],
+          "title": "U.S. International Trade in Goods and Services, July 2026 | U.S. Bureau of Economic Analysis (BEA)",
+          "publisher_host": "www.bea.gov",
+          "retrieved_at": "2026-09-20T23:55:07.863754+00:00",
+          "published_at": null,
+          "publication_time_basis": "unknown",
+          "last_modified": "Sun, 20 Sep 2026 20:00:15 GMT",
+          "content_type": "text/html; charset=utf-8",
+          "original_sha256": "271e8d879c11bbd8df7cb5b6516ae1a72f52855191531ec382ce53b0da4d5605",
+          "original_bytes": 95739,
+          "content_truncated": false,
+          "article_extraction": "article",
+          "article_chars": 45776,
+          "excerpt_truncated": true,
+          "publication_time_confirmed": true
+        }
+      },
+      {
+        "source": "govuk-fcdo",
+        "feed_url": "https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=foreign-commonwealth-development-office&order=updated-newest",
+        "feed": {
+          "ok": true,
+          "skipped": 0,
+          "etag": "W/\"5cfe857cc2314e2c611e0cb0781133d2\"",
+          "modified": "",
+          "sha256": "5cfe857cc2314e2c611e0cb0781133d20608424f043eb9c7805bd8ccac081221",
+          "bytes": 14811
+        },
+        "entry_count": 20,
+        "latest_entry": {
+          "url": "https://www.gov.uk/government/speeches/the-united-kingdom-stands-ready-to-work-with-the-un-to-ensure-un-peace-operations-remain-adaptable-effective-and-fit-for-the-challenges-ahead-uk-state",
+          "title": "The United Kingdom stands ready to work with the UN to ensure UN peace operations remain adaptable, effective, and fit for the challenges ahead: UK statement at the UN Security Council",
+          "published_at": null,
+          "updated_at": "2026-09-18 21:04:48+00:00"
+        },
+        "original": {
+          "ok": true,
+          "url": "https://www.gov.uk/government/speeches/the-united-kingdom-stands-ready-to-work-with-the-un-to-ensure-un-peace-operations-remain-adaptable-effective-and-fit-for-the-challenges-ahead-uk-state",
+          "requested_url": "https://www.gov.uk/government/speeches/the-united-kingdom-stands-ready-to-work-with-the-un-to-ensure-un-peace-operations-remain-adaptable-effective-and-fit-for-the-challenges-ahead-uk-state",
+          "redirects": [],
+          "title": "The United Kingdom stands ready to work with the UN to ensure UN peace operations remain adaptable, effective, and fit for the challenges ahead: UK statement at the UN Security Council - GOV.UK",
+          "publisher_host": "www.gov.uk",
+          "retrieved_at": "2026-09-20T23:55:10.467372+00:00",
+          "published_at": "2026-09-18T22:04:48+01:00",
+          "publication_time_basis": "page_metadata",
+          "last_modified": null,
+          "content_type": "text/html; charset=utf-8",
+          "original_sha256": "a581ff8c6858007487f6b1c9fa5c710bbee7b4ce4f4cd9cd2569a80ef2ca19d2",
+          "original_bytes": 73359,
+          "content_truncated": false,
+          "article_extraction": "main",
+          "article_chars": 4481,
+          "excerpt_truncated": false,
+          "publication_time_confirmed": true
+        }
+      },
+      {
+        "source": "govuk-treasury",
+        "feed_url": "https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=hm-treasury&order=updated-newest",
+        "feed": {
+          "ok": true,
+          "skipped": 3,
+          "etag": "W/\"048726165fa465d788134b72754fa34f\"",
+          "modified": "",
+          "sha256": "048726165fa465d788134b72754fa34fcb84e97421667a205692778da1a3ba3f",
+          "bytes": 12064
+        },
+        "entry_count": 17,
+        "latest_entry": {
+          "url": "https://www.gov.uk/government/news/uks-250th-banking-hub-opens-in-chepstow-keeping-access-to-cash-and-face-to-face-banking-in-the-town",
+          "title": "UK’s 250th banking hub opens in Chepstow, keeping access to cash and face-to-face banking in the town",
+          "published_at": null,
+          "updated_at": "2026-09-18 13:53:43+00:00"
+        },
+        "original": {
+          "ok": true,
+          "url": "https://www.gov.uk/government/news/uks-250th-banking-hub-opens-in-chepstow-keeping-access-to-cash-and-face-to-face-banking-in-the-town",
+          "requested_url": "https://www.gov.uk/government/news/uks-250th-banking-hub-opens-in-chepstow-keeping-access-to-cash-and-face-to-face-banking-in-the-town",
+          "redirects": [],
+          "title": "UK’s 250th banking hub opens in Chepstow, keeping access to cash and face-to-face banking in the town - GOV.UK",
+          "publisher_host": "www.gov.uk",
+          "retrieved_at": "2026-09-20T23:55:13.267002+00:00",
+          "published_at": "2026-09-18T14:53:43+01:00",
+          "publication_time_basis": "page_metadata",
+          "last_modified": null,
+          "content_type": "text/html; charset=utf-8",
+          "original_sha256": "32b1d35c98202963f8aa28cf5d96b7195890f649830c7f350d11cdc771f81599",
+          "original_bytes": 74344,
+          "content_truncated": false,
+          "article_extraction": "main",
+          "article_chars": 4922,
+          "excerpt_truncated": false,
+          "publication_time_confirmed": true
+        }
+      },
+      {
+        "source": "govuk-trade",
+        "feed_url": "https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=department-for-business-and-trade&order=updated-newest",
+        "feed": {
+          "ok": true,
+          "skipped": 2,
+          "etag": "W/\"187e9c6a770b50124f2a0fcb275d35c0\"",
+          "modified": "",
+          "sha256": "187e9c6a770b50124f2a0fcb275d35c0a09c999fae3b09774bc4809e9282406f",
+          "bytes": 12319
+        },
+        "entry_count": 18,
+        "latest_entry": {
+          "url": "https://www.gov.uk/government/news/new-creative-trade-forum-to-boost-uk-creative-industries-announced-at-edinburgh-international-festival",
+          "title": "New Creative Trade Forum to boost UK creative industries announced at Edinburgh International Festival",
+          "published_at": null,
+          "updated_at": "2026-08-26 11:35:28+00:00"
+        },
+        "original": {
+          "ok": true,
+          "url": "https://www.gov.uk/government/news/new-creative-trade-forum-to-boost-uk-creative-industries-announced-at-edinburgh-international-festival",
+          "requested_url": "https://www.gov.uk/government/news/new-creative-trade-forum-to-boost-uk-creative-industries-announced-at-edinburgh-international-festival",
+          "redirects": [],
+          "title": "New Creative Trade Forum to boost UK creative industries announced at Edinburgh International Festival - GOV.UK",
+          "publisher_host": "www.gov.uk",
+          "retrieved_at": "2026-09-20T23:55:16.075806+00:00",
+          "published_at": "2026-08-26T12:35:28+01:00",
+          "publication_time_basis": "page_metadata",
+          "last_modified": null,
+          "content_type": "text/html; charset=utf-8",
+          "original_sha256": "f01097f80e566d497199763471d734e527b8bde744b4b7585244f250785e4d83",
+          "original_bytes": 91721,
+          "content_truncated": false,
+          "article_extraction": "main",
+          "article_chars": 9540,
+          "excerpt_truncated": true,
+          "publication_time_confirmed": true
+        }
+      }
+    ]
+  },
+  "slack_after_token_rotation": {
+    "checked_at": "2026-09-20T23:57:26.336521+00:00",
+    "auth": {
+      "ok": true,
+      "error": null,
+      "team_id": "T0C1YRDRPNF",
+      "user_id": "U0C2FLSUUMV",
+      "bot_id": "B0C2V3TJ230"
+    },
+    "history_ok": true,
+    "history_error": null,
+    "has_more": false,
+    "messages": [
+      {
+        "ts": "1789749363.261359",
+        "user": "U0C2FLSUUMV",
+        "bot_id": "B0C2V3TJ230",
+        "app_id": "A0C2V1Q5CCE",
+        "client_msg_id": "1b380241-ceda-58fc-afe3-a6b8f7aa1c41"
+      },
+      {
+        "ts": "1789749361.591839",
+        "thread_ts": "1789749361.591839",
+        "user": "U0C2FLSUUMV",
+        "bot_id": "B0C2V3TJ230",
+        "app_id": "A0C2V1Q5CCE",
+        "reply_count": 3,
+        "client_msg_id": "0e1373ae-387b-553a-99ab-b40d33dc7528"
+      },
+      {
+        "ts": "1789746408.675599",
+        "user": "U0C2FLSUUMV",
+        "subtype": "channel_join"
+      },
+      {
+        "ts": "1789618655.316899",
+        "user": "U0C250E23NW",
+        "subtype": "channel_join"
+      }
+    ]
+  },
+  "limitations": [
+    "Current Slack reading/authentication was verified; no new message was sent in this diagnosis.",
+    "Only the current continued-as-new Temporal runs were inspected for activity failures; this is not a claim of zero historical outages.",
+    "The absence of new registered-source candidates does not imply the absence of important world news.",
+    "Article queued state is historical editorial disposition; the actual outbox status of both publications is delivered.",
+    "No additional media source was deployed during this status check."
+  ],
+  "next_scope": "Qualify and connect broader economic/international reporting sources; retain source, date, duplicate and claim verification. Do not treat poll success as coverage acceptance."
+}
