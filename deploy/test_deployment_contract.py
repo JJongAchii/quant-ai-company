@@ -19,7 +19,7 @@ backup = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(backup)
 
 
-def compose_config(*profiles, extra_env=None):
+def compose_config(*profiles, extra_env=None, overlays=()):
     if not shutil.which("docker"):
         pytest.skip("Docker Compose CLI is not installed")
     command = ["docker", "compose", "--env-file", str(DEPLOY / ".env.example"), "-f",
@@ -28,9 +28,52 @@ def compose_config(*profiles, extra_env=None):
         command += ["--env-file", str(extra_env)]
     for profile in profiles:
         command += ["--profile", profile]
+    for overlay in overlays:
+        command += ["-f", str(DEPLOY / overlay)]
     result = subprocess.run(command + ["config", "--format", "json"],
                             check=True, capture_output=True, text=True)
     return json.loads(result.stdout)
+
+
+def test_autonomous_overlay_preserves_boundaries_and_requires_explicit_activation(tmp_path):
+    env = tmp_path / "runtime.env"
+    env.write_text("RESEARCH_REPORT_BUCKET=synthetic-qualification-bucket\n")
+    services = compose_config(extra_env=env,
+        overlays=("research.compose.yaml", "autonomous-research.compose.yaml"))["services"]
+    assert services["worker"]["build"]["target"] == "autonomous-research"
+    for name in ("api", "slack-socket", "worker", "dispatch"):
+        assert services[name]["environment"]["COMPANY_AUTONOMOUS_RESEARCH_ENABLED"] == "false"
+    for name, value in services.items():
+        mounts = {mount["target"]: mount for mount in value.get("volumes", [])}
+        assert ("/opt/research-audit/qlab" in mounts) == (name == "worker")
+        if name in ("api", "slack-socket", "worker"):
+            assert mounts["/etc/quant-company/research-profiles.json"]["read_only"]
+        if name == "codex-runtime":
+            assert not any("research" in target for target in mounts)
+    env.write_text(env.read_text() + "COMPANY_AUTONOMOUS_RESEARCH_ENABLED=true\n")
+    enabled = compose_config(extra_env=env,
+        overlays=("research.compose.yaml", "autonomous-research.compose.yaml"))["services"]
+    assert enabled["worker"]["environment"]["COMPANY_AUTONOMOUS_RESEARCH_ENABLED"] == "true"
+
+
+def test_research_backup_keeps_durable_files_and_rejects_host_links(tmp_path):
+    state, staging = tmp_path / "state", tmp_path / "staging"
+    staging.mkdir()
+    for name in ("research/missions/context.json", "research-audit/qlab/core/src/qlab/record.py",
+                 "config/research-profiles.json", "config/research-qlab.json", "secrets/token"):
+        path = state / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('{}' if name.endswith('.json') else 'fixture')
+    cfg = {"COMPANY_RESEARCH_ENABLED": "true", "COMPANY_AUTONOMOUS_RESEARCH_ENABLED": "true"}
+    backup.copy_research_state(state, staging, cfg)
+    assert (staging / "research/missions/context.json").read_bytes() == b'{}'
+    assert (staging / "research-audit/qlab/core/src/qlab/record.py").is_file()
+    assert not (staging / "secrets").exists()
+    (state / "research/unsafe").symlink_to(state / "secrets/token")
+    newer = tmp_path / "newer"
+    newer.mkdir()
+    with pytest.raises(ValueError, match="unsafe"):
+        backup.copy_research_state(state, newer, cfg)
 
 
 def test_compose_model_boundary_and_published_ports():

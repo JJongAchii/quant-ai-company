@@ -83,7 +83,8 @@ class Store:
             events = conn.execute("""
                 SELECT 'event:'||e.id::text AS key,e.project_id,e.kind,e.detail,e.created_at
                 FROM events e JOIN projects p ON p.id=e.project_id
-                WHERE p.owner_user=ANY(%s) AND (p.channel=ANY(%s) OR p.channel LIKE 'D%%') AND e.kind IN ('turn_blocked','task_blocked')
+                WHERE p.owner_user=ANY(%s) AND (p.channel=ANY(%s) OR p.channel LIKE 'D%%')
+                  AND e.kind IN ('turn_blocked','task_blocked','research_stage_waiting')
                   AND NOT EXISTS (SELECT 1 FROM maintenance_observations o WHERE o.key='event:'||e.id::text)
                 ORDER BY e.id LIMIT 4
                 """, (self.config.allowed_owners, self.company.settings.slack_allowed_channels)).fetchall()

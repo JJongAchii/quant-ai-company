@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "host": "DESKTOP-5T00NAF",
+  "root": "/home/achii/quant-company-research/pilot/quant-lab/labs/company-kr-etf-pilot/data/snapshot-20260918",
+  "lake_id": "krx-etf-9c4fb62c8f19a158aee1dff36af37706-meta-2d8776e0c3fbe4e020dc383718239ee5",
+  "files": {
+    "warmup/snapshot.json": {
+      "expected": "bba2e273a1b1c60313021baff842c2f3a8896a750df3d12822e1756300da537d",
+      "actual": "bba2e273a1b1c60313021baff842c2f3a8896a750df3d12822e1756300da537d",
+      "bytes": 439023,
+      "matches": true
+    },
+    "warmup/prices.parquet": {
+      "expected": "bd877acabc34874679239d0c9eccd92e4a32e26bf2316f85b115903490bfa961",
+      "actual": "bd877acabc34874679239d0c9eccd92e4a32e26bf2316f85b115903490bfa961",
+      "bytes": 3343713,
+      "matches": true
+    },
+    "warmup/meta.parquet": {
+      "expected": "91b34929ea9b464e9b21c787ec19e70153353cc39500e6e4b76d555f167169f3",
+      "actual": "91b34929ea9b464e9b21c787ec19e70153353cc39500e6e4b76d555f167169f3",
+      "bytes": 1043591,
+      "matches": true
+    },
+    "dev/snapshot.json": {
+      "expected": "8a10e640ca4430f7bcab7085e717f4e29119be0d6a0a2dd86877dd7691ee574e",
+      "actual": "8a10e640ca4430f7bcab7085e717f4e29119be0d6a0a2dd86877dd7691ee574e",
+      "bytes": 6081710,
+      "matches": true
+    },
+    "dev/prices.parquet": {
+      "expected": "702217d3f6ae9c220ad9c0dfaa3e3c7384b9678cd4c1ba2337b44333dca5c553",
+      "actual": "702217d3f6ae9c220ad9c0dfaa3e3c7384b9678cd4c1ba2337b44333dca5c553",
+      "bytes": 74996774,
+      "matches": true
+    },
+    "dev/meta.parquet": {
+      "expected": "97a3caac1c3423d2af95df118823287de1b7e0034000415b26b3734945d838b6",
+      "actual": "97a3caac1c3423d2af95df118823287de1b7e0034000415b26b3734945d838b6",
+      "bytes": 23428517,
+      "matches": true
+    }
+  },
+  "all_match": true,
+  "operation": "byte-hash-only",
+  "performance_read": false,
+  "scientific_trials_added": 0
+}

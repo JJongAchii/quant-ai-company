@@ -27,6 +27,10 @@ class Settings(BaseSettings):
     company_max_daily_turns: int = Field(default=0, ge=0, le=10000)
     company_code_commit: str = "unknown"
     company_research_enabled: bool = False
+    company_autonomous_research_enabled: bool = False
+    # Operator-provisioned, immutable execution profiles. Never a model-selected path.
+    research_profiles_file: Path | None = None
+    research_qlab_profile_file: Path | None = None
     research_worker_token: SecretStr = SecretStr("")
     research_artifact_dir: Path = Path("/var/lib/quant-company/research")
     research_report_bucket: str = ""
@@ -67,6 +71,8 @@ class Settings(BaseSettings):
             raise ValueError("MODEL_PROVIDER must be codex or fixture")
         if self.model_provider == "fixture" and not self.fixture_mode:
             raise ValueError("Fixture provider requires explicit FIXTURE_MODE=true")
+        if self.company_autonomous_research_enabled and not self.company_research_enabled:
+            raise ValueError("Autonomous research requires the durable research service")
         return self
 
     def require_operator_token(self) -> str:

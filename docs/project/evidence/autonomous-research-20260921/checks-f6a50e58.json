@@ -1,0 +1,40 @@
+{
+  "company_commit": "f6a50e58a5eed6f4388f99556ef931c32f48533e",
+  "checks": [
+    {
+      "name": "lint",
+      "argv": [
+        "uv",
+        "run",
+        "--frozen",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 0.16,
+      "log": ".local/acceptance/lint-f6a50e58.log"
+    },
+    {
+      "name": "suite",
+      "argv": [
+        "uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "-m",
+        "not live",
+        "tests",
+        "deploy/test_deployment_contract.py",
+        "evals/test_financial_fixtures.py"
+      ],
+      "exit_code": 0,
+      "seconds": 312.65,
+      "log": ".local/acceptance/suite-f6a50e58.log"
+    }
+  ],
+  "finished_head": "f6a50e58a5eed6f4388f99556ef931c32f48533e",
+  "dirty": ""
+}

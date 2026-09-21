@@ -19,6 +19,7 @@ import zipfile
 from collections.abc import Callable
 from pathlib import Path, PurePosixPath
 
+from .adaptive_contracts import AdaptiveAssignment, AdaptiveManifest, parse_assignment
 from .contracts import Assignment, ExecutionReceipt, Recipe
 from .worker import (
     WorkerConfig,
@@ -371,9 +372,19 @@ def execute_replay(
     return build_archive(job, recipe, receipt, outputs, config.evidence_repo)
 
 
+def execute_assignment(config: WorkerConfig, assignment: Assignment | AdaptiveAssignment,
+                       recipe: Recipe | AdaptiveManifest, job: Path, started_at: str) -> str:
+    if isinstance(assignment, AdaptiveAssignment):
+        from .adaptive_executor import execute_adaptive
+
+        return execute_adaptive(config, assignment, recipe, job, started_at)
+    return execute_replay(config, assignment, recipe, job, started_at)
+
+
 def execute_child(
     job: Path, launch_id: str,
-    *, operation: Callable[[WorkerConfig, Assignment, Recipe, Path, str], str] = execute_replay,
+    *, operation: Callable[[WorkerConfig, Assignment | AdaptiveAssignment, Recipe | AdaptiveManifest, Path, str], str]
+    = execute_assignment,
 ) -> int:
     """One lifetime of a detached child. Test callbacks exercise the same claim path."""
     cancelled = False
@@ -391,14 +402,20 @@ def execute_child(
             if (job / "process.json").exists() or (job / "result.json").exists():
                 return 2
             intent = read_json(job / "launch-intent.json")
-            assignment = Assignment.model_validate(intent["assignment"])
-            recipe = Recipe.model_validate(read_json(job / "recipe.json"))
+            assignment = parse_assignment(intent["assignment"])
+            recipe = (AdaptiveManifest.model_validate(read_json(job / "recipe.json"))
+                      if isinstance(assignment, AdaptiveAssignment)
+                      else Recipe.model_validate(read_json(job / "recipe.json")))
             config = WorkerConfig.model_validate(read_json(job / "execution-config.json"))
             if (
                 launch_id != intent["launch_id"] or intent.get("phase") != "spawning"
                 or assignment.manifest_digest != canonical_sha(
                     recipe.model_dump(mode="json")
                 ) or config.company_commit != intent["company_commit"]
+            ):
+                return 3
+            if isinstance(assignment, AdaptiveAssignment) and (
+                assignment.manifest != recipe or recipe.company_commit != config.company_commit
             ):
                 return 3
             identity = process_identity(os.getpid())

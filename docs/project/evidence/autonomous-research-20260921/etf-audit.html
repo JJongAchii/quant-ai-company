@@ -1,0 +1,73 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>판정 리포트 — labs/company-autonomous-etf 1건</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--muted:#68706b;--line:#e4e4e4;--card:#fafafa;
+--blocking:#b3261e;--major:#9a5b00;--minor:#5c6370;--ok:#12704a;--warn:#9a5b00}
+@media(prefers-color-scheme:dark){:root{--bg:#151515;--fg:#e9e9e9;--muted:#9aa09c;
+--line:#2f2f2f;--card:#1d1d1d;--blocking:#ff7264;--major:#e0a44a;--minor:#98a2ae;
+--ok:#4fcb92;--warn:#e0a44a}}
+*{box-sizing:border-box}
+body{margin:0;padding:2rem 1.1rem;background:var(--bg);color:var(--fg);line-height:1.75;
+font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+font-size:16px;word-break:keep-all}
+main{max-width:54rem;margin:0 auto}
+h1{font-size:1.5rem;margin:0 0 .3rem}
+h2{font-size:1.2rem;margin:0 0 .2rem}
+h3{font-size:1rem;margin:1.8rem 0 .5rem;padding-bottom:.3rem;border-bottom:1px solid var(--line)}
+h4{font-size:.95rem;margin:1.1rem 0 .4rem}
+code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,"Apple SD Gothic Neo","Noto Sans KR",
+monospace;font-size:.88em}
+.muted{color:var(--muted)}
+.lede{margin:.2rem 0 0}
+.note{color:var(--muted);font-size:.92rem;margin:.5rem 0}
+.card{border:1px solid var(--line);border-radius:10px;background:var(--card);
+padding:1.3rem 1.2rem;margin:1.6rem 0}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border-bottom:1px solid var(--line);padding:.45rem .55rem;text-align:left;vertical-align:top}
+.axes th{width:6.5rem;white-space:nowrap}
+.badge{display:inline-block;padding:.05rem .5rem;border-radius:999px;border:1px solid currentColor;
+font-size:.85rem;white-space:nowrap}
+.v-pass,.f-live,.g-pass,.o-current{color:var(--ok)}
+.v-fail,.f-expired,.g-block{color:var(--blocking)}
+.v-unverified,.f-unresolved,.o-unknown,.o-absent{color:var(--minor)}
+.f-retired,.o-revised{color:var(--warn)}
+ul.findings{list-style:none;margin:0;padding:0}
+li.finding{border-left:3px solid var(--line);padding:.1rem 0 .1rem .8rem;margin:.7rem 0}
+li.sev-blocking{border-left-color:var(--blocking)}
+li.sev-major{border-left-color:var(--major)}
+li.sev-minor{border-left-color:var(--minor)}
+.loc{color:var(--muted);font-size:.82rem}
+h4.sev-blocking{color:var(--blocking)}
+h4.sev-major{color:var(--major)}
+h4.sev-minor{color:var(--minor)}
+ul.scope{margin:.3rem 0;padding-left:1.2rem}
+ul.violations{margin:.3rem 0;padding-left:1.2rem;color:var(--blocking)}
+.body{margin-top:.5rem}
+.body table{margin:.8rem 0}
+.body pre{overflow-x:auto;background:var(--bg);border:1px solid var(--line);
+border-radius:6px;padding:.7rem}
+.body blockquote{margin:.8rem 0;padding-left:.9rem;border-left:3px solid var(--line);
+color:var(--muted)}
+tr.now td{font-weight:600}
+footer{margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--line)}
+</style></head><body><main><header><h1>판정 리포트</h1><p class="lede muted">대상 labs/company-autonomous-etf · 심판 leak-auditor · 판정 1건</p><p class="note">게이트 통과는 결함 없음을 뜻하지 않는다 — 이 축은 판정의 형식과 신선도만 본다 — 판정 내용은 보지 않는다. 정직한 fail 도 통과하고 만료된 pass 는 막힌다. push 게이트는 여기에 리포트 영수증 검사를 하나 더 얹는다.</p></header><section class="card"><h2>leak-auditor <span class="muted">→ labs/company-autonomous-etf</span></h2><p class="muted mono">AUDIT-leak-auditor-20260921-adaptive-engineering-r2.md · issued 2026-09-21</p><div class="scroll"><table class="axes"><tbody><tr><th>판정</th><td><span class="badge v-pass">pass</span></td><td class="muted">이 심판의 심사 항목을 충족했다. 다른 심판·다른 축은 별개다</td></tr><tr><th>신선도</th><td><span class="badge f-live">유효</span></td><td class="muted">scope 파일의 내용이 판정 당시와 같다</td></tr><tr><th>게이트</th><td><span class="badge g-pass">막지 않음</span></td><td class="muted">이 축은 판정의 형식과 신선도만 본다 — 판정 내용은 보지 않는다. 정직한 fail 도 통과하고 만료된 pass 는 막힌다. push 게이트는 여기에 리포트 영수증 검사를 하나 더 얹는다</td></tr><tr><th>목적함수</th><td><span class="badge o-current">현행 03d58ee449e6</span></td><td class="muted">판정이 현재 목적함수에 묶여 있다</td></tr></tbody></table></div><h3>왜 이 판정인가</h3><p class="muted">findings 가 없다. 판정 근거는 아래 본문에 있다.</p><h3>무엇을 봤나</h3><p class="muted">기록 <span class="mono">9621c244eb27</span></p><ul class="scope"><li class="mono">run.py</li><li class="mono">policy.json</li><li class="mono">lineage.json</li><li class="mono">configs/candidate.json</li><li class="mono">src/company_autonomous_etf/__init__.py</li><li class="mono">src/company_autonomous_etf/adapter.py</li><li class="mono">src/company_autonomous_etf/engine.py</li><li class="mono">src/company_autonomous_etf/signals.py</li><li class="mono">tests/conftest.py</li><li class="mono">tests/test_adapter.py</li><li class="mono">tests/test_signals.py</li><li class="mono">pyproject.toml</li><li class="mono">examples/M2.json</li><li class="mono">examples/A25.json</li><li class="mono">examples/A75.json</li><li class="mono">examples/B.json</li><li class="mono">examples/C.json</li><li class="mono">examples/D50.json</li><li class="mono">examples/D75.json</li></ul><p class="note">이 목록 밖은 판정하지 않았다. 심판의 “판별 불가”는 결함이 없다는 뜻이 아니라 이 범위에서 보이지 않았다는 뜻일 수 있다.</p><h3>재판정 체인</h3><div class="scroll"><table><thead><tr><th>판정</th><th>verdict</th><th>blocking · major · minor</th></tr></thead><tbody><tr><td class="mono">AUDIT-leak-auditor-20260921-adaptive-engineering.md</td><td>pass</td><td class="mono">blocking 0 · major 0 · minor 0</td></tr><tr class="now"><td><span class="mono">AUDIT-leak-auditor-20260921-adaptive-engineering-r2.md</span> (이번)</td><td>pass</td><td class="mono">blocking 0 · major 0 · minor 0</td></tr></tbody></table></div><p class="note">개수 변화만 기계적으로 낸다. 어느 지적이 해소되고 어느 것이 남았는지는 심판이 본문에 쓴 판단이고, <strong>렌더러가 계산할 수 있는 것이 아니다</strong> — 아래 본문을 봐야 한다.</p><h3>판정 본문</h3><div class="body"><h1>Offline ETF adapter — 출력 로그 연결 변경 재감사</h1>
+<h2>판정</h2>
+<p><strong>pass.</strong> 공학적 준비 범위에서 기존 인과성 경계가 보존됐다. <code>backtest-hygiene</code> 및 guards 참조와 이 repo의 <code>CLAUDE.md</code>를 적용했다. 승인 설계 digest는 <code>fcec7879dbf7</code>이다. 위 19개 scope의 현재 바이트가 기록한 commit과 모두 일치한다. 이 판정은 동일 target의 이전 공학 감사를 승계하며, P11 과학 판정이나 회사 실행 경로의 별도 판정을 대체하지 않는다.</p>
+<h2>변경과 보존 확인</h2>
+<p>이전 실제 검토 commit <code>dc1ec6dfd762cbbbf7055e053cda04accc37aca7</code>과 현재 scope를 파일별로 직접 대조했다. 변경은 다음 두 파일에 한정된다.</p>
+<ul>
+<li><code>adapter.py:512</code>: 이미 있는 출력 디렉터리에 일반 파일인 <code>stdout.log</code>·<code>stderr.log</code>만 허용한다. 출력 디렉터리 symlink, 다른 이름의 파일, log 이름의 symlink/디렉터리는 계속 거절한다. 로그 내용은 입력·신호·자격검증·회계에 사용하지 않는다. 산출물 쓰기는 그대로 <code>open(&quot;xb&quot;)</code>를 사용하므로 기존 결과 파일을 덮어쓰지 않는다.</li>
+<li><code>test_adapter.py:263</code>: 선생성 로그를 보존한 qualification 통과와 기존 결과/log symlink/log 디렉터리 거절 검사를 추가했다.</li>
+</ul>
+<p>나머지 17개 scope 파일과 adapter의 입력·manifest·qualification·evaluation·회계 함수는 동일하다. M2/A25/A75/B/C/D50/D75의 prefix 가격 창, 당일 기준 ADV, 당시 eligible cross-section, 이전 월말 단면 재구성, 직전 관측일 신호의 다음 시가 집행 및 초기 자본/첫 비용을 유지하는 수익률 변환이 바뀌지 않았다. 전체 기간 fit·미래 라벨·현재 상장 목록으로 과거를 거르는 경로를 추가하지 않았다.</p>
+<p>피처 생성 진입점은 <code>engine.features_asof</code>, <code>signals.features_asof</code>이며 target selection까지 <code>assert_causal_asof</code>로 검사된다. 일곱 수식 각각의 6개 cutoff에서 피처·eligible·ADV·분류·history·prior score·target weight를 절단 재계산/미래 교란으로 대조하는 기존 검사가 그대로다. 입력은 날짜별 wide frame이고 출력은 cutoff 단면이므로 롱 패널의 중간 행을 시간 분할점으로 쓰지 않는다.</p>
+<h2>실제 검사</h2>
+<p>현재 격리 repo에서 <code>PYTHONDONTWRITEBYTECODE=1</code>, 명시적인 lab/core <code>PYTHONPATH</code> 및 기존 fixture Python 환경으로 <code>tests/test_signals.py</code>를 다시 실행했다. producer와 qlab guard의 실제 import 경로가 모두 현재 repo 안임을 확인했다. 결과는 <strong>21 passed in 0.86s</strong>였다.</p>
+<p>쓰기·subprocess·network를 거부하는 Python audit hook을 사용했다. 최초 pytest 기본 FD capture가 임시 파일을 만들려 하여 실행 전에 차단됐으므로, <code>--capture=sys</code>와 <code>-p no:cacheprovider -p no:logging -p no:faulthandler</code>로 메모리 capture를 사용했다. 최종 통과 실행의 부수효과 시도는 0건이었다. 실제 입력, 전략 실행 또는 출력 파일 생성은 수행하지 않았다.</p>
+<p>허용된 추가 read context인 회사 <code>3070-etf.json</code>과 회수 ZIP을 독립적으로 읽었다. ZIP SHA-256 <code>9534c1a22741d1dc40126be2d27af0025c877ca7149429931d23960724e81f54</code>가 영수증과 일치했고, 회사의 현재 strict consumer가 27개 member를 검증했다. ZIP의 <code>run.py</code>, <code>policy.json</code>, <code>lineage.json</code>, <code>__init__.py</code>, <code>adapter.py</code>, <code>engine.py</code>, <code>signals.py</code> 바이트는 현재 lab과 일치한다. 실행 config는 등록 수식 A25를 선택한 생성 fixture이다.</p>
+<p>해당 실행은 회사 pin <code>f6a50e58a5eed6f4388f99556ef931c32f48533e</code>, lab base <code>21fa730a6c98d593143a530715b44c0d64cf74b5</code>, 생성 fixture commit <code>c721146e61966cc52bd617689ed05c79356ee3fb</code>에 묶인다. qualification·두 sandbox receipt·profile·개발 시작 이전 표본 날짜를 직접 대조했다. 영수증은 실제 3070/bwrap 두 단계, <code>fixture_only=true</code>, 추가 과학 시행 0, 실제 snapshot 읽기 0을 기록한다. 이 context는 출력 로그 수정 후 producer-consumer 연결의 증거이며 이 lab의 19개 digest scope에는 포함되지 않는다.</p>
+<p>메인 스레드가 보고한 producer-consumer 57개 통과 및 실제 worker 검사 1개 통과는 별도 수행 결과다. 감사자는 이를 직접 실행했다고 주장하지 않는다. <code>test_adapter.py</code>의 파일 생성 회귀 검사는 소스와 회수된 연결 증거로 검토했다.</p>
+<h2>한계와 파일 검사</h2>
+<p>실제 레이크/snapshot/sealed 데이터, SSH, 모델 학습·시장 성과 계산을 수행하지 않았다. 경제적 설득력·후보 선택·confirmation·배치와 실제 Slack/Temporal은 판정 대상이 아니다. 기존 원본 lineage·정책·가드 판정은 동일 바이트 확인과 현재 가드 통과로 보존성을 확인했다.</p>
+<p>동일 repoRoot에서 <code>qlab.audits.compute_scope_digest(target_root, scope)</code>로 <code>9621c244eb27</code>을 산출했다. objective digest는 주어진 <code>03d58ee449e6</code>이다. HTML/receipt 및 <code>qlab.control</code> 검증은 메인 스레드가 수행한다.</p>
+<p>실제 <code>parse_audit</code> 성공, <code>validate_audit(record, repoRoot) == []</code>와 supersedes 대상의 동일 judge/target을 확인했다. 동일 repoRoot의 <code>make check-audits</code>도 <code>UV_NO_SYNC=1</code>, <code>UV_OFFLINE=1</code>, 기존 Python 환경 및 파일 쓰기 금지 sandbox에서 실행했다. uv cache 초기화가 <code>/Users/achii/.cache/uv/sdists-v9/.git</code> 쓰기를 요구해 <strong>exit 2</strong>로 거부됐다. 전체 Make gate 통과는 주장하지 않으며, 직접 판정 API 검사는 통과했다.</p>
+</div></section><footer><p class="note"><strong>이 리포트는 판정하지 않고 제안하지 않는다.</strong> 모든 문장의 출처는 판정 파일이며 qlab.reporting 이 결정적으로 생성했다 — 사람이 옮겨 적은 수치가 없다.</p><p class="mono muted">uv run python -m qlab.reporting labs/company-autonomous-etf/audits/AUDIT-leak-auditor-20260921-adaptive-engineering-r2.md</p></footer></main></body></html>

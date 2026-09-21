@@ -1,0 +1,400 @@
+uv lock --check (.)
+Resolved 169 packages in 1ms
+uv lock --check (strategies/scalerank/v03)
+Resolved 85 packages in 0.88ms
+uv lock --check (strategies/scalerank/v04)
+Resolved 85 packages in 0.90ms
+uv run ruff check --extend-exclude '**/audits/*.md' core tests strategies labs
+All checks passed!
+uv run ruff format --check --extend-exclude '**/audits/*.md' core tests strategies labs
+496 files already formatted
+라인 분류 확인 완료: TORCH_TESTPATHS=[tests strategies/hdrl-aa] OTHER_TESTPATHS=[strategies/uprank] SCALERANK_PROJECTS=[strategies/scalerank/v03 strategies/scalerank/v04]
+랩 분류 확인 완료: LABS_TESTPATHS=[labs/lppls-null labs/lppls-identification labs/netrank-inventory labs/lppls-sector labs/star-crypto labs/company-autonomous-etf]
+uv run pytest -q -c pyproject.toml tests strategies/hdrl-aa
+........................................................................ [ 13%]
+........................................................................ [ 27%]
+........................................................................ [ 41%]
+........................................................................ [ 54%]
+........................................................................ [ 68%]
+........................................................................ [ 82%]
+........................................................................ [ 96%]
+....................                                                     [100%]
+=============================== warnings summary ===============================
+strategies/hdrl-aa/tests/integration/test_train_cro_smoke.py::test_phase2_end_to_end
+  /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/strategies/hdrl-aa/src/hdrl_aa/training/pretrain_cro.py:105: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+  Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:822.)
+    epoch_loss += float(loss) * len(idx)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+524 passed, 1 warning in 21.05s
+uv run pytest -q -c pyproject.toml strategies/uprank
+........................................................................ [ 32%]
+........................................................................ [ 65%]
+........................................................................ [ 98%]
+...                                                                      [100%]
+=============================== warnings summary ===============================
+strategies/uprank/tests/test_ranker.py::test_ranker_fits_date_groups_and_scores
+strategies/uprank/tests/test_ranker.py::test_top_tail_classifier_fits_cross_sectional_target
+strategies/uprank/tests/test_ranker.py::test_absolute_positive_classifier_uses_forward_return_sign
+  /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/.venv/lib/python3.11/site-packages/lightgbm/sklearn.py:1106: LGBMDeprecationWarning: The argument 'eval_set' is deprecated, use 'eval_X' and 'eval_y' instead.
+    eval_set = _validate_eval_set_Xy(eval_set=eval_set, eval_X=eval_X, eval_y=eval_y)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+219 passed, 3 warnings in 6.58s
+uv run pytest -q -c pyproject.toml labs/lppls-null labs/lppls-identification labs/netrank-inventory labs/lppls-sector labs/star-crypto labs/company-autonomous-etf
+........................................................................ [ 24%]
+........................................................................ [ 49%]
+........................................................................ [ 73%]
+........................................................................ [ 98%]
+....                                                                     [100%]
+=============================== warnings summary ===============================
+labs/netrank-inventory/tests/leakage/test_causal.py::test_forward_return_does_not_depend_on_data_after_its_own_horizon
+labs/netrank-inventory/tests/leakage/test_causal.py::test_forward_return_does_not_depend_on_data_after_its_own_horizon
+labs/netrank-inventory/tests/leakage/test_causal.py::test_forward_return_is_sensitive_within_its_horizon
+labs/netrank-inventory/tests/leakage/test_causal.py::test_forward_return_is_sensitive_within_its_horizon
+labs/netrank-inventory/tests/test_panel.py::test_forward_return_uses_calendar_position_not_ticker_observations
+labs/netrank-inventory/tests/test_panel.py::test_forward_return_uses_last_price_when_delisted
+labs/netrank-inventory/tests/test_panel.py::test_forward_return_is_nan_where_stock_not_yet_listed
+  /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/netrank-inventory/src/netrank_inventory/q2.py:28: FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+    alive_fwd = alive.shift(-horizon).astype("object").fillna(False).astype(bool)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+292 passed, 1 skipped, 7 warnings in 15.43s
+uv run pytest (strategies/scalerank/v03, 독립 venv)
+.........................................                                [100%]
+=============================== warnings summary ===============================
+tests/leakage/test_quality_features.py::test_cfs_preferred_over_ofs
+  /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/strategies/scalerank/v03/tests/leakage/test_quality_features.py:62: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+    q = annual_quality(pd.concat([dart, ofs], ignore_index=True))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+41 passed, 1 warning in 1.85s
+uv run pytest (strategies/scalerank/v04, 독립 venv)
+........................................................................ [ 88%]
+.........                                                                [100%]
+=============================== warnings summary ===============================
+tests/leakage/test_quality_features.py::test_cfs_preferred_over_ofs
+  /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/strategies/scalerank/v04/tests/leakage/test_quality_features.py:62: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+    q = annual_quality(pd.concat([dart, ofs], ignore_index=True))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+81 passed, 1 warning in 4.44s
+uv run pytest -m leakage -v
+============================= test session starts ==============================
+platform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/achii/quant-company-qualification/autonomous-20260921/etf-lab
+configfile: pyproject.toml
+testpaths: tests, strategies, labs
+plugins: timeout-2.4.0, cov-7.1.0
+timeout: 60.0s
+timeout method: signal
+timeout func_only: False
+collecting ... collected 1035 items / 818 deselected / 1 skipped / 217 selected
+
+tests/contracts/test_sealed_window.py::test_development_rows_pass PASSED [  0%]
+tests/contracts/test_sealed_window.py::test_sealed_row_raises PASSED     [  0%]
+tests/contracts/test_sealed_window.py::test_error_message_names_the_frame_and_the_first_offending_date PASSED [  1%]
+tests/contracts/test_sealed_window.py::test_non_datetime_index_raises PASSED [  1%]
+tests/contracts/test_sealed_window.py::test_sealed_boundary_date_raises PASSED [  2%]
+tests/contracts/test_sealed_window.py::test_index_with_nat_raises PASSED [  2%]
+tests/contracts/test_sealed_window.py::test_index_tz_aware_raises_domain_message PASSED [  3%]
+tests/contracts/test_sealed_window.py::test_dev_start_after_dev_end_raises PASSED [  3%]
+tests/contracts/test_sealed_window.py::test_dev_end_overlaps_sealed_start_raises PASSED [  4%]
+tests/contracts/test_sealed_window.py::test_sealed_start_after_sealed_end_raises PASSED [  4%]
+tests/contracts/test_sealed_window.py::test_panel_development_rows_pass PASSED [  5%]
+tests/contracts/test_sealed_window.py::test_panel_sealed_row_raises PASSED [  5%]
+tests/contracts/test_sealed_window.py::test_panel_missing_date_column_raises PASSED [  5%]
+tests/contracts/test_sealed_window.py::test_panel_custom_date_column PASSED [  6%]
+tests/contracts/test_sealed_window.py::test_panel_integer_date_column_raises PASSED [  6%]
+tests/contracts/test_sealed_window.py::test_panel_non_datetime_string_raises PASSED [  7%]
+tests/contracts/test_sealed_window.py::test_panel_sealed_boundary_date_raises PASSED [  7%]
+tests/contracts/test_sealed_window.py::test_panel_with_nat_raises PASSED [  8%]
+tests/contracts/test_sealed_window.py::test_panel_tz_aware_raises_domain_message PASSED [  8%]
+tests/contracts/test_sealed_window.py::test_from_config_reads_the_block PASSED [  9%]
+tests/contracts/test_sealed_window.py::test_from_config_missing_block_raises PASSED [  9%]
+tests/contracts/test_sealed_window.py::test_from_config_missing_key_raises PASSED [ 10%]
+tests/contracts/test_sealed_window.py::test_from_config_quoted_false_string_raises PASSED [ 10%]
+tests/contracts/test_sealed_window.py::test_from_config_quoted_true_string_raises PASSED [ 11%]
+tests/contracts/test_sealed_window.py::test_from_config_non_mapping_block_raises PASSED [ 11%]
+tests/contracts/test_sealed_window.py::test_require_sealed_opened_blocks_unopened PASSED [ 11%]
+tests/contracts/test_sealed_window.py::test_require_sealed_opened_passes_when_opened PASSED [ 12%]
+tests/guards/test_causal.py::test_truncation_passes_for_causal_function PASSED [ 12%]
+tests/guards/test_causal.py::test_truncation_catches_leaky_function PASSED [ 13%]
+tests/guards/test_causal.py::test_perturbation_passes_for_causal_function PASSED [ 13%]
+tests/guards/test_causal.py::test_perturbation_catches_leaky_function PASSED [ 14%]
+tests/guards/test_causal.py::test_truncation_rejects_out_of_range_cut PASSED [ 14%]
+tests/guards/test_causal.py::test_perturbation_catches_order_dependent_leak PASSED [ 15%]
+tests/guards/test_causal.py::test_perturbation_catches_sign_dependent_leak PASSED [ 15%]
+tests/guards/test_causal.py::test_truncation_rejects_length_changing_fn PASSED [ 16%]
+tests/guards/test_causal.py::test_perturbation_rejects_length_changing_fn PASSED [ 16%]
+tests/guards/test_panel.py::test_snap_includes_whole_cross_section PASSED [ 17%]
+tests/guards/test_panel.py::test_snap_uses_date_not_row_position PASSED  [ 17%]
+tests/guards/test_panel.py::test_snap_rejects_unsorted_panel PASSED      [ 17%]
+tests/guards/test_panel.py::test_snap_rejects_boundaries_with_nothing_on_one_side PASSED [ 18%]
+tests/guards/test_panel.py::test_raw_guard_falsely_flags_causal_code_when_cut_splits_a_cross_section PASSED [ 18%]
+tests/guards/test_panel.py::test_wrapper_passes_the_same_causal_code PASSED [ 19%]
+tests/guards/test_panel.py::test_wrapper_still_catches_a_real_leak PASSED [ 19%]
+tests/guards/test_panel.py::test_wrapper_catches_leak_at_every_boundary PASSED [ 20%]
+tests/guards/test_panel.py::test_wrapper_rejects_row_count_changing_fn PASSED [ 20%]
+tests/guards/test_panel.py::test_wrapper_rejects_panel_without_numeric_columns PASSED [ 21%]
+tests/guards/test_panel.py::test_wrapper_preserves_key_value_alignment PASSED [ 21%]
+strategies/hdrl-aa/tests/leakage/test_anchor_causal.py::test_future_perturbation_does_not_change_anchor PASSED [ 22%]
+strategies/hdrl-aa/tests/leakage/test_anchor_causal.py::test_truncated_history_matches_full_history PASSED [ 22%]
+strategies/hdrl-aa/tests/leakage/test_cro_aux_target.py::test_inputs_only_use_past_macro PASSED [ 23%]
+strategies/hdrl-aa/tests/leakage/test_cro_aux_target.py::test_runtime_channels_are_zero_in_pretraining PASSED [ 23%]
+strategies/hdrl-aa/tests/leakage/test_cro_aux_target.py::test_label_differs_when_future_returns_change PASSED [ 23%]
+strategies/hdrl-aa/tests/leakage/test_env_causal.py::test_future_perturbation_leaves_early_steps_unchanged PASSED [ 24%]
+strategies/hdrl-aa/tests/leakage/test_features_causal.py::test_truncated_recompute_matches_full PASSED [ 24%]
+strategies/hdrl-aa/tests/leakage/test_features_causal.py::test_future_perturbation_leaves_past_unchanged PASSED [ 25%]
+strategies/hdrl-aa/tests/leakage/test_features_causal.py::test_identity_features_causal PASSED [ 25%]
+strategies/hdrl-aa/tests/leakage/test_features_causal.py::test_min_periods_warmup_is_nan PASSED [ 26%]
+strategies/hdrl-aa/tests/leakage/test_features_causal.py::test_expanding_stats_use_only_past PASSED [ 26%]
+strategies/hdrl-aa/tests/leakage/test_features_causal.py::test_turbulence_causal PASSED [ 27%]
+strategies/hdrl-aa/tests/leakage/test_fred_alignment.py::test_aligned_value_is_previous_trading_day PASSED [ 27%]
+strategies/hdrl-aa/tests/leakage/test_fred_alignment.py::test_weekend_gap_uses_friday_value PASSED [ 28%]
+strategies/hdrl-aa/tests/leakage/test_fred_alignment.py::test_series_start_stays_nan PASSED [ 28%]
+strategies/hdrl-aa/tests/leakage/test_fred_alignment.py::test_future_fred_perturbation_does_not_change_past PASSED [ 29%]
+strategies/hdrl-aa/tests/leakage/test_fred_alignment.py::test_future_price_perturbation_does_not_change_past PASSED [ 29%]
+strategies/hdrl-aa/tests/leakage/test_sealed_period.py::test_dev_end_is_day_before_sealed_start PASSED [ 29%]
+strategies/hdrl-aa/tests/leakage/test_sealed_period.py::test_window_ending_in_sealed_period_raises PASSED [ 30%]
+strategies/hdrl-aa/tests/leakage/test_sealed_period.py::test_window_inside_dev_passes PASSED [ 30%]
+strategies/hdrl-aa/tests/leakage/test_sealed_period.py::test_window_starting_in_sealed_period_raises PASSED [ 31%]
+strategies/hdrl-aa/tests/leakage/test_sealed_period.py::test_unlock_allows_final_evaluation PASSED [ 31%]
+strategies/hdrl-aa/tests/leakage/test_sealed_period.py::test_fold_validation_windows_end_before_sealed PASSED [ 32%]
+strategies/hdrl-aa/tests/leakage/test_splits.py::test_walkforward_folds_do_not_leak PASSED [ 32%]
+strategies/hdrl-aa/tests/leakage/test_splits.py::test_test_set_starts_after_all_validation PASSED [ 33%]
+strategies/uprank/tests/grouprank/test_dataset.py::test_label_ignores_post_window_prices_when_nothing_goes_missing PASSED [ 33%]
+strategies/uprank/tests/grouprank/test_dataset.py::test_group_return_must_not_depend_on_prices_after_the_horizon PASSED [ 34%]
+strategies/uprank/tests/leakage/test_engine_index_contract.py::test_unsorted_mktcap_index_raises PASSED [ 34%]
+strategies/uprank/tests/leakage/test_engine_index_contract.py::test_unsorted_price_index_raises PASSED [ 35%]
+strategies/uprank/tests/leakage/test_engine_index_contract.py::test_duplicate_dates_in_mktcap_raise PASSED [ 35%]
+strategies/uprank/tests/leakage/test_ensemble_blend.py::test_blend_uses_only_same_date PASSED [ 35%]
+strategies/uprank/tests/leakage/test_ensemble_blend.py::test_blend_no_cross_date_mixing PASSED [ 36%]
+strategies/uprank/tests/leakage/test_ensemble_blend.py::test_min_members_dropped_ledger PASSED [ 36%]
+strategies/uprank/tests/leakage/test_ensemble_blend.py::test_member_selection_ignores_confirm PASSED [ 37%]
+strategies/uprank/tests/leakage/test_ensemble_blend.py::test_drop_rule_requires_all_segments_nonpositive PASSED [ 37%]
+strategies/uprank/tests/leakage/test_excess_labels.py::test_last_horizon_rows_are_nan PASSED [ 38%]
+strategies/uprank/tests/leakage/test_excess_labels.py::test_sliced_equals_full_before_boundary PASSED [ 38%]
+strategies/uprank/tests/leakage/test_excess_labels.py::test_market_forward_min_names PASSED [ 39%]
+strategies/uprank/tests/leakage/test_excess_labels.py::test_label_is_balanced_by_construction PASSED [ 39%]
+strategies/uprank/tests/leakage/test_factors.py::test_exposures_causal PASSED [ 40%]
+strategies/uprank/tests/leakage/test_factors.py::test_sector_pit PASSED  [ 40%]
+strategies/uprank/tests/leakage/test_factors.py::test_residualize_removes_exposure PASSED [ 41%]
+strategies/uprank/tests/leakage/test_factors.py::test_residual_label_last_horizon_nan PASSED [ 41%]
+strategies/uprank/tests/leakage/test_factors.py::test_residual_label_no_future_leak PASSED [ 41%]
+strategies/uprank/tests/leakage/test_factors_index_contract.py::test_build_rejects_unsorted_prices PASSED [ 42%]
+strategies/uprank/tests/leakage/test_factors_index_contract.py::test_build_rejects_duplicate_dates PASSED [ 42%]
+strategies/uprank/tests/leakage/test_factors_index_contract.py::test_exposure_frame_rejects_unsorted_panel_at_the_truncation_point PASSED [ 43%]
+strategies/uprank/tests/leakage/test_factors_index_contract.py::test_sorted_input_still_produces_exposures PASSED [ 43%]
+strategies/uprank/tests/leakage/test_features_b0.py::test_feature_count_is_176 PASSED [ 44%]
+strategies/uprank/tests/leakage/test_features_b0.py::test_train_rows_exclude_unknown_labels PASSED [ 44%]
+strategies/uprank/tests/leakage/test_features_b0.py::test_features_causal PASSED [ 45%]
+strategies/uprank/tests/leakage/test_features_b0.py::test_label_is_forward_return PASSED [ 45%]
+strategies/uprank/tests/leakage/test_flows.py::test_feature_names_and_count PASSED [ 46%]
+strategies/uprank/tests/leakage/test_flows.py::test_no_lookahead_rolling PASSED [ 46%]
+strategies/uprank/tests/leakage/test_flows.py::test_intensity_is_scale_neutral PASSED [ 47%]
+strategies/uprank/tests/leakage/test_flows.py::test_consistency_bounded PASSED [ 47%]
+strategies/uprank/tests/leakage/test_flows.py::test_stack_panels_slices_at_end PASSED [ 47%]
+strategies/uprank/tests/leakage/test_grouprank_features.py::test_all_blocks_are_causal_at_multiple_cutoffs PASSED [ 48%]
+strategies/uprank/tests/leakage/test_grouprank_features.py::test_guard_would_catch_a_seeded_leak PASSED [ 48%]
+strategies/uprank/tests/leakage/test_grouprank_features.py::test_unsorted_panel_is_rejected_not_silently_leaked PASSED [ 49%]
+strategies/uprank/tests/leakage/test_grouprank_features.py::test_group_returns_rejects_unsorted_calendar PASSED [ 49%]
+strategies/uprank/tests/leakage/test_grouprank_groups.py::test_uses_only_pre_cutoff_sector_snapshot PASSED [ 50%]
+strategies/uprank/tests/leakage/test_grouprank_groups.py::test_build_groups_does_not_apply_min_members PASSED [ 50%]
+strategies/uprank/tests/leakage/test_grouprank_groups.py::test_min_members_filter_drops_small_groups PASSED [ 51%]
+strategies/uprank/tests/leakage/test_grouprank_groups.py::test_duplicate_ticker_resolution_is_deterministic PASSED [ 51%]
+strategies/uprank/tests/leakage/test_grouprank_groups.py::test_size_bucket_is_computed_within_market PASSED [ 52%]
+strategies/uprank/tests/leakage/test_grouprank_groups.py::test_coverage_reports_dropped_groups_and_stocks PASSED [ 52%]
+strategies/uprank/tests/leakage/test_grouprank_groups.py::test_no_snapshot_before_cutoff_raises PASSED [ 52%]
+strategies/uprank/tests/leakage/test_pooled.py::test_normalize_uses_only_same_date PASSED [ 53%]
+strategies/uprank/tests/leakage/test_pooled.py::test_normalize_rank_bounded PASSED [ 53%]
+strategies/uprank/tests/leakage/test_pooled.py::test_training_panel_excludes_unknown_labels PASSED [ 54%]
+strategies/uprank/tests/leakage/test_pooled.py::test_training_panel_no_lookahead PASSED [ 54%]
+strategies/uprank/tests/leakage/test_pooled.py::test_scoring_panel_is_single_cross_section PASSED [ 55%]
+strategies/uprank/tests/leakage/test_pooled.py::test_scoring_panel_no_lookahead PASSED [ 55%]
+strategies/uprank/tests/leakage/test_purged_kfold.py::test_folds_partition_validation PASSED [ 56%]
+strategies/uprank/tests/leakage/test_purged_kfold.py::test_no_train_within_purge_embargo_gap PASSED [ 56%]
+strategies/uprank/tests/leakage/test_purged_kfold.py::test_embargo_widens_gap PASSED [ 57%]
+strategies/uprank/tests/leakage/test_purged_kfold.py::test_bounds_cover_all PASSED [ 57%]
+strategies/uprank/tests/leakage/test_purged_kfold.py::test_cross_sectional_same_day_purged PASSED [ 58%]
+strategies/uprank/tests/leakage/test_realistic_disappearance.py::test_future_reappearance_does_not_change_status PASSED [ 58%]
+strategies/uprank/tests/leakage/test_realistic_disappearance.py::test_output_invariant_to_any_future_after_end[resume] PASSED [ 58%]
+strategies/uprank/tests/leakage/test_realistic_disappearance.py::test_output_invariant_to_any_future_after_end[gone] PASSED [ 59%]
+strategies/uprank/tests/leakage/test_realistic_disappearance.py::test_output_invariant_to_any_future_after_end[scaled] PASSED [ 59%]
+strategies/uprank/tests/leakage/test_realistic_disappearance.py::test_output_invariant_to_any_future_after_end[gapped] PASSED [ 60%]
+strategies/uprank/tests/leakage/test_realistic_disappearance.py::test_missing_at_end_defaults_to_disappeared PASSED [ 60%]
+strategies/uprank/tests/leakage/test_realistic_disappearance.py::test_halt_grace_declares_tolerance_without_future_data PASSED [ 61%]
+strategies/uprank/tests/leakage/test_realistic_disappearance.py::test_grace_is_measured_on_trading_days_up_to_end_only PASSED [ 61%]
+strategies/uprank/tests/leakage/test_realistic_index_contract.py::test_unsorted_index_raises_instead_of_marking_a_future_price PASSED [ 62%]
+strategies/uprank/tests/leakage/test_realistic_index_contract.py::test_duplicate_dates_raise PASSED [ 62%]
+strategies/uprank/tests/leakage/test_realistic_index_contract.py::test_sorted_index_still_works PASSED [ 63%]
+strategies/uprank/tests/leakage/test_sealed_guard.py::test_guard_raises_inside_sealed PASSED [ 63%]
+strategies/uprank/tests/leakage/test_sealed_guard.py::test_guard_passes_outside_sealed PASSED [ 64%]
+strategies/uprank/tests/leakage/test_sealed_guard.py::test_guard_boundary_inclusive PASSED [ 64%]
+strategies/uprank/tests/leakage/test_train_horizon.py::test_training_panel_excludes_unknown_labels_63d PASSED [ 64%]
+strategies/uprank/tests/leakage/test_train_horizon.py::test_sliced_equals_full_before_boundary_63d PASSED [ 65%]
+strategies/uprank/tests/leakage/test_train_horizon.py::test_no_lookahead_mutation_63d PASSED [ 65%]
+strategies/uprank/tests/leakage/test_train_horizon.py::test_chronological_split_purge_gap[21] PASSED [ 66%]
+strategies/uprank/tests/leakage/test_train_horizon.py::test_chronological_split_purge_gap[63] PASSED [ 66%]
+strategies/uprank/tests/leakage/test_train_horizon.py::test_scoring_panel_horizon_invariant PASSED [ 67%]
+strategies/uprank/tests/leakage/test_universe.py::test_rules PASSED      [ 67%]
+strategies/uprank/tests/leakage/test_universe.py::test_meritz_not_filtered_as_reit PASSED [ 68%]
+strategies/uprank/tests/leakage/test_universe.py::test_min_history_excludes_new_listing PASSED [ 68%]
+strategies/uprank/tests/leakage/test_universe.py::test_suspension_proxy PASSED [ 69%]
+strategies/uprank/tests/leakage/test_universe.py::test_market_filter_is_point_in_time PASSED [ 69%]
+strategies/uprank/tests/leakage/test_universe.py::test_duplicate_ticker_in_names_resolves_to_one_row PASSED [ 70%]
+strategies/uprank/tests/leakage/test_universe.py::test_no_lookahead PASSED [ 70%]
+labs/company-autonomous-etf/tests/test_signals.py::test_complete_features_eligibility_adv_and_targets_are_asof[M2] PASSED [ 70%]
+labs/company-autonomous-etf/tests/test_signals.py::test_complete_features_eligibility_adv_and_targets_are_asof[A25] PASSED [ 71%]
+labs/company-autonomous-etf/tests/test_signals.py::test_complete_features_eligibility_adv_and_targets_are_asof[A75] PASSED [ 71%]
+labs/company-autonomous-etf/tests/test_signals.py::test_complete_features_eligibility_adv_and_targets_are_asof[B] PASSED [ 72%]
+labs/company-autonomous-etf/tests/test_signals.py::test_complete_features_eligibility_adv_and_targets_are_asof[C] PASSED [ 72%]
+labs/company-autonomous-etf/tests/test_signals.py::test_complete_features_eligibility_adv_and_targets_are_asof[D50] PASSED [ 73%]
+labs/company-autonomous-etf/tests/test_signals.py::test_complete_features_eligibility_adv_and_targets_are_asof[D75] PASSED [ 73%]
+labs/company-autonomous-etf/tests/test_signals.py::test_planted_future_leak_fails_the_real_guard PASSED [ 74%]
+labs/lppls-null/tests/test_scan.py::TestCausality::test_truncation_guard[300] PASSED [ 74%]
+labs/lppls-null/tests/test_scan.py::TestCausality::test_truncation_guard[400] PASSED [ 75%]
+labs/lppls-null/tests/test_scan.py::TestCausality::test_truncation_guard[500] PASSED [ 75%]
+labs/lppls-null/tests/test_scan.py::TestCausality::test_perturbation_guard[300] PASSED [ 76%]
+labs/lppls-null/tests/test_scan.py::TestCausality::test_perturbation_guard[400] PASSED [ 76%]
+labs/lppls-null/tests/test_scan.py::TestCausality::test_perturbation_guard[500] PASSED [ 76%]
+labs/lppls-null/tests/test_scan.py::TestCausality::test_guards_detect_a_planted_leak[300] PASSED [ 77%]
+labs/lppls-null/tests/test_scan.py::TestCausality::test_guards_detect_a_planted_leak[400] PASSED [ 77%]
+labs/lppls-null/tests/test_scan.py::TestCausality::test_guards_detect_a_planted_leak[500] PASSED [ 78%]
+labs/lppls-null/tests/test_scan.py::TestCausality::test_row_matches_indicator_computed_on_the_truncated_series PASSED [ 78%]
+labs/lppls-sector/tests/test_residual.py::TestCausality::test_truncation_guard[300] PASSED [ 79%]
+labs/lppls-sector/tests/test_residual.py::TestCausality::test_truncation_guard[400] PASSED [ 79%]
+labs/lppls-sector/tests/test_residual.py::TestCausality::test_truncation_guard[500] PASSED [ 80%]
+labs/lppls-sector/tests/test_residual.py::TestCausality::test_perturbation_guard[300] PASSED [ 80%]
+labs/lppls-sector/tests/test_residual.py::TestCausality::test_perturbation_guard[400] PASSED [ 81%]
+labs/lppls-sector/tests/test_residual.py::TestCausality::test_perturbation_guard[500] PASSED [ 81%]
+labs/lppls-sector/tests/test_residual.py::TestCausality::test_guards_detect_a_planted_leak[300] PASSED [ 82%]
+labs/lppls-sector/tests/test_residual.py::TestCausality::test_guards_detect_a_planted_leak[400] PASSED [ 82%]
+labs/lppls-sector/tests/test_residual.py::TestCausality::test_guards_detect_a_planted_leak[500] PASSED [ 82%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_are_causal[100-mom21] PASSED [ 83%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_are_causal[100-rev5] PASSED [ 83%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_are_causal[100-mom252] PASSED [ 84%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_are_causal[160-mom21] PASSED [ 84%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_are_causal[160-rev5] PASSED [ 85%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_are_causal[160-mom252] PASSED [ 85%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_are_causal[220-mom21] PASSED [ 86%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_are_causal[220-rev5] PASSED [ 86%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_are_causal[220-mom252] PASSED [ 87%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_are_causal[260-mom21] PASSED [ 87%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_are_causal[260-rev5] PASSED [ 88%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_are_causal[260-mom252] PASSED [ 88%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_naive_scores_do_not_ffill_across_halts PASSED [ 88%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_forward_return_does_not_depend_on_data_after_its_own_horizon PASSED [ 89%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_forward_return_is_sensitive_within_its_horizon PASSED [ 89%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_rolling_flow_ignores_future_rows[5] PASSED [ 90%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_rolling_flow_ignores_future_rows[21] PASSED [ 90%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_rolling_flow_ignores_future_rows[63] PASSED [ 91%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_rolling_flow_presence_mask_is_not_filled PASSED [ 91%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_adv_uses_only_past_and_present PASSED [ 92%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_undetected_ca_exclusion_does_not_depend_on_the_future PASSED [ 92%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_guard_catches_a_seeded_leak_in_a_panel_feature PASSED [ 93%]
+labs/netrank-inventory/tests/leakage/test_causal.py::test_guard_catches_a_seeded_leak_in_rolling_flow PASSED [ 93%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_signal_cannot_read_the_bar_it_trades PASSED [ 94%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_pattern_legs_are_two_and_one_bars_back PASSED [ 94%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_body_and_one_bar_return_are_the_same_number PASSED [ 94%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_big_bar_threshold_excludes_its_own_bar PASSED [ 95%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_entry_is_the_open_and_exit_is_h_bars_later PASSED [ 95%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_resampled_bar_is_stamped_when_it_closes PASSED [ 96%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_resample_keeps_only_complete_bars[607] PASSED [ 96%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_resample_keeps_only_complete_bars[600] PASSED [ 97%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_resample_keeps_only_complete_bars[613] PASSED [ 97%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_funding_counts_only_stamps_inside_the_hold PASSED [ 98%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_vectorised_funding_matches_the_scalar_form PASSED [ 98%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_thinning_enforces_the_holding_spacing PASSED [ 99%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_big_only_is_disjoint_from_the_pattern PASSED [ 99%]
+labs/star-crypto/tests/leakage/test_star_crypto_causal.py::test_evening_is_the_mirror_of_morning PASSED [100%]
+
+=============================== warnings summary ===============================
+labs/netrank-inventory/tests/leakage/test_causal.py::test_forward_return_does_not_depend_on_data_after_its_own_horizon
+labs/netrank-inventory/tests/leakage/test_causal.py::test_forward_return_does_not_depend_on_data_after_its_own_horizon
+labs/netrank-inventory/tests/leakage/test_causal.py::test_forward_return_is_sensitive_within_its_horizon
+labs/netrank-inventory/tests/leakage/test_causal.py::test_forward_return_is_sensitive_within_its_horizon
+  /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/netrank-inventory/src/netrank_inventory/q2.py:28: FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+    alive_fwd = alive.shift(-horizon).astype("object").fillna(False).astype(bool)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========= 217 passed, 1 skipped, 818 deselected, 4 warnings in 19.08s ==========
+uv run pytest -m leakage -v (strategies/scalerank/v03, 독립 venv)
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/strategies/scalerank/v03
+configfile: pyproject.toml
+testpaths: tests
+plugins: timeout-2.4.0, cov-7.1.0
+timeout: 60.0s
+timeout method: signal
+timeout func_only: False
+collected 41 items / 17 deselected / 24 selected
+
+tests/leakage/test_features_and_purge.py .....                           [ 20%]
+tests/leakage/test_portfolio_inputs.py ..                                [ 29%]
+tests/leakage/test_quality_features.py ....                              [ 45%]
+tests/leakage/test_riskmodel_pit.py .                                    [ 50%]
+tests/leakage/test_splits.py ......                                      [ 75%]
+tests/leakage/test_universe.py ......                                    [100%]
+
+=============================== warnings summary ===============================
+tests/leakage/test_quality_features.py::test_cfs_preferred_over_ofs
+  /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/strategies/scalerank/v03/tests/leakage/test_quality_features.py:62: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+    q = annual_quality(pd.concat([dart, ofs], ignore_index=True))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================= 24 passed, 17 deselected, 1 warning in 1.01s =================
+uv run pytest -m leakage -v (strategies/scalerank/v04, 독립 venv)
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/strategies/scalerank/v04
+configfile: pyproject.toml
+testpaths: tests
+plugins: timeout-2.4.0, cov-7.1.0
+timeout: 60.0s
+timeout method: signal
+timeout func_only: False
+collected 81 items / 51 deselected / 30 selected
+
+tests/leakage/test_features_and_purge.py .....                           [ 16%]
+tests/leakage/test_policy_fit.py ......                                  [ 36%]
+tests/leakage/test_portfolio_inputs.py ..                                [ 43%]
+tests/leakage/test_quality_features.py ....                              [ 56%]
+tests/leakage/test_riskmodel_pit.py .                                    [ 60%]
+tests/leakage/test_splits.py ......                                      [ 80%]
+tests/leakage/test_universe.py ......                                    [100%]
+
+=============================== warnings summary ===============================
+tests/leakage/test_quality_features.py::test_cfs_preferred_over_ofs
+  /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/strategies/scalerank/v04/tests/leakage/test_quality_features.py:62: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+    q = annual_quality(pd.concat([dart, ofs], ignore_index=True))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================= 30 passed, 51 deselected, 1 warning in 1.24s =================
+leakage 수집(워크스페이스 공유 세션) 217 건
+  strategies/hdrl-aa/tests/leakage/ 25 건
+  strategies/uprank/tests/leakage/ 79 건
+  labs/netrank-inventory/tests/leakage/ 23 건
+  labs/star-crypto/tests/leakage/ 14 건
+  strategies/scalerank/v03/tests/leakage/ 24 건 (독립 venv)
+  strategies/scalerank/v04/tests/leakage/ 30 건 (독립 venv)
+leakage 수집 총계(워크스페이스 + scalerank 독립 venv 둘 다 포함): 271 건
+범위 기준: origin/main (29 개 경로)
+판정 아티팩트 101 건 검사 (유효 41, 은퇴 60)
+  범위 한정 모드 — 변경 경로 29 건 기준
+  경고(범위 밖, 이번 push 를 막지 않음) — /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/lppls-null/audits/AUDIT-execution-realist-20260802-v2r3.md: 추적되지 않는 파일이 scope 에 있다 (runs/v2/verdict.json) — 이 판정은 그것을 만든 머신에서만 검증된다. 산출물이 근거라면 scope 가 아니라 본문에 해시로 적을 것
+  경고(범위 밖, 이번 push 를 막지 않음) — /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/lppls-null/audits/AUDIT-execution-realist-20260802-v2r3.md: scope 파일이 존재하지 않는다: /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/lppls-null/runs/v2/verdict.json
+  경고(범위 밖, 이번 push 를 막지 않음) — /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/lppls-null/audits/AUDIT-mechanism-critic-20260802-v2r3.md: 추적되지 않는 파일이 scope 에 있다 (runs/v2/verdict.json) — 이 판정은 그것을 만든 머신에서만 검증된다. 산출물이 근거라면 scope 가 아니라 본문에 해시로 적을 것
+  경고(범위 밖, 이번 push 를 막지 않음) — /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/lppls-null/audits/AUDIT-mechanism-critic-20260802-v2r3.md: scope 파일이 존재하지 않는다: /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/lppls-null/runs/v2/verdict.json
+  경고(범위 밖, 이번 push 를 막지 않음) — /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/lppls-null/audits/AUDIT-overfitting-skeptic-20260802-v2r3.md: 추적되지 않는 파일이 scope 에 있다 (runs/v2/verdict.json) — 이 판정은 그것을 만든 머신에서만 검증된다. 산출물이 근거라면 scope 가 아니라 본문에 해시로 적을 것
+  경고(범위 밖, 이번 push 를 막지 않음) — /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/lppls-null/audits/AUDIT-overfitting-skeptic-20260802-v2r3.md: scope 파일이 존재하지 않는다: /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/lppls-null/runs/v2/verdict.json
+  경고(범위 밖, 이번 push 를 막지 않음) — /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/lppls-null/audits/AUDIT-prereg-adjudicator-20260803-v2r4.md: 추적되지 않는 파일이 scope 에 있다 (runs/v2/verdict.json) — 이 판정은 그것을 만든 머신에서만 검증된다. 산출물이 근거라면 scope 가 아니라 본문에 해시로 적을 것
+  경고(범위 밖, 이번 push 를 막지 않음) — /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/lppls-null/audits/AUDIT-prereg-adjudicator-20260803-v2r4.md: scope 파일이 존재하지 않는다: /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/lppls-null/runs/v2/verdict.json
+  경고(범위 밖, 이번 push 를 막지 않음) — /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/netrank-inventory/audits/AUDIT-prereg-adjudicator-20260804-refresh.md: 추적되지 않는 파일이 scope 에 있다 (runs/20260731T125239Z/RESULT.md, runs/20260731T125239Z/q2_verdict.csv, runs/20260731T125239Z/q2_secondary.csv, runs/20260731T125239Z/ic_by_year_flow_inst_21.csv, runs/20260731T125239Z/ic_by_year_flow_indiv_21.csv, runs/20260731T125239Z/flow_coverage_by_year.csv, runs/20260731T135533Z/RESULT.md, runs/20260731T135533Z/q3_naives.csv, runs/20260731T135533Z/q3_paired_t.csv, runs/20260731T135533Z/q4_drift.csv, runs/20260731T135533Z/q4_ic_split.csv, runs/repair-q4-dev-only/market_cagr_by_span.csv) — 이 판정은 그것을 만든 머신에서만 검증된다. 산출물이 근거라면 scope 가 아니라 본문에 해시로 적을 것
+  경고(범위 밖, 이번 push 를 막지 않음) — /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/netrank-inventory/audits/AUDIT-prereg-adjudicator-20260804-refresh.md: scope 파일이 존재하지 않는다: /home/achii/quant-company-qualification/autonomous-20260921/etf-lab/labs/netrank-inventory/runs/20260731T125239Z/RESULT.md
+uv run python -m qlab.ledger verify .
+시행 원장 6 건 검사 (시행 행 13, 다중검정 분모 13, 시도 18)
+uv run python -m qlab.control verify .
+{"failures": [], "manifests": 0, "ok": true, "states": {}}

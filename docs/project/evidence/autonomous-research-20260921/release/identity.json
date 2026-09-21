@@ -1,0 +1,31 @@
+{
+  "status": "prepared-not-approved-not-deployed",
+  "company_code_commit": "6d786b67c0da0c4ca05448536a6145147f9408d5",
+  "lab_commit": "857e4243c54d86067c2bf8519eee1162cbd02189",
+  "source_bundle_sha256": "76451f7297a1f4b02268e5568081126e978056c95d05492310485a7d22a77b61",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "mission_digest": "5d094b0df1a089039959c265995e8874b06977767c486daabded988d1668899e",
+  "execution_profile_digest": "9bf5f4fb27e0c2ca83e6adcab09219e7d8e754371731a4597f8e95382191883b",
+  "runtime_profile_sha256": "61a942002222771137e6ff4772f7d07e0c8f953f199492f3825bec7da1ea7cfb",
+  "runtime_manifest_sha256": "3a4067a218dec27533f424f6edcfd659cd72413cec64dc786111dee480eaa7b7",
+  "code_files": {
+    "labs/company-autonomous-etf/run.py": "383defbf17fec319f216db401473a292f496eed6f2ea42fed4fd0f9caa0092aa",
+    "labs/company-autonomous-etf/policy.json": "bf14a28c9f7dc48ae39ced848c474a1afad4f226671494e7cdb7ac2020ecd87a",
+    "labs/company-autonomous-etf/lineage.json": "9d06ae299c08221a61d85c9691bb548b1b4b7e7cbcdcc95d7635282da1d53b9b",
+    "labs/company-autonomous-etf/src/company_autonomous_etf/__init__.py": "634bda323ff02e792631b5ebce9c69f3b9a8d708d5fed496844003d81133a11c",
+    "labs/company-autonomous-etf/src/company_autonomous_etf/engine.py": "e344cde8f86a0cae2524aedc66f4fc0685a4735ff52ec59c013e20408c1f1627",
+    "labs/company-autonomous-etf/src/company_autonomous_etf/signals.py": "34b3dc6285113c0a8f9cff133fe34f80f472e9ec789ad925742c7c25f0fdd1b8",
+    "labs/company-autonomous-etf/src/company_autonomous_etf/adapter.py": "570086aba9be91b6f86c7a5c11cb8b6671036e2322bb24319773f21b090e11d0",
+    "labs/company-autonomous-etf/configs/candidate.json": "f8c8d42ca3138bad16847fbe4cb4e93be0173a5f94454b640eaf3e1700022ae2"
+  },
+  "configuration_files": {
+    "execution-profile.json": "b3172ab43bcef3b31636f70132b00d4ad8b221aea89bb6f5843abc5099c3ff7c",
+    "first-mission.json": "ba116344f8ac6d5c173d660aed1e8b13f41f50f7cb6fd060a7f74b1e4cbbfca8",
+    "server-profiles.json": "8024706e9fa3e191e9ca0ba4676392f76ce3b0ea8778d01894e127b1c0fb1e2e",
+    "worker-profile.json": "0c65eef6214b835fe07b13fc165e2915baa9cdbf113a595c46561e5f14dd3b80",
+    "qlab-profile.json": "679b7767a534f8d9f81c830861422a1ca2ed73723b2c969582fe0cbd3406c0e6",
+    "runtime-profile.json": "61a942002222771137e6ff4772f7d07e0c8f953f199492f3825bec7da1ea7cfb"
+  },
+  "scientific_trials_added": 0,
+  "lab_pull_request": "https://github.com/JJongAchii/quant-lab/pull/17"
+}

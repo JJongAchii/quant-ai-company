@@ -118,6 +118,31 @@ async def test_quota_pause_survives_company_restart_without_paid_fallback(compan
     assert restarted.prepare_turn(queued_turns(restarted, newer["project_id"])[0])["state"] == "defer"
 
 
+async def test_repeated_unavailability_keeps_same_request_after_old_retry_limit(company):
+    class RecoveringProvider:
+        def __init__(self):
+            self.ids = []
+
+        async def run(self, request):
+            self.ids.append(request.request_id)
+            if len(self.ids) <= 6:
+                raise ProviderFault("unavailable", "Synthetic temporary transport failure", 5)
+            return completed(request.request_id)
+
+    req = company.ingest(event_key="recovering-provider", text="Fixture", owner="user")
+    turn_id = queued_turns(company, req["project_id"])[0]
+    provider = RecoveringProvider()
+    for _ in range(6):
+        executor = TurnExecutor(Company(company.settings, company.roles), provider)
+        assert (await executor.execute(turn_id))["state"] == "defer"
+        with company.db.transaction() as conn:
+            conn.execute("UPDATE turns SET due_at=now() WHERE id=%s", (turn_id,))
+    assert (await executor.execute(turn_id))["state"] == "completed"
+    assert len(set(provider.ids)) == 1
+    state = company.project_state(req["project_id"])
+    assert len(state["turns"]) == 1 and state["tasks"][0]["status"] == "completed"
+
+
 def test_daily_budget_is_atomic_across_projects(company):
     company.settings.company_max_daily_turns = 1
     turns = []

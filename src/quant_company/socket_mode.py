@@ -30,9 +30,10 @@ class RedactSlackSecrets(logging.Filter):
 async def accept_envelope(ingress, role, client, request):
     if not request.envelope_id:
         return
-    if request.type == "events_api":
+    if request.type in {"events_api", "interactive"}:
         try:
-            if not isinstance(request.payload, dict) or request.payload.get("type") != "event_callback":
+            expected = "event_callback" if request.type == "events_api" else "block_actions"
+            if not isinstance(request.payload, dict) or request.payload.get("type") != expected:
                 raise PolicyError("Invalid Socket Mode event")
             await asyncio.to_thread(ingress.accept, role, request.payload, ingress.credentials[role])
         except (PolicyError, KeyError, TypeError, ValueError):

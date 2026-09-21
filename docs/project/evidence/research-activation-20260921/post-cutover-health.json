@@ -1,0 +1,75 @@
+{
+  "observed_at": "2026-09-21T04:56:21.661839+00:00",
+  "services": [
+    {
+      "name": "/quant-company-api-1",
+      "image": "quant-company:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "running": true,
+      "oom_killed": false,
+      "restart_count": 0,
+      "health": "healthy"
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "image": "quant-company:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "running": true,
+      "oom_killed": false,
+      "restart_count": 0,
+      "health": null
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "image": "quant-company:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "running": true,
+      "oom_killed": false,
+      "restart_count": 0,
+      "health": null
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "image": "quant-company:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "running": true,
+      "oom_killed": false,
+      "restart_count": 0,
+      "health": null
+    },
+    {
+      "name": "/quant-company-postgres-1",
+      "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "running": true,
+      "oom_killed": false,
+      "restart_count": 1,
+      "health": "healthy"
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "image": "quant-company-codex:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "running": true,
+      "oom_killed": false,
+      "restart_count": 0,
+      "health": "healthy"
+    },
+    {
+      "name": "/quant-company-claude-runtime-1",
+      "image": "quant-company-claude:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "running": true,
+      "oom_killed": false,
+      "restart_count": 0,
+      "health": "healthy"
+    },
+    {
+      "name": "/quant-company-maintenance-1",
+      "image": "quant-company-maintenance:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "running": true,
+      "oom_killed": false,
+      "restart_count": 0,
+      "health": null
+    }
+  ],
+  "memory": "               total        used        free      shared  buff/cache   available\nMem:            1907        1060         135          60         976         847\nSwap:              0           0           0\n",
+  "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/root        58G   54G  3.8G  94% /\n",
+  "api_http_status": 200,
+  "api_health": {
+    "ok": true
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "observed_at": "2026-09-21T05:06:07.061844+00:00",
+  "current_link": "/opt/quant-company/releases/0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "current_resolved": "/opt/quant-company/releases/0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "runtime": {
+    "RELEASE_COMMIT": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+    "COMPANY_RESEARCH_ENABLED": "true",
+    "RESEARCH_REPORT_BUCKET": "quant-company-061039802347-backups",
+    "QDATA_BUILD_CONTEXT": "/opt/quant-company/releases/0e89d998022abfb626cf29a4ff99012cd83ffb74/qdata"
+  },
+  "containers": [
+    {
+      "name": "/quant-company-worker-1",
+      "image": "quant-company:0e89d998022abfb626cf29a4ff99012cd83ffb74",
+      "id": "78efdf831c15bccd577e62e1795162879eb2680e4d0ab2f4ff52bed04335d467",
+      "started_at": "2026-09-21T05:05:52.380105596Z",
+      "restarts": 0
+    },
+    {
+      "name": "/quant-company-api-1",
+      "image": "quant-company:0e89d998022abfb626cf29a4ff99012cd83ffb74",
+      "id": "960755c3b96de6bb8a919967e25c580d7ab0578220baad7603573abc97f416d8",
+      "started_at": "2026-09-21T05:05:52.001551038Z",
+      "restarts": 0
+    },
+    {
+      "name": "/quant-company-postgres-1",
+      "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+      "started_at": "2026-09-21T01:28:20.371309952Z",
+      "restarts": 1
+    }
+  ],
+  "release_service": "○ quant-company-release.service - Apply human-approved Quant Company maintenance releases\n     Loaded: loaded (/etc/systemd/system/quant-company-release.service; static)\n     Active: inactive (dead) since Mon 2026-09-21 05:05:51 UTC; 16s ago\nTriggeredBy: ● quant-company-release.timer\n    Process: 3193386 ExecStart=/usr/bin/python3 /opt/quant-company/current/deploy/maintenance_release.py (code=exited, status=0/SUCCESS)\n   Main PID: 3193386 (code=exited, status=0/SUCCESS)\n        CPU: 98ms\n\nSep 21 05:05:50 ip-172-26-2-166 systemd[1]: Starting quant-company-release.service - Apply human-approved Quant Company maintenance releases...\nSep 21 05:05:51 ip-172-26-2-166 systemd[1]: quant-company-release.service: Deactivated successfully.\nSep 21 05:05:51 ip-172-26-2-166 systemd[1]: Finished quant-company-release.service - Apply human-approved Quant Company maintenance releases.\n",
+  "recent_release_journals": [
+    {
+      "path": "/var/lib/quant-company/releases/reporter-mainstream-0e89d998022abfb626cf29a4ff99012cd83ffb74.json",
+      "data": {
+        "commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+        "previous": "/opt/quant-company/releases/9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+        "phase": "enabling",
+        "checked_at": 1789966677.3548706,
+        "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "configured_preflight": {
+          "database_healthy": true,
+          "roles_loaded": 11,
+          "director_effort": "max"
+        },
+        "postgres_id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+        "backup": {
+          "backup": "/var/lib/quant-company/backups/company-20260921T050352Z-fc7ffb4a.tar.gz",
+          "sha256": "2721e1f617f6dbc41da575b669260cd1ddf9f670ea514f1c4f5c3468b5545552",
+          "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260921T050352Z-fc7ffb4a.tar.gz",
+          "release_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+          "secrets_included": false
+        },
+        "health": {
+          "healthy_services": 8,
+          "postgres_recreated": false
+        },
+        "existing_roles_preserved": true,
+        "existing_credentials_preserved": true
+      }
+    },
+    {
+      "path": "/var/lib/quant-company/releases/reporter-mainstream-831a8e474b3d6a062bcd1ab7ab8d88bca4803f2e.json",
+      "data": {
+        "commit": "831a8e474b3d6a062bcd1ab7ab8d88bca4803f2e",
+        "previous": "/opt/quant-company/releases/9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+        "phase": "staging",
+        "checked_at": 1789966496.4223654
+      }
+    }
+  ]
+}

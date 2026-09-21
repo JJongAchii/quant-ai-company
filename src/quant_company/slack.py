@@ -41,6 +41,8 @@ class SlackIngress:
         return credential
 
     def accept(self, role, payload: dict, credential: dict):
+        if payload.get("type") == "block_actions":
+            return self.accept_interaction(role, payload, credential)
         if payload.get("type") == "url_verification":
             return {"challenge": payload.get("challenge", "")}
         if (not self.settings.slack_team_id or payload.get("team_id") != self.settings.slack_team_id
@@ -87,7 +89,12 @@ class SlackIngress:
             target = "reporter" if project["news"] else "director"
             if role != target:
                 return {"ok": True, "ignored": True}
+        original_text = text
         text = re.sub(r"<@[A-Z0-9]+>", "", text).strip()
+        approval_context = {"origin": "event_callback", "team_id": payload["team_id"],
+                            "app_id": payload["api_app_id"], "owner": user, "channel": channel,
+                            "thread_ts": thread_ts, "event_ts": timestamp,
+                            "provider_event_id": payload.get("event_id"), "original_text": original_text}
         if target == "director":
             from .maintenance.applications import accept_approval
             from .owner_controls import parse_daily_limit_command
@@ -99,11 +106,15 @@ class SlackIngress:
                     owner=user, agent=target, channel=channel, thread_ts=thread_ts, daily_limit_command=command)
                 return {"ok": True, "owner_control": True, **result}
 
-            approval = accept_approval(
-                self.company, text=text, owner=user, channel=channel, thread_ts=thread_ts,
-                event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", event_ts=timestamp)
-            if approval is not None:
-                return {"ok": True, **approval}
+            from .research.approvals import has_targets, short_command
+
+            research_reply = short_command(text) and has_targets(self.company, user, channel, thread_ts)
+            if not research_reply:
+                approval = accept_approval(
+                    self.company, text=text, owner=user, channel=channel, thread_ts=thread_ts,
+                    event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", event_ts=timestamp)
+                if approval is not None:
+                    return {"ok": True, **approval}
         revise = text.startswith(("수정:", "변경:", "revise:"))
         if revise:
             text = text.split(":", 1)[1].strip()
@@ -116,8 +127,41 @@ class SlackIngress:
             status_only=text.strip().lower() in {"상태", "진행 상황", "status"},
             interpret=target == 'director' and not revise,
             control_action=immediate(text) if target == 'director' and not revise else None,
+            approval_context=approval_context if target == "director" else None,
         )
         return {"ok": True, **result}
+
+    def accept_interaction(self, role, payload, credential):
+        from .research.approvals import ACTIONS, ApprovalEvent
+
+        try:
+            if (role != "director" or payload["type"] != "block_actions"
+                    or payload["team"]["id"] != self.settings.slack_team_id
+                    or payload["api_app_id"] != credential["app_id"]
+                    or len(payload["actions"]) != 1):
+                raise PolicyError("Unexpected research Slack interaction")
+            action, message, container = payload["actions"][0], payload["message"], payload["container"]
+            user, channel = payload["user"]["id"], payload["channel"]["id"]
+            selected = ACTIONS[action["action_id"]]
+            if (action["type"] != "button" or action["block_id"] != "research_approval:" + action["value"]
+                    or user not in self.settings.slack_allowed_users
+                    or (not channel.startswith("D") and channel not in self.settings.slack_allowed_channels)
+                    or message["user"] != credential["bot_user_id"]
+                    or message.get("app_id", credential["app_id"]) != credential["app_id"]
+                    or message["ts"] != container["message_ts"] or channel != container["channel_id"]
+                    or container["type"] not in {"message", "message_attachment"}
+                    or container.get("is_ephemeral", False)):
+                raise PolicyError("Invalid research Slack message identity")
+            event = ApprovalEvent(origin="block_actions", team_id=payload["team"]["id"], app_id=payload["api_app_id"],
+                owner=user, channel=channel, thread_ts=message["thread_ts"], event_ts=action["action_ts"],
+                original_text=action["text"]["text"], binding=action["value"], action=selected, message_ts=message["ts"])
+            if event.original_text != ("승인" if selected == "approve" else "취소"):
+                raise PolicyError("Research approval button label changed")
+        except (KeyError, TypeError, ValueError, AttributeError):
+            raise PolicyError("Malformed research Slack interaction") from None
+        result = self.company.ingest(event_key=event.event_key(), text=event.original_text, owner=user,
+            agent="director", channel=channel, thread_ts=event.thread_ts, approval_context=event.model_dump(mode="json"))
+        return {"ok": True, "research_approval": True, **result}
 
 
 class SlackOutbox:
@@ -253,6 +297,11 @@ class SlackOutbox:
                 "client_msg_id": row["id"],
                 "unfurl_links": False, "unfurl_media": False,
                 "metadata": {"event_type": "quant_company_message", "event_payload": {"id": row["id"]}}}
+        from .research.approvals import blocks_for_outbox
+
+        blocks = await asyncio.to_thread(blocks_for_outbox, self.company, row, self.credentials[row["agent"]])
+        if blocks:
+            body["blocks"] = blocks
         if row["thread_ts"] is None:
             del body["thread_ts"]
         elif row.get("news_broadcast"):

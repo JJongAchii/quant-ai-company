@@ -1,0 +1,302 @@
+{
+  "runId": "company-autonomous-research-20260921",
+  "builderId": "etf-profile",
+  "buildStage": "research",
+  "domain": "personal",
+  "canonicalRepo": "https://github.com/JJongAchii/quant-lab.git",
+  "baseHead": "ea1d09f809f509571c9c0baaf61e0126c2acb790",
+  "commit": "918620ff08236f12df0eeedab5a211fdfbd1e92a",
+  "branch": "company-autonomous-etf-profile",
+  "approvedDesignDigest": "fcec7879dbf7",
+  "objectiveDigest": "03d58ee449e6",
+  "preregDigest": null,
+  "implementationStatus": "partial",
+  "qualificationStatus": "passed",
+  "qualificationScope": "Approved synthetic warmup-only actual entrypoint -> actual company typed consumers. Real-data qualification not authorized and not run.",
+  "changes": [
+    {
+      "path": "labs/company-autonomous-etf/README.md",
+      "reason": "Operator code/input boundary, public CLI, formula/accounting semantics, fixture qualification and limitations.",
+      "sha256": "a787368d64a8e12613aa278f422f5c92bb5b249114203fca13ffec61cb8c255f"
+    },
+    {
+      "path": "labs/company-autonomous-etf/configs/candidate.json",
+      "reason": "Single writable candidate configuration, default original M2.",
+      "sha256": "f8c8d42ca3138bad16847fbe4cb4e93be0173a5f94454b640eaf3e1700022ae2"
+    },
+    {
+      "path": "labs/company-autonomous-etf/examples/A25.json",
+      "reason": "Frozen example of the registered A25 formula; not a writable trial config path.",
+      "sha256": "338cbd0d4737779919ab076de570c77af3ff0cb46f9634765880d3e7a7af8982"
+    },
+    {
+      "path": "labs/company-autonomous-etf/examples/A75.json",
+      "reason": "Frozen example of the registered A75 formula; not a writable trial config path.",
+      "sha256": "c7b92c297547cc903900ba47832050df334b1ced562921b93d07e4b77671f2df"
+    },
+    {
+      "path": "labs/company-autonomous-etf/examples/B.json",
+      "reason": "Frozen example of the registered B formula; not a writable trial config path.",
+      "sha256": "63105b76c2504acd6e412ee3d884e52fcfa4b86814a5eb9fa0c05cce5f285ac5"
+    },
+    {
+      "path": "labs/company-autonomous-etf/examples/C.json",
+      "reason": "Frozen example of the registered C formula; not a writable trial config path.",
+      "sha256": "1120e50d37c9ecf9df564aed0b332887fc3715be175e8b6b8849dc042af3911d"
+    },
+    {
+      "path": "labs/company-autonomous-etf/examples/D50.json",
+      "reason": "Frozen example of the registered D50 formula; not a writable trial config path.",
+      "sha256": "9f62a8ac9a41fcf7078c21b0ccc495149d220b1d209b7a8964d5931480c2e4bb"
+    },
+    {
+      "path": "labs/company-autonomous-etf/examples/D75.json",
+      "reason": "Frozen example of the registered D75 formula; not a writable trial config path.",
+      "sha256": "aaaa1841d94ff1dd133f4c33ec02d064621e9695f1cbc040e9d0ca0ce18bb9e0"
+    },
+    {
+      "path": "labs/company-autonomous-etf/examples/M2.json",
+      "reason": "Frozen example of the registered M2 formula; not a writable trial config path.",
+      "sha256": "f8c8d42ca3138bad16847fbe4cb4e93be0173a5f94454b640eaf3e1700022ae2"
+    },
+    {
+      "path": "labs/company-autonomous-etf/lineage.json",
+      "reason": "Original committed P11 engine/config SHA-256 lineage and the two permitted callback edits.",
+      "sha256": "9d06ae299c08221a61d85c9691bb548b1b4b7e7cbcdcc95d7635282da1d53b9b"
+    },
+    {
+      "path": "labs/company-autonomous-etf/policy.json",
+      "reason": "Protected fixed dates, costs, ADV, ranks/weights, provenance and mission envelope.",
+      "sha256": "bf14a28c9f7dc48ae39ced848c474a1afad4f226671494e7cdb7ac2020ecd87a"
+    },
+    {
+      "path": "labs/company-autonomous-etf/pyproject.toml",
+      "reason": "Lab workspace package metadata and minimal scientific dependencies without root lock changes.",
+      "sha256": "b30ebf6fdab3c2506cf261e2d51fab3efde9d89ed93e5709aa8cc308e3ccb593"
+    },
+    {
+      "path": "labs/company-autonomous-etf/run.py",
+      "reason": "Protected offline qualify/evaluate entrypoint with local source import.",
+      "sha256": "383defbf17fec319f216db401473a292f496eed6f2ea42fed4fd0f9caa0092aa"
+    },
+    {
+      "path": "labs/company-autonomous-etf/src/company_autonomous_etf/__init__.py",
+      "reason": "Isolated package identity.",
+      "sha256": "634bda323ff02e792631b5ebce9c69f3b9a8d708d5fed496844003d81133a11c"
+    },
+    {
+      "path": "labs/company-autonomous-etf/src/company_autonomous_etf/adapter.py",
+      "reason": "Verified staged inputs and fixed mission boundary; JSON qualification and typed result producer.",
+      "sha256": "c43bfad4ad0e85e4ae441092858572fc5295b210ba0b7d9ef6e489d92b5f4c87"
+    },
+    {
+      "path": "labs/company-autonomous-etf/src/company_autonomous_etf/engine.py",
+      "reason": "Frozen original PIT/accounting engine with optional feature callback only.",
+      "sha256": "e344cde8f86a0cae2524aedc66f4fc0685a4735ff52ec59c013e20408c1f1627"
+    },
+    {
+      "path": "labs/company-autonomous-etf/src/company_autonomous_etf/signals.py",
+      "reason": "Seven fixed formulas, full as-of diagnostics, and stateless prior-month M2 reconstruction.",
+      "sha256": "34b3dc6285113c0a8f9cff133fe34f80f472e9ec789ad925742c7c25f0fdd1b8"
+    },
+    {
+      "path": "labs/company-autonomous-etf/tests/conftest.py",
+      "reason": "Small deterministic synthetic panels and actual company contract-bound subprocess staging.",
+      "sha256": "ef96590a75db38eb1335f761127eafdf1e56f5cd3016a23e0f92edf7603fb058"
+    },
+    {
+      "path": "labs/company-autonomous-etf/tests/test_adapter.py",
+      "reason": "Real CLI to company Pydantic/CSV/report consumer, malformed inputs, policy rejection and no partial artifacts.",
+      "sha256": "d46c95c5e1c413dab9b9d5cc06b49bb207bafacf3b4be31de46d23aa3016ead5"
+    },
+    {
+      "path": "labs/company-autonomous-etf/tests/test_signals.py",
+      "reason": "Complete as-of guard, planted future leak, formula oracles, prior-PIT/restart equivalence and original-blob comparison.",
+      "sha256": "dd95f9dbdb1a2c5779408280485aebfe963fccbc805e4fd9decdb143e642c932"
+    }
+  ],
+  "tests": [
+    {
+      "name": "unit-integration",
+      "argv": [
+        ".local/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-c",
+        "labs/company-autonomous-etf/pyproject.toml",
+        "labs/company-autonomous-etf/tests"
+      ],
+      "environment": {
+        "PYTHONPATH": "labs/company-autonomous-etf/src:core/src:../../../quant-ai-company/src",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "raw_log": ".local/etf-profile-build/unit-integration.log",
+      "log_sha256": "e4814b3004d554fd862151f2b3721fc4a94f8ecb96cdf5cc494916acf58ef4f0",
+      "raw_summary": ".....................................................                    [100%]\n53 passed in 12.62s"
+    },
+    {
+      "name": "lint",
+      "argv": [
+        ".local/venv/bin/ruff",
+        "check",
+        "labs/company-autonomous-etf"
+      ],
+      "environment": {
+        "PYTHONPATH": "labs/company-autonomous-etf/src:core/src:../../../quant-ai-company/src",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "raw_log": ".local/etf-profile-build/lint.log",
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_summary": "All checks passed!"
+    },
+    {
+      "name": "format",
+      "argv": [
+        ".local/venv/bin/ruff",
+        "format",
+        "--check",
+        "labs/company-autonomous-etf"
+      ],
+      "environment": {
+        "PYTHONPATH": "labs/company-autonomous-etf/src:core/src:../../../quant-ai-company/src",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "raw_log": ".local/etf-profile-build/format.log",
+      "log_sha256": "2ce9758b9f8abd876ec3e76c589e099e8b05377b1e7ea2331e81ee80f07bdff8",
+      "raw_summary": "9 files already formatted"
+    },
+    {
+      "name": "qualification",
+      "argv": [
+        ".local/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-c",
+        "labs/company-autonomous-etf/pyproject.toml",
+        "labs/company-autonomous-etf/tests/test_adapter.py::test_committed_fixture_producer_consumer_qualification"
+      ],
+      "environment": {
+        "PYTHONPATH": "labs/company-autonomous-etf/src:core/src:../../../quant-ai-company/src",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "raw_log": ".local/etf-profile-build/qualification.log",
+      "log_sha256": "b7b3aa92344a38bedb2ba74f765049f69319b8af87f14816cc3a4df38eeb870a",
+      "raw_summary": ".                                                                        [100%]\n1 passed in 0.74s"
+    }
+  ],
+  "earlierTestSummary": {
+    "command": "PYTHONPATH=labs/company-autonomous-etf/src:core/src:../../../quant-ai-company/src .local/venv/bin/python -m pytest -q -c labs/company-autonomous-etf/pyproject.toml labs/company-autonomous-etf/tests",
+    "exit_code": 0,
+    "raw_summary": "52 passed, 1 warning in 16.34s",
+    "resolution": "Replaced pandas chained assignment; final 53 tests have no warnings. Lint-only formatting/import issues corrected before final recorded checks."
+  },
+  "notRun": [
+    {
+      "check": "Real-snapshot qualification or economic evaluation",
+      "reason": "Outside approved builder scope; no real snapshot reads permitted."
+    },
+    {
+      "check": "Actual 3070 sandbox/runtime acceptance",
+      "reason": "No SSH/worker operations delegated; root owns subsequent synthetic runtime acceptance."
+    },
+    {
+      "check": "Independent leakage audit",
+      "reason": "Builder cannot judge same run; root owns independent review."
+    },
+    {
+      "check": "Root workspace lock integration",
+      "reason": "Root pyproject.toml and uv.lock protected; root owns package integration."
+    }
+  ],
+  "protocol": {
+    "version": "quant-company-adaptive-v1",
+    "executionProfile": "kr-etf-monthly-python-v1",
+    "entrypoint": "labs/company-autonomous-etf/run.py",
+    "configPath": "labs/company-autonomous-etf/configs/candidate.json",
+    "code_files": {
+      "labs/company-autonomous-etf/run.py": "383defbf17fec319f216db401473a292f496eed6f2ea42fed4fd0f9caa0092aa",
+      "labs/company-autonomous-etf/policy.json": "bf14a28c9f7dc48ae39ced848c474a1afad4f226671494e7cdb7ac2020ecd87a",
+      "labs/company-autonomous-etf/lineage.json": "9d06ae299c08221a61d85c9691bb548b1b4b7e7cbcdcc95d7635282da1d53b9b",
+      "labs/company-autonomous-etf/src/company_autonomous_etf/__init__.py": "634bda323ff02e792631b5ebce9c69f3b9a8d708d5fed496844003d81133a11c",
+      "labs/company-autonomous-etf/src/company_autonomous_etf/engine.py": "e344cde8f86a0cae2524aedc66f4fc0685a4735ff52ec59c013e20408c1f1627",
+      "labs/company-autonomous-etf/src/company_autonomous_etf/signals.py": "34b3dc6285113c0a8f9cff133fe34f80f472e9ec789ad925742c7c25f0fdd1b8",
+      "labs/company-autonomous-etf/src/company_autonomous_etf/adapter.py": "c43bfad4ad0e85e4ae441092858572fc5295b210ba0b7d9ef6e489d92b5f4c87",
+      "labs/company-autonomous-etf/configs/candidate.json": "f8c8d42ca3138bad16847fbe4cb4e93be0173a5f94454b640eaf3e1700022ae2"
+    },
+    "qualification_input_names": [
+      "warmup/prices.parquet",
+      "warmup/meta.parquet",
+      "warmup/snapshot.json"
+    ],
+    "evaluation_input_names": [
+      "warmup/prices.parquet",
+      "warmup/meta.parquet",
+      "warmup/snapshot.json",
+      "dev/prices.parquet",
+      "dev/meta.parquet",
+      "dev/snapshot.json"
+    ],
+    "producerConsumerAgreement": "Actual AdaptiveQualification/AdaptiveResult/TrialMetrics plus worker strict CSV parser and independent report series parser accepted emitted JSON/CSV. No company imports in science subprocess.",
+    "returnColumns": [
+      "date",
+      "net_return"
+    ],
+    "returnUnit": "fraction-per-period",
+    "primaryUnit": "fraction-per-year",
+    "returnContract": "initial-zero-calendar-cagr-v1"
+  },
+  "scopeChecks": {
+    "preWorkTrackedDiff": [],
+    "postWorkTrackedDiff": [],
+    "protectedFilesChanged": [],
+    "objectiveOrPreregChanged": false,
+    "untrackedLocalEvidenceOnly": true,
+    "scientificTrialsAdded": 0,
+    "realSnapshotReads": 0,
+    "deploymentOrSsh": false
+  },
+  "knownLimitations": [
+    "Generated sparse panels verify implementation/protocol only; they establish no historical performance or approval.",
+    "Profile fixture_only, signed approval, interpreter/dependency closure, mount isolation and exact Git ancestry are outer worker responsibilities, not producer authentication.",
+    "The six-input profile provides no terminal-redemption evidence; a held-price gap remains a blocking error.",
+    "Development output requires an initial 2014-01-01 capital row, first observed session afterward, and last observed session 2026-08-31; no held-price extrapolation.",
+    "Existing P11 union-of-observed-dates calendar and adjusted-price (not cash-distribution TR) semantics remain unchanged.",
+    "Runtime SHA pins in this manifest cover this builder commit; root must pin its final integrated commit/profile/runtime before operations."
+  ],
+  "evidence": {
+    "checks.json": {
+      "path": ".local/etf-profile-build/checks.json",
+      "sha256": "437eca64efc63e9485e297b9317e59b401b46765baa7da949b9b3850cc812c79"
+    },
+    "qualification-checks.json": {
+      "path": ".local/etf-profile-build/qualification-checks.json",
+      "sha256": "4e3461029d113ebd667d6a7e77a3e602f008bb69357be98bb2506b9c00b1db73"
+    },
+    "qualification-receipt.json": {
+      "path": ".local/etf-profile-build/qualification-receipt.json",
+      "sha256": "b4a4aa301623cfc4c2702e9f1388654e67ffc3960b30348d921f3243b60684b1"
+    },
+    "unit-integration.log": {
+      "path": ".local/etf-profile-build/unit-integration.log",
+      "sha256": "e4814b3004d554fd862151f2b3721fc4a94f8ecb96cdf5cc494916acf58ef4f0"
+    },
+    "lint.log": {
+      "path": ".local/etf-profile-build/lint.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "format.log": {
+      "path": ".local/etf-profile-build/format.log",
+      "sha256": "2ce9758b9f8abd876ec3e76c589e099e8b05377b1e7ea2331e81ee80f07bdff8"
+    },
+    "qualification.log": {
+      "path": ".local/etf-profile-build/qualification.log",
+      "sha256": "b7b3aa92344a38bedb2ba74f765049f69319b8af87f14816cc3a4df38eeb870a"
+    }
+  }
+}

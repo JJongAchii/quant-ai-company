@@ -85,7 +85,7 @@ class TurnExecutor:
             response = await task
             return await asyncio.to_thread(self.company.commit_turn, turn_id, response)
         except ProviderFault as exc:
-            if exc.code in {"quota", "busy"} or (exc.code == "unavailable" and prepared["attempts"] < 4):
+            if exc.code in {"quota", "busy", "unavailable"}:
                 seconds = max(5, min(exc.retry_after_seconds or 30, 604800))
                 await asyncio.to_thread(self.company.defer_turn, turn_id, seconds, exc.code, exc.code == "quota")
                 return {"state": "defer", "seconds": seconds, "reason": exc.code}

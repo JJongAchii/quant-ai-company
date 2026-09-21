@@ -1,0 +1,35 @@
+{
+  "commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+  "previous": "4a8eb43b6406d3229cfd1e93b51011a817f87343",
+  "images": [
+    {
+      "tags": [
+        "quant-company:9a90b5eeff1f7f3685099b0c05241df1306d93fa"
+      ],
+      "id": "sha256:5ccc5d0690ca25a5397c547cef271e6384d3bf5b83e2cf7efebbd3cd55b2dcbb",
+      "revision": "9a90b5eeff1f7f3685099b0c05241df1306d93fa"
+    },
+    {
+      "tags": [
+        "quant-company-codex:9a90b5eeff1f7f3685099b0c05241df1306d93fa"
+      ],
+      "id": "sha256:8f1c8cfd60503a17f49554455595a71197fa661258f4b17a3baafc0c0af12859",
+      "revision": "9a90b5eeff1f7f3685099b0c05241df1306d93fa"
+    },
+    {
+      "tags": [
+        "quant-company-maintenance:9a90b5eeff1f7f3685099b0c05241df1306d93fa"
+      ],
+      "id": "sha256:8b22c9a468f6793de4caf5f3f3de058aded8b2975d1e19d11b8f55ade2f1ff83",
+      "revision": "9a90b5eeff1f7f3685099b0c05241df1306d93fa"
+    },
+    {
+      "tags": [
+        "quant-company-claude:9a90b5eeff1f7f3685099b0c05241df1306d93fa"
+      ],
+      "id": "sha256:f82844e2893be9f805a50fb21b04704d4d022350332f91d760bc2f00b130abb7",
+      "revision": "9a90b5eeff1f7f3685099b0c05241df1306d93fa"
+    }
+  ],
+  "production_cutover": false
+}

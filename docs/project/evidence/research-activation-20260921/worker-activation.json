@@ -1,0 +1,26 @@
+{
+  "observed_at": "2026-09-21T04:56:20.056293+00:00",
+  "hostname": "DESKTOP-5T00NAF",
+  "company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+  "clean_checkout": true,
+  "linger": "Linger=yes",
+  "worker_token_operator_endpoint_http": 401,
+  "services": {
+    "research-worker.service": {
+      "ActiveState": "active",
+      "SubState": "running",
+      "ActiveEnterTimestamp": "Mon 2026-09-21 13:52:28 KST",
+      "MainPID": "324952",
+      "NRestarts": "0",
+      "unit_sha256": "b5ea14f877df041653bd04576c6d4c372f78f21de938dd19693947ae2e7ba63d"
+    },
+    "research-worker-tunnel.service": {
+      "ActiveState": "active",
+      "SubState": "running",
+      "ActiveEnterTimestamp": "Mon 2026-09-21 13:41:22 KST",
+      "MainPID": "324254",
+      "NRestarts": "0",
+      "unit_sha256": "63c87029e98ac5a5e7cbf54b383f701ab1121c62ada625eba85fd667b0aeb220"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "page_id": "10bc5d84-a857-410e-a4ea-55ec21567a25",
+  "actual_s3_report_opened": true,
+  "loaded": true,
+  "document": {
+    "title": "P11 고정 재실행 · 개발구간 보고서",
+    "readyState": "complete",
+    "charts": 6,
+    "tables": 6,
+    "monthlyRows": 456,
+    "bodyWidth": 940,
+    "viewport": 940
+  },
+  "horizontal_page_overflow": false,
+  "visual_inspection": {
+    "title_and_scope_notice_readable": true,
+    "equity_and_drawdown_charts_rendered": true,
+    "percent_units_visible": true,
+    "screenshots": [
+      "report-view.png",
+      "report-chart.png"
+    ]
+  }
+}

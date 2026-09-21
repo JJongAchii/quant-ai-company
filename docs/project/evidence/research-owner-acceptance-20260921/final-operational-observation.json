@@ -1,0 +1,135 @@
+{
+  "server": {
+    "observed_at": "2026-09-21T06:54:20.832833+00:00",
+    "current_release": "/opt/quant-company/releases/0e89d998022abfb626cf29a4ff99012cd83ffb74",
+    "runtime": {
+      "RELEASE_COMMIT": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+      "COMPANY_RESEARCH_ENABLED": "true",
+      "RESEARCH_REPORT_BUCKET": "quant-company-061039802347-backups"
+    },
+    "containers": [
+      {
+        "name": "/quant-company-worker-1",
+        "image": "quant-company:0e89d998022abfb626cf29a4ff99012cd83ffb74",
+        "id": "78efdf831c15bccd577e62e1795162879eb2680e4d0ab2f4ff52bed04335d467",
+        "status": "running",
+        "health": null,
+        "restarts": 0,
+        "started_at": "2026-09-21T06:12:44.11854502Z"
+      },
+      {
+        "name": "/quant-company-maintenance-1",
+        "image": "quant-company-maintenance:0e89d998022abfb626cf29a4ff99012cd83ffb74",
+        "id": "44a2e8ff2a8dcecb77fd90c0958221828d427a84fee768bc46c800f3c2d31ca5",
+        "status": "running",
+        "health": null,
+        "restarts": 0,
+        "started_at": "2026-09-21T06:12:36.539988099Z"
+      },
+      {
+        "name": "/quant-company-api-1",
+        "image": "quant-company:0e89d998022abfb626cf29a4ff99012cd83ffb74",
+        "id": "960755c3b96de6bb8a919967e25c580d7ab0578220baad7603573abc97f416d8",
+        "status": "running",
+        "health": "healthy",
+        "restarts": 0,
+        "started_at": "2026-09-21T06:12:35.893738061Z"
+      },
+      {
+        "name": "/quant-company-dispatch-1",
+        "image": "quant-company:0e89d998022abfb626cf29a4ff99012cd83ffb74",
+        "id": "7ec785da52a2d69ccee9373818864548194b4cae7a1dc937cf58da45402f323f",
+        "status": "running",
+        "health": null,
+        "restarts": 0,
+        "started_at": "2026-09-21T06:12:36.21302018Z"
+      },
+      {
+        "name": "/quant-company-slack-socket-1",
+        "image": "quant-company:0e89d998022abfb626cf29a4ff99012cd83ffb74",
+        "id": "503b28229c10fc7287cd37239c46f08f9584ccc69cac7e2da9e7eda6f24b3881",
+        "status": "running",
+        "health": null,
+        "restarts": 0,
+        "started_at": "2026-09-21T06:12:36.962373424Z"
+      },
+      {
+        "name": "/quant-company-codex-runtime-1",
+        "image": "quant-company-codex:0e89d998022abfb626cf29a4ff99012cd83ffb74",
+        "id": "18048e27ed1eea77ceaf52d64aa5e7730b5f22c27b5711d2eae57f3935633735",
+        "status": "running",
+        "health": "healthy",
+        "restarts": 0,
+        "started_at": "2026-09-21T06:12:35.315247064Z"
+      },
+      {
+        "name": "/quant-company-claude-runtime-1",
+        "image": "quant-company-claude:0e89d998022abfb626cf29a4ff99012cd83ffb74",
+        "id": "30f04cb1f31505560511c433ef3525f826cedea4eda96c38a0a4af0456d2a1e9",
+        "status": "running",
+        "health": "healthy",
+        "restarts": 0,
+        "started_at": "2026-09-21T06:12:35.610416254Z"
+      },
+      {
+        "name": "/quant-company-postgres-1",
+        "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+        "id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+        "status": "running",
+        "health": "healthy",
+        "restarts": 1,
+        "started_at": "2026-09-21T01:28:20.371309952Z"
+      }
+    ],
+    "disk_available_bytes": 3494682624
+  },
+  "slack": {
+    "observed_at": "2026-09-21T06:54:22.894527+00:00",
+    "actual_slack_api_read": true,
+    "channel": "C0C2B9EUEGM",
+    "thread_ts": "1789633942.673909",
+    "owner_messages_after_prompt": [
+      {
+        "ts": "1789969435.567029",
+        "thread_ts": "1789633942.673909",
+        "user": "U0C250E23NW",
+        "matches_original_v4_approval": false,
+        "matches_current_v5_approval": false,
+        "has_bot_id": false
+      },
+      {
+        "ts": "1789970318.691419",
+        "thread_ts": "1789633942.673909",
+        "user": "U0C250E23NW",
+        "matches_original_v4_approval": false,
+        "matches_current_v5_approval": true,
+        "has_bot_id": false
+      }
+    ],
+    "latest_message_ts": "1789973527.351909",
+    "pagination_complete": true
+  },
+  "worker": {
+    "observed_at": "2026-09-21T06:54:22.241695+00:00",
+    "hostname": "DESKTOP-5T00NAF",
+    "company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+    "company_status": "",
+    "linger": "yes",
+    "services": {
+      "research-worker.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "ActiveEnterTimestamp": "Mon 2026-09-21 15:44:08 KST",
+        "MainPID": "330475",
+        "NRestarts": "0"
+      },
+      "research-worker-tunnel.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "ActiveEnterTimestamp": "Mon 2026-09-21 13:41:22 KST",
+        "MainPID": "324254",
+        "NRestarts": "0"
+      }
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "kr-etf-monthly-python-v1": {
+    "public_profile": {
+      "schema_version": 1,
+      "id": "kr-etf-monthly-python-v1",
+      "protocol": "quant-company-adaptive-v1",
+      "return_series_contract": "initial-zero-calendar-cagr-v1",
+      "entrypoint": "labs/company-autonomous-etf/run.py",
+      "entrypoint_sha256": "383defbf17fec319f216db401473a292f496eed6f2ea42fed4fd0f9caa0092aa",
+      "protected_paths": [
+        "labs/company-autonomous-etf/run.py",
+        "labs/company-autonomous-etf/policy.json",
+        "labs/company-autonomous-etf/lineage.json",
+        "labs/company-autonomous-etf/src/company_autonomous_etf/__init__.py",
+        "labs/company-autonomous-etf/src/company_autonomous_etf/engine.py",
+        "labs/company-autonomous-etf/src/company_autonomous_etf/signals.py",
+        "labs/company-autonomous-etf/src/company_autonomous_etf/adapter.py"
+      ],
+      "code_paths": [
+        "labs/company-autonomous-etf/run.py",
+        "labs/company-autonomous-etf/policy.json",
+        "labs/company-autonomous-etf/lineage.json",
+        "labs/company-autonomous-etf/src/company_autonomous_etf/__init__.py",
+        "labs/company-autonomous-etf/src/company_autonomous_etf/engine.py",
+        "labs/company-autonomous-etf/src/company_autonomous_etf/signals.py",
+        "labs/company-autonomous-etf/src/company_autonomous_etf/adapter.py",
+        "labs/company-autonomous-etf/configs/candidate.json"
+      ],
+      "python_executable": "/runtime/python",
+      "python_sha256": "c0b74b270ea823c760917e64fbde1945e67ba739d97fa716a48a5b69e6505d62",
+      "runtime_mounts": [
+        {
+          "target": "/runtime",
+          "sha256": "dba78604745923a15f663d5c3578aafacd03c3863f0fc123b95597cce5bd3b8e"
+        },
+        {
+          "target": "/lib",
+          "sha256": "8c98527ea8e0eb702c5222555b8559b6cad364a22d18666a772a7fc112b89570"
+        },
+        {
+          "target": "/lib64",
+          "sha256": "aa59e9bd06b0b9e05f0ef0e43b6a79e32bf3131ee49948146a414e727c6958aa"
+        },
+        {
+          "target": "/usr",
+          "sha256": "382d4e9859f721832cf5cc5efe33f6d84a80a6111c76f8847ba4244280fa4522"
+        }
+      ],
+      "qualification_input_names": [
+        "warmup/snapshot.json",
+        "warmup/prices.parquet",
+        "warmup/meta.parquet"
+      ],
+      "evaluation_input_names": [
+        "warmup/snapshot.json",
+        "warmup/prices.parquet",
+        "warmup/meta.parquet",
+        "dev/snapshot.json",
+        "dev/prices.parquet",
+        "dev/meta.parquet"
+      ],
+      "qualification_timeout_seconds": 600.0,
+      "evaluation_timeout_seconds": 3600.0,
+      "fixture_only": false
+    },
+    "source_bundle": "/state/research/provisioned/857e4243c54d86067c2bf8519eee1162cbd02189.bundle",
+    "source_bundle_sha256": "76451f7297a1f4b02268e5568081126e978056c95d05492310485a7d22a77b61",
+    "base_commit": "857e4243c54d86067c2bf8519eee1162cbd02189",
+    "config_path": "labs/company-autonomous-etf/configs/candidate.json",
+    "config_files": [
+      "labs/company-autonomous-etf/configs/candidate.json"
+    ],
+    "allowed_write_paths": [
+      "labs/company-autonomous-etf/configs/candidate.json"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "auditPaths": [
+    "audits/AUDIT-leak-auditor-20260921-owner-approved-p11-replay.md"
+  ],
+  "branch": "company-research-execution",
+  "domain": "personal",
+  "gateVerdict": "pass",
+  "head": "b852356c431c7af2cde93b721e5af82fed8c3655",
+  "objectiveDigest": "03d58ee449e6",
+  "ok": true,
+  "operation": "verify-audits",
+  "repoRoot": "/Users/achii/quant-ws/company-research-execution/quant-ai-company",
+  "verifiedJudges": [
+    "leak-auditor"
+  ]
+}

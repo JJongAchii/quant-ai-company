@@ -68,6 +68,29 @@ def run(command: list[str], **kwargs):
     return subprocess.run(command, check=True, **kwargs)
 
 
+def copy_research_state(state: Path, staging: Path, cfg: dict[str, str]) -> None:
+    """Retain the file evidence referenced by the database, without following host links."""
+    if cfg.get("COMPANY_RESEARCH_ENABLED") != "true":
+        return
+    trees = ["research"]
+    if cfg.get("COMPANY_AUTONOMOUS_RESEARCH_ENABLED") == "true":
+        trees.append("research-audit")
+        for name in ("research-profiles.json", "research-qlab.json"):
+            source = state / "config" / name
+            if source.is_symlink() or not source.is_file():
+                raise ValueError("Research operator profile missing or unsafe")
+            # These are public profile schemas; secrets remain in the dedicated secret directory.
+            json.loads(source.read_text())
+            shutil.copyfile(source, staging / name)
+    for name in trees:
+        source = state / name
+        if not source.is_dir() or source.is_symlink() or any(
+            p.is_symlink() or not (p.is_file() or p.is_dir()) for p in source.rglob("*")
+        ):
+            raise ValueError("Research evidence tree missing or unsafe")
+        shutil.copytree(source, staging / name)
+
+
 def unpack(archive: Path, destination: Path) -> dict:
     checksum = archive.with_suffix(archive.suffix + ".sha256").read_text().split()[0]
     if not re.fullmatch(r"[0-9a-f]{64}", checksum) or sha256(archive) != checksum:
@@ -75,8 +98,9 @@ def unpack(archive: Path, destination: Path) -> dict:
     with tarfile.open(archive, "r:gz") as bundle:
         for member in bundle.getmembers():
             path = PurePosixPath(member.name)
-            allowed = member.name in {"manifest.json", "database.dump", "roles.json", "runtime.env", "maintenance.json"} or (
-                len(path.parts) > 1 and path.parts[0] in {"jobs", "claude-jobs"}
+            allowed = member.name in {"manifest.json", "database.dump", "roles.json", "runtime.env", "maintenance.json",
+                                      "research-profiles.json", "research-qlab.json"} or (
+                len(path.parts) > 1 and path.parts[0] in {"jobs", "claude-jobs", "research", "research-audit"}
             )
             if (not allowed or path.is_absolute() or ".." in path.parts or not member.isfile()
                     or member.issym() or member.islnk()):
@@ -141,6 +165,7 @@ def backup(args, cfg: dict[str, str], compose: list[str], state: Path) -> None:
                 if jobs.is_symlink() or any(path.is_symlink() for path in jobs.rglob("*")):
                     raise ValueError("Model receipt tree contains an unexpected symbolic link")
                 shutil.copytree(jobs, staging / destination)
+            copy_research_state(state, staging, cfg)
         finally:
             if restart:
                 run(compose + ["start", *reversed(restart)])

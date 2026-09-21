@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-09-21T06:44:09.934615+00:00",
+  "recovery_id": "5fe6b24e-daf8-4c97-b6ff-22fef105091f",
+  "service": {
+    "ActiveState": "active",
+    "SubState": "running",
+    "MainPID": "330475",
+    "NRestarts": "0"
+  },
+  "approval_replaced": false,
+  "runtime_company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74"
+}

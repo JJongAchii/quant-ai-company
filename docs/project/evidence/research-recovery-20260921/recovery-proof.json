@@ -1,0 +1,58 @@
+{
+  "actor": "operator:codex-root",
+  "assignment_digest": "f7d5fd810c113126c5c0bc7abae4fb2d6c7a1db59a8c47e274d62013d13002e0",
+  "economic_executions_before_recovery": 0,
+  "execution_count_meaning": "execution_count=1 describes the sole economic replay; the preserved precheck launch ran no economics",
+  "executor_and_group_absent": true,
+  "failed_update_digest": "c0ecb416861d72c15476239b226d48c0330716f7807e26dc96b003991b444a5f",
+  "failure": {
+    "completed_at": "2026-09-21T05:58:41.868954Z",
+    "launch_id": "942d7e7c58694b8eb85172d5be20decf",
+    "reason": "repository-commit-mismatch",
+    "state": "failed"
+  },
+  "failure_digest": "3d8c5fe794d1977ac83d77d69168381f71fcfb1665ae5f1650d8e5f9ad2b0d80",
+  "history_path": "failure-history/6a64df0e-9c60-555f-aa3a-a80a70e7f985-5fe6b24e-daf8-4c97-b6ff-22fef105091f",
+  "launch_attempt_failures": 1,
+  "lease_sha256": "f6e728cf1da61b1aaad0277f2b45b77615c8f728b7f2005b5ce510eba9bdc081",
+  "new_launch_id": "615463e253ce47099bf92f4fe9a4cc9e",
+  "next_economic_execution_count": 1,
+  "operation": "company-commit-precheck-recovery",
+  "prepared_at": "2026-09-21T06:39:28.711665Z",
+  "prepared_digest": "f97c2f86334a33c0e304b9f10184c17e1d61b39cfb16a2c269b84d593069755c",
+  "prepared_files": {
+    "execution-config.json": "c5c2bd9924b9945c95bcb42783d3192f508488ba03bd0825fd74d9645ca99f3f",
+    "launch-intent.json": "5d46ce356b71302c9b80aa52ea7ba1c84f92d14ed9d1567af730aea10bb8bec8",
+    "recipe.json": "ff2286d6f45b81596367f7fd884a5148a345f953fba65e8c4a45b96373d9c701",
+    "state.json": "7e8a8389eb71ebd4cbd0c81699c245219fe691661f0b71914ace1274ca38dbdc"
+  },
+  "recovery_id": "5fe6b24e-daf8-4c97-b6ff-22fef105091f",
+  "recovery_tool_commit": "125ad96bb8e0734c8a2940f342b9c35f73bfc2cc",
+  "request": {
+    "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1789970318.691419:director",
+    "approved_by": "U0C250E23NW",
+    "company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+    "failed_company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+    "failed_launch_id": "942d7e7c58694b8eb85172d5be20decf",
+    "failure_files": {
+      "execution-config.json": "545544b47b4e4bee3aac2c702017628d079479c30d9a8a73046ac604487c9fc6",
+      "execution.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "executor.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "launch-intent.json": "a6a540fb0fcf493220abd6173cb710f6a988eac8ea03c6704a74fe5eea4e6a06",
+      "process.json": "b7841f1cfa3e8ac11059d340664cbbebf217d13718bc8d6e90a3bad1cfb672c5",
+      "recipe.json": "ff2286d6f45b81596367f7fd884a5148a345f953fba65e8c4a45b96373d9c701",
+      "result.json": "a8860b60466b2f41b582e0f78c83ad715c97b4979d80726ef154e518b6a3b09a",
+      "state.json": "7e8a8389eb71ebd4cbd0c81699c245219fe691661f0b71914ace1274ca38dbdc"
+    },
+    "job_id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+    "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "recipe_id": "kr-etf-p11-replay-v1",
+    "revision": 5,
+    "sequence": 3
+  },
+  "research_commands_absent": true,
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "worker_stopped": true
+}

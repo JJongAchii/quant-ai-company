@@ -1,0 +1,32 @@
+# Third overlay, after compose.yaml and research.compose.yaml. Off until reviewed activation.
+# The pinned profile contains source bundle paths under /state/research/provisioned.
+services:
+  api:
+    environment:
+      COMPANY_AUTONOMOUS_RESEARCH_ENABLED: ${COMPANY_AUTONOMOUS_RESEARCH_ENABLED:-false}
+      RESEARCH_PROFILES_FILE: /etc/quant-company/research-profiles.json
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/config/research-profiles.json:/etc/quant-company/research-profiles.json:ro
+  slack-socket:
+    environment:
+      COMPANY_AUTONOMOUS_RESEARCH_ENABLED: ${COMPANY_AUTONOMOUS_RESEARCH_ENABLED:-false}
+      RESEARCH_PROFILES_FILE: /etc/quant-company/research-profiles.json
+      RESEARCH_ARTIFACT_DIR: /state/research
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/config/research-profiles.json:/etc/quant-company/research-profiles.json:ro
+      - ${STATE_DIR:-/var/lib/quant-company}/research:/state/research:ro
+  worker:
+    image: quant-company-autonomous:${RELEASE_COMMIT:-unqualified}
+    build:
+      target: autonomous-research
+    environment:
+      COMPANY_AUTONOMOUS_RESEARCH_ENABLED: ${COMPANY_AUTONOMOUS_RESEARCH_ENABLED:-false}
+      RESEARCH_PROFILES_FILE: /etc/quant-company/research-profiles.json
+      RESEARCH_QLAB_PROFILE_FILE: /etc/quant-company/research-qlab.json
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/config/research-profiles.json:/etc/quant-company/research-profiles.json:ro
+      - ${STATE_DIR:-/var/lib/quant-company}/config/research-qlab.json:/etc/quant-company/research-qlab.json:ro
+      - ${STATE_DIR:-/var/lib/quant-company}/research-audit/qlab:/opt/research-audit/qlab:ro
+  dispatch:
+    environment:
+      COMPANY_AUTONOMOUS_RESEARCH_ENABLED: ${COMPANY_AUTONOMOUS_RESEARCH_ENABLED:-false}

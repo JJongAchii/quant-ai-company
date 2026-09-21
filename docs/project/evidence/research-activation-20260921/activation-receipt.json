@@ -1,0 +1,48 @@
+{
+  "commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+  "previous": "4a8eb43b6406d3229cfd1e93b51011a817f87343",
+  "started_at": "2026-09-21T04:50:31.738428+00:00",
+  "state": "complete",
+  "postgres_before": {
+    "id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+    "started_at": "2026-09-21T01:28:20.371309952Z",
+    "restart_count": 1
+  },
+  "roles_sha256_before": "d1d8ac4cec76f6c9303c6113779fc18239d15ac57f1aa29a9d7c56a7f2dda3bd",
+  "slack_ingress_paused_at": "2026-09-21T04:50:32.912881+00:00",
+  "drained_activity": {
+    "turns": 0,
+    "outbox": 0
+  },
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20260921T045033Z-42d9075f.tar.gz",
+    "sha256": "50f5b8d74241bc32d5045ace10b3f5d6b6c92456c3720fa0978c719faaeaacec",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260921T045033Z-42d9075f.tar.gz",
+    "release_commit": "4a8eb43b6406d3229cfd1e93b51011a817f87343",
+    "secrets_included": false
+  },
+  "additive_migration_completed_at": "2026-09-21T04:50:51.220222+00:00",
+  "healthy_services": 8,
+  "postgres_recreated": false,
+  "api_http_status": 200,
+  "api_health": {
+    "ok": true
+  },
+  "completed_at": "2026-09-21T04:51:34.967128+00:00",
+  "postgres_after": {
+    "id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+    "started_at": "2026-09-21T01:28:20.371309952Z",
+    "restart_count": 1
+  },
+  "roles_sha256_after": "d1d8ac4cec76f6c9303c6113779fc18239d15ac57f1aa29a9d7c56a7f2dda3bd",
+  "services": [
+    "codex-runtime",
+    "api",
+    "worker",
+    "dispatch",
+    "slack-socket",
+    "maintenance",
+    "claude-runtime"
+  ],
+  "research_enabled": true
+}
