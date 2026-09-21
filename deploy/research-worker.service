@@ -1,0 +1,27 @@
+# Install as a user unit on the explicitly approved 3070 host only.
+# Edit checkout/config paths to the operator-provisioned exact company commit.
+# Requires a persistent WSL user service manager (linger/boot setup is operator-owned).
+[Unit]
+Description=Quant company fixed research pull worker
+Wants=research-worker-tunnel.service
+After=network-online.target research-worker-tunnel.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=/home/achii/quant-company-research/company
+Environment=PYTHONPATH=/home/achii/quant-company-research/company/src
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PATH=/home/achii/quant-company-research/company/.venv/bin:/usr/local/bin:/usr/bin:/bin:/usr/lib/wsl/lib
+ExecStart=/home/achii/quant-company-research/company/.venv/bin/python -m quant_company.research.worker --config /home/achii/.config/quant-company/research-worker.json
+Restart=always
+RestartSec=5
+# A polling-daemon restart must leave the separately receipted executor alive.
+# Research cancellation goes through the verified per-job process group.
+KillMode=process
+TimeoutStopSec=10
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

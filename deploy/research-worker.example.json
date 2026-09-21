@@ -1,0 +1,17 @@
+{
+  "api_url": "http://127.0.0.1:18764",
+  "token_file": "/home/achii/.config/quant-company/research-worker.token",
+  "state_dir": "/home/achii/quant-company-research/worker-state",
+  "repo_source": "/home/achii/quant-company-research/pilot/quant-lab",
+  "input_source": "/home/achii/quant-company-research/frozen-inputs",
+  "evidence_repo": "/home/achii/quant-company-research/audit-evidence/quant-lab",
+  "evidence_objective": "docs/objective.md",
+  "research_python": "/home/achii/quant-company-research/pilot/quant-lab/.venv/bin/python",
+  "company_repo": "/home/achii/quant-company-research/company",
+  "company_commit": "0000000000000000000000000000000000000000",
+  "worker_id": "worker",
+  "poll_seconds": 5,
+  "heartbeat_seconds": 15,
+  "cancel_grace_seconds": 15,
+  "http_timeout_seconds": 20
+}
