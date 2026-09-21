@@ -8,7 +8,7 @@ from psycopg.types.json import Jsonb
 from ..company import as_json, fingerprint, stable
 from ..contracts import ProviderRequest
 from ..owner_controls import effective_limits
-from .contracts import NewsSource, load_sources
+from .contracts import NEWS_TOPICS, NewsSource, load_sources
 from .editor import bounded_prompt, render, validate_review
 from .feeds import timestamp
 
@@ -28,6 +28,7 @@ class NewsStore:
                             "allowed_channels": settings.slack_allowed_channels,
                             "allowed_users": settings.slack_allowed_users,
                             "max_age": settings.news_max_age_hours,
+                            "editor_policy": 2,
                             "sources": [s.model_dump() for s in self.sources().values()]})
 
     def authorized(self):
@@ -79,7 +80,9 @@ class NewsStore:
                 return {"state": "source_error"}
             added = 0
             for entry in receipt["entries"]:
-                identity = fingerprint([source["id"], entry["url"], entry["digest"]])
+                origin = ("media:" + source["config"]["origin_group"]
+                          if source["config"]["kind"] == "media" else source["id"])
+                identity = fingerprint([origin, entry["url"], entry["digest"]])
                 published = entry["published_at"]
                 horizon = (timedelta(hours=self.company.settings.news_max_age_hours) if source["last_success"]
                            else timedelta(minutes=self.company.settings.news_initial_lookback_minutes))
@@ -121,8 +124,8 @@ class NewsStore:
             return row
 
     def save_original(self, article, receipt):
-        if (article["retrieval"] or {}).get("earliest_publication"):
-            receipt = {"earliest_publication": article["retrieval"]["earliest_publication"], **receipt}
+        receipt = {**{k: v for k, v in (article["retrieval"] or {}).items()
+                      if k in {"earliest_publication", "discovery_request_id"}}, **receipt}
         source = NewsSource.model_validate(article["config"])
         ok = (receipt.get("ok") and receipt.get("publisher_host") in article["config"]["article_hosts"]
               and source.allows_article(receipt.get("url", article["url"]))
@@ -177,14 +180,17 @@ class NewsStore:
                     WHERE a.state=%s AND s.enabled AND s.config->>'use_for_summary'='true'
                     AND a.source_digest=s.config_digest AND a.published_at>=now()-make_interval(hours=>%s)
                     AND a.published_at<=now()+interval '5 minutes'
-                    ORDER BY a.collected_at,a.id LIMIT 6""", (state, self.company.settings.news_max_age_hours)).fetchall())
+                    ORDER BY row_number() OVER (PARTITION BY s.config->>'origin_group' ORDER BY a.collected_at,a.id),
+                        a.collected_at,a.id LIMIT 6""", (state, self.company.settings.news_max_age_hours)).fetchall())
             primary = [r["id"] for r in rows if r["state"] == "ready"]
             if not primary:
                 return {"state": "idle"}
             articles = [{"id": r["id"], "url": r["url"], "title": r["title"], "content": r["content"],
                          "excerpt_truncated": bool((r["retrieval"] or {}).get("excerpt_truncated")),
+                         "bylines": (r["retrieval"] or {}).get("bylines", []),
                          "published_at": r["published_at"], "publisher": r["config"]["publisher"],
                          "license_url": r["config"].get("license_url"), "license_name": r["config"].get("license_name", ""),
+                         "allow_attributed_reporting": r["config"].get("allow_attributed_reporting", False),
                          "kind": r["config"]["kind"], "origin_group": r["config"]["origin_group"]} for r in rows]
             for article in articles:
                 existing = conn.execute("""SELECT n.id::text FROM news_events n
@@ -337,10 +343,27 @@ class NewsStore:
 
     def status(self):
         with self.db.transaction() as conn:
+            sources = conn.execute("""SELECT s.id,s.enabled,s.last_success,s.last_attempt,s.failures,s.error,s.receipt,
+                s.config->>'kind' AS kind,s.config->'topics' AS topics,s.config->'regions' AS regions,
+                a.latest_collected,a.latest_publication,a.fresh_count,a.ready_count
+                FROM news_sources s LEFT JOIN LATERAL (
+                    SELECT max(collected_at) AS latest_collected,max(published_at) AS latest_publication,
+                    count(*) FILTER (WHERE published_at BETWEEN now()-interval '24 hours' AND now()+interval '5 minutes') AS fresh_count,
+                    count(*) FILTER (WHERE state='ready') AS ready_count
+                    FROM news_articles WHERE source_id=s.id) a ON true ORDER BY s.id""").fetchall()
+            coverage = {topic: {"enabled_sources": [s["id"] for s in sources if s["enabled"] and topic in (s["topics"] or [])],
+                               "fresh_media_sources": [s["id"] for s in sources if s["enabled"] and s["kind"] == "media"
+                                                       and s["fresh_count"] and topic in (s["topics"] or [])]}
+                        for topic in NEWS_TOPICS}
             return as_json({"enabled": self.company.settings.company_news_enabled,
                             "publish_enabled": self.company.settings.news_publish_enabled,
                             "channel": self.company.settings.news_channel_id,
-                            "sources": conn.execute("SELECT id,enabled,last_success,last_attempt,failures,error,receipt FROM news_sources ORDER BY id").fetchall(),
+                            "sources": sources, "coverage": coverage,
+                            "search_enabled": self.company.settings.news_search_enabled,
+                            "searches": conn.execute("""SELECT id,topic,state,error,created_at,completed_at,
+                                receipt->'added' AS added,receipt->'excluded_unregistered' AS excluded_unregistered
+                                FROM news_searches ORDER BY created_at DESC LIMIT 6""").fetchall(),
+                            "coverage_note": "Source topic registration and fresh article counts, not proof that every topic/event was covered. Delivery status comes from the outbox, not article queued state.",
                             "articles": conn.execute("SELECT state,count(*) AS count FROM news_articles GROUP BY state ORDER BY state").fetchall(),
                             "deliveries": conn.execute("""SELECT o.id::text,o.status,o.error,o.sent_ts,o.created_at
                                 FROM outbox o JOIN news_publications p ON p.id=o.id ORDER BY o.created_at DESC LIMIT 20""").fetchall(),

@@ -9,8 +9,8 @@ from temporalio.worker import Worker
 from .company import Company
 from .config import Settings
 from .execution import TurnExecutor
-from .news.runner import NewsCollector, NewsEditor
-from .news.workflow import NewsCollectionWorkflow, NewsEditorialWorkflow
+from .news.runner import NewsCollector, NewsDiscovery, NewsEditor
+from .news.workflow import NewsCollectionWorkflow, NewsDiscoveryWorkflow, NewsEditorialWorkflow
 from .research.runner import ResearchRunner
 from .research.workflow import ResearchWorkflow
 from .slack import SlackIngress, SlackOutbox
@@ -29,9 +29,11 @@ def make_worker(client, company, executor=None):
     executor = executor or TurnExecutor(company)
     staff = StaffRunner(company, executor.provider)
     news = NewsEditor(company, executor.provider)
+    discovery = NewsDiscovery(company, executor.provider)
     return Worker(client, task_queue=company.settings.temporal_task_queue,
-                  workflows=[CompanyTurnWorkflow, StaffDevelopmentWorkflow, NewsEditorialWorkflow],
-                  activities=[executor.activity_execute, executor.activity_block, staff.activity_tick, news.activity_tick],
+                  workflows=[CompanyTurnWorkflow, StaffDevelopmentWorkflow, NewsEditorialWorkflow, NewsDiscoveryWorkflow],
+                  activities=[executor.activity_execute, executor.activity_block, staff.activity_tick, news.activity_tick,
+                              discovery.activity_tick],
                   max_concurrent_activities=1, max_cached_workflows=100,
                   graceful_shutdown_timeout=timedelta(seconds=10))
 
@@ -72,6 +74,15 @@ async def dispatch_once(client, company):
             except WorkflowAlreadyStartedError:
                 pass
         company._news_workflows_started = True
+    if (company.settings.company_news_enabled and company.settings.news_search_enabled
+            and not getattr(company, "_news_search_started", False)):
+        try:
+            await client.start_workflow(NewsDiscoveryWorkflow.run, id="company-news-discovery-v1",
+                                        task_queue=company.settings.temporal_task_queue,
+                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+        except WorkflowAlreadyStartedError:
+            pass
+        company._news_search_started = True
     if company.settings.company_staff_development_enabled and not getattr(company, "_staff_workflow_started", False):
         try:
             await client.start_workflow(StaffDevelopmentWorkflow.run, id="company-staff-development-v1",

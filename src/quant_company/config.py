@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     company_web_enabled: bool = True
     company_news_enabled: bool = False
     news_publish_enabled: bool = False
+    news_search_enabled: bool = False
     news_channel_id: str = ""
     news_owner_user: str = ""
     news_sources_file: Path | None = None

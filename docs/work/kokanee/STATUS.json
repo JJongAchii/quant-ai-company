@@ -1,62 +1,60 @@
 {
   "approval": {
-    "approvedAt": "2026-09-18T15:19:55.326719+00:00",
-    "id": "chat-20260919-continue-reporter-activation"
+    "approvedAt": "2026-09-21T00:05:20.807710+00:00",
+    "id": "chat-20260921-restore-original-news-scope"
   },
-  "currentIntent": "INTENT-v2.json",
+  "currentIntent": "INTENT-v3.json",
   "deliverables": {
-    "DEPLOY": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/hot-news-operating-health.json",
-          "sha256": "87fa7321cc82"
-        }
-      ],
-      "note": "검증된 커밋으로 배포, 기존 역할·인증·DB 보존, 8개 서비스 정상. Temporal 실행과 worker/dispatch 재시작 영수증은 hot-news-restart.json에 기록. backup/release timer 복구.",
-      "status": "verified",
-      "updatedAt": "2026-09-18T16:43:51.358790+00:00"
-    },
     "LIVE": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "PIPELINE": {
       "evidence": [
         {
-          "path": "docs/project/evidence/hot-news-quiet-channel-check.json",
-          "sha256": "ce3a84f200b5"
+          "path": "docs/project/evidence/hot-news-scope-codex-preview.json",
+          "sha256": "a8788d69d3c9"
         },
         {
-          "path": "docs/project/evidence/hot-news-slack-credential-cleanup.json",
-          "sha256": "89f30688d7c4"
+          "path": "docs/project/evidence/hot-news-scope-tests.json",
+          "sha256": "08bb8a931037"
         }
       ],
-      "note": "9월 21일 실제 DB·Temporal·Slack 읽기와 6개 원문 재조회 확인. 새 기사 유입 부족으로 초기 2건 이후 게시 없음; 글로벌 뉴스 범위는 미충족. 사용자 재인증 후 구형 검증 토큰 교체·새로고침 검증 완료.",
+      "note": "실제 언론 6건을 구독 모델 검토: 미리보기 3·보류 2·제외 1; 추가 검색 실제 실행 후 후보만 저장, outbox 0. 원문·날짜·매체 귀속·중복·불명 호출 복구 회귀 검증",
       "status": "verified",
-      "updatedAt": "2026-09-20T23:58:06.522411+00:00"
+      "updatedAt": "2026-09-21T00:35:10.160795+00:00"
     },
-    "SLACK": {
+    "SCOPE": {
       "evidence": [
         {
-          "path": "docs/project/evidence/hot-news-slack-install.json",
-          "sha256": "f0a90345c517"
+          "path": "docs/project/HOT-NEWS-SCOPE-RESTORATION.md",
+          "sha256": "cb0238013955"
         }
       ],
-      "note": "전용 앱·실제 hot-news 참여·auth.test/history 성공. 토큰은 비공개 운영 경로로 전달.",
+      "note": "최초 6개 뉴스 영역과 한국·해외 범위, 상시 검증 전달, daily-brief 분리 및 무료·기존 구독 우선 결정 기록",
       "status": "verified",
-      "updatedAt": "2026-09-18T15:52:03.951537+00:00"
+      "updatedAt": "2026-09-21T00:33:02.493229+00:00"
     },
     "SOURCES": {
       "evidence": [
         {
-          "path": "docs/project/evidence/hot-news-final-image-probe.json",
-          "sha256": "550c88fe728b"
+          "path": "docs/project/evidence/hot-news-scope-source-probe.json",
+          "sha256": "2bea5d6db7fc"
+        },
+        {
+          "path": "src/quant_company/news/sources.json",
+          "sha256": "c3a510488066"
         }
       ],
-      "note": "통합 배포 커밋의 정상 entrypoint에서 6개 공식 피드와 원문·발행 시각 확인. 일반 언론 커버리지 제한 유지.",
+      "note": "운영 지역의 새 코드로 무료 언론 RSS 9개·공식 6개 성공; 최신 언론 8개 표본의 실제 본문 확인, 영역별 한계 명시",
       "status": "verified",
-      "updatedAt": "2026-09-18T16:32:35.443382+00:00"
+      "updatedAt": "2026-09-21T00:33:02.643750+00:00"
     }
   },
-  "intentDigest": "4df23b420435",
+  "intentDigest": "e7f0410f8294",
   "schemaVersion": 1,
   "slug": "kokanee",
   "state": "approved",
-  "updatedAt": "2026-09-20T23:58:06.522411+00:00"
+  "updatedAt": "2026-09-21T00:35:10.160795+00:00"
 }

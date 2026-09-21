@@ -7,11 +7,40 @@ from temporalio.worker import Replayer, Worker
 
 from quant_company.execution import TurnExecutor
 from quant_company.news.store import NewsStore
-from quant_company.news.workflow import NewsCollectionWorkflow, NewsEditorialWorkflow
+from quant_company.news.workflow import NewsCollectionWorkflow, NewsDiscoveryWorkflow, NewsEditorialWorkflow
 from quant_company.runtime import dispatch_once, make_news_collector, make_worker
 
 from .test_news import news, ready_article, reply  # noqa: F401
+from .test_news_scope import discovery, search_reply  # noqa: F401
 from .test_temporal import temporal_environment  # noqa: F401
+
+
+@pytest.mark.integration
+async def test_news_search_recovers_frozen_request_without_repeated_spending(discovery, temporal_environment):  # noqa: F811
+    seen = []
+    completed = asyncio.Event()
+
+    @activity.defn(name="company_news_discover")
+    async def discover():
+        ready = await asyncio.to_thread(discovery.prepare)
+        seen.append(ready)
+        if len(seen) == 1:
+            raise RuntimeError("simulated worker loss after search freeze")
+        result = await asyncio.to_thread(discovery.commit, search_reply(ready))
+        completed.set()
+        return result
+
+    queue = "news-search-recovery-"+uuid4().hex
+    async with Worker(temporal_environment.client, task_queue=queue, workflows=[NewsDiscoveryWorkflow], activities=[discover]):
+        handle = await temporal_environment.client.start_workflow(NewsDiscoveryWorkflow.run, id=queue, task_queue=queue)
+        await asyncio.wait_for(completed.wait(), timeout=20)
+        assert seen[0]["request"] == seen[1]["request"]
+        await Replayer(workflows=[NewsDiscoveryWorkflow]).replay_workflow(await handle.fetch_history())
+        await handle.cancel()
+    with discovery.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM news_searches").fetchone()["n"] == 1
+        assert conn.execute("SELECT reserved FROM daily_usage").fetchone()["reserved"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
 
 
 @pytest.mark.integration
