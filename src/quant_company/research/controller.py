@@ -173,6 +173,9 @@ def stage_prompt(company, conn, task):
     context["read_chunks"] = as_json(reads[-5:])
     context["inspected_chunks"] = [{"path": value["path"], "offset": value["offset"]} for value in reads]
     payload = json.dumps(context, ensure_ascii=False, allow_nan=False)
+    while len(payload) > 65000 and len(context["read_chunks"]) > 1:
+        context["read_chunks"].pop(0)
+        payload = json.dumps(context, ensure_ascii=False, allow_nan=False)
     if len(payload) > 70000:
         raise PolicyError("Mission stage context needs bounded evidence selection")
     return role, (
@@ -351,7 +354,11 @@ class MissionController:
             snapshot = self.store.snapshot(conn, candidate["id"], public=False)
             row = conn.execute("SELECT * FROM research_mission_stages WHERE mission_id=%s AND stage_key=%s",
                                (candidate["id"], self._key(snapshot))).fetchone()
+            conn.execute("UPDATE research_missions SET updated_at=now() WHERE id=%s", (candidate["id"],))
         stage = snapshot["stage"]["stage"]
+        if row and (row["state"] == "completed" or row["state"] == "running"
+                    or (row["state"] == "waiting" and row["retry_at"] and row["retry_at"] > now())):
+            return {"state": "waiting", "stage": stage}
         if row and row["state"] == "received":
             try:
                 if stage in {"implementation", "repair", "audit"}:
