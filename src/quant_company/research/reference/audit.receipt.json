@@ -1,0 +1,10 @@
+{
+  "artifact_url": null,
+  "audit": "AUDIT-leak-auditor-20260919-company-kr-etf-pilot-p11-report-path.md",
+  "audit_sha256": "76a975ba77ba54b38b298a2ed748db45113326785f58bc9caace2409fa999fd4",
+  "html_sha256": "5c3c084675981cab573fb8d8d68952fbd823a0ac6b08ff0cc928138156b01d82",
+  "rendered_at": "2026-09-19T01:18:41+09:00",
+  "renderer": 1,
+  "scope_digest": "e1c51cf90a17",
+  "verdict": "pass"
+}
