@@ -30,5 +30,3 @@ template1
 template0
 quant_company
 restore_drill_20260916
-
-
