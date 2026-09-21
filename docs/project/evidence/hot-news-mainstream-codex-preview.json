@@ -1,0 +1,433 @@
+{
+  "checked_at": "2026-09-21T04:50:16.307331+00:00",
+  "candidate_code": true,
+  "database": "disposable real PostgreSQL on operating server",
+  "model": "real isolated ChatGPT subscription gpt-6-astra/high",
+  "mode": "preview",
+  "freshness_window_hours": 24,
+  "initial_lookback_minutes": 120,
+  "inputs": [
+    {
+      "source": "yonhap-economy",
+      "input": {
+        "url": "https://www.yna.co.kr/view/AKR20260921094200008",
+        "title": "[게시판] 하나증권, 투자 인사이트 포럼 개최",
+        "published_at": "2026-09-21 04:38:53+00:00",
+        "updated_at": null,
+        "digest": "7c80616564b4a6fb38d1e0ee7afc695437891e79b431dd0ac3c10e74797ee245"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.yna.co.kr/view/AKR20260921094200008",
+        "requested_url": "https://www.yna.co.kr/view/AKR20260921094200008",
+        "redirects": [],
+        "title": "[게시판] 하나증권, 투자 인사이트 포럼 개최 | 연합뉴스",
+        "publisher_host": "www.yna.co.kr",
+        "retrieved_at": "2026-09-21T04:48:54.811156+00:00",
+        "published_at": "2026-09-21T13:38:53+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html;charset=utf-8",
+        "original_sha256": "435fef66fdd1e57eb958741a54904fc548586ed369fce2926dbf72cca2182a46",
+        "original_bytes": 156422,
+        "content_truncated": false,
+        "bylines": [
+          "김유아"
+        ],
+        "article_extraction": "article",
+        "article_chars": 480,
+        "excerpt_truncated": false
+      }
+    },
+    {
+      "source": "yonhap-international",
+      "input": {
+        "url": "https://www.yna.co.kr/view/AKR20260921094300704",
+        "title": "[쇼츠] 우크라 대공습에 불탄 러 심장부…드론·미사일 쏟아부었다",
+        "published_at": "2026-09-21 04:21:07+00:00",
+        "updated_at": null,
+        "digest": "c24a64d324f4c85d1313e19ebe756bf06c310ad4fd2d90dd193477ef8f55468d"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.yna.co.kr/view/AKR20260921094300704",
+        "requested_url": "https://www.yna.co.kr/view/AKR20260921094300704",
+        "redirects": [],
+        "title": "[쇼츠] 우크라 대공습에 불탄 러 심장부…드론·미사일 쏟아부었다 | 연합뉴스",
+        "publisher_host": "www.yna.co.kr",
+        "retrieved_at": "2026-09-21T04:48:55.249525+00:00",
+        "published_at": "2026-09-21T13:21:07+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html;charset=utf-8",
+        "original_sha256": "5f188acf77cf8ecbe41cb885d638d77f0db367e5b2b365555ce54edf2cbae6dd",
+        "original_bytes": 160410,
+        "content_truncated": false,
+        "bylines": [
+          "임동근"
+        ],
+        "article_extraction": "article",
+        "article_chars": 753,
+        "excerpt_truncated": false
+      }
+    },
+    {
+      "source": "sbs-economy",
+      "input": {
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763619",
+        "title": "오세훈 \"박원순 때 서울정비사업 해제 유도…이러고 남탓하나\"",
+        "published_at": "2026-09-21 03:38:00+00:00",
+        "updated_at": null,
+        "digest": "8519adfef72cbe6a4f8f3465656f103e188ef3ca5efb13512b5ddedf8daf6277"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763619",
+        "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763619",
+        "redirects": [],
+        "title": "오세훈 \"박원순 때 서울정비사업 해제 유도…이러고 남탓하나\"",
+        "publisher_host": "news.sbs.co.kr",
+        "retrieved_at": "2026-09-21T04:48:55.604611+00:00",
+        "published_at": "2026-09-21T12:31:00+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html;charset=utf-8",
+        "original_sha256": "454deccb430dbf25cc2c3a4d36f87d43ee145935c9b6e72d68055a86f56dc2d2",
+        "original_bytes": 128313,
+        "content_truncated": false,
+        "bylines": [
+          "윤나라 기자"
+        ],
+        "article_extraction": "articleBody",
+        "article_chars": 2120,
+        "excerpt_truncated": false
+      }
+    },
+    {
+      "source": "sbs-world",
+      "input": {
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763701",
+        "title": "일본, 북한 선수단 신칸센 이용 금지…북한 체육상, 일 접촉에 '냉랭'",
+        "published_at": "2026-09-21 04:45:00+00:00",
+        "updated_at": null,
+        "digest": "9b50daa0a1fb33f2f2b5ee30867084cfc50b4dd1bc544b21eb6e92152746c7d5"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763701",
+        "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763701",
+        "redirects": [],
+        "title": "일본, 북한 선수단 신칸센 이용 금지…북한 체육상, 일 접촉에 '냉랭'",
+        "publisher_host": "news.sbs.co.kr",
+        "retrieved_at": "2026-09-21T04:48:55.923703+00:00",
+        "published_at": "2026-09-21T13:45:03+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html;charset=utf-8",
+        "original_sha256": "bf6311bcb8675430a4b503523847ba9a014b0da8885cf5247e416ef459660c46",
+        "original_bytes": 125436,
+        "content_truncated": false,
+        "bylines": [
+          "김영아 기자"
+        ],
+        "article_extraction": "articleBody",
+        "article_chars": 1231,
+        "excerpt_truncated": false
+      }
+    },
+    {
+      "source": "etoday-finance",
+      "input": {
+        "url": "https://www.etoday.co.kr/news/view/2627980",
+        "title": "다이소서 최대 50% 할인⋯롯데카드 ‘다이소엔로카’ 선봬",
+        "published_at": "2026-09-21 04:36:00+00:00",
+        "updated_at": null,
+        "digest": "9cdf6b15d752de9fce26f90d3aa54503fd888323eddbeb3142caebb7bce5c866"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.etoday.co.kr/news/view/2627980",
+        "requested_url": "https://www.etoday.co.kr/news/view/2627980",
+        "redirects": [],
+        "title": "다이소서 최대 50% 할인⋯롯데카드 ‘다이소엔로카’ 선봬 - 이투데이",
+        "publisher_host": "www.etoday.co.kr",
+        "retrieved_at": "2026-09-21T04:48:56.237161+00:00",
+        "published_at": "2026-09-21T13:36:00+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "cc48fe83bdf5188b5db0357b409466f79c4daff3037ca16cc5ea116cbacde21f",
+        "original_bytes": 139505,
+        "content_truncated": false,
+        "bylines": [
+          "전아현"
+        ],
+        "article_extraction": "articleBody",
+        "article_chars": 714,
+        "excerpt_truncated": false
+      }
+    }
+  ],
+  "result": {
+    "state": "completed",
+    "items": [
+      {
+        "state": "ignored",
+        "headline": "",
+        "reason": "투자 강연과 금융상품 체험을 중심으로 한 증권사 행사 안내다. 주요 금융정책이나 산업 변화에 해당하는 새로운 사실이 없어 제외한다."
+      },
+      {
+        "state": "held",
+        "headline": "",
+        "reason": "서울 주택공급은 중요한 국내 경제 사안이지만, 본문의 핵심은 전임 시정이 정비사업 해제를 유도했다는 오세훈 시장의 비판이다. 389곳·43만 호라는 수치와 공급 감소의 인과관계를 뒷받침할 행정자료나 독립 취재가 제공되지 않았다. 새로운 정책 시행도 확인되지 않는다. 승인 매체 보도라도 이러한 의혹을 단일 매체 귀속 방식으로 발행할 수 없어 보류한다."
+      },
+      {
+        "state": "ignored",
+        "headline": "",
+        "reason": "개별 제휴카드 출시와 할인 조건을 소개하는 상품 홍보성 보도다. 금융시장이나 산업 전반에 중요한 변화가 제시되지 않아 제외한다."
+      },
+      {
+        "state": "held",
+        "headline": "",
+        "reason": "본문상 공습 시점은 9월 20일 현지시간이다. 중요한 전쟁·에너지 시설 관련 사안이지만, 공격 규모·목적·시설 타격·인명피해 여부는 교전 당사자 발언에 의존한다. 로이터·AFP 등의 영상 출처 나열만으로 중앙 주장을 뒷받침하는 독립 보도 두 건이 확보됐다고 볼 수 없다. 당사자 주장을 확정 사실로 발행하지 않고 독립 근거 보강까지 보류한다."
+      },
+      {
+        "state": "held",
+        "headline": "",
+        "reason": "북한 선수단 이동 제한과 북일 접촉은 외교적으로 검토할 사안이다. 다만 SBS 본문은 교도통신이 신원을 밝히지 않은 북한 선수단 관계자 및 북일 관계자에게서 전한 내용을 인용한다. 별도의 독립 취재나 일본 정부의 제한 조치 확인 자료가 없다. SBS와 교도통신을 독립된 두 보도로 셀 수 없으며, 익명 주장과 대화 회피 원인에 대한 해석은 단일 매체 귀속 발행 대상이 아니므로 보류한다."
+      }
+    ]
+  },
+  "search_result": {
+    "state": "completed",
+    "added": 1,
+    "excluded_unregistered": 0
+  },
+  "reviews": [
+    {
+      "id": "news-58e977cf-be0e-4120-961a-4fa969bfee81",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "ignored",
+          "reason": "투자 강연과 금융상품 체험을 중심으로 한 증권사 행사 안내다. 주요 금융정책이나 산업 변화에 해당하는 새로운 사실이 없어 제외한다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "서울 주택공급은 중요한 국내 경제 사안이지만, 본문의 핵심은 전임 시정이 정비사업 해제를 유도했다는 오세훈 시장의 비판이다. 389곳·43만 호라는 수치와 공급 감소의 인과관계를 뒷받침할 행정자료나 독립 취재가 제공되지 않았다. 새로운 정책 시행도 확인되지 않는다. 승인 매체 보도라도 이러한 의혹을 단일 매체 귀속 방식으로 발행할 수 없어 보류한다.",
+          "headline": ""
+        },
+        {
+          "state": "ignored",
+          "reason": "개별 제휴카드 출시와 할인 조건을 소개하는 상품 홍보성 보도다. 금융시장이나 산업 전반에 중요한 변화가 제시되지 않아 제외한다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "본문상 공습 시점은 9월 20일 현지시간이다. 중요한 전쟁·에너지 시설 관련 사안이지만, 공격 규모·목적·시설 타격·인명피해 여부는 교전 당사자 발언에 의존한다. 로이터·AFP 등의 영상 출처 나열만으로 중앙 주장을 뒷받침하는 독립 보도 두 건이 확보됐다고 볼 수 없다. 당사자 주장을 확정 사실로 발행하지 않고 독립 근거 보강까지 보류한다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "북한 선수단 이동 제한과 북일 접촉은 외교적으로 검토할 사안이다. 다만 SBS 본문은 교도통신이 신원을 밝히지 않은 북한 선수단 관계자 및 북일 관계자에게서 전한 내용을 인용한다. 별도의 독립 취재나 일본 정부의 제한 조치 확인 자료가 없다. SBS와 교도통신을 독립된 두 보도로 셀 수 없으며, 익명 주장과 대화 회피 원인에 대한 해석은 단일 매체 귀속 발행 대상이 아니므로 보류한다.",
+          "headline": ""
+        }
+      ],
+      "response": {
+        "usage": {
+          "input_tokens": 13778,
+          "output_tokens": 1592,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 131
+        },
+        "decision": {
+          "say": "기사 5건을 검토했습니다. 근거 보강이 필요한 3건은 보류하고, 일반 행사·상품 홍보 2건은 제외했습니다. 발행 제안은 없습니다.",
+          "tools": [],
+          "status": "complete",
+          "memories": [],
+          "messages": [],
+          "artifacts": [
+            {
+              "title": "뉴스 검토 결과",
+              "content": "{\"items\":[{\"disposition\":\"ignore\",\"article_ids\":[\"88fa17d61e877e63dd9f271c4cdbc6e49cc13589c21d47270dc38d6df6fb208c\"],\"reason\":\"투자 강연과 금융상품 체험을 중심으로 한 증권사 행사 안내다. 주요 금융정책이나 산업 변화에 해당하는 새로운 사실이 없어 제외한다.\",\"category\":\"금융\"},{\"disposition\":\"hold\",\"article_ids\":[\"8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30\"],\"reason\":\"서울 주택공급은 중요한 국내 경제 사안이지만, 본문의 핵심은 전임 시정이 정비사업 해제를 유도했다는 오세훈 시장의 비판이다. 389곳·43만 호라는 수치와 공급 감소의 인과관계를 뒷받침할 행정자료나 독립 취재가 제공되지 않았다. 새로운 정책 시행도 확인되지 않는다. 승인 매체 보도라도 이러한 의혹을 단일 매체 귀속 방식으로 발행할 수 없어 보류한다.\",\"category\":\"경제\",\"claim_type\":\"allegation\",\"verification\":\"insufficient\",\"evidence\":[{\"article_id\":\"8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30\",\"quote\":\"오세훈 서울시장은 서울 주택공급 절벽이 전임 박원순 시장 시절에 비롯된 것이라며 책임소재를 분명히 해야 한다고 주장했습니다.\"}],\"independent_origins\":[]},{\"disposition\":\"ignore\",\"article_ids\":[\"d38521cb2dd6d8d23235b808b29872187714288263d9eb17c4c9c7caef1d3865\"],\"reason\":\"개별 제휴카드 출시와 할인 조건을 소개하는 상품 홍보성 보도다. 금융시장이나 산업 전반에 중요한 변화가 제시되지 않아 제외한다.\",\"category\":\"금융\"},{\"disposition\":\"hold\",\"article_ids\":[\"011071227926455dbe68a297a6ae868200c989dc1c2077905ded37fdba0bfa25\"],\"reason\":\"본문상 공습 시점은 9월 20일 현지시간이다. 중요한 전쟁·에너지 시설 관련 사안이지만, 공격 규모·목적·시설 타격·인명피해 여부는 교전 당사자 발언에 의존한다. 로이터·AFP 등의 영상 출처 나열만으로 중앙 주장을 뒷받침하는 독립 보도 두 건이 확보됐다고 볼 수 없다. 당사자 주장을 확정 사실로 발행하지 않고 독립 근거 보강까지 보류한다.\",\"category\":\"세계정세\",\"claim_type\":\"allegation\",\"verification\":\"insufficient\",\"evidence\":[{\"article_id\":\"011071227926455dbe68a297a6ae868200c989dc1c2077905ded37fdba0bfa25\",\"quote\":\"세르게이 소뱌닌 모스크바 시장은 소셜미디어에 \\\"우크라이나가 선거 방해 목적으로 1천600대 이상의 드론을 동원해 러시아를 공격했다\\\"고 밝혔습니다.\"},{\"article_id\":\"011071227926455dbe68a297a6ae868200c989dc1c2077905ded37fdba0bfa25\",\"quote\":\"볼로디미르 젤렌스키 우크라이나 대통령은 이날 소셜미디어에 모스크바주의 핵심 석유산업 시설과 물류 시설을 플라밍고 미사일 등으로 공격했다고 밝혔습니다.\"}],\"independent_origins\":[]},{\"disposition\":\"hold\",\"article_ids\":[\"30ae57496aa9962ea28b20b878effcfd39aa708af0813cd0421fec64215fc854\"],\"reason\":\"북한 선수단 이동 제한과 북일 접촉은 외교적으로 검토할 사안이다. 다만 SBS 본문은 교도통신이 신원을 밝히지 않은 북한 선수단 관계자 및 북일 관계자에게서 전한 내용을 인용한다. 별도의 독립 취재나 일본 정부의 제한 조치 확인 자료가 없다. SBS와 교도통신을 독립된 두 보도로 셀 수 없으며, 익명 주장과 대화 회피 원인에 대한 해석은 단일 매체 귀속 발행 대상이 아니므로 보류한다.\",\"category\":\"세계정세\",\"claim_type\":\"anonymous_claim\",\"verification\":\"insufficient\",\"evidence\":[{\"article_id\":\"30ae57496aa9962ea28b20b878effcfd39aa708af0813cd0421fec64215fc854\",\"quote\":\"교도통신은 오늘 북한 선수단 관계자를 인용해 북한 선수단이 일본 체재 중 일본 측으로부터 신칸센 이용을 제한받고 있다며 타국 선수단에게는 없는 세세한 제약을 하고 있는 것이라고 설명했습니다.\"}],\"independent_origins\":[]}]}",
+              "source_ids": []
+            }
+          ],
+          "follow_up": null,
+          "delegations": []
+        },
+        "provider": "codex",
+        "thread_id": "01a0c24b-beb0-7702-affa-b7224cfb5fb5",
+        "request_id": "news-58e977cf-be0e-4120-961a-4fa969bfee81",
+        "web_searches": []
+      }
+    }
+  ],
+  "searches": [
+    {
+      "id": "news-search-00ebdd7e-54de-4754-ba81-d8cea707f0d2",
+      "topic": "economy_finance",
+      "state": "completed",
+      "error": null,
+      "arguments": {
+        "limit": 6,
+        "query": "major economy finance markets banking Korea international news; recent 24 hours as of 2026-09-21T04:49:52.155796+00:00; discover major developments covered by Reuters, AP, Bloomberg, FT, WSJ, CNBC, Yonhap and leading Korean economic media, then find public reporting of those events. Return only news article URLs from news.sbs.co.kr, world.kbs.co.kr, www.bbc.co.uk, www.bbc.com, www.cnbc.com, www.etoday.co.kr, www.yna.co.kr; Korean and English searches; at most 3 native searches; do not open pages. Also seek independent reporting for: [쇼츠] 우크라 대공습에 불탄 러 심장부…드론·미사일 쏟아부었다; 오세훈 \"박원순 때 서울정비사업 해제 유도…이러고 남탓하나\"",
+        "held_ids": [
+          "011071227926455dbe68a297a6ae868200c989dc1c2077905ded37fdba0bfa25",
+          "8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30"
+        ]
+      },
+      "receipt": {
+        "ok": true,
+        "added": 1,
+        "query": "major economy finance markets banking Korea international news; recent 24 hours as of 2026-09-21T04:49:52.155796+00:00; discover major developments covered by Reuters, AP, Bloomberg, FT, WSJ, CNBC, Yonhap and leading Korean economic media, then find public reporting of those events. Return only news article URLs from news.sbs.co.kr, world.kbs.co.kr, www.bbc.co.uk, www.bbc.com, www.cnbc.com, www.etoday.co.kr, www.yna.co.kr; Korean and English searches; at most 3 native searches; do not open pages. Also seek independent reporting for: [쇼츠] 우크라 대공습에 불탄 러 심장부…드론·미사일 쏟아부었다; 오세훈 \"박원순 때 서울정비사업 해제 유도…이러고 남탓하나\"",
+        "results": [
+          {
+            "url": "https://news.sbs.co.kr/news/endPagePrintPopup.do?news_id=N1008763435",
+            "title": "오세훈 \"박원순 전 시장이 서울정비사업 해제 유도…이러고 남 탓하나\"",
+            "snippet": "SBS search result displays September 21, 2026, 11:23 KST. Reports Oh Se-hoon's remarks at a Seoul housing-policy event blaming redevelopment cancellations under former mayor Park Won-soon for housing supply constraints and disputing President Lee Jae-myung's criticism.",
+            "verified": false
+          }
+        ],
+        "verified": false,
+        "instruction": "Candidates and snippets are not evidence. Read originals with web_read before citing.",
+        "retrieved_at": "2026-09-21T04:50:16.285613+00:00",
+        "search_events": [
+          {
+            "id": "exec-edb28a9e-5f84-4f65-b1cd-ee58f654d15d",
+            "query": "(site:yna.co.kr OR site:cnbc.com OR site:bbc.com OR site:etoday.co.kr) (경제 OR 금융 OR markets OR banking) (\"2026-09-21\" OR \"2026-09-20\" OR \"2026.09.21\" OR \"2026.09.20\") ...",
+            "action": {
+              "type": "search",
+              "queries": [
+                "(site:yna.co.kr OR site:cnbc.com OR site:bbc.com OR site:etoday.co.kr) (경제 OR 금융 OR markets OR banking) (\"2026-09-21\" OR \"2026-09-20\" OR \"2026.09.21\" OR \"2026.09.20\")",
+                "(site:news.sbs.co.kr OR site:world.kbs.co.kr OR site:bbc.co.uk OR site:bbc.com OR site:yna.co.kr) 우크라 대공습 러시아 심장부 드론 미사일 2026 9 20",
+                "(site:yna.co.kr OR site:etoday.co.kr OR site:news.sbs.co.kr OR site:world.kbs.co.kr) 오세훈 박원순 서울정비사업 해제 유도 남탓"
+              ]
+            }
+          }
+        ],
+        "provider_request_id": "news-search-00ebdd7e-54de-4754-ba81-d8cea707f0d2",
+        "excluded_unregistered": 0
+      }
+    }
+  ],
+  "articles": [
+    {
+      "source_id": "yonhap-economy",
+      "state": "ignored",
+      "error": null
+    },
+    {
+      "source_id": "yonhap-international",
+      "state": "held",
+      "error": null
+    },
+    {
+      "source_id": "sbs-economy",
+      "state": "held",
+      "error": null
+    },
+    {
+      "source_id": "etoday-finance",
+      "state": "ignored",
+      "error": null
+    },
+    {
+      "source_id": "sbs-world",
+      "state": "held",
+      "error": null
+    },
+    {
+      "source_id": "sbs-economy",
+      "state": "collected",
+      "error": null
+    }
+  ],
+  "outbox_count": 0,
+  "slack_writes": 0,
+  "database_name": "reporter_acceptance_e3b2a67380bf",
+  "disposable_database_removed_after_receipt": true,
+  "package_manifest": {
+    "src/quant_company/__init__.py": "e106c3c09ab6bbc43727ec132984da9a3388718f7be12530a151773b8beb526d",
+    "src/quant_company/api.py": "cd796fb3e3e34c991af32bc770bec2a529e6fb541210a9acf9c3a5cd37fae31f",
+    "src/quant_company/cli.py": "4671d6892c270f9e8a8d1b585b57fc8867016d59937671797caea7bc93f03cc9",
+    "src/quant_company/company.py": "055114d12ad0b1edacaebe96c2d9cb9a1210a5bbe498f7d2ec6350e6d2090e17",
+    "src/quant_company/config.py": "00cec7ed57e59a56a869840f7413678925b92592ced45320175ab1f454fd5810",
+    "src/quant_company/contracts.py": "4945bffe498572ce56801ebad39ede0bc82f21859d3f1b74250f3ab139febd4f",
+    "src/quant_company/db.py": "064980c58907e2a7ddd12ddbc0adc8ab09c6fb092262b0053fb394cd0e67d614",
+    "src/quant_company/execution.py": "89ed7c2ec4021458f724653fc37e8332909a45b9b608f6db234c7d976f6571d9",
+    "src/quant_company/finance_sources.py": "572afe4036c508a31f8218e3bc5978eb7c9c444bd6e33c08d14f8c805e56a2d2",
+    "src/quant_company/lake_reader.py": "6b8bd441aba39ec7b6fb1666f0947132183f10e8bd2a6acbdd5dfbbb29c1c0ef",
+    "src/quant_company/lake_tools.py": "ecfac9469aca7b930020742c35376d84724e0c64573170383146575872c6186a",
+    "src/quant_company/maintenance/__init__.py": "a068a4a09f888f2f3105bbf238cfa3aa5ee50961cfa898ba1c48e9d9cc9186db",
+    "src/quant_company/maintenance/applications.py": "3a005277c08f4d65ac301a0cce45a551bd0abb1d295c2bd7ada74bbc8a8bc17f",
+    "src/quant_company/maintenance/evaluation.py": "40f88e931511732759392d8e7f4e6565a7db5f94b1ac5216a1f99ee16e4752db",
+    "src/quant_company/maintenance/github.py": "f7e293f1aa060107944dc46eefe64f1f36b316f47073607d12eac43725ade41f",
+    "src/quant_company/maintenance/investigation.py": "02f1e798631f64891e7e6b493e3d0528d30dc2b965b70c5f61316e83fa2739fc",
+    "src/quant_company/maintenance/observation.py": "971fc5628a74685bfdbe082e8c5ac32d0df2cb47912c4f6ea618e20f3e17a08e",
+    "src/quant_company/maintenance/policy.py": "1383700813d542e55dbe59c681f0f9be32f3c1148fb1049852ad9de1b6ef293b",
+    "src/quant_company/maintenance/releases.py": "6bcaba753160e48aeea73076e925f414c7e17ae1df09cdb02eb004d9dbb86129",
+    "src/quant_company/maintenance/requests.py": "268caa92b7605e217bec2724e9589a71815f8573bc8efac4e823fb902de481b4",
+    "src/quant_company/maintenance/runner.py": "5a5705155132c0e66589921249b3efd61687fe1eac2570fd78850beced8e05f4",
+    "src/quant_company/maintenance/schema.sql": "0289757d109b6854d8b93f7261a279838abbf60062ab19990320327d27fd4683",
+    "src/quant_company/maintenance/store.py": "204e802f30f9b843175564e66cb0a6812663444ff4e28365cd56e82d09cc4b40",
+    "src/quant_company/maintenance/workflow.py": "429263214da307b15ca653f3220355dd2494ffe3dbf2e4e59504c4a342907f5c",
+    "src/quant_company/news/__init__.py": "64cfe5081277c5a0db7fa4ac640c9038e589464047cd70a9061e332f780af41a",
+    "src/quant_company/news/commands.py": "681ece1a44fa2543496181895f8b1b3294d5a1a229e26077ae482dcfa51f9f7b",
+    "src/quant_company/news/contracts.py": "45ab9846ccc4aa3e74896cbb3e977a6880708bbc07625b4ebafa6e49f0a1b060",
+    "src/quant_company/news/discovery.py": "49f76861c57c2eb807152b211f43b523b21e652481196c441dec38b782d397dc",
+    "src/quant_company/news/editor.py": "9d08d0ecfccd78c0dbe8d9b7fd0a25ea7567f952018919d693ee7b0df66c3976",
+    "src/quant_company/news/feeds.py": "949a29770afa69376f2b8df4ae8d234965b25fe4d66914b80824b3d39b7bfaa2",
+    "src/quant_company/news/originals.py": "f5b2ed5aa144b192b32208350e4a1d443747cdb111a41c2d95cd6be0869c669b",
+    "src/quant_company/news/runner.py": "7a97f7f17c3c48fafb4cdfe7c16acdd2a4066092ec56367300fe532d52bada4f",
+    "src/quant_company/news/schema.sql": "1945cb4608915305d26b33959fe5012408391fecf68bd3597ffb3d781b363c2c",
+    "src/quant_company/news/sources.json": "5bfc3b0a4dd120611205d299ca373dc07240406d4f7e0cb06b4ccc33dd06f21d",
+    "src/quant_company/news/store.py": "4a1be98facfcf7e0488da7e10d326891b4917424496d0d3aeda7b7d54684f592",
+    "src/quant_company/news/workflow.py": "219cbd9520144f11f6732cd7e5f9e110ae5aa8bad157b2693b1e55323e47636a",
+    "src/quant_company/owner_controls.py": "0c48b36ef32630100aadfea6f36181d3ffbdd6d5c0870020bae9f047c45ff4c9",
+    "src/quant_company/providers/__init__.py": "a289dd8ab63e6c5a35d2274e98232e30023cdf5806200e98f6b61c30c685f6ae",
+    "src/quant_company/providers/claude_runner.py": "38429f8eee314f155dd8287f044d3f3263264233f5f7b5c0465097d7531cce2c",
+    "src/quant_company/providers/claude_runtime.py": "ac3a5e95b9b7581af929543148deba43dbe5e5b6cbf4a4d88e94bdf6e742f415",
+    "src/quant_company/providers/client.py": "832dbcf61a37c4930928ddcbe0192fcf996aeea70c52ce20c3875ae9fc9c31b8",
+    "src/quant_company/providers/codex_runner.py": "595502009a3bc6ec53ad2c1956f44b639fbab3012e75e37d8983baa5f960ca62",
+    "src/quant_company/providers/codex_runtime.py": "8c5697a99c2d7c7dc11cf6682f5aa71045703c664d44d62eb4ae5e0a709c0686",
+    "src/quant_company/roles.json": "90e09f4ae2aac849f5b6879b6397ff4da07954c34d6ce25c8b2828c96c5ab4e3",
+    "src/quant_company/runtime.py": "68526cb21d03440650ca547bce3bb92a8cc41c8a4402014a039458d8f44df196",
+    "src/quant_company/schema.sql": "2625e691eb0e07fcb451e711aca4015687cdd84c45d2533653ecc4e653eaf880",
+    "src/quant_company/slack.py": "5d8c7d61d9bd42d35c57cc21172824cc3340fe4010fd9dcc081b13fbfb3d076a",
+    "src/quant_company/socket_mode.py": "421763c9200bf02a45ea1cd81408979a502484b3ab72b0d8bbccd93a5e61854d",
+    "src/quant_company/staff/__init__.py": "5413f69ff4318af76c1b1ec1f54c8ad86fb3992114eac54f5f35d4e646094c97",
+    "src/quant_company/staff/cases.py": "e6b5da401ba849b4b5317fae033c7a9290b42b33ce129748e747aab3bc4e3ed7",
+    "src/quant_company/staff/comparisons.py": "2f43eef1b6c804eac611609fc4933cce604a63e169eda6ad287d233e0aec926b",
+    "src/quant_company/staff/independent_review.py": "c8fddeb76b3ccfa493b7c9a9c17a602354e7250af18470ba8018dabe4fdd0230",
+    "src/quant_company/staff/packs.py": "fd6570fb21a3403e8c79e6289e51db62c814f837b3da00d8059676f742067e63",
+    "src/quant_company/staff/playbooks/data.md": "0ec6d6ae63ae53c9c2a55e09b3413474416cc7bba1d9829b5a5dcd4c5d07b619",
+    "src/quant_company/staff/playbooks/director.md": "8d9ac0554e42c66b33faf1aa4f057eb013fcef09549e64111f4a6c1727ac188a",
+    "src/quant_company/staff/playbooks/engineer.md": "04ab1e6db3778cd21fa2704922ebc2be4b7e4d3c3f427c975777817c588273a8",
+    "src/quant_company/staff/playbooks/financial_strategist.md": "7bf5e15ea27fc4bc73d987586152a56fabad4acba0f6658158ca4faa73f1be9f",
+    "src/quant_company/staff/playbooks/maintainer.md": "d6dcabad814a6a796adc08d2de4f8874c4b0987410b75b2191a491e279b8855d",
+    "src/quant_company/staff/playbooks/operations.md": "dac56c8c086a1ec1aa52fb5af4f544cd470732553f88d58cfe72159573155769",
+    "src/quant_company/staff/playbooks/reporter.md": "1e61f9d1e3c1d07a133800a535a6c2a3b44fccceeef834f9550aad685762ea02",
+    "src/quant_company/staff/playbooks/researcher_crypto.md": "b32f70250ad114b930a74e3184502883e7533fc373696781af41d54de3822dea",
+    "src/quant_company/staff/playbooks/researcher_global.md": "77b1d9783eb9c5e47f0a9cf5035f03f3a7204103c73a5cf96249d75f96784c93",
+    "src/quant_company/staff/playbooks/researcher_kr.md": "b95703a73e22ef9f43bdbf62b965b1dd6f9c2f0fdc828e0acaa594f7f1b15587",
+    "src/quant_company/staff/playbooks/risk.md": "f6990bde545f70b653374c0ba92d576decd59b1459d7da9d18aedf133acedce9",
+    "src/quant_company/staff/playbooks/validator.md": "0d67b997df5931ce91c23e417231b3a7e3153b47f723cbcfc92ef8340c7ec390",
+    "src/quant_company/staff/progress.py": "418aa62b7e24924287083d00734cd62a8afd9ab056a32749345b034fe0710000",
+    "src/quant_company/staff/review_contract.py": "411039ae175dbe49800f64e53a76d199570a6762319a69cd6be8312a7cb7120a",
+    "src/quant_company/staff/runner.py": "1942cd186d1cbe013e49446cebc5db16db6d938ccba26e78fdca587e021a6929",
+    "src/quant_company/staff/schema.sql": "ae8701287da7ec74fbc74d189a61b0277541eb17dd101de0747dfacd4f1549c1",
+    "src/quant_company/staff/store.py": "7db6bc2177ff4ad97bace9ae35e00d2756b1759500d179b0289669f2aca415e3",
+    "src/quant_company/staff/tools.py": "595f8baa34da983da964f0c221a60e54307a69fcc12faeed59d518cc9aae861a",
+    "src/quant_company/staff/workflow.py": "6e04eb274375d4f4b9952faa91e08cb750eaac519d1557ec52bc3636a1b33d43",
+    "src/quant_company/state_schema.sql": "c5f2b0df1a9c804fbdcb112b8ffddd31590757b20f9907960f0f259aee6093a2",
+    "src/quant_company/system_state.py": "0b36eea5deec9dac2100ef0aaabab80e7a45b2e88f717000705cca48c2b0387c",
+    "src/quant_company/task_control.py": "b728b67562b4617dc03c64c149cc707f61fdda6592547e3353008fa327b544c9",
+    "src/quant_company/tools.py": "1187a4fdc25fc38b29fffeac153d33e658c0450ff7134bc2dab57baf3ca05aec",
+    "src/quant_company/web_fetch.py": "22b2de321cca384b0d8d1cea2a8d08eb624765e2b062b8e95005584934ba7a14",
+    "src/quant_company/web_tools.py": "176b4163441548412fc8ca1f280978e9b3c24d080ede069c3d28a37f1fb44077",
+    "src/quant_company/workflow.py": "4d66cfe2dc230162ace5841baad61464cad74546dc2b3a2a46a42573a5cefab9"
+  }
+}

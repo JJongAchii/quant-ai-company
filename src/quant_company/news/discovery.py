@@ -30,7 +30,7 @@ class NewsDiscoveryStore(NewsStore):
 
     def search_policy(self):
         return fingerprint([self.policy(), self.company.settings.company_web_enabled,
-                            self.company.settings.news_search_enabled, "discovery-v1"])
+                            self.company.settings.news_search_enabled, "discovery-v2"])
 
     def prepare(self):
         if not self.allowed():
@@ -72,7 +72,9 @@ class NewsDiscoveryStore(NewsStore):
             at = datetime.now(UTC)
             hosts = sorted({host for s in sources for host in s.article_hosts})
             query = (TOPIC_QUERIES[topic] + "; recent 24 hours as of " + at.isoformat()
-                     + "; only news articles from " + ", ".join(hosts)
+                     + "; discover major developments covered by Reuters, AP, Bloomberg, FT, WSJ, CNBC, "
+                     + "Yonhap and leading Korean economic media, then find public reporting of those events. "
+                     + "Return only news article URLs from " + ", ".join(hosts)
                      + "; Korean and English searches; at most 3 native searches; do not open pages. "
                      + "Also seek independent reporting for: " + "; ".join(r["title"][:120] for r in held))[:1000]
             args = {"query": query, "limit": 6}

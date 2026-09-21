@@ -1,0 +1,428 @@
+{
+  "checked_at": "2026-09-21T05:17:34.767383+00:00",
+  "commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "additional_feed_repeat_poll_count": 10,
+  "repeat_polls": [
+    {
+      "source": "etoday-economy",
+      "first_success": "2026-09-21T05:06:07.129702+00:00",
+      "next_success": "2026-09-21T05:16:18.193368+00:00",
+      "seconds_between": 611.063666,
+      "failures": 0
+    },
+    {
+      "source": "etoday-finance",
+      "first_success": "2026-09-21T05:06:09.550606+00:00",
+      "next_success": "2026-09-21T05:16:20.436819+00:00",
+      "seconds_between": 610.886213,
+      "failures": 0
+    },
+    {
+      "source": "etoday-global",
+      "first_success": "2026-09-21T05:06:11.962940+00:00",
+      "next_success": "2026-09-21T05:16:23.164360+00:00",
+      "seconds_between": 611.20142,
+      "failures": 0
+    },
+    {
+      "source": "etoday-industry",
+      "first_success": "2026-09-21T05:06:14.414824+00:00",
+      "next_success": "2026-09-21T05:16:26.161010+00:00",
+      "seconds_between": 611.746186,
+      "failures": 0
+    },
+    {
+      "source": "sbs-economy",
+      "first_success": "2026-09-21T05:06:16.903742+00:00",
+      "next_success": "2026-09-21T05:16:28.600696+00:00",
+      "seconds_between": 611.696954,
+      "failures": 0
+    },
+    {
+      "source": "sbs-world",
+      "first_success": "2026-09-21T05:06:19.312507+00:00",
+      "next_success": "2026-09-21T05:16:31.016281+00:00",
+      "seconds_between": 611.703774,
+      "failures": 0
+    },
+    {
+      "source": "yonhap-economy",
+      "first_success": "2026-09-21T05:06:21.762758+00:00",
+      "next_success": "2026-09-21T05:16:33.479542+00:00",
+      "seconds_between": 611.716784,
+      "failures": 0
+    },
+    {
+      "source": "yonhap-industry",
+      "first_success": "2026-09-21T05:06:24.263371+00:00",
+      "next_success": "2026-09-21T05:16:36.016641+00:00",
+      "seconds_between": 611.75327,
+      "failures": 0
+    },
+    {
+      "source": "yonhap-international",
+      "first_success": "2026-09-21T05:06:26.822904+00:00",
+      "next_success": "2026-09-21T05:16:38.510183+00:00",
+      "seconds_between": 611.687279,
+      "failures": 0
+    },
+    {
+      "source": "yonhap-market",
+      "first_success": "2026-09-21T05:06:29.343684+00:00",
+      "next_success": "2026-09-21T05:16:41.060593+00:00",
+      "seconds_between": 611.716909,
+      "failures": 0
+    }
+  ],
+  "automatic_reviews_completed": 2,
+  "review_states": [
+    {
+      "id": "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-21 05:07:05.659630+00:00",
+      "completed_at": "2026-09-21 05:09:05.008848+00:00"
+    },
+    {
+      "id": "news-bdcc3989-021b-4083-a516-db2f07d4d665",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-21 05:14:05.227096+00:00",
+      "completed_at": "2026-09-21 05:15:06.518472+00:00"
+    }
+  ],
+  "delivered_after_release": 4,
+  "outbox_issues": [],
+  "workflows": [
+    {
+      "id": "company-news-collection-v1",
+      "run_id": "9fa60dbf-483b-4f07-b8b4-e71fbecf9e08",
+      "status": "RUNNING",
+      "recent_activity_results": [
+        {
+          "at": "2026-09-21 05:16:28.803342+00:00",
+          "result": [
+            {
+              "added": 2,
+              "article_fetched": true,
+              "source": "sbs-economy",
+              "state": "collected"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:16:31.210945+00:00",
+          "result": [
+            {
+              "added": 0,
+              "article_fetched": true,
+              "source": "sbs-world",
+              "state": "collected"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:16:33.730665+00:00",
+          "result": [
+            {
+              "added": 3,
+              "article_fetched": true,
+              "source": "yonhap-economy",
+              "state": "collected"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:16:36.258578+00:00",
+          "result": [
+            {
+              "added": 1,
+              "article_fetched": true,
+              "source": "yonhap-industry",
+              "state": "collected"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:16:38.792984+00:00",
+          "result": [
+            {
+              "added": 0,
+              "article_fetched": true,
+              "source": "yonhap-international",
+              "state": "collected"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:16:41.310347+00:00",
+          "result": [
+            {
+              "added": 0,
+              "article_fetched": true,
+              "source": "yonhap-market",
+              "state": "collected"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:16:43.465474+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:17:13.634346+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        }
+      ],
+      "activity_failure_count": 0,
+      "recent_failures": []
+    },
+    {
+      "id": "company-news-editorial-v1",
+      "run_id": "a897b92c-5076-4726-a4a2-94d5bd2969d7",
+      "status": "RUNNING",
+      "recent_activity_results": [
+        {
+          "at": "2026-09-21 04:35:15.020620+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 04:40:37.014403+00:00",
+          "result": [
+            {
+              "items": [
+                {
+                  "headline": "",
+                  "reason": "기존 발행 내용과 같은 사건이다. 비투기성 농지 위반 행정처분 유예 추진, 농지은행 위탁 조건, 연내 특별법 추진 및 중대한 위법행위 엄정 대응이 이미 반영돼 있다. 제공 본문에는 특별법 제정 완료나 유예 시행일 등 실질적인 추가 사실 또는 정정 사항이 없다.",
+                  "state": "ignored"
+                },
+                {
+                  "headline": "",
+                  "reason": "아시안게임 남자 농구 결승 결과를 다룬 스포츠 기사다. 제공 본문에는 경제·산업·국제정세 또는 중대한 공공 현안과 연결되는 전개가 없어 이번 편집 범위에서 제외한다.",
+                  "state": "ignored"
+                }
+              ],
+              "state": "completed"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 04:45:37.282578+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 04:51:44.587194+00:00",
+          "result": [
+            {
+              "items": [
+                {
+                  "headline": "KBS: 강훈식 대통령비서실장, 이재명 대통령에게 사의 표명",
+                  "reason": "승인된 매체 KBS가 대통령실 공개 브리핑을 인용해 전한 사의 표명이다. 국내 국정 운영상 중요한 인사 동향으로, 추정된 사퇴 동기와 익명 관계자의 설명은 제외한다.",
+                  "state": "queued"
+                },
+                {
+                  "headline": "",
+                  "reason": "서울시의 단일 창고 상표법 위반 혐의 수사 보도다. 해당 수사기관의 역대 최대 적발이라는 설명은 있으나, 본문만으로는 주요 경제·산업 동향으로 다룰 광범위한 영향이나 제도 변화를 확인하기 어렵다. 개별 단속 사건으로 판단해 제외한다.",
+                  "state": "ignored"
+                }
+              ],
+              "state": "completed"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 04:56:44.788665+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:02:05.337050+00:00",
+          "result": [
+            {
+              "items": [
+                {
+                  "headline": "",
+                  "reason": "버밍엄의 한 육아용품 지원단체 운영자가 전일제 근로 가구의 이용 증가와 생필품 부족을 설명한 지역 사례 기사다. 본문에는 이용자 증가 규모나 전국 단위 통계, 새로운 정책 변화가 없어 영국 전반의 경제 동향으로 확대 해석할 수 없다. 중요한 경제·사회적 변화로 선정할 근거가 부족해 제외한다.",
+                  "state": "ignored"
+                }
+              ],
+              "state": "completed"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:09:05.044338+00:00",
+          "result": [
+            {
+              "items": [
+                {
+                  "headline": "",
+                  "reason": "공기업의 신입·경력 총 59명 채용 공고다. 본문에 고용시장이나 주요 산업에 의미 있는 변화를 보여주는 근거가 없어 통상적인 기관 채용 안내로 제외한다.",
+                  "state": "ignored"
+                },
+                {
+                  "headline": "SBS: 서울시, 재개발 규제 개선 설명…청년 주거비 지원 확대 방침",
+                  "reason": "같은 서울 주택정책 성과공유회 보도를 통합한다. SBS가 전한 서울시의 규제 개선 설명과 주거비 지원 확대 방침으로 발행 범위를 한정한다. 전임 시장의 갈등 조장 의혹과 공급난 책임 공방은 뒷받침하는 자료가 없어 제외한다. 두 기사는 같은 기자·매체의 보도로 독립 확인이 아니다.",
+                  "state": "queued"
+                },
+                {
+                  "headline": "연합뉴스: 한은 원화국제결제망 시범운영 시작…국내 4개 은행 참여",
+                  "reason": "원화 국제결제 인프라의 실제 시범운영 개시와 첫 거래가 본문에 명시돼 있다. 연합뉴스의 한국은행 발표 인용 보도로 발행하며, 한국은행 원문을 제공받은 것은 아니므로 official_action으로 분류하지 않는다.",
+                  "state": "queued"
+                },
+                {
+                  "headline": "이투데이: 농축산물 가격비교 앱, 수원 등 5개 도시서 시범운영",
+                  "reason": "두 부처가 추진한 농축산물 가격정보 서비스의 실제 시범운영 개시다. 단순 장보기 조언이 아니라 5개 도시의 가격정보 제공 사업으로 다루되, 전국 시행이나 물가 인하 효과로 확대 해석하지 않는다.",
+                  "state": "queued"
+                },
+                {
+                  "headline": "이투데이: 고소애 가수분해물, 근력 유지 기능성 원료 등록",
+                  "reason": "곤충 단백질 소재의 기능성 원료 등록이라는 산업상 변화를 다룬다. 이투데이가 전한 농진청 발표로 한정하며 직접적인 식약처 확인으로 표시하지 않는다. 시험 규모·대조군·통계적 유의성이 제시되지 않은 악력 개선 수치는 발행 내용에서 제외한다.",
+                  "state": "queued"
+                }
+              ],
+              "state": "completed"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:15:06.539490+00:00",
+          "result": [
+            {
+              "items": [
+                {
+                  "headline": "",
+                  "reason": "사내 혁신과제 성과 발표와 시상이 중심이다. 신규 투자 결정, 발전설비 가동, 에너지 공급 변화나 정량적인 사업 성과를 확인할 내용이 없어 주요 산업·에너지 뉴스로 선정하지 않는다.",
+                  "state": "ignored"
+                },
+                {
+                  "headline": "",
+                  "reason": "북한 선수단의 신칸센 이용 제한은 교도통신이 신원을 밝히지 않은 선수단 관계자를 인용한 주장이다. 일본 정부의 접촉 경위 역시 익명의 북일 관계자들에 의존한다. SBS의 교도통신 인용은 별개의 독립 취재가 아니며, 제공 자료에는 제한의 범위와 근거를 확인할 공식 문서나 독립 보도가 없다. 익명 주장에 attributed_report를 적용할 수 없어 보류한다.",
+                  "state": "held"
+                },
+                {
+                  "headline": "",
+                  "reason": "특정 재개발구역의 길고양이 중성화와 이동 유도에 관한 통상적인 지역 행정 안내다. 중대한 공중보건·재난 사건이나 주요 경제정책 변화에 해당하지 않는다.",
+                  "state": "ignored"
+                },
+                {
+                  "headline": "",
+                  "reason": "9월 21일 시범운영 개시, 국내 4개 은행 참여, 오전 9시 30분 기준 2개 기관의 약 14억원 거래, 주말·공휴일 제외 24시간 운영, 2027년 1월 본운영 예정은 모두 기존 발행 내용과 겹친다. 외국계 은행 참여 예정과 해외 원화계좌 설명은 배경 보충이며 새로운 시행 결정이나 실적 변화는 확인되지 않는다.",
+                  "state": "ignored"
+                },
+                {
+                  "headline": "",
+                  "reason": "트럼프의 9월 20일 폭스뉴스 발언과 이란 대통령 회동 가능성은 기존 발행과 중복된다. 추가된 후티의 사우디 공격·항구 장악, 해협 봉쇄 및 사우디의 공습 요청에는 독립적인 뒷받침이 없다. 이란군의 미국 공격 결정 주장은 상대국에 관한 주장으로 확정할 수 없다. 국무부 경보가 기존 발행된 경보와 다른지도 확인되지 않는다. 유가 수치는 관측 시각과 계약월이 부족해 기존 보도의 정정 근거가 되지 않는다.",
+                  "state": "held"
+                },
+                {
+                  "headline": "",
+                  "reason": "9월 18일 진행한 금융기관의 명절 후원 행사 안내다. 후원금과 물품 규모는 제시됐으나 주요 금융정책이나 산업 변화에 해당하지 않아 제외한다.",
+                  "state": "ignored"
+                }
+              ],
+              "state": "completed"
+            }
+          ]
+        }
+      ],
+      "activity_failure_count": 0,
+      "recent_failures": []
+    },
+    {
+      "id": "company-news-discovery-v1",
+      "run_id": "01a0c16a-92a1-7930-b86b-5345bc210fd7",
+      "status": "RUNNING",
+      "recent_activity_results": [
+        {
+          "at": "2026-09-21 04:35:15.102751+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 04:40:37.102124+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 04:45:37.428945+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 04:51:44.683530+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 04:57:03.632868+00:00",
+          "result": [
+            {
+              "added": 0,
+              "excluded_unregistered": 0,
+              "state": "completed"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:02:05.415723+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:09:05.123307+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 05:15:06.714921+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        }
+      ],
+      "activity_failure_count": 0,
+      "recent_failures": []
+    }
+  ],
+  "scope": "Observed first and subsequent 10-minute feed cycles; not a long-term uptime or completeness guarantee."
+}

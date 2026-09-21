@@ -54,6 +54,28 @@ def test_same_media_article_in_two_category_feeds_is_one_candidate(news):  # noq
     assert canonical_url("https://www.bbc.co.uk/news/articles/abc?at_campaign=rss&at_medium=RSS") == "https://www.bbc.co.uk/news/articles/abc"
 
 
+def test_sbs_feed_and_search_links_have_one_article_identity(news):  # noqa: F811
+    spec = source(kind="media").model_copy(update={"article_hosts": ["news.sbs.co.kr"]})
+    register(news, [spec])
+    plain = "https://news.sbs.co.kr/news/endPage.do?news_id=N1001234567"
+    rss = plain + "&cooper=RSSREADER&plink=RSSLINK"
+    raw = feed(spec).replace(b"https://official.example.org/policy?utm_source=rss", rss.replace("&", "&amp;").encode())
+    entries, _ = parse_feed(raw, spec)
+    assert entries[0]["url"] == canonical_url(plain) == plain
+    assert canonical_url(plain.replace("endPage.do", "endPagePrintPopup.do")) == plain
+    assert canonical_url(plain.replace("N1001234567", "N1007654321")) != plain
+    assert canonical_url("https://other.example.org/?cooper=functional&plink=keep") == (
+        "https://other.example.org/?cooper=functional&plink=keep")
+    claimed = news.claim_source()
+    news.save_feed(claimed, {"ok": True, "entries": entries})
+    plain_entries, _ = parse_feed(raw.replace(rss.replace("&", "&amp;").encode(), plain.encode()), spec)
+    news.save_feed(claimed, {"ok": True, "entries": plain_entries})
+    print_entries, _ = parse_feed(raw.replace(b"endPage.do", b"endPagePrintPopup.do"), spec)
+    news.save_feed(claimed, {"ok": True, "entries": print_entries})
+    with news.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM news_articles").fetchone()["n"] == 1
+
+
 def test_primary_batch_includes_other_outlets_despite_first_source_flood(news):  # noqa: F811
     specs = [source("media-one", kind="media"), source("media-two", kind="media"), source("media-three", kind="media")]
     register(news, specs)

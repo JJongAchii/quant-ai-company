@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-09-21T04:51:13.067189+00:00",
+  "command": "uv run --frozen pytest -q -m 'not live' tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py",
+  "passed": 480,
+  "skipped": 2,
+  "live_deselected": 1,
+  "seconds": 89.688,
+  "ruff": "passed",
+  "postgresql": "real local PostgreSQL 14",
+  "temporal": "real SDK test server",
+  "model": "simulated",
+  "slack": "simulated"
+}

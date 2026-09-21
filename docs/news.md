@@ -69,6 +69,9 @@ flowchart LR
 | BBC 국제·경제·기술 | 무료 RSS 3개 | 공개 기사 영역·JSON-LD 발행 시각·기자 표시. 일반 보도 후보 |
 | KBS World 전체·경제 | 무료 RSS 2개 | 한국 경제·외교·안보 등. RSS 발행 시각과 실제 기사 본문 확인 |
 | CNBC 국제·경제·금융·기술 | 무료 RSS 4개 | 금융·무역·기업·기술 보도. 공개 원문과 메타데이터 확인; 유료벽 제외 |
+| 연합뉴스 경제·마켓·산업·국제 | 무료 RSS 4개 | 개인 비상업 RSS. 공개 원문·실제 발행 시각·기자 확인 |
+| SBS 경제·국제 | 무료 RSS 2개 | 개인 비상업 RSS. 기사 영역·발행 시각 확인. RSS와 검색의 추적 매개변수 차이를 정규화 |
+| 이투데이 경제·금융·산업·국제 | 무료 RSS 4개 | 비상업 RSS. 공개 `articleBody`와 발행 시각 확인 |
 | 뉴시스 국제·경제 | 운영 수집 비활성 | 자동 수집 제한을 확인해 제외 |
 | 미국 BLS | 로컬·운영 서버 HTTP 403 | 접근 차단을 우회하지 않고 운영 등록 보류 |
 
@@ -85,17 +88,25 @@ Reuters와 AP는 후보이며, 이 구현에 계약·키·API 연결을 추가�
 Reuters는 AI/RAG 활용용 콘텐츠 제공 경로를, AP는 API의 인증·접근 범위를 안내한다.
 [Reuters AI 콘텐츠](https://reutersagency.com/solutions/ai-training-rag/),
 [AP API 시작 안내](https://api.ap.org/media/v/docs/Getting_Started_API.htm).
-DW·연합뉴스도 사용 경로와 조건 확인 전에는 수집 목록에 넣지 않았다.
 2026-09-21 사용자 지시에 따라 **추가 비용 없이 기존 구독·무료 소스를 우선**한다.
-일반 언론 RSS 9개(원천 3개)와 공식 피드 6개를 등록하며, 기존 ChatGPT 구독 검색을 보완 경로로 쓴다.
+같은 날 사용자가 확장을 승인한 구성은 일반 언론 RSS 19개(매체 6개)와 공식 피드 6개다.
+정확한 배포 상태와 시점은 [주요 매체 확장 기록](project/HOT-NEWS-MAINSTREAM-EXPANSION.md)을 따른다.
+기존 ChatGPT 구독 검색을 보완 경로로 쓴다. 검색에서 Reuters·AP·Bloomberg·FT·WSJ·CNBC와
+국내 주요 경제 매체가 다룬 사건을 찾아보되, 반환 URL과 게시 근거는 허용된 공개 매체 원문만 사용한다.
+이는 해당 유료 매체의 본문 수집·API 연결·기사별 감시를 제공한다는 뜻이 아니다.
 공개 RSS를 개인 뉴스 읽기에 사용하고 소유자의 Slack에 짧은 사실 요약과 원문 링크를 전달한다.
 기사 전문·사진·영상의 재배포나 모델 학습에 사용하지 않으며, 상업적 콘텐츠 이용권을 취득했다는 뜻이 아니다.
 [BBC RSS 안내](https://support.bbc.co.uk/platform/feeds/NewsFeeds.htm),
-[KBS RSS 안내](https://world.kbs.co.kr/service/about_rss.htm?lang=e).
-한국경제·매일경제·뉴시스처럼 자동 수집 제한이 확인된 소스, 계약·접근이 필요한 Reuters/AP API,
+[KBS RSS 안내](https://world.kbs.co.kr/service/about_rss.htm?lang=e),
+[연합뉴스 RSS 안내](https://www.yna.co.kr/rss/index),
+[연합뉴스 저작권규약](https://www.yna.co.kr/policy/copyright),
+[SBS RSS 안내](https://news.sbs.co.kr/news/rss.do), [이투데이 RSS 안내](https://www.etoday.co.kr/rss/).
+한국경제·매일경제·동아일보·뉴시스처럼 자동 수집 제한이 확인된 소스, 계약·접근이 필요한 Reuters/AP API,
 접근 차단 페이지는 추가하지 않는다. GNews 결제·유료 API 키·신규 서버 구매는 하지 않았다.
-분야 등록은 실제 사건의 포괄적 수집 증명이 아니다. 세계 주요 사건의 누락률, 비영어권·지역별
-균형 및 3개 원천 밖의 독립 확인 한계는 지속 관찰 대상이다. 실제 분야별 기사는
+사용자는 지역별 매체 안배를 원하지 않았으므로 CNA·DW·France 24 등의 지역 보강용 매체를
+추가하지 않는다. 세계적으로 중요한 사건을 발생 지역 때문에 제외하는 필터도 두지 않는다.
+분야 등록은 실제 사건의 포괄적 수집 증명이 아니다. 세계 주요 사건의 누락률과 독립 확인의
+충분성은 지속 관찰 대상이다. 실제 분야별 기사는
 [범위 복원 인수](project/HOT-NEWS-SCOPE-RESTORATION.md)에 기록한다.
 
 소스 목록은 [sources.json](../src/quant_company/news/sources.json)에 있다.
@@ -130,6 +141,8 @@ NEWS_INITIAL_LOOKBACK_MINUTES=120
 
 2026-09-19 실제 운영에서는 두 활성화 설정을 모두 true로 켰고, 최초 lookback을 1,440분으로
 지정했다. 신선도 상한은 그대로 24시간이다. 실제 채널·커밋·게시 영수증은 활성화 기록을 따른다.
+2026-09-21 주요 매체 확장에서는 신규 피드의 초기 입력을 최근 120분으로 제한한다.
+이미 수집하던 피드의 정상 재개 기준 24시간과 기존 게시물은 유지한다.
 
 패키지와 배포 템플릿의 수집·발송·추가 검색 기본값은 false다. 미리보기에서는 검토 결과만 저장하며
 outbox에 넣지 않는다. 실제 채널·앱 권한·운영 소스와 결과를 확인한 후

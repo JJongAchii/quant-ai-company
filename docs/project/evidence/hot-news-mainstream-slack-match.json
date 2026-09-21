@@ -1,0 +1,105 @@
+{
+  "checked_at": "2026-09-21T05:11:47.430447+00:00",
+  "operating_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "mode": "automatic Temporal news review and actual Slack delivery; read-only acceptance checks",
+  "auth": {
+    "ok": true,
+    "error": null,
+    "team_id": "T0C1YRDRPNF",
+    "user_id": "U0C2FLSUUMV",
+    "bot_id": "B0C2V3TJ230"
+  },
+  "history_ok": true,
+  "matched_messages": [
+    {
+      "message_id": "cadf316e-77e9-56c1-be87-5c27c941f6ea",
+      "slack_ts": "1789967346.441399",
+      "client_msg_id": "cadf316e-77e9-56c1-be87-5c27c941f6ea",
+      "author_is_reporter": true,
+      "text_matches_outbox": true,
+      "attempts": 1,
+      "review_id": "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+      "headline": "*[보도 · 주요 · 경제] SBS: 서울시, 재개발 규제 개선 설명…청년 주거비 지원 확대 방침*",
+      "articles": [
+        {
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763620",
+          "title": "오세훈 서울주택공급 성과공유회…\"최근 정비구역 지정 이전의 두 배\"",
+          "source": "sbs-economy",
+          "published_at": "2026-09-21T03:31:00+00:00"
+        },
+        {
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763619",
+          "title": "오세훈 \"박원순 때 서울정비사업 해제 유도…이러고 남탓하나\"",
+          "source": "sbs-economy",
+          "published_at": "2026-09-21T03:38:00+00:00"
+        }
+      ],
+      "url": "https://achiisquantresearch.slack.com/archives/C0C2J1SSX09/p1789967346441399",
+      "occurrences_in_read_slack_history": 1
+    },
+    {
+      "message_id": "b7bd006e-8e33-5680-bcf0-4165d4cf8f85",
+      "slack_ts": "1789967348.007399",
+      "client_msg_id": "b7bd006e-8e33-5680-bcf0-4165d4cf8f85",
+      "author_is_reporter": true,
+      "text_matches_outbox": true,
+      "attempts": 1,
+      "review_id": "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+      "headline": "*[보도 · 주요 · 금융] 연합뉴스: 한은 원화국제결제망 시범운영 시작…국내 4개 은행 참여*",
+      "articles": [
+        {
+          "url": "https://www.yna.co.kr/view/AKR20260921081100002",
+          "title": "오늘부터 '한국은행 원화국제결제망' 시범운영…내년 본운영",
+          "source": "yonhap-economy",
+          "published_at": "2026-09-21T05:00:02+00:00"
+        }
+      ],
+      "url": "https://achiisquantresearch.slack.com/archives/C0C2J1SSX09/p1789967348007399",
+      "occurrences_in_read_slack_history": 1
+    },
+    {
+      "message_id": "aea7a79f-0739-5a68-bc96-5d5569f38a58",
+      "slack_ts": "1789967349.538129",
+      "client_msg_id": "aea7a79f-0739-5a68-bc96-5d5569f38a58",
+      "author_is_reporter": true,
+      "text_matches_outbox": true,
+      "attempts": 1,
+      "review_id": "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+      "headline": "*[보도 · 주요 · 경제] 이투데이: 농축산물 가격비교 앱, 수원 등 5개 도시서 시범운영*",
+      "articles": [
+        {
+          "url": "https://www.etoday.co.kr/news/view/2627859",
+          "title": "어느 마트가 더 쌀까…‘알뜰하게 장볼지도’ 앱 5개 도시서 첫선",
+          "source": "etoday-economy",
+          "published_at": "2026-09-21T04:16:00+00:00"
+        }
+      ],
+      "url": "https://achiisquantresearch.slack.com/archives/C0C2J1SSX09/p1789967349538129",
+      "occurrences_in_read_slack_history": 1
+    },
+    {
+      "message_id": "f17f8ec8-8b25-55ae-b5be-6770a2c1a614",
+      "slack_ts": "1789967351.117239",
+      "client_msg_id": "f17f8ec8-8b25-55ae-b5be-6770a2c1a614",
+      "author_is_reporter": true,
+      "text_matches_outbox": true,
+      "attempts": 1,
+      "review_id": "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+      "headline": "*[보도 · 주요 · 산업] 이투데이: 고소애 가수분해물, 근력 유지 기능성 원료 등록*",
+      "articles": [
+        {
+          "url": "https://www.etoday.co.kr/news/view/2627960",
+          "title": "애벌레의 변신…고소애, ‘근력 유지’ 건강기능식품 원료로",
+          "source": "etoday-economy",
+          "published_at": "2026-09-21T05:00:00+00:00"
+        }
+      ],
+      "url": "https://achiisquantresearch.slack.com/archives/C0C2J1SSX09/p1789967351117239",
+      "occurrences_in_read_slack_history": 1
+    }
+  ],
+  "manual_slack_posts": 0,
+  "observed_duplicate_message_ids": 0,
+  "outbox_issues": [],
+  "duplicate_check_scope": "The retrieved latest channel-history window; not an exactly-once delivery guarantee."
+}

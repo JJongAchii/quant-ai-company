@@ -415,5 +415,272 @@
     ],
     "allow_attributed_reporting": true,
     "usage_note": "매체가 공개한 개인용 RSS에서 뉴스 발견 후 공개 기사 내용을 확인하여 소유자의 Slack에 짧은 사실 요약과 원문 링크로 전달한다. 기사 전문·사진·영상의 재배포나 모델 학습에 사용하지 않는다. 이용 범위는 개인 뉴스 읽기이며 상업적 콘텐츠 라이선스를 취득했다는 뜻이 아니다. 원문 접근 실패·유료벽은 우회하지 않는다."
+  },
+  {
+    "kind": "media",
+    "enabled": true,
+    "use_for_summary": true,
+    "allow_attributed_reporting": true,
+    "poll_seconds": 600,
+    "id": "yonhap-economy",
+    "publisher": "연합뉴스",
+    "origin_group": "yonhap",
+    "feed_url": "https://www.yna.co.kr/rss/economy.xml",
+    "article_hosts": [
+      "www.yna.co.kr"
+    ],
+    "article_path_prefixes": [
+      "/view/"
+    ],
+    "topics": [
+      "economy_finance",
+      "macroeconomics",
+      "trade_energy"
+    ],
+    "regions": [
+      "KR",
+      "global"
+    ],
+    "usage_note": "매체가 공개한 개인/비상업적 RSS로 뉴스를 발견하고 공개 원문의 날짜와 기사 본문을 확인한다. 소유자의 Slack에서 개인 뉴스 읽기를 위한 짧은 사실 요약과 원문 링크로만 사용한다. 기사 전문·이미지·영상의 재배포, 모델 학습, 상업적 뉴스 공급에는 사용하지 않는다. 유료벽·로그인·접근 제한을 우회하지 않는다. 개인 RSS 안내: https://www.yna.co.kr/rss/index ; 저작권규약: https://www.yna.co.kr/policy/copyright"
+  },
+  {
+    "kind": "media",
+    "enabled": true,
+    "use_for_summary": true,
+    "allow_attributed_reporting": true,
+    "poll_seconds": 600,
+    "id": "yonhap-market",
+    "publisher": "연합뉴스",
+    "origin_group": "yonhap",
+    "feed_url": "https://www.yna.co.kr/rss/market.xml",
+    "article_hosts": [
+      "www.yna.co.kr"
+    ],
+    "article_path_prefixes": [
+      "/view/"
+    ],
+    "topics": [
+      "economy_finance",
+      "macroeconomics"
+    ],
+    "regions": [
+      "KR",
+      "global"
+    ],
+    "usage_note": "매체가 공개한 개인/비상업적 RSS로 뉴스를 발견하고 공개 원문의 날짜와 기사 본문을 확인한다. 소유자의 Slack에서 개인 뉴스 읽기를 위한 짧은 사실 요약과 원문 링크로만 사용한다. 기사 전문·이미지·영상의 재배포, 모델 학습, 상업적 뉴스 공급에는 사용하지 않는다. 유료벽·로그인·접근 제한을 우회하지 않는다. 개인 RSS 안내: https://www.yna.co.kr/rss/index ; 저작권규약: https://www.yna.co.kr/policy/copyright"
+  },
+  {
+    "kind": "media",
+    "enabled": true,
+    "use_for_summary": true,
+    "allow_attributed_reporting": true,
+    "poll_seconds": 600,
+    "id": "yonhap-industry",
+    "publisher": "연합뉴스",
+    "origin_group": "yonhap",
+    "feed_url": "https://www.yna.co.kr/rss/industry.xml",
+    "article_hosts": [
+      "www.yna.co.kr"
+    ],
+    "article_path_prefixes": [
+      "/view/"
+    ],
+    "topics": [
+      "industry_technology",
+      "trade_energy"
+    ],
+    "regions": [
+      "KR",
+      "global"
+    ],
+    "usage_note": "매체가 공개한 개인/비상업적 RSS로 뉴스를 발견하고 공개 원문의 날짜와 기사 본문을 확인한다. 소유자의 Slack에서 개인 뉴스 읽기를 위한 짧은 사실 요약과 원문 링크로만 사용한다. 기사 전문·이미지·영상의 재배포, 모델 학습, 상업적 뉴스 공급에는 사용하지 않는다. 유료벽·로그인·접근 제한을 우회하지 않는다. 개인 RSS 안내: https://www.yna.co.kr/rss/index ; 저작권규약: https://www.yna.co.kr/policy/copyright"
+  },
+  {
+    "kind": "media",
+    "enabled": true,
+    "use_for_summary": true,
+    "allow_attributed_reporting": true,
+    "poll_seconds": 600,
+    "id": "yonhap-international",
+    "publisher": "연합뉴스",
+    "origin_group": "yonhap",
+    "feed_url": "https://www.yna.co.kr/rss/international.xml",
+    "article_hosts": [
+      "www.yna.co.kr"
+    ],
+    "article_path_prefixes": [
+      "/view/"
+    ],
+    "topics": [
+      "geopolitics",
+      "trade_energy",
+      "world_events"
+    ],
+    "regions": [
+      "KR",
+      "global"
+    ],
+    "usage_note": "매체가 공개한 개인/비상업적 RSS로 뉴스를 발견하고 공개 원문의 날짜와 기사 본문을 확인한다. 소유자의 Slack에서 개인 뉴스 읽기를 위한 짧은 사실 요약과 원문 링크로만 사용한다. 기사 전문·이미지·영상의 재배포, 모델 학습, 상업적 뉴스 공급에는 사용하지 않는다. 유료벽·로그인·접근 제한을 우회하지 않는다. 개인 RSS 안내: https://www.yna.co.kr/rss/index ; 저작권규약: https://www.yna.co.kr/policy/copyright"
+  },
+  {
+    "kind": "media",
+    "enabled": true,
+    "use_for_summary": true,
+    "allow_attributed_reporting": true,
+    "poll_seconds": 600,
+    "id": "sbs-economy",
+    "publisher": "SBS 뉴스",
+    "origin_group": "sbs",
+    "feed_url": "https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=02&plink=RSSREADER",
+    "article_hosts": [
+      "news.sbs.co.kr"
+    ],
+    "article_path_prefixes": [
+      "/news/"
+    ],
+    "topics": [
+      "economy_finance",
+      "macroeconomics",
+      "industry_technology",
+      "trade_energy"
+    ],
+    "regions": [
+      "KR",
+      "global"
+    ],
+    "usage_note": "매체가 공개한 개인/비상업적 RSS로 뉴스를 발견하고 공개 원문의 날짜와 기사 본문을 확인한다. 소유자의 Slack에서 개인 뉴스 읽기를 위한 짧은 사실 요약과 원문 링크로만 사용한다. 기사 전문·이미지·영상의 재배포, 모델 학습, 상업적 뉴스 공급에는 사용하지 않는다. 유료벽·로그인·접근 제한을 우회하지 않는다. 개인 비상업 RSS 안내: https://news.sbs.co.kr/news/rss.do"
+  },
+  {
+    "kind": "media",
+    "enabled": true,
+    "use_for_summary": true,
+    "allow_attributed_reporting": true,
+    "poll_seconds": 600,
+    "id": "sbs-world",
+    "publisher": "SBS 뉴스",
+    "origin_group": "sbs",
+    "feed_url": "https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=07&plink=RSSREADER",
+    "article_hosts": [
+      "news.sbs.co.kr"
+    ],
+    "article_path_prefixes": [
+      "/news/"
+    ],
+    "topics": [
+      "geopolitics",
+      "world_events",
+      "trade_energy"
+    ],
+    "regions": [
+      "KR",
+      "global"
+    ],
+    "usage_note": "매체가 공개한 개인/비상업적 RSS로 뉴스를 발견하고 공개 원문의 날짜와 기사 본문을 확인한다. 소유자의 Slack에서 개인 뉴스 읽기를 위한 짧은 사실 요약과 원문 링크로만 사용한다. 기사 전문·이미지·영상의 재배포, 모델 학습, 상업적 뉴스 공급에는 사용하지 않는다. 유료벽·로그인·접근 제한을 우회하지 않는다. 개인 비상업 RSS 안내: https://news.sbs.co.kr/news/rss.do"
+  },
+  {
+    "kind": "media",
+    "enabled": true,
+    "use_for_summary": true,
+    "allow_attributed_reporting": true,
+    "poll_seconds": 600,
+    "id": "etoday-economy",
+    "publisher": "이투데이",
+    "origin_group": "etoday",
+    "feed_url": "https://rss.etoday.co.kr/eto/economy_news.xml",
+    "article_hosts": [
+      "www.etoday.co.kr"
+    ],
+    "article_path_prefixes": [
+      "/news/view/"
+    ],
+    "topics": [
+      "economy_finance",
+      "macroeconomics"
+    ],
+    "regions": [
+      "KR",
+      "global"
+    ],
+    "usage_note": "매체가 공개한 개인/비상업적 RSS로 뉴스를 발견하고 공개 원문의 날짜와 기사 본문을 확인한다. 소유자의 Slack에서 개인 뉴스 읽기를 위한 짧은 사실 요약과 원문 링크로만 사용한다. 기사 전문·이미지·영상의 재배포, 모델 학습, 상업적 뉴스 공급에는 사용하지 않는다. 유료벽·로그인·접근 제한을 우회하지 않는다. 비상업 RSS 서비스 안내: https://www.etoday.co.kr/rss/ . RSS 개인 이용 범위이며 무단 대량 수집·재배포나 AI 학습 허락을 뜻하지 않는다."
+  },
+  {
+    "kind": "media",
+    "enabled": true,
+    "use_for_summary": true,
+    "allow_attributed_reporting": true,
+    "poll_seconds": 600,
+    "id": "etoday-finance",
+    "publisher": "이투데이",
+    "origin_group": "etoday",
+    "feed_url": "https://rss.etoday.co.kr/eto/finance_news.xml",
+    "article_hosts": [
+      "www.etoday.co.kr"
+    ],
+    "article_path_prefixes": [
+      "/news/view/"
+    ],
+    "topics": [
+      "economy_finance",
+      "macroeconomics"
+    ],
+    "regions": [
+      "KR",
+      "global"
+    ],
+    "usage_note": "매체가 공개한 개인/비상업적 RSS로 뉴스를 발견하고 공개 원문의 날짜와 기사 본문을 확인한다. 소유자의 Slack에서 개인 뉴스 읽기를 위한 짧은 사실 요약과 원문 링크로만 사용한다. 기사 전문·이미지·영상의 재배포, 모델 학습, 상업적 뉴스 공급에는 사용하지 않는다. 유료벽·로그인·접근 제한을 우회하지 않는다. 비상업 RSS 서비스 안내: https://www.etoday.co.kr/rss/ . RSS 개인 이용 범위이며 무단 대량 수집·재배포나 AI 학습 허락을 뜻하지 않는다."
+  },
+  {
+    "kind": "media",
+    "enabled": true,
+    "use_for_summary": true,
+    "allow_attributed_reporting": true,
+    "poll_seconds": 600,
+    "id": "etoday-industry",
+    "publisher": "이투데이",
+    "origin_group": "etoday",
+    "feed_url": "https://rss.etoday.co.kr/eto/industry_news.xml",
+    "article_hosts": [
+      "www.etoday.co.kr"
+    ],
+    "article_path_prefixes": [
+      "/news/view/"
+    ],
+    "topics": [
+      "industry_technology",
+      "trade_energy"
+    ],
+    "regions": [
+      "KR",
+      "global"
+    ],
+    "usage_note": "매체가 공개한 개인/비상업적 RSS로 뉴스를 발견하고 공개 원문의 날짜와 기사 본문을 확인한다. 소유자의 Slack에서 개인 뉴스 읽기를 위한 짧은 사실 요약과 원문 링크로만 사용한다. 기사 전문·이미지·영상의 재배포, 모델 학습, 상업적 뉴스 공급에는 사용하지 않는다. 유료벽·로그인·접근 제한을 우회하지 않는다. 비상업 RSS 서비스 안내: https://www.etoday.co.kr/rss/ . RSS 개인 이용 범위이며 무단 대량 수집·재배포나 AI 학습 허락을 뜻하지 않는다."
+  },
+  {
+    "kind": "media",
+    "enabled": true,
+    "use_for_summary": true,
+    "allow_attributed_reporting": true,
+    "poll_seconds": 600,
+    "id": "etoday-global",
+    "publisher": "이투데이",
+    "origin_group": "etoday",
+    "feed_url": "https://rss.etoday.co.kr/eto/global_news.xml",
+    "article_hosts": [
+      "www.etoday.co.kr"
+    ],
+    "article_path_prefixes": [
+      "/news/view/"
+    ],
+    "topics": [
+      "economy_finance",
+      "geopolitics",
+      "trade_energy",
+      "world_events"
+    ],
+    "regions": [
+      "KR",
+      "global"
+    ],
+    "usage_note": "매체가 공개한 개인/비상업적 RSS로 뉴스를 발견하고 공개 원문의 날짜와 기사 본문을 확인한다. 소유자의 Slack에서 개인 뉴스 읽기를 위한 짧은 사실 요약과 원문 링크로만 사용한다. 기사 전문·이미지·영상의 재배포, 모델 학습, 상업적 뉴스 공급에는 사용하지 않는다. 유료벽·로그인·접근 제한을 우회하지 않는다. 비상업 RSS 서비스 안내: https://www.etoday.co.kr/rss/ . RSS 개인 이용 범위이며 무단 대량 수집·재배포나 AI 학습 허락을 뜻하지 않는다."
   }
 ]

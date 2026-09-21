@@ -1,0 +1,45 @@
+{
+  "commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "previous": "/opt/quant-company/releases/9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+  "phase": "news_enabled",
+  "checked_at": 1789966677.3548706,
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "configured_preflight": {
+    "database_healthy": true,
+    "roles_loaded": 11,
+    "director_effort": "max"
+  },
+  "postgres_id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20260921T050352Z-fc7ffb4a.tar.gz",
+    "sha256": "2721e1f617f6dbc41da575b669260cd1ddf9f670ea514f1c4f5c3468b5545552",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260921T050352Z-fc7ffb4a.tar.gz",
+    "release_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+    "secrets_included": false
+  },
+  "health": {
+    "healthy_services": 8,
+    "postgres_recreated": false
+  },
+  "existing_roles_preserved": true,
+  "existing_credentials_preserved": true,
+  "enabled_at": 1789967193.5310912,
+  "evidence_recorded_at": "2026-09-21T05:08:00.856768+00:00",
+  "ci": {
+    "result": "success",
+    "head_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35562896990"
+  },
+  "cutover_drain": {
+    "due_turns": 0,
+    "outbox": 0,
+    "news_calls": 0,
+    "research_calls": 0
+  },
+  "application_code_changes": [
+    "src/quant_company/news/sources.json",
+    "src/quant_company/news/feeds.py",
+    "src/quant_company/news/discovery.py"
+  ],
+  "preserved_concurrent_main_change": "PR #40 company-research-execution at 9a90b5eeff1f7f3685099b0c05241df1306d93fa"
+}

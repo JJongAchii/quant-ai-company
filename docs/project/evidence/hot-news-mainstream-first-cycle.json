@@ -1,0 +1,643 @@
+{
+  "checked_at": "2026-09-21T05:07:24.331017+00:00",
+  "commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "since": "2026-09-21T05:05:00+00:00",
+  "read_only": true,
+  "sources": [
+    {
+      "id": "bbc-business",
+      "publisher": "BBC News",
+      "kind": "media",
+      "origin_group": "bbc",
+      "last_success": "2026-09-21 04:59:02.096233+00:00",
+      "last_attempt": "2026-09-21 04:59:01.837882+00:00",
+      "next_at": "2026-09-21 05:09:02.096233+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 40019,
+        "sha256": "f283bcadf6f12af0fc71fc195e4177204235458f7e17e02a9f2ba5a4ca38f0d7",
+        "skipped": 5,
+        "modified": "",
+        "latest_publication": "2026-09-21 04:56:35+00:00"
+      }
+    },
+    {
+      "id": "bbc-technology",
+      "publisher": "BBC News",
+      "kind": "media",
+      "origin_group": "bbc",
+      "last_success": "2026-09-21 04:59:04.821958+00:00",
+      "last_attempt": "2026-09-21 04:59:04.574384+00:00",
+      "next_at": "2026-09-21 05:09:04.821958+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 15293,
+        "sha256": "9c7e3925b3b82390399cec98d66bcc064c4307922e38a2d757a23f8bf492ed6e",
+        "skipped": 9,
+        "modified": "",
+        "latest_publication": "2026-09-19 23:01:57+00:00"
+      }
+    },
+    {
+      "id": "bbc-world",
+      "publisher": "BBC News",
+      "kind": "media",
+      "origin_group": "bbc",
+      "last_success": "2026-09-21 04:58:57.286930+00:00",
+      "last_attempt": "2026-09-21 04:58:57.009167+00:00",
+      "next_at": "2026-09-21 05:08:57.286930+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 21211,
+        "sha256": "ccd48b4c012aae58d823a1017c8927907688aaca06e7aa246d22afb22de84b86",
+        "skipped": 4,
+        "modified": "",
+        "latest_publication": "2026-09-21 03:22:44+00:00"
+      }
+    },
+    {
+      "id": "bea-releases",
+      "publisher": "U.S. Bureau of Economic Analysis",
+      "kind": "official",
+      "origin_group": "bea",
+      "last_success": "2026-09-21 05:02:52.091063+00:00",
+      "last_attempt": "2026-09-21 05:02:51.297592+00:00",
+      "next_at": "2026-09-21 05:12:52.091063+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": "2026-09-03 12:30:00+00:00"
+      }
+    },
+    {
+      "id": "cnbc-economy",
+      "publisher": "CNBC",
+      "kind": "media",
+      "origin_group": "cnbc",
+      "last_success": "2026-09-21 04:59:07.400127+00:00",
+      "last_attempt": "2026-09-21 04:59:07.018838+00:00",
+      "next_at": "2026-09-21 05:09:07.400127+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 20527,
+        "sha256": "5764de7f253ac89aa64bc0c4e2f7bfa17ad59392091564d93370cbfe64fba1a0",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 01:02:25+00:00"
+      }
+    },
+    {
+      "id": "cnbc-finance",
+      "publisher": "CNBC",
+      "kind": "media",
+      "origin_group": "cnbc",
+      "last_success": "2026-09-21 04:59:10.036020+00:00",
+      "last_attempt": "2026-09-21 04:59:09.645850+00:00",
+      "next_at": "2026-09-21 05:09:10.036020+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 21297,
+        "sha256": "560688ba2bda0e17fce403e1f7f79fe4352aaba2fe06ceaf8560461b4a7ce080",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-20 12:47:23+00:00"
+      }
+    },
+    {
+      "id": "cnbc-technology",
+      "publisher": "CNBC",
+      "kind": "media",
+      "origin_group": "cnbc",
+      "last_success": "2026-09-21 04:59:12.685353+00:00",
+      "last_attempt": "2026-09-21 04:59:12.325745+00:00",
+      "next_at": "2026-09-21 05:09:12.685353+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 20979,
+        "sha256": "714b41f5c966f147bbd49531d88521e5e1956b091ac2b205724cef167ff72231",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 03:51:31+00:00"
+      }
+    },
+    {
+      "id": "cnbc-world",
+      "publisher": "CNBC",
+      "kind": "media",
+      "origin_group": "cnbc",
+      "last_success": "2026-09-21 04:59:15.229641+00:00",
+      "last_attempt": "2026-09-21 04:59:14.908054+00:00",
+      "next_at": "2026-09-21 05:09:15.229641+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 20765,
+        "sha256": "6b9a9ef764c79c11f538c4f69daddab583b60cd31d61910425796eefdb440ce4",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 04:51:02+00:00"
+      }
+    },
+    {
+      "id": "ecb-press",
+      "publisher": "European Central Bank",
+      "kind": "official",
+      "origin_group": "ecb",
+      "last_success": "2026-09-21 05:02:54.704215+00:00",
+      "last_attempt": "2026-09-21 05:02:54.263550+00:00",
+      "next_at": "2026-09-21 05:12:54.704215+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "\"myra-ed0ba98c\"",
+        "bytes": 5673,
+        "sha256": "979c5611f0a043bb0e21f613b20f667ae2ac2d6938e301724efe89be17f44df0",
+        "skipped": 12,
+        "modified": "",
+        "latest_publication": "2026-09-18 08:00:00+00:00"
+      }
+    },
+    {
+      "id": "etoday-economy",
+      "publisher": "이투데이",
+      "kind": "media",
+      "origin_group": "etoday",
+      "last_success": "2026-09-21 05:06:07.129702+00:00",
+      "last_attempt": "2026-09-21 05:06:07.021081+00:00",
+      "next_at": "2026-09-21 05:16:07.129702+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 49880,
+        "sha256": "2dca3f11b1783501e94875391d7957ded4aa36b011dd430980e63290e8c2cc5b",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 05:00:00+00:00"
+      }
+    },
+    {
+      "id": "etoday-finance",
+      "publisher": "이투데이",
+      "kind": "media",
+      "origin_group": "etoday",
+      "last_success": "2026-09-21 05:06:09.550606+00:00",
+      "last_attempt": "2026-09-21 05:06:09.486715+00:00",
+      "next_at": "2026-09-21 05:16:09.550606+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 18282,
+        "sha256": "161d3c6339ae2ce599d7abc12dd2f30351598ebb164546f7e46f4294944db26d",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 04:36:00+00:00"
+      }
+    },
+    {
+      "id": "etoday-global",
+      "publisher": "이투데이",
+      "kind": "media",
+      "origin_group": "etoday",
+      "last_success": "2026-09-21 05:06:11.962940+00:00",
+      "last_attempt": "2026-09-21 05:06:11.900561+00:00",
+      "next_at": "2026-09-21 05:16:11.962940+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 14256,
+        "sha256": "c159f75f1310f5019da6d1a6951eaa631c03bbcac60cf8a9a1b782362a7bd160",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 02:18:00+00:00"
+      }
+    },
+    {
+      "id": "etoday-industry",
+      "publisher": "이투데이",
+      "kind": "media",
+      "origin_group": "etoday",
+      "last_success": "2026-09-21 05:06:14.414824+00:00",
+      "last_attempt": "2026-09-21 05:06:14.309120+00:00",
+      "next_at": "2026-09-21 05:16:14.414824+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 130769,
+        "sha256": "e7b4c2f1816ed915bb4f1806436286051775832a4978e49ff332690733357c54",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 05:00:00+00:00"
+      }
+    },
+    {
+      "id": "fed-press",
+      "publisher": "Federal Reserve",
+      "kind": "official",
+      "origin_group": "federal-reserve",
+      "last_success": "2026-09-21 05:02:56.987064+00:00",
+      "last_attempt": "2026-09-21 05:02:56.865460+00:00",
+      "next_at": "2026-09-21 05:12:56.987064+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": "2026-09-18 15:00:00+00:00"
+      }
+    },
+    {
+      "id": "govuk-fcdo",
+      "publisher": "UK Foreign, Commonwealth & Development Office",
+      "kind": "official",
+      "origin_group": "uk-government",
+      "last_success": "2026-09-21 05:06:00.332397+00:00",
+      "last_attempt": "2026-09-21 05:06:00.266052+00:00",
+      "next_at": "2026-09-21 05:16:00.332397+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "govuk-trade",
+      "publisher": "UK Department for Business and Trade",
+      "kind": "official",
+      "origin_group": "uk-government",
+      "last_success": "2026-09-21 05:06:02.590780+00:00",
+      "last_attempt": "2026-09-21 05:06:02.515728+00:00",
+      "next_at": "2026-09-21 05:16:02.590780+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "govuk-treasury",
+      "publisher": "HM Treasury",
+      "kind": "official",
+      "origin_group": "uk-government",
+      "last_success": "2026-09-21 05:06:04.833704+00:00",
+      "last_attempt": "2026-09-21 05:06:04.769540+00:00",
+      "next_at": "2026-09-21 05:16:04.833704+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "kbs-economy",
+      "publisher": "KBS World",
+      "kind": "media",
+      "origin_group": "kbs",
+      "last_success": "2026-09-21 04:59:17.547837+00:00",
+      "last_attempt": "2026-09-21 04:59:17.451613+00:00",
+      "next_at": "2026-09-21 05:09:17.547837+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 37710,
+        "sha256": "26c99c775cff19d1f31b9b8adb01270f51a91bed4b1912ff14ce1e867971ecd7",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 00:39:59+00:00"
+      }
+    },
+    {
+      "id": "kbs-world",
+      "publisher": "KBS World",
+      "kind": "media",
+      "origin_group": "kbs",
+      "last_success": "2026-09-21 04:58:59.617751+00:00",
+      "last_attempt": "2026-09-21 04:58:59.500882+00:00",
+      "next_at": "2026-09-21 05:08:59.617751+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 38859,
+        "sha256": "a40a1d97ae4afebc49a553405990b8d05dfa99ff83d2833f1069ad24e63c4eee",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 04:45:36+00:00"
+      }
+    },
+    {
+      "id": "sbs-economy",
+      "publisher": "SBS 뉴스",
+      "kind": "media",
+      "origin_group": "sbs",
+      "last_success": "2026-09-21 05:06:16.903742+00:00",
+      "last_attempt": "2026-09-21 05:06:16.820926+00:00",
+      "next_at": "2026-09-21 05:16:16.903742+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 274035,
+        "sha256": "76d527049241898d232f289a70c8a509f22e32bba71efbbe2fe0da6c2c1c0d0e",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 03:38:00+00:00"
+      }
+    },
+    {
+      "id": "sbs-world",
+      "publisher": "SBS 뉴스",
+      "kind": "media",
+      "origin_group": "sbs",
+      "last_success": "2026-09-21 05:06:19.312507+00:00",
+      "last_attempt": "2026-09-21 05:06:19.235970+00:00",
+      "next_at": "2026-09-21 05:16:19.312507+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 253345,
+        "sha256": "ff8115402172d3c687dbb3efabdc25402459e9af9f92ee35ed828b412d1249b9",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 04:45:00+00:00"
+      }
+    },
+    {
+      "id": "yonhap-economy",
+      "publisher": "연합뉴스",
+      "kind": "media",
+      "origin_group": "yonhap",
+      "last_success": "2026-09-21 05:06:21.762758+00:00",
+      "last_attempt": "2026-09-21 05:06:21.642755+00:00",
+      "next_at": "2026-09-21 05:16:21.762758+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "1789967192689",
+        "bytes": 93849,
+        "sha256": "1113b062c6c5e675902ba4b845fbb2ea7f5a56006071ad3dbb5c36e7a33e6495",
+        "skipped": 0,
+        "modified": "Mon, 21 Sep 2026 05:03:57 GMT",
+        "latest_publication": "2026-09-21 05:00:05+00:00"
+      }
+    },
+    {
+      "id": "yonhap-industry",
+      "publisher": "연합뉴스",
+      "kind": "media",
+      "origin_group": "yonhap",
+      "last_success": "2026-09-21 05:06:24.263371+00:00",
+      "last_attempt": "2026-09-21 05:06:24.125013+00:00",
+      "next_at": "2026-09-21 05:16:24.263371+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "1789967190889",
+        "bytes": 96492,
+        "sha256": "f67f8a0f0f1bf0faa3242cce5bf34fefdcfa5fe57a0dc0c89768dc094a05dfce",
+        "skipped": 0,
+        "modified": "Mon, 21 Sep 2026 05:03:58 GMT",
+        "latest_publication": "2026-09-21 05:00:06+00:00"
+      }
+    },
+    {
+      "id": "yonhap-international",
+      "publisher": "연합뉴스",
+      "kind": "media",
+      "origin_group": "yonhap",
+      "last_success": "2026-09-21 05:06:26.822904+00:00",
+      "last_attempt": "2026-09-21 05:06:26.703724+00:00",
+      "next_at": "2026-09-21 05:16:26.822904+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "1789967209199",
+        "bytes": 100133,
+        "sha256": "cc18f238ad4b57058940ae9b6ac67c0c0d5da5d0e7eeca8392d4fcfc2679bebb",
+        "skipped": 0,
+        "modified": "Mon, 21 Sep 2026 05:03:58 GMT",
+        "latest_publication": "2026-09-21 04:53:08+00:00"
+      }
+    },
+    {
+      "id": "yonhap-market",
+      "publisher": "연합뉴스",
+      "kind": "media",
+      "origin_group": "yonhap",
+      "last_success": "2026-09-21 05:06:29.343684+00:00",
+      "last_attempt": "2026-09-21 05:06:29.217285+00:00",
+      "next_at": "2026-09-21 05:16:29.343684+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "1789967190611",
+        "bytes": 84813,
+        "sha256": "b395633f8ead07d44886c53aa86cd592ce4e9cd035c14af6ba060b234b1911ac",
+        "skipped": 0,
+        "modified": "Mon, 21 Sep 2026 05:03:58 GMT",
+        "latest_publication": "2026-09-21 04:57:33+00:00"
+      }
+    }
+  ],
+  "new_source_articles": [
+    {
+      "source_id": "etoday-economy",
+      "state": "historical_or_undated",
+      "count": 20,
+      "latest_publication": "2026-09-21 03:00:00+00:00"
+    },
+    {
+      "source_id": "etoday-economy",
+      "state": "ready",
+      "count": 9,
+      "latest_publication": "2026-09-21 05:00:00+00:00"
+    },
+    {
+      "source_id": "etoday-finance",
+      "state": "historical_or_undated",
+      "count": 9,
+      "latest_publication": "2026-09-21 03:00:00+00:00"
+    },
+    {
+      "source_id": "etoday-finance",
+      "state": "ready",
+      "count": 2,
+      "latest_publication": "2026-09-21 04:36:00+00:00"
+    },
+    {
+      "source_id": "etoday-global",
+      "state": "historical_or_undated",
+      "count": 10,
+      "latest_publication": "2026-09-21 02:18:00+00:00"
+    },
+    {
+      "source_id": "etoday-industry",
+      "state": "fetch_failed",
+      "count": 1,
+      "latest_publication": "2026-09-21 04:16:00+00:00"
+    },
+    {
+      "source_id": "etoday-industry",
+      "state": "historical_or_undated",
+      "count": 73,
+      "latest_publication": "2026-09-21 03:03:00+00:00"
+    },
+    {
+      "source_id": "etoday-industry",
+      "state": "ready",
+      "count": 7,
+      "latest_publication": "2026-09-21 05:00:00+00:00"
+    },
+    {
+      "source_id": "sbs-economy",
+      "state": "historical_or_undated",
+      "count": 27,
+      "latest_publication": "2026-09-21 01:31:00+00:00"
+    },
+    {
+      "source_id": "sbs-economy",
+      "state": "ready",
+      "count": 2,
+      "latest_publication": "2026-09-21 03:38:00+00:00"
+    },
+    {
+      "source_id": "sbs-world",
+      "state": "historical_or_undated",
+      "count": 27,
+      "latest_publication": "2026-09-21 02:40:00+00:00"
+    },
+    {
+      "source_id": "sbs-world",
+      "state": "ready",
+      "count": 2,
+      "latest_publication": "2026-09-21 04:45:00+00:00"
+    },
+    {
+      "source_id": "yonhap-economy",
+      "state": "collected",
+      "count": 4,
+      "latest_publication": "2026-09-21 04:56:26+00:00"
+    },
+    {
+      "source_id": "yonhap-economy",
+      "state": "historical_or_undated",
+      "count": 107,
+      "latest_publication": "2026-09-21 03:00:44+00:00"
+    },
+    {
+      "source_id": "yonhap-economy",
+      "state": "ready",
+      "count": 9,
+      "latest_publication": "2026-09-21 05:00:05+00:00"
+    },
+    {
+      "source_id": "yonhap-industry",
+      "state": "collected",
+      "count": 8,
+      "latest_publication": "2026-09-21 05:00:06+00:00"
+    },
+    {
+      "source_id": "yonhap-industry",
+      "state": "historical_or_undated",
+      "count": 72,
+      "latest_publication": "2026-09-21 03:00:13+00:00"
+    },
+    {
+      "source_id": "yonhap-international",
+      "state": "collected",
+      "count": 4,
+      "latest_publication": "2026-09-21 04:53:08+00:00"
+    },
+    {
+      "source_id": "yonhap-international",
+      "state": "historical_or_undated",
+      "count": 113,
+      "latest_publication": "2026-09-21 03:03:59+00:00"
+    },
+    {
+      "source_id": "yonhap-market",
+      "state": "collected",
+      "count": 1,
+      "latest_publication": "2026-09-21 04:57:33+00:00"
+    },
+    {
+      "source_id": "yonhap-market",
+      "state": "historical_or_undated",
+      "count": 85,
+      "latest_publication": "2026-09-21 03:00:09+00:00"
+    }
+  ],
+  "recent_reviews": [
+    {
+      "id": "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+      "state": "running",
+      "error": null,
+      "result": null,
+      "created_at": "2026-09-21 05:07:05.659630+00:00",
+      "completed_at": null,
+      "primary_ids": [
+        "1aca3e3421e9dd037ec184170211ef08ff8b3d90f464cc1971de313b0d770ed4",
+        "4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76",
+        "042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9",
+        "1b6687a10518420f75d739bf897052f900318308514aab1bdf8248d555cee8df",
+        "8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30",
+        "2507a5d8da1cea6fc44a8f4e20c19120c1da523ed72eaa74924a66aa3268b37f"
+      ]
+    }
+  ],
+  "recent_searches": [],
+  "publications": [],
+  "outbox_issues": [],
+  "research_states": [
+    {
+      "state": "pending_approval",
+      "count": 1
+    }
+  ]
+}

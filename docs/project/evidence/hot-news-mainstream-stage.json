@@ -1,0 +1,50 @@
+{
+  "checked_at": "2026-09-21T05:03:38.404139+00:00",
+  "failed_candidate": "831a8e474b3d6a062bcd1ab7ab8d88bca4803f2e",
+  "error": "release_archive_roots",
+  "failure_phase": "stage unpack preflight before build and cutover",
+  "installed_release_unchanged_by_failed_attempt": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+  "repair": "Use git archive --prefix release/ and validate archive using installed-equivalent unpack locally before upload. Merge already approved main deployment before building.",
+  "repaired_candidate": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "archive_bytes": 9558123,
+  "expanded_bytes": 14520327,
+  "maximum_expanded_bytes": 33554432,
+  "local_unpack_passed": true,
+  "stage": {
+    "commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+    "previous": "/opt/quant-company/releases/9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+    "phase": "staged",
+    "checked_at": 1789966677.3548706,
+    "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "configured_preflight": {
+      "database_healthy": true,
+      "roles_loaded": 11,
+      "director_effort": "max"
+    }
+  },
+  "original_failure_receipt": {
+    "phase": "staging",
+    "previous": "/opt/quant-company/releases/9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+    "current_release": "/opt/quant-company/releases/9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+    "configured_preflight": null,
+    "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/root        58G   54G  3.8G  94% /\n",
+    "build_logs": [
+      {
+        "name": "reporter-build-maintenance.log",
+        "bytes": 4098
+      },
+      {
+        "name": "reporter-build-codex-runtime.log",
+        "bytes": 5019
+      },
+      {
+        "name": "reporter-build-claude-runtime.log",
+        "bytes": 4228
+      },
+      {
+        "name": "reporter-build-api.log",
+        "bytes": 7567
+      }
+    ]
+  }
+}
