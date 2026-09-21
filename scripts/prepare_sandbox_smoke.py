@@ -5,6 +5,7 @@ It does not provision a scientific profile, download packages, or modify a servi
 """
 
 import argparse
+import hashlib
 import json
 import platform
 import re
@@ -15,7 +16,10 @@ import sysconfig
 from pathlib import Path
 
 from quant_company.research.sandbox import runtime_digest
-from quant_company.research.worker import sha_file
+
+def sha_file(path):
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
 def main():

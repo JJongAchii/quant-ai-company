@@ -167,8 +167,8 @@ def stage_prompt(company, conn, task):
                    "interpretation": Interpretation}.get(row["stage"])
     if output_type:
         context["output_schema"] = output_type.model_json_schema()
-    reads = conn.execute("""SELECT path,offset,content,next_offset FROM research_stage_reads
-        WHERE stage_id=%s ORDER BY created_at,id""", (row["id"],)).fetchall()
+    reads = conn.execute('''SELECT path,character_offset AS "offset",content,next_offset FROM research_stage_reads
+        WHERE stage_id=%s ORDER BY created_at,id''', (row["id"],)).fetchall()
     # Reads remain in the DB. Give a bounded recent window and a manifest of all inspected chunks.
     context["read_chunks"] = as_json(reads[-5:])
     context["inspected_chunks"] = [{"path": value["path"], "offset": value["offset"]} for value in reads]
@@ -203,10 +203,10 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         from .builds import read_stage_file
 
         receipt = read_stage_file(company, row, request.arguments)
-        if conn.execute("SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND path=%s AND offset=%s",
+        if conn.execute("SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND path=%s AND character_offset=%s",
                         (row["id"], receipt["path"], receipt["offset"])).fetchone():
             raise PolicyError("This immutable evidence chunk was already read")
-        conn.execute("""INSERT INTO research_stage_reads(id,stage_id,path,offset,content,next_offset,sha256)
+        conn.execute("""INSERT INTO research_stage_reads(id,stage_id,path,character_offset,content,next_offset,sha256)
             VALUES (%s,%s,%s,%s,%s,%s,%s)""", (stable("stage-read:" + str(turn["id"])), row["id"],
                 receipt["path"], receipt["offset"], receipt["content"], receipt["next_offset"], receipt["sha256"]))
         conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",

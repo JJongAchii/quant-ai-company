@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS research_stage_attempts (
 );
 CREATE TABLE IF NOT EXISTS research_stage_reads (
  id uuid PRIMARY KEY, stage_id uuid NOT NULL REFERENCES research_mission_stages(id),
- path text NOT NULL, offset integer NOT NULL CHECK(offset>=0), content text NOT NULL,
+ path text NOT NULL, character_offset integer NOT NULL CHECK(character_offset>=0), content text NOT NULL,
  next_offset integer, sha256 text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
 );
 -- Multiple scientific trials inherit one mission approval; replay still permits one job per event.
