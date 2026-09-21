@@ -6,9 +6,15 @@
   "currentIntent": "INTENT-v1.json",
   "deliverables": {
     "ACTIVATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/TECH-FEED-VALIDATION.md",
+          "sha256": "ae17fe5eb08d"
+        }
+      ],
+      "note": "12 real production feeds baselined; dedicated Temporal Cloud workflow; actual Reporter setup message delivered and matched in Slack history; article count honestly zero at snapshot.",
+      "status": "verified",
+      "updatedAt": "2026-09-21T13:09:12.977639+00:00"
     },
     "IMPLEMENTATION": {
       "evidence": [
@@ -37,5 +43,5 @@
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-21T12:57:34.418691+00:00"
+  "updatedAt": "2026-09-21T13:09:12.977639+00:00"
 }

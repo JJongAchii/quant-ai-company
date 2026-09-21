@@ -1,0 +1,159 @@
+{
+  "commit": "7e41b3307879098f649b182bf07b52b8de840882",
+  "previous": "/opt/quant-company/releases/e7a0f941169b2253ec7733c7f68eca2165b80b97",
+  "phase": "enabled",
+  "started_at": 1789995637.2856407,
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "build_method": "wheel over unchanged qualified dependency layers",
+  "wheel_sha256": "50eb7632d74ab404da48db89ba3a31b49de4db6b34572eca533a577a29ba3dd7",
+  "research_implementation_unchanged": true,
+  "images": [
+    {
+      "service": "api",
+      "image": "sha256:c597ef7956c3529800f70fc1e2aff670752f78dc5cb40b963776a9c4100e7f2b",
+      "parent_image": "sha256:7a976df26667acc18a168841b6c8695ede51a0c3965502a453f1a91d7f364726",
+      "installed_source_matches_commit": true
+    },
+    {
+      "service": "worker",
+      "image": "sha256:957d4977983f7371410384dbec5dd9cce1bad802ff07e551be83095a807ca1cb",
+      "parent_image": "sha256:b4ac9189912f1cb286b60511fcd840d5c5d301120981b7970b07df330f194d50",
+      "installed_source_matches_commit": true
+    },
+    {
+      "service": "codex-runtime",
+      "image": "sha256:dfd4de7b3d4d8e6e31c433f86979e49e2871753095599b534a6fab11189e1cea",
+      "parent_image": "sha256:861b37c965d7aa6554fe62fc11aee14a111e28c2faf42cf705880bf581f94ded",
+      "installed_source_matches_commit": true
+    },
+    {
+      "service": "maintenance",
+      "image": "sha256:dd51a0d83c21d703f676687a9d8c1b1ca719d2a35d5ad9c4c6ebbc07709854fd",
+      "parent_image": "sha256:1ae38be90b755760a15a5c353f2ee89f2a7b632a90ddee637fa42d5ced7b43ee",
+      "installed_source_matches_commit": true
+    },
+    {
+      "service": "claude-runtime",
+      "image": "sha256:9c12522ff1a2c7cb6a1a3ffd5a0455d566b0773fe5ac024b3a73abeef12ef635",
+      "parent_image": "sha256:42d79759bd282164f199fcdecff828d7577d9ec13263cd7744570cb1b55435db",
+      "installed_source_matches_commit": true
+    }
+  ],
+  "preflight_activity": {
+    "due_turns": 0,
+    "outbox": 0,
+    "news_reviews": 0,
+    "news_triages": 0,
+    "news_searches": 0,
+    "research_jobs": 0,
+    "research_missions": 0
+  },
+  "postgres_id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20260921T130402Z-136eecf4.tar.gz",
+    "sha256": "aaf567fa009d820c7dc4b132ea609b58006117eeffa30facc401d19e96b5510a",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260921T130402Z-136eecf4.tar.gz",
+    "release_commit": "e7a0f941169b2253ec7733c7f68eca2165b80b97",
+    "secrets_included": false
+  },
+  "health": {
+    "healthy_services": 8,
+    "postgres_recreated": false
+  },
+  "existing_roles_credentials_research_configs_preserved": true,
+  "enabled_at": 1789996004.313674,
+  "runtime_services": [
+    {
+      "name": "/quant-company-api-1",
+      "running": true,
+      "health": "healthy",
+      "image_revision": "7e41b3307879098f649b182bf07b52b8de840882",
+      "tech_feed_settings": {
+        "TECH_FEED_ENABLED": "true",
+        "TECH_FEED_PUBLISH_ENABLED": "true",
+        "TECH_FEED_CHANNEL_ID": "C0C2KPB76KE",
+        "TECH_FEED_OWNER_USER": "U0C250E23NW"
+      }
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "running": true,
+      "health": "not-configured",
+      "image_revision": "7e41b3307879098f649b182bf07b52b8de840882",
+      "tech_feed_settings": {
+        "TECH_FEED_ENABLED": "true",
+        "TECH_FEED_PUBLISH_ENABLED": "true",
+        "TECH_FEED_CHANNEL_ID": "C0C2KPB76KE",
+        "TECH_FEED_OWNER_USER": "U0C250E23NW"
+      }
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "running": true,
+      "health": "not-configured",
+      "image_revision": "7e41b3307879098f649b182bf07b52b8de840882",
+      "tech_feed_settings": {
+        "TECH_FEED_ENABLED": "true",
+        "TECH_FEED_PUBLISH_ENABLED": "true",
+        "TECH_FEED_CHANNEL_ID": "C0C2KPB76KE",
+        "TECH_FEED_OWNER_USER": "U0C250E23NW"
+      }
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "running": true,
+      "health": "not-configured",
+      "image_revision": "7e41b3307879098f649b182bf07b52b8de840882",
+      "tech_feed_settings": {
+        "TECH_FEED_ENABLED": "true",
+        "TECH_FEED_PUBLISH_ENABLED": "true",
+        "TECH_FEED_CHANNEL_ID": "C0C2KPB76KE",
+        "TECH_FEED_OWNER_USER": "U0C250E23NW"
+      }
+    },
+    {
+      "name": "/quant-company-maintenance-1",
+      "running": true,
+      "health": "not-configured",
+      "image_revision": "7e41b3307879098f649b182bf07b52b8de840882",
+      "tech_feed_settings": {
+        "TECH_FEED_ENABLED": "true",
+        "TECH_FEED_PUBLISH_ENABLED": "true",
+        "TECH_FEED_CHANNEL_ID": "C0C2KPB76KE",
+        "TECH_FEED_OWNER_USER": "U0C250E23NW"
+      }
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "running": true,
+      "health": "healthy",
+      "image_revision": "7e41b3307879098f649b182bf07b52b8de840882",
+      "tech_feed_settings": {}
+    },
+    {
+      "name": "/quant-company-claude-runtime-1",
+      "running": true,
+      "health": "healthy",
+      "image_revision": "7e41b3307879098f649b182bf07b52b8de840882",
+      "tech_feed_settings": {}
+    },
+    {
+      "name": "/quant-company-postgres-1",
+      "running": true,
+      "health": "healthy",
+      "image_revision": null,
+      "tech_feed_settings": {}
+    }
+  ],
+  "runtime_env_changed_keys": [
+    "QDATA_BUILD_CONTEXT",
+    "RELEASE_COMMIT",
+    "SLACK_ALLOWED_CHANNELS",
+    "TECH_FEED_CHANNEL_ID",
+    "TECH_FEED_ENABLED",
+    "TECH_FEED_OWNER_USER",
+    "TECH_FEED_PUBLISH_ENABLED"
+  ],
+  "existing_hot_news_settings_preserved": true,
+  "current_release_matches": true
+}

@@ -1,0 +1,14 @@
+{
+  "commit": "7e41b3307879098f649b182bf07b52b8de840882",
+  "previous_commit": "e7a0f941169b2253ec7733c7f68eca2165b80b97",
+  "company_runtime": "/home/achii/quant-company-qualification/autonomous-20260921/release-candidates/7e41b3307879098f649b182bf07b52b8de840882/code",
+  "config_changes": ["company_commit", "company_repo"],
+  "research_profiles_unchanged": true,
+  "research_jobs_executed_by_this_operation": 0,
+  "poller_state": "active",
+  "systemd_kill_mode": "process",
+  "old_release_retained": true,
+  "git_status_porcelain": "",
+  "source_snapshot_sha256": "7975d646124c3722720a658568afd6642529273abee0948a6612ff5c0f8aa300",
+  "scope": "Only the company runtime/config pair and poller service directory were advanced. Research repositories, inputs, profiles and historical job pins were not edited."
+}
