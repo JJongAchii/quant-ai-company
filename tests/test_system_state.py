@@ -14,7 +14,7 @@ from quant_company.contracts import ProviderRequest
 from quant_company.maintenance.github import GitHub, blob_sha
 from quant_company.maintenance.policy import Triage, digest, writable
 from quant_company.maintenance.requests import report
-from quant_company.maintenance.runner import proposal_material
+from quant_company.maintenance.runner import proposal_material, repository_prompt_paths
 from quant_company.owner_controls import effective_limits, parse_daily_limit_command
 from quant_company.system_state import assess, current_system, readable, repository_read
 
@@ -63,6 +63,19 @@ def test_large_system_records_are_compacted_inside_the_same_provider_budget():
     assert material['prompt_system_compaction'] >= 1
     assert material['current_implementation']['system']['runtime']['code_commit'] == 'a'*40
     assert len(material['current_implementation']['system']['verifications']) <= 5
+
+
+def test_repository_prompt_lists_only_paths_available_to_bounded_inspection():
+    entries = {
+        'src/quant_company/config.py': {},
+        'docs/maintenance.md': {},
+        'docs/project/evidence/large.json': {},
+        'docs/project/evidence/archive.zip': {},
+        '.github/workflows/quant-company-ci.yml': {},
+    }
+    assert repository_prompt_paths(entries) == [
+        'docs/maintenance.md', 'src/quant_company/config.py',
+    ]
 
 
 @pytest.mark.integration
