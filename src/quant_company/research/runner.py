@@ -123,6 +123,7 @@ class ResearchRunner:
         # by publishing the same digest, never by launching another experiment.
         try:
             published = self.publisher.publish(row["id"], report["html"], archive)
+            published["renderer_company_commit"] = self.company.settings.company_code_commit
         except Exception:
             with self.company.db.transaction() as conn:
                 project, current = self.store._locked(conn, row["id"])

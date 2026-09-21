@@ -59,7 +59,11 @@ def producer(tmp_path, *, transform=None, title="고정된 P11 재실행", appro
         outputs[f"{name}/objective.json"] = encoded({
             "metric": "stress-net-absolute-cagr", "unit": "fraction-per-year",
             "value": (0.98 + index * 0.01) ** (1 / years) - 1,
-            "minimumHurdle": 0.0, "riskConstraintResults": {},
+            "minimumHurdle": 0.0, "riskConstraintResults": [
+                {"constraint": "long-only", "within": True},
+                {"constraint": "gross-exposure-at-most-one", "within": True},
+                {"constraint": "no-leveraged-or-inverse-etfs", "within": True},
+            ],
         })
     if transform:
         transform(outputs)
@@ -373,7 +377,8 @@ def test_monthly_rows_must_be_complete_calendar_monthends_reconciled_to_daily(tm
 
 @pytest.mark.parametrize("updates", [
     {"unit": "percent"}, {"metric": "excess-cagr"}, {"value": 12.0},
-    {"value": "0.1"}, {"value": True}, {"riskConstraintResults": []}, {"extra": 1},
+    {"value": "0.1"}, {"value": True}, {"riskConstraintResults": {}},
+    {"riskConstraintResults": []}, {"extra": 1},
 ])
 def test_primary_objective_unit_schema_and_value_match_verified_stress_series(tmp_path, updates):
     path, recipe, assignment, _ = producer(

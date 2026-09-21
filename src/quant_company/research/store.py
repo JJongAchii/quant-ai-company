@@ -74,6 +74,29 @@ class ResearchStore:
         if not self.company.settings.company_research_enabled:
             raise PolicyError("Research execution is not activated")
 
+    def revalidate(self, job_id, value):
+        """Operator recovery of a received archive; never creates another execution lease."""
+        self.require_enabled()
+        with self.company.db.transaction() as conn:
+            project, row = self._locked(conn, job_id)
+            if (row["revision"] != value.expected_revision or row["revision"] != project["revision"]
+                    or project["status"] != "active" or not row["approval_event_id"]
+                    or row["manifest_digest"] != recipe_digest(load_recipe(row["recipe_id"]))
+                    or row["artifact_sha256"] != value.artifact_sha256 or not row["artifact_path"]):
+                raise PolicyError("Research revalidation requires the same approved revision and received archive")
+            if row["state"] in {"received", "completed"}:
+                return {"ok": True, "state": row["state"], "duplicate": True}
+            if row["state"] != "awaiting_audit":
+                raise PolicyError("Only a withheld received archive may be revalidated")
+            conn.execute("""UPDATE research_jobs SET state='received',error=NULL,
+                notified_state=NULL,updated_at=now() WHERE id=%s""", (job_id,))
+            self.company._event(conn, "research_revalidation_requested", {
+                "job_id": job_id, "artifact_sha256": value.artifact_sha256,
+                "revision": value.expected_revision, "reason": value.reason, "actor": "operator",
+                "validator_company_commit": self.company.settings.company_code_commit,
+            }, str(project["id"]))
+            return {"ok": True, "state": "received", "duplicate": False}
+
     def status(self, conn, project_id):
         worker = conn.execute("SELECT last_seen FROM research_workers WHERE id='worker'").fetchone()
         rows = conn.execute("SELECT * FROM research_jobs WHERE project_id=%s ORDER BY created_at DESC LIMIT 10",

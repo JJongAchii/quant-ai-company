@@ -57,6 +57,15 @@ The existing staff exercise bank includes variations on receipt-vs-completion an
 HTTP-success-vs-cancelled-job mistakes, with source lineage. Answer keys remain
 server-side; these exercises do not certify a staff member or a strategy.
 
+The actual 3070 acceptance returned 33 matching economic output files, but the first
+server validator withheld the report: the fixed producer emits `riskConstraintResults`
+as a list of three constraint outcomes, while the initial synthetic fixture and validator
+expected an object. The validator now accepts the exact frozen list contract. A privileged, revision- and
+archive-bound revalidation endpoint resumes the stored result after a reviewed repair,
+without changing the worker execution identity or weakening any evidence checks.
+Both the original withheld state and the operator's revalidation event remain recorded.
+The report records its renderer commit separately from the original worker commit.
+
 ## Acceptance
 
 Use real PostgreSQL/Temporal for duplicate approval, lost claim response, worker restart,

@@ -342,7 +342,11 @@ def validate_bundle(
         _require(set(objective) == {"metric", "unit", "value", "minimumHurdle", "riskConstraintResults"},
                  "objective_schema_mismatch")
         _require(objective["metric"] == "stress-net-absolute-cagr" and objective["unit"] == "fraction-per-year"
-                 and isinstance(objective["riskConstraintResults"], dict), "objective_schema_mismatch")
+                 and objective["riskConstraintResults"] == [
+                     {"constraint": "long-only", "within": True},
+                     {"constraint": "gross-exposure-at-most-one", "within": True},
+                     {"constraint": "no-leveraged-or-inverse-etfs", "within": True},
+                 ], "objective_schema_mismatch")
         _require(type(objective["value"]) in (int, float) and type(objective["minimumHurdle"]) in (int, float),
                  "objective_schema_mismatch")
         _require(math.isclose(_number(objective["value"]), series["stress"].absolute_cagr,

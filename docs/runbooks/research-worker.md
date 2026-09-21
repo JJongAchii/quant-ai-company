@@ -62,6 +62,13 @@ lease tokens. Worker logs/launch records remain private on the worker.
 - Publication failure: the already-received archive stays immutable and is retried
   under the same object identity. A model/provider outage can delay the final summary;
   the report/source and pending director task remain in PostgreSQL.
+- After a reviewed validator repair or restoration of the exact original evidence,
+  an operator may call `POST /v1/research/jobs/{job_id}/revalidate` with the existing
+  `artifact_sha256`, `expected_revision` and reason `validator_repaired` or
+  `evidence_restored`. This requires the operator token, rejects worker/model access,
+  and records the current validator commit. It only resumes validation of a withheld
+  archive; it does not mark the audit passed, change the execution receipt or relaunch
+  a backtest. Changed owner revisions and mismatched archives remain blocked.
 - To roll back, cancel or finish active research first, preserve jobs/receipts and
   returned artifacts, stop the worker/tunnel units and remove the research overlay.
   Return to the previously reviewed company image. Leave additive research tables

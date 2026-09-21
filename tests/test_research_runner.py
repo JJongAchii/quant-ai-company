@@ -108,3 +108,62 @@ def test_model_task_limit_does_not_drop_a_verified_research_report(
     research.settings.company_max_project_tasks = 1
     assert ResearchRunner(research).tick()["state"] == "completed"
     assert row_for(research, row["id"])["report"]["director_task_id"]
+
+
+def test_operator_revalidates_same_archive_after_validator_repair_without_worker_reexecution(
+    research, credentials, monkeypatch, tmp_path,
+):
+    from fastapi.testclient import TestClient
+
+    from quant_company.api import create_app
+    from quant_company.research.report import ValidationError
+
+    row, _ = returned(research, credentials, monkeypatch, tmp_path)
+
+    def prior_validator(*args):
+        raise ValidationError("synthetic_old_validator_schema_mismatch")
+
+    with monkeypatch.context() as broken:
+        broken.setattr("quant_company.research.report.validate_bundle", prior_validator)
+        assert ResearchRunner(research).tick()["state"] == "awaiting_audit"
+    withheld = row_for(research, row["id"])
+    client = TestClient(create_app(research.settings, research, credentials))
+    endpoint = f"/v1/research/jobs/{row['id']}/revalidate"
+    body = {"artifact_sha256": withheld["artifact_sha256"], "expected_revision": row["revision"],
+            "reason": "validator_repaired"}
+    worker = {"Authorization": "Bearer " + research.settings.research_worker_token.get_secret_value()}
+    operator = {"Authorization": "Bearer " + research.settings.operator_token.get_secret_value()}
+    assert client.post(endpoint, json=body, headers=worker).status_code == 401
+    assert client.post(endpoint, json={**body, "artifact_sha256": "0" * 64}, headers=operator).status_code == 409
+    assert client.post(endpoint, json={**body, "expected_revision": 9}, headers=operator).status_code == 409
+    assert client.post(endpoint, json=body, headers=operator).json() == {
+        "ok": True, "state": "received", "duplicate": False}
+    assert client.post(endpoint, json=body, headers=operator).json()["duplicate"]
+    assert ResearchStore(research).poll() == {"assignment": None}
+    assert ResearchRunner(research).tick()["state"] == "completed"
+    completed = row_for(research, row["id"])
+    for key in ("lease_token", "company_commit", "artifact_sha256", "approval_event_id"):
+        assert completed[key] == withheld[key]
+    assert completed["report"]["renderer_company_commit"] == research.settings.company_code_commit
+
+
+def test_revalidation_cannot_bypass_evidence_validation_or_changed_owner_revision(
+    research, credentials, monkeypatch, tmp_path,
+):
+    import pytest
+
+    from quant_company.company import PolicyError
+    from quant_company.research.contracts import ResearchRevalidation
+
+    row, path = returned(research, credentials, monkeypatch, tmp_path)
+    path.write_bytes(b"corrupt returned artifact")
+    assert ResearchRunner(research).tick()["state"] == "awaiting_audit"
+    value = ResearchRevalidation(artifact_sha256=row_for(research, row["id"])["artifact_sha256"],
+                                 expected_revision=row["revision"], reason="evidence_restored")
+    store = ResearchStore(research)
+    assert store.revalidate(str(row["id"]), value)["state"] == "received"
+    assert ResearchRunner(research).tick()["state"] == "awaiting_audit"
+    assert row_for(research, row["id"])["report"] is None
+    owner(research, credentials, row, text="중단", stamp="128.0")
+    with pytest.raises(PolicyError):
+        store.revalidate(str(row["id"]), value)

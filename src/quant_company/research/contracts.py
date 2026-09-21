@@ -47,6 +47,12 @@ class WorkerPoll(StrictModel):
     worker_id: Literal["worker"]
 
 
+class ResearchRevalidation(StrictModel):
+    artifact_sha256: Digest
+    expected_revision: int = Field(ge=1)
+    reason: Literal["validator_repaired", "evidence_restored"]
+
+
 class WorkerUpdate(StrictModel):
     lease_token: Digest
     sequence: int = Field(ge=1)

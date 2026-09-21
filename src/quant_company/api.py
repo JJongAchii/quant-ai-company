@@ -9,6 +9,7 @@ from pydantic import Field
 from .company import Company, PolicyError
 from .config import Settings
 from .contracts import HumanRequest, StrictModel
+from .research.contracts import ResearchRevalidation
 from .slack import SlackIngress
 
 
@@ -84,6 +85,18 @@ def create_app(settings: Settings | None = None, company: Company | None = None,
     @app.get("/v1/agents", dependencies=[Depends(operator)])
     def agents():
         return [role.model_dump() for role in company.roles.values()]
+
+    @app.post("/v1/research/jobs/{job_id}/revalidate", dependencies=[Depends(operator)])
+    def research_revalidate(job_id: str, value: ResearchRevalidation):
+        from uuid import UUID
+
+        from .research.store import ResearchStore
+
+        try:
+            identity = str(UUID(job_id))
+        except ValueError:
+            raise HTTPException(422, "Invalid research job ID") from None
+        return ResearchStore(company).revalidate(identity, value)
 
     @app.get("/v1/staff", dependencies=[Depends(operator)])
     def staff_status(employee: str | None = None):
