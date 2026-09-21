@@ -9,6 +9,8 @@ from pydantic import Field, field_validator, model_validator
 from ..contracts import StrictModel
 from ..web_fetch import public_url
 
+NEWS_TOPICS = ("economy_finance", "macroeconomics", "geopolitics", "trade_energy", "industry_technology", "world_events")
+
 
 class NewsSource(StrictModel):
     id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]{1,60}$")
@@ -25,6 +27,9 @@ class NewsSource(StrictModel):
     enabled: bool = False
     use_for_summary: bool = False
     usage_note: str = Field(min_length=1, max_length=1000)
+    topics: list[Literal["economy_finance", "macroeconomics", "geopolitics", "trade_energy", "industry_technology", "world_events"]] = Field(default_factory=list, max_length=6)
+    regions: list[str] = Field(default_factory=list, max_length=8)
+    allow_attributed_reporting: bool = False
 
     @field_validator("feed_url")
     @classmethod
@@ -67,14 +72,15 @@ class NewsProposal(StrictModel):
     article_ids: list[str] = Field(min_length=1, max_length=12)
     reason: str = Field(min_length=1, max_length=1000)
     event_id: str | None = None
-    category: Literal["거시경제", "세계정세", "무역", "에너지", "산업", "금융"] = "세계정세"
+    category: Literal["경제", "거시경제", "세계정세", "무역", "에너지", "산업", "기술", "금융", "글로벌 주요사건"] = "세계정세"
     priority: Literal["major", "urgent"] = "major"
     headline: str = Field(default="", max_length=160)
     facts: str = Field(default="", max_length=900)
     significance: str = Field(default="", max_length=500)
     change: str = Field(default="", max_length=500)
     evidence: list[Evidence] = Field(default_factory=list, max_length=6)
-    verification: Literal["insufficient", "official_action", "independent_reports"] = "insufficient"
+    verification: Literal["insufficient", "official_action", "independent_reports", "attributed_report"] = "insufficient"
+    claim_type: Literal["reported_fact", "allegation", "anonymous_claim", "casualty", "forecast", "opinion"] = "reported_fact"
     independent_origins: list[str] = Field(default_factory=list, max_length=6)
 
     @model_validator(mode="after")

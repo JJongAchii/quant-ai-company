@@ -11,7 +11,14 @@
     "enabled": true,
     "use_for_summary": true,
     "usage_note": "연준이 제공하는 공개 발표 피드. 자체 정책·통계 발표의 사실 확인과 링크에 사용하며 제3자의 주장을 독립 확인으로 취급하지 않는다.",
-    "poll_seconds": 600
+    "poll_seconds": 600,
+    "topics": [
+      "macroeconomics",
+      "economy_finance"
+    ],
+    "regions": [
+      "US"
+    ]
   },
   {
     "id": "ecb-press",
@@ -29,6 +36,13 @@
     "article_path_prefixes": [
       "/press/pr/",
       "/press/govcdec/"
+    ],
+    "topics": [
+      "macroeconomics",
+      "economy_finance"
+    ],
+    "regions": [
+      "Europe"
     ]
   },
   {
@@ -41,10 +55,22 @@
       "www.bbc.com",
       "www.bbc.co.uk"
     ],
-    "enabled": false,
-    "use_for_summary": false,
-    "usage_note": "운영 수집·본문 요약 비활성. 이용 조건과 자동 처리 범위를 확인한 뒤 재검토한다.",
-    "poll_seconds": 600
+    "enabled": true,
+    "use_for_summary": true,
+    "poll_seconds": 600,
+    "topics": [
+      "geopolitics",
+      "world_events",
+      "trade_energy"
+    ],
+    "regions": [
+      "global"
+    ],
+    "allow_attributed_reporting": true,
+    "usage_note": "매체가 공개한 개인용 RSS에서 뉴스 발견 후 공개 기사 내용을 확인하여 소유자의 Slack에 짧은 사실 요약과 원문 링크로 전달한다. 기사 전문·사진·영상의 재배포나 모델 학습에 사용하지 않는다. 이용 범위는 개인 뉴스 읽기이며 상업적 콘텐츠 라이선스를 취득했다는 뜻이 아니다. 원문 접근 실패·유료벽은 우회하지 않는다.",
+    "article_path_prefixes": [
+      "/news/articles/"
+    ]
   },
   {
     "id": "newsis-world",
@@ -83,10 +109,26 @@
     "article_hosts": [
       "world.kbs.co.kr"
     ],
-    "enabled": false,
-    "use_for_summary": false,
-    "usage_note": "운영 수집·본문 요약 비활성. 이용 조건과 자동 처리 범위를 확인한 뒤 재검토한다.",
-    "poll_seconds": 600
+    "enabled": true,
+    "use_for_summary": true,
+    "poll_seconds": 600,
+    "topics": [
+      "economy_finance",
+      "macroeconomics",
+      "geopolitics",
+      "trade_energy",
+      "industry_technology",
+      "world_events"
+    ],
+    "regions": [
+      "KR",
+      "Asia"
+    ],
+    "allow_attributed_reporting": true,
+    "usage_note": "매체가 공개한 개인용 RSS에서 뉴스 발견 후 공개 기사 내용을 확인하여 소유자의 Slack에 짧은 사실 요약과 원문 링크로 전달한다. 기사 전문·사진·영상의 재배포나 모델 학습에 사용하지 않는다. 이용 범위는 개인 뉴스 읽기이며 상업적 콘텐츠 라이선스를 취득했다는 뜻이 아니다. 원문 접근 실패·유료벽은 우회하지 않는다.",
+    "article_path_prefixes": [
+      "/service/"
+    ]
   },
   {
     "id": "bea-releases",
@@ -103,7 +145,14 @@
     "enabled": true,
     "use_for_summary": true,
     "usage_note": "BEA의 자체 경제통계 발표·정부 작성 텍스트를 사실 확인과 링크에 사용. 외부 저작물과 그림은 제외. https://www.bea.gov/about/policies-and-information",
-    "poll_seconds": 600
+    "poll_seconds": 600,
+    "topics": [
+      "macroeconomics",
+      "economy_finance"
+    ],
+    "regions": [
+      "US"
+    ]
   },
   {
     "id": "govuk-fcdo",
@@ -124,7 +173,16 @@
     "license_url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
     "license_name": "Contains public sector information licensed under the Open Government Licence v3.0",
     "usage_note": "GOV.UK OGL v3.0 자체 발표 텍스트. Atom 수정 시각은 발행 시각으로 쓰지 않고 원문 first-published-at을 확인한다. 제3자 저작물·사진 제외. https://www.gov.uk/help/reuse-govuk-content",
-    "poll_seconds": 600
+    "poll_seconds": 600,
+    "topics": [
+      "geopolitics",
+      "world_events",
+      "trade_energy"
+    ],
+    "regions": [
+      "global",
+      "UK"
+    ]
   },
   {
     "id": "govuk-treasury",
@@ -145,7 +203,14 @@
     "license_url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
     "license_name": "Contains public sector information licensed under the Open Government Licence v3.0",
     "usage_note": "GOV.UK OGL v3.0 자체 발표 텍스트. Atom 수정 시각은 발행 시각으로 쓰지 않고 원문 first-published-at을 확인한다. 제3자 저작물·사진 제외. https://www.gov.uk/help/reuse-govuk-content",
-    "poll_seconds": 600
+    "poll_seconds": 600,
+    "topics": [
+      "macroeconomics",
+      "economy_finance"
+    ],
+    "regions": [
+      "UK"
+    ]
   },
   {
     "id": "govuk-trade",
@@ -166,6 +231,189 @@
     "license_url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
     "license_name": "Contains public sector information licensed under the Open Government Licence v3.0",
     "usage_note": "GOV.UK OGL v3.0 자체 발표 텍스트. Atom 수정 시각은 발행 시각으로 쓰지 않고 원문 first-published-at을 확인한다. 제3자 저작물·사진 제외. https://www.gov.uk/help/reuse-govuk-content",
-    "poll_seconds": 600
+    "poll_seconds": 600,
+    "topics": [
+      "trade_energy",
+      "industry_technology"
+    ],
+    "regions": [
+      "global",
+      "UK"
+    ]
+  },
+  {
+    "id": "bbc-business",
+    "publisher": "BBC News",
+    "origin_group": "bbc",
+    "kind": "media",
+    "feed_url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+    "article_hosts": [
+      "www.bbc.com",
+      "www.bbc.co.uk"
+    ],
+    "enabled": true,
+    "use_for_summary": true,
+    "poll_seconds": 600,
+    "topics": [
+      "economy_finance",
+      "macroeconomics",
+      "industry_technology"
+    ],
+    "regions": [
+      "global"
+    ],
+    "allow_attributed_reporting": true,
+    "usage_note": "매체가 공개한 개인용 RSS에서 뉴스 발견 후 공개 기사 내용을 확인하여 소유자의 Slack에 짧은 사실 요약과 원문 링크로 전달한다. 기사 전문·사진·영상의 재배포나 모델 학습에 사용하지 않는다. 이용 범위는 개인 뉴스 읽기이며 상업적 콘텐츠 라이선스를 취득했다는 뜻이 아니다. 원문 접근 실패·유료벽은 우회하지 않는다.",
+    "article_path_prefixes": [
+      "/news/articles/"
+    ]
+  },
+  {
+    "id": "bbc-technology",
+    "publisher": "BBC News",
+    "origin_group": "bbc",
+    "kind": "media",
+    "feed_url": "https://feeds.bbci.co.uk/news/technology/rss.xml",
+    "article_hosts": [
+      "www.bbc.com",
+      "www.bbc.co.uk"
+    ],
+    "enabled": true,
+    "use_for_summary": true,
+    "poll_seconds": 600,
+    "topics": [
+      "industry_technology",
+      "world_events"
+    ],
+    "regions": [
+      "global"
+    ],
+    "allow_attributed_reporting": true,
+    "usage_note": "매체가 공개한 개인용 RSS에서 뉴스 발견 후 공개 기사 내용을 확인하여 소유자의 Slack에 짧은 사실 요약과 원문 링크로 전달한다. 기사 전문·사진·영상의 재배포나 모델 학습에 사용하지 않는다. 이용 범위는 개인 뉴스 읽기이며 상업적 콘텐츠 라이선스를 취득했다는 뜻이 아니다. 원문 접근 실패·유료벽은 우회하지 않는다.",
+    "article_path_prefixes": [
+      "/news/articles/"
+    ]
+  },
+  {
+    "id": "kbs-economy",
+    "publisher": "KBS World",
+    "origin_group": "kbs",
+    "kind": "media",
+    "feed_url": "https://world.kbs.co.kr/rss/rss_news.htm?lang=e&id=Ec",
+    "article_hosts": [
+      "world.kbs.co.kr"
+    ],
+    "enabled": true,
+    "use_for_summary": true,
+    "poll_seconds": 600,
+    "topics": [
+      "economy_finance",
+      "macroeconomics",
+      "trade_energy",
+      "industry_technology"
+    ],
+    "regions": [
+      "KR"
+    ],
+    "allow_attributed_reporting": true,
+    "usage_note": "매체가 공개한 개인용 RSS에서 뉴스 발견 후 공개 기사 내용을 확인하여 소유자의 Slack에 짧은 사실 요약과 원문 링크로 전달한다. 기사 전문·사진·영상의 재배포나 모델 학습에 사용하지 않는다. 이용 범위는 개인 뉴스 읽기이며 상업적 콘텐츠 라이선스를 취득했다는 뜻이 아니다. 원문 접근 실패·유료벽은 우회하지 않는다.",
+    "article_path_prefixes": [
+      "/service/"
+    ]
+  },
+  {
+    "id": "cnbc-world",
+    "publisher": "CNBC",
+    "origin_group": "cnbc",
+    "kind": "media",
+    "feed_url": "https://www.cnbc.com/id/100727362/device/rss/rss.html",
+    "article_hosts": [
+      "www.cnbc.com"
+    ],
+    "enabled": true,
+    "use_for_summary": true,
+    "poll_seconds": 600,
+    "topics": [
+      "economy_finance",
+      "geopolitics",
+      "trade_energy",
+      "world_events"
+    ],
+    "regions": [
+      "global"
+    ],
+    "allow_attributed_reporting": true,
+    "usage_note": "매체가 공개한 개인용 RSS에서 뉴스 발견 후 공개 기사 내용을 확인하여 소유자의 Slack에 짧은 사실 요약과 원문 링크로 전달한다. 기사 전문·사진·영상의 재배포나 모델 학습에 사용하지 않는다. 이용 범위는 개인 뉴스 읽기이며 상업적 콘텐츠 라이선스를 취득했다는 뜻이 아니다. 원문 접근 실패·유료벽은 우회하지 않는다."
+  },
+  {
+    "id": "cnbc-economy",
+    "publisher": "CNBC",
+    "origin_group": "cnbc",
+    "kind": "media",
+    "feed_url": "https://www.cnbc.com/id/20910258/device/rss/rss.html",
+    "article_hosts": [
+      "www.cnbc.com"
+    ],
+    "enabled": true,
+    "use_for_summary": true,
+    "poll_seconds": 600,
+    "topics": [
+      "economy_finance",
+      "macroeconomics",
+      "trade_energy"
+    ],
+    "regions": [
+      "global",
+      "US"
+    ],
+    "allow_attributed_reporting": true,
+    "usage_note": "매체가 공개한 개인용 RSS에서 뉴스 발견 후 공개 기사 내용을 확인하여 소유자의 Slack에 짧은 사실 요약과 원문 링크로 전달한다. 기사 전문·사진·영상의 재배포나 모델 학습에 사용하지 않는다. 이용 범위는 개인 뉴스 읽기이며 상업적 콘텐츠 라이선스를 취득했다는 뜻이 아니다. 원문 접근 실패·유료벽은 우회하지 않는다."
+  },
+  {
+    "id": "cnbc-finance",
+    "publisher": "CNBC",
+    "origin_group": "cnbc",
+    "kind": "media",
+    "feed_url": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
+    "article_hosts": [
+      "www.cnbc.com"
+    ],
+    "enabled": true,
+    "use_for_summary": true,
+    "poll_seconds": 600,
+    "topics": [
+      "economy_finance",
+      "macroeconomics",
+      "industry_technology"
+    ],
+    "regions": [
+      "global",
+      "US"
+    ],
+    "allow_attributed_reporting": true,
+    "usage_note": "매체가 공개한 개인용 RSS에서 뉴스 발견 후 공개 기사 내용을 확인하여 소유자의 Slack에 짧은 사실 요약과 원문 링크로 전달한다. 기사 전문·사진·영상의 재배포나 모델 학습에 사용하지 않는다. 이용 범위는 개인 뉴스 읽기이며 상업적 콘텐츠 라이선스를 취득했다는 뜻이 아니다. 원문 접근 실패·유료벽은 우회하지 않는다."
+  },
+  {
+    "id": "cnbc-technology",
+    "publisher": "CNBC",
+    "origin_group": "cnbc",
+    "kind": "media",
+    "feed_url": "https://www.cnbc.com/id/19854910/device/rss/rss.html",
+    "article_hosts": [
+      "www.cnbc.com"
+    ],
+    "enabled": true,
+    "use_for_summary": true,
+    "poll_seconds": 600,
+    "topics": [
+      "industry_technology",
+      "trade_energy"
+    ],
+    "regions": [
+      "global",
+      "US"
+    ],
+    "allow_attributed_reporting": true,
+    "usage_note": "매체가 공개한 개인용 RSS에서 뉴스 발견 후 공개 기사 내용을 확인하여 소유자의 Slack에 짧은 사실 요약과 원문 링크로 전달한다. 기사 전문·사진·영상의 재배포나 모델 학습에 사용하지 않는다. 이용 범위는 개인 뉴스 읽기이며 상업적 콘텐츠 라이선스를 취득했다는 뜻이 아니다. 원문 접근 실패·유료벽은 우회하지 않는다."
   }
 ]

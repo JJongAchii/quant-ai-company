@@ -16,7 +16,7 @@ from ..web_fetch import MAX_BYTES, Page, PublicConnection, public_url
 def canonical_url(value):
     url = urlsplit(public_url(value))
     query = [(k, v) for k, v in parse_qsl(url.query, keep_blank_values=True)
-             if not k.lower().startswith("utm_") and k.lower() not in {"fbclid", "gclid"}]
+             if not k.lower().startswith("utm_") and k.lower() not in {"fbclid", "gclid", "at_campaign", "at_medium"}]
     return urlunsplit((url.scheme, url.netloc, quote(url.path, safe="/:@-._~!$&'()*+,;=%"), urlencode(sorted(query)), ""))
 
 

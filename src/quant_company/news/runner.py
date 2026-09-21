@@ -6,6 +6,7 @@ from temporalio import activity
 from ..contracts import ProviderFault, ProviderRequest, ProviderResponse
 from ..execution import provider_for
 from .contracts import NewsSource
+from .discovery import NewsDiscoveryStore
 from .feeds import fetch_feed
 from .originals import fetch_original
 from .store import NewsStore
@@ -49,6 +50,9 @@ class NewsEditor:
 
     async def tick(self, heartbeat=False):
         ready = await asyncio.to_thread(self.store.prepare_review)
+        return await self.run_request(ready, self.store.commit_review, self.store.fault, heartbeat)
+
+    async def run_request(self, ready, commit, fault, heartbeat):
         if ready["state"] != "ready":
             return ready
         request = ProviderRequest.model_validate(ready["request"])
@@ -61,12 +65,12 @@ class NewsEditor:
             response = ProviderResponse.model_validate(await task)
             if response.request_id != request.request_id:
                 raise ValueError("news_response_identity_mismatch")
-            return await asyncio.to_thread(self.store.commit_review, response)
+            return await asyncio.to_thread(commit, response)
         except ProviderFault as exc:
-            await asyncio.to_thread(self.store.fault, request.request_id, exc.code, exc.retry_after_seconds)
+            await asyncio.to_thread(fault, request.request_id, exc.code, exc.retry_after_seconds)
             return {"state": "defer" if exc.code in {"quota", "busy", "unavailable"} else "blocked", "reason": exc.code}
         except ValueError:
-            await asyncio.to_thread(self.store.fault, request.request_id, "invalid_news_proposal")
+            await asyncio.to_thread(fault, request.request_id, "invalid_news_proposal")
             return {"state": "blocked", "reason": "invalid_news_proposal"}
         finally:
             if not task.done():
@@ -75,5 +79,19 @@ class NewsEditor:
                     await task
 
     @activity.defn(name="company_news_review")
+    async def activity_tick(self):
+        return await self.tick(heartbeat=True)
+
+
+class NewsDiscovery(NewsEditor):
+    def __init__(self, company, provider=None):
+        super().__init__(company, provider)
+        self.store = NewsDiscoveryStore(company)
+
+    async def tick(self, heartbeat=False):
+        ready = await asyncio.to_thread(self.store.prepare)
+        return await self.run_request(ready, self.store.commit, self.store.search_fault, heartbeat)
+
+    @activity.defn(name="company_news_discover")
     async def activity_tick(self):
         return await self.tick(heartbeat=True)

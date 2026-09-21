@@ -1,0 +1,472 @@
+{
+  "checked_at": "2026-09-21T00:34:33.255926+00:00",
+  "candidate_code": true,
+  "database": "disposable real PostgreSQL on operating server",
+  "model": "real isolated ChatGPT subscription gpt-6-astra/high",
+  "mode": "preview",
+  "freshness_window_hours": 24,
+  "inputs": [
+    {
+      "source": "bbc-world",
+      "input": {
+        "url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+        "title": "German Chancellor Merz calls state election a 'disaster' for his party but vows to stay on",
+        "published_at": "2026-09-20 20:21:40+00:00",
+        "updated_at": null,
+        "digest": "2a716da706870e73cf5fe713d4abe463c75866a7303a8ba65c68f946be602f02"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+        "requested_url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+        "redirects": [],
+        "title": "German state elections: Chancellor Friedrich Merz vows to stay on despite 'disaster' in polls - BBC News",
+        "publisher_host": "www.bbc.co.uk",
+        "retrieved_at": "2026-09-21T00:32:03.804548+00:00",
+        "published_at": "2026-09-20T16:50:21.517Z",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html",
+        "original_sha256": "fa93e652d20c095d823b7e18406aa220f320e9c9ef57b861bbf929a6bcd64fe4",
+        "original_bytes": 424968,
+        "content_truncated": false,
+        "bylines": [
+          "Amy Walker",
+          "Jessica Parker"
+        ],
+        "article_extraction": "article",
+        "article_chars": 4881,
+        "excerpt_truncated": false
+      }
+    },
+    {
+      "source": "kbs-world",
+      "input": {
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204374&lang=e",
+        "title": "JCS: N. Korea Fires 2 Short-Range Ballistic Missiles into East Sea in Succession",
+        "published_at": "2026-09-20 06:38:07+00:00",
+        "updated_at": null,
+        "digest": "0f5defb318c99ad845cf8a3cbf28b585014566c29d943a6e4e4eacb19cd01632"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204374&lang=e",
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204374&lang=e",
+        "redirects": [],
+        "title": "JCS: N. Korea Fires 2 Short-Range Ballistic Missiles into East Sea in Succession l KBS WORLD",
+        "publisher_host": "world.kbs.co.kr",
+        "retrieved_at": "2026-09-21T00:32:04.160225+00:00",
+        "published_at": null,
+        "publication_time_basis": "unknown",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "a7b59c7a4f627947f9352b8cce4469f879705dfa05a5446a552097f60fbe493a",
+        "original_bytes": 68452,
+        "content_truncated": false,
+        "bylines": [],
+        "article_extraction": "kbs_body_txt",
+        "article_chars": 1665,
+        "excerpt_truncated": false
+      }
+    },
+    {
+      "source": "kbs-economy",
+      "input": {
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204368&lang=e",
+        "title": "Semiconductor Jobs Up 15% in 8 Years, New Hires Down 22%",
+        "published_at": "2026-09-20 03:40:55+00:00",
+        "updated_at": null,
+        "digest": "40bdf33d19af973fcb082c4ffa40a7e5ce1e8981ea4699e9cf81364fe7ea2447"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204368&lang=e",
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204368&lang=e",
+        "redirects": [],
+        "title": "Semiconductor Jobs Up 15% in 8 Years, New Hires Down 22% l KBS WORLD",
+        "publisher_host": "world.kbs.co.kr",
+        "retrieved_at": "2026-09-21T00:32:04.521850+00:00",
+        "published_at": null,
+        "publication_time_basis": "unknown",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "f47a681a015955a59450af451aa2aa35e5261375bfe6376152fdc37df7174173",
+        "original_bytes": 67854,
+        "content_truncated": false,
+        "bylines": [],
+        "article_extraction": "kbs_body_txt",
+        "article_chars": 1275,
+        "excerpt_truncated": false
+      }
+    },
+    {
+      "source": "cnbc-technology",
+      "input": {
+        "url": "https://www.cnbc.com/2026/09/20/bessent-he-lifeng-trump-xi-summit.html",
+        "title": "Bessent meets China Vice Premier He Lifeng ahead of Trump-Xi summit",
+        "published_at": "2026-09-20 16:56:14+00:00",
+        "updated_at": null,
+        "digest": "2fe6731a59253fae9a24670442d700c08a0e0d1408fb81f6fdae2d7f96d95db7"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/20/bessent-he-lifeng-trump-xi-summit.html",
+        "requested_url": "https://www.cnbc.com/2026/09/20/bessent-he-lifeng-trump-xi-summit.html",
+        "redirects": [],
+        "title": "Bessent, He Lifeng meet before Trump-Xi summit",
+        "publisher_host": "www.cnbc.com",
+        "retrieved_at": "2026-09-21T00:32:05.470798+00:00",
+        "published_at": "2026-09-20T16:56:14+0000",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "052a47d96e224d53aac65659223da252cc0aa037b06154dd12f9e40b0ec640e1",
+        "original_bytes": 794499,
+        "content_truncated": false,
+        "bylines": [
+          "Garrett Downs"
+        ],
+        "article_extraction": "main",
+        "article_chars": 3752,
+        "excerpt_truncated": false
+      }
+    },
+    {
+      "source": "cnbc-finance",
+      "input": {
+        "url": "https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html",
+        "title": "‘It's awful’: How tariffs, soaring fuel costs and higher interest rates are squeezing American companies",
+        "published_at": "2026-09-20 12:47:23+00:00",
+        "updated_at": null,
+        "digest": "a546b1e20cdacab324d5fb5cdb8ddc12e2ea202434771d7a9b368c8aa4cbd24b"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html",
+        "requested_url": "https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html",
+        "redirects": [],
+        "title": "Tariffs, fuel prices and interest rates squeeze U.S. companies",
+        "publisher_host": "www.cnbc.com",
+        "retrieved_at": "2026-09-21T00:32:06.565306+00:00",
+        "published_at": "2026-09-20T12:00:01+0000",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "ada47b35f78a24cecf96d7554f11dcac007dc6e403e3e80c7b04436633b982fa",
+        "original_bytes": 810538,
+        "content_truncated": false,
+        "bylines": [
+          "Hugh Son",
+          "Leslie Josephs",
+          "Michael Wayland"
+        ],
+        "article_extraction": "main",
+        "article_chars": 9535,
+        "excerpt_truncated": true
+      }
+    },
+    {
+      "source": "cnbc-world",
+      "input": {
+        "url": "https://www.cnbc.com/2026/09/20/nvidia-ceo-jensen-huang-emerges-as-trumps-top-ally-in-ai-debate.html",
+        "title": "Nvidia CEO Jensen Huang emerges as Trump's top ally in AI safety debate",
+        "published_at": "2026-09-20 11:25:08+00:00",
+        "updated_at": null,
+        "digest": "18a323706d52eb3ed92f60c58c4a2bd23f2f1e78cdc90cba22a848766ea8532c"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/20/nvidia-ceo-jensen-huang-emerges-as-trumps-top-ally-in-ai-debate.html",
+        "requested_url": "https://www.cnbc.com/2026/09/20/nvidia-ceo-jensen-huang-emerges-as-trumps-top-ally-in-ai-debate.html",
+        "redirects": [],
+        "title": "Nvidia CEO Jensen Huang emerges as Trump's top ally in AI debate",
+        "publisher_host": "www.cnbc.com",
+        "retrieved_at": "2026-09-21T00:32:07.451129+00:00",
+        "published_at": "2026-09-20T11:00:01+0000",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "65a86e1d4bc694992d754e63f7850b2e0ff689d23e41cae6029e666450fdf73f",
+        "original_bytes": 862081,
+        "content_truncated": false,
+        "bylines": [
+          "Kif Leswing",
+          "Ashley Capoot"
+        ],
+        "article_extraction": "main",
+        "article_chars": 8222,
+        "excerpt_truncated": true
+      }
+    }
+  ],
+  "result": {
+    "state": "completed",
+    "items": [
+      {
+        "state": "previewed",
+        "headline": "BBC: 메르츠 독일 총리, 지방선거 충격 속 유임·개혁 추진 의사",
+        "reason": "승인 매체 BBC가 보도한 메르츠 총리의 유임 및 개혁 추진 의사 표명만 게재한다. 출구조사와 예상 득표율은 확정 결과로 취급하지 않는다."
+      },
+      {
+        "state": "held",
+        "headline": "",
+        "reason": "북한의 미사일 2발 발사와 비행거리는 한국 합참의 대북 주장에 의존한다. 일본 매체 보도는 KBS 본문에 재인용됐을 뿐 별도 원문이 없고, 2발 및 거리까지 독립적으로 뒷받침하지 않는다. 또한 게시 시각 06:38 UTC는 한국 시각 15:38로 본문의 두 번째 발사 시각 17:50보다 이르며, 갱신 이력이 없어 시간 관계 확인이 필요하다."
+      },
+      {
+        "state": "previewed",
+        "headline": "CNBC: 베선트·허리펑 뉴욕 회동…24일 미중 정상회담 준비",
+        "reason": "승인 매체 CNBC의 실명 기자 보도와 본문에 인용된 회담 전 발언이 회동 사실을 뒷받침한다. 예상 의제와 참석자, 협상 성과 전망은 제외한다."
+      },
+      {
+        "state": "previewed",
+        "headline": "KBS: 한국 반도체 일자리 8년간 14.5% 증가…신규 충원은 21.6% 감소",
+        "reason": "승인 매체 KBS가 전한 통계 수치와 비교 기간을 본문에서 확인했다. 통계 원문은 제공되지 않아 공식 발표 직접 확인으로 분류하지 않으며, 신규 충원을 순수 일자리 창출과 구분한다."
+      },
+      {
+        "state": "ignored",
+        "headline": "",
+        "reason": "관세·연료비·금리 부담을 여러 시점의 기업 사례와 전문가 해석으로 설명하는 기획 기사다. 제공된 부분의 공장 계획 취소는 지난해, 일부 경영진 발언은 5월 또는 지난달 내용이며, 금리 인상은 발생 날짜가 명시되지 않았다. 개별 부품 가격과 재고 사례만으로 새로운 주요 산업 동향을 일반화할 수 없어 이번 속보성 검토에서 제외한다."
+      },
+      {
+        "state": "held",
+        "headline": "",
+        "reason": "황 CEO가 백악관 AI 정책에 특별한 영향력을 행사한다는 중심 주장은 전문가 평가이며, 안전성 논쟁도 의견·예측을 포함한다. 국빈 만찬 참석은 익명 취재원에 의존하고, 모델의 외부 시스템 침해 주장에는 직접 공개자료나 독립된 추가 보도가 제공되지 않았다. 공개 통화 사실만으로 정책 변경을 입증할 수 없으므로 attributed_report로 중심 주장을 게재하지 않는다."
+      }
+    ]
+  },
+  "search_result": {
+    "state": "completed",
+    "added": 1,
+    "excluded_unregistered": 0
+  },
+  "reviews": [
+    {
+      "id": "news-3fc2557f-1a8c-49b1-a7f4-9b85e3363064",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "previewed",
+          "reason": "승인 매체 BBC가 보도한 메르츠 총리의 유임 및 개혁 추진 의사 표명만 게재한다. 출구조사와 예상 득표율은 확정 결과로 취급하지 않는다.",
+          "headline": "BBC: 메르츠 독일 총리, 지방선거 충격 속 유임·개혁 추진 의사"
+        },
+        {
+          "state": "held",
+          "reason": "북한의 미사일 2발 발사와 비행거리는 한국 합참의 대북 주장에 의존한다. 일본 매체 보도는 KBS 본문에 재인용됐을 뿐 별도 원문이 없고, 2발 및 거리까지 독립적으로 뒷받침하지 않는다. 또한 게시 시각 06:38 UTC는 한국 시각 15:38로 본문의 두 번째 발사 시각 17:50보다 이르며, 갱신 이력이 없어 시간 관계 확인이 필요하다.",
+          "headline": ""
+        },
+        {
+          "state": "previewed",
+          "reason": "승인 매체 CNBC의 실명 기자 보도와 본문에 인용된 회담 전 발언이 회동 사실을 뒷받침한다. 예상 의제와 참석자, 협상 성과 전망은 제외한다.",
+          "headline": "CNBC: 베선트·허리펑 뉴욕 회동…24일 미중 정상회담 준비"
+        },
+        {
+          "state": "previewed",
+          "reason": "승인 매체 KBS가 전한 통계 수치와 비교 기간을 본문에서 확인했다. 통계 원문은 제공되지 않아 공식 발표 직접 확인으로 분류하지 않으며, 신규 충원을 순수 일자리 창출과 구분한다.",
+          "headline": "KBS: 한국 반도체 일자리 8년간 14.5% 증가…신규 충원은 21.6% 감소"
+        },
+        {
+          "state": "ignored",
+          "reason": "관세·연료비·금리 부담을 여러 시점의 기업 사례와 전문가 해석으로 설명하는 기획 기사다. 제공된 부분의 공장 계획 취소는 지난해, 일부 경영진 발언은 5월 또는 지난달 내용이며, 금리 인상은 발생 날짜가 명시되지 않았다. 개별 부품 가격과 재고 사례만으로 새로운 주요 산업 동향을 일반화할 수 없어 이번 속보성 검토에서 제외한다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "황 CEO가 백악관 AI 정책에 특별한 영향력을 행사한다는 중심 주장은 전문가 평가이며, 안전성 논쟁도 의견·예측을 포함한다. 국빈 만찬 참석은 익명 취재원에 의존하고, 모델의 외부 시스템 침해 주장에는 직접 공개자료나 독립된 추가 보도가 제공되지 않았다. 공개 통화 사실만으로 정책 변경을 입증할 수 없으므로 attributed_report로 중심 주장을 게재하지 않는다.",
+          "headline": ""
+        }
+      ],
+      "response": {
+        "usage": {
+          "input_tokens": 15755,
+          "output_tokens": 3194,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 459
+        },
+        "decision": {
+          "say": "6건을 검토해 3건은 게재, 2건은 보류, 1건은 제외했습니다. 게재안은 제공된 매체 보도에 근거하며, 보류·제외 사유를 검토 기록에 담았습니다.",
+          "tools": [],
+          "status": "complete",
+          "memories": [],
+          "messages": [],
+          "artifacts": [
+            {
+              "title": "경제·세계뉴스 검토 결과",
+              "content": "{\"items\":[{\"disposition\":\"publish\",\"article_ids\":[\"4db10160e6b2931d8dfbc458e73c5e5e00775d7926215a897fc64c9a17980e9d\"],\"reason\":\"승인 매체 BBC가 보도한 메르츠 총리의 유임 및 개혁 추진 의사 표명만 게재한다. 출구조사와 예상 득표율은 확정 결과로 취급하지 않는다.\",\"category\":\"세계정세\",\"priority\":\"major\",\"headline\":\"BBC: 메르츠 독일 총리, 지방선거 충격 속 유임·개혁 추진 의사\",\"facts\":\"BBC에 따르면 프리드리히 메르츠 독일 총리는 9월 20일 지방선거 출구조사가 기독민주당의 부진을 가리키는 가운데 총리직을 계속 수행하겠다고 밝혔다. 베를린 당사에서 경제·세제·복지 개혁을 추진하겠다는 뜻도 재확인했다. 제공된 보도 시점에는 최종 선거 결과가 나오지 않았다.\",\"significance\":\"독일 정부의 경제·복지 개혁 추진 방향과 관련된 정치적 대응이다. 실제 입법 성과나 연정 안정성은 이 발언만으로 판단할 수 없다.\",\"change\":\"9월 20일 선거 당일 나온 총리의 유임 및 개혁 추진 입장을 신규 반영한다.\",\"evidence\":[{\"article_id\":\"4db10160e6b2931d8dfbc458e73c5e5e00775d7926215a897fc64c9a17980e9d\",\"quote\":\"Embattled German Chancellor Friedrich Merz has vowed to stay on despite exit polls in two local elections suggesting damaging defeats for his centre-right Christian Democratic Union (CDU) party.\"},{\"article_id\":\"4db10160e6b2931d8dfbc458e73c5e5e00775d7926215a897fc64c9a17980e9d\",\"quote\":\"Echoing comments he made after that defeat, Merz told reporters at the party's Berlin headquarters on Sunday that he would forge ahead with his coalition government's plans to push through a package of economic, tax and welfare reforms.\"}],\"verification\":\"attributed_report\",\"claim_type\":\"reported_fact\",\"independent_origins\":[]},{\"disposition\":\"hold\",\"article_ids\":[\"6d4c5ae5572b32cc57191cb78c9a9a7686ae5ab568b4acad81a0d72d49552bfe\"],\"reason\":\"북한의 미사일 2발 발사와 비행거리는 한국 합참의 대북 주장에 의존한다. 일본 매체 보도는 KBS 본문에 재인용됐을 뿐 별도 원문이 없고, 2발 및 거리까지 독립적으로 뒷받침하지 않는다. 또한 게시 시각 06:38 UTC는 한국 시각 15:38로 본문의 두 번째 발사 시각 17:50보다 이르며, 갱신 이력이 없어 시간 관계 확인이 필요하다.\",\"category\":\"세계정세\",\"verification\":\"insufficient\",\"claim_type\":\"allegation\",\"evidence\":[],\"independent_origins\":[]},{\"disposition\":\"publish\",\"article_ids\":[\"512aec9d11840749cfb7d4c824d7ba9fb941a12fff93c23959844be05c189e9c\"],\"reason\":\"승인 매체 CNBC의 실명 기자 보도와 본문에 인용된 회담 전 발언이 회동 사실을 뒷받침한다. 예상 의제와 참석자, 협상 성과 전망은 제외한다.\",\"category\":\"무역\",\"priority\":\"major\",\"headline\":\"CNBC: 베선트·허리펑 뉴욕 회동…24일 미중 정상회담 준비\",\"facts\":\"CNBC는 9월 20일 스콧 베선트 미국 재무장관과 허리펑 중국 부총리가 뉴욕에서 회동한다고 보도했다. 베선트는 회담 전 뉴욕 JPMorgan Chase에서 기자들에게 이번 대화가 정상회담을 준비하기 위한 것이라고 밝혔다. 보도에 따르면 트럼프·시진핑 정상회담은 9월 24일 워싱턴에서 예정돼 있다.\",\"significance\":\"미중 경제·무역 관계를 다루는 고위급 접촉이다. 회담 개최 사실과 별개로 관세나 수출 관련 합의는 제공된 기사에서 확인되지 않는다.\",\"change\":\"정상회담에 앞서 뉴욕에서 진행되는 양국 경제 당국자 회동을 신규 반영한다.\",\"evidence\":[{\"article_id\":\"512aec9d11840749cfb7d4c824d7ba9fb941a12fff93c23959844be05c189e9c\",\"quote\":\"Treasury Secretary Scott Bessent and Chinese Vice Premier He Lifeng are meeting in New York ahead of the Sept. 24 Trump-Xi summit.\"},{\"article_id\":\"512aec9d11840749cfb7d4c824d7ba9fb941a12fff93c23959844be05c189e9c\",\"quote\":\"In brief remarks to reporters before the meeting at JPMorgan Chase in New York, Bessent said he looks forward to \\\"focused, fulsome and constructive talks today that will set the stage\\\" for this week's summit between the leaders of the world's two largest national economies.\"}],\"verification\":\"attributed_report\",\"claim_type\":\"reported_fact\",\"independent_origins\":[]},{\"disposition\":\"publish\",\"article_ids\":[\"0db2aefc59550cc4d379784b5ec5f8e6dd3c476c138fe1806e4ed0f7e9575180\"],\"reason\":\"승인 매체 KBS가 전한 통계 수치와 비교 기간을 본문에서 확인했다. 통계 원문은 제공되지 않아 공식 발표 직접 확인으로 분류하지 않으며, 신규 충원을 순수 일자리 창출과 구분한다.\",\"category\":\"산업\",\"priority\":\"major\",\"headline\":\"KBS: 한국 반도체 일자리 8년간 14.5% 증가…신규 충원은 21.6% 감소\",\"facts\":\"KBS가 국가통계포털 자료를 인용한 보도에 따르면 2026년 1분기 반도체 제조업 유급 일자리는 17만4천 개로, 통계 작성이 시작된 2018년 같은 분기보다 14.5% 증가해 최고치를 기록했다. 신규 충원 일자리는 2만9천 개로 2018년 3만7천 개보다 21.6% 줄었다. 신규 충원에는 퇴사자 대체와 사업체 신설·확장에 따른 일자리가 함께 포함된다.\",\"significance\":\"반도체 산업의 전체 일자리 규모와 신규 충원 흐름이 다르게 움직였음을 보여준다. 제시된 수치만으로 감소 원인이나 앞으로의 채용 규모를 단정할 수 없다.\",\"change\":\"9월 20일 보도된 1분기 일자리 수치와 2018년 동기 대비 변화를 신규 반영한다.\",\"evidence\":[{\"article_id\":\"0db2aefc59550cc4d379784b5ec5f8e6dd3c476c138fe1806e4ed0f7e9575180\",\"quote\":\"According to data released Sunday by the Korean Statistical Information Service, paid jobs in semiconductor manufacturing reached a record 174-thousand in the first quarter, up 14-point-five percent, or 22-thousand, from the same quarter in 2018, when the data was first compiled.\"},{\"article_id\":\"0db2aefc59550cc4d379784b5ec5f8e6dd3c476c138fe1806e4ed0f7e9575180\",\"quote\":\"Newly filled jobs, including replacement positions created by employee departures and new positions generated through business establishment or expansion, totaled 29-thousand in the first quarter, the third‑lowest level on record for the period and down 21-point-six percent, or eight thousand, from 37-thousand in 2018.\"}],\"verification\":\"attributed_report\",\"claim_type\":\"reported_fact\",\"independent_origins\":[]},{\"disposition\":\"ignore\",\"article_ids\":[\"4f1113bc0bd3d7ad9a7f868c598bca2b144fdc4f01e2b857f6e5a10faa2a4b0f\"],\"reason\":\"관세·연료비·금리 부담을 여러 시점의 기업 사례와 전문가 해석으로 설명하는 기획 기사다. 제공된 부분의 공장 계획 취소는 지난해, 일부 경영진 발언은 5월 또는 지난달 내용이며, 금리 인상은 발생 날짜가 명시되지 않았다. 개별 부품 가격과 재고 사례만으로 새로운 주요 산업 동향을 일반화할 수 없어 이번 속보성 검토에서 제외한다.\",\"category\":\"경제\",\"verification\":\"insufficient\",\"claim_type\":\"opinion\",\"evidence\":[],\"independent_origins\":[]},{\"disposition\":\"hold\",\"article_ids\":[\"529284cf8e32d29cfc7a84f484a8042c49c52c635e92f0f82bf1ddb0b43da8d0\"],\"reason\":\"황 CEO가 백악관 AI 정책에 특별한 영향력을 행사한다는 중심 주장은 전문가 평가이며, 안전성 논쟁도 의견·예측을 포함한다. 국빈 만찬 참석은 익명 취재원에 의존하고, 모델의 외부 시스템 침해 주장에는 직접 공개자료나 독립된 추가 보도가 제공되지 않았다. 공개 통화 사실만으로 정책 변경을 입증할 수 없으므로 attributed_report로 중심 주장을 게재하지 않는다.\",\"category\":\"기술\",\"verification\":\"insufficient\",\"claim_type\":\"opinion\",\"evidence\":[],\"independent_origins\":[]}]}",
+              "source_ids": []
+            }
+          ],
+          "follow_up": null,
+          "delegations": []
+        },
+        "provider": "codex",
+        "thread_id": "01a0c160-995f-7d13-ab15-995cc8eec5c8",
+        "request_id": "news-3fc2557f-1a8c-49b1-a7f4-9b85e3363064",
+        "web_searches": []
+      }
+    }
+  ],
+  "searches": [
+    {
+      "id": "news-search-597a0faa-7e4f-4072-b0ce-a4dc9d9910bc",
+      "topic": "economy_finance",
+      "state": "completed",
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "added": 1,
+        "query": "major economy finance markets banking Korea international news; recent 24 hours as of 2026-09-21T00:33:48.460203+00:00; only news articles from world.kbs.co.kr, www.bbc.co.uk, www.bbc.com, www.cnbc.com; Korean and English searches; at most 3 native searches; do not open pages. Also seek independent reporting for: JCS: N. Korea Fires 2 Short-Range Ballistic Missiles into East Sea in Succession; Nvidia CEO Jensen Huang emerges as Trump's top ally in AI safety debate",
+        "results": [
+          {
+            "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204368&lang=e",
+            "title": "Semiconductor Jobs Up 15% in 8 Years, New Hires Down 22%",
+            "snippet": "Search result dated September 20, 2026: South Korean semiconductor employment reached 174,000 in the first quarter, while newly filled positions declined compared with 2018.",
+            "verified": false
+          },
+          {
+            "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204374&lang=e",
+            "title": "JCS: N. Korea Fires Short-Range Ballistic Missile, Additional Unidentified Projectile into East Sea",
+            "snippet": "Search result dated September 20, 2026: South Korea’s Joint Chiefs reported a short-range ballistic missile launch from Wonsan, followed about three hours later by an unidentified projectile. This candidate does not confirm that both were ballistic missiles.",
+            "verified": false
+          },
+          {
+            "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204366&lang=e",
+            "title": "Police Nab 1,863 in Special Crackdown on Local Corruption",
+            "snippet": "Search result dated September 20, 2026: Police reported a crackdown involving local officials and businesses, including abuse of authority, diversion of public funds, and collusion over permits.",
+            "verified": false
+          }
+        ],
+        "verified": false,
+        "instruction": "Candidates and snippets are not evidence. Read originals with web_read before citing.",
+        "retrieved_at": "2026-09-21T00:34:33.231629+00:00",
+        "search_events": [
+          {
+            "id": "exec-45734533-61d0-4b9f-9f60-f5322fa68ba4",
+            "query": "site:world.kbs.co.kr September 20 2026 economy banking Korea missiles JCS ...",
+            "action": {
+              "type": "search",
+              "queries": [
+                "site:world.kbs.co.kr September 20 2026 economy banking Korea missiles JCS",
+                "site:bbc.com OR site:bbc.co.uk September 20 2026 North Korea missiles economy markets",
+                "site:cnbc.com Nvidia Jensen Huang Trump ally AI safety debate September 2026"
+              ]
+            }
+          },
+          {
+            "id": "exec-a106fb50-1332-4bf7-b0f2-7b2ce779f9c6",
+            "query": "site:world.kbs.co.kr \"2026-09-20\" 경제 금융 은행 국제 북한 미사일 ...",
+            "action": {
+              "type": "search",
+              "queries": [
+                "site:world.kbs.co.kr \"2026-09-20\" 경제 금융 은행 국제 북한 미사일",
+                "\"Jensen Huang\" \"Trump\" \"safety\" \"ally\" site:cnbc.com",
+                "\"North Korea\" \"September 20, 2026\" missiles (site:bbc.com OR site:bbc.co.uk OR site:cnbc.com)"
+              ]
+            }
+          },
+          {
+            "id": "exec-8c71a456-eb1a-4f7e-8ce9-3f506ca57271",
+            "query": "site:world.kbs.co.kr \"2026-09-20\" \"Economy\" ...",
+            "action": {
+              "type": "search",
+              "queries": [
+                "site:world.kbs.co.kr \"2026-09-20\" \"Economy\"",
+                "site:cnbc.com \"Huang\" \"top ally\"",
+                "site:bbc.com \"2026\" \"September\" \"20\" \"North Korea\"",
+                "site:bbc.com/korean 2026 9월 20일 경제 북한 미사일 젠슨 황 트럼프"
+              ]
+            }
+          }
+        ],
+        "provider_request_id": "news-search-597a0faa-7e4f-4072-b0ce-a4dc9d9910bc",
+        "excluded_unregistered": 0
+      }
+    }
+  ],
+  "outbox_count": 0,
+  "slack_writes": 0,
+  "database_name": "reporter_acceptance_b4286c7b74e6",
+  "disposable_database_removed_after_receipt": true,
+  "candidate_package_digest": "238fd37580a7f144c31b1cfc8879da1cf9f7427352780dd166b0d7660f169ba5",
+  "candidate_package_files": {
+    "quant_company/__init__.py": "e106c3c09ab6bbc43727ec132984da9a3388718f7be12530a151773b8beb526d",
+    "quant_company/api.py": "cd796fb3e3e34c991af32bc770bec2a529e6fb541210a9acf9c3a5cd37fae31f",
+    "quant_company/cli.py": "4671d6892c270f9e8a8d1b585b57fc8867016d59937671797caea7bc93f03cc9",
+    "quant_company/company.py": "055114d12ad0b1edacaebe96c2d9cb9a1210a5bbe498f7d2ec6350e6d2090e17",
+    "quant_company/config.py": "00cec7ed57e59a56a869840f7413678925b92592ced45320175ab1f454fd5810",
+    "quant_company/contracts.py": "4945bffe498572ce56801ebad39ede0bc82f21859d3f1b74250f3ab139febd4f",
+    "quant_company/db.py": "064980c58907e2a7ddd12ddbc0adc8ab09c6fb092262b0053fb394cd0e67d614",
+    "quant_company/execution.py": "89ed7c2ec4021458f724653fc37e8332909a45b9b608f6db234c7d976f6571d9",
+    "quant_company/finance_sources.py": "572afe4036c508a31f8218e3bc5978eb7c9c444bd6e33c08d14f8c805e56a2d2",
+    "quant_company/lake_reader.py": "6b8bd441aba39ec7b6fb1666f0947132183f10e8bd2a6acbdd5dfbbb29c1c0ef",
+    "quant_company/lake_tools.py": "ecfac9469aca7b930020742c35376d84724e0c64573170383146575872c6186a",
+    "quant_company/maintenance/__init__.py": "a068a4a09f888f2f3105bbf238cfa3aa5ee50961cfa898ba1c48e9d9cc9186db",
+    "quant_company/maintenance/applications.py": "3a005277c08f4d65ac301a0cce45a551bd0abb1d295c2bd7ada74bbc8a8bc17f",
+    "quant_company/maintenance/evaluation.py": "40f88e931511732759392d8e7f4e6565a7db5f94b1ac5216a1f99ee16e4752db",
+    "quant_company/maintenance/github.py": "f7e293f1aa060107944dc46eefe64f1f36b316f47073607d12eac43725ade41f",
+    "quant_company/maintenance/investigation.py": "02f1e798631f64891e7e6b493e3d0528d30dc2b965b70c5f61316e83fa2739fc",
+    "quant_company/maintenance/observation.py": "971fc5628a74685bfdbe082e8c5ac32d0df2cb47912c4f6ea618e20f3e17a08e",
+    "quant_company/maintenance/policy.py": "1383700813d542e55dbe59c681f0f9be32f3c1148fb1049852ad9de1b6ef293b",
+    "quant_company/maintenance/releases.py": "6bcaba753160e48aeea73076e925f414c7e17ae1df09cdb02eb004d9dbb86129",
+    "quant_company/maintenance/requests.py": "268caa92b7605e217bec2724e9589a71815f8573bc8efac4e823fb902de481b4",
+    "quant_company/maintenance/runner.py": "5a5705155132c0e66589921249b3efd61687fe1eac2570fd78850beced8e05f4",
+    "quant_company/maintenance/schema.sql": "0289757d109b6854d8b93f7261a279838abbf60062ab19990320327d27fd4683",
+    "quant_company/maintenance/store.py": "204e802f30f9b843175564e66cb0a6812663444ff4e28365cd56e82d09cc4b40",
+    "quant_company/maintenance/workflow.py": "429263214da307b15ca653f3220355dd2494ffe3dbf2e4e59504c4a342907f5c",
+    "quant_company/news/__init__.py": "64cfe5081277c5a0db7fa4ac640c9038e589464047cd70a9061e332f780af41a",
+    "quant_company/news/commands.py": "681ece1a44fa2543496181895f8b1b3294d5a1a229e26077ae482dcfa51f9f7b",
+    "quant_company/news/contracts.py": "45ab9846ccc4aa3e74896cbb3e977a6880708bbc07625b4ebafa6e49f0a1b060",
+    "quant_company/news/discovery.py": "0598e6af144dad6b89a8d8c2f2dcebf767da80b1ef85a6df9c9b7e6981e8cfe7",
+    "quant_company/news/editor.py": "65ef293e7d6c25a3b6d4212e62737811cfd79ab605ef7a91955be17939c9ed09",
+    "quant_company/news/feeds.py": "90446aac780b119394e58f922c92ede5dfd06ff50f7ac459f203e252621566df",
+    "quant_company/news/originals.py": "f5b2ed5aa144b192b32208350e4a1d443747cdb111a41c2d95cd6be0869c669b",
+    "quant_company/news/runner.py": "7a97f7f17c3c48fafb4cdfe7c16acdd2a4066092ec56367300fe532d52bada4f",
+    "quant_company/news/schema.sql": "1945cb4608915305d26b33959fe5012408391fecf68bd3597ffb3d781b363c2c",
+    "quant_company/news/sources.json": "c3a510488066b32f43490fb85a38b5990d1ef010257de83a469e40645895b467",
+    "quant_company/news/store.py": "4a1be98facfcf7e0488da7e10d326891b4917424496d0d3aeda7b7d54684f592",
+    "quant_company/news/workflow.py": "219cbd9520144f11f6732cd7e5f9e110ae5aa8bad157b2693b1e55323e47636a",
+    "quant_company/owner_controls.py": "0c48b36ef32630100aadfea6f36181d3ffbdd6d5c0870020bae9f047c45ff4c9",
+    "quant_company/providers/__init__.py": "a289dd8ab63e6c5a35d2274e98232e30023cdf5806200e98f6b61c30c685f6ae",
+    "quant_company/providers/claude_runner.py": "38429f8eee314f155dd8287f044d3f3263264233f5f7b5c0465097d7531cce2c",
+    "quant_company/providers/claude_runtime.py": "ac3a5e95b9b7581af929543148deba43dbe5e5b6cbf4a4d88e94bdf6e742f415",
+    "quant_company/providers/client.py": "832dbcf61a37c4930928ddcbe0192fcf996aeea70c52ce20c3875ae9fc9c31b8",
+    "quant_company/providers/codex_runner.py": "595502009a3bc6ec53ad2c1956f44b639fbab3012e75e37d8983baa5f960ca62",
+    "quant_company/providers/codex_runtime.py": "8c5697a99c2d7c7dc11cf6682f5aa71045703c664d44d62eb4ae5e0a709c0686",
+    "quant_company/roles.json": "90e09f4ae2aac849f5b6879b6397ff4da07954c34d6ce25c8b2828c96c5ab4e3",
+    "quant_company/runtime.py": "68526cb21d03440650ca547bce3bb92a8cc41c8a4402014a039458d8f44df196",
+    "quant_company/schema.sql": "2625e691eb0e07fcb451e711aca4015687cdd84c45d2533653ecc4e653eaf880",
+    "quant_company/slack.py": "5d8c7d61d9bd42d35c57cc21172824cc3340fe4010fd9dcc081b13fbfb3d076a",
+    "quant_company/socket_mode.py": "421763c9200bf02a45ea1cd81408979a502484b3ab72b0d8bbccd93a5e61854d",
+    "quant_company/staff/__init__.py": "5413f69ff4318af76c1b1ec1f54c8ad86fb3992114eac54f5f35d4e646094c97",
+    "quant_company/staff/cases.py": "e6b5da401ba849b4b5317fae033c7a9290b42b33ce129748e747aab3bc4e3ed7",
+    "quant_company/staff/comparisons.py": "2f43eef1b6c804eac611609fc4933cce604a63e169eda6ad287d233e0aec926b",
+    "quant_company/staff/independent_review.py": "c8fddeb76b3ccfa493b7c9a9c17a602354e7250af18470ba8018dabe4fdd0230",
+    "quant_company/staff/packs.py": "fd6570fb21a3403e8c79e6289e51db62c814f837b3da00d8059676f742067e63",
+    "quant_company/staff/playbooks/data.md": "0ec6d6ae63ae53c9c2a55e09b3413474416cc7bba1d9829b5a5dcd4c5d07b619",
+    "quant_company/staff/playbooks/director.md": "8d9ac0554e42c66b33faf1aa4f057eb013fcef09549e64111f4a6c1727ac188a",
+    "quant_company/staff/playbooks/engineer.md": "04ab1e6db3778cd21fa2704922ebc2be4b7e4d3c3f427c975777817c588273a8",
+    "quant_company/staff/playbooks/financial_strategist.md": "7bf5e15ea27fc4bc73d987586152a56fabad4acba0f6658158ca4faa73f1be9f",
+    "quant_company/staff/playbooks/maintainer.md": "d6dcabad814a6a796adc08d2de4f8874c4b0987410b75b2191a491e279b8855d",
+    "quant_company/staff/playbooks/operations.md": "dac56c8c086a1ec1aa52fb5af4f544cd470732553f88d58cfe72159573155769",
+    "quant_company/staff/playbooks/reporter.md": "1e61f9d1e3c1d07a133800a535a6c2a3b44fccceeef834f9550aad685762ea02",
+    "quant_company/staff/playbooks/researcher_crypto.md": "b32f70250ad114b930a74e3184502883e7533fc373696781af41d54de3822dea",
+    "quant_company/staff/playbooks/researcher_global.md": "77b1d9783eb9c5e47f0a9cf5035f03f3a7204103c73a5cf96249d75f96784c93",
+    "quant_company/staff/playbooks/researcher_kr.md": "b95703a73e22ef9f43bdbf62b965b1dd6f9c2f0fdc828e0acaa594f7f1b15587",
+    "quant_company/staff/playbooks/risk.md": "f6990bde545f70b653374c0ba92d576decd59b1459d7da9d18aedf133acedce9",
+    "quant_company/staff/playbooks/validator.md": "0d67b997df5931ce91c23e417231b3a7e3153b47f723cbcfc92ef8340c7ec390",
+    "quant_company/staff/progress.py": "418aa62b7e24924287083d00734cd62a8afd9ab056a32749345b034fe0710000",
+    "quant_company/staff/review_contract.py": "411039ae175dbe49800f64e53a76d199570a6762319a69cd6be8312a7cb7120a",
+    "quant_company/staff/runner.py": "1942cd186d1cbe013e49446cebc5db16db6d938ccba26e78fdca587e021a6929",
+    "quant_company/staff/schema.sql": "ae8701287da7ec74fbc74d189a61b0277541eb17dd101de0747dfacd4f1549c1",
+    "quant_company/staff/store.py": "7db6bc2177ff4ad97bace9ae35e00d2756b1759500d179b0289669f2aca415e3",
+    "quant_company/staff/tools.py": "595f8baa34da983da964f0c221a60e54307a69fcc12faeed59d518cc9aae861a",
+    "quant_company/staff/workflow.py": "6e04eb274375d4f4b9952faa91e08cb750eaac519d1557ec52bc3636a1b33d43",
+    "quant_company/state_schema.sql": "c5f2b0df1a9c804fbdcb112b8ffddd31590757b20f9907960f0f259aee6093a2",
+    "quant_company/system_state.py": "0b36eea5deec9dac2100ef0aaabab80e7a45b2e88f717000705cca48c2b0387c",
+    "quant_company/task_control.py": "b728b67562b4617dc03c64c149cc707f61fdda6592547e3353008fa327b544c9",
+    "quant_company/tools.py": "1187a4fdc25fc38b29fffeac153d33e658c0450ff7134bc2dab57baf3ca05aec",
+    "quant_company/web_fetch.py": "22b2de321cca384b0d8d1cea2a8d08eb624765e2b062b8e95005584934ba7a14",
+    "quant_company/web_tools.py": "176b4163441548412fc8ca1f280978e9b3c24d080ede069c3d28a37f1fb44077",
+    "quant_company/workflow.py": "4d66cfe2dc230162ace5841baad61464cad74546dc2b3a2a46a42573a5cefab9"
+  }
+}

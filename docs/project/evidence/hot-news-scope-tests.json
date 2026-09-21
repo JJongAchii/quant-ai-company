@@ -1,0 +1,20 @@
+{
+  "postgres": "real local PostgreSQL 14; disposable database per test",
+  "temporal": "real local Temporal development service and replay",
+  "model": "fixture",
+  "slack": "simulated HTTP; not live deployment",
+  "command": "uv run --frozen pytest -q -m 'not live' tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py",
+  "result": {
+    "passed": 479,
+    "skipped": 2,
+    "deselected_live": 1
+  },
+  "lint": "uv run --frozen ruff check . passed",
+  "scope": [
+    "attributed media reports and rejection of contested single-source claims",
+    "publisher/feed deduplication and diverse editorial batches",
+    "KBS article extraction; bylines, publication date and paywall metadata",
+    "durable bounded discovery; originals/date required; no snippet publication",
+    "shared budget, frozen retries, uncertain outcomes, Temporal recovery/replay"
+  ]
+}
