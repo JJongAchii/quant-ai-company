@@ -24,6 +24,10 @@
    only local TCP forwarding to `127.0.0.1:8000`, no remote forwards, PTY, agent/X11
    forwarding or shell. Do not copy the administrator's private key to the worker.
    The API remains bound to server loopback; no public port/domain is needed.
+   Allocate an explicit host UID only after checking both host accounts and running
+   container process UIDs. Docker process UIDs can exist without a host passwd entry;
+   automatic system-user allocation is not proof of isolation. The acceptance cleanup
+   incident used UID999, which also belonged to the PostgreSQL container.
 5. Create `${STATE_DIR}/research`, owned by container UID10001. Set
    `RESEARCH_REPORT_BUCKET` to the existing approved backup bucket, then apply
    `compose.yaml` with `research.compose.yaml`. The overlay enables api, Slack
@@ -75,7 +79,13 @@ lease tokens. Worker logs/launch records remain private on the worker.
   and evidence intact. Remove only the dedicated forwarding identity and worker token
   if deactivating permanently; keep administrator identities unchanged.
 
-An isolated acceptance environment uses a separate DB/task queue, loopback port and
-temporary forwarding identity, and does not alter the production BOT processes.
+An isolated acceptance environment must use a separate DB/task queue, loopback port
+and temporary forwarding identity, and must preserve the production BOT processes.
+The 2026-09-21 acceptance did not preserve this boundary during account cleanup;
+review the [incident](../project/RESEARCH-CLEANUP-INCIDENT-20260921.md) before activation.
 Remove its own container, credentials/tunnel, test workflow and DB only after evidence
 has been recovered. Never run broad Docker/Git cleanup against the shared server.
+Revoke the exact SSH key and forwarding configuration first. If removal of an idle
+temporary account fails, inspect its processes and container cgroups; do not force the
+cleanup with UID-wide process termination (`pkill -u`, `killall -u`, or equivalent).
+Leave the disabled account for investigation rather than stopping another container.

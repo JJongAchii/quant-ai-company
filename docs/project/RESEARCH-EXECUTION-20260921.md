@@ -32,8 +32,10 @@ New strategies still require their own specification and independent audit evide
 ## Verification record
 
 The final local suite passed **644 tests**, with two explicit skips and one live-model
-test deselected. It used real PostgreSQL and local Temporal. Linux CI is recorded
-separately. Reporter PR39 and its actual deployed code `4a8eb43` are integrated.
+test deselected. It used real PostgreSQL and local Temporal. The subsequent staff
+incident-feedback/maintenance checks passed all 78 tests. Linux CI passed on the
+initial evidence commit; the PR records the final-head check separately. Reporter
+PR39 and its actual deployed code `4a8eb43` are integrated.
 
 On the existing Lightsail server, a separate database, Temporal Cloud queue and
 loopback API submitted two intentional engineering replays to `DESKTOP-5T00NAF`
@@ -59,7 +61,11 @@ strategy or employee evaluation. The S3 publisher was also corrected to use the
 [Machine-readable acceptance](evidence/research-execution-20260921/acceptance-summary.json)
 and [server/S3 receipts](evidence/research-execution-20260921/server-evidence.json)
 include exact commits, IDs, timestamps and validation boundaries. The independent
-execution-path audit is tracked separately in `RESEARCH-EXECUTION-AUDIT-REQUEST.json`.
+[execution-path audit](../../audits/AUDIT-leak-auditor-20260921-company-research-replay.md)
+passed for the fixed replay's preservation, and actual `qlab.control verify-audits`
+verified the current 51-file scope `cf5350b5fffc`. The
+[control receipt](evidence/research-execution-20260921/audit-control.json) and rendered
+audit are retained. This does not certify deployment, new research or cleanup actions.
 
 `scripts/accept_research_server.py` requires an isolated `company_research_acceptance_*`
 database, synthetic identity and separate Temporal task queue. It sends no messages
@@ -67,6 +73,19 @@ to Slack and makes no model calls. Its actual 3070 backtest and report transport
 be tested on the existing server without replacing the production company processes.
 Physical Mac shutdown, genuine Slack approval ingress and production activation must
 be reported separately; the test harness cannot establish them.
+
+Afterward, the existing production director completed an explicitly recorded
+administrative report in the original research-center project. All three model turns
+used `gpt-6-astra` with `max` effort. Its factual source included the replay/audit
+evidence, activation limits and cleanup incident. The final outbox row was delivered,
+and a separate Slack API read retrieved the actual message with the owner's mention:
+[actual director report](https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789954849187919).
+The generic operator request API had rejected access to the Slack-owned project with
+409; the authorized administrative import preserved its owner and revision and
+recorded its origin explicitly. This was not a signed Slack ingress event or research
+approval. The [delivery receipt](evidence/research-execution-20260921/director-slack-delivery.json)
+therefore establishes real reporting, while genuine owner approval through the new
+research feature remains pending its activation review.
 
 The Mac transferred committed code and frozen evidence during bootstrap; it was not
 the running API tunnel, executor, database, workflow worker or result destination.
@@ -78,13 +97,23 @@ logout/reboot and long-term service startup have not been tested by these replay
 The existing staff bank now includes director exercises distinguishing audit-pending
 results from completed reports and engineering replay from a new confirmation, plus
 operations exercises distinguishing HTTP acknowledgement from the persisted cancel
-state. Their public provenance points to ADR0029; generated answer keys remain private.
+state and host UIDs from container process ownership. Their public provenance points
+to ADR0029 and the actual root-session cleanup incident; generated answer keys remain
+private. The cleanup error is attributed to this implementation session, not a BOT.
 The original maintenance tests also exposed a saved-prompt size cutoff that dropped
 valid context, and passed after repair. These are additions to the existing periodic
 evaluation/maintenance process; this change does not claim that staff have already
 passed the new production exercises or acquired general expert proficiency.
 
 ## Operational review
+
+**An unintended production interruption occurred during temporary-account cleanup.**
+The host account's UID collided with the PostgreSQL container UID; an incorrect
+UID-wide termination stopped PostgreSQL and triggered its and the dispatcher's
+automatic restart. Subsequent DB/API health and outbox checks passed, but this is
+not a claim that no inbound message could have been lost. Review the
+[incident and corrected identity/cleanup procedure](RESEARCH-CLEANUP-INCIDENT-20260921.md).
+The leak audit does not certify these operational actions.
 
 Production activation uses [the runbook](../runbooks/research-worker.md) and the
 explicit compose overlay. The user's existing policy remains: fixes/tests/PR are
