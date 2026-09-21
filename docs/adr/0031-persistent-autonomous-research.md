@@ -1,4 +1,4 @@
-# ADR 0030 — Persistent, evidence-driven autonomous research
+# ADR 0031 — Persistent, evidence-driven autonomous research
 
 Status: approved implementation plan, 2026-09-21. Production activation and the
 first scientific brief remain separate decisions under the existing review policy.
