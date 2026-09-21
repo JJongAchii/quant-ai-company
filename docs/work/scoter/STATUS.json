@@ -8,13 +8,13 @@
     "ACTIVATION": {
       "evidence": [
         {
-          "path": "docs/project/TECH-FEED-VALIDATION.md",
-          "sha256": "ae17fe5eb08d"
+          "path": "docs/project/evidence/tech-feed-production-active.json",
+          "sha256": "187ae735709d"
         }
       ],
-      "note": "12 real production feeds baselined; dedicated Temporal Cloud workflow; actual Reporter setup message delivered and matched in Slack history; article count honestly zero at snapshot.",
+      "note": "Real production RSS, running Temporal Cloud workflow and delivered Slack setup receipt; future article delivery is not fabricated.",
       "status": "verified",
-      "updatedAt": "2026-09-21T13:09:12.977639+00:00"
+      "updatedAt": "2026-09-21T13:11:24.338389+00:00"
     },
     "IMPLEMENTATION": {
       "evidence": [
@@ -30,18 +30,18 @@
     "VALIDATION": {
       "evidence": [
         {
-          "path": "docs/project/TECH-FEED-VALIDATION.md",
-          "sha256": "9bed63d53cf3"
+          "path": "docs/project/evidence/tech-feed-integrated-tests.xml",
+          "sha256": "56fe95bcae81"
         }
       ],
-      "note": "992 passed, 36 environmental/opt-in skips; real PostgreSQL and Temporal, simulated Slack, real public RSS.",
+      "note": "992 passed with real local PostgreSQL/Temporal; 36 documented opt-in/environment skips. Detailed scope is in TECH-FEED-VALIDATION.md.",
       "status": "verified",
-      "updatedAt": "2026-09-21T12:57:34.418691+00:00"
+      "updatedAt": "2026-09-21T13:11:24.184765+00:00"
     }
   },
   "intentDigest": "1793f313fc9f",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-21T13:09:12.977639+00:00"
+  "updatedAt": "2026-09-21T13:11:24.338389+00:00"
 }
