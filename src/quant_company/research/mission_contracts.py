@@ -89,6 +89,9 @@ class ResourcePolicy(MissionModel):
 
 class SearchPolicy(MissionModel):
     max_trials_per_cycle: int = Field(ge=1, strict=True)
+    # Omission preserves existing immutable mission/ZIP identities. This is an
+    # owner-approved scientific scope, never a company or technical retry cap.
+    max_total_trials: int | None = Field(default=None, ge=1, strict=True, exclude_if=lambda v: v is None)
     patience: int = Field(ge=1, strict=True)
     min_improvement: Annotated[FiniteFloat, Field(ge=0)]
     continuous: bool = Field(strict=True)

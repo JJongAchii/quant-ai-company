@@ -281,6 +281,10 @@ class MissionStore:
         return (row["cycle_trials"] >= spec.search.max_trials_per_cycle
                 or row["stagnant_trials"] >= spec.search.patience)
 
+    def _scope_exhausted(self, row, spec):
+        return (spec.search.max_total_trials is not None
+                and row["cumulative_trials"] >= spec.search.max_total_trials)
+
     def reject_proposal(self, conn, mission_id, proposal_id, *, actor, challenge_ids, rationale):
         project, row, _ = self._locked(conn, mission_id, active=True)
         self._actor(actor, "director")
@@ -325,6 +329,8 @@ class MissionStore:
                 raise PolicyError("Trial identity belongs to another mission")
             _same(old, selection, "selection_digest")
             return as_json(old)
+        if self._scope_exhausted(row, spec):
+            raise PolicyError("Approved scientific scope is exhausted; a new mission approval is required")
         if self._cycle_ended(row, spec):
             raise PolicyError("Cycle requires a report checkpoint and evidence-based renewal")
         pending = conn.execute("SELECT id FROM research_mission_trials WHERE mission_id=%s AND state<>'reported'",
@@ -537,6 +543,8 @@ class MissionStore:
         if old:
             _same(old, payload)
             return self.snapshot(conn, mission_id)
+        if self._scope_exhausted(row, spec):
+            raise PolicyError("Approved scientific scope is exhausted; a new mission approval is required")
         if (not spec.search.continuous or row["cycle"] != cycle or not self._cycle_ended(row, spec)
                 or not isinstance(rationale, str) or not rationale.strip()):
             raise PolicyError("Cycle renewal requires an approved continuous policy and completed cycle")
@@ -571,6 +579,8 @@ class MissionStore:
                      "running": "execution", "technical_waiting": "repair", "received": "interpretation",
                      "interpreted": "audit"}[trial["state"]]
             return {**result, "stage": stage, "trial_id": str(trial["id"]), "proposal_id": str(trial["proposal_id"])}
+        if self._scope_exhausted(row, spec):
+            return {**result, "stage": "owner_review", "reason": "scientific_scope_exhausted"}
         if self._cycle_ended(row, spec):
             return {**result, "stage": "cycle_review" if spec.search.continuous else "owner_review"}
         latest = conn.execute("""SELECT id FROM research_mission_trials WHERE mission_id=%s

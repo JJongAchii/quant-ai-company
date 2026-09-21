@@ -423,6 +423,47 @@ def test_next_stage_preserves_but_skips_proposals_made_before_latest_evidence(ha
     assert any(row["id"] == str(stale.id) for row in h.snapshot()["proposals"])
 
 
+def test_total_scientific_scope_survives_cycle_renewal_and_finishes_pending_audit(harness):
+    h = harness
+    payload = spec_payload()
+    payload["search"].update(max_trials_per_cycle=2, max_total_trials=3)
+    h.mission(spec=payload)
+    first, _ = h.finish(score=0.1)
+    second, _ = h.finish(score=0.2)
+    h.invoke("advance_cycle", h.mission_id, cycle=1, actor="director",
+             rationale="One distinct scientific trial remains", source_ids=["fixture:baseline"],
+             predecessor_trial_ids=[first, second])
+    third, plan = h.prepare()
+    outcome = h.outcome(plan, score=0.3)
+    h.invoke("record_outcome", h.mission_id, third, outcome)
+    assert h.snapshot()["cumulative_trials"] == 3
+    assert h.snapshot()["stage"]["stage"] == "interpretation"
+    h.interpret(third, outcome)
+    assert h.snapshot()["stage"]["stage"] == "audit"
+    h.invoke("checkpoint", h.mission_id, third, verify=lambda: h.publication(third, outcome))
+    assert h.snapshot()["stage"]["stage"] == "owner_review"
+    assert h.snapshot()["stage"]["reason"] == "scientific_scope_exhausted"
+    with pytest.raises(PolicyError, match="scientific scope is exhausted"):
+        h.select()
+    with pytest.raises(PolicyError, match="scientific scope is exhausted"):
+        h.invoke("advance_cycle", h.mission_id, cycle=2, actor="director", rationale="No budget remains",
+                 source_ids=["fixture:baseline"], predecessor_trial_ids=[third])
+    assert h.snapshot()["incumbent_trial_id"] == third
+
+
+def test_optional_total_scope_preserves_legacy_mission_digest_and_is_strict():
+    payload = spec_payload()
+    original = MissionSpec.model_validate(payload)
+    assert original.model_dump(mode="json")["search"] == payload["search"]
+    for invalid in (0, -1, True, 2.5):
+        payload["search"]["max_total_trials"] = invalid
+        with pytest.raises(ValidationError):
+            MissionSpec.model_validate(payload)
+    payload["search"]["max_total_trials"] = 6
+    bounded = MissionSpec.model_validate(payload)
+    assert fingerprint(original.model_dump(mode="json")) != fingerprint(bounded.model_dump(mode="json"))
+
+
 def test_cancel_preserves_queued_job_and_history_for_controller_reconciliation(harness):
     h = harness
     h.mission()
