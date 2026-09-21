@@ -174,6 +174,7 @@ def test_evidence_prompt_preserves_manifest_with_bounded_chunks(mission):
                 VALUES (%s,%s,'fixture.txt',%s,%s,%s)""", (uuid4(), stage["id"], index*12000, "x"*12000, "a"*64))
         task = conn.execute("SELECT * FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
         _, prompt = stage_prompt(company, conn, task)
+    assert "request exactly one file chunk" in prompt and "Never batch file reads" in prompt
     assert len(prompt) < 90000
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
     assert len(context["inspected_chunks"]) == 10 and 1 <= len(context["read_chunks"]) <= 5

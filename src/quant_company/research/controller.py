@@ -145,11 +145,14 @@ def stage_prompt(company, conn, task):
     role = stage_role(company, row["actor"])
     instructions = {
         "proposal": "Return HypothesisProposal. Include real source_ids, latest interpreted predecessor_trial_ids, "
-                    "expected economic effect and falsification. Respond to any rejected proposal's criticism.",
+                    "expected economic effect and falsification. Respond to any rejected proposal's criticism. "
+                    "Inspect frozen_experiment_code and propose only a registered change expressible by the approved write paths.",
         "challenge": "Return Challenge. Challenge the selected proposal independently: mechanism, leakage, "
-                     "cost, or a testable failure. Copy proposal_id and use your actual role as reviewer.",
+                     "cost, implementation scope, or a testable failure. Copy proposal_id and use your actual role as reviewer. "
+                     "Inspect frozen_experiment_code and reject any unregistered formula or parameter.",
         "selection": 'Return {"decision":"execute"|"revise","rationale":str,"challenge_ids":[uuid]}. '
-                     "Cite the actual independent challenge. Revise when it requires a different hypothesis.",
+                     "Cite the actual independent challenge. Revise when it requires a different hypothesis or the proposal "
+                     "is not a registered change expressible by the approved write paths. Inspect frozen_experiment_code.",
         "implementation": 'Return {"patches":[{"path":str,"expected_text":str|null,"replacement_text":str}],'
                           '"rationale":str}. expected_text is the exact ENTIRE file. Only approved paths. '
                           "Do not change evaluator, data, criteria, costs, risk or sealed scope.",
@@ -192,7 +195,8 @@ def stage_prompt(company, conn, task):
         "Approval, execution, Git and publication are service actions; do not claim they occurred. "
         "Do not use say, messages, delegations, memories, follow_up or external tools. "
         "Complete with exactly one artifact whose content is a JSON object and status=complete. "
-        "If evidence is needed, use only research_control with "
+        "If evidence is needed, request exactly one file chunk in that turn: use one research_control tool only, "
+        "with no artifact or second tool, and status=continue. Never batch file reads. Use "
         '{"action":"read_stage_file","path":<exact available path>,"offset":0}, status=continue. '
         "The service never executes your text as a command. Read required evidence before completing.\n"
         + employee_pack(role.id) + "\nSTAGE: " + row["stage"] + "\n" + instructions[row["stage"]]

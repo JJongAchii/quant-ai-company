@@ -219,6 +219,10 @@ class BackendHarness(Harness):
 
 def test_context_has_only_managed_hash_bound_files_and_compact_history(backend_fixture):
     h = backend_fixture
+    proposal_context = h.backend.context(h.snapshot(), None)
+    assert proposal_context["frozen_experiment_code"]["config_path"] == "code/config.json"
+    assert "code/candidate.py" in proposal_context["frozen_experiment_code"]["code_paths"]
+    assert "code/candidate.py" in proposal_context["_private_files"]
     h.select()
     snapshot = h.snapshot()
     context = h.backend.context(snapshot, None)
