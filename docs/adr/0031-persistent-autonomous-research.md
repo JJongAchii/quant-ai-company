@@ -48,6 +48,12 @@ cumulative trial history. No company-wide call cap or technical retry exhaustion
 reintroduced. An unchanged failure waits with backoff and a concrete repair/resume
 condition instead of generating identical experiments.
 
+An owner may also freeze `search.max_total_trials` for a finite research scope. The
+counter survives cycle renewal, excludes technical failures, and stops new selection
+after the last result's interpretation/audit/publication. An omitted total preserves
+existing serialized mission identities. The first six-variant brief proposes a total
+of six; this is a scientific scope, not a service-wide rate limit.
+
 The canonical loop is proposal → independent challenge → decision → implementation →
 qualification → execution → interpretation → best selection → audit/report checkpoint
 → follow-up. Decisions cite completed predecessor evidence; first decisions cite the

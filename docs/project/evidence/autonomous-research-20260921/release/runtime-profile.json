@@ -1,0 +1,31 @@
+{
+  "allowed_roots": [
+    "/home/achii/quant-company-qualification/autonomous-20260921/etf-runtime-v1"
+  ],
+  "bwrap_executable": "/usr/bin/bwrap",
+  "mounts": [
+    {
+      "sha256": "dba78604745923a15f663d5c3578aafacd03c3863f0fc123b95597cce5bd3b8e",
+      "source": "/home/achii/quant-company-qualification/autonomous-20260921/etf-runtime-v1/runtime",
+      "target": "/runtime"
+    },
+    {
+      "sha256": "8c98527ea8e0eb702c5222555b8559b6cad364a22d18666a772a7fc112b89570",
+      "source": "/home/achii/quant-company-qualification/autonomous-20260921/etf-runtime-v1/elf/lib",
+      "target": "/lib"
+    },
+    {
+      "sha256": "aa59e9bd06b0b9e05f0ef0e43b6a79e32bf3131ee49948146a414e727c6958aa",
+      "source": "/home/achii/quant-company-qualification/autonomous-20260921/etf-runtime-v1/elf/lib64",
+      "target": "/lib64"
+    },
+    {
+      "sha256": "382d4e9859f721832cf5cc5efe33f6d84a80a6111c76f8847ba4244280fa4522",
+      "source": "/home/achii/quant-company-qualification/autonomous-20260921/etf-runtime-v1/elf/usr",
+      "target": "/usr"
+    }
+  ],
+  "profile_id": "kr-etf-monthly-python-v1",
+  "python_executable": "/runtime/python",
+  "python_sha256": "c0b74b270ea823c760917e64fbde1945e67ba739d97fa716a48a5b69e6505d62"
+}

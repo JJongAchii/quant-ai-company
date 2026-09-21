@@ -46,7 +46,10 @@ source bundle은 기존 신뢰한 quant-lab checkout에서 만들며 후보가 �
    `docker compose config --quiet`를 사용해 출력에 비밀 환경변수를 노출하지 않는다.
 3. 새 DB 스키마를 migrate한다. 표준 서비스 절차에서 서버 앱만 교체한다. 기존 역할 설정을
    보존하고 director/금융/연구/검증 Astra max, engineer Sol max, data Terra high를 확인한다.
-4. 워커의 준비된 release를 `activate_release`로 원자적으로 선택하고 기존 poller만 정상 재시작한다.
+4. 워커의 준비된 release를 `activate_release`로 원자적으로 선택한다. `research-worker.service`의
+   `WorkingDirectory`와 `PYTHONPATH`도 준비된 `code` 경로로 맞춘다. 설정 파일의 commit만
+   바꾸고 기존 코드의 poller를 다시 실행하면 새 계약을 처리하지 못한다. 검토 자료의
+   `prepared-worker-dropin.conf`를 적용한 뒤 `daemon-reload`하고 기존 poller만 정상 재시작한다.
    이전 실행은 등록된 이전 release로 대사한다. UID 전체 종료나 실행 중 하위 프로세스 종료를 하지 않는다.
 5. 기능 플래그 `COMPANY_AUTONOMOUS_RESEARCH_ENABLED=true`를 승인된 overlay에 적용한다.
    서버와 워커의 정확한 commit·profile identity를 검사한다. 잘못된 pin은 실행 전에 거부되어야 한다.
@@ -61,7 +64,8 @@ source bundle은 기존 신뢰한 quant-lab checkout에서 만들며 후보가 �
 1. 새 mission scheduling을 비활성화하고 진행 중 job 상태를 보존한다. 결과나 승인 행을 지우지 않는다.
 2. 이전 server env/config로 복원하고 이전 image로 앱 서비스만 되돌린다. 이전 커밋에 새 overlay가
    없으면 플래그와 compose 파일 목록도 함께 되돌린다. DB의 추가 테이블을 drop하지 않는다.
-3. `rollback_release(active_config=...)`로 검증된 이전 worker config를 선택하고 poller를 정상 재시작한다.
+3. release registry를 사용하는 버전 간 복구는 `rollback_release(active_config=...)`로 검증된
+   이전 worker config를 선택하고 unit의 코드 경로도 복원한 뒤 poller를 정상 재시작한다.
    새 job이나 uncertain launch가 있으면 그 release/입력/상태는 회수하지 않고 대사한다.
 4. 기존 대화·Reporter·maintenance 건강 상태, 이전 P11 job source, 실제 outbox와 DB 재개를 확인한다.
    필요하면 검증된 백업을 별도 대상에서 복원해 비교한다. 운영 DB에 덮어쓰는 복구는 별도 결정이다.
@@ -69,3 +73,18 @@ source bundle은 기존 신뢰한 quant-lab checkout에서 만들며 후보가 �
 상태 복구 시 research-audit와 연구 source bundle/profile도 DB와 함께 복구해야 한다. 워커 release
 경로·runtime 경로·입력 SHA가 바뀌면 기존 job을 임의의 최신 버전으로 실행하지 않는다.
 전역 `docker system prune`, 전체 process/UID kill, 운영 DB 컨테이너 재생성은 이 절차에 없다.
+
+## 최초 전환의 기존 워커 호환성
+
+현재 운영 워커 `0e89d998022abfb626cf29a4ff99012cd83ffb74`에는 release registry와 adaptive
+config 필드가 없다. 최초 전환의 롤백에는 새 스키마로 다시 직렬화한 설정을 주지 않는다.
+준비 영수증의 `legacy_rollback` 경로에 보존한 **원래 JSON 바이트·unit·Git bundle**을 사용한다.
+비밀 토큰을 복사하거나 값을 바꿀 필요는 없다. 배포 직전에도 해당 파일 해시와 운영 상태를 재확인한다.
+
+최초 전환 전에 구형 job의 실행·미확인 launch가 남아 있으면 새 버전으로 재제출하지 말고
+구형 경로에서 대사를 끝낸다. 이번 읽기 전용 관측에서는 기존 P11 job 한 건의 upload ACK와
+실행 프로세스 부재를 확인했다. 이는 미래 배포 시점의 상태를 보장하지 않는다.
+
+준비 자료: [release 식별자](../project/evidence/autonomous-research-20260921/release/identity.json),
+[실제 워커 준비 영수증](../project/evidence/autonomous-research-20260921/worker-release-preparation.json),
+[검증·남은 승인](../project/AUTONOMOUS-RESEARCH-VALIDATION.md).

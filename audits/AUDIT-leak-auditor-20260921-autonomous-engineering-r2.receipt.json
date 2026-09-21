@@ -1,0 +1,10 @@
+{
+  "artifact_url": null,
+  "audit": "AUDIT-leak-auditor-20260921-autonomous-engineering-r2.md",
+  "audit_sha256": "14e570f6c812a781b1f63a975995d4971786ce3105638909d2bc55105fa489ca",
+  "html_sha256": "f4ab8edc200d4f38cda60d41dccf04b73e48449a879400d189b0c9f5dfa3311a",
+  "rendered_at": "2026-09-21T21:09:38+09:00",
+  "renderer": 1,
+  "scope_digest": "0c6e83e09e69",
+  "verdict": "pass"
+}

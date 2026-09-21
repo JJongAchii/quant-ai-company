@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "implementation-verified-awaiting-production-and-scientific-approval",
+  "approved_design_digest": "fcec7879dbf7",
+  "company_code_commit": "6d786b67c0da0c4ca05448536a6145147f9408d5",
+  "research_code_commit": "857e4243c54d86067c2bf8519eee1162cbd02189",
+  "company_suite": {
+    "passed": 985,
+    "skipped": 5,
+    "deselected": 1
+  },
+  "scientific_trials_added": 0,
+  "new_production_activation": false,
+  "live_adaptive_acceptance": false,
+  "safe_evidence_files_scanned": 40,
+  "required_reviews": [
+    "production-release",
+    "FIRST-AUTONOMOUS-RESEARCH-BRIEF"
+  ],
+  "evidence": {
+    "checks-6d786b67.json": "74a223582de856eb132840be8c75239c5a50c7a30a1753ec44a1b64edf09b554",
+    "suite-6d786b67.log": "c6eacb587e4023481ba6e65a5da0b9574b49f7883fd6ffa597b9ec49cfda07cd",
+    "etf-gate.json": "33277037c9d1a3813da1b8659b2d9b04360fe4540f2f078aecce59574f57c070",
+    "3070-etf-final.json": "b34eed0b7831a9a420b50ab033f41da57d4fc4f65a111ac1d508eb9d4d5efc80",
+    "3070-input-identity.json": "c3dd40c770304a4a8adb2ede61fffd4c7849b803bc1a051959959a5280278b85",
+    "company-audit-r2-control.json": "769b9c38a2ca324ef9ed2e4fc279cd1fa12600867e82d53d23d6b8da3494cd9c",
+    "etf-audit-control.json": "a7646783c73ff5888112556673b18cb6aef2377477b84caf7db03b2e865faf57",
+    "worker-release-preparation.json": "db2f8169835727c15d6eea78b585ef065d4ee93bc8de43af5e2f30c13303378e",
+    "release/identity.json": "d8182d54eeb3860c6ae7172d5f0ad78cd44a492fec3ccec8764c3f2be0dca631",
+    "release/first-mission.json": "ba116344f8ac6d5c173d660aed1e8b13f41f50f7cb6fd060a7f74b1e4cbbfca8"
+  }
+}
