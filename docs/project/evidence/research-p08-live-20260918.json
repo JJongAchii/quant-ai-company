@@ -1,0 +1,81 @@
+{
+  "schema": "research-p08-live-verification-v1",
+  "recorded_at": "2026-09-18T06:52:29.731673+00:00",
+  "runtime_commit": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "task_id": "262d590d-59b1-5675-b5cd-6165f41d8153",
+  "task_state": "completed",
+  "actual_codex_calls": 2,
+  "requested_model": "gpt-6-astra",
+  "requested_reasoning_effort": "max",
+  "configured_request_and_completed_cli_receipt_verified": true,
+  "provider_effort_attestation_claimed": false,
+  "requests": [
+    {
+      "id": "17ccc102-7bed-5ad5-b0c1-785d029197c1",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "prompt_sha256": "6f738fde0c8bc01c1799166a32bfe7c41aa6b75e4d8a6f4b554c12196337acdd"
+    },
+    {
+      "id": "a8d752ac-0112-5000-a95b-7a6a490bb3db",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "prompt_sha256": "6cda96b03c297f782182b55b5cbde1f6e20df0e99159c758ee959becdc5e2faa"
+    }
+  ],
+  "cli_receipts": [
+    {
+      "request_id": "17ccc102-7bed-5ad5-b0c1-785d029197c1",
+      "input_digest": "2a315b8e4a9e25f306dfbf026672fa6d53bd6002082e36ef8c154aade61fb61f",
+      "state": "complete",
+      "cli_version": "0.154.0",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "a8d752ac-0112-5000-a95b-7a6a490bb3db",
+      "input_digest": "f065577e85482a5403cc85efeb317dbeb29cdecbbcb26f3e6d77e52620c6ffa5",
+      "state": "complete",
+      "cli_version": "0.154.0",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "4a78e602-2488-510c-af02-236c4b9e5c94",
+      "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+      "task_id": "262d590d-59b1-5675-b5cd-6165f41d8153",
+      "revision": 4,
+      "title": "국내상장 ETF 월간 연구 P08: 기술 진행, 자료 공백과 NAV 날짜 해석 정정",
+      "content": "P08 기록 시각은 2026-09-18T06:47:11.908164+00:00이다. 등록된 read_source 반환 전문을 근거로 총괄이 작성한 보고다. 아래 자료 수집·코드 수리·테스트·작업기 실행의 수행자는 운영자다. 이 기록은 연구 진행 증거이며 수익성 검증 결과를 뜻하지 않는다.\n\nRTX 3070 작업기에서 후보 3개의 사전검사가 통과했다. 과학 시행 집계는 기준선 시작 1건, 기준선 완료 0건, 후보 실행 0건이며 성과 산출물도 0개다. 후보별 종료회계 진단은 모두 자료 공백으로 차단됐다. 사전검사와 기술 진단을 과학 시행 완료로 집계하지 않는다.\n\n| 후보 경로 | 종목 | 진단 차단 날짜 | 남은 자료 공백 |\n| --- | --- | --- | --- |\n| m1 | 161500 | 2017-12-04 | 실제 1좌당 상환금액 근거 미검증 |\n| m2 | 108440 | 2016-04-29 | 실제 1좌당 상환금액 근거 미검증 |\n| m3 | 226810 | 2019-05-31 | 실제 1좌당 상환금액 근거 미검증 |\n\n세 후보 모두 공식 상장폐지·지급 예정 공지는 수집됐다. 각 진단은 두 비용 조건에서 같은 공백을 보였고, 보충 이벤트 반영 건수는 각각 0건이다. 표의 날짜는 진단이 막힌 날짜이며 실제 지급일을 뜻하지 않는다. 108440의 2016-04-28 수정 공지는 임시공휴일로 지급 예정일을 2016-05-06에서 2016-05-09로 바꾼 내용이다. 예정일 변경만으로 실제 지급이나 지급액을 확인할 수 없다.\n\nP08의 코드·자료 검토는 P06/P07의 차별적 날짜 해석을 정정한다. 138210 투자설명서 23쪽의 공시일·전일 자산 관계는 기존 12종목과 같다. 금투협(KOFIA) 날짜 필드가 공시일에 어떻게 대응하는지에 대한 검증 공백은 기존 12종목에도 있다. 현재 판단은 날짜 대응 근거가 미검증이라는 것이며, 미래정보 누수가 확정됐다는 판정은 아니다. 138210의 발행사 과거 가격 API는 제공된 외부 식별자로 조회했을 때 0행을 반환했다. 내부 펀드 코드 연결과 금투협 기준일의 의미가 미검증이므로, 이를 과거 자료 자체의 부재로 단정하지 않는다.\n\n운영자는 수집기의 과거 연도·날짜·호스트 범위 처리와 일반 ETF 일정 공지의 별도 보존을 수리했다. 수리 커밋은 3fa319183a45891f2eb2f248fddde5e199a95768이며, 테스트 32개와 형식·정적 검사가 통과한 것으로 기록됐다. 전략이나 평가 정책의 변경은 없고 과학적 연구 범위도 유지됐다. 과거 기술 실패 11건은 이력으로 보존되며 기술 재시도 횟수 제한은 없다. 이 숫자는 과학 시행 횟수가 아니다.\n\n최우선 다음 단계는 일관된 과거 NAV 날짜 정의와 실제 상환·평가 원문 근거를 확보해 검증하는 것이다. 이를 충족한 뒤 새 실행 입력을 만들고 기준선부터 과학 시행을 재개하는 순서가 필요하다. 이는 후속 조건이며 이번 보고에서 실행한 작업은 아니다. 협회·운용사 외부 문의는 구체적인 초안만 있고 발송되지 않았다.\n\nP08에 기록된 실행 커밋은 ed783e782013a525611386bfe6b0942dd884ab40, 최신 연구 커밋은 f31eca1ec4a0f81f0d5a1901ec853d4ded3222ac이다. 관련 링크: [quant-lab 연구 PR #16](https://github.com/JJongAchii/quant-lab/pull/16). 이번 완료 표시는 P08 보고서 작성 완료를 뜻하며, 기준선이나 성과 연구 완료를 뜻하지 않는다.",
+      "source_ids": [
+        "operator:research-p08-20260918"
+      ],
+      "digest": "4ef4ce8307cfb27b9e47a27f54935b63ae0ecf1510a1a03917dcf279811d3e10",
+      "created_at": "2026-09-18 06:50:19.765450+00:00"
+    }
+  ],
+  "slack_messages": [
+    {
+      "ts": "1789714062.333729",
+      "text": "[지시 v4] P08 원문을 조회해 운영자의 연구 진행 결과, 기술 진단, 남은 자료·검증 공백을 구분해 정리하겠습니다.",
+      "bot_user_id": "U0C23PPKR5L"
+    },
+    {
+      "ts": "1789714220.839439",
+      "text": "[지시 v4] <@U0C250E23NW>\nP08 운영자 기록(2026-09-18): RTX 3070에서 후보 3개 사전검사를 통과했으며, 성과 산출물은 아직 0개입니다.\n자료 수집·수집기 수리·테스트·실행은 운영자가 수행했습니다. 테스트 32개와 형식·정적 검사가 통과했습니다.\nm1: 161500·진단 날짜 2017-12-04에서 실제 1좌당 상환금액 근거가 미검증입니다.\nm2: 108440·2016-04-29에서도 같은 공백입니다. 지급 예정일 5/6→5/9 변경 공지는 실제 지급 증거가 아닙니다.\nm3: 226810·2019-05-31에서도 같은 공백입니다. 세 후보의 공식 상장폐지·지급 예정 공지는 확보됐습니다.\nP06/P07 해석 정정: 138210과 기존 12종목 모두 NAV(순자산가치) 날짜와 공시일의 연결이 미검증입니다. 미래정보 사용이 확정된 것은 아닙니다.\n과학 시행은 기준선 시작 1·완료 0, 후보 실행 0입니다. 이번 후보 점검은 기술 진단이며 기술 재시도 횟수 제한은 없습니다.\n다음 단계는 일관된 NAV 날짜 정의와 실제 상환·평가 근거 확보입니다. 외부 문의는 초안만 있고 발송되지 않았습니다.\n근거: operator:research-p08-20260918 · [연구 PR #16](<https://github.com/JJongAchii/quant-lab/pull/16>)",
+      "bot_user_id": "U0C23PPKR5L"
+    }
+  ],
+  "final_owner_mentioned": true,
+  "slack_comparison_normalization": "Remove Slack-added angle brackets around URLs inside Markdown link destinations; preserve other text.",
+  "new_slack_ingress": false,
+  "link": "https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789714220839439",
+  "limits": "Verified operator-directed server execution and real Slack readback, not autonomous research or provider reasoning attestation."
+}

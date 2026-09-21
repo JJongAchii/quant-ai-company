@@ -1,0 +1,102 @@
+{
+  "schema": "company-research-source-registration-v1",
+  "verified_at": "2026-09-18T07:09:17.400257+00:00",
+  "registration": {
+    "source_id": "operator:research-p09-20260918",
+    "content_sha256": "025c80584f5529ff931836af286b503473382053ffc1a864d24a613524a24e51",
+    "approved": true,
+    "synthetic": false,
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "available_at": "2026-09-18 07:09:12.693283+00:00",
+    "runtime_commit": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+    "task_created": false,
+    "slack_message_sent": false
+  },
+  "source": {
+    "schema": "research-p09-operator-evidence-v1",
+    "source_id": "operator:research-p09-20260918",
+    "recorded_at": "2026-09-18T07:09:12.693283+00:00",
+    "latest_research_commit": "0f3a3b378d1a11910183f8bd1ecd306a1297f10d",
+    "research_pr": "https://github.com/JJongAchii/quant-lab/pull/16",
+    "manifest_sha256": "324d22b8ae6076bb2fa8a2939e9ea352b8cf69c56cf17b55d32a9475cd2fbde4",
+    "reports": [
+      {
+        "ticker": "161500",
+        "title": "증권발행실적보고서(집합투자증권)",
+        "fundCode": "AC322",
+        "rcpNo": "20171219000253",
+        "dcmNo": "5889152",
+        "publicationDate": "2017-12-19",
+        "period": [
+          "2017-01-01",
+          "2017-12-15"
+        ],
+        "displayUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20171219000253",
+        "pdfUrl": "https://dart.fss.or.kr/pdf/download/pdf.do?rcp_no=20171219000253&dcm_no=5889152",
+        "pdfSha256": "1152bb5ee5a8b8c269640394c2ba81ab76cb69fb5d2aaa0cb43ff4175c88d11a",
+        "wholeBodyInspected": true,
+        "physicalPages": 6,
+        "periodTablePhysicalPage": 4,
+        "actualFinalPaymentDateDirectlyStated": false,
+        "finalPaymentPerUnitDirectlyStated": false,
+        "promotedToExecutableInput": false
+      },
+      {
+        "ticker": "108440",
+        "title": "증권발행실적보고서(집합투자증권)",
+        "fundCode": "89718",
+        "rcpNo": "20160525000045",
+        "dcmNo": "5156090",
+        "publicationDate": "2016-05-25",
+        "period": [
+          "2016-01-01",
+          "2016-05-09"
+        ],
+        "displayUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20160525000045",
+        "pdfUrl": "https://dart.fss.or.kr/pdf/download/pdf.do?rcp_no=20160525000045&dcm_no=5156090",
+        "pdfSha256": "6f6200e17149977bb88a369e4a65240e0fa6a22297b8c261a14db83c0f482df4",
+        "wholeBodyInspected": true,
+        "physicalPages": 6,
+        "periodTablePhysicalPage": 4,
+        "actualFinalPaymentDateDirectlyStated": false,
+        "finalPaymentPerUnitDirectlyStated": false,
+        "promotedToExecutableInput": false
+      },
+      {
+        "ticker": "226810",
+        "title": "증권발행실적보고서(집합투자증권)",
+        "fundCode": "B6344",
+        "rcpNo": "20190621000335",
+        "dcmNo": "6783087",
+        "publicationDate": "2019-06-21",
+        "period": [
+          "2019-01-01",
+          "2019-06-03"
+        ],
+        "displayUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20190621000335",
+        "pdfUrl": "https://dart.fss.or.kr/pdf/download/pdf.do?rcp_no=20190621000335&dcm_no=6783087",
+        "pdfSha256": "73e4c602f3d7d5f780a41c645430cd28a2442c758bfad774fb942669bb5104e8",
+        "wholeBodyInspected": true,
+        "physicalPages": 6,
+        "periodTablePhysicalPage": 4,
+        "actualFinalPaymentDateDirectlyStated": false,
+        "finalPaymentPerUnitDirectlyStated": false,
+        "promotedToExecutableInput": false
+      }
+    ],
+    "finding": "Three original post-termination securities-issuance reports recovered and inspected completely. Their period aggregate redemption amounts are not directly stated final per-unit payments. Actual payment dates are not directly stated. No new executable inputs were admitted.",
+    "current_blocker": "P08 common NAV date mapping and held-instrument dated valuation/actual redemption terms remain unresolved.",
+    "previous_source_id": "operator:research-p08-20260918",
+    "backup_sha256": "505c2ae5ade74fa985fa0edbd3cbe7250a820a2babf4db6cfbb1e44fffa572e7",
+    "backup_full_download_verified": true,
+    "technical_retries_unlimited": true,
+    "new_worker_runs": 0,
+    "candidate_scientific_executions": 0,
+    "baseline_completed": 0,
+    "performance_artifacts": 0,
+    "sealed_read": false,
+    "source_dates_backdated": false,
+    "external_information_request": "Prepared draft; not sent to the association or issuers.",
+    "integration_mode": "Operator source investigation and archival supplement. This is not autonomous staff research execution or a performance result."
+  }
+}

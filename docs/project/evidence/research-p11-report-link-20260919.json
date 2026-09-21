@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-09-18T16:23:18.976379+00:00",
+  "httpStatus": 200,
+  "contentType": "text/html; charset=utf-8",
+  "bytes": 517527,
+  "sha256": "feabd2dec3b2d495c1eb8e54d7e5f5ca9922bdfbbf92b18a24a9bf2ba5d5df63",
+  "fullContentVerified": true,
+  "reportLinkExpiresAt": "2026-09-25T16:21:35.847079+00:00",
+  "urlOmittedBecauseBearerToken": true
+}

@@ -1,0 +1,93 @@
+{
+  "schema": "research-p11-live-verification-v1",
+  "recorded_at": "2026-09-18T16:26:20.253829+00:00",
+  "runtime_commit": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "task_id": "38d05def-cd08-5d3d-82c3-103727648a19",
+  "task_state": "completed",
+  "actual_codex_calls": 2,
+  "requested_model": "gpt-6-astra",
+  "requested_reasoning_effort": "max",
+  "configured_request_and_completed_cli_receipt_verified": true,
+  "provider_effort_attestation_claimed": false,
+  "requests": [
+    {
+      "id": "59068fd9-e3e9-5a22-9b1f-b9713028923f",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "prompt_sha256": "e794d12224e1266bbde66e09325049ba234053e3b0c2c705ef8e731a8eadda01"
+    },
+    {
+      "id": "92195759-67c6-589f-b3da-10a4ac4784dc",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "prompt_sha256": "c1617883cb40094aa590437e3dc56c1b34d2f87608f5340d0d3c316c9dbb2f54"
+    }
+  ],
+  "cli_receipts": [
+    {
+      "request_id": "59068fd9-e3e9-5a22-9b1f-b9713028923f",
+      "input_digest": "67e36d3c57293e0396927f36b9180670ac621714b02980e9b57efcab1a628c17",
+      "state": "complete",
+      "cli_version": "0.154.0",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "92195759-67c6-589f-b3da-10a4ac4784dc",
+      "input_digest": "431573fc23dcb6ee11af2678153272a426a4211d93a3422ce15f4cf7b91e01c8",
+      "state": "complete",
+      "cli_version": "0.154.0",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    }
+  ],
+  "actual_read_source_receipts": [
+    {
+      "source_id": "operator:research-p11-20260919",
+      "content_sha256": "9abb61cd6b734751ce93f9b72bc2d35ed13afae3d764dfc888c3946c67c1a8a5",
+      "complete_content_verified": true
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "00abfc47-454d-5463-a242-6498eb8718f1",
+      "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+      "task_id": "38d05def-cd08-5d3d-82c3-103727648a19",
+      "revision": 4,
+      "title": "P11 국내상장 ETF: 후보 3개 개발구간 결과와 독립 누수감사 요약",
+      "content": "P11 등록 실행·감사 기록에 따른 총괄 보고입니다. 개발구간은 2014-01-01~2026-08-31이며 선택 후보는 C02(M2)입니다. 결과의 적용 범위는 개발구간에 한정됩니다.\n\n운영자·연구 세션이 worker / DESKTOP-5T00NAF / RTX 3070에서 후보 3개를 실제 실행하고 독립 D2 검토를 수행한 것으로 기록돼 있습니다. 총괄의 이번 산출물은 제공된 read_source 반환 기록의 요약·해석입니다. 실행 코드 커밋은 02649715bd3661826253e1ce84f8002d2a74c822입니다. candidate_runs_completed=3, qualification_passed=3이며 종료 사유는 budget-exhausted입니다. sealed_read=false로 봉인자료는 미열람 상태입니다.\n\n| 후보 | 방법 | 기본비용 CAGR | stress CAGR | stress MDD | 기록된 선택 상태 |\n| --- | --- | --- | --- | --- | --- |\n| C01 | M1 | +11.94% | +9.78% | -51.41% | 보존 |\n| C02 | M2 | +13.76% | +11.66% | -45.24% | 선택 |\n| C03 | M3 | +1.57% | +0.24% | -34.20% | 보존 |\n\nC02는 세 후보 중 stress CAGR이 가장 높습니다. C01보다 stress CAGR이 높고 최대낙폭의 크기가 작지만, C03보다 최대낙폭의 크기가 큽니다. 선택 후보의 stress 최악월 수익률은 -28.35%입니다. 수익률·낙폭의 원본 fraction 값은 100을 곱하고 소수점 둘째 자리까지 표시했습니다.\n\n기본비용 시나리오(base)는 비교 기준전략(baseline)과 구별됩니다. 편도 비용 가정은 기본 0.10%, stress 0.30%이며 제한된 근사치입니다. 성과는 KRX 기준가격 조정수익률로, 현금분배를 모두 반영한 총수익률이나 정확한 실제 세후수익률을 의미하지 않습니다.\n\nbaseline은 447820의 2024-10-08 보유자산 평가 공백으로 미측정입니다. 따라서 초과성과·알파 또는 베타/타이밍 기여도 분해를 주장할 수 없습니다. 경제·위험조건 충족과 독립 누수감사 pass는 알파나 실제 투자적합성의 증명이 아니며, 투자·확증 통과 또는 배포 가능 판정도 아닙니다.\n\n독립 누수감사 verdict는 pass입니다. 감사 경로는 audits/AUDIT-leak-auditor-20260919-company-kr-etf-pilot-p11-report-path.md이며 objective_digest는 03d58ee449e6, 감사 receipt SHA-256은 b38581cd007e88f371ce4e44fb150925266cdb057d411f4a170907e41a781759입니다. 이는 등록 기록에 명시된 감사 결과의 보고입니다.\n\n다음 단계는 PREREG와 baseline·비교정책을 포함한 별도 확증명세입니다. 이번 보고의 완료는 확증 연구의 완료를 의미하지 않습니다.\n\n출처: operator:research-p11-20260919. 기록 시각: 2026-09-18T16:21:54.380365+00:00. 보고서 SHA-256: feabd2dec3b2d495c1eb8e54d7e5f5ca9922bdfbbf92b18a24a9bf2ba5d5df63.\n\n[HTML 보고서]([private report URL redacted; see publication receipt]\n\n링크 유효기한: 2026-09-25T16:21:35.847079+00:00.",
+      "source_ids": [
+        "operator:research-p11-20260919"
+      ],
+      "digest": "105a23f065437be81867478953d117eecec8227536b65f879d0b84e18b746c6a",
+      "created_at": "2026-09-18 16:25:23.819910+00:00"
+    }
+  ],
+  "slack_messages": [
+    {
+      "ts": "1789748541.863949",
+      "text": "[지시 v4] P11 원문의 실행·감사 기록, 후보별 성과와 보고서 링크를 확인하겠습니다.",
+      "bot_user_id": "U0C23PPKR5L"
+    },
+    {
+      "ts": "1789748724.765429",
+      "text": "[지시 v4] <@U0C250E23NW>\nP11 등록 기록상 운영자·연구 세션이 RTX 3070에서 후보 3개를 실행했고, 독립 누수감사 결과는 pass입니다.\n개발구간 2014-01-01~2026-08-31 전용 결과이며, 선택 후보는 C02(M2)입니다.\nC01(M1): 기본 CAGR +11.94% / stress CAGR +9.78% / stress MDD -51.41% — 보존.\nC02(M2): 기본 CAGR +13.76% / stress CAGR +11.66% / stress MDD -45.24% — 선택.\nC03(M3): 기본 CAGR +1.57% / stress CAGR +0.24% / stress MDD -34.20% — 보존.\n편도 비용은 기본 0.10%·stress 0.30%의 근사치입니다. 수익률은 KRX 기준가격 조정 기준으로, 현금분배 포함 총수익률·실제 세후수익률과 다릅니다.\nbaseline·초과성과는 미측정입니다(447820의 2024-10-08 보유자산 평가 공백). 알파·베타/타이밍 기여도도 확인되지 않았습니다.\n경제·위험조건 충족과 감사 pass는 알파나 실제 투자적합성의 증명이 아니며, 투자·확증 통과를 뜻하지 않습니다.\n다음은 PREREG와 baseline·비교정책을 담은 별도 확증명세 단계입니다.\n<[private report URL redacted; see publication receipt] 보고서> · 링크 유효기한: 2026-09-25 16:21:35.847079 UTC.",
+      "bot_user_id": "U0C23PPKR5L"
+    }
+  ],
+  "final_owner_mentioned": true,
+  "slack_comparison_normalization": "Remove Slack-added angle brackets around URLs inside Markdown link destinations; preserve other text.",
+  "new_slack_ingress": false,
+  "link": "https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789748724765429",
+  "limits": "Verified operator-directed server execution and real Slack readback, not autonomous research or provider reasoning attestation.",
+  "raw_slack_messages_sha256": "a04b331e2b9bcf723d2ade3e23c6873add900c295608c46c616d4fe951290dc2",
+  "bearer_report_links_redacted_from_git": true,
+  "private_report_url_matches_publication": true,
+  "selected_stress_cagr_and_mdd_match_generated_report": true,
+  "baseline_unmeasured_and_development_scope_present": true
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "research-source-backup-v1",
+  "recorded_at": "2026-09-18T07:07:09.203881+00:00",
+  "uri": "s3://quant-company-061039802347-backups/company/research/company-kr-etf-pilot/terminal-repair-p09-20260918/505c2ae5ade74fa985fa0edbd3cbe7250a820a2babf4db6cfbb1e44fffa572e7.tar.gz",
+  "bytes": 1066685,
+  "sha256": "505c2ae5ade74fa985fa0edbd3cbe7250a820a2babf4db6cfbb1e44fffa572e7",
+  "full_download_verified": true,
+  "retention": "existing backup bucket lifecycle applies; not permanent archival",
+  "expiration": "expiry-date=\"Mon, 19 Oct 2026 00:00:00 GMT\", rule-id=\"CompanyBackupRetention\"",
+  "research_commit": "0f3a3b378d1a11910183f8bd1ecd306a1297f10d",
+  "P09_manifest_sha256": "324d22b8ae6076bb2fa8a2939e9ea352b8cf69c56cf17b55d32a9475cd2fbde4",
+  "files": 24,
+  "scope": "Incremental P09 original DART reports, archival transport history and research documentation. P08 and earlier execution/source dependencies retain their existing separate archives."
+}

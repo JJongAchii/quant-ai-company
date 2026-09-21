@@ -1,0 +1,45 @@
+{
+  "schema": "staff-model-context-live-verification-v1",
+  "recorded_at": "2026-09-18T05:21:58.606298+00:00",
+  "runtime_commit": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "task_id": "b279778b-9519-53bb-85ea-69ff8a358649",
+  "task_state": "completed",
+  "actual_codex_calls": 1,
+  "requested_model": "gpt-6-astra",
+  "requested_reasoning_effort": "max",
+  "configured_request_and_completed_cli_receipt_verified": true,
+  "provider_effort_attestation_claimed": false,
+  "requests": [
+    {
+      "id": "80f37d30-4859-5d09-b263-e2f3564c5fc8",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "prompt_sha256": "29221096992f8ee634bdaf8e58d16b8542478c58f478a9b042a1961ca6078354"
+    }
+  ],
+  "cli_receipts": [
+    {
+      "request_id": "80f37d30-4859-5d09-b263-e2f3564c5fc8",
+      "input_digest": "f18f304da9a8a7e937d4454bc44a33f2760f8d6b38d6fd934ead4d5af0ba857c",
+      "state": "complete",
+      "cli_version": "0.154.0",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    }
+  ],
+  "artifacts": [],
+  "slack_messages": [
+    {
+      "ts": "1789708860.757539",
+      "text": "[지시 v4] <@U0C250E23NW>\n최신 RUNTIME CONFIG 기준 총괄: gpt-6-astra, effort=max.\n개선 BOT: gpt-5.6-sol, effort=max(신규 요청). 설정 노출 보완으로 이전 ‘적용값 확인 불가’가 해소됐습니다.\n독립 설명검토: claude-opus-5, effort=max(활성, 신규 요청). 모두 요청에 사용하는 설정값 확인이며, 제공자 내부 인증이나 실력 인증은 아닙니다.",
+      "bot_user_id": "U0C23PPKR5L"
+    }
+  ],
+  "final_owner_mentioned": true,
+  "new_slack_ingress": false,
+  "link": "https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789708860757539",
+  "limits": "Verified operator-directed server execution and real Slack readback, not autonomous research or provider reasoning attestation."
+}

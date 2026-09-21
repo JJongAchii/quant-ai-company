@@ -1,0 +1,14 @@
+{
+  "schema": "research-source-backup-v1",
+  "recorded_at": "2026-09-18T08:22:05.147146+00:00",
+  "uri": "s3://quant-company-061039802347-backups/company/research/company-kr-etf-pilot/liquidity-p10-20260918/14acde5146aac5b03f4d45593e5ac9ce7c81d202f8a3fed9c9a865c14e848145.tar.gz",
+  "bytes": 210237,
+  "sha256": "14acde5146aac5b03f4d45593e5ac9ce7c81d202f8a3fed9c9a865c14e848145",
+  "full_download_verified": true,
+  "retention": "existing backup bucket lifecycle applies; not permanent archival",
+  "expiration": "expiry-date=\"Mon, 19 Oct 2026 00:00:00 GMT\", rule-id=\"CompanyBackupRetention\"",
+  "research_commit": "d4bd98700d2b25ed554c766065e52ea47e8dd57a",
+  "P10_manifest_sha256": "c655ac9497c2269054c6a120136cae59954aa4ed140e246c3d1f17f462e11bec",
+  "files": 95,
+  "scope": "P10 3070 qualification/accounting artifacts, exact implementation, frozen specification, public-source inquiry responses and pending sequence proposal. Frozen price/meta snapshots retain earlier separate archives."
+}
