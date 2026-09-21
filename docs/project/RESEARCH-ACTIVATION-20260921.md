@@ -7,14 +7,17 @@ PR40 was merged and production was activated at **04:51:34 UTC (13:51 KST)** on
 **운영 반영·실제 Slack 인수 진행**. The approval and observed receipts are in
 [`evidence/research-activation-20260921`](evidence/research-activation-20260921).
 
-The server and 3070 initially ran the same company commit. A concurrent Reporter
-session subsequently deployed `0e89d998022abfb626cf29a4ff99012cd83ffb74`; its 51 research
-audit-scope files match `9a90b5e` byte for byte. The prepared job and 3070 retain their
-original `9a90b5e` execution pin. The new research job is prepared in the existing
-research-center thread. At **05:17 UTC (14:17 KST)** an actual Slack API read still
-found no owner reply after the approval prompt. The database records **pending owner
-Slack approval**; an executed production replay and final research delivery must not be
-claimed from deployment or preparation alone.
+The server and 3070 now both run `0e89d998022abfb626cf29a4ff99012cd83ffb74`.
+A concurrent Reporter session deployed that version; its 51 research audit-scope
+files match `9a90b5e` byte for byte. The 3070 was synchronized only after confirming
+the original unexecuted job was cancelled and there were no active research leases.
+
+The owner's real Slack reply **승인** was received at 05:43:56 UTC. The director
+incorrectly treated this approval-only reply as an instruction amendment, cancelled
+the original v4 job, and prepared the same recipe under v5. At **05:52 UTC
+(14:52 KST)**, the replacement job `6a64df0e-9c60-555f-aa3a-a80a70e7f985` is
+**pending owner Slack approval**. No production replay or final research report has
+been produced by these two jobs. See the observed routing defect below.
 
 ## Verified activation
 
@@ -66,7 +69,7 @@ does not prove the other session has acknowledged it. The 05:17 UTC observation 
 This later free-space observation is not evidence that this activation removed images.
 Any further release/3070 pin changes require coordination with the pending execution.
 
-## Actual Slack acceptance boundary
+## Original preparation
 
 Preparation was explicitly imported as an authorized administrative request,
 `operator:research-activation-prepare-20260921`; it was not presented as Slack ingress.
@@ -74,18 +77,61 @@ The real Astra/max director consulted the catalog, requested the fixed recipe an
 completed its three-turn preparation task. The service posted the exact manifest and
 owner mention in [the research thread](https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789966459779259).
 
-- Project: `9aac0de4-2b97-5195-a720-287d324234f3`, revision 4.
-- Prepared job: `939b54bb-1004-56f4-b2ae-86512617f1c6`.
+- Project: `9aac0de4-2b97-5195-a720-287d324234f3`, original revision 4.
+- Original job: `939b54bb-1004-56f4-b2ae-86512617f1c6`, now cancelled before execution.
 - Manifest SHA256: `f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0`.
 - Recipe: fixed `kr-etf-p11-replay-v1`, scientific code `02649715bd3661826253e1ce84f8002d2a74c822`.
-- The actual owner Slack command, accepted ingress receipt, execution archive, verified
-  report/source/artifact records and final Slack delivery remain to be recorded.
+- The original manifest and owner mention were actually retrieved from Slack.
 
-The required command is `연구 승인 939b54bb-1004-56f4-b2ae-86512617f1c6 f0fb9af6a987`
-in that same Slack thread. The operator must not create an owner-origin event to stand
-in for it. Once the real command is accepted, the deployed server and enabled 3070
-service can process the job without this Mac session; acceptance is complete only
-after its actual execution and final delivery receipts have been checked.
+## Actual owner ingress and approval-only routing defect
+
+The actual owner message was `승인`, Slack timestamp `1789969435.567029`, in the
+expected workspace, channel and research thread. PostgreSQL recorded the inbound key
+`slack:T0C1YRDRPNF:C0C2B9EUEGM:1789969435.567029:director` and its completed task
+`496144aa-f20d-5c89-a34b-1607c6a4ffde`. Thus genuine owner ingress is verified;
+this was not an operator-created event.
+
+The research parser only recognizes an approval that contains the job UUID and
+manifest prefix. The shorter reply therefore reached the general model router.
+That router chose `amend`; event 315 records revision 4 becoming 5 at
+05:44:29.282957 UTC. Normal revision cancellation then cancelled the original job,
+and the director created a replacement for the same manifest at 05:45:49.447565 UTC.
+The cancellation was not a request from the owner to change the research scope.
+This is an observed conversation-control defect, not a failed strategy result.
+
+The root's first retry instruction repeated the old job ID from the earlier snapshot
+before checking the router's completed transition. It was withdrawn and replaced
+with the current command after the new job and worker pin were verified.
+
+The replacement v5 job is `6a64df0e-9c60-555f-aa3a-a80a70e7f985`, pinned to the
+currently deployed `0e89d99`. At 05:49 UTC, an explicit global check found zero active
+research leases and no queued job with a different company pin. Only the dedicated
+3070 polling daemon was briefly stopped; its clean company checkout was updated
+from a hash-verified bundle of `0e89d99` and the same service restarted. Research
+modules, unit template, dependency lock and configuration were unchanged. The
+direct SSH tunnel remained running and PostgreSQL subsequently recorded fresh
+worker heartbeats. No backtest was launched by this maintenance operation.
+
+The current command is:
+
+```text
+연구 승인 6a64df0e-9c60-555f-aa3a-a80a70e7f985 f0fb9af6a987
+```
+
+It must arrive in the same Slack thread. The operator must not manufacture a bound
+owner approval from the short reply or rewrite an old inbound event. Once accepted,
+the server and 3070 can process the job without this Mac session. Acceptance still
+requires the actual execution archive, audit revalidation, published artifacts and
+final owner-tagged Slack delivery to be checked.
+
+### Concrete improvement follow-up
+
+For approval-only replies while a research manifest is pending, a deterministic
+handler should preserve the project revision and present the current bound approval
+action. A regression should replay the observed pending-manifest → `승인` sequence
+and verify that it neither cancels the job nor changes the scope. Execution must
+still bind the owner, thread, job and manifest. This repair is proposed, not deployed;
+the actual event and receipts above provide an attributable improvement case.
 
 The already-approved P11 replay adds zero scientific trials. It provides no new
 confirmation, baseline comparison, capital allocation or live trading approval.
