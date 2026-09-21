@@ -1,0 +1,1452 @@
+{
+  "enabled": true,
+  "publish_enabled": true,
+  "channel": "C0C2J1SSX09",
+  "sources": [
+    {
+      "id": "bbc-business",
+      "enabled": true,
+      "last_success": "2026-09-21 00:43:09.660215+00:00",
+      "last_attempt": "2026-09-21 00:43:09.401600+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 40063,
+        "sha256": "4e829a93b68e76b149f55ee0684c12ac052856dfbfd003d710d50050fb92f1fb",
+        "skipped": 5,
+        "modified": "",
+        "latest_publication": "2026-09-21 00:34:53+00:00"
+      },
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "industry_technology"
+      ],
+      "regions": [
+        "global"
+      ],
+      "latest_collected": "2026-09-21 00:43:09.670918+00:00",
+      "latest_publication": "2026-09-21 00:34:53+00:00",
+      "fresh_count": 9,
+      "ready_count": 0
+    },
+    {
+      "id": "bbc-technology",
+      "enabled": true,
+      "last_success": "2026-09-21 00:43:12.430597+00:00",
+      "last_attempt": "2026-09-21 00:43:11.991648+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 15293,
+        "sha256": "c8be92fd17822802bb2620677828674c43e0592803e0a7d26534e9397919f8a3",
+        "skipped": 9,
+        "modified": "",
+        "latest_publication": "2026-09-19 23:01:57+00:00"
+      },
+      "kind": "media",
+      "topics": [
+        "industry_technology",
+        "world_events"
+      ],
+      "regions": [
+        "global"
+      ],
+      "latest_collected": "2026-09-21 00:43:12.441218+00:00",
+      "latest_publication": "2026-09-17 14:33:12+00:00",
+      "fresh_count": 0,
+      "ready_count": 0
+    },
+    {
+      "id": "bbc-world",
+      "enabled": true,
+      "last_success": "2026-09-21 00:43:04.270204+00:00",
+      "last_attempt": "2026-09-21 00:43:04.038644+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 21212,
+        "sha256": "dcd51b65acf2cb1ba592f8075c7cfb6b0f302b6631ac4da990c9ba21eb041177",
+        "skipped": 4,
+        "modified": "",
+        "latest_publication": "2026-09-20 21:17:22+00:00"
+      },
+      "kind": "media",
+      "topics": [
+        "geopolitics",
+        "world_events",
+        "trade_energy"
+      ],
+      "regions": [
+        "global"
+      ],
+      "latest_collected": "2026-09-21 00:43:04.281553+00:00",
+      "latest_publication": "2026-09-20 21:17:22+00:00",
+      "fresh_count": 6,
+      "ready_count": 6
+    },
+    {
+      "id": "bea-releases",
+      "enabled": true,
+      "last_success": "2026-09-21 00:36:53.119633+00:00",
+      "last_attempt": "2026-09-21 00:36:52.281633+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": "2026-09-03 12:30:00+00:00"
+      },
+      "kind": "official",
+      "topics": [
+        "macroeconomics",
+        "economy_finance"
+      ],
+      "regions": [
+        "US"
+      ],
+      "latest_collected": "2026-09-18 16:33:54.474454+00:00",
+      "latest_publication": "2026-09-03 12:30:00+00:00",
+      "fresh_count": 0,
+      "ready_count": 0
+    },
+    {
+      "id": "cnbc-economy",
+      "enabled": true,
+      "last_success": "2026-09-21 00:43:15.169823+00:00",
+      "last_attempt": "2026-09-21 00:43:14.735894+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 20527,
+        "sha256": "2eaa356087782e00c6f9b519a8fe58aa234521e1d46afd23a8fbdfecf806f964",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-20 05:00:01+00:00"
+      },
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "trade_energy"
+      ],
+      "regions": [
+        "global",
+        "US"
+      ],
+      "latest_collected": "2026-09-21 00:43:15.186374+00:00",
+      "latest_publication": "2026-09-20 05:00:01+00:00",
+      "fresh_count": 1,
+      "ready_count": 0
+    },
+    {
+      "id": "cnbc-finance",
+      "enabled": true,
+      "last_success": "2026-09-21 00:43:17.842274+00:00",
+      "last_attempt": "2026-09-21 00:43:17.509420+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 21297,
+        "sha256": "560688ba2bda0e17fce403e1f7f79fe4352aaba2fe06ceaf8560461b4a7ce080",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-20 12:47:23+00:00"
+      },
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "industry_technology"
+      ],
+      "regions": [
+        "global",
+        "US"
+      ],
+      "latest_collected": "2026-09-21 00:43:17.853034+00:00",
+      "latest_publication": "2026-09-20 12:47:23+00:00",
+      "fresh_count": 1,
+      "ready_count": 0
+    },
+    {
+      "id": "cnbc-technology",
+      "enabled": true,
+      "last_success": "2026-09-21 00:43:20.452357+00:00",
+      "last_attempt": "2026-09-21 00:43:20.159003+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 20979,
+        "sha256": "59b49e75e03d8ffba8fbfe103ad23c68ac86a57a5fc863f8776f31405ad71b46",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 00:39:34+00:00"
+      },
+      "kind": "media",
+      "topics": [
+        "industry_technology",
+        "trade_energy"
+      ],
+      "regions": [
+        "global",
+        "US"
+      ],
+      "latest_collected": "2026-09-21 00:43:20.463118+00:00",
+      "latest_publication": "2026-09-21 00:39:34+00:00",
+      "fresh_count": 4,
+      "ready_count": 0
+    },
+    {
+      "id": "cnbc-world",
+      "enabled": true,
+      "last_success": "2026-09-21 00:43:23.178498+00:00",
+      "last_attempt": "2026-09-21 00:43:22.768034+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 20796,
+        "sha256": "f1d4b25140f6da8735f07b7df2165d046cc30842e62ba9af86190dbed5e17c50",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 00:39:34+00:00"
+      },
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "geopolitics",
+        "trade_energy",
+        "world_events"
+      ],
+      "regions": [
+        "global"
+      ],
+      "latest_collected": "2026-09-21 00:43:23.189127+00:00",
+      "latest_publication": "2026-09-20 23:42:00+00:00",
+      "fresh_count": 2,
+      "ready_count": 0
+    },
+    {
+      "id": "ecb-press",
+      "enabled": true,
+      "last_success": "2026-09-21 00:36:56.279265+00:00",
+      "last_attempt": "2026-09-21 00:36:55.334529+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "\"myra-ecf64764\"",
+        "bytes": 5673,
+        "sha256": "979c5611f0a043bb0e21f613b20f667ae2ac2d6938e301724efe89be17f44df0",
+        "skipped": 12,
+        "modified": "",
+        "latest_publication": "2026-09-18 08:00:00+00:00"
+      },
+      "kind": "official",
+      "topics": [
+        "macroeconomics",
+        "economy_finance"
+      ],
+      "regions": [
+        "Europe"
+      ],
+      "latest_collected": "2026-09-18 16:33:55.186849+00:00",
+      "latest_publication": "2026-09-18 08:00:00+00:00",
+      "fresh_count": 0,
+      "ready_count": 0
+    },
+    {
+      "id": "fed-press",
+      "enabled": true,
+      "last_success": "2026-09-21 00:36:58.642638+00:00",
+      "last_attempt": "2026-09-21 00:36:58.477420+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      },
+      "kind": "official",
+      "topics": [
+        "macroeconomics",
+        "economy_finance"
+      ],
+      "regions": [
+        "US"
+      ],
+      "latest_collected": "2026-09-18 16:33:56.106593+00:00",
+      "latest_publication": "2026-09-18 15:00:00+00:00",
+      "fresh_count": 0,
+      "ready_count": 0
+    },
+    {
+      "id": "govuk-fcdo",
+      "enabled": true,
+      "last_success": "2026-09-21 00:38:02.440921+00:00",
+      "last_attempt": "2026-09-21 00:38:01.190891+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      },
+      "kind": "official",
+      "topics": [
+        "geopolitics",
+        "world_events",
+        "trade_energy"
+      ],
+      "regions": [
+        "global",
+        "UK"
+      ],
+      "latest_collected": "2026-09-18 21:13:42.810735+00:00",
+      "latest_publication": "2026-09-18 21:04:48+00:00",
+      "fresh_count": 0,
+      "ready_count": 0
+    },
+    {
+      "id": "govuk-trade",
+      "enabled": true,
+      "last_success": "2026-09-21 00:38:05.860836+00:00",
+      "last_attempt": "2026-09-21 00:38:04.632527+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      },
+      "kind": "official",
+      "topics": [
+        "trade_energy",
+        "industry_technology"
+      ],
+      "regions": [
+        "global",
+        "UK"
+      ],
+      "latest_collected": "2026-09-18 16:33:57.260965+00:00",
+      "latest_publication": null,
+      "fresh_count": 0,
+      "ready_count": 0
+    },
+    {
+      "id": "govuk-treasury",
+      "enabled": true,
+      "last_success": "2026-09-21 00:38:09.284169+00:00",
+      "last_attempt": "2026-09-21 00:38:08.073594+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      },
+      "kind": "official",
+      "topics": [
+        "macroeconomics",
+        "economy_finance"
+      ],
+      "regions": [
+        "UK"
+      ],
+      "latest_collected": "2026-09-18 16:33:57.512822+00:00",
+      "latest_publication": "2026-09-18 13:53:43+00:00",
+      "fresh_count": 0,
+      "ready_count": 0
+    },
+    {
+      "id": "kbs-economy",
+      "enabled": true,
+      "last_success": "2026-09-21 00:43:25.636224+00:00",
+      "last_attempt": "2026-09-21 00:43:25.524320+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 37694,
+        "sha256": "d8d2293b87d3165e46dc73b9e9ffa19c10e7f4a59fd3a538f2a82e4dbcb61f37",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 00:39:59+00:00"
+      },
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "trade_energy",
+        "industry_technology"
+      ],
+      "regions": [
+        "KR"
+      ],
+      "latest_collected": "2026-09-21 00:43:25.646748+00:00",
+      "latest_publication": "2026-09-18 07:03:27+00:00",
+      "fresh_count": 0,
+      "ready_count": 0
+    },
+    {
+      "id": "kbs-world",
+      "enabled": true,
+      "last_success": "2026-09-21 00:43:07.009947+00:00",
+      "last_attempt": "2026-09-21 00:43:06.932747+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 38253,
+        "sha256": "64a1f8b111f01a7817bd236c3362fae85ca0dfb1187fec8a9c8a2ae9f246d181",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 00:40:20+00:00"
+      },
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "geopolitics",
+        "trade_energy",
+        "industry_technology",
+        "world_events"
+      ],
+      "regions": [
+        "KR",
+        "Asia"
+      ],
+      "latest_collected": "2026-09-21 00:43:07.026646+00:00",
+      "latest_publication": "2026-09-21 00:40:20+00:00",
+      "fresh_count": 14,
+      "ready_count": 7
+    },
+    {
+      "id": "newsis-economy",
+      "enabled": false,
+      "last_success": null,
+      "last_attempt": null,
+      "failures": 0,
+      "error": null,
+      "receipt": null,
+      "kind": "media",
+      "topics": [],
+      "regions": [],
+      "latest_collected": null,
+      "latest_publication": null,
+      "fresh_count": 0,
+      "ready_count": 0
+    },
+    {
+      "id": "newsis-world",
+      "enabled": false,
+      "last_success": null,
+      "last_attempt": null,
+      "failures": 0,
+      "error": null,
+      "receipt": null,
+      "kind": "media",
+      "topics": [],
+      "regions": [],
+      "latest_collected": null,
+      "latest_publication": null,
+      "fresh_count": 0,
+      "ready_count": 0
+    }
+  ],
+  "coverage": {
+    "economy_finance": {
+      "enabled_sources": [
+        "bbc-business",
+        "bea-releases",
+        "cnbc-economy",
+        "cnbc-finance",
+        "cnbc-world",
+        "ecb-press",
+        "fed-press",
+        "govuk-treasury",
+        "kbs-economy",
+        "kbs-world"
+      ],
+      "fresh_media_sources": [
+        "bbc-business",
+        "cnbc-economy",
+        "cnbc-finance",
+        "cnbc-world",
+        "kbs-world"
+      ]
+    },
+    "macroeconomics": {
+      "enabled_sources": [
+        "bbc-business",
+        "bea-releases",
+        "cnbc-economy",
+        "cnbc-finance",
+        "ecb-press",
+        "fed-press",
+        "govuk-treasury",
+        "kbs-economy",
+        "kbs-world"
+      ],
+      "fresh_media_sources": [
+        "bbc-business",
+        "cnbc-economy",
+        "cnbc-finance",
+        "kbs-world"
+      ]
+    },
+    "geopolitics": {
+      "enabled_sources": [
+        "bbc-world",
+        "cnbc-world",
+        "govuk-fcdo",
+        "kbs-world"
+      ],
+      "fresh_media_sources": [
+        "bbc-world",
+        "cnbc-world",
+        "kbs-world"
+      ]
+    },
+    "trade_energy": {
+      "enabled_sources": [
+        "bbc-world",
+        "cnbc-economy",
+        "cnbc-technology",
+        "cnbc-world",
+        "govuk-fcdo",
+        "govuk-trade",
+        "kbs-economy",
+        "kbs-world"
+      ],
+      "fresh_media_sources": [
+        "bbc-world",
+        "cnbc-economy",
+        "cnbc-technology",
+        "cnbc-world",
+        "kbs-world"
+      ]
+    },
+    "industry_technology": {
+      "enabled_sources": [
+        "bbc-business",
+        "bbc-technology",
+        "cnbc-finance",
+        "cnbc-technology",
+        "govuk-trade",
+        "kbs-economy",
+        "kbs-world"
+      ],
+      "fresh_media_sources": [
+        "bbc-business",
+        "cnbc-finance",
+        "cnbc-technology",
+        "kbs-world"
+      ]
+    },
+    "world_events": {
+      "enabled_sources": [
+        "bbc-technology",
+        "bbc-world",
+        "cnbc-world",
+        "govuk-fcdo",
+        "kbs-world"
+      ],
+      "fresh_media_sources": [
+        "bbc-world",
+        "cnbc-world",
+        "kbs-world"
+      ]
+    }
+  },
+  "search_enabled": true,
+  "searches": [
+    {
+      "id": "news-search-6fb095bb-c26b-4abb-b7ef-8d313c8f4fe3",
+      "topic": "economy_finance",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-21 00:43:03.673301+00:00",
+      "completed_at": "2026-09-21 00:43:25.272884+00:00",
+      "added": 0,
+      "excluded_unregistered": 0
+    }
+  ],
+  "coverage_note": "Source topic registration and fresh article counts, not proof that every topic/event was covered. Delivery status comes from the outbox, not article queued state.",
+  "articles": [
+    {
+      "state": "collected",
+      "count": 24
+    },
+    {
+      "state": "expired",
+      "count": 2
+    },
+    {
+      "state": "historical_or_undated",
+      "count": 309
+    },
+    {
+      "state": "ignored",
+      "count": 4
+    },
+    {
+      "state": "queued",
+      "count": 2
+    },
+    {
+      "state": "ready",
+      "count": 13
+    }
+  ],
+  "deliveries": [
+    {
+      "id": "0e1373ae-387b-553a-99ab-b40d33dc7528",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789749361.591839",
+      "created_at": "2026-09-18 16:36:00.199864+00:00"
+    },
+    {
+      "id": "1b380241-ceda-58fc-afe3-a6b8f7aa1c41",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789749363.261359",
+      "created_at": "2026-09-18 16:36:00.199864+00:00"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "news-54481df4-3f6e-47e1-a202-c6ac1611006b",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "ignored",
+          "reason": "2026년 9월 18일 영국의 유엔 안보리 연설은 평화유지활동의 정치적 목표, 임무 효율화, 장비·훈련 및 안정적 재원 확보에 대한 지지 입장이다. 제공된 전문에는 신규 자금 지원, 파병, 임무 변경 등 구체적 조치가 없다. 결의 2823호는 올해 앞서 채택된 것으로 언급되며, 유엔 사무총장 검토 보고서도 발간 환영만 제시돼 주요 신규 결정이나 변화의 내용을 확인할 수 없다. 주요 뉴스로 발행할 새 전개가 부족해 제외한다.",
+          "headline": ""
+        }
+      ],
+      "created_at": "2026-09-18 21:16:23.531179+00:00",
+      "completed_at": "2026-09-18 21:16:40.166911+00:00"
+    },
+    {
+      "id": "news-3e522f28-a71b-4b4c-ab2e-f6fa3820d5cb",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "ignored",
+          "reason": "본문은 영국 체프스토의 250번째 공동 은행서비스 거점 개소와 기존 의회 임기 내 최소 350곳 설치 공약의 이행을 소개한다. 지역 주민과 사업체의 현금·대면 금융 접근성에는 의미가 있지만, 새로운 전국 단위 정책이나 중대한 금융시스템 변화는 제시하지 않아 주요 경제·세계 뉴스 발행 대상에서 제외한다.",
+          "headline": ""
+        }
+      ],
+      "created_at": "2026-09-18 16:41:00.389975+00:00",
+      "completed_at": "2026-09-18 16:41:15.279400+00:00"
+    },
+    {
+      "id": "news-de05b6ea-43d7-4450-ab4f-16bab39ad2c5",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "queued",
+          "reason": "ECB가 직접 발표한 소비자 기대 통계로, 모든 조사 시계의 기대인플레이션 상승은 통화정책 분석에 중요한 변화다.",
+          "headline": "ECB 8월 소비자 조사, 1년·3년·5년 기대인플레이션 모두 상승"
+        },
+        {
+          "state": "ignored",
+          "reason": "오클라호마 소재 SNB Bancshares와 Bank of Eufaula에 대한 개별 감독조치 종료 공지다. 종료일은 9월 3일이고 발표일은 9월 18일이다. 제공 본문에는 금융시스템 전반이나 감독정책의 중대한 변화를 뒷받침하는 내용이 없어 제외한다.",
+          "headline": ""
+        },
+        {
+          "state": "ignored",
+          "reason": "금융회사 전직 직원 3명의 자금 유용·이해상충·수표 사기 관련 개별 제재다. 제공 본문에 거시경제나 금융시스템 차원의 파급을 보여주는 근거가 없어 주요 뉴스에서 제외한다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "영국의 기업 지원 입장은 확인되지만 구체적인 신규 지원 조치는 제시되지 않았다. 핵심 쟁점인 아르헨티나의 기업·개인 위협과 법적 조치는 영국 정부의 주장만 제공됐다. 해당 조치의 내용·날짜·범위를 확인할 직접 자료와 독립 보도가 없어 보류한다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "9월 17일 영국 대표 연설은 러시아·중국의 이란 전문가패널 임기 갱신 거부권 행사를 주장한다. 중대한 국제안보 사안이지만 제공 자료는 영국 정부 한 출처뿐이다. 안보리 자체 표결 기록이나 두 개 이상의 독립 원보도가 없어 표결 결과와 제재 효력을 확정해 발행할 수 없다. 이란의 핵활동 관련 비판도 별도 근거가 필요하다.",
+          "headline": ""
+        },
+        {
+          "state": "queued",
+          "reason": "영국 정부가 자국의 시리아 지원금 기여 계획을 금액과 연도까지 명시했다. 발행 범위는 자체 지원 약속으로 한정하며, 다른 기관의 결정이나 타국 행위에 관한 주장은 포함하지 않는다.",
+          "headline": "영국, 올해 시리아 회복·취약계층 지원에 9천만 달러 기여 계획 발표"
+        }
+      ],
+      "created_at": "2026-09-18 16:34:55.440565+00:00",
+      "completed_at": "2026-09-18 16:36:00.199864+00:00"
+    }
+  ],
+  "checked_at": "2026-09-21T00:43:36.363583+00:00",
+  "commit": "4eb5847f64153c0dd3e622a41c18c7f98795983a",
+  "news_messages": [
+    {
+      "id": "1b380241-ceda-58fc-afe3-a6b8f7aa1c41",
+      "project_id": "24d4a5f0-60f0-5a65-b360-d215a7552d96",
+      "status": "delivered",
+      "sent_ts": "1789749363.261359",
+      "thread_ts": null,
+      "attempts": 1,
+      "error": null,
+      "kind": "news",
+      "text": "*[주요 · 세계정세] 영국, 올해 시리아 회복·취약계층 지원에 9천만 달러 기여 계획 발표*\n영국의 케이트 포스터 유엔 차석대사는 2026년 9월 17일 안보리 시리아 회의에서 시리아 정부의 회복 계획과 실향민·취약계층의 필요를 지원하기 위해 올해 9천만 달러를 기여하겠다고 밝혔다. 본문은 향후 기여 약속을 명시하며 집행 완료 여부는 제시하지 않는다.\n*왜 중요한가* 시리아의 회복과 인도적 지원을 위한 영국의 재정 참여 규모를 보여준다. 실제 효과는 자금 집행과 현지 여건에 달려 있다.\n*달라진 점* 9월 17일 공식 발언에서 올해 지원금 기여 계획이 제시됐다. 기존 지원 대비 증액인지 여부는 제공 본문에서 확인되지 않는다.\n<https://www.gov.uk/government/speeches/the-uk-stands-ready-to-support-efforts-in-the-destruction-of-assad-era-chemical-weapons-for-syria-to-emerge-as-a-sovereign-stable-state-uk-statement-a|UK Foreign, Commonwealth &amp; Development Office> · 발표 09-18 03:52 KST\n출처 이용: <https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/|Contains public sector information licensed under the Open Government Licence v3.0>\nReporter의 AI 한국어 요약 · 확인 09-19 01:36 KST"
+    },
+    {
+      "id": "0e1373ae-387b-553a-99ab-b40d33dc7528",
+      "project_id": "f759d9fa-3fc5-5b60-9ad3-f408c029dc1e",
+      "status": "delivered",
+      "sent_ts": "1789749361.591839",
+      "thread_ts": null,
+      "attempts": 1,
+      "error": null,
+      "kind": "news",
+      "text": "*[주요 · 거시경제] ECB 8월 소비자 조사, 1년·3년·5년 기대인플레이션 모두 상승*\nECB가 9월 18일 발표한 2026년 8월 소비자기대조사에서 향후 1년 기대인플레이션 중앙값은 7월 2.9%에서 3.0%로 올랐다. 3년 기대는 2.7%에서 2.9%로, 5년 기대는 2.4%에서 2.5%로 상승했다. 이는 소비자들의 기대를 집계한 수치다.\n*왜 중요한가* 단기뿐 아니라 중장기 물가 기대도 높아져 기대인플레이션 안정 여부를 살피는 데 중요한 자료다. 이 결과만으로 ECB의 향후 금리 결정을 단정할 수는 없다.\n*달라진 점* 새로 발표된 8월 조사에서 7월 대비 1년 기대는 0.1%포인트, 3년 기대는 0.2%포인트, 5년 기대는 0.1%포인트 상승했다.\n<https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html|European Central Bank> · 발표 09-18 17:00 KST\nReporter의 AI 한국어 요약 · 확인 09-19 01:36 KST"
+    },
+    {
+      "id": "a485ec0f-ca52-4d3a-a5c5-eeeca894362b",
+      "project_id": "f759d9fa-3fc5-5b60-9ad3-f408c029dc1e",
+      "status": "delivered",
+      "sent_ts": "1789749447.668049",
+      "thread_ts": "1789749361.591839",
+      "attempts": 1,
+      "error": null,
+      "kind": "answer",
+      "text": "저장된 ECB 원문을 읽고 1년 후 기대인플레이션 수치와 원문 링크를 확인하겠습니다."
+    },
+    {
+      "id": "3e79b067-02a2-477d-ae90-cc6417c3db0a",
+      "project_id": "f759d9fa-3fc5-5b60-9ad3-f408c029dc1e",
+      "status": "delivered",
+      "sent_ts": "1789749456.256359",
+      "thread_ts": "1789749361.591839",
+      "attempts": 1,
+      "error": null,
+      "kind": "answer",
+      "text": "저장된 ECB 원문에 따르면, 2026년 8월 조사에서 향후 1년 기대인플레이션 중앙값은 **3.0%**로, 7월 2.9%보다 0.1%포인트 상승했습니다. 실제 물가상승률이 아닌 소비자 기대치입니다.\n[ECB 원문 · 2026년 9월 18일 발표](https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html)"
+    }
+  ],
+  "news_tasks": [
+    {
+      "id": "3621fc37-c353-5f2e-b7ba-44b075ed67f6",
+      "kind": "work",
+      "status": "completed",
+      "agent": "reporter"
+    }
+  ],
+  "media_articles": [
+    {
+      "id": "a72a4dbabf8a6d365c5d854ca294ba10a40a473cf54f80ae4fc1a4251d8e9ffa",
+      "source_id": "cnbc-world",
+      "url": "https://www.cnbc.com/2026/09/20/here-are-the-3-big-things-were-watching-in-the-stock-market-this-week.html",
+      "title": "Here are the 3 big things we're watching in the stock market this week",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 23:42:00+00:00",
+      "collected_at": "2026-09-21 00:43:23.189127+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "51980063d6eadbbb0b65e376a5f87ea7efebd7d1610eff11fed972de98929729",
+      "source_id": "cnbc-world",
+      "url": "https://www.cnbc.com/2026/09/20/us-middle-east-travel-warning-iran-war-hormuz.html",
+      "title": "U.S. urges Americans to reconsider Middle East travel as Iran tensions rise",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 14:23:53+00:00",
+      "collected_at": "2026-09-21 00:43:23.189127+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "109b8dbd23f8ea1c7855788ea0ebf54f4e5f69fe917c16a75bd355998e7c071e",
+      "source_id": "cnbc-technology",
+      "url": "https://www.cnbc.com/2026/09/20/ai-data-center-alarms-dominate-cbc-week-in-washington.html",
+      "title": "AI, data center alarms dominate Congressional Black Caucus week in Washington",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 18:05:02+00:00",
+      "collected_at": "2026-09-21 00:43:20.463118+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "f14622f6ba05d8794301c0fa26e97ebc3e22771df82f2354ca050cb8e91d3ae3",
+      "source_id": "cnbc-technology",
+      "url": "https://www.cnbc.com/2026/09/20/ai-jobs-worker-fears.html",
+      "title": "The 'robot relations' department may become reality in workplace of the future",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 14:37:34+00:00",
+      "collected_at": "2026-09-21 00:43:20.463118+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "06fb832621f253340b823d3a5f0abd3118f099d7d2c45e6e18b2463a537a536c",
+      "source_id": "cnbc-technology",
+      "url": "https://www.cnbc.com/2026/09/20/bessent-he-lifeng-trump-xi-summit.html",
+      "title": "Bessent calls meeting with China Vice Premier He Lifeng 'successful' ahead of Trump-Xi summit",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-21 00:39:34+00:00",
+      "collected_at": "2026-09-21 00:43:20.463118+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "529284cf8e32d29cfc7a84f484a8042c49c52c635e92f0f82bf1ddb0b43da8d0",
+      "source_id": "cnbc-technology",
+      "url": "https://www.cnbc.com/2026/09/20/nvidia-ceo-jensen-huang-emerges-as-trumps-top-ally-in-ai-debate.html",
+      "title": "Nvidia CEO Jensen Huang emerges as Trump's top ally in AI safety debate",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 11:25:08+00:00",
+      "collected_at": "2026-09-21 00:43:20.463118+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "4f1113bc0bd3d7ad9a7f868c598bca2b144fdc4f01e2b857f6e5a10faa2a4b0f",
+      "source_id": "cnbc-finance",
+      "url": "https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html",
+      "title": "‘It's awful’: How tariffs, soaring fuel costs and higher interest rates are squeezing American companies",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 12:47:23+00:00",
+      "collected_at": "2026-09-21 00:43:17.853034+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "ce09f3ebdbde38111a6d74e0346b5936ba44b1b47854d5d9c06f3c3d403c0710",
+      "source_id": "cnbc-economy",
+      "url": "https://www.cnbc.com/2026/09/20/france-wine-production-70-year-low-heatwaves-drought.html",
+      "title": "France’s wine production nears a 70-year low, leaving winemakers with tough choices",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 05:00:01+00:00",
+      "collected_at": "2026-09-21 00:43:15.186374+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "a325b6e48f8b5d12839ff60555df87abd5672648e46ee477c31b28cf49ed087d",
+      "source_id": "bbc-business",
+      "url": "https://www.bbc.co.uk/news/articles/cm0rexrwjj1vo",
+      "title": "Billionaire Man United owner loses moral high ground after tax exile, Labour chair says",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 11:22:21+00:00",
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "449cdf371f434004a3a223420d49160612b3f4c75aa873077bb2acac087b36ac",
+      "source_id": "bbc-business",
+      "url": "https://www.bbc.co.uk/news/articles/cr89j514dly2o",
+      "title": "Ed Davey calls for immediate 10p cut to fuel duty",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 14:42:42+00:00",
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "204c3789b341f23762bab21a31dfc3ca2dadc18afe531fdcdd17e2f5107f4715",
+      "source_id": "bbc-business",
+      "url": "https://www.bbc.co.uk/news/articles/c68xk701d975o",
+      "title": "Chiltern Railways renationalised after 30 years",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 10:45:39+00:00",
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "015e7c645739ad7912c4f821572e313e5b3c3f9208b9dd6d367a91444d2f72dc",
+      "source_id": "bbc-business",
+      "url": "https://www.bbc.co.uk/news/articles/cr5ye7p13jg7o",
+      "title": "Nvidia boss rejects AI extinction fears as 'doomsday narratives'",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-21 00:34:53+00:00",
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "d95b47815dc3f8b01be27bcb80b699cf1c05b194772d1a3a8093b2ec4c1c27ea",
+      "source_id": "bbc-business",
+      "url": "https://www.bbc.co.uk/news/articles/c20veglyjp8o",
+      "title": "What food items should you stock up on in case of an emergency?",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 23:02:27+00:00",
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "17fb37fa3e0ccfb42f75659dc1a9a95567e9fd8f3985f21e2127dbdbd5e9fb42",
+      "source_id": "bbc-business",
+      "url": "https://www.bbc.co.uk/news/articles/c8qlwg07p906o",
+      "title": "Family shares hidden cost of cancer care",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 09:25:34+00:00",
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "97ca4ecb80d379cc2e8c589bcd47d85bcc8da48abaa3046628a6043969451b09",
+      "source_id": "bbc-business",
+      "url": "https://www.bbc.co.uk/news/articles/cme30e8zyvjno",
+      "title": "Families missing out on NHS money for healthy food",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 06:12:13+00:00",
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "ff02e2d0e98ee212684ec07ade44680cfde136202245b6ca36f9d7b7a0b6fb91",
+      "source_id": "bbc-business",
+      "url": "https://www.bbc.co.uk/news/articles/cqrk31k7pprlo",
+      "title": "Lib Dems vow to end 'computer says no' economy to boost growth",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 14:05:15+00:00",
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "56384a049ac3db1b32a28b741f68b21f3d79a808a4736eea59385a747fee9ceb",
+      "source_id": "bbc-business",
+      "url": "https://www.bbc.co.uk/news/articles/crq5x74yv6dxo",
+      "title": "Will you get £13,000 a year when you stop working? Here's how to check",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 23:02:45+00:00",
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "6d4c5ae5572b32cc57191cb78c9a9a7686ae5ab568b4acad81a0d72d49552bfe",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204374&lang=e",
+      "title": "JCS: N. Korea Fires 2 Short-Range Ballistic Missiles into East Sea in Succession",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-20 06:38:07+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204374&lang=e",
+        "title": "JCS: N. Korea Fires 2 Short-Range Ballistic Missiles into East Sea in Succession l KBS WORLD",
+        "bylines": [],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": null,
+        "retrieved_at": "2026-09-21T00:43:28.151672+00:00",
+        "article_chars": 1665,
+        "last_modified": null,
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204374&lang=e",
+        "original_bytes": 68461,
+        "publisher_host": "world.kbs.co.kr",
+        "original_sha256": "5ec4570cc62dc58bfb07b1f361fa6f76b50b6936ee372e131e0ad87f0527d8f2",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "kbs_body_txt",
+        "publication_time_basis": "unknown"
+      }
+    },
+    {
+      "id": "b47327ec3375c403ca75d8f36a10708176a7352477ede899e18b9779078c4083",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204380&lang=e",
+      "title": "Korean Remake of \"The Intern\" Debuts No. 1 at Box Office",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-21 00:40:20+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "ffaedca50d3a6bb744c011bb65bd195216c461fd3366bf4a8e2355f4352d328f",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204377&lang=e",
+      "title": "Fox News: Trump in 'Deciding Mode' on Iran, Open to Meet Iranian President",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 23:59:58+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "9b62812cfdd37ea3f039174fffccaca33081361a5bc66290abdc7b514474ceab",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204373&lang=e",
+      "title": "Chuseok Highway Traffic to Peak Thursday Morning, Friday Afternoon",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 05:32:50+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "9ef73a38a3ffe0fcadf4661bee35539ad912a7b12f843f11bf65e7b35a736b39",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204372&lang=e",
+      "title": "Mostly Sunny Monday With Wide Temperature Swings, Strong Coastal Swells",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 05:21:05+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "9e4e75b014b046a46da059804d8dd1beba80daa947f94243c2dbdf71c6b66c23",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204371&lang=e",
+      "title": "Lee Urges Supporters to Avoid Hate Speech, Mockery",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 04:36:15+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "7e6ffae2fc11f72cf25ef0fce6aee551c1cd5ade9c0db620da194c1aedee336f",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204370&lang=e",
+      "title": "Pantathlete Seong Seung-min Wins S. Korea's First Gold at Asian Games",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-20 04:31:06+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204370&lang=e",
+        "title": "Pantathlete Seong Seung-min Wins S. Korea's First Gold at Asian Games l KBS WORLD",
+        "bylines": [],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": null,
+        "retrieved_at": "2026-09-21T00:43:30.497765+00:00",
+        "article_chars": 985,
+        "last_modified": null,
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204370&lang=e",
+        "original_bytes": 68326,
+        "publisher_host": "world.kbs.co.kr",
+        "original_sha256": "d252f30842b00cce278f1e6cb5b891c00cc525a2c15c810217a2e73e17e57b67",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "kbs_body_txt",
+        "publication_time_basis": "unknown"
+      }
+    },
+    {
+      "id": "99814138771b7f3fa370017e57e83fdc1b94ae45b5b464d867b5e48a0880a519",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204378&lang=e",
+      "title": "Exports during First 20 Days of Sept. Break US$70 Bln for 1st Time",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-21 00:34:58+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204378&lang=e",
+        "title": "Exports during First 20 Days of Sept. Break US$70 Bln for 1st Time l KBS WORLD",
+        "bylines": [],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": null,
+        "retrieved_at": "2026-09-21T00:43:35.518278+00:00",
+        "article_chars": 912,
+        "last_modified": null,
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204378&lang=e",
+        "original_bytes": 67536,
+        "publisher_host": "world.kbs.co.kr",
+        "original_sha256": "62eb4a6ba30765252fcd58b248a9d6771dc088b92102716dfc2aaeb4f03b7b46",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "kbs_body_txt",
+        "publication_time_basis": "unknown"
+      }
+    },
+    {
+      "id": "a3c7936020391b5d6304b6b90c8ae65e141dc66ae3ebefa85c275beb15322bc4",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204367&lang=e",
+      "title": "KTX, Train Ticket Booking Window Extended to 2 Months",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 03:17:41+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "e9a7675caad2bd1337871c1afe5284f905fb4fe5ad46e3ef66b909043245ea07",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204366&lang=e",
+      "title": "Police Nab 1,863 in Special Crackdown on Local Corruption",
+      "state": "collected",
+      "error": null,
+      "published_at": "2026-09-20 03:10:52+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": null
+    },
+    {
+      "id": "0db2aefc59550cc4d379784b5ec5f8e6dd3c476c138fe1806e4ed0f7e9575180",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204368&lang=e",
+      "title": "Semiconductor Jobs Up 15% in 8 Years, New Hires Down 22%",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-20 03:40:55+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204368&lang=e",
+        "title": "Semiconductor Jobs Up 15% in 8 Years, New Hires Down 22% l KBS WORLD",
+        "bylines": [],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": null,
+        "retrieved_at": "2026-09-21T00:43:20.606648+00:00",
+        "article_chars": 1275,
+        "last_modified": null,
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204368&lang=e",
+        "original_bytes": 67862,
+        "publisher_host": "world.kbs.co.kr",
+        "original_sha256": "e68caa045a6613f27265c4c136e0af6e986319dba10c1fac5ab0bc379684099a",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "kbs_body_txt",
+        "publication_time_basis": "unknown"
+      }
+    },
+    {
+      "id": "29113052499716580322c7baab887bc2b0c830a0c7bb779a466c5d17d96cfb9c",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204376&lang=e",
+      "title": "S. Korean Men's Basketball Team Wins Gold at Asian Games",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-20 12:36:04+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204376&lang=e",
+        "title": "S. Korean Men's Basketball Team Wins Gold at Asian Games l KBS WORLD",
+        "bylines": [],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": null,
+        "retrieved_at": "2026-09-21T00:43:23.365668+00:00",
+        "article_chars": 681,
+        "last_modified": null,
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204376&lang=e",
+        "original_bytes": 67944,
+        "publisher_host": "world.kbs.co.kr",
+        "original_sha256": "fd9dabd5fe44d95968f68d667acc6d5a7f37d2074fafb78d1ddee512c86ce149",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "kbs_body_txt",
+        "publication_time_basis": "unknown"
+      }
+    },
+    {
+      "id": "6cf390b8a1cc6faa3acd020c6c34aa487b4debbde3250974ed80892752856da8",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204369&lang=e",
+      "title": "Cyclist Shin Ji-eun Wins Bronze, S. Korea's First Asian Games Medal",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-20 04:23:46+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204369&lang=e",
+        "title": "Cyclist Shin Ji-eun Wins Bronze, S. Korea's First Asian Games Medal l KBS WORLD",
+        "bylines": [],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": null,
+        "retrieved_at": "2026-09-21T00:43:25.791267+00:00",
+        "article_chars": 951,
+        "last_modified": null,
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204369&lang=e",
+        "original_bytes": 67618,
+        "publisher_host": "world.kbs.co.kr",
+        "original_sha256": "41c6c177bc8f6d30a6a6ff9c06624a1e55390139274080bfc3c215cdafbd2d38",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "kbs_body_txt",
+        "publication_time_basis": "unknown"
+      }
+    },
+    {
+      "id": "8ed8fb4fe1efce6ebe833b20c952b1ff9b6326ac1d8b1a80280927d4bfde13dc",
+      "source_id": "kbs-world",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204379&lang=e",
+      "title": "KOSPI Opens Up 0.64% Monday",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-21 00:39:59+00:00",
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204379&lang=e",
+        "title": "KOSPI Opens Up 0.64% Monday l KBS WORLD",
+        "bylines": [],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": null,
+        "retrieved_at": "2026-09-21T00:43:32.838526+00:00",
+        "article_chars": 245,
+        "last_modified": null,
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204379&lang=e",
+        "original_bytes": 65961,
+        "publisher_host": "world.kbs.co.kr",
+        "original_sha256": "240ddc66b8b77c296a2f92132ef0e07733ac213280a728f124cc4b84e7a7a374",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "kbs_body_txt",
+        "publication_time_basis": "unknown"
+      }
+    },
+    {
+      "id": "34065eba3c9df13b115cfdba451a6fd288bad15f2c5289fbe00f00f9fef0ac7a",
+      "source_id": "bbc-world",
+      "url": "https://www.bbc.co.uk/news/articles/cqm27pnyd294o",
+      "title": "Man, 82, dies after beach fight with 76-year-old over sunlounger in Greece",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-20 21:17:22+00:00",
+      "collected_at": "2026-09-21 00:43:04.281553+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/cqm27pnyd294o",
+        "title": "Vouliagmeni beach: Man, 82, dies after beach fight with 76-year-old over sunlounger in Greece - BBC News",
+        "bylines": [
+          "Hafsa Khalil"
+        ],
+        "redirects": [],
+        "content_type": "text/html",
+        "published_at": "2026-09-20T21:17:22.370Z",
+        "retrieved_at": "2026-09-21T00:43:04.682350+00:00",
+        "article_chars": 1335,
+        "last_modified": null,
+        "requested_url": "https://www.bbc.co.uk/news/articles/cqm27pnyd294o",
+        "original_bytes": 372928,
+        "publisher_host": "www.bbc.co.uk",
+        "original_sha256": "4f364a974571d12557f1f23965dde91cbd10ef4ea5897a799588dd73f3b9f65b",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "article",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "cf9313937ae275ba9f2a806414827c31716324f6a3aa070c3e3049d156ad6224",
+      "source_id": "bbc-world",
+      "url": "https://www.bbc.co.uk/news/articles/cqdj4pez00dzo",
+      "title": "Trump says triumphal arch will be military complex with drones and snipers",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-20 16:36:43+00:00",
+      "collected_at": "2026-09-21 00:43:04.281553+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/cqdj4pez00dzo",
+        "title": "Trump says triumphal arch will be military complex - BBC News",
+        "bylines": [
+          "Grace Eliza Goodwin"
+        ],
+        "redirects": [],
+        "content_type": "text/html",
+        "published_at": "2026-09-20T13:50:51.506Z",
+        "retrieved_at": "2026-09-21T00:43:15.317542+00:00",
+        "article_chars": 2490,
+        "last_modified": null,
+        "requested_url": "https://www.bbc.co.uk/news/articles/cqdj4pez00dzo",
+        "original_bytes": 388243,
+        "publisher_host": "www.bbc.co.uk",
+        "original_sha256": "1a72aad48138984b02f3af59fb7ce61387af6ce75ab45359a3318236a21cc145",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "article",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "a627ca80f461b119f0d846e86f19ac81d56264e2ad98fcaa18a2b964f4656e40",
+      "source_id": "bbc-world",
+      "url": "https://www.bbc.co.uk/news/articles/c34gdjk1ne8yo",
+      "title": "Largest attack on Moscow sees Ukraine fire hundreds of drones, mayor says",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-20 10:45:39+00:00",
+      "collected_at": "2026-09-21 00:43:04.281553+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/c34gdjk1ne8yo",
+        "title": "Largest attack on Moscow sees Ukraine fire hundreds of drones, mayor says - BBC News",
+        "bylines": [
+          "Jaroslav Lukiv",
+          "Dearbail Jordan"
+        ],
+        "redirects": [],
+        "content_type": "text/html",
+        "published_at": "2026-09-20T05:04:54.866Z",
+        "retrieved_at": "2026-09-21T00:43:12.558282+00:00",
+        "article_chars": 4380,
+        "last_modified": null,
+        "requested_url": "https://www.bbc.co.uk/news/articles/c34gdjk1ne8yo",
+        "original_bytes": 410610,
+        "publisher_host": "www.bbc.co.uk",
+        "original_sha256": "c99d967ab9456c0ef3d41ef2bb2b05ecba81198813a48fb35ec94e2d44699622",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "article",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "4db10160e6b2931d8dfbc458e73c5e5e00775d7926215a897fc64c9a17980e9d",
+      "source_id": "bbc-world",
+      "url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+      "title": "German Chancellor Merz calls state election a 'disaster' for his party but vows to stay on",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-20 20:21:40+00:00",
+      "collected_at": "2026-09-21 00:43:04.281553+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+        "title": "German state elections: Chancellor Friedrich Merz vows to stay on despite 'disaster' in polls - BBC News",
+        "bylines": [
+          "Amy Walker",
+          "Jessica Parker"
+        ],
+        "redirects": [],
+        "content_type": "text/html",
+        "published_at": "2026-09-20T16:50:21.517Z",
+        "retrieved_at": "2026-09-21T00:43:07.193996+00:00",
+        "article_chars": 4881,
+        "last_modified": null,
+        "requested_url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+        "original_bytes": 424968,
+        "publisher_host": "www.bbc.co.uk",
+        "original_sha256": "d71a1b72a96065cc6044d5f3050ae161119bc36cb0e2e4b08205d2ca0730d985",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "article",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "d660747d216a25b6f1d7e74a7292033db1c4322a3a67fd7c7c359932255fcdf0",
+      "source_id": "bbc-world",
+      "url": "https://www.bbc.co.uk/news/articles/cm780ll1de18o",
+      "title": "Ed Sheeran admits 'mistakes' at first show since Macklemore controversy",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-20 04:49:11+00:00",
+      "collected_at": "2026-09-21 00:43:04.281553+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/cm780ll1de18o",
+        "title": "Ed Sheeran admits 'mistakes' at first show since Macklemore controversy in Philadelphia - BBC News",
+        "bylines": [
+          "Carl Nasman and Jonathan Csapo",
+          "Nardine Saad"
+        ],
+        "redirects": [],
+        "content_type": "text/html",
+        "published_at": "2026-09-20T00:28:30.367Z",
+        "retrieved_at": "2026-09-21T00:43:17.976830+00:00",
+        "article_chars": 5683,
+        "last_modified": null,
+        "requested_url": "https://www.bbc.co.uk/news/articles/cm780ll1de18o",
+        "original_bytes": 433961,
+        "publisher_host": "www.bbc.co.uk",
+        "original_sha256": "38b1b201dca6f6bd4d36bb30605364ef07716303749d36904fc5e592cdb5db08",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "article",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "8a359ad131a3a27511fb414c904c809163bd8460287fc4d573adeb783c63e6d8",
+      "source_id": "bbc-world",
+      "url": "https://www.bbc.co.uk/news/articles/cm36l2pye2kwo",
+      "title": "Sister of Pakistan's ex-PM Imran Khan arrested",
+      "state": "ready",
+      "error": null,
+      "published_at": "2026-09-20 19:04:11+00:00",
+      "collected_at": "2026-09-21 00:43:04.281553+00:00",
+      "retrieval": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/cm36l2pye2kwo",
+        "title": "Aleema Khanum: Sister of Pakistan's ex-PM Imran Khan arrested - BBC News",
+        "bylines": [
+          "Carrie Davies",
+          "Hafsa Khalil"
+        ],
+        "redirects": [],
+        "content_type": "text/html",
+        "published_at": "2026-09-20T19:04:11.205Z",
+        "retrieved_at": "2026-09-21T00:43:09.823034+00:00",
+        "article_chars": 2802,
+        "last_modified": null,
+        "requested_url": "https://www.bbc.co.uk/news/articles/cm36l2pye2kwo",
+        "original_bytes": 400820,
+        "publisher_host": "www.bbc.co.uk",
+        "original_sha256": "41c77249416253a2851c40dbad46a8049ab88253b47bb5e62f93901abacc2c87",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "article",
+        "publication_time_basis": "page_metadata"
+      }
+    }
+  ],
+  "normal_work_due": 0,
+  "workflows": [
+    {
+      "id": "company-news-collection-v1",
+      "run_id": "af6f8502-4c55-4953-b27f-2f780ebc55ba",
+      "status": "RUNNING",
+      "task_queue": "quant-company-news-collection"
+    },
+    {
+      "id": "company-news-editorial-v1",
+      "run_id": "5bde5bc8-0770-4754-8356-b180abac7c35",
+      "status": "RUNNING",
+      "task_queue": "quant-company"
+    },
+    {
+      "id": "company-news-discovery-v1",
+      "run_id": "01a0c16a-92a1-7930-b86b-5345bc210fd7",
+      "status": "RUNNING",
+      "task_queue": "quant-company"
+    }
+  ]
+}

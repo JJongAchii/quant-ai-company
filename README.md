@@ -28,9 +28,10 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 [웹 검색·개선 BOT 검증](docs/project/WEB-ENGINEERING-VALIDATION.md)에 실제 실행과 fixture 범위를 구분합니다.
 
 `hot-news` 전용 **Reporter**는 연속 수집→원문 확인→주요 뉴스 검토→사건별 게시 경로를 추가했습니다.
-기존 서버에서 공식 피드 6개를 수집하고 검토 후 게시합니다. 실제 뉴스 게시·원문을 읽는 스레드 답변·
-작업 프로세스 재시작을 확인했습니다. 일반 언론 보도 커버리지는 아직 제한돼 있습니다.
-[설정·데모와 소스별 확인 상태](docs/news.md), [운영 인수와 남은 보안 정리](docs/project/HOT-NEWS-ACTIVATION.md)를 참고하세요.
+기존 서버에서 BBC·CNBC·KBS World의 무료 언론 피드 9개와 공식 피드 6개를 수집합니다.
+기존 구독의 추가 검색, 원문 확인, 매체 귀속과 사건별 후속 처리를 사용하며 추가 유료 API는 없습니다.
+[설정·데모와 소스별 확인 상태](docs/news.md), [범위 복원과 실제 검증](docs/project/HOT-NEWS-SCOPE-RESTORATION.md),
+[최초 운영 인수·보안 정리](docs/project/HOT-NEWS-ACTIVATION.md)를 참고하세요.
 정기 브리핑은 추후 `daily-brief`에서 다룹니다.
 
 ## 동작

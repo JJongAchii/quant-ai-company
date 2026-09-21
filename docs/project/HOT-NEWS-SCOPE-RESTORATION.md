@@ -63,5 +63,36 @@ BBC 기술은 오래된 기사만 있어 최신 뉴스 표본으로 대체하지
 
 ## 운영 인수
 
-배포·실제 편집·Slack 발송·다음 자동 주기 검사가 진행 중이다. 코드와 피드 검사를 운영 완료로
-표현하지 않는다. 정확한 배포 커밋과 실제 전달 영수증을 이 절에 추가한다.
+최초 범위 복원 커밋 `4eb5847f64153c0dd3e622a41c18c7f98795983a`를 백업·CI 확인 후
+기존 서버에 배포하고 09:43 KST에 수집·편집·검색을 활성화했다. 실제 구독 미리보기의 패키지
+파일 해시는 이 커밋과 일치한다. 최종 이미지에서도 15개 피드 및 최신 언론 표본 8개를 확인했다.
+[최종 이미지 소스 검사](evidence/hot-news-scope-final-image-probe.json),
+[배포·백업](evidence/hot-news-scope-release.json), [서비스·인증 격리 확인](evidence/hot-news-scope-host-health.json).
+
+09:45 자동 편집은 KBS 반도체 고용과 BBC 독일·파키스탄 정치 동향 3건을 전달했다.
+실제 Slack `client_msg_id`, 메시지 시각, Reporter 사용자 ID와 본문을 DB 성공 영수증에 대조했다.
+이는 운영자가 선택 기사를 삽입하거나 직접 전송한 검사가 아니라, 실제 Temporal 수집·편집의 결과다.
+[실제 Slack 대조](evidence/hot-news-scope-live-slack.json).
+
+09:52에는 모스크바 사건, 미국 대통령의 공개 구상, CNBC의 미국 제조업체 보도 3건이 추가됐다.
+신규 뉴스는 총 6건이며 이전 9월 19일의 2건을 포함한 누적 뉴스는 8건이다.
+전망·당사자 주장·날짜 불일치가 있는 기사 2건은 보류됐고 스포츠 보도 등은 제외했다.
+CNBC 구독 전용 기사 1건은 `article_requires_subscription`으로 근거 사용을 차단했다.
+
+09:53~09:54에는 일반 언론 피드 9개 모두 자동으로 다시 조회됐다. 첫 게시물은 다시 보내지
+않았으며 수집·편집·검색 workflow는 모두 RUNNING, 관찰한 activity 실패는 0건이다.
+[다음 자동 수집·편집 주기](evidence/hot-news-scope-continuity.json).
+
+첫 게시물의 불필요한 `달라진 점` 설명은 실제 사건 후속에서만 표시하도록 한 줄 수정했다.
+수집·검증·검색 정책은 동일하며 해당 수정 커밋 `4a8eb43b6406d3229cfd1e93b51011a817f87343`의
+[CI](https://github.com/JJongAchii/quant-ai-company/actions/runs/35548831640)도 479 passed,
+2 skipped, 1 live deselected와 lint 통과다. 이 최종 커밋을 09:56 KST에 활성화했다.
+[최종 전환·백업](evidence/hot-news-scope-format-release.json),
+[최종 서비스·타이머·격리 확인](evidence/hot-news-scope-final-host-health.json),
+[운영 이미지에서 실제 저장 원고의 표시 확인](evidence/hot-news-scope-final-render.json).
+기존 직원 설정·Slack 인증·PostgreSQL을 그대로 보존했고 서비스 8개와 두 운영 타이머가 정상이다.
+
+지역별 누락률·장시간 가용성·중요도 판단의 정확도는 이번 연결 인수만으로 확정하지 않는다.
+뉴스 원천은 BBC·CNBC·KBS 중심이며, 모든 국가·사건을 포괄한다는 뜻이 아니다. 거시 통계 및
+재난·보건 등 하위 분야의 새로운 실제 사건은 발생 시 추가 관찰한다. 일정 브리핑이나 뉴스
+건수 채우기는 추가하지 않았다.
