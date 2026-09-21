@@ -11,6 +11,7 @@ from .test_research_store import owner, request, row_for
 def returned(company, credentials, monkeypatch, tmp_path):
     path, recipe, _, contents = producer(tmp_path)
     monkeypatch.setattr("quant_company.research.store.load_recipe", lambda *args: recipe)
+    monkeypatch.setattr("quant_company.research.recipes.load_recipe", lambda *args: recipe)
     company.settings.company_code_commit = COMPANY_COMMIT
     _, row = request(company)
     owner(company, credentials, row)

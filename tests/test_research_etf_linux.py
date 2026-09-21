@@ -45,7 +45,8 @@ def test_actual_etf_evaluator_roundtrips_parquet_in_both_sandbox_phases(monkeypa
     module_spec.loader.exec_module(fixtures)
     generated = fixtures.stage_fixture(root / "generated", "A25")
     source = root / "base.bundle"
-    subprocess.run(["git", "bundle", "create", str(source), base], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "bundle", "create", str(source), "HEAD"], cwd=repo, check=True, capture_output=True)
+    assert subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip() == base
     config_path = generated.manifest.config_path
     prepared = prepare_workspace(source, sha_file(source), base, root / "prepared", (config_path,),
         tuple(generated.profile.protected_paths),
