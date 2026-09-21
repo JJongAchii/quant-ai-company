@@ -1,0 +1,23 @@
+{
+  "observed_at": "2026-09-21T05:10:11.813808+00:00",
+  "channel": "C0C2B9EUEGM",
+  "thread_ts": "1789633942.673909",
+  "actual_slack_api_read": true,
+  "preparation_origin": "authorized_codex_admin_preparation",
+  "prompt": {
+    "ts": "1789966459.779259",
+    "thread_ts": "1789633942.673909",
+    "user": "U0C23PPKR5L",
+    "bot_id": "B0C3035TX24",
+    "text": "[지시 v4] <@U0C250E23NW>\n연구 실행 명세: 국내 ETF P11 고정 후보 3개 재현\n개발기간 2014-01-01~2026-08-31, 준비기간 2012~2013. 월별 M1/M2/M3, 편도 비용 10/30bp. 고정된 코드·입력·결과와 기존 독립 감사의 재현 검증. 새 과학 시행 0회, 기준선·초과성과 미측정, 확증·투자 승인 아님.\n실행: 3070 · 코드 02649715bd36 · 지시 v4\n확인한 명세로 실행하려면 이 스레드에 아래 문구를 보내주세요.\n연구 승인 939b54bb-1004-56f4-b2ae-86512617f1c6 f0fb9af6a987"
+  },
+  "prompt_mentions_owner": true,
+  "preparation_final": {
+    "ts": "1789966514.094569",
+    "thread_ts": "1789633942.673909",
+    "user": "U0C23PPKR5L",
+    "bot_id": "B0C3035TX24",
+    "text": "[지시 v4] 서버 응답상 `kr-etf-p11-replay-v1` 명세 준비 요청이 접수됐으며, 현재 `pending_approval`(소유자 승인 대기)입니다. 이번 요청은 아직 실행 전입니다.\n\n실제 소유자가 이 Slack 스레드에 아래 명령을 그대로 보내주세요.\n\n`연구 승인 939b54bb-1004-56f4-b2ae-86512617f1c6 f0fb9af6a987`\n\n연구 서비스가 해당 명세에 대한 소유자의 직접 승인을 요구하므로 운영자 전달로 대체할 수 없습니다. 승인 범위는 기존 P11 후보 3개의 고정 재현이며, 새 과학 시행이나 확증·투자 승인은 포함하지 않습니다."
+  },
+  "owner_message_timestamps_after_prompt": []
+}

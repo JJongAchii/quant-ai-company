@@ -1,0 +1,90 @@
+{
+  "observed_at": "2026-09-21T06:58:16.408850+00:00",
+  "job_id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+  "state": "completed",
+  "revision": 5,
+  "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1789970318.691419:director",
+  "approved_by": "U0C250E23NW",
+  "source": {
+    "id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+    "approved": true,
+    "synthetic": false,
+    "metadata": {
+      "kind": "equivalent_replay",
+      "job_id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+      "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+      "audit_scope_digest": "e1c51cf90a17"
+    }
+  },
+  "source_reads": [
+    {
+      "message_id": "959dba39-181c-40be-b6a5-190db11a7f0c",
+      "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+      "source_read": true
+    }
+  ],
+  "turns": [
+    {
+      "id": "38958ab7-5920-58a7-8b01-d054615bbf3a",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "effort": "max",
+      "attempts": 40,
+      "error": "busy"
+    },
+    {
+      "id": "111e98a1-bf44-58e1-beea-4ef69c02d8fd",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "effort": "max",
+      "attempts": 1,
+      "error": null
+    }
+  ],
+  "recovery_events": [
+    {
+      "id": 324,
+      "kind": "research_preparation_recovered",
+      "created_at": "2026-09-21 06:44:01.289919+00:00",
+      "detail": {
+        "actor": "operator:codex-root",
+        "job_id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+        "revision": 5,
+        "prior_error": "worker_error",
+        "recovery_id": "5fe6b24e-daf8-4c97-b6ff-22fef105091f",
+        "lease_sha256": "f6e728cf1da61b1aaad0277f2b45b77615c8f728b7f2005b5ce510eba9bdc081",
+        "proof_digest": "595e4c0446f6a134998f0eb8d704959a80e5543d3b8cb15e39aedb9c911a49dd",
+        "new_launch_id": "615463e253ce47099bf92f4fe9a4cc9e",
+        "old_launch_id": "942d7e7c58694b8eb85172d5be20decf",
+        "company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+        "failure_digest": "3d8c5fe794d1977ac83d77d69168381f71fcfb1665ae5f1650d8e5f9ad2b0d80",
+        "failure_reason": "repository-commit-mismatch",
+        "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+        "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1789970318.691419:director",
+        "old_company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+        "preserved_sequence": 3,
+        "recovery_tool_commit": "125ad96bb8e0734c8a2940f342b9c35f73bfc2cc",
+        "execution_count_meaning": "execution_count=1 describes the sole economic replay; the preserved precheck launch ran no economics",
+        "launch_attempt_failures": 1,
+        "scientific_trials_added": 0,
+        "economic_executions_before_recovery": 0
+      }
+    }
+  ],
+  "final_delivery": {
+    "actual_slack_api_read": true,
+    "outbox_id": "8828a8fe-94ae-4ae2-9ca5-9108ef0db376",
+    "status": "delivered",
+    "sent_ts": "1789973527.351909",
+    "channel": "C0C2B9EUEGM",
+    "thread_ts": "1789633942.673909",
+    "matches_sent_text_after_html_entity_decode": true,
+    "comparison_rule": "Slack sender revision prefix plus outbox text; decode HTML entities on both sides",
+    "matches_expected_thread": true,
+    "mentions_owner": true,
+    "has_expected_report_url": true,
+    "is_bot_message": true,
+    "text_sha256": "f8f71291619920609f2e036f90cf38a6cf1b120575067fb48c5f14d0de7c6112",
+    "permalink": "https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789973527351909"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "ssh_user": "qresearch-worker",
+  "uid": 24021,
+  "host_and_container_uid_checked": true,
+  "ssh_config_valid": true,
+  "worker_token_installed": true,
+  "backup_credentials_installed": true,
+  "research_directory": "/var/lib/quant-company/research",
+  "production_research_enabled": false
+}

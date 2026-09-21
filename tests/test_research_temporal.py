@@ -32,7 +32,9 @@ async def test_real_temporal_research_report_survives_worker_restart_and_replays
                     await asyncio.sleep(0.05)
         restarted = Company(research.settings, research.roles)
         async with make_research_worker(client, restarted):
-            async with asyncio.timeout(10):
+            # A stopped worker's sticky queue can take the SDK's default 10s
+            # to hand over, followed by the workflow's next reconciliation tick.
+            async with asyncio.timeout(30):
                 while True:
                     history = await handle.fetch_history()
                     completions = [event for event in history.events if event.HasField("activity_task_completed_event_attributes")]

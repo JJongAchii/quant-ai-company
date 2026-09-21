@@ -1,0 +1,8 @@
+{
+  "local_html_sha256": "48f8ca6999ad8589212efa61fbf8f7d921f6e187009ec5706e04cd332ebd9d76",
+  "published_html_sha256": "73d9d64cccac2bf80b2b96cd39e59c88f847f7c7cd59a6bc0e41191bfd3c70b6",
+  "body_and_financial_charts_byte_equal": true,
+  "three_provenance_json_objects_semantically_equal": true,
+  "different_bytes": "nested recipe dictionaries are emitted in file JSON vs PostgreSQL jsonb key order",
+  "published_report_is_actual_server_file_and_s3_get_verified": true
+}

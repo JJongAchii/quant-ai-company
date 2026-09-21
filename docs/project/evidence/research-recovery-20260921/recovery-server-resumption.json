@@ -1,0 +1,11 @@
+{
+  "result": {
+    "ok": true,
+    "state": "claimed",
+    "duplicate": false,
+    "recovery_id": "5fe6b24e-daf8-4c97-b6ff-22fef105091f"
+  },
+  "tool_commit": "125ad96bb8e0734c8a2940f342b9c35f73bfc2cc",
+  "container_helper_sha256": "e67a7acf0069b29ea8da2839807ffb11587728621a5838733cffb18e76f089b2",
+  "proof_digest": "595e4c0446f6a134998f0eb8d704959a80e5543d3b8cb15e39aedb9c911a49dd"
+}

@@ -1,0 +1,25 @@
+{
+  "ci_run_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35569098450",
+  "original_result": {
+    "failed": 1,
+    "passed": 678,
+    "skipped": 2,
+    "deselected": 1
+  },
+  "failure": "test_real_temporal_research_report_survives_worker_restart_and_replays: TimeoutError waiting for second activity completion",
+  "observed_installed_sdk_sticky_handover_seconds": 10,
+  "previous_restart_test_wait_seconds": 10,
+  "corrected_restart_test_wait_seconds": 30,
+  "runtime_changes": false,
+  "economic_replay_changes": false,
+  "test_file_sha256": "d6d2da2b8198252a8637648b5d271867c0f62e72758fc1e63eb2d1e094ce88de",
+  "local_validation": {
+    "command": "uv run --frozen pytest -q tests/test_research_temporal.py",
+    "exit_code": 0,
+    "passed": 1,
+    "seconds": 13.62,
+    "postgres": "real disposable local PostgreSQL on 55439",
+    "temporal": "real local Temporal server"
+  },
+  "local_setup_note": "Initial test startup had no PostgreSQL listener on configured port; corrected the owned cluster port before test execution."
+}

@@ -1,0 +1,30 @@
+{
+  "job": {
+    "id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+    "revision": 5,
+    "state": "failed",
+    "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1789970318.691419:director",
+    "approved_by": "U0C250E23NW",
+    "approved_at": "2026-09-21T05:58:39.116+00:00",
+    "sequence": 3,
+    "error": "worker_error",
+    "notified_state": "failed",
+    "company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74"
+  },
+  "recent_status": [
+    {
+      "id": "7f4a00a0-1ee4-451d-a565-91c66a319518",
+      "status": "delivered",
+      "sent_ts": "1789970320.340739",
+      "error": null,
+      "text": "승인한 연구를 3070 대기열에 등록했습니다. 연결이 없으면 업무를 보존하고 기다립니다."
+    },
+    {
+      "id": "50eefef9-72a1-4748-bd1d-bcea4acf185c",
+      "status": "delivered",
+      "sent_ts": "1789970357.433059",
+      "error": null,
+      "text": "<@U0C250E23NW>\n연구 6a64df0e-9c60-555f-aa3a-a80a70e7f985: 실행 오류·결과 보존. 현재 확인되지 않은 성과 수치는 공개하지 않았습니다. 실행·수신 기록은 보존했습니다."
+    }
+  ]
+}

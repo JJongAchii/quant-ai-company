@@ -1,0 +1,8 @@
+{
+  "observed_at": "2026-09-21T06:16:07.674591+00:00",
+  "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260921T061228Z-f641bb87.tar.gz",
+  "bytes": 21189279,
+  "sha256": "c20e91a30d61af57687763b709b9931929b0adff6a773a0b872311a3b8168fa3",
+  "actual_s3_get": true,
+  "matches_backup_receipt": true
+}

@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-09-21T05:47:36.18999+00:00",
+  "project": {
+    "id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "revision": 5,
+    "status": "active"
+  },
+  "jobs": [
+    {
+      "id": "939b54bb-1004-56f4-b2ae-86512617f1c6",
+      "revision": 4,
+      "state": "cancelled",
+      "company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+      "approval_event_id": null,
+      "approved_at": null,
+      "claimed_at": null
+    },
+    {
+      "id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+      "revision": 5,
+      "state": "pending_approval",
+      "company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+      "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+      "approval_event_id": null,
+      "approved_at": null,
+      "claimed_at": null
+    }
+  ],
+  "busy_count": 0
+}

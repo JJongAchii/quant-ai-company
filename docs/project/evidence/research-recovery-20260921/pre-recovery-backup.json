@@ -1,0 +1,7 @@
+{
+  "backup": "/var/lib/quant-company/backups/company-20260921T061228Z-f641bb87.tar.gz",
+  "sha256": "c20e91a30d61af57687763b709b9931929b0adff6a773a0b872311a3b8168fa3",
+  "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260921T061228Z-f641bb87.tar.gz",
+  "release_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "secrets_included": false
+}

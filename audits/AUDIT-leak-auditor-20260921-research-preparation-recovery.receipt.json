@@ -1,0 +1,10 @@
+{
+  "artifact_url": null,
+  "audit": "AUDIT-leak-auditor-20260921-research-preparation-recovery.md",
+  "audit_sha256": "6b2e055ff9321625286c9dc50ee9a2f514a726687389b03c3db7ce43cc71e483",
+  "html_sha256": "462cd358b6936d036696d38a283458cfaff060840fefa15d55d0a9fb5a2318a8",
+  "rendered_at": "2026-09-21T15:38:04+09:00",
+  "renderer": 1,
+  "scope_digest": "ac155f665861",
+  "verdict": "pass"
+}

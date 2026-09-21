@@ -1,0 +1,107 @@
+{
+  "images": [
+    {
+      "ref": "quant-company:ae7517c5fbe79db92c1c19396a60711ecac120e1",
+      "exists": true,
+      "id": "sha256:50dfac506fec8871507c6bac506a3bdf59f82eb236a9442c3220c5d61cb6dfb6",
+      "tags": [
+        "quant-company:ae7517c5fbe79db92c1c19396a60711ecac120e1"
+      ],
+      "revision": "ae7517c5fbe79db92c1c19396a60711ecac120e1"
+    },
+    {
+      "ref": "quant-company-codex:ae7517c5fbe79db92c1c19396a60711ecac120e1",
+      "exists": true,
+      "id": "sha256:f7d8ddd0c2bb8d70f5eb74fa8fa64f9d25b3b41518a28c57ef3b14bad9e3b442",
+      "tags": [
+        "quant-company-codex:ae7517c5fbe79db92c1c19396a60711ecac120e1"
+      ],
+      "revision": "ae7517c5fbe79db92c1c19396a60711ecac120e1"
+    },
+    {
+      "ref": "quant-company-maintenance:ae7517c5fbe79db92c1c19396a60711ecac120e1",
+      "exists": true,
+      "id": "sha256:29b74a1d1bbf42735df10c9201bd25975e14ceaa3a4f11d7b72b5061f3f2d5e0",
+      "tags": [
+        "quant-company-maintenance:ae7517c5fbe79db92c1c19396a60711ecac120e1"
+      ],
+      "revision": "ae7517c5fbe79db92c1c19396a60711ecac120e1"
+    }
+  ],
+  "containers": [
+    {
+      "id": "22a99c7b8892aaf0a0390711b71783b6f1eeac8b9f8000f12335e8032b9f5acb",
+      "name": "/quant-company-worker-1",
+      "image_ref": "quant-company:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "image_id": "sha256:5ccc5d0690ca25a5397c547cef271e6384d3bf5b83e2cf7efebbd3cd55b2dcbb",
+      "started_at": "2026-09-21T04:51:02.482289659Z",
+      "restarts": 0,
+      "running": true
+    },
+    {
+      "id": "cd703c0937dd45c7cf6d5b4d5b91a0598e1fe6281ed113b5dc02e5a76579c240",
+      "name": "/quant-company-maintenance-1",
+      "image_ref": "quant-company-maintenance:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "image_id": "sha256:8b22c9a468f6793de4caf5f3f3de058aded8b2975d1e19d11b8f55ade2f1ff83",
+      "started_at": "2026-09-21T04:50:53.785989402Z",
+      "restarts": 0,
+      "running": true
+    },
+    {
+      "id": "416e1392269e7aa4e3a9361ee8556c34eaad16b0c1443fb6ff67827bd697aafd",
+      "name": "/quant-company-api-1",
+      "image_ref": "quant-company:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "image_id": "sha256:5ccc5d0690ca25a5397c547cef271e6384d3bf5b83e2cf7efebbd3cd55b2dcbb",
+      "started_at": "2026-09-21T04:50:53.456717675Z",
+      "restarts": 0,
+      "running": true
+    },
+    {
+      "id": "ad122e9b204fb972e4b95231a63277ff6b6bdc210136fef1b36e0a56d598e1cc",
+      "name": "/quant-company-dispatch-1",
+      "image_ref": "quant-company:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "image_id": "sha256:5ccc5d0690ca25a5397c547cef271e6384d3bf5b83e2cf7efebbd3cd55b2dcbb",
+      "started_at": "2026-09-21T04:50:52.922597284Z",
+      "restarts": 0,
+      "running": true
+    },
+    {
+      "id": "f545a12296d26f145115ae8819e3958b2930b648980b6669a73b2831f436c9b5",
+      "name": "/quant-company-codex-runtime-1",
+      "image_ref": "quant-company-codex:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "image_id": "sha256:8f1c8cfd60503a17f49554455595a71197fa661258f4b17a3baafc0c0af12859",
+      "started_at": "2026-09-21T04:50:54.595065955Z",
+      "restarts": 0,
+      "running": true
+    },
+    {
+      "id": "ea45ac2cdcec26afd61614998ff1673fcb3737fef2bf77ae2169bd9bc2801fe1",
+      "name": "/quant-company-claude-runtime-1",
+      "image_ref": "quant-company-claude:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "image_id": "sha256:f82844e2893be9f805a50fb21b04704d4d022350332f91d760bc2f00b130abb7",
+      "started_at": "2026-09-21T04:50:53.159411635Z",
+      "restarts": 0,
+      "running": true
+    },
+    {
+      "id": "a88d239f3dc79bc27ab3bd6a2439a177b6401c006630ae6f20bbff68d1cd8086",
+      "name": "/quant-company-slack-socket-1",
+      "image_ref": "quant-company:9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "image_id": "sha256:5ccc5d0690ca25a5397c547cef271e6384d3bf5b83e2cf7efebbd3cd55b2dcbb",
+      "started_at": "2026-09-21T04:50:54.154105304Z",
+      "restarts": 0,
+      "running": true
+    },
+    {
+      "id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+      "name": "/quant-company-postgres-1",
+      "image_ref": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "image_id": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "started_at": "2026-09-21T01:28:20.371309952Z",
+      "restarts": 1,
+      "running": true
+    }
+  ],
+  "receipt_exists": false,
+  "available_bytes": 2172936192
+}

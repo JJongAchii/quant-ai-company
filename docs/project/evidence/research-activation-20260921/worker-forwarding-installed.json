@@ -1,0 +1,7 @@
+{
+  "tunnel_unit": "active",
+  "linger": "Linger=yes",
+  "private_key_stays_on_worker": true,
+  "host_key_pinned_from_trusted_admin_connection": true,
+  "research_executor_started": false
+}
