@@ -175,6 +175,7 @@ def adaptive(tmp_path, monkeypatch, pinned_company):  # noqa: F811 -- imported p
     source_bundle, base = snapshot(tmp_path / "research", {
         "driver.py": "# Pinned synthetic evaluator protocol; not an economic strategy.\n",
         "model.py": "fixture = 1\n", "config.json": '{"fixture":true}\n',
+        "history/results.json": '{"fixture":"not accessible to qualification"}\n',
     })
     prepared = prepare_workspace(source_bundle, sha_file(source_bundle), base, tmp_path / "prepared",
                                  ("model.py",), ("driver.py",),
@@ -206,7 +207,7 @@ def adaptive(tmp_path, monkeypatch, pinned_company):  # noqa: F811 -- imported p
         input_files[name] = sha_file(file)
     public = AdaptiveExecutionProfile(
         id="kr-etf-monthly-python-v1", entrypoint="driver.py", entrypoint_sha256=prepared.manifest["files"]["driver.py"],
-        protected_paths=["driver.py"], code_paths=list(prepared.manifest["files"]), python_executable=runtime["python_executable"],
+        protected_paths=["driver.py"], code_paths=["driver.py", "model.py", "config.json"], python_executable=runtime["python_executable"],
         python_sha256=runtime["python_sha256"],
         runtime_mounts=[{"target": mount["target"], "sha256": mount["sha256"]} for mount in runtime["mounts"]],
         qualification_input_names=["warmup/observations.json"], evaluation_input_names=list(input_files),
@@ -233,7 +234,8 @@ def adaptive(tmp_path, monkeypatch, pinned_company):  # noqa: F811 -- imported p
     )
     manifest = AdaptiveManifest(
         mission_id=uuid4(), mission_digest=record_digest(spec), trial_id=plan.trial_id, plan_digest=record_digest(plan),
-        plan=plan, spec=spec, code_files=prepared.manifest["files"], bundle_sha256=prepared.bundle_sha256,
+        plan=plan, spec=spec, code_files={path: prepared.manifest["files"][path] for path in public.code_paths},
+        bundle_sha256=prepared.bundle_sha256,
         config_path="config.json", company_commit=pinned_company[1],
     )
     assignment = AdaptiveAssignment(job_id=uuid4(), project_id=uuid4(), revision=1,
@@ -287,6 +289,8 @@ def test_qualification_real_git_transport_child_and_typed_artifact(adaptive):
     assert record_digest(adaptive.manifest.spec) == fingerprint(adaptive.manifest.spec.model_dump(mode="json"))
     assert record_digest(adaptive.manifest.plan) == fingerprint(adaptive.manifest.plan.model_dump(mode="json"))
     assert parse_assignment(adaptive.assignment.model_dump(mode="json")) == adaptive.assignment
+    assert "history/results.json" in adaptive.prepared.manifest["files"]
+    assert "history/results.json" not in adaptive.manifest.code_files
     adaptive.worker().step()
     finish(adaptive)
     assert len(adaptive.children) == 1 and len(adaptive.transport.downloads) == 1
@@ -439,3 +443,56 @@ def test_actual_executor_rejects_non3070_host_before_files_or_commands(adaptive,
         adaptive_executor.execute_adaptive(adaptive.config, adaptive.assignment, adaptive.manifest,
                                            adaptive.directory, "2026-09-21T00:00:00+00:00")
     assert not adaptive.directory.exists()
+
+
+def test_queued_old_pin_uses_only_verified_retained_release(adaptive, tmp_path):
+    from quant_company.research.releases import activate_release, prepare_release
+
+    source = adaptive.config.company_repo
+    bundle = tmp_path / "old-company.bundle"
+    git(source, "bundle", "create", str(bundle), "HEAD")
+    releases = tmp_path / "releases"
+    releases.mkdir()
+    first = prepare_release(source_snapshot=bundle, snapshot_sha256=sha_file(bundle),
+                            commit=adaptive.config.company_commit, release_root=releases, config=adaptive.config)
+    active_path = tmp_path / "active-worker.json"
+    old = activate_release(first, active_config=active_path)
+    # Prepare an actual newer immutable company release; the queued assignment
+    # remains bound to the old company commit and is never rewritten.
+    newer = tmp_path / "new-company"
+    subprocess.run(["git", "clone", "-q", "--no-hardlinks", str(source), str(newer)], check=True)
+    (newer / "reviewed-release.txt").write_text("operator fixture release change\n")
+    git(newer, "add", ".")
+    git(newer, "-c", "user.name=Fixture", "-c", "user.email=fixture@example.test",
+        "-c", "core.hooksPath=/dev/null", "commit", "-qm", "Newer polling release")
+    commit = git(newer, "rev-parse", "HEAD")
+    bundle = tmp_path / "new-company.bundle"
+    git(newer, "bundle", "create", str(bundle), "HEAD")
+    second = prepare_release(source_snapshot=bundle, snapshot_sha256=sha_file(bundle), commit=commit,
+                             release_root=releases, config=old)
+    current = activate_release(second, active_config=active_path)
+    assert current.company_commit != adaptive.assignment.manifest.company_commit
+    Worker(current, adaptive.client).step()
+    eventually(lambda: (adaptive.directory / "result.json").exists(), timeout=10)
+    Worker(current, adaptive.client).step()
+    assert len(adaptive.children) == 1 and len(adaptive.transport.uploads) == 1
+    stored = WorkerConfig.from_file(adaptive.directory / "execution-config.json")
+    assert stored.company_repo == old.company_repo and stored.company_commit == old.company_commit
+    assert read_json(current.release_registry_file)["releases"] == {
+        first.commit: str(first.config_path), second.commit: str(second.config_path),
+    }
+    with zipfile.ZipFile(adaptive.directory / "artifact.zip") as archive:
+        receipt = AdaptiveExecutionReceipt.model_validate_json(archive.read("receipt.json"))
+        assert receipt.company_commit == old.company_commit
+
+
+def test_cancel_during_bundle_wait_never_rearms_stale_run(adaptive):
+    adaptive.transport.lose_download = True
+    with pytest.raises(httpx.ReadTimeout):
+        adaptive.worker().step()
+    adaptive.transport.assignment = adaptive.assignment.model_copy(update={"action": "cancel"})
+    adaptive.worker().step()
+    adaptive.transport.assignment = adaptive.assignment
+    adaptive.worker().step()
+    assert not adaptive.children
+    assert adaptive.transport.updates[-1]["state"] == "cancelled"

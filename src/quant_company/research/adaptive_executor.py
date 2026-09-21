@@ -95,6 +95,8 @@ def load_profile(config: WorkerConfig, manifest: AdaptiveManifest) -> AdaptivePr
         raise ExecutionBlocked("adaptive-profile-input-scope-mismatch")
     if set(manifest.code_files) != set(public.code_paths):
         raise ExecutionBlocked("adaptive-code-outside-approved-closure")
+    if not set(manifest.plan.changed_paths) <= set(public.code_paths):
+        raise ExecutionBlocked("adaptive-changes-outside-code-closure")
     if manifest.code_files.get(public.entrypoint) != public.entrypoint_sha256:
         raise ExecutionBlocked("adaptive-evaluator-digest-mismatch")
     if any(path == protected or path.startswith(protected + "/") for path in manifest.plan.changed_paths

@@ -116,3 +116,50 @@ def test_invalid_pin_or_bundle_is_rejected_before_activation(release_source, tmp
     with pytest.raises(ReleaseError):
         verify_company_pin(config.model_copy(update={"company_commit": "a" * 40}))
     assert not (tmp_path / "active-worker.json").exists()
+
+
+@pytest.mark.parametrize("change", [
+    {"api_url": "http://127.0.0.1:19999"}, {"token_file": Path("/tmp/different-token")},
+    {"state_dir": Path("/tmp/different-jobs")},
+])
+def test_retained_release_cannot_redirect_transport_or_credentials(release_source, tmp_path, change):
+    from quant_company.research.releases import resolve_release_config
+
+    prepared = prepare(release_source)
+    old = activate_release(prepared, active_config=tmp_path / "active.json")
+    current = old.model_copy(update={"company_commit": "a" * 40, **change})
+    with pytest.raises(ReleaseError, match="authority-mismatch"):
+        resolve_release_config(current, old.company_commit)
+
+
+def test_unknown_registry_pin_fails_closed(release_source, tmp_path):
+    from quant_company.research.releases import resolve_release_config
+
+    prepared = prepare(release_source)
+    current = activate_release(prepared, active_config=tmp_path / "active.json")
+    with pytest.raises(ReleaseError, match="not-registered"):
+        resolve_release_config(current, "a" * 40)
+
+
+def test_previous_release_rolls_back_with_both_retained_configs(release_source, tmp_path):
+    from quant_company.research.releases import rollback_release
+
+    first = prepare(release_source)
+    active = tmp_path / "active.json"
+    old = activate_release(first, active_config=active)
+    source = tmp_path / "second-source"
+    subprocess.run(["git", "clone", "-q", "--no-hardlinks", str(old.company_repo), str(source)], check=True)
+    (source / "version.txt").write_text("second reviewed release\n")
+    subprocess.run(["git", "-C", str(source), "add", "."], check=True)
+    subprocess.run(["git", "-C", str(source), "-c", "user.name=Fixture", "-c", "user.email=fixture@example.test",
+                    "-c", "core.hooksPath=/dev/null", "commit", "-qm", "Rollback fixture"], check=True)
+    commit = subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"], text=True).strip()
+    bundle = tmp_path / "second.bundle"
+    subprocess.run(["git", "-C", str(source), "bundle", "create", str(bundle), "HEAD"], check=True)
+    second = prepare_release(source_snapshot=bundle, snapshot_sha256=sha_file(bundle), commit=commit,
+                             release_root=release_source[2], config=old)
+    current = activate_release(second, active_config=active)
+    restored = rollback_release(active_config=active)
+    assert restored == old == WorkerConfig.from_file(active)
+    assert WorkerConfig.from_file(active.with_name(active.name + ".previous")) == current
+    assert set(read_json(old.release_registry_file)["releases"]) == {old.company_commit, current.company_commit}

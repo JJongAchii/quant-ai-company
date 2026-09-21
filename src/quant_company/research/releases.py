@@ -12,8 +12,8 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from .worker import WorkerConfig, atomic_json, read_json, sha_file
-from .workspace import WorkspaceError, canonical_path, prepare_workspace, snapshot_files
+from .worker import WorkerConfig, atomic_json, exclusive_lock, read_json, sha_file
+from .workspace import COMMIT_PATTERN, WorkspaceError, canonical_path, prepare_workspace, snapshot_files
 
 
 class ReleaseError(ValueError):
@@ -54,12 +54,15 @@ def prepare_release(*, source_snapshot: Path, snapshot_sha256: str, commit: str,
             raise ReleaseError("release-already-exists")
         prepared = prepare_workspace(source_snapshot, snapshot_sha256, commit, directory, (), (), ())
         pinned = WorkerConfig.model_validate({**config.model_dump(mode="json"),
-                                             "company_repo": str(prepared.worktree), "company_commit": commit})
+                                             "company_repo": str(prepared.worktree), "company_commit": commit,
+                                             "release_registry_file": str(config.release_registry_file or root / "registry.json")})
         # Relative paths would change meaning when the active configuration moves.
         for name in ("token_file", "state_dir", "repo_source", "input_source", "evidence_repo",
                      "research_python", "company_repo"):
             if not getattr(pinned, name).is_absolute():
                 raise ReleaseError("release-config-path-must-be-absolute")
+        if not pinned.release_registry_file.is_absolute():
+            raise ReleaseError("release-registry-path-must-be-absolute")
         if any(not path.is_absolute() for path in pinned.adaptive_profiles.values()):
             raise ReleaseError("release-profile-path-must-be-absolute")
         verify_company_pin(pinned)
@@ -117,7 +120,93 @@ def activate_release(release: PreparedRelease, *, active_config: Path) -> Worker
         target = canonical_path(active_config, exists=False)
         if target.is_relative_to(release.directory) or not target.parent.is_dir():
             raise ReleaseError("invalid-active-config-path")
-        atomic_json(target, config.model_dump(mode="json"))
+        registry = canonical_path(config.release_registry_file, exists=False)
+        if registry.is_relative_to(release.directory) or registry == target or not registry.parent.is_dir():
+            raise ReleaseError("invalid-release-registry-path")
+        with exclusive_lock(registry.with_name(registry.name + ".lock")):
+            refs = _read_registry(registry)
+            previous = refs.get(release.commit)
+            if previous is not None and previous != str(path):
+                raise ReleaseError("release-pin-already-registered")
+            refs[release.commit] = str(path)
+            # A crash here can add an unused retained release, never leave an
+            # active config referring to an unregistered release.
+            atomic_json(registry, {"schema_version": 1, "releases": refs})
+            if target.exists():
+                atomic_json(target.with_name(target.name + ".previous"), read_json(target))
+            atomic_json(target, config.model_dump(mode="json"))
         return config
     except (WorkspaceError, OSError, KeyError):
         raise ReleaseError("release-activation-failed") from None
+
+
+def _read_registry(path: Path) -> dict[str, str]:
+    if not path.exists():
+        return {}
+    value = read_json(path)
+    if set(value) != {"schema_version", "releases"} or value["schema_version"] != 1:
+        raise ReleaseError("invalid-release-registry")
+    refs = value["releases"]
+    if not isinstance(refs, dict) or any(
+        not isinstance(commit, str) or not COMMIT_PATTERN.fullmatch(commit)
+        or not isinstance(location, str) or not Path(location).is_absolute()
+        for commit, location in refs.items()
+    ):
+        raise ReleaseError("invalid-release-registry")
+    return dict(refs)
+
+
+def _same_transport(current: WorkerConfig, retained: WorkerConfig) -> None:
+    if any(getattr(current, name) != getattr(retained, name)
+           for name in ("api_url", "worker_id", "token_file", "state_dir")):
+        raise ReleaseError("retained-release-authority-mismatch")
+
+
+def resolve_release_config(current: WorkerConfig, commit: str) -> WorkerConfig:
+    """Resolve only an exact operator-registered release, never search or fetch."""
+    if current.company_commit == commit:
+        verify_company_pin(current)
+        return current
+    if current.release_registry_file is None:
+        raise ReleaseError("retained-release-not-registered")
+    try:
+        registry = canonical_path(current.release_registry_file)
+        location = _read_registry(registry).get(commit)
+        if location is None:
+            raise ReleaseError("retained-release-not-registered")
+        path = canonical_path(Path(location))
+        config = WorkerConfig.from_file(path)
+        if config.company_commit != commit:
+            raise ReleaseError("retained-release-pin-mismatch")
+        _same_transport(current, config)
+        verify_company_pin(config)
+        receipt = read_json(path.parent / "release.json")
+        if (receipt["commit"] != commit or receipt["config_sha256"] != sha_file(path)
+                or receipt["code_files"] != snapshot_files(config.company_repo, commit)):
+            raise ReleaseError("retained-release-receipt-mismatch")
+        return config
+    except (WorkspaceError, OSError, KeyError, TypeError):
+        raise ReleaseError("retained-release-unavailable") from None
+
+
+def rollback_release(*, active_config: Path) -> WorkerConfig:
+    """Select the previous verified config. Service restart remains an operator action."""
+    try:
+        active = canonical_path(active_config)
+        previous_path = canonical_path(active.with_name(active.name + ".previous"))
+        current = WorkerConfig.from_file(active)
+        previous = WorkerConfig.from_file(previous_path)
+        _same_transport(current, previous)
+        restored = resolve_release_config(current, previous.company_commit)
+        if restored != previous:
+            raise ReleaseError("previous-config-differs-from-retained-release")
+        registry = canonical_path(current.release_registry_file)
+        with exclusive_lock(registry.with_name(registry.name + ".lock")):
+            # Detect an intervening operator swap instead of rolling it back.
+            if WorkerConfig.from_file(active) != current or WorkerConfig.from_file(previous_path) != previous:
+                raise ReleaseError("active-config-changed-before-rollback")
+            atomic_json(active, previous.model_dump(mode="json"))
+            atomic_json(previous_path, current.model_dump(mode="json"))
+        return previous
+    except (WorkspaceError, OSError, KeyError, TypeError):
+        raise ReleaseError("release-rollback-failed") from None

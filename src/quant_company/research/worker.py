@@ -163,6 +163,7 @@ class WorkerConfig(StrictModel):
     company_repo: Path
     company_commit: Commit
     adaptive_profiles: dict[str, Path] = Field(default_factory=dict)
+    release_registry_file: Path | None = None
     worker_id: Literal["worker"] = "worker"
     poll_seconds: float = Field(default=5, ge=0.1, le=60)
     heartbeat_seconds: float = Field(default=15, ge=0.1, le=300)
@@ -194,6 +195,8 @@ class WorkerConfig(StrictModel):
             item = getattr(value, field)
             # Do not resolve the venv executable symlink: its path selects the venv.
             setattr(value, field, Path(os.path.abspath(path.parent / item)))
+        if value.release_registry_file is not None:
+            value.release_registry_file = Path(os.path.abspath(path.parent / value.release_registry_file))
         value.adaptive_profiles = {name: Path(os.path.abspath(path.parent / item))
                                    for name, item in value.adaptive_profiles.items()}
         return value
@@ -293,18 +296,20 @@ class Worker:
                 return True
         return False
 
-    def _launch(self, directory: Path, state: dict, recipe: Recipe | AdaptiveManifest) -> None:
+    def _launch(self, directory: Path, state: dict, recipe: Recipe | AdaptiveManifest,
+                config: WorkerConfig | None = None) -> None:
         if self._other_active(directory):
             self._uncertain(directory, state, "other-job-unreconciled")
             return
+        config = config or self.config
         launch_id = uuid4().hex
         atomic_json(directory / "recipe.json", recipe.model_dump(mode="json"))
-        atomic_json(directory / "execution-config.json", self.config.model_dump(mode="json"))
+        atomic_json(directory / "execution-config.json", config.model_dump(mode="json"))
         state.pop("preparing_bundle", None)
         self._save(directory, state)
         atomic_json(directory / "launch-intent.json", {
             "launch_id": launch_id, "assignment": state["assignment"], "created_at": utc_now(),
-            "company_commit": self.config.company_commit, "phase": "prepared",
+            "company_commit": config.company_commit, "phase": "prepared",
         })
         self._resume_prepared_launch(directory, state)
 
@@ -525,7 +530,7 @@ class Worker:
                     signal_group(read_json(process_path)["identity"], signal.SIGTERM)
                 self._uncertain(directory, state, "assignment-identity-changed")
                 return
-        if assignment.action == "cancel":
+        if assignment.action == "cancel" or state.get("cancelled"):
             self.reconcile(directory, state, cancel=True)
             return
         if state.get("uncertain_reason"):
@@ -538,8 +543,13 @@ class Worker:
             if (directory / "launch-intent.json").exists():
                 self._uncertain(directory, state, "launch-intent-without-local-state")
                 return
+            execution_config = self.config
             if isinstance(assignment, AdaptiveAssignment):
-                if assignment.manifest.company_commit != self.config.company_commit:
+                from .releases import ReleaseError, resolve_release_config
+
+                try:
+                    execution_config = resolve_release_config(self.config, assignment.manifest.company_commit)
+                except ReleaseError:
                     self._uncertain(directory, state, "adaptive-company-pin-mismatch")
                     return
                 self._download_bundle(directory, assignment)
@@ -549,7 +559,7 @@ class Worker:
             if canonical_sha(recipe.model_dump(mode="json")) != assignment.manifest_digest:
                 self._uncertain(directory, state, "recipe-manifest-mismatch")
                 return
-            self._launch(directory, state, recipe)
+            self._launch(directory, state, recipe, execution_config)
         elif not state.get("uncertain_reason") and not (directory / "stop.json").exists():
             intent_path = directory / "launch-intent.json"
             if intent_path.exists() and read_json(intent_path).get("phase") == "prepared":
