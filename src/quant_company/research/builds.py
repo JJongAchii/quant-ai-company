@@ -154,7 +154,7 @@ def read_stage_file(company, stage, arguments):
     # All mappings are created by the trusted controller, not accepted from a model path.
     if not path.resolve().is_relative_to(company.settings.research_artifact_dir.resolve()):
         raise PolicyError("Research evidence escapes the managed artifact store")
-    content = path.read_text()
+    content = path.read_bytes().decode("utf-8")
     if offset >= len(content) and not (offset == 0 and not content):
         raise PolicyError("Research evidence offset is past EOF")
     return {"path": name, "sha256": entry["sha256"], "offset": offset, "content": content[offset:offset+12000],
