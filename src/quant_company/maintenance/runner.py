@@ -68,6 +68,13 @@ def compact_prompt_value(value, *, string_chars, list_items):
     return value
 
 
+def repository_prompt_paths(entries):
+    """Expose only paths the maintainer can actually inspect as repository evidence."""
+    from ..system_state import readable
+
+    return sorted(path for path in entries if readable(path))
+
+
 def proposal_material(payload, schema):
     """Share a finite provider context budget; retain full evidence and reserved prompts in the DB."""
     material = copy.deepcopy(payload)
@@ -208,7 +215,7 @@ class Maintainer:
                 "current_implementation": payload["diagnosis"],
                 "investigated_code": inspected,
                 "external_research": external,
-                "repository_paths": sorted(payload["snapshot"]["entries"]),
+                "repository_paths": repository_prompt_paths(payload["snapshot"]["entries"]),
                 "inspection_rounds_remaining": self.config.max_investigation_rounds - round_number,
                 "evidence_references": [payload["diagnosis"]["key"]] + [r["key"] for r in
                     payload["diagnosis"]["source_files"] + inspected + external],
