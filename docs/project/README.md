@@ -5,6 +5,7 @@
 회사 운영 검증 기록을 여기로 모았습니다. 이후 회사 기록은 quant-workspace에 추가하지 않습니다.
 
 - [현재 사용 범위와 로드맵](NEXT-STEPS.md)
+- [hot-news Reporter 무료 매체·검색과 원래 뉴스 범위 복원](HOT-NEWS-SCOPE-RESTORATION.md)
 - [hot-news Reporter 운영 게시·스레드·재시작 인수](HOT-NEWS-ACTIVATION.md)
 - [hot-news Reporter 구현·소스·실제 모델 검증](HOT-NEWS-VALIDATION.md)
 - [실제 웹 검색·원문 분석·개선 BOT 구현 인수](WEB-ENGINEERING-VALIDATION.md)

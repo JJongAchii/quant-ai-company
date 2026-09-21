@@ -1,0 +1,96 @@
+{
+  "checked_at": "2026-09-21T00:43:33.385351+00:00",
+  "commit": "4eb5847f64153c0dd3e622a41c18c7f98795983a",
+  "services": [
+    {
+      "name": "/quant-company-postgres-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "started_at": "2026-09-16T05:08:00.998614759Z",
+      "restart_count": 0,
+      "revision": null
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "started_at": "2026-09-21T00:41:14.192001865Z",
+      "restart_count": 0,
+      "revision": "4eb5847f64153c0dd3e622a41c18c7f98795983a"
+    },
+    {
+      "name": "/quant-company-api-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "started_at": "2026-09-21T00:42:56.762216367Z",
+      "restart_count": 0,
+      "revision": "4eb5847f64153c0dd3e622a41c18c7f98795983a"
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "started_at": "2026-09-21T00:42:55.826250927Z",
+      "restart_count": 0,
+      "revision": "4eb5847f64153c0dd3e622a41c18c7f98795983a"
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "started_at": "2026-09-21T00:42:55.613019714Z",
+      "restart_count": 0,
+      "revision": "4eb5847f64153c0dd3e622a41c18c7f98795983a"
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "started_at": "2026-09-21T00:42:56.38554741Z",
+      "restart_count": 0,
+      "revision": "4eb5847f64153c0dd3e622a41c18c7f98795983a"
+    },
+    {
+      "name": "/quant-company-maintenance-1",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "started_at": "2026-09-21T00:42:56.086518398Z",
+      "restart_count": 0,
+      "revision": "4eb5847f64153c0dd3e622a41c18c7f98795983a"
+    },
+    {
+      "name": "/quant-company-claude-runtime-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "started_at": "2026-09-21T00:41:13.482178785Z",
+      "restart_count": 0,
+      "revision": "4eb5847f64153c0dd3e622a41c18c7f98795983a"
+    }
+  ],
+  "postgres_container_id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+  "existing_roles_preserved": true,
+  "existing_slack_credentials_preserved": true,
+  "codex_has_no_slack_or_database_secret_mounts": true,
+  "flags": {
+    "COMPANY_NEWS_ENABLED": "true",
+    "NEWS_PUBLISH_ENABLED": "true",
+    "NEWS_SEARCH_ENABLED": "true",
+    "NEWS_CHANNEL_ID": "C0C2J1SSX09",
+    "NEWS_OWNER_USER": "U0C250E23NW",
+    "NEWS_MAX_AGE_HOURS": "24",
+    "NEWS_INITIAL_LOOKBACK_MINUTES": "1440"
+  },
+  "timers": {
+    "quant-company-release.timer": "active",
+    "quant-company-backup.timer": "active"
+  },
+  "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/root        58G   48G  9.4G  84% /\n"
+}
