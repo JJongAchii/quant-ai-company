@@ -35,6 +35,11 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 토큰 절약과 KST 06:00~24:00 발송·야간 모음의 설정 및 검증 상태는 [최적화 인수 기록](docs/project/HOT-NEWS-EFFICIENCY.md)에 남깁니다.
 정기 브리핑은 추후 `daily-brief`에서 다룹니다.
 
+`tech-feed`에는 **AI 호출 없이** 국내외 기술 RSS·Atom의 원문 제목·링크·짧은 발췌를 전달하는
+별도 구독 기능을 추가했습니다. 12개 소스를 10분 대기 간격으로 수집하고 KST 06~24시에 한 건씩
+발송하며, 기존 Reporter·DB·Temporal을 사용합니다. 초기 활성화 기본값은 꺼짐입니다.
+[설정·데모·복구](docs/tech-feed.md), [검증 및 운영 상태](docs/project/TECH-FEED-VALIDATION.md)를 참고하세요.
+
 ## 동작
 
 ```mermaid

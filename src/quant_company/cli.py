@@ -69,6 +69,9 @@ def main():
     news = sub.add_parser("news")
     news.add_argument("action", choices=["status", "collect", "review", "probe"])
     news.add_argument("--output", type=Path)
+    tech_feed = sub.add_parser("tech-feed")
+    tech_feed.add_argument("action", choices=["status", "collect", "probe"])
+    tech_feed.add_argument("--output", type=Path)
     sub.add_parser("demo")
     maintenance = sub.add_parser("maintenance")
     maintenance.add_argument("--config", type=Path, required=True)
@@ -109,8 +112,11 @@ def main():
         if args.transport == "http" and not (args.base_url or "").startswith("https://"):
             parser.error("Slack public callback URL must use HTTPS")
         manifests(Company(settings), args.base_url, args.output, args.transport, args.include_reporter)
-    elif args.command == "news":
-        from .news.commands import command
+    elif args.command in {"news", "tech-feed"}:
+        if args.command == "news":
+            from .news.commands import command
+        else:
+            from .tech_feed.commands import command
 
         result = asyncio.run(command(settings, args.action))
         rendered = json.dumps(result, default=str, ensure_ascii=False, indent=2) + "\n"
