@@ -29,7 +29,7 @@ class NewsStore:
                             "allowed_channels": settings.slack_allowed_channels,
                             "allowed_users": settings.slack_allowed_users,
                             "max_age": settings.news_max_age_hours,
-                            "editor_policy": 2,
+                            "editor_policy": 3,
                             "optimization": settings.news_optimization_enabled,
                             "screening_policy": 2,
                             "delivery_window": settings.news_delivery_window_enabled,
@@ -191,14 +191,16 @@ class NewsStore:
                     ORDER BY (a.collected_at>=%s AND a.collected_at<%s) DESC,
                         COALESCE((a.screening->>'importance')::int,0) DESC,
                         row_number() OVER (PARTITION BY s.config->>'origin_group' ORDER BY a.collected_at,a.id),
-                        a.collected_at,a.id LIMIT 6""", (state, self.company.settings.news_max_age_hours,
+                        a.collected_at,a.id LIMIT %s""", (state, self.company.settings.news_max_age_hours,
                             schedule.overnight_start() if self.company.settings.news_delivery_window_enabled else datetime.min.replace(tzinfo=UTC),
-                            schedule.opening() if self.company.settings.news_delivery_window_enabled else datetime.min.replace(tzinfo=UTC))).fetchall())
+                            schedule.opening() if self.company.settings.news_delivery_window_enabled else datetime.min.replace(tzinfo=UTC),
+                            8 if optimized else 6)).fetchall())
             primary = [r["id"] for r in rows if r["state"] == primary_state]
             if not primary:
                 return {"state": "idle"}
             if optimized:
-                related = sorted({identity for r in rows for identity in (r["screening"] or {}).get("related_ids", [])} - set(primary))[:6]
+                related = list(dict.fromkeys(identity for r in rows for identity in (r["screening"] or {}).get("related_ids", [])
+                                             if identity not in primary))[:min(6, 12-len(primary))]
                 rows.extend(conn.execute("""SELECT a.*,s.config FROM news_articles a JOIN news_sources s ON s.id=a.source_id
                     WHERE a.id=ANY(%s) AND a.state IN ('held','selected','ignored') AND s.enabled AND a.source_digest=s.config_digest
                     AND a.published_at>=now()-make_interval(hours=>%s)""",
@@ -230,9 +232,9 @@ class NewsStore:
                 JOIN outbox o ON o.id=n.root_message_id
                 JOIN projects p ON p.id=n.project_id WHERE p.channel=%s AND p.owner_user=%s
                 AND n.updated_at>now()-interval '3 days'
-                ORDER BY (n.id::text=ANY(%s)) DESC,n.updated_at DESC LIMIT %s""",
+                ORDER BY (n.id::text=ANY(%s)) DESC,n.updated_at DESC LIMIT 30""",
                                   (self.company.settings.news_channel_id, self.company.settings.news_owner_user,
-                                   required_events, max(12, len(required_events)) if optimized else 30)).fetchall()
+                                   required_events)).fetchall()
             bundle = as_json({"primary_ids": primary, "articles": articles, "events": events,
                               "as_of": datetime.now(UTC), "mode": "publish" if self.company.settings.news_publish_enabled else "preview"})
             if self.company.settings.news_delivery_window_enabled and any(

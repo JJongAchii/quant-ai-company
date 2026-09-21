@@ -1,0 +1,713 @@
+{
+  "checked_at": "2026-09-21T07:22:12.838637+00:00",
+  "policy": "editor v3; eight primary originals; 30-event history retained; 12 originals total cap",
+  "mode": "real ChatGPT subscription and PostgreSQL, with explicitly simulated historical Slack roots; zero Slack writes",
+  "historical_context_count": 24,
+  "same_primary_articles": 24,
+  "cached_screen_reused_with_exact_request_digest": true,
+  "new_screen_inferences": 0,
+  "baseline_reviews": [
+    {
+      "id": "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+      "usage": {
+        "input_tokens": 26403,
+        "output_tokens": 3761,
+        "cached_input_tokens": 5888,
+        "reasoning_output_tokens": 516
+      }
+    },
+    {
+      "id": "news-bdcc3989-021b-4083-a516-db2f07d4d665",
+      "usage": {
+        "input_tokens": 25878,
+        "output_tokens": 1893,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 256
+      }
+    },
+    {
+      "id": "news-f9e78c92-872c-423e-b1cb-eb25e21ca1b1",
+      "usage": {
+        "input_tokens": 27257,
+        "output_tokens": 3276,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 345
+      }
+    },
+    {
+      "id": "news-fcc80ff3-e31d-4c7d-b4c9-58cd62797486",
+      "usage": {
+        "input_tokens": 26086,
+        "output_tokens": 2180,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 174
+      }
+    }
+  ],
+  "results": [
+    {
+      "state": "completed",
+      "selected": 13,
+      "next_delay": 2
+    },
+    {
+      "state": "completed",
+      "items": [
+        {
+          "state": "previewed",
+          "headline": "연합뉴스: 한은 원화국제결제망 시범운영 시작…평일 24시간 결제",
+          "reason": "같은 결제망 시범운영을 다룬 기사들을 통합했다. 두 기사 모두 한국은행 발표에 근거하므로 독립 확인으로 격상하지 않고 연합뉴스의 보도로 게재한다."
+        },
+        {
+          "state": "held",
+          "headline": "",
+          "reason": "트럼프의 폭스뉴스 통화 발언과 회동 가능성은 기존 사건과 중복이며, 미 국무부 경보도 이미 제공된 사건에 포함된다. 추가된 미국의 공격 결정 주장은 이란 측 주장이고, 사우디의 공습 요청은 출처가 명확하지 않다. 공격·해협 봉쇄 등 중대한 추가 내용도 독립된 원보도 두 곳의 근거가 없다. 유가 수치는 기존 보도와 관측 시각·계약월을 맞출 수 없어 정정이나 유의미한 후속 변동으로 판단하지 않았다."
+        },
+        {
+          "state": "previewed",
+          "headline": "SBS: 서울시, 신속통합기획 이후 214개 구역·30만7천 호 정비사업 추진 발표",
+          "reason": "서울 주택공급 관련 당일 발표 수치를 SBS 보도로 한정해 전한다. 정비사업 추진 물량을 준공·입주 물량으로 바꾸지 않으며, 공급난 해소라는 평가와 전임자 책임 주장은 제외한다."
+        },
+        {
+          "state": "previewed",
+          "headline": "이투데이: 농지 임대차 특별정비 11월 15일까지 연장…시설 양성화 요건 제시",
+          "reason": "기존 농지 대책에 없던 특별정비기간 연장과 불법 전용 시설의 양성화 요건을 추가한다. 본문 말미는 잘렸지만 선택한 내용과 별도 입법 필요성은 완결된 문장으로 확인된다. 잘린 시행 일정은 사용하지 않는다."
+        },
+        {
+          "state": "held",
+          "headline": "",
+          "reason": "신칸센 제한의 핵심 근거는 교도통신이 인용한 익명의 북한 선수단 관계자이고, 접촉 경위도 익명의 북일 관계자들에게 의존한다. SBS의 교도통신 인용은 별도 독립 원보도가 아니다. 제공된 자료에는 일본 측 제한 지침이나 독립된 추가 확인이 없어 익명 주장을 attributed_report로 게재할 수 없다."
+        },
+        {
+          "state": "previewed",
+          "headline": "이투데이: 서해 3000톤급 경비함정 2030년까지 17척 확대 계획",
+          "reason": "서해 경비전력과 국가 예산안의 구체적 확대 계획으로 중요성이 있다. 이투데이 보도로 귀속하고 예산안·건조 계획을 확정 집행이나 배치 완료로 표현하지 않는다. 특정 중국어선의 위법행위는 판단하지 않는다."
+        },
+        {
+          "state": "previewed",
+          "headline": "이투데이: 2024년 취업유발계수 7.8명으로 최저…부가가치율은 상승",
+          "reason": "당일 발표된 2024년 산업연관표를 다룬 신규 통계 보도다. 기존 반도체 일자리·9월 수출 사건과 기준 시점 및 지표가 다르다. 사진 설명의 2026년 GDP 수치와 기사 말미 전망은 제외한다."
+        }
+      ],
+      "next_delay": 300
+    },
+    {
+      "state": "completed",
+      "items": [
+        {
+          "state": "previewed",
+          "headline": "SBS: 메가특구 노동 특례 논의 위한 노사정 사전 협의 개최",
+          "reason": "승인된 매체의 실명 기자 보도로 노사정 사전 협의 개최와 참석 범위를 확인할 수 있다. 개최일이 확정되지 않은 실무회의와 예상 의제는 발행 사실에서 제외했다."
+        },
+        {
+          "state": "held",
+          "headline": "",
+          "reason": "주요 제조업체의 산업안전 감독 결과로 중요성이 있다. 다만 핵심인 법 위반 138건과 사법 처리 관련 내용은 노동부 발표를 인용한 단일 매체 보도뿐이다. 법 위반 주장과 사망 관련 내용을 뒷받침할 발표 원문 또는 독립적인 추가 보도가 없어 보류한다. 과태료는 부과 예정이며 유죄 판결이나 납부 완료로 해석할 수 없다."
+        },
+        {
+          "state": "ignored",
+          "headline": "",
+          "reason": "개별 식품 원료의 기능성 등록과 제품화 계획이 중심이다. 제공된 내용만으로는 주요 산업 변화나 공중보건 사건으로 선정할 중요성이 충분하지 않다. 임상시험의 대조군·표본 규모 등도 제시되지 않아 악력 변화 수치를 일반적인 효능으로 확대하지 않는다."
+        },
+        {
+          "state": "held",
+          "headline": "",
+          "reason": "서울 주택공급은 중요한 사안이지만 본문의 핵심은 전임 시정이 정비사업 해제를 유도했다는 정치적 주장과 공급 감소 원인에 대한 해석이다. 정비구역 389곳·43만 호 등의 원자료나 인과관계를 검증할 독립 근거가 없으며, 발언 사실로 바꾸어 귀속 보도하더라도 의혹을 뒷받침하지 못한다. 새로운 공급정책의 확정·시행도 확인되지 않아 보류한다."
+        },
+        {
+          "state": "previewed",
+          "headline": "이투데이: 포스코스틸리온·KG스틸 제품, 삼원계 도금 도장강판 첫 KS 인증",
+          "reason": "승인된 매체의 실명 기자 보도가 주요 철강업체 제품의 첫 KS 인증과 인증서비스 개시를 구체적으로 전한다. 인증일과 발표일을 구분하고, 의무화의 세부 적용 범위와 자재 성능 우월성은 발행 사실에 포함하지 않는다."
+        }
+      ],
+      "next_delay": 300
+    },
+    {
+      "state": "idle"
+    }
+  ],
+  "triages": [
+    {
+      "id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+      "state": "completed",
+      "error": null,
+      "response": {
+        "usage": {
+          "input_tokens": 19980,
+          "output_tokens": 2663,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 187
+        },
+        "decision": {
+          "say": "",
+          "tools": [],
+          "status": "complete",
+          "memories": [],
+          "messages": [],
+          "artifacts": [
+            {
+              "title": "News Screening",
+              "content": "{\"items\":[{\"article_id\":\"1aca3e3421e9dd037ec184170211ef08ff8b3d90f464cc1971de313b0d770ed4\",\"disposition\":\"ignore\",\"importance\":1,\"reason\":\"공공기관 정기 채용으로 거시적 영향이 제한적임\"},{\"article_id\":\"1b6687a10518420f75d739bf897052f900318308514aab1bdf8248d555cee8df\",\"disposition\":\"ignore\",\"importance\":2,\"reason\":\"지역 시범 앱 출시로 정책 파급력이 제한적임\"},{\"article_id\":\"2507a5d8da1cea6fc44a8f4e20c19120c1da523ed72eaa74924a66aa3268b37f\",\"disposition\":\"keep\",\"importance\":3,\"reason\":\"식용곤충 원료의 기능성 인정으로 식품·바이오 산업 활용 가능성이 있음\"},{\"article_id\":\"45161021ad98f9057ca01ab70056abc15e12b436cf55867d3849dd78b9ddd164\",\"disposition\":\"ignore\",\"importance\":2,\"reason\":\"공기업 내부 혁신 성과 발표로 외부 영향이 제한적임\"},{\"article_id\":\"4db97280b8ba41005611ed250574036edd85a10a974bec3ad5341a1720230485\",\"disposition\":\"keep\",\"importance\":5,\"reason\":\"원화 국제결제 인프라 시범운영으로 금융시장·통화 국제화에 중요함\",\"related_ids\":[\"042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9\"]},{\"article_id\":\"554b02bb609c362562e265e9c9b35c0346f745bff70b4d01337ae4237f5f1200\",\"disposition\":\"keep\",\"importance\":4,\"reason\":\"농지 불법전용 양성화와 특별법 추진으로 농업·부동산 정책 변화가 큼\"},{\"article_id\":\"666af63c6e2491815ed1d2764c2fd7e119b30ef00669e4f9ac34ec39ebdc0e51\",\"disposition\":\"keep\",\"importance\":4,\"reason\":\"서해 해양경비 전력 증강으로 대중국·해양안보와 예산에 중요함\"},{\"article_id\":\"93dabab5d51ab65ae770fe6fe28649708f4b7b16df5e75bd8bacb2b29d19ecf6\",\"disposition\":\"keep\",\"importance\":4,\"reason\":\"반도체 중심 성장과 역대 최저 고용유발계수로 산업·고용 구조를 보여줌\"},{\"article_id\":\"e4645225b4abb7bc09bfd1a9aca8ed8a98edd12031f0809e1fdc51e2c621fcbb\",\"disposition\":\"keep\",\"importance\":3,\"reason\":\"건축 외장재 KS 인증 의무화로 관련 제조·건설업 규제가 바뀜\"},{\"article_id\":\"3da0d023802d60db5bbc98459c9c7f3343a74ff675a062f1694260d1c178477d\",\"disposition\":\"ignore\",\"importance\":1,\"reason\":\"기업 사회공헌 계획으로 경제·정책 영향이 제한적임\"},{\"article_id\":\"4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76\",\"disposition\":\"keep\",\"importance\":4,\"reason\":\"서울 정비구역 확대와 주택공급 정책은 부동산 시장에 중요함\",\"related_ids\":[\"8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30\"]},{\"article_id\":\"8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30\",\"disposition\":\"keep\",\"importance\":3,\"reason\":\"서울 정비사업 규제와 정책 책임 공방으로 주택정책 쟁점이 드러남\",\"related_ids\":[\"4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76\"]},{\"article_id\":\"30ae57496aa9962ea28b20b878effcfd39aa708af0813cd0421fec64215fc854\",\"disposition\":\"keep\",\"importance\":4,\"reason\":\"일본의 대북 접촉과 북한 선수단 제한으로 북일 관계와 지역 외교에 중요함\"},{\"article_id\":\"ffebaa97ca9ea77f75e3a983bf2b43f38966bcfa37c55474e7dd74d5f9106c85\",\"disposition\":\"keep\",\"importance\":5,\"reason\":\"미국·이란 군사충돌 위협과 보복 경고로 중동·에너지·안보 리스크가 큼\"},{\"article_id\":\"042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9\",\"disposition\":\"keep\",\"importance\":5,\"reason\":\"원화 국제결제망 시범운영으로 금융시장·통화 국제화에 중요함\",\"related_ids\":[\"4db97280b8ba41005611ed250574036edd85a10a974bec3ad5341a1720230485\"]},{\"article_id\":\"0ec27dbbb0bbc1db0cc9399efaff2d5e8fff8c9c85cb6626a186492f998570a8\",\"disposition\":\"ignore\",\"importance\":1,\"reason\":\"지역 길고양이 관리 사업으로 중요도가 낮음\"},{\"article_id\":\"4084730f687bb157a9f2b5097b2641c8030887f1f50c5c2f8c8be438e7187d26\",\"disposition\":\"ignore\",\"importance\":1,\"reason\":\"기업의 일회성 사회공헌 행사로 중요도가 낮음\"},{\"article_id\":\"46ad28654c30e829871e5103faaa6854d0c610a9c33f0cc870436aee870b0d0c\",\"disposition\":\"ignore\",\"importance\":2,\"reason\":\"도시외교 포럼 개최로 구체적 정책 변화가 제한적임\"},{\"article_id\":\"779706d49b4021e6cdd90bd7c5a45e1721062f0e4072e10394b65f1a2dcae1fb\",\"disposition\":\"ignore\",\"importance\":2,\"reason\":\"장관의 병원 방문과 일반적 서비스 개선 발언임\"},{\"article_id\":\"7ce7015563d49d5418e2640f94f2a46142458b43356778f97cc4cdadd1ad3940\",\"disposition\":\"ignore\",\"importance\":1,\"reason\":\"지방자치단체 명절 홍보 이벤트로 중요도가 낮음\"},{\"article_id\":\"85dcec2a8fcad5431a24e53c4c364144213017be7c1d81200eba94889ad75c81\",\"disposition\":\"ignore\",\"importance\":2,\"reason\":\"개별 투자상품 출시로 홍보성 성격이 강함\"},{\"article_id\":\"88fa17d61e877e63dd9f271c4cdbc6e49cc13589c21d47270dc38d6df6fb208c\",\"disposition\":\"ignore\",\"importance\":1,\"reason\":\"증권사 투자 포럼 개최로 정책·시장 새 정보가 제한적임\"},{\"article_id\":\"a3ef052bf5a533a90a09117f6fb42d50bc374a3680bb744d306af66481d4bc4d\",\"disposition\":\"keep\",\"importance\":4,\"reason\":\"메가특구 노동 특례를 둘러싼 노사정 협의로 노동·산업정책에 중요함\"},{\"article_id\":\"bfa5265996b7b82107ca8a797973de29f1fbcb3bef9685cfdae55337c72aabba\",\"disposition\":\"keep\",\"importance\":4,\"reason\":\"중대재해와 다수의 산업안전 위반으로 노동·기업 규제에 중요함\"}]}",
+              "source_ids": []
+            }
+          ],
+          "follow_up": null,
+          "delegations": []
+        },
+        "provider": "codex",
+        "thread_id": "01a0c2b3-e72c-7ec0-a2ce-975e44f4260e",
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "web_searches": []
+      },
+      "model": "gpt-5.6-luna"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "news-0d6973aa-2d9c-4763-ae25-336de2b316e0",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "previewed",
+          "reason": "같은 결제망 시범운영을 다룬 기사들을 통합했다. 두 기사 모두 한국은행 발표에 근거하므로 독립 확인으로 격상하지 않고 연합뉴스의 보도로 게재한다.",
+          "headline": "연합뉴스: 한은 원화국제결제망 시범운영 시작…평일 24시간 결제"
+        },
+        {
+          "state": "held",
+          "reason": "트럼프의 폭스뉴스 통화 발언과 회동 가능성은 기존 사건과 중복이며, 미 국무부 경보도 이미 제공된 사건에 포함된다. 추가된 미국의 공격 결정 주장은 이란 측 주장이고, 사우디의 공습 요청은 출처가 명확하지 않다. 공격·해협 봉쇄 등 중대한 추가 내용도 독립된 원보도 두 곳의 근거가 없다. 유가 수치는 기존 보도와 관측 시각·계약월을 맞출 수 없어 정정이나 유의미한 후속 변동으로 판단하지 않았다.",
+          "headline": ""
+        },
+        {
+          "state": "previewed",
+          "reason": "서울 주택공급 관련 당일 발표 수치를 SBS 보도로 한정해 전한다. 정비사업 추진 물량을 준공·입주 물량으로 바꾸지 않으며, 공급난 해소라는 평가와 전임자 책임 주장은 제외한다.",
+          "headline": "SBS: 서울시, 신속통합기획 이후 214개 구역·30만7천 호 정비사업 추진 발표"
+        },
+        {
+          "state": "previewed",
+          "reason": "기존 농지 대책에 없던 특별정비기간 연장과 불법 전용 시설의 양성화 요건을 추가한다. 본문 말미는 잘렸지만 선택한 내용과 별도 입법 필요성은 완결된 문장으로 확인된다. 잘린 시행 일정은 사용하지 않는다.",
+          "headline": "이투데이: 농지 임대차 특별정비 11월 15일까지 연장…시설 양성화 요건 제시"
+        },
+        {
+          "state": "held",
+          "reason": "신칸센 제한의 핵심 근거는 교도통신이 인용한 익명의 북한 선수단 관계자이고, 접촉 경위도 익명의 북일 관계자들에게 의존한다. SBS의 교도통신 인용은 별도 독립 원보도가 아니다. 제공된 자료에는 일본 측 제한 지침이나 독립된 추가 확인이 없어 익명 주장을 attributed_report로 게재할 수 없다.",
+          "headline": ""
+        },
+        {
+          "state": "previewed",
+          "reason": "서해 경비전력과 국가 예산안의 구체적 확대 계획으로 중요성이 있다. 이투데이 보도로 귀속하고 예산안·건조 계획을 확정 집행이나 배치 완료로 표현하지 않는다. 특정 중국어선의 위법행위는 판단하지 않는다.",
+          "headline": "이투데이: 서해 3000톤급 경비함정 2030년까지 17척 확대 계획"
+        },
+        {
+          "state": "previewed",
+          "reason": "당일 발표된 2024년 산업연관표를 다룬 신규 통계 보도다. 기존 반도체 일자리·9월 수출 사건과 기준 시점 및 지표가 다르다. 사진 설명의 2026년 GDP 수치와 기사 말미 전망은 제외한다.",
+          "headline": "이투데이: 2024년 취업유발계수 7.8명으로 최저…부가가치율은 상승"
+        }
+      ],
+      "response": {
+        "usage": {
+          "input_tokens": 26001,
+          "output_tokens": 4969,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 169
+        },
+        "decision": {
+          "say": "주요 기사 8건을 7개 사건으로 묶어 검토했습니다. 게재 5건, 보류 2건이며 농지 대책은 기존 사건의 추가 내용으로 반영했습니다.",
+          "tools": [],
+          "status": "complete",
+          "memories": [],
+          "messages": [],
+          "artifacts": [
+            {
+              "title": "경제·세계 뉴스 검토",
+              "content": "{\"items\":[{\"disposition\":\"publish\",\"article_ids\":[\"042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9\",\"4db97280b8ba41005611ed250574036edd85a10a974bec3ad5341a1720230485\"],\"reason\":\"같은 결제망 시범운영을 다룬 기사들을 통합했다. 두 기사 모두 한국은행 발표에 근거하므로 독립 확인으로 격상하지 않고 연합뉴스의 보도로 게재한다.\",\"category\":\"금융\",\"priority\":\"major\",\"headline\":\"연합뉴스: 한은 원화국제결제망 시범운영 시작…평일 24시간 결제\",\"facts\":\"연합뉴스에 따르면 한국은행은 2026년 9월 21일 오전 9시 원화국제결제망 시범운영을 시작했다. 국민·우리·하나·신한은행이 참여하며, 외국계 은행 등은 2027년 1월 예정된 본운영에 참여할 예정이다. 이 결제망은 주말·공휴일을 제외하고 24시간 운영된다.\",\"significance\":\"해외원화업무취급기관 계좌를 통한 자국 영업시간대 원화 결제를 지원하는 인프라다. 원화의 국제적 위상이 실제로 높아졌다는 결과까지 확인된 것은 아니다.\",\"change\":\"신규 사건: 원화국제결제망의 시범운영 개시와 참여기관·운영시간을 전한다.\",\"evidence\":[{\"article_id\":\"042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9\",\"quote\":\"한국은행이 21일 오전 9시부터 '한국은행 원화국제결제망' 시범운영을 시작했다고 밝혔다.\"},{\"article_id\":\"042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9\",\"quote\":\"시범 운영에는 국민·우리·하나·신한은행 등 4개 국내은행이 참가했다. 내년 1월로 예정된 본운영에는 외국계 은행 등도 참여할 예정이다.\"},{\"article_id\":\"042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9\",\"quote\":\"이 결제망은 한국은행 최초의 주말과 공휴일을 제외하고 24시간 운영되는 결제망이다.\"},{\"article_id\":\"042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9\",\"quote\":\"이를 통해 외국인 투자자는 국내 금융기관이 아닌 해외원화업무취급기관(RFI-K)에서 계좌를 개설하는 것만으로 자국의 영업시간대에 원화 결제를 할 수 있다.\"}],\"verification\":\"attributed_report\",\"claim_type\":\"reported_fact\",\"independent_origins\":[]},{\"disposition\":\"hold\",\"article_ids\":[\"ffebaa97ca9ea77f75e3a983bf2b43f38966bcfa37c55474e7dd74d5f9106c85\"],\"event_id\":\"4f073dfe-9517-511c-b39d-4733803643c9\",\"reason\":\"트럼프의 폭스뉴스 통화 발언과 회동 가능성은 기존 사건과 중복이며, 미 국무부 경보도 이미 제공된 사건에 포함된다. 추가된 미국의 공격 결정 주장은 이란 측 주장이고, 사우디의 공습 요청은 출처가 명확하지 않다. 공격·해협 봉쇄 등 중대한 추가 내용도 독립된 원보도 두 곳의 근거가 없다. 유가 수치는 기존 보도와 관측 시각·계약월을 맞출 수 없어 정정이나 유의미한 후속 변동으로 판단하지 않았다.\",\"category\":\"세계정세\",\"change\":\"기존 핵심 발언의 반복은 재게재하지 않으며, 추가 군사 주장과 에너지 공급 차질은 확인 근거 부족으로 보류한다.\",\"verification\":\"insufficient\",\"claim_type\":\"allegation\",\"independent_origins\":[]},{\"disposition\":\"publish\",\"article_ids\":[\"4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76\"],\"reason\":\"서울 주택공급 관련 당일 발표 수치를 SBS 보도로 한정해 전한다. 정비사업 추진 물량을 준공·입주 물량으로 바꾸지 않으며, 공급난 해소라는 평가와 전임자 책임 주장은 제외한다.\",\"category\":\"경제\",\"headline\":\"SBS: 서울시, 신속통합기획 이후 214개 구역·30만7천 호 정비사업 추진 발표\",\"facts\":\"SBS에 따르면 오세훈 서울시장은 9월 21일 주택정책 성과공유회에서 최근 5년간 신규 정비구역 지정이 연평균 35곳으로 직전 10년 평균 17곳보다 늘었으며, 서울 전역 496곳에서 정비사업이 추진 중이라고 설명했다. 서울시는 2021년 신속통합기획 도입 이후 추진된 정비사업 규모를 214개 구역, 30만7천 호로 제시했다.\",\"significance\":\"서울의 향후 주택공급 기반을 보여주는 발표다. 정비구역 지정과 사업 추진은 실제 착공·입주와 구분해야 하며, 이 수치만으로 공급난 해소를 판단할 수 없다.\",\"change\":\"신규 사건: 서울시가 공개한 정비사업 추진 규모를 전한다.\",\"evidence\":[{\"article_id\":\"4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76\",\"quote\":\"오 시장은 오늘(21일) 서울시청 브리핑룸에서 '2026 서울 주택정책 성과공유회-서울 주택정책, 이렇게 달라졌습니다'를 열고 이같이 말했습니다.\"},{\"article_id\":\"4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76\",\"quote\":\"먼저 서울 주택공급과 관련해서는 \\\"지난 5년간 신규 정비구역 지정은 연평균 35곳으로 직전 10년 평균인 17곳의 두 배 이상으로 늘었다\\\"며 \\\"현재 서울 전역의 496곳에서 정비사업이 추진되고 있다\\\"고 설명했습니다.\"},{\"article_id\":\"4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76\",\"quote\":\"시에 따르면 2021년 신속통합기획 도입 이후 214개 구역, 30만 7천 호 규모의 정비사업이 추진됐습니다.\"}],\"verification\":\"attributed_report\",\"claim_type\":\"reported_fact\",\"independent_origins\":[]},{\"disposition\":\"publish\",\"article_ids\":[\"554b02bb609c362562e265e9c9b35c0346f745bff70b4d01337ae4237f5f1200\"],\"event_id\":\"fb274bbe-57b0-5ad3-a35b-5057762b3a60\",\"reason\":\"기존 농지 대책에 없던 특별정비기간 연장과 불법 전용 시설의 양성화 요건을 추가한다. 본문 말미는 잘렸지만 선택한 내용과 별도 입법 필요성은 완결된 문장으로 확인된다. 잘린 시행 일정은 사용하지 않는다.\",\"category\":\"경제\",\"headline\":\"이투데이: 농지 임대차 특별정비 11월 15일까지 연장…시설 양성화 요건 제시\",\"facts\":\"이투데이의 9월 21일 보도에 따르면 정부는 농지 임대차 특별정비기간을 11월 15일까지 연장한다. 불법 전용 시설 양성화 계획안은 2026년 5월 18일 이전 완공 시설 중 신고·허가를 거쳤다면 설치할 수 있었던 시설을 대상으로 하며, 농지법과 다른 법령의 설치 제한에 저촉되지 않아야 한다. 농지은행 위탁을 통한 처분 유예와 불법 전용 사후 추인에는 별도의 법적 근거가 필요하다.\",\"significance\":\"기존 임차농의 경작 유지와 시설 소유자의 정비 판단에 영향을 주는 기한·대상 요건이다. 양성화는 추진안으로, 합법화가 이미 완료됐다는 의미는 아니다.\",\"change\":\"기존 보도의 처분 유예·특별법 추진 원칙에 특별정비 종료일, 시설 완공 기준일, 법령 적합 요건을 추가한다.\",\"evidence\":[{\"article_id\":\"554b02bb609c362562e265e9c9b35c0346f745bff70b4d01337ae4237f5f1200\",\"quote\":\"조사 과정에서 임차인이 쫓겨나는 등의 혼란을 막기 위해 임대차 특별정비기간은 11월 15일까지 연장한다.\"},{\"article_id\":\"554b02bb609c362562e265e9c9b35c0346f745bff70b4d01337ae4237f5f1200\",\"quote\":\"원래 신고·허가 절차를 거쳤다면 설치할 수 있었지만 이를 이행하지 않아 불법 상태로 남은 농업용·공공·기타 시설이 대상이다.\"},{\"article_id\":\"554b02bb609c362562e265e9c9b35c0346f745bff70b4d01337ae4237f5f1200\",\"quote\":\"계획안은 올해 5월 18일 이전에 완공된 시설을 양성화 대상으로 제시했다. 농지법과 다른 법령상 설치 제한 등에 저촉되지 않아야 한다.\"},{\"article_id\":\"554b02bb609c362562e265e9c9b35c0346f745bff70b4d01337ae4237f5f1200\",\"quote\":\"이번 대책에 담긴 농지은행 위탁을 통한 처분 유예와 불법 전용의 사후 추인에는 별도의 법적 근거가 필요하다.\"}],\"verification\":\"attributed_report\",\"claim_type\":\"reported_fact\",\"independent_origins\":[]},{\"disposition\":\"hold\",\"article_ids\":[\"30ae57496aa9962ea28b20b878effcfd39aa708af0813cd0421fec64215fc854\"],\"reason\":\"신칸센 제한의 핵심 근거는 교도통신이 인용한 익명의 북한 선수단 관계자이고, 접촉 경위도 익명의 북일 관계자들에게 의존한다. SBS의 교도통신 인용은 별도 독립 원보도가 아니다. 제공된 자료에는 일본 측 제한 지침이나 독립된 추가 확인이 없어 익명 주장을 attributed_report로 게재할 수 없다.\",\"category\":\"세계정세\",\"verification\":\"insufficient\",\"claim_type\":\"anonymous_claim\",\"independent_origins\":[]},{\"disposition\":\"publish\",\"article_ids\":[\"666af63c6e2491815ed1d2764c2fd7e119b30ef00669e4f9ac34ec39ebdc0e51\"],\"reason\":\"서해 경비전력과 국가 예산안의 구체적 확대 계획으로 중요성이 있다. 이투데이 보도로 귀속하고 예산안·건조 계획을 확정 집행이나 배치 완료로 표현하지 않는다. 특정 중국어선의 위법행위는 판단하지 않는다.\",\"category\":\"세계정세\",\"headline\":\"이투데이: 서해 3000톤급 경비함정 2030년까지 17척 확대 계획\",\"facts\":\"이투데이의 9월 21일 보도에 따르면 정부는 서해 경비 대응 강화를 위해 3000톤급 경비함정을 2030년까지 17척으로 늘릴 계획이다. 2027년 예산안에는 건조 중인 1척의 마무리 비용 439억원과 신규 3척의 건조 착수비 512억원이 반영됐다. 신규 3척의 총사업비는 3660억원이다. 2027년 해양경찰 예산안은 2조2291억원으로 올해보다 1406억원, 6.7% 늘었다.\",\"significance\":\"서해의 장거리·장기간 경비 역량과 관련된 투자 계획이다. 예산안에 반영된 금액과 향후 전력 확보 목표를 구분해 볼 필요가 있다.\",\"change\":\"신규 사건: 대형 경비함정 확충 목표와 2027년 예산안 반영 규모를 전한다.\",\"evidence\":[{\"article_id\":\"666af63c6e2491815ed1d2764c2fd7e119b30ef00669e4f9ac34ec39ebdc0e51\",\"quote\":\"정부는 서해 광역해역과 경계미획정해역 등의 경비 대응 체계를 강화하기 위해 3000톤급 경비함정을 2030년까지 17척으로 확충할 계획이다.\"},{\"article_id\":\"666af63c6e2491815ed1d2764c2fd7e119b30ef00669e4f9ac34ec39ebdc0e51\",\"quote\":\"2027년 예산안에는 현재 건조 중인 1척의 마무리 비용 439억원과 신규 3척 건조 착수비 512억원이 반영됐다. 신규 3척 건조에 투입되는 총사업비는 3660억원이다.\"},{\"article_id\":\"666af63c6e2491815ed1d2764c2fd7e119b30ef00669e4f9ac34ec39ebdc0e51\",\"quote\":\"서해 경비전력 확충 등을 포함한 2027년 해양경찰 예산안은 2조2291억원으로 편성됐다. 올해 2조885억원보다 1406억원(6.7%) 늘어난 규모다.\"}],\"verification\":\"attributed_report\",\"claim_type\":\"reported_fact\",\"independent_origins\":[]},{\"disposition\":\"publish\",\"article_ids\":[\"93dabab5d51ab65ae770fe6fe28649708f4b7b16df5e75bd8bacb2b29d19ecf6\"],\"reason\":\"당일 발표된 2024년 산업연관표를 다룬 신규 통계 보도다. 기존 반도체 일자리·9월 수출 사건과 기준 시점 및 지표가 다르다. 사진 설명의 2026년 GDP 수치와 기사 말미 전망은 제외한다.\",\"category\":\"거시경제\",\"headline\":\"이투데이: 2024년 취업유발계수 7.8명으로 최저…부가가치율은 상승\",\"facts\":\"이투데이가 9월 21일 한국은행의 2024년 산업연관표를 인용한 보도에 따르면, 2024년 재화·서비스 총공급은 7113조6000억원으로 전년보다 4.6% 증가했다. 부가가치율은 41.2%에서 42.0%로 상승했다. 최종수요 10억원당 직·간접적으로 유발되는 취업자 수인 취업유발계수는 8.2명에서 7.8명으로 낮아져 통계 작성 이후 최저를 기록했다.\",\"significance\":\"부가가치율 개선과 단위 최종수요당 고용 파급효과 약화가 함께 나타났다. 취업유발계수 하락 자체가 전체 취업자 수 감소를 뜻하지는 않는다.\",\"change\":\"신규 사건: 2024년 경제의 산업 간 거래와 고용 파급효과를 보여주는 통계 발표다.\",\"evidence\":[{\"article_id\":\"93dabab5d51ab65ae770fe6fe28649708f4b7b16df5e75bd8bacb2b29d19ecf6\",\"quote\":\"21일 한국은행이 발표한 '2024년 산업연관표(연장표)'에 따르면, 2024년 우리 경제의 재화와 서비스 총공급(총수요)은 7113조6000억원으로 전년(6802조7000억원)보다 310조9000억원(4.6%) 증가한 것으로 집계됐다.\"},{\"article_id\":\"93dabab5d51ab65ae770fe6fe28649708f4b7b16df5e75bd8bacb2b29d19ecf6\",\"quote\":\"실제 산업 투입구조를 살펴보면, 반도체 수출 호조와 유연탄 등 수입 원자재 가격 안정세에 힘입어 총투입 중 부가가치 비율을 뜻하는 부가가치율(부가가치/총투입)이 41.2%에서 42.0%로 상승했다.\"},{\"article_id\":\"93dabab5d51ab65ae770fe6fe28649708f4b7b16df5e75bd8bacb2b29d19ecf6\",\"quote\":\"상품 소비와 투자, 수출 등 최종수요 10억원당 전 산업에서 직·간접적으로 유발되는 취업자 수인 취업유발계수는 7.8명으로 전년(8.2명) 대비 감소했다. 이는 한국은행이 관련 통계를 작성한 이후 가장 낮은 수준이다.\"}],\"verification\":\"attributed_report\",\"claim_type\":\"reported_fact\",\"independent_origins\":[]}]}",
+              "source_ids": []
+            }
+          ],
+          "follow_up": null,
+          "delegations": []
+        },
+        "provider": "codex",
+        "thread_id": "01a0c2d4-6488-7e00-992e-280f84ac5f49",
+        "request_id": "news-0d6973aa-2d9c-4763-ae25-336de2b316e0",
+        "web_searches": []
+      },
+      "primary_ids": [
+        "042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9",
+        "4db97280b8ba41005611ed250574036edd85a10a974bec3ad5341a1720230485",
+        "ffebaa97ca9ea77f75e3a983bf2b43f38966bcfa37c55474e7dd74d5f9106c85",
+        "4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76",
+        "554b02bb609c362562e265e9c9b35c0346f745bff70b4d01337ae4237f5f1200",
+        "30ae57496aa9962ea28b20b878effcfd39aa708af0813cd0421fec64215fc854",
+        "666af63c6e2491815ed1d2764c2fd7e119b30ef00669e4f9ac34ec39ebdc0e51",
+        "93dabab5d51ab65ae770fe6fe28649708f4b7b16df5e75bd8bacb2b29d19ecf6"
+      ],
+      "event_count": 24,
+      "article_count": 9,
+      "model": "gpt-6-astra"
+    },
+    {
+      "id": "news-a3a9e19a-1b7d-4ebd-93bc-a353fb99724d",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "previewed",
+          "reason": "승인된 매체의 실명 기자 보도로 노사정 사전 협의 개최와 참석 범위를 확인할 수 있다. 개최일이 확정되지 않은 실무회의와 예상 의제는 발행 사실에서 제외했다.",
+          "headline": "SBS: 메가특구 노동 특례 논의 위한 노사정 사전 협의 개최"
+        },
+        {
+          "state": "held",
+          "reason": "주요 제조업체의 산업안전 감독 결과로 중요성이 있다. 다만 핵심인 법 위반 138건과 사법 처리 관련 내용은 노동부 발표를 인용한 단일 매체 보도뿐이다. 법 위반 주장과 사망 관련 내용을 뒷받침할 발표 원문 또는 독립적인 추가 보도가 없어 보류한다. 과태료는 부과 예정이며 유죄 판결이나 납부 완료로 해석할 수 없다.",
+          "headline": ""
+        },
+        {
+          "state": "ignored",
+          "reason": "개별 식품 원료의 기능성 등록과 제품화 계획이 중심이다. 제공된 내용만으로는 주요 산업 변화나 공중보건 사건으로 선정할 중요성이 충분하지 않다. 임상시험의 대조군·표본 규모 등도 제시되지 않아 악력 변화 수치를 일반적인 효능으로 확대하지 않는다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "서울 주택공급은 중요한 사안이지만 본문의 핵심은 전임 시정이 정비사업 해제를 유도했다는 정치적 주장과 공급 감소 원인에 대한 해석이다. 정비구역 389곳·43만 호 등의 원자료나 인과관계를 검증할 독립 근거가 없으며, 발언 사실로 바꾸어 귀속 보도하더라도 의혹을 뒷받침하지 못한다. 새로운 공급정책의 확정·시행도 확인되지 않아 보류한다.",
+          "headline": ""
+        },
+        {
+          "state": "previewed",
+          "reason": "승인된 매체의 실명 기자 보도가 주요 철강업체 제품의 첫 KS 인증과 인증서비스 개시를 구체적으로 전한다. 인증일과 발표일을 구분하고, 의무화의 세부 적용 범위와 자재 성능 우월성은 발행 사실에 포함하지 않는다.",
+          "headline": "이투데이: 포스코스틸리온·KG스틸 제품, 삼원계 도금 도장강판 첫 KS 인증"
+        }
+      ],
+      "response": {
+        "usage": {
+          "input_tokens": 18909,
+          "output_tokens": 2647,
+          "cached_input_tokens": 5888,
+          "reasoning_output_tokens": 305
+        },
+        "decision": {
+          "say": "기사 5건을 검토해 발행 2건, 보류 2건, 제외 1건으로 분류했습니다.",
+          "tools": [],
+          "status": "complete",
+          "memories": [],
+          "messages": [],
+          "artifacts": [
+            {
+              "title": "뉴스 검토 결과",
+              "content": "{\"items\":[{\"disposition\":\"publish\",\"article_ids\":[\"a3ef052bf5a533a90a09117f6fb42d50bc374a3680bb744d306af66481d4bc4d\"],\"reason\":\"승인된 매체의 실명 기자 보도로 노사정 사전 협의 개최와 참석 범위를 확인할 수 있다. 개최일이 확정되지 않은 실무회의와 예상 의제는 발행 사실에서 제외했다.\",\"event_id\":null,\"category\":\"경제\",\"priority\":\"major\",\"headline\":\"SBS: 메가특구 노동 특례 논의 위한 노사정 사전 협의 개최\",\"facts\":\"SBS가 9월 21일 고용노동부 설명을 인용한 보도에 따르면, 9월 18일 메가특구특별법의 노동 특례를 논의하기 위한 차관급 사전 협의가 열렸다. 한국노총·민주노총과 경총·대한상의 부대표급, 노동부 등 관계부처 차관 및 경제사회노동위원회 상임위원이 참석했다. 이는 대화 절차의 시작이며 노동 특례 도입에 합의한 것은 아니다.\",\"significance\":\"특구 내 노동 규제 적용을 둘러싼 논의에 양대 노총과 주요 경제단체가 참여했다. 향후 합의 내용에 따라 특구 기업의 고용·근로조건에 영향을 줄 수 있다.\",\"change\":\"9월 15일 대화 제안 이후 실제 사전 협의가 개최된 사실을 새로 전한다.\",\"evidence\":[{\"article_id\":\"a3ef052bf5a533a90a09117f6fb42d50bc374a3680bb744d306af66481d4bc4d\",\"quote\":\"오늘(21일) 고용노동부에 따르면 지난 18일 노사와 관계부처가 모두 참여하는 메가특구특별법 원포인트 사회적 대화 사전 협의(차관급)가 열렸습니다.\"},{\"article_id\":\"a3ef052bf5a533a90a09117f6fb42d50bc374a3680bb744d306af66481d4bc4d\",\"quote\":\"사전 협의에는 노동계에서 한국노동조합총연맹(한국노총)·전국민주노동조합총연맹(민주노총) 부대표급이, 경영계에서 한국경영자총협회(경총)·대한상공회의소 부대표급이 참여했습니다.\"},{\"article_id\":\"a3ef052bf5a533a90a09117f6fb42d50bc374a3680bb744d306af66481d4bc4d\",\"quote\":\"정부에서는 노동부·국무조정실·재정경제부·산업통상부 차관과 경제사회노동위원회(경사노위) 상임위원이 자리했습니다.\"}],\"verification\":\"attributed_report\",\"claim_type\":\"reported_fact\",\"independent_origins\":[]},{\"disposition\":\"hold\",\"article_ids\":[\"bfa5265996b7b82107ca8a797973de29f1fbcb3bef9685cfdae55337c72aabba\"],\"reason\":\"주요 제조업체의 산업안전 감독 결과로 중요성이 있다. 다만 핵심인 법 위반 138건과 사법 처리 관련 내용은 노동부 발표를 인용한 단일 매체 보도뿐이다. 법 위반 주장과 사망 관련 내용을 뒷받침할 발표 원문 또는 독립적인 추가 보도가 없어 보류한다. 과태료는 부과 예정이며 유죄 판결이나 납부 완료로 해석할 수 없다.\",\"event_id\":null,\"category\":\"산업\",\"priority\":\"major\",\"evidence\":[],\"verification\":\"insufficient\",\"claim_type\":\"allegation\",\"independent_origins\":[]},{\"disposition\":\"ignore\",\"article_ids\":[\"2507a5d8da1cea6fc44a8f4e20c19120c1da523ed72eaa74924a66aa3268b37f\"],\"reason\":\"개별 식품 원료의 기능성 등록과 제품화 계획이 중심이다. 제공된 내용만으로는 주요 산업 변화나 공중보건 사건으로 선정할 중요성이 충분하지 않다. 임상시험의 대조군·표본 규모 등도 제시되지 않아 악력 변화 수치를 일반적인 효능으로 확대하지 않는다.\",\"event_id\":null,\"category\":\"산업\",\"evidence\":[],\"verification\":\"insufficient\",\"claim_type\":\"reported_fact\",\"independent_origins\":[]},{\"disposition\":\"hold\",\"article_ids\":[\"8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30\"],\"reason\":\"서울 주택공급은 중요한 사안이지만 본문의 핵심은 전임 시정이 정비사업 해제를 유도했다는 정치적 주장과 공급 감소 원인에 대한 해석이다. 정비구역 389곳·43만 호 등의 원자료나 인과관계를 검증할 독립 근거가 없으며, 발언 사실로 바꾸어 귀속 보도하더라도 의혹을 뒷받침하지 못한다. 새로운 공급정책의 확정·시행도 확인되지 않아 보류한다.\",\"event_id\":null,\"category\":\"경제\",\"priority\":\"major\",\"evidence\":[],\"verification\":\"insufficient\",\"claim_type\":\"allegation\",\"independent_origins\":[]},{\"disposition\":\"publish\",\"article_ids\":[\"e4645225b4abb7bc09bfd1a9aca8ed8a98edd12031f0809e1fdc51e2c621fcbb\"],\"reason\":\"승인된 매체의 실명 기자 보도가 주요 철강업체 제품의 첫 KS 인증과 인증서비스 개시를 구체적으로 전한다. 인증일과 발표일을 구분하고, 의무화의 세부 적용 범위와 자재 성능 우월성은 발행 사실에 포함하지 않는다.\",\"event_id\":null,\"category\":\"산업\",\"priority\":\"major\",\"headline\":\"이투데이: 포스코스틸리온·KG스틸 제품, 삼원계 도금 도장강판 첫 KS 인증\",\"facts\":\"이투데이의 9월 21일 보도에 따르면 한국화학융합시험연구원(KTR)은 삼원계 도금 도장강판 인증시스템을 구축하고 첫 KS 인증을 부여했다고 이날 밝혔다. 실제 인증 부여일은 9월 11일이며 대상은 포스코스틸리온과 KG스틸이 제조한 제품이다. KTR은 올해 6월 해당 KS표준(KS D 3034)의 인증기관으로 지정됐다.\",\"significance\":\"건축 외장재로 쓰이는 강판에 대한 인증 절차가 실제 제품 인증으로 이어졌다. 주요 철강업체의 건축자재 품질 인증과 공급에 관련된 산업 동향이다.\",\"change\":\"6월 인증기관 지정에 이어 9월 11일 첫 제품 인증이 이뤄졌다는 21일 발표를 전한다.\",\"evidence\":[{\"article_id\":\"e4645225b4abb7bc09bfd1a9aca8ed8a98edd12031f0809e1fdc51e2c621fcbb\",\"quote\":\"KTR은 산업용 건축물과 주상복합 등 신축 건물의 건축자재로 주목받는 삼원계 도금 도장강판 인증시스템을 구축하고 첫 번째 KS 인증을 부여했다고 21일 밝혔다.\"},{\"article_id\":\"e4645225b4abb7bc09bfd1a9aca8ed8a98edd12031f0809e1fdc51e2c621fcbb\",\"quote\":\"앞서 KTR은 올해 6월 국내 최초로 삼원계 도장 도금강판 KS표준(KS D 3034) 인증기관으로 단독 지정된 바 있다.\"},{\"article_id\":\"e4645225b4abb7bc09bfd1a9aca8ed8a98edd12031f0809e1fdc51e2c621fcbb\",\"quote\":\"이후 엄격한 실무 시험과 인증심사, 인증위원회 검토를 거쳐 11일 포스코스틸리온과 KG스틸이 제조한 제품에 국내 첫 KS 인증을 부여했다.\"}],\"verification\":\"attributed_report\",\"claim_type\":\"reported_fact\",\"independent_origins\":[]}]}",
+              "source_ids": []
+            }
+          ],
+          "follow_up": null,
+          "delegations": []
+        },
+        "provider": "codex",
+        "thread_id": "01a0c2d6-bb85-7993-abda-9625523940a7",
+        "request_id": "news-a3a9e19a-1b7d-4ebd-93bc-a353fb99724d",
+        "web_searches": []
+      },
+      "primary_ids": [
+        "a3ef052bf5a533a90a09117f6fb42d50bc374a3680bb744d306af66481d4bc4d",
+        "bfa5265996b7b82107ca8a797973de29f1fbcb3bef9685cfdae55337c72aabba",
+        "2507a5d8da1cea6fc44a8f4e20c19120c1da523ed72eaa74924a66aa3268b37f",
+        "8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30",
+        "e4645225b4abb7bc09bfd1a9aca8ed8a98edd12031f0809e1fdc51e2c621fcbb"
+      ],
+      "event_count": 24,
+      "article_count": 5,
+      "model": "gpt-6-astra"
+    }
+  ],
+  "articles": [
+    {
+      "id": "6d4c5ae5572b32cc57191cb78c9a9a7686ae5ab568b4acad81a0d72d49552bfe",
+      "title": "JCS: N. Korea Fires 2 Short-Range Ballistic Missiles into East Sea in Succession",
+      "source_id": "kbs-world",
+      "state": "held",
+      "screening": null
+    },
+    {
+      "id": "ddfec51dcad06cb4de254b8451ff81dcbdb3e6e0876eafa1982afb6bdd79402a",
+      "title": "Truck Driver Who Rammed into People at Anseong Flea Market Appears for Detention Hearing",
+      "source_id": "kbs-world",
+      "state": "held",
+      "screening": null
+    },
+    {
+      "id": "529284cf8e32d29cfc7a84f484a8042c49c52c635e92f0f82bf1ddb0b43da8d0",
+      "title": "Nvidia CEO Jensen Huang emerges as Trump's top ally in AI safety debate",
+      "source_id": "cnbc-technology",
+      "state": "held",
+      "screening": null
+    },
+    {
+      "id": "015e7c645739ad7912c4f821572e313e5b3c3f9208b9dd6d367a91444d2f72dc",
+      "title": "Nvidia boss rejects AI extinction fears as 'doomsday narratives'",
+      "source_id": "bbc-business",
+      "state": "held",
+      "screening": null
+    },
+    {
+      "id": "109b8dbd23f8ea1c7855788ea0ebf54f4e5f69fe917c16a75bd355998e7c071e",
+      "title": "AI, data center alarms dominate Congressional Black Caucus week in Washington",
+      "source_id": "cnbc-technology",
+      "state": "held",
+      "screening": null
+    },
+    {
+      "id": "1a5ac9f1fd3739ec92aa3b20251c0bc1f63be15eddb3b22f02b56b4b42db9d7c",
+      "title": "UK should 'team up' with Canada in new Europe alliance, Canadian minister tells BBC",
+      "source_id": "bbc-business",
+      "state": "held",
+      "screening": null
+    },
+    {
+      "id": "1aca3e3421e9dd037ec184170211ef08ff8b3d90f464cc1971de313b0d770ed4",
+      "title": "조폐공사, 신입직원 57명 대규모 선발⋯ICT·마케팅 경력도 채용",
+      "source_id": "etoday-economy",
+      "state": "ignored",
+      "screening": {
+        "reason": "공공기관 정기 채용으로 거시적 영향이 제한적임",
+        "article_id": "1aca3e3421e9dd037ec184170211ef08ff8b3d90f464cc1971de313b0d770ed4",
+        "importance": 1,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "ignore",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "1b6687a10518420f75d739bf897052f900318308514aab1bdf8248d555cee8df",
+      "title": "어느 마트가 더 쌀까…‘알뜰하게 장볼지도’ 앱 5개 도시서 첫선",
+      "source_id": "etoday-economy",
+      "state": "ignored",
+      "screening": {
+        "reason": "지역 시범 앱 출시로 정책 파급력이 제한적임",
+        "article_id": "1b6687a10518420f75d739bf897052f900318308514aab1bdf8248d555cee8df",
+        "importance": 2,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "ignore",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "45161021ad98f9057ca01ab70056abc15e12b436cf55867d3849dd78b9ddd164",
+      "title": "서부발전, '서부가 그린대로' 성과 발표회⋯혁신 우수과제 10건 선정",
+      "source_id": "etoday-economy",
+      "state": "ignored",
+      "screening": {
+        "reason": "공기업 내부 혁신 성과 발표로 외부 영향이 제한적임",
+        "article_id": "45161021ad98f9057ca01ab70056abc15e12b436cf55867d3849dd78b9ddd164",
+        "importance": 2,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "ignore",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "3da0d023802d60db5bbc98459c9c7f3343a74ff675a062f1694260d1c178477d",
+      "title": "우리금융, 스포츠 꿈나무 위해 10년간 30억 지원",
+      "source_id": "etoday-finance",
+      "state": "ignored",
+      "screening": {
+        "reason": "기업 사회공헌 계획으로 경제·정책 영향이 제한적임",
+        "article_id": "3da0d023802d60db5bbc98459c9c7f3343a74ff675a062f1694260d1c178477d",
+        "importance": 1,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "ignore",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30",
+      "title": "오세훈 \"박원순 때 서울정비사업 해제 유도…이러고 남탓하나\"",
+      "source_id": "sbs-economy",
+      "state": "held",
+      "screening": {
+        "reason": "서울 정비사업 규제와 정책 책임 공방으로 주택정책 쟁점이 드러남",
+        "article_id": "8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30",
+        "importance": 3,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": [
+          "4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76"
+        ]
+      }
+    },
+    {
+      "id": "0ec27dbbb0bbc1db0cc9399efaff2d5e8fff8c9c85cb6626a186492f998570a8",
+      "title": "울산 중구, 재개발구역 내 길고양이 중성화 수술 추진",
+      "source_id": "yonhap-economy",
+      "state": "ignored",
+      "screening": {
+        "reason": "지역 길고양이 관리 사업으로 중요도가 낮음",
+        "article_id": "0ec27dbbb0bbc1db0cc9399efaff2d5e8fff8c9c85cb6626a186492f998570a8",
+        "importance": 1,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "ignore",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "4084730f687bb157a9f2b5097b2641c8030887f1f50c5c2f8c8be438e7187d26",
+      "title": "[게시판] KB손보, 금감원과 '추석맞이 전통시장 사랑나눔 행사'",
+      "source_id": "yonhap-economy",
+      "state": "ignored",
+      "screening": {
+        "reason": "기업의 일회성 사회공헌 행사로 중요도가 낮음",
+        "article_id": "4084730f687bb157a9f2b5097b2641c8030887f1f50c5c2f8c8be438e7187d26",
+        "importance": 1,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "ignore",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "46ad28654c30e829871e5103faaa6854d0c610a9c33f0cc870436aee870b0d0c",
+      "title": "서울시, 세계 도시와 평화·협력 논의…'도시외교 포럼'",
+      "source_id": "yonhap-economy",
+      "state": "ignored",
+      "screening": {
+        "reason": "도시외교 포럼 개최로 구체적 정책 변화가 제한적임",
+        "article_id": "46ad28654c30e829871e5103faaa6854d0c610a9c33f0cc870436aee870b0d0c",
+        "importance": 2,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "ignore",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "779706d49b4021e6cdd90bd7c5a45e1721062f0e4072e10394b65f1a2dcae1fb",
+      "title": "노동장관, 추석 앞두고 산재병원 방문 \"재활서비스 지속 개발\"",
+      "source_id": "yonhap-economy",
+      "state": "ignored",
+      "screening": {
+        "reason": "장관의 병원 방문과 일반적 서비스 개선 발언임",
+        "article_id": "779706d49b4021e6cdd90bd7c5a45e1721062f0e4072e10394b65f1a2dcae1fb",
+        "importance": 2,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "ignore",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "7ce7015563d49d5418e2640f94f2a46142458b43356778f97cc4cdadd1ad3940",
+      "title": "포천시, 추석맞이 고향사랑기부제 28일까지 이벤트",
+      "source_id": "yonhap-economy",
+      "state": "ignored",
+      "screening": {
+        "reason": "지방자치단체 명절 홍보 이벤트로 중요도가 낮음",
+        "article_id": "7ce7015563d49d5418e2640f94f2a46142458b43356778f97cc4cdadd1ad3940",
+        "importance": 1,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "ignore",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "85dcec2a8fcad5431a24e53c4c364144213017be7c1d81200eba94889ad75c81",
+      "title": "미래에셋운용, TIGER 피지컬AI밸류체인 ETF 상장",
+      "source_id": "yonhap-economy",
+      "state": "ignored",
+      "screening": {
+        "reason": "개별 투자상품 출시로 홍보성 성격이 강함",
+        "article_id": "85dcec2a8fcad5431a24e53c4c364144213017be7c1d81200eba94889ad75c81",
+        "importance": 2,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "ignore",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "88fa17d61e877e63dd9f271c4cdbc6e49cc13589c21d47270dc38d6df6fb208c",
+      "title": "[게시판] 하나증권, 투자 인사이트 포럼 개최",
+      "source_id": "yonhap-economy",
+      "state": "ignored",
+      "screening": {
+        "reason": "증권사 투자 포럼 개최로 정책·시장 새 정보가 제한적임",
+        "article_id": "88fa17d61e877e63dd9f271c4cdbc6e49cc13589c21d47270dc38d6df6fb208c",
+        "importance": 1,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "ignore",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "4db97280b8ba41005611ed250574036edd85a10a974bec3ad5341a1720230485",
+      "title": "한은, 오늘부터 4대 은행 대상 '원화국제결제망' 시범운영",
+      "source_id": "etoday-economy",
+      "state": "previewed",
+      "screening": {
+        "reason": "원화 국제결제 인프라 시범운영으로 금융시장·통화 국제화에 중요함",
+        "article_id": "4db97280b8ba41005611ed250574036edd85a10a974bec3ad5341a1720230485",
+        "importance": 5,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": [
+          "042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9"
+        ]
+      }
+    },
+    {
+      "id": "042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9",
+      "title": "오늘부터 '한국은행 원화국제결제망' 시범운영…내년 본운영",
+      "source_id": "yonhap-economy",
+      "state": "previewed",
+      "screening": {
+        "reason": "원화 국제결제망 시범운영으로 금융시장·통화 국제화에 중요함",
+        "article_id": "042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9",
+        "importance": 5,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": [
+          "4db97280b8ba41005611ed250574036edd85a10a974bec3ad5341a1720230485"
+        ]
+      }
+    },
+    {
+      "id": "ffebaa97ca9ea77f75e3a983bf2b43f38966bcfa37c55474e7dd74d5f9106c85",
+      "title": "\"언제 날려버릴까\"…트럼프 대이란 궤멸전 수사에 중동 초긴장",
+      "source_id": "sbs-world",
+      "state": "held",
+      "screening": {
+        "reason": "미국·이란 군사충돌 위협과 보복 경고로 중동·에너지·안보 리스크가 큼",
+        "article_id": "ffebaa97ca9ea77f75e3a983bf2b43f38966bcfa37c55474e7dd74d5f9106c85",
+        "importance": 5,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76",
+      "title": "오세훈 서울주택공급 성과공유회…\"최근 정비구역 지정 이전의 두 배\"",
+      "source_id": "sbs-economy",
+      "state": "previewed",
+      "screening": {
+        "reason": "서울 정비구역 확대와 주택공급 정책은 부동산 시장에 중요함",
+        "article_id": "4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76",
+        "importance": 4,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": [
+          "8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30"
+        ]
+      }
+    },
+    {
+      "id": "554b02bb609c362562e265e9c9b35c0346f745bff70b4d01337ae4237f5f1200",
+      "title": "농지, 38년 만에 불법전용 양성화…정부, 연내 ‘처분 유예’ 특별법 추진",
+      "source_id": "etoday-economy",
+      "state": "previewed",
+      "screening": {
+        "reason": "농지 불법전용 양성화와 특별법 추진으로 농업·부동산 정책 변화가 큼",
+        "article_id": "554b02bb609c362562e265e9c9b35c0346f745bff70b4d01337ae4237f5f1200",
+        "importance": 4,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "30ae57496aa9962ea28b20b878effcfd39aa708af0813cd0421fec64215fc854",
+      "title": "일본, 북한 선수단 신칸센 이용 금지…북한 체육상, 일 접촉에 '냉랭'",
+      "source_id": "sbs-world",
+      "state": "held",
+      "screening": {
+        "reason": "일본의 대북 접촉과 북한 선수단 제한으로 북일 관계와 지역 외교에 중요함",
+        "article_id": "30ae57496aa9962ea28b20b878effcfd39aa708af0813cd0421fec64215fc854",
+        "importance": 4,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "666af63c6e2491815ed1d2764c2fd7e119b30ef00669e4f9ac34ec39ebdc0e51",
+      "title": "中 불법어선 막는다…서해 3000톤급 해경함정 17척까지 확충",
+      "source_id": "etoday-economy",
+      "state": "previewed",
+      "screening": {
+        "reason": "서해 해양경비 전력 증강으로 대중국·해양안보와 예산에 중요함",
+        "article_id": "666af63c6e2491815ed1d2764c2fd7e119b30ef00669e4f9ac34ec39ebdc0e51",
+        "importance": 4,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "93dabab5d51ab65ae770fe6fe28649708f4b7b16df5e75bd8bacb2b29d19ecf6",
+      "title": "반도체 덕 본 24년 韓 경제⋯부가가치 상승에도 일자리 유발 '최저'",
+      "source_id": "etoday-economy",
+      "state": "previewed",
+      "screening": {
+        "reason": "반도체 중심 성장과 역대 최저 고용유발계수로 산업·고용 구조를 보여줌",
+        "article_id": "93dabab5d51ab65ae770fe6fe28649708f4b7b16df5e75bd8bacb2b29d19ecf6",
+        "importance": 4,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "a3ef052bf5a533a90a09117f6fb42d50bc374a3680bb744d306af66481d4bc4d",
+      "title": "메가특구 사회적 대화, 상견례 완료…추석전 본격 실무협의 추진",
+      "source_id": "sbs-economy",
+      "state": "previewed",
+      "screening": {
+        "reason": "메가특구 노동 특례를 둘러싼 노사정 협의로 노동·산업정책에 중요함",
+        "article_id": "a3ef052bf5a533a90a09117f6fb42d50bc374a3680bb744d306af66481d4bc4d",
+        "importance": 4,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "bfa5265996b7b82107ca8a797973de29f1fbcb3bef9685cfdae55337c72aabba",
+      "title": "'근로자 끼임사' HL만도 평택공장, 법 위반 138건…86건 사법 처리",
+      "source_id": "sbs-economy",
+      "state": "held",
+      "screening": {
+        "reason": "중대재해와 다수의 산업안전 위반으로 노동·기업 규제에 중요함",
+        "article_id": "bfa5265996b7b82107ca8a797973de29f1fbcb3bef9685cfdae55337c72aabba",
+        "importance": 4,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "2507a5d8da1cea6fc44a8f4e20c19120c1da523ed72eaa74924a66aa3268b37f",
+      "title": "애벌레의 변신…고소애, ‘근력 유지’ 건강기능식품 원료로",
+      "source_id": "etoday-economy",
+      "state": "ignored",
+      "screening": {
+        "reason": "식용곤충 원료의 기능성 인정으로 식품·바이오 산업 활용 가능성이 있음",
+        "article_id": "2507a5d8da1cea6fc44a8f4e20c19120c1da523ed72eaa74924a66aa3268b37f",
+        "importance": 3,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": []
+      }
+    },
+    {
+      "id": "e4645225b4abb7bc09bfd1a9aca8ed8a98edd12031f0809e1fdc51e2c621fcbb",
+      "title": "KTR, '삼원계 도장도금강판' KS 인증 본격화⋯포스코스틸리온·KG스틸 획득",
+      "source_id": "etoday-economy",
+      "state": "previewed",
+      "screening": {
+        "reason": "건축 외장재 KS 인증 의무화로 관련 제조·건설업 규제가 바뀜",
+        "article_id": "e4645225b4abb7bc09bfd1a9aca8ed8a98edd12031f0809e1fdc51e2c621fcbb",
+        "importance": 3,
+        "request_id": "news-screen-2090426e-5b1d-4927-be19-462095983924",
+        "disposition": "keep",
+        "related_ids": []
+      }
+    }
+  ],
+  "outbox_count": 24,
+  "new_outbox_count": 0,
+  "slack_writes": 0,
+  "database_name": "reporter_acceptance_0d420b355cd2",
+  "disposable_database_removed_after_receipt": true
+}

@@ -1,0 +1,117 @@
+{
+  "checked_at": "2026-09-21T07:02:24.972777+00:00",
+  "commit": "c52c9bc755e868434440e6c7d1f6d978a29f371f",
+  "services": [
+    {
+      "name": "/quant-company-postgres-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "started_at": "2026-09-21T01:28:20.371309952Z",
+      "restart_count": 1,
+      "revision": null
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "started_at": "2026-09-21T07:00:14.021854541Z",
+      "restart_count": 0,
+      "revision": "c52c9bc755e868434440e6c7d1f6d978a29f371f"
+    },
+    {
+      "name": "/quant-company-api-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "started_at": "2026-09-21T07:01:35.629799397Z",
+      "restart_count": 0,
+      "revision": "c52c9bc755e868434440e6c7d1f6d978a29f371f"
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "started_at": "2026-09-21T07:01:35.263114948Z",
+      "restart_count": 0,
+      "revision": "c52c9bc755e868434440e6c7d1f6d978a29f371f"
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "started_at": "2026-09-21T07:01:34.784566424Z",
+      "restart_count": 0,
+      "revision": "c52c9bc755e868434440e6c7d1f6d978a29f371f"
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "started_at": "2026-09-21T07:01:36.071848677Z",
+      "restart_count": 0,
+      "revision": "c52c9bc755e868434440e6c7d1f6d978a29f371f"
+    },
+    {
+      "name": "/quant-company-maintenance-1",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "started_at": "2026-09-21T07:01:34.993510024Z",
+      "restart_count": 0,
+      "revision": "c52c9bc755e868434440e6c7d1f6d978a29f371f"
+    },
+    {
+      "name": "/quant-company-claude-runtime-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "started_at": "2026-09-21T07:00:14.986310403Z",
+      "restart_count": 0,
+      "revision": "c52c9bc755e868434440e6c7d1f6d978a29f371f"
+    }
+  ],
+  "postgres_container_id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+  "existing_roles_preserved": true,
+  "existing_slack_credentials_preserved": true,
+  "codex_has_no_slack_or_database_secret_mounts": true,
+  "research_configuration_preserved": true,
+  "research_overlay_services": [
+    {
+      "service": "api",
+      "enabled_and_required_mounts_present": true
+    },
+    {
+      "service": "worker",
+      "enabled_and_required_mounts_present": true
+    },
+    {
+      "service": "dispatch",
+      "enabled_and_required_mounts_present": true
+    },
+    {
+      "service": "slack-socket",
+      "enabled_and_required_mounts_present": true
+    }
+  ],
+  "flags": {
+    "COMPANY_NEWS_ENABLED": "true",
+    "NEWS_PUBLISH_ENABLED": "true",
+    "NEWS_SEARCH_ENABLED": "true",
+    "NEWS_CHANNEL_ID": "C0C2J1SSX09",
+    "NEWS_OWNER_USER": "U0C250E23NW",
+    "NEWS_MAX_AGE_HOURS": "24",
+    "NEWS_INITIAL_LOOKBACK_MINUTES": "120",
+    "NEWS_OPTIMIZATION_ENABLED": "true",
+    "NEWS_DELIVERY_WINDOW_ENABLED": "true"
+  },
+  "timers": {
+    "quant-company-release.timer": "active",
+    "quant-company-backup.timer": "active"
+  },
+  "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/root        58G   52G  5.6G  91% /\n"
+}

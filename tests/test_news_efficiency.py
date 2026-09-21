@@ -376,3 +376,27 @@ async def test_cold_restart_after_night_groups_old_pending_post(efficient):
     assert not await sender.send_one()
     assert NewsDigestStore(store.company).flush()["members"] == 1
     assert await sender.send_one()
+
+
+def test_optimization_retains_prior_event_outside_latest_twelve(efficient):
+    from quant_company.company import stable
+
+    store, _ = efficient
+    overnight(store)
+    select(store)
+    store.commit_review(reply(store.prepare_review()["request"]))
+    with store.db.transaction() as conn:
+        event = conn.execute("SELECT * FROM news_events").fetchone()
+        prior = stable("already-published-presidential-itinerary")
+        for index in range(29):
+            conn.execute("""INSERT INTO news_events(id,project_id,headline,root_message_id,last_facts,updated_at)
+                VALUES(%s,%s,%s,%s,%s,now()-make_interval(mins=>%s))""",
+                         (prior if index == 27 else stable(f"history-{index}"), event["project_id"],
+                          "유엔총회·멕시코 순방 계획" if index == 27 else f"Earlier event {index}",
+                          event["root_message_id"], "이미 발표한 순방 일정이며 아직 합의는 없다.", index+1))
+    overnight(store, suffix="same-event-different-outlet", title="다른 매체의 순방 일정 보도")
+    select(store)
+    request = store.prepare_review()["request"]
+    bundle = json.loads(request["prompt"].split("NEWS DATA JSON:\n")[1])
+    assert len(bundle["events"]) == 30
+    assert next(e for e in bundle["events"] if e["id"] == prior)["last_facts"] == "이미 발표한 순방 일정이며 아직 합의는 없다."

@@ -9,5 +9,21 @@
     "reasoning_output_tokens": 67
   },
   "cause": "Screen related_ids named other offered primary articles; v1 validator accepted only held IDs. All references were supplied, not invented.",
-  "repair": "v2 permits offered primary and held IDs; existing evidence verification remains mandatory. Old blocked request retained; deliberate new qualification sample, not automatic replay of an unknown effect."
+  "repair": "v2 permits offered primary and held IDs; existing evidence verification remains mandatory. Old blocked request retained; deliberate new qualification sample, not automatic replay of an unknown effect.",
+  "disposable_database_removed_after_receipt": true,
+  "runtime_receipt_states": [
+    {
+      "id": "news-screen-490c3ea1-e2cc-47b5-9cea-5029c826a31b",
+      "receipt_exists": true,
+      "state": "complete",
+      "input_digest": "80a74d5dda61d719a2610bb91543142f6e7dd48266d822906f1f24dec946b957"
+    },
+    {
+      "id": "news-search-395bd394-29e9-403e-af3a-8cab8fb3cd41",
+      "receipt_exists": false,
+      "state": null,
+      "input_digest": null
+    }
+  ],
+  "unexecuted_search_rejected_busy": true
 }

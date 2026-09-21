@@ -1,11 +1,11 @@
 {
   "full_suite": {
-    "summary": "667 passed, 2 skipped, 1 deselected, 2 warnings in 112.82s (0:01:52)",
-    "log_sha256": "73f519069fd1c6257e67b44d0ffd4a81c86eafd0f8df71668d4e75f629df86cf"
+    "summary": "669 passed, 2 skipped, 1 deselected, 2 warnings in 109.47s (0:01:49)",
+    "log_sha256": "7a687538357d39da357d77f1fcad222672c2dfda711c0296ceafd291df1d8ff1"
   },
   "boundary_suite": {
-    "summary": "67 passed in 8.24s",
-    "log_sha256": "87093bee0b5db7ee8153cbfd0af817abeebcade3701effaac6be303532820b90"
+    "summary": "86 passed in 10.19s",
+    "log_sha256": "043c4aa1a270b1447d6c259c4f8b97fa25977d3cf61d21c17fbc78f7fb660bf2"
   },
   "legacy_history_replay": {
     "legacy_production_history_replays": true,
@@ -14,11 +14,16 @@
     "no_external_effects": true,
     "history_sha256": "22e62ab975a67973c0dd3b3b8b93e55f68468089f1fdc1fd739dce53ed4c09e6"
   },
-  "checked_at": "2026-09-21T06:52:34.939919+00:00",
+  "checked_at": "2026-09-21T07:22:32.258610+00:00",
   "postgres": "real disposable PostgreSQL 14",
   "temporal": "real test server plus replay of pre-change production history",
   "slack": "httpx simulated only",
   "model": "synthetic fixture only; actual subscription qualification recorded separately",
   "natural_midnight_or_0600_observed": false,
-  "lint": "All checks passed!"
+  "lint": "All checks passed!",
+  "additional_fast_timer_test": {
+    "summary": "1 passed in 3.50s",
+    "real_temporal": true,
+    "model_and_slack_calls": 0
+  }
 }

@@ -1017,6 +1017,7 @@
     "optimized_search_input_output_tokens": 28788,
     "optimized_search_native_calls": 1,
     "limitations": [
+      "This preview used a 12-event history cap. Final policy restores 30 after a real duplicate was observed. The 33.7% figure is not the final-policy savings rate.",
       "Same actual article sample, but baseline had historical event context and the disposable preview had no prior event history; this is not an isolated causal estimate or a production daily average.",
       "Preview final reviews do not persist published-event history, so the preview may revisit a contextual peer that production publication consumes.",
       "Search query/time differs from baseline; no matched search reduction claim.",

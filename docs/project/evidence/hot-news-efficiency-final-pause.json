@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-09-21 07:19:53.844068+00:00",
+  "reason": "pause idle editor while qualifying and deploying preserved dedup history; RSS collection continues",
+  "old_run": "01a0c2ca-f8d0-7606-a99f-d1f85254c553",
+  "old_next_timer": "2026-09-21 07:21:09.874369+00:00",
+  "pending_activities_before": 0,
+  "frozen_editor_or_screen_calls_before": 0,
+  "inference_request_ids_replayed_or_replaced": 0,
+  "manual_slack_writes": 0,
+  "resume_after_final_activation_required": true
+}
