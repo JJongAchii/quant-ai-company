@@ -17,6 +17,7 @@ from pathlib import Path
 
 from quant_company.research.sandbox import runtime_digest
 
+
 def sha_file(path):
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()

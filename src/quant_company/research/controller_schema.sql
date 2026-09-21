@@ -17,9 +17,11 @@ CREATE TABLE IF NOT EXISTS research_stage_attempts (
 );
 CREATE TABLE IF NOT EXISTS research_stage_reads (
  id uuid PRIMARY KEY, stage_id uuid NOT NULL REFERENCES research_mission_stages(id),
+ attempt integer NOT NULL DEFAULT 1,
  path text NOT NULL, character_offset integer NOT NULL CHECK(character_offset>=0), content text NOT NULL,
  next_offset integer, sha256 text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
 );
+ALTER TABLE research_stage_reads ADD COLUMN IF NOT EXISTS attempt integer NOT NULL DEFAULT 1;
 -- Multiple scientific trials inherit one mission approval; replay still permits one job per event.
 ALTER TABLE research_jobs DROP CONSTRAINT IF EXISTS research_jobs_approval_event_id_key;
 CREATE UNIQUE INDEX IF NOT EXISTS research_replay_approval_event ON research_jobs(approval_event_id)
