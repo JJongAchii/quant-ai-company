@@ -125,7 +125,7 @@ def render(item, articles, verified_at):
     if item.verification == "attributed_report":
         publisher = articles[item.evidence[0].article_id]["publisher"]
         lines.insert(1, escape(publisher, quote=False) + " 보도에 따르면:")
-    if item.change:
+    if item.event_id and item.change:
         lines.append("*달라진 점* " + escape(item.change, quote=False))
     sources = {e.article_id for e in item.evidence}
     licenses = set()
