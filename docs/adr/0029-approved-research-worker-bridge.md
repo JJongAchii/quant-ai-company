@@ -42,6 +42,21 @@ context and Slack. New research recipes require an approved specification and ac
 audits for their own scope; the replay verdict cannot authorize a new experiment or deployment.
 The original SEARCH, audit, data and pilot output remain unchanged.
 
+## Integration finding
+
+The recorded-prompt maintenance tests reproduced a hidden omission: adding specialist
+instructions made valid saved requests exceed the observer's old 25,000-byte cutoff
+(26,896/26,899 bytes in the reproducer). Twelve existing behavior tests lost their
+replay inputs. The observer now validates the actual ProviderRequest contract and
+uses a bounded 600,000-byte serialized envelope, sufficient for the existing 90,000
+character prompt limit with JSON escaping. It still retains six requests and sends
+only the existing bounded diagnostic excerpts to the observer. It does not enlarge
+provider prompts or fabricate context. The original failing behavior tests now pass.
+
+The existing staff exercise bank includes variations on receipt-vs-completion and
+HTTP-success-vs-cancelled-job mistakes, with source lineage. Answer keys remain
+server-side; these exercises do not certify a staff member or a strategy.
+
 ## Acceptance
 
 Use real PostgreSQL/Temporal for duplicate approval, lost claim response, worker restart,

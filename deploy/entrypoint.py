@@ -9,7 +9,7 @@ from urllib.parse import quote
 def main() -> None:
     if len(sys.argv) < 2:
         raise SystemExit("An executable is required")
-    for name in ("OPERATOR_TOKEN", "MODEL_RUNTIME_TOKEN", "TEMPORAL_API_KEY"):
+    for name in ("OPERATOR_TOKEN", "MODEL_RUNTIME_TOKEN", "TEMPORAL_API_KEY", "RESEARCH_WORKER_TOKEN"):
         path = os.environ.pop(f"{name}_FILE", None)
         if path:
             value = Path(path).read_text().strip()

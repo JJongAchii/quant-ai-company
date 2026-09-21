@@ -49,12 +49,15 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     allowed_tools = {"calculate", "knowledge_search", "read_source", "company_history",
                      "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
                      "finance_search", "finance_read", "web_search", "web_read",
-                     "finance_compute", "data_quality", "staff_status", "news_status"} | LAKE_TOOLS
+                     "finance_compute", "data_quality", "staff_status", "news_status", "research_control"} | LAKE_TOOLS
     for role in roles:
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
     if "reporter" in by_id and settings.company_news_enabled:
         by_id["reporter"] = by_id["reporter"].model_copy(update={"active": True})
+    if settings.company_research_enabled and "director" in by_id:
+        role = by_id["director"]
+        by_id["director"] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "research_control"]))})
     return by_id
 
 
@@ -104,6 +107,16 @@ class Company:
             "capabilities": {
                 **TOOL_GUIDE,
                 "news_status": "Reporter: {}. Read-only news receipts.",
+                "research_control": {
+                    "enabled": self.settings.company_research_enabled,
+                    "usage": 'Director: {action:"catalog"|"status"} or '
+                             '{action:"request",recipe_id:"kr-etf-p11-replay-v1"}. '
+                             'Request prepares a fixed replay for authenticated owner approval; it is not an execution. '
+                             'The server sends the exact approval command. Do not infer approval from a model or quote. '
+                             'After request/status, explain the receipt and complete the conversational task; '
+                             'do not poll with follow-ups or claim the background research is complete. '
+                             'The durable queue delivers the verified report later. New research is not registered.',
+                },
                 "news_reporting": {"enabled": self.settings.company_news_enabled,
                                    "publish_enabled": self.settings.news_publish_enabled},
                 "staff_status": "Director only: {employee?: exact employee id or maintainer}. "
@@ -172,7 +185,7 @@ class Company:
                 },
                 "external_web_search": self.settings.company_web_enabled and any(
                     role.active and "web_search" in role.tools for role in self.roles.values()),
-                "research_worker_submission": False,
+                "research_worker_submission": self.settings.company_research_enabled,
                 "strategy_code_execution": False,
                 "live_trading": False,
                 "paid_api_fallback": False,
@@ -276,6 +289,12 @@ class Company:
         self.role(agent)
         if not text.strip() or len(text) > 10000:
             raise PolicyError("Instruction must contain 1–10000 characters")
+        from .research.store import parse_command
+
+        research_command = parse_command(text) if agent == "director" else None
+        if research_command:
+            interpret = False
+            status_only = True
         digest = fingerprint([text, owner, agent, project_id, channel, thread_ts, revise, status_only])
         prior_ingress_digest = digest
         if interpret or control_action:
@@ -330,7 +349,11 @@ class Company:
             conn.execute("INSERT INTO inbound(event_key,project_id,task_id,payload_digest) VALUES (%s,%s,%s,%s)",
                          (event_key, project_id, task["id"], digest))
             self._message(conn, project, task["id"], owner, "human", text)
-            if control_action:
+            if research_command:
+                from .research.store import ResearchStore
+
+                ResearchStore(self).owner_command(conn, project, task, event_key, research_command)
+            elif control_action:
                 from .task_control import Control, apply
 
                 apply(conn, self, project, task, Control(action=control_action))
@@ -360,6 +383,8 @@ class Company:
                                         (owner, owner)).fetchall())
 
     def project_state(self, project_id, owner=None):
+        from .research.store import ResearchStore
+
         with self.db.transaction() as conn:
             project = self._project(conn, project_id, owner, lock=False)
             result = {"project": project}
@@ -369,6 +394,7 @@ class Company:
             result["turns"] = conn.execute("""SELECT t.id,t.task_id,t.sequence,t.revision,t.status,t.error,
                 t.due_at,t.attempts FROM turns t JOIN tasks k ON k.id=t.task_id WHERE k.project_id=%s
                 ORDER BY t.created_at""", (project_id,)).fetchall()
+            result["research"] = ResearchStore(self).status(conn, project_id)
             return as_json(result)
 
     def _context(self, conn, task, project):
@@ -600,6 +626,12 @@ class Company:
 
     def _tool(self, conn, project_id, request, *, task=None, turn_id=None):
         arguments = request.arguments
+        if request.name == "research_control":
+            from .research.store import ResearchStore
+
+            if not task:
+                raise PolicyError("Research control requires a task")
+            return ResearchStore(self).tool(conn, self._project(conn, project_id, lock=False), task, arguments)
         if request.name == "news_status":
             from .news.store import NewsStore
 
@@ -750,6 +782,10 @@ class Company:
                 return commit_routing(conn, self, project, task, turn, response)
             self.validate_decision(conn, project, task, decision)
             final = task["agent"] == "director" and not task["parent_id"] and decision.status == "complete"
+            if final:
+                final = not conn.execute("""SELECT 1 FROM research_jobs WHERE task_id=%s
+                    AND state NOT IN ('completed','cancelled','failed','awaiting_audit') LIMIT 1""",
+                                         (task["id"],)).fetchone()
             # Maintenance owns the eventual result notification; its intake acknowledgement is progress.
             if final and conn.execute("SELECT to_regclass('maintenance_jobs') AS name").fetchone()["name"]:
                 final = not conn.execute("""SELECT 1 FROM maintenance_jobs WHERE kind='review'

@@ -45,6 +45,9 @@ def create_app(settings: Settings | None = None, company: Company | None = None,
     ingress = SlackIngress(settings, company, credentials)
     app = FastAPI(title="Quant Company", docs_url=None, redoc_url=None, openapi_url=None)
     app.state.company = company
+    from .research.api import register_routes
+
+    register_routes(app, company)
 
     def operator(authorization: str = Header(default="")):
         if not hmac.compare_digest(authorization, "Bearer " + token):
