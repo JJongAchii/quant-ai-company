@@ -280,6 +280,8 @@ def test_linux_namespace_nonperformance_qualification(tmp_path, monkeypatch):
 from pathlib import Path
 assert not Path({str(hidden)!r}).exists()
 assert not Path('/code/.git').exists()
+for omitted in ['.env', 'history/raw.json', 'docs/prior.md', 'development/rows.csv']:
+    assert not Path('/code', omitted).exists()
 assert not Path('/proc/{os.getpid()}').exists()
 assert 'AWS_SECRET_ACCESS_KEY' not in os.environ
 assert 'OPERATOR_TOKEN' not in os.environ
@@ -295,7 +297,9 @@ for filename in ['/code/src/entry.py', '/inputs/sample.json']:
 Path('/output/result.json').write_text(json.dumps({{'fixture': True, 'isolated': True}}))
 print('non-performance namespace fixture complete')
 '''
-    _, bundle, base = make_snapshot(tmp_path, {"src/entry.py": code})
+    _, bundle, base = make_snapshot(tmp_path, {"src/entry.py": code, ".env": "SYNTHETIC_SECRET=hidden\n",
+                                              "history/raw.json": "[]\n", "docs/prior.md": "Synthetic prior artifact\n",
+                                              "development/rows.csv": "date,value\n"})
     prepared = prepare_workspace(bundle, content_digest(bundle.read_bytes()), base, tmp_path / "job", (), (), ())
     inputs = tmp_path / "inputs"
     inputs.mkdir()
@@ -303,7 +307,8 @@ print('non-performance namespace fixture complete')
     data.write_text('{"fixture":true}')
     output = tmp_path / "output"
     output.mkdir()
-    spec = SandboxSpec(profile, prepared.worktree, prepared.commit, prepared.manifest["files"],
+    declared = {"src/entry.py": prepared.manifest["files"]["src/entry.py"]}
+    spec = SandboxSpec(profile, prepared.worktree, prepared.commit, declared,
                        (InputMount(data, "sample.json", content_digest(data.read_bytes())),),
                        (inputs,), tmp_path, output, "src/entry.py", timeout_seconds=30, fixture_only=True)
     monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "synthetic-do-not-inherit")
@@ -322,3 +327,44 @@ def test_sensitive_input_cannot_hide_under_a_broad_registered_parent(spec, name)
     mount = InputMount(source, "sample.json", content_digest(source.read_bytes()))
     with pytest.raises(SandboxError, match="sensitive-input-path"):
         build_command(replace(spec, input_mounts=(mount,)))
+
+
+def test_declared_code_subset_qualification_omits_tracked_secrets_history_and_development_artifacts(spec, tmp_path):
+    fixture = tmp_path / "closure-fixture"
+    fixture.mkdir()
+    omitted = {".env": "SYNTHETIC_SECRET=must-not-mount\n", "history/prior.json": "[]\n",
+               "docs/prior.md": "Synthetic prior artifact\n", "development/rows.csv": "date,value\n"}
+    _, bundle, base = make_snapshot(fixture, {"src/entry.py": "VALUE = 1\n", **omitted})
+    prepared = prepare_workspace(bundle, content_digest(bundle.read_bytes()), base,
+                                 tmp_path / "closure-job", (), (), ())
+    declared = {"src/entry.py": prepared.manifest["files"]["src/entry.py"]}
+    selected = replace(spec, code_root=prepared.worktree, code_commit=prepared.commit, code_files=declared)
+    command = build_command(selected)
+    code_targets = {command[index + 2] for index, arg in enumerate(command) if arg == "--ro-bind"
+                    and command[index + 2].startswith("/code/")}
+    assert code_targets == {"/code/src/entry.py"}
+    assert set(omitted).issubset(prepared.manifest["files"])
+    for name in omitted:
+        assert str(prepared.worktree / name) not in command
+        assert "/code/" + name not in command
+    assert sandbox._validate(selected)[1]["code_files"] == declared
+
+
+def test_declared_subset_must_match_tracked_hashes_and_cannot_include_untracked_files(spec):
+    declared = {spec.entrypoint: spec.code_files[spec.entrypoint]}
+    with pytest.raises(SandboxError, match="code-manifest-mismatch"):
+        build_command(replace(spec, code_files={spec.entrypoint: "0" * 64}))
+    with pytest.raises(SandboxError, match="code-manifest-mismatch"):
+        build_command(replace(spec, code_files={**declared, "src/not-tracked.py": "0" * 64}))
+    extra = spec.code_root / "src/not-tracked.py"
+    extra.write_text("not_tracked = True\n")
+    with pytest.raises(SandboxError, match="code-identity-invalid"):
+        build_command(replace(spec, code_files={**declared, "src/not-tracked.py": content_digest(extra.read_bytes())}))
+
+
+def test_omitted_files_still_require_an_unchanged_clean_checkout(spec):
+    selected = replace(spec, code_files={spec.entrypoint: spec.code_files[spec.entrypoint]})
+    build_command(selected)
+    (spec.code_root / "src/evaluator.py").write_text("CRITERIA = 'tampered'\n")
+    with pytest.raises(SandboxError, match="code-identity-invalid"):
+        build_command(selected)

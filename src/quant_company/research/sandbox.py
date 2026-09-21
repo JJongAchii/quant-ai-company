@@ -66,7 +66,7 @@ class SandboxSpec:
     profile: RuntimeProfile
     code_root: Path
     code_commit: str
-    code_files: dict[str, str]
+    code_files: dict[str, str]  # Operator-selected committed closure, not the whole repository.
     input_mounts: tuple[InputMount, ...]
     allowed_input_roots: tuple[Path, ...]
     allowed_job_root: Path
@@ -188,9 +188,12 @@ def _validate(spec: SandboxSpec) -> tuple[list[tuple[Path, str]], dict[str, Any]
     output = _approved(spec.output_dir, (job_root,))
     _require(code.is_dir() and output.is_dir() and not _overlaps(str(code), str(output)), "invalid-job-mounts")
     try:
+        _require(isinstance(spec.code_files, dict) and bool(spec.code_files), "code-manifest-empty")
         entrypoint = safe_relative_path(spec.entrypoint)
         _require(entrypoint.endswith(".py") and entrypoint in spec.code_files, "entrypoint-not-committed")
-        _require(snapshot_files(code, spec.code_commit) == spec.code_files, "code-manifest-mismatch")
+        committed_files = snapshot_files(code, spec.code_commit)
+        _require(all(name in committed_files and committed_files[name] == digest
+                     for name, digest in spec.code_files.items()), "code-manifest-mismatch")
     except WorkspaceError:
         raise SandboxError("code-identity-invalid") from None
     profile = spec.profile
