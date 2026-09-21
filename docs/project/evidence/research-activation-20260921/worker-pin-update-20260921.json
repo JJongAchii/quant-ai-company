@@ -1,0 +1,24 @@
+{
+  "server_preflight": {
+    "observed_at": "2026-09-21T05:49:39.888645+00:00",
+    "busy_count": 0,
+    "queued_wrong_pin": 0,
+    "current_job": {
+      "id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+      "revision": 5,
+      "state": "pending_approval",
+      "company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+      "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0"
+    }
+  },
+  "worker_update": {
+    "observed_at": "2026-09-21T05:49:39.657207+00:00",
+    "hostname": "DESKTOP-5T00NAF",
+    "company_commit_before": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+    "company_commit_after": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+    "worker_scope_or_dependencies_changed": false,
+    "bundle_sha256": "1702a68df5d8d6ea52b2f28b2a53b2c4a738eda00f89cbf2d04aee9ae78154ec",
+    "config_sha256": "73ed7485e67359a82d2c83403206da46e3159afcc093dcde05e67a7bb07b4f50",
+    "reason": "Prior unexecuted v4 job cancelled after owner-intent routing; current v5 job pins the already-deployed Reporter release."
+  }
+}

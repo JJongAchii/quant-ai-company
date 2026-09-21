@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "title": "국내 ETF 월별 전략: P11 이후 피처 가설 6개를 반론과 이전 결과로 개선",
+  "kind": "strategy",
+  "objective": {
+    "metric": "stress-net-absolute-cagr",
+    "direction": "maximize",
+    "unit": "fraction-per-year"
+  },
+  "base_cost_bps": 10.0,
+  "stress_cost_bps": 30.0,
+  "risk_constraints": [
+    {
+      "metric": "gross_exposure",
+      "maximum": 1.0,
+      "unit": "multiple"
+    }
+  ],
+  "development": {
+    "start": "2014-01-01",
+    "end": "2026-08-31"
+  },
+  "sealed": [
+    {
+      "start": "2026-09-18",
+      "end": "2027-09-17"
+    }
+  ],
+  "data": {
+    "lake_id": "krx-etf-9c4fb62c8f19a158aee1dff36af37706-meta-2d8776e0c3fbe4e020dc383718239ee5",
+    "input_files": {
+      "warmup/snapshot.json": "bba2e273a1b1c60313021baff842c2f3a8896a750df3d12822e1756300da537d",
+      "warmup/prices.parquet": "bd877acabc34874679239d0c9eccd92e4a32e26bf2316f85b115903490bfa961",
+      "warmup/meta.parquet": "91b34929ea9b464e9b21c787ec19e70153353cc39500e6e4b76d555f167169f3",
+      "dev/snapshot.json": "8a10e640ca4430f7bcab7085e717f4e29119be0d6a0a2dd86877dd7691ee574e",
+      "dev/prices.parquet": "702217d3f6ae9c220ad9c0dfaa3e3c7384b9678cd4c1ba2337b44333dca5c553",
+      "dev/meta.parquet": "97a3caac1c3423d2af95df118823287de1b7e0034000415b26b3734945d838b6"
+    }
+  },
+  "code": {
+    "repository": "quant-lab",
+    "base_commit": "857e4243c54d86067c2bf8519eee1162cbd02189",
+    "write_paths": [
+      "labs/company-autonomous-etf/configs/candidate.json"
+    ]
+  },
+  "allowed_changes": [
+    "features"
+  ],
+  "execution_profile": "kr-etf-monthly-python-v1",
+  "execution_profile_digest": "9bf5f4fb27e0c2ca83e6adcab09219e7d8e754371731a4597f8e95382191883b",
+  "resources": {
+    "worker_id": "worker",
+    "priority": "owner"
+  },
+  "search": {
+    "max_trials_per_cycle": 4,
+    "max_total_trials": 6,
+    "patience": 2,
+    "min_improvement": 0.001,
+    "continuous": true
+  },
+  "baseline_source_ids": [
+    "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+  ]
+}

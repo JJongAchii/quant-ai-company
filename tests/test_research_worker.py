@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import shutil
 import signal
 import subprocess
 import sys
@@ -106,13 +107,29 @@ class FakeTransport:
         return httpx.Response(200, json={"ok": True, "state": "received", "duplicate": len(self.uploads) > 1})
 
 
+@pytest.fixture(scope="session")
+def pinned_company(tmp_path_factory):
+    """Actual clean committed company code, including the current implementation."""
+    source = tmp_path_factory.mktemp("pinned-company")
+    shutil.copytree(ROOT / "src" / "quant_company", source / "src" / "quant_company",
+                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    (source / ".gitignore").write_text("__pycache__/\n*.pyc\n")
+    subprocess.run(["git", "init", "-q", str(source)], check=True)
+    subprocess.run(["git", "-C", str(source), "add", "."], check=True)
+    subprocess.run(["git", "-C", str(source), "-c", "user.name=Fixture", "-c", "user.email=fixture@example.test",
+                    "-c", "core.hooksPath=/dev/null", "commit", "-qm", "Committed company lifecycle fixture"],
+                   check=True)
+    commit = subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"], text=True).strip()
+    return source, commit
+
+
 @pytest.fixture
-def harness(tmp_path, monkeypatch):
+def harness(tmp_path, monkeypatch, pinned_company):
     recipe = load_recipe()
     config = WorkerConfig(
         api_url="http://127.0.0.1:18764", token_file=tmp_path / "token", state_dir=tmp_path / "state",
         repo_source=tmp_path / "source", input_source=tmp_path / "inputs", evidence_repo=tmp_path / "evidence",
-        research_python=Path(sys.executable), company_repo=ROOT, company_commit="a" * 40,
+        research_python=Path(sys.executable), company_repo=pinned_company[0], company_commit=pinned_company[1],
         heartbeat_seconds=0.1, cancel_grace_seconds=3,
     )
     config.token_file.write_text("test-worker-token-never-log")
@@ -238,7 +255,7 @@ def test_second_private_executor_cannot_claim_existing_flock_or_receipt(harness)
     launch_id = read_json(harness.directory / "launch-intent.json")["launch_id"]
     process = REAL_POPEN(
         [sys.executable, "-c", CHILD_FIXTURE, str(harness.directory), launch_id, "finish"],
-        start_new_session=True, env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
+        start_new_session=True, env={**os.environ, "PYTHONPATH": str(harness.config.company_repo / "src")},
     )
     assert process.wait(timeout=5) == 2
     assert (harness.directory / "executions.txt").read_text().count("one bounded") == 1
@@ -247,7 +264,7 @@ def test_second_private_executor_cannot_claim_existing_flock_or_receipt(harness)
     wait_for_terminal(harness)
     process = REAL_POPEN(
         [sys.executable, "-c", CHILD_FIXTURE, str(harness.directory), launch_id, "finish"],
-        start_new_session=True, env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
+        start_new_session=True, env={**os.environ, "PYTHONPATH": str(harness.config.company_repo / "src")},
     )
     assert process.wait(timeout=5) == 2
     assert (harness.directory / "executions.txt").read_text().count("one bounded") == 1
@@ -527,7 +544,7 @@ time.sleep(30)
 '''
     poller = REAL_POPEN(
         [sys.executable, "-c", script, str(configuration), str(assignment_path), CHILD_FIXTURE],
-        start_new_session=True, env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
+        start_new_session=True, env={**os.environ, "PYTHONPATH": str(harness.config.company_repo / "src")},
     )
     try:
         eventually(lambda: (harness.config.state_dir / "poller-ready").exists())

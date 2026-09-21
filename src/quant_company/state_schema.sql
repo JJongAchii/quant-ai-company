@@ -51,3 +51,12 @@ CREATE TABLE IF NOT EXISTS web_requests (
     CHECK ((turn_id IS NULL) <> (maintenance_job_id IS NULL))
 );
 CREATE INDEX IF NOT EXISTS web_requests_turn ON web_requests(turn_id);
+-- Opaque controls are issued only with a server-created research approval notice.
+CREATE TABLE IF NOT EXISTS research_approval_bindings (
+ id uuid PRIMARY KEY, message_id uuid NOT NULL UNIQUE REFERENCES outbox(id),
+ project_id uuid NOT NULL REFERENCES projects(id), target_kind text NOT NULL, target_id uuid NOT NULL,
+ revision integer NOT NULL, manifest_digest text NOT NULL, owner_user text NOT NULL,
+ team_id text NOT NULL, app_id text, channel text NOT NULL, thread_ts text NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS research_approval_project ON research_approval_bindings(project_id,revision);

@@ -1,0 +1,9 @@
+{
+  "commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+  "previous": "4a8eb43b6406d3229cfd1e93b51011a817f87343",
+  "stage": "/var/lib/quant-company/releases/activation-20260921",
+  "archives": {
+    "company.tar": "964771fda248377c504112f685d2a225b87017a561b3f7e61097fc88bad0f7b7",
+    "qdata.tar": "8bb50549a923f3ec39bb1e6ffce2ac182ed41d368275614e55f60686707a138c"
+  }
+}

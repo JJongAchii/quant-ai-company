@@ -24,6 +24,10 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
                          "interactivity": {"is_enabled": False}, "org_deploy_enabled": False,
                          "socket_mode_enabled": transport == "socket", "token_rotation_enabled": False},
         }
+        if role.id == "director":
+            value["settings"]["interactivity"] = {"is_enabled": True}
+            if transport == "http":
+                value["settings"]["interactivity"]["request_url"] = base_url.rstrip("/") + "/slack/events/director"
         if role.id == "reporter":
             value["display_information"]["name"] = "Reporter"
             value["features"]["bot_user"]["display_name"] = "reporter"

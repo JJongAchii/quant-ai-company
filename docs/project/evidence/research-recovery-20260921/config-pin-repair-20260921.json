@@ -1,0 +1,27 @@
+{
+  "observed_at": "2026-09-21T06:04:21.228236+00:00",
+  "worker_unit": "stopped_for_preparation_recovery",
+  "config_sha256_before": "73ed7485e67359a82d2c83403206da46e3159afcc093dcde05e67a7bb07b4f50",
+  "config_sha256_after": "f25a143e6cf9862cb77cf0c654b1966890b8c314763071411262a40c621d8203",
+  "company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "changed_keys": [
+    "company_commit"
+  ],
+  "failed_launch_id": "942d7e7c58694b8eb85172d5be20decf",
+  "executor_alive": false,
+  "live_group_members": [],
+  "command_receipt_count": 0,
+  "checkout_exists": false,
+  "old_attempt_files": {
+    "execution-config.json": "545544b47b4e4bee3aac2c702017628d079479c30d9a8a73046ac604487c9fc6",
+    "result.json": "a8860b60466b2f41b582e0f78c83ad715c97b4979d80726ef154e518b6a3b09a",
+    "recipe.json": "ff2286d6f45b81596367f7fd884a5148a345f953fba65e8c4a45b96373d9c701",
+    "state.json": "7e8a8389eb71ebd4cbd0c81699c245219fe691661f0b71914ace1274ca38dbdc",
+    "executor.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "launch-intent.json": "a6a540fb0fcf493220abd6173cb710f6a988eac8ea03c6704a74fe5eea4e6a06",
+    "execution.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "process.json": "b7841f1cfa3e8ac11059d340664cbbebf217d13718bc8d6e90a3bad1cfb672c5"
+  },
+  "prior_approval_preserved": true,
+  "new_execution_started": false
+}

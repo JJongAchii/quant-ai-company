@@ -1,0 +1,65 @@
+{
+  "observed_at": "2026-09-21T05:54:38.118612+00:00",
+  "project": {
+    "id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "revision": 5,
+    "status": "active"
+  },
+  "jobs": [
+    {
+      "id": "939b54bb-1004-56f4-b2ae-86512617f1c6",
+      "task_id": "535fc344-b1f7-56f6-ad1d-14766dd1be69",
+      "revision": 4,
+      "state": "cancelled",
+      "approval_event_id": null,
+      "approved_by": null,
+      "approved_at": null,
+      "claimed_at": null,
+      "heartbeat_at": null,
+      "artifact_sha256": null,
+      "artifact_path": null,
+      "error": "project_revision_changed",
+      "company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+      "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+      "updated_at": "2026-09-21T05:44:29.282957+00:00",
+      "sequence": 0,
+      "report": null
+    },
+    {
+      "id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+      "task_id": "81a8f0ac-7e5d-5974-9d17-db79250c67b3",
+      "revision": 5,
+      "state": "pending_approval",
+      "approval_event_id": null,
+      "approved_by": null,
+      "approved_at": null,
+      "claimed_at": null,
+      "heartbeat_at": null,
+      "artifact_sha256": null,
+      "artifact_path": null,
+      "error": null,
+      "company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+      "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+      "updated_at": "2026-09-21T05:45:49.447565+00:00",
+      "sequence": 0,
+      "report": null
+    }
+  ],
+  "worker": {
+    "id": "worker",
+    "last_seen": "2026-09-21T05:54:34.46707+00:00"
+  },
+  "recent_inbound": [
+    {
+      "event_key": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1789969435.567029:director",
+      "task_id": "496144aa-f20d-5c89-a34b-1607c6a4ffde",
+      "created_at": "2026-09-21T05:43:56.295886+00:00",
+      "status": "completed",
+      "kind": "control",
+      "instruction": "승인"
+    }
+  ],
+  "report_tasks": [],
+  "report_turns": [],
+  "report_outbox": []
+}

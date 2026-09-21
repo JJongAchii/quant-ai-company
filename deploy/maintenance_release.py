@@ -72,6 +72,15 @@ def compose_command(root):
         if not overlay.is_file():
             raise ValueError('release_research_overlay_missing')
         command += ['-f', str(overlay)]
+    autonomous = any(line.strip() == 'COMPANY_AUTONOMOUS_RESEARCH_ENABLED=true'
+                     for line in envfile.read_text().splitlines()) if envfile.exists() else False
+    if autonomous:
+        if not research:
+            raise ValueError('release_autonomous_requires_research')
+        overlay = root/'deploy/autonomous-research.compose.yaml'
+        if not overlay.is_file():
+            raise ValueError('release_autonomous_overlay_missing')
+        command += ['-f', str(overlay)]
     return command
 
 

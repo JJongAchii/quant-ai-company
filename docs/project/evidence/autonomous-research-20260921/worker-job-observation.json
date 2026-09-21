@@ -1,0 +1,17 @@
+{
+  "jobs": [
+    {
+      "job_id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+      "uploaded": true,
+      "upload_ack": {
+        "duplicate": false,
+        "ok": true,
+        "state": "received"
+      },
+      "upload_sha256": "1f84528764ba45f20d90217de11d80465af107d2bbdd24d9bbeae718139c1782",
+      "has_pending_update": false
+    }
+  ],
+  "matching_execution_processes": [],
+  "read_only": true
+}

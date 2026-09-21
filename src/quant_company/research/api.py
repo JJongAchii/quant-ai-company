@@ -10,6 +10,7 @@ from pathlib import Path
 from uuid import UUID
 
 from fastapi import Depends, Header, HTTPException, Request
+from fastapi.responses import Response
 
 from .contracts import WorkerPoll, WorkerUpdate
 from .store import ResearchStore
@@ -32,6 +33,23 @@ def register_routes(app, company):
     @app.post("/v1/research/worker/jobs/{job_id}/heartbeat", dependencies=[Depends(worker)])
     def heartbeat(job_id: UUID, value: WorkerUpdate):
         return store.heartbeat(str(job_id), value)
+
+    @app.get("/v1/research/worker/jobs/{job_id}/bundle", dependencies=[Depends(worker)])
+    def bundle(job_id: UUID, x_research_lease: str = Header(default="")):
+        from .adaptive_contracts import MAX_BUNDLE_BYTES
+
+        with company.db.transaction() as conn:
+            _, row = store._locked(conn, str(job_id), x_research_lease)
+            if row["state"] not in {"claimed", "running"} or not row["bundle_path"] or not row["bundle_sha256"]:
+                raise HTTPException(409, "Research bundle is not available for this lease")
+            path, expected = Path(row["bundle_path"]), row["bundle_sha256"]
+        if (path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_BUNDLE_BYTES
+                or not path.resolve().is_relative_to(company.settings.research_artifact_dir.resolve())):
+            raise HTTPException(409, "Research bundle identity changed")
+        body = path.read_bytes()
+        if hashlib.sha256(body).hexdigest() != expected:
+            raise HTTPException(409, "Research bundle digest changed")
+        return Response(body, media_type="application/octet-stream", headers={"X-Bundle-Sha256": expected})
 
     @app.post("/v1/research/worker/jobs/{job_id}/artifact", dependencies=[Depends(worker)])
     async def artifact(job_id: UUID, request: Request, x_research_lease: str = Header(default=""),

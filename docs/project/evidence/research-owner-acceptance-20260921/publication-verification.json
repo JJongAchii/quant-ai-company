@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-09-21T06:48:38.367299+00:00",
+  "objects": [
+    {
+      "uri": "s3://quant-company-061039802347-backups/company/research/executions/6a64df0e-9c60-555f-aa3a-a80a70e7f985/1f84528764ba45f20d90217de11d80465af107d2bbdd24d9bbeae718139c1782.zip",
+      "sha256": "1f84528764ba45f20d90217de11d80465af107d2bbdd24d9bbeae718139c1782",
+      "bytes": 545705,
+      "actual_s3_get": true,
+      "matches_server_file": true
+    },
+    {
+      "uri": "s3://quant-company-061039802347-backups/company/research/executions/6a64df0e-9c60-555f-aa3a-a80a70e7f985/73d9d64cccac2bf80b2b96cd39e59c88f847f7c7cd59a6bc0e41191bfd3c70b6.html",
+      "sha256": "73d9d64cccac2bf80b2b96cd39e59c88f847f7c7cd59a6bc0e41191bfd3c70b6",
+      "bytes": 634387,
+      "actual_s3_get": true,
+      "matches_server_file": true
+    }
+  ],
+  "report": {
+    "uri": "s3://quant-company-061039802347-backups/company/research/executions/6a64df0e-9c60-555f-aa3a-a80a70e7f985/73d9d64cccac2bf80b2b96cd39e59c88f847f7c7cd59a6bc0e41191bfd3c70b6.html",
+    "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+    "expires_at": "2026-09-28T06:45:32.579856+00:00",
+    "archive_uri": "s3://quant-company-061039802347-backups/company/research/executions/6a64df0e-9c60-555f-aa3a-a80a70e7f985/1f84528764ba45f20d90217de11d80465af107d2bbdd24d9bbeae718139c1782.zip",
+    "html_sha256": "73d9d64cccac2bf80b2b96cd39e59c88f847f7c7cd59a6bc0e41191bfd3c70b6",
+    "publication": "s3",
+    "director_task_id": "1689d7c8-a186-588d-891e-4e509173235b",
+    "renderer_company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74"
+  }
+}

@@ -1,0 +1,1 @@
+{"argv": ["git", "-c", "core.hooksPath=/dev/null", "checkout", "--detach", "02649715bd3661826253e1ce84f8002d2a74c822"], "exit_code": 0}

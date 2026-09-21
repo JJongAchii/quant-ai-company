@@ -1,0 +1,128 @@
+{
+  "runId": "company-research-prelaunch-20260921",
+  "builderId": "research_worker_builder",
+  "buildStage": "research",
+  "domain": "personal",
+  "canonicalRepo": "https://github.com/JJongAchii/quant-ai-company.git",
+  "baseHead": "688dff1bb9652aed5d18ee69978c7d2019a18c83",
+  "worktreeBranch": "research-prelaunch-repair",
+  "commit": "bfce16d01113f79273c671dc1a16f6b0f57dbd7e",
+  "implementationStatus": "complete",
+  "qualificationStatus": "passed",
+  "completionScope": "Approved pre-execution recovery helper engineering slice only; no research/PREREG/deployment verdict.",
+  "approvedDesignDigest": "6cce84435908",
+  "objectiveDigest": "03d58ee449e6",
+  "preregDigest": null,
+  "protectedDigestsUnchanged": true,
+  "buildManifestSha256": "a64f90e24afdf1ae6d5625b8f6e5f9114c1d09eb9622c3629514dda557aa974d",
+  "changes": [
+    {
+      "path": "deploy/research_preparation_recovery.py",
+      "reason": "Bounded operator-only precheck recovery: fixed failure shape, private history, typed secret-free proof, prepared worker layout and locked/idempotent server transaction.",
+      "sha256": "e67a7acf0069b29ea8da2839807ffb11587728621a5838733cffb18e76f089b2"
+    },
+    {
+      "path": "tests/test_research_preparation_recovery.py",
+      "reason": "Local refusal/partial-install tests and real PostgreSQL + captured-failure/unchanged-worker qualification with non-performance subprocess.",
+      "sha256": "9ff6801fbb22746387739957fa1ca20503c0fe0bf6432f7065695a5990725de9"
+    },
+    {
+      "path": "docs/runbooks/research-worker.md",
+      "reason": "Release-pin consistency and exact operator recovery procedure, separate clean tool checkout, and Git-free API-container attestation.",
+      "sha256": "3fb0fbedb70aba199e0e906e860c7070f0a8a7189421aa3625b529e5885d900f"
+    }
+  ],
+  "tests": [
+    {
+      "command": "uv run ruff check deploy/research_preparation_recovery.py tests/test_research_preparation_recovery.py",
+      "exitCode": 2,
+      "rawSummary": "Failed to generate qdata package metadata: isolated worktree has no ../quant-data. No source/config change; used committed lockfile with --frozen."
+    },
+    {
+      "command": "uv run --frozen ruff check deploy/research_preparation_recovery.py tests/test_research_preparation_recovery.py",
+      "exitCode": 1,
+      "rawSummary": "I001 import ordering and F401 unused sha_file in test; corrected."
+    },
+    {
+      "command": "uv run --frozen ruff check --fix deploy/research_preparation_recovery.py tests/test_research_preparation_recovery.py",
+      "exitCode": 0,
+      "rawSummary": "Found 2 errors (2 fixed, 0 remaining)."
+    },
+    {
+      "command": "uv run --frozen pytest -q tests/test_research_preparation_recovery.py",
+      "exitCode": 0,
+      "rawSummary": "29 passed, 2 warnings in 7.47s"
+    },
+    {
+      "command": "uv run --frozen pytest -q tests/test_research_preparation_recovery.py",
+      "exitCode": 0,
+      "rawSummary": "29 passed, 2 warnings in 8.69s"
+    },
+    {
+      "command": "uv run --frozen pytest -q tests/test_research_preparation_recovery.py",
+      "exitCode": 0,
+      "rawSummary": "32 passed, 2 warnings in 7.58s"
+    },
+    {
+      "command": "uv run --frozen ruff check deploy/research_preparation_recovery.py tests/test_research_preparation_recovery.py",
+      "exitCode": 0,
+      "rawSummary": "All checks passed!"
+    },
+    {
+      "command": "git diff --cached --check",
+      "exitCode": 0,
+      "rawSummary": ""
+    },
+    {
+      "command": "RECOVERY_QUALIFICATION_RECEIPT=.local/recovery-build/qualification-receipt.json uv run --frozen pytest -q tests/test_research_preparation_recovery.py::test_captured_failure_shape_roundtrip",
+      "exitCode": 0,
+      "rawSummary": "1 passed, 2 warnings in 1.05s",
+      "codeCommit": "bfce16d01113f79273c671dc1a16f6b0f57dbd7e"
+    }
+  ],
+  "warnings": "Existing FastAPI/Starlette test-client dependency deprecations; no functional failures.",
+  "qualificationReceipt": ".local/recovery-build/qualification-receipt.json",
+  "qualificationReceiptSha256": "4cf5b657278a0b5466d50e3f5cab0f3f09a1c5c534b15b914294a334c71e6821",
+  "notRun": [
+    {
+      "command": "Production 3070 local preparation, live server resume and polling restart",
+      "reason": "Root-owned operational application explicitly prohibited for builder; no SSH/deployment/live experiment performed."
+    },
+    {
+      "command": "Fresh economic replay / full production acceptance",
+      "reason": "Outside this implementation slice; qualification uses captured sanitized failure plus non-performance executor fixture."
+    }
+  ],
+  "interfaceConfirmation": {
+    "producer": "prepare_local -> RecoveryProof(schema_version=1)",
+    "consumer": "resume_server plus unchanged Worker prepared/ack/spawn path",
+    "sameFieldsUnitsVersion": true,
+    "ids": "UUID/full pinned IDs",
+    "digests": "full SHA256; proof canonical JSON",
+    "dates": "typed datetime JSON roundtrip",
+    "sequence": "integer preserved at3, continued at4 in qualification",
+    "secrets": "lease preserved only in private old/new assignment files; public proof/event contain only lease SHA256",
+    "scientificTrialsAdded": 0,
+    "failedLaunchAttempts": 1,
+    "economicExecutionsBeforeRecovery": 0
+  },
+  "writeSurface": {
+    "before": [],
+    "committedFiles": [
+      "deploy/research_preparation_recovery.py",
+      "docs/runbooks/research-worker.md",
+      "tests/test_research_preparation_recovery.py"
+    ],
+    "after": []
+  },
+  "knownDeviations": [
+    "Used uv run --frozen because plain uv attempted to resolve an absent optional sibling qdata source; lockfile and dependencies were not edited."
+  ],
+  "remainingRisks": [
+    "An interrupted local journal blocks reinvocation; polling must remain stopped for manual reconciliation. It never self-retries an ambiguous operation.",
+    "Production request is a safe draft from captured evidence; the helper rechecks actual files/identity/config/process absence before producing proof.",
+    "Git-free container function invocation relies on root operator attesting host clean HEAD and matching helper bytes before passing that commit; no new public authority is exposed.",
+    "Runtime stays at0e89d998022abfb626cf29a4ff99012cd83ffb74; recovery tools must use a separate clean checkout on both hosts."
+  ],
+  "operatorRequest": ".local/recovery-build/recovery-request-v5.json"
+}

@@ -72,6 +72,7 @@ def review_snapshot(conn, company, owners, at):
         SELECT 'turn:'||t.id::text AS key,k.project_id,k.agent,t.request,t.created_at
         FROM turns t JOIN tasks k ON k.id=t.task_id JOIN projects p ON p.id=k.project_id
         WHERE p.owner_user=ANY(%s) AND (p.channel=ANY(%s) OR p.channel LIKE 'D%%') AND t.created_at>=%s AND t.created_at<%s
+          AND k.kind<>'research_stage'
           AND t.status='completed' AND t.request IS NOT NULL AND octet_length(t.request::text)<=%s
         ORDER BY t.created_at DESC,t.id DESC LIMIT 7
         """, (owners, company.settings.slack_allowed_channels, at - timedelta(days=30), at,

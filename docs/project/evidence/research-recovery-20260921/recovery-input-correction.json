@@ -1,0 +1,8 @@
+{
+  "stage": "RecoveryRequest validation",
+  "rejection": "extra_forbidden: action",
+  "job_unchanged": true,
+  "recovery_directories_empty": true,
+  "correction": "removed assignment transport action field; remaining request equals builder typed request",
+  "scientific_trials_added": 0
+}

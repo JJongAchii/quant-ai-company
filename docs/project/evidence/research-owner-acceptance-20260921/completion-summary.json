@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-21T07:14:09.625018+00:00",
+  "outcome": "actual_owner_approved_fixed_p11_replay_and_final_slack_delivery_completed",
+  "job_id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+  "revision": 5,
+  "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1789970318.691419:director",
+  "approved_by": "U0C250E23NW",
+  "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+  "execution_company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "science_code_commit": "02649715bd3661826253e1ce84f8002d2a74c822",
+  "execution_host": "DESKTOP-5T00NAF",
+  "execution_gpu": "NVIDIA GeForce RTX 3070",
+  "economic_files_verified": 33,
+  "original_scope_files_verified": 193,
+  "archive_sha256": "1f84528764ba45f20d90217de11d80465af107d2bbdd24d9bbeae718139c1782",
+  "published_html_sha256": "73d9d64cccac2bf80b2b96cd39e59c88f847f7c7cd59a6bc0e41191bfd3c70b6",
+  "failed_preparation_attempts": 1,
+  "economic_replay_count": 1,
+  "scientific_trials_added": 0,
+  "sealed_read": false,
+  "independent_audit": {
+    "path": "audits/AUDIT-leak-auditor-20260921-owner-approved-p11-replay.md",
+    "scope_digest": "57fa1670f50a",
+    "objective_digest": "03d58ee449e6",
+    "gate_verdict": "pass"
+  },
+  "director": {
+    "model": "gpt-6-astra",
+    "effort": "max",
+    "source_read_confirmed": true
+  },
+  "final_slack_permalink": "https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789973527351909",
+  "ci": {
+    "head": "b852356c431c7af2cde93b721e5af82fed8c3655",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35571238912",
+    "conclusion": "success",
+    "pytest_summary_lines": [
+      "service\tPostgreSQL, Temporal and service regression tests\t2026-09-21T07:07:54.9061469Z 679 passed, 2 skipped, 1 deselected, 2 warnings in 165.50s (0:02:45)"
+    ]
+  },
+  "remaining_boundary": [
+    "Bare approval-only routing repair is proposed but not implemented.",
+    "No new scientific trial, confirmation, or capital allocation.",
+    "Physical Mac shutdown was not tested."
+  ],
+  "evidence_sha256": {
+    "slack-final-delivery.json": "3a21a51b10b788f3beaf826dd5a17e703295f07d8111ca313f0d0281b29896b8",
+    "validation.json": "59e214edd307a875b96eb9a26de38abe62f6734d03e401945df0d5b6c667ee46",
+    "publication-verification.json": "533bd4fafe30b8bd7cf0e6f1b1cdc29de2f9df41128dfa9d5f017e63f67e01ee",
+    "browser-verification.json": "f9a0d6af555c7b45749a2b804cf7fd49c3458f1d6181a2ea8fbd19354e37d5dc",
+    "final-operational-observation.json": "3278cccbd2f35f430b74fd6b65febf0550eccfe7cbc8d11d175d564e99e211df",
+    "audit-control.json": "a01dec215bb16a43595885cd419e6b661616edfc09de3db5ccdd91ae3a1f8086",
+    "ci-verification.json": "b669052e495fa1d915394b887c8ac5a61b50a2f9208449748e45376cc8cb4979",
+    "published-report.html": "73d9d64cccac2bf80b2b96cd39e59c88f847f7c7cd59a6bc0e41191bfd3c70b6",
+    "audit.html": "8b4d476749340ea699a25803cd0f98563251643cbfe5fe481383f5ec53272bae"
+  }
+}

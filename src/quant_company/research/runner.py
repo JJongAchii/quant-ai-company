@@ -89,14 +89,19 @@ class ResearchRunner:
         if not self.company.settings.company_research_enabled:
             return {"state": "disabled"}
         with self.company.db.transaction() as conn:
-            row = conn.execute("SELECT id FROM research_jobs WHERE state='received' ORDER BY updated_at,id LIMIT 1").fetchone()
+            row = conn.execute("""SELECT id FROM research_jobs WHERE state='received'
+                AND recipe_id='kr-etf-p11-replay-v1' ORDER BY updated_at,id LIMIT 1""").fetchone()
             if not row:
-                return {"state": "idle"}
-            project, row = self.store._locked(conn, row["id"])
-            if row["state"] != "received" or project["status"] != "active" or waiting_router(conn, project["id"]):
-                return {"state": "deferred"}
-            # Snapshot only; expensive hashing, rendering and S3 writes happen outside the transaction.
-            row = as_json(row)
+                row = None
+            else:
+                project, row = self.store._locked(conn, row["id"])
+                if row["state"] != "received" or project["status"] != "active" or waiting_router(conn, project["id"]):
+                    return {"state": "deferred"}
+                row = as_json(row)
+        if row is None:
+            from .controller import MissionController
+
+            return MissionController(self.company).tick() if self.company.settings.company_autonomous_research_enabled else {"state": "idle"}
         from .report import build_report, validate_bundle
 
         assignment = Assignment(job_id=row["id"], project_id=row["project_id"], revision=row["revision"],

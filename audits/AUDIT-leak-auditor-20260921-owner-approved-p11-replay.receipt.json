@@ -1,0 +1,10 @@
+{
+  "artifact_url": null,
+  "audit": "AUDIT-leak-auditor-20260921-owner-approved-p11-replay.md",
+  "audit_sha256": "fbb6c1c3cfafe67b55115ac5069afdfa6e1fffa18a9a716a3e5483e423fbb13b",
+  "html_sha256": "8b4d476749340ea699a25803cd0f98563251643cbfe5fe481383f5ec53272bae",
+  "rendered_at": "2026-09-21T16:12:14+09:00",
+  "renderer": 1,
+  "scope_digest": "57fa1670f50a",
+  "verdict": "pass"
+}

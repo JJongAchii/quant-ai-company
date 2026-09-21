@@ -1,0 +1,25 @@
+{
+  "result": {
+    "completed_at": "2026-09-21T05:58:41.868954+00:00",
+    "launch_id": "942d7e7c58694b8eb85172d5be20decf",
+    "reason": "repository-commit-mismatch",
+    "state": "failed"
+  },
+  "active_config_company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+  "snapshot_company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+  "process": {
+    "company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+    "identity": {
+      "boot": "0ddce41e-24ba-4870-a10f-aecbbb3a81b2",
+      "command": "a9d7450b5e23a616e803b34b231ac331d3f85a58d1ae5997faa204ea0b5a51fc",
+      "pgid": 328038,
+      "pid": 328038,
+      "start": "66330570"
+    },
+    "launch_id": "942d7e7c58694b8eb85172d5be20decf",
+    "started_at": "2026-09-21T05:58:41.809854+00:00"
+  },
+  "checkout_exists": false,
+  "command_receipts": [],
+  "performance_files": []
+}

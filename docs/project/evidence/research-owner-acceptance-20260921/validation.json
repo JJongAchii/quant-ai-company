@@ -1,0 +1,18 @@
+{
+  "job_id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+  "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1789970318.691419:director",
+  "revision": 5,
+  "archive_sha256": "1f84528764ba45f20d90217de11d80465af107d2bbdd24d9bbeae718139c1782",
+  "html_sha256": "48f8ca6999ad8589212efa61fbf8f7d921f6e187009ec5706e04cd332ebd9d76",
+  "economic_files_verified": 33,
+  "original_scope_files_verified": 193,
+  "validator_code_commit": "125ad96bb8e0734c8a2940f342b9c35f73bfc2cc",
+  "execution_company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "science_code_commit": "02649715bd3661826253e1ce84f8002d2a74c822",
+  "scientific_trials_added": 0,
+  "failed_preparation_attempts": 1,
+  "sole_economic_replay_count": 1,
+  "qualification_passed": true,
+  "sealed_read": false,
+  "validation": "passed"
+}
