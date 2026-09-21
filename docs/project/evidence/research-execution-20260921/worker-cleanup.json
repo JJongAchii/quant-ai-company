@@ -1,0 +1,15 @@
+{
+  "completed_at": "2026-09-21T01:27:23.049205+00:00",
+  "temporary_worker_and_tunnel_stopped": true,
+  "temporary_user_units_removed": true,
+  "temporary_credential_files_removed": [
+    "worker.token",
+    "known_hosts",
+    "tunnel_ed25519",
+    "tunnel_ed25519.pub"
+  ],
+  "research_receipts_preserved": true,
+  "original_pilot_changed": false,
+  "sudo_system_unit_setup": "not_performed; sudo required interactive authentication",
+  "user_linger_changed": false
+}

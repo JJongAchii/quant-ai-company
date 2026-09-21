@@ -1,0 +1,26 @@
+{
+  "schema": "research-p11-private-publication-v1",
+  "recordedAt": "2026-09-18T16:21:35.847079+00:00",
+  "researchCommit": "1b106d129a3e838d37a11fd3c9f0aa59147f630c",
+  "files": 206,
+  "objects": [
+    {
+      "uri": "s3://quant-company-061039802347-backups/company/research/company-kr-etf-pilot/candidates-p11-20260919/2dbf385bdbd38fb5e086be5e97b9e85355422679115cf08677592a69ac515931.tar.gz",
+      "sha256": "2dbf385bdbd38fb5e086be5e97b9e85355422679115cf08677592a69ac515931",
+      "bytes": 87848563,
+      "fullDownloadVerified": true,
+      "expiration": "expiry-date=\"Mon, 19 Oct 2026 00:00:00 GMT\", rule-id=\"CompanyBackupRetention\""
+    },
+    {
+      "uri": "s3://quant-company-061039802347-backups/company/research/company-kr-etf-pilot/candidates-p11-20260919/feabd2dec3b2d495c1eb8e54d7e5f5ca9922bdfbbf92b18a24a9bf2ba5d5df63.html",
+      "sha256": "feabd2dec3b2d495c1eb8e54d7e5f5ca9922bdfbbf92b18a24a9bf2ba5d5df63",
+      "bytes": 517527,
+      "fullDownloadVerified": true,
+      "expiration": "expiry-date=\"Mon, 19 Oct 2026 00:00:00 GMT\", rule-id=\"CompanyBackupRetention\""
+    }
+  ],
+  "publicAccessEnabled": false,
+  "reportLinkExpiresAt": "2026-09-25T16:21:35.847079+00:00",
+  "retention": "Existing backup lifecycle; not permanent archival. Committed scripts and compact report inputs enable regeneration.",
+  "bundleSha256": "602291bf24ff11d364e16214ecf3d175f3f768181e9701bfad61056621fec97b"
+}

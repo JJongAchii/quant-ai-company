@@ -1,0 +1,13 @@
+{
+  "supersedes": "server-cleanup-original-claim.json",
+  "production_postgresql_interrupted": true,
+  "production_dispatcher_restarted": true,
+  "cause": "operator UID-wide termination matched Docker PostgreSQL UID999",
+  "db_ready_at": "2026-09-21T01:28:20.808Z",
+  "observed_api_health_200": true,
+  "observed_unconfirmed_outbox_count": 0,
+  "observed_pending_outbox_count": 0,
+  "no_data_loss_proven": false,
+  "new_research_production_feature_activated": false,
+  "temporary_resources_removed": true
+}

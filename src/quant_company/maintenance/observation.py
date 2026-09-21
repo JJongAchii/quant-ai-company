@@ -4,8 +4,15 @@ import json
 from datetime import timedelta
 
 from ..company import as_json
+from ..contracts import ProviderRequest
 from .evaluation import employee_context
 from .policy import SECRET, digest
+
+# A saved ProviderRequest allows a 90,000-character prompt. JSON can encode a
+# character as six bytes; bound DB reads without silently dropping ordinary
+# multilingual specialist prompts. Only six validated requests are retained;
+# observer/model diagnostics still receive the existing 3,500-character summary.
+MAX_REPLAY_REQUEST_BYTES = 600_000
 
 
 def safe_rows(rows):
@@ -65,15 +72,17 @@ def review_snapshot(conn, company, owners, at):
         SELECT 'turn:'||t.id::text AS key,k.project_id,k.agent,t.request,t.created_at
         FROM turns t JOIN tasks k ON k.id=t.task_id JOIN projects p ON p.id=k.project_id
         WHERE p.owner_user=ANY(%s) AND (p.channel=ANY(%s) OR p.channel LIKE 'D%%') AND t.created_at>=%s AND t.created_at<%s
-          AND t.status='completed' AND t.request IS NOT NULL AND octet_length(t.request::text)<=25000
+          AND t.status='completed' AND t.request IS NOT NULL AND octet_length(t.request::text)<=%s
         ORDER BY t.created_at DESC,t.id DESC LIMIT 7
-        """, (owners, company.settings.slack_allowed_channels, at - timedelta(days=30), at)).fetchall()
+        """, (owners, company.settings.slack_allowed_channels, at - timedelta(days=30), at,
+              MAX_REPLAY_REQUEST_BYTES)).fetchall()
     replay_inputs = {}
     replay_summaries = []
     for row in safe_rows(requests[:6]):
         if row.get("omitted"):
             continue
         try:
+            ProviderRequest.model_validate(row["request"])
             runtime, context = employee_context(row["request"])
             task = context["task"]
         except (KeyError, ValueError, IndexError, TypeError):
@@ -115,7 +124,7 @@ def review_snapshot(conn, company, owners, at):
         "evidence": safe_rows(evidence[:24]) + replay_summaries + maintenance_observations(conn, owners),
         "sampling": {"recent_message_limit": 24, "messages_truncated": len(evidence) > 24,
                      "replay_limit": 6, "replays_truncated": len(requests) > 6,
-                     "replay_request_max_bytes": 25000},
+                     "replay_request_max_bytes": MAX_REPLAY_REQUEST_BYTES},
         "interpretation": "Counts by creation cohort and current status, not success or accuracy scores. "
                           "Periods have different lengths; do not compare raw totals as rates. Repeated identical "
                           "delegation is only a signal and may be legitimate. Samples omit older/large/secret inputs. "

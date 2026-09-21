@@ -1,0 +1,13 @@
+{
+  "source_id": "operator:company-research-acceptance-20260921",
+  "title": "회사 서버·3070 연구 연결 실검증과 운영 활성화 전 검토",
+  "uri": "https://github.com/JJongAchii/quant-ai-company/pull/40",
+  "content": "{\"kind\": \"engineering_acceptance\", \"code_commit\": \"84d47462b992261b0bb56add6f8134f196f4bf7e\", \"review_pr\": \"https://github.com/JJongAchii/quant-ai-company/pull/40\", \"facts\": {\"real_fixed_replays_on_3070\": 2, \"execution_count_each\": 1, \"economic_output_files_matched_each\": 33, \"existing_audit_scope_files_verified_each\": 193, \"new_scientific_trials\": 0, \"full_regression_passed\": 644, \"independent_execution_path_audit\": \"pass; qlab.control verified current 51-file scope cf5350b5fffc\", \"server_and_worker_restarted_during_second_computation\": true, \"same_execution_process_survived\": true, \"s3_html_and_zip_get_sha_verified\": 4}, \"report_view_url\": \"[7-day S3 signed capability URL omitted from Git]\", \"report_view_url_expires_at\": \"2026-09-28T01:33:46.228706+00:00\", \"boundaries\": {\"new_production_research_feature_active\": false, \"actual_slack_owner_approval_in_replay\": false, \"slack_input_in_replay\": \"synthetic owner control with real PostgreSQL, Temporal Cloud, 3070 and S3\", \"new_confirmation_or_investment_approval\": false, \"physical_mac_shutdown_test\": false, \"this_director_request\": \"operator initiated real production director/Slack delivery; not genuine owner research approval\"}, \"cleanup_incident\": {\"cause\": \"temporary Linux account UID 999 collided with PostgreSQL container UID; operator incorrectly used UID-based termination during cleanup\", \"at_utc\": \"2026-09-21T01:28:20Z\", \"database_auto_recovered_seconds_about\": 0.7, \"dispatcher_auto_restarted\": true, \"api_health_200\": true, \"observed_pending_or_uncertain_slack_outbox\": 0, \"socket_error_log_lines_since_incident\": 0, \"claim_no_data_loss\": \"not established; current stored jobs and health checked\"}, \"next_step\": \"PR40와 운영 절차 검토 후 연구 기능을 활성화하고 실제 소유자의 Slack 승인부터 최종 답변까지 인수한다. 현재 운영은 기존 코드이며 연구 연결이 켜졌다고 말하지 않는다.\"}",
+  "available_at": "2026-09-21T01:33:46.228734+00:00",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "approved": true,
+  "synthetic": false,
+  "evidence_redactions": [
+    "report_view_url"
+  ]
+}

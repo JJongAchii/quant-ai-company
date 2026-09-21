@@ -7,6 +7,7 @@ import psycopg
 import pytest
 from psycopg import sql
 from psycopg.conninfo import conninfo_to_dict, make_conninfo
+from pydantic import SecretStr
 
 from quant_company.company import Company
 from quant_company.config import Settings
@@ -46,6 +47,16 @@ def company(database_url, test_roles):
                         slack_team_id="TTEST", slack_allowed_users=["UHUMAN"], slack_allowed_channels=["CQUANT"])
     company = Company(settings, test_roles)
     company.db.migrate()
+    return company
+
+
+@pytest.fixture
+def research(company, tmp_path):
+    company.settings.company_research_enabled = True
+    company.settings.company_code_commit = "b" * 40
+    company.settings.research_worker_token = SecretStr("synthetic-worker-token-with-at-least-32-characters")
+    company.settings.research_artifact_dir = tmp_path / "artifacts"
+    company.roles["director"].tools.append("research_control")
     return company
 
 

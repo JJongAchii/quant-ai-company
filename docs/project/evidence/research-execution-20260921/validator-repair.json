@@ -1,0 +1,8 @@
+{
+  "kind": "validator_repair_only",
+  "company_commit": "84d47462b992261b0bb56add6f8134f196f4bf7e",
+  "old_execution_company_commit": "ea389bbac6d7cd09749f9d5d595f87819c0f1932",
+  "container_id": "e0296ef5c1762a8188bf0f2fd2a1812058b75972df63b303c9d233865289463c",
+  "production_changed": false,
+  "backtest_reexecuted": false
+}

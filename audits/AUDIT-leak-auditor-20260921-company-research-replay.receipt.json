@@ -1,0 +1,10 @@
+{
+  "artifact_url": null,
+  "audit": "AUDIT-leak-auditor-20260921-company-research-replay.md",
+  "audit_sha256": "f4ea6f36d83412f46e5fb834fb103341b7cbd53bc2bc5205d62b5755f991953f",
+  "html_sha256": "7098fb709ad63c73126a1d75d4f285c27047dd599e34129c1453c02c1a46aca8",
+  "rendered_at": "2026-09-21T10:29:49+09:00",
+  "renderer": 1,
+  "scope_digest": "cf5350b5fffc",
+  "verdict": "pass"
+}

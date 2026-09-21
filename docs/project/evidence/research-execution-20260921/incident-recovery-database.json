@@ -1,0 +1,1 @@
+{"observed_at": "2026-09-21T01:31:47.900554+00:00", "database": {"turns_updated_since": [], "unconfirmed_outbox": [], "pending_outbox_count": 0, "inbound_count": 56, "project_count": 32, "last_slack_delivery": null}, "api_health_http_status": 200, "api_health": {"ok": true}, "socket_log_error_lines_since_incident": 0}

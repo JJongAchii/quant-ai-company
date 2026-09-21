@@ -26,6 +26,12 @@ class Settings(BaseSettings):
     # Zero disables our daily quota; provider quotas and bounded task execution remain.
     company_max_daily_turns: int = Field(default=0, ge=0, le=10000)
     company_code_commit: str = "unknown"
+    company_research_enabled: bool = False
+    research_worker_token: SecretStr = SecretStr("")
+    research_artifact_dir: Path = Path("/var/lib/quant-company/research")
+    research_report_bucket: str = ""
+    research_report_prefix: str = "company/research/executions"
+    research_s3_credentials_file: Path | None = None
     company_web_enabled: bool = True
     company_news_enabled: bool = False
     news_publish_enabled: bool = False

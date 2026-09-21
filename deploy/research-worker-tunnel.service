@@ -1,0 +1,19 @@
+# Configure Host quant-company-research-tunnel in ~/.ssh/config with a restricted
+# forwarding-only key and a pinned known_hosts entry. The server key must permit
+# only the selected loopback destination (PermitOpen 127.0.0.1:8000), no shell.
+# This tunnel terminates at the company server, never at a Mac session.
+[Unit]
+Description=Quant company research API loopback tunnel
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N -T -o BatchMode=yes -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 127.0.0.1:18764:127.0.0.1:8000 quant-company-research-tunnel
+Restart=always
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

@@ -42,3 +42,19 @@ Astra max 요청 2회로 완료했다. 두 CLI 영수증의 요청 설정과 DB 
 후속 보완은 `background_model_requests`에 engineer 설정에서 읽은 개선 BOT의 모델·effort와
 독립 검토의 모델·effort를 공개한다. 데몬 건강·활성화 상태나 과거 요청의 설정을 소급 주장하지
 않으며, reviewer effort도 실제 요청과 같은 상수를 참조한다.
+
+후속 최종 코드 `e869eb5`의 [CI](https://github.com/JJongAchii/quant-ai-company/actions/runs/35309836027)는
+PostgreSQL·Temporal·배포 계약을 포함해 **409 passed, 2 skipped, 1 deselected**였다. 로컬의
+배경 설정 관련 29개 검사도 통과했다. 중간 import 형식 실패와 수정은
+[후속 검증 기록](evidence/staff-model-context-local-20260918.json)에 보존했다.
+
+최종 운영 릴리스는 **`e869eb5f608254d42da6159ff2932c1af8c2f451`**이며 8개 서비스 정상·DB 보존을
+확인했다. [후속 배포 영수증](evidence/staff-model-context-deployment-20260918.json)과
+[운영 runtime context](evidence/staff-model-context-runtime-20260918.json)에 실제 배경 BOT 설정을
+기록했다. 최초 Astra max의 실제 2회 호출 검증과 이 후속 정보 노출 검증은 서로 다른 기록이다.
+
+[후속 실제 총괄 답변](https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789708860757539)도
+Astra max 1회로 완료했다. 총괄이 새 runtime context에서 개선 BOT Sol max와 독립 설명검토
+Opus 5 max를 읽어 이전의 확인 불가 상태가 해소됐다고 답했다. CLI 요청·완료 영수증·실제
+Slack 본문·사용자 태그를 [후속 실제 검증](evidence/staff-model-context-live-20260918.json)으로
+확인했다. 최초 2회와 합해 이번 정책 검증의 실제 Astra max 호출은 총 3회다.

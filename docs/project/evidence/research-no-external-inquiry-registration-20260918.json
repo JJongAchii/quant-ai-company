@@ -1,0 +1,16 @@
+{
+  "schema": "company-user-direction-registration-v1",
+  "verified_at": "2026-09-18T07:44:31.236160+00:00",
+  "direction_path": "docs/project/evidence/research-no-external-inquiry-20260918.json",
+  "direction_sha256": "fb9c8977713b6032fc1c35807a8b150b1744c2e7f82c28136ce9adcece17fc03",
+  "registration": {
+    "source_id": "operator:research-no-external-inquiry-20260918",
+    "content_sha256": "5635b053b8ea882ef8335cd8be042086112e35cbc7561ecdd742e90cade68e6f",
+    "approved": true,
+    "synthetic": false,
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "runtime_commit": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+    "task_created": false,
+    "external_message_sent": false
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "runId": "company-research-execution-20260921",
+  "builderId": "research-worker",
+  "buildStage": "research",
+  "domain": "personal",
+  "canonicalRepo": "JJongAchii/quant-ai-company",
+  "baseHead": "ac07c4979780c55c8e02f9f5710b72470e387c41",
+  "branch": "company-research-worker",
+  "commit": "a29d1861a6d06049156d428e66b35b71611174d4",
+  "implementationStatus": "partial",
+  "qualificationStatus": "not-run",
+  "approvedDesignDigest": "e5156cbd17d6969bf4148b86a252e9d51b0cd950ad76cf2fc9b7eeeaf0eed53c",
+  "objectiveDigest": "6cce84435908",
+  "researchObjectiveDigest": "03d58ee449e6",
+  "preregDigest": null,
+  "protectedDigestsUnchanged": true,
+  "designDigestVerified": true,
+  "buildManifestSha256": "2a68ba6e139ec5c347415a0add935831bb1eb86f32c18f0a028f4b685536c9ea",
+  "changes": [
+    {
+      "path": "src/quant_company/research/worker.py",
+      "reason": "Durable pull transport, acknowledged preparation barrier, detached execution reconciliation, idempotent heartbeat/upload retries and verified cancellation.",
+      "sha256": "9a42ae928baeddfca55bd450f8e3ff1935daa70a93d0c4a2385b8b8049d49e5d"
+    },
+    {
+      "path": "src/quant_company/research/executor.py",
+      "reason": "Fixed P11 fresh-checkout replay, input/config/host/import pins, existing audit APIs, qualification before evaluation, typed strict ZIP artifact.",
+      "sha256": "d05d3dea2c357f660c0eb8cd1f7ca4225763b0a1256cf806d730e5a8b1efd607"
+    },
+    {
+      "path": "tests/test_research_worker.py",
+      "reason": "Actual subprocess lifecycle tests, acknowledgement/cancellation races, fixed-input and typed archive contracts; no real research execution.",
+      "sha256": "bcf03934f5ffc85fce03aa481607541ade00c734ee1a2730d5d9116fccff2b7d"
+    },
+    {
+      "path": "deploy/research-worker.service",
+      "reason": "3070 user-service template preserving executor on polling service restart.",
+      "sha256": "b5ea14f877df041653bd04576c6d4c372f78f21de938dd19693947ae2e7ba63d"
+    },
+    {
+      "path": "deploy/research-worker-tunnel.service",
+      "reason": "Restricted server-bound loopback SSH tunnel template.",
+      "sha256": "63c87029e98ac5a5e7cbf54b383f701ab1121c62ada625eba85fd667b0aeb220"
+    },
+    {
+      "path": "deploy/research-worker.example.json",
+      "reason": "Operator-provisioned runtime paths and exact company commit placeholder; token-file reference only.",
+      "sha256": "6848580de122477b6f61ed60e1f810e330d89138ae5d7fc93c4919fb32ec1282"
+    }
+  ],
+  "dependencyIntegration": {
+    "sourceCommit": "2b37524",
+    "localCommit": "f958e96",
+    "author": "main thread",
+    "description": "Frozen recipes/reference dependency cherry-picked as explicitly instructed; no builder-authored changes to those files."
+  },
+  "tests": [
+    {
+      "command": "../../quant-ai-company/.venv/bin/ruff check src/quant_company/research/worker.py src/quant_company/research/executor.py",
+      "exitCode": 1,
+      "rawSummary": "F401 json imported but unused in executor.py; corrected."
+    },
+    {
+      "command": "PYTHONPATH=src ../../quant-ai-company/.venv/bin/python -m pytest -q tests/test_research_worker.py",
+      "exitCode": 1,
+      "rawSummary": "25 passed, 1 error in 3.00s; teardown raced a just-exited process group; cleanup now waits/revalidates identity."
+    },
+    {
+      "command": "../../quant-ai-company/.venv/bin/ruff check src/quant_company/research/worker.py src/quant_company/research/executor.py tests/test_research_worker.py\nPYTHONPATH=src ../../quant-ai-company/.venv/bin/python -m pytest -q tests/test_research_worker.py",
+      "exitCode": 0,
+      "rawSummary": "All checks passed! 25 passed in 4.27s"
+    },
+    {
+      "command": "PYTHONPATH=src ../../quant-ai-company/.venv/bin/python -m pytest -q tests/test_research_worker.py",
+      "exitCode": 0,
+      "rawSummary": "27 passed in 4.53s"
+    },
+    {
+      "command": "PYTHONPATH=src ../../quant-ai-company/.venv/bin/python -m pytest -q tests/test_research_worker.py",
+      "exitCode": 0,
+      "rawSummary": "28 passed in 4.51s"
+    },
+    {
+      "command": "../../quant-ai-company/.venv/bin/ruff check src/quant_company/research/worker.py src/quant_company/research/executor.py tests/test_research_worker.py",
+      "exitCode": 0,
+      "rawSummary": "All checks passed!"
+    },
+    {
+      "command": "PYTHONPATH=src ../../quant-ai-company/.venv/bin/python -m pytest -q tests/test_research_worker.py",
+      "exitCode": 0,
+      "rawSummary": ".................................... [100%]\n36 passed in 5.29s"
+    },
+    {
+      "command": "git diff --cached --check",
+      "exitCode": 0,
+      "rawSummary": ""
+    }
+  ],
+  "notRun": [
+    {
+      "command": "Main will run committed company worker with --config on actual worker3070; builder returns qualificationStatus=not-run and implementationStatus=partial without that real-host test. Do not fabricate complete.",
+      "reason": "Main owns real 3070 provisioning, committed-code replay and producer-to-server/report qualification. Builder was expressly prohibited from heavy research execution."
+    },
+    {
+      "command": "Real PostgreSQL/Temporal/server worker integration",
+      "reason": "Main owns server/store/runtime integration; this slice uses a simulated HTTP peer for lifecycle tests."
+    },
+    {
+      "command": "systemd service/tunnel activation",
+      "reason": "Templates only; installation and daemon deployment are main/operator-owned."
+    }
+  ],
+  "interfaceConfirmation": {
+    "producer": "quant_company.research.executor.ExecutionReceipt and fixed P11 CLI",
+    "consumer": "quant_company.research.contracts.ExecutionReceipt plus main-owned artifact endpoint",
+    "sharedFieldsAndVersions": true,
+    "recipeDigest": "canonical JSON sorted keys, separators comma/colon, ensure_ascii=False, SHA256",
+    "archive": "33 registered economic output members plus receipt.json,audit.md,audit.receipt.json,audit-verification.json; no lease in bundle",
+    "units": "Frozen configs retain primaryUnit=fraction-per-year and costBps; worker performs no unit conversion. Full report-consumer qualification remains not-run."
+  },
+  "knownDeviations": [
+    "Read pyproject.toml as dependency/lint context in addition to manifest-listed read paths; no changes were made to it.",
+    "No code/schema/scientific-envelope changes outside the owned slice; frozen dependency integration is listed separately."
+  ],
+  "remainingRisks": [
+    "Actual 3070/evidence checkout and original-audit API validation have not run in this builder session.",
+    "Provision all 193 original scope files, the exact original objective and six frozen snapshot files before running; input_source preserves repo-relative paths.",
+    "Existing research venv must be Python 3.11.15; runtime records distribution versions and blocks changed output bytes, but does not install or repair dependencies.",
+    "An ambiguous spawning intent or dead executor without terminal receipt remains uncertain and requires operator reconciliation; no exactly-once claim.",
+    "Polling and artifact retries have no automatic retry-count exhaustion; research failures never automatically rerun.",
+    "SIGKILL/reboot before a terminal receipt can leave uncertainty. WSL boot/linger supervision and service activation remain operator-owned."
+  ],
+  "writeSurface": {
+    "before": [],
+    "ownedCommittedFiles": [
+      "deploy/research-worker-tunnel.service",
+      "deploy/research-worker.example.json",
+      "deploy/research-worker.service",
+      "src/quant_company/research/executor.py",
+      "src/quant_company/research/worker.py",
+      "tests/test_research_worker.py"
+    ],
+    "afterUnstaged": [],
+    "afterStaged": []
+  }
+}
