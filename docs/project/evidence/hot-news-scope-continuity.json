@@ -1,0 +1,1172 @@
+{
+  "checked_at": "2026-09-21T00:54:24.150964+00:00",
+  "commit": "4eb5847f64153c0dd3e622a41c18c7f98795983a",
+  "sources": [
+    {
+      "id": "bbc-business",
+      "enabled": true,
+      "next_at": "2026-09-21 01:03:33.949062+00:00",
+      "last_attempt": "2026-09-21 00:53:33.459687+00:00",
+      "last_success": "2026-09-21 00:53:33.949062+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 40063,
+        "sha256": "8e0dceff530fb24402da27989878ffbce4205f1bf844480dd5757e7129693085",
+        "skipped": 5,
+        "modified": "",
+        "latest_publication": "2026-09-21 00:34:53+00:00"
+      }
+    },
+    {
+      "id": "bbc-technology",
+      "enabled": true,
+      "next_at": "2026-09-21 01:03:36.551938+00:00",
+      "last_attempt": "2026-09-21 00:53:36.122818+00:00",
+      "last_success": "2026-09-21 00:53:36.551938+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 15293,
+        "sha256": "6f0ea7ea0cb8de332c106d7208025a260f03e238d975e6e90ff9b9be04176c55",
+        "skipped": 9,
+        "modified": "",
+        "latest_publication": "2026-09-19 23:01:57+00:00"
+      }
+    },
+    {
+      "id": "bbc-world",
+      "enabled": true,
+      "next_at": "2026-09-21 01:03:28.651947+00:00",
+      "last_attempt": "2026-09-21 00:53:28.429099+00:00",
+      "last_success": "2026-09-21 00:53:28.651947+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 21211,
+        "sha256": "fabffcf6e0589f1538c6ee1ca56d099ca42c8b817563bbe23fd21c1ff8369756",
+        "skipped": 4,
+        "modified": "",
+        "latest_publication": "2026-09-20 21:17:22+00:00"
+      }
+    },
+    {
+      "id": "bea-releases",
+      "enabled": true,
+      "next_at": "2026-09-21 00:57:08.257905+00:00",
+      "last_attempt": "2026-09-21 00:47:07.036597+00:00",
+      "last_success": "2026-09-21 00:47:08.257905+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "\"76c81ff39f3bdd1:0\"",
+        "bytes": 88601,
+        "sha256": "446cb4078349673864407af824f8a6f54c1ec9fc54d10d076451ae5c179915f7",
+        "skipped": 6,
+        "modified": "Thu, 03 Sep 2026 12:30:05 GMT",
+        "latest_publication": "2026-09-03 12:30:00+00:00"
+      }
+    },
+    {
+      "id": "cnbc-economy",
+      "enabled": true,
+      "next_at": "2026-09-21 01:03:39.149290+00:00",
+      "last_attempt": "2026-09-21 00:53:38.723867+00:00",
+      "last_success": "2026-09-21 00:53:39.149290+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 20527,
+        "sha256": "2eaa356087782e00c6f9b519a8fe58aa234521e1d46afd23a8fbdfecf806f964",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-20 05:00:01+00:00"
+      }
+    },
+    {
+      "id": "cnbc-finance",
+      "enabled": true,
+      "next_at": "2026-09-21 01:03:41.700444+00:00",
+      "last_attempt": "2026-09-21 00:53:41.420081+00:00",
+      "last_success": "2026-09-21 00:53:41.700444+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 21297,
+        "sha256": "560688ba2bda0e17fce403e1f7f79fe4352aaba2fe06ceaf8560461b4a7ce080",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-20 12:47:23+00:00"
+      }
+    },
+    {
+      "id": "cnbc-technology",
+      "enabled": true,
+      "next_at": "2026-09-21 01:03:44.396515+00:00",
+      "last_attempt": "2026-09-21 00:53:43.876349+00:00",
+      "last_success": "2026-09-21 00:53:44.396515+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 20979,
+        "sha256": "054e82513d082e5e84c2d9bbe1f169ea1a3ff26654097ab5743e377b9b18010f",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 00:45:26+00:00"
+      }
+    },
+    {
+      "id": "cnbc-world",
+      "enabled": true,
+      "next_at": "2026-09-21 01:03:46.910723+00:00",
+      "last_attempt": "2026-09-21 00:53:46.563244+00:00",
+      "last_success": "2026-09-21 00:53:46.910723+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 20796,
+        "sha256": "a5314a76fc7590a2907fc1d6e30060652ae683621908aba1022e2e1f1a4e276c",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 00:45:26+00:00"
+      }
+    },
+    {
+      "id": "ecb-press",
+      "enabled": true,
+      "next_at": "2026-09-21 00:57:11.396162+00:00",
+      "last_attempt": "2026-09-21 00:47:10.432816+00:00",
+      "last_success": "2026-09-21 00:47:11.396162+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "\"myra-ecf6c5dc\"",
+        "bytes": 5673,
+        "sha256": "979c5611f0a043bb0e21f613b20f667ae2ac2d6938e301724efe89be17f44df0",
+        "skipped": 12,
+        "modified": "",
+        "latest_publication": "2026-09-18 08:00:00+00:00"
+      }
+    },
+    {
+      "id": "fed-press",
+      "enabled": true,
+      "next_at": "2026-09-21 00:57:13.717846+00:00",
+      "last_attempt": "2026-09-21 00:47:13.577505+00:00",
+      "last_success": "2026-09-21 00:47:13.717846+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "\"2a27c06a7e47dd1:0\"",
+        "bytes": 14853,
+        "sha256": "bdb248554aec56ffd75e93baae7b8096ffa7abe199cc8a5d7a2f4bb773541ad5",
+        "skipped": 0,
+        "modified": "Fri, 18 Sep 2026 15:00:17 GMT",
+        "latest_publication": "2026-09-18 15:00:00+00:00"
+      }
+    },
+    {
+      "id": "govuk-fcdo",
+      "enabled": true,
+      "next_at": "2026-09-21 00:58:17.473701+00:00",
+      "last_attempt": "2026-09-21 00:48:16.209516+00:00",
+      "last_success": "2026-09-21 00:48:17.473701+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "W/\"5cfe857cc2314e2c611e0cb0781133d2\"",
+        "bytes": 14811,
+        "sha256": "5cfe857cc2314e2c611e0cb0781133d20608424f043eb9c7805bd8ccac081221",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "govuk-trade",
+      "enabled": true,
+      "next_at": "2026-09-21 00:58:20.937001+00:00",
+      "last_attempt": "2026-09-21 00:48:19.674313+00:00",
+      "last_success": "2026-09-21 00:48:20.937001+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "W/\"187e9c6a770b50124f2a0fcb275d35c0\"",
+        "bytes": 12319,
+        "sha256": "187e9c6a770b50124f2a0fcb275d35c0a09c999fae3b09774bc4809e9282406f",
+        "skipped": 2,
+        "modified": "",
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "govuk-treasury",
+      "enabled": true,
+      "next_at": "2026-09-21 00:58:24.070720+00:00",
+      "last_attempt": "2026-09-21 00:48:23.105509+00:00",
+      "last_success": "2026-09-21 00:48:24.070720+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "W/\"048726165fa465d788134b72754fa34f\"",
+        "bytes": 12064,
+        "sha256": "048726165fa465d788134b72754fa34fcb84e97421667a205692778da1a3ba3f",
+        "skipped": 3,
+        "modified": "",
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "kbs-economy",
+      "enabled": true,
+      "next_at": "2026-09-21 01:03:49.187372+00:00",
+      "last_attempt": "2026-09-21 00:53:49.090369+00:00",
+      "last_success": "2026-09-21 00:53:49.187372+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 37694,
+        "sha256": "d8d2293b87d3165e46dc73b9e9ffa19c10e7f4a59fd3a538f2a82e4dbcb61f37",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 00:39:59+00:00"
+      }
+    },
+    {
+      "id": "kbs-world",
+      "enabled": true,
+      "next_at": "2026-09-21 01:03:31.288187+00:00",
+      "last_attempt": "2026-09-21 00:53:31.212772+00:00",
+      "last_success": "2026-09-21 00:53:31.288187+00:00",
+      "lease_until": null,
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 38253,
+        "sha256": "64a1f8b111f01a7817bd236c3362fae85ca0dfb1187fec8a9c8a2ae9f246d181",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 00:40:20+00:00"
+      }
+    }
+  ],
+  "article_counts": [
+    {
+      "source_id": "bbc-business",
+      "state": "historical_or_undated",
+      "count": 37,
+      "first_collected": "2026-09-21 00:43:09.670918+00:00",
+      "last_collected": "2026-09-21 00:43:09.670918+00:00",
+      "latest_publication": "2026-09-18 23:06:16+00:00"
+    },
+    {
+      "source_id": "bbc-business",
+      "state": "ready",
+      "count": 9,
+      "first_collected": "2026-09-21 00:43:09.670918+00:00",
+      "last_collected": "2026-09-21 00:43:09.670918+00:00",
+      "latest_publication": "2026-09-21 00:34:53+00:00"
+    },
+    {
+      "source_id": "bbc-technology",
+      "state": "historical_or_undated",
+      "count": 7,
+      "first_collected": "2026-09-21 00:43:12.441218+00:00",
+      "last_collected": "2026-09-21 00:43:12.441218+00:00",
+      "latest_publication": "2026-09-17 14:33:12+00:00"
+    },
+    {
+      "source_id": "bbc-world",
+      "state": "historical_or_undated",
+      "count": 17,
+      "first_collected": "2026-09-21 00:43:04.281553+00:00",
+      "last_collected": "2026-09-21 00:43:04.281553+00:00",
+      "latest_publication": "2026-09-19 23:49:26+00:00"
+    },
+    {
+      "source_id": "bbc-world",
+      "state": "ignored",
+      "count": 1,
+      "first_collected": "2026-09-21 00:43:04.281553+00:00",
+      "last_collected": "2026-09-21 00:43:04.281553+00:00",
+      "latest_publication": "2026-09-20 21:17:22+00:00"
+    },
+    {
+      "source_id": "bbc-world",
+      "state": "queued",
+      "count": 4,
+      "first_collected": "2026-09-21 00:43:04.281553+00:00",
+      "last_collected": "2026-09-21 00:43:04.281553+00:00",
+      "latest_publication": "2026-09-20 20:21:40+00:00"
+    },
+    {
+      "source_id": "bbc-world",
+      "state": "ready",
+      "count": 2,
+      "first_collected": "2026-09-21 00:43:04.281553+00:00",
+      "last_collected": "2026-09-21 00:53:28.669434+00:00",
+      "latest_publication": "2026-09-20 20:21:40+00:00"
+    },
+    {
+      "source_id": "bea-releases",
+      "state": "historical_or_undated",
+      "count": 42,
+      "first_collected": "2026-09-18 16:33:54.474454+00:00",
+      "last_collected": "2026-09-18 16:33:54.474454+00:00",
+      "latest_publication": "2026-09-03 12:30:00+00:00"
+    },
+    {
+      "source_id": "cnbc-economy",
+      "state": "held",
+      "count": 1,
+      "first_collected": "2026-09-21 00:43:15.186374+00:00",
+      "last_collected": "2026-09-21 00:43:15.186374+00:00",
+      "latest_publication": "2026-09-20 05:00:01+00:00"
+    },
+    {
+      "source_id": "cnbc-economy",
+      "state": "historical_or_undated",
+      "count": 29,
+      "first_collected": "2026-09-21 00:43:15.186374+00:00",
+      "last_collected": "2026-09-21 00:43:15.186374+00:00",
+      "latest_publication": "2026-09-19 12:50:49+00:00"
+    },
+    {
+      "source_id": "cnbc-finance",
+      "state": "historical_or_undated",
+      "count": 28,
+      "first_collected": "2026-09-21 00:43:17.853034+00:00",
+      "last_collected": "2026-09-21 00:43:17.853034+00:00",
+      "latest_publication": "2026-09-18 18:28:31+00:00"
+    },
+    {
+      "source_id": "cnbc-finance",
+      "state": "queued",
+      "count": 1,
+      "first_collected": "2026-09-21 00:43:17.853034+00:00",
+      "last_collected": "2026-09-21 00:43:17.853034+00:00",
+      "latest_publication": "2026-09-20 12:47:23+00:00"
+    },
+    {
+      "source_id": "cnbc-technology",
+      "state": "historical_or_undated",
+      "count": 25,
+      "first_collected": "2026-09-21 00:43:20.463118+00:00",
+      "last_collected": "2026-09-21 00:43:20.463118+00:00",
+      "latest_publication": "2026-09-19 16:03:09+00:00"
+    },
+    {
+      "source_id": "cnbc-technology",
+      "state": "ready",
+      "count": 4,
+      "first_collected": "2026-09-21 00:43:20.463118+00:00",
+      "last_collected": "2026-09-21 00:43:20.463118+00:00",
+      "latest_publication": "2026-09-21 00:39:34+00:00"
+    },
+    {
+      "source_id": "cnbc-world",
+      "state": "fetch_failed",
+      "count": 1,
+      "first_collected": "2026-09-21 00:43:23.189127+00:00",
+      "last_collected": "2026-09-21 00:43:23.189127+00:00",
+      "latest_publication": "2026-09-20 23:42:00+00:00"
+    },
+    {
+      "source_id": "cnbc-world",
+      "state": "historical_or_undated",
+      "count": 12,
+      "first_collected": "2026-09-21 00:43:23.189127+00:00",
+      "last_collected": "2026-09-21 00:43:23.189127+00:00",
+      "latest_publication": "2026-09-19 18:12:15+00:00"
+    },
+    {
+      "source_id": "cnbc-world",
+      "state": "ready",
+      "count": 1,
+      "first_collected": "2026-09-21 00:43:23.189127+00:00",
+      "last_collected": "2026-09-21 00:43:23.189127+00:00",
+      "latest_publication": "2026-09-20 14:23:53+00:00"
+    },
+    {
+      "source_id": "ecb-press",
+      "state": "historical_or_undated",
+      "count": 2,
+      "first_collected": "2026-09-18 16:33:55.186849+00:00",
+      "last_collected": "2026-09-18 16:33:55.186849+00:00",
+      "latest_publication": "2026-09-16 08:00:00+00:00"
+    },
+    {
+      "source_id": "ecb-press",
+      "state": "queued",
+      "count": 1,
+      "first_collected": "2026-09-18 16:33:55.186849+00:00",
+      "last_collected": "2026-09-18 16:33:55.186849+00:00",
+      "latest_publication": "2026-09-18 08:00:00+00:00"
+    },
+    {
+      "source_id": "fed-press",
+      "state": "historical_or_undated",
+      "count": 18,
+      "first_collected": "2026-09-18 16:33:56.106593+00:00",
+      "last_collected": "2026-09-18 16:33:56.106593+00:00",
+      "latest_publication": "2026-09-16 18:00:00+00:00"
+    },
+    {
+      "source_id": "fed-press",
+      "state": "ignored",
+      "count": 2,
+      "first_collected": "2026-09-18 16:33:56.106593+00:00",
+      "last_collected": "2026-09-18 16:33:56.106593+00:00",
+      "latest_publication": "2026-09-18 15:00:00+00:00"
+    },
+    {
+      "source_id": "govuk-fcdo",
+      "state": "expired",
+      "count": 2,
+      "first_collected": "2026-09-18 16:33:56.710839+00:00",
+      "last_collected": "2026-09-18 16:33:56.710839+00:00",
+      "latest_publication": "2026-09-18 15:21:00+00:00"
+    },
+    {
+      "source_id": "govuk-fcdo",
+      "state": "historical_or_undated",
+      "count": 17,
+      "first_collected": "2026-09-18 16:33:56.710839+00:00",
+      "last_collected": "2026-09-18 16:33:56.710839+00:00",
+      "latest_publication": null
+    },
+    {
+      "source_id": "govuk-fcdo",
+      "state": "ignored",
+      "count": 1,
+      "first_collected": "2026-09-18 21:13:42.810735+00:00",
+      "last_collected": "2026-09-18 21:13:42.810735+00:00",
+      "latest_publication": "2026-09-18 21:04:48+00:00"
+    },
+    {
+      "source_id": "govuk-fcdo",
+      "state": "queued",
+      "count": 1,
+      "first_collected": "2026-09-18 16:33:56.710839+00:00",
+      "last_collected": "2026-09-18 16:33:56.710839+00:00",
+      "latest_publication": "2026-09-17 18:52:55+00:00"
+    },
+    {
+      "source_id": "govuk-trade",
+      "state": "historical_or_undated",
+      "count": 18,
+      "first_collected": "2026-09-18 16:33:57.260965+00:00",
+      "last_collected": "2026-09-18 16:33:57.260965+00:00",
+      "latest_publication": null
+    },
+    {
+      "source_id": "govuk-treasury",
+      "state": "historical_or_undated",
+      "count": 16,
+      "first_collected": "2026-09-18 16:33:57.512822+00:00",
+      "last_collected": "2026-09-18 16:33:57.512822+00:00",
+      "latest_publication": null
+    },
+    {
+      "source_id": "govuk-treasury",
+      "state": "ignored",
+      "count": 1,
+      "first_collected": "2026-09-18 16:33:57.512822+00:00",
+      "last_collected": "2026-09-18 16:33:57.512822+00:00",
+      "latest_publication": "2026-09-18 13:53:43+00:00"
+    },
+    {
+      "source_id": "kbs-economy",
+      "state": "historical_or_undated",
+      "count": 25,
+      "first_collected": "2026-09-21 00:43:25.646748+00:00",
+      "last_collected": "2026-09-21 00:43:25.646748+00:00",
+      "latest_publication": "2026-09-18 07:03:27+00:00"
+    },
+    {
+      "source_id": "kbs-world",
+      "state": "held",
+      "count": 1,
+      "first_collected": "2026-09-21 00:43:07.026646+00:00",
+      "last_collected": "2026-09-21 00:43:07.026646+00:00",
+      "latest_publication": "2026-09-20 06:38:07+00:00"
+    },
+    {
+      "source_id": "kbs-world",
+      "state": "historical_or_undated",
+      "count": 16,
+      "first_collected": "2026-09-21 00:43:07.026646+00:00",
+      "last_collected": "2026-09-21 00:43:07.026646+00:00",
+      "latest_publication": "2026-09-19 09:03:40+00:00"
+    },
+    {
+      "source_id": "kbs-world",
+      "state": "ignored",
+      "count": 3,
+      "first_collected": "2026-09-21 00:43:07.026646+00:00",
+      "last_collected": "2026-09-21 00:43:07.026646+00:00",
+      "latest_publication": "2026-09-20 12:36:04+00:00"
+    },
+    {
+      "source_id": "kbs-world",
+      "state": "queued",
+      "count": 1,
+      "first_collected": "2026-09-21 00:43:07.026646+00:00",
+      "last_collected": "2026-09-21 00:43:07.026646+00:00",
+      "latest_publication": "2026-09-20 03:40:55+00:00"
+    },
+    {
+      "source_id": "kbs-world",
+      "state": "ready",
+      "count": 9,
+      "first_collected": "2026-09-21 00:43:07.026646+00:00",
+      "last_collected": "2026-09-21 00:43:07.026646+00:00",
+      "latest_publication": "2026-09-21 00:40:20+00:00"
+    }
+  ],
+  "recent_articles": [
+    {
+      "source_id": "bbc-world",
+      "title": "German Chancellor Merz calls state election a 'disaster' for his party but vows to stay on",
+      "url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+      "published_at": "2026-09-20 20:21:40+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:53:28.669434+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "cnbc-world",
+      "title": "U.S. urges Americans to reconsider Middle East travel as Iran tensions rise",
+      "url": "https://www.cnbc.com/2026/09/20/us-middle-east-travel-warning-iran-war-hormuz.html",
+      "published_at": "2026-09-20 14:23:53+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:23.189127+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "cnbc-world",
+      "title": "Here are the 3 big things we're watching in the stock market this week",
+      "url": "https://www.cnbc.com/2026/09/20/here-are-the-3-big-things-were-watching-in-the-stock-market-this-week.html",
+      "published_at": "2026-09-20 23:42:00+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:23.189127+00:00",
+      "state": "fetch_failed",
+      "error": "article_requires_subscription"
+    },
+    {
+      "source_id": "cnbc-technology",
+      "title": "AI, data center alarms dominate Congressional Black Caucus week in Washington",
+      "url": "https://www.cnbc.com/2026/09/20/ai-data-center-alarms-dominate-cbc-week-in-washington.html",
+      "published_at": "2026-09-20 18:05:02+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:20.463118+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "cnbc-technology",
+      "title": "Bessent calls meeting with China Vice Premier He Lifeng 'successful' ahead of Trump-Xi summit",
+      "url": "https://www.cnbc.com/2026/09/20/bessent-he-lifeng-trump-xi-summit.html",
+      "published_at": "2026-09-21 00:39:34+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:20.463118+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "cnbc-technology",
+      "title": "The 'robot relations' department may become reality in workplace of the future",
+      "url": "https://www.cnbc.com/2026/09/20/ai-jobs-worker-fears.html",
+      "published_at": "2026-09-20 14:37:34+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:20.463118+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "cnbc-technology",
+      "title": "Nvidia CEO Jensen Huang emerges as Trump's top ally in AI safety debate",
+      "url": "https://www.cnbc.com/2026/09/20/nvidia-ceo-jensen-huang-emerges-as-trumps-top-ally-in-ai-debate.html",
+      "published_at": "2026-09-20 11:25:08+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:20.463118+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "cnbc-finance",
+      "title": "‘It's awful’: How tariffs, soaring fuel costs and higher interest rates are squeezing American companies",
+      "url": "https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html",
+      "published_at": "2026-09-20 12:47:23+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:17.853034+00:00",
+      "state": "queued",
+      "error": null
+    },
+    {
+      "source_id": "cnbc-economy",
+      "title": "France’s wine production nears a 70-year low, leaving winemakers with tough choices",
+      "url": "https://www.cnbc.com/2026/09/20/france-wine-production-70-year-low-heatwaves-drought.html",
+      "published_at": "2026-09-20 05:00:01+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:15.186374+00:00",
+      "state": "held",
+      "error": null
+    },
+    {
+      "source_id": "bbc-business",
+      "title": "Chiltern Railways renationalised after 30 years",
+      "url": "https://www.bbc.co.uk/news/articles/c68xk701d975o",
+      "published_at": "2026-09-20 10:45:39+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "bbc-business",
+      "title": "Ed Davey calls for immediate 10p cut to fuel duty",
+      "url": "https://www.bbc.co.uk/news/articles/cr89j514dly2o",
+      "published_at": "2026-09-20 14:42:42+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "bbc-business",
+      "title": "Families missing out on NHS money for healthy food",
+      "url": "https://www.bbc.co.uk/news/articles/cme30e8zyvjno",
+      "published_at": "2026-09-20 06:12:13+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "bbc-business",
+      "title": "Nvidia boss rejects AI extinction fears as 'doomsday narratives'",
+      "url": "https://www.bbc.co.uk/news/articles/cr5ye7p13jg7o",
+      "published_at": "2026-09-21 00:34:53+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "bbc-business",
+      "title": "Lib Dems vow to end 'computer says no' economy to boost growth",
+      "url": "https://www.bbc.co.uk/news/articles/cqrk31k7pprlo",
+      "published_at": "2026-09-20 14:05:15+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "bbc-business",
+      "title": "Will you get £13,000 a year when you stop working? Here's how to check",
+      "url": "https://www.bbc.co.uk/news/articles/crq5x74yv6dxo",
+      "published_at": "2026-09-20 23:02:45+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "bbc-business",
+      "title": "What food items should you stock up on in case of an emergency?",
+      "url": "https://www.bbc.co.uk/news/articles/c20veglyjp8o",
+      "published_at": "2026-09-20 23:02:27+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "bbc-business",
+      "title": "Billionaire Man United owner loses moral high ground after tax exile, Labour chair says",
+      "url": "https://www.bbc.co.uk/news/articles/cm0rexrwjj1vo",
+      "published_at": "2026-09-20 11:22:21+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "bbc-business",
+      "title": "Family shares hidden cost of cancer care",
+      "url": "https://www.bbc.co.uk/news/articles/c8qlwg07p906o",
+      "published_at": "2026-09-20 09:25:34+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:09.670918+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "kbs-world",
+      "title": "Korean Remake of \"The Intern\" Debuts No. 1 at Box Office",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204380&lang=e",
+      "published_at": "2026-09-21 00:40:20+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "kbs-world",
+      "title": "Exports during First 20 Days of Sept. Break US$70 Bln for 1st Time",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204378&lang=e",
+      "published_at": "2026-09-21 00:34:58+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "kbs-world",
+      "title": "Lee Urges Supporters to Avoid Hate Speech, Mockery",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204371&lang=e",
+      "published_at": "2026-09-20 04:36:15+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "kbs-world",
+      "title": "Fox News: Trump in 'Deciding Mode' on Iran, Open to Meet Iranian President",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204377&lang=e",
+      "published_at": "2026-09-20 23:59:58+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "kbs-world",
+      "title": "Pantathlete Seong Seung-min Wins S. Korea's First Gold at Asian Games",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204370&lang=e",
+      "published_at": "2026-09-20 04:31:06+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "state": "ignored",
+      "error": null
+    },
+    {
+      "source_id": "kbs-world",
+      "title": "Semiconductor Jobs Up 15% in 8 Years, New Hires Down 22%",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204368&lang=e",
+      "published_at": "2026-09-20 03:40:55+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "state": "queued",
+      "error": null
+    },
+    {
+      "source_id": "kbs-world",
+      "title": "JCS: N. Korea Fires 2 Short-Range Ballistic Missiles into East Sea in Succession",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204374&lang=e",
+      "published_at": "2026-09-20 06:38:07+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "state": "held",
+      "error": null
+    },
+    {
+      "source_id": "kbs-world",
+      "title": "KOSPI Opens Up 0.64% Monday",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204379&lang=e",
+      "published_at": "2026-09-21 00:39:59+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "kbs-world",
+      "title": "Chuseok Highway Traffic to Peak Thursday Morning, Friday Afternoon",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204373&lang=e",
+      "published_at": "2026-09-20 05:32:50+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "kbs-world",
+      "title": "Mostly Sunny Monday With Wide Temperature Swings, Strong Coastal Swells",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204372&lang=e",
+      "published_at": "2026-09-20 05:21:05+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "kbs-world",
+      "title": "KTX, Train Ticket Booking Window Extended to 2 Months",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204367&lang=e",
+      "published_at": "2026-09-20 03:17:41+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "state": "ready",
+      "error": null
+    },
+    {
+      "source_id": "kbs-world",
+      "title": "Police Nab 1,863 in Special Crackdown on Local Corruption",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204366&lang=e",
+      "published_at": "2026-09-20 03:10:52+00:00",
+      "updated_at": null,
+      "collected_at": "2026-09-21 00:43:07.026646+00:00",
+      "state": "ready",
+      "error": null
+    }
+  ],
+  "review_counts": [
+    {
+      "state": "completed",
+      "count": 5,
+      "latest_created": "2026-09-21 00:50:30.323175+00:00",
+      "latest_completed": "2026-09-21 00:52:11.566066+00:00"
+    }
+  ],
+  "delivery_counts": [
+    {
+      "status": "delivered",
+      "count": 8,
+      "latest_created": "2026-09-21 00:52:11.566066+00:00"
+    }
+  ],
+  "runtime_control": [
+    {
+      "paused_until": null,
+      "reason": null
+    }
+  ],
+  "daily_usage": [
+    {
+      "day": "2026-09-21",
+      "reserved": 3
+    },
+    {
+      "day": "2026-09-18",
+      "reserved": 66
+    },
+    {
+      "day": "2026-09-17",
+      "reserved": 131
+    },
+    {
+      "day": "2026-09-16",
+      "reserved": 53
+    }
+  ],
+  "busy_turns": [],
+  "effective_limits": {
+    "revision": 0,
+    "company": null,
+    "maintenance": null
+  },
+  "workflows": [
+    {
+      "id": "company-news-collection-v1",
+      "run_id": "c4d9ae12-8112-4f75-b36b-d3398479bfb7",
+      "status": "RUNNING",
+      "recent_activity_results": [
+        {
+          "at": "2026-09-21 00:53:36.590566+00:00",
+          "result": [
+            {
+              "added": 0,
+              "source": "bbc-technology",
+              "state": "collected"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:53:39.257404+00:00",
+          "result": [
+            {
+              "added": 0,
+              "source": "cnbc-economy",
+              "state": "collected"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:53:41.746864+00:00",
+          "result": [
+            {
+              "added": 0,
+              "source": "cnbc-finance",
+              "state": "collected"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:53:44.438114+00:00",
+          "result": [
+            {
+              "added": 0,
+              "source": "cnbc-technology",
+              "state": "collected"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:53:46.962223+00:00",
+          "result": [
+            {
+              "added": 0,
+              "source": "cnbc-world",
+              "state": "collected"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:53:49.229514+00:00",
+          "result": [
+            {
+              "added": 0,
+              "source": "kbs-economy",
+              "state": "collected"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:53:51.382441+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:54:21.725774+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        }
+      ],
+      "activity_failure_count": 0,
+      "recent_failures": []
+    },
+    {
+      "id": "company-news-editorial-v1",
+      "run_id": "5bde5bc8-0770-4754-8356-b180abac7c35",
+      "status": "RUNNING",
+      "recent_activity_results": [
+        {
+          "at": "2026-09-21 00:14:06.982655+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:19:07.138774+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:24:07.300531+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:29:07.486176+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:34:07.647409+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:39:07.989693+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:45:30.164721+00:00",
+          "result": [
+            {
+              "items": [
+                {
+                  "headline": "",
+                  "reason": "그리스 해변에서 발생한 개별 사망 사건으로, 제공된 본문에는 주요 세계 사건으로 볼 만한 광범위한 영향이나 제도적 파장이 제시되지 않았다.",
+                  "state": "ignored"
+                },
+                {
+                  "headline": "KBS: 반도체 유급 일자리 17만4천 개…대체 포함 신규채용은 2018년보다 감소",
+                  "reason": "한국 핵심 산업의 고용 규모와 채용 흐름을 보여주는 통계 보도다. 승인된 KBS의 보도로 출처를 명시하며, 사진의 연합뉴스 표기는 별도 보도 출처로 세지 않는다.",
+                  "state": "queued"
+                },
+                {
+                  "headline": "BBC: 메르츠 독일 총리, 직무 유지·경제·조세·복지 개혁 추진 의사 밝혀",
+                  "reason": "독일 총리의 직무 유지 및 개혁 추진 입장 표명은 중요한 정치·경제 동향이다. BBC가 보도한 공개 발언만 다루며, 출구조사에 따른 의석·승패 전망과 교체설은 출판 사실에서 제외한다.",
+                  "state": "queued"
+                },
+                {
+                  "headline": "",
+                  "reason": "아시안게임 농구 경기 결과 중심의 스포츠 보도로, 요청된 경제·세계 주요 사건 보도 범위에 해당하는 파장이 본문에 제시되지 않았다.",
+                  "state": "ignored"
+                },
+                {
+                  "headline": "BBC: 파키스탄 임란 칸 전 총리 누이 체포…명령서에 30일 구금 명시",
+                  "reason": "파키스탄 전직 총리 가족의 구금은 주요 정치 동향이다. BBC가 경찰에 확인한 체포 사실과 기사에 제시된 구금 명령의 내용만 보도한다. 당국의 동원·질서교란 주장, 야당의 불법 구금 주장, 체포 동기에 관한 추정은 확정 사실로 다루지 않는다.",
+                  "state": "queued"
+                },
+                {
+                  "headline": "",
+                  "reason": "아시안게임 사이클 메달 소식으로 요청된 경제·세계 주요 사건 보도 범위 밖이다. 본문에 제시된 두 선수 기록과 시간 차도 서로 맞지 않아 해당 수치를 재전달하지 않는다.",
+                  "state": "ignored"
+                }
+              ],
+              "state": "completed"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:52:11.621468+00:00",
+          "result": [
+            {
+              "items": [
+                {
+                  "headline": "BBC: 모스크바 야간 폭발·창고 화재 영상 확인…주요 공항 운항 일시 제한",
+                  "reason": "BBC가 검증했다고 명시한 영상과 공항 운영 상황만 게재한다. 공격 주체·최대 규모·드론 450대·정유시설 피해·사상자 수는 교전 당사자 주장에 의존하므로 게재 사실에서 제외한다.",
+                  "state": "queued"
+                },
+                {
+                  "headline": "",
+                  "reason": "한국 안보상 중요한 사안이지만 북한의 미사일 2발 발사와 비행거리는 합참의 상대국 관련 주장에 의존한다. 본문에 인용된 일본 언론도 발사체 추정만 전하며, 별도로 제공된 독립 보도가 아니다. 또한 게시 시각은 한국시간 9월 20일 15시 38분인데 본문은 같은 날 17시 50분의 두 번째 발사를 포함한다. 수정 시각이나 추가 자료 없이 시간 관계와 핵심 주장을 확인하기 어려워 보류한다.",
+                  "state": "held"
+                },
+                {
+                  "headline": "",
+                  "reason": "핵심인 프랑스 와인 생산의 70년래 최저 가능성은 확정 생산통계가 아닌 전망이다. 농업부 원문이나 독립된 추가 보고가 없으므로 CNBC 단독 인용 보도 방식으로 이 전망을 게재할 수 없다. 본문의 성장률 전망과 산업 전망도 같은 제약이 있다. 지원책은 여름 말 발표로만 제시돼 신규 조치 여부를 판단하기 어렵고 기사 말미도 잘려 있어 보류한다.",
+                  "state": "held"
+                },
+                {
+                  "headline": "BBC: 트럼프, 개선문에 드론·저격수 운용 기능 추가 구상 밝혀",
+                  "reason": "승인된 매체 BBC가 전한 대통령의 공개 구상 변경 발언을 게재한다. 군의 요청이 있었다는 주장이나 시설 승인·착공·완공은 확인된 사실로 취급하지 않는다.",
+                  "state": "queued"
+                },
+                {
+                  "headline": "",
+                  "reason": "아시안게임 근대5종 메달 획득 소식으로, 제공된 본문에는 경제·산업·정책 또는 중대한 세계 사건에 해당하는 파급 사실이 없다. 이번 경제·세계뉴스 편집 범위에서 제외한다.",
+                  "state": "ignored"
+                },
+                {
+                  "headline": "CNBC: 미국 소형 제조업체, 부품값 상승 속 재고 확보 확대",
+                  "reason": "CNBC의 실명 취재로 제시된 현재 재고 확보와 부품 가격 사례만 게재한다. 기사 말미는 잘렸지만 해당 사례의 문맥은 완결돼 있다. 향후 가격 인상, 환급 효과 상쇄 전망, 과거 공장 계획 취소를 새로운 확정 사실로 묶지 않는다.",
+                  "state": "queued"
+                }
+              ],
+              "state": "completed"
+            }
+          ]
+        }
+      ],
+      "activity_failure_count": 0,
+      "recent_failures": []
+    },
+    {
+      "id": "company-news-discovery-v1",
+      "run_id": "01a0c16a-92a1-7930-b86b-5345bc210fd7",
+      "status": "RUNNING",
+      "recent_activity_results": [
+        {
+          "at": "2026-09-21 00:43:25.303808+00:00",
+          "result": [
+            {
+              "added": 0,
+              "excluded_unregistered": 0,
+              "state": "completed"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:48:25.458316+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 00:53:25.625997+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        }
+      ],
+      "activity_failure_count": 0,
+      "recent_failures": []
+    }
+  ],
+  "verification_note": "All nine media feeds automatically polled again after their initial 00:43 UTC collection; two autonomous editorial batches completed and six new news publications were delivered. This receipt predates the display-only follow-up change."
+}

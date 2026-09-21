@@ -1,0 +1,40 @@
+{
+  "postgres": "real local PostgreSQL 14; disposable database per test",
+  "temporal": "real local Temporal development service and replay",
+  "model": "fixture",
+  "slack": "simulated HTTP; not live deployment",
+  "command": "uv run --frozen pytest -q -m 'not live' tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py",
+  "result": {
+    "passed": 479,
+    "skipped": 2,
+    "deselected_live": 1
+  },
+  "lint": "uv run --frozen ruff check . passed",
+  "scope": [
+    "attributed media reports and rejection of contested single-source claims",
+    "publisher/feed deduplication and diverse editorial batches",
+    "KBS article extraction; bylines, publication date and paywall metadata",
+    "durable bounded discovery; originals/date required; no snippet publication",
+    "shared budget, frozen retries, uncertain outcomes, Temporal recovery/replay"
+  ],
+  "ci": {
+    "commit": "4eb5847f64153c0dd3e622a41c18c7f98795983a",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35548199269",
+    "conclusion": "success",
+    "passed": 479,
+    "skipped": 2,
+    "deselected_live": 1,
+    "postgres": "real PostgreSQL 16",
+    "temporal": "real local Temporal server and replay",
+    "model_slack": "fixtures, not live"
+  },
+  "final_ci": {
+    "commit": "4a8eb43b6406d3229cfd1e93b51011a817f87343",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35548831640",
+    "conclusion": "success",
+    "passed": 479,
+    "skipped": 2,
+    "deselected_live": 1,
+    "note": "Only additional code change is hiding follow-up change explanations on new roots; root/follow-up rendering was also checked locally."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "commit": "4a8eb43b6406d3229cfd1e93b51011a817f87343",
+  "previous": "/opt/quant-company/releases/4eb5847f64153c0dd3e622a41c18c7f98795983a",
+  "phase": "news_enabled",
+  "checked_at": 1789951706.8029532,
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "configured_preflight": {
+    "database_healthy": true,
+    "roles_loaded": 11,
+    "director_effort": "max"
+  },
+  "postgres_id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20260921T005428Z-6d29589c.tar.gz",
+    "sha256": "2756f90f388018168499116886afe3131f7646442ee8e8b8e74ec3124a717e8c",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260921T005428Z-6d29589c.tar.gz",
+    "release_commit": "4eb5847f64153c0dd3e622a41c18c7f98795983a",
+    "secrets_included": false
+  },
+  "health": {
+    "healthy_services": 8,
+    "postgres_recreated": false
+  },
+  "existing_roles_preserved": true,
+  "existing_credentials_preserved": true,
+  "enabled_at": 1789952210.4522645,
+  "ci_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35548831640",
+  "change": "Only display the change section on actual event follow-ups; collection and editorial policy unchanged."
+}

@@ -1,0 +1,516 @@
+{
+  "checked_at": "2026-09-21T00:28:38.750265+00:00",
+  "candidate_code": true,
+  "slack_writes": 0,
+  "model_calls": 0,
+  "results": [
+    {
+      "source": "fed-press",
+      "kind": "official",
+      "topics": [
+        "macroeconomics",
+        "economy_finance"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "\"2a27c06a7e47dd1:0\"",
+        "modified": "Fri, 18 Sep 2026 15:00:17 GMT",
+        "sha256": "bdb248554aec56ffd75e93baae7b8096ffa7abe199cc8a5d7a2f4bb773541ad5",
+        "bytes": 14853
+      },
+      "entries": 20,
+      "fresh_count": 0
+    },
+    {
+      "source": "ecb-press",
+      "kind": "official",
+      "topics": [
+        "macroeconomics",
+        "economy_finance"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 12,
+        "etag": "\"myra-ecf63537\"",
+        "modified": "",
+        "sha256": "979c5611f0a043bb0e21f613b20f667ae2ac2d6938e301724efe89be17f44df0",
+        "bytes": 5673
+      },
+      "entries": 3,
+      "fresh_count": 0
+    },
+    {
+      "source": "bbc-world",
+      "kind": "media",
+      "topics": [
+        "geopolitics",
+        "world_events",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 4,
+        "etag": "",
+        "modified": "",
+        "sha256": "6c04416eea7c47adc9bf8f006c29c7b7f8480ab2c66193795d37e35e4c80bfe9",
+        "bytes": 21212
+      },
+      "entries": 23,
+      "fresh_count": 6,
+      "sample": {
+        "url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+        "title": "German Chancellor Merz calls state election a 'disaster' for his party but vows to stay on",
+        "published_at": "2026-09-20 20:21:40+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+        "requested_url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+        "redirects": [],
+        "title": "German state elections: Chancellor Friedrich Merz vows to stay on despite 'disaster' in polls - BBC News",
+        "publisher_host": "www.bbc.co.uk",
+        "retrieved_at": "2026-09-21T00:28:32.903924+00:00",
+        "published_at": "2026-09-20T16:50:21.517Z",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html",
+        "original_sha256": "c7994f4822de57ebeb7b2f03855744e52d56f17b12bf50a3705a84f86e3711d1",
+        "original_bytes": 424968,
+        "content_truncated": false,
+        "bylines": [
+          "Amy Walker",
+          "Jessica Parker"
+        ],
+        "article_extraction": "article",
+        "article_chars": 4881,
+        "excerpt_truncated": false,
+        "excerpt_chars": 4881
+      }
+    },
+    {
+      "source": "kbs-world",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "geopolitics",
+        "trade_energy",
+        "industry_technology",
+        "world_events"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "98fd331db5044e8c902caa180a9b0fb9718e463de89f29f014020172da713be5",
+        "bytes": 38792
+      },
+      "entries": 30,
+      "fresh_count": 11,
+      "sample": {
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204377&lang=e",
+        "title": "Fox News: Trump in 'Deciding Mode' on Iran, Open to Meet Iranian President",
+        "published_at": "2026-09-20 23:59:58+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204377&lang=e",
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204377&lang=e",
+        "redirects": [],
+        "title": "Fox News: Trump in 'Deciding Mode' on Iran, Open to Meet Iranian President l KBS WORLD",
+        "publisher_host": "world.kbs.co.kr",
+        "retrieved_at": "2026-09-21T00:28:33.111188+00:00",
+        "published_at": null,
+        "publication_time_basis": "unknown",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "70832fff38459f1830eb441df053d3a0748d7063b47ba058acf81f280cbf8c5f",
+        "original_bytes": 67726,
+        "content_truncated": false,
+        "bylines": [],
+        "article_extraction": "kbs_body_txt",
+        "article_chars": 1048,
+        "excerpt_truncated": false,
+        "excerpt_chars": 1048
+      }
+    },
+    {
+      "source": "bea-releases",
+      "kind": "official",
+      "topics": [
+        "macroeconomics",
+        "economy_finance"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 6,
+        "etag": "\"76c81ff39f3bdd1:0\"",
+        "modified": "Thu, 03 Sep 2026 12:30:05 GMT",
+        "sha256": "446cb4078349673864407af824f8a6f54c1ec9fc54d10d076451ae5c179915f7",
+        "bytes": 88601
+      },
+      "entries": 42,
+      "fresh_count": 0
+    },
+    {
+      "source": "govuk-fcdo",
+      "kind": "official",
+      "topics": [
+        "geopolitics",
+        "world_events",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "W/\"5cfe857cc2314e2c611e0cb0781133d2\"",
+        "modified": "",
+        "sha256": "5cfe857cc2314e2c611e0cb0781133d20608424f043eb9c7805bd8ccac081221",
+        "bytes": 14811
+      },
+      "entries": 20,
+      "fresh_count": 0
+    },
+    {
+      "source": "govuk-treasury",
+      "kind": "official",
+      "topics": [
+        "macroeconomics",
+        "economy_finance"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 3,
+        "etag": "W/\"048726165fa465d788134b72754fa34f\"",
+        "modified": "",
+        "sha256": "048726165fa465d788134b72754fa34fcb84e97421667a205692778da1a3ba3f",
+        "bytes": 12064
+      },
+      "entries": 17,
+      "fresh_count": 0
+    },
+    {
+      "source": "govuk-trade",
+      "kind": "official",
+      "topics": [
+        "trade_energy",
+        "industry_technology"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 2,
+        "etag": "W/\"187e9c6a770b50124f2a0fcb275d35c0\"",
+        "modified": "",
+        "sha256": "187e9c6a770b50124f2a0fcb275d35c0a09c999fae3b09774bc4809e9282406f",
+        "bytes": 12319
+      },
+      "entries": 18,
+      "fresh_count": 0
+    },
+    {
+      "source": "bbc-business",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "industry_technology"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 5,
+        "etag": "",
+        "modified": "",
+        "sha256": "523dba60d7225ebbdf138cfd10847c8aa59e6da57046252628477537f3d4e75d",
+        "bytes": 40049
+      },
+      "entries": 49,
+      "fresh_count": 9,
+      "sample": {
+        "url": "https://www.bbc.co.uk/news/articles/crq5x74yv6dxo",
+        "title": "Will you get £13,000 a year when you stop working? Here's how to check",
+        "published_at": "2026-09-20 23:02:45+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/crq5x74yv6dxo",
+        "requested_url": "https://www.bbc.co.uk/news/articles/crq5x74yv6dxo",
+        "redirects": [],
+        "title": "Will you get £13,000 a year when you stop working? Here's how to check - BBC News",
+        "publisher_host": "www.bbc.co.uk",
+        "retrieved_at": "2026-09-21T00:28:34.990479+00:00",
+        "published_at": "2026-09-20T23:02:45.847Z",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html",
+        "original_sha256": "6ba0dbdff3686dbb403e8be7e79809f031c2de12700f5b3257e1cae13585bcd2",
+        "original_bytes": 404746,
+        "content_truncated": false,
+        "bylines": [
+          "Kevin Peachey"
+        ],
+        "article_extraction": "article",
+        "article_chars": 3460,
+        "excerpt_truncated": false,
+        "excerpt_chars": 3460
+      }
+    },
+    {
+      "source": "bbc-technology",
+      "kind": "media",
+      "topics": [
+        "industry_technology",
+        "world_events"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 9,
+        "etag": "",
+        "modified": "",
+        "sha256": "524fc0706613df3e5d4d4643c3dc369e74757d2a38d5bc97c11e5e2535d485b4",
+        "bytes": 15293
+      },
+      "entries": 12,
+      "fresh_count": 0
+    },
+    {
+      "source": "kbs-economy",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "trade_energy",
+        "industry_technology"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "52f13e18f1b4fdc34c7211f141fb8de297dc04c69df211cbe73512938f2f771a",
+        "bytes": 38080
+      },
+      "entries": 30,
+      "fresh_count": 1,
+      "sample": {
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204368&lang=e",
+        "title": "Semiconductor Jobs Up 15% in 8 Years, New Hires Down 22%",
+        "published_at": "2026-09-20 03:40:55+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204368&lang=e",
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204368&lang=e",
+        "redirects": [],
+        "title": "Semiconductor Jobs Up 15% in 8 Years, New Hires Down 22% l KBS WORLD",
+        "publisher_host": "world.kbs.co.kr",
+        "retrieved_at": "2026-09-21T00:28:35.720540+00:00",
+        "published_at": null,
+        "publication_time_basis": "unknown",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "7d9c15747fd3fada1fbca1c0a092afd47c6f92d56e7b2bbd6d2af0e4354dc6ee",
+        "original_bytes": 67855,
+        "content_truncated": false,
+        "bylines": [],
+        "article_extraction": "kbs_body_txt",
+        "article_chars": 1275,
+        "excerpt_truncated": false,
+        "excerpt_chars": 1275
+      }
+    },
+    {
+      "source": "cnbc-world",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "geopolitics",
+        "trade_energy",
+        "world_events"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "ac58fc296135ff5be01ba69328be50ca3033bdac420f8234b60313fe6cf7cd3d",
+        "bytes": 20752
+      },
+      "entries": 30,
+      "fresh_count": 6,
+      "sample": {
+        "url": "https://www.cnbc.com/2026/09/20/nvidia-ceo-jensen-huang-emerges-as-trumps-top-ally-in-ai-debate.html",
+        "title": "Nvidia CEO Jensen Huang emerges as Trump's top ally in AI safety debate",
+        "published_at": "2026-09-20 11:25:08+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/20/nvidia-ceo-jensen-huang-emerges-as-trumps-top-ally-in-ai-debate.html",
+        "requested_url": "https://www.cnbc.com/2026/09/20/nvidia-ceo-jensen-huang-emerges-as-trumps-top-ally-in-ai-debate.html",
+        "redirects": [],
+        "title": "Nvidia CEO Jensen Huang emerges as Trump's top ally in AI debate",
+        "publisher_host": "www.cnbc.com",
+        "retrieved_at": "2026-09-21T00:28:36.419550+00:00",
+        "published_at": "2026-09-20T11:00:01+0000",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "65a86e1d4bc694992d754e63f7850b2e0ff689d23e41cae6029e666450fdf73f",
+        "original_bytes": 862081,
+        "content_truncated": false,
+        "bylines": [
+          "Kif Leswing",
+          "Ashley Capoot"
+        ],
+        "article_extraction": "main",
+        "article_chars": 8222,
+        "excerpt_truncated": true,
+        "excerpt_chars": 6000
+      }
+    },
+    {
+      "source": "cnbc-economy",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "2eaa356087782e00c6f9b519a8fe58aa234521e1d46afd23a8fbdfecf806f964",
+        "bytes": 20527
+      },
+      "entries": 30,
+      "fresh_count": 1,
+      "sample": {
+        "url": "https://www.cnbc.com/2026/09/20/france-wine-production-70-year-low-heatwaves-drought.html",
+        "title": "France’s wine production nears a 70-year low, leaving winemakers with tough choices",
+        "published_at": "2026-09-20 05:00:01+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/20/france-wine-production-70-year-low-heatwaves-drought.html",
+        "requested_url": "https://www.cnbc.com/2026/09/20/france-wine-production-70-year-low-heatwaves-drought.html",
+        "redirects": [],
+        "title": "France wine production nears 70-year low as heatwaves hit harvest",
+        "publisher_host": "www.cnbc.com",
+        "retrieved_at": "2026-09-21T00:28:37.037336+00:00",
+        "published_at": "2026-09-20T05:00:01+0000",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "23d2928b4ac4760e67e5430a856410c882e2a855911695522fd79c2a25ae3ddb",
+        "original_bytes": 770881,
+        "content_truncated": false,
+        "bylines": [
+          "Charlotte Reed"
+        ],
+        "article_extraction": "main",
+        "article_chars": 8311,
+        "excerpt_truncated": true,
+        "excerpt_chars": 6000
+      }
+    },
+    {
+      "source": "cnbc-finance",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "industry_technology"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "560688ba2bda0e17fce403e1f7f79fe4352aaba2fe06ceaf8560461b4a7ce080",
+        "bytes": 21297
+      },
+      "entries": 30,
+      "fresh_count": 1,
+      "sample": {
+        "url": "https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html",
+        "title": "‘It's awful’: How tariffs, soaring fuel costs and higher interest rates are squeezing American companies",
+        "published_at": "2026-09-20 12:47:23+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html",
+        "requested_url": "https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html",
+        "redirects": [],
+        "title": "Tariffs, fuel prices and interest rates squeeze U.S. companies",
+        "publisher_host": "www.cnbc.com",
+        "retrieved_at": "2026-09-21T00:28:37.815504+00:00",
+        "published_at": "2026-09-20T12:00:01+0000",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "ada47b35f78a24cecf96d7554f11dcac007dc6e403e3e80c7b04436633b982fa",
+        "original_bytes": 810538,
+        "content_truncated": false,
+        "bylines": [
+          "Hugh Son",
+          "Leslie Josephs",
+          "Michael Wayland"
+        ],
+        "article_extraction": "main",
+        "article_chars": 9535,
+        "excerpt_truncated": true,
+        "excerpt_chars": 6000
+      }
+    },
+    {
+      "source": "cnbc-technology",
+      "kind": "media",
+      "topics": [
+        "industry_technology",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "81e2133f4566dc40af90ebcd78d7c90bd07e204beee4f3494f633572eb3ad268",
+        "bytes": 20935
+      },
+      "entries": 30,
+      "fresh_count": 4,
+      "sample": {
+        "url": "https://www.cnbc.com/2026/09/20/bessent-he-lifeng-trump-xi-summit.html",
+        "title": "Bessent meets China Vice Premier He Lifeng ahead of Trump-Xi summit",
+        "published_at": "2026-09-20 16:56:14+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/20/bessent-he-lifeng-trump-xi-summit.html",
+        "requested_url": "https://www.cnbc.com/2026/09/20/bessent-he-lifeng-trump-xi-summit.html",
+        "redirects": [],
+        "title": "Bessent, He Lifeng meet before Trump-Xi summit",
+        "publisher_host": "www.cnbc.com",
+        "retrieved_at": "2026-09-21T00:28:38.733239+00:00",
+        "published_at": "2026-09-20T16:56:14+0000",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "052a47d96e224d53aac65659223da252cc0aa037b06154dd12f9e40b0ec640e1",
+        "original_bytes": 794499,
+        "content_truncated": false,
+        "bylines": [
+          "Garrett Downs"
+        ],
+        "article_extraction": "main",
+        "article_chars": 3752,
+        "excerpt_truncated": false,
+        "excerpt_chars": 3752
+      }
+    }
+  ],
+  "scope": "Real public RSS and original-page reads from operating server, candidate package staged temporarily; no production code switch, model call or Slack write."
+}

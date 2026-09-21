@@ -1,0 +1,30 @@
+{
+  "commit": "4eb5847f64153c0dd3e622a41c18c7f98795983a",
+  "previous": "/opt/quant-company/releases/7528d05d4f3d9dca655ced4622f9c367d0900a5c",
+  "phase": "news_enabled",
+  "checked_at": 1789950962.0746136,
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "configured_preflight": {
+    "database_healthy": true,
+    "roles_loaded": 11,
+    "director_effort": "max"
+  },
+  "postgres_id": "da2e97762d3866a8215ef37e6702d3ada1302cb7a6de6471597238610db8ad31",
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20260921T004054Z-9bce2c5b.tar.gz",
+    "sha256": "2a0b370d3ab5ba5b44a9e6c3da0567e538685b3f2ffac6b0b545521907a0a39e",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260921T004054Z-9bce2c5b.tar.gz",
+    "release_commit": "7528d05d4f3d9dca655ced4622f9c367d0900a5c",
+    "secrets_included": false
+  },
+  "health": {
+    "healthy_services": 8,
+    "postgres_recreated": false
+  },
+  "existing_roles_preserved": true,
+  "existing_credentials_preserved": true,
+  "enabled_at": 1789951418.3220756,
+  "ci_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35548199269",
+  "preview_candidate_code_matches_deployed_package": true,
+  "user_cost_preference": "Existing subscriptions and free sources; no new purchase or paid API"
+}

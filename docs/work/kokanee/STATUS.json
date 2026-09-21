@@ -1,62 +1,78 @@
 {
   "approval": {
-    "approvedAt": "2026-09-18T15:19:55.326719+00:00",
-    "id": "chat-20260919-continue-reporter-activation"
+    "approvedAt": "2026-09-21T00:05:20.807710+00:00",
+    "id": "chat-20260921-restore-original-news-scope"
   },
-  "currentIntent": "INTENT-v2.json",
+  "currentIntent": "INTENT-v3.json",
   "deliverables": {
-    "DEPLOY": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/hot-news-operating-health.json",
-          "sha256": "87fa7321cc82"
-        }
-      ],
-      "note": "검증된 커밋으로 배포, 기존 역할·인증·DB 보존, 8개 서비스 정상. Temporal 실행과 worker/dispatch 재시작 영수증은 hot-news-restart.json에 기록. backup/release timer 복구.",
-      "status": "verified",
-      "updatedAt": "2026-09-18T16:43:51.358790+00:00"
-    },
     "LIVE": {
       "evidence": [
         {
-          "path": "docs/project/evidence/hot-news-quiet-channel-check.json",
-          "sha256": "ce3a84f200b5"
+          "path": "docs/project/evidence/hot-news-scope-final-delivery.json",
+          "sha256": "fb7746a98730"
         },
         {
-          "path": "docs/project/evidence/hot-news-slack-credential-cleanup.json",
-          "sha256": "89f30688d7c4"
+          "path": "docs/project/evidence/hot-news-scope-continuity.json",
+          "sha256": "01b863a8674d"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-scope-format-release.json",
+          "sha256": "071b45ba8397"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-scope-final-host-health.json",
+          "sha256": "1f0cc3e05982"
         }
       ],
-      "note": "9월 21일 실제 DB·Temporal·Slack 읽기와 6개 원문 재조회 확인. 새 기사 유입 부족으로 초기 2건 이후 게시 없음; 글로벌 뉴스 범위는 미충족. 사용자 재인증 후 구형 검증 토큰 교체·새로고침 검증 완료.",
+      "note": "신규 자동 뉴스 8건 실제 Slack 대조, 최종 4a8eb43에서도 무역·AI 뉴스 2건 자동 발송. 다음 자동 수집 및 기존 서비스·인증·DB 보존 확인. 지역/분야 누락률 미검증 한계 명시",
       "status": "verified",
-      "updatedAt": "2026-09-20T23:58:06.522411+00:00"
+      "updatedAt": "2026-09-21T01:02:40.923157+00:00"
     },
-    "SLACK": {
+    "PIPELINE": {
       "evidence": [
         {
-          "path": "docs/project/evidence/hot-news-slack-install.json",
-          "sha256": "f0a90345c517"
+          "path": "docs/project/evidence/hot-news-scope-codex-preview.json",
+          "sha256": "af48c151906e"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-scope-tests.json",
+          "sha256": "c9d845dc5534"
         }
       ],
-      "note": "전용 앱·실제 hot-news 참여·auth.test/history 성공. 토큰은 비공개 운영 경로로 전달.",
+      "note": "실제 기사 구독 검토 3 preview·2 hold·1 ignore; 실제 네이티브 후보 검색; 원문/날짜/귀속/중복/불명 호출 검증. 두 배포 커밋 CI 479 passed",
       "status": "verified",
-      "updatedAt": "2026-09-18T15:52:03.951537+00:00"
+      "updatedAt": "2026-09-21T00:58:25.858371+00:00"
+    },
+    "SCOPE": {
+      "evidence": [
+        {
+          "path": "docs/project/HOT-NEWS-SCOPE-RESTORATION.md",
+          "sha256": "c1a179f09688"
+        }
+      ],
+      "note": "최초 6개 뉴스 영역·한국과 해외·상시 검증 전달·daily-brief 분리와 기존 구독/무료 우선 비용 결정 복원",
+      "status": "verified",
+      "updatedAt": "2026-09-21T01:02:40.767954+00:00"
     },
     "SOURCES": {
       "evidence": [
         {
-          "path": "docs/project/evidence/hot-news-final-image-probe.json",
-          "sha256": "550c88fe728b"
+          "path": "src/quant_company/news/sources.json",
+          "sha256": "c3a510488066"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-scope-final-image-probe.json",
+          "sha256": "fd3a9828b65d"
         }
       ],
-      "note": "통합 배포 커밋의 정상 entrypoint에서 6개 공식 피드와 원문·발행 시각 확인. 일반 언론 커버리지 제한 유지.",
+      "note": "무료 언론 9·공식 6 피드의 운영 이미지 실접속; 최신 언론 8개 표본의 실제 원문 확인. 소스 등록과 실제 사건 커버리지를 구분",
       "status": "verified",
-      "updatedAt": "2026-09-18T16:32:35.443382+00:00"
+      "updatedAt": "2026-09-21T00:58:25.699761+00:00"
     }
   },
-  "intentDigest": "4df23b420435",
+  "intentDigest": "e7f0410f8294",
   "schemaVersion": 1,
   "slug": "kokanee",
   "state": "approved",
-  "updatedAt": "2026-09-20T23:58:06.522411+00:00"
+  "updatedAt": "2026-09-21T01:02:40.923157+00:00"
 }

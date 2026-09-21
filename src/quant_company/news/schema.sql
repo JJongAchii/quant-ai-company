@@ -30,3 +30,10 @@ CREATE TABLE IF NOT EXISTS news_publications (
 );
 ALTER TABLE news_publications ADD COLUMN IF NOT EXISTS broadcast boolean NOT NULL DEFAULT false;
 ALTER TABLE outbox ALTER COLUMN thread_ts DROP NOT NULL;
+CREATE TABLE IF NOT EXISTS news_searches (
+ id text PRIMARY KEY, state text NOT NULL DEFAULT 'running',
+ topic text NOT NULL, arguments jsonb NOT NULL, request jsonb NOT NULL,
+ policy_digest text NOT NULL, response jsonb, receipt jsonb,
+ next_at timestamptz NOT NULL DEFAULT now(), error text,
+ created_at timestamptz NOT NULL DEFAULT now(), completed_at timestamptz
+);
