@@ -46,6 +46,28 @@ INSTRUCTIONS = employee_pack("maintainer") + (
 )
 
 
+def compact_prompt_value(value, *, string_chars, list_items):
+    """Bound untrusted diagnostic detail while preserving its structure and omission counts."""
+    if isinstance(value, str):
+        return value if len(value) <= string_chars else value[:string_chars] + "[PROMPT EXCERPT]"
+    if isinstance(value, list):
+        omitted = sum(item.get("_prompt_omitted_items", 0) for item in value
+                      if isinstance(item, dict) and set(item) == {"_prompt_omitted_items", "reason"})
+        records = [item for item in value if not (isinstance(item, dict)
+                   and set(item) == {"_prompt_omitted_items", "reason"})]
+        compacted = [compact_prompt_value(item, string_chars=string_chars, list_items=list_items)
+                     for item in records[:list_items]]
+        omitted += max(0, len(records) - list_items)
+        if omitted:
+            compacted.append({"_prompt_omitted_items": omitted,
+                              "reason": "shared_provider_context_budget"})
+        return compacted
+    if isinstance(value, dict):
+        return {key: compact_prompt_value(item, string_chars=string_chars, list_items=list_items)
+                for key, item in value.items()}
+    return value
+
+
 def proposal_material(payload, schema):
     """Share a finite provider context budget; retain full evidence and reserved prompts in the DB."""
     material = copy.deepcopy(payload)
@@ -77,6 +99,13 @@ def proposal_material(payload, schema):
         if len(longest.get("content", "")) > 1000:
             longest["content"] = longest["content"][:max(1000, len(longest["content"]) // 2)]
             longest["excerpted"] = True
+        elif material.get("prompt_system_compaction", 0) < 3:
+            stage = material.get("prompt_system_compaction", 0)
+            string_chars, list_items = [(1000, 4), (400, 2), (160, 1)][stage]
+            diagnostic["system"] = compact_prompt_value(
+                diagnostic.get("system", {}), string_chars=string_chars, list_items=list_items)
+            material["prompt_system_compaction"] = stage + 1
+            material["prompt_excerpted"] = True
         else:
             # Preserve current configuration/assessments. Omit older history records explicitly.
             history = material.get("history", {}).get("evidence", [])
@@ -446,14 +475,16 @@ class Maintainer:
             with self.company.db.transaction() as conn:
                 cached = conn.execute("SELECT files,metadata FROM repository_evidence WHERE commit=%s",
                                       (snapshot["commit"],)).fetchone()
+                previous = conn.execute("SELECT files FROM repository_evidence ORDER BY checked_at DESC LIMIT 1").fetchone()
             files, coverage = ((cached["files"], cached["metadata"].get("coverage")) if cached else
-                               self.github.read_repository(snapshot))
+                               self.github.read_repository(snapshot, (previous or {}).get("files")))
             metadata = self.github.current_metadata(snapshot)
-        except (GitHubError, httpx.HTTPError):
+        except (GitHubError, httpx.HTTPError) as exc:
+            reason = str(exc) if isinstance(exc, GitHubError) else type(exc).__name__
             with self.company.db.transaction() as conn:
-                conn.execute("""UPDATE repository_evidence SET metadata=metadata || '{"refresh_error":"github_unavailable"}'
-                    WHERE commit=(SELECT commit FROM repository_evidence ORDER BY checked_at DESC LIMIT 1)""")
-            raise Deferred("current_repository_unavailable") from None
+                conn.execute("""UPDATE repository_evidence SET metadata=metadata || jsonb_build_object('refresh_error',%s)
+                    WHERE commit=(SELECT commit FROM repository_evidence ORDER BY checked_at DESC LIMIT 1)""", (reason,))
+            raise Deferred("current_repository_" + reason) from None
         metadata["coverage"] = coverage
         with self.company.db.transaction() as conn:
             record_repository(conn, snapshot, files, metadata)

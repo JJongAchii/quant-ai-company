@@ -71,7 +71,7 @@ class GitHubFixture:
         return {"commit": "a" * 40, "tree": "b" * 40, "paths": [SOURCE],
                 "entries": {SOURCE: {"sha": "d" * 40, "type": "blob", "mode": "100644"}}}
 
-    def read_repository(self, snapshot):
+    def read_repository(self, snapshot, previous=None):
         return {SOURCE: ORIGINAL}, {"read_files": 1, "omitted_paths": []}
 
     def current_metadata(self, snapshot):
@@ -176,6 +176,29 @@ def test_late_transaction_is_observed_without_reprocessing(company):
         conn.execute("UPDATE maintenance_control SET next_observe_at=now()")
     assert store.collect() is not None
     assert store.next_job()["payload"]["observations"][0]["key"] == "message:" + late_id
+
+
+@pytest.mark.integration
+def test_deferred_triage_allows_a_bounded_fresh_observation_buffer(company):
+    request = prepare(company)
+    store = Store(company, config())
+    store.initialize()
+    assert store.collect()
+    for index in range(1, 5):
+        current = store.next_job()
+        store.save(current['id'], current['state'], error='current_repository_archive_too_large')
+        with company.db.transaction() as conn:
+            conn.execute("""INSERT INTO messages(id,project_id,revision,author,kind,text)
+                VALUES (%s,%s,1,'UHUMAN','human',%s)""", (str(uuid4()), request['project_id'], f'fresh {index}'))
+            conn.execute("UPDATE maintenance_control SET next_observe_at=now()")
+        created = store.collect()
+        if index < 4:
+            assert created
+            assert store.next_job()['error'] is None
+        else:
+            assert created is None
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM maintenance_jobs WHERE state='triage'").fetchone()['n'] == 4
 
 
 @pytest.mark.integration

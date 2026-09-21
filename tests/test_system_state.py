@@ -1,8 +1,6 @@
 """Real database/ingress tests; model and GitHub outputs are explicitly fixtures."""
 
-import io
 import json
-import tarfile
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
@@ -40,6 +38,30 @@ def test_history_and_current_code_share_the_real_provider_input_budget_without_m
     assert material['observations'] == payload['observations']
     assert material['current_implementation']['system'] == payload['current_implementation']['system']
     assert any(r.get('excerpted') for r in material['current_implementation']['source_files'])
+
+
+def test_large_system_records_are_compacted_inside_the_same_provider_budget():
+    system = {
+        'runtime': {'code_commit': 'a'*40, 'config_digest': 'b'*64,
+                    'configuration': {'context': 'r'*12000}},
+        'repository': {'state': 'observed', 'commit': 'c'*40,
+                       'pull_requests': [{'title': 'p'*2000} for _ in range(15)],
+                       'ci': [{'url': 'u'*2000} for _ in range(15)]},
+        'verifications': [{'id': str(i), 'evidence': {'detail': 'v'*5000}} for i in range(12)],
+        'maintenance_jobs': {'records': [{'error': 'e'*2000} for _ in range(10)]},
+    }
+    payload = {'observations': [{'key': 'message:original', 'text': 'owner request'}],
+               'history': {'evidence': [{'key': f'message:{i}', 'text': 'h'*1800,
+                                         'created_at': str(i)} for i in range(12)]},
+               'current_implementation': {'system': system,
+                                          'source_files': [{'key': f'code:fixed:{i}', 'content': 's'*6000}
+                                                           for i in range(11)]}}
+    before = digest(payload)
+    material, prompt = proposal_material(payload, Triage)
+    assert len(prompt) <= 88000 and digest(payload) == before
+    assert material['prompt_system_compaction'] >= 1
+    assert material['current_implementation']['system']['runtime']['code_commit'] == 'a'*40
+    assert len(material['current_implementation']['system']['verifications']) <= 5
 
 
 @pytest.mark.integration
@@ -187,24 +209,21 @@ def test_repository_read_boundary_is_broader_than_patch_boundary_and_checks_exac
     for forbidden in ['../config.py', '/etc/passwd', 'deploy/.env', 'secrets/key.py', 'src/../oops.py']:
         assert not readable(forbidden)
     body = b'VALUE = 0\n'
-    bundle = io.BytesIO()
-    with tarfile.open(fileobj=bundle, mode='w:gz') as archive:
-        for name, content in [(path, body), ('deploy/.env', b'never-read'), ('src/link.py', b'')]:
-            item = tarfile.TarInfo('root/' + name)
-            if name.endswith('link.py'):
-                item.type, item.linkname = tarfile.SYMTYPE, '/etc/passwd'
-                archive.addfile(item)
-            else:
-                item.size = len(content)
-                archive.addfile(item, io.BytesIO(content))
     github = GitHub(config())
-    github.archive = lambda _: bundle.getvalue()
-    snapshot = {'commit': 'a'*40, 'entries': {path: {'sha': blob_sha(body.decode()), 'mode': '100644', 'type': 'blob'}}}
-    files, coverage = github.read_repository(snapshot)
+    fetched = []
+    github.read_files = lambda snapshot, paths: fetched.append(paths[0]) or {paths[0]: body.decode()}
+    snapshot = {'commit': 'a'*40, 'entries': {
+        path: {'sha': blob_sha(body.decode()), 'mode': '100644', 'type': 'blob', 'size': len(body)},
+        'src/link.py': {'sha': 'c'*40, 'mode': '120000', 'type': 'blob', 'size': 4},
+        'deploy/.env': {'sha': 'd'*40, 'mode': '100644', 'type': 'blob', 'size': 10},
+    }}
+    files, coverage = github.read_repository(snapshot, {path: body.decode()})
     assert files == {path: body.decode()} and 'src/link.py' in coverage['omitted_paths']
+    assert fetched == [] and coverage['reused_files'] == 1
     snapshot['entries'][path]['sha'] = 'b'*40
-    with pytest.raises(ValueError, match='digest_mismatch'):
-        github.read_repository(snapshot)
+    github.read_files = lambda snapshot, paths: {paths[0]: body.decode()}
+    files, coverage = github.read_repository(snapshot, {path: body.decode()})
+    assert files == {path: body.decode()} and coverage['fetched_files'] == 1
 
 
 @pytest.mark.integration
