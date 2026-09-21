@@ -1,0 +1,18 @@
+[
+  {
+    "host": "worker",
+    "tool_commit": "125ad96bb8e0734c8a2940f342b9c35f73bfc2cc",
+    "helper_sha256": "e67a7acf0069b29ea8da2839807ffb11587728621a5838733cffb18e76f089b2",
+    "clean": true,
+    "path": "/home/achii/quant-company-research/operator-tools/prelaunch-125ad96bb8e0/tool",
+    "runtime_modified": false
+  },
+  {
+    "host": "server",
+    "tool_commit": "125ad96bb8e0734c8a2940f342b9c35f73bfc2cc",
+    "helper_sha256": "e67a7acf0069b29ea8da2839807ffb11587728621a5838733cffb18e76f089b2",
+    "clean": true,
+    "path": "/home/ubuntu/quant-operator-tools/prelaunch-125ad96bb8e0/tool",
+    "runtime_modified": false
+  }
+]
