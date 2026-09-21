@@ -1,0 +1,50 @@
+{
+  "job_id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+  "assignment": {
+    "action": "run",
+    "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1789970318.691419:director",
+    "job_id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+    "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "recipe_id": "kr-etf-p11-replay-v1",
+    "revision": 5
+  },
+  "lease_sha256": "f6e728cf1da61b1aaad0277f2b45b77615c8f728b7f2005b5ce510eba9bdc081",
+  "sequence": 3,
+  "last_ack": {
+    "duplicate": false,
+    "ok": true,
+    "state": "failed"
+  },
+  "file_hashes": {
+    "execution-config.json": "545544b47b4e4bee3aac2c702017628d079479c30d9a8a73046ac604487c9fc6",
+    "result.json": "a8860b60466b2f41b582e0f78c83ad715c97b4979d80726ef154e518b6a3b09a",
+    "recipe.json": "ff2286d6f45b81596367f7fd884a5148a345f953fba65e8c4a45b96373d9c701",
+    "state.json": "7e8a8389eb71ebd4cbd0c81699c245219fe691661f0b71914ace1274ca38dbdc",
+    "executor.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "launch-intent.json": "a6a540fb0fcf493220abd6173cb710f6a988eac8ea03c6704a74fe5eea4e6a06",
+    "execution.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "process.json": "b7841f1cfa3e8ac11059d340664cbbebf217d13718bc8d6e90a3bad1cfb672c5"
+  },
+  "result": {
+    "completed_at": "2026-09-21T05:58:41.868954+00:00",
+    "launch_id": "942d7e7c58694b8eb85172d5be20decf",
+    "reason": "repository-commit-mismatch",
+    "state": "failed"
+  },
+  "process": {
+    "company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+    "identity": {
+      "boot": "0ddce41e-24ba-4870-a10f-aecbbb3a81b2",
+      "command": "a9d7450b5e23a616e803b34b231ac331d3f85a58d1ae5997faa204ea0b5a51fc",
+      "pgid": 328038,
+      "pid": 328038,
+      "start": "66330570"
+    },
+    "launch_id": "942d7e7c58694b8eb85172d5be20decf",
+    "started_at": "2026-09-21T05:58:41.809854+00:00"
+  },
+  "snapshot_company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+  "corrected_company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "no_research_commands_or_outputs": true
+}

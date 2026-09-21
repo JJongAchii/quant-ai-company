@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "actual_slack_api_read": true,
+  "actual_durable_owner_ingress": true,
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "revision": 5,
+  "job_id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+  "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+  "company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "owner_user": "U0C250E23NW",
+  "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1789970318.691419:director",
+  "approved_at": "2026-09-21T05:58:39.116+00:00",
+  "owner_slack_ts": "1789970318.691419",
+  "channel": "C0C2B9EUEGM",
+  "thread_ts": "1789633942.673909",
+  "command": "연구 승인 6a64df0e-9c60-555f-aa3a-a80a70e7f985 f0fb9af6a987",
+  "task_id": "6fb7e292-9f68-5e46-b54e-f6a507fab702",
+  "operator_generated_owner_event": false
+}
