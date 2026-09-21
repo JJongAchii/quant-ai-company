@@ -8,6 +8,7 @@ from psycopg.types.json import Jsonb
 from ..company import as_json, fingerprint, stable
 from ..contracts import ProviderRequest
 from ..owner_controls import effective_limits
+from . import schedule
 from .contracts import NEWS_TOPICS, NewsSource, load_sources
 from .editor import bounded_prompt, render, validate_review
 from .feeds import timestamp
@@ -29,6 +30,9 @@ class NewsStore:
                             "allowed_users": settings.slack_allowed_users,
                             "max_age": settings.news_max_age_hours,
                             "editor_policy": 2,
+                            "optimization": settings.news_optimization_enabled,
+                            "screening_policy": 2,
+                            "delivery_window": settings.news_delivery_window_enabled,
                             "sources": [s.model_dump() for s in self.sources().values()]})
 
     def authorized(self):
@@ -112,7 +116,7 @@ class NewsStore:
 
     def claim_article(self):
         with self.db.transaction() as conn:
-            conn.execute("""UPDATE news_articles SET state='expired' WHERE state IN ('collected','fetching','ready','held')
+            conn.execute("""UPDATE news_articles SET state='expired' WHERE state IN ('collected','fetching','ready','selected','held')
                 AND published_at<now()-make_interval(hours=>%s)""", (self.company.settings.news_max_age_hours,))
             row = conn.execute("""SELECT a.*,s.config FROM news_articles a JOIN news_sources s ON s.id=a.source_id
                 WHERE a.state IN ('collected','fetching') AND a.next_at<=now() AND s.enabled
@@ -155,6 +159,8 @@ class NewsStore:
     def prepare_review(self):
         if not self.authorized():
             return {"state": "paused"}
+        if schedule.quiet(self.company.settings):
+            return {"state": "quiet", "next_delay": schedule.next_delay(self.company.settings)}
         self.sync_sources()
         policy = self.policy()
         with self.db.transaction() as conn:
@@ -174,17 +180,29 @@ class NewsStore:
                     return {"state": "defer"}
                 return {"state": "ready", "request": active["request"]}
             # A held item is revisited only when new material arrives, not on an unbounded model timer.
+            optimized = self.company.settings.news_optimization_enabled
+            primary_state = "selected" if optimized else "ready"
             rows = []
-            for state in ("ready", "held"):
+            for state in ((primary_state,) if optimized else ("ready", "held")):
                 rows.extend(conn.execute("""SELECT a.*,s.config FROM news_articles a JOIN news_sources s ON s.id=a.source_id
                     WHERE a.state=%s AND s.enabled AND s.config->>'use_for_summary'='true'
                     AND a.source_digest=s.config_digest AND a.published_at>=now()-make_interval(hours=>%s)
                     AND a.published_at<=now()+interval '5 minutes'
-                    ORDER BY row_number() OVER (PARTITION BY s.config->>'origin_group' ORDER BY a.collected_at,a.id),
-                        a.collected_at,a.id LIMIT 6""", (state, self.company.settings.news_max_age_hours)).fetchall())
-            primary = [r["id"] for r in rows if r["state"] == "ready"]
+                    ORDER BY (a.collected_at>=%s AND a.collected_at<%s) DESC,
+                        COALESCE((a.screening->>'importance')::int,0) DESC,
+                        row_number() OVER (PARTITION BY s.config->>'origin_group' ORDER BY a.collected_at,a.id),
+                        a.collected_at,a.id LIMIT 6""", (state, self.company.settings.news_max_age_hours,
+                            schedule.overnight_start() if self.company.settings.news_delivery_window_enabled else datetime.min.replace(tzinfo=UTC),
+                            schedule.opening() if self.company.settings.news_delivery_window_enabled else datetime.min.replace(tzinfo=UTC))).fetchall())
+            primary = [r["id"] for r in rows if r["state"] == primary_state]
             if not primary:
                 return {"state": "idle"}
+            if optimized:
+                related = sorted({identity for r in rows for identity in (r["screening"] or {}).get("related_ids", [])} - set(primary))[:6]
+                rows.extend(conn.execute("""SELECT a.*,s.config FROM news_articles a JOIN news_sources s ON s.id=a.source_id
+                    WHERE a.id=ANY(%s) AND a.state IN ('held','selected','ignored') AND s.enabled AND a.source_digest=s.config_digest
+                    AND a.published_at>=now()-make_interval(hours=>%s)""",
+                                         (related, self.company.settings.news_max_age_hours)).fetchall())
             articles = [{"id": r["id"], "url": r["url"], "title": r["title"], "content": r["content"],
                          "excerpt_truncated": bool((r["retrieval"] or {}).get("excerpt_truncated")),
                          "bylines": (r["retrieval"] or {}).get("bylines", []),
@@ -192,6 +210,11 @@ class NewsStore:
                          "license_url": r["config"].get("license_url"), "license_name": r["config"].get("license_name", ""),
                          "allow_attributed_reporting": r["config"].get("allow_attributed_reporting", False),
                          "kind": r["config"]["kind"], "origin_group": r["config"]["origin_group"]} for r in rows]
+            if optimized:
+                for article in articles:
+                    if len(article["content"]) > 3000:
+                        article["content"] = article["content"][:3000]
+                        article["excerpt_truncated"] = True
             for article in articles:
                 existing = conn.execute("""SELECT n.id::text FROM news_events n
                     JOIN news_publications p ON p.event_id=n.id
@@ -207,11 +230,14 @@ class NewsStore:
                 JOIN outbox o ON o.id=n.root_message_id
                 JOIN projects p ON p.id=n.project_id WHERE p.channel=%s AND p.owner_user=%s
                 AND n.updated_at>now()-interval '3 days'
-                ORDER BY (n.id::text=ANY(%s)) DESC,n.updated_at DESC LIMIT 30""",
+                ORDER BY (n.id::text=ANY(%s)) DESC,n.updated_at DESC LIMIT %s""",
                                   (self.company.settings.news_channel_id, self.company.settings.news_owner_user,
-                                   required_events)).fetchall()
+                                   required_events, max(12, len(required_events)) if optimized else 30)).fetchall()
             bundle = as_json({"primary_ids": primary, "articles": articles, "events": events,
                               "as_of": datetime.now(UTC), "mode": "publish" if self.company.settings.news_publish_enabled else "preview"})
+            if self.company.settings.news_delivery_window_enabled and any(
+                    schedule.overnight_start() <= r["collected_at"] < schedule.opening() for r in rows if r["id"] in primary):
+                bundle["morning_day"] = str(schedule.opening().date())
             identity = "news-" + str(uuid4())
             role = self.company.role("reporter")
             request = ProviderRequest(request_id=identity, model=role.model, reasoning_effort=role.reasoning_effort,
@@ -231,7 +257,7 @@ class NewsStore:
         # A policy change must not implicitly re-spend on a request whose remote outcome may be unknown.
         conn.execute("""UPDATE news_articles SET state='review_stale',error='review_policy_changed' WHERE id IN
             (SELECT jsonb_array_elements_text(bundle->'primary_ids') FROM news_reviews WHERE id=%s)
-            AND state='ready'""", (identity,))
+            AND state IN ('ready','selected')""", (identity,))
 
     def fault(self, identity, code, seconds=0):
         with self.db.transaction() as conn:
@@ -245,7 +271,7 @@ class NewsStore:
                              (code, identity))
                 conn.execute("""UPDATE news_articles SET state='review_blocked',error=%s WHERE id IN
                     (SELECT jsonb_array_elements_text(bundle->'primary_ids') FROM news_reviews WHERE id=%s)
-                    AND state='ready'""", (code, identity))
+                    AND state IN ('ready','selected')""", (code, identity))
 
     def commit_review(self, response):
         at = datetime.now(UTC)
@@ -293,19 +319,21 @@ class NewsStore:
                     state = "held"
                 elif item.disposition == "publish" and self.company.settings.news_publish_enabled:
                     state = self._publish(conn, saved, item, index, articles, policy, at)
-                conn.execute("UPDATE news_articles SET state=%s WHERE id=ANY(%s) AND state IN ('ready','held')",
+                conn.execute("UPDATE news_articles SET state=%s WHERE id=ANY(%s) AND state IN ('ready','selected','held','ignored')",
                              (state, [identity for identity in item.article_ids if identity in primary or state == "queued"]))
                 results.append({"state": state, "headline": item.headline, "reason": item.reason})
-            conn.execute("UPDATE news_reviews SET state='completed',response=%s,result=%s,completed_at=now() WHERE id=%s",
+            conn.execute("UPDATE news_reviews SET state='completed',response=%s,result=%s,error=NULL,completed_at=now() WHERE id=%s",
                          (Jsonb(body), Jsonb(results), response.request_id))
-            return {"state": "completed", "items": results}
+            return {"state": "completed", "items": results, "next_delay": 2 if saved["bundle"].get("morning_day") else 300}
 
     def _publish(self, conn, review, item, index, articles, policy, at):
         event_id = item.event_id or stable(f"news-event:{review['id']}:{index}")
         if item.event_id:
             event = conn.execute("SELECT * FROM news_events WHERE id=%s FOR UPDATE", (event_id,)).fetchone()
             project = self.company._project(conn, str(event["project_id"]))
-            root = conn.execute("SELECT status,sent_ts FROM outbox WHERE id=%s", (event["root_message_id"],)).fetchone()
+            root = conn.execute("""SELECT o.status,COALESCE(root.sent_ts,o.sent_ts) AS sent_ts FROM outbox o
+                LEFT JOIN news_publications p ON p.id=o.id LEFT JOIN news_digests d ON d.id=p.digest_id
+                LEFT JOIN outbox root ON root.id=d.root_id WHERE o.id=%s""", (event["root_message_id"],)).fetchone()
             if not root or root["status"] != "delivered" or not root["sent_ts"] or project["status"] != "active":
                 return "held"
             project["thread_ts"] = root["sent_ts"]
@@ -322,6 +350,11 @@ class NewsStore:
         expires = min(articles[identity]["published_at"] for identity in item.article_ids) + timedelta(hours=self.company.settings.news_max_age_hours)
         conn.execute("""INSERT INTO news_publications(id,event_id,review_id,article_ids,policy_digest,expires_at)
             VALUES(%s,%s,%s,%s,%s,%s)""", (message_id, event_id, review["id"], Jsonb(item.article_ids), policy, expires))
+        morning_day = review["bundle"].get("morning_day")
+        if schedule.quiet(self.company.settings):
+            morning_day = str(schedule.opening().date())
+        if morning_day:
+            conn.execute("UPDATE news_publications SET morning_day=%s WHERE id=%s", (morning_day, message_id))
         if item.event_id and item.priority == "urgent":
             conn.execute("UPDATE news_publications SET broadcast=true WHERE id=%s", (message_id,))
         conn.execute("UPDATE news_events SET root_message_id=COALESCE(root_message_id,%s),headline=%s,last_facts=%s,updated_at=%s WHERE id=%s",
@@ -360,11 +393,16 @@ class NewsStore:
                             "channel": self.company.settings.news_channel_id,
                             "sources": sources, "coverage": coverage,
                             "search_enabled": self.company.settings.news_search_enabled,
+                            "optimization_enabled": self.company.settings.news_optimization_enabled,
+                            "delivery_window": "06:00–24:00 Asia/Seoul" if self.company.settings.news_delivery_window_enabled else "all day",
+                            "triages": conn.execute("SELECT id,state,error,created_at,completed_at FROM news_triages ORDER BY created_at DESC LIMIT 6").fetchall(),
+                            "digests": conn.execute("""SELECT d.id,d.day,d.part,d.member_ids,o.status,o.sent_ts,o.error
+                                FROM news_digests d JOIN outbox o ON o.id=d.id ORDER BY d.created_at DESC LIMIT 6""").fetchall(),
                             "searches": conn.execute("""SELECT id,topic,state,error,created_at,completed_at,
                                 receipt->'added' AS added,receipt->'excluded_unregistered' AS excluded_unregistered
                                 FROM news_searches ORDER BY created_at DESC LIMIT 6""").fetchall(),
                             "coverage_note": "Source topic registration and fresh article counts, not proof that every topic/event was covered. Delivery status comes from the outbox, not article queued state.",
                             "articles": conn.execute("SELECT state,count(*) AS count FROM news_articles GROUP BY state ORDER BY state").fetchall(),
-                            "deliveries": conn.execute("""SELECT o.id::text,o.status,o.error,o.sent_ts,o.created_at
+                            "deliveries": conn.execute("""SELECT o.id::text,o.status,o.error,o.sent_ts,o.created_at,p.digest_id
                                 FROM outbox o JOIN news_publications p ON p.id=o.id ORDER BY o.created_at DESC LIMIT 20""").fetchall(),
                             "reviews": conn.execute("SELECT id,state,error,result,created_at,completed_at FROM news_reviews ORDER BY created_at DESC LIMIT 10").fetchall()})

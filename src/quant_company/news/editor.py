@@ -41,7 +41,7 @@ Use hold for missing evidence and ignore for unimportant/duplicate coverage. Rea
 
 def prompt(bundle):
     return (EDITOR_INSTRUCTIONS + "\nOUTPUT SCHEMA:\n" + json.dumps(NewsReview.model_json_schema(), ensure_ascii=False)
-            + "\nNEWS DATA JSON:\n" + json.dumps(as_json(bundle), ensure_ascii=False))
+            + "\nNEWS DATA JSON:\n" + json.dumps(as_json(bundle), ensure_ascii=False, separators=(",", ":")))
 
 
 def bounded_prompt(bundle):

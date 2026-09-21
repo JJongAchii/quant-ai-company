@@ -98,6 +98,18 @@ class NewsReview(StrictModel):
     items: list[NewsProposal] = Field(max_length=12)
 
 
+class ScreeningItem(StrictModel):
+    article_id: str
+    disposition: Literal["keep", "ignore"]
+    importance: int = Field(ge=1, le=5)
+    reason: str = Field(min_length=1, max_length=240)
+    related_ids: list[str] = Field(default_factory=list, max_length=2)
+
+
+class NewsScreening(StrictModel):
+    items: list[ScreeningItem] = Field(min_length=1, max_length=24)
+
+
 def load_sources(path=None):
     path = path or files("quant_company.news").joinpath("sources.json")
     result = [NewsSource.model_validate(item) for item in json.loads(path.read_text())]
