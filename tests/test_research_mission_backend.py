@@ -344,6 +344,23 @@ def test_qualification_real_git_pg_restart_audit_report_and_no_duplicate_experim
     report_path = Path(job["report"]["uri"].removeprefix("file://"))
     assert report_path.is_file() and sha_file(report_path) == job["report"]["html_sha256"]
     assert "Synthetic engineering fixture" in report_path.read_text()
+    # Consume the actual verified source through the ordinary director path before
+    # allowing another background stage. Notification is rendered by the server.
+    for decision in (
+        AgentDecision(say="", status="continue", tools=[{"name": "read_source", "arguments": {
+            "source_id": result["source_id"]}}]),
+        AgentDecision(say="합성 fixture 연결 검증 보고서입니다. 실제 금융 성과가 아닙니다.", status="complete", artifacts=[
+            {"title": "Synthetic engineering report", "content": job["report"]["uri"], "source_ids": [result["source_id"]]}]),
+    ):
+        with h.company.db.transaction() as conn:
+            turn = conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                (director["id"],)).fetchone()
+        identity = str(turn["id"])
+        assert h.company.prepare_turn(identity)["state"] == "ready"
+        h.company.commit_turn(identity, ProviderResponse(request_id=identity, provider="fixture", decision=decision))
+    with h.company.db.transaction() as conn:
+        assert conn.execute("SELECT 1 FROM outbox WHERE project_id=%s AND text LIKE '<@UHUMAN>%%'",
+                            (h.project["project_id"],)).fetchone()
     assert h.backend.reconcile()["state"] == "idle"
     assert len(h.snapshot()["outcomes"]) == 1
     with pytest.raises(PolicyError, match="duplicate_scientific_configuration"):
@@ -355,6 +372,7 @@ def test_qualification_real_git_pg_restart_audit_report_and_no_duplicate_experim
                "worker_archive_sha256": sha_file(archive), "report_sha256": sha_file(report_path),
                "independent_task_bound": True, "all_validator_text_files_read": True,
                "unverified_metrics_withheld": True, "post_restart_outcome_count": 1,
+               "verified_source_read_by_director": True, "director_final_owner_mention": True,
                "renamed_duplicate_experiment_rejected": True,
                "report_archive_sha256": job["report"]["report_archive_sha256"],
                "audit_scope_digest": source["metadata"]["audit_scope_digest"]}
