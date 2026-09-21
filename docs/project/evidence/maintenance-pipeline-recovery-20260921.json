@@ -1,0 +1,102 @@
+{
+  "objective": "Restore the production maintenance pipeline from repository refresh through a completed model-backed triage without weakening read or patch permissions.",
+  "checked_at": "2026-09-21T10:59:05Z",
+  "root_causes": [
+    {
+      "code": "archive_too_large",
+      "evidence": {
+        "previous_archive_bytes": 8259245,
+        "blocked_archive_bytes": 9595486,
+        "old_limit_bytes": 8388608
+      }
+    },
+    {
+      "code": "maintenance_proposal_context_too_large",
+      "evidence": {
+        "blocked_triage_jobs_before_repair": 29,
+        "last_model_call_before_repair": "2026-09-17T06:27:29.734998Z",
+        "provider_prompt_limit_chars": 88000
+      }
+    },
+    {
+      "code": "triage_head_backpressure",
+      "evidence": {
+        "old_active_buffer": 1,
+        "new_bounded_active_buffer": 4
+      }
+    }
+  ],
+  "changes": [
+    {
+      "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/44",
+      "merge_commit": "b15db999455885edcb57ddaba153d2cd908ac1b2",
+      "result": "Reuse exact prior Git blobs, fetch only changed readable blobs, compact prompt-only system evidence, retain safe refresh errors, and bound deferred triage buffering."
+    },
+    {
+      "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/45",
+      "merge_commit": "01f4600ac5815f386225020787d5c70ab1a51f45",
+      "result": "Keep repository evidence reads on the readable boundary instead of routing them through the narrower patch boundary."
+    },
+    {
+      "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/46",
+      "merge_commit": "8883e32812c027a6da6eaf31a6b31fa8ce5ecdc4",
+      "result": "Send only inspectable repository paths to triage rather than every Git tree entry."
+    }
+  ],
+  "validation": {
+    "local_suite": {
+      "passed": 386,
+      "skipped_without_local_postgres_or_temporal": 243,
+      "ruff": "passed"
+    },
+    "github_ci": [
+      {"pull_request": 44, "result": "passed", "duration": "3m08s"},
+      {"pull_request": 45, "result": "passed", "duration": "3m13s"},
+      {"pull_request": 46, "result": "passed", "duration": "4m28s"}
+    ],
+    "production_payload_replay": {
+      "original_material_chars": 154709,
+      "provider_prompt_chars": 83021,
+      "inspectable_repository_paths": 207,
+      "original_evidence_digest_preserved": true,
+      "exact_commit_preserved": true
+    }
+  },
+  "deployment": {
+    "active_commit": "8883e32812c027a6da6eaf31a6b31fa8ce5ecdc4",
+    "healthy_services": 8,
+    "postgres_recreated": false,
+    "backups": [
+      "s3://quant-company-061039802347-backups/company/company-20260921T083013Z-4d30b55c.tar.gz",
+      "s3://quant-company-061039802347-backups/company/company-20260921T103041Z-8b2d0d82.tar.gz",
+      "s3://quant-company-061039802347-backups/company/company-20260921T104855Z-4d810c82.tar.gz"
+    ],
+    "disk_before": {"use_percent": 100, "available_bytes": 796000},
+    "disk_after": {"use_percent": 46, "available_bytes": 33285722112},
+    "cleanup": "Removed unused historical release image tags while retaining the active and immediate rollback images."
+  },
+  "production_acceptance": {
+    "repository_evidence": {
+      "commit": "8883e32812c027a6da6eaf31a6b31fa8ce5ecdc4",
+      "refresh_error": null,
+      "read_files": 203,
+      "read_bytes": 1725153,
+      "reused_files": 201,
+      "fetched_files": 3
+    },
+    "maintenance_calls_before": 20,
+    "maintenance_calls_after": 21,
+    "latest_call_responded": true,
+    "recovered_job_state": "done",
+    "recovered_job_error": null,
+    "active_maintenance_jobs": 0,
+    "maintenance_memory": "78.83MiB / 128MiB",
+    "codex_runtime_memory": "155.6MiB / 512MiB"
+  },
+  "incidents_and_limits": [
+    "The first deployed revision exposed a read-versus-write boundary mismatch; PR 45 corrected it before replaying the durable triage.",
+    "The next production payload exposed an unbounded all-tree path list; PR 46 restricted it to paths available to the inspection tool.",
+    "Two operator diagnostic probes launched a second Python process inside the 128 MiB maintenance container and caused one automatic container restart each. PostgreSQL and durable jobs were unaffected; later payload inspection used the 256 MiB API container.",
+    "This acceptance proves one current production triage reached and completed a real model call. It does not replay or reclassify all historical blocked jobs and does not certify general employee expertise."
+  ]
+}
