@@ -136,6 +136,25 @@ def test_active_research_cannot_silently_drop_missing_overlay(tmp_path, monkeypa
     assert commands == []
 
 
+def test_autonomous_release_keeps_overlay_and_refuses_incompatible_rollback(tmp_path, monkeypatch):
+    monkeypatch.setattr(release, 'STATE', tmp_path/'state')
+    env = release.STATE/'config/runtime.env'
+    env.parent.mkdir(parents=True)
+    env.write_text('COMPANY_RESEARCH_ENABLED=true\nCOMPANY_AUTONOMOUS_RESEARCH_ENABLED=true\n')
+    root = tmp_path/'release'
+    deploy = root/'deploy'
+    deploy.mkdir(parents=True)
+    (deploy/'research.compose.yaml').write_text('services: {}\n')
+    with pytest.raises(ValueError, match='release_autonomous_overlay_missing'):
+        release.compose_command(root)
+    overlay = deploy/'autonomous-research.compose.yaml'
+    overlay.write_text('services: {}\n')
+    assert release.compose_command(root)[-2:] == ['-f', str(overlay)]
+    env.write_text('COMPANY_RESEARCH_ENABLED=false\nCOMPANY_AUTONOMOUS_RESEARCH_ENABLED=true\n')
+    with pytest.raises(ValueError, match='release_autonomous_requires_research'):
+        release.compose_command(root)
+
+
 def fixture_host(tmp_path, monkeypatch, *, fail_health=False):
     state = tmp_path/'state'
     (state/'config').mkdir(parents=True)

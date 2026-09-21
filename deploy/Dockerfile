@@ -28,6 +28,16 @@ USER 10001:10001
 ENTRYPOINT ["python", "/app/entrypoint.py"]
 CMD ["quant-company", "serve", "--host", "0.0.0.0", "--port", "8000"]
 
+FROM app AS autonomous-research
+USER root
+# Trusted Git operations build scoped research bundles and verify the pinned qlab checkout.
+# Candidate code executes only in the 3070 sandbox, never in this image.
+RUN apt-get update && apt-get install --yes --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/* \
+    && /app/.venv/bin/python -c "import yaml; assert yaml.__version__ == '6.0.3'"
+USER 10001:10001
+CMD ["quant-company", "worker"]
+
 FROM app AS maintenance
 USER root
 # Only the fixed GitHub App JWT signer invokes this binary; candidate code is never executed here.
