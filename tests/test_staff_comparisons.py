@@ -24,7 +24,7 @@ class StaffGitHub(GitHubFixture):
         return {"commit": "a"*40, "tree": "b"*40, "paths": [PATH],
                 "entries": {PATH: {"sha": "d"*40, "type": "blob", "mode": "100644"}}}
 
-    def read_repository(self, snapshot):
+    def read_repository(self, snapshot, previous=None):
         return {PATH: pack("data")["procedure"]}, {"read_files": 1, "omitted_paths": []}
 
     def read_files(self, snapshot, paths):

@@ -2,10 +2,8 @@
 
 import base64
 import hashlib
-import io
 import json
 import subprocess
-import tarfile
 import time
 from datetime import UTC, datetime
 from urllib.parse import quote
@@ -100,36 +98,48 @@ class GitHub:
             blob = self.request("GET", "/git/blobs/" + item["sha"])
             if blob["encoding"] != "base64":
                 raise ValueError("unsupported_blob_encoding")
-            output[path] = base64.b64decode(blob["content"]).decode("utf-8")
+            content = base64.b64decode(blob["content"]).decode("utf-8")
+            if blob_sha(content) != item["sha"]:
+                raise ValueError("repository_blob_digest_mismatch")
+            output[path] = content
         if sum(map(len, output.values())) > 300000:
             raise ValueError("source_context_too_large")
         return output
 
-    def read_repository(self, snapshot):
-        """Broader read permission than patch permission; no extraction or candidate execution."""
+    def read_repository(self, snapshot, previous=None):
+        """Read only allowlisted text blobs, reusing content-addressed evidence from the prior commit."""
         from ..system_state import readable
 
-        output, omitted, total = {}, [], 0
-        with tarfile.open(fileobj=io.BytesIO(self.archive(snapshot["commit"])), mode="r:gz") as archive:
-            for member in archive:
-                path = member.name.partition("/")[2]
-                if not readable(path):
-                    continue
-                entry = snapshot["entries"].get(path)
-                if (not member.isfile() or not entry or entry["type"] != "blob" or entry["mode"] != "100644"
-                        or member.size > 100000 or total + member.size > 2000000):
-                    omitted.append(path)
-                    continue
-                content = archive.extractfile(member).read().decode("utf-8")
+        previous = previous or {}
+        output, omitted, total, reused, fetched = {}, [], 0, 0, 0
+        for path, entry in sorted(snapshot["entries"].items()):
+            if not readable(path):
+                continue
+            size = entry.get("size", 0)
+            if (entry["type"] != "blob" or entry["mode"] != "100644" or size > 100000
+                    or total + size > 2000000):
+                omitted.append(path)
+                continue
+            content = previous.get(path)
+            if content is not None and blob_sha(content) == entry["sha"]:
+                reused += 1
+            else:
+                blob = self.request("GET", "/git/blobs/" + entry["sha"])
+                if blob["encoding"] != "base64":
+                    raise ValueError("unsupported_blob_encoding")
+                content = base64.b64decode(blob["content"]).decode("utf-8")
                 if blob_sha(content) != entry["sha"]:
                     raise ValueError("repository_blob_digest_mismatch")
-                if SECRET.search(content):
-                    omitted.append(path)
-                    continue
-                output[path] = content
-                total += member.size
-        return output, {"read_files": len(output), "read_bytes": total, "omitted_paths": omitted,
-                        "boundary": "allowlisted text only; no credentials, binaries, links or arbitrary repository"}
+                fetched += 1
+            actual = len(content.encode())
+            if actual > 100000 or total + actual > 2000000 or SECRET.search(content):
+                omitted.append(path)
+                continue
+            output[path] = content
+            total += actual
+        return output, {"read_files": len(output), "read_bytes": total, "reused_files": reused,
+                        "fetched_files": fetched, "omitted_paths": omitted,
+                        "boundary": "allowlisted text blobs only; no credentials, binaries, links or arbitrary repository"}
 
     def current_metadata(self, snapshot):
         from ..system_state import readable
@@ -385,6 +395,6 @@ class GitHub:
                 data = bytearray()
                 for chunk in stream.iter_bytes():
                     data.extend(chunk)
-                    if len(data) > 8 * 1024 * 1024:
+                    if len(data) > 32 * 1024 * 1024:
                         raise GitHubError("archive_too_large")
         return bytes(data)
