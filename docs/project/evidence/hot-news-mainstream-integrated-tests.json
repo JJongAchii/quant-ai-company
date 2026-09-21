@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-09-21T05:03:38.403049+00:00",
+  "commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "preserved_main_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+  "command": "uv run --frozen pytest -q -m 'not live' tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py",
+  "passed": 648,
+  "skipped": 2,
+  "live_deselected": 1,
+  "seconds": 102.381,
+  "ruff": "passed",
+  "postgresql": "real local PostgreSQL 14",
+  "temporal": "real SDK test server",
+  "model": "simulated",
+  "slack": "simulated"
+}

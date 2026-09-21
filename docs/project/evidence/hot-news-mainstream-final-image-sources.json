@@ -1,0 +1,981 @@
+{
+  "checked_at": "2026-09-21T05:05:27.072076+00:00",
+  "operating_image_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "slack_writes": 0,
+  "model_calls": 0,
+  "results": [
+    {
+      "source": "fed-press",
+      "kind": "official",
+      "topics": [
+        "macroeconomics",
+        "economy_finance"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "\"2a27c06a7e47dd1:0\"",
+        "modified": "Fri, 18 Sep 2026 15:00:17 GMT",
+        "sha256": "bdb248554aec56ffd75e93baae7b8096ffa7abe199cc8a5d7a2f4bb773541ad5",
+        "bytes": 14853
+      },
+      "entries": 20,
+      "fresh_count": 0
+    },
+    {
+      "source": "ecb-press",
+      "kind": "official",
+      "topics": [
+        "macroeconomics",
+        "economy_finance"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 12,
+        "etag": "\"myra-ed0c0fe9\"",
+        "modified": "",
+        "sha256": "979c5611f0a043bb0e21f613b20f667ae2ac2d6938e301724efe89be17f44df0",
+        "bytes": 5673
+      },
+      "entries": 3,
+      "fresh_count": 0
+    },
+    {
+      "source": "bbc-world",
+      "kind": "media",
+      "topics": [
+        "geopolitics",
+        "world_events",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 4,
+        "etag": "",
+        "modified": "",
+        "sha256": "96bdf7300f00a9355c85ea0e5216db27eb1858faafce04943d451ede834688c2",
+        "bytes": 21211
+      },
+      "entries": 23,
+      "fresh_count": 5,
+      "sample": {
+        "url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+        "title": "German Chancellor Merz calls state election a 'disaster' for his party but vows to stay on",
+        "published_at": "2026-09-21 03:22:44+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+        "requested_url": "https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o",
+        "redirects": [],
+        "title": "German state elections: Chancellor Friedrich Merz vows to stay on despite 'disaster' in polls - BBC News",
+        "publisher_host": "www.bbc.co.uk",
+        "retrieved_at": "2026-09-21T05:05:17.145094+00:00",
+        "published_at": "2026-09-20T16:50:21.517Z",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html",
+        "original_sha256": "cf3848fb7604660b029c657a03c23c0e6799969f83a7bdc70035621e50f80206",
+        "original_bytes": 424937,
+        "content_truncated": false,
+        "bylines": [
+          "Amy Walker",
+          "Jessica Parker"
+        ],
+        "article_extraction": "article",
+        "article_chars": 4963,
+        "excerpt_truncated": false,
+        "excerpt_chars": 4963
+      }
+    },
+    {
+      "source": "kbs-world",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "geopolitics",
+        "trade_energy",
+        "industry_technology",
+        "world_events"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "a40a1d97ae4afebc49a553405990b8d05dfa99ff83d2833f1069ad24e63c4eee",
+        "bytes": 38859
+      },
+      "entries": 30,
+      "fresh_count": 15,
+      "sample": {
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204387&lang=e",
+        "title": "Presidential Chief of Staff Kang Hoon-sik Offers to Resign",
+        "published_at": "2026-09-21 04:45:36+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204387&lang=e",
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204387&lang=e",
+        "redirects": [],
+        "title": "Presidential Chief of Staff Kang Hoon-sik Offers to Resign l KBS WORLD",
+        "publisher_host": "world.kbs.co.kr",
+        "retrieved_at": "2026-09-21T05:05:17.630021+00:00",
+        "published_at": null,
+        "publication_time_basis": "unknown",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "d856666dd5e770dd0af4f07bfeef82759d447f942e6ad570b08c465eee5dc247",
+        "original_bytes": 67356,
+        "content_truncated": false,
+        "bylines": [],
+        "article_extraction": "kbs_body_txt",
+        "article_chars": 772,
+        "excerpt_truncated": false,
+        "excerpt_chars": 772
+      }
+    },
+    {
+      "source": "bea-releases",
+      "kind": "official",
+      "topics": [
+        "macroeconomics",
+        "economy_finance"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 6,
+        "etag": "\"76c81ff39f3bdd1:0\"",
+        "modified": "Thu, 03 Sep 2026 12:30:05 GMT",
+        "sha256": "446cb4078349673864407af824f8a6f54c1ec9fc54d10d076451ae5c179915f7",
+        "bytes": 88601
+      },
+      "entries": 42,
+      "fresh_count": 0
+    },
+    {
+      "source": "govuk-fcdo",
+      "kind": "official",
+      "topics": [
+        "geopolitics",
+        "world_events",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "W/\"5cfe857cc2314e2c611e0cb0781133d2\"",
+        "modified": "",
+        "sha256": "5cfe857cc2314e2c611e0cb0781133d20608424f043eb9c7805bd8ccac081221",
+        "bytes": 14811
+      },
+      "entries": 20,
+      "fresh_count": 0
+    },
+    {
+      "source": "govuk-treasury",
+      "kind": "official",
+      "topics": [
+        "macroeconomics",
+        "economy_finance"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 3,
+        "etag": "W/\"048726165fa465d788134b72754fa34f\"",
+        "modified": "",
+        "sha256": "048726165fa465d788134b72754fa34fcb84e97421667a205692778da1a3ba3f",
+        "bytes": 12064
+      },
+      "entries": 17,
+      "fresh_count": 0
+    },
+    {
+      "source": "govuk-trade",
+      "kind": "official",
+      "topics": [
+        "trade_energy",
+        "industry_technology"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 2,
+        "etag": "W/\"187e9c6a770b50124f2a0fcb275d35c0\"",
+        "modified": "",
+        "sha256": "187e9c6a770b50124f2a0fcb275d35c0a09c999fae3b09774bc4809e9282406f",
+        "bytes": 12319
+      },
+      "entries": 18,
+      "fresh_count": 0
+    },
+    {
+      "source": "bbc-business",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "industry_technology"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 5,
+        "etag": "",
+        "modified": "",
+        "sha256": "ba4798669d6b75bba98956ca48e406e4ec194710a7a9598784de74a5f775054f",
+        "bytes": 40019
+      },
+      "entries": 49,
+      "fresh_count": 12,
+      "sample": {
+        "url": "https://www.bbc.co.uk/news/articles/cmed7p06epxjo",
+        "title": "UK should 'team up' with Canada in new Europe alliance, Canadian minister tells BBC",
+        "published_at": "2026-09-21 04:00:38+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/cmed7p06epxjo",
+        "requested_url": "https://www.bbc.co.uk/news/articles/cmed7p06epxjo",
+        "redirects": [],
+        "title": "UK should 'team up' with Canada in new Europe alliance, Canadian minister says - BBC News",
+        "publisher_host": "www.bbc.co.uk",
+        "retrieved_at": "2026-09-21T05:05:21.082969+00:00",
+        "published_at": "2026-09-21T04:00:38.588Z",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html",
+        "original_sha256": "d879c79abdb71fa1edbd525fa1e55adf41d6c61e9512f2850b8b97fc274a516f",
+        "original_bytes": 414820,
+        "content_truncated": false,
+        "bylines": [
+          "Faisal Islam"
+        ],
+        "article_extraction": "article",
+        "article_chars": 5039,
+        "excerpt_truncated": false,
+        "excerpt_chars": 5039
+      }
+    },
+    {
+      "source": "bbc-technology",
+      "kind": "media",
+      "topics": [
+        "industry_technology",
+        "world_events"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 9,
+        "etag": "",
+        "modified": "",
+        "sha256": "133f2f1c696bc452b3046cc7ab0dfe45eac5fcf6c38574a19988179dd90b5170",
+        "bytes": 15293
+      },
+      "entries": 12,
+      "fresh_count": 0
+    },
+    {
+      "source": "kbs-economy",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "trade_energy",
+        "industry_technology"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "26c99c775cff19d1f31b9b8adb01270f51a91bed4b1912ff14ce1e867971ecd7",
+        "bytes": 37710
+      },
+      "entries": 30,
+      "fresh_count": 2,
+      "sample": {
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204379&lang=e",
+        "title": "KOSPI Opens Up 0.64% Monday",
+        "published_at": "2026-09-21 00:39:59+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204379&lang=e",
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204379&lang=e",
+        "redirects": [],
+        "title": "KOSPI Opens Up 0.64% Monday l KBS WORLD",
+        "publisher_host": "world.kbs.co.kr",
+        "retrieved_at": "2026-09-21T05:05:21.821094+00:00",
+        "published_at": null,
+        "publication_time_basis": "unknown",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "74afb303477f495309e6ee919d5d4a9e4a136b73bb2e51fd9bee1ec4b349d64d",
+        "original_bytes": 65992,
+        "content_truncated": false,
+        "bylines": [],
+        "article_extraction": "kbs_body_txt",
+        "article_chars": 245,
+        "excerpt_truncated": false,
+        "excerpt_chars": 245
+      }
+    },
+    {
+      "source": "cnbc-world",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "geopolitics",
+        "trade_energy",
+        "world_events"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "6b9a9ef764c79c11f538c4f69daddab583b60cd31d61910425796eefdb440ce4",
+        "bytes": 20765
+      },
+      "entries": 30,
+      "fresh_count": 9,
+      "sample": {
+        "url": "https://www.cnbc.com/2026/09/21/us-iran-war-trump-hormuz.html",
+        "title": "Iran vows 'painful' retaliation as Trump piles on pressure ahead of UN General Assembly meeting",
+        "published_at": "2026-09-21 04:04:18+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/21/us-iran-war-trump-hormuz.html",
+        "requested_url": "https://www.cnbc.com/2026/09/21/us-iran-war-trump-hormuz.html",
+        "redirects": [],
+        "title": "Trump threatens to wipe out Iran as Tehran warns of 'painful' response",
+        "publisher_host": "www.cnbc.com",
+        "retrieved_at": "2026-09-21T05:05:22.430518+00:00",
+        "published_at": "2026-09-21T04:04:18+0000",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "3e3e457c9fc336eb73c05d65c3faba984b82a7ed869cdb21ed7e850f41f3a47f",
+        "original_bytes": 814842,
+        "content_truncated": false,
+        "bylines": [
+          "Anniek Bao"
+        ],
+        "article_extraction": "main",
+        "article_chars": 4507,
+        "excerpt_truncated": false,
+        "excerpt_chars": 4507
+      }
+    },
+    {
+      "source": "cnbc-economy",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "5764de7f253ac89aa64bc0c4e2f7bfa17ad59392091564d93370cbfe64fba1a0",
+        "bytes": 20527
+      },
+      "entries": 30,
+      "fresh_count": 1,
+      "sample": {
+        "url": "https://www.cnbc.com/2026/09/18/japan-rate-hike-stocks-rise-bond-yields-yen-fall.html",
+        "title": "Why Japan’s markets flipped the usual script after central bank rate hike",
+        "published_at": "2026-09-21 01:02:25+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/18/japan-rate-hike-stocks-rise-bond-yields-yen-fall.html",
+        "requested_url": "https://www.cnbc.com/2026/09/18/japan-rate-hike-stocks-rise-bond-yields-yen-fall.html",
+        "redirects": [],
+        "title": "Japanese stocks rose as bond yields and the yen fell after rate hike",
+        "publisher_host": "www.cnbc.com",
+        "retrieved_at": "2026-09-21T05:05:23.044507+00:00",
+        "published_at": "2026-09-18T07:19:25+0000",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "1324c46c4804048e65d5617d3c4a895045b3dd2431e234fd87135c9b86ecb7be",
+        "original_bytes": 772583,
+        "content_truncated": false,
+        "bylines": [
+          "Lim Hui Jie"
+        ],
+        "article_extraction": "main",
+        "article_chars": 4401,
+        "excerpt_truncated": false,
+        "excerpt_chars": 4401
+      }
+    },
+    {
+      "source": "cnbc-finance",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "industry_technology"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "560688ba2bda0e17fce403e1f7f79fe4352aaba2fe06ceaf8560461b4a7ce080",
+        "bytes": 21297
+      },
+      "entries": 30,
+      "fresh_count": 1,
+      "sample": {
+        "url": "https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html",
+        "title": "‘It's awful’: How tariffs, soaring fuel costs and higher interest rates are squeezing American companies",
+        "published_at": "2026-09-20 12:47:23+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html",
+        "requested_url": "https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html",
+        "redirects": [],
+        "title": "Tariffs, fuel prices and interest rates squeeze U.S. companies",
+        "publisher_host": "www.cnbc.com",
+        "retrieved_at": "2026-09-21T05:05:23.826653+00:00",
+        "published_at": "2026-09-20T12:00:01+0000",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "ada47b35f78a24cecf96d7554f11dcac007dc6e403e3e80c7b04436633b982fa",
+        "original_bytes": 810538,
+        "content_truncated": false,
+        "bylines": [
+          "Hugh Son",
+          "Leslie Josephs",
+          "Michael Wayland"
+        ],
+        "article_extraction": "main",
+        "article_chars": 9535,
+        "excerpt_truncated": true,
+        "excerpt_chars": 6000
+      }
+    },
+    {
+      "source": "cnbc-technology",
+      "kind": "media",
+      "topics": [
+        "industry_technology",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "714b41f5c966f147bbd49531d88521e5e1956b091ac2b205724cef167ff72231",
+        "bytes": 20979
+      },
+      "entries": 30,
+      "fresh_count": 5,
+      "sample": {
+        "url": "https://www.cnbc.com/2026/09/20/bessent-he-lifeng-trump-xi-summit.html",
+        "title": "Bessent calls meeting with China Vice Premier He Lifeng 'successful' ahead of Trump-Xi summit",
+        "published_at": "2026-09-21 00:45:26+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/20/bessent-he-lifeng-trump-xi-summit.html",
+        "requested_url": "https://www.cnbc.com/2026/09/20/bessent-he-lifeng-trump-xi-summit.html",
+        "redirects": [],
+        "title": "Bessent, He Lifeng meet before Trump-Xi summit",
+        "publisher_host": "www.cnbc.com",
+        "retrieved_at": "2026-09-21T05:05:24.436116+00:00",
+        "published_at": "2026-09-20T16:56:14+0000",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "1268b73d7952b3d0610eb255e9410be203e1d1f1543d39bc3a928514744c3ddc",
+        "original_bytes": 797047,
+        "content_truncated": false,
+        "bylines": [
+          "Garrett Downs"
+        ],
+        "article_extraction": "main",
+        "article_chars": 4071,
+        "excerpt_truncated": false,
+        "excerpt_chars": 4071
+      }
+    },
+    {
+      "source": "yonhap-economy",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "1789967128356",
+        "modified": "Mon, 21 Sep 2026 05:03:57 GMT",
+        "sha256": "1113b062c6c5e675902ba4b845fbb2ea7f5a56006071ad3dbb5c36e7a33e6495",
+        "bytes": 93849
+      },
+      "entries": 120,
+      "fresh_count": 120,
+      "sample": {
+        "url": "https://www.yna.co.kr/view/AKR20260921045200004",
+        "title": "서울시, 세계 도시와 평화·협력 논의…'도시외교 포럼'",
+        "published_at": "2026-09-21 05:00:05+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.yna.co.kr/view/AKR20260921045200004",
+        "requested_url": "https://www.yna.co.kr/view/AKR20260921045200004",
+        "redirects": [],
+        "title": "서울시, 세계 도시와 평화·협력 논의…'도시외교 포럼' | 연합뉴스",
+        "publisher_host": "www.yna.co.kr",
+        "retrieved_at": "2026-09-21T05:05:24.774551+00:00",
+        "published_at": "2026-09-21T14:00:05+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html;charset=utf-8",
+        "original_sha256": "e3f927ddfc82d815856c124469726d27300dfc42019d06efc31db1ff40e13cc3",
+        "original_bytes": 161214,
+        "content_truncated": false,
+        "bylines": [
+          "유한주"
+        ],
+        "article_extraction": "article",
+        "article_chars": 1234,
+        "excerpt_truncated": false,
+        "excerpt_chars": 1234
+      }
+    },
+    {
+      "source": "yonhap-market",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "1789967137293",
+        "modified": "Mon, 21 Sep 2026 05:03:58 GMT",
+        "sha256": "b395633f8ead07d44886c53aa86cd592ce4e9cd035c14af6ba060b234b1911ac",
+        "bytes": 84813
+      },
+      "entries": 120,
+      "fresh_count": 57,
+      "sample": {
+        "url": "https://www.yna.co.kr/view/AKR20260921103200008",
+        "title": "금투협-태국채권시장협회, 장외채권 자율규제·정보협력 논의",
+        "published_at": "2026-09-21 04:57:33+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.yna.co.kr/view/AKR20260921103200008",
+        "requested_url": "https://www.yna.co.kr/view/AKR20260921103200008",
+        "redirects": [],
+        "title": "금투협-태국채권시장협회, 장외채권 자율규제·정보협력 논의 | 연합뉴스",
+        "publisher_host": "www.yna.co.kr",
+        "retrieved_at": "2026-09-21T05:05:25.181427+00:00",
+        "published_at": "2026-09-21T13:57:33+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html;charset=utf-8",
+        "original_sha256": "abf752b6956b31179e424452d740e5d88f87d280587c753df9089e3283f6dbc7",
+        "original_bytes": 160076,
+        "content_truncated": false,
+        "bylines": [
+          "강수지"
+        ],
+        "article_extraction": "article",
+        "article_chars": 1037,
+        "excerpt_truncated": false,
+        "excerpt_chars": 1037
+      }
+    },
+    {
+      "source": "yonhap-industry",
+      "kind": "media",
+      "topics": [
+        "industry_technology",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "1789967149905",
+        "modified": "Mon, 21 Sep 2026 05:03:58 GMT",
+        "sha256": "f67f8a0f0f1bf0faa3242cce5bf34fefdcfa5fe57a0dc0c89768dc094a05dfce",
+        "bytes": 96492
+      },
+      "entries": 120,
+      "fresh_count": 120,
+      "sample": {
+        "url": "https://www.yna.co.kr/view/AKR20260921031000057",
+        "title": "현대차 노사, 추석 맞이 전통시장 응원 행사…9천만원 기탁",
+        "published_at": "2026-09-21 05:00:06+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.yna.co.kr/view/AKR20260921031000057",
+        "requested_url": "https://www.yna.co.kr/view/AKR20260921031000057",
+        "redirects": [],
+        "title": "현대차 노사, 추석 맞이 전통시장 응원 행사…9천만원 기탁 | 연합뉴스",
+        "publisher_host": "www.yna.co.kr",
+        "retrieved_at": "2026-09-21T05:05:25.479489+00:00",
+        "published_at": "2026-09-21T14:00:06+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html;charset=utf-8",
+        "original_sha256": "0ca621848fcc3358384b398c8c95edf7a69ba3ba45a389ce7da015de393453da",
+        "original_bytes": 159979,
+        "content_truncated": false,
+        "bylines": [
+          "김근주"
+        ],
+        "article_extraction": "article",
+        "article_chars": 887,
+        "excerpt_truncated": false,
+        "excerpt_chars": 887
+      }
+    },
+    {
+      "source": "yonhap-international",
+      "kind": "media",
+      "topics": [
+        "geopolitics",
+        "trade_energy",
+        "world_events"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "1789967132620",
+        "modified": "Mon, 21 Sep 2026 05:03:58 GMT",
+        "sha256": "cc18f238ad4b57058940ae9b6ac67c0c0d5da5d0e7eeca8392d4fcfc2679bebb",
+        "bytes": 100133
+      },
+      "entries": 120,
+      "fresh_count": 110,
+      "sample": {
+        "url": "https://www.yna.co.kr/view/AKR20260921092900089",
+        "title": "홍콩, '金 거래시장 구축' 강조…\"위안화 영향력 확대\"",
+        "published_at": "2026-09-21 04:53:08+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.yna.co.kr/view/AKR20260921092900089",
+        "requested_url": "https://www.yna.co.kr/view/AKR20260921092900089",
+        "redirects": [],
+        "title": "홍콩, '金 거래시장 구축' 강조…\"위안화 영향력 확대\" | 연합뉴스",
+        "publisher_host": "www.yna.co.kr",
+        "retrieved_at": "2026-09-21T05:05:25.771084+00:00",
+        "published_at": "2026-09-21T13:53:08+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html;charset=utf-8",
+        "original_sha256": "ee7a2b3895c61b75c78d352e938b53aa6fededcb641b8fe2ba6dfb798d070fa7",
+        "original_bytes": 162966,
+        "content_truncated": false,
+        "bylines": [
+          "차병섭"
+        ],
+        "article_extraction": "article",
+        "article_chars": 1856,
+        "excerpt_truncated": false,
+        "excerpt_chars": 1856
+      }
+    },
+    {
+      "source": "sbs-economy",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics",
+        "industry_technology",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "d8bc435303ae5674c790d5eaefa425add1a02a9de7e83d293d4a1bb84d781ba1",
+        "bytes": 274035
+      },
+      "entries": 29,
+      "fresh_count": 17,
+      "sample": {
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763620",
+        "title": "오세훈 서울주택공급 성과공유회…\"최근 정비구역 지정 이전의 두 배\"",
+        "published_at": "2026-09-21 03:31:00+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763620",
+        "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763620",
+        "redirects": [],
+        "title": "오세훈 서울주택공급 성과공유회…\"최근 정비구역 지정 이전의 두 배\"",
+        "publisher_host": "news.sbs.co.kr",
+        "retrieved_at": "2026-09-21T05:05:26.014374+00:00",
+        "published_at": "2026-09-21T12:31:48+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html;charset=utf-8",
+        "original_sha256": "2b5a0e81906c055e1ce4af3a0fa1b782f0c2b57a5a4cc775793d6d647ee98681",
+        "original_bytes": 131319,
+        "content_truncated": false,
+        "bylines": [
+          "윤나라 기자"
+        ],
+        "article_extraction": "articleBody",
+        "article_chars": 2522,
+        "excerpt_truncated": false,
+        "excerpt_chars": 2522
+      }
+    },
+    {
+      "source": "sbs-world",
+      "kind": "media",
+      "topics": [
+        "geopolitics",
+        "world_events",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "189b6479b783acb3f8a71d4e14babf7c9e7c0fad00d59a9f4ae00bc622f87677",
+        "bytes": 253345
+      },
+      "entries": 29,
+      "fresh_count": 29,
+      "sample": {
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763701",
+        "title": "일본, 북한 선수단 신칸센 이용 금지…북한 체육상, 일 접촉에 '냉랭'",
+        "published_at": "2026-09-21 04:45:00+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763701",
+        "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763701",
+        "redirects": [],
+        "title": "일본, 북한 선수단 신칸센 이용 금지…북한 체육상, 일 접촉에 '냉랭'",
+        "publisher_host": "news.sbs.co.kr",
+        "retrieved_at": "2026-09-21T05:05:26.212711+00:00",
+        "published_at": "2026-09-21T13:45:03+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html;charset=utf-8",
+        "original_sha256": "ee74a317bc315807492086291cf678079fe544cd9178f5f43cfa442cd42b2b21",
+        "original_bytes": 125436,
+        "content_truncated": false,
+        "bylines": [
+          "김영아 기자"
+        ],
+        "article_extraction": "articleBody",
+        "article_chars": 1231,
+        "excerpt_truncated": false,
+        "excerpt_chars": 1231
+      }
+    },
+    {
+      "source": "etoday-economy",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "2dca3f11b1783501e94875391d7957ded4aa36b011dd430980e63290e8c2cc5b",
+        "bytes": 49880
+      },
+      "entries": 37,
+      "fresh_count": 37,
+      "sample": {
+        "url": "https://www.etoday.co.kr/news/view/2627957",
+        "title": "한은, 오늘부터 4대 은행 대상 '원화국제결제망' 시범운영",
+        "published_at": "2026-09-21 05:00:00+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.etoday.co.kr/news/view/2627957",
+        "requested_url": "https://www.etoday.co.kr/news/view/2627957",
+        "redirects": [],
+        "title": "한은, 오늘부터 4대 은행 대상 '원화국제결제망' 시범운영 - 이투데이",
+        "publisher_host": "www.etoday.co.kr",
+        "retrieved_at": "2026-09-21T05:05:26.403502+00:00",
+        "published_at": "2026-09-21T14:00:00+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "a04d8b380b14c78f7a85ee958e29687d57bc000eeef531e71481978cf88a1ddf",
+        "original_bytes": 138758,
+        "content_truncated": false,
+        "bylines": [
+          "배근미"
+        ],
+        "article_extraction": "articleBody",
+        "article_chars": 653,
+        "excerpt_truncated": false,
+        "excerpt_chars": 653
+      }
+    },
+    {
+      "source": "etoday-finance",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "macroeconomics"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "161d3c6339ae2ce599d7abc12dd2f30351598ebb164546f7e46f4294944db26d",
+        "bytes": 18282
+      },
+      "entries": 13,
+      "fresh_count": 13,
+      "sample": {
+        "url": "https://www.etoday.co.kr/news/view/2627980",
+        "title": "다이소서 최대 50% 할인⋯롯데카드 ‘다이소엔로카’ 선봬",
+        "published_at": "2026-09-21 04:36:00+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.etoday.co.kr/news/view/2627980",
+        "requested_url": "https://www.etoday.co.kr/news/view/2627980",
+        "redirects": [],
+        "title": "다이소서 최대 50% 할인⋯롯데카드 ‘다이소엔로카’ 선봬 - 이투데이",
+        "publisher_host": "www.etoday.co.kr",
+        "retrieved_at": "2026-09-21T05:05:26.590995+00:00",
+        "published_at": "2026-09-21T13:36:00+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "c380514686878bf4bdb96ab2de367c62cba2042183d97c945a2a1cb7eeca3e44",
+        "original_bytes": 139508,
+        "content_truncated": false,
+        "bylines": [
+          "전아현"
+        ],
+        "article_extraction": "articleBody",
+        "article_chars": 714,
+        "excerpt_truncated": false,
+        "excerpt_chars": 714
+      }
+    },
+    {
+      "source": "etoday-industry",
+      "kind": "media",
+      "topics": [
+        "industry_technology",
+        "trade_energy"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "e7b4c2f1816ed915bb4f1806436286051775832a4978e49ff332690733357c54",
+        "bytes": 130769
+      },
+      "entries": 96,
+      "fresh_count": 96,
+      "sample": {
+        "url": "https://www.etoday.co.kr/news/view/2627614",
+        "title": "AI 속도조절론의 역설…‘학습’ 줄어도 ‘추론·소버린AI’가 메모리 삼킨다",
+        "published_at": "2026-09-21 05:00:00+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.etoday.co.kr/news/view/2627614",
+        "requested_url": "https://www.etoday.co.kr/news/view/2627614",
+        "redirects": [],
+        "title": "AI 속도조절론의 역설…‘학습’ 줄어도 ‘추론·소버린AI’가 메모리 삼킨다 - 이투데이",
+        "publisher_host": "www.etoday.co.kr",
+        "retrieved_at": "2026-09-21T05:05:26.818947+00:00",
+        "published_at": "2026-09-21T14:00:00+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "cd29b2d871a8d238088e6d7bc4582d36e4e91cb799463afdbbd9174d8bbe9160",
+        "original_bytes": 152418,
+        "content_truncated": false,
+        "bylines": [
+          "권태성"
+        ],
+        "article_extraction": "articleBody",
+        "article_chars": 4791,
+        "excerpt_truncated": false,
+        "excerpt_chars": 4791
+      }
+    },
+    {
+      "source": "etoday-global",
+      "kind": "media",
+      "topics": [
+        "economy_finance",
+        "geopolitics",
+        "trade_energy",
+        "world_events"
+      ],
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "c159f75f1310f5019da6d1a6951eaa631c03bbcac60cf8a9a1b782362a7bd160",
+        "bytes": 14256
+      },
+      "entries": 10,
+      "fresh_count": 10,
+      "sample": {
+        "url": "https://www.etoday.co.kr/news/view/2627934",
+        "title": "MS AI 수장 “중국 핑계로 AI 안전장치 외면해선 안 돼”",
+        "published_at": "2026-09-21 02:18:00+00:00"
+      },
+      "original": {
+        "ok": true,
+        "url": "https://www.etoday.co.kr/news/view/2627934",
+        "requested_url": "https://www.etoday.co.kr/news/view/2627934",
+        "redirects": [],
+        "title": "MS AI 수장 “중국 핑계로 AI 안전장치 외면해선 안 돼” - 이투데이",
+        "publisher_host": "www.etoday.co.kr",
+        "retrieved_at": "2026-09-21T05:05:27.007962+00:00",
+        "published_at": "2026-09-21T11:18:00+09:00",
+        "publication_time_basis": "page_metadata",
+        "last_modified": null,
+        "content_type": "text/html; charset=utf-8",
+        "original_sha256": "f6f0e3eda77a440243af04b10f0a13de62a6895a22b23387f2326fe713039771",
+        "original_bytes": 141247,
+        "content_truncated": false,
+        "bylines": [
+          "이진영"
+        ],
+        "article_extraction": "articleBody",
+        "article_chars": 1403,
+        "excerpt_truncated": false,
+        "excerpt_chars": 1403
+      }
+    }
+  ]
+}

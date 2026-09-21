@@ -1,0 +1,205 @@
+{
+  "checked_at": "2026-09-21T05:13:08.268757+00:00",
+  "commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "coverage": {
+    "economy_finance": {
+      "enabled_sources": [
+        "bbc-business",
+        "bea-releases",
+        "cnbc-economy",
+        "cnbc-finance",
+        "cnbc-world",
+        "ecb-press",
+        "etoday-economy",
+        "etoday-finance",
+        "etoday-global",
+        "fed-press",
+        "govuk-treasury",
+        "kbs-economy",
+        "kbs-world",
+        "sbs-economy",
+        "yonhap-economy",
+        "yonhap-market"
+      ],
+      "fresh_media_sources": [
+        "bbc-business",
+        "cnbc-finance",
+        "cnbc-world",
+        "etoday-economy",
+        "etoday-finance",
+        "etoday-global",
+        "kbs-world",
+        "sbs-economy",
+        "yonhap-economy",
+        "yonhap-market"
+      ]
+    },
+    "macroeconomics": {
+      "enabled_sources": [
+        "bbc-business",
+        "bea-releases",
+        "cnbc-economy",
+        "cnbc-finance",
+        "ecb-press",
+        "etoday-economy",
+        "etoday-finance",
+        "fed-press",
+        "govuk-treasury",
+        "kbs-economy",
+        "kbs-world",
+        "sbs-economy",
+        "yonhap-economy",
+        "yonhap-market"
+      ],
+      "fresh_media_sources": [
+        "bbc-business",
+        "cnbc-finance",
+        "etoday-economy",
+        "etoday-finance",
+        "kbs-world",
+        "sbs-economy",
+        "yonhap-economy",
+        "yonhap-market"
+      ]
+    },
+    "geopolitics": {
+      "enabled_sources": [
+        "bbc-world",
+        "cnbc-world",
+        "etoday-global",
+        "govuk-fcdo",
+        "kbs-world",
+        "sbs-world",
+        "yonhap-international"
+      ],
+      "fresh_media_sources": [
+        "bbc-world",
+        "cnbc-world",
+        "etoday-global",
+        "kbs-world",
+        "sbs-world",
+        "yonhap-international"
+      ]
+    },
+    "trade_energy": {
+      "enabled_sources": [
+        "bbc-world",
+        "cnbc-economy",
+        "cnbc-technology",
+        "cnbc-world",
+        "etoday-global",
+        "etoday-industry",
+        "govuk-fcdo",
+        "govuk-trade",
+        "kbs-economy",
+        "kbs-world",
+        "sbs-economy",
+        "sbs-world",
+        "yonhap-economy",
+        "yonhap-industry",
+        "yonhap-international"
+      ],
+      "fresh_media_sources": [
+        "bbc-world",
+        "cnbc-technology",
+        "cnbc-world",
+        "etoday-global",
+        "etoday-industry",
+        "kbs-world",
+        "sbs-economy",
+        "sbs-world",
+        "yonhap-economy",
+        "yonhap-industry",
+        "yonhap-international"
+      ]
+    },
+    "industry_technology": {
+      "enabled_sources": [
+        "bbc-business",
+        "bbc-technology",
+        "cnbc-finance",
+        "cnbc-technology",
+        "etoday-industry",
+        "govuk-trade",
+        "kbs-economy",
+        "kbs-world",
+        "sbs-economy",
+        "yonhap-industry"
+      ],
+      "fresh_media_sources": [
+        "bbc-business",
+        "cnbc-finance",
+        "cnbc-technology",
+        "etoday-industry",
+        "kbs-world",
+        "sbs-economy",
+        "yonhap-industry"
+      ]
+    },
+    "world_events": {
+      "enabled_sources": [
+        "bbc-technology",
+        "bbc-world",
+        "cnbc-world",
+        "etoday-global",
+        "govuk-fcdo",
+        "kbs-world",
+        "sbs-world",
+        "yonhap-international"
+      ],
+      "fresh_media_sources": [
+        "bbc-world",
+        "cnbc-world",
+        "etoday-global",
+        "kbs-world",
+        "sbs-world",
+        "yonhap-international"
+      ]
+    }
+  },
+  "coverage_note": "Source topic registration and fresh article counts, not proof that every topic/event was covered. Delivery status comes from the outbox, not article queued state.",
+  "new_source_fetch_failures": [
+    {
+      "id": "a36885a77ac4535692000411cdb3d8b202281180de6a6994b1213d79864f391a",
+      "source_id": "etoday-industry",
+      "url": "https://www.etoday.co.kr/news/view/2627356",
+      "title": "현대차, 6년 만에 변신한 ‘디 올 뉴 투싼’ 공개…더 크고 똑똑해졌다",
+      "state": "fetch_failed",
+      "error": "feed_original_date_conflict",
+      "retrieval_error": "feed_original_date_conflict",
+      "http_status": null,
+      "extraction": null
+    }
+  ],
+  "articles": [
+    {
+      "state": "expired",
+      "count": 3
+    },
+    {
+      "state": "fetch_failed",
+      "count": 7
+    },
+    {
+      "state": "held",
+      "count": 9
+    },
+    {
+      "state": "historical_or_undated",
+      "count": 853
+    },
+    {
+      "state": "ignored",
+      "count": 31
+    },
+    {
+      "state": "queued",
+      "count": 31
+    },
+    {
+      "state": "ready",
+      "count": 42
+    }
+  ],
+  "scope": "Recent feed availability by declared topic and article processing states; not an article-by-article completeness or importance-quality measurement."
+}

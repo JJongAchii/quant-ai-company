@@ -1,0 +1,846 @@
+{
+  "checked_at": "2026-09-21T05:17:34.767383+00:00",
+  "commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "since": "2026-09-21T05:05:00+00:00",
+  "read_only": true,
+  "sources": [
+    {
+      "id": "bbc-business",
+      "publisher": "BBC News",
+      "kind": "media",
+      "origin_group": "bbc",
+      "last_success": "2026-09-21 05:09:11.062610+00:00",
+      "last_attempt": "2026-09-21 05:09:10.806813+00:00",
+      "next_at": "2026-09-21 05:19:11.062610+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 40019,
+        "sha256": "40fe3d69d286fdf14ca135f1347b9c948d1907b34950dd6712218cd613ff04f6",
+        "skipped": 5,
+        "modified": "",
+        "latest_publication": "2026-09-21 04:56:35+00:00"
+      }
+    },
+    {
+      "id": "bbc-technology",
+      "publisher": "BBC News",
+      "kind": "media",
+      "origin_group": "bbc",
+      "last_success": "2026-09-21 05:09:13.482659+00:00",
+      "last_attempt": "2026-09-21 05:09:13.299053+00:00",
+      "next_at": "2026-09-21 05:19:13.482659+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 15293,
+        "sha256": "0c30985974429d5aade8e56e8dcfe35ceba80a988aad87474f29e36ddcdc8afa",
+        "skipped": 9,
+        "modified": "",
+        "latest_publication": "2026-09-19 23:01:57+00:00"
+      }
+    },
+    {
+      "id": "bbc-world",
+      "publisher": "BBC News",
+      "kind": "media",
+      "origin_group": "bbc",
+      "last_success": "2026-09-21 05:09:06.373735+00:00",
+      "last_attempt": "2026-09-21 05:09:06.140253+00:00",
+      "next_at": "2026-09-21 05:19:06.373735+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 21211,
+        "sha256": "dbdb5c6d5bb8a6eb55e550250304fa354d166ad1da25d178b02942d0be5f18b9",
+        "skipped": 4,
+        "modified": "",
+        "latest_publication": "2026-09-21 03:22:44+00:00"
+      }
+    },
+    {
+      "id": "bea-releases",
+      "publisher": "U.S. Bureau of Economic Analysis",
+      "kind": "official",
+      "origin_group": "bea",
+      "last_success": "2026-09-21 05:12:59.934933+00:00",
+      "last_attempt": "2026-09-21 05:12:59.130995+00:00",
+      "next_at": "2026-09-21 05:22:59.934933+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": "2026-09-03 12:30:00+00:00"
+      }
+    },
+    {
+      "id": "cnbc-economy",
+      "publisher": "CNBC",
+      "kind": "media",
+      "origin_group": "cnbc",
+      "last_success": "2026-09-21 05:09:15.951864+00:00",
+      "last_attempt": "2026-09-21 05:09:15.656804+00:00",
+      "next_at": "2026-09-21 05:19:15.951864+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 20527,
+        "sha256": "5764de7f253ac89aa64bc0c4e2f7bfa17ad59392091564d93370cbfe64fba1a0",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 01:02:25+00:00"
+      }
+    },
+    {
+      "id": "cnbc-finance",
+      "publisher": "CNBC",
+      "kind": "media",
+      "origin_group": "cnbc",
+      "last_success": "2026-09-21 05:09:18.433387+00:00",
+      "last_attempt": "2026-09-21 05:09:18.145329+00:00",
+      "next_at": "2026-09-21 05:19:18.433387+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 21297,
+        "sha256": "560688ba2bda0e17fce403e1f7f79fe4352aaba2fe06ceaf8560461b4a7ce080",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-20 12:47:23+00:00"
+      }
+    },
+    {
+      "id": "cnbc-technology",
+      "publisher": "CNBC",
+      "kind": "media",
+      "origin_group": "cnbc",
+      "last_success": "2026-09-21 05:09:20.886506+00:00",
+      "last_attempt": "2026-09-21 05:09:20.610649+00:00",
+      "next_at": "2026-09-21 05:19:20.886506+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 20979,
+        "sha256": "714b41f5c966f147bbd49531d88521e5e1956b091ac2b205724cef167ff72231",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 03:51:31+00:00"
+      }
+    },
+    {
+      "id": "cnbc-world",
+      "publisher": "CNBC",
+      "kind": "media",
+      "origin_group": "cnbc",
+      "last_success": "2026-09-21 05:09:23.343033+00:00",
+      "last_attempt": "2026-09-21 05:09:23.063325+00:00",
+      "next_at": "2026-09-21 05:19:23.343033+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 20765,
+        "sha256": "6b9a9ef764c79c11f538c4f69daddab583b60cd31d61910425796eefdb440ce4",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 04:51:02+00:00"
+      }
+    },
+    {
+      "id": "ecb-press",
+      "publisher": "European Central Bank",
+      "kind": "official",
+      "origin_group": "ecb",
+      "last_success": "2026-09-21 05:13:02.570954+00:00",
+      "last_attempt": "2026-09-21 05:13:02.115000+00:00",
+      "next_at": "2026-09-21 05:23:02.570954+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "\"myra-ed0c250c\"",
+        "bytes": 5673,
+        "sha256": "979c5611f0a043bb0e21f613b20f667ae2ac2d6938e301724efe89be17f44df0",
+        "skipped": 12,
+        "modified": "",
+        "latest_publication": "2026-09-18 08:00:00+00:00"
+      }
+    },
+    {
+      "id": "etoday-economy",
+      "publisher": "이투데이",
+      "kind": "media",
+      "origin_group": "etoday",
+      "last_success": "2026-09-21 05:16:18.193368+00:00",
+      "last_attempt": "2026-09-21 05:16:18.125963+00:00",
+      "next_at": "2026-09-21 05:26:18.193368+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 47622,
+        "sha256": "829a56cd8d945cea93eb27317b674e83dd0b44e7239dae5469df113f954b638c",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 05:00:00+00:00"
+      }
+    },
+    {
+      "id": "etoday-finance",
+      "publisher": "이투데이",
+      "kind": "media",
+      "origin_group": "etoday",
+      "last_success": "2026-09-21 05:16:20.436819+00:00",
+      "last_attempt": "2026-09-21 05:16:20.371724+00:00",
+      "next_at": "2026-09-21 05:26:20.436819+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 18247,
+        "sha256": "0effa9c4316f4beb6870f56627b0c1efe9d607942c53299067c0a4047c8b268b",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 05:10:00+00:00"
+      }
+    },
+    {
+      "id": "etoday-global",
+      "publisher": "이투데이",
+      "kind": "media",
+      "origin_group": "etoday",
+      "last_success": "2026-09-21 05:16:23.164360+00:00",
+      "last_attempt": "2026-09-21 05:16:22.866929+00:00",
+      "next_at": "2026-09-21 05:26:23.164360+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 11605,
+        "sha256": "0c3d4ab01add81abd2d9dc3f6ac37da28ab9bd92f837e8aa0821bfd360dc7a17",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 05:10:00+00:00"
+      }
+    },
+    {
+      "id": "etoday-industry",
+      "publisher": "이투데이",
+      "kind": "media",
+      "origin_group": "etoday",
+      "last_success": "2026-09-21 05:16:26.161010+00:00",
+      "last_attempt": "2026-09-21 05:16:26.067768+00:00",
+      "next_at": "2026-09-21 05:26:26.161010+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 130820,
+        "sha256": "7ed8bd7e6c3fc7ffcce5af7d50640659cd8d561d6817688aff25dc3ecadcb92b",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 05:15:00+00:00"
+      }
+    },
+    {
+      "id": "fed-press",
+      "publisher": "Federal Reserve",
+      "kind": "official",
+      "origin_group": "federal-reserve",
+      "last_success": "2026-09-21 05:13:04.875051+00:00",
+      "last_attempt": "2026-09-21 05:13:04.748629+00:00",
+      "next_at": "2026-09-21 05:23:04.875051+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": "2026-09-18 15:00:00+00:00"
+      }
+    },
+    {
+      "id": "govuk-fcdo",
+      "publisher": "UK Foreign, Commonwealth & Development Office",
+      "kind": "official",
+      "origin_group": "uk-government",
+      "last_success": "2026-09-21 05:16:09.411252+00:00",
+      "last_attempt": "2026-09-21 05:16:08.219743+00:00",
+      "next_at": "2026-09-21 05:26:09.411252+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "govuk-trade",
+      "publisher": "UK Department for Business and Trade",
+      "kind": "official",
+      "origin_group": "uk-government",
+      "last_success": "2026-09-21 05:16:12.571468+00:00",
+      "last_attempt": "2026-09-21 05:16:11.574625+00:00",
+      "next_at": "2026-09-21 05:26:12.571468+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "govuk-treasury",
+      "publisher": "HM Treasury",
+      "kind": "official",
+      "origin_group": "uk-government",
+      "last_success": "2026-09-21 05:16:15.965125+00:00",
+      "last_attempt": "2026-09-21 05:16:14.762231+00:00",
+      "next_at": "2026-09-21 05:26:15.965125+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true,
+        "latest_publication": null
+      }
+    },
+    {
+      "id": "kbs-economy",
+      "publisher": "KBS World",
+      "kind": "media",
+      "origin_group": "kbs",
+      "last_success": "2026-09-21 05:09:25.590370+00:00",
+      "last_attempt": "2026-09-21 05:09:25.518580+00:00",
+      "next_at": "2026-09-21 05:19:25.590370+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 37710,
+        "sha256": "26c99c775cff19d1f31b9b8adb01270f51a91bed4b1912ff14ce1e867971ecd7",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 00:39:59+00:00"
+      }
+    },
+    {
+      "id": "kbs-world",
+      "publisher": "KBS World",
+      "kind": "media",
+      "origin_group": "kbs",
+      "last_success": "2026-09-21 05:09:08.619206+00:00",
+      "last_attempt": "2026-09-21 05:09:08.546847+00:00",
+      "next_at": "2026-09-21 05:19:08.619206+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 38859,
+        "sha256": "a40a1d97ae4afebc49a553405990b8d05dfa99ff83d2833f1069ad24e63c4eee",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 04:45:36+00:00"
+      }
+    },
+    {
+      "id": "sbs-economy",
+      "publisher": "SBS 뉴스",
+      "kind": "media",
+      "origin_group": "sbs",
+      "last_success": "2026-09-21 05:16:28.600696+00:00",
+      "last_attempt": "2026-09-21 05:16:28.523679+00:00",
+      "next_at": "2026-09-21 05:26:28.600696+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 278122,
+        "sha256": "264a652a2a7f75160af11a0b02f4bed2fbba4bd1b3638008c5302d7cfd81a67c",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 05:11:00+00:00"
+      }
+    },
+    {
+      "id": "sbs-world",
+      "publisher": "SBS 뉴스",
+      "kind": "media",
+      "origin_group": "sbs",
+      "last_success": "2026-09-21 05:16:31.016281+00:00",
+      "last_attempt": "2026-09-21 05:16:30.936301+00:00",
+      "next_at": "2026-09-21 05:26:31.016281+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 253345,
+        "sha256": "eb53281a687340ce73299de44dced3df27f99a0482bfd663073e2cdcca947555",
+        "skipped": 0,
+        "modified": "",
+        "latest_publication": "2026-09-21 04:45:00+00:00"
+      }
+    },
+    {
+      "id": "yonhap-economy",
+      "publisher": "연합뉴스",
+      "kind": "media",
+      "origin_group": "yonhap",
+      "last_success": "2026-09-21 05:16:33.479542+00:00",
+      "last_attempt": "2026-09-21 05:16:33.352910+00:00",
+      "next_at": "2026-09-21 05:26:33.479542+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "1789967821594",
+        "bytes": 94309,
+        "sha256": "0bcdea1fedc617d7d8af8d6c1bb2e9162321b7930a84107354cd2172e771d267",
+        "skipped": 0,
+        "modified": "Mon, 21 Sep 2026 05:15:57 GMT",
+        "latest_publication": "2026-09-21 05:07:44+00:00"
+      }
+    },
+    {
+      "id": "yonhap-industry",
+      "publisher": "연합뉴스",
+      "kind": "media",
+      "origin_group": "yonhap",
+      "last_success": "2026-09-21 05:16:36.016641+00:00",
+      "last_attempt": "2026-09-21 05:16:35.870683+00:00",
+      "next_at": "2026-09-21 05:26:36.016641+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "1789967795697",
+        "bytes": 96621,
+        "sha256": "aa4138bc639b49e3626ce81966d467ba2407cd71ef96efcdd8d38971138f1f00",
+        "skipped": 0,
+        "modified": "Mon, 21 Sep 2026 05:15:58 GMT",
+        "latest_publication": "2026-09-21 05:07:12+00:00"
+      }
+    },
+    {
+      "id": "yonhap-international",
+      "publisher": "연합뉴스",
+      "kind": "media",
+      "origin_group": "yonhap",
+      "last_success": "2026-09-21 05:16:38.510183+00:00",
+      "last_attempt": "2026-09-21 05:16:38.390422+00:00",
+      "next_at": "2026-09-21 05:26:38.510183+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "1789967820468",
+        "bytes": 100133,
+        "sha256": "43833ed8b9b4bc8c5cd130b731c608a11b832a72d3d93724e902b6fa10c619c3",
+        "skipped": 0,
+        "modified": "Mon, 21 Sep 2026 05:15:58 GMT",
+        "latest_publication": "2026-09-21 04:53:08+00:00"
+      }
+    },
+    {
+      "id": "yonhap-market",
+      "publisher": "연합뉴스",
+      "kind": "media",
+      "origin_group": "yonhap",
+      "last_success": "2026-09-21 05:16:41.060593+00:00",
+      "last_attempt": "2026-09-21 05:16:40.940088+00:00",
+      "next_at": "2026-09-21 05:26:41.060593+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "1789967800669",
+        "bytes": 84813,
+        "sha256": "b395633f8ead07d44886c53aa86cd592ce4e9cd035c14af6ba060b234b1911ac",
+        "skipped": 0,
+        "modified": "Mon, 21 Sep 2026 05:15:58 GMT",
+        "latest_publication": "2026-09-21 04:57:33+00:00"
+      }
+    }
+  ],
+  "new_source_articles": [
+    {
+      "source_id": "etoday-economy",
+      "state": "historical_or_undated",
+      "count": 20,
+      "latest_publication": "2026-09-21 03:00:00+00:00"
+    },
+    {
+      "source_id": "etoday-economy",
+      "state": "ignored",
+      "count": 3,
+      "latest_publication": "2026-09-21 05:00:00+00:00"
+    },
+    {
+      "source_id": "etoday-economy",
+      "state": "queued",
+      "count": 2,
+      "latest_publication": "2026-09-21 05:00:00+00:00"
+    },
+    {
+      "source_id": "etoday-economy",
+      "state": "ready",
+      "count": 4,
+      "latest_publication": "2026-09-21 05:00:00+00:00"
+    },
+    {
+      "source_id": "etoday-finance",
+      "state": "historical_or_undated",
+      "count": 9,
+      "latest_publication": "2026-09-21 03:00:00+00:00"
+    },
+    {
+      "source_id": "etoday-finance",
+      "state": "ready",
+      "count": 3,
+      "latest_publication": "2026-09-21 05:10:00+00:00"
+    },
+    {
+      "source_id": "etoday-global",
+      "state": "historical_or_undated",
+      "count": 10,
+      "latest_publication": "2026-09-21 02:18:00+00:00"
+    },
+    {
+      "source_id": "etoday-global",
+      "state": "ready",
+      "count": 1,
+      "latest_publication": "2026-09-21 05:10:00+00:00"
+    },
+    {
+      "source_id": "etoday-industry",
+      "state": "fetch_failed",
+      "count": 1,
+      "latest_publication": "2026-09-21 04:16:00+00:00"
+    },
+    {
+      "source_id": "etoday-industry",
+      "state": "historical_or_undated",
+      "count": 73,
+      "latest_publication": "2026-09-21 03:03:00+00:00"
+    },
+    {
+      "source_id": "etoday-industry",
+      "state": "ready",
+      "count": 8,
+      "latest_publication": "2026-09-21 05:15:00+00:00"
+    },
+    {
+      "source_id": "sbs-economy",
+      "state": "historical_or_undated",
+      "count": 27,
+      "latest_publication": "2026-09-21 01:31:00+00:00"
+    },
+    {
+      "source_id": "sbs-economy",
+      "state": "queued",
+      "count": 2,
+      "latest_publication": "2026-09-21 03:38:00+00:00"
+    },
+    {
+      "source_id": "sbs-economy",
+      "state": "ready",
+      "count": 2,
+      "latest_publication": "2026-09-21 05:11:00+00:00"
+    },
+    {
+      "source_id": "sbs-world",
+      "state": "held",
+      "count": 2,
+      "latest_publication": "2026-09-21 04:45:00+00:00"
+    },
+    {
+      "source_id": "sbs-world",
+      "state": "historical_or_undated",
+      "count": 27,
+      "latest_publication": "2026-09-21 02:40:00+00:00"
+    },
+    {
+      "source_id": "yonhap-economy",
+      "state": "historical_or_undated",
+      "count": 107,
+      "latest_publication": "2026-09-21 03:00:44+00:00"
+    },
+    {
+      "source_id": "yonhap-economy",
+      "state": "ignored",
+      "count": 2,
+      "latest_publication": "2026-09-21 04:59:09+00:00"
+    },
+    {
+      "source_id": "yonhap-economy",
+      "state": "queued",
+      "count": 1,
+      "latest_publication": "2026-09-21 05:00:02+00:00"
+    },
+    {
+      "source_id": "yonhap-economy",
+      "state": "ready",
+      "count": 13,
+      "latest_publication": "2026-09-21 05:07:44+00:00"
+    },
+    {
+      "source_id": "yonhap-industry",
+      "state": "historical_or_undated",
+      "count": 72,
+      "latest_publication": "2026-09-21 03:00:13+00:00"
+    },
+    {
+      "source_id": "yonhap-industry",
+      "state": "ready",
+      "count": 9,
+      "latest_publication": "2026-09-21 05:07:12+00:00"
+    },
+    {
+      "source_id": "yonhap-international",
+      "state": "historical_or_undated",
+      "count": 113,
+      "latest_publication": "2026-09-21 03:03:59+00:00"
+    },
+    {
+      "source_id": "yonhap-international",
+      "state": "ready",
+      "count": 4,
+      "latest_publication": "2026-09-21 04:53:08+00:00"
+    },
+    {
+      "source_id": "yonhap-market",
+      "state": "historical_or_undated",
+      "count": 85,
+      "latest_publication": "2026-09-21 03:00:09+00:00"
+    },
+    {
+      "source_id": "yonhap-market",
+      "state": "ready",
+      "count": 1,
+      "latest_publication": "2026-09-21 04:57:33+00:00"
+    }
+  ],
+  "recent_reviews": [
+    {
+      "id": "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "ignored",
+          "reason": "공기업의 신입·경력 총 59명 채용 공고다. 본문에 고용시장이나 주요 산업에 의미 있는 변화를 보여주는 근거가 없어 통상적인 기관 채용 안내로 제외한다.",
+          "headline": ""
+        },
+        {
+          "state": "queued",
+          "reason": "같은 서울 주택정책 성과공유회 보도를 통합한다. SBS가 전한 서울시의 규제 개선 설명과 주거비 지원 확대 방침으로 발행 범위를 한정한다. 전임 시장의 갈등 조장 의혹과 공급난 책임 공방은 뒷받침하는 자료가 없어 제외한다. 두 기사는 같은 기자·매체의 보도로 독립 확인이 아니다.",
+          "headline": "SBS: 서울시, 재개발 규제 개선 설명…청년 주거비 지원 확대 방침"
+        },
+        {
+          "state": "queued",
+          "reason": "원화 국제결제 인프라의 실제 시범운영 개시와 첫 거래가 본문에 명시돼 있다. 연합뉴스의 한국은행 발표 인용 보도로 발행하며, 한국은행 원문을 제공받은 것은 아니므로 official_action으로 분류하지 않는다.",
+          "headline": "연합뉴스: 한은 원화국제결제망 시범운영 시작…국내 4개 은행 참여"
+        },
+        {
+          "state": "queued",
+          "reason": "두 부처가 추진한 농축산물 가격정보 서비스의 실제 시범운영 개시다. 단순 장보기 조언이 아니라 5개 도시의 가격정보 제공 사업으로 다루되, 전국 시행이나 물가 인하 효과로 확대 해석하지 않는다.",
+          "headline": "이투데이: 농축산물 가격비교 앱, 수원 등 5개 도시서 시범운영"
+        },
+        {
+          "state": "queued",
+          "reason": "곤충 단백질 소재의 기능성 원료 등록이라는 산업상 변화를 다룬다. 이투데이가 전한 농진청 발표로 한정하며 직접적인 식약처 확인으로 표시하지 않는다. 시험 규모·대조군·통계적 유의성이 제시되지 않은 악력 개선 수치는 발행 내용에서 제외한다.",
+          "headline": "이투데이: 고소애 가수분해물, 근력 유지 기능성 원료 등록"
+        }
+      ],
+      "created_at": "2026-09-21 05:07:05.659630+00:00",
+      "completed_at": "2026-09-21 05:09:05.008848+00:00",
+      "primary_ids": [
+        "1aca3e3421e9dd037ec184170211ef08ff8b3d90f464cc1971de313b0d770ed4",
+        "4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76",
+        "042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9",
+        "1b6687a10518420f75d739bf897052f900318308514aab1bdf8248d555cee8df",
+        "8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30",
+        "2507a5d8da1cea6fc44a8f4e20c19120c1da523ed72eaa74924a66aa3268b37f"
+      ]
+    },
+    {
+      "id": "news-bdcc3989-021b-4083-a516-db2f07d4d665",
+      "state": "completed",
+      "error": null,
+      "result": [
+        {
+          "state": "ignored",
+          "reason": "사내 혁신과제 성과 발표와 시상이 중심이다. 신규 투자 결정, 발전설비 가동, 에너지 공급 변화나 정량적인 사업 성과를 확인할 내용이 없어 주요 산업·에너지 뉴스로 선정하지 않는다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "북한 선수단의 신칸센 이용 제한은 교도통신이 신원을 밝히지 않은 선수단 관계자를 인용한 주장이다. 일본 정부의 접촉 경위 역시 익명의 북일 관계자들에 의존한다. SBS의 교도통신 인용은 별개의 독립 취재가 아니며, 제공 자료에는 제한의 범위와 근거를 확인할 공식 문서나 독립 보도가 없다. 익명 주장에 attributed_report를 적용할 수 없어 보류한다.",
+          "headline": ""
+        },
+        {
+          "state": "ignored",
+          "reason": "특정 재개발구역의 길고양이 중성화와 이동 유도에 관한 통상적인 지역 행정 안내다. 중대한 공중보건·재난 사건이나 주요 경제정책 변화에 해당하지 않는다.",
+          "headline": ""
+        },
+        {
+          "state": "ignored",
+          "reason": "9월 21일 시범운영 개시, 국내 4개 은행 참여, 오전 9시 30분 기준 2개 기관의 약 14억원 거래, 주말·공휴일 제외 24시간 운영, 2027년 1월 본운영 예정은 모두 기존 발행 내용과 겹친다. 외국계 은행 참여 예정과 해외 원화계좌 설명은 배경 보충이며 새로운 시행 결정이나 실적 변화는 확인되지 않는다.",
+          "headline": ""
+        },
+        {
+          "state": "held",
+          "reason": "트럼프의 9월 20일 폭스뉴스 발언과 이란 대통령 회동 가능성은 기존 발행과 중복된다. 추가된 후티의 사우디 공격·항구 장악, 해협 봉쇄 및 사우디의 공습 요청에는 독립적인 뒷받침이 없다. 이란군의 미국 공격 결정 주장은 상대국에 관한 주장으로 확정할 수 없다. 국무부 경보가 기존 발행된 경보와 다른지도 확인되지 않는다. 유가 수치는 관측 시각과 계약월이 부족해 기존 보도의 정정 근거가 되지 않는다.",
+          "headline": ""
+        },
+        {
+          "state": "ignored",
+          "reason": "9월 18일 진행한 금융기관의 명절 후원 행사 안내다. 후원금과 물품 규모는 제시됐으나 주요 금융정책이나 산업 변화에 해당하지 않아 제외한다.",
+          "headline": ""
+        }
+      ],
+      "created_at": "2026-09-21 05:14:05.227096+00:00",
+      "completed_at": "2026-09-21 05:15:06.518472+00:00",
+      "primary_ids": [
+        "45161021ad98f9057ca01ab70056abc15e12b436cf55867d3849dd78b9ddd164",
+        "30ae57496aa9962ea28b20b878effcfd39aa708af0813cd0421fec64215fc854",
+        "0ec27dbbb0bbc1db0cc9399efaff2d5e8fff8c9c85cb6626a186492f998570a8",
+        "4db97280b8ba41005611ed250574036edd85a10a974bec3ad5341a1720230485",
+        "ffebaa97ca9ea77f75e3a983bf2b43f38966bcfa37c55474e7dd74d5f9106c85",
+        "4084730f687bb157a9f2b5097b2641c8030887f1f50c5c2f8c8be438e7187d26"
+      ]
+    }
+  ],
+  "recent_searches": [],
+  "publications": [
+    {
+      "id": "cadf316e-77e9-56c1-be87-5c27c941f6ea",
+      "status": "delivered",
+      "attempts": 1,
+      "sent_ts": "1789967346.441399",
+      "thread_ts": null,
+      "error": null,
+      "created_at": "2026-09-21 05:09:05.008848+00:00",
+      "text": "*[보도 · 주요 · 경제] SBS: 서울시, 재개발 규제 개선 설명…청년 주거비 지원 확대 방침*\nSBS 뉴스 보도에 따르면:\nSBS에 따르면 서울시는 9월 21일 주택정책 성과공유회에서 재개발 조합설립 동의율을 75%에서 70%로 낮추고 공원·녹지 기부채납 기준을 완화하는 등 규제를 개선하고 있다고 설명했다. 조합원 지위 양도 제한의 3년 한시 완화 등은 정부에 계속 건의할 계획이라고 밝혔다. 청년 월세지원과 전월세 보증금 이자 지원도 확대한다는 방침이다. 기사에는 각 조치의 시행일과 지원 확대 규모가 제시되지 않았다.\n*왜 중요한가* 서울의 정비사업 절차와 청년 주거비 부담에 관련된 정책이다. 이번 발표만으로 실제 착공·입주 증가나 주택가격 안정 효과를 확인할 수는 없다.\n<https://news.sbs.co.kr/news/endPage.do?news_id=N1008763620|SBS 뉴스> · 발표 09-21 12:31 KST\nReporter의 AI 한국어 요약 · 확인 09-21 14:09 KST",
+      "review_id": "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+      "event_id": "3e16eafd-09b0-5a1e-b5e8-bf298994f20b",
+      "article_ids": [
+        "4248597d815a50c5c659fd0512efff7e652c3d439a3b8133375e29fb81d03c76",
+        "8b916ca569fe7e19901e9094bded1d29d389fe44ae3307424ae77164c1db7e30"
+      ],
+      "articles": [
+        {
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763620",
+          "title": "오세훈 서울주택공급 성과공유회…\"최근 정비구역 지정 이전의 두 배\"",
+          "source": "sbs-economy",
+          "published_at": "2026-09-21T03:31:00+00:00"
+        },
+        {
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763619",
+          "title": "오세훈 \"박원순 때 서울정비사업 해제 유도…이러고 남탓하나\"",
+          "source": "sbs-economy",
+          "published_at": "2026-09-21T03:38:00+00:00"
+        }
+      ]
+    },
+    {
+      "id": "b7bd006e-8e33-5680-bcf0-4165d4cf8f85",
+      "status": "delivered",
+      "attempts": 1,
+      "sent_ts": "1789967348.007399",
+      "thread_ts": null,
+      "error": null,
+      "created_at": "2026-09-21 05:09:05.008848+00:00",
+      "text": "*[보도 · 주요 · 금융] 연합뉴스: 한은 원화국제결제망 시범운영 시작…국내 4개 은행 참여*\n연합뉴스 보도에 따르면:\n연합뉴스가 한국은행 발표를 인용한 보도에 따르면 9월 21일 오전 9시 원화국제결제망 시범운영이 시작됐다. 국민·우리·하나·신한은행이 참여했으며, 오전 9시 30분께 국내 참가기관 2곳이 약 14억원 규모의 첫 시범 거래에 나섰다. 이 결제망은 주말과 공휴일을 제외하고 24시간 운영된다. 본운영은 2027년 1월로 예정돼 있다.\n*왜 중요한가* 해외 투자자의 원화 결제 접근성과 운영시간에 관련된 금융 인프라 변화다. 시범운영 개시가 원화 수요 증가나 국제적 위상 상승을 입증하는 것은 아니다.\n<https://www.yna.co.kr/view/AKR20260921081100002|연합뉴스> · 발표 09-21 14:00 KST\nReporter의 AI 한국어 요약 · 확인 09-21 14:09 KST",
+      "review_id": "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+      "event_id": "be4df3aa-76d7-5906-8e19-673dbea6c61d",
+      "article_ids": [
+        "042792cb784697b8bda496aff5490d3920f893d821f1e02868a7f7620fb7a2c9"
+      ],
+      "articles": [
+        {
+          "url": "https://www.yna.co.kr/view/AKR20260921081100002",
+          "title": "오늘부터 '한국은행 원화국제결제망' 시범운영…내년 본운영",
+          "source": "yonhap-economy",
+          "published_at": "2026-09-21T05:00:02+00:00"
+        }
+      ]
+    },
+    {
+      "id": "aea7a79f-0739-5a68-bc96-5d5569f38a58",
+      "status": "delivered",
+      "attempts": 1,
+      "sent_ts": "1789967349.538129",
+      "thread_ts": null,
+      "error": null,
+      "created_at": "2026-09-21 05:09:05.008848+00:00",
+      "text": "*[보도 · 주요 · 경제] 이투데이: 농축산물 가격비교 앱, 수원 등 5개 도시서 시범운영*\n이투데이 보도에 따르면:\n이투데이에 따르면 농림축산식품부와 과학기술정보통신부는 9월 21일 ‘알뜰하게 장볼지도’ 앱 시범 출시 기념식을 열었다. 시범 서비스 지역은 수원·원주·청주·전주·창원이다. 앱은 주변 점포의 신선 농축산물 가격과 할인행사 정보를 제공한다. 이날 부처와 개발업체, 유통업체, 관련 협회·소비자단체 등이 참여한 농축산물 가격정보 협의체도 발족했다.\n*왜 중요한가* 여러 지역에서 점포별 농축산물 가격정보를 비교할 수 있도록 하는 사업이다. 실제 가격정보의 포괄성이나 소비자 지출 절감 효과는 본문에서 확인되지 않는다.\n<https://www.etoday.co.kr/news/view/2627859|이투데이> · 발표 09-21 13:16 KST\nReporter의 AI 한국어 요약 · 확인 09-21 14:09 KST",
+      "review_id": "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+      "event_id": "9277122e-9d76-5f65-b205-e85f192da275",
+      "article_ids": [
+        "1b6687a10518420f75d739bf897052f900318308514aab1bdf8248d555cee8df"
+      ],
+      "articles": [
+        {
+          "url": "https://www.etoday.co.kr/news/view/2627859",
+          "title": "어느 마트가 더 쌀까…‘알뜰하게 장볼지도’ 앱 5개 도시서 첫선",
+          "source": "etoday-economy",
+          "published_at": "2026-09-21T04:16:00+00:00"
+        }
+      ]
+    },
+    {
+      "id": "f17f8ec8-8b25-55ae-b5be-6770a2c1a614",
+      "status": "delivered",
+      "attempts": 1,
+      "sent_ts": "1789967351.117239",
+      "thread_ts": null,
+      "error": null,
+      "created_at": "2026-09-21 05:09:05.008848+00:00",
+      "text": "*[보도 · 주요 · 산업] 이투데이: 고소애 가수분해물, 근력 유지 기능성 원료 등록*\n이투데이 보도에 따르면:\n이투데이에 따르면 농촌진흥청은 9월 21일 브리핑에서 고소애 가수분해물이 식약처로부터 ‘노화로 인해 감소할 수 있는 근력 유지에 도움을 줄 수 있음’이라는 기능성을 인정받아 건강기능식품 기능성 원료로 등록됐다고 밝혔다. 고소애는 갈색거저리 애벌레다. 본문은 등록 사실을 이날 발표했다고 전하며, 실제 등록일은 명시하지 않았다.\n*왜 중요한가* 식용곤충 소재를 건강기능식품 원료로 활용하는 데 관련된 규제상 변화다. 해당 기능성 인정은 질병 치료 효과나 개별 소비자의 근력 개선을 보장한다는 뜻이 아니다.\n<https://www.etoday.co.kr/news/view/2627960|이투데이> · 발표 09-21 14:00 KST\nReporter의 AI 한국어 요약 · 확인 09-21 14:09 KST",
+      "review_id": "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+      "event_id": "b6df7025-d8ae-50b7-aee8-49ce8aa03ea4",
+      "article_ids": [
+        "2507a5d8da1cea6fc44a8f4e20c19120c1da523ed72eaa74924a66aa3268b37f"
+      ],
+      "articles": [
+        {
+          "url": "https://www.etoday.co.kr/news/view/2627960",
+          "title": "애벌레의 변신…고소애, ‘근력 유지’ 건강기능식품 원료로",
+          "source": "etoday-economy",
+          "published_at": "2026-09-21T05:00:00+00:00"
+        }
+      ]
+    }
+  ],
+  "outbox_issues": [],
+  "research_states": [
+    {
+      "state": "pending_approval",
+      "count": 1
+    }
+  ]
+}
