@@ -159,10 +159,18 @@ class MissionBackend:
                 mappings[name] = self._entry(self._blob(directory, group, item))
                 relevant.setdefault(group, []).append(name)
         extra["relevant_evidence"] = relevant
-        if stage in {"implementation", "repair"}:
+        if stage in {"proposal", "challenge", "selection", "cycle_review", "implementation", "repair"}:
             prepared = base_workspace(self.company, profile)
             for name in profile.public_profile.code_paths:
                 mappings["code/" + name] = self._entry(prepared.worktree / name)
+            extra["frozen_experiment_code"] = {
+                "config_path": "code/" + profile.config_path,
+                "code_paths": ["code/" + name for name in profile.public_profile.code_paths],
+                "rule": ("Inspect enough of this immutable code before proposing, challenging or selecting a change. "
+                         "The change must already be registered and expressible through the approved write paths; "
+                         "a new formula or parameter requires a new owner-approved mission."),
+            }
+        if stage in {"implementation", "repair"}:
             extra["patch_base_commit"] = prepared.commit
             extra["patch_rule"] = "Patch paths omit the code/ prefix; expected_text is the entire base file."
         elif stage == "audit":
