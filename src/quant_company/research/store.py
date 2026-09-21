@@ -53,6 +53,8 @@ def public_job(row, *, worker_seen=None):
     result = {key: row[key] for key in ("id", "revision", "recipe_id", "manifest_digest", "state",
                                        "created_at", "updated_at", "heartbeat_at")}
     result["status_text"] = STATE_TEXT[row["state"]]
+    if row["recipe_id"] != "kr-etf-p11-replay-v1" and row["state"] == "completed":
+        result["status_text"] = "개발 실험·독립 감사·보고서 완료"
     if row.get("error") == "publication_unavailable" and row["state"] == "received":
         result["status_text"] = "결과 수신 완료·보고서 저장소 연결 확인 중"
     seen = row["heartbeat_at"] or worker_seen
@@ -74,6 +76,24 @@ class ResearchStore:
         if not self.company.settings.company_research_enabled:
             raise PolicyError("Research execution is not activated")
 
+    def _manifest_valid(self, conn, row):
+        if row["recipe_id"] == "kr-etf-p11-replay-v1":
+            return row["manifest_digest"] == recipe_digest(load_recipe(row["recipe_id"]))
+        from .adaptive_contracts import AdaptiveManifest, digest_model
+
+        if not self.company.settings.company_autonomous_research_enabled:
+            return False
+        manifest = AdaptiveManifest.model_validate(row["manifest"])
+        mission = conn.execute("SELECT * FROM research_missions WHERE id=%s", (manifest.mission_id,)).fetchone()
+        return bool(mission and str(row["mission_id"]) == str(manifest.mission_id)
+                    and str(row["trial_id"]) == str(manifest.trial_id)
+                    and digest_model(manifest) == row["manifest_digest"]
+                    and mission["manifest_digest"] == manifest.mission_digest
+                    and mission["spec"] == manifest.spec.model_dump(mode="json")
+                    and mission["revision"] == row["revision"]
+                    and mission["approval_event_id"] == row["approval_event_id"]
+                    and mission["owner_user"] == row["approved_by"])
+
     def revalidate(self, job_id, value):
         """Operator recovery of a received archive; never creates another execution lease."""
         self.require_enabled()
@@ -81,7 +101,7 @@ class ResearchStore:
             project, row = self._locked(conn, job_id)
             if (row["revision"] != value.expected_revision or row["revision"] != project["revision"]
                     or project["status"] != "active" or not row["approval_event_id"]
-                    or row["manifest_digest"] != recipe_digest(load_recipe(row["recipe_id"]))
+                    or not self._manifest_valid(conn, row)
                     or row["artifact_sha256"] != value.artifact_sha256 or not row["artifact_path"]):
                 raise PolicyError("Research revalidation requires the same approved revision and received archive")
             if row["state"] in {"received", "completed"}:
@@ -224,9 +244,11 @@ class ResearchStore:
                     return {"assignment": None}
                 queued = conn.execute("""SELECT r.id FROM research_jobs r JOIN projects p ON p.id=r.project_id
                     WHERE r.state='queued' AND p.status='active' AND r.revision=p.revision
+                    AND (r.mission_id IS NULL OR EXISTS(SELECT 1 FROM research_missions m
+                        WHERE m.id=r.mission_id AND m.state='active'))
                     AND NOT EXISTS(SELECT 1 FROM tasks t WHERE t.project_id=p.id AND t.kind='routing'
                                    AND t.status NOT IN ('completed','superseded'))
-                    ORDER BY r.created_at,r.id LIMIT 1""").fetchone()
+                    ORDER BY r.priority,r.created_at,r.id LIMIT 1""").fetchone()
                 if not queued:
                     return {"assignment": None}
                 project, row = self._locked(conn, queued["id"])
@@ -234,17 +256,23 @@ class ResearchStore:
 
                 if row["state"] != "queued" or project["status"] != "active" or waiting_router(conn, project["id"]):
                     return {"assignment": None}
-                if row["manifest_digest"] != recipe_digest(load_recipe(row["recipe_id"])):
+                if not self._manifest_valid(conn, row):
                     raise PolicyError("Registered research manifest changed")
                 row = conn.execute("""UPDATE research_jobs SET state='claimed',worker_id='worker',lease_token=%s,
                     claimed_at=now(),updated_at=now() WHERE id=%s RETURNING *""",
                                    (secrets.token_hex(32), row["id"])).fetchone()
                 action = "run"
                 self.company._event(conn, "research_claimed", {"job_id": str(row["id"]), "worker": "worker"}, project["id"])
-            return {"assignment": Assignment(job_id=row["id"], project_id=row["project_id"], revision=row["revision"],
-                                              recipe_id=row["recipe_id"], manifest_digest=row["manifest_digest"],
-                                              approval_event_id=row["approval_event_id"], lease_token=row["lease_token"],
-                                              action=action).model_dump(mode="json")}
+            values = dict(job_id=row["id"], project_id=row["project_id"], revision=row["revision"],
+                          recipe_id=row["recipe_id"], manifest_digest=row["manifest_digest"],
+                          approval_event_id=row["approval_event_id"], lease_token=row["lease_token"], action=action)
+            if row["recipe_id"] != "kr-etf-p11-replay-v1":
+                from .adaptive_contracts import AdaptiveAssignment
+
+                assignment = AdaptiveAssignment(**values, manifest=row["manifest"])
+            else:
+                assignment = Assignment(**values)
+            return {"assignment": assignment.model_dump(mode="json")}
 
     def heartbeat(self, job_id, update: WorkerUpdate):
         with self.company.db.transaction() as conn:

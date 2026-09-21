@@ -66,6 +66,9 @@ class Company:
         self.settings = settings
         self.db = Database(settings.database_url)
         self.roles = roles if roles is not None else load_roles(settings)
+        from .research.controller import MissionApprovalAdapter
+
+        self.research_approval_adapters = (MissionApprovalAdapter(self),)
 
     def role(self, name: str) -> Role:
         role = self.roles.get(name)
@@ -115,7 +118,24 @@ class Company:
                              'The server sends the exact approval command. Do not infer approval from a model or quote. '
                              'After request/status, explain the receipt and complete the conversational task; '
                              'do not poll with follow-ups or claim the background research is complete. '
-                             'The durable queue delivers the verified report later. New research is not registered.',
+                             'The durable queue delivers the verified report later.',
+                },
+                "autonomous_research": {
+                    "enabled": self.settings.company_autonomous_research_enabled,
+                    "usage": 'Director research_control: {action:"mission_status"} reads public state. '
+                             '{action:"mission_draft",spec:<complete MissionSpec>} prepares a frozen mission '
+                             'only when an operator execution profile is provisioned. Never invent missing '
+                             'scientific parameters or approval. Authenticated Slack approval is required. '
+                             'The durable service schedules proposal, independent challenge, selection, '
+                             'scoped implementation, 3070 qualification/evaluation, interpretation and audit. '
+                             'Unverified metrics remain private. Reports are checkpoints; continuous '
+                             'follow-up is limited to the approved search scope. Model/claim execution is unavailable.',
+                    "internal_staff": [
+                        {"role": name, "model": self.roles[name].model,
+                         "reasoning_effort": self.roles[name].reasoning_effort,
+                         "slack_identity_active": self.roles[name].active}
+                        for name in ("engineer", "validator") if name in self.roles
+                    ],
                 },
                 "news_reporting": {"enabled": self.settings.company_news_enabled,
                                    "publish_enabled": self.settings.news_publish_enabled},
@@ -186,7 +206,7 @@ class Company:
                 "external_web_search": self.settings.company_web_enabled and any(
                     role.active and "web_search" in role.tools for role in self.roles.values()),
                 "research_worker_submission": self.settings.company_research_enabled,
-                "strategy_code_execution": False,
+                "strategy_code_execution": self.settings.company_autonomous_research_enabled,
                 "live_trading": False,
                 "paid_api_fallback": False,
                 "maintenance_approval": (
@@ -245,7 +265,7 @@ class Company:
 
     def _new_turn(self, conn, task, due_at=None):
         sequence = task["turn_count"] + 1
-        if sequence > self.settings.company_max_task_turns:
+        if sequence > self.settings.company_max_task_turns and task["kind"] != "research_stage":
             conn.execute("UPDATE tasks SET status='blocked',error='task_turn_limit' WHERE id=%s", (task["id"],))
             self._event(conn, "task_blocked", {"task_id": task["id"], "reason": "task_turn_limit"},
                         task["project_id"])
@@ -413,6 +433,12 @@ class Company:
                 t.due_at,t.attempts FROM turns t JOIN tasks k ON k.id=t.task_id WHERE k.project_id=%s
                 ORDER BY t.created_at""", (project_id,)).fetchall()
             result["research"] = ResearchStore(self).status(conn, project_id)
+            from .research.missions import MissionStore
+
+            mission_store = MissionStore(self)
+            result["research_missions"] = [mission_store.snapshot(conn, row["id"], public=True) for row in
+                conn.execute("SELECT id FROM research_missions WHERE project_id=%s ORDER BY created_at,id",
+                             (project_id,)).fetchall()]
             return as_json(result)
 
     def _context(self, conn, task, project):
@@ -554,7 +580,11 @@ class Company:
                     return {"state": "defer", "seconds": 3600, "reason": "daily_turn_budget"}
                 conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             if not turn["request"]:
-                if task['kind'] == 'routing':
+                if task['kind'] == 'research_stage':
+                    from .research.controller import stage_prompt
+
+                    role, prompt = stage_prompt(self, conn, task)
+                elif task['kind'] == 'routing':
                     from .task_control import routing_prompt
 
                     role = self.role('director')
@@ -624,11 +654,25 @@ class Company:
             project = self._project(conn, task["project_id"])
             if task["revision"] != project["revision"]:
                 return
+            private_reason = reason
+            if task["kind"] == "research_stage":
+                reason = "stage_response_rejected"
             updated = conn.execute("""UPDATE turns SET status='blocked',error=%s,updated_at=now()
                 WHERE id=%s AND status IN ('running','queued','waiting') RETURNING id""", (reason, turn_id)).fetchone()
             if not updated:
                 return
             conn.execute("UPDATE tasks SET status='blocked',error=%s WHERE id=%s", (reason, task["id"]))
+            if task["kind"] == "research_stage":
+                # Failed structured output is a technical repair, not a public performance artifact.
+                # Keep the exact provider evidence in private stage attempts and retry after backoff.
+                conn.execute("""UPDATE research_mission_stages SET state='waiting',error=%s,
+                    retry_at=now()+interval '5 minutes',updated_at=now() WHERE task_id=%s AND state='running'""",
+                             (private_reason[:1500], task["id"]))
+                conn.execute("UPDATE research_stage_attempts SET error='stage_response_rejected' WHERE task_id=%s",
+                             (task["id"],))
+                self._event(conn, "research_stage_waiting", {"task_id": str(task["id"]),
+                            "reason": "stage_response_rejected"}, project["id"])
+                return
             self._message(conn, project, task["id"], task["agent"], "status",
                           f"업무가 확인 대기 상태입니다. 사유: {reason}. 작업 기록은 보존했습니다.",
                           notify_owner=not task["parent_id"])
@@ -649,6 +693,10 @@ class Company:
 
             if not task:
                 raise PolicyError("Research control requires a task")
+            if arguments.get("action", "").startswith("mission_"):
+                from .research.controller import mission_tool
+
+                return mission_tool(self, conn, self._project(conn, project_id, lock=False), task, arguments)
             return ResearchStore(self).tool(conn, self._project(conn, project_id, lock=False), task, arguments)
         if request.name == "news_status":
             from .news.store import NewsStore
@@ -798,6 +846,10 @@ class Company:
                 return {'state': 'defer', 'seconds': hold_delay(conn, project), 'reason': 'owner_input_or_project_pause'}
             if task['kind'] == 'routing':
                 return commit_routing(conn, self, project, task, turn, response)
+            if task['kind'] == 'research_stage':
+                from .research.controller import commit_stage
+
+                return commit_stage(self, conn, project, task, turn, response)
             self.validate_decision(conn, project, task, decision)
             final = task["agent"] == "director" and not task["parent_id"] and decision.status == "complete"
             if final:
