@@ -8,8 +8,8 @@
     "LIVE": {
       "evidence": [
         {
-          "path": "docs/project/evidence/hot-news-scope-live-slack.json",
-          "sha256": "08ba47321de7"
+          "path": "docs/project/evidence/hot-news-scope-final-delivery.json",
+          "sha256": "fb7746a98730"
         },
         {
           "path": "docs/project/evidence/hot-news-scope-continuity.json",
@@ -22,15 +22,11 @@
         {
           "path": "docs/project/evidence/hot-news-scope-final-host-health.json",
           "sha256": "1f0cc3e05982"
-        },
-        {
-          "path": "docs/project/evidence/hot-news-scope-final-render.json",
-          "sha256": "3a6a93cccc9b"
         }
       ],
-      "note": "실제 일반 언론 자동 뉴스 발송과 9개 언론 피드의 다음 자동 주기 확인; 최종 커밋 4a8eb43 운영, 8개 서비스 정상, 기존 설정·인증·DB 보존. 분야/지역 누락률의 미검증 한계 명시",
+      "note": "신규 자동 뉴스 8건 실제 Slack 대조, 최종 4a8eb43에서도 무역·AI 뉴스 2건 자동 발송. 다음 자동 수집 및 기존 서비스·인증·DB 보존 확인. 지역/분야 누락률 미검증 한계 명시",
       "status": "verified",
-      "updatedAt": "2026-09-21T00:59:22.793754+00:00"
+      "updatedAt": "2026-09-21T01:02:40.923157+00:00"
     },
     "PIPELINE": {
       "evidence": [
@@ -51,12 +47,12 @@
       "evidence": [
         {
           "path": "docs/project/HOT-NEWS-SCOPE-RESTORATION.md",
-          "sha256": "ede59ed57200"
+          "sha256": "c1a179f09688"
         }
       ],
       "note": "최초 6개 뉴스 영역·한국과 해외·상시 검증 전달·daily-brief 분리와 기존 구독/무료 우선 비용 결정 복원",
       "status": "verified",
-      "updatedAt": "2026-09-21T00:59:22.630288+00:00"
+      "updatedAt": "2026-09-21T01:02:40.767954+00:00"
     },
     "SOURCES": {
       "evidence": [
@@ -78,5 +74,5 @@
   "schemaVersion": 1,
   "slug": "kokanee",
   "state": "approved",
-  "updatedAt": "2026-09-21T00:59:22.793754+00:00"
+  "updatedAt": "2026-09-21T01:02:40.923157+00:00"
 }

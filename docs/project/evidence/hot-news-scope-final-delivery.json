@@ -1,0 +1,337 @@
+{
+  "checked_at": "2026-09-21T01:01:18.936026+00:00",
+  "commit": "4a8eb43b6406d3229cfd1e93b51011a817f87343",
+  "real_slack_auth": {
+    "ok": true,
+    "error": null,
+    "team_id": "T0C1YRDRPNF",
+    "user_id": "U0C2FLSUUMV",
+    "bot_id": "B0C2V3TJ230"
+  },
+  "eight_new_publications_matched": true,
+  "old_news_roots": 2,
+  "new_news_roots": 8,
+  "cumulative_news_roots": 10,
+  "new_publications": [
+    {
+      "id": "6b89ae8c-9151-5ce9-bcab-9e056efc92ac",
+      "project_id": "053a1f03-7212-5616-add0-5ab0e89c017a",
+      "status": "delivered",
+      "sent_ts": "1789951534.264129",
+      "thread_ts": null,
+      "attempts": 1,
+      "error": null,
+      "kind": "news",
+      "text": "*[보도 · 주요 · 세계정세] BBC: 파키스탄 임란 칸 전 총리 누이 체포…명령서에 30일 구금 명시*\nBBC News 보도에 따르면:\nBBC는 수감 중인 임란 칸 파키스탄 전 총리의 누이 알리마 카눔이 체포됐으며 경찰 관계자가 BBC에 체포 사실을 확인했다고 보도했다. 기사에 따르면 라호르 부행정관이 발부한 체포 명령에는 30일간 구금한다는 내용이 담겼다.\n*왜 중요한가* 전직 총리를 둘러싼 파키스탄의 정치적 갈등을 살펴볼 주요 사건이다. 체포의 적법성이나 당국이 제시한 혐의의 진위는 이 보도만으로 판단하지 않는다.\n*달라진 점* 제공된 기존 보도 목록에 없는 체포 및 구금 명령 보도다.\n<https://www.bbc.co.uk/news/articles/cm36l2pye2kwo|BBC News> · 발표 09-21 04:04 KST\nReporter의 AI 한국어 요약 · 확인 09-21 09:45 KST"
+    },
+    {
+      "id": "4a1690cf-f13b-5a0b-a94d-d9f5195950fe",
+      "project_id": "241bf383-ba27-571c-af74-a3c56345cd3b",
+      "status": "delivered",
+      "sent_ts": "1789951531.060809",
+      "thread_ts": null,
+      "attempts": 1,
+      "error": null,
+      "kind": "news",
+      "text": "*[보도 · 주요 · 산업] KBS: 반도체 유급 일자리 17만4천 개…대체 포함 신규채용은 2018년보다 감소*\nKBS World 보도에 따르면:\nKBS가 국가통계포털 자료를 인용한 보도에 따르면, 2026년 1분기 반도체 제조업 유급 일자리는 17만4천 개로 2018년 같은 분기보다 14.5%, 2만2천 개 늘어 집계 이래 최대였다. 반면 퇴사자 대체와 사업 신설·확장에 따른 자리를 포함한 신규채용 일자리는 2만9천 개로, 2018년 3만7천 개보다 21.6% 감소했다. 이 수치는 순수하게 새로 창출된 일자리만을 뜻하지 않는다.\n*왜 중요한가* 반도체 산업의 전체 고용 규모 확대와 신규채용 흐름이 다를 수 있음을 보여준다. 제시된 수치만으로 채용 감소의 원인까지 확정할 수는 없다.\n*달라진 점* 제공된 기존 보도 목록에 없는 국내 반도체 고용 통계 보도다.\n<https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204368&amp;lang=e|KBS World> · 발표 09-20 12:40 KST\nReporter의 AI 한국어 요약 · 확인 09-21 09:45 KST"
+    },
+    {
+      "id": "4d3a72d0-7d96-5722-8009-274333a6a9a9",
+      "project_id": "263ec1e7-bf9a-5b1a-88f5-0d131f9f572a",
+      "status": "delivered",
+      "sent_ts": "1789951532.661539",
+      "thread_ts": null,
+      "attempts": 1,
+      "error": null,
+      "kind": "news",
+      "text": "*[보도 · 주요 · 세계정세] BBC: 메르츠 독일 총리, 직무 유지·경제·조세·복지 개혁 추진 의사 밝혀*\nBBC News 보도에 따르면:\nBBC에 따르면 프리드리히 메르츠 독일 총리는 9월 20일 베를린 당 본부에서 기자들에게 연립정부의 경제·조세·복지 개혁 계획을 계속 추진하겠다고 밝혔다. 그는 CDU 대표이자 총리로서 책임을 이어가겠다는 입장을 표명했다. 이는 공개 발언에 대한 보도이며 개혁안의 통과나 시행을 뜻하지 않는다.\n*왜 중요한가* 독일 정부의 개혁 의제가 계속 추진될지 살피는 데 중요한 입장 표명이다. 실제 정책 진전 여부는 후속 입법과 정부 조치로 확인해야 한다.\n*달라진 점* 제공된 기존 보도 목록에 없는 9월 20일 총리의 공개 입장 표명이다.\n<https://www.bbc.co.uk/news/articles/cvwyz29n0nn2o|BBC News> · 발표 09-21 05:21 KST\nReporter의 AI 한국어 요약 · 확인 09-21 09:45 KST"
+    },
+    {
+      "id": "f0a8079c-feb5-53dc-93ff-147a732f851f",
+      "project_id": "2430a1fa-0770-5a7b-b059-af3b30f983f3",
+      "status": "delivered",
+      "sent_ts": "1789951931.960129",
+      "thread_ts": null,
+      "attempts": 1,
+      "error": null,
+      "kind": "news",
+      "text": "*[보도 · 주요 · 세계정세] BBC: 모스크바 야간 폭발·창고 화재 영상 확인…주요 공항 운항 일시 제한*\nBBC News 보도에 따르면:\nBBC의 9월 20일 보도에 따르면, BBC가 검증한 소셜미디어 영상에는 모스크바 밤하늘의 폭발과 불타는 창고가 담겼다. 셰레메티예보 공항은 밤사이 임시 제한을 안내했고, 브누코보 공항에서는 모든 도착·출발 운항이 중단됐다. 두 공항의 제한은 일요일 아침 해제됐지만 공항들은 일부 항공편의 지연 가능성을 안내했다.\n*왜 중요한가* 러시아 수도권에서 폭발·화재와 함께 주요 공항의 운항 차질이 보도됐다. 인용한 영상만으로 공격 주체나 전체 피해 규모를 확정할 수는 없다.\n*달라진 점* 제공된 기존 사건 목록에 없는 수도권 폭발 영상과 공항 운영 차질을 다룬다.\n<https://www.bbc.co.uk/news/articles/c34gdjk1ne8yo|BBC News> · 발표 09-20 19:45 KST\nReporter의 AI 한국어 요약 · 확인 09-21 09:52 KST"
+    },
+    {
+      "id": "ab977905-e75e-54fe-b559-484669b4096d",
+      "project_id": "af002b61-296a-59b0-aca3-04227bea74dd",
+      "status": "delivered",
+      "sent_ts": "1789951933.555099",
+      "thread_ts": null,
+      "attempts": 1,
+      "error": null,
+      "kind": "news",
+      "text": "*[보도 · 주요 · 세계정세] BBC: 트럼프, 개선문에 드론·저격수 운용 기능 추가 구상 밝혀*\nBBC News 보도에 따르면:\nBBC에 따르면 트럼프 미국 대통령은 9월 20일 소셜미디어 게시물에서 자신이 추진하는 개선문에 군사 장비 저장과 드론·저격수 운용 기능을 포함하도록 계획을 수정하고 있다고 밝혔다. 그는 건설 세부 계획이나 일정을 제시하지 않았다. BBC는 추가 승인이 필요한지 불분명하다고 전했으며, 미 국방부는 추가 설명을 거부했다.\n*왜 중요한가* 수도권 기념시설에 군사적 기능을 추가하겠다는 대통령의 공개 구상이다. 승인 절차와 실행 일정이 불명확해 실제 배치나 운영이 결정됐다고 볼 근거는 부족하다.\n*달라진 점* 기존 개선문 구상에 군사 장비 보관·운용 기능을 추가하겠다는 새 발언을 다룬다. 제공된 기존 사건 목록에는 없는 사안이다.\n<https://www.bbc.co.uk/news/articles/cqdj4pez00dzo|BBC News> · 발표 09-21 01:36 KST\nReporter의 AI 한국어 요약 · 확인 09-21 09:52 KST"
+    },
+    {
+      "id": "f174eebf-7ebb-5254-8251-dc1a694a0c81",
+      "project_id": "7f3dd4c0-22a3-5b6f-b777-1c46a78d3b4c",
+      "status": "delivered",
+      "sent_ts": "1789951935.160269",
+      "thread_ts": null,
+      "attempts": 1,
+      "error": null,
+      "kind": "news",
+      "text": "*[보도 · 주요 · 산업] CNBC: 미국 소형 제조업체, 부품값 상승 속 재고 확보 확대*\nCNBC 보도에 따르면:\nCNBC는 아이오와주 브릿의 직원 25명 규모 산업용 톱 제조업체 오리지널 소가 알루미늄·철강·필수 부품 가격 급등에 대응해 추가 재고를 보유하고 있다고 보도했다. 대표 앨런 이든은 톱 모터에 쓰는 작은 브래킷 가격이 올여름 42달러에서 87달러로 올랐다고 말했다. 이는 CNBC가 취재한 개별 기업 사례다.\n*왜 중요한가* 핵심 부품 가격 상승에 대응해 소형 제조업체가 재고 확보를 늘리는 사례를 보여준다. 이 사례만으로 미국 제조업 전체의 비용 상승 폭이나 향후 판매가격을 판단할 수는 없다.\n*달라진 점* 제공된 기존 사건 목록에 없는 기업의 현재 재고 대응과 올여름 부품 가격 변화를 소개한다.\n<https://www.cnbc.com/2026/09/20/tariffs-fuel-prices-and-interest-rates-squeeze-us-companies.html|CNBC> · 발표 09-20 21:47 KST\nReporter의 AI 한국어 요약 · 확인 09-21 09:52 KST"
+    },
+    {
+      "id": "192f37b7-87d9-5554-846c-6594078db9dc",
+      "project_id": "de68c843-4507-542a-be78-530522ed1a42",
+      "status": "delivered",
+      "sent_ts": "1789952314.245289",
+      "thread_ts": null,
+      "attempts": 1,
+      "error": null,
+      "kind": "news",
+      "text": "*[보도 · 주요 · 무역] KBS: 9월 1~20일 수출 714억 달러…반도체 비중 47.8%*\nKBS World 보도에 따르면:\nKBS가 9월 21일 관세청 잠정 자료를 인용한 보도에 따르면, 9월 1~20일 수출은 전년 동기보다 78.3% 증가한 714억 달러로 20일 누계 기준 최대였다. 반도체 수출은 259.4% 증가한 341억 달러로 전체의 47.8%를 차지했다. 수입은 26.7% 증가한 484억 달러였으며, 무역흑자는 같은 기간 기준 최대인 230억 달러였다.\n*왜 중요한가* 반도체가 해당 기간 수출액의 절반 가까이를 차지해 한국 수출에서 차지하는 비중을 보여준다. 월 전체 실적이나 조업일수를 보정한 증가율을 뜻하지 않는다.\n<https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204378&amp;lang=e|KBS World> · 발표 09-21 09:34 KST\nReporter의 AI 한국어 요약 · 확인 09-21 09:58 KST"
+    },
+    {
+      "id": "b23423d1-3109-5777-8e1a-107b815496a7",
+      "project_id": "ba06021c-de4c-5c58-a222-d1a0599a5501",
+      "status": "delivered",
+      "sent_ts": "1789952312.730019",
+      "thread_ts": null,
+      "attempts": 1,
+      "error": null,
+      "kind": "news",
+      "text": "*[보도 · 주요 · 무역] CNBC: 미중, 정상회담 앞두고 AI 대화 논의…미국은 사고 통보체계 제안*\nCNBC 보도에 따르면:\nCNBC에 따르면 스콧 베선트 미국 재무장관은 9월 20일 허리펑 중국 부총리와 회담한 뒤 양측이 ‘미중 AI 대화’ 설치를 논의했다고 밝혔다. 미국 측은 국가안보 수준으로 번지는 AI 관련 사고의 통보체계를 제안했다. 이번 회담에서는 AI와 무역 등을 다뤘으며, 미중 정상회담은 9월 24일 워싱턴에서 열릴 예정이다. 본문은 통보체계의 최종 합의나 시행을 확인하지 않는다.\n*왜 중요한가* AI 사고 대응이 미중 경제·기술 협의 의제로 다뤄졌다. 실제 통보체계 마련 여부는 후속 합의에서 확인할 사안이다.\n<https://www.cnbc.com/2026/09/20/bessent-he-lifeng-trump-xi-summit.html|CNBC> · 발표 09-21 09:39 KST\nReporter의 AI 한국어 요약 · 확인 09-21 09:58 KST"
+    }
+  ],
+  "final_version_publication_ids": [
+    "192f37b7-87d9-5554-846c-6594078db9dc",
+    "b23423d1-3109-5777-8e1a-107b815496a7"
+  ],
+  "final_version_root_change_section_absent": true,
+  "workflows": [
+    {
+      "id": "company-news-collection-v1",
+      "run_id": "c4d9ae12-8112-4f75-b36b-d3398479bfb7",
+      "status": "RUNNING",
+      "task_queue": "quant-company-news-collection"
+    },
+    {
+      "id": "company-news-editorial-v1",
+      "run_id": "5bde5bc8-0770-4754-8356-b180abac7c35",
+      "status": "RUNNING",
+      "task_queue": "quant-company"
+    },
+    {
+      "id": "company-news-discovery-v1",
+      "run_id": "01a0c16a-92a1-7930-b86b-5345bc210fd7",
+      "status": "RUNNING",
+      "task_queue": "quant-company"
+    }
+  ],
+  "articles": [
+    {
+      "state": "expired",
+      "count": 2
+    },
+    {
+      "state": "fetch_failed",
+      "count": 1
+    },
+    {
+      "state": "held",
+      "count": 4
+    },
+    {
+      "state": "historical_or_undated",
+      "count": 309
+    },
+    {
+      "state": "ignored",
+      "count": 10
+    },
+    {
+      "state": "queued",
+      "count": 10
+    },
+    {
+      "state": "ready",
+      "count": 19
+    }
+  ],
+  "sources": [
+    {
+      "id": "bbc-business",
+      "kind": "media",
+      "last_success": "2026-09-21 00:53:33.949062+00:00",
+      "latest_collected": "2026-09-21 00:43:09.670918+00:00",
+      "latest_publication": "2026-09-21 00:34:53+00:00",
+      "fresh_count": 9,
+      "error": null
+    },
+    {
+      "id": "bbc-technology",
+      "kind": "media",
+      "last_success": "2026-09-21 00:53:36.551938+00:00",
+      "latest_collected": "2026-09-21 00:43:12.441218+00:00",
+      "latest_publication": "2026-09-17 14:33:12+00:00",
+      "fresh_count": 0,
+      "error": null
+    },
+    {
+      "id": "bbc-world",
+      "kind": "media",
+      "last_success": "2026-09-21 00:53:28.651947+00:00",
+      "latest_collected": "2026-09-21 00:53:28.669434+00:00",
+      "latest_publication": "2026-09-20 21:17:22+00:00",
+      "fresh_count": 7,
+      "error": null
+    },
+    {
+      "id": "bea-releases",
+      "kind": "official",
+      "last_success": "2026-09-21 00:57:31.253805+00:00",
+      "latest_collected": "2026-09-18 16:33:54.474454+00:00",
+      "latest_publication": "2026-09-03 12:30:00+00:00",
+      "fresh_count": 0,
+      "error": null
+    },
+    {
+      "id": "cnbc-economy",
+      "kind": "media",
+      "last_success": "2026-09-21 00:53:39.149290+00:00",
+      "latest_collected": "2026-09-21 00:43:15.186374+00:00",
+      "latest_publication": "2026-09-20 05:00:01+00:00",
+      "fresh_count": 1,
+      "error": null
+    },
+    {
+      "id": "cnbc-finance",
+      "kind": "media",
+      "last_success": "2026-09-21 00:53:41.700444+00:00",
+      "latest_collected": "2026-09-21 00:43:17.853034+00:00",
+      "latest_publication": "2026-09-20 12:47:23+00:00",
+      "fresh_count": 1,
+      "error": null
+    },
+    {
+      "id": "cnbc-technology",
+      "kind": "media",
+      "last_success": "2026-09-21 00:53:44.396515+00:00",
+      "latest_collected": "2026-09-21 00:43:20.463118+00:00",
+      "latest_publication": "2026-09-21 00:39:34+00:00",
+      "fresh_count": 4,
+      "error": null
+    },
+    {
+      "id": "cnbc-world",
+      "kind": "media",
+      "last_success": "2026-09-21 00:53:46.910723+00:00",
+      "latest_collected": "2026-09-21 00:43:23.189127+00:00",
+      "latest_publication": "2026-09-20 23:42:00+00:00",
+      "fresh_count": 2,
+      "error": null
+    },
+    {
+      "id": "ecb-press",
+      "kind": "official",
+      "last_success": "2026-09-21 00:57:33.971594+00:00",
+      "latest_collected": "2026-09-18 16:33:55.186849+00:00",
+      "latest_publication": "2026-09-18 08:00:00+00:00",
+      "fresh_count": 0,
+      "error": null
+    },
+    {
+      "id": "fed-press",
+      "kind": "official",
+      "last_success": "2026-09-21 00:57:36.284379+00:00",
+      "latest_collected": "2026-09-18 16:33:56.106593+00:00",
+      "latest_publication": "2026-09-18 15:00:00+00:00",
+      "fresh_count": 0,
+      "error": null
+    },
+    {
+      "id": "govuk-fcdo",
+      "kind": "official",
+      "last_success": "2026-09-21 00:58:39.801945+00:00",
+      "latest_collected": "2026-09-18 21:13:42.810735+00:00",
+      "latest_publication": "2026-09-18 21:04:48+00:00",
+      "fresh_count": 0,
+      "error": null
+    },
+    {
+      "id": "govuk-trade",
+      "kind": "official",
+      "last_success": "2026-09-21 00:58:42.417656+00:00",
+      "latest_collected": "2026-09-18 16:33:57.260965+00:00",
+      "latest_publication": null,
+      "fresh_count": 0,
+      "error": null
+    },
+    {
+      "id": "govuk-treasury",
+      "kind": "official",
+      "last_success": "2026-09-21 00:58:45.792643+00:00",
+      "latest_collected": "2026-09-18 16:33:57.512822+00:00",
+      "latest_publication": "2026-09-18 13:53:43+00:00",
+      "fresh_count": 0,
+      "error": null
+    },
+    {
+      "id": "kbs-economy",
+      "kind": "media",
+      "last_success": "2026-09-21 00:53:49.187372+00:00",
+      "latest_collected": "2026-09-21 00:43:25.646748+00:00",
+      "latest_publication": "2026-09-18 07:03:27+00:00",
+      "fresh_count": 0,
+      "error": null
+    },
+    {
+      "id": "kbs-world",
+      "kind": "media",
+      "last_success": "2026-09-21 00:53:31.288187+00:00",
+      "latest_collected": "2026-09-21 00:43:07.026646+00:00",
+      "latest_publication": "2026-09-21 00:40:20+00:00",
+      "fresh_count": 14,
+      "error": null
+    }
+  ],
+  "latest_review": {
+    "id": "news-5f965a45-10ff-4d28-92fb-63b6a50551d7",
+    "state": "completed",
+    "error": null,
+    "result": [
+      {
+        "state": "ignored",
+        "reason": "가수의 공연·발언 논란이 중심이다. 제공된 내용만으로 주요 경제·국제정세 뉴스로 선정할 만한 정책이나 산업 차원의 변화를 확인하기 어렵다.",
+        "headline": ""
+      },
+      {
+        "state": "ignored",
+        "reason": "코스피·코스닥의 통상적인 개장 지수 단신이다. 본문에 특별한 시장 사건이나 변동 배경이 없어 주요 금융 뉴스로 선정하지 않는다.",
+        "headline": ""
+      },
+      {
+        "state": "queued",
+        "reason": "승인된 CNBC의 실명 취재 보도로, 미중 회담에서 이뤄진 논의와 미국 측 제안만 전달한다. 회담 성과에 관한 평가와 향후 합의 전망은 제외한다.",
+        "headline": "CNBC: 미중, 정상회담 앞두고 AI 대화 논의…미국은 사고 통보체계 제안"
+      },
+      {
+        "state": "queued",
+        "reason": "승인된 KBS 보도 본문에 관세청 잠정 통계의 기간과 수치가 명시돼 있다. 직접 확보한 공식 발표가 아니므로 KBS의 보도로 귀속한다. 사진의 연합뉴스 표시는 별도 취재 출처로 계산하지 않는다.",
+        "headline": "KBS: 9월 1~20일 수출 714억 달러…반도체 비중 47.8%"
+      },
+      {
+        "state": "held",
+        "reason": "핵심은 AI 멸종 위험에 대한 황젠슨의 의견·예측이며 경쟁사의 동기에 관한 주장도 포함한다. BBC는 CBS 인터뷰를 인용하고 있어 두 독립 취재로 볼 수 없다. 의견에는 attributed_report를 적용할 수 없으며, 제공 자료에 핵심 판단을 뒷받침할 추가 근거가 없어 보류한다.",
+        "headline": ""
+      },
+      {
+        "state": "held",
+        "reason": "핵심 수치인 CBC 의원 62명 중 최소 60명의 규제 법안 찬성 가능성은 트로이 카터 의원의 예상이며 실제 표결 결과가 아니다. 제공된 발췌문에는 구체적인 새 법안의 채택이나 합의가 확인되지 않는다. 규제 필요성에 대한 의견과 표결 전망을 발행할 추가 근거가 부족해 보류한다.",
+        "headline": ""
+      }
+    ],
+    "created_at": "2026-09-21 00:57:12.049594+00:00",
+    "completed_at": "2026-09-21 00:58:31.243050+00:00"
+  },
+  "scope": "Actual automatic collection and model review, Slack history matched to persisted success receipts; no manual publication."
+}

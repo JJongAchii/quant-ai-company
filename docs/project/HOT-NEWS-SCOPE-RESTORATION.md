@@ -92,6 +92,12 @@ CNBC 구독 전용 기사 1건은 `article_requires_subscription`으로 근거 �
 [운영 이미지에서 실제 저장 원고의 표시 확인](evidence/hot-news-scope-final-render.json).
 기존 직원 설정·Slack 인증·PostgreSQL을 그대로 보존했고 서비스 8개와 두 운영 타이머가 정상이다.
 
+09:58에는 최종 버전에서도 KBS의 한국 수출 통계와 CNBC의 미중 AI 대화 보도 2건이
+자동 발송됐다. 10:01 KST Slack 조회에서 이번 신규 8건 모두의 본문·Reporter ID·시각·
+client_msg_id를 성공 영수증과 대조했다. 기존 2건을 합한 누적 뉴스는 10건이다.
+최종 버전의 신규 글 2건에는 불필요한 `달라진 점` 문구가 없다.
+[최종 버전의 실제 자동 게시](evidence/hot-news-scope-final-delivery.json).
+
 지역별 누락률·장시간 가용성·중요도 판단의 정확도는 이번 연결 인수만으로 확정하지 않는다.
 뉴스 원천은 BBC·CNBC·KBS 중심이며, 모든 국가·사건을 포괄한다는 뜻이 아니다. 거시 통계 및
 재난·보건 등 하위 분야의 새로운 실제 사건은 발생 시 추가 관찰한다. 일정 브리핑이나 뉴스
