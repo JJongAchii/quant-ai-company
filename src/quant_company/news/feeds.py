@@ -15,8 +15,13 @@ from ..web_fetch import MAX_BYTES, Page, PublicConnection, public_url
 
 def canonical_url(value):
     url = urlsplit(public_url(value))
+    tracking = {"fbclid", "gclid", "at_campaign", "at_medium"}
+    if url.hostname == "news.sbs.co.kr":
+        tracking.update({"cooper", "plink"})
+        if url.path == "/news/endPagePrintPopup.do":
+            url = url._replace(path="/news/endPage.do")
     query = [(k, v) for k, v in parse_qsl(url.query, keep_blank_values=True)
-             if not k.lower().startswith("utm_") and k.lower() not in {"fbclid", "gclid", "at_campaign", "at_medium"}]
+             if not k.lower().startswith("utm_") and k.lower() not in tracking]
     return urlunsplit((url.scheme, url.netloc, quote(url.path, safe="/:@-._~!$&'()*+,;=%"), urlencode(sorted(query)), ""))
 
 

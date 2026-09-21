@@ -1,0 +1,9 @@
+{
+  "state": "repaired_before_model_call",
+  "failure": "Candidate qualification archive omitted schema.sql",
+  "public_tables": 0,
+  "model_calls": 0,
+  "slack_writes": 0,
+  "empty_disposable_database_removed": true,
+  "repair": "Include all package resources in qualification archive"
+}

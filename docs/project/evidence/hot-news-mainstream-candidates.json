@@ -1,0 +1,277 @@
+{
+  "checked_at": "2026-09-21T04:38:29.551971+00:00",
+  "probe_location": "production-host",
+  "purpose": "candidate availability only, not enabled sources or a usage licence",
+  "slack_writes": 0,
+  "model_calls": 0,
+  "results": [
+    {
+      "publisher": "연합뉴스",
+      "feed_url": "https://www.yna.co.kr/rss/economy.xml",
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "1789965510570",
+        "modified": "Mon, 21 Sep 2026 04:36:57 GMT",
+        "sha256": "2195d34886c32b1312f2dc9ee2a32b15a1120b2c70b5986e4dac379902b1aab0",
+        "bytes": 93969
+      },
+      "items": 120,
+      "fresh_24h": 120,
+      "latest": "2026-09-21 04:00:00+00:00",
+      "sample": {
+        "title": "사회적가치 페스타 개막…최태원 \"AI, 강력한 사회문제 해결사\"",
+        "url": "https://www.yna.co.kr/view/AKR20260921051100003",
+        "published_at": "2026-09-21 04:00:00+00:00"
+      },
+      "original": {
+        "ok": true,
+        "error": null,
+        "http_status": null,
+        "published_at": "2026-09-21T13:00:00+09:00",
+        "extraction_method": null,
+        "bylines": [
+          "임성호"
+        ],
+        "excerpt_chars": 2341
+      }
+    },
+    {
+      "publisher": "SBS",
+      "feed_url": "https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=02&plink=RSSREADER",
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "30abd56281392dcdb46cf2f02498563c0a335a9a1fde140f0316d2e45e77b3f7",
+        "bytes": 274035
+      },
+      "items": 29,
+      "fresh_24h": 18,
+      "latest": "2026-09-21 03:38:00+00:00",
+      "sample": {
+        "title": "오세훈 서울주택공급 성과공유회…\"최근 정비구역 지정 이전의 두 배\"",
+        "url": "https://news.sbs.co.kr/news/endPage.do?cooper=RSSREADER&news_id=N1008763620&plink=RSSLINK",
+        "published_at": "2026-09-21 03:31:00+00:00"
+      },
+      "original": {
+        "ok": true,
+        "error": null,
+        "http_status": null,
+        "published_at": "2026-09-21T12:31:48+09:00",
+        "extraction_method": null,
+        "bylines": [
+          "윤나라 기자"
+        ],
+        "excerpt_chars": 2522
+      }
+    },
+    {
+      "publisher": "이데일리",
+      "feed_url": "https://rss.edaily.co.kr/edaily_news.xml",
+      "feed": {
+        "ok": false,
+        "error": "feed_network_unavailable"
+      },
+      "items": 0,
+      "fresh_24h": 0,
+      "latest": null
+    },
+    {
+      "publisher": "이투데이",
+      "feed_url": "https://rss.etoday.co.kr/eto/economy_news.xml",
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "abcaac38cb2605bc292a84e609959c4ae1a31a93d43c6140964b94ccc748ec06",
+        "bytes": 42115
+      },
+      "items": 31,
+      "fresh_24h": 31,
+      "latest": "2026-09-21 04:37:00+00:00",
+      "sample": {
+        "title": "KTR, '삼원계 도장도금강판' KS 인증 본격화⋯포스코스틸리온·KG스틸 획득",
+        "url": "https://www.etoday.co.kr/news/view/2627981",
+        "published_at": "2026-09-21 04:37:00+00:00"
+      },
+      "original": {
+        "ok": true,
+        "error": null,
+        "http_status": null,
+        "published_at": "2026-09-21T13:37:00+09:00",
+        "extraction_method": null,
+        "bylines": [
+          "세종=서병곤"
+        ],
+        "excerpt_chars": 844
+      }
+    },
+    {
+      "publisher": "동아일보",
+      "feed_url": "https://rss.donga.com/economy.xml",
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "",
+        "modified": "",
+        "sha256": "77d54bf97e4cb4ec96cb7fa61dd7dfed6c4c29441ed8f12b402d2d0a2959f0ff",
+        "bytes": 91301
+      },
+      "items": 50,
+      "fresh_24h": 50,
+      "latest": "2026-09-21 04:30:00+00:00",
+      "sample": {
+        "title": "헌혈부터 송편까지…우리금융-국민은행-하나금융, 추석 앞두고 ‘나눔’ 실천",
+        "url": "https://www.donga.com/news/Economy/article/all/20260921/134709299/1",
+        "published_at": "2026-09-21 04:30:00+00:00"
+      },
+      "original": {
+        "ok": false,
+        "error": "article_body_not_found",
+        "http_status": null,
+        "published_at": "2026-09-21T13:30:00+09:00",
+        "extraction_method": null,
+        "bylines": [
+          "정봉오"
+        ],
+        "excerpt_chars": 0
+      }
+    },
+    {
+      "publisher": "Yahoo Finance",
+      "feed_url": "https://finance.yahoo.com/news/rssindex",
+      "feed": {
+        "ok": true,
+        "skipped": 1,
+        "etag": "\"927acc4a38631118a92ff0083e8fb7d4\"",
+        "modified": "Mon, 21 Sep 2026 04:26:20 GMT",
+        "sha256": "48e34153ec38b664a86ed8b0462e42d04b24b316309341d46799c67cf0307f6e",
+        "bytes": 29194
+      },
+      "items": 49,
+      "fresh_24h": 4,
+      "latest": "2026-09-20 18:17:00+00:00",
+      "sample": {
+        "title": "Key Christmas retailer files for Chapter 11 bankrutpcy",
+        "url": "https://finance.yahoo.com/small-business/articles/key-christmas-retailer-files-chapter-140700474.html",
+        "published_at": "2026-09-20 14:07:00+00:00"
+      },
+      "original": {
+        "ok": true,
+        "error": null,
+        "http_status": null,
+        "published_at": "2026-09-20T14:07:00Z",
+        "extraction_method": null,
+        "bylines": [
+          "Daniel Kline"
+        ],
+        "excerpt_chars": 2695
+      }
+    },
+    {
+      "publisher": "Bloomberg",
+      "feed_url": "https://www.bloomberg.com/feeds/markets/news.rss",
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "W/\"3c2b-+GdKfSDkCt89jl+MkQXGYF7qN24\"",
+        "modified": "",
+        "sha256": "3bf0aa03002a1a2fabb95b82177fb6f10910ed850ef54023d7bd63a04656631e",
+        "bytes": 15403
+      },
+      "items": 20,
+      "fresh_24h": 20,
+      "latest": "2026-09-21 03:46:38+00:00",
+      "sample": {
+        "title": "Stocks Rise With US Futures, Brent Extends Decline: Markets Wrap",
+        "url": "https://www.bloomberg.com/news/articles/2026-09-20/us-stock-futures-up-ahead-of-talks-dollar-steady-markets-wrap",
+        "published_at": "2026-09-20 22:14:48+00:00"
+      },
+      "original": {
+        "ok": false,
+        "error": "http_status",
+        "http_status": 403,
+        "published_at": null,
+        "extraction_method": null,
+        "bylines": null,
+        "excerpt_chars": 0
+      }
+    },
+    {
+      "publisher": "Financial Times",
+      "feed_url": "https://www.ft.com/rss/home",
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "W/\"1c21-UY+lvhCV2uIcgvrdKxvNmx/2bhU\"",
+        "modified": "",
+        "sha256": "84220897a49fd2ba3f889b33117380c3da3e8466d86c63a130f0dbb308c38d95",
+        "bytes": 7201
+      },
+      "items": 9,
+      "fresh_24h": 9,
+      "latest": "2026-09-21 04:11:57+00:00",
+      "sample": {
+        "title": "German chancellor Merz vows to stay on despite ‘disaster’ in regional elections",
+        "url": "https://www.ft.com/content/d74ce82a-2a15-404a-ae3a-3921e887bab3?syn-25a6b1a6=1",
+        "published_at": "2026-09-21 02:08:18+00:00"
+      },
+      "original": {
+        "ok": false,
+        "error": "http_status",
+        "http_status": 403,
+        "published_at": null,
+        "extraction_method": null,
+        "bylines": null,
+        "excerpt_chars": 0
+      }
+    },
+    {
+      "publisher": "Wall Street Journal",
+      "feed_url": "https://feeds.a.dj.com/rss/RSSMarketsMain.xml",
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "\"7a56136c3f5e1371a33c5641258ab351\"",
+        "modified": "Mon, 27 Jan 2025 19:27:17 GMT",
+        "sha256": "02b06b556a266f5760c0f31a693bd1912c8b1f9469ce52168647e43f68b3a523",
+        "bytes": 12752
+      },
+      "items": 20,
+      "fresh_24h": 0,
+      "latest": "2025-01-27 19:26:00+00:00"
+    },
+    {
+      "publisher": "MarketWatch",
+      "feed_url": "https://feeds.content.dowjones.io/public/rss/mw_topstories",
+      "feed": {
+        "ok": true,
+        "skipped": 0,
+        "etag": "W/\"20c3-VaNUFiHXxFTgrB/llitJhoUCbx8\"",
+        "modified": "",
+        "sha256": "3ab1aabc087483757e507dcbd80a65ae7163ad6e57c4414201b18ea00798fad0",
+        "bytes": 8387
+      },
+      "items": 10,
+      "fresh_24h": 10,
+      "latest": "2026-09-21 02:40:00+00:00",
+      "sample": {
+        "title": "‘My total balance should be $20 million’: I invested $1.1 million in a crypto platform. Have I lost it all?",
+        "url": "https://www.marketwatch.com/story/my-total-balance-should-be-worth-20-million-i-invested-1-1-million-in-a-crypto-platform-have-i-lost-it-all-d22da562?mod=mw_rss_topstories",
+        "published_at": "2026-09-21 02:40:00+00:00"
+      },
+      "original": {
+        "ok": false,
+        "error": "http_status",
+        "http_status": 401,
+        "published_at": null,
+        "extraction_method": null,
+        "bylines": null,
+        "excerpt_chars": 0
+      }
+    }
+  ]
+}

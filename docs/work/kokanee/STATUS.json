@@ -1,78 +1,65 @@
 {
   "approval": {
-    "approvedAt": "2026-09-21T00:05:20.807710+00:00",
-    "id": "chat-20260921-restore-original-news-scope"
+    "approvedAt": "2026-09-21T04:36:22.548080+00:00",
+    "id": "chat-20260921-mainstream-free-news-expansion"
   },
-  "currentIntent": "INTENT-v3.json",
+  "currentIntent": "INTENT-v4.json",
   "deliverables": {
     "LIVE": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/hot-news-scope-final-delivery.json",
-          "sha256": "fb7746a98730"
-        },
-        {
-          "path": "docs/project/evidence/hot-news-scope-continuity.json",
-          "sha256": "01b863a8674d"
-        },
-        {
-          "path": "docs/project/evidence/hot-news-scope-format-release.json",
-          "sha256": "071b45ba8397"
-        },
-        {
-          "path": "docs/project/evidence/hot-news-scope-final-host-health.json",
-          "sha256": "1f0cc3e05982"
-        }
-      ],
-      "note": "신규 자동 뉴스 8건 실제 Slack 대조, 최종 4a8eb43에서도 무역·AI 뉴스 2건 자동 발송. 다음 자동 수집 및 기존 서비스·인증·DB 보존 확인. 지역/분야 누락률 미검증 한계 명시",
-      "status": "verified",
-      "updatedAt": "2026-09-21T01:02:40.923157+00:00"
+      "evidence": [],
+      "note": "기존 서버·직원·인증 경계를 유지해 최종 커밋을 배포하고 실제 자동 수집·게시를 인수한다.",
+      "status": "in_progress",
+      "updatedAt": "2026-09-21T04:53:26.250790+00:00"
     },
     "PIPELINE": {
       "evidence": [
         {
-          "path": "docs/project/evidence/hot-news-scope-codex-preview.json",
-          "sha256": "af48c151906e"
+          "path": "docs/project/evidence/hot-news-mainstream-codex-preview.json",
+          "sha256": "1a61c69f03af"
         },
         {
-          "path": "docs/project/evidence/hot-news-scope-tests.json",
-          "sha256": "c9d845dc5534"
+          "path": "docs/project/evidence/hot-news-mainstream-tests.json",
+          "sha256": "fcc29835112e"
         }
       ],
-      "note": "실제 기사 구독 검토 3 preview·2 hold·1 ignore; 실제 네이티브 후보 검색; 원문/날짜/귀속/중복/불명 호출 검증. 두 배포 커밋 CI 479 passed",
+      "note": "실제 구독 검토 2 ignore·3 hold 및 실제 네이티브 검색 완료. 새 매체의 검증 기준을 낮추지 않았으며 검색에서 발견한 SBS 인쇄 URL 중복을 정규화 회귀 검사로 보완.",
       "status": "verified",
-      "updatedAt": "2026-09-21T00:58:25.858371+00:00"
+      "updatedAt": "2026-09-21T04:53:26.076310+00:00"
     },
     "SCOPE": {
       "evidence": [
         {
-          "path": "docs/project/HOT-NEWS-SCOPE-RESTORATION.md",
-          "sha256": "c1a179f09688"
+          "path": "docs/project/HOT-NEWS-MAINSTREAM-EXPANSION.md",
+          "sha256": "43a8257ae505"
         }
       ],
-      "note": "최초 6개 뉴스 영역·한국과 해외·상시 검증 전달·daily-brief 분리와 기존 구독/무료 우선 비용 결정 복원",
+      "note": "국내 경제와 글로벌 주요 사건 중심, 지역별 매체 안배 제외, 추가 뉴스 비용 없는 조건과 실제 연결/후보 구분을 명시",
       "status": "verified",
-      "updatedAt": "2026-09-21T01:02:40.767954+00:00"
+      "updatedAt": "2026-09-21T04:51:29.416251+00:00"
     },
     "SOURCES": {
       "evidence": [
         {
           "path": "src/quant_company/news/sources.json",
-          "sha256": "c3a510488066"
+          "sha256": "5bfc3b0a4dd1"
         },
         {
-          "path": "docs/project/evidence/hot-news-scope-final-image-probe.json",
-          "sha256": "fd3a9828b65d"
+          "path": "docs/project/evidence/hot-news-mainstream-qualified-sources.json",
+          "sha256": "5c68f24140c6"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-mainstream-source-policy.json",
+          "sha256": "55d62586ce2a"
         }
       ],
-      "note": "무료 언론 9·공식 6 피드의 운영 이미지 실접속; 최신 언론 8개 표본의 실제 원문 확인. 소스 등록과 실제 사건 커버리지를 구분",
+      "note": "추가 3개 매체 10개 피드의 최근 기사·원문·날짜 실접속 및 이용 범위 확인; 차단·제한 후보는 구분해 제외",
       "status": "verified",
-      "updatedAt": "2026-09-21T00:58:25.699761+00:00"
+      "updatedAt": "2026-09-21T04:51:29.564396+00:00"
     }
   },
-  "intentDigest": "e7f0410f8294",
+  "intentDigest": "e209d02c075b",
   "schemaVersion": 1,
   "slug": "kokanee",
   "state": "approved",
-  "updatedAt": "2026-09-21T01:02:40.923157+00:00"
+  "updatedAt": "2026-09-21T04:53:26.250790+00:00"
 }

@@ -1,0 +1,67 @@
+{
+  "checked_at": "2026-09-21T04:51:13.067877+00:00",
+  "purpose": "owner personal non-commercial news reading; no new paid subscriptions, no training, no full-article redistribution",
+  "new_region_balancing_sources": [],
+  "sources": [
+    {
+      "publisher": "연합뉴스",
+      "url": "https://www.yna.co.kr/rss/index",
+      "assessment": "개인·비상업 RSS 허용. 공개 기사 날짜와 본문 확인 후 개인용 사실 요약·링크.",
+      "decision": "enabled"
+    },
+    {
+      "publisher": "연합뉴스",
+      "url": "https://www.yna.co.kr/policy/copyright",
+      "assessment": "개인 참고·교육 등 비영리 복사/인쇄 예외와 출처 명시. 상업 재배포 또는 포괄 AI 이용권으로 해석하지 않는다.",
+      "decision": "personal_scope"
+    },
+    {
+      "publisher": "SBS",
+      "url": "https://news.sbs.co.kr/news/rss.do",
+      "assessment": "개인 비상업 RSS 허용. 학습·전문 재배포는 하지 않는다.",
+      "decision": "enabled"
+    },
+    {
+      "publisher": "이투데이",
+      "url": "https://www.etoday.co.kr/rss/",
+      "assessment": "비상업 RSS 제공. 개인 뉴스 읽기와 사실 요약·링크 범위. 무단 대량 수집·AI 학습은 하지 않는다.",
+      "decision": "enabled"
+    },
+    {
+      "publisher": "한국경제",
+      "url": "https://www.hankyung.com/help/policy?category=%EC%9D%B4%EC%9A%A9%EC%95%BD%EA%B4%80",
+      "assessment": "제19조의 자동화 수단을 통한 콘텐츠 접근·수집 제한.",
+      "decision": "not_registered"
+    },
+    {
+      "publisher": "매일경제",
+      "url": "https://www.mk.co.kr/mypage/policy",
+      "assessment": "제22조의 자동화 도구 이용 제한. 검색 색인 또는 계약 외 경로 미확인.",
+      "decision": "not_registered"
+    },
+    {
+      "publisher": "동아일보",
+      "url": "https://secure.donga.com/membership/policy/service.php",
+      "assessment": "제27조 자동화 도구를 통한 콘텐츠 이용 제한.",
+      "decision": "not_registered"
+    },
+    {
+      "publisher": "Yahoo Finance",
+      "url": "https://legal.yahoo.com/us/en/yahoo/terms/otos/index.html",
+      "assessment": "자동 접근/수집 제한 및 RSS 내용 변경 제한. 기술 접속 성공을 요약 허가로 해석하지 않는다.",
+      "decision": "not_registered"
+    },
+    {
+      "publisher": "Reuters",
+      "url": "https://reutersagency.com/content/content-types/text/",
+      "assessment": "계약형 콘텐츠 공급. 이번 작업에서 API 계약/키 추가 없음.",
+      "decision": "not_registered"
+    },
+    {
+      "publisher": "AP",
+      "url": "https://api.ap.org/media/v/docs/Getting_Started_API.htm",
+      "assessment": "콘텐츠 이용 범위와 가격은 계약을 따른다. API 계약/키 추가 없음.",
+      "decision": "not_registered"
+    }
+  ]
+}
