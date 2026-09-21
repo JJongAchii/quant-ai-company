@@ -1,0 +1,44 @@
+{
+  "schema": "context-source-order-repair-verification-v1",
+  "recorded_at": "2026-09-18T14:48:00.098651+00:00",
+  "implementation_commit": "880825897509cc8e30a995ae3905a704424c174b",
+  "supersedes_for_final_implementation": [
+    "docs/project/evidence/context-evidence-repair-20260918.json",
+    "docs/project/evidence/context-evidence-pages-20260918.json"
+  ],
+  "previous_ci_failure": {
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35357811507",
+    "head": "451ccb4e19b756e0766bfd1517e46698b5460c03",
+    "failed": 1,
+    "passed": 415,
+    "skipped": 2,
+    "deselected": 1,
+    "cause": "Whole read receipt could be dropped before system summarization; transaction timestamp ties left UUID ordering to decide which old message survived."
+  },
+  "deterministic_reproduction": {
+    "base_commit": "ea20eee505b877b9bc5d18aa6471aabfe613a63c",
+    "uuid_order_cases": 2,
+    "passed": 1,
+    "failed": 1,
+    "failed_case": "reverse_ids=True"
+  },
+  "verification": {
+    "tests": 64,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "source_context_cases": 8,
+    "database": "dedicated disposable PostgreSQL 14",
+    "model_and_system_inputs": "synthetic fixtures",
+    "junit_sha256": "d1578c78ad527a4105dbdd6de9d348cbcc26f08c697e2da8250b26a8d00aea83",
+    "ruff": "passed",
+    "diff_check": "passed"
+  },
+  "file_sha256": {
+    "src/quant_company/company.py": "b61363ede8cacbc55481ac51ae2abc5a50268fff1a4b69f283fdd6b7257700bc",
+    "tests/test_context_evidence.py": "198300053fd5083a9df917a7cf08be6a32abe150f4ad448028bdfcaa8ecec12a",
+    "docs/adr/0028-preserve-consumed-context-evidence.md": "e903ee7ac8bb0ef12a25d61db3e5fe26c2f9485cfe007188444c95a6a5caf932"
+  },
+  "deployed": false,
+  "new_live_model_validation_of_fix": false
+}

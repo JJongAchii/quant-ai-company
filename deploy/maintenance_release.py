@@ -61,9 +61,22 @@ def services(root):
     return SERVICES + (['claude-runtime'] if enabled and supported else [])
 
 
+def compose_command(root):
+    envfile = STATE/'config/runtime.env'
+    command = ['docker', 'compose', '--profile', 'maintenance', '--profile', 'claude',
+               '--env-file', str(envfile), '-f', str(root/'deploy/compose.yaml')]
+    research = any(line.strip() == 'COMPANY_RESEARCH_ENABLED=true'
+                   for line in envfile.read_text().splitlines()) if envfile.exists() else False
+    if research:
+        overlay = root/'deploy/research.compose.yaml'
+        if not overlay.is_file():
+            raise ValueError('release_research_overlay_missing')
+        command += ['-f', str(overlay)]
+    return command
+
+
 def compose(root, *args, env=None):
-    return run(['docker', 'compose', '--profile', 'maintenance', '--profile', 'claude', '--env-file', str(STATE/'config/runtime.env'),
-                '-f', str(root/'deploy/compose.yaml'), *args], env=env)
+    return run([*compose_command(root), *args], env=env)
 
 
 def unpack(data, target):
@@ -183,8 +196,7 @@ def take_backup(previous, envfile):
     spec.loader.exec_module(backup)
     for key, value in backup.config_values(STATE/'config/backup.env').items():
         os.environ[key] = value
-    command = ['docker', 'compose', '--profile', 'maintenance', '--profile', 'claude', '--env-file', str(envfile),
-               '-f', str(previous/'deploy/compose.yaml')]
+    command = compose_command(previous)
     backup.backup(SimpleNamespace(env_file=envfile, s3_uri=None), backup.config_values(envfile), command, STATE)
 
 

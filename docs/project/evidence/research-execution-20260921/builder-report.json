@@ -1,0 +1,130 @@
+{
+  "runId": "company-research-execution-20260921",
+  "builderId": "research-report",
+  "buildStage": "research",
+  "domain": "personal",
+  "canonicalRepo": "JJongAchii/quant-ai-company",
+  "baseHead": "ac07c4979780c55c8e02f9f5710b72470e387c41",
+  "worktreeBranch": "company-research-report",
+  "implementationCommit": "d0de135fdc256486baa446b0cc0b3275a18d774f",
+  "dependencyCommitIntegratedByMain": "4a32c9b1f16879d36df7fa07227102d1a61faf30",
+  "implementationStatus": "partial",
+  "qualificationStatus": "not-run",
+  "changes": [
+    {
+      "path": "src/quant_company/research/report.py",
+      "reason": "Validate exact frozen ZIP bytes, execution identity and prior-audit revalidation before typed CSV/JSON consumption and Korean HTML/report summary."
+    },
+    {
+      "path": "tests/test_research_report.py",
+      "reason": "Synthetic producer-to-ZIP-to-validator-to-HTML integration plus hostile archive, identity, provenance, schema, date, numeric and escaping boundaries."
+    }
+  ],
+  "tests": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src ../../quant-ai-company/.venv/bin/python -m pytest -q -p no:cacheprovider tests/test_research_report.py",
+      "exitCode": 0,
+      "rawSummary": "94 passed in 0.94s",
+      "stage": "initial"
+    },
+    {
+      "command": "../../quant-ai-company/.venv/bin/ruff check --no-cache src/quant_company/research/report.py tests/test_research_report.py",
+      "exitCode": 1,
+      "rawSummary": "Found 7 errors: UP035 (1), B905 (6)",
+      "stage": "initial"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src ../../quant-ai-company/.venv/bin/python -m pytest -q -p no:cacheprovider tests/test_research_report.py",
+      "exitCode": 0,
+      "rawSummary": "97 passed in 0.37s",
+      "stage": "archive-hardening"
+    },
+    {
+      "command": "../../quant-ai-company/.venv/bin/ruff check --no-cache src/quant_company/research/report.py tests/test_research_report.py",
+      "exitCode": 0,
+      "rawSummary": "All checks passed!",
+      "stage": "archive-hardening"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src ../../quant-ai-company/.venv/bin/python -m pytest -q -p no:cacheprovider tests/test_research_report.py",
+      "exitCode": 0,
+      "rawSummary": "102 passed in 0.37s",
+      "stage": "final"
+    },
+    {
+      "command": "../../quant-ai-company/.venv/bin/ruff check --no-cache src/quant_company/research/report.py tests/test_research_report.py",
+      "exitCode": 0,
+      "rawSummary": "All checks passed!",
+      "stage": "final"
+    }
+  ],
+  "notRun": [
+    {
+      "command": "Main runs committed archive validation/report on actual worker archive after merge; until then implementationStatus partial/qualificationStatus not-run",
+      "reason": "Main owns actual fixed-artifact qualification after integration. No actual worker/archive fixture was executed in this builder."
+    }
+  ],
+  "approvedDesignDigest": "e5156cbd17d6969bf4148b86a252e9d51b0cd950ad76cf2fc9b7eeeaf0eed53c",
+  "approvedDesignDigestUnchanged": true,
+  "objectiveDigest": "6cce84435908",
+  "researchObjectiveDigest": "03d58ee449e6",
+  "objectiveDigestUnchanged": true,
+  "preregDigest": null,
+  "protectedFiles": "No objective, PREREG, judge audit, ledger, or qws contract written. Research-stage manifest has no PREREG digest.",
+  "writeSurface": {
+    "preDiffNames": [],
+    "committedPaths": [
+      "src/quant_company/research/report.py",
+      "tests/test_research_report.py"
+    ],
+    "postDiffNames": []
+  },
+  "interfaceContract": {
+    "validator": "validate_bundle(path: Path, recipe: Recipe, assignment: Assignment, expected_company_commit: str) -> ValidatedReplay",
+    "renderer": "build_report(validated: ValidatedReplay) -> {'html': str, 'summary': dict}",
+    "producerConsumerAligned": true,
+    "versions": {
+      "recipe": "kr-etf-p11-replay-v1",
+      "auditVerification": 1
+    },
+    "fields": {
+      "daily": [
+        "date",
+        "equity",
+        "cashWeight",
+        "grossWeight",
+        "turnover",
+        "cost",
+        "holdings"
+      ],
+      "monthly": [
+        "date",
+        "equity"
+      ],
+      "economicJsonRoot": "list",
+      "objective": [
+        "metric",
+        "unit",
+        "value",
+        "minimumHurdle",
+        "riskConstraintResults"
+      ]
+    },
+    "units": {
+      "equity": "initial NAV multiple; initial capital 1",
+      "weightsTurnoverCost": "fraction of NAV",
+      "holdings": "integer instrument count",
+      "objective": "fraction-per-year",
+      "costBase": "10bp fixed",
+      "costStress": "30bp fixed"
+    },
+    "formula": "CAGR: last_equity ** (365.2425 / inclusive days since 2014-01-01) - 1; MDD: min(equity/max(1,running_peak)-1). Monthly calendar monthend equals final daily equity in month."
+  },
+  "knownDeviations": [
+    "Only cache-suppression flags/environment added to approved unit/lint commands; acceptance criteria unchanged."
+  ],
+  "remainingRisks": [
+    "Actual fixed-data qualification, server publication integration, and independent review remain owned by main.",
+    "Engineering equivalent replay only; no new scientific trial or independent research verdict."
+  ]
+}

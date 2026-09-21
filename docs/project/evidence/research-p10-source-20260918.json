@@ -1,0 +1,294 @@
+{
+  "schema": "company-research-source-registration-v1",
+  "verified_at": "2026-09-18T08:25:06.041217+00:00",
+  "registration": {
+    "source_id": "operator:research-p10-20260918",
+    "content_sha256": "2aa16e1ca1e9d107266b26ab6855c23d624ae13249a8b3ef3ee719d2bee5698c",
+    "approved": true,
+    "synthetic": false,
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "available_at": "2026-09-18 08:23:26.581211+00:00",
+    "runtime_commit": "e869eb5f608254d42da6159ff2932c1af8c2f451"
+  },
+  "source": {
+    "schema": "research-p10-operator-evidence-v1",
+    "source_id": "operator:research-p10-20260918",
+    "recorded_at": "2026-09-18T08:23:26.581211+00:00",
+    "latest_research_commit": "d4bd98700d2b25ed554c766065e52ea47e8dd57a",
+    "manifest_sha256": "c655ac9497c2269054c6a120136cae59954aa4ed140e246c3d1f17f462e11bec",
+    "research_pr": "https://github.com/JJongAchii/quant-lab/pull/16",
+    "execution_host": "worker / DESKTOP-5T00NAF / RTX 3070",
+    "execution_commit": "7521cdd385a61455dbfe281c306155dc59c817a8",
+    "guard": {
+      "command": "uv run --frozen pytest labs/company-kr-etf-pilot/tests -m leakage -q",
+      "status": "passed",
+      "exitCode": 0,
+      "testCount": 122,
+      "executionMachine": "worker",
+      "hostname": "DESKTOP-5T00NAF",
+      "codeCommit": "7521cdd385a61455dbfe281c306155dc59c817a8",
+      "path": "docs/research/company-kr-etf-pilot/P10-guard-worker.log",
+      "sha256": "cb2d0d7b3de84bfe945364d714106cac09988b71183234674efe9512017b6a30"
+    },
+    "counts": {
+      "scope": "P10 approved-v3 runs",
+      "qualification": {
+        "planned": 4,
+        "attempted": 4,
+        "succeeded": 4,
+        "blocked": 0
+      },
+      "accountingPath": {
+        "planned": 4,
+        "attempted": 4,
+        "succeeded": 3,
+        "blocked": 1
+      },
+      "scientific": {
+        "budgetedBaseline": 1,
+        "budgetedCandidates": 3,
+        "attempted": 0,
+        "succeeded": 0,
+        "roundsCompleted": 0
+      },
+      "technicalFailureEpisodes": {
+        "before": 11,
+        "new": 1,
+        "total": 12,
+        "maximum": null
+      },
+      "scientificCompletedCumulative": 0,
+      "priorFailedBaselineAttemptPreserved": "B01"
+    },
+    "qualification_and_paths": [
+      {
+        "method": "baseline",
+        "qualification": "passed",
+        "accounting_path_status": "blocked",
+        "scenarios": {
+          "base": {
+            "status": "blocked",
+            "reason": "missing-held-close-no-documented-terminal-value",
+            "method": "baseline",
+            "costBps": 10,
+            "rows": [
+              {
+                "ticker": "447820",
+                "date": "2024-10-08",
+                "lastObservedDate": "2024-10-07"
+              }
+            ],
+            "performanceEmitted": false,
+            "partialWindowMetricsComputed": false,
+            "resumeCondition": "A documented valuation/redemption event for held ETFs, or separately approved change to the research envelope.",
+            "terminalUses": []
+          },
+          "stress": {
+            "status": "blocked",
+            "reason": "missing-held-close-no-documented-terminal-value",
+            "method": "baseline",
+            "costBps": 30,
+            "rows": [
+              {
+                "ticker": "447820",
+                "date": "2024-10-08",
+                "lastObservedDate": "2024-10-07"
+              }
+            ],
+            "performanceEmitted": false,
+            "partialWindowMetricsComputed": false,
+            "resumeCondition": "A documented valuation/redemption event for held ETFs, or separately approved change to the research envelope.",
+            "terminalUses": []
+          }
+        },
+        "receipt_sha256": "6945f4f878b14fd54acead4b57406275c721c472a0b63614a84bbdf02b971c86"
+      },
+      {
+        "method": "m1",
+        "qualification": "passed",
+        "accounting_path_status": "completed",
+        "scenarios": {
+          "base": {
+            "status": "completed",
+            "checkedSessions": 3107,
+            "performanceComputed": false,
+            "terminalUses": [],
+            "riskConstraints": [
+              {
+                "constraint": "long-only",
+                "within": true
+              },
+              {
+                "constraint": "gross-exposure-at-most-one",
+                "within": true
+              },
+              {
+                "constraint": "no-leveraged-or-inverse-etfs",
+                "within": true
+              }
+            ]
+          },
+          "stress": {
+            "status": "completed",
+            "checkedSessions": 3107,
+            "performanceComputed": false,
+            "terminalUses": [],
+            "riskConstraints": [
+              {
+                "constraint": "long-only",
+                "within": true
+              },
+              {
+                "constraint": "gross-exposure-at-most-one",
+                "within": true
+              },
+              {
+                "constraint": "no-leveraged-or-inverse-etfs",
+                "within": true
+              }
+            ]
+          }
+        },
+        "receipt_sha256": "14bf6a31f3bc657f2cf31e7a400ecc5e1aec5f01853efabc696a5f76d0e5daff"
+      },
+      {
+        "method": "m2",
+        "qualification": "passed",
+        "accounting_path_status": "completed",
+        "scenarios": {
+          "base": {
+            "status": "completed",
+            "checkedSessions": 3107,
+            "performanceComputed": false,
+            "terminalUses": [],
+            "riskConstraints": [
+              {
+                "constraint": "long-only",
+                "within": true
+              },
+              {
+                "constraint": "gross-exposure-at-most-one",
+                "within": true
+              },
+              {
+                "constraint": "no-leveraged-or-inverse-etfs",
+                "within": true
+              }
+            ]
+          },
+          "stress": {
+            "status": "completed",
+            "checkedSessions": 3107,
+            "performanceComputed": false,
+            "terminalUses": [],
+            "riskConstraints": [
+              {
+                "constraint": "long-only",
+                "within": true
+              },
+              {
+                "constraint": "gross-exposure-at-most-one",
+                "within": true
+              },
+              {
+                "constraint": "no-leveraged-or-inverse-etfs",
+                "within": true
+              }
+            ]
+          }
+        },
+        "receipt_sha256": "bca9b5807cdf10bd699ca134bb8c5af5c3ae5f1f55ae3965416fe0c726982749"
+      },
+      {
+        "method": "m3",
+        "qualification": "passed",
+        "accounting_path_status": "completed",
+        "scenarios": {
+          "base": {
+            "status": "completed",
+            "checkedSessions": 3107,
+            "performanceComputed": false,
+            "terminalUses": [],
+            "riskConstraints": [
+              {
+                "constraint": "long-only",
+                "within": true
+              },
+              {
+                "constraint": "gross-exposure-at-most-one",
+                "within": true
+              },
+              {
+                "constraint": "no-leveraged-or-inverse-etfs",
+                "within": true
+              }
+            ]
+          },
+          "stress": {
+            "status": "completed",
+            "checkedSessions": 3107,
+            "performanceComputed": false,
+            "terminalUses": [],
+            "riskConstraints": [
+              {
+                "constraint": "long-only",
+                "within": true
+              },
+              {
+                "constraint": "gross-exposure-at-most-one",
+                "within": true
+              },
+              {
+                "constraint": "no-leveraged-or-inverse-etfs",
+                "within": true
+              }
+            ]
+          }
+        },
+        "receipt_sha256": "2b5a650e726fa949e7327354c29d1b48b6de283ef11e7df1c234dc7c42405970"
+      }
+    ],
+    "universe_amendment": {
+      "authorized_direction": "User said 그래 이어서 진행해 after public-data liquid-universe proposal.",
+      "minimum_adv20_krw": 2000000000,
+      "floor_origin": "Implementation choice: 100m KRW account / five positions / 1% reference ADV participation; not a numeric direct user quote.",
+      "period_cost_signals_budget_unchanged": true,
+      "floor_tuned_after_path_result": false,
+      "same_pool_before_ranks": true,
+      "terminal_inputs": null
+    },
+    "public_source_findings": {
+      "officialDelistingDate": "2024-10-08",
+      "scheduledTradingHalt": "2024-10-07",
+      "scheduledPaymentDate": "2024-10-11",
+      "actualPaymentAmount": null,
+      "actualPaymentVerified": false,
+      "issuerHistoricalNavRowsRecovered": 0,
+      "issuerMissingPeriods": [
+        "2024-09-01..2024-09-30",
+        "2024-10-01..2024-10-11"
+      ],
+      "issuerIdentifierEvidence": "English NAV Excel recognizes TIGER 24-10 CORPORATE ACTIVE ETF but returns headers only.",
+      "dateAndUnitLimits": "Date reference is not mapped to historical publication time; English field NAV/CU is not assumed per ETF share.",
+      "absenceScope": "Current queried public endpoints only; not a claim that all official archives lack records."
+    },
+    "external_contact_sent": false,
+    "backup": {
+      "sha256": "14acde5146aac5b03f4d45593e5ac9ce7c81d202f8a3fed9c9a865c14e848145",
+      "uri": "s3://quant-company-061039802347-backups/company/research/company-kr-etf-pilot/liquidity-p10-20260918/14acde5146aac5b03f4d45593e5ac9ce7c81d202f8a3fed9c9a865c14e848145.tar.gz",
+      "files": 95,
+      "full_download_verified": true
+    },
+    "performance_artifacts": 0,
+    "sealed_read": false,
+    "next_step_pending_user_answer": {
+      "proposal": "Preserve the unmeasured equal-weight baseline, measure existing M1/M2/M3 absolute performance first, then independent D2 audit and development HTML. No universe/parameter/cost/budget change.",
+      "status": "proposal-only; no candidate performance executed and no approval assumed",
+      "reason_approval_needed": "Approved v3 explicitly requires the baseline to be measured first.",
+      "limitation": "Baseline-relative performance and alpha remain unmeasured; this does not complete the original comparative research.",
+      "path": "docs/research/company-kr-etf-pilot/CANDIDATE-FIRST-AMENDMENT-PROPOSAL.md"
+    },
+    "integration_mode": "Operator and research-session roles implemented and ran the 3070 checks. Director reads registered evidence and reports; this is not autonomous Slack staff strategy execution or audited performance."
+  },
+  "ingress_mode": "operator request; not fabricated Slack user message"
+}

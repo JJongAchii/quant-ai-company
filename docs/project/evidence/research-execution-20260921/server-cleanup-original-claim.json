@@ -1,0 +1,14 @@
+{
+  "completed_at": "2026-09-21T01:28:20.472836+00:00",
+  "temporary_containers_removed": 2,
+  "temporary_database_backed_up_and_removed": true,
+  "temporary_forwarding_user_and_config_removed": true,
+  "temporary_api_credentials_removed": true,
+  "test_temporal_workflow_cancelled": true,
+  "production_bot_containers_changed": false,
+  "s3_evidence_preserved": true,
+  "worker_artifacts_preserved": true,
+  "dedicated_tunnel_user_session_terminated_for_cleanup": true,
+  "original_claim_incorrect": true,
+  "correction_document": "docs/project/RESEARCH-CLEANUP-INCIDENT-20260921.md"
+}

@@ -73,6 +73,9 @@ def routing_prompt(conn, task, project):
 
 
 def advance(conn, company, project, *, instruction=None, status='active', keep_routing=False, current=None):
+    from .research.store import cancel_project
+
+    cancel_project(conn, project['id'])
     project = conn.execute("""UPDATE projects SET revision=revision+1,instruction=COALESCE(%s,instruction),
         status=%s,clarification=NULL,updated_at=now() WHERE id=%s RETURNING *""",
                            (instruction, status, project['id'])).fetchone()
@@ -107,6 +110,12 @@ def status_text(conn, project):
         text += '\n확인할 내용: ' + project['clarification']
     if waiting_router(conn, project['id']):
         text += '\n새 지시의 뜻을 확인 중입니다. 이전 업무의 새 결과 게시는 보류합니다.'
+    from .research.store import STATE_TEXT
+
+    research = conn.execute("""SELECT state,count(*) AS n FROM research_jobs WHERE project_id=%s
+        GROUP BY state ORDER BY state""", (project['id'],)).fetchall()
+    for row in research:
+        text += f"\n• 연구 실행: {STATE_TEXT[row['state']]} {row['n']}건"
     for row in rows:
         text += f"\n• {row['agent']}: {row['status']} {row['n']}건" + (f" ({row['error']})" if row['error'] else '')
     pause = conn.execute('SELECT * FROM runtime_control WHERE id=1').fetchone()

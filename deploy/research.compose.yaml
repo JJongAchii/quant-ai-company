@@ -1,0 +1,34 @@
+# Apply after review alongside compose.yaml. Migrate first and provision the token/artifact directory.
+# The base company deploy stays unchanged until this explicit overlay is enabled.
+services:
+  api:
+    environment:
+      COMPANY_RESEARCH_ENABLED: "true"
+      RESEARCH_WORKER_TOKEN_FILE: /run/secrets/research_worker_token
+      RESEARCH_ARTIFACT_DIR: /state/research
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/research:/state/research
+    secrets:
+      - research_worker_token
+  slack-socket:
+    environment:
+      COMPANY_RESEARCH_ENABLED: "true"
+  worker:
+    environment:
+      COMPANY_RESEARCH_ENABLED: "true"
+      RESEARCH_ARTIFACT_DIR: /state/research
+      RESEARCH_REPORT_BUCKET: ${RESEARCH_REPORT_BUCKET:?Set the existing approved backup bucket}
+      RESEARCH_REPORT_PREFIX: company/research/executions
+      RESEARCH_S3_CREDENTIALS_FILE: /run/secrets/research_backup_aws
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/research:/state/research
+    secrets:
+      - research_backup_aws
+  dispatch:
+    environment:
+      COMPANY_RESEARCH_ENABLED: "true"
+secrets:
+  research_worker_token:
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/research-worker-token
+  research_backup_aws:
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/research-backup-aws.json

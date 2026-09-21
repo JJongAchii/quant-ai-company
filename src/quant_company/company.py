@@ -49,12 +49,15 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     allowed_tools = {"calculate", "knowledge_search", "read_source", "company_history",
                      "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
                      "finance_search", "finance_read", "web_search", "web_read",
-                     "finance_compute", "data_quality", "staff_status", "news_status"} | LAKE_TOOLS
+                     "finance_compute", "data_quality", "staff_status", "news_status", "research_control"} | LAKE_TOOLS
     for role in roles:
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
     if "reporter" in by_id and settings.company_news_enabled:
         by_id["reporter"] = by_id["reporter"].model_copy(update={"active": True})
+    if settings.company_research_enabled and "director" in by_id:
+        role = by_id["director"]
+        by_id["director"] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "research_control"]))})
     return by_id
 
 
@@ -104,6 +107,16 @@ class Company:
             "capabilities": {
                 **TOOL_GUIDE,
                 "news_status": "Reporter: {}. Read-only news receipts.",
+                "research_control": {
+                    "enabled": self.settings.company_research_enabled,
+                    "usage": 'Director: {action:"catalog"|"status"} or '
+                             '{action:"request",recipe_id:"kr-etf-p11-replay-v1"}. '
+                             'Request prepares a fixed replay for authenticated owner approval; it is not an execution. '
+                             'The server sends the exact approval command. Do not infer approval from a model or quote. '
+                             'After request/status, explain the receipt and complete the conversational task; '
+                             'do not poll with follow-ups or claim the background research is complete. '
+                             'The durable queue delivers the verified report later. New research is not registered.',
+                },
                 "news_reporting": {"enabled": self.settings.company_news_enabled,
                                    "publish_enabled": self.settings.news_publish_enabled},
                 "staff_status": "Director only: {employee?: exact employee id or maintainer}. "
@@ -172,7 +185,7 @@ class Company:
                 },
                 "external_web_search": self.settings.company_web_enabled and any(
                     role.active and "web_search" in role.tools for role in self.roles.values()),
-                "research_worker_submission": False,
+                "research_worker_submission": self.settings.company_research_enabled,
                 "strategy_code_execution": False,
                 "live_trading": False,
                 "paid_api_fallback": False,
@@ -276,6 +289,12 @@ class Company:
         self.role(agent)
         if not text.strip() or len(text) > 10000:
             raise PolicyError("Instruction must contain 1–10000 characters")
+        from .research.store import parse_command
+
+        research_command = parse_command(text) if agent == "director" else None
+        if research_command:
+            interpret = False
+            status_only = True
         digest = fingerprint([text, owner, agent, project_id, channel, thread_ts, revise, status_only])
         prior_ingress_digest = digest
         if interpret or control_action:
@@ -330,7 +349,11 @@ class Company:
             conn.execute("INSERT INTO inbound(event_key,project_id,task_id,payload_digest) VALUES (%s,%s,%s,%s)",
                          (event_key, project_id, task["id"], digest))
             self._message(conn, project, task["id"], owner, "human", text)
-            if control_action:
+            if research_command:
+                from .research.store import ResearchStore
+
+                ResearchStore(self).owner_command(conn, project, task, event_key, research_command)
+            elif control_action:
                 from .task_control import Control, apply
 
                 apply(conn, self, project, task, Control(action=control_action))
@@ -360,6 +383,8 @@ class Company:
                                         (owner, owner)).fetchall())
 
     def project_state(self, project_id, owner=None):
+        from .research.store import ResearchStore
+
         with self.db.transaction() as conn:
             project = self._project(conn, project_id, owner, lock=False)
             result = {"project": project}
@@ -369,6 +394,7 @@ class Company:
             result["turns"] = conn.execute("""SELECT t.id,t.task_id,t.sequence,t.revision,t.status,t.error,
                 t.due_at,t.attempts FROM turns t JOIN tasks k ON k.id=t.task_id WHERE k.project_id=%s
                 ORDER BY t.created_at""", (project_id,)).fetchall()
+            result["research"] = ResearchStore(self).status(conn, project_id)
             return as_json(result)
 
     def _context(self, conn, task, project):
@@ -376,11 +402,21 @@ class Company:
 
         messages = conn.execute("""SELECT author,recipient,kind,text,revision FROM messages WHERE project_id=%s
             ORDER BY created_at DESC,id DESC LIMIT 35""", (project["id"],)).fetchall()[::-1]
+        # Only service-produced read receipts identify consumed evidence. Recheck approval,
+        # availability and project ownership below; a historical receipt is not authorization.
+        read_ids = set()
+        for message in messages:
+            if message["kind"] != "tool" or message["author"] != "tool:read_source":
+                continue
+            receipt = json.loads(message["text"])["receipt"]
+            if isinstance(receipt, dict) and isinstance(receipt.get("id"), str):
+                read_ids.add(receipt["id"])
         children = conn.execute("SELECT agent,instruction,status,result,error FROM tasks WHERE parent_id=%s",
                                 (task["id"],)).fetchall()
         sources = conn.execute("""SELECT id,title,uri,available_at,synthetic,metadata FROM sources WHERE approved
-            AND available_at<=now() AND (project_id IS NULL OR project_id=%s) ORDER BY available_at DESC,id LIMIT 50""",
-                               (project["id"],)).fetchall()
+            AND available_at<=now() AND (project_id IS NULL OR project_id=%s)
+            ORDER BY (id=ANY(%s)) DESC,available_at DESC,id LIMIT 50""",
+                               (project["id"], sorted(read_ids))).fetchall()
         memories = conn.execute("""SELECT text,source_ids FROM memories m WHERE status='verified'
             AND (project_id=%s OR (shared AND EXISTS(SELECT 1 FROM projects p
             WHERE p.id=m.project_id AND p.owner_user=%s))) ORDER BY created_at DESC LIMIT 15""",
@@ -408,8 +444,12 @@ class Company:
                 system = current_system(conn, self, [project["owner_user"]])
                 identity = record_source(conn, project, "system_status", system)
                 context["system"] = {**system, "source_id": identity}
-                context["approved_sources"].append({"id": identity, "title": "Current system evidence",
-                                                     "uri": "company://records/" + identity, "synthetic": False})
+                context["approved_sources"].insert(0, {"id": identity, "title": "Current system evidence",
+                                                       "uri": "company://records/" + identity, "synthetic": False})
+                read_ids.add(identity)
+        # Keep explicitly requested, currently approved sources even before the first read.
+        read_ids.update(source["id"] for source in context["approved_sources"]
+                        if source["id"] in task["instruction"])
         # The DB keeps full evidence. Explicitly bounded excerpts keep an old busy project from
         # exhausting the model context or subscription on every turn.
         for child in context["child_results"]:
@@ -417,18 +457,42 @@ class Company:
                 if child.get(key) and len(child[key]) > limit:
                     child[key] = child[key][:limit] + " [excerpt; full content remains in project records]"
                     context["context_truncated"] = True
+        # Reduce background state before removing any recent messages: even a short
+        # multi-page read can otherwise lose a whole page, not just an excerpt.
+        if "system" in context and len(json.dumps(context, ensure_ascii=False)) > 68000:
+            system = context["system"]
+            context["system"] = {
+                "source_id": system["source_id"], "excerpted": True,
+                "repository": {k: v for k, v in system.get("repository", {}).items()
+                               if k in {"state", "commit", "checked_at", "reason"}},
+                "runtime": {k: v for k, v in system.get("runtime", {}).items()
+                            if k in {"code_commit", "roles_digest", "config_digest"}},
+                "interpretation": "Bounded summary, not a complete status report. Use read_source with "
+                                  "source_id for full evidence. Omitted evidence is unknown, not absent.",
+            }
+            context["context_truncated"] = True
         while len(json.dumps(context, ensure_ascii=False)) > 68000:
-            for key, minimum in [("messages", 3), ("recent_artifacts", 0), ("verified_memories", 0),
-                                 ("approved_sources", 0), ("child_results", 0)]:
+            for key, minimum, index in [("messages", 3, 0), ("recent_artifacts", 0, -1),
+                                        ("verified_memories", 0, -1), ("approved_sources", 0, -1),
+                                        ("child_results", 0, 0)]:
+                if key == "approved_sources":
+                    index = next((i for i in range(len(context[key]) - 1, -1, -1)
+                                  if context[key][i]["id"] not in read_ids), None)
+                    if index is None:
+                        continue
                 if len(context[key]) > minimum:
-                    context[key].pop(0)
+                    context[key].pop(index)
                     context["context_truncated"] = True
                     break
             else:
-                # Three remaining messages can each contain a large source/tool response.
                 for message in context["messages"]:
-                    message["text"] = message["text"][:3000] + " [excerpt]"
+                    if len(message["text"]) > 3000:
+                        message["text"] = message["text"][:3000] + " [excerpt; full content remains in project records]"
+                for source in context["approved_sources"]:
+                    source.pop("metadata", None)
                 context["context_truncated"] = True
+                if len(json.dumps(context, ensure_ascii=False)) > 68000:
+                    raise PolicyError("Required task context exceeds the bounded prompt budget")
                 break
         return context
 
@@ -562,6 +626,12 @@ class Company:
 
     def _tool(self, conn, project_id, request, *, task=None, turn_id=None):
         arguments = request.arguments
+        if request.name == "research_control":
+            from .research.store import ResearchStore
+
+            if not task:
+                raise PolicyError("Research control requires a task")
+            return ResearchStore(self).tool(conn, self._project(conn, project_id, lock=False), task, arguments)
         if request.name == "news_status":
             from .news.store import NewsStore
 
@@ -712,6 +782,10 @@ class Company:
                 return commit_routing(conn, self, project, task, turn, response)
             self.validate_decision(conn, project, task, decision)
             final = task["agent"] == "director" and not task["parent_id"] and decision.status == "complete"
+            if final:
+                final = not conn.execute("""SELECT 1 FROM research_jobs WHERE task_id=%s
+                    AND state NOT IN ('completed','cancelled','failed','awaiting_audit') LIMIT 1""",
+                                         (task["id"],)).fetchone()
             # Maintenance owns the eventual result notification; its intake acknowledgement is progress.
             if final and conn.execute("SELECT to_regclass('maintenance_jobs') AS name").fetchone()["name"]:
                 final = not conn.execute("""SELECT 1 FROM maintenance_jobs WHERE kind='review'

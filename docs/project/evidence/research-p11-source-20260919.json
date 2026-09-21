@@ -1,0 +1,89 @@
+{
+  "schema": "research-p11-operator-evidence-v1",
+  "source_id": "operator:research-p11-20260919",
+  "recorded_at": "2026-09-18T16:21:54.380365+00:00",
+  "stage": "DEVELOPMENT ONLY — NOT CONFIRMATORY OR DEPLOYABLE",
+  "execution": {
+    "host": "worker / DESKTOP-5T00NAF / RTX 3070",
+    "code_commit": "02649715bd3661826253e1ce84f8002d2a74c822",
+    "qualification_passed": 3,
+    "candidate_runs_completed": 3,
+    "stop_reason": "budget-exhausted",
+    "sealed_read": false
+  },
+  "audit": {
+    "verdict": "pass",
+    "paths": [
+      "audits/AUDIT-leak-auditor-20260919-company-kr-etf-pilot-p11-report-path.md"
+    ],
+    "objective_digest": "03d58ee449e6",
+    "receipt_sha256": "b38581cd007e88f371ce4e44fb150925266cdb057d411f4a170907e41a781759"
+  },
+  "selected_trial": "C02",
+  "selected_method": "m2",
+  "selected_base_cagr_fraction": 0.13758907940537446,
+  "selected_stress_metrics_fraction": {
+    "cagr": 0.1165731419324525,
+    "sharpe": 0.5870410855918182,
+    "mdd": -0.45241098654973266,
+    "worstMonth": -0.28349850160352374,
+    "skewness": 0.555408694489766,
+    "excessKurtosis": 24.5454578555008,
+    "totalOneWayTurnover": 117.2699645173216
+  },
+  "all_trials_columns": [
+    "trial",
+    "method",
+    "base CAGR",
+    "stress CAGR",
+    "stress MDD",
+    "selection"
+  ],
+  "all_trials": [
+    [
+      "C01",
+      "M1",
+      "+11.94%",
+      "+9.78%",
+      "-51.41%",
+      "보존"
+    ],
+    [
+      "C02",
+      "M2",
+      "+13.76%",
+      "+11.66%",
+      "-45.24%",
+      "선택"
+    ],
+    [
+      "C03",
+      "M3",
+      "+1.57%",
+      "+0.24%",
+      "-34.20%",
+      "보존"
+    ]
+  ],
+  "development_period": "2014-01-01..2026-08-31",
+  "costs": "one-way base 10bp / stress 30bp; bounded approximation",
+  "baseline": "unmeasured: 447820 held valuation gap on 2024-10-08; no excess return, alpha or beta/timing decomposition claim",
+  "return_semantics": "KRX reference-price adjusted return; not full cash-distribution TR or exact after-tax live return",
+  "report_link_expires_at": "2026-09-25T16:21:35.847079+00:00",
+  "report_sha256": "feabd2dec3b2d495c1eb8e54d7e5f5ca9922bdfbbf92b18a24a9bf2ba5d5df63",
+  "research_pr": "https://github.com/JJongAchii/quant-lab/pull/16",
+  "next_step": "Review the development report. A separate approved PREREG and baseline/comparison policy are required for confirmation; no extra strategy runs or deployment authorized.",
+  "integration_mode": "Operator/research-session performed the 3070 execution and independent D2 review. Director reads this registered evidence and reports. Do not claim autonomous Slack staff strategy execution.",
+  "report_url": "[private report URL redacted; see publication receipt]",
+  "private_report_url_sha256": "0c3c73ec2731492c48ee558be7cbea6a1a3c45709a0cc870c91d34ef00881d63",
+  "delivery": {
+    "request": {
+      "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+      "task_id": "38d05def-cd08-5d3d-82c3-103727648a19",
+      "duplicate": false
+    },
+    "runtime_commit": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+    "new_slack_ingress": false,
+    "source_id": "operator:research-p11-20260919"
+  }
+}

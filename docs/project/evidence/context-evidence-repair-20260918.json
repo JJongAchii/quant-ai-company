@@ -1,0 +1,92 @@
+{
+  "schema": "context-evidence-repair-verification-v1",
+  "recorded_at": "2026-09-18T08:40:09.928044+00:00",
+  "implementation_commit": "e7593d0931d71fd0aab4a4ce97e462e4221c6af7",
+  "production_observation": {
+    "runtime_commit": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+    "task_id": "974dda36-6b80-5946-9c21-5b56e542ccf8",
+    "task_completed": true,
+    "actual_codex_calls": 5,
+    "actual_read_source_calls": 4,
+    "turns": [
+      {
+        "turn_id": "c6feb067-bea1-5b39-a56d-c4ee6545237a",
+        "prompt_sha256": "79debf57e1b6844e3440aa89aab8193dc46f03c20116bdbe4401e0487f0adcff",
+        "context_characters": 67983,
+        "system_characters": 53674,
+        "p10_in_approved_sources": true,
+        "p10_read_receipt_present": false,
+        "status": "completed"
+      },
+      {
+        "turn_id": "745ebc55-962f-5311-aca3-2828813f8dd7",
+        "prompt_sha256": "e62cd0b222cae0e4a480fc2fbfb1fb8476d007896addf0e1db05b63ef631be40",
+        "context_characters": 67789,
+        "system_characters": 53674,
+        "p10_in_approved_sources": false,
+        "p10_read_receipt_present": true,
+        "status": "completed"
+      },
+      {
+        "turn_id": "6a45eea5-4366-5662-af6a-804ce37b6fe7",
+        "prompt_sha256": "70dae5132b8b98e41194dcc808bbc5a9c3f724b4d3250ae48be289a43aad4662",
+        "context_characters": 67975,
+        "system_characters": 53674,
+        "p10_in_approved_sources": false,
+        "p10_read_receipt_present": true,
+        "status": "completed"
+      },
+      {
+        "turn_id": "3587d8d9-f8e6-59d4-aad5-5657b821dded",
+        "prompt_sha256": "89f96b674ee729d5376da862a205b699ee9e00b15aa61cec93fb07035fe46352",
+        "context_characters": 67980,
+        "system_characters": 53674,
+        "p10_in_approved_sources": false,
+        "p10_read_receipt_present": true,
+        "status": "completed"
+      },
+      {
+        "turn_id": "42c3404e-fc38-5c60-b053-26f54448d941",
+        "prompt_sha256": "7cd30cfa48f40935693c74a7a89f9d731ed2ccbdef4bf1a9a91d537c7a6cd2dc",
+        "context_characters": 67908,
+        "system_characters": 53674,
+        "p10_in_approved_sources": false,
+        "p10_read_receipt_present": true,
+        "status": "completed"
+      }
+    ],
+    "final_slack_report_verified_by": "docs/project/evidence/research-p10-live-20260918.json"
+  },
+  "before_patch": {
+    "base_commit": "43ed57b",
+    "tests": 5,
+    "passed": 3,
+    "failed": 2,
+    "failures": [
+      "Successful read source absent from approved_sources under newer-source pressure",
+      "Oversized system facts caused ProviderRequest prompt > 90000 characters"
+    ]
+  },
+  "after_patch": {
+    "suite": "tests/test_context_evidence.py tests/test_company.py tests/test_system_state.py tests/test_maintenance_behavior.py",
+    "tests": 62,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "database": "dedicated disposable local PostgreSQL 14",
+    "source_context_cases": 6,
+    "provider": "synthetic fixture only",
+    "ruff": "passed",
+    "diff_check": "passed",
+    "junit_sha256": "b3c8e4d9f4bfc802714519defc82bf55332b5b04965cce026788046ba762f099"
+  },
+  "file_sha256": {
+    "src/quant_company/company.py": "d6b23564aed3cde5448f63f3802a089dac9a83920d50a43d81ea3516f0a0e49c",
+    "tests/test_context_evidence.py": "7c2dd1d3fb5039c2cd0af46820a44cff7cee2f92bfa32aac90e983b7b7fbf4e9",
+    "docs/adr/0028-preserve-consumed-context-evidence.md": "504fc65aa54dcd2127687ee60b0d443b1fb1eb82b24d9620629d7cb221446bab"
+  },
+  "deployed": false,
+  "production_requests_rewritten": false,
+  "new_live_model_validation_of_fix": false,
+  "limits": "P10 completed on unchanged runtime despite repeated reads. This receipt proves local context assembly and authorization regression checks, not improved production model behavior. Operational rollout remains subject to owner review."
+}

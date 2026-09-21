@@ -1,0 +1,65 @@
+{
+  "kind": "intentional_polling_daemon_restart",
+  "started_at": "2026-09-21T01:04:03.331558+00:00",
+  "job_id": "13a0d3d9-7078-568d-9303-eda281bf2107",
+  "process_before": {
+    "company_commit": "ea389bbac6d7cd09749f9d5d595f87819c0f1932",
+    "identity": {
+      "boot": "0ddce41e-24ba-4870-a10f-aecbbb3a81b2",
+      "command": "2442406fa73c94943532b22d765d7824ec348fc14eadc3f8850f3e4a5762f75e",
+      "pgid": 313972,
+      "pid": 313972,
+      "start": "64554498"
+    },
+    "launch_id": "9bad9974633d4ec1a312b07c2ef7b3e3",
+    "started_at": "2026-09-21T01:02:41.205710+00:00"
+  },
+  "files_before": [
+    "artifact.zip",
+    "audit-verification.json",
+    "checkout.command.json",
+    "checkout.log",
+    "clone.command.json",
+    "clone.log",
+    "environment.command.json",
+    "environment.json",
+    "environment.log",
+    "execution-config.json",
+    "execution.lock",
+    "executor.log",
+    "launch-intent.json",
+    "m1-evaluate.command.json",
+    "m1-evaluate.log",
+    "m1-qualify.command.json",
+    "m1-qualify.log",
+    "m2-evaluate.command.json",
+    "m2-evaluate.log",
+    "m2-qualify.command.json",
+    "m2-qualify.log",
+    "m3-evaluate.command.json",
+    "m3-evaluate.log",
+    "m3-qualify.command.json",
+    "m3-qualify.log",
+    "original-audit-verification.command.json",
+    "original-audit-verification.log",
+    "process.json",
+    "receipt.json",
+    "recipe.json",
+    "result.json",
+    "state.json"
+  ],
+  "process_after": {
+    "company_commit": "ea389bbac6d7cd09749f9d5d595f87819c0f1932",
+    "identity": {
+      "boot": "0ddce41e-24ba-4870-a10f-aecbbb3a81b2",
+      "command": "2442406fa73c94943532b22d765d7824ec348fc14eadc3f8850f3e4a5762f75e",
+      "pgid": 313972,
+      "pid": 313972,
+      "start": "64554498"
+    },
+    "launch_id": "9bad9974633d4ec1a312b07c2ef7b3e3",
+    "started_at": "2026-09-21T01:02:41.205710+00:00"
+  },
+  "same_process_record": true,
+  "ended_at": "2026-09-21T01:04:03.339996+00:00"
+}

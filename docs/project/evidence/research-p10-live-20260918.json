@@ -1,0 +1,166 @@
+{
+  "schema": "research-p10-live-verification-v1",
+  "recorded_at": "2026-09-18T08:32:10.962304+00:00",
+  "runtime_commit": "e869eb5f608254d42da6159ff2932c1af8c2f451",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "task_id": "974dda36-6b80-5946-9c21-5b56e542ccf8",
+  "task_state": "completed",
+  "actual_codex_calls": 5,
+  "requested_model": "gpt-6-astra",
+  "requested_reasoning_effort": "max",
+  "configured_request_and_completed_cli_receipt_verified": true,
+  "provider_effort_attestation_claimed": false,
+  "requests": [
+    {
+      "id": "c6feb067-bea1-5b39-a56d-c4ee6545237a",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "prompt_sha256": "79debf57e1b6844e3440aa89aab8193dc46f03c20116bdbe4401e0487f0adcff"
+    },
+    {
+      "id": "745ebc55-962f-5311-aca3-2828813f8dd7",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "prompt_sha256": "e62cd0b222cae0e4a480fc2fbfb1fb8476d007896addf0e1db05b63ef631be40"
+    },
+    {
+      "id": "6a45eea5-4366-5662-af6a-804ce37b6fe7",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "prompt_sha256": "70dae5132b8b98e41194dcc808bbc5a9c3f724b4d3250ae48be289a43aad4662"
+    },
+    {
+      "id": "3587d8d9-f8e6-59d4-aad5-5657b821dded",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "prompt_sha256": "89f96b674ee729d5376da862a205b699ee9e00b15aa61cec93fb07035fe46352"
+    },
+    {
+      "id": "42c3404e-fc38-5c60-b053-26f54448d941",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "prompt_sha256": "7cd30cfa48f40935693c74a7a89f9d731ed2ccbdef4bf1a9a91d537c7a6cd2dc"
+    }
+  ],
+  "cli_receipts": [
+    {
+      "request_id": "c6feb067-bea1-5b39-a56d-c4ee6545237a",
+      "input_digest": "6e3eb105a030b5813aa0ed14f0660134bcbfc864594cf533ed4fad853ce88568",
+      "state": "complete",
+      "cli_version": "0.154.0",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "745ebc55-962f-5311-aca3-2828813f8dd7",
+      "input_digest": "a24a93b80745fcf55879043bde6725f87ad4d865fca64dc0e1b4d1ab1a339afa",
+      "state": "complete",
+      "cli_version": "0.154.0",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "6a45eea5-4366-5662-af6a-804ce37b6fe7",
+      "input_digest": "58b54fe4220adfd49eda9c82f5dc8f5ee89b4e08d9d31ced2586fe87977d724d",
+      "state": "complete",
+      "cli_version": "0.154.0",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "3587d8d9-f8e6-59d4-aad5-5657b821dded",
+      "input_digest": "3230f8c8b3dd20518775e9eb05c25dba47906ae93c689a5105c3bd066e9e9848",
+      "state": "complete",
+      "cli_version": "0.154.0",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "42c3404e-fc38-5c60-b053-26f54448d941",
+      "input_digest": "97c803ac8e3da7ea18f14c38b836f09928b26e37f09e64402727d5993744cbb0",
+      "state": "complete",
+      "cli_version": "0.154.0",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    }
+  ],
+  "actual_read_source_receipts": [
+    {
+      "source_id": "operator:research-p10-20260918",
+      "content_sha256": "2aa16e1ca1e9d107266b26ab6855c23d624ae13249a8b3ef3ee719d2bee5698c",
+      "complete_content_verified": true
+    },
+    {
+      "source_id": "operator:research-p10-20260918",
+      "content_sha256": "2aa16e1ca1e9d107266b26ab6855c23d624ae13249a8b3ef3ee719d2bee5698c",
+      "complete_content_verified": true
+    },
+    {
+      "source_id": "operator:research-p10-20260918",
+      "content_sha256": "2aa16e1ca1e9d107266b26ab6855c23d624ae13249a8b3ef3ee719d2bee5698c",
+      "complete_content_verified": true
+    },
+    {
+      "source_id": "operator:research-p10-20260918",
+      "content_sha256": "2aa16e1ca1e9d107266b26ab6855c23d624ae13249a8b3ef3ee719d2bee5698c",
+      "complete_content_verified": true
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "0acc9af2-2f97-5ce5-aa2a-9ce91a4b0665",
+      "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+      "task_id": "974dda36-6b80-5946-9c21-5b56e542ccf8",
+      "revision": 4,
+      "title": "P10 유동성 개정 연구: 실제 검사 결과와 기준선 자료 공백",
+      "content": "제공된 read_source 반환 영수증을 근거로 P10 approved-v3 실행 기록을 정리했다. 기록 시각은 2026-09-18T08:23:26.581211+00:00이다. 운영자·연구 세션이 worker / DESKTOP-5T00NAF / RTX 3070에서 구현과 검사를 수행했다. 총괄의 업무는 반환된 증거의 검토·보고이며, Slack 직원들이 직접 전략을 실행한 결과로 해석하지 않는다.\n\n유동성 하한은 ADV20 2,000,000,000원이다. 이는 계좌 1억 원·5개 보유·기준 거래대금 참여율 1%에 따른 구현 선택이며, 사용자가 직접 지정한 수치가 아니다. 순위 산정 전에 동일한 후보군을 적용했고, 경로 결과를 본 뒤 하한을 조정하지 않았다. 기간·비용·신호·예산은 유지했다.\n\n실행 커밋은 7521cdd385a61455dbfe281c306155dc59c817a8이다. 해당 실행의 leakage 코드 검사 122개가 종료 코드 0으로 통과했고, 기준선과 M1·M2·M3의 qualification 검사도 4개 모두 통과했다. 기록에 별도로 표시된 최신 연구 커밋은 d4bd98700d2b25ed554c766065e52ea47e8dd57a이며, 실행 커밋과 구분한다.\n\n| 대상 | qualification | 기본 10bp·스트레스 30bp 회계 경로 |\n| --- | --- | --- |\n| 동일가중 기준선 | 통과 | 두 조건 모두 자료 공백으로 중단 |\n| M1 | 통과 | 두 조건 각각 전체 3,107거래일 완료 |\n| M2 | 통과 | 두 조건 각각 전체 3,107거래일 완료 |\n| M3 | 통과 | 두 조건 각각 전체 3,107거래일 완료 |\n\n기준선의 장애는 보유 종목 447820의 2024-10-08 종가 부재와 문서화된 종료가치 미확보다. 마지막 관측일은 2024-10-07이다. 실제 상환 지급액은 확인되지 않았고, 종료가치 대체 입력이나 부분기간 성과를 사용하지 않았다. 공개자료 미확보는 조회한 공개 경로 범위의 결과이며, 모든 공식 보관소에 자료가 없다는 뜻은 아니다. 기준선 재개 조건은 문서화된 평가·상환 이벤트 확보 또는 별도로 승인된 연구 범위 변경이다.\n\nM1·M2·M3의 경로 검사에서는 매수 전용, 총노출 1 이하, 레버리지·인버스 ETF 제외 제약이 충족됐다. 그러나 모든 후보의 performanceComputed는 false이고 성과 산출물은 0개다. 수익·기준선 대비 성과·알파는 아직 측정하지 않았다. 회계 경로 완료와 qualification 통과는 수익성 또는 독립 감사 통과의 증거가 아니며, 원래의 비교 연구는 미완료다.\n\n기술 실패 기록은 기존 11건에 신규 1건을 더한 누적 12건이며, 기술 재시도 횟수 상한은 없다. 외부기관 직접 문의는 발송되지 않았고 이번 업무에서도 진행하지 않는다.\n\n다음 단계는 운영자가 이미 전달한 순서 변경안에 대한 사용자 답변을 반영하는 것이다. 제안은 동일가중 기준선을 미측정 상태로 보존하고 기존 M1·M2·M3의 절대성과를 먼저 측정한 뒤 독립 D2 감사와 개발용 HTML로 이어가는 순서다. 유니버스·파라미터·비용·예산 변경은 포함하지 않는다. 기록상 제안 단계이며 후보 성과 실행이나 해당 순서 변경의 승인을 가정하지 않는다. 승인을 재요청하지 않는다.\n\n근거 PR: https://github.com/JJongAchii/quant-lab/pull/16\n이번 완료 범위는 실행 증거 보고서 작성이다.",
+      "source_ids": [
+        "operator:research-p10-20260918"
+      ],
+      "digest": "1c9ed5fa95d241ff5cdae76a042139b4bf03d2318e90ba4227a3f7fb48d84aaa",
+      "created_at": "2026-09-18 08:30:17.625330+00:00"
+    }
+  ],
+  "slack_messages": [
+    {
+      "ts": "1789719835.060639",
+      "text": "[지시 v4] P10 원문에서 실행 기록과 남은 자료 공백, 근거 GitHub PR을 확인하겠습니다.",
+      "bot_user_id": "U0C23PPKR5L"
+    },
+    {
+      "ts": "1789719952.731429",
+      "text": "[지시 v4] P10 실행 영수증은 제공됐지만 해당 ID가 현재 승인된 출처 목록에 없습니다. 최종 보고서에 인용하기 위해 등록 원문을 다시 확인하겠습니다.",
+      "bot_user_id": "U0C23PPKR5L"
+    },
+    {
+      "ts": "1789719999.004439",
+      "text": "[지시 v4] P10の実行記録は提供されていますが、承認済み出典一覧との整合を確認するため、指定原文を再取得します。",
+      "bot_user_id": "U0C23PPKR5L"
+    },
+    {
+      "ts": "1789720078.531849",
+      "text": "[지시 v4] P10 실행 영수증은 제공됐지만 지정 출처가 승인 목록에 없어, 원문 조회로 인용 근거를 확인하겠습니다.",
+      "bot_user_id": "U0C23PPKR5L"
+    },
+    {
+      "ts": "1789720218.768589",
+      "text": "[지시 v4] <@U0C250E23NW>\nP10 기록(2026-09-18): 운영자·연구 세션이 RTX 3070에서 수행한 결과입니다.\n유동성 기준(20일 평균 거래대금 20억 원)을 구현한 코드 검사 122개와 qualification 4개가 통과했습니다.\nM1·M2·M3는 기본 10bp·스트레스 30bp 모두 전체기간 3,107거래일 회계 경로를 완료했습니다.\n기준선만 447820의 2024-10-08 종가·문서화된 종료가치 자료 공백으로 막혔습니다.\n수익은 아직 계산하지 않았습니다. 경로 완료는 수익성·독립 감사 통과나 비교 연구 완료를 의미하지 않습니다.\n기술 재시도 횟수 제한은 없으며 외부기관 직접 문의는 하지 않습니다.\n운영자가 후보 성과부터 측정하는 순서 변경안을 이미 제시했으며, 사용자 답변 대기 상태입니다.\n근거: [연구 PR #16](<https://github.com/JJongAchii/quant-lab/pull/16>)",
+      "bot_user_id": "U0C23PPKR5L"
+    }
+  ],
+  "final_owner_mentioned": true,
+  "slack_comparison_normalization": "Remove Slack-added angle brackets around URLs inside Markdown link destinations; preserve other text.",
+  "new_slack_ingress": false,
+  "link": "https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1789720218768589",
+  "limits": "Verified operator-directed server execution and real Slack readback, not autonomous research or provider reasoning attestation."
+}

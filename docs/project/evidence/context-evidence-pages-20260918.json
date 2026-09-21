@@ -1,0 +1,33 @@
+{
+  "schema": "context-source-page-repair-verification-v1",
+  "recorded_at": "2026-09-18T14:41:28.368512+00:00",
+  "implementation_commit": "ea20eee505b877b9bc5d18aa6471aabfe613a63c",
+  "previous_evidence": "docs/project/evidence/context-evidence-repair-20260918.json",
+  "reproduction": {
+    "base_commit": "e7593d0",
+    "test": "test_large_system_does_not_cut_the_current_two_page_read_receipt",
+    "result": "failed",
+    "cause": "With 53k system facts and a 20k source read in two pages, remaining tool messages were excerpted before system facts."
+  },
+  "verification": {
+    "tests": 63,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "database": "dedicated disposable PostgreSQL 14",
+    "source_context_cases": 7,
+    "model_and_system_inputs": "synthetic fixtures",
+    "suite": "tests/test_context_evidence.py tests/test_company.py tests/test_system_state.py tests/test_maintenance_behavior.py",
+    "junit_sha256": "5b3fd7d47256831e0fa77f74866eb9188b667954ae574e7acc85633ea075b4d4",
+    "ruff": "passed",
+    "diff_check": "passed"
+  },
+  "file_sha256": {
+    "src/quant_company/company.py": "860da90e233cc4b3cbc394fda1bd832308f9c4a1da3af1da62f664b7aebc2511",
+    "tests/test_context_evidence.py": "b09c81a6ddf1c8d372e24db7323b6cc90744a130c1c45ac759d8060240a84777",
+    "docs/adr/0028-preserve-consumed-context-evidence.md": "c3a4c669d64337248f40ae03e7c392bf3169145b4e320afc697905dad92282e1"
+  },
+  "deployed": false,
+  "original_requests_and_sources_unchanged": true,
+  "new_live_model_validation_of_fix": false
+}
