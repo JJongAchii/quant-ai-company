@@ -21,6 +21,9 @@ async def test_signed_button_activates_exact_provisioned_mission_once(backend_fi
         draft = mission_tool(h.company, conn, project, task, {"action": "mission_draft", "spec": spec})
     assert draft["state"] == "draft"
     body = await deliver_approval(h.company, credentials)
+    visible = "".join(block["text"]["text"] for block in body["blocks"] if block["type"] == "section")
+    assert spec["execution_profile_digest"] in visible and spec["code"]["base_commit"] in visible
+    assert all(digest in visible for digest in spec["data"]["input_files"].values())
     payload = interaction(h.company, credentials, body)
     raw, headers = signed_form(payload, credentials["director"])
     app = create_app(h.company.settings, h.company, credentials)

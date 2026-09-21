@@ -106,6 +106,9 @@ def mission_tool(company, conn, project, task, arguments):
     from .builds import profile_for
 
     profile_for(company, spec)
+    rendered_spec = json.dumps(spec.model_dump(mode="json"), ensure_ascii=False, sort_keys=True, indent=2)
+    if len(rendered_spec) > 28000:
+        raise PolicyError("Research specification exceeds the complete Slack approval display size")
     snapshot = store.create(conn, project["id"], project["owner_user"], project["revision"], spec)
     from .approvals import publish_approval
 
@@ -118,7 +121,9 @@ def mission_tool(company, conn, project, task, arguments):
                    f"정체 {spec.search.patience}회 · 승인 범위 내 후속 연구 "
                    f"{'지속' if spec.search.continuous else '보고 후 대기'}\n"
                    f"명세 식별자 {snapshot['manifest_digest']}\n"
-                   "상세 명세와 쓰기 범위를 검토한 뒤 아래 버튼으로 승인하거나 취소할 수 있습니다.")
+                   "아래 전체 명세와 쓰기 범위를 검토한 뒤 승인하거나 취소할 수 있습니다.\n"
+                   "기존 기준선은 보존하며, 새 연구 안의 최선이 기존 기준선을 이겼다는 뜻은 아닙니다.\n"
+                   + rendered_spec)
         publish_approval(company, conn, project, task["id"], target, summary)
     return snapshot
 

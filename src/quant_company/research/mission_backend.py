@@ -86,6 +86,7 @@ class MissionBackend:
         for group in ("proposals", "challenges", "interpretations"):
             for row in snapshot[group]:
                 identities.update(row["payload"].get("source_ids", ()))
+        identities.update(row["payload"]["source_id"] for row in snapshot["publications"])
         with self.company.db.transaction() as conn:
             self.company._check_sources(conn, snapshot["project_id"], sorted(identities))
             return conn.execute("""SELECT id,title,uri,content,available_at,synthetic FROM sources
@@ -144,6 +145,20 @@ class MissionBackend:
             source_index.append({"source_id": source["id"], "file": name, "title": source["title"][:200]})
         stage = snapshot["stage"]["stage"]
         extra = {"mission": self._compact(snapshot), "evidence_sources": source_index}
+        # Staff can inspect the specific predecessor/critique without paging through
+        # the entire append-only history. Full history remains available for older evidence.
+        relevant = {}
+        proposal_id = snapshot["stage"].get("proposal_id")
+        for group in ("proposals", "challenges", "rejections", "interpretations", "outcomes"):
+            rows = snapshot[group]
+            if proposal_id and group in {"proposals", "challenges"}:
+                rows = [item for item in rows if str(item.get("proposal_id", item.get("id"))) == proposal_id]
+            for item in rows[-2:]:
+                identity = str(item.get("id", item.get("trial_id", item.get("proposal_id"))))
+                name = f"evidence/{group}/{identity}.json"
+                mappings[name] = self._entry(self._blob(directory, group, item))
+                relevant.setdefault(group, []).append(name)
+        extra["relevant_evidence"] = relevant
         if stage in {"implementation", "repair"}:
             prepared = base_workspace(self.company, profile)
             for name in profile.public_profile.code_paths:
