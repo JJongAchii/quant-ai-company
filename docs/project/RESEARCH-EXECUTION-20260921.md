@@ -1,5 +1,9 @@
 # Company research execution — 2026-09-21
 
+Current deployment status is recorded in
+[Research execution activation](RESEARCH-ACTIVATION-20260921.md). The sections below
+preserve the pre-activation engineering acceptance and its incident history.
+
 User approval: **응 진행해** (2026-09-21, current conversation), for connecting the
 company's approved research, 3070 execution, verification and reporting. The provider
 message UUID is not exposed; no replacement identifier is invented. Engineering

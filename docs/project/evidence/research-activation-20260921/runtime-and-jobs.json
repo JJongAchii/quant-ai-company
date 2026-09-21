@@ -1,0 +1,44 @@
+{
+  "observed_at": "2026-09-21T04:54:11.170857+00:00",
+  "company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+  "research_enabled": true,
+  "news_enabled": true,
+  "staff_development_enabled": true,
+  "staff_review_enabled": true,
+  "director": {
+    "id": "director",
+    "name": "총괄",
+    "active": true,
+    "model": "gpt-6-astra",
+    "reasoning_effort": "max",
+    "version": "7",
+    "tools": [
+      "calculate",
+      "knowledge_search",
+      "read_source",
+      "company_history",
+      "maintenance_review",
+      "maintenance_status",
+      "system_status",
+      "repository_read",
+      "finance_search",
+      "finance_read",
+      "web_search",
+      "web_read",
+      "staff_status",
+      "research_control"
+    ],
+    "can_delegate_to": [
+      "financial_strategist",
+      "researcher_kr",
+      "data"
+    ],
+    "specialist_pack_version": "2026-09-17.1",
+    "specialist_pack_digest": "ea0e564027d5e8083cd6a5046e7123a418284134a7b122796ac3e3c3850bb1bf"
+  },
+  "worker": {
+    "id": "worker",
+    "last_seen": "2026-09-21 04:54:10.803053+00:00"
+  },
+  "jobs": []
+}

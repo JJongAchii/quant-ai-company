@@ -1,0 +1,89 @@
+{
+  "observed_at": "2026-09-21T05:15:13.900008+00:00",
+  "job": {
+    "id": "939b54bb-1004-56f4-b2ae-86512617f1c6",
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "task_id": "535fc344-b1f7-56f6-ad1d-14766dd1be69",
+    "revision": 4,
+    "state": "pending_approval",
+    "approval_event_id": null,
+    "approved_at": null,
+    "claimed_at": null,
+    "heartbeat_at": null,
+    "artifact_sha256": null,
+    "artifact_path": null,
+    "error": null,
+    "company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+    "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+    "updated_at": "2026-09-21T04:54:17.092294+00:00"
+  },
+  "preparation_task": {
+    "id": "535fc344-b1f7-56f6-ad1d-14766dd1be69",
+    "status": "completed",
+    "turn_count": 3,
+    "error": null
+  },
+  "turns": [
+    {
+      "id": "a7a5018e-bd4d-5c07-8c67-e50999343b4d",
+      "status": "completed",
+      "attempts": 1,
+      "error": null,
+      "model": "gpt-6-astra",
+      "effort": "max",
+      "updated_at": "2026-09-21T04:53:51.719251+00:00"
+    },
+    {
+      "id": "88be77a1-9b9f-5e69-aac4-0a0731d36217",
+      "status": "completed",
+      "attempts": 1,
+      "error": null,
+      "model": "gpt-6-astra",
+      "effort": "max",
+      "updated_at": "2026-09-21T04:54:17.092294+00:00"
+    },
+    {
+      "id": "1b553400-9a13-5a76-8486-4dcdd093df66",
+      "status": "completed",
+      "attempts": 1,
+      "error": null,
+      "model": "gpt-6-astra",
+      "effort": "max",
+      "updated_at": "2026-09-21T04:55:12.892023+00:00"
+    }
+  ],
+  "outbox": [
+    {
+      "id": "61165200-4973-462f-b212-1a144b2247e9",
+      "status": "delivered",
+      "agent": "director",
+      "sent_ts": "1789966432.417589",
+      "error": null,
+      "text": "등록된 kr-etf-p11-replay-v1 명세를 확인한 뒤 승인 대기 요청을 준비하겠습니다. 소유자가 이 Slack 스레드에서 보낼 정확한 승인 명령은 서버 응답을 확인해 안내하겠습니다."
+    },
+    {
+      "id": "2b96f8f3-657f-40d1-836a-7d33de904f2e",
+      "status": "delivered",
+      "agent": "director",
+      "sent_ts": "1789966458.208059",
+      "error": null,
+      "text": "카탈로그에서 확인한 `kr-etf-p11-replay-v1` 고정 명세로 승인 대기 요청을 준비하겠습니다. 서버 반환을 확인한 뒤 실제 소유자가 이 Slack 스레드에 보낼 정확한 승인 명령을 안내하겠습니다."
+    },
+    {
+      "id": "68a7abf1-a3cf-42cf-9ef8-fb2bf02981f7",
+      "status": "delivered",
+      "agent": "director",
+      "sent_ts": "1789966459.779259",
+      "error": null,
+      "text": "<@U0C250E23NW>\n연구 실행 명세: 국내 ETF P11 고정 후보 3개 재현\n개발기간 2014-01-01~2026-08-31, 준비기간 2012~2013. 월별 M1/M2/M3, 편도 비용 10/30bp. 고정된 코드·입력·결과와 기존 독립 감사의 재현 검증. 새 과학 시행 0회, 기준선·초과성과 미측정, 확증·투자 승인 아님.\n실행: 3070 · 코드 02649715bd36 · 지시 v4\n확인한 명세로 실행하려면 이 스레드에 아래 문구를 보내주세요.\n연구 승인 939b54bb-1004-56f4-b2ae-86512617f1c6 f0fb9af6a987"
+    },
+    {
+      "id": "6cd07ef4-bc68-4f82-864b-0aee35e7b26d",
+      "status": "delivered",
+      "agent": "director",
+      "sent_ts": "1789966514.094569",
+      "error": null,
+      "text": "서버 응답상 `kr-etf-p11-replay-v1` 명세 준비 요청이 접수됐으며, 현재 `pending_approval`(소유자 승인 대기)입니다. 이번 요청은 아직 실행 전입니다.\n\n실제 소유자가 이 Slack 스레드에 아래 명령을 그대로 보내주세요.\n\n`연구 승인 939b54bb-1004-56f4-b2ae-86512617f1c6 f0fb9af6a987`\n\n연구 서비스가 해당 명세에 대한 소유자의 직접 승인을 요구하므로 운영자 전달로 대체할 수 없습니다. 승인 범위는 기존 P11 후보 3개의 고정 재현이며, 새 과학 시행이나 확증·투자 승인은 포함하지 않습니다."
+    }
+  ]
+}
