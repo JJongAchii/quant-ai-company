@@ -11,19 +11,31 @@
       "status": "pending"
     },
     "IMPLEMENTATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/tech-feed.md",
+          "sha256": "40f4fc0f9cc7"
+        }
+      ],
+      "note": "12-source zero-model collector and durable Slack delivery implemented; integrated latest production main.",
+      "status": "verified",
+      "updatedAt": "2026-09-21T12:57:34.258742+00:00"
     },
     "VALIDATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/TECH-FEED-VALIDATION.md",
+          "sha256": "9bed63d53cf3"
+        }
+      ],
+      "note": "992 passed, 36 environmental/opt-in skips; real PostgreSQL and Temporal, simulated Slack, real public RSS.",
+      "status": "verified",
+      "updatedAt": "2026-09-21T12:57:34.418691+00:00"
     }
   },
   "intentDigest": "1793f313fc9f",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-21T12:41:43.499751+00:00"
+  "updatedAt": "2026-09-21T12:57:34.418691+00:00"
 }

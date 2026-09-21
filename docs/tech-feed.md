@@ -28,7 +28,8 @@ NAVER D2, 토스 기술 블로그의 12개다. OpenAI는 기술 관련 분류, N
 
 ## 연결
 
-기존 Reporter를 실제 `tech-feed` 채널에 초대하고 채널 ID·소유자를 기존 Slack 허용 목록에도 추가한다.
+기존 Reporter를 실제 채널에 초대하고 채널 ID·소유자를 기존 Slack 허용 목록에도 추가한다.
+현재 워크스페이스의 실제 채널명은 `#tech-feeds`이며 채널 ID는 `C0C2KPB76KE`다.
 자격증명은 기존 서버 비밀 저장소에 그대로 두며 코드·채팅·모델 컨테이너로 복사하지 않는다.
 다음 설정을 API·worker·dispatcher·slack-socket에 동일하게 전달한다. Compose 공통 환경에 포함되어 있다.
 

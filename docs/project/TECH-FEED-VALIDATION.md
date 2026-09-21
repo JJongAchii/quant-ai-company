@@ -1,6 +1,6 @@
 # tech-feed implementation and acceptance
 
-2026-09-21. Implementation complete; final integration and production activation in progress.
+2026-09-21. Implementation and latest-main integration validated; production activation in progress.
 
 The approved feed has 12 sources, no model requests, original-language title/link/excerpt, first-sync baseline,
 72-hour freshness, durable deduplication, KST 06:00–24:00 delivery and one-minute spacing.
@@ -16,8 +16,14 @@ See [operating instructions](../tech-feed.md) and [decision](../adr/0032-zero-mo
 - GitHub feed embeds HTML DOCTYPE samples in CDATA; these are treated as text while actual XML DTD/entity
   declarations remain prohibited. Kubernetes feed exceeded 1MiB, so only the tech-feed parser/transport uses
   a bounded 2MiB limit. The existing news defaults remain 1MiB and the original parser.
-- Latest production release was observed at `e7a0f941169b2253ec7733c7f68eca2165b80b97`; integration must preserve
-  its autonomous-research changes. Initial tests above preceded that integration.
+- Merged the latest production/main release `e7a0f941169b2253ec7733c7f68eca2165b80b97` without conflicts.
+  Its research implementation and deployment overlays are preserved.
+- [Integrated regression suite](evidence/tech-feed-integrated-tests.xml): **992 passed, 36 skipped**, including
+  36 focused tech-feed checks, with real disposable PostgreSQL 14 and local Temporal; Slack is simulated.
+  Skips: 30 pinned-qlab checks, 3 operator-only Linux research runtime checks and 3 opt-in Codex checks.
+  `uv run --frozen ruff check .` passed. No research run, training or live model inference was initiated.
+- Slack UI inspection resolved the user's existing channel as `#tech-feeds` (`C0C2KPB76KE`), not singular
+  `#tech-feed`. No new channel or app will be created.
 
-Production channel access, installed source hashes, actual publication receipts and final integration test
-results are pending. Mocked Slack tests are not a deployment claim.
+Production channel membership, installed source hashes and actual publication receipts are pending.
+Mocked Slack tests are not a deployment claim.
