@@ -49,6 +49,13 @@ def local_failure(tmp_path, monkeypatch):
     repo = tmp_path / "clean-company"
     repo.mkdir()
     (repo / "fixture.txt").write_text("No research code or data is executed by this fixture.\n")
+    # Release preflight now also requires the two committed executor entrypoints.
+    # The captured-failure test still injects only its labelled non-performance child.
+    for name in ("worker.py", "executor.py"):
+        relative = Path("src/quant_company/research") / name
+        destination = repo / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes((ROOT / relative).read_bytes())
     subprocess.run(["git", "init", "-q", str(repo)], check=True)
     subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
     subprocess.run(["git", "-C", str(repo), "-c", "user.name=Fixture", "-c", "user.email=fixture@example.test",

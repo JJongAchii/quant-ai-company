@@ -86,6 +86,30 @@ def base_workspace(company, profile):
     return materialize(company, profile, destination)
 
 
+def experiment_signature(root, files, config_files):
+    """JSON formatting is not a different scientific configuration."""
+    identities = dict(files)
+
+    def unique_pairs(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate-config-key")
+            result[key] = value
+        return result
+
+    for name in config_files:
+        if name.endswith(".json"):
+            try:
+                value = json.loads((root / name).read_bytes(), object_pairs_hook=unique_pairs)
+                encoded = json.dumps(value, ensure_ascii=False, sort_keys=True,
+                                     separators=(",", ":"), allow_nan=False).encode()
+            except (UnicodeError, ValueError, OSError):
+                raise PolicyError("Research configuration must be unambiguous finite JSON") from None
+            identities[name] = hashlib.sha256(encoded).hexdigest()
+    return hashlib.sha256(json.dumps(identities, sort_keys=True).encode()).hexdigest()
+
+
 def build_trial(company, row, snapshot):
     spec = MissionSpec.model_validate(snapshot["spec"])
     profile = profile_for(company, spec)
@@ -123,7 +147,11 @@ def build_trial(company, row, snapshot):
         company_commit=company.settings.company_code_commit)
     # A distinct trial must make a distinct experiment. Commit timestamps or renamed hypotheses
     # alone are not a new scientific configuration.
-    signature = hashlib.sha256(json.dumps(files, sort_keys=True).encode()).hexdigest()
+    signature = experiment_signature(prepared.worktree, files, profile.config_files)
+    base = base_workspace(company, profile)
+    base_files = {name: base.manifest["files"][name] for name in profile.public_profile.code_paths}
+    if signature == experiment_signature(base.worktree, base_files, profile.config_files):
+        raise PolicyError("This patch does not change the baseline experiment")
     for attempt in snapshot["attempts"]:
         previous_plan = attempt["plan"]
         if (str(attempt["trial_id"]) != str(trial_id)
