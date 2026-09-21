@@ -1,5 +1,6 @@
 """Real database/ingress tests; model and GitHub outputs are explicitly fixtures."""
 
+import base64
 import json
 from concurrent.futures import ThreadPoolExecutor
 
@@ -210,8 +211,7 @@ def test_repository_read_boundary_is_broader_than_patch_boundary_and_checks_exac
         assert not readable(forbidden)
     body = b'VALUE = 0\n'
     github = GitHub(config())
-    fetched = []
-    github.read_files = lambda snapshot, paths: fetched.append(paths[0]) or {paths[0]: body.decode()}
+    github.request = lambda *args: (_ for _ in ()).throw(AssertionError('unchanged blob must be reused'))
     snapshot = {'commit': 'a'*40, 'entries': {
         path: {'sha': blob_sha(body.decode()), 'mode': '100644', 'type': 'blob', 'size': len(body)},
         'src/link.py': {'sha': 'c'*40, 'mode': '120000', 'type': 'blob', 'size': 4},
@@ -219,11 +219,13 @@ def test_repository_read_boundary_is_broader_than_patch_boundary_and_checks_exac
     }}
     files, coverage = github.read_repository(snapshot, {path: body.decode()})
     assert files == {path: body.decode()} and 'src/link.py' in coverage['omitted_paths']
-    assert fetched == [] and coverage['reused_files'] == 1
-    snapshot['entries'][path]['sha'] = 'b'*40
-    github.read_files = lambda snapshot, paths: {paths[0]: body.decode()}
+    assert coverage['reused_files'] == 1
+    changed = 'VALUE = 1\n'
+    snapshot['entries'][path]['sha'] = blob_sha(changed)
+    github.request = lambda method, route: {'encoding': 'base64',
+                                             'content': base64.b64encode(changed.encode()).decode()}
     files, coverage = github.read_repository(snapshot, {path: body.decode()})
-    assert files == {path: body.decode()} and coverage['fetched_files'] == 1
+    assert files == {path: changed} and coverage['fetched_files'] == 1
 
 
 @pytest.mark.integration

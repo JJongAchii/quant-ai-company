@@ -124,7 +124,12 @@ class GitHub:
             if content is not None and blob_sha(content) == entry["sha"]:
                 reused += 1
             else:
-                content = self.read_files(snapshot, [path])[path]
+                blob = self.request("GET", "/git/blobs/" + entry["sha"])
+                if blob["encoding"] != "base64":
+                    raise ValueError("unsupported_blob_encoding")
+                content = base64.b64decode(blob["content"]).decode("utf-8")
+                if blob_sha(content) != entry["sha"]:
+                    raise ValueError("repository_blob_digest_mismatch")
                 fetched += 1
             actual = len(content.encode())
             if actual > 100000 or total + actual > 2000000 or SECRET.search(content):
