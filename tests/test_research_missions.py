@@ -410,6 +410,33 @@ def test_feedback_best_preservation_and_continuous_cycles_keep_cumulative_histor
     assert h.snapshot()["cumulative_trials"] == 4
 
 
+def test_next_stage_preserves_but_skips_proposals_made_before_latest_evidence(harness):
+    h = harness
+    h.mission()
+    stale = h.add(hypothesis="Alternative registered before the first comparison")
+    h.challenge(stale)
+    first, _ = h.finish()
+    assert h.invoke("next_stage", h.mission_id)["stage"] == "proposal"
+    fresh = h.add()
+    assert h.invoke("next_stage", h.mission_id)["proposal_id"] == str(fresh.id)
+    assert str(first) in fresh.model_dump(mode="json")["predecessor_trial_ids"]
+    assert any(row["id"] == str(stale.id) for row in h.snapshot()["proposals"])
+
+
+def test_cancel_preserves_queued_job_and_history_for_controller_reconciliation(harness):
+    h = harness
+    h.mission()
+    trial_id, _ = h.prepare()
+    event = h.owner_event("cancel")
+    h.invoke("cancel", h.mission_id, **h.owner_args(event), reason="Owner requested stop")
+    h.invoke("cancel", h.mission_id, **h.owner_args(event), reason="Owner requested stop")
+    state = h.snapshot()
+    assert state["state"] == "cancelled" and state["trials"][0]["id"] == trial_id
+    assert state["trials"][0]["job_id"] and len(state["attempts"]) == 1
+    with pytest.raises(PolicyError, match="different content"):
+        h.invoke("cancel", h.mission_id, **h.owner_args(event), reason="Different cancellation payload")
+
+
 @pytest.mark.parametrize("mutation", [
     lambda p: p["objective"].update(metric="sharpe"),
     lambda p: p["objective"].update(direction="minimize"),

@@ -398,6 +398,7 @@ class MissionStore:
         if (not job or str(job["project_id"]) != str(project["id"]) or job["revision"] != row["revision"]
                 or job["recipe_id"] != spec.execution_profile or job["state"] != "queued"
                 or job["approval_event_id"] != row["approval_event_id"]
+                or job["approved_by"] != row["owner_user"]
                 or any(job["manifest"].get(key) != value for key, value in expected.items())):
             raise PolicyError("Worker job is not bound to the same approved trial plan")
         conn.execute("INSERT INTO research_mission_attempts(job_id,trial_id,plan,plan_digest) VALUES (%s,%s,%s,%s)",
@@ -572,12 +573,16 @@ class MissionStore:
             return {**result, "stage": stage, "trial_id": str(trial["id"]), "proposal_id": str(trial["proposal_id"])}
         if self._cycle_ended(row, spec):
             return {**result, "stage": "cycle_review" if spec.search.continuous else "owner_review"}
-        proposal = conn.execute("""SELECT p.id,EXISTS(SELECT 1 FROM research_mission_challenges c
+        latest = conn.execute("""SELECT id FROM research_mission_trials WHERE mission_id=%s
+            AND result_id IS NOT NULL ORDER BY ordinal DESC LIMIT 1""", (mission_id,)).fetchone()
+        proposals = conn.execute("""SELECT p.id,p.payload,EXISTS(SELECT 1 FROM research_mission_challenges c
             WHERE c.proposal_id=p.id) AS challenged FROM research_mission_proposals p WHERE p.mission_id=%s
             AND p.cycle=%s AND NOT EXISTS(SELECT 1 FROM research_mission_trials t WHERE t.proposal_id=p.id)
             AND NOT EXISTS(SELECT 1 FROM research_mission_rejections r WHERE r.proposal_id=p.id)
-            ORDER BY p.created_at,p.id LIMIT 1""", (mission_id, row["cycle"])).fetchone()
-        if proposal:
+            ORDER BY p.created_at,p.id""", (mission_id, row["cycle"])).fetchall()
+        for proposal in proposals:
+            if latest and str(latest["id"]) not in proposal["payload"]["predecessor_trial_ids"]:
+                continue
             return {**result, "stage": "selection" if proposal["challenged"] else "challenge",
                     "proposal_id": str(proposal["id"])}
         return {**result, "stage": "proposal"}
