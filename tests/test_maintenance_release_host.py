@@ -106,6 +106,36 @@ def test_optional_claude_follows_installed_code_and_activation(tmp_path, monkeyp
     assert 'claude-runtime' not in release.services(root)
 
 
+@pytest.mark.parametrize('enabled', [False, True])
+def test_release_and_rollback_preserve_enabled_research_overlay(tmp_path, monkeypatch, enabled):
+    monkeypatch.setattr(release, 'STATE', tmp_path/'state')
+    env = release.STATE/'config/runtime.env'
+    env.parent.mkdir(parents=True)
+    env.write_text(f'COMPANY_RESEARCH_ENABLED={str(enabled).lower()}\n')
+    commands = []
+    monkeypatch.setattr(release, 'run', lambda args, **kwargs: commands.append(args))
+    for root in [tmp_path/'new', tmp_path/'previous']:
+        overlay = root/'deploy/research.compose.yaml'
+        overlay.parent.mkdir(parents=True)
+        overlay.write_text('services: {}\n')
+        release.compose(root, 'up', '-d', '--no-deps', 'worker')
+        assert (str(overlay) in commands[-1]) is enabled
+        assert commands[-1][-4:] == ['up', '-d', '--no-deps', 'worker']
+        assert 'postgres' not in commands[-1]
+
+
+def test_active_research_cannot_silently_drop_missing_overlay(tmp_path, monkeypatch):
+    monkeypatch.setattr(release, 'STATE', tmp_path/'state')
+    env = release.STATE/'config/runtime.env'
+    env.parent.mkdir(parents=True)
+    env.write_text('COMPANY_RESEARCH_ENABLED=true\n')
+    commands = []
+    monkeypatch.setattr(release, 'run', lambda args, **kwargs: commands.append(args))
+    with pytest.raises(ValueError, match='release_research_overlay_missing'):
+        release.compose(tmp_path/'release', 'up', '-d', '--no-deps', 'worker')
+    assert commands == []
+
+
 def fixture_host(tmp_path, monkeypatch, *, fail_health=False):
     state = tmp_path/'state'
     (state/'config').mkdir(parents=True)

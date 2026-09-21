@@ -1,0 +1,9 @@
+{
+  "date": "2026-09-21",
+  "user_text": "운영 반영·실제 Slack 인수 진행",
+  "approved_action": "Merge/deploy PR40 and verify actual owner Slack approval through fixed P11 replay and final report",
+  "reviewed_pr": "https://github.com/JJongAchii/quant-ai-company/pull/40",
+  "reviewed_head": "7698e13a118b8996de2fda3651e0c00d9bc0c50a",
+  "message_uuid_exposed": false,
+  "technical_rollout_repair": "Preserve enabled research compose overlay in the existing maintenance deploy/backup/rollback command; no change to audited research scope or scientific trial budget."
+}

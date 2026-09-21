@@ -34,6 +34,10 @@
    ingress, model worker and dispatcher consistently. Existing S3 lifecycle expiry
    applies; monitor disk use and preserve needed long-lived research evidence before
    backup expiry. Generated viewing links expire after seven days.
+   Persist `COMPANY_RESEARCH_ENABLED=true` in `runtime.env` as well. The reviewed
+   maintenance release executor reads that flag to preserve the overlay during
+   updates, backup and rollback. Keep the 3070 company checkout pinned to the same
+   release when updating the company; completed archives retain their original pin.
 6. Install the worker/tunnel user-unit templates on the 3070 and enable its existing
    WSL boot/user-service persistence. These are research services, not data collection
    schedules. Collector scheduling remains on EC2. Confirm service startup and
