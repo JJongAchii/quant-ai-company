@@ -50,7 +50,10 @@ See [operating instructions](../tech-feed.md) and [decision](../adr/0032-zero-mo
   [Open the confirmation](https://achiisquantresearch.slack.com/archives/C0C2KPB76KE/p1789996019208189).
 
 At the 22:07 KST acceptance snapshot no fresh article had arrived after the baseline; article publications
-were therefore still zero. The next natural collection is due around 22:14 KST. Historical articles were
+were therefore still zero. [The next natural cycle](evidence/tech-feed-production-second-cycle.json) completed
+at 22:14 KST, after the worker restart used to enable publication: all 12 sources succeeded, both 600-second
+timers are present in the same Temporal run, existing items were not duplicated and no model tasks/turns
+were created. No fresh articles had arrived by the 22:15 KST snapshot. Historical articles were
 not relabeled as new or replayed to manufacture delivery evidence. Real production collection and real Slack
 status delivery are distinguished above from automated article-delivery tests using simulated Slack HTTP.
 

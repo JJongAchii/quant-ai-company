@@ -1,0 +1,189 @@
+{
+  "checked_at": "2026-09-21 13:15:08.161195+00:00",
+  "company_commit": "7e41b3307879098f649b182bf07b52b8de840882",
+  "scope": "Read-only confirmation after the first natural 600-second timer; no manual collection or synthetic article",
+  "temporal": {
+    "workflow_id": "company-tech-feed-collection-v1",
+    "run_id": "01a0c411-8090-7938-b27f-ce101cc3299b",
+    "status": "RUNNING",
+    "task_queue": "quant-company-tech-feed",
+    "events": 22,
+    "completed_collection_activities": 2,
+    "timer_seconds": [
+      600,
+      600
+    ]
+  },
+  "sources": [
+    {
+      "id": "cloudflare",
+      "last_success": "2026-09-21 13:14:45.764548+00:00",
+      "last_attempt": "2026-09-21 13:14:45.528770+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true
+      }
+    },
+    {
+      "id": "deepmind",
+      "last_success": "2026-09-21 13:14:46.418681+00:00",
+      "last_attempt": "2026-09-21 13:14:45.528770+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "\"semxTg\"",
+        "bytes": 71439,
+        "sha256": "e97a206e974345102f7b103cc9abc17d8be6a734143e4a34449d1c36782f49b2",
+        "skipped": 0,
+        "modified": ""
+      }
+    },
+    {
+      "id": "duckdb",
+      "last_success": "2026-09-21 13:14:46.073655+00:00",
+      "last_attempt": "2026-09-21 13:14:45.528770+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true
+      }
+    },
+    {
+      "id": "geeknews",
+      "last_success": "2026-09-21 13:14:45.863772+00:00",
+      "last_attempt": "2026-09-21 13:14:45.528770+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 43201,
+        "sha256": "ab00a8d8ae3d6697d85365bfa6abbd6c7c3bc9bedc43a450f9285566a10c10c0",
+        "skipped": 0,
+        "modified": ""
+      }
+    },
+    {
+      "id": "github-engineering",
+      "last_success": "2026-09-21 13:14:46.283378+00:00",
+      "last_attempt": "2026-09-21 13:14:45.528770+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true
+      }
+    },
+    {
+      "id": "hugging-face",
+      "last_success": "2026-09-21 13:14:46.636913+00:00",
+      "last_attempt": "2026-09-21 13:14:45.528770+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true
+      }
+    },
+    {
+      "id": "kubernetes",
+      "last_success": "2026-09-21 13:14:46.666193+00:00",
+      "last_attempt": "2026-09-21 13:14:45.528770+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true
+      }
+    },
+    {
+      "id": "naver-d2",
+      "last_success": "2026-09-21 13:14:47.236475+00:00",
+      "last_attempt": "2026-09-21 13:14:45.528770+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 304026,
+        "sha256": "c524d3ade80e26e13b6054e56c942c0529b3e1234277284d1d1f2ddd8556cb64",
+        "skipped": 1,
+        "modified": ""
+      }
+    },
+    {
+      "id": "openai",
+      "last_success": "2026-09-21 13:14:47.181705+00:00",
+      "last_attempt": "2026-09-21 13:14:45.528770+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 738503,
+        "sha256": "999e1a2db5eebe49126b6a2c3999a073a64d3261442ef88ce022c8df3f92a639",
+        "skipped": 602,
+        "modified": ""
+      }
+    },
+    {
+      "id": "postgresql",
+      "last_success": "2026-09-21 13:14:50.051590+00:00",
+      "last_attempt": "2026-09-21 13:14:45.528770+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true
+      }
+    },
+    {
+      "id": "simon-willison",
+      "last_success": "2026-09-21 13:14:48.010545+00:00",
+      "last_attempt": "2026-09-21 13:14:45.528770+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "not_modified": true
+      }
+    },
+    {
+      "id": "toss-tech",
+      "last_success": "2026-09-21 13:14:48.641768+00:00",
+      "last_attempt": "2026-09-21 13:14:45.528770+00:00",
+      "failures": 0,
+      "error": null,
+      "receipt": {
+        "ok": true,
+        "etag": "",
+        "bytes": 844332,
+        "sha256": "179ab30c0a4e8e83478d197d78880be4d9837f23157c5ca225393c4b286fe51c",
+        "skipped": 0,
+        "modified": ""
+      }
+    }
+  ],
+  "items": [
+    {
+      "state": "baseline",
+      "count": 1808
+    }
+  ],
+  "deliveries": [],
+  "tech_feed_project_execution_counts": {
+    "tasks": 0,
+    "turns": 0
+  },
+  "setup_confirmation_receipt": {
+    "id": "52902eba-cfde-58d7-977d-e405a62d327e",
+    "status": "delivered",
+    "sent_ts": "1789996019.208189",
+    "error": null,
+    "attempts": 1
+  }
+}
