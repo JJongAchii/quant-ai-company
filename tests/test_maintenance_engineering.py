@@ -64,7 +64,7 @@ class LocalCI(GitHubFixture):
         super().__init__()
         self.root, self.candidates, self.results = root, [], []
 
-    def read_repository(self, snapshot):
+    def read_repository(self, snapshot, previous=None):
         return {SOURCE: BASE}, {'read_files': 1, 'omitted_paths': []}
 
     def read_files(self, snapshot, paths):

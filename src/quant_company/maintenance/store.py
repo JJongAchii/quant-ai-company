@@ -66,8 +66,10 @@ class Store:
                 return None
             conn.execute("UPDATE maintenance_control SET next_observe_at=%s WHERE id=1",
                          (datetime.now(UTC) + timedelta(seconds=self.config.observe_seconds),))
-            # Bound the backlog. Do not consume records until a triage job is durable.
-            if conn.execute("SELECT 1 FROM maintenance_jobs WHERE state IN ('review','triage') LIMIT 1").fetchone():
+            # A deferred head must not monopolize observation collection, but keep the buffer finite.
+            active = conn.execute("""SELECT count(*) AS count,bool_or(error IS NULL) AS ready
+                FROM maintenance_jobs WHERE state IN ('review','triage')""").fetchone()
+            if active["ready"] or active["count"] >= 4:
                 return None
             rows = conn.execute("""
                 SELECT 'message:'||m.id::text AS key, m.project_id, m.task_id, m.author,
@@ -106,7 +108,7 @@ class Store:
         with self.db.transaction() as conn:
             return conn.execute("""SELECT * FROM maintenance_jobs
                 WHERE state IN ('review','triage','patch','design','evaluate','publish','ci','pr')
-                ORDER BY (payload ? 'request_project_id') DESC,updated_at,id LIMIT 1""").fetchone()
+                ORDER BY (payload ? 'request_project_id') DESC,(error IS NULL) DESC,updated_at,id LIMIT 1""").fetchone()
 
     def check_authorization(self, job):
         # A paused historical review must not keep using an owner's records after access is revoked.

@@ -1,3 +1,4 @@
+import base64
 import json
 import time
 from datetime import UTC, datetime
@@ -65,6 +66,27 @@ def test_moved_base_stops_before_any_git_write():
     case = job()
     with pytest.raises(ValueError, match="base_moved"):
         client(handler).publish(case, case["payload"])
+
+
+def test_release_archive_accepts_current_repository_size_above_old_eight_megabyte_limit():
+    body = b'x' * (9 * 1024 * 1024)
+    def handler(request):
+        if request.url.host == 'api.github.com':
+            return httpx.Response(302, headers={'location': 'https://codeload.github.com/archive'})
+        assert request.url.host == 'codeload.github.com'
+        return httpx.Response(200, content=body)
+    assert client(handler).archive('a' * 40) == body
+
+
+def test_read_files_rejects_blob_content_that_does_not_match_the_tree():
+    def handler(request):
+        assert request.url.path.endswith('/git/blobs/' + 'b' * 40)
+        return httpx.Response(200, json={'encoding': 'base64',
+                                         'content': base64.b64encode(b'changed').decode()})
+    snapshot = {'entries': {'src/quant_company/tools.py': {
+        'sha': 'b' * 40, 'type': 'blob', 'mode': '100644', 'size': 7}}}
+    with pytest.raises(ValueError, match='repository_blob_digest_mismatch'):
+        client(handler).read_files(snapshot, ['src/quant_company/tools.py'])
 
 
 @pytest.mark.parametrize("test_conclusion", ["skipped", "failure", "success"])
