@@ -1,0 +1,11 @@
+{
+  "builder_commit": "bfce16d01113f79273c671dc1a16f6b0f57dbd7e",
+  "integrated_commit": "615c373406a17c5d1ab8777978b3713ae414f481",
+  "files": {
+    "deploy/research_preparation_recovery.py": "e67a7acf0069b29ea8da2839807ffb11587728621a5838733cffb18e76f089b2",
+    "tests/test_research_preparation_recovery.py": "9ff6801fbb22746387739957fa1ca20503c0fe0bf6432f7065695a5990725de9",
+    "docs/runbooks/research-worker.md": "3fb0fbedb70aba199e0e906e860c7070f0a8a7189421aa3625b529e5885d900f"
+  },
+  "runtime_pin": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "runtime_science_code_changed": false
+}
