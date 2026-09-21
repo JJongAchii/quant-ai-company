@@ -9,28 +9,66 @@
       "evidence": [
         {
           "path": "docs/project/HOT-NEWS-EFFICIENCY.md",
-          "sha256": "3ec72004baf5"
+          "sha256": "2b6f58e6d31b"
         },
         {
           "path": "docs/project/evidence/hot-news-token-usage-20260921.json",
           "sha256": "d0f831ca525d"
         }
       ],
-      "note": "과거 사건 30개 유지·최대 8개 기사 검토로 보완; 초기 중복과 수정 사실 기록",
+      "note": "최종 배포·운영 검증 기록 완료. 00–06 수집·경량 선별, 06시 검증 후 모음, 낮 개별 발송. 같은 표본 토큰 약36% 절감.",
       "status": "verified",
-      "updatedAt": "2026-09-21T07:21:59.064135+00:00"
+      "updatedAt": "2026-09-21T07:39:07.772132+00:00"
     },
     "LIVE": {
-      "evidence": [],
-      "note": "초기 실발송 3개 중 일정 중복 발견. 최종 정책 검증 후 재배포·편집 재개 필요.",
-      "status": "in_progress",
-      "updatedAt": "2026-09-21T07:21:59.376588+00:00"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/hot-news-efficiency-final-release.json",
+          "sha256": "6195a6330003"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-efficiency-final-host-health.json",
+          "sha256": "a5f4de3d17b1"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-efficiency-final-resume.json",
+          "sha256": "b03f69953b5d"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-efficiency-final-acceptance.json",
+          "sha256": "0e68c013eaf3"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-efficiency-final-slack.json",
+          "sha256": "a6c2f54fe511"
+        }
+      ],
+      "note": "c0eaeaa 최종 앱 16:27KST 배포·편집 재개, 16:30 Reporter 자동 뉴스3건 실제 Slack 대조. 25피드·3워크플로 정상. 실제 자정/06시 전환은 아직 미도래, 시간경계 회귀 검증과 구분.",
+      "status": "verified",
+      "updatedAt": "2026-09-21T07:39:07.986068+00:00"
     },
     "OPTIMIZATION": {
-      "evidence": [],
-      "note": "최종 정책에서 같은 실제 기사와 과거 사건 문맥을 포함한 비교 진행 중",
-      "status": "in_progress",
-      "updatedAt": "2026-09-21T07:21:59.224411+00:00"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/hot-news-efficiency-final-preview.json",
+          "sha256": "2e7df86c67ec"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-efficiency-dedup-repair.json",
+          "sha256": "1e08887f3d8b"
+        },
+        {
+          "path": "src/quant_company/news/screening.py",
+          "sha256": "7a4c89341040"
+        },
+        {
+          "path": "src/quant_company/news/store.py",
+          "sha256": "9d8f252eb656"
+        }
+      ],
+      "note": "최종 30개 사건 이력·8개 기사 배치, 동일 실제 기사24건/초기 이력24개. 정상선별비용 포함 75169 대 116734 토큰(표본 -35.61%).",
+      "status": "verified",
+      "updatedAt": "2026-09-21T07:26:41.320063+00:00"
     },
     "SCHEDULE": {
       "evidence": [
@@ -68,5 +106,5 @@
   "schemaVersion": 1,
   "slug": "kokanee",
   "state": "approved",
-  "updatedAt": "2026-09-21T07:22:32.488509+00:00"
+  "updatedAt": "2026-09-21T07:39:07.986068+00:00"
 }

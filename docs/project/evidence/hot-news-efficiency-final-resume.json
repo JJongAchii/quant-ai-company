@@ -1,0 +1,9 @@
+{
+  "at": "2026-09-21 07:27:27.988922+00:00",
+  "commit": "c0eaeaa603a11fa17aa05bddf243373d0433cc7b",
+  "workflow": "company-news-editorial-v1",
+  "run_id": "01a0c2dc-d6ce-762b-982d-d6f1c7c1a44f",
+  "state": "RUNNING",
+  "manual_slack_writes": 0,
+  "frozen_inference_ids_replayed_or_replaced": 0
+}

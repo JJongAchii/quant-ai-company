@@ -1,0 +1,129 @@
+{
+  "checked_at": "2026-09-21T07:31:33.713775+00:00",
+  "post_enable_verified_slack_posts": [
+    {
+      "id": "a0b3ebe1-6e9f-59f0-80b6-094f2dbd8636",
+      "ts": "1789975827.761589",
+      "author": "U0C2FLSUUMV",
+      "headline": "*[보도 · 주요 · 경제] 연합뉴스: 전남광주시, 공공기관 22곳을 11곳으로 통합 추진*",
+      "url": "https://achiisquantresearch.slack.com/archives/C0C2J1SSX09/p1789975827761589"
+    },
+    {
+      "id": "8e412336-1792-51f7-b875-be76f591faec",
+      "ts": "1789975829.300859",
+      "author": "U0C2FLSUUMV",
+      "headline": "*[보도 · 주요 · 무역] 연합뉴스: 8월 인천 수출 51억5000만달러…반도체 월간 최고*",
+      "url": "https://achiisquantresearch.slack.com/archives/C0C2J1SSX09/p1789975829300859"
+    },
+    {
+      "id": "11ec2141-c35f-54a4-8b7b-c01ec5be1816",
+      "ts": "1789975830.866689",
+      "author": "U0C2FLSUUMV",
+      "headline": "*[보도 · 주요 · 금융] 이투데이: 소상공인 더드림 12.3조원으로 개편…추석 금융지원 102.6조원*",
+      "url": "https://achiisquantresearch.slack.com/archives/C0C2J1SSX09/p1789975830866689"
+    }
+  ],
+  "new_model_requests": {
+    "news_triages": [
+      {
+        "id": "news-screen-d4158bbb-0f4c-49fe-9fab-a00c51c6a54e",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 07:27:28.100880+00:00",
+        "completed_at": "2026-09-21 07:28:19.790679+00:00",
+        "model": "gpt-5.6-luna",
+        "effort": "low",
+        "usage": {
+          "input_tokens": 23388,
+          "output_tokens": 2626,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 140
+        }
+      }
+    ],
+    "news_reviews": [
+      {
+        "id": "news-84c727e1-c75b-4a86-8280-fd61926fa0ec",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 07:28:22.039272+00:00",
+        "completed_at": "2026-09-21 07:30:26.726742+00:00",
+        "model": "gpt-6-astra",
+        "effort": "high",
+        "usage": {
+          "input_tokens": 22193,
+          "output_tokens": 3998,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 336
+        }
+      }
+    ],
+    "news_searches": []
+  },
+  "new_uncertain": [],
+  "application_commit": "c0eaeaa603a11fa17aa05bddf243373d0433cc7b",
+  "enabled_at_utc": "2026-09-21T07:27:25.263211+00:00",
+  "channel_id": "C0C2J1SSX09",
+  "verified_against_actual_slack": {
+    "authenticated_reporter_author": true,
+    "client_message_id": true,
+    "text": true,
+    "timestamp": true,
+    "manual_slack_writes_for_acceptance": 0
+  },
+  "flags": {
+    "company_news_enabled": true,
+    "news_publish_enabled": true,
+    "news_search_enabled": true,
+    "news_optimization_enabled": true,
+    "news_delivery_window_enabled": true
+  },
+  "source_counts": {
+    "enabled": 25,
+    "media": 19,
+    "official": 6,
+    "fetch_failures_at_snapshot": 0
+  },
+  "final_review": {
+    "primary_count": 8,
+    "historical_events": 30
+  },
+  "workflows": [
+    {
+      "id": "company-news-collection-v1",
+      "run_id": "52717baf-a43b-4140-9020-93f5f052f62b",
+      "status": "RUNNING",
+      "workflow_task_failures": []
+    },
+    {
+      "id": "company-news-editorial-v1",
+      "run_id": "01a0c2dc-d6ce-762b-982d-d6f1c7c1a44f",
+      "status": "RUNNING",
+      "workflow_task_failures": []
+    },
+    {
+      "id": "company-news-discovery-v1",
+      "run_id": "01a0c16a-92a1-7930-b86b-5345bc210fd7",
+      "status": "RUNNING",
+      "workflow_task_failures": []
+    }
+  ],
+  "natural_midnight_or_0600_observed": false,
+  "clock_boundary_validation": "Real PostgreSQL/Temporal with simulated clock, model and Slack; see hot-news-efficiency-tests.json",
+  "sample_token_comparison": {
+    "baseline_input_plus_output": 116734,
+    "optimized_pipeline_input_plus_output": 75169,
+    "reduction_percent": 35.61,
+    "sample_articles": 24,
+    "not_a_daily_rate_or_subscription_quota_guarantee": true
+  },
+  "final_application_ci": {
+    "status": "passed",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35572667540/job/106247452630"
+  },
+  "full_regression": "669 passed, 2 skipped, 1 live check deselected",
+  "local_acceptance_cleanup": {
+    "owned_postgres_server_stopped": true,
+    "disposable_preview_databases_removed": true
+  }
+}

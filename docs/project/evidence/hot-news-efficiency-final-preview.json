@@ -709,5 +709,26 @@
   "new_outbox_count": 0,
   "slack_writes": 0,
   "database_name": "reporter_acceptance_0d420b355cd2",
-  "disposable_database_removed_after_receipt": true
+  "disposable_database_removed_after_receipt": true,
+  "comparison": {
+    "baseline_input_output_tokens": 116734,
+    "final_review_input_output_tokens": 52526,
+    "normal_screen_input_output_tokens_from_exact_cached_request": 22643,
+    "normal_pipeline_equivalent_input_output_tokens": 75169,
+    "sample_reduction_percent": 35.61,
+    "new_inference_tokens_spent_for_this_final_check": 52526,
+    "initial_historical_events_in_both": 24,
+    "limitations": [
+      "Small Korean-heavy sample, not a daily average or quota guarantee.",
+      "The baseline history evolved between its four calls; the preview starts from the original first-call history and does not persist new publications.",
+      "The unchanged screening result was reused only after exact request digest verification. Its normal usage is included in the comparison, but the final check did not incur a second screen inference.",
+      "Historical project/Slack-root rows in the disposable database are explicitly simulated. All new decisions used the real ChatGPT subscription; actual Slack writes were zero."
+    ],
+    "quality": [
+      "13 potentially important candidates retained for final review; 11 screened out.",
+      "Monetary infrastructure, employment statistics, maritime security and land-policy developments retained.",
+      "Contested military statements, anonymous diplomacy and alleged industrial violations held.",
+      "Lower-impact grocery comparison pilot and insect-protein registration excluded at screening/final review respectively."
+    ]
+  }
 }
