@@ -30,6 +30,12 @@ import httpx
 from pydantic import Field, field_validator
 
 from ..contracts import StrictModel
+from .adaptive_contracts import (
+    MAX_BUNDLE_BYTES,
+    AdaptiveAssignment,
+    AdaptiveManifest,
+    parse_assignment,
+)
 from .contracts import Assignment, Commit, Recipe, WorkerPoll, WorkerUpdate
 
 LOG = logging.getLogger(__name__)
@@ -156,6 +162,7 @@ class WorkerConfig(StrictModel):
     research_python: Path
     company_repo: Path
     company_commit: Commit
+    adaptive_profiles: dict[str, Path] = Field(default_factory=dict)
     worker_id: Literal["worker"] = "worker"
     poll_seconds: float = Field(default=5, ge=0.1, le=60)
     heartbeat_seconds: float = Field(default=15, ge=0.1, le=300)
@@ -187,6 +194,8 @@ class WorkerConfig(StrictModel):
             item = getattr(value, field)
             # Do not resolve the venv executable symlink: its path selects the venv.
             setattr(value, field, Path(os.path.abspath(path.parent / item)))
+        value.adaptive_profiles = {name: Path(os.path.abspath(path.parent / item))
+                                   for name, item in value.adaptive_profiles.items()}
         return value
 
 
@@ -217,7 +226,7 @@ class Worker:
         atomic_json(directory / "state.json", state)
 
     @staticmethod
-    def _same_assignment(first: dict, second: Assignment) -> bool:
+    def _same_assignment(first: dict, second: Assignment | AdaptiveAssignment) -> bool:
         return {k: v for k, v in first.items() if k != "action"} == second.model_dump(
             mode="json", exclude={"action"}
         )
@@ -284,13 +293,15 @@ class Worker:
                 return True
         return False
 
-    def _launch(self, directory: Path, state: dict, recipe: Recipe) -> None:
+    def _launch(self, directory: Path, state: dict, recipe: Recipe | AdaptiveManifest) -> None:
         if self._other_active(directory):
             self._uncertain(directory, state, "other-job-unreconciled")
             return
         launch_id = uuid4().hex
         atomic_json(directory / "recipe.json", recipe.model_dump(mode="json"))
         atomic_json(directory / "execution-config.json", self.config.model_dump(mode="json"))
+        state.pop("preparing_bundle", None)
+        self._save(directory, state)
         atomic_json(directory / "launch-intent.json", {
             "launch_id": launch_id, "assignment": state["assignment"], "created_at": utc_now(),
             "company_commit": self.config.company_commit, "phase": "prepared",
@@ -305,9 +316,20 @@ class Worker:
             self._uncertain(directory, state, "other-job-unreconciled")
             return
         config = WorkerConfig.model_validate(read_json(directory / "execution-config.json"))
-        if config.company_commit != self.config.company_commit:
-            self._uncertain(directory, state, "company-commit-changed-before-launch")
+        # The prepared job keeps its immutable release even after the polling
+        # service is upgraded. Never replace a stored config with the latest one.
+        from .releases import ReleaseError, verify_company_pin
+
+        try:
+            verify_company_pin(config)
+        except ReleaseError:
+            self._uncertain(directory, state, "company-checkout-pin-mismatch")
             return
+        assignment = parse_assignment(state["assignment"])
+        if isinstance(assignment, AdaptiveAssignment):
+            if assignment.manifest.company_commit != config.company_commit:
+                self._uncertain(directory, state, "adaptive-company-pin-mismatch")
+                return
         # The server must durably acknowledge this exact pending heartbeat before
         # any subprocess launch is attempted. Prepared is safe to resume; spawning
         # is never safe to repeat without a process/terminal receipt.
@@ -421,6 +443,10 @@ class Worker:
             # An operator must resolve ambiguity. A later stale poll cannot rearm.
             self._send_update(directory, state, "uncertain", state["uncertain_reason"])
             return
+        if state.get("preparing_bundle"):
+            # No launch has been attempted; wait for the authenticated assignment
+            # to resume bundle transport instead of inventing execution ambiguity.
+            return
         intent_path = directory / "launch-intent.json"
         if not intent_path.exists():
             self._uncertain(directory, state, "missing-launch-intent")
@@ -446,7 +472,40 @@ class Worker:
             return
         self._send_update(directory, state, "running")
 
-    def accept(self, assignment: Assignment) -> None:
+    def _download_bundle(self, directory: Path, assignment: AdaptiveAssignment) -> None:
+        target = directory / "source.bundle"
+        if target.exists():
+            if target.is_symlink() or sha_file(target) != assignment.manifest.bundle_sha256:
+                raise ValueError("adaptive-bundle-digest-mismatch")
+            return
+        temporary = directory / f".bundle-{uuid4().hex}.tmp"
+        try:
+            digest = hashlib.sha256()
+            size = 0
+            with self.client.stream(
+                "GET", f"/v1/research/worker/jobs/{assignment.job_id}/bundle",
+                headers={"X-Research-Lease": assignment.lease_token},
+            ) as response:
+                response.raise_for_status()
+                fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                with os.fdopen(fd, "wb") as stream:
+                    for block in response.iter_bytes():
+                        size += len(block)
+                        if size > MAX_BUNDLE_BYTES:
+                            raise ValueError("adaptive-bundle-size-limit")
+                        digest.update(block)
+                        stream.write(block)
+                    stream.flush()
+                    os.fsync(stream.fileno())
+            if digest.hexdigest() != assignment.manifest.bundle_sha256:
+                raise ValueError("adaptive-bundle-digest-mismatch")
+            os.replace(temporary, target)
+            target.chmod(0o400)
+            sync_directory(directory)
+        finally:
+            temporary.unlink(missing_ok=True)
+
+    def accept(self, assignment: Assignment | AdaptiveAssignment) -> None:
         directory = self.jobs / str(assignment.job_id)
         directory.mkdir(exist_ok=True, mode=0o700)
         sync_directory(self.jobs)
@@ -454,6 +513,8 @@ class Worker:
         new = not state_path.exists()
         if new:
             state = {"assignment": assignment.model_dump(mode="json"), "sequence": 0}
+            if isinstance(assignment, AdaptiveAssignment):
+                state["preparing_bundle"] = True
             self._save(directory, state)
         else:
             state = read_json(state_path)
@@ -467,14 +528,24 @@ class Worker:
         if assignment.action == "cancel":
             self.reconcile(directory, state, cancel=True)
             return
+        if state.get("uncertain_reason"):
+            self.reconcile(directory, state)
+            return
         if new and assignment.action != "run":
             self._uncertain(directory, state, "reconcile-without-local-state")
             return
-        if new:
+        if new or state.get("preparing_bundle"):
             if (directory / "launch-intent.json").exists():
                 self._uncertain(directory, state, "launch-intent-without-local-state")
                 return
-            recipe = self.recipe_loader(assignment.recipe_id)
+            if isinstance(assignment, AdaptiveAssignment):
+                if assignment.manifest.company_commit != self.config.company_commit:
+                    self._uncertain(directory, state, "adaptive-company-pin-mismatch")
+                    return
+                self._download_bundle(directory, assignment)
+                recipe = assignment.manifest
+            else:
+                recipe = self.recipe_loader(assignment.recipe_id)
             if canonical_sha(recipe.model_dump(mode="json")) != assignment.manifest_digest:
                 self._uncertain(directory, state, "recipe-manifest-mismatch")
                 return
@@ -494,7 +565,7 @@ class Worker:
         )
         reply.raise_for_status()
         value = reply.json()["assignment"]
-        active = Assignment.model_validate(value) if value else None
+        active = parse_assignment(value) if value else None
         if active:
             self.accept(active)
         for directory in sorted(self.jobs.iterdir()):
