@@ -1,0 +1,9 @@
+{
+  "removed_only_never_deployed_candidate_images": [
+    "quant-company-maintenance:52f09e38dfb8e13510da7322621a8a7a24a7d803",
+    "quant-company-codex:52f09e38dfb8e13510da7322621a8a7a24a7d803",
+    "quant-company:52f09e38dfb8e13510da7322621a8a7a24a7d803"
+  ],
+  "preserved_all_previous_release_images": true,
+  "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/root        58G   52G  5.6G  91% /\n"
+}

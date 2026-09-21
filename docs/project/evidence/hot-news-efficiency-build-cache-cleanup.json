@@ -1,0 +1,9 @@
+{
+  "at": "2026-09-21T06:54:00.453823+00:00",
+  "action": "remove unused Docker build cache only; no image/container/volume/backups removed",
+  "before": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/root        58G   58G  8.0M 100% /\n",
+  "exit_code": 0,
+  "prune_output": "     \ttrue \t971.9kB   \t4 minutes ago\nw4adpsrtnlb4ju761tgpec4gh               \ttrue \t872kB     \t4 minutes ago\nvfzz7y2vedzaezqmjymzx50hp               \ttrue \t45.6kB    \t4 minutes ago\n5sqwthu43u2s1wbar0bpaqve0               \ttrue \t8.295kB   \t4 minutes ago\ntucg19hlusd4mhxh0frnkxh7v               \ttrue \t12.4kB    \t4 minutes ago\nqu2jk0ply969fk96coplncs5p               \ttrue \t90.04MB   \t4 minutes ago\natunru6ylr2ua0xqhg1na90cp               \ttrue \t249B      \t4 minutes ago\nr5dipe31ndyqawk22pggnx4qw               \ttrue \t13.67MB   \t7 minutes ago\nxo6ipko1m7s9cn7ku8u44jnm3               \ttrue \t3.533MB   \t7 minutes ago\nt3wz3cqqace3mzrrjg311ykn0               \ttrue \t28.23MB   \t4 minutes ago\nTotal:\t4.157GB\n",
+  "after": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/root        58G   54G  3.3G  95% /\n",
+  "containers": "quant-company-worker-1: Up 41 minutes\nquant-company-maintenance-1: Up 41 minutes\nquant-company-api-1: Up 41 minutes (healthy)\nquant-company-dispatch-1: Up 41 minutes\nquant-company-slack-socket-1: Up 41 minutes\nquant-company-codex-runtime-1: Up 41 minutes (healthy)\nquant-company-claude-runtime-1: Up 41 minutes (healthy)\nquant-company-postgres-1: Up 5 hours (healthy)\n"
+}

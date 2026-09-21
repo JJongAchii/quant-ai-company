@@ -1,0 +1,34 @@
+        # Reuse the qualified dependency and CLI layers only when every dependency/build input is unchanged.
+        import hashlib
+        import zipfile
+        for relative in ['pyproject.toml','uv.lock','deploy/Dockerfile','deploy/entrypoint.py','deploy/qdata-source.json']:
+            if (TARGET/relative).read_bytes()!=(previous/relative).read_bytes():
+                raise ValueError('wheel_dependency_baseline_changed')
+        wheel=Path('/tmp/quant_company-0.1.0-py3-none-any.whl')
+        with zipfile.ZipFile(wheel) as archive:
+            package={n:hashlib.sha256(archive.read(n)).hexdigest() for n in archive.namelist() if n.startswith('quant_company/')}
+        expected={str(p.relative_to(TARGET/'src')):hashlib.sha256(p.read_bytes()).hexdigest() for p in (TARGET/'src/quant_company').rglob('*') if p.is_file() and '__pycache__' not in p.parts}
+        if package!=expected:raise ValueError('wheel_does_not_match_committed_source')
+        context=Path('/tmp/reporter-efficient-wheel-'+COMMIT);context.mkdir(exist_ok=False)
+        shutil.copyfile(wheel,context/wheel.name)
+        record.update(build_method='new project wheel over unchanged, qualified production dependency/CLI layers',wheel_sha256=hashlib.sha256(wheel.read_bytes()).hexdigest(),source_manifest_sha256=hashlib.sha256(json.dumps(package,sort_keys=True).encode()).hexdigest(),dependency_build_inputs_byte_identical=True,images=[]);save(record)
+        for service,repository in [('api','quant-company'),('codex-runtime','quant-company-codex'),('maintenance','quant-company-maintenance'),('claude-runtime','quant-company-claude')]:
+            parent=repository+':'+previous.name
+            parent_data=json.loads(run(['docker','image','inspect',parent]))[0]
+            running=json.loads(run(['docker','inspect','quant-company-'+service+'-1']))[0]
+            if parent_data['Id']!=running['Image']:raise ValueError('parent_is_not_current_qualified_image')
+            dockerfile=context/('Dockerfile.'+service)
+            dockerfile.write_text('FROM '+parent+'\nUSER root\nCOPY '+wheel.name+' /tmp/'+wheel.name+'\nRUN uv pip install --python /app/.venv/bin/python --no-deps --reinstall /tmp/'+wheel.name+' && rm /tmp/'+wheel.name+'\nLABEL org.opencontainers.image.revision='+COMMIT+'\nENV COMPANY_CODE_COMMIT='+COMMIT+'\nUSER 10001:10001\n')
+            tag=repository+':'+COMMIT
+            emit(phase='building_from_qualified_dependencies',service=service,commit=COMMIT)
+            output=run(['docker','build','--network=none','-f',str(dockerfile),'-t',tag,str(context)])
+            (STATE/'releases'/('reporter-efficient-build-'+service+'.log')).write_bytes(output)
+            verify="import hashlib,importlib.util,json,pathlib;root=pathlib.Path(importlib.util.find_spec('quant_company').origin).parent;print(json.dumps({'quant_company/'+str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts}))"
+            actual=json.loads(run(['docker','run','--rm','--network=none','--entrypoint','python',tag,'-c',verify]))
+            if actual!=expected:raise ValueError('installed_package_mismatch')
+            info=json.loads(run(['docker','image','inspect',tag]))[0]
+            if info['Config']['Labels']['org.opencontainers.image.revision']!=COMMIT:raise ValueError('image_revision_mismatch')
+            record['images'].append({'service':service,'image':info['Id'],'parent_image':parent_data['Id'],'installed_source_matches_commit':True});save(record)
+        record['codex_version']=run(['docker','run','--rm','--network=none','--entrypoint','codex','quant-company-codex:'+COMMIT,'--version']).decode().strip()
+        record['claude_version']=run(['docker','run','--rm','--network=none','--entrypoint','claude','quant-company-claude:'+COMMIT,'--version']).decode().strip()
+        if record['codex_version']!='codex-cli 0.154.0' or record['claude_version']!='2.1.275 (Claude Code)':raise ValueError('qualified_cli_version_changed')

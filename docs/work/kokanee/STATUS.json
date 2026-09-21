@@ -1,90 +1,110 @@
 {
   "approval": {
-    "approvedAt": "2026-09-21T04:36:22.548080+00:00",
-    "id": "chat-20260921-mainstream-free-news-expansion"
+    "approvedAt": "2026-09-21T06:17:21.763700+00:00",
+    "id": "chat-20260921-news-optimization-quiet-hours"
   },
-  "currentIntent": "INTENT-v4.json",
+  "currentIntent": "INTENT-v5.json",
   "deliverables": {
+    "DESIGN": {
+      "evidence": [
+        {
+          "path": "docs/project/HOT-NEWS-EFFICIENCY.md",
+          "sha256": "2b6f58e6d31b"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-token-usage-20260921.json",
+          "sha256": "d0f831ca525d"
+        }
+      ],
+      "note": "최종 배포·운영 검증 기록 완료. 00–06 수집·경량 선별, 06시 검증 후 모음, 낮 개별 발송. 같은 표본 토큰 약36% 절감.",
+      "status": "verified",
+      "updatedAt": "2026-09-21T07:39:07.772132+00:00"
+    },
     "LIVE": {
       "evidence": [
         {
-          "path": "docs/project/evidence/hot-news-mainstream-release.json",
-          "sha256": "b48fed17fbb5"
+          "path": "docs/project/evidence/hot-news-efficiency-final-release.json",
+          "sha256": "6195a6330003"
         },
         {
-          "path": "docs/project/evidence/hot-news-mainstream-host-health.json",
-          "sha256": "cf1f74406d46"
+          "path": "docs/project/evidence/hot-news-efficiency-final-host-health.json",
+          "sha256": "a5f4de3d17b1"
         },
         {
-          "path": "docs/project/evidence/hot-news-mainstream-slack-match.json",
-          "sha256": "ec4d0ff7cdf5"
+          "path": "docs/project/evidence/hot-news-efficiency-final-resume.json",
+          "sha256": "b03f69953b5d"
         },
         {
-          "path": "docs/project/evidence/hot-news-mainstream-continuity.json",
-          "sha256": "fe6ca911a8cf"
+          "path": "docs/project/evidence/hot-news-efficiency-final-acceptance.json",
+          "sha256": "0e68c013eaf3"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-efficiency-final-slack.json",
+          "sha256": "a6c2f54fe511"
         }
       ],
-      "note": "최신 main의 연구 연결을 보존한 정확한 코드·8개 서비스 배포와 백업 완료. 추가 매체 3곳의 자동 게시 4건을 실제 Slack과 대조하고 10개 신규 피드의 다음 10분 주기 및 자동 편집 2회를 확인했다. 불확실 발송·활동 실패 0건.",
+      "note": "c0eaeaa 최종 앱 16:27KST 배포·편집 재개, 16:30 Reporter 자동 뉴스3건 실제 Slack 대조. 25피드·3워크플로 정상. 실제 자정/06시 전환은 아직 미도래, 시간경계 회귀 검증과 구분.",
       "status": "verified",
-      "updatedAt": "2026-09-21T05:18:52.003945+00:00"
+      "updatedAt": "2026-09-21T07:39:07.986068+00:00"
     },
-    "PIPELINE": {
+    "OPTIMIZATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/hot-news-mainstream-integrated-tests.json",
-          "sha256": "172652daaa62"
+          "path": "docs/project/evidence/hot-news-efficiency-final-preview.json",
+          "sha256": "2e7df86c67ec"
         },
         {
-          "path": "docs/project/evidence/hot-news-mainstream-codex-preview.json",
-          "sha256": "1a61c69f03af"
+          "path": "docs/project/evidence/hot-news-efficiency-dedup-repair.json",
+          "sha256": "1e08887f3d8b"
         },
         {
-          "path": "docs/project/evidence/hot-news-mainstream-slack-match.json",
-          "sha256": "ec4d0ff7cdf5"
+          "path": "src/quant_company/news/screening.py",
+          "sha256": "7a4c89341040"
+        },
+        {
+          "path": "src/quant_company/news/store.py",
+          "sha256": "9d8f252eb656"
         }
       ],
-      "note": "최신 main 통합 648건 회귀·CI 통과. 실제 자동 구독 검토가 추가 매체 3곳의 4건을 게시하고 Slack 본문·발신자·메시지 ID·시도 1회를 대조했다. SBS 동일 행사 2기사 병합, 날짜 충돌·채용 공고·미확인 주장을 제외했다.",
+      "note": "최종 30개 사건 이력·8개 기사 배치, 동일 실제 기사24건/초기 이력24개. 정상선별비용 포함 75169 대 116734 토큰(표본 -35.61%).",
       "status": "verified",
-      "updatedAt": "2026-09-21T05:14:06.551819+00:00"
+      "updatedAt": "2026-09-21T07:26:41.320063+00:00"
     },
-    "SCOPE": {
+    "SCHEDULE": {
       "evidence": [
         {
-          "path": "docs/project/HOT-NEWS-MAINSTREAM-EXPANSION.md",
-          "sha256": "1d6e1e03a499"
+          "path": "src/quant_company/news/digest.py",
+          "sha256": "2fb8f124007e"
+        },
+        {
+          "path": "src/quant_company/news/schedule.py",
+          "sha256": "2e054ab5dbb9"
+        },
+        {
+          "path": "src/quant_company/slack.py",
+          "sha256": "3ae0e8554901"
+        },
+        {
+          "path": "tests/test_news_efficiency.py",
+          "sha256": "7c7099060174"
+        },
+        {
+          "path": "tests/test_news_temporal.py",
+          "sha256": "78702329cbc2"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-efficiency-tests.json",
+          "sha256": "3ddb48129b38"
         }
       ],
-      "note": "국내 경제·산업·정책과 글로벌 주요 사건 중심으로 무료 매체를 확장해 운영 반영했다. 지역 안배, 유료 뉴스 구매, daily-brief는 포함하지 않으며 실제 수신·게시와 포괄성 한계를 구분했다.",
+      "note": "669개 회귀 통과. 최신 12개 밖 중복 이력, 2초 타이머 재시작, 자정/06시, 모음 영수증과 후속 원문 공유 포함",
       "status": "verified",
-      "updatedAt": "2026-09-21T05:18:51.848844+00:00"
-    },
-    "SOURCES": {
-      "evidence": [
-        {
-          "path": "src/quant_company/news/sources.json",
-          "sha256": "5bfc3b0a4dd1"
-        },
-        {
-          "path": "docs/project/evidence/hot-news-mainstream-final-image-sources.json",
-          "sha256": "3cec4fdf9adc"
-        },
-        {
-          "path": "docs/project/evidence/hot-news-mainstream-source-policy.json",
-          "sha256": "55d62586ce2a"
-        },
-        {
-          "path": "docs/project/evidence/hot-news-mainstream-coverage.json",
-          "sha256": "c11a1dc85622"
-        }
-      ],
-      "note": "최종 운영 이미지에서 활성 25개 피드 수신과 추가 10개 피드의 최근 기사·표본 원문을 확인했다. 6개 분야는 피드 가용성으로 기록하고 기사 완전성으로 해석하지 않는다.",
-      "status": "verified",
-      "updatedAt": "2026-09-21T05:14:06.256410+00:00"
+      "updatedAt": "2026-09-21T07:22:32.488509+00:00"
     }
   },
-  "intentDigest": "e209d02c075b",
+  "intentDigest": "71d4cd4616bb",
   "schemaVersion": 1,
   "slug": "kokanee",
   "state": "approved",
-  "updatedAt": "2026-09-21T05:18:52.003945+00:00"
+  "updatedAt": "2026-09-21T07:39:07.986068+00:00"
 }

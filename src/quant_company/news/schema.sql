@@ -13,6 +13,13 @@ CREATE TABLE IF NOT EXISTS news_articles (
  UNIQUE(source_id,url,feed_digest)
 );
 CREATE INDEX IF NOT EXISTS news_article_queue ON news_articles(state,next_at);
+ALTER TABLE news_articles ADD COLUMN IF NOT EXISTS screening jsonb;
+CREATE TABLE IF NOT EXISTS news_triages (
+ id text PRIMARY KEY, state text NOT NULL DEFAULT 'running',
+ request jsonb NOT NULL, bundle jsonb NOT NULL, response jsonb,
+ policy_digest text NOT NULL, next_at timestamptz NOT NULL DEFAULT now(), error text,
+ created_at timestamptz NOT NULL DEFAULT now(), completed_at timestamptz
+);
 CREATE TABLE IF NOT EXISTS news_reviews (
  id text PRIMARY KEY, state text NOT NULL DEFAULT 'running',
  request jsonb NOT NULL, bundle jsonb NOT NULL, response jsonb, result jsonb,
@@ -29,6 +36,15 @@ CREATE TABLE IF NOT EXISTS news_publications (
  policy_digest text NOT NULL, expires_at timestamptz NOT NULL, broadcast boolean NOT NULL DEFAULT false
 );
 ALTER TABLE news_publications ADD COLUMN IF NOT EXISTS broadcast boolean NOT NULL DEFAULT false;
+ALTER TABLE news_publications ADD COLUMN IF NOT EXISTS morning_day date;
+ALTER TABLE news_publications ADD COLUMN IF NOT EXISTS digest_id uuid;
+CREATE TABLE IF NOT EXISTS news_digests (
+ id uuid PRIMARY KEY REFERENCES messages(id), project_id uuid NOT NULL REFERENCES projects(id),
+ day date NOT NULL, part integer NOT NULL DEFAULT 0, root_id uuid,
+ channel text NOT NULL, owner_user text NOT NULL,
+ member_ids jsonb NOT NULL, policy_digest text NOT NULL, expires_at timestamptz NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now(), UNIQUE(day,channel,owner_user,part)
+);
 ALTER TABLE outbox ALTER COLUMN thread_ts DROP NOT NULL;
 CREATE TABLE IF NOT EXISTS news_searches (
  id text PRIMARY KEY, state text NOT NULL DEFAULT 'running',

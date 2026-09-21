@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-09-21 07:07:57.039724+00:00",
+  "reason": "activate patched timer cadence after legacy replay retained its old 300-second timer",
+  "old_run": "a897b92c-5076-4726-a4a2-94d5bd2969d7",
+  "old_next_timer": "2026-09-21 07:10:21.344223+00:00",
+  "pending_activities_before": 0,
+  "frozen_editor_or_screen_calls_before": 0,
+  "new_run": "01a0c2ca-f8d0-7606-a99f-d1f85254c553",
+  "new_status": "RUNNING",
+  "inference_request_ids_replayed_or_replaced": 0,
+  "manual_slack_writes": 0
+}

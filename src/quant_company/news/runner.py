@@ -5,10 +5,13 @@ from temporalio import activity
 
 from ..contracts import ProviderFault, ProviderRequest, ProviderResponse
 from ..execution import provider_for
+from . import schedule
 from .contracts import NewsSource
+from .digest import NewsDigestStore
 from .discovery import NewsDiscoveryStore
 from .feeds import fetch_feed
 from .originals import fetch_original
+from .screening import NewsScreeningStore
 from .store import NewsStore
 
 
@@ -21,6 +24,7 @@ class NewsCollector:
     async def tick(self):
         if not self.store.company.settings.company_news_enabled:
             return {"state": "paused"}
+        await asyncio.to_thread(NewsDigestStore(self.store.company).flush)
         source = await asyncio.to_thread(self.store.claim_source)
         result = {"state": "idle"}
         if source:
@@ -49,6 +53,13 @@ class NewsEditor:
         self.provider = provider if provider is not None else provider_for(company)
 
     async def tick(self, heartbeat=False):
+        if self.store.company.settings.news_optimization_enabled:
+            screening = NewsScreeningStore(self.store.company)
+            ready = await asyncio.to_thread(screening.prepare)
+            if ready["state"] not in {"idle", "paused"}:
+                result = await self.run_request(ready, screening.commit, screening.screen_fault, heartbeat)
+                result.setdefault("next_delay", schedule.next_delay(self.store.company.settings))
+                return result
         ready = await asyncio.to_thread(self.store.prepare_review)
         return await self.run_request(ready, self.store.commit_review, self.store.fault, heartbeat)
 

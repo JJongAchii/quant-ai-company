@@ -9,6 +9,7 @@ from ..company import as_json, fingerprint
 from ..contracts import ProviderRequest
 from ..owner_controls import effective_limits
 from ..web_tools import search_prompt, search_result
+from . import schedule
 from .contracts import NEWS_TOPICS
 from .feeds import canonical_url
 from .store import NewsStore
@@ -35,6 +36,8 @@ class NewsDiscoveryStore(NewsStore):
     def prepare(self):
         if not self.allowed():
             return {"state": "paused"}
+        if schedule.quiet(self.company.settings):
+            return {"state": "quiet"}
         self.sync_sources()
         policy = self.search_policy()
         with self.db.transaction() as conn:
@@ -57,7 +60,8 @@ class NewsDiscoveryStore(NewsStore):
                     return {"state": "defer"}
                 return {"state": "ready", "request": active["request"]}
             latest = conn.execute("SELECT max(completed_at) AS at,count(*) AS n FROM news_searches").fetchone()
-            if latest["at"] and latest["at"] > datetime.now(UTC)-timedelta(minutes=30):
+            optimized = self.company.settings.news_optimization_enabled
+            if latest["at"] and latest["at"] > datetime.now(UTC)-timedelta(minutes=60 if optimized else 30):
                 return {"state": "idle"}
             topic = NEWS_TOPICS[latest["n"] % len(NEWS_TOPICS)]
             sources = [s for s in self.sources().values() if s.enabled and s.use_for_summary and s.kind == "media"]
@@ -75,12 +79,12 @@ class NewsDiscoveryStore(NewsStore):
                      + "; discover major developments covered by Reuters, AP, Bloomberg, FT, WSJ, CNBC, "
                      + "Yonhap and leading Korean economic media, then find public reporting of those events. "
                      + "Return only news article URLs from " + ", ".join(hosts)
-                     + "; Korean and English searches; at most 3 native searches; do not open pages. "
+                     + f"; Korean and English searches; at most {1 if optimized else 3} native searches; do not open pages. "
                      + "Also seek independent reporting for: " + "; ".join(r["title"][:120] for r in held))[:1000]
             args = {"query": query, "limit": 6}
             role = self.company.role("reporter")
-            request = ProviderRequest(request_id="news-search-"+str(uuid4()), model=role.model,
-                                      reasoning_effort=role.reasoning_effort, web_search=True, prompt=search_prompt(args))
+            request = ProviderRequest(request_id="news-search-"+str(uuid4()), model="gpt-5.6-luna" if optimized else role.model,
+                                      reasoning_effort="low" if optimized else role.reasoning_effort, web_search=True, prompt=search_prompt(args))
             conn.execute("INSERT INTO daily_usage(day,reserved) VALUES(CURRENT_DATE,0) ON CONFLICT DO NOTHING")
             used = conn.execute("SELECT reserved FROM daily_usage WHERE day=CURRENT_DATE FOR UPDATE").fetchone()["reserved"]
             cap = effective_limits(conn, self.company)["company"]

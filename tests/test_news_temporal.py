@@ -137,3 +137,33 @@ async def test_runtime_collects_while_model_is_busy(news, temporal_environment):
             release.set()
             for identity in ("company-news-collection-v1", "company-news-editorial-v1"):
                 await client.get_workflow_handle(identity).cancel()
+
+
+@pytest.mark.integration
+async def test_screening_fast_timer_survives_worker_restart(temporal_environment):  # noqa: F811
+    calls = []
+    completed = asyncio.Event()
+
+    @activity.defn(name="company_news_review")
+    async def review():
+        calls.append(1)
+        if len(calls) > 1:
+            completed.set()
+        return {"state": "completed", "next_delay": 2}
+
+    client = temporal_environment.client
+    queue = "news-screen-timer-"+uuid4().hex
+    async with Worker(client, task_queue=queue, workflows=[NewsEditorialWorkflow], activities=[review]):
+        handle = await client.start_workflow(NewsEditorialWorkflow.run, id=queue, task_queue=queue)
+        async with asyncio.timeout(10):
+            while True:
+                history = await handle.fetch_history()
+                timers = [e.timer_started_event_attributes for e in history.events if e.HasField("timer_started_event_attributes")]
+                if timers:
+                    assert timers[-1].start_to_fire_timeout.seconds == 2
+                    break
+                await asyncio.sleep(0.1)
+    async with Worker(client, task_queue=queue, workflows=[NewsEditorialWorkflow], activities=[review]):
+        await asyncio.wait_for(completed.wait(), timeout=15)
+        await Replayer(workflows=[NewsEditorialWorkflow]).replay_workflow(await handle.fetch_history())
+        await handle.cancel()

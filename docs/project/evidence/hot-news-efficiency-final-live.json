@@ -1,0 +1,1956 @@
+{
+  "checked_at": "2026-09-21T07:31:33.713775+00:00",
+  "commit": "c0eaeaa603a11fa17aa05bddf243373d0433cc7b",
+  "flags": {
+    "company_news_enabled": true,
+    "news_publish_enabled": true,
+    "news_search_enabled": true,
+    "news_optimization_enabled": true,
+    "news_delivery_window_enabled": true
+  },
+  "configured_reporter_model": "gpt-6-astra",
+  "configured_reporter_effort": "high",
+  "status": {
+    "enabled": true,
+    "publish_enabled": true,
+    "channel": "C0C2J1SSX09",
+    "sources": [
+      {
+        "id": "bbc-business",
+        "enabled": true,
+        "last_success": "2026-09-21 07:22:38.542783+00:00",
+        "last_attempt": "2026-09-21 07:22:38.308883+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 40022,
+          "sha256": "e9e8bffcc4107c87156ab081b65c2010949f17865c793ccd26423b3aca5fd0b0",
+          "skipped": 5,
+          "modified": "",
+          "latest_publication": "2026-09-21 06:25:43+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "economy_finance",
+          "macroeconomics",
+          "industry_technology"
+        ],
+        "regions": [
+          "global"
+        ],
+        "latest_collected": "2026-09-21 06:00:27.558084+00:00",
+        "latest_publication": "2026-09-21 05:50:56+00:00",
+        "fresh_count": 11,
+        "ready_count": 0
+      },
+      {
+        "id": "bbc-technology",
+        "enabled": true,
+        "last_success": "2026-09-21 07:22:41.288409+00:00",
+        "last_attempt": "2026-09-21 07:22:40.882704+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 15293,
+          "sha256": "10dc4f16db74e26ad94b9253b0d833e696eb5cfd4f924a5661cffc9c1466dd4c",
+          "skipped": 9,
+          "modified": "",
+          "latest_publication": "2026-09-19 23:01:57+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "industry_technology",
+          "world_events"
+        ],
+        "regions": [
+          "global"
+        ],
+        "latest_collected": "2026-09-21 00:43:12.441218+00:00",
+        "latest_publication": "2026-09-17 14:33:12+00:00",
+        "fresh_count": 0,
+        "ready_count": 0
+      },
+      {
+        "id": "bbc-world",
+        "enabled": true,
+        "last_success": "2026-09-21 07:22:33.494869+00:00",
+        "last_attempt": "2026-09-21 07:22:33.216299+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 28657,
+          "sha256": "117734ba4a18faf8f7b8ef584df61cacf814132a14d84fbd91000eac0c5fb459",
+          "skipped": 6,
+          "modified": "",
+          "latest_publication": "2026-09-21 07:01:25+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "geopolitics",
+          "world_events",
+          "trade_energy"
+        ],
+        "regions": [
+          "global"
+        ],
+        "latest_collected": "2026-09-21 07:22:33.505590+00:00",
+        "latest_publication": "2026-09-21 07:01:25+00:00",
+        "fresh_count": 12,
+        "ready_count": 6
+      },
+      {
+        "id": "bea-releases",
+        "enabled": true,
+        "last_success": "2026-09-21 07:26:55.499713+00:00",
+        "last_attempt": "2026-09-21 07:26:54.684236+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "not_modified": true,
+          "latest_publication": "2026-09-03 12:30:00+00:00"
+        },
+        "kind": "official",
+        "topics": [
+          "macroeconomics",
+          "economy_finance"
+        ],
+        "regions": [
+          "US"
+        ],
+        "latest_collected": "2026-09-18 16:33:54.474454+00:00",
+        "latest_publication": "2026-09-03 12:30:00+00:00",
+        "fresh_count": 0,
+        "ready_count": 0
+      },
+      {
+        "id": "cnbc-economy",
+        "enabled": true,
+        "last_success": "2026-09-21 07:22:43.959937+00:00",
+        "last_attempt": "2026-09-21 07:22:43.650537+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 20527,
+          "sha256": "5764de7f253ac89aa64bc0c4e2f7bfa17ad59392091564d93370cbfe64fba1a0",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": "2026-09-21 01:02:25+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "economy_finance",
+          "macroeconomics",
+          "trade_energy"
+        ],
+        "regions": [
+          "global",
+          "US"
+        ],
+        "latest_collected": "2026-09-21 00:43:15.186374+00:00",
+        "latest_publication": "2026-09-20 05:00:01+00:00",
+        "fresh_count": 0,
+        "ready_count": 0
+      },
+      {
+        "id": "cnbc-finance",
+        "enabled": true,
+        "last_success": "2026-09-21 07:22:46.671249+00:00",
+        "last_attempt": "2026-09-21 07:22:46.338397+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 21297,
+          "sha256": "560688ba2bda0e17fce403e1f7f79fe4352aaba2fe06ceaf8560461b4a7ce080",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": "2026-09-20 12:47:23+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "economy_finance",
+          "macroeconomics",
+          "industry_technology"
+        ],
+        "regions": [
+          "global",
+          "US"
+        ],
+        "latest_collected": "2026-09-21 00:43:17.853034+00:00",
+        "latest_publication": "2026-09-20 12:47:23+00:00",
+        "fresh_count": 1,
+        "ready_count": 0
+      },
+      {
+        "id": "cnbc-technology",
+        "enabled": true,
+        "last_success": "2026-09-21 07:22:49.360730+00:00",
+        "last_attempt": "2026-09-21 07:22:49.018831+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 20979,
+          "sha256": "714b41f5c966f147bbd49531d88521e5e1956b091ac2b205724cef167ff72231",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": "2026-09-21 03:51:31+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "industry_technology",
+          "trade_energy"
+        ],
+        "regions": [
+          "global",
+          "US"
+        ],
+        "latest_collected": "2026-09-21 00:43:20.463118+00:00",
+        "latest_publication": "2026-09-21 00:39:34+00:00",
+        "fresh_count": 4,
+        "ready_count": 0
+      },
+      {
+        "id": "cnbc-world",
+        "enabled": true,
+        "last_success": "2026-09-21 07:22:51.873561+00:00",
+        "last_attempt": "2026-09-21 07:22:51.562398+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 20771,
+          "sha256": "c35c038934ceda3bb61e98f87a98ab44113af992c939123e0970077d12c229c9",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": "2026-09-21 06:41:34+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "economy_finance",
+          "geopolitics",
+          "trade_energy",
+          "world_events"
+        ],
+        "regions": [
+          "global"
+        ],
+        "latest_collected": "2026-09-21 06:51:43.494417+00:00",
+        "latest_publication": "2026-09-21 06:41:34+00:00",
+        "fresh_count": 7,
+        "ready_count": 0
+      },
+      {
+        "id": "ecb-press",
+        "enabled": true,
+        "last_success": "2026-09-21 07:26:58.580220+00:00",
+        "last_attempt": "2026-09-21 07:26:57.695227+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "\"myra-ed1d24eb\"",
+          "bytes": 5673,
+          "sha256": "6e2fb8fbfdf62ddf10749755d9085f5eefc346fb99643b4e16c13cc0c80fc9dd",
+          "skipped": 12,
+          "modified": "",
+          "latest_publication": "2026-09-18 08:00:00+00:00"
+        },
+        "kind": "official",
+        "topics": [
+          "macroeconomics",
+          "economy_finance"
+        ],
+        "regions": [
+          "Europe"
+        ],
+        "latest_collected": "2026-09-18 16:33:55.186849+00:00",
+        "latest_publication": "2026-09-18 08:00:00+00:00",
+        "fresh_count": 0,
+        "ready_count": 0
+      },
+      {
+        "id": "etoday-economy",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:13.560135+00:00",
+        "last_attempt": "2026-09-21 07:29:13.490627+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 33445,
+          "sha256": "8c7ebf01ad1548886648eeb74f20ae43b6b611e65c254f74f3dcb3881e6a0d5e",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": "2026-09-21 07:25:00+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "economy_finance",
+          "macroeconomics"
+        ],
+        "regions": [
+          "KR",
+          "global"
+        ],
+        "latest_collected": "2026-09-21 07:29:13.571076+00:00",
+        "latest_publication": "2026-09-21 07:25:00+00:00",
+        "fresh_count": 33,
+        "ready_count": 3
+      },
+      {
+        "id": "etoday-finance",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:15.964198+00:00",
+        "last_attempt": "2026-09-21 07:29:15.899627+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 21107,
+          "sha256": "d36e1551cd0b741f30eb72092bbf6d657cc57124d8fe890a505458e20d87a554",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": "2026-09-21 07:19:00+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "economy_finance",
+          "macroeconomics"
+        ],
+        "regions": [
+          "KR",
+          "global"
+        ],
+        "latest_collected": "2026-09-21 07:29:15.974789+00:00",
+        "latest_publication": "2026-09-21 07:19:00+00:00",
+        "fresh_count": 18,
+        "ready_count": 3
+      },
+      {
+        "id": "etoday-global",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:18.363371+00:00",
+        "last_attempt": "2026-09-21 07:29:18.300266+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 16926,
+          "sha256": "94f185f50227cf6e6294946a00f2acde961a23182f00eb992d904894b36b67c5",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": "2026-09-21 07:21:00+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "economy_finance",
+          "geopolitics",
+          "trade_energy",
+          "world_events"
+        ],
+        "regions": [
+          "KR",
+          "global"
+        ],
+        "latest_collected": "2026-09-21 07:29:18.374239+00:00",
+        "latest_publication": "2026-09-21 07:21:00+00:00",
+        "fresh_count": 17,
+        "ready_count": 4
+      },
+      {
+        "id": "etoday-industry",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:20.773403+00:00",
+        "last_attempt": "2026-09-21 07:29:20.705743+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 70413,
+          "sha256": "61dc48544aa45851a175de756ca038166f38b72f2f43ed0e4a11d6bf8efb00fa",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": "2026-09-21 07:19:00+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "industry_technology",
+          "trade_energy"
+        ],
+        "regions": [
+          "KR",
+          "global"
+        ],
+        "latest_collected": "2026-09-21 07:29:20.787437+00:00",
+        "latest_publication": "2026-09-21 07:19:00+00:00",
+        "fresh_count": 99,
+        "ready_count": 3
+      },
+      {
+        "id": "fed-press",
+        "enabled": true,
+        "last_success": "2026-09-21 07:27:00.899787+00:00",
+        "last_attempt": "2026-09-21 07:27:00.767141+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "not_modified": true,
+          "latest_publication": "2026-09-18 15:00:00+00:00"
+        },
+        "kind": "official",
+        "topics": [
+          "macroeconomics",
+          "economy_finance"
+        ],
+        "regions": [
+          "US"
+        ],
+        "latest_collected": "2026-09-18 16:33:56.106593+00:00",
+        "latest_publication": "2026-09-18 15:00:00+00:00",
+        "fresh_count": 0,
+        "ready_count": 0
+      },
+      {
+        "id": "govuk-fcdo",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:05.259753+00:00",
+        "last_attempt": "2026-09-21 07:29:04.046888+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "not_modified": true,
+          "latest_publication": null
+        },
+        "kind": "official",
+        "topics": [
+          "geopolitics",
+          "world_events",
+          "trade_energy"
+        ],
+        "regions": [
+          "global",
+          "UK"
+        ],
+        "latest_collected": "2026-09-18 21:13:42.810735+00:00",
+        "latest_publication": "2026-09-18 21:04:48+00:00",
+        "fresh_count": 0,
+        "ready_count": 0
+      },
+      {
+        "id": "govuk-trade",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:08.656653+00:00",
+        "last_attempt": "2026-09-21 07:29:07.446233+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "not_modified": true,
+          "latest_publication": null
+        },
+        "kind": "official",
+        "topics": [
+          "trade_energy",
+          "industry_technology"
+        ],
+        "regions": [
+          "global",
+          "UK"
+        ],
+        "latest_collected": "2026-09-18 16:33:57.260965+00:00",
+        "latest_publication": null,
+        "fresh_count": 0,
+        "ready_count": 0
+      },
+      {
+        "id": "govuk-treasury",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:11.270546+00:00",
+        "last_attempt": "2026-09-21 07:29:10.841287+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "not_modified": true,
+          "latest_publication": null
+        },
+        "kind": "official",
+        "topics": [
+          "macroeconomics",
+          "economy_finance"
+        ],
+        "regions": [
+          "UK"
+        ],
+        "latest_collected": "2026-09-18 16:33:57.512822+00:00",
+        "latest_publication": "2026-09-18 13:53:43+00:00",
+        "fresh_count": 0,
+        "ready_count": 0
+      },
+      {
+        "id": "kbs-economy",
+        "enabled": true,
+        "last_success": "2026-09-21 07:22:54.163744+00:00",
+        "last_attempt": "2026-09-21 07:22:54.069232+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 37957,
+          "sha256": "b3d8a037b9e492bc2526ae0039eead1130599021cc87fcaba147d80c9d8c44a6",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": "2026-09-21 06:56:46+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "economy_finance",
+          "macroeconomics",
+          "trade_energy",
+          "industry_technology"
+        ],
+        "regions": [
+          "KR"
+        ],
+        "latest_collected": "2026-09-21 00:43:25.646748+00:00",
+        "latest_publication": "2026-09-18 07:03:27+00:00",
+        "fresh_count": 0,
+        "ready_count": 0
+      },
+      {
+        "id": "kbs-world",
+        "enabled": true,
+        "last_success": "2026-09-21 07:22:35.955510+00:00",
+        "last_attempt": "2026-09-21 07:22:35.884803+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 38835,
+          "sha256": "df0490a5c4663e97ba0382c511b93de086d8f8eb556a748e280eb0a8cb16c723",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": "2026-09-21 06:56:46+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "economy_finance",
+          "macroeconomics",
+          "geopolitics",
+          "trade_energy",
+          "industry_technology",
+          "world_events"
+        ],
+        "regions": [
+          "KR",
+          "Asia"
+        ],
+        "latest_collected": "2026-09-21 07:02:00.742698+00:00",
+        "latest_publication": "2026-09-21 06:56:46+00:00",
+        "fresh_count": 37,
+        "ready_count": 5
+      },
+      {
+        "id": "newsis-economy",
+        "enabled": false,
+        "last_success": null,
+        "last_attempt": null,
+        "failures": 0,
+        "error": null,
+        "receipt": null,
+        "kind": "media",
+        "topics": [],
+        "regions": [],
+        "latest_collected": null,
+        "latest_publication": null,
+        "fresh_count": 0,
+        "ready_count": 0
+      },
+      {
+        "id": "newsis-world",
+        "enabled": false,
+        "last_success": null,
+        "last_attempt": null,
+        "failures": 0,
+        "error": null,
+        "receipt": null,
+        "kind": "media",
+        "topics": [],
+        "regions": [],
+        "latest_collected": null,
+        "latest_publication": null,
+        "fresh_count": 0,
+        "ready_count": 0
+      },
+      {
+        "id": "sbs-economy",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:23.271229+00:00",
+        "last_attempt": "2026-09-21 07:29:23.180081+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 278948,
+          "sha256": "69d202e6a0803ad89176558236450da56b824e966d9795a9888c162ca604c115",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": "2026-09-21 07:26:00+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "economy_finance",
+          "macroeconomics",
+          "industry_technology",
+          "trade_energy"
+        ],
+        "regions": [
+          "KR",
+          "global"
+        ],
+        "latest_collected": "2026-09-21 07:19:09.922387+00:00",
+        "latest_publication": "2026-09-21 07:08:00+00:00",
+        "fresh_count": 36,
+        "ready_count": 7
+      },
+      {
+        "id": "sbs-world",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:25.564914+00:00",
+        "last_attempt": "2026-09-21 07:29:25.477404+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "",
+          "bytes": 247577,
+          "sha256": "d046967fc788fd1fc39d34c6f78a33b2f058ff8f4090568aaf2bceb9cd84926f",
+          "skipped": 0,
+          "modified": "",
+          "latest_publication": "2026-09-21 07:21:00+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "geopolitics",
+          "world_events",
+          "trade_energy"
+        ],
+        "regions": [
+          "KR",
+          "global"
+        ],
+        "latest_collected": "2026-09-21 07:29:25.575713+00:00",
+        "latest_publication": "2026-09-21 07:21:00+00:00",
+        "fresh_count": 35,
+        "ready_count": 2
+      },
+      {
+        "id": "yonhap-economy",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:28.043107+00:00",
+        "last_attempt": "2026-09-21 07:29:27.920753+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "1789975775408",
+          "bytes": 94867,
+          "sha256": "a7c6f0a3fef6ced2383ec4334e5394b104be35b4586874a15e45a8e802688840",
+          "skipped": 0,
+          "modified": "Mon, 21 Sep 2026 07:27:57 GMT",
+          "latest_publication": "2026-09-21 07:23:41+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "economy_finance",
+          "macroeconomics",
+          "trade_energy"
+        ],
+        "regions": [
+          "KR",
+          "global"
+        ],
+        "latest_collected": "2026-09-21 07:29:28.053823+00:00",
+        "latest_publication": "2026-09-21 07:23:41+00:00",
+        "fresh_count": 160,
+        "ready_count": 20
+      },
+      {
+        "id": "yonhap-industry",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:30.557878+00:00",
+        "last_attempt": "2026-09-21 07:29:30.438157+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "1789975770937",
+          "bytes": 97437,
+          "sha256": "0d78fd8ad1f01ccd53a24a68e4f1eacd62ec9adf5c0deb030567166e4c0e7b05",
+          "skipped": 0,
+          "modified": "Mon, 21 Sep 2026 07:27:58 GMT",
+          "latest_publication": "2026-09-21 07:23:50+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "industry_technology",
+          "trade_energy"
+        ],
+        "regions": [
+          "KR",
+          "global"
+        ],
+        "latest_collected": "2026-09-21 07:29:30.568842+00:00",
+        "latest_publication": "2026-09-21 07:23:50+00:00",
+        "fresh_count": 128,
+        "ready_count": 25
+      },
+      {
+        "id": "yonhap-international",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:33.080440+00:00",
+        "last_attempt": "2026-09-21 07:29:32.961060+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "1789975789424",
+          "bytes": 99503,
+          "sha256": "6ff4e870f957254a42bba8817099b55a5531e41ef6cca2c4fdab937fdd0e3ac4",
+          "skipped": 0,
+          "modified": "Mon, 21 Sep 2026 07:27:58 GMT",
+          "latest_publication": "2026-09-21 07:22:51+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "geopolitics",
+          "trade_energy",
+          "world_events"
+        ],
+        "regions": [
+          "KR",
+          "global"
+        ],
+        "latest_collected": "2026-09-21 07:29:33.091334+00:00",
+        "latest_publication": "2026-09-21 07:22:51+00:00",
+        "fresh_count": 116,
+        "ready_count": 12
+      },
+      {
+        "id": "yonhap-market",
+        "enabled": true,
+        "last_success": "2026-09-21 07:29:35.618551+00:00",
+        "last_attempt": "2026-09-21 07:29:35.480843+00:00",
+        "failures": 0,
+        "error": null,
+        "receipt": {
+          "ok": true,
+          "etag": "1789975800542",
+          "bytes": 85223,
+          "sha256": "32be75667d069264e717948fbdebba5f38c2abf22ee314e99bd8bdb39534bc0d",
+          "skipped": 0,
+          "modified": "Mon, 21 Sep 2026 07:27:58 GMT",
+          "latest_publication": "2026-09-21 07:04:16+00:00"
+        },
+        "kind": "media",
+        "topics": [
+          "economy_finance",
+          "macroeconomics"
+        ],
+        "regions": [
+          "KR",
+          "global"
+        ],
+        "latest_collected": "2026-09-21 06:58:59.160835+00:00",
+        "latest_publication": "2026-09-21 06:45:56+00:00",
+        "fresh_count": 34,
+        "ready_count": 10
+      }
+    ],
+    "coverage": {
+      "economy_finance": {
+        "enabled_sources": [
+          "bbc-business",
+          "bea-releases",
+          "cnbc-economy",
+          "cnbc-finance",
+          "cnbc-world",
+          "ecb-press",
+          "etoday-economy",
+          "etoday-finance",
+          "etoday-global",
+          "fed-press",
+          "govuk-treasury",
+          "kbs-economy",
+          "kbs-world",
+          "sbs-economy",
+          "yonhap-economy",
+          "yonhap-market"
+        ],
+        "fresh_media_sources": [
+          "bbc-business",
+          "cnbc-finance",
+          "cnbc-world",
+          "etoday-economy",
+          "etoday-finance",
+          "etoday-global",
+          "kbs-world",
+          "sbs-economy",
+          "yonhap-economy",
+          "yonhap-market"
+        ]
+      },
+      "macroeconomics": {
+        "enabled_sources": [
+          "bbc-business",
+          "bea-releases",
+          "cnbc-economy",
+          "cnbc-finance",
+          "ecb-press",
+          "etoday-economy",
+          "etoday-finance",
+          "fed-press",
+          "govuk-treasury",
+          "kbs-economy",
+          "kbs-world",
+          "sbs-economy",
+          "yonhap-economy",
+          "yonhap-market"
+        ],
+        "fresh_media_sources": [
+          "bbc-business",
+          "cnbc-finance",
+          "etoday-economy",
+          "etoday-finance",
+          "kbs-world",
+          "sbs-economy",
+          "yonhap-economy",
+          "yonhap-market"
+        ]
+      },
+      "geopolitics": {
+        "enabled_sources": [
+          "bbc-world",
+          "cnbc-world",
+          "etoday-global",
+          "govuk-fcdo",
+          "kbs-world",
+          "sbs-world",
+          "yonhap-international"
+        ],
+        "fresh_media_sources": [
+          "bbc-world",
+          "cnbc-world",
+          "etoday-global",
+          "kbs-world",
+          "sbs-world",
+          "yonhap-international"
+        ]
+      },
+      "trade_energy": {
+        "enabled_sources": [
+          "bbc-world",
+          "cnbc-economy",
+          "cnbc-technology",
+          "cnbc-world",
+          "etoday-global",
+          "etoday-industry",
+          "govuk-fcdo",
+          "govuk-trade",
+          "kbs-economy",
+          "kbs-world",
+          "sbs-economy",
+          "sbs-world",
+          "yonhap-economy",
+          "yonhap-industry",
+          "yonhap-international"
+        ],
+        "fresh_media_sources": [
+          "bbc-world",
+          "cnbc-technology",
+          "cnbc-world",
+          "etoday-global",
+          "etoday-industry",
+          "kbs-world",
+          "sbs-economy",
+          "sbs-world",
+          "yonhap-economy",
+          "yonhap-industry",
+          "yonhap-international"
+        ]
+      },
+      "industry_technology": {
+        "enabled_sources": [
+          "bbc-business",
+          "bbc-technology",
+          "cnbc-finance",
+          "cnbc-technology",
+          "etoday-industry",
+          "govuk-trade",
+          "kbs-economy",
+          "kbs-world",
+          "sbs-economy",
+          "yonhap-industry"
+        ],
+        "fresh_media_sources": [
+          "bbc-business",
+          "cnbc-finance",
+          "cnbc-technology",
+          "etoday-industry",
+          "kbs-world",
+          "sbs-economy",
+          "yonhap-industry"
+        ]
+      },
+      "world_events": {
+        "enabled_sources": [
+          "bbc-technology",
+          "bbc-world",
+          "cnbc-world",
+          "etoday-global",
+          "govuk-fcdo",
+          "kbs-world",
+          "sbs-world",
+          "yonhap-international"
+        ],
+        "fresh_media_sources": [
+          "bbc-world",
+          "cnbc-world",
+          "etoday-global",
+          "kbs-world",
+          "sbs-world",
+          "yonhap-international"
+        ]
+      }
+    },
+    "search_enabled": true,
+    "optimization_enabled": true,
+    "delivery_window": "06:00–24:00 Asia/Seoul",
+    "triages": [
+      {
+        "id": "news-screen-d4158bbb-0f4c-49fe-9fab-a00c51c6a54e",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 07:27:28.100880+00:00",
+        "completed_at": "2026-09-21 07:28:19.790679+00:00"
+      },
+      {
+        "id": "news-screen-bc4daa3c-af85-4d99-bcfe-1786c62f722b",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 07:04:32.640230+00:00",
+        "completed_at": "2026-09-21 07:05:21.263823+00:00"
+      }
+    ],
+    "digests": [],
+    "searches": [
+      {
+        "id": "news-search-19c1b2df-3299-4990-9dd4-cbbd4893741a",
+        "topic": "world_events",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 06:35:01.010980+00:00",
+        "completed_at": "2026-09-21 06:35:55.935754+00:00",
+        "added": 2,
+        "excluded_unregistered": 2
+      },
+      {
+        "id": "news-search-762ee2a9-f63b-4ced-8dac-343367ba405c",
+        "topic": "industry_technology",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 06:02:58.485664+00:00",
+        "completed_at": "2026-09-21 06:03:17.585597+00:00",
+        "added": 0,
+        "excluded_unregistered": 0
+      },
+      {
+        "id": "news-search-e79607ea-76a3-4ccb-9e76-90de74c45626",
+        "topic": "trade_energy",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 05:28:01.246665+00:00",
+        "completed_at": "2026-09-21 05:28:55.470315+00:00",
+        "added": 1,
+        "excluded_unregistered": 2
+      },
+      {
+        "id": "news-search-3920ff7c-c2d0-46fd-ad05-20c41fdd8507",
+        "topic": "geopolitics",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 04:56:44.853087+00:00",
+        "completed_at": "2026-09-21 04:57:03.619341+00:00",
+        "added": 0,
+        "excluded_unregistered": 0
+      },
+      {
+        "id": "news-search-3f17c417-70f7-4286-89c3-69aa0c172b20",
+        "topic": "macroeconomics",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 04:24:36.832522+00:00",
+        "completed_at": "2026-09-21 04:25:00.498349+00:00",
+        "added": 1,
+        "excluded_unregistered": 0
+      },
+      {
+        "id": "news-search-340b15d4-65b8-4543-83d3-36ca220d70c9",
+        "topic": "economy_finance",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 03:53:21.139789+00:00",
+        "completed_at": "2026-09-21 03:53:53.186549+00:00",
+        "added": 4,
+        "excluded_unregistered": 0
+      }
+    ],
+    "coverage_note": "Source topic registration and fresh article counts, not proof that every topic/event was covered. Delivery status comes from the outbox, not article queued state.",
+    "articles": [
+      {
+        "state": "expired",
+        "count": 4
+      },
+      {
+        "state": "fetch_failed",
+        "count": 7
+      },
+      {
+        "state": "held",
+        "count": 26
+      },
+      {
+        "state": "historical_or_undated",
+        "count": 853
+      },
+      {
+        "state": "ignored",
+        "count": 113
+      },
+      {
+        "state": "queued",
+        "count": 66
+      },
+      {
+        "state": "ready",
+        "count": 100
+      },
+      {
+        "state": "selected",
+        "count": 9
+      }
+    ],
+    "deliveries": [
+      {
+        "id": "8e412336-1792-51f7-b875-be76f591faec",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789975829.300859",
+        "created_at": "2026-09-21 07:30:26.726742+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "11ec2141-c35f-54a4-8b7b-c01ec5be1816",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789975830.866689",
+        "created_at": "2026-09-21 07:30:26.726742+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "a0b3ebe1-6e9f-59f0-80b6-094f2dbd8636",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789975827.761589",
+        "created_at": "2026-09-21 07:30:26.726742+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "9ee7d09c-f2bc-5f23-ba15-869a807be54e",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789974972.531799",
+        "created_at": "2026-09-21 07:16:09.802419+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "b299db35-f4f7-536f-aaf3-4224c741acdd",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789974970.965939",
+        "created_at": "2026-09-21 07:16:09.802419+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "3b2759c7-8c0c-5312-87cf-c5293c947be8",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789974583.452849",
+        "created_at": "2026-09-21 07:09:40.925993+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "daf7502a-ccb1-55fe-8ce2-3ab626f14506",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789974581.886209",
+        "created_at": "2026-09-21 07:09:40.925993+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "466247f0-832b-5597-892b-17c315a71e47",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789974585.157539",
+        "created_at": "2026-09-21 07:09:40.925993+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "2fd43fa3-4db2-536b-990a-bd587076bdb9",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789973973.537599",
+        "created_at": "2026-09-21 06:59:32.276747+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "061c527b-a2ec-5e18-a9f6-0a7be9205d2c",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789973611.916709",
+        "created_at": "2026-09-21 06:53:29.344385+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "2cfab702-6cb5-55a5-9d6f-8df14b3628a5",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789973610.351299",
+        "created_at": "2026-09-21 06:53:29.344385+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "0c9c35d8-15ec-5295-9c2f-9420b65502b6",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789972900.809409",
+        "created_at": "2026-09-21 06:41:38.148844+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "e92f685c-469f-5b06-84ff-f6201b9fd4fb",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789972899.295619",
+        "created_at": "2026-09-21 06:41:38.148844+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "a6eeb0b8-d771-5171-9a58-0cafa9cce7da",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789972501.919899",
+        "created_at": "2026-09-21 06:35:00.803904+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "dc0bf074-8e12-5396-a925-607228fe7de2",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789972141.245009",
+        "created_at": "2026-09-21 06:28:59.154507+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "71e55eca-95af-5e44-bf3c-71f631c947b4",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789972139.632459",
+        "created_at": "2026-09-21 06:28:59.154507+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "0ea2b9fa-987e-50b6-a188-675f5891c487",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789971755.948939",
+        "created_at": "2026-09-21 06:22:35.609489+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "c83cafe8-5d31-5f48-ae06-49e77c79d202",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789971757.502959",
+        "created_at": "2026-09-21 06:22:35.609489+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "0cad5db8-85db-5bb9-a58f-8e1f7ae44721",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789971361.862999",
+        "created_at": "2026-09-21 06:15:59.686048+00:00",
+        "digest_id": null
+      },
+      {
+        "id": "0ff06d0c-a37a-5325-abc6-fa87ce55b2e9",
+        "status": "delivered",
+        "error": null,
+        "sent_ts": "1789971360.332759",
+        "created_at": "2026-09-21 06:15:59.686048+00:00",
+        "digest_id": null
+      }
+    ],
+    "reviews": [
+      {
+        "id": "news-84c727e1-c75b-4a86-8280-fd61926fa0ec",
+        "state": "completed",
+        "error": null,
+        "result": [
+          {
+            "state": "ignored",
+            "reason": "9월 19일 미국 경유 평균가격 6.505달러와 6.50달러 첫 돌파는 이미 전달한 블룸버그 인용 보도와 동일하다. 수출 제한 요구와 16일 법안 발의는 배경 설명이며, 새로운 수출 금지 시행이나 가격 집계는 제시되지 않았다. 선거 영향 전망도 발행하지 않는다.",
+            "headline": ""
+          },
+          {
+            "state": "ignored",
+            "reason": "고려아연 미국 제련소의 환경평가 완료와 중대한 환경영향 없음 결정은 기존 전달 사건과 같다. 평가 완료일과 처리 규모를 보충하지만 추가 인허가 취득이나 착공 등 실질적인 후속 진전은 확인되지 않는다. 환경평가 완료를 전체 인허가 완료로 확대 해석하지 않는다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "개발·신용보증·산업지원 등을 담당하는 지역 공공기관의 대규모 조직 개편이다. 승인된 매체의 실명 보도를 근거로 통합 추진 현황과 남은 의결 절차를 구분해 전달한다.",
+            "headline": "연합뉴스: 전남광주시, 공공기관 22곳을 11곳으로 통합 추진"
+          },
+          {
+            "state": "held",
+            "reason": "나델라의 9월 24일 미중 정상 만찬 참석 예정이라는 핵심 내용은 블룸버그의 익명 소식통 보도에 의존한다. 연합뉴스와 SBS 모두 같은 보도를 인용하므로 독립된 두 취재원이 아니다. 익명 주장에는 attributed_report를 적용할 수 없으며, 참석자나 주최 측의 확인도 제공되지 않았다.",
+            "headline": "미중 정상 만찬 나델라 참석 보도, 익명 단일 출처로 보류"
+          },
+          {
+            "state": "queued",
+            "reason": "인천의 월간 수출과 반도체 수출 최고치라는 구체적인 지역 경제 실적이다. 연합뉴스가 인용한 무역협회 집계를 전달하며 전국 수출 실적으로 일반화하지 않는다.",
+            "headline": "연합뉴스: 8월 인천 수출 51억5000만달러…반도체 월간 최고"
+          },
+          {
+            "state": "ignored",
+            "reason": "본문의 새 소식은 위원장의 현장 점검과 안전관리 당부다. 중수 누설은 지난 7월 사건이며, 최근 3호기 재가동의 구체적인 날짜·조건이나 새로운 사고·규제 결정은 제시되지 않았다. 기존 원전 문제를 신규 사고로 재포장하지 않고 정례적 후속 점검 보도로 제외한다. 사진 설명의 2025년 회의도 이번 사건과 구분한다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "시장 방문 자체보다 이번 달 확대 개편된 소상공인 금융지원과 추석 자금 공급 계획의 규모가 중요하다. 이투데이의 상세 수치를 매체에 귀속해 전달한다. 두 기사는 금융위 설명에 기반하므로 독립 확인으로 간주하지 않으며, 연합뉴스의 103조원은 이투데이의 102.6조원을 반올림한 수준으로 별도 증액으로 보지 않는다.",
+            "headline": "이투데이: 소상공인 더드림 12.3조원으로 개편…추석 금융지원 102.6조원"
+          }
+        ],
+        "created_at": "2026-09-21 07:28:22.039272+00:00",
+        "completed_at": "2026-09-21 07:30:26.726742+00:00"
+      },
+      {
+        "id": "news-1ebea41e-a756-4e04-830f-3703192e97b0",
+        "state": "completed",
+        "error": null,
+        "result": [
+          {
+            "state": "ignored",
+            "reason": "지역 경제계와 정당의 간담회 및 지원 요청이다. 가덕신공항 공사비 기준 변경, 정책금융기관 이전, 통합 항공사 본사 입지에 관한 확정 결정이나 실제 사업 진전은 제시되지 않아 제외한다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "서로 다른 기자가 대구와 서울 시장에서 직접 취재한 기사로, 명절 장보기에서 소량 구매를 선택하는 모습을 각각 확인했다. 시장별 혼잡도는 구분하고, 조사 기준이 다른 차례상 비용 수치는 합치지 않는다.",
+            "headline": "추석 앞둔 서울·대구 시장 르포…필요한 만큼 나눠 사는 장보기"
+          },
+          {
+            "state": "ignored",
+            "reason": "경주시장의 유치 지지 여부를 둘러싼 지방정부 간 발표 충돌이다. 통합 공기업 설립이나 본사 입지에 관한 새로운 결정은 없으므로 주요 경제 뉴스에서 제외한다. 어느 지방정부의 주장도 사실로 확정하지 않는다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "수소차 검사 기반시설 조성을 위한 실제 협약 체결과 사업 규모가 보도됐다. 승인된 매체인 연합뉴스의 보도로 귀속하며, 준공 시점은 확정 실적이 아닌 목표로 표시한다.",
+            "headline": "연합뉴스: 전북·완주·교통안전공단, 81억3천만원 수소차 검사센터 협약"
+          },
+          {
+            "state": "held",
+            "reason": "핵심인 AI 멸망 확률 0%는 경영자의 의견·예측이며, 경쟁사의 법적 책임 회피 의도에 관한 발언도 주장이다. attributed_report로 발행할 수 없다. SBS와 연합뉴스 본문은 발언과 전개가 거의 같고 같은 CBS 인터뷰를 토대로 하므로 독립 취재 두 건으로 인정할 근거가 부족하다. 인터뷰 원문과 주장에 대한 추가 근거가 없어 보류한다.",
+            "headline": ""
+          },
+          {
+            "state": "held",
+            "reason": "냉방 투자비를 4년 내 회수할 수 있다는 핵심 내용은 연구 추정·전망으로 attributed_report 대상이 아니다. 공급된 기사는 로이터 보도를 인용한 연합뉴스 기사 한 건이며 연구 원문, 회수기간 산정 가정, 별도 독립 보도가 없다. 다카 공장 8곳의 조사 결과를 방글라데시 의류산업 전체로 일반화할 수도 없다. 2030년 수출 손실 전망은 3년 전 연구로 신규 사실과 구분해야 한다.",
+            "headline": ""
+          }
+        ],
+        "created_at": "2026-09-21 07:14:41.164184+00:00",
+        "completed_at": "2026-09-21 07:16:09.802419+00:00"
+      },
+      {
+        "id": "news-5f312343-e3c7-42c5-b36e-1c090c9afdc2",
+        "state": "completed",
+        "error": null,
+        "result": [
+          {
+            "state": "queued",
+            "reason": "종합 기사에서 새로운 대통령 순방 일정 발표를 선정했다. 비서실장 사의와 중장년 사회조사는 기존 발행 내용과 중복된다. DMZ 사고의 부상자 수와 원인은 추가 근거가 필요하며, 대이란 발언은 재전언만으로 군사행동 확정 사실로 다루지 않는다.",
+            "headline": "연합뉴스: 이 대통령, 21∼27일 미국·멕시코 순방 예정"
+          },
+          {
+            "state": "queued",
+            "reason": "본문에 가격 기준일과 전국 평균 수치가 명시돼 있다. 블룸버그를 인용한 연합뉴스 보도로 출처를 밝히고, 선거 영향 전망과 전쟁 관련 원인 해석은 발행 사실에서 제외한다.",
+            "headline": "연합뉴스·블룸버그 인용: 미국 경유 전국 평균, 갤런당 6.50달러 첫 돌파"
+          },
+          {
+            "state": "held",
+            "reason": "핵심인 발행 규모 100억달러·10억유로는 블룸버그의 익명 소식통에 근거한다. 같은 기사에 로이터 인용이 있으나 해당 규모를 별도로 뒷받침하는지, 취재 기원이 독립적인지 확인할 수 없다. 발행사 공시 등 추가 근거가 필요하며 익명 주장을 attributed_report로 발행할 수 없다.",
+            "headline": "소프트뱅크의 오픈AI 투자용 대규모 채권 발행 보도, 근거 보강 필요"
+          },
+          {
+            "state": "ignored",
+            "reason": "수소 정책 재설계와 투자 예측 가능성에 관한 토론회 제언이 중심이다. 새로운 정책 시행·확정 투자·사업 착수 등 주요한 실제 변화가 제시되지 않아 제외한다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "승인된 매체가 전한 고려아연의 환경평가 완료 발표로 한정해 발행한다. 정부 원문을 직접 확인한 official_action으로 분류하지 않으며, 후속 인허가와 금융·전력 지원이 확정됐다는 의미로 확대하지 않는다.",
+            "headline": "이투데이: 고려아연, 미국 제련소 사업 환경평가 완료 발표"
+          },
+          {
+            "state": "held",
+            "reason": "6개 업체가 소송으로 벌점을 회피했다는 핵심 주장은 의원의 자료 분석과 설명에 의존한다. 조달청 원자료, 개별 제재·집행정지 결정 또는 독립적인 추가 취재가 제공되지 않았다. 낙찰액과 제재 지연 경위, 업체 책임을 함께 검증할 근거가 부족하므로 의혹을 일반 보도 사실로 바꾸어 발행하지 않는다.",
+            "headline": "철근누락 관련 업체의 제재 회피·추가 낙찰 주장, 근거 보강 필요"
+          }
+        ],
+        "created_at": "2026-09-21 07:07:57.344452+00:00",
+        "completed_at": "2026-09-21 07:09:40.925993+00:00"
+      },
+      {
+        "id": "news-cf59745c-d043-4f14-b9ab-e3a11ff04f9f",
+        "state": "completed",
+        "error": null,
+        "result": [
+          {
+            "state": "ignored",
+            "reason": "울주군 배 작황에 관한 지역 단위 전망이다. 평년 대비 생산량 10% 증가는 확정 생산실적이 아니며, 전국 농산물 수급이나 가격에 미치는 중대한 영향은 본문에 제시되지 않았다.",
+            "headline": ""
+          },
+          {
+            "state": "ignored",
+            "reason": "9월 21일 회사가 알린 내용은 9월 6일 학회에서 발표한 임상2상 등록환자 104명의 투여 전 특성이다. 유효성·안전성 결과나 허가·사업화 성과가 아니며, 주요 산업 뉴스로 선정할 만큼의 새로운 임상 결과는 제시되지 않았다.",
+            "headline": ""
+          },
+          {
+            "state": "ignored",
+            "reason": "아시안게임 역사 인물 연출에 대한 비판과 포토존 안내를 다룬 기사다. 본문상 포토존 안내 날짜는 9월 22일이며, 중대한 외교 조치나 대회 운영 변경은 확인되지 않아 주요 세계정세 뉴스에서 제외한다.",
+            "headline": ""
+          },
+          {
+            "state": "ignored",
+            "reason": "국가 독감 무료접종 개시, 일주일 조기 시행, 의심환자 비율 증가라는 핵심 사실은 이미 전달됐다. 기존 요약에 없던 고령층 접종 일정과 이용 안내는 추가 세부사항이며, 정책 변경이나 유행 상황의 새로운 변화로 제시되지 않아 재게시하지 않는다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "승인 매체 CNBC가 보도한 AI 정책 발표와 미중 대화체 합의에 한정한다. 실제 조직 출범이나 제도 시행으로 확대 해석하지 않는다. 같은 종합기사의 익명 취재원 기반 만찬 참석 전망, 러시아 선거 전망·사상자·공격 관련 주장 등은 게시 내용에서 제외했다.",
+            "headline": "CNBC: 트럼프 ‘AI 포스’ 신설 발표…미중, AI 사고 통보 대화체 합의"
+          },
+          {
+            "state": "ignored",
+            "reason": "지방자치단체 공무원 한 명의 AI 역량 인증 취득과 내부 업무 개선 사례다. 주요 산업·기술 정책이나 광범위한 행정 서비스 변화에 해당하는 내용은 없어 지역 인물 소식으로 제외한다.",
+            "headline": ""
+          }
+        ],
+        "created_at": "2026-09-21 06:58:29.553916+00:00",
+        "completed_at": "2026-09-21 06:59:32.276747+00:00"
+      },
+      {
+        "id": "news-91637d99-1b26-436e-8fcd-aa94506ff12f",
+        "state": "completed",
+        "error": "busy",
+        "result": [
+          {
+            "state": "ignored",
+            "reason": "IP 기반 금융상품 개발을 위한 3사 업무협약이다. 실제 상품 발행·판매나 투자 집행은 확인되지 않고 사업 규모와 일정도 제시되지 않아 주요 금융 뉴스로 선정하지 않는다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "승인된 매체의 현장 취재를 바탕으로 금융·콘텐츠 제작의 실제 AI 도입 사례를 전한다. 회사가 제시한 절감 효과는 산정 근거가 없어 게재 사실에서 제외한다.",
+            "headline": "이투데이: KT그룹, 금융 AI 모델 49종 공개·콘텐츠 제작 시스템 소개"
+          },
+          {
+            "state": "held",
+            "reason": "핵심은 AI 멸망 위험과 규제 요구의 동기에 관한 황 CEO의 의견이다. SBS와 BBC 모두 같은 CBS 인터뷰에 근거해 별개의 독립 취재로 판단할 수 없다. 발언이 실렸다는 사실만으로 위험 확률이나 경쟁사 동기가 입증되지 않으며, 의견에는 attributed_report를 적용할 수 없어 보류한다.",
+            "headline": "젠슨 황의 AI 멸망 위험 부정 발언, 의견 검증 근거 부족"
+          },
+          {
+            "state": "queued",
+            "reason": "기존 사의 표명 보도 이후 대통령이 수용 여부를 아직 결정하지 않았다고 직접 설명한 후속 사실이다. 승인된 KBS 보도에 귀속해 인사 결정 상태만 갱신한다.",
+            "headline": "KBS: 이 대통령, 강훈식 비서실장 사의 수용 여부 미결정 밝혀"
+          },
+          {
+            "state": "ignored",
+            "reason": "2027∼2029년 총 1억9천만원을 투입하는 지역 양식기술 연구사업 선정 소식이다. 현장 검증 전 단계의 소규모 지역 사업으로, 주요 산업·경제 변화에 해당하는 근거가 부족하다.",
+            "headline": ""
+          },
+          {
+            "state": "ignored",
+            "reason": "기업의 모발 연구 발표와 헤어케어 제품 원료 적용 소식이다. 제공 본문에는 주요 산업 변화로 볼 만한 사업 규모나 파급 근거가 없고 연구 설계·표본 등 효능 평가에 필요한 정보도 없어 선정하지 않는다.",
+            "headline": ""
+          }
+        ],
+        "created_at": "2026-09-21 06:46:38.372567+00:00",
+        "completed_at": "2026-09-21 06:53:29.344385+00:00"
+      },
+      {
+        "id": "news-4401a703-7fb1-4dfe-a341-0c81f9ea5636",
+        "state": "completed",
+        "error": null,
+        "result": [
+          {
+            "state": "ignored",
+            "reason": "10월 출시 예정과 교통비 환급·친환경 소비 혜택 결합은 이미 전달한 내용이다. 발급사와 포인트 사용처 설명만으로는 중요한 후속 변화로 보기 어렵고, 본문도 업무협약 체결 완료를 확인하지 않는다.",
+            "headline": ""
+          },
+          {
+            "state": "ignored",
+            "reason": "명절 전 장관의 복지현장 방문이 중심인 통상 일정 기사다. 기준중위소득 6.70% 인상과 부양의무자 기준 폐지 추진은 배경으로 소개됐으며, 이번 방문에서 새로 결정됐거나 시행 단계가 바뀌었다는 근거가 없다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "명절 운영 안내 가운데 고속철도 통합 이후의 수송 실적 비교는 국내 주요 교통 인프라 운영에 관한 구체적인 새 정보다. 승인 매체 SBS의 보도로 귀속하고 통합의 인과적 효과는 단정하지 않는다.",
+            "headline": "SBS: 고속철도 통합 후 9월 상반월 일평균 수송량 12.1% 증가"
+          },
+          {
+            "state": "ignored",
+            "reason": "유엔총회 연설, 멕시코 국빈방문·정상회담 및 공급망 협력 논의 계획은 이미 전달한 일정과 같다. 투자행사 등 세부 일정은 있으나 회담 개최나 합의 도출 같은 중대한 후속 진전은 확인되지 않는다. 트럼프 대통령과의 접촉도 가능성으로 제시됐다.",
+            "headline": ""
+          },
+          {
+            "state": "held",
+            "reason": "트럼프의 폭스뉴스 통화 발언과 회동 가능성은 기존 전달 내용과 겹친다. 추가된 후티 공격·공항 차질·해협 통제 및 사우디의 공습 요청 주장은 공급된 다른 원보도로 뒷받침되지 않는다. 이란의 미국 공격 결정 주장도 상대국에 관한 주장일 뿐 확정 사실이 아니다. 기존 뉴스 요약과 기사 사진의 통신사 표기는 독립적인 본문 증거로 계산하지 않는다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "보험사의 현재 상품 판매 상태와 2026년 상반기 공시 내용을 확인한 승인 매체의 보도다. 판매 중단 시점은 2025년 하반기로 명시하며, 오늘 내려진 결정이나 전체 상해 보장의 동등성 확인으로 표현하지 않는다.",
+            "headline": "이투데이: 동양생명, 일반 상해보험 신규 판매 중단 확인…특약·미니보험은 유지"
+          }
+        ],
+        "created_at": "2026-09-21 06:40:01.008959+00:00",
+        "completed_at": "2026-09-21 06:41:38.148844+00:00"
+      },
+      {
+        "id": "news-09440b22-41ce-49c2-9851-5ef5d1988ca7",
+        "state": "completed",
+        "error": null,
+        "result": [
+          {
+            "state": "ignored",
+            "reason": "2030년까지 서해 3000t급 경비함정 17척 확충 목표와 2027년 건조 예산안은 이미 전달한 사건과 같다. 기존 11척이라는 설명과 보호장비·훈련시설 예산 세부사항은 추가되지만, 핵심 계획의 변경이나 예산 확정·사업 집행 등 중대한 새 진전은 확인되지 않아 중복 제외한다.",
+            "headline": ""
+          },
+          {
+            "state": "ignored",
+            "reason": "재단의 유학생 6명 장학금 수여와 참여 프로그램 소개다. 주요 경제·산업 또는 공공정책 변화로 볼 만한 내용이 없는 정례 사회공헌 소식이므로 제외한다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "대중교통비 환급과 친환경 소비 지원을 결합하는 정책 연계 상품의 출시 계획이다. 승인된 매체의 본문으로 상품 구조와 일정을 확인할 수 있어 SBS 보도로 귀속해 게재한다. 협약 체결 및 상품 출시가 완료됐다고 표현하지 않는다.",
+            "headline": "SBS: 교통비 환급·친환경 소비 혜택 결합한 ‘모두의그린카드’ 10월 출시 예정"
+          },
+          {
+            "state": "ignored",
+            "reason": "남자 농구 아시안게임 경기 결과 보도로, 이번 경제·세계 주요사건 편집 범위에 해당하는 정책·경제·사회적 파급의 구체적인 발전이 제시되지 않아 제외한다.",
+            "headline": ""
+          },
+          {
+            "state": "ignored",
+            "reason": "같은 사회적가치 페스타 개막과 참석자 발언을 다룬 기사로 묶었다. AI 활용과 혼합금융에 대한 의견·제언이 중심이며, 새로운 정책 시행이나 투자 확정은 제시되지 않았다. 사회성과 5400억원과 매출 성장 수치는 발언자의 과거 실험 평가로, 별도 검증 근거 없이 확정 성과로 게재하지 않는다. 주요 경제 발전보다 행사·의견 소개에 해당해 제외한다.",
+            "headline": ""
+          }
+        ],
+        "created_at": "2026-09-21 06:33:59.336099+00:00",
+        "completed_at": "2026-09-21 06:35:00.803904+00:00"
+      },
+      {
+        "id": "news-d9fd420c-9f56-4eb2-bb13-c32a7ee75f98",
+        "state": "completed",
+        "error": null,
+        "result": [
+          {
+            "state": "ignored",
+            "reason": "채권시장 운영 경험 공유와 실무 교류 논의에 관한 간담회다. 구체적인 제도 변경이나 시장 인프라 도입 등 중요한 신규 조치가 제시되지 않았다.",
+            "headline": ""
+          },
+          {
+            "state": "ignored",
+            "reason": "기업의 사회공헌 전시 안내로, 치료제 개발·의료 접근성·공중보건 정책 등에 관한 주요 변화는 제시되지 않았다.",
+            "headline": ""
+          },
+          {
+            "state": "ignored",
+            "reason": "햅쌀 출하기 정기적인 표시 단속 안내다. 기사에 설명된 처벌은 현행법상 기준이며 새로운 처벌 강화나 중대한 부정유통 적발 내용은 아니다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "기존에 전달된 같은 산업연관표의 부가가치율·수입의존도와 달리, 최종수요 구성과 수요별 고용유발 수치를 추가한다. 승인된 KBS World의 통계 인용 보도로 발행하며 한국은행 원문을 직접 확인한 것으로 취급하지 않는다.",
+            "headline": "KBS: 2024년 최종수요 중 수출 31.8%…10억원당 고용유발은 소비의 절반"
+          },
+          {
+            "state": "queued",
+            "reason": "중장년층의 노후 준비와 부양책임 인식에 관한 신규 통계 발표로, 연금·돌봄 정책에 의미가 있다. 승인된 연합뉴스 보도에 귀속한다. 항목별 조사연도가 혼재하고 일부 증감폭은 표시된 수치의 단순 차이와 달라, 정확한 항목별 연도와 해당 증감폭은 단정하지 않는다.",
+            "headline": "연합뉴스: 중장년 노후 준비 비중 81.9%…주된 준비 수단 국민연금 61%"
+          },
+          {
+            "state": "ignored",
+            "reason": "구내식당 판매 상품 확대를 알리는 기업 프로모션이다. 투자·고용·공급망이나 산업 구조에 관한 중요한 변화가 제시되지 않았다.",
+            "headline": ""
+          }
+        ],
+        "created_at": "2026-09-21 06:27:35.804514+00:00",
+        "completed_at": "2026-09-21 06:28:59.154507+00:00"
+      },
+      {
+        "id": "news-06613af2-deea-4d35-bc0b-25d216998480",
+        "state": "completed",
+        "error": null,
+        "result": [
+          {
+            "state": "held",
+            "reason": "본문은 9월 17일 싱가포르 해협 인근 선박 충돌을 현지 매체 인용으로 전하지만, 피해 규모·구조 상황·오염·항로 운영 영향이 제시되지 않았다. 주요 해양 사고로 선정하는 데 필요한 맥락이 부족해 보류한다. 기사에 언급된 매체들은 별도로 제공된 독립 보도가 아니다.",
+            "headline": ""
+          },
+          {
+            "state": "held",
+            "reason": "명절 소비 부담은 국내 경제상 의미가 있지만, 부제의 전통시장 차례상 35만원과 본문의 4인 가족 평균 19만6630원은 산정 범위와 관계가 설명되지 않았다. 본문은 과일류 가격 하락 통계와 현장 가격 상승 발언을 함께 제시하므로 전국적인 과일값 상승이나 소비 위축으로 일반화할 수 없다. 비용 통계의 조사 기준과 비교 범위를 확인할 때까지 보류한다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "승인된 SBS 보도 본문에서 전국 단위 신고포상금 제도의 시행일과 개정 내용을 확인할 수 있다. 관세청 원문이 아닌 언론 보도이므로 매체 귀속 방식으로 게재한다.",
+            "headline": "SBS: 관세청, 밀수·탈세 신고포상금 상한 폐지…내부신고 최대 3배"
+          },
+          {
+            "state": "held",
+            "reason": "국과수의 압수 시료 3건 분석과 중간체 2종 확인을 전하는 단일 KBS 보도다. 핵심인 국내 불법 제조 판단은 수사 관련 주장으로, 중간체 검출만으로 제조 장소와 범위까지 확정할 수 없다. 국과수 원문이나 독립적인 뒷받침이 제공되지 않아 보류하며, 단일 매체 귀속 방식으로 범죄 주장을 확정하지 않는다.",
+            "headline": ""
+          },
+          {
+            "state": "queued",
+            "reason": "승인된 연합뉴스 본문이 전하는 홍콩 재정사장의 정책 방향 표명과 기존 계획의 내용으로 범위를 한정한다. 기사 속 관찰자망·블룸버그 언급을 별개의 독립 확인으로 세지 않으며, 위안화 영향력 확대 전망은 사실로 채택하지 않는다.",
+            "headline": "연합뉴스: 홍콩 재정사장, 위안화 표시 금·원자재 시장 육성 방침 재확인"
+          },
+          {
+            "state": "ignored",
+            "reason": "9월 17일 체결한 공동연구 업무협약을 21일 알린 기사다. 투자액·확정 연구과제·개발 성과·상용화 계약이 제시되지 않은 일반적인 협력 발표로, 주요 산업 뉴스로 선정할 만한 구체적 변화가 부족하다.",
+            "headline": ""
+          }
+        ],
+        "created_at": "2026-09-21 06:20:59.894245+00:00",
+        "completed_at": "2026-09-21 06:22:35.609489+00:00"
+      },
+      {
+        "id": "news-e6d2cebc-0b5c-41ce-827c-3b46bc87dac6",
+        "state": "completed",
+        "error": null,
+        "result": [
+          {
+            "state": "held",
+            "reason": "이미 제공된 모스크바 폭발·공항 제한 사건의 후속 보도다. 드론 규모·요격 수·공격 목적·정유시설 피해는 교전 당사자들의 주장에 의존한다. 영상 출처에 로이터·AFP가 열거됐다는 사실만으로 해당 주장에 대한 독립 확인이 성립하지 않아 보류한다.",
+            "headline": "모스크바 공습 규모·시설 타격 주장, 추가 근거 부족으로 보류"
+          },
+          {
+            "state": "queued",
+            "reason": "국내 가계대출 조건의 구체적인 변경이다. 승인된 매체의 일반 사실 보도로 게재하되, 적용 상품과 시행 예정일을 구분한다.",
+            "headline": "이투데이: 기업은행, 22일부터 대면 주담대·전세대출 금리감면 확대"
+          },
+          {
+            "state": "queued",
+            "reason": "주요 유통기업의 희망퇴직 시행은 의미 있는 고용·인력구조 변화다. SBS 기자 명의의 보도이며 연합뉴스 표기는 사진에 붙어 있다. 본문 보상액의 오기 의심 표기와 제목·본문의 임금 기준 차이 때문에 지급액은 제외하고, 명확한 시행 사실과 접수 일정만 게재한다.",
+            "headline": "SBS: 롯데백화점, 5년 만에 희망퇴직…10월 5일까지 접수"
+          },
+          {
+            "state": "queued",
+            "reason": "조기 독감 유행에 대응한 전국 예방접종 개시로 공중보건상 중요하다. KBS의 질병관리청 인용 보도이며 정부 원문은 아니므로 매체 귀속 보도로 제안한다. 연합뉴스 표기는 사진 출처다.",
+            "headline": "KBS: 조기 독감 유행에 국가 무료접종 일주일 앞당겨 시작"
+          },
+          {
+            "state": "held",
+            "reason": "새로운 핵심 내용인 일본 총리의 대미 배려 동기와 표현 결정 과정은 아사히신문의 익명 정부 관계자 취재를 연합뉴스가 전한 것이다. 두 독립 취재로 볼 수 없으며 익명 주장에는 attributed_report를 적용할 수 없다. 제재와 유감 표명은 지난달 사건이고 예정된 정상회담·연설을 실제 성과로 다룰 수도 없어 보류한다.",
+            "headline": "다카이치의 ICC 제재 대응 배경 보도, 익명 취재 의존으로 보류"
+          },
+          {
+            "state": "ignored",
+            "reason": "기업의 정기적인 지역사회 기부 활동 소개다. 주요 산업·경제 변화나 중대한 공공 사건에 해당하는 추가 내용이 없어 제외한다.",
+            "headline": ""
+          }
+        ],
+        "created_at": "2026-09-21 06:14:11.985728+00:00",
+        "completed_at": "2026-09-21 06:15:59.686048+00:00"
+      }
+    ]
+  },
+  "recent_model_requests": {
+    "news_triages": [
+      {
+        "id": "news-screen-bc4daa3c-af85-4d99-bcfe-1786c62f722b",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 07:04:32.640230+00:00",
+        "completed_at": "2026-09-21 07:05:21.263823+00:00",
+        "model": "gpt-5.6-luna",
+        "effort": "low",
+        "usage": {
+          "input_tokens": 22832,
+          "output_tokens": 2478,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 78
+        }
+      },
+      {
+        "id": "news-screen-d4158bbb-0f4c-49fe-9fab-a00c51c6a54e",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 07:27:28.100880+00:00",
+        "completed_at": "2026-09-21 07:28:19.790679+00:00",
+        "model": "gpt-5.6-luna",
+        "effort": "low",
+        "usage": {
+          "input_tokens": 23388,
+          "output_tokens": 2626,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 140
+        }
+      }
+    ],
+    "news_reviews": [
+      {
+        "id": "news-cf59745c-d043-4f14-b9ab-e3a11ff04f9f",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 06:58:29.553916+00:00",
+        "completed_at": "2026-09-21 06:59:32.276747+00:00",
+        "model": "gpt-6-astra",
+        "effort": "high",
+        "usage": {
+          "input_tokens": 27492,
+          "output_tokens": 1923,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 276
+        }
+      },
+      {
+        "id": "news-5f312343-e3c7-42c5-b36e-1c090c9afdc2",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 07:07:57.344452+00:00",
+        "completed_at": "2026-09-21 07:09:40.925993+00:00",
+        "model": "gpt-6-astra",
+        "effort": "high",
+        "usage": {
+          "input_tokens": 20869,
+          "output_tokens": 3296,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 516
+        }
+      },
+      {
+        "id": "news-1ebea41e-a756-4e04-830f-3703192e97b0",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 07:14:41.164184+00:00",
+        "completed_at": "2026-09-21 07:16:09.802419+00:00",
+        "model": "gpt-6-astra",
+        "effort": "high",
+        "usage": {
+          "input_tokens": 20199,
+          "output_tokens": 2739,
+          "cached_input_tokens": 5888,
+          "reasoning_output_tokens": 322
+        }
+      },
+      {
+        "id": "news-84c727e1-c75b-4a86-8280-fd61926fa0ec",
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-09-21 07:28:22.039272+00:00",
+        "completed_at": "2026-09-21 07:30:26.726742+00:00",
+        "model": "gpt-6-astra",
+        "effort": "high",
+        "usage": {
+          "input_tokens": 22193,
+          "output_tokens": 3998,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 336
+        }
+      }
+    ],
+    "news_searches": []
+  },
+  "actual_automatic_messages": [
+    {
+      "id": "2fd43fa3-4db2-536b-990a-bd587076bdb9",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789973973.537599",
+      "text": "*[보도 · 주요 · 기술] CNBC: 트럼프 ‘AI 포스’ 신설 발표…미중, AI 사고 통보 대화체 합의*\nCNBC 보도에 따르면:\nCNBC의 9월 21일 보도에 따르면 트럼프 미국 대통령은 ‘AI 차르’로 불리는 고문이 이끄는 ‘AI 포스’ 신설을 발표했다. 기사는 발표에 추가 세부사항이 없었다고 전했다. CNBC는 주말 뉴욕에서 만난 스콧 베선트 미국 재무장관과 허리펑 중국 부총리가 AI 사고 통보 체계를 포함하는 ‘미중 AI 대화’ 설립에 합의했다고 보도했다.\n*왜 중요한가* 미국의 AI 정책 추진체계와 미중 간 AI 사고 소통에 관한 움직임이다. 조직의 권한과 대화체 운영 방식이 구체화되면 기업의 규제 대응과 양국 간 위험 관리에 영향을 줄 수 있다.\n<https://www.cnbc.com/2026/09/21/cnbc-daily-open-trump-china-ai-force.html|CNBC> · 발표 09-21 15:41 KST\nReporter의 AI 한국어 요약 · 확인 09-21 15:59 KST",
+      "channel": "C0C2J1SSX09",
+      "kind": "news",
+      "created_at": "2026-09-21 06:59:32.276747+00:00"
+    },
+    {
+      "id": "daf7502a-ccb1-55fe-8ce2-3ab626f14506",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789974581.886209",
+      "text": "*[보도 · 주요 · 세계정세] 연합뉴스: 이 대통령, 21∼27일 미국·멕시코 순방 예정*\n연합뉴스 보도에 따르면:\n연합뉴스에 따르면 위성락 국가안보실장은 9월 21일 브리핑에서 이재명 대통령의 미국·멕시코 순방 일정을 소개했다. 발표된 순방 기간은 9월 21일부터 27일까지다.\n*왜 중요한가* 한국 대통령의 대미·대멕시코 정상외교 일정이다. 구체적인 협의 결과나 합의는 제공된 본문에서 확인되지 않는다.\n<https://www.yna.co.kr/view/AKR20260921107400011|연합뉴스> · 발표 09-21 14:30 KST\nReporter의 AI 한국어 요약 · 확인 09-21 16:09 KST",
+      "channel": "C0C2J1SSX09",
+      "kind": "news",
+      "created_at": "2026-09-21 07:09:40.925993+00:00"
+    },
+    {
+      "id": "466247f0-832b-5597-892b-17c315a71e47",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789974585.157539",
+      "text": "*[보도 · 주요 · 산업] 이투데이: 고려아연, 미국 제련소 사업 환경평가 완료 발표*\n이투데이 보도에 따르면:\n이투데이에 따르면 고려아연은 9월 21일 미국 전쟁부가 테네시주 프로젝트 크루서블의 최종 환경평가(Final EA)를 완료하고 중대한 환경영향 없음 결정(FONSI)을 확정했다고 밝혔다. 이 사업은 미국 정부 등과 약 74억달러를 투자해 대규모 제련소를 건설하는 계획이다. 고려아연은 건설·운영에 필요한 개별 인허가를 단계적으로 진행할 계획이다.\n*왜 중요한가* 미국 내 핵심광물 생산시설 건설을 위한 환경 절차의 진전이다. 개별 인허가와 금융·전력 인프라 지원 여부는 후속 판단 사항이다.\n<https://www.etoday.co.kr/news/view/2628063|이투데이> · 발표 09-21 14:59 KST\nReporter의 AI 한국어 요약 · 확인 09-21 16:09 KST",
+      "channel": "C0C2J1SSX09",
+      "kind": "news",
+      "created_at": "2026-09-21 07:09:40.925993+00:00"
+    },
+    {
+      "id": "3b2759c7-8c0c-5312-87cf-c5293c947be8",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789974583.452849",
+      "text": "*[보도 · 주요 · 에너지] 연합뉴스·블룸버그 인용: 미국 경유 전국 평균, 갤런당 6.50달러 첫 돌파*\n연합뉴스 보도에 따르면:\n연합뉴스는 블룸버그의 9월 20일 현지시간 보도를 인용해 미국 전국 경유 평균 소비자가격이 처음으로 갤런당 6.50달러를 넘었다고 전했다. 기사에 인용된 미국자동차협회(AAA) 집계에서 9월 19일 가격은 갤런당 6.505달러다.\n*왜 중요한가* 경유를 사용하는 화물운송과 농업 등의 연료비 부담에 관련된 변화다. 선거 지지율이나 최종 소비자물가에 미칠 영향은 이 수치만으로 판단할 수 없다.\n<https://www.yna.co.kr/view/AKR20260921065851009|연합뉴스> · 발표 09-21 14:32 KST\nReporter의 AI 한국어 요약 · 확인 09-21 16:09 KST",
+      "channel": "C0C2J1SSX09",
+      "kind": "news",
+      "created_at": "2026-09-21 07:09:40.925993+00:00"
+    },
+    {
+      "id": "b299db35-f4f7-536f-aaf3-4224c741acdd",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789974970.965939",
+      "text": "*[주요 · 경제] 추석 앞둔 서울·대구 시장 르포…필요한 만큼 나눠 사는 장보기*\n9월 21일 연합뉴스의 대구 서문시장 취재에서는 비교적 한산한 시장에서 시민들이 작은 비닐봉지에 조금씩 장을 보는 모습이 관찰됐다. 같은 날 이투데이가 취재한 서울 청량리종합시장은 붐볐지만, 필요한 만큼 골라 담거나 저렴한 상품을 찾는 손님들이 눈에 띄었다. 두 현장 보도는 소량 구매 사례를 전하며, 시장 전체의 방문객 흐름은 서로 달랐다.\n*왜 중요한가* 명절 소비에서 구매 단위와 가격 비교가 중요해지는 현장 사례다. 두 시장의 관찰만으로 전국 소비 감소나 물가 상승률을 판단할 수는 없다.\n<https://www.etoday.co.kr/news/view/2627947|이투데이> · 발표 09-21 14:28 KST\n<https://www.yna.co.kr/view/AKR20260921099500053|연합뉴스> · 발표 09-21 14:40 KST\nReporter의 AI 한국어 요약 · 확인 09-21 16:16 KST",
+      "channel": "C0C2J1SSX09",
+      "kind": "news",
+      "created_at": "2026-09-21 07:16:09.802419+00:00"
+    },
+    {
+      "id": "9ee7d09c-f2bc-5f23-ba15-869a807be54e",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789974972.531799",
+      "text": "*[보도 · 주요 · 산업] 연합뉴스: 전북·완주·교통안전공단, 81억3천만원 수소차 검사센터 협약*\n연합뉴스 보도에 따르면:\n연합뉴스에 따르면 전북특별자치도는 9월 21일 완주군·한국교통안전공단과 수소모빌리티 검사센터 구축 업무협약을 체결했다. 완주 테크노밸리 산업단지에 조성하는 사업으로, 2028년까지 국비 65억3천만원과 지방비 16억원 등 81억3천만원을 투입하는 계획이다. 한국교통안전공단이 사업을 시행하며, 기사에 제시된 일정은 이달 실시설계 시작과 2028년 준공 목표다.\n*왜 중요한가* 수소차 검사와 안전관리를 위한 지역 산업 기반시설 사업이다. 실제 시설 확충 효과는 건립과 운영이 진행된 뒤 평가할 수 있다.\n<https://www.yna.co.kr/view/AKR20260921064100055|연합뉴스> · 발표 09-21 14:40 KST\nReporter의 AI 한국어 요약 · 확인 09-21 16:16 KST",
+      "channel": "C0C2J1SSX09",
+      "kind": "news",
+      "created_at": "2026-09-21 07:16:09.802419+00:00"
+    },
+    {
+      "id": "a0b3ebe1-6e9f-59f0-80b6-094f2dbd8636",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789975827.761589",
+      "text": "*[보도 · 주요 · 경제] 연합뉴스: 전남광주시, 공공기관 22곳을 11곳으로 통합 추진*\n연합뉴스 보도에 따르면:\n연합뉴스에 따르면 전남광주통합특별시는 9월 21일 산하 41개 공공기관 가운데 22개를 11개로 통합하는 추진 현황을 설명했다. 기후·환경·에너지 분야 3개 기관은 독자성을 유지하며 기능을 강화한다. 통합 대상 중 12개 기관은 통합 방식에 합의했다. 시는 관련 조례안을 10월 시의회에 제출할 계획이며, 조례 의결 이후 정관·규정 마련과 임원 구성 등을 거쳐 2027년 1월 1일 통합기관 출범을 목표로 한다.\n*왜 중요한가* 지역 개발과 기업 금융지원 등을 담당하는 기관의 운영 체계가 바뀌는 사안이다. 실제 출범에는 조례 의결과 후속 조직 정비가 필요하다.\n<https://www.yna.co.kr/view/AKR20260921118100054|연합뉴스> · 발표 09-21 15:02 KST\nReporter의 AI 한국어 요약 · 확인 09-21 16:30 KST",
+      "channel": "C0C2J1SSX09",
+      "kind": "news",
+      "created_at": "2026-09-21 07:30:26.726742+00:00"
+    },
+    {
+      "id": "8e412336-1792-51f7-b875-be76f591faec",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789975829.300859",
+      "text": "*[보도 · 주요 · 무역] 연합뉴스: 8월 인천 수출 51억5000만달러…반도체 월간 최고*\n연합뉴스 보도에 따르면:\n연합뉴스가 9월 21일 전한 한국무역협회 인천본부 집계에 따르면 2026년 8월 인천 수출은 전년 동월보다 11.6% 증가한 51억5000만달러였다. 수입은 27.8% 늘어난 59억1000만달러로 무역수지는 7억6000만달러 적자였다. 반도체 수출은 32.3% 증가한 20억5000만달러로 월간 최고액을 기록했다. 반도체의 수출 비중은 39.9%였고, 반도체 외 품목 수출 증가율은 1.1%였다.\n*왜 중요한가* 인천 수출 증가와 함께 반도체 집중도가 드러난다. 전체 수출 증가율만으로 다른 품목까지 고르게 회복했다고 해석하기 어렵다.\n<https://www.yna.co.kr/view/AKR20260921124600065|연합뉴스> · 발표 09-21 15:10 KST\nReporter의 AI 한국어 요약 · 확인 09-21 16:30 KST",
+      "channel": "C0C2J1SSX09",
+      "kind": "news",
+      "created_at": "2026-09-21 07:30:26.726742+00:00"
+    },
+    {
+      "id": "11ec2141-c35f-54a4-8b7b-c01ec5be1816",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1789975830.866689",
+      "text": "*[보도 · 주요 · 금융] 이투데이: 소상공인 더드림 12.3조원으로 개편…추석 금융지원 102.6조원*\n이투데이 보도에 따르면:\n이투데이에 따르면 금융위원회는 9월 21일 소상공인 지원 방안을 설명하면서 이달 확대 개편한 더드림 패키지의 공급 규모를 12조3000억원으로 제시했다. 창업 지원 2조원, 성장 지원 2조5000억원, 경영 애로 해소 7조8000억원으로 구성된다. 추석 전후 소상공인·중소기업 등을 위한 금융지원은 은행권 대출 79조6000억원과 정책금융기관 신규 대출·보증 23조원 등 총 102조6000억원 규모로 소개됐다. 이는 지원 계획이며 집행 완료 실적은 아니다.\n*왜 중요한가* 소상공인과 중소기업의 자금 조달을 지원하는 규모 있는 금융 프로그램이다. 대출·보증 공급액을 현금 보조금이나 실제 수혜 실적으로 해석해서는 안 된다.\n<https://www.etoday.co.kr/news/view/2628076|이투데이> · 발표 09-21 15:15 KST\nReporter의 AI 한국어 요약 · 확인 09-21 16:30 KST",
+      "channel": "C0C2J1SSX09",
+      "kind": "news",
+      "created_at": "2026-09-21 07:30:26.726742+00:00"
+    }
+  ],
+  "new_uncertain_deliveries_since_build": [],
+  "workflows": [
+    {
+      "id": "company-news-collection-v1",
+      "run_id": "52717baf-a43b-4140-9020-93f5f052f62b",
+      "status": "RUNNING",
+      "recent_results": [
+        {
+          "at": "2026-09-21 07:29:52.417405+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 07:30:22.594628+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 07:30:52.826040+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 07:31:23.010454+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        }
+      ],
+      "workflow_task_failures": []
+    },
+    {
+      "id": "company-news-editorial-v1",
+      "run_id": "01a0c2dc-d6ce-762b-982d-d6f1c7c1a44f",
+      "status": "RUNNING",
+      "recent_results": [
+        {
+          "at": "2026-09-21 07:28:19.820215+00:00",
+          "result": [
+            {
+              "next_delay": 2,
+              "selected": 14,
+              "state": "completed"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 07:30:26.762027+00:00",
+          "result": [
+            {
+              "items": [
+                {
+                  "headline": "",
+                  "reason": "9월 19일 미국 경유 평균가격 6.505달러와 6.50달러 첫 돌파는 이미 전달한 블룸버그 인용 보도와 동일하다. 수출 제한 요구와 16일 법안 발의는 배경 설명이며, 새로운 수출 금지 시행이나 가격 집계는 제시되지 않았다. 선거 영향 전망도 발행하지 않는다.",
+                  "state": "ignored"
+                },
+                {
+                  "headline": "",
+                  "reason": "고려아연 미국 제련소의 환경평가 완료와 중대한 환경영향 없음 결정은 기존 전달 사건과 같다. 평가 완료일과 처리 규모를 보충하지만 추가 인허가 취득이나 착공 등 실질적인 후속 진전은 확인되지 않는다. 환경평가 완료를 전체 인허가 완료로 확대 해석하지 않는다.",
+                  "state": "ignored"
+                },
+                {
+                  "headline": "연합뉴스: 전남광주시, 공공기관 22곳을 11곳으로 통합 추진",
+                  "reason": "개발·신용보증·산업지원 등을 담당하는 지역 공공기관의 대규모 조직 개편이다. 승인된 매체의 실명 보도를 근거로 통합 추진 현황과 남은 의결 절차를 구분해 전달한다.",
+                  "state": "queued"
+                },
+                {
+                  "headline": "미중 정상 만찬 나델라 참석 보도, 익명 단일 출처로 보류",
+                  "reason": "나델라의 9월 24일 미중 정상 만찬 참석 예정이라는 핵심 내용은 블룸버그의 익명 소식통 보도에 의존한다. 연합뉴스와 SBS 모두 같은 보도를 인용하므로 독립된 두 취재원이 아니다. 익명 주장에는 attributed_report를 적용할 수 없으며, 참석자나 주최 측의 확인도 제공되지 않았다.",
+                  "state": "held"
+                },
+                {
+                  "headline": "연합뉴스: 8월 인천 수출 51억5000만달러…반도체 월간 최고",
+                  "reason": "인천의 월간 수출과 반도체 수출 최고치라는 구체적인 지역 경제 실적이다. 연합뉴스가 인용한 무역협회 집계를 전달하며 전국 수출 실적으로 일반화하지 않는다.",
+                  "state": "queued"
+                },
+                {
+                  "headline": "",
+                  "reason": "본문의 새 소식은 위원장의 현장 점검과 안전관리 당부다. 중수 누설은 지난 7월 사건이며, 최근 3호기 재가동의 구체적인 날짜·조건이나 새로운 사고·규제 결정은 제시되지 않았다. 기존 원전 문제를 신규 사고로 재포장하지 않고 정례적 후속 점검 보도로 제외한다. 사진 설명의 2025년 회의도 이번 사건과 구분한다.",
+                  "state": "ignored"
+                },
+                {
+                  "headline": "이투데이: 소상공인 더드림 12.3조원으로 개편…추석 금융지원 102.6조원",
+                  "reason": "시장 방문 자체보다 이번 달 확대 개편된 소상공인 금융지원과 추석 자금 공급 계획의 규모가 중요하다. 이투데이의 상세 수치를 매체에 귀속해 전달한다. 두 기사는 금융위 설명에 기반하므로 독립 확인으로 간주하지 않으며, 연합뉴스의 103조원은 이투데이의 102.6조원을 반올림한 수준으로 별도 증액으로 보지 않는다.",
+                  "state": "queued"
+                }
+              ],
+              "next_delay": 300,
+              "state": "completed"
+            }
+          ]
+        }
+      ],
+      "workflow_task_failures": []
+    },
+    {
+      "id": "company-news-discovery-v1",
+      "run_id": "01a0c16a-92a1-7930-b86b-5345bc210fd7",
+      "status": "RUNNING",
+      "recent_results": [
+        {
+          "at": "2026-09-21 07:12:08.161301+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 07:17:08.322827+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 07:22:08.487315+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        },
+        {
+          "at": "2026-09-21 07:27:08.995850+00:00",
+          "result": [
+            {
+              "state": "idle"
+            }
+          ]
+        }
+      ],
+      "workflow_task_failures": []
+    }
+  ]
+}

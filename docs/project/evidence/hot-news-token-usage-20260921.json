@@ -1,0 +1,65 @@
+{
+  "checked_at": "2026-09-21T06:01:55.206918+00:00",
+  "operating_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+  "window_start_kst": "2026-09-21T14:05:00+09:00",
+  "window_end_kst": "2026-09-21T15:01:55.206918+09:00",
+  "elapsed_minutes": 56.9201153,
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "measurement": "Persisted production news review/search response usage; excludes development, disposable previews, this chat and other company roles.",
+  "parts": {
+    "reviews": {
+      "calls": 8,
+      "states": {
+        "completed": 8
+      },
+      "input_tokens": 219806,
+      "cached_input_tokens": 17664,
+      "output_tokens": 18176,
+      "reasoning_output_tokens": 2426,
+      "input_plus_output_tokens": 237982,
+      "mean_input_plus_output_per_call": 29747.75,
+      "min_input_plus_output_per_call": 27771,
+      "max_input_plus_output_per_call": 31544,
+      "request_ids": [
+        "news-5cb8a607-d30a-42e7-b24e-e2be0cd93434",
+        "news-bdcc3989-021b-4083-a516-db2f07d4d665",
+        "news-f9e78c92-872c-423e-b1cb-eb25e21ca1b1",
+        "news-fcc80ff3-e31d-4c7d-b4c9-58cd62797486",
+        "news-16fd8beb-e32b-4ac2-b404-0e24ea0eb19b",
+        "news-302e907e-34ef-4ed0-b0ad-5d65933afe2f",
+        "news-57559f12-b1a0-4a06-be12-eb0f523ddfd4",
+        "news-e55c4b92-4baf-4134-9045-3d8565b6467b"
+      ]
+    },
+    "searches": {
+      "calls": 1,
+      "states": {
+        "completed": 1
+      },
+      "input_tokens": 92304,
+      "cached_input_tokens": 56576,
+      "output_tokens": 1144,
+      "reasoning_output_tokens": 19,
+      "input_plus_output_tokens": 93448,
+      "mean_input_plus_output_per_call": 93448,
+      "min_input_plus_output_per_call": 93448,
+      "max_input_plus_output_per_call": 93448,
+      "request_ids": [
+        "news-search-e79607ea-76a3-4ccb-9e76-90de74c45626"
+      ]
+    }
+  },
+  "total_input_plus_output_tokens": 331430,
+  "included_cached_input_tokens": 74240,
+  "uncached_input_tokens": 237870,
+  "output_tokens": 19320,
+  "linear_24h_input_plus_output_tokens": 8384719,
+  "linear_24h_note": "Scenario only if the observed pace continued for 24 hours. This short startup window includes the first two-hour feed backfill and is not a measured daily average, upper bound, bill or account-limit percentage.",
+  "rss_fetch_original_extraction_and_slack_dispatch_model_tokens": 0,
+  "usage_interpretation": "Cached input is already included in input_tokens and is not added again. The reported reasoning_output_tokens field is preserved separately and not added to the input+output metric. Cached and uncached tokens have different consumption weights; token totals do not directly establish the fraction of the account allowance.",
+  "configuration_changed": false,
+  "model_calls_for_this_measurement": 0,
+  "database_query_read_only": true,
+  "official_usage_reference": "https://learn.chatgpt.com/docs/pricing"
+}
