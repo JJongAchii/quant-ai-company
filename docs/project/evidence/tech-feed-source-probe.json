@@ -1,0 +1,200 @@
+{
+  "checked_at": "2026-09-21 12:45:55.282510+00:00",
+  "network": "real-public-rss",
+  "model": "not-called",
+  "slack": "not-connected",
+  "sources": [
+    {
+      "source": "openai",
+      "feed_url": "https://openai.com/news/rss.xml",
+      "ok": true,
+      "skipped": 602,
+      "etag": "",
+      "modified": "",
+      "sha256": "999e1a2db5eebe49126b6a2c3999a073a64d3261442ef88ce022c8df3f92a639",
+      "bytes": 738503,
+      "entries": 608,
+      "dated": 608,
+      "preview": [
+        "*OpenAI · AI·제품·연구*\n<https://openai.com/index/reimagining-advertising-with-ai|Reimagining advertising with AI>\nExplore new AI-powered advertising experiences from OpenAI, including Sponsored Agents, tools for marketers, and integrations with HubSpot and Shopify.\n발행 09-16 22:00 KST",
+        "*OpenAI · AI·제품·연구*\n<https://openai.com/index/how-to-connect-ai-usage-to-business-value|How to connect AI usage to business value>\nLearn how ChatGPT Work and Codex analytics help teams understand AI usage and spend, identify training needs, and connect adoption to business outcomes.\n발행 09-16 21:00 KST"
+      ]
+    },
+    {
+      "source": "deepmind",
+      "feed_url": "https://deepmind.google/blog/rss.xml",
+      "ok": true,
+      "skipped": 0,
+      "etag": "\"zsm40Q\"",
+      "modified": "",
+      "sha256": "e97a206e974345102f7b103cc9abc17d8be6a734143e4a34449d1c36782f49b2",
+      "bytes": 71439,
+      "entries": 100,
+      "dated": 100,
+      "preview": [
+        "*Google DeepMind · AI·연구*\n<https://deepmind.google/blog/introducing-gemini-3-8-live-and-3-8-live-extended-thinking/|Introducing Gemini 3.8 Live and 3.8 Live Extended Thinking>\n발행 09-16 02:05 KST",
+        "*Google DeepMind · AI·연구*\n<https://deepmind.google/blog/alphagenome-atlas-a-predictive-map-of-every-possible-dna-letter-change-in-the-human-genome/|AlphaGenome Atlas: A predictive map of every possible DNA letter change in the human genome>\nAlphaGenome Atlas maps the molecular effects of 9 billion single-letter DNA variants across the human genome.\n발행 09-08 23:00 KST"
+      ]
+    },
+    {
+      "source": "hugging-face",
+      "feed_url": "https://huggingface.co/blog/feed.xml",
+      "ok": true,
+      "skipped": 0,
+      "etag": "W/\"3e1bf-BtuJ+UgdfyutafgENnCca2y0ZTM\"",
+      "modified": "",
+      "sha256": "0c7f3ae80bb59ec02501bf420925fc9eecf8e1e3b3a82cc66e82eebb9e2bc380",
+      "bytes": 254399,
+      "entries": 862,
+      "dated": 862,
+      "preview": [
+        "*Hugging Face Blog · 오픈소스 AI*\n<https://huggingface.co/blog/ibm-research/altk-evolve-consistency|Your Agent Aced the Task. Will It Do It Again?>\n발행 09-16 01:00 KST",
+        "*Hugging Face Blog · 오픈소스 AI*\n<https://huggingface.co/blog/asyncgrpo-lora-hfjobs|Async GRPO with LoRA across HF Jobs: a bucket, a proxy, and no NCCL>\n발행 09-10 09:00 KST"
+      ]
+    },
+    {
+      "source": "simon-willison",
+      "feed_url": "https://simonwillison.net/atom/everything/",
+      "ok": true,
+      "skipped": 0,
+      "etag": "",
+      "modified": "Sun, 20 Sep 2026 21:06:43 GMT",
+      "sha256": "9de0af658c834a703739a05933bc55b3e900a361ca739286dffb7ccc3a22f5ab",
+      "bytes": 79151,
+      "entries": 30,
+      "dated": 30,
+      "preview": [
+        "*Simon Willison · AI·개발 도구*\n<https://simonwillison.net/2026/Sep/20/voxium/|Quoting voxium>\nIt has been half a month since I started a new role at a big company. Nobody knows anything here. The specs, code, tests, PRDs, tickets, resolution of those ti…\n발행 09-21 06:06 KST",
+        "*Simon Willison · AI·개발 도구*\n<https://simonwillison.net/2026/Sep/20/llm-keys-ui/|llm-keys-ui 0.1>\nRelease: llm-keys-ui 0.1 This plugin solves a very specific problem. I've started using Codex Remote to run coding agents on various machines while controlling…\n발행 09-21 04:22 KST"
+      ]
+    },
+    {
+      "source": "github-engineering",
+      "feed_url": "https://github.blog/engineering/feed/",
+      "ok": true,
+      "skipped": 0,
+      "etag": "\"12027bc0ff5af2f6d22111e9c0db14d5\"",
+      "modified": "Fri, 18 Sep 2026 21:25:02 GMT",
+      "sha256": "8bab7e12f33e42150d52076574a794812b5ada28efddad2a91e92a373b102043",
+      "bytes": 281086,
+      "entries": 10,
+      "dated": 10,
+      "preview": [
+        "*GitHub Engineering · 소프트웨어 엔지니어링*\n<https://github.blog/ai-and-ml/github-copilot/how-we-make-ai-coding-more-cost-efficient-without-sacrificing-task-quality/|How we make AI coding more cost efficient without sacrificing task quality>\nWhy shorter outputs can cost more, and how GitHub Copilot reduces wasted work across the complete coding task. The post How we make AI coding more cost efficie…\n발행 09-03 03:00 KST",
+        "*GitHub Engineering · 소프트웨어 엔지니어링*\n<https://github.blog/engineering/user-experience/your-alt-text-passes-automated-checks-that-doesnt-mean-its-any-good/|Your alt text passes automated checks. That doesn’t mean it’s any good.>\nWe built a plugin for the GitHub Accessibility Scanner to make sure your alt text is actually accessible. Here's how it works. The post Your alt text passes au…\n발행 08-25 05:56 KST"
+      ]
+    },
+    {
+      "source": "duckdb",
+      "feed_url": "https://duckdb.org/feed.xml",
+      "ok": true,
+      "skipped": 0,
+      "etag": "\"c73c4045915804407e88b3553d2c63e8\"",
+      "modified": "",
+      "sha256": "bab57e31a19eb592f46b39f315e5c0e2e7e22e8d3014cc5db86c4cf8c3af7bd7",
+      "bytes": 261375,
+      "entries": 10,
+      "dated": 10,
+      "preview": [
+        "*DuckDB · 데이터·분석*\n<https://duckdb.org/2026/09/18/opfs-wasm.html|Persistent Databases in the Browser with DuckDB-Wasm and OPFS>\nDuckDB-Wasm can open a persistent database file in the browser's Origin Private File System (OPFS). This post shows how, and when data reaches disk.\n발행 09-18 09:00 KST",
+        "*DuckDB · 데이터·분석*\n<https://duckdb.org/2026/09/16/duckdb-skills.html|DuckDB Skills for Claude Code>\nThe duckdb-skills plugin gives Claude Code a growing number of skills that use the DuckDB CLI to read data files, run queries, convert formats, explore object…\n발행 09-16 09:00 KST"
+      ]
+    },
+    {
+      "source": "postgresql",
+      "feed_url": "https://www.postgresql.org/versions.rss",
+      "ok": true,
+      "skipped": 0,
+      "etag": "",
+      "modified": "Thu, 13 Aug 2026 00:00:00 GMT",
+      "sha256": "f327d9b73cbd399a5be7b5d31afc7a446b9ba40ebe17619895cf14ee91577b7c",
+      "bytes": 9470,
+      "entries": 29,
+      "dated": 29,
+      "preview": [
+        "*PostgreSQL · 데이터베이스 릴리스*\n<https://www.postgresql.org/docs/18/release-18-6.html|18.6>\n18.6 is the latest release in the 18 series.\n발행 08-13 09:00 KST",
+        "*PostgreSQL · 데이터베이스 릴리스*\n<https://www.postgresql.org/docs/17/release-17-11.html|17.11>\n17.11 is the latest release in the 17 series.\n발행 08-13 09:00 KST"
+      ]
+    },
+    {
+      "source": "cloudflare",
+      "feed_url": "https://blog.cloudflare.com/rss/",
+      "ok": true,
+      "skipped": 0,
+      "etag": "",
+      "modified": "Sat, 19 Sep 2026 17:39:23 GMT",
+      "sha256": "bc10d72a9135a9dfea05b8da7624babf8ff461f14090740140b0206f53c673cb",
+      "bytes": 370411,
+      "entries": 20,
+      "dated": 20,
+      "preview": [
+        "*Cloudflare · 인프라·보안*\n<https://blog.cloudflare.com/saving-100-tb-of-ram-with-math/|Saving another 100TB of RAM with math (and Rust)>\nCloudflare's global network is immense but not limitless. As we look for small ways to trim our resource usage, we sometimes get lucky and we can cut significa…\n발행 09-19 02:23 KST",
+        "*Cloudflare · 인프라·보안*\n<https://blog.cloudflare.com/client-side-security-finds-4-malicious-campaigns/|When scanners miss the attack: how Cloudflare Client-Side Security protects storefronts>\nA modern storefront can look healthy while malicious JavaScript quietly siphons revenue, hijacks clicks, or rewrites analytics. See how Cloudflare's machine le…\n발행 09-17 05:06 KST"
+      ]
+    },
+    {
+      "source": "kubernetes",
+      "feed_url": "https://kubernetes.io/feed.xml",
+      "ok": true,
+      "skipped": 0,
+      "etag": "\"5bbe7b348614e9964aa98a5823ffa82c-ssl\"",
+      "modified": "",
+      "sha256": "5d591263684f9c35323742bb2bf09e22d4bcdff5d39b6ced3e0dc3d28e8c9e7e",
+      "bytes": 1128706,
+      "entries": 50,
+      "dated": 50,
+      "preview": [
+        "*Kubernetes · 클라우드·분산 시스템*\n<https://kubernetes.io/blog/2026/09/16/kubernetes-v1-37-hardening-container-storage/|Kubernetes v1.37: Hardening Container Storage with Bind Mount Options and EmptyDir Permissions>\nKubernetes v1.37 brings important storage security features: emptyDir permission modes and bind mount options. They help application programmers and security p…\n발행 09-17 03:30 KST",
+        "*Kubernetes · 클라우드·분산 시스템*\n<https://kubernetes.io/blog/2026/09/15/kubernetes-v1-37-pod-level-resource-managers-beta/|Kubernetes v1.37: Pod-Level Resource Managers graduated to Beta>\nWith the release of Kubernetes v1.37, the Pod-Level Resource Managers feature has graduated to Beta status (disabled by default)! First introduced as an Alpha…\n발행 09-16 03:30 KST"
+      ]
+    },
+    {
+      "source": "geeknews",
+      "feed_url": "https://news.hada.io/rss/news",
+      "ok": true,
+      "skipped": 0,
+      "etag": "",
+      "modified": "",
+      "sha256": "ab00a8d8ae3d6697d85365bfa6abbd6c7c3bc9bedc43a450f9285566a10c10c0",
+      "bytes": 43201,
+      "entries": 50,
+      "dated": 50,
+      "preview": [
+        "*GeekNews · 기술 동향·커뮤니티*\n<https://news.hada.io/topic?id=34067|Show HN: Mini-AGI - 8GB VRAM에서 학습하는 동적 지속 학습 모델>\nmini-AGI 는 단일 8GB VRAM GPU에서 처음부터 학습하고, 읽는 데이터에 따라 전문가 풀과 연산 깊이를 바꾸는 바이트 단위 언어 모델임 가중치와 옵티마이저 상태를 디스크에 저장 하고 필요한 전문가만 GPU에 올리므로, 전체 파라미터 수보다 현재 작업 집합이 VRAM...\n발행 09-21 21:38 KST",
+        "*GeekNews · 기술 동향·커뮤니티*\n<https://news.hada.io/topic?id=34066|ZuckOff, Meta 안경이 당신을 보기 전에 먼저 감지하는 무료 앱>\nZuckOff 는 주변 스마트 안경의 Bluetooth 신호를 감지해 같은 공간에 기기가 있는지 알려주는 앱으로, iPhone에서 기본 스캔 기능을 무료로 제공함 모델별 Bluetooth 신호로 만든 디지털 지문 을 활용하며, Ray-Ban Meta, Oakley Meta, Snap…\n발행 09-21 21:35 KST"
+      ]
+    },
+    {
+      "source": "naver-d2",
+      "feed_url": "https://d2.naver.com/d2.atom",
+      "ok": true,
+      "skipped": 1,
+      "etag": "",
+      "modified": "",
+      "sha256": "c524d3ade80e26e13b6054e56c942c0529b3e1234277284d1d1f2ddd8556cb64",
+      "bytes": 304026,
+      "entries": 19,
+      "dated": 19,
+      "preview": [
+        "*NAVER D2 · 국내 개발·운영 사례*\n<https://d2.naver.com/news/7360495|FE News 26년 9월 소식을 전해드립니다.>\n26년 9월 소식에서는 다음과 같은 유용한 정보들을 만나보실 수 있습니다. 주요소식 ​ ​ The AI Engineering Skills Map Andrew Ng이 DeepLearning.AI 팀과 함께 1만 건이 넘는 채용 공고 분석과 전문가 인터뷰, 설문을 종합해 정리한 AI 엔지…\n수정 09-03 14:29 KST",
+        "*NAVER D2 · 국내 개발·운영 사례*\n<https://d2.naver.com/helloworld/4452165|Python의 멀티프로세싱과 Airflow, 그리고 관련된 문제 해결기 1편>\n저희 팀은 데이터 입수 플랫폼의 배치 워크플로를 Airflow 2.10.2로 운영하고 있습니다. 2025년 4월 Airflow 3.0이 릴리스되었고, UI 개선과 다양한 신규 기능이 포함되었습니다. 이 변화가 저희 운영 환경에 필요하다고 판단했고 도입을 위한 PoC(Proof of C…\n수정 09-01 15:52 KST"
+      ]
+    },
+    {
+      "source": "toss-tech",
+      "feed_url": "https://toss.tech/rss.xml",
+      "ok": true,
+      "skipped": 0,
+      "etag": "",
+      "modified": "",
+      "sha256": "ef60cb5b4be9f642eb5b48a60e821e63b7a1f6631a44609f483a5a63cd30b2c3",
+      "bytes": 844332,
+      "entries": 20,
+      "dated": 20,
+      "preview": [
+        "*토스 기술 블로그 · 국내 개발·운영 사례*\n<https://toss.tech/article/remittance_transfer|도메인 지식 없는 디자이너가 팀의 기준을 바꾼 방법>\n은행 지식이 없던 디자이너가 규제가 가득한 도메인에서 어떻게 팀의 기준을 바꿨는지 이야기해 보려고 해요.\n발행 09-21 19:15 KST",
+        "*토스 기술 블로그 · 국내 개발·운영 사례*\n<https://toss.tech/article/lockbank|사용자를 위해 일부러 어렵게 만드는 경험, 어디까지 괜찮을까?>\n10대를 위한 잠금 저금통을 만들며 찾은 ‘좋은 불편함’의 기준을 공유합니다.\n발행 09-18 12:41 KST"
+      ]
+    }
+  ]
+}

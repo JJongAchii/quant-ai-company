@@ -59,6 +59,9 @@ class SlackIngress:
         is_dm = event.get("channel_type") == "im" or channel.startswith("D")
         if not is_dm and channel not in self.settings.slack_allowed_channels:
             return {"ok": True, "ignored": True}
+        if role == "reporter" and channel and channel == self.settings.tech_feed_channel_id:
+            # This feed is a zero-model subscription, including mentions and thread replies.
+            return {"ok": True, "ignored": True, "reason": "tech_feed_has_no_model_responder"}
         text = event.get("text", "")
         timestamp = event.get("ts")
         if not text.strip() or not timestamp:
@@ -211,6 +214,10 @@ class SlackOutbox:
             current = conn.execute("SELECT status FROM outbox WHERE id=%s FOR UPDATE", (row["id"],)).fetchone()
             if not current or current["status"] != "sending":
                 return False
+            if row["message_kind"] == "tech_feed":
+                from .tech_feed.store import TechFeedStore
+
+                return TechFeedStore(self.company).gate(conn, row, claimed=True)
             return not self.defer_news(conn, row, claimed=True)
 
     def claim(self):
@@ -227,6 +234,11 @@ class SlackOutbox:
                 return None
             if self.defer_news(conn, row):
                 return None
+            if row["message_kind"] == "tech_feed":
+                from .tech_feed.store import TechFeedStore
+
+                if not TechFeedStore(self.company).gate(conn, row):
+                    return None
             if row["message_kind"] in {"news", "news_digest"}:
                 from .news.digest import NewsDigestStore
                 from .news.store import NewsStore
@@ -311,7 +323,7 @@ class SlackOutbox:
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_server_error")
                 return True
             result = response.json()
-            if result.get("ok") and (row.get("message_kind") not in {"news", "news_digest"} or result.get("ts")):
+            if result.get("ok") and (row.get("message_kind") not in {"news", "news_digest", "tech_feed"} or result.get("ts")):
                 await asyncio.to_thread(self.settle, row, "delivered", sent_ts=result.get("ts"))
             elif result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="missing_slack_message_receipt")

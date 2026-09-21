@@ -107,6 +107,16 @@ def test_compose_https_is_explicit_opt_in():
     assert {port["published"] for port in caddy["ports"]} == {"80", "443"}
 
 
+def test_tech_feed_defaults_off_and_stays_out_of_model_container():
+    services = compose_config()["services"]
+    for name in ("api", "worker", "dispatch", "slack-socket"):
+        environment = services[name]["environment"]
+        assert environment["TECH_FEED_ENABLED"] == "false"
+        assert environment["TECH_FEED_PUBLISH_ENABLED"] == "false"
+        assert "TECH_FEED_CHANNEL_ID" in environment
+    assert not any(key.startswith("TECH_FEED_") for key in services["codex-runtime"]["environment"])
+
+
 def test_claude_profile_is_private_separately_authenticated_and_off_by_default():
     assert "claude-runtime" not in compose_config()["services"]
     services = compose_config("claude")["services"]

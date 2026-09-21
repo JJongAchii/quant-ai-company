@@ -47,6 +47,11 @@ class Settings(BaseSettings):
     news_sources_file: Path | None = None
     news_max_age_hours: int = Field(default=24, ge=1, le=72)
     news_initial_lookback_minutes: int = Field(default=120, ge=0, le=1440)
+    tech_feed_enabled: bool = False
+    tech_feed_publish_enabled: bool = False
+    tech_feed_channel_id: str = ""
+    tech_feed_owner_user: str = ""
+    tech_feed_sources_file: Path | None = None
     company_staff_development_enabled: bool = False
     staff_daily_exercises: int = Field(default=2, ge=1, le=6)
     staff_max_calls_per_exercise: int = Field(default=3, ge=1, le=4)

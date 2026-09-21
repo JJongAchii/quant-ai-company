@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "slug": "scoter",
+  "revision": 1,
+  "sourceRequest": "tech-feed에서 개발·연구 중심의 국내외 기술 소식을 원문 제목·한 줄·링크로 수시 수신. 추가 AI 비용 없이 한국어·영어 피드, 핵심 소스, KST 06~24시 발송. Implement the plan.",
+  "outcome": "12개 공개 RSS/Atom을 AI 호출 없이 수집하고 기존 Reporter와 영속 outbox로 tech-feed에 전달한다.",
+  "constraints": ["모델 호출 및 자동 모델 작업 생성 0건", "신규 유료 서비스 없음", "기존 hot-news 동작 보존", "회사 저장소에만 기록", "비밀 출력 및 Git 저장 금지"],
+  "deliverables": [
+    {"id": "IMPLEMENTATION", "description": "수집·원문 표시·중복·야간 대기·발송 및 관리 명령", "acceptance": ["승인된 12개 소스 및 무모델 수집 경로", "10분 수집, 06~24 발송, 발송 최소 1분 간격", "최초 기준점 및 72시간 복구 한도"]},
+    {"id": "VALIDATION", "description": "실제 PostgreSQL/Temporal, 모의 Slack, 모델 호출 0 회귀", "acceptance": ["실제 DB 및 Temporal 재시작·재생 검사", "중복·시간경계·권한 변경·불명 결과 검사", "실제 공개 피드와 모의 Slack을 구분"]},
+    {"id": "ACTIVATION", "description": "운영 소스 및 실제 Slack 연결 확인과 활성화 기록", "acceptance": ["기존 운영 서버와 Reporter, 실제 채널의 권한 검증", "검증된 코드 배포와 실제 발송 상태의 증거 보존"]}
+  ],
+  "nonGoals": ["AI 요약·번역·자동 답변", "신규 유료 서비스", "hot-news 정책 변경"],
+  "decisionGates": ["사용자의 Implement the plan은 제시한 구현·검증·기존 서버 활성화 범위의 승인이다."],
+  "stopConditions": ["접근 불가 시 정확한 외부 조건을 기록한다.", "불명 발송을 자동 재실행하지 않는다."],
+  "approval": "사용자가 제시된 설계에 Implement the plan으로 구현을 승인했다.",
+  "workspace": "독립 회사 Git worktree scoter. QWS_CANONICAL=/Users/achii/Quant/quant-ai-company로 회사 저장소만 qws 정본으로 지정한다. 과거 Quant 계약은 변경하지 않는다."
+}

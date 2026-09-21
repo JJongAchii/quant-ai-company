@@ -53,7 +53,7 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     for role in roles:
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
-    if "reporter" in by_id and settings.company_news_enabled:
+    if "reporter" in by_id and (settings.company_news_enabled or settings.tech_feed_enabled):
         by_id["reporter"] = by_id["reporter"].model_copy(update={"active": True})
     if settings.company_research_enabled and "director" in by_id:
         role = by_id["director"]

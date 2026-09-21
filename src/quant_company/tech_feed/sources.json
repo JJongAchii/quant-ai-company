@@ -1,0 +1,14 @@
+[
+  {"id":"openai","publisher":"OpenAI","topic":"AI·제품·연구","feed_url":"https://openai.com/news/rss.xml","article_hosts":["openai.com"],"categories":["Product","Research","Engineering","Applied AI","API","ChatGPT","Release","Safety","Security","Safety & Alignment"]},
+  {"id":"deepmind","publisher":"Google DeepMind","topic":"AI·연구","feed_url":"https://deepmind.google/blog/rss.xml","article_hosts":["deepmind.google"]},
+  {"id":"hugging-face","publisher":"Hugging Face Blog","topic":"오픈소스 AI","feed_url":"https://huggingface.co/blog/feed.xml","article_hosts":["huggingface.co"]},
+  {"id":"simon-willison","publisher":"Simon Willison","topic":"AI·개발 도구","feed_url":"https://simonwillison.net/atom/everything/","article_hosts":["simonwillison.net"]},
+  {"id":"github-engineering","publisher":"GitHub Engineering","topic":"소프트웨어 엔지니어링","feed_url":"https://github.blog/engineering/feed/","article_hosts":["github.blog"]},
+  {"id":"duckdb","publisher":"DuckDB","topic":"데이터·분석","feed_url":"https://duckdb.org/feed.xml","article_hosts":["duckdb.org"]},
+  {"id":"postgresql","publisher":"PostgreSQL","topic":"데이터베이스 릴리스","feed_url":"https://www.postgresql.org/versions.rss","article_hosts":["www.postgresql.org"]},
+  {"id":"cloudflare","publisher":"Cloudflare","topic":"인프라·보안","feed_url":"https://blog.cloudflare.com/rss/","article_hosts":["blog.cloudflare.com"]},
+  {"id":"kubernetes","publisher":"Kubernetes","topic":"클라우드·분산 시스템","feed_url":"https://kubernetes.io/feed.xml","article_hosts":["kubernetes.io"]},
+  {"id":"geeknews","publisher":"GeekNews","topic":"기술 동향·커뮤니티","feed_url":"https://news.hada.io/rss/news","article_hosts":["news.hada.io"]},
+  {"id":"naver-d2","publisher":"NAVER D2","topic":"국내 개발·운영 사례","feed_url":"https://d2.naver.com/d2.atom","article_hosts":["d2.naver.com"],"paths":["/helloworld/"],"title_prefixes":["FE News"]},
+  {"id":"toss-tech","publisher":"토스 기술 블로그","topic":"국내 개발·운영 사례","feed_url":"https://toss.tech/rss.xml","article_hosts":["toss.tech"]}
+]

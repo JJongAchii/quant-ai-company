@@ -1,0 +1,47 @@
+{
+  "approval": {
+    "approvedAt": "2026-09-21T12:41:43.499751+00:00",
+    "id": "chat-20260921-implement-tech-feed"
+  },
+  "currentIntent": "INTENT-v1.json",
+  "deliverables": {
+    "ACTIVATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/tech-feed-production-active.json",
+          "sha256": "187ae735709d"
+        }
+      ],
+      "note": "Real production RSS, running Temporal Cloud workflow and delivered Slack setup receipt; future article delivery is not fabricated.",
+      "status": "verified",
+      "updatedAt": "2026-09-21T13:11:24.338389+00:00"
+    },
+    "IMPLEMENTATION": {
+      "evidence": [
+        {
+          "path": "docs/tech-feed.md",
+          "sha256": "40f4fc0f9cc7"
+        }
+      ],
+      "note": "12-source zero-model collector and durable Slack delivery implemented; integrated latest production main.",
+      "status": "verified",
+      "updatedAt": "2026-09-21T12:57:34.258742+00:00"
+    },
+    "VALIDATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/tech-feed-integrated-tests.xml",
+          "sha256": "56fe95bcae81"
+        }
+      ],
+      "note": "992 passed with real local PostgreSQL/Temporal; 36 documented opt-in/environment skips. Detailed scope is in TECH-FEED-VALIDATION.md.",
+      "status": "verified",
+      "updatedAt": "2026-09-21T13:11:24.184765+00:00"
+    }
+  },
+  "intentDigest": "1793f313fc9f",
+  "schemaVersion": 1,
+  "slug": "scoter",
+  "state": "approved",
+  "updatedAt": "2026-09-21T13:11:24.338389+00:00"
+}

@@ -79,7 +79,8 @@ def parse_feed(raw, source):
     return result, skipped + max(0, len(entries)-200)
 
 
-def fetch_feed(source, etag=None, modified=None, *, connection_factory=PublicConnection):
+def fetch_feed(source, etag=None, modified=None, *, connection_factory=PublicConnection, parser=parse_feed,
+               max_bytes=MAX_BYTES):
     current = source.feed_url
     deadline = time.monotonic() + 30
     try:
@@ -111,17 +112,17 @@ def fetch_feed(source, etag=None, modified=None, *, connection_factory=PublicCon
                 if response.getheader("Content-Encoding", "identity").lower() != "identity":
                     raise ValueError("unsupported_feed_encoding")
                 raw = bytearray()
-                while len(raw) <= MAX_BYTES:
+                while len(raw) <= max_bytes:
                     remaining = deadline - time.monotonic()
                     if remaining <= 0:
                         raise ValueError("feed_timeout")
                     if getattr(connection, "sock", None):
                         connection.sock.settimeout(min(12, remaining))
-                    chunk = response.read1(min(16384, MAX_BYTES + 1 - len(raw)))
+                    chunk = response.read1(min(16384, max_bytes + 1 - len(raw)))
                     if not chunk:
                         break
                     raw.extend(chunk)
-                entries, skipped = parse_feed(bytes(raw), source)
+                entries, skipped = parser(bytes(raw), source)
                 return {"ok": True, "entries": entries, "skipped": skipped,
                         "etag": (response.getheader("ETag") or "")[:500],
                         "modified": (response.getheader("Last-Modified") or "")[:200],

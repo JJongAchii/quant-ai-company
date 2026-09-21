@@ -47,6 +47,18 @@ researcher_kr, data. `roles.json` is a JSON array of `Role` objects, packaged in
 
 ## Deployment
 
+### Zero-model tech feed
+
+- `quant-company tech-feed probe|collect|status [--output PATH]`.
+- `TECH_FEED_ENABLED=false`, `TECH_FEED_PUBLISH_ENABLED=false`, `TECH_FEED_CHANNEL_ID`,
+  `TECH_FEED_OWNER_USER`, optional `TECH_FEED_SOURCES_FILE`. Slack allowlists still apply.
+- Separate PostgreSQL `tech_feed_*` state and `company-tech-feed-collection-v1` Temporal workflow;
+  task queue suffix `-tech-feed`. Reuses Reporter and the outbox with message kind `tech_feed`.
+- No ProviderRequest, turns, model budgets, automatic summaries/translations or Reporter follow-up calls.
+- See [tech-feed](docs/tech-feed.md) for first-sync, freshness, delivery window and uncertainty semantics.
+
+### Host
+
 Single AWS Lightsail host with service, Slack socket receiver, worker/dispatcher, PostgreSQL and isolated Codex
 runtime. Temporal Cloud in production; local Temporal dev server is for development only.
 Caddy is an optional `https` Compose profile. Default Lightsail ingress allows only the configured
