@@ -1,0 +1,10 @@
+{
+  "labs/company-autonomous-etf/run.py": "383defbf17fec319f216db401473a292f496eed6f2ea42fed4fd0f9caa0092aa",
+  "labs/company-autonomous-etf/policy.json": "bf14a28c9f7dc48ae39ced848c474a1afad4f226671494e7cdb7ac2020ecd87a",
+  "labs/company-autonomous-etf/lineage.json": "9d06ae299c08221a61d85c9691bb548b1b4b7e7cbcdcc95d7635282da1d53b9b",
+  "labs/company-autonomous-etf/src/company_autonomous_etf/__init__.py": "634bda323ff02e792631b5ebce9c69f3b9a8d708d5fed496844003d81133a11c",
+  "labs/company-autonomous-etf/src/company_autonomous_etf/engine.py": "e344cde8f86a0cae2524aedc66f4fc0685a4735ff52ec59c013e20408c1f1627",
+  "labs/company-autonomous-etf/src/company_autonomous_etf/signals.py": "34b3dc6285113c0a8f9cff133fe34f80f472e9ec789ad925742c7c25f0fdd1b8",
+  "labs/company-autonomous-etf/src/company_autonomous_etf/adapter.py": "c43bfad4ad0e85e4ae441092858572fc5295b210ba0b7d9ef6e489d92b5f4c87",
+  "labs/company-autonomous-etf/configs/candidate.json": "f8c8d42ca3138bad16847fbe4cb4e93be0173a5f94454b640eaf3e1700022ae2"
+}

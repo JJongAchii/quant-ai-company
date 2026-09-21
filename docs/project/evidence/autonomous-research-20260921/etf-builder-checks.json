@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-21T11:19:22.693778+00:00",
+  "code_commit": "ea1d09f809f509571c9c0baaf61e0126c2acb790",
+  "fixture_only": true,
+  "checks": [
+    {
+      "name": "unit-integration",
+      "argv": [
+        ".local/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-c",
+        "labs/company-autonomous-etf/pyproject.toml",
+        "labs/company-autonomous-etf/tests"
+      ],
+      "environment": {
+        "PYTHONPATH": "labs/company-autonomous-etf/src:core/src:../../../quant-ai-company/src",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "raw_log": ".local/etf-profile-build/unit-integration.log",
+      "log_sha256": "e4814b3004d554fd862151f2b3721fc4a94f8ecb96cdf5cc494916acf58ef4f0",
+      "raw_summary": ".....................................................                    [100%]\n53 passed in 12.62s"
+    },
+    {
+      "name": "lint",
+      "argv": [
+        ".local/venv/bin/ruff",
+        "check",
+        "labs/company-autonomous-etf"
+      ],
+      "environment": {
+        "PYTHONPATH": "labs/company-autonomous-etf/src:core/src:../../../quant-ai-company/src",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "raw_log": ".local/etf-profile-build/lint.log",
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_summary": "All checks passed!"
+    },
+    {
+      "name": "format",
+      "argv": [
+        ".local/venv/bin/ruff",
+        "format",
+        "--check",
+        "labs/company-autonomous-etf"
+      ],
+      "environment": {
+        "PYTHONPATH": "labs/company-autonomous-etf/src:core/src:../../../quant-ai-company/src",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "raw_log": ".local/etf-profile-build/format.log",
+      "log_sha256": "2ce9758b9f8abd876ec3e76c589e099e8b05377b1e7ea2331e81ee80f07bdff8",
+      "raw_summary": "9 files already formatted"
+    }
+  ]
+}
