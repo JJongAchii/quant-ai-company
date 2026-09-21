@@ -74,10 +74,16 @@ def create_app(settings: Settings | None = None, company: Company | None = None,
         try:
             credential = ingress.verify(role, body, request.headers.get("x-slack-request-timestamp", ""),
                                         request.headers.get("x-slack-signature", ""))
-            payload = json.loads(body)
+            if request.headers.get("content-type", "").split(";", 1)[0] == "application/x-www-form-urlencoded":
+                from urllib.parse import parse_qs
+
+                form = parse_qs(body.decode(), strict_parsing=True, max_num_fields=1)
+                payload = json.loads(form["payload"][0])
+            else:
+                payload = json.loads(body)
             if not isinstance(payload, dict):
                 raise ValueError("Expected object")
-        except (PolicyError, ValueError):
+        except (PolicyError, ValueError, KeyError):
             raise HTTPException(401, "Invalid Slack request") from None
         # ACK only after the transaction commits. No model call in this request path.
         return await asyncio.to_thread(ingress.accept, role, payload, credential)

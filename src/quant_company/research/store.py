@@ -125,11 +125,14 @@ class ResearchStore:
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s) RETURNING *""",
                            (identity, project["id"], task["id"], project["revision"], recipe.id,
                             Jsonb(recipe.model_dump()), digest, self.company.settings.company_code_commit)).fetchone()
-        self.company._message(conn, project, task["id"], "director", "status",
-                              f"연구 실행 명세: {recipe.title}\n{recipe.description}\n"
-                              f"실행: 3070 · 코드 {recipe.code_commit[:12]} · 지시 v{project['revision']}\n"
-                              f"확인한 명세로 실행하려면 이 스레드에 아래 문구를 보내주세요.\n"
-                              f"연구 승인 {identity} {digest[:12]}", notify_owner=True)
+        from .approvals import ReplayApprovalAdapter, publish_approval
+
+        target = next(t for t in ReplayApprovalAdapter(self.company).targets(conn, project) if str(t.target_id) == identity)
+        publish_approval(self.company, conn, project, task["id"], target,
+                         f"연구 실행 명세: {recipe.title}\n{recipe.description}\n"
+                         f"실행: 3070 · 코드 {recipe.code_commit[:12]} · 지시 v{project['revision']}\n"
+                         f"확인한 명세로 실행하려면 승인 버튼이나 이 스레드에 ‘승인’을 보내주세요.\n"
+                         f"전체 명령: 연구 승인 {identity} {digest[:12]}")
         self.company._event(conn, "research_requested", {"job_id": identity, "manifest_digest": digest}, project["id"])
         return public_job(row)
 

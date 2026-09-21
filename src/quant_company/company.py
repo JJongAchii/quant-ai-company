@@ -285,18 +285,35 @@ class Company:
     def ingest(self, *, event_key: str, text: str, owner: str, agent: str = "director",
                project_id: str | None = None, channel: str | None = None, thread_ts: str | None = None,
                revise: bool = False, status_only: bool = False, daily_limit_command: dict | None = None,
-               interpret: bool = False, control_action: str | None = None) -> dict:
+               interpret: bool = False, control_action: str | None = None,
+               approval_context: dict | None = None) -> dict:
         self.role(agent)
         if not text.strip() or len(text) > 10000:
             raise PolicyError("Instruction must contain 1–10000 characters")
+        from .research.approvals import ApprovalEvent, short_command
         from .research.store import parse_command
 
-        research_command = parse_command(text) if agent == "director" else None
+        research_command = (parse_command(text) or short_command(text)) if agent == "director" else None
+        event = None
+        if approval_context and (research_command or approval_context.get("origin") == "block_actions"):
+            try:
+                event = ApprovalEvent.model_validate(approval_context)
+            except ValueError:
+                raise PolicyError("Invalid research approval provenance") from None
+        if event and event.origin == "block_actions":
+            if agent != "director" or not event.binding or not event.action:
+                raise PolicyError("Invalid research approval action")
+            research_command = {"action": event.action + "_pending"}
         if research_command:
+            if revise:
+                raise PolicyError("Research approval cannot amend the project")
             interpret = False
+            control_action = None
             status_only = True
         digest = fingerprint([text, owner, agent, project_id, channel, thread_ts, revise, status_only])
         prior_ingress_digest = digest
+        if research_command and event:
+            digest = fingerprint([digest, event.model_dump(mode="json")])
         if interpret or control_action:
             from .task_control import immediate
 
@@ -317,7 +334,8 @@ class Company:
             old = conn.execute("SELECT * FROM inbound WHERE event_key=%s", (event_key,)).fetchone()
             if old:
                 if old["payload_digest"] != digest and not (
-                    (daily_limit_command is not None or interpret or control_action is not None)
+                    (daily_limit_command is not None or interpret or control_action is not None
+                     or (research_command and approval_context))
                     and old["payload_digest"] == prior_ingress_digest
                 ):
                     raise PolicyError("Request ID was already used for different content")
@@ -350,9 +368,9 @@ class Company:
                          (event_key, project_id, task["id"], digest))
             self._message(conn, project, task["id"], owner, "human", text)
             if research_command:
-                from .research.store import ResearchStore
+                from .research.approvals import apply_owner_command
 
-                ResearchStore(self).owner_command(conn, project, task, event_key, research_command)
+                apply_owner_command(self, conn, project, task, event_key, research_command, approval_context)
             elif control_action:
                 from .task_control import Control, apply
 
