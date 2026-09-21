@@ -32,14 +32,15 @@ class ReportPublisher:
                     "publication": "local_fixture", "expires_at": None}
         if not settings.research_report_bucket:
             raise ValueError("research_report_storage_not_configured")
-        import boto3
+        from botocore.session import get_session
 
         credentials = {}
         if settings.research_s3_credentials_file:
             value = json.loads(settings.research_s3_credentials_file.read_text())
             credentials = {"aws_access_key_id": value["AccessKeyId"],
                            "aws_secret_access_key": value["SecretAccessKey"]}
-        s3 = boto3.client("s3", region_name="ap-northeast-2", **credentials)
+        # The production image's locked lake extra includes botocore (not boto3).
+        s3 = get_session().create_client("s3", region_name="ap-northeast-2", **credentials)
         prefix = f"{settings.research_report_prefix}/{job_id}"
         key = f"{prefix}/{digest}.html"
         with archive.open("rb") as stream:
