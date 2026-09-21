@@ -101,6 +101,12 @@ def test_qualification_real_pg_restart_challenge_revision_and_selection(mission)
     stage, turn_id = active(mission)
     assert stage["actor"] == "engineer" and not company.roles["engineer"].active
     assert company.prepare_turn(turn_id)["request"]["model"] == company.roles["engineer"].model
+    with company.db.transaction() as conn:
+        discussions = conn.execute("SELECT agent,text FROM outbox WHERE text LIKE '[%%' ORDER BY created_at").fetchall()
+    assert any(item["agent"] == "researcher_kr" and second.hypothesis in item["text"] for item in discussions)
+    assert any(item["agent"] == "financial_strategist" and challenge["concern"] in item["text"] for item in discussions)
+    assert any("[가설 수정 결정]" in item["text"] for item in discussions)
+    assert len(discussions) == 6  # Each actual debate outcome published once despite repeated commits.
 
 
 def test_private_stage_cannot_publish_prose_tools_or_fake_audit(mission):
@@ -171,3 +177,48 @@ def test_evidence_prompt_preserves_manifest_with_bounded_chunks(mission):
     assert len(prompt) < 90000
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
     assert len(context["inspected_chunks"]) == 10 and 1 <= len(context["read_chunks"]) <= 5
+
+
+def test_retry_reads_are_bound_to_new_validator_attempt(mission):
+    company = mission.company
+    controller = MissionController(company, backend=FixtureBackend(company))
+    controller.tick()
+    stage, turn_id = active(mission)
+    company.prepare_turn(turn_id)
+    response = ProviderResponse(request_id=turn_id, decision=AgentDecision(say="", status="continue", tools=[
+        {"name": "research_control", "arguments": {"action": "read_stage_file", "path": "fixture.txt"}}]))
+    company.commit_turn(turn_id, response)
+    _, following = active(mission)
+    company.block_turn(following, "fixture restart with an incomplete audit")
+    with company.db.transaction() as conn:
+        conn.execute("UPDATE research_mission_stages SET retry_at=now() WHERE id=%s", (stage["id"],))
+    assert controller.tick()["state"] == "running"
+    second, turn_id = active(mission)
+    assert second["attempt"] == 2
+    prompt = company.prepare_turn(turn_id)["request"]["prompt"]
+    context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
+    assert context["inspected_chunks"] == []
+    company.commit_turn(turn_id, response.model_copy(update={"request_id": turn_id}))
+    with company.db.transaction() as conn:
+        assert {row["attempt"] for row in conn.execute("SELECT attempt FROM research_stage_reads")} == {1, 2}
+
+
+def test_maintenance_receives_sanitized_contract_failure_not_private_research(mission):
+    from quant_company.maintenance.store import Store
+
+    from .test_maintenance import config
+
+    company = mission.company
+    controller = MissionController(company, backend=FixtureBackend(company))
+    controller.tick()
+    _, turn_id = active(mission)
+    company.prepare_turn(turn_id)
+    company.block_turn(turn_id, "unverified private metric 987.123")
+    maintenance = Store(company, config())
+    maintenance.initialize()
+    identity = maintenance.collect()
+    with company.db.transaction() as conn:
+        payload = conn.execute("SELECT payload FROM maintenance_jobs WHERE id=%s", (identity,)).fetchone()["payload"]
+    events = [item for item in payload["observations"] if item["kind"] == "research_stage_waiting"]
+    assert events and events[0]["detail"]["employee"] == "researcher_kr"
+    assert "987.123" not in json.dumps(payload)

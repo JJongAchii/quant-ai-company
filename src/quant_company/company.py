@@ -287,7 +287,7 @@ class Company:
         depth = parent["depth"] + 1 if parent else 0
         if depth > self.settings.company_max_depth:
             raise PolicyError("Delegation depth exhausted")
-        count = conn.execute("SELECT count(*) AS n FROM tasks WHERE project_id=%s AND turn_count>0",
+        count = conn.execute("SELECT count(*) AS n FROM tasks WHERE project_id=%s AND turn_count>0 AND kind<>'research_stage'",
                              (project["id"],)).fetchone()
         if not status_only and count["n"] >= self.settings.company_max_project_tasks:
             raise PolicyError("Project task limit exhausted")
@@ -671,7 +671,8 @@ class Company:
                 conn.execute("UPDATE research_stage_attempts SET error='stage_response_rejected' WHERE task_id=%s",
                              (task["id"],))
                 self._event(conn, "research_stage_waiting", {"task_id": str(task["id"]),
-                            "reason": "stage_response_rejected"}, project["id"])
+                            "employee": task["agent"], "reason": "stage_response_rejected",
+                            "scope": "Operational contract failure; not a research finding or capability score."}, project["id"])
                 return
             self._message(conn, project, task["id"], task["agent"], "status",
                           f"업무가 확인 대기 상태입니다. 사유: {reason}. 작업 기록은 보존했습니다.",

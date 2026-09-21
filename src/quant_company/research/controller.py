@@ -134,7 +134,7 @@ def _stage(conn, task_id):
 
 
 def stage_prompt(company, conn, task):
-    from ..staff.packs import employee_pack
+    from ..staff.packs import coaching, employee_pack
 
     row = _stage(conn, task["id"])
     role = stage_role(company, row["actor"])
@@ -163,6 +163,9 @@ def stage_prompt(company, conn, task):
     }
     context = {**{key: value for key, value in row["context"].items() if not key.startswith("_")},
                "stage_id": str(row["id"]), "actor": row["actor"], "last_error": row["error"]}
+    project = company._project(conn, task["project_id"], lock=False)
+    context["professional_feedback"] = as_json(coaching(
+        conn, project["owner_user"], role.id, role.model, role.reasoning_effort))
     output_type = {"proposal": HypothesisProposal, "challenge": Challenge,
                    "interpretation": Interpretation}.get(row["stage"])
     if output_type:
@@ -276,10 +279,43 @@ class MissionController:
         conn.execute("""UPDATE research_mission_stages SET task_id=%s,attempt=%s,state='running',
             context=%s,retry_at=NULL,updated_at=now() WHERE id=%s""", (task_id, attempt, Jsonb(context), identity))
         self.company._new_turn(conn, task)
-        if attempt == 1:
+        if attempt == 1 and stage not in {"proposal", "challenge", "selection", "cycle_review"}:
             # Internal engineer/validator need no fake Slack identity. Director posts a truthful stage receipt.
             self.company._message(conn, project, task_id, "director", "status", STAGE_TEXT[stage])
         return {**row, "state": "running", "task_id": task_id}
+
+    def _discussion(self, conn, row, snapshot):
+        """Publish the actual pre-experiment debate, only after prior results were audited.
+
+        An interpretation/audit context can contain unverified measurements; it is never
+        rendered here. The next proposal cannot inherit such a context through a retry.
+        """
+        stage, data = row["stage"], row["result"]
+        if stage not in {"proposal", "challenge", "selection"}:
+            return
+        reported = {str(item["trial_id"]) for item in snapshot["publications"]}
+        if any(item["payload"]["status"] == "result" and str(item["trial_id"]) not in reported
+               for item in snapshot["outcomes"]):
+            raise PolicyError("Prior result audit is required before public research discussion")
+        def excerpt(value):
+            return value if len(value) <= 1800 else value[:1800] + "…"
+        if stage == "proposal":
+            text = ("[연구 가설 · 검증 전]\n" + excerpt(data["hypothesis"])
+                    + "\n예상 효과: " + excerpt(data["expected_effect"])
+                    + "\n반증 조건: " + excerpt(data["falsification"]))
+            sources = data["source_ids"]
+        elif stage == "challenge":
+            text = ("[독립 반론]\n" + excerpt(data["concern"]) + "\n확인할 검사: " + excerpt(data["test"]))
+            sources = data["source_ids"]
+        else:
+            text = ("[가설 수정 결정]" if data["decision"] == "revise" else "[실험 준비 결정]")
+            text += "\n" + excerpt(data["rationale"]) + "\n반론: " + ", ".join(data["challenge_ids"])
+            sources = []
+        if sources:
+            text += "\n근거: " + ", ".join(sources)
+        project = self.company._project(conn, snapshot["project_id"])
+        self.company._message(conn, project, row["task_id"], row["actor"], "status", text,
+                              message_id=stable("mission-discussion:" + str(row["id"])))
 
     def _apply(self, conn, row, snapshot):
         data, stage, actor = row["result"], row["stage"], row["actor"]
@@ -323,6 +359,7 @@ class MissionController:
                 raise PolicyError("Invalid cycle decision")
         else:
             raise PolicyError("Stage requires the file backend")
+        self._discussion(conn, row, snapshot)
         conn.execute("UPDATE research_mission_stages SET state='completed',error=NULL,updated_at=now() WHERE id=%s",
                      (row["id"],))
 
@@ -336,6 +373,11 @@ class MissionController:
                 updated_at=now() WHERE id=%s AND state='received'""", (reason, now() + timedelta(seconds=delay), row["id"]))
             conn.execute("UPDATE research_stage_attempts SET error=%s WHERE stage_id=%s AND attempt=%s",
                          (reason, row["id"], row["attempt"]))
+            self.company._event(conn, "research_stage_waiting", {
+                "task_id": str(row["task_id"]), "stage": row["stage"], "employee": row["actor"],
+                "reason": "stage_contract_rejected", "attempt": row["attempt"],
+                "scope": "Operational contract failure; not a research finding or employee capability score.",
+            }, mission["project_id"])
 
     def tick(self):
         if not self.company.settings.company_autonomous_research_enabled:
