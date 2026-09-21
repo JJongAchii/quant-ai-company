@@ -1,0 +1,74 @@
+{
+  "scope": "engineering_acceptance_of_fixed_p11",
+  "code_commit": "84d47462b992261b0bb56add6f8134f196f4bf7e",
+  "scientific_code_commit": "02649715bd3661826253e1ce84f8002d2a74c822",
+  "real_engineering_replays": 2,
+  "new_scientific_trials": 0,
+  "each_execution_count": [
+    1,
+    1
+  ],
+  "original_economic_files_matched_each": 33,
+  "original_audit_scope_files_verified_each": 193,
+  "actual_restart_within_second_execution": true,
+  "actual_server_restart_within_second_execution": true,
+  "child_alive_before_and_after_restart": true,
+  "same_process_identity_after_restart": true,
+  "first_post_execution_restart_label": "completed_computation_before_restart; not an in-execution restart",
+  "actual_postgresql": true,
+  "actual_temporal_cloud": true,
+  "actual_s3_objects_get_and_sha_verified": 4,
+  "actual_slack_approval_ingress": false,
+  "actual_director_model_call_in_acceptance": false,
+  "physical_mac_shutdown_test": false,
+  "production_research_activation": false,
+  "server_report_pending_director_tasks": 2,
+  "unit_system_user": "achii",
+  "user_service_linger": false,
+  "worker_windows_reboot_test": false,
+  "mac_in_runtime_data_path": false,
+  "tests": [
+    {
+      "report": "research-full-final.xml",
+      "sha256": "3f7cc07dc3c5989ebc4f61db693b14f0a34aaecca4c3c5e36a886496424596c9",
+      "tests": 625,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2,
+      "time_seconds": 94.56
+    },
+    {
+      "report": "research-deployed-integration.xml",
+      "sha256": "3a635fb904a37a513980dcacd173ef2f3803431be74f718876c65a40ececbe16",
+      "tests": 643,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2,
+      "time_seconds": 99.789
+    },
+    {
+      "report": "research-real-schema-repair.xml",
+      "sha256": "a326aeec3c2a43d99557d9c465fccb6d6a05627d98d769e56d862a6d46df837e",
+      "tests": 110,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_seconds": 1.692
+    },
+    {
+      "report": "research-final-e2e.xml",
+      "sha256": "ab0f54d115d426d61820548e7e52f8b397f845d71ceff600456bdef8bd2eb959",
+      "tests": 646,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2,
+      "time_seconds": 103.84
+    }
+  ],
+  "intent_digest": "6cce84435908",
+  "remaining": [
+    "independent_new_execution_path_audit",
+    "production_activation_review",
+    "actual_owner_slack_approval_to_new_research_job_and_final_delivery"
+  ]
+}

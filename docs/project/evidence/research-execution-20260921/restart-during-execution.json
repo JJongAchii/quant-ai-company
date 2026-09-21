@@ -1,0 +1,33 @@
+{
+  "kind": "intentional_restart_during_actual_research",
+  "job_id": "0e546b29-bc31-57c8-98ab-d33a245c69d3",
+  "at": "2026-09-21T01:14:04.811123+00:00",
+  "process_before": {
+    "company_commit": "84d47462b992261b0bb56add6f8134f196f4bf7e",
+    "identity": {
+      "boot": "0ddce41e-24ba-4870-a10f-aecbbb3a81b2",
+      "command": "5b379df6f62e4e9a83e5717d9bfb2db3eea95b7a3d454f5c5a40602f6c685dc2",
+      "pgid": 314975,
+      "pid": 314975,
+      "start": "64622831"
+    },
+    "launch_id": "b971f605b1e84beaa40a87aca4c45980",
+    "started_at": "2026-09-21T01:14:04.419474+00:00"
+  },
+  "child_alive_before": true,
+  "terminal_receipt_before": false,
+  "process_after": {
+    "company_commit": "84d47462b992261b0bb56add6f8134f196f4bf7e",
+    "identity": {
+      "boot": "0ddce41e-24ba-4870-a10f-aecbbb3a81b2",
+      "command": "5b379df6f62e4e9a83e5717d9bfb2db3eea95b7a3d454f5c5a40602f6c685dc2",
+      "pgid": 314975,
+      "pid": 314975,
+      "start": "64622831"
+    },
+    "launch_id": "b971f605b1e84beaa40a87aca4c45980",
+    "started_at": "2026-09-21T01:14:04.419474+00:00"
+  },
+  "child_alive_after": true,
+  "same_process_record": true
+}

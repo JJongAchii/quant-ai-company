@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "kind": "real_server_3070_with_synthetic_owner_control",
+  "production_activated": false,
+  "real_slack_ingress": false,
+  "real_model_used": false,
+  "physical_mac_shutdown_test": false,
+  "validator_company_commit": "84d47462b992261b0bb56add6f8134f196f4bf7e",
+  "jobs": [
+    {
+      "id": "13a0d3d9-7078-568d-9303-eda281bf2107",
+      "project_id": "130299c4-232b-5e06-9804-b0fea7c812f3",
+      "revision": 1,
+      "recipe_id": "kr-etf-p11-replay-v1",
+      "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+      "company_commit": "ea389bbac6d7cd09749f9d5d595f87819c0f1932",
+      "state": "completed",
+      "approval_event_id": "slack:TRESEARCHFIXTURE:CACCEPTANCE:2.0:director",
+      "approved_by": "UACCEPTANCE",
+      "approved_at": "2026-09-21 01:02:41.447257+00:00",
+      "created_at": "2026-09-21 01:02:41.353078+00:00",
+      "updated_at": "2026-09-21 01:12:08.240169+00:00",
+      "heartbeat_at": "2026-09-21 01:03:37.614783+00:00",
+      "artifact_sha256": "53313d225b7eed4a2e7e0a42755f483a2de90b6e2fba5557996997d1b1cabe4c",
+      "report": {
+        "uri": "s3://quant-company-061039802347-backups/company/research/acceptance-20260921/13a0d3d9-7078-568d-9303-eda281bf2107/23ac88222c0db345e3f552b51052f2d9424f1a416807f45080042603103d4290.html",
+        "source_id": "research:13a0d3d9-7078-568d-9303-eda281bf2107",
+        "expires_at": "2026-09-28T01:12:08.227827+00:00",
+        "archive_uri": "s3://quant-company-061039802347-backups/company/research/acceptance-20260921/13a0d3d9-7078-568d-9303-eda281bf2107/53313d225b7eed4a2e7e0a42755f483a2de90b6e2fba5557996997d1b1cabe4c.zip",
+        "html_sha256": "23ac88222c0db345e3f552b51052f2d9424f1a416807f45080042603103d4290",
+        "publication": "s3",
+        "director_task_id": "883ca82d-7b8f-5f2a-aae5-6613cc44e579",
+        "renderer_company_commit": "84d47462b992261b0bb56add6f8134f196f4bf7e"
+      },
+      "error": null
+    },
+    {
+      "id": "0e546b29-bc31-57c8-98ab-d33a245c69d3",
+      "project_id": "751616c4-0538-532f-a81f-323f4fc3cbcb",
+      "revision": 1,
+      "recipe_id": "kr-etf-p11-replay-v1",
+      "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0",
+      "company_commit": "84d47462b992261b0bb56add6f8134f196f4bf7e",
+      "state": "completed",
+      "approval_event_id": "slack:TRESEARCHFIXTURE:CACCEPTANCE:4.0:director",
+      "approved_by": "UACCEPTANCE",
+      "approved_at": "2026-09-21 01:14:03.376300+00:00",
+      "created_at": "2026-09-21 01:14:03.280980+00:00",
+      "updated_at": "2026-09-21 01:15:14.911086+00:00",
+      "heartbeat_at": "2026-09-21 01:15:01.342146+00:00",
+      "artifact_sha256": "dcb11fd730a2451980b0bafabb53c5ba74c1527151fbb09dc8f346b59ea684d3",
+      "report": {
+        "uri": "s3://quant-company-061039802347-backups/company/research/acceptance-20260921/0e546b29-bc31-57c8-98ab-d33a245c69d3/47d5b2ed5c0743f385f9bd5f861fc038e3250d9918157a91d6f6dcfd131270ef.html",
+        "source_id": "research:0e546b29-bc31-57c8-98ab-d33a245c69d3",
+        "expires_at": "2026-09-28T01:15:14.891932+00:00",
+        "archive_uri": "s3://quant-company-061039802347-backups/company/research/acceptance-20260921/0e546b29-bc31-57c8-98ab-d33a245c69d3/dcb11fd730a2451980b0bafabb53c5ba74c1527151fbb09dc8f346b59ea684d3.zip",
+        "html_sha256": "47d5b2ed5c0743f385f9bd5f861fc038e3250d9918157a91d6f6dcfd131270ef",
+        "publication": "s3",
+        "director_task_id": "ea9d85ba-a163-5c41-853d-02a2d4e28b0d",
+        "renderer_company_commit": "84d47462b992261b0bb56add6f8134f196f4bf7e"
+      },
+      "error": null
+    }
+  ],
+  "records": {
+    "research_jobs": 2,
+    "artifacts": 2,
+    "sources": 4,
+    "outbox": 7
+  },
+  "events": [
+    {
+      "kind": "research_requested",
+      "detail": {
+        "job_id": "13a0d3d9-7078-568d-9303-eda281bf2107",
+        "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0"
+      },
+      "created_at": "2026-09-21 01:02:41.353078+00:00"
+    },
+    {
+      "kind": "research_approved",
+      "detail": {
+        "job_id": "13a0d3d9-7078-568d-9303-eda281bf2107",
+        "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0"
+      },
+      "created_at": "2026-09-21 01:02:41.447257+00:00"
+    },
+    {
+      "kind": "research_claimed",
+      "detail": {
+        "job_id": "13a0d3d9-7078-568d-9303-eda281bf2107"
+      },
+      "created_at": "2026-09-21 01:02:41.704984+00:00"
+    },
+    {
+      "kind": "research_evidence_withheld",
+      "detail": {
+        "job_id": "13a0d3d9-7078-568d-9303-eda281bf2107",
+        "artifact_sha256": "53313d225b7eed4a2e7e0a42755f483a2de90b6e2fba5557996997d1b1cabe4c"
+      },
+      "created_at": "2026-09-21 01:04:01.652715+00:00"
+    },
+    {
+      "kind": "research_revalidation_requested",
+      "detail": {
+        "actor": "operator",
+        "job_id": "13a0d3d9-7078-568d-9303-eda281bf2107",
+        "reason": "validator_repaired",
+        "revision": 1,
+        "artifact_sha256": "53313d225b7eed4a2e7e0a42755f483a2de90b6e2fba5557996997d1b1cabe4c",
+        "validator_company_commit": "84d47462b992261b0bb56add6f8134f196f4bf7e"
+      },
+      "created_at": "2026-09-21 01:11:51.234880+00:00"
+    },
+    {
+      "kind": "research_report_ready",
+      "detail": {
+        "job_id": "13a0d3d9-7078-568d-9303-eda281bf2107",
+        "source_id": "research:13a0d3d9-7078-568d-9303-eda281bf2107",
+        "html_sha256": "23ac88222c0db345e3f552b51052f2d9424f1a416807f45080042603103d4290",
+        "artifact_sha256": "53313d225b7eed4a2e7e0a42755f483a2de90b6e2fba5557996997d1b1cabe4c",
+        "director_task_id": "883ca82d-7b8f-5f2a-aae5-6613cc44e579",
+        "scientific_trials_added": 0
+      },
+      "created_at": "2026-09-21 01:12:08.240169+00:00"
+    },
+    {
+      "kind": "research_requested",
+      "detail": {
+        "job_id": "0e546b29-bc31-57c8-98ab-d33a245c69d3",
+        "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0"
+      },
+      "created_at": "2026-09-21 01:14:03.280980+00:00"
+    },
+    {
+      "kind": "research_approved",
+      "detail": {
+        "job_id": "0e546b29-bc31-57c8-98ab-d33a245c69d3",
+        "manifest_digest": "f0fb9af6a98756438d95b36530a583b01dec771c469d7e72333f4fea8e4ec4b0"
+      },
+      "created_at": "2026-09-21 01:14:03.376300+00:00"
+    },
+    {
+      "kind": "research_claimed",
+      "detail": {
+        "job_id": "0e546b29-bc31-57c8-98ab-d33a245c69d3"
+      },
+      "created_at": "2026-09-21 01:14:05.052526+00:00"
+    },
+    {
+      "kind": "research_report_ready",
+      "detail": {
+        "job_id": "0e546b29-bc31-57c8-98ab-d33a245c69d3",
+        "source_id": "research:0e546b29-bc31-57c8-98ab-d33a245c69d3",
+        "html_sha256": "47d5b2ed5c0743f385f9bd5f861fc038e3250d9918157a91d6f6dcfd131270ef",
+        "artifact_sha256": "dcb11fd730a2451980b0bafabb53c5ba74c1527151fbb09dc8f346b59ea684d3",
+        "director_task_id": "ea9d85ba-a163-5c41-853d-02a2d4e28b0d",
+        "scientific_trials_added": 0
+      },
+      "created_at": "2026-09-21 01:15:14.911086+00:00"
+    }
+  ],
+  "s3_get_verification": [
+    {
+      "job_id": "13a0d3d9-7078-568d-9303-eda281bf2107",
+      "uri": "s3://quant-company-061039802347-backups/company/research/acceptance-20260921/13a0d3d9-7078-568d-9303-eda281bf2107/23ac88222c0db345e3f552b51052f2d9424f1a416807f45080042603103d4290.html",
+      "sha256": "23ac88222c0db345e3f552b51052f2d9424f1a416807f45080042603103d4290",
+      "bytes": 634378,
+      "server_side_encryption": "AES256",
+      "content_type": "text/html; charset=utf-8",
+      "last_modified": "2026-09-21T01:12:09+00:00",
+      "http_status": 200
+    },
+    {
+      "job_id": "13a0d3d9-7078-568d-9303-eda281bf2107",
+      "uri": "s3://quant-company-061039802347-backups/company/research/acceptance-20260921/13a0d3d9-7078-568d-9303-eda281bf2107/53313d225b7eed4a2e7e0a42755f483a2de90b6e2fba5557996997d1b1cabe4c.zip",
+      "sha256": "53313d225b7eed4a2e7e0a42755f483a2de90b6e2fba5557996997d1b1cabe4c",
+      "bytes": 545703,
+      "server_side_encryption": "AES256",
+      "content_type": "application/zip",
+      "last_modified": "2026-09-21T01:12:09+00:00",
+      "http_status": 200
+    },
+    {
+      "job_id": "0e546b29-bc31-57c8-98ab-d33a245c69d3",
+      "uri": "s3://quant-company-061039802347-backups/company/research/acceptance-20260921/0e546b29-bc31-57c8-98ab-d33a245c69d3/47d5b2ed5c0743f385f9bd5f861fc038e3250d9918157a91d6f6dcfd131270ef.html",
+      "sha256": "47d5b2ed5c0743f385f9bd5f861fc038e3250d9918157a91d6f6dcfd131270ef",
+      "bytes": 634378,
+      "server_side_encryption": "AES256",
+      "content_type": "text/html; charset=utf-8",
+      "last_modified": "2026-09-21T01:15:15+00:00",
+      "http_status": 200
+    },
+    {
+      "job_id": "0e546b29-bc31-57c8-98ab-d33a245c69d3",
+      "uri": "s3://quant-company-061039802347-backups/company/research/acceptance-20260921/0e546b29-bc31-57c8-98ab-d33a245c69d3/dcb11fd730a2451980b0bafabb53c5ba74c1527151fbb09dc8f346b59ea684d3.zip",
+      "sha256": "dcb11fd730a2451980b0bafabb53c5ba74c1527151fbb09dc8f346b59ea684d3",
+      "bytes": 545705,
+      "server_side_encryption": "AES256",
+      "content_type": "application/zip",
+      "last_modified": "2026-09-21T01:15:15+00:00",
+      "http_status": 200
+    }
+  ]
+}

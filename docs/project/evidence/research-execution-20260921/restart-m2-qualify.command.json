@@ -1,0 +1,1 @@
+{"argv": ["/home/achii/quant-company-research/pilot/quant-lab/.venv/bin/python", "-B", "labs/company-kr-etf-pilot/run.py", "qualify", "--config", "labs/company-kr-etf-pilot/configs/m2-liquid-11.json", "--output", "labs/company-kr-etf-pilot/output/q-m2-liquid-11", "--discovery-args", "docs/research/company-kr-etf-pilot/DISCOVERY-ARGS-v4-execution.json"], "exit_code": 0}

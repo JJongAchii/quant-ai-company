@@ -1,0 +1,6 @@
+{
+  "kind": "intentional_acceptance_server_restart",
+  "started_at": "2026-09-21T01:04:05.482724+00:00",
+  "production_containers_restarted": false,
+  "ended_at": "2026-09-21T01:04:06.461777+00:00"
+}
