@@ -145,7 +145,7 @@ def test_screen_unknown_result_owns_articles(efficient):
 
 async def test_morning_digest_one_receipt_questions_and_followup(efficient):
     store, _ = efficient
-    article = overnight(store)
+    overnight(store)
     digest = NewsDigestStore(store.company)
     assert digest.flush()["state"] == "awaiting_review"
     select(store)
@@ -179,13 +179,16 @@ async def test_morning_digest_one_receipt_questions_and_followup(efficient):
     # Clear the synthetic user task so the background editor may run.
     with store.db.transaction() as conn:
         conn.execute("UPDATE turns SET status='completed'")
-        conn.execute("UPDATE news_articles SET state='selected' WHERE id=%s", (article["id"],))
+    update = overnight(store, suffix="followup-original")
+    select(store)
     follow = store.prepare_review()["request"]
     store.commit_review(reply(follow, event_id=str(event["id"]), facts="중앙은행이 새 정책 경로를 밝혔습니다.", change="새로운 정책 경로"))
     digest.flush()
     due(store)
     assert await sender.send_one()
     assert posts[-1]["thread_ts"] == "1000.000001"
+    with store.db.transaction() as conn:
+        assert conn.execute("SELECT 1 FROM sources WHERE project_id=%s AND uri=%s", (project["id"], update["url"])).fetchone()
 
 
 async def test_midnight_between_claim_and_http_preserves_message(efficient, monkeypatch):

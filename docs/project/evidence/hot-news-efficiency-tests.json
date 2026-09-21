@@ -4,8 +4,8 @@
     "log_sha256": "73f519069fd1c6257e67b44d0ffd4a81c86eafd0f8df71668d4e75f629df86cf"
   },
   "boundary_suite": {
-    "summary": "67 passed in 7.99s",
-    "log_sha256": "ee7f10aef14bd36f6f180cec355123f97272a963a358acbb6af369e02d44f554"
+    "summary": "67 passed in 8.24s",
+    "log_sha256": "87093bee0b5db7ee8153cbfd0af817abeebcade3701effaac6be303532820b90"
   },
   "legacy_history_replay": {
     "legacy_production_history_replays": true,
@@ -14,7 +14,7 @@
     "no_external_effects": true,
     "history_sha256": "22e62ab975a67973c0dd3b3b8b93e55f68468089f1fdc1fd739dce53ed4c09e6"
   },
-  "checked_at": "2026-09-21T06:45:29.132709+00:00",
+  "checked_at": "2026-09-21T06:52:34.939919+00:00",
   "postgres": "real disposable PostgreSQL 14",
   "temporal": "real test server plus replay of pre-change production history",
   "slack": "httpx simulated only",

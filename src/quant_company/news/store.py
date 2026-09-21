@@ -328,15 +328,19 @@ class NewsStore:
 
     def _publish(self, conn, review, item, index, articles, policy, at):
         event_id = item.event_id or stable(f"news-event:{review['id']}:{index}")
+        digest_context = None
         if item.event_id:
             event = conn.execute("SELECT * FROM news_events WHERE id=%s FOR UPDATE", (event_id,)).fetchone()
             project = self.company._project(conn, str(event["project_id"]))
-            root = conn.execute("""SELECT o.status,COALESCE(root.sent_ts,o.sent_ts) AS sent_ts FROM outbox o
+            root = conn.execute("""SELECT o.status,COALESCE(root.sent_ts,o.sent_ts) AS sent_ts,
+                d.project_id AS digest_project_id,d.root_id AS digest_root_id FROM outbox o
                 LEFT JOIN news_publications p ON p.id=o.id LEFT JOIN news_digests d ON d.id=p.digest_id
                 LEFT JOIN outbox root ON root.id=d.root_id WHERE o.id=%s""", (event["root_message_id"],)).fetchone()
             if not root or root["status"] != "delivered" or not root["sent_ts"] or project["status"] != "active":
                 return "held"
             project["thread_ts"] = root["sent_ts"]
+            if root["digest_project_id"]:
+                digest_context = (f"news-digest:{root['digest_root_id']}", root["digest_project_id"])
         else:
             project = conn.execute("""INSERT INTO projects(id,title,instruction,owner_user,channel)
                 VALUES(%s,%s,%s,%s,%s) RETURNING *""",
@@ -360,12 +364,13 @@ class NewsStore:
         conn.execute("UPDATE news_events SET root_message_id=COALESCE(root_message_id,%s),headline=%s,last_facts=%s,updated_at=%s WHERE id=%s",
                      (message_id, item.headline, item.facts, at, event_id))
         # Follow-up user questions can read the exact originals associated with this event.
+        contexts = [(f"news:{event_id}", project["id"])] + ([digest_context] if digest_context else [])
         for identity in item.article_ids:
             article = articles[identity]
-            conn.execute("""INSERT INTO sources(id,title,uri,content,available_at,approved,project_id,synthetic)
-                VALUES(%s,%s,%s,%s,%s,true,%s,false) ON CONFLICT DO NOTHING""",
-                         (f"news:{event_id}:{identity[:16]}", article["title"], article["url"], article["content"],
-                          at, project["id"]))
+            for prefix, target in contexts:
+                conn.execute("""INSERT INTO sources(id,title,uri,content,available_at,approved,project_id,synthetic)
+                    VALUES(%s,%s,%s,%s,%s,true,%s,false) ON CONFLICT DO NOTHING""",
+                             (f"{prefix}:{identity[:16]}", article["title"], article["url"], article["content"], at, target))
         return "queued"
 
     def delivery_allowed(self, conn, row):

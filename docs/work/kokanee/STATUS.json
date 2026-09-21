@@ -9,16 +9,16 @@
       "evidence": [
         {
           "path": "docs/project/HOT-NEWS-EFFICIENCY.md",
-          "sha256": "ef365d6b3bd4"
+          "sha256": "93d2b0214668"
         },
         {
           "path": "docs/project/evidence/hot-news-token-usage-20260921.json",
           "sha256": "d0f831ca525d"
         }
       ],
-      "note": "KST 발송/아침 처리·토큰 절약·실측 비교 설계 기록",
+      "note": "실측 한계와 작은 표본의 선정 차이를 포함한 최종 설계",
       "status": "verified",
-      "updatedAt": "2026-09-21T06:33:44.071227+00:00"
+      "updatedAt": "2026-09-21T06:52:35.270399+00:00"
     },
     "LIVE": {
       "evidence": [],
@@ -26,9 +26,27 @@
       "status": "pending"
     },
     "OPTIMIZATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/hot-news-efficiency-codex-preview.json",
+          "sha256": "29093ac18073"
+        },
+        {
+          "path": "docs/project/evidence/hot-news-efficiency-preview-repair.json",
+          "sha256": "a8e416d874e0"
+        },
+        {
+          "path": "src/quant_company/news/screening.py",
+          "sha256": "7a4c89341040"
+        },
+        {
+          "path": "src/quant_company/news/store.py",
+          "sha256": "59b4a27b0188"
+        }
+      ],
+      "note": "실제 동일 기사 24건, 구독 Luna 선별·검색 및 Astra 검토 통과. 33.7% 표본 감소는 이력 문맥이 다른 미리보기 수치이며 운영 평균 아님.",
+      "status": "verified",
+      "updatedAt": "2026-09-21T06:52:35.426653+00:00"
     },
     "SCHEDULE": {
       "evidence": [
@@ -46,21 +64,21 @@
         },
         {
           "path": "tests/test_news_efficiency.py",
-          "sha256": "22cbce8e8977"
+          "sha256": "e40228f12f79"
         },
         {
           "path": "docs/project/evidence/hot-news-efficiency-tests.json",
-          "sha256": "9604ca27cc34"
+          "sha256": "79de50a336a2"
         }
       ],
-      "note": "실제 PostgreSQL/Temporal, 모의 Slack 경계·재시작·불명·429·모음·질문·후속 검사 및 기존 운영 history 재생 통과. 자연 자정/06시 미관찰.",
+      "note": "최종 후속 원문 공유까지 실제 PostgreSQL 회귀 통과; 자연 밤/06시 미관찰",
       "status": "verified",
-      "updatedAt": "2026-09-21T06:45:29.437804+00:00"
+      "updatedAt": "2026-09-21T06:52:35.579577+00:00"
     }
   },
   "intentDigest": "71d4cd4616bb",
   "schemaVersion": 1,
   "slug": "kokanee",
   "state": "approved",
-  "updatedAt": "2026-09-21T06:45:29.437804+00:00"
+  "updatedAt": "2026-09-21T06:52:35.579577+00:00"
 }
