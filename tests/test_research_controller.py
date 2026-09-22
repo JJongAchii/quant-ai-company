@@ -127,7 +127,7 @@ def test_private_stage_cannot_publish_prose_tools_or_fake_audit(mission):
         assert not conn.execute("SELECT 1 FROM outbox WHERE text LIKE '%987.123%'").fetchone()
 
 
-def test_scoped_reads_are_internal_and_reject_repeated_or_changed_files(mission):
+def test_scoped_reads_are_internal_and_duplicate_reads_preserve_progress(mission):
     company = mission.company
     controller = MissionController(company, backend=FixtureBackend(company))
     controller.tick()
@@ -140,8 +140,16 @@ def test_scoped_reads_are_internal_and_reject_repeated_or_changed_files(mission)
     prompt = company.prepare_turn(next_id)["request"]["prompt"]
     assert "Fixture evidence, never market performance." in prompt
     assert "_private_files" not in prompt
-    with pytest.raises(PolicyError, match="already read"):
-        company.commit_turn(next_id, response.model_copy(update={"request_id": next_id}))
+    duplicate = company.commit_turn(next_id, response.model_copy(update={"request_id": next_id}))
+    assert duplicate["state"] == "completed" and duplicate["duplicate_read"]
+    with company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages").fetchone()
+        assert stage["attempt"] == 1 and stage["state"] == "running"
+        assert stage["error"] == "evidence_chunk_already_read:fixture.txt@0;choose_an_unread_chunk"
+        assert conn.execute("SELECT count(*) AS count FROM research_stage_reads").fetchone()["count"] == 1
+    _, third_id = active(mission)
+    third_prompt = company.prepare_turn(third_id)["request"]["prompt"]
+    assert "evidence_chunk_already_read:fixture.txt@0;choose_an_unread_chunk" in third_prompt
     state = company.project_state(mission.project["project_id"])
     assert "Fixture evidence, never market performance." not in json.dumps(state)
 
@@ -222,7 +230,7 @@ def test_audit_prompt_retains_early_compact_scope_evidence(mission):
                          (uuid4(), stage["id"], f"large-audit-{index}.csv", "x"*12000, "e"*64))
         task = conn.execute("SELECT * FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
         _, prompt = stage_prompt(company, conn, task)
-    assert len(prompt) < 130000
+    assert len(prompt) < 90000
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
     assert receipt in {chunk["content"] for chunk in context["read_chunks"]}
 
@@ -245,7 +253,7 @@ def test_retry_reads_are_bound_to_new_validator_attempt(mission):
     assert second["attempt"] == 2
     prompt = company.prepare_turn(turn_id)["request"]["prompt"]
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
-    assert context["inspected_chunks"] == []
+    assert context["inspected_chunks"] == [] and context["last_error"] is None
     company.commit_turn(turn_id, response.model_copy(update={"request_id": turn_id}))
     with company.db.transaction() as conn:
         assert {row["attempt"] for row in conn.execute("SELECT attempt FROM research_stage_reads")} == {1, 2}
