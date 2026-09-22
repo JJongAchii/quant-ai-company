@@ -393,8 +393,8 @@ def test_socket_credentials_example_covers_active_role_contract():
     credentials = json.loads((DEPLOY / "slack-credentials.example.json").read_text())
     roles = json.loads((DEPLOY.parent / "src/quant_company/roles.json").read_text())
     interactive = {role["id"] for role in roles if role["active"]}
-    assert set(credentials) == interactive | {"tech_scout"}
-    for role in interactive:
+    assert set(credentials) == interactive | {"tech_scout", "maintainer"}
+    for role in interactive | {"maintainer"}:
         credential = credentials[role]
         assert set(credential) == {"app_id", "bot_user_id", "bot_token", "app_token", "signing_secret"}
         assert credential["app_token"] and credential["bot_token"]
@@ -402,3 +402,24 @@ def test_socket_credentials_example_covers_active_role_contract():
         assert credential["signing_secret"] == ""  # HTTP secret is not a Socket prerequisite.
     assert set(credentials["tech_scout"]) == {"app_id", "bot_user_id", "bot_token"}
     assert not next(role for role in roles if role["id"] == "tech_scout")["active"]
+
+
+def test_improvements_activation_reaches_all_company_processes_without_model_credentials(tmp_path):
+    from quant_company.company import load_roles
+    from quant_company.config import Settings
+
+    env = tmp_path / "improvements.env"
+    env.write_text('COMPANY_IMPROVEMENTS_ENABLED=true\nIMPROVEMENTS_CHANNEL_ID=CIMPROVE\n'
+                   'SLACK_ALLOWED_CHANNELS=["CIMPROVE"]\nSLACK_ALLOWED_USERS=["UHUMAN"]\n')
+    services = compose_config("maintenance", extra_env=env)["services"]
+    for name in ("api", "worker", "news-worker", "dispatch", "slack-socket", "maintenance"):
+        values = services[name]["environment"]
+        settings = Settings(**{key.lower(): json.loads(value) if key in
+                              {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS"} else value
+                              for key, value in values.items()})
+        assert settings.company_improvements_enabled and settings.improvements_channel_id == "CIMPROVE"
+        # Resolve the packaged roster here, not a production bind mount on the test host.
+        settings.roles_file = DEPLOY.parent / "src/quant_company/roles.json"
+        assert load_roles(settings)["maintainer"].active
+    assert "SLACK_CREDENTIALS_FILE" not in services["codex-runtime"]["environment"]
+    assert not any("slack" in str(item) for item in services["codex-runtime"].get("secrets", []))

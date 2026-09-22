@@ -71,7 +71,15 @@ class SlackIngress:
         known = {item["bot_user_id"]: name for name, item in self.credentials.items()}
         targets = {known[mention] for mention in mentions if mention in known}
         thread_ts = event.get("thread_ts") or timestamp
-        if is_dm:
+        improvements = (self.settings.company_improvements_enabled
+                        and channel == self.settings.improvements_channel_id)
+        if role == "maintainer" and not improvements:
+            return {"ok": True, "ignored": True}
+        if improvements:
+            if role != "maintainer":
+                return {"ok": True, "ignored": True}
+            target = "maintainer"
+        elif is_dm:
             target = role
         elif targets:
             if role not in targets:
@@ -96,6 +104,14 @@ class SlackIngress:
                             "app_id": payload["api_app_id"], "owner": user, "channel": channel,
                             "thread_ts": thread_ts, "event_ts": timestamp,
                             "provider_event_id": payload.get("event_id"), "original_text": original_text}
+        if target == "maintainer":
+            from .maintenance.applications import accept_approval
+
+            approval = accept_approval(
+                self.company, text=text, owner=user, channel=channel, thread_ts=thread_ts,
+                event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", event_ts=timestamp)
+            if approval is not None:
+                return {"ok": True, **approval}
         if target == "director":
             from .maintenance.applications import accept_approval
             from .owner_controls import parse_daily_limit_command
@@ -116,7 +132,7 @@ class SlackIngress:
                     event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", event_ts=timestamp)
                 if approval is not None:
                     return {"ok": True, **approval}
-        revise = text.startswith(("수정:", "변경:", "revise:"))
+        revise = target != "maintainer" and text.startswith(("수정:", "변경:", "revise:"))
         if revise:
             text = text.split(":", 1)[1].strip()
             target = "director"
@@ -125,7 +141,8 @@ class SlackIngress:
         result = self.company.ingest(
             event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}",
             text=text, owner=user, agent=target, channel=channel, thread_ts=thread_ts, revise=revise,
-            status_only=text.strip().lower() in {"상태", "진행 상황", "status"},
+            status_only=text.strip().lower() in ({"상태", "진행 상황", "status", "목록", "list"}
+                                               if target == "maintainer" else {"상태", "진행 상황", "status"}),
             interpret=target == 'director' and not revise,
             control_action=immediate(text) if target == 'director' and not revise else None,
             approval_context=approval_context if target == "director" else None,
@@ -215,6 +232,13 @@ class SlackOutbox:
             current = conn.execute("SELECT status FROM outbox WHERE id=%s FOR UPDATE", (row["id"],)).fetchone()
             if not current or current["status"] != "sending":
                 return False
+            if row["agent"] == "maintainer":
+                from .maintenance.cases import gate
+
+                if not gate(conn, self.company, row):
+                    conn.execute("UPDATE outbox SET status='stale',error='maintenance_scope_changed' WHERE id=%s",
+                                 (row["id"],))
+                    return False
             if row["message_kind"] == "tech_feed":
                 from .tech_feed.store import TechFeedStore
 
@@ -283,6 +307,9 @@ class SlackOutbox:
             if status == "delivered" and sent_ts and row.get("message_kind") in {"news", "news_digest"} and not row["thread_ts"]:
                 conn.execute("UPDATE projects SET thread_ts=%s WHERE id=%s AND thread_ts IS NULL",
                              (sent_ts, row["project_id"]))
+            if status == "delivered" and sent_ts and row["agent"] == "maintainer" and not row["thread_ts"]:
+                conn.execute("UPDATE projects SET thread_ts=%s WHERE id=%s AND thread_ts IS NULL",
+                             (sent_ts, row["project_id"]))
 
     async def send_one(self):
         import asyncio
@@ -294,7 +321,7 @@ class SlackOutbox:
         token = self.credentials[row["agent"]]["bot_token"]
         # The stable client_msg_id helps correlation; it is not an exactly-once guarantee.
         body = {"channel": row["channel"], "thread_ts": row["thread_ts"],
-                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT}
+                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, "maintainer"}
                 else f"[지시 v{row['revision']}] {row['text']}",
                 "client_msg_id": row["id"],
                 "unfurl_links": False, "unfurl_media": False,
@@ -308,11 +335,16 @@ class SlackOutbox:
             del body["thread_ts"]
         elif row.get("news_broadcast"):
             body["reply_broadcast"] = True
+        method = "chat.postMessage"
+        if row.get("update_ts"):
+            method = "chat.update"
+            body = {key: body[key] for key in ("channel", "text")}
+            body["ts"] = row["update_ts"]
         try:
             async with httpx.AsyncClient(timeout=12, transport=self.transport) as client:
                 if not await asyncio.to_thread(self.before_send, row):
                     return False
-                response = await client.post("https://slack.com/api/chat.postMessage", json=body,
+                response = await client.post("https://slack.com/api/" + method, json=body,
                                              headers={"Authorization": "Bearer " + token})
             if response.status_code == 429:
                 try:
@@ -325,7 +357,10 @@ class SlackOutbox:
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_server_error")
                 return True
             result = response.json()
-            if result.get("ok") and (row.get("message_kind") not in {"news", "news_digest", "tech_feed"} or result.get("ts")):
+            requires_receipt = row.get("message_kind") in {"news", "news_digest", "tech_feed"} or row["agent"] == "maintainer"
+            if row.get("update_ts") and result.get("ts") != row["update_ts"] and result.get("ok"):
+                await asyncio.to_thread(self.settle, row, "uncertain", error="slack_update_receipt_mismatch")
+            elif result.get("ok") and (not requires_receipt or result.get("ts")):
                 await asyncio.to_thread(self.settle, row, "delivered", sent_ts=result.get("ts"))
             elif result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="missing_slack_message_receipt")

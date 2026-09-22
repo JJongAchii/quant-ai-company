@@ -34,3 +34,15 @@ CREATE TABLE IF NOT EXISTS maintenance_applications (
  state text NOT NULL DEFAULT 'approved', receipt jsonb NOT NULL DEFAULT '{}', error text,
  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- One immutable diagnosis has one case, even when triage links to repairs/rechecks.
+-- Existing jobs are deliberately not backfilled into a new Slack destination.
+CREATE TABLE IF NOT EXISTS maintenance_cases (
+ id uuid PRIMARY KEY, request_id uuid NOT NULL UNIQUE REFERENCES maintenance_jobs(id),
+ source_project_id uuid NOT NULL REFERENCES projects(id), source_revision integer NOT NULL,
+ project_id uuid NOT NULL UNIQUE REFERENCES projects(id), owner_user text NOT NULL,
+ root_message_id uuid NOT NULL UNIQUE REFERENCES messages(id), last_snapshot text,
+ announced_candidate jsonb NOT NULL DEFAULT '{}',
+ created_at timestamptz NOT NULL DEFAULT now(), checked_at timestamptz NOT NULL DEFAULT '1970-01-01 UTC'
+);
+ALTER TABLE outbox ADD COLUMN IF NOT EXISTS update_ts text;

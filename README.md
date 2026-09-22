@@ -221,3 +221,8 @@ PR 알림 스레드에서 소유자가 `반영해`라고 승인하면 해당 커
 
 아침 정기 시황 브리핑과 요청형 시장 분석 BOT은 [후속 로드맵](docs/project/NEXT-STEPS.md)에
 등록했습니다. 두 기능의 구현·활성화는 추후 진행합니다.
+# 채널 구조와 전용 개선 담당
+
+[회사 Slack 최종 구조](docs/project/SLACK-COMPANY-DESIGN.md)와
+[Maintainer 사용·설치 절차](docs/improvements.md)를 따른다. 전용 개선 채널은 기본 비활성이며,
+실제 운영 적용 여부는 [인수 기록](docs/project/IMPROVEMENTS-VALIDATION.md)에 따로 표시한다.

@@ -16,6 +16,7 @@ PROTECTED = {
     "owner_controls.py", "state_schema.sql", "web_fetch.py", "finance_sources.py",
     "maintenance/policy.py", "maintenance/github.py", "maintenance/applications.py",
     "maintenance/releases.py", "maintenance/schema.sql",
+    "maintenance/cases.py", "maintenance/identity.py", "maintenance/reporting.py",
     "staff/cases.py", "staff/store.py", "staff/runner.py", "staff/workflow.py", "staff/schema.sql", "staff/packs.py",
     "staff/progress.py", "staff/comparisons.py", "maintenance/evaluation.py",
     "staff/independent_review.py", "staff/review_contract.py",
