@@ -19,6 +19,21 @@ from .feeds import aliases
 LOCK = 71350249
 
 
+def _sanitize_original_text(receipt):
+    """Make extracted page text JSONB-safe while retaining the original byte receipt."""
+    if not receipt.get("ok"):
+        return receipt
+    pages, replacements = [], 0
+    for page in receipt["pages"]:
+        text = page["text"]
+        replacements += text.count("\x00")
+        pages.append({**page, "text": text.replace("\x00", "\ufffd")})
+    if not replacements:
+        return receipt
+    return {**receipt, "pages": pages,
+            "text_sanitization": {"nul_replacements": replacements, "replacement": "U+FFFD"}}
+
+
 class QuantFeedStore:
     def __init__(self, company):
         self.company, self.db = company, company.db
@@ -116,6 +131,7 @@ class QuantFeedStore:
         source = self.sources().get(claimed["source_id"])
         if not self.authorized() or not source or not source.enabled or fingerprint(source.model_dump()) != claimed["source_digest"]:
             return {"state": "stale"}
+        receipt = _sanitize_original_text(receipt)
         with self.db.transaction() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK,))
             candidate = conn.execute("SELECT * FROM quant_feed_candidates WHERE id=%s FOR UPDATE", (claimed["id"],)).fetchone()

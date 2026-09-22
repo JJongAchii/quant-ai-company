@@ -154,6 +154,18 @@ def test_bundle_distinguishes_original_truncation_from_bounded_context(quant):
     assert bundle["truncated"] is False
 
 
+def test_nul_in_extracted_text_is_replaced_and_receipted(quant):
+    assert original(quant, text=TEXT + "\x00equation")["state"] == "ready"
+    with quant.db.transaction() as conn:
+        document = conn.execute("SELECT pages,receipt FROM quant_feed_documents").fetchone()
+    assert "\x00" not in document["pages"][0]["text"]
+    assert "\ufffdequation" in document["pages"][0]["text"]
+    assert document["receipt"]["original_sha256"] == fingerprint(TEXT + "\x00equation")
+    assert document["receipt"]["text_sanitization"] == {
+        "nul_replacements": 1, "replacement": "U+FFFD",
+    }
+
+
 def test_new_work_does_not_require_prior_change_comparison_but_updates_do():
     ready = {"request": {"request_id": "quant-feed-critique"}}
     value = response(ready, critique(material_change_verified=False))
