@@ -123,7 +123,8 @@ def stage(args, previous, target, journal, module):
         raise ValueError("archive_digest_mismatch")
     record = {"phase": "staging", "commit": args.commit, "previous": str(previous),
               "archive_sha256": args.archive_sha256, "started_at": time.time(), "images": [],
-              "running_before": active_services(), "build_method": "full committed Dockerfile with frozen lock",
+              "running_before": active_services(),
+              "build_method": "full images from committed Dockerfile, lock, package and deployment inputs",
               "worker_before": worker_state(), "builder_memory_mib": 512, "builder_cpus": 1}
     module.atomic(journal, json.dumps(record).encode())
     target.mkdir()
@@ -320,7 +321,19 @@ def main():
         target = CURRENT.parent / "releases" / args.commit
         journal = STATE / "releases" / ("quant-feed-" + args.commit + ".json")
         function = stage if args.action == "stage" else cutover
-        function(args, previous, target, journal, helper(previous))
+        module = helper(previous)
+        try:
+            function(args, previous, target, journal, module)
+        except Exception as exc:
+            # Pre-build validation failures happen before stage() enters its builder cleanup block.
+            # Preserve an explicit terminal receipt instead of leaving an ambiguous staging record.
+            if args.action == "stage" and journal.exists():
+                record = json.loads(journal.read_text())
+                if record.get("phase") == "staging":
+                    record.update(phase="stage_failed", error=type(exc).__name__,
+                                  error_code=str(exc) if isinstance(exc, ValueError) else "stage_command_failed")
+                    module.atomic(journal, json.dumps(record).encode())
+            raise
 
 
 if __name__ == "__main__":

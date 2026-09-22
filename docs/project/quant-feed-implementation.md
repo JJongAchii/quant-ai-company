@@ -60,6 +60,13 @@ cutover or rollback. The production capacity observation showed 701 MiB host mem
 108.4 MiB used by the research worker and 35.18 MiB by the 512 MiB Codex runtime, with no OOM or
 restart. This admits a bounded preview, not yet three-lane publication.
 
+The first post-confirmation staging call rejected the whole-repository source archive at the
+existing 32 MiB expanded-input gate, before creating a builder or changing a service. Release
+archives now contain only Git-committed build inputs (`pyproject.toml`, `uv.lock`, `README.md`,
+`src/`, and `deploy/`); all resulting service images are still built afresh from the committed
+Dockerfile and verified against the committed package inventory. The failed attempt remains in
+the release journal and is not represented as a build.
+
 Additional post-merge targeted tests: 152 passed, one macOS PDF skip. Release state-preservation,
 rollback and real Temporal/deployment tests pass (33 tests after the running-worker refinement).
 The latest full local regression passed 1,071 with 36 skipped and one live test deselected; PR CI
