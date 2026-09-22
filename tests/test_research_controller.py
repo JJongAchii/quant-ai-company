@@ -140,6 +140,9 @@ def test_scoped_reads_are_internal_and_duplicate_reads_preserve_progress(mission
     prompt = company.prepare_turn(next_id)["request"]["prompt"]
     assert "Fixture evidence, never market performance." in prompt
     assert "_private_files" not in prompt
+    context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
+    assert context["continuation_offsets"] == {}
+    assert context["completed_read_paths"] == ["fixture.txt"]
     duplicate = company.commit_turn(next_id, response.model_copy(update={"request_id": next_id}))
     assert duplicate["state"] == "completed" and duplicate["duplicate_read"]
     with company.db.transaction() as conn:
@@ -180,12 +183,16 @@ def test_evidence_prompt_preserves_manifest_with_bounded_chunks(mission):
         for index in range(10):
             conn.execute("""INSERT INTO research_stage_reads(id,stage_id,path,character_offset,content,sha256)
                 VALUES (%s,%s,'fixture.txt',%s,%s,%s)""", (uuid4(), stage["id"], index*12000, "x"*12000, "a"*64))
+        conn.execute("""UPDATE research_stage_reads SET next_offset=character_offset+12000
+            WHERE stage_id=%s AND path='fixture.txt'""", (stage["id"],))
         task = conn.execute("SELECT * FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
         _, prompt = stage_prompt(company, conn, task)
     assert "request exactly one file chunk" in prompt and "Never batch file reads" in prompt
     assert len(prompt) < 90000
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
     assert len(context["inspected_chunks"]) == 10 and 1 <= len(context["read_chunks"]) <= 5
+    assert context["continuation_offsets"] == {"fixture.txt": 120000}
+    assert context["completed_read_paths"] == []
 
 
 def test_evidence_prompt_retains_early_compact_frozen_menu(mission):
