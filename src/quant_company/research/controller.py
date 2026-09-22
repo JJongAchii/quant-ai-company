@@ -304,8 +304,8 @@ def stage_prompt(company, conn, task):
                              (row["id"], attempts)).fetchall()
     reads = _compatible_stage_reads(row, raw_reads)
     # Reads remain in the DB. Retain the recent window plus concise chunks from the frozen code
-    # and directly relevant evidence. Otherwise a role can inspect the registered menu, read five
-    # more files, and receive only the path (not the bytes) when it must make its decision.
+    # and directly relevant evidence. Audit code and causal supplements are resident: a validator
+    # may not finish after reading them if their bytes have since fallen out of its final context.
     values = [{"path": item["path"], "offset": item["character_offset"], "content": item["content"],
                "next_offset": item["next_offset"]} for item in reads]
     latest_chunks = {}
@@ -327,14 +327,21 @@ def stage_prompt(company, conn, task):
     for paths in context.get("relevant_evidence", {}).values():
         important_paths.update(paths)
     audit = context.get("audit", {})
+    resident_paths = set()
     if row["stage"] == "audit":
         important_paths.add("audit/package.json")
         important_paths.update("audit/" + path for path in audit.get("scope", []))
+        resident_paths.update(audit.get("resident_evidence_paths", []))
     retained = []
     priorities = []
+    resident_chunks = set()
     for index, value in enumerate(values):
         priority = 2 if index >= len(values) - 5 else 0
-        if value["path"] in important_paths and len(value["content"]) <= 8000:
+        key = (value["path"], value["offset"])
+        if value["path"] in resident_paths:
+            priority = 5
+            resident_chunks.add(key)
+        elif value["path"] in important_paths and len(value["content"]) <= 8000:
             priority = max(priority, 3)
         if index == len(values) - 1:
             priority = 4
@@ -365,13 +372,21 @@ def stage_prompt(company, conn, task):
     # ProviderRequest has a 90,000-character contract. Bound the complete prompt,
     # including employee instructions, instead of bounding only the JSON payload.
     while len(prefix) + len(payload) > 88000 and len(context["read_chunks"]) > 1:
-        victim = min(range(len(context["read_chunks"])),
+        evictable = [index for index, priority in enumerate(priorities) if priority < 5]
+        if not evictable:
+            break
+        victim = min(evictable,
                      key=lambda index: (priorities[index], -len(context["read_chunks"][index]["content"]), index))
         context["read_chunks"].pop(victim)
         priorities.pop(victim)
         payload = json.dumps(context, ensure_ascii=False, allow_nan=False)
+    retained_chunks = {(value["path"], value["offset"]) for value in context["read_chunks"]}
+    if not resident_chunks <= retained_chunks:
+        raise PolicyError("Audit resident evidence was evicted")
     if len(prefix) + len(payload) > 90000:
-        raise PolicyError("Mission stage context needs bounded evidence selection")
+        reason = ("Audit resident evidence exceeds model context" if resident_chunks
+                  else "Mission stage context needs bounded evidence selection")
+        raise PolicyError(reason)
     return role, prefix + payload
 
 

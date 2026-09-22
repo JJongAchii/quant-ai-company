@@ -93,6 +93,23 @@ retries remain attempt-local. Audit output starts with the qlab frontmatter cont
 completed prose judgment cannot fail later merely because its machine-readable header was
 omitted.
 
+The immutable package may also contain operator-produced causal supplements when their
+source contract, verifier source and execution receipt are all included in qlab scope.
+The service checks the receipt against every trial's exact input hashes and protected-code
+hashes before packaging it; a receipt from a different data or engine version is rejected.
+For the first KRX ETF snapshot, the supplement states the missing historical collection/
+revision vintages rather than inferring them. A committed checker on the 3070 verifies
+point-in-time keys, next-session fills and invariance of all registered features and
+simulations to deterministic positive per-ticker adjusted-price rescaling, while recording
+no performance values. This addresses latest-anchor rescaling only and does not prove that
+KRX never corrected a historical official return or classification.
+
+Core engine, adapter, signal and causal-supplement chunks remain resident in the validator's
+final prompt after they are read. Other large result chunks remain hash-addressed and may be
+evicted after their read receipt is stored. If the resident evidence cannot fit the bounded
+provider context, the stage fails closed instead of asking the validator to judge code bytes
+that are no longer present.
+
 ## Acceptance and rollout
 
 Use real disposable PostgreSQL/Temporal for approval races, restart, duplicate/lost

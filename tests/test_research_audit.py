@@ -116,6 +116,29 @@ def test_qualification_actual_git_files_qlab_to_verified_publication(tmp_path, q
     assert verify_audit_package(package.root, audit, expected=binding, qlab_profile=qlab_profile).public_receipt() == verified.public_receipt()
 
 
+def test_operator_supplements_are_immutable_hash_bound_scope(tmp_path, qlab_profile):
+    trial = validate(producer(tmp_path))
+    binding = binding_for(trial)
+    package = prepare_audit_package(
+        tmp_path / "package", (trial,), mission_spec=trial.manifest.spec, binding=binding,
+        qlab_profile=qlab_profile, history=history_for(trial),
+        supplements={"source/contract.json": b'{"causal":true}\n'},
+    )
+    name = "scope/supplements/source/contract.json"
+    assert package.supplement_files == (name,)
+    assert package.scope_files[name] == sha(b'{"causal":true}\n')
+    assert (package.root / name).stat().st_mode & 0o222 == 0
+    metadata = json.loads((package.root / "package.json").read_text())
+    assert metadata["schema_version"] == 2 and metadata["supplement_files"] == [name]
+    target = package.root / name
+    target.chmod(0o644)
+    target.write_text('{"causal":false}\n')
+    target.chmod(0o444)
+    with pytest.raises(ValidationError, match="audit_scope_content_changed"):
+        verify_audit_package(package.root, package.root / "missing.md", expected=binding,
+                             qlab_profile=qlab_profile)
+
+
 def test_independence_requires_distinct_requests_and_registered_role(tmp_path):
     trial = validate(producer(tmp_path))
     payload = binding_for(trial).model_dump()
