@@ -165,10 +165,7 @@ class NewsStore:
         policy = self.policy()
         with self.db.transaction() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(71350227)")
-            busy = conn.execute("""SELECT 1 FROM turns t JOIN tasks k ON k.id=t.task_id JOIN projects p ON p.id=k.project_id
-                WHERE t.status IN ('queued','running','waiting') AND t.due_at<=now() AND k.revision=p.revision
-                AND p.status='active' LIMIT 1""").fetchone()
-            if busy or conn.execute("SELECT 1 FROM runtime_control WHERE paused_until>now()").fetchone():
+            if conn.execute("SELECT 1 FROM runtime_control WHERE paused_until>now()").fetchone():
                 return {"state": "defer"}
             active = conn.execute("SELECT * FROM news_reviews WHERE state='running' ORDER BY created_at LIMIT 1 FOR UPDATE").fetchone()
             if active and active["policy_digest"] != policy:

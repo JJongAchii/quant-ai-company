@@ -1,59 +1,51 @@
 {
   "approval": {
-    "approvedAt": "2026-09-21T22:58:59.815010+00:00",
-    "id": "chat-20260922-tech-scout-bot"
+    "approvedAt": "2026-09-22T02:20:00.811643+00:00",
+    "id": "chat-20260922-dedicated-news-lane"
   },
-  "currentIntent": "INTENT-v2.json",
+  "currentIntent": "INTENT-v3.json",
   "deliverables": {
-    "IDENTITY_IMPLEMENTATION": {
+    "ACTIVATION": {
       "evidence": [
         {
-          "path": "docs/adr/0033-dedicated-tech-scout-identity.md",
-          "sha256": "7d2f878f66cb"
-        },
-        {
-          "path": "slack-apps/tech_scout.json",
-          "sha256": "abb933a78cb8"
-        },
-        {
-          "path": "slack-apps/avatars/tech_scout.png",
-          "sha256": "95416a2f2c86"
+          "path": "docs/project/evidence/news-lane-before.json",
+          "sha256": "2700c91453b8"
         }
       ],
-      "note": "Dedicated delivery-only Tech Scout identity, minimal manifest and same-family robot profile are merged in PR #52.",
-      "status": "verified",
-      "updatedAt": "2026-09-22T00:49:58.526769+00:00"
+      "note": "Preserve the latest concurrent research deployment; activate only after CI and a quiesced cutover.",
+      "status": "in_progress",
+      "updatedAt": "2026-09-22T02:43:21.102922+00:00"
     },
-    "SLACK_ACTIVATION": {
+    "NEWS_LANE": {
       "evidence": [
         {
-          "path": "docs/project/evidence/tech-scout-production-active.json",
-          "sha256": "cfc27717eca7"
+          "path": "docs/adr/0034-dedicated-news-model-lane.md",
+          "sha256": "0f1a497c8347"
         },
         {
-          "path": "docs/project/TECH-SCOUT-ACTIVATION.md",
-          "sha256": "d3b7bad5211e"
+          "path": "src/quant_company/runtime.py",
+          "sha256": "36fa93eb46b8"
         }
       ],
-      "note": "Live Tech Scout app delivered the first natural post-cutover feed article; UI sender/profile and DB/Slack receipt match.",
+      "note": "Dedicated news process and queue; one company plus one news Codex lock, unchanged receipts/budgets.",
       "status": "verified",
-      "updatedAt": "2026-09-22T00:49:58.835797+00:00"
+      "updatedAt": "2026-09-22T02:43:20.789317+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/tech-scout-tests.xml",
-          "sha256": "50606f9cba0e"
+          "path": "docs/project/evidence/news-lane-tests.xml",
+          "sha256": "3d94fa15c905"
         }
       ],
-      "note": "996 passed, 36 documented skips; ruff and GitHub CI passed with no Tech Scout task/model path.",
+      "note": "1012 passed, 36 explicit skips. Real local PostgreSQL and Temporal; model and Slack are simulated. Ruff passed.",
       "status": "verified",
-      "updatedAt": "2026-09-22T00:49:58.678974+00:00"
+      "updatedAt": "2026-09-22T02:43:20.942380+00:00"
     }
   },
-  "intentDigest": "b81d57ebf964",
+  "intentDigest": "85f4c0331a2f",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-22T00:49:58.835797+00:00"
+  "updatedAt": "2026-09-22T02:43:21.102922+00:00"
 }

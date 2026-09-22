@@ -18,7 +18,7 @@ from uuid import UUID
 
 STATE = Path('/var/lib/quant-company')
 CURRENT = Path('/opt/quant-company/current')
-SERVICES = ['codex-runtime', 'api', 'worker', 'dispatch', 'slack-socket', 'maintenance']
+SERVICES = ['codex-runtime', 'api', 'worker', 'news-worker', 'dispatch', 'slack-socket', 'maintenance']
 
 
 def run(args, **kwargs):

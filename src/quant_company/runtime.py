@@ -30,6 +30,8 @@ async def connect(settings: Settings):
 def make_worker(client, company, executor=None):
     executor = executor or TurnExecutor(company)
     staff = StaffRunner(company, executor.provider)
+    # Legacy registrations drain pre-lane histories until a safe tick boundary
+    # continues each news workflow onto the dedicated news process/queue.
     news = NewsEditor(company, executor.provider)
     discovery = NewsDiscovery(company, executor.provider)
     return Worker(client, task_queue=company.settings.temporal_task_queue,
@@ -44,6 +46,16 @@ def make_news_collector(client, company, collector=None):
     collector = collector or NewsCollector(company)
     return Worker(client, task_queue=company.settings.temporal_task_queue + "-news-collection",
                   workflows=[NewsCollectionWorkflow], activities=[collector.activity_tick],
+                  max_concurrent_activities=1, max_cached_workflows=10,
+                  graceful_shutdown_timeout=timedelta(seconds=10))
+
+
+def make_news_model_worker(client, company, provider=None):
+    editor = NewsEditor(company, provider)
+    discovery = NewsDiscovery(company, editor.provider)
+    return Worker(client, task_queue=company.settings.temporal_task_queue + "-news-model",
+                  workflows=[NewsEditorialWorkflow, NewsDiscoveryWorkflow],
+                  activities=[editor.activity_tick, discovery.activity_tick],
                   max_concurrent_activities=1, max_cached_workflows=10,
                   graceful_shutdown_timeout=timedelta(seconds=10))
 
@@ -84,7 +96,7 @@ async def dispatch_once(client, company):
     if company.settings.company_news_enabled and not getattr(company, "_news_workflows_started", False):
         for workflow, identity, queue in (
             (NewsCollectionWorkflow.run, "company-news-collection-v1", company.settings.temporal_task_queue + "-news-collection"),
-            (NewsEditorialWorkflow.run, "company-news-editorial-v1", company.settings.temporal_task_queue),
+            (NewsEditorialWorkflow.run, "company-news-editorial-v1", company.settings.temporal_task_queue + "-news-model"),
         ):
             try:
                 await client.start_workflow(workflow, id=identity, task_queue=queue,
@@ -96,7 +108,7 @@ async def dispatch_once(client, company):
             and not getattr(company, "_news_search_started", False)):
         try:
             await client.start_workflow(NewsDiscoveryWorkflow.run, id="company-news-discovery-v1",
-                                        task_queue=company.settings.temporal_task_queue,
+                                        task_queue=company.settings.temporal_task_queue + "-news-model",
                                         id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
         except WorkflowAlreadyStartedError:
             pass
@@ -125,8 +137,16 @@ async def worker_main(settings=None):
     settings = settings or Settings()
     company = Company(settings)
     client = await connect(settings)
-    async with (make_worker(client, company), make_news_collector(client, company),
-                make_research_worker(client, company), make_tech_feed_collector(client, company)):
+    async with (make_worker(client, company), make_research_worker(client, company),
+                make_tech_feed_collector(client, company)):
+        await asyncio.Event().wait()
+
+
+async def news_worker_main(settings=None):
+    settings = settings or Settings()
+    company = Company(settings)
+    client = await connect(settings)
+    async with (make_news_model_worker(client, company), make_news_collector(client, company)):
         await asyncio.Event().wait()
 
 

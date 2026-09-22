@@ -211,6 +211,23 @@ services:
       postgres: {condition: service_healthy}
       codex-runtime: {condition: service_healthy}
 
+  news-worker:
+    <<: *app
+    command: [quant-company, news-worker]
+    environment:
+      <<: [*db-env, *temporal-env]
+      MODEL_RUNTIME_URL: http://codex-runtime:8080
+      MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+    secrets: [database_password, temporal_api_key, model_runtime_token]
+    networks: [core, model, service_egress]
+    mem_limit: 192m
+    cpus: 0.5
+    depends_on:
+      postgres: {condition: service_healthy}
+      codex-runtime: {condition: service_healthy}
+
   dispatch:
     <<: *app
     command: [quant-company, dispatch]

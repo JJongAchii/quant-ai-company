@@ -34,9 +34,19 @@ Start one ASGI worker on the private container network:
 uv run uvicorn quant_company.providers.codex_runtime:app --host 0.0.0.0 --port 8090 --workers 1
 ```
 
-The filesystem lock prevents concurrent inference across runtime objects, but
-explicit cancellation targets an in-process task. **One worker is required.**
+Filesystem locks bound inference across runtime objects to **one company turn plus
+one news turn**. Service-generated `news-` request IDs (screening, editorial and search)
+share `.runtime-news.lock`; all other IDs use the original `.runtime.lock`. These are
+two fixed lanes, not one slot per bot or request. Both use the same official login
+and subscription allowance; no extra credentials or paid fallback are introduced.
+Explicit cancellation still targets an in-process task. **One ASGI worker is required.**
 `GET /healthz` is liveness only; it does not verify the subscription, login or quota.
+
+Request digests and receipt paths are unchanged, including pre-lane receipts. New
+receipts record `execution_lane` for operational verification. A frozen/orphaned
+`running` receipt is still uncertain, never permission to start inference again.
+Cutover/rollback must drain both lanes before replacing the runtime; do not run old
+single-lock and new two-lock runtime versions together against the same jobs volume.
 
 The child gets only `PATH`, `HOME`, `LANG`, `LC_ALL`, `TZ`, `CODEX_HOME` and
 `NO_COLOR`. User config/rules are ignored, the working directory is temporary
