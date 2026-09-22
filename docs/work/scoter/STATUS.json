@@ -6,24 +6,42 @@
   "currentIntent": "INTENT-v4.json",
   "deliverables": {
     "ACTIVATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/quant-feed-deployment-conflict-20260922.json",
+          "sha256": "45e4ec65113d"
+        }
+      ],
+      "note": "Concurrent PR59 deployment restarted research worker; quant stage refused changed baseline. Need user coordination before changing stopped-state policy.",
+      "status": "blocked",
+      "updatedAt": "2026-09-22T04:31:39.269301+00:00"
     },
     "QUANT_FEED": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/quant-feed-implementation.md",
+          "sha256": "f5a2b112032a"
+        }
+      ],
+      "note": "Implementation and outbound app/auth/icon verified; no live publication claim.",
+      "status": "verified",
+      "updatedAt": "2026-09-22T04:31:38.926574+00:00"
     },
     "VALIDATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/quant-feed-implementation.md",
+          "sha256": "f5a2b112032a"
+        }
+      ],
+      "note": "Initial Linux CI passed; post-merge targeted 152 passed/1 skipped, release/Temporal 6 passed. Latest full suite still running.",
+      "status": "in_progress",
+      "updatedAt": "2026-09-22T04:31:39.103294+00:00"
     }
   },
   "intentDigest": "c402037885c5",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-22T03:39:32.649902+00:00"
+  "updatedAt": "2026-09-22T04:31:39.269301+00:00"
 }

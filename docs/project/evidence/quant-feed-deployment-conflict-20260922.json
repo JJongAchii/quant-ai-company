@@ -1,0 +1,46 @@
+{
+  "observed_at": "2026-09-22T04:30:35Z",
+  "implementation_commit": "99c0dbcd2c849fe541233bb05bd445b0597640dd",
+  "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/60",
+  "previous_observed_release": "4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124",
+  "current_release": "08b84d4d14d823d77b3af4ee2fab83a18a72c516",
+  "current_release_source": "PR 59 research audit timeout recovery, already merged into quant branch",
+  "research_worker": {
+    "running": true,
+    "started_at": "2026-09-22T04:25:48.078119658Z",
+    "oom_killed": false,
+    "image": "quant-company-autonomous:08b84d4d14d823d77b3af4ee2fab83a18a72c516",
+    "started_by_this_task": false
+  },
+  "quant_release_attempt": {
+    "result": "deployment_baseline_changed",
+    "failed_before_staging": true,
+    "release_directory_exists": false,
+    "built_images": false,
+    "runtime_or_worker_changed_by_this_task": false,
+    "source_archive_copied_to_host_tmp": true,
+    "source_archive_sha256": "51c02aba8c6e29f5ebaa29fde16b26c0e447b36a7f7fca3efe654035b9f98bd3",
+    "qdata_exact_local_and_remote_tree_sha256": "528251801f09b120d9c33baeb6956a6a84e49b2c09aeb15420e5994fa170e396"
+  },
+  "slack": {
+    "app_id": "A0C3HFP831Q",
+    "bot_user_id": "U0C3288AXPH",
+    "bot_id": "B0C3CM109FX",
+    "team_id": "T0C1YRDRPNF",
+    "channel_id": "C0C3K8ZB9PB",
+    "scopes": ["chat:write"],
+    "installed_auth_test_verified": true,
+    "icon_saved": true,
+    "credential_handoff_preserved_six_existing_entries": true,
+    "channel_invitation_verified": false,
+    "quant_feed_posts_sent": 0
+  },
+  "next_gate": "Clarify whether the other task's newly running research worker is intentional before changing deployment baseline or service-state policy.",
+  "not_yet_verified": [
+    "Full committed release images",
+    "Real subscription quant editorial and evidence critique",
+    "Quant Scout channel membership and delivery receipt",
+    "Three concurrent subscription calls and PDF load admission",
+    "48-hour observation"
+  ]
+}

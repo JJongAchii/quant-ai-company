@@ -43,3 +43,16 @@ blindly repeat it. The helper is not an autonomous maintenance-policy expansion.
 Pending: full image qualification, real subscription original/critic preview, channel invitation,
 controlled activation, actual load admission, and elapsed 48-hour observation. No simulated result
 is claimed as deployed.
+
+## Deployment coordination gate, 13:30 KST
+
+The staging attempt failed closed **before any build or runtime change** because another task
+deployed `08b84d4d14d823d77b3af4ee2fab83a18a72c516` and started the research worker at
+13:25:48 KST. This task did not start or stop it. The user had explicitly asked us to preserve
+its stopped state, so neither the deployment baseline nor service-state policy was silently
+changed. Await clarification of the other task's intended state. News remains running.
+Exact public receipts are in `evidence/quant-feed-deployment-conflict-20260922.json`.
+
+Additional post-merge targeted tests: 152 passed, one macOS PDF skip. Release state-preservation,
+rollback and real Temporal tests: six passed. Latest full regression and PR CI are in progress;
+do not treat those pending runs as successful or claim the new feed is active.
