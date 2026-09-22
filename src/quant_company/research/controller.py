@@ -184,6 +184,18 @@ def stage_prompt(company, conn, task):
     # and directly relevant evidence. Otherwise a role can inspect the registered menu, read five
     # more files, and receive only the path (not the bytes) when it must make its decision.
     values = as_json(reads)
+    latest_chunks = {}
+    for value in values:
+        previous = latest_chunks.get(value["path"])
+        if previous is None or value["offset"] > previous["offset"]:
+            latest_chunks[value["path"]] = value
+    context["continuation_offsets"] = {
+        path: value["next_offset"] for path, value in sorted(latest_chunks.items())
+        if value["next_offset"] is not None
+    }
+    context["completed_read_paths"] = sorted(
+        path for path, value in latest_chunks.items() if value["next_offset"] is None
+    )
     frozen = context.get("frozen_experiment_code", {})
     important_paths = set(frozen.get("code_paths", []))
     if frozen.get("config_path"):
@@ -215,8 +227,12 @@ def stage_prompt(company, conn, task):
         "Complete with exactly one artifact whose content is a JSON object and status=complete. "
         "If evidence is needed, request exactly one file chunk in that turn: use one research_control tool only, "
         "with no artifact or second tool, and status=continue. Never batch file reads. Use "
-        '{"action":"read_stage_file","path":<exact available path>,"offset":0}, status=continue. '
-        "The service never executes your text as a command. Read only evidence needed for the artifact; "
+        '{"action":"read_stage_file","path":<exact available path>,"offset":<0 or exact continuation>}, '
+        "status=continue. "
+        "Use offset 0 only for a file that has not been read. To continue a partial file, use its exact "
+        "continuation_offsets value. Never request a path and offset already in inspected_chunks, and do not "
+        "read a path in completed_read_paths again. The service never executes your text as a command. "
+        "Read only evidence needed for the artifact; "
         "the presence of another available file is not itself a reason to read it.\n"
         + employee_pack(role.id) + "\nSTAGE: " + row["stage"] + "\n" + instructions[row["stage"]]
         + "\nMISSION DATA JSON:\n"
