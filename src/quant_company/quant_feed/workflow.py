@@ -22,13 +22,14 @@ def editorial_delay(result):
 class QuantFeedCollectionWorkflow:
     @workflow.run
     async def run(self):
-        for _ in range(100):
+        for tick in range(100):
             try:
                 await workflow.execute_activity("company_quant_feed_collect", start_to_close_timeout=timedelta(minutes=8),
                                                 retry_policy=RetryPolicy(maximum_attempts=3))
             except ActivityError:
                 workflow.logger.exception("Quant source interrupted; durable source leases retained")
-            delay = COLLECTION_DELAY_SECONDS if workflow.patched("quant-collection-sustainable-cadence-v1") else 15
+            delay = (COLLECTION_DELAY_SECONDS
+                     if workflow.patched(f"quant-collection-sustainable-cadence-v1-{tick}") else 15)
             await workflow.sleep(delay)
         workflow.continue_as_new()
 
@@ -37,7 +38,7 @@ class QuantFeedCollectionWorkflow:
 class QuantFeedEditorialWorkflow:
     @workflow.run
     async def run(self):
-        for _ in range(100):
+        for tick in range(100):
             result = {}
             try:
                 result = await workflow.execute_activity(
@@ -46,6 +47,6 @@ class QuantFeedEditorialWorkflow:
             except ActivityError:
                 workflow.logger.exception("Quant review interrupted; frozen request ID retained")
             delay = (editorial_delay(result)
-                     if workflow.patched("quant-editorial-sustainable-cadence-v1") else 20)
+                     if workflow.patched(f"quant-editorial-sustainable-cadence-v1-{tick}") else 20)
             await workflow.sleep(delay)
         workflow.continue_as_new()
