@@ -82,12 +82,16 @@ knowledge. No live capital allocation or new confirmation is authorized by disco
 A terminal validator runtime failure requires an operator reconciliation note before a
 new inference ID is created. If the same attempt is still waiting, its completed reads
 remain attached to that attempt. If the controller has already opened exactly one empty
-successor attempt, only prior chunks whose full-file SHA-256 still equals the successor's
-immutable file map may be inherited. Changed binding or package files must be read again.
-The failed receipt, superseded turn and retry event remain durable, and the final audit
-checker verifies every inherited chunk against its original completed validator turn.
-This exception applies only to validator audits; ordinary scientific retries remain
-attempt-local.
+successor attempt, prior chunks whose full-file SHA-256 still equals the successor's
+immutable file map remain as recovery evidence, but they do not count as evidence seen by
+the new provider thread. The successor must receive every required text byte again; changed
+binding or package files are likewise read from the new immutable map. The failed receipt,
+superseded turn and retry event remain durable, and the final audit checker verifies prior
+chunks against their original completed validator turns while requiring a complete current
+attempt read set. This exception applies only to validator audits; ordinary scientific
+retries remain attempt-local. Audit output starts with the qlab frontmatter contract so a
+completed prose judgment cannot fail later merely because its machine-readable header was
+omitted.
 
 ## Acceptance and rollout
 
