@@ -266,7 +266,18 @@ def test_audit_prompt_keeps_large_resident_code_chunks(mission):
             context=context || %s::jsonb WHERE id=%s""", (json.dumps({"audit": {
                 "scope": [path.removeprefix("audit/") for path in resident],
                 "resident_evidence_paths": list(resident),
-            }}), stage["id"]))
+            }, "mission": {
+                "id": "fixture-mission", "revision": 1, "manifest_digest": "a" * 64,
+                "stage": {"stage": "audit"}, "cycle": 1, "cycle_trials": 1,
+                "cumulative_trials": 1, "incumbent_trial_id": "fixture-trial",
+                "spec": {"title": "Synthetic audit", "unrelated_history": "m" * 10000},
+            }, "evidence_sources": [{"padding": "s" * 2500}],
+            "relevant_evidence": {"padding": ["r" * 2500]},
+            "available_files": [
+                {"name": f"audit/scope/file-{index}.json", "sha256": "a" * 64,
+                 "size": 12345, "characters": 12345}
+                for index in range(44)
+            ]}), stage["id"]))
         expected = set()
         for path, chunks in resident.items():
             for offset, content in chunks:
@@ -279,12 +290,42 @@ def test_audit_prompt_keeps_large_resident_code_chunks(mission):
             conn.execute("""INSERT INTO research_stage_reads(id,stage_id,path,character_offset,content,sha256)
                 VALUES (%s,%s,%s,0,%s,%s)""",
                          (uuid4(), stage["id"], f"large-output-{index}.csv", "x" * 12000, "e" * 64))
+        conn.execute("""UPDATE research_stage_reads SET created_at=now()+interval '1 minute'
+            WHERE stage_id=%s AND path='audit/scope/supplements/receipt.json'""", (stage["id"],))
         task = conn.execute("SELECT * FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
         _, prompt = stage_prompt(company, conn, task)
     assert len(prompt) < 90000
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
     retained = {(chunk["path"], chunk["offset"], chunk["content"]) for chunk in context["read_chunks"]}
     assert expected <= retained
+    assert set(context["mission"]) == {
+        "id", "revision", "manifest_digest", "stage", "cycle", "cycle_trials",
+        "cumulative_trials", "incumbent_trial_id", "title", "evidence_rule",
+    }
+    assert all(set(item) == {"name"} for item in context["available_files"])
+    assert "evidence_sources" not in context and "relevant_evidence" not in context
+
+
+def test_audit_prompt_fails_before_evicting_latest_resident_chunk(mission):
+    company = mission.company
+    controller = MissionController(company, backend=FixtureBackend(company))
+    controller.tick()
+    stage, _ = active(mission)
+    paths = ["audit/scope/supplements/first.txt", "audit/scope/supplements/latest.txt"]
+    with company.db.transaction() as conn:
+        conn.execute("""UPDATE research_mission_stages SET stage='audit',actor='validator',
+            context=context || %s::jsonb WHERE id=%s""", (json.dumps({"audit": {
+                "scope": [path.removeprefix("audit/") for path in paths],
+                "resident_evidence_paths": paths,
+            }}), stage["id"]))
+        for index, path in enumerate(paths):
+            conn.execute("""INSERT INTO research_stage_reads(
+                id,stage_id,path,character_offset,content,sha256,created_at
+            ) VALUES (%s,%s,%s,0,%s,%s,now()+(%s * interval '1 minute'))""",
+                         (uuid4(), stage["id"], path, "x" * 50000, "f" * 64, index))
+        task = conn.execute("SELECT * FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
+        with pytest.raises(PolicyError, match="Audit resident evidence exceeds model context"):
+            stage_prompt(company, conn, task)
 
 
 def test_retry_reads_are_bound_to_new_validator_attempt(mission):
