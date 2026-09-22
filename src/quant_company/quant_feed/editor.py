@@ -66,19 +66,35 @@ def _quote_text(value):
     return re.sub(r"\s+", "", unicodedata.normalize("NFKC", value))
 
 
+def _clean_controls(value):
+    if isinstance(value, str):
+        return re.sub(r"[\x00-\x1f]+", " ", value)
+    if isinstance(value, list):
+        return [_clean_controls(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _clean_controls(item) for key, item in value.items()}
+    return value
+
+
+def _proposal(schema, content):
+    # strict=False accepts only otherwise-invalid control characters inside JSON
+    # strings; trailing commas, broken structure and wrong field types still fail.
+    return schema.model_validate(_clean_controls(json.loads(content, strict=False)))
+
+
 def validate(response, bundle, stage):
     decision = response.decision
     if (decision.status != "complete" or len(decision.artifacts) != 1 or decision.tools or decision.delegations
             or decision.messages or decision.memories or decision.follow_up or decision.artifacts[0].source_ids):
         raise ValueError("quant_artifact_only")
     if stage == "critique":
-        value = EvidenceCritique.model_validate_json(decision.artifacts[0].content)
+        value = _proposal(EvidenceCritique, decision.artifacts[0].content)
         draft = bundle.get("draft") or {}
         needs_change_check = bool(bundle.get("prior")) or draft.get("change") in {"material", "correction", "retraction"}
         if value.disposition == "pass" and needs_change_check and not value.material_change_verified:
             raise ValueError("quant_unverified_material_change")
         return value
-    brief = ResearchBrief.model_validate_json(decision.artifacts[0].content)
+    brief = _proposal(ResearchBrief, decision.artifacts[0].content)
     if brief.disposition != "publish":
         return brief
     # PDF extractors may split words across layout whitespace or emit compatibility

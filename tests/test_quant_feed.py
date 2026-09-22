@@ -195,6 +195,37 @@ def test_quote_validation_ignores_only_pdf_layout_whitespace():
         validate(response(ready, value), bundle, "review")
 
 
+def test_raw_json_control_characters_are_only_normalized_inside_strings():
+    content = json.dumps(brief(), ensure_ascii=False).replace("검증 한계에 대한 연구적 가치", "검증 한계\n연구적 가치")
+    value = ProviderResponse(request_id="quant-feed-review", provider="fixture",
+                             decision=AgentDecision(status="complete", say="", artifacts=[
+                                 ArtifactDraft(title="quant review", content=content)]))
+    bundle = {"pages": [{"location": "PDF p.1", "text": TEXT}],
+              "as_of": "2026-09-22T00:00:00+00:00", "links": [], "commercial": False, "prior": None}
+    assert validate(value, bundle, "review").reason == "검증 한계 연구적 가치"
+
+
+def test_one_deterministic_proposal_repair_then_fail_closed(quant):
+    original(quant)
+    invalid = brief(evidence=[
+        {"claim": "fabricated", "location": "PDF p.1", "quote": "Invented result one"},
+        {"claim": "fabricated", "location": "PDF p.1", "quote": "Invented result two"},
+    ])
+    first = quant.prepare()
+    repaired = quant.commit(response(first, invalid))
+    assert repaired["document_state"] == "ready"
+    assert repaired["validation_issue"] == "quant_quote_not_in_original_version"
+    with quant.db.transaction() as conn:
+        document = conn.execute("SELECT state,stage,revision,critique FROM quant_feed_documents").fetchone()
+    assert (document["state"], document["stage"], document["revision"]) == ("ready", "revision", 1)
+    assert document["critique"]["issues"] == ["quant_quote_not_in_original_version"]
+    second = quant.prepare()
+    with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
+        quant.commit(response(second, invalid))
+    quant.fault(second["request"]["request_id"], "invalid_quant_proposal")
+    assert quant.prepare()["state"] == "idle"
+
+
 def test_shared_budget_quota_pause_and_same_request_retry(quant):
     original(quant)
     quant.company.settings.company_max_daily_turns = 1
