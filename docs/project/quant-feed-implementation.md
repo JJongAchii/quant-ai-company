@@ -53,6 +53,14 @@ its stopped state, so neither the deployment baseline nor service-state policy w
 changed. Await clarification of the other task's intended state. News remains running.
 Exact public receipts are in `evidence/quant-feed-deployment-conflict-20260922.json`.
 
+The user subsequently confirmed the running research worker is intentional and independently
+owned. The revised release snapshots its exact container ID, running/OOM state and restart count,
+then refuses any drift. It never stops, starts or recreates that worker during staging, backup,
+cutover or rollback. The production capacity observation showed 701 MiB host memory available,
+108.4 MiB used by the research worker and 35.18 MiB by the 512 MiB Codex runtime, with no OOM or
+restart. This admits a bounded preview, not yet three-lane publication.
+
 Additional post-merge targeted tests: 152 passed, one macOS PDF skip. Release state-preservation,
-rollback and real Temporal tests: six passed. Latest full regression and PR CI are in progress;
-do not treat those pending runs as successful or claim the new feed is active.
+rollback and real Temporal/deployment tests pass (33 tests after the running-worker refinement).
+The latest full local regression passed 1,071 with 36 skipped and one live test deselected; PR CI
+passed. Do not claim the new feed is active until preview and delivery gates complete.

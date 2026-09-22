@@ -17,27 +17,28 @@ def release():
     return module
 
 
-def test_running_inventory_rejects_research_restart(release, monkeypatch):
-    rows = [{"State": {"Running": False}}] + [{"State": {"Running": name != "maintenance"}} for name in release.SERVICES]
+def test_running_inventory_and_worker_state_are_independent(release, monkeypatch):
+    rows = [{"State": {"Running": name != "maintenance"}} for name in release.SERVICES]
     monkeypatch.setattr(release, "inspect", lambda names: rows)
     assert "maintenance" not in release.active_services()
     assert "worker" not in release.active_services()
-    rows[0]["State"]["Running"] = True
-    with pytest.raises(ValueError, match="research_worker_state_changed"):
-        release.active_services()
+    worker = {"Id": "worker", "State": {"Running": True, "OOMKilled": False}, "RestartCount": 0}
+    monkeypatch.setattr(release, "inspect", lambda names: [worker])
+    assert release.worker_state() == {"id": "worker", "running": True, "oom_killed": False, "restarts": 0}
 
 
 def test_health_requires_same_stopped_worker_and_database(release, monkeypatch):
     rows = [{"Id": "pg", "Name": "/quant-company-postgres-1", "State": {"Running": True, "OOMKilled": False}},
-            {"Id": "worker", "State": {"Running": False}},
+            {"Id": "worker", "State": {"Running": True, "OOMKilled": False}, "RestartCount": 0},
             {"Name": "/quant-company-api-1", "State": {"Running": True, "OOMKilled": False},
              "Config": {"Labels": {"org.opencontainers.image.revision": "commit"}}}]
     monkeypatch.setattr(release, "inspect", lambda names: rows)
     monkeypatch.setattr(release, "memory_available_mib", lambda: 600)
-    assert release.health("commit", ["api"], "pg", "worker")["research_worker_preserved_stopped"]
+    before = {"id": "worker", "running": True, "oom_killed": False, "restarts": 0}
+    assert release.health("commit", ["api"], "pg", before)["research_worker_preserved"] == before
     rows[1]["Id"] = "recreated"
-    with pytest.raises(ValueError, match="database_or_stopped_worker_changed"):
-        release.health("commit", ["api"], "pg", "worker")
+    with pytest.raises(ValueError, match="database_or_research_worker_changed"):
+        release.health("commit", ["api"], "pg", before)
 
 
 @pytest.mark.parametrize("fail_migration", [False, True])
@@ -49,9 +50,11 @@ def test_cutover_and_rollback_never_start_stopped_worker(release, tmp_path, monk
     monkeypatch.setattr(release, "STATE", state)
     selected = list(release.SERVICES)
     monkeypatch.setattr(release, "active_services", lambda: selected)
+    worker_before = {"id": "worker", "running": True, "oom_killed": False, "restarts": 0}
+    monkeypatch.setattr(release, "worker_state", lambda: worker_before)
     monkeypatch.setattr(release, "memory_available_mib", lambda: 600)
     monkeypatch.setattr(release, "inspect", lambda names: [{"Id": "pg"}, {"Id": "worker"}])
-    monkeypatch.setattr(release, "health", lambda *args: {"research_worker_preserved_stopped": True})
+    monkeypatch.setattr(release, "health", lambda *args: {"research_worker_preserved": worker_before})
     monkeypatch.setattr(release.os, "fchown", lambda *args: None)
     monkeypatch.setattr(release.time, "sleep", lambda seconds: None)
     monkeypatch.setattr(release, "run", lambda *args, **kwargs: b'{"research_jobs":0,"sending_outbox":0}')
@@ -65,7 +68,8 @@ def test_cutover_and_rollback_never_start_stopped_worker(release, tmp_path, monk
     for name in ("research-profiles.json", "research-qlab.json"):
         (state / "config" / name).write_text("{}")
     journal = state / "releases/journal.json"
-    journal.write_text(json.dumps({"phase": "staged", "previous": str(previous), "running_before": selected, "qdata_commit": "pin"}))
+    journal.write_text(json.dumps({"phase": "staged", "previous": str(previous), "running_before": selected,
+                                   "worker_before": worker_before, "qdata_commit": "pin"}))
     commands = []
 
     def compose(root, *command):
@@ -74,8 +78,10 @@ def test_cutover_and_rollback_never_start_stopped_worker(release, tmp_path, monk
             raise RuntimeError("synthetic migration failure")
 
     module = SimpleNamespace(atomic=lambda path, data: path.write_bytes(data), compose=compose, link=Mock(),
-                             take_backup=lambda *args: print('{"backup":"synthetic-only"}'))
+                             compose_command=lambda root: ["compose"])
     monkeypatch.setattr(release, "helper", lambda root: module)
+    monkeypatch.setattr(release, "take_backup_preserving_worker",
+                        lambda *args: print('{"backup":"synthetic-only"}'))
     args = SimpleNamespace(commit="candidate", channel="CQUANT")
     if fail_migration:
         with pytest.raises(RuntimeError, match="synthetic"):

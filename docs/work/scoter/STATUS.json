@@ -9,12 +9,12 @@
       "evidence": [
         {
           "path": "docs/project/evidence/quant-feed-deployment-conflict-20260922.json",
-          "sha256": "45e4ec65113d"
+          "sha256": "1dd6094af484"
         }
       ],
-      "note": "Concurrent PR59 deployment restarted research worker; quant stage refused changed baseline. Need user coordination before changing stopped-state policy.",
-      "status": "blocked",
-      "updatedAt": "2026-09-22T04:31:39.269301+00:00"
+      "note": "User confirmed research worker is intentional separate work. Release revised to preserve its exact container/state; bounded capacity admission passed, live gates remain.",
+      "status": "in_progress",
+      "updatedAt": "2026-09-22T04:43:31.764399+00:00"
     },
     "QUANT_FEED": {
       "evidence": [
@@ -31,17 +31,17 @@
       "evidence": [
         {
           "path": "docs/project/quant-feed-implementation.md",
-          "sha256": "f5a2b112032a"
+          "sha256": "9c8727ddc791"
         }
       ],
-      "note": "Initial Linux CI passed; post-merge targeted 152 passed/1 skipped, release/Temporal 6 passed. Latest full suite still running.",
-      "status": "in_progress",
-      "updatedAt": "2026-09-22T04:31:39.103294+00:00"
+      "note": "Post-merge full local suite 1071 passed/36 skipped/1 live deselected; PR CI passed; running-worker release preservation tests passed.",
+      "status": "verified",
+      "updatedAt": "2026-09-22T04:43:31.596973+00:00"
     }
   },
   "intentDigest": "c402037885c5",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-22T04:31:39.269301+00:00"
+  "updatedAt": "2026-09-22T04:43:31.764399+00:00"
 }

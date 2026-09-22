@@ -35,7 +35,21 @@
     "channel_invitation_verified": false,
     "quant_feed_posts_sent": 0
   },
-  "next_gate": "Clarify whether the other task's newly running research worker is intentional before changing deployment baseline or service-state policy.",
+  "coordination_resolved_at": "2026-09-22T04:42:45Z",
+  "coordination_resolution": "User confirmed that the running research worker belongs to a separate intentional task. Quant release must preserve its exact container, running state, OOM state and restart count without stopping or recreating it.",
+  "capacity_observation": {
+    "host_total_mib": 1907,
+    "host_available_mib": 701,
+    "swap_mib": 0,
+    "research_worker_current_mib": 108.4,
+    "research_worker_limit_mib": 384,
+    "codex_runtime_current_mib": 35.18,
+    "codex_runtime_limit_mib": 512,
+    "codex_runtime_prior_two_lane_peak_mib": 182.14,
+    "oom_or_restart_observed": false,
+    "admission": "Enough for bounded preview; actual three-lane model overlap and quant PDF load remain mandatory before publication."
+  },
+  "next_gate": "Build full images under the 512 MiB/one-CPU builder limit, preserving the independent research worker unchanged.",
   "not_yet_verified": [
     "Full committed release images",
     "Real subscription quant editorial and evidence critique",

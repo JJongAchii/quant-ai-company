@@ -20,6 +20,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from types import SimpleNamespace
 
 STATE = Path("/var/lib/quant-company")
 CURRENT = Path("/opt/quant-company/current")
@@ -51,10 +52,14 @@ def inspect(names):
 
 
 def active_services():
-    rows = inspect(["worker", *SERVICES])
-    if rows[0]["State"]["Running"]:
-        raise ValueError("research_worker_state_changed_stop_and_reconcile")
-    return [name for name, row in zip(SERVICES, rows[1:], strict=True) if row["State"]["Running"]]
+    rows = inspect(list(SERVICES))
+    return [name for name, row in zip(SERVICES, rows, strict=True) if row["State"]["Running"]]
+
+
+def worker_state():
+    row = inspect(["worker"])[0]
+    return {"id": row["Id"], "running": row["State"]["Running"],
+            "oom_killed": row["State"]["OOMKilled"], "restarts": row["RestartCount"]}
 
 
 def memory_available_mib():
@@ -62,17 +67,19 @@ def memory_available_mib():
     return int(values["MemAvailable"].split()[0]) // 1024
 
 
-def health(commit, names, postgres_id, stopped_worker_id):
+def health(commit, names, postgres_id, worker_before):
     rows = inspect(["postgres", "worker", *names])
-    if rows[0]["Id"] != postgres_id or rows[1]["Id"] != stopped_worker_id or rows[1]["State"]["Running"]:
-        raise ValueError("database_or_stopped_worker_changed")
+    worker_after = {"id": rows[1]["Id"], "running": rows[1]["State"]["Running"],
+                    "oom_killed": rows[1]["State"]["OOMKilled"], "restarts": rows[1]["RestartCount"]}
+    if rows[0]["Id"] != postgres_id or worker_after != worker_before:
+        raise ValueError("database_or_research_worker_changed")
     for row in [rows[0], *rows[2:]]:
         state = row["State"]
         if not state["Running"] or state["OOMKilled"] or state.get("Health", {}).get("Status", "healthy") != "healthy":
             raise ValueError("release_service_unhealthy")
         if row["Name"] != "/quant-company-postgres-1" and row["Config"]["Labels"].get("org.opencontainers.image.revision") != commit:
             raise ValueError("release_image_revision_mismatch")
-    return {"running": names, "postgres_recreated": False, "research_worker_preserved_stopped": True,
+    return {"running": names, "postgres_recreated": False, "research_worker_preserved": worker_after,
             "host_mem_available_mib": memory_available_mib()}
 
 
@@ -95,8 +102,20 @@ def qdata_tree_digest(root):
     return hashlib.sha256(json.dumps(values, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
+def take_backup_preserving_worker(previous, env, module):
+    """Use the qualified backup while excluding the independently owned research process."""
+    spec = importlib.util.spec_from_file_location("quant_state_backup", previous / "deploy/state_backup.py")
+    backup = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(backup)
+    backup.APP_SERVICES = tuple(name for name in backup.APP_SERVICES if name != "worker")
+    for key, value in backup.config_values(STATE / "config/backup.env").items():
+        os.environ[key] = value
+    backup.backup(SimpleNamespace(env_file=env, s3_uri=None), backup.config_values(env),
+                  module.compose_command(previous), STATE)
+
+
 def stage(args, previous, target, journal, module):
-    if target.exists() or memory_available_mib() < 768 or shutil.disk_usage(target.parent).free < 10 * 1024**3:
+    if target.exists() or memory_available_mib() < 640 or shutil.disk_usage(target.parent).free < 10 * 1024**3:
         raise ValueError("stage_target_exists_or_insufficient_headroom")
     archive = Path(args.archive)
     data = archive.read_bytes()
@@ -105,7 +124,7 @@ def stage(args, previous, target, journal, module):
     record = {"phase": "staging", "commit": args.commit, "previous": str(previous),
               "archive_sha256": args.archive_sha256, "started_at": time.time(), "images": [],
               "running_before": active_services(), "build_method": "full committed Dockerfile with frozen lock",
-              "builder_memory_mib": 512, "builder_cpus": 1}
+              "worker_before": worker_state(), "builder_memory_mib": 512, "builder_cpus": 1}
     module.atomic(journal, json.dumps(record).encode())
     target.mkdir()
     module.unpack(data, target)
@@ -162,7 +181,7 @@ def cutover(args, previous, target, journal, module):
     if record["phase"] != "staged" or record["previous"] != str(previous):
         raise ValueError("cutover_precondition")
     selected = active_services()
-    if selected != record["running_before"] or memory_available_mib() < 384:
+    if selected != record["running_before"] or worker_state() != record["worker_before"] or memory_available_mib() < 384:
         raise ValueError("running_services_changed_or_memory_admission_failed")
     if not {"api", "dispatch", "news-worker", "codex-runtime", "slack-socket"} <= set(selected):
         raise ValueError("required_services_not_running")
@@ -186,8 +205,8 @@ def cutover(args, previous, target, journal, module):
         raise ValueError("quant_role_already_configured")
     preserved = {name: (STATE / name).read_bytes() for name in (
         "secrets/slack-credentials.json", "config/research-profiles.json", "config/research-qlab.json")}
-    rows = inspect(["postgres", "worker"])
-    record.update(postgres_id=rows[0]["Id"], stopped_worker_id=rows[1]["Id"], phase="draining", drain_started_at=time.time())
+    rows = inspect(["postgres"])
+    record.update(postgres_id=rows[0]["Id"], phase="draining", drain_started_at=time.time())
     module.atomic(STATE / "releases" / ("quant-feed-" + args.commit + ".env"), oldenv)
     module.atomic(STATE / "releases" / ("quant-feed-" + args.commit + ".roles"), oldroles)
     module.atomic(journal, json.dumps(record).encode())
@@ -234,7 +253,7 @@ with c.db.transaction() as x:
         module.compose(previous, "stop", *selected)
         capture = io.StringIO()
         with contextlib.redirect_stdout(capture):
-            module.take_backup(previous, env)
+            take_backup_preserving_worker(previous, env, module)
         record["backup"] = json.loads(capture.getvalue().strip().splitlines()[-1])
         changed = True
         setenv(module, {"RELEASE_COMMIT": args.commit, "QDATA_COMMIT": record["qdata_commit"],
@@ -251,12 +270,13 @@ with c.db.transaction() as x:
         new_selected = [*selected, "quant-feed-worker"]
         new_module.compose(target, "up", "-d", "--no-deps", "--force-recreate", "--wait", "--wait-timeout", "120", *new_selected)
         for _ in range(3):
-            result = health(args.commit, new_selected, record["postgres_id"], record["stopped_worker_id"])
+            result = health(args.commit, new_selected, record["postgres_id"], record["worker_before"])
             time.sleep(5)
         if not all((STATE / name).read_bytes() == content for name, content in preserved.items()):
             raise ValueError("unrelated_config_changed")
         record.update(phase="preview_active", activated_at=time.time(), health=result,
-                      publication_enabled=False, preserved_existing_roles=True, model_allowance_changed=False,
+                      publication_enabled=False, preserved_existing_roles=True, research_worker_untouched=True,
+                      model_allowance_changed=False,
                       schema_change="additive quant tables only", uncertain_receipts_replayed=False)
         module.atomic(journal, json.dumps(record).encode())
         emit(**record)
@@ -271,7 +291,7 @@ with c.db.transaction() as x:
         module.compose(previous, "up", "-d", "--no-deps", "--wait", "--wait-timeout", "120", *selected)
         record.update(phase="rolled_back", error=type(exc).__name__,
                       error_code=str(exc) if isinstance(exc, ValueError) else "release_command_failed",
-                      health=health(previous.name, selected, record["postgres_id"], record["stopped_worker_id"]))
+                      health=health(previous.name, selected, record["postgres_id"], record["worker_before"]))
         module.atomic(journal, json.dumps(record).encode())
         emit(**record)
         raise
