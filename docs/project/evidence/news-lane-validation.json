@@ -1,0 +1,45 @@
+{
+  "checked_at": "2026-09-22T02:51:00Z",
+  "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/57",
+  "head_commit": "8c256f49eb14a59fd963cc4edd9c736996b330d5",
+  "merge_commit": "4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124",
+  "ci": {
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35680498889",
+    "conclusion": "success",
+    "passed": 1012,
+    "skipped": 35,
+    "deselected": 1,
+    "warnings": 2,
+    "duration_seconds": 341.28,
+    "real": [
+      "PostgreSQL",
+      "Temporal",
+      "process execution"
+    ],
+    "simulated": [
+      "Codex executable",
+      "Slack HTTP"
+    ],
+    "live_opt_in_excluded": true
+  },
+  "rebased_focused_suite": {
+    "passed": 44,
+    "seconds": 27.42
+  },
+  "source_commit": "8c256f49eb14a59fd963cc4edd9c736996b330d5",
+  "production_history_replay": [
+    {
+      "workflow_id": "company-news-editorial-v1",
+      "run_id": "0f7308b5-9f2f-44e0-ba40-56bcf691e05b",
+      "events": 644,
+      "replayed": true
+    },
+    {
+      "workflow_id": "company-news-discovery-v1",
+      "run_id": "270d9882-de81-4551-8bc7-96dc2c9b8e98",
+      "events": 978,
+      "replayed": true
+    }
+  ],
+  "activities_executed": 0
+}
