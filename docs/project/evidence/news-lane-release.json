@@ -1,0 +1,62 @@
+{
+  "commit": "4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124",
+  "previous": "/opt/quant-company/releases/2705ffc39f2cc748b88b67b5c4bec3a73b8f88a2",
+  "phase": "active",
+  "started_at": 1790045458.8287482,
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "build_method": "reviewed wheel over unchanged qualified dependency layers",
+  "wheel_sha256": "1d9559dedcb33f94fb7e99a93af5bf8ae0d08ecbf47163293b92e87b67d65466",
+  "installed_source_matches_commit": true,
+  "images": [
+    {
+      "service": "api",
+      "image": "sha256:1d7658de78527b6177f93db4808aa4afa70fcefce3e481e2d194c8dfa4c53f4c",
+      "parent_image": "sha256:b6eadc76c44aa23989407699bebd2dc276ad415b08600143897ba718daa903d1",
+      "installed_source_matches_commit": true
+    },
+    {
+      "service": "worker",
+      "image": "sha256:ed397488874716a1dd92706cb0bf0b2940411c374c560e9ac2620b8065ea5d84",
+      "parent_image": "sha256:5b7851c3c11d123d1a6a8457ebd866d0c2124b20ac498754c25a5c8c28d34876",
+      "installed_source_matches_commit": true
+    },
+    {
+      "service": "codex-runtime",
+      "image": "sha256:b89a4b0b2d74a35a347882f6dbc7987a47269e053a17a7da5bcf3f084a003881",
+      "parent_image": "sha256:1a7215d147853292be0901916ea18b1d09de100926df6025de7e194f30ec96f3",
+      "installed_source_matches_commit": true
+    },
+    {
+      "service": "maintenance",
+      "image": "sha256:c145b549773a118abb3f34ea9528fe856d2755670357e784b546cd44b604e485",
+      "parent_image": "sha256:a3fa0d42e309bfec32508df1ccfd0c300910317aab5a0a0dcdd686180da4f860",
+      "installed_source_matches_commit": true
+    },
+    {
+      "service": "claude-runtime",
+      "image": "sha256:64ae8e32eef1fe728962d9dcc145eed3f5d6b1de90539efb62697cd5321d45e6",
+      "parent_image": "sha256:4b77435acd96281f8c971022a9c7d803a77535778122cb8b128fb65a71a9457f",
+      "installed_source_matches_commit": true
+    }
+  ],
+  "postgres_id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+  "drain_started_at": 1790045498.2533896,
+  "model_locks_acquired": true,
+  "drain_wait_seconds": 7.6,
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20260922T025147Z-212ff53e.tar.gz",
+    "sha256": "595a2b738dac59f35d0b19216559530e2d7d3e1949aad0b43cf51165745807e5",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260922T025147Z-212ff53e.tar.gz",
+    "release_commit": "2705ffc39f2cc748b88b67b5c4bec3a73b8f88a2",
+    "secrets_included": false
+  },
+  "activated_at": 1790045566.3649528,
+  "health": {
+    "healthy_services": 9,
+    "postgres_recreated": false
+  },
+  "preserved_configs": true,
+  "schema_changed": false,
+  "model_allowance_changed": false,
+  "uncertain_receipts_replayed": false
+}

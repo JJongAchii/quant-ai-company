@@ -1,0 +1,424 @@
+{
+  "checked_at": "2026-09-22 02:59:22.765478+00:00",
+  "company_commit": "4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124",
+  "runtime_pause": {
+    "paused_until": null,
+    "reason": null
+  },
+  "shared_limits": {
+    "revision": 0,
+    "company": null,
+    "maintenance": null
+  },
+  "usage": [
+    {
+      "day": "2026-09-22",
+      "reserved": 168
+    },
+    {
+      "day": "2026-09-21",
+      "reserved": 283
+    }
+  ],
+  "turn_states": [
+    {
+      "status": "completed",
+      "n": 403
+    },
+    {
+      "status": "stale",
+      "n": 2
+    },
+    {
+      "status": "blocked",
+      "n": 13
+    },
+    {
+      "status": "queued",
+      "n": 1
+    }
+  ],
+  "due_company_work": [
+    {
+      "id": "3a6c75c0-96ad-574e-a9fe-073288095c59",
+      "status": "queued",
+      "due_at": "2026-09-22 02:59:22.682842+00:00",
+      "agent": "validator"
+    }
+  ],
+  "news_triages": [
+    {
+      "id": "news-screen-0960a7e8-6935-46da-b66d-9e5edffd121b",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-22 02:55:47.923020+00:00",
+      "completed_at": "2026-09-22 02:56:36.675682+00:00",
+      "next_at": "2026-09-22 02:55:47.923020+00:00"
+    },
+    {
+      "id": "news-screen-47add913-1d28-4d28-8976-c3bba8a73a5b",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-22 01:21:10.892549+00:00",
+      "completed_at": "2026-09-22 02:43:38.628360+00:00",
+      "next_at": "2026-09-22 01:22:11.129619+00:00"
+    },
+    {
+      "id": "news-screen-7401a0e4-2499-4dce-80f1-98152432db5d",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-22 00:58:36.436690+00:00",
+      "completed_at": "2026-09-22 00:59:20.804671+00:00",
+      "next_at": "2026-09-22 00:58:36.436690+00:00"
+    },
+    {
+      "id": "news-screen-a6b40640-0412-4a69-a631-7bffd6ae15f4",
+      "state": "blocked",
+      "error": "invalid_news_proposal",
+      "created_at": "2026-09-22 00:45:34.596101+00:00",
+      "completed_at": "2026-09-22 00:51:37.020115+00:00",
+      "next_at": "2026-09-22 00:46:34.741247+00:00"
+    }
+  ],
+  "news_reviews": [
+    {
+      "id": "news-24dcbc84-de98-4d87-a92c-1f6cdd49c835",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-22 02:56:38.922462+00:00",
+      "completed_at": "2026-09-22 02:58:45.273679+00:00",
+      "next_at": "2026-09-22 02:56:38.922462+00:00"
+    },
+    {
+      "id": "news-c0fd32b3-6308-4b42-9c8e-722383725e83",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-22 02:43:40.970654+00:00",
+      "completed_at": "2026-09-22 02:45:35.590659+00:00",
+      "next_at": "2026-09-22 02:43:40.970654+00:00"
+    },
+    {
+      "id": "news-3d6b2073-9145-4613-8bb3-5530d4f4a29f",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-22 00:00:51.847694+00:00",
+      "completed_at": "2026-09-22 00:02:44.347459+00:00",
+      "next_at": "2026-09-22 00:00:51.847694+00:00"
+    },
+    {
+      "id": "news-ee3a8084-8304-4ac6-8e7f-8528d09bd0f9",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-21 23:43:33.595554+00:00",
+      "completed_at": "2026-09-21 23:44:32.411532+00:00",
+      "next_at": "2026-09-21 23:43:33.595554+00:00"
+    }
+  ],
+  "news_searches": [
+    {
+      "id": "news-search-2bcedf33-462e-4532-b92b-3ae405238b00",
+      "state": "blocked",
+      "error": "invalid_search_candidates",
+      "created_at": "2026-09-21 07:37:09.297678+00:00",
+      "completed_at": "2026-09-21 07:37:33.878948+00:00",
+      "next_at": "2026-09-21 07:37:09.297678+00:00"
+    },
+    {
+      "id": "news-search-19c1b2df-3299-4990-9dd4-cbbd4893741a",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-21 06:35:01.010980+00:00",
+      "completed_at": "2026-09-21 06:35:55.935754+00:00",
+      "next_at": "2026-09-21 06:35:01.010980+00:00"
+    },
+    {
+      "id": "news-search-762ee2a9-f63b-4ced-8dac-343367ba405c",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-21 06:02:58.485664+00:00",
+      "completed_at": "2026-09-21 06:03:17.585597+00:00",
+      "next_at": "2026-09-21 06:02:58.485664+00:00"
+    },
+    {
+      "id": "news-search-e79607ea-76a3-4ccb-9e76-90de74c45626",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-09-21 05:28:01.246665+00:00",
+      "completed_at": "2026-09-21 05:28:55.470315+00:00",
+      "next_at": "2026-09-21 05:28:01.246665+00:00"
+    }
+  ],
+  "article_states": [
+    {
+      "state": "screen_blocked",
+      "n": 192
+    },
+    {
+      "state": "fetch_failed",
+      "n": 10
+    },
+    {
+      "state": "ready",
+      "n": 273
+    },
+    {
+      "state": "queued",
+      "n": 225
+    },
+    {
+      "state": "selected",
+      "n": 56
+    },
+    {
+      "state": "ignored",
+      "n": 298
+    },
+    {
+      "state": "held",
+      "n": 59
+    },
+    {
+      "state": "review_blocked",
+      "n": 39
+    },
+    {
+      "state": "historical_or_undated",
+      "n": 853
+    },
+    {
+      "state": "expired",
+      "n": 9
+    }
+  ],
+  "sources": {
+    "total": 25,
+    "healthy": 24,
+    "oldest_success": "2026-09-22 02:43:25.484399+00:00",
+    "latest_success": "2026-09-22 02:54:09.691366+00:00"
+  },
+  "source_errors": [
+    {
+      "id": "yonhap-international",
+      "error": "feed_parse_or_policy_error",
+      "failures": 1,
+      "last_attempt": "2026-09-22 02:53:47.480888+00:00",
+      "next_at": "2026-09-22 03:03:47.680008+00:00"
+    }
+  ],
+  "hot_news": {
+    "delivery_states": [
+      {
+        "status": "delivered",
+        "n": 204
+      }
+    ],
+    "latest": [
+      {
+        "id": "682d9dfb-5dcc-5a3a-a8ba-5c170c9baac6",
+        "agent": "reporter",
+        "status": "delivered",
+        "sent_ts": "1790045928.060719",
+        "error": null,
+        "attempts": 1,
+        "created_at": "2026-09-22 02:58:45.273679+00:00"
+      },
+      {
+        "id": "0ffafc30-3e2d-5614-a5fb-59ab9301cd5c",
+        "agent": "reporter",
+        "status": "delivered",
+        "sent_ts": "1790045929.636049",
+        "error": null,
+        "attempts": 1,
+        "created_at": "2026-09-22 02:58:45.273679+00:00"
+      },
+      {
+        "id": "fa00c096-f349-5f1c-8c90-513d3fc32fd2",
+        "agent": "reporter",
+        "status": "delivered",
+        "sent_ts": "1790045926.464839",
+        "error": null,
+        "attempts": 1,
+        "created_at": "2026-09-22 02:58:45.273679+00:00"
+      },
+      {
+        "id": "67b8e698-997b-51ef-b2ab-b288fef58135",
+        "agent": "reporter",
+        "status": "delivered",
+        "sent_ts": "1790045931.349929",
+        "error": null,
+        "attempts": 1,
+        "created_at": "2026-09-22 02:58:45.273679+00:00"
+      }
+    ]
+  },
+  "tech_feed": {
+    "delivery_states": [
+      {
+        "status": "delivered",
+        "n": 37
+      }
+    ],
+    "latest": [
+      {
+        "id": "86cad61b-d688-5829-a032-2d38999d8850",
+        "agent": "tech_scout",
+        "status": "delivered",
+        "sent_ts": "1790045630.173399",
+        "error": null,
+        "attempts": 1,
+        "created_at": "2026-09-22 02:52:48.477299+00:00"
+      },
+      {
+        "id": "cb7d1987-fda8-53b5-a8e4-863e9ef1a97e",
+        "agent": "tech_scout",
+        "status": "delivered",
+        "sent_ts": "1790045569.184959",
+        "error": null,
+        "attempts": 1,
+        "created_at": "2026-09-22 02:52:48.477299+00:00"
+      },
+      {
+        "id": "c4c0f577-5b77-5825-9565-35ad84df7216",
+        "agent": "tech_scout",
+        "status": "delivered",
+        "sent_ts": "1790044964.839709",
+        "error": null,
+        "attempts": 1,
+        "created_at": "2026-09-22 02:42:43.609816+00:00"
+      },
+      {
+        "id": "6027ba48-a857-50da-b011-98beac2dd4f4",
+        "agent": "tech_scout",
+        "status": "delivered",
+        "sent_ts": "1790039489.563299",
+        "error": null,
+        "attempts": 1,
+        "created_at": "2026-09-22 01:11:28.283741+00:00"
+      }
+    ]
+  },
+  "temporal": [
+    {
+      "id": "company-news-editorial-v1",
+      "run_id": "5fc5c0a7-73b9-4105-8cf3-5d970897a415",
+      "task_queue": "quant-company-news-model",
+      "status": "RUNNING",
+      "scheduled_tail": [
+        {
+          "event_id": 5,
+          "time": "2026-09-22 02:55:47.852799+00:00",
+          "queue": "quant-company-news-model"
+        },
+        {
+          "event_id": 18,
+          "time": "2026-09-22 02:56:38.780809+00:00",
+          "queue": "quant-company-news-model"
+        }
+      ]
+    },
+    {
+      "id": "company-news-discovery-v1",
+      "run_id": "8011eb68-5f6d-48bb-b050-6849178ab6db",
+      "task_queue": "quant-company-news-model",
+      "status": "RUNNING",
+      "scheduled_tail": [
+        {
+          "event_id": 5,
+          "time": "2026-09-22 02:53:55.019261+00:00",
+          "queue": "quant-company-news-model"
+        },
+        {
+          "event_id": 16,
+          "time": "2026-09-22 02:58:55.256234+00:00",
+          "queue": "quant-company-news-model"
+        }
+      ]
+    },
+    {
+      "id": "company-news-collection-v1",
+      "run_id": "5433804b-9389-4aca-9638-b98a01ca95dd",
+      "task_queue": "quant-company-news-collection",
+      "status": "RUNNING",
+      "scheduled_tail": [
+        {
+          "event_id": 214,
+          "time": "2026-09-22 02:57:43.247193+00:00",
+          "queue": "quant-company-news-collection"
+        },
+        {
+          "event_id": 225,
+          "time": "2026-09-22 02:58:13.429424+00:00",
+          "queue": "quant-company-news-collection"
+        },
+        {
+          "event_id": 236,
+          "time": "2026-09-22 02:58:43.603222+00:00",
+          "queue": "quant-company-news-collection"
+        },
+        {
+          "event_id": 247,
+          "time": "2026-09-22 02:59:13.778522+00:00",
+          "queue": "quant-company-news-collection"
+        }
+      ]
+    },
+    {
+      "id": "company-tech-feed-collection-v1",
+      "run_id": "01a0c411-8090-7938-b27f-ce101cc3299b",
+      "task_queue": "quant-company-tech-feed",
+      "status": "RUNNING",
+      "scheduled_tail": [
+        {
+          "event_id": 847,
+          "time": "2026-09-22 02:05:47.660153+00:00",
+          "queue": "quant-company-tech-feed"
+        },
+        {
+          "event_id": 858,
+          "time": "2026-09-22 02:15:52.711112+00:00",
+          "queue": "quant-company-tech-feed"
+        },
+        {
+          "event_id": 871,
+          "time": "2026-09-22 02:42:42.307614+00:00",
+          "queue": "quant-company-tech-feed"
+        },
+        {
+          "event_id": 882,
+          "time": "2026-09-22 02:52:48.081342+00:00",
+          "queue": "quant-company-tech-feed"
+        }
+      ]
+    }
+  ],
+  "slack": {
+    "ok": true,
+    "error": null,
+    "messages": [
+      {
+        "ts": "1790045931.349929",
+        "user": "U0C2FLSUUMV",
+        "bot_id": "B0C2V3TJ230",
+        "client_msg_id": "67b8e698-997b-51ef-b2ab-b288fef58135"
+      },
+      {
+        "ts": "1790045929.636049",
+        "user": "U0C2FLSUUMV",
+        "bot_id": "B0C2V3TJ230",
+        "client_msg_id": "0ffafc30-3e2d-5614-a5fb-59ab9301cd5c"
+      },
+      {
+        "ts": "1790045928.060719",
+        "user": "U0C2FLSUUMV",
+        "bot_id": "B0C2V3TJ230",
+        "client_msg_id": "682d9dfb-5dcc-5a3a-a8ba-5c170c9baac6"
+      },
+      {
+        "ts": "1790045926.464839",
+        "user": "U0C2FLSUUMV",
+        "bot_id": "B0C2V3TJ230",
+        "client_msg_id": "fa00c096-f349-5f1c-8c90-513d3fc32fd2"
+      }
+    ]
+  }
+}

@@ -1,0 +1,394 @@
+{
+  "checked_at": "2026-09-22T02:56:23.637003+00:00",
+  "since": 1790045498.2533896,
+  "host_mem_available_kib": 677932,
+  "services": [
+    {
+      "name": "/quant-company-postgres-1",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 268435456,
+      "image_commit": null,
+      "memory": {
+        "memory.current": 143372288,
+        "memory.peak": 194691072,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    },
+    {
+      "name": "/quant-company-api-1",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 134217728,
+      "image_commit": "4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124",
+      "memory": {
+        "memory.current": 60125184,
+        "memory.peak": 74018816,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "running": true,
+      "oom_killed": false,
+      "health": "not-configured",
+      "restarts": 0,
+      "memory_limit": 402653184,
+      "image_commit": "4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124",
+      "memory": {
+        "memory.current": 92782592,
+        "memory.peak": 103682048,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    },
+    {
+      "name": "/quant-company-news-worker-1",
+      "running": true,
+      "oom_killed": false,
+      "health": "not-configured",
+      "restarts": 0,
+      "memory_limit": 201326592,
+      "image_commit": "4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124",
+      "memory": {
+        "memory.current": 81739776,
+        "memory.peak": 82391040,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "running": true,
+      "oom_killed": false,
+      "health": "not-configured",
+      "restarts": 0,
+      "memory_limit": 201326592,
+      "image_commit": "4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124",
+      "memory": {
+        "memory.current": 83181568,
+        "memory.peak": 146026496,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "running": true,
+      "oom_killed": false,
+      "health": "not-configured",
+      "restarts": 0,
+      "memory_limit": 201326592,
+      "image_commit": "4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124",
+      "memory": {
+        "memory.current": 51695616,
+        "memory.peak": 54706176,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    },
+    {
+      "name": "/quant-company-maintenance-1",
+      "running": true,
+      "oom_killed": false,
+      "health": "not-configured",
+      "restarts": 0,
+      "memory_limit": 134217728,
+      "image_commit": "4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124",
+      "memory": {
+        "memory.current": 95858688,
+        "memory.peak": 134217728,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "2",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 536870912,
+      "image_commit": "4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124",
+      "memory": {
+        "memory.current": 175697920,
+        "memory.peak": 184184832,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    },
+    {
+      "name": "/quant-company-claude-runtime-1",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 536870912,
+      "image_commit": "4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124",
+      "memory": {
+        "memory.current": 36208640,
+        "memory.peak": 49926144,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0"
+        }
+      }
+    }
+  ],
+  "instantaneous_stats": [
+    {
+      "name": "quant-company-postgres-1",
+      "cpu_percent": "10.86%",
+      "memory_percent": "35.23%"
+    },
+    {
+      "name": "quant-company-api-1",
+      "cpu_percent": "0.17%",
+      "memory_percent": "38.65%"
+    },
+    {
+      "name": "quant-company-worker-1",
+      "cpu_percent": "0.90%",
+      "memory_percent": "22.27%"
+    },
+    {
+      "name": "quant-company-news-worker-1",
+      "cpu_percent": "0.06%",
+      "memory_percent": "39.73%"
+    },
+    {
+      "name": "quant-company-dispatch-1",
+      "cpu_percent": "2.54%",
+      "memory_percent": "36.01%"
+    },
+    {
+      "name": "quant-company-slack-socket-1",
+      "cpu_percent": "0.00%",
+      "memory_percent": "24.44%"
+    },
+    {
+      "name": "quant-company-maintenance-1",
+      "cpu_percent": "0.00%",
+      "memory_percent": "69.64%"
+    },
+    {
+      "name": "quant-company-codex-runtime-1",
+      "cpu_percent": "1.71%",
+      "memory_percent": "19.39%"
+    },
+    {
+      "name": "quant-company-claude-runtime-1",
+      "cpu_percent": "0.14%",
+      "memory_percent": "6.72%"
+    }
+  ],
+  "receipts": [
+    {
+      "request_id": "03b40440-1bb5-5396-9211-bb2a15883672",
+      "state": "complete",
+      "execution_lane": "company",
+      "started_at": 1790045550.1976507,
+      "completed_at": 1790045573.528995,
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "eb207421-9911-5079-b0ae-1d520d4c5e4a",
+      "state": "complete",
+      "execution_lane": "company",
+      "started_at": 1790045574.6441393,
+      "completed_at": 1790045594.8108447,
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "fbbc7ecb-30a6-569d-8c2d-a1f53bf91192",
+      "state": "complete",
+      "execution_lane": "company",
+      "started_at": 1790045596.2953625,
+      "completed_at": 1790045620.7789884,
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "25985182-f150-5154-82fc-a33fb459523b",
+      "state": "complete",
+      "execution_lane": "company",
+      "started_at": 1790045622.403792,
+      "completed_at": 1790045640.0756176,
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "e31e35ee-1fad-5894-8948-95b46b521733",
+      "state": "complete",
+      "execution_lane": "company",
+      "started_at": 1790045645.718858,
+      "completed_at": 1790045664.9813955,
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "d2da6ea3-f79c-53b3-b149-c080f22472e2",
+      "state": "complete",
+      "execution_lane": "company",
+      "started_at": 1790045666.3117907,
+      "completed_at": 1790045685.9347475,
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "5cd8b1f1-2a3d-5cc1-9945-4478e0dd05a6",
+      "state": "complete",
+      "execution_lane": "company",
+      "started_at": 1790045686.7189283,
+      "completed_at": 1790045708.8510098,
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "2c9cfb0d-bb53-55f6-b4e1-4b9c32d18da9",
+      "state": "complete",
+      "execution_lane": "company",
+      "started_at": 1790045709.7751145,
+      "completed_at": 1790045732.5578399,
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "a0d5ed0d-df75-5fad-b3ea-e0582a836142",
+      "state": "complete",
+      "execution_lane": "company",
+      "started_at": 1790045733.9121442,
+      "completed_at": 1790045757.8093948,
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "news-screen-0960a7e8-6935-46da-b66d-9e5edffd121b",
+      "state": "running",
+      "execution_lane": "news",
+      "started_at": 1790045748.3566089,
+      "completed_at": null,
+      "requested_execution": {
+        "model": "gpt-5.6-luna",
+        "reasoning_effort": "low"
+      }
+    },
+    {
+      "request_id": "ba0d89c2-2283-5c42-8b26-5e45b33ba4fc",
+      "state": "complete",
+      "execution_lane": "company",
+      "started_at": 1790045759.2331152,
+      "completed_at": 1790045778.22314,
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    },
+    {
+      "request_id": "3ea224e3-1f54-539f-8a2d-f5632b214729",
+      "state": "running",
+      "execution_lane": "company",
+      "started_at": 1790045779.2794151,
+      "completed_at": null,
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    }
+  ],
+  "cross_lane_overlap": [
+    {
+      "company_request": "a0d5ed0d-df75-5fad-b3ea-e0582a836142",
+      "news_request": "news-screen-0960a7e8-6935-46da-b66d-9e5edffd121b",
+      "overlap_seconds": 9.453
+    },
+    {
+      "company_request": "ba0d89c2-2283-5c42-8b26-5e45b33ba4fc",
+      "news_request": "news-screen-0960a7e8-6935-46da-b66d-9e5edffd121b",
+      "overlap_seconds": 18.99
+    },
+    {
+      "company_request": "3ea224e3-1f54-539f-8a2d-f5632b214729",
+      "news_request": "news-screen-0960a7e8-6935-46da-b66d-9e5edffd121b",
+      "overlap_seconds": 2.248
+    }
+  ]
+}
