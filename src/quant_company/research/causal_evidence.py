@@ -15,6 +15,16 @@ CONTRACT_FILE = "krx-etf-source-contract.json"
 CHECKER_FILE = "check-krx-etf-causality.py"
 RECEIPT_FILE = "krx-etf-causality-receipt.json"
 REFERENCE_FILES = (CONTRACT_FILE, CHECKER_FILE, RECEIPT_FILE)
+RECEIPT_KEYS = {
+    "schema_version", "kind", "generated_at", "checker_commit", "checker_sha256",
+    "source_contract_sha256", "source_code_commit", "api_sha256", "source_heads",
+    "source_job_id", "source_trial_id", "source_archive_sha256", "execution", "input_files",
+    "protected_code_files", "registered_variants", "cost_scenarios", "counts", "checks", "limitations",
+}
+COUNT_KEYS = {
+    "price_rows", "meta_rows", "observed_sessions", "feature_cutoffs_per_variant",
+    "simulation_comparisons", "job_orders_checked",
+}
 REQUIRED_CHECKS = {
     "input_hashes_match",
     "snapshots_bound_to_source_contract",
@@ -53,19 +63,16 @@ def _reference_bytes() -> dict[str, bytes]:
     return {name: root.joinpath(name).read_bytes() for name in REFERENCE_FILES}
 
 
-def audit_supplements(trials: tuple[ValidatedAdaptiveTrial, ...]) -> dict[str, bytes]:
-    """Return the receipt only when its exact inputs and protected code cover every trial."""
-    if not trials or any(trial.profile.id != PROFILE_ID for trial in trials):
-        return {}
-    if any(trial.manifest.plan.lake_id.startswith("synthetic:") for trial in trials):
-        return {}
-
+def _validated_reference() -> tuple[dict[str, bytes], dict]:
     evidence = _reference_bytes()
     contract = _object(evidence[CONTRACT_FILE], "krx_source_contract")
     receipt = _object(evidence[RECEIPT_FILE], "krx_causality_receipt")
     checks = receipt.get("checks")
+    counts = receipt.get("counts")
+    execution = receipt.get("execution")
     if (
-        receipt.get("schema_version") != 1
+        set(receipt) != RECEIPT_KEYS
+        or receipt.get("schema_version") != 1
         or receipt.get("kind") != "krx_etf_causality_verification"
         or not isinstance(checks, dict)
         or set(checks) != REQUIRED_CHECKS
@@ -80,8 +87,27 @@ def audit_supplements(trials: tuple[ValidatedAdaptiveTrial, ...]) -> dict[str, b
         or receipt.get("registered_variants") != ["M2", "A25", "A75", "B", "C", "D50", "D75"]
         or receipt.get("cost_scenarios") != ["base", "stress"]
         or receipt.get("limitations") != contract.get("known_limitations")
+        or not isinstance(counts, dict)
+        or set(counts) != COUNT_KEYS
+        or any(type(value) is not int or value <= 0 for value in counts.values())
+        or not isinstance(execution, dict)
+        or set(execution) != {"worker_id", "hostname", "gpu", "python"}
+        or execution["worker_id"] != "worker"
+        or execution["gpu"] != "NVIDIA GeForce RTX 3070"
+        or not execution["hostname"]
     ):
         raise PolicyError("krx_causality_receipt_invalid")
+    return evidence, receipt
+
+
+def audit_supplements(trials: tuple[ValidatedAdaptiveTrial, ...]) -> dict[str, bytes]:
+    """Return the receipt only when its exact inputs and protected code cover every trial."""
+    if not trials or any(trial.profile.id != PROFILE_ID for trial in trials):
+        return {}
+    if any(trial.manifest.plan.lake_id.startswith("synthetic:") for trial in trials):
+        return {}
+
+    evidence, receipt = _validated_reference()
 
     inputs = receipt.get("input_files")
     protected = receipt.get("protected_code_files")

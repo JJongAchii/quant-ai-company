@@ -1,0 +1,84 @@
+{
+  "api_sha256": "9d52a95f4f360c7d451d2c4c6b9a695ce5bf1e6720ee678576be74f704bb251a",
+  "checker_commit": "364c4d630d9e27e81b9ceca6be8d968772060701",
+  "checker_sha256": "0e103a77099d542b5fd80716cdc948368f5b21588d3a4ba2ae1450eb9a99ca5e",
+  "checks": {
+    "all_registered_features_scale_invariant": true,
+    "all_registered_simulations_scale_invariant": true,
+    "approved_dates_only": true,
+    "candidate_job_reproduced": true,
+    "current_profile_fields_absent": true,
+    "historical_exposure_flags_boolean": true,
+    "input_hashes_match": true,
+    "job_output_hashes_match": true,
+    "orders_use_next_observed_session": true,
+    "performance_values_recorded": false,
+    "point_in_time_keys_unique": true,
+    "price_meta_join_one_to_one": true,
+    "risk_constraints_scale_invariant": true,
+    "sealed_rows_absent": true,
+    "snapshots_bound_to_source_contract": true
+  },
+  "cost_scenarios": [
+    "base",
+    "stress"
+  ],
+  "counts": {
+    "feature_cutoffs_per_variant": 152,
+    "job_orders_checked": 2012,
+    "meta_rows": 1659509,
+    "observed_sessions": 3602,
+    "price_rows": 1659509,
+    "simulation_comparisons": 14
+  },
+  "execution": {
+    "gpu": "NVIDIA GeForce RTX 3070",
+    "hostname": "DESKTOP-5T00NAF",
+    "python": "3.11.15",
+    "worker_id": "worker"
+  },
+  "generated_at": "2026-09-22T06:43:41.388704+00:00",
+  "input_files": {
+    "dev/meta.parquet": "97a3caac1c3423d2af95df118823287de1b7e0034000415b26b3734945d838b6",
+    "dev/prices.parquet": "702217d3f6ae9c220ad9c0dfaa3e3c7384b9678cd4c1ba2337b44333dca5c553",
+    "dev/snapshot.json": "8a10e640ca4430f7bcab7085e717f4e29119be0d6a0a2dd86877dd7691ee574e",
+    "warmup/meta.parquet": "91b34929ea9b464e9b21c787ec19e70153353cc39500e6e4b76d555f167169f3",
+    "warmup/prices.parquet": "bd877acabc34874679239d0c9eccd92e4a32e26bf2316f85b115903490bfa961",
+    "warmup/snapshot.json": "bba2e273a1b1c60313021baff842c2f3a8896a750df3d12822e1756300da537d"
+  },
+  "kind": "krx_etf_causality_verification",
+  "limitations": [
+    "Historical backfill files do not contain the original per-session collection timestamp or a full revision-vintage archive.",
+    "The invariance receipt therefore tests that any per-ticker positive anchor rescaling cannot alter features, ranks, universe membership, fills, accounting, or risk checks.",
+    "The test does not prove that KRX never corrected an historical FLUC_RT or classification value.",
+    "Cash distributions are not exact event cash and the result must not be labelled total return."
+  ],
+  "protected_code_files": {
+    "labs/company-autonomous-etf/lineage.json": "9d06ae299c08221a61d85c9691bb548b1b4b7e7cbcdcc95d7635282da1d53b9b",
+    "labs/company-autonomous-etf/policy.json": "bf14a28c9f7dc48ae39ced848c474a1afad4f226671494e7cdb7ac2020ecd87a",
+    "labs/company-autonomous-etf/run.py": "383defbf17fec319f216db401473a292f496eed6f2ea42fed4fd0f9caa0092aa",
+    "labs/company-autonomous-etf/src/company_autonomous_etf/__init__.py": "634bda323ff02e792631b5ebce9c69f3b9a8d708d5fed496844003d81133a11c",
+    "labs/company-autonomous-etf/src/company_autonomous_etf/adapter.py": "570086aba9be91b6f86c7a5c11cb8b6671036e2322bb24319773f21b090e11d0",
+    "labs/company-autonomous-etf/src/company_autonomous_etf/engine.py": "e344cde8f86a0cae2524aedc66f4fc0685a4735ff52ec59c013e20408c1f1627",
+    "labs/company-autonomous-etf/src/company_autonomous_etf/signals.py": "34b3dc6285113c0a8f9cff133fe34f80f472e9ec789ad925742c7c25f0fdd1b8"
+  },
+  "registered_variants": [
+    "M2",
+    "A25",
+    "A75",
+    "B",
+    "C",
+    "D50",
+    "D75"
+  ],
+  "schema_version": 1,
+  "source_archive_sha256": "359e8fc4bee7af5f9ddd496d84cf029cbbc1df5e1b902077562b5bf47155751b",
+  "source_code_commit": "bcc1d825078a3c2b59e7505a72697fdca70ec259",
+  "source_contract_sha256": "861dadaa80513c21109302990754efe6f8de123b0c9e9c176ef9cce2078d28cb",
+  "source_heads": {
+    "krx_etf": "9c4fb62c8f19a158aee1dff36af37706",
+    "krx_etf_meta": "2d8776e0c3fbe4e020dc383718239ee5"
+  },
+  "source_job_id": "7dabcdfe-7826-5eee-8976-462675f3290c",
+  "source_trial_id": "bf3bef35-3ebf-5b30-93c1-dc88d115d3f8"
+}
