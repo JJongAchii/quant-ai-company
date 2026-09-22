@@ -125,7 +125,7 @@ def stage(args, previous, target, journal, module):
               "archive_sha256": args.archive_sha256, "started_at": time.time(), "images": [],
               "running_before": active_services(),
               "build_method": "full images from committed Dockerfile, lock, package and deployment inputs",
-              "worker_before": worker_state(), "builder_memory_mib": 512, "builder_cpus": 1}
+              "worker_at_stage": worker_state(), "builder_memory_mib": 512, "builder_cpus": 1}
     module.atomic(journal, json.dumps(record).encode())
     target.mkdir()
     module.unpack(data, target)
@@ -182,8 +182,11 @@ def cutover(args, previous, target, journal, module):
     if record["phase"] != "staged" or record["previous"] != str(previous):
         raise ValueError("cutover_precondition")
     selected = active_services()
-    if selected != record["running_before"] or worker_state() != record["worker_before"] or memory_available_mib() < 384:
+    if selected != record["running_before"] or memory_available_mib() < 384:
         raise ValueError("running_services_changed_or_memory_admission_failed")
+    # The independently owned research task may legitimately start or stop between
+    # image staging and cutover. Preserve its state as observed at this boundary.
+    worker_at_cutover = worker_state()
     if not {"api", "dispatch", "news-worker", "codex-runtime", "slack-socket"} <= set(selected):
         raise ValueError("required_services_not_running")
     if not re.fullmatch(r"[CG][A-Z0-9]+", args.channel or ""):
@@ -207,7 +210,8 @@ def cutover(args, previous, target, journal, module):
     preserved = {name: (STATE / name).read_bytes() for name in (
         "secrets/slack-credentials.json", "config/research-profiles.json", "config/research-qlab.json")}
     rows = inspect(["postgres"])
-    record.update(postgres_id=rows[0]["Id"], phase="draining", drain_started_at=time.time())
+    record.update(postgres_id=rows[0]["Id"], worker_at_cutover=worker_at_cutover,
+                  phase="draining", drain_started_at=time.time())
     module.atomic(STATE / "releases" / ("quant-feed-" + args.commit + ".env"), oldenv)
     module.atomic(STATE / "releases" / ("quant-feed-" + args.commit + ".roles"), oldroles)
     module.atomic(journal, json.dumps(record).encode())
@@ -271,7 +275,7 @@ with c.db.transaction() as x:
         new_selected = [*selected, "quant-feed-worker"]
         new_module.compose(target, "up", "-d", "--no-deps", "--force-recreate", "--wait", "--wait-timeout", "120", *new_selected)
         for _ in range(3):
-            result = health(args.commit, new_selected, record["postgres_id"], record["worker_before"])
+            result = health(args.commit, new_selected, record["postgres_id"], record["worker_at_cutover"])
             time.sleep(5)
         if not all((STATE / name).read_bytes() == content for name, content in preserved.items()):
             raise ValueError("unrelated_config_changed")
@@ -292,7 +296,7 @@ with c.db.transaction() as x:
         module.compose(previous, "up", "-d", "--no-deps", "--wait", "--wait-timeout", "120", *selected)
         record.update(phase="rolled_back", error=type(exc).__name__,
                       error_code=str(exc) if isinstance(exc, ValueError) else "release_command_failed",
-                      health=health(previous.name, selected, record["postgres_id"], record["worker_before"]))
+                      health=health(previous.name, selected, record["postgres_id"], record["worker_at_cutover"]))
         module.atomic(journal, json.dumps(record).encode())
         emit(**record)
         raise

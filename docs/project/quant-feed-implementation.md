@@ -53,10 +53,11 @@ its stopped state, so neither the deployment baseline nor service-state policy w
 changed. Await clarification of the other task's intended state. News remains running.
 Exact public receipts are in `evidence/quant-feed-deployment-conflict-20260922.json`.
 
-The user subsequently confirmed the running research worker is intentional and independently
-owned. The revised release snapshots its exact container ID, running/OOM state and restart count,
-then refuses any drift. It never stops, starts or recreates that worker during staging, backup,
-cutover or rollback. The production capacity observation showed 701 MiB host memory available,
+The user subsequently confirmed the research worker is intentional and independently owned. Its
+state may therefore legitimately change between the long image build and cutover. The revised
+release snapshots its exact container ID, running/OOM state and restart count at the cutover
+boundary, then refuses any drift during cutover/rollback. It never stops, starts or recreates that
+worker during staging, backup, cutover or rollback. The production capacity observation showed 701 MiB host memory available,
 108.4 MiB used by the research worker and 35.18 MiB by the 512 MiB Codex runtime, with no OOM or
 restart. This admits a bounded preview, not yet three-lane publication.
 

@@ -69,7 +69,7 @@ def test_cutover_and_rollback_never_start_stopped_worker(release, tmp_path, monk
         (state / "config" / name).write_text("{}")
     journal = state / "releases/journal.json"
     journal.write_text(json.dumps({"phase": "staged", "previous": str(previous), "running_before": selected,
-                                   "worker_before": worker_before, "qdata_commit": "pin"}))
+                                   "worker_at_stage": {**worker_before, "running": False}, "qdata_commit": "pin"}))
     commands = []
 
     def compose(root, *command):
@@ -94,4 +94,6 @@ def test_cutover_and_rollback_never_start_stopped_worker(release, tmp_path, monk
         assert json.loads((state / "config/roles.json").read_text())[:-1] == roles
     assert all("worker" not in command for root, command in commands)
     assert all("quant-feed-worker" not in command for root, command in commands if root == previous)
-    assert json.loads(journal.read_text())["phase"] == ("rolled_back" if fail_migration else "preview_active")
+    receipt = json.loads(journal.read_text())
+    assert receipt["phase"] == ("rolled_back" if fail_migration else "preview_active")
+    assert receipt["worker_at_cutover"] == worker_before
