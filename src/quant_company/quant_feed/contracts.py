@@ -134,6 +134,6 @@ class EvidenceCritique(StrictModel):
     def complete_pass(self):
         if self.disposition == "pass" and (self.issues or not all((self.original_sufficient, self.claims_supported,
                 self.dates_authors_verified, self.limitations_honest, self.relevance_and_value,
-                self.no_investment_advice, self.material_change_verified))):
+                self.no_investment_advice))):
             raise ValueError("quant_incomplete_critique")
         return self

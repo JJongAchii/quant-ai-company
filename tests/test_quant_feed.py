@@ -145,6 +145,25 @@ def test_preview_never_queues_and_activation_does_not_replay_it(quant):
     assert quant.status()["deliveries"] == []
 
 
+def test_bundle_distinguishes_original_truncation_from_bounded_context(quant):
+    original(quant, text=TEXT * 100)
+    with quant.db.transaction() as conn:
+        document = conn.execute("SELECT * FROM quant_feed_documents").fetchone()
+        bundle = quant.bundle(conn, document)
+    assert bundle["context_clipped"] is True
+    assert bundle["truncated"] is False
+
+
+def test_new_work_does_not_require_prior_change_comparison_but_updates_do():
+    ready = {"request": {"request_id": "quant-feed-critique"}}
+    value = response(ready, critique(material_change_verified=False))
+    bundle = {"prior": None, "draft": {"change": "new"}}
+    assert validate(value, bundle, "critique").disposition == "pass"
+    bundle = {"prior": {"publication_id": "prior"}, "draft": {"change": "material"}}
+    with pytest.raises(ValueError, match="quant_unverified_material_change"):
+        validate(value, bundle, "critique")
+
+
 def test_shared_budget_quota_pause_and_same_request_retry(quant):
     original(quant)
     quant.company.settings.company_max_daily_turns = 1

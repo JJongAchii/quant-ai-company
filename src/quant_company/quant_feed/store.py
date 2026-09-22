@@ -37,7 +37,7 @@ class QuantFeedStore:
 
     def policy(self):
         s = self.company.settings
-        return fingerprint({"version": 1, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
+        return fingerprint({"version": 2, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
                             "owner": s.quant_feed_owner_user, "channel": s.quant_feed_channel_id,
                             "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
                             "web": s.company_web_enabled, "sources": [x.model_dump() for x in self.sources().values()],
@@ -166,7 +166,8 @@ class QuantFeedStore:
         links = metadata["links"][:30]
         return as_json({"document_id": document["id"], "as_of": schedule.utcnow(), "metadata": bibliographic,
                         "pages": clipped, "original_sha256": document["receipt"]["original_sha256"],
-                        "truncated": document["receipt"].get("truncated", False) or clipped != pages,
+                        "truncated": document["receipt"].get("truncated", False),
+                        "context_clipped": clipped != pages,
                         "retrieval": document["receipt"], "links": links, "commercial": metadata["commercial"],
                         "prior": prior, "draft": document["brief"], "previous_critique": document["critique"]})
 

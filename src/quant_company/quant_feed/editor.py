@@ -27,8 +27,13 @@ numeric performance, invented links, broad copied passages, or buy/sell instruct
 Limitations and application are conditional interpretation, not proven findings. Local data availability has
 NOT been checked: mention required point-in-time data and explicitly say local availability is unverified.
 Only return related_urls that occur in supplied links; code/data links are availability, not verified execution.
-Paywall notices/abstracts/navigation/search snippets alone are NOT sufficient original evidence. Truncated or
-unreadable text/tables/equations: hold if needed context is missing. Never infer a table's numeric results.
+Paywall notices/abstracts/navigation/search snippets alone are NOT sufficient original evidence. An original with
+truncated=true or unreadable text/tables/equations must be held if needed context is missing. context_clipped=true
+only means the service bounded the model input; it is not evidence that retrieval failed. In that case accept only
+claims literally supported by supplied excerpts and remove or hold claims that need omitted context. Never infer a
+table's numeric results. For prior=null and draft.change=new, material_change_verified means no update/correction
+claim needs verification; it does not require an exhaustive novelty search. Require change verification when a
+prior publication exists or the draft claims material change, correction or retraction.
 For an existing prior publication, compare substance: cosmetic changes/retitled versions are not a new post.
 Use material/correction/retraction only with specific supported changes and change_summary. A journal version
 of a preprint without substantive change is cosmetic. Honest unresolved uncertainty means hold, not guess.
@@ -56,7 +61,12 @@ def validate(response, bundle, stage):
             or decision.messages or decision.memories or decision.follow_up or decision.artifacts[0].source_ids):
         raise ValueError("quant_artifact_only")
     if stage == "critique":
-        return EvidenceCritique.model_validate_json(decision.artifacts[0].content)
+        value = EvidenceCritique.model_validate_json(decision.artifacts[0].content)
+        draft = bundle.get("draft") or {}
+        needs_change_check = bool(bundle.get("prior")) or draft.get("change") in {"material", "correction", "retraction"}
+        if value.disposition == "pass" and needs_change_check and not value.material_change_verified:
+            raise ValueError("quant_unverified_material_change")
+        return value
     brief = ResearchBrief.model_validate_json(decision.artifacts[0].content)
     if brief.disposition != "publish":
         return brief
