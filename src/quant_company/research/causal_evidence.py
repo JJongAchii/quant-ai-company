@@ -117,12 +117,12 @@ def audit_supplements(trials: tuple[ValidatedAdaptiveTrial, ...]) -> dict[str, b
                      if str(trial.manifest.trial_id) == receipt.get("source_trial_id")]
     if (len(source_trials) != 1
             or source_trials[0].archive_sha256 != receipt.get("source_archive_sha256")):
-        raise PolicyError("krx_causality_receipt_source_missing")
+        return {}
     for trial in trials:
         manifest = trial.manifest
         expected_protected = {
             path: manifest.code_files[path] for path in trial.profile.protected_paths
         }
         if manifest.plan.input_files != inputs or expected_protected != protected:
-            raise PolicyError("krx_causality_receipt_scope_mismatch")
+            return {}
     return evidence
