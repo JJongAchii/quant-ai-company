@@ -288,6 +288,29 @@ def stage_prompt(company, conn, task):
     }
     context = {**{key: value for key, value in row["context"].items() if not key.startswith("_")},
                "stage_id": str(row["id"]), "actor": row["actor"], "last_error": row["error"]}
+    if row["stage"] == "audit":
+        # The immutable audit package contains the complete mission, sources and trial
+        # history.  Keep only the navigation identity here so the final prompt can retain
+        # the causal code and operator evidence bytes that the validator actually read.
+        mission = context.get("mission", {})
+        spec = mission.get("spec", {}) if isinstance(mission, dict) else {}
+        context["mission"] = {
+            key: mission[key] for key in (
+                "id", "revision", "manifest_digest", "stage", "cycle", "cycle_trials",
+                "cumulative_trials", "incumbent_trial_id",
+            ) if key in mission
+        }
+        if isinstance(spec, dict) and "title" in spec:
+            context["mission"]["title"] = spec["title"]
+        context["mission"]["evidence_rule"] = (
+            "The audit package files are the complete immutable evidence; read those files for every finding."
+        )
+        context.pop("evidence_sources", None)
+        context.pop("relevant_evidence", None)
+        context["available_files"] = [
+            {"name": item["name"]} for item in context.get("available_files", [])
+            if isinstance(item, dict) and isinstance(item.get("name"), str)
+        ]
     project = company._project(conn, task["project_id"], lock=False)
     context["professional_feedback"] = as_json(coaching(
         conn, project["owner_user"], role.id, role.model, role.reasoning_effort))
@@ -344,7 +367,7 @@ def stage_prompt(company, conn, task):
         elif value["path"] in important_paths and len(value["content"]) <= 8000:
             priority = max(priority, 3)
         if index == len(values) - 1:
-            priority = 4
+            priority = max(priority, 4)
         if priority:
             retained.append(value)
             priorities.append(priority)
