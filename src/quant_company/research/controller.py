@@ -272,9 +272,16 @@ def stage_prompt(company, conn, task):
                           "Explain what changed, what the measured outcome falsifies, and the next hypothesis. "
                           "These development metrics are internal and have not passed independent audit.",
         "audit": 'Return {"markdown":str}. Write the actual independent qlab leak-auditor audit of the complete '
-                 "provided immutable package. Copy its target, scope, objective and identity fields exactly. "
-                 "Inspect implementation/data/execution/guards and prior reported versions. Do not implement code. "
-                 "Missing evidence means unverified, never inferred pass. No numeric Slack report.",
+                 "provided immutable package. The markdown MUST start at byte 0 with a qlab YAML frontmatter block: "
+                 "the first line is exactly ---, then judge, target, verdict, issued, scope, scope_digest, "
+                 "objective_digest, findings, conflicts_with, supersedes and spawns_claim, followed by exactly --- "
+                 "before prose. Copy judge/target/issued/scope/digests from audit exactly; choose verdict from "
+                 "pass|fail|unverified. Each finding has severity blocking|major|minor, location and claim; use [] "
+                 "for empty list fields. A pass may contain only minor findings. Judge causal/no-lookahead validity. "
+                 "Economic superiority, a comparator, deployment and live execution are limitations outside this "
+                 "verdict unless their absence directly prevents causal validity. Inspect implementation, data, "
+                 "execution, guards and prior reported versions. Do not implement code. Missing causal evidence "
+                 "means unverified, never inferred pass. No numeric Slack report and no prose before frontmatter.",
         "cycle_review": 'Return {"decision":"continue"|"wait","rationale":str,"source_ids":[str],'
                         '"predecessor_trial_ids":[uuid]}. Continue only with a distinct useful next hypothesis '
                         "within the frozen scope. Exhausted scope requires wait; do not rename the same experiment.",
@@ -288,10 +295,10 @@ def stage_prompt(company, conn, task):
                    "interpretation": Interpretation}.get(row["stage"])
     if output_type:
         context["output_schema"] = output_type.model_json_schema()
+    # A new attempt owns a new provider thread. Prior read receipts remain useful
+    # operator evidence, but their bytes are not present in that new thread and
+    # therefore cannot be advertised as inspected or completed model evidence.
     attempts = [row["attempt"]]
-    resume = row["context"].get("_audit_resume") if row["stage"] == "audit" else None
-    if isinstance(resume, dict) and isinstance(resume.get("attempt"), int):
-        attempts.append(resume["attempt"])
     raw_reads = conn.execute('''SELECT id,attempt,path,character_offset,content,next_offset,sha256,created_at
         FROM research_stage_reads WHERE stage_id=%s AND attempt=ANY(%s) ORDER BY created_at,id''',
                              (row["id"], attempts)).fetchall()
