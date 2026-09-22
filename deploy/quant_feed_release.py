@@ -316,9 +316,134 @@ with c.db.transaction() as x:
         unlock()
 
 
+def activate(args, current, target, journal, module):
+    """Enable publication only after a real, separately critiqued preview."""
+    if current != target:
+        raise ValueError("activation_commit_mismatch")
+    record = json.loads(journal.read_text())
+    if (record.get("phase") != "preview_active" or record.get("commit") != args.commit
+            or record.get("publication_enabled") is not False):
+        raise ValueError("activation_precondition")
+    selected = [*active_services(), "quant-feed-worker"]
+    if not inspect(["quant-feed-worker"])[0]["State"]["Running"]:
+        raise ValueError("quant_worker_not_running")
+    if not {"api", "dispatch", "news-worker", "codex-runtime", "slack-socket", "quant-feed-worker"} <= set(selected):
+        raise ValueError("required_services_not_running")
+    worker_before = worker_state()
+    postgres_id = inspect(["postgres"])[0]["Id"]
+    env = STATE / "config/runtime.env"
+    oldenv = env.read_bytes()
+    values = dict(line.split("=", 1) for line in oldenv.decode().splitlines()
+                  if "=" in line and not line.startswith("#"))
+    if (values.get("RELEASE_COMMIT") != args.commit or values.get("QUANT_FEED_ENABLED") != "true"
+            or values.get("QUANT_FEED_PUBLISH_ENABLED") != "false"
+            or values.get("QUANT_FEED_CHANNEL_ID") != args.channel):
+        raise ValueError("activation_environment_mismatch")
+    credentials = json.loads((STATE / "secrets/slack-credentials.json").read_text())
+    credential = credentials.get("quant_scout", {})
+    if (credential.get("app_id") != APP_ID or credential.get("bot_user_id") != BOT_USER_ID
+            or set(credential) != {"app_id", "bot_user_id", "bot_token"}):
+        raise ValueError("quant_credential_identity")
+    database_check = """import json
+from quant_company.company import Company
+from quant_company.config import Settings
+c=Company(Settings())
+with c.db.transaction() as x:
+ print(json.dumps({
+  'previews':x.execute("SELECT count(*) AS n FROM quant_feed_documents WHERE state='preview' AND brief IS NOT NULL AND critique IS NOT NULL").fetchone()['n'],
+  'publications':x.execute("SELECT count(*) AS n FROM quant_feed_publications").fetchone()['n'],
+  'running_quant_calls':x.execute("SELECT count(*) AS n FROM quant_feed_calls WHERE state='running'").fetchone()['n'],
+  'sending_outbox':x.execute("SELECT count(*) AS n FROM outbox WHERE status='sending'").fetchone()['n']}))
+"""
+    checks = json.loads(run(["docker", "exec", "-i", "quant-company-api-1", "python", "/app/entrypoint.py",
+                             "python", "-"], input=database_check.encode()))
+
+    def ready(value):
+        return (set(value) == {"previews", "publications", "running_quant_calls", "sending_outbox"}
+                and value["previews"] >= 1 and value["publications"] == 0
+                and value["running_quant_calls"] == 0 and value["sending_outbox"] == 0)
+
+    if not ready(checks):
+        raise ValueError("activation_preview_or_activity_gate")
+    slack_check = """import httpx,json
+from quant_company.config import Settings
+s=Settings();c=json.loads(s.slack_credentials_file.read_text())['quant_scout']
+r=httpx.post('https://slack.com/api/auth.test',headers={'Authorization':'Bearer '+c['bot_token']},timeout=12).json()
+print(json.dumps({'ok':r.get('ok') is True,'user_id':r.get('user_id'),'team_id':r.get('team_id')}))
+"""
+    slack = json.loads(run(["docker", "exec", "-i", "quant-company-dispatch-1", "python", "/app/entrypoint.py",
+                            "python", "-"], input=slack_check.encode()))
+    if slack != {"ok": True, "user_id": BOT_USER_ID, "team_id": values.get("SLACK_TEAM_ID")}:
+        raise ValueError("quant_slack_auth_preflight")
+    lock_path = STATE / "codex/jobs/.runtime-quant.lock"
+    if lock_path.is_symlink():
+        raise ValueError("quant_model_lock_symlink")
+    existed = lock_path.exists()
+    lock_fd = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
+    if not existed:
+        os.fchown(lock_fd, 10001, 10001)
+    changed = False
+    preserved = {name: (STATE / name).read_bytes() for name in (
+        "secrets/slack-credentials.json", "config/roles.json", "config/research-profiles.json", "config/research-qlab.json")}
+    try:
+        try:
+            fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise ValueError("quant_model_lane_busy") from None
+        checks = json.loads(run(["docker", "exec", "-i", "quant-company-api-1", "python",
+                                 "/app/entrypoint.py", "python", "-"], input=database_check.encode()))
+        if not ready(checks):
+            raise ValueError("activation_preview_or_activity_gate")
+        module.atomic(STATE / "releases" / ("quant-feed-" + args.commit + ".activation.env"), oldenv)
+        record.update(phase="activating", activation_started_at=time.time(), activation_preflight=checks,
+                      activation_slack={"app_id": APP_ID, **slack}, worker_at_activation=worker_before)
+        module.atomic(journal, json.dumps(record).encode())
+        setenv(module, {"QUANT_FEED_PUBLISH_ENABLED": "true"})
+        changed = True
+        # Dispatch receives the gate before the producer can enqueue anything.
+        module.compose(current, "up", "-d", "--no-deps", "--force-recreate", "--wait", "--wait-timeout", "120",
+                       "api", "dispatch")
+        module.compose(current, "up", "-d", "--no-deps", "--force-recreate", "--wait", "--wait-timeout", "120",
+                       "quant-feed-worker")
+        status_code = """import json
+from quant_company.company import Company
+from quant_company.config import Settings
+from quant_company.quant_feed.store import QuantFeedStore
+c=Company(Settings());s=QuantFeedStore(c)
+print(json.dumps({'publish_enabled':c.settings.quant_feed_publish_enabled,'authorized':s.authorized()}))
+"""
+        propagated = json.loads(run(["docker", "exec", "-i", "quant-company-dispatch-1", "python",
+                                     "/app/entrypoint.py", "python", "-"], input=status_code.encode()))
+        if propagated != {"publish_enabled": True, "authorized": True}:
+            raise ValueError("activation_settings_not_propagated")
+        result = health(args.commit, selected, postgres_id, worker_before)
+        if not all((STATE / name).read_bytes() == content for name, content in preserved.items()):
+            raise ValueError("unrelated_config_changed")
+        record.update(phase="live_active", activated_for_publication_at=time.time(), health=result,
+                      publication_enabled=True, activation_settings=propagated,
+                      preview_documents_at_activation=checks["previews"], research_worker_untouched=True)
+        module.atomic(journal, json.dumps(record).encode())
+        emit(**record)
+    except BaseException as exc:
+        if changed:
+            module.atomic(env, oldenv)
+            with contextlib.suppress(Exception):
+                module.compose(current, "up", "-d", "--no-deps", "--force-recreate", "--wait", "--wait-timeout", "120",
+                               "api", "dispatch", "quant-feed-worker")
+            with contextlib.suppress(Exception):
+                record.update(phase="preview_active", publication_enabled=False,
+                              activation_last_error=type(exc).__name__,
+                              activation_last_error_code=str(exc) if isinstance(exc, ValueError) else "activation_command_failed",
+                              health=health(args.commit, selected, postgres_id, worker_before))
+                module.atomic(journal, json.dumps(record).encode())
+        raise
+    finally:
+        os.close(lock_fd)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["stage", "cutover"])
+    parser.add_argument("action", choices=["stage", "cutover", "activate"])
     parser.add_argument("base")
     parser.add_argument("commit")
     parser.add_argument("--archive")
@@ -336,7 +461,7 @@ def main():
             raise ValueError("deployment_baseline_changed")
         target = CURRENT.parent / "releases" / args.commit
         journal = STATE / "releases" / ("quant-feed-" + args.commit + ".json")
-        function = stage if args.action == "stage" else cutover
+        function = {"stage": stage, "cutover": cutover, "activate": activate}[args.action]
         module = helper(previous)
         try:
             function(args, previous, target, journal, module)
