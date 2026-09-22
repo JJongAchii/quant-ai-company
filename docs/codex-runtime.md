@@ -21,7 +21,7 @@ Required environment:
 | `CODEX_HOME` | Dedicated persisted CLI authentication directory |
 | `CODEX_JOBS_DIR` | Dedicated persisted receipt directory on a local POSIX filesystem |
 | `CODEX_BIN` | Official pinned CLI executable; default `codex` |
-| `CODEX_TIMEOUT_SECONDS` | Per-inference wall time; default 300, maximum 3600 seconds |
+| `CODEX_TIMEOUT_SECONDS` | Per-inference wall time; default 900, maximum 3600 seconds |
 
 Authenticate as the runtime user with the official `codex login --device-auth`
 flow. API-key environment variables are rejected. An existing API-key login is
@@ -69,7 +69,7 @@ necessary: CLI configuration is not a substitute for withholding host secrets.
 All POST routes require `Authorization: Bearer <MODEL_RUNTIME_TOKEN>`.
 
 ```python
-client = RuntimeClient(base_url, token, timeout_seconds=360)
+client = RuntimeClient(base_url, token, timeout_seconds=960)
 result = await client.run(provider_request)
 status = await client.cancel(provider_request.request_id)
 ```
@@ -117,6 +117,9 @@ returns the cached result without invoking Codex or requiring current quota.
 The HTTP client has no internal retry loop. Transport timeouts return `uncertain`:
 the company service may recover the **same** request ID to obtain its receipt,
 but must not invent a new inference ID to get around an ambiguous outcome.
+The deployed company client waits 960 seconds and its Temporal activity allows
+20 minutes, so the runtime's 900-second terminal receipt is committed before either
+outer boundary expires.
 
 `POST /v1/turns/{request_id}/cancel` explicitly cancels a superseded turn and
 terminates its process group. It returns `cancelled`, `completed`, or `uncertain`.

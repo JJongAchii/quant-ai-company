@@ -6,10 +6,12 @@ from datetime import timedelta
 from uuid import uuid4
 
 import pytest
+from psycopg.types.json import Jsonb
 
-from quant_company.company import Company, PolicyError, now
+from quant_company.company import Company, PolicyError, now, stable
 from quant_company.contracts import AgentDecision, ProviderResponse
-from quant_company.research.controller import MissionController, stage_prompt
+from quant_company.research.controller import MissionController, _compatible_stage_reads, stage_prompt
+from quant_company.research.mission_backend import MissionBackend
 
 from .test_research_missions import Harness, spec_payload
 
@@ -264,6 +266,100 @@ def test_retry_reads_are_bound_to_new_validator_attempt(mission):
     company.commit_turn(turn_id, response.model_copy(update={"request_id": turn_id}))
     with company.db.transaction() as conn:
         assert {row["attempt"] for row in conn.execute("SELECT attempt FROM research_stage_reads")} == {1, 2}
+
+
+def test_operator_reconciles_timeout_into_started_audit_attempt_without_rereading(mission):
+    company = mission.company
+    controller = MissionController(company, backend=FixtureBackend(company))
+    assert controller.tick()["state"] == "running"
+    stage, first_turn = active(mission)
+    evidence = company.settings.research_artifact_dir / "audit-evidence.txt"
+    evidence.parent.mkdir(parents=True, exist_ok=True)
+    evidence.write_text("immutable validator evidence")
+    digest = hashlib.sha256(evidence.read_bytes()).hexdigest()
+    context = {
+        **stage["context"],
+        "audit": {"scope": ["audit-evidence.txt"], "validator_request_id": first_turn},
+        "_audit": {"binding": {"validator_request_id": first_turn},
+                   "required_reads": {"audit/evidence.txt": {
+                       "sha256": digest, "characters": len(evidence.read_text())}}},
+        "_private_files": {"audit/evidence.txt": {
+            "path": str(evidence), "sha256": digest, "size": evidence.stat().st_size}},
+        "available_files": [{"name": "audit/evidence.txt", "sha256": digest,
+                             "size": evidence.stat().st_size}],
+    }
+    with company.db.transaction() as conn:
+        conn.execute("""UPDATE research_mission_stages SET stage='audit',actor='validator',context=%s
+            WHERE id=%s""", (Jsonb(context), stage["id"]))
+        conn.execute("UPDATE tasks SET agent='validator' WHERE id=%s", (stage["task_id"],))
+
+    company.prepare_turn(first_turn)
+    read = ProviderResponse(request_id=first_turn, provider="fixture", decision=AgentDecision(
+        say="", status="continue", tools=[{"name": "research_control", "arguments": {
+            "action": "read_stage_file", "path": "audit/evidence.txt"}}]))
+    company.commit_turn(first_turn, read)
+    _, failed_turn = active(mission)
+    company.prepare_turn(failed_turn)
+    company.block_turn(failed_turn, "timeout")
+
+    with company.db.transaction() as conn:
+        prior = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s FOR UPDATE", (stage["id"],)).fetchone()
+        second_task_id = stable(f"mission-stage-attempt:{stage['id']}:2")
+        second_task = conn.execute("""INSERT INTO tasks(id,project_id,agent,instruction,revision,depth,priority,kind)
+            VALUES (%s,%s,'validator','Retry synthetic audit',1,0,0,'research_stage') RETURNING *""",
+                                   (second_task_id, mission.project["project_id"])).fetchone()
+        conn.execute("INSERT INTO research_stage_attempts(stage_id,attempt,task_id) VALUES (%s,2,%s)",
+                     (stage["id"], second_task_id))
+        second_turn = company._new_turn(conn, second_task)
+        context = dict(prior["context"])
+        context["audit"] = {**context["audit"], "validator_request_id": str(second_turn)}
+        context["_audit"] = {**context["_audit"],
+                             "binding": {"validator_request_id": str(second_turn)}}
+        conn.execute("""UPDATE research_mission_stages SET task_id=%s,attempt=2,state='running',context=%s,
+            error=NULL,retry_at=NULL WHERE id=%s""", (second_task_id, Jsonb(context), stage["id"]))
+
+    company.prepare_turn(str(second_turn))
+    company.defer_turn(str(second_turn), 5, "busy")
+    recovered = company.retry_task(str(stage["task_id"]), reconciliation_note=(
+        "Durable runtime receipt says timeout with no response; following busy request produced no receipt."))
+    assert recovered["recovery_mode"] == "next_attempt_exact_digest_reads"
+    assert recovered["reused_read_count"] == 1
+    assert recovered["turn_id"] != str(second_turn)
+    prepared = company.prepare_turn(recovered["turn_id"])
+    payload = json.loads(prepared["request"]["prompt"].split("MISSION DATA JSON:\n", 1)[1])
+    assert payload["completed_read_paths"] == ["audit/evidence.txt"]
+    assert payload["inspected_chunks"] == [{"path": "audit/evidence.txt", "offset": 0}]
+
+    response = ProviderResponse(request_id=recovered["turn_id"], provider="fixture", decision=AgentDecision(
+        say="", status="complete", artifacts=[{"title": "Synthetic audit",
+        "content": json.dumps({"markdown": "Synthetic validator result"})}]))
+    company.commit_turn(recovered["turn_id"], response)
+    snapshot = mission.snapshot()
+    with company.db.transaction() as conn:
+        current = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+        backend = MissionBackend(company)
+        turns = backend._actor_turns(conn, current["task_id"], "validator", snapshot)
+        assert [turn["status"] for turn in turns] == ["stale", "completed"]
+        backend._check_audit_turns(conn, current, snapshot)
+        assert {row["attempt"] for row in conn.execute("SELECT attempt FROM research_stage_reads")} == {1}
+
+
+def test_reconciled_audit_excludes_prior_bytes_when_full_file_digest_changed():
+    timestamp = now()
+    row = {"stage": "audit", "attempt": 2, "context": {
+        "_audit_resume": {"attempt": 1},
+        "_private_files": {
+            "stable.txt": {"sha256": "a" * 64},
+            "changed.txt": {"sha256": "c" * 64},
+        },
+    }}
+    reads = [
+        {"id": uuid4(), "attempt": 1, "path": "stable.txt", "character_offset": 0,
+         "content": "stable", "next_offset": None, "sha256": "a" * 64, "created_at": timestamp},
+        {"id": uuid4(), "attempt": 1, "path": "changed.txt", "character_offset": 0,
+         "content": "old", "next_offset": None, "sha256": "b" * 64, "created_at": timestamp},
+    ]
+    assert [item["path"] for item in _compatible_stage_reads(row, reads)] == ["stable.txt"]
 
 
 def test_maintenance_receives_sanitized_contract_failure_not_private_research(mission):

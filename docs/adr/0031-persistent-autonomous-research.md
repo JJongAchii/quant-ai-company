@@ -79,6 +79,16 @@ the personal workflow is unchanged. Audit scope includes reported trial versions
 actual artifacts. Missing/unverified audits withhold performance from Slack and shared
 knowledge. No live capital allocation or new confirmation is authorized by discovery.
 
+A terminal validator runtime failure requires an operator reconciliation note before a
+new inference ID is created. If the same attempt is still waiting, its completed reads
+remain attached to that attempt. If the controller has already opened exactly one empty
+successor attempt, only prior chunks whose full-file SHA-256 still equals the successor's
+immutable file map may be inherited. Changed binding or package files must be read again.
+The failed receipt, superseded turn and retry event remain durable, and the final audit
+checker verifies every inherited chunk against its original completed validator turn.
+This exception applies only to validator audits; ordinary scientific retries remain
+attempt-local.
+
 ## Acceptance and rollout
 
 Use real disposable PostgreSQL/Temporal for approval races, restart, duplicate/lost

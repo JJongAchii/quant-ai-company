@@ -400,7 +400,20 @@ class MissionBackend:
                 or task["status"] != "completed" or not turns
                 or str(turns[0]["id"]) != stable("turn:" + str(task_id) + ":1")):
             raise PolicyError("mission_independent_task_binding_invalid")
+        reconciled = set()
+        if actor == "validator":
+            events = conn.execute("""SELECT detail FROM events WHERE project_id=%s AND kind='operator_retry'
+                ORDER BY id""", (task["project_id"],)).fetchall()
+            for event in events:
+                reconciled.update(event["detail"].get("reconciled_turn_ids", []))
+        from .controller import AUDIT_RECONCILED_ERROR
+
         for turn in turns:
+            if (turn["status"] == "stale" and str(turn["id"]) in reconciled
+                    and turn["error"] == AUDIT_RECONCILED_ERROR and turn["request"]
+                    and turn["request"].get("request_id") == str(turn["id"])
+                    and turn["response"] is None):
+                continue
             if (turn["status"] != "completed" or not turn["request"] or not turn["response"]
                     or turn["request"].get("request_id") != str(turn["id"])
                     or turn["response"].get("request_id") != str(turn["id"])):
@@ -488,15 +501,52 @@ class MissionBackend:
         turns = self._actor_turns(conn, row["task_id"], "validator", snapshot)
         if audit["binding"]["validator_request_id"] != str(turns[0]["id"]):
             raise PolicyError("mission_validator_request_changed")
-        ids = [UUID(stable("stage-read:" + str(turn["id"]))) for turn in turns]
-        reads = conn.execute("""SELECT path,character_offset AS \"offset\",content,next_offset,sha256
-            FROM research_stage_reads WHERE stage_id=%s AND id=ANY(%s) ORDER BY path,character_offset""",
-                             (row["id"], ids)).fetchall()
+        current_ids = {UUID(stable("stage-read:" + str(turn["id"]))) for turn in turns}
+        attempts = [row["attempt"]]
+        allowed_ids = set(current_ids)
+        resume = row["context"].get("_audit_resume")
+        if resume:
+            event = conn.execute("""SELECT 1 FROM events WHERE project_id=%s AND kind='operator_retry'
+                AND detail->>'stage_id'=%s AND detail->>'task_id'=%s
+                AND detail->>'recovery_mode'='next_attempt_exact_digest_reads' LIMIT 1""",
+                                 (snapshot["project_id"], str(row["id"]), resume["task_id"])).fetchone()
+            previous = conn.execute("""SELECT a.task_id,t.agent,t.kind,t.project_id,t.revision,t.status
+                FROM research_stage_attempts a JOIN tasks t ON t.id=a.task_id
+                WHERE a.stage_id=%s AND a.attempt=%s""", (row["id"], resume["attempt"])).fetchone()
+            if (not event or not previous or str(previous["task_id"]) != resume["task_id"]
+                    or previous["agent"] != "validator" or previous["kind"] != "research_stage"
+                    or str(previous["project_id"]) != str(snapshot["project_id"])
+                    or previous["revision"] != snapshot["revision"] or previous["status"] != "blocked"):
+                raise PolicyError("mission_audit_resume_binding_invalid")
+            prior_turns = conn.execute("SELECT * FROM turns WHERE task_id=%s ORDER BY sequence",
+                                       (previous["task_id"],)).fetchall()
+            failed_seen = False
+            for turn in prior_turns:
+                if str(turn["id"]) == resume["failed_turn_id"]:
+                    failed_seen = (turn["status"] == "blocked" and turn["response"] is None
+                                   and turn["request"] is not None)
+                    continue
+                if (turn["status"] != "completed" or not turn["request"] or not turn["response"]
+                        or turn["request"].get("request_id") != str(turn["id"])
+                        or turn["response"].get("request_id") != str(turn["id"])):
+                    raise PolicyError("mission_audit_resume_turn_invalid")
+                allowed_ids.add(UUID(stable("stage-read:" + str(turn["id"]))))
+            if not failed_seen:
+                raise PolicyError("mission_audit_resume_failure_missing")
+            attempts.append(resume["attempt"])
+        raw_reads = conn.execute("""SELECT id,attempt,path,character_offset,content,next_offset,sha256,created_at
+            FROM research_stage_reads WHERE stage_id=%s AND attempt=ANY(%s)
+            ORDER BY created_at,id""", (row["id"], attempts)).fetchall()
+        if any(item["id"] not in allowed_ids for item in raw_reads):
+            raise PolicyError("mission_audit_read_turn_binding_invalid")
+        from .controller import _compatible_stage_reads
+
+        reads = _compatible_stage_reads(row, raw_reads)
         for path, expected in audit["required_reads"].items():
             position = 0
             file_reads = [item for item in reads if item["path"] == path]
             for item in file_reads:
-                if item["sha256"] != expected["sha256"] or item["offset"] != position:
+                if item["sha256"] != expected["sha256"] or item["character_offset"] != position:
                     raise PolicyError("mission_audit_read_binding_invalid")
                 position += len(item["content"])
                 if item["next_offset"] is not None and item["next_offset"] != position:
