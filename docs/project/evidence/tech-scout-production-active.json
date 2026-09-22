@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-09-22T00:43:58Z",
+  "identity": {
+    "name": "Tech Scout",
+    "role_id": "tech_scout",
+    "delivery_only": true,
+    "active_model_role": false,
+    "tools": [],
+    "can_delegate_to": [],
+    "workspace_id": "T0C1YRDRPNF",
+    "app_id": "A0C3112M7N3",
+    "bot_user_id": "U0C3JD8E4LR",
+    "bot_id": "B0C3BGXVDEZ",
+    "slack_auth_ok": true,
+    "oauth_scopes_from_slack_response_header": [
+      "chat:write"
+    ],
+    "socket_mode_enabled": false,
+    "event_subscriptions_enabled": false,
+    "channel": {
+      "name": "tech-feeds",
+      "id": "C0C2KPB76KE",
+      "membership_observed_in_slack_ui": true
+    },
+    "profile": {
+      "asset": "slack-apps/avatars/tech_scout.png",
+      "sha256": "95416a2f2c8693b1e5a3a4ca01bcbacff7e5d2a89e36cfa310dbfbcc52a665c1",
+      "width": 1254,
+      "height": 1254,
+      "slack_ui_observation": "Same ivory ceramic robot form and portrait composition as the employee bots, distinguished by a navy-teal palette, aqua eyes and radar-compass chest emblem.",
+      "applied_to_live_app": true
+    }
+  },
+  "release": {
+    "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/52",
+    "ci_conclusion": "success",
+    "commit": "3cd63607d821ecb6489c09135d16fc5d063f9022",
+    "previous_commit": "dddda0badb3a37c0823392a29723bdb6ababd7e2",
+    "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "build_method": "reviewed wheel over unchanged qualified dependency layers",
+    "wheel_sha256": "89d4bac151205577239cc38c99694f9478be16e9824bd3273bdb45b8e4c11114",
+    "installed_source_matches_commit_in_all_five_image_variants": true,
+    "healthy_services": 8,
+    "postgres_recreated": false,
+    "preserved_configs": true,
+    "preflight_activity": {
+      "running_turns": 0,
+      "sending_outbox": 0,
+      "news_reviews": 0,
+      "news_triages": 0,
+      "news_searches": 0,
+      "research_jobs": 0
+    },
+    "drain_wait_seconds": 85,
+    "backup": {
+      "path": "/var/lib/quant-company/backups/company-20260922T003836Z-c0c1d160.tar.gz",
+      "sha256": "5c174b2357d0e544c08f4bffc0904abfcace5a8de2f3bb9a8d3c5852e15c5d96",
+      "secrets_included": false
+    },
+    "migration": {
+      "before": {
+        "pending_reporter": 0,
+        "pending_tech_scout": 0,
+        "reporter_nonpending": 28,
+        "tech_publications": 28,
+        "tasks": 114,
+        "turns": 285,
+        "sources": 12
+      },
+      "after": {
+        "pending_reporter": 0,
+        "pending_tech_scout": 0,
+        "reporter_nonpending": 28,
+        "tech_publications": 28,
+        "tasks": 114,
+        "turns": 285,
+        "sources": 12
+      }
+    }
+  },
+  "feed": {
+    "enabled": true,
+    "publish_enabled": true,
+    "authorized": true,
+    "model_execution": "not_used",
+    "sources_total": 12,
+    "sources_healthy": 12,
+    "latest_collection": "2026-09-22T00:41:20.325236Z",
+    "tech_feed_project_tasks": 0,
+    "tech_feed_project_turns": 0,
+    "delivery_counts_after_cutover": [
+      {
+        "author": "reporter",
+        "agent": "reporter",
+        "status": "delivered",
+        "count": 28,
+        "meaning": "historical receipts preserved"
+      },
+      {
+        "author": "tech_scout",
+        "agent": "tech_scout",
+        "status": "delivered",
+        "count": 1,
+        "meaning": "first natural post-cutover article"
+      }
+    ],
+    "first_natural_tech_scout_delivery": {
+      "id": "b76ecef6-09fe-5696-9630-25b68a76ea87",
+      "source": "GeekNews",
+      "title": "Transformer를 시각적으로 이해하기",
+      "url": "https://news.hada.io/topic?id=34091",
+      "author": "tech_scout",
+      "agent": "tech_scout",
+      "channel": "C0C2KPB76KE",
+      "status": "delivered",
+      "attempts": 1,
+      "sent_ts": "1790037677.725119",
+      "error": null,
+      "slack_permalink": "https://achiisquantresearch.slack.com/archives/C0C2KPB76KE/p1790037677725119",
+      "slack_ui_readback": {
+        "sender": "Tech Scout",
+        "displayed_at": "09:41 KST",
+        "title_and_body_match_database": true,
+        "matching_profile_avatar_visible": true
+      }
+    }
+  },
+  "credentials": {
+    "file_owner_and_mode": "root:root:0444",
+    "entries": 6,
+    "tech_scout_fields": [
+      "app_id",
+      "bot_user_id",
+      "bot_token"
+    ],
+    "pre_change_backup_present": true,
+    "secret_values_recorded_here": false
+  },
+  "validation": {
+    "local_regression": {
+      "passed": 996,
+      "skipped": 36,
+      "failed": 0,
+      "receipt": "docs/project/evidence/tech-scout-tests.xml"
+    },
+    "ruff": "passed",
+    "github_ci": "passed"
+  }
+}

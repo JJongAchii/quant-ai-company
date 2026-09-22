@@ -2,6 +2,10 @@
 
 2026-09-21. Implemented, integrated, deployed and activated in the existing `#tech-feeds` channel.
 
+2026-09-22 identity update: feed delivery moved from Reporter to the dedicated **Tech Scout** app. See the
+[live activation and first natural Tech Scout delivery](TECH-SCOUT-ACTIVATION.md). The original collection and
+delivery-policy acceptance below remains the provenance for the unchanged feed subsystem.
+
 The approved feed has 12 sources, no model requests, original-language title/link/excerpt, first-sync baseline,
 72-hour freshness, durable deduplication, KST 06:00–24:00 delivery and one-minute spacing.
 See [operating instructions](../tech-feed.md) and [decision](../adr/0032-zero-model-tech-feed.md).
