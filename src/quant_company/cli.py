@@ -81,6 +81,7 @@ def main():
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8000)
     sub.add_parser("worker")
+    sub.add_parser("news-worker")
     sub.add_parser("dispatch")
     sub.add_parser("slack-socket")
     news = sub.add_parser("news")
@@ -122,6 +123,10 @@ def main():
         from .runtime import worker_main
 
         asyncio.run(worker_main(settings))
+    elif args.command == "news-worker":
+        from .runtime import news_worker_main
+
+        asyncio.run(news_worker_main(settings))
     elif args.command == "dispatch":
         from .runtime import dispatch_main
 

@@ -47,7 +47,7 @@ if mode == 'hang':
     signal.signal(signal.SIGTERM, signal.SIG_IGN)
     time.sleep(30)
 if mode == 'delay':
-    time.sleep(0.3)
+    time.sleep(control.get('delay_seconds', 0.3))
 if mode == 'quota':
     print(json.dumps({'type': 'turn.failed', 'error': {'message': 'usage limit reached SECRET-ERROR'}}))
     sys.exit(1)
@@ -420,11 +420,13 @@ async def test_explicit_quota_defers_then_retries_same_bound_input(fake_codex, r
     assert len(calls()) == 2
 
 
-async def test_orphan_running_receipt_never_restarts_inference(fake_codex, request_model):
+@pytest.mark.parametrize("identity", ["turn-01", "news-screen-01", "news-search-01", "news-01"])
+async def test_orphan_running_receipt_never_restarts_inference(fake_codex, request_model, identity):
     config, _, calls = fake_codex
+    request_model = request_model.model_copy(update={"request_id": identity})
     config.jobs_dir.mkdir()
-    atomic_json(config.jobs_dir / "turn-01.json", {
-        "version": 1, "request_id": "turn-01", "input_digest": request_digest(request_model),
+    atomic_json(config.jobs_dir / f"{identity}.json", {
+        "version": 1, "request_id": identity, "input_digest": request_digest(request_model),
         "state": "running", "started_at": time.time() - 600,
     })
     with pytest.raises(ProviderFault) as caught:
@@ -459,6 +461,62 @@ async def test_live_duplicate_and_other_turn_receive_busy(fake_codex, request_mo
         assert caught.value.code == "busy"
     await operation
     assert len(calls()) == 1
+
+
+async def test_news_and_company_have_independent_single_slots(fake_codex, request_model):
+    config, configure, calls = fake_codex
+    configure(mode="delay", delay_seconds=1)
+    news = request_model.model_copy(update={"request_id": "news-screen-01"})
+    # Separate runner objects prove the limit is a filesystem lock, not an in-memory semaphore.
+    operations = [asyncio.create_task(runner_for(config).run(request)) for request in (request_model, news)]
+    try:
+        async with asyncio.timeout(3):
+            while len(calls()) < 2:
+                await asyncio.sleep(0.01)
+        assert all(not operation.done() for operation in operations)
+        for identity in ("turn-01", "another-turn", "maintenance-01", "news-screen-01", "news-search-02", "news-03"):
+            with pytest.raises(ProviderFault) as caught:
+                await runner_for(config).run(request_model.model_copy(update={"request_id": identity}))
+            assert caught.value.code == "busy"
+        results = await asyncio.gather(*operations)
+        assert len(calls()) == 2
+        for request, result in zip((request_model, news), results, strict=True):
+            assert await runner_for(config).run(request) == result
+        with pytest.raises(ProviderFault, match="different input"):
+            await runner_for(config).run(news.model_copy(update={"prompt": "Changed news input"}))
+        assert len(calls()) == 2
+    finally:
+        for operation in operations:
+            operation.cancel()
+        await asyncio.gather(*operations, return_exceptions=True)
+
+
+async def test_cancelling_news_does_not_cancel_company_lane(fake_codex, request_model):
+    config, configure, calls = fake_codex
+    configure(mode="delay", delay_seconds=1)
+    runner = runner_for(config)
+    client = RuntimeClient("http://runtime", "token", transport=httpx.ASGITransport(
+        app=create_app(runner=runner, token="token")))
+    news = request_model.model_copy(update={"request_id": "news-cancel-01"})
+    operations = [asyncio.create_task(client.run(request)) for request in (request_model, news)]
+    try:
+        async with asyncio.timeout(3):
+            while len(calls()) < 2:
+                await asyncio.sleep(0.01)
+        assert await client.cancel(news.request_id) == "cancelled"
+        with pytest.raises(ProviderFault) as caught:
+            await operations[1]
+        assert caught.value.code == "uncertain"
+        completed = await operations[0]
+        assert await client.run(request_model) == completed
+        with pytest.raises(ProviderFault) as replay:
+            await client.run(news)
+        assert replay.value.code == "uncertain"
+        assert len(calls()) == 2
+    finally:
+        for operation in operations:
+            operation.cancel()
+        await asyncio.gather(*operations, return_exceptions=True)
 
 
 async def test_cancel_endpoint_kills_process_group_and_blocks_replay(fake_codex, request_model):

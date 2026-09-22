@@ -1,5 +1,6 @@
 import asyncio
 import json
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime, timedelta
 from email.utils import format_datetime
 
@@ -350,15 +351,29 @@ async def test_collector_runs_without_model_and_preserves_feed_health(news):
         assert conn.execute("SELECT last_success FROM news_sources").fetchone()["last_success"] is not None
 
 
-def test_budget_and_owner_work_precede_new_editorial_calls(news):
+def test_shared_budget_blocks_news_but_owner_work_does_not(news):
     ready_article(news)
     news.company.settings.company_max_daily_turns = 1
     with news.db.transaction() as conn:
         conn.execute("INSERT INTO daily_usage(day,reserved) VALUES(CURRENT_DATE,1)")
     assert news.prepare_review()["state"] == "defer"
     news.company.settings.company_max_daily_turns = 0
-    news.company.ingest(event_key="owner-request", owner="UHUMAN", text="User work comes first", agent="data")
-    assert news.prepare_review()["state"] == "defer"
+    news.company.ingest(event_key="owner-request", owner="UHUMAN", text="Concurrent user work", agent="data")
+    assert news.prepare_review()["state"] == "ready"
+
+
+def test_company_and_news_cannot_double_reserve_last_daily_slot(news):
+    ready_article(news)
+    news.company.settings.company_max_daily_turns = 1
+    news.company.ingest(event_key="budget-race", owner="UHUMAN", text="User work", agent="data")
+    with news.db.transaction() as conn:
+        turn_id = str(conn.execute("SELECT id FROM turns").fetchone()["id"])
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        pending = [pool.submit(news.prepare_review), pool.submit(news.company.prepare_turn, turn_id)]
+        results = [future.result(timeout=10) for future in pending]
+    assert sorted(result["state"] for result in results) == ["defer", "ready"]
+    with news.db.transaction() as conn:
+        assert conn.execute("SELECT reserved FROM daily_usage").fetchone()["reserved"] == 1
 
 
 def test_reporter_manifest_is_opt_in_and_packaged_role_is_inactive(tmp_path):
@@ -452,11 +467,11 @@ def test_expired_editorial_result_cannot_be_published(news):
     assert news.commit_review(reply(prepared["request"]))["items"][0]["state"] == "held"
 
 
-def test_owner_work_precedes_resuming_frozen_editorial_request(news):
+def test_owner_work_does_not_block_resuming_frozen_editorial_request(news):
     ready_article(news)
     request = news.prepare_review()["request"]
     news.company.ingest(event_key="owner-after-freeze", owner="UHUMAN", text="User work", agent="data")
-    assert news.prepare_review()["state"] == "defer"
+    assert news.prepare_review() == {"state": "ready", "request": request}
     with news.db.transaction() as conn:
         assert conn.execute("SELECT request FROM news_reviews").fetchone()["request"] == request
 

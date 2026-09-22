@@ -305,7 +305,7 @@ async def test_digest_rate_limit_retries_same_container_and_empty_night_is_silen
     assert calls[0]["client_msg_id"] == calls[1]["client_msg_id"]
 
 
-def test_optimized_search_model_interval_and_user_work_priority(efficient):
+def test_optimized_search_model_interval_and_independent_news_lane(efficient):
     from tests.test_news import source
     from tests.test_news_scope import register, search_reply
 
@@ -324,9 +324,39 @@ def test_optimized_search_model_interval_and_user_work_priority(efficient):
         conn.execute("UPDATE news_searches SET completed_at=now()-interval '61 minutes'")
     assert search.prepare()["state"] == "ready"
     store.company.ingest(event_key="efficiency-user", text="연구 상태를 알려줘", owner="UHUMAN", agent="director", channel="CQUANT", thread_ts="88.1")
-    assert NewsScreeningStore(store.company).prepare()["state"] == "defer"
-    assert store.prepare_review()["state"] == "defer"
-    assert search.prepare()["state"] == "defer"
+    assert NewsScreeningStore(store.company).prepare()["state"] == "idle"
+    assert store.prepare_review()["state"] == "idle"
+    assert search.prepare()["state"] == "ready"
+
+
+@pytest.mark.parametrize("turn_state", ["queued", "running", "waiting"])
+def test_news_screening_and_review_continue_during_user_work(efficient, turn_state):
+    store, _ = efficient
+    overnight(store)
+    store.company.ingest(event_key="concurrent-user", text="User research", owner="UHUMAN", agent="data")
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE turns SET status=%s,due_at=now()", (turn_state,))
+    select(store)
+    request = store.prepare_review()["request"]
+    assert store.prepare_review()["request"] == request
+    with store.db.transaction() as conn:
+        assert conn.execute("SELECT reserved FROM daily_usage").fetchone()["reserved"] == 2
+
+
+def test_all_news_stages_still_respect_global_runtime_pause(efficient):
+    from tests.test_news import source
+    from tests.test_news_scope import register
+
+    store, _ = efficient
+    register(store, [source(kind="media", allow_attributed_reporting=True)])
+    store.company.settings.news_search_enabled = store.company.settings.company_web_enabled = True
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE runtime_control SET paused_until=now()+interval '1 hour'")
+    assert NewsScreeningStore(store.company).prepare() == {"state": "defer"}
+    assert store.prepare_review() == {"state": "defer"}
+    assert NewsDiscoveryStore(store.company).prepare() == {"state": "defer"}
+    with store.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM daily_usage").fetchone()["n"] == 0
 
 
 async def test_quiet_news_does_not_block_user_reply(efficient):

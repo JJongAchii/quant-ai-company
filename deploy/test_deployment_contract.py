@@ -88,7 +88,7 @@ def test_compose_model_boundary_and_published_ports():
         assert not service.get("privileged", False)
         assert all("docker.sock" not in mount.get("source", "") for mount in service.get("volumes", []))
         assert all(port["host_ip"] == "127.0.0.1" for port in service.get("ports", []))
-    for name in ("api", "dispatch", "worker", "slack-socket", "codex-runtime"):
+    for name in ("api", "dispatch", "worker", "news-worker", "slack-socket", "codex-runtime"):
         assert services[name]["read_only"] and services[name]["user"] == "10001:10001"
     for name in ("api", "dispatch", "slack-socket", "postgres"):
         assert "model_runtime_token" not in [item["source"] for item in services[name].get("secrets", [])]
@@ -165,10 +165,22 @@ def test_two_gib_candidate_leaves_host_memory_without_changing_service_boundarie
     candidate = compose_config(extra_env=DEPLOY / "lightsail-2gb.env.example")["services"]
     assert set(candidate) == set(base)
     # Static admission check only; real RSS/OOM and execution checks are still required.
-    assert sum(int(service["mem_limit"]) for service in candidate.values()) <= 1664 * 1024 * 1024
+    assert sum(int(service["mem_limit"]) for service in candidate.values()) <= 1856 * 1024 * 1024
     for name, service in candidate.items():
         for boundary in ("networks", "secrets", "volumes", "ports", "read_only", "security_opt"):
             assert service.get(boundary) == base[name].get(boundary)
+
+
+def test_news_worker_is_independent_and_has_only_news_runtime_credentials():
+    services = compose_config()["services"]
+    news = services["news-worker"]
+    assert news["command"] == ["quant-company", "news-worker"]
+    assert "worker" not in news["depends_on"]
+    assert {item["source"] for item in news["secrets"]} == {
+        "database_password", "temporal_api_key", "model_runtime_token"}
+    assert int(news["mem_limit"]) == 192 * 1024 * 1024
+    assert set(news["networks"]) == {"core", "model", "service_egress"}
+    assert "news-worker" in backup.APP_SERVICES
 
 
 def resolve_cf(node, parameters, conditions):
@@ -346,7 +358,7 @@ def test_backup_pauses_socket_ingress_until_snapshot_is_complete(
 
     monkeypatch.setattr(backup, "run", record)
     monkeypatch.setattr(backup.subprocess, "check_output", lambda *args, **kwargs:
-                        "postgres\nslack-socket\napi\n" + ("maintenance\n" if maintenance_running else "")
+                        "postgres\nslack-socket\napi\nnews-worker\n" + ("maintenance\n" if maintenance_running else "")
                         + ("claude-runtime\n" if claude_running else ""))
     backup.backup(args, cfg, ["docker", "compose"], state)
     stop = next(i for i, command in enumerate(calls) if "stop" in command)
@@ -354,6 +366,7 @@ def test_backup_pauses_socket_ingress_until_snapshot_is_complete(
     resume = next(i for i, command in enumerate(calls) if "start" in command)
     assert stop < dump < resume
     assert "slack-socket" in calls[stop] and "slack-socket" in calls[resume]
+    assert "news-worker" in calls[stop] and "news-worker" in calls[resume]
     assert "worker" not in calls[resume]  # Previously stopped processes stay stopped.
     assert ("maintenance" in calls[stop]) == ("maintenance" in calls[resume]) == maintenance_running
     assert ("claude-runtime" in calls[stop]) == ("claude-runtime" in calls[resume]) == claude_running

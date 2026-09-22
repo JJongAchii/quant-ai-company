@@ -6,13 +6,14 @@
 
 ## 1. 처음 사용할 구성
 
-Linux Lightsail 한 대에서 API, Slack Socket 수신기, worker, dispatcher, PostgreSQL 16,
+Linux Lightsail 한 대에서 API, Slack Socket 수신기, worker, news-worker, dispatcher, PostgreSQL 16,
 격리된 Codex 실행기를 운영한다. 비용 검토 후 첫 자격검증 후보는 **2GB·월 $12**다.
 기존 4GB 기본 설정의 메모리 한도 합계는 2GB를 넘으므로 그대로 2GB에 적용하지 않는다.
 기본 Slack 연결에는 도메인과 공개 HTTP endpoint가 필요 없다.
 Socket 수신기가 Slack에 인증된 outbound WebSocket 연결을 유지한다. Caddy는 선택 기능이다.
 [Slack Socket Mode](https://docs.slack.dev/apis/events-api/using-socket-mode/) 운영 workflow는 Temporal Cloud를 사용한다. 직원 10명 중 총괄·금융전략·
-국내연구·데이터만 활성화하며, Codex는 한 번에 한 작업을 처리한다. 무거운 계산·학습은
+국내연구·데이터만 활성화한 첫 검증에서 Codex는 한 번에 한 작업을 처리했다. 현재 실행기에는
+일반 업무 1개와 뉴스 전용 1개의 자리가 있다([뉴스 실행 정책](news.md)). 무거운 계산·학습은
 이 서버의 업무가 아니다. 2GB에서 네 직원·8회 모델 호출의 합성 협업을 완료했다. 약 4분간
 가용 메모리는 최소 1072.5 MiB, Codex 컨테이너 peak는 177.6 MiB, OOM kill은 0이었다.
 장시간 운영·큰 문서·더 많은 동시 작업의 용량은 별도로 측정한다.
@@ -20,7 +21,7 @@ Socket 수신기가 Slack에 인증된 outbound WebSocket 연결을 유지한다
 ### 2GB 자격검증 후보
 
 [메모리 설정](../deploy/lightsail-2gb.env.example)을 영속 `runtime.env`에 반영한다. Socket Mode
-여섯 서비스의 메모리 한도 합계는 1664 MiB다. 명목 2 GiB 중 384 MiB를 호스트용으로 남기는
+뉴스 전용 프로세스를 포함한 일곱 서비스의 메모리 한도 합계는 1856 MiB다. 명목 2 GiB 중 192 MiB를 호스트용으로 남기는
 정적 설정이며, 실제 사용 가능 메모리와 안정성을 보장하지 않는다. 기본 4GB 설정은 별도로 유지한다.
 임시 Compose override 대신 영속 환경 파일을 사용하므로 재시작·백업·복원에도 같은 한도가 적용된다.
 
@@ -34,6 +35,7 @@ worker·호스트 재시작을 측정한다. 이 설정에는 선택 HTTPS profi
 | API | edge/core, host 127.0.0.1:8000 | DB 앱 계정, Slack 자격증명·operator token |
 | Caddy — 선택 `https` profile | public 80/443 → API | 인증서 저장, HTTP 수신을 선택할 때만 실행 |
 | worker | core/model/서비스 egress | DB, Temporal API key, model runtime token |
+| news-worker | core/model/서비스 egress | 뉴스 수집·선별·편집·검색 전담. DB, Temporal, model runtime token만 사용 |
 | dispatcher | core/서비스 egress | DB, Temporal, Slack 발신 token |
 | PostgreSQL | core 전용, 공개 포트 없음 | DB 볼륨, 별도 관리자 계정 |
 | Codex runtime | model/전용 egress | Codex 계정 캐시·job 영수증·runtime token |

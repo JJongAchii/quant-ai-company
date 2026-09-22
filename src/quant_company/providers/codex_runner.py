@@ -460,14 +460,19 @@ class CodexRunner:
         if cached is not None:
             return cached
         try:
-            lock_fd = os.open(directory / ".runtime.lock", os.O_CREAT | os.O_RDWR, 0o600)
+            # The service owns request IDs. All news stages share one reserved slot;
+            # ordinary turns/maintenance retain the original single-slot lock.
+            # Do not change the request digest or receipt path at this cutover.
+            lane = "news" if request.request_id.startswith("news-") else "company"
+            lock_name = ".runtime-news.lock" if lane == "news" else ".runtime.lock"
+            lock_fd = os.open(directory / lock_name, os.O_CREAT | os.O_RDWR, 0o600)
         except OSError:
             raise ProviderFault("unavailable", "The durable runtime lock is unavailable.") from None
         try:
             try:
                 fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
             except BlockingIOError:
-                raise ProviderFault("busy", "The subscription runtime is executing another turn.", 5) from None
+                raise ProviderFault("busy", "The subscription runtime lane is executing another turn.", 5) from None
             cached = self._read_receipt(receipt_path, digest, request.request_id, locked=True)
             if cached is not None:
                 return cached
@@ -482,6 +487,7 @@ class CodexRunner:
                 atomic_json(schema, CLI_OUTPUT_SCHEMA)
                 receipt = {"version": 1, "request_id": request.request_id, "input_digest": digest,
                            "state": "running", "started_at": time.time(), "cli_version": SUPPORTED_CLI_VERSION,
+                           "execution_lane": lane,
                            "requested_execution": {"model": request.model,
                                                    "reasoning_effort": request.reasoning_effort}}
                 atomic_json(receipt_path, receipt)

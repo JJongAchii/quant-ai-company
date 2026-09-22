@@ -1,3 +1,5 @@
+"""Pre-news-lane workflow definitions, kept only to produce real replay histories."""
+
 from datetime import timedelta
 
 from temporalio import workflow
@@ -5,34 +7,13 @@ from temporalio.common import RetryPolicy
 from temporalio.exceptions import ActivityError
 
 
-@workflow.defn
-class NewsCollectionWorkflow:
+@workflow.defn(name="NewsEditorialWorkflow")
+class LegacyNewsEditorialWorkflow:
     @workflow.run
     async def run(self):
         for _ in range(100):
-            try:
-                result = await workflow.execute_activity(
-                    "company_news_collect", start_to_close_timeout=timedelta(minutes=2),
-                    retry_policy=RetryPolicy(maximum_attempts=3, initial_interval=timedelta(seconds=5)))
-                delay = 2 if result.get("article_fetched") or result["state"] == "collected" else 30
-            except ActivityError:
-                delay = 60
-            await workflow.sleep(delay)
-        workflow.continue_as_new()
-
-
-@workflow.defn
-class NewsEditorialWorkflow:
-    @workflow.run
-    async def run(self):
-        for tick in range(100):
             result = {}
             try:
-                # Preserve the workflow ID/history chain, moving at a safe tick
-                # boundary. Per-tick patches avoid a memoized legacy decision.
-                if (not workflow.info().task_queue.endswith("-news-model")
-                        and workflow.patched(f"news-dedicated-model-lane-v1-{tick}")):
-                    workflow.continue_as_new(task_queue=workflow.info().task_queue + "-news-model")
                 result = await workflow.execute_activity(
                     "company_news_review", start_to_close_timeout=timedelta(minutes=8),
                     heartbeat_timeout=timedelta(seconds=30),
@@ -44,15 +25,12 @@ class NewsEditorialWorkflow:
         workflow.continue_as_new()
 
 
-@workflow.defn
-class NewsDiscoveryWorkflow:
+@workflow.defn(name="NewsDiscoveryWorkflow")
+class LegacyNewsDiscoveryWorkflow:
     @workflow.run
     async def run(self):
-        for tick in range(100):
+        for _ in range(100):
             try:
-                if (not workflow.info().task_queue.endswith("-news-model")
-                        and workflow.patched(f"news-dedicated-model-lane-v1-{tick}")):
-                    workflow.continue_as_new(task_queue=workflow.info().task_queue + "-news-model")
                 await workflow.execute_activity(
                     "company_news_discover", start_to_close_timeout=timedelta(minutes=8),
                     heartbeat_timeout=timedelta(seconds=30),

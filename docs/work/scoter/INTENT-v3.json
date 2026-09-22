@@ -1,0 +1,65 @@
+{
+  "approval": "사용자가 연구와 별도로 뉴스 AI 작업 1개가 계속 실행되도록 구현·운영 적용을 요청했다.",
+  "constraints": [
+    "기존 일반 업무 실행 1개와 뉴스 전용 실행 1개만 허용",
+    "신규 유료 서비스 없음",
+    "기존 구독 로그인·회사 공통 사용량 한도·quota 일시정지 유지",
+    "기존 요청 ID·영수증·취소·불명 결과 보호와 Temporal 기록 보존",
+    "기존 tech-feed 수집·중복 제거·시간 정책과 DB 상태 보존",
+    "회사 저장소에만 기록",
+    "비밀 출력 및 Git 저장 금지"
+  ],
+  "createdAt": "2026-09-22T02:18:19.785804+00:00",
+  "decisionGates": [
+    "이번 요청은 뉴스 실행 자리 분리와 기존 서버 배포 승인이며 유료 증설·추가 크레딧 구매 승인은 아니다."
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "뉴스 편집·선별·검색 활동이 전용 Temporal 실행 자리 1개 사용",
+        "Codex 일반 업무 1개와 뉴스 1개 동시 실행, 같은 자리의 중복 실행은 busy",
+        "대기·실행 중 연구가 뉴스 준비를 막지 않으며 공통 예산·정지는 유지"
+      ],
+      "description": "영속 뉴스 전용 실행 자리 구현",
+      "id": "NEWS_LANE"
+    },
+    {
+      "acceptance": [
+        "실제 PostgreSQL·Temporal에서 연구/뉴스 동시 실행과 뉴스 직렬 실행 검증",
+        "실제 subprocess 모의 Codex로 자리별 잠금·재시작·영수증·취소 검증",
+        "기존 Temporal 기록 재생과 전체 서비스 회귀 통과"
+      ],
+      "description": "동시성·안전성·회귀 검증",
+      "id": "VALIDATION"
+    },
+    {
+      "acceptance": [
+        "기존 운영 배포와 연구 기록을 보존한 정확한 커밋 배포",
+        "뉴스 전용 queue의 자연 작업·실제 Codex 완료 영수증 확인",
+        "서버 메모리·OOM·worker·Slack 전달 상태와 미검증 범위 기록"
+      ],
+      "description": "운영 활성화와 실제 관찰 영수증",
+      "id": "ACTIVATION"
+    }
+  ],
+  "nonGoals": [
+    "신규 유료 서비스",
+    "뉴스 내용 선정·발송 시간·구독 모델·회사 예산 변경",
+    "Tech Scout에 대화형 AI 응답 또는 Socket Mode 이벤트 처리 추가"
+  ],
+  "outcome": "Reporter의 뉴스 AI 작업 1개가 연구 작업과 독립적으로 지속 처리되도록 실행 자리를 분리하고 운영 검증한다.",
+  "revision": 3,
+  "revisionReason": "사용자가 연구와 독립적으로 뉴스 AI 작업 1개를 지속 실행하도록 승인",
+  "schemaVersion": 1,
+  "slug": "scoter",
+  "sourceRequest": "뉴스 1개는 별도로 계속 돌아가게 해줘 그럼",
+  "stopConditions": [
+    "접근 불가 시 정확한 외부 조건을 기록한다.",
+    "불명 발송을 자동 재실행하지 않는다."
+  ],
+  "supersedes": {
+    "intentDigest": "b81d57ebf964",
+    "intentFile": "INTENT-v2.json"
+  },
+  "workspace": "독립 회사 Git worktree scoter. QWS_CANONICAL=/Users/achii/Quant/quant-ai-company로 회사 저장소만 qws 정본으로 지정한다. 과거 Quant 계약은 변경하지 않는다."
+}
