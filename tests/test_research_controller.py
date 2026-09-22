@@ -180,6 +180,29 @@ def test_evidence_prompt_preserves_manifest_with_bounded_chunks(mission):
     assert len(context["inspected_chunks"]) == 10 and 1 <= len(context["read_chunks"]) <= 5
 
 
+def test_evidence_prompt_retains_early_compact_frozen_menu(mission):
+    company = mission.company
+    controller = MissionController(company, backend=FixtureBackend(company))
+    controller.tick()
+    stage, _ = active(mission)
+    menu = "REGISTERED_VARIANTS = ('M2', 'A25', 'A75', 'B', 'C', 'D50', 'D75')"
+    with company.db.transaction() as conn:
+        conn.execute("""UPDATE research_mission_stages SET context=context || %s::jsonb WHERE id=%s""",
+                     (json.dumps({"frozen_experiment_code": {
+                         "config_path": "code/config.json", "code_paths": ["code/menu.py"]}}), stage["id"]))
+        conn.execute("""INSERT INTO research_stage_reads(id,stage_id,path,character_offset,content,sha256)
+            VALUES (%s,%s,'code/menu.py',0,%s,%s)""", (uuid4(), stage["id"], menu, "b"*64))
+        for index in range(7):
+            conn.execute("""INSERT INTO research_stage_reads(id,stage_id,path,character_offset,content,sha256)
+                VALUES (%s,%s,%s,0,%s,%s)""",
+                         (uuid4(), stage["id"], f"large-{index}.txt", "x"*12000, "c"*64))
+        task = conn.execute("SELECT * FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
+        _, prompt = stage_prompt(company, conn, task)
+    assert len(prompt) < 90000
+    context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
+    assert menu in {chunk["content"] for chunk in context["read_chunks"]}
+
+
 def test_retry_reads_are_bound_to_new_validator_attempt(mission):
     company = mission.company
     controller = MissionController(company, backend=FixtureBackend(company))

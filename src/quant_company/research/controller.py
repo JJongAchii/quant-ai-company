@@ -180,12 +180,35 @@ def stage_prompt(company, conn, task):
         context["output_schema"] = output_type.model_json_schema()
     reads = conn.execute('''SELECT path,character_offset AS "offset",content,next_offset FROM research_stage_reads
         WHERE stage_id=%s AND attempt=%s ORDER BY created_at,id''', (row["id"], row["attempt"])).fetchall()
-    # Reads remain in the DB. Give a bounded recent window and a manifest of all inspected chunks.
-    context["read_chunks"] = as_json(reads[-5:])
+    # Reads remain in the DB. Retain the recent window plus concise chunks from the frozen code
+    # and directly relevant evidence. Otherwise a role can inspect the registered menu, read five
+    # more files, and receive only the path (not the bytes) when it must make its decision.
+    values = as_json(reads)
+    frozen = context.get("frozen_experiment_code", {})
+    important_paths = set(frozen.get("code_paths", []))
+    if frozen.get("config_path"):
+        important_paths.add(frozen["config_path"])
+    for paths in context.get("relevant_evidence", {}).values():
+        important_paths.update(paths)
+    retained = []
+    priorities = []
+    for index, value in enumerate(values):
+        priority = 2 if index >= len(values) - 5 else 0
+        if value["path"] in important_paths and len(value["content"]) <= 8000:
+            priority = max(priority, 3)
+        if index == len(values) - 1:
+            priority = 4
+        if priority:
+            retained.append(value)
+            priorities.append(priority)
+    context["read_chunks"] = retained
     context["inspected_chunks"] = [{"path": value["path"], "offset": value["offset"]} for value in reads]
     payload = json.dumps(context, ensure_ascii=False, allow_nan=False)
     while len(payload) > 65000 and len(context["read_chunks"]) > 1:
-        context["read_chunks"].pop(0)
+        victim = min(range(len(context["read_chunks"])),
+                     key=lambda index: (priorities[index], -len(context["read_chunks"][index]["content"]), index))
+        context["read_chunks"].pop(victim)
+        priorities.pop(victim)
         payload = json.dumps(context, ensure_ascii=False, allow_nan=False)
     if len(payload) > 70000:
         raise PolicyError("Mission stage context needs bounded evidence selection")
@@ -198,7 +221,8 @@ def stage_prompt(company, conn, task):
         "If evidence is needed, request exactly one file chunk in that turn: use one research_control tool only, "
         "with no artifact or second tool, and status=continue. Never batch file reads. Use "
         '{"action":"read_stage_file","path":<exact available path>,"offset":0}, status=continue. '
-        "The service never executes your text as a command. Read required evidence before completing.\n"
+        "The service never executes your text as a command. Read only evidence needed for the artifact; "
+        "the presence of another available file is not itself a reason to read it.\n"
         + employee_pack(role.id) + "\nSTAGE: " + row["stage"] + "\n" + instructions[row["stage"]]
         + "\nMISSION DATA JSON:\n" + payload
     )
