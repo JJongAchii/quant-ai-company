@@ -1,4 +1,6 @@
 import json
+import re
+import unicodedata
 from datetime import date
 from html import escape
 
@@ -26,7 +28,9 @@ dates as YYYY or YYYY-MM. Verify authors/dates from supplied original metadata/p
 Use vintage=classic for old foundational work; why_read must explain why it matters NOW, not call it new.
 Every substantive claim and reported number must be supported by evidence: an exact short quote and the
 supplied page/section location. Evidence claims in Korean should map explicitly to the brief. No unsupported
-numeric performance, invented links, broad copied passages, or buy/sell instructions. Write concise Korean.
+numeric performance, invented links, broad copied passages, or buy/sell instructions. Copy quote wording
+literally from the supplied excerpt; do not fix grammar or substitute articles/words. Layout whitespace may be
+normalized. Write concise Korean.
 Limitations and application are conditional interpretation, not proven findings. Local data availability has
 NOT been checked: mention required point-in-time data and explicitly say local availability is unverified.
 Only return related_urls that occur in supplied links; code/data links are availability, not verified execution.
@@ -58,6 +62,10 @@ def prompt(bundle, stage):
     return result
 
 
+def _quote_text(value):
+    return re.sub(r"\s+", "", unicodedata.normalize("NFKC", value))
+
+
 def validate(response, bundle, stage):
     decision = response.decision
     if (decision.status != "complete" or len(decision.artifacts) != 1 or decision.tools or decision.delegations
@@ -73,9 +81,12 @@ def validate(response, bundle, stage):
     brief = ResearchBrief.model_validate_json(decision.artifacts[0].content)
     if brief.disposition != "publish":
         return brief
-    pages = {p["location"]: p["text"] for p in bundle["pages"]}
+    # PDF extractors may split words across layout whitespace or emit compatibility
+    # glyphs. Ignore only those presentation differences; every non-whitespace
+    # character and its order must still occur in the frozen excerpt.
+    pages = {p["location"]: _quote_text(p["text"]) for p in bundle["pages"]}
     for evidence in brief.evidence:
-        if evidence.location not in pages or evidence.quote not in pages[evidence.location]:
+        if evidence.location not in pages or _quote_text(evidence.quote) not in pages[evidence.location]:
             raise ValueError("quant_quote_not_in_original_version")
     for stamp in (brief.published_on, brief.revised_on):
         if stamp and stamp > date.fromisoformat(bundle["as_of"][:10]).isoformat()[:len(stamp)]:

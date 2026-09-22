@@ -181,6 +181,20 @@ def test_new_work_does_not_require_prior_change_comparison_but_updates_do():
         validate(value, bundle, "critique")
 
 
+def test_quote_validation_ignores_only_pdf_layout_whitespace():
+    ready = {"request": {"request_id": "quant-feed-review"}}
+    bundle = {"pages": [{"location": "PDF p.1", "text": "a convex functionf on a B-bounded domain"}],
+              "as_of": "2026-09-22T00:00:00+00:00", "links": [], "commercial": False, "prior": None}
+    value = brief(evidence=[
+        {"claim": "layout", "location": "PDF p.1", "quote": "convex function f on a B-bounded domain"},
+        {"claim": "domain", "location": "PDF p.1", "quote": "B-bounded domain"},
+    ])
+    assert validate(response(ready, value), bundle, "review").disposition == "publish"
+    value["evidence"][0]["quote"] = "convex function g on a B-bounded domain"
+    with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
+        validate(response(ready, value), bundle, "review")
+
+
 def test_shared_budget_quota_pause_and_same_request_retry(quant):
     original(quant)
     quant.company.settings.company_max_daily_turns = 1
