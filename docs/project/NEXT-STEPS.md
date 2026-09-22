@@ -6,8 +6,10 @@
 
 [최종 채널 설계](SLACK-COMPANY-DESIGN.md)를 전체 운영 구조로 채택한다. 이번 첫 구현은
 전용 Maintainer와 improvements의 접수·케이스·독립 보고·기존 승인 연결이다.
-[검증·활성화 상태](IMPROVEMENTS-VALIDATION.md)를 확인한다. **그다음 구현은 data-watch의
-전체 레이크 개요 + 핵심 연구 데이터 상세 검사**다. 본사·시장 분석·연구 라이브러리·정기 브리핑·
+[검증·활성화 상태](IMPROVEMENTS-VALIDATION.md)를 확인한다. 이어서 **data-watch의
+전체 레이크 개요 + 핵심 연구 데이터 상세 검사**를 구현했다. [검증 기록](DATA-WATCH-VALIDATION.md)과
+[설치 절차](../data-watch.md)를 따른다. **다음 구현은 company-hq 요약과 market-deep-dive**다.
+본사·시장 분석·연구 라이브러리·정기 브리핑·
 리스크 채널도 최종 설계에 포함하며, 준비 조건에 맞춰 단계적으로 구현·활성화한다.
 첫 연구 인수가 모든 비활성 직원을 자동 활성화하는 것은 아니다.
 

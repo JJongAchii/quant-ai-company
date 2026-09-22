@@ -423,3 +423,34 @@ def test_improvements_activation_reaches_all_company_processes_without_model_cre
         assert load_roles(settings)["maintainer"].active
     assert "SLACK_CREDENTIALS_FILE" not in services["codex-runtime"]["environment"]
     assert not any("slack" in str(item) for item in services["codex-runtime"].get("secrets", []))
+
+
+def test_data_watch_configuration_reaches_existing_processes_without_new_credentials(tmp_path):
+    from quant_company.config import Settings
+
+    env = tmp_path / "data-watch.env"
+    env.write_text('DATA_WATCH_ENABLED=true\nDATA_WATCH_PUBLISH_ENABLED=true\nDATA_WATCH_CHANNEL_ID=CDATA\n'
+                   'DATA_WATCH_OWNER_USER=UHUMAN\nSLACK_ALLOWED_CHANNELS=["CDATA"]\nSLACK_ALLOWED_USERS=["UHUMAN"]\n')
+    services = compose_config("maintenance", extra_env=env, overlays=("data-watch.compose.yaml",))["services"]
+    for name in ("api", "worker", "news-worker", "dispatch", "slack-socket", "maintenance"):
+        values = services[name]["environment"]
+        settings = Settings(**{key.lower(): json.loads(value) if key in {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS"}
+                               else value for key, value in values.items()})
+        assert settings.data_watch_enabled and settings.data_watch_publish_enabled
+        assert settings.data_watch_contracts_file.name == "data-watch-contracts.json"
+        assert not settings.data_watch_core_enabled
+        assert any(v["target"].endswith("data-watch-contracts.json") and v["read_only"] for v in services[name]["volumes"])
+    assert not any(key.startswith("DATA_WATCH") for key in services["codex-runtime"]["environment"])
+    assert not any("data-watch" in str(v) for v in services["codex-runtime"]["volumes"])
+    config = json.loads((DEPLOY / "research-worker.example.json").read_text())
+    assert config["data_watch_enabled"] is False
+    env.write_text(env.read_text() + 'DATA_WATCH_CORE_ENABLED=true\nRESEARCH_REPORT_BUCKET=synthetic-bucket\n')
+    services = compose_config("maintenance", extra_env=env,
+                              overlays=("research.compose.yaml", "data-watch.compose.yaml"))["services"]
+    for name in ("api", "worker", "news-worker", "dispatch", "slack-socket", "maintenance"):
+        values = services[name]["environment"]
+        settings = Settings(**{key.lower(): json.loads(value) if key in {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS"}
+                               else value for key, value in values.items()})
+        assert settings.data_watch_core_enabled
+        if name in {"api", "worker", "slack-socket", "dispatch"}:
+            assert settings.company_research_enabled

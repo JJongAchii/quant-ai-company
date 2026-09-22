@@ -28,6 +28,12 @@ def allowed(conn, company, case):
         return False
     source = company._project(conn, case["source_project_id"], lock=False)
     target = company._project(conn, case["project_id"], lock=False)
+    from ..data_watch.reporting import incident_allowed
+    from ..data_watch.store import DataWatchStore
+
+    incident = conn.execute("SELECT * FROM data_watch_incidents WHERE project_id=%s", (source["id"],)).fetchone()
+    if incident and not incident_allowed(conn, DataWatchStore(company), incident):
+        return False
     runtime = service(conn, company, case["owner_user"])
     return (runtime.get("enabled") and permitted(company, source) and permitted(company, target)
             and company.roles[AGENT].active

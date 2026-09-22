@@ -50,7 +50,8 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     allowed_tools = {"calculate", "knowledge_search", "read_source", "company_history",
                      "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
                      "finance_search", "finance_read", "web_search", "web_read",
-                     "finance_compute", "data_quality", "staff_status", "news_status", "research_control"} | LAKE_TOOLS
+                     "finance_compute", "data_quality", "staff_status", "news_status", "research_control",
+                     "data_watch_status"} | LAKE_TOOLS
     for role in roles:
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
@@ -65,6 +66,9 @@ def load_roles(settings: Settings) -> dict[str, Role]:
         if "engineer" not in by_id:
             raise ValueError("Maintainer requires the configured engineer model")
         by_id["maintainer"] = maintainer_role(by_id["engineer"])
+    if settings.data_watch_enabled and "data" in by_id:
+        role = by_id["data"]
+        by_id["data"] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "data_watch_status"]))})
     return by_id
 
 
@@ -210,6 +214,10 @@ class Company:
                     "scope": "Read-only metadata and bounded samples; no arbitrary SQL, full scans or backtests. "
                              "Data questions require fresh tool receipts. Delegate to data when not authorized.",
                 },
+                "data_watch": {"enabled": self.settings.data_watch_enabled,
+                               "channel": self.settings.data_watch_channel_id,
+                               "tool": "data_watch_status {} reads recorded checks without scanning the lake; "
+                                       "available to data in its configured channel. Unknown freshness is not healthy."},
                 "external_web_search": self.settings.company_web_enabled and any(
                     role.active and "web_search" in role.tools for role in self.roles.values()),
                 "research_worker_submission": self.settings.company_research_enabled,
@@ -423,6 +431,13 @@ class Company:
                     from .maintenance.cases import status_text
 
                     summary = status_text(conn, self, project)
+                if (agent == "data" and self.settings.data_watch_enabled
+                        and project["channel"] == self.settings.data_watch_channel_id
+                        and project["owner_user"] == self.settings.data_watch_owner_user):
+                    from .data_watch.reporting import status_text
+                    from .data_watch.store import DataWatchStore
+
+                    summary = status_text(DataWatchStore(self).snapshot(conn))
                 conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (summary, task["id"]))
                 self._message(conn, project, task["id"], agent, "status", summary)
             self._event(conn, "task_created", {"task_id": task["id"], "agent": agent}, project_id)
@@ -770,6 +785,20 @@ class Company:
                 if not matching:
                     raise PolicyError("Lake source identifier collision")
                 result["source_id"] = source_id
+            return result
+        if request.name == "data_watch_status":
+            from .data_watch.reporting import status_text
+            from .data_watch.store import DataWatchStore
+            from .maintenance.requests import record_source
+
+            project = self._project(conn, project_id, lock=False)
+            store = DataWatchStore(self)
+            if (arguments or not task or task["agent"] != "data" or not store.authorized()
+                    or project["channel"] != self.settings.data_watch_channel_id
+                    or project["owner_user"] != self.settings.data_watch_owner_user):
+                raise PolicyError("Data watch status requires the configured data channel and owner")
+            result = {"summary": status_text(store.snapshot(conn)), "checked_at": now().isoformat()}
+            result["source_id"] = record_source(conn, project, "data_watch_status", result)
             return result
         if request.name == "calculate":
             if set(arguments) != {"expression"}:

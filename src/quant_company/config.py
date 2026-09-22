@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     slack_credentials_file: Path | None = None
     company_improvements_enabled: bool = False
     improvements_channel_id: str = ""
+    data_watch_enabled: bool = False
+    data_watch_publish_enabled: bool = False
+    data_watch_core_enabled: bool = False
+    data_watch_channel_id: str = ""
+    data_watch_owner_user: str = ""
+    data_watch_contracts_file: Path | None = None
     temporal_address: str = "localhost:7233"
     temporal_namespace: str = "default"
     temporal_api_key: SecretStr = SecretStr("")
@@ -80,6 +86,15 @@ class Settings(BaseSettings):
             or self.improvements_channel_id not in self.slack_allowed_channels
         ):
             raise ValueError("Improvements requires an explicitly allowed Slack channel")
+        if self.data_watch_enabled and (
+            not self.data_watch_channel_id.startswith("C")
+            or self.data_watch_channel_id not in self.slack_allowed_channels
+            or self.data_watch_owner_user not in self.slack_allowed_users
+            or self.data_watch_channel_id == self.improvements_channel_id
+        ):
+            raise ValueError("Data watch requires a dedicated allowed Slack channel and owner")
+        if self.data_watch_core_enabled and not self.data_watch_enabled:
+            raise ValueError("Data watch core checks require data watch")
         return self
 
     def require_operator_token(self) -> str:

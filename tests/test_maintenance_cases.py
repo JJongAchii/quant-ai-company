@@ -160,6 +160,39 @@ async def test_uncertain_root_is_not_replayed_or_followed_by_orphan_updates(impr
         assert conn.execute("SELECT count(*) AS n FROM outbox WHERE update_ts IS NOT NULL").fetchone()["n"] == 0
 
 
+async def test_data_incident_links_once_to_improvements_after_confirmed_root(improvements):
+    from datetime import UTC, datetime
+    from types import SimpleNamespace
+
+    from quant_company.data_watch.store import DataWatchStore
+
+    from .test_data_watch import tick
+
+    company, credentials = improvements
+    company.settings.data_watch_enabled = company.settings.data_watch_publish_enabled = True
+    company.settings.data_watch_channel_id = "CDATA"
+    company.settings.data_watch_owner_user = "UHUMAN"
+    company.settings.slack_allowed_channels.append("CDATA")
+    company.settings.company_lake_uri = "s3://example/qdata"
+    watch = SimpleNamespace(company=company, store=DataWatchStore(company), clock=[datetime.now(UTC)])
+    await tick(watch, fail=True)
+    maintenance = Store(company, config(observe_seconds=60))
+    assert maintenance.collect() is None  # no confirmed incident thread yet
+    box, calls = delivery(company, credentials)
+    await drain(box)
+    with company.db.transaction() as conn:
+        conn.execute("UPDATE maintenance_control SET next_observe_at=now()")
+    identity = maintenance.collect()
+    assert identity
+    with company.db.transaction() as conn:
+        job = conn.execute("SELECT payload FROM maintenance_jobs WHERE id=%s", (identity,)).fetchone()
+        assert job["payload"]["observations"][0]["kind"] == "data_watch_problem"
+        assert len(conn.execute("SELECT * FROM maintenance_cases WHERE request_id=%s", (identity,)).fetchall()) == 1
+        conn.execute("UPDATE maintenance_jobs SET state='done' WHERE id=%s", (identity,))
+        conn.execute("UPDATE maintenance_control SET next_observe_at=now()")
+    assert maintenance.collect() is None
+
+
 async def test_uncertain_update_blocks_later_updates_and_revoked_case_stops_delivery(improvements):
     company, credentials = improvements
     _, receipt, case = submit(company, channel="CIMPROVE")

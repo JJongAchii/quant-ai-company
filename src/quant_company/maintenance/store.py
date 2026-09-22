@@ -86,7 +86,9 @@ class Store:
                 SELECT 'event:'||e.id::text AS key,e.project_id,p.owner_user,e.kind,e.detail,e.created_at
                 FROM events e JOIN projects p ON p.id=e.project_id
                 WHERE p.owner_user=ANY(%s) AND (p.channel=ANY(%s) OR p.channel LIKE 'D%%')
-                  AND e.kind IN ('turn_blocked','task_blocked','research_stage_waiting')
+                  AND e.kind IN ('turn_blocked','task_blocked','research_stage_waiting','data_watch_problem')
+                  AND (e.kind<>'data_watch_problem' OR (p.thread_ts IS NOT NULL AND EXISTS(
+                    SELECT 1 FROM data_watch_incidents d WHERE d.project_id=p.id AND d.state='active')))
                   AND (NOT %s OR (e.created_at >= %s::timestamptz AND e.kind<>'research_stage_waiting'
                     AND COALESCE(e.detail->>'reason','') NOT IN ('quota','daily_model_budget','task_turn_limit')))
                   AND NOT EXISTS (SELECT 1 FROM maintenance_observations o WHERE o.key='event:'||e.id::text)
@@ -94,6 +96,12 @@ class Store:
                 """, (self.config.allowed_owners, self.company.settings.slack_allowed_channels,
                       self.company.settings.company_improvements_enabled,
                       control["runtime"].get("improvements_started_at", datetime.now(UTC).isoformat()))).fetchall()
+            from ..data_watch.reporting import incident_allowed
+            from ..data_watch.store import DataWatchStore
+
+            events = [event for event in events if event["kind"] != "data_watch_problem" or incident_allowed(
+                conn, DataWatchStore(self.company), conn.execute("SELECT * FROM data_watch_incidents WHERE project_id=%s",
+                                                               (event["project_id"],)).fetchone())]
             from ..staff.store import maintenance_observations
 
             owners = self.config.allowed_owners

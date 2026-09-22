@@ -1,59 +1,71 @@
 {
   "approval": {
-    "approvedAt": "2026-09-22T06:28:19.834672+00:00",
-    "id": "chat-20260922-implement-channel-plan"
+    "approvedAt": "2026-09-22T07:17:39.064541+00:00",
+    "id": "chat-20260922-continue-data-watch"
   },
-  "currentIntent": "INTENT-v1.json",
+  "currentIntent": "INTENT-v2.json",
   "deliverables": {
-    "CHANNEL_DESIGN": {
+    "CORE_CHECKS": {
+      "evidence": [
+        {
+          "path": "src/quant_company/data_watch/checker.py",
+          "sha256": "c388d5225979"
+        },
+        {
+          "path": "src/quant_company/data_watch/core.py",
+          "sha256": "74dacb5c5404"
+        },
+        {
+          "path": "docs/data-watch.md",
+          "sha256": "5d7bf988457a"
+        }
+      ],
+      "note": "Existing-worker read-only lane and typed consumer verified with real synthetic Parquet, subprocess and API/DB tests; actual 3070 activation remains explicitly outside local acceptance.",
+      "status": "verified",
+      "updatedAt": "2026-09-22T07:59:44.232952+00:00"
+    },
+    "DATA_WATCH": {
       "evidence": [
         {
           "path": "docs/project/SLACK-COMPANY-DESIGN.md",
-          "sha256": "979776e57ce2"
-        }
-      ],
-      "note": "Complete channel structure, staged activation and data-watch next scope are recorded in the company repository.",
-      "status": "verified",
-      "updatedAt": "2026-09-22T06:56:37.561997+00:00"
-    },
-    "MAINTAINER": {
-      "evidence": [
-        {
-          "path": "src/quant_company/maintenance/cases.py",
-          "sha256": "aad780063f57"
+          "sha256": "316a42b0e4bf"
         },
         {
-          "path": "docs/project/IMPROVEMENTS-VALIDATION.md",
-          "sha256": "c1b25278ba96"
+          "path": "docs/project/DATA-WATCH-VALIDATION.md",
+          "sha256": "0f0549a0f007"
         }
       ],
-      "note": "Dedicated configured identity, durable cases, independent Temporal reporting, current-scope and exact-head approval implemented. Existing paths preserved; live activation remains outside this first code slice.",
+      "note": "Bounded metadata monitoring, explicit freshness states, daily summaries, incident/recovery and approval-aware delivery passed real PostgreSQL/Temporal tests; live activation not performed.",
       "status": "verified",
-      "updatedAt": "2026-09-22T06:56:37.724353+00:00"
+      "updatedAt": "2026-09-22T07:59:43.985696+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/improvements-validation.json",
-          "sha256": "afabba2fbd39"
+          "path": "docs/project/evidence/data-watch-validation.json",
+          "sha256": "1b5e2f057a0a"
         },
         {
-          "path": "docs/project/evidence/improvements-tests.xml",
-          "sha256": "5cbea900f734"
+          "path": "docs/project/evidence/data-watch-tests.xml",
+          "sha256": "d63031ee9347"
         },
         {
-          "path": "docs/project/evidence/improvements-deployment-tests.xml",
-          "sha256": "3807cd8d4599"
+          "path": "docs/project/evidence/data-watch-deployment-tests.xml",
+          "sha256": "2470a7b7c6fa"
+        },
+        {
+          "path": "docs/project/evidence/data-watch-financial-fixtures.xml",
+          "sha256": "83905f79c654"
         }
       ],
-      "note": "997 service tests and 27 deployment configuration tests passed; 36 explicit platform/live checks skipped. Ruff and diff checks passed. Real local PostgreSQL/Temporal; synthetic Slack/model/GitHub.",
+      "note": "Final integrated tree: 1029 service, 28 deployment and 3 financial fixture tests passed; 37 platform/live opt-in checks skipped. Ruff and diff checks passed.",
       "status": "verified",
-      "updatedAt": "2026-09-22T06:56:37.895100+00:00"
+      "updatedAt": "2026-09-22T07:59:44.480476+00:00"
     }
   },
-  "intentDigest": "d412fd004ce0",
+  "intentDigest": "0a86350b0dfa",
   "schemaVersion": 1,
   "slug": "piddock",
   "state": "approved",
-  "updatedAt": "2026-09-22T06:56:37.895100+00:00"
+  "updatedAt": "2026-09-22T07:59:44.480476+00:00"
 }

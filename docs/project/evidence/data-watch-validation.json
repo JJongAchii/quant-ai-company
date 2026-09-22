@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-09-22T07:59:43.675527+00:00",
+  "state": "local_acceptance_passed",
+  "scope": "Approved second slice: data-watch overview and approved ETF frozen-input checks; first improvements slice retained",
+  "implementation_base_commit": "727dc826483ac93344697179d4d68c3933a162a6",
+  "tests": {
+    "service": {
+      "tests": 1066,
+      "passed": 1029,
+      "failure": 0,
+      "error": 0,
+      "skipped": 37,
+      "skipped_reasons": {
+        "Set CODEX_CONFIG_PROBE=1 for the local CLI probe": 2,
+        "Requires explicit operator runtime profile on the registered Linux 3070": 1,
+        "Real pinned qlab checkout required: QUANT_TEST_QLAB_ROOT": 31,
+        "Opt-in real 3070, committed ETF checkout and prepared science runtime required": 1,
+        "Requires explicit operator-reviewed runtime profile on the 3070; no Mac fallback": 1,
+        "Opt-in real Codex subscription test": 1
+      }
+    },
+    "deployment": {
+      "tests": 28,
+      "passed": 28,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0,
+      "skipped_reasons": {}
+    },
+    "financial_fixtures": {
+      "tests": 3,
+      "passed": 3,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0,
+      "skipped_reasons": {}
+    }
+  },
+  "passed_total": 1060,
+  "python": "3.12.13",
+  "lint": "passed",
+  "diff_check": "passed",
+  "postgres": "Real worktree-local PostgreSQL 14, disposable unique database per test; no production DB",
+  "temporal": "Real local Temporal, activity retry, worker restart, workflow replay, separate queue without a model provider",
+  "core_data": "Synthetic Parquet inputs read by actual checker, typed FastAPI consumer and PostgreSQL persistence; registered child entry point tested with absent production inputs",
+  "slack": "Synthetic HTTP transport; no channel/app changes or production messages",
+  "codex": "No new real subscription call; scheduled monitoring/status/checks do not call models",
+  "worker_3070": "Not activated or read for this new feature",
+  "live_activation": "Not performed; all new feature/publish/core flags default false",
+  "limitations": [
+    "No new live S3 read or verified exchange publication calendar in this acceptance",
+    "No full trading-calendar coverage or prices/meta key correspondence validation",
+    "No new research/performance/causality verification; source files are read-only",
+    "Core checks are limited to current-approved registered fixed P11 recipe inputs"
+  ],
+  "next_implementation": "company-hq summary and on-demand market-deep-dive",
+  "implementation_sha256": {
+    "deploy/.env.example": "5b455c7a09937f8f5fd2cb9ca322b46468250eeb3378bc3be3b05b27e2bff9b9",
+    "deploy/compose.yaml": "026b3c0da829443434992123db1dfd60fc9fbd73c152d91240c3caf82465cbf8",
+    "deploy/data-watch.compose.yaml": "cfee595eee581a67c9b233b9446fabe10c71018f2f4d9139c0411dbc7e4c618f",
+    "deploy/research-worker.example.json": "a0ee8594af359cf80457f85852ef03839d777d82cee5be759d1284565bd2ad10",
+    "deploy/test_deployment_contract.py": "007308a0e17a111473336dce868a2005722626e3143e96750c0ed4910105d3e5",
+    "pyproject.toml": "674349408c03f9525f2881eba57366351bfd632c9922693d4887aa753de7467f",
+    "src/quant_company/api.py": "493f0699ee3fc4c0dc349064d59b8e5673ca41bb2cf8dacdf3c9830c535ca40a",
+    "src/quant_company/company.py": "53790a3fc57ae9a94d423520d7beeb3814ad5fe039fdb669313907dcea895f32",
+    "src/quant_company/config.py": "dc4faa958464e7293f573b1675399fd9c5b7521ac463524d1f7d33e655c259d1",
+    "src/quant_company/data_watch/__init__.py": "1ccb2e5343adbce9135c57333f91aceb81f898dc8b1a8b001ccd36b0eb30d386",
+    "src/quant_company/data_watch/checker.py": "c388d5225979e71b7129ded6dde29d8b5b39d3a8050052f85fcaf7b6fb4a617e",
+    "src/quant_company/data_watch/contracts.py": "d0524260a555ffc3156703012cc0afa83b9dddac6f41dcf3a9fa47adcf444947",
+    "src/quant_company/data_watch/core.py": "74dacb5c54042d4f6a14d73b418a70ddd2c8dd5e3df695bd04df05bc20a07d96",
+    "src/quant_company/data_watch/reporting.py": "28965592b12181c80ba21b5f21081410c66cab44eaea48ce4b62679d1520b608",
+    "src/quant_company/data_watch/runner.py": "3e1ec8b446afc8b81e2e4627ef56f613fafdc3abbc33d54ffaf16a97aaaee646",
+    "src/quant_company/data_watch/schema.sql": "ee0db0eb6b00c110a4d311ce576c61a1e036b15a6fa22fbd434ccdfce797fa7b",
+    "src/quant_company/data_watch/store.py": "68b128365f030b7acabad4cddcb6bb13f3fe417f0f82c849a7b6a1184d19bdcc",
+    "src/quant_company/data_watch/worker.py": "f4ff40ed9ec24cfe7c844a93d119b11a48a895229ff8b11bd6ab665a6ff3c6ae",
+    "src/quant_company/data_watch/workflow.py": "bd2567d8e4be22e7e282263cb0bc4a796075c266ebc1c44faea4be7a961b8328",
+    "src/quant_company/db.py": "ec05f3b0953dc264d06e7b5827c76b80587eb133a1bd33289a31a97ff68d58d3",
+    "src/quant_company/maintenance/cases.py": "50989eb973b7715e6559b61492d88f96d85b6525ea9f01e9a2714840d934e2a2",
+    "src/quant_company/maintenance/policy.py": "6827b9b3ec49ffbf798d3a4a6628600a784a412cb169a7b2d92767e0fcdf344c",
+    "src/quant_company/maintenance/store.py": "36dca42b6e60a6e99b5667271cd88b575fffd34044b4828c8e515a6518c8c292",
+    "src/quant_company/research/api.py": "dddd85f16c10236432ef9faa948f340568e51ddf204481be2600329ed966f11a",
+    "src/quant_company/research/worker.py": "f3d939021153f028867fd7cbab6f744a5f150c642362e0cf63d39e045c12a8af",
+    "src/quant_company/runtime.py": "a2ab54f6f4c3c9c5dd949023e649b2e725892d0258d3e5397ea052a347b686ab",
+    "src/quant_company/slack.py": "891be6bff7e51a867bac1f279f637ee78345461579de1ef8eccf8601c6dfe080",
+    "tests/test_data_watch.py": "d748c162f8042937cd4b1aa46ff7d8088b1465af441a51040d6d6ed49538732b",
+    "tests/test_data_watch_temporal.py": "d23a80f2d6d783fa23ebe91fb2bba605df7ef370107de06767a70b1ea5dfc446",
+    "tests/test_maintenance_cases.py": "4fe7f48c360cee96ac44fda08e6a243db1ef1cdb77fedfee403a4fd5075e375d",
+    "uv.lock": "a22907b3f77c5d617096e4357357850b336d2450f8968e9ec816c836268c9f99"
+  },
+  "test_receipt_sha256": {
+    "docs/project/evidence/data-watch-tests.xml": "d63031ee9347993004a695ea02a8e61ddbc4c19b2d004096742ce6003310a352",
+    "docs/project/evidence/data-watch-deployment-tests.xml": "2470a7b7c6faabccee7b04b24adf1af93877c416384fce88050d836d24c741ac",
+    "docs/project/evidence/data-watch-financial-fixtures.xml": "83905f79c654e7a153d437db0cd33059ceb710b0484386ddf9378a77436427f3"
+  }
+}

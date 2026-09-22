@@ -46,7 +46,7 @@ company-ops의 목적은 company-hq에 통합한다. research-review의 목적�
 - PostgreSQL이 업무·케이스·점검 기록을, Temporal이 실행·재시도·예약을 소유한다.
   Slack 전달 영수증을 보존하고 불명확한 쓰기를 자동 재실행하지 않는다.
 
-## data-watch: 다음 구현 범위
+## data-watch: 두 번째 구현 범위
 
 사용자가 선택한 **전체 개요 + 핵심 상세**를 따른다. 전체 카탈로그와 객체 메타데이터를
 30분마다 확인하고 신규·변경 객체에만 기존 제한된 descriptor 조회를 수행한다.
@@ -67,7 +67,8 @@ company-ops의 목적은 company-hq에 통합한다. research-review의 목적�
 
 1. **이번 구현:** improvements 전용 Maintainer, 케이스 스레드·상태 카드·독립 보고와 승인 연결.
    [사용·설치 절차](../improvements.md), [검증 결과](IMPROVEMENTS-VALIDATION.md)를 따른다.
-2. **다음 구현:** 위 data-watch 범위를 구현한다.
+2. **두 번째 구현:** 2026-09-22 위 data-watch 범위를 이어서 구현했다. [사용·설치](../data-watch.md),
+   [검증·운영 활성화 경계](DATA-WATCH-VALIDATION.md)를 따른다.
 3. company-hq 운영 요약과 market-deep-dive 요청형 분석.
 4. research-library와 정기 daily-brief. 다른 작업트리에서 병행 중인 기능은 실제 합쳐진
    커밋과 인수 증거를 확인해 재사용하며, 이 문서가 그 작업의 완료를 뜻하지 않는다.

@@ -22,7 +22,12 @@ lake = ["qdata[s3]"]
 qdata = { path = "../quant-data" }
 
 [dependency-groups]
-dev = ["pytest>=8.3,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.11,<1"]
+dev = [
+    "pyarrow>=20,<26",
+    "pytest>=8.3,<10",
+    "pytest-asyncio>=0.25,<2",
+    "ruff>=0.11,<1",
+]
 
 [project.scripts]
 quant-company = "quant_company.cli:main"

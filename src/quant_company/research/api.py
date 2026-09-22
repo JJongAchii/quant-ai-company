@@ -30,6 +30,20 @@ def register_routes(app, company):
     def poll(value: WorkerPoll):
         return store.poll()
 
+    from ..data_watch.contracts import CheckReceipt
+    from ..data_watch.core import CoreChecks
+    from ..data_watch.store import DataWatchStore
+
+    checks = CoreChecks(DataWatchStore(company))
+
+    @app.post("/v1/data-watch/worker/poll", dependencies=[Depends(worker)])
+    def data_watch_poll(value: WorkerPoll):
+        return checks.poll()
+
+    @app.post("/v1/data-watch/worker/checks/{check_id}", dependencies=[Depends(worker)])
+    def data_watch_receipt(check_id: UUID, value: CheckReceipt, x_data_watch_lease: str = Header(default="")):
+        return checks.accept(str(check_id), x_data_watch_lease, value)
+
     @app.post("/v1/research/worker/jobs/{job_id}/heartbeat", dependencies=[Depends(worker)])
     def heartbeat(job_id: UUID, value: WorkerUpdate):
         return store.heartbeat(str(job_id), value)
