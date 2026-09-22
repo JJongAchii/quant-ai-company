@@ -5,11 +5,23 @@ import pytest
 from temporalio import activity
 from temporalio.worker import Replayer, Worker
 
-from quant_company.quant_feed.workflow import QuantFeedCollectionWorkflow, QuantFeedEditorialWorkflow
+from quant_company.quant_feed.workflow import (
+    QuantFeedCollectionWorkflow,
+    QuantFeedEditorialWorkflow,
+    editorial_delay,
+)
 from quant_company.runtime import dispatch_once, make_quant_collector, make_quant_model_worker
 
 from .test_quant_feed import brief, original, quant, response  # noqa: F401
 from .test_temporal import temporal_environment  # noqa: F401
+
+
+def test_quant_editorial_cadence_finishes_one_document_then_paces_candidates():
+    assert editorial_delay({"state": "completed", "document_state": "ready"}) == 20
+    assert editorial_delay({"state": "idle"}) == 300
+    assert editorial_delay({"state": "defer"}) == 300
+    assert editorial_delay({"state": "completed", "document_state": "held"}) == 1800
+    assert editorial_delay({"state": "blocked"}) == 1800
 
 
 @pytest.mark.integration

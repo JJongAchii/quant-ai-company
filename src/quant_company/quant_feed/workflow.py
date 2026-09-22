@@ -4,6 +4,19 @@ from temporalio import workflow
 from temporalio.common import RetryPolicy
 from temporalio.exceptions import ActivityError
 
+COLLECTION_DELAY_SECONDS = 300
+EDITORIAL_IDLE_DELAY_SECONDS = 300
+EDITORIAL_CANDIDATE_DELAY_SECONDS = 1800
+EDITORIAL_FOLLOWUP_DELAY_SECONDS = 20
+
+
+def editorial_delay(result):
+    if result.get("document_state") == "ready":
+        return EDITORIAL_FOLLOWUP_DELAY_SECONDS
+    if result.get("state") in {"idle", "defer"}:
+        return EDITORIAL_IDLE_DELAY_SECONDS
+    return EDITORIAL_CANDIDATE_DELAY_SECONDS
+
 
 @workflow.defn
 class QuantFeedCollectionWorkflow:
@@ -15,7 +28,8 @@ class QuantFeedCollectionWorkflow:
                                                 retry_policy=RetryPolicy(maximum_attempts=3))
             except ActivityError:
                 workflow.logger.exception("Quant source interrupted; durable source leases retained")
-            await workflow.sleep(15)
+            delay = COLLECTION_DELAY_SECONDS if workflow.patched("quant-collection-sustainable-cadence-v1") else 15
+            await workflow.sleep(delay)
         workflow.continue_as_new()
 
 
@@ -24,11 +38,14 @@ class QuantFeedEditorialWorkflow:
     @workflow.run
     async def run(self):
         for _ in range(100):
+            result = {}
             try:
-                await workflow.execute_activity("company_quant_feed_review", start_to_close_timeout=timedelta(minutes=18),
-                                                heartbeat_timeout=timedelta(seconds=45),
-                                                retry_policy=RetryPolicy(maximum_attempts=3))
+                result = await workflow.execute_activity(
+                    "company_quant_feed_review", start_to_close_timeout=timedelta(minutes=18),
+                    heartbeat_timeout=timedelta(seconds=45), retry_policy=RetryPolicy(maximum_attempts=3))
             except ActivityError:
                 workflow.logger.exception("Quant review interrupted; frozen request ID retained")
-            await workflow.sleep(20)
+            delay = (editorial_delay(result)
+                     if workflow.patched("quant-editorial-sustainable-cadence-v1") else 20)
+            await workflow.sleep(delay)
         workflow.continue_as_new()

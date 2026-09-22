@@ -255,7 +255,9 @@ def test_editor_rotates_across_sources(quant, tmp_path):
             WHERE c.source_id='fair-a' ORDER BY d.id""").fetchall()
         b = conn.execute("""SELECT d.id FROM quant_feed_documents d JOIN quant_feed_candidates c ON c.id=d.candidate_id
             WHERE c.source_id='fair-b'""").fetchone()
-        conn.execute("UPDATE quant_feed_documents SET state='held',reviewed_at=now() WHERE id=%s", (a[0]["id"],))
+        # A deterministic/model-contract failure is held without reviewed_at; it
+        # still consumed the source's editorial turn and must rotate fairly.
+        conn.execute("UPDATE quant_feed_documents SET state='held' WHERE id=%s", (a[0]["id"],))
         conn.execute("UPDATE quant_feed_documents SET created_at='2020-01-01' WHERE id=%s", (a[1]["id"],))
         conn.execute("UPDATE quant_feed_documents SET created_at='2021-01-01' WHERE id=%s", (b["id"],))
     request = quant.prepare()

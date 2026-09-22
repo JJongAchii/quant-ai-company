@@ -217,7 +217,8 @@ class QuantFeedStore:
                     ORDER BY (d.stage='critique') DESC,
                         (SELECT count(*) FROM quant_feed_documents seen
                          JOIN quant_feed_candidates seen_candidate ON seen_candidate.id=seen.candidate_id
-                         WHERE seen_candidate.source_id=c.source_id AND seen.reviewed_at IS NOT NULL),
+                         WHERE seen_candidate.source_id=c.source_id
+                         AND seen.state NOT IN ('ready','reviewing')),
                         d.created_at,d.id FOR UPDATE OF d SKIP LOCKED LIMIT 1""").fetchone()
                 if not document:
                     return {"state": "idle"}

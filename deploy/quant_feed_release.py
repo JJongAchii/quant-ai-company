@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Explicit operator release: full images, preview first, preserve stopped services.
 
-Run as root on the reviewed office host with stage/cutover, exact base/commit and
+Run as root on the reviewed office host with stage/cutover/activate, exact base/commit and
 an archive whose SHA-256 was recorded locally. No credential or environment output.
 This is not an autonomous maintenance policy and never starts the research worker.
 """
