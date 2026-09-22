@@ -203,6 +203,30 @@ def test_evidence_prompt_retains_early_compact_frozen_menu(mission):
     assert menu in {chunk["content"] for chunk in context["read_chunks"]}
 
 
+def test_audit_prompt_retains_early_compact_scope_evidence(mission):
+    company = mission.company
+    controller = MissionController(company, backend=FixtureBackend(company))
+    controller.tick()
+    stage, _ = active(mission)
+    receipt = '{"company_commit":"' + "d"*40 + '","qualification":"verified"}'
+    with company.db.transaction() as conn:
+        conn.execute("""UPDATE research_mission_stages SET stage='audit',actor='validator',
+            context=context || %s::jsonb WHERE id=%s""",
+                     (json.dumps({"audit": {"scope": ["scope/receipt.json"]}}), stage["id"]))
+        conn.execute("""INSERT INTO research_stage_reads(id,stage_id,path,character_offset,content,sha256)
+            VALUES (%s,%s,'audit/scope/receipt.json',0,%s,%s)""",
+                     (uuid4(), stage["id"], receipt, "d"*64))
+        for index in range(7):
+            conn.execute("""INSERT INTO research_stage_reads(id,stage_id,path,character_offset,content,sha256)
+                VALUES (%s,%s,%s,0,%s,%s)""",
+                         (uuid4(), stage["id"], f"large-audit-{index}.csv", "x"*12000, "e"*64))
+        task = conn.execute("SELECT * FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
+        _, prompt = stage_prompt(company, conn, task)
+    assert len(prompt) < 130000
+    context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
+    assert receipt in {chunk["content"] for chunk in context["read_chunks"]}
+
+
 def test_retry_reads_are_bound_to_new_validator_attempt(mission):
     company = mission.company
     controller = MissionController(company, backend=FixtureBackend(company))

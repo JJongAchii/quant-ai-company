@@ -190,6 +190,10 @@ def stage_prompt(company, conn, task):
         important_paths.add(frozen["config_path"])
     for paths in context.get("relevant_evidence", {}).values():
         important_paths.update(paths)
+    audit = context.get("audit", {})
+    if row["stage"] == "audit":
+        important_paths.add("audit/package.json")
+        important_paths.update("audit/" + path for path in audit.get("scope", []))
     retained = []
     priorities = []
     for index, value in enumerate(values):
@@ -204,13 +208,14 @@ def stage_prompt(company, conn, task):
     context["read_chunks"] = retained
     context["inspected_chunks"] = [{"path": value["path"], "offset": value["offset"]} for value in reads]
     payload = json.dumps(context, ensure_ascii=False, allow_nan=False)
-    while len(payload) > 65000 and len(context["read_chunks"]) > 1:
+    payload_limit = 100000 if row["stage"] == "audit" else 65000
+    while len(payload) > payload_limit and len(context["read_chunks"]) > 1:
         victim = min(range(len(context["read_chunks"])),
                      key=lambda index: (priorities[index], -len(context["read_chunks"][index]["content"]), index))
         context["read_chunks"].pop(victim)
         priorities.pop(victim)
         payload = json.dumps(context, ensure_ascii=False, allow_nan=False)
-    if len(payload) > 70000:
+    if len(payload) > payload_limit + 5000:
         raise PolicyError("Mission stage context needs bounded evidence selection")
     return role, (
         "You are an employee in a persistent quant research mission. Respond in Korean. "
