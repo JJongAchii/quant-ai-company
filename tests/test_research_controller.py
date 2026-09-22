@@ -143,8 +143,7 @@ def test_scoped_reads_are_internal_and_duplicate_reads_preserve_progress(mission
     assert "Fixture evidence, never market performance." in prompt
     assert "_private_files" not in prompt
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
-    assert context["continuation_offsets"] == {}
-    assert context["completed_read_paths"] == ["fixture.txt"]
+    assert context["file_progress"] == {"fixture.txt": {"next_offset": None, "chunks_read": 1}}
     duplicate = company.commit_turn(next_id, response.model_copy(update={"request_id": next_id}))
     assert duplicate["state"] == "completed" and duplicate["duplicate_read"]
     with company.db.transaction() as conn:
@@ -192,9 +191,8 @@ def test_evidence_prompt_preserves_manifest_with_bounded_chunks(mission):
     assert "request exactly one file chunk" in prompt and "Never batch file reads" in prompt
     assert len(prompt) < 90000
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
-    assert len(context["inspected_chunks"]) == 10 and 1 <= len(context["read_chunks"]) <= 5
-    assert context["continuation_offsets"] == {"fixture.txt": 120000}
-    assert context["completed_read_paths"] == []
+    assert 1 <= len(context["read_chunks"]) <= 5
+    assert context["file_progress"] == {"fixture.txt": {"next_offset": 120000, "chunks_read": 10}}
 
 
 def test_evidence_prompt_retains_early_compact_frozen_menu(mission):
@@ -286,12 +284,15 @@ def test_audit_prompt_keeps_large_resident_code_chunks(mission):
                     id,stage_id,path,character_offset,content,sha256
                 ) VALUES (%s,%s,%s,%s,%s,%s)""",
                              (uuid4(), stage["id"], path, offset, content, "f" * 64))
-        for index in range(7):
-            conn.execute("""INSERT INTO research_stage_reads(id,stage_id,path,character_offset,content,sha256)
-                VALUES (%s,%s,%s,0,%s,%s)""",
-                         (uuid4(), stage["id"], f"large-output-{index}.csv", "x" * 12000, "e" * 64))
         conn.execute("""UPDATE research_stage_reads SET created_at=now()+interval '1 minute'
             WHERE stage_id=%s AND path='audit/scope/supplements/receipt.json'""", (stage["id"],))
+        output_path = "audit/scope/trials/example/outputs/orders-stress.json"
+        for index in range(25):
+            conn.execute("""INSERT INTO research_stage_reads(
+                id,stage_id,path,character_offset,content,next_offset,sha256,created_at
+            ) VALUES (%s,%s,%s,%s,%s,%s,%s,now()+interval '2 minutes'+(%s * interval '1 second'))""",
+                         (uuid4(), stage["id"], output_path, index * 12000, "x" * 12000,
+                          (index + 1) * 12000, "e" * 64, index))
         task = conn.execute("SELECT * FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
         _, prompt = stage_prompt(company, conn, task)
     assert len(prompt) < 90000
@@ -304,6 +305,7 @@ def test_audit_prompt_keeps_large_resident_code_chunks(mission):
     }
     assert all(set(item) == {"name"} for item in context["available_files"])
     assert "evidence_sources" not in context and "relevant_evidence" not in context
+    assert context["file_progress"][output_path] == {"next_offset": 300000, "chunks_read": 25}
 
 
 def test_audit_prompt_fails_before_evicting_latest_resident_chunk(mission):
@@ -346,7 +348,7 @@ def test_retry_reads_are_bound_to_new_validator_attempt(mission):
     assert second["attempt"] == 2
     prompt = company.prepare_turn(turn_id)["request"]["prompt"]
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
-    assert context["inspected_chunks"] == [] and context["last_error"] is None
+    assert context["file_progress"] == {} and context["last_error"] is None
     company.commit_turn(turn_id, response.model_copy(update={"request_id": turn_id}))
     with company.db.transaction() as conn:
         assert {row["attempt"] for row in conn.execute("SELECT attempt FROM research_stage_reads")} == {1, 2}
@@ -411,8 +413,7 @@ def test_operator_reconciles_timeout_into_started_audit_attempt_with_current_thr
     assert recovered["turn_id"] != str(second_turn)
     prepared = company.prepare_turn(recovered["turn_id"])
     payload = json.loads(prepared["request"]["prompt"].split("MISSION DATA JSON:\n", 1)[1])
-    assert payload["completed_read_paths"] == []
-    assert payload["inspected_chunks"] == []
+    assert payload["file_progress"] == {}
 
     replay = ProviderResponse(request_id=recovered["turn_id"], provider="fixture", decision=AgentDecision(
         say="", status="continue", tools=[{"name": "research_control", "arguments": {
