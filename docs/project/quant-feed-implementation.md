@@ -87,4 +87,5 @@ During preview the company, news and quant lanes naturally overlapped without sy
 calls. Codex runtime memory peaked at 338,063,360 bytes under its 512 MiB limit, with zero `high`,
 `max`, OOM or OOM-kill events. The quant worker used about 73 MiB under its 256 MiB limit. Full
 image rebuilds reuse only the prior bounded BuildKit cache after an exact-base check; images are
-still rebuilt and their installed source inventory is reverified.
+still rebuilt and their installed source inventory is reverified. A cold build requires 640 MiB
+host availability; a same-base cache rebuild requires 512 MiB, matching the builder's hard cap.

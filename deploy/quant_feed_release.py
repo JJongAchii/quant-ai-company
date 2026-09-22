@@ -118,7 +118,8 @@ def stage(args, previous, target, journal, module):
     builder = "quant-feed-" + args.base[:12]
     builder_reused = subprocess.run(["docker", "buildx", "inspect", builder], capture_output=True).returncode == 0
     required_disk = (4 if builder_reused else 10) * 1024**3
-    if target.exists() or memory_available_mib() < 640 or shutil.disk_usage(target.parent).free < required_disk:
+    required_memory = 512 if builder_reused else 640
+    if target.exists() or memory_available_mib() < required_memory or shutil.disk_usage(target.parent).free < required_disk:
         raise ValueError("stage_target_exists_or_insufficient_headroom")
     archive = Path(args.archive)
     data = archive.read_bytes()
@@ -129,7 +130,7 @@ def stage(args, previous, target, journal, module):
               "running_before": active_services(),
               "build_method": "full images from committed Dockerfile, lock, package and deployment inputs",
               "worker_at_stage": worker_state(), "builder_memory_mib": 512, "builder_cpus": 1,
-              "builder_cache_reused": builder_reused}
+              "builder_cache_reused": builder_reused, "admission_memory_mib": required_memory}
     module.atomic(journal, json.dumps(record).encode())
     target.mkdir()
     module.unpack(data, target)
