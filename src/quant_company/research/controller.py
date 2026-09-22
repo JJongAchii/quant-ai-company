@@ -250,10 +250,21 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         if conn.execute("""SELECT 1 FROM research_stage_reads
             WHERE stage_id=%s AND attempt=%s AND path=%s AND character_offset=%s""",
                         (row["id"], row["attempt"], receipt["path"], receipt["offset"])).fetchone():
-            raise PolicyError("This immutable evidence chunk was already read")
+            # A stateless model can occasionally request a chunk that is already in
+            # inspected_chunks. Preserve the completed audit reads instead of turning
+            # this harmless duplicate into a fresh stage attempt. The next prompt gets
+            # an explicit bounded hint and the same immutable evidence index.
+            error = f"evidence_chunk_already_read:{receipt['path']}@{receipt['offset']};choose_an_unread_chunk"
+            conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s",
+                         (error, row["id"]))
+            conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                         (Jsonb(response.model_dump(mode="json")), turn["id"]))
+            company._new_turn(conn, task)
+            return {"state": "completed", "duplicate_read": True}
         conn.execute("""INSERT INTO research_stage_reads(id,stage_id,attempt,path,character_offset,content,next_offset,sha256)
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""", (stable("stage-read:" + str(turn["id"])), row["id"], row["attempt"],
                 receipt["path"], receipt["offset"], receipt["content"], receipt["next_offset"], receipt["sha256"]))
+        conn.execute("UPDATE research_mission_stages SET error=NULL,updated_at=now() WHERE id=%s", (row["id"],))
         conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
                      (Jsonb(response.model_dump(mode="json")), turn["id"]))
         company._new_turn(conn, task)
@@ -315,7 +326,7 @@ class MissionController:
         conn.execute("""INSERT INTO research_stage_attempts(stage_id,attempt,task_id) VALUES (%s,%s,%s)""",
                      (identity, attempt, task_id))
         conn.execute("""UPDATE research_mission_stages SET task_id=%s,attempt=%s,state='running',
-            context=%s,retry_at=NULL,updated_at=now() WHERE id=%s""", (task_id, attempt, Jsonb(context), identity))
+            context=%s,error=NULL,retry_at=NULL,updated_at=now() WHERE id=%s""", (task_id, attempt, Jsonb(context), identity))
         self.company._new_turn(conn, task)
         if attempt == 1 and stage not in {"proposal", "challenge", "selection", "cycle_review"}:
             # Internal engineer/validator need no fake Slack identity. Director posts a truthful stage receipt.
