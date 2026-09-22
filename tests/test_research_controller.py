@@ -242,6 +242,8 @@ def test_audit_prompt_retains_early_compact_scope_evidence(mission):
     assert len(prompt) < 90000
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
     assert receipt in {chunk["content"] for chunk in context["read_chunks"]}
+    assert "MUST start at byte 0 with a qlab YAML frontmatter block" in prompt
+    assert "no prose before frontmatter" in prompt
 
 
 def test_retry_reads_are_bound_to_new_validator_attempt(mission):
@@ -268,7 +270,7 @@ def test_retry_reads_are_bound_to_new_validator_attempt(mission):
         assert {row["attempt"] for row in conn.execute("SELECT attempt FROM research_stage_reads")} == {1, 2}
 
 
-def test_operator_reconciles_timeout_into_started_audit_attempt_without_rereading(mission):
+def test_operator_reconciles_timeout_into_started_audit_attempt_with_current_thread_replay(mission):
     company = mission.company
     controller = MissionController(company, backend=FixtureBackend(company))
     assert controller.tick()["state"] == "running"
@@ -327,21 +329,27 @@ def test_operator_reconciles_timeout_into_started_audit_attempt_without_rereadin
     assert recovered["turn_id"] != str(second_turn)
     prepared = company.prepare_turn(recovered["turn_id"])
     payload = json.loads(prepared["request"]["prompt"].split("MISSION DATA JSON:\n", 1)[1])
-    assert payload["completed_read_paths"] == ["audit/evidence.txt"]
-    assert payload["inspected_chunks"] == [{"path": "audit/evidence.txt", "offset": 0}]
+    assert payload["completed_read_paths"] == []
+    assert payload["inspected_chunks"] == []
 
-    response = ProviderResponse(request_id=recovered["turn_id"], provider="fixture", decision=AgentDecision(
+    replay = ProviderResponse(request_id=recovered["turn_id"], provider="fixture", decision=AgentDecision(
+        say="", status="continue", tools=[{"name": "research_control", "arguments": {
+            "action": "read_stage_file", "path": "audit/evidence.txt"}}]))
+    company.commit_turn(recovered["turn_id"], replay)
+    _, final_turn = active(mission)
+    company.prepare_turn(final_turn)
+    response = ProviderResponse(request_id=final_turn, provider="fixture", decision=AgentDecision(
         say="", status="complete", artifacts=[{"title": "Synthetic audit",
         "content": json.dumps({"markdown": "Synthetic validator result"})}]))
-    company.commit_turn(recovered["turn_id"], response)
+    company.commit_turn(final_turn, response)
     snapshot = mission.snapshot()
     with company.db.transaction() as conn:
         current = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
         backend = MissionBackend(company)
         turns = backend._actor_turns(conn, current["task_id"], "validator", snapshot)
-        assert [turn["status"] for turn in turns] == ["stale", "completed"]
+        assert [turn["status"] for turn in turns] == ["stale", "completed", "completed"]
         backend._check_audit_turns(conn, current, snapshot)
-        assert {row["attempt"] for row in conn.execute("SELECT attempt FROM research_stage_reads")} == {1}
+        assert {row["attempt"] for row in conn.execute("SELECT attempt FROM research_stage_reads")} == {1, 2}
 
 
 def test_reconciled_audit_excludes_prior_bytes_when_full_file_digest_changed():

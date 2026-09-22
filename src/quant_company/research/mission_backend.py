@@ -542,9 +542,13 @@ class MissionBackend:
         from .controller import _compatible_stage_reads
 
         reads = _compatible_stage_reads(row, raw_reads)
+        # A successor attempt has a new provider thread. Digest-compatible reads
+        # from the failed task remain auditable recovery evidence, but only bytes
+        # delivered in this attempt can satisfy the validator's evidence contract.
+        current_reads = [item for item in reads if item["attempt"] == row["attempt"]]
         for path, expected in audit["required_reads"].items():
             position = 0
-            file_reads = [item for item in reads if item["path"] == path]
+            file_reads = [item for item in current_reads if item["path"] == path]
             for item in file_reads:
                 if item["sha256"] != expected["sha256"] or item["character_offset"] != position:
                     raise PolicyError("mission_audit_read_binding_invalid")
