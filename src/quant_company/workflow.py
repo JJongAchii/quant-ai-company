@@ -15,7 +15,7 @@ class CompanyTurnWorkflow:
             try:
                 result = await workflow.execute_activity(
                     "company_execute_turn", turn_id,
-                    start_to_close_timeout=timedelta(minutes=8), heartbeat_timeout=timedelta(seconds=30),
+                    start_to_close_timeout=timedelta(minutes=20), heartbeat_timeout=timedelta(seconds=30),
                     retry_policy=RetryPolicy(initial_interval=timedelta(seconds=2), maximum_attempts=3),
                 )
             except ActivityError:

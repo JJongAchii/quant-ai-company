@@ -18,7 +18,7 @@ from quant_company.providers.codex_runner import (
     atomic_json,
     request_digest,
 )
-from quant_company.providers.codex_runtime import create_app
+from quant_company.providers.codex_runtime import create_app, runner_from_environment
 
 FAKE_CODEX = r'''
 import json, os, signal, subprocess, sys, time
@@ -168,6 +168,18 @@ def request_model():
 
 def runner_for(config, **kwargs):
     return CodexRunner(config, environment={"PATH": os.environ["PATH"], "HOME": str(config.codex_home.parent)}, **kwargs)
+
+
+def test_runtime_default_allows_long_validator_completion(monkeypatch, tmp_path):
+    auth = tmp_path / "auth"
+    auth.mkdir()
+    monkeypatch.setenv("CODEX_HOME", str(auth))
+    monkeypatch.setenv("CODEX_JOBS_DIR", str(tmp_path / "jobs"))
+    monkeypatch.delenv("CODEX_TIMEOUT_SECONDS", raising=False)
+    assert runner_from_environment().config.timeout_seconds == 900
+    compose = Path("deploy/compose.yaml").read_text()
+    assert "CODEX_TIMEOUT_SECONDS: ${CODEX_TIMEOUT_SECONDS:-900}" in compose
+    assert "COMPANY_MODEL_TIMEOUT_SECONDS: ${COMPANY_MODEL_TIMEOUT_SECONDS:-960}" in compose
 
 
 async def wait_for_path(path: Path, timeout=3):
