@@ -40,4 +40,5 @@ CREATE TABLE IF NOT EXISTS quant_feed_publications (
 );
 CREATE TABLE IF NOT EXISTS quant_feed_delivery (channel text PRIMARY KEY, next_at timestamptz NOT NULL);
 CREATE INDEX IF NOT EXISTS quant_feed_candidates_due ON quant_feed_candidates(next_at);
+CREATE INDEX IF NOT EXISTS quant_feed_candidates_source_fetch ON quant_feed_candidates(source_id,last_fetch);
 CREATE INDEX IF NOT EXISTS quant_feed_documents_pending ON quant_feed_documents(state,created_at);

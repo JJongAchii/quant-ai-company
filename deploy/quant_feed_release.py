@@ -115,7 +115,10 @@ def take_backup_preserving_worker(previous, env, module):
 
 
 def stage(args, previous, target, journal, module):
-    if target.exists() or memory_available_mib() < 640 or shutil.disk_usage(target.parent).free < 10 * 1024**3:
+    builder = "quant-feed-" + args.base[:12]
+    builder_reused = subprocess.run(["docker", "buildx", "inspect", builder], capture_output=True).returncode == 0
+    required_disk = (4 if builder_reused else 10) * 1024**3
+    if target.exists() or memory_available_mib() < 640 or shutil.disk_usage(target.parent).free < required_disk:
         raise ValueError("stage_target_exists_or_insufficient_headroom")
     archive = Path(args.archive)
     data = archive.read_bytes()
@@ -125,7 +128,8 @@ def stage(args, previous, target, journal, module):
               "archive_sha256": args.archive_sha256, "started_at": time.time(), "images": [],
               "running_before": active_services(),
               "build_method": "full images from committed Dockerfile, lock, package and deployment inputs",
-              "worker_at_stage": worker_state(), "builder_memory_mib": 512, "builder_cpus": 1}
+              "worker_at_stage": worker_state(), "builder_memory_mib": 512, "builder_cpus": 1,
+              "builder_cache_reused": builder_reused}
     module.atomic(journal, json.dumps(record).encode())
     target.mkdir()
     module.unpack(data, target)
@@ -137,11 +141,11 @@ def stage(args, previous, target, journal, module):
     shutil.copytree(previous / "qdata", target / "qdata")
     record["qdata_commit"] = pin["commit"]
     record["qdata_tree_sha256"] = args.qdata_tree_sha256
-    builder = "quant-feed-" + args.commit[:12]
     expected = source_inventory(target / "src/quant_company")
     try:
-        run(["docker", "buildx", "create", "--name", builder, "--driver", "docker-container",
-             "--driver-opt", "memory=512m,memory-swap=512m,cpu-period=100000,cpu-quota=100000,restart-policy=no"])
+        if not builder_reused:
+            run(["docker", "buildx", "create", "--name", builder, "--driver", "docker-container",
+                 "--driver-opt", "memory=512m,memory-swap=512m,cpu-period=100000,cpu-quota=100000,restart-policy=no"])
         for build_target, repository in IMAGES:
             emit(phase="building", target=build_target)
             tag = repository + ":" + args.commit

@@ -212,6 +212,60 @@ def test_source_failure_and_stale_lease_isolation(quant):
     assert status["error"] == "http_status"
 
 
+def fair_sources(quant, tmp_path):
+    sources = [
+        QuantSource(id="fair-a", publisher="A", kind="seed", url="https://a.example.org/index",
+                    article_hosts=["a.example.org"]),
+        QuantSource(id="fair-b", publisher="B", kind="seed", url="https://b.example.org/index",
+                    article_hosts=["b.example.org"]),
+    ]
+    path = tmp_path / "fair-sources.json"
+    path.write_text(json.dumps([source.model_dump() for source in sources]))
+    quant.company.settings.quant_feed_sources_file = path
+    with quant.db.transaction() as conn:
+        quant.sync_sources(conn)
+        for source, suffixes in ((sources[0], ["one", "two"]), (sources[1], ["one"])):
+            for suffix in suffixes:
+                quant.add_candidate(conn, source, {"url": f"https://{source.article_hosts[0]}/{suffix}",
+                                                   "title": f"{source.id}-{suffix}", "metadata": {}})
+        conn.execute("UPDATE quant_feed_candidates SET discovered_at='2020-01-01' WHERE source_id='fair-a'")
+        conn.execute("UPDATE quant_feed_candidates SET discovered_at='2021-01-01' WHERE source_id='fair-b'")
+    return sources
+
+
+def test_candidate_fetch_rotates_across_sources(quant, tmp_path):
+    fair_sources(quant, tmp_path)
+    first = quant.claim_candidate()
+    assert first["source_id"] == "fair-a"
+    quant.save_original(first, {"ok": False, "error": "synthetic_hold"})
+    assert quant.claim_candidate()["source_id"] == "fair-b"
+
+
+def test_editor_rotates_across_sources(quant, tmp_path):
+    fair_sources(quant, tmp_path)
+    for _ in range(3):
+        candidate = quant.claim_candidate()
+        text = TEXT + candidate["url"]
+        quant.save_original(candidate, {"ok": True, "url": candidate["url"],
+                                       "original_sha256": fingerprint(text),
+                                       "pages": [{"location": "PDF p.1", "text": text}],
+                                       "metadata": {}, "links": [], "truncated": False})
+    with quant.db.transaction() as conn:
+        a = conn.execute("""SELECT d.id FROM quant_feed_documents d JOIN quant_feed_candidates c ON c.id=d.candidate_id
+            WHERE c.source_id='fair-a' ORDER BY d.id""").fetchall()
+        b = conn.execute("""SELECT d.id FROM quant_feed_documents d JOIN quant_feed_candidates c ON c.id=d.candidate_id
+            WHERE c.source_id='fair-b'""").fetchone()
+        conn.execute("UPDATE quant_feed_documents SET state='held',reviewed_at=now() WHERE id=%s", (a[0]["id"],))
+        conn.execute("UPDATE quant_feed_documents SET created_at='2020-01-01' WHERE id=%s", (a[1]["id"],))
+        conn.execute("UPDATE quant_feed_documents SET created_at='2021-01-01' WHERE id=%s", (b["id"],))
+    request = quant.prepare()
+    with quant.db.transaction() as conn:
+        selected = conn.execute("""SELECT c.source_id FROM quant_feed_calls q JOIN quant_feed_documents d ON d.id=q.document_id
+            JOIN quant_feed_candidates c ON c.id=d.candidate_id WHERE q.id=%s""",
+                                (request["request"]["request_id"],)).fetchone()
+    assert selected["source_id"] == "fair-b"
+
+
 def test_delivery_window_and_discovery_slots():
     at = datetime(2026, 9, 21, 17, tzinfo=UTC)
     assert schedule.delivery_time(at).hour == 6  # 06:00 KST next morning

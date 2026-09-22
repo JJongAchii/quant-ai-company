@@ -107,7 +107,9 @@ class QuantFeedStore:
                 WHERE id=(SELECT c.id FROM quant_feed_candidates c JOIN quant_feed_sources s ON s.id=c.source_id
                     WHERE s.enabled AND c.source_digest=s.config_digest AND c.next_at<=now()
                     AND (c.lease_until IS NULL OR c.lease_until<=now())
-                    ORDER BY c.next_at,c.discovered_at,c.id FOR UPDATE OF c SKIP LOCKED LIMIT 1)
+                    ORDER BY (SELECT count(*) FROM quant_feed_candidates seen
+                              WHERE seen.source_id=c.source_id AND seen.last_fetch IS NOT NULL),
+                             c.next_at,c.discovered_at,c.id FOR UPDATE OF c SKIP LOCKED LIMIT 1)
                 RETURNING *""", (uuid4(),)).fetchone()
 
     def save_original(self, claimed, receipt):
@@ -212,7 +214,11 @@ class QuantFeedStore:
                 document = conn.execute("""SELECT d.* FROM quant_feed_documents d
                     JOIN quant_feed_candidates c ON c.id=d.candidate_id JOIN quant_feed_sources s ON s.id=c.source_id
                     WHERE d.state='ready' AND s.enabled AND d.source_digest=s.config_digest
-                    ORDER BY (d.stage='critique') DESC,d.created_at,d.id FOR UPDATE OF d SKIP LOCKED LIMIT 1""").fetchone()
+                    ORDER BY (d.stage='critique') DESC,
+                        (SELECT count(*) FROM quant_feed_documents seen
+                         JOIN quant_feed_candidates seen_candidate ON seen_candidate.id=seen.candidate_id
+                         WHERE seen_candidate.source_id=c.source_id AND seen.reviewed_at IS NOT NULL),
+                        d.created_at,d.id FOR UPDATE OF d SKIP LOCKED LIMIT 1""").fetchone()
                 if not document:
                     return {"state": "idle"}
                 stage, bundle = document["stage"], self.bundle(conn, document)

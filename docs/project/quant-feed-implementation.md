@@ -72,3 +72,19 @@ Additional post-merge targeted tests: 152 passed, one macOS PDF skip. Release st
 rollback and real Temporal/deployment tests pass (33 tests after the running-worker refinement).
 The latest full local regression passed 1,071 with 36 skipped and one live test deselected; PR CI
 passed. Do not claim the new feed is active until preview and delivery gates complete.
+
+## Preview findings and source fairness
+
+The first real subscription preview rejected or held all twelve initial AQR entries: marketing
+landing pages lacked full methods/results, and unsupported exact quotes failed closed. No Slack
+message was created. This also exposed source-order bias: a large commercial index could delay
+NBER, Korean institutional and academic originals. Candidate fetching and document review now
+prefer the source with the fewest prior fetches/reviews, while an already drafted brief's critique
+retains absolute priority. PostgreSQL tests prove both rotations. This changes ordering only, not
+the quality threshold or publication count policy.
+
+During preview the company, news and quant lanes naturally overlapped without synthetic model
+calls. Codex runtime memory peaked at 338,063,360 bytes under its 512 MiB limit, with zero `high`,
+`max`, OOM or OOM-kill events. The quant worker used about 73 MiB under its 256 MiB limit. Full
+image rebuilds reuse only the prior bounded BuildKit cache after an exact-base check; images are
+still rebuilt and their installed source inventory is reverified.
