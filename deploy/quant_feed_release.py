@@ -210,8 +210,15 @@ def cutover(args, previous, target, journal, module):
         raise ValueError("owner_or_channel_ambiguous")
     roles = json.loads(oldroles)
     candidate = next(r for r in json.loads((target / "src/quant_company/roles.json").read_text()) if r["id"] == "quant_scout")
-    if any(r["id"] == "quant_scout" for r in roles):
-        raise ValueError("quant_role_already_configured")
+    deployed_quant = next((r for r in roles if r["id"] == "quant_scout"), None)
+    if deployed_quant:
+        previous_quant = next(r for r in json.loads((previous / "src/quant_company/roles.json").read_text())
+                              if r["id"] == "quant_scout")
+        if deployed_quant != previous_quant:
+            raise ValueError("quant_role_override_requires_review")
+        roles = [candidate if role["id"] == "quant_scout" else role for role in roles]
+    else:
+        roles.append(candidate)
     preserved = {name: (STATE / name).read_bytes() for name in (
         "secrets/slack-credentials.json", "config/research-profiles.json", "config/research-qlab.json")}
     rows = inspect(["postgres"])
@@ -271,7 +278,7 @@ with c.db.transaction() as x:
                         "QUANT_FEED_PUBLISH_ENABLED": "false", "QUANT_FEED_CHANNEL_ID": args.channel,
                         "QUANT_FEED_OWNER_USER": owners[0],
                         "SLACK_ALLOWED_CHANNELS": json.dumps(list(dict.fromkeys([*channels, args.channel])), separators=(",", ":"))})
-        module.atomic(roles_file, json.dumps([*roles, candidate], ensure_ascii=False).encode())
+        module.atomic(roles_file, json.dumps(roles, ensure_ascii=False).encode())
         module.link(target)
         # Additive schema only; default constructor does not migrate implicitly.
         migration = "from quant_company.company import Company;from quant_company.config import Settings;c=Company(Settings());c.db.migrate()"

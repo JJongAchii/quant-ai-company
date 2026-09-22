@@ -42,10 +42,12 @@ def test_health_requires_same_stopped_worker_and_database(release, monkeypatch):
 
 
 @pytest.mark.parametrize("fail_migration", [False, True])
-def test_cutover_and_rollback_never_start_stopped_worker(release, tmp_path, monkeypatch, fail_migration):
+@pytest.mark.parametrize("preconfigured", [False, True])
+def test_cutover_and_rollback_preserve_independent_worker(release, tmp_path, monkeypatch,
+                                                          fail_migration, preconfigured):
     state, previous, target = tmp_path / "state", tmp_path / "base", tmp_path / "candidate"
     for path in (state / "config", state / "secrets", state / "releases", state / "codex/jobs", state / "claude/jobs",
-                 target / "src/quant_company"):
+                 target / "src/quant_company", previous / "src/quant_company"):
         path.mkdir(parents=True)
     monkeypatch.setattr(release, "STATE", state)
     selected = list(release.SERVICES)
@@ -58,9 +60,13 @@ def test_cutover_and_rollback_never_start_stopped_worker(release, tmp_path, monk
     monkeypatch.setattr(release.os, "fchown", lambda *args: None)
     monkeypatch.setattr(release.time, "sleep", lambda seconds: None)
     monkeypatch.setattr(release, "run", lambda *args, **kwargs: b'{"research_jobs":0,"sending_outbox":0}')
+    candidate_role = {"id": "quant_scout", "active": False}
     roles = [{"id": "reporter", "active": True, "model": "existing"}]
+    if preconfigured:
+        roles.append(candidate_role)
     (state / "config/roles.json").write_text(json.dumps(roles))
-    (target / "src/quant_company/roles.json").write_text(json.dumps([{"id": "quant_scout", "active": False}]))
+    (target / "src/quant_company/roles.json").write_text(json.dumps([candidate_role]))
+    (previous / "src/quant_company/roles.json").write_text(json.dumps([candidate_role]))
     env = 'SLACK_ALLOWED_USERS=["UOWNER"]\nSLACK_ALLOWED_CHANNELS=["CNEWS"]\nNEWS_CHANNEL_ID=CNEWS\nNEWS_PUBLISH_ENABLED=true\n'
     (state / "config/runtime.env").write_text(env)
     credential = {"app_id": release.APP_ID, "bot_user_id": release.BOT_USER_ID, "bot_token": "fixture"}
@@ -91,7 +97,9 @@ def test_cutover_and_rollback_never_start_stopped_worker(release, tmp_path, monk
     else:
         release.cutover(args, previous, target, journal, module)
         assert "QUANT_FEED_PUBLISH_ENABLED=false" in (state / "config/runtime.env").read_text()
-        assert json.loads((state / "config/roles.json").read_text())[:-1] == roles
+        deployed = json.loads((state / "config/roles.json").read_text())
+        assert deployed[0] == roles[0]
+        assert [role for role in deployed if role["id"] == "quant_scout"] == [candidate_role]
     assert all("worker" not in command for root, command in commands)
     assert all("quant-feed-worker" not in command for root, command in commands if root == previous)
     receipt = json.loads(journal.read_text())
