@@ -80,6 +80,7 @@ class AuditPackage:
     scope_digest: str
     scope_files: Mapping[str, str]
     qlab_commit: str
+    supplement_files: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -239,6 +240,7 @@ def _match_trials(binding: AuditBinding, trials: tuple[ValidatedAdaptiveTrial, .
 def prepare_audit_package(
     destination: Path, trials: tuple[ValidatedAdaptiveTrial, ...], *, mission_spec: MissionSpec,
     binding: AuditBinding, qlab_profile: QlabProfile, history: ReportHistory,
+    supplements: Mapping[str, bytes] | None = None,
 ) -> AuditPackage:
     """Copy validated immutable inputs; never create an audit or a pass verdict."""
     _match_trials(binding, trials)
@@ -257,12 +259,22 @@ def prepare_audit_package(
         prefix = f"scope/trials/{trial.manifest.trial_id}/"
         contents.update({prefix + name: content for name, content in trial.contents.items()})
         contents[prefix + "archive.zip"] = trial.archive
+    supplement_files = []
+    for name, content in sorted((supplements or {}).items()):
+        relative_path(name)
+        _require(isinstance(content, bytes) and not name.startswith("scope/"),
+                 "invalid_audit_supplement")
+        scoped = "scope/supplements/" + name
+        _require(scoped not in contents, "invalid_audit_supplement")
+        contents[scoped] = content
+        supplement_files.append(scoped)
     for name, content in sorted(contents.items()):
         _write(destination, name, content)
     files = {name: _sha256(content) for name, content in sorted(contents.items())}
     qlab = _qlab(qlab_profile, destination, list(files), "digest")
     metadata = {
-        "schema_version": 1, "binding": binding.model_dump(mode="json"), "scope_files": files,
+        "schema_version": 2, "binding": binding.model_dump(mode="json"), "scope_files": files,
+        "supplement_files": supplement_files,
         "objective_digest": qlab["objective_digest"], "scope_digest": qlab["scope_digest"],
         "qlab_commit": qlab_profile.commit,
     }
@@ -272,9 +284,11 @@ def prepare_audit_package(
 
 def _load_package(root: Path, expected: AuditBinding, profile: QlabProfile) -> AuditPackage:
     metadata = _json(_file(root, "package.json").read_bytes(), "\x00not-a-lease-token\x00")
-    _require(isinstance(metadata, dict) and set(metadata) == {
-        "schema_version", "binding", "scope_files", "objective_digest", "scope_digest", "qlab_commit",
-    } and type(metadata["schema_version"]) is int and metadata["schema_version"] == 1
+    base_keys = {"schema_version", "binding", "scope_files", "objective_digest", "scope_digest", "qlab_commit"}
+    schema = metadata.get("schema_version") if isinstance(metadata, dict) else None
+    expected_keys = base_keys if schema == 1 else base_keys | {"supplement_files"}
+    _require(isinstance(metadata, dict) and set(metadata) == expected_keys
+        and type(schema) is int and schema in {1, 2}
         and metadata["binding"] == expected.model_dump(mode="json")
         and metadata["qlab_commit"] == profile.commit, "audit_package_identity_mismatch")
     files = metadata["scope_files"]
@@ -309,12 +323,17 @@ def _load_package(root: Path, expected: AuditBinding, profile: QlabProfile) -> A
                 expected_members.add(prefix + name)
                 _require(files.get(prefix + name) == _sha256(archive.read(name)), "audit_archive_member_mismatch")
         expected_members.add(prefix + "archive.zip")
+    supplements = metadata.get("supplement_files", [])
+    _require(isinstance(supplements, list) and len(supplements) == len(set(supplements))
+             and all(isinstance(name, str) and name.startswith("scope/supplements/")
+                     for name in supplements), "audit_supplement_inventory_mismatch")
+    expected_members.update(supplements)
     _require(set(files) == expected_members, "reported_trial_scope_mismatch")
     values = _qlab(profile, root, list(files), "digest")
     _require(values == {"scope_digest": metadata["scope_digest"], "objective_digest": metadata["objective_digest"]},
              "audit_scope_digest_mismatch")
     return AuditPackage(root, expected, metadata["objective_digest"], metadata["scope_digest"],
-                        MappingProxyType(files), profile.commit)
+                        MappingProxyType(files), profile.commit, tuple(supplements))
 
 
 def zipfile_for_audit(path: Path):

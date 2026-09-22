@@ -246,6 +246,47 @@ def test_audit_prompt_retains_early_compact_scope_evidence(mission):
     assert "no prose before frontmatter" in prompt
 
 
+def test_audit_prompt_keeps_large_resident_code_chunks(mission):
+    company = mission.company
+    controller = MissionController(company, backend=FixtureBackend(company))
+    controller.tick()
+    stage, _ = active(mission)
+    resident = {
+        "audit/scope/trials/example/code/engine.py": [(0, "engine-resident\n" + "e" * 18400)],
+        "audit/scope/trials/example/code/adapter.py": [
+            (0, "adapter-resident\n" + "a" * 19900), (20000, "adapter-tail\n" + "a" * 650),
+        ],
+        "audit/scope/trials/example/code/signals.py": [(0, "signals-resident\n" + "s" * 3600)],
+        "audit/scope/supplements/checker.py": [(0, "checker-resident\n" + "c" * 12200)],
+        "audit/scope/supplements/contract.json": [(0, "contract-resident\n" + "k" * 8800)],
+        "audit/scope/supplements/receipt.json": [(0, "receipt-resident\n" + "r" * 4500)],
+    }
+    with company.db.transaction() as conn:
+        conn.execute("""UPDATE research_mission_stages SET stage='audit',actor='validator',
+            context=context || %s::jsonb WHERE id=%s""", (json.dumps({"audit": {
+                "scope": [path.removeprefix("audit/") for path in resident],
+                "resident_evidence_paths": list(resident),
+            }}), stage["id"]))
+        expected = set()
+        for path, chunks in resident.items():
+            for offset, content in chunks:
+                expected.add((path, offset, content))
+                conn.execute("""INSERT INTO research_stage_reads(
+                    id,stage_id,path,character_offset,content,sha256
+                ) VALUES (%s,%s,%s,%s,%s,%s)""",
+                             (uuid4(), stage["id"], path, offset, content, "f" * 64))
+        for index in range(7):
+            conn.execute("""INSERT INTO research_stage_reads(id,stage_id,path,character_offset,content,sha256)
+                VALUES (%s,%s,%s,0,%s,%s)""",
+                         (uuid4(), stage["id"], f"large-output-{index}.csv", "x" * 12000, "e" * 64))
+        task = conn.execute("SELECT * FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
+        _, prompt = stage_prompt(company, conn, task)
+    assert len(prompt) < 90000
+    context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
+    retained = {(chunk["path"], chunk["offset"], chunk["content"]) for chunk in context["read_chunks"]}
+    assert expected <= retained
+
+
 def test_retry_reads_are_bound_to_new_validator_attempt(mission):
     company = mission.company
     controller = MissionController(company, backend=FixtureBackend(company))
