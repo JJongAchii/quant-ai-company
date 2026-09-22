@@ -230,7 +230,7 @@ def test_audit_prompt_retains_early_compact_scope_evidence(mission):
                          (uuid4(), stage["id"], f"large-audit-{index}.csv", "x"*12000, "e"*64))
         task = conn.execute("SELECT * FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
         _, prompt = stage_prompt(company, conn, task)
-    assert len(prompt) < 130000
+    assert len(prompt) < 90000
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
     assert receipt in {chunk["content"] for chunk in context["read_chunks"]}
 
