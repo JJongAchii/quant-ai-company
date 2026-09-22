@@ -9,6 +9,8 @@ from pydantic import Field, field_validator
 from ..contracts import StrictModel
 from ..web_fetch import public_url
 
+TECH_FEED_AGENT = "tech_scout"
+
 
 class TechFeedSource(StrictModel):
     id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]{1,60}$")

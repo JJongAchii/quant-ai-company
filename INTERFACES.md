@@ -2,8 +2,10 @@
 
 Python package `quant_company`, Python 3.11+. Shared Pydantic models are in `contracts.py`.
 Role IDs: director, financial_strategist, researcher_kr, researcher_global, researcher_crypto,
-data, engineer, validator, risk, operations. First four active: director, financial_strategist,
-researcher_kr, data. `roles.json` is a JSON array of `Role` objects, packaged in `src/quant_company/`.
+data, engineer, validator, risk, operations, reporter, tech_scout. First four active: director,
+financial_strategist, researcher_kr, data. Reporter is activated only by hot-news. Tech Scout remains
+inactive because it is a deterministic outbound identity, not a model employee. `roles.json` is a JSON
+array of `Role` objects, packaged in `src/quant_company/`.
 
 ## Codex runtime (separate container)
 
@@ -31,6 +33,7 @@ researcher_kr, data. `roles.json` is a JSON array of `Role` objects, packaged in
   COMPANY_MAX_DAILY_TURNS=100, COMPANY_MAX_TASK_TURNS=8, COMPANY_MAX_DEPTH=3.
 - Slack credentials: `{role_id: {app_id, bot_user_id, bot_token, app_token, signing_secret}}`.
   `app_token` with `connections:write` is required for Socket Mode; `signing_secret` is required only for HTTP.
+  The inactive outbound-only `tech_scout` entry needs only `app_id`, `bot_user_id` and `bot_token`.
 - Default transport is Socket Mode: `slack-socket` maintains authenticated outbound WebSockets with
   the official Slack SDK. Workspace/user/channel/app checks and DB commit precede the envelope ACK.
   Duplicate deliveries share the same inbox key as HTTP. No public domain/port is required.
@@ -53,8 +56,9 @@ researcher_kr, data. `roles.json` is a JSON array of `Role` objects, packaged in
 - `TECH_FEED_ENABLED=false`, `TECH_FEED_PUBLISH_ENABLED=false`, `TECH_FEED_CHANNEL_ID`,
   `TECH_FEED_OWNER_USER`, optional `TECH_FEED_SOURCES_FILE`. Slack allowlists still apply.
 - Separate PostgreSQL `tech_feed_*` state and `company-tech-feed-collection-v1` Temporal workflow;
-  task queue suffix `-tech-feed`. Reuses Reporter and the outbox with message kind `tech_feed`.
-- No ProviderRequest, turns, model budgets, automatic summaries/translations or Reporter follow-up calls.
+  task queue suffix `-tech-feed`. Uses the dedicated `tech_scout` credential and the existing outbox with
+  message kind `tech_feed`; queued legacy Reporter deliveries migrate before sending.
+- No ProviderRequest, turns, model budgets, automatic summaries/translations or interactive Tech Scout calls.
 - See [tech-feed](docs/tech-feed.md) for first-sync, freshness, delivery window and uncertainty semantics.
 
 ### Host

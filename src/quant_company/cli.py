@@ -6,12 +6,15 @@ from uuid import uuid4
 
 from .company import Company
 from .config import Settings
+from .tech_feed.contracts import TECH_FEED_AGENT
 
 
-def manifests(company, base_url, output, transport="socket", include_reporter=False):
+def manifests(company, base_url, output, transport="socket", include_reporter=False, include_tech_scout=False):
     output.mkdir(parents=True, exist_ok=True)
     for role in company.roles.values():
-        if not role.active and not (include_reporter and role.id == "reporter"):
+        optional = ((include_reporter and role.id == "reporter")
+                    or (include_tech_scout and role.id == TECH_FEED_AGENT))
+        if not role.active and not optional:
             continue
         value = {
             "display_information": {"name": "Quant " + role.name, "description": role.mission[:140]},
@@ -31,8 +34,18 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
         if role.id == "reporter":
             value["display_information"]["name"] = "Reporter"
             value["features"]["bot_user"]["display_name"] = "reporter"
+        if role.id == TECH_FEED_AGENT:
+            value = {
+                "display_information": {"name": "Tech Scout", "description": role.mission[:140]},
+                "features": {"bot_user": {"display_name": "tech-scout", "always_online": False}},
+                "oauth_config": {"scopes": {"bot": ["chat:write"]}},
+                "settings": {"org_deploy_enabled": False, "socket_mode_enabled": False,
+                             "token_rotation_enabled": False},
+            }
         if transport == "http":
-            value["settings"]["event_subscriptions"]["request_url"] = base_url.rstrip("/") + "/slack/events/" + role.id
+            subscriptions = value["settings"].get("event_subscriptions")
+            if subscriptions is not None:
+                subscriptions["request_url"] = base_url.rstrip("/") + "/slack/events/" + role.id
         (output / f"{role.id}.json").write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
 
 
@@ -96,6 +109,7 @@ def main():
     slack.add_argument("--base-url")
     slack.add_argument("--output", type=Path, default=Path(".local/slack-manifests"))
     slack.add_argument("--include-reporter", action="store_true")
+    slack.add_argument("--include-tech-scout", action="store_true")
     args = parser.parse_args()
     settings = Settings()
     if args.command == "migrate":
@@ -115,7 +129,8 @@ def main():
     elif args.command == "slack-manifests":
         if args.transport == "http" and not (args.base_url or "").startswith("https://"):
             parser.error("Slack public callback URL must use HTTPS")
-        manifests(Company(settings), args.base_url, args.output, args.transport, args.include_reporter)
+        manifests(Company(settings), args.base_url, args.output, args.transport,
+                  args.include_reporter, args.include_tech_scout)
     elif args.command in {"news", "tech-feed"}:
         if args.command == "news":
             from .news.commands import command

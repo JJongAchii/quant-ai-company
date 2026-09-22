@@ -20,3 +20,8 @@ CREATE TABLE IF NOT EXISTS tech_feed_publications (
 CREATE TABLE IF NOT EXISTS tech_feed_delivery (
  channel text PRIMARY KEY, next_at timestamptz NOT NULL
 );
+-- Preserve already queued articles while moving only unsent delivery ownership off Reporter.
+UPDATE messages SET author='tech_scout'
+ WHERE kind='tech_feed' AND id IN (SELECT id FROM outbox WHERE status='pending');
+UPDATE outbox SET agent='tech_scout'
+ WHERE status='pending' AND id IN (SELECT id FROM messages WHERE kind='tech_feed');

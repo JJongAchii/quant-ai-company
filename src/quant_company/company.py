@@ -12,6 +12,7 @@ from .config import Settings
 from .contracts import DIRECTOR_MODEL, AgentDecision, ProviderRequest, ProviderResponse, Role
 from .db import Database
 from .lake_tools import LAKE_TOOLS, query_lake
+from .tech_feed.contracts import TECH_FEED_AGENT
 from .tools import calculate
 
 
@@ -53,7 +54,7 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     for role in roles:
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
-    if "reporter" in by_id and (settings.company_news_enabled or settings.tech_feed_enabled):
+    if "reporter" in by_id and settings.company_news_enabled:
         by_id["reporter"] = by_id["reporter"].model_copy(update={"active": True})
     if settings.company_research_enabled and "director" in by_id:
         role = by_id["director"]
@@ -93,7 +94,7 @@ class Company:
                     ["id", "name", "active", "model", "reasoning_effort", "version", "tools", "can_delegate_to"]},
                  "specialist_pack_version": pack(role.id)["version"],
                  "specialist_pack_digest": pack(role.id)["digest"]}
-                for role in self.roles.values()
+                for role in self.roles.values() if role.id != TECH_FEED_AGENT
             ],
             "background_model_requests": {
                 "maintainer": ({"model": self.roles["engineer"].model,

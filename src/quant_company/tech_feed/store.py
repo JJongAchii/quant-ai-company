@@ -7,7 +7,7 @@ from psycopg.types.json import Jsonb
 
 from ..company import as_json, fingerprint, stable
 from . import schedule
-from .contracts import TechFeedItem, load_sources
+from .contracts import TECH_FEED_AGENT, TechFeedItem, load_sources
 from .feeds import render
 
 LOCK = 71350241
@@ -23,9 +23,10 @@ class TechFeedStore:
 
     def authorized(self):
         settings = self.company.settings
+        role = self.company.roles.get(TECH_FEED_AGENT)
         return (settings.tech_feed_enabled and settings.tech_feed_owner_user in settings.slack_allowed_users
                 and settings.tech_feed_channel_id in settings.slack_allowed_channels
-                and settings.tech_feed_channel_id.startswith(("C", "G")) and "reporter" in self.company.roles
+                and settings.tech_feed_channel_id.startswith(("C", "G")) and role is not None and not role.active
                 and not (settings.company_news_enabled and settings.news_channel_id == settings.tech_feed_channel_id))
 
     def policy(self):
@@ -123,7 +124,8 @@ class TechFeedStore:
                      (project_id, settings.tech_feed_owner_user, settings.tech_feed_channel_id))
         project = conn.execute("SELECT * FROM projects WHERE id=%s", (project_id,)).fetchone()
         message_id = stable(f"tech-feed:{settings.tech_feed_channel_id}:{item['url']}")
-        self.company._message(conn, project, None, "reporter", "tech_feed", render(item, source), message_id=message_id)
+        self.company._message(conn, project, None, TECH_FEED_AGENT, "tech_feed", render(item, source),
+                              message_id=message_id)
         conn.execute("""INSERT INTO tech_feed_publications(id,item_id,channel,owner_user,url,policy_digest,expires_at)
             VALUES(%s,%s,%s,%s,%s,%s,%s)""", (message_id, identity, settings.tech_feed_channel_id,
                                             settings.tech_feed_owner_user, item["url"], self.policy(),

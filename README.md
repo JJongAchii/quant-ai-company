@@ -37,7 +37,8 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 
 `tech-feed`에는 **AI 호출 없이** 국내외 기술 RSS·Atom의 원문 제목·링크·짧은 발췌를 전달하는
 별도 구독 기능을 추가했습니다. 12개 소스를 10분 대기 간격으로 수집하고 KST 06~24시에 한 건씩
-발송하며, 기존 Reporter·DB·Temporal을 사용합니다. 초기 활성화 기본값은 꺼짐입니다.
+발송하며, 발송 전용 **Tech Scout** Slack 앱과 기존 DB·Temporal을 사용합니다. Tech Scout는
+대화형 직원이나 AI 봇이 아니며 `chat:write`만 갖습니다. 초기 활성화 기본값은 꺼짐입니다.
 [설정·데모·복구](docs/tech-feed.md), [검증 및 운영 상태](docs/project/TECH-FEED-VALIDATION.md)를 참고하세요.
 
 ## 동작
@@ -46,10 +47,11 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 flowchart LR
     U[사용자 · 휴대폰 Slack] <--> S[직원별 Slack 앱 4개]
     S <-->|인증된 WebSocket · Web API| C[회사 서비스]
+    C --> TS[Tech Scout · 발송 전용] --> U
     C <--> P[(PostgreSQL 업무 · 대화 · 기억)]
-    C <--> T[Temporal 작업 · 재시도 · 예약]
-    T --> W[회사 worker]
-    W <--> R[격리된 Codex 실행기]
+    C <--> TM[Temporal 작업 · 재시도 · 예약]
+    TM --> WK[회사 worker]
+    WK <--> R[격리된 Codex 실행기]
     R <--> M[기존 Codex 구독]
 ```
 

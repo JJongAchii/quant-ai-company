@@ -2,16 +2,20 @@ import json
 from datetime import UTC, datetime, timedelta
 from email.utils import format_datetime
 from html import escape
+from pathlib import Path
 
 import httpx
 import pytest
 
 from quant_company.api import create_app
+from quant_company.cli import manifests
+from quant_company.company import Company, load_roles
+from quant_company.config import Settings
 from quant_company.contracts import Role
 from quant_company.news.feeds import fetch_feed
 from quant_company.slack import SlackOutbox
 from quant_company.tech_feed import schedule
-from quant_company.tech_feed.contracts import TechFeedSource, load_sources
+from quant_company.tech_feed.contracts import TECH_FEED_AGENT, TechFeedSource, load_sources
 from quant_company.tech_feed.feeds import MAX_FEED_BYTES, parse_feed, render
 from quant_company.tech_feed.runner import TechFeedCollector
 from quant_company.tech_feed.store import TechFeedStore
@@ -40,8 +44,8 @@ def tech(company, tmp_path, monkeypatch):
     company.settings.slack_allowed_channels.append("CTECH")
     company.settings.tech_feed_sources_file = tmp_path / "tech-sources.json"
     company.settings.tech_feed_sources_file.write_text(json.dumps([spec().model_dump()]))
-    company.roles["reporter"] = Role(id="reporter", name="Reporter", mission="Feed fixture", model="unused",
-                                     instructions="No models", tools=[], can_delegate_to=[], active=True)
+    company.roles[TECH_FEED_AGENT] = Role(id=TECH_FEED_AGENT, name="Tech Scout", mission="Feed fixture",
+                                          model="unused", instructions="No models", tools=[], can_delegate_to=[])
     clock = [datetime(2026, 9, 21, 3, tzinfo=UTC)]
     monkeypatch.setattr(schedule, "utcnow", lambda: clock[0])
     store = TechFeedStore(company)
@@ -73,9 +77,10 @@ def outgoing(store):
         return conn.execute("SELECT * FROM outbox ORDER BY created_at,id").fetchall()
 
 
-def reporter_credentials(credentials):
-    return {**credentials, "reporter": {"app_id": "AREPORTER", "bot_user_id": "UBOTREPORTER",
-                                        "bot_token": "fixture-reporter", "signing_secret": "fixture-signing"}}
+def tech_scout_credentials(credentials):
+    return {**credentials, TECH_FEED_AGENT: {"app_id": "ATECHSCOUT", "bot_user_id": "UBOTTECHSCOUT",
+                                             "bot_token": "fixture-tech-scout",
+                                             "signing_secret": "fixture-signing"}}
 
 
 def test_catalog_and_source_filters():
@@ -241,11 +246,12 @@ async def test_end_to_end_has_zero_model_calls_tasks_turns_and_usage(tech, crede
         return httpx.Response(200, json={"ok": True, "ts": "200.123"})
 
     due(tech)
-    outbox = SlackOutbox(tech.company, reporter_credentials(credentials), httpx.MockTransport(deliver))
+    outbox = SlackOutbox(tech.company, tech_scout_credentials(credentials), httpx.MockTransport(deliver))
     assert await outbox.send_one()
     assert captured[0]["channel"] == "CTECH" and "thread_ts" not in captured[0]
     assert not captured[0]["unfurl_links"] and "지시 v" not in captured[0]["text"]
-    assert outgoing(tech)[0]["status"] == "delivered"
+    assert captured[0]["client_msg_id"] == str(outgoing(tech)[0]["id"])
+    assert outgoing(tech)[0]["status"] == "delivered" and outgoing(tech)[0]["agent"] == TECH_FEED_AGENT
     with tech.db.transaction() as conn:
         for table in ("tasks", "turns", "daily_usage", "news_reviews", "news_searches"):
             assert conn.execute(f"SELECT count(*) AS n FROM {table}").fetchone()["n"] == 0
@@ -263,7 +269,7 @@ async def test_kst_boundary(tech, credentials, hour, minute, allowed):
         sent.append(request)
         return httpx.Response(200, json={"ok": True, "ts": "1.2"})
 
-    outbox = SlackOutbox(tech.company, reporter_credentials(credentials), httpx.MockTransport(deliver))
+    outbox = SlackOutbox(tech.company, tech_scout_credentials(credentials), httpx.MockTransport(deliver))
     assert bool(await outbox.send_one()) is allowed
     assert bool(sent) is allowed
 
@@ -272,7 +278,7 @@ def test_midnight_crossing_after_claim_is_deferred(tech, credentials):
     queue(tech)
     tech.clock[0] = datetime(2026, 9, 21, 14, 59, 59, tzinfo=UTC)
     due(tech)
-    outbox = SlackOutbox(tech.company, reporter_credentials(credentials))
+    outbox = SlackOutbox(tech.company, tech_scout_credentials(credentials))
     row = outbox.claim()
     assert row is not None
     tech.clock[0] += timedelta(seconds=1)
@@ -286,11 +292,11 @@ def test_two_dispatchers_cannot_burst_and_restart_preserves_spacing(tech, creden
     queue(tech)
     ingest(tech, rss(tech.clock[0], "second"))
     due(tech)
-    outbox = SlackOutbox(tech.company, reporter_credentials(credentials))
+    outbox = SlackOutbox(tech.company, tech_scout_credentials(credentials))
     first, second = outbox.claim(), outbox.claim()
     assert first and second
     assert outbox.before_send(first)
-    restarted = SlackOutbox(tech.company, reporter_credentials(credentials))
+    restarted = SlackOutbox(tech.company, tech_scout_credentials(credentials))
     assert not restarted.before_send(second)
     assert any(r["next_at"] == tech.clock[0] + timedelta(minutes=1) for r in outgoing(tech))
 
@@ -299,7 +305,7 @@ def test_two_dispatchers_cannot_burst_and_restart_preserves_spacing(tech, creden
 def test_policy_and_expiry_rechecked_immediately_before_send(tech, credentials, mutation):
     queue(tech)
     due(tech)
-    outbox = SlackOutbox(tech.company, reporter_credentials(credentials))
+    outbox = SlackOutbox(tech.company, tech_scout_credentials(credentials))
     row = outbox.claim()
     if mutation == "publish":
         tech.company.settings.tech_feed_publish_enabled = False
@@ -331,7 +337,7 @@ async def test_ambiguous_slack_result_is_preserved_not_replayed(tech, credential
             return httpx.Response(503)
         return httpx.Response(200, json={"ok": True})
 
-    outbox = SlackOutbox(tech.company, reporter_credentials(credentials), httpx.MockTransport(deliver))
+    outbox = SlackOutbox(tech.company, tech_scout_credentials(credentials), httpx.MockTransport(deliver))
     await outbox.send_one()
     tech.clock[0] += timedelta(minutes=10)
     await outbox.send_one()
@@ -349,7 +355,7 @@ async def test_slack_rate_limit_retries_same_id_after_delay(tech, credentials):
         return (httpx.Response(429, headers={"Retry-After": "90"}) if len(calls) == 1
                 else httpx.Response(200, json={"ok": True, "ts": "1.2"}))
 
-    outbox = SlackOutbox(tech.company, reporter_credentials(credentials), httpx.MockTransport(deliver))
+    outbox = SlackOutbox(tech.company, tech_scout_credentials(credentials), httpx.MockTransport(deliver))
     await outbox.send_one()
     assert outgoing(tech)[0]["status"] == "pending"
     tech.clock[0] += timedelta(seconds=90)
@@ -359,14 +365,60 @@ async def test_slack_rate_limit_retries_same_id_after_delay(tech, credentials):
     assert outgoing(tech)[0]["status"] == "delivered"
 
 
-def test_reporter_mentions_and_comments_in_feed_do_not_create_model_work(tech, credentials):
+def test_tech_scout_events_never_create_model_work(tech, credentials):
     from fastapi.testclient import TestClient
 
-    credentials = reporter_credentials(credentials)
+    credentials = tech_scout_credentials(credentials)
     client = TestClient(create_app(tech.company.settings, tech.company, credentials))
     for extra in ({}, {"type": "message", "thread_ts": "1.2"}, {"bot_id": "BREPORTER"}):
-        payload = event(credentials, role="reporter", channel="CTECH", text="<@UBOTREPORTER> explain", **extra)
-        body, headers = signed(payload, credentials["reporter"])
-        assert client.post("/slack/events/reporter", content=body, headers=headers).json()["ignored"]
+        payload = event(credentials, role=TECH_FEED_AGENT, channel="CTECH",
+                        text="<@UBOTTECHSCOUT> explain", **extra)
+        body, headers = signed(payload, credentials[TECH_FEED_AGENT])
+        result = client.post("/slack/events/tech_scout", content=body, headers=headers).json()
+        assert result == {"ok": True, "ignored": True,
+                          "reason": "tech_feed_delivery_identity_is_not_interactive"}
     with tech.db.transaction() as conn:
         assert conn.execute("SELECT count(*) AS n FROM turns").fetchone()["n"] == 0
+
+
+def test_packaged_tech_scout_is_inactive_and_manifest_has_only_outbound_permission(tmp_path):
+    roles = load_roles(Settings(tech_feed_enabled=True))
+    assert not roles[TECH_FEED_AGENT].active
+    assert not roles["reporter"].active
+    assert load_roles(Settings(company_news_enabled=True))["reporter"].active
+    runtime = Company(Settings(), roles).runtime_context()
+    assert TECH_FEED_AGENT not in {employee["id"] for employee in runtime["employees"]}
+    manifests(type("Roster", (), {"roles": roles})(), None, tmp_path, include_tech_scout=True)
+    app = json.loads((tmp_path / "tech_scout.json").read_text())
+    assert app["display_information"]["name"] == "Tech Scout"
+    assert app["features"]["bot_user"]["display_name"] == "tech-scout"
+    assert not app["features"]["bot_user"]["always_online"]
+    assert app["oauth_config"]["scopes"]["bot"] == ["chat:write"]
+    assert "event_subscriptions" not in app["settings"] and not app["settings"]["socket_mode_enabled"]
+    assert app == json.loads(Path("slack-apps/tech_scout.json").read_text())
+
+
+def test_tech_feed_fails_closed_if_delivery_identity_becomes_interactive(tech):
+    tech.company.roles[TECH_FEED_AGENT] = tech.company.roles[TECH_FEED_AGENT].model_copy(update={"active": True})
+    assert not tech.authorized()
+
+
+def test_migration_moves_only_pending_tech_feed_delivery_off_reporter(tech):
+    queue(tech)
+    ingest(tech, rss(tech.clock[0], "second"))
+    delivered, pending = outgoing(tech)
+    with tech.db.transaction() as conn:
+        conn.execute("UPDATE messages SET author='reporter' WHERE id IN (%s,%s)",
+                     (delivered["id"], pending["id"]))
+        conn.execute("UPDATE outbox SET agent='reporter' WHERE id IN (%s,%s)",
+                     (delivered["id"], pending["id"]))
+        conn.execute("UPDATE outbox SET status='delivered' WHERE id=%s", (delivered["id"],))
+    tech.db.migrate()
+    with tech.db.transaction() as conn:
+        rows = conn.execute("""SELECT m.author,o.agent,o.status FROM messages m
+            JOIN outbox o ON o.id=m.id WHERE m.id IN (%s,%s) ORDER BY o.status""",
+                            (delivered["id"], pending["id"])).fetchall()
+    assert rows == [
+        {"author": "reporter", "agent": "reporter", "status": "delivered"},
+        {"author": TECH_FEED_AGENT, "agent": TECH_FEED_AGENT, "status": "pending"},
+    ]

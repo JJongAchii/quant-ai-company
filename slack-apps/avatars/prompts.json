@@ -1,6 +1,7 @@
 {
   "generator": "built-in image_gen",
   "created_on": "2026-09-17",
+  "updated_on": "2026-09-22",
   "assets": [
     {
       "role": "director",
@@ -17,6 +18,10 @@
     {
       "role": "data",
       "prompt": "Use case: stylized-concept. Asset type: Slack app profile avatar for a professional personal quantitative finance research company. Create ONE square 1024 x 1024 finished profile image, a premium 3D studio portrait of an original non-human AI colleague. Shared design system: ivory satin ceramic rounded-rectangle robot head, dark smoked-glass face visor, two small horizontal luminous eyes, machined metal ear discs, restrained sculpted shoulders. Calm, competent, approachable; sophisticated research institution, not a toy. Front-facing centered close head-and-shoulders portrait; head fills about 60% of the frame, all essential features within central 80% for a circular crop. Broad clean shapes legible at 32 px. Softbox lighting, refined realistic materials, subtle depth, uncluttered single-color gradient background. No text, letters, numbers, company logos, watermark, frame, collages, extra characters, human skin or busy microdetails. Same design system as the other company staff portraits. Role: data engineer and data quality specialist. Rich amethyst purple background, brushed titanium metal details and soft lavender eyes. Plum torso with one large simple three-disc database-cylinder emblem on the chest, subtly cyan-lit. Clean precise geometric detailing, large visually readable head, no handheld props."
+    },
+    {
+      "role": "tech_scout",
+      "prompt": "Use case: stylized-concept. Asset type: Slack app profile avatar for Tech Scout, the technology-feed scout in the same professional AI colleague family as the four reference portraits. Create ONE new square finished portrait, not a collage and not an edit of any one employee. Match the established form very closely: premium 3D studio head-and-shoulders portrait; ivory satin-ceramic rounded robot head; large dark smoked-glass face visor; two simple horizontal luminous eyes; machined circular metal ear discs; restrained sculpted shoulders; front-facing, centered, calm and competent; head about 60% of frame; essential features inside the central 80% for Slack's circular crop; refined realistic materials and broad shapes readable at 32 px. Tech Scout role treatment: deep midnight-teal background, dark navy-teal torso, brushed titanium details, luminous aqua/teal eyes. Put one large simple radar-and-compass emblem on the center chest: a clean circular radar sweep crossed by a small compass pointer, with one tiny warm amber discovery dot. Keep the emblem geometric and legible, similar in visual weight to the compass, chart, magnifier, and database symbols in the references. Softbox lighting and subtle depth. No text, letters, numbers, Slack logo, company logo, OpenAI logo, watermark, frame, handheld props, extra characters, human skin, antennae, or busy microdetails. Fully filled square background. Production-ready avatar."
     }
   ]
 }

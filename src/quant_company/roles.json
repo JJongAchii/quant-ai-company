@@ -238,5 +238,17 @@
     "active": false,
     "version": "1",
     "reasoning_effort": "high"
+  },
+  {
+    "id": "tech_scout",
+    "name": "Tech Scout",
+    "mission": "AI·개발·데이터·오픈소스·인프라·보안의 새 글을 원문 제목·발췌·링크로 전하는 기술 탐색 봇",
+    "model": "gpt-5.6-luna",
+    "instructions": "This is an outbound-only Slack delivery identity. It must remain inactive and must never receive model turns, tools, delegations or interactive Slack work. The deterministic tech-feed service alone may publish with this identity.",
+    "tools": [],
+    "can_delegate_to": [],
+    "active": false,
+    "version": "1",
+    "reasoning_effort": "low"
   }
 ]
