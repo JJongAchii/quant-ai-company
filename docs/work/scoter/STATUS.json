@@ -1,71 +1,29 @@
 {
   "approval": {
-    "approvedAt": "2026-09-22T02:20:00.811643+00:00",
-    "id": "chat-20260922-dedicated-news-lane"
+    "approvedAt": "2026-09-22T03:39:32.649902+00:00",
+    "id": "chat-20260922-quant-feed"
   },
-  "currentIntent": "INTENT-v3.json",
+  "currentIntent": "INTENT-v4.json",
   "deliverables": {
     "ACTIVATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/news-lane-release.json",
-          "sha256": "ed7f15cd48f3"
-        },
-        {
-          "path": "docs/project/evidence/news-lane-after.json",
-          "sha256": "7faa72ed0289"
-        },
-        {
-          "path": "docs/project/evidence/news-lane-observation.json",
-          "sha256": "ea567b21433b"
-        },
-        {
-          "path": "docs/project/evidence/news-lane-concurrent.json",
-          "sha256": "ee93eb961ac2"
-        },
-        {
-          "path": "docs/project/NEWS-LANE-ACTIVATION.md",
-          "sha256": "e16ef49fd022"
-        }
-      ],
-      "note": "Exact merged commit deployed; real news screening and editorial complete alongside company work, four Reporter Slack receipts, nine services and zero OOM/restarts. Shared infrastructure/quota and unrelated discovery/feed failures documented.",
-      "status": "verified",
-      "updatedAt": "2026-09-22T03:00:50.682895+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
-    "NEWS_LANE": {
-      "evidence": [
-        {
-          "path": "docs/adr/0034-dedicated-news-model-lane.md",
-          "sha256": "483de2267ab2"
-        },
-        {
-          "path": "src/quant_company/runtime.py",
-          "sha256": "36fa93eb46b8"
-        }
-      ],
-      "note": "Dedicated news process deployed at 4fc8132; original workflow IDs migrate safely and model receipts/limits remain unchanged.",
-      "status": "verified",
-      "updatedAt": "2026-09-22T02:54:22.260570+00:00"
+    "QUANT_FEED": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
     "VALIDATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/news-lane-tests.xml",
-          "sha256": "3d94fa15c905"
-        },
-        {
-          "path": "docs/project/evidence/news-lane-validation.json",
-          "sha256": "81ff04c674b8"
-        }
-      ],
-      "note": "Local and CI 1012 passed; 44 focused tests after latest research integration. Live Temporal history replay passed with zero activities/model calls.",
-      "status": "verified",
-      "updatedAt": "2026-09-22T02:53:19.665548+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     }
   },
-  "intentDigest": "85f4c0331a2f",
+  "intentDigest": "c402037885c5",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-22T03:00:50.682895+00:00"
+  "updatedAt": "2026-09-22T03:39:32.649902+00:00"
 }

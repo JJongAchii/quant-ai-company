@@ -420,7 +420,7 @@ async def test_explicit_quota_defers_then_retries_same_bound_input(fake_codex, r
     assert len(calls()) == 2
 
 
-@pytest.mark.parametrize("identity", ["turn-01", "news-screen-01", "news-search-01", "news-01"])
+@pytest.mark.parametrize("identity", ["turn-01", "news-screen-01", "news-search-01", "news-01", "quant-feed-01"])
 async def test_orphan_running_receipt_never_restarts_inference(fake_codex, request_model, identity):
     config, _, calls = fake_codex
     request_model = request_model.model_copy(update={"request_id": identity})
@@ -485,6 +485,32 @@ async def test_news_and_company_have_independent_single_slots(fake_codex, reques
         with pytest.raises(ProviderFault, match="different input"):
             await runner_for(config).run(news.model_copy(update={"prompt": "Changed news input"}))
         assert len(calls()) == 2
+    finally:
+        for operation in operations:
+            operation.cancel()
+        await asyncio.gather(*operations, return_exceptions=True)
+
+
+async def test_three_independent_single_slots_with_durable_receipts(fake_codex, request_model):
+    config, configure, calls = fake_codex
+    configure(mode="delay", delay_seconds=1)
+    requests = [request_model.model_copy(update={"request_id": identity})
+                for identity in ("company-quant-test", "news-quant-test", "quant-feed-test")]
+    operations = [asyncio.create_task(runner_for(config).run(request)) for request in requests]
+    try:
+        async with asyncio.timeout(3):
+            while len(calls()) < 3:
+                await asyncio.sleep(0.01)
+        assert all(not operation.done() for operation in operations)
+        for request in requests:
+            with pytest.raises(ProviderFault) as caught:
+                await runner_for(config).run(request.model_copy(update={"request_id": request.request_id + "-second"}))
+            assert caught.value.code == "busy"
+        results = await asyncio.gather(*operations)
+        for request, result in zip(requests, results, strict=True):
+            assert await runner_for(config).run(request) == result
+        assert len(calls()) == 3
+        assert {json.loads(p.read_text())["execution_lane"] for p in config.jobs_dir.glob("*.json")} == {"company", "news", "quant"}
     finally:
         for operation in operations:
             operation.cancel()

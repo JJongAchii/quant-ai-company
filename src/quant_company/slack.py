@@ -9,6 +9,7 @@ import httpx
 
 from .company import Company, PolicyError, as_json, now
 from .config import Settings
+from .quant_feed.contracts import QUANT_FEED_AGENT
 from .tech_feed.contracts import TECH_FEED_AGENT
 
 
@@ -52,6 +53,8 @@ class SlackIngress:
         if role == TECH_FEED_AGENT:
             # Outbound-only identity: even an accidentally configured callback never creates model work.
             return {"ok": True, "ignored": True, "reason": "tech_feed_delivery_identity_is_not_interactive"}
+        if role == QUANT_FEED_AGENT:
+            return {"ok": True, "ignored": True, "reason": "quant_feed_delivery_identity_is_not_interactive"}
         event = payload.get("event", {})
         if (event.get("type") not in {"app_mention", "message"}
                 or event.get("bot_id") or event.get("subtype") or not event.get("user")):
@@ -219,6 +222,10 @@ class SlackOutbox:
                 from .tech_feed.store import TechFeedStore
 
                 return TechFeedStore(self.company).gate(conn, row, claimed=True)
+            if row["message_kind"] == "quant_feed":
+                from .quant_feed.store import QuantFeedStore
+
+                return QuantFeedStore(self.company).gate(conn, row, claimed=True)
             return not self.defer_news(conn, row, claimed=True)
 
     def claim(self):
@@ -230,7 +237,8 @@ class SlackOutbox:
                  ((p.status='active' OR k.kind='answer') AND NOT EXISTS
                   (SELECT 1 FROM tasks r WHERE r.project_id=o.project_id AND r.kind='routing'
                    AND r.status NOT IN ('completed','superseded'))))
-                ORDER BY o.created_at FOR UPDATE OF o SKIP LOCKED LIMIT 1""").fetchone()
+                ORDER BY (EXISTS(SELECT 1 FROM quant_feed_publications q WHERE q.id=o.id AND q.correction)) DESC,
+                o.created_at FOR UPDATE OF o SKIP LOCKED LIMIT 1""").fetchone()
             if not row:
                 return None
             if self.defer_news(conn, row):
@@ -239,6 +247,11 @@ class SlackOutbox:
                 from .tech_feed.store import TechFeedStore
 
                 if not TechFeedStore(self.company).gate(conn, row):
+                    return None
+            if row["message_kind"] == "quant_feed":
+                from .quant_feed.store import QuantFeedStore
+
+                if not QuantFeedStore(self.company).gate(conn, row):
                     return None
             if row["message_kind"] in {"news", "news_digest"}:
                 from .news.digest import NewsDigestStore
@@ -294,7 +307,7 @@ class SlackOutbox:
         token = self.credentials[row["agent"]]["bot_token"]
         # The stable client_msg_id helps correlation; it is not an exactly-once guarantee.
         body = {"channel": row["channel"], "thread_ts": row["thread_ts"],
-                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT}
+                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, QUANT_FEED_AGENT}
                 else f"[지시 v{row['revision']}] {row['text']}",
                 "client_msg_id": row["id"],
                 "unfurl_links": False, "unfurl_media": False,
@@ -325,7 +338,7 @@ class SlackOutbox:
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_server_error")
                 return True
             result = response.json()
-            if result.get("ok") and (row.get("message_kind") not in {"news", "news_digest", "tech_feed"} or result.get("ts")):
+            if result.get("ok") and (row.get("message_kind") not in {"news", "news_digest", "tech_feed", "quant_feed"} or result.get("ts")):
                 await asyncio.to_thread(self.settle, row, "delivered", sent_ts=result.get("ts"))
             elif result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="missing_slack_message_receipt")

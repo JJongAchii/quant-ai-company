@@ -52,6 +52,8 @@ def load_roles(settings: Settings) -> dict[str, Role]:
                      "finance_search", "finance_read", "web_search", "web_read",
                      "finance_compute", "data_quality", "staff_status", "news_status", "research_control"} | LAKE_TOOLS
     for role in roles:
+        if role.id == "quant_scout" and (role.active or role.tools or role.can_delegate_to):
+            raise ValueError("Quant Scout must remain an outbound-only identity")
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
     if "reporter" in by_id and settings.company_news_enabled:
@@ -94,7 +96,7 @@ class Company:
                     ["id", "name", "active", "model", "reasoning_effort", "version", "tools", "can_delegate_to"]},
                  "specialist_pack_version": pack(role.id)["version"],
                  "specialist_pack_digest": pack(role.id)["digest"]}
-                for role in self.roles.values() if role.id != TECH_FEED_AGENT
+                for role in self.roles.values() if role.id not in {TECH_FEED_AGENT, "quant_scout"}
             ],
             "background_model_requests": {
                 "maintainer": ({"model": self.roles["engineer"].model,

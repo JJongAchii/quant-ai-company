@@ -1,0 +1,327 @@
+import copy
+import io
+import json
+import sys
+from datetime import UTC, datetime
+from unittest.mock import Mock
+
+import httpx
+import pytest
+from pypdf import PdfWriter
+from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
+
+from quant_company.company import fingerprint
+from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderResponse, Role
+from quant_company.quant_feed import schedule
+from quant_company.quant_feed.contracts import EvidenceCritique, QuantSource, ResearchBrief, load_sources
+from quant_company.quant_feed.editor import render, validate
+from quant_company.quant_feed.feeds import aliases, collect
+from quant_company.quant_feed.originals import download, extract_pdf, fetch_original
+from quant_company.quant_feed.store import QuantFeedStore
+from quant_company.slack import SlackIngress, SlackOutbox
+
+TEXT = ("A study by Example Author, published 2026-09-01. US equities from 2000 to 2020. "
+        "The chronological holdout shows weaker performance than the training sample. "
+        "Transaction costs are not estimated. The study does not establish tradability. ") * 5
+
+
+def brief(**updates):
+    value = dict(disposition="publish", reason="검증 한계에 대한 연구적 가치", title="예측 검증의 한계",
+                 authors=["Example Author"], published_on="2026-09-01", kind="empirical", maturity="working_paper",
+                 market="미국 주식", topic="research_validity", vintage="recent", why_read="시간 분할 검증의 중요성",
+                 idea="학습·검증 성과 차이를 비교한다.", data_period="2000–2020 미국 주식",
+                 validation="시간 순 홀드아웃", author_results="검증 성과가 학습 성과보다 약하다고 저자가 보고",
+                 costs_turnover="거래비용 추정 미기재", limitations=["거래비용 및 실거래 가능성 검증 부재"],
+                 application="한국 적용에는 시점별 종목·가격 데이터 필요. 로컬 가용성 미확인.",
+                 evidence=[{"claim": "기간", "location": "PDF p.1", "quote": "US equities from 2000 to 2020."},
+                           {"claim": "한계", "location": "PDF p.1", "quote": "Transaction costs are not estimated."}])
+    value.update(updates)
+    return value
+
+
+def critique(**updates):
+    value = dict(disposition="pass", reason="원문과 주장 일치", original_sufficient=True, claims_supported=True,
+                 dates_authors_verified=True, limitations_honest=True, relevance_and_value=True,
+                 no_investment_advice=True, material_change_verified=True, issues=[])
+    value.update(updates)
+    return value
+
+
+def response(ready, content):
+    return ProviderResponse(request_id=ready["request"]["request_id"], provider="fixture",
+                            decision=AgentDecision(status="complete", say="", artifacts=[
+                                ArtifactDraft(title="quant review", content=json.dumps(content, ensure_ascii=False))]))
+
+
+@pytest.fixture
+def quant(company, tmp_path, monkeypatch):
+    company.settings.quant_feed_enabled = True
+    company.settings.quant_feed_publish_enabled = True
+    company.settings.quant_feed_channel_id = "CQUANT"
+    company.settings.quant_feed_owner_user = "UHUMAN"
+    company.settings.company_web_enabled = False
+    company.roles["quant_scout"] = Role(id="quant_scout", name="Quant Scout", mission="Synthetic curation test",
+                                       model="gpt-5.6-luna", instructions="Delivery only", tools=[], can_delegate_to=[])
+    source = QuantSource(id="example", publisher="Example research", kind="seed", url="https://example.org/paper",
+                         article_hosts=["example.org", "arxiv.org"])
+    path = tmp_path / "sources.json"
+    path.write_text(json.dumps([source.model_dump()]))
+    company.settings.quant_feed_sources_file = path
+    monkeypatch.setattr(schedule, "delivery_time", lambda at: at)
+    return QuantFeedStore(company)
+
+
+def original(store, suffix="", text=TEXT, metadata=None):
+    claimed = store.claim_source()
+    source = store.sources()["example"]
+    entry = {"url": source.url + suffix, "title": "Research" + suffix, "metadata": metadata or {}}
+    if claimed:
+        store.save_source(claimed, {"ok": True, "entries": [entry]})
+    else:
+        with store.db.transaction() as conn:
+            store.add_candidate(conn, source, entry)
+    candidate = store.claim_candidate()
+    return store.save_original(candidate, {"ok": True, "url": candidate["url"], "original_sha256": fingerprint(text),
+                                          "pages": [{"location": "PDF p.1", "text": text}], "metadata": {}, "links": [],
+                                          "truncated": False})
+
+
+def publish(store, **updates):
+    first = store.prepare()
+    store.commit(response(first, brief(**updates)))
+    second = store.prepare()
+    assert second["request"]["request_id"] != first["request"]["request_id"]
+    return store.commit(response(second, critique()))
+
+
+def test_real_postgres_two_stage_atomic_outbox_and_idempotency(quant):
+    original(quant)
+    ready = quant.prepare()
+    assert quant.prepare() == ready
+    result = response(ready, brief())
+    quant.commit(result)
+    assert quant.commit(result)["duplicate"]
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
+        assert conn.execute("SELECT reserved FROM daily_usage").fetchone()["reserved"] == 1
+    ready = quant.prepare()
+    result = response(ready, critique())
+    assert quant.commit(result)["document_state"] == "queued"
+    assert quant.commit(result)["duplicate"]
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox WHERE agent='quant_scout'").fetchone()["n"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM turns").fetchone()["n"] == 0
+        assert conn.execute("SELECT reserved FROM daily_usage").fetchone()["reserved"] == 2
+
+
+def test_failed_document_does_not_block_next_or_replay_uncertain(quant):
+    original(quant)
+    first = quant.prepare()
+    quant.fault(first["request"]["request_id"], "uncertain")
+    original(quant, "-next")
+    next_request = quant.prepare()
+    assert next_request["request"]["request_id"] != first["request"]["request_id"]
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM quant_feed_calls WHERE state='blocked'").fetchone()["n"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM quant_feed_documents WHERE state='held'").fetchone()["n"] == 1
+
+
+def test_one_revision_then_hold(quant):
+    original(quant)
+    quant.commit(response(quant.prepare(), brief()))
+    revision = critique(disposition="revise", claims_supported=False, issues=["claim overstatement"])
+    quant.commit(response(quant.prepare(), revision))
+    quant.commit(response(quant.prepare(), brief()))
+    assert quant.commit(response(quant.prepare(), revision))["document_state"] == "held"
+    assert quant.prepare()["state"] == "idle"
+
+
+def test_preview_never_queues_and_activation_does_not_replay_it(quant):
+    quant.company.settings.quant_feed_publish_enabled = False
+    original(quant)
+    assert publish(quant)["document_state"] == "preview"
+    quant.company.settings.quant_feed_publish_enabled = True
+    assert quant.prepare()["state"] == "idle"
+    assert quant.status()["deliveries"] == []
+
+
+def test_shared_budget_quota_pause_and_same_request_retry(quant):
+    original(quant)
+    quant.company.settings.company_max_daily_turns = 1
+    first = quant.prepare()
+    quant.fault(first["request"]["request_id"], "quota", 120)
+    assert quant.prepare() == {"state": "defer", "reason": "global_quota_pause"}
+    with quant.db.transaction() as conn:
+        conn.execute("UPDATE runtime_control SET paused_until=NULL")
+        conn.execute("UPDATE quant_feed_calls SET next_at='2020-01-01'")
+    assert quant.prepare() == first
+    quant.commit(response(first, brief()))
+    assert quant.prepare()["reason"] == "daily_model_budget"
+
+
+def test_policy_edit_stales_frozen_request_without_new_call(quant):
+    original(quant)
+    first = quant.prepare()
+    quant.company.settings.quant_feed_publish_enabled = False
+    assert quant.prepare()["state"] == "blocked"
+    assert quant.commit(response(first, brief()))["state"] == "stale"
+    assert quant.prepare()["state"] == "idle"
+
+
+def test_doi_arxiv_versions_and_cosmetic_dedupe(quant):
+    original(quant, metadata={"doi": "10.1000/example"})
+    original(quant, "-journal", metadata={"doi": "10.1000/EXAMPLE"})
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM quant_feed_documents").fetchone()["n"] == 1
+    assert "arxiv:2609.01234" in aliases("https://arxiv.org/pdf/2609.01234v2.pdf", {})
+    assert "arxiv:2609.01234" in aliases("https://arxiv.org/abs/2609.01234v1", {})
+
+
+async def test_slack_identity_pacing_uncertain_no_replay(quant):
+    original(quant)
+    publish(quant)
+    with quant.db.transaction() as conn:
+        conn.execute("UPDATE outbox SET next_at='2020-01-01'")
+    credentials = {"quant_scout": {"app_id": "AQ", "bot_user_id": "UQ", "bot_token": "synthetic"}}
+    sent = []
+
+    def handle(request):
+        sent.append(json.loads(request.content))
+        return httpx.Response(200, json={"ok": True})  # Missing receipt is ambiguous, not success.
+
+    outbox = SlackOutbox(quant.company, credentials, httpx.MockTransport(handle))
+    assert await outbox.send_one()
+    assert not await outbox.send_one()
+    assert len(sent) == 1 and sent[0]["channel"] == "CQUANT"
+    assert not sent[0]["text"].startswith("[지시")
+    assert quant.status()["deliveries"][0]["status"] == "uncertain"
+    ingress = SlackIngress(quant.company.settings, quant.company, credentials)
+    assert ingress.accept("quant_scout", {"team_id": "TTEST", "api_app_id": "AQ", "event": {
+        "type": "app_mention", "user": "UHUMAN", "channel": "CQUANT", "text": "hello", "ts": "1.0"}},
+                          credentials["quant_scout"])["ignored"]
+
+
+def test_source_failure_and_stale_lease_isolation(quant):
+    source = quant.claim_source()
+    assert quant.claim_source() is None
+    bad = {**source, "lease_token": None}
+    assert quant.save_source(bad, {"ok": True, "entries": []})["state"] == "stale"
+    quant.save_source(source, {"ok": False, "error": "http_status", "http_status": 429, "retry_after": 7200})
+    status = quant.status()["sources"][0]
+    assert status["failures"] == 1 and status["last_success"] is None
+    assert status["error"] == "http_status"
+
+
+def test_delivery_window_and_discovery_slots():
+    at = datetime(2026, 9, 21, 17, tzinfo=UTC)
+    assert schedule.delivery_time(at).hour == 6  # 06:00 KST next morning
+    assert schedule.discovery_slot(at) is None
+    assert schedule.discovery_slot(datetime(2026, 9, 22, 0, tzinfo=UTC)) == "2026-09-22-08"
+    assert schedule.discovery_slot(datetime(2026, 9, 22, 11, tzinfo=UTC)) == "2026-09-22-20"
+
+
+def pdf_bytes(page_count=1, text="Evidence original text " * 30):
+    writer = PdfWriter()
+    for _ in range(page_count):
+        page = writer.add_blank_page(width=612, height=792)
+        font = DictionaryObject({NameObject("/Type"): NameObject("/Font"), NameObject("/Subtype"): NameObject("/Type1"),
+                                 NameObject("/BaseFont"): NameObject("/Helvetica")})
+        page[NameObject("/Resources")] = DictionaryObject({NameObject("/Font"): DictionaryObject({NameObject("/F1"): font})})
+        stream = DecodedStreamObject()
+        stream.set_data(f"BT /F1 12 Tf 10 10 Td ({text}) Tj ET".encode())
+        page[NameObject("/Contents")] = writer._add_object(stream)
+    data = io.BytesIO()
+    writer.write(data)
+    return data.getvalue()
+
+
+@pytest.mark.skipif(sys.platform != "linux", reason="Hard PDF memory qualification requires Linux RLIMIT_AS")
+def test_real_pdf_subprocess_limits_and_pages():
+    assert extract_pdf(pdf_bytes())["pages"][0]["location"] == "PDF p.1"
+    for content in (b"bad pdf", pdf_bytes(text=""), pdf_bytes(page_count=201)):
+        with pytest.raises(ValueError, match="unreadable_or_resource_limit"):
+            extract_pdf(content)
+
+
+@pytest.mark.parametrize("url", ["http://example.org/a", "https://127.0.0.1/a", "https://a.local/a", "https://u:p@example.org/"])
+def test_unsafe_originals_rejected_before_network(url):
+    connection = Mock()
+    with pytest.raises(ValueError):
+        download(url, connection_factory=connection)
+    connection.assert_not_called()
+
+
+def test_registry_and_strict_feed_boundaries():
+    sources = load_sources()
+    assert len(sources) >= 15 and all(s.interval_hours >= 1 for s in sources)
+    source = sources[0]
+    receipt = collect(source, lambda url: ({"ok": True}, b"<!DOCTYPE a><feed></feed>"))
+    assert not receipt["ok"]
+    assert not source.allows("https://arxiv.org.evil.example/paper")
+
+
+def test_corrupt_pdf_falls_back_only_to_existing_html_evidence():
+    source = QuantSource(id="a", publisher="a", kind="seed", url="https://example.org/", article_hosts=["example.org"])
+    html = ('<html><meta name="citation_pdf_url" content="/paper.pdf"><p>' + TEXT + '</p></html>').encode()
+
+    def retrieve(url, **kwargs):
+        return {"ok": True, "url": url, "content_type": "text/html"}, html if url.endswith("/") else b"%PDF-bad"
+
+    result = fetch_original(source.url, source, downloader=retrieve, pdf_parser=Mock(side_effect=ValueError("bad")))
+    assert result["ok"] and result["fulltext_status"] == "html_requires_evidence_check"
+    assert result["pdf_errors"] == ["pdf_extraction_failed"]
+
+
+GOLD_CASES = [
+    ("empirical-with-limitations", {}, True),
+    ("promising-hypothesis", {"kind": "hypothesis", "maturity": "hypothesis"}, True),
+    ("negative-replication", {"kind": "replication", "author_results": "저자는 재현 실패 보고"}, True),
+    ("theory-no-backtest", {"kind": "theory", "costs_turnover": "해당 없음: 이론 연구"}, True),
+    ("methodology", {"kind": "methodology"}, True),
+    ("institutional-transparent", {"kind": "institutional", "commercial_bias": "자산운용사의 상업적 이해관계"}, True),
+    ("code-is-not-reproduction", {"kind": "data_code", "maturity": "reproduction_resource"}, True),
+    ("classic-why-now", {"vintage": "classic", "published_on": "1993", "why_read": "현재 팩터 검증의 기준점"}, True),
+    ("paywall-hold", {"disposition": "hold", "reason": "공개 원문 없음"}, True),
+    ("scanned-hold", {"disposition": "hold", "reason": "스캔 PDF 원문 불충분"}, True),
+    ("advertising-reject", {"disposition": "reject", "reason": "상품 광고"}, True),
+    ("stock-pick-reject", {"disposition": "reject", "reason": "종목 추천"}, True),
+    ("missing-costs-disclosed", {"costs_turnover": "거래비용·회전율 미기재"}, True),
+    ("invalid-date", {"published_on": "2026-99-12"}, False),
+    ("future-date", {"published_on": "2099-01-01"}, False),
+    ("missing-date", {"published_on": ""}, False),
+    ("missing-authors", {"authors": []}, False),
+    ("missing-validation", {"validation": ""}, False),
+    ("missing-cost-field", {"costs_turnover": ""}, False),
+    ("missing-limitations", {"limitations": []}, False),
+    ("missing-evidence", {"evidence": []}, False),
+    ("fabricated-quote", {"evidence": [{"claim": "x", "location": "PDF p.1", "quote": "Invented result"}] * 2}, False),
+    ("wrong-page", {"evidence": [{"claim": "x", "location": "PDF p.2", "quote": TEXT[:40]}] * 2}, False),
+    ("invented-link", {"related_urls": ["https://example.org/made-up"]}, False),
+    ("unsafe-link", {"related_urls": ["https://127.0.0.1/key"]}, False),
+    ("correction-needs-change", {"change": "correction"}, False),
+    ("material-update", {"change": "material", "change_summary": "검증 표본 변경"}, True),
+    ("retraction", {"change": "retraction", "change_summary": "저자가 오류로 철회"}, True),
+    ("cosmetic-not-new", {"change": "cosmetic"}, True),
+    ("partial-original-date", {"published_on": "2026-09"}, True),
+]
+
+
+@pytest.mark.parametrize("name,updates,accepted", GOLD_CASES, ids=[c[0] for c in GOLD_CASES])
+def test_thirty_golden_contract_cases(name, updates, accepted):
+    # Synthetic proposals test deterministic gates, not model classification accuracy.
+    bundle = {"pages": [{"location": "PDF p.1", "text": TEXT}], "as_of": "2026-09-22", "commercial": False, "links": []}
+    ready = {"request": {"request_id": "quant-feed-gold"}}
+    value = response(ready, brief(**copy.deepcopy(updates)))
+    if accepted:
+        assert validate(value, bundle, "review")
+    else:
+        with pytest.raises(ValueError):
+            validate(value, bundle, "review")
+
+
+def test_critic_cannot_pass_unsupported_claim_and_render_labels():
+    with pytest.raises(ValueError):
+        EvidenceCritique.model_validate(critique(claims_supported=False))
+    rendered = render(ResearchBrief.model_validate(brief()), {"publisher": "Example", "url": "https://example.org/"})
+    assert "저자 보고 결과" in rendered and "≠ 독립 재현" in rendered
+    assert "Transaction costs" not in rendered  # Evidence quotes retained privately, not republished.

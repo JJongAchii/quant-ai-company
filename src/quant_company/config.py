@@ -52,6 +52,11 @@ class Settings(BaseSettings):
     tech_feed_channel_id: str = ""
     tech_feed_owner_user: str = ""
     tech_feed_sources_file: Path | None = None
+    quant_feed_enabled: bool = False
+    quant_feed_publish_enabled: bool = False
+    quant_feed_channel_id: str = ""
+    quant_feed_owner_user: str = ""
+    quant_feed_sources_file: Path | None = None
     company_staff_development_enabled: bool = False
     staff_daily_exercises: int = Field(default=2, ge=1, le=6)
     staff_max_calls_per_exercise: int = Field(default=3, ge=1, le=4)

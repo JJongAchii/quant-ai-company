@@ -1,0 +1,6 @@
+{
+  "display_information": {"name": "Quant Scout", "description": "퀀트 연구 원문을 근거·한계·적용 조건과 함께 전하는 연구 큐레이터"},
+  "features": {"bot_user": {"display_name": "quant-scout", "always_online": false}},
+  "oauth_config": {"scopes": {"bot": ["chat:write"]}},
+  "settings": {"org_deploy_enabled": false, "socket_mode_enabled": false, "token_rotation_enabled": false}
+}
