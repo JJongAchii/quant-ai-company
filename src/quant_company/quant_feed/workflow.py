@@ -25,7 +25,7 @@ class QuantFeedEditorialWorkflow:
     async def run(self):
         for _ in range(100):
             try:
-                await workflow.execute_activity("company_quant_feed_review", start_to_close_timeout=timedelta(minutes=8),
+                await workflow.execute_activity("company_quant_feed_review", start_to_close_timeout=timedelta(minutes=18),
                                                 heartbeat_timeout=timedelta(seconds=45),
                                                 retry_policy=RetryPolicy(maximum_attempts=3))
             except ActivityError:

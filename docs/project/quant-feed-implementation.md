@@ -23,6 +23,23 @@ stopped for another task. **Preserve stopped state. Do not restart it during qua
 Reporter/news remains separate. The currently deployed base observed during this work was
 `4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124`; deployment must check for concurrent changes.
 
-Pending: Linux CI/full image qualification, real subscription original/critic preview, Slack
-installation/icon/channel receipt, controlled activation, actual load admission, and elapsed
-48-hour observation. No simulated result is claimed as deployed.
+Linux CI passed for the initial implementation (Actions run 35686244281). Integrated the
+concurrent research audit-recovery change from PR #59 without activating its stopped worker.
+The quant editorial activity now allows the runtime's 900-second model limit to complete.
+
+Slack installation verified via real auth.test: Quant Scout `A0C3HFP831Q`, bot user
+`U0C3288AXPH`, bot `B0C3CM109FX`, workspace `T0C1YRDRPNF`, sole scope `chat:write`.
+The matching generated icon is persisted on the app. Credential handoff appended only
+`quant_scout` to the host's private store; all six existing entries were unchanged. Channel
+`#quant-feeds` was resolved in the authenticated workspace as `C0C3K8ZB9PB`.
+
+The explicit `deploy/quant_feed_release.py` operator path builds all five images from the
+committed Dockerfile/lock in a 512 MiB, one-CPU build container. It verifies installed source
+and the exact qdata tree, snapshots actual running services, and refuses if the stopped research
+worker changes state. Cutover and rollback never start/recreate that worker. Activation begins
+with publication disabled. A crashed cutover requires manual journal reconciliation; do not
+blindly repeat it. The helper is not an autonomous maintenance-policy expansion.
+
+Pending: full image qualification, real subscription original/critic preview, channel invitation,
+controlled activation, actual load admission, and elapsed 48-hour observation. No simulated result
+is claimed as deployed.
