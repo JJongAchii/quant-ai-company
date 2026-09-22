@@ -212,6 +212,17 @@ Socket Mode이며 Request URL을 지정하지 않는다. 생성된 네 manifest�
 uv run quant-company slack-manifests --output .local/slack-manifests
 ```
 
+tech-feed를 켤 때는 별도의 단방향 Tech Scout manifest도 생성한다. 이 앱에는
+`chat:write`만 부여하고 App-Level Token·Socket Mode·Event Subscriptions를 사용하지 않는다.
+
+```bash
+uv run quant-company slack-manifests --include-tech-scout \
+  --output .local/slack-manifests
+```
+
+Tech Scout를 `#tech-feeds`에 초대한 뒤 `app_id`, `bot_user_id`, `bot_token`만 root-owned Slack
+비밀 파일의 `tech_scout` 항목에 추가한다. 기존 Reporter 항목과 hot-news 연결은 변경하지 않는다.
+
 앱을 허용 채널에 초대한 뒤 DM·멘션으로 실제 왕복을 확인한다. Socket 연결에서는 인증된
 WebSocket과 앱·workspace·사용자·채널 검사가 수신 경계를 이룬다. DB 저장 후 envelope를
 ACK하며, HTTP용 signing secret 검증과 구분한다. 연결 재수립·재전송 중에도 업무가 중복

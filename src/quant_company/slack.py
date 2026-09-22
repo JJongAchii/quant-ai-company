@@ -9,6 +9,7 @@ import httpx
 
 from .company import Company, PolicyError, as_json, now
 from .config import Settings
+from .tech_feed.contracts import TECH_FEED_AGENT
 
 
 class SlackIngress:
@@ -48,6 +49,9 @@ class SlackIngress:
         if (not self.settings.slack_team_id or payload.get("team_id") != self.settings.slack_team_id
                 or payload.get("api_app_id") != credential["app_id"]):
             raise PolicyError("Unexpected Slack workspace or app")
+        if role == TECH_FEED_AGENT:
+            # Outbound-only identity: even an accidentally configured callback never creates model work.
+            return {"ok": True, "ignored": True, "reason": "tech_feed_delivery_identity_is_not_interactive"}
         event = payload.get("event", {})
         if (event.get("type") not in {"app_mention", "message"}
                 or event.get("bot_id") or event.get("subtype") or not event.get("user")):
@@ -59,9 +63,6 @@ class SlackIngress:
         is_dm = event.get("channel_type") == "im" or channel.startswith("D")
         if not is_dm and channel not in self.settings.slack_allowed_channels:
             return {"ok": True, "ignored": True}
-        if role == "reporter" and channel and channel == self.settings.tech_feed_channel_id:
-            # This feed is a zero-model subscription, including mentions and thread replies.
-            return {"ok": True, "ignored": True, "reason": "tech_feed_has_no_model_responder"}
         text = event.get("text", "")
         timestamp = event.get("ts")
         if not text.strip() or not timestamp:
@@ -293,7 +294,8 @@ class SlackOutbox:
         token = self.credentials[row["agent"]]["bot_token"]
         # The stable client_msg_id helps correlation; it is not an exactly-once guarantee.
         body = {"channel": row["channel"], "thread_ts": row["thread_ts"],
-                "text": row["text"] if row["agent"] == "reporter" else f"[지시 v{row['revision']}] {row['text']}",
+                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT}
+                else f"[지시 v{row['revision']}] {row['text']}",
                 "client_msg_id": row["id"],
                 "unfurl_links": False, "unfurl_media": False,
                 "metadata": {"event_type": "quant_company_message", "event_payload": {"id": row["id"]}}}

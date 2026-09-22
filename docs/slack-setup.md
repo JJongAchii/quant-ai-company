@@ -13,23 +13,29 @@
 | 금융전략 | [financial_strategist.json](../slack-apps/financial_strategist.json) |
 | 국내시장 연구 | [researcher_kr.json](../slack-apps/researcher_kr.json) |
 | 데이터 | [data.json](../slack-apps/data.json) |
+| 기술 피드 발송 전용 Tech Scout | [tech_scout.json](../slack-apps/tech_scout.json) |
 
 새 workspace를 만들면 [Slack 앱 관리](https://api.slack.com/apps)에서 **Create New App →
 From a manifest**로 각 파일을 적용하고 workspace에 설치합니다. 같은 bot의 표시명만 바꾸는
-방식이 아니라 네 개의 앱 identity입니다.
+방식이 아니라 별도 앱 identity입니다. Tech Scout는 직원 앱과 달리 단방향 발송만 한다.
 
-각 앱의 Basic Information에서 App-Level Token을 만들고 `connections:write` scope를
+대화형 직원 앱의 Basic Information에서 App-Level Token을 만들고 `connections:write` scope를
 부여합니다. OAuth & Permissions의 bot token과 함께 서버의 비밀 파일에 입력합니다.
 토큰 원문은 채팅이나 Git으로 공유하지 않습니다.
 [공식 Python SDK 설정](https://docs.slack.dev/tools/python-slack-sdk/socket-mode/)
+
+Tech Scout는 `chat:write` bot scope만 사용하고 이벤트 구독과 Socket Mode를 켜지 않는다.
+따라서 App-Level Token이나 signing secret 없이 `app_id`, `bot_user_id`, `bot_token`만 보관한다.
 
 ## 계정·채널 설정
 
 - `SLACK_TEAM_ID`: 새 workspace ID.
 - `SLACK_ALLOWED_USERS`: 처음에는 본인 Slack user ID 하나의 JSON 배열.
-- `SLACK_ALLOWED_CHANNELS`: 회사 업무용 채널 ID 배열. 그 채널에 네 앱을 초대합니다.
-- `/var/lib/quant-company/secrets/slack-credentials.json`: 역할별
+- `SLACK_ALLOWED_CHANNELS`: 회사 업무용 채널 ID 배열. 대화형 직원 앱은 업무 채널에,
+  Tech Scout는 `#tech-feeds`에 초대합니다.
+- `/var/lib/quant-company/secrets/slack-credentials.json`: 대화형 역할별
   `app_id`, `bot_user_id`, `bot_token`, `app_token`. HTTP를 사용할 때만 `signing_secret`도 필요합니다.
+  `tech_scout`는 위 단방향 세 필드만 둔다.
 
 앱·workspace·user·channel 값이 맞지 않는 이벤트는 업무로 만들지 않습니다. bot echo도 무시합니다.
 전용 workspace의 무료 요금제로 네 앱 연결을 먼저 확인할 수 있습니다. 회사 업무의 원본은 DB에

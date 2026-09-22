@@ -3,7 +3,7 @@
 개발·연구에 유용한 한국어·영어 RSS/Atom을 원문 제목, 링크, 피드에 있는 짧은 설명으로 전달한다.
 공식 발표뿐 아니라 실무 기술 블로그와 커뮤니티를 포함해 보안·인프라·데이터·개발 도구의 변화를 다룬다.
 수집·선별·발송·댓글에 모델 호출을 사용하지 않는다. 정기 요약, 자동 번역, 본문 크롤링도 없다.
-기존 Reporter Slack 계정, 회사 서버, PostgreSQL, Temporal 및 발송 영수증을 재사용한다.
+발송 전용 Slack 앱 **Tech Scout**, 기존 회사 서버, PostgreSQL, Temporal 및 발송 영수증을 사용한다.
 새 AI/API/피드 구독 비용은 없으며 기존 인프라 사용량은 증가한다.
 
 ## 발송 정책
@@ -17,7 +17,8 @@
 - 날짜가 없거나 5분을 넘겨 미래인 글은 발송하지 않는다. 수정 시각만 있는 소스는 `수정`이라고 표시한다.
 - 설명은 원문 피드의 HTML을 제거한 최대 160자 발췌다. 설명이 없으면 제목·링크만 보낸다.
 - GeekNews 링크는 GeekNews 게시글로 연결한다. 같은 사건의 다른 URL·다른 언어 소개까지 의미상 중복을 제거하는 기능은 없다.
-- `@channel`/`@here` 및 링크·이미지 미리보기를 사용하지 않는다. Reporter에게 보낸 이 채널의 멘션·댓글도 AI 작업을 만들지 않는다.
+- `@channel`/`@here` 및 링크·이미지 미리보기를 사용하지 않는다. Tech Scout는 이벤트 구독과 대화 기능이
+  없는 발송 전용 identity이며, 잘못 연결된 이벤트도 AI 작업을 만들지 않는다.
   다른 직원에게 명시적으로 요청하는 별도 업무는 그 직원의 일반 실행 정책을 따른다.
 
 등록 소스는 `src/quant_company/tech_feed/sources.json`에 있다. OpenAI, Google DeepMind, Hugging Face,
@@ -28,9 +29,12 @@ NAVER D2, 토스 기술 블로그의 12개다. OpenAI는 기술 관련 분류, N
 
 ## 연결
 
-기존 Reporter를 실제 채널에 초대하고 채널 ID·소유자를 기존 Slack 허용 목록에도 추가한다.
+전용 [Tech Scout manifest](../slack-apps/tech_scout.json)로 Slack 앱을 만들고
+[프로필 이미지](../slack-apps/avatars/tech_scout.png)를 적용한 뒤 실제 채널에 초대한다.
 현재 워크스페이스의 실제 채널명은 `#tech-feeds`이며 채널 ID는 `C0C2KPB76KE`다.
-자격증명은 기존 서버 비밀 저장소에 그대로 두며 코드·채팅·모델 컨테이너로 복사하지 않는다.
+권한은 `chat:write` 하나뿐이다. 이벤트 구독·Socket Mode·App-Level Token·signing secret은 필요 없다.
+서버 비밀 저장소의 `tech_scout` 항목에는 `app_id`, `bot_user_id`, `bot_token`만 두며
+코드·채팅·모델 컨테이너로 복사하지 않는다. Reporter 자격증명과 hot-news 동작은 그대로 유지한다.
 다음 설정을 API·worker·dispatcher·slack-socket에 동일하게 전달한다. Compose 공통 환경에 포함되어 있다.
 
 ```dotenv
@@ -60,7 +64,8 @@ uv run --frozen quant-company tech-feed status
 미리보기와 실제 채널 접근을 확인한 다음 `TECH_FEED_PUBLISH_ENABLED=true`로 바꾸고 기존 배포 절차로
 회사 프로세스를 갱신한다. 상시 실행은 `worker`·`dispatch`가 맡고 별도 서버나 cron은 필요 없다.
 수집 workflow ID는 `company-tech-feed-collection-v1`, task queue는 회사 queue의 `-tech-feed` 접미사다.
-모델 업무 queue를 사용하지 않는다. 기존 `hot-news` 설정과 소스는 별도다.
+모델 업무 queue를 사용하지 않는다. Tech Scout는 active model role이나 Socket Mode 연결에 포함되지 않는다.
+기존 `hot-news` 설정·소스·Reporter identity는 별도다.
 
 ## 검증과 복구
 

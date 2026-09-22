@@ -1,0 +1,65 @@
+{
+  "approval": "사용자가 Reporter 봇 대신 별도의 tech-feed 봇과 적절한 이름·프로필 적용을 요청했다.",
+  "constraints": [
+    "모델 호출 및 자동 모델 작업 생성 0건",
+    "신규 유료 서비스 없음",
+    "기존 Reporter와 hot-news 동작 보존",
+    "기존 tech-feed 수집·중복 제거·시간 정책과 DB 상태 보존",
+    "회사 저장소에만 기록",
+    "비밀 출력 및 Git 저장 금지"
+  ],
+  "createdAt": "2026-09-21T22:58:06.520225+00:00",
+  "decisionGates": [
+    "사용자의 별도 봇 요청은 새 Slack 앱 생성·프로필 적용·보안 자격증명 저장·기존 채널 전환 범위의 승인이다."
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "tech-feed 메시지는 tech_scout 전용 identity와 자격증명으로만 발송",
+        "Tech Scout는 비대화형·무모델 delivery-only identity",
+        "Reporter의 hot-news identity와 권한 경로는 유지"
+      ],
+      "description": "Reporter와 분리된 Tech Scout 발송 identity 및 최소 권한 경로",
+      "id": "IDENTITY_IMPLEMENTATION"
+    },
+    {
+      "acceptance": [
+        "전용 credential 라우팅과 원문 메시지 렌더링 검사",
+        "Tech Scout 이벤트가 모델 task/turn을 만들지 않는 검사",
+        "기존 tech-feed 및 전체 서비스 회귀 통과"
+      ],
+      "description": "전용 봇 격리·무모델·기존 동작 회귀 검증",
+      "id": "VALIDATION"
+    },
+    {
+      "acceptance": [
+        "Tech Scout Slack 앱의 이름·설명·생성 프로필 이미지 적용",
+        "최소 chat:write 권한, Git 밖 비밀 저장, #tech-feeds 채널 참여",
+        "전환 후 실제 Slack 영수증과 기존 수집 상태 보존 증거"
+      ],
+      "description": "실제 Tech Scout 앱 생성·프로필·채널 전환과 운영 영수증",
+      "id": "SLACK_ACTIVATION"
+    }
+  ],
+  "nonGoals": [
+    "AI 요약·번역·자동 답변",
+    "신규 유료 서비스",
+    "hot-news 정책 변경",
+    "Tech Scout에 대화형 AI 응답 또는 Socket Mode 이벤트 처리 추가"
+  ],
+  "outcome": "기존 tech-feed를 Reporter에서 분리해 전용 Slack 봇 Tech Scout의 고유 이름·프로필·최소 권한으로 전달한다.",
+  "revision": 2,
+  "revisionReason": "사용자가 Reporter와 분리된 tech-feed 전용 봇과 프로필을 요청했다.",
+  "schemaVersion": 1,
+  "slug": "scoter",
+  "sourceRequest": "reporter 봇 말고 tech-feed를 전하는 별도 봇이 있었으면 좋겠는데. 봇 명은 적절하게 해주고, 프로필도.",
+  "stopConditions": [
+    "접근 불가 시 정확한 외부 조건을 기록한다.",
+    "불명 발송을 자동 재실행하지 않는다."
+  ],
+  "supersedes": {
+    "intentDigest": "1793f313fc9f",
+    "intentFile": "INTENT-v1.json"
+  },
+  "workspace": "독립 회사 Git worktree scoter. QWS_CANONICAL=/Users/achii/Quant/quant-ai-company로 회사 저장소만 qws 정본으로 지정한다. 과거 Quant 계약은 변경하지 않는다."
+}

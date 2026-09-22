@@ -379,9 +379,13 @@ def test_backup_rejects_private_material_in_maintenance_configuration(tmp_path):
 def test_socket_credentials_example_covers_active_role_contract():
     credentials = json.loads((DEPLOY / "slack-credentials.example.json").read_text())
     roles = json.loads((DEPLOY.parent / "src/quant_company/roles.json").read_text())
-    assert set(credentials) == {role["id"] for role in roles if role["active"]}
-    for credential in credentials.values():
+    interactive = {role["id"] for role in roles if role["active"]}
+    assert set(credentials) == interactive | {"tech_scout"}
+    for role in interactive:
+        credential = credentials[role]
         assert set(credential) == {"app_id", "bot_user_id", "bot_token", "app_token", "signing_secret"}
         assert credential["app_token"] and credential["bot_token"]
         assert credential["app_token"] != credential["bot_token"]
         assert credential["signing_secret"] == ""  # HTTP secret is not a Socket prerequisite.
+    assert set(credentials["tech_scout"]) == {"app_id", "bot_user_id", "bot_token"}
+    assert not next(role for role in roles if role["id"] == "tech_scout")["active"]
