@@ -71,7 +71,7 @@ def quant(company, tmp_path, monkeypatch):
     return QuantFeedStore(company)
 
 
-def original(store, suffix="", text=TEXT, metadata=None):
+def original(store, suffix="", text=TEXT, metadata=None, receipt_updates=None):
     claimed = store.claim_source()
     source = store.sources()["example"]
     entry = {"url": source.url + suffix, "title": "Research" + suffix, "metadata": metadata or {}}
@@ -81,9 +81,11 @@ def original(store, suffix="", text=TEXT, metadata=None):
         with store.db.transaction() as conn:
             store.add_candidate(conn, source, entry)
     candidate = store.claim_candidate()
-    return store.save_original(candidate, {"ok": True, "url": candidate["url"], "original_sha256": fingerprint(text),
-                                          "pages": [{"location": "PDF p.1", "text": text}], "metadata": {}, "links": [],
-                                          "truncated": False})
+    receipt = {"ok": True, "url": candidate["url"], "original_sha256": fingerprint(text),
+               "pages": [{"location": "PDF p.1", "text": text}], "metadata": {}, "links": [],
+               "truncated": False}
+    receipt.update(receipt_updates or {})
+    return store.save_original(candidate, receipt)
 
 
 def publish(store, **updates):
@@ -146,12 +148,15 @@ def test_preview_never_queues_and_activation_does_not_replay_it(quant):
 
 
 def test_bundle_distinguishes_original_truncation_from_bounded_context(quant):
-    original(quant, text=TEXT * 100)
+    original(quant, text="HEAD " + TEXT * 100 + " TAIL")
     with quant.db.transaction() as conn:
         document = conn.execute("SELECT * FROM quant_feed_documents").fetchone()
         bundle = quant.bundle(conn, document)
     assert bundle["context_clipped"] is True
     assert bundle["truncated"] is False
+    assert len(bundle["pages"]) == 3
+    assert bundle["pages"][0]["text"].startswith("HEAD")
+    assert bundle["pages"][-1]["text"].endswith("TAIL")
 
 
 def test_nul_in_extracted_text_is_replaced_and_receipted(quant):
@@ -299,6 +304,27 @@ def test_editor_rotates_across_sources(quant, tmp_path):
     assert selected["source_id"] == "fair-b"
 
 
+def test_editor_prefers_complete_original_within_source_fairness(quant):
+    html = original(quant, "-html", receipt_updates={
+        "content_type": "text/html", "fulltext_status": "html_requires_evidence_check",
+    })
+    pdf = original(quant, "-pdf", receipt_updates={"content_type": "application/pdf"})
+    request = quant.prepare()
+    with quant.db.transaction() as conn:
+        selected = conn.execute("SELECT document_id FROM quant_feed_calls WHERE id=%s",
+                                (request["request"]["request_id"],)).fetchone()["document_id"]
+    assert selected == pdf["document_id"]
+    assert selected != html["document_id"]
+
+
+def test_citation_title_replaces_generic_link_label(quant):
+    saved = original(quant, receipt_updates={"metadata": {"citation_title": ["Specific research title"]}})
+    with quant.db.transaction() as conn:
+        title = conn.execute("SELECT metadata->>'title' AS title FROM quant_feed_documents WHERE id=%s",
+                             (saved["document_id"],)).fetchone()["title"]
+    assert title == "Specific research title"
+
+
 def test_delivery_window_and_discovery_slots():
     at = datetime(2026, 9, 21, 17, tzinfo=UTC)
     assert schedule.delivery_time(at).hour == 6  # 06:00 KST next morning
@@ -357,6 +383,26 @@ def test_corrupt_pdf_falls_back_only_to_existing_html_evidence():
     result = fetch_original(source.url, source, downloader=retrieve, pdf_parser=Mock(side_effect=ValueError("bad")))
     assert result["ok"] and result["fulltext_status"] == "html_requires_evidence_check"
     assert result["pdf_errors"] == ["pdf_extraction_failed"]
+
+
+def test_nber_landing_uses_predictable_public_pdf_original():
+    source = QuantSource(id="nber", publisher="NBER", kind="seed", url="https://www.nber.org/papers/w35766",
+                         article_hosts=["www.nber.org"])
+    calls = []
+
+    def retrieve(url, **kwargs):
+        calls.append(url)
+        if url.endswith("/papers/w35766"):
+            return ({"ok": True, "url": url, "content_type": "text/html",
+                     "original_sha256": "a" * 64}, ("<html><p>" + TEXT + "</p></html>").encode())
+        return ({"ok": True, "url": url, "content_type": "application/pdf",
+                 "original_sha256": "b" * 64}, b"%PDF-public")
+
+    parsed = {"pages": [{"location": "PDF p.1", "text": TEXT}], "truncated": False}
+    result = fetch_original(source.url, source, downloader=retrieve, pdf_parser=Mock(return_value=parsed))
+    expected = "https://www.nber.org/system/files/working_papers/w35766/w35766.pdf"
+    assert calls == [source.url, expected]
+    assert result["ok"] and result["url"] == expected
 
 
 GOLD_CASES = [

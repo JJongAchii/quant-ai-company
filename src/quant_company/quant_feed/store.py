@@ -34,6 +34,36 @@ def _sanitize_original_text(receipt):
             "text_sanitization": {"nul_replacements": replacements, "replacement": "U+FFFD"}}
 
 
+def _bounded_pages(pages, budget=42000):
+    """Sample long pages across their full span without exceeding the model budget."""
+    allowance = max(100, budget // max(1, len(pages)))
+    bounded, clipped = [], False
+    for page in pages:
+        text, location = page["text"], page["location"]
+        if len(text) <= allowance:
+            bounded.append({"location": location, "text": text})
+            continue
+        clipped = True
+        count = 2 if len(text) <= allowance * 2 else 3
+        width = max(1, allowance // count)
+        starts = ([0, len(text) - width] if count == 2
+                  else [0, (len(text) - width) // 2, len(text) - width])
+        for index, start in enumerate(starts, 1):
+            suffix = f" [{index}/{count}]"
+            bounded.append({"location": location[:50-len(suffix)] + suffix,
+                            "text": text[start:start+width]})
+    return bounded, clipped
+
+
+def _bibliographic_title(candidate, receipt):
+    values = receipt["metadata"].get("citation_title", [])
+    if values and isinstance(values[0], str):
+        title = " ".join(values[0].split())
+        if len(title) > 6:
+            return title[:500]
+    return candidate["title"]
+
+
 class QuantFeedStore:
     def __init__(self, company):
         self.company, self.db = company, company.db
@@ -52,7 +82,7 @@ class QuantFeedStore:
 
     def policy(self):
         s = self.company.settings
-        return fingerprint({"version": 2, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
+        return fingerprint({"version": 3, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
                             "owner": s.quant_feed_owner_user, "channel": s.quant_feed_channel_id,
                             "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
                             "web": s.company_web_enabled, "sources": [x.model_dump() for x in self.sources().values()],
@@ -147,7 +177,8 @@ class QuantFeedStore:
             if not source.allows(receipt["url"]):
                 raise ValueError("quant_unregistered_original")
             metadata = {**candidate["metadata"], **receipt["metadata"], "publisher": source.publisher,
-                        "commercial": source.commercial, "title": candidate["title"], "url": receipt["url"],
+                        "commercial": source.commercial, "title": _bibliographic_title(candidate, receipt),
+                        "url": receipt["url"],
                         "landing_url": candidate["url"], "links": receipt["links"]}
             keys = list(dict.fromkeys(aliases(candidate["url"], metadata) + aliases(receipt["url"], metadata)))
             existing = conn.execute("SELECT DISTINCT work_id FROM quant_feed_aliases WHERE alias=ANY(%s)", (keys,)).fetchall()
@@ -171,9 +202,10 @@ class QuantFeedStore:
     def bundle(self, conn, document):
         metadata = document["metadata"]
         pages = document["pages"]
-        # Include every page, visibly mark clipping, freeze exactly what each reviewer saw.
-        allowance = max(100, 42000 // max(1, len(pages)))
-        clipped = [{"location": p["location"], "text": p["text"][:allowance]} for p in pages]
+        # Include every page and freeze exactly what each reviewer saw. Long pages
+        # are sampled at the head/middle/tail so tables and limitations near the
+        # end are not systematically hidden by prefix-only clipping.
+        clipped, context_clipped = _bounded_pages(pages)
         prior = conn.execute("""SELECT d.brief,d.id,p.id AS publication_id,o.status,o.sent_ts,p.channel
             FROM quant_feed_publications p JOIN quant_feed_documents d ON d.id=p.document_id JOIN outbox o ON o.id=p.id
             WHERE p.work_id=%s AND p.channel=%s ORDER BY o.created_at DESC LIMIT 1""",
@@ -183,7 +215,7 @@ class QuantFeedStore:
         return as_json({"document_id": document["id"], "as_of": schedule.utcnow(), "metadata": bibliographic,
                         "pages": clipped, "original_sha256": document["receipt"]["original_sha256"],
                         "truncated": document["receipt"].get("truncated", False),
-                        "context_clipped": clipped != pages,
+                        "context_clipped": context_clipped,
                         "retrieval": document["receipt"], "links": links, "commercial": metadata["commercial"],
                         "prior": prior, "draft": document["brief"], "previous_critique": document["critique"]})
 
@@ -236,6 +268,7 @@ class QuantFeedStore:
                          JOIN quant_feed_candidates seen_candidate ON seen_candidate.id=seen.candidate_id
                          WHERE seen_candidate.source_id=c.source_id
                          AND seen.state NOT IN ('ready','reviewing')),
+                        (COALESCE(d.receipt->>'fulltext_status','')='html_requires_evidence_check'),
                         d.created_at,d.id FOR UPDATE OF d SKIP LOCKED LIMIT 1""").fetchone()
                 if not document:
                     return {"state": "idle"}

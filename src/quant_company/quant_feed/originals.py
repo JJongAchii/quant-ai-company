@@ -149,6 +149,9 @@ def fetch_original(url, source, *, downloader=download, pdf_parser=extract_pdf):
                     and not re.search(r"privacy|terms|disclaimer|cookie|legal|개인정보|이용약관", x["title"] + x["url"], re.I)]
             if urlsplit(receipt["url"]).hostname == "arxiv.org" and "/abs/" in receipt["url"]:
                 pdfs.insert(0, receipt["url"].replace("/abs/", "/pdf/"))
+            nber = re.fullmatch(r"/papers/(w\d+)/?", urlsplit(receipt["url"]).path)
+            if urlsplit(receipt["url"]).hostname == "www.nber.org" and nber:
+                pdfs.insert(0, f"https://www.nber.org/system/files/working_papers/{nber[1]}/{nber[1]}.pdf")
             extracted = None
             # At most two public author/publisher copies. No recursive crawl or login bypass.
             errors = []

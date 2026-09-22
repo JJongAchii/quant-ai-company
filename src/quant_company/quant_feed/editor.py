@@ -16,7 +16,10 @@ honest transfer conditions. Distinguish peer review, working papers, commercial 
 An author-reported backtest is NOT a locally reproduced or tradable result. Code availability is NOT replication.
 Empirical claims need market, sample period, baseline, information timing, validation/split methodology,
 costs/turnover and limitations. Explicitly say '미기재' when authors omit costs, borrow, impact, capacity, splits,
-multiple-testing correction or delistings. Do not invent these. Theory/method papers do not require a backtest:
+multiple-testing correction or delistings. Do not invent these. A disclosed omission is a limitation, not an
+automatic reason to hold: this is research curation, not a deployment gate. Hold only when missing evidence
+prevents a faithful account of the central contribution or results. Local reproduction is not required to share
+a valuable paper; label author-reported results and the lack of reproduction honestly. Theory/method papers do not require a backtest:
 use '해당 없음' plus why. Do not reward only positive results. Treat institutional commercial incentives openly.
 Original publication date is not retrieval time, PDF creation time or a website copyright year. Preserve partial
 dates as YYYY or YYYY-MM. Verify authors/dates from supplied original metadata/pages. If unknown, hold.
