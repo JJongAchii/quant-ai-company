@@ -918,6 +918,17 @@ class Company:
             project = self._project(conn, task["project_id"], owner)
             if task["status"] != "blocked" or task["revision"] != project["revision"]:
                 raise PolicyError("Only a current blocked task can be explicitly retried")
+            if task["kind"] == "research_stage":
+                from .research.controller import reconcile_audit_retry
+
+                recovered = reconcile_audit_retry(self, conn, project, task, reconciliation_note)
+                if recovered:
+                    self._event(conn, "operator_retry", {
+                        "task_id": task_id, "previous_error": task["error"],
+                        "reconciliation_note": reconciliation_note, **recovered,
+                    }, project["id"])
+                    return recovered
+                raise PolicyError("Research stage retry requires a recoverable validator audit")
             if task["parent_id"]:
                 parent = conn.execute("SELECT status FROM tasks WHERE id=%s", (task["parent_id"],)).fetchone()
                 if parent["status"] != "waiting":

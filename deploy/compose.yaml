@@ -69,6 +69,7 @@ x-db-env: &db-env
   COMPANY_MAX_DAILY_TURNS: ${COMPANY_MAX_DAILY_TURNS:-0}
   COMPANY_MAX_TASK_TURNS: ${COMPANY_MAX_TASK_TURNS:-8}
   COMPANY_MAX_DEPTH: ${COMPANY_MAX_DEPTH:-3}
+  COMPANY_MODEL_TIMEOUT_SECONDS: ${COMPANY_MODEL_TIMEOUT_SECONDS:-960}
 
 x-temporal-env: &temporal-env
   TEMPORAL_ADDRESS: ${TEMPORAL_ADDRESS:-configure.tmprl.cloud:7233}
@@ -280,7 +281,7 @@ services:
       CODEX_HOME: /state/auth
       CODEX_BIN: codex
       CODEX_JOBS_DIR: /state/jobs
-      CODEX_TIMEOUT_SECONDS: "300"
+      CODEX_TIMEOUT_SECONDS: ${CODEX_TIMEOUT_SECONDS:-900}
       WEB_CONCURRENCY: "1"
       WORKERS: "1"
       MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token

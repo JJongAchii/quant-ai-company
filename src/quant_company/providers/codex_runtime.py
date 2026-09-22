@@ -33,7 +33,7 @@ def runner_from_environment() -> CodexRunner:
     try:
         config = RunnerConfig(codex_home=Path(home), jobs_dir=Path(jobs),
                               codex_bin=os.environ.get("CODEX_BIN", "codex"),
-                              timeout_seconds=float(os.environ.get("CODEX_TIMEOUT_SECONDS", "300")))
+                              timeout_seconds=float(os.environ.get("CODEX_TIMEOUT_SECONDS", "900")))
     except ValueError:
         raise ProviderFault("unavailable", "The Codex runtime configuration is invalid.") from None
     return CodexRunner(config)
