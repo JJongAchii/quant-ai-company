@@ -1,0 +1,71 @@
+{
+  "approval": {
+    "approvedAt": "2026-09-22T07:17:39.064541+00:00",
+    "id": "chat-20260922-continue-data-watch"
+  },
+  "currentIntent": "INTENT-v2.json",
+  "deliverables": {
+    "CORE_CHECKS": {
+      "evidence": [
+        {
+          "path": "src/quant_company/data_watch/checker.py",
+          "sha256": "c388d5225979"
+        },
+        {
+          "path": "src/quant_company/data_watch/core.py",
+          "sha256": "74dacb5c5404"
+        },
+        {
+          "path": "docs/data-watch.md",
+          "sha256": "5d7bf988457a"
+        }
+      ],
+      "note": "Existing-worker read-only lane and typed consumer verified with real synthetic Parquet, subprocess and API/DB tests; actual 3070 activation remains explicitly outside local acceptance.",
+      "status": "verified",
+      "updatedAt": "2026-09-22T07:59:44.232952+00:00"
+    },
+    "DATA_WATCH": {
+      "evidence": [
+        {
+          "path": "docs/project/SLACK-COMPANY-DESIGN.md",
+          "sha256": "316a42b0e4bf"
+        },
+        {
+          "path": "docs/project/DATA-WATCH-VALIDATION.md",
+          "sha256": "0f0549a0f007"
+        }
+      ],
+      "note": "Bounded metadata monitoring, explicit freshness states, daily summaries, incident/recovery and approval-aware delivery passed real PostgreSQL/Temporal tests; live activation not performed.",
+      "status": "verified",
+      "updatedAt": "2026-09-22T07:59:43.985696+00:00"
+    },
+    "VALIDATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/data-watch-validation.json",
+          "sha256": "1b5e2f057a0a"
+        },
+        {
+          "path": "docs/project/evidence/data-watch-tests.xml",
+          "sha256": "d63031ee9347"
+        },
+        {
+          "path": "docs/project/evidence/data-watch-deployment-tests.xml",
+          "sha256": "2470a7b7c6fa"
+        },
+        {
+          "path": "docs/project/evidence/data-watch-financial-fixtures.xml",
+          "sha256": "83905f79c654"
+        }
+      ],
+      "note": "Final integrated tree: 1029 service, 28 deployment and 3 financial fixture tests passed; 37 platform/live opt-in checks skipped. Ruff and diff checks passed.",
+      "status": "verified",
+      "updatedAt": "2026-09-22T07:59:44.480476+00:00"
+    }
+  },
+  "intentDigest": "0a86350b0dfa",
+  "schemaVersion": 1,
+  "slug": "piddock",
+  "state": "approved",
+  "updatedAt": "2026-09-22T07:59:44.480476+00:00"
+}

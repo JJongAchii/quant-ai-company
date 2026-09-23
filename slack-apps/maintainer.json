@@ -1,0 +1,20 @@
+{
+  "display_information": {
+    "name": "Quant Maintainer",
+    "description": "개선 요청의 진단·수정·검증·PR 진행을 케이스별로 안내합니다."
+  },
+  "features": {
+    "bot_user": {"display_name": "quant-maintainer", "always_online": true},
+    "app_home": {"home_tab_enabled": false, "messages_tab_enabled": false}
+  },
+  "oauth_config": {
+    "scopes": {"bot": ["app_mentions:read", "chat:write", "channels:history", "groups:history"]}
+  },
+  "settings": {
+    "event_subscriptions": {"bot_events": ["app_mention", "message.channels", "message.groups"]},
+    "interactivity": {"is_enabled": false},
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": true,
+    "token_rotation_enabled": false
+  }
+}

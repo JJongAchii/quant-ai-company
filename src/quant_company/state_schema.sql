@@ -60,3 +60,5 @@ CREATE TABLE IF NOT EXISTS research_approval_bindings (
  created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS research_approval_project ON research_approval_bindings(project_id,revision);
+-- Server-owned updates target only a previously receipted bot message.
+ALTER TABLE outbox ADD COLUMN IF NOT EXISTS update_ts text;

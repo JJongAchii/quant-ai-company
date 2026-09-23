@@ -50,7 +50,8 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     allowed_tools = {"calculate", "knowledge_search", "read_source", "company_history",
                      "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
                      "finance_search", "finance_read", "web_search", "web_read",
-                     "finance_compute", "data_quality", "staff_status", "news_status", "research_control"} | LAKE_TOOLS
+                     "finance_compute", "data_quality", "staff_status", "news_status", "research_control",
+                     "data_watch_status"} | LAKE_TOOLS
     for role in roles:
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
@@ -59,6 +60,15 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     if settings.company_research_enabled and "director" in by_id:
         role = by_id["director"]
         by_id["director"] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "research_control"]))})
+    if settings.company_improvements_enabled:
+        from .maintenance.identity import role as maintainer_role
+
+        if "engineer" not in by_id:
+            raise ValueError("Maintainer requires the configured engineer model")
+        by_id["maintainer"] = maintainer_role(by_id["engineer"])
+    if settings.data_watch_enabled and "data" in by_id:
+        role = by_id["data"]
+        by_id["data"] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "data_watch_status"]))})
     return by_id
 
 
@@ -186,10 +196,10 @@ class Company:
                 "company_history": "Director only: {query?: string, limit?: 1..20}. Reads the owner's recorded "
                                    "requests/results in authorized Slack channels over the last 30 days. "
                                    "Use for past requests, not knowledge_search. Returns a citable source and truncation flags.",
-                "maintenance_review": "Director only: {}. Queues the current human request for the maintenance "
+                "maintenance_review": "Director or configured Maintainer: {}. Queues the current human request for the maintenance "
                                       "service. It reports progress, budget waits, results or blockers to this thread. "
                                       "A returned request_id proves receipt, not completion. No merge/deploy approval is granted.",
-                "maintenance_status": "Director only: {}. Reads real maintenance status and requests for this thread. "
+                "maintenance_status": "Director or configured Maintainer: {}. Reads real maintenance status and requests for this thread. "
                                       "TASK DATA maintenance is a current snapshot. The maintainer is a background "
                                       "service, not an employee in can_delegate_to. Do not ask users to paste stored history.",
                 "read_source": "{source_id, offset?: nonnegative int}. Read 12000 characters of a registered source; "
@@ -204,6 +214,10 @@ class Company:
                     "scope": "Read-only metadata and bounded samples; no arbitrary SQL, full scans or backtests. "
                              "Data questions require fresh tool receipts. Delegate to data when not authorized.",
                 },
+                "data_watch": {"enabled": self.settings.data_watch_enabled,
+                               "channel": self.settings.data_watch_channel_id,
+                               "tool": "data_watch_status {} reads recorded checks without scanning the lake; "
+                                       "available to data in its configured channel. Unknown freshness is not healthy."},
                 "external_web_search": self.settings.company_web_enabled and any(
                     role.active and "web_search" in role.tools for role in self.roles.values()),
                 "research_worker_submission": self.settings.company_research_enabled,
@@ -251,7 +265,10 @@ class Company:
         if project["channel"] and author in self.roles:
             # Persist the rendered text now: delayed progress must not turn into a completion ping.
             owner = project["owner_user"]
-            mention = (notify_owner and author == "director" and recipient is None
+            may_notify = author == "director" or (
+                author == "maintainer" and self.settings.company_improvements_enabled
+                and project["channel"] == self.settings.improvements_channel_id)
+            mention = (notify_owner and may_notify and recipient is None
                        and owner in self.settings.slack_allowed_users and re.fullmatch(r"[UW][A-Z0-9]+", owner))
             rendered = re.sub(r"<@" + re.escape(owner) + r"(?:\|[^<>]*)?>", "", text).lstrip() if mention else text
             # Keep ordinary links/formatting; only the server may create notification tokens.
@@ -410,6 +427,17 @@ class Company:
                 pause = conn.execute("SELECT paused_until,reason FROM runtime_control WHERE id=1").fetchone()
                 if pause["paused_until"] and pause["paused_until"] > now():
                     summary += f"\n모델 작업 대기: {pause['reason']} ({pause['paused_until'].isoformat()}까지)"
+                if agent == "maintainer":
+                    from .maintenance.cases import status_text
+
+                    summary = status_text(conn, self, project)
+                if (agent == "data" and self.settings.data_watch_enabled
+                        and project["channel"] == self.settings.data_watch_channel_id
+                        and project["owner_user"] == self.settings.data_watch_owner_user):
+                    from .data_watch.reporting import status_text
+                    from .data_watch.store import DataWatchStore
+
+                    summary = status_text(DataWatchStore(self).snapshot(conn))
                 conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (summary, task["id"]))
                 self._message(conn, project, task["id"], agent, "status", summary)
             self._event(conn, "task_created", {"task_id": task["id"], "agent": agent}, project_id)
@@ -480,7 +508,7 @@ class Company:
         context["professional_feedback"] = as_json(coaching(
             conn, project["owner_user"], task["agent"], self.roles[task["agent"]].model,
             self.roles[task["agent"]].reasoning_effort))
-        if task["agent"] == "director":
+        if task["agent"] in {"director", "maintainer"}:
             from .maintenance.requests import permitted, record_source, status
             from .system_state import current_system
 
@@ -735,7 +763,9 @@ class Company:
         if request.name in {"company_history", "maintenance_review", "maintenance_status", "system_status", "repository_read"}:
             from .maintenance.requests import tool
 
-            if not task or task["agent"] != "director":
+            maintainer = (task and task["agent"] == "maintainer" and self.settings.company_improvements_enabled
+                          and self._project(conn, project_id)["channel"] == self.settings.improvements_channel_id)
+            if not task or (task["agent"] != "director" and not maintainer):
                 raise PolicyError("Company history and maintenance tools require the director")
             return tool(conn, self, task, request)
         if request.name in LAKE_TOOLS:
@@ -755,6 +785,20 @@ class Company:
                 if not matching:
                     raise PolicyError("Lake source identifier collision")
                 result["source_id"] = source_id
+            return result
+        if request.name == "data_watch_status":
+            from .data_watch.reporting import status_text
+            from .data_watch.store import DataWatchStore
+            from .maintenance.requests import record_source
+
+            project = self._project(conn, project_id, lock=False)
+            store = DataWatchStore(self)
+            if (arguments or not task or task["agent"] != "data" or not store.authorized()
+                    or project["channel"] != self.settings.data_watch_channel_id
+                    or project["owner_user"] != self.settings.data_watch_owner_user):
+                raise PolicyError("Data watch status requires the configured data channel and owner")
+            result = {"summary": status_text(store.snapshot(conn)), "checked_at": now().isoformat()}
+            result["source_id"] = record_source(conn, project, "data_watch_status", result)
             return result
         if request.name == "calculate":
             if set(arguments) != {"expression"}:

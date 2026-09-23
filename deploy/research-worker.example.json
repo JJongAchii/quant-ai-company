@@ -10,6 +10,7 @@
   "company_repo": "/home/achii/quant-company-research/company",
   "release_registry_file": "/home/achii/quant-company-research/releases/registry.json",
   "adaptive_profiles": {},
+  "data_watch_enabled": false,
   "company_commit": "0000000000000000000000000000000000000000",
   "worker_id": "worker",
   "poll_seconds": 5,
