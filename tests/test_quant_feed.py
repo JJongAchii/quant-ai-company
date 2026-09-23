@@ -14,9 +14,9 @@ from quant_company.company import fingerprint
 from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderResponse, Role
 from quant_company.quant_feed import schedule
 from quant_company.quant_feed.contracts import EvidenceCritique, QuantSource, ResearchBrief, load_sources
-from quant_company.quant_feed.editor import render, validate
+from quant_company.quant_feed.editor import INSTRUCTIONS, render, validate
 from quant_company.quant_feed.feeds import aliases, collect
-from quant_company.quant_feed.originals import download, extract_pdf, fetch_original
+from quant_company.quant_feed.originals import download, extract_pdf, fetch_original, parse_html
 from quant_company.quant_feed.store import QuantFeedStore
 from quant_company.slack import SlackIngress, SlackOutbox
 
@@ -424,10 +424,22 @@ def test_unsafe_originals_rejected_before_network(url):
 def test_registry_and_strict_feed_boundaries():
     sources = load_sources()
     assert len(sources) >= 15 and all(s.interval_hours >= 1 for s in sources)
+    two_sigma = next(s for s in sources if s.id == "two-sigma")
+    assert two_sigma.url == "https://www.twosigma.com/topic/markets-economy/"
+    assert two_sigma.paths == ["/articles/"]
+    assert "Reject unrelated infrastructure, cloud security, careers" in INSTRUCTIONS
     source = sources[0]
     receipt = collect(source, lambda url: ({"ok": True}, b"<!DOCTYPE a><feed></feed>"))
     assert not receipt["ok"]
     assert not source.allows("https://arxiv.org.evil.example/paper")
+
+
+def test_research_link_title_excludes_embedded_style_text():
+    raw = (b'<a href="/paper"><style>@keyframes shimmer { 0% { color: red; } }</style>'
+           b'An Evidence-Based Research Paper</a>')
+    _, content, links = parse_html(raw, {"url": "https://example.org/index", "content_type": "text/html"})
+    assert links == [{"url": "https://example.org/paper", "title": "An Evidence-Based Research Paper"}]
+    assert "@keyframes" not in content
 
 
 def test_corrupt_pdf_falls_back_only_to_existing_html_evidence():

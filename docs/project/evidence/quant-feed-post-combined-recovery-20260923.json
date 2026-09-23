@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-23T02:00:38Z",
+  "scope": "Quant Scout publication-gate recovery after independently owned combined release",
+  "previous_quant_release": {
+    "commit": "377335dcab983007a998a2166807d7332548e024",
+    "receipt_phase": "live_active",
+    "publication_enabled": true
+  },
+  "combined_release": {
+    "commit": "f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+    "handoff_receipt": "/var/lib/quant-company/releases/piddock-f40-release.json",
+    "handoff_state_at_reactivation": "catalog_preview_active",
+    "quant_worker_running": true,
+    "quant_publication_gate_before": false,
+    "research_worker_preserved_id": "3a3579a8eadb6bb118d368833c7d02288eee3784b8aa2a033dcfbaf718d877ba"
+  },
+  "operator": {
+    "action": "reactivate",
+    "source": "deploy/quant_feed_release.py",
+    "uploaded_script_sha256": "d778720f287e15be111e3ef50378ce412a33ef2fff1373812e359a9f275bbeb2",
+    "shared_deployment_lock": true,
+    "first_attempt": {
+      "outcome": "failed_closed",
+      "reason": "health gate assumed all containers had new image revision; Codex and Claude runtime images were intentionally preserved from prior release",
+      "environment_rolled_back_to_publish_disabled": true,
+      "next_attempt_verified_dispatch_and_quant_worker_publish_disabled": true
+    },
+    "successful_attempt": {
+      "activated_at": "2026-09-23T01:58:41Z",
+      "receipt_phase": "live_active",
+      "publication_enabled": true,
+      "preflight": {
+        "real_preview_documents": 1,
+        "publications": 0,
+        "running_quant_calls": 0,
+        "sending_outbox_rows": 0,
+        "slack_auth_test_ok": true,
+        "slack_app_id": "A0C3HFP831Q",
+        "slack_bot_user_id": "U0C3288AXPH",
+        "slack_team_id": "T0C1YRDRPNF",
+        "quant_channel_id": "C0C3K8ZB9PB"
+      },
+      "dispatch_settings": {
+        "publish_enabled": true,
+        "authorized": true
+      },
+      "preserved_services": [
+        "worker",
+        "news-worker",
+        "data-watch-worker",
+        "slack-socket",
+        "codex-runtime",
+        "claude-runtime"
+      ],
+      "postgres_recreated": false,
+      "research_worker_oom_killed": false,
+      "research_worker_restarts": 0,
+      "host_mem_available_mib": 414
+    }
+  },
+  "post_activation_observation": {
+    "at": "2026-09-23T02:00:38Z",
+    "quant_enabled": true,
+    "quant_publish_enabled": true,
+    "quant_authorized": true,
+    "documents": {
+      "ready": 120,
+      "preview": 1,
+      "held": 49,
+      "rejected": 19
+    },
+    "deliveries": 0,
+    "global_runtime_pause": {
+      "reason": "quota",
+      "until": "2026-09-23T02:12:08Z",
+      "not_bypassed": true
+    },
+    "elapsed_48_hours": false
+  },
+  "subsequent_observation": {
+    "at": "2026-09-23T02:15:30Z",
+    "quant_collection_workflow_running": true,
+    "quant_editorial_workflow_running": true,
+    "ready_documents": 122,
+    "deliveries": 0,
+    "global_runtime_pause": {
+      "reason": "quota",
+      "extended_until": "2026-09-23T02:27:12Z",
+      "not_bypassed": true
+    }
+  },
+  "merged_branch_validation": {
+    "local_tests": "1137 passed, 37 skipped, 1 opt-in live deselected",
+    "ruff": "passed",
+    "linux_ci": {
+      "status": "success",
+      "run_id": 35809276862,
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35809276862"
+    }
+  }
+}

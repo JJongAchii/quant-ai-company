@@ -1,4 +1,5 @@
 import asyncio
+from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
@@ -22,6 +23,31 @@ def test_quant_editorial_cadence_finishes_one_document_then_paces_candidates():
     assert editorial_delay({"state": "defer"}) == 300
     assert editorial_delay({"state": "completed", "document_state": "held"}) == 1800
     assert editorial_delay({"state": "blocked"}) == 1800
+
+
+async def test_quant_and_account_workflows_start_once_together():
+    settings = SimpleNamespace(
+        quant_feed_enabled=True, model_accounts_enabled=True, data_watch_enabled=False,
+        tech_feed_enabled=False, company_research_enabled=False, company_news_enabled=False,
+        company_staff_development_enabled=False, temporal_task_queue="combined",
+    )
+    company = SimpleNamespace(settings=settings, pending_starts=lambda: [])
+
+    class Client:
+        def __init__(self):
+            self.started = []
+
+        async def start_workflow(self, workflow, **kwargs):
+            self.started.append((kwargs["id"], kwargs["task_queue"]))
+
+    client = Client()
+    assert await dispatch_once(client, company) == 0
+    assert await dispatch_once(client, company) == 0
+    assert client.started == [
+        ("company-quant-feed-collection-v1", "combined-quant-collection"),
+        ("company-quant-feed-editorial-v1", "combined-quant-model"),
+        ("company-model-accounts-v1", "combined-accounts"),
+    ]
 
 
 @pytest.mark.integration

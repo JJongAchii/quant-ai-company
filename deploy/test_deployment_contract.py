@@ -226,6 +226,7 @@ def test_quant_worker_is_opt_in_and_has_no_slack_or_lake_secrets():
         "database_password", "temporal_api_key", "model_runtime_token"}
     assert "worker" not in service["depends_on"]
     assert "quant-feed-worker" in backup.APP_SERVICES
+    assert "account-gateway" in backup.APP_SERVICES
 
 
 def resolve_cf(node, parameters, conditions):

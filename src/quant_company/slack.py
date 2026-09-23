@@ -273,15 +273,15 @@ class SlackOutbox:
                 from .tech_feed.store import TechFeedStore
 
                 return TechFeedStore(self.company).gate(conn, row, claimed=True)
+            if row["message_kind"] == "quant_feed":
+                from .quant_feed.store import QuantFeedStore
+
+                return QuantFeedStore(self.company).gate(conn, row, claimed=True)
             if row["message_kind"] == "data_watch":
                 from .data_watch.reporting import gate
                 from .data_watch.store import DataWatchStore
 
                 return gate(conn, DataWatchStore(self.company), row)
-            if row["message_kind"] == "quant_feed":
-                from .quant_feed.store import QuantFeedStore
-
-                return QuantFeedStore(self.company).gate(conn, row, claimed=True)
             return not self.defer_news(conn, row, claimed=True)
 
     def claim(self):
@@ -412,7 +412,8 @@ class SlackOutbox:
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_server_error")
                 return True
             result = response.json()
-            requires_receipt = row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed", "data_watch"} or row["agent"] == "maintainer"
+            requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed", "data_watch"}
+                                or row["agent"] == "maintainer")
             if row.get("update_ts") and result.get("ts") != row["update_ts"] and result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_update_receipt_mismatch")
             elif row.get("message_kind") == "data_watch" and result.get("ok") and (

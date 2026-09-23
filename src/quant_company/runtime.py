@@ -99,6 +99,17 @@ def make_data_watch_worker(client, company, runner=None):
 
 
 async def dispatch_once(client, company):
+    if company.settings.quant_feed_enabled and not getattr(company, "_quant_feed_started", False):
+        for workflow, identity, suffix in (
+            (QuantFeedCollectionWorkflow.run, "company-quant-feed-collection-v1", "-quant-collection"),
+            (QuantFeedEditorialWorkflow.run, "company-quant-feed-editorial-v1", "-quant-model"),
+        ):
+            try:
+                await client.start_workflow(workflow, id=identity, task_queue=company.settings.temporal_task_queue + suffix,
+                                            id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+            except WorkflowAlreadyStartedError:
+                pass
+        company._quant_feed_started = True
     if company.settings.model_accounts_enabled and not getattr(company, "_accounts_started", False):
         try:
             await client.start_workflow(AccountControlWorkflow.run, id="company-model-accounts-v1",
@@ -115,17 +126,6 @@ async def dispatch_once(client, company):
         except WorkflowAlreadyStartedError:
             pass
         company._data_watch_started = True
-    if company.settings.quant_feed_enabled and not getattr(company, "_quant_feed_started", False):
-        for workflow, identity, suffix in (
-            (QuantFeedCollectionWorkflow.run, "company-quant-feed-collection-v1", "-quant-collection"),
-            (QuantFeedEditorialWorkflow.run, "company-quant-feed-editorial-v1", "-quant-model"),
-        ):
-            try:
-                await client.start_workflow(workflow, id=identity, task_queue=company.settings.temporal_task_queue + suffix,
-                                            id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-            except WorkflowAlreadyStartedError:
-                pass
-        company._quant_feed_started = True
     if company.settings.tech_feed_enabled and not getattr(company, "_tech_feed_started", False):
         try:
             await client.start_workflow(TechFeedCollectionWorkflow.run, id="company-tech-feed-collection-v1",

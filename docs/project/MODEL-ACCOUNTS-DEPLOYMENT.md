@@ -1,6 +1,6 @@
 # 회사 공용 Codex 계정 제어 운영 적용
 
-2026-09-23 KST. **비공개 계정 전환 채널까지 운영 반영. 서로 다른 두 계정의 공식 인증 완료. 실제 소유자의 전환 명령은 아직 없다.**
+2026-09-23 KST. **비공개 계정 전환 채널 운영 반영 완료. 소유자의 실제 전환과 예비 계정의 모델 응답, 미인식 명령 안내 답글까지 확인했다.**
 
 ## 적용 버전
 
@@ -8,18 +8,20 @@
 |---|---|
 | 기능 PR | [#68](https://github.com/JJongAchii/quant-ai-company/pull/68), CI 통과 후 main 병합 |
 | 전용 채널 수정 PR | [#69](https://github.com/JJongAchii/quant-ai-company/pull/69), CI 통과 후 main `caaf56b00ad8ee9cb523bc5eadf46b800bb8a45f` 병합 |
-| main 병합 | `ebb1e08d724a2d0358a59abf0226471b3e0472c7` |
-| 실제 운영 소스 | `deeb846d7942243165a3de6fd9ca7e35b8f49d89`, `deploy/model-accounts-production` |
-| 직전 운영 소스 | `ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e` |
+| 미인식 명령 안내 PR | [#70](https://github.com/JJongAchii/quant-ai-company/pull/70), CI 통과 후 main `1b4529ddd59b323653f884299ce3008ee4745207` 병합 |
+| 기능 main 병합 | `ebb1e08d724a2d0358a59abf0226471b3e0472c7` |
+| 실제 운영 소스 | `fde7681e0286501d8713e08e30a96991a88b9151`, `deploy/model-accounts-production` |
+| 직전 운영 소스 | `deeb846d7942243165a3de6fd9ca7e35b8f49d89` |
 | 적용 상태 | `MODEL_ACCOUNTS_ENABLED=true`, 소유자 한 명 및 비공개 `#ai-account-switch` (`C0C3C6ELJ0P`) 지정 |
-| 현재 선택 | 기본 계정, revision 0. 자동 전환 없음 |
+| 현재 선택 | 예비 계정, revision 1. 소유자의 명시적 명령으로 전환했고 자동 전환은 없음 |
 | 공식 CLI | Codex 0.154.0 유지 |
 
 운영에 이미 포함된 Quant Scout와 데이터 점검 서비스를 유지하며 통합했다. app, Codex,
 maintenance, Claude 이미지는 해당 커밋 전체 소스로 빌드하고 이미지 내부 패키지 파일의
 해시를 저장소 소스와 비교했다. Claude CLI 버전과 인증은 유지했다.
 새 채널에는 소유자와 director 앱이 참여하며, director 앱의 채널 기록 읽기 권한도 실제로
-확인했다. 전용 채널 밖의 계정 명령과 채널 안의 일반 업무 문장은 모델 작업으로 보내지 않는다.
+확인했다. 전용 채널 밖의 계정 명령은 무시한다. 채널 안의 미인식 문장에는 모델을 호출하지
+않고 사용 가능한 명령을 같은 스레드에 답하며 계정은 바꾸지 않는다.
 
 연구 워커는 기존 `quant-company-autonomous:31ff903f08a1471d26cb2ce0fef9643a0b34fc75`
 이미지와 `COMPANY_CODE_COMMIT`을 유지했다. 컨테이너는 연결 설정 적용을 위해 재생성했다.
@@ -47,8 +49,17 @@ maintenance, Claude 이미지는 해당 커밋 전체 소스로 빌드하고 이
   스크린샷에서 설정 ON과 인증 거절이 계속되는 것을 확인했다. 원인은 아직 확정하지 않았다.
   공식 일반 브라우저 로그인과 SSH callback 전달로 전환해 사용자가 인증을 완료했다.
   로그인 전용 컨테이너에는 예비 auth 디렉터리 하나만 mount했음을 확인했고 완료 후 제거됐다.
-- 새 채널에서 소유자 명령을 보낸 기록은 2026-09-23 14:36 KST 기준 없다. 따라서 새 채널의
-  실제 명령 응답과 예비 계정의 모델 추론 성공은 아직 관측하지 않았다.
+- 소유자의 실제 `모델 계정 상태` 명령과 Slack 답글을 채널 스레드에서 확인했다. 이후 소유자가
+  `모델 계정 예비로 전환`을 보내 PostgreSQL에 `switched`, revision 1이 기록됐고 전환 답글이
+  Slack에 도착했다. 이어진 상태 조회도 예비 계정을 표시했다.
+- 전환 후 예비 계정으로 완료된 모델 호출 18건이 기록됐고, 최신 성공 시각은 새 릴리스 기동
+  후인 2026-09-23 15:15:37 KST다. 로그인 확인뿐 아니라 실제 모델 응답을 관측했다.
+- `서브 계정으로 전환해줘` 등 미인식 문장에 답이 없던 문제를 수정했다. 소유자가 새 릴리스에
+  같은 문장을 보냈을 때 약 2초 뒤 세 가지 정확한 명령을 안내하는 답글이 기존 스레드에
+  게시됐다. 해당 입력은 전환 명령이나 모델 작업을 만들지 않았고 예비 계정 revision 1을 유지했다.
+- 새 릴리스 `fde7681e`의 12개 서비스가 모두 정상이고 재시작은 0회다. PostgreSQL 컨테이너,
+  연구 워커 이미지와 설정 해시, Temporal 계정 제어 workflow를 유지했다. 전환 전 백업은
+  인증 파일 없이 S3에 저장했다.
 
 ## 테스트 범위
 
@@ -58,10 +69,12 @@ maintenance, Claude 이미지는 해당 커밋 전체 소스로 빌드하고 이
 | 운영 통합본 전체 | 1,168 | 37 | 0 |
 | 운영 통합 관련 테스트 | 141 | 1 | 0 |
 | 전용 채널 관련 테스트, 로컬·운영 통합본 각각 | 53 | 2 | 0 |
+| 미인식 명령 안내 관련 테스트, 운영 통합본 | 56 | 2 | 0 |
 
 통합본 전체 실행에서는 live 테스트 1개를 제외했다. 로컬 PostgreSQL 14 및 실제 Temporal
 개발 서버를 사용했다. 자동 Slack 입력은 서명된 합성 fixture이고 모델은 가짜 Codex 실행
-프로그램이다. 실제 계정 전환이나 실 모델 추론 성공으로 해석하지 않는다. 기능 PR의 CI도 통과했다.
+프로그램이다. 실제 계정 전환과 실 모델 응답은 위의 별도 운영 영수증으로 확인했다.
+미인식 명령 안내 PR의 전체 CI도 통과했다.
 
 ## 적용 과정에서 수정한 문제
 
@@ -76,12 +89,11 @@ maintenance, Claude 이미지는 해당 커밋 전체 소스로 빌드하고 이
 gateway 운영 진단은 `/healthz`와 별도 프로세스의 DB/Temporal 조회를 사용한다.
 제한된 gateway 컨테이너 안에서 전체 회사 모듈을 다시 import하는 진단은 실행하지 않는다.
 
-## 다음 단계
+## 운영 명령
 
-소유자가 비공개 [#ai-account-switch](https://achiisquantresearch.slack.com/archives/C0C3C6ELJ0P)에
-`모델 계정 상태`를 보낸다. 상태 응답이 도착하면 필요할 때
-`모델 계정 예비로 전환`을 보내 실제 전환 응답을 확인한다.
-회사 전체의 새 요청과 한도 대기 요청에 적용된다.
+소유자는 비공개 [#ai-account-switch](https://achiisquantresearch.slack.com/archives/C0C3C6ELJ0P)에
+`모델 계정 상태`를 보내 현재 선택을 확인한다. 필요할 때 `모델 계정 예비로 전환` 또는
+`모델 계정 기본으로 전환`을 보낸다. 전환은 회사 전체의 새 요청과 한도 대기 요청에 적용된다.
 실행 중이거나 결과가 불확실한 요청, 완료된 요청은 기존 receipt를 보존한다.
 
 [운영 조회/백업 receipt](evidence/model-accounts-20260923/production-activation.json),
@@ -89,4 +101,5 @@ gateway 운영 진단은 `/healthz`와 별도 프로세스의 DB/Temporal 조회
 [공식 예비 계정 등록 확인](evidence/model-accounts-20260923/enrollment.json),
 [메모리 확인](evidence/model-accounts-20260923/post-probe-stability.json),
 [전용 채널 배포 확인](evidence/model-accounts-20260923/dedicated-channel-rollout.json),
+[실제 전환·안내 답글과 최종 릴리스](evidence/model-accounts-20260923/live-account-control.json),
 [사용 및 복구 절차](../runbooks/model-accounts.md).

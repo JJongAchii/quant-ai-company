@@ -8,40 +8,40 @@
     "ACTIVATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/quant-feed-deployment-conflict-20260922.json",
-          "sha256": "1dd6094af484"
+          "path": "docs/project/evidence/quant-feed-source-quality-20260923.json",
+          "sha256": "d80b2c62c97b"
         }
       ],
-      "note": "User confirmed research worker is intentional separate work. Release revised to preserve its exact container/state; bounded capacity admission passed, live gates remain.",
+      "note": "Real backup-profile Quant calls completed but source candidate held; zero natural Slack deliveries. Post-fix production deployment, first delivery, and elapsed 48-hour stability still pending.",
       "status": "in_progress",
-      "updatedAt": "2026-09-22T04:43:31.764399+00:00"
+      "updatedAt": "2026-09-23T06:41:46.347521+00:00"
     },
     "QUANT_FEED": {
       "evidence": [
         {
           "path": "docs/project/quant-feed-implementation.md",
-          "sha256": "f5a2b112032a"
+          "sha256": "236ab35e6139"
         }
       ],
-      "note": "Implementation and outbound app/auth/icon verified; no live publication claim.",
+      "note": "Quant Scout integrated with account-gateway main; Two Sigma narrowed to 10 official market/economy article links and hidden CSS title bug fixed in branch.",
       "status": "verified",
-      "updatedAt": "2026-09-22T04:31:38.926574+00:00"
+      "updatedAt": "2026-09-23T06:41:37.461821+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
-          "path": "docs/project/quant-feed-implementation.md",
-          "sha256": "9c8727ddc791"
+          "path": "docs/project/evidence/quant-feed-source-quality-20260923.json",
+          "sha256": "d80b2c62c97b"
         }
       ],
-      "note": "Post-merge full local suite 1071 passed/36 skipped/1 live deselected; PR CI passed; running-worker release preservation tests passed.",
+      "note": "Natural backup-profile review held with zero Slack writes; official narrowed Two Sigma probe produced 10 article links; 59 Quant tests passed/1 skipped and Ruff passed. Post-fix CI pending.",
       "status": "verified",
-      "updatedAt": "2026-09-22T04:43:31.596973+00:00"
+      "updatedAt": "2026-09-23T06:41:42.080773+00:00"
     }
   },
   "intentDigest": "c402037885c5",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-22T04:43:31.764399+00:00"
+  "updatedAt": "2026-09-23T06:41:46.347521+00:00"
 }
