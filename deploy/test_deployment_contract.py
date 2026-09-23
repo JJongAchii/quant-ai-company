@@ -442,7 +442,8 @@ def test_data_watch_configuration_reaches_existing_processes_without_new_credent
     env = tmp_path / "data-watch.env"
     env.write_text('DATA_WATCH_ENABLED=true\nDATA_WATCH_PUBLISH_ENABLED=true\nDATA_WATCH_CHANNEL_ID=CDATA\n'
                    'DATA_WATCH_OWNER_USER=UHUMAN\nSLACK_ALLOWED_CHANNELS=["CDATA"]\nSLACK_ALLOWED_USERS=["UHUMAN"]\n')
-    services = compose_config("maintenance", extra_env=env, overlays=("data-watch.compose.yaml",))["services"]
+    services = compose_config("maintenance", "data-watch", extra_env=env,
+                              overlays=("data-watch.compose.yaml",))["services"]
     for name in ("api", "worker", "news-worker", "dispatch", "slack-socket", "maintenance"):
         values = services[name]["environment"]
         settings = Settings(**{key.lower(): json.loads(value) if key in {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS"}
@@ -451,12 +452,21 @@ def test_data_watch_configuration_reaches_existing_processes_without_new_credent
         assert settings.data_watch_contracts_file.name == "data-watch-contracts.json"
         assert not settings.data_watch_core_enabled
         assert any(v["target"].endswith("data-watch-contracts.json") and v["read_only"] for v in services[name]["volumes"])
+    standalone = services["data-watch-worker"]
+    assert standalone["command"] == ["quant-company", "data-watch-worker"]
+    assert standalone["environment"]["DATA_WATCH_ENABLED"] == "true"
+    assert standalone["environment"]["AWS_SHARED_CREDENTIALS_FILE"] == "/run/secrets/lake_read_credentials"
+    assert standalone["environment"]["DATA_WATCH_CONTRACTS_FILE"] == "/etc/quant-company/data-watch-contracts.json"
+    assert "MODEL_RUNTIME_TOKEN_FILE" not in standalone["environment"]
+    assert "SLACK_CREDENTIALS_FILE" not in standalone["environment"]
+    assert not any("model_runtime_token" in str(item) or "slack_credentials" in str(item)
+                   for item in standalone["secrets"])
     assert not any(key.startswith("DATA_WATCH") for key in services["codex-runtime"]["environment"])
     assert not any("data-watch" in str(v) for v in services["codex-runtime"]["volumes"])
     config = json.loads((DEPLOY / "research-worker.example.json").read_text())
     assert config["data_watch_enabled"] is False
     env.write_text(env.read_text() + 'DATA_WATCH_CORE_ENABLED=true\nRESEARCH_REPORT_BUCKET=synthetic-bucket\n')
-    services = compose_config("maintenance", extra_env=env,
+    services = compose_config("maintenance", "data-watch", extra_env=env,
                               overlays=("research.compose.yaml", "data-watch.compose.yaml"))["services"]
     for name in ("api", "worker", "news-worker", "dispatch", "slack-socket", "maintenance"):
         values = services[name]["environment"]
@@ -465,3 +475,4 @@ def test_data_watch_configuration_reaches_existing_processes_without_new_credent
         assert settings.data_watch_core_enabled
         if name in {"api", "worker", "slack-socket", "dispatch"}:
             assert settings.company_research_enabled
+    assert services["data-watch-worker"]["environment"]["COMPANY_RESEARCH_ENABLED"] == "true"

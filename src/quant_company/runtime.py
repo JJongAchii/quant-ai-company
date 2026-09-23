@@ -173,6 +173,14 @@ async def worker_main(settings=None):
         await asyncio.Event().wait()
 
 
+async def data_watch_worker_main(settings=None):
+    settings = settings or Settings()
+    company = Company(settings)
+    client = await connect(settings)
+    async with make_data_watch_worker(client, company):
+        await asyncio.Event().wait()
+
+
 async def news_worker_main(settings=None):
     settings = settings or Settings()
     company = Company(settings)
