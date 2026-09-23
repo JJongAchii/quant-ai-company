@@ -1,6 +1,6 @@
 # ADR 0037: Owner-selected Codex authentication profiles
 
-Date: 2026-09-23. Status: implemented; production activation and second-account enrollment pending.
+Date: 2026-09-23. Status: implemented and active in production; both distinct accounts enrolled.
 
 ## Decision
 
