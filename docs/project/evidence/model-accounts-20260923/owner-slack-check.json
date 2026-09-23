@@ -1,0 +1,15 @@
+{
+  "at": "2026-09-23T04:17:19.649140+00:00",
+  "commands": null,
+  "policy": {
+    "profile": "primary",
+    "revision": 0
+  },
+  "calls": [
+    {
+      "profile": "primary",
+      "state": "waiting",
+      "count": 1
+    }
+  ]
+}

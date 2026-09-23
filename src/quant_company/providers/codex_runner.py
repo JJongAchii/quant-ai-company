@@ -15,7 +15,7 @@ import signal
 import tempfile
 import time
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -114,6 +114,7 @@ class RunnerConfig:
     quota_retry_seconds: int = 900
     max_stdout_bytes: int = MAX_STDOUT_BYTES
     max_stderr_bytes: int = MAX_STDERR_BYTES
+    backup_codex_home: Path | None = None
 
     def __post_init__(self) -> None:
         if not math.isfinite(self.timeout_seconds) or not 0 < self.timeout_seconds <= 3600:
@@ -222,7 +223,8 @@ def cli_command(config: RunnerConfig, request: ProviderRequest, work_dir: Path, 
             "--sandbox", "read-only", "--skip-git-repo-check", "--ephemeral", "--json", "--color", "never",
             "--model", request.model, "--cd", str(work_dir), "--output-schema", str(schema_path)]
     overrides = [
-        'forced_login_method="chatgpt"', 'model_provider="openai"', 'approval_policy="never"',
+        'forced_login_method="chatgpt"', 'cli_auth_credentials_store="file"',
+        'model_provider="openai"', 'approval_policy="never"',
         'web_search="live"' if request.web_search else 'web_search="disabled"',
         "mcp_servers={}", "apps._default.enabled=false", "notify=[]",
         "agents.enabled=false",
@@ -380,7 +382,8 @@ class CodexRunner:
         self.environment = dict(os.environ if environment is None else environment)
         self._active: dict[str, asyncio.Task] = {}
 
-    def _read_receipt(self, path: Path, digest: str, request_id: str, *, locked: bool = False) -> ProviderResponse | None:
+    def _read_receipt(self, path: Path, digest: str, request_id: str, *, locked: bool = False,
+                      profile: str = "primary", revision: int = 0) -> ProviderResponse | None:
         if not path.exists():
             return None
         try:
@@ -399,6 +402,18 @@ class CodexRunner:
                     raise ValueError("Mismatched result")
                 return result
             if receipt["state"] == "deferred":
+                previous = receipt.get("account", {"profile": "primary", "revision": 0})
+                if (previous["profile"] not in {"primary", "backup"} or type(previous["revision"]) is not int
+                        or not 0 <= previous["revision"] < 2**63 or receipt.get("fault", {}).get("code") != "quota"):
+                    raise ValueError("Invalid account quota receipt")
+                if revision < previous["revision"]:
+                    raise ProviderFault("uncertain", "A newer account selection owns this request.")
+                if previous["profile"] != profile:
+                    if revision <= previous["revision"] or receipt.get("fault", {}).get("code") != "quota":
+                        raise ProviderFault("uncertain", "Account reassignment requires a newer owner selection and quota receipt.")
+                    # Only an explicit structured quota denial may move to another account.
+                    # The shared lane lock and second read still guard actual execution.
+                    return None
                 wait = max(0, math.ceil(receipt["retry_at"] - time.time()))
                 if wait == 0:
                     return None
@@ -441,13 +456,43 @@ class CodexRunner:
             raise ProviderFault("unavailable", f"The runtime requires the validated Codex CLI {SUPPORTED_CLI_VERSION}.")
         await self._configuration_preflight(request, work_dir, env)
         login = await self.process.run(
-            [self.config.codex_bin, "login", "status", "-c", 'forced_login_method="chatgpt"'], **options,
+            [self.config.codex_bin, "login", "status", "-c", 'forced_login_method="chatgpt"',
+             "-c", 'cli_auth_credentials_store="file"'], **options,
         )
         status = (login.stdout + login.stderr).decode(errors="replace")
         if login.returncode != 0 or not re.search(r"(?m)^Logged in using ChatGPT\s*$", status):
             raise ProviderFault("auth", "Authenticate this runtime using the official ChatGPT login.")
 
-    async def run(self, request: ProviderRequest) -> ProviderResponse:
+    def account_config(self, profile: str) -> RunnerConfig:
+        if profile == "primary":
+            return self.config
+        if profile == "backup" and self.config.backup_codex_home is not None:
+            if self.config.backup_codex_home.resolve() == self.config.codex_home.resolve():
+                raise ProviderFault("auth", "Account profiles must use separate authentication directories.")
+            return replace(self.config, codex_home=self.config.backup_codex_home)
+        raise ProviderFault("auth", "The selected account has not been registered.")
+
+    async def account_status(self, profile: str) -> dict:
+        try:
+            config = self.account_config(profile)
+            if not config.codex_home.is_dir():
+                raise ProviderFault("auth", "Account home missing")
+            result = await self.process.run(
+                [config.codex_bin, "login", "status", "-c", 'forced_login_method="chatgpt"',
+                 "-c", 'cli_auth_credentials_store="file"'],
+                cwd=config.codex_home, env=safe_environment(config, self.environment), timeout_seconds=15,
+                max_stdout_bytes=MAX_STDERR_BYTES, max_stderr_bytes=MAX_STDERR_BYTES)
+            status = (result.stdout + result.stderr).decode(errors="replace")
+            authenticated = result.returncode == 0 and bool(re.search(r"(?m)^Logged in using ChatGPT\s*$", status))
+            return {"profile": profile, "authentication": "chatgpt" if authenticated else "needs_login"}
+        except ProviderFault as exc:
+            return {"profile": profile, "authentication": "needs_login" if exc.code == "auth" else "unavailable"}
+        except OSError:
+            return {"profile": profile, "authentication": "unavailable"}
+
+    async def run(self, request: ProviderRequest, *, profile: str = "primary", revision: int = 0) -> ProviderResponse:
+        if profile not in {"primary", "backup"} or type(revision) is not int or not 0 <= revision < 2**63:
+            raise ProviderFault("auth", "Invalid account selection.")
         directory = self.config.jobs_dir.resolve()
         try:
             directory.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -456,7 +501,7 @@ class CodexRunner:
         digest = request_digest(request)
         receipt_path = directory / f"{request.request_id}.json"
         # Cached completion does not need credentials, capacity or a live Codex process.
-        cached = self._read_receipt(receipt_path, digest, request.request_id)
+        cached = self._read_receipt(receipt_path, digest, request.request_id, profile=profile, revision=revision)
         if cached is not None:
             return cached
         try:
@@ -474,12 +519,14 @@ class CodexRunner:
                 fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
             except BlockingIOError:
                 raise ProviderFault("busy", "The subscription runtime lane is executing another turn.", 5) from None
-            cached = self._read_receipt(receipt_path, digest, request.request_id, locked=True)
+            cached = self._read_receipt(receipt_path, digest, request.request_id, locked=True,
+                                        profile=profile, revision=revision)
             if cached is not None:
                 return cached
             self._active[request.request_id] = asyncio.current_task()
-            env = safe_environment(self.config, self.environment)
-            if not self.config.codex_home.is_dir():
+            config = self.account_config(profile)
+            env = safe_environment(config, self.environment)
+            if not config.codex_home.is_dir():
                 raise ProviderFault("auth", "The configured Codex authentication directory is unavailable.")
             with tempfile.TemporaryDirectory(prefix=".turn-", dir=directory) as temporary:
                 work_dir = Path(temporary).resolve()
@@ -488,9 +535,19 @@ class CodexRunner:
                 atomic_json(schema, CLI_OUTPUT_SCHEMA)
                 receipt = {"version": 1, "request_id": request.request_id, "input_digest": digest,
                            "state": "running", "started_at": time.time(), "cli_version": SUPPORTED_CLI_VERSION,
+                           "account": {"profile": profile, "revision": revision},
                            "execution_lane": lane,
                            "requested_execution": {"model": request.model,
                                                    "reasoning_effort": request.reasoning_effort}}
+                if receipt_path.exists():
+                    previous = strict_json(receipt_path.read_bytes())
+                    old_account = previous.get("account", {"profile": "primary", "revision": 0})
+                    if old_account["profile"] != profile:
+                        transfers = directory / "account-transfers"
+                        transfers.mkdir(exist_ok=True, mode=0o700)
+                        atomic_json(transfers / f"{request.request_id}-{revision}.json", {
+                            "previous_receipt": previous, "selected_account": receipt["account"],
+                            "changed_at": time.time()})
                 atomic_json(receipt_path, receipt)
                 try:
                     output = await self.process.run(

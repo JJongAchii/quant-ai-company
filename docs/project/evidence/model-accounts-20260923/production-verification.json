@@ -1,0 +1,70 @@
+{
+  "feature_commit": "4e8e81f4173ef58883b4eaf57151f4377ea6a5bb",
+  "main_merge": "ebb1e08d724a2d0358a59abf0226471b3e0472c7",
+  "production_commit": "ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+  "feature_pr": {
+    "mergeCommit": {
+      "oid": "ebb1e08d724a2d0358a59abf0226471b3e0472c7"
+    },
+    "mergedAt": "2026-09-23T03:46:15Z",
+    "state": "MERGED",
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/68"
+  },
+  "tests": {
+    "feature": {
+      "passed": 1061,
+      "skipped": 37,
+      "failed": 0
+    },
+    "production_integration": {
+      "passed": 1168,
+      "skipped": 37,
+      "deselected": 1,
+      "failed": 0
+    },
+    "integration_focused": {
+      "passed": 141,
+      "skipped": 1,
+      "failed": 0
+    }
+  },
+  "scope": {
+    "database": "real local PostgreSQL 14",
+    "workflow": "real local Temporal dev server",
+    "automated_slack": "synthetic signed fixtures",
+    "automated_model": "fake Codex executable",
+    "production_auth": "official installed codex-cli 0.154.0 login status",
+    "production_workflow": "real Temporal Cloud account-control workflow RUNNING",
+    "actual_owner_slack_command": "pending",
+    "backup_browser_authentication": "completed; official browser OAuth using SSH callback; distinct accounts verified without exposing identifiers"
+  },
+  "operator_events": [
+    {
+      "kind": "lock_contention",
+      "effect": "No mutation; waited for scheduled release check to finish"
+    },
+    {
+      "kind": "cutover_rollback",
+      "reason": "Compose run rejects --no-build; migration did not start",
+      "recovery": "Verified previous images and configuration restored; retried using supported flags"
+    },
+    {
+      "kind": "verification_probe_oom",
+      "reason": "Second full application import inside the 128 MiB gateway exceeded its memory limit",
+      "effect": "One gateway OOM/restart; no account calls or commands existed at the subsequent database check",
+      "recovery": "Moved probes to larger runtime/dispatcher and native psql; gateway healthy at 78.42 MiB with no further restart at recorded check"
+    },
+    {
+      "kind": "device_auth_consent_rejected",
+      "observation": "Owner screenshot confirmed device authentication enabled, but consent remained disabled after retry; root cause not established",
+      "recovery": "Official browser OAuth via SSH localhost callback completed; isolated temporary login container removed"
+    }
+  ],
+  "operator_script_sha256": {
+    "stage.py": "4ffd81fcb077d3cae817f7e03895707ee9ff983251e7b87183d31de8a2280a25",
+    "cutover.py": "b280f5f18d08adfec135b472aa14b608c86a11a752fe31bf90325ff750572339",
+    "verify.py": "756aab9165020b39cab5c63d34ce41a9d428fb88256ea2a02d74dd0ba820ca58",
+    "align_runtime.py": "b44a00bad5b1d0e1abf318f22d050b652bed511b9cdddb9c62f2635b7f6d61df",
+    "codex-backup-browser-login.sh": "63b77a2b180442d21e0bfeabda88d5d257489313553ef11633ca6a3bd0b89847"
+  }
+}

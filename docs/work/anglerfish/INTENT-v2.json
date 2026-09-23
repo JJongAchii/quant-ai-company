@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 2,
+  "sourceRequest": "운영서버 적용될때까지 다음 진행하자 그럼",
+  "outcome": "Deploy and activate owner-only Slack Codex account controls on the current production release while preserving research job pins, stable receipts and existing service configuration.",
+  "deliverables": [
+    {
+      "id": "CONTROL",
+      "description": "Deterministic authenticated Slack commands with PostgreSQL records and Temporal execution"
+    },
+    {
+      "id": "RUNTIME",
+      "description": "Isolated account homes, shared request receipts, explicit quota-only reassignment and per-account cooldown"
+    },
+    {
+      "id": "VALIDATION",
+      "description": "Real PostgreSQL and Temporal verification, simulated provider/Slack clearly identified, operator enrollment and deployment instructions"
+    },
+    {
+      "id": "DEPLOYMENT",
+      "description": "Integrate with actual production commits, back up state, deploy and verify live control readiness without altering research inputs or outcomes"
+    },
+    {
+      "id": "ENROLLMENT",
+      "description": "Prepare official backup-profile browser authentication; record user-authentication-dependent status truthfully"
+    }
+  ],
+  "constraints": [
+    "Preserve stable request IDs, frozen inputs, completed results and uncertain receipts",
+    "Official ChatGPT authentication; owner browser enrollment; no credentials in Slack or Git",
+    "Only explicit owner commands select another account",
+    "Company evidence stays in this repository; research integrations remain read-only"
+  ],
+  "workspace": "Existing isolated Git worktree; qws start rejects the independent company repository. No historical quant-workspace records changed.",
+  "approval": "User explicitly authorized proceeding until production server application in this conversation."
+}
