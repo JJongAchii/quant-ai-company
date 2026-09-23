@@ -85,6 +85,10 @@ API는 원래 요청 ID·scope digest·6개 해시·lease·검사 시각·측정
 
 회사 DB migration을 먼저 적용한다. 허용 목록에 전용 채널 ID와 소유자를 넣고 기존 데이터
 직원을 해당 채널에 참여시킨다. 기존 데이터 앱의 signed ingress/Socket Mode 설정을 재사용한다.
+기존 연구 worker를 다른 작업 때문에 재생성할 수 없는 배포에서는 `data-watch` Compose profile의
+`data-watch-worker`를 별도로 시작한다. 같은 Temporal queue를 처리하므로 나중에 기존 worker가
+새 버전으로 올라와도 기록과 workflow ID를 바꾸지 않는다. 이 프로세스에는 모델·Slack 토큰을
+전달하지 않고 DB·Temporal·레이크 읽기 자격만 제공한다.
 
 ```dotenv
 DATA_WATCH_ENABLED=true
