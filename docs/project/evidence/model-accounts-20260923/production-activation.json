@@ -1,0 +1,335 @@
+{
+  "at": "2026-09-23T04:17:18.931309+00:00",
+  "current": "/opt/quant-company/releases/ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+  "journal": {
+    "phase": "active",
+    "commit": "ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+    "previous": "/opt/quant-company/releases/f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+    "archive_sha256": "33390f85022c539823162ef57b0e8db68a9b82a333807228f3fa53cf46be74ba",
+    "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "qdata_tree_sha256": "528251801f09b120d9c33baeb6956a6a84e49b2c09aeb15420e5994fa170e396",
+    "started_at": 1790134992.0876462,
+    "images": [
+      {
+        "target": "app",
+        "tag": "quant-company:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "sha256:b81bed7f73cc5fb0df81794546dc0179a56ed171014c98f867cd592632c71cde",
+        "source_matches_commit": true
+      },
+      {
+        "target": "codex",
+        "tag": "quant-company-codex:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "sha256:ce5f2104d32f1913f80c55d4af79f6d86c4b4341ac0787df89ec5dcb7087d6a9",
+        "source_matches_commit": true
+      },
+      {
+        "target": "maintenance",
+        "tag": "quant-company-maintenance:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "sha256:178b3a10ce18aee252916b8773dfb974d107be1e7d0115547e29a784b6ae5def",
+        "source_matches_commit": true
+      },
+      {
+        "target": "claude",
+        "tag": "quant-company-claude:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "sha256:d7ffc843d86007cf05c4eea782ace345485a989af331d23bccb18fd5db48bfb9",
+        "source_matches_commit": true
+      }
+    ],
+    "builder": "quant-feed-75f1b100ab76",
+    "builder_memory_mib": 512,
+    "builder_cpus": 1,
+    "staged_at": 1790135265.9756324,
+    "baseline": {
+      "api": {
+        "image": "quant-company:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+        "image_id": "sha256:62c1e22f8ab182e8faa37e01a0738f01be30e9f938e4a5f95d795e46ecc4f37a",
+        "id": "23b60019b3c4a0bee7aa95de5d16882290ef91e561ada628367eff452f151995"
+      },
+      "worker": {
+        "image": "quant-company-autonomous:31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
+        "image_id": "sha256:f024b53434ab61b648b3242ffd62f583453a6f98729d91aeb6ad75ae692bade8",
+        "id": "a90ef53e8b03ccb6854f1e74a8b8e0e44697d4173be8c053d406150dd91cdb71"
+      },
+      "news-worker": {
+        "image": "quant-company:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+        "image_id": "sha256:62c1e22f8ab182e8faa37e01a0738f01be30e9f938e4a5f95d795e46ecc4f37a",
+        "id": "abeca833e36dd29ed3d918761bf5ba51fa7b4ba839d3b098c577ffa4bb0635f8"
+      },
+      "quant-feed-worker": {
+        "image": "quant-company:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+        "image_id": "sha256:62c1e22f8ab182e8faa37e01a0738f01be30e9f938e4a5f95d795e46ecc4f37a",
+        "id": "ce40edf05934697b1b3fd4c7c3a92a767c188a105de0efd4b50812c5ae5f5127"
+      },
+      "data-watch-worker": {
+        "image": "quant-company:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+        "image_id": "sha256:62c1e22f8ab182e8faa37e01a0738f01be30e9f938e4a5f95d795e46ecc4f37a",
+        "id": "8d6e527538fcda3eaf030ffe67ca62fbd9ce9c94da1ea5801609872a424e2dcf"
+      },
+      "maintenance": {
+        "image": "quant-company-maintenance:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+        "image_id": "sha256:ab76d76fdf2daa26810eb04de4f085a20864ffe1866bb373b9cfd6b92419a3dc",
+        "id": "3841f2d961a80414232d43426551af48ce55e53fd8e68f0f6025bd1bee0c3de9"
+      },
+      "dispatch": {
+        "image": "quant-company:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+        "image_id": "sha256:62c1e22f8ab182e8faa37e01a0738f01be30e9f938e4a5f95d795e46ecc4f37a",
+        "id": "d4806ca15abdcfe74e301135f6477eaaf78e44d974fc354e53caa5bc8827bf1f"
+      },
+      "slack-socket": {
+        "image": "quant-company:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+        "image_id": "sha256:62c1e22f8ab182e8faa37e01a0738f01be30e9f938e4a5f95d795e46ecc4f37a",
+        "id": "5cedfa2f2c29c874a7e1acb8afb2e8f2df1ab98578844abbe106c958a030f2ed"
+      },
+      "codex-runtime": {
+        "image": "quant-company-codex:377335dcab983007a998a2166807d7332548e024",
+        "image_id": "sha256:5b9ba7e2f3359d93c66f56f629e6f6cee85b36821a33214c4d2f7464401f2710",
+        "id": "baf4632e3fd6b8b656301b74f080372eb985daaa2000dc6527cf2fc64c8e4173"
+      },
+      "claude-runtime": {
+        "image": "quant-company-claude:377335dcab983007a998a2166807d7332548e024",
+        "image_id": "sha256:d35c46e5798867031e37b5d509e59a70664d275ca47f43eaec174581dbb27d0d",
+        "id": "013c6bd2bb8c4544cc865fe0c4a62459e77eff886c86d1bc34bb8b6a69b6ed6f"
+      }
+    },
+    "postgres_id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+    "config_hashes": {
+      "roles.json": "95fdee86cc0e59fdf4f68abb4200a582520cfc3cdb801c5c5f44c1a8af544a3c",
+      "research-profiles.json": "221cb9a6d5d8f383e328ec26d72493c07a5a5e4f1989f25aba10ada38571a043",
+      "research-qlab.json": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd"
+    },
+    "rollback_override": "/var/lib/quant-company/releases/model-accounts-ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e.rollback.json",
+    "cutover_started_at": 1790135446.8686275,
+    "backup": {
+      "backup": "/var/lib/quant-company/backups/company-20260923T035049Z-33c1021b.tar.gz",
+      "sha256": "35d27f2fc8c3ccba38d003a27a74b9a2c01ab67c04b7e451d6d3b709dbd29742",
+      "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260923T035049Z-33c1021b.tar.gz",
+      "release_commit": "f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+      "secrets_included": false
+    },
+    "error": "CalledProcessError",
+    "rolled_back_at": 1790135415.0604825,
+    "previous_attempts": [
+      {
+        "journal": "/var/lib/quant-company/releases/model-accounts-ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e.attempt-1.json",
+        "result": "rolled_back",
+        "reason": "compose_run_no_build_flag_unsupported",
+        "database_migration_started": false
+      }
+    ],
+    "initial_policy": {
+      "profile": "primary",
+      "revision": 0
+    },
+    "activated_at": 1790135581.7184517,
+    "containers": [
+      {
+        "service": "api",
+        "image": "quant-company:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "5625da4d9b0cec26648961bcfd29eba9559495435e970e93f76609a12385a99d",
+        "health": "healthy",
+        "oom_killed": false
+      },
+      {
+        "service": "worker",
+        "image": "quant-company-autonomous:31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
+        "id": "6b5c320d0a9ba56e312f047659ad1aa4fb34784b17ab6f863306cb892584d04a",
+        "health": null,
+        "oom_killed": false
+      },
+      {
+        "service": "news-worker",
+        "image": "quant-company:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "994da6ce9ba892ebe74b2fbcb04e27803fa63e21cd075f42fdf8c4833121633c",
+        "health": null,
+        "oom_killed": false
+      },
+      {
+        "service": "quant-feed-worker",
+        "image": "quant-company:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "7db33697acf766d30f4b6c30059d103d76d06b4ab444d289e97c5fc6327cfcd3",
+        "health": null,
+        "oom_killed": false
+      },
+      {
+        "service": "data-watch-worker",
+        "image": "quant-company:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "15e7574db6dfccc5a9d68f8809200aa3fcaef85ad59b489b4ef0f5c4aa24a8dd",
+        "health": null,
+        "oom_killed": false
+      },
+      {
+        "service": "maintenance",
+        "image": "quant-company-maintenance:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "fdcb6a77788f280449c8ddc5d81ace24b123b58b62eed98660caaae3930ae4b7",
+        "health": null,
+        "oom_killed": false
+      },
+      {
+        "service": "dispatch",
+        "image": "quant-company:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "ec04c125f8bfdf520b8b908c1666b3d0b802676769653351550b2ff951a71396",
+        "health": null,
+        "oom_killed": false
+      },
+      {
+        "service": "slack-socket",
+        "image": "quant-company:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "936f3f37cacd69b22ba67aa023ae900a50e83bcc722ac3e18666341816e1a2b1",
+        "health": null,
+        "oom_killed": false
+      },
+      {
+        "service": "codex-runtime",
+        "image": "quant-company-codex:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "1b784f8f00cdf52c72ec594fc9cba0604bcea98d4e9138156d3ca030818d6126",
+        "health": "healthy",
+        "oom_killed": false
+      },
+      {
+        "service": "claude-runtime",
+        "image": "quant-company-claude:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "e8cee21f3491def5e3bdd797b1a170c25d5859db451fda7b800817bf5c88a286",
+        "health": "healthy",
+        "oom_killed": false
+      },
+      {
+        "service": "account-gateway",
+        "image": "quant-company:ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e",
+        "id": "6d4b15866c6e71ee0f21c54ed9a0fa32cc87763ffe319706aef61e0a73296a64",
+        "health": "healthy",
+        "oom_killed": false
+      }
+    ],
+    "postgres_recreated": false,
+    "research_code_pin_preserved": true,
+    "backup_authentication": "chatgpt",
+    "actual_slack_check": "pending",
+    "release_health": {
+      "healthy_services": 12,
+      "postgres_recreated": false
+    },
+    "claude_alignment": {
+      "at": 1790135998.9277604,
+      "cli_version_unchanged": "2.1.275",
+      "reason": "Keep installed Compose, release health and rollback image references coherent",
+      "authentication_unchanged": true,
+      "previous_image": "quant-company-claude:377335dcab983007a998a2166807d7332548e024"
+    },
+    "enrollment_completed_at": "2026-09-23T04:13:43.319120+00:00",
+    "enrollment_method": "official_browser_oauth_over_ssh_callback",
+    "distinct_accounts_verified": true
+  },
+  "probe": {
+    "enabled": true,
+    "configured_owner": "U0C250E23NW",
+    "accounts": [
+      {
+        "profile": "primary",
+        "authentication": "chatgpt"
+      },
+      {
+        "profile": "backup",
+        "authentication": "chatgpt"
+      }
+    ],
+    "policy": {
+      "profile": "primary",
+      "revision": 0
+    },
+    "calls": [
+      {
+        "profile": "primary",
+        "state": "waiting",
+        "count": 1
+      }
+    ],
+    "commands": null,
+    "research_jobs": [
+      {
+        "state": "received",
+        "company_commit": "3cd63607d821ecb6489c09135d16fc5d063f9022",
+        "count": 1
+      },
+      {
+        "state": "cancelled",
+        "company_commit": "9a90b5eeff1f7f3685099b0c05241df1306d93fa",
+        "count": 1
+      },
+      {
+        "state": "completed",
+        "company_commit": "0e89d998022abfb626cf29a4ff99012cd83ffb74",
+        "count": 1
+      }
+    ],
+    "outbox": [
+      {
+        "status": "delivered",
+        "count": 785
+      },
+      {
+        "status": "stale",
+        "count": 24
+      }
+    ],
+    "control_workflow": {
+      "id": "company-model-accounts-v1",
+      "status": "RUNNING",
+      "task_queue": "quant-company-accounts"
+    },
+    "gateway_restarts": 1
+  },
+  "logs": {
+    "account-gateway": {
+      "tracebacks": 0,
+      "oom_mentions": 0,
+      "socket_sessions_established": 0
+    },
+    "api": {
+      "tracebacks": 0,
+      "oom_mentions": 0,
+      "socket_sessions_established": 0
+    },
+    "worker": {
+      "tracebacks": 0,
+      "oom_mentions": 0,
+      "socket_sessions_established": 0
+    },
+    "news-worker": {
+      "tracebacks": 0,
+      "oom_mentions": 0,
+      "socket_sessions_established": 0
+    },
+    "quant-feed-worker": {
+      "tracebacks": 0,
+      "oom_mentions": 0,
+      "socket_sessions_established": 0
+    },
+    "data-watch-worker": {
+      "tracebacks": 0,
+      "oom_mentions": 0,
+      "socket_sessions_established": 0
+    },
+    "maintenance": {
+      "tracebacks": 0,
+      "oom_mentions": 0,
+      "socket_sessions_established": 0
+    },
+    "dispatch": {
+      "tracebacks": 0,
+      "oom_mentions": 0,
+      "socket_sessions_established": 0
+    },
+    "slack-socket": {
+      "tracebacks": 0,
+      "oom_mentions": 0,
+      "socket_sessions_established": 0
+    },
+    "codex-runtime": {
+      "tracebacks": 0,
+      "oom_mentions": 0,
+      "socket_sessions_established": 0
+    }
+  },
+  "codex_version": "codex-cli 0.154.0",
+  "memory": "               total        used        free      shared  buff/cache   available\nMem:            1907        1436         115          74         611         471\nSwap:              0           0           0\n"
+}
