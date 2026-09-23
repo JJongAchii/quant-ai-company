@@ -10,7 +10,7 @@ from quant_company.contracts import Role, ToolRequest
 
 IDS = {
     "director", "financial_strategist", "researcher_kr", "researcher_global", "researcher_crypto",
-    "data", "engineer", "validator", "risk", "operations", "reporter", "tech_scout",
+    "data", "engineer", "validator", "risk", "operations", "reporter", "tech_scout", "quant_scout",
 }
 ACTIVE = {"director", "financial_strategist", "researcher_kr", "data"}
 

@@ -63,6 +63,10 @@ x-db-env: &db-env
   TECH_FEED_PUBLISH_ENABLED: ${TECH_FEED_PUBLISH_ENABLED:-false}
   TECH_FEED_CHANNEL_ID: ${TECH_FEED_CHANNEL_ID:-}
   TECH_FEED_OWNER_USER: ${TECH_FEED_OWNER_USER:-}
+  QUANT_FEED_ENABLED: ${QUANT_FEED_ENABLED:-false}
+  QUANT_FEED_PUBLISH_ENABLED: ${QUANT_FEED_PUBLISH_ENABLED:-false}
+  QUANT_FEED_CHANNEL_ID: ${QUANT_FEED_CHANNEL_ID:-}
+  QUANT_FEED_OWNER_USER: ${QUANT_FEED_OWNER_USER:-}
   COMPANY_STAFF_DEVELOPMENT_ENABLED: ${COMPANY_STAFF_DEVELOPMENT_ENABLED:-false}
   STAFF_DAILY_EXERCISES: ${STAFF_DAILY_EXERCISES:-2}
   STAFF_MAX_CALLS_PER_EXERCISE: ${STAFF_MAX_CALLS_PER_EXERCISE:-3}
@@ -231,6 +235,24 @@ services:
     secrets: [database_password, temporal_api_key, model_runtime_token]
     networks: [core, model, service_egress]
     mem_limit: 192m
+    cpus: 0.5
+    depends_on:
+      postgres: {condition: service_healthy}
+      codex-runtime: {condition: service_healthy}
+
+  quant-feed-worker:
+    <<: *app
+    profiles: [quant-feed]
+    command: [quant-company, quant-feed-worker]
+    environment:
+      <<: [*db-env, *temporal-env]
+      MODEL_RUNTIME_URL: http://codex-runtime:8080
+      MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+    secrets: [database_password, temporal_api_key, model_runtime_token]
+    networks: [core, model, service_egress]
+    mem_limit: 256m
     cpus: 0.5
     depends_on:
       postgres: {condition: service_healthy}

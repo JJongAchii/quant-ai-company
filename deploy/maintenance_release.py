@@ -58,12 +58,14 @@ def services(root):
     enabled = any(line.strip() == 'COMPANY_STAFF_REVIEW_ENABLED=true'
                   for line in envfile.read_text().splitlines()) if envfile.exists() else False
     supported = (root/'src/quant_company/providers/claude_runtime.py').is_file()
-    return SERVICES + (['claude-runtime'] if enabled and supported else [])
+    quant = (envfile.exists() and 'QUANT_FEED_ENABLED=true' in envfile.read_text().splitlines()
+             and (root/'src/quant_company/quant_feed').is_dir())
+    return SERVICES + (['claude-runtime'] if enabled and supported else []) + (['quant-feed-worker'] if quant else [])
 
 
 def compose_command(root):
     envfile = STATE/'config/runtime.env'
-    command = ['docker', 'compose', '--profile', 'maintenance', '--profile', 'claude',
+    command = ['docker', 'compose', '--profile', 'maintenance', '--profile', 'claude', '--profile', 'quant-feed',
                '--env-file', str(envfile), '-f', str(root/'deploy/compose.yaml')]
     research = any(line.strip() == 'COMPANY_RESEARCH_ENABLED=true'
                    for line in envfile.read_text().splitlines()) if envfile.exists() else False
