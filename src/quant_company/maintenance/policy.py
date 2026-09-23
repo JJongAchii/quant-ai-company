@@ -14,6 +14,7 @@ WORKFLOW = ".github/workflows/quant-company-ci.yml"
 PROTECTED = {
     "api.py", "cli.py", "config.py", "db.py", "schema.sql", "socket_mode.py",
     "owner_controls.py", "state_schema.sql", "web_fetch.py", "finance_sources.py",
+    "accounts.py", "account_gateway.py", "account_workflow.py", "account_schema.sql",
     "maintenance/policy.py", "maintenance/github.py", "maintenance/applications.py",
     "maintenance/releases.py", "maintenance/schema.sql",
     "maintenance/cases.py", "maintenance/identity.py", "maintenance/reporting.py",

@@ -361,7 +361,7 @@ class Store:
         until = datetime.now(UTC) + timedelta(seconds=max(30, min(seconds or 60, 604800)))
         with self.db.transaction() as conn:
             conn.execute("UPDATE maintenance_calls SET error=%s,due_at=%s WHERE id=%s", (reason, until, call_id))
-            if reason == "quota":
+            if reason == "quota" and not self.company.settings.model_accounts_enabled:
                 conn.execute("UPDATE runtime_control SET paused_until=GREATEST(paused_until,%s),reason='quota' WHERE id=1",
                              (until,))
 

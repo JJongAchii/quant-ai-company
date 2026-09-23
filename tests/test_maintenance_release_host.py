@@ -80,7 +80,8 @@ def test_host_accepts_procedures_but_rejects_grader_changes(tmp_path):
 
 
 @pytest.mark.parametrize('name', ['staff/independent_review.py', 'staff/review_contract.py',
-                                  'staff/progress.py', 'staff/comparisons.py', 'maintenance/evaluation.py'])
+                                  'staff/progress.py', 'staff/comparisons.py', 'maintenance/evaluation.py',
+                                  'accounts.py', 'account_gateway.py', 'account_workflow.py'])
 def test_host_cannot_rewrite_evaluator_or_promotion_rules(tmp_path, name):
     previous, target = tmp_path/'old', tmp_path/'new'
     previous.mkdir()
@@ -104,6 +105,21 @@ def test_optional_claude_follows_installed_code_and_activation(tmp_path, monkeyp
     assert 'claude-runtime' in release.services(root)
     env.write_text('COMPANY_STAFF_REVIEW_ENABLED=false\n')
     assert 'claude-runtime' not in release.services(root)
+
+
+def test_account_overlay_is_preserved_for_future_release_and_backup(tmp_path, monkeypatch):
+    monkeypatch.setattr(release, 'STATE', tmp_path/'state')
+    env = release.STATE/'config/runtime.env'
+    env.parent.mkdir(parents=True)
+    env.write_text('MODEL_ACCOUNTS_ENABLED=true\n')
+    root = tmp_path/'release'
+    overlay = root/'deploy/model-accounts.compose.yaml'
+    overlay.parent.mkdir(parents=True)
+    with pytest.raises(ValueError, match='account_overlay_missing'):
+        release.compose_command(root)
+    overlay.write_text('services: {}\n')
+    assert str(overlay) in release.compose_command(root)
+    assert 'account-gateway' in release.services(root)
 
 
 @pytest.mark.parametrize('enabled', [False, True])
