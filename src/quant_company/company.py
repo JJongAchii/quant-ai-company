@@ -436,10 +436,12 @@ class Company:
                 if (agent == "data" and self.settings.data_watch_enabled
                         and project["channel"] == self.settings.data_watch_channel_id
                         and project["owner_user"] == self.settings.data_watch_owner_user):
-                    from .data_watch.reporting import status_text
+                    from .data_watch.reporting import list_text, status_text
                     from .data_watch.store import DataWatchStore
 
-                    summary = status_text(DataWatchStore(self).snapshot(conn))
+                    snapshot = DataWatchStore(self).snapshot(conn)
+                    summary = (list_text(snapshot) if text.strip().lower() in {"목록", "list"}
+                               else status_text(snapshot))
                 conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (summary, task["id"]))
                 self._message(conn, project, task["id"], agent, "status", summary)
             self._event(conn, "task_created", {"task_id": task["id"], "agent": agent}, project_id)

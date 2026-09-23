@@ -19,7 +19,7 @@ from quant_company.config import Settings
 from quant_company.data_watch.checker import check, errors_for
 from quant_company.data_watch.contracts import CheckAssignment, CheckReceipt, FreshnessContract, freshness
 from quant_company.data_watch.core import CoreChecks
-from quant_company.data_watch.reporting import status_text
+from quant_company.data_watch.reporting import list_text, status_text
 from quant_company.data_watch.runner import DataWatchRunner
 from quant_company.data_watch.store import DataWatchStore
 from quant_company.research.recipes import load_recipe, recipe_digest
@@ -160,6 +160,46 @@ async def test_descriptor_identity_and_whole_catalog_validation_fail_closed(watc
     assert watch.store.status()["datasets"][0]["problem"] == "descriptor_unavailable_or_changed"
 
 
+def test_known_qdata_footer_budget_is_reported_as_an_inspection_limit(watch):
+    watch.store.save_inventory(watch.store.claim_inventory(), catalog(watch))
+    claim = watch.store.claim_descriptions()[0]
+    watch.store.save_description(claim, {"ok": False, "error": "inspection_limit_or_invalid_request",
+        "detail": "Parquet footer exceeds the 2 MiB inspection budget"})
+    snapshot = watch.store.status()
+    assert snapshot["datasets"][0]["inspection"] == "unchecked"
+    assert snapshot["datasets"][0]["problem"] == "parquet_footer_limit"
+    with watch.company.db.transaction() as conn:
+        saved = conn.execute("SELECT receipt FROM data_watch_descriptions WHERE id=%s",
+                             (claim["lease_token"],)).fetchone()["receipt"]
+    assert saved == {"ok": False, "error": "parquet_footer_limit"}
+    watch.store.report()
+    incident = next(row["text"] for row in rows(watch, "outbox") if "점검 필요" in row["text"])
+    assert "2 MiB 검사 한도" in incident
+    assert "원본 데이터 손상" in incident
+    assert "descriptor_unavailable_or_changed" not in incident
+    assert "version:" not in incident
+
+
+def test_daily_summary_is_short_and_full_names_are_on_demand():
+    snapshot = {"checked_at": "2026-09-23T02:00:00+00:00",
+        "next_inventory_at": "2026-09-23T02:30:00+00:00",
+        "inventory": {"receipt": {"ok": True}},
+        "datasets": [{"dataset": f"dataset_{index:02d}_with_a_long_name", "inspection": "metadata_checked",
+                      "freshness": {"state": "unregistered"}, "problem": None}
+                     for index in range(37)] + [
+            {"dataset": "us_prices", "inspection": "unchecked", "freshness": {"state": "unregistered"},
+             "problem": "parquet_footer_limit"}],
+        "core_checks": []}
+    summary = status_text(snapshot)
+    listing = list_text(snapshot)
+    assert len(summary) < 1000 and len(listing) < 3000
+    assert "38개 중 메타데이터 확인 37개, 미확인 1개" in summary
+    assert "2 MiB 검사 한도" in summary and "원본 손상" in summary
+    assert "dataset_36_with_a_long_name" not in summary
+    assert "dataset_36_with_a_long_name" in listing and "us_prices" in listing
+    assert "11:00 KST" in summary and "11:30 KST" in summary
+
+
 async def test_claims_survive_restart_and_stale_lease_is_rejected(watch):
     first = watch.store.claim_inventory()
     restarted = DataWatchStore(Company(watch.company.settings, watch.company.roles))
@@ -237,6 +277,23 @@ async def test_data_is_channel_lead_and_status_does_not_invoke_model(watch, cred
     assert ingress.accept("director", payload, credentials["director"])["ignored"]
     assert not rows(watch, "turns")
     assert "미검사" in watch.company.project_state(first["project_id"])["tasks"][0]["result"]
+    await tick(watch)
+    payload["api_app_id"] = credentials["data"]["app_id"]
+    payload["event"]["ts"] = "12.2"
+    payload["event"]["text"] = "목록"
+    listed = ingress.accept("data", payload, credentials["data"])
+    assert any("krx_etf" in task["result"] for task in watch.company.project_state(listed["project_id"])["tasks"])
+    assert not rows(watch, "turns")
+
+
+async def test_oversized_data_watch_publication_fails_closed(watch, credentials):
+    await tick(watch)
+    with watch.company.db.transaction() as conn:
+        conn.execute("UPDATE outbox SET text=%s WHERE agent='data'", ("x" * 3001,))
+    box, calls = delivery(watch, credentials)
+    await drain(box)
+    assert not calls
+    assert rows(watch, "outbox")[0]["status"] == "stale"
 
 
 @pytest.fixture
