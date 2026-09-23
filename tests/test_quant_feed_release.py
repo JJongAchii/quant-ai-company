@@ -286,7 +286,9 @@ def test_release_inventory_includes_quant_and_account_gateway_together(tmp_path,
 
 
 @pytest.mark.parametrize("running_calls", [0, 1])
-def test_pause_publication_preserves_other_workers_and_fails_closed(release, tmp_path, monkeypatch, running_calls):
+@pytest.mark.parametrize("research_running", [False, True])
+def test_pause_publication_preserves_other_workers_and_fails_closed(
+        release, tmp_path, monkeypatch, running_calls, research_running):
     commit = "a" * 40
     state, current = tmp_path / "state", tmp_path / commit
     for path in (state / "config", state / "releases", state / "codex/jobs", current / "deploy"):
@@ -296,6 +298,8 @@ def test_pause_publication_preserves_other_workers_and_fails_closed(release, tmp
            "QUANT_FEED_PUBLISH_ENABLED=true\nQUANT_FEED_CHANNEL_ID=CQUANT\n")
     (state / "config/runtime.env").write_text(env)
     monkeypatch.setattr(release, "STATE", state)
+    research_worker = {"id": "worker", "running": research_running, "oom_killed": False, "restarts": 0}
+    monkeypatch.setattr(release, "worker_state", lambda: research_worker)
     monkeypatch.setattr(release, "service_identity", lambda names: {name: {"id": name, "restarts": 0} for name in names})
     monkeypatch.setattr(release, "inspect", lambda names: [{"Id": "postgres"}])
     monkeypatch.setattr(release, "emit", lambda **kwargs: None)
@@ -324,7 +328,8 @@ def test_pause_publication_preserves_other_workers_and_fails_closed(release, tmp
     else:
         release.pause(args, current, current, journal, module)
         assert "QUANT_FEED_PUBLISH_ENABLED=false" in (state / "config/runtime.env").read_text()
-        assert json.loads(journal.read_text())["phase"] == "paused"
+        record = json.loads(journal.read_text())
+        assert record["phase"] == "paused" and record["research_worker"] == research_worker
         compose = [command for command in commands if command[:2] == ["docker", "compose"]]
         assert len(compose) == 2
         assert compose[0][-2:] == ["api", "dispatch"]

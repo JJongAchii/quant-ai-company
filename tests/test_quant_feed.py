@@ -14,7 +14,7 @@ from quant_company.company import fingerprint
 from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderResponse, Role
 from quant_company.quant_feed import schedule
 from quant_company.quant_feed.contracts import EvidenceCritique, QuantSource, ResearchBrief, load_sources
-from quant_company.quant_feed.editor import INSTRUCTIONS, render, validate
+from quant_company.quant_feed.editor import INSTRUCTIONS, prompt, render, validate
 from quant_company.quant_feed.feeds import aliases, collect
 from quant_company.quant_feed.originals import download, extract_pdf, fetch_original, parse_html
 from quant_company.quant_feed.store import QuantFeedStore
@@ -41,7 +41,8 @@ def brief(**updates):
 
 def critique(**updates):
     value = dict(disposition="pass", reason="원문과 주장 일치", original_sufficient=True, claims_supported=True,
-                 dates_authors_verified=True, limitations_honest=True, relevance_and_value=True,
+                 dates_authors_verified=True, limitations_honest=True, direct_quant_scope=True,
+                 substantive_research=True, relevance_and_value=True,
                  no_investment_advice=True, material_change_verified=True, issues=[])
     value.update(updates)
     return value
@@ -509,9 +510,24 @@ def test_thirty_golden_contract_cases(name, updates, accepted):
             validate(value, bundle, "review")
 
 
-def test_critic_cannot_pass_unsupported_claim_and_render_labels():
-    with pytest.raises(ValueError):
-        EvidenceCritique.model_validate(critique(claims_supported=False))
-    rendered = render(ResearchBrief.model_validate(brief()), {"publisher": "Example", "url": "https://example.org/"})
-    assert "저자 보고 결과" in rendered and "≠ 독립 재현" in rendered
+@pytest.mark.parametrize("failed_check", ["claims_supported", "direct_quant_scope", "substantive_research"])
+def test_critic_cannot_pass_unsupported_or_out_of_scope_research(failed_check):
+    with pytest.raises(ValueError, match="quant_incomplete_critique"):
+        EvidenceCritique.model_validate(critique(**{failed_check: False}))
+    assert "General AI governance" in INSTRUCTIONS
+    assert "direct_quant_scope and substantive_research separately" in prompt({}, "critique")
+
+
+def test_render_is_scan_friendly_and_does_not_duplicate_or_mislabel_links():
+    value = brief(related_urls=["https://example.org/paper", "https://example.org/code"],
+                  limitations=["거래비용 미반영", "표본 편향 가능성", "시장 충격 미기재"])
+    rendered = render(ResearchBrief.model_validate(value),
+                      {"publisher": "Example", "url": "https://example.org/paper"})
+    assert "*왜 읽나*" in rendered and "\n\n*데이터·검증*" in rendered
+    assert "*저자 보고*" in rendered and "*주의*" in rendered
+    assert "추가 한계 1건은 원문 확인" in rendered
+    assert "*적용 전*" in rendered and "독립 재현·투자 검증 아님" in rendered
+    assert rendered.count("<https://example.org/paper|") == 1
+    assert "<https://example.org/code|추가 자료 1>" in rendered
+    assert "관련 코드·데이터" not in rendered and "research_validity" not in rendered
     assert "Transaction costs" not in rendered  # Evidence quotes retained privately, not republished.

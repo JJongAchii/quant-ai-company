@@ -368,6 +368,7 @@ class QuantFeedStore:
                                     reason="결정적 계약 검증 실패: 원문에서 그대로 복사한 인용과 제공된 링크만 사용해 1회 수정",
                                     original_sufficient=True, claims_supported=False,
                                     dates_authors_verified=True, limitations_honest=True,
+                                    direct_quant_scope=True, substantive_research=True,
                                     relevance_and_value=True, no_investment_advice=True,
                                     material_change_verified=False, issues=[code]).model_dump()
         conn.execute("""UPDATE quant_feed_documents SET state='ready',stage='revision',revision=1,

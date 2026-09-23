@@ -544,9 +544,10 @@ def pause(args, current, target, journal, module):
         raise ValueError("pause_journal_requires_manual_reconciliation")
     if values.get("QUANT_FEED_PUBLISH_ENABLED") != "true":
         raise ValueError("pause_gate_not_live")
-    preserved_names = ["worker", "news-worker", "data-watch-worker", "account-gateway", "slack-socket",
+    preserved_names = ["news-worker", "data-watch-worker", "account-gateway", "slack-socket",
                        "codex-runtime", "claude-runtime"]
     preserved = service_identity(preserved_names)
+    research_worker = worker_state()  # Independently owned; it may be running or intentionally stopped.
     service_identity(["api", "dispatch", "quant-feed-worker"])
     postgres_id = inspect(["postgres"])[0]["Id"]
     check = """import json
@@ -574,7 +575,7 @@ with c.db.transaction() as x:
             raise ValueError("pause_quant_activity_unresolved")
         record = {"phase": "prepared", "commit": args.commit, "channel": args.channel,
                   "publication_enabled": True, "prepared_at": time.time(), "activity": activity,
-                  "preserved_services": preserved, "postgres_id": postgres_id,
+                  "preserved_services": preserved, "research_worker": research_worker, "postgres_id": postgres_id,
                   "original_env_sha256": hashlib.sha256(oldenv).hexdigest()}
         module.atomic(journal, json.dumps(record).encode())
         module.atomic(STATE / "releases" / ("quant-feed-pause-" + args.commit + ".env"), oldenv)
@@ -600,7 +601,8 @@ print(json.dumps({'enabled':s.quant_feed_enabled,'publish_enabled':s.quant_feed_
                 if propagated != {"enabled": True, "publish_enabled": False, "channel": args.channel}:
                     raise ValueError("pause_settings_not_propagated")
             service_identity(["api", "dispatch", "quant-feed-worker"])
-            if inspect(["postgres"])[0]["Id"] != postgres_id or service_identity(preserved_names) != preserved:
+            if (inspect(["postgres"])[0]["Id"] != postgres_id or service_identity(preserved_names) != preserved
+                    or worker_state() != research_worker):
                 raise ValueError("pause_independent_service_changed")
             record.update(phase="paused", paused_at=time.time(), independent_services_preserved=True,
                           collection_worker_running=True, slack_publication_disabled=True)
