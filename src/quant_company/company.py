@@ -325,6 +325,7 @@ class Company:
     def ingest(self, *, event_key: str, text: str, owner: str, agent: str = "director",
                project_id: str | None = None, channel: str | None = None, thread_ts: str | None = None,
                revise: bool = False, status_only: bool = False, daily_limit_command: dict | None = None,
+               account_command: dict | None = None,
                interpret: bool = False, control_action: str | None = None,
                approval_context: dict | None = None) -> dict:
         self.role(agent)
@@ -352,6 +353,18 @@ class Company:
             status_only = True
         digest = fingerprint([text, owner, agent, project_id, channel, thread_ts, revise, status_only])
         prior_ingress_digest = digest
+        if account_command is not None:
+            from .accounts import parse_command
+
+            if (account_command != parse_command(text) or agent != "director" or not channel
+                    or channel != self.settings.model_accounts_channel_id
+                    or channel not in self.settings.slack_allowed_channels
+                    or not event_key.startswith("slack:")
+                    or owner != self.settings.model_accounts_owner_user or owner not in self.settings.slack_allowed_users):
+                raise PolicyError("Account control requires the configured owner in the dedicated channel")
+            digest = fingerprint([digest, account_command])
+            status_only = True
+            interpret = False
         if research_command and event:
             digest = fingerprint([digest, event.model_dump(mode="json")])
         if interpret or control_action:
@@ -407,7 +420,11 @@ class Company:
             conn.execute("INSERT INTO inbound(event_key,project_id,task_id,payload_digest) VALUES (%s,%s,%s,%s)",
                          (event_key, project_id, task["id"], digest))
             self._message(conn, project, task["id"], owner, "human", text)
-            if research_command:
+            if account_command is not None:
+                from .accounts import enqueue
+
+                enqueue(conn, self, project, task, event_key, account_command)
+            elif research_command:
                 from .research.approvals import apply_owner_command
 
                 apply_owner_command(self, conn, project, task, event_key, research_command, approval_context)
@@ -672,7 +689,7 @@ class Company:
         with self.db.transaction() as conn:
             conn.execute("""UPDATE turns SET status='waiting',due_at=%s,error=%s,updated_at=now()
                 WHERE id=%s AND status='running'""", (until, reason, turn_id))
-            if global_pause:
+            if global_pause and not self.settings.model_accounts_enabled:
                 conn.execute("""UPDATE runtime_control SET paused_until=GREATEST(paused_until,%s),reason=%s
                     WHERE id=1""", (until, reason))
 

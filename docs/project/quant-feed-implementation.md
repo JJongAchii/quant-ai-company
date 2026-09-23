@@ -149,3 +149,20 @@ editorial workflows remained running, and the source backlog advanced to 122 rea
 We did not bypass that limit or publish a hand-picked item. The actual natural
 publication and elapsed stability observation are separate gates; current evidence is in
 `evidence/quant-feed-post-combined-recovery-20260923.json`.
+
+## Account-gateway handoff and resumed editorial work, 15:05 KST
+
+A separately owned model-account release moved production to
+`deeb846d7942243165a3de6fd9ca7e35b8f49d89`. Quant publication remained enabled, its
+worker and the new account gateway were both running, and the company-wide quota pause had
+cleared. The server Codex CLI reported ChatGPT authentication, and several real company-lane
+model calls completed after 05:46 UTC; this confirms usable subscription calls, not which
+specific account served them. No API-key fallback was made by this task.
+
+Quant collection continued and the editorial workflow made its first new calls at 05:50 UTC.
+One reviewed candidate then failed the one permitted evidence/contract repair and was held at
+05:53 UTC without any Slack write. This is the intended fail-closed quality gate. The first
+natural delivered post and elapsed 48-hour stability check remain pending. The exact follow-up
+receipt is `evidence/quant-feed-after-account-gateway-20260923.json`. The research worker was
+recreated by the separate account release before this observation; no change to it was made by
+the Quant task.

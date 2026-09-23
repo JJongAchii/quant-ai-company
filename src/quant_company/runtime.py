@@ -6,6 +6,8 @@ from temporalio.common import WorkflowIDReusePolicy
 from temporalio.exceptions import WorkflowAlreadyStartedError
 from temporalio.worker import Worker
 
+from .account_workflow import AccountControlWorkflow
+from .accounts import AccountControl
 from .company import Company
 from .config import Settings
 from .data_watch.runner import DataWatchRunner
@@ -43,6 +45,14 @@ def make_worker(client, company, executor=None):
                   activities=[executor.activity_execute, executor.activity_block, staff.activity_tick, news.activity_tick,
                               discovery.activity_tick],
                   max_concurrent_activities=1, max_cached_workflows=100,
+                  graceful_shutdown_timeout=timedelta(seconds=10))
+
+
+def make_accounts_worker(client, company, control=None):
+    control = control or AccountControl(company, temporal=client)
+    return Worker(client, task_queue=company.settings.temporal_task_queue + "-accounts",
+                  workflows=[AccountControlWorkflow], activities=[control.activity_tick],
+                  max_concurrent_activities=1, max_cached_workflows=10,
                   graceful_shutdown_timeout=timedelta(seconds=10))
 
 
@@ -100,6 +110,14 @@ async def dispatch_once(client, company):
             except WorkflowAlreadyStartedError:
                 pass
         company._quant_feed_started = True
+    if company.settings.model_accounts_enabled and not getattr(company, "_accounts_started", False):
+        try:
+            await client.start_workflow(AccountControlWorkflow.run, id="company-model-accounts-v1",
+                                        task_queue=company.settings.temporal_task_queue + "-accounts",
+                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+        except WorkflowAlreadyStartedError:
+            pass
+        company._accounts_started = True
     if company.settings.data_watch_enabled and not getattr(company, "_data_watch_started", False):
         try:
             await client.start_workflow(DataWatchWorkflow.run, id="company-data-watch-v1",
@@ -169,7 +187,8 @@ async def worker_main(settings=None):
     company = Company(settings)
     client = await connect(settings)
     async with (make_worker(client, company), make_research_worker(client, company),
-                make_tech_feed_collector(client, company), make_data_watch_worker(client, company)):
+                make_tech_feed_collector(client, company), make_data_watch_worker(client, company),
+                make_accounts_worker(client, company)):
         await asyncio.Event().wait()
 
 

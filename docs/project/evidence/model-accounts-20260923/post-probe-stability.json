@@ -1,0 +1,53 @@
+{
+  "checked_at": 1790136267.3685918,
+  "containers": [
+    {
+      "name": "/quant-company-account-gateway-1",
+      "id": "6d4b15866c6e71ee0f21c54ed9a0fa32cc87763ffe319706aef61e0a73296a64",
+      "running": true,
+      "oom_killed": false,
+      "restart_count": 1,
+      "health": "healthy",
+      "started_at": "2026-09-23T03:53:06.717993724Z"
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "id": "ec04c125f8bfdf520b8b908c1666b3d0b802676769653351550b2ff951a71396",
+      "running": true,
+      "oom_killed": false,
+      "restart_count": 0,
+      "health": null,
+      "started_at": "2026-09-23T03:51:56.654174872Z"
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "id": "1b784f8f00cdf52c72ec594fc9cba0604bcea98d4e9138156d3ca030818d6126",
+      "running": true,
+      "oom_killed": false,
+      "restart_count": 0,
+      "health": "healthy",
+      "started_at": "2026-09-23T03:51:30.514357761Z"
+    }
+  ],
+  "resource_usage": [
+    {
+      "name": "quant-company-account-gateway-1",
+      "memory": "80.48MiB / 128MiB",
+      "cpu": "2.68%",
+      "pids": "16"
+    },
+    {
+      "name": "quant-company-dispatch-1",
+      "memory": "65.62MiB / 192MiB",
+      "cpu": "2.53%",
+      "pids": "8"
+    },
+    {
+      "name": "quant-company-codex-runtime-1",
+      "memory": "141.1MiB / 512MiB",
+      "cpu": "0.16%",
+      "pids": "24"
+    }
+  ],
+  "gateway_oom_events_since_cutover": 0
+}

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "currentIntent": "INTENT-v2.json",
+  "state": "in_progress",
+  "deliverables": {
+    "CONTROL": {
+      "status": "completed"
+    },
+    "RUNTIME": {
+      "status": "completed"
+    },
+    "VALIDATION": {
+      "status": "completed"
+    },
+    "DEPLOYMENT": {
+      "status": "completed",
+      "commit": "ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e"
+    },
+    "ENROLLMENT": {
+      "status": "completed",
+      "method": "official_browser_oauth_over_ssh_callback",
+      "distinctAccountsVerified": true
+    }
+  },
+  "operationalStatus": "Both distinct accounts authenticated. Actual owner status command in an allowed channel was rejected by the DM-only guard; fixing channel support and recovering the original request before completion.",
+  "evidence": "../../project/evidence/model-accounts-20260923/production-activation.json"
+}

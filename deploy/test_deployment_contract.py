@@ -107,6 +107,40 @@ def test_compose_https_is_explicit_opt_in():
     assert {port["published"] for port in caddy["ports"]} == {"80", "443"}
 
 
+def test_account_selection_reaches_all_consumers_without_sharing_auth_with_slack(tmp_path):
+    env = tmp_path / "accounts.env"
+    env.write_text('MODEL_ACCOUNTS_ENABLED=true\nMODEL_ACCOUNTS_OWNER_USER=UOWNER\nSLACK_ALLOWED_USERS=["UOWNER"]\n')
+    services = compose_config("maintenance", extra_env=env)["services"]
+    for name in ("api", "slack-socket", "dispatch", "worker", "news-worker", "maintenance"):
+        assert services[name]["environment"]["MODEL_ACCOUNTS_ENABLED"] == "true"
+        assert services[name]["environment"]["MODEL_ACCOUNTS_OWNER_USER"] == "UOWNER"
+        assert not any("/codex/" in mount["source"] for mount in services[name].get("volumes", []))
+    runtime = services["codex-runtime"]
+    mounts = {mount["target"]: mount["source"] for mount in runtime["volumes"]}
+    assert mounts["/state/auth"] != mounts["/state/backup-auth"]
+    assert runtime["environment"]["CODEX_BACKUP_HOME"] == "/state/backup-auth"
+    assert "/state/jobs" in mounts
+
+
+def test_account_gateway_overlay_preserves_research_code_pin_and_auth_boundary(tmp_path):
+    env = tmp_path / "pinned.env"
+    pin = "quant-company-autonomous:" + "3" * 40
+    env.write_text('MODEL_ACCOUNTS_ENABLED=true\nMODEL_ACCOUNTS_OWNER_USER=UOWNER\n'
+                   'SLACK_ALLOWED_USERS=["UOWNER"]\nRESEARCH_REPORT_BUCKET=synthetic-backup-bucket\n'
+                   'PINNED_COMPANY_WORKER_IMAGE=' + pin + '\n')
+    services = compose_config(extra_env=env, overlays=("research.compose.yaml", "autonomous-research.compose.yaml",
+                                                      "model-accounts.compose.yaml"))["services"]
+    worker, gateway, model = (services[name] for name in ("worker", "account-gateway", "codex-runtime"))
+    assert worker["image"] == pin
+    assert worker["environment"]["MODEL_RUNTIME_URL"] == "http://account-gateway:8080"
+    assert "COMPANY_CODE_COMMIT" not in worker["environment"]  # Inherited truthfully from the pinned image.
+    assert gateway["environment"]["MODEL_RUNTIME_URL"] == "http://codex-runtime:8080"
+    assert {s["source"] for s in gateway["secrets"]} == {"database_password", "temporal_api_key", "model_runtime_token"}
+    assert all("/codex/" not in v["source"] for v in gateway.get("volumes", []))
+    assert {s["source"] for s in model["secrets"]} == {"model_runtime_token"}
+    assert not gateway.get("ports") and not model.get("ports")
+
+
 def test_tech_feed_defaults_off_and_stays_out_of_model_container():
     services = compose_config()["services"]
     for name in ("api", "worker", "dispatch", "slack-socket"):
@@ -192,6 +226,7 @@ def test_quant_worker_is_opt_in_and_has_no_slack_or_lake_secrets():
         "database_password", "temporal_api_key", "model_runtime_token"}
     assert "worker" not in service["depends_on"]
     assert "quant-feed-worker" in backup.APP_SERVICES
+    assert "account-gateway" in backup.APP_SERVICES
 
 
 def resolve_cf(node, parameters, conditions):

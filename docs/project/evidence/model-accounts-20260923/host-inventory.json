@@ -1,0 +1,78 @@
+{
+  "at": "2026-09-23T02:43:21.635505+00:00",
+  "containers": [
+    {
+      "name": "quant-company-api-1",
+      "image": "quant-company:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+      "running": true,
+      "health": "healthy"
+    },
+    {
+      "name": "quant-company-maintenance-1",
+      "image": "quant-company-maintenance:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+      "running": true,
+      "health": null
+    },
+    {
+      "name": "quant-company-dispatch-1",
+      "image": "quant-company:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+      "running": true,
+      "health": null
+    },
+    {
+      "name": "quant-company-slack-socket-1",
+      "image": "quant-company:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+      "running": true,
+      "health": null
+    },
+    {
+      "name": "quant-company-news-worker-1",
+      "image": "quant-company:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+      "running": true,
+      "health": null
+    },
+    {
+      "name": "quant-company-quant-feed-worker-1",
+      "image": "quant-company:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+      "running": true,
+      "health": null
+    },
+    {
+      "name": "quant-company-data-watch-worker-1",
+      "image": "quant-company:f40fa10755004db724d6c5c74ebadc3eab4ebec2",
+      "running": true,
+      "health": null
+    },
+    {
+      "name": "quant-company-codex-runtime-1",
+      "image": "quant-company-codex:377335dcab983007a998a2166807d7332548e024",
+      "running": true,
+      "health": "healthy"
+    },
+    {
+      "name": "quant-company-claude-runtime-1",
+      "image": "quant-company-claude:377335dcab983007a998a2166807d7332548e024",
+      "running": true,
+      "health": "healthy"
+    },
+    {
+      "name": "quant-company-worker-1",
+      "image": "quant-company-autonomous:31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
+      "running": true,
+      "health": null
+    },
+    {
+      "name": "quant-company-postgres-1",
+      "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "running": true,
+      "health": "healthy"
+    }
+  ],
+  "configuration": {
+    "COMPANY_RESEARCH_ENABLED": "true",
+    "COMPANY_AUTONOMOUS_RESEARCH_ENABLED": "true",
+    "RELEASE_COMMIT": "f40fa10755004db724d6c5c74ebadc3eab4ebec2"
+  },
+  "backup_auth_directory_exists": false,
+  "writes_performed": false
+}

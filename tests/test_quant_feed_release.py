@@ -268,3 +268,18 @@ def test_reactivation_recovers_interrupted_false_gate(release, tmp_path, monkeyp
     receipt = json.loads(journal.read_text())
     assert receipt["phase"] == "preview_active"
     assert receipt["activation_last_error_code"] == "interrupted_activation_restored"
+
+
+def test_release_inventory_includes_quant_and_account_gateway_together(tmp_path, monkeypatch):
+    spec = importlib.util.spec_from_file_location("maintenance_release_test", ROOT / "deploy/maintenance_release.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    state, root = tmp_path / "state", tmp_path / "release"
+    (state / "config").mkdir(parents=True)
+    (state / "config/runtime.env").write_text("QUANT_FEED_ENABLED=true\nMODEL_ACCOUNTS_ENABLED=true\n")
+    (root / "src/quant_company/quant_feed").mkdir(parents=True)
+    monkeypatch.setattr(module, "STATE", state)
+    names = module.services(root)
+    assert "quant-feed-worker" in names
+    assert "account-gateway" in names
+    assert len(names) == len(set(names))

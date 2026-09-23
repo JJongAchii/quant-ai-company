@@ -55,12 +55,32 @@ class RuntimeClient:
         except (httpx.HTTPError, ValueError, TypeError):
             raise ProviderFault("uncertain", "Cancellation was not acknowledged by the runtime.") from None
 
-    async def run(self, request: ProviderRequest) -> ProviderResponse:
+    async def accounts(self) -> list[dict]:
+        try:
+            async with httpx.AsyncClient(timeout=40, transport=self.transport,
+                                         follow_redirects=False, trust_env=False) as client:
+                response = await client.get(f"{self.base_url}/v1/accounts",
+                                            headers={"Authorization": f"Bearer {self.token}"})
+            data = strict_json(response.content)
+            rows = data["accounts"]
+            if (response.status_code != 200 or not isinstance(rows, list) or len(rows) != 2
+                    or {r["profile"] for r in rows} != {"primary", "backup"}
+                    or any(set(r) != {"profile", "authentication"} or r["authentication"] not in
+                           {"chatgpt", "needs_login", "unavailable"} for r in rows)):
+                raise ValueError("Invalid account status")
+            return rows
+        except (httpx.HTTPError, ValueError, KeyError, TypeError):
+            raise ProviderFault("unavailable", "Account authentication could not be checked.") from None
+
+    async def run(self, request: ProviderRequest, *, account: dict | None = None) -> ProviderResponse:
+        headers = {"Authorization": f"Bearer {self.token}"}
+        if account is not None:
+            headers.update({"X-Company-Account": account["profile"], "X-Company-Account-Revision": str(account["revision"])})
         try:
             async with httpx.AsyncClient(timeout=self.timeout_seconds, transport=self.transport,
                                          follow_redirects=False, trust_env=False) as client:
                 async with client.stream("POST", f"{self.base_url}/v1/turns",
-                                         headers={"Authorization": f"Bearer {self.token}"},
+                                         headers=headers,
                                          json=request.model_dump(mode="json")) as response:
                     body = bytearray()
                     async for chunk in response.aiter_bytes():

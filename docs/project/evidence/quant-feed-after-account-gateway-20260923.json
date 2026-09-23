@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-23T06:05:18Z",
+  "scope": "Quant Scout natural editorial resumption after independently deployed model-account gateway",
+  "runtime": {
+    "release_commit": "deeb846d7942243165a3de6fd9ca7e35b8f49d89",
+    "quant_feed_enabled": true,
+    "quant_feed_publish_enabled": true,
+    "model_accounts_enabled": true,
+    "quant_channel_id": "C0C3K8ZB9PB",
+    "quant_worker_running": true,
+    "account_gateway_running": true,
+    "news_worker_running": true,
+    "research_worker_running": true,
+    "selected_services_oom_killed": false,
+    "selected_services_restart_count": 0,
+    "research_worker_owned_by_other_task": true
+  },
+  "subscription": {
+    "codex_login_method": "ChatGPT",
+    "global_quota_pause_at_2026_09_23_054901_utc": null,
+    "recent_company_lane_completed_calls": "multiple between 2026-09-23T05:46Z and 2026-09-23T05:48Z",
+    "selected_account_identity_verified_here": false,
+    "paid_api_key_substituted": false
+  },
+  "quant_temporal": {
+    "collection_workflow_running": true,
+    "editorial_workflow_running": true,
+    "collection_activity_completed_at": "2026-09-23T06:00:55Z",
+    "editorial_review_completed_at": "2026-09-23T05:52:01Z",
+    "one_revision_blocked_at": "2026-09-23T05:53:57Z",
+    "revision_block_reason": "invalid_quant_proposal",
+    "documents_ready_after_review": 158,
+    "documents_held_after_review": 50,
+    "publications_delivered": 0,
+    "quality_gate_bypassed": false
+  },
+  "observation": {
+    "first_natural_slack_delivery": "pending",
+    "elapsed_48_hours": false
+  }
+}
