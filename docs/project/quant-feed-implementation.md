@@ -178,3 +178,22 @@ include both `quant-feed-worker` and `account-gateway`. A new regression checks 
 families start once on their separate queues. The latest CI-equivalent local suite passed 1,186
 tests (37 skips, one opt-in live test deselected), and Ruff passed. This validates repository
 integration; it does not replace the still-pending natural Slack delivery observation.
+
+## Source-quality follow-up, 15:28 KST
+
+The next natural review ran at 06:23:58–06:25:40 UTC on the selected `backup` subscription
+profile. It reviewed a generic cloud-security paper from Two Sigma's broad insights index and
+held it, with no Slack write. The recorded hold reason was an unverifiable original publication
+date, **not** an explicit topical rejection; this revealed that source relevance should be
+tighter before model use.
+
+A credential-free probe of Two Sigma's official `Markets & Economy` index returned 10 article
+links through the existing collector; its two generic archive links were excluded. The source
+registry now targets that index, and the editor
+instructions explicitly exclude unrelated infrastructure, cloud security and career/interview
+content. Separately, a failing regression reproduced hidden CSS text leaking into institutional
+link titles; one parser condition now ignores that hidden text. Quant tests passed 59 with one
+platform skip, and Ruff passed. These source and parser changes are on the branch, not yet in the
+separately owned production release; existing database candidates were not rewritten. The exact
+observation and remaining activation gates are in
+`evidence/quant-feed-source-quality-20260923.json`.

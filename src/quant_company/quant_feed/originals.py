@@ -91,7 +91,7 @@ class ResearchPage(Page):
 
     def handle_data(self, data):
         super().handle_data(data)
-        if self.anchor is not None and len(self.anchor["title"]) < 500:
+        if self.anchor is not None and not self.ignored and len(self.anchor["title"]) < 500:
             self.anchor["title"] += data
 
     def handle_endtag(self, tag):
