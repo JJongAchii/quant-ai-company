@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Explicit operator release: full images, preview first, preserve stopped services.
 
-Run as root on the reviewed office host with stage/cutover/activate, exact base/commit and
+Run as root on the reviewed office host with stage/cutover/activate/pause, exact base/commit and
 an archive whose SHA-256 was recorded locally. No credential or environment output.
 This is not an autonomous maintenance policy and never starts the research worker.
 """
@@ -522,9 +522,103 @@ print(json.dumps({'publish_enabled':c.settings.quant_feed_publish_enabled}))
              expected_revisions)
 
 
+def pause(args, current, target, journal, module):
+    """Fail closed to preview-only, without restarting independent workers."""
+    if current != target or args.base != args.commit or not re.fullmatch(r"[CG][A-Z0-9]+", args.channel or ""):
+        raise ValueError("pause_target_or_channel_invalid")
+    overlay = current / "deploy/data-watch.compose.yaml"
+    if not overlay.is_file():
+        raise ValueError("pause_data_watch_overlay_missing")
+    env = STATE / "config/runtime.env"
+    oldenv = env.read_bytes()
+    values = dict(line.split("=", 1) for line in oldenv.decode().splitlines()
+                  if "=" in line and not line.startswith("#"))
+    if (values.get("QUANT_FEED_ENABLED") != "true" or values.get("QUANT_FEED_CHANNEL_ID") != args.channel
+            or values.get("RELEASE_COMMIT") != args.commit):
+        raise ValueError("pause_environment_mismatch")
+    if journal.exists():
+        record = json.loads(journal.read_text())
+        if record.get("phase") == "paused" and values.get("QUANT_FEED_PUBLISH_ENABLED") == "false":
+            emit(**record)
+            return
+        raise ValueError("pause_journal_requires_manual_reconciliation")
+    if values.get("QUANT_FEED_PUBLISH_ENABLED") != "true":
+        raise ValueError("pause_gate_not_live")
+    preserved_names = ["worker", "news-worker", "data-watch-worker", "account-gateway", "slack-socket",
+                       "codex-runtime", "claude-runtime"]
+    preserved = service_identity(preserved_names)
+    service_identity(["api", "dispatch", "quant-feed-worker"])
+    postgres_id = inspect(["postgres"])[0]["Id"]
+    check = """import json
+from quant_company.company import Company
+from quant_company.config import Settings
+c=Company(Settings())
+with c.db.transaction() as x:
+ print(json.dumps({
+  'running_quant_calls':x.execute("SELECT count(*) AS n FROM quant_feed_calls WHERE state='running'").fetchone()['n'],
+  'sending_quant_outbox':x.execute("SELECT count(*) AS n FROM quant_feed_publications p JOIN outbox o ON o.id=p.id WHERE o.status='sending'").fetchone()['n'],
+  'pending_quant_outbox':x.execute("SELECT count(*) AS n FROM quant_feed_publications p JOIN outbox o ON o.id=p.id WHERE o.status='pending'").fetchone()['n']}))
+"""
+    lock_path = STATE / "codex/jobs/.runtime-quant.lock"
+    if lock_path.is_symlink():
+        raise ValueError("pause_model_lock_symlink")
+    fd = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise ValueError("pause_quant_model_lane_busy") from None
+        activity = json.loads(run(["docker", "exec", "-i", "quant-company-api-1", "python",
+                                   "/app/entrypoint.py", "python", "-"], input=check.encode()))
+        if activity != {"running_quant_calls": 0, "sending_quant_outbox": 0, "pending_quant_outbox": 0}:
+            raise ValueError("pause_quant_activity_unresolved")
+        record = {"phase": "prepared", "commit": args.commit, "channel": args.channel,
+                  "publication_enabled": True, "prepared_at": time.time(), "activity": activity,
+                  "preserved_services": preserved, "postgres_id": postgres_id,
+                  "original_env_sha256": hashlib.sha256(oldenv).hexdigest()}
+        module.atomic(journal, json.dumps(record).encode())
+        module.atomic(STATE / "releases" / ("quant-feed-pause-" + args.commit + ".env"), oldenv)
+        try:
+            setenv(module, {"QUANT_FEED_PUBLISH_ENABLED": "false"})
+            record.update(phase="pausing", publication_enabled=False)
+            module.atomic(journal, json.dumps(record).encode())
+            command = [*module.compose_command(current), "--profile", "data-watch", "-f", str(overlay)]
+            run([*command, "up", "-d", "--no-deps", "--force-recreate", "--wait", "--wait-timeout", "120",
+                 "api", "dispatch"])
+            run([*command, "up", "-d", "--no-deps", "--force-recreate", "--wait", "--wait-timeout", "120",
+                 "quant-feed-worker"])
+            status = """import json
+from quant_company.config import Settings
+s=Settings()
+print(json.dumps({'enabled':s.quant_feed_enabled,'publish_enabled':s.quant_feed_publish_enabled,
+                  'channel':s.quant_feed_channel_id}))
+"""
+            for service in ("api", "dispatch", "quant-feed-worker"):
+                propagated = json.loads(run(["docker", "exec", "-i", "quant-company-" + service + "-1",
+                                             "python", "/app/entrypoint.py", "python", "-"],
+                                            input=status.encode()))
+                if propagated != {"enabled": True, "publish_enabled": False, "channel": args.channel}:
+                    raise ValueError("pause_settings_not_propagated")
+            service_identity(["api", "dispatch", "quant-feed-worker"])
+            if inspect(["postgres"])[0]["Id"] != postgres_id or service_identity(preserved_names) != preserved:
+                raise ValueError("pause_independent_service_changed")
+            record.update(phase="paused", paused_at=time.time(), independent_services_preserved=True,
+                          collection_worker_running=True, slack_publication_disabled=True)
+            module.atomic(journal, json.dumps(record).encode())
+            emit(**record)
+        except BaseException as exc:
+            record.update(phase="pause_incomplete", error=type(exc).__name__,
+                          error_code=str(exc) if isinstance(exc, ValueError) else "pause_command_failed",
+                          publication_enabled=False)
+            module.atomic(journal, json.dumps(record).encode())
+            raise
+    finally:
+        os.close(fd)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["stage", "cutover", "activate", "reactivate"])
+    parser.add_argument("action", choices=["stage", "cutover", "activate", "reactivate", "pause"])
     parser.add_argument("base")
     parser.add_argument("commit")
     parser.add_argument("--archive")
@@ -539,12 +633,14 @@ def main():
     with (STATE / ".backup.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         previous = CURRENT.resolve()
-        expected_current = args.commit if args.action == "reactivate" else args.base
+        expected_current = args.commit if args.action in {"reactivate", "pause"} else args.base
         if previous.name != expected_current:
             raise ValueError("deployment_baseline_changed")
         target = CURRENT.parent / "releases" / args.commit
-        journal = STATE / "releases" / ("quant-feed-" + args.commit + ".json")
-        function = {"stage": stage, "cutover": cutover, "activate": activate, "reactivate": reactivate}[args.action]
+        name = ("quant-feed-pause-" if args.action == "pause" else "quant-feed-") + args.commit + ".json"
+        journal = STATE / "releases" / name
+        function = {"stage": stage, "cutover": cutover, "activate": activate,
+                    "reactivate": reactivate, "pause": pause}[args.action]
         module = helper(previous)
         try:
             function(args, previous, target, journal, module)
