@@ -177,7 +177,9 @@ class AccountControl:
             authorized = (self.company.settings.model_accounts_enabled
                 and command["owner_user"] == self.company.settings.model_accounts_owner_user
                 and command["owner_user"] in self.company.settings.slack_allowed_users
-                and project["owner_user"] == command["owner_user"] and project["channel"].startswith("D"))
+                and project["owner_user"] == command["owner_user"]
+                and (project["channel"].startswith("D")
+                     or project["channel"] in self.company.settings.slack_allowed_channels))
             if not authorized:
                 text, outcome = "계정 제어 권한 또는 설정이 변경되어 요청을 적용하지 않았습니다.", "rejected"
             else:
