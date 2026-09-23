@@ -60,7 +60,13 @@ def services(root):
     supported = (root/'src/quant_company/providers/claude_runtime.py').is_file()
     quant = (envfile.exists() and 'QUANT_FEED_ENABLED=true' in envfile.read_text().splitlines()
              and (root/'src/quant_company/quant_feed').is_dir())
-    return SERVICES + (['claude-runtime'] if enabled and supported else []) + (['quant-feed-worker'] if quant else [])
+    data = (envfile.exists() and 'DATA_WATCH_ENABLED=true' in envfile.read_text().splitlines()
+            and (root/'src/quant_company/data_watch/worker.py').is_file())
+    accounts = any(line.strip() == 'MODEL_ACCOUNTS_ENABLED=true'
+                   for line in envfile.read_text().splitlines()) if envfile.exists() else False
+    return (SERVICES + (['claude-runtime'] if enabled and supported else [])
+            + (['quant-feed-worker'] if quant else []) + (['data-watch-worker'] if data else [])
+            + (['account-gateway'] if accounts else []))
 
 
 def compose_command(root):
@@ -82,6 +88,13 @@ def compose_command(root):
         overlay = root/'deploy/autonomous-research.compose.yaml'
         if not overlay.is_file():
             raise ValueError('release_autonomous_overlay_missing')
+        command += ['-f', str(overlay)]
+    accounts = any(line.strip() == 'MODEL_ACCOUNTS_ENABLED=true'
+                   for line in envfile.read_text().splitlines()) if envfile.exists() else False
+    if accounts:
+        overlay = root/'deploy/model-accounts.compose.yaml'
+        if not overlay.is_file():
+            raise ValueError('release_account_overlay_missing')
         command += ['-f', str(overlay)]
     return command
 
@@ -123,6 +136,7 @@ def unpack(data, target):
 def validate_tree(previous, target):
     # Load the policy from the installed release, never the candidate. No third-party dependencies.
     protected = {'api.py', 'cli.py', 'config.py', 'db.py', 'schema.sql', 'socket_mode.py',
+                 'accounts.py', 'account_gateway.py', 'account_workflow.py', 'account_schema.sql',
                  'owner_controls.py', 'state_schema.sql', 'web_fetch.py', 'finance_sources.py', 'maintenance/policy.py',
                  'maintenance/github.py', 'maintenance/applications.py', 'maintenance/releases.py', 'maintenance/schema.sql',
                  'staff/cases.py', 'staff/store.py', 'staff/runner.py', 'staff/workflow.py', 'staff/schema.sql', 'staff/packs.py',
@@ -179,6 +193,10 @@ def validate_tree(previous, target):
 
 
 def health(commit, postgres_id):
+    envfile = STATE/'config/runtime.env'
+    configuration = dict(line.split('=', 1) for line in envfile.read_text().splitlines()
+                         if '=' in line and not line.lstrip().startswith('#')) if envfile.exists() else {}
+    pinned = configuration.get('PINNED_COMPANY_WORKER_IMAGE') if configuration.get('MODEL_ACCOUNTS_ENABLED') == 'true' else None
     rows = json.loads(run(['docker', 'inspect', *['quant-company-'+s+'-1' for s in ['postgres', *services(CURRENT.resolve())]]]))
     for row in rows:
         state = row['State']
@@ -187,6 +205,10 @@ def health(commit, postgres_id):
         if row['Name'] == '/quant-company-postgres-1':
             if row['Id'] != postgres_id:
                 raise ValueError('release_database_recreated')
+        elif row['Name'] == '/quant-company-worker-1' and pinned:
+            if (row['Config'].get('Image') != pinned
+                    or row['Config']['Labels'].get('org.opencontainers.image.revision') != pinned.rsplit(':', 1)[-1]):
+                raise ValueError('release_pinned_worker_changed')
         elif row['Config']['Labels'].get('org.opencontainers.image.revision') != commit:
             raise ValueError('release_image_revision_mismatch')
     return {'healthy_services': len(rows), 'postgres_recreated': False}

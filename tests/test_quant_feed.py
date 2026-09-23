@@ -240,6 +240,18 @@ def test_shared_budget_quota_pause_and_same_request_retry(quant):
     assert quant.prepare()["reason"] == "daily_model_budget"
 
 
+def test_owner_account_switch_resumes_quant_without_global_pause(quant):
+    from quant_company.accounts import resume_quota_waits
+    original(quant)
+    quant.company.settings.model_accounts_enabled = True
+    first = quant.prepare()
+    quant.fault(first["request"]["request_id"], "quota", 120)
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT paused_until FROM runtime_control WHERE id=1").fetchone()["paused_until"] is None
+        resume_quota_waits(conn, None, 1)
+    assert quant.prepare() == first
+
+
 def test_policy_edit_stales_frozen_request_without_new_call(quant):
     original(quant)
     first = quant.prepare()

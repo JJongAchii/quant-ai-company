@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "currentIntent": "INTENT-v2.json",
+  "state": "in_progress",
+  "deliverables": {
+    "CONTROL": {
+      "status": "completed"
+    },
+    "RUNTIME": {
+      "status": "completed"
+    },
+    "VALIDATION": {
+      "status": "completed"
+    },
+    "DEPLOYMENT": {
+      "status": "in_progress"
+    },
+    "ENROLLMENT": {
+      "status": "pending"
+    }
+  },
+  "operationalStatus": "Production integration and preflight in progress; prior feature CI passed.",
+  "evidence": "../../project/evidence/model-accounts-20260923/verification.json"
+}

@@ -9,9 +9,17 @@ from temporalio.exceptions import ActivityError
 class CompanyTurnWorkflow:
     """Durable inference turn. No credentials, prompt, or artifact bodies in workflow history."""
 
+    def __init__(self):
+        self.account_revision = 0
+
+    @workflow.signal
+    def model_account_changed(self, revision: int):
+        self.account_revision = max(self.account_revision, revision)
+
     @workflow.run
     async def run(self, turn_id: str) -> dict:
-        for _ in range(48):
+        for attempt in range(48):
+            revision = self.account_revision
             try:
                 result = await workflow.execute_activity(
                     "company_execute_turn", turn_id,
@@ -25,5 +33,12 @@ class CompanyTurnWorkflow:
                 continue
             if result["state"] != "defer":
                 return result
-            await workflow.sleep(timedelta(seconds=max(1, result.get("seconds", 30))))
+            delay = timedelta(seconds=max(1, result.get("seconds", 30)))
+            if workflow.patched(f"owner-account-wake-v1-{attempt}"):
+                try:
+                    await workflow.wait_condition(lambda previous=revision: self.account_revision > previous, timeout=delay)
+                except TimeoutError:
+                    pass
+            else:
+                await workflow.sleep(delay)
         workflow.continue_as_new(turn_id)

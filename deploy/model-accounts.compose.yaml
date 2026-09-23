@@ -1,0 +1,26 @@
+# Apply after the production research overlays. The worker image/code pin stays intact.
+# Read PINNED_COMPANY_WORKER_IMAGE from the running worker before activation.
+services:
+  account-gateway:
+    extends:
+      file: compose.yaml
+      service: news-worker
+    command: [uvicorn, quant_company.account_gateway:app, --host, 0.0.0.0, --port, "8080", --workers, "1"]
+    environment:
+      MODEL_ACCOUNTS_ENABLED: "true"
+      MODEL_ACCOUNTS_OWNER_USER: ${MODEL_ACCOUNTS_OWNER_USER:?Set the allowed Slack owner before activation}
+    mem_limit: 128m
+    cpus: 0.25
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+  worker:
+    image: ${PINNED_COMPANY_WORKER_IMAGE:?Preserve the current research worker image}
+    environment:
+      MODEL_RUNTIME_URL: http://account-gateway:8080
+    depends_on:
+      account-gateway:
+        condition: service_healthy

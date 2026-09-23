@@ -41,6 +41,8 @@ x-db-env: &db-env
   DATABASE_NAME: ${DATABASE_NAME:-quant_company}
   ROLES_FILE: /etc/quant-company/roles.json
   MODEL_PROVIDER: codex
+  MODEL_ACCOUNTS_ENABLED: ${MODEL_ACCOUNTS_ENABLED:-false}
+  MODEL_ACCOUNTS_OWNER_USER: ${MODEL_ACCOUNTS_OWNER_USER:-}
   COMPANY_LAKE_URI: ${COMPANY_LAKE_URI:-}
   COMPANY_WEB_ENABLED: ${COMPANY_WEB_ENABLED:-true}
   COMPANY_IMPROVEMENTS_ENABLED: ${COMPANY_IMPROVEMENTS_ENABLED:-false}
@@ -304,6 +306,7 @@ services:
         QDATA_COMMIT: ${QDATA_COMMIT:-unqualified}
     environment:
       CODEX_HOME: /state/auth
+      CODEX_BACKUP_HOME: /state/backup-auth
       CODEX_BIN: codex
       CODEX_JOBS_DIR: /state/jobs
       CODEX_TIMEOUT_SECONDS: ${CODEX_TIMEOUT_SECONDS:-900}
@@ -313,6 +316,7 @@ services:
     secrets: [model_runtime_token]
     volumes:
       - ${STATE_DIR:-/var/lib/quant-company}/codex/auth:/state/auth
+      - ${STATE_DIR:-/var/lib/quant-company}/codex/backup-auth:/state/backup-auth
       - ${STATE_DIR:-/var/lib/quant-company}/codex/jobs:/state/jobs
     networks: [model, model_egress]
     mem_limit: ${CODEX_MEMORY_LIMIT:-1g}

@@ -32,6 +32,7 @@ def runner_from_environment() -> CodexRunner:
         raise ProviderFault("unavailable", "Configure the Codex authentication and durable jobs directories.")
     try:
         config = RunnerConfig(codex_home=Path(home), jobs_dir=Path(jobs),
+                              backup_codex_home=Path(os.environ["CODEX_BACKUP_HOME"]) if os.environ.get("CODEX_BACKUP_HOME") else None,
                               codex_bin=os.environ.get("CODEX_BIN", "codex"),
                               timeout_seconds=float(os.environ.get("CODEX_TIMEOUT_SECONDS", "900")))
     except ValueError:
@@ -82,6 +83,10 @@ def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
                     return JSONResponse({"code": "invalid_request", "message": "Request exceeds byte limit.",
                                          "retry_after_seconds": 0}, status_code=413)
             payload = ProviderRequest.model_validate(strict_json(body))
+            profile = request.headers.get("x-company-account", "primary")
+            revision = int(request.headers.get("x-company-account-revision", "0"))
+            if profile not in {"primary", "backup"} or not 0 <= revision < 2**63:
+                raise ValueError("Invalid account selection")
         except (ValueError, TypeError, ValidationError):
             # Do not echo invalid field values or the original prompt.
             return JSONResponse({"code": "invalid_request", "message": "Request does not match ProviderRequest.",
@@ -95,7 +100,13 @@ def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
                 task.exception()  # Consume a detached failure without logging model output.
 
         try:
-            operation = asyncio.create_task(get_runner().run(payload))
+            runtime = get_runner()
+            selection = {}
+            if "x-company-account" in request.headers or "x-company-account-revision" in request.headers:
+                if not isinstance(runtime, CodexRunner):
+                    raise ProviderFault("auth", "This runtime does not support Codex account selection.")
+                selection = {"profile": profile, "revision": revision}
+            operation = asyncio.create_task(runtime.run(payload, **selection))
             app.state.operations.add(operation)
             operation.add_done_callback(completed)
             # Transport loss is not steering. Finish/cache the existing turn so
@@ -117,6 +128,18 @@ def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
             return fault_response(fault)
         except OSError:
             return fault_response(ProviderFault("unavailable", "The durable cancellation store is unavailable."))
+
+    @app.get("/v1/accounts")
+    async def accounts(request: Request) -> JSONResponse:
+        try:
+            authorize(request)
+            runtime = get_runner()
+            if not isinstance(runtime, CodexRunner):
+                raise ProviderFault("unavailable", "This runtime does not manage Codex accounts.")
+            statuses = [await runtime.account_status(profile) for profile in ("primary", "backup")]
+            return JSONResponse({"accounts": statuses})
+        except ProviderFault as fault:
+            return fault_response(fault)
 
     return app
 

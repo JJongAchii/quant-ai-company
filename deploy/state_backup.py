@@ -15,7 +15,8 @@ from pathlib import Path, PurePosixPath
 from uuid import uuid4
 
 DEPLOY = Path(__file__).resolve().parent
-APP_SERVICES = ("slack-socket", "maintenance", "worker", "news-worker", "quant-feed-worker", "dispatch", "api", "codex-runtime", "claude-runtime")
+APP_SERVICES = ("slack-socket", "maintenance", "worker", "news-worker", "quant-feed-worker", "data-watch-worker", "dispatch", "api",
+                "account-gateway", "codex-runtime", "claude-runtime")
 
 
 def config_values(path: Path) -> dict[str, str]:
@@ -242,6 +243,11 @@ def main() -> None:
     os.umask(0o077)
     compose = ["docker", "compose", "--profile", "maintenance", "--profile", "claude", "--env-file", str(args.env_file),
                "-f", str(DEPLOY / "compose.yaml")]
+    for flag, overlay in (("COMPANY_RESEARCH_ENABLED", "research.compose.yaml"),
+                          ("COMPANY_AUTONOMOUS_RESEARCH_ENABLED", "autonomous-research.compose.yaml"),
+                          ("MODEL_ACCOUNTS_ENABLED", "model-accounts.compose.yaml")):
+        if cfg.get(flag) == "true":
+            compose += ["-f", str(DEPLOY / overlay)]
     # One local backup/restore process at a time. Locking never occurs in preview mode.
     import fcntl
     state.mkdir(parents=True, exist_ok=True)

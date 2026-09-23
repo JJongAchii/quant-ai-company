@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 1,
+  "sourceRequest": "그래 진행해줘",
+  "outcome": "Owner-only Slack manual Codex account selection with isolated pre-enrolled primary/backup authentication, model-free status/control, durable receipts and safe quota-deferred resumption.",
+  "deliverables": [
+    {"id": "CONTROL", "description": "Deterministic authenticated Slack commands with PostgreSQL records and Temporal execution"},
+    {"id": "RUNTIME", "description": "Isolated account homes, shared request receipts, explicit quota-only reassignment and per-account cooldown"},
+    {"id": "VALIDATION", "description": "Real PostgreSQL and Temporal verification, simulated provider/Slack clearly identified, operator enrollment and deployment instructions"}
+  ],
+  "constraints": ["Preserve stable request IDs, frozen inputs, completed results and uncertain receipts", "Official ChatGPT authentication; owner browser enrollment; no credentials in Slack or Git", "Only explicit owner commands select another account", "Company evidence stays in this repository; research integrations remain read-only"],
+  "workspace": "Existing isolated Git worktree; qws start rejects the independent company repository. No historical quant-workspace records changed.",
+  "approval": "User approved the preceding implementation proposal in this conversation"
+}

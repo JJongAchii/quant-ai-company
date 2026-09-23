@@ -120,6 +120,14 @@ class SlackIngress:
             if approval is not None:
                 return {"ok": True, **approval}
         if target == "director":
+            from .accounts import parse_command as parse_account_command
+
+            account_command = parse_account_command(text)
+            if account_command is not None:
+                result = self.company.ingest(
+                    event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,
+                    owner=user, agent=target, channel=channel, thread_ts=thread_ts, account_command=account_command)
+                return {"ok": True, "owner_control": True, **result}
             from .maintenance.applications import accept_approval
             from .owner_controls import parse_daily_limit_command
 
