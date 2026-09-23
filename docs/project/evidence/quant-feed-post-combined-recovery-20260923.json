@@ -78,9 +78,25 @@
     },
     "elapsed_48_hours": false
   },
+  "subsequent_observation": {
+    "at": "2026-09-23T02:15:30Z",
+    "quant_collection_workflow_running": true,
+    "quant_editorial_workflow_running": true,
+    "ready_documents": 122,
+    "deliveries": 0,
+    "global_runtime_pause": {
+      "reason": "quota",
+      "extended_until": "2026-09-23T02:27:12Z",
+      "not_bypassed": true
+    }
+  },
   "merged_branch_validation": {
     "local_tests": "1137 passed, 37 skipped, 1 opt-in live deselected",
     "ruff": "passed",
-    "linux_ci": "pending merged revision"
+    "linux_ci": {
+      "status": "success",
+      "run_id": 35809276862,
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35809276862"
+    }
   }
 }

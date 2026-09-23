@@ -9,39 +9,39 @@
       "evidence": [
         {
           "path": "docs/project/evidence/quant-feed-post-combined-recovery-20260923.json",
-          "sha256": "7696022aa10e"
+          "sha256": "5fcb0f9fd60f"
         }
       ],
-      "note": "Quant Scout publication active on combined release with previous research/news/data-watch workers preserved; first natural Slack delivery and elapsed 48-hour observation remain pending.",
+      "note": "Quant Scout publication active and Temporal workflows running; subscription quota extended to 02:27 UTC. First natural Slack delivery and elapsed 48-hour observation remain pending.",
       "status": "in_progress",
-      "updatedAt": "2026-09-23T02:07:44.128796+00:00"
+      "updatedAt": "2026-09-23T02:17:13.388848+00:00"
     },
     "QUANT_FEED": {
       "evidence": [
         {
           "path": "docs/project/quant-feed-implementation.md",
-          "sha256": "50e4279f3503"
+          "sha256": "16388cf1d8d5"
         }
       ],
-      "note": "Quant Scout implemented, source-qualified, main-integrated and scoped reactivation verified; first natural Slack receipt remains an activation observation.",
+      "note": "Quant Scout implemented, deployed, main-integrated, Linux CI passed and scoped reactivation verified; natural Slack receipt remains a separate activation observation.",
       "status": "verified",
-      "updatedAt": "2026-09-23T02:07:36.515569+00:00"
+      "updatedAt": "2026-09-23T02:17:08.306742+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
           "path": "docs/project/evidence/quant-feed-post-combined-recovery-20260923.json",
-          "sha256": "7696022aa10e"
+          "sha256": "5fcb0f9fd60f"
         }
       ],
-      "note": "Combined main regression 1137 passed, 37 skipped, 1 live deselected; Ruff passed. Scoped reactivation operator tests and real host receipt passed; merged-revision Linux CI pending push.",
+      "note": "Combined main regression 1137 passed, 37 skipped, 1 live deselected; Ruff and Linux CI 35809276862 passed. Scoped reactivation and real host receipt passed; natural Slack delivery separately pending.",
       "status": "verified",
-      "updatedAt": "2026-09-23T02:07:31.721455+00:00"
+      "updatedAt": "2026-09-23T02:17:03.502839+00:00"
     }
   },
   "intentDigest": "c402037885c5",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-23T02:07:44.128796+00:00"
+  "updatedAt": "2026-09-23T02:17:13.388848+00:00"
 }

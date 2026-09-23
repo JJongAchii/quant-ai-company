@@ -11,7 +11,8 @@ No daily publication cap. Defaults are disabled. Separate Quant Scout manifest a
 
 The deployed code passed **1,057 local tests with 37 explicit skips** and Ruff passed. After merging
 the latest main branch, the combined suite passed **1,137 with 37 skips and one opt-in live test
-excluded**; Ruff passed again. GitHub Actions run 35800220559 passed on the deployed code commit. Unit and integration fixtures
+excluded**; Ruff passed again. GitHub Actions runs 35800220559 (deployed code) and 35809276862
+(merged branch) passed. Unit and integration fixtures
 distinguish simulated proposals from the production qualification below; passing contract cases
 does not by itself measure long-run curation quality.
 
@@ -143,6 +144,8 @@ restart count were unchanged. Host available memory was 414 MiB at this gate, wi
 
 At 02:00 UTC the new lane was active with 120 source documents ready for editorial review,
 but no delivered Slack message yet. The company-wide runtime control had a `quota` pause until
-02:12 UTC. We did not bypass that limit or publish a hand-picked item. The actual natural
+02:12 UTC and extended it to 02:27 UTC at the next observation. Both Temporal collection and
+editorial workflows remained running, and the source backlog advanced to 122 ready documents.
+We did not bypass that limit or publish a hand-picked item. The actual natural
 publication and elapsed stability observation are separate gates; current evidence is in
 `evidence/quant-feed-post-combined-recovery-20260923.json`.
