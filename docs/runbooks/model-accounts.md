@@ -2,9 +2,11 @@
 
 ## 사용 명령
 
-`MODEL_ACCOUNTS_OWNER_USER`에 등록된 사용자가 **총괄의 DM 또는 허용된 채널**에 다음 문장을 보낸다.
-채널에서는 총괄을 멘션한다. 이미 총괄과 연결된 일반 업무 스레드에서는 멘션 없이도 사용할 수 있다.
-응답은 요청을 보낸 스레드에 남는다. 접수 시와 실행 시 모두 소유자와 채널 허용 설정을 확인한다.
+`MODEL_ACCOUNTS_OWNER_USER`에 등록된 사용자가 비공개 **#ai-account-switch** 채널에
+다음 문장을 보낸다. 이 채널은 `MODEL_ACCOUNTS_CHANNEL_ID`로 지정하며 director 앱을
+초대한다. 멘션은 선택 사항이다. 응답은 요청을 보낸 스레드에 남는다.
+접수 시와 실행 시 모두 소유자·전용 채널 권한을 확인한다. 다른 채널이나 DM의
+계정 명령은 일반 모델 업무로 처리하지 않는다.
 명령은 모델을 호출하지 않고 처리하므로 Codex 한도 소진 중에도 사용할 수 있다.
 
 | 명령 | 동작 |
@@ -23,7 +25,7 @@
 첫 배포 전에 이미 시작된 Temporal 대기 타이머는 남은 시간을 마친 뒤 새 재개 신호 방식을
 채택한다. 이 경우 최초 전환은 기존 한도 대기 시간만큼 늦게 적용될 수 있다.
 
-`모델 계정 상태` 등 계정 명령을 보내면 해당 DM 또는 채널 스레드가 알림 대상으로 등록된다. 이후 선택된
+`모델 계정 상태` 등 계정 명령을 보내면 해당 전용 채널 스레드가 알림 대상으로 등록된다. 이후 선택된
 계정에서 한도 오류가 발생하면 해당 스레드에 전환 안내를 한 번 남긴다. Slack 전송
 결과가 불확실한 경우에는 기존 outbox 절차로 대사하며 무조건 재전송하지 않는다.
 
@@ -50,8 +52,9 @@
    기존에 사용 중인 프로필을 재인증할 때는 해당 프로필의 실행을 먼저 마무리한다.
 5. `bash deploy/codex-account-login.sh backup status`로 확인한다. API key 인증은 지원하지 않는다.
    이메일·계정 ID를 알림이나 증거에 기록할 필요는 없다.
-6. 기존 운영 env에 `MODEL_ACCOUNTS_ENABLED=true`, `MODEL_ACCOUNTS_OWNER_USER=<Slack user ID>`를
-   설정한다. 해당 사용자는 `SLACK_ALLOWED_USERS`에도 있어야 한다. api/socket/dispatch/worker/
+6. 기존 운영 env에 `MODEL_ACCOUNTS_ENABLED=true`, `MODEL_ACCOUNTS_OWNER_USER=<Slack user ID>`,
+   `MODEL_ACCOUNTS_CHANNEL_ID=<전용 채널 ID>`를 설정한다. 소유자는 `SLACK_ALLOWED_USERS`, 전용
+   채널은 `SLACK_ALLOWED_CHANNELS`에도 있어야 한다. api/socket/dispatch/worker/
    news-worker/maintenance 등 기존 Compose 서비스에 동일하게 적용한다. Slack 프로세스에
    모델 runtime token을 추가하지 않는다.
    연구 코드가 고정된 worker를 유지할 때는 그 컨테이너의 정확한 image를
@@ -61,7 +64,7 @@
    해당 worker의 URL만 gateway로 바뀌며, 다른 최신 클라이언트는 기존 Codex runtime을 사용한다.
    이전 worker는 계정 대기를 30초 간격으로 다시 확인하되 실제 모델 cooldown은 DB에 보존한다.
    첫 배포 전에 기록된 타이머는 한 번 기존 남은 시간을 기다릴 수 있다.
-7. 실제 소유자가 총괄 DM 또는 허용된 채널에서 상태 → 예비 전환을 보낸다. 적용 기록과 다음 정상 업무 응답을
+7. 실제 소유자가 전용 채널에서 상태 → 예비 전환을 보낸다. 적용 기록과 다음 정상 업무 응답을
    확인한다. 로그인 확인만으로 실제 구독 모델 검증을 완료했다고 기록하지 않는다.
 
 ### 장치 인증 설정을 켰는데도 인증 페이지가 거절할 때

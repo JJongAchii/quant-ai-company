@@ -6,9 +6,9 @@ Date: 2026-09-23. Status: implemented; production activation and second-account 
 
 The company has one selected ChatGPT profile, shared by its Codex-backed staff, news,
 web searches and maintenance. The configured owner selects `primary` or `backup`
-with an exact command in the director's Slack DM or a configured allowed channel. Channel
-messages mention the director or belong to an existing director thread. Ingress and execution
-both check the configured owner and channel permission. Authentication is enrolled separately
+with an exact command in a dedicated private Slack channel shared with the director app.
+Ingress and execution both check the configured owner and exact channel ID. Account
+commands elsewhere are ignored before model dispatch. Authentication is enrolled separately
 by an operator using the official interactive Codex device login. No automatic account
 rotation, API fallback, credential transfer through Slack or model-generated switch is added.
 
@@ -40,7 +40,7 @@ revision 0. This also protects calls submitted before the feature was enabled.
 A quota response pauses only its profile. Selection does not reset a known cooldown, and
 an exhausted target is rejected until its next permitted attempt. Both accounts can be
 unavailable; tasks then remain queued. One owner notice is persisted per selected revision
-after an account command establishes its DM or allowed channel thread as the destination. Lost Slack replies
+after an account command establishes its dedicated channel thread as the destination. Lost Slack replies
 retain the outbox's uncertain-delivery semantics.
 
 Successful switches bring explicit quota waits forward without editing frozen inputs or
