@@ -1,22 +1,25 @@
 # 회사 공용 Codex 계정 제어 운영 적용
 
-2026-09-23 KST. **운영 반영 및 서로 다른 두 계정의 공식 인증 완료. 실제 소유자 Slack 전환 명령 확인은 진행 중이다.**
+2026-09-23 KST. **비공개 계정 전환 채널까지 운영 반영. 서로 다른 두 계정의 공식 인증 완료. 실제 소유자의 전환 명령은 아직 없다.**
 
 ## 적용 버전
 
 | 항목 | 결과 |
 |---|---|
 | 기능 PR | [#68](https://github.com/JJongAchii/quant-ai-company/pull/68), CI 통과 후 main 병합 |
+| 전용 채널 수정 PR | [#69](https://github.com/JJongAchii/quant-ai-company/pull/69), CI 통과 후 main `caaf56b00ad8ee9cb523bc5eadf46b800bb8a45f` 병합 |
 | main 병합 | `ebb1e08d724a2d0358a59abf0226471b3e0472c7` |
-| 실제 운영 소스 | `ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e`, `deploy/model-accounts-production` |
-| 기존 운영 소스 | `f40fa10755004db724d6c5c74ebadc3eab4ebec2` |
-| 적용 상태 | `MODEL_ACCOUNTS_ENABLED=true`, 기존 허용 사용자 중 소유자 한 명 지정 |
+| 실제 운영 소스 | `deeb846d7942243165a3de6fd9ca7e35b8f49d89`, `deploy/model-accounts-production` |
+| 직전 운영 소스 | `ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e` |
+| 적용 상태 | `MODEL_ACCOUNTS_ENABLED=true`, 소유자 한 명 및 비공개 `#ai-account-switch` (`C0C3C6ELJ0P`) 지정 |
 | 현재 선택 | 기본 계정, revision 0. 자동 전환 없음 |
 | 공식 CLI | Codex 0.154.0 유지 |
 
 운영에 이미 포함된 Quant Scout와 데이터 점검 서비스를 유지하며 통합했다. app, Codex,
 maintenance, Claude 이미지는 해당 커밋 전체 소스로 빌드하고 이미지 내부 패키지 파일의
 해시를 저장소 소스와 비교했다. Claude CLI 버전과 인증은 유지했다.
+새 채널에는 소유자와 director 앱이 참여하며, director 앱의 채널 기록 읽기 권한도 실제로
+확인했다. 전용 채널 밖의 계정 명령과 채널 안의 일반 업무 문장은 모델 작업으로 보내지 않는다.
 
 연구 워커는 기존 `quant-company-autonomous:31ff903f08a1471d26cb2ce0fef9643a0b34fc75`
 이미지와 `COMPANY_CODE_COMMIT`을 유지했다. 컨테이너는 연결 설정 적용을 위해 재생성했다.
@@ -33,12 +36,19 @@ maintenance, Claude 이미지는 해당 커밋 전체 소스로 빌드하고 이
 - 실제 Temporal Cloud의 `company-model-accounts-v1`이 `quant-company-accounts`에서 RUNNING.
 - 실제 공식 CLI 인증 조회: 기본·예비 계정 모두 `chatgpt`. 서로 다른 계정임을 호스트 안에서
   비교하고 boolean만 기록했다. 계정 식별자나 인증 내용은 기록하지 않았다.
+- 전용 채널 적용 전 소유자가 보낸 director DM의 `모델 계정 상태` 명령은 PostgreSQL에
+  `completed`로 기록됐고 Slack outbox에는 `delivered` 영수증이 있다.
+- 전용 채널 변경은 전체 CI 통과 뒤 적용했다. 새 릴리스에서 12개 서비스가 모두 정상이고
+  재시작 횟수는 0이다. PostgreSQL 컨테이너·연구 워커 이미지·역할/연구 설정 해시는 유지됐다.
+  Temporal 계정 제어 workflow도 `RUNNING`이다. 운영 설정 및 작업 기록의 백업을 S3에
+  보존했으며 인증 파일은 포함하지 않았다.
 - 예비 계정 로그인 터미널을 사용자에게 열었다. 사용자가 장치 코드 인증을 활성화한 뒤
   기존 인증 화면의 계속 버튼이 비활성이라고 알려 새 로그인 요청을 발급했다. 사용자
   스크린샷에서 설정 ON과 인증 거절이 계속되는 것을 확인했다. 원인은 아직 확정하지 않았다.
   공식 일반 브라우저 로그인과 SSH callback 전달로 전환해 사용자가 인증을 완료했다.
   로그인 전용 컨테이너에는 예비 auth 디렉터리 하나만 mount했음을 확인했고 완료 후 제거됐다.
-- 실제 Slack 명령/응답 및 예비 계정 모델 응답은 아직 검증하지 않았다.
+- 새 채널에서 소유자 명령을 보낸 기록은 2026-09-23 14:36 KST 기준 없다. 따라서 새 채널의
+  실제 명령 응답과 예비 계정의 모델 추론 성공은 아직 관측하지 않았다.
 
 ## 테스트 범위
 
@@ -47,6 +57,7 @@ maintenance, Claude 이미지는 해당 커밋 전체 소스로 빌드하고 이
 | 기능 브랜치 전체 | 1,061 | 37 | 0 |
 | 운영 통합본 전체 | 1,168 | 37 | 0 |
 | 운영 통합 관련 테스트 | 141 | 1 | 0 |
+| 전용 채널 관련 테스트, 로컬·운영 통합본 각각 | 53 | 2 | 0 |
 
 통합본 전체 실행에서는 live 테스트 1개를 제외했다. 로컬 PostgreSQL 14 및 실제 Temporal
 개발 서버를 사용했다. 자동 Slack 입력은 서명된 합성 fixture이고 모델은 가짜 Codex 실행
@@ -67,7 +78,9 @@ gateway 운영 진단은 `/healthz`와 별도 프로세스의 DB/Temporal 조회
 
 ## 다음 단계
 
-사용자가 총괄 봇 DM에 `모델 계정 예비로 전환`을 보내 실제 전환 응답을 확인한다.
+소유자가 비공개 [#ai-account-switch](https://achiisquantresearch.slack.com/archives/C0C3C6ELJ0P)에
+`모델 계정 상태`를 보낸다. 상태 응답이 도착하면 필요할 때
+`모델 계정 예비로 전환`을 보내 실제 전환 응답을 확인한다.
 회사 전체의 새 요청과 한도 대기 요청에 적용된다.
 실행 중이거나 결과가 불확실한 요청, 완료된 요청은 기존 receipt를 보존한다.
 
@@ -75,4 +88,5 @@ gateway 운영 진단은 `/healthz`와 별도 프로세스의 DB/Temporal 조회
 [테스트 및 적용 중 조치](evidence/model-accounts-20260923/production-verification.json),
 [공식 예비 계정 등록 확인](evidence/model-accounts-20260923/enrollment.json),
 [메모리 확인](evidence/model-accounts-20260923/post-probe-stability.json),
+[전용 채널 배포 확인](evidence/model-accounts-20260923/dedicated-channel-rollout.json),
 [사용 및 복구 절차](../runbooks/model-accounts.md).
