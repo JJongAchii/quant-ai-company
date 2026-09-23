@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 from temporalio import activity
 from temporalio.worker import Replayer, Worker
 
+from quant_company.account_gateway import create_app as gateway_app
 from quant_company.account_workflow import AccountControlWorkflow
 from quant_company.accounts import AccountControl, AccountProvider, parse_command
 from quant_company.api import create_app
@@ -214,6 +215,47 @@ async def test_quota_arriving_after_switch_retries_soon_on_new_selection(account
         await task
     assert result.value.retry_after_seconds == 5
     assert provider.select(request_model) == ({"profile": "backup", "revision": 1}, 0)
+
+
+async def test_pinned_worker_gateway_routes_without_changing_frozen_request(accounts, request_model):
+    company, control, provider, runner, configure, calls = accounts
+    company.settings.model_provider = "codex"
+    app = gateway_app(company=company, client=provider.client, token="gateway-token")
+    legacy = RuntimeClient("http://gateway", "gateway-token", transport=httpx.ASGITransport(app=app))
+    configure(mode="quota")
+    for _ in range(2):
+        with pytest.raises(ProviderFault) as quota:
+            await legacy.run(request_model)
+        assert quota.value.code == "quota" and quota.value.retry_after_seconds == 30
+    assert len(calls()) == 1
+    with company.db.transaction() as conn:
+        row = conn.execute("SELECT paused_until>now()+interval '14 minutes' AS full_delay FROM model_accounts WHERE profile='primary'").fetchone()
+        assert row["full_delay"]
+        conn.execute("UPDATE runtime_control SET paused_until=now()+interval '15 minutes',reason='subscription_quota'")
+    command(company)
+    await control.tick()
+    configure()
+    result = await legacy.run(request_model)
+    assert result.request_id == request_model.request_id
+    assert calls()[-1]["environment"]["CODEX_HOME"] == str(runner.config.backup_codex_home)
+    assert await legacy.run(request_model) == result
+    assert await legacy.cancel(request_model.request_id) == "completed"
+    assert len(calls()) == 2
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT paused_until FROM runtime_control").fetchone()["paused_until"] is None
+
+
+async def test_gateway_cannot_accept_an_untrusted_selection_header(accounts, request_model):
+    company, _, provider, _, _, calls = accounts
+    company.settings.model_provider = "codex"
+    app = gateway_app(company=company, client=provider.client, token="gateway-token")
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://gateway") as client:
+        for headers in ({}, {"Authorization":"Bearer gateway-token", "X-Company-Account":"backup",
+                              "X-Company-Account-Revision":"100"}):
+            result = await client.post("/v1/turns", json=request_model.model_dump(), headers=headers)
+            assert result.status_code == 401
+    assert calls() == []
+    assert policy(company)["profile"] == "primary"
 
 
 async def test_private_account_status_does_not_infer_or_expose_credentials(accounts):

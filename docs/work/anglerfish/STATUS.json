@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v1.json",
-  "state": "completed",
+  "currentIntent": "INTENT-v2.json",
+  "state": "in_progress",
   "deliverables": {
     "CONTROL": {
       "status": "completed"
@@ -12,8 +12,14 @@
     },
     "VALIDATION": {
       "status": "completed"
+    },
+    "DEPLOYMENT": {
+      "status": "in_progress"
+    },
+    "ENROLLMENT": {
+      "status": "pending"
     }
   },
-  "operationalStatus": "Not deployed. Owner device login and integration with existing pinned production release remain.",
+  "operationalStatus": "Production integration and preflight in progress; prior feature CI passed.",
   "evidence": "../../project/evidence/model-accounts-20260923/verification.json"
 }

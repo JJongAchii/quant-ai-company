@@ -122,6 +122,25 @@ def test_account_selection_reaches_all_consumers_without_sharing_auth_with_slack
     assert "/state/jobs" in mounts
 
 
+def test_account_gateway_overlay_preserves_research_code_pin_and_auth_boundary(tmp_path):
+    env = tmp_path / "pinned.env"
+    pin = "quant-company-autonomous:" + "3" * 40
+    env.write_text('MODEL_ACCOUNTS_ENABLED=true\nMODEL_ACCOUNTS_OWNER_USER=UOWNER\n'
+                   'SLACK_ALLOWED_USERS=["UOWNER"]\nRESEARCH_REPORT_BUCKET=synthetic-backup-bucket\n'
+                   'PINNED_COMPANY_WORKER_IMAGE=' + pin + '\n')
+    services = compose_config(extra_env=env, overlays=("research.compose.yaml", "autonomous-research.compose.yaml",
+                                                      "model-accounts.compose.yaml"))["services"]
+    worker, gateway, model = (services[name] for name in ("worker", "account-gateway", "codex-runtime"))
+    assert worker["image"] == pin
+    assert worker["environment"]["MODEL_RUNTIME_URL"] == "http://account-gateway:8080"
+    assert "COMPANY_CODE_COMMIT" not in worker["environment"]  # Inherited truthfully from the pinned image.
+    assert gateway["environment"]["MODEL_RUNTIME_URL"] == "http://codex-runtime:8080"
+    assert {s["source"] for s in gateway["secrets"]} == {"database_password", "temporal_api_key", "model_runtime_token"}
+    assert all("/codex/" not in v["source"] for v in gateway.get("volumes", []))
+    assert {s["source"] for s in model["secrets"]} == {"model_runtime_token"}
+    assert not gateway.get("ports") and not model.get("ports")
+
+
 def test_tech_feed_defaults_off_and_stays_out_of_model_container():
     services = compose_config()["services"]
     for name in ("api", "worker", "dispatch", "slack-socket"):

@@ -125,12 +125,15 @@ def resume_quota_waits(conn, command_id, revision):
     for row in rows:
         conn.execute("""INSERT INTO model_account_wakes(command_id,turn_id,revision) VALUES (%s,%s,%s)
             ON CONFLICT DO NOTHING""", (command_id, row["id"], revision))
-    for table in ("news_triages", "news_reviews", "news_searches", "staff_runs"):
+    for table in ("news_triages", "news_reviews", "news_searches", "staff_runs", "quant_feed_calls"):
+        if not conn.execute("SELECT to_regclass(%s) AS name", ("public." + table,)).fetchone()["name"]:
+            continue
         conn.execute(sql.SQL("UPDATE {} SET next_at=now() WHERE error='quota' AND state IN ('running','queued')")
                      .format(sql.Identifier(table)))
     if conn.execute("SELECT to_regclass('public.maintenance_calls') AS name").fetchone()["name"]:
         conn.execute("UPDATE maintenance_calls SET due_at=now() WHERE error='quota' AND response IS NULL")
-    conn.execute("UPDATE runtime_control SET paused_until=NULL,reason=NULL WHERE id=1 AND reason='quota'")
+    conn.execute("""UPDATE runtime_control SET paused_until=NULL,reason=NULL
+        WHERE id=1 AND reason IN ('quota','subscription_quota')""")
     return len(rows)
 
 

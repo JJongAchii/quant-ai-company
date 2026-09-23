@@ -52,6 +52,13 @@
    설정한다. 해당 사용자는 `SLACK_ALLOWED_USERS`에도 있어야 한다. api/socket/dispatch/worker/
    news-worker/maintenance 등 기존 Compose 서비스에 동일하게 적용한다. Slack 프로세스에
    모델 runtime token을 추가하지 않는다.
+   연구 코드가 고정된 worker를 유지할 때는 그 컨테이너의 정확한 image를
+   `PINNED_COMPANY_WORKER_IMAGE`에 기록하고 `model-accounts.compose.yaml`을 마지막 overlay로
+   적용한다. private `account-gateway`가 기존 worker의 모델 요청을 DB의 선택 계정으로 보내고
+   별도 계정 제어 Temporal queue도 담당한다. worker의 이미지와 `COMPANY_CODE_COMMIT`은 유지한다.
+   해당 worker의 URL만 gateway로 바뀌며, 다른 최신 클라이언트는 기존 Codex runtime을 사용한다.
+   이전 worker는 계정 대기를 30초 간격으로 다시 확인하되 실제 모델 cooldown은 DB에 보존한다.
+   첫 배포 전에 기록된 타이머는 한 번 기존 남은 시간을 기다릴 수 있다.
 7. 실제 소유자가 총괄 DM에서 상태 → 예비 전환을 보낸다. 적용 기록과 다음 정상 업무 응답을
    확인한다. 로그인 확인만으로 실제 구독 모델 검증을 완료했다고 기록하지 않는다.
 
@@ -66,6 +73,8 @@
   계정으로 요청하므로 실행 중에 단순히 끄지 않는다. DB/receipt/transfer archive는 삭제하지 않는다.
 - 인증 상태 조회는 `/v1/accounts`, 실행 선택은 private HTTP headers로만 전달한다.
   임의 `CODEX_HOME`, shell 명령, Docker 제어는 Slack에서 허용하지 않는다.
+- 정기 백업과 유지보수 배포도 account overlay를 포함한다. DB·Temporal·runtime token은
+  gateway에만 제공하고 Codex 컨테이너에는 DB/Slack/Temporal 자격증명을 넣지 않는다.
 
 [공식 인증 문서](https://learn.chatgpt.com/docs/auth),
 [설계](../adr/0037-owner-selected-codex-accounts.md),

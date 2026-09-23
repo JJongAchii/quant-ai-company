@@ -52,7 +52,14 @@ retry delay for the same request, avoiding a stale 15-minute wait.
 
 Feature activation is explicit and requires an owner in `SLACK_ALLOWED_USERS`. Disabled
 deployments retain the existing primary profile. Runtime and all model consumers must be
-updated together; a prior binary has no knowledge of the selected backup profile.
+covered together. When research execution requires a pinned worker binary, the private
+account gateway applies the same database routing to its unchanged requests. Its image
+and company code identity stay pinned; only its model endpoint configuration changes.
+The gateway also owns the control Temporal worker and has no Slack or ChatGPT credentials.
+Old workflows poll the durable quota gate every 30 seconds without repeating inference;
+already-recorded legacy timers keep their remaining duration once. Other updated clients
+route directly. Backups stop this additional database writer, and later releases retain
+the overlay and validate the exact pinned worker image.
 
 Credentials remain only in host-mounted private directories. Enrollment never copies or
 overwrites another profile. An expired login needs interactive reauthentication. No model
