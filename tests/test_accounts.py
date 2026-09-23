@@ -67,6 +67,34 @@ def test_account_commands_require_exact_intent(text):
     assert parse_command(text) is None
 
 
+@pytest.mark.parametrize("text,thread_ts", [
+    ("서브 계정으로 전환해줘", None),
+    ("<@UBOT0> 서브 계정으로 전환해줘", "100.1"),
+    ("<@UBOT0>", "100.1"),
+])
+def test_unrecognized_owner_message_gets_deterministic_help(accounts, credentials, text, thread_ts):
+    company, _, _, _, _, calls = accounts
+    payload = event(credentials, text=text, type="app_mention" if text.startswith("<@") else "message",
+                    channel="CACC", thread_ts=thread_ts)
+    raw, headers = signed(payload, credentials["director"])
+    client = TestClient(create_app(company.settings, company, credentials))
+    first = client.post("/slack/events/director", content=raw, headers=headers)
+    assert first.status_code == 200
+    assert first.json()["account_help"] is True
+    assert first.json()["owner_control"] is False
+    assert client.post("/slack/events/director", content=raw, headers=headers).json()["duplicate"]
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM model_account_commands").fetchone()["n"] == 0
+        assert conn.execute("SELECT count(*) AS n FROM turns").fetchone()["n"] == 0
+        row = conn.execute("SELECT channel,thread_ts,text FROM outbox").fetchone()
+        assert row["channel"] == "CACC"
+        assert row["thread_ts"] == (thread_ts or payload["event"]["ts"])
+        assert "계정 명령을 인식하지 못했습니다" in row["text"]
+        assert "`모델 계정 예비로 전환`" in row["text"]
+    assert policy(company)["profile"] == "primary"
+    assert calls() == []
+
+
 def test_account_channel_is_required_in_configuration():
     with pytest.raises(ValueError, match="dedicated allowed Slack channel"):
         Settings(model_accounts_enabled=True, model_accounts_owner_user="UHUMAN",
@@ -146,6 +174,8 @@ def test_account_control_rejects_untrusted_events(accounts, credentials, change)
     with company.db.transaction() as conn:
         assert conn.execute("SELECT count(*) AS n FROM model_account_commands").fetchone()["n"] == 0
         assert conn.execute("SELECT count(*) AS n FROM turns").fetchone()["n"] == 0
+        if change != "unrelated_text":
+            assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
 
 
 async def test_owner_channel_thread_status_and_switch_are_model_free(accounts, credentials):

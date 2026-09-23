@@ -323,7 +323,7 @@ class Company:
     def ingest(self, *, event_key: str, text: str, owner: str, agent: str = "director",
                project_id: str | None = None, channel: str | None = None, thread_ts: str | None = None,
                revise: bool = False, status_only: bool = False, daily_limit_command: dict | None = None,
-               account_command: dict | None = None,
+               account_command: dict | None = None, account_help: bool = False,
                interpret: bool = False, control_action: str | None = None,
                approval_context: dict | None = None) -> dict:
         self.role(agent)
@@ -332,7 +332,7 @@ class Company:
         from .research.approvals import ApprovalEvent, short_command
         from .research.store import parse_command
 
-        research_command = (parse_command(text) or short_command(text)) if agent == "director" else None
+        research_command = (parse_command(text) or short_command(text)) if agent == "director" and not account_help else None
         event = None
         if approval_context and (research_command or approval_context.get("origin") == "block_actions"):
             try:
@@ -351,16 +351,20 @@ class Company:
             status_only = True
         digest = fingerprint([text, owner, agent, project_id, channel, thread_ts, revise, status_only])
         prior_ingress_digest = digest
-        if account_command is not None:
+        if account_command is not None or account_help:
             from .accounts import parse_command
 
-            if (account_command != parse_command(text) or agent != "director" or not channel
+            if ((account_command is not None and account_command != parse_command(text))
+                    or (account_help and (account_command is not None or parse_command(text) is not None))
+                    or revise or daily_limit_command is not None or interpret or control_action is not None
+                    or agent != "director" or not channel
                     or channel != self.settings.model_accounts_channel_id
                     or channel not in self.settings.slack_allowed_channels
                     or not event_key.startswith("slack:")
                     or owner != self.settings.model_accounts_owner_user or owner not in self.settings.slack_allowed_users):
                 raise PolicyError("Account control requires the configured owner in the dedicated channel")
-            digest = fingerprint([digest, account_command])
+            digest = fingerprint([digest, account_command] if account_command is not None
+                                 else [digest, "account_help"])
             status_only = True
             interpret = False
         if research_command and event:
@@ -422,6 +426,11 @@ class Company:
                 from .accounts import enqueue
 
                 enqueue(conn, self, project, task, event_key, account_command)
+            elif account_help:
+                from .accounts import HELP_TEXT
+
+                conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (HELP_TEXT, task["id"]))
+                self._message(conn, project, task["id"], agent, "status", HELP_TEXT)
             elif research_command:
                 from .research.approvals import apply_owner_command
 
