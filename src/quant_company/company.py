@@ -357,10 +357,11 @@ class Company:
             from .accounts import parse_command
 
             if (account_command != parse_command(text) or agent != "director" or not channel
-                    or (not channel.startswith("D") and channel not in self.settings.slack_allowed_channels)
+                    or channel != self.settings.model_accounts_channel_id
+                    or channel not in self.settings.slack_allowed_channels
                     or not event_key.startswith("slack:")
                     or owner != self.settings.model_accounts_owner_user or owner not in self.settings.slack_allowed_users):
-                raise PolicyError("Account control requires the configured owner in a DM or allowed channel")
+                raise PolicyError("Account control requires the configured owner in the dedicated channel")
             digest = fingerprint([digest, account_command])
             status_only = True
             interpret = False

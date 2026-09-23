@@ -70,15 +70,30 @@ class SlackIngress:
         timestamp = event.get("ts")
         if not text.strip() or not timestamp:
             return {"ok": True, "ignored": True}
+        from .accounts import parse_command as parse_account_command
+
+        account_text = re.sub(r"<@[A-Z0-9]+>", "", text).strip()
+        account_command = parse_account_command(account_text)
+        account_channel = channel == self.settings.model_accounts_channel_id
+        if account_channel:
+            if (role != "director" or user != self.settings.model_accounts_owner_user
+                    or account_command is None):
+                return {"ok": True, "ignored": True, "reason": "account_channel_scope"}
+        elif account_command is not None:
+            return {"ok": True, "ignored": True, "reason": "account_channel_required"}
         mentions = set(re.findall(r"<@([A-Z0-9]+)>", text))
         known = {item["bot_user_id"]: name for name, item in self.credentials.items()}
         targets = {known[mention] for mention in mentions if mention in known}
+        if account_channel and targets and targets != {"director"}:
+            return {"ok": True, "ignored": True, "reason": "account_channel_scope"}
         thread_ts = event.get("thread_ts") or timestamp
         improvements = (self.settings.company_improvements_enabled
                         and channel == self.settings.improvements_channel_id)
         if role == "maintainer" and not improvements:
             return {"ok": True, "ignored": True}
-        if self.settings.data_watch_enabled and channel == self.settings.data_watch_channel_id:
+        if account_channel:
+            target = "director"
+        elif self.settings.data_watch_enabled and channel == self.settings.data_watch_channel_id:
             if role != "data" or user != self.settings.data_watch_owner_user:
                 return {"ok": True, "ignored": True}
             target = "data"
@@ -120,9 +135,6 @@ class SlackIngress:
             if approval is not None:
                 return {"ok": True, **approval}
         if target == "director":
-            from .accounts import parse_command as parse_account_command
-
-            account_command = parse_account_command(text)
             if account_command is not None:
                 result = self.company.ingest(
                     event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,

@@ -88,7 +88,8 @@ class AccountProvider:
                 if (not switched and state["notified_revision"] != policy["revision"]
                         and policy["control_project_id"]):
                     project = self.company._project(conn, policy["control_project_id"])
-                    if project["owner_user"] == self.company.settings.model_accounts_owner_user:
+                    if (project["owner_user"] == self.company.settings.model_accounts_owner_user
+                            and project["channel"] == self.company.settings.model_accounts_channel_id):
                         self.company._message(conn, project, None, "director", "status",
                             f"{LABELS[account['profile']]} 계정에서 사용 한도 응답을 받아 모델 작업이 대기 중입니다. "
                             "`모델 계정 상태`로 확인한 뒤 전환 명령을 보내 주세요. 자동으로 계정을 바꾸지는 않습니다.")
@@ -178,8 +179,8 @@ class AccountControl:
                 and command["owner_user"] == self.company.settings.model_accounts_owner_user
                 and command["owner_user"] in self.company.settings.slack_allowed_users
                 and project["owner_user"] == command["owner_user"]
-                and (project["channel"].startswith("D")
-                     or project["channel"] in self.company.settings.slack_allowed_channels))
+                and project["channel"] == self.company.settings.model_accounts_channel_id
+                and project["channel"] in self.company.settings.slack_allowed_channels)
             if not authorized:
                 text, outcome = "계정 제어 권한 또는 설정이 변경되어 요청을 적용하지 않았습니다.", "rejected"
             else:
