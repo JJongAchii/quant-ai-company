@@ -16,7 +16,8 @@ from quant_company.account_gateway import create_app as gateway_app
 from quant_company.account_workflow import AccountControlWorkflow
 from quant_company.accounts import AccountControl, AccountProvider, parse_command
 from quant_company.api import create_app
-from quant_company.company import Company
+from quant_company.company import Company, PolicyError
+from quant_company.config import Settings
 from quant_company.contracts import ProviderFault
 from quant_company.execution import TurnExecutor
 from quant_company.providers.client import RuntimeClient
@@ -37,6 +38,8 @@ from .test_temporal import temporal_environment as temporal_environment
 @pytest.fixture
 def accounts(company, fake_codex, tmp_path):
     company.settings.model_accounts_owner_user = "UHUMAN"
+    company.settings.model_accounts_channel_id = "CACC"
+    company.settings.slack_allowed_channels.append("CACC")
     company.settings.model_accounts_enabled = True
     config, configure, calls = fake_codex
     backup = tmp_path / "backup-auth"
@@ -49,8 +52,8 @@ def accounts(company, fake_codex, tmp_path):
 
 
 def command(company, text="모델 계정 예비로 전환", *, identity=None):
-    return company.ingest(event_key="slack:TTEST:DOWNER:" + (identity or uuid4().hex), text=text,
-        owner="UHUMAN", channel="DOWNER", thread_ts="100.1", account_command=parse_command(text))
+    return company.ingest(event_key="slack:TTEST:CACC:" + (identity or uuid4().hex), text=text,
+        owner="UHUMAN", channel="CACC", thread_ts="100.1", account_command=parse_command(text))
 
 
 def policy(company):
@@ -64,10 +67,27 @@ def test_account_commands_require_exact_intent(text):
     assert parse_command(text) is None
 
 
-async def test_signed_owner_dm_is_model_free_deduplicated_and_persistent(accounts, credentials):
+def test_account_channel_is_required_in_configuration():
+    with pytest.raises(ValueError, match="dedicated allowed Slack channel"):
+        Settings(model_accounts_enabled=True, model_accounts_owner_user="UHUMAN",
+                 slack_allowed_users=["UHUMAN"], slack_allowed_channels=["CQUANT"])
+
+
+@pytest.mark.parametrize("channel", ["CQUANT", "DOWNER"])
+def test_direct_account_ingest_refuses_other_channels(accounts, channel):
+    company = accounts[0]
+    with pytest.raises(PolicyError, match="dedicated channel"):
+        company.ingest(event_key=f"slack:TTEST:{channel}:100.1:director", text="모델 계정 예비로 전환",
+                       owner="UHUMAN", channel=channel, thread_ts="100.1",
+                       account_command=parse_command("모델 계정 예비로 전환"))
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM model_account_commands").fetchone()["n"] == 0
+
+
+async def test_signed_owner_channel_is_model_free_deduplicated_and_persistent(accounts, credentials):
     company, control, _, _, _, calls = accounts
     client = TestClient(create_app(company.settings, company, credentials))
-    raw, headers = signed(event(credentials, text="모델 계정 예비로 전환", type="message", channel="DOWNER"),
+    raw, headers = signed(event(credentials, text="모델 계정 예비로 전환", type="message", channel="CACC"),
                           credentials["director"])
     response = client.post("/slack/events/director", content=raw, headers=headers)
     assert response.status_code == 200
@@ -83,32 +103,101 @@ async def test_signed_owner_dm_is_model_free_deduplicated_and_persistent(account
     assert calls() == []
 
 
-@pytest.mark.parametrize("change", ["other_user", "channel", "bot", "signature", "workspace", "edited"])
+@pytest.mark.parametrize("change", ["other_user", "other_channel_user", "channel", "other_allowed_channel",
+                                  "dm", "other_role", "other_bot_mention", "unrelated_text", "bot", "signature",
+                                  "workspace", "edited"])
 def test_account_control_rejects_untrusted_events(accounts, credentials, change):
     company, _, _, _, _, _ = accounts
     company.settings.slack_allowed_users.append("UOTHER")
-    payload = event(credentials, text="모델 계정 예비로 전환", type="message", channel="DOWNER")
+    payload = event(credentials, text="모델 계정 예비로 전환", type="message", channel="CACC")
     if change == "other_user":
         payload["event"]["user"] = "UOTHER"
+    elif change == "other_channel_user":
+        payload["event"].update(user="UOTHER", channel="CACC", type="app_mention",
+                                text="<@UBOT0> 모델 계정 예비로 전환")
     elif change == "channel":
-        payload["event"]["channel"] = "CQUANT"
+        payload["event"]["channel"] = "CUNCONFIGURED"
         payload["event"]["type"] = "app_mention"
         payload["event"]["text"] = "<@UBOT0> 모델 계정 예비로 전환"
+    elif change == "other_allowed_channel":
+        payload["event"].update(channel="CQUANT", type="app_mention",
+                                text="<@UBOT0> 모델 계정 예비로 전환")
+    elif change == "dm":
+        payload["event"]["channel"] = "DOWNER"
+    elif change == "other_role":
+        payload["api_app_id"] = credentials["data"]["app_id"]
+    elif change == "other_bot_mention":
+        payload["event"].update(type="app_mention", text="<@UBOT3> 모델 계정 예비로 전환")
+    elif change == "unrelated_text":
+        payload["event"]["text"] = "일반 업무를 해줘"
     elif change == "bot":
         payload["event"]["bot_id"] = "BOTHER"
     elif change == "workspace":
         payload["team_id"] = "TOTHER"
     elif change == "edited":
         payload["event"]["subtype"] = "message_changed"
-    raw, headers = signed(payload, credentials["director"])
+    signing_role = "data" if change == "other_role" else "director"
+    raw, headers = signed(payload, credentials[signing_role])
     if change == "signature":
         headers["x-slack-signature"] = "v0=invalid"
     response = TestClient(create_app(company.settings, company, credentials)).post(
-        "/slack/events/director", content=raw, headers=headers)
+        f"/slack/events/{signing_role}", content=raw, headers=headers)
     assert response.status_code in {200, 401, 409}
     with company.db.transaction() as conn:
         assert conn.execute("SELECT count(*) AS n FROM model_account_commands").fetchone()["n"] == 0
         assert conn.execute("SELECT count(*) AS n FROM turns").fetchone()["n"] == 0
+
+
+async def test_owner_channel_thread_status_and_switch_are_model_free(accounts, credentials):
+    company, control, _, _, _, calls = accounts
+    client = TestClient(create_app(company.settings, company, credentials))
+
+    def receive(text, ts, *, mention):
+        payload = event(credentials, text=("<@UBOT0> " if mention else "") + text,
+                        ts=ts, thread_ts="100.1", channel="CACC",
+                        type="app_mention" if mention else "message")
+        raw, headers = signed(payload, credentials["director"])
+        first = client.post("/slack/events/director", content=raw, headers=headers)
+        assert first.status_code == 200
+        assert first.json()["owner_control"]
+        assert client.post("/slack/events/director", content=raw, headers=headers).json()["duplicate"]
+        return first.json()
+
+    status = receive("모델 계정 상태", "100.2", mention=True)
+    await control.tick()
+    assert policy(company)["profile"] == "primary"
+    assert policy(company)["revision"] == 0
+    switch = receive("모델 계정 예비로 전환", "100.3", mention=False)
+    await control.tick()
+    assert switch["project_id"] == status["project_id"]
+    assert company.project_state(status["project_id"])["turns"] == []
+    assert policy(company)["profile"] == "backup"
+    assert policy(company)["revision"] == 1
+    with company.db.transaction() as conn:
+        replies = conn.execute("SELECT channel,thread_ts,text FROM outbox ORDER BY created_at").fetchall()
+        assert len(replies) == 2
+        assert all(r["channel"] == "CACC" and r["thread_ts"] == "100.1" for r in replies)
+        assert "회사 공용 모델 계정: 기본" in replies[0]["text"]
+        assert "예비 계정으로 전환했습니다" in replies[1]["text"]
+    assert calls() == []
+
+
+async def test_queued_account_switch_rechecks_allowed_channel(accounts, credentials):
+    company, control, _, _, _, calls = accounts
+    payload = event(credentials, text="<@UBOT0> 모델 계정 예비로 전환", type="app_mention",
+                    channel="CACC", thread_ts="100.1")
+    raw, headers = signed(payload, credentials["director"])
+    response = TestClient(create_app(company.settings, company, credentials)).post(
+        "/slack/events/director", content=raw, headers=headers)
+    assert response.status_code == 200
+    assert response.json()["owner_control"]
+    company.settings.slack_allowed_channels.clear()
+    await control.tick()
+    assert policy(company)["profile"] == "primary"
+    assert policy(company)["revision"] == 0
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT receipt FROM model_account_commands").fetchone()["receipt"]["outcome"] == "rejected"
+    assert calls() == []
 
 
 async def test_quota_switch_preserves_id_cached_completion_and_profile_cooldowns(accounts, request_model):
