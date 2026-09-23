@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "currentIntent": "INTENT-v1.json",
+  "state": "completed",
+  "deliverables": {
+    "CONTROL": {
+      "status": "completed"
+    },
+    "RUNTIME": {
+      "status": "completed"
+    },
+    "VALIDATION": {
+      "status": "completed"
+    }
+  },
+  "operationalStatus": "Not deployed. Owner device login and integration with existing pinned production release remain.",
+  "evidence": "../../project/evidence/model-accounts-20260923/verification.json"
+}

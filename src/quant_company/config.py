@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     model_provider: str = "codex"
     model_runtime_url: str = "http://codex:8081"
     model_runtime_token: SecretStr = SecretStr("")
+    model_accounts_enabled: bool = False
+    model_accounts_owner_user: str = ""
     company_lake_uri: str = Field(default="", pattern=r"^(|s3://[a-z0-9][a-z0-9.-]+/[A-Za-z0-9_/-]+)$")
     slack_team_id: str = ""
     slack_allowed_users: list[str] = Field(default_factory=list)
@@ -75,6 +77,8 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def explicit_simulation(self) -> "Settings":
+        if self.model_accounts_enabled and self.model_accounts_owner_user not in self.slack_allowed_users:
+            raise ValueError("Model account control requires an explicitly allowed owner")
         if self.model_provider not in {"codex", "fixture"}:
             raise ValueError("MODEL_PROVIDER must be codex or fixture")
         if self.model_provider == "fixture" and not self.fixture_mode:

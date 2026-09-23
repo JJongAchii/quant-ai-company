@@ -43,9 +43,14 @@ def provider_for(company: Company):
         return FixtureProvider()
     from .providers.client import RuntimeClient
 
-    return RuntimeClient(company.settings.model_runtime_url,
+    client = RuntimeClient(company.settings.model_runtime_url,
                          company.settings.model_runtime_token.get_secret_value(),
                          timeout_seconds=company.settings.company_model_timeout_seconds)
+    if company.settings.model_accounts_enabled:
+        from .accounts import AccountProvider
+
+        return AccountProvider(company, client)
+    return client
 
 
 class TurnExecutor:

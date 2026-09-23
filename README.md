@@ -43,6 +43,11 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 
 ## 동작
 
+회사 공용 Codex의 기본·예비 계정을 총괄 DM에서 수동 선택하는 기능을 추가했습니다.
+기본값은 비활성화이며 별도 로그인과 운영 활성화가 필요합니다.
+[명령·설정·복구](docs/runbooks/model-accounts.md),
+[검증 및 운영 반영 상태](docs/project/MODEL-ACCOUNTS-VALIDATION.md)를 참고하세요.
+
 ```mermaid
 flowchart LR
     U[사용자 · 휴대폰 Slack] <--> S[직원별 Slack 앱 4개]
