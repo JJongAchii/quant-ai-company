@@ -23,6 +23,6 @@
       "distinctAccountsVerified": true
     }
   },
-  "operationalStatus": "Production activated; both distinct accounts authenticated; all 12 release health checks passed. Awaiting actual owner Slack switch command verification.",
+  "operationalStatus": "Both distinct accounts authenticated. Actual owner status command in an allowed channel was rejected by the DM-only guard; fixing channel support and recovering the original request before completion.",
   "evidence": "../../project/evidence/model-accounts-20260923/production-activation.json"
 }

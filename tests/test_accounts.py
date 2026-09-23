@@ -83,15 +83,19 @@ async def test_signed_owner_dm_is_model_free_deduplicated_and_persistent(account
     assert calls() == []
 
 
-@pytest.mark.parametrize("change", ["other_user", "channel", "bot", "signature", "workspace", "edited"])
+@pytest.mark.parametrize("change", ["other_user", "other_channel_user", "channel", "bot", "signature",
+                                  "workspace", "edited"])
 def test_account_control_rejects_untrusted_events(accounts, credentials, change):
     company, _, _, _, _, _ = accounts
     company.settings.slack_allowed_users.append("UOTHER")
     payload = event(credentials, text="모델 계정 예비로 전환", type="message", channel="DOWNER")
     if change == "other_user":
         payload["event"]["user"] = "UOTHER"
+    elif change == "other_channel_user":
+        payload["event"].update(user="UOTHER", channel="CQUANT", type="app_mention",
+                                text="<@UBOT0> 모델 계정 예비로 전환")
     elif change == "channel":
-        payload["event"]["channel"] = "CQUANT"
+        payload["event"]["channel"] = "CUNCONFIGURED"
         payload["event"]["type"] = "app_mention"
         payload["event"]["text"] = "<@UBOT0> 모델 계정 예비로 전환"
     elif change == "bot":
@@ -109,6 +113,58 @@ def test_account_control_rejects_untrusted_events(accounts, credentials, change)
     with company.db.transaction() as conn:
         assert conn.execute("SELECT count(*) AS n FROM model_account_commands").fetchone()["n"] == 0
         assert conn.execute("SELECT count(*) AS n FROM turns").fetchone()["n"] == 0
+
+
+async def test_owner_channel_thread_status_and_switch_are_model_free(accounts, credentials):
+    company, control, _, _, _, calls = accounts
+    client = TestClient(create_app(company.settings, company, credentials))
+
+    def receive(text, ts, *, mention):
+        payload = event(credentials, text=("<@UBOT0> " if mention else "") + text,
+                        ts=ts, thread_ts="100.1", channel="CQUANT",
+                        type="app_mention" if mention else "message")
+        raw, headers = signed(payload, credentials["director"])
+        first = client.post("/slack/events/director", content=raw, headers=headers)
+        assert first.status_code == 200
+        assert first.json()["owner_control"]
+        assert client.post("/slack/events/director", content=raw, headers=headers).json()["duplicate"]
+        return first.json()
+
+    status = receive("모델 계정 상태", "100.2", mention=True)
+    await control.tick()
+    assert policy(company)["profile"] == "primary"
+    assert policy(company)["revision"] == 0
+    switch = receive("모델 계정 예비로 전환", "100.3", mention=False)
+    await control.tick()
+    assert switch["project_id"] == status["project_id"]
+    assert company.project_state(status["project_id"])["turns"] == []
+    assert policy(company)["profile"] == "backup"
+    assert policy(company)["revision"] == 1
+    with company.db.transaction() as conn:
+        replies = conn.execute("SELECT channel,thread_ts,text FROM outbox ORDER BY created_at").fetchall()
+        assert len(replies) == 2
+        assert all(r["channel"] == "CQUANT" and r["thread_ts"] == "100.1" for r in replies)
+        assert "회사 공용 모델 계정: 기본" in replies[0]["text"]
+        assert "예비 계정으로 전환했습니다" in replies[1]["text"]
+    assert calls() == []
+
+
+async def test_queued_account_switch_rechecks_allowed_channel(accounts, credentials):
+    company, control, _, _, _, calls = accounts
+    payload = event(credentials, text="<@UBOT0> 모델 계정 예비로 전환", type="app_mention",
+                    channel="CQUANT", thread_ts="100.1")
+    raw, headers = signed(payload, credentials["director"])
+    response = TestClient(create_app(company.settings, company, credentials)).post(
+        "/slack/events/director", content=raw, headers=headers)
+    assert response.status_code == 200
+    assert response.json()["owner_control"]
+    company.settings.slack_allowed_channels.clear()
+    await control.tick()
+    assert policy(company)["profile"] == "primary"
+    assert policy(company)["revision"] == 0
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT receipt FROM model_account_commands").fetchone()["receipt"]["outcome"] == "rejected"
+    assert calls() == []
 
 
 async def test_quota_switch_preserves_id_cached_completion_and_profile_cooldowns(accounts, request_model):
