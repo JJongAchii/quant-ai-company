@@ -15,6 +15,8 @@ from .data_watch.workflow import DataWatchWorkflow
 from .execution import TurnExecutor
 from .news.runner import NewsCollector, NewsDiscovery, NewsEditor
 from .news.workflow import NewsCollectionWorkflow, NewsDiscoveryWorkflow, NewsEditorialWorkflow
+from .quant_feed.runner import QuantFeedCollector, QuantFeedEditor
+from .quant_feed.workflow import QuantFeedCollectionWorkflow, QuantFeedEditorialWorkflow
 from .research.runner import ResearchRunner
 from .research.workflow import ResearchWorkflow
 from .slack import SlackIngress, SlackOutbox
@@ -97,6 +99,17 @@ def make_data_watch_worker(client, company, runner=None):
 
 
 async def dispatch_once(client, company):
+    if company.settings.quant_feed_enabled and not getattr(company, "_quant_feed_started", False):
+        for workflow, identity, suffix in (
+            (QuantFeedCollectionWorkflow.run, "company-quant-feed-collection-v1", "-quant-collection"),
+            (QuantFeedEditorialWorkflow.run, "company-quant-feed-editorial-v1", "-quant-model"),
+        ):
+            try:
+                await client.start_workflow(workflow, id=identity, task_queue=company.settings.temporal_task_queue + suffix,
+                                            id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+            except WorkflowAlreadyStartedError:
+                pass
+        company._quant_feed_started = True
     if company.settings.model_accounts_enabled and not getattr(company, "_accounts_started", False):
         try:
             await client.start_workflow(AccountControlWorkflow.run, id="company-model-accounts-v1",
@@ -192,6 +205,30 @@ async def news_worker_main(settings=None):
     company = Company(settings)
     client = await connect(settings)
     async with (make_news_model_worker(client, company), make_news_collector(client, company)):
+        await asyncio.Event().wait()
+
+
+def make_quant_collector(client, company, collector=None):
+    collector = collector or QuantFeedCollector(company)
+    return Worker(client, task_queue=company.settings.temporal_task_queue + "-quant-collection",
+                  workflows=[QuantFeedCollectionWorkflow], activities=[collector.activity_tick],
+                  max_concurrent_activities=1, max_cached_workflows=5,
+                  graceful_shutdown_timeout=timedelta(seconds=10))
+
+
+def make_quant_model_worker(client, company, provider=None):
+    editor = QuantFeedEditor(company, provider)
+    return Worker(client, task_queue=company.settings.temporal_task_queue + "-quant-model",
+                  workflows=[QuantFeedEditorialWorkflow], activities=[editor.activity_tick],
+                  max_concurrent_activities=1, max_cached_workflows=5,
+                  graceful_shutdown_timeout=timedelta(seconds=10))
+
+
+async def quant_feed_worker_main(settings=None):
+    settings = settings or Settings()
+    company = Company(settings)
+    client = await connect(settings)
+    async with make_quant_collector(client, company), make_quant_model_worker(client, company):
         await asyncio.Event().wait()
 
 

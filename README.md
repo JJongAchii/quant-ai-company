@@ -151,6 +151,9 @@ flowchart LR
 ## 시작할 때
 
 [AWS 설치·복구 안내](docs/deployment.md)와 [Slack 설정](docs/slack-setup.md)을 사용합니다.
+
+`#quant-feeds` 전용 Quant Scout의 원문 심사·별도 근거 검사·발송 운영은
+[퀀트 연구 피드 안내](docs/quant-feed.md)를 참고하세요. 기본 비활성이며, 뉴스와 별도 슬롯을 사용합니다.
 기존 EC2·Insight-Invest가 있는 `default` 프로필의 서울 리전에서 별도 Lightsail **2GB·월 $12**를
 생성을 승인받아 운영합니다. 약 4분간의 합성 협업 측정에서 호스트 가용 메모리는 최소 1072.5 MiB였고,
 메모리 부족으로 종료된 컨테이너는 없었습니다. 이는 동시 모델 작업 1개의 짧은 검사이며 장시간 부하

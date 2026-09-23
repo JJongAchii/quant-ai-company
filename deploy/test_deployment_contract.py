@@ -217,6 +217,18 @@ def test_news_worker_is_independent_and_has_only_news_runtime_credentials():
     assert "news-worker" in backup.APP_SERVICES
 
 
+def test_quant_worker_is_opt_in_and_has_no_slack_or_lake_secrets():
+    assert "quant-feed-worker" not in compose_config()["services"]
+    service = compose_config("quant-feed")["services"]["quant-feed-worker"]
+    assert service["command"] == ["quant-company", "quant-feed-worker"]
+    assert int(service["mem_limit"]) == 256 * 1024 * 1024
+    assert {item["source"] for item in service["secrets"]} == {
+        "database_password", "temporal_api_key", "model_runtime_token"}
+    assert "worker" not in service["depends_on"]
+    assert "quant-feed-worker" in backup.APP_SERVICES
+    assert "account-gateway" in backup.APP_SERVICES
+
+
 def resolve_cf(node, parameters, conditions):
     # Evaluate the small intrinsic subset used by the actual ingress property.
     if isinstance(node, dict):

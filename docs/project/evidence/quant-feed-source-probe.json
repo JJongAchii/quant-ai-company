@@ -1,0 +1,484 @@
+{
+  "network": "real-public-sources",
+  "model": "not-called",
+  "slack": "not-connected",
+  "sources": [
+    {
+      "source": "arxiv-qfin",
+      "ok": true,
+      "url": "https://rss.arxiv.org/atom/q-fin.PM+q-fin.ST+q-fin.TR+q-fin.CP",
+      "requested_url": "https://rss.arxiv.org/atom/q-fin.PM+q-fin.ST+q-fin.TR+q-fin.CP",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:12:46.683467+00:00",
+      "content_type": "application/atom+xml",
+      "original_sha256": "5e6c24d835cd3f51f8be10692b3a437a95cd46b37d0f55db91d140bafb777283",
+      "original_bytes": 27616,
+      "coverage": "registered endpoint only",
+      "entries": 13,
+      "sample": [
+        {
+          "url": "https://arxiv.org/abs/2609.22893",
+          "title": "Universal Diffusion Models for Implied Volatility Surfaces: Learning Shared Dynamics Across Stocks",
+          "metadata": {
+            "published": "2026-09-22T00:00:00-04:00",
+            "updated": "2026-09-22T04:03:46.431165+00:00",
+            "doi": null,
+            "authors": []
+          }
+        },
+        {
+          "url": "https://arxiv.org/abs/2609.23223",
+          "title": "Stealing profits: Spread-based temporal hierarchy forecasting for day-ahead electricity markets",
+          "metadata": {
+            "published": "2026-09-22T00:00:00-04:00",
+            "updated": "2026-09-22T04:03:46.431284+00:00",
+            "doi": null,
+            "authors": []
+          }
+        }
+      ]
+    },
+    {
+      "source": "nber-asset-pricing",
+      "ok": true,
+      "url": "https://back.nber.org/rss/newap.xml",
+      "requested_url": "https://back.nber.org/rss/newap.xml",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:12:47.013621+00:00",
+      "content_type": "application/xml",
+      "original_sha256": "c545251b490593322b5fc4a36482fc69c4813fcd799bc956a7bbd84450cc7523",
+      "original_bytes": 2869,
+      "coverage": "registered endpoint only",
+      "entries": 2,
+      "sample": [
+        {
+          "url": "https://www.nber.org/papers/w35766",
+          "title": "Expectations and the Term Structure of Interest Rates -- by Pooya Molavi, Alireza Tahbaz-Salehi, Andrea Vedolin",
+          "metadata": {
+            "published": null,
+            "updated": null,
+            "doi": null,
+            "authors": []
+          }
+        },
+        {
+          "url": "https://www.nber.org/papers/w35781",
+          "title": "Risk Premia, Firm Insurance, and Endogenous Labor Income Risk -- by Maarten Meeuwis, Dimitris Papanikolaou, Lawrence D.W. Schmidt",
+          "metadata": {
+            "published": null,
+            "updated": null,
+            "doi": null,
+            "authors": []
+          }
+        }
+      ]
+    },
+    {
+      "source": "nber-classic-ml",
+      "ok": true,
+      "basis": "registered_seed_not_verified_original",
+      "entries": 1,
+      "sample": [
+        {
+          "url": "https://www.nber.org/papers/w25398",
+          "title": "NBER",
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "source": "journal-jf",
+      "ok": true,
+      "url": "https://api.crossref.org/journals/1540-6261/works?sort=published&order=desc&rows=50",
+      "requested_url": "https://api.crossref.org/journals/1540-6261/works?sort=published&order=desc&rows=50",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:12:49.330086+00:00",
+      "content_type": "application/json",
+      "original_sha256": "c759679a0b0753198c061f3b0af6a2a006d24c48c674c725eb6ac2bed1b8c18e",
+      "original_bytes": 570080,
+      "coverage": "registered endpoint only",
+      "entries": 48,
+      "sample": [
+        {
+          "url": "https://doi.org/10.1111/jofi.70073",
+          "title": "Discretionary Announcement Timing and Stock Returns",
+          "metadata": {
+            "doi": "10.1111/jofi.70073",
+            "published": "2026-09-03",
+            "authors": [
+              "KERRY BACK",
+              "BRUCE I. CARLIN",
+              "SEYED M. KAZEMPOUR",
+              "CHLOE L. XIE"
+            ],
+            "metadata_only": true
+          }
+        },
+        {
+          "url": "https://doi.org/10.1111/jofi.70077",
+          "title": "Longevity, Health, and Housing Risk Management in Retirement",
+          "metadata": {
+            "doi": "10.1111/jofi.70077",
+            "published": "2026-08-25",
+            "authors": [
+              "PIERRE‐CARL MICHAUD",
+              "PASCAL ST‐AMOUR"
+            ],
+            "metadata_only": true
+          }
+        }
+      ]
+    },
+    {
+      "source": "journal-rfs",
+      "ok": true,
+      "url": "https://api.crossref.org/journals/1465-7368/works?sort=published&order=desc&rows=50",
+      "requested_url": "https://api.crossref.org/journals/1465-7368/works?sort=published&order=desc&rows=50",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:12:52.178931+00:00",
+      "content_type": "application/json",
+      "original_sha256": "1d88c1faa6c2e84568ea8dcffb024ac0e9a0499a95ed24b8fdf82504d4a1bd19",
+      "original_bytes": 940849,
+      "coverage": "registered endpoint only",
+      "entries": 50,
+      "sample": [
+        {
+          "url": "https://doi.org/10.1093/rfs/hhag082",
+          "title": "Corporate Bond Multipliers: Substitutes Matter",
+          "metadata": {
+            "doi": "10.1093/rfs/hhag082",
+            "published": "2026-09-19",
+            "authors": [
+              "Manav Chaudhary",
+              "Julie Zhiyu Fu",
+              "Jian Li"
+            ],
+            "metadata_only": true
+          }
+        },
+        {
+          "url": "https://doi.org/10.1093/rfs/hhag081",
+          "title": "Adverse Selection and the Government Intervention Trap",
+          "metadata": {
+            "doi": "10.1093/rfs/hhag081",
+            "published": "2026-09-19",
+            "authors": [
+              "Fenghua Song",
+              "Anjan Thakor"
+            ],
+            "metadata_only": true
+          }
+        }
+      ]
+    },
+    {
+      "source": "journal-jfe",
+      "ok": true,
+      "url": "https://api.crossref.org/journals/0304-405X/works?sort=published&order=desc&rows=50",
+      "requested_url": "https://api.crossref.org/journals/0304-405X/works?sort=published&order=desc&rows=50",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:12:54.954041+00:00",
+      "content_type": "application/json",
+      "original_sha256": "606aef8d9847e411769a5d1b18866c92289d12fa4f416151e3e1e4cdac65c3ce",
+      "original_bytes": 961163,
+      "coverage": "registered endpoint only",
+      "entries": 50,
+      "sample": [
+        {
+          "url": "https://doi.org/10.1016/j.jfineco.2026.104355",
+          "title": "Signaling with debt currency choice",
+          "metadata": {
+            "doi": "10.1016/j.jfineco.2026.104355",
+            "published": "2026-11",
+            "authors": [
+              "Egemen Eren",
+              "Semyon Malamud",
+              "Haonan Zhou"
+            ],
+            "metadata_only": true
+          }
+        },
+        {
+          "url": "https://doi.org/10.1016/j.jfineco.2026.104358",
+          "title": "The value of trademarks",
+          "metadata": {
+            "doi": "10.1016/j.jfineco.2026.104358",
+            "published": "2026-11",
+            "authors": [
+              "Pranav Desai",
+              "Ekaterina Gavrilova",
+              "Rui C. Silva",
+              "Margarida Soares"
+            ],
+            "metadata_only": true
+          }
+        }
+      ]
+    },
+    {
+      "source": "journal-faj",
+      "ok": true,
+      "url": "https://api.crossref.org/journals/1938-3312/works?sort=published&order=desc&rows=50",
+      "requested_url": "https://api.crossref.org/journals/1938-3312/works?sort=published&order=desc&rows=50",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:12:57.291998+00:00",
+      "content_type": "application/json",
+      "original_sha256": "b669e2e495811ddd37dd0a7d6f7b4482baec6e9c39a02db180e9396e3c6023c1",
+      "original_bytes": 398869,
+      "coverage": "registered endpoint only",
+      "entries": 50,
+      "sample": [
+        {
+          "url": "https://doi.org/10.1080/0015198x.2026.2728638",
+          "title": "All Investments Lie on a Spectrum Defined by Utilitarian, Expressive, and Emotional Returns: Stocks, Bonds, Houses, Paintings, Coins, Even Handbags",
+          "metadata": {
+            "doi": "10.1080/0015198x.2026.2728638",
+            "published": "2026-09-21",
+            "authors": [
+              "Meir Statman"
+            ],
+            "metadata_only": true
+          }
+        },
+        {
+          "url": "https://doi.org/10.1080/0015198x.2026.2726135",
+          "title": "Foreign Signal Radar",
+          "metadata": {
+            "doi": "10.1080/0015198x.2026.2726135",
+            "published": "2026-09-21",
+            "authors": [
+              "Wei Jiao"
+            ],
+            "metadata_only": true
+          }
+        }
+      ]
+    },
+    {
+      "source": "aqr",
+      "ok": true,
+      "url": "https://www.aqr.com/Insights/Research",
+      "requested_url": "https://www.aqr.com/Insights/Research",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:12:59.865092+00:00",
+      "content_type": "text/html; charset=utf-8",
+      "original_sha256": "d6abfd286aeb36b25c521900d9739e02b250be257f7b435dd3272f19caf8816b",
+      "original_bytes": 69957,
+      "coverage": "registered endpoint only",
+      "entries": 12,
+      "sample": [
+        {
+          "url": "https://www.aqr.com/Insights/Research/Alternative-Thinking",
+          "title": "Alternative Thinking",
+          "metadata": {}
+        },
+        {
+          "url": "https://www.aqr.com/Insights/Research/Working-Paper/The-Tax-Benefits-of-Pre-Tax-Alpha",
+          "title": "The Tax Benefits of Pre-Tax Alpha",
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "source": "robeco",
+      "ok": true,
+      "url": "https://www.robeco.com/en-us/insights",
+      "requested_url": "https://www.robeco.com/en-us/insights",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:13:00.053405+00:00",
+      "content_type": "text/html;charset=utf-8",
+      "original_sha256": "653d501ea267e259ba35a9cce6d7884a7d94870f5e4b1626d9b7c55a349feb2b",
+      "original_bytes": 712809,
+      "coverage": "registered endpoint only",
+      "entries": 23,
+      "sample": [
+        {
+          "url": "https://www.robeco.com/en-us/insights/2026/08/agentic-ai-and-alpha",
+          "title": "Agentic AI and alpha",
+          "metadata": {}
+        },
+        {
+          "url": "https://www.robeco.com/en-us/insights/2026/09/agentic-ai-and-governance",
+          "title": "Agentic AI and governance",
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "source": "two-sigma",
+      "ok": true,
+      "url": "https://www.twosigma.com/insights/",
+      "requested_url": "https://www.twosigma.com/insights/",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:13:00.992567+00:00",
+      "content_type": "text/html; charset=utf-8",
+      "original_sha256": "be67ad1e129139172635a63d0b4255cb4faa5d3b48168f381aa0b76f09d8e412",
+      "original_bytes": 220105,
+      "coverage": "registered endpoint only",
+      "entries": 59,
+      "sample": [
+        {
+          "url": "https://www.twosigma.com/articles/meet-the-phd-fellows-spencer-compton/",
+          "title": "Meet the PhD Fellows: Spencer Compton",
+          "metadata": {}
+        },
+        {
+          "url": "https://www.twosigma.com/type/insights/",
+          "title": "Insights",
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "source": "man",
+      "ok": true,
+      "url": "https://www.man.com/insights",
+      "requested_url": "https://www.man.com/insights",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:13:04.475637+00:00",
+      "content_type": "text/html; charset=utf-8",
+      "original_sha256": "0a30a4a1ad080fc74df8713b4a66540b445fd8e1253de958c61dd7202bf26a0d",
+      "original_bytes": 220688,
+      "coverage": "registered endpoint only",
+      "entries": 19,
+      "sample": [
+        {
+          "url": "https://www.man.com/insights/views-from-the-floor-2026-15-sept",
+          "title": "Article 6 min Views From the Floor Sep 2026 Is the Bond Market Calling Washington’s Bluff? Sticky inflation and high debt loads are turning sovereign paper into a source of portfolio risk.",
+          "metadata": {}
+        },
+        {
+          "url": "https://www.man.com/insights/the-early-view-july-2026",
+          "title": "Article 14 min The Early View Jul 2026 Looking for AI Alpha Without AI Beta We expect more of the same in the third quarter – mini cycles of AI boom and bust and flare ups in the Middle East.",
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "source": "research-affiliates",
+      "ok": true,
+      "url": "https://www.syzygyassetmanagement.com/insights",
+      "requested_url": "https://www.syzygyassetmanagement.com/insights",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:13:04.786151+00:00",
+      "content_type": "text/html; charset=utf-8",
+      "original_sha256": "933ba4231152ae1575220cb9ad12f51133a9580f94ab26e79449db98d50b8f69",
+      "original_bytes": 1761111,
+      "coverage": "registered endpoint only",
+      "entries": 277,
+      "sample": [
+        {
+          "url": "https://www.syzygyassetmanagement.com/insights/journal-papers/1108-adaptive-macro-regimes-for-dynamic-equity-allocation",
+          "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveSEP 2026Adaptive Macro Regimes for Dynamic Equity AllocationAn adaptive macro-regime signal identifies shifts in the economic backdrop by emphasizing indicators with the strongest recent predictive value. By classifying conditions as expansion, slowdown, contraction, or recovery, it can support disciplined tactical equity allocation while improving returns and reducing downside risk relative to ",
+          "metadata": {}
+        },
+        {
+          "url": "https://www.syzygyassetmanagement.com/insights/publications/articles/1124-cio-insights-alignment-in-the-time-of-dispersion",
+          "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveSEP 2026Alignment in the Time of Dispersion: Introducing Syzygy Asset ManagementLike the astronomical phenomenon that inspired its name, Syzygy Asset Management represents the alignment of ideas for the benefit of investors. Read time: 8 minBy Jim Masturzo",
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "source": "kcmi",
+      "ok": true,
+      "url": "https://www.kcmi.re.kr/report/report_list",
+      "requested_url": "https://www.kcmi.re.kr/report/report_list",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:13:05.017433+00:00",
+      "content_type": "text/html; charset=utf-8",
+      "original_sha256": "79bdd8408fab47cbc4e73c8c711c305e438b250460c47ea4faa779faeb8b179c",
+      "original_bytes": 54940,
+      "coverage": "registered endpoint only",
+      "entries": 4,
+      "sample": [
+        {
+          "url": "https://www.kcmi.re.kr/report/report_view?report_no=2327",
+          "title": "클릭하면 게시물로 이동합니다.",
+          "metadata": {}
+        },
+        {
+          "url": "https://www.kcmi.re.kr/report/report_view?report_no=2319",
+          "title": "클릭하면 게시물로 이동합니다.",
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "source": "bok",
+      "ok": true,
+      "url": "https://www.bok.or.kr/imerEng/bbs/B0000268/list.do?menuNo=600354",
+      "requested_url": "https://www.bok.or.kr/imerEng/bbs/B0000268/list.do?menuNo=600354",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:13:05.214519+00:00",
+      "content_type": "text/html;charset=utf-8",
+      "original_sha256": "16cc0e24ca834521c9d1fb77cba470793e2d8fff504c4b230d352281dec9fadb",
+      "original_bytes": 97420,
+      "coverage": "registered endpoint only",
+      "entries": 10,
+      "sample": [
+        {
+          "url": "https://www.bok.or.kr/imerEng/bbs/B0000268/view.do?menuNo=600354&nttId=11064888&pageIndex=1&type=List",
+          "title": "BOK Working Paper No.2026-15, Co-movement of Long-Term Interest Rates between Korea and the United States",
+          "metadata": {}
+        },
+        {
+          "url": "https://www.bok.or.kr/imerEng/bbs/B0000268/view.do?menuNo=600354&nttId=11064008&pageIndex=1&type=List",
+          "title": "BOK Working Paper No.2026-14, Economic Shocks and Income Polarization under Quasi-Marketization: Evidence from North Korea",
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "source": "kjfs",
+      "ok": true,
+      "url": "https://www.e-kjfs.org/",
+      "requested_url": "https://www.e-kjfs.org/",
+      "redirects": [],
+      "retrieved_at": "2026-09-22T04:13:05.542316+00:00",
+      "content_type": "text/html",
+      "original_sha256": "b337047e5c4ccab860008cc40709d9a97cdde9d6a13b8de052f89e40d09995ef",
+      "original_bytes": 43441,
+      "coverage": "registered endpoint only",
+      "entries": 6,
+      "sample": [
+        {
+          "url": "https://www.e-kjfs.org/journal/view.php?number=1031",
+          "title": "Full text",
+          "metadata": {}
+        },
+        {
+          "url": "https://www.e-kjfs.org/journal/view.php?number=1032",
+          "title": "Full text",
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "source": "open-asset-pricing",
+      "ok": true,
+      "basis": "registered_seed_not_verified_original",
+      "entries": 1,
+      "sample": [
+        {
+          "url": "https://www.openassetpricing.com/",
+          "title": "Open Source Asset Pricing",
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "source": "author-versions",
+      "ok": true,
+      "basis": "registered_seed_not_verified_original",
+      "entries": 1,
+      "sample": [
+        {
+          "url": "https://www.openassetpricing.com/papers/",
+          "title": "Public author manuscripts / code",
+          "metadata": {}
+        }
+      ]
+    }
+  ]
+}
