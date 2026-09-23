@@ -76,8 +76,7 @@ class SlackIngress:
         account_command = parse_account_command(account_text)
         account_channel = channel == self.settings.model_accounts_channel_id
         if account_channel:
-            if (role != "director" or user != self.settings.model_accounts_owner_user
-                    or account_command is None):
+            if role != "director" or user != self.settings.model_accounts_owner_user:
                 return {"ok": True, "ignored": True, "reason": "account_channel_scope"}
         elif account_command is not None:
             return {"ok": True, "ignored": True, "reason": "account_channel_required"}
@@ -122,6 +121,8 @@ class SlackIngress:
                 return {"ok": True, "ignored": True}
         original_text = text
         text = re.sub(r"<@[A-Z0-9]+>", "", text).strip()
+        if account_channel and not text:
+            text = original_text.strip()
         approval_context = {"origin": "event_callback", "team_id": payload["team_id"],
                             "app_id": payload["api_app_id"], "owner": user, "channel": channel,
                             "thread_ts": thread_ts, "event_ts": timestamp,
@@ -135,11 +136,13 @@ class SlackIngress:
             if approval is not None:
                 return {"ok": True, **approval}
         if target == "director":
-            if account_command is not None:
+            if account_channel:
                 result = self.company.ingest(
                     event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,
-                    owner=user, agent=target, channel=channel, thread_ts=thread_ts, account_command=account_command)
-                return {"ok": True, "owner_control": True, **result}
+                    owner=user, agent=target, channel=channel, thread_ts=thread_ts,
+                    account_command=account_command, account_help=account_command is None)
+                return {"ok": True, "owner_control": account_command is not None,
+                        "account_help": account_command is None, **result}
             from .maintenance.applications import accept_approval
             from .owner_controls import parse_daily_limit_command
 
