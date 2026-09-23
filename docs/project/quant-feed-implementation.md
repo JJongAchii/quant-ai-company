@@ -156,8 +156,10 @@ A separately owned model-account release moved production to
 `deeb846d7942243165a3de6fd9ca7e35b8f49d89`. Quant publication remained enabled, its
 worker and the new account gateway were both running, and the company-wide quota pause had
 cleared. The server Codex CLI reported ChatGPT authentication, and several real company-lane
-model calls completed after 05:46 UTC; this confirms usable subscription calls, not which
-specific account served them. No API-key fallback was made by this task.
+model calls completed after 05:46 UTC. Both Quant review and revision runtime jobs completed
+with `account.profile=backup`, revision 1. This confirms the selected subscription profile
+served Quant calls, though this task did not inspect the underlying account identity. No API-key
+fallback was made by this task.
 
 Quant collection continued and the editorial workflow made its first new calls at 05:50 UTC.
 One reviewed candidate then failed the one permitted evidence/contract repair and was held at
@@ -166,3 +168,13 @@ natural delivered post and elapsed 48-hour stability check remain pending. The e
 receipt is `evidence/quant-feed-after-account-gateway-20260923.json`. The research worker was
 recreated by the separate account release before this observation; no change to it was made by
 the Quant task.
+
+## Latest main compatibility, 15:16 KST
+
+The account-gateway release and its dedicated-channel follow-up on main were merged into the
+Quant branch without changing the separately owned production services. Dispatch now starts
+Quant collection/editorial and account control together, while deployment service inventories
+include both `quant-feed-worker` and `account-gateway`. A new regression checks both workflow
+families start once on their separate queues. The latest CI-equivalent local suite passed 1,186
+tests (37 skips, one opt-in live test deselected), and Ruff passed. This validates repository
+integration; it does not replace the still-pending natural Slack delivery observation.

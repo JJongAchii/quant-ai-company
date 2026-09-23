@@ -8,40 +8,40 @@
     "ACTIVATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/quant-feed-post-combined-recovery-20260923.json",
-          "sha256": "5fcb0f9fd60f"
+          "path": "docs/project/evidence/quant-feed-after-account-gateway-20260923.json",
+          "sha256": "f5dd0a2a820f"
         }
       ],
-      "note": "Quant Scout publication active and Temporal workflows running; subscription quota extended to 02:27 UTC. First natural Slack delivery and elapsed 48-hour observation remain pending.",
+      "note": "Quant publication gate enabled and backup subscription calls resumed, but no natural delivered Slack receipt; first delivery and elapsed 48-hour stability observation remain pending.",
       "status": "in_progress",
-      "updatedAt": "2026-09-23T02:17:13.388848+00:00"
+      "updatedAt": "2026-09-23T06:17:36.157236+00:00"
     },
     "QUANT_FEED": {
       "evidence": [
         {
           "path": "docs/project/quant-feed-implementation.md",
-          "sha256": "16388cf1d8d5"
+          "sha256": "c189f5b98084"
         }
       ],
-      "note": "Quant Scout implemented, deployed, main-integrated, Linux CI passed and scoped reactivation verified; natural Slack receipt remains a separate activation observation.",
+      "note": "Quant Scout integrated with latest account-gateway main, subscription backup profile completed real Quant calls, repository regressions passed; natural Slack delivery remains an activation observation.",
       "status": "verified",
-      "updatedAt": "2026-09-23T02:17:08.306742+00:00"
+      "updatedAt": "2026-09-23T06:17:27.080749+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/quant-feed-post-combined-recovery-20260923.json",
-          "sha256": "5fcb0f9fd60f"
+          "path": "docs/project/evidence/quant-feed-after-account-gateway-20260923.json",
+          "sha256": "f5dd0a2a820f"
         }
       ],
-      "note": "Combined main regression 1137 passed, 37 skipped, 1 live deselected; Ruff and Linux CI 35809276862 passed. Scoped reactivation and real host receipt passed; natural Slack delivery separately pending.",
+      "note": "Latest main integration passed 1186 CI-equivalent local tests (37 skipped, one live deselected) and Ruff. Real Quant review/revision runtime jobs completed on backup profile revision 1; one invalid proposal held without Slack write.",
       "status": "verified",
-      "updatedAt": "2026-09-23T02:17:03.502839+00:00"
+      "updatedAt": "2026-09-23T06:17:32.277544+00:00"
     }
   },
   "intentDigest": "c402037885c5",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-23T02:17:13.388848+00:00"
+  "updatedAt": "2026-09-23T06:17:36.157236+00:00"
 }

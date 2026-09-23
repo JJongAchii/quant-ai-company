@@ -20,6 +20,11 @@
     "codex_login_method": "ChatGPT",
     "global_quota_pause_at_2026_09_23_054901_utc": null,
     "recent_company_lane_completed_calls": "multiple between 2026-09-23T05:46Z and 2026-09-23T05:48Z",
+    "quant_job_receipts_checked_at": "2026-09-23T06:12:44Z",
+    "quant_review_and_revision_runtime_jobs": [
+      {"id": "quant-feed-2bbf2f15-57dd-4584-9dbc-b47fad2d2df5", "state": "complete", "account_profile": "backup", "account_revision": 1},
+      {"id": "quant-feed-d6121294-bd5c-411e-a8d6-8d1704e0bb02", "state": "complete", "account_profile": "backup", "account_revision": 1}
+    ],
     "selected_account_identity_verified_here": false,
     "paid_api_key_substituted": false
   },
