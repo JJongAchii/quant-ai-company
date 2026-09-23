@@ -1,0 +1,55 @@
+{
+  "observed_at_utc": "2026-09-23T05:36:33.733864+00:00",
+  "channel": {
+    "id": "C0C3C6ELJ0P",
+    "name": "ai-account-switch",
+    "private": true,
+    "director_app_joined": true,
+    "director_bot_history_read_ok": true,
+    "owner_command_before_activation": false
+  },
+  "change": {
+    "initial_general_channel_event_ts": "1790138664.895409",
+    "initial_general_channel_inbound_record": false,
+    "initial_rejection_cause": "Previous account control required a director DM",
+    "dedicated_channel_commands_only": true,
+    "main_pr": 69,
+    "main_merge_commit": "caaf56b00ad8ee9cb523bc5eadf46b800bb8a45f",
+    "production_integration_commit": "deeb846d7942243165a3de6fd9ca7e35b8f49d89",
+    "previous_production_commit": "ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e"
+  },
+  "validation": {
+    "focused_real_postgresql_tests_on_feature_branch": 53,
+    "focused_real_postgresql_tests_on_production_branch": 53,
+    "temporal_integration_cases_deselected_in_focused_run": 2,
+    "ruff_passed": true,
+    "github_actions_run": 35822302890,
+    "github_actions_conclusion": "success",
+    "compose_channel_propagated_to_nine_services": true,
+    "production_app_codex_maintenance_claude_images_match_source": true
+  },
+  "production": {
+    "activated_at_utc": "2026-09-23T05:34:14.022269+00:00",
+    "services_healthy": 12,
+    "service_restarts_after_activation": 0,
+    "postgres_container_recreated": false,
+    "research_worker_image_and_code_pin_preserved": true,
+    "roles_and_research_profile_hashes_preserved": true,
+    "temporal_account_control_workflow": "RUNNING",
+    "selected_profile": "primary",
+    "selection_revision": 0,
+    "authentication": {
+      "primary": "chatgpt",
+      "backup": "chatgpt"
+    },
+    "prior_owner_director_dm_status_command": "completed",
+    "prior_owner_director_dm_delivery": "delivered",
+    "dedicated_channel_owner_command_observed": false,
+    "backup": {
+      "sha256": "5291ac23bad2db6367086d1919a6f95dc1e94b7dc1fc36985ef0be59b7c04303",
+      "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260923T053156Z-c84bc39d.tar.gz",
+      "secrets_included": false
+    }
+  },
+  "interpretation": "Live dedicated-channel response and backup-profile inference require an actual owner command; no switch or model probe was performed."
+}

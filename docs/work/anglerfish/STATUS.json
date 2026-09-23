@@ -15,7 +15,7 @@
     },
     "DEPLOYMENT": {
       "status": "completed",
-      "commit": "ce3b93565d7d0fd97ed4d0dcc93a64af2f2aa92e"
+      "commit": "deeb846d7942243165a3de6fd9ca7e35b8f49d89"
     },
     "ENROLLMENT": {
       "status": "completed",
@@ -23,6 +23,6 @@
       "distinctAccountsVerified": true
     }
   },
-  "operationalStatus": "Both distinct accounts authenticated. Actual owner status command in an allowed channel was rejected by the DM-only guard; fixing channel support and recovering the original request before completion.",
-  "evidence": "../../project/evidence/model-accounts-20260923/production-activation.json"
+  "operationalStatus": "Private ai-account-switch channel and director app active in production; both distinct accounts authenticated; previous owner DM status reply delivered. Awaiting the owner's first dedicated-channel command and optional manual switch.",
+  "evidence": "../../project/evidence/model-accounts-20260923/dedicated-channel-rollout.json"
 }
