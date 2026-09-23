@@ -8,6 +8,7 @@ x-calendar: &calendar
 services:
   api: *calendar
   worker: *calendar
+  data-watch-worker: *calendar
   news-worker: *calendar
   dispatch: *calendar
   slack-socket: *calendar
