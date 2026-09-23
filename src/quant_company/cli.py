@@ -81,6 +81,7 @@ def main():
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8000)
     sub.add_parser("worker")
+    sub.add_parser("data-watch-worker")
     sub.add_parser("news-worker")
     sub.add_parser("quant-feed-worker")
     sub.add_parser("dispatch")
@@ -128,6 +129,10 @@ def main():
         from .runtime import worker_main
 
         asyncio.run(worker_main(settings))
+    elif args.command == "data-watch-worker":
+        from .runtime import data_watch_worker_main
+
+        asyncio.run(data_watch_worker_main(settings))
     elif args.command == "news-worker":
         from .runtime import news_worker_main
 

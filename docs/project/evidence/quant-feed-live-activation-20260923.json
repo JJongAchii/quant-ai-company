@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-23T00:28:14.341835Z",
+  "scope": "Quant Scout staged activation and real-subscription preview",
+  "release": {
+    "commit": "377335dcab983007a998a2166807d7332548e024",
+    "previous_commit": "75f1b100ab760b5d58e7cb2aef4889f154727a93",
+    "phase": "live_active",
+    "archive_sha256": "0a0df5b0133b4f046c64815b9f60c57537e3a63f61abdfd6cb49e1bb654bdbad",
+    "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "qdata_tree_sha256": "528251801f09b120d9c33baeb6956a6a84e49b2c09aeb15420e5994fa170e396",
+    "images": {
+      "app": "sha256:d05e8329f674d88e894b1b4c489846f6f033464004854d80e34420e328e9004a",
+      "autonomous_research": "sha256:21d11850398db9dd656c7764a97fc871903fd97a5a1924fe2c6c77ecdcc1c3f4",
+      "codex": "sha256:5b9ba7e2f3359d93c66f56f629e6f6cee85b36821a33214c4d2f7464401f2710",
+      "maintenance": "sha256:a2035c6f732cd63e870ca39b4992ec6ea10fdc97d916835b50b74cd43c4eff83",
+      "claude": "sha256:d35c46e5798867031e37b5d509e59a70664d275ca47f43eaec174581dbb27d0d"
+    },
+    "installed_source_matches_commit": true,
+    "postgres_recreated": false,
+    "schema_change": "additive quant tables only",
+    "uncertain_receipts_replayed": false,
+    "prebuild_format_rejection": {
+      "code": "release_archive_roots",
+      "images_built": 0,
+      "runtime_changed": false,
+      "receipt_preserved_as": "/var/lib/quant-company/releases/quant-feed-377335dcab983007a998a2166807d7332548e024.archive-root-failed.json"
+    },
+    "backup": {
+      "path": "/var/lib/quant-company/backups/company-20260923T001054Z-0f7bc4a1.tar.gz",
+      "sha256": "3cc169ed6f3174fc22bcfe33da98c463612fc3d7c0bb443e5f82d95dd89434da",
+      "s3_uploaded": true,
+      "secrets_included": false
+    }
+  },
+  "activation_gate": {
+    "activated_at": "2026-09-23T00:28:14.341835Z",
+    "preview_documents": 1,
+    "publications_before_activation": 0,
+    "running_quant_calls": 0,
+    "sending_outbox": 0,
+    "publish_enabled": true,
+    "authorized": true
+  },
+  "slack": {
+    "app_id": "A0C3HFP831Q",
+    "bot_user_id": "U0C3288AXPH",
+    "team_id": "T0C1YRDRPNF",
+    "channel_id": "C0C3K8ZB9PB",
+    "auth_test_ok": true,
+    "scope": [
+      "chat:write"
+    ],
+    "live_delivery": {
+      "status": "pending_natural_editorial_cycle",
+      "sent_ts": null,
+      "message_id": null
+    }
+  },
+  "real_subscription_preview": {
+    "document_id": "8bf4466f75db620b55d2063d0da67e02376a8f7c19934bc1d6c3b336007c1007",
+    "source": "man",
+    "title": "Will AI Make Firms Bigger or Smaller?",
+    "original_type": "complete HTML",
+    "revision_count": 1,
+    "path": [
+      "review: publish",
+      "critique: revise",
+      "revision: publish",
+      "critique: pass",
+      "preview"
+    ],
+    "claims_supported": true,
+    "limitations_honest": true,
+    "no_investment_advice": true,
+    "slack_writes": 0
+  },
+  "bounded_validation_repair": {
+    "policy_version": 5,
+    "repairable_codes": [
+      "quant_quote_not_in_original_version",
+      "quant_unretrieved_related_link"
+    ],
+    "maximum_repairs_per_document": 1,
+    "observed_first_failure": "completed with durable validation_issue receipt and revision=1",
+    "observed_second_failure": "blocked as invalid_quant_proposal and document held",
+    "raw_json_controls": "normalized only inside parsed string values; malformed structure and wrong types remain rejected"
+  },
+  "resource_snapshot": {
+    "host_mem_available_mib": 593,
+    "containers": {
+      "research_worker": {
+        "memory_mib": 97.0,
+        "limit_mib": 384,
+        "running": true,
+        "oom_killed": false,
+        "restarts": 0,
+        "preserved_container_id": "3a3579a8eadb6bb118d368833c7d02288eee3784b8aa2a033dcfbaf718d877ba"
+      },
+      "news_worker": {
+        "memory_mib": 89.73,
+        "limit_mib": 192,
+        "running": true,
+        "oom_killed": false,
+        "restarts": 0
+      },
+      "quant_feed_worker": {
+        "memory_mib": 88.57,
+        "limit_mib": 256,
+        "running": true,
+        "oom_killed": false,
+        "restarts": 0
+      },
+      "codex_runtime": {
+        "memory_mib": 194.1,
+        "limit_mib": 512,
+        "running": true,
+        "oom_killed": false,
+        "restarts": 0
+      }
+    },
+    "research_worker_untouched": true,
+    "model_allowance_changed": false
+  },
+  "validation": {
+    "focused": "58 passed, 1 skipped",
+    "full_local": "1057 passed, 37 skipped, 2 dependency deprecation warnings",
+    "ruff": "passed",
+    "github_actions": {
+      "status": "success",
+      "run_id": 35800220559,
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35800220559"
+    }
+  },
+  "observation": {
+    "elapsed_48_hours": false,
+    "status": "pending",
+    "claim": "No 48-hour stability claim is made before the interval elapses.",
+    "post_activation_interruption": {
+      "quant_worker_stopped_at": "2026-09-23T00:30:15.417686Z",
+      "exit_code": 143,
+      "oom_killed": false,
+      "restarts": 0,
+      "shutdown_initiator": "unverified",
+      "natural_slack_delivery_at_observation": 0,
+      "recovery": "pending separate guarded combined-channel release"
+    }
+  }
+}

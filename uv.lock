@@ -2548,6 +2548,7 @@ lake = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "pyarrow" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "ruff" },
@@ -2571,6 +2572,7 @@ provides-extras = ["lake"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "pyarrow", specifier = ">=20,<26" },
     { name = "pytest", specifier = ">=8.3,<10" },
     { name = "pytest-asyncio", specifier = ">=0.25,<2" },
     { name = "ruff", specifier = ">=0.11,<1" },

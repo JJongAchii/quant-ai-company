@@ -125,6 +125,13 @@ def create_app(settings: Settings | None = None, company: Company | None = None,
     def projects():
         return company.list_projects()
 
+    @app.get("/v1/data-watch", dependencies=[Depends(operator)])
+    def data_watch_status():
+        from .data_watch.store import DataWatchStore
+
+        store = DataWatchStore(company)
+        return {"authorized": store.authorized(), **store.status()}
+
     @app.get("/v1/projects/{project_id}", dependencies=[Depends(operator)])
     def project(project_id: str):
         return company.project_state(project_id)

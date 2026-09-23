@@ -461,6 +461,7 @@ class MissionBackend:
 
     def _audit_context(self, snapshot, row, profile, mappings):
         from .audit import audit_context, prepare_audit_package
+        from .causal_evidence import audit_supplements
 
         stage_id = stable(f"mission-stage:{snapshot['id']}:{_key(snapshot)}")
         if row and str(row["id"]) != stage_id:
@@ -472,8 +473,10 @@ class MissionBackend:
         directory = self.root / "missions" / snapshot["id"] / "audit" / stage_id / str(attempt)
         qlab_profile = self._qlab_profile()
         package = prepare_audit_package(directory, trials, mission_spec=MissionSpec.model_validate(snapshot["spec"]),
-            binding=binding, qlab_profile=qlab_profile, history=history)
+            binding=binding, qlab_profile=qlab_profile, history=history,
+            supplements=audit_supplements(trials))
         required_reads = {}
+        resident_paths = []
         for chunk in audit_context(package):
             name = "audit/" + chunk["path"]
             if chunk["encoding"] == "utf-8" and name not in required_reads:
@@ -481,6 +484,9 @@ class MissionBackend:
                 entry["characters"] = chunk["total_chars"]
                 mappings[name] = entry
                 required_reads[name] = {"sha256": entry["sha256"], "characters": chunk["total_chars"]}
+                causal_code = chunk["path"].endswith(("/engine.py", "/adapter.py", "/signals.py"))
+                if causal_code or chunk["path"].startswith("scope/supplements/"):
+                    resident_paths.append(name)
         metadata = self._entry(package.root / "package.json")
         mappings["audit/package.json"] = metadata
         issued = now().astimezone(UTC).date().isoformat()
@@ -488,7 +494,8 @@ class MissionBackend:
             "audit": {"judge": "leak-auditor", "target": ".", "issued": issued,
                       "objective_digest": package.objective_digest, "scope_digest": package.scope_digest,
                       "scope": sorted(package.scope_files), "validator_request_id": request_id,
-                      "binding_file": "audit/scope/binding.json", "requires_all_text_files_read": True},
+                      "binding_file": "audit/scope/binding.json", "requires_all_text_files_read": True,
+                      "resident_evidence_paths": sorted(resident_paths)},
             "_audit": {"root": str(package.root), "binding": binding.model_dump(mode="json"),
                        "history": history.to_dict(), "issued": issued, "required_reads": required_reads,
                        "qlab_commit": qlab_profile.commit, "profile_digest": digest_model(profile.public_profile)},

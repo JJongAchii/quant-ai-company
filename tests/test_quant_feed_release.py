@@ -36,6 +36,8 @@ def test_health_requires_same_stopped_worker_and_database(release, monkeypatch):
     monkeypatch.setattr(release, "memory_available_mib", lambda: 600)
     before = {"id": "worker", "running": True, "oom_killed": False, "restarts": 0}
     assert release.health("commit", ["api"], "pg", before)["research_worker_preserved"] == before
+    rows[2]["Config"]["Labels"]["org.opencontainers.image.revision"] = "previous"
+    assert release.health("commit", ["api"], "pg", before, {"api": "previous"})["research_worker_preserved"] == before
     rows[1]["Id"] = "recreated"
     with pytest.raises(ValueError, match="database_or_research_worker_changed"):
         release.health("commit", ["api"], "pg", before)
@@ -171,3 +173,98 @@ def test_activation_requires_preview_and_preserves_independent_worker(release, t
     assert receipt["phase"] == ("preview_active" if fail_recreate else "live_active")
     assert receipt["worker_at_activation"] == worker_before
     assert all("worker" not in command for command in commands)
+
+
+@pytest.mark.parametrize("handoff_state", ["catalog_preview_active", "cutover_started"])
+def test_reactivation_requires_prior_live_receipt_and_exact_handoff(release, tmp_path, monkeypatch,
+                                                                    handoff_state):
+    state = tmp_path / "state"
+    (state / "releases").mkdir(parents=True)
+    monkeypatch.setattr(release, "STATE", state)
+    old_commit, new_commit = "a" * 40, "b" * 40
+    old = {"commit": old_commit, "phase": "live_active", "publication_enabled": True}
+    (state / "releases" / f"quant-feed-{old_commit}.json").write_text(json.dumps(old))
+    handoff = {"previous": old_commit, "candidate": new_commit, "state": handoff_state,
+               "publication_enabled": False}
+    (state / "releases/handoff.json").write_text(json.dumps(handoff))
+    preserved = {"news-worker": {"id": "news", "restarts": 0},
+                 "data-watch-worker": {"id": "watch", "restarts": 0},
+                 "slack-socket": {"id": "socket", "restarts": 0},
+                 "codex-runtime": {"id": "codex", "restarts": 0},
+                 "claude-runtime": {"id": "claude", "restarts": 0}}
+    monkeypatch.setattr(release, "service_identity", lambda names: preserved)
+    monkeypatch.setattr(release, "inspect", lambda names: [
+        {"Config": {"Labels": {"org.opencontainers.image.revision": old_commit}}},
+        {"Config": {"Labels": {"org.opencontainers.image.revision": old_commit}}},
+    ])
+    calls = []
+    monkeypatch.setattr(release, "activate", lambda *args: calls.append(args))
+    module = SimpleNamespace(atomic=lambda path, data: path.write_bytes(data),
+                             compose_command=lambda root: ["docker", "compose"])
+    args = SimpleNamespace(base=old_commit, commit=new_commit, channel="CQUANT", handoff_journal="handoff.json")
+    journal = state / "releases" / f"quant-feed-{new_commit}.json"
+    current = tmp_path / new_commit
+    (current / "deploy").mkdir(parents=True)
+    (current / "deploy/data-watch.compose.yaml").write_text("services: {}\n")
+    if handoff_state != "catalog_preview_active":
+        with pytest.raises(ValueError, match="reactivation_handoff_precondition"):
+            release.reactivate(args, current, current, journal, module)
+        assert not journal.exists()
+        assert not calls
+    else:
+        release.reactivate(args, current, current, journal, module)
+        assert len(calls) == 1
+        assert calls[0][-2] == preserved
+        assert calls[0][-1] == {"codex-runtime": old_commit, "claude-runtime": old_commit}
+        commands = []
+        monkeypatch.setattr(release, "run", lambda command: commands.append(command))
+        calls[0][4].compose(current, "up", "-d", "api")
+        assert commands == [["docker", "compose", "--profile", "data-watch", "-f",
+                             str(current / "deploy/data-watch.compose.yaml"), "up", "-d", "api"]]
+        receipt = json.loads(journal.read_text())
+        assert receipt["reactivation_from"] == old_commit
+        assert receipt["publication_enabled"] is False
+
+
+def test_reactivation_rejects_handoff_path_traversal(release, tmp_path):
+    args = SimpleNamespace(base="a" * 40, commit="b" * 40, handoff_journal="../other.json")
+    current = tmp_path / args.commit
+    with pytest.raises(ValueError, match="reactivation_target_or_handoff_invalid"):
+        release.reactivate(args, current, current, tmp_path / "journal.json", None)
+
+
+def test_reactivation_recovers_interrupted_false_gate(release, tmp_path, monkeypatch):
+    state = tmp_path / "state"
+    (state / "releases").mkdir(parents=True)
+    (state / "config").mkdir()
+    monkeypatch.setattr(release, "STATE", state)
+    old_commit, new_commit = "a" * 40, "b" * 40
+    (state / "releases" / f"quant-feed-{old_commit}.json").write_text(json.dumps(
+        {"commit": old_commit, "phase": "live_active", "publication_enabled": True}))
+    (state / "releases/handoff.json").write_text(json.dumps(
+        {"previous": old_commit, "candidate": new_commit, "state": "catalog_preview_active",
+         "publication_enabled": False}))
+    (state / "config/runtime.env").write_text("QUANT_FEED_PUBLISH_ENABLED=false\n")
+    journal = state / "releases" / f"quant-feed-{new_commit}.json"
+    journal.write_text(json.dumps({"phase": "activating", "commit": new_commit,
+                                   "reactivation_from": old_commit, "publication_enabled": False}))
+    current = tmp_path / new_commit
+    (current / "deploy").mkdir(parents=True)
+    (current / "deploy/data-watch.compose.yaml").write_text("services: {}\n")
+    monkeypatch.setattr(release, "service_identity", lambda names: {name: {"id": name} for name in names})
+    monkeypatch.setattr(release, "inspect", lambda names: [
+        {"Config": {"Labels": {"org.opencontainers.image.revision": old_commit}}} for _ in names])
+    commands = []
+    monkeypatch.setattr(release, "run", lambda command, **kwargs: commands.append(command)
+                        or b'{"publish_enabled":false}')
+    activated = []
+    monkeypatch.setattr(release, "activate", lambda *args: activated.append(args))
+    module = SimpleNamespace(atomic=lambda path, data: path.write_bytes(data),
+                             compose_command=lambda root: ["docker", "compose"])
+    args = SimpleNamespace(base=old_commit, commit=new_commit, channel="CQUANT", handoff_journal="handoff.json")
+    release.reactivate(args, current, current, journal, module)
+    assert len(commands) == 2
+    assert len(activated) == 1
+    receipt = json.loads(journal.read_text())
+    assert receipt["phase"] == "preview_active"
+    assert receipt["activation_last_error_code"] == "interrupted_activation_restored"

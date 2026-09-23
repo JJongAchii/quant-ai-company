@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-09-22T06:55:56.177600+00:00",
+  "state": "local_acceptance_passed",
+  "scope": "approved first slice: Maintainer/improvements plus complete channel design",
+  "base_commit": "fc972261106bdc070faf45b27312e5813a4a0da7",
+  "tests": {
+    "service": {
+      "tests": 1033,
+      "passed": 997,
+      "failure": 0,
+      "error": 0,
+      "skipped": 36,
+      "skipped_reasons": {
+        "Set CODEX_CONFIG_PROBE=1 for the local CLI probe": 2,
+        "Requires explicit operator runtime profile on the registered Linux 3070": 1,
+        "Real pinned qlab checkout required: QUANT_TEST_QLAB_ROOT": 30,
+        "Opt-in real 3070, committed ETF checkout and prepared science runtime required": 1,
+        "Requires explicit operator-reviewed runtime profile on the 3070; no Mac fallback": 1,
+        "Opt-in real Codex subscription test": 1
+      }
+    },
+    "deployment": {
+      "tests": 27,
+      "passed": 27,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0,
+      "skipped_reasons": {}
+    }
+  },
+  "lint": "passed",
+  "diff_check": "passed",
+  "postgres": "real disposable worktree-local PostgreSQL 14; no user database",
+  "temporal": "real local Temporal; independent reporting, restart readback and workflow history replay",
+  "slack": "synthetic HTTP transport only; no production channel or app changes",
+  "codex": "synthetic typed provider in new acceptance; no real Maintainer subscription qualification",
+  "github": "synthetic repair/approval acceptance; not a production merge/deploy test",
+  "live_activation": "not_performed; feature defaults off",
+  "next_implementation": "data-watch: whole-lake metadata overview plus approved core-input detailed checks",
+  "implementation_sha256": {
+    "deploy/.env.example": "01efa89544d2d231e0c96fa9f3f67791560c61d8bd0ccc0413f0b3cfd8ad245b",
+    "deploy/compose.yaml": "5933edce75180ac28891e6471981320b085c269528dc9bc97f786ad6eb572205",
+    "deploy/lightsail-2gb.env.example": "8b51bf136d4aff13c87fb1567f145c43e24a5b5eb9aca204d925a794408c91f9",
+    "deploy/slack-credentials.example.json": "fb7c618932c259363bcf6421f87b978baee3282b24a3de9aa7034cb6be178562",
+    "deploy/test_deployment_contract.py": "ad31429fe32ad3bd23fa3865ac6a375605ac81950f5d0839c91347531a8f8738",
+    "slack-apps/maintainer.json": "e2ec84a8b4d563df9bce57a7bdd38d35a79e3ba1362db22ff5797c35c18aaa92",
+    "src/quant_company/company.py": "257b41d541af1624c4ea74f14b0daef157d5614fbca6b47684faeddf7b949783",
+    "src/quant_company/config.py": "1ceabf0d8ba9947d82efb8c8997dd26ada40fd55a0c7eaea89a66b6d3564e14f",
+    "src/quant_company/maintenance/applications.py": "74bdccddea78c17d860731e06f0f1eb4fcab2f9813c0a75a85d63f073fcd8bda",
+    "src/quant_company/maintenance/cases.py": "aad780063f57bf8f93bf4a057a182a9e6df12c2fee0449114befd90a4d979e6f",
+    "src/quant_company/maintenance/identity.py": "fc701e86cc6c181251080520193388b00d2dfb301b6c34747689780409e9ffb8",
+    "src/quant_company/maintenance/policy.py": "8389074ac392f1aacf8c28dfc6ee8644dae1138fbc09efe7dee050c74075d9d2",
+    "src/quant_company/maintenance/reporting.py": "4476e4972237882a989e9e862ccfef7224949dc5113c473da2e5f57321054ca4",
+    "src/quant_company/maintenance/requests.py": "7f6aa94d96affad1e1b4c16db855c0f8bd42fdf32c89dc8eb4c8efee6d1f84c4",
+    "src/quant_company/maintenance/runner.py": "ea5e852a434f430142f7dd66e872ad8a26c5c5d6061daab70d1c4a19ee5303e7",
+    "src/quant_company/maintenance/schema.sql": "58da5704bd124df3da6d3f276ffb96226184226f3b76d168efbfeaa9e4f349df",
+    "src/quant_company/maintenance/store.py": "9858c5781170e40a78ccd7a1053003bc7362ee43bcbf3b2e284ae8d770a4cfee",
+    "src/quant_company/maintenance/workflow.py": "3a7a97a6b0ac07ae717a439e905c5f88f3c3a47d2054da323f414f976467f1a1",
+    "src/quant_company/slack.py": "d2a02e2d4c645bfbe0a75c12292ef062f3cef63459c308353c3b43af22747697",
+    "src/quant_company/state_schema.sql": "e12003316e569f2630b7c54ffda790d94bbec3cc33c0f38c1d23c2bd84cfcc62",
+    "tests/test_maintenance_cases.py": "1bfbc0497d862a90887679098beda618fdd7fb27402d33c8d66731b2ca85a097"
+  }
+}

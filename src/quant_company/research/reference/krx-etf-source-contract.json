@@ -1,0 +1,66 @@
+{
+  "api_sha256": "9d52a95f4f360c7d451d2c4c6b9a695ce5bf1e6720ee678576be74f704bb251a",
+  "causal_contract": {
+    "adjustment": "ETF adj_close chains official KRX FLUC_RT and is latest-close anchored. A later anchor can only multiply one ticker history by a positive constant when past official returns are unchanged.",
+    "availability": "The collector rejects the current session before 18:00 KST; this strategy signals after the prior observed close and fills only at the next observed open.",
+    "metadata_panel": "Historical daily metadata supplies contemporaneous leverage/inverse flags; current-only profile fields are excluded.",
+    "price_panel": "Daily all-ETF KRX snapshots retain delisted instruments; consumers must form signals from prefixes.",
+    "return_basis": "krx_reference_price_adjusted_return; exact cash-distribution total return is unavailable and is not claimed."
+  },
+  "evidence_excerpts": [
+    {
+      "lines": "319-338",
+      "path": "src/qdata/api.py",
+      "sha256": "1c8ae136423e36cff9c2335b333d46103627f1546f504695f3a9ef0fb2e21190",
+      "text": "    \"\"\"KRX 전 종목 ETF 일별 시세를 long으로 반환 (ADR-0003 D1).\n\n    컬럼: date, ticker, nav, open, high, low, close, volume, value(거래대금),\n    index_value(기초지수), chg_pct(KRX 기준가격 대비 등락률), adj_factor,\n    adj_close. 일별 전 종목 스냅샷 기반 point-in-time 패널 —\n    상폐 ETF 포함(생존편향 없음). look-ahead 정렬·유니버스 필터는 소비 전략의 책임.\n\n    **index_value 결측은 NaN이다** (ADR-0006부터). 이전에는 pykrx 래퍼가 KRX 원본의\n    결측 표기 \"-\"를 0.0으로 바꿔 내려줬다(전체의 6.2%). 0은 가짜 값이라 수익률·비율\n    계산을 조용히 오염시키므로 원본 의미대로 NaN으로 둔다 — `krx_fundamental`의\n    PER/PBR=0을 결측으로 취급하는 것과 같은 규칙이다. `index_value > 0` 필터를\n    쓰던 소비자는 영향이 없다 (0도 NaN도 조건을 통과하지 못한다).\n\n    **수익률 계약:** ``adj_close``는 KRX 원본 ``FLUC_RT``가 설명하지 못하는 종가\n    점프를 backward 조정한 **거래소 기준가격 조정 계열**이다. KRX가 분배락일에 별도\n    기준가격을 적용하므로 raw close의 기계적 분배락은 제거되지만, 현금 분배액 이벤트를\n    직접 합성한 total-return 계열은 아니다. ``close``·``nav``는 원레벨이고,\n    구 pykrx 8컬럼 raw만 있는 이력은 ``chg_pct/adj_factor/adj_close``가 NaN이다.\n    따라서 정확한 현금 재투자 총수익이 필요한 소비자는 별도 분배금 이벤트 계약이\n    생기기 전까지 이 계열을 ``total_return``으로 표시하면 안 된다.\n"
+    },
+    {
+      "lines": "356-370",
+      "path": "src/qdata/api.py",
+      "sha256": "fb939ebe9bc80ec1b319c10e6a73b626b5000abc4be6f182b8e912d1c30b020d",
+      "text": "    \"\"\"ETF 일별 메타(이름·기초지수·순자산)를 long으로 반환 (ADR-0006).\n\n    컬럼: date, ticker, name, index_name, index_kind(TR/PR/None), aum(순자산총액),\n    mktcap, shares, is_leveraged, is_inverse. **그 시점의 값이다** — 이름은 브랜드 개편 전\n    표기가 그대로 남는다 (152100: 2020년 \"ARIRANG 200\" → 현재 \"PLUS 200\").\n    상폐 ETF도 존재 기간만큼 남는다.\n\n    index_kind는 기초지수명 표기에서 파생한 값이다(총수익/TR → TR, (PR) → PR,\n    표기 없으면 None). 표기가 없다고 PR인 것은 아니므로 None을 PR로 간주하지 말 것 —\n    품질 리포트가 수치로 교차검증한 결과를 함께 참고한다.\n\n    is_leveraged(\"레버리지\"/\"2X\")·is_inverse(\"인버스\")도 종목명에서 파생한다.\n    파생 노출 배수가 1이 아니면 기초지수와 수익률 관계가 깨지므로 자산군의 대표값으로\n    쓸 수 없다 — 자산군 정의 시 두 플래그를 제외 조건으로 쓸 것.\n    \"\"\"\n"
+    },
+    {
+      "lines": "387-392",
+      "path": "src/qdata/api.py",
+      "sha256": "9261338f5da4fb9ad3de6063f61182645d1a6a9cb35d9ef1d846ac7407bfb490",
+      "text": "    **경고 — 수집 시작 이후만 존재한다.** 소스(KRX ETF 전종목 기본정보)에 날짜 파라미터가\n    없어 과거 총보수를 받을 수 없고, 상폐 ETF도 빠져 있다. 총보수는 수수료 경쟁으로\n    내려가기만 했으므로 **현재값으로 과거를 필터하면 낙관 편향**이 들어간다 —\n    백테스트의 유니버스 조건이 아니라 집행 단계에서 쓸 것.\n    과거 시점의 이름·기초지수는 `load_krx_etf_meta()`가 2012년까지 제공한다.\n    \"\"\"\n"
+    },
+    {
+      "lines": "129-148",
+      "path": "src/qdata/store/krx_etf.py",
+      "sha256": "126dfd1d3859c3d03431e6941fafbb4ae6c6a77566aee8ccead61b1b2d8bc3fa",
+      "text": "def compute_reference_adjusted_close(close: pd.Series, chg_pct: pd.Series) -> pd.Series:\n    \"\"\"KRX ``FLUC_RT``를 정확히 체인한 최신 종가 앵커 계열.\n\n    주식용 ``compute_adj_factor``의 0.3% 자본행동 임계값은 작은 ETF 분배락을\n    버릴 수 있으므로 재사용하지 않는다. 인접 두 수정종가의 수익률이 두 번째\n    날짜의 공식 등락률과 일치하도록 전 기간을 체인한다. 유효하지 않은 가격이나\n    ``-100%`` 이하 수익률이 하나라도 있으면 해당 티커 전체를 NaN으로 막는다.\n    \"\"\"\n    close = pd.to_numeric(close, errors=\"coerce\").astype(\"float64\")\n    chg_pct = pd.to_numeric(chg_pct, errors=\"coerce\").astype(\"float64\")\n    growth = 1.0 + chg_pct / 100.0\n    valid = (\n        close.notna().all() and (close > 0).all() and growth.notna().all() and (growth > 0).all()\n    )\n    if not valid or close.empty:\n        return pd.Series(float(\"nan\"), index=close.index, dtype=\"float64\")\n\n    chain = growth.cumprod()\n    return chain / chain.iloc[-1] * close.iloc[-1]\n\n"
+    },
+    {
+      "lines": "43-52",
+      "path": "src/qdata/ingest/krx.py",
+      "sha256": "39bb4f594f2544c7dca06dc52c8393497c143e9c6c3e41450cbfe03a388b1f7f",
+      "text": "KST = timezone(timedelta(hours=9))\nSETTLED_HOUR_KST = 18  # 장 마감 + 수급 확정치 공표 이후로 보는 시각\n\n\ndef drop_unsettled_today(\n    days: list[str], now: datetime | None = None\n) -> tuple[list[str], str | None]:\n    \"\"\"장중 실행 가드: 당일 데이터는 18시(KST) 이전이면 수집 대상에서 제외.\n\n    장중 스냅샷은 미완성(장중 시세·수급 잠정치)인데 파일이 생기면 체크포인트가\n"
+    },
+    {
+      "lines": "130-145",
+      "path": "src/qdata/ingest/krx_etf.py",
+      "sha256": "a7c03db6bf706f7d0b199105204ec03a0d7c737d2985170131090a1c39ad42a8",
+      "text": "    \"\"\"체크포인트 재개형 백필: 지수(캘린더) → 일별 ETF 스냅샷 루프 → 프로필.\n\n    파일 존재 = 완료이므로 중단 후 재실행하면 이어서 받는다. 당일은 18시(KST) 이전\n    수집 금지 (장중 가드 — qdata.ingest.krx.drop_unsettled_today 재사용).\n\n    수집 대상은 `snapshot`(원본 22컬럼)이다. 기존 `ohlcv`(8컬럼)는 원칙 1(raw 불변)에\n    따라 손대지 않고 동결하며, clean 빌더가 snapshot을 우선하고 없으면 폴백한다.\n    \"\"\"\n    fetch_etf_calendar(root, start=start, end=end)\n    days = etf_trading_days(root, start, end)\n    days, skipped = drop_unsettled_today(days)\n    if skipped:\n        progress(\n            f\"[krx_etf] 당일({skipped})은 {SETTLED_HOUR_KST}시(KST) 이전이라 건너뜀 — \"\n            \"확정 후 `qdata etf update` 재실행\"\n        )\n"
+    }
+  ],
+  "known_limitations": [
+    "Historical backfill files do not contain the original per-session collection timestamp or a full revision-vintage archive.",
+    "The invariance receipt therefore tests that any per-ticker positive anchor rescaling cannot alter features, ranks, universe membership, fills, accounting, or risk checks.",
+    "The test does not prove that KRX never corrected an historical FLUC_RT or classification value.",
+    "Cash distributions are not exact event cash and the result must not be labelled total return."
+  ],
+  "schema_version": 1,
+  "source_code_commit": "bcc1d825078a3c2b59e7505a72697fdca70ec259",
+  "source_file_sha256": {
+    "src/qdata/api.py": "9d52a95f4f360c7d451d2c4c6b9a695ce5bf1e6720ee678576be74f704bb251a",
+    "src/qdata/ingest/krx.py": "30077c12a6307268a62369a0f37b0ffc498826d398b4eab542a756739748f3be",
+    "src/qdata/ingest/krx_etf.py": "cd0ef00baf401c0b33f655213db6933964bc51a62c7067401b170e0e864898dd",
+    "src/qdata/store/krx_etf.py": "38b72a68fb8e20e3583b5fc70b82768548e99fea7ead2622ee8b0e5ecfad9833"
+  },
+  "source_heads": {
+    "krx_etf": "9c4fb62c8f19a158aee1dff36af37706",
+    "krx_etf_meta": "2d8776e0c3fbe4e020dc383718239ee5"
+  }
+}

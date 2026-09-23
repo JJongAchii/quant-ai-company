@@ -67,7 +67,7 @@ def memory_available_mib():
     return int(values["MemAvailable"].split()[0]) // 1024
 
 
-def health(commit, names, postgres_id, worker_before):
+def health(commit, names, postgres_id, worker_before, expected_revisions=None):
     rows = inspect(["postgres", "worker", *names])
     worker_after = {"id": rows[1]["Id"], "running": rows[1]["State"]["Running"],
                     "oom_killed": rows[1]["State"]["OOMKilled"], "restarts": rows[1]["RestartCount"]}
@@ -77,7 +77,9 @@ def health(commit, names, postgres_id, worker_before):
         state = row["State"]
         if not state["Running"] or state["OOMKilled"] or state.get("Health", {}).get("Status", "healthy") != "healthy":
             raise ValueError("release_service_unhealthy")
-        if row["Name"] != "/quant-company-postgres-1" and row["Config"]["Labels"].get("org.opencontainers.image.revision") != commit:
+    for name, row in zip(names, rows[2:], strict=True):
+        expected = (expected_revisions or {}).get(name, commit)
+        if row["Config"]["Labels"].get("org.opencontainers.image.revision") != expected:
             raise ValueError("release_image_revision_mismatch")
     return {"running": names, "postgres_recreated": False, "research_worker_preserved": worker_after,
             "host_mem_available_mib": memory_available_mib()}
@@ -316,7 +318,18 @@ with c.db.transaction() as x:
         unlock()
 
 
-def activate(args, current, target, journal, module):
+def service_identity(names):
+    rows = inspect(names)
+    result = {}
+    for name, row in zip(names, rows, strict=True):
+        state = row["State"]
+        if not state["Running"] or state["OOMKilled"] or state.get("Health", {}).get("Status", "healthy") != "healthy":
+            raise ValueError("unrelated_service_unhealthy")
+        result[name] = {"id": row["Id"], "restarts": row["RestartCount"]}
+    return result
+
+
+def activate(args, current, target, journal, module, preserved_services=None, expected_revisions=None):
     """Enable publication only after a real, separately critiqued preview."""
     if current != target:
         raise ValueError("activation_commit_mismatch")
@@ -416,7 +429,9 @@ print(json.dumps({'publish_enabled':c.settings.quant_feed_publish_enabled,'autho
                                      "/app/entrypoint.py", "python", "-"], input=status_code.encode()))
         if propagated != {"publish_enabled": True, "authorized": True}:
             raise ValueError("activation_settings_not_propagated")
-        result = health(args.commit, selected, postgres_id, worker_before)
+        result = health(args.commit, selected, postgres_id, worker_before, expected_revisions)
+        if preserved_services is not None and service_identity(list(preserved_services)) != preserved_services:
+            raise ValueError("unrelated_service_changed")
         if not all((STATE / name).read_bytes() == content for name, content in preserved.items()):
             raise ValueError("unrelated_config_changed")
         record.update(phase="live_active", activated_for_publication_at=time.time(), health=result,
@@ -434,22 +449,89 @@ print(json.dumps({'publish_enabled':c.settings.quant_feed_publish_enabled,'autho
                 record.update(phase="preview_active", publication_enabled=False,
                               activation_last_error=type(exc).__name__,
                               activation_last_error_code=str(exc) if isinstance(exc, ValueError) else "activation_command_failed",
-                              health=health(args.commit, selected, postgres_id, worker_before))
+                              health=health(args.commit, selected, postgres_id, worker_before, expected_revisions))
                 module.atomic(journal, json.dumps(record).encode())
         raise
     finally:
         os.close(lock_fd)
 
 
+def reactivate(args, current, target, journal, module):
+    """Restore only the Quant publication gate after a reviewed combined release."""
+    if current != target or not args.handoff_journal or not re.fullmatch(r"[a-z0-9-]+\.json", args.handoff_journal):
+        raise ValueError("reactivation_target_or_handoff_invalid")
+    prior_path = STATE / "releases" / ("quant-feed-" + args.base + ".json")
+    prior = json.loads(prior_path.read_text())
+    handoff = json.loads((STATE / "releases" / args.handoff_journal).read_text())
+    if (prior.get("commit") != args.base or prior.get("phase") != "live_active"
+            or prior.get("publication_enabled") is not True
+            or handoff.get("previous") != args.base or handoff.get("candidate") != args.commit
+            or handoff.get("state") != "catalog_preview_active"
+            or handoff.get("publication_enabled") is not False):
+        raise ValueError("reactivation_handoff_precondition")
+    overlay = current / "deploy/data-watch.compose.yaml"
+    if not overlay.is_file():
+        raise ValueError("reactivation_data_watch_overlay_missing")
+
+    def compose_with_watch(root, *command):
+        return run([*module.compose_command(root), "--profile", "data-watch", "-f", str(overlay), *command])
+
+    preserved_services = service_identity(["news-worker", "data-watch-worker", "slack-socket",
+                                           "codex-runtime", "claude-runtime"])
+    runtime_rows = inspect(["codex-runtime", "claude-runtime"])
+    expected_revisions = {name: row["Config"]["Labels"].get("org.opencontainers.image.revision")
+                          for name, row in zip(("codex-runtime", "claude-runtime"), runtime_rows, strict=True)}
+    if not set(expected_revisions.values()) <= {args.base, args.commit}:
+        raise ValueError("reactivation_runtime_revision_unexpected")
+    if journal.exists():
+        record = json.loads(journal.read_text())
+        if record.get("phase") == "live_active" and record.get("publication_enabled") is True:
+            emit(**record)
+            return
+        if (record.get("commit") != args.commit or record.get("reactivation_from") != args.base):
+            raise ValueError("reactivation_journal_conflict")
+        if record.get("phase") == "activating":
+            values = dict(line.split("=", 1) for line in (STATE / "config/runtime.env").read_text().splitlines()
+                          if "=" in line and not line.startswith("#"))
+            if values.get("QUANT_FEED_PUBLISH_ENABLED") != "false":
+                raise ValueError("reactivation_interrupted_state_ambiguous")
+            status_code = """import json
+from quant_company.company import Company
+from quant_company.config import Settings
+c=Company(Settings())
+print(json.dumps({'publish_enabled':c.settings.quant_feed_publish_enabled}))
+"""
+            for service in ("dispatch", "quant-feed-worker"):
+                propagated = json.loads(run(["docker", "exec", "-i", "quant-company-" + service + "-1",
+                                             "python", "/app/entrypoint.py", "python", "-"],
+                                            input=status_code.encode()))
+                if propagated != {"publish_enabled": False}:
+                    raise ValueError("reactivation_interrupted_state_ambiguous")
+            record.update(phase="preview_active", publication_enabled=False,
+                          activation_last_error_code="interrupted_activation_restored")
+            module.atomic(journal, json.dumps(record).encode())
+        if record.get("phase") != "preview_active":
+            raise ValueError("reactivation_journal_conflict")
+    else:
+        record = {"phase": "preview_active", "commit": args.commit, "publication_enabled": False,
+                  "reactivation_from": args.base, "handoff_journal": args.handoff_journal,
+                  "handoff_state": handoff["state"], "prepared_at": time.time()}
+        module.atomic(journal, json.dumps(record).encode())
+    activate(args, current, target, journal,
+             SimpleNamespace(atomic=module.atomic, compose=compose_with_watch), preserved_services,
+             expected_revisions)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["stage", "cutover", "activate"])
+    parser.add_argument("action", choices=["stage", "cutover", "activate", "reactivate"])
     parser.add_argument("base")
     parser.add_argument("commit")
     parser.add_argument("--archive")
     parser.add_argument("--archive-sha256")
     parser.add_argument("--qdata-tree-sha256")
     parser.add_argument("--channel")
+    parser.add_argument("--handoff-journal")
     args = parser.parse_args()
     if not all(re.fullmatch(r"[0-9a-f]{40}", value) for value in (args.base, args.commit)):
         raise ValueError("invalid_commit")
@@ -457,11 +539,12 @@ def main():
     with (STATE / ".backup.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         previous = CURRENT.resolve()
-        if previous.name != args.base:
+        expected_current = args.commit if args.action == "reactivate" else args.base
+        if previous.name != expected_current:
             raise ValueError("deployment_baseline_changed")
         target = CURRENT.parent / "releases" / args.commit
         journal = STATE / "releases" / ("quant-feed-" + args.commit + ".json")
-        function = {"stage": stage, "cutover": cutover, "activate": activate}[args.action]
+        function = {"stage": stage, "cutover": cutover, "activate": activate, "reactivate": reactivate}[args.action]
         module = helper(previous)
         try:
             function(args, previous, target, journal, module)

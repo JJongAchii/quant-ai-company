@@ -8,40 +8,40 @@
     "ACTIVATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/quant-feed-deployment-conflict-20260922.json",
-          "sha256": "1dd6094af484"
+          "path": "docs/project/evidence/quant-feed-post-combined-recovery-20260923.json",
+          "sha256": "7696022aa10e"
         }
       ],
-      "note": "User confirmed research worker is intentional separate work. Release revised to preserve its exact container/state; bounded capacity admission passed, live gates remain.",
+      "note": "Quant Scout publication active on combined release with previous research/news/data-watch workers preserved; first natural Slack delivery and elapsed 48-hour observation remain pending.",
       "status": "in_progress",
-      "updatedAt": "2026-09-22T04:43:31.764399+00:00"
+      "updatedAt": "2026-09-23T02:07:44.128796+00:00"
     },
     "QUANT_FEED": {
       "evidence": [
         {
           "path": "docs/project/quant-feed-implementation.md",
-          "sha256": "f5a2b112032a"
+          "sha256": "50e4279f3503"
         }
       ],
-      "note": "Implementation and outbound app/auth/icon verified; no live publication claim.",
+      "note": "Quant Scout implemented, source-qualified, main-integrated and scoped reactivation verified; first natural Slack receipt remains an activation observation.",
       "status": "verified",
-      "updatedAt": "2026-09-22T04:31:38.926574+00:00"
+      "updatedAt": "2026-09-23T02:07:36.515569+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
-          "path": "docs/project/quant-feed-implementation.md",
-          "sha256": "9c8727ddc791"
+          "path": "docs/project/evidence/quant-feed-post-combined-recovery-20260923.json",
+          "sha256": "7696022aa10e"
         }
       ],
-      "note": "Post-merge full local suite 1071 passed/36 skipped/1 live deselected; PR CI passed; running-worker release preservation tests passed.",
+      "note": "Combined main regression 1137 passed, 37 skipped, 1 live deselected; Ruff passed. Scoped reactivation operator tests and real host receipt passed; merged-revision Linux CI pending push.",
       "status": "verified",
-      "updatedAt": "2026-09-22T04:43:31.596973+00:00"
+      "updatedAt": "2026-09-23T02:07:31.721455+00:00"
     }
   },
   "intentDigest": "c402037885c5",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-22T04:43:31.764399+00:00"
+  "updatedAt": "2026-09-23T02:07:44.128796+00:00"
 }

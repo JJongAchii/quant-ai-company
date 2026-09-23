@@ -1,6 +1,7 @@
 # Quant-feed implementation / qualification
 
-2026-09-22. Implementation in scoter; operational qualification remains in progress.
+2026-09-23. Implemented and activated in scoter, then reactivated after an independently owned
+combined-channel release. First natural Slack delivery and the elapsed 48-hour observation remain pending.
 
 Implemented: dedicated source registry and collection leases, original HTML/PDF retrieval,
 DOI/arXiv version aliases, Korean typed brief, separate AI evidence critique, one bounded rewrite,
@@ -8,24 +9,24 @@ per-document holds, atomic Slack outbox, KST window/pacing, correction links/pri
 search slots, status/probe/explicit live preview, independent third Codex lock and Temporal worker.
 No daily publication cap. Defaults are disabled. Separate Quant Scout manifest and matching avatar.
 
-Local full service suite: **1,034 passed, 37 skipped**. Additional deployment suite: **27 passed**.
-PostgreSQL and Temporal are real, model and Slack proposals are synthetic. Thirty golden contract
-cases test schema/evidence gates, NOT measured AI curation quality. Linux PDF hard-limit test is
-intentionally skipped on macOS and must pass in Linux CI/release qualification.
+The deployed code passed **1,057 local tests with 37 explicit skips** and Ruff passed. After merging
+the latest main branch, the combined suite passed **1,137 with 37 skips and one opt-in live test
+excluded**; Ruff passed again. GitHub Actions run 35800220559 passed on the deployed code commit. Unit and integration fixtures
+distinguish simulated proposals from the production qualification below; passing contract cases
+does not by itself measure long-run curation quality.
 
 The public-source probe is real and credential-free; it does not prove full-text availability or
 publication quality. Source titles/snippets are not accepted as evidence. Updated NBER to the
 real asset-pricing RSS, parsed KCMI numeric report links without JS execution, followed the
 official Research Affiliates pointer to Syzygy. The complete dated probe is under evidence.
 
-User instruction during implementation: existing company/research worker was intentionally
-stopped for another task. **Preserve stopped state. Do not restart it during quant deployment.**
-Reporter/news remains separate. The currently deployed base observed during this work was
-`4fc8132bb31d56eb1ce3f7a3c57d98afba7a8124`; deployment must check for concurrent changes.
+User clarification during implementation: the company/research worker belongs to a separate task.
+Quant deployment must observe and preserve its exact container ID, running/OOM state and restart
+count, never start, stop or recreate it. Reporter/news also remains separate.
 
-Linux CI passed for the initial implementation (Actions run 35686244281). Integrated the
-concurrent research audit-recovery change from PR #59 without activating its stopped worker.
-The quant editorial activity now allows the runtime's 900-second model limit to complete.
+Linux CI passed for the initial implementation and every final policy change. The quant editorial
+activity allows the runtime's 900-second model limit to complete while its own sustainable cadence
+keeps one active Quant request at a time.
 
 Slack installation verified via real auth.test: Quant Scout `A0C3HFP831Q`, bot user
 `U0C3288AXPH`, bot `B0C3CM109FX`, workspace `T0C1YRDRPNF`, sole scope `chat:write`.
@@ -35,14 +36,18 @@ The matching generated icon is persisted on the app. Credential handoff appended
 
 The explicit `deploy/quant_feed_release.py` operator path builds all five images from the
 committed Dockerfile/lock in a 512 MiB, one-CPU build container. It verifies installed source
-and the exact qdata tree, snapshots actual running services, and refuses if the stopped research
-worker changes state. Cutover and rollback never start/recreate that worker. Activation begins
+and the exact qdata tree, snapshots actual running services, and refuses if the independently owned
+research worker changes state during the cutover boundary. Cutover and rollback never start,
+stop or recreate that worker. Activation begins
 with publication disabled. A crashed cutover requires manual journal reconciliation; do not
 blindly repeat it. The helper is not an autonomous maintenance-policy expansion.
 
-Pending: full image qualification, real subscription original/critic preview, channel invitation,
-controlled activation, actual load admission, and elapsed 48-hour observation. No simulated result
-is claimed as deployed.
+All five images were rebuilt and source-verified at
+`377335dcab983007a998a2166807d7332548e024`. A real subscription preview completed
+review → critique/revise → one revision → critique/pass with zero Slack writes, and the explicit
+activation gate then enabled publication. A later combined release temporarily restored the
+publication gate to disabled; the scoped reactivation below enabled it again. The first natural
+Slack delivery and elapsed 48-hour observation remain pending.
 
 ## Deployment coordination gate, 13:30 KST
 
@@ -68,10 +73,8 @@ archives now contain only Git-committed build inputs (`pyproject.toml`, `uv.lock
 Dockerfile and verified against the committed package inventory. The failed attempt remains in
 the release journal and is not represented as a build.
 
-Additional post-merge targeted tests: 152 passed, one macOS PDF skip. Release state-preservation,
-rollback and real Temporal/deployment tests pass (33 tests after the running-worker refinement).
-The latest full local regression passed 1,071 with 36 skipped and one live test deselected; PR CI
-passed. Do not claim the new feed is active until preview and delivery gates complete.
+Release state-preservation, rollback and real Temporal/deployment tests pass. The combined main
+branch regression passed 1,137 with 37 explicit skips, one opt-in live exclusion and Ruff passed.
 
 ## Preview findings and source fairness
 
@@ -89,3 +92,57 @@ calls. Codex runtime memory peaked at 338,063,360 bytes under its 512 MiB limit,
 image rebuilds reuse only the prior bounded BuildKit cache after an exact-base check; images are
 still rebuilt and their installed source inventory is reverified. A cold build requires 640 MiB
 host availability; a same-base cache rebuild requires 512 MiB, matching the builder's hard cap.
+
+Complete originals are preferred within the source-fairness tier. Long originals are sampled
+across head, middle and tail rather than truncated only at the beginning, and predictable public
+NBER paper URLs can resolve to their PDF originals. Exact-quote comparison applies Unicode NFKC
+and ignores layout whitespace only; changed words still fail. Raw JSON control characters are
+normalized only after a structurally valid parse. A quote/link contract failure may request one
+deterministic revision, while a second failure is held. Production exercised both the one-repair
+path and the second-failure stop.
+
+## Production activation, 09:28 KST
+
+The operator rebuilt five images from the committed package and exact qdata tree, took a
+secret-free backup, preserved PostgreSQL, and moved from `preview_active` to `live_active` only
+after one complete real-subscription preview, zero publications, zero running Quant calls and zero
+sending outbox rows. Slack `auth.test` matched Quant Scout app `A0C3HFP831Q`, bot user
+`U0C3288AXPH`, workspace `T0C1YRDRPNF` and `#quant-feeds` channel `C0C3K8ZB9PB`.
+
+With research, news and Quant workers running together, the observed memory snapshot was 97.0,
+89.73 and 88.57 MiB respectively; the shared Codex runtime was 194.1 MiB of its 512 MiB limit and
+the host retained 593 MiB available. All four containers had zero OOM kills and zero restarts. The
+research container ID was unchanged across cutover and activation. This is an activation/load
+snapshot, not yet an elapsed 48-hour stability result. The exact receipt is
+`evidence/quant-feed-live-activation-20260923.json`.
+
+At 00:30 UTC, the Quant worker exited with code 143 (SIGTERM), zero OOM kills and zero restarts.
+The shutdown initiator has not been proven. An independently owned combined release later restored
+the worker on `f40fa10755004db724d6c5c74ebadc3eab4ebec2`, but left
+`QUANT_FEED_PUBLISH_ENABLED=false` in its candidate environment.
+
+## Scoped reactivation, 10:58 KST
+
+The `reactivate` operator action requires the earlier Quant `live_active` receipt and the exact
+combined-release handoff receipt; it obtains the shared deployment lock, verifies the real preview,
+zero running Quant calls and zero sending outbox rows, rechecks the Quant Scout Slack identity,
+and preserves the data-watch Compose overlay. It recreates only API, dispatch and Quant worker,
+then verifies the company/research worker and the independent news, data-watch, Slack-socket,
+Codex and Claude containers were preserved. The shared Codex and Claude images legitimately
+remain at the previous verified revision; the health gate records that explicit mixed-image
+baseline instead of requiring them to be rebuilt.
+
+The first reactivation attempt failed closed at that mixed-image gate. Its rollback restored the
+publication environment to `false`; the next attempt verified both dispatch and Quant worker
+also saw `false` before retrying. The corrected action reached `live_active` at
+2026-09-23 01:58:41 UTC (10:58:41 KST). Activation recorded one complete preview,
+zero publications, zero running Quant calls, zero sending outbox rows, and Slack `auth.test`
+matching app `A0C3HFP831Q`, bot user `U0C3288AXPH`, workspace `T0C1YRDRPNF`.
+Dispatch reported `publish_enabled=true` and `authorized=true`; the research worker ID and
+restart count were unchanged. Host available memory was 414 MiB at this gate, without an OOM.
+
+At 02:00 UTC the new lane was active with 120 source documents ready for editorial review,
+but no delivered Slack message yet. The company-wide runtime control had a `quota` pause until
+02:12 UTC. We did not bypass that limit or publish a hand-picked item. The actual natural
+publication and elapsed stability observation are separate gates; current evidence is in
+`evidence/quant-feed-post-combined-recovery-20260923.json`.

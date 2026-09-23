@@ -1,0 +1,17 @@
+{
+  "constraints": ["Company records stay in this company repository", "Preserve signed/allowlisted Slack ingress, typed proposals and exact-candidate approval", "Existing subscription models and bounded maintenance engine; no research execution or external deployment in this slice", "Real PostgreSQL/Temporal checks; label simulated Slack/Codex separately"],
+  "createdAt": "2026-09-22T06:26:09.797551+00:00",
+  "decisionGates": [],
+  "deliverables": [
+    {"id": "CHANNEL_DESIGN", "description": "Complete company channel structure and staged employee activation", "acceptance": ["Seven core channels, three feeds, social/test and gated risk-desk are documented", "data-watch whole inventory plus core detail is explicitly the next implementation"]},
+    {"id": "MAINTAINER", "description": "Dedicated improvements intake, durable case threads and independent reporting", "acceptance": ["Configured Maintainer identity receives dedicated-channel conversations without duplicate director work", "New cases preserve owner/source linkage and report to a stable thread with case cards", "Progress reporting continues independently of long maintenance calls", "Existing cases and exact-head approval remain compatible"]},
+    {"id": "VALIDATION", "description": "Regression and restart/delivery validation", "acceptance": ["Real PostgreSQL tests cover ingress, owner scope, case delivery and approval", "Real Temporal validates independent reporting and history replay", "Repository tests and lint pass; live activation gaps are explicitly recorded"]}
+  ],
+  "nonGoals": ["Implement later-stage data-watch, briefing or risk engines in the first slice", "Automatically activate other employees", "Change other worktrees or research repositories", "Deploy or post test messages to production Slack"],
+  "outcome": "Implement the plan. AI 직원 회사 Slack 전체 채널 설계를 회사 저장소에 반영하고, 합의한 첫 구현 범위인 전용 Maintainer와 improvements 채널의 접수·케이스 스레드·독립 상태 보고·기존 승인 경로를 구현하고 검증한다. data-watch를 다음 구현으로 명시하고 나머지 채널과 직원 활성화 조건을 보존한다.",
+  "revision": 1,
+  "schemaVersion": 1,
+  "slug": "piddock",
+  "sourceRequest": "Implement the plan. AI 직원 회사 Slack 전체 채널 설계를 회사 저장소에 반영하고, 합의한 첫 구현 범위인 전용 Maintainer와 improvements 채널의 접수·케이스 스레드·독립 상태 보고·기존 승인 경로를 구현하고 검증한다. data-watch를 다음 구현으로 명시하고 나머지 채널과 직원 활성화 조건을 보존한다.",
+  "stopConditions": ["Record unavailable external activation prerequisites without fabricating live verification", "Never automatically replay uncertain external writes or charges"]
+}

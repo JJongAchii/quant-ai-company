@@ -28,11 +28,13 @@ class Store:
 
     def heartbeat(self):
         with self.db.transaction() as conn:
-            conn.execute("UPDATE maintenance_control SET runtime=%s WHERE id=1", (Jsonb(as_json({
+            conn.execute("""UPDATE maintenance_control SET runtime=runtime || %s ||
+                CASE WHEN %s AND NOT runtime ? 'improvements_started_at'
+                THEN jsonb_build_object('improvements_started_at',now()) ELSE '{}'::jsonb END WHERE id=1""", (Jsonb(as_json({
                 "enabled": self.config.enabled, "allowed_owners": self.config.allowed_owners,
                 "max_daily_calls": self.config.max_daily_calls, "poll_seconds": self.config.poll_seconds,
                 "heartbeat_at": datetime.now(UTC),
-            })),))
+            })), self.company.settings.company_improvements_enabled))
 
     def prepare_review(self, job):
         """Freeze owner history when the durable request is picked up, before model analysis."""
@@ -81,28 +83,67 @@ class Store:
                 ORDER BY m.created_at,m.id LIMIT 16
                 """, (self.config.allowed_owners, self.company.settings.slack_allowed_channels)).fetchall()
             events = conn.execute("""
-                SELECT 'event:'||e.id::text AS key,e.project_id,e.kind,e.detail,e.created_at
+                SELECT 'event:'||e.id::text AS key,e.project_id,p.owner_user,e.kind,e.detail,e.created_at
                 FROM events e JOIN projects p ON p.id=e.project_id
                 WHERE p.owner_user=ANY(%s) AND (p.channel=ANY(%s) OR p.channel LIKE 'D%%')
-                  AND e.kind IN ('turn_blocked','task_blocked','research_stage_waiting')
+                  AND e.kind IN ('turn_blocked','task_blocked','research_stage_waiting','data_watch_problem')
+                  AND (e.kind<>'data_watch_problem' OR (p.thread_ts IS NOT NULL AND EXISTS(
+                    SELECT 1 FROM data_watch_incidents d WHERE d.project_id=p.id AND d.state='active')))
+                  AND (NOT %s OR (e.created_at >= %s::timestamptz AND e.kind<>'research_stage_waiting'
+                    AND COALESCE(e.detail->>'reason','') NOT IN ('quota','daily_model_budget','task_turn_limit')))
                   AND NOT EXISTS (SELECT 1 FROM maintenance_observations o WHERE o.key='event:'||e.id::text)
                 ORDER BY e.id LIMIT 4
-                """, (self.config.allowed_owners, self.company.settings.slack_allowed_channels)).fetchall()
+                """, (self.config.allowed_owners, self.company.settings.slack_allowed_channels,
+                      self.company.settings.company_improvements_enabled,
+                      control["runtime"].get("improvements_started_at", datetime.now(UTC).isoformat()))).fetchall()
+            from ..data_watch.reporting import incident_allowed
+            from ..data_watch.store import DataWatchStore
+
+            events = [event for event in events if event["kind"] != "data_watch_problem" or incident_allowed(
+                conn, DataWatchStore(self.company), conn.execute("SELECT * FROM data_watch_incidents WHERE project_id=%s",
+                                                               (event["project_id"],)).fetchone())]
             from ..staff.store import maintenance_observations
 
-            rows = safe_rows(rows + events + maintenance_observations(conn, self.config.allowed_owners, unseen=True))
+            owners = self.config.allowed_owners
+            if self.company.settings.company_improvements_enabled:
+                # Ordinary conversations/ideas do not trigger automatic model work. One owner per case.
+                rows = []
+                owners = [events[0]["owner_user"]] if events else []
+                events = [event for event in events if event["owner_user"] in owners]
+                staff = []
+                for owner in owners or self.config.allowed_owners:
+                    failures = [row for row in maintenance_observations(conn, [owner], unseen=True)
+                                if row.get("grade", {}).get("objective_passed") is False
+                                and datetime.fromisoformat(row["created_at"]) >= datetime.fromisoformat(
+                                    control["runtime"]["improvements_started_at"])]
+                    if failures:
+                        owners, staff = [owner], failures
+                        break
+                rows = safe_rows(events + staff)
+            else:
+                rows = safe_rows(rows + events + maintenance_observations(conn, owners, unseen=True))
             if not rows:
                 return None
             review, replay_inputs, review_digest = review_snapshot(
-                conn, self.company, self.config.allowed_owners, datetime.now(UTC))
+                conn, self.company, owners, datetime.now(UTC))
             payload = {"observations": rows, "review": review, "review_digest": review_digest,
-                       "replay_inputs": replay_inputs, "owners": self.config.allowed_owners}
+                       "replay_inputs": replay_inputs, "owners": owners}
             job_id = str(uuid4())
             conn.execute("INSERT INTO maintenance_jobs(id,kind,state,payload) VALUES (%s,'triage','triage',%s)",
                          (job_id, Jsonb(payload)))
             for row in rows:
                 conn.execute("INSERT INTO maintenance_observations(key,job_id,body) VALUES (%s,%s,%s)",
                              (row["key"], job_id, Jsonb(row)))
+            if self.company.settings.company_improvements_enabled:
+                from .cases import attach, identity
+
+                project_id = next((row["project_id"] for row in rows if row.get("project_id")), None)
+                source = (self.company._project(conn, project_id) if project_id else conn.execute(
+                    """INSERT INTO projects(id,title,instruction,owner_user,channel)
+                    VALUES (%s,'직원 평가 오류 점검','기록된 평가 실패를 진단한다.',%s,%s) RETURNING *""",
+                    (identity(job_id + ":observation"), owners[0],
+                     self.company.settings.improvements_channel_id)).fetchone())
+                attach(conn, self.company, job_id, source)
             return job_id
 
     def next_job(self):
@@ -116,6 +157,14 @@ class Store:
         owners = set(job["payload"].get("owners", []))
         if not owners or not owners <= set(self.config.allowed_owners) & set(self.company.settings.slack_allowed_users):
             raise ValueError("review_owner_authorization_changed")
+        if job["payload"].get("slack_case_id"):
+            from .cases import allowed
+
+            with self.db.transaction() as conn:
+                case = conn.execute("SELECT * FROM maintenance_cases WHERE id=%s",
+                                    (job["payload"]["slack_case_id"],)).fetchone()
+                if not case or not allowed(conn, self.company, case):
+                    raise ValueError("review_case_scope_changed")
         if job["payload"].get("request_project_id"):
             from .requests import permitted
 
@@ -153,7 +202,8 @@ class Store:
                 # A patch/evaluation belongs to its old inputs. Re-diagnose in a linked new job.
                 identity = str(uuid5(NAMESPACE_URL, f"maintenance-recheck:{job['id']}:{diagnosis['scope_digest']}"))
                 replacement = {key: payload[key] for key in ("owners", "observations", "review", "review_digest",
-                               "replay_inputs", "request_project_id", "request_task_id", "request_revision", "instruction")
+                               "replay_inputs", "request_project_id", "request_task_id", "request_revision", "instruction",
+                               "slack_case_id")
                                if key in payload}
                 replacement.update(predecessor=str(job["id"]), diagnostic_revision=revision)
                 requested = "request_project_id" in replacement
@@ -240,7 +290,8 @@ class Store:
                                investigation_external=external,
                                investigation_requests=context.get("investigation_requests", []))
                 payload.update({key: context[key] for key in
-                                ("request_project_id", "request_task_id", "request_revision", "instruction") if key in context})
+                                ("request_project_id", "request_task_id", "request_revision", "instruction", "slack_case_id")
+                                if key in context})
                 if finding.evaluation.mode == "staff_replay":
                     from ..staff.comparisons import source_run
 
@@ -321,6 +372,9 @@ class Store:
             projects = {item["project_id"] for item in job["payload"]["observations"] if item.get("project_id")}
             if job["payload"].get("request_project_id"):
                 projects.add(job["payload"]["request_project_id"])
+            # New cases have one authoritative delivery/approval destination. Legacy jobs retain theirs.
+            if job["payload"].get("slack_case_id"):
+                projects = set()
             for project_id in sorted(projects):
                 project = self.company._project(conn, project_id)
                 if project["owner_user"] not in self.config.allowed_owners:
@@ -343,7 +397,11 @@ class Store:
 
         # One notice per distinct durable state, including terminal failure/no-finding and budget waits.
         with self.db.transaction() as conn:
-            jobs = conn.execute("""SELECT * FROM maintenance_jobs WHERE kind='review'
+            if not conn.execute("SELECT pg_try_advisory_xact_lock(71350227) AS ok").fetchone()["ok"]:
+                return
+            jobs = conn.execute("""SELECT * FROM maintenance_jobs j WHERE kind='review'
+                AND NOT j.payload ? 'slack_case_id'
+                AND NOT EXISTS (SELECT 1 FROM maintenance_cases c WHERE c.request_id=j.id)
                 ORDER BY COALESCE(receipt->>'last_report_scan_at',''),created_at LIMIT 50""").fetchall()
             for job in jobs:
                 conn.execute("UPDATE maintenance_jobs SET receipt=jsonb_set(receipt,'{last_report_scan_at}',%s) WHERE id=%s",
