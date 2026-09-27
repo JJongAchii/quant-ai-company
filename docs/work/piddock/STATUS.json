@@ -1,71 +1,48 @@
 {
   "approval": {
-    "approvedAt": "2026-09-22T07:17:39.064541+00:00",
-    "id": "chat-20260922-continue-data-watch"
+    "id": "chat-operational-channel-application",
+    "sourceRequest": "우선 지금까지 진행한것들은 운영 적용 진행해줘",
+    "recordedAt": "2026-09-27T22:41:30+00:00"
   },
-  "currentIntent": "INTENT-v2.json",
+  "currentIntent": "INTENT-v3.json",
   "deliverables": {
-    "CORE_CHECKS": {
+    "CHANNEL_OPERATIONS": {
+      "status": "verified",
+      "updatedAt": "2026-09-27T22:41:30+00:00",
       "evidence": [
         {
-          "path": "src/quant_company/data_watch/checker.py",
-          "sha256": "c388d5225979"
-        },
-        {
-          "path": "src/quant_company/data_watch/core.py",
-          "sha256": "74dacb5c5404"
-        },
-        {
-          "path": "docs/data-watch.md",
-          "sha256": "5d7bf988457a"
+          "path": "docs/project/evidence/data-watch-production-20260928.json",
+          "sha256": "645d4927af90"
         }
       ],
-      "note": "Existing-worker read-only lane and typed consumer verified with real synthetic Parquet, subprocess and API/DB tests; actual 3070 activation remains explicitly outside local acceptance.",
-      "status": "verified",
-      "updatedAt": "2026-09-22T07:59:44.232952+00:00"
+      "note": "Live Maintainer/data-watch activation, Slack delivery receipts, and current release/service state recorded. Owner inbound and fixed research-input E2E remain unverified."
     },
-    "DATA_WATCH": {
+    "READABILITY": {
+      "status": "verified",
+      "updatedAt": "2026-09-27T22:41:30+00:00",
       "evidence": [
         {
-          "path": "docs/project/SLACK-COMPANY-DESIGN.md",
-          "sha256": "316a42b0e4bf"
-        },
-        {
-          "path": "docs/project/DATA-WATCH-VALIDATION.md",
-          "sha256": "0f0549a0f007"
+          "path": "docs/project/DATA-WATCH-PRODUCTION-20260928.md",
+          "sha256": "8cf6d02e687b"
         }
       ],
-      "note": "Bounded metadata monitoring, explicit freshness states, daily summaries, incident/recovery and approval-aware delivery passed real PostgreSQL/Temporal tests; live activation not performed.",
-      "status": "verified",
-      "updatedAt": "2026-09-22T07:59:43.985696+00:00"
+      "note": "271-character single-message daily summary and 288-character incident reply matched Slack and PostgreSQL receipts."
     },
     "VALIDATION": {
+      "status": "verified",
+      "updatedAt": "2026-09-27T22:41:30+00:00",
       "evidence": [
         {
-          "path": "docs/project/evidence/data-watch-validation.json",
-          "sha256": "1b5e2f057a0a"
-        },
-        {
-          "path": "docs/project/evidence/data-watch-tests.xml",
-          "sha256": "d63031ee9347"
-        },
-        {
-          "path": "docs/project/evidence/data-watch-deployment-tests.xml",
-          "sha256": "2470a7b7c6fa"
-        },
-        {
-          "path": "docs/project/evidence/data-watch-financial-fixtures.xml",
-          "sha256": "83905f79c654"
+          "path": "docs/project/evidence/data-watch-production-20260928.json",
+          "sha256": "645d4927af90"
         }
       ],
-      "note": "Final integrated tree: 1029 service, 28 deployment and 3 financial fixture tests passed; 37 platform/live opt-in checks skipped. Ruff and diff checks passed.",
-      "status": "verified",
-      "updatedAt": "2026-09-22T07:59:44.480476+00:00"
+      "note": "Combined source passed 1158 service tests (38 skipped), 31 deployment checks, Ruff and CI; live Slack receipts and remaining E2E gaps are recorded."
     }
   },
-  "intentDigest": "0a86350b0dfa",
+  "intentDigest": "a289bfa790ef",
   "schemaVersion": 1,
   "slug": "piddock",
   "state": "approved",
-  "updatedAt": "2026-09-22T07:59:44.480476+00:00"
+  "updatedAt": "2026-09-27T22:41:30+00:00"
 }
