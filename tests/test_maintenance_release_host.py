@@ -122,6 +122,18 @@ def test_account_overlay_is_preserved_for_future_release_and_backup(tmp_path, mo
     assert 'account-gateway' in release.services(root)
 
 
+def test_enabled_data_watch_worker_is_updated_with_company_release(tmp_path, monkeypatch):
+    monkeypatch.setattr(release, 'STATE', tmp_path/'state')
+    env = release.STATE/'config/runtime.env'
+    env.parent.mkdir(parents=True)
+    env.write_text('DATA_WATCH_ENABLED=true\n')
+    root = tmp_path/'release'
+    module = root/'src/quant_company/data_watch/worker.py'
+    module.parent.mkdir(parents=True)
+    module.write_text('qualified worker')
+    assert 'data-watch-worker' in release.services(root)
+
+
 @pytest.mark.parametrize('enabled', [False, True])
 def test_release_and_rollback_preserve_enabled_research_overlay(tmp_path, monkeypatch, enabled):
     monkeypatch.setattr(release, 'STATE', tmp_path/'state')
