@@ -9,39 +9,39 @@
       "evidence": [
         {
           "path": "docs/project/evidence/quant-feed-publication-pause-20260923.json",
-          "sha256": "95dd6a888404"
+          "sha256": "2f00981488df"
         }
       ],
-      "note": "Quant Scout publication gate false; collection active and original Robeco post retained. Scoped quality release, preview, explicit resumption and 48h observation pending.",
+      "note": "Publish gate false, original post retained and no new deliveries after 20m. Scoped release, real subscription preview, explicit resumption and 48h observation pending.",
       "status": "in_progress",
-      "updatedAt": "2026-09-23T07:55:34.290828+00:00"
+      "updatedAt": "2026-09-23T08:07:44.459736+00:00"
     },
     "QUANT_FEED": {
       "evidence": [
         {
           "path": "docs/project/quant-feed-implementation.md",
-          "sha256": "f5c5e69370a8"
+          "sha256": "7f5a643e22a8"
         }
       ],
-      "note": "First natural post exposed generic AI-governance false positive and poor Slack readability; publication paused, code fix implemented locally but not deployed.",
+      "note": "Quant Scout publication paused after generic AI-governance false positive; scoped research gate and readable card implemented but not deployed.",
       "status": "in_progress",
-      "updatedAt": "2026-09-23T07:55:25.038518+00:00"
+      "updatedAt": "2026-09-23T08:07:35.958091+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
           "path": "docs/project/evidence/quant-feed-publication-pause-20260923.json",
-          "sha256": "95dd6a888404"
+          "sha256": "2f00981488df"
         }
       ],
-      "note": "Operational pause verified; 1192 local tests and Ruff passed, focused stopped-worker cases passed. Quality code awaits CI and real-subscription preview.",
+      "note": "Production pause and continued collection verified; deterministic institutional basis gate added. CI and live quality preview pending.",
       "status": "in_progress",
-      "updatedAt": "2026-09-23T07:55:29.858990+00:00"
+      "updatedAt": "2026-09-23T08:07:40.065803+00:00"
     }
   },
   "intentDigest": "c402037885c5",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-23T07:55:34.290828+00:00"
+  "updatedAt": "2026-09-23T08:07:44.459736+00:00"
 }

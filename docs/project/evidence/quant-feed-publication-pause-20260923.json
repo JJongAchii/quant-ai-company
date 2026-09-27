@@ -28,6 +28,15 @@
     "readback_delivery_count": 1,
     "readback_delivery_status": "delivered"
   },
+  "post_pause_readback": {
+    "observed_at": "2026-09-23T08:04:24Z",
+    "publish_enabled": false,
+    "delivered_publications": 1,
+    "same_original_publication_retained": true,
+    "ready_documents_before_after": [175, 177],
+    "held_documents_before_after": [52, 53],
+    "latest_quant_call_state": "completed"
+  },
   "follow_up": {
     "quality_and_render_code_deployed": false,
     "publication_resume_approved": false,

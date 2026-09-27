@@ -103,6 +103,9 @@ class ResearchBrief(StrictModel):
                     self.limitations, self.application, self.evidence)
         if not all(required) or len(self.evidence) < 2:
             raise ValueError("quant_brief_missing_evidence_or_limitations")
+        if self.kind == "institutional" and all(
+                value.strip().startswith(("해당 없음", "미기재")) for value in (self.data_period, self.validation)):
+            raise ValueError("quant_institutional_without_research_basis")
         for stamp in (self.published_on, self.revised_on):
             if not stamp:
                 continue

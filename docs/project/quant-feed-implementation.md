@@ -218,12 +218,18 @@ runtimes retained their exact container IDs and restart counts; PostgreSQL was n
 An independent status readback reported `enabled=true`, `publish_enabled=false`, and the original
 one delivered outbox entry unchanged. The private original environment snapshot and pause journal
 remain on the host; a secret-free receipt is in `evidence/quant-feed-publication-pause-20260923.json`.
+At 08:04 UTC, a second readback still showed only that delivered entry while ready documents
+rose from 175 to 177 and held documents from 52 to 53, confirming collection and review activity
+continued after the pause.
 
 The follow-up code requires the independent critic to affirm both direct quantitative-finance
 scope and substantive research before `pass`; instructions explicitly reject generic AI
 governance or organizational commentary even from an asset manager. Slack rendering is grouped
-into a short research card, suppresses the raw topic enum and duplicate original link, and no
-longer labels every related URL as code/data. These changes are **not deployed** by the pause.
+into a short research card. A separate deterministic contract rejects an institutional brief
+whose data/sample and validation/method fields both declare no research basis; formal theory and
+methodology work use their own categories and are not blocked by that rule. The card suppresses
+the raw topic enum and duplicate original link, and no longer labels every related URL as
+code/data. These changes are **not deployed** by the pause.
 The release operator was also extended to preserve the research worker unchanged whether the
 separate task has it running or intentionally stopped. The initial quality patch passed 1,192
 local regression tests with 37 skips and one opt-in live test excluded; Ruff passed. The later
