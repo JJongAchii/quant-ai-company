@@ -8,33 +8,33 @@
   "deliverables": {
     "CHANNEL_OPERATIONS": {
       "status": "verified",
-      "updatedAt": "2026-09-27T22:41:30+00:00",
+      "updatedAt": "2026-09-27T22:58:30+00:00",
       "evidence": [
         {
           "path": "docs/project/evidence/data-watch-production-20260928.json",
-          "sha256": "645d4927af90"
+          "sha256": "836202e29307"
         }
       ],
       "note": "Live Maintainer/data-watch activation, Slack delivery receipts, and current release/service state recorded. Owner inbound and fixed research-input E2E remain unverified."
     },
     "READABILITY": {
       "status": "verified",
-      "updatedAt": "2026-09-27T22:41:30+00:00",
+      "updatedAt": "2026-09-27T22:58:30+00:00",
       "evidence": [
         {
           "path": "docs/project/DATA-WATCH-PRODUCTION-20260928.md",
-          "sha256": "8cf6d02e687b"
+          "sha256": "cea2ba1d1bcb"
         }
       ],
-      "note": "271-character single-message daily summary and 288-character incident reply matched Slack and PostgreSQL receipts."
+      "note": "One short initial summary plus three subsequent 285-character daily summaries and incident reply matched Slack/PostgreSQL receipts."
     },
     "VALIDATION": {
       "status": "verified",
-      "updatedAt": "2026-09-27T22:41:30+00:00",
+      "updatedAt": "2026-09-27T22:58:30+00:00",
       "evidence": [
         {
           "path": "docs/project/evidence/data-watch-production-20260928.json",
-          "sha256": "645d4927af90"
+          "sha256": "836202e29307"
         }
       ],
       "note": "Combined source passed 1158 service tests (38 skipped), 31 deployment checks, Ruff and CI; live Slack receipts and remaining E2E gaps are recorded."
@@ -44,5 +44,5 @@
   "schemaVersion": 1,
   "slug": "piddock",
   "state": "approved",
-  "updatedAt": "2026-09-27T22:41:30+00:00"
+  "updatedAt": "2026-09-27T22:58:30+00:00"
 }

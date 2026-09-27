@@ -104,5 +104,45 @@
     "No approved freshness calendar exists; unknown does not mean delayed.",
     "The catalog/footer check does not prove per-ticker completeness or source integrity.",
     "Other inactive employees were not mass activated."
-  ]
+  ],
+  "daily_summary_continuity": {
+    "readback_recorded_at": "2026-09-27T22:58:30Z",
+    "method": "Read-only Slack conversations.history using configured data bot and PostgreSQL data_watch_publications/outbox",
+    "lookback": "Latest 3 daily summaries visible at readback; 2026-09-28 09:00 KST summary was not due yet",
+    "rows": [
+      {
+        "kst_date": "2026-09-27",
+        "slack_ts": "1790467262.489869",
+        "client_msg_id": "e2f8c006-57ae-5324-9fe7-bcc1c4683aa5",
+        "db_status": "delivered",
+        "characters": 285,
+        "one_slack_message": true
+      },
+      {
+        "kst_date": "2026-09-26",
+        "slack_ts": "1790380856.462989",
+        "client_msg_id": "4d526292-9c46-5d06-9006-ea293e99a10b",
+        "db_status": "delivered",
+        "characters": 285,
+        "one_slack_message": true
+      },
+      {
+        "kst_date": "2026-09-25",
+        "slack_ts": "1790294447.708359",
+        "client_msg_id": "7731a356-396c-5932-aee9-9e4b84bba48a",
+        "db_status": "delivered",
+        "characters": 285,
+        "one_slack_message": true
+      }
+    ],
+    "common_readable_status": {
+      "lake_datasets": 38,
+      "metadata_checked": 37,
+      "metadata_unchecked": 1,
+      "unchecked_dataset": "us_prices",
+      "reason": "Parquet metadata exceeds 2 MiB inspection budget",
+      "freshness_unregistered": 38,
+      "fixed_research_inputs_not_checked": 6
+    }
+  }
 }
