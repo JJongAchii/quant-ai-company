@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "scope": "data-watch and Maintainer channel production activation, readable Slack reports, and combined release",
+  "initial_delivery_observed_at": "2026-09-23",
+  "current_host_check_at": "2026-09-27T22:41:30Z",
+  "production": {
+    "release_commit": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+    "release_path": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+    "archive_sha256": "e9a6b7c8524081a08e7ac29ee31873b545bc2e4ba571c33fa775815baa0035fe",
+    "app_image": "sha256:942a896a92f6a2c6e3d5b4743ad670808da62be448136d77f2e75455f7668b24",
+    "maintenance_image": "sha256:50124cabdc3db809bfc799e14aa9af1c155d86b6a577f910d18b49d6e5f226f5",
+    "backup_sha256": "c37216db4f61f662e52028599063577b1f670e05e5788fbc84b98a0a9dde5b1a",
+    "backup_secrets_included": false,
+    "release_timer_active_at_cutover": true,
+    "data_watch_enabled": true,
+    "data_watch_publish_enabled": true,
+    "data_watch_core_enabled": false,
+    "maintainer_enabled": true,
+    "selected_services_running_at_current_check": [
+      "api",
+      "news-worker",
+      "dispatch",
+      "slack-socket",
+      "maintenance",
+      "quant-feed-worker",
+      "data-watch-worker",
+      "account-gateway"
+    ],
+    "other_services_running_at_current_check": [
+      "postgres",
+      "worker",
+      "codex-runtime",
+      "claude-runtime"
+    ],
+    "healthy_at_current_check": [
+      "api",
+      "account-gateway",
+      "postgres",
+      "codex-runtime",
+      "claude-runtime"
+    ],
+    "research_worker_and_postgres_preserved_at_cutover": true,
+    "host_key_fingerprint": "SHA256:I4FMVaL20Xw7EUuMr7PjlaZGHPCiPyyS5wlNmFxJmwY"
+  },
+  "lake_observation_at_initial_delivery": {
+    "source": "qdata public dataset_catalog and bounded inspect_dataset API against configured production lake",
+    "datasets": 38,
+    "metadata_checked": 37,
+    "metadata_unchecked": 1,
+    "unchecked_dataset": "us_prices",
+    "unchecked_reason": "parquet_footer_limit",
+    "reason_detail": "Parquet metadata exceeds qdata 2 MiB inspection budget",
+    "freshness_contracts_registered": 0,
+    "freshness_unclassified": 38,
+    "source_corruption_proven": false,
+    "data_lateness_proven": false,
+    "fixed_research_inputs_checked": 0,
+    "fixed_research_inputs_target": 6
+  },
+  "slack": {
+    "workspace_id": "T0C1YRDRPNF",
+    "data_watch_channel_id": "C0C3Q7H30HL",
+    "improvements_channel_id": "C0C3Q7BFQCE",
+    "daily_summary": {
+      "outbox_id": "ad9d0ee1-f3eb-5da0-ad58-179813eab51e",
+      "sent_ts": "1790150394.271459",
+      "slack_message_count": 1,
+      "length_characters": 271,
+      "db_delivery_receipt_matches_slack": true,
+      "url": "https://achiisquantresearch.slack.com/archives/C0C3Q7H30HL/p1790150394271459"
+    },
+    "incident": {
+      "root_outbox_id": "fdb300ff-48ef-5362-80c1-d2e1199bb4d0",
+      "root_sent_ts": "1790128822.133779",
+      "readable_transition_outbox_id": "5f0cdaf3-dc25-53b1-ad54-5294261ac5f3",
+      "readable_transition_sent_ts": "1790150595.245189",
+      "transition_length_characters": 288,
+      "same_root_thread": true,
+      "db_delivery_receipt_matches_slack": true,
+      "url": "https://achiisquantresearch.slack.com/archives/C0C3Q7H30HL/p1790150595245189"
+    },
+    "historical_split_summary": {
+      "outbox_id": "e44ef931-6ebf-5fe8-8074-0d3b258af69b",
+      "slack_message_count": 2,
+      "chunk_lengths_characters": [
+        3871,
+        736
+      ],
+      "left_in_history_to_preserve_receipts": true
+    }
+  },
+  "validation": {
+    "local_service": "1158 passed, 38 skipped; disposable real PostgreSQL and Temporal",
+    "deployment_contract": "31 passed",
+    "ruff": "passed",
+    "github_ci": "success",
+    "github_ci_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/35829743774/job/107079347641",
+    "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/67"
+  },
+  "limits": [
+    "No signed owner message in #data-watch has yet been verified end to end in production.",
+    "No real owner case in #improvements has yet been verified end to end in production.",
+    "The fixed 3070 research input checks are disabled and no real six-file result is claimed.",
+    "No approved freshness calendar exists; unknown does not mean delayed.",
+    "The catalog/footer check does not prove per-ticker completeness or source integrity.",
+    "Other inactive employees were not mass activated."
+  ]
+}

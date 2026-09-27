@@ -312,7 +312,7 @@ class QuantFeedStore:
             if code in {"quota", "busy", "unavailable"}:
                 delay = max(60, min(seconds or 300, 604800))
                 conn.execute("UPDATE quant_feed_calls SET error=%s,next_at=now()+make_interval(secs=>%s) WHERE id=%s", (code, delay, identity))
-                if code == "quota":
+                if code == "quota" and not self.company.settings.model_accounts_enabled:
                     conn.execute("""UPDATE runtime_control SET paused_until=GREATEST(paused_until,now()+make_interval(secs=>%s)),
                         reason='subscription_quota' WHERE id=1""", (delay,))
             else:

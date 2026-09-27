@@ -124,7 +124,14 @@ class DataWatchStore:
                     or len(str(receipt).encode()) > 32768):
                 raise ValueError("descriptor_identity_or_scope")
         except (ValueError, KeyError, TypeError):
-            receipt, error = {"ok": False, "error": "descriptor_unavailable_or_changed"}, "descriptor_unavailable_or_changed"
+            # qdata's public bounded-inspection contract can reject an otherwise
+            # readable object. Keep a safe reason code; never persist arbitrary
+            # provider exception text from the short-lived reader.
+            footer_limit = (isinstance(receipt, dict)
+                            and receipt.get("error") == "inspection_limit_or_invalid_request"
+                            and receipt.get("detail") == "Parquet footer exceeds the 2 MiB inspection budget")
+            error = "parquet_footer_limit" if footer_limit else "descriptor_unavailable_or_changed"
+            receipt = {"ok": False, "error": error}
         with self.db.transaction() as conn:
             row = conn.execute("SELECT * FROM data_watch_datasets WHERE id=%s FOR UPDATE", (claim["id"],)).fetchone()
             accepted = (self.authorized() and self.policy() == claim["policy"] and row["version"] == claim["version"]
