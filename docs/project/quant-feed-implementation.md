@@ -1,7 +1,9 @@
 # Quant-feed implementation / qualification
 
 2026-09-23. Implemented and activated in scoter, then reactivated after an independently owned
-combined-channel release. First natural Slack delivery and the elapsed 48-hour observation remain pending.
+combined-channel release. The first natural Slack delivery exposed an editorial false positive;
+Quant Scout publication is now paused while collection continues. The elapsed 48-hour observation
+and a quality-approved resumption remain pending.
 
 Implemented: dedicated source registry and collection leases, original HTML/PDF retrieval,
 DOI/arXiv version aliases, Korean typed brief, separate AI evidence critique, one bounded rewrite,
@@ -193,7 +195,45 @@ registry now targets that index, and the editor
 instructions explicitly exclude unrelated infrastructure, cloud security and career/interview
 content. Separately, a failing regression reproduced hidden CSS text leaking into institutional
 link titles; one parser condition now ignores that hidden text. Quant tests passed 59 with one
-platform skip, and Ruff passed. These source and parser changes are on the branch, not yet in the
+platform skip, and Ruff passed. These source and parser changes were merged in PR #60, but not yet in the
 separately owned production release; existing database candidates were not rewritten. The exact
 observation and remaining activation gates are in
 `evidence/quant-feed-source-quality-20260923.json`.
+
+## First delivery and publication pause, 16:44 KST
+
+At 06:58:54 UTC Quant Scout delivered its first natural post to `#quant-feeds`, a Robeco article
+about general agentic-AI governance. It was accurately labeled as lacking a market sample,
+quantitative validation and backtest results, yet the critic marked it publishable. This is an
+editorial scope/depth false positive, not evidence that the material meets the requested quant
+research standard. The Slack card also repeated links, exposed an internal topic enum and packed
+too many fields without visual grouping. The user elected to keep that existing post and to pause
+only future Quant Scout publication until a stricter gate is deployed. We did not edit or delete it.
+
+The pause operator checked zero running Quant model calls and zero pending/sending Quant outbox
+items, then changed `QUANT_FEED_PUBLISH_ENABLED` to `false` and recreated only API, dispatch and
+Quant worker to propagate the setting. The Quant worker remained running, so collection and
+preview review continue. Research, news, data-watch, account gateway, Slack socket and both model
+runtimes retained their exact container IDs and restart counts; PostgreSQL was not recreated.
+An independent status readback reported `enabled=true`, `publish_enabled=false`, and the original
+one delivered outbox entry unchanged. The private original environment snapshot and pause journal
+remain on the host; a secret-free receipt is in `evidence/quant-feed-publication-pause-20260923.json`.
+At 08:04 UTC, a second readback still showed only that delivered entry while ready documents
+rose from 175 to 177 and held documents from 52 to 53, confirming collection and review activity
+continued after the pause.
+
+The follow-up code requires the independent critic to affirm both direct quantitative-finance
+scope and substantive research before `pass`; instructions explicitly reject generic AI
+governance or organizational commentary even from an asset manager. Slack rendering is grouped
+into a short research card. A separate deterministic contract rejects an institutional brief
+whose data/sample and validation/method fields both declare no research basis; formal theory and
+methodology work use their own categories and are not blocked by that rule. The card suppresses
+the raw topic enum and duplicate original link, and no longer labels every related URL as
+code/data. These changes are **not deployed** by the pause.
+The release operator was also extended to preserve the research worker unchanged whether the
+separate task has it running or intentionally stopped. The initial quality patch passed 1,192
+local regression tests with 37 skips and one opt-in live test excluded; Ruff passed. The later
+stopped-worker operator refinement passed its four focused tests and awaits CI with the branch.
+Publication must remain disabled until the change is merged, a scoped production release and real
+subscription previews demonstrate the quality bar, and a fresh explicit activation is reviewed.
+The 48-hour stability observation has not elapsed.

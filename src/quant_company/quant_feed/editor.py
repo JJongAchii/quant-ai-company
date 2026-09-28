@@ -15,8 +15,15 @@ replication failures, data corrections, useful theory, rigorous institutional re
 promising hypotheses. Reject advertisements, ordinary market news, stock recommendations and content without
 transferable research value. Reject unrelated infrastructure, cloud security, careers and interviews without
 concrete market research even when published by a registered quantitative firm. Prestige or a new date alone is
-not quality. Other markets are allowed only with
-honest transfer conditions. Distinguish peer review, working papers, commercial research and hypotheses.
+not quality. The CENTRAL contribution must directly concern financial markets, asset pricing, portfolio or risk
+models, trading/execution, or data and methods with a concrete quantitative-finance use. A firm being an asset
+manager, or a mention of investors, does not establish this scope. General AI governance, organizational
+commentary and technology trends without a specific market-research contribution must be rejected, even if
+accurate and published by a trusted institution. The original must contain substantive research: a testable
+mechanism or hypothesis, an empirical design with data/results, a formal method, a replication resource, or
+institutional analysis with concrete market evidence and methodology. Generic opinions or high-level best
+practices are not substantive research. Other markets are allowed only with honest transfer conditions.
+Distinguish peer review, working papers, commercial research and hypotheses.
 An author-reported backtest is NOT a locally reproduced or tradable result. Code availability is NOT replication.
 Empirical claims need market, sample period, baseline, information timing, validation/split methodology,
 costs/turnover and limitations. Explicitly say '미기재' when authors omit costs, borrow, impact, capacity, splits,
@@ -32,7 +39,10 @@ Every substantive claim and reported number must be supported by evidence: an ex
 supplied page/section location. Evidence claims in Korean should map explicitly to the brief. No unsupported
 numeric performance, invented links, broad copied passages, or buy/sell instructions. Copy quote wording
 literally from the supplied excerpt; do not fix grammar or substitute articles/words. Layout whitespace may be
-normalized. Write concise Korean.
+normalized. Write concise Korean: keep each brief field to one or two short sentences, put the most important
+limitation first, and avoid repeating the same disclaimer across fields. The rendered Slack card must fit in
+2400 characters including links and labels; aim for 1400-1800 characters. Compress wording without omitting
+material caveats, costs or the distinction between author results and verified results.
 Limitations and application are conditional interpretation, not proven findings. Local data availability has
 NOT been checked: mention required point-in-time data and explicitly say local availability is unverified.
 Only return related_urls that occur in supplied links; code/data links are availability, not verified execution.
@@ -52,7 +62,10 @@ of a preprint without substantive change is cosmetic. Honest unresolved uncertai
 def prompt(bundle, stage):
     schema = EvidenceCritique if stage == "critique" else ResearchBrief
     task = ("Critique the offered draft afresh against the original. Check EACH claim, number, author and date; "
-            "check research value, missing limitations, copyright and material-change claims. This is a separate AI "
+            "check direct_quant_scope and substantive_research separately from evidence accuracy and general "
+            "relevance. Set either false for a generic AI governance or organizational insight, even from an "
+            "asset manager, when it lacks a concrete quantitative market method, data, model or testable mechanism. "
+            "Check research value, missing limitations, copyright and material-change claims. This is a separate AI "
             "evidence check, NOT independent reproduction. If a bounded rewrite can fix unsupported/overstated "
             "content choose revise and name every issue; unavailable necessary evidence means hold. Only all "
             "checks true and no issues permits pass." if stage == "critique" else
@@ -115,37 +128,49 @@ def validate(response, bundle, stage):
         raise ValueError("quant_commercial_disclosure_required")
     if bundle.get("prior") and brief.change == "new":
         raise ValueError("quant_existing_work_requires_comparison")
+    if re.search(r"@keyframes|background-position", brief.title, flags=re.IGNORECASE):
+        raise ValueError("quant_malformed_title")
+    if len(render(brief, bundle["metadata"])) > 2400:
+        raise ValueError("quant_card_too_long")
     return brief
 
 
 def render(brief, document, previous_url=None):
     def safe(value):
         # Escape Slack controls and mentions, not just HTML.
-        return escape(str(value), quote=False).replace("|", "¦").replace("@", "＠")
+        return (escape(str(value), quote=False).replace("|", "¦").replace("@", "＠")
+                .replace("*", "＊").replace("_", "＿"))
+
+    def link(url, label):
+        target = url.replace("|", "%7C").replace("<", "%3C").replace(">", "%3E")
+        return f"<{target}|{label}>"
 
     labels = {"peer_reviewed": "학술 심사", "working_paper": "워킹페이퍼", "institutional_research": "기관 연구",
               "hypothesis": "가설", "reproduction_resource": "재현·데이터 자료"}
-    vintage = {"recent": "연구", "classic": "고전 재조명", "update": "후속"}[brief.vintage]
+    vintage = {"recent": "", "classic": " · 고전 재조명", "update": " · 후속"}[brief.vintage]
     if brief.change in {"correction", "retraction"}:
-        vintage = "정정·철회"
-    lines = [f"*[{vintage} · {labels[brief.maturity]}] {safe(brief.title)}*",
-             f"{safe(', '.join(brief.authors))} · {safe(document['publisher'])}",
-             f"원발표 {safe(brief.published_on)}" + (f" · 개정 {safe(brief.revised_on)}" if brief.revised_on else ""),
-             f"{safe(brief.market)} · {safe(brief.topic)}",
-             "*읽을 이유* " + safe(brief.why_read), "*핵심 아이디어* " + safe(brief.idea),
-             "*데이터·기간* " + safe(brief.data_period), "*검증 방식* " + safe(brief.validation),
-             "*저자 보고 결과* " + safe(brief.author_results), "*비용·회전율* " + safe(brief.costs_turnover),
-             "*한계* " + " / ".join(safe(v) for v in brief.limitations),
-             "*한·미 적용 조건* " + safe(brief.application)]
+        vintage = " · 정정·철회"
+    authors = ", ".join(brief.authors[:3]) + (f" 외 {len(brief.authors) - 3}명" if len(brief.authors) > 3 else "")
+    date_line = brief.published_on + (f" (개정 {brief.revised_on})" if brief.revised_on else "")
+    limitations = " / ".join(safe(value) for value in brief.limitations)
+    lines = [f"*{labels[brief.maturity]}{vintage}*", f"*{safe(brief.title)}*",
+             f"{safe(document['publisher'])} · {safe(authors)} · {safe(date_line)} · {safe(brief.market)}",
+             "", "*왜 읽나* " + safe(brief.why_read), "*핵심* " + safe(brief.idea),
+             "", "*데이터·검증* " + safe(brief.data_period) + " · " + safe(brief.validation),
+             "*저자 보고* " + safe(brief.author_results),
+             "", "*주의* " + limitations + " · 비용/회전율: " + safe(brief.costs_turnover),
+             "*적용 전* " + safe(brief.application)]
     if brief.commercial_bias:
         lines.append("*이해관계* " + safe(brief.commercial_bias))
     if brief.change_summary:
         lines.append("*달라진 점* " + safe(brief.change_summary))
+    lines.append("")
     if previous_url:
-        lines.append(f"<{previous_url}|이전 게시>")
-    lines.append(f"<{document['url'].replace('|', '%7C')}|원문> · 근거 위치: "
+        lines.append(link(previous_url, "이전 게시"))
+    lines.append(link(document["url"], "원문") + " · 근거 "
                  + safe(", ".join(dict.fromkeys(e.location for e in brief.evidence))))
-    for url in brief.related_urls:
-        lines.append(f"<{url.replace('|', '%7C')}|관련 코드·데이터·참고 자료 (미실행)>")
-    lines.append("Quant Scout · 원문 대조 AI 브리프 · 별도 AI 근거 검사 통과 ≠ 독립 재현·투자 검증")
+    related = list(dict.fromkeys(url for url in brief.related_urls if url != document["url"]))
+    if related:
+        lines.append(" · ".join(link(url, f"추가 자료 {index}") for index, url in enumerate(related[:2], 1)))
+    lines.append("_원문 대조 AI 요약·별도 AI 검토; 독립 재현·투자 검증 아님_")
     return "\n".join(lines)

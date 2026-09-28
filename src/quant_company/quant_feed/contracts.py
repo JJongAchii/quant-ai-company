@@ -103,6 +103,9 @@ class ResearchBrief(StrictModel):
                     self.limitations, self.application, self.evidence)
         if not all(required) or len(self.evidence) < 2:
             raise ValueError("quant_brief_missing_evidence_or_limitations")
+        if self.kind == "institutional" and all(
+                value.strip().startswith(("해당 없음", "미기재")) for value in (self.data_period, self.validation)):
+            raise ValueError("quant_institutional_without_research_basis")
         for stamp in (self.published_on, self.revised_on):
             if not stamp:
                 continue
@@ -125,6 +128,8 @@ class EvidenceCritique(StrictModel):
     claims_supported: bool
     dates_authors_verified: bool
     limitations_honest: bool
+    direct_quant_scope: bool
+    substantive_research: bool
     relevance_and_value: bool
     no_investment_advice: bool
     material_change_verified: bool
@@ -133,7 +138,8 @@ class EvidenceCritique(StrictModel):
     @model_validator(mode="after")
     def complete_pass(self):
         if self.disposition == "pass" and (self.issues or not all((self.original_sufficient, self.claims_supported,
-                self.dates_authors_verified, self.limitations_honest, self.relevance_and_value,
+                self.dates_authors_verified, self.limitations_honest, self.direct_quant_scope,
+                self.substantive_research, self.relevance_and_value,
                 self.no_investment_advice))):
             raise ValueError("quant_incomplete_critique")
         return self
