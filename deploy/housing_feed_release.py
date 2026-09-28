@@ -92,6 +92,32 @@ def oneoff(module, root, env, code):
     return module.compose(root, 'run', '--rm', '--no-deps', '-T', 'housing-feed-worker', 'python', '-c', code, env=env)
 
 
+def compatible_base(previous, target):
+    for name in ('pyproject.toml', 'uv.lock', 'deploy/Dockerfile', 'deploy/entrypoint.py', 'deploy/qdata-source.json'):
+        if (previous / name).read_bytes() != (target / name).read_bytes():
+            raise ValueError('housing_base_dependencies_changed')
+
+
+def build(args, previous, target, module, env):
+    if not args.reuse_base_image:
+        module.compose(target, 'build', 'housing-feed-worker', env=env)
+        return {'mode': 'full'}
+    compatible_base(previous, target)
+    image = json.loads(run(['docker', 'image', 'inspect', 'quant-company:' + args.base]))[0]
+    if image['Config']['Labels'].get('org.opencontainers.image.revision') != args.base:
+        raise ValueError('housing_base_image_revision_mismatch')
+    if not re.fullmatch(r'sha256:[0-9a-f]{64}', image['Id']):
+        raise ValueError('housing_base_image_digest_missing')
+    pinned = 'quant-company-housing-base:' + image['Id'].split(':')[1]
+    run(['docker', 'image', 'tag', image['Id'], pinned])
+    run(['docker', 'build', '-f', str(target / 'deploy/Dockerfile.code-update'),
+         '--build-arg', 'BASE_IMAGE=' + pinned, '--build-arg', 'RELEASE_COMMIT=' + args.commit,
+         '-t', 'quant-company:' + args.commit, str(target)])
+    if json.loads(run(['docker', 'image', 'inspect', pinned]))[0]['Id'] != image['Id']:
+        raise ValueError('housing_base_image_changed')
+    return {'mode': 'unchanged_dependencies', 'base_image': image['Id']}
+
+
 def updates(args, values):
     if args.owner not in json.loads(values['SLACK_ALLOWED_USERS']):
         raise ValueError('owner_not_authorized')
@@ -139,7 +165,7 @@ def stage(args, previous, target, module, journal):
     shutil.copytree(qdata, target / 'qdata')
     settings['QDATA_BUILD_CONTEXT'] = str(target / 'qdata')
     env = {**os.environ, **settings}
-    module.compose(target, 'build', 'housing-feed-worker', env=env)
+    built = build(args, previous, target, module, env)
     schema = """from importlib.resources import files
 from quant_company.config import Settings
 from quant_company.db import Database
@@ -159,8 +185,8 @@ print('housing_schema_ready')
     module.atomic(journal.with_suffix('.env'), raw)
     module.atomic(journal, json.dumps({'phase': 'staged', 'base': args.base, 'commit': args.commit,
                                       'archive_sha256': args.sha256, 'env_sha256': hashlib.sha256(raw).hexdigest(),
-                                      'updates': settings, 'access': access, 'preview': preview}).encode())
-    return {'phase': 'staged', 'preview': preview, 'access': access, 'unrelated_services_preserved': True}
+                                      'updates': settings, 'access': access, 'preview': preview, 'build': built}).encode())
+    return {'phase': 'staged', 'preview': preview, 'access': access, 'build': built, 'unrelated_services_preserved': True}
 
 
 def activate(args, previous, target, module, journal):
@@ -226,6 +252,7 @@ def main():
         parser.add_argument('--' + name, required=True)
     parser.add_argument('--archive', type=Path)
     parser.add_argument('--sha256')
+    parser.add_argument('--reuse-base-image', action='store_true')
     args = parser.parse_args()
     if not all(re.fullmatch(r'[0-9a-f]{40}', s) for s in (args.base, args.commit)):
         raise ValueError('invalid_release_revision')

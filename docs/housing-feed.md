@@ -94,3 +94,8 @@ uv run --frozen ruff check .
 실패 시 새 프로세스를 멈추고 housing pending은 stale, sending은 uncertain으로 보존한 뒤
 이전 runtime.env와 dispatcher를 복구한다. 이미 게시된 메시지는 되돌리지 않는다.
 최종 실제 Slack readback과 Temporal 상태는 별도 운영 증거로 보존한다.
+
+기존 app image의 의존성을 재사용하려면 operator가 stage에 `--reuse-base-image`를 명시한다.
+`pyproject.toml`, `uv.lock`, 기본 Dockerfile, entrypoint, qdata pin이 이전 release와 바이트 단위로
+같을 때만 허용한다. 기존 image ID를 확인하고 새 source 전체를 복사한 뒤 회사 패키지 wheel을
+다시 설치한다. 새 image에는 새 commit을 기록한다. 실행 중인 컨테이너를 수정하지 않는다.

@@ -68,3 +68,17 @@ def test_cutover_failure_closes_pending_housing_effects_before_restoring_dispatc
     assert actions[-3] == (target, ('stop', '-t', '30', 'housing-feed-worker', 'dispatch'))
     assert 'uncertain' in actions[-2][1] and 'housing_release_rollback' in actions[-2][1]
     assert all('worker' not in action[1] for action in actions if action[0] != 'sql')
+
+
+@pytest.mark.parametrize('changed', ['pyproject.toml', 'uv.lock', 'deploy/Dockerfile', 'deploy/entrypoint.py', 'deploy/qdata-source.json'])
+def test_dependency_reuse_rejects_changed_build_inputs(release, tmp_path, changed):
+    previous, target = tmp_path / 'previous', tmp_path / 'target'
+    for root in (previous, target):
+        for name in ('pyproject.toml', 'uv.lock', 'deploy/Dockerfile', 'deploy/entrypoint.py', 'deploy/qdata-source.json'):
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('qualified fixture')
+    release.compatible_base(previous, target)
+    (target / changed).write_text('different dependency input')
+    with pytest.raises(ValueError, match='housing_base_dependencies_changed'):
+        release.compatible_base(previous, target)
