@@ -200,6 +200,8 @@ def test_daily_summary_shows_actual_source_dates_and_the_right_date_axis():
             row("us_shortvol", "date", "2026-09-24"),
             row("sec_fundamental", "filed", "2026-03-31", other={
                 "ddate": {"statistics_complete": True, "max": "2215-09-30"}}),
+            row("sec_13f", "filed", "2026-05-29"),
+            row("sec_insider", "filed", "2026-03-31"),
             row("us_dividends", "asof", "2026-09-28", other={
                 "ex_date": {"statistics_complete": True, "max": "2030-12-13"}}),
             row("us_prices", "date", None, problem="parquet_footer_limit")]
@@ -210,6 +212,7 @@ def test_daily_summary_shows_actual_source_dates_and_the_right_date_axis():
     summary = status_text(snapshot)
     listing = list_text(snapshot)
     assert len(summary) < 3000 and len(listing) < 3000
+    assert "공개분 미반영 5건 · 날짜 미확인 1건" in summary
     assert "한국시장: 주식 2026-09-23" in summary
     assert "09/24~27 추석 휴장" in summary
     assert ("미국 일별: 미국 ETF·주가 2026-09-24, 미국 전종목 미확인, "
@@ -218,13 +221,17 @@ def test_daily_summary_shows_actual_source_dates_and_the_right_date_axis():
     assert "us_prices: 거래일 미확인" in summary and "2 MiB" in summary
     assert "FINRA가 9/25분을 공개한 뒤에도" in summary
     assert "2026 Q2 공개본이 레이크" in summary
+    assert "SEC 2026년 6~8월 13F 공개본이 레이크" in summary
+    assert "SEC 분기 Form 3·4·5의 2026 Q2 공개본이 레이크" in summary
     assert "09/28 13:30 KST 성공" in summary
     assert "파일 교체 2026-09-25" in listing and "sec_fundamental 제출일 2026-03-31" in listing
     assert dataset_date(data[3]) == date(2026, 3, 31)
-    assert dataset_date(data[4]) == date(2026, 9, 28)
+    assert dataset_date(data[6]) == date(2026, 9, 28)
     assert observed(data[0], snapshot["checked_at"])["state"] == "observed"
     assert observed(data[1], snapshot["checked_at"])["state"] == "source_gap"
     assert observed(data[3], snapshot["checked_at"])["state"] == "source_gap"
+    assert observed(data[4], snapshot["checked_at"])["state"] == "source_gap"
+    assert observed(data[5], snapshot["checked_at"])["state"] == "source_gap"
     assert observed(data[0], "2026-09-28T11:01:00+00:00")["state"] == "source_gap"
 
 
