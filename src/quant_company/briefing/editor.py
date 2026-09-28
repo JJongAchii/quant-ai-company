@@ -1,5 +1,6 @@
 import json
-from datetime import timedelta
+import re
+from datetime import date, timedelta
 from html import escape
 from zoneinfo import ZoneInfo
 
@@ -21,10 +22,10 @@ from .contracts import (
 )
 from .numeric import numbers, prose_numbers_supported, reported_change_supported
 from .quality import assurance
-from .schedule import KST
+from .schedule import KST, close
 
 FORMAT_VERSION = 9
-VALIDATION_VERSION = 10
+VALIDATION_VERSION = 11
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Return AgentDecision(status=complete,say='') with exactly one artifact containing BriefProposal JSON.
@@ -99,6 +100,9 @@ If only a foreign local date is known, do not assign it to a Korean 'tonight' or
 the source date and timezone with time unconfirmed until an exact release time is available.
 Every factual number in prose must occur in its evidence; exact written unit conversions (million/만) and
 English month names to Korean dates are supported. Leave return calculations to the service scoreboard.
+For a dated equity or ETF price, verify that the stated date was a session on its exchange. A source can
+misdate a price: do not carry its precise price or return into the brief when the date is a Sunday or
+exchange holiday. Explain the conflict or wait for an independent point-in-time price source.
 The summary is a 30-second orientation, not the whole briefing. Give each section a distinct job: summary
 states the few useful conclusions; overview connects markets and sets the session's context; observations
 hold exact market levels; issue facts supply the concrete developments and necessary scale. A brief reminder
@@ -192,6 +196,9 @@ counter-evidence. A government statement does not independently establish claims
 Calendar dates and times must be in the original, not inferred from a recurring historical schedule.
 Reject an observation if you cannot confirm its actual session, instrument or comparison basis. Missing
 evidence should reduce coverage, not be filled by your knowledge. concerns are short Korean explanations.
+Also check historical equity and ETF price dates inside cited articles against the relevant exchange
+calendar. A verbatim quote does not make a Sunday or exchange-holiday price a verified market close.
+Flag the conflicting item and withhold the precise price/return until an independent dated source resolves it.
 Do not rewrite the proposal or introduce any new facts. Return only offered item IDs.
 Return verdict publish/reduce/withhold and ALL twelve checks: numbers, sources, timing, causality, materiality,
 counterevidence, transmission, alternatives, falsifiability, coverage, depth, readability. Verify the mechanism's intermediate link and
@@ -346,6 +353,35 @@ def artifact(response, schema):
     return schema.model_validate(value)
 
 
+_KR_LISTED_PRICE = re.compile(r"KODEX|TIGER|ARIRANG|(?:\bACE|\bSOL)\s*\d|ETF|코스피|코스닥", re.I)
+_KRW_ASOF_PRICE = re.compile(
+    r"(?:(?P<year>\d{4})년\s*)?(?:(?P<month>\d{1,2})월\s*)?"
+    r"(?:(?:지난|이달)\s*)?(?P<day>\d{1,2})일"
+    r"(?:에는|에|의)?\s*(?:(?:\d+[십백천만]\s*)+\d?[\d,\s]*|\d[\d,\s]*)원"
+    r"(?:으로|에)?\s*(?:올라|올랐|내려|내렸|상승|하락|마감|기록|거래|달했)"
+)
+
+
+def non_session_korean_listed_price(quote, published_at):
+    """Flag a quoted KR-listed price explicitly dated to a closed session."""
+    if not _KR_LISTED_PRICE.search(quote):
+        return False
+    published = published_at.astimezone(KST).date()
+    for match in _KRW_ASOF_PRICE.finditer(quote):
+        month = int(match["month"]) if match["month"] else published.month
+        year = int(match["year"]) if match["year"] else published.year - (month > published.month)
+        if not match["year"] and not match["month"] and int(match["day"]) > published.day:
+            month = published.month - 1 or 12
+            year = published.year - (month == 12)
+        try:
+            as_of = date(year, month, int(match["day"]))
+        except ValueError:
+            return True
+        if as_of.year >= 2000 and close("KR", as_of) is None:
+            return True
+    return False
+
+
 def validate(proposal, bundle):
     edition = BriefEdition.model_validate(bundle["edition"])
     docs = {d["id"]: SourceDocument.model_validate(d) for d in bundle["documents"]}
@@ -363,6 +399,10 @@ def validate(proposal, bundle):
                         or doc.retrieved_at > edition.cutoff):
                     raise ValueError("evidence_not_in_frozen_original")
                 quotes.append(evidence.quote)
+                if (isinstance(item, Claim) and _KR_LISTED_PRICE.search(item.text)
+                        and re.search(r"수익률|가격|주가|지수|종가|마감|%", item.text)
+                        and non_session_korean_listed_price(evidence.quote, doc.published_at)):
+                    raise ValueError("source_price_date_non_session")
             tokens = numbers(" ".join(quotes))
             if isinstance(item, MarketObservation):
                 if any(docs[e.source_id].kind == "calendar" for e in item.evidence):

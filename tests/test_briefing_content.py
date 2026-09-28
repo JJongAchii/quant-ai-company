@@ -17,6 +17,7 @@ from quant_company.briefing.coverage import inventory, select_documents, topics
 from quant_company.briefing.editor import (
     apply_condition_patch,
     artifact,
+    non_session_korean_listed_price,
     prune,
     render,
     validate,
@@ -110,6 +111,33 @@ def test_valid_translation_keeps_market_issue_but_changed_amount_removes_it():
     rejected = validate(p, data)
     assert rejected[p.issues[0].fact.id] == "unsupported_prose_number"
     assert prune(p, rejected).issues == []
+
+
+def test_quoted_etf_price_on_non_trading_day_cannot_support_a_return():
+    p, data = proposal(), bundle()
+    data["documents"][0]["published_at"] = "2026-09-21T00:00:00+00:00"
+    sunday = "KODEX200은 1월 2일 6만 460원에서 지난 20일에는 10만 9,285원으로 올라 80.76% 수익률을 기록했다."
+    data["documents"][0]["content"] += "\n" + sunday
+    p.overview[0].text = "KODEX200은 지난 20일 기준 80.76% 올랐다고 보도됐습니다."
+    p.overview[0].evidence[0].quote = sunday
+    assert validate(p, data)["overview"] == "source_price_date_non_session"
+
+    friday = sunday.replace("지난 20일", "지난 18일")
+    data["documents"][0]["content"] += "\n" + friday
+    p.overview[0].text = p.overview[0].text.replace("20일", "18일")
+    p.overview[0].evidence[0].quote = friday
+    assert "overview" not in validate(p, data)
+    assert not non_session_korean_listed_price(
+        "KODEX200은 지난 20일에는 100원으로 가입비를 정했다.",
+        SourceDocument.model_validate(data["documents"][0]).published_at,
+    )
+    assert not non_session_korean_listed_price(
+        "KODEX200 운용자산은 지난 20일에는 100억원으로 올라섰다.",
+        SourceDocument.model_validate(data["documents"][0]).published_at,
+    )
+    published = SourceDocument.model_validate(data["documents"][0]).published_at
+    assert non_session_korean_listed_price("KODEX200은 2025년 9월 20일 10만원으로 올랐다.", published)
+    assert not non_session_korean_listed_price("KODEX200은 2024년 9월 20일 10만원으로 올랐다.", published)
 
 
 @pytest.mark.parametrize("source, expected", [
