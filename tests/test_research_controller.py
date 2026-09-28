@@ -143,8 +143,7 @@ def test_scoped_reads_are_internal_and_duplicate_reads_preserve_progress(mission
     assert "Fixture evidence, never market performance." in prompt
     assert "_private_files" not in prompt
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
-    assert context["continuation_offsets"] == {}
-    assert context["completed_read_paths"] == ["fixture.txt"]
+    assert context["file_progress"] == {"fixture.txt": {"next_offset": None, "chunks_read": 1}}
     duplicate = company.commit_turn(next_id, response.model_copy(update={"request_id": next_id}))
     assert duplicate["state"] == "completed" and duplicate["duplicate_read"]
     with company.db.transaction() as conn:
@@ -192,9 +191,8 @@ def test_evidence_prompt_preserves_manifest_with_bounded_chunks(mission):
     assert "request exactly one file chunk" in prompt and "Never batch file reads" in prompt
     assert len(prompt) < 90000
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
-    assert len(context["inspected_chunks"]) == 10 and 1 <= len(context["read_chunks"]) <= 5
-    assert context["continuation_offsets"] == {"fixture.txt": 120000}
-    assert context["completed_read_paths"] == []
+    assert 1 <= len(context["read_chunks"]) <= 5
+    assert context["file_progress"] == {"fixture.txt": {"next_offset": 120000, "chunks_read": 10}}
 
 
 def test_evidence_prompt_retains_early_compact_frozen_menu(mission):
@@ -242,6 +240,94 @@ def test_audit_prompt_retains_early_compact_scope_evidence(mission):
     assert len(prompt) < 90000
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
     assert receipt in {chunk["content"] for chunk in context["read_chunks"]}
+    assert "MUST start at byte 0 with a qlab YAML frontmatter block" in prompt
+    assert "no prose before frontmatter" in prompt
+
+
+def test_audit_prompt_keeps_large_resident_code_chunks(mission):
+    company = mission.company
+    controller = MissionController(company, backend=FixtureBackend(company))
+    controller.tick()
+    stage, _ = active(mission)
+    resident = {
+        "audit/scope/trials/example/code/engine.py": [(0, "engine-resident\n" + "e" * 18400)],
+        "audit/scope/trials/example/code/adapter.py": [
+            (0, "adapter-resident\n" + "a" * 19900), (20000, "adapter-tail\n" + "a" * 650),
+        ],
+        "audit/scope/trials/example/code/signals.py": [(0, "signals-resident\n" + "s" * 3600)],
+        "audit/scope/supplements/checker.py": [(0, "checker-resident\n" + "c" * 12200)],
+        "audit/scope/supplements/contract.json": [(0, "contract-resident\n" + "k" * 8800)],
+        "audit/scope/supplements/receipt.json": [(0, "receipt-resident\n" + "r" * 4500)],
+    }
+    with company.db.transaction() as conn:
+        conn.execute("""UPDATE research_mission_stages SET stage='audit',actor='validator',
+            context=context || %s::jsonb WHERE id=%s""", (json.dumps({"audit": {
+                "scope": [path.removeprefix("audit/") for path in resident],
+                "resident_evidence_paths": list(resident),
+            }, "mission": {
+                "id": "fixture-mission", "revision": 1, "manifest_digest": "a" * 64,
+                "stage": {"stage": "audit"}, "cycle": 1, "cycle_trials": 1,
+                "cumulative_trials": 1, "incumbent_trial_id": "fixture-trial",
+                "spec": {"title": "Synthetic audit", "unrelated_history": "m" * 10000},
+            }, "evidence_sources": [{"padding": "s" * 2500}],
+            "relevant_evidence": {"padding": ["r" * 2500]},
+            "available_files": [
+                {"name": f"audit/scope/file-{index}.json", "sha256": "a" * 64,
+                 "size": 12345, "characters": 12345}
+                for index in range(44)
+            ]}), stage["id"]))
+        expected = set()
+        for path, chunks in resident.items():
+            for offset, content in chunks:
+                expected.add((path, offset, content))
+                conn.execute("""INSERT INTO research_stage_reads(
+                    id,stage_id,path,character_offset,content,sha256
+                ) VALUES (%s,%s,%s,%s,%s,%s)""",
+                             (uuid4(), stage["id"], path, offset, content, "f" * 64))
+        conn.execute("""UPDATE research_stage_reads SET created_at=now()+interval '1 minute'
+            WHERE stage_id=%s AND path='audit/scope/supplements/receipt.json'""", (stage["id"],))
+        output_path = "audit/scope/trials/example/outputs/orders-stress.json"
+        for index in range(25):
+            conn.execute("""INSERT INTO research_stage_reads(
+                id,stage_id,path,character_offset,content,next_offset,sha256,created_at
+            ) VALUES (%s,%s,%s,%s,%s,%s,%s,now()+interval '2 minutes'+(%s * interval '1 second'))""",
+                         (uuid4(), stage["id"], output_path, index * 12000, "x" * 12000,
+                          (index + 1) * 12000, "e" * 64, index))
+        task = conn.execute("SELECT * FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
+        _, prompt = stage_prompt(company, conn, task)
+    assert len(prompt) < 90000
+    context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
+    retained = {(chunk["path"], chunk["offset"], chunk["content"]) for chunk in context["read_chunks"]}
+    assert expected <= retained
+    assert set(context["mission"]) == {
+        "id", "revision", "manifest_digest", "stage", "cycle", "cycle_trials",
+        "cumulative_trials", "incumbent_trial_id", "title", "evidence_rule",
+    }
+    assert all(set(item) == {"name"} for item in context["available_files"])
+    assert "evidence_sources" not in context and "relevant_evidence" not in context
+    assert context["file_progress"][output_path] == {"next_offset": 300000, "chunks_read": 25}
+
+
+def test_audit_prompt_fails_before_evicting_latest_resident_chunk(mission):
+    company = mission.company
+    controller = MissionController(company, backend=FixtureBackend(company))
+    controller.tick()
+    stage, _ = active(mission)
+    paths = ["audit/scope/supplements/first.txt", "audit/scope/supplements/latest.txt"]
+    with company.db.transaction() as conn:
+        conn.execute("""UPDATE research_mission_stages SET stage='audit',actor='validator',
+            context=context || %s::jsonb WHERE id=%s""", (json.dumps({"audit": {
+                "scope": [path.removeprefix("audit/") for path in paths],
+                "resident_evidence_paths": paths,
+            }}), stage["id"]))
+        for index, path in enumerate(paths):
+            conn.execute("""INSERT INTO research_stage_reads(
+                id,stage_id,path,character_offset,content,sha256,created_at
+            ) VALUES (%s,%s,%s,0,%s,%s,now()+(%s * interval '1 minute'))""",
+                         (uuid4(), stage["id"], path, "x" * 50000, "f" * 64, index))
+        task = conn.execute("SELECT * FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
+        with pytest.raises(PolicyError, match="Audit resident evidence exceeds model context"):
+            stage_prompt(company, conn, task)
 
 
 def test_retry_reads_are_bound_to_new_validator_attempt(mission):
@@ -262,13 +348,13 @@ def test_retry_reads_are_bound_to_new_validator_attempt(mission):
     assert second["attempt"] == 2
     prompt = company.prepare_turn(turn_id)["request"]["prompt"]
     context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
-    assert context["inspected_chunks"] == [] and context["last_error"] is None
+    assert context["file_progress"] == {} and context["last_error"] is None
     company.commit_turn(turn_id, response.model_copy(update={"request_id": turn_id}))
     with company.db.transaction() as conn:
         assert {row["attempt"] for row in conn.execute("SELECT attempt FROM research_stage_reads")} == {1, 2}
 
 
-def test_operator_reconciles_timeout_into_started_audit_attempt_without_rereading(mission):
+def test_operator_reconciles_timeout_into_started_audit_attempt_with_current_thread_replay(mission):
     company = mission.company
     controller = MissionController(company, backend=FixtureBackend(company))
     assert controller.tick()["state"] == "running"
@@ -327,21 +413,26 @@ def test_operator_reconciles_timeout_into_started_audit_attempt_without_rereadin
     assert recovered["turn_id"] != str(second_turn)
     prepared = company.prepare_turn(recovered["turn_id"])
     payload = json.loads(prepared["request"]["prompt"].split("MISSION DATA JSON:\n", 1)[1])
-    assert payload["completed_read_paths"] == ["audit/evidence.txt"]
-    assert payload["inspected_chunks"] == [{"path": "audit/evidence.txt", "offset": 0}]
+    assert payload["file_progress"] == {}
 
-    response = ProviderResponse(request_id=recovered["turn_id"], provider="fixture", decision=AgentDecision(
+    replay = ProviderResponse(request_id=recovered["turn_id"], provider="fixture", decision=AgentDecision(
+        say="", status="continue", tools=[{"name": "research_control", "arguments": {
+            "action": "read_stage_file", "path": "audit/evidence.txt"}}]))
+    company.commit_turn(recovered["turn_id"], replay)
+    _, final_turn = active(mission)
+    company.prepare_turn(final_turn)
+    response = ProviderResponse(request_id=final_turn, provider="fixture", decision=AgentDecision(
         say="", status="complete", artifacts=[{"title": "Synthetic audit",
         "content": json.dumps({"markdown": "Synthetic validator result"})}]))
-    company.commit_turn(recovered["turn_id"], response)
+    company.commit_turn(final_turn, response)
     snapshot = mission.snapshot()
     with company.db.transaction() as conn:
         current = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
         backend = MissionBackend(company)
         turns = backend._actor_turns(conn, current["task_id"], "validator", snapshot)
-        assert [turn["status"] for turn in turns] == ["stale", "completed"]
+        assert [turn["status"] for turn in turns] == ["stale", "completed", "completed"]
         backend._check_audit_turns(conn, current, snapshot)
-        assert {row["attempt"] for row in conn.execute("SELECT attempt FROM research_stage_reads")} == {1}
+        assert {row["attempt"] for row in conn.execute("SELECT attempt FROM research_stage_reads")} == {1, 2}
 
 
 def test_reconciled_audit_excludes_prior_bytes_when_full_file_digest_changed():

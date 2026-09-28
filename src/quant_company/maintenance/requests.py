@@ -20,6 +20,9 @@ def permitted(company, project):
 def service(conn, company, owner):
     if not conn.execute("SELECT to_regclass('maintenance_control') AS name").fetchone()["name"]:
         return {"enabled": False, "reason": "maintenance_not_installed"}
+    if company.settings.company_improvements_enabled and not conn.execute(
+        "SELECT to_regclass('maintenance_cases') AS name").fetchone()["name"]:
+        return {"enabled": False, "reason": "maintenance_case_schema_not_initialized"}
     # Also tolerates the previous schema during a rolling process restart.
     config = conn.execute("SELECT to_jsonb(c)->'runtime' AS runtime FROM maintenance_control c WHERE id=1").fetchone()
     config = (config or {}).get("runtime") or {}
@@ -69,6 +72,7 @@ def report(conn, job, owner):
               "prior_attempts": len(current["payload"].get("candidate_attempts", [])),
               "validation": current["receipt"].get("ci"),
               "reason": current["receipt"].get("reason") or job["receipt"].get("reason"), "pr": current["receipt"].get("pr"),
+              "head": current["receipt"].get("head"),
               "created_at": job["created_at"], "assessment": truth,
               "finding_is_current_fact": truth["disposition"] == "reproduced"}
     if truth["disposition"] in {"invalidated", "resolved"}:
@@ -89,6 +93,11 @@ def status(conn, company, project):
              (kind='repair' AND EXISTS (SELECT 1 FROM jsonb_array_elements(payload->'observations') x
               WHERE x->>'project_id'=%s))) ORDER BY created_at DESC,id DESC LIMIT 10""",
                             (Jsonb([project["owner_user"]]), str(project["id"]), str(project["id"]))).fetchall()
+        from .cases import allowed, lookup
+
+        case = lookup(conn, project["id"])
+        if case and allowed(conn, company, case):
+            jobs = [conn.execute("SELECT * FROM maintenance_jobs WHERE id=%s", (case["request_id"],)).fetchone()]
     reports = []
     for job in jobs:
         item = report(conn, job, project["owner_user"])
@@ -147,7 +156,12 @@ def submit(conn, company, project, task):
     identity = str(uuid5(NAMESPACE_URL, "maintenance-review:" + str(task["id"])))
     existing = conn.execute("SELECT id FROM maintenance_jobs WHERE id=%s", (identity,)).fetchone()
     if existing:
-        return {"accepted": True, "request_id": identity, "duplicate": True, "service": runtime}
+        from .cases import destination, installed
+
+        case = (conn.execute("SELECT * FROM maintenance_cases WHERE request_id=%s", (identity,)).fetchone()
+                if installed(conn) else None)
+        return {"accepted": True, "request_id": identity, "duplicate": True, "service": runtime,
+                **({"destination": destination(conn, case)} if case else {})}
     pending = conn.execute("""SELECT id FROM maintenance_jobs WHERE kind='review' AND payload->'owners'=%s
         AND state IN ('review','triage') ORDER BY created_at LIMIT 3""", (Jsonb([project["owner_user"]]),)).fetchall()
     if len(pending) >= 3:
@@ -160,8 +174,14 @@ def submit(conn, company, project, task):
     conn.execute("INSERT INTO maintenance_jobs(id,kind,state,payload) VALUES (%s,'review','review',%s)",
                  (identity, Jsonb(payload)))
     company._event(conn, "maintenance_review_requested", {"request_id": identity, "task_id": str(task["id"])}, project["id"])
+    from .cases import attach
+
+    case = attach(conn, company, identity, project)
     return {"accepted": True, "request_id": identity, "state": "queued", "service": runtime,
-            "next": "Maintenance reports to this thread without another user message. Receipt is not analysis completion."}
+            **({"destination": case} if case else {}),
+            "next": ("Maintenance reports to the linked case thread. A pending/uncertain delivery is not a live thread."
+                     if case else "Maintenance reports to this thread without another user message. "
+                     "Receipt is not analysis completion.")}
 
 
 def tool(conn, company, task, request):

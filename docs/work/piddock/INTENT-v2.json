@@ -1,0 +1,58 @@
+{
+  "constraints": [
+    "Company records stay in this repository; upstream research/data repositories are read-only integration targets",
+    "No model calls for scheduling, quality checks, status or delivery; PostgreSQL records and deterministic Temporal execution",
+    "Bounded catalog/footer reads only on company server; existing registered worker performs read-only frozen-input checks",
+    "No changes to research inputs, strategy code, approvals, credentials or live deployment; preserve uncertain Slack delivery"
+  ],
+  "createdAt": "2026-09-22T07:17:15.177793+00:00",
+  "decisionGates": [],
+  "deliverables": [
+    {
+      "id": "DATA_WATCH",
+      "description": "Bounded whole-lake inventory and explicit check/freshness states",
+      "acceptance": [
+        "30-minute metadata inventory describes only new/changed or previously failed objects",
+        "Separate observed, upload and data dates; unknown calendar/cadence is not healthy freshness",
+        "Durable restart-safe daily 09:00 KST summary and deduplicated incident/recovery threads"
+      ]
+    },
+    {
+      "id": "CORE_CHECKS",
+      "description": "Read-only approved ETF input checks through the existing worker",
+      "acceptance": [
+        "Fixed registered recipe and approved research job determine exact input/scope hashes",
+        "Worker producer and service consumer validate version/scope with bounded typed receipts",
+        "No heavy computation, latest-input replacement or upstream writes; failed checks stay visible"
+      ]
+    },
+    {
+      "id": "VALIDATION",
+      "description": "Real persistence/workflow and producer-consumer validation",
+      "acceptance": [
+        "PostgreSQL tests cover metadata changes, partial failures, incidents, delivery ambiguity, owner/revision and receipt rejection",
+        "Real Temporal checks scheduling/replay without model calls",
+        "Worker read-only fixture E2E and deployment configuration pass; live gaps documented"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "Implement remaining HQ, deep-dive, library or daily-brief stages in this slice",
+    "New research, training, backtests, orders, upstream fixes or mass employee activation",
+    "Create channels or deploy unreviewed changes to production Slack"
+  ],
+  "outcome": "Continue the approved company channel implementation with data-watch: bounded whole-lake inventory, version-bound read-only checks of approved ETF inputs on the existing worker, durable incidents and daily summaries.",
+  "revision": 2,
+  "revisionReason": "User requested continuing the approved channel implementation; implement data-watch next.",
+  "schemaVersion": 1,
+  "slug": "piddock",
+  "sourceRequest": "이어서 진행해줘",
+  "stopConditions": [
+    "Record unavailable external activation prerequisites without fabricating live verification",
+    "Never automatically replay uncertain external writes or charges"
+  ],
+  "supersedes": {
+    "intentDigest": "d412fd004ce0",
+    "intentFile": "INTENT-v1.json"
+  }
+}

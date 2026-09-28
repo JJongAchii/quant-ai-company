@@ -86,7 +86,9 @@ def main():
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8000)
     sub.add_parser("worker")
+    sub.add_parser("data-watch-worker")
     sub.add_parser("news-worker")
+    sub.add_parser("quant-feed-worker")
     sub.add_parser("dispatch")
     sub.add_parser("slack-socket")
     news = sub.add_parser("news")
@@ -98,6 +100,10 @@ def main():
     tech_feed = sub.add_parser("tech-feed")
     tech_feed.add_argument("action", choices=["status", "collect", "probe"])
     tech_feed.add_argument("--output", type=Path)
+    quant_feed = sub.add_parser("quant-feed")
+    quant_feed.add_argument("action", choices=["status", "probe", "preview"])
+    quant_feed.add_argument("--live", action="store_true")
+    quant_feed.add_argument("--output", type=Path)
     sub.add_parser("demo")
     maintenance = sub.add_parser("maintenance")
     maintenance.add_argument("--config", type=Path, required=True)
@@ -132,10 +138,18 @@ def main():
         from .runtime import worker_main
 
         asyncio.run(worker_main(settings))
+    elif args.command == "data-watch-worker":
+        from .runtime import data_watch_worker_main
+
+        asyncio.run(data_watch_worker_main(settings))
     elif args.command == "news-worker":
         from .runtime import news_worker_main
 
         asyncio.run(news_worker_main(settings))
+    elif args.command == "quant-feed-worker":
+        from .runtime import quant_feed_worker_main
+
+        asyncio.run(quant_feed_worker_main(settings))
     elif args.command == "dispatch":
         from .runtime import dispatch_main
 
@@ -145,15 +159,17 @@ def main():
             parser.error("Slack public callback URL must use HTTPS")
         manifests(Company(settings), args.base_url, args.output, args.transport,
                   args.include_reporter, args.include_tech_scout, args.include_market_brief)
-    elif args.command in {"news", "tech-feed", "briefing"}:
+    elif args.command in {"news", "tech-feed", "briefing", "quant-feed"}:
         if args.command == "news":
             from .news.commands import command
         elif args.command == "briefing":
             from .briefing.commands import command
-        else:
+        elif args.command == "tech-feed":
             from .tech_feed.commands import command
+        else:
+            from .quant_feed.commands import command
 
-        result = asyncio.run(command(settings, args.action))
+        result = asyncio.run(command(settings, args.action, **({"live": args.live} if args.command == "quant-feed" else {})))
         rendered = json.dumps(result, default=str, ensure_ascii=False, indent=2) + "\n"
         if args.output:
             args.output.parent.mkdir(parents=True, exist_ok=True)

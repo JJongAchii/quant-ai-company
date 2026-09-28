@@ -1,0 +1,67 @@
+{
+  "at": "2026-09-23T02:47:28.910298+00:00",
+  "base_commit": "e4a037907dd1f7aee2ecda54302824f768910ad7",
+  "source_fingerprint_sha256": "550779b7fd3c01b8e32bc45a15e1582889fe9f83f68f8e7e9151acb4d878d662",
+  "postgres": "real local PostgreSQL 14, disposable database per test",
+  "temporal": "real local Temporal CLI 1.9.1 / server 1.32.0, ephemeral test persistence",
+  "slack": "signed simulated ingress and persisted outbox; no live message sent",
+  "model": "real subprocess with fake Codex executable; no real inference",
+  "official_cli_probe": {
+    "version": "0.154.0",
+    "inference": false,
+    "authentication": "empty isolated directory",
+    "tests_passed": 2
+  },
+  "feature_tests": {
+    "passed": 25,
+    "includes": [
+      "owner-only signed DM",
+      "idempotent concurrent commands",
+      "profile-isolated CODEX_HOME",
+      "quota-only transfer with original request ID",
+      "completed, running, cancelled and ambiguous receipts preserved",
+      "per-account cooldown and late quota response",
+      "replay of new and pre-upgrade Temporal histories"
+    ]
+  },
+  "deployment": "not performed; server is healthy, backup auth directory absent, research worker separately pinned",
+  "regression_status": "passed",
+  "earlier_findings_fixed": [
+    "Temporal integration fixture used an expired follow-up timestamp; replaced with explicit completion",
+    "Shared Claude HTTP transport must omit Codex routing keywords without account headers; 25 Claude tests subsequently passed"
+  ],
+  "verified_at": "2026-09-23T02:52:21.658651+00:00",
+  "service_regression": {
+    "tests": 1092,
+    "passed": 1055,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 37,
+    "seconds": 319.015
+  },
+  "compose_regression": {
+    "tests": 29,
+    "passed": 29,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 4.996
+  },
+  "financial_fixture_regression": {
+    "passed": 3,
+    "scientific_research": false
+  },
+  "skips": {
+    "Set CODEX_CONFIG_PROBE=1 for the local CLI probe": 2,
+    "Requires explicit operator runtime profile on the registered Linux 3070": 1,
+    "Real pinned qlab checkout required: QUANT_TEST_QLAB_ROOT": 31,
+    "Opt-in real 3070, committed ETF checkout and prepared science runtime required": 1,
+    "Requires explicit operator-reviewed runtime profile on the 3070; no Mac fallback": 1,
+    "Opt-in real Codex subscription test": 1
+  },
+  "static_checks": {
+    "ruff": "passed",
+    "diff_check": "passed",
+    "bash_syntax": "passed"
+  }
+}

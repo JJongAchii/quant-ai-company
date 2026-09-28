@@ -1,0 +1,70 @@
+{
+  "observed_at_utc": "2026-09-23T06:17:17.372130+00:00",
+  "channel": {
+    "id": "C0C3C6ELJ0P",
+    "name": "ai-account-switch",
+    "private": true
+  },
+  "source": {
+    "main_pr": 70,
+    "main_merge_commit": "1b4529ddd59b323653f884299ce3008ee4745207",
+    "production_integration_commit": "fde7681e0286501d8713e08e30a96991a88b9151",
+    "previous_production_commit": "deeb846d7942243165a3de6fd9ca7e35b8f49d89",
+    "full_ci_run": 35824032620,
+    "full_ci_conclusion": "success",
+    "focused_real_postgresql_tests_passed": 56,
+    "temporal_integration_cases_deselected_in_focused_run": 2
+  },
+  "owner_slack_control": {
+    "initial_status_event_ts": "1790141899.924769",
+    "initial_status_reply_ts": "1790141903.717209",
+    "switch_command": "모델 계정 예비로 전환",
+    "switch_event_ts": "1790142363.225429",
+    "switch_reply_ts": "1790142365.131459",
+    "switch_receipt": {
+      "outcome": "switched",
+      "profile": "backup",
+      "revision": 1,
+      "outbox": "delivered"
+    },
+    "followup_status_event_ts": "1790142387.821249",
+    "followup_status_reply_ts": "1790142390.812779"
+  },
+  "unsupported_text": {
+    "text": "서브 계정으로 전환해줘",
+    "earlier_messages_silently_ignored": true,
+    "after_fix_event_ts": "1790144224.468749",
+    "after_fix_reply_ts": "1790144226.068939",
+    "reply_contains_three_exact_commands": true,
+    "inbound_task_completed": true,
+    "outbox": "delivered",
+    "posted_in_existing_status_thread": true,
+    "account_switch_command_created": false,
+    "model_turn_created": false,
+    "selection_after_reply": {
+      "profile": "backup",
+      "revision": 1
+    }
+  },
+  "production": {
+    "activated_at_utc": "2026-09-23T06:15:05.109561+00:00",
+    "services_healthy": 12,
+    "service_restarts_after_activation": 0,
+    "postgres_container_recreated": false,
+    "research_worker_pin_and_input_hashes_preserved": true,
+    "temporal_account_control_workflow": "RUNNING",
+    "image_count_source_verified": 4,
+    "authentication": {
+      "primary": "chatgpt",
+      "backup": "chatgpt"
+    },
+    "backup_model_calls_completed": 18,
+    "backup_last_success_at_utc": "2026-09-23T06:15:37.552398+00:00",
+    "backup": {
+      "s3_uri": "s3://quant-company-061039802347-backups/company/company-20260923T061247Z-9ce1fb93.tar.gz",
+      "sha256": "15159b8ec653cfb530ccef6e0d3db28ed1a4389d816b5685631fb8f1b58ddc0e",
+      "secrets_included": false
+    }
+  },
+  "scope": "The owner-selected backup profile and deterministic help response were observed in live Slack and PostgreSQL. Switching back to primary was not requested or tested."
+}

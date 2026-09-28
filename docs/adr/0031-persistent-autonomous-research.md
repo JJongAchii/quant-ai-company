@@ -82,12 +82,33 @@ knowledge. No live capital allocation or new confirmation is authorized by disco
 A terminal validator runtime failure requires an operator reconciliation note before a
 new inference ID is created. If the same attempt is still waiting, its completed reads
 remain attached to that attempt. If the controller has already opened exactly one empty
-successor attempt, only prior chunks whose full-file SHA-256 still equals the successor's
-immutable file map may be inherited. Changed binding or package files must be read again.
-The failed receipt, superseded turn and retry event remain durable, and the final audit
-checker verifies every inherited chunk against its original completed validator turn.
-This exception applies only to validator audits; ordinary scientific retries remain
-attempt-local.
+successor attempt, prior chunks whose full-file SHA-256 still equals the successor's
+immutable file map remain as recovery evidence, but they do not count as evidence seen by
+the new provider thread. The successor must receive every required text byte again; changed
+binding or package files are likewise read from the new immutable map. The failed receipt,
+superseded turn and retry event remain durable, and the final audit checker verifies prior
+chunks against their original completed validator turns while requiring a complete current
+attempt read set. This exception applies only to validator audits; ordinary scientific
+retries remain attempt-local. Audit output starts with the qlab frontmatter contract so a
+completed prose judgment cannot fail later merely because its machine-readable header was
+omitted.
+
+The immutable package may also contain operator-produced causal supplements when their
+source contract, verifier source and execution receipt are all included in qlab scope.
+The service checks the receipt against every trial's exact input hashes and protected-code
+hashes before packaging it; a receipt from a different data or engine version is rejected.
+For the first KRX ETF snapshot, the supplement states the missing historical collection/
+revision vintages rather than inferring them. A committed checker on the 3070 verifies
+point-in-time keys, next-session fills and invariance of all registered features and
+simulations to deterministic positive per-ticker adjusted-price rescaling, while recording
+no performance values. This addresses latest-anchor rescaling only and does not prove that
+KRX never corrected a historical official return or classification.
+
+Core engine, adapter, signal and causal-supplement chunks remain resident in the validator's
+final prompt after they are read. Other large result chunks remain hash-addressed and may be
+evicted after their read receipt is stored. If the resident evidence cannot fit the bounded
+provider context, the stage fails closed instead of asking the validator to judge code bytes
+that are no longer present.
 
 ## Acceptance and rollout
 

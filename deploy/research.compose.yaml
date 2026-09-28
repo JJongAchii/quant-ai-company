@@ -24,6 +24,9 @@ services:
       - ${STATE_DIR:-/var/lib/quant-company}/research:/state/research
     secrets:
       - research_backup_aws
+  data-watch-worker:
+    environment:
+      COMPANY_RESEARCH_ENABLED: "true"
   dispatch:
     environment:
       COMPANY_RESEARCH_ENABLED: "true"

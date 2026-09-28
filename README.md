@@ -49,6 +49,11 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 
 ## 동작
 
+회사 공용 Codex의 기본·예비 계정을 총괄 DM에서 수동 선택하는 기능을 추가했습니다.
+기본값은 비활성화이며 별도 로그인과 운영 활성화가 필요합니다.
+[명령·설정·복구](docs/runbooks/model-accounts.md),
+[검증 및 운영 반영 상태](docs/project/MODEL-ACCOUNTS-VALIDATION.md)를 참고하세요.
+
 ```mermaid
 flowchart LR
     U[사용자 · 휴대폰 Slack] <--> S[직원별 Slack 앱 4개]
@@ -152,6 +157,9 @@ flowchart LR
 ## 시작할 때
 
 [AWS 설치·복구 안내](docs/deployment.md)와 [Slack 설정](docs/slack-setup.md)을 사용합니다.
+
+`#quant-feeds` 전용 Quant Scout의 원문 심사·별도 근거 검사·발송 운영은
+[퀀트 연구 피드 안내](docs/quant-feed.md)를 참고하세요. 기본 비활성이며, 뉴스와 별도 슬롯을 사용합니다.
 기존 EC2·Insight-Invest가 있는 `default` 프로필의 서울 리전에서 별도 Lightsail **2GB·월 $12**를
 생성을 승인받아 운영합니다. 약 4분간의 합성 협업 측정에서 호스트 가용 메모리는 최소 1072.5 MiB였고,
 메모리 부족으로 종료된 컨테이너는 없었습니다. 이는 동시 모델 작업 1개의 짧은 검사이며 장시간 부하
@@ -227,3 +235,14 @@ PR 알림 스레드에서 소유자가 `반영해`라고 승인하면 해당 커
 
 정기 시황 브리핑은 Analyst의 구현과 실제 모델 내용 평가를 진행했으며 운영 발송 인수가 남아 있습니다.
 요청형 시장 분석 BOT은 [후속 로드맵](docs/project/NEXT-STEPS.md)의 별도 미구현 항목입니다.
+
+# 채널 구조와 전용 개선 담당
+
+[회사 Slack 최종 구조](docs/project/SLACK-COMPANY-DESIGN.md)와
+[Maintainer 사용·설치 절차](docs/improvements.md)를 따른다. 전용 개선 채널은 기본 비활성이며,
+실제 운영 적용 여부는 [인수 기록](docs/project/IMPROVEMENTS-VALIDATION.md)에 따로 표시한다.
+
+두 번째 구현인 [data-watch](docs/data-watch.md)는 전체 레이크의 제한된 메타데이터와
+승인된 ETF 고정 입력 검사를 구분해 기록한다. 기존 데이터 직원이 일일 요약·장애·복구를
+알리며 상태 조회와 예약에는 모델을 호출하지 않는다. 기본 비활성이고,
+[검증 기록](docs/project/DATA-WATCH-VALIDATION.md)은 실제 Slack·3070 운영 활성화와 구별한다.

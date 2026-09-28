@@ -20,9 +20,12 @@ def approval_command(text):
 
 
 def notify(company, conn, project, identity, text, *, notify_owner=False):
+    from .cases import lookup
+
     message_id = str(uuid5(NAMESPACE_URL, "maintenance-application:" + identity))
     if not conn.execute("SELECT 1 FROM messages WHERE id=%s", (message_id,)).fetchone():
-        company._message(conn, project, None, "director", "maintenance", "[개선 담당] " + text,
+        agent = "maintainer" if lookup(conn, project["id"]) else "director"
+        company._message(conn, project, None, agent, "maintenance", "[개선 담당] " + text,
                          message_id=message_id, notify_owner=notify_owner)
 
 
@@ -38,6 +41,14 @@ def accept_approval(company, *, text, owner, channel, thread_ts, event_key, even
                                (channel, thread_ts, owner)).fetchone()
         if not project or owner not in company.settings.slack_allowed_users:
             return None
+        from .cases import allowed, current, lookup
+        from .requests import permitted
+
+        if not permitted(company, project):
+            return None
+        case = lookup(conn, project["id"])
+        if case and not allowed(conn, company, case):
+            return {"maintenance_approval": "case_scope_changed"}
         jobs = conn.execute("""SELECT j.* FROM maintenance_jobs j WHERE j.kind='repair'
             AND j.receipt ? 'pr' AND (EXISTS (
               SELECT 1 FROM jsonb_array_elements(j.payload->'observations') x
@@ -46,6 +57,10 @@ def accept_approval(company, *, text, owner, channel, thread_ts, event_key, even
                 AND r.payload->>'request_project_id'=%s AND r.payload->'owners'=%s
                 AND r.receipt->>'case_id'=j.id::text)) ORDER BY j.created_at DESC""",
                             (str(project["id"]), str(project["id"]), Jsonb([owner]))).fetchall()
+        if case:
+            value = current(conn, case)
+            jobs = conn.execute("SELECT * FROM maintenance_jobs WHERE id=%s AND kind='repair' AND receipt ? 'pr'",
+                                (value.get("case_id"),)).fetchall()
         # Only a PR actually announced in this thread can be approved implicitly.
         announced = []
         for job in jobs:
@@ -67,6 +82,10 @@ def accept_approval(company, *, text, owner, channel, thread_ts, event_key, even
                    notify_owner=True)
             return {"maintenance_approval": "ambiguous"}
         job = jobs[0]
+        if case and (case["announced_candidate"].get("job_id") != str(job["id"])
+                     or not case["announced_candidate"].get("head")
+                     or case["announced_candidate"]["head"] != job["receipt"].get("head")):
+            return {"maintenance_approval": "announced_candidate_changed"}
         old = conn.execute("SELECT * FROM maintenance_applications WHERE job_id=%s", (job["id"],)).fetchone()
         if old:
             if old["event_key"] != event_key:
@@ -134,6 +153,13 @@ class Applications:
         try:
             if application["owner_user"] not in set(self.config.allowed_owners) & set(self.company.settings.slack_allowed_users):
                 raise ValueError("approval_owner_no_longer_authorized")
+            from .cases import allowed, current, lookup
+
+            with self.company.db.transaction() as conn:
+                case = lookup(conn, application["project_id"])
+                if case and (not allowed(conn, self.company, case)
+                             or current(conn, case).get("case_id") != str(job["id"])):
+                    raise ValueError("approval_case_scope_changed")
             if application["head"] != job["receipt"]["head"]:
                 raise ValueError("approved_head_changed")
             if digest(job["payload"]["changes"]) != job["payload"]["patch_digest"]:

@@ -69,6 +69,9 @@ def quantity(text):
 def numbers(text):
     # Canonicalize entire quantities so 2.5 million == 250만, not the unrelated bare digits 2.5/250.
     text = written_fractions(written_counts(text))
+    # A compact percent range uses a hyphen as a separator, not the sign of
+    # its upper bound. Keep a spaced "5% -3%" as a genuinely negative value.
+    text = re.sub(r"(?<=%)-(?=\d[\d,]*(?:\.\d+)?%)", " to ", text)
     text = re.sub(r"\bS&P\)?\s*500(?!\d)", "S_AND_P_INDEX", text, flags=re.I)
     normalized = re.sub(NUMBER+r"(?:\s*[십백천만억조](?:\s*\d[\d,]*(?:\.\d+)?)?)+",
                         lambda m: " "+str(quantity(m[0]))+" ", text)

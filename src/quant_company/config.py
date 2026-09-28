@@ -13,11 +13,22 @@ class Settings(BaseSettings):
     model_provider: str = "codex"
     model_runtime_url: str = "http://codex:8081"
     model_runtime_token: SecretStr = SecretStr("")
+    model_accounts_enabled: bool = False
+    model_accounts_owner_user: str = ""
+    model_accounts_channel_id: str = ""
     company_lake_uri: str = Field(default="", pattern=r"^(|s3://[a-z0-9][a-z0-9.-]+/[A-Za-z0-9_/-]+)$")
     slack_team_id: str = ""
     slack_allowed_users: list[str] = Field(default_factory=list)
     slack_allowed_channels: list[str] = Field(default_factory=list)
     slack_credentials_file: Path | None = None
+    company_improvements_enabled: bool = False
+    improvements_channel_id: str = ""
+    data_watch_enabled: bool = False
+    data_watch_publish_enabled: bool = False
+    data_watch_core_enabled: bool = False
+    data_watch_channel_id: str = ""
+    data_watch_owner_user: str = ""
+    data_watch_contracts_file: Path | None = None
     temporal_address: str = "localhost:7233"
     temporal_namespace: str = "default"
     temporal_api_key: SecretStr = SecretStr("")
@@ -58,6 +69,11 @@ class Settings(BaseSettings):
     tech_feed_channel_id: str = ""
     tech_feed_owner_user: str = ""
     tech_feed_sources_file: Path | None = None
+    quant_feed_enabled: bool = False
+    quant_feed_publish_enabled: bool = False
+    quant_feed_channel_id: str = ""
+    quant_feed_owner_user: str = ""
+    quant_feed_sources_file: Path | None = None
     company_staff_development_enabled: bool = False
     staff_daily_exercises: int = Field(default=2, ge=1, le=6)
     staff_max_calls_per_exercise: int = Field(default=3, ge=1, le=4)
@@ -78,12 +94,35 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def explicit_simulation(self) -> "Settings":
+        if self.model_accounts_enabled and self.model_accounts_owner_user not in self.slack_allowed_users:
+            raise ValueError("Model account control requires an explicitly allowed owner")
+        if self.model_accounts_enabled and (
+            not self.model_accounts_channel_id.startswith("C")
+            or self.model_accounts_channel_id not in self.slack_allowed_channels
+            or self.model_accounts_channel_id in {self.improvements_channel_id, self.data_watch_channel_id,
+                                                  self.news_channel_id}
+        ):
+            raise ValueError("Model account control requires a dedicated allowed Slack channel")
         if self.model_provider not in {"codex", "fixture"}:
             raise ValueError("MODEL_PROVIDER must be codex or fixture")
         if self.model_provider == "fixture" and not self.fixture_mode:
             raise ValueError("Fixture provider requires explicit FIXTURE_MODE=true")
         if self.company_autonomous_research_enabled and not self.company_research_enabled:
             raise ValueError("Autonomous research requires the durable research service")
+        if self.company_improvements_enabled and (
+            not self.improvements_channel_id.startswith("C")
+            or self.improvements_channel_id not in self.slack_allowed_channels
+        ):
+            raise ValueError("Improvements requires an explicitly allowed Slack channel")
+        if self.data_watch_enabled and (
+            not self.data_watch_channel_id.startswith("C")
+            or self.data_watch_channel_id not in self.slack_allowed_channels
+            or self.data_watch_owner_user not in self.slack_allowed_users
+            or self.data_watch_channel_id == self.improvements_channel_id
+        ):
+            raise ValueError("Data watch requires a dedicated allowed Slack channel and owner")
+        if self.data_watch_core_enabled and not self.data_watch_enabled:
+            raise ValueError("Data watch core checks require data watch")
         return self
 
     def require_operator_token(self) -> str:

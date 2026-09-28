@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "currentIntent": "INTENT-v2.json",
+  "state": "completed",
+  "deliverables": {
+    "CONTROL": {
+      "status": "completed"
+    },
+    "RUNTIME": {
+      "status": "completed"
+    },
+    "VALIDATION": {
+      "status": "completed"
+    },
+    "DEPLOYMENT": {
+      "status": "completed",
+      "commit": "fde7681e0286501d8713e08e30a96991a88b9151"
+    },
+    "ENROLLMENT": {
+      "status": "completed",
+      "method": "official_browser_oauth_over_ssh_callback",
+      "distinctAccountsVerified": true
+    }
+  },
+  "operationalStatus": "Private ai-account-switch channel active in production. The owner's explicit switch selected the backup ChatGPT account at revision 1, backup model calls completed, and an unsupported phrase received a deterministic Slack command guide without changing the selection. All 12 services healthy with no restarts.",
+  "evidence": "../../project/evidence/model-accounts-20260923/live-account-control.json"
+}

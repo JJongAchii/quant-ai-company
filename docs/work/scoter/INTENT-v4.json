@@ -1,0 +1,73 @@
+{
+  "approval": "사용자가 승인한 quant-feeds 설계를 Implement the plan으로 구현·운영 적용 요청했다.",
+  "constraints": [
+    "기존 일반 업무 1개·뉴스 1개 보존, 퀀트 전용 1개 추가",
+    "신규 유료 서비스 없음",
+    "기존 구독 로그인·회사 공통 사용량 한도·quota 일시정지 유지",
+    "기존 요청 ID·영수증·취소·불명 결과 보호와 Temporal 기록 보존",
+    "기존 tech-feed·news 동작과 DB 상태 보존",
+    "일일 게시 수 제한 없음, 품질 기준과 KST 06–24시·60초 간격 적용",
+    "한국·미국 주식 중심, 최신·고전·가설·부정 결과를 구별",
+    "원문·문서 버전·근거 위치 필수, 검증되지 않은 성과를 사실로 단정 금지",
+    "공개 접근만 허용, PDF 20MiB·200쪽·60초 및 격리 처리",
+    "회사 저장소에만 기록",
+    "비밀 출력 및 Git 저장 금지"
+  ],
+  "createdAt": "2026-09-22T03:38:47.530224+00:00",
+  "decisionGates": [
+    "게시 기본 비활성. 원문 심사·독립 근거 검사·부하 및 봇 자격 검증 이후 활성화한다.",
+    "호스트 가용 메모리 256MiB 미만 지속·OOM·접근 불가 시 활성화를 보류한다. 유료 증설 승인은 없다."
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "수집·검색·원문 확보·타입별 심사·별도 근거 검사·보류·게시 상태 영속화",
+        "학술·기관·한국·코드·반증·고전 자료 소스 및 시간 정책",
+        "독립 퀀트 슬롯·worker·큐·잠금과 공통 예산·중복·불명 보호 유지",
+        "Quant Scout 전용 앱·동일 계열 프로필·배송 전용 권한"
+      ],
+      "description": "원문 근거 기반 퀀트 피드 구현",
+      "id": "QUANT_FEED"
+    },
+    {
+      "acceptance": [
+        "30종 품질·보류·중복·정정 평가 케이스",
+        "실제 PostgreSQL·Temporal과 모의 모델·Slack 구분, 3개 자리 및 자리별 직렬 검증",
+        "PDF 제한·소스 격리·불명 결과·재시작·회귀 검증"
+      ],
+      "description": "동시성·안전성·회귀 검증",
+      "id": "VALIDATION"
+    },
+    {
+      "acceptance": [
+        "기존 운영 배포와 연구 기록을 보존한 정확한 커밋 배포",
+        "실제 공개 원문·구독 심사·Slack 게시와 영수증을 단계별 확인",
+        "3개 동시 호출·PDF 부하·메모리·OOM·worker 및 미검증 범위 기록",
+        "48시간 관찰은 실제 경과·자동 관찰 구성 범위만 주장"
+      ],
+      "description": "운영 활성화와 실제 관찰 영수증",
+      "id": "ACTIVATION"
+    }
+  ],
+  "nonGoals": [
+    "신규 유료 서비스",
+    "기존 뉴스·테크 피드 정책·구독 모델·회사 예산 변경",
+    "봇 대화형 AI 응답 또는 Socket Mode 이벤트 처리 추가",
+    "훈련·백테스트·실거래·유료 OCR·페이월 우회"
+  ],
+  "outcome": "quant-feeds에서 Quant Scout가 원문 근거·한계·실무 적용 조건을 갖춘 한국어 연구 브리프를 지속 전달한다.",
+  "revision": 4,
+  "revisionReason": "Implement approved dedicated quant research feed with evidence review and isolated model lane",
+  "schemaVersion": 1,
+  "slug": "scoter",
+  "sourceRequest": "quant-feeds 최고의 연구 피드 설계 및 Implement the plan.",
+  "stopConditions": [
+    "접근 불가 시 정확한 외부 조건을 기록한다.",
+    "불명 발송을 자동 재실행하지 않는다."
+  ],
+  "supersedes": {
+    "intentDigest": "85f4c0331a2f",
+    "intentFile": "INTENT-v3.json"
+  },
+  "workspace": "독립 회사 Git worktree scoter. QWS_CANONICAL=/Users/achii/Quant/quant-ai-company로 회사 저장소만 qws 정본으로 지정한다. 과거 Quant 계약은 변경하지 않는다."
+}

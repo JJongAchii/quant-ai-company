@@ -554,7 +554,8 @@ async def run_maintenance(company, config):
     from temporalio.worker import Worker
 
     from ..runtime import connect
-    from .workflow import MaintenanceWorkflow
+    from .reporting import Reporter
+    from .workflow import MaintenanceReportingWorkflow, MaintenanceWorkflow
 
     if not config.enabled:
         raise SystemExit("Maintenance is disabled; review the deployment and GitHub App installation first")
@@ -565,8 +566,13 @@ async def run_maintenance(company, config):
     client = await connect(company.settings)
     queue = company.settings.temporal_task_queue + "-maintenance"
     workflow_id = "company-maintenance-v1"
-    async with Worker(client, task_queue=queue, workflows=[MaintenanceWorkflow], activities=[maintainer.tick],
-                      max_concurrent_activities=1, max_cached_workflows=10):
+    reporter = Reporter(company, config)
+    async with (
+        Worker(client, task_queue=queue, workflows=[MaintenanceWorkflow], activities=[maintainer.tick],
+               max_concurrent_activities=1, max_cached_workflows=10),
+        Worker(client, task_queue=queue + "-reporting", workflows=[MaintenanceReportingWorkflow],
+               activities=[reporter.tick], max_concurrent_activities=1, max_cached_workflows=2),
+    ):
         try:
             handle = await client.start_workflow(MaintenanceWorkflow.run, config.poll_seconds,
                                                  id=workflow_id, task_queue=queue,
@@ -575,4 +581,12 @@ async def run_maintenance(company, config):
             handle = client.get_workflow_handle(workflow_id)
         if (await handle.describe()).status != WorkflowExecutionStatus.RUNNING:
             raise RuntimeError("Maintenance workflow is not running; inspect its existing history")
+        report_id = "company-maintenance-reporting-v1"
+        try:
+            report_handle = await client.start_workflow(MaintenanceReportingWorkflow.run, 60,
+                id=report_id, task_queue=queue + "-reporting", id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+        except WorkflowAlreadyStartedError:
+            report_handle = client.get_workflow_handle(report_id)
+        if (await report_handle.describe()).status != WorkflowExecutionStatus.RUNNING:
+            raise RuntimeError("Maintenance reporting workflow is not running; inspect its existing history")
         await asyncio.Event().wait()

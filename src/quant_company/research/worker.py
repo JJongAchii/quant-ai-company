@@ -163,6 +163,7 @@ class WorkerConfig(StrictModel):
     company_repo: Path
     company_commit: Commit
     adaptive_profiles: dict[str, Path] = Field(default_factory=dict)
+    data_watch_enabled: bool = False
     release_registry_file: Path | None = None
     worker_id: Literal["worker"] = "worker"
     poll_seconds: float = Field(default=5, ge=0.1, le=60)
@@ -586,6 +587,12 @@ class Worker:
                 state = read_json(state_path)
                 if not state.get("uploaded"):
                     self.reconcile(directory, state)
+        if self.config.data_watch_enabled:
+            from ..data_watch.worker import DataWatchTransport
+
+            if not hasattr(self, "data_watch"):
+                self.data_watch = DataWatchTransport(self.config, self.client)
+            self.data_watch.step()
 
 
 def main() -> int:

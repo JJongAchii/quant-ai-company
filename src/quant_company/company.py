@@ -50,8 +50,11 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     allowed_tools = {"calculate", "knowledge_search", "read_source", "company_history",
                      "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
                      "finance_search", "finance_read", "web_search", "web_read",
-                     "finance_compute", "data_quality", "staff_status", "news_status", "briefing_status", "research_control"} | LAKE_TOOLS
+                     "finance_compute", "data_quality", "staff_status", "news_status", "research_control",
+                     "data_watch_status", "briefing_status"} | LAKE_TOOLS
     for role in roles:
+        if role.id == "quant_scout" and (role.active or role.tools or role.can_delegate_to):
+            raise ValueError("Quant Scout must remain an outbound-only identity")
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
     if "reporter" in by_id and settings.company_news_enabled:
@@ -61,6 +64,15 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     if settings.company_research_enabled and "director" in by_id:
         role = by_id["director"]
         by_id["director"] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "research_control"]))})
+    if settings.company_improvements_enabled:
+        from .maintenance.identity import role as maintainer_role
+
+        if "engineer" not in by_id:
+            raise ValueError("Maintainer requires the configured engineer model")
+        by_id["maintainer"] = maintainer_role(by_id["engineer"])
+    if settings.data_watch_enabled and "data" in by_id:
+        role = by_id["data"]
+        by_id["data"] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "data_watch_status"]))})
     return by_id
 
 
@@ -96,7 +108,7 @@ class Company:
                     ["id", "name", "active", "model", "reasoning_effort", "version", "tools", "can_delegate_to"]},
                  "specialist_pack_version": pack(role.id)["version"],
                  "specialist_pack_digest": pack(role.id)["digest"]}
-                for role in self.roles.values() if role.id != TECH_FEED_AGENT
+                for role in self.roles.values() if role.id not in {TECH_FEED_AGENT, "quant_scout"}
             ],
             "background_model_requests": {
                 "maintainer": ({"model": self.roles["engineer"].model,
@@ -193,10 +205,10 @@ class Company:
                 "company_history": "Director only: {query?: string, limit?: 1..20}. Reads the owner's recorded "
                                    "requests/results in authorized Slack channels over the last 30 days. "
                                    "Use for past requests, not knowledge_search. Returns a citable source and truncation flags.",
-                "maintenance_review": "Director only: {}. Queues the current human request for the maintenance "
+                "maintenance_review": "Director or configured Maintainer: {}. Queues the current human request for the maintenance "
                                       "service. It reports progress, budget waits, results or blockers to this thread. "
                                       "A returned request_id proves receipt, not completion. No merge/deploy approval is granted.",
-                "maintenance_status": "Director only: {}. Reads real maintenance status and requests for this thread. "
+                "maintenance_status": "Director or configured Maintainer: {}. Reads real maintenance status and requests for this thread. "
                                       "TASK DATA maintenance is a current snapshot. The maintainer is a background "
                                       "service, not an employee in can_delegate_to. Do not ask users to paste stored history.",
                 "read_source": "{source_id, offset?: nonnegative int}. Read 12000 characters of a registered source; "
@@ -211,6 +223,10 @@ class Company:
                     "scope": "Read-only metadata and bounded samples; no arbitrary SQL, full scans or backtests. "
                              "Data questions require fresh tool receipts. Delegate to data when not authorized.",
                 },
+                "data_watch": {"enabled": self.settings.data_watch_enabled,
+                               "channel": self.settings.data_watch_channel_id,
+                               "tool": "data_watch_status {} reads recorded checks without scanning the lake; "
+                                       "available to data in its configured channel. Unknown freshness is not healthy."},
                 "external_web_search": self.settings.company_web_enabled and any(
                     role.active and "web_search" in role.tools for role in self.roles.values()),
                 "research_worker_submission": self.settings.company_research_enabled,
@@ -258,7 +274,10 @@ class Company:
         if project["channel"] and author in self.roles:
             # Persist the rendered text now: delayed progress must not turn into a completion ping.
             owner = project["owner_user"]
-            mention = (notify_owner and author == "director" and recipient is None
+            may_notify = author == "director" or (
+                author == "maintainer" and self.settings.company_improvements_enabled
+                and project["channel"] == self.settings.improvements_channel_id)
+            mention = (notify_owner and may_notify and recipient is None
                        and owner in self.settings.slack_allowed_users and re.fullmatch(r"[UW][A-Z0-9]+", owner))
             rendered = re.sub(r"<@" + re.escape(owner) + r"(?:\|[^<>]*)?>", "", text).lstrip() if mention else text
             # Keep ordinary links/formatting; only the server may create notification tokens.
@@ -313,6 +332,7 @@ class Company:
     def ingest(self, *, event_key: str, text: str, owner: str, agent: str = "director",
                project_id: str | None = None, channel: str | None = None, thread_ts: str | None = None,
                revise: bool = False, status_only: bool = False, daily_limit_command: dict | None = None,
+               account_command: dict | None = None, account_help: bool = False,
                interpret: bool = False, control_action: str | None = None,
                approval_context: dict | None = None) -> dict:
         self.role(agent)
@@ -321,7 +341,7 @@ class Company:
         from .research.approvals import ApprovalEvent, short_command
         from .research.store import parse_command
 
-        research_command = (parse_command(text) or short_command(text)) if agent == "director" else None
+        research_command = (parse_command(text) or short_command(text)) if agent == "director" and not account_help else None
         event = None
         if approval_context and (research_command or approval_context.get("origin") == "block_actions"):
             try:
@@ -340,6 +360,22 @@ class Company:
             status_only = True
         digest = fingerprint([text, owner, agent, project_id, channel, thread_ts, revise, status_only])
         prior_ingress_digest = digest
+        if account_command is not None or account_help:
+            from .accounts import parse_command
+
+            if ((account_command is not None and account_command != parse_command(text))
+                    or (account_help and (account_command is not None or parse_command(text) is not None))
+                    or revise or daily_limit_command is not None or interpret or control_action is not None
+                    or agent != "director" or not channel
+                    or channel != self.settings.model_accounts_channel_id
+                    or channel not in self.settings.slack_allowed_channels
+                    or not event_key.startswith("slack:")
+                    or owner != self.settings.model_accounts_owner_user or owner not in self.settings.slack_allowed_users):
+                raise PolicyError("Account control requires the configured owner in the dedicated channel")
+            digest = fingerprint([digest, account_command] if account_command is not None
+                                 else [digest, "account_help"])
+            status_only = True
+            interpret = False
         if research_command and event:
             digest = fingerprint([digest, event.model_dump(mode="json")])
         if interpret or control_action:
@@ -395,7 +431,16 @@ class Company:
             conn.execute("INSERT INTO inbound(event_key,project_id,task_id,payload_digest) VALUES (%s,%s,%s,%s)",
                          (event_key, project_id, task["id"], digest))
             self._message(conn, project, task["id"], owner, "human", text)
-            if research_command:
+            if account_command is not None:
+                from .accounts import enqueue
+
+                enqueue(conn, self, project, task, event_key, account_command)
+            elif account_help:
+                from .accounts import HELP_TEXT
+
+                conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (HELP_TEXT, task["id"]))
+                self._message(conn, project, task["id"], agent, "status", HELP_TEXT)
+            elif research_command:
                 from .research.approvals import apply_owner_command
 
                 apply_owner_command(self, conn, project, task, event_key, research_command, approval_context)
@@ -417,6 +462,19 @@ class Company:
                 pause = conn.execute("SELECT paused_until,reason FROM runtime_control WHERE id=1").fetchone()
                 if pause["paused_until"] and pause["paused_until"] > now():
                     summary += f"\n모델 작업 대기: {pause['reason']} ({pause['paused_until'].isoformat()}까지)"
+                if agent == "maintainer":
+                    from .maintenance.cases import status_text
+
+                    summary = status_text(conn, self, project)
+                if (agent == "data" and self.settings.data_watch_enabled
+                        and project["channel"] == self.settings.data_watch_channel_id
+                        and project["owner_user"] == self.settings.data_watch_owner_user):
+                    from .data_watch.reporting import list_text, status_text
+                    from .data_watch.store import DataWatchStore
+
+                    snapshot = DataWatchStore(self).snapshot(conn)
+                    summary = (list_text(snapshot) if text.strip().lower() in {"목록", "list"}
+                               else status_text(snapshot))
                 conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (summary, task["id"]))
                 self._message(conn, project, task["id"], agent, "status", summary)
             self._event(conn, "task_created", {"task_id": task["id"], "agent": agent}, project_id)
@@ -487,7 +545,7 @@ class Company:
         context["professional_feedback"] = as_json(coaching(
             conn, project["owner_user"], task["agent"], self.roles[task["agent"]].model,
             self.roles[task["agent"]].reasoning_effort))
-        if task["agent"] == "director":
+        if task["agent"] in {"director", "maintainer"}:
             from .maintenance.requests import permitted, record_source, status
             from .system_state import current_system
 
@@ -649,7 +707,7 @@ class Company:
         with self.db.transaction() as conn:
             conn.execute("""UPDATE turns SET status='waiting',due_at=%s,error=%s,updated_at=now()
                 WHERE id=%s AND status='running'""", (until, reason, turn_id))
-            if global_pause:
+            if global_pause and not self.settings.model_accounts_enabled:
                 conn.execute("""UPDATE runtime_control SET paused_until=GREATEST(paused_until,%s),reason=%s
                     WHERE id=1""", (until, reason))
 
@@ -750,7 +808,9 @@ class Company:
         if request.name in {"company_history", "maintenance_review", "maintenance_status", "system_status", "repository_read"}:
             from .maintenance.requests import tool
 
-            if not task or task["agent"] != "director":
+            maintainer = (task and task["agent"] == "maintainer" and self.settings.company_improvements_enabled
+                          and self._project(conn, project_id)["channel"] == self.settings.improvements_channel_id)
+            if not task or (task["agent"] != "director" and not maintainer):
                 raise PolicyError("Company history and maintenance tools require the director")
             return tool(conn, self, task, request)
         if request.name in LAKE_TOOLS:
@@ -770,6 +830,20 @@ class Company:
                 if not matching:
                     raise PolicyError("Lake source identifier collision")
                 result["source_id"] = source_id
+            return result
+        if request.name == "data_watch_status":
+            from .data_watch.reporting import status_text
+            from .data_watch.store import DataWatchStore
+            from .maintenance.requests import record_source
+
+            project = self._project(conn, project_id, lock=False)
+            store = DataWatchStore(self)
+            if (arguments or not task or task["agent"] != "data" or not store.authorized()
+                    or project["channel"] != self.settings.data_watch_channel_id
+                    or project["owner_user"] != self.settings.data_watch_owner_user):
+                raise PolicyError("Data watch status requires the configured data channel and owner")
+            result = {"summary": status_text(store.snapshot(conn)), "checked_at": now().isoformat()}
+            result["source_id"] = record_source(conn, project, "data_watch_status", result)
             return result
         if request.name == "calculate":
             if set(arguments) != {"expression"}:

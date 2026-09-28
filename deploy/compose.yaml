@@ -41,8 +41,18 @@ x-db-env: &db-env
   DATABASE_NAME: ${DATABASE_NAME:-quant_company}
   ROLES_FILE: /etc/quant-company/roles.json
   MODEL_PROVIDER: codex
+  MODEL_ACCOUNTS_ENABLED: ${MODEL_ACCOUNTS_ENABLED:-false}
+  MODEL_ACCOUNTS_OWNER_USER: ${MODEL_ACCOUNTS_OWNER_USER:-}
+  MODEL_ACCOUNTS_CHANNEL_ID: ${MODEL_ACCOUNTS_CHANNEL_ID:-}
   COMPANY_LAKE_URI: ${COMPANY_LAKE_URI:-}
   COMPANY_WEB_ENABLED: ${COMPANY_WEB_ENABLED:-true}
+  COMPANY_IMPROVEMENTS_ENABLED: ${COMPANY_IMPROVEMENTS_ENABLED:-false}
+  IMPROVEMENTS_CHANNEL_ID: ${IMPROVEMENTS_CHANNEL_ID:-}
+  DATA_WATCH_ENABLED: ${DATA_WATCH_ENABLED:-false}
+  DATA_WATCH_PUBLISH_ENABLED: ${DATA_WATCH_PUBLISH_ENABLED:-false}
+  DATA_WATCH_CORE_ENABLED: ${DATA_WATCH_CORE_ENABLED:-false}
+  DATA_WATCH_CHANNEL_ID: ${DATA_WATCH_CHANNEL_ID:-}
+  DATA_WATCH_OWNER_USER: ${DATA_WATCH_OWNER_USER:-}
   COMPANY_NEWS_ENABLED: ${COMPANY_NEWS_ENABLED:-false}
   NEWS_PUBLISH_ENABLED: ${NEWS_PUBLISH_ENABLED:-false}
   NEWS_SEARCH_ENABLED: ${NEWS_SEARCH_ENABLED:-false}
@@ -62,6 +72,10 @@ x-db-env: &db-env
   TECH_FEED_PUBLISH_ENABLED: ${TECH_FEED_PUBLISH_ENABLED:-false}
   TECH_FEED_CHANNEL_ID: ${TECH_FEED_CHANNEL_ID:-}
   TECH_FEED_OWNER_USER: ${TECH_FEED_OWNER_USER:-}
+  QUANT_FEED_ENABLED: ${QUANT_FEED_ENABLED:-false}
+  QUANT_FEED_PUBLISH_ENABLED: ${QUANT_FEED_PUBLISH_ENABLED:-false}
+  QUANT_FEED_CHANNEL_ID: ${QUANT_FEED_CHANNEL_ID:-}
+  QUANT_FEED_OWNER_USER: ${QUANT_FEED_OWNER_USER:-}
   COMPANY_STAFF_DEVELOPMENT_ENABLED: ${COMPANY_STAFF_DEVELOPMENT_ENABLED:-false}
   STAFF_DAILY_EXERCISES: ${STAFF_DAILY_EXERCISES:-2}
   STAFF_MAX_CALLS_PER_EXERCISE: ${STAFF_MAX_CALLS_PER_EXERCISE:-3}
@@ -218,6 +232,24 @@ services:
       postgres: {condition: service_healthy}
       codex-runtime: {condition: service_healthy}
 
+  data-watch-worker:
+    <<: *app
+    profiles: [data-watch]
+    command: [quant-company, data-watch-worker]
+    environment:
+      <<: [*db-env, *temporal-env]
+      AWS_SHARED_CREDENTIALS_FILE: /run/secrets/lake_read_credentials
+      AWS_DEFAULT_REGION: ap-northeast-2
+      SLACK_TEAM_ID: ${SLACK_TEAM_ID:-CONFIGURE}
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+    secrets: [database_password, temporal_api_key, lake_read_credentials]
+    networks: [core, service_egress]
+    mem_limit: 256m
+    cpus: 0.25
+    depends_on:
+      postgres: {condition: service_healthy}
+
   news-worker:
     <<: *app
     command: [quant-company, news-worker]
@@ -230,6 +262,24 @@ services:
     secrets: [database_password, temporal_api_key, model_runtime_token]
     networks: [core, model, service_egress]
     mem_limit: 192m
+    cpus: 0.5
+    depends_on:
+      postgres: {condition: service_healthy}
+      codex-runtime: {condition: service_healthy}
+
+  quant-feed-worker:
+    <<: *app
+    profiles: [quant-feed]
+    command: [quant-company, quant-feed-worker]
+    environment:
+      <<: [*db-env, *temporal-env]
+      MODEL_RUNTIME_URL: http://codex-runtime:8080
+      MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+    secrets: [database_password, temporal_api_key, model_runtime_token]
+    networks: [core, model, service_egress]
+    mem_limit: 256m
     cpus: 0.5
     depends_on:
       postgres: {condition: service_healthy}
@@ -263,6 +313,7 @@ services:
         QDATA_COMMIT: ${QDATA_COMMIT:-unqualified}
     environment:
       CODEX_HOME: /state/auth
+      CODEX_BACKUP_HOME: /state/backup-auth
       CODEX_BIN: codex
       CODEX_JOBS_DIR: /state/jobs
       CODEX_TIMEOUT_SECONDS: ${CODEX_TIMEOUT_SECONDS:-900}
@@ -272,6 +323,7 @@ services:
     secrets: [model_runtime_token]
     volumes:
       - ${STATE_DIR:-/var/lib/quant-company}/codex/auth:/state/auth
+      - ${STATE_DIR:-/var/lib/quant-company}/codex/backup-auth:/state/backup-auth
       - ${STATE_DIR:-/var/lib/quant-company}/codex/jobs:/state/jobs
     networks: [model, model_egress]
     mem_limit: ${CODEX_MEMORY_LIMIT:-1g}

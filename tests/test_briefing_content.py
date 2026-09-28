@@ -91,6 +91,14 @@ def test_fraction_normalization_does_not_treat_fiscal_quarters_or_ordinals_as_pr
     assert Decimal("0.25") not in numbers("The fourth quarter of 2026")
 
 
+def test_compact_percent_ranges_preserve_upper_bounds_without_erasing_negative_values():
+    source = "The target range is 3.75%-4%, and underlying inflation is 2.5%-3%."
+    assert numbers("목표범위 3.75~4%, 기조 물가 2.5~3%") <= numbers(source)
+    assert Decimal("-4") not in numbers(source)
+    assert Decimal("-3") in numbers("The change was 5% -3%")
+    assert not prose_numbers_supported("목표범위 3.75~4%", ["The target changed 3.75% -4%"])
+
+
 def test_valid_translation_keeps_market_issue_but_changed_amount_removes_it():
     p, data = analytical_proposal(), bundle()
     text = "The central bank approved a quarter percentage point increase."

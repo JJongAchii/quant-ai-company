@@ -107,6 +107,40 @@ def test_compose_https_is_explicit_opt_in():
     assert {port["published"] for port in caddy["ports"]} == {"80", "443"}
 
 
+def test_account_selection_reaches_all_consumers_without_sharing_auth_with_slack(tmp_path):
+    env = tmp_path / "accounts.env"
+    env.write_text('MODEL_ACCOUNTS_ENABLED=true\nMODEL_ACCOUNTS_OWNER_USER=UOWNER\nSLACK_ALLOWED_USERS=["UOWNER"]\n')
+    services = compose_config("maintenance", extra_env=env)["services"]
+    for name in ("api", "slack-socket", "dispatch", "worker", "news-worker", "maintenance"):
+        assert services[name]["environment"]["MODEL_ACCOUNTS_ENABLED"] == "true"
+        assert services[name]["environment"]["MODEL_ACCOUNTS_OWNER_USER"] == "UOWNER"
+        assert not any("/codex/" in mount["source"] for mount in services[name].get("volumes", []))
+    runtime = services["codex-runtime"]
+    mounts = {mount["target"]: mount["source"] for mount in runtime["volumes"]}
+    assert mounts["/state/auth"] != mounts["/state/backup-auth"]
+    assert runtime["environment"]["CODEX_BACKUP_HOME"] == "/state/backup-auth"
+    assert "/state/jobs" in mounts
+
+
+def test_account_gateway_overlay_preserves_research_code_pin_and_auth_boundary(tmp_path):
+    env = tmp_path / "pinned.env"
+    pin = "quant-company-autonomous:" + "3" * 40
+    env.write_text('MODEL_ACCOUNTS_ENABLED=true\nMODEL_ACCOUNTS_OWNER_USER=UOWNER\n'
+                   'SLACK_ALLOWED_USERS=["UOWNER"]\nRESEARCH_REPORT_BUCKET=synthetic-backup-bucket\n'
+                   'PINNED_COMPANY_WORKER_IMAGE=' + pin + '\n')
+    services = compose_config(extra_env=env, overlays=("research.compose.yaml", "autonomous-research.compose.yaml",
+                                                      "model-accounts.compose.yaml"))["services"]
+    worker, gateway, model = (services[name] for name in ("worker", "account-gateway", "codex-runtime"))
+    assert worker["image"] == pin
+    assert worker["environment"]["MODEL_RUNTIME_URL"] == "http://account-gateway:8080"
+    assert "COMPANY_CODE_COMMIT" not in worker["environment"]  # Inherited truthfully from the pinned image.
+    assert gateway["environment"]["MODEL_RUNTIME_URL"] == "http://codex-runtime:8080"
+    assert {s["source"] for s in gateway["secrets"]} == {"database_password", "temporal_api_key", "model_runtime_token"}
+    assert all("/codex/" not in v["source"] for v in gateway.get("volumes", []))
+    assert {s["source"] for s in model["secrets"]} == {"model_runtime_token"}
+    assert not gateway.get("ports") and not model.get("ports")
+
+
 def test_tech_feed_defaults_off_and_stays_out_of_model_container():
     services = compose_config()["services"]
     for name in ("api", "worker", "dispatch", "slack-socket"):
@@ -181,6 +215,18 @@ def test_news_worker_is_independent_and_has_only_news_runtime_credentials():
     assert int(news["mem_limit"]) == 192 * 1024 * 1024
     assert set(news["networks"]) == {"core", "model", "service_egress"}
     assert "news-worker" in backup.APP_SERVICES
+
+
+def test_quant_worker_is_opt_in_and_has_no_slack_or_lake_secrets():
+    assert "quant-feed-worker" not in compose_config()["services"]
+    service = compose_config("quant-feed")["services"]["quant-feed-worker"]
+    assert service["command"] == ["quant-company", "quant-feed-worker"]
+    assert int(service["mem_limit"]) == 256 * 1024 * 1024
+    assert {item["source"] for item in service["secrets"]} == {
+        "database_password", "temporal_api_key", "model_runtime_token"}
+    assert "worker" not in service["depends_on"]
+    assert "quant-feed-worker" in backup.APP_SERVICES
+    assert "account-gateway" in backup.APP_SERVICES
 
 
 def resolve_cf(node, parameters, conditions):
@@ -393,8 +439,8 @@ def test_socket_credentials_example_covers_active_role_contract():
     credentials = json.loads((DEPLOY / "slack-credentials.example.json").read_text())
     roles = json.loads((DEPLOY.parent / "src/quant_company/roles.json").read_text())
     interactive = {role["id"] for role in roles if role["active"]}
-    assert set(credentials) == interactive | {"tech_scout"}
-    for role in interactive:
+    assert set(credentials) == interactive | {"tech_scout", "maintainer"}
+    for role in interactive | {"maintainer"}:
         credential = credentials[role]
         assert set(credential) == {"app_id", "bot_user_id", "bot_token", "app_token", "signing_secret"}
         assert credential["app_token"] and credential["bot_token"]
@@ -402,3 +448,66 @@ def test_socket_credentials_example_covers_active_role_contract():
         assert credential["signing_secret"] == ""  # HTTP secret is not a Socket prerequisite.
     assert set(credentials["tech_scout"]) == {"app_id", "bot_user_id", "bot_token"}
     assert not next(role for role in roles if role["id"] == "tech_scout")["active"]
+
+
+def test_improvements_activation_reaches_all_company_processes_without_model_credentials(tmp_path):
+    from quant_company.company import load_roles
+    from quant_company.config import Settings
+
+    env = tmp_path / "improvements.env"
+    env.write_text('COMPANY_IMPROVEMENTS_ENABLED=true\nIMPROVEMENTS_CHANNEL_ID=CIMPROVE\n'
+                   'SLACK_ALLOWED_CHANNELS=["CIMPROVE"]\nSLACK_ALLOWED_USERS=["UHUMAN"]\n')
+    services = compose_config("maintenance", extra_env=env)["services"]
+    for name in ("api", "worker", "news-worker", "dispatch", "slack-socket", "maintenance"):
+        values = services[name]["environment"]
+        settings = Settings(**{key.lower(): json.loads(value) if key in
+                              {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS"} else value
+                              for key, value in values.items()})
+        assert settings.company_improvements_enabled and settings.improvements_channel_id == "CIMPROVE"
+        # Resolve the packaged roster here, not a production bind mount on the test host.
+        settings.roles_file = DEPLOY.parent / "src/quant_company/roles.json"
+        assert load_roles(settings)["maintainer"].active
+    assert "SLACK_CREDENTIALS_FILE" not in services["codex-runtime"]["environment"]
+    assert not any("slack" in str(item) for item in services["codex-runtime"].get("secrets", []))
+
+
+def test_data_watch_configuration_reaches_existing_processes_without_new_credentials(tmp_path):
+    from quant_company.config import Settings
+
+    env = tmp_path / "data-watch.env"
+    env.write_text('DATA_WATCH_ENABLED=true\nDATA_WATCH_PUBLISH_ENABLED=true\nDATA_WATCH_CHANNEL_ID=CDATA\n'
+                   'DATA_WATCH_OWNER_USER=UHUMAN\nSLACK_ALLOWED_CHANNELS=["CDATA"]\nSLACK_ALLOWED_USERS=["UHUMAN"]\n')
+    services = compose_config("maintenance", "data-watch", extra_env=env,
+                              overlays=("data-watch.compose.yaml",))["services"]
+    for name in ("api", "worker", "news-worker", "dispatch", "slack-socket", "maintenance"):
+        values = services[name]["environment"]
+        settings = Settings(**{key.lower(): json.loads(value) if key in {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS"}
+                               else value for key, value in values.items()})
+        assert settings.data_watch_enabled and settings.data_watch_publish_enabled
+        assert settings.data_watch_contracts_file.name == "data-watch-contracts.json"
+        assert not settings.data_watch_core_enabled
+        assert any(v["target"].endswith("data-watch-contracts.json") and v["read_only"] for v in services[name]["volumes"])
+    standalone = services["data-watch-worker"]
+    assert standalone["command"] == ["quant-company", "data-watch-worker"]
+    assert standalone["environment"]["DATA_WATCH_ENABLED"] == "true"
+    assert standalone["environment"]["AWS_SHARED_CREDENTIALS_FILE"] == "/run/secrets/lake_read_credentials"
+    assert standalone["environment"]["DATA_WATCH_CONTRACTS_FILE"] == "/etc/quant-company/data-watch-contracts.json"
+    assert "MODEL_RUNTIME_TOKEN_FILE" not in standalone["environment"]
+    assert "SLACK_CREDENTIALS_FILE" not in standalone["environment"]
+    assert not any("model_runtime_token" in str(item) or "slack_credentials" in str(item)
+                   for item in standalone["secrets"])
+    assert not any(key.startswith("DATA_WATCH") for key in services["codex-runtime"]["environment"])
+    assert not any("data-watch" in str(v) for v in services["codex-runtime"]["volumes"])
+    config = json.loads((DEPLOY / "research-worker.example.json").read_text())
+    assert config["data_watch_enabled"] is False
+    env.write_text(env.read_text() + 'DATA_WATCH_CORE_ENABLED=true\nRESEARCH_REPORT_BUCKET=synthetic-bucket\n')
+    services = compose_config("maintenance", "data-watch", extra_env=env,
+                              overlays=("research.compose.yaml", "data-watch.compose.yaml"))["services"]
+    for name in ("api", "worker", "news-worker", "dispatch", "slack-socket", "maintenance"):
+        values = services[name]["environment"]
+        settings = Settings(**{key.lower(): json.loads(value) if key in {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS"}
+                               else value for key, value in values.items()})
+        assert settings.data_watch_core_enabled
+        if name in {"api", "worker", "slack-socket", "dispatch"}:
+            assert settings.company_research_enabled
+    assert services["data-watch-worker"]["environment"]["COMPANY_RESEARCH_ENABLED"] == "true"

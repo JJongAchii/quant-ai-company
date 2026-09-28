@@ -240,6 +240,18 @@
     "reasoning_effort": "high"
   },
   {
+    "id": "quant_scout",
+    "name": "Quant Scout",
+    "mission": "한국·미국 주식 중심의 퀀트 연구를 원문 근거·한계·재현 조건과 함께 전하는 연구 큐레이터",
+    "model": "gpt-5.6-luna",
+    "instructions": "Outbound-only Slack identity. Remain inactive with no interactive tools or delegation. Only the evidence-gated quant-feed service may use this identity and its dedicated model lane for research curation. Never train, backtest or trade.",
+    "tools": [],
+    "can_delegate_to": [],
+    "active": false,
+    "version": "1",
+    "reasoning_effort": "high"
+  },
+  {
     "id": "tech_scout",
     "name": "Tech Scout",
     "mission": "AI·개발·데이터·오픈소스·인프라·보안의 새 글을 원문 제목·발췌·링크로 전하는 기술 탐색 봇",

@@ -1,0 +1,15 @@
+# Optional, reviewed publication calendar. Supply the same file to every company process.
+# Core checks also require research.compose.yaml; this overlay alone does not enable research.
+x-calendar: &calendar
+  environment:
+    DATA_WATCH_CONTRACTS_FILE: /etc/quant-company/data-watch-contracts.json
+  volumes:
+    - ${STATE_DIR:-/var/lib/quant-company}/config/data-watch-contracts.json:/etc/quant-company/data-watch-contracts.json:ro
+services:
+  api: *calendar
+  worker: *calendar
+  data-watch-worker: *calendar
+  news-worker: *calendar
+  dispatch: *calendar
+  slack-socket: *calendar
+  maintenance: *calendar
