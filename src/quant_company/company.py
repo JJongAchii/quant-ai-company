@@ -239,7 +239,7 @@ class Company:
                 "daily_limit_meaning": "null means no service daily quota; subscription quotas still apply.",
                 "task_turns": self.settings.company_max_task_turns,
                 "delegation_depth": self.settings.company_max_depth,
-                "project_model_tasks": self.settings.company_max_project_tasks,
+                "project_model_tasks": self.settings.company_max_project_tasks or None,
             },
         }
 
@@ -307,10 +307,12 @@ class Company:
         depth = parent["depth"] + 1 if parent else 0
         if depth > self.settings.company_max_depth:
             raise PolicyError("Delegation depth exhausted")
-        count = conn.execute("SELECT count(*) AS n FROM tasks WHERE project_id=%s AND turn_count>0 AND kind<>'research_stage'",
-                             (project["id"],)).fetchone()
-        if not status_only and count["n"] >= self.settings.company_max_project_tasks:
-            raise PolicyError("Project task limit exhausted")
+        if not status_only and self.settings.company_max_project_tasks:
+            count = conn.execute("""SELECT count(*) AS n FROM tasks
+                WHERE project_id=%s AND turn_count>0 AND kind<>'research_stage'""",
+                                 (project["id"],)).fetchone()
+            if count["n"] >= self.settings.company_max_project_tasks:
+                raise PolicyError("Project task limit exhausted")
         task_id = task_id or str(uuid4())
         priority = priority if priority is not None else (parent["priority"] + 10 if parent else 0)
         kind = kind or (parent['kind'] if parent else 'work')

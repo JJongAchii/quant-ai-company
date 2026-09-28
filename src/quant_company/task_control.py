@@ -166,9 +166,11 @@ def apply(conn, company, project, task, control, *, routed=False):
         if action == 'pause':
             text = '이 스레드의 진행 중인 업무를 중단했습니다. 기록은 보존했고, “이어서 진행해”로 재개할 수 있습니다.'
         else:
-            count = conn.execute('SELECT count(*) AS n FROM tasks WHERE project_id=%s AND turn_count>0',
-                                 (project['id'],)).fetchone()['n']
-            if count >= company.settings.company_max_project_tasks:
+            limit = company.settings.company_max_project_tasks
+            exhausted = (limit and conn.execute(
+                'SELECT count(*) AS n FROM tasks WHERE project_id=%s AND turn_count>0',
+                (project['id'],)).fetchone()['n'] >= limit)
+            if exhausted:
                 notify_owner = True
                 conn.execute("UPDATE projects SET status='paused' WHERE id=%s", (project['id'],))
                 text = '지시는 저장했지만 이 스레드의 업무 수 한도에 도달했습니다. 새 스레드에서 요청하면 이어갈 수 있습니다.'

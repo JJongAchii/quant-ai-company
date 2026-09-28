@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v3.json",
-  "state": "deployed_awaiting_live_reply_verification",
+  "currentIntent": "INTENT-v4.json",
+  "state": "slack_replies_verified_project_task_quota_removal_prepared",
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
   "deliverables": {
     "DIAGNOSIS": {"status": "completed"},
@@ -10,11 +10,13 @@
     "PINNED_WORKER": {"status": "prepared", "commit": "e53b771aa994a54c1f4be6a2610856ea7a298816", "temporaryOverlay": "deploy/pinned-worker-roles-compat.compose.yaml"},
     "VALIDATION": {"status": "completed", "realPostgresTests": 16, "pinnedWorkerTests": 1},
     "CUTOVER": {"status": "applied", "commit": "d571734e161c39f7c26252005231f93b619b3749"},
-    "LIVE_REPLY": {"status": "pending", "reason": "Selected backup ChatGPT account is quota-paused until 2026-09-28T07:34:10Z"}
+    "LIVE_REPLY": {"status": "completed", "financialStrategistDm": "two delivered messages confirmed in real Slack", "researchCenter": "two delivered messages confirmed in real Slack"},
+    "TASK_LIMIT": {"status": "prepared", "default": "unlimited", "realPostgresTests": 3, "fullSuitePassed": 1226, "fullSuiteSkipped": 38, "lint": "passed"},
+    "TASK_LIMIT_RELEASE": {"status": "pending", "reason": "Pinned research worker requires a qualified release with historical job pins preserved"}
   },
-  "operationalStatus": "The app and pinned worker role overlay are live. The linked DM turns advanced to the model account gate but are waiting for the selected backup ChatGPT subscription quota; no new Slack replies are verified. Old rejected research-center messages were not replayed.",
+  "operationalStatus": "Both named Slack threads have real delivered bot replies. The 40-task project quota remains in production pending a reviewed app and research-capable worker release. Source and real-PostgreSQL tests now support an unlimited default.",
   "evidence": "../../project/evidence/slack-reply-cutover-20260928.json",
-  "previousIntent": "INTENT-v2.json",
+  "previousIntent": "INTENT-v3.json",
   "previousState": "completed",
   "previousEvidence": "../../project/evidence/model-accounts-20260923/live-account-control.json"
 }

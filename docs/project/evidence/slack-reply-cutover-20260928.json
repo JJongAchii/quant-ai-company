@@ -1,12 +1,13 @@
 {
   "schemaVersion": 1,
   "recordedAt": "2026-09-28T07:29:49Z",
-  "state": "production_applied_awaiting_model_quota_recovery",
+  "updatedAt": "2026-09-28T07:57:32Z",
+  "state": "both_thread_reply_paths_verified_project_task_limit_remains",
   "sourceKinds": {
     "cutover": "real Lightsail Docker Compose receipt and container readback",
     "database": "read-only production PostgreSQL queries after cutover",
     "modelStatus": "production model account policy and call receipts",
-    "slack": "actual Slack reply not yet observed"
+    "slack": "real Slack conversations.replies readback using the financial strategist and director bot identities"
   },
   "deployment": {
     "approvedByOwner": true,
@@ -39,9 +40,25 @@
     "primaryAccount": "last quota response recorded, no successful call recorded; no automatic switch",
     "researchCenter": "Old rejected messages were not replayed; a new owner message is needed for real Slack status-response verification."
   },
+  "dmRecoveryAt20260928T074041Z": {
+    "ownerAccountSwitch": "The owner's real Slack command selected primary account revision 2; no automatic switch was made.",
+    "primaryAccountLastSuccessAt": "2026-09-28T07:39:23Z",
+    "linkedTurnStates": ["completed", "completed"],
+    "outboxStatuses": ["delivered", "delivered"],
+    "sentTs": ["1790581135.290859", "1790581220.780979"],
+    "realSlackReadback": "Both sent_ts values appeared in the named DM thread as financial_strategist bot messages; no message body is stored in this evidence."
+  },
+  "researchCenterRecoveryAt20260928T0743Z": {
+    "ownerMessageTs": ["1790581302.176209", "1790581335.589659"],
+    "ingress": "Both newly sent owner messages became completed control tasks with no model turn; the three older rejected events were not replayed.",
+    "outboxStatuses": ["delivered", "delivered"],
+    "sentTs": ["1790581304.082259", "1790581336.607999"],
+    "realSlackReadback": "Both sent_ts values appeared in the named research-center thread as director bot messages; no message body is stored in this evidence.",
+    "remainingIssue": "The 40-task project quota still blocks general new work in this thread; the owner requested its removal."
+  },
   "limits": [
     "The global current release link and runtime.env still name c54667e; the scoped app containers run d571734 with unchanged other services.",
     "Subsequent Compose recreation of the pinned worker must include the worker-only roles overlay until its image is upgraded.",
-    "Local and simulated Slack tests do not establish a delivered production Slack reply."
+    "The 40-task project quota remains in the deployed app and research-pinned worker until a reviewed follow-up release."
   ]
 }
