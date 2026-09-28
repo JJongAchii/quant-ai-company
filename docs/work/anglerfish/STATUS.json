@@ -5,7 +5,7 @@
   "state": "prepared_awaiting_cutover_review",
   "deliverables": {
     "DIAGNOSIS": {"status": "completed"},
-    "APPLICATION": {"status": "prepared", "commit": "bebf69b59586a89c5306b1bed412781db1529460"},
+    "APPLICATION": {"status": "prepared", "commit": "ae132c3", "base": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce"},
     "PINNED_WORKER": {"status": "prepared", "commit": "e53b771aa994a54c1f4be6a2610856ea7a298816", "temporaryOverlay": "deploy/pinned-worker-roles-compat.compose.yaml"},
     "VALIDATION": {"status": "completed", "realPostgresTests": 16, "pinnedWorkerTests": 1},
     "CUTOVER": {"status": "pending"}

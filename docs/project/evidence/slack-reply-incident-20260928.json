@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "recordedAt": "2026-09-28T06:28:08Z",
-  "updatedAt": "2026-09-28T06:49:00Z",
+  "updatedAt": "2026-09-28T06:59:26Z",
   "state": "repair_prepared_not_deployed",
   "sourceKinds": {
     "slack": "real Slack conversations.replies readback using the configured bot identities",
@@ -39,9 +39,8 @@
     "note": "A point-in-time observation, not cutover authorization; recheck external effects immediately before any worker restart."
   },
   "preparedChanges": {
-    "applicationBase": "c54667e2827506d50b4cbfaa63d924f2b69f21ab",
-    "applicationCandidate": "bebf69b59586a89c5306b1bed412781db1529460",
-    "latestObservedApplicationBase": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+    "applicationBase": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+    "applicationCandidate": "ae132c3",
     "pinnedWorkerBase": "31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
     "pinnedWorkerCandidate": "e53b771aa994a54c1f4be6a2610856ea7a298816",
     "pinnedWorkerCutover": "Preserve the exact 31ff903f image and research commit; attach a worker-only roles file that differs only by removing inactive quant_scout.",
@@ -52,7 +51,9 @@
     "composeConfigValidation": "passed with example environment; worker image unchanged, worker-only ROLES_FILE and read-only mount applied",
     "realPostgresApplicationTests": "16 passed",
     "realPostgresPinnedWorkerTest": "1 passed",
+    "realPostgresFullSuite": "1223 passed, 38 skipped, 0 failed on the latest application base",
     "ruff": "passed",
-    "productionDeployed": false
+    "productionDeployed": false,
+    "reviewBlocker": "GitHub CLI authentication was invalid at review preparation; no PR was opened."
   }
 }
