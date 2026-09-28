@@ -9,15 +9,17 @@ import argparse
 import fcntl
 import hashlib
 import importlib.util
+import io
 import json
 import os
 import re
 import shutil
 import subprocess
+import tarfile
 import time
 import urllib.parse
 import urllib.request
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 STATE = Path('/var/lib/quant-company')
 CURRENT = Path('/opt/quant-company/current')
@@ -32,6 +34,34 @@ def helper(root):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def unpack(data, target):
+    # The committed tree includes historical evidence and is now larger than 32 MiB.
+    with tarfile.open(fileobj=io.BytesIO(data), mode='r:gz') as archive:
+        members = archive.getmembers()
+        if sum(m.size for m in members) > 64 * 1024 * 1024:
+            raise ValueError('housing_archive_too_large')
+        if len({PurePosixPath(m.name).parts[0] for m in members}) != 1:
+            raise ValueError('housing_archive_roots')
+        for item in members:
+            parts = PurePosixPath(item.name).parts
+            if item.name.startswith('/') or '..' in parts or not (item.isdir() or item.isfile()):
+                raise ValueError('housing_archive_path')
+            if len(parts) == 1:
+                continue
+            path = target.joinpath(*parts[1:])
+            if item.isdir():
+                path.mkdir(parents=True, exist_ok=True)
+            else:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                with archive.extractfile(item) as source, path.open('xb') as output:
+                    shutil.copyfileobj(source, output)
+                path.chmod(0o755 if item.mode & 0o111 else 0o644)
+        target.chmod(0o755)
+        for path in target.rglob('*'):
+            if path.is_dir():
+                path.chmod(0o755)
 
 
 def configuration(data):
@@ -105,7 +135,7 @@ def stage(args, previous, target, module, journal):
     if '/quant-company-housing-feed-worker-1' in before:
         raise ValueError('housing_already_installed')
     target.mkdir()
-    module.unpack(data, target)
+    unpack(data, target)
     qdata = Path(values['QDATA_BUILD_CONTEXT'])
     shutil.copytree(qdata, target / 'qdata')
     settings['QDATA_BUILD_CONTEXT'] = str(target / 'qdata')
