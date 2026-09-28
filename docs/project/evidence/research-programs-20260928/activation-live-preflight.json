@@ -1,0 +1,136 @@
+{
+  "containers": [
+    {
+      "image": "quant-company-autonomous:31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
+      "name": "quant-company-worker-1",
+      "status": "Up 54 minutes"
+    },
+    {
+      "image": "quant-company:d571734e161c39f7c26252005231f93b619b3749",
+      "name": "quant-company-api-1",
+      "status": "Up 55 minutes (healthy)"
+    },
+    {
+      "image": "quant-company:d571734e161c39f7c26252005231f93b619b3749",
+      "name": "quant-company-slack-socket-1",
+      "status": "Up 55 minutes"
+    },
+    {
+      "image": "quant-company:0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+      "name": "quant-company-data-watch-worker-1",
+      "status": "Up 2 hours"
+    },
+    {
+      "image": "quant-company:c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+      "name": "quant-company-dispatch-1",
+      "status": "Up 2 hours"
+    },
+    {
+      "image": "quant-company:c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+      "name": "quant-company-housing-feed-worker-1",
+      "status": "Up 2 hours"
+    },
+    {
+      "image": "quant-company:12398af25dc111fd93d99fa3408fbc66cb699121",
+      "name": "quant-company-quant-feed-worker-1",
+      "status": "Up 6 hours"
+    },
+    {
+      "image": "quant-company-maintenance:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "name": "quant-company-maintenance-1",
+      "status": "Up 31 minutes"
+    },
+    {
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "name": "quant-company-account-gateway-1",
+      "status": "Up 7 hours (healthy)"
+    },
+    {
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "name": "quant-company-news-worker-1",
+      "status": "Up 7 hours"
+    },
+    {
+      "image": "quant-company-claude:fde7681e0286501d8713e08e30a96991a88b9151",
+      "name": "quant-company-claude-runtime-1",
+      "status": "Up 7 hours (healthy)"
+    },
+    {
+      "image": "quant-company-codex:fde7681e0286501d8713e08e30a96991a88b9151",
+      "name": "quant-company-codex-runtime-1",
+      "status": "Up 7 hours (healthy)"
+    },
+    {
+      "image": "bb3e1a57e540",
+      "name": "quant-company-postgres-1",
+      "status": "Up 7 hours (healthy)"
+    }
+  ],
+  "credentials_read_or_exported": false,
+  "cross_system_atomic_snapshot": false,
+  "hostname": "ip-172-26-10-158",
+  "instance_name": "quant-company-host-4gb-20260928",
+  "observed_at": "2026-09-28T08:19:20.903976+00:00",
+  "profile_config_sha256": "221cb9a6d5d8f383e328ec26d72493c07a5a5e4f1989f25aba10ada38571a043",
+  "profile_ids": [
+    "kr-etf-monthly-python-v1"
+  ],
+  "provisioned_bundles": [
+    {
+      "name": "37abfceb07f5b684d7c3210548fecef156e3f9fc.bundle",
+      "sha256": "c62ab9780e2aaf0f64b6a00e0ea894dd17368b8f1b98140d6bbec8b1a7d47798"
+    },
+    {
+      "name": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49.bundle",
+      "sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49"
+    }
+  ],
+  "quant_feed": {
+    "documents_total": 484,
+    "independently_passed": 5
+  },
+  "research_audit_qlab_commit": "37abfceb07f5b684d7c3210548fecef156e3f9fc",
+  "research_jobs_by_state": [
+    {
+      "count": 1,
+      "state": "cancelled"
+    },
+    {
+      "count": 1,
+      "state": "completed"
+    },
+    {
+      "count": 1,
+      "state": "received"
+    }
+  ],
+  "research_missions": [
+    {
+      "cumulative_trials": 1,
+      "id": "4462aff3-c7fe-5e66-a003-4aca2e8f3330",
+      "state": "active",
+      "updated_at": "2026-09-28T08:19:10.762137+00:00"
+    }
+  ],
+  "schema": {
+    "quant_feed_documents": true,
+    "research_missions": true,
+    "research_programs": false
+  },
+  "schema_version": 1,
+  "scientific_execution_started_by_this_audit": false,
+  "source_anchor": {
+    "id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "prior_baseline_measured": false,
+    "prior_scientific_trials_added": 0,
+    "quant_feed_owner_matches": true,
+    "source_approved": true,
+    "source_available_at": "2026-09-21T06:45:32.592519+00:00",
+    "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+    "source_metadata_kind": "equivalent_replay",
+    "source_synthetic": false,
+    "source_title": "고정 국내 ETF 연구 재현 보고서",
+    "title": "국내상장 ETF 월간 연구: 데이터 확인과 실행 전 연구 설계"
+  },
+  "state": "read_only_live_observation_no_activation"
+}

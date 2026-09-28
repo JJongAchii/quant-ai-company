@@ -1,0 +1,13 @@
+{
+  "commit": "2b4034db126ff13ff936c8e3def3ae89c7456824",
+  "observed_at": "2026-09-28T08:22:00.993759+00:00",
+  "previous_current_release": "/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+  "production_pointer_changed": false,
+  "production_service_restarted": false,
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "qdata_files": 149,
+  "schema_version": 1,
+  "source_bundle_sha256": "83f148a6793a38ba24b240aa4e7ec40587890da5d5665449820e0d447c00fe57",
+  "state": "exact_code_staged_not_active",
+  "target": "/opt/quant-company/releases/2b4034db126ff13ff936c8e3def3ae89c7456824"
+}
