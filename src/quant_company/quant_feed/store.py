@@ -17,7 +17,8 @@ from .editor import prompt, render, validate
 from .feeds import aliases
 
 LOCK = 71350249
-REPAIRABLE_PROPOSAL_ERRORS = {"quant_quote_not_in_original_version", "quant_unretrieved_related_link", "quant_card_too_long"}
+REPAIRABLE_PROPOSAL_ERRORS = {"quant_quote_not_in_original_version", "quant_unretrieved_related_link",
+                              "quant_card_too_long", "quant_malformed_title"}
 
 
 def _sanitize_original_text(receipt):

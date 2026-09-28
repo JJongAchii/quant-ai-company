@@ -128,6 +128,8 @@ def validate(response, bundle, stage):
         raise ValueError("quant_commercial_disclosure_required")
     if bundle.get("prior") and brief.change == "new":
         raise ValueError("quant_existing_work_requires_comparison")
+    if re.search(r"@keyframes|background-position", brief.title, flags=re.IGNORECASE):
+        raise ValueError("quant_malformed_title")
     if len(render(brief, bundle["metadata"])) > 2400:
         raise ValueError("quant_card_too_long")
     return brief

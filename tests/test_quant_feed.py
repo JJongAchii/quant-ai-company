@@ -246,6 +246,15 @@ def test_long_card_is_rewritten_once_without_dropping_caveats(quant):
     assert all(item in text for item in corrected["limitations"])
 
 
+def test_old_css_contaminated_title_is_rewritten_before_publication(quant):
+    original(quant)
+    invalid = brief(title="@keyframes shimmer { background-position: 200% 0 }")
+    repaired = quant.commit(response(quant.prepare(), invalid))
+    assert repaired["validation_issue"] == "quant_malformed_title"
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
+
+
 def test_shared_budget_quota_pause_and_same_request_retry(quant):
     original(quant)
     quant.company.settings.company_max_daily_turns = 1
