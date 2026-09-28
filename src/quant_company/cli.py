@@ -34,6 +34,7 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
         if role.id == "reporter":
             value["display_information"]["name"] = "Reporter"
             value["features"]["bot_user"]["display_name"] = "reporter"
+            value["settings"]["event_subscriptions"]["bot_events"].append("entity_details_requested")
         if role.id == TECH_FEED_AGENT:
             value = {
                 "display_information": {"name": "Tech Scout", "description": role.mission[:140]},

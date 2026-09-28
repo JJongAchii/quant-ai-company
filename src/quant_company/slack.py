@@ -50,12 +50,19 @@ class SlackIngress:
         if (not self.settings.slack_team_id or payload.get("team_id") != self.settings.slack_team_id
                 or payload.get("api_app_id") != credential["app_id"]):
             raise PolicyError("Unexpected Slack workspace or app")
+        event = payload.get("event")
+        if isinstance(event, dict) and event.get("type") == "entity_details_requested":
+            if role != "reporter":
+                return {"ok": True, "ignored": True}
+            from .housing_feed.panel import HousingMapPanel
+
+            return HousingMapPanel(self.company, self.credentials).accept(payload, event, credential)
         if role == TECH_FEED_AGENT:
             # Outbound-only identity: even an accidentally configured callback never creates model work.
             return {"ok": True, "ignored": True, "reason": "tech_feed_delivery_identity_is_not_interactive"}
         if role == QUANT_FEED_AGENT:
             return {"ok": True, "ignored": True, "reason": "quant_feed_delivery_identity_is_not_interactive"}
-        event = payload.get("event", {})
+        event = event if isinstance(event, dict) else {}
         if (event.get("type") not in {"app_mention", "message"}
                 or event.get("bot_id") or event.get("subtype") or not event.get("user")):
             return {"ok": True, "ignored": True}
@@ -395,6 +402,13 @@ class SlackOutbox:
         blocks = await asyncio.to_thread(blocks_for_outbox, self.company, row, self.credentials[row["agent"]])
         if blocks:
             body["blocks"] = blocks
+        if row.get("message_kind") == "housing_feed" and self.company.settings.housing_map_panel_enabled:
+            from .housing_feed.maps import work_object
+            from .housing_feed.store import HousingFeedStore
+
+            notice = await asyncio.to_thread(HousingFeedStore(self.company).notice_for_message, row["id"])
+            if notice and notice.map_location:
+                body["metadata"] = {"entities": [work_object(notice)]}
         if row["thread_ts"] is None:
             del body["thread_ts"]
         elif row.get("news_broadcast"):
