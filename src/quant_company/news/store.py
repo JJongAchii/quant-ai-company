@@ -177,6 +177,10 @@ class NewsStore:
                     return {"state": "defer"}
                 return {"state": "ready", "request": active["request"]}
             # A held item is revisited only when new material arrives, not on an unbounded model timer.
+            from ..briefing.store import priority_pending
+
+            if priority_pending(self.company):
+                return {"state": "defer", "reason": "briefing_priority", "next_delay": 30}
             optimized = self.company.settings.news_optimization_enabled
             primary_state = "selected" if optimized else "ready"
             rows = []

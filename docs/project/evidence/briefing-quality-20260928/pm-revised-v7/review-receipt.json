@@ -1,0 +1,35 @@
+{
+  "request_id": "news-brief-eval-01e542ba99dff3118360d40b510fb4b9",
+  "request_sha256": "23606e16a36b38dd9e07f491869402859692f171d12d0e74a7eb617b2660c897",
+  "elapsed_seconds": 94.198,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "request_id": "news-brief-eval-01e542ba99dff3118360d40b510fb4b9",
+    "decision": {
+      "say": "",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [
+        {
+          "title": "BriefReview",
+          "content": "{\"verdict\":\"publish\",\"checks\":{\"numbers\":true,\"sources\":true,\"timing\":true,\"causality\":true,\"materiality\":true,\"counterevidence\":true,\"transmission\":true,\"alternatives\":true,\"falsifiability\":true,\"coverage\":true,\"depth\":true,\"readability\":true},\"source_assessments\":[{\"source_id\":\"3155236565fe5ca068f1f32cfd14e3c9138f8631\",\"treatment\":\"covered\",\"reason\":\"국내 지수 종가와 장중 흐름, 업종 간 격차, 투자자별 수급 및 시각이 명시된 환율을 본문에 반영했다.\",\"item_ids\":[\"summary_equity\",\"overview_kr\",\"overview_fx\",\"kosdaq_close\",\"kospi_close\",\"usdkrw_afternoon\",\"semis_counterpoint\"]},{\"source_id\":\"4c858feaad66c47bc229df23e405fbb732c682c1\",\"treatment\":\"covered\",\"reason\":\"장중 하락 전환 뒤 반등한 국내장 흐름을 반영했다. 종가 중복 보도를 독립 확인으로 내세우지 않았다.\",\"item_ids\":[\"overview_kr\"]},{\"source_id\":\"a135df313f2e5f19f874e876364936b47e18d518\",\"treatment\":\"not_material\",\"reason\":\"명절 기간 차이에 따른 계절적 현금 공급 보도이며 정책금리 변경이나 당일 증시 자금 유입을 입증하지 않는다.\",\"item_ids\":[]},{\"source_id\":\"cd2c1e8a1a44601c39098212daf0b2332e231e7d\",\"treatment\":\"covered\",\"reason\":\"지난주 인상과 콜린스의 비투표권자 지위, 물가·고용 경고를 반영했다. 레인의 물가 압력과 연내 에너지 개선 전망도 함께 제시했다.\",\"item_ids\":[\"summary_rates\",\"rates_fact\",\"rates_alternative\",\"rates_counterpoint\"]},{\"source_id\":\"f2a295d28f66f5771a0bd10d82117c591f0f9ec5\",\"treatment\":\"covered\",\"reason\":\"22일 미국장 혼조와 달러 상승, 미국채 수준을 반영했다. 금 하락 설명과 금리 방향의 기사 내부 불일치도 본문에서 밝혔다.\",\"item_ids\":[\"overview_us_background\",\"rates_counterpoint\"]},{\"source_id\":\"0a6279dfea2dbe7a7c1c0d8b940331f0f290a7ab\",\"treatment\":\"background\",\"reason\":\"같은 매체의 후속 종합기사와 미국장·협상 내용이 중복된다. 별도 신규 동인이나 독립 확인으로 추가할 필요가 낮다.\",\"item_ids\":[]},{\"source_id\":\"51a0c4bb7995086f0fc121be0977a3cb237055b8\",\"treatment\":\"covered\",\"reason\":\"목요일 회담과 AI 사고 대화 채널, 지속되는 첨단칩 제한 및 중국 모델 채택 확대를 반영했다. 수출통제 변경 여부를 확인 조건으로 삼았다.\",\"item_ids\":[\"ai_policy_fact\",\"ai_policy_mechanism\",\"ai_policy_alternative\",\"ai_policy_next\",\"trump_xi_dialogue\"]},{\"source_id\":\"2df6c7ce5ada6411de8a78f510d30d3cb38fa989\",\"treatment\":\"covered\",\"reason\":\"양사 상승률과 수요 기대뿐 아니라 배당기준일·환원 규모·실제 자사주 매입을 반영했다. 기타법인 매수 집중과 외국인 종목별 반대 매매도 공개했다.\",\"item_ids\":[\"summary_equity\",\"semis_fact\",\"semis_mechanism\",\"semis_alternative\",\"semis_counterpoint\",\"semis_next\"]},{\"source_id\":\"eef15b24bd15c7bf6a25828bcca2fdffcfc1ba69\",\"treatment\":\"covered\",\"reason\":\"미국장 혼조·공급 기대·고금리 부담은 다른 원문과 통합됐다. 이 기사의 PMI 예고 날짜는 정확한 발표 시각과 구별해 본문 일정에 반영했다.\",\"item_ids\":[\"rates_next\",\"pmi_preliminary\"]},{\"source_id\":\"c5e584c5bce41c36808bf1d12ecc932dee7c4076\",\"treatment\":\"covered\",\"reason\":\"후속 유가 혼조를 관측 시각·계약월과 함께 반영했다. 해협 재개방의 군사 압박·항만 봉쇄 완화 조건과 재충돌 위험도 제시했다.\",\"item_ids\":[\"summary_rates\",\"oil_fact\",\"oil_counterpoint\",\"oil_alternative\",\"oil_next\"]},{\"source_id\":\"f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0\",\"treatment\":\"covered\",\"reason\":\"원유 계약별 종가, 사우디 송유관의 소량 재가동 보도와 26일까지의 회복 목표를 반영했다. 공급 복구와 협상 기대를 구별했다.\",\"item_ids\":[\"oil_fact\",\"oil_mechanism\",\"oil_counterpoint\",\"oil_next\"]},{\"source_id\":\"852b93b97dd7694a7408a9c264dc9fcfcfcda062\",\"treatment\":\"not_material\",\"reason\":\"프랑스의 관여 의향 발언으로 구체적인 파병 결정·일정이나 통항 변화는 제시되지 않았다. 핵심 공급 상황을 바꾼 실행 조치로 다룰 근거가 부족하다.\",\"item_ids\":[]},{\"source_id\":\"45a1ff52fbbb9fb1027751e918bb1f72a1bda0b9\",\"treatment\":\"covered\",\"reason\":\"국고채 3년·10년 금리 수준과 하락 폭, 유가 안정이라는 보도 설명을 반영했다. 명목금리에서 실질금리나 정책 완화로 단정하지 않았다.\",\"item_ids\":[\"summary_rates\",\"rates_fact\",\"rates_mechanism\"]},{\"source_id\":\"54e036895c2164dc95a2a71d79c2f4c36cb710c7\",\"treatment\":\"covered\",\"reason\":\"원유·가스 의존도 목표, 기존 중동 비중, 저장능력 확대 규모와 기한, 콘덴세이트 확보 및 핵심광물 확대를 반영하고 실행과 계획을 구별했다.\",\"item_ids\":[\"resource_fact\",\"resource_mechanism\",\"resource_alternative\",\"resource_next\"]},{\"source_id\":\"19f0d6ace0af4c4a8ddf74fbd39d5fc4790f26f4\",\"treatment\":\"covered\",\"reason\":\"해협의 에너지 수송 비중과 협상 돌파구 부재, 미국의 파괴 위협을 본문에 반영해 공급 개선 기대의 한계를 드러냈다.\",\"item_ids\":[\"oil_fact\",\"oil_counterpoint\"]},{\"source_id\":\"356e4030df1cb13e0cf53545b91014fa124f7007\",\"treatment\":\"background\",\"reason\":\"회담과 미국의 위협, 이란의 조건 재확인 보도는 다른 협상 기사와 중복된다. 구체적 합의나 확정된 후속 회담 시각을 추가하지 않는다.\",\"item_ids\":[]}],\"rejected_ids\":[],\"concerns\":[]}",
+          "source_ids": []
+        }
+      ],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0e59d-faef-7002-b49c-95a650ed209a",
+    "usage": {
+      "input_tokens": 39688,
+      "cached_input_tokens": 0,
+      "output_tokens": 2900,
+      "reasoning_output_tokens": 687
+    },
+    "provider": "codex",
+    "web_searches": []
+  }
+}

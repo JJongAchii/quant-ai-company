@@ -1,0 +1,34 @@
+{
+  "approval": {
+    "approvedAt": "2026-09-28T01:50:17.131916+00:00",
+    "id": "chat-proceed-briefing-preview-20260928"
+  },
+  "currentIntent": "INTENT-v7.json",
+  "deliverables": {
+    "AM-EVALUATION": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "PREVIEW-SETUP": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "RELEASE-BASELINE": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "VALIDATION": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    }
+  },
+  "intentDigest": "80d848a9641c",
+  "schemaVersion": 1,
+  "slug": "amberjack",
+  "state": "approved",
+  "updatedAt": "2026-09-28T01:50:17.131916+00:00"
+}

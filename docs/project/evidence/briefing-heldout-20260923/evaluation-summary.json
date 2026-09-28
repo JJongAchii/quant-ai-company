@@ -1,0 +1,123 @@
+{
+  "scope": "historical original-source offline evaluation; not a scheduled preview or Slack publication",
+  "source_manifest": "source-snapshots.json",
+  "am": {
+    "day": "2026-09-23",
+    "scheduled_cutoff_kst": "07:10",
+    "original_input_bundle": "am-20260923-bundle.json",
+    "selection_v3_comparison": "am-20260923-source-selection-v3.json",
+    "first_writer_deterministic_rejected": 0,
+    "first_writer_issue_count": 5,
+    "first_review_validation": "review_coverage_not_cited",
+    "corrected_review_verdict": "reduce",
+    "corrected_review_failed_checks": [
+      "counterevidence",
+      "coverage",
+      "depth"
+    ],
+    "revised_writer_deterministic_rejected": 0,
+    "revised_writer_issue_count": 5,
+    "independent_dimensions_initial": {
+      "grounding": "supported",
+      "reasoning": "supported",
+      "assumptions": "supported",
+      "limitations": "concern"
+    },
+    "independent_dimensions_revised": {
+      "grounding": "supported",
+      "reasoning": "supported",
+      "assumptions": "supported",
+      "limitations": "concern"
+    },
+    "editorial_outcome": "not_ready: important forward catalyst and currency context remain omitted",
+    "codex_receipts": [
+      {
+        "path": "am-20260923/write-receipt.json",
+        "request_id": "news-brief-eval-1a6505a3296ebf3d6afe2e5a21901cf9",
+        "request_sha256": "ce90bee8c9601c0884be1ad4996a0c5675c6ceb4754fe8b32d8aad939904743b",
+        "provider": "codex",
+        "fault": null,
+        "actual_model": null,
+        "receipt_sha256": "18e6bde606d244e79d5f689136b6e24ec71fd72956a28c906e9ae0f4eee0d663"
+      },
+      {
+        "path": "am-20260923/review-receipt.json",
+        "request_id": "news-brief-eval-75ca016eb99d5b9f3b23844c2b20a476",
+        "request_sha256": "c35b623106288493f37f3941cec3d8ecb6abb7188dee4ea906913bac9bd45d66",
+        "provider": "codex",
+        "fault": null,
+        "actual_model": null,
+        "receipt_sha256": "34e5a3dd40d1292813e3ffc7bef90b3cda8531e78e3bc7573eea9a228d6a6ec9"
+      },
+      {
+        "path": "am-20260923/review-corrected-receipt.json",
+        "request_id": "news-brief-eval-b4adf9a96e9d1108e1b9500eb323cb77",
+        "request_sha256": "b7db80f0350e423a2027b686f32c79ff7bb5636a8980d9fe8bfe7f302ea0220b",
+        "provider": "codex",
+        "fault": null,
+        "actual_model": null,
+        "receipt_sha256": "5658a5827e01025d2df3c9b868296373660a26676ecb1328ca1b5c1238fc6190"
+      },
+      {
+        "path": "am-20260923/revise-receipt.json",
+        "request_id": "news-brief-eval-ac9fc906eac551ab05d22b10644fc38c",
+        "request_sha256": "8150c16adbf164e885a66f04e2923fc64e3e076c68ce526e330a64c9666be501",
+        "provider": "codex",
+        "fault": null,
+        "actual_model": null,
+        "receipt_sha256": "c23be37141ec379ae9c1d0eb3ad17b5634477f1258d8c76835bf2ca6af9a74d1"
+      },
+      {
+        "path": "am-20260923-revised/review-receipt.json",
+        "request_id": "news-brief-eval-f70d32ce1ea1aa0b7b303016120a0ecf",
+        "request_sha256": "48f4e53d82780dada44d045f8ca5b4f63daa1dea687e3ee137796e49511d9184",
+        "provider": null,
+        "fault": "quota",
+        "actual_model": null,
+        "receipt_sha256": "1cc20f8fe3b9619f687629a58857abc66c01cc0ed7c7e8bea25e5e346d7cf7f1"
+      },
+      {
+        "path": "am-20260923-revised/review-receipt-replay-1790129676.json",
+        "request_id": "news-brief-eval-f70d32ce1ea1aa0b7b303016120a0ecf",
+        "request_sha256": "48f4e53d82780dada44d045f8ca5b4f63daa1dea687e3ee137796e49511d9184",
+        "provider": null,
+        "fault": "quota",
+        "actual_model": null,
+        "receipt_sha256": "f6d0c2c8cfdc2a5807e2a8fc679e4ffb025ea1119f0986f74b43f184a77b3ec9"
+      }
+    ],
+    "independent_receipts": [
+      {
+        "path": "am-20260923/independent-receipt.json",
+        "request_id": "brief-heldout-independent-78f8b8b1ecfe95aadd48e50b",
+        "request_sha256": "ef3edfd22657acd9e850a937d583660630b13f4fbf4f88d7f25fab3dada58743",
+        "provider": "claude",
+        "fault": null,
+        "actual_model": "claude-opus-5",
+        "receipt_sha256": "fa26103f5eba8a0c92d5280c9b56b43e54b901a760f37afb2313089348de9f28"
+      },
+      {
+        "path": "am-20260923-revised/independent-receipt.json",
+        "request_id": "brief-heldout-independent-b44d24b7867b03112ba95756",
+        "request_sha256": "44584426a337c2dccbad60a56cc14aab8c6d4dec3b9f16586cb9c87dba72062b",
+        "provider": "claude",
+        "fault": null,
+        "actual_model": "claude-opus-5",
+        "receipt_sha256": "a6433b60de9da91207da86c857283eb9f7951d6085970303c8a66abde7c5ccb4"
+      }
+    ]
+  },
+  "pm": {
+    "day": "2026-09-21",
+    "scheduled_cutoff_kst": "19:40",
+    "selection_v3_bundle": "pm-20260921-bundle-selection-v3.json",
+    "selection_comparison": "pm-20260921-source-selection-v3.json",
+    "write_request_id": "news-brief-eval-4a20760574c3e4ff1dc6e2d733fd640d",
+    "writer_call": "not_sent_due_to_codex_subscription_quota",
+    "editorial_outcome": "not_assessed"
+  },
+  "slack": "not_connected",
+  "publishing_changed": false,
+  "five_scheduled_trading_days": "not_observed",
+  "human_analyst_certification": false
+}

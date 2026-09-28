@@ -1,0 +1,36 @@
+{
+  "checked_at": "2026-09-28T01:13:10.096212+00:00",
+  "instance": "quant-company-host-4gb-20260928",
+  "state": "running",
+  "static_public_ip": "15.165.137.122",
+  "ssh": "existing operator key and pinned host key accepted; strict checking enabled",
+  "services": {
+    "api": "healthy",
+    "codex_runtime": "healthy",
+    "claude_runtime": "healthy",
+    "worker": "running",
+    "postgres": "healthy"
+  },
+  "independent_review": {
+    "request_id": "brief-heldout-independent-d8f7077d0556c28ef993d727",
+    "durable_receipt_found": true,
+    "provider": "claude",
+    "state": "failed",
+    "fault": "uncertain",
+    "cli_version": "2.1.275",
+    "started_at_epoch": 1790552158.2403686,
+    "new_execution": false,
+    "conclusion": "Original ambiguous failure receipt was migrated. No completed review was confirmed; do not count as quality pass or automatically replay."
+  },
+  "new_container_memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0,
+    "sock_throttled": 0
+  },
+  "memory_scope": "Counters are from the new container only; they cannot establish the reason for an old-instance failure.",
+  "effects": "Read-only infrastructure and receipt inspection. No deployment, restart, firewall change or Slack delivery."
+}

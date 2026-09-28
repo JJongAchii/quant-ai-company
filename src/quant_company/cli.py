@@ -9,11 +9,13 @@ from .config import Settings
 from .tech_feed.contracts import TECH_FEED_AGENT
 
 
-def manifests(company, base_url, output, transport="socket", include_reporter=False, include_tech_scout=False):
+def manifests(company, base_url, output, transport="socket", include_reporter=False, include_tech_scout=False,
+              include_market_brief=False):
     output.mkdir(parents=True, exist_ok=True)
     for role in company.roles.values():
         optional = ((include_reporter and role.id == "reporter")
-                    or (include_tech_scout and role.id == TECH_FEED_AGENT))
+                    or (include_tech_scout and role.id == TECH_FEED_AGENT)
+                    or (include_market_brief and role.id == "market_brief"))
         if not role.active and not optional:
             continue
         value = {
@@ -34,6 +36,9 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
         if role.id == "reporter":
             value["display_information"]["name"] = "Reporter"
             value["features"]["bot_user"]["display_name"] = "reporter"
+        if role.id == "market_brief":
+            value["display_information"]["name"] = "Analyst"
+            value["features"]["bot_user"]["display_name"] = "analyst"
         if role.id == TECH_FEED_AGENT:
             value = {
                 "display_information": {"name": "Tech Scout", "description": role.mission[:140]},
@@ -87,6 +92,9 @@ def main():
     news = sub.add_parser("news")
     news.add_argument("action", choices=["status", "collect", "review", "probe"])
     news.add_argument("--output", type=Path)
+    briefing = sub.add_parser("briefing")
+    briefing.add_argument("action", choices=["status", "preview", "collect", "data", "review", "probe", "data-probe", "qualify"])
+    briefing.add_argument("--output", type=Path)
     tech_feed = sub.add_parser("tech-feed")
     tech_feed.add_argument("action", choices=["status", "collect", "probe"])
     tech_feed.add_argument("--output", type=Path)
@@ -111,6 +119,7 @@ def main():
     slack.add_argument("--output", type=Path, default=Path(".local/slack-manifests"))
     slack.add_argument("--include-reporter", action="store_true")
     slack.add_argument("--include-tech-scout", action="store_true")
+    slack.add_argument("--include-market-brief", action="store_true")
     args = parser.parse_args()
     settings = Settings()
     if args.command == "migrate":
@@ -135,10 +144,12 @@ def main():
         if args.transport == "http" and not (args.base_url or "").startswith("https://"):
             parser.error("Slack public callback URL must use HTTPS")
         manifests(Company(settings), args.base_url, args.output, args.transport,
-                  args.include_reporter, args.include_tech_scout)
-    elif args.command in {"news", "tech-feed"}:
+                  args.include_reporter, args.include_tech_scout, args.include_market_brief)
+    elif args.command in {"news", "tech-feed", "briefing"}:
         if args.command == "news":
             from .news.commands import command
+        elif args.command == "briefing":
+            from .briefing.commands import command
         else:
             from .tech_feed.commands import command
 

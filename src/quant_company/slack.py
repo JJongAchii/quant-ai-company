@@ -7,6 +7,7 @@ from datetime import timedelta
 
 import httpx
 
+from .briefing.contracts import BRIEFER
 from .company import Company, PolicyError, as_json, now
 from .config import Settings
 from .tech_feed.contracts import TECH_FEED_AGENT
@@ -78,20 +79,30 @@ class SlackIngress:
                 return {"ok": True, "ignored": True}
             target = role
         else:
-            if role not in {"director", "reporter"} or not event.get("thread_ts"):
+            if role not in {"director", "reporter", BRIEFER} or not event.get("thread_ts"):
                 return {"ok": True, "ignored": True}
             with self.company.db.transaction() as conn:
                 project = conn.execute("""SELECT p.id,(EXISTS(SELECT 1 FROM news_events n WHERE n.project_id=p.id)
-                    OR EXISTS(SELECT 1 FROM news_digests d WHERE d.project_id=p.id)) AS news
+                    OR EXISTS(SELECT 1 FROM news_digests d WHERE d.project_id=p.id)) AS news,
+                    EXISTS(SELECT 1 FROM brief_editions b WHERE b.project_id=p.id) AS briefing
                     FROM projects p WHERE channel=%s AND thread_ts=%s""",
                                        (channel, thread_ts)).fetchone()
             if not project:
                 return {"ok": True, "ignored": True}
-            target = "reporter" if project["news"] else "director"
+            target = BRIEFER if project["briefing"] else "reporter" if project["news"] else "director"
             if role != target:
                 return {"ok": True, "ignored": True}
         original_text = text
         text = re.sub(r"<@[A-Z0-9]+>", "", text).strip()
+        # This human-authored command, or a direct strategist mention, is the only automatic handoff.
+        # The model has no delegation permission; a document cannot create a team-lead task.
+        if target == BRIEFER and event.get("thread_ts") and text.startswith("금융전략 검토:"):
+            with self.company.db.transaction() as conn:
+                brief = conn.execute("""SELECT 1 FROM brief_editions b JOIN projects p ON p.id=b.project_id
+                    WHERE p.channel=%s AND p.thread_ts=%s AND p.owner_user=%s""", (channel, thread_ts, user)).fetchone()
+            if brief and text.split(":", 1)[1].strip():
+                target = "financial_strategist"
+                text = text.split(":", 1)[1].strip()
         approval_context = {"origin": "event_callback", "team_id": payload["team_id"],
                             "app_id": payload["api_app_id"], "owner": user, "channel": channel,
                             "thread_ts": thread_ts, "event_ts": timestamp,
@@ -219,6 +230,10 @@ class SlackOutbox:
                 from .tech_feed.store import TechFeedStore
 
                 return TechFeedStore(self.company).gate(conn, row, claimed=True)
+            if row["message_kind"] == "briefing":
+                from .briefing.store import BriefStore
+
+                return BriefStore(self.company).gate(conn, row, claimed=True)
             return not self.defer_news(conn, row, claimed=True)
 
     def claim(self):
@@ -235,6 +250,11 @@ class SlackOutbox:
                 return None
             if self.defer_news(conn, row):
                 return None
+            if row["message_kind"] == "briefing":
+                from .briefing.store import BriefStore
+
+                if not BriefStore(self.company).gate(conn, row):
+                    return None
             if row["message_kind"] == "tech_feed":
                 from .tech_feed.store import TechFeedStore
 
@@ -280,7 +300,7 @@ class SlackOutbox:
                 from .news.digest import NewsDigestStore
 
                 NewsDigestStore.settle_members(conn, row, status, sent_ts, error)
-            if status == "delivered" and sent_ts and row.get("message_kind") in {"news", "news_digest"} and not row["thread_ts"]:
+            if status == "delivered" and sent_ts and row.get("message_kind") in {"news", "news_digest", "briefing"} and not row["thread_ts"]:
                 conn.execute("UPDATE projects SET thread_ts=%s WHERE id=%s AND thread_ts IS NULL",
                              (sent_ts, row["project_id"]))
 
@@ -294,7 +314,7 @@ class SlackOutbox:
         token = self.credentials[row["agent"]]["bot_token"]
         # The stable client_msg_id helps correlation; it is not an exactly-once guarantee.
         body = {"channel": row["channel"], "thread_ts": row["thread_ts"],
-                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT}
+                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, BRIEFER}
                 else f"[지시 v{row['revision']}] {row['text']}",
                 "client_msg_id": row["id"],
                 "unfurl_links": False, "unfurl_media": False,
@@ -325,7 +345,7 @@ class SlackOutbox:
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_server_error")
                 return True
             result = response.json()
-            if result.get("ok") and (row.get("message_kind") not in {"news", "news_digest", "tech_feed"} or result.get("ts")):
+            if result.get("ok") and (row.get("message_kind") not in {"news", "news_digest", "tech_feed", "briefing"} or result.get("ts")):
                 await asyncio.to_thread(self.settle, row, "delivered", sent_ts=result.get("ts"))
             elif result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="missing_slack_message_receipt")
