@@ -96,7 +96,7 @@ def test_saved_response_is_validated_without_second_model_call(qualification, mo
     monkeypatch.setattr(
         qualification,
         "validate",
-        lambda response, bundle, stage: SimpleNamespace(
+        lambda response, bundle, stage, *, audit=None: SimpleNamespace(
             disposition="hold", direct_quant_scope=False, substantive_research=False
         ),
     )
