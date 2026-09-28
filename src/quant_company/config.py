@@ -63,6 +63,10 @@ class Settings(BaseSettings):
     tech_feed_channel_id: str = ""
     tech_feed_owner_user: str = ""
     tech_feed_sources_file: Path | None = None
+    housing_feed_enabled: bool = False
+    housing_feed_publish_enabled: bool = False
+    housing_feed_channel_id: str = ""
+    housing_feed_owner_user: str = ""
     quant_feed_enabled: bool = False
     quant_feed_publish_enabled: bool = False
     quant_feed_channel_id: str = ""

@@ -276,10 +276,14 @@ def test_release_inventory_includes_quant_and_account_gateway_together(tmp_path,
     spec.loader.exec_module(module)
     state, root = tmp_path / "state", tmp_path / "release"
     (state / "config").mkdir(parents=True)
-    (state / "config/runtime.env").write_text("QUANT_FEED_ENABLED=true\nMODEL_ACCOUNTS_ENABLED=true\n")
+    (state / "config/runtime.env").write_text("QUANT_FEED_ENABLED=true\nMODEL_ACCOUNTS_ENABLED=true\nHOUSING_FEED_ENABLED=true\n")
     (root / "src/quant_company/quant_feed").mkdir(parents=True)
+    housing = root / "src/quant_company/housing_feed/workflow.py"
+    housing.parent.mkdir()
+    housing.touch()
     monkeypatch.setattr(module, "STATE", state)
     names = module.services(root)
     assert "quant-feed-worker" in names
     assert "account-gateway" in names
+    assert "housing-feed-worker" in names
     assert len(names) == len(set(names))
