@@ -1,0 +1,59 @@
+{
+  "approval": {
+    "approvedAt": "2026-09-28T02:01:25.847005+00:00",
+    "id": "chat-seoul-gyeonggi-housing-feed"
+  },
+  "currentIntent": "INTENT-v1.json",
+  "deliverables": {
+    "ACTIVATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/housing-feed/release-receipt.json",
+          "sha256": "3e96ca2b8ced"
+        },
+        {
+          "path": "docs/project/evidence/housing-feed/live-readback.json",
+          "sha256": "6f77d1f2f8be"
+        }
+      ],
+      "note": "Reporter posts in C0C4UV5C14J matched DB IDs and normalized text; workflow RUNNING with completed activity and durable 300-second timer. Initial 10 notices queued, 3 delivered at first readback.",
+      "status": "verified",
+      "updatedAt": "2026-09-28T03:17:49.161507+00:00"
+    },
+    "IMPLEMENTATION": {
+      "evidence": [
+        {
+          "path": "docs/housing-feed.md",
+          "sha256": "facfe2f84e94"
+        },
+        {
+          "path": "src/quant_company/housing_feed/store.py",
+          "sha256": "902880f46fd6"
+        }
+      ],
+      "note": "Official Seoul/Gyeonggi feed and isolated outbound permissions implemented; identical-dependency image build qualified.",
+      "status": "verified",
+      "updatedAt": "2026-09-28T03:17:48.846952+00:00"
+    },
+    "VALIDATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/housing-feed/automated-validation.json",
+          "sha256": "8780f076b12c"
+        },
+        {
+          "path": "docs/project/HOUSING-FEED-VALIDATION.md",
+          "sha256": "302064b16068"
+        }
+      ],
+      "note": "Final GitHub CI 1244 passed, 36 skipped, 1 deselected; actual public pages, PostgreSQL, Temporal and Slack evidence separated.",
+      "status": "verified",
+      "updatedAt": "2026-09-28T03:17:49.005615+00:00"
+    }
+  },
+  "intentDigest": "7dc44c58dcb3",
+  "schemaVersion": 1,
+  "slug": "menhaden",
+  "state": "approved",
+  "updatedAt": "2026-09-28T03:17:49.161507+00:00"
+}

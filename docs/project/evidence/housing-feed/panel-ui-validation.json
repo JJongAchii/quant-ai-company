@@ -1,0 +1,19 @@
+{
+  "checked_on": "2026-09-28",
+  "client": "Slack macOS desktop app, Achii's Quant Research workspace",
+  "channel": "C0C4UV5C14J",
+  "preview_message_id": "ed232a00-b386-539c-998e-d4e74591e9e5",
+  "preview_message_ts": "1790575737.355409",
+  "observed": {
+    "clearly_labelled_existing_notice_preview": true,
+    "work_object_card_visible": true,
+    "card_has_official_address_and_area_center_disclaimer": true,
+    "card_click_opens_interactive_openstreetmap_embed_inside_slack": true,
+    "zoom_in_button_changes_map_scale": true,
+    "open_in_side_panel_shows_map_on_right": true,
+    "embed_accessibility_title": "OpenStreetMap Embedded"
+  },
+  "screenshot": "panel-sideview.png",
+  "server_receipt": "panel-live-readback.json",
+  "note": "Slack conversations.history returned the delivered message but omitted Work Object entities. The desktop UI card, embed, and PostgreSQL entity.presentDetails delivery receipts were checked separately. The marker represents the verified administrative area's center, not the apartment parcel."
+}

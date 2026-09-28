@@ -1,0 +1,64 @@
+{
+  "kind": "production_disk_cleanup",
+  "observed_at_utc": "2026-09-28T07:02:07Z",
+  "scope": "Quant Company Lightsail host; Docker build caches only",
+  "before": {
+    "root_filesystem": {"size": "77G", "used": "74G", "available": "3.1G", "use_percent": 96},
+    "docker": {
+      "images": 54,
+      "active_images": 10,
+      "image_reclaimable": "12.5GB",
+      "local_volumes": "18.89GB",
+      "build_cache": "7.203GB",
+      "build_cache_reclaimable": "6.693GB"
+    },
+    "stopped_builders": [
+      {"name": "quant-feed-837ac72a76cf", "state_volume": "4.416GB"},
+      {"name": "quant-feed-ccdcc43c2a09", "state_volume": "7.217GB"}
+    ]
+  },
+  "actions": [
+    {
+      "command": "docker buildx rm --force quant-feed-837ac72a76cf quant-feed-ccdcc43c2a09",
+      "preconditions": "Both builder containers were exited; the shared release lock was held",
+      "result": "Both stopped builders and their state volumes removed"
+    },
+    {
+      "command": "docker buildx prune --builder default --force",
+      "preconditions": "The shared release lock was held",
+      "result": "6.693GB of reclaimable default-builder cache removed"
+    }
+  ],
+  "after": {
+    "root_filesystem": {"size": "77G", "used": "57G", "available": "21G", "use_percent": 74},
+    "docker": {
+      "images": 54,
+      "active_images": 10,
+      "local_volumes": "7.261GB",
+      "build_cache": "510.7MB",
+      "build_cache_reclaimable": "0B"
+    },
+    "retained_builders": ["quant-feed-75f1b100ab76", "default"]
+  },
+  "readback": {
+    "housing_feed_enabled": true,
+    "housing_feed_publish_enabled": true,
+    "housing_map_panel_enabled": true,
+    "sources": 4,
+    "sources_without_error": 4,
+    "publications_delivered": 11,
+    "map_details_delivered": 7,
+    "api_health_http_status": 200,
+    "housing_worker_running": true,
+    "dispatcher_running": true,
+    "slack_socket_running": true,
+    "postgres_healthy": true
+  },
+  "preserved": [
+    "All 54 Docker images, including live and rollback candidates",
+    "The running Buildx builder and its 7.261GB state volume",
+    "PostgreSQL and all application data volumes",
+    "The current housing release and running service containers"
+  ],
+  "measurement_note": "df and docker system df display rounded sizes; their totals are not additive."
+}

@@ -1,0 +1,35 @@
+{
+  "checked_at": "2026-09-28T02:50:18.591851+00:00",
+  "network": "real production-host anonymous public HTTPS",
+  "sources": [
+    {
+      "source": "applyhome-apt",
+      "status": 200,
+      "bytes": 83070,
+      "sha256": "feb744ecd42f998bb73596bd2f5d436e9541c61b61ce66c98547c39a29552c09",
+      "expected_listing_marker": true
+    },
+    {
+      "source": "applyhome-remndr",
+      "status": 200,
+      "bytes": 74113,
+      "sha256": "01a4f0faf04e1b05671f8e7b8d52d5bbfd895c4db68161b013b21df56029295b",
+      "expected_listing_marker": true
+    },
+    {
+      "source": "lh-sale",
+      "status": 200,
+      "bytes": 161803,
+      "sha256": "8b4174041ca996e2604030f64399a68b60ad0d09704a59007d55ec52748b781c",
+      "expected_listing_marker": true
+    },
+    {
+      "source": "sh-sale",
+      "status": 200,
+      "bytes": 115250,
+      "sha256": "c23e9093c1668b288340e9a5ac269fc8c68746d19da6924fd8a9bc3e4143c1c4",
+      "expected_listing_marker": true
+    }
+  ],
+  "scope": "List-page accessibility only; parsed complete snapshots and Slack readback are separate."
+}
