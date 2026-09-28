@@ -17,7 +17,7 @@ from .editor import prompt, render, validate
 from .feeds import aliases
 
 LOCK = 71350249
-REPAIRABLE_PROPOSAL_ERRORS = {"quant_quote_not_in_original_version", "quant_unretrieved_related_link"}
+REPAIRABLE_PROPOSAL_ERRORS = {"quant_quote_not_in_original_version", "quant_unretrieved_related_link", "quant_card_too_long"}
 
 
 def _sanitize_original_text(receipt):
@@ -83,7 +83,7 @@ class QuantFeedStore:
 
     def policy(self):
         s = self.company.settings
-        return fingerprint({"version": 5, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
+        return fingerprint({"version": 6, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
                             "owner": s.quant_feed_owner_user, "channel": s.quant_feed_channel_id,
                             "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
                             "web": s.company_web_enabled, "sources": [x.model_dump() for x in self.sources().values()],
@@ -365,10 +365,10 @@ class QuantFeedStore:
         if document["revision"] != 0:
             return None
         feedback = EvidenceCritique(disposition="revise",
-                                    reason="결정적 계약 검증 실패: 원문에서 그대로 복사한 인용과 제공된 링크만 사용해 1회 수정",
+                                    reason="계약 검증 실패: 원문 인용·제공된 링크·카드 길이 중 issues에 명시된 항목을 1회 수정",
                                     original_sufficient=True, claims_supported=False,
                                     dates_authors_verified=True, limitations_honest=True,
-                                    direct_quant_scope=True, substantive_research=True,
+                                    direct_quant_scope=False, substantive_research=False,
                                     relevance_and_value=True, no_investment_advice=True,
                                     material_change_verified=False, issues=[code]).model_dump()
         conn.execute("""UPDATE quant_feed_documents SET state='ready',stage='revision',revision=1,

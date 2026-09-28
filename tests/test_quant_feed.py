@@ -185,7 +185,8 @@ def test_new_work_does_not_require_prior_change_comparison_but_updates_do():
 def test_quote_validation_ignores_only_pdf_layout_whitespace():
     ready = {"request": {"request_id": "quant-feed-review"}}
     bundle = {"pages": [{"location": "PDF p.1", "text": "a convex functionf on a B-bounded domain"}],
-              "as_of": "2026-09-22T00:00:00+00:00", "links": [], "commercial": False, "prior": None}
+              "as_of": "2026-09-22T00:00:00+00:00", "links": [], "commercial": False, "prior": None,
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
     value = brief(evidence=[
         {"claim": "layout", "location": "PDF p.1", "quote": "convex function f on a B-bounded domain"},
         {"claim": "domain", "location": "PDF p.1", "quote": "B-bounded domain"},
@@ -202,7 +203,8 @@ def test_raw_json_control_characters_are_only_normalized_inside_strings():
                              decision=AgentDecision(status="complete", say="", artifacts=[
                                  ArtifactDraft(title="quant review", content=content)]))
     bundle = {"pages": [{"location": "PDF p.1", "text": TEXT}],
-              "as_of": "2026-09-22T00:00:00+00:00", "links": [], "commercial": False, "prior": None}
+              "as_of": "2026-09-22T00:00:00+00:00", "links": [], "commercial": False, "prior": None,
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
     assert validate(value, bundle, "review").reason == "검증 한계 연구적 가치"
 
 
@@ -225,6 +227,23 @@ def test_one_deterministic_proposal_repair_then_fail_closed(quant):
         quant.commit(response(second, invalid))
     quant.fault(second["request"]["request_id"], "invalid_quant_proposal")
     assert quant.prepare()["state"] == "idle"
+
+
+def test_long_card_is_rewritten_once_without_dropping_caveats(quant):
+    original(quant)
+    invalid = brief(idea="연구 방법 설명. " * 90, why_read="읽을 이유. " * 75,
+                    limitations=["중요한 한계. " * 75] * 3)
+    repaired = quant.commit(response(quant.prepare(), invalid))
+    assert repaired["validation_issue"] == "quant_card_too_long"
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
+    corrected = brief(limitations=["표본 외 검증 없음", "거래비용 미반영", "시장 충격 미반영"])
+    quant.commit(response(quant.prepare(), corrected))
+    assert quant.commit(response(quant.prepare(), critique()))["document_state"] == "queued"
+    with quant.db.transaction() as conn:
+        text = conn.execute("SELECT text FROM outbox").fetchone()["text"]
+    assert len(text) <= 2400
+    assert all(item in text for item in corrected["limitations"])
 
 
 def test_shared_budget_quota_pause_and_same_request_retry(quant):
@@ -515,7 +534,8 @@ GOLD_CASES = [
 @pytest.mark.parametrize("name,updates,accepted", GOLD_CASES, ids=[c[0] for c in GOLD_CASES])
 def test_thirty_golden_contract_cases(name, updates, accepted):
     # Synthetic proposals test deterministic gates, not model classification accuracy.
-    bundle = {"pages": [{"location": "PDF p.1", "text": TEXT}], "as_of": "2026-09-22", "commercial": False, "links": []}
+    bundle = {"pages": [{"location": "PDF p.1", "text": TEXT}], "as_of": "2026-09-22", "commercial": False, "links": [],
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
     ready = {"request": {"request_id": "quant-feed-gold"}}
     value = response(ready, brief(**copy.deepcopy(updates)))
     if accepted:
@@ -540,7 +560,7 @@ def test_render_is_scan_friendly_and_does_not_duplicate_or_mislabel_links():
                       {"publisher": "Example", "url": "https://example.org/paper"})
     assert "*왜 읽나*" in rendered and "\n\n*데이터·검증*" in rendered
     assert "*저자 보고*" in rendered and "*주의*" in rendered
-    assert "추가 한계 1건은 원문 확인" in rendered
+    assert "시장 충격 미기재" in rendered
     assert "*적용 전*" in rendered and "독립 재현·투자 검증 아님" in rendered
     assert rendered.count("<https://example.org/paper|") == 1
     assert "<https://example.org/code|추가 자료 1>" in rendered

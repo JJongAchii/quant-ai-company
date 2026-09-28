@@ -40,7 +40,9 @@ supplied page/section location. Evidence claims in Korean should map explicitly 
 numeric performance, invented links, broad copied passages, or buy/sell instructions. Copy quote wording
 literally from the supplied excerpt; do not fix grammar or substitute articles/words. Layout whitespace may be
 normalized. Write concise Korean: keep each brief field to one or two short sentences, put the most important
-limitation first, and avoid repeating the same disclaimer across fields.
+limitation first, and avoid repeating the same disclaimer across fields. The rendered Slack card must fit in
+2400 characters including links and labels; aim for 1400-1800 characters. Compress wording without omitting
+material caveats, costs or the distinction between author results and verified results.
 Limitations and application are conditional interpretation, not proven findings. Local data availability has
 NOT been checked: mention required point-in-time data and explicitly say local availability is unverified.
 Only return related_urls that occur in supplied links; code/data links are availability, not verified execution.
@@ -126,6 +128,8 @@ def validate(response, bundle, stage):
         raise ValueError("quant_commercial_disclosure_required")
     if bundle.get("prior") and brief.change == "new":
         raise ValueError("quant_existing_work_requires_comparison")
+    if len(render(brief, bundle["metadata"])) > 2400:
+        raise ValueError("quant_card_too_long")
     return brief
 
 
@@ -146,15 +150,13 @@ def render(brief, document, previous_url=None):
         vintage = " · 정정·철회"
     authors = ", ".join(brief.authors[:3]) + (f" 외 {len(brief.authors) - 3}명" if len(brief.authors) > 3 else "")
     date_line = brief.published_on + (f" (개정 {brief.revised_on})" if brief.revised_on else "")
-    limitations = " / ".join(safe(value) for value in brief.limitations[:2])
-    if len(brief.limitations) > 2:
-        limitations += f" / 추가 한계 {len(brief.limitations) - 2}건은 원문 확인"
+    limitations = " / ".join(safe(value) for value in brief.limitations)
     lines = [f"*{labels[brief.maturity]}{vintage}*", f"*{safe(brief.title)}*",
              f"{safe(document['publisher'])} · {safe(authors)} · {safe(date_line)} · {safe(brief.market)}",
              "", "*왜 읽나* " + safe(brief.why_read), "*핵심* " + safe(brief.idea),
              "", "*데이터·검증* " + safe(brief.data_period) + " · " + safe(brief.validation),
              "*저자 보고* " + safe(brief.author_results),
-             "*주의* " + limitations + " · 비용/회전율: " + safe(brief.costs_turnover),
+             "", "*주의* " + limitations + " · 비용/회전율: " + safe(brief.costs_turnover),
              "*적용 전* " + safe(brief.application)]
     if brief.commercial_bias:
         lines.append("*이해관계* " + safe(brief.commercial_bias))
