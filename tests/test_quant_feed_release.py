@@ -287,3 +287,55 @@ def test_release_inventory_includes_quant_and_account_gateway_together(tmp_path,
     assert "account-gateway" in names
     assert "housing-feed-worker" in names
     assert len(names) == len(set(names))
+
+
+@pytest.mark.parametrize("running_calls", [0, 1])
+@pytest.mark.parametrize("research_running", [False, True])
+def test_pause_publication_preserves_other_workers_and_fails_closed(
+        release, tmp_path, monkeypatch, running_calls, research_running):
+    commit = "a" * 40
+    state, current = tmp_path / "state", tmp_path / commit
+    for path in (state / "config", state / "releases", state / "codex/jobs", current / "deploy"):
+        path.mkdir(parents=True)
+    (current / "deploy/data-watch.compose.yaml").write_text("services: {}\n")
+    env = (f"RELEASE_COMMIT={commit}\nQUANT_FEED_ENABLED=true\n"
+           "QUANT_FEED_PUBLISH_ENABLED=true\nQUANT_FEED_CHANNEL_ID=CQUANT\n")
+    (state / "config/runtime.env").write_text(env)
+    monkeypatch.setattr(release, "STATE", state)
+    research_worker = {"id": "worker", "running": research_running, "oom_killed": False, "restarts": 0}
+    monkeypatch.setattr(release, "worker_state", lambda: research_worker)
+    monkeypatch.setattr(release, "service_identity", lambda names: {name: {"id": name, "restarts": 0} for name in names})
+    monkeypatch.setattr(release, "inspect", lambda names: [{"Id": "postgres"}])
+    monkeypatch.setattr(release, "emit", lambda **kwargs: None)
+    commands = []
+
+    def run(command, **kwargs):
+        commands.append(command)
+        if command[:2] == ["docker", "exec"]:
+            if b"running_quant_calls" in kwargs["input"]:
+                return json.dumps({"running_quant_calls": running_calls, "sending_quant_outbox": 0,
+                                   "pending_quant_outbox": 0}).encode()
+            return b'{"enabled":true,"publish_enabled":false,"channel":"CQUANT"}'
+        return b""
+
+    monkeypatch.setattr(release, "run", run)
+    module = SimpleNamespace(atomic=lambda path, data: path.write_bytes(data),
+                             compose_command=lambda root: ["docker", "compose"])
+    args = SimpleNamespace(base=commit, commit=commit, channel="CQUANT")
+    journal = state / "releases" / f"quant-feed-pause-{commit}.json"
+    if running_calls:
+        with pytest.raises(ValueError, match="pause_quant_activity_unresolved"):
+            release.pause(args, current, current, journal, module)
+        assert (state / "config/runtime.env").read_text() == env
+        assert not journal.exists()
+        assert not any(command[:2] == ["docker", "compose"] for command in commands)
+    else:
+        release.pause(args, current, current, journal, module)
+        assert "QUANT_FEED_PUBLISH_ENABLED=false" in (state / "config/runtime.env").read_text()
+        record = json.loads(journal.read_text())
+        assert record["phase"] == "paused" and record["research_worker"] == research_worker
+        compose = [command for command in commands if command[:2] == ["docker", "compose"]]
+        assert len(compose) == 2
+        assert compose[0][-2:] == ["api", "dispatch"]
+        assert compose[1][-1] == "quant-feed-worker"
+        assert all("worker" not in command and "news-worker" not in command for command in compose)

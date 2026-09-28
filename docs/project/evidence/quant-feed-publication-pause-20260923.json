@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-23T07:48:40Z",
+  "scope": "User-approved pause of new Quant Scout Slack publication after first-post quality and readability failure",
+  "production_release": "fde7681e0286501d8713e08e30a96991a88b9151",
+  "channel": "C0C3K8ZB9PB",
+  "first_natural_delivery": {
+    "sent_at": "2026-09-23T06:58:54Z",
+    "publication_id": "ee661513-7996-5045-a465-82b9e2c60eb4",
+    "source_url": "https://www.robeco.com/en-us/insights/2026/09/agentic-ai-and-governance",
+    "status_after_pause": "delivered",
+    "user_choice": "retain_existing_post_without_edit_or_delete",
+    "quality_issue": "Generic AI-governance commentary without a quantitative market method, sample or result passed the editorial critic",
+    "readability_issue": "Dense Slack card, duplicate original link, internal topic enum and misleading generic code/data label"
+  },
+  "pause": {
+    "completed_at": "2026-09-23T07:44:02Z",
+    "operator_action": "pause",
+    "operator_commit": "dfa00bb2e19f1758460438327f6b98ed6e34cdc5",
+    "operator_script_sha256": "6ab92e314dd6c1972cec5eb7e7ba5d9c8b0627a580a46b349ebf6b65baad5a41",
+    "preflight": {"running_quant_calls": 0, "sending_quant_outbox": 0, "pending_quant_outbox": 0},
+    "production_quant_feed_enabled": true,
+    "production_quant_feed_publish_enabled": false,
+    "recreated_services": ["api", "dispatch", "quant-feed-worker"],
+    "independent_service_ids_and_restart_counts_preserved": ["worker", "news-worker", "data-watch-worker", "account-gateway", "slack-socket", "codex-runtime", "claude-runtime"],
+    "postgres_recreated": false,
+    "quant_collection_worker_running": true,
+    "readback_delivery_count": 1,
+    "readback_delivery_status": "delivered"
+  },
+  "post_pause_readback": {
+    "observed_at": "2026-09-23T08:04:24Z",
+    "publish_enabled": false,
+    "delivered_publications": 1,
+    "same_original_publication_retained": true,
+    "ready_documents_before_after": [175, 177],
+    "held_documents_before_after": [52, 53],
+    "latest_quant_call_state": "completed"
+  },
+  "follow_up": {
+    "quality_and_render_code_deployed": false,
+    "publication_resume_approved": false,
+    "focused_quant_release_tests": "81 passed, 1 skipped before the stopped-worker preservation extension; 4 additional pause cases passed after it",
+    "full_local_regression": "1192 passed, 37 skipped, 1 opt-in live test deselected before the stopped-worker preservation extension",
+    "ruff": "passed",
+    "production_release_for_quality_patch": "pending",
+    "elapsed_48_hour_observation": false
+  }
+}

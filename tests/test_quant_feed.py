@@ -14,7 +14,7 @@ from quant_company.company import fingerprint
 from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderResponse, Role
 from quant_company.quant_feed import schedule
 from quant_company.quant_feed.contracts import EvidenceCritique, QuantSource, ResearchBrief, load_sources
-from quant_company.quant_feed.editor import INSTRUCTIONS, render, validate
+from quant_company.quant_feed.editor import INSTRUCTIONS, prompt, render, validate
 from quant_company.quant_feed.feeds import aliases, collect
 from quant_company.quant_feed.originals import download, extract_pdf, fetch_original, parse_html
 from quant_company.quant_feed.store import QuantFeedStore
@@ -41,7 +41,8 @@ def brief(**updates):
 
 def critique(**updates):
     value = dict(disposition="pass", reason="원문과 주장 일치", original_sufficient=True, claims_supported=True,
-                 dates_authors_verified=True, limitations_honest=True, relevance_and_value=True,
+                 dates_authors_verified=True, limitations_honest=True, direct_quant_scope=True,
+                 substantive_research=True, relevance_and_value=True,
                  no_investment_advice=True, material_change_verified=True, issues=[])
     value.update(updates)
     return value
@@ -184,7 +185,8 @@ def test_new_work_does_not_require_prior_change_comparison_but_updates_do():
 def test_quote_validation_ignores_only_pdf_layout_whitespace():
     ready = {"request": {"request_id": "quant-feed-review"}}
     bundle = {"pages": [{"location": "PDF p.1", "text": "a convex functionf on a B-bounded domain"}],
-              "as_of": "2026-09-22T00:00:00+00:00", "links": [], "commercial": False, "prior": None}
+              "as_of": "2026-09-22T00:00:00+00:00", "links": [], "commercial": False, "prior": None,
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
     value = brief(evidence=[
         {"claim": "layout", "location": "PDF p.1", "quote": "convex function f on a B-bounded domain"},
         {"claim": "domain", "location": "PDF p.1", "quote": "B-bounded domain"},
@@ -201,7 +203,8 @@ def test_raw_json_control_characters_are_only_normalized_inside_strings():
                              decision=AgentDecision(status="complete", say="", artifacts=[
                                  ArtifactDraft(title="quant review", content=content)]))
     bundle = {"pages": [{"location": "PDF p.1", "text": TEXT}],
-              "as_of": "2026-09-22T00:00:00+00:00", "links": [], "commercial": False, "prior": None}
+              "as_of": "2026-09-22T00:00:00+00:00", "links": [], "commercial": False, "prior": None,
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
     assert validate(value, bundle, "review").reason == "검증 한계 연구적 가치"
 
 
@@ -224,6 +227,32 @@ def test_one_deterministic_proposal_repair_then_fail_closed(quant):
         quant.commit(response(second, invalid))
     quant.fault(second["request"]["request_id"], "invalid_quant_proposal")
     assert quant.prepare()["state"] == "idle"
+
+
+def test_long_card_is_rewritten_once_without_dropping_caveats(quant):
+    original(quant)
+    invalid = brief(idea="연구 방법 설명. " * 90, why_read="읽을 이유. " * 75,
+                    limitations=["중요한 한계. " * 75] * 3)
+    repaired = quant.commit(response(quant.prepare(), invalid))
+    assert repaired["validation_issue"] == "quant_card_too_long"
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
+    corrected = brief(limitations=["표본 외 검증 없음", "거래비용 미반영", "시장 충격 미반영"])
+    quant.commit(response(quant.prepare(), corrected))
+    assert quant.commit(response(quant.prepare(), critique()))["document_state"] == "queued"
+    with quant.db.transaction() as conn:
+        text = conn.execute("SELECT text FROM outbox").fetchone()["text"]
+    assert len(text) <= 2400
+    assert all(item in text for item in corrected["limitations"])
+
+
+def test_old_css_contaminated_title_is_rewritten_before_publication(quant):
+    original(quant)
+    invalid = brief(title="@keyframes shimmer { background-position: 200% 0 }")
+    repaired = quant.commit(response(quant.prepare(), invalid))
+    assert repaired["validation_issue"] == "quant_malformed_title"
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
 
 
 def test_shared_budget_quota_pause_and_same_request_retry(quant):
@@ -481,6 +510,9 @@ GOLD_CASES = [
     ("theory-no-backtest", {"kind": "theory", "costs_turnover": "해당 없음: 이론 연구"}, True),
     ("methodology", {"kind": "methodology"}, True),
     ("institutional-transparent", {"kind": "institutional", "commercial_bias": "자산운용사의 상업적 이해관계"}, True),
+    ("institutional-without-data-or-method", {"kind": "institutional", "maturity": "institutional_research",
+                                              "data_period": "해당 없음: 시장 데이터 없음",
+                                              "validation": "해당 없음: 검증 방법 없음"}, False),
     ("code-is-not-reproduction", {"kind": "data_code", "maturity": "reproduction_resource"}, True),
     ("classic-why-now", {"vintage": "classic", "published_on": "1993", "why_read": "현재 팩터 검증의 기준점"}, True),
     ("paywall-hold", {"disposition": "hold", "reason": "공개 원문 없음"}, True),
@@ -511,7 +543,8 @@ GOLD_CASES = [
 @pytest.mark.parametrize("name,updates,accepted", GOLD_CASES, ids=[c[0] for c in GOLD_CASES])
 def test_thirty_golden_contract_cases(name, updates, accepted):
     # Synthetic proposals test deterministic gates, not model classification accuracy.
-    bundle = {"pages": [{"location": "PDF p.1", "text": TEXT}], "as_of": "2026-09-22", "commercial": False, "links": []}
+    bundle = {"pages": [{"location": "PDF p.1", "text": TEXT}], "as_of": "2026-09-22", "commercial": False, "links": [],
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
     ready = {"request": {"request_id": "quant-feed-gold"}}
     value = response(ready, brief(**copy.deepcopy(updates)))
     if accepted:
@@ -521,9 +554,24 @@ def test_thirty_golden_contract_cases(name, updates, accepted):
             validate(value, bundle, "review")
 
 
-def test_critic_cannot_pass_unsupported_claim_and_render_labels():
-    with pytest.raises(ValueError):
-        EvidenceCritique.model_validate(critique(claims_supported=False))
-    rendered = render(ResearchBrief.model_validate(brief()), {"publisher": "Example", "url": "https://example.org/"})
-    assert "저자 보고 결과" in rendered and "≠ 독립 재현" in rendered
+@pytest.mark.parametrize("failed_check", ["claims_supported", "direct_quant_scope", "substantive_research"])
+def test_critic_cannot_pass_unsupported_or_out_of_scope_research(failed_check):
+    with pytest.raises(ValueError, match="quant_incomplete_critique"):
+        EvidenceCritique.model_validate(critique(**{failed_check: False}))
+    assert "General AI governance" in INSTRUCTIONS
+    assert "direct_quant_scope and substantive_research separately" in prompt({}, "critique")
+
+
+def test_render_is_scan_friendly_and_does_not_duplicate_or_mislabel_links():
+    value = brief(related_urls=["https://example.org/paper", "https://example.org/code"],
+                  limitations=["거래비용 미반영", "표본 편향 가능성", "시장 충격 미기재"])
+    rendered = render(ResearchBrief.model_validate(value),
+                      {"publisher": "Example", "url": "https://example.org/paper"})
+    assert "*왜 읽나*" in rendered and "\n\n*데이터·검증*" in rendered
+    assert "*저자 보고*" in rendered and "*주의*" in rendered
+    assert "시장 충격 미기재" in rendered
+    assert "*적용 전*" in rendered and "독립 재현·투자 검증 아님" in rendered
+    assert rendered.count("<https://example.org/paper|") == 1
+    assert "<https://example.org/code|추가 자료 1>" in rendered
+    assert "관련 코드·데이터" not in rendered and "research_validity" not in rendered
     assert "Transaction costs" not in rendered  # Evidence quotes retained privately, not republished.
