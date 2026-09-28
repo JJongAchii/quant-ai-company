@@ -210,7 +210,7 @@
       "date_meaning": "제출일",
       "latest_data_date": "2026-05-29",
       "file_last_modified_date": "2026-08-26",
-      "operator_state": "observed",
+      "operator_state": "source_gap",
       "inspection_error": null
     },
     {
@@ -237,7 +237,7 @@
       "date_meaning": "제출일",
       "latest_data_date": "2026-03-31",
       "file_last_modified_date": "2026-08-20",
-      "operator_state": "attention",
+      "operator_state": "source_gap",
       "inspection_error": null
     },
     {

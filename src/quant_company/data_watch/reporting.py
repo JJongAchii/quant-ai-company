@@ -10,7 +10,7 @@ from .coverage import SUMMARY_GROUPS, item_text, observed, short_date
 from .store import utcnow
 
 KST = ZoneInfo("Asia/Seoul")
-SUMMARY_FORMAT_VERSION = 4
+SUMMARY_FORMAT_VERSION = 5
 PROBLEM_TEXT = {
     "parquet_footer_limit": "파일 정보를 읽는 검사 도구의 2 MiB 검사 한도에 걸려 확인하지 못함",
     "descriptor_unavailable_or_changed": "메타데이터 확인 실패 또는 조회 중 객체 변경",
@@ -60,9 +60,18 @@ def status_text(snapshot):
          "undated": 4}[observed(row, snapshot["checked_at"])["state"]],
         row["dataset"],
     ))
+    counts = {state: sum(observed(row, snapshot["checked_at"])["state"] == state for row in findings)
+              for state in ("source_gap", "late", "unreadable", "undated", "attention")}
+    finding_labels = [
+        ("공개분 미반영", counts["source_gap"]),
+        ("등록 기준 지연", counts["late"]),
+        ("날짜 미확인", counts["unreadable"] + counts["undated"]),
+        ("갱신 확인", counts["attention"]),
+    ]
+    finding_headline = " · ".join(f"{label} {count}건" for label, count in finding_labels if count)
     headline = ("첫 목록 조회 대기" if not inventory else
                 "현재 목록 조회 실패" if not inventory_ok else
-                f"갱신 점검 {len(findings)}건" if findings else "소스별 날짜 확인")
+                finding_headline if findings else "소스별 날짜 확인")
     lines = [f"*데이터 현황 · {headline}* · {kst(snapshot['checked_at'])}"]
     if not inventory:
         lines.append("*지금 상태* 첫 목록 조회가 아직 끝나지 않았습니다.")
