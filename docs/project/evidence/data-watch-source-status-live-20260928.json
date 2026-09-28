@@ -50,8 +50,64 @@
     "otherServiceIdsPreserved": true,
     "currentReleaseLinkUnchanged": "ccdcc43c2a0985dcc035262f33d19e0ae979f0a1"
   },
+  "integratedRelease": {
+    "imageRevision": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+    "imageId": "sha256:7c834100fdefc0ecd09c2c8810c2b9630c93976ffa3fa739c78a87e71d752309",
+    "baseReleaseLink": "c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+    "api": "api_live",
+    "slackSocket": "slack_socket_live",
+    "dataWatchWorker": "data_watch_worker_live",
+    "otherServiceIdsPreservedAtEachCutover": true,
+    "releaseTimerActiveAfterCutovers": true,
+    "realPostgresqlTemporalTests": "1219 passed, 38 skipped",
+    "ci": "PR 81 service SUCCESS"
+  },
+  "correctedDailyMessage": {
+    "channel": "data-watch",
+    "outboxId": "03e94bcd-76bf-5b12-8d7f-4fd001ebd8c5",
+    "outboxStatus": "delivered",
+    "outboxSentTs": "1790577351.422529",
+    "slackClientMsgId": "03e94bcd-76bf-5b12-8d7f-4fd001ebd8c5",
+    "slackTs": "1790577351.422529",
+    "databaseTextCharacters": 1314,
+    "slackRenderedTextCharacters": 1322,
+    "headline": "데이터 현황 · 현재 목록 조회 실패",
+    "catalogReadAtDelivery": "failed at 2026-09-28 15:30 KST",
+    "retainedDatesLabelledAs": "last successful inventory at 2026-09-28 14:31 KST",
+    "publishedSourceGapsShown": ["prices", "sec_13f", "sec_filings", "sec_fundamental", "sec_insider", "us_shortvol"],
+    "limitation": "This was a stale-catalog message; do not treat the retained maxima as a new successful 15:30 observation."
+  },
+  "catalogFailureFollowup": {
+    "automaticFailures": ["2026-09-28 15:00 KST", "2026-09-28 15:30 KST"],
+    "storedError": "lake_catalog_unavailable",
+    "readOnlyQdataProbeAt": "2026-09-28 15:42 KST",
+    "readOnlyQdataCatalogResult": "38 datasets",
+    "readOnlyUsPricesResult": "Parquet footer exceeds the 2 MiB inspection budget",
+    "exactAutomaticFailureCause": "not recorded; no attribution to build load or upstream provider is verified",
+    "automaticRecoveryCheckedAt": "2026-09-28T07:00:22.789489+00:00",
+    "automaticRecoveryDatasetCount": 38,
+    "usPricesAutomaticRetryAt": "2026-09-28T07:09:34.305515+00:00",
+    "usPricesAutomaticRetryError": "parquet_footer_limit",
+    "incidentState": "recovered",
+    "recoveryOutboxStatus": "delivered",
+    "recoveryOutboxSentTs": "1790578823.967039",
+    "slackRecoveryReadback": {
+      "ts": "1790578823.967039",
+      "clientMsgId": "900ed8f0-bb62-552b-aaa0-bf18a481e6b7",
+      "firstLine": "데이터 복구 확인 · 전체 목록 접근",
+      "botUserMatched": true
+    }
+  },
   "onDemand": {
-    "state": "pending_integrated_slack_socket_rollout",
+    "state": "integrated_slack_socket_live_owner_command_unverified",
+    "readOnlyProductionRenderAt": "2026-09-28 16:10 KST",
+    "readOnlyProductionInventoryOk": true,
+    "summaryFirstLine": "데이터 현황 · 공개분 미반영 6건 · 날짜 미확인 1건",
+    "summaryCharacters": 1341,
+    "datasetLines": 38,
+    "listCharacters": 2198,
+    "containsSec13fAndInsider": true,
+    "renderCatalogState": "2026-09-28 16:00 KST inventory succeeded",
     "note": "The real owner has not yet sent a post-rollout 목록 command; fixture-backed command routing and 38-row preview are separate evidence."
   }
 }

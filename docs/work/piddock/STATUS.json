@@ -11,23 +11,32 @@
   },
   "deliverables": {
     "SOURCE_EVIDENCE": {
-      "status": "in_progress",
-      "updatedAt": "2026-09-28T05:13:47+00:00",
-      "evidence": [],
-      "note": "38 live dataset date bounds and official KRX, NYSE, FINRA and SEC checkpoints inspected; final integrated evidence pending."
+      "status": "verified",
+      "updatedAt": "2026-09-28T06:56:48+00:00",
+      "evidence": [
+        "docs/project/evidence/data-watch-source-coverage-20260928.json",
+        "docs/project/DATA-WATCH-SOURCE-STATUS-20260928.md"
+      ],
+      "note": "38 bounded dataset dates and file replacement dates recorded; KRX, NYSE, FINRA, SEC FSDS, 13F and insider source checkpoints verified. Producer failure stages remain unverified."
     },
     "MESSAGE": {
-      "status": "in_progress",
-      "updatedAt": "2026-09-28T05:13:47+00:00",
-      "evidence": [],
-      "note": "Source-date daily and 38-row list previews fit one Slack message; production application pending."
+      "status": "verified",
+      "updatedAt": "2026-09-28T07:13:00+00:00",
+      "evidence": [
+        "src/quant_company/data_watch/reporting.py",
+        "docs/project/evidence/data-watch-source-status-live-20260928.json"
+      ],
+      "note": "Source-date daily summaries reached real Slack; read-only production render shows all 38 dated dataset lines in one list message. The actual owner-typed on-demand Slack round trip remains untested."
     },
     "OPERATIONS": {
-      "status": "in_progress",
-      "updatedAt": "2026-09-28T05:13:47+00:00",
-      "evidence": [],
-      "note": "Integrated API and worker deployment, real Slack delivery and on-demand status receipt remain to be verified."
+      "status": "verified",
+      "updatedAt": "2026-09-28T07:13:00+00:00",
+      "evidence": [
+        "docs/project/evidence/data-watch-source-status-live-20260928.json",
+        "docs/project/DATA-WATCH-SOURCE-STATUS-20260928.md"
+      ],
+      "note": "Integrated API, Slack socket and data-watch worker are live; real Slack summary and recovery receipts match PostgreSQL. Real owner-typed 목록 delivery is an explicit unverified E2E boundary."
     }
   },
-  "updatedAt": "2026-09-28T05:13:47+00:00"
+  "updatedAt": "2026-09-28T07:13:00+00:00"
 }
