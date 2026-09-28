@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "state": "final_regression_running",
+  "code_commit": "efd2e50cfb34758a894c8a735b9319dc488cd18d",
+  "code_tree": "297ce52b079e30927f0da4712363998c14f13791",
+  "tests_tree": "e373128255553e1fedb12fa3d1334588b7284f06",
+  "company_bundle_sha256": "03db77dddf037b0086b0ca97eacabebef1eabc45a1694e5e74ed9eedc451f467",
+  "initial_regression": {
+    "commit": "189226da204ef2d4fb3655e683b40ac0ec5f381a",
+    "command": "uv run pytest -q --junitxml=.local/research-programs-tests.xml",
+    "tests": 1237,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 7,
+    "seconds": 370.818,
+    "junit_sha256": "bf6f90c2ef828e9673b23ab47630b7088592e9ad43a761b23575fdc58dd2fbac",
+    "skips": [
+      {
+        "test": "tests.test_codex_config_probe.test_real_cli_accepts_required_configuration_without_inference[gpt-6-astra-max]",
+        "reason": "Set CODEX_CONFIG_PROBE=1 for the local CLI probe"
+      },
+      {
+        "test": "tests.test_codex_config_probe.test_real_cli_accepts_required_configuration_without_inference[gpt-5.6-terra-high]",
+        "reason": "Set CODEX_CONFIG_PROBE=1 for the local CLI probe"
+      },
+      {
+        "test": "tests.test_quant_feed.test_real_pdf_subprocess_limits_and_pages",
+        "reason": "Hard PDF memory qualification requires Linux RLIMIT_AS"
+      },
+      {
+        "test": "tests.test_research_adaptive_linux.test_actual_linux_adaptive_qualification_through_detached_worker",
+        "reason": "Requires explicit operator runtime profile on the registered Linux 3070"
+      },
+      {
+        "test": "tests.test_research_etf_linux.test_actual_etf_evaluator_roundtrips_parquet_in_both_sandbox_phases",
+        "reason": "Opt-in real 3070, committed ETF checkout and prepared science runtime required"
+      },
+      {
+        "test": "tests.test_research_sandbox.test_linux_namespace_nonperformance_qualification",
+        "reason": "Requires explicit operator-reviewed runtime profile on the 3070; no Mac fallback"
+      },
+      {
+        "test": "tests.test_temporal.test_live_codex_company_producer_consumer",
+        "reason": "Opt-in real Codex subscription test"
+      }
+    ]
+  },
+  "followup_regression": {
+    "tests": 49,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 24.293,
+    "junit_sha256": "12d987c0748406001b4797bb3c6d71f3c4be904ee6713a5f5316efe9ba809afd",
+    "skips": []
+  },
+  "actual_3070": {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 10.704,
+    "junit_sha256": "5d0a146c52d84f85f0000adc9b1f8ac7b3ba21cf1dc9d8d573b940e38f74dd7b",
+    "skips": []
+  },
+  "environment": {
+    "local_python": "3.12.13",
+    "postgresql": "14, disposable databases on isolated local cluster",
+    "temporal": "actual local dev server and history replay",
+    "qlab_commit": "857e4243c54d86067c2bf8519eee1162cbd02189",
+    "worker_gpu": "NVIDIA GeForce RTX 3070",
+    "worker_host": "DESKTOP-5T00NAF"
+  },
+  "limits": {
+    "scientific_trials_added": 0,
+    "new_program_real_codex": false,
+    "new_program_real_slack": false,
+    "real_market_snapshots": false,
+    "production_activated": false
+  },
+  "recorded_at": "2026-09-28T06:30:36.824962+00:00"
+}

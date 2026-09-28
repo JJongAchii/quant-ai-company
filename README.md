@@ -102,6 +102,12 @@ flowchart LR
 새 자율 연구는 아직 운영에 활성화하지 않았습니다. [구현·검증 상태](docs/project/AUTONOMOUS-RESEARCH-20260921.md),
 [배포·롤백 절차](docs/runbooks/autonomous-research.md), [설계 결정](docs/adr/0031-persistent-autonomous-research.md)을 따릅니다.
 
+자료에서 과제를 만드는 **연구 프로그램**도 구현했습니다. 한 번 승인한 범위·예산 안에서
+원문 읽기 → 데이터 검토 → 가설·독립 반론 → 실험 → 인과성 감사·별도 해석 → 후속 연구를 연결합니다.
+국내 ETF·주식의 전략/주장/재현 평가와 부정적 결과 보존을 지원합니다.
+[새 구현의 검증 범위·운영 준비 상태](docs/project/RESEARCH-PROGRAMS-VALIDATION-20260928.md)와
+[첫 프로그램 준비안](docs/project/FIRST-RESEARCH-PROGRAM-20260928.md)을 확인하세요.
+
 모델 배치는 평가 전 초기값입니다. 금융전략에는 거시·채권·주식·회계·파생·리스크·시장구조의
 직무, 검증된 출처 검색, 계산 도구, [전문 시험 사례](docs/financial-specialist.md)를 제공합니다.
 방대한 지식 기반을 수집했다거나 실제 금융 전문성 시험을 통과했다는 뜻은 아닙니다.
