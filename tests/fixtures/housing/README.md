@@ -1,0 +1,1 @@
+Public official HTML snapshots retrieved 2026-09-28. Tables from 청약홈 APT/잔여세대 lists and details, LH public sale list/detail, SH 주택분양 list. Whitespace, scripts and unrelated navigation removed. These fixtures are historical parser inputs, not current availability claims.
