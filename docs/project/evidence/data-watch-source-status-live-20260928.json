@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "scope": "Source-date data-watch status; no lake writes or producer repair",
+  "observedAt": "2026-09-28T05:33:12.470179+00:00",
+  "sourceInspection": {
+    "lastCatalogSuccess": "2026-09-28 14:31 KST",
+    "datasets": 38,
+    "metadataChecked": 37,
+    "metadataUnreadable": ["us_prices"],
+    "coverageEvidence": "docs/project/evidence/data-watch-source-coverage-20260928.json"
+  },
+  "dailyMessage": {
+    "channel": "data-watch",
+    "imageRevision": "cf2c08177827103868598980e5acd213d23fa9b6",
+    "outboxId": "7e64b7a6-8e27-5c5c-91f8-f9a6bccfa688",
+    "outboxStatus": "delivered",
+    "outboxSentTs": "1790573592.470179",
+    "slackClientMsgId": "7e64b7a6-8e27-5c5c-91f8-f9a6bccfa688",
+    "slackTs": "1790573592.470179",
+    "slackFirstLine": "데이터 현황 · 갱신 점검 6건 · 09/28 14:33 KST",
+    "databaseTextCharacters": 1211,
+    "slackRenderedTextCharacters": 1219,
+    "readback": "Actual Slack conversations.history result; Slack normalized the warning emoji syntax.",
+    "visibleSourceDates": {
+      "krx_prices": "2026-09-23",
+      "krx_etf": "2026-09-23",
+      "krx_flows": "2026-09-23",
+      "krx_index_prices": "2026-09-23",
+      "prices": "2026-09-24",
+      "us_shortvol": "2026-09-24",
+      "fred": "2026-09-24",
+      "ecos": "2026-09-23",
+      "oecd_cli": "2026-08-01",
+      "dart_fundamental": "2026-07-24",
+      "sec_filings": "2026-03-31",
+      "sec_13f": "2026-05-29",
+      "sec_nport": "2026-06-30"
+    },
+    "visibleFindings": [
+      "prices: 2026-09-25 US trading date not reflected in lake maximum",
+      "us_shortvol: 2026-09-25 FINRA date not reflected in lake maximum",
+      "sec_filings and sec_fundamental: SEC 2026 Q2 FSDS package not reflected in lake maximum filed date",
+      "us_prices: date unreadable under qdata 2 MiB footer limit; object replaced 2026-09-28",
+      "sec_insider: age-only review hint; producer cadence and failure stage unverified"
+    ]
+  },
+  "workerCutover": {
+    "state": "data_watch_worker_live",
+    "newImage": "sha256:85714634c906821d17d7d0ef2ad9ec9095c4fe0dc22edd899b475e655a1ee37d",
+    "otherServiceIdsPreserved": true,
+    "currentReleaseLinkUnchanged": "ccdcc43c2a0985dcc035262f33d19e0ae979f0a1"
+  },
+  "onDemand": {
+    "state": "pending_integrated_slack_socket_rollout",
+    "note": "The real owner has not yet sent a post-rollout 목록 command; fixture-backed command routing and 38-row preview are separate evidence."
+  }
+}
