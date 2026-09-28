@@ -20,11 +20,16 @@ full-context cryptocurrency-volatility paper in a second real subscription previ
 generic item was held/rejected and the positive brief passed source validation, but the final
 independent critic requested further changes after the only allowed revision. This receipt is
 also final and must not be replayed. The new local version-10 checklist patch has not been
-deployed or qualified. A different original and a new durable request series are required.
+deployed or qualified. `run_v10_lob_preview.py` used an exact-source version-10 image and a
+separate full-context limit-order-book paper; its first negative-control call blocked with a
+durable `decision_contract:invalid_shape` provider fault, before the positive paper was reviewed.
+That receipt is final and must not be replayed. Investigate this fault before another real trial.
 
 The public repo holds no full model response, credentials or original PDF. The exact
 qualifier source was installed at
 `/var/lib/quant-company/operations/quant-feed-continuation-20260928/qualify_quant_editorial.py`
 with SHA-256 `5e12d4ee0083b8fff24d3e64e612c5d4657e1550917e30c2a90fcc4e47f132ca`.
-The private v8 and v9 outputs are below that operation's `preview/` directory. A later operator
+The private v8, v9 and v10 outputs are below that operation's `preview/` directory. The disposable
+v9 and v10 preview images and their scoped buildx builders were removed after final receipts;
+no running service used either image. A later operator
 must recheck the production baseline before any live preview or cutover.

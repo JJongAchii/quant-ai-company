@@ -345,3 +345,14 @@ removed, restoring disk headroom to about 17 GB. The local next patch adds gener
 whole-claim evidence and full-field critic checks (policy version 10). It is not yet deployed or
 qualified. The local version-10 patch passed 1,179 full tests (38 skipped) and Ruff. Both failed
 receipts remain private and must not be replayed.
+
+An exact-source version-10 image was built for a different full-context limit-order-book paper.
+Its preflight passed with publication disabled and no Quant call, pending outbox item or quota
+pause. The first negative-control model call failed the Codex decision envelope contract with
+`invalid_output (decision_contract:invalid_shape)`, so this trial never reached the positive
+paper and proves nothing about version-10 editorial quality. The request and final blocked
+receipt were not retried. The unchanged-service, release-link and publication checks passed;
+the disposable image and its scoped builder were then removed, leaving about 15 GB free.
+The version-10 code passed local tests/Ruff and GitHub service CI, but remains undeployed and
+unqualified. Further review needs the provider fault reconciled and a genuinely new request
+series, then a passing positive and 48-hour publication-off observation before owner approval.

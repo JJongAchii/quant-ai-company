@@ -90,17 +90,42 @@
     "scoped_buildx_builder_removed_after_receipt": true,
     "disk_available_gb_after_cleanup_approx": 17
   },
+  "version_10_lob_preview": {
+    "source_commit": "b64292b2247bdd3ad408af56abdc60ceae3c1f65",
+    "image_source_inventory_verified": true,
+    "private_receipt": "qualification-agentic-lob-v10.json",
+    "positive_document_id": "32879918c5c174b3777913287bcd3a2304bf33c6681c7fb8c2cbf1938d1612e9",
+    "positive_source": "https://arxiv.org/abs/2609.31260",
+    "context_clipped": false,
+    "preflight_activity_clear": true,
+    "state": "blocked",
+    "first_call": "negative-critic",
+    "first_call_fault": "invalid_output",
+    "runtime_fault_detail": "decision_contract:invalid_shape",
+    "positive_candidate_reviewed": false,
+    "quality_outcome": "not_established",
+    "receipt_replayed": false,
+    "running_services_preserved": true,
+    "current_release_unchanged": true,
+    "publication_count_unchanged": true,
+    "slack_writes": false,
+    "document_writes": false,
+    "disposable_preview_image_removed_after_receipt": true,
+    "scoped_buildx_builder_removed_after_receipt": true,
+    "disk_available_gb_after_cleanup_approx": 15
+  },
   "service_cutover_executed": false,
   "follow_up_patch": {
     "local_policy_version": 10,
     "change": "in addition to arXiv dates and clipped excerpts, require inconclusive comparisons, residual-confounding caveats, whole-claim quote support and field-by-field criticism",
     "production_deployed": false,
-    "fresh_positive_under_new_policy": "not_run",
+    "fresh_positive_under_new_policy": "blocked_before_positive_by_provider_invalid_output",
     "focused_tests_passed": 72,
     "focused_tests_skipped": 1,
     "full_tests_passed": 1179,
     "full_tests_skipped": 38,
-    "ruff": "passed"
+    "ruff": "passed",
+    "github_service_ci": "passed"
   },
   "complete_context_shortlist": [
     "https://arxiv.org/abs/2609.27024",
@@ -125,5 +150,5 @@
     "global_runtime_pause_reason": "quota",
     "quota_pause_rolling": true
   },
-  "interpretation": "Storage headroom was restored. A version-8 positive failed critique and a concurrent maintenance-container OOM invalidated that unchanged-service check. A distinct full-context version-9 positive passed source validation but failed its final independent critique after its only revision; its service-preservation check passed. A local version-10 checklist patch remains undeployed and unqualified. No Quant publication or release cutover is authorized."
+  "interpretation": "Storage headroom was restored. A version-8 positive failed critique and a concurrent maintenance-container OOM invalidated that unchanged-service check. A distinct full-context version-9 positive passed source validation but failed its final independent critique after its only revision; its service-preservation check passed. The version-10 preview blocked at the first negative-control call with a durable provider invalid-output fault, before the new positive was assessed. The version-10 patch remains undeployed and unqualified. No Quant publication or release cutover is authorized."
 }
