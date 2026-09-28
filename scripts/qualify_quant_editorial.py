@@ -117,8 +117,9 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None):
                 raise ProviderFault("uncertain", "Runtime outcome requires reconciliation.") from exc
             row.update(state="returned", response=response.model_dump(mode="json"))
             save()
-        value = validate(response, bundle, stage)
-        row.update(state="validated", disposition=value.disposition)
+        corrections = []
+        value = validate(response, bundle, stage, audit=corrections)
+        row.update(state="validated", disposition=value.disposition, source_corrections=corrections)
         save()
         return value
 

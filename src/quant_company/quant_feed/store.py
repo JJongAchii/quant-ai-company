@@ -84,7 +84,7 @@ class QuantFeedStore:
 
     def policy(self):
         s = self.company.settings
-        return fingerprint({"version": 6, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
+        return fingerprint({"version": 7, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
                             "owner": s.quant_feed_owner_user, "channel": s.quant_feed_channel_id,
                             "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
                             "web": s.company_web_enabled, "sources": [x.model_dump() for x in self.sources().values()],
@@ -378,14 +378,16 @@ class QuantFeedStore:
 
     def commit_document(self, conn, saved, response):
         document = conn.execute("SELECT * FROM quant_feed_documents WHERE id=%s FOR UPDATE", (saved["document_id"],)).fetchone()
-        value = validate(response, saved["bundle"], saved["stage"])
+        corrections = []
+        value = validate(response, saved["bundle"], saved["stage"], audit=corrections)
         if saved["stage"] != "critique":
             state = {"publish": "ready", "hold": "held", "reject": "rejected"}[value.disposition]
             if value.disposition == "publish" and value.change == "cosmetic":
                 state = "duplicate"
             conn.execute("UPDATE quant_feed_documents SET brief=%s,state=%s,stage='critique',reviewed_at=now() WHERE id=%s",
                          (Jsonb(value.model_dump()), state, document["id"]))
-            return {"document_state": state, "document_id": document["id"]}
+            return {"document_state": state, "document_id": document["id"],
+                    "source_corrections": corrections}
         state = "held"
         if value.disposition == "revise" and document["revision"] == 0:
             state = "ready"

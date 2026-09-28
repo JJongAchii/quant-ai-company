@@ -197,6 +197,21 @@ def test_quote_validation_ignores_only_pdf_layout_whitespace():
         validate(response(ready, value), bundle, "review")
 
 
+def test_ambiguous_quote_location_is_never_inferred():
+    ready = {"request": {"request_id": "quant-feed-review"}}
+    bundle = {"pages": [{"location": "PDF p.1", "text": TEXT},
+                        {"location": "PDF p.2", "text": TEXT}],
+              "as_of": "2026-09-22", "links": [], "commercial": False, "prior": None,
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
+    value = brief(evidence=[{"claim": "기간", "location": "PDF p.3", "quote": "US equities from 2000 to 2020."},
+                            {"claim": "한계", "location": "PDF p.2", "quote": "Transaction costs are not estimated."}])
+    with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
+        validate(response(ready, value), bundle, "review")
+    value["evidence"][0]["quote"] = "         "
+    with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
+        validate(response(ready, value), bundle, "review")
+
+
 def test_raw_json_control_characters_are_only_normalized_inside_strings():
     content = json.dumps(brief(), ensure_ascii=False).replace("검증 한계에 대한 연구적 가치", "검증 한계\n연구적 가치")
     value = ProviderResponse(request_id="quant-feed-review", provider="fixture",
@@ -227,6 +242,21 @@ def test_one_deterministic_proposal_repair_then_fail_closed(quant):
         quant.commit(response(second, invalid))
     quant.fault(second["request"]["request_id"], "invalid_quant_proposal")
     assert quant.prepare()["state"] == "idle"
+
+
+def test_unique_quote_location_correction_is_audited_before_critic(quant):
+    original(quant)
+    value = brief(evidence=[{"claim": "기간", "location": "PDF p.2", "quote": "US equities from 2000 to 2020."},
+                            {"claim": "한계", "location": "PDF p.1", "quote": "Transaction costs are not estimated."}])
+    result = quant.commit(response(quant.prepare(), value))
+    assert result["document_state"] == "ready"
+    assert [item["kind"] for item in result["source_corrections"]] == ["unique_quote_location"]
+    with quant.db.transaction() as conn:
+        document = conn.execute("SELECT brief FROM quant_feed_documents").fetchone()
+        receipt = conn.execute("SELECT receipt FROM quant_feed_calls").fetchone()["receipt"]
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
+    assert document["brief"]["evidence"][0]["location"] == "PDF p.1"
+    assert receipt["source_corrections"] == result["source_corrections"]
 
 
 def test_long_card_is_rewritten_once_without_dropping_caveats(quant):
@@ -529,7 +559,7 @@ GOLD_CASES = [
     ("missing-limitations", {"limitations": []}, False),
     ("missing-evidence", {"evidence": []}, False),
     ("fabricated-quote", {"evidence": [{"claim": "x", "location": "PDF p.1", "quote": "Invented result"}] * 2}, False),
-    ("wrong-page", {"evidence": [{"claim": "x", "location": "PDF p.2", "quote": TEXT[:40]}] * 2}, False),
+    ("wrong-page-uniquely-correctable", {"evidence": [{"claim": "x", "location": "PDF p.2", "quote": TEXT[:40]}] * 2}, True),
     ("invented-link", {"related_urls": ["https://example.org/made-up"]}, False),
     ("unsafe-link", {"related_urls": ["https://127.0.0.1/key"]}, False),
     ("correction-needs-change", {"change": "correction"}, False),
