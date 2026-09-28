@@ -1,0 +1,17 @@
+{
+  "date": "2026-09-28",
+  "owner_request": "Continue the paused Quant Scout quality and readability work after the 4 GB server migration",
+  "scope": "Quant editorial selection, concise Slack rendering, real subscription qualification and a scoped release to production with publication initially disabled",
+  "production_start": {
+    "quant_collection_enabled": true,
+    "quant_publication_enabled": false,
+    "first_Robeco_post_retained_by_owner": true
+  },
+  "acceptance": [
+    "A generic AI governance original fails the direct quantitative-finance research gate",
+    "A genuine quantitative-market study survives the same gate and renders a concise, caveat-complete card",
+    "The real subscription qualification sends no Slack message and preserves ambiguous call receipts",
+    "A production release preserves independently operated news and research workers",
+    "Quant publication is enabled only after real quality and operational gates pass"
+  ]
+}
