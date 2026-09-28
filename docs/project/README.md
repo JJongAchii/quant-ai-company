@@ -7,6 +7,7 @@
 - [현재 사용 범위와 로드맵](NEXT-STEPS.md)
 - [data-watch 운영 게시와 메시지 해석](DATA-WATCH-PRODUCTION-20260928.md)
 - [data-watch 운영자 현황 문구 개선](DATA-WATCH-STATUS-CLARITY-20260928.md)
+- [data-watch 소스별 마지막 날짜와 갱신 점검](DATA-WATCH-SOURCE-STATUS-20260928.md)
 - [회사 서버·3070 연구 실행 연결과 실제 복구 검증](RESEARCH-EXECUTION-20260921.md)
 - [hot-news Reporter 무료 매체·검색과 원래 뉴스 범위 복원](HOT-NEWS-SCOPE-RESTORATION.md)
 - [hot-news Reporter 운영 게시·스레드·재시작 인수](HOT-NEWS-ACTIVATION.md)

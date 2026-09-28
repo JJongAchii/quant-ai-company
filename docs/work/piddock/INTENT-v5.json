@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "slug": "piddock",
+  "revision": 5,
+  "createdAt": "2026-09-28T05:13:47+00:00",
+  "revisionReason": "The user rejected an unknown-freshness summary and asked for source-by-source update dates and specific missing updates.",
+  "sourceRequest": "아니 내가 데이터 업데이트 현황을 잘 파악할 수 있게 해줘야지. 어떤 데이터 소스가 어디까지 업데이트되었는지 또는 어떤 데이터가 어떻게 데이터 최신화가 안되었는지. 아직 판단 불가 이 상태는 내가 뭐 어떻게 현황파악하라는거야!",
+  "supersedes": {
+    "intentFile": "INTENT-v4.json",
+    "intentDigest": "bf65828b0c7a"
+  },
+  "outcome": "Show actual latest data dates by source, distinguish them from file-upload and inspection times, identify concrete published dates missing from the lake, and provide a full on-demand dataset list in #data-watch.",
+  "constraints": [
+    "Use only published qdata read APIs and stored bounded inspection receipts; do not scan raw lake paths or copy credentials.",
+    "Never mistake future event dates, object modification times or dataset-wide maxima for per-instrument completeness.",
+    "A reviewed source checkpoint may identify a missing published date, while age-only triage remains explicitly provisional.",
+    "Do not start ingestion, alter source data, activate frozen research checks or change unrelated employees.",
+    "Preserve concurrent housing and Quant services; API and data-watch worker must run an integrated source revision before claiming on-demand status works.",
+    "Do not replay an uncertain Slack write."
+  ],
+  "deliverables": [
+    {
+      "id": "SOURCE_EVIDENCE",
+      "description": "Source-specific dates and bounded evidence",
+      "acceptance": [
+        "Record the last data date and file replacement date separately for the live datasets.",
+        "Use the correct date axis for SEC, OECD and future-dated corporate actions.",
+        "Distinguish confirmed public-source gaps, age-only investigation hints, historical references and unreadable datasets."
+      ]
+    },
+    {
+      "id": "MESSAGE",
+      "description": "Readable daily and on-demand Slack status",
+      "acceptance": [
+        "Daily message shows KRX, US daily, macro and filing dates and the specific datasets needing attention.",
+        "The on-demand list shows all current datasets with last data date and file replacement date in one message.",
+        "Failed catalog reads mark retained dates as previous observations."
+      ]
+    },
+    {
+      "id": "OPERATIONS",
+      "description": "Integrated validation and actual Slack delivery",
+      "acceptance": [
+        "Real PostgreSQL and Temporal regression, deployment contract and CI pass.",
+        "The production API and data-watch worker use code that preserves concurrent housing and Quant changes.",
+        "A new Slack summary and on-demand response are checked against durable delivery receipts, with unresolved real-owner E2E boundaries stated."
+      ]
+    }
+  ],
+  "nonGoals": [
+    "Automatically refresh qdata, repair upstream ingest or claim the source failure step without producer receipts",
+    "Full per-ticker or per-series coverage audit",
+    "Training, backtests, research or orders"
+  ],
+  "decisionGates": [],
+  "stopConditions": [
+    "Do not claim live application before matching actual Slack and PostgreSQL receipts.",
+    "Abort deployment when production baseline or concurrent service revisions change."
+  ]
+}
