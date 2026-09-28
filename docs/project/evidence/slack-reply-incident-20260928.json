@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-28T06:28:08Z",
+  "state": "repair_prepared_not_deployed",
+  "sourceKinds": {
+    "slack": "real Slack conversations.replies readback using the configured bot identities",
+    "database": "read-only production PostgreSQL queries",
+    "temporal": "read-only Temporal Cloud workflow and poller descriptions",
+    "worker": "read-only Docker state and redacted exception classification",
+    "tests": "simulated Slack events against disposable real PostgreSQL; no real model invocation"
+  },
+  "financialStrategistDm": {
+    "channel": "D0C21110TSR",
+    "threadTs": "1789618913.334449",
+    "ownerMessageTs": ["1790573402.584159", "1790573425.148069"],
+    "inboundRows": 2,
+    "turnState": "queued; workflow_started=true; attempts=0",
+    "temporalWorkflowState": "RUNNING on quant-company",
+    "outboxReplies": 0,
+    "workerFailure": "ValueError: Unknown specialist in runtime_context -> staff.packs.pack",
+    "configurationMismatch": "The pinned worker at 31ff903f sees the inactive outbound-only quant_scout role in the live 13-role configuration but does not exclude it from specialist packs."
+  },
+  "researchCenter": {
+    "channel": "C0C2B9EUEGM",
+    "threadTs": "1789633942.673909",
+    "ownerMessageTs": ["1790544867.173419", "1790545011.514709", "1790557724.244619"],
+    "inboundRows": 0,
+    "countedProjectTasks": 41,
+    "configuredProjectTaskLimit": 40,
+    "socketPolicyRejections": ["2026-09-27T21:34:28Z", "2026-09-27T21:36:51Z"],
+    "thirdMessageReceipt": "No inbound row or matching policy log; Socket delivery is unconfirmed.",
+    "failure": "Natural progress questions were treated as new model work and rejected at the project task limit without a visible reply."
+  },
+  "researchSafetyAt20260928T060158Z": {
+    "missionState": "active",
+    "activeResearchJobs": 0,
+    "runningCompanyTurns": 0,
+    "note": "A point-in-time observation, not cutover authorization; recheck external effects immediately before any worker restart."
+  },
+  "preparedChanges": {
+    "applicationBase": "c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+    "applicationCandidate": "bebf69b59586a89c5306b1bed412781db1529460",
+    "pinnedWorkerBase": "31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
+    "pinnedWorkerCandidate": "e53b771aa994a54c1f4be6a2610856ea7a298816",
+    "realPostgresApplicationTests": "16 passed",
+    "realPostgresPinnedWorkerTest": "1 passed",
+    "ruff": "passed",
+    "productionDeployed": false
+  }
+}
