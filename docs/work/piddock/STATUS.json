@@ -1,48 +1,33 @@
 {
   "approval": {
-    "id": "chat-operational-channel-application",
-    "sourceRequest": "우선 지금까지 진행한것들은 운영 적용 진행해줘",
-    "recordedAt": "2026-09-27T22:41:30+00:00"
+    "id": "chat-data-watch-status-clarity",
+    "sourceRequest": "data-watch 에서 너가 보내는 저 메세지는 내가 어떻게 해석해야할지 사실 현황 파악이 잘 안되",
+    "recordedAt": "2026-09-28T01:46:31+00:00"
   },
-  "currentIntent": "INTENT-v3.json",
+  "currentIntent": "INTENT-v4.json",
   "deliverables": {
-    "CHANNEL_OPERATIONS": {
-      "status": "verified",
-      "updatedAt": "2026-09-27T22:58:30+00:00",
-      "evidence": [
-        {
-          "path": "docs/project/evidence/data-watch-production-20260928.json",
-          "sha256": "836202e29307"
-        }
-      ],
-      "note": "Live Maintainer/data-watch activation, Slack delivery receipts, and current release/service state recorded. Owner inbound and fixed research-input E2E remain unverified."
+    "MESSAGE_CLARITY": {
+      "status": "in_progress",
+      "updatedAt": "2026-09-28T01:46:31+00:00",
+      "evidence": [],
+      "note": "Code and local tests are prepared; CI and live Slack receipt remain to be verified."
     },
-    "READABILITY": {
-      "status": "verified",
-      "updatedAt": "2026-09-27T22:58:30+00:00",
-      "evidence": [
-        {
-          "path": "docs/project/DATA-WATCH-PRODUCTION-20260928.md",
-          "sha256": "cea2ba1d1bcb"
-        }
-      ],
-      "note": "One short initial summary plus three subsequent 285-character daily summaries and incident reply matched Slack/PostgreSQL receipts."
+    "STALE_CATALOG": {
+      "status": "in_progress",
+      "updatedAt": "2026-09-28T01:46:31+00:00",
+      "evidence": [],
+      "note": "Code and local tests are prepared; CI and live Slack receipt remain to be verified."
     },
-    "VALIDATION": {
-      "status": "verified",
-      "updatedAt": "2026-09-27T22:58:30+00:00",
-      "evidence": [
-        {
-          "path": "docs/project/evidence/data-watch-production-20260928.json",
-          "sha256": "836202e29307"
-        }
-      ],
-      "note": "Combined source passed 1158 service tests (38 skipped), 31 deployment checks, Ruff and CI; live Slack receipts and remaining E2E gaps are recorded."
+    "OPERATIONS": {
+      "status": "in_progress",
+      "updatedAt": "2026-09-28T01:46:31+00:00",
+      "evidence": [],
+      "note": "Code and local tests are prepared; CI and live Slack receipt remain to be verified."
     }
   },
-  "intentDigest": "a289bfa790ef",
+  "intentDigest": "bf65828b0c7a",
   "schemaVersion": 1,
   "slug": "piddock",
   "state": "approved",
-  "updatedAt": "2026-09-27T22:58:30+00:00"
+  "updatedAt": "2026-09-28T01:46:31+00:00"
 }

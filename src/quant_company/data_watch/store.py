@@ -148,8 +148,15 @@ class DataWatchStore:
 
     def snapshot(self, conn):
         at, contracts = utcnow(), self.contracts()
+        policy = self.policy()
         inventory = conn.execute("""SELECT id,receipt,checked_at FROM data_watch_inventory
-            WHERE policy=%s AND state='complete' ORDER BY checked_at DESC LIMIT 1""", (self.policy(),)).fetchone()
+            WHERE policy=%s AND state='complete' ORDER BY checked_at DESC LIMIT 1""", (policy,)).fetchone()
+        last_successful_inventory_at = None
+        if not inventory or not inventory["receipt"].get("ok"):
+            last_success = conn.execute("""SELECT checked_at FROM data_watch_inventory
+                WHERE policy=%s AND state='complete' AND receipt->>'ok'='true'
+                ORDER BY checked_at DESC LIMIT 1""", (policy,)).fetchone()
+            last_successful_inventory_at = last_success["checked_at"] if last_success else None
         datasets = []
         for row in conn.execute("SELECT * FROM data_watch_datasets WHERE lake=%s ORDER BY dataset LIMIT 200",
                                 (self.company.settings.company_lake_uri,)).fetchall():
@@ -169,7 +176,8 @@ class DataWatchStore:
                              "problem": problem})
         from .core import CoreChecks
 
-        return as_json({"checked_at": at, "inventory": inventory, "datasets": datasets,
+        return as_json({"checked_at": at, "inventory": inventory,
+                        "last_successful_inventory_at": last_successful_inventory_at, "datasets": datasets,
                         "core_checks": CoreChecks(self).status(conn), "next_inventory_at":
                         datetime.fromtimestamp((int(at.timestamp()) // 1800 + 1) * 1800, UTC),
                         "scope": "Catalog and parquet footers; per-instrument coverage is unchecked. "

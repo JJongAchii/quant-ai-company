@@ -132,7 +132,13 @@ async def test_inventory_failure_preserves_previous_presence_and_changed_object_
     await tick(watch)
     watch.clock[0] += timedelta(minutes=30)
     await tick(watch, {"ok": False, "error": "private provider detail"})
-    assert watch.store.status()["datasets"][0]["inspection"] == "metadata_checked"
+    failed = watch.store.status()
+    assert failed["datasets"][0]["inspection"] == "metadata_checked"
+    failed_text = status_text(failed)
+    assert "현재 목록 조회 실패" in failed_text
+    assert "아래 숫자는 09/22 09:00 KST 마지막 성공 기록 기준" in failed_text
+    assert "마지막 성공 목록 1개" in failed_text
+    assert "현재 상태를 판단할 수 없습니다" in failed_text
     assert rows(watch, "data_watch_incidents")[0]["state"] == "active"
     watch.clock[0] += timedelta(minutes=30)
     item = catalog(watch, etag="new")
@@ -193,8 +199,13 @@ def test_daily_summary_is_short_and_full_names_are_on_demand():
     summary = status_text(snapshot)
     listing = list_text(snapshot)
     assert len(summary) < 1000 and len(listing) < 3000
-    assert "38개 중 메타데이터 확인 37개, 미확인 1개" in summary
-    assert "2 MiB 검사 한도" in summary and "원본 손상" in summary
+    assert "*데이터 현황 · 확인 필요 1건*" in summary
+    assert "*지금 상태* 데이터 전체가 최신인지 아직 판단할 수 없습니다." in summary
+    assert "현재 목록 38개: 파일 정보 확인 37개, 미확인 1개" in summary
+    assert "2 MiB 검사 한도" in summary and "파일 손상" in summary
+    assert "최신성: 전체 판정 불가" in summary and "데이터별 갱신 기준이 없습니다" in summary
+    assert "*필요한 조치*" in summary and "읽기 한도 보완" in summary
+    assert "갱신 시각 기준 정하기" in summary
     assert "dataset_36_with_a_long_name" not in summary
     assert "dataset_36_with_a_long_name" in listing and "us_prices" in listing
     assert "11:00 KST" in summary and "11:30 KST" in summary
@@ -276,7 +287,7 @@ async def test_data_is_channel_lead_and_status_does_not_invoke_model(watch, cred
     payload["api_app_id"] = credentials["director"]["app_id"]
     assert ingress.accept("director", payload, credentials["director"])["ignored"]
     assert not rows(watch, "turns")
-    assert "미검사" in watch.company.project_state(first["project_id"])["tasks"][0]["result"]
+    assert "첫 목록 조회 대기" in watch.company.project_state(first["project_id"])["tasks"][0]["result"]
     await tick(watch)
     payload["api_app_id"] = credentials["data"]["app_id"]
     payload["event"]["ts"] = "12.2"
