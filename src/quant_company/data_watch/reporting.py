@@ -10,7 +10,7 @@ from .coverage import SUMMARY_GROUPS, item_text, observed, short_date
 from .store import utcnow
 
 KST = ZoneInfo("Asia/Seoul")
-SUMMARY_FORMAT_VERSION = 4
+SUMMARY_FORMAT_VERSION = 5
 PROBLEM_TEXT = {
     "parquet_footer_limit": "파일 정보를 읽는 검사 도구의 2 MiB 검사 한도에 걸려 확인하지 못함",
     "descriptor_unavailable_or_changed": "메타데이터 확인 실패 또는 조회 중 객체 변경",
