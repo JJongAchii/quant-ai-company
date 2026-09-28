@@ -1,0 +1,393 @@
+{
+  "publication_enabled": false,
+  "document_states": [
+    {
+      "state": "held",
+      "n": 96
+    },
+    {
+      "state": "preview",
+      "n": 4
+    },
+    {
+      "state": "queued",
+      "n": 1
+    },
+    {
+      "state": "ready",
+      "n": 337
+    },
+    {
+      "state": "rejected",
+      "n": 37
+    }
+  ],
+  "publication_states": [
+    {
+      "status": "delivered",
+      "n": 1
+    }
+  ],
+  "possible_cases": [
+    {
+      "id": "eab01733dab66494bd5391d6b47154a3c80633108993eb4c0bf85210e59a6003",
+      "source_id": "robeco",
+      "title": "Agentic AI and governance",
+      "url": "https://www.robeco.com/en-us/insights/2026/09/agentic-ai-and-governance",
+      "state": "queued",
+      "stage": "critique",
+      "original_bytes": 2686,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": true,
+      "has_critique": true
+    },
+    {
+      "id": "da86c1a93af92ba487d365b78ff89aad4606901e29ff9614f3a362ef8139f764",
+      "source_id": "kcmi",
+      "title": "클릭하면 게시물로 이동합니다.",
+      "url": "https://www.kcmi.re.kr/common/downloadw?fid=28959&fgu=002002&fty=004003",
+      "state": "held",
+      "stage": "review",
+      "original_bytes": 215954,
+      "fulltext_status": null,
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "ea2936c4b831e4542fa83c77fd234e5913315eba5d9f67904189ba9fa4575db9",
+      "source_id": "aqr",
+      "title": "Empirical Asset Pricing in Machine Learning",
+      "url": "https://images.aqr.com/-/media/AQR/Documents/Journal-Articles/Empirical-Asset-Pricing-in-Machine-Learning.pdf",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 164876,
+      "fulltext_status": null,
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "cd87b5d2bd87b74c8174eb2b0805bc23431ea5b36cb1c451132973969f0a69b9",
+      "source_id": "kcmi",
+      "title": "클릭하면 게시물로 이동합니다.",
+      "url": "https://www.kcmi.re.kr/common/downloadw?fid=29133&fgu=002002&fty=004003",
+      "state": "held",
+      "stage": "review",
+      "original_bytes": 139969,
+      "fulltext_status": null,
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "e1e6c76e513f08f9685843706b569cf336b57b80087358cd7e682f095f9b028d",
+      "source_id": "aqr",
+      "title": "Inflation Redux?",
+      "url": "https://www.aqr.com/-/media/AQR/Documents/Alternative-Thinking/AQR-Alternative-Thinking-Q3-2026---Inflation-Redux.pdf?sc_lang=en",
+      "state": "held",
+      "stage": "review",
+      "original_bytes": 85625,
+      "fulltext_status": null,
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "f6c839acb10aa8ee4df1248cfe919eb48fb2e49d1fb2b865031deaae66b8bca8",
+      "source_id": "kcmi",
+      "title": "클릭하면 게시물로 이동합니다.",
+      "url": "https://www.kcmi.re.kr/common/downloadw?fid=29154&fgu=002002&fty=004003",
+      "state": "held",
+      "stage": "review",
+      "original_bytes": 82543,
+      "fulltext_status": null,
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "64aa3844534276c2fae7ae010138a2e1ca6a5f0bd741a98a1658a242019aefb6",
+      "source_id": "kcmi",
+      "title": "클릭하면 게시물로 이동합니다.",
+      "url": "https://www.kcmi.re.kr/common/downloadw?fid=29074&fgu=002002&fty=004003",
+      "state": "held",
+      "stage": "review",
+      "original_bytes": 55887,
+      "fulltext_status": null,
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "9bb07e72ff3035771da053f04493491e3e7f5e27d64a9f743e2c3f48542c6870",
+      "source_id": "aqr",
+      "title": "Investing in a Warming World",
+      "url": "https://www.aqr.com/-/media/AQR/Documents/White-Papers/Investing-in-a-Warming-World-How-Market-Driven-Valuation-Effects-Can-Impact-Portfolio-Decarbonization.pdf?sc_lang=en&hash=BA80DCF11FE32D528AAFE7DEE7A34DFC",
+      "state": "held",
+      "stage": "review",
+      "original_bytes": 47556,
+      "fulltext_status": null,
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "16093195a23e67f8f74cec630341a27860f48e34439f78a7919a1d719e202788",
+      "source_id": "aqr",
+      "title": "Academic Alpha",
+      "url": "https://www.aqr.com/-/media/AQR/Documents/White-Papers/Academic-Alpha-A-Re-Introduction-to-Style-Premia-Investing.pdf?sc_lang=en&hash=4459D2FC2A0D470B879C4426DA6D8FD1",
+      "state": "rejected",
+      "stage": "critique",
+      "original_bytes": 28663,
+      "fulltext_status": null,
+      "has_brief": true,
+      "has_critique": false
+    },
+    {
+      "id": "4a33cd98393d449f9ffc546a79fd4864e27a51025aa13c4cda7c02e3dd6170e1",
+      "source_id": "research-affiliates",
+      "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveJAN 2021Reports of Value's Death May Be Greatly ExaggeratedValue investing has underperformed growth investing for the last 13.5 years. The drawdown is the longest and deepest since 1963 and is explained by value becoming unusually cheap relative to growth. As of June 30, 2020, the relative valuation of the HML value factor fell to the 100th percentile of the historical distribution. Published i",
+      "url": "https://www.syzygyassetmanagement.com/insights/journal-papers/reports-of-values-death-may-be-greatly-exaggerated",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 25675,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "60400605c3cb6b8ce68d7ca173dc67457c989f0b8b4e0b8824f368c52acd6920",
+      "source_id": "research-affiliates",
+      "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveMAR 2019What Is Quality?Unlike standard factors, such as value, momentum, and size, “quality” lacks a commonly accepted definition. Practitioners, however, are increasingly gravitating to this style factor. Published in the Financial Analysts Journal. Winner of the 2019 Graham and Dodd Top Award. Read time: 30 minBy Jason Hsu, Engin Kose, Vitali Kalesnik",
+      "url": "https://www.syzygyassetmanagement.com/insights/journal-papers/717-what-is-quality",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 25523,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "3c58d94a94329329ce43fab47a9c527576624a10b678c5be117bb61a23cb999f",
+      "source_id": "aqr",
+      "title": "Misconceptions about Tax-Aware Long-Short: Misleading Parallels with Direct Indexing, Part I",
+      "url": "https://www.aqr.com/Insights/Research/Tax-Aware-Investing/Misconceptions-about-Tax-Aware-Long-Short-Misleading-Parallels-with-Direct-Indexing-Part-I",
+      "state": "held",
+      "stage": "review",
+      "original_bytes": 14773,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "8f7623b80efa503e165fdddcd4e8f330bff33df65409e3b1140d71e34bd88a90",
+      "source_id": "aqr",
+      "title": "Not Locked Up: Accessing Liquidity in Tax-Aware Portfolios",
+      "url": "https://www.aqr.com/Insights/Research/Tax-Aware-Investing/Not-Locked-Up-Accessing-Liquidity-in-Tax-Aware-Portfolios",
+      "state": "held",
+      "stage": "critique",
+      "original_bytes": 13302,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": true,
+      "has_critique": false
+    },
+    {
+      "id": "28b8c2c90a7b52d2d01d2b1cf99e77bae100d26a86e0e41d2dff96ac29ac010a",
+      "source_id": "aqr",
+      "title": "In the Age of AI, A Quant’s Edge is Human",
+      "url": "https://www.aqr.com/Insights/Research/Trade-Publication/In-the-Age-of-AI-A-Quants-Edge-is-Human",
+      "state": "rejected",
+      "stage": "critique",
+      "original_bytes": 13201,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": true,
+      "has_critique": false
+    },
+    {
+      "id": "18e6208b6c27d0971b860efbd35eabaaf3ecb47e2f774ae0c6a1b76b87a2ce64",
+      "source_id": "aqr",
+      "title": "Ten Lessons on Managing Concentrated Wealth",
+      "url": "https://www.aqr.com/Insights/Research/Tax-Aware-Investing/Ten-Lessons-on-Managing-Concentrated-Wealth",
+      "state": "rejected",
+      "stage": "critique",
+      "original_bytes": 12669,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": true,
+      "has_critique": false
+    },
+    {
+      "id": "f9261e07d11148b7446861e6eff23f9f1b97a1e87af64cecc9bae8d2b30bae75",
+      "source_id": "aqr",
+      "title": "Managing Concentrated Wealth: Research, Perspectives, and Practical Insights",
+      "url": "https://www.aqr.com/Insights/Research/Tax-Aware-Investing/Managing-Concentrated-Wealth-Research-Perspectives-and-Practical-Insights",
+      "state": "rejected",
+      "stage": "critique",
+      "original_bytes": 10479,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": true,
+      "has_critique": false
+    },
+    {
+      "id": "277928697a069dfb74e93c11539210725d3ab4e007954b19dbe081e6d5867892",
+      "source_id": "aqr",
+      "title": "Liquidity without Liquidation",
+      "url": "https://www.aqr.com/Insights/Research/Working-Paper/Liquidity-without-Liquidation",
+      "state": "held",
+      "stage": "critique",
+      "original_bytes": 9205,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": true,
+      "has_critique": false
+    },
+    {
+      "id": "82f0b26973441512169148dce66666dc81fd44f6deca8af46bac0d841829d84c",
+      "source_id": "aqr",
+      "title": "The Tax Benefits of Pre-Tax Alpha",
+      "url": "https://www.aqr.com/Insights/Research/Working-Paper/The-Tax-Benefits-of-Pre-Tax-Alpha",
+      "state": "held",
+      "stage": "critique",
+      "original_bytes": 9022,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": true,
+      "has_critique": false
+    },
+    {
+      "id": "ac3ba062a9a1ee3d0a52202a814c4710a3eddd5a7864be32cee561687c1caf8c",
+      "source_id": "aqr",
+      "title": "The Case for Taking a Total Portfolio Approach",
+      "url": "https://www.aqr.com/Insights/Research/Trade-Publication/The-Case-for-Taking-a-Total-Portfolio-Approach",
+      "state": "rejected",
+      "stage": "critique",
+      "original_bytes": 8902,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": true,
+      "has_critique": false
+    },
+    {
+      "id": "1d1669383168ca9c43c3d719e6ca337975f7d2a80c8debe1439d44b4ad3dd30e",
+      "source_id": "aqr",
+      "title": "Alternative Thinking",
+      "url": "https://www.aqr.com/Insights/Research/Alternative-Thinking",
+      "state": "held",
+      "stage": "critique",
+      "original_bytes": 8273,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": true,
+      "has_critique": false
+    },
+    {
+      "id": "4cde1c783d1bf7b147e5b838dcf5c862781dd11280aeec828cb97003ee83f909",
+      "source_id": "research-affiliates",
+      "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveNOV 2025Why Hold Expensive Slow-Growing Stocks? An Alternative Framework for Value and Growth IndicesThe dominant style index structure forces investors to hold the whole market, leading to diversification rather than diworsification. We propose a framework that removes expensive, slow-growing stocks and boosts performance. Read time:",
+      "url": "https://www.syzygyassetmanagement.com/insights/publications/articles/1100-why-hold-expensive-slow-growing-stocks",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 3269,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "953717d90f52126e0696ef67c5611372d7d968fabef99669dbea97fcc7186530",
+      "source_id": "research-affiliates",
+      "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveAPR 2025Small Caps, Big Opportunities: Investing Beyond Large-Cap StocksThe historically wide valuation discount between small- and large-cap stocks provides a substantial opportunity, but investors remain wary. Research shows that a smarter value approach by applying quality and momentum screens can minimize risks and enhance returns.",
+      "url": "https://www.syzygyassetmanagement.com/insights/publications/articles/1075-small-caps-big-opportunities-investing-beyond-large-cap-stocks",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 3217,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "cc4bb566ab9da510ecafdb52e45b5ba1b30238b7378518e8393496864c116132",
+      "source_id": "research-affiliates",
+      "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveFEB 2026Everything Everywhere All at Once: Conglomerates and the Disappearing Diversification DiscountModern conglomerates Alphabet, Apple, Amazon, and Microsoft average a “diversification premium” of 70%, or a combined $5.62 trillion. Read time: 12 minBy Noah Beck, Que Nguyen",
+      "url": "https://www.syzygyassetmanagement.com/insights/publications/articles/1105-everything-everywhere-all-at-once-conglomerates-and-the-disappearing-diversification-discount",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 3202,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "34fc211fa2950b60580ff679f325d6cb20515dd0e687c0fd614bb9719ddf4dd3",
+      "source_id": "research-affiliates",
+      "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveFEB 2024Active Value Investing: Avoiding Value TrapsValue traps erode returns for value investors. A strategy that actively screens out value traps using quality and momentum signals can provide better upside potential through more concentrated, yet less risky exposure to the least expensive stocks. Read time: 10 minBy Que Nguyen, Mario Albuquerque, Xi Liu",
+      "url": "https://www.syzygyassetmanagement.com/insights/publications/articles/1013-avoiding-value-traps",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 3154,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "06d1f8d5bcca2cbe8cc84b7469dd26e2bc46dd3f98d38c68e651731ebd11af5b",
+      "source_id": "research-affiliates",
+      "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveMAY 2026Guided by Fundamentals: Navigating Emerging Markets with ValueQuality and Momentum screens, alone or in combination, and a focus on inexpensive stocks can help maximize returns for investors seeking exposure to emerging market equities. Read time: 11 minBy Que Nguyen, Mario Albuquerque",
+      "url": "https://www.syzygyassetmanagement.com/insights/publications/articles/1116-guided-by-fundamentals-navigating-emerging-markets-with-value",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 3130,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "bc2f0a97dbfdf1a280ed21d47ae99a23d4e3c7ec4221cbbf5bafb6d53c5452e1",
+      "source_id": "research-affiliates",
+      "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveJUN 2016When a Storm Is in the Offing: Fundamental Growth in the U.S. Equity MarketForecasting the weather or stock prices is a mostly mundane matter, but the unforeseen can exact a heavy toll. For investors, economic data improve the precision of market forecasts. Read time: 10 minBy Omid Shakernia, Michael Aked",
+      "url": "https://www.syzygyassetmanagement.com/insights/publications/articles/548_when_a_storm_is_in_the_offing_fundamental_growth_in_the_us_equity_market",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 3081,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "0ac236944dff2a69366040f81c7b9fc81f22e9f8f6ff187e928045a48c04291e",
+      "source_id": "research-affiliates",
+      "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveJUN 2025Passive Aggressive: The Increasing Risks of Passive DominanceWhile passive indexing increases correlations, distorts prices, and heightens systemic risk, it also creates opportunity for active investors to profit from systematic rebalancing. Read time: 20 minBy Chris Brightman, Campbell Harvey, Forrest Henslee",
+      "url": "https://www.syzygyassetmanagement.com/insights/publications/articles/1078-passive-aggressive-risks-of-passive-dominance",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 3078,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "ee336807ba00ceece53932e52734d5f047f184548616e33e779c688e548599fb",
+      "source_id": "research-affiliates",
+      "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveFEB 2025Current Constituents CAPEShiller CAPE suffers from backward-looking biases in its calculation but still provides a useful starting-point valuation for predicting long-term equity returns. Our modified, forward-looking method (CC CAPE) boosts the robustness of CAPE. Read time: 15 minBy Seanna Kim, Trent Commins, Ted Hsu",
+      "url": "https://www.syzygyassetmanagement.com/insights/publications/articles/1070-current-constituents-cape",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 3067,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "89e6a62d97605b9d01525a50534dba636a679a21044162371b03a151071d42bc",
+      "source_id": "research-affiliates",
+      "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveJUN 2026Reading Between the Lines: NLP for Long-Horizon Factor Investing (Part 1 of 2)Natural language processing (NLP) can parse SEC 10-K and 10-Q filings to produce investment signals that are slow-moving and durable. Our analysis shows that long-term investors can apply such methods to enhance their factor strategies. Read time: 15",
+      "url": "https://www.syzygyassetmanagement.com/insights/publications/articles/1117-nlp-for-long-horizon-factor-investing",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 3060,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    },
+    {
+      "id": "d30d4a5f472386d4f76bec2b949fc2a9616234ccebfdec95591586a0beda9eb2",
+      "source_id": "research-affiliates",
+      "title": "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } SaveFEB 2026Should Trend Follow Carry: Lessons from Bonds, Gold, and 2022Carry conditioning has benefited trend strategies, especially stocks and bonds, but it is not a one-size-fits-all proposition and the filtering decision requires several critical considerations. Read time: 24 minBy Jim Masturzo, Colin Suvak",
+      "url": "https://www.syzygyassetmanagement.com/insights/publications/articles/1107-should-trend-follow-carry-lessons-from-bonds-gold-and-2022",
+      "state": "ready",
+      "stage": "review",
+      "original_bytes": 3056,
+      "fulltext_status": "html_requires_evidence_check",
+      "has_brief": false,
+      "has_critique": false
+    }
+  ]
+}

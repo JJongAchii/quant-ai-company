@@ -1,0 +1,25 @@
+{
+  "checked_at_utc": "2026-09-28T04:56:49.619089+00:00",
+  "state": "staged_partial_qualification_deployment_pending_housing_integration",
+  "production_current_release": "ccdcc43c2a0985dcc035262f33d19e0ae979f0a1",
+  "running_quant_image_release": "12398af25dc111fd93d99fa3408fbc66cb699121",
+  "staged_quality_release": "0c6dcba5ce747f242c2aa919ab70e71078df9e1e",
+  "staged_release_cutover": false,
+  "quant_collection_enabled": true,
+  "quant_publication_enabled": false,
+  "quant_publication_resumed": false,
+  "first_robeco_post_retained": true,
+  "delivered_quant_posts": 1,
+  "running_quant_calls": 0,
+  "negative_scope_case": "hold_and_reject",
+  "stored_positive_brief_new_independent_critique": "pass",
+  "fresh_positive_end_to_end": "not_passed_due_to_unsupported_exact_quote",
+  "slack_writes_during_qualification": false,
+  "deployment_blocker": "independent_housing_dispatch_uses_ccdcc_release; staged_quant_only_image_must_not_replace_it",
+  "activation_gates_remaining": [
+    "coordinate a combined release preserving the separately owned Housing services",
+    "obtain a fresh positive end-to-end source-grounded qualification",
+    "observe the new release for 48 hours with publication disabled",
+    "obtain explicit authorization before resuming Quant publication"
+  ]
+}
