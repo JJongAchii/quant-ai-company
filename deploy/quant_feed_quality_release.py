@@ -164,20 +164,21 @@ def cutover(args, previous, target, journal, helper):
         run(["docker", "start", "quant-company-quant-feed-worker-1"])
         raise
     old_env_path = journal.with_suffix(".env")
-    helper.atomic(old_env_path, original)
-    record.update(
-        phase="cutover_started",
-        cutover_started_at=time.time(),
-        original_env_sha256=hashlib.sha256(original).hexdigest(),
-        independent_before={key: value for key, value in before.items() if key not in selected},
-    )
-    helper.atomic(journal, json.dumps(record).encode())
     changed = False
     try:
+        helper.atomic(old_env_path, original)
+        record.update(
+            phase="cutover_started",
+            cutover_started_at=time.time(),
+            original_env_sha256=hashlib.sha256(original).hexdigest(),
+            independent_before={key: value for key, value in before.items() if key not in selected},
+        )
+        helper.atomic(journal, json.dumps(record).encode())
         run(["docker", "stop", "--time", "360", "quant-company-dispatch-1", "quant-company-api-1"])
         if any(activity().values()):
             raise ValueError("quality_release_activity_after_dispatch_stop")
         release = module(previous / "deploy/quant_feed_release.py")
+        changed = True  # Restore the snapshot even if the environment write fails.
         release.setenv(
             helper,
             {
@@ -186,7 +187,6 @@ def cutover(args, previous, target, journal, helper):
                 "QDATA_BUILD_CONTEXT": str(target / "qdata"),
             },
         )
-        changed = True
         helper.link(target)
         compose(
             helper,

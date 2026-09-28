@@ -28,8 +28,9 @@ def test_activity_uses_database_container_when_api_is_stopped(release, monkeypat
     assert "quant_feed_calls" in commands[0][-1]
 
 
+@pytest.mark.parametrize("fail_setenv", [False, True])
 def test_cutover_recreates_only_selected_services_and_preserves_publication_pause(
-    release, monkeypatch, tmp_path
+    release, monkeypatch, tmp_path, fail_setenv
 ):
     base, target, state = (tmp_path / name for name in ("base", "target", "state"))
     for path in (base, target, state / "config"):
@@ -89,6 +90,8 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
         env.write_text(
             current.replace("RELEASE_COMMIT=" + "a" * 40, "RELEASE_COMMIT=" + updates["RELEASE_COMMIT"])
         )
+        if fail_setenv:
+            raise RuntimeError("synthetic environment write failure")
 
     helper = SimpleNamespace(atomic=lambda path, value: path.write_bytes(value), link=linked.append)
     monkeypatch.setattr(release, "run", run)
@@ -101,11 +104,16 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
         lambda: {"running_quant_calls": 0, "pending_quant_outbox": 0, "sending_outbox": 0},
     )
     monkeypatch.setattr(release.time, "sleep", lambda seconds: None)
-    release.cutover(SimpleNamespace(base="a" * 40, commit=commit), base, target, journal, helper)
+    args = SimpleNamespace(base="a" * 40, commit=commit)
+    if fail_setenv:
+        with pytest.raises(RuntimeError, match="synthetic"):
+            release.cutover(args, base, target, journal, helper)
+    else:
+        release.cutover(args, base, target, journal, helper)
     assert [command for command in commands if command[0] == "compose"] == [
         [
             "compose",
-            str(target),
+            str(base if fail_setenv else target),
             "up",
             "-d",
             "--no-deps",
@@ -120,6 +128,6 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
         ["--time", "900", "quant-company-quant-feed-worker-1"],
         ["--time", "360", "quant-company-dispatch-1", "quant-company-api-1"],
     ]
-    assert linked == [target]
+    assert linked == ([base] if fail_setenv else [target])
     assert "QUANT_FEED_PUBLISH_ENABLED=false" in env.read_text()
-    assert json.loads(journal.read_text())["phase"] == "preview_active"
+    assert json.loads(journal.read_text())["phase"] == ("rolled_back" if fail_setenv else "preview_active")
