@@ -6,7 +6,7 @@
   "deliverables": {
     "DIAGNOSIS": {"status": "completed"},
     "APPLICATION": {"status": "prepared", "commit": "bebf69b59586a89c5306b1bed412781db1529460"},
-    "PINNED_WORKER": {"status": "prepared", "commit": "e53b771aa994a54c1f4be6a2610856ea7a298816"},
+    "PINNED_WORKER": {"status": "prepared", "commit": "e53b771aa994a54c1f4be6a2610856ea7a298816", "temporaryOverlay": "deploy/pinned-worker-roles-compat.compose.yaml"},
     "VALIDATION": {"status": "completed", "realPostgresTests": 16, "pinnedWorkerTests": 1},
     "CUTOVER": {"status": "pending"}
   },

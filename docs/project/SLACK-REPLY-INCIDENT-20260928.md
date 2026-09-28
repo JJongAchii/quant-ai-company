@@ -19,7 +19,9 @@
   일반 질문이 한도에 걸리면 접수 영수증과 한도 안내 답변을 한 번만 남긴다.
 - 고정 연구 worker `31ff903` 기반 후보 `e53b771`은 발송 전용 `quant_scout`를 직원
   모델 문맥에서 제외하는 한 줄의 코드 변경이다. 현재 main에도 이 제외가 있으나 운영
-  worker는 연구 호환성을 위해 구버전으로 고정돼 있다.
+  worker는 연구 호환성을 위해 구버전으로 고정돼 있다. 활성 연구 중에는 이미지와
+  `COMPANY_CODE_COMMIT`을 유지하고 [worker 전용 역할 설정 overlay](../../deploy/pinned-worker-roles-compat.compose.yaml)로
+  비활성 발송 역할만 제외하는 임시 경로를 준비했다. Compose 병합 검사는 통과했다.
 - 합성 Slack 입력을 실제 임시 PostgreSQL에 연결한 앱 회귀 검사 16개와 고정 worker
   검사 1개가 통과했다. Ruff도 통과했다. 실제 직원 답변이나 새 Slack 왕복은 아직 검증하지 않았다.
 
@@ -28,7 +30,10 @@
 현재 연구 임무는 활성 상태다. 마지막 읽기 전용 관측 때 실행 중인 연구 job과 일반 turn은
 없었지만, 이는 재시작 시점의 안전을 보증하지 않는다. [연구 배포·복구 절차](../runbooks/autonomous-research.md)에
 따라 실행 중 외부 효과와 release pin을 다시 대사하고, 진행 중인 다른 배포와 조율한 뒤
-앱 Socket과 고정 worker만 교체한다. 기존 이미지·설정·영수증을 보존한다.
+앱 Socket을 새 코드로 교체한다. 고정 worker는 기존 이미지를 유지한 채 역할 설정만 분리해
+재시작한다. 새 역할 파일은 운영 `roles.json`에서 비활성 `quant_scout` 한 항목만 제외하며,
+다른 모든 역할이 같은지 확인하고 원본과 새 파일의 digest를 영수증에 기록한다.
+기존 이미지·설정·영수증을 보존한다.
 
 운영 적용 후에는 DM의 기존 두 Temporal turn이 완료되고 실제 Slack 답변 영수증이 생기는지
 확인한다. 거절된 `research-center` 메시지는 자동 재생하지 않는다. 사용자가 새 메시지로
