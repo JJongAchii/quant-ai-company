@@ -1,0 +1,16 @@
+# Operator-only fast build when lockfile, project metadata, qdata pin and entrypoint
+# are byte-identical to the reviewed base. The operator records BASE_IMAGE's ID.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+ARG RELEASE_COMMIT
+USER root
+WORKDIR /opt/company
+COPY pyproject.toml uv.lock ./
+COPY src ./src
+RUN UV_COMPILE_BYTECODE=0 uv build --wheel --out-dir /tmp/company-wheel --no-sources \
+    && UV_COMPILE_BYTECODE=0 uv pip install --python /app/.venv/bin/python --no-deps \
+       --reinstall-package quant-company /tmp/company-wheel/*.whl \
+    && rm -rf /tmp/company-wheel
+USER 10001:10001
+ENV COMPANY_CODE_COMMIT=$RELEASE_COMMIT
+LABEL org.opencontainers.image.revision=$RELEASE_COMMIT
