@@ -99,7 +99,7 @@ def publish_library(company, conn, original_project, source_id, report, conclusi
                                      (source_id,)).fetchone():
         raise PolicyError("Research library requires a verified published checkpoint")
     project_id = stable(f"research-library:{channel}:{original_project['owner_user']}")
-    conn.execute("""INSERT INTO projects(id,name,goal,owner_user,channel)
+    conn.execute("""INSERT INTO projects(id,title,instruction,owner_user,channel)
         VALUES(%s,'research-library','Verified research findings and reconsideration conditions',%s,%s)
         ON CONFLICT DO NOTHING""", (project_id, original_project["owner_user"], channel))
     project = company._project(conn, project_id)

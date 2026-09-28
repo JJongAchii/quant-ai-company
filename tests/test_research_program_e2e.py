@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID
 
 from quant_company.research.feedback import resolve_challenges
 from quant_company.research.mission_contracts import MissionSpec
@@ -20,6 +20,7 @@ def test_two_program_trials_wait_for_independent_meaning_review_before_publicati
                                 "python_executable": str(qlab_profile.python_executable)}))
     p.company.settings.research_qlab_profile_file = qlab
     p.company.settings.company_code_commit = "c" * 40
+    p.company.settings.research_library_channel_id = "CQUANT"
     h = BackendHarness(p.company, p.original, p.public, qlab_profile)
     h.mission_id = p.mission_id
     current = h.snapshot()
@@ -28,7 +29,8 @@ def test_two_program_trials_wait_for_independent_meaning_review_before_publicati
     def select():
         proposal = h.add()
         challenge = h.challenge(proposal)
-        trial = str(uuid4())
+        # Fixed worker fixture timestamps and reverse UUID order must retain the first incumbent.
+        trial = str(UUID(int=100 - len(h.snapshot()["trials"])))
         with h.company.db.transaction() as conn:
             resolve_challenges(h.company, conn, h.snapshot(), proposal.id, {
                 "decision": "execute", "rationale": "Fixture contract check", "responses": [{
@@ -70,6 +72,11 @@ def test_two_program_trials_wait_for_independent_meaning_review_before_publicati
         with h.company.db.transaction() as conn:
             source = conn.execute("SELECT content FROM sources WHERE id=%s", (published["source_id"],)).fetchone()
             assert json.loads(source["content"])["summary"]["meaning_review"]["conclusion"] == "inconclusive"
+            library = conn.execute("SELECT content FROM sources WHERE id=%s",
+                                   (published["source_id"] + ":library",)).fetchone()
+            assert library["content"] == source["content"]
+            assert conn.execute("SELECT count(*) AS n FROM outbox WHERE text LIKE %s",
+                                ("검증된 연구 기록 · 결론 보류%",)).fetchone()["n"] == number
             # Ordinary director delivery is independently tested by the legacy producer/consumer gate.
             conn.execute("UPDATE turns SET status='stale' WHERE status='queued'")
             conn.execute("UPDATE tasks SET status='completed'")

@@ -2,6 +2,8 @@
 
 import json
 from datetime import date
+from types import SimpleNamespace
+from uuid import uuid4
 
 import pytest
 
@@ -12,15 +14,14 @@ from quant_company.research.domestic_profile import ROOT, prepare_domestic_profi
 from quant_company.research.mission_contracts import MissionSpec, TrialPlan
 from quant_company.research.reference.domestic_engine import run
 from quant_company.research.worker import sha_file
+from quant_company.research.workspace import TextPatch, prepare_workspace
 
 from .test_research_domestic_engine import rows
 from .test_research_missions import spec_payload
 from .test_research_workspace import make_snapshot
 
 
-@pytest.mark.parametrize("market", ["kr_stock", "kr_etf"])
-@pytest.mark.parametrize("kind", ["strategy", "claim", "replication"])
-def test_prepared_bundle_qualifies_and_evaluates_with_exact_typed_consumer(tmp_path, market, kind, monkeypatch):
+def prepare_case(tmp_path, market, kind, runtime=None, company_commit="c" * 40):
     _, bundle, base = make_snapshot(tmp_path)
     inputs = tmp_path / "inputs"
     inputs.mkdir()
@@ -35,7 +36,7 @@ def test_prepared_bundle_qualifies_and_evaluates_with_exact_typed_consumer(tmp_p
     for name, chosen in (("warmup.json", [r for r in data if r["date"] < start]),
                          ("development.json", [r for r in data if r["date"] >= start])):
         (inputs / name).write_text(json.dumps(chosen))
-    runtime = {"profile_id": market.replace("_", "-") + "-research-v2", "python_executable": "/runtime/python",
+    runtime = runtime or {"profile_id": market.replace("_", "-") + "-research-v2", "python_executable": "/runtime/python",
         "python_sha256": "a"*64, "mounts": [{"source": str(tmp_path), "target": "/runtime", "sha256": "b"*64}],
         "allowed_roots": [str(tmp_path)], "bwrap_executable": "/usr/bin/bwrap"}
     destination = tmp_path / "release"
@@ -56,30 +57,42 @@ def test_prepared_bundle_qualifies_and_evaluates_with_exact_typed_consumer(tmp_p
             **({"target": .1, "tolerance": .01} if kind == "replication" else {})},
             objective={"metric": metric, "direction": "maximize" if kind == "claim" else "minimize", "unit": "fraction"})
     spec = MissionSpec.model_validate(payload)
-    from uuid import uuid4
-
     code = destination / "source/code"
-    monkeypatch.syspath_prepend(str(code / ROOT))
+    candidate = ROOT + "/candidate.py"
+    prepared = prepare_workspace(server.source_bundle, server.source_bundle_sha256, server.base_commit,
+        tmp_path / "candidate", tuple(server.allowed_write_paths), tuple(server.public_profile.protected_paths),
+        (TextPatch(candidate, (code / candidate).read_text(),
+                   (code / candidate).read_text() + "\n# Synthetic qualification candidate revision.\n"),))
+    code = prepared.worktree
     config_path = ROOT + "/config.json"
     plan = TrialPlan(trial_id=uuid4(), proposal_id=uuid4(), mission_digest=record_digest(spec),
         execution_profile=server.public_profile.id, implementer="engineer", repository="quant-lab",
-        code_commit=server.base_commit, changed_paths=[ROOT + "/candidate.py"],
+        code_commit=prepared.commit, changed_paths=[candidate],
         config_files={config_path: sha_file(code / config_path)}, input_files=receipt["input_files"],
         lake_id=spec.data.lake_id, development=spec.development, worker_id="worker",
         hostname="DESKTOP-5T00NAF", gpu="NVIDIA GeForce RTX 3070")
     manifest = AdaptiveManifest(id="kr-research-python-v2", mission_id=uuid4(), mission_digest=record_digest(spec),
         trial_id=plan.trial_id, plan_digest=record_digest(plan), plan=plan, spec=spec,
         code_files={name: sha_file(code / name) for name in server.public_profile.code_paths},
-        bundle_sha256=server.source_bundle_sha256, config_path=config_path, company_commit="c"*40)
+        bundle_sha256=prepared.bundle_sha256, config_path=config_path, company_commit=company_commit)
     path = tmp_path / "manifest.json"
     path.write_text(manifest.model_dump_json())
+    return SimpleNamespace(receipt=receipt, server=server, manifest=manifest, path=path, code=code,
+                           inputs=inputs, prepared=prepared, destination=destination)
+
+
+@pytest.mark.parametrize("market", ["kr_stock", "kr_etf"])
+@pytest.mark.parametrize("kind", ["strategy", "claim", "replication"])
+def test_prepared_bundle_qualifies_and_evaluates_with_exact_typed_consumer(tmp_path, market, kind, monkeypatch):
+    case = prepare_case(tmp_path, market, kind)
+    monkeypatch.syspath_prepend(str(case.code / ROOT))
     for action in ("qualify", "evaluate"):
         output = tmp_path / action
         output.mkdir()
         # Explicit direct synthetic fixture. Production uses bubblewrap on the 3070 only.
-        run(action, code / config_path, path, output, input_root=inputs)
-    qualification_from_file(tmp_path / "qualify/qualification.json", manifest, server.public_profile)
-    result = validate_result_files(tmp_path / "evaluate", manifest)
+        run(action, case.code / case.manifest.config_path, case.path, output, input_root=case.inputs)
+    qualification_from_file(tmp_path / "qualify/qualification.json", case.manifest, case.server.public_profile)
+    result = validate_result_files(tmp_path / "evaluate", case.manifest)
     assert result.metrics.sample_count == (5 if kind == "strategy" else 39)
     assert set(result.output_files) == ({"base.csv", "stress.csv"} if kind == "strategy" else {"observations.csv"})
-    assert not any(name.endswith("token") for name in receipt)
+    assert not any(name.endswith("token") for name in case.receipt)

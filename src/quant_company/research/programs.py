@@ -148,6 +148,10 @@ class ProgramStore:
         count = conn.execute("SELECT count(*) AS n FROM research_missions WHERE program_id=%s", (program_id,)).fetchone()["n"]
         if count >= spec.max_missions or used["trials"] >= spec.max_total_trials or used["compute_seconds"] >= spec.max_compute_seconds:
             raise PolicyError("Program budget exhausted")
+        active = [m for m in self.snapshot(conn, program_id)["missions"]
+                  if m["stage"] not in {"owner_review", "cancelled"}]
+        if len(active) >= spec.max_parallel_missions:
+            raise PolicyError("Program parallel mission limit reached")
         proposal = typed(ResearchTaskProposal, task["proposal"])
         envelope = next(e for e in spec.envelopes if e.name == proposal.envelope)
         require_current(conn, proposal.source_ids)
@@ -155,6 +159,7 @@ class ProgramStore:
         mission_spec.update(title=proposal.title, baseline_source_ids=sorted(set(
             envelope.template.baseline_source_ids + proposal.source_ids + task["data_assessment"]["source_ids"])))
         mission_spec = MissionSpec.model_validate(mission_spec)
+        require_current(conn, mission_spec.baseline_source_ids)
         profile_for(self.company, mission_spec)
         mission = MissionStore(self.company).create(conn, project["id"], row["owner_user"], row["revision"], mission_spec)
         if mission["state"] != "draft":
@@ -192,6 +197,7 @@ class ProgramStore:
             return
         _, _, spec = self.locked(conn, mission["program_id"], active=True)
         self.require_authorized(conn, mission)
+        require_current(conn, mission["spec"]["baseline_source_ids"])
         old = conn.execute("SELECT * FROM research_program_reservations WHERE job_id=%s", (job_id,)).fetchone()
         if old:
             if str(old["trial_id"]) != str(trial_id) or old["reserved_seconds"] != seconds:

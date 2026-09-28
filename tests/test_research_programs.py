@@ -120,6 +120,12 @@ def test_exact_replication_cannot_silently_be_a_market_transfer(program):
             h.program_store.assess(conn, h.program_id, task, ready(), actor="data")
 
 
+def test_task_acceptance_rechecks_parallel_limit_inside_the_transaction(program):
+    create_task(program)
+    with pytest.raises(PolicyError, match="parallel mission limit"):
+        create_task(program, title="Second distinct fixture", question="Can another task start concurrently?")
+
+
 def test_all_challenges_require_dispositions_and_revisions_block_execution(program):
     h = program
     create_task(h)

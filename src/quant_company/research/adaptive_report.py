@@ -391,7 +391,13 @@ def build_adaptive_report(
                            for risk in trial.manifest.spec.risk_constraints)]
         best = max(eligible, key=lambda trial: trial.result.metrics.primary.value * (
             -1 if trial.manifest.spec.objective.direction == "minimize" else 1)) if eligible else None
-        _require(history.best_trial_id == (best.manifest.trial_id if best else None), "reported_best_trial_mismatch")
+        incumbent = next((trial for trial in eligible if trial.manifest.trial_id == history.best_trial_id), None)
+        # The audited company history preserves the earlier incumbent on a tie. Worker
+        # timestamps can coincide; UUID ordering cannot replace that durable decision.
+        _require((best is None and history.best_trial_id is None)
+                 or (best is not None and incumbent is not None
+                     and incumbent.result.metrics.primary.value == best.result.metrics.primary.value),
+                 "reported_best_trial_mismatch")
         for trial in trials:
             trial_id = str(trial.manifest.trial_id)
             role = "best" if trial.manifest.trial_id == history.best_trial_id else "candidate"
@@ -438,6 +444,13 @@ def build_adaptive_report(
                 f'<tbody>{rows}</tbody></table><p>Exact code: <code>{trial.receipt.code_commit}</code></p></section>'
             )
         summary["audit"] = audit.public_receipt()
+    return_convention = (
+        '<p>initial-zero-calendar-cagr-v1: 첫 수익률은 0, 시작자산은 1. '
+        'CAGR = 최종자산^(365.25 / 실제 경과일수) − 1. 낙폭은 자산 / 누적 최고자산 − 1. '
+        '월 수익률은 월말 마지막 관측 자산 / 전월말 자산 − 1 (첫 달 분모 1).</p>'
+        '<p>월별 관측이 빠졌거나 전월 자산이 0이면 해당 월의 수익률은 미측정으로 표시합니다.</p>'
+        if any(trial.result.observations is None for trial in trials) else ''
+    )
     document = (
         '<!doctype html><html lang="ko"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
@@ -452,10 +465,7 @@ def build_adaptive_report(
         f'<p>누적 과학 시행 {history.cumulative_scientific_trials}회 · '
         f'기술 시도 {history.cumulative_technical_attempts}회 · 현재 cycle {history.current_cycle}.</p>'
         '<p>벤치마크·초과수익은 미측정입니다. 확증 통과 또는 실거래 성과를 뜻하지 않습니다.</p>'
-        '<p>initial-zero-calendar-cagr-v1: 첫 수익률은 0, 시작자산은 1. '
-        'CAGR = 최종자산^(365.25 / 실제 경과일수) − 1. 낙폭은 자산 / 누적 최고자산 − 1. '
-        '월 수익률은 월말 마지막 관측 자산 / 전월말 자산 − 1 (첫 달 분모 1).</p>'
-        '<p>월별 관측이 빠졌거나 전월 자산이 0이면 해당 월의 수익률은 미측정으로 표시합니다.</p>'
+        f'{return_convention}'
         f'{"".join(sections)}<footer><p>다음 단계: 승인된 목표와 연구 예산 안에서 근거를 검토하고 '
         '후속 가설을 선택합니다.</p></footer></body></html>'
     )
