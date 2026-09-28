@@ -1,0 +1,85 @@
+{
+  "active_3070": {
+    "company_commit": "2e1b5c783319c69e384a4a37c79af24a5441c422",
+    "config_sha256": "9741cdeec6b9a26c7e4ed15e7e7d39d25081d44fb34c6eaead84a7894fa058e6",
+    "unit_sha256": "53cac82f4ac991e3f8e6eb649ec57999048a8aed52b732e55d3b5fd4f56b5407"
+  },
+  "active_server": {
+    "api_image": "quant-company:d571734e161c39f7c26252005231f93b619b3749",
+    "mission_trials": [
+      [
+        "4462aff3-c7fe-5e66-a003-4aca2e8f3330",
+        1
+      ]
+    ],
+    "profile_sha256": "221cb9a6d5d8f383e328ec26d72493c07a5a5e4f1989f25aba10ada38571a043",
+    "research_programs_table": false,
+    "research_worker_image": "quant-company-autonomous:31ff903f08a1471d26cb2ce0fef9643a0b34fc75"
+  },
+  "candidate_bundle_sha256": "cbf3d92af2e77d3ccad4493d5532735ececf06a858ef7c644332d397b5579cf3",
+  "candidate_company_commit": "382284512ade2c0750c79494389a0899d2b46688",
+  "candidate_images": {
+    "quant-company-autonomous:382284512ade2c0750c79494389a0899d2b46688": {
+      "id": "sha256:8f47ea3ddf91de161eda9ce40d1be70eeb061f73b4d2d1a1f746d0f2858ec6cd",
+      "qdata_revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+      "revision": "382284512ade2c0750c79494389a0899d2b46688"
+    },
+    "quant-company:382284512ade2c0750c79494389a0899d2b46688": {
+      "id": "sha256:1a9150c1826e715e92f48d32b15fec876ec29ec62baec261fe08772777e28401",
+      "qdata_revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+      "revision": "382284512ade2c0750c79494389a0899d2b46688"
+    }
+  },
+  "candidate_qdata_archive_sha256": "8bb50549a923f3ec39bb1e6ffce2ac182ed41d368275614e55f60686707a138c",
+  "candidate_qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "created_at": "2026-09-28T23:07:39.260281+00:00",
+  "evidence_files": {
+    "activation-worker-drift.json": "b179a379d0b8148801fc78aea721e3c0c1db53a47be953ead351d76bf819ab10",
+    "next-compose-preflight.json": "e01253b5485169238a6e65b27143cfa31927523c06416e8e41fec907dae00927",
+    "next-image-stage.json": "469e5898cdfd5c4d7bef39f17c70a1cbfd838c165551727b661521fca4a645c6",
+    "next-live-server-audit.json": "396e2116532c98d1807daca4b5688d4c7d07b1a3021d6984a211287354a1ccfe",
+    "next-live-worker-audit.json": "f336b7b8ba91aa0ad62766ff180d1af55027d7f8d43556447db933bebac076ba",
+    "next-server-stage.json": "86306cc86cb07989957a0112b2e33be7af4dd7792e82c6d0add047d4afa3942a",
+    "next-worker-baseline.json": "b60fbdf3090f00c19350e46ef8a8f2b37f9fcc3bfd2444018446b731431322a8",
+    "next-worker-stage.json": "032cb45841cafbadfb77babcf15f6cdfc6988a89ceb1b695183d2a892246f73a",
+    "next-worker-warmup.json": "6fabe54c17c2cd0c34024c01ef47320b22cdab23243d6e3bb146d9791e698cc5"
+  },
+  "operational_state": {
+    "new_scientific_trials": 0,
+    "program_approval_request_posted": false,
+    "server_db_migrated": false,
+    "server_services_recreated": false,
+    "worker_candidate_activated": false
+  },
+  "program_limits": {
+    "compute_seconds": 36000,
+    "missions": 6,
+    "parallel_missions": 1,
+    "trials": 24
+  },
+  "program_manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "reason": "3070 active worker independently changed to 2e1b5c78 at 2026-09-28T08:30:25Z after the previous exact approval",
+  "research_source_bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+  "schema_version": 2,
+  "server_profile_registry_sha256": "22a5fd7aa0fcd440730258f3a828720c04bf496ac28846354c84ee81e92d0779",
+  "state": "new_candidate_prepared_owner_reapproval_required",
+  "supersedes_reviewed_commit": "2b4034db126ff13ff936c8e3def3ae89c7456824",
+  "verification": {
+    "local_full_pytest": "1288 passed, 13 skipped",
+    "local_ruff": "passed",
+    "real_postgresql": true,
+    "server_compose_config_exit_code": 0,
+    "server_images_source_matches": 6,
+    "temporal_live_rechecked": false,
+    "worker_warmup_cases": [
+      "etf_strategy",
+      "etf_claim",
+      "stock_strategy",
+      "stock_claim"
+    ],
+    "worker_warmup_scientific_trials": 0
+  },
+  "worker_candidate_config_sha256": "63337bd726e3b53502d8df282523df9c4a97b9f737b2f2d46c5db1b11598eae8",
+  "worker_release_receipt_sha256": "3f34a0c9bea4eda00cc4937f6b583493db756334ddc6936cd91ed6148afa9ee3",
+  "worker_warmup_receipt_sha256": "6fabe54c17c2cd0c34024c01ef47320b22cdab23243d6e3bb146d9791e698cc5"
+}

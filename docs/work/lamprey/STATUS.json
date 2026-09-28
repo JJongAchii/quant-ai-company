@@ -1,40 +1,10 @@
 {
-  "approval": {
-    "approvedAt": "2026-09-28T08:18:58.455393+00:00",
-    "id": "chat-20260928-owner-approved-deploy-and-program-request"
-  },
-  "currentIntent": "INTENT-v4.json",
-  "deliverables": {
-    "ACTIVATION": {
-      "evidence": [
-        "docs/project/evidence/research-programs-20260928/activation-worker-drift.json",
-        "docs/project/RESEARCH-PROGRAMS-LIVE-REVIEW-20260928.md"
-      ],
-      "note": "Withheld: new active 3070 commit 2e1b5c78 was not in the owner-reviewed 2b4034 release.",
-      "status": "blocked"
-    },
-    "PRE_ACTIVATION": {
-      "evidence": [
-        "docs/project/evidence/research-programs-20260928/activation-worker-drift.json",
-        "docs/project/RESEARCH-PROGRAMS-LIVE-REVIEW-20260928.md",
-        "docs/project/evidence/research-programs-20260928/activation-server-baseline.json",
-        "docs/project/evidence/research-programs-20260928/activation-image-stage.json"
-      ],
-      "note": "Stopped on exact 3070 active commit/config drift before backup; server baseline and staged images verified.",
-      "status": "blocked"
-    },
-    "PROGRAM_REQUEST": {
-      "evidence": [
-        "docs/project/evidence/research-programs-20260928/activation-worker-drift.json",
-        "docs/project/RESEARCH-PROGRAMS-LIVE-REVIEW-20260928.md"
-      ],
-      "note": "Withheld because release activation did not pass; no Slack approval message posted.",
-      "status": "blocked"
-    }
-  },
-  "intentDigest": "5bd4603853d3",
+  "approval": null,
+  "currentIntent": "INTENT-v5.json",
+  "deliverables": {},
+  "intentDigest": null,
   "schemaVersion": 1,
   "slug": "lamprey",
-  "state": "approved",
-  "updatedAt": "2026-09-28T22:45:57.741390+00:00"
+  "state": "draft",
+  "updatedAt": "2026-09-28T23:09:13.779216+00:00"
 }
