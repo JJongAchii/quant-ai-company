@@ -35,8 +35,11 @@ flowchart TD
 
 ## 검증 범위와 증거
 
-전체 검사의 최종 집계는 [validation.json](evidence/research-programs-20260928/validation.json)에 기록한다.
-기존 전체 회귀검사와 수정 뒤의 새 통합검사를 구분하고, 중복 검사 수를 합산하지 않는다.
+최종 `uv run pytest -q`는 **1,232개 통과, 13개 건너뜀, 실패 0개**다. `uv run ruff check .`도
+통과했다. 로컬에서 건너뛴 새 Linux 검사 6개는 실제 3070에서 별도로 모두 통과했다.
+전체 집계·건너뛴 이유·테스트 및 코드 tree는
+[validation.json](evidence/research-programs-20260928/validation.json)에 기록했다.
+기존 회귀검사와 수정 뒤의 통합검사는 중복 합산하지 않는다.
 
 | 대상 | 실제로 확인한 내용 | 구분 |
 |---|---|---|

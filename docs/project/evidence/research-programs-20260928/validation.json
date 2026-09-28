@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "state": "final_regression_running",
+  "state": "engineering_verified_production_not_activated",
   "code_commit": "efd2e50cfb34758a894c8a735b9319dc488cd18d",
   "code_tree": "297ce52b079e30927f0da4712363998c14f13791",
   "tests_tree": "e373128255553e1fedb12fa3d1334588b7284f06",
@@ -78,5 +78,78 @@
     "real_market_snapshots": false,
     "production_activated": false
   },
-  "recorded_at": "2026-09-28T06:30:36.824962+00:00"
+  "recorded_at": "2026-09-28T06:32:58.839159+00:00",
+  "final_regression": {
+    "command": "uv run pytest -q --junitxml=.local/research-programs-final-tests.xml",
+    "passed": 1232,
+    "tests": 1245,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 13,
+    "seconds": 360.384,
+    "junit_sha256": "75b8670cafa2b0a3f28104c3f9096bea8248c0060773c759f65725c431acfc0c",
+    "code_and_test_trees_unchanged": true,
+    "skips": [
+      {
+        "test": "tests.test_codex_config_probe.test_real_cli_accepts_required_configuration_without_inference[gpt-6-astra-max]",
+        "reason": "Set CODEX_CONFIG_PROBE=1 for the local CLI probe"
+      },
+      {
+        "test": "tests.test_codex_config_probe.test_real_cli_accepts_required_configuration_without_inference[gpt-5.6-terra-high]",
+        "reason": "Set CODEX_CONFIG_PROBE=1 for the local CLI probe"
+      },
+      {
+        "test": "tests.test_quant_feed.test_real_pdf_subprocess_limits_and_pages",
+        "reason": "Hard PDF memory qualification requires Linux RLIMIT_AS"
+      },
+      {
+        "test": "tests.test_research_adaptive_linux.test_actual_linux_adaptive_qualification_through_detached_worker",
+        "reason": "Requires explicit operator runtime profile on the registered Linux 3070"
+      },
+      {
+        "test": "tests.test_research_domestic_linux.test_domestic_profiles_in_actual_linux_sandbox[strategy-kr_stock]",
+        "reason": "Opt-in approved 3070 and verified runtime required"
+      },
+      {
+        "test": "tests.test_research_domestic_linux.test_domestic_profiles_in_actual_linux_sandbox[strategy-kr_etf]",
+        "reason": "Opt-in approved 3070 and verified runtime required"
+      },
+      {
+        "test": "tests.test_research_domestic_linux.test_domestic_profiles_in_actual_linux_sandbox[claim-kr_stock]",
+        "reason": "Opt-in approved 3070 and verified runtime required"
+      },
+      {
+        "test": "tests.test_research_domestic_linux.test_domestic_profiles_in_actual_linux_sandbox[claim-kr_etf]",
+        "reason": "Opt-in approved 3070 and verified runtime required"
+      },
+      {
+        "test": "tests.test_research_domestic_linux.test_domestic_profiles_in_actual_linux_sandbox[replication-kr_stock]",
+        "reason": "Opt-in approved 3070 and verified runtime required"
+      },
+      {
+        "test": "tests.test_research_domestic_linux.test_domestic_profiles_in_actual_linux_sandbox[replication-kr_etf]",
+        "reason": "Opt-in approved 3070 and verified runtime required"
+      },
+      {
+        "test": "tests.test_research_etf_linux.test_actual_etf_evaluator_roundtrips_parquet_in_both_sandbox_phases",
+        "reason": "Opt-in real 3070, committed ETF checkout and prepared science runtime required"
+      },
+      {
+        "test": "tests.test_research_sandbox.test_linux_namespace_nonperformance_qualification",
+        "reason": "Requires explicit operator-reviewed runtime profile on the 3070; no Mac fallback"
+      },
+      {
+        "test": "tests.test_temporal.test_live_codex_company_producer_consumer",
+        "reason": "Opt-in real Codex subscription test"
+      }
+    ],
+    "warnings": [
+      "Starlette httpx TestClient integration deprecation",
+      "anyio.abc.BlockingPortal alias deprecation"
+    ]
+  },
+  "lint": {
+    "command": "uv run ruff check .",
+    "result": "pass"
+  }
 }
