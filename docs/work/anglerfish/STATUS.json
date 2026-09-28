@@ -12,10 +12,11 @@
     "CUTOVER": {"status": "applied", "commit": "d571734e161c39f7c26252005231f93b619b3749"},
     "LIVE_REPLY": {"status": "completed", "financialStrategistDm": "two delivered messages confirmed in real Slack", "researchCenter": "two delivered messages confirmed in real Slack"},
     "TASK_LIMIT": {"status": "prepared", "default": "unlimited", "realPostgresTests": 3, "fullSuitePassed": 1226, "fullSuiteSkipped": 38, "lint": "passed"},
-    "TASK_LIMIT_RELEASE": {"status": "pending", "reason": "Pinned research worker requires a qualified release with historical job pins preserved"}
+    "TASK_LIMIT_RELEASE": {"status": "staged", "appImage": "sha256:9ef6d12b7b39796dc7ee1bbcb41cb9644d251395ec0402ce9f63673690e58714", "workerImage": "sha256:468512d7bd125b372737039f784951ab579629dedc9032f66120408baa2819c7", "prepared3070ConfigSha256": "9741cdeec6b9a26c7e4ed15e7e7d39d25081d44fb34c6eaead84a7894fa058e6"}
   },
-  "operationalStatus": "Both named Slack threads have real delivered bot replies. The 40-task project quota remains in production pending a reviewed app and research-capable worker release. Source and real-PostgreSQL tests now support an unlimited default.",
+  "operationalStatus": "Both named Slack threads have real delivered bot replies. Unlimited-cap app and research-capable worker images are staged and byte-checked; the 3070 release is prepared without activation. The 40-task cap remains live pending updated PR review and a scoped production cutover.",
   "evidence": "../../project/evidence/slack-reply-cutover-20260928.json",
+  "taskLimitEvidence": "../../project/evidence/project-task-quota-preparation-20260928.json",
   "previousIntent": "INTENT-v3.json",
   "previousState": "completed",
   "previousEvidence": "../../project/evidence/model-accounts-20260923/live-account-control.json"
