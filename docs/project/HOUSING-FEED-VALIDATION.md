@@ -27,3 +27,29 @@ SH의 첨부 문서에만 있는 일정은 자동 추출하지 않으며, GH 별
 공용 채널 목록 변경이 다른 feed의 policy digest를 바꿀 수 있어 housing 전용 발송 허용 목록으로
 수정했다. 이후 관련 **52개 검사 통과**, 전체 lint 통과. 수신 Slack 이벤트의 허용 범위는 확장하지 않는다.
 [기계 판독 증거](evidence/housing-feed/automated-validation.json)에 검사 버전과 범위를 구분했다.
+
+## 2026-09-28 운영 활성화
+
+- 새 `housing-feed` 채널 `C0C4UV5C14J`, 기존 Reporter `U0C2FLSUUMV`, workspace `T0C1YRDRPNF`.
+- 운영 release `ccdcc43c2a0985dcc035262f33d19e0ae979f0a1`.
+- 서버 preview는 청약홈 APT 2건, 잔여세대 7건, LH 1건, SH 최근 모집 공고 0건. 네 소스 모두 성공.
+- DB·Temporal 실제 운영 경로 활성화. `company-housing-feed-v1` RUNNING, activity 완료 및 300초 timer 확인.
+- 12:15 KST readback에서 **3건 실제 게시, 7건 순차 발송 대기**. 게시 ID·채널·bot·client_msg_id 일치.
+  Slack이 URL의 `&`를 `&amp;`로 돌려주므로 HTML entity를 풀어 비교했고, 게시 본문은 일치한다.
+- 이후 소스별 다음 수집은 13:12 KST 이후. 공고 변경·신규·확인 가능한 접수 일정의 알림을 지속한다.
+- collector와 dispatcher만 변경했고, 기존 PostgreSQL·연구 worker·다른 서비스의 컨테이너와 상태를 보존했다.
+  collector에는 DB·Temporal secret만 마운트되어 있다. 실제 Slack token 값은 출력·Git 저장하지 않았다.
+- 최종 GitHub CI: **1,244 passed / 36 skipped / 1 deselected**, lint 통과.
+  [CI](https://github.com/JJongAchii/quant-ai-company/actions/runs/36372204330), [PR #75](https://github.com/JJongAchii/quant-ai-company/pull/75).
+
+최초 `5fc89a2` full image build는 layer export 도중 900초 제한으로 종료됐으며 활성화하지 않았다.
+의존성 입력 다섯 파일이 기존 release와 동일함을 확인하고, 기존 image ID를 고정한 새 image에
+회사 source 전체와 wheel을 다시 설치했다. 새 image 생성은 41초였다. 실행 중인 컨테이너 수정이나
+Slack 발송 재생은 하지 않았다. 서버 journal의 `updates`는 **preview 설정**이며, 실제 활성화 설정은
+아래 영수증의 `effective_housing_settings` 및 실제 worker 조회에서 확인한다.
+
+- [공식 소스의 서버 접근](evidence/housing-feed/server-source-access.json)
+- [배포·프로세스·설정 영수증](evidence/housing-feed/release-receipt.json)
+- [실제 PostgreSQL·Temporal·Slack readback](evidence/housing-feed/live-readback.json)
+
+청약 자동 접수, 개인 자격 판정, GH 별도 공고, 임대·오피스텔, SH PDF-only 일정 추출은 포함하지 않는다.

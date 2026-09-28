@@ -1,0 +1,266 @@
+{
+  "enabled": true,
+  "publish_enabled": true,
+  "allowed_channels": [
+    "C0C4UV5C14J"
+  ],
+  "channel": "C0C4UV5C14J",
+  "sources": [
+    {
+      "id": "applyhome-apt",
+      "last_success": "2026-09-28 03:12:35.640553+00:00",
+      "error": null,
+      "next_at": "2026-09-28 04:12:35.640553+00:00"
+    },
+    {
+      "id": "applyhome-remndr",
+      "last_success": "2026-09-28 03:12:50.053647+00:00",
+      "error": null,
+      "next_at": "2026-09-28 04:12:50.053647+00:00"
+    },
+    {
+      "id": "lh-sale",
+      "last_success": "2026-09-28 03:12:52.281080+00:00",
+      "error": null,
+      "next_at": "2026-09-28 04:12:52.281080+00:00"
+    },
+    {
+      "id": "sh-sale",
+      "last_success": "2026-09-28 03:12:56.988387+00:00",
+      "error": null,
+      "next_at": "2026-09-28 04:12:56.988387+00:00"
+    }
+  ],
+  "notices": [
+    {
+      "source_id": "applyhome-apt",
+      "count": 2
+    },
+    {
+      "source_id": "applyhome-remndr",
+      "count": 7
+    },
+    {
+      "source_id": "lh-sale",
+      "count": 1
+    }
+  ],
+  "publications": [
+    {
+      "id": "a083ed65-841f-56d8-a55f-29a4bbaa1abc",
+      "notice_id": "applyhome-apt:2026000453:2026000453",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1790565181.104669",
+      "attempts": 1,
+      "slack_readback": {
+        "found": true,
+        "text_matches": false,
+        "normalized_text_matches": true,
+        "text_difference": [
+          "--- \n",
+          "+++ \n",
+          "@@ -12,5 +12,5 @@\n",
+          " • 2순위 · 기타지역: 10/02",
+          " 당첨자 발표: 10/12",
+          " 접수 시간·자격은 모집공고문 확인",
+          "-<https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000453&pblancNo=2026000453|공식 공고·신청 안내 확인> · <https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000453&pblancNo=2026000453&atchmnflSeqNo=1971127&atchmnflSn=7|모집공고문>",
+          "+<https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000453&amp;pblancNo=2026000453|공식 공고·신청 안내 확인> · <https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000453&amp;pblancNo=2026000453&amp;atchmnflSeqNo=1971127&amp;atchmnflSn=7|모집공고문>",
+          " 확인 09/28 12:12 KST · 신청자격은 공고문 기준으로 직접 확인하세요."
+        ],
+        "client_id": "a083ed65-841f-56d8-a55f-29a4bbaa1abc",
+        "bot_id": "B0C2V3TJ230",
+        "url": "https://app.slack.com/client/T0C1YRDRPNF/C0C4UV5C14J/thread/C0C4UV5C14J-1790565181.104669"
+      }
+    },
+    {
+      "id": "3ebd083a-5070-57a7-88b6-0e0479ada362",
+      "notice_id": "applyhome-apt:2026000103:2026000103",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1790565241.225609",
+      "attempts": 1,
+      "slack_readback": {
+        "found": true,
+        "text_matches": false,
+        "normalized_text_matches": true,
+        "text_difference": [
+          "--- \n",
+          "+++ \n",
+          "@@ -12,5 +12,5 @@\n",
+          " • 2순위 · 기타지역: 09/28",
+          " 당첨자 발표: 10/02",
+          " 접수 시간·자격은 모집공고문 확인",
+          "-<https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000103&pblancNo=2026000103|공식 공고·신청 안내 확인> · <https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000103&pblancNo=2026000103&atchmnflSeqNo=1797255&atchmnflSn=9|모집공고문>",
+          "+<https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000103&amp;pblancNo=2026000103|공식 공고·신청 안내 확인> · <https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000103&amp;pblancNo=2026000103&amp;atchmnflSeqNo=1797255&amp;atchmnflSn=9|모집공고문>",
+          " 확인 09/28 12:12 KST · 신청자격은 공고문 기준으로 직접 확인하세요."
+        ],
+        "client_id": "3ebd083a-5070-57a7-88b6-0e0479ada362",
+        "bot_id": "B0C2V3TJ230",
+        "url": "https://app.slack.com/client/T0C1YRDRPNF/C0C4UV5C14J/thread/C0C4UV5C14J-1790565241.225609"
+      }
+    },
+    {
+      "id": "bdaf4831-f6e0-5fd8-965a-d1abc504b915",
+      "notice_id": "applyhome-remndr:2026930036:2026930036",
+      "status": "pending",
+      "error": "housing_delivery_window_or_spacing",
+      "sent_ts": null,
+      "attempts": 0,
+      "slack_readback": {
+        "found": false,
+        "text_matches": false,
+        "normalized_text_matches": false,
+        "text_difference": [],
+        "client_id": null,
+        "bot_id": null,
+        "url": null
+      }
+    },
+    {
+      "id": "34d4300c-0fb8-538a-95f7-12ef01665009",
+      "notice_id": "applyhome-remndr:2026930037:2026930037",
+      "status": "pending",
+      "error": "housing_delivery_window_or_spacing",
+      "sent_ts": null,
+      "attempts": 0,
+      "slack_readback": {
+        "found": false,
+        "text_matches": false,
+        "normalized_text_matches": false,
+        "text_difference": [],
+        "client_id": null,
+        "bot_id": null,
+        "url": null
+      }
+    },
+    {
+      "id": "9c9be7cf-d2f9-546a-8c2b-24c389e11137",
+      "notice_id": "applyhome-remndr:2026940203:2026940203",
+      "status": "pending",
+      "error": "housing_delivery_window_or_spacing",
+      "sent_ts": null,
+      "attempts": 0,
+      "slack_readback": {
+        "found": false,
+        "text_matches": false,
+        "normalized_text_matches": false,
+        "text_difference": [],
+        "client_id": null,
+        "bot_id": null,
+        "url": null
+      }
+    },
+    {
+      "id": "a7078da6-16ac-59e6-aeb5-ee4540865d35",
+      "notice_id": "applyhome-remndr:2026940207:2026940207",
+      "status": "pending",
+      "error": "housing_delivery_window_or_spacing",
+      "sent_ts": null,
+      "attempts": 0,
+      "slack_readback": {
+        "found": false,
+        "text_matches": false,
+        "normalized_text_matches": false,
+        "text_difference": [],
+        "client_id": null,
+        "bot_id": null,
+        "url": null
+      }
+    },
+    {
+      "id": "70b3670c-e45c-5f5c-aee1-5c1d6b053508",
+      "notice_id": "applyhome-remndr:2026910251:2026910251",
+      "status": "pending",
+      "error": "housing_delivery_window_or_spacing",
+      "sent_ts": null,
+      "attempts": 0,
+      "slack_readback": {
+        "found": false,
+        "text_matches": false,
+        "normalized_text_matches": false,
+        "text_difference": [],
+        "client_id": null,
+        "bot_id": null,
+        "url": null
+      }
+    },
+    {
+      "id": "e20b67be-10d6-5ab1-8b3b-f5180b46a500",
+      "notice_id": "applyhome-remndr:2026930040:2026930040",
+      "status": "delivered",
+      "error": null,
+      "sent_ts": "1790565302.401729",
+      "attempts": 1,
+      "slack_readback": {
+        "found": true,
+        "text_matches": false,
+        "normalized_text_matches": true,
+        "text_difference": [
+          "--- \n",
+          "+++ \n",
+          "@@ -7,5 +7,5 @@\n",
+          " • 일반공급: 10/06",
+          " 당첨자 발표: 10/12",
+          " 접수 시간·자격은 모집공고문 확인",
+          "-<https://www.applyhome.co.kr/ai/aia/selectAPTRemndrLttotPblancDetailView.do?houseManageNo=2026930040&pblancNo=2026930040|공식 공고·신청 안내 확인> · <https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026930040&pblancNo=2026930040&atchmnflSeqNo=1982993&atchmnflSn=5|모집공고문>",
+          "+<https://www.applyhome.co.kr/ai/aia/selectAPTRemndrLttotPblancDetailView.do?houseManageNo=2026930040&amp;pblancNo=2026930040|공식 공고·신청 안내 확인> · <https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026930040&amp;pblancNo=2026930040&amp;atchmnflSeqNo=1982993&amp;atchmnflSn=5|모집공고문>",
+          " 확인 09/28 12:12 KST · 신청자격은 공고문 기준으로 직접 확인하세요."
+        ],
+        "client_id": "e20b67be-10d6-5ab1-8b3b-f5180b46a500",
+        "bot_id": "B0C2V3TJ230",
+        "url": "https://app.slack.com/client/T0C1YRDRPNF/C0C4UV5C14J/thread/C0C4UV5C14J-1790565302.401729"
+      }
+    },
+    {
+      "id": "f66ea6f8-4864-5196-8610-74ab43225d33",
+      "notice_id": "applyhome-remndr:2026910220:2026910220",
+      "status": "pending",
+      "error": "housing_delivery_window_or_spacing",
+      "sent_ts": null,
+      "attempts": 0,
+      "slack_readback": {
+        "found": false,
+        "text_matches": false,
+        "normalized_text_matches": false,
+        "text_difference": [],
+        "client_id": null,
+        "bot_id": null,
+        "url": null
+      }
+    },
+    {
+      "id": "7416ba55-04d8-5f42-af88-ea401721001e",
+      "notice_id": "lh-sale:0000061175",
+      "status": "pending",
+      "error": "housing_delivery_window_or_spacing",
+      "sent_ts": null,
+      "attempts": 0,
+      "slack_readback": {
+        "found": false,
+        "text_matches": false,
+        "normalized_text_matches": false,
+        "text_difference": [],
+        "client_id": null,
+        "bot_id": null,
+        "url": null
+      }
+    }
+  ],
+  "temporal": {
+    "workflow": "company-housing-feed-v1",
+    "status": "RUNNING",
+    "activity_completions": [
+      7
+    ],
+    "durable_timers": [
+      {
+        "event_id": 11,
+        "seconds": 300
+      }
+    ]
+  },
+  "checked_at": "2026-09-28T03:15:04.660243+00:00",
+  "network": "real official public HTTP, production PostgreSQL/Temporal, real Slack API readback",
+  "current_release": "ccdcc43c2a0985dcc035262f33d19e0ae979f0a1"
+}

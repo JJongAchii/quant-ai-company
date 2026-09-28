@@ -22,5 +22,24 @@
     "time": "11.394"
   },
   "final_targeted_scope": "Housing parsing, PostgreSQL/Temporal retries, Slack ambiguity, dedicated outbound allowlist, dispatcher coexistence, scoped deployment rollback; 52 passed.",
-  "configuration_isolation": "HOUSING_FEED_ALLOWED_CHANNELS is separate from SLACK_ALLOWED_CHANNELS; existing news/quant/tech policy digests and incoming Slack event permissions are unchanged."
+  "configuration_isolation": "HOUSING_FEED_ALLOWED_CHANNELS is separate from SLACK_ALLOWED_CHANNELS; existing news/quant/tech policy digests and incoming Slack event permissions are unchanged.",
+  "deployment_configuration_suite": {
+    "tests": "31",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "time": "6.544"
+  },
+  "deployment_configuration_note": "Docker Compose CLI used locally without a daemon; 31 passed after adding the new list field to existing JSON fixture decoding. This test-only change does not alter the deployed application.",
+  "ci_initial": "1237 passed, 36 skipped, 1 deselected; 2 failures in direct Settings(**dict) fixture conversion of HOUSING_FEED_ALLOWED_CHANNELS. Corrected in 0f07d4d.",
+  "ci_final": {
+    "commit": "ccdcc43c2a0985dcc035262f33d19e0ae979f0a1",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36372204330",
+    "passed": 1244,
+    "skipped": 36,
+    "deselected": 1,
+    "seconds": 382.33,
+    "lint": "passed"
+  },
+  "dependency_reuse_checks": "7 operator tests passed, including refusal for changes to each of five dependency/build inputs."
 }
