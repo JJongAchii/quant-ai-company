@@ -237,3 +237,36 @@ stopped-worker operator refinement passed its four focused tests and awaits CI w
 Publication must remain disabled until the change is merged, a scoped production release and real
 subscription previews demonstrate the quality bar, and a fresh explicit activation is reviewed.
 The 48-hour stability observation has not elapsed.
+
+## Quality-gate follow-up after the 4 GiB migration, 28 September
+
+PR #72 (shorter grouped Slack card, direct quant scope and substantive-research critique gates,
+deterministic institutional-research check) and PR #76 (unique-location correction for an exact
+quote in the supplied original excerpts) are merged into `main`. The card is capped at 2,400
+characters. The citation gate never substitutes or invents quotation text: absent or ambiguous
+quotes and unregistered links still fail. Local regression and Ruff, followed by Linux CI, passed
+for both changes.
+
+Production publication remained disabled throughout. The quality release was built and source
+verified as `0c6dcba5ce747f242c2aa919ab70e71078df9e1e`, then tested in an isolated one-off
+container without a service cutover or Slack write. A fresh real-subscription negative preview
+held/rejected the previously mispublished generic Robeco AI-governance article. A stored Two Sigma
+regime-modeling brief passed frozen-original citation validation and a new independent
+real-subscription critique (direct quant scope, substantive research and all evidence checks);
+its grouped card was 1,653 characters. This is **not** a fresh end-to-end positive: new AQR and
+Two Sigma drafts failed closed because model-generated exact quotes or links were unsupported by
+the supplied originals. The acceptance gate for fresh positive generation therefore remains open.
+
+At the final read-only check (04:56:49 UTC), Quant collection was enabled, publication disabled,
+one earlier Robeco post remained delivered, and no Quant model call was running. Housing's
+independently operated dispatch and worker were on `ccdcc43c2a0985dcc035262f33d19e0ae979f0a1`,
+while the API and Quant worker were on the earlier quality image `12398af25dc111fd93d99fa3408fbc66cb699121`.
+The current release symlink also pointed to the Housing revision. Cutting over the staged
+Quant-only image would replace that dispatch with an image lacking Housing code, so the cutover
+was intentionally withheld. No Housing, research or news service was changed by this follow-up.
+
+The remaining sequence is a coordinated combined release after the Housing task owns its merge,
+fresh positive end-to-end source-grounded qualification, a 48-hour operational observation with
+publication still off, and explicit authorization to resume posting. The compact receipt and
+diagnostic scripts are under `evidence/quant-feed-quality-20260928/`; private full
+subscription and release journals remain on the server.

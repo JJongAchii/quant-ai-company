@@ -1,0 +1,64 @@
+{
+  "evidence_kind": "real_subscription_preview_and_read_only_production_observation",
+  "date": "2026-09-28",
+  "source_prs": [72, 76],
+  "merged_source_commit": "0c6dcba5ce747f242c2aa919ab70e71078df9e1e",
+  "policy_sha256": "ae087d1cf858843865e95e9d8fe5d6bf13a77b776eb030da5d3533da7d6d6ee5",
+  "staged_image_source_verified": true,
+  "staged_release_phase": "staged",
+  "staged_app_image_id": "sha256:9832f0723185a98cc5227cd14e21d6f085fc8472bba8414b3e610127a457b8cd",
+  "preview_cases": {
+    "negative_robeco_general_ai_governance": {
+      "document_id": "eab01733dab66494bd5391d6b47154a3c80633108993eb4c0bf85210e59a6003",
+      "fresh_review": "reject",
+      "independent_critique": "hold"
+    },
+    "positive_aqr_fresh_review": {
+      "document_id": "ea2936c4b831e4542fa83c77fd234e5913315eba5d9f67904189ba9fa4575db9",
+      "result": "not_passed",
+      "reason": "generated citation or link failed deterministic original-source validation"
+    },
+    "positive_two_sigma_fresh_review": {
+      "document_id": "a7dc910cf962c50bddc6763d8ad0d04aa209dda009c9caaaf85dbefb3ac65600",
+      "result": "not_passed",
+      "reason": "generated exact quote absent from frozen excerpts"
+    },
+    "positive_two_sigma_stored_brief_new_critique": {
+      "document_id": "a7dc910cf962c50bddc6763d8ad0d04aa209dda009c9caaaf85dbefb3ac65600",
+      "checked_at_utc": "2026-09-28T04:52:31.187966+00:00",
+      "result": "passed",
+      "stored_brief_exact_source_validation": true,
+      "fresh_independent_critique": "pass",
+      "direct_quant_scope": true,
+      "substantive_research": true,
+      "critique_issues": [],
+      "card_characters": 1653,
+      "call_state": "validated",
+      "request_id": "quant-feed-existing-critic-e9351c00208933f3624b7ff6c3a8221d9718a98a"
+    }
+  },
+  "preview_side_effects": {
+    "slack_writes": false,
+    "document_writes": false,
+    "publication_enabled": false,
+    "running_services_preserved_at_one_off_boundary": true
+  },
+  "production_observation": {
+    "checked_at_utc": "2026-09-28T04:56:49.619089+00:00",
+    "current_release": "ccdcc43c2a0985dcc035262f33d19e0ae979f0a1",
+    "quant_worker_image_release": "12398af25dc111fd93d99fa3408fbc66cb699121",
+    "dispatch_and_housing_worker_image_release": "ccdcc43c2a0985dcc035262f33d19e0ae979f0a1",
+    "quant_collection_enabled": true,
+    "quant_publication_enabled": false,
+    "quant_outbox_delivered": 1,
+    "quant_calls_running": 0,
+    "quant_document_states": {
+      "held": 101,
+      "preview": 4,
+      "queued": 1,
+      "ready": 330,
+      "rejected": 39
+    }
+  },
+  "interpretation": "Scope rejection and stored-brief critique passed on real ChatGPT-subscription calls, but fresh positive review did not pass. The staged Quant-only release was not cut over because it would replace an independently operated Housing dispatch. Quant publication remains paused; no 48-hour observation or activation approval is claimed."
+}
