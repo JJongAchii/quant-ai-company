@@ -1,0 +1,62 @@
+{
+  "channel": "C0C4UV5C14J",
+  "map_enabled": true,
+  "sources": [
+    {
+      "id": "applyhome-apt",
+      "last_success": "2026-09-28 06:07:45.081120+00:00",
+      "error": null
+    },
+    {
+      "id": "applyhome-remndr",
+      "last_success": "2026-09-28 06:07:59.070580+00:00",
+      "error": null
+    },
+    {
+      "id": "lh-sale",
+      "last_success": "2026-09-28 06:07:59.891522+00:00",
+      "error": null
+    },
+    {
+      "id": "sh-sale",
+      "last_success": "2026-09-28 06:08:02.281838+00:00",
+      "error": null
+    }
+  ],
+  "active_notices": 10,
+  "addressed_notices": 9,
+  "mapped_notices": 9,
+  "preview": {
+    "id": "ed232a00-b386-539c-998e-d4e74591e9e5",
+    "status": "delivered",
+    "error": null,
+    "sent_ts": "1790575737.355409"
+  },
+  "panel_details": [
+    {
+      "status": "delivered",
+      "error": null,
+      "created_at": "2026-09-28 06:14:21.463438+00:00"
+    },
+    {
+      "status": "delivered",
+      "error": null,
+      "created_at": "2026-09-28 06:13:09.547536+00:00"
+    },
+    {
+      "status": "delivered",
+      "error": null,
+      "created_at": "2026-09-28 06:13:09.546339+00:00"
+    }
+  ],
+  "slack_readback": {
+    "found": true,
+    "client_id_matches": true,
+    "work_object_count": 0,
+    "entity_type": null,
+    "preview_url": "https://app.slack.com/client/T0C1YRDRPNF/C0C4UV5C14J/thread/C0C4UV5C14J-1790575737.355409"
+  },
+  "current_release": "c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+  "checked_at": "2026-09-28T06:17:46.819820+00:00",
+  "network": "production PostgreSQL and real Slack readback; no credentials returned"
+}

@@ -43,16 +43,18 @@ API 키·유료 API·모델 호출은 사용하지 않는다. 실제 청약 접�
 ### 지도 패널
 
 `HOUSING_MAP_PANEL_ENABLED=true`이면 공고에 주소가 있고 공개 지오코더가 행정구역을
-검증한 경우에만 지도 카드를 함께 게시한다. 카드를 클릭하면 Slack 오른쪽 패널에서
-이동·확대할 수 있는 OpenStreetMap 지도가 열린다. 지도 표식은 **행정구역 중심**이며
+검증한 경우에만 지도 카드를 함께 게시한다. 카드를 클릭하면 Slack 내부의 움직이는
+OpenStreetMap 지도 미리보기가 열린다. 카드의 **사이드 패널에서 열기**를 누르면
+오른쪽 패널에 지도가 표시된다. 지도 표식은 **행정구역 중심**이며
 아파트 대지의 정확한 좌표가 아니다. 메시지의 공고상 주소와 공식 공고문으로 실제
 위치를 확인한다. 지오코딩이 실패해도 공식 공고 알림은 발송한다.
 
 별도 도메인이나 지도·공공데이터 API 키는 쓰지 않는다. Reporter 앱의 Work Object Previews에서
 `slack#/entities/item` 유형과 `www.openstreetmap.org` 임베드 허용 주소를 등록하고,
 `entity_details_requested` bot 이벤트를 구독한다. 공개 지도는 사용자의 Slack 클라이언트가
-OpenStreetMap에서 직접 읽는다. Slack의 iframe 정책이나 OpenStreetMap 응답이 바뀌면
-패널이 열리지 않을 수 있으므로 실제 메시지의 클릭 확인이 필요하다.
+OpenStreetMap에서 직접 읽는다. 운영 시험 메시지에서 카드 클릭·확대·오른쪽 사이드 패널 표시를
+[확인했다](project/HOUSING-FEED-VALIDATION.md). Slack의 iframe 정책이나 OpenStreetMap 응답이
+바뀌면 같은 클릭 검사를 다시 수행한다.
 
 ```dotenv
 HOUSING_FEED_ENABLED=true
