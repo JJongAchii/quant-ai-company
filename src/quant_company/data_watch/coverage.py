@@ -87,6 +87,8 @@ CHECKPOINTS = {
                                         "SEC 분기 FSDS의 2026 Q2 공개본이 레이크 최대 제출일에 반영되지 않음"),
     "sec_13f": SourceCheckpoint(date(2026, 6, 1), datetime(2026, 9, 1, tzinfo=KST),
                                 "SEC 2026년 6~8월 13F 공개본이 레이크 최대 제출일에 반영되지 않음"),
+    "sec_insider": SourceCheckpoint(date(2026, 4, 1), datetime(2026, 9, 28, tzinfo=KST),
+                                    "SEC 분기 Form 3·4·5의 2026 Q2 공개본이 레이크 최대 제출일에 반영되지 않음"),
     **{name: SourceCheckpoint(date(2026, 9, 28), datetime(2026, 9, 28, 20, tzinfo=KST),
                               "9/28 한국 거래일분이 저녁 수집 확인 시각 이후에도 반영되지 않음")
        for name in ("krx_prices", "krx_etf", "krx_flows", "krx_index_prices")},
