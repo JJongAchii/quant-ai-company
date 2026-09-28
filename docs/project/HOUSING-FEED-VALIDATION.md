@@ -82,3 +82,13 @@ Slack 발송 재생은 하지 않았다. 서버 journal의 `updates`는 **previe
 [오른쪽 패널 화면](evidence/housing-feed/panel-sideview.png)에 결과를 남겼다.
 
 청약 자동 접수, 개인 자격 판정, GH 별도 공고, 임대·오피스텔, SH PDF-only 일정 추출은 포함하지 않는다.
+
+## 2026-09-28 운영 디스크 정리
+
+서버 루트 디스크가 96% 사용 중(여유 3.1GB)이어서, 중단된 Buildx 빌더 두 개의
+상태 볼륨과 기본 빌더의 미사용 캐시를 공용 배포 잠금 아래 정리했다. 이후 사용률은
+74%(여유 21GB)였다. 실행 중인 빌더·이미지 54개·PostgreSQL 데이터와 서비스 컨테이너는
+보존했다. 정리 후 API health HTTP 200, 피드 소스 4곳 오류 없음, 공고 발송 11건과
+지도 패널 응답 7건의 영수증을 확인했다.
+
+[디스크 정리 전후 수치와 대상](evidence/housing-feed/disk-cleanup-20260928.json)을 기록했다.
