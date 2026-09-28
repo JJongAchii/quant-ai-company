@@ -65,6 +65,21 @@ def test_prefix_and_per_ticker_adjustment_rescaling_preserve_earlier_results():
     assert [r for _, r in rescaled["stress"]] == pytest.approx([r for _, r in baseline["stress"]])
 
 
+def test_later_adjustment_rebases_do_not_change_historical_level_rank():
+    original = snapshot(rows())
+    rebased = copy.deepcopy(original)
+    for row in rebased:
+        row["adj_close"] *= {"A": 1000, "B": .01, "C": 5}[row["ticker"]]
+    for cut in ("2020-01-03", "2020-01-05", "2020-01-07"):
+        first = history_at(original, cut)
+        second = history_at(rebased, cut)
+        assert [(r["ticker"], r["date"]) for r in first] == [(r["ticker"], r["date"]) for r in second]
+        assert [r["adj_close"] for r in first] == pytest.approx([r["adj_close"] for r in second])
+        latest = max(r["date"] for r in first)
+        assert max((r for r in first if r["date"] == latest), key=lambda r: r["adj_close"])["ticker"] == \
+            max((r for r in second if r["date"] == latest), key=lambda r: r["adj_close"])["ticker"]
+
+
 @pytest.mark.parametrize("change", ["missing", "halted", "universe", "nonfinite", "leverage"])
 def test_unverified_execution_conditions_never_silently_drop_holdings(change):
     data, weights = rows(), {"A": .8}
@@ -80,6 +95,16 @@ def test_unverified_execution_conditions_never_silently_drop_holdings(change):
         weights = {"A": 1.2}
     with pytest.raises(ValueError):
         simulate(snapshot(data), SimpleNamespace(weights=lambda history, config: weights), {}, spec())
+
+
+def test_zero_open_halt_is_represented_but_cannot_price_a_held_position():
+    data = rows()
+    halted = next(row for row in data if row["ticker"] == "A" and row["date"] == "2020-01-04")
+    halted.update(open=0, value=0, tradable=False)
+    parsed = snapshot(data)
+    assert next(row for row in parsed if row["ticker"] == "A" and row["date"] == "2020-01-04")["tradable"] is False
+    with pytest.raises(ValueError, match="unexecutable"):
+        simulate(parsed, SimpleNamespace(weights=lambda history, config: {"A": .5}), {}, spec())
 
 
 def scientific_csv(value=.02):

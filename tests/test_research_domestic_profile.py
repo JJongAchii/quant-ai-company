@@ -96,3 +96,31 @@ def test_prepared_bundle_qualifies_and_evaluates_with_exact_typed_consumer(tmp_p
     assert result.metrics.sample_count == (5 if kind == "strategy" else 39)
     assert set(result.output_files) == ({"base.csv", "stress.csv"} if kind == "strategy" else {"observations.csv"})
     assert not any(name.endswith("token") for name in case.receipt)
+
+
+def test_scientific_profile_refuses_missing_or_changed_data_quality_receipt(tmp_path):
+    _, bundle, base = make_snapshot(tmp_path)
+    inputs = tmp_path / "inputs"
+    inputs.mkdir()
+    sources = {name: inputs / name for name in ("warmup.json", "development.json")}
+    for path in sources.values():
+        path.write_text("[]")
+    runtime = {"profile_id": "kr-stock-research-v2", "python_executable": "/runtime/python",
+        "python_sha256": "a"*64, "mounts": [{"source": str(tmp_path), "target": "/runtime", "sha256": "b"*64}],
+        "allowed_roots": [str(tmp_path)], "bwrap_executable": "/usr/bin/bwrap"}
+    options = {"source_bundle": bundle, "source_sha256": sha_file(bundle), "base_commit": base,
+        "destination": tmp_path / "release", "runtime": runtime, "input_sources": sources,
+        "market": "kr_stock", "qualification_seconds": 30, "evaluation_seconds": 30}
+    with pytest.raises(ValueError, match="data quality receipt"):
+        prepare_domestic_profile(**options)
+    (inputs / "receipt.json").write_text(json.dumps({"state": "blocked_data_quality", "market": "kr_stock",
+        "input_files": {name: sha_file(path) for name, path in sources.items()},
+        "quality": {"bad_rows": [], "missing_rows": []}}))
+    with pytest.raises(ValueError, match="quality and hash"):
+        prepare_domestic_profile(**options)
+    receipt = json.loads((inputs / "receipt.json").read_text())
+    receipt["state"] = "ready"
+    (inputs / "receipt.json").write_text(json.dumps(receipt))
+    sources["development.json"].write_text("[ ]")
+    with pytest.raises(ValueError, match="quality and hash"):
+        prepare_domestic_profile(**options)

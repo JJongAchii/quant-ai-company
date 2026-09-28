@@ -1,63 +1,29 @@
 {
   "approval": {
-    "approvedAt": "2026-09-28T05:36:58.164115+00:00",
-    "id": "chat-20260928-implement-approved-plan"
+    "approvedAt": "2026-09-28T07:07:52.588908+00:00",
+    "id": "chat-20260928-next-preparation"
   },
-  "currentIntent": "INTENT-v1.json",
+  "currentIntent": "INTENT-v2.json",
   "deliverables": {
-    "PLATFORM": {
-      "evidence": [
-        {
-          "path": "docs/adr/0037-literature-grounded-research-programs.md",
-          "sha256": "1564f33cbd1b"
-        },
-        {
-          "path": "docs/project/RESEARCH-PROGRAMS-VALIDATION-20260928.md",
-          "sha256": "04c62678ff99"
-        }
-      ],
-      "note": "Program authority, original read provenance, feedback and typed domestic evaluation verified; refreshed acceptance report with final regression results.",
-      "status": "verified",
-      "updatedAt": "2026-09-28T06:33:16.631528+00:00"
+    "DATA_PROFILES": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
-    "ROLLOUT": {
-      "evidence": [
-        {
-          "path": "docs/runbooks/research-programs.md",
-          "sha256": "7cdda2ecb5bf"
-        },
-        {
-          "path": "docs/project/FIRST-RESEARCH-PROGRAM-20260928.md",
-          "sha256": "778da6fdaf2d"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260928/worker-preparation.json",
-          "sha256": "7aea2716fdcb"
-        }
-      ],
-      "note": "Reviewable preparation complete. Worker release prepared without activation. Actual data profiles, complete scientific program and production activation remain explicit decision gates; no live acceptance claim.",
-      "status": "verified",
-      "updatedAt": "2026-09-28T06:32:14.580776+00:00"
+    "PROGRAM_DRAFT": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
-    "VALIDATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/research-programs-20260928/validation.json",
-          "sha256": "8efcea3eeb3d"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260928/domestic-linux.json",
-          "sha256": "cd23f73d0ef8"
-        }
-      ],
-      "note": "Final regression: 1232 passed, 13 skipped; ruff pass. Real PostgreSQL and Temporal/replay, pinned qlab, six real 3070 bubblewrap cases. All scientific data/model judgments remain explicitly synthetic; no new-program live Slack or science claim.",
-      "status": "verified",
-      "updatedAt": "2026-09-28T06:32:59.148782+00:00"
+    "WORKER_QUAL": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     }
   },
-  "intentDigest": "94e00c09e763",
+  "intentDigest": "1ecaae9be488",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-28T06:33:16.631528+00:00"
+  "updatedAt": "2026-09-28T07:07:52.588908+00:00"
 }

@@ -43,6 +43,21 @@ def prepare_domestic_profile(*, source_bundle, source_sha256, base_commit, desti
     for path in input_sources.values():
         if not path.is_absolute() or path.is_symlink() or not path.is_file():
             raise ValueError("Input snapshots must be absolute immutable regular files")
+    data_receipt_sha256 = None
+    if not fixture_only:
+        parents = {path.parent for path in input_sources.values()}
+        if len(parents) != 1:
+            raise ValueError("Scientific inputs must share one reviewed data receipt")
+        data_receipt = next(iter(parents)) / "receipt.json"
+        if not data_receipt.is_file() or data_receipt.is_symlink():
+            raise ValueError("Scientific inputs require the data quality receipt")
+        content = json.loads(data_receipt.read_text())
+        if (content.get("state") != "ready" or content.get("market") != market
+                or content.get("input_files") != {name: sha_file(path) for name, path in input_sources.items()}
+                or content.get("quality", {}).get("bad_rows")
+                or content.get("quality", {}).get("missing_rows")):
+            raise ValueError("Scientific inputs failed the frozen quality and hash checks")
+        data_receipt_sha256 = sha_file(data_receipt)
     resources = files("quant_company.research").joinpath("reference")
     contents = {
         ROOT + "/engine.py": resources.joinpath("domestic_engine.py").read_text(),
@@ -78,6 +93,8 @@ def prepare_domestic_profile(*, source_bundle, source_sha256, base_commit, desti
         "execution_profile": public.id, "execution_profile_digest": digest_model(public),
         "input_files": {name: sha_file(path) for name, path in input_sources.items()},
         "protected_files": {name: workspace.manifest["files"][name] for name in public.protected_paths}}
+    if data_receipt_sha256:
+        identity["data_receipt_sha256"] = data_receipt_sha256
     atomic_json(destination / "identity.json", identity)
     return identity
 

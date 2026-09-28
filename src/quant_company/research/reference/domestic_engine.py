@@ -47,7 +47,8 @@ def snapshot(payload):
         seen.add(key)
         for field in ("open", "close", "adj_close", "value"):
             row[field] = finite(row[field])
-            if row[field] < 0 or (field != "value" and row[field] == 0):
+            if (row[field] < 0 or (field in {"close", "adj_close"} and row[field] == 0)
+                    or (field == "open" and row[field] == 0 and row["tradable"])):
                 raise ValueError("invalid_price_or_liquidity")
         rows.append(row)
     return sorted(rows, key=lambda row: (row["date"], row["ticker"]))
@@ -55,9 +56,22 @@ def snapshot(payload):
 
 def history_at(rows, trade_day):
     cutoff = datetime.combine(date.fromisoformat(trade_day), time(9), KST)
-    # A fresh copy prevents candidate mutation of the protected evaluator's rows.
-    return [dict(row) for row in rows if row["date"] < trade_day
-            and datetime.fromisoformat(row["available_at"]) < cutoff]
+    # The lake's adjusted series is anchored to its newest asof. A later split or
+    # distribution can rescale every earlier value. Rebase each ticker to its
+    # latest *known* raw close before exposing history to candidate code; this
+    # removes future-asof scale while preserving ratios known at the signal time.
+    # Fresh copies also prevent candidate mutation of the evaluator's own rows.
+    history = [dict(row) for row in rows if row["date"] < trade_day
+               and datetime.fromisoformat(row["available_at"]) < cutoff]
+    latest = {}
+    for row in history:
+        ticker = row["ticker"]
+        if ticker not in latest or row["date"] > latest[ticker]["date"]:
+            latest[ticker] = row
+    for row in history:
+        reference = latest[row["ticker"]]
+        row["adj_close"] *= reference["close"] / reference["adj_close"]
+    return history
 
 
 def adjusted_open(row):
