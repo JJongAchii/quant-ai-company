@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "slug": "piddock",
+  "revision": 3,
+  "createdAt": "2026-09-27T22:41:30+00:00",
+  "revisionReason": "User authorized operational application of the completed channel slice and requested readable interpretation of data-watch posts.",
+  "sourceRequest": "우선 지금까지 진행한것들은 운영 적용 진행해줘 / 근데 data-watch 에 발송된 내용들은 뭘 의미해? 가독성이 너무 떨어지는데",
+  "supersedes": {
+    "intentFile": "INTENT-v2.json",
+    "intentDigest": "0a86350b0dfa"
+  },
+  "outcome": "Operate the completed Maintainer and data-watch channel slice, make data-watch messages readable, verify actual Slack delivery and preserve production evidence.",
+  "constraints": [
+    "Company records and evidence remain only in this repository; research/data repositories are read-only targets.",
+    "Signed allowlisted Slack ingress, typed proposals, deterministic Temporal/PostgreSQL state, and uncertain-effect receipts remain mandatory.",
+    "Preserve research worker and existing Quant Scout/account-gateway runtime during the channel release.",
+    "Do not activate other inactive employees or fixed research-input checks without their own validated activation.",
+    "Do not infer source corruption, data lateness or completed core checks from catalog/footer inspection."
+  ],
+  "deliverables": [
+    {
+      "id": "CHANNEL_OPERATIONS",
+      "description": "Apply approved Maintainer and data-watch channel slice to production",
+      "acceptance": [
+        "Exact release deployed with existing services preserved",
+        "Live Slack summary and incident reply matched to durable receipts",
+        "Production service and authorized status observations recorded"
+      ]
+    },
+    {
+      "id": "READABILITY",
+      "description": "Explain data-watch status in short Korean messages",
+      "acceptance": [
+        "One concise daily summary instead of Slack split messages",
+        "Footer limit explained without implying corruption or lateness",
+        "Full dataset names available on request and raw internal hashes omitted from Slack"
+      ]
+    },
+    {
+      "id": "VALIDATION",
+      "description": "Retain local, CI, and live evidence with stated limits",
+      "acceptance": [
+        "Real PostgreSQL/Temporal regression and deployment checks pass",
+        "Code commit and backup receipts recorded",
+        "Unverified owner inbound and fixed research-input checks remain explicit"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "Mass activation of inactive employees",
+    "Automatic source data repair or changes to approved research inputs",
+    "Heavy research, training, backtests or live orders",
+    "Claiming live end-to-end checks that were not performed"
+  ],
+  "decisionGates": [],
+  "stopConditions": [
+    "Never automatically replay an uncertain Slack write or charge",
+    "Do not claim data delay without an approved freshness contract"
+  ]
+}
