@@ -2,6 +2,7 @@
 
 실제 Slack, 운영 PostgreSQL, Temporal Cloud와 고정 연구 worker를 읽기 전용으로 대조했다.
 [기계 판독 증거](evidence/slack-reply-incident-20260928.json)에 시각과 범위를 남겼다.
+[운영 적용 영수증](evidence/slack-reply-cutover-20260928.json)에 실제 교체 결과를 따로 기록했다.
 
 ## 확인된 원인
 
@@ -47,3 +48,14 @@
 확인한다. 거절된 `research-center` 메시지는 자동 재생하지 않는다. 사용자가 새 메시지로
 상태를 물었을 때 한 번의 답변이 게시되는지 확인한다. 기존 코드에서도 정확히 `상태`라고
 보내면 모델 없이 상태 요약을 받을 수 있다.
+
+## 2026-09-28 운영 적용 현황
+
+소유자 승인 후 07:24 UTC에 API·Slack 수신부를 `d571734` 이미지로 교체하고, 고정 연구
+worker는 `31ff903` 이미지 그대로 역할 파일만 분리해 재시작했다. 다른 컨테이너 ID와
+연구 커밋은 유지됐고, 적용 직전 활성 연구 job·running turn·발송 중 outbox는 모두 0건이었다.
+현재 API는 healthy이고 두 DM turn은 worker에서 모델 계정 게이트까지 진행했다. 선택된 예비
+ChatGPT 계정이 quota 상태로 07:34 UTC까지 대기 중이어서 실제 Slack 답변은 아직 없다.
+계정은 자동 전환하지 않는다. `research-center`의 기존 거절 메시지도 다시 실행하지 않았다.
+공통 release 링크와 runtime.env는 기존 `c54667e`를 가리키므로, 후속 Compose 작업은
+실제 컨테이너 이미지와 worker 전용 overlay를 확인해야 한다.

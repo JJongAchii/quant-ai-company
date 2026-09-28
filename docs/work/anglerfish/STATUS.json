@@ -2,17 +2,18 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v3.json",
-  "state": "prepared_awaiting_cutover_review",
+  "state": "deployed_awaiting_live_reply_verification",
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
   "deliverables": {
     "DIAGNOSIS": {"status": "completed"},
     "APPLICATION": {"status": "prepared", "commit": "ae132c3", "base": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce"},
     "PINNED_WORKER": {"status": "prepared", "commit": "e53b771aa994a54c1f4be6a2610856ea7a298816", "temporaryOverlay": "deploy/pinned-worker-roles-compat.compose.yaml"},
     "VALIDATION": {"status": "completed", "realPostgresTests": 16, "pinnedWorkerTests": 1},
-    "CUTOVER": {"status": "pending"}
+    "CUTOVER": {"status": "applied", "commit": "d571734e161c39f7c26252005231f93b619b3749"},
+    "LIVE_REPLY": {"status": "pending", "reason": "Selected backup ChatGPT account is quota-paused until 2026-09-28T07:34:10Z"}
   },
-  "operationalStatus": "The linked DM turns are durable but fail before inference in the pinned worker. The research-center progress questions were not committed because the project is over its task limit. No production repair has been applied.",
-  "evidence": "../../project/evidence/slack-reply-incident-20260928.json",
+  "operationalStatus": "The app and pinned worker role overlay are live. The linked DM turns advanced to the model account gate but are waiting for the selected backup ChatGPT subscription quota; no new Slack replies are verified. Old rejected research-center messages were not replayed.",
+  "evidence": "../../project/evidence/slack-reply-cutover-20260928.json",
   "previousIntent": "INTENT-v2.json",
   "previousState": "completed",
   "previousEvidence": "../../project/evidence/model-accounts-20260923/live-account-control.json"
