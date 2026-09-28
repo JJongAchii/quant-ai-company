@@ -212,6 +212,7 @@ def test_daily_summary_shows_actual_source_dates_and_the_right_date_axis():
     summary = status_text(snapshot)
     listing = list_text(snapshot)
     assert len(summary) < 3000 and len(listing) < 3000
+    assert "공개분 미반영 5건 · 날짜 미확인 1건" in summary
     assert "한국시장: 주식 2026-09-23" in summary
     assert "09/24~27 추석 휴장" in summary
     assert ("미국 일별: 미국 ETF·주가 2026-09-24, 미국 전종목 미확인, "
