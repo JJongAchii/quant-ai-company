@@ -1,0 +1,16 @@
+{
+  "case": "am-20260926-heldout",
+  "scope": "Frozen originals and actual subscription writer; no reviewer was called because the typed proposal was invalid.",
+  "writer_request_id": "news-brief-eval-aefa1a9024e959febeb7ee607a2912e7",
+  "provider": "codex",
+  "elapsed_seconds": 505.266,
+  "result": "fail_invalid_proposal",
+  "typed_validation_error": {
+    "path": "issues.0.fact.evidence",
+    "condition": "Evidence list has five entries; BriefProposal requires at most four per claim."
+  },
+  "reviewer_called": false,
+  "semantic_checks_passed": false,
+  "decision": "Do not trim evidence or rewrite the saved model answer and call it a pass. This held-out case fails the unchanged policy; clarify the output contract and test on a newly frozen case.",
+  "slack": "not_called"
+}

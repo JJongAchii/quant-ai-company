@@ -23,8 +23,8 @@ from .numeric import numbers, prose_numbers_supported, reported_change_supported
 from .quality import assurance
 from .schedule import KST
 
-FORMAT_VERSION = 8
-VALIDATION_VERSION = 8
+FORMAT_VERSION = 9
+VALIDATION_VERSION = 10
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Return AgentDecision(status=complete,say='') with exactly one artifact containing BriefProposal JSON.
@@ -39,6 +39,9 @@ cannot be established, explain the specific missing evidence in limitations. A w
 array despite explicit core closing prices fails publication quality.
 Copy each evidence quote verbatim from its own source_id; never attach a quote from one article to another.
 Preserve punctuation, including straight/curly quotes, when copying. Keep quotes short enough to copy exactly.
+Every claim, observation and event permits one to four evidence quotes. If a fact needs more, split the
+development into separate supported claims or use the four quotes that directly support its full wording.
+Never leave an assertion unsupported merely to fit the limit.
 Every day/month number written in a claim or event note must also appear in that claim's own quoted evidence.
 Do not expand a source's '22일' to '9월 22일' without evidence for the month. If a paragraph combines a prior
 session and an upcoming event, cite the dated source passage for each or move the event to its own item.
@@ -124,6 +127,10 @@ date; mentioning only one does not cover the other. State who decided what, when
 exposure changes when these details are supported and material. Distinguish a meeting, joint statement,
 proposal, binding decision and actual enforcement. Include a geopolitical action only when its market or
 policy significance is concrete; do not force a token mention of every diplomatic statement.
+When a material truce, deadline, policy rate or restriction is extended or changed, give the sourced
+previous baseline AND new term in the main post so the reader can see what changed. A duplicate article
+may contain the only previous expiry or level; use that distinct fact without repeating its other details.
+If no original supports the previous baseline, say what is known without inventing a comparison.
 When a dominant risk has a source-supported, time-bounded counterproposal, include its conditions and
 deadline as opposing evidence if they could change the risk interpretation. Neither a proposal nor a
 party's demand is an agreement or implemented action.
@@ -137,6 +144,8 @@ If flows are material to a market-close explanation, report available investor-g
 flows, with the correct venue and provisional status. Do not infer causality from simultaneous flows alone.
 When central-bank speakers disagree in the supplied originals, name the relevant opposing signal and the
 next data or decision that could resolve it; avoid flattening disagreement into one policy consensus.
+When separate officials give material same-direction views, include both if the second changes how strong
+the policy signal is. One named speaker does not stand in for the other.
 If the supplied originals give the current policy-rate range, latest decision size or published rate path,
 include that baseline when it changes the meaning of a new central-bank warning. A warning without its
 known baseline can understate the size and timing of the actual policy constraint. Do not mislabel a dot
@@ -219,6 +228,11 @@ central-bank signal in that same article is missing, fail coverage and explain t
 source has a cited item_id. background/not_material needs a concrete reason. Do not
 accept an omitted major new development merely because the included claims are true. Headlines may be
 duplicates, irrelevant local news, old context or conflict in dates; explain that rather than forcing them in.
+For a material extension or change, compare the prior expiry, level or rule with the new one when an
+original gives both. A source can be mostly duplicate yet uniquely supply that baseline: identify it in
+source_assessments and fail coverage/depth if its omission makes the change hard to understand.
+Check each material policy speaker or agency in a source, including a second voice in the same direction.
+Do not mark the source covered if omitting that distinct voice changes the weight of the policy signal.
 Depth requires a readable overview and substantive facts plus economic implications, not a headline list.
 Check meaningful numerical scale/comparisons, already-known deadlines and material opposing policy news
 when the originals provide them. Vague qualitative discussion must not hide the central quantitative change.

@@ -1,0 +1,145 @@
+{
+  "mode": "historical_originals_before_exact_scheduled_cutoff",
+  "raw_originals_sha256": "fb3c2354647bd8ba2359ea3c86a416f39732aecda382e6148da7b37b18dab790",
+  "model": "not_yet_called",
+  "slack": "not_connected",
+  "snapshots": {
+    "am-20260926": {
+      "cutoff": "2026-09-25T22:10:00+00:00",
+      "raw_article_count": 133,
+      "eligible_count": 133,
+      "selected_count": 16,
+      "bundle_sha256": "2b819b2e37d3275495ba94e0f2223d6a93860f459d1ac71f7070a74a584fffe2",
+      "selected": [
+        {
+          "id": "1ea4f7745cf54a932cfc15a7adff7dcd26f18ce3",
+          "title": "뉴욕증시, 호르무즈 협상 기대·유가 하락에 상승 마감",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-25T20:17:48+00:00",
+          "retrieved_at": "2026-09-25T20:23:20.650436+00:00",
+          "sha256": "fd19e134b5c68326eb45ced0ab23dd33a7dc8e28c7146f0d505740d06cc45ca4"
+        },
+        {
+          "id": "0e4f611267193cc1f861e6ef22816113af050410",
+          "title": "뉴욕증시, 고유가·국채금리 급등에 혼조⋯다우 0.31%↓ [종합]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-25T01:08:00+00:00",
+          "retrieved_at": "2026-09-25T01:17:50.802351+00:00",
+          "sha256": "70ae62f4af8e1b47799cae20c885940503ab128a90ad643fa96958766769a8e6"
+        },
+        {
+          "id": "265481d75d877689590fc46f47ac8b5140b0b8d5",
+          "title": "물가 급등에 가계부채도 뇌관…브라질 대선서 변수 될까",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-25T18:04:16+00:00",
+          "retrieved_at": "2026-09-25T18:11:34.754729+00:00",
+          "sha256": "36d1a55fd56cc41798cbf208b153e980a1a760df03209b8f7eddde8d72b1322b"
+        },
+        {
+          "id": "ca8e4f17f38b78b2e098c8ca37b8d46da707e9bf",
+          "title": "\"EU, 영국에 中자동차 관세 인상 촉구\"…'對중국 압박' 고조",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-25T07:13:57+00:00",
+          "retrieved_at": "2026-09-25T07:22:47.582432+00:00",
+          "sha256": "6e9b9d9a63fc8e4dbb065cd385bf55e222f1f3f55f7ab4c7f23dd90aed177726"
+        },
+        {
+          "id": "7aad44f11b5e90fdddc45e5d8d8de16e51ead788",
+          "title": "이란 \"호르무즈 개방 '7일 계획' 美에 전달…선택은 美에 달려\"",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-25T21:32:09+00:00",
+          "retrieved_at": "2026-09-25T21:44:22.340715+00:00",
+          "sha256": "4a625d76c849a32f6a3d5fcbd2ef1532918eb24c9ddb44fdc854b13504dfa96a"
+        },
+        {
+          "id": "bfda76e15ec3596a37fa0851fb86326e22541e29",
+          "title": "[미중정상회담] 美전문가들 \"취약한 휴전 연장…AI경쟁 본능 억제못해\"(종합)",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-25T21:07:55+00:00",
+          "retrieved_at": "2026-09-25T21:13:54.689819+00:00",
+          "sha256": "e13b51e593ee57aa6e0fc0aeff42d405e2f4463103332e7c3994c27e0e4239a0"
+        },
+        {
+          "id": "a7620c488928b32cd69270c2c62e035334481884",
+          "title": "[미중정상회담] '전략적 안정' 재확인…AI·무역·안보는 평행선 그렸나",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-25T19:49:15+00:00",
+          "retrieved_at": "2026-09-25T19:52:56.955848+00:00",
+          "sha256": "2e111ee0c402671c79bbc2a0ef843bce105e3a85a161c24328e511ab87353f0e"
+        },
+        {
+          "id": "48b5afaa9c2d66fd5d051328592f9c9ca5d23fde",
+          "title": "Meta's 'powerful breakout' sets up a unique trading strategy, says Mike Khouw",
+          "publisher": "CNBC",
+          "published_at": "2026-09-25T17:57:14+00:00",
+          "retrieved_at": "2026-09-25T18:10:17.853656+00:00",
+          "sha256": "b534fc8369b0c71cd25654b93f908b2112e00ad6303cac09fddfe01ce75e4950"
+        },
+        {
+          "id": "b2e337b68587080410828bead08ef17d92931e82",
+          "title": "국제유가, 호르무즈 해협 개방 기대감에 하락⋯WTI 2.33%↓ [상보]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-25T21:59:00+00:00",
+          "retrieved_at": "2026-09-25T22:04:50.511569+00:00",
+          "sha256": "0884199c15ac7061ff59731c4198172ee1a967f0972d556bc6c6db35a800c65a"
+        },
+        {
+          "id": "8c6476d84fc42d9da764eddf337d504d34266c89",
+          "title": "'자산토큰화반' 신설한 한은, 국채 토큰화 속도내나",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-25T20:51:00+00:00",
+          "retrieved_at": "2026-09-25T21:04:12.283268+00:00",
+          "sha256": "e6faaabe6c658332c606fd8156354180975cfaa665715cd31a52999536db8c2b"
+        },
+        {
+          "id": "5d71625a9f7907fa738fe83c2e102b130d89d086",
+          "title": "뉴욕증시, 미국ㆍ이란 협상 재개 기대에 상승⋯다우 0.93%↑ [상보]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-25T21:48:00+00:00",
+          "retrieved_at": "2026-09-25T21:54:45.782148+00:00",
+          "sha256": "9921477778669269698150de4d7913eccdbbca1e784d6057e783546247a07b6a"
+        },
+        {
+          "id": "76023abf00882a4c6bf043a0cc72cc906c4615b3",
+          "title": "Saudi Arabia crude oil exports hit highest level since Iran war began despite pipeline outage",
+          "publisher": "CNBC",
+          "published_at": "2026-09-25T17:43:21+00:00",
+          "retrieved_at": "2026-09-25T18:20:26.143098+00:00",
+          "sha256": "d6692b55d2d43611f52a1697526a720a2983af1a11431028ce5c9faa859394ac"
+        },
+        {
+          "id": "a99c850ba387a56d560795e1137ba084683eff5d",
+          "title": "Oil falls amid optimism over potential diplomatic solution to the Iran conflict",
+          "publisher": "CNBC",
+          "published_at": "2026-09-25T01:23:29+00:00",
+          "retrieved_at": "2026-09-25T04:59:29.371158+00:00",
+          "sha256": "399bdb5ac637dbbbd5e48ea1fa640885f77a5830d604cc07b0d664dc2403045f"
+        },
+        {
+          "id": "71888117cb7419ed2fe3bb41c3cac0e1b855f447",
+          "title": "후티 반군, 사우디 미사일 공격 소식에…국제유가 3% 넘게 급등",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-24T20:17:00+00:00",
+          "retrieved_at": "2026-09-24T20:23:33.334678+00:00",
+          "sha256": "12dc948ab32c1f8c8a297b920c951e17f4f7dde996071fc30f7eb1d2db7f82ea"
+        },
+        {
+          "id": "277d1662e5e4dbe60e94609cf0ff0dcfb837e780",
+          "title": "이란 고위 관리 \"미 호르무즈 재개방 조건 수용해도 핵 양보 안 해\"",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-25T18:40:00+00:00",
+          "retrieved_at": "2026-09-25T18:52:33.016996+00:00",
+          "sha256": "06acc4c055c27644e159ea06f61d069613c15d488a473c245e7daa226aede0f0"
+        },
+        {
+          "id": "c831191da0464e15297fd846056fece550b24a64",
+          "title": "미중 정상, 차담으로 사흘 연속 대면…문서기록청 방문",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-25T15:12:00+00:00",
+          "retrieved_at": "2026-09-25T15:19:44.166334+00:00",
+          "sha256": "da3cf9d57cae9ec0cea0d464aa649be0871c12b48c3f33af84a479ca691dca86"
+        }
+      ]
+    }
+  }
+}

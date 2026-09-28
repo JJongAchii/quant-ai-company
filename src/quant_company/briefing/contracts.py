@@ -3,6 +3,7 @@ from decimal import Decimal
 from typing import Literal
 
 from pydantic import AwareDatetime, Field, field_validator, model_validator
+from typing_extensions import TypedDict
 
 from ..contracts import StrictModel
 from ..web_fetch import public_url
@@ -150,6 +151,21 @@ REVIEW_CHECKS = {"numbers", "sources", "timing", "causality", "materiality", "co
                  "transmission", "alternatives", "falsifiability", "coverage", "depth", "readability"}
 
 
+class ReviewChecks(TypedDict):
+    numbers: bool
+    sources: bool
+    timing: bool
+    causality: bool
+    materiality: bool
+    counterevidence: bool
+    transmission: bool
+    alternatives: bool
+    falsifiability: bool
+    coverage: bool
+    depth: bool
+    readability: bool
+
+
 class SourceAssessment(StrictModel):
     source_id: str
     treatment: Literal["covered", "background", "not_material"]
@@ -160,8 +176,7 @@ class SourceAssessment(StrictModel):
 class BriefReview(StrictModel):
     verdict: Literal["publish", "reduce", "withhold"]
     # Each criterion must be considered explicitly, never inferred from an empty rejection list.
-    checks: dict[Literal["numbers", "sources", "timing", "causality", "materiality", "counterevidence",
-                         "transmission", "alternatives", "falsifiability", "coverage", "depth", "readability"], bool]
+    checks: ReviewChecks
     source_assessments: list[SourceAssessment] = Field(default_factory=list, max_length=24)
     rejected_ids: list[str] = Field(default_factory=list, max_length=80)
     concerns: list[str] = Field(default_factory=list, max_length=8)

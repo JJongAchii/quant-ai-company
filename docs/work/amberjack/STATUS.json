@@ -1,58 +1,90 @@
 {
   "approval": {
-    "approvedAt": "2026-09-28T01:50:17.131916+00:00",
-    "id": "chat-proceed-briefing-preview-20260928"
+    "approvedAt": "2026-09-28T06:56:14.467931+00:00",
+    "id": "chat-quality-briefing-20260928"
   },
-  "currentIntent": "INTENT-v7.json",
+  "currentIntent": "INTENT-v9.json",
   "deliverables": {
-    "AM-EVALUATION": {
+    "CONTRACT-REPAIR": {
       "evidence": [
         {
-          "path": "docs/project/evidence/briefing-am-20260925/final-frozen/assessment.json",
-          "sha256": "d4584cdba2c7"
+          "path": "src/quant_company/briefing/contracts.py",
+          "sha256": "9e91ac2adcda"
+        },
+        {
+          "path": "src/quant_company/briefing/numeric.py",
+          "sha256": "27d7d76ce40b"
+        },
+        {
+          "path": "tests/test_briefing_content.py",
+          "sha256": "fee18c9593fe"
         }
       ],
-      "note": "Frozen fresh AM evaluation completed with actual subscription calls; content failed coverage and depth; development replay is not a new pass.",
+      "note": "All 12 review checks are schema-required; exact dollar-million, spoken decimal and coordinated percentage forms are supported with negative controls. Current full suite 1333 passed, 38 skipped; Ruff and uv lock check passed.",
       "status": "verified",
-      "updatedAt": "2026-09-28T05:16:50.361719+00:00"
+      "updatedAt": "2026-09-28T07:16:37.249907+00:00"
     },
-    "PREVIEW-SETUP": {
+    "FAILURE-DIAGNOSIS": {
       "evidence": [
         {
-          "path": "docs/project/ANALYST-PREVIEW-20260928.md",
-          "sha256": "ca55e92602c4"
+          "path": "docs/project/evidence/briefing-am-20260925/dev-baseline-v8-reviewed/independent-content-check.json",
+          "sha256": "843a3a5aa4ac"
+        },
+        {
+          "path": "docs/project/evidence/briefing-am-20260926/initial/writer-validation.json",
+          "sha256": "b993c0f5de3a"
+        },
+        {
+          "path": "docs/project/evidence/briefing-am-20260922/development-v9-draft/reviewer-validation.json",
+          "sha256": "d424979144db"
         }
       ],
-      "note": "Correct Slack app and host credentials prepared; read-only KRX index probe passed; publication-disabled preview not started because installed release contract rejects candidate. Runnable gate audit and exact next settings recorded.",
+      "note": "Actual receipts show a false positive model review and two invalid typed artifacts; all were retained as failures, not quality passes.",
       "status": "verified",
-      "updatedAt": "2026-09-28T05:17:05.447783+00:00"
+      "updatedAt": "2026-09-28T07:15:01.118026+00:00"
     },
-    "RELEASE-BASELINE": {
+    "FRESH-EVAL": {
       "evidence": [
         {
-          "path": "docs/project/evidence/briefing-preview-release-gate-20260928.json",
-          "sha256": "7390db996a1a"
+          "path": "docs/project/evidence/briefing-am-20260923/evaluation-policy.json",
+          "sha256": "58d27762aabd"
+        },
+        {
+          "path": "docs/project/evidence/briefing-am-20260923/draft/original-validation.json",
+          "sha256": "efc91f04c76b"
+        },
+        {
+          "path": "docs/project/evidence/briefing-am-20260923/development-v10-final/assessment.json",
+          "sha256": "e666774b1c63"
+        },
+        {
+          "path": "docs/project/evidence/briefing-am-20260923/development-v10-final/independent-content-check.json",
+          "sha256": "74e1e2c58725"
         }
       ],
-      "note": "Merged origin/main and installed release lineage; installed maintenance validator rejects protected-file changes, so no host cutover.",
+      "note": "The newly frozen format-9/validation-9 edition failed its original mechanical gate. Same-source validation-10 development used actual writer, review, one repair and final review; the repaired content passed all 12 plus assistant source checklist, but it is not fresh qualification.",
       "status": "verified",
-      "updatedAt": "2026-09-28T05:16:56.295381+00:00"
+      "updatedAt": "2026-09-28T07:26:19.849517+00:00"
     },
-    "VALIDATION": {
+    "QUALITY-DECISION": {
       "evidence": [
         {
-          "path": "docs/project/ANALYST-PREVIEW-20260928.md",
-          "sha256": "ca55e92602c4"
+          "path": "docs/project/ANALYST-QUALITY-FOLLOWUP-20260928.md",
+          "sha256": "9bba3df11dc7"
+        },
+        {
+          "path": "docs/project/evidence/briefing-am-20260923/development-v10-final/brief.md",
+          "sha256": "17ed57e312a3"
         }
       ],
-      "note": "Integrated candidate: 1364 passed, 38 skipped; four real local PostgreSQL/Temporal focused checks passed; Ruff and uv lock check passed. Actual model AM verdict failed; no real Slack delivery or five-day observation.",
+      "note": "Current code: 1333 passed, 38 skipped, Ruff/lock/diff clean; actual four-call development preview 1447.046 seconds. No fresh qualified pass, independent lake history, timed five-day observation, full release or Slack delivery. Publication remains disabled.",
       "status": "verified",
-      "updatedAt": "2026-09-28T05:17:11.655235+00:00"
+      "updatedAt": "2026-09-28T07:26:32.412322+00:00"
     }
   },
-  "intentDigest": "80d848a9641c",
+  "intentDigest": "fdc3a2017fb2",
   "schemaVersion": 1,
   "slug": "amberjack",
   "state": "approved",
-  "updatedAt": "2026-09-28T05:17:11.655235+00:00"
+  "updatedAt": "2026-09-28T07:26:32.412322+00:00"
 }

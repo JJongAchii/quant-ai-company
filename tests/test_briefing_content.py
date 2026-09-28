@@ -476,10 +476,27 @@ def test_migration_updates_existing_phase_constraint(company):
 
 @pytest.mark.parametrize("left,right", [("2.5 million", "250만"), ("5만2048.83", "52048.83"),
     ("1조3천억", "1300000000000"), ("-2.3 billion", "-23억"), ("10 November", "11월 10일"),
-    ("$110bn", "1,100억 달러")])
+    ("$110bn", "1,100억 달러"), ("$17.5m", "1,750만 달러")])
 def test_exact_written_quantity_and_month_conversion(left, right):
     assert numbers(left) == numbers(right)
     assert numbers("2.5 million") != numbers("2500만")
+
+
+def test_attached_dollar_million_does_not_convert_unrelated_m_units():
+    assert numbers("$17.5m") == {Decimal(17500000)}
+    assert numbers("17.5m") == {Decimal("17.5")}
+    assert numbers("$17.5m") != numbers("1,750억 달러")
+
+
+def test_spoken_market_decimal_and_shared_change_predicate():
+    assert numbers("one-thousand-358-point-two won") == {Decimal("1358.2")}
+    assert numbers("seven-thousand-17-point-91") == {Decimal("7017.91")}
+    assert numbers("22-point-eight") == {Decimal("22.8")}
+    claim = "샌디스크는 6.8%, 마이크론은 5% 올랐고 우버는 1.3%, 리프트는 2.4% 내렸습니다."
+    quote = "샌디스크는 6.8%, 마이크론은 5% 올랐다. 우버는 1.3%, 리프트는 2.4% 내렸다."
+    assert prose_numbers_supported(claim, [quote])
+    assert not prose_numbers_supported("우버는 1.3%, 리프트는 2.4% 내렸다.",
+                                       ["우버는 1.3%, 리프트는 2.4% 올랐다."])
 
 
 def test_spelled_out_counts_and_entity_names_are_not_false_price_errors():

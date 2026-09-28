@@ -68,13 +68,26 @@ def quantity(text):
 
 def numbers(text):
     # Canonicalize entire quantities so 2.5 million == 250만, not the unrelated bare digits 2.5/250.
+    digit_words = "|".join(CARDINALS[:10])
+    thousands = r"\b("+"|".join(CARDINALS[1:10])+r")-thousand-(\d{1,3})-point-("+digit_words+r"|\d+)\b"
+    text = re.sub(thousands,
+        lambda m: str(CARDINALS.index(m[1].lower())*1000+int(m[2]))+"."
+                  +(str(CARDINALS.index(m[3].lower())) if m[3].lower() in CARDINALS else m[3]),
+        text, flags=re.I)
     text = written_fractions(written_counts(text))
+    # Some broadcasters spell decimal points as hyphenated words/numbers.
+    text = re.sub(r"(?<![A-Za-z0-9])(\d+)-point-(\d+)\b", r"\1.\2", text, flags=re.I)
     # A compact percent range uses a hyphen as a separator, not the sign of
     # its upper bound. Keep a spaced "5% -3%" as a genuinely negative value.
     text = re.sub(r"(?<=%)-(?=\d[\d,]*(?:\.\d+)?%)", " to ", text)
     text = re.sub(r"\bS&P\)?\s*500(?!\d)", "S_AND_P_INDEX", text, flags=re.I)
     normalized = re.sub(NUMBER+r"(?:\s*[십백천만억조](?:\s*\d[\d,]*(?:\.\d+)?)?)+",
                         lambda m: " "+str(quantity(m[0]))+" ", text)
+    # Finance articles use an attached m for millions of dollars. Require the
+    # currency mark so unrelated m-units are not silently converted.
+    normalized = re.sub(r"(?<![A-Za-z0-9])(?:US)?\$\s*("+NUMBER+r")m\b",
+        lambda m: str(Decimal(m[1].replace(",", "").replace("−", "-"))*1000000),
+        normalized, flags=re.I)
     scales = {"million": 10**6, "billion": 10**9, "trillion": 10**12, "bn": 10**9, "tn": 10**12}
     normalized = re.sub("("+NUMBER+r")\s*(million|billion|trillion|bn|tn)\b",
         lambda m: str(Decimal(m[1].replace(",", "").replace("−", "-"))*scales[m[2].lower()]),
@@ -113,6 +126,11 @@ def reported_change_supported(value, unit, quotes):
             after = re.sub(r"^\s*\([^()]{0,40}\)", "", after)
             if (re.search("(?:"+direction+r")(?:\s+(?:by|about|roughly|nearly))?\s*$", before, re.I)
                     or re.match(r"^[\s)\]]*(?:(?:가|나|만큼)\s*)?(?:"+direction+")", after, re.I)):
+                return True
+            # A coordinated list can share its final direction: "A 1.3%, B 2.4% 내렸다".
+            shared = (r"(?:\s*,\s*[가-힣A-Za-z·\s]{0,60}"+NUMBER+r"\s*(?:"+units[unit]+r"))+"
+                      r"\s*(?:"+direction+r")")
+            if re.match(shared, after, re.I):
                 return True
     return False
 
