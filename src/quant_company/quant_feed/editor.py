@@ -97,7 +97,7 @@ def _proposal(schema, content):
     return schema.model_validate(_clean_controls(json.loads(content, strict=False)))
 
 
-def validate(response, bundle, stage):
+def validate(response, bundle, stage, *, audit=None):
     decision = response.decision
     if (decision.status != "complete" or len(decision.artifacts) != 1 or decision.tools or decision.delegations
             or decision.messages or decision.memories or decision.follow_up or decision.artifacts[0].source_ids):
@@ -112,13 +112,24 @@ def validate(response, bundle, stage):
     brief = _proposal(ResearchBrief, decision.artifacts[0].content)
     if brief.disposition != "publish":
         return brief
+    corrections = []
     # PDF extractors may split words across layout whitespace or emit compatibility
     # glyphs. Ignore only those presentation differences; every non-whitespace
-    # character and its order must still occur in the frozen excerpt.
+    # character and its order must still occur in the frozen excerpt. A wrong
+    # location can be corrected only when that exact quote occurs in one and
+    # only one supplied excerpt; ambiguous or unsupported quotes still fail.
     pages = {p["location"]: _quote_text(p["text"]) for p in bundle["pages"]}
-    for evidence in brief.evidence:
-        if evidence.location not in pages or _quote_text(evidence.quote) not in pages[evidence.location]:
+    for index, evidence in enumerate(brief.evidence):
+        quote = _quote_text(evidence.quote)
+        if not quote:
             raise ValueError("quant_quote_not_in_original_version")
+        if quote not in pages.get(evidence.location, ""):
+            matches = [location for location, text in pages.items() if quote in text]
+            if len(matches) != 1:
+                raise ValueError("quant_quote_not_in_original_version")
+            corrections.append({"kind": "unique_quote_location", "evidence_index": index,
+                                "from": evidence.location, "to": matches[0]})
+            evidence.location = matches[0]
     for stamp in (brief.published_on, brief.revised_on):
         if stamp and stamp > date.fromisoformat(bundle["as_of"][:10]).isoformat()[:len(stamp)]:
             raise ValueError("quant_future_publication_date")
@@ -132,6 +143,8 @@ def validate(response, bundle, stage):
         raise ValueError("quant_malformed_title")
     if len(render(brief, bundle["metadata"])) > 2400:
         raise ValueError("quant_card_too_long")
+    if audit is not None:
+        audit.extend(corrections)
     return brief
 
 
