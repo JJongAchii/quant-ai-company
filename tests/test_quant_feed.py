@@ -634,6 +634,17 @@ def test_critic_cannot_pass_unsupported_or_out_of_scope_research(failed_check):
     assert "direct_quant_scope and substantive_research separately" in prompt({}, "critique")
 
 
+def test_arxiv_date_and_clipped_context_are_explicit_in_editor_prompt():
+    bundle = {"metadata": {"publisher": "arXiv", "citation_date": ["2026/09/22"],
+                           "citation_online_date": ["2026/09/22"], "published": "2026-09-24"}}
+    instructions = prompt(bundle, "review")
+    assert "DATE_GUARD: arXiv original citation date is 2026-09-22" in instructions
+    assert "do not substitute feed published/updated" in instructions
+    assert "제공 발췌에서 확인되지 않음" in instructions
+    bundle["metadata"]["citation_online_date"] = ["2026/09/23"]
+    assert "arXiv date metadata is incomplete or conflicting" in prompt(bundle, "review")
+
+
 def test_render_is_scan_friendly_and_does_not_duplicate_or_mislabel_links():
     value = brief(related_urls=["https://example.org/paper", "https://example.org/code"],
                   limitations=["거래비용 미반영", "표본 편향 가능성", "시장 충격 미기재"])

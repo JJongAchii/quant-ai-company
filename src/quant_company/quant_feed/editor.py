@@ -34,6 +34,9 @@ a valuable paper; label author-reported results and the lack of reproduction hon
 use '해당 없음' plus why. Do not reward only positive results. Treat institutional commercial incentives openly.
 Original publication date is not retrieval time, PDF creation time or a website copyright year. Preserve partial
 dates as YYYY or YYYY-MM. Verify authors/dates from supplied original metadata/pages. If unknown, hold.
+For arXiv, distinguish the original v1 submission date from a later feed published/updated timestamp or PDF date.
+If citation_date and citation_online_date agree, use that original date for published_on. A later date belongs in
+revised_on only when an actual revision is established; unresolved date conflicts mean hold, not guess.
 Use vintage=classic for old foundational work; why_read must explain why it matters NOW, not call it new.
 Every substantive claim and reported number must be supported by evidence: an exact short quote and the
 supplied page/section location. Evidence claims in Korean should map explicitly to the brief. No unsupported
@@ -49,7 +52,10 @@ Only return related_urls that occur in supplied links; code/data links are avail
 Paywall notices/abstracts/navigation/search snippets alone are NOT sufficient original evidence. An original with
 truncated=true or unreadable text/tables/equations must be held if needed context is missing. context_clipped=true
 only means the service bounded the model input; it is not evidence that retrieval failed. In that case accept only
-claims literally supported by supplied excerpts and remove or hold claims that need omitted context. Never infer a
+claims literally supported by supplied excerpts and remove or hold claims that need omitted context. Do not claim
+that the full paper omits a split, point-in-time universe, delistings, multiple-testing correction or costs merely
+because the supplied excerpts do not show them; say '제공 발췌에서 확인되지 않음' instead and distinguish any methods
+the excerpts do disclose. Never infer a
 table's numeric results. For prior=null and draft.change=new, material_change_verified means no update/correction
 claim needs verification; it does not require an exhaustive novelty search. Require change verification when a
 prior publication exists or the draft claims material change, correction or retraction.
@@ -70,7 +76,23 @@ def prompt(bundle, stage):
             "content choose revise and name every issue; unavailable necessary evidence means hold. Only all "
             "checks true and no issues permits pass." if stage == "critique" else
             "Produce one research brief. If a prior critique exists, correct its issues in this single allowed revision.")
-    result = (INSTRUCTIONS + "\nTASK: " + task + "\nSCHEMA:\n" + json.dumps(schema.model_json_schema(), ensure_ascii=False)
+    metadata = bundle.get("metadata") or {}
+    date_guard = ""
+    if metadata.get("publisher") == "arXiv":
+        dates = [metadata.get(key) for key in ("citation_date", "citation_online_date")]
+        if (all(isinstance(value, list) and len(value) == 1 and isinstance(value[0], str) for value in dates)
+                and dates[0][0] == dates[1][0]):
+            stamp = dates[0][0].replace("/", "-")
+            try:
+                date.fromisoformat(stamp)
+            except ValueError:
+                pass
+            else:
+                date_guard = "\nDATE_GUARD: arXiv original citation date is " + stamp + ". Use it for published_on; do not substitute feed published/updated."
+        if not date_guard:
+            date_guard = "\nDATE_GUARD: arXiv date metadata is incomplete or conflicting. Verify the original v1 date or hold."
+    result = (INSTRUCTIONS + "\nTASK: " + task + date_guard + "\nSCHEMA:\n"
+              + json.dumps(schema.model_json_schema(), ensure_ascii=False)
               + "\nDATA:\n" + json.dumps(bundle, ensure_ascii=False, default=str))
     if len(result) > 89000:
         raise ValueError("quant_context_limit")

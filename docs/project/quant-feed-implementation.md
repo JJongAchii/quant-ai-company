@@ -301,3 +301,34 @@ image build was running. No image or cache was pruned by this task. Further Quan
 activation await safe storage headroom, a coordinated Housing-compatible release, a successful
 fresh positive qualification, 48-hour observation and explicit owner approval. Compact evidence
 is in `evidence/quant-feed-initial-case-20260928/`.
+
+## Continuation after disk cleanup, later 28 September
+
+Lightsail disk headroom recovered to about 20 GB, so storage no longer blocks the next
+qualification. The existing combined `0e09b85` app image was independently rechecked against
+its installed package source and qdata revision; it contains the newer Quant quality policy and
+the Housing/data-watch integration. A new arXiv portfolio-cost paper with a full PDF, verified
+authors and source metadata was selected for a fresh positive preview. The no-call preview
+preflight passed, and 121 focused tests (one skip) plus Ruff passed. Two previously saved Quant
+briefs still render source-valid cards of 1,653 and 1,855 characters. The original Robeco post
+remains the sole delivered Quant post, and publication stays disabled.
+
+An existing Quant review initially remained `running` with a `quota` error, while the shared
+runtime quota pause kept renewing. After both cleared, one real subscription preview ran with
+publication disabled. The old generic Robeco item was held by the independent critic and
+rejected on fresh review. The new portfolio-cost paper's first draft failed the source
+contract; its one allowed revision passed exact-source validation, but the independent critic
+requested date and limitation corrections, so the fresh positive did **not** pass. No new Slack
+post or release cutover occurred. The unchanged-service check also failed because the separately
+operated maintenance container OOM-restarted at its 128 MiB limit during the preview; causation
+by this preview is unproven. The API had independently changed to `d571734` before this call;
+the Quant worker and Housing worker were not changed by this task. The exact private receipt,
+check-only runner, candidate metadata and open gates are under
+`evidence/quant-feed-continuation-20260928/`.
+
+An offline replay identified the initial draft failure as an exact quotation absent from the
+supplied excerpt. A full-context PDF shortlist was then assembled without another model call.
+The next local patch makes arXiv's original citation date explicit in the prompt and forbids
+claiming a full-paper omission from clipped-excerpt silence; the Quant policy fingerprint is
+version 9. This change passed focused regressions and Ruff but remains **undeployed and without
+a fresh positive qualification**. The failed version-8 private receipt must not be retried.

@@ -1,0 +1,93 @@
+{
+  "evidence_kind": "read_only_production_preflight_and_local_regression",
+  "checked_at_utc": "2026-09-28T08:02:55Z",
+  "disk_available_gb_approx": 20,
+  "disk_use_percent": 75,
+  "candidate": {
+    "document_id": "5209c2517c42ae1b492e758c5f5f7dfeca5645d837aa54341a46b117f96f8d65",
+    "title": "Cost-Sensitive Online Window Size Selection for Portfolio Management",
+    "source": "https://arxiv.org/abs/2609.29887",
+    "frozen_original_sha256": "36d856fd78d8a6af97ba6327c03b97ba8632b0a115c8dd155719f9b08d322cb5",
+    "original_type": "application/pdf",
+    "truncated": false,
+    "context_clipped": true,
+    "source_metadata_and_pdf_authors_checked": true
+  },
+  "preflight": {
+    "combined_app_image_commit": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+    "combined_app_installed_source_matches_release_tree": true,
+    "combined_app_image_revision_and_qdata_pin_match": true,
+    "qualifier_source_sha256": "5e12d4ee0083b8fff24d3e64e612c5d4657e1550917e30c2a90fcc4e47f132ca",
+    "qualifier_source_installed_root_private": true,
+    "private_receipt_directory_prepared_empty": true,
+    "compose_preview_image_matches_candidate": true,
+    "existing_source_valid_brief_card_lengths": [1653, 1855],
+    "local_focused_tests_passed": 122,
+    "local_focused_tests_skipped": 1,
+    "local_full_tests_passed": 1178,
+    "local_full_tests_skipped": 38,
+    "ruff": "passed"
+  },
+  "live_preview_executed": true,
+  "live_preview": {
+    "private_receipt": "qualification-cost-window-v8.json",
+    "state": "not_passed",
+    "negative_existing_false_positive_critic": "hold",
+    "negative_existing_false_positive_review": "reject",
+    "positive_initial_review": "source_contract_failed",
+    "positive_initial_validation_error": "quant_quote_not_in_original_version",
+    "positive_single_contract_revision": "source_validated_publish_proposal",
+    "positive_independent_critique": "revise",
+    "positive_critic_checks": {
+      "direct_quant_scope": true,
+      "substantive_research": true,
+      "original_sufficient": true,
+      "claims_supported": false,
+      "limitations_honest": false,
+      "dates_authors_verified": false,
+      "relevance_and_value": true
+    },
+    "critic_issues": [
+      "publication date conflicted with PDF v1 and citation metadata",
+      "missing split, multiple-testing, point-in-time and delisting disclosures were overstated despite clipped context",
+      "constituent and survivorship caveats failed to distinguish author-reported sample handling",
+      "keep author-reported numerical and method claims tied to exact source locations"
+    ],
+    "revision_limit_exhausted": true,
+    "quant_publication_count_unchanged": true,
+    "running_services_preserved": false,
+    "concurrent_maintenance_container_oom_restart_observed": true,
+    "maintenance_oom_attribution_to_preview": "unproven"
+  },
+  "service_cutover_executed": false,
+  "follow_up_patch": {
+    "local_policy_version": 9,
+    "change": "give arXiv original citation date priority over later feed timestamps and distinguish clipped-excerpt silence from full-paper omission",
+    "production_deployed": false,
+    "fresh_positive_under_new_policy": "not_run"
+  },
+  "complete_context_shortlist": [
+    "https://arxiv.org/abs/2609.27024",
+    "https://arxiv.org/abs/2609.31260"
+  ],
+  "slack_writes_by_this_task": false,
+  "document_writes_by_this_task": false,
+  "final_observation": {
+    "quant_collection_enabled": true,
+    "quant_publication_enabled": false,
+    "quant_running_calls": 0,
+    "quant_delivered_posts": 1,
+    "housing_worker_running": true,
+    "news_worker_running": true,
+    "research_worker_running": true,
+    "disk_available_gb_approx": 20
+  },
+  "earlier_blocking_observation": {
+    "running_quant_call_count": 1,
+    "running_call_stage": "review",
+    "running_call_error": "quota",
+    "global_runtime_pause_reason": "quota",
+    "quota_pause_rolling": true
+  },
+  "interpretation": "Storage headroom was restored and the real subscription preview ran after the existing call and quota pause cleared. The fresh positive did not pass its independent critique, and a concurrent maintenance-container OOM invalidated the unchanged-service check. A narrowly tested local version-9 prompt correction remains undeployed and unqualified. No Quant publication or release cutover is authorized."
+}

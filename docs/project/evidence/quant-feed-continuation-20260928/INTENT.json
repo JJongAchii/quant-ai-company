@@ -1,0 +1,20 @@
+{
+  "date": "2026-09-28",
+  "owner_request": "Resume the paused Quant Scout quality and deployment work after Lightsail disk headroom was restored",
+  "scope": "Read-only candidate triage, source-grounded real-subscription qualification when the existing call is settled, and a Housing-compatible scoped release with publication still disabled",
+  "starting_observation_utc": "2026-09-28T07:07:29Z",
+  "starting_disk_available_gb_approx": 21,
+  "guardrails": [
+    "keep Quant Slack publication disabled and retain the existing Robeco post",
+    "do not replay or overlap the running Quant model call",
+    "preserve independently owned Housing, news, data-watch and research services",
+    "do not use paid API credentials or silently switch model providers",
+    "retain durable external-call and release receipts"
+  ],
+  "acceptance": [
+    "one fresh positive brief passes original-source validation and independent real-subscription critique",
+    "a combined source revision preserves the existing Housing and data-watch code",
+    "a scoped production release leaves Quant publication disabled and independent container identities unchanged",
+    "the release begins a 48-hour observation before any request to resume publication"
+  ]
+}
