@@ -10,9 +10,9 @@ from ..company import stable
 from .store import utcnow
 
 KST = ZoneInfo("Asia/Seoul")
-SUMMARY_FORMAT_VERSION = 2
+SUMMARY_FORMAT_VERSION = 3
 PROBLEM_TEXT = {
-    "parquet_footer_limit": "Parquet 메타데이터가 2 MiB 검사 한도를 초과해 확인하지 못함",
+    "parquet_footer_limit": "파일 정보를 읽는 검사 도구의 2 MiB 검사 한도에 걸려 확인하지 못함",
     "descriptor_unavailable_or_changed": "메타데이터 확인 실패 또는 조회 중 객체 변경",
     "lake_catalog_unavailable": "전체 목록 조회 실패",
     "dataset_missing": "이전 목록에 있던 데이터셋이 현재 목록에 없음",
@@ -49,35 +49,75 @@ def problem_text(code):
 
 def status_text(snapshot):
     inventory = snapshot["inventory"]
+    inventory_ok = bool(inventory and inventory["receipt"].get("ok") is True)
     datasets = snapshot["datasets"]
     counts = Counter(row["freshness"]["state"] for row in datasets)
     checked = sum(row["inspection"] == "metadata_checked" for row in datasets)
     problems = [row for row in datasets if row["problem"]]
-    lines = [
-        f"*데이터 현황* · {kst(snapshot['checked_at'])}",
-        f"• 최신 레이크: {len(datasets)}개 중 메타데이터 확인 {checked}개, 미확인 {len(datasets) - checked}개",
-    ]
-    if not inventory or not inventory["receipt"].get("ok"):
-        lines.append("• 전체 목록 조회 실패 또는 미검사. 아래 개수는 마지막으로 저장된 목록입니다.")
-    if counts["unregistered"]:
-        lines.append(f"• 최신성 기준 미등록 {counts['unregistered']}개 — 데이터가 늦었다는 판정이 아닙니다.")
-    if counts["stale"]:
-        lines.append(f"• 등록 기준보다 늦은 데이터 {counts['stale']}개")
+    unknown = counts["unregistered"] + counts["unchecked"]
+    headline = ("첫 목록 조회 대기" if not inventory else
+                "현재 목록 조회 실패" if not inventory_ok else
+                f"확인 필요 {len(problems)}건" if problems else
+                "최신성 판단 보류" if unknown else "등록 기준 점검 완료")
+    lines = [f"*데이터 현황 · {headline}* · {kst(snapshot['checked_at'])}"]
+    if not inventory:
+        lines.append("*지금 상태* 첫 목록 조회가 아직 끝나지 않았습니다.")
+    elif not inventory_ok:
+        last_good = snapshot.get("last_successful_inventory_at")
+        lines.append(f"*지금 상태* 새 목록을 읽지 못했습니다. 아래 숫자는 {kst(last_good)} 마지막 성공 기록 기준입니다."
+                     if last_good else "*지금 상태* 새 목록을 읽지 못했고 이전 성공 기록도 없습니다.")
+    elif unknown:
+        lines.append("*지금 상태* 데이터 전체가 최신인지 아직 판단할 수 없습니다.")
+    elif problems:
+        lines.append("*지금 상태* 아래 데이터를 확인해야 합니다.")
+    else:
+        lines.append("*지금 상태* 등록된 검사 범위에서 확인된 이상은 없습니다. 전체 값·누락 검사는 아닙니다.")
+    if inventory_ok or snapshot.get("last_successful_inventory_at"):
+        label = "현재 목록" if inventory_ok else "마지막 성공 목록"
+        lines.append(f"• {label} {len(datasets)}개: 파일 정보 확인 {checked}개, 미확인 {len(datasets) - checked}개"
+                     " (실제 값·누락 검사는 아님)")
     if problems:
-        lines.append("*확인 필요*")
-        lines += [f"• {row['dataset']}: {problem_text(row['problem'])}" for row in problems[:5]]
-        if len(problems) > 5:
-            lines.append(f"• 그 외 {len(problems) - 5}개는 운영 상태 API에서 확인")
+        lines.append("*지난 점검에서 확인 필요*" if not inventory_ok else "*확인 필요*")
+        lines += [f"• {row['dataset']}: {problem_text(row['problem'])}" for row in problems[:3]]
+        if len(problems) > 3:
+            lines.append(f"• 그 외 {len(problems) - 3}개는 운영 상태 API에서 확인")
         if any(row["problem"] in {"parquet_footer_limit", "descriptor_unavailable_or_changed"} for row in problems):
-            lines.append("검사 실패만으로 원본 손상이나 데이터 지연을 단정하지 않습니다.")
+            lines.append("  ↳ 파일 손상이나 데이터 지연으로 판정한 것은 아닙니다.")
+    if not inventory:
+        lines.append("• 최신성: 아직 확인할 자료가 없습니다.")
+    elif not inventory_ok:
+        lines.append("• 최신성: 이번 목록을 확인하지 못해 현재 상태를 판단할 수 없습니다.")
+    elif counts["unregistered"] == len(datasets) and datasets:
+        lines.append("• 최신성: 전체 판정 불가 — 데이터별 갱신 기준이 없습니다.")
+    else:
+        freshness = []
+        for state, label in (("fresh", "기준 충족"), ("stale", "기준보다 지연"),
+                             ("unregistered", "갱신 기준 없음"), ("unchecked", "판정 자료 부족")):
+            if counts[state]:
+                freshness.append(f"{label} {counts[state]}개")
+        if freshness:
+            lines.append("• 최신성: " + ", ".join(freshness))
     core = snapshot["core_checks"]
     if not core:
-        lines.append("• 고정 연구 입력 6개: 아직 미검사. 현재 레이크와 별도입니다.")
+        lines.append("• 별도 연구 입력 6개는 이 알림의 검사 대상이 아니며 아직 검사 전입니다.")
     else:
         complete = sum(row["state"] == "complete" and not row["problem"] for row in core)
         lines.append(f"• 고정 연구 입력: {len(core)}건 중 전체 입력 검사 완료 {complete}건")
         lines += [f"  ◦ {row['title'][:60]}: {problem_text(row['problem'])}" for row in core if row["problem"]][:2]
-    lines.append(f"다음 목록 확인 {kst(snapshot['next_inventory_at'])} · 전체 이름은 채널에 `목록`으로 조회")
+    actions = []
+    if not inventory:
+        actions.append("첫 목록 조회 대기")
+    elif not inventory_ok:
+        actions.append("목록 조회 복구 확인")
+    if any(row["problem"] == "parquet_footer_limit" for row in problems):
+        actions.append("검사 도구의 읽기 한도 보완")
+    elif problems:
+        actions.append("확인 필요 항목 원인 점검")
+    if counts["unregistered"]:
+        actions.append("데이터별 갱신 시각 기준 정하기")
+    if actions:
+        lines.append("*필요한 조치* " + ", ".join(actions))
+    lines.append(f"다음 자동 목록 확인 {kst(snapshot['next_inventory_at'])} · 전체 이름은 `목록`")
     return "\n".join(lines)
 
 

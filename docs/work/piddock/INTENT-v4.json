@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "slug": "piddock",
+  "revision": 4,
+  "createdAt": "2026-09-28T01:46:31+00:00",
+  "revisionReason": "The user could not infer operational data state from the numeric data-watch message.",
+  "sourceRequest": "data-watch 에서 너가 보내는 저 메세지는 내가 어떻게 해석해야할지 사실 현황 파악이 잘 안되",
+  "supersedes": {
+    "intentFile": "INTENT-v3.json",
+    "intentDigest": "a289bfa790ef"
+  },
+  "outcome": "Make data-watch daily and on-demand status readable as an operator decision: current conclusion, verified scope, unknowns, incident meaning and needed action; verify and apply it to the existing production channel.",
+  "constraints": [
+    "Do not equate Parquet metadata access with row quality, dataset completeness or freshness.",
+    "If the latest catalog failed, mark retained counts as the last successful observation and show its time.",
+    "Preserve signed Slack ingress, durable outbox receipts and the existing research worker.",
+    "Keep freshness unregistered until a reviewed data-specific publication schedule exists.",
+    "Do not activate frozen research-input checks or other inactive employees as part of message copy changes."
+  ],
+  "deliverables": [
+    {
+      "id": "MESSAGE_CLARITY",
+      "description": "Operator-first data-watch status wording",
+      "acceptance": [
+        "Conclusion appears before technical counts",
+        "Metadata checks are not described as data quality or freshness",
+        "The issue and next action are stated in plain Korean"
+      ]
+    },
+    {
+      "id": "STALE_CATALOG",
+      "description": "Avoid presenting cached counts as current on catalog failure",
+      "acceptance": [
+        "Show latest catalog failure as the headline",
+        "Display last successful inventory time",
+        "Do not claim current freshness from a failed catalog"
+      ]
+    },
+    {
+      "id": "OPERATIONS",
+      "description": "Validate and publish the corrected status",
+      "acceptance": [
+        "Real PostgreSQL/Temporal and deployment regression pass",
+        "Reviewed code is deployed without replacing pinned research services",
+        "New Slack summary is one message and matches its database delivery receipt"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "Invent freshness contracts or claim all datasets are current",
+    "Modify source lake objects or approved research inputs",
+    "Run research, backtests, training or live orders",
+    "Mass activate inactive employees"
+  ],
+  "decisionGates": [],
+  "stopConditions": [
+    "Never automatically replay an uncertain Slack write",
+    "Do not claim production delivery without matching the Slack and PostgreSQL receipts"
+  ]
+}
