@@ -81,6 +81,13 @@ def _quote_text(value):
     return re.sub(r"\s+", "", unicodedata.normalize("NFKC", value))
 
 
+def _initial_case_variant(value):
+    """Allow only an ASCII initial-letter case change, not reworded evidence."""
+    if value and ("A" <= value[0] <= "Z" or "a" <= value[0] <= "z"):
+        return value[0].swapcase() + value[1:]
+    return None
+
+
 def _clean_controls(value):
     if isinstance(value, str):
         return re.sub(r"[\x00-\x1f]+", " ", value)
@@ -114,22 +121,38 @@ def validate(response, bundle, stage, *, audit=None):
         return brief
     corrections = []
     # PDF extractors may split words across layout whitespace or emit compatibility
-    # glyphs. Ignore only those presentation differences; every non-whitespace
+    # glyphs. A model may also capitalize the first ASCII letter of a sentence
+    # fragment. Ignore only these presentation differences; every subsequent
     # character and its order must still occur in the frozen excerpt. A wrong
-    # location can be corrected only when that exact quote occurs in one and
-    # only one supplied excerpt; ambiguous or unsupported quotes still fail.
+    # location can be corrected only when the quote occurs in one and only one
+    # supplied excerpt; ambiguous or unsupported quotes still fail.
     pages = {p["location"]: _quote_text(p["text"]) for p in bundle["pages"]}
     for index, evidence in enumerate(brief.evidence):
         quote = _quote_text(evidence.quote)
         if not quote:
             raise ValueError("quant_quote_not_in_original_version")
-        if quote not in pages.get(evidence.location, ""):
-            matches = [location for location, text in pages.items() if quote in text]
-            if len(matches) != 1:
+        variants = [quote]
+        if initial_case := _initial_case_variant(quote):
+            variants.append(initial_case)
+        for variant in variants:
+            if variant in pages.get(evidence.location, ""):
+                if variant != quote:
+                    corrections.append({"kind": "initial_case_quote_match", "evidence_index": index,
+                                        "location": evidence.location})
+                break
+            matches = [location for location, text in pages.items() if variant in text]
+            if len(matches) > 1:
                 raise ValueError("quant_quote_not_in_original_version")
-            corrections.append({"kind": "unique_quote_location", "evidence_index": index,
-                                "from": evidence.location, "to": matches[0]})
-            evidence.location = matches[0]
+            if len(matches) == 1:
+                corrections.append({"kind": "unique_quote_location", "evidence_index": index,
+                                    "from": evidence.location, "to": matches[0]})
+                if variant != quote:
+                    corrections.append({"kind": "initial_case_quote_match", "evidence_index": index,
+                                        "location": matches[0]})
+                evidence.location = matches[0]
+                break
+        else:
+            raise ValueError("quant_quote_not_in_original_version")
     for stamp in (brief.published_on, brief.revised_on):
         if stamp and stamp > date.fromisoformat(bundle["as_of"][:10]).isoformat()[:len(stamp)]:
             raise ValueError("quant_future_publication_date")
