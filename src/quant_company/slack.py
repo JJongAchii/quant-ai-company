@@ -288,6 +288,10 @@ class SlackOutbox:
                 from .briefing.store import BriefStore
 
                 return BriefStore(self.company).gate(conn, row, claimed=True)
+            if row["message_kind"] == "housing_feed":
+                from .housing_feed.store import HousingFeedStore
+
+                return HousingFeedStore(self.company).gate(conn, row, claimed=True)
             if row["message_kind"] == "quant_feed":
                 from .quant_feed.store import QuantFeedStore
 
@@ -329,6 +333,11 @@ class SlackOutbox:
                 from .tech_feed.store import TechFeedStore
 
                 if not TechFeedStore(self.company).gate(conn, row):
+                    return None
+            if row["message_kind"] == "housing_feed":
+                from .housing_feed.store import HousingFeedStore
+
+                if not HousingFeedStore(self.company).gate(conn, row):
                     return None
             if row["message_kind"] == "quant_feed":
                 from .quant_feed.store import QuantFeedStore
@@ -432,15 +441,16 @@ class SlackOutbox:
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_server_error")
                 return True
             result = response.json()
-            requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed", "data_watch", "briefing"}
+            requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed",
+                                                            "data_watch", "briefing", "housing_feed"}
                                 or row["agent"] == "maintainer")
             if row.get("update_ts") and result.get("ts") != row["update_ts"] and result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_update_receipt_mismatch")
-            elif row.get("message_kind") == "data_watch" and result.get("ok") and (
+            elif row.get("message_kind") in {"data_watch", "housing_feed"} and result.get("ok") and (
                 not isinstance(result.get("ts"), str) or not re.fullmatch(r"\d+\.\d+", result["ts"])
-                or result.get("channel", row["channel"]) != row["channel"]
+                or result.get("channel", None if row["message_kind"] == "housing_feed" else row["channel"]) != row["channel"]
             ):
-                await asyncio.to_thread(self.settle, row, "uncertain", error="data_watch_delivery_receipt_mismatch")
+                await asyncio.to_thread(self.settle, row, "uncertain", error=f"{row['message_kind']}_delivery_receipt_mismatch")
             elif result.get("ok") and (not requires_receipt or result.get("ts")):
                 await asyncio.to_thread(self.settle, row, "delivered", sent_ts=result.get("ts"))
             elif result.get("ok"):

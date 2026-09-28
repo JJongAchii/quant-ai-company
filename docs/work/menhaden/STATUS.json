@@ -1,0 +1,55 @@
+{
+  "approval": {
+    "approvedAt": "2026-09-28T02:01:25.847005+00:00",
+    "id": "chat-seoul-gyeonggi-housing-feed"
+  },
+  "currentIntent": "INTENT-v1.json",
+  "deliverables": {
+    "ACTIVATION": {
+      "evidence": [
+        {
+          "path": "docs/housing-feed.md",
+          "sha256": "81f4965951f2"
+        }
+      ],
+      "note": "Slack housing-feed C0C4UV5C14J and Reporter history access verified. Scoped server stage waits for existing piddock combined-stage release lock; no activation claimed.",
+      "status": "in_progress",
+      "updatedAt": "2026-09-28T02:35:30.475513+00:00"
+    },
+    "IMPLEMENTATION": {
+      "evidence": [
+        {
+          "path": "docs/housing-feed.md",
+          "sha256": "95d0fa52e7d4"
+        },
+        {
+          "path": "src/quant_company/housing_feed/store.py",
+          "sha256": "8170929407ee"
+        }
+      ],
+      "note": "Official public source collector, durable Temporal/PostgreSQL delivery and reviewed scoped rollout implemented.",
+      "status": "verified",
+      "updatedAt": "2026-09-28T02:31:35.492123+00:00"
+    },
+    "VALIDATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/housing-feed/automated-validation.json",
+          "sha256": "5e25a08fee70"
+        },
+        {
+          "path": "docs/project/HOUSING-FEED-VALIDATION.md",
+          "sha256": "163bb5fdbf8f"
+        }
+      ],
+      "note": "1203 passed/38 skipped full suite; 52 final targeted checks; real PostgreSQL and local Temporal; simulated Slack separate from pending real activation.",
+      "status": "verified",
+      "updatedAt": "2026-09-28T02:39:19.991519+00:00"
+    }
+  },
+  "intentDigest": "7dc44c58dcb3",
+  "schemaVersion": 1,
+  "slug": "menhaden",
+  "state": "approved",
+  "updatedAt": "2026-09-28T02:39:19.991519+00:00"
+}

@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-09-28T02:38:11.870869+00:00",
+  "tested_application_commit": "00501eab979dec20aba0e95fbb47939f9ef95b35",
+  "suite": {
+    "tests": "1241",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "38",
+    "time": "285.126"
+  },
+  "database": "real PostgreSQL 14.23; disposable local databases",
+  "temporal": "real local test server; activity retry, worker restart, history replay",
+  "slack": "simulated in automated tests; real activation recorded separately",
+  "providers": "public official HTML fixtures and mocked HTTP in tests",
+  "lint": "uv run --frozen ruff check . passed",
+  "initial_failure": "Optional housing flag absent from a pre-existing SimpleNamespace fixture; dispatch now defaults to disabled.",
+  "final_targeted_suite": {
+    "tests": "52",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "time": "11.394"
+  },
+  "final_targeted_scope": "Housing parsing, PostgreSQL/Temporal retries, Slack ambiguity, dedicated outbound allowlist, dispatcher coexistence, scoped deployment rollback; 52 passed.",
+  "configuration_isolation": "HOUSING_FEED_ALLOWED_CHANNELS is separate from SLACK_ALLOWED_CHANNELS; existing news/quant/tech policy digests and incoming Slack event permissions are unchanged."
+}

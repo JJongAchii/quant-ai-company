@@ -16,6 +16,8 @@ from .config import Settings
 from .data_watch.runner import DataWatchRunner
 from .data_watch.workflow import DataWatchWorkflow
 from .execution import TurnExecutor
+from .housing_feed.runner import HousingFeedCollector
+from .housing_feed.workflow import HousingFeedWorkflow
 from .news.runner import NewsCollector, NewsDiscovery, NewsEditor
 from .news.workflow import NewsCollectionWorkflow, NewsDiscoveryWorkflow, NewsEditorialWorkflow
 from .quant_feed.runner import QuantFeedCollector, QuantFeedEditor
@@ -120,6 +122,14 @@ def make_data_watch_worker(client, company, runner=None):
                   graceful_shutdown_timeout=timedelta(seconds=10))
 
 
+def make_housing_feed_worker(client, company, collector=None):
+    collector = collector or HousingFeedCollector(company)
+    return Worker(client, task_queue=company.settings.temporal_task_queue + "-housing-feed",
+                  workflows=[HousingFeedWorkflow], activities=[collector.activity_tick],
+                  max_concurrent_activities=1, max_cached_workflows=5,
+                  graceful_shutdown_timeout=timedelta(seconds=10))
+
+
 async def dispatch_once(client, company):
     if getattr(company.settings, "briefing_enabled", False):
         from .briefing.store import BriefStore
@@ -141,6 +151,14 @@ async def dispatch_once(client, company):
             await asyncio.to_thread(BriefStore(company).flush)
         except (ValueError, OSError) as exc:
             logging.getLogger(__name__).error("Briefing configuration unavailable: %s", type(exc).__name__)
+    if getattr(company.settings, "housing_feed_enabled", False) and not getattr(company, "_housing_feed_started", False):
+        try:
+            await client.start_workflow(HousingFeedWorkflow.run, id="company-housing-feed-v1",
+                                        task_queue=company.settings.temporal_task_queue + "-housing-feed",
+                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+        except WorkflowAlreadyStartedError:
+            pass
+        company._housing_feed_started = True
     if company.settings.quant_feed_enabled and not getattr(company, "_quant_feed_started", False):
         for workflow, identity, suffix in (
             (QuantFeedCollectionWorkflow.run, "company-quant-feed-collection-v1", "-quant-collection"),
@@ -239,6 +257,14 @@ async def data_watch_worker_main(settings=None):
     company = Company(settings)
     client = await connect(settings)
     async with make_data_watch_worker(client, company):
+        await asyncio.Event().wait()
+
+
+async def housing_feed_worker_main(settings=None):
+    settings = settings or Settings()
+    company = Company(settings)
+    client = await connect(settings)
+    async with make_housing_feed_worker(client, company):
         await asyncio.Event().wait()
 
 
