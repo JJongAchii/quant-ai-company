@@ -8,8 +8,7 @@ import pytest
 
 from quant_company.contracts import Role
 from quant_company.housing_feed import schedule
-from quant_company.housing_feed.contracts import ApplicationWindow, HousingNotice, MapLocation
-from quant_company.housing_feed.maps import enrich, geocode, image_blocks, image_url
+from quant_company.housing_feed.contracts import ApplicationWindow, HousingNotice
 from quant_company.housing_feed.render import render
 from quant_company.housing_feed.runner import HousingFeedCollector
 from quant_company.housing_feed.sources import (
@@ -51,68 +50,6 @@ def test_public_applyhome_snapshots_keep_region_rank_and_price_semantics():
     assert detail.result_date == date(2026, 10, 12)
     text = render(detail, datetime(2026, 9, 28, tzinfo=UTC))
     assert "최고가" in text and "최저" not in text and "자격" in text
-    assert f"위치: {detail.address}" in text
-    assert "<https://map.kakao.com/link/search/" in text
-    assert "|카카오맵에서 주소 검색>" in text
-
-
-def test_map_search_uses_only_the_official_address_and_encodes_slack_link():
-    notice = example().model_copy(update={"address": "경기도 성남시 <가|나>&1"})
-    text = render(notice, datetime(2026, 9, 28, tzinfo=UTC))
-    assert "위치: 경기도 성남시 &lt;가|나&gt;&amp;1" in text
-    assert "<https://map.kakao.com/link/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EC%84%B1%EB%82%A8%EC%8B%9C%20%3C%EA%B0%80%7C%EB%82%98%3E%261|카카오맵에서 주소 검색>" in text
-
-
-def test_area_map_uses_verified_administrative_result_and_inline_image():
-    seen = []
-
-    def response(request):
-        seen.append(request.url.params["q"])
-        return httpx.Response(200, json={"features": [{"properties": {
-            "countrycode": "KR", "name": "소하동", "city": "광명시", "state": "경기도"},
-            "geometry": {"coordinates": [126.8823406, 37.4432784]}}]})
-
-    address = "경기도 광명시 소하동 광명 구름산지구 A6BL"
-    location = geocode(address, "경기", transport=httpx.MockTransport(response))
-    assert seen == ["경기도 광명시 소하동"]
-    assert location == MapLocation(longitude=126.8823406, latitude=37.4432784,
-                                   label="경기도 광명시 소하동", level="neighborhood")
-    assert "markers=126.8823406,37.4432784,H" in image_url(location)
-    blocks = image_blocks("*분양 공고*\n위치: 경기도 광명시 소하동", location)
-    assert blocks[0]["text"]["text"].startswith("*분양 공고*")
-    assert blocks[-1]["type"] == "image" and blocks[-1]["image_url"].startswith("https://mapmap.ai/")
-    assert "정확한 위치가 아닙니다" in blocks[-1]["alt_text"]
-
-
-def test_geocoder_rejects_another_city(monkeypatch):
-    monkeypatch.setattr("quant_company.housing_feed.maps.time.sleep", lambda _: None)
-
-    def response(request):
-        return httpx.Response(200, json={"features": [{"properties": {
-            "countrycode": "KR", "name": request.url.params["q"].split()[-1],
-            "city": "성남시", "state": "경기도"},
-            "geometry": {"coordinates": [127.11873, 37.36628]}}]})
-
-    assert geocode("경기도 광명시 소하동 A6BL", "경기", transport=httpx.MockTransport(response)) is None
-
-
-def test_map_lookup_cache_does_not_change_notice_content():
-    notice = example().model_copy(update={"address": "경기도 광명시 소하동 A6BL"})
-    today = date(2026, 9, 28)
-    location = MapLocation(longitude=126.8823406, latitude=37.4432784,
-                           label="경기도 광명시 소하동", level="neighborhood")
-    calls = []
-
-    def resolver(address, region):
-        calls.append((address, region))
-        return location
-
-    receipt = {"ok": True, "entries": [notice.model_dump(mode="json")]}
-    first = enrich(receipt, {}, today, resolver=resolver)
-    prior = {notice.id: HousingNotice.model_validate(first["entries"][0])}
-    second = enrich(receipt, prior, today, resolver=resolver)
-    assert calls == [(notice.address, "경기")]
-    assert first["entries"] == second["entries"]
 
 
 def test_remaining_units_do_not_invent_general_supply_dates():
@@ -134,7 +71,6 @@ def test_lh_uses_application_table_not_board_deadline():
     assert "10:00" in detail.schedule_note and "17:00" in detail.schedule_note
     assert detail.price_summary.startswith("주택형별 평균가") and "367,070,000원" in detail.price_summary
     assert all(n.region in {"서울", "경기"} for n in rows)
-    assert "카카오맵에서 주소 검색" not in render(detail, datetime(2026, 9, 28, tzinfo=UTC))
 
 
 def test_sh_registration_notices_are_not_new_housing_recruitment():
@@ -227,16 +163,6 @@ def test_snapshot_commit_retry_and_preview_activation(housing):
         assert conn.execute("SELECT count(*) AS n FROM turns").fetchone()["n"] == 0
 
 
-def test_map_metadata_does_not_create_a_changed_notice(housing):
-    notice = example(housing.clock[0].date()).model_copy(update={"address": "경기도 광명시 소하동 A6BL"})
-    collect(housing, notice)
-    mapped = notice.model_copy(update={"map_location": MapLocation(
-        longitude=126.8823406, latitude=37.4432784, label="경기도 광명시 소하동", level="neighborhood"),
-        "map_checked_on": housing.clock[0].date()})
-    collect(housing, mapped)
-    assert len(outgoing(housing)) == 1
-
-
 def test_reminders_are_durable_and_initial_connection_does_not_double_post(housing):
     collect(housing)
     assert housing.reminders() == 0
@@ -315,11 +241,7 @@ async def test_uncertain_slack_outcome_is_not_replayed(housing, result):
 
 
 async def test_real_postgres_to_simulated_slack_has_stable_receipt(housing):
-    notice = example(housing.clock[0].date()).model_copy(update={
-        "address": "경기도 광명시 소하동 A6BL",
-        "map_location": MapLocation(longitude=126.8823406, latitude=37.4432784,
-                                    label="경기도 광명시 소하동", level="neighborhood")})
-    collect(housing, notice)
+    collect(housing)
     posted = []
 
     def response(request):
@@ -329,8 +251,6 @@ async def test_real_postgres_to_simulated_slack_has_stable_receipt(housing):
     assert await sender(housing, response).send_one()
     assert posted[0]["channel"] == "CHOUSING"
     assert "합성 분양 공고" in posted[0]["text"] and "공식 공고·신청 안내 확인" in posted[0]["text"]
-    assert posted[0]["blocks"][-1]["type"] == "image"
-    assert posted[0]["blocks"][-1]["image_url"].startswith("https://mapmap.ai/api/static-map?")
     assert posted[0]["client_msg_id"] == str(outgoing(housing)[0]["id"])
     assert outgoing(housing)[0]["status"] == "delivered"
 

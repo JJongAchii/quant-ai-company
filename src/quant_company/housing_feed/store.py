@@ -74,8 +74,7 @@ class HousingFeedStore:
             queued = 0
             for notice in notices:
                 payload = notice.model_dump(mode="json")
-                digest = fingerprint({k: v for k, v in payload.items()
-                                      if k not in {"map_location", "map_checked_on"}})
+                digest = fingerprint(payload)
                 previous = conn.execute("SELECT digest FROM housing_feed_notices WHERE id=%s", (notice.id,)).fetchone()
                 conn.execute("""INSERT INTO housing_feed_notices(id,source_id,payload,digest,active,checked_at)
                     VALUES(%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload,
@@ -88,19 +87,6 @@ class HousingFeedStore:
                 lease_until=NULL,lease_token=NULL WHERE id=%s""",
                          (at, Jsonb(as_json(metadata)), at + timedelta(hours=1), row["id"]))
             return {"state": "collected", "notices": len(notices), "queued": queued}
-
-    def map_previous(self, ids):
-        if not ids:
-            return {}
-        with self.db.transaction() as conn:
-            rows = conn.execute("SELECT id,payload FROM housing_feed_notices WHERE id=ANY(%s)", (ids,)).fetchall()
-        return {row["id"]: HousingNotice.model_validate(row["payload"]) for row in rows}
-
-    def map_for_message(self, identity):
-        with self.db.transaction() as conn:
-            row = conn.execute("""SELECT n.payload FROM housing_feed_publications p
-                JOIN housing_feed_notices n ON n.id=p.notice_id WHERE p.id=%s""", (identity,)).fetchone()
-        return HousingNotice.model_validate(row["payload"]).map_location if row else None
 
     def enqueue(self, conn, notice, digest, at, *, changed=False, reminders=()):
         s = self.company.settings

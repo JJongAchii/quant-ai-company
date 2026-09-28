@@ -395,13 +395,6 @@ class SlackOutbox:
         blocks = await asyncio.to_thread(blocks_for_outbox, self.company, row, self.credentials[row["agent"]])
         if blocks:
             body["blocks"] = blocks
-        if row.get("message_kind") == "housing_feed":
-            from .housing_feed.maps import image_blocks
-            from .housing_feed.store import HousingFeedStore
-
-            location = await asyncio.to_thread(HousingFeedStore(self.company).map_for_message, row["id"])
-            if location:
-                body["blocks"] = image_blocks(body["text"], location)
         if row["thread_ts"] is None:
             del body["thread_ts"]
         elif row.get("news_broadcast"):
