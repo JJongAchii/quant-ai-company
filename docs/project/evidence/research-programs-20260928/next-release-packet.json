@@ -39,6 +39,7 @@
     "next-image-stage.json": "469e5898cdfd5c4d7bef39f17c70a1cbfd838c165551727b661521fca4a645c6",
     "next-live-server-audit.json": "396e2116532c98d1807daca4b5688d4c7d07b1a3021d6984a211287354a1ccfe",
     "next-live-worker-audit.json": "f336b7b8ba91aa0ad62766ff180d1af55027d7f8d43556447db933bebac076ba",
+    "next-roles-preflight.json": "380f368f9fb5693eb038145bd75039b359ccc94ddb32cdbfcaea337432798e59",
     "next-server-stage.json": "86306cc86cb07989957a0112b2e33be7af4dd7792e82c6d0add047d4afa3942a",
     "next-worker-baseline.json": "b60fbdf3090f00c19350e46ef8a8f2b37f9fcc3bfd2444018446b731431322a8",
     "next-worker-stage.json": "032cb45841cafbadfb77babcf15f6cdfc6988a89ceb1b695183d2a892246f73a",
@@ -70,6 +71,7 @@
     "real_postgresql": true,
     "server_compose_config_exit_code": 0,
     "server_images_source_matches": 6,
+    "server_live_roles_valid": true,
     "temporal_live_rechecked": false,
     "worker_warmup_cases": [
       "etf_strategy",

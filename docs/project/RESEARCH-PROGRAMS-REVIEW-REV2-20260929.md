@@ -37,6 +37,8 @@
 revision label과 설치된 핵심 소스 해시를 확인한다.
 [Compose 검사](evidence/research-programs-20260928/next-compose-preflight.json)는 현재 사용 중인
 research·autonomous·model accounts overlay를 새 커밋으로 해석해 통과했다.
+[역할 파일 검사](evidence/research-programs-20260928/next-roles-preflight.json)는 새 이미지가
+현재 운영의 13개 직원 역할 설정을 그대로 읽는 것을 확인했다.
 
 [3070 준비](evidence/research-programs-20260928/next-worker-stage.json)는 새 회사 bundle을 정확한
 코드·설정 쌍으로 풀었다. [네 가지 실제 3070 준비 구간 검사](evidence/research-programs-20260928/next-worker-warmup.json)는
