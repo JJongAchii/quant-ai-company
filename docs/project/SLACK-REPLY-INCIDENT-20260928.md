@@ -22,6 +22,8 @@
   worker는 연구 호환성을 위해 구버전으로 고정돼 있다. 활성 연구 중에는 이미지와
   `COMPANY_CODE_COMMIT`을 유지하고 [worker 전용 역할 설정 overlay](../../deploy/pinned-worker-roles-compat.compose.yaml)로
   비활성 발송 역할만 제외하는 임시 경로를 준비했다. Compose 병합 검사는 통과했다.
+  실제 고정 커밋 소스에서도 필터링한 12개 역할을 읽고 활성 직원 4명의 모델 문맥을
+  오류 없이 구성하는 것을 로컬에서 확인했다.
 - 합성 Slack 입력을 실제 임시 PostgreSQL에 연결한 앱 회귀 검사 16개와 고정 worker
   검사 1개가 통과했다. 최신 앱 기반 전체 검사는 1,223개 통과·38개 건너뜀·실패 0개였고
   Ruff도 통과했다. 실제 직원 답변이나 새 Slack 왕복은 아직 검증하지 않았다.
@@ -34,7 +36,9 @@
 앱 Socket을 새 코드로 교체한다. 고정 worker는 기존 이미지를 유지한 채 역할 설정만 분리해
 재시작한다. 새 역할 파일은 운영 `roles.json`에서 비활성 `quant_scout` 한 항목만 제외하며,
 다른 모든 역할이 같은지 확인하고 원본과 새 파일의 digest를 영수증에 기록한다.
-기존 이미지·설정·영수증을 보존한다.
+기존 이미지·설정·영수증을 보존한다. 고정 worker를 다시 생성하는 후속 Compose 명령에도
+같은 worker 전용 overlay를 포함해야 한다. 고정 이미지가 수리된 코드로 바뀔 때
+임시 overlay를 제거한다.
 
 [검토용 초안 PR #83](https://github.com/JJongAchii/quant-ai-company/pull/83)을 열었다.
 운영 반영 전 PR 검토와 cutover 승인이 남아 있다.

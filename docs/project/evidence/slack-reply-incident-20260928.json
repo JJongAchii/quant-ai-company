@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "recordedAt": "2026-09-28T06:28:08Z",
-  "updatedAt": "2026-09-28T07:02:48Z",
+  "updatedAt": "2026-09-28T07:08:53Z",
   "state": "repair_prepared_not_deployed",
   "sourceKinds": {
     "slack": "real Slack conversations.replies readback using the configured bot identities",
@@ -44,6 +44,7 @@
     "pinnedWorkerBase": "31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
     "pinnedWorkerCandidate": "e53b771aa994a54c1f4be6a2610856ea7a298816",
     "pinnedWorkerCutover": "Preserve the exact 31ff903f image and research commit; attach a worker-only roles file that differs only by removing inactive quant_scout.",
+    "pinnedWorkerRuntimeDryRun": "Exact 31ff903f source loaded the filtered 12-role file, built runtime context for all 4 active employees, and did not request a quant_scout specialist pack.",
     "temporaryComposeOverlay": "deploy/pinned-worker-roles-compat.compose.yaml",
     "rolesPreparationHelper": "deploy/prepare-pinned-worker-roles.py",
     "liveRolesSourceSha256": "95fdee86cc0e59fdf4f68abb4200a582520cfc3cdb801c5c5f44c1a8af544a3c",
