@@ -5,6 +5,7 @@
 회사 운영 검증 기록을 여기로 모았습니다. 이후 회사 기록은 quant-workspace에 추가하지 않습니다.
 
 - [현재 사용 범위와 로드맵](NEXT-STEPS.md)
+- [Analyst 앱 설치·새 아침판 평가·서버 미리보기 릴리스 차단](ANALYST-PREVIEW-20260928.md)
 - [data-watch 운영 게시와 메시지 해석](DATA-WATCH-PRODUCTION-20260928.md)
 - [data-watch 운영자 현황 문구 개선](DATA-WATCH-STATUS-CLARITY-20260928.md)
 - [회사 서버·3070 연구 실행 연결과 실제 복구 검증](RESEARCH-EXECUTION-20260921.md)
