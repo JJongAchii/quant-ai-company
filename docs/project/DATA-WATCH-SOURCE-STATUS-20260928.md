@@ -12,7 +12,8 @@
 | FINRA 공매도 거래량 `us_shortvol` | 거래일 2026-09-24 | [FINRA는 일별 파일을 거래일 당일 18:00 ET까지 게시](https://www.finra.org/finra-data/browse-catalog/short-sale-volume-data/daily-short-sale-volume-files)한다고 명시한다. 09/25분이 레이크 최대 거래일에 반영되지 않았다. 수집·발행 경로 점검이 필요하다. |
 | 미국 전종목 가격 `us_prices` | 내부 거래일 미확인 | 객체 자체는 09/28 교체됐으나 qdata의 2 MiB Parquet footer 검사 한도를 넘었다. 업로드 날짜로 데이터 날짜를 대신하지 않는다. 검사 한도와 대상 파일을 검토해야 한다. |
 | SEC `sec_filings`·`sec_fundamental` | `filed` 2026-03-31 | 이 자료는 전체 EDGAR 실시간 공시가 아니라 분기별 FSDS다. [SEC가 2026 Q2 FSDS를 공개](https://www.sec.gov/data-research/sec-markets-data/financial-statement-data-sets)했지만 레이크 최대 제출일은 Q1 말일이다. Q2 수집·clean 빌드·발행 경로 확인이 필요하다. |
-| SEC `sec_insider` | `filed` 2026-03-31 | 181일째 이후 제출일이 보이지 않는다. 이 자료의 별도 공급 주기와 수집 경로는 아직 확인하지 않았으므로 지연 원인을 확정하지 않는다. |
+| SEC `sec_13f` | `filed` 2026-05-29 | [SEC의 2026년 6~8월 13F 묶음](https://www.sec.gov/data-research/sec-markets-data/form-13f-data-sets)이 공개됐으나 레이크 최대 제출일은 5월 29일이다. 이 자료의 수집·clean 빌드·발행 경로 확인이 필요하다. |
+| SEC `sec_insider` | `filed` 2026-03-31 | [SEC의 2026 Q2 Form 3·4·5 데이터셋](https://www.sec.gov/data-research/sec-markets-data/insider-transactions-data-sets)이 공개됐으나 레이크 최대 제출일은 3월 31일이다. 수집·clean 빌드·발행 중 원인 단계는 아직 확인하지 않았다. |
 | FRED·ECOS·OECD CLI | 관측일 09/24·09/23, 기준월 08월 | 소스마다 시리즈·공표 주기가 다르다. 전체 데이터셋의 최대 날짜만으로 모든 시리즈가 최신이라고 판정하지 않는다. |
 
 날짜는 qdata의 읽기 전용 `dataset_catalog()`와 `inspect_dataset(sample_rows=0)`
