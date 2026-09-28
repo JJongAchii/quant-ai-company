@@ -66,6 +66,12 @@ x-db-env: &db-env
   TECH_FEED_PUBLISH_ENABLED: ${TECH_FEED_PUBLISH_ENABLED:-false}
   TECH_FEED_CHANNEL_ID: ${TECH_FEED_CHANNEL_ID:-}
   TECH_FEED_OWNER_USER: ${TECH_FEED_OWNER_USER:-}
+  HOUSING_FEED_ENABLED: ${HOUSING_FEED_ENABLED:-false}
+  HOUSING_FEED_PUBLISH_ENABLED: ${HOUSING_FEED_PUBLISH_ENABLED:-false}
+  HOUSING_FEED_CHANNEL_ID: ${HOUSING_FEED_CHANNEL_ID:-}
+  HOUSING_FEED_OWNER_USER: ${HOUSING_FEED_OWNER_USER:-}
+  HOUSING_FEED_ALLOWED_CHANNELS: ${HOUSING_FEED_ALLOWED_CHANNELS:-[]}
+  HOUSING_MAP_PANEL_ENABLED: ${HOUSING_MAP_PANEL_ENABLED:-false}
   QUANT_FEED_ENABLED: ${QUANT_FEED_ENABLED:-false}
   QUANT_FEED_PUBLISH_ENABLED: ${QUANT_FEED_PUBLISH_ENABLED:-false}
   QUANT_FEED_CHANNEL_ID: ${QUANT_FEED_CHANNEL_ID:-}
@@ -240,6 +246,22 @@ services:
     secrets: [database_password, temporal_api_key, lake_read_credentials]
     networks: [core, service_egress]
     mem_limit: 256m
+    cpus: 0.25
+    depends_on:
+      postgres: {condition: service_healthy}
+
+  housing-feed-worker:
+    <<: *app
+    profiles: [housing-feed]
+    command: [quant-company, housing-feed-worker]
+    environment:
+      <<: [*db-env, *temporal-env]
+      SLACK_TEAM_ID: ${SLACK_TEAM_ID:-CONFIGURE}
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+    secrets: [database_password, temporal_api_key]
+    networks: [core, service_egress]
+    mem_limit: 192m
     cpus: 0.25
     depends_on:
       postgres: {condition: service_healthy}

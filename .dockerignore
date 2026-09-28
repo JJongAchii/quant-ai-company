@@ -5,6 +5,7 @@
 !src/**
 !deploy/
 !deploy/Dockerfile
+!deploy/Dockerfile.code-update
 !deploy/entrypoint.py
 **/__pycache__/
 **/*.pyc

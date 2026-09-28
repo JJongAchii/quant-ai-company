@@ -1,0 +1,11 @@
+{
+  "date": "2026-09-28",
+  "owner_request": "Continue the paused Quant Scout quality work without resuming Slack publication",
+  "scope": "Test whether an otherwise exact PDF quotation differing only at its first ASCII letter can be validated without weakening word, number or location checks; independently critique the resulting saved real revision",
+  "production_guardrails": [
+    "keep Quant Slack publication disabled",
+    "do not change independently owned Housing, news or research services",
+    "preserve durable model-call and release receipts",
+    "stop additional image building at a 5 GiB disk-safety threshold"
+  ]
+}

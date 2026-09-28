@@ -182,7 +182,7 @@ def test_new_work_does_not_require_prior_change_comparison_but_updates_do():
         validate(value, bundle, "critique")
 
 
-def test_quote_validation_ignores_only_pdf_layout_whitespace():
+def test_quote_validation_ignores_pdf_layout_whitespace():
     ready = {"request": {"request_id": "quant-feed-review"}}
     bundle = {"pages": [{"location": "PDF p.1", "text": "a convex functionf on a B-bounded domain"}],
               "as_of": "2026-09-22T00:00:00+00:00", "links": [], "commercial": False, "prior": None,
@@ -193,6 +193,48 @@ def test_quote_validation_ignores_only_pdf_layout_whitespace():
     ])
     assert validate(response(ready, value), bundle, "review").disposition == "publish"
     value["evidence"][0]["quote"] = "convex function g on a B-bounded domain"
+    with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
+        validate(response(ready, value), bundle, "review")
+
+
+def test_quote_initial_ascii_case_only_is_audited_without_rewording():
+    ready = {"request": {"request_id": "quant-feed-review"}}
+    text = ("In the model, we will ask the GMM to model all 17 factors in the lens. "
+            "Transaction costs are not estimated.")
+    bundle = {"pages": [{"location": "PDF p.1", "text": text}],
+              "as_of": "2026-09-22", "links": [], "commercial": False, "prior": None,
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
+    value = brief(evidence=[
+        {"claim": "모형", "location": "PDF p.1", "quote": "We will ask the GMM to model all 17 factors in the lens."},
+        {"claim": "비용", "location": "PDF p.1", "quote": "Transaction costs are not estimated."},
+    ])
+    corrections = []
+    assert validate(response(ready, value), bundle, "review", audit=corrections).disposition == "publish"
+    assert corrections == [{"kind": "initial_case_quote_match", "evidence_index": 0,
+                            "location": "PDF p.1"}]
+    value["evidence"][0]["quote"] = "We will ask the GMM to model all 18 factors in the lens."
+    with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
+        validate(response(ready, value), bundle, "review")
+    value["evidence"][0]["quote"] = "WE will ask the GMM to model all 17 factors in the lens."
+    with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
+        validate(response(ready, value), bundle, "review")
+
+
+def test_initial_case_quote_wrong_location_requires_unique_original_match():
+    ready = {"request": {"request_id": "quant-feed-review"}}
+    text = "we will ask the GMM to model all 17 factors in the lens. Transaction costs are not estimated."
+    bundle = {"pages": [{"location": "PDF p.1", "text": text}],
+              "as_of": "2026-09-22", "links": [], "commercial": False, "prior": None,
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
+    value = brief(evidence=[
+        {"claim": "모형", "location": "PDF p.2", "quote": "We will ask the GMM to model all 17 factors in the lens."},
+        {"claim": "비용", "location": "PDF p.1", "quote": "Transaction costs are not estimated."},
+    ])
+    corrections = []
+    validated = validate(response(ready, value), bundle, "review", audit=corrections)
+    assert validated.evidence[0].location == "PDF p.1"
+    assert [item["kind"] for item in corrections] == ["unique_quote_location", "initial_case_quote_match"]
+    bundle["pages"].append({"location": "PDF p.3", "text": text})
     with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
         validate(response(ready, value), bundle, "review")
 

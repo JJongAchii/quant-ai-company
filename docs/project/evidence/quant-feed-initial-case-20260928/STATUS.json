@@ -1,0 +1,19 @@
+{
+  "state": "publication_paused_fresh_positive_not_passed_partial_app_preview_only",
+  "quant_publication_enabled": false,
+  "source_fix_merged": true,
+  "source_fix_deployed": false,
+  "full_release_staged": false,
+  "one_off_app_source_verified": true,
+  "saved_revision_source_validated": true,
+  "fresh_independent_critique": "revise",
+  "fresh_positive_end_to_end": "not_passed",
+  "service_cutover": false,
+  "remaining_gates": [
+    "quality-pass on a new source-grounded brief within the bounded revision policy",
+    "coordinate a combined release preserving the separately owned Housing and other feed services",
+    "restore safe disk headroom without deleting rollback assets blindly",
+    "observe a complete new release for 48 hours with Quant publication disabled",
+    "obtain explicit authorization before resuming Quant Slack posts"
+  ]
+}
