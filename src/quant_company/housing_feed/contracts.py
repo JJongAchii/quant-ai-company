@@ -36,6 +36,13 @@ class ApplicationWindow(StrictModel):
         return self
 
 
+class MapLocation(StrictModel):
+    longitude: float = Field(ge=125.5, le=128.5)
+    latitude: float = Field(ge=36.5, le=38.6)
+    label: str = Field(min_length=1, max_length=100)
+    level: Literal["neighborhood", "municipality"]
+
+
 class HousingNotice(StrictModel):
     id: str = Field(min_length=1, max_length=120)
     source: Literal["applyhome-apt", "applyhome-remndr", "lh-sale", "sh-sale"]
@@ -53,6 +60,8 @@ class HousingNotice(StrictModel):
     # Board closure is not necessarily the application deadline.
     board_close: date | None = None
     schedule_note: str = Field(default="접수 시간·자격은 모집공고문 확인", max_length=300)
+    map_location: MapLocation | None = None
+    map_checked_on: date | None = None
 
     @field_validator("url", "document_url")
     @classmethod
