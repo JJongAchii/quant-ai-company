@@ -15,12 +15,16 @@ never run it while a Quant call is active, the shared quota pause persists, or a
 receipt is uncertain. It deliberately refuses the existing failed receipt instead of replaying it.
 
 The failed real preview used the existing version-8 image. A local version-9 prompt/date
-correction followed; it has not been deployed or qualified by this receipt. A different
-full-context source and a new durable request series are required for any next trial.
+correction followed. `run_v9_full_original_preview.py` used its exact image and a distinct
+full-context cryptocurrency-volatility paper in a second real subscription preview. The old
+generic item was held/rejected and the positive brief passed source validation, but the final
+independent critic requested further changes after the only allowed revision. This receipt is
+also final and must not be replayed. The new local version-10 checklist patch has not been
+deployed or qualified. A different original and a new durable request series are required.
 
 The public repo holds no full model response, credentials or original PDF. The exact
 qualifier source was installed at
 `/var/lib/quant-company/operations/quant-feed-continuation-20260928/qualify_quant_editorial.py`
 with SHA-256 `5e12d4ee0083b8fff24d3e64e612c5d4657e1550917e30c2a90fcc4e47f132ca`.
-The private output path is below that operation's `preview/` directory. A later operator
+The private v8 and v9 outputs are below that operation's `preview/` directory. A later operator
 must recheck the production baseline before any live preview or cutover.

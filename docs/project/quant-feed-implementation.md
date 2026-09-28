@@ -332,3 +332,16 @@ The next local patch makes arXiv's original citation date explicit in the prompt
 claiming a full-paper omission from clipped-excerpt silence; the Quant policy fingerprint is
 version 9. This change passed focused regressions and Ruff but remains **undeployed and without
 a fresh positive qualification**. The failed version-8 private receipt must not be retried.
+
+The next isolated version-9 preview used an exact-source image and the full original of an
+arXiv cryptocurrency-volatility study. Negative controls held/rejected the old generic item.
+The positive draft and its one revision both passed source-contract validation, but independent
+final criticism still found an overstatement about dynamic predictive ability, an omitted
+inconclusive confidence interval and a quote that did not support its entire associated claim.
+The v9 receipt is final `not_passed`; all running services, the current release, the publication
+count and the disabled publication setting were preserved. The host image was built only for this
+isolated preview; after the receipt was durable, its unused image and scoped buildx builder were
+removed, restoring disk headroom to about 17 GB. The local next patch adds general comparison-uncertainty, residual-confounding,
+whole-claim evidence and full-field critic checks (policy version 10). It is not yet deployed or
+qualified. The local version-10 patch passed 1,179 full tests (38 skipped) and Ruff. Both failed
+receipts remain private and must not be replayed.

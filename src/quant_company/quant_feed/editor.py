@@ -32,6 +32,9 @@ automatic reason to hold: this is research curation, not a deployment gate. Hold
 prevents a faithful account of the central contribution or results. Local reproduction is not required to share
 a valuable paper; label author-reported results and the lack of reproduction honestly. Theory/method papers do not require a backtest:
 use '해당 없음' plus why. Do not reward only positive results. Treat institutional commercial incentives openly.
+For model comparisons, preserve the authors' uncertainty intervals and inconclusive results when they qualify
+the main conclusion. Alignment, normalization or controls do not by themselves isolate dynamic or causal skill;
+state any residual level differences or confounding that the original acknowledges.
 Original publication date is not retrieval time, PDF creation time or a website copyright year. Preserve partial
 dates as YYYY or YYYY-MM. Verify authors/dates from supplied original metadata/pages. If unknown, hold.
 For arXiv, distinguish the original v1 submission date from a later feed published/updated timestamp or PDF date.
@@ -39,7 +42,9 @@ If citation_date and citation_online_date agree, use that original date for publ
 revised_on only when an actual revision is established; unresolved date conflicts mean hold, not guess.
 Use vintage=classic for old foundational work; why_read must explain why it matters NOW, not call it new.
 Every substantive claim and reported number must be supported by evidence: an exact short quote and the
-supplied page/section location. Evidence claims in Korean should map explicitly to the brief. No unsupported
+supplied page/section location. Each quote must directly support the WHOLE associated claim, including its
+sample, target, horizon and result; split compound claims across evidence entries when needed. Evidence claims
+in Korean should map explicitly to the brief. No unsupported
 numeric performance, invented links, broad copied passages, or buy/sell instructions. Copy quote wording
 literally from the supplied excerpt; do not fix grammar or substitute articles/words. Layout whitespace may be
 normalized. Write concise Korean: keep each brief field to one or two short sentences, put the most important
@@ -67,8 +72,11 @@ of a preprint without substantive change is cosmetic. Honest unresolved uncertai
 
 def prompt(bundle, stage):
     schema = EvidenceCritique if stage == "critique" else ResearchBrief
-    task = ("Critique the offered draft afresh against the original. Check EACH claim, number, author and date; "
-            "check direct_quant_scope and substantive_research separately from evidence accuracy and general "
+    task = ("Critique the offered draft afresh against the original. Audit EACH brief field and EACH evidence "
+            "entry against its exact quote; check every claim component, number, author and date. Enumerate "
+            "ALL material issues in one response, not only the most salient one. After a revision, re-audit "
+            "the entire brief, including newly worded claims, uncertainty and previously unchecked quotes. "
+            "Check direct_quant_scope and substantive_research separately from evidence accuracy and general "
             "relevance. Set either false for a generic AI governance or organizational insight, even from an "
             "asset manager, when it lacks a concrete quantitative market method, data, model or testable mechanism. "
             "Check research value, missing limitations, copyright and material-change claims. This is a separate AI "

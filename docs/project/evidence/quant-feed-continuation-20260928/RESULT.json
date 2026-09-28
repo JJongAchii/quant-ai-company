@@ -59,12 +59,48 @@
     "concurrent_maintenance_container_oom_restart_observed": true,
     "maintenance_oom_attribution_to_preview": "unproven"
   },
+  "version_9_full_original_preview": {
+    "source_commit": "0f397498078f1d5ea25e6634e33c0b5cf9a0a3f2",
+    "image_source_inventory_verified": true,
+    "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "private_receipt": "qualification-crypto-volatility-v9.json",
+    "positive_document_id": "1dabb1c146c0ddd1afa86349399df38f1d50d1bd35e84810099042247736adef",
+    "positive_source": "https://arxiv.org/abs/2609.27024",
+    "context_clipped": false,
+    "preflight_activity_clear": true,
+    "state": "not_passed",
+    "negative_existing_false_positive_critic": "hold",
+    "negative_existing_false_positive_review": "reject",
+    "positive_initial_review": "source_validated_publish_proposal",
+    "positive_initial_critic": "revise",
+    "positive_single_revision": "source_validated_publish_proposal",
+    "positive_final_critic": "revise",
+    "final_critic_issues": [
+      "forecast-level alignment was still worded as isolation of dynamic predictive ability despite residual level differences",
+      "a shared-input loss-to-model ratio of 0.81 with 95% CI [0.66, 1.22] left the ranking statistically inconclusive but was omitted",
+      "one quote supported the exchange and sample end date but not the next-day Garman-Klass target in its associated claim"
+    ],
+    "revision_limit_exhausted": true,
+    "running_services_preserved": true,
+    "current_release_unchanged": true,
+    "publication_count_unchanged": true,
+    "slack_writes": false,
+    "document_writes": false,
+    "disposable_preview_image_removed_after_receipt": true,
+    "scoped_buildx_builder_removed_after_receipt": true,
+    "disk_available_gb_after_cleanup_approx": 17
+  },
   "service_cutover_executed": false,
   "follow_up_patch": {
-    "local_policy_version": 9,
-    "change": "give arXiv original citation date priority over later feed timestamps and distinguish clipped-excerpt silence from full-paper omission",
+    "local_policy_version": 10,
+    "change": "in addition to arXiv dates and clipped excerpts, require inconclusive comparisons, residual-confounding caveats, whole-claim quote support and field-by-field criticism",
     "production_deployed": false,
-    "fresh_positive_under_new_policy": "not_run"
+    "fresh_positive_under_new_policy": "not_run",
+    "focused_tests_passed": 72,
+    "focused_tests_skipped": 1,
+    "full_tests_passed": 1179,
+    "full_tests_skipped": 38,
+    "ruff": "passed"
   },
   "complete_context_shortlist": [
     "https://arxiv.org/abs/2609.27024",
@@ -89,5 +125,5 @@
     "global_runtime_pause_reason": "quota",
     "quota_pause_rolling": true
   },
-  "interpretation": "Storage headroom was restored and the real subscription preview ran after the existing call and quota pause cleared. The fresh positive did not pass its independent critique, and a concurrent maintenance-container OOM invalidated the unchanged-service check. A narrowly tested local version-9 prompt correction remains undeployed and unqualified. No Quant publication or release cutover is authorized."
+  "interpretation": "Storage headroom was restored. A version-8 positive failed critique and a concurrent maintenance-container OOM invalidated that unchanged-service check. A distinct full-context version-9 positive passed source validation but failed its final independent critique after its only revision; its service-preservation check passed. A local version-10 checklist patch remains undeployed and unqualified. No Quant publication or release cutover is authorized."
 }

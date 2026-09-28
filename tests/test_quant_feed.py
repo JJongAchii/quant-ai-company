@@ -645,6 +645,17 @@ def test_arxiv_date_and_clipped_context_are_explicit_in_editor_prompt():
     assert "arXiv date metadata is incomplete or conflicting" in prompt(bundle, "review")
 
 
+def test_editor_audits_uncertainty_and_entire_evidence_claim():
+    review = prompt({}, "review")
+    assert "uncertainty intervals and inconclusive results" in review
+    assert "do not by themselves isolate dynamic or causal skill" in review
+    assert "directly support the WHOLE associated claim" in review
+    critique = prompt({}, "critique")
+    assert "Audit EACH brief field and EACH evidence" in critique
+    assert "Enumerate ALL material issues" in critique
+    assert "After a revision, re-audit" in critique
+
+
 def test_render_is_scan_friendly_and_does_not_duplicate_or_mislabel_links():
     value = brief(related_urls=["https://example.org/paper", "https://example.org/code"],
                   limitations=["거래비용 미반영", "표본 편향 가능성", "시장 충격 미기재"])
