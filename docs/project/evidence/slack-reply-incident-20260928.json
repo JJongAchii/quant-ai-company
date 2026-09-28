@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-28T06:28:08Z",
+  "updatedAt": "2026-09-28T07:08:53Z",
+  "state": "repair_prepared_not_deployed",
+  "sourceKinds": {
+    "slack": "real Slack conversations.replies readback using the configured bot identities",
+    "database": "read-only production PostgreSQL queries",
+    "temporal": "read-only Temporal Cloud workflow and poller descriptions",
+    "worker": "read-only Docker state and redacted exception classification",
+    "tests": "simulated Slack events against disposable real PostgreSQL; no real model invocation"
+  },
+  "financialStrategistDm": {
+    "channel": "D0C21110TSR",
+    "threadTs": "1789618913.334449",
+    "ownerMessageTs": ["1790573402.584159", "1790573425.148069"],
+    "inboundRows": 2,
+    "turnState": "queued; workflow_started=true; attempts=0",
+    "temporalWorkflowState": "RUNNING on quant-company",
+    "outboxReplies": 0,
+    "workerFailure": "ValueError: Unknown specialist in runtime_context -> staff.packs.pack",
+    "configurationMismatch": "The pinned worker at 31ff903f sees the inactive outbound-only quant_scout role in the live 13-role configuration but does not exclude it from specialist packs."
+  },
+  "researchCenter": {
+    "channel": "C0C2B9EUEGM",
+    "threadTs": "1789633942.673909",
+    "ownerMessageTs": ["1790544867.173419", "1790545011.514709", "1790557724.244619"],
+    "inboundRows": 0,
+    "countedProjectTasks": 41,
+    "configuredProjectTaskLimit": 40,
+    "socketPolicyRejections": ["2026-09-27T21:34:28Z", "2026-09-27T21:36:51Z"],
+    "thirdMessageReceipt": "No inbound row or matching policy log; Socket delivery is unconfirmed.",
+    "failure": "Natural progress questions were treated as new model work and rejected at the project task limit without a visible reply."
+  },
+  "researchSafetyAt20260928T060158Z": {
+    "missionState": "active",
+    "activeResearchJobs": 0,
+    "runningCompanyTurns": 0,
+    "note": "A point-in-time observation, not cutover authorization; recheck external effects immediately before any worker restart."
+  },
+  "preparedChanges": {
+    "applicationBase": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+    "applicationCandidate": "ae132c3",
+    "pinnedWorkerBase": "31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
+    "pinnedWorkerCandidate": "e53b771aa994a54c1f4be6a2610856ea7a298816",
+    "pinnedWorkerCutover": "Preserve the exact 31ff903f image and research commit; attach a worker-only roles file that differs only by removing inactive quant_scout.",
+    "pinnedWorkerRuntimeDryRun": "Exact 31ff903f source loaded the filtered 12-role file, built runtime context for all 4 active employees, and did not request a quant_scout specialist pack.",
+    "temporaryComposeOverlay": "deploy/pinned-worker-roles-compat.compose.yaml",
+    "rolesPreparationHelper": "deploy/prepare-pinned-worker-roles.py",
+    "liveRolesSourceSha256": "95fdee86cc0e59fdf4f68abb4200a582520cfc3cdb801c5c5f44c1a8af544a3c",
+    "preparedWorkerRolesSha256": "6a68c1a54f80dcadcba27926dc0b6131618b958414326c6d915bf12b67d88a8a",
+    "composeConfigValidation": "passed with example environment; worker image unchanged, worker-only ROLES_FILE and read-only mount applied",
+    "realPostgresApplicationTests": "16 passed",
+    "realPostgresPinnedWorkerTest": "1 passed",
+    "realPostgresFullSuite": "1223 passed, 38 skipped, 0 failed on the latest application base",
+    "ruff": "passed",
+    "productionDeployed": false,
+    "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
+    "remainingGate": "Review and approval of the draft PR and live cutover under the autonomous-research runbook."
+  }
+}

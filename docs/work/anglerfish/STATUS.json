@@ -1,28 +1,20 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v2.json",
-  "state": "completed",
+  "currentIntent": "INTENT-v3.json",
+  "state": "deployed_awaiting_live_reply_verification",
+  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
   "deliverables": {
-    "CONTROL": {
-      "status": "completed"
-    },
-    "RUNTIME": {
-      "status": "completed"
-    },
-    "VALIDATION": {
-      "status": "completed"
-    },
-    "DEPLOYMENT": {
-      "status": "completed",
-      "commit": "fde7681e0286501d8713e08e30a96991a88b9151"
-    },
-    "ENROLLMENT": {
-      "status": "completed",
-      "method": "official_browser_oauth_over_ssh_callback",
-      "distinctAccountsVerified": true
-    }
+    "DIAGNOSIS": {"status": "completed"},
+    "APPLICATION": {"status": "prepared", "commit": "ae132c3", "base": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce"},
+    "PINNED_WORKER": {"status": "prepared", "commit": "e53b771aa994a54c1f4be6a2610856ea7a298816", "temporaryOverlay": "deploy/pinned-worker-roles-compat.compose.yaml"},
+    "VALIDATION": {"status": "completed", "realPostgresTests": 16, "pinnedWorkerTests": 1},
+    "CUTOVER": {"status": "applied", "commit": "d571734e161c39f7c26252005231f93b619b3749"},
+    "LIVE_REPLY": {"status": "pending", "reason": "Selected backup ChatGPT account is quota-paused until 2026-09-28T07:34:10Z"}
   },
-  "operationalStatus": "Private ai-account-switch channel active in production. The owner's explicit switch selected the backup ChatGPT account at revision 1, backup model calls completed, and an unsupported phrase received a deterministic Slack command guide without changing the selection. All 12 services healthy with no restarts.",
-  "evidence": "../../project/evidence/model-accounts-20260923/live-account-control.json"
+  "operationalStatus": "The app and pinned worker role overlay are live. The linked DM turns advanced to the model account gate but are waiting for the selected backup ChatGPT subscription quota; no new Slack replies are verified. Old rejected research-center messages were not replayed.",
+  "evidence": "../../project/evidence/slack-reply-cutover-20260928.json",
+  "previousIntent": "INTENT-v2.json",
+  "previousState": "completed",
+  "previousEvidence": "../../project/evidence/model-accounts-20260923/live-account-control.json"
 }

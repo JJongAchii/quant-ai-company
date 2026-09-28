@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-28T07:29:49Z",
+  "state": "production_applied_awaiting_model_quota_recovery",
+  "sourceKinds": {
+    "cutover": "real Lightsail Docker Compose receipt and container readback",
+    "database": "read-only production PostgreSQL queries after cutover",
+    "modelStatus": "production model account policy and call receipts",
+    "slack": "actual Slack reply not yet observed"
+  },
+  "deployment": {
+    "approvedByOwner": true,
+    "reviewPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
+    "sourceCommit": "d571734e161c39f7c26252005231f93b619b3749",
+    "sourceArchiveSha256": "42bf741b333aa43944f7a08474bf2d2dfd4825dc9c51dc9ccc9722ee08d057be",
+    "applicationBaseImage": "quant-company:0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+    "applicationImage": "quant-company:d571734e161c39f7c26252005231f93b619b3749",
+    "applicationImageId": "sha256:5c63fa65a9a7f22c5bc2bba4be1b0823ba6e9471bbbba00dddcb6e0b6825e144",
+    "applicationActivatedAt": "2026-09-28T07:24:26Z",
+    "workerActivatedAt": "2026-09-28T07:24:29Z",
+    "workerImageUnchanged": "quant-company-autonomous:31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
+    "workerImageId": "sha256:f024b53434ab61b648b3242ffd62f583453a6f98729d91aeb6ad75ae692bade8",
+    "rolesSourceSha256": "95fdee86cc0e59fdf4f68abb4200a582520cfc3cdb801c5c5f44c1a8af544a3c",
+    "workerRolesSha256": "6a68c1a54f80dcadcba27926dc0b6131618b958414326c6d915bf12b67d88a8a",
+    "unrelatedContainerIdsPreserved": true,
+    "activeResearchJobsAtCutover": 0,
+    "runningTurnsAtCutover": 0,
+    "sendingOutboxAtCutover": 0,
+    "hostReceipt": "/var/lib/quant-company/releases/slack-reply-d571734e161c39f7c26252005231f93b619b3749.json",
+    "scopedBackup": "/var/lib/quant-company/backups/slack-reply-20260928T071836Z",
+    "databaseDumpSha256": "2eaba72beadde5f349c6c1f24315257b3c638feb86b861e374acde7c80d2697d"
+  },
+  "verificationAt20260928T072949Z": {
+    "apiHealthy": true,
+    "workerRoleFailure": "No recurrence observed after worker restart; both named turns advanced beyond their pre-cutover queued state.",
+    "dmTurns": "Both attempts reached the model account gate and are waiting with quota; no new outbox reply yet.",
+    "selectedAccount": "backup, revision 1",
+    "selectedAccountPausedUntil": "2026-09-28T07:34:10Z",
+    "primaryAccount": "last quota response recorded, no successful call recorded; no automatic switch",
+    "researchCenter": "Old rejected messages were not replayed; a new owner message is needed for real Slack status-response verification."
+  },
+  "limits": [
+    "The global current release link and runtime.env still name c54667e; the scoped app containers run d571734 with unchanged other services.",
+    "Subsequent Compose recreation of the pinned worker must include the worker-only roles overlay until its image is upgraded.",
+    "Local and simulated Slack tests do not establish a delivered production Slack reply."
+  ]
+}
