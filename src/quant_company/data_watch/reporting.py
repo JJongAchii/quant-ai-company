@@ -1,16 +1,16 @@
 """Server-rendered summaries and one receipt-bound thread per data incident."""
 
-from collections import Counter
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from psycopg.types.json import Jsonb
 
 from ..company import stable
+from .coverage import SUMMARY_GROUPS, item_text, observed, short_date
 from .store import utcnow
 
 KST = ZoneInfo("Asia/Seoul")
-SUMMARY_FORMAT_VERSION = 3
+SUMMARY_FORMAT_VERSION = 4
 PROBLEM_TEXT = {
     "parquet_footer_limit": "파일 정보를 읽는 검사 도구의 2 MiB 검사 한도에 걸려 확인하지 못함",
     "descriptor_unavailable_or_changed": "메타데이터 확인 실패 또는 조회 중 객체 변경",
@@ -51,96 +51,98 @@ def status_text(snapshot):
     inventory = snapshot["inventory"]
     inventory_ok = bool(inventory and inventory["receipt"].get("ok") is True)
     datasets = snapshot["datasets"]
-    counts = Counter(row["freshness"]["state"] for row in datasets)
-    checked = sum(row["inspection"] == "metadata_checked" for row in datasets)
-    problems = [row for row in datasets if row["problem"]]
-    unknown = counts["unregistered"] + counts["unchecked"]
+    visible = datasets if inventory_ok or snapshot.get("last_successful_inventory_at") else []
+    by_name = {row["dataset"]: row for row in visible}
+    findings = [row for row in visible if observed(row, snapshot["checked_at"])["state"]
+                in {"late", "source_gap", "attention", "unreadable", "undated"}]
+    findings.sort(key=lambda row: (
+        {"late": 0, "source_gap": 1, "unreadable": 2, "attention": 3,
+         "undated": 4}[observed(row, snapshot["checked_at"])["state"]],
+        row["dataset"],
+    ))
     headline = ("첫 목록 조회 대기" if not inventory else
                 "현재 목록 조회 실패" if not inventory_ok else
-                f"확인 필요 {len(problems)}건" if problems else
-                "최신성 판단 보류" if unknown else "등록 기준 점검 완료")
+                f"갱신 점검 {len(findings)}건" if findings else "소스별 날짜 확인")
     lines = [f"*데이터 현황 · {headline}* · {kst(snapshot['checked_at'])}"]
     if not inventory:
         lines.append("*지금 상태* 첫 목록 조회가 아직 끝나지 않았습니다.")
     elif not inventory_ok:
         last_good = snapshot.get("last_successful_inventory_at")
-        lines.append(f"*지금 상태* 새 목록을 읽지 못했습니다. 아래 숫자는 {kst(last_good)} 마지막 성공 기록 기준입니다."
+        lines.append(f"*지금 상태* 새 목록을 읽지 못했습니다. 아래 날짜와 숫자는 {kst(last_good)} 마지막 성공 기록 기준입니다."
                      if last_good else "*지금 상태* 새 목록을 읽지 못했고 이전 성공 기록도 없습니다.")
-    elif unknown:
-        lines.append("*지금 상태* 데이터 전체가 최신인지 아직 판단할 수 없습니다.")
-    elif problems:
-        lines.append("*지금 상태* 아래 데이터를 확인해야 합니다.")
     else:
-        lines.append("*지금 상태* 등록된 검사 범위에서 확인된 이상은 없습니다. 전체 값·누락 검사는 아닙니다.")
-    if inventory_ok or snapshot.get("last_successful_inventory_at"):
-        label = "현재 목록" if inventory_ok else "마지막 성공 목록"
-        lines.append(f"• {label} {len(datasets)}개: 파일 정보 확인 {checked}개, 미확인 {len(datasets) - checked}개"
-                     " (실제 값·누락 검사는 아님)")
-    if problems:
-        lines.append("*지난 점검에서 확인 필요*" if not inventory_ok else "*확인 필요*")
-        lines += [f"• {row['dataset']}: {problem_text(row['problem'])}" for row in problems[:3]]
-        if len(problems) > 3:
-            lines.append(f"• 그 외 {len(problems) - 3}개는 운영 상태 API에서 확인")
-        if any(row["problem"] in {"parquet_footer_limit", "descriptor_unavailable_or_changed"} for row in problems):
-            lines.append("  ↳ 파일 손상이나 데이터 지연으로 판정한 것은 아닙니다.")
-    if not inventory:
-        lines.append("• 최신성: 아직 확인할 자료가 없습니다.")
-    elif not inventory_ok:
-        lines.append("• 최신성: 이번 목록을 확인하지 못해 현재 상태를 판단할 수 없습니다.")
-    elif counts["unregistered"] == len(datasets) and datasets:
-        lines.append("• 최신성: 전체 판정 불가 — 데이터별 갱신 기준이 없습니다.")
-    else:
-        freshness = []
-        for state, label in (("fresh", "기준 충족"), ("stale", "기준보다 지연"),
-                             ("unregistered", "갱신 기준 없음"), ("unchecked", "판정 자료 부족")):
-            if counts[state]:
-                freshness.append(f"{label} {counts[state]}개")
-        if freshness:
-            lines.append("• 최신성: " + ", ".join(freshness))
+        lines.append(f"*목록 검사* {kst(inventory.get('checked_at'))} 성공 · {len(datasets)}개 데이터셋")
+    if visible:
+        lines.append("*소스별 마지막 데이터 날짜* (파일 업로드 날짜와 다름)")
+        names = {
+            "krx_prices": "주식", "krx_etf": "ETF", "krx_flows": "수급", "krx_index_prices": "지수",
+            "prices": "미국 ETF·주가", "us_prices": "미국 전종목", "us_shortvol": "FINRA 공매도량",
+            "fred": "FRED", "ecos": "ECOS", "oecd_cli": "OECD CLI",
+            "dart_fundamental": "DART", "sec_filings": "SEC 분기 FSDS",
+            "sec_13f": "SEC 13F", "sec_nport": "SEC N-PORT",
+            "us_dividends": "배당 스냅샷", "us_splits": "분할 스냅샷",
+        }
+        for group, keys in SUMMARY_GROUPS:
+            items = [f"{names[key]} {short_date(observed(by_name[key], snapshot['checked_at'])['date'])}"
+                     for key in keys if key in by_name]
+            if items:
+                lines.append(f"• {group}: " + ", ".join(items))
+        at = snapshot["checked_at"]
+        if isinstance(at, str):
+            at = datetime.fromisoformat(at.replace("Z", "+00:00"))
+        local_at = at.astimezone(KST)
+        if (local_at.date().isoformat() == "2026-09-28" and local_at.hour < 20
+                and "krx_prices" in by_name
+                and short_date(observed(by_name["krx_prices"], snapshot["checked_at"])["date"]) == "2026-09-23"):
+            lines.append("• 한국시장 참고: 09/24~27 추석 휴장, 09/28분은 장 마감 뒤 저녁 수집 예정")
+    if findings:
+        lines.append("*갱신 점검 항목*" if inventory_ok else "*이전 기록의 점검 항목*")
+        for row in findings[:8]:
+            info = observed(row, snapshot["checked_at"])
+            note = problem_text(row["problem"]) if row["problem"] else (
+                info["checkpoint"].explanation if info["state"] == "source_gap" else
+                f"{info['age_days']}일째 새 날짜가 없어 갱신 경로 확인 필요"
+                if info["state"] == "attention" else "데이터 날짜 확인 불가")
+            lines.append(f"• {row['dataset']}: {info['rule'].meaning if info['rule'] else '기준일'} "
+                         f"{short_date(info['date'])} · 파일 교체 {short_date(info['object_modified'])} · {note}")
+        if len(findings) > 8:
+            lines.append(f"• 그 외 {len(findings) - 8}개는 `목록`에서 확인")
+    if inventory_ok:
+        checked = sum(row["inspection"] == "metadata_checked" for row in datasets)
+        lines.append(f"파일 정보 확인 {checked}/{len(datasets)}개 · 개별 종목 누락 검사와는 별개")
     core = snapshot["core_checks"]
     if not core:
-        lines.append("• 별도 연구 입력 6개는 이 알림의 검사 대상이 아니며 아직 검사 전입니다.")
+        lines.append("고정 연구 입력 6개는 이 알림의 검사 대상이 아니며 아직 검사 전")
     else:
         complete = sum(row["state"] == "complete" and not row["problem"] for row in core)
         lines.append(f"• 고정 연구 입력: {len(core)}건 중 전체 입력 검사 완료 {complete}건")
         lines += [f"  ◦ {row['title'][:60]}: {problem_text(row['problem'])}" for row in core if row["problem"]][:2]
-    actions = []
-    if not inventory:
-        actions.append("첫 목록 조회 대기")
-    elif not inventory_ok:
-        actions.append("목록 조회 복구 확인")
-    if any(row["problem"] == "parquet_footer_limit" for row in problems):
-        actions.append("검사 도구의 읽기 한도 보완")
-    elif problems:
-        actions.append("확인 필요 항목 원인 점검")
-    if counts["unregistered"]:
-        actions.append("데이터별 갱신 시각 기준 정하기")
-    if actions:
-        lines.append("*필요한 조치* " + ", ".join(actions))
-    lines.append(f"다음 자동 목록 확인 {kst(snapshot['next_inventory_at'])} · 전체 이름은 `목록`")
+    if findings:
+        lines.append("⚠는 공개 자료·저녁 수집 시각·경과일 기준 점검 요청입니다. 종목별 누락 검사는 별개입니다.")
+    lines.append(f"전체 {len(datasets)}개 날짜·파일 교체일은 `목록` · 다음 목록 검사 {kst(snapshot['next_inventory_at'])}")
     return "\n".join(lines)
 
 
 def list_text(snapshot):
-    names = [("⚠ " if row["problem"] else "") + row["dataset"] for row in snapshot["datasets"]]
-    lines = [f"*최신 레이크 데이터셋 {len(names)}개* · {kst(snapshot['checked_at'])}"]
-    line = ""
+    inventory = snapshot["inventory"]
+    visible = snapshot["datasets"] if (inventory and inventory["receipt"].get("ok")
+                                      or snapshot.get("last_successful_inventory_at")) else []
+    when = (kst(inventory.get("checked_at")) if inventory and inventory["receipt"].get("ok")
+            else kst(snapshot.get("last_successful_inventory_at")))
+    label = "목록 검사" if inventory and inventory["receipt"].get("ok") else "마지막 성공 목록"
+    lines = [f"*데이터셋별 마지막 날짜 · {len(visible)}개*", f"{label} {when}"]
+    if inventory and not inventory["receipt"].get("ok"):
+        lines.append("⚠ 이번 목록 조회 실패. 아래는 이전 기록입니다.")
     shown = 0
-    for name in names:
-        addition = (" · " if line else "") + name
-        if len("\n".join(lines)) + len(line) + len(addition) > 2600:
+    for row in visible:
+        line = "• " + item_text(row, snapshot["checked_at"], verbose=True)
+        if len("\n".join(lines)) + len(line) > 2850:
             break
-        if len(line) + len(addition) > 100:
-            lines.append(line)
-            line = name
-        else:
-            line += addition
-        shown += 1
-    if line:
         lines.append(line)
-    if shown < len(names):
-        lines.append(f"그 외 {len(names) - shown}개는 운영 상태 API에서 확인")
-    lines.append("⚠는 점검 필요 항목입니다. 데이터 기준일·객체 정보는 운영 상태 API에서 확인합니다.")
+        shown += 1
+    if shown < len(visible):
+        lines.append(f"그 외 {len(visible) - shown}개는 운영 상태 API에서 확인")
+    lines.append("파일 교체일은 데이터 기준일이 아닙니다. 날짜는 데이터셋 전체의 최대값이며 종목별 누락 검사는 아닙니다.")
     return "\n".join(lines)
 
 

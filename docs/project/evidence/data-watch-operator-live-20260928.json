@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "scope": "Operator-readable data-watch summary, scoped production worker update and real Slack readback",
+  "observed_at": "2026-09-28T04:53:33Z",
+  "source": {
+    "code_commit": "958630ecd806df5d53a18a2778f8ffda4de9f031",
+    "merged_pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/74",
+    "archive_sha256": "ed9235ce13ea37bcfd1641416343cc09c1b98b4542d78a9f238aa02ad9fcee2f",
+    "staged_app_image": "sha256:89a257ebbf17c7f78ddb5270195c18cedf705b96e3060c45f762e3c4244ba4fe"
+  },
+  "deployment": {
+    "mode": "scoped data-watch-worker container replacement",
+    "current_release_link_preserved": "ccdcc43c2a0985dcc035262f33d19e0ae979f0a1",
+    "runtime_env_unchanged": true,
+    "previous_data_watch_image": "sha256:942a896a92f6a2c6e3d5b4743ad670808da62be448136d77f2e75455f7668b24",
+    "live_data_watch_image": "sha256:89a257ebbf17c7f78ddb5270195c18cedf705b96e3060c45f762e3c4244ba4fe",
+    "live_data_watch_revision": "958630ecd806df5d53a18a2778f8ffda4de9f031",
+    "live_data_watch_running": true,
+    "live_data_watch_oom_killed": false,
+    "live_data_watch_restarts": 0,
+    "postgres_research_and_other_service_ids_preserved_at_cutover": true,
+    "release_timer_active_after_cutover": true,
+    "quant_feed_publish_enabled": false,
+    "housing_feed_enabled": true,
+    "data_watch_enabled": true,
+    "data_watch_publish_enabled": true,
+    "data_watch_core_enabled": false,
+    "journal": "/var/lib/quant-company/releases/piddock-data-watch-scoped-958.json"
+  },
+  "lake_observation": {
+    "latest_completed_catalog_at": "2026-09-28T04:30:54.449311Z",
+    "latest_completed_catalog_ok": true,
+    "datasets": 38,
+    "metadata_checked": 37,
+    "metadata_error": 1,
+    "unchecked_dataset": "us_prices",
+    "unchecked_reason": "parquet_footer_limit",
+    "reason_detail": "qdata's bounded Parquet metadata reader rejected the 2 MiB footer; source corruption or delay was not proven",
+    "freshness_contracts_registered": 0,
+    "fixed_research_input_check_rows": 0,
+    "fixed_research_input_checks_enabled": false
+  },
+  "slack": {
+    "channel_id": "C0C3Q7H30HL",
+    "new_daily_summary": {
+      "headline": "데이터 현황 · 확인 필요 1건",
+      "conclusion": "데이터 전체가 최신인지 아직 판단할 수 없습니다.",
+      "required_actions": "검사 도구의 읽기 한도 보완, 데이터별 갱신 시각 기준 정하기",
+      "client_msg_id": "1a283cf4-48ee-574b-b2c1-bfe34117d3f5",
+      "sent_ts": "1790571083.237409",
+      "characters": 386,
+      "one_slack_message": true,
+      "postgres_outbox_status": "delivered",
+      "postgres_id_timestamp_and_length_match_slack": true,
+      "url": "https://achiisquantresearch.slack.com/archives/C0C3Q7H30HL/p1790571083237409"
+    },
+    "previous_daily_summary_left_in_history": {
+      "client_msg_id": "98e9a288-a563-577a-9ba5-b8170f7d9b6a",
+      "sent_ts": "1790557134.539219",
+      "reason": "Preserve the prior delivery receipt; do not delete or replay uncertain Slack effects"
+    }
+  },
+  "validation": {
+    "real_postgresql_temporal_service_tests": "1173 passed, 38 skipped, 2 warnings",
+    "data_watch_focused_tests": "30 passed",
+    "deployment_contract_tests": "31 passed",
+    "ruff": "passed",
+    "pull_request_service_ci": "success",
+    "ci_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36367416984/job/108756486372"
+  },
+  "limits": [
+    "The summary reports catalog and bounded Parquet metadata access, not per-instrument completeness or source integrity.",
+    "No approved per-dataset freshness calendar exists; all-current status cannot be inferred.",
+    "The six frozen research inputs were not checked, and other inactive employees were not activated.",
+    "This was a scoped worker update; the concurrently deployed housing release link and other container images were intentionally preserved."
+  ]
+}

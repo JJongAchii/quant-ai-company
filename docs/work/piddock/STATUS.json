@@ -1,33 +1,33 @@
 {
-  "approval": {
-    "id": "chat-data-watch-status-clarity",
-    "sourceRequest": "data-watch 에서 너가 보내는 저 메세지는 내가 어떻게 해석해야할지 사실 현황 파악이 잘 안되",
-    "recordedAt": "2026-09-28T01:46:31+00:00"
-  },
-  "currentIntent": "INTENT-v4.json",
-  "deliverables": {
-    "MESSAGE_CLARITY": {
-      "status": "in_progress",
-      "updatedAt": "2026-09-28T01:46:31+00:00",
-      "evidence": [],
-      "note": "Code and local tests are prepared; CI and live Slack receipt remain to be verified."
-    },
-    "STALE_CATALOG": {
-      "status": "in_progress",
-      "updatedAt": "2026-09-28T01:46:31+00:00",
-      "evidence": [],
-      "note": "Code and local tests are prepared; CI and live Slack receipt remain to be verified."
-    },
-    "OPERATIONS": {
-      "status": "in_progress",
-      "updatedAt": "2026-09-28T01:46:31+00:00",
-      "evidence": [],
-      "note": "Code and local tests are prepared; CI and live Slack receipt remain to be verified."
-    }
-  },
-  "intentDigest": "bf65828b0c7a",
   "schemaVersion": 1,
   "slug": "piddock",
   "state": "approved",
-  "updatedAt": "2026-09-28T01:46:31+00:00"
+  "currentIntent": "INTENT-v5.json",
+  "intentDigest": "d58266017d28",
+  "approval": {
+    "id": "chat-data-watch-source-status",
+    "sourceRequest": "어떤 데이터 소스가 어디까지 업데이트되었는지 또는 어떤 데이터가 어떻게 데이터 최신화가 안되었는지",
+    "recordedAt": "2026-09-28T05:13:47+00:00"
+  },
+  "deliverables": {
+    "SOURCE_EVIDENCE": {
+      "status": "in_progress",
+      "updatedAt": "2026-09-28T05:13:47+00:00",
+      "evidence": [],
+      "note": "38 live dataset date bounds and official KRX, NYSE, FINRA and SEC checkpoints inspected; final integrated evidence pending."
+    },
+    "MESSAGE": {
+      "status": "in_progress",
+      "updatedAt": "2026-09-28T05:13:47+00:00",
+      "evidence": [],
+      "note": "Source-date daily and 38-row list previews fit one Slack message; production application pending."
+    },
+    "OPERATIONS": {
+      "status": "in_progress",
+      "updatedAt": "2026-09-28T05:13:47+00:00",
+      "evidence": [],
+      "note": "Integrated API and worker deployment, real Slack delivery and on-demand status receipt remain to be verified."
+    }
+  },
+  "updatedAt": "2026-09-28T05:13:47+00:00"
 }
