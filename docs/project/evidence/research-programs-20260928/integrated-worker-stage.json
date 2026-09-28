@@ -1,0 +1,28 @@
+{
+  "active_company_commit": "31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
+  "active_config_sha256": "e615f9ffcda1732cb69dd7e1cb2146f50300cb0098d63e3f859168d7e0c2006b",
+  "active_worker_config_changed": false,
+  "candidate_company_commit": "2b4034db126ff13ff936c8e3def3ae89c7456824",
+  "candidate_config_sha256": "45cb81892a5e5e0bd9b5a0d5e183c00f6b04ff7e3f16b028adb7b0a4c1c44161",
+  "candidate_profile_ids": [
+    "kr-etf-monthly-python-v1",
+    "kr-etf-research-v2",
+    "kr-stock-research-v2"
+  ],
+  "candidate_release_receipt_sha256": "e88fc450e8cab95a90d17dffed9a5e938fe83388d7becbbd628dab9909aa0058",
+  "candidate_source_bundle_sha256": "83f148a6793a38ba24b240aa4e7ec40587890da5d5665449820e0d447c00fe57",
+  "canonical_research_bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+  "hostname": "DESKTOP-5T00NAF",
+  "observed_at": "2026-09-28T08:05:17.783146+00:00",
+  "profile_bindings_match_previous_prepared_candidate": true,
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "state": "exact_worker_release_staged_not_active",
+  "warmup_cases": [
+    "etf_strategy",
+    "etf_claim",
+    "stock_strategy",
+    "stock_claim"
+  ],
+  "warmup_receipt_sha256": "720422238914b746ce2e5f45f78e0f8674a555ad7b77c6a8fac484121ca26870"
+}

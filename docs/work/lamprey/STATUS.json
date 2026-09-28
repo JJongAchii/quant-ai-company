@@ -1,83 +1,87 @@
 {
   "approval": {
-    "approvedAt": "2026-09-28T07:07:52.588908+00:00",
-    "id": "chat-20260928-next-preparation"
+    "approvedAt": "2026-09-28T07:34:36.600764+00:00",
+    "id": "chat-20260928-proceed-live-review"
   },
-  "currentIntent": "INTENT-v2.json",
+  "currentIntent": "INTENT-v3.json",
   "deliverables": {
-    "DATA_PROFILES": {
+    "LIVE_AUDIT": {
       "evidence": [
         {
-          "path": "docs/project/evidence/research-programs-20260928/real-inputs.json",
-          "sha256": "6304b47935e3"
+          "path": "docs/project/evidence/research-programs-20260928/live-server-audit-final.json",
+          "sha256": "a4912f217299"
         },
         {
-          "path": "docs/project/evidence/research-programs-20260928/data-receipt-kr_etf-prepared-v2.json",
-          "sha256": "c4dfc0bcd294"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260928/data-receipt-kr_stock-prepared-v2.json",
-          "sha256": "b087961ecfd4"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260928/preparation-validation.json",
-          "sha256": "a0c21ed5a4f1"
+          "path": "docs/project/evidence/research-programs-20260928/source-anchor-verification.json",
+          "sha256": "c70030e04f05"
         }
       ],
-      "note": "Pinned qdata S3 ETF/stock cohorts and immutable warmup/development hashes reconciled with raw receipts; coverage and nontrading rows explicit; no performance read.",
+      "note": "Lightsail live images, active mission, schema and approved non-synthetic source with exact citation verified read-only; no production activation.",
       "status": "verified",
-      "updatedAt": "2026-09-28T07:25:37.517319+00:00"
+      "updatedAt": "2026-09-28T08:12:26.472431+00:00"
     },
-    "PROGRAM_DRAFT": {
+    "PROGRAM_REVIEW": {
       "evidence": [
+        {
+          "path": "docs/project/evidence/research-programs-20260928/program-review.json",
+          "sha256": "ff7ebe165133"
+        },
         {
           "path": "docs/project/evidence/research-programs-20260928/first-program-draft.json",
           "sha256": "98e588c4698b"
         },
         {
-          "path": "docs/project/evidence/research-programs-20260928/real-profile-public.json",
-          "sha256": "ead2ee756a58"
+          "path": "docs/project/evidence/research-programs-20260928/first-question-draft.json",
+          "sha256": "70ca4d7aaee9"
         },
         {
-          "path": "docs/project/RESEARCH-PROGRAMS-DATA-PREPARATION-20260928.md",
-          "sha256": "54f10c417093"
-        },
-        {
-          "path": "docs/runbooks/research-programs-real-data.md",
-          "sha256": "b29d12dd39f6"
+          "path": "docs/project/RESEARCH-PROGRAMS-LIVE-REVIEW-20260928.md",
+          "sha256": "4c8544effe43"
         }
       ],
-      "note": "Typed 4-envelope bounded program matches exact profile/input digests. Live server release and source anchor explicitly unresolved; production and science remain behind INTENT-v2 review gate.",
+      "note": "Bounded four-envelope program and first falsifiable source-cited ETF question prepared for owner review; no Slack approval or scientific trial claimed.",
       "status": "verified",
-      "updatedAt": "2026-09-28T07:25:53.403347+00:00"
+      "updatedAt": "2026-09-28T08:12:26.781500+00:00"
     },
-    "WORKER_QUAL": {
+    "RELEASE_PACKET": {
       "evidence": [
         {
-          "path": "docs/project/evidence/research-programs-20260928/real-worker-preparation.json",
-          "sha256": "02ceae98be91"
+          "path": "docs/project/evidence/research-programs-20260928/release-packet.json",
+          "sha256": "f3bf2b1103cd"
         },
         {
-          "path": "docs/project/evidence/research-programs-20260928/warmup-qualification.json",
-          "sha256": "2de54d01e11e"
+          "path": "docs/project/evidence/research-programs-20260928/integrated-server-stage.json",
+          "sha256": "9f75ef629ec1"
         },
         {
-          "path": "docs/project/evidence/research-programs-20260928/real-worker-final-state.json",
-          "sha256": "65da572286b6"
+          "path": "docs/project/evidence/research-programs-20260928/integrated-worker-stage.json",
+          "sha256": "bbab1b571718"
         },
         {
-          "path": "docs/project/evidence/research-programs-20260928/preparation-validation.json",
-          "sha256": "a0c21ed5a4f1"
+          "path": "docs/project/evidence/research-programs-20260928/integrated-migration-test.json",
+          "sha256": "4c070c4c9e76"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/integrated-profile-validation.json",
+          "sha256": "7431353ad67c"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/integrated-worker-warmup.json",
+          "sha256": "720422238914"
+        },
+        {
+          "path": "docs/project/RESEARCH-PROGRAMS-LIVE-REVIEW-20260928.md",
+          "sha256": "4c8544effe43"
         }
       ],
-      "note": "Four actual Linux 3070 warmup-only qualifications passed with no development or sealed mount. Canonical source bundle corrected after preserved technical blocks. Active worker config preserved; prepared release remains isolated.",
+      "note": "Integrated exact current-main/live code commit, staged server/3070 bundle and profiles, tested real PostgreSQL migration and four 3070 warmups; activation and science remain withheld.",
       "status": "verified",
-      "updatedAt": "2026-09-28T07:25:45.627154+00:00"
+      "updatedAt": "2026-09-28T08:12:26.626897+00:00"
     }
   },
-  "intentDigest": "1ecaae9be488",
+  "intentDigest": "b5053c92c4f9",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-28T07:25:53.403347+00:00"
+  "updatedAt": "2026-09-28T08:12:26.781500+00:00"
 }

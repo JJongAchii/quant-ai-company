@@ -1,0 +1,13 @@
+{
+  "approved": true,
+  "content_sha256": "aaffedd1643b16ec0a97d5f4bb0ef6084c6fc0fdc2b4ad75f707b808d0725379",
+  "credentials_read_or_exported": false,
+  "observed_at": "2026-09-28T08:07:56.465441+00:00",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "quote_offset_zero_based": 9331,
+  "quote_present": true,
+  "schema_version": 1,
+  "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+  "state": "live_source_anchor_verified_read_only",
+  "synthetic": false
+}

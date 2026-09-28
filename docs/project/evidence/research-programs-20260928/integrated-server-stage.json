@@ -1,0 +1,21 @@
+{
+  "active_profile_config_sha256": "221cb9a6d5d8f383e328ec26d72493c07a5a5e4f1989f25aba10ada38571a043",
+  "active_profile_ids": [
+    "kr-etf-monthly-python-v1"
+  ],
+  "candidate_company_bundle_mode": "0o600",
+  "candidate_company_bundle_path": "/var/lib/quant-company/release-prep/2b4034db126ff13ff936c8e3def3ae89c7456824.bundle",
+  "candidate_company_bundle_sha256": "83f148a6793a38ba24b240aa4e7ec40587890da5d5665449820e0d447c00fe57",
+  "candidate_company_commit": "2b4034db126ff13ff936c8e3def3ae89c7456824",
+  "candidate_profile_registry_path": "/var/lib/quant-company/release-prep/research-profiles-2b4034.json",
+  "candidate_profile_registry_sha256": "22a5fd7aa0fcd440730258f3a828720c04bf496ac28846354c84ee81e92d0779",
+  "canonical_research_bundle_path": "/var/lib/quant-company/research/provisioned/44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49.bundle",
+  "canonical_research_bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+  "observed_at": "2026-09-28T08:08:42.641530+00:00",
+  "prior_profile_preserved_in_candidate": true,
+  "production_profiles_registered": false,
+  "production_service_restarted": false,
+  "schema_version": 1,
+  "scientific_trials_started": false,
+  "state": "exact_server_source_and_profile_staged_not_active"
+}
