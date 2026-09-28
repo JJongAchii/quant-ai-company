@@ -6,29 +6,53 @@
   "currentIntent": "INTENT-v7.json",
   "deliverables": {
     "AM-EVALUATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/briefing-am-20260925/final-frozen/assessment.json",
+          "sha256": "d4584cdba2c7"
+        }
+      ],
+      "note": "Frozen fresh AM evaluation completed with actual subscription calls; content failed coverage and depth; development replay is not a new pass.",
+      "status": "verified",
+      "updatedAt": "2026-09-28T05:16:50.361719+00:00"
     },
     "PREVIEW-SETUP": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/ANALYST-PREVIEW-20260928.md",
+          "sha256": "ca55e92602c4"
+        }
+      ],
+      "note": "Correct Slack app and host credentials prepared; read-only KRX index probe passed; publication-disabled preview not started because installed release contract rejects candidate. Runnable gate audit and exact next settings recorded.",
+      "status": "verified",
+      "updatedAt": "2026-09-28T05:17:05.447783+00:00"
     },
     "RELEASE-BASELINE": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/briefing-preview-release-gate-20260928.json",
+          "sha256": "7390db996a1a"
+        }
+      ],
+      "note": "Merged origin/main and installed release lineage; installed maintenance validator rejects protected-file changes, so no host cutover.",
+      "status": "verified",
+      "updatedAt": "2026-09-28T05:16:56.295381+00:00"
     },
     "VALIDATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/ANALYST-PREVIEW-20260928.md",
+          "sha256": "ca55e92602c4"
+        }
+      ],
+      "note": "Integrated candidate: 1364 passed, 38 skipped; four real local PostgreSQL/Temporal focused checks passed; Ruff and uv lock check passed. Actual model AM verdict failed; no real Slack delivery or five-day observation.",
+      "status": "verified",
+      "updatedAt": "2026-09-28T05:17:11.655235+00:00"
     }
   },
   "intentDigest": "80d848a9641c",
   "schemaVersion": 1,
   "slug": "amberjack",
   "state": "approved",
-  "updatedAt": "2026-09-28T01:50:17.131916+00:00"
+  "updatedAt": "2026-09-28T05:17:11.655235+00:00"
 }
