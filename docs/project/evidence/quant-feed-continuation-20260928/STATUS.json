@@ -1,6 +1,6 @@
 {
   "checked_at_utc": "2026-09-28T08:02:55Z",
-  "updated_at_utc": "2026-09-28T23:05:23Z",
+  "updated_at_utc": "2026-09-28T23:07:17Z",
   "state": "v10_provider_invalid_output_before_positive_publication_paused",
   "production_current_release": "c54667e2827506d50b4cbfaa63d924f2b69f21ab",
   "running_api_image_release": "d571734e161c39f7c26252005231f93b619b3749",
@@ -21,6 +21,7 @@
   "v10_positive_quality_assessed": false,
   "v10_services_preserved": true,
   "disk_available_gb_after_v10_preview_cleanup_approx": 15,
+  "latest_disk_available_gb_approx": 13,
   "local_policy_version": 10,
   "production_quant_policy_updated": false,
   "quality_release_cutover": false,

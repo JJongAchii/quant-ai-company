@@ -134,6 +134,7 @@
   "slack_writes_by_this_task": false,
   "document_writes_by_this_task": false,
   "final_observation": {
+    "checked_at_utc": "2026-09-28T23:07:17Z",
     "quant_collection_enabled": true,
     "quant_publication_enabled": false,
     "quant_running_calls": 0,
@@ -141,7 +142,7 @@
     "housing_worker_running": true,
     "news_worker_running": true,
     "research_worker_running": true,
-    "disk_available_gb_approx": 20
+    "disk_available_gb_approx": 13
   },
   "earlier_blocking_observation": {
     "running_quant_call_count": 1,
