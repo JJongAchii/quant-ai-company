@@ -1,9 +1,11 @@
 # 첫 연구 프로그램의 실제 입력 준비
 
-상태: **실제 데이터·로컬 프로필 준비, 미배포·미승인·과학 실험 0회**.
-[입력 영수증](evidence/research-programs-20260928/real-inputs.json)과
-[프로그램 초안](evidence/research-programs-20260928/first-program-draft.json)에 정확한 해시와 범위를 기록했다.
-시장 가격이나 연구 성과 수치를 읽거나 비교하지 않았다.
+상태: **실제 데이터 준비와 3070 준비 구간 자격검사 완료, 미배포·미승인·과학 실험 0회**.
+[입력 영수증](evidence/research-programs-20260928/real-inputs.json),
+[프로그램 초안](evidence/research-programs-20260928/first-program-draft.json),
+[교차 검증 영수증](evidence/research-programs-20260928/preparation-validation.json)에
+정확한 해시와 범위를 기록했다. 시장 가격은 입력 생성·품질검사에 사용했고,
+수익률이나 연구 성과 수치는 계산·비교하지 않았다.
 
 ## 입력 출처와 유니버스
 
@@ -26,9 +28,47 @@
   나중의 기업행동으로 과거 시계열 전체가 상수배 재조정돼도 당시 절대 가격·순위에
   그 미래 배율이 들어가지 않도록 한다. 여러 절단 시점과 종목별 재배율 테스트를 추가했다.
 
-실제 JSON 입력은 큰 데이터 파일이므로 회사 Git에는 넣지 않았다. 준비된 경로는
-이 작업공간의 `.local/science-inputs/`이며, 해시가 바뀌면 프로필 준비 단계에서 거절한다.
-워커에는 별도 격리 경로로 정확히 같은 바이트와 영수증을 배치해야 한다.
+실제 JSON 입력은 회사 Git에 넣지 않았다. 준비된 경로는 이 작업공간의
+`.local/science-inputs/`와 3070의 격리 준비 경로이며, 해시가 바뀌면 프로필 준비
+단계에서 거절한다. 두 시장의 최종·초기 차단 원본 영수증은 이 저장소의
+`evidence/research-programs-20260928/data-receipt-*.json`에 남겼다.
+
+## 실제 3070 자격검사와 릴리스 상태
+
+워커 `DESKTOP-5T00NAF`의 Linux bubblewrap에서 네 프로그램 유형을 각각 실행했다.
+입력 mount는 `warmup.json`과 계약 manifest뿐이었고, 개발 입력과 2026년 봉인 입력은
+연결하지 않았다. [자격검사 영수증](evidence/research-programs-20260928/warmup-qualification.json)에
+실제 샌드박스 종료 코드, 입력·프로필 해시와 출력 해시를 기록했다. 각 manifest와
+`qualification.json` 원본도 같은 증거 디렉터리에 보존했다.
+
+| 시장 | 유형 | 준비 구간 거래일 | 자격검사 |
+|---|---|---:|---|
+| ETF | 전략 | 104 | 통과 |
+| ETF | 예측 주장 | 104 | 통과 |
+| 주식 | 전략 | 226 | 통과 |
+| 주식 | 예측 주장 | 226 | 통과 |
+
+두 번의 기술적 차단도 보존했다. 첫 재시도는 3070에서 새로 생성한 프로필의 Git
+커밋(`e46025a…`)과 이 초안의 정본 번들 커밋(`422e5da…`)이 달라 거절됐다.
+같은 코드 내용이더라도 commit과 bundle SHA가 다르면 다른 실행 권한이다. 3070에
+정본 번들 SHA `44fb48c8…`를 별도 배치해 다시 검사했다. 다음 재시도는 코드 작업공간이
+샌드박스가 허용한 job root 밖에 있어 거절됐고, job 안에서 새 checkout을 만들어
+검사를 완료했다. 차단 영수증은
+[Git 기준 불일치](evidence/research-programs-20260928/warmup-attempt-2-blocked.json)와
+[mount 경계 위반](evidence/research-programs-20260928/warmup-attempt-3-blocked.json)에 있다.
+3070에서 재생성한 `server-profile.json`의 번들은 **등록 대상이 아니다**. 서버에 등록할
+프로필은 이 초안과 동일한 `422e5da…`/`44fb48c8…` 조합이어야 한다.
+
+[워커 준비 영수증](evidence/research-programs-20260928/real-worker-preparation.json)과
+[검사 후 상태 영수증](evidence/research-programs-20260928/real-worker-final-state.json)은
+활성 설정 SHA `e615f9ff…`와 기존 프로필만 유지됐음을 확인한다. 새 릴리스의 설정 SHA는
+`c0f8ee61…`이며 **준비 경로에만** 있다. 실제 개발구간 평가, 서버 프로필 등록,
+과학 실험은 실행하지 않았다. 주식의 거래 불가 행을 요구하는 후보는 평가 단계에서
+거절될 수 있으므로, 이 준비 구간 검사는 후보의 개발구간 실행 가능성을 보증하지 않는다.
+
+로컬 전체 회귀는 `uv run pytest -q --junitxml=.local/real-data-final-tests.xml`에서
+**1,237 통과·13 건너뜀**, `uv run ruff check .` 통과였다. 준비 입력·원본 자격검사·
+프로그램 digest·워커 영수증을 별도 스크립트로 대조한 결과는 위 교차 검증 영수증에 있다.
 
 ## 프로그램 초안과 남은 결정
 
@@ -45,10 +85,15 @@
 `include_quant_feed=true`는 그 원문을 직원이 선택할 수 있게 한다.
 
 프로필은 기존 3070 런타임의 정확한 mount digest와 새 평가 코드·입력 해시로 로컬에서
-생성했다. 워커 격리 경로에서 다시 준비·검사하고 서버 컨테이너 경로로 bundle을 배치해야
-실제 `program_catalog`에 등록할 수 있다. 현재 AWS Lightsail 회사 호스트는
+생성했다. 워커 격리 경로의 검사까지 완료했다. 서버 컨테이너 경로로 **정본 bundle**을
+배치하고 프로필 파일 경로·SHA를 다시 확인해야 실제 `program_catalog`에 등록할 수 있다.
+현재 AWS Lightsail 회사 호스트는
 `quant-company-host-4gb-20260928`로 관측됐다. 기존 배포 문서의 서버 용량·release를
 그대로 현재 상태라고 가정하지 않는다.
+
+운영 서버의 현재 커밋·프로필·진행 job 및 기존 출처 ID의 승인 상태는 아직 확인하지
+못했다. 새 프로그램의 승인 요청을 게시하기 전에 이 항목을 확인해야 한다. 원문 수치의
+정확한 재현에는 대응하는 실제 논문과 같은 추정량의 목표값·허용 오차가 추가로 필요하다.
 
 운영 활성화와 실제 자료 실험은 [배포·인수 절차](../runbooks/research-programs.md)의
 별도 검토 단계다. 이번 영수증은 그 결정을 대체하지 않는다.

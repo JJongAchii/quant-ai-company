@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "state": "ready",
+  "market": "kr_etf",
+  "lake_uri": "s3://insight-invest-datalake/qdata",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "source": {
+    "krx_etf": {
+      "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf.parquet",
+      "size_bytes": 78684160,
+      "last_modified": "2026-09-25T11:06:48+00:00",
+      "etag": "\"d063a814e88d88d2d7dc21bc676e8255\"",
+      "version_id": null
+    },
+    "krx_etf_meta": {
+      "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf_meta.parquet",
+      "size_bytes": 24474548,
+      "last_modified": "2026-09-25T11:06:49+00:00",
+      "etag": "\"5a4a8afe695dc41458b81faecdb0a490\"",
+      "version_id": null
+    }
+  },
+  "cohort_rule": "top_20_session_average_traded_value_asof_selection_date; stock KOSPI common suffix 0; ETF no leverage/inverse",
+  "cohort": [
+    "069500",
+    "229200",
+    "153130",
+    "214980",
+    "196230",
+    "157450",
+    "371460",
+    "102110",
+    "357870",
+    "305720"
+  ],
+  "selection_date": "2022-12-29",
+  "selection_checks": {
+    "selection_sessions": [
+      "2022-12-02",
+      "2022-12-05",
+      "2022-12-06",
+      "2022-12-07",
+      "2022-12-08",
+      "2022-12-09",
+      "2022-12-12",
+      "2022-12-13",
+      "2022-12-14",
+      "2022-12-15",
+      "2022-12-16",
+      "2022-12-19",
+      "2022-12-20",
+      "2022-12-21",
+      "2022-12-22",
+      "2022-12-23",
+      "2022-12-26",
+      "2022-12-27",
+      "2022-12-28",
+      "2022-12-29"
+    ],
+    "selection_eligible_count": 533,
+    "selection_excluded_bad_rows": 40
+  },
+  "warmup_start": "2022-08-01",
+  "development_start": "2023-01-02",
+  "development_end": "2025-12-30",
+  "quality": {
+    "bad_rows": [],
+    "missing_rows": [],
+    "nontrading_rows": [],
+    "observed_sessions": 835,
+    "warmup_rows": 1040,
+    "development_rows": 7310,
+    "development_months": 36
+  },
+  "input_files": {
+    "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81",
+    "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+  }
+}
