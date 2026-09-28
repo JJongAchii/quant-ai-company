@@ -20,6 +20,8 @@ from .contracts import Assignment, Commit, Digest
 from .mission_contracts import FileMap, MissionSpec, Path, TrialMetrics, TrialPlan
 
 ADAPTIVE_RECIPE = "kr-etf-monthly-python-v1"
+RESEARCH_RECIPE = "kr-research-python-v2"
+AdaptiveRecipe = Literal["kr-etf-monthly-python-v1", "kr-research-python-v2"]
 MAX_BUNDLE_BYTES = 256 * 1024 * 1024
 MAX_OUTPUT_FILES = 64
 
@@ -112,7 +114,7 @@ class AdaptiveExecutionProfile(AdaptiveModel):
 
 class AdaptiveManifest(AdaptiveModel):
     schema_version: Literal[1] = 1
-    id: Literal["kr-etf-monthly-python-v1"] = ADAPTIVE_RECIPE
+    id: AdaptiveRecipe = ADAPTIVE_RECIPE
     kind: Literal["adaptive_discovery"] = "adaptive_discovery"
     mission_id: UUID
     mission_digest: Digest
@@ -127,8 +129,10 @@ class AdaptiveManifest(AdaptiveModel):
 
     @model_validator(mode="after")
     def identities(self):
-        if self.spec.kind != "strategy":
+        if self.id == ADAPTIVE_RECIPE and self.spec.kind != "strategy":
             raise ValueError("only-strategy-missions-executable")
+        if (self.id == RESEARCH_RECIPE) != (self.spec.schema_version == 2):
+            raise ValueError("adaptive-profile-version-mismatch")
         if self.mission_digest != record_digest(self.spec) or self.plan_digest != record_digest(self.plan):
             raise ValueError("adaptive-manifest-digest-mismatch")
         if self.plan.mission_digest != self.mission_digest or self.plan.trial_id != self.trial_id:
@@ -155,7 +159,7 @@ class AdaptiveAssignment(AdaptiveModel):
     job_id: UUID
     project_id: UUID
     revision: int = Field(ge=1)
-    recipe_id: Literal["kr-etf-monthly-python-v1"] = ADAPTIVE_RECIPE
+    recipe_id: AdaptiveRecipe = ADAPTIVE_RECIPE
     kind: Literal["adaptive_discovery"] = "adaptive_discovery"
     manifest_digest: Digest
     approval_event_id: str = Field(min_length=1)
@@ -165,13 +169,13 @@ class AdaptiveAssignment(AdaptiveModel):
 
     @model_validator(mode="after")
     def manifest_identity(self):
-        if self.manifest_digest != digest_model(self.manifest):
+        if self.manifest_digest != digest_model(self.manifest) or self.recipe_id != self.manifest.id:
             raise ValueError("adaptive-assignment-manifest-mismatch")
         return self
 
 
 def parse_assignment(value: dict[str, Any]) -> Assignment | AdaptiveAssignment:
-    if value.get("kind") == "adaptive_discovery" or value.get("recipe_id") == ADAPTIVE_RECIPE:
+    if value.get("kind") == "adaptive_discovery" or value.get("recipe_id") in {ADAPTIVE_RECIPE, RESEARCH_RECIPE}:
         return AdaptiveAssignment.model_validate(value)
     return Assignment.model_validate(value)
 
@@ -189,7 +193,7 @@ class AdaptiveQualification(AdaptiveModel):
     json_datetimes: Annotated[list[datetime], Field(min_length=1)]
     typed_schema: Annotated[dict[str, Literal["date", "datetime", "float", "integer", "string", "boolean"]],
                             Field(min_length=1)]
-    primary_unit: Literal["fraction-per-year"]
+    primary_unit: Literal["fraction-per-year", "fraction"]
     empty_sample_rejected: Literal[True]
     non_finite_rejected: Literal[True]
     json_roundtrip_passed: Literal[True]
@@ -229,14 +233,22 @@ class AdaptiveResult(AdaptiveModel):
     plan_digest: Digest
     code_commit: Commit
     metrics: TrialMetrics
-    base_returns: ReturnSeriesRef
-    stress_returns: ReturnSeriesRef
+    base_returns: ReturnSeriesRef | None = Field(default=None, exclude_if=lambda v: v is None)
+    stress_returns: ReturnSeriesRef | None = Field(default=None, exclude_if=lambda v: v is None)
+    observations: Path | None = Field(default=None, exclude_if=lambda v: v is None)
     output_files: Annotated[FileMap, Field(max_length=MAX_OUTPUT_FILES)]
 
     @model_validator(mode="after")
     def series_contract(self):
         if self.metrics.sample_count < 2:
             raise ValueError("dated-return-series-needs-two-observations")
+        if self.metrics.primary.metric != "stress-net-absolute-cagr":
+            if (self.base_returns is not None or self.stress_returns is not None or self.observations is None
+                    or not self.observations.endswith(".csv") or self.observations not in self.output_files):
+                raise ValueError("scientific-result-requires-observations-without-invented-returns")
+            return self
+        if self.base_returns is None or self.stress_returns is None or self.observations is not None:
+            raise ValueError("strategy-result-requires-return-series")
         if self.base_returns.path == self.stress_returns.path:
             raise ValueError("base-and-stress-artifacts-must-be-distinct")
         if self.base_returns.frequency != self.stress_returns.frequency:
@@ -256,7 +268,7 @@ class AdaptiveExecutionReceipt(AdaptiveModel):
     job_id: UUID
     project_id: UUID
     revision: int = Field(ge=1)
-    recipe_id: Literal["kr-etf-monthly-python-v1"] = ADAPTIVE_RECIPE
+    recipe_id: AdaptiveRecipe = ADAPTIVE_RECIPE
     manifest_digest: Digest
     approval_event_id: str
     mission_id: UUID

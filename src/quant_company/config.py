@@ -46,6 +46,7 @@ class Settings(BaseSettings):
     research_artifact_dir: Path = Path("/var/lib/quant-company/research")
     research_report_bucket: str = ""
     research_report_prefix: str = "company/research/executions"
+    research_library_channel_id: str = ""
     research_s3_credentials_file: Path | None = None
     company_web_enabled: bool = True
     company_news_enabled: bool = False

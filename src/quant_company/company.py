@@ -80,8 +80,9 @@ class Company:
         self.db = Database(settings.database_url)
         self.roles = roles if roles is not None else load_roles(settings)
         from .research.controller import MissionApprovalAdapter
+        from .research.program_controller import ProgramApprovalAdapter
 
-        self.research_approval_adapters = (MissionApprovalAdapter(self),)
+        self.research_approval_adapters = (MissionApprovalAdapter(self), ProgramApprovalAdapter(self))
 
     def role(self, name: str) -> Role:
         role = self.roles.get(name)
@@ -135,14 +136,19 @@ class Company:
                 },
                 "autonomous_research": {
                     "enabled": self.settings.company_autonomous_research_enabled,
-                    "usage": 'Director research_control: {action:"mission_status"} reads public state. '
+                    "usage": 'Director research_control: {action:"program_catalog"} reads the program schema and provisioned profiles. '
+                             '{action:"program_draft",spec:<ResearchProgram>} prepares bounded program authority for owner approval; '
+                             '{action:"program_status"} reads budgets and tasks. Program staff read original sources, propose tasks, '
+                             'check data, resolve independent challenges and perform validity then meaning reviews. '
+                             '{action:"mission_status"} reads public mission state. '
                              '{action:"mission_draft",spec:<complete MissionSpec>} prepares a frozen mission '
                              'only when an operator execution profile is provisioned. Never invent missing '
                              'scientific parameters or approval. Authenticated Slack approval is required. '
                              'The durable service schedules proposal, independent challenge, selection, '
                              'scoped implementation, 3070 qualification/evaluation, interpretation and audit. '
                              'Unverified metrics remain private. Reports are checkpoints; continuous '
-                             'follow-up is limited to the approved search scope. Model/claim execution is unavailable.',
+                             'follow-up is limited to the approved search scope. Version 2 supports provisioned domestic '
+                             'strategy and scientific evaluation profiles; unavailable profiles cannot execute.',
                     "internal_staff": [
                         {"role": name, "model": self.roles[name].model,
                          "reasoning_effort": self.roles[name].reasoning_effort,
@@ -753,6 +759,10 @@ class Company:
 
             if not task:
                 raise PolicyError("Research control requires a task")
+            if arguments.get("action", "").startswith("program_"):
+                from .research.program_controller import program_tool
+
+                return program_tool(self, conn, self._project(conn, project_id, lock=False), task, arguments)
             if arguments.get("action", "").startswith("mission_"):
                 from .research.controller import mission_tool
 

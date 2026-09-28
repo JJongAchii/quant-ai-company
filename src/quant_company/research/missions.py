@@ -75,6 +75,10 @@ class MissionStore:
             raise PolicyError("Mission requires the current active project revision and owner")
         if active and (row["state"] != "active" or not row["approval_event_id"]):
             raise PolicyError("Mission is not active and approved")
+        if active and row.get("program_id"):
+            from .programs import ProgramStore
+
+            ProgramStore(self.company).require_authorized(conn, row)
         return project, row, spec
 
     def _trial(self, conn, mission_id, trial_id):
@@ -89,7 +93,7 @@ class MissionStore:
             raise PolicyError("Distinct authorized evidence sources are required")
         self.company._check_sources(conn, project_id, source_ids)
 
-    def _owner(self, conn, project, row, *, owner, revision, manifest_digest, event_key, action):
+    def _owner(self, conn, project, row, *, owner, revision, manifest_digest, event_key, action, target_kind="mission"):
         if (owner not in self.company.settings.slack_allowed_users or owner != project["owner_user"]
                 or owner != row["owner_user"] or revision != row["revision"]
                 or revision != project["revision"] or manifest_digest != row["manifest_digest"]):
@@ -104,7 +108,7 @@ class MissionStore:
             records = conn.execute("""SELECT detail FROM events WHERE project_id=%s
                 AND kind='research_approval_authorized' AND detail->>'owner_event_id'=%s""",
                                    (project["id"], event_key)).fetchall()
-            expected = {"kind": "mission", "target_id": str(row["id"]), "revision": revision,
+            expected = {"kind": target_kind, "target_id": str(row["id"]), "revision": revision,
                         "manifest_digest": manifest_digest}
             matched = False
             for record in records:
@@ -152,7 +156,8 @@ class MissionStore:
         project, row, spec = self._locked(conn, mission_id)
         self._owner(conn, project, row, owner=owner, revision=revision, manifest_digest=manifest_digest,
                     event_key=event_key, action="approve")
-        if spec.kind != "strategy" or spec.execution_profile != EXECUTION_PROFILE:
+        if not ((spec.kind == "strategy" and spec.execution_profile == EXECUTION_PROFILE)
+                or spec.schema_version == 2):
             raise PolicyError("This mission kind or execution profile is draft-only")
         payload = {"action": "approve", "mission_id": str(mission_id), "owner": owner,
                    "revision": revision, "manifest_digest": manifest_digest}
@@ -345,6 +350,12 @@ class MissionStore:
             raise PolicyError("Rejected proposal requires a revised hypothesis")
         self._sources(conn, project["id"], proposal["payload"]["source_ids"])
         self._lineage(conn, row, spec, typed(HypothesisProposal, proposal["payload"]))
+        if row.get("program_id"):
+            from .feedback import require_resolutions
+            from .library import require_current
+
+            require_current(conn, proposal["payload"]["source_ids"])
+            require_resolutions(conn, mission_id, proposal_id)
         for identity in challenge_ids:
             challenge = conn.execute("""SELECT payload FROM research_mission_challenges
                 WHERE id=%s AND mission_id=%s AND proposal_id=%s""", (identity, mission_id, proposal_id)).fetchone()
@@ -402,7 +413,8 @@ class MissionStore:
         expected = {"mission_id": str(mission_id), "mission_digest": row["manifest_digest"],
                     "trial_id": str(trial_id), "plan_digest": trial["plan_digest"]}
         if (not job or str(job["project_id"]) != str(project["id"]) or job["revision"] != row["revision"]
-                or job["recipe_id"] != spec.execution_profile or job["state"] != "queued"
+                or job["recipe_id"] != ("kr-research-python-v2" if spec.schema_version == 2 else spec.execution_profile)
+                or job["state"] != "queued"
                 or job["approval_event_id"] != row["approval_event_id"]
                 or job["approved_by"] != row["owner_user"]
                 or any(job["manifest"].get(key) != value for key, value in expected.items())):
@@ -444,6 +456,9 @@ class MissionStore:
         conn.execute("""INSERT INTO research_mission_outcomes(id,trial_id,job_id,kind,payload,digest)
             VALUES (%s,%s,%s,%s,%s,%s)""", (outcome.id, trial_id, trial["job_id"], outcome.status,
                                            Jsonb(payload), digest))
+        from .programs import ProgramStore
+
+        ProgramStore(self.company).settle(conn, row, trial["job_id"], outcome)
         if outcome.status == "result":
             ordinal = row["cumulative_trials"] + 1
             conn.execute("""UPDATE research_missions SET cycle_trials=cycle_trials+1,
@@ -483,8 +498,11 @@ class MissionStore:
                                      (row["incumbent_trial_id"],)).fetchone()
         incumbent_value = typed(TrialOutcome, incumbent["payload"]).metrics.primary.value if incumbent else None
         score = metrics.primary.value
-        best = feasible and (incumbent_value is None or score > incumbent_value)
-        improvement = feasible and (incumbent_value is None or score - incumbent_value > spec.search.min_improvement)
+        delta = (score - incumbent_value) if incumbent_value is not None else None
+        if delta is not None and spec.objective.direction == "minimize":
+            delta = -delta
+        best = feasible and (delta is None or delta > 0)
+        improvement = feasible and (delta is None or delta > spec.search.min_improvement)
         conn.execute("INSERT INTO research_mission_interpretations(trial_id,payload,digest) VALUES (%s,%s,%s)",
                      (trial_id, Jsonb(payload), fingerprint(payload)))
         conn.execute("""UPDATE research_missions SET incumbent_trial_id=CASE WHEN %s THEN %s
@@ -572,14 +590,30 @@ class MissionStore:
             return {**result, "stage": "stale_revision"}
         if row["state"] != "active":
             return {**result, "stage": "approval" if row["state"] == "draft" else row["state"]}
+        program_exhausted = False
+        if row.get("program_id"):
+            from .programs import ProgramStore
+
+            _, program, program_spec = ProgramStore(self.company).locked(conn, row["program_id"])
+            if program["state"] != "active":
+                return {**result, "stage": "program_waiting"}
+            usage = ProgramStore(self.company).usage(conn, row["program_id"])
+            from .builds import profile_for
+
+            profile = profile_for(self.company, spec).public_profile
+            required_time = profile.qualification_timeout_seconds + profile.evaluation_timeout_seconds
+            program_exhausted = (usage["trials"] >= program_spec.max_total_trials
+                or usage["compute_seconds"] + required_time > program_spec.max_compute_seconds)
         trial = conn.execute("""SELECT * FROM research_mission_trials WHERE mission_id=%s AND state<>'reported'
             ORDER BY created_at,id LIMIT 1""", (mission_id,)).fetchone()
         if trial:
+            if program_exhausted and trial["state"] in {"selected", "prepared", "technical_waiting"}:
+                return {**result, "stage": "owner_review", "reason": "program_budget_exhausted"}
             stage = {"selected": "implementation", "prepared": "execution", "queued": "execution",
                      "running": "execution", "technical_waiting": "repair", "received": "interpretation",
                      "interpreted": "audit"}[trial["state"]]
             return {**result, "stage": stage, "trial_id": str(trial["id"]), "proposal_id": str(trial["proposal_id"])}
-        if self._scope_exhausted(row, spec):
+        if program_exhausted or self._scope_exhausted(row, spec):
             return {**result, "stage": "owner_review", "reason": "scientific_scope_exhausted"}
         if self._cycle_ended(row, spec):
             return {**result, "stage": "cycle_review" if spec.search.continuous else "owner_review"}
@@ -619,6 +653,8 @@ class MissionStore:
         result = as_json(row)
         result["stage"] = self.next_stage(conn, mission_id)
         result["trials"] = as_json(trials)
+        result["challenge_responses"] = as_json(conn.execute("""SELECT * FROM research_challenge_responses
+            WHERE mission_id=%s ORDER BY created_at""", (mission_id,)).fetchall())
         for name in ("proposals", "challenges", "rejections", "cycles"):
             result[name] = as_json(conn.execute(f"SELECT * FROM research_mission_{name} WHERE mission_id=%s ORDER BY created_at",
                                                (mission_id,)).fetchall())

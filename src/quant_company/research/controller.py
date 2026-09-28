@@ -21,6 +21,7 @@ ACTORS = {
     "proposal": "researcher_kr", "challenge": "financial_strategist", "selection": "director",
     "implementation": "engineer", "repair": "engineer", "interpretation": "researcher_kr",
     "audit": "validator", "cycle_review": "director",
+    "meaning": "financial_strategist",
 }
 STAGE_TEXT = {
     "proposal": "연구 담당자가 근거와 반증 조건을 갖춘 다음 가설을 준비합니다.",
@@ -31,6 +32,7 @@ STAGE_TEXT = {
     "interpretation": "연구 담당자가 수신한 결과를 해석하고 다음 가설을 기록합니다. 성과는 감사 후 공개합니다.",
     "audit": "독립 검증 담당자가 코드·입력·결과의 고정된 감사 묶음을 검토합니다.",
     "cycle_review": "총괄이 이번 연구 주기의 증거와 남은 가설을 검토합니다.",
+    "meaning": "유효성 검증 후 과적합·비용·대안 설명과 미해결 반론을 검토합니다.",
 }
 
 AUDIT_RECONCILED_ERROR = "audit_runtime_failure_reconciled"
@@ -38,7 +40,7 @@ AUDIT_RECONCILED_ERROR = "audit_runtime_failure_reconciled"
 
 def stage_role(company, actor):
     role = company.roles.get(actor)
-    if not role or actor not in set(ACTORS.values()):
+    if not role or actor not in set(ACTORS.values()) | {"data"}:
         raise PolicyError("Unknown mission employee")
     if not role.active and actor not in {"engineer", "validator"}:
         raise PolicyError("Mission employee is inactive")
@@ -286,6 +288,15 @@ def stage_prompt(company, conn, task):
                         '"predecessor_trial_ids":[uuid]}. Continue only with a distinct useful next hypothesis '
                         "within the frozen scope. Exhausted scope requires wait; do not rename the same experiment.",
     }
+    from .program_controller import PROGRAM_STAGES
+
+    instructions.update({key: value[2] for key, value in PROGRAM_STAGES.items()})
+    instructions["meaning"] = (
+        "Return MeaningReview for the exact trial and outcome digest. Causal validity already passed; "
+        "independently assess multiple testing, costs and executability, alternative mechanisms and uncertainty. "
+        "Read all required_meaning_reads, the interpretation and challenge responses. List every unperformed "
+        "test obligation and unresolved objection. Choose inconclusive when required evidence is missing. "
+        "Support is development evidence only, never confirmation or an investment recommendation.")
     context = {**{key: value for key, value in row["context"].items() if not key.startswith("_")},
                "stage_id": str(row["id"]), "actor": row["actor"], "last_error": row["error"]}
     if row["stage"] == "audit":
@@ -316,6 +327,24 @@ def stage_prompt(company, conn, task):
         conn, project["owner_user"], role.id, role.model, role.reasoning_effort))
     output_type = {"proposal": HypothesisProposal, "challenge": Challenge,
                    "interpretation": Interpretation}.get(row["stage"])
+    if row["stage"] in PROGRAM_STAGES:
+        output_type = PROGRAM_STAGES[row["stage"]][1]
+    if row["stage"] == "meaning":
+        from .program_contracts import MeaningReview
+
+        output_type = MeaningReview
+    if row["context"].get("mission", {}).get("program_id"):
+        if row["stage"] in {"proposal", "challenge"}:
+            instructions[row["stage"]] = instructions[row["stage"]].replace(
+                "only a registered change", "a new testable change").replace(
+                "reject any unregistered formula or parameter", "check new formulas against the approved code and evaluation scope")
+        if row["stage"] == "selection":
+            from .program_contracts import ReviewDecision
+
+            output_type = ReviewDecision
+            instructions["selection"] = ("Return ReviewDecision. Resolve EVERY challenge as revise, test, or reject. "
+                "Provide evidence and a concrete test plan where needed. Required revisions prevent execution. "
+                "New feature/model/portfolio code is allowed only inside approved paths. Evaluator and data stay frozen.")
     if output_type:
         context["output_schema"] = output_type.model_json_schema()
     # A new attempt owns a new provider thread. Prior read receipts remain useful
@@ -428,6 +457,14 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         from .builds import read_stage_file
 
         receipt = read_stage_file(company, row, request.arguments)
+        previous = conn.execute("""SELECT next_offset FROM research_stage_reads WHERE stage_id=%s
+            AND attempt=%s AND path=%s ORDER BY character_offset DESC LIMIT 1""",
+            (row["id"], row["attempt"], receipt["path"])).fetchone()
+        expected_offset = previous["next_offset"] if previous else 0
+        if receipt["offset"] != expected_offset and not conn.execute("""SELECT 1 FROM research_stage_reads
+            WHERE stage_id=%s AND attempt=%s AND path=%s AND character_offset=%s""",
+            (row["id"], row["attempt"], receipt["path"], receipt["offset"])).fetchone():
+            raise PolicyError("Evidence reads must be contiguous from the first byte")
         if conn.execute("""SELECT 1 FROM research_stage_reads
             WHERE stage_id=%s AND attempt=%s AND path=%s AND character_offset=%s""",
                         (row["id"], row["attempt"], receipt["path"], receipt["offset"])).fetchone():
@@ -455,6 +492,24 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
     value = json.loads(decision.artifacts[0].content)
     if not isinstance(value, dict):
         raise PolicyError("Research artifact must be an object")
+    for path in row["context"].get("required_meaning_reads", []):
+        if not conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
+            AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
+            raise PolicyError("Independent meaning review requires the actual validated artifacts")
+    if row.get("program_id") or row["context"].get("mission", {}).get("program_id"):
+        # Each cited original must actually have reached this provider attempt. An index,
+        # previous employee's summary or old attempt's receipt is not a read receipt.
+        cited = value.get("source_ids", [])
+        if row["stage"] == "selection":
+            cited = sorted({source for response in value.get("responses", []) for source in response.get("source_ids", [])})
+        if row["stage"] == "program_selection":
+            cited = row["context"]["task"]["proposal"]["source_ids"]
+        paths = {entry["source_id"]: entry["file"] for entry in row["context"].get("evidence_sources", [])}
+        for source in cited:
+            if source not in paths or not conn.execute("""SELECT 1 FROM research_stage_reads
+                WHERE stage_id=%s AND attempt=%s AND path=%s AND next_offset IS NULL""",
+                (row["id"], row["attempt"], paths.get(source))).fetchone():
+                raise PolicyError("Cited source has not been read completely in this employee attempt")
     conn.execute("UPDATE research_mission_stages SET state='received',result=%s,updated_at=now() WHERE id=%s",
                  (Jsonb(value), row["id"]))
     conn.execute("""UPDATE research_stage_attempts SET response=%s,completed_at=now()
@@ -559,6 +614,11 @@ class MissionController:
                 raise PolicyError("Challenge points to another proposal")
             self.store.add_challenge(conn, mission_id, value, actor=actor)
         elif stage == "selection":
+            if snapshot.get("program_id"):
+                from .feedback import resolve_challenges
+
+                data = resolve_challenges(self.company, conn, snapshot, current["proposal_id"], data, actor)
+                row = {**row, "result": data}
             if set(data) != {"decision", "rationale", "challenge_ids"}:
                 raise PolicyError("Invalid selection fields")
             if data["decision"] == "revise":
