@@ -23,7 +23,8 @@ def test_destination_updates_preserve_other_feeds_and_require_owner(release):
     values = release.updates(args, release.configuration(raw))
     result = release.configuration(release.updated(raw, values))
     assert result['QUANT_FEED_PUBLISH_ENABLED'] == 'false'
-    assert json.loads(result['SLACK_ALLOWED_CHANNELS']) == ['CNEWS', 'CHOUSING']
+    assert json.loads(result['SLACK_ALLOWED_CHANNELS']) == ['CNEWS']
+    assert json.loads(result['HOUSING_FEED_ALLOWED_CHANNELS']) == ['CHOUSING']
     assert result['HOUSING_FEED_PUBLISH_ENABLED'] == 'false'
     args.owner = 'UOTHER'
     with pytest.raises(ValueError, match='owner_not_authorized'):

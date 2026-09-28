@@ -67,6 +67,7 @@ class Settings(BaseSettings):
     housing_feed_publish_enabled: bool = False
     housing_feed_channel_id: str = ""
     housing_feed_owner_user: str = ""
+    housing_feed_allowed_channels: list[str] = Field(default_factory=list)
     quant_feed_enabled: bool = False
     quant_feed_publish_enabled: bool = False
     quant_feed_channel_id: str = ""

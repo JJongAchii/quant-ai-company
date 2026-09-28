@@ -93,13 +93,12 @@ def oneoff(module, root, env, code):
 
 
 def updates(args, values):
-    channels = json.loads(values['SLACK_ALLOWED_CHANNELS'])
     if args.owner not in json.loads(values['SLACK_ALLOWED_USERS']):
         raise ValueError('owner_not_authorized')
     return {'RELEASE_COMMIT': args.commit, 'HOUSING_FEED_ENABLED': 'true',
             'HOUSING_FEED_PUBLISH_ENABLED': 'false', 'HOUSING_FEED_CHANNEL_ID': args.channel,
             'HOUSING_FEED_OWNER_USER': args.owner,
-            'SLACK_ALLOWED_CHANNELS': json.dumps(list(dict.fromkeys([*channels, args.channel])), separators=(',', ':'))}
+            'HOUSING_FEED_ALLOWED_CHANNELS': json.dumps([args.channel])}
 
 
 def slack_access(channel, team):

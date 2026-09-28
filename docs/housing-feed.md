@@ -36,12 +36,16 @@ API 키·유료 API·모델 호출은 사용하지 않는다. 실제 청약 접�
 
 기존 Reporter 앱을 새 `#housing-feed`에 추가한다. 별도 AI 직원이나 Slack 앱을 만들 필요는 없다.
 워크스페이스·허용 채널·소유자 설정을 기존 배포와 일치시킨다.
+주택 피드의 발송 허용 목록은 `HOUSING_FEED_ALLOWED_CHANNELS`로 별도 지정한다.
+기존 피드의 정책 digest가 바뀌지 않도록 공용 `SLACK_ALLOWED_CHANNELS`는 수정하지 않는다.
+이 채널은 분양 알림 수신용이며 대화형 직원의 새 지시 접수 채널로 등록하지 않는다.
 
 ```dotenv
 HOUSING_FEED_ENABLED=true
 HOUSING_FEED_PUBLISH_ENABLED=false
 HOUSING_FEED_CHANNEL_ID=C_ACTUAL_HOUSING_CHANNEL
 HOUSING_FEED_OWNER_USER=U_ACTUAL_OWNER
+HOUSING_FEED_ALLOWED_CHANNELS=["C_ACTUAL_HOUSING_CHANNEL"]
 ```
 
 ```bash
@@ -74,3 +78,19 @@ uv run --frozen ruff check .
 테스트 DB는 임시 DB를 생성·삭제할 수 있는 전용 PostgreSQL이어야 한다.
 자동 검사의 HTTP와 Slack 응답은 fixture이며 실제 Slack 게시와 구분한다.
 실제 공개 소스·운영 연결 결과는 `docs/project/evidence`에 기록한다.
+
+### 제한된 운영 배포
+
+`deploy/housing_feed_release.py`는 승인된 operator 경로다. 실행 중인 release commit을 `--base`,
+리뷰한 회사 commit을 `--commit`으로 지정하고 실제 channel·owner를 전달한다.
+`stage`에 `--archive`와 로컬에서 확인한 `--sha256`을 추가한다. 기존 DB와 연구 worker를 보존하고
+새 app image를 만든 뒤 housing 테이블만 추가하고 발송 비활성 상태에서 공개 소스 네 곳을 수집한다.
+`activate`는 stage 영수증·기존 runtime.env digest·workspace·Reporter 채널 접근을 다시 확인한다.
+기존 dispatcher와 새 housing collector만 시작하며 다른 서비스의 컨테이너 ID·실행 상태를 검사한다.
+두 단계 모두 공용 `.backup.lock`을 사용하므로 다른 배포·백업이 진행 중이면 종료한다.
+기존 영수증이 있거나 base/config가 달라졌을 때 자동으로 덮어쓰거나 재활성화하지 않는다.
+
+영수증은 서버 `/var/lib/quant-company/releases/housing-feed-<commit>.json`에 남는다.
+실패 시 새 프로세스를 멈추고 housing pending은 stale, sending은 uncertain으로 보존한 뒤
+이전 runtime.env와 dispatcher를 복구한다. 이미 게시된 메시지는 되돌리지 않는다.
+최종 실제 Slack readback과 Temporal 상태는 별도 운영 증거로 보존한다.

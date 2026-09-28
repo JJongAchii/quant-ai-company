@@ -22,3 +22,8 @@
 공개 HTML fixture·HTTP mock·Slack mock 테스트와 실제 공개 사이트 조회/Slack 게시는 별개다.
 실제 PostgreSQL 14 임시 DB 및 로컬 Temporal 서버에서 activity 재시도·worker 재시작·history replay를 검사했다.
 SH의 첨부 문서에만 있는 일정은 자동 추출하지 않으며, GH 별도 공고·임대·오피스텔은 수집 범위 밖이다.
+
+최종 공통 검사: **1,203 passed / 38 skipped**, 285.18초.
+공용 채널 목록 변경이 다른 feed의 policy digest를 바꿀 수 있어 housing 전용 발송 허용 목록으로
+수정했다. 이후 관련 **52개 검사 통과**, 전체 lint 통과. 수신 Slack 이벤트의 허용 범위는 확장하지 않는다.
+[기계 판독 증거](evidence/housing-feed/automated-validation.json)에 검사 버전과 범위를 구분했다.

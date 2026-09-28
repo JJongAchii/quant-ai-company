@@ -121,7 +121,7 @@ def housing(company, monkeypatch):
     company.settings.housing_feed_publish_enabled = True
     company.settings.housing_feed_channel_id = "CHOUSING"
     company.settings.housing_feed_owner_user = "UHUMAN"
-    company.settings.slack_allowed_channels.append("CHOUSING")
+    company.settings.housing_feed_allowed_channels = ["CHOUSING"]
     company.roles["reporter"] = Role(id="reporter", name="Reporter", mission="Fixture", model="unused",
                                      instructions="Fixture", tools=[], can_delegate_to=[], active=False)
     store = HousingFeedStore(company)
@@ -181,7 +181,7 @@ def test_old_lease_cannot_replace_newer_snapshot(housing):
     assert housing.save(old, {"ok": True, "entries": [example().model_dump(mode="json")]})["state"] == "stale"
 
 
-@pytest.mark.parametrize("change", ["publish", "owner", "channel", "notice", "gone", "expired"])
+@pytest.mark.parametrize("change", ["publish", "owner", "channel", "allowlist", "notice", "gone", "expired"])
 def test_gate_rechecks_policy_and_current_notice_before_http(housing, change):
     notice = collect(housing)
     outbox = sender(housing, lambda _: pytest.fail("HTTP must not run after invalidation"))
@@ -189,10 +189,12 @@ def test_gate_rechecks_policy_and_current_notice_before_http(housing, change):
     assert row
     if change == "publish":
         housing.company.settings.housing_feed_publish_enabled = False
+    elif change == "allowlist":
+        housing.company.settings.housing_feed_allowed_channels = []
     elif change == "owner":
         housing.company.settings.slack_allowed_users = []
     elif change == "channel":
-        housing.company.settings.slack_allowed_channels = []
+        housing.company.settings.housing_feed_channel_id = "COTHER"
     elif change == "notice":
         collect(housing, notice.model_copy(update={"price_summary": "changed"}))
     elif change == "gone":

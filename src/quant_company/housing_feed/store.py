@@ -19,7 +19,7 @@ class HousingFeedStore:
         s = self.company.settings
         return (s.housing_feed_enabled and s.housing_feed_owner_user in s.slack_allowed_users
                 and s.housing_feed_channel_id.startswith(("C", "G"))
-                and s.housing_feed_channel_id in s.slack_allowed_channels
+                and s.housing_feed_channel_id in s.housing_feed_allowed_channels
                 and s.housing_feed_channel_id not in {s.news_channel_id, s.tech_feed_channel_id,
                     s.quant_feed_channel_id, s.data_watch_channel_id, s.model_accounts_channel_id,
                     s.improvements_channel_id}
@@ -30,7 +30,7 @@ class HousingFeedStore:
         return fingerprint({"version": 1, "enabled": s.housing_feed_enabled,
                             "publish": s.housing_feed_publish_enabled, "channel": s.housing_feed_channel_id,
                             "owner": s.housing_feed_owner_user, "users": s.slack_allowed_users,
-                            "channels": s.slack_allowed_channels, "sources": list(SOURCES)})
+                            "channels": s.housing_feed_allowed_channels, "sources": list(SOURCES)})
 
     def claim_sources(self):
         if not self.authorized():
