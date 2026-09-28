@@ -36,8 +36,8 @@
 다른 모든 역할이 같은지 확인하고 원본과 새 파일의 digest를 영수증에 기록한다.
 기존 이미지·설정·영수증을 보존한다.
 
-GitHub CLI 인증이 유효하지 않아 검토용 PR은 아직 열지 못했다. 운영 반영 전 PR 검토가
-필요하다는 runbook 조건이 남아 있다.
+[검토용 초안 PR #83](https://github.com/JJongAchii/quant-ai-company/pull/83)을 열었다.
+운영 반영 전 PR 검토와 cutover 승인이 남아 있다.
 
 운영 적용 후에는 DM의 기존 두 Temporal turn이 완료되고 실제 Slack 답변 영수증이 생기는지
 확인한다. 거절된 `research-center` 메시지는 자동 재생하지 않는다. 사용자가 새 메시지로

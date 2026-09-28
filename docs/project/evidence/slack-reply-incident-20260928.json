@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "recordedAt": "2026-09-28T06:28:08Z",
-  "updatedAt": "2026-09-28T06:59:26Z",
+  "updatedAt": "2026-09-28T07:02:48Z",
   "state": "repair_prepared_not_deployed",
   "sourceKinds": {
     "slack": "real Slack conversations.replies readback using the configured bot identities",
@@ -54,6 +54,7 @@
     "realPostgresFullSuite": "1223 passed, 38 skipped, 0 failed on the latest application base",
     "ruff": "passed",
     "productionDeployed": false,
-    "reviewBlocker": "GitHub CLI authentication was invalid at review preparation; no PR was opened."
+    "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
+    "remainingGate": "Review and approval of the draft PR and live cutover under the autonomous-research runbook."
   }
 }

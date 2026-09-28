@@ -3,6 +3,7 @@
   "slug": "anglerfish",
   "currentIntent": "INTENT-v3.json",
   "state": "prepared_awaiting_cutover_review",
+  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
   "deliverables": {
     "DIAGNOSIS": {"status": "completed"},
     "APPLICATION": {"status": "prepared", "commit": "ae132c3", "base": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce"},
