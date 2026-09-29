@@ -19,9 +19,15 @@
 2026-09-29 승인 후, 운영의 다른 배포와 충돌하지 않도록 연구 worker만 후보 커밋
 `f2fa96f518b2eb04937e6fd7fc7a86a26b85052c` 이미지로 교체했다. S3 백업과
 서버 백업 파일의 해시를 확인했고, API·Slack 수신부·Quant Feed 앱 이미지와 3070
-실행 경로는 유지했다. 배포 직후 worker 실행과 API 건강 상태를 확인했다. 새 질문에
-대한 실제 Slack 답변은 아직 관측하지 않았으므로 이 수정의 운영 효과는 추가 확인이
-필요하다. 이전 질문은 재전송하지 않는다.
+실행 경로는 유지했다. 배포 직후 worker 실행과 API 건강 상태를 확인했다. 이전
+질문은 재전송하지 않았다.
+
+사용자가 새로 보낸 후보명·보류 이유 질문은 총괄의 `answer` 작업 두 turn 뒤 완료됐다.
+Slack 전송 영수증은 최종 답변 한 건이고, [실제 답변](https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1790662312284579?thread_ts=1789633942.673909&cid=C0C2B9EUEGM)은
+보류된 KOSPI200 ETF 원안·보완안의 검증 근거 부족을 설명하고 새 069500 ETF 제안의
+평가·선정 미기록 상태를 구분했다. 세 후보 상태는 운영 DB와 일치한다. 이 실행에서는
+중간 본문이 생성되지 않아, 중간 본문이 있을 때 Slack 게시를 막는 경로는 실제
+Slack에서는 아직 별도로 관측되지 않았다. 해당 경로의 PostgreSQL 회귀 검사는 통과했다.
 
 근거: [실제 질문·전송·연구 상태와 수정 검증 영수증](evidence/director-live-answer-followup-20260929.json),
 [운영 교체 영수증](evidence/director-live-answer-deployment-20260929.json).

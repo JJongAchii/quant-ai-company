@@ -46,7 +46,22 @@
     "researchJobsRunningOrUncertainAtCutover": 0,
     "turnsRunningOrUncertainAtCutover": 0,
     "deliveredOutboxCountAfterCutover": 1744,
-    "liveNewSlackQuestion": "not yet observed; earlier questions were not replayed"
+    "liveNewSlackQuestion": {
+      "taskId": "031d6e55-819b-52b7-af8c-226efd134f19",
+      "taskCreatedAt": "2026-09-29T06:09:14.160688Z",
+      "taskStatus": "completed",
+      "turnCount": 2,
+      "finalTurnCompletedAt": "2026-09-29T06:11:51.490491Z",
+      "answerMessages": 1,
+      "deliveredAnswerOutboxRows": 1,
+      "slackSentTs": "1790662312.284579",
+      "slackChannel": "C0C2B9EUEGM",
+      "slackThreadTs": "1789633942.673909",
+      "slackPermalink": "https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1790662312284579?thread_ts=1789633942.673909&cid=C0C2B9EUEGM",
+      "contentCheck": "Names two waiting KOSPI200 ETF GMM proposal versions and their missing input/execution evidence; distinguishes a newly proposed 069500 ETF task without a data or selection decision; states zero execution missions.",
+      "databaseCrossCheck": "Two waiting tasks have blocked data assessments and wait selection decisions; the third is proposed with no assessment or selection decision.",
+      "limit": "No intermediate say text was generated in this live task, so suppression of a nonempty interim say is supported by the PostgreSQL regression test rather than this Slack observation."
+    }
   },
   "localValidation": {
     "realPostgresFullSuite": "1285 passed, 46 skipped",
