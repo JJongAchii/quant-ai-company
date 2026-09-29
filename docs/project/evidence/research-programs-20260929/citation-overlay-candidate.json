@@ -1,0 +1,30 @@
+{
+  "active_base_image": "quant-company-autonomous:5fcd4353b8adab3e3fb6f11fda3f08fef7aea801",
+  "active_base_image_id": "sha256:833d0baf7605d4682a61f0747a0821fd7c4c7bfda67b9049a62b5a6b4e305e7a",
+  "active_base_release": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801",
+  "active_runtime_sha256": "cd9ae1675da40453bebd7b952a15c0686f890f3c7b0c51f776e2dd59949e073d",
+  "build_log_sha256": "2c0e9e8e923ec949368ba31dcc709f6292ba1b877ac520ed7cee84bf25c36a3b",
+  "bundle_sha256": "81673ffcf55725b20c6968450e5c76085d5dbf14c31406d568237a36c0d6a64e",
+  "candidate_commit": "0072b575e11ab4e1959a51e1e08d4aa61c44510c",
+  "candidate_image": "quant-company-autonomous:0072b575e11ab4e1959a51e1e08d4aa61c44510c",
+  "candidate_image_id": "sha256:b48e1a2be54a6a1d5f6391ce5dc7792e717e1d2e6994184b20fb104d9d9c440d",
+  "candidate_runtime_sha256": "da1c9f7597a58a8e29a7acdffe524858b696a8dc10e715f250833294f3738027",
+  "candidate_worker_route": "http://codex-runtime:8080",
+  "deploy_files_changed_from_active_release": false,
+  "image_built_at": "2026-09-29T02:29:03.238847+00:00",
+  "imported_program_controller_sha256": "bbb48087c931f1fd569fd2b00e163536ce1bad6fdf5490b1119f849e3d9b7875",
+  "initial_candidate_rejected_before_activation": {
+    "image_id": "sha256:b1008451552cf89ff69be97bd8c4c17ce94dbafae9549fee6a030d2220374019",
+    "installed_import_sha256": "cc64d1da9356020a4039d6241506f4e9692ed4690eea48d8bf2d897c212dc369",
+    "reason": "source path changed but installed package still imported the old module",
+    "removed_without_service_change": true
+  },
+  "only_changed_runtime_source": "src/quant_company/research/program_controller.py",
+  "program_controller_sha256": "bbb48087c931f1fd569fd2b00e163536ce1bad6fdf5490b1119f849e3d9b7875",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "runtime_candidate_prepared_at": "2026-09-29T02:25:43.185776+00:00",
+  "schema_version": 1,
+  "scope": "production Lightsail candidate, not activated",
+  "services_recreated": false,
+  "source_staged_at": "2026-09-29T02:24:11.980633+00:00"
+}

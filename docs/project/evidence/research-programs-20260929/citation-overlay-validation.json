@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "commit": "0072b575e11ab4e1959a51e1e08d4aa61c44510c",
+  "active_base_commit_at_build": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801",
+  "only_changed_runtime_source": "src/quant_company/research/program_controller.py",
+  "candidate_image_id": "sha256:b48e1a2be54a6a1d5f6391ce5dc7792e717e1d2e6994184b20fb104d9d9c440d",
+  "source_and_installed_import_sha256": "bbb48087c931f1fd569fd2b00e163536ce1bad6fdf5490b1119f849e3d9b7875",
+  "commands": [
+    {
+      "command": "uv run pytest -q tests/test_research_programs.py tests/test_research_audit_delivery.py",
+      "passed": 13,
+      "result": "pass"
+    },
+    {
+      "command": "uv run pytest -q",
+      "passed": 1307,
+      "skipped": 13,
+      "warnings": 2,
+      "result": "pass"
+    },
+    {
+      "command": "uv run ruff check .",
+      "result": "pass"
+    }
+  ],
+  "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/87",
+  "service_ci": "SUCCESS",
+  "merge_state": "CLEAN",
+  "production_activation_at_validation": false,
+  "scientific_performance_claims": 0
+}

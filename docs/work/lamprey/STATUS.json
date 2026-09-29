@@ -41,11 +41,19 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/second-release-drift-safe-abort.json",
           "sha256": "8c1e3fe3bff4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-cutover.json",
+          "sha256": "b8f5c33d45ff"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-post-check.json",
+          "sha256": "70f1b286cd25"
         }
       ],
-      "note": "Attempts 7-9 read originals but exact-location citation validation rejected all three. Active worker now follows separate audit release 5fcd435; another deployment branch includes the prompt fix. No program task, mission or scientific trial is recorded.",
+      "note": "Signed owner approval remains bound to the active program. Attempt 10 failed exact-location citation validation before the worker correction; the corrected worker is live, attempt 11 is scheduled automatically, and no research task, mission, reservation or scientific trial has been recorded.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T02:18:54.240664+00:00"
+      "updatedAt": "2026-09-29T02:41:49.936228+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -88,16 +96,32 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/citation-integrated-validation.json",
           "sha256": "c8eb0b63258c"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-candidate.json",
+          "sha256": "6536e7084bff"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-validation.json",
+          "sha256": "376a9ca4991b"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-cutover.json",
+          "sha256": "b8f5c33d45ff"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-post-check.json",
+          "sha256": "70f1b286cd25"
         }
       ],
-      "note": "Exact worker image and source-read guard live; citation-format guidance candidate and merged PR pass local tests and CI. Guarded cutovers stopped on concurrent release drift.",
+      "note": "Citation guidance image 0072b57 passed 1307 tests and lint; guarded production cutover replaced only the idle research worker. Readback confirms the imported installed module hash and direct official ChatGPT runtime route.",
       "status": "verified",
-      "updatedAt": "2026-09-29T02:18:54.240664+00:00"
+      "updatedAt": "2026-09-29T02:41:49.936228+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T02:18:54.240664+00:00"
+  "updatedAt": "2026-09-29T02:41:49.936228+00:00"
 }

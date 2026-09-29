@@ -71,8 +71,27 @@ lint, PR 서비스 CI가 통과했다. [검증 영수증](evidence/research-prog
 감사 릴리스 `5fcd4353b8adab3e3fb6f11fda3f08fef7aea801`이 먼저 활성화돼 변경 전
 중단됐다. 운영 설정과 컨테이너는 이 전환 시도로 변경되지 않았다.
 [두 번째 안전 중단 영수증](evidence/research-programs-20260929/second-release-drift-safe-abort.json).
-현재 다른 배포 브랜치는 새 감사 릴리스와 동일한 인용 안내를 통합 중이다. 이 작업은
-중복 운영 전환을 멈추고 실제 활성 이미지와 연구 기록을 읽기 전용으로 대조한다.
+당시 다른 배포 브랜치도 새 감사 릴리스와 동일한 인용 안내를 통합 중이었다. 이후
+운영 전환 직전에 실제 활성 이미지와 연구 기록을 다시 대조했다.
+
+추가로 현 활성 릴리스 `5fcd435`에 인용 안내 파일만 더한 `0072b57` 후보를 준비했다.
+처음 만든 얇은 이미지는 소스 경로만 바꾸고 실제 설치 패키지의 import 경로를 놓쳤다.
+배포 전 import 해시 검사에서 발견해 그 이미지를 제거했다. 수정한 후보는 두 경로의
+파일 해시가 일치하고, 운영 설정 후보에서도 공식 ChatGPT용 Codex runtime 직접 경로를
+유지한다. 이 후보 준비 시점에는 운영에 적용하지 않았다.
+[단일 파일 이미지 후보 영수증](evidence/research-programs-20260929/citation-overlay-candidate.json).
+
+10회차도 기존 워커에서 인용 위치 오류로 거부됐다. 후보 `0072b57`의 전체 테스트
+1,307 통과·13 건너뜀, lint와 PR #87 CI 통과를 확인한 뒤, 11:39:13 KST에
+안전 사전 검사와 함께 **연구 워커 한 개만** 새 이미지로 교체했다. 승인 digest·서명된
+Slack 이벤트·프로그램 활성 상태, 대기 중인 단계, 실행 중인 턴·작업·불확실한 모델
+호출이 0건인 것을 검사했다. 나머지 서비스의 컨테이너 ID는 그대로였고, 적용 후 실제
+워커가 설치 패키지에서 수정된 파일 해시를 import하는 것을 읽기 전용으로 확인했다.
+[후보 검증](evidence/research-programs-20260929/citation-overlay-validation.json),
+[운영 전환 영수증](evidence/research-programs-20260929/citation-overlay-cutover.json),
+[적용 후 확인](evidence/research-programs-20260929/citation-overlay-post-check.json).
+11:41 KST 현재 과제와 과학 시행은 0건이다. 11회차 자동 재시도 예정 시각은
+11:43:43 KST이며, 검증을 통과한 제안이나 독립 검토 결과는 아직 없다.
 
 최신 main을 병합한 PR #87의 커밋 `716cbc1`에서 전체 테스트 1,307 통과·13 건너뜀,
 lint와 서비스 CI 성공, 병합 가능 상태를 확인했다. 운영 후보 `6dfbdcc`와 PR HEAD의
