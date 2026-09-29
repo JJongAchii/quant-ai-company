@@ -102,7 +102,12 @@ def numbers(text):
     for month, name in enumerate(MONTHS, 1):
         names = name if name == "May" else "(?:"+name+"|"+name[:3]+r"\.?"+(r"|Sept\.?" if month == 9 else "")+")"
         dated = r"\b(?:\d{1,2}(?:st|nd|rd|th)?\s+"+names+"|"+names+r"\s+(?:\d{4}|\d{1,2}(?:st|nd|rd|th)?))\b"
+        # A possessive month labels an economic release, without inventing its
+        # day or time. Require release context, not just a possessive name.
+        release_month = (r"\b"+names+r"['’]s\s+(?:(?:CPI|PPI|PCE|JOLTS|jobs|payrolls?|inflation)\s+)?"
+                         r"(?:report|data|figures|reading|release)\b")
         if (re.search(dated, text, re.I)
+                or re.search(release_month, text, re.I)
                 or re.search(r"\b(?:in|of|during|as of|by|for|last|this|next|since|until|on)\s+"+names+r"\b", text, re.I)):
             result.add(Decimal(month))
     return result

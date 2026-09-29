@@ -3,11 +3,20 @@
 import json
 from copy import deepcopy
 from datetime import timedelta
+from html import escape
+from pathlib import Path
 
 import pytest
 
-from quant_company.briefing.contracts import BriefReview, Claim, SourcePlan
-from quant_company.briefing.editor import prompt, revision_bundle, validate_review
+from quant_company.briefing.contracts import (
+    BriefProposal,
+    BriefReview,
+    CalendarEvent,
+    Claim,
+    SourcePlan,
+    item_map,
+)
+from quant_company.briefing.editor import prompt, render, revision_bundle, validate, validate_review
 from quant_company.briefing.inputs import document
 from quant_company.briefing.planning import apply_plan, plan_prompt, required_sources
 from quant_company.briefing.qualification import replay
@@ -133,12 +142,39 @@ def test_review_compression_preserves_exact_quotes_and_raw_proposal():
     request = prompt(bundle(), "review", p)
     payload = json.loads(request.split("BRIEF DATA JSON:\n")[1])
     ref = payload["proposal"]["summary"][0]["evidence"][0]
-    assert payload["evidence_quotes"][ref] == {"source_id": "source-1", "quote": CONTENT}
+    assert payload["evidence_quotes"][ref] == [0, CONTENT]
     parts = payload["documents"][0]["content_parts"]
-    reconstructed = "".join(p if isinstance(p, str) else payload["evidence_quotes"][p["quote_ref"]]["quote"] for p in parts)
+    reconstructed = "".join(p if isinstance(p, str) else payload["evidence_quotes"][p["quote_ref"]][1] for p in parts)
     assert reconstructed == bundle()["documents"][0]["content"]
+    items = item_map(proposal())
+    main = "".join(part if isinstance(part, str) else escape(items[part["item_text"]].text, quote=False)
+                   for part in payload["main_post_preview"])
+    assert main == render(proposal(), bundle())[0][0]
     assert "view" not in payload["main_post_item_ids"] and "fact" in payload["main_post_item_ids"]
     assert p == before
+
+
+def test_unknown_event_time_does_not_require_an_invented_iana_timezone():
+    p = proposal()
+    p.calendar = [CalendarEvent(id="release", title="경제지표 발표", at=None,
+        source_timezone="미국 현지·세부 시간대 미명시", status="time_unconfirmed",
+        note="원문상 발표 예정이며 정확한 시각은 확인되지 않았습니다.",
+        evidence=[{"source_id": "source-1", "quote": CONTENT}])]
+    assert "release" not in validate(p, bundle())
+    assert "시각 미확인" in render(p, bundle())[0][0]
+    p.calendar[0].at = definition().cutoff+timedelta(hours=1)
+    p.calendar[0].status = "scheduled"
+    assert "release" in validate(p, bundle())
+
+
+def test_expanded_real_source_packet_fits_and_keeps_the_third_calendar_in_main():
+    saved = Path(__file__).resolve().parents[1]/"docs/project/evidence/briefing-pipeline-20260929/development-v19-repaired/assessment.json"
+    data = json.loads(saved.read_text())
+    request = prompt(data["bundle"], "review", data["proposal"])
+    payload = json.loads(request.split("BRIEF DATA JSON:\n")[1])
+    assert len(request) <= 88000 and len(payload["documents"]) == 20
+    assert "pce" in payload["main_post_item_ids"]
+    assert "PCE" in render(BriefProposal.model_validate(data["proposal"]), data["bundle"])[0][0]
 
 
 def test_reviewer_can_request_only_frozen_omitted_originals_and_cannot_publish_them_unread():

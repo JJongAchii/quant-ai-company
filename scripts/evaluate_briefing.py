@@ -159,9 +159,9 @@ async def main():
     result = assess(bundle, provider_response(args.writer), provider_response(args.reviewer) if args.reviewer else None,
                     previous=provider_response(args.previous_writer) if args.previous_writer else None,
                     correction_review=provider_response(args.correction_review) if args.correction_review else None)
+    save(args.output/"assessment.json", result)
     if not args.reviewer:
         save(args.output/"review-request.json", request(result["bundle"], "review", result["proposal"]).model_dump(mode="json"))
-    save(args.output/"assessment.json", result)
     if args.prepare_revision and not result["passed"]:
         revised = prepare_revision(bundle, provider_response(args.writer), provider_response(args.reviewer))
         save(args.output/"revise-bundle.json", revised)

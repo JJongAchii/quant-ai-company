@@ -49,6 +49,7 @@ class BriefStore:
         s = self.company.settings
         return fingerprint({"version": FORMAT_VERSION, "validation_version": VALIDATION_VERSION,
                             "selection_version": COVERAGE_VERSION,
+                            "schedule_version": schedule.SCHEDULE_VERSION,
                             "editorial_contract": fingerprint([PLAN, WRITE, REVIEW, PATCH]),
                             "enabled": s.briefing_enabled, "publish": s.briefing_publish_enabled,
                             "analyst_procedure": pack(BRIEFER)["digest"],
@@ -459,4 +460,5 @@ def priority_pending(company):
     with company.db.transaction() as conn:
         return bool(conn.execute("""SELECT 1 FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
             AND state IN ('collecting','planning','writing','reviewing','revising','final_reviewing') AND due_at>=%s AND due_at<=%s LIMIT 1""",
-                                 (policy, at-timedelta(minutes=10), at+timedelta(minutes=50))).fetchone())
+                                 (policy, at-timedelta(minutes=10),
+                                  at+timedelta(minutes=schedule.PREPARATION_MINUTES+schedule.COLLECTION_MINUTES))).fetchone())

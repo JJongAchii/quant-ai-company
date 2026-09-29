@@ -10,6 +10,9 @@ from .contracts import BriefEdition, CalendarOverride
 
 KST = ZoneInfo("Asia/Seoul")
 NY = ZoneInfo("America/New_York")
+SCHEDULE_VERSION = 2
+PREPARATION_MINUTES = 45
+COLLECTION_MINUTES = 20
 
 
 def utcnow():
@@ -51,7 +54,7 @@ def previous(market, day, changes=None):
 def editions(day, channel, owner, changes=None):
     if day.weekday() == 6:
         return []
-    morning = datetime.combine(day, time(7, 30), KST)
+    morning = datetime.combine(day, time(7, 45), KST)
     us_day = morning.astimezone(NY).date()
     us_close = close("US", us_day, changes)
     # Friday's result belongs to Saturday KST, not Monday's daily return.
@@ -59,13 +62,14 @@ def editions(day, channel, owner, changes=None):
     kr_close = close("KR", day, changes)
     result = []
     # Observed clean KRX publication is around 19:24 KST; leave collection/review time after it.
-    evening = max(datetime.combine(day, time(20), KST), kr_close+timedelta(minutes=50)) if kr_close else None
+    lead = PREPARATION_MINUTES+COLLECTION_MINUTES
+    evening = max(datetime.combine(day, time(20, 15), KST), kr_close+timedelta(minutes=lead)) if kr_close else None
     for kind, due in (("am", morning), ("pm", evening)):
         if due is None or (kind == "am" and not (us_session or kr_close or day.weekday() == 0)):
             continue
         result.append(BriefEdition(
             id=stable(f"brief:{channel}:{owner}:{day}:{kind}"), day=day, kind=kind,
-            due_at=due, starts_at=due-timedelta(minutes=50), cutoff=due-timedelta(minutes=30),
+            due_at=due, starts_at=due-timedelta(minutes=lead), cutoff=due-timedelta(minutes=PREPARATION_MINUTES),
             expires_at=due+timedelta(hours=1), us_session=us_session if kind == "am" else None,
             kr_session=day if kr_close else None,
             previous_us_session=previous("US", us_session, changes) if us_session and kind == "am" else None,

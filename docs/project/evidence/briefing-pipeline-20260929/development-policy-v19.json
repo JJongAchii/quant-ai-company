@@ -1,0 +1,38 @@
+{
+  "frozen_before_final_review": "2026-09-29T02:25:58.382328+00:00",
+  "mode": "development_continuation_not_fresh_qualification",
+  "validation_version": 19,
+  "remaining_model_calls": 1,
+  "technical_repairs": [
+    "Lossless quote tuples and reader-preview references; condensed repeated reviewer instructions, with all twelve semantic criteria retained. Collector retrieval timestamps and prior source-request reasons omitted from model input only; originals and publication times retained.",
+    "Only confirmed release times require IANA timezone resolution; date-only time_unconfirmed events keep their original locality without inventing a timezone.",
+    "Possessive English months in release/report context normalize to exact Korean months; no day/time inference. August's JOLTS report now supports 8월. Bare personal names and modal may remain unsupported."
+  ],
+  "all_original_contents_reconstructed": 20,
+  "main_preview_reconstructed_exactly": true,
+  "unselected_candidates_retained": 76,
+  "prompt_chars": 87969,
+  "mechanical_rejections": {},
+  "request_id": "news-brief-eval-c8c5c4b8e139308d9a850f5f50fc1fc9",
+  "request_sha256": "db6aab102ae251e170c4887c0da0a2cafaa55e69f19e896e5606f9cf3d92d177",
+  "files_sha256": {
+    "src/quant_company/briefing/__init__.py": "5b1c5470916d1d6682bea5680c78255d7ee3e2043011043ee728383a23541abf",
+    "src/quant_company/briefing/commands.py": "695070e4bce8749597720286543cd8c9faff938d7f7fb9724dd08bf301846886",
+    "src/quant_company/briefing/contracts.py": "ae7b9b24495f15474d46c26f545d6d4276b8b829909af1847130515b91c85f4d",
+    "src/quant_company/briefing/coverage.py": "6ea638fdc86af479b8332fc800fbe8af1dded98135d4afd791ed476d15e7b2dc",
+    "src/quant_company/briefing/data.py": "8b03e898503e77a76b964bfa07255607fa0049c8da693b8a2ea8d90ab570d095",
+    "src/quant_company/briefing/data_reader.py": "d0c9e41719db033e1c9f7c77656d6a35bc07133ec644c121c2953428f4bccd69",
+    "src/quant_company/briefing/editor.py": "5517863372fe84e8fafe4f7b2abf9c9b0cba4efcea319c0182231552f099a2f8",
+    "src/quant_company/briefing/inputs.py": "9bb49676aa34ae5c89308922b5d3ca48a391a47d7f944bf467587fc67087133a",
+    "src/quant_company/briefing/numeric.py": "de232e0291d67a69477baf732b253d29e3a4b00999c676cdea1fa134b48277eb",
+    "src/quant_company/briefing/planning.py": "0b642ddf3b3103a1d01560385711255ff5f0c4541ce6f6f130cf0e10b1d16b5a",
+    "src/quant_company/briefing/qualification.py": "0bdc5f43f5fdd233ea8dd5ab9dca44dc679d3e904cf406bfbb84e216409b65a3",
+    "src/quant_company/briefing/quality.py": "20cbdc194007ebf73fd690264f81270116138d2db393ef211e6fad14f9878960",
+    "src/quant_company/briefing/runner.py": "40c7c2671cc2223e0f3ca546655a6b117a244362ca58308007ddde7f8c4b169e",
+    "src/quant_company/briefing/schedule.py": "3e3b4871daa4b02b476d8bfc5cec4c0a8600e79f1b5c01a779aaa7125fe5b4de",
+    "src/quant_company/briefing/schema.sql": "9a2288bbb3b031ced516d4e69e1b70ae6d9458226977466cb2dc12f82c4f1e09",
+    "src/quant_company/briefing/store.py": "719aaf74597e886ccedd3abdc18987018380ee584aaec0bad7a49afa64fe1300",
+    "src/quant_company/briefing/workflow.py": "76713c503ed4c414b330f539002cc7384981f485d7fab0a9ae22b577a37fff9b"
+  },
+  "slack": "not_called"
+}

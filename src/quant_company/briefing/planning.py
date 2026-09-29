@@ -20,6 +20,9 @@ Then prioritize material policy changes, geopolitical actions AND opposing devel
 rate/FX/commodity changes, and earnings/industry developments. Include a second article on an event
 when it supplies a distinct baseline, operative detail, denial or contrary evidence. Do not spend slots
 on reprints, routine issuance, local publicity or personal-interest stories while those are missing.
+Prioritize major newly announced corporate transactions over routine fund flows or old incidents. Compare
+event time with publication time: distinguish a new event, new material disclosure about an older event,
+and repeated background. Check after-close developments without treating them as causes of that close.
 For each choice give a short Korean reason naming the distinct information the writer should check.
 Give up to six short Korean editorial priorities as questions to verify, not factual conclusions.
 For AM without a new US session, focus on weekend changes and the next session; do not invent a close.

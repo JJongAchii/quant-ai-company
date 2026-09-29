@@ -157,7 +157,7 @@ class Company:
                 "market_briefing": {"enabled": self.settings.briefing_enabled,
                                     "publish_enabled": self.settings.briefing_publish_enabled,
                                     "display_name": "Analyst", "professional_procedure": "market_brief",
-                                    "owner": "market_brief", "schedule": "07:30 KST; 20:00 KST after collected KRX data",
+                                    "owner": "market_brief", "schedule": "07:45 KST; 20:15 KST after collected KRX data",
                                     "strategy_handoff": "human request only"},
                 "staff_status": "Director only: {employee?: exact employee id or maintainer}. "
                                 "Reads actual training schedule, versioned synthetic assessments and their limits. "

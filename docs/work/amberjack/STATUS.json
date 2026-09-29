@@ -3,24 +3,61 @@
     "id": "chat-improve-analyst-pipeline-20260929",
     "approvedAt": "2026-09-29T00:59:09.807067+00:00"
   },
-  "currentIntent": "INTENT-v14.json",
+  "currentIntent": "INTENT-v15.json",
   "deliverables": {
     "DIAGNOSIS": {
-      "status": "in_progress",
-      "updatedAt": "2026-09-29T00:59:09.807067+00:00"
+      "status": "verified",
+      "updatedAt": "2026-09-29T02:52:11.118156+00:00",
+      "evidence": [
+        "docs/project/ANALYST-PIPELINE-20260929.md",
+        "docs/project/evidence/briefing-pipeline-20260929/input-loss-audit.json",
+        "docs/project/evidence/briefing-pipeline-20260929/independent-final-audit.json"
+      ],
+      "evidenceSha256": {
+        "docs/project/ANALYST-PIPELINE-20260929.md": "3538bf2801abd3f2fdc6f4889bf1e6e658f853268b6479221d4f7fcb54be6453",
+        "docs/project/evidence/briefing-pipeline-20260929/input-loss-audit.json": "cd880c84a3dcfe70640b577a7a60b73a8b11c6521c2dbfadaf69251d1d1197dd",
+        "docs/project/evidence/briefing-pipeline-20260929/independent-final-audit.json": "97dbe1a051401e27c65e734a6480773917bb3069140b253e72ac4c91710b44e4"
+      },
+      "note": "Confirmed Reporter/Analyst path, cached original text loss, source selection and visible fact coverage failures; Quant Scout research curation is not the daily briefing source."
     },
     "PIPELINE": {
-      "status": "in_progress",
-      "updatedAt": "2026-09-29T00:59:09.807067+00:00"
+      "status": "verified",
+      "updatedAt": "2026-09-29T02:52:11.118156+00:00",
+      "evidence": [
+        "docs/project/evidence/briefing-pipeline-20260929/final-validation.json",
+        "docs/project/evidence/briefing-pipeline-20260929/repair-input-audit.json",
+        "docs/project/evidence/briefing-pipeline-20260929/lossless-review-input-audit.json",
+        "docs/project/evidence/briefing-pipeline-20260929/layout-replay-main.txt"
+      ],
+      "evidenceSha256": {
+        "docs/project/evidence/briefing-pipeline-20260929/final-validation.json": "eba12a3bea801f53c66bb9a9207438163a2ffd91227d1a6812a9c86194acb918",
+        "docs/project/evidence/briefing-pipeline-20260929/repair-input-audit.json": "0d5339a1430a43fe6a1619fd66d99ca82da636dd7aadb99822ee2ea7ec1e2b7b",
+        "docs/project/evidence/briefing-pipeline-20260929/lossless-review-input-audit.json": "5be490b0d26e7f9b4978655c4a76ab742fb699ac2884f1d647b57a62c3899ea1",
+        "docs/project/evidence/briefing-pipeline-20260929/layout-replay-main.txt": "ec6cf39887afdfa4eec5c8565d494b193c067680ed666e8864385c5dd72508a9"
+      },
+      "note": "Bounded source selection, retained cached originals, fact-level visible coverage, same-pool supplement in one repair, lossless model projections, all selected calendars visible, and 45-minute preparation implemented. No server deployment."
     },
     "VERIFY": {
-      "status": "in_progress",
-      "updatedAt": "2026-09-29T00:59:09.807067+00:00"
+      "status": "verified",
+      "updatedAt": "2026-09-29T02:52:11.118156+00:00",
+      "evidence": [
+        "docs/project/evidence/briefing-pipeline-20260929/final-validation.json",
+        "docs/project/evidence/briefing-pipeline-20260929/independent-final-audit.json",
+        "docs/project/evidence/briefing-pipeline-20260929/development-final/assessment.json",
+        "docs/project/evidence/briefing-pipeline-20260929/host-preview-status.json"
+      ],
+      "evidenceSha256": {
+        "docs/project/evidence/briefing-pipeline-20260929/final-validation.json": "eba12a3bea801f53c66bb9a9207438163a2ffd91227d1a6812a9c86194acb918",
+        "docs/project/evidence/briefing-pipeline-20260929/independent-final-audit.json": "97dbe1a051401e27c65e734a6480773917bb3069140b253e72ac4c91710b44e4",
+        "docs/project/evidence/briefing-pipeline-20260929/development-final/assessment.json": "4b325bce11219215ebadc257de41d7f476decd25861dbca957b87ecf1620501e",
+        "docs/project/evidence/briefing-pipeline-20260929/host-preview-status.json": "52a10499911f3a67f66083951c90741569f6571546fc206de67c4a357f2e7c28"
+      },
+      "note": "Verification performed, not expert quality achieved: 1365 regression passes and 38 explicit skips; five actual subscription calls, final review reduce with 6/12 checks and independent confirmed defects. Fresh policy content pass, independent market data, five-day timing and real Slack acceptance remain unverified; publication stays disabled."
     }
   },
-  "intentDigest": "9d4763c63479",
+  "intentDigest": "7cf9aaeae71c",
   "schemaVersion": 1,
   "slug": "amberjack",
   "state": "approved",
-  "updatedAt": "2026-09-29T00:59:09.807067+00:00"
+  "updatedAt": "2026-09-29T02:52:11.118156+00:00"
 }

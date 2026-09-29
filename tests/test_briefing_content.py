@@ -71,6 +71,10 @@ def test_bank_name_does_not_masquerade_as_central_bank_and_small_ipo_is_demoted(
 def test_month_named_in_source_can_support_its_exact_korean_month_without_modal_false_positive():
     assert Decimal(7) in numbers("Saudi crude accounted for 34.1% of imports in July.")
     assert Decimal(5) not in numbers("The committee may change its policy.")
+    assert Decimal(8) in numbers("August's JOLTS report forecasts 7.24 million job openings.")
+    assert Decimal(5) in numbers("May’s inflation data will be released later.")
+    assert Decimal(5) not in numbers("May's remarks supported the proposal.")
+    assert Decimal(9) not in numbers("August's JOLTS report forecasts 7.24 million job openings.")
 
 
 @pytest.mark.parametrize("source, translated", [
@@ -391,7 +395,7 @@ def test_main_claim_keeps_links_to_all_its_supporting_sources():
     assert all(d["url"] in parts[0] for d in b["documents"])
 
 
-def test_main_checkpoints_are_short_and_unknown_time_is_labelled_once():
+def test_selected_calendar_events_remain_visible_and_unknown_time_is_labelled_once():
     p = proposal()
     p.calendar = [CalendarEvent.model_validate({
         "id": f"event-{n}", "title": f"행사 {n}", "at": None,
@@ -405,8 +409,8 @@ def test_main_checkpoints_are_short_and_unknown_time_is_labelled_once():
     main, detail = parts[0], "\n".join(parts[1:])
     assert "행사 1" in main and "행사 2" in main
     assert "시장 조건 1" in main and "시장 조건 2" in main
-    assert "행사 3" not in main and "행사 4" not in main and "시장 조건 3" not in main
-    assert all(value in detail for value in ("행사 3", "행사 4", "시장 조건 3"))
+    assert all(f"행사 {n}" in main for n in range(1, 5))
+    assert "시장 조건 3" not in main and "시장 조건 3" in detail
     assert "시각 미확인 · 행사" not in main and "[미확인]" not in main
     assert "추가 확인 사항" in detail and "추가 확인 일정" not in detail
 
