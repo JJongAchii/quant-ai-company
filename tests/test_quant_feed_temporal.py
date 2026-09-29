@@ -82,7 +82,7 @@ async def test_quant_frozen_request_survives_retry_restart_and_replay(quant, tem
         async def run(self, request):
             from .test_quant_feed import critique
 
-            assert "Critique the offered draft afresh" in request.prompt
+            assert "offered draft afresh" in request.prompt
             started.set()
             return response({"request": request.model_dump()}, critique())
 

@@ -2,12 +2,14 @@
 """Scoped Quant editorial release; keep publication off and preserve other workers."""
 
 import argparse
+import contextlib
 import fcntl
 import hashlib
 import importlib.util
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -16,6 +18,7 @@ from pathlib import Path
 STATE = Path("/var/lib/quant-company")
 CURRENT = Path("/opt/quant-company/current")
 SELECTED = ("api", "dispatch", "quant-feed-worker")
+DEDICATED_RUNTIME = "quant-codex-runtime"
 PROTOCOL_PROBE = """
 import hashlib, json
 from quant_company.contracts import ProviderRequest
@@ -102,12 +105,8 @@ def activity():
     )
 
 
-def protocol_preflight(app_image_id):
-    """Compare actual producer/consumer schemas without auth mounts or model calls.
-
-    This operator preserves the shared runtime. A compatible runtime must already
-    be deployed through its separately coordinated, drained release path.
-    """
+def protocol_preflight(app_image_id, runtime_image_id):
+    """Compare staged producer/consumer schemas without credentials or model calls."""
     try:
         consumer = json.loads(run([
             "docker", "run", "--rm", "--network", "none", "--read-only", "--cap-drop=ALL",
@@ -115,15 +114,91 @@ def protocol_preflight(app_image_id):
             "--entrypoint", "python", app_image_id, "-c", PROTOCOL_PROBE,
         ]))
         producer = json.loads(run([
-            "docker", "exec", "quant-company-codex-runtime-1", "python", "-c", PROTOCOL_PROBE,
+            "docker", "run", "--rm", "--network", "none", "--read-only", "--cap-drop=ALL",
+            "--security-opt=no-new-privileges:true", "--pids-limit=32", "--memory=128m",
+            "--entrypoint", "python", runtime_image_id, "-c", PROTOCOL_PROBE,
         ]))
         if (not isinstance(consumer, dict) or set(consumer) != {"quant_brief_v4", "quant_critique_v2"}
                 or not all(isinstance(value, str) and re.fullmatch(r"[a-f0-9]{64}", value)
                            for value in consumer.values()) or consumer != producer):
             raise ValueError("schema_mismatch")
     except (RuntimeError, ValueError):
-        raise ValueError("quant_native_protocol_requires_matching_runtime_before_cutover") from None
+        raise ValueError("quant_native_protocol_requires_matching_staged_images") from None
     return consumer
+
+
+def stage(args, previous, target, journal, helper):
+    """Build only the two changed code images from dependency-identical installed bases."""
+    if target.exists() or journal.exists() or shutil.disk_usage(target.parent).free < 3 * 1024**3:
+        raise ValueError("quant_stage_target_exists_or_disk_headroom_low")
+    archive = Path(args.archive)
+    data = archive.read_bytes()
+    if hashlib.sha256(data).hexdigest() != args.archive_sha256:
+        raise ValueError("quant_stage_archive_digest_mismatch")
+    before = inventory()
+    if "quant-company-quant-codex-runtime-1" in before:
+        raise ValueError("quant_dedicated_runtime_already_installed")
+    target.mkdir()
+    record = {"phase": "staging", "commit": args.commit, "previous": str(previous),
+              "archive_sha256": args.archive_sha256, "images": [], "build_method": "unchanged_dependency_code_update",
+              "service_inventory_before": before, "started_at": time.time()}
+    helper.atomic(journal, json.dumps(record).encode())
+    try:
+        module(previous / "deploy/housing_feed_release.py").unpack(data, target)
+        quant = module(previous / "deploy/quant_feed_release.py")
+        if quant.qdata_tree_digest(previous / "qdata") != args.qdata_tree_sha256:
+            raise ValueError("quant_stage_qdata_tree_mismatch")
+        shutil.copytree(previous / "qdata", target / "qdata")
+        record["qdata_commit"] = json.loads((target / "deploy/qdata-source.json").read_text())["commit"]
+        record["qdata_tree_sha256"] = args.qdata_tree_sha256
+        runtime = json.loads(run(["docker", "inspect", "quant-company-codex-runtime-1"]))[0]
+        app = json.loads(run(["docker", "inspect", "quant-company-api-1"]))[0]
+        runtime_commit = runtime["Config"]["Labels"].get("org.opencontainers.image.revision")
+        if (not re.fullmatch(r"[a-f0-9]{40}", runtime_commit or "")
+                or app["Config"]["Labels"].get("org.opencontainers.image.revision") != args.base
+                or runtime["Image"] != before["quant-company-codex-runtime-1"]["image_id"]
+                or app["Image"] != before["quant-company-api-1"]["image_id"]):
+            raise ValueError("quant_stage_base_image_changed")
+        runtime_source = CURRENT.parent / "releases" / runtime_commit
+        fixed_inputs = ("pyproject.toml", "uv.lock", "deploy/Dockerfile", "deploy/Dockerfile.code-update",
+                        "deploy/entrypoint.py",
+                        "deploy/qdata-source.json")
+        if not runtime_source.is_dir() or any(
+                (target / name).read_bytes() != (base / name).read_bytes()
+                for base in (previous, runtime_source) for name in fixed_inputs):
+            raise ValueError("quant_stage_base_dependencies_changed")
+        expected = quant.source_inventory(target / "src/quant_company")
+        probe = ("import hashlib,importlib.util,json,pathlib;"
+                 "root=pathlib.Path(importlib.util.find_spec('quant_company').origin).parent;"
+                 "print(json.dumps({'quant_company/'+str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() "
+                 "for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts}))")
+        for name, base_image, repository in (("app", app["Image"], "quant-company"),
+                                             ("codex", runtime["Image"], "quant-company-codex")):
+            pinned = f"quant-feed-base-{name}:{base_image.split(':', 1)[1]}"
+            run(["docker", "image", "tag", base_image, pinned])
+            tag = f"{repository}:{args.commit}"
+            run(["docker", "build", "--network=none", "--pull=false", "-f",
+                 str(target / "deploy/Dockerfile.code-update"), "--build-arg", "BASE_IMAGE=" + pinned,
+                 "--build-arg", "RELEASE_COMMIT=" + args.commit, "-t", tag, str(target)])
+            actual = json.loads(run(["docker", "run", "--rm", "--network=none", "--memory=128m",
+                                     "--entrypoint", "python", tag, "-c", probe]))
+            image = json.loads(run(["docker", "image", "inspect", tag]))[0]
+            if (actual != expected or image["Config"]["Labels"].get("org.opencontainers.image.revision") != args.commit
+                    or image["Config"]["Labels"].get("org.quant-company.qdata-revision") != record["qdata_commit"]):
+                raise ValueError("quant_stage_installed_source_or_label_mismatch")
+            record["images"].append({"target": name, "id": image["Id"], "base_id": base_image,
+                                     "source_matches_commit": True})
+            helper.atomic(journal, json.dumps(record).encode())
+        if inventory() != before:
+            raise ValueError("quant_stage_changed_production_services")
+        record.update(phase="staged", staged_at=time.time())
+    except BaseException as exc:
+        record.update(phase="stage_failed", error=type(exc).__name__)
+        raise
+    finally:
+        helper.atomic(journal, json.dumps(record).encode())
+    print(json.dumps({"phase": "staged", "commit": args.commit, "images": record["images"],
+                      "independent_services_preserved": True}), flush=True)
 
 
 def compose(helper, root, *args):
@@ -133,9 +208,10 @@ def compose(helper, root, *args):
     return run([*helper.compose_command(root), "--profile", "data-watch", "-f", str(overlay), *args])
 
 
-def check(before, commit, app_image_id):
+def check(before, commit, app_image_id, runtime_image_id):
     after = inventory()
-    if set(after) != set(before):
+    dedicated = "quant-company-" + DEDICATED_RUNTIME + "-1"
+    if set(after) != set(before) | {dedicated}:
         raise ValueError("container_inventory_changed")
     selected = {"quant-company-" + name + "-1" for name in SELECTED}
     for name, expected in before.items():
@@ -154,8 +230,12 @@ def check(before, commit, app_image_id):
             key: expected[key] for key in ("id", "image_id", "running", "oom", "restarts")
         }:
             raise ValueError("independent_service_changed")
+    runtime = after[dedicated]
+    if (not runtime["running"] or runtime["oom"] or runtime["health"] not in (None, "healthy")
+            or runtime["image_revision"] != commit or runtime["image_id"] != runtime_image_id):
+        raise ValueError("quant_dedicated_runtime_unhealthy")
     return {
-        "selected": list(SELECTED),
+        "selected": [DEDICATED_RUNTIME, *SELECTED],
         "independent_service_ids_preserved": True,
         "publication_enabled": False,
     }
@@ -171,8 +251,9 @@ def cutover(args, previous, target, journal, helper):
     ):
         raise ValueError("quality_release_not_staged")
     app_images = [image["id"] for image in record["images"] if image["target"] == "app"]
-    if len(app_images) != 1:
-        raise ValueError("quality_release_app_image_missing")
+    runtime_images = [image["id"] for image in record["images"] if image["target"] == "codex"]
+    if len(app_images) != 1 or len(runtime_images) != 1:
+        raise ValueError("quality_release_images_missing")
     env = STATE / "config/runtime.env"
     original = env.read_bytes()
     values = dict(
@@ -193,7 +274,7 @@ def cutover(args, previous, target, journal, helper):
     if any(activity().values()):
         raise ValueError("quality_release_activity_not_drained")
     # Never stop a service or write release state before proving compatibility.
-    protocol = protocol_preflight(app_images[0])
+    protocol = protocol_preflight(app_images[0], runtime_images[0])
     # Stop only the Quant consumer first. Its durable workflow may start a final
     # activity between the first idle check and shutdown; inspect it again.
     run(["docker", "stop", "--time", "900", "quant-company-quant-feed-worker-1"])
@@ -230,6 +311,14 @@ def cutover(args, previous, target, journal, helper):
         )
         helper.link(target)
         compose(
+            helper, target, "up", "-d", "--no-deps", "--force-recreate", "--wait", "--wait-timeout", "120",
+            DEDICATED_RUNTIME,
+        )
+        live_protocol = json.loads(run(["docker", "exec", "quant-company-" + DEDICATED_RUNTIME + "-1",
+                                        "python", "-c", PROTOCOL_PROBE]))
+        if live_protocol != protocol:
+            raise ValueError("quant_live_runtime_schema_mismatch")
+        compose(
             helper,
             target,
             "up",
@@ -241,10 +330,10 @@ def cutover(args, previous, target, journal, helper):
             "120",
             *SELECTED,
         )
-        result = check(before, args.commit, app_images[0])
+        result = check(before, args.commit, app_images[0], runtime_images[0])
         for _ in range(2):
             time.sleep(5)
-            result = check(before, args.commit, app_images[0])
+            result = check(before, args.commit, app_images[0], runtime_images[0])
         if any(activity()[key] for key in ("pending_quant_outbox", "sending_outbox")):
             raise ValueError("quality_release_unexpected_outbox_activity")
         record.update(
@@ -256,9 +345,20 @@ def cutover(args, previous, target, journal, helper):
         helper.atomic(journal, json.dumps(record).encode())
         print(json.dumps({"phase": record["phase"], "commit": args.commit, **result}), flush=True)
     except BaseException as exc:
+        try:
+            unresolved = changed and activity()["running_quant_calls"]
+        except Exception:
+            unresolved = changed
+        if unresolved:
+            record.update(phase="intervention_required", error=type(exc).__name__,
+                          reason="new_quant_call_may_have_an_ambiguous_effect")
+            helper.atomic(journal, json.dumps(record).encode())
+            raise
         if changed:
             helper.atomic(env, original)
             helper.link(previous)
+            with contextlib.suppress(Exception):
+                compose(helper, target, "stop", DEDICATED_RUNTIME)
         compose(
             helper,
             previous,
@@ -301,7 +401,7 @@ def main():
         if args.action == "stage":
             if not args.archive or not args.archive_sha256 or not args.qdata_tree_sha256 or journal.exists():
                 raise ValueError("quality_stage_requires_new_exact_inputs")
-            module(previous / "deploy/quant_feed_release.py").stage(args, previous, target, journal, helper)
+            stage(args, previous, target, journal, helper)
         else:
             cutover(args, previous, target, journal, helper)
 

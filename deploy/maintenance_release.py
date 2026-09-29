@@ -67,7 +67,8 @@ def services(root):
     accounts = any(line.strip() == 'MODEL_ACCOUNTS_ENABLED=true'
                    for line in envfile.read_text().splitlines()) if envfile.exists() else False
     return (SERVICES + (['claude-runtime'] if enabled and supported else [])
-            + (['quant-feed-worker'] if quant else []) + (['data-watch-worker'] if data else [])
+            + (['quant-codex-runtime', 'quant-feed-worker'] if quant else [])
+            + (['data-watch-worker'] if data else [])
             + (['housing-feed-worker'] if housing else [])
             + (['account-gateway'] if accounts else []))
 
