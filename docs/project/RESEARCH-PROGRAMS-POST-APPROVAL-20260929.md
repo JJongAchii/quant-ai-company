@@ -52,6 +52,33 @@ account-gateway 등의 컨테이너 ID는 그대로다. 현재 릴리스 포인�
 한다. 운영에서는 과제·미션·예약·과학 시행 0건을 유지했고, 다음 직원 시도가 자동 시작됐다.
 [인용 위치 거부 영수증](evidence/research-programs-20260929/citation-location-rejection.json).
 
+8회차도 같은 인용 위치 오류로 과제 등록 전에 거부됐다. 커밋
+`a7ddf0ec5ee2b7e681dfe1046160140a68be1b82`에서 제안 프롬프트에 페이지 `location`
+필드와 `char:0` 위치 형식을 명시했다. 인용 검증 코드는 유지했고 전체 테스트 1,289건,
+lint, PR 서비스 CI가 통과했다. [검증 영수증](evidence/research-programs-20260929/citation-prompt-validation.json).
+
+이 수정본을 운영에 적용하려던 사전 검사에서 릴리스 포인터가 다른 감사 작업의
+`fac61efe624f843c2edc5aec51b8d1e0c7c989cb`으로 바뀐 것을 발견했다. 검사 단계에서
+중단돼 이 작업의 운영 설정·컨테이너는 변경되지 않았다.
+[안전 중단 영수증](evidence/research-programs-20260929/release-drift-safe-abort.json).
+현재 운영 워커 `d790b2e`의 코드를 포함하도록 소스를 병합한 `6dfbdcc` 후보를 만들었다.
+첫 이미지 빌드는 서버 디스크 공간 부족으로 실패했다. 이번 작업의 미사용 이미지 두 개와
+오래된 빌드 캐시 일부만 정리한 뒤 재빌드가 성공했고, 새 워커 설정 후보의 Codex runtime
+직접 경로를 검증했다. **후보는 아직 운영에 적용되지 않았다.**
+[통합 후보 영수증](evidence/research-programs-20260929/citation-integrated-candidate.json).
+
+9회차도 인용 위치 오류로 거부됐다. 통합 후보를 적용하려던 다음 사전 검사에서도 별도
+감사 릴리스 `5fcd4353b8adab3e3fb6f11fda3f08fef7aea801`이 먼저 활성화돼 변경 전
+중단됐다. 운영 설정과 컨테이너는 이 전환 시도로 변경되지 않았다.
+[두 번째 안전 중단 영수증](evidence/research-programs-20260929/second-release-drift-safe-abort.json).
+현재 다른 배포 브랜치는 새 감사 릴리스와 동일한 인용 안내를 통합 중이다. 이 작업은
+중복 운영 전환을 멈추고 실제 활성 이미지와 연구 기록을 읽기 전용으로 대조한다.
+
+최신 main을 병합한 PR #87의 커밋 `716cbc1`에서 전체 테스트 1,307 통과·13 건너뜀,
+lint와 서비스 CI 성공, 병합 가능 상태를 확인했다. 운영 후보 `6dfbdcc`와 PR HEAD의
+연구 controller·프로그램 controller·배포 경로 파일은 동일하다.
+[통합 검증 영수증](evidence/research-programs-20260929/citation-integrated-validation.json).
+
 배포 설정 회귀 검사는 통과했다. 첫 수정의 전체 `uv run pytest -q` 결과는 1,288 통과·13 건너뜀,
 `uv run ruff check .`도 통과했고 PR #87의 커밋 `0742e88` CI는 성공했다.
 이 수치는 전략 성과나 가설 검증 결과가 아니다.

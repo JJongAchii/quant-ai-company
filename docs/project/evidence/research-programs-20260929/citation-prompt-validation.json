@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "commit": "a7ddf0ec5ee2b7e681dfe1046160140a68be1b82",
+  "change": "Require exact machine-readable citation location keys in the program proposal prompt",
+  "source_verification_logic_changed": false,
+  "commands": [
+    {
+      "command": "uv run pytest -q tests/test_research_programs.py",
+      "passed": 8,
+      "result": "pass"
+    },
+    {
+      "command": "uv run pytest -q",
+      "passed": 1289,
+      "skipped": 13,
+      "warnings": 2,
+      "result": "pass"
+    },
+    {
+      "command": "uv run ruff check .",
+      "result": "pass"
+    }
+  ],
+  "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/87",
+  "service_ci": "SUCCESS",
+  "merge_state": "CLEAN",
+  "production_state_at_validation": "candidate image built; active worker remains 2d2ee42ffc41dabb505020ada896e4d9760a8ab1"
+}

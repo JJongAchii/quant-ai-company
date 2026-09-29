@@ -25,11 +25,27 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/same-attempt-source-continuation.json",
           "sha256": "5b52bbfdd120"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-location-rejection.json",
+          "sha256": "0363480aee63"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/release-drift-safe-abort.json",
+          "sha256": "375bf8998105"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-integrated-candidate.json",
+          "sha256": "5e6e62ea34d2"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/second-release-drift-safe-abort.json",
+          "sha256": "8c1e3fe3bff4"
         }
       ],
-      "note": "Attempt 7 completed original source reads; final typed proposal turn is running. No research task, mission or trial is recorded yet.",
+      "note": "Attempts 7-9 read originals but exact-location citation validation rejected all three. Active worker now follows separate audit release 5fcd435; another deployment branch includes the prompt fix. No program task, mission or scientific trial is recorded.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T01:30:24.180041+00:00"
+      "updatedAt": "2026-09-29T02:18:54.240664+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -68,16 +84,20 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/same-attempt-source-continuation.json",
           "sha256": "5b52bbfdd120"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-integrated-validation.json",
+          "sha256": "c8eb0b63258c"
         }
       ],
-      "note": "Exact-image worker fix is live; attempt 7 completed the original source within the same employee attempt. Merged branch full suite and PR service CI pass.",
+      "note": "Exact worker image and source-read guard live; citation-format guidance candidate and merged PR pass local tests and CI. Guarded cutovers stopped on concurrent release drift.",
       "status": "verified",
-      "updatedAt": "2026-09-29T01:30:24.180041+00:00"
+      "updatedAt": "2026-09-29T02:18:54.240664+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T01:30:24.180041+00:00"
+  "updatedAt": "2026-09-29T02:18:54.240664+00:00"
 }

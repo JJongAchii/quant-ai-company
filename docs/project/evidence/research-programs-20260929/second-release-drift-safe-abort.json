@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "source": "production guarded cutover and read-only reconciliation",
+  "candidate_commit": "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9",
+  "expected_active_release": "fac61efe624f843c2edc5aec51b8d1e0c7c989cb",
+  "guard_error": "release_or_journal_drift",
+  "cutover_journal_created": false,
+  "runtime_backup_created": false,
+  "runtime_or_service_mutated_by_aborted_attempt": false,
+  "observed_active_release": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801",
+  "observed_active_worker_image": "quant-company-autonomous:5fcd4353b8adab3e3fb6f11fda3f08fef7aea801",
+  "observed_runtime_sha256": "cd9ae1675da40453bebd7b952a15c0686f890f3c7b0c51f776e2dd59949e073d",
+  "observed_current_source_has_citation_prompt": false,
+  "related_deployment_branch": "origin/deploy/director-followup-post-citation-20260929",
+  "related_branch_contains_citation_prompt": true,
+  "response": "No additional worker cutover attempted while the related deployment branch is integrating the same prompt."
+}
