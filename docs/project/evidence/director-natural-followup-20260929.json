@@ -7,7 +7,7 @@
     "apiAndSlackSocket": "quant-company:382284512ade2c0750c79494389a0899d2b46688",
     "modelWorker": "quant-company-autonomous:2d2ee42ffc41dabb505020ada896e4d9760a8ab1"
   },
-  "candidateBase": "8fe020f9a8893bedf299d01592e341026e2a69ea",
+  "candidateBase": "4a7e319cea3bb084213b093f868d03bade726955",
   "sourceKinds": {
     "messages": "read-only production PostgreSQL records for the affected project",
     "program": "read-only production PostgreSQL research_programs and research_mission_stages",
