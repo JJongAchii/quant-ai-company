@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "recordedAt": "2026-09-29T00:12:16Z",
-  "updatedAt": "2026-09-29T00:57:28Z",
+  "updatedAt": "2026-09-29T01:00:08Z",
   "state": "activated_then_superseded_by_compatible_release",
   "sourceCommit": "2e1b5c783319c69e384a4a37c79af24a5441c422",
   "reviewPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
@@ -80,6 +80,13 @@
     "mainTaskAndControlGuardsPresent": true,
     "runningAppAndModelWorkerProjectTaskLimitAt005728Z": [0, 0],
     "laterResearchReleaseAlsoUsesUnlimitedDefault": true,
+    "productionAppAndWorkerProjectTaskLimitEnvironmentOverride": "unset",
+    "knownOpenBranchDefaultsAt010008Z": {
+      "pr83": 0,
+      "pr87": 0,
+      "pr86": 40,
+      "pr78": 40
+    },
     "remainingCondition": "Every future deployment candidate must contain this change or an equivalent unlimited setting; deploying a divergent older commit can still restore the cap."
   },
   "validation": {
