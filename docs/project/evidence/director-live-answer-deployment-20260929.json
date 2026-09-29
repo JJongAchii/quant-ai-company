@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "deployedAt": "2026-09-29T06:04:26.489592Z",
+  "approval": "User approved PR #93 deployment in this session",
+  "pr": 93,
+  "approvedSourceCommit": "f2fa96f518b2eb04937e6fd7fc7a86a26b85052c",
+  "integrationBaseAtBuild": "e3e26e9ba968d56cc8b6e2f802a7508b018a4bac",
+  "workerImage": {
+    "tag": "quant-company-autonomous:f2fa96f518b2eb04937e6fd7fc7a86a26b85052c",
+    "id": "sha256:8bf0ee5e4449990b5a3b2f0b758b36eb6d1f84fb787674ecaf4d58665b21715f",
+    "qdataRevision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "previousTag": "quant-company-autonomous:e3e26e9ba968d56cc8b6e2f802a7508b018a4bac",
+    "previousId": "sha256:04b06747dff9e9dff2330b09e1087c6737b23bfa1050e4656192f57f254106b0"
+  },
+  "otherServicesPreserved": {
+    "appRelease": "dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf",
+    "apiAndDispatchImage": "quant-company:dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf",
+    "slackSocketImage": "quant-company:eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+    "quantFeedWorkerImage": "quant-company:dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf",
+    "worker3070Path": "/home/achii/quant-company-qualification/programs-20260929/release-candidates/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/code"
+  },
+  "backup": {
+    "serverArchive": "/var/lib/quant-company/backups/company-20260929T055051Z-e9afd518.tar.gz",
+    "sha256": "19feba19fb38f5501c2e35ec58db5978c505506bebbb531d4fda2a9a507d7ad1",
+    "s3Uri": "s3://quant-company-061039802347-backups/company/company-20260929T055051Z-e9afd518.tar.gz",
+    "s3ObjectBytes": 308933207,
+    "s3ServerSideEncryption": "AES256",
+    "checksumObjectBytes": 107,
+    "backupReleaseCommit": "dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf",
+    "secretsIncluded": false
+  },
+  "cutover": {
+    "changedServices": ["worker"],
+    "runtimeEnvBeforeSha256": "bd187e5da06896353365fd8511a01c333a6b4a310e64d9391481ab1d9ade3547",
+    "runtimeEnvAfterSha256": "f2a99e8577b32178eb1bc0773111a43caf9d39fff652bbddcfaff75f6c2a92b4",
+    "rolesSha256": "95fdee86cc0e59fdf4f68abb4200a582520cfc3cdb801c5c5f44c1a8af544a3c",
+    "researchProfilesSha256": "22a5fd7aa0fcd440730258f3a828720c04bf496ac28846354c84ee81e92d0779",
+    "researchQlabSha256": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
+    "migration": "none; code-only change"
+  },
+  "postCutover": {
+    "worker": "running from approved image",
+    "api": "healthy",
+    "slackSocket": "running",
+    "dispatch": "running",
+    "researchJobsRunningOrUncertainAtCutover": 0,
+    "turnsRunningOrUncertainAtCutover": 0,
+    "deliveredOutboxCountAfterCutover": 1744,
+    "liveNewSlackQuestion": "not yet observed; earlier questions were not replayed"
+  },
+  "localValidation": {
+    "realPostgresFullSuite": "1285 passed, 46 skipped",
+    "ruff": "passed"
+  }
+}
