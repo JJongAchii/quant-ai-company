@@ -1,5 +1,6 @@
 {
   "cause": "Attempt 11 proposal referenced one predecessor mission while the approved program has zero missions.",
+  "ci_checked_head": "e6003f3004ce5101067ff78e59fc69413bbc0f7d",
   "commands": [
     {
       "command": "uv run pytest -q tests/test_research_programs.py",
@@ -20,9 +21,11 @@
   ],
   "commit": "ac44bf5b66b3016021e13c34ffc75b8db215bfc3",
   "image_import_sha256": "1399083b64baa8d243c6ce9c196eb7c699a5229b1c64f2a0116d596dae135f66",
+  "merge_state": "CLEAN",
   "production_activation_at_validation": false,
   "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/87",
   "schema_version": 1,
   "scientific_performance_claims": 0,
+  "service_ci": "SUCCESS",
   "validator_boundary": "Only missions belonging to the program remain valid; no validator change."
 }

@@ -57,11 +57,23 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt11.json",
           "sha256": "e870643a3688"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt12.json",
+          "sha256": "5a997ffc0f55"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-cutover.json",
+          "sha256": "459c316f1935"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-post-check.json",
+          "sha256": "fd0c8587762a"
         }
       ],
-      "note": "Attempt 11 read selected originals, passed citation checks, then failed because it named a predecessor outside this empty program. Attempt 12 started on the prior worker; no task, mission, reservation or scientific trial is recorded.",
+      "note": "Attempt 12 repeated the out-of-program predecessor rejection before task creation. The corrected worker is now active after an idle guarded cutover; attempt 13 is scheduled automatically. No task, mission, reservation or scientific trial is recorded.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T03:10:03.186363+00:00"
+      "updatedAt": "2026-09-29T03:26:19.290272+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -135,17 +147,29 @@
         },
         {
           "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-validation.json",
-          "sha256": "897007909651"
+          "sha256": "b8bc0103abbb"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt12.json",
+          "sha256": "5a997ffc0f55"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-cutover.json",
+          "sha256": "459c316f1935"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-post-check.json",
+          "sha256": "fd0c8587762a"
         }
       ],
-      "note": "The program boundary correctly rejected a predecessor from outside the program. Commit ac44bf5 now provides the exact allowed predecessor IDs and empty-list instruction; 1307 local tests and lint pass, image candidate is built but awaits an idle cutover.",
+      "note": "Commit ac44bf5 passed 1307 local tests, lint and PR service CI. A guarded worker-only cutover activated the explicit allowed predecessor list; readback verified the installed module hash and unchanged other service IDs.",
       "status": "verified",
-      "updatedAt": "2026-09-29T03:10:03.186363+00:00"
+      "updatedAt": "2026-09-29T03:26:19.290272+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T03:10:03.186363+00:00"
+  "updatedAt": "2026-09-29T03:26:19.290272+00:00"
 }

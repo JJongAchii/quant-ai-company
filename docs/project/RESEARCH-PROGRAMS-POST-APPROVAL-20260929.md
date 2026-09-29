@@ -106,9 +106,21 @@ Slack 이벤트·프로그램 활성 상태, 대기 중인 단계, 실행 중인
 실제 PostgreSQL 테스트를 포함한 전체 1,307 통과·13 건너뜀, lint가 통과했다.
 현 워커 `0072b57`를 바탕으로 실행 소스 한 파일만 바꾼 이미지를 만들고, 설치된
 패키지의 import 해시와 공식 ChatGPT용 Codex runtime 직접 경로를 검증했다.
-12:09 KST 현재 후보는 운영에 적용하지 않았으며, 12회차는 기존 워커에서 실행 중이다.
+12:09 KST 후보 준비 시점에는 운영에 적용하지 않았으며, 12회차는 기존 워커에서 실행 중이었다.
 [후보 영수증](evidence/research-programs-20260929/predecessor-overlay-candidate.json),
 [후보 검증](evidence/research-programs-20260929/predecessor-overlay-validation.json).
+
+12회차도 기존 안내에서 논문을 완독하고 인용 검증을 통과한 뒤 같은 선행 미션
+오류로 거부됐다. 제안은 프로그램 밖의 선행 미션 1건을 다시 지정했고 과제·미션·
+예약·과학 시행은 0건을 유지했다.
+[12회차 거부 영수증](evidence/research-programs-20260929/predecessor-rejection-attempt12.json).
+PR #87의 서비스 CI 성공과 병합 가능 상태를 확인했다. 2026-09-29 12:25:01 KST,
+승인 digest·소유자 Slack 이벤트·대기 단계, 실행 중 턴·작업·불확실한 모델 호출 0건을
+재검사하고 **연구 워커 한 개만** `ac44bf5` 이미지로 교체했다. 나머지 서비스의
+컨테이너 ID는 그대로였으며, 새 워커가 설치 패키지에서 수정된 파일 해시를 실제로
+import하는 것을 확인했다. 다음 자동 재시도는 12:29:22 KST 예정이다.
+[전환 영수증](evidence/research-programs-20260929/predecessor-overlay-cutover.json),
+[적용 후 확인](evidence/research-programs-20260929/predecessor-overlay-post-check.json).
 
 최신 main을 병합한 PR #87의 커밋 `716cbc1`에서 전체 테스트 1,307 통과·13 건너뜀,
 lint와 서비스 CI 성공, 병합 가능 상태를 확인했다. 운영 후보 `6dfbdcc`와 PR HEAD의
