@@ -90,8 +90,12 @@ Slack 이벤트·프로그램 활성 상태, 대기 중인 단계, 실행 중인
 [후보 검증](evidence/research-programs-20260929/citation-overlay-validation.json),
 [운영 전환 영수증](evidence/research-programs-20260929/citation-overlay-cutover.json),
 [적용 후 확인](evidence/research-programs-20260929/citation-overlay-post-check.json).
-11:41 KST 현재 과제와 과학 시행은 0건이다. 11회차 자동 재시도 예정 시각은
-11:43:43 KST이며, 검증을 통과한 제안이나 독립 검토 결과는 아직 없다.
+11회차 자동 재시도는 11:43 KST에 새 워커에서 시작됐다. 11:53 KST 읽기 전용
+조회에서는 일곱 개의 고정 모델 요청 모두에 정확한 인용 안내와 `PDF p.6` 예시가
+들어 있었다. 연구자는 재현 보고서와 선택한 논문의 마지막 구간까지 읽었고, 최종
+제안 턴은 실행 중이었다. 과제·미션·예약·과학 시행은 0건이다.
+[11회차 요청·완독 영수증](evidence/research-programs-20260929/citation-guidance-attempt11.json).
+검증을 통과한 제안이나 독립 검토 결과는 아직 없다.
 
 최신 main을 병합한 PR #87의 커밋 `716cbc1`에서 전체 테스트 1,307 통과·13 건너뜀,
 lint와 서비스 CI 성공, 병합 가능 상태를 확인했다. 운영 후보 `6dfbdcc`와 PR HEAD의

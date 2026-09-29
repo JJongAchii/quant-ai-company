@@ -49,11 +49,15 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/citation-overlay-post-check.json",
           "sha256": "70f1b286cd25"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-guidance-attempt11.json",
+          "sha256": "2df7b309c0d4"
         }
       ],
-      "note": "Signed owner approval remains bound to the active program. Attempt 10 failed exact-location citation validation before the worker correction; the corrected worker is live, attempt 11 is scheduled automatically, and no research task, mission, reservation or scientific trial has been recorded.",
+      "note": "Attempt 11 started automatically with verified prompt guidance and read both selected originals to completion. Its final proposal turn is running; no research task, mission, reservation or scientific trial is recorded yet.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T02:41:49.936228+00:00"
+      "updatedAt": "2026-09-29T02:54:42.116629+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -112,16 +116,20 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/citation-overlay-post-check.json",
           "sha256": "70f1b286cd25"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-guidance-attempt11.json",
+          "sha256": "2df7b309c0d4"
         }
       ],
-      "note": "Citation guidance image 0072b57 passed 1307 tests and lint; guarded production cutover replaced only the idle research worker. Readback confirms the imported installed module hash and direct official ChatGPT runtime route.",
+      "note": "Active worker imported the citation guidance fix; production attempt 11 frozen requests all contain the exact citation location instruction and page example. The read guard recorded complete reads of the selected report and paper.",
       "status": "verified",
-      "updatedAt": "2026-09-29T02:41:49.936228+00:00"
+      "updatedAt": "2026-09-29T02:54:42.116629+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T02:41:49.936228+00:00"
+  "updatedAt": "2026-09-29T02:54:42.116629+00:00"
 }
