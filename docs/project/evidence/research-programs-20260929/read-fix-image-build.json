@@ -1,0 +1,13 @@
+{
+  "build_log_sha256": "e07b5a1dc2d8089364e3b89e6c564aa14ca342b9d92082e1dc6fadd9bc2bbfba",
+  "candidate_commit": "2d2ee42ffc41dabb505020ada896e4d9760a8ab1",
+  "controller_sha256": "d62324b9a487aea0a348961f4e0ddc74306da1e85b0427c4b8038f3e46529836",
+  "image": "quant-company-autonomous:2d2ee42ffc41dabb505020ada896e4d9760a8ab1",
+  "image_id": "sha256:4b7468aa1326f7c14d9398b67d48a369124be7dbf6940fef1e61eb3d388e08fe",
+  "observed_at": "2026-09-29T01:09:38.153087+00:00",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "schema_version": 1,
+  "services_recreated": false,
+  "source": "production server build command and image inspection",
+  "state": "worker_image_built_not_active"
+}
