@@ -253,8 +253,8 @@ def cutover(args, previous, target, journal, helper):
         or not target.is_dir()
     ):
         raise ValueError("quality_release_not_staged")
-    app_images = [image["id"] for image in record["images"] if image["target"] == "app"]
-    runtime_images = [image["id"] for image in record["images"] if image["target"] == "codex"]
+    app_images = [image for image in record["images"] if image["target"] == "app"]
+    runtime_images = [image for image in record["images"] if image["target"] == "codex"]
     if len(app_images) != 1 or len(runtime_images) != 1:
         raise ValueError("quality_release_images_missing")
     env = STATE / "config/runtime.env"
@@ -264,20 +264,25 @@ def cutover(args, previous, target, journal, helper):
         for line in original.decode().splitlines()
         if "=" in line and not line.startswith("#")
     )
+    before = inventory()
     if (
-        values.get("RELEASE_COMMIT") != args.base
+        values.get("RELEASE_COMMIT") != before["quant-company-api-1"]["image_revision"]
         or values.get("QUANT_FEED_ENABLED") != "true"
         or values.get("QUANT_FEED_PUBLISH_ENABLED") != "false"
     ):
         raise ValueError("quality_release_environment_changed")
-    before = inventory()
+    if (
+        before["quant-company-api-1"]["image_id"] != app_images[0]["base_id"]
+        or before["quant-company-codex-runtime-1"]["image_id"] != runtime_images[0]["base_id"]
+    ):
+        raise ValueError("quality_release_base_image_changed")
     selected = {"quant-company-" + name + "-1" for name in SELECTED}
     if any(not before[name]["running"] or before[name]["oom"] for name in selected):
         raise ValueError("quality_release_service_not_running")
     if any(activity().values()):
         raise ValueError("quality_release_activity_not_drained")
     # Never stop a service or write release state before proving compatibility.
-    protocol = protocol_preflight(app_images[0], runtime_images[0])
+    protocol = protocol_preflight(app_images[0]["id"], runtime_images[0]["id"])
     # Stop only the Quant consumer first. Its durable workflow may start a final
     # activity between the first idle check and shutdown; inspect it again.
     run(["docker", "stop", "--time", "900", "quant-company-quant-feed-worker-1"])
@@ -333,10 +338,10 @@ def cutover(args, previous, target, journal, helper):
             "120",
             *SELECTED,
         )
-        result = check(before, args.commit, app_images[0], runtime_images[0])
+        result = check(before, args.commit, app_images[0]["id"], runtime_images[0]["id"])
         for _ in range(2):
             time.sleep(5)
-            result = check(before, args.commit, app_images[0], runtime_images[0])
+            result = check(before, args.commit, app_images[0]["id"], runtime_images[0]["id"])
         if any(activity()[key] for key in ("pending_quant_outbox", "sending_outbox")):
             raise ValueError("quality_release_unexpected_outbox_activity")
         record.update(

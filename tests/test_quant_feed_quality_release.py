@@ -100,18 +100,20 @@ def test_stage_builds_only_dependency_identical_app_and_dedicated_runtime(releas
     assert not any(command[:2] == ["docker", "stop"] for command in commands)
 
 
-@pytest.mark.parametrize("failure", [None, "setenv", "protocol"])
+@pytest.mark.parametrize("failure", [None, "pinned", "environment", "base_image", "setenv", "protocol"])
 def test_cutover_recreates_only_selected_services_and_preserves_publication_pause(
     release, monkeypatch, tmp_path, failure
 ):
     fail_setenv = failure == "setenv"
+    old_app_commit = "d" * 40 if failure == "pinned" else "a" * 40
+    env_commit = "c" * 40 if failure == "environment" else old_app_commit
     base, target, state = (tmp_path / name for name in ("base", "target", "state"))
     for path in (base, target, state / "config"):
         path.mkdir(parents=True)
     monkeypatch.setattr(release, "STATE", state)
     env = state / "config/runtime.env"
     env.write_text(
-        "RELEASE_COMMIT=" + "a" * 40 + "\nQUANT_FEED_ENABLED=true\nQUANT_FEED_PUBLISH_ENABLED=false\n"
+        "RELEASE_COMMIT=" + env_commit + "\nQUANT_FEED_ENABLED=true\nQUANT_FEED_PUBLISH_ENABLED=false\n"
     )
     journal = state / "journal.json"
     commit = "b" * 40
@@ -122,8 +124,9 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
                 "commit": commit,
                 "previous": str(base),
                 "qdata_commit": "qdata",
-                "images": [{"target": "app", "id": "new-image"},
-                           {"target": "codex", "id": "new-runtime-image"}],
+                "images": [{"target": "app", "id": "new-image", "base_id":
+                            "wrong-image" if failure == "base_image" else "old-image"},
+                           {"target": "codex", "id": "new-runtime-image", "base_id": "old-runtime-image"}],
             }
         )
     )
@@ -144,8 +147,11 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
             "quant-company-news-worker-1",
             "quant-company-worker-1",
             "quant-company-postgres-1",
+            "quant-company-codex-runtime-1",
         ]
     }
+    rows["quant-company-api-1"]["image_revision"] = old_app_commit
+    rows["quant-company-codex-runtime-1"]["image_id"] = "old-runtime-image"
     commands = []
     linked = []
 
@@ -170,7 +176,7 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
     def setenv(helper, updates):
         current = env.read_text()
         env.write_text(
-            current.replace("RELEASE_COMMIT=" + "a" * 40, "RELEASE_COMMIT=" + updates["RELEASE_COMMIT"])
+            current.replace("RELEASE_COMMIT=" + env_commit, "RELEASE_COMMIT=" + updates["RELEASE_COMMIT"])
         )
         if fail_setenv:
             raise RuntimeError("synthetic environment write failure")
@@ -197,6 +203,13 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
     )
     monkeypatch.setattr(release.time, "sleep", lambda seconds: None)
     args = SimpleNamespace(base="a" * 40, commit=commit)
+    if failure in ("environment", "base_image"):
+        original = env.read_bytes()
+        with pytest.raises(ValueError, match="quality_release_" + failure + "_changed"):
+            release.cutover(args, base, target, journal, helper)
+        assert not probed and not commands and not linked
+        assert env.read_bytes() == original and json.loads(journal.read_text())["phase"] == "staged"
+        return
     if failure == "protocol":
         original = env.read_bytes()
         with pytest.raises(ValueError, match="runtime_protocol_mismatch"):
