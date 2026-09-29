@@ -270,3 +270,34 @@ fresh positive end-to-end source-grounded qualification, a 48-hour operational o
 publication still off, and explicit authorization to resume posting. The compact receipt and
 diagnostic scripts are under `evidence/quant-feed-quality-20260928/`; private full
 subscription and release journals remain on the server.
+
+## Narrow citation correction and independent critique, later 28 September
+
+PR #79 merged an auditable allowance for a single ASCII first-letter capitalization difference
+in an otherwise exact source quotation. Changed words, numbers and ambiguous source locations
+still fail; the Quant policy fingerprint advanced to version 8. The local suite passed 1,177
+tests with 38 skips, Ruff passed, and Linux CI passed. In a network-disabled replay of a saved
+real Two Sigma response, the original draft still failed exact-source validation, while its
+one permitted contract revision passed with one recorded initial-case correction at PDF p.2.
+The rendered card was 1,511 characters.
+
+A new independent real-subscription critic then marked that revision `revise`, **not `pass`**.
+It affirmed direct quantitative-finance scope and substantive research, but requested an exact
+PDF p.3 quote for the AIC/multivariate-fit claim and clearer disclosure that split methodology
+and time-series leakage controls were unreported. The single allowed revision had already been
+used, so the candidate was held with no Slack or document write. The one-off container preserved
+all running company-service identities at its boundary. The source-grounded positive
+end-to-end activation gate remains unmet.
+
+The five-image production preparation was stopped at the disk-safety threshold after four
+images, including the app image, were source-verified. The Claude image was not built; the
+release journal remains `staging`, **not `staged`**, and no service cutover occurred. Concurrent
+Housing work changed the production release to `c54667e2827506d50b4cbfaa63d924f2b69f21ab`;
+the Quant one-off runner detected that change before its first call and stopped. A later exact-base
+runner performed only the independent critique. At 06:12 UTC, collection was enabled,
+publication disabled, the earlier one post remained delivered, and no Quant call was running.
+At approximately 06:15 UTC, disk availability had fallen to 3.6 GiB (96% used) while a separate
+image build was running. No image or cache was pruned by this task. Further Quant builds and
+activation await safe storage headroom, a coordinated Housing-compatible release, a successful
+fresh positive qualification, 48-hour observation and explicit owner approval. Compact evidence
+is in `evidence/quant-feed-initial-case-20260928/`.

@@ -1,0 +1,357 @@
+{
+  "schema_version": 1,
+  "method": "Read-only PostgreSQL projection of qdata dataset_catalog and bounded inspect_dataset receipts; object paths, etags and credentials excluded",
+  "observed_at": "2026-09-28T05:07:14.330558+00:00",
+  "latest_catalog_at": "2026-09-28T05:00:35.813021+00:00",
+  "latest_catalog_ok": true,
+  "dataset_count": 38,
+  "rows": [
+    {
+      "dataset": "binance_usdtm_klines",
+      "date_column": "event_time",
+      "date_meaning": "거래시각",
+      "latest_data_date": "2025-06-30",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "cusip_map",
+      "date_column": null,
+      "date_meaning": "정적 매핑",
+      "latest_data_date": null,
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "reference",
+      "inspection_error": null
+    },
+    {
+      "dataset": "dart_fundamental",
+      "date_column": "effective_dt",
+      "date_meaning": "공시 반영일",
+      "latest_data_date": "2026-07-24",
+      "file_last_modified_date": "2026-08-03",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "ecos",
+      "date_column": "date",
+      "date_meaning": "관측일",
+      "latest_data_date": "2026-09-23",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "fred",
+      "date_column": "date",
+      "date_meaning": "관측일",
+      "latest_data_date": "2026-09-24",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_etf",
+      "date_column": "date",
+      "date_meaning": "거래일",
+      "latest_data_date": "2026-09-23",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_etf_meta",
+      "date_column": "date",
+      "date_meaning": "거래일",
+      "latest_data_date": "2026-09-23",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_etf_profile",
+      "date_column": "asof",
+      "date_meaning": "스냅샷일",
+      "latest_data_date": "2026-09-25",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_flows",
+      "date_column": "date",
+      "date_meaning": "거래일",
+      "latest_data_date": "2026-09-23",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_fundamental",
+      "date_column": "date",
+      "date_meaning": "거래일",
+      "latest_data_date": "2026-09-23",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_index",
+      "date_column": "date",
+      "date_meaning": "거래일",
+      "latest_data_date": "2026-09-23",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_index_fundamental",
+      "date_column": "date",
+      "date_meaning": "거래일",
+      "latest_data_date": "2026-09-23",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_index_master",
+      "date_column": "asof",
+      "date_meaning": "스냅샷일",
+      "latest_data_date": "2026-09-24",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_index_prices",
+      "date_column": "date",
+      "date_meaning": "거래일",
+      "latest_data_date": "2026-09-23",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_prices",
+      "date_column": "date",
+      "date_meaning": "거래일",
+      "latest_data_date": "2026-09-23",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_sector",
+      "date_column": "date",
+      "date_meaning": "거래일",
+      "latest_data_date": "2026-09-23",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_security_continuity_coverage",
+      "date_column": "window_end",
+      "date_meaning": "이력 종료일",
+      "latest_data_date": "2023-12-28",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_security_continuity_events",
+      "date_column": "effective_date",
+      "date_meaning": "이력 사건일",
+      "latest_data_date": "2024-03-27",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_security_continuity_legs",
+      "date_column": "successor_available_date",
+      "date_meaning": "이력 사건일",
+      "latest_data_date": "2024-03-29",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "krx_stock_master",
+      "date_column": "asof",
+      "date_meaning": "스냅샷일",
+      "latest_data_date": "2026-09-23",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "oecd_cli",
+      "date_column": "period",
+      "date_meaning": "기준월",
+      "latest_data_date": "2026-08-01",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "prices",
+      "date_column": "date",
+      "date_meaning": "거래일",
+      "latest_data_date": "2026-09-24",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "source_gap",
+      "inspection_error": null
+    },
+    {
+      "dataset": "sec_13f",
+      "date_column": "filed",
+      "date_meaning": "제출일",
+      "latest_data_date": "2026-05-29",
+      "file_last_modified_date": "2026-08-26",
+      "operator_state": "source_gap",
+      "inspection_error": null
+    },
+    {
+      "dataset": "sec_filings",
+      "date_column": "filed",
+      "date_meaning": "제출일",
+      "latest_data_date": "2026-03-31",
+      "file_last_modified_date": "2026-08-03",
+      "operator_state": "source_gap",
+      "inspection_error": null
+    },
+    {
+      "dataset": "sec_fundamental",
+      "date_column": "filed",
+      "date_meaning": "제출일",
+      "latest_data_date": "2026-03-31",
+      "file_last_modified_date": "2026-08-03",
+      "operator_state": "source_gap",
+      "inspection_error": null
+    },
+    {
+      "dataset": "sec_insider",
+      "date_column": "filed",
+      "date_meaning": "제출일",
+      "latest_data_date": "2026-03-31",
+      "file_last_modified_date": "2026-08-20",
+      "operator_state": "source_gap",
+      "inspection_error": null
+    },
+    {
+      "dataset": "sec_nport",
+      "date_column": "filed",
+      "date_meaning": "제출일",
+      "latest_data_date": "2026-06-30",
+      "file_last_modified_date": "2026-08-26",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "sec_nport_fund",
+      "date_column": "filed",
+      "date_meaning": "제출일",
+      "latest_data_date": "2026-06-30",
+      "file_last_modified_date": "2026-08-26",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "sec_tickers",
+      "date_column": "asof",
+      "date_meaning": "스냅샷일",
+      "latest_data_date": "2026-07-31",
+      "file_last_modified_date": "2026-08-03",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "us_dividends",
+      "date_column": "asof",
+      "date_meaning": "스냅샷일",
+      "latest_data_date": "2026-09-28",
+      "file_last_modified_date": "2026-09-28",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "us_prices",
+      "date_column": "date",
+      "date_meaning": "거래일",
+      "latest_data_date": null,
+      "file_last_modified_date": "2026-09-28",
+      "operator_state": "unreadable",
+      "inspection_error": "parquet_footer_limit"
+    },
+    {
+      "dataset": "us_shortvol",
+      "date_column": "date",
+      "date_meaning": "거래일",
+      "latest_data_date": "2026-09-24",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "source_gap",
+      "inspection_error": null
+    },
+    {
+      "dataset": "us_splits",
+      "date_column": "asof",
+      "date_meaning": "스냅샷일",
+      "latest_data_date": "2026-09-28",
+      "file_last_modified_date": "2026-09-28",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "us_symbols",
+      "date_column": "date",
+      "date_meaning": "스냅샷일",
+      "latest_data_date": "2026-09-25",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "us_ticker_details",
+      "date_column": "asof",
+      "date_meaning": "스냅샷일",
+      "latest_data_date": "2026-09-02",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "us_ticker_events",
+      "date_column": "asof",
+      "date_meaning": "스냅샷일",
+      "latest_data_date": "2026-08-04",
+      "file_last_modified_date": "2026-08-05",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "us_ticker_history",
+      "date_column": "valid_from",
+      "date_meaning": "이력 변경일",
+      "latest_data_date": "2026-09-02",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    },
+    {
+      "dataset": "us_tickers",
+      "date_column": "asof",
+      "date_meaning": "스냅샷일",
+      "latest_data_date": "2026-09-25",
+      "file_last_modified_date": "2026-09-25",
+      "operator_state": "observed",
+      "inspection_error": null
+    }
+  ],
+  "limits": [
+    "Dataset-wide date maximum is not per-instrument or per-series coverage.",
+    "A file modification date is not a trading, observation or filing date.",
+    "An age-only attention state is not a confirmed source publication delay."
+  ]
+}

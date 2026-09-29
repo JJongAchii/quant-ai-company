@@ -40,12 +40,29 @@ API 키·유료 API·모델 호출은 사용하지 않는다. 실제 청약 접�
 기존 피드의 정책 digest가 바뀌지 않도록 공용 `SLACK_ALLOWED_CHANNELS`는 수정하지 않는다.
 이 채널은 분양 알림 수신용이며 대화형 직원의 새 지시 접수 채널로 등록하지 않는다.
 
+### 지도 패널
+
+`HOUSING_MAP_PANEL_ENABLED=true`이면 공고에 주소가 있고 공개 지오코더가 행정구역을
+검증한 경우에만 지도 카드를 함께 게시한다. 카드를 클릭하면 Slack 내부의 움직이는
+OpenStreetMap 지도 미리보기가 열린다. 카드의 **사이드 패널에서 열기**를 누르면
+오른쪽 패널에 지도가 표시된다. 지도 표식은 **행정구역 중심**이며
+아파트 대지의 정확한 좌표가 아니다. 메시지의 공고상 주소와 공식 공고문으로 실제
+위치를 확인한다. 지오코딩이 실패해도 공식 공고 알림은 발송한다.
+
+별도 도메인이나 지도·공공데이터 API 키는 쓰지 않는다. Reporter 앱의 Work Object Previews에서
+`slack#/entities/item` 유형과 `www.openstreetmap.org` 임베드 허용 주소를 등록하고,
+`entity_details_requested` bot 이벤트를 구독한다. 공개 지도는 사용자의 Slack 클라이언트가
+OpenStreetMap에서 직접 읽는다. 운영 시험 메시지에서 카드 클릭·확대·오른쪽 사이드 패널 표시를
+[확인했다](project/HOUSING-FEED-VALIDATION.md). Slack의 iframe 정책이나 OpenStreetMap 응답이
+바뀌면 같은 클릭 검사를 다시 수행한다.
+
 ```dotenv
 HOUSING_FEED_ENABLED=true
 HOUSING_FEED_PUBLISH_ENABLED=false
 HOUSING_FEED_CHANNEL_ID=C_ACTUAL_HOUSING_CHANNEL
 HOUSING_FEED_OWNER_USER=U_ACTUAL_OWNER
 HOUSING_FEED_ALLOWED_CHANNELS=["C_ACTUAL_HOUSING_CHANNEL"]
+HOUSING_MAP_PANEL_ENABLED=false
 ```
 
 ```bash
@@ -59,7 +76,7 @@ uv run --frozen quant-company housing-feed status
 공고를 보존하며 publish 설정이 켜진 경우 발송을 준비한다. `status`로 소스별 성공·실패와
 발송 영수증을 확인한다. 준비한 메시지를 보내려면 `dispatch` 프로세스가 필요하다.
 
-배포 시 **같은 버전의 dispatcher와 housing-feed-worker**를 사용한다. 기존 버전 dispatcher는
+분양 피드 첫 배포 시 **같은 버전의 dispatcher와 housing-feed-worker**를 사용한다. 기존 버전 dispatcher는
 새 메시지 종류의 검증을 지원하지 않으므로 수집·발송 활성화보다 먼저 교체해야 한다.
 Compose의 `housing-feed` profile을 켜면 전용 worker가 실행된다. 기존 dispatcher가
 `company-housing-feed-v1` Temporal workflow를 시작하고, 전용 `-housing-feed` queue에서 실행한다.
@@ -78,6 +95,14 @@ uv run --frozen ruff check .
 테스트 DB는 임시 DB를 생성·삭제할 수 있는 전용 PostgreSQL이어야 한다.
 자동 검사의 HTTP와 Slack 응답은 fixture이며 실제 Slack 게시와 구분한다.
 실제 공개 소스·운영 연결 결과는 `docs/project/evidence`에 기록한다.
+
+지도 패널 업그레이드는 `deploy/housing_panel_release.py`의 `stage`와 `activate`를 사용한다.
+`stage`는 현재 release와 보관된 runtime.env를 검증하고 새 이미지·DB 테이블·공개 지오코더·
+지도 임베드 페이지를 확인한다. `activate`는 dispatcher, housing-feed-worker, slack-socket만
+교체한다. `HOUSING_MAP_PANEL_ENABLED=true`는 이때 영속 설정에 기록된다. 세 서비스와
+다른 서비스의 ID·상태를 대조하고, 실패 시 원래 코드·설정으로 복구한다. 성공 후
+`deploy/housing_panel_preview.py`로 기존 공식 공고 한 건을 명시적인 시험 메시지로
+발송해 실제 Slack 카드·클릭 이벤트·오른쪽 지도 패널을 검증한다.
 
 ### 제한된 운영 배포
 

@@ -17,3 +17,11 @@ CREATE TABLE IF NOT EXISTS housing_feed_publications (
 CREATE TABLE IF NOT EXISTS housing_feed_delivery (
  channel text PRIMARY KEY, next_at timestamptz NOT NULL
 );
+CREATE TABLE IF NOT EXISTS housing_map_details (
+ trigger_id text PRIMARY KEY, event_id text NOT NULL UNIQUE,
+ notice_id text NOT NULL REFERENCES housing_feed_notices(id),
+ channel text NOT NULL, message_ts text NOT NULL, user_id text NOT NULL,
+ status text NOT NULL DEFAULT 'pending', error text,
+ created_at timestamptz NOT NULL DEFAULT now(), started_at timestamptz,
+ expires_at timestamptz NOT NULL, attempts integer NOT NULL DEFAULT 0
+);

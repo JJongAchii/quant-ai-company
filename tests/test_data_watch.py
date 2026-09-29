@@ -136,9 +136,9 @@ async def test_inventory_failure_preserves_previous_presence_and_changed_object_
     assert failed["datasets"][0]["inspection"] == "metadata_checked"
     failed_text = status_text(failed)
     assert "현재 목록 조회 실패" in failed_text
-    assert "아래 숫자는 09/22 09:00 KST 마지막 성공 기록 기준" in failed_text
-    assert "마지막 성공 목록 1개" in failed_text
-    assert "현재 상태를 판단할 수 없습니다" in failed_text
+    assert "아래 날짜와 숫자는 09/22 09:00 KST 마지막 성공 기록 기준" in failed_text
+    assert "한국시장: ETF 2026-09-21" in failed_text
+    assert "이번 목록 조회 실패" in list_text(failed)
     assert rows(watch, "data_watch_incidents")[0]["state"] == "active"
     watch.clock[0] += timedelta(minutes=30)
     item = catalog(watch, etag="new")
@@ -186,29 +186,53 @@ def test_known_qdata_footer_budget_is_reported_as_an_inspection_limit(watch):
     assert "version:" not in incident
 
 
-def test_daily_summary_is_short_and_full_names_are_on_demand():
-    snapshot = {"checked_at": "2026-09-23T02:00:00+00:00",
-        "next_inventory_at": "2026-09-23T02:30:00+00:00",
-        "inventory": {"receipt": {"ok": True}},
-        "datasets": [{"dataset": f"dataset_{index:02d}_with_a_long_name", "inspection": "metadata_checked",
-                      "freshness": {"state": "unregistered"}, "problem": None}
-                     for index in range(37)] + [
-            {"dataset": "us_prices", "inspection": "unchecked", "freshness": {"state": "unregistered"},
-             "problem": "parquet_footer_limit"}],
-        "core_checks": []}
+def test_daily_summary_shows_actual_source_dates_and_the_right_date_axis():
+    from quant_company.data_watch.coverage import dataset_date, observed
+
+    def row(name, column, maximum, *, problem=None, other=None):
+        bounds = {column: {"statistics_complete": True, "max": maximum}, **(other or {})}
+        return {"dataset": name, "date_bounds": bounds, "source": {"last_modified": "2026-09-25T11:00:00Z"},
+                "inspection": "unchecked" if problem else "metadata_checked",
+                "freshness": {"state": "unregistered"}, "problem": problem}
+
+    data = [row("krx_prices", "date", "2026-09-23"),
+            row("prices", "date", "2026-09-24"),
+            row("us_shortvol", "date", "2026-09-24"),
+            row("sec_fundamental", "filed", "2026-03-31", other={
+                "ddate": {"statistics_complete": True, "max": "2215-09-30"}}),
+            row("sec_13f", "filed", "2026-05-29"),
+            row("sec_insider", "filed", "2026-03-31"),
+            row("us_dividends", "asof", "2026-09-28", other={
+                "ex_date": {"statistics_complete": True, "max": "2030-12-13"}}),
+            row("us_prices", "date", None, problem="parquet_footer_limit")]
+    snapshot = {"checked_at": "2026-09-28T04:51:00+00:00",
+                "next_inventory_at": "2026-09-28T05:00:00+00:00",
+                "inventory": {"receipt": {"ok": True}, "checked_at": "2026-09-28T04:30:00+00:00"},
+                "datasets": data, "core_checks": []}
     summary = status_text(snapshot)
     listing = list_text(snapshot)
-    assert len(summary) < 1000 and len(listing) < 3000
-    assert "*데이터 현황 · 확인 필요 1건*" in summary
-    assert "*지금 상태* 데이터 전체가 최신인지 아직 판단할 수 없습니다." in summary
-    assert "현재 목록 38개: 파일 정보 확인 37개, 미확인 1개" in summary
-    assert "2 MiB 검사 한도" in summary and "파일 손상" in summary
-    assert "최신성: 전체 판정 불가" in summary and "데이터별 갱신 기준이 없습니다" in summary
-    assert "*필요한 조치*" in summary and "읽기 한도 보완" in summary
-    assert "갱신 시각 기준 정하기" in summary
-    assert "dataset_36_with_a_long_name" not in summary
-    assert "dataset_36_with_a_long_name" in listing and "us_prices" in listing
-    assert "11:00 KST" in summary and "11:30 KST" in summary
+    assert len(summary) < 3000 and len(listing) < 3000
+    assert "공개분 미반영 5건 · 날짜 미확인 1건" in summary
+    assert "한국시장: 주식 2026-09-23" in summary
+    assert "09/24~27 추석 휴장" in summary
+    assert ("미국 일별: 미국 ETF·주가 2026-09-24, 미국 전종목 미확인, "
+            "FINRA 공매도량 2026-09-24") in summary
+    assert "sec_fundamental: 제출일 2026-03-31" in summary
+    assert "us_prices: 거래일 미확인" in summary and "2 MiB" in summary
+    assert "FINRA가 9/25분을 공개한 뒤에도" in summary
+    assert "2026 Q2 공개본이 레이크" in summary
+    assert "SEC 2026년 6~8월 13F 공개본이 레이크" in summary
+    assert "SEC 분기 Form 3·4·5의 2026 Q2 공개본이 레이크" in summary
+    assert "09/28 13:30 KST 성공" in summary
+    assert "파일 교체 2026-09-25" in listing and "sec_fundamental 제출일 2026-03-31" in listing
+    assert dataset_date(data[3]) == date(2026, 3, 31)
+    assert dataset_date(data[6]) == date(2026, 9, 28)
+    assert observed(data[0], snapshot["checked_at"])["state"] == "observed"
+    assert observed(data[1], snapshot["checked_at"])["state"] == "source_gap"
+    assert observed(data[3], snapshot["checked_at"])["state"] == "source_gap"
+    assert observed(data[4], snapshot["checked_at"])["state"] == "source_gap"
+    assert observed(data[5], snapshot["checked_at"])["state"] == "source_gap"
+    assert observed(data[0], "2026-09-28T11:01:00+00:00")["state"] == "source_gap"
 
 
 async def test_claims_survive_restart_and_stale_lease_is_rejected(watch):

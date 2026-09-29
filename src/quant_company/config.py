@@ -74,6 +74,7 @@ class Settings(BaseSettings):
     housing_feed_channel_id: str = ""
     housing_feed_owner_user: str = ""
     housing_feed_allowed_channels: list[str] = Field(default_factory=list)
+    housing_map_panel_enabled: bool = False
     quant_feed_enabled: bool = False
     quant_feed_publish_enabled: bool = False
     quant_feed_channel_id: str = ""
@@ -88,7 +89,8 @@ class Settings(BaseSettings):
     staff_review_daily_limit: int = Field(default=2, ge=1, le=12)
     company_max_task_turns: int = Field(default=8, ge=1, le=30)
     company_max_depth: int = Field(default=3, ge=0, le=5)
-    company_max_project_tasks: int = Field(default=40, ge=1, le=500)
+    # Zero disables the project-wide task quota.
+    company_max_project_tasks: int = Field(default=0, ge=0, le=500)
     company_model_timeout_seconds: int = Field(default=960, ge=10, le=1800)
     fixture_mode: bool = False
 

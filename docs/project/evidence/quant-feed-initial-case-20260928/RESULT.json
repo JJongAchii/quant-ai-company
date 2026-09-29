@@ -1,0 +1,68 @@
+{
+  "evidence_kind": "real_saved_response_revalidation_and_new_subscription_critique",
+  "date": "2026-09-28",
+  "source_pr": 79,
+  "merged_commit": "9ef85902c0c5ff7aa323a1853809d3f065398c23",
+  "local_tests": {"passed": 1177, "skipped": 38, "ruff": "passed"},
+  "policy_sha256": "be0fa83b4e57c3dbb2ae297d8711d29aba1b47552d3290d0967735a4cf145030",
+  "saved_source_receipt_sha256": "26959229a2a8dd400da6fa9e853f58dfbf4a42b6ff980acd1e2d9259c5e852ef",
+  "release_preparation": {
+    "corrected_source_archive_sha256": "8b941215f58dcd83b95b7474c8caf57d0995005a7d24153005d29e3547da4d8d",
+    "first_archive_failure": "release_archive_roots; failed journal and empty target retained separately",
+    "phase": "staging_interrupted_at_disk_safety_threshold",
+    "source_verified_images": ["app", "autonomous-research", "codex", "maintenance"],
+    "claude_image_built": false,
+    "complete_release_staged": false,
+    "service_cutover": false,
+    "current_release_at_qualification": "c54667e2827506d50b4cbfaa63d924f2b69f21ab"
+  },
+  "offline_saved_response_revalidation": {
+    "document_id": "a7dc910cf962c50bddc6763d8ad0d04aa209dda009c9caaaf85dbefb3ac65600",
+    "initial_review": "rejected_by_exact_source_contract",
+    "one_allowed_contract_revision": "source_validated",
+    "card_characters": 1511,
+    "source_corrections": [
+      {"kind": "initial_case_quote_match", "evidence_index": 1, "location": "PDF p.2"}
+    ],
+    "network": false,
+    "slack_writes": false,
+    "document_writes": false
+  },
+  "new_independent_subscription_critique": {
+    "request_id": "quant-feed-regime-revision-critic-98e52ac90df0201ad999d15266531d9422d5cdfd",
+    "request_state": "validated",
+    "disposition": "revise",
+    "direct_quant_scope": true,
+    "substantive_research": true,
+    "original_sufficient": true,
+    "claims_supported": false,
+    "limitations_honest": true,
+    "dates_authors_verified": true,
+    "relevance_and_value": true,
+    "issues": [
+      "AIC and multivariate-fit claim needs an exact supporting quotation and location from PDF p.3",
+      "replace the vague missing-split caveat with explicit split-method and time-series leakage-control omissions"
+    ],
+    "one_revision_limit_exhausted": true,
+    "slack_writes": false,
+    "document_writes": false,
+    "production_service_ids_preserved_at_call_boundary": true,
+    "current_release_unchanged_at_call_boundary": true
+  },
+  "final_read_only_observation": {
+    "checked_at_utc": "2026-09-28T06:12:18.673906+00:00",
+    "quant_collection_enabled": true,
+    "quant_publication_enabled": false,
+    "quant_delivered_posts": 1,
+    "quant_running_calls": 0,
+    "quant_document_states": {"held": 102, "preview": 4, "queued": 1, "ready": 328, "rejected": 40}
+  },
+  "capacity_observation": {
+    "checked_at_utc_approx": "2026-09-28T06:15:31+00:00",
+    "filesystem_use_percent": 96,
+    "filesystem_available_gib_approx": 3.6,
+    "separate_image_build_observed_running": true,
+    "images_or_caches_removed": false
+  },
+  "conclusion": "The narrow citation normalization works, but the independent critic did not pass the fresh positive brief. No Quant publication or full production cutover is authorized. Disk headroom and independently owned Housing release integration require coordination before further builds."
+}

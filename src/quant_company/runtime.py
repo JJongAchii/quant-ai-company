@@ -306,7 +306,11 @@ async def dispatch_main(settings=None):
     company = Company(settings)
     client = await connect(settings)
     outbox = SlackOutbox(company, SlackIngress(settings, company).credentials)
+    from .housing_feed.panel import HousingMapPanel
+
+    panel = HousingMapPanel(company, outbox.credentials)
     while True:
         await dispatch_once(client, company)
+        await panel.send_one()
         await outbox.send_one()
         await asyncio.sleep(1.1)
