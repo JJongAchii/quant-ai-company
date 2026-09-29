@@ -8,40 +8,44 @@
     "ACTIVATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/quant-feed-publication-pause-20260923.json",
-          "sha256": "2f00981488df"
+          "path": "docs/project/evidence/quant-feed-structural-20260929/RESULT.json",
+          "sha256": "2f6fe99ce773"
+        },
+        {
+          "path": "docs/project/evidence/quant-feed-structural-20260929/handoff-observation.json",
+          "sha256": "f5b9024ed088"
         }
       ],
-      "note": "Publish gate false, original post retained and no new deliveries after 20m. Scoped release, real subscription preview, explicit resumption and 48h observation pending.",
+      "note": "Collection remains enabled; publication disabled and original post retained. No production cutover. Installed runtime only supports agent_decision, so matched runtime/consumer rollout, a fresh positive qualification, 48h observation and explicit publication resumption remain pending.",
       "status": "in_progress",
-      "updatedAt": "2026-09-23T08:07:44.459736+00:00"
+      "updatedAt": "2026-09-29T03:48:57+00:00"
     },
     "QUANT_FEED": {
       "evidence": [
         {
           "path": "docs/project/quant-feed-implementation.md",
-          "sha256": "7f5a643e22a8"
+          "sha256": "951a16e939aa"
         }
       ],
-      "note": "Quant Scout publication paused after generic AI-governance false positive; scoped research gate and readable card implemented but not deployed.",
+      "note": "Native Quant output, lossless source-span binding, joint evidence, separate technical repair and editorial revision, consistent evidence-gap criteria and runtime compatibility guard implemented. Remaining prose/evidence revision convergence is not solved; code remains undeployed.",
       "status": "in_progress",
-      "updatedAt": "2026-09-23T08:07:35.958091+00:00"
+      "updatedAt": "2026-09-29T03:48:57+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/quant-feed-publication-pause-20260923.json",
-          "sha256": "2f00981488df"
+          "path": "docs/project/evidence/quant-feed-structural-20260929/RESULT.json",
+          "sha256": "2f6fe99ce773"
         }
       ],
-      "note": "Production pause and continued collection verified; deterministic institutional basis gate added. CI and live quality preview pending.",
+      "note": "Full v16 local tests: 1308 passed/46 skipped; native/Quant focused: 183 passed/1 skipped; later deployment guard: 8 passed; Ruff and final-code Linux CI 36511874627 passed. Seven private real-subscription trials (31 new calls) retained; negative controls rejected, no fresh positive passed. No live Slack validation claimed.",
       "status": "in_progress",
-      "updatedAt": "2026-09-23T08:07:40.065803+00:00"
+      "updatedAt": "2026-09-29T03:48:57+00:00"
     }
   },
   "intentDigest": "c402037885c5",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-23T08:07:44.459736+00:00"
+  "updatedAt": "2026-09-29T03:48:57+00:00"
 }

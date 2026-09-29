@@ -356,3 +356,60 @@ the disposable image and its scoped builder were then removed, leaving about 15 
 The version-10 code passed local tests/Ruff and GitHub service CI, but remains undeployed and
 unqualified. Further review needs the provider fault reconciled and a genuinely new request
 series, then a passing positive and 48-hour publication-off observation before owner approval.
+
+## Structural diagnosis and repair, 29 September
+
+The owner's request was to identify whether the blocker was Quant Scout itself,
+document processing, or another component, then improve the responsible path.
+The confirmed technical defects were the nested generic company output contract,
+unnecessary clipping of uneven pages, model-written exact quotations, and technical
+quote repair consuming the sole content revision. Quant now uses direct typed
+output; the service creates the safe artifact wrapper, redistributes the unchanged
+42,000-character input budget, and resolves exact quotations from immutable source
+span IDs. A claim may bind multiple spans. Technical repair and editorial revision
+have separate bounded budgets; failed drafts and field-specific feedback survive.
+Generic company/news wire formats and old request digests remain compatible.
+
+The real trials also exposed inconsistent treatment of qualified missing evidence,
+optional wording, and the authors' claims of simulation realism versus actual
+market-data validation. The shared writer/critic policy now distinguishes these
+without relaxing false-number, causal-skill, tradability or direct-quant-scope gates.
+The concise Korean card retains its 2,400-character cap and explicitly states the
+extracted-text evidence boundary. This is curation, not local strategy reproduction.
+
+Seven private development trials used 31 actual subscription calls, with no new
+Docker images or Slack posts. The latest fresh v16 trial rejected the old generic
+Robeco article and completed review, independent critique, one revision and final
+critique without format or source-resolution failures. However, its positive was
+**still held**: a critic-requested four-span substitution removed support for another
+retained result, and final criticism requested narrower validation-gap wording.
+The remaining processing defect is the separately editable prose/evidence mapping
+and a non-convergent free-form revision path. No further same-policy retry, manual
+pass, erased failure, model switch or budget reset was used. A source-backed
+sentence representation and dependency-aware edits are the next design target;
+that replacement is **not implemented or qualified** in this checkpoint.
+
+At source `94b4281`, the full local suite passed 1,308 tests (46 skipped); focused
+native output/Quant/audit-session checks passed 183 (one skipped), and Ruff passed.
+A subsequent deployment-only guard at `2782abe` passed eight tests: before any
+service stop or release-state write, it compares actual producer/consumer schema
+hashes and refuses a mismatched runtime. These tests use simulated model/Slack
+responses; the private subscription trials above are distinct real checks.
+Linux service CI `36511874627` passed on final code `2782abe`: 1,348 passed,
+44 skipped and one live test deselected (7m49s).
+
+At 02:20:42 UTC, the Quant worker was still `12398af`, collection was enabled,
+publication disabled, one old post remained and there were no running Quant calls,
+pending Quant outbox entries or preview containers. The shared runtime exposed only
+the legacy `agent_decision` contract. The production baseline changed independently
+to `5fcd435` during v16, so that trial's service/release-preservation checks failed
+honestly; no production worker or release link was changed by this task. Available
+disk was 6.15 GiB and memory 1.96 GiB at the final observation. No coordinated native
+runtime/consumer release, positive editorial qualification, elapsed 48-hour
+observation or publication resumption is claimed. Detailed diagnosis, immutable
+receipt hashes and read-only operational probes are in
+`evidence/quant-feed-structural-20260929/`.
+The 03:48:57 UTC handoff readback again confirmed publication off, collection on,
+one old post and no preview containers; one natural Quant review was running.
+The separately advanced baseline was `ac44bf5`, with the same old Quant worker
+and legacy-only runtime. This task did not recreate either service.

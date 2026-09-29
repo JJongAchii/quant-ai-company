@@ -4,14 +4,21 @@
     "v8 deterministic quote repair consumed the single editorial revision and discarded the failed draft",
     "v9 independent critique found unsupported interpretation across multiple brief fields",
     "v10 stopped before positive review at the generic nested AgentDecision output boundary; the precise invalid field is unknown",
-    "equal per-page allowances clipped uneven originals even when their total text fit the context budget"
+    "equal per-page allowances clipped uneven originals even when their total text fit the context budget",
+    "model-written literal quotations repeatedly changed PDF layout or inserted ellipses",
+    "single-span evidence could not express claims jointly supported by adjacent passages",
+    "criticism conflated qualified evidence gaps, optional phrasing, and authors' realism claims with substantive accuracy failures"
   ],
   "changes": [
     "Quant-only direct structured response with service-owned action wrapping; legacy provider requests unchanged",
     "redistribute original page budget without unnecessary clipping",
     "one technical repair plus one editorial revision, preserving failed drafts and field-specific feedback",
     "deterministic arXiv original-date check and field-addressed independent critique",
-    "case-level qualification outcomes and request IDs bound to model, effort, output contract, policy and prompt"
+    "case-level qualification outcomes and request IDs bound to model, effort, output contract, policy and prompt",
+    "v13 source-span selection: the service resolves exact quotes and locations instead of asking the model to copy them",
+    "v14 distinguish qualified evidence gaps and optional suggestions from material errors",
+    "v15 jointly bind up to four immutable source spans per claim and forbid same-policy judge retries",
+    "v16 distinguish validation types by actual data and test design, not authors' generic claims of realism"
   ],
   "verification": [
     "real PostgreSQL transitions, full regression suite, real Temporal replay where available",
