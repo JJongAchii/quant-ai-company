@@ -96,12 +96,16 @@
         },
         {
           "path": "docs/project/FIRST-TASK-DATA-GAP-20260929.md",
-          "sha256": "b645a9c5e9d4"
+          "sha256": "28298643ac5a"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/etf-input-contract-readback.json",
+          "sha256": "349b95934d5d"
         }
       ],
-      "note": "One literature-grounded task was registered and independently assessed. Data evidence was blocked and director chose wait; no mission, reservation or scientific trial exists. A newly reviewed literature source started another proposal stage; the specific data evidence gap is documented.",
+      "note": "Exact prepared ETF JSON files match the approved hashes and pass bounded schema/calendar checks. This does not independently prove source publication timing, point-in-time universe or execution; data review remains blocked, director chose wait, and no mission or scientific trial exists.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T03:55:48.641393+00:00"
+      "updatedAt": "2026-09-29T03:58:53.665718+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -207,5 +211,5 @@
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T03:55:48.641393+00:00"
+  "updatedAt": "2026-09-29T03:58:53.665718+00:00"
 }
