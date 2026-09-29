@@ -822,6 +822,18 @@ def test_arxiv_date_and_clipped_context_are_explicit_in_editor_prompt():
     assert "arXiv date metadata is incomplete or conflicting" in prompt(bundle, "review")
 
 
+def test_editorial_validation_types_depend_on_design_not_authors_validation_word():
+    # Prompt regression only; semantic model accuracy is checked separately on real originals.
+    for stage in ("review", "revision", "critique"):
+        rules = prompt({}, stage)
+        assert "internal simulation diagnostics" in rules
+        assert "do not erase an actual empirical comparison" in rules
+        assert "authors' word 'validate' alone does not establish a market-data" in rules
+    rules = prompt({}, "critique")
+    assert "data or test design that contradicts the statement" in rules
+    assert "adding another equivalent author assertion is optional" in rules
+
+
 def test_confirmed_arxiv_original_date_is_checked_without_silent_rewriting():
     bundle = {"metadata": {"publisher": "arXiv", "url": "https://arxiv.org/abs/2609.12345",
                            "citation_date": ["2026/09/01"], "citation_online_date": ["2026/09/01"]},

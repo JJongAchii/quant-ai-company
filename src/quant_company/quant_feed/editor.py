@@ -27,6 +27,13 @@ institutional analysis with concrete market evidence and methodology. Generic op
 practices are not substantive research. Other markets are allowed only with honest transfer conditions.
 Distinguish peer review, working papers, commercial research and hypotheses.
 An author-reported backtest is NOT a locally reproduced or tradable result. Code availability is NOT replication.
+Distinguish an author's claim of realism or validation, internal simulation diagnostics, comparison with observed
+market data, held-out evaluation, and independent reproduction. These are different evidence types, not synonyms.
+Describe the actual data and test design before assigning a validation type. Qualitative resemblance to stylized
+facts, a citation to an empirical study, or the authors' word 'validate' alone does not establish a market-data
+test, external validation or independent reproduction. Conversely, do not erase an actual empirical comparison
+just because it is in-sample or author-conducted. Attribute qualitative/realism claims as claims, not proven
+external validation. Keep these distinctions consistent across the brief, including its limitations.
 Empirical claims need market, sample period, baseline, information timing, validation/split methodology,
 costs/turnover and limitations. If costs, borrow, impact, capacity, splits, multiple-testing correction or delistings
 cannot be established, say '제공 원문에서 확인되지 않음' (or '미기재' under the displayed evidence_scope).
@@ -121,6 +128,10 @@ def prompt(bundle, stage):
             "numbers, causality, predictive skill, tradability or guarantees remain MATERIAL even in those fields. "
             "Respect the displayed evidence_scope: qualified gaps do not require a quotation proving absence. "
             "If a supposedly missing detail IS disclosed in the supplied spans, that is still a material error. "
+            "For a material objection to a validation/evidence-gap statement, identify the actual disclosed "
+            "data or test design that contradicts the statement; an author's generic validation/realism claim "
+            "alone is not counterevidence. If the draft already attributes qualitative similarity honestly, "
+            "adding another equivalent author assertion is optional, not a material omission. "
             "Do not demand an unchanged or already-correct field be revised." if stage == "critique" else
             "Repair only the deterministic validation issues in previous_critique. The failed draft is supplied; "
             "preserve its supported content and any earlier editorial corrections. Do not introduce new claims."
