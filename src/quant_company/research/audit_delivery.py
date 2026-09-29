@@ -99,6 +99,8 @@ def _progress(packets):
 
 
 def prepare_packet(company, conn, row, turn, instructions):
+    from ..staff.packs import employee_pack
+
     packets = _packets(conn, row)
     progress = _progress(packets)
     audit = row["context"]["audit"]
@@ -152,7 +154,8 @@ def prepare_packet(company, conn, row, turn, instructions):
         "Carry forward unresolved findings, causal links and source path/offset references from previous_notes. "
         "Record conflicts and missing evidence; do not turn partial coverage into a pass. Your review completes "
         "only this packet. For phase=final, use this session's reviewed packets, cumulative notes and re-supplied "
-        "resident_evidence to write the final audit. " + instructions + MARKER
+        "resident_evidence to write the final audit. " + instructions + "\n"
+        + employee_pack("validator") + MARKER
     )
     prompt = prefix + _json(data)
     if len(prompt) > 90000:
