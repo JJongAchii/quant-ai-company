@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "source": "production PostgreSQL repeatable-read read-only transactions",
+  "observed_at": "2026-09-29T01:36:07.043862+00:00",
+  "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+  "stage_id": "85f6e5a3-1d37-5a98-81b3-b25ea221633a",
+  "attempt": 7,
+  "stage_state": "waiting",
+  "stage_error": "Citation does not occur at the specified original location",
+  "retry_at": "2026-09-29T01:38:51.884886+00:00",
+  "proposal_mode": "novel_hypothesis",
+  "proposal_envelope": "etf_strategy",
+  "proposal_source_count": 2,
+  "citation_count": 7,
+  "exact_quotes_present_in_raw_source": 7,
+  "report_source": {
+    "has_pages": false,
+    "citation_count": 4,
+    "submitted_locations": "narrative report paths",
+    "required_location_form": "char:<decimal offset>"
+  },
+  "paper_source": {
+    "has_pages": true,
+    "citation_count": 3,
+    "submitted_locations": "page labels with added headings or notes",
+    "available_page_location_form": "PDF p.<page number>"
+  },
+  "research_tasks": 0,
+  "missions": 0,
+  "reservations": 0,
+  "scientific_trials": 0,
+  "conclusion": "The exact-location citation gate rejected the proposal after full source reads; no research task was committed."
+}

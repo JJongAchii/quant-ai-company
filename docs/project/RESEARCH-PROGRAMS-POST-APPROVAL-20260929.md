@@ -46,6 +46,12 @@ account-gateway 등의 컨테이너 ID는 그대로다. 현재 릴리스 포인�
 실행 중이었고, 연구 과제나 과학 시행은 여전히 0건이었다.
 [같은 시도 원문 완독 영수증](evidence/research-programs-20260929/same-attempt-source-continuation.json).
 
+완독 뒤 나온 과제 제안은 원문 위치 검증에서 거부됐다. 7개 인용 문구는 원문 문자열에
+있었지만, 모델이 페이지 필드의 정확한 값 대신 설명식 위치를 적었다. 보고서 원문은
+`char:<offset>`, 페이지가 있는 논문은 `PDF p.6`처럼 원문 `location` 필드 그대로여야
+한다. 운영에서는 과제·미션·예약·과학 시행 0건을 유지했고, 다음 직원 시도가 자동 시작됐다.
+[인용 위치 거부 영수증](evidence/research-programs-20260929/citation-location-rejection.json).
+
 배포 설정 회귀 검사는 통과했다. 첫 수정의 전체 `uv run pytest -q` 결과는 1,288 통과·13 건너뜀,
 `uv run ruff check .`도 통과했고 PR #87의 커밋 `0742e88` CI는 성공했다.
 이 수치는 전략 성과나 가설 검증 결과가 아니다.
