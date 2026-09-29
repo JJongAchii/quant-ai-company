@@ -1,0 +1,34 @@
+{
+  "asOfUtc": "2026-09-29T04:46:52Z",
+  "mode": "read-only production status and source-contract inspection; no model or backtest execution",
+  "missionId": "4462aff3-c7fe-5e66-a003-4aca2e8f3330",
+  "stageId": "e6d49c02-b55f-57ff-833d-ba5b4fcfecfe",
+  "heldAttempt": 37,
+  "heldTurnId": "c11e49a6-1839-5089-8ff3-585eca3687b9",
+  "heldState": "waiting",
+  "holdReason": "token_efficiency_remediation",
+  "deliveryVersion": null,
+  "heldTurnResponsePresent": false,
+  "heldTurnRuntimeReceiptPresent": false,
+  "heldTurnAccountCallState": "auth",
+  "attempts30Through37": "Each blocked before its first model response; no per-request runtime receipt found in the mounted durable jobs directory.",
+  "currentPrimaryCodexLoginProbe": "Logged in using ChatGPT",
+  "storedPrimaryAccountAuthentication": "needs_login",
+  "lastCompletedAuditAttempt": 29,
+  "lastCompletedAuditVerdict": "unverified",
+  "lastCompletedAuditStageError": "stage_contract_rejected: Replay validation failed: independent_audit_not_passed",
+  "unresolvedFindings": [
+    "Historical per-session first collection time and revision vintages are absent, so the FLUC_RT and classification values available at each signal time are unproved.",
+    "The open fill uses the same day's adj_factor; the package does not show that the adjustment could be reconstructed from information published before the open."
+  ],
+  "localSourceContract": {
+    "path": "src/quant_company/research/reference/krx-etf-source-contract.json",
+    "sha256": "861dadaa80513c21109302990754efe6f8de123b0c9e9c176ef9cce2078d28cb",
+    "knownLimitation": "Historical backfill files do not contain the original per-session collection timestamp or a full revision-vintage archive."
+  },
+  "qdataApiObservation": "load_krx_etf_prices and load_krx_etf_meta expose trade-date panels; they do not expose historical collection/revision vintages.",
+  "decision": "keep-held",
+  "providerChargeLimit": "Receipt absence and auth fault do not establish a completed model response. The original request remains blocked and is not replayed.",
+  "researchResumeCondition": "Acquire source-time vintage and pre-open adjustment evidence for the frozen inputs, or approve and execute a causally redesigned scientific trial before a new audit. Recheck the selected account state before any inference.",
+  "performanceReported": false
+}
