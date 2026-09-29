@@ -7,7 +7,8 @@
     "apiAndSlackSocket": "quant-company:382284512ade2c0750c79494389a0899d2b46688",
     "modelWorker": "quant-company-autonomous:2d2ee42ffc41dabb505020ada896e4d9760a8ab1"
   },
-  "candidateBase": "8fe020f9a8893bedf299d01592e341026e2a69ea",
+  "candidateBase": "fac61efe624f843c2edc5aec51b8d1e0c7c989cb",
+  "integrationNote": "The fix was integrated on top of the already deployed audit and token-accounting release after a concurrent production change; the earlier PR remains the focused review of the fix.",
   "sourceKinds": {
     "messages": "read-only production PostgreSQL records for the affected project",
     "program": "read-only production PostgreSQL research_programs and research_mission_stages",
