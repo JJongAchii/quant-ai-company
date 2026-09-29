@@ -351,6 +351,8 @@ def parse_result(request: ProviderRequest, process: ProcessResult, quota_retry_s
                 token_usage[key] = value
         phase = "thread_id"
         thread_ids = [event.get("thread_id") for event in events if event.get("type") == "thread.started"]
+        if len(thread_ids) > 1:
+            raise ValueError("Ambiguous thread identity")
         thread_id = thread_ids[0] if thread_ids else None
         if thread_id is not None and (not isinstance(thread_id, str) or not re.fullmatch(r"[\w-]{1,128}", thread_id)):
             raise ValueError("Invalid thread ID")
