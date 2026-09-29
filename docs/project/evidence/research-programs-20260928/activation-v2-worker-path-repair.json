@@ -1,0 +1,14 @@
+{
+  "candidate_commit": "382284512ade2c0750c79494389a0899d2b46688",
+  "corrected_unit_sha256": "b2c5ef5fb8333f337e12d29c063c2f9bcf380b739a24e89f512b22e9aec991bf",
+  "corrected_working_directory": "/home/achii/quant-company-qualification/programs-20260929/release-candidates/382284512ade2c0750c79494389a0899d2b46688/code",
+  "final_live_verification": "activation-v2-final-worker.json",
+  "first_start_at": "2026-09-28T23:48:22.620747+00:00",
+  "first_start_error": "systemd EXIT_CHDIR (ExecMainStatus=200)",
+  "first_start_unit_sha256": "614bce85b0f17f43494a5362ea4379c1895eddea658061da1d942f18aa6d484e",
+  "first_start_working_directory": "/home/achii/quant-company-qualification/autonomous-20260921/release-candidates/382284512ade2c0750c79494389a0899d2b46688/code",
+  "repaired_at": "2026-09-28T23:49:14.289117+00:00",
+  "schema_version": 1,
+  "scientific_trials_started": 0,
+  "state": "worker_systemd_path_reconciled"
+}

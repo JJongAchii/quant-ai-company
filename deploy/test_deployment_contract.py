@@ -132,7 +132,8 @@ def test_account_gateway_overlay_preserves_research_code_pin_and_auth_boundary(t
                                                       "model-accounts.compose.yaml"))["services"]
     worker, gateway, model = (services[name] for name in ("worker", "account-gateway", "codex-runtime"))
     assert worker["image"] == pin
-    assert worker["environment"]["MODEL_RUNTIME_URL"] == "http://account-gateway:8080"
+    assert worker["environment"]["MODEL_ACCOUNTS_ENABLED"] == "true"
+    assert worker["environment"]["MODEL_RUNTIME_URL"] == "http://codex-runtime:8080"
     assert "COMPANY_CODE_COMMIT" not in worker["environment"]  # Inherited truthfully from the pinned image.
     assert gateway["environment"]["MODEL_RUNTIME_URL"] == "http://codex-runtime:8080"
     assert {s["source"] for s in gateway["secrets"]} == {"database_password", "temporal_api_key", "model_runtime_token"}
