@@ -4,7 +4,6 @@ import json
 import sys
 from pathlib import Path
 
-
 receipt = json.loads(Path(sys.argv[1]).read_text())
 views = []
 for call in receipt.get("calls", []):
