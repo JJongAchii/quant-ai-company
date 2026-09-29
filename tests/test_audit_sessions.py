@@ -4,9 +4,11 @@
 import json
 from dataclasses import replace
 
+import httpx
 import pytest
 
 from quant_company.contracts import ProviderFault, ProviderRequest, ProviderSession
+from quant_company.providers.client import RuntimeClient
 from quant_company.providers.codex_runner import atomic_json
 
 from .test_codex_runtime import fake_codex, runner_for  # noqa: F401 -- shared subprocess fixture
@@ -15,6 +17,22 @@ from .test_codex_runtime import fake_codex, runner_for  # noqa: F401 -- shared s
 def request(identity, previous=None, session="audit-01"):
     return ProviderRequest(request_id=identity, model="gpt-6-astra", reasoning_effort="max", prompt="Synthetic audit.",
                            session=ProviderSession(id=session, previous_request_id=previous))
+
+
+async def test_stateless_wire_requests_remain_compatible_with_pinned_runtimes():
+    sent = []
+
+    def respond(incoming):
+        value = json.loads(incoming.content)
+        sent.append(value)
+        return httpx.Response(200, json={"request_id": value["request_id"], "provider": "codex",
+                                        "decision": {"say": "Synthetic", "status": "complete"}})
+
+    client = RuntimeClient("http://fixture", "synthetic-token", transport=httpx.MockTransport(respond))
+    await client.run(ProviderRequest(request_id="ordinary", model="gpt-6-astra", prompt="Synthetic"))
+    await client.run(request("audit-start"))
+    assert "session" not in sent[0]
+    assert sent[1]["session"] == {"id": "audit-01", "previous_request_id": None}
 
 
 async def test_explicit_session_survives_restart_and_never_forks(fake_codex):
