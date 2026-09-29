@@ -17,14 +17,16 @@
 단독 `상태` 명령은 모델 사용이 막힌 동안에도 즉시 조회되며 프로그램 단계도 표시한다.
 이전 질문을 자동 재전송하지 않는다.
 
-검증은 로컬 실제 PostgreSQL에서 전체 1,261건 통과·45건 건너뜀, 변경 경로
-집중 검사 28건 통과, 전체 Ruff 린트 통과다. Slack과 모델 응답은 시험 입력으로
-검증했으며 변경 후 실제 Slack 답변은 아직 확인되지 않았다.
+최종 합본의 검증은 로컬 실제 PostgreSQL에서 전체 1,279건 통과·46건 건너뜀,
+변경 경로 집중 검사 28건 통과, 전체 Ruff 린트 통과다. 실제 3070의 합성 ETF
+sandbox 두 단계와 결과 소비 검사도 통과했다. Slack과 모델 응답은 시험 입력으로
+검증했으며 변경 후 실제 Slack 자연어 답변은 다음 사용자 메시지를 기다린다.
 
 운영 반영은 [지속형 연구 배포·복구 절차](../runbooks/autonomous-research.md)에 따라
-새 PR과 정확한 release 명세를 검토한 뒤 수행한다. 현재 운영 release는 이 수리를
-포함하지 않는다. 활성화 시 앱·Slack 수신부·모델 worker와 연구 worker의 기존
-커밋 고정을 함께 확인하고, 실제 Slack 후속 질문에 대한 총괄의 문장형 답변을
-읽어 검증한다.
+완료됐다. 앱·Slack 수신부·모델 worker·3070 연구 worker는
+`eec5e2326dc5ecfcfe8bc7a98840afec0820242a`로 실행 중이다. 운영 DB와 Codex
+runtime은 교체하지 않았다. 이전 질문은 재전송하지 않았으며, 다음 실제 Slack 질문의
+문장형 답변은 별도로 확인해야 한다.
 
-근거: [사건·테스트 영수증](evidence/director-natural-followup-20260929.json).
+근거: [사건·테스트 영수증](evidence/director-natural-followup-20260929.json),
+[운영 배포 영수증](evidence/director-natural-followup-release-20260929.json).

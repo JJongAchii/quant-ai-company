@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-09-29T04:22:55Z",
+  "state": "deployed_runtime_verified",
+  "scope": "research-center director natural owner progress questions",
+  "focusedReviewPr": "https://github.com/JJongAchii/quant-ai-company/pull/90",
+  "deployedCompanyCommit": "eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+  "sourceBranch": "deploy/director-followup-post-citation-20260929",
+  "priorLiveCommit": "ac44bf5b66b3016021e13c34ffc75b8db215bfc3",
+  "previousImages": {
+    "apiSlackDispatch": "quant-company:382284512ade2c0750c79494389a0899d2b46688",
+    "modelWorker": "quant-company-autonomous:ac44bf5b66b3016021e13c34ffc75b8db215bfc3",
+    "codexRuntime": "quant-company-codex:d790b2ecf203b63a76425b8b2703c9d10250ff44"
+  },
+  "includedConcurrentChanges": [
+    "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9",
+    "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801",
+    "ac44bf5b66b3016021e13c34ffc75b8db215bfc3"
+  ],
+  "companyGitBundleSha256": "4f828f6c2780e50637bcc11abe79d79e946a8719767c619fd86ecc8e0a596523",
+  "companySourceTarSha256": "142631b8c8d8bac5065a47ce25d06032626cb4ff0334dfef53f5671124d0cce0",
+  "qdataCommit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "qdataArchiveSha256": "8bb50549a923f3ec39bb1e6ffce2ac182ed41d368275614e55f60686707a138c",
+  "qlabCommit": "37abfceb07f5b684d7c3210548fecef156e3f9fc",
+  "serverResearchProfilesSha256": "22a5fd7aa0fcd440730258f3a828720c04bf496ac28846354c84ee81e92d0779",
+  "serverResearchQlabSha256": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
+  "workerAdaptiveProfileSha256": {
+    "kr-etf-monthly-python-v1": "0c65eef6214b835fe07b13fc165e2915baa9cdbf113a595c46561e5f14dd3b80",
+    "kr-etf-research-v2": "5d780fe9ea6777319319c00f15778585b5a600e6ced532a51d835f59099c9afe",
+    "kr-stock-research-v2": "7871b7f3b4e05e7e98562ac0c173e1edbe5234f1303eb291565c59691d74339f"
+  },
+  "backup": {
+    "archive": "company-20260929T040850Z-3e2c397b.tar.gz",
+    "sha256": "d3772ffbeab6e28b80b57a95bb8fc50dd0a56ee14ec92583ade8c0dbb4089c19",
+    "manifestReleaseCommit": "382284512ade2c0750c79494389a0899d2b46688",
+    "s3Uploaded": true,
+    "includesSecrets": false
+  },
+  "server": {
+    "currentSymlinkCommit": "eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+    "apiSlackDispatchImage": "quant-company:eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+    "modelWorkerImage": "quant-company-autonomous:eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+    "codexRuntimePreserved": "quant-company-codex:d790b2ecf203b63a76425b8b2703c9d10250ff44",
+    "postgresContainerIdPreserved": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+    "runtimeEnvSha256": "fba399a93293cbd36e034a9f9a19abbaf526630567c1662be7c3f66f762699c2",
+    "rolesSha256Unchanged": "95fdee86cc0e59fdf4f68abb4200a582520cfc3cdb801c5c5f44c1a8af544a3c",
+    "apiHealthy": true,
+    "slackSocketWorkerDispatchRunning": true
+  },
+  "worker3070": {
+    "activeCompanyCommit": "eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+    "activeConfigSha256": "23920eaaaa415ac1e2c2ddbe918f908955de20a54223b9b04a1a76644da5deef",
+    "activeUnitSha256": "f34d4b1694e8cda60228fa623a7a8c673a9e1764ddd3ccb7582054668d7f6d96",
+    "serviceActive": true,
+    "previousCommitRegistered": "382284512ade2c0750c79494389a0899d2b46688"
+  },
+  "validation": {
+    "fullSuiteRealPostgres": "1279 passed, 46 skipped",
+    "ruff": "passed",
+    "actual3070SyntheticEtfSandbox": "passed; both phases and strict consumer; no scientific trial",
+    "productionImportProbe": "natural follow-up routes to answer; bare status remains control",
+    "realSlackNaturalFollowupAfterRelease": "pending next owner message"
+  },
+  "currentProgramAtObservation": {
+    "state": "active",
+    "stage": "program_data",
+    "stageState": "waiting",
+    "stageActor": "data",
+    "taskStates": {"proposed": 1, "waiting": 1},
+    "childMissions": 0
+  },
+  "priorMessagesReplayed": false,
+  "cutoverReceiptOnServer": "/var/lib/quant-company/releases/manual-eec5e23/cutover.json"
+}

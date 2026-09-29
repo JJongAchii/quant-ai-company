@@ -2,16 +2,16 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v5.json",
-  "state": "director_natural_followup_release_prepared",
+  "state": "director_natural_followup_deployed_runtime_verified",
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/90",
   "deliverables": {
     "DIAGNOSIS": {"status": "completed"},
     "APPLICATION": {"status": "completed", "integratedBase": "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9", "concurrentWorkerCommitIncluded": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801", "latestConcurrentReleaseIncluded": "ac44bf5b66b3016021e13c34ffc75b8db215bfc3"},
-    "VALIDATION": {"status": "completed", "focusedRealPostgresTests": 28, "lint": "passed"},
+    "VALIDATION": {"status": "completed", "focusedRealPostgresTests": 28, "fullSuitePassed": 1279, "fullSuiteSkipped": 46, "actual3070SyntheticSandbox": "passed", "lint": "passed"},
     "REVIEW": {"status": "completed", "pr": "https://github.com/JJongAchii/quant-ai-company/pull/90"},
-    "LIVE_CHECK": {"status": "pending", "reason": "Integrated release is being qualified for production cutover"}
+    "LIVE_CHECK": {"status": "runtime_verified", "deployedCommit": "eec5e2326dc5ecfcfe8bc7a98840afec0820242a", "realSlackAnswer": "pending next owner message"}
   },
-  "operationalStatus": "Natural owner progress questions still need the integrated company release on the app and model worker; prior messages are not replayed.",
-  "evidence": "../../project/evidence/director-natural-followup-20260929.json",
+  "operationalStatus": "App, Slack socket, model worker and 3070 research worker run the integrated release. Previous questions were not replayed; the next owner question will provide the real Slack answer check.",
+  "evidence": "../../project/evidence/director-natural-followup-release-20260929.json",
   "previousIntent": "INTENT-v4.json"
 }
