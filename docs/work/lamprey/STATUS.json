@@ -73,11 +73,35 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/predecessor-guidance-attempt13.json",
           "sha256": "75839fc5b43e"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/first-task-independent-review.json",
+          "sha256": "0fd3c3fb25e4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/first-task-data-assessment.json",
+          "sha256": "a1e46b92dcb0"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/first-task-final-decision.json",
+          "sha256": "17d2f9a1cf22"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/first-task-wait-new-evidence.json",
+          "sha256": "9713eda8945e"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/new-literature-trigger.json",
+          "sha256": "29c002f78701"
+        },
+        {
+          "path": "docs/project/FIRST-TASK-DATA-GAP-20260929.md",
+          "sha256": "b645a9c5e9d4"
         }
       ],
-      "note": "Attempt 13 began on the corrected worker, read the selected originals completely and is preparing its final proposal. No task, mission, reservation or scientific trial is recorded yet.",
+      "note": "One literature-grounded task was registered and independently assessed. Data evidence was blocked and director chose wait; no mission, reservation or scientific trial exists. A newly reviewed literature source started another proposal stage; the specific data evidence gap is documented.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T03:41:39.893831+00:00"
+      "updatedAt": "2026-09-29T03:55:48.641393+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -168,16 +192,20 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/predecessor-guidance-attempt13.json",
           "sha256": "75839fc5b43e"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/first-task-independent-review.json",
+          "sha256": "0fd3c3fb25e4"
         }
       ],
-      "note": "The active worker uses the new installed module. Attempt 13 frozen model requests include the exact empty allowed predecessor list and instruction; the selected report and paper were fully read.",
+      "note": "The live corrected worker produced a validated first task with seven citations and zero predecessor missions; independent data and director stages then executed. The code and CI gates passed.",
       "status": "verified",
-      "updatedAt": "2026-09-29T03:41:39.893831+00:00"
+      "updatedAt": "2026-09-29T03:55:48.641393+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T03:41:39.893831+00:00"
+  "updatedAt": "2026-09-29T03:55:48.641393+00:00"
 }
