@@ -44,8 +44,49 @@
     "disk_available_bytes": 4013797376,
     "memory_available_kib": 1960816
   },
+  "post_cutover_backup": {
+    "started_at": "2026-09-29T05:50:50Z",
+    "initiated_by_this_task": false,
+    "purpose": "consistent company database and receipt backup",
+    "writers_stopped_observed_at": "2026-09-29T05:52:04Z",
+    "backup_process_gone_by": "2026-09-29T06:01:24Z",
+    "all_services_running_observed_at": "2026-09-29T06:01:34Z",
+    "quant_revision_unchanged": true,
+    "service_ids_unchanged": true,
+    "oom_and_restarts_in_new_quant_services": 0,
+    "backup_upload_success_verified": false,
+    "recovered_disk_available_bytes": 3829059584,
+    "recovered_memory_available_kib": 2054556
+  },
+  "natural_production_review": {
+    "first_call_at": "2026-09-29T05:59:56Z",
+    "final_critique_completed_at": "2026-09-29T06:09:30Z",
+    "completed_stages": ["review", "repair", "critique", "revision", "critique"],
+    "transport_or_commit_errors": 0,
+    "final_document_state": "held",
+    "final_critique_disposition": "revise",
+    "reason_summary": "Two material overstatements remained: a missing trading-cost check was generalized from clipped excerpts to the whole original, and documented event-time alignment was described too broadly as unverified.",
+    "new_slack_writes": 0,
+    "total_historic_publications": 1,
+    "same_candidate_retry_or_manual_override": false
+  },
+  "capacity_remediation": {
+    "low_disk_observed_at": "2026-09-29T06:16:48Z",
+    "low_disk_available_bytes": 2250145792,
+    "active_docker_builds_found": false,
+    "scope": "Unused build cache in Quant-only builder quant-feed-75f1b100ab76; no Docker images, containers, volumes, receipts or backups removed.",
+    "first_24_hour_prune_reclaimed_bytes_approx": 5891000,
+    "quant_builder_prune_reclaimed_bytes_approx": 7633000000,
+    "post_prune_observed_at": "2026-09-29T06:20:45Z",
+    "post_prune_disk_available_bytes": 9869406208,
+    "quant_collection_enabled": true,
+    "quant_publication_enabled": false,
+    "quant_worker_and_runtime_running": true,
+    "quant_worker_and_runtime_oom_or_restarts": 0,
+    "note": "A separately owned general worker changed its image/ID after the backup; Quant service images and IDs stayed fixed. Pruned caches are reproducible by a later build."
+  },
   "remaining_gates": [
-    "Observe the new production code with publication disabled for a real 48 hours after cutover; earliest completion is 2026-10-01T05:42:03Z if stable.",
+    "The intervening backup stopped writers. Restart the conservative 48-hour publication-off observation at the first all-running readback, 2026-09-29T06:01:34Z; earliest completion is 2026-10-01T06:01:34Z if stable.",
     "Recheck quality, activity, disk, memory, OOM, receipts and independent services; do not infer a live model call or Slack delivery from simulated checks.",
     "Request explicit owner approval before enabling Quant Scout publication. Do not delete or edit the existing Robeco post without separate authorization."
   ]

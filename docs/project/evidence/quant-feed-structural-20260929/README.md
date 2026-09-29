@@ -177,7 +177,37 @@ legacy contract for unrelated workers. Disk free was 4,013,797,376 bytes and
 available memory 1,960,816 KiB. This is a **publication-off production preview**,
 not a live Slack delivery or an elapsed 48-hour stability result.
 
-The earliest 48-hour check is 2026-10-01 05:42:03 UTC (14:42:03 KST), provided
-the new code and service state remain stable throughout. Recheck quality and
-operational evidence then obtain explicit owner approval before enabling
-`#quant-feeds` posting. The historic Robeco post remains untouched.
+An independently initiated consistent backup started at 05:50:50 UTC. Its normal
+writer-pause procedure stopped Quant, news and other services; the 05:52:04 readback
+therefore did **not** establish uninterrupted service. The backup process was gone
+by 06:01:24 and a 06:01:34 readback found every service running again with the
+same IDs and images, no new Quant OOM/restart, publication still off and one old
+post. The backup's remote upload success was not independently verified here.
+Conservatively restart the 48-hour observation from that all-running readback:
+earliest check 2026-10-01 06:01:34 UTC (15:01:34 KST), if stable.
+
+The resumed natural Quant lane completed five real subscription stages through
+final critique without transport or database-commit errors. It held the candidate
+after one revision: two material statements still overstated what the clipped
+excerpts establish about trading costs and what the original already says about
+event-time alignment. This was a relevant Quant paper, but the quality gate did
+not let the overstatements through. No Slack message was added and the candidate
+was not force-retried or manually approved. The compact production receipt is in
+`RESULT-v18.json`; the full original/model records remain private on the host.
+
+After the elapsed observation, recheck quality and operational evidence and obtain
+explicit owner approval before enabling `#quant-feeds` posting. The historic Robeco
+post remains untouched.
+
+At 06:16:48 UTC, another task had changed the general worker image/ID while Quant
+remained on its deployed images. Free disk had fallen to 2,250,145,792 bytes
+(98% used). The latest local backup archive was about 295 MB; Docker reported
+substantial reclaimable build cache. With no active build command, we pruned only
+the unused cache of the Quant-specific `quant-feed-75f1b100ab76` builder. The
+24-hour-limited pass recovered about 5.9 MB; the scoped full unused-cache pass
+recovered about 7.633 GB. It did not remove Docker images, containers, volumes,
+backups or model receipts. At 06:20:45 UTC, disk free was 9,869,406,208 bytes;
+Quant collection, the dedicated runtime, news and other services were running,
+publication was off, and the one historic post remained. A future build may need
+to regenerate the removed cache. This cleanup did not interrupt the Quant worker
+or reset the post-backup observation clock.
