@@ -198,6 +198,15 @@ Codex 런타임은 다시 올라왔다. 종료 원인은 이 읽기 전용 조�
 04:45 UTC 전환 사전 검사에서는 director의 Slack 후속 답변 턴 1건이 실행 중이라
 적용 전에 중단됐다. 이 검사로 운영 설정이나 컨테이너가 변경되지는 않았다.
 [안전 보류 영수증](evidence/research-programs-20260929/unread-source-cutover-held.json).
+후속 답변들이 끝난 04:53 UTC에는 승인 digest·서명된 소유자 이벤트·대기 상태,
+실행 중 턴·단계·작업·불확실한 모델 호출 0건과 배포 잠금 해제를 재확인했다.
+**연구 워커 한 개만** `cd6d293` 이미지로 교체했고, 다른 서비스 컨테이너 ID는
+유지됐다. 적용 후 설치 패키지에서 수정된 `controller.py` 해시가 실제로 import되고
+공식 ChatGPT용 Codex runtime 직접 경로가 유지됨을 확인했다. 04:54 UTC에
+프로그램은 계속 `active`, 두 과제는 모두 `waiting`, 미션·예약·과학 시행은 0건이다.
+[전환 영수증](evidence/research-programs-20260929/unread-source-overlay-cutover.json),
+[설치 코드 확인](evidence/research-programs-20260929/unread-source-overlay-post-check.json),
+[프로그램 읽기 확인](evidence/research-programs-20260929/program-post-unread-source.json).
 
 13:24 KST에는 승인된 ETF 입력을 고정 qdata API와 현재 S3 객체로 대조했다.
 당시 20거래일 기준 cohort, 835거래일의 8,350개 원시 시가·종가·거래대금 행은

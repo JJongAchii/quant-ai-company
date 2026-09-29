@@ -133,11 +133,27 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/unread-source-cutover-held.json",
           "sha256": "df5cb4a98b16"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-cutover.json",
+          "sha256": "ece9ca787115"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-post-check.json",
+          "sha256": "1dd3b8408bec"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/program-post-unread-source.json",
+          "sha256": "265d135cf0f3"
+        },
+        {
+          "path": "docs/project/RESEARCH-PROGRAMS-POST-APPROVAL-20260929.md",
+          "sha256": "cc5082ebc7d9"
         }
       ],
-      "note": "Signed owner program remains active. Two evidence-grounded ETF tasks reached independent data assessment and director wait; no mission, reservation or scientific trial exists. Pinned qdata readback found current source drift and an execution-method mismatch. Worker service continuity was restored.",
+      "note": "Signed owner program is active. Two literature-grounded ETF tasks passed proposal validation, received independent blocked data assessments, and were held by the director. The frozen ETF inputs were checked against pinned qdata; publication provenance and task/profile execution compatibility remain unresolved. Zero missions, reservations and scientific trials.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T04:50:56.366197+00:00"
+      "updatedAt": "2026-09-29T04:54:52.965400+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -252,16 +268,28 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/unread-source-cutover-held.json",
           "sha256": "df5cb4a98b16"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-cutover.json",
+          "sha256": "ece9ca787115"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-post-check.json",
+          "sha256": "1dd3b8408bec"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/program-post-unread-source.json",
+          "sha256": "265d135cf0f3"
         }
       ],
-      "note": "One-file same-attempt unread-source continuation passed local PostgreSQL tests, full suite, lint and PR CI. Candidate image/config are staged; production cutover was held because a director answer turn was running.",
-      "status": "in_progress",
-      "updatedAt": "2026-09-29T04:50:28.403357+00:00"
+      "note": "The unread-source same-attempt continuation patch passed 1312 local tests, lint and PR service CI. Guarded worker-only cutover from eec5 to cd6d completed after all turns were idle; installed controller hash and official ChatGPT route were read back. Other service container IDs stayed fixed.",
+      "status": "verified",
+      "updatedAt": "2026-09-29T04:54:52.965400+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T04:50:56.366197+00:00"
+  "updatedAt": "2026-09-29T04:54:52.965400+00:00"
 }
