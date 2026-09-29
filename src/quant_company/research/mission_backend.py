@@ -587,6 +587,8 @@ class MissionBackend:
         current_reads = [item for item in reads if item["attempt"] == row["attempt"]]
         delivered = set()
         for turn in turns:
+            if turn["status"] != "completed" or not turn["response"]:
+                continue
             try:
                 data = json.loads(turn["request"]["prompt"].split("\nMISSION DATA JSON:\n", 1)[1])
                 for chunk in data.get("read_chunks", []):
