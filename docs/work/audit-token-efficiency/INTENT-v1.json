@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "slug": "audit-token-efficiency",
+  "revision": 1,
+  "createdAt": "2026-09-29T00:25:00Z",
+  "sourceRequest": "그래 최적화해줘",
+  "outcome": "Reduce the server's Codex audit cost while preserving Astra, immutable evidence and independent audit criteria.",
+  "constraints": ["Official ChatGPT authentication and read-only Codex execution", "No repeated inference after an ambiguous charge", "Company records remain in this repository", "No scientific trials or market orders"],
+  "deliverables": [
+    {"id": "RETRY", "description": "Stop unchanged or unsuccessful audit loops", "acceptance": ["Nonpass verdicts and audit runtime failures wait for explicit remediation", "Existing runaway audit is held with a durable receipt", "Audit inference has finite turn and token budgets"]},
+    {"id": "EVIDENCE", "description": "Batch immutable evidence and verify actual delivery", "acceptance": ["No evidence is counted without a completed bound model request containing its bytes", "Bounded packet reviews persist digest-bound observations", "Final audit retains causal code and observations"]},
+    {"id": "CONTEXT", "description": "Reuse the audit's explicit Codex session", "acceptance": ["Only the exact completed predecessor can be resumed", "Account, model, attempt and ambiguous-receipt boundaries fail closed", "Legacy request digests remain compatible"]},
+    {"id": "OPERATIONS", "description": "Validate and apply scoped runtime changes", "acceptance": ["Real PostgreSQL regressions and runtime receipt tests pass", "Production change and measured limits are recorded", "Offline savings are distinguished from observed model usage"]}
+  ],
+  "nonGoals": ["Downgrade Astra", "Weaken causal audit criteria", "Resume unresolved research automatically"],
+  "decisionGates": [],
+  "stopConditions": ["Uncertain provider executions require reconciliation", "Do not publish nonpass research as verified"]
+}
