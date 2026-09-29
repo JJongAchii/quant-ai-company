@@ -97,6 +97,45 @@ Slack 이벤트·프로그램 활성 상태, 대기 중인 단계, 실행 중인
 [11회차 요청·완독 영수증](evidence/research-programs-20260929/citation-guidance-attempt11.json).
 검증을 통과한 제안이나 독립 검토 결과는 아직 없다.
 
+11회차의 최종 제안은 인용 검증을 통과했지만 선행 미션 검증에서 거부됐다. 운영
+프로그램의 미션은 0건인데 제안의 `predecessor_mission_ids`에 1건이 들어 있었다.
+완료된 모델 호출 7건에는 불확실한 호출이 없고 과제는 생성되지 않았다.
+[선행 미션 거부 영수증](evidence/research-programs-20260929/predecessor-rejection-attempt11.json).
+커밋 `ac44bf5`는 제안 요청에 이 프로그램의 허용된 선행 미션 ID 목록을 명시하고,
+첫 과제처럼 목록이 비었으면 `[]`를 요구한다. 선행 미션 검증 규칙은 그대로다.
+실제 PostgreSQL 테스트를 포함한 전체 1,307 통과·13 건너뜀, lint가 통과했다.
+현 워커 `0072b57`를 바탕으로 실행 소스 한 파일만 바꾼 이미지를 만들고, 설치된
+패키지의 import 해시와 공식 ChatGPT용 Codex runtime 직접 경로를 검증했다.
+12:09 KST 후보 준비 시점에는 운영에 적용하지 않았으며, 12회차는 기존 워커에서 실행 중이었다.
+[후보 영수증](evidence/research-programs-20260929/predecessor-overlay-candidate.json),
+[후보 검증](evidence/research-programs-20260929/predecessor-overlay-validation.json).
+
+12회차도 기존 안내에서 논문을 완독하고 인용 검증을 통과한 뒤 같은 선행 미션
+오류로 거부됐다. 제안은 프로그램 밖의 선행 미션 1건을 다시 지정했고 과제·미션·
+예약·과학 시행은 0건을 유지했다.
+[12회차 거부 영수증](evidence/research-programs-20260929/predecessor-rejection-attempt12.json).
+PR #87의 서비스 CI 성공과 병합 가능 상태를 확인했다. 2026-09-29 12:25:01 KST,
+승인 digest·소유자 Slack 이벤트·대기 단계, 실행 중 턴·작업·불확실한 모델 호출 0건을
+재검사하고 **연구 워커 한 개만** `ac44bf5` 이미지로 교체했다. 나머지 서비스의
+컨테이너 ID는 그대로였으며, 새 워커가 설치 패키지에서 수정된 파일 해시를 실제로
+import하는 것을 확인했다. 다음 자동 재시도는 12:29:22 KST 예정이다.
+[전환 영수증](evidence/research-programs-20260929/predecessor-overlay-cutover.json),
+[적용 후 확인](evidence/research-programs-20260929/predecessor-overlay-post-check.json).
+
+13회차 자동 재시도는 12:29 KST에 새 워커에서 시작됐다. 고정된 모델 요청에
+`allowed_predecessor_mission_ids=[]`와 첫 과제의 빈 선행 미션 목록 지시가 들어
+있다. 12:39 KST에는 재현 보고서와 선택한 논문을 모두 완독했고 최종 제안 턴이
+실행 중이었다. 이 시점의 과제·미션·예약·과학 시행은 0건이다.
+[13회차 요청·완독 영수증](evidence/research-programs-20260929/predecessor-guidance-attempt13.json).
+
+13회차 최종 제안은 검증을 통과해 12:45 KST에 첫 과제 1건으로 등록됐다. 독립
+데이터 직원은 지정 ETF 입력의 시점·커버리지·체결 가능성에 대한 현재 과제의
+조회 근거가 부족해 `blocked`를 기록했다. director는 원문 완독 검증 뒤 과제를
+`waiting`으로 남겼다. 미션·자원 예약·과학 시행은 0건이다. 이후 새 검토 자료
+1편이 유입돼 다음 연구자 제안 단계가 시작됐다. 새 자료는 국내 ETF 입력 증거가
+아니다. [첫 과제 데이터 근거 공백](FIRST-TASK-DATA-GAP-20260929.md)에 실제
+준비 영수증과 독립 심사의 남은 확인 사항을 대조했다.
+
 최신 main을 병합한 PR #87의 커밋 `716cbc1`에서 전체 테스트 1,307 통과·13 건너뜀,
 lint와 서비스 CI 성공, 병합 가능 상태를 확인했다. 운영 후보 `6dfbdcc`와 PR HEAD의
 연구 controller·프로그램 controller·배포 경로 파일은 동일하다.
@@ -111,3 +150,42 @@ lint와 서비스 CI 성공, 병합 가능 상태를 확인했다. 운영 후보
 연구 프로그램은 승인된 24회 과학 시행·36,000초 계산·6개 미션·동시 1개 미션의
 상한 아래에서 자료 제안 → 독립 데이터 점검 → director 선정 순서로 진행한다. 후속 단계의
 실제 결과는 별도 운영 기록과 연구 감사가 있어야 판단한다.
+
+13:06 KST에는 새 문헌을 근거로 연구자가 두 번째 ETF 과제
+`dc0e9eac-040d-5eac-9a6d-69fd2c32a0f6`를 등록했다. 원문 2건에 대한 인용
+8건과 빈 선행 미션 목록이 기록됐다.
+[두 번째 과제 요약](evidence/research-programs-20260929/second-task-proposal-summary.json).
+첫 데이터 직원 시도는 인용한 원문을 끝까지 읽지 않아 차단됐고, 두 번째·세 번째
+시도는 Codex 응답의 회사 결정 계약 형식 오류로 차단됐다. 네 번째 시도도 인용한
+원문을 열지 않은 상태로 결론을 제시해 차단됐다. 각 시도의 호출 영수증은
+정상 완료와 형식 거부를 구별한다. 네 번째 시도 직후 과제는 `proposed`였다.
+[첫 차단 영수증](evidence/research-programs-20260929/second-task-data-read-rejection.json),
+[재시도 호출 영수증](evidence/research-programs-20260929/second-task-data-retry-faults.json),
+[네 번째 시도 상태](evidence/research-programs-20260929/second-task-data-attempt4.json).
+다섯 번째 데이터 직원 시도는 13:34 KST에 유효한 독립 심사로 완료됐고,
+시점·커버리지·실행 가능 가격·원문 조건 네 항목을 모두 미확인으로 판단해
+`blocked`를 기록했다. 직원이 실제 고정 ETF 입력과 실행 프로필을 조회한
+증거가 없다는 이유다. 13:35 KST에는 director 선정 단계가 진행 중이었다.
+[두 번째 과제 데이터 심사](evidence/research-programs-20260929/second-task-data-assessment.json).
+
+04:08 UTC에 연구 워커·작업 배포기·Slack 소켓 컨테이너가 종료됐고 API와
+Codex 런타임은 다시 올라왔다. 종료 원인은 이 읽기 전용 조사만으로 확정하지
+않았다. 04:17 UTC에 배포 잠금, 활성 릴리스 `ac44bf5`, 승인 digest·이벤트,
+실행 중 턴·단계·작업 0건을 재검사한 뒤 종료돼 있던 **동일한 세 컨테이너**를
+재시작했다. 컨테이너 ID·이미지와 다른 핵심 서비스 ID는 유지됐고, 자동 데이터
+시도가 다시 생성되는 것을 확인했다.
+[복구 전후 영수증](evidence/research-programs-20260929/service-restart-recovery.json).
+04:31 UTC에는 별도의 director 후속 응답 릴리스 `eec5e23`이 활성화됐다.
+연구 워커가 가져온 프로그램 controller의 실제 import 해시는 앞선 `ac44bf5`
+수정본과 같음을 확인했다. 이번 원문 이어 읽기 수정은 새 릴리스와 통합해
+검증해야 한다.
+[활성 릴리스 확인](evidence/research-programs-20260929/active-release-drift-20260929.json).
+
+13:24 KST에는 승인된 ETF 입력을 고정 qdata API와 현재 S3 객체로 대조했다.
+당시 20거래일 기준 cohort, 835거래일의 8,350개 원시 시가·종가·거래대금 행은
+일치했다. 현재 S3 객체는 준비 당시 객체와 달라 조정종가 6,680행이 바뀌었고,
+종목별 차이는 일정한 배율이었다. 원래 객체 버전 ID와 원천 공개시각·실제
+체결 조건은 미확인이다. 상세 결과와 재현 스크립트는
+[첫 과제 데이터 근거 공백](FIRST-TASK-DATA-GAP-20260929.md)에 기록했다.
+데이터 직원의 `blocked`와 director의 `waiting` 판단을 변경하지 않았으며,
+미션·예약·과학 시행은 여전히 0건이다.

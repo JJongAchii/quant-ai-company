@@ -1,0 +1,22 @@
+{
+  "active_base_release": "0072b575e11ab4e1959a51e1e08d4aa61c44510c",
+  "active_runtime_sha256": "da1c9f7597a58a8e29a7acdffe524858b696a8dc10e715f250833294f3738027",
+  "base_image_id": "sha256:b48e1a2be54a6a1d5f6391ce5dc7792e717e1d2e6994184b20fb104d9d9c440d",
+  "build_log_sha256": "e6b8b14e00a6cdfd24814158ebaf6a81d2f091df7b5fd6ca15ff6a86b67a2494",
+  "bundle_sha256": "e914d5f6c5325fd1acfc40f7f5ad3a355114401af4f5d0f545964b0c096834dc",
+  "candidate_commit": "ac44bf5b66b3016021e13c34ffc75b8db215bfc3",
+  "candidate_image": "quant-company-autonomous:ac44bf5b66b3016021e13c34ffc75b8db215bfc3",
+  "candidate_image_id": "sha256:a030d4210a03081251e0fbc24670c89fb15315972f9006925cae0fb30b101665",
+  "candidate_runtime_sha256": "f7059d7d0442b997519bc0a9a3996bc35b3bdf6176708db9feb68083ade4d995",
+  "candidate_worker_route": "http://codex-runtime:8080",
+  "deploy_files_changed_from_active_release": false,
+  "image_built_at": "2026-09-29T03:05:38.256963+00:00",
+  "only_changed_runtime_source": "src/quant_company/research/program_controller.py",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "runtime_candidate_prepared_at": "2026-09-29T03:06:10.945825+00:00",
+  "schema_version": 1,
+  "scope": "production Lightsail candidate, not activated at build",
+  "services_recreated": false,
+  "source_and_installed_import_sha256": "1399083b64baa8d243c6ce9c196eb7c699a5229b1c64f2a0116d596dae135f66",
+  "source_staged_at": "2026-09-29T03:05:10.497258+00:00"
+}
