@@ -291,6 +291,7 @@ def stage_prompt(company, conn, task, turn=None):
                         '"predecessor_trial_ids":[uuid]}. Continue only with a distinct useful next hypothesis '
                         "within the frozen scope. Exhausted scope requires wait; do not rename the same experiment.",
     }
+    from .audit_delivery import enabled, prepare_packet
     from .program_controller import PROGRAM_STAGES
 
     instructions.update({key: value[2] for key, value in PROGRAM_STAGES.items()})
@@ -300,8 +301,6 @@ def stage_prompt(company, conn, task, turn=None):
         "Read all required_meaning_reads, the interpretation and challenge responses. List every unperformed "
         "test obligation and unresolved objection. Choose inconclusive when required evidence is missing. "
         "Support is development evidence only, never confirmation or an investment recommendation.")
-    from .audit_delivery import enabled, prepare_packet
-
     if enabled(row):
         if turn is None:
             raise PolicyError("audit_packet_requires_bound_turn")
@@ -504,14 +503,17 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         return {"state": "completed"}
     if decision.status != "complete" or len(decision.artifacts) != 1:
         raise PolicyError("Research stage requires exactly one complete structured artifact")
-    value = json.loads(decision.artifacts[0].content)
+    content = decision.artifacts[0].content
+    try:
+        value = json.loads(content)
+    except json.JSONDecodeError as exc:
+        # The outer decision is already typed. Preserve harmless literal newlines
+        # in an artifact string while keeping every other JSON error fail-closed.
+        if exc.msg != "Invalid control character at" or any(ord(char) < 32 and char != "\n" for char in content):
+            raise
+        value = json.loads(content, strict=False)
     if not isinstance(value, dict):
         raise PolicyError("Research artifact must be an object")
-    if enabled(row):
-        if commit_review(company, conn, row, turn, response, value):
-            return {"state": "completed", "audit_packet_reviewed": True}
-        if packet_data(turn["request"]["prompt"]).get("phase") != "final":
-            raise PolicyError("audit_final_before_evidence_review")
     for path in row["context"].get("required_meaning_reads", []):
         if not conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
             AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
@@ -526,10 +528,29 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
             cited = row["context"]["task"]["proposal"]["source_ids"]
         paths = {entry["source_id"]: entry["file"] for entry in row["context"].get("evidence_sources", [])}
         for source in cited:
-            if source not in paths or not conn.execute("""SELECT 1 FROM research_stage_reads
+            if source in paths and conn.execute("""SELECT 1 FROM research_stage_reads
                 WHERE stage_id=%s AND attempt=%s AND path=%s AND next_offset IS NULL""",
-                (row["id"], row["attempt"], paths.get(source))).fetchone():
-                raise PolicyError("Cited source has not been read completely in this employee attempt")
+                (row["id"], row["attempt"], paths[source])).fetchone():
+                continue
+            if source in paths:
+                progress = conn.execute("""SELECT next_offset FROM research_stage_reads WHERE stage_id=%s
+                    AND attempt=%s AND path=%s ORDER BY character_offset DESC LIMIT 1""",
+                    (row["id"], row["attempt"], paths[source])).fetchone()
+                if progress and progress["next_offset"] is not None:
+                    hint = f"cited_source_incomplete:{paths[source]}@{progress['next_offset']};read_next_chunk"
+                    if row["error"] != hint:
+                        conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s",
+                                     (hint, row["id"]))
+                        conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                                     (Jsonb(response.model_dump(mode="json")), turn["id"]))
+                        company._new_turn(conn, task)
+                        return {"state": "completed", "incomplete_source": True}
+            raise PolicyError("Cited source has not been read completely in this employee attempt")
+    if enabled(row):
+        if commit_review(company, conn, row, turn, response, value):
+            return {"state": "completed", "audit_packet_reviewed": True}
+        if packet_data(turn["request"]["prompt"]).get("phase") != "final":
+            raise PolicyError("audit_final_before_evidence_review")
     conn.execute("UPDATE research_mission_stages SET state='received',result=%s,updated_at=now() WHERE id=%s",
                  (Jsonb(value), row["id"]))
     conn.execute("""UPDATE research_stage_attempts SET response=%s,completed_at=now()

@@ -1,0 +1,39 @@
+{
+  "affected_stage_id": "85f6e5a3-1d37-5a98-81b3-b25ea221633a",
+  "correction": "The account-enabled worker now calls codex-runtime directly; account-gateway remains the Temporal account-control worker.",
+  "correction_commit": "0742e88dbbcf524644d584722ec2282e0d6392a9",
+  "diagnosis_interval_utc": [
+    "2026-09-29T00:24:42Z",
+    "2026-09-29T00:32:31Z"
+  ],
+  "observations": {
+    "blocked_fault_code": "auth",
+    "first_request_codex_receipt_exists": false,
+    "first_request_id": "cffa6f0e-7376-58a0-9343-49a1ae495627",
+    "gateway_before": {
+      "MODEL_ACCOUNTS_ENABLED": "true",
+      "MODEL_RUNTIME_URL": "http://codex-runtime:8080"
+    },
+    "model_runtime_token_match_across_worker_gateway_runtime": true,
+    "official_chatgpt_login_status": {
+      "backup": "chatgpt",
+      "primary": "chatgpt"
+    },
+    "scientific_trials_before_fix": 0,
+    "second_attempt_codex_runtime_request_seen_in_same_window": false,
+    "second_attempt_gateway_http_status": 401,
+    "selected_account": {
+      "profile": "primary",
+      "revision": 2
+    },
+    "stage_attempts_blocked_before_fix": 3,
+    "worker_before": {
+      "MODEL_ACCOUNTS_ENABLED": "true",
+      "MODEL_RUNTIME_URL": "http://account-gateway:8080"
+    }
+  },
+  "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+  "root_cause_inference": "The worker selected the primary account and sent a pinned account header to account-gateway. The gateway rejected account headers for its AccountProvider runner before Codex received the turn.",
+  "schema_version": 1,
+  "sensitive_values_included": false
+}

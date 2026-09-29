@@ -17,7 +17,7 @@ from quant_company.research.feedback import resolve_challenges
 from quant_company.research.mission_contracts import MissionSpec
 from quant_company.research.program_contracts import ResearchProgram
 from quant_company.research.program_controller import ProgramController
-from quant_company.research.programs import ProgramStore
+from quant_company.research.programs import ProgramStore, public_progress
 from quant_company.research.worker import sha_file
 
 from .test_research_adaptive_report import producer
@@ -96,6 +96,24 @@ def create_task(h, **changes):
     return task_id
 
 
+def test_owner_followup_sees_current_program_stage(program):
+    from .test_task_control import route, turn_for
+
+    h = program
+    ProgramController(h.company).tick()
+    with h.company.db.transaction() as conn:
+        progress = public_progress(conn, h.project["project_id"])
+    assert progress[0]["state"] == "active"
+    assert progress[0]["stage"]["stage"] == "program_proposal"
+    assert progress[0]["mission_count"] == 0
+    question = h.company.ingest(event_key="fixture:program-progress", text="방금 승인한 새 연구 진행 중이야?",
+                                owner="UHUMAN", project_id=h.project["project_id"], interpret=True)
+    assert route(h.company, question, "status")["intent"]["action"] == "followup"
+    answer = h.company.prepare_turn(turn_for(h.company, question["task_id"]))
+    context = json.loads(answer["request"]["prompt"].split("TASK DATA JSON:\n")[1])
+    assert context["research_programs"] == progress
+
+
 def test_program_inherits_bound_owner_authority_and_rejects_self_approval(program):
     h = program
     create_task(h)
@@ -154,7 +172,12 @@ def test_program_stage_requires_current_attempt_original_read_and_survives_resta
         stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
         turn = conn.execute("SELECT id FROM turns WHERE task_id=%s", (stage["task_id"],)).fetchone()
     identity = str(turn["id"])
-    assert h.company.prepare_turn(identity)["state"] == "ready"
+    assert stage["context"]["allowed_predecessor_mission_ids"] == []
+    prepared = h.company.prepare_turn(identity)
+    assert prepared["state"] == "ready"
+    assert "If that list is empty, set predecessor_mission_ids to []" in prepared["request"]["prompt"]
+    assert json.loads(prepared["request"]["prompt"].split("MISSION DATA JSON:\n", 1)[1])[
+        "allowed_predecessor_mission_ids"] == []
     response = ProviderResponse(request_id=identity, provider="fixture", decision=AgentDecision(say="", status="complete",
         artifacts=[{"title": "Synthetic proposal", "content": json.dumps(task_proposal())}]))
     with pytest.raises(PolicyError, match="not been read"):
@@ -172,6 +195,62 @@ def test_program_stage_requires_current_attempt_original_read_and_survives_resta
     assert ProgramController(h.company).tick()["state"] == "running"
     with h.company.db.transaction() as conn:
         assert conn.execute("SELECT actor FROM research_mission_stages WHERE state='running'").fetchone()["actor"] == "data"
+
+
+def test_partial_original_and_literal_newline_continue_same_attempt(program):
+    h = program
+    with h.company.db.transaction() as conn:
+        conn.execute("UPDATE sources SET content=content || %s WHERE id='fixture:baseline'", ("x" * 12000,))
+    controller = ProgramController(h.company)
+    assert controller.tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+        first = conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'", (stage["task_id"],)).fetchone()
+    first_id = str(first["id"])
+    h.company.prepare_turn(first_id)
+    path = stage["context"]["evidence_sources"][0]["file"]
+    def read(identity, offset):
+        return ProviderResponse(request_id=identity, provider="fixture", decision=AgentDecision(
+            say="", status="continue", tools=[{"name": "research_control", "arguments": {
+                "action": "read_stage_file", "path": path, "offset": offset}}]))
+    h.company.commit_turn(first_id, read(first_id, 0))
+    with h.company.db.transaction() as conn:
+        second_id = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                     (stage["task_id"],)).fetchone()["id"])
+    h.company.prepare_turn(second_id)
+    proposal = task_proposal(method="First line\nSecond line")
+    malformed = json.dumps(proposal).replace("First line\\nSecond line", "First line\nSecond line")
+    with pytest.raises(json.JSONDecodeError):
+        json.loads(malformed)
+    premature = ProviderResponse(request_id=second_id, provider="fixture", decision=AgentDecision(
+        say="", status="complete", artifacts=[{"title": "Synthetic proposal", "content": malformed}]))
+    result = h.company.commit_turn(second_id, premature)
+    assert result["incomplete_source"]
+    with h.company.db.transaction() as conn:
+        current = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+        third_id = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                    (stage["task_id"],)).fetchone()["id"])
+        assert current["state"] == "running" and current["attempt"] == 1
+        assert "read_next_chunk" in current["error"]
+        assert conn.execute("SELECT count(*) AS n FROM research_program_tasks").fetchone()["n"] == 0
+    prompt = h.company.prepare_turn(third_id)["request"]["prompt"]
+    context = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
+    assert context["file_progress"][path]["next_offset"] == 12000
+    with pytest.raises(PolicyError, match="not been read"):
+        h.company.commit_turn(third_id, premature.model_copy(update={"request_id": third_id}))
+    h.company.commit_turn(third_id, read(third_id, 12000))
+    with h.company.db.transaction() as conn:
+        final_id = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                    (stage["task_id"],)).fetchone()["id"])
+    h.company.prepare_turn(final_id)
+    valid = ProviderResponse(request_id=final_id, provider="fixture", decision=AgentDecision(
+        say="", status="complete", artifacts=[{"title": "Synthetic proposal", "content": json.dumps(proposal)}]))
+    assert h.company.commit_turn(final_id, valid)["state"] == "completed"
+    assert controller.tick()["state"] == "completed"
+    with h.company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM research_program_tasks").fetchone()["n"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM research_stage_reads WHERE stage_id=%s",
+                            (stage["id"],)).fetchone()["n"] == 2
 
 
 def test_concurrent_budget_reservations_are_serialized_and_uncertain_jobs_hold_budget(program):
