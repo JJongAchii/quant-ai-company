@@ -270,4 +270,23 @@ Codex 런타임은 다시 올라왔다. 종료 원인은 이 읽기 전용 조�
 7회차가 06:31 UTC에 시작됐다. 실제 모델 요청에 허용 출처 ID와 패킷 경로의
 차이를 알리는 두 문장이 포함됐다.
 [운영 요청 확인](evidence/research-programs-20260929/source-guidance-live-prompt.json).
-이 시도의 데이터 심사 결과는 아직 없다.
+서비스가 미완독 원문을 안내하자 데이터 직원은 같은 7회차에서 원문을 끝까지 읽고
+`coverage=true`, `point_in_time=false`, `executable_prices=false`,
+`original_conditions=false`의 `blocked` 심사를 제출했다. 패킷 해시만으로
+시점성과 실제 체결을 승인하지 않은 독립 판단이다.
+[원문 읽기](evidence/research-programs-20260929/source-guidance-live-original-read.json),
+[심사 영수증](evidence/research-programs-20260929/third-task-data-assessment.json).
+director는 제안 근거 논문·기존 연구 보고서·고정 엔진을 완독한 뒤 `wait`로
+선정 단계를 마쳤다. 고정 체결 방식과의 일치는 인정했고, 독립 데이터 차단은
+유지했다. 세 과제 모두 대기 중이며 미션·예약·과학 시행은 0건이다.
+[director 읽기](evidence/research-programs-20260929/third-task-director-read-depth.json),
+[선정 결과](evidence/research-programs-20260929/third-task-final-decision.json).
+
+선정 직후 별도 자료 유입 없이 새 제안 단계가 열린 이유를 조사했다. 제안 단계는
+ETF 패킷 두 건, 선정 단계는 해당 과제 패킷 한 건만 증거 버전에 넣어 서로 다른
+값을 만들었다. 같은 ETF 패킷의 digest와 원문 출처 ID 집합은 그대로였다.
+[반복 원인 영수증](evidence/research-programs-20260929/packet-version-loop-diagnosis.json).
+프로그램 전체 패킷 집합으로 동일한 증거 버전을 계산하도록 수정하고,
+두 envelope의 과제가 `wait`로 끝난 뒤 새 증거 없이 제안 단계를 만들지 않는
+실제 PostgreSQL 회귀 검사를 추가했다. 운영 적용은 검증 후 별도 영수증으로
+기록한다.

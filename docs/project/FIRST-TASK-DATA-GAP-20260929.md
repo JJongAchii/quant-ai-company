@@ -127,3 +127,20 @@ director 역시 [두 번째 과제의 최종 판단](evidence/research-programs-
 [워커 전환](evidence/research-programs-20260929/source-guidance-worker-cutover.json),
 [적용 후 코드·프로그램 확인](evidence/research-programs-20260929/source-guidance-worker-postcheck.json).
 2026-09-29 15:27 KST 현재 과제는 `proposed`이고 다음 데이터 재시도를 기다린다.
+
+새 워커의 7회차 요청에는 허용 출처 ID 안내가 실제로 포함됐다.
+[모델 요청 확인](evidence/research-programs-20260929/source-guidance-live-prompt.json).
+서비스가 미완독 원문을 지정하자 데이터 직원이 **같은 7회차**에서 보고서 원문을
+끝까지 읽었고, 데이터 심사가 완료됐다.
+[원문 읽기 영수증](evidence/research-programs-20260929/source-guidance-live-original-read.json),
+[독립 데이터 판단](evidence/research-programs-20260929/third-task-data-assessment.json).
+판단은 `blocked`다. 고정 10종목·835세션 입력의 관측 범위는 확인해 `coverage=true`로
+두었지만, 원천 공개시각과 마지막 거래일의 다음 신호 시각이 검증되지 않아
+`point_in_time=false`로 두었다. 실제 호가 체결·거래정지·상폐 정산·현금배당
+처리가 확인되지 않아 `executable_prices=false`, 준비 당시 원본 객체가 없어
+`original_conditions=false`로 두었다. director는 제안의 시가 체결 방법이
+고정 엔진과 맞는다는 점을 인정하면서도 데이터 차단을 이유로 `wait`를 기록했다.
+과거의 종가 체결 불일치를 현재안에 잘못 적용하지 않았고, 보류를 전략 실패로
+취급하지 않았다. 세 과제 모두 `waiting`이며 미션·예약·과학 시행은 0건이다.
+[director 원문·엔진 읽기](evidence/research-programs-20260929/third-task-director-read-depth.json),
+[최종 선정 판단](evidence/research-programs-20260929/third-task-final-decision.json).

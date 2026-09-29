@@ -1,0 +1,21 @@
+{
+  "diagnosis": "Stage-specific packet subsets changed evidence_version when selection returned to proposal, even though source IDs and each shared packet digest were unchanged.",
+  "next_proposal_evidence_version": "a6ab4de5602a4b24d1e79a52c8d436dfbd65dec8c5687d0258cd08f8be9494b5",
+  "next_proposal_packet_digests": {
+    "etf_claim": "550e279088d95aedff550af4b565ff02f94fcb2bdefd9bc86c9215841bbd5b4e",
+    "etf_strategy": "84440254f0a0021e7ee57be1ebcb59e0793c8087cfdf2149c3e7d74f49e943c6"
+  },
+  "next_proposal_stage_id": "b88d3ee3-95d2-588e-a4f7-c9f95d4be915",
+  "next_proposal_state": "running",
+  "observed_at": "2026-09-29T06:45:33.704519+00:00",
+  "schema_version": 1,
+  "selection_evidence_version": "f79f44452a9568787e8f73d267d2c33ba9606cbf95519967446edaabb7208868",
+  "selection_packet_digests": {
+    "etf_strategy": "84440254f0a0021e7ee57be1ebcb59e0793c8087cfdf2149c3e7d74f49e943c6"
+  },
+  "selection_stage_id": "07bfc822-d49a-5a6b-9760-2033fa8bf52f",
+  "selection_state": "completed",
+  "shared_packet_digests_match": true,
+  "source_ids_added": [],
+  "source_ids_removed": []
+}
