@@ -96,6 +96,7 @@ def test_stage_builds_only_dependency_identical_app_and_dedicated_runtime(releas
     assert [image["target"] for image in result["images"]] == ["app", "codex"]
     builds = [command for command in commands if command[:2] == ["docker", "build"]]
     assert len(builds) == 2 and all("--network=none" in command for command in builds)
+    assert all(any(str(item).endswith("Dockerfile.quant-code-update") for item in command) for command in builds)
     assert not any(command[:2] == ["docker", "stop"] for command in commands)
 
 

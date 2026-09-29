@@ -181,7 +181,7 @@ def stage(args, previous, target, journal, helper):
             run(["docker", "image", "tag", base_image, pinned])
             tag = f"{repository}:{args.commit}"
             run(["docker", "build", "--network=none", "--pull=false", "-f",
-                 str(target / "deploy/Dockerfile.code-update"), "--build-arg", "BASE_IMAGE=" + pinned,
+                 str(target / "deploy/Dockerfile.quant-code-update"), "--build-arg", "BASE_IMAGE=" + pinned,
                  "--build-arg", "RELEASE_COMMIT=" + args.commit, "-t", tag, str(target)])
             actual = json.loads(run(["docker", "run", "--rm", "--network=none", "--memory=128m",
                                      "--entrypoint", "python", tag, "-c", probe]))
