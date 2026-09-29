@@ -74,6 +74,11 @@ class RuntimeClient:
 
     async def run(self, request: ProviderRequest, *, account: dict | None = None) -> ProviderResponse:
         headers = {"Authorization": f"Bearer {self.token}"}
+        payload = request.model_dump(mode="json")
+        # Other pinned subscription runtimes still use the older strict request
+        # schema. Ordinary requests retain their original wire shape.
+        if request.session is None:
+            payload.pop("session", None)
         if account is not None:
             headers.update({"X-Company-Account": account["profile"], "X-Company-Account-Revision": str(account["revision"])})
         try:
@@ -81,7 +86,7 @@ class RuntimeClient:
                                          follow_redirects=False, trust_env=False) as client:
                 async with client.stream("POST", f"{self.base_url}/v1/turns",
                                          headers=headers,
-                                         json=request.model_dump(mode="json")) as response:
+                                         json=payload) as response:
                     body = bytearray()
                     async for chunk in response.aiter_bytes():
                         body.extend(chunk)

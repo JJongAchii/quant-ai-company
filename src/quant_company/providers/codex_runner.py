@@ -15,6 +15,7 @@ import signal
 import tempfile
 import time
 from collections.abc import Mapping
+from contextlib import nullcontext
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
@@ -82,6 +83,8 @@ def request_digest(request: ProviderRequest) -> str:
     if not request.web_search:
         # Preserve the input digest of pre-search outstanding/cached requests.
         material.pop("web_search", None)
+    if request.session is None:
+        material.pop("session", None)
     canonical = json.dumps(material, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(canonical.encode()).hexdigest()
 
@@ -218,10 +221,13 @@ def safe_environment(config: RunnerConfig, source: Mapping[str, str]) -> dict[st
     return result
 
 
-def cli_command(config: RunnerConfig, request: ProviderRequest, work_dir: Path, schema_path: Path) -> list[str]:
+def cli_command(config: RunnerConfig, request: ProviderRequest, work_dir: Path, schema_path: Path,
+                resume_thread: str | None = None) -> list[str]:
     argv = [config.codex_bin, "exec", "--ignore-user-config", "--ignore-rules", "--strict-config",
-            "--sandbox", "read-only", "--skip-git-repo-check", "--ephemeral", "--json", "--color", "never",
+            "--sandbox", "read-only", "--skip-git-repo-check", "--json", "--color", "never",
             "--model", request.model, "--cd", str(work_dir), "--output-schema", str(schema_path)]
+    if request.session is None:
+        argv.append("--ephemeral")
     overrides = [
         'forced_login_method="chatgpt"', 'cli_auth_credentials_store="file"',
         'model_provider="openai"', 'approval_policy="never"',
@@ -245,7 +251,7 @@ def cli_command(config: RunnerConfig, request: ProviderRequest, work_dir: Path, 
                      for name in DISABLED_FEATURES)
     for override in overrides:
         argv.extend(("-c", override))
-    return [*argv, "-"]
+    return [*argv, "resume", resume_thread, "-"] if resume_thread else [*argv, "-"]
 
 
 def cli_prompt(request: ProviderRequest) -> bytes:
@@ -345,6 +351,8 @@ def parse_result(request: ProviderRequest, process: ProcessResult, quota_retry_s
                 token_usage[key] = value
         phase = "thread_id"
         thread_ids = [event.get("thread_id") for event in events if event.get("type") == "thread.started"]
+        if len(thread_ids) > 1:
+            raise ValueError("Ambiguous thread identity")
         thread_id = thread_ids[0] if thread_ids else None
         if thread_id is not None and (not isinstance(thread_id, str) or not re.fullmatch(r"[\w-]{1,128}", thread_id)):
             raise ValueError("Invalid thread ID")
@@ -429,7 +437,8 @@ class CodexRunner:
         except (ValueError, TypeError, KeyError, AttributeError, ValidationError):
             raise ProviderFault("uncertain", "The request receipt cannot be verified; operator review is required.") from None
 
-    async def _configuration_preflight(self, request: ProviderRequest, work_dir: Path, env: dict[str, str]) -> None:
+    async def _configuration_preflight(self, request: ProviderRequest, work_dir: Path, env: dict[str, str],
+                                       resume_thread: str | None = None) -> None:
         # Two deliberate stop conditions: there is no prompt and the schema
         # path does not exist. The pinned CLI validates config before rejecting
         # empty stdin, before any model session can start. Never send the task.
@@ -438,7 +447,7 @@ class CodexRunner:
             raise ProviderFault("unavailable", "The configuration probe directory is not clean.")
         try:
             probe = await self.process.run(
-                cli_command(self.config, request, work_dir, missing_schema), cwd=work_dir, env=env,
+                cli_command(self.config, request, work_dir, missing_schema, resume_thread), cwd=work_dir, env=env,
                 stdin=b"", timeout_seconds=15,
                 max_stdout_bytes=MAX_STDERR_BYTES, max_stderr_bytes=MAX_STDERR_BYTES,
             )
@@ -448,13 +457,14 @@ class CodexRunner:
                 or probe.stderr.strip() != b"No prompt provided via stdin."):
             raise ProviderFault("unavailable", "Codex rejected its required execution configuration.")
 
-    async def _preflight(self, request: ProviderRequest, work_dir: Path, env: dict[str, str]) -> None:
+    async def _preflight(self, request: ProviderRequest, work_dir: Path, env: dict[str, str],
+                         resume_thread: str | None = None) -> None:
         options = dict(cwd=work_dir, env=env, timeout_seconds=15,
                        max_stdout_bytes=MAX_STDERR_BYTES, max_stderr_bytes=MAX_STDERR_BYTES)
         version = await self.process.run([self.config.codex_bin, "--version"], **options)
         if version.returncode != 0 or version.stdout.decode(errors="replace").strip() != f"codex-cli {SUPPORTED_CLI_VERSION}":
             raise ProviderFault("unavailable", f"The runtime requires the validated Codex CLI {SUPPORTED_CLI_VERSION}.")
-        await self._configuration_preflight(request, work_dir, env)
+        await self._configuration_preflight(request, work_dir, env, resume_thread)
         login = await self.process.run(
             [self.config.codex_bin, "login", "status", "-c", 'forced_login_method="chatgpt"',
              "-c", 'cli_auth_credentials_store="file"'], **options,
@@ -528,9 +538,20 @@ class CodexRunner:
             env = safe_environment(config, self.environment)
             if not config.codex_home.is_dir():
                 raise ProviderFault("auth", "The configured Codex authentication directory is unavailable.")
-            with tempfile.TemporaryDirectory(prefix=".turn-", dir=directory) as temporary:
+            session_path = session = None
+            resume_thread = None
+            if request.session:
+                from .codex_sessions import prepare_session
+
+                session_path, session, work = prepare_session(
+                    request, directory, profile, revision, read_json=strict_json, write_json=atomic_json)
+                resume_thread = session["thread_id"]
+                workspace = nullcontext(work)
+            else:
+                workspace = tempfile.TemporaryDirectory(prefix=".turn-", dir=directory)
+            with workspace as temporary:
                 work_dir = Path(temporary).resolve()
-                await self._preflight(request, work_dir, env)
+                await self._preflight(request, work_dir, env, resume_thread)
                 schema = work_dir / "decision.schema.json"
                 atomic_json(schema, CLI_OUTPUT_SCHEMA)
                 receipt = {"version": 1, "request_id": request.request_id, "input_digest": digest,
@@ -539,6 +560,9 @@ class CodexRunner:
                            "execution_lane": lane,
                            "requested_execution": {"model": request.model,
                                                    "reasoning_effort": request.reasoning_effort}}
+                if session is not None:
+                    receipt["session"] = request.session.model_dump()
+                    atomic_json(session_path, {**session, "inflight": request.request_id})
                 if receipt_path.exists():
                     previous = strict_json(receipt_path.read_bytes())
                     old_account = previous.get("account", {"profile": "primary", "revision": 0})
@@ -551,14 +575,30 @@ class CodexRunner:
                 atomic_json(receipt_path, receipt)
                 try:
                     output = await self.process.run(
-                        cli_command(self.config, request, work_dir, schema), cwd=work_dir, env=env,
+                        cli_command(self.config, request, work_dir, schema, resume_thread), cwd=work_dir, env=env,
                         stdin=cli_prompt(request), timeout_seconds=self.config.timeout_seconds,
                         max_stdout_bytes=self.config.max_stdout_bytes,
                         max_stderr_bytes=self.config.max_stderr_bytes,
                     )
                     result = parse_result(request, output, self.config.quota_retry_seconds)
+                    if session is not None and (not result.thread_id or (resume_thread and result.thread_id != resume_thread)):
+                        raise ProviderFault("uncertain", "Codex did not confirm the bound audit session.")
+                    if session is not None:
+                        from .codex_sessions import turn_usage
+
+                        receipt["session_usage"] = dict(result.usage)
+                        result = result.model_copy(update={"usage": turn_usage(result.usage, session["usage"])})
                     atomic_json(receipt_path, {**receipt, "state": "complete", "completed_at": time.time(),
                                                "result": result.model_dump(mode="json")})
+                    if session is not None:
+                        try:
+                            atomic_json(session_path, {**session, "head": request.request_id,
+                                                      "thread_id": result.thread_id, "inflight": None,
+                                                      "usage": receipt["session_usage"]})
+                        except OSError:
+                            # The completed receipt is already authoritative. The
+                            # next continuation reconciles this window without inference.
+                            pass
                     return result
                 except asyncio.CancelledError:
                     self._save_fault(receipt_path, receipt, ProviderFault(

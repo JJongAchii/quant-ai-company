@@ -403,6 +403,29 @@ def write_audit(
     return audit
 
 
+def inspect_audit_verdict(
+    package_root: Path, audit_path: Path, *, expected: AuditBinding, qlab_profile: QlabProfile,
+) -> str:
+    """Verify a verdict's identity and receipt without granting publication authority."""
+    package = _load_package(package_root, expected, qlab_profile)
+    name = audit_path.absolute().relative_to(package_root.absolute()).as_posix()
+    _require(name.startswith("audits/AUDIT-leak-auditor-") and name.endswith(
+        "-" + expected.validator_request_id.lower().replace("_", "-") + ".md"), "audit_path_mismatch")
+    values = _qlab(qlab_profile, package_root, sorted(package.scope_files), "verify", audit=name)
+    _audit_identity(values, package, require_pass=False)
+    receipt = _json(_file(package_root, str(Path(name).with_suffix(".receipt.json"))).read_bytes(), "\x00not-a-token\x00")
+    verdict = values.get("verdict")
+    _require(verdict in {"pass", "fail", "unverified"} and not values.get("receipt_violations")
+             and isinstance(receipt, dict) and receipt.get("verdict") == verdict
+             and receipt.get("audit") == audit_path.name
+             and receipt.get("audit_sha256") == _sha256(_file(package_root, name).read_bytes())
+             and receipt.get("scope_digest") == package.scope_digest
+             and receipt.get("html_sha256") == _sha256(
+                 _file(package_root, str(Path(name).with_suffix(".html"))).read_bytes()),
+             "independent_audit_receipt_mismatch")
+    return verdict
+
+
 def verify_audit_package(
     package_root: Path, audit_path: Path, *, expected: AuditBinding, qlab_profile: QlabProfile,
 ) -> VerifiedAudit:
