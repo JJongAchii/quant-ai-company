@@ -19,7 +19,7 @@ def _status_request(text: str, target: str) -> bool:
         return True
     if target in {"maintainer", "data"} and normalized in {"목록", "list"}:
         return True
-    return bool(re.fullmatch(r"(?:현재)?진행상황이어떻게(?:돼|되(?:니|나요|어)?|됐(?:어|나요)?)", normalized))
+    return False
 
 
 class SlackIngress:
