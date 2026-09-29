@@ -87,6 +87,7 @@
   },
   "remaining_gates": [
     "The intervening backup stopped writers. Restart the conservative 48-hour publication-off observation at the first all-running readback, 2026-09-29T06:01:34Z; earliest completion is 2026-10-01T06:01:34Z if stable.",
+    "The daily scheduled backup around 18:10 UTC may pause writers during the window. Count it as expected maintenance only if its receipt and full service recovery are verified; do not automatically restart the clock for a successful bounded pause. An unplanned outage, failed recovery, or Quant code/policy/image change invalidates the current window.",
     "Recheck quality, activity, disk, memory, OOM, receipts and independent services; do not infer a live model call or Slack delivery from simulated checks.",
     "Request explicit owner approval before enabling Quant Scout publication. Do not delete or edit the existing Robeco post without separate authorization."
   ]

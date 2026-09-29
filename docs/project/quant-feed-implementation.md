@@ -457,6 +457,11 @@ IDs/images and Quant publication still disabled. Its remote upload success was
 not independently checked in this task. The conservative 48-hour clock therefore
 starts at **06:01:34 UTC**, with earliest review **2026-10-01 15:01:34 KST** if
 the restored service state remains stable.
+The daily 18:10 UTC backup will create planned pauses inside that window. Its
+receipt and complete recovery must be checked; a successful bounded maintenance
+pause does not restart the clock. Failed recovery, an unplanned Quant outage or a
+Quant code/policy/image change invalidates the observation. Unrelated worker
+deployments are recorded separately rather than mistaken for Quant changes.
 
 The natural production Quant lane then completed review, technical repair,
 independent critique, one editorial revision and final critique without call or

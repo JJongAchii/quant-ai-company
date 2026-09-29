@@ -185,6 +185,12 @@ same IDs and images, no new Quant OOM/restart, publication still off and one old
 post. The backup's remote upload success was not independently verified here.
 Conservatively restart the 48-hour observation from that all-running readback:
 earliest check 2026-10-01 06:01:34 UTC (15:01:34 KST), if stable.
+The daily backup timer runs around 18:10 UTC, so this window will include planned
+writer pauses. A bounded scheduled pause does not reset the clock if the backup
+receipt, all-service recovery and unchanged Quant image/policy are verified. Failed
+recovery, an unplanned outage or a Quant code/policy/image change invalidates the
+window. Independently owned worker changes are recorded, not attributed to the
+Quant cutover.
 
 The resumed natural Quant lane completed five real subscription stages through
 final critique without transport or database-commit errors. It held the candidate
