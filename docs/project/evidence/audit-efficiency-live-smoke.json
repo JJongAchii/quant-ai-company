@@ -1,0 +1,64 @@
+{
+  "exit_code": 0,
+  "result": {
+    "real_model": "gpt-6-astra",
+    "effort": "max",
+    "max_calls": 2,
+    "official_chatgpt_auth": true,
+    "results": [
+      {
+        "request_id": "audit-efficiency-smoke-20260929-1",
+        "thread_id": "01a0eacb-d9df-7152-9528-dcb2495ae543",
+        "usage": {
+          "input_tokens": 9746,
+          "cached_input_tokens": 5888,
+          "output_tokens": 117,
+          "reasoning_output_tokens": 79
+        },
+        "marker_recalled": true
+      },
+      {
+        "request_id": "audit-efficiency-smoke-20260929-2",
+        "thread_id": "01a0eacb-d9df-7152-9528-dcb2495ae543",
+        "usage": {
+          "input_tokens": 20772,
+          "cached_input_tokens": 15488,
+          "output_tokens": 153,
+          "reasoning_output_tokens": 79
+        },
+        "marker_recalled": true
+      }
+    ]
+  },
+  "cli_version": "0.154.0",
+  "raw_counters_are_session_totals": true,
+  "per_call_results": [
+    {
+      "request_id": "audit-efficiency-smoke-20260929-1",
+      "thread_id": "01a0eacb-d9df-7152-9528-dcb2495ae543",
+      "usage": {
+        "input_tokens": 9746,
+        "cached_input_tokens": 5888,
+        "output_tokens": 117,
+        "reasoning_output_tokens": 79
+      },
+      "marker_recalled": true
+    },
+    {
+      "request_id": "audit-efficiency-smoke-20260929-2",
+      "thread_id": "01a0eacb-d9df-7152-9528-dcb2495ae543",
+      "usage": {
+        "input_tokens": 11026,
+        "cached_input_tokens": 9600,
+        "output_tokens": 36,
+        "reasoning_output_tokens": 0
+      },
+      "marker_recalled": true
+    }
+  ],
+  "independent_confirmation": "The session event_msg token_count last_token_usage matched these deltas.",
+  "final_runtime_saves_per_call_usage": true,
+  "model_calls_executed": 2,
+  "second_call_cache_ratio": 0.870669327045166,
+  "limit": "A small context-retention probe; this does not measure full-audit savings or audit judgment quality."
+}
