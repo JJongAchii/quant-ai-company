@@ -139,3 +139,45 @@ another multi-gigabyte image or give model processes database/Slack credentials.
   containers. One natural Quant review was running; no Quant publication was pending.
   The independently advanced current release was `ac44bf5`; available disk was
   6.40 GiB and memory 1.95 GiB. See `handoff-observation.json`.
+
+## v18 repair and production preview, 29 September
+
+The v16 checkpoint above is historical. The later v18 contract replaces separately
+editable prose and evidence with source-bound statements: each statement carries
+its own basis and span IDs, and the service derives the rendered prose and evidence
+together. The policy also distinguishes direct market-data validation from simulated
+results and keeps the independent semantic critic. A fresh private LOB trial passed
+review and critique in four real subscription calls; the old generic Robeco case
+was held/rejected with no Slack write. A different crypto-volatility paper remained
+held after critique, so this is not a claim of perfect screening or a held-out
+accuracy estimate. Private receipts are retained on the host; their hashes are in
+`RESULT-v18.json`.
+
+The deployment operator initially refused a pinned API image because it expected
+the environment release commit to equal the newer release-directory link. The guard
+was corrected to compare the environment commit with the **running API image** and
+to verify that both staged base images still match production. Tests cover ordinary,
+pinned, mismatched-environment and changed-base-image cases. A later independent
+research release advanced the production base to `e3e26e9`; it was merged into the
+Quant target before rollout. One archive-format stage failure left an empty target
+and a failure journal. The journal was moved to the private operation evidence
+directory, the empty target removed, and a correctly prefixed archive of the exact
+merged commit was staged. No running service changed during either failed attempt.
+
+Final source `dccf7a7`: full local suite 1,332 passed/46 skipped, Ruff passed, and
+Linux CI `36526443940` succeeded. The source-verified app and dedicated Codex
+images were staged without dependency downloads. Compose configuration and native
+producer/consumer schema hashes matched before cutover. At 05:42:03 UTC, the
+scoped cutover reached `preview_active`: API, dispatch, Quant worker and the new
+Quant-only model runtime run the exact source; other service IDs/images were
+preserved. A separate readback at 05:43:29 UTC found collection on, publication
+off, one unchanged historic post, zero pending Quant outbox items, zero running
+Quant calls and no preview containers. The shared model runtime remains on its
+legacy contract for unrelated workers. Disk free was 4,013,797,376 bytes and
+available memory 1,960,816 KiB. This is a **publication-off production preview**,
+not a live Slack delivery or an elapsed 48-hour stability result.
+
+The earliest 48-hour check is 2026-10-01 05:42:03 UTC (14:42:03 KST), provided
+the new code and service state remain stable throughout. Recheck quality and
+operational evidence then obtain explicit owner approval before enabling
+`#quant-feeds` posting. The historic Robeco post remains untouched.

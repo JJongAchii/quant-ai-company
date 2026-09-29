@@ -8,44 +8,40 @@
     "ACTIVATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/quant-feed-structural-20260929/RESULT.json",
-          "sha256": "2f6fe99ce773"
-        },
-        {
-          "path": "docs/project/evidence/quant-feed-structural-20260929/handoff-observation.json",
-          "sha256": "f5b9024ed088"
+          "path": "docs/project/evidence/quant-feed-structural-20260929/RESULT-v18.json",
+          "sha256": "7cb1d58311dc"
         }
       ],
-      "note": "Collection remains enabled; publication disabled and original post retained. No production cutover. Installed runtime only supports agent_decision, so matched runtime/consumer rollout, a fresh positive qualification, 48h observation and explicit publication resumption remain pending.",
+      "note": "Exact dccf7a7 source deployed in publication-off preview at 05:42:03 UTC. Quant-only native runtime and consumer matched; independent services retained. Collection on, publication off, one old post retained. Real 48h observation and explicit owner approval before Slack posting remain pending.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T03:48:57+00:00"
+      "updatedAt": "2026-09-29T05:45:14+00:00"
     },
     "QUANT_FEED": {
       "evidence": [
         {
           "path": "docs/project/quant-feed-implementation.md",
-          "sha256": "951a16e939aa"
+          "sha256": "46d29f61e4f0"
         }
       ],
-      "note": "Native Quant output, lossless source-span binding, joint evidence, separate technical repair and editorial revision, consistent evidence-gap criteria and runtime compatibility guard implemented. Remaining prose/evidence revision convergence is not solved; code remains undeployed.",
+      "note": "v18 source-bound statements remove the separate prose/evidence edit path; a fresh LOB case passed. Dedicated subscription runtime, Quant worker and readable card are deployed; publication remains intentionally off pending observation and approval.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T03:48:57+00:00"
+      "updatedAt": "2026-09-29T05:45:14+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/quant-feed-structural-20260929/RESULT.json",
-          "sha256": "2f6fe99ce773"
+          "path": "docs/project/evidence/quant-feed-structural-20260929/RESULT-v18.json",
+          "sha256": "7cb1d58311dc"
         }
       ],
-      "note": "Full v16 local tests: 1308 passed/46 skipped; native/Quant focused: 183 passed/1 skipped; later deployment guard: 8 passed; Ruff and final-code Linux CI 36511874627 passed. Seven private real-subscription trials (31 new calls) retained; negative controls rejected, no fresh positive passed. No live Slack validation claimed.",
+      "note": "Full final-source local suite 1332 passed/46 skipped, Ruff and Linux CI 36526443940 passed. Fresh private real-subscription v18 LOB positive passed and generic negative held; crypto case held. Production cutover/readback passed without Slack delivery. Elapsed 48h and live delivery unverified.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T03:48:57+00:00"
+      "updatedAt": "2026-09-29T05:45:14+00:00"
     }
   },
   "intentDigest": "c402037885c5",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-29T03:48:57+00:00"
+  "updatedAt": "2026-09-29T05:45:14+00:00"
 }

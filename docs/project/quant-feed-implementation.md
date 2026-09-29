@@ -413,3 +413,39 @@ The 03:48:57 UTC handoff readback again confirmed publication off, collection on
 one old post and no preview containers; one natural Quant review was running.
 The separately advanced baseline was `ac44bf5`, with the same old Quant worker
 and legacy-only runtime. This task did not recreate either service.
+
+## v18 structural fix and guarded production preview, 29 September
+
+The earlier v16 no-candidate checkpoint above has been superseded. `quant_brief_v4`
+binds each research statement to its own source spans and basis; the service renders
+the prose and citations from that single typed structure. Policy v18 strengthens
+subject scope and simulation-versus-market-data wording while retaining independent
+critique. In a fresh private real-subscription trial, a LOB paper passed review and
+critique and the previously mispublished generic AI-governance case was held. A
+separate crypto-volatility paper was held after final critique. No Quant Slack post
+was made in these trials; one positive is not a long-run precision estimate.
+
+The release operator now accepts an intentionally pinned running API image when
+its environment revision matches that image, not merely the newer release-directory
+link; it also rejects changed staged base images before stopping services. The
+other team's current research-program release `e3e26e9` was merged into the exact
+target `dccf7a7`. Local full tests passed 1,332 with 46 skipped, Ruff passed, and
+Linux CI `36526443940` succeeded on that exact target. Its app and dedicated
+Quant Codex images were source-verified, and the effective production Compose
+configuration was valid.
+
+At 05:42:03 UTC the scoped release journal reached `preview_active`. The API,
+dispatch, Quant worker and a new Quant-only subscription runtime were replaced;
+news, general research, housing and the shared Codex runtime retained their
+container IDs and images. Native producer/consumer schema hashes matched. A
+separate 05:43:29 UTC readback confirmed collection on, publication off, one
+historic Robeco post, zero pending Quant publications, zero running Quant calls,
+zero preview containers, and no OOM/restarts in the new services. Host free disk
+was 4,013,797,376 bytes and available memory 1,960,816 KiB.
+
+This is **not yet public-feed completion**: the new release must complete an
+actual 48-hour publication-off observation (earliest 2026-10-01 14:42:03 KST if
+stable), then pass an operational/quality readback and receive explicit owner
+approval before posting resumes. No live Slack delivery from v18 is claimed.
+The detailed machine-readable receipt is
+`evidence/quant-feed-structural-20260929/RESULT-v18.json`.

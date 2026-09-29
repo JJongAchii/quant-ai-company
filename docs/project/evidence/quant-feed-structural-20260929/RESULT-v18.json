@@ -1,0 +1,52 @@
+{
+  "recorded_at": "2026-09-29T05:45:14Z",
+  "outcome": "quality_release_deployed_publication_paused",
+  "source_commit": "dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf",
+  "production_base_commit": "e3e26e9ba968d56cc8b6e2f802a7508b018a4bac",
+  "policy_version": 18,
+  "editorial_contract": "quant_brief_v4",
+  "editorial_change": "Each research statement binds its own source spans and basis; the service derives prose and citations together. The independent critic still checks semantic support and relevance.",
+  "real_subscription_qualification": {
+    "case": "agentic-lob-v18",
+    "negative_generic_governance": "held_or_rejected",
+    "fresh_positive": "passed_review_and_independent_critique",
+    "calls": 4,
+    "receipt_sha256": "eb28b7b34ccd99ad15f3433822c42653f013f54837708d9116027e0f17b69dfd",
+    "operation_sha256": "645648c3c01a194973a53b4bc818ea7359283fce2e17eceb19134222c85c02c9",
+    "slack_writes": 0,
+    "limitation": "A separate crypto-volatility v18 case was held after final critique. These development cases do not estimate long-run editorial precision."
+  },
+  "verification": {
+    "local_full": "1332 passed, 46 skipped",
+    "ruff": "passed",
+    "linux_ci_run_id": 36526443940,
+    "linux_ci_status": "success",
+    "linux_ci_head_sha": "dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf",
+    "simulated_slack": true,
+    "actual_slack_delivery_tested": false
+  },
+  "deployment": {
+    "journal": "/var/lib/quant-company/releases/quant-feed-dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf.json",
+    "phase": "preview_active",
+    "cutover_completed_at": "2026-09-29T05:42:03Z",
+    "quant_app_image": "sha256:f7d701887d51849ebb2c34360eadadfaab6b5f302f68269c9fa10e14232ad138",
+    "quant_codex_image": "sha256:788aaa95c7a56d960a434ba16e65000f47bc47fe8dd03950eace02be4c138a73",
+    "producer_consumer_schema_match": true,
+    "independent_service_ids_preserved": true,
+    "roles_and_credentials_preserved": true,
+    "quant_collection_enabled": true,
+    "quant_publication_enabled": false,
+    "historic_publications": 1,
+    "pending_quant_outbox": 0,
+    "running_quant_calls": 0,
+    "preview_containers_present": false,
+    "post_cutover_observed_at": "2026-09-29T05:43:29Z",
+    "disk_available_bytes": 4013797376,
+    "memory_available_kib": 1960816
+  },
+  "remaining_gates": [
+    "Observe the new production code with publication disabled for a real 48 hours after cutover; earliest completion is 2026-10-01T05:42:03Z if stable.",
+    "Recheck quality, activity, disk, memory, OOM, receipts and independent services; do not infer a live model call or Slack delivery from simulated checks.",
+    "Request explicit owner approval before enabling Quant Scout publication. Do not delete or edit the existing Robeco post without separate authorization."
+  ]
+}
