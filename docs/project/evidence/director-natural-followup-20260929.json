@@ -8,7 +8,8 @@
     "modelWorker": "quant-company-autonomous:2d2ee42ffc41dabb505020ada896e4d9760a8ab1"
   },
   "candidateBase": "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9",
-  "integrationNote": "The fix was integrated on top of the active audit and token-accounting release and the concurrent research citation guidance release; the earlier PR remains the focused review of the fix.",
+  "integrationNote": "The fix includes the active audit and token-accounting release, research citation guidance, and the concurrent validator audit-packet release; the earlier PR remains the focused review of the fix.",
+  "concurrentWorkerCommitIncluded": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801",
   "sourceKinds": {
     "messages": "read-only production PostgreSQL records for the affected project",
     "program": "read-only production PostgreSQL research_programs and research_mission_stages",
