@@ -1,22 +1,17 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v4.json",
-  "state": "slack_replies_verified_project_task_quota_removal_prepared",
-  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
+  "currentIntent": "INTENT-v5.json",
+  "state": "director_natural_followup_release_prepared",
+  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/90",
   "deliverables": {
     "DIAGNOSIS": {"status": "completed"},
-    "APPLICATION": {"status": "prepared", "commit": "ae132c3", "base": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce"},
-    "PINNED_WORKER": {"status": "prepared", "commit": "e53b771aa994a54c1f4be6a2610856ea7a298816", "temporaryOverlay": "deploy/pinned-worker-roles-compat.compose.yaml"},
-    "VALIDATION": {"status": "completed", "realPostgresTests": 16, "pinnedWorkerTests": 1},
-    "CUTOVER": {"status": "applied", "commit": "d571734e161c39f7c26252005231f93b619b3749"},
-    "LIVE_REPLY": {"status": "completed", "financialStrategistDm": "two delivered messages confirmed in real Slack", "researchCenter": "two delivered messages confirmed in real Slack"},
-    "TASK_LIMIT": {"status": "prepared", "default": "unlimited", "realPostgresTests": 3, "fullSuitePassed": 1226, "fullSuiteSkipped": 38, "lint": "passed"},
-    "TASK_LIMIT_RELEASE": {"status": "pending", "reason": "Pinned research worker requires a qualified release with historical job pins preserved"}
+    "APPLICATION": {"status": "completed", "integratedBase": "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9", "concurrentWorkerCommitIncluded": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801", "latestConcurrentReleaseIncluded": "ac44bf5b66b3016021e13c34ffc75b8db215bfc3"},
+    "VALIDATION": {"status": "completed", "focusedRealPostgresTests": 28, "lint": "passed"},
+    "REVIEW": {"status": "completed", "pr": "https://github.com/JJongAchii/quant-ai-company/pull/90"},
+    "LIVE_CHECK": {"status": "pending", "reason": "Integrated release is being qualified for production cutover"}
   },
-  "operationalStatus": "Both named Slack threads have real delivered bot replies. The 40-task project quota remains in production pending a reviewed app and research-capable worker release. Source and real-PostgreSQL tests now support an unlimited default.",
-  "evidence": "../../project/evidence/slack-reply-cutover-20260928.json",
-  "previousIntent": "INTENT-v3.json",
-  "previousState": "completed",
-  "previousEvidence": "../../project/evidence/model-accounts-20260923/live-account-control.json"
+  "operationalStatus": "Natural owner progress questions still need the integrated company release on the app and model worker; prior messages are not replayed.",
+  "evidence": "../../project/evidence/director-natural-followup-20260929.json",
+  "previousIntent": "INTENT-v4.json"
 }

@@ -17,7 +17,7 @@ from quant_company.research.feedback import resolve_challenges
 from quant_company.research.mission_contracts import MissionSpec
 from quant_company.research.program_contracts import ResearchProgram
 from quant_company.research.program_controller import ProgramController
-from quant_company.research.programs import ProgramStore
+from quant_company.research.programs import ProgramStore, public_progress
 from quant_company.research.worker import sha_file
 
 from .test_research_adaptive_report import producer
@@ -94,6 +94,24 @@ def create_task(h, **changes):
         h.program_store.decide(conn, h.program_id, task_id, {"decision": "accept", "rationale": "Bounded fixture"}, actor="director")
         h.mission_id = str(conn.execute("SELECT mission_id FROM research_program_tasks WHERE id=%s", (task_id,)).fetchone()["mission_id"])
     return task_id
+
+
+def test_owner_followup_sees_current_program_stage(program):
+    from .test_task_control import route, turn_for
+
+    h = program
+    ProgramController(h.company).tick()
+    with h.company.db.transaction() as conn:
+        progress = public_progress(conn, h.project["project_id"])
+    assert progress[0]["state"] == "active"
+    assert progress[0]["stage"]["stage"] == "program_proposal"
+    assert progress[0]["mission_count"] == 0
+    question = h.company.ingest(event_key="fixture:program-progress", text="방금 승인한 새 연구 진행 중이야?",
+                                owner="UHUMAN", project_id=h.project["project_id"], interpret=True)
+    assert route(h.company, question, "status")["intent"]["action"] == "followup"
+    answer = h.company.prepare_turn(turn_for(h.company, question["task_id"]))
+    context = json.loads(answer["request"]["prompt"].split("TASK DATA JSON:\n")[1])
+    assert context["research_programs"] == progress
 
 
 def test_program_inherits_bound_owner_authority_and_rejects_self_approval(program):
