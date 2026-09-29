@@ -267,4 +267,7 @@ Codex 런타임은 다시 올라왔다. 종료 원인은 이 읽기 전용 조�
 [워커 전환](evidence/research-programs-20260929/source-guidance-worker-cutover.json),
 [적용 후 확인](evidence/research-programs-20260929/source-guidance-worker-postcheck.json).
 이 시점에 미션·예약·과학 시행은 0건이다. 새 안내를 이용한 데이터 직원의
-다음 시도는 아직 완료되지 않았다.
+7회차가 06:31 UTC에 시작됐다. 실제 모델 요청에 허용 출처 ID와 패킷 경로의
+차이를 알리는 두 문장이 포함됐다.
+[운영 요청 확인](evidence/research-programs-20260929/source-guidance-live-prompt.json).
+이 시도의 데이터 심사 결과는 아직 없다.

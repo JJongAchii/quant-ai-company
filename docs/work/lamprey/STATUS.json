@@ -148,7 +148,7 @@
         },
         {
           "path": "docs/project/RESEARCH-PROGRAMS-POST-APPROVAL-20260929.md",
-          "sha256": "46d3e13a2d59"
+          "sha256": "51e30b90bed4"
         },
         {
           "path": "docs/project/evidence/research-programs-20260929/etf-data-evidence-note.json",
@@ -229,11 +229,15 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-postcheck.json",
           "sha256": "4cdad6047ef4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-live-prompt.json",
+          "sha256": "1a415add969f"
         }
       ],
-      "note": "Signed owner program active. Third ETF hypothesis aligns its fill window with the frozen engine, but six data review attempts have produced no accepted assessment; required packet reads and cited original reads remain distinct. S3 offers only current null versions for the source objects. Five declared data gaps continue to block real-profile ready. Zero missions, reservations and scientific trials.",
+      "note": "Signed owner program active. Third ETF task remains proposed after six rejected data attempts. Guarded source guidance worker cutover verified; the seventh live data prompt contains approved source-ID and packet-path guidance. No accepted assessment yet. Five data gaps block real-profile ready; zero missions, reservations and scientific trials.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T06:29:56.797567+00:00"
+      "updatedAt": "2026-09-29T06:32:43.181807+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -399,5 +403,5 @@
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T06:29:56.797567+00:00"
+  "updatedAt": "2026-09-29T06:32:43.181807+00:00"
 }
