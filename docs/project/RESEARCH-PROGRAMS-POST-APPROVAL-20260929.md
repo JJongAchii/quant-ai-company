@@ -150,3 +150,38 @@ lint와 서비스 CI 성공, 병합 가능 상태를 확인했다. 운영 후보
 연구 프로그램은 승인된 24회 과학 시행·36,000초 계산·6개 미션·동시 1개 미션의
 상한 아래에서 자료 제안 → 독립 데이터 점검 → director 선정 순서로 진행한다. 후속 단계의
 실제 결과는 별도 운영 기록과 연구 감사가 있어야 판단한다.
+
+13:06 KST에는 새 문헌을 근거로 연구자가 두 번째 ETF 과제
+`dc0e9eac-040d-5eac-9a6d-69fd2c32a0f6`를 등록했다. 원문 2건에 대한 인용
+8건과 빈 선행 미션 목록이 기록됐다.
+[두 번째 과제 요약](evidence/research-programs-20260929/second-task-proposal-summary.json).
+첫 데이터 직원 시도는 인용한 원문을 끝까지 읽지 않아 차단됐고, 두 번째·세 번째
+시도는 Codex 응답의 회사 결정 계약 형식 오류로 차단됐다. 네 번째 시도도 인용한
+원문을 열지 않은 상태로 결론을 제시해 차단됐다. 각 시도의 호출 영수증은
+정상 완료와 형식 거부를 구별한다. 두 번째 과제는 13:29 KST 현재 `proposed`
+상태이고, 다음 자동 재시도는 13:34 KST 예정이다.
+[첫 차단 영수증](evidence/research-programs-20260929/second-task-data-read-rejection.json),
+[재시도 호출 영수증](evidence/research-programs-20260929/second-task-data-retry-faults.json),
+[네 번째 시도 상태](evidence/research-programs-20260929/second-task-data-attempt4.json).
+
+04:08 UTC에 연구 워커·작업 배포기·Slack 소켓 컨테이너가 종료됐고 API와
+Codex 런타임은 다시 올라왔다. 종료 원인은 이 읽기 전용 조사만으로 확정하지
+않았다. 04:17 UTC에 배포 잠금, 활성 릴리스 `ac44bf5`, 승인 digest·이벤트,
+실행 중 턴·단계·작업 0건을 재검사한 뒤 종료돼 있던 **동일한 세 컨테이너**를
+재시작했다. 컨테이너 ID·이미지와 다른 핵심 서비스 ID는 유지됐고, 자동 데이터
+시도가 다시 생성되는 것을 확인했다.
+[복구 전후 영수증](evidence/research-programs-20260929/service-restart-recovery.json).
+04:31 UTC에는 별도의 director 후속 응답 릴리스 `eec5e23`이 활성화됐다.
+연구 워커가 가져온 프로그램 controller의 실제 import 해시는 앞선 `ac44bf5`
+수정본과 같음을 확인했다. 이번 원문 이어 읽기 수정은 새 릴리스와 통합해
+검증해야 한다.
+[활성 릴리스 확인](evidence/research-programs-20260929/active-release-drift-20260929.json).
+
+13:24 KST에는 승인된 ETF 입력을 고정 qdata API와 현재 S3 객체로 대조했다.
+당시 20거래일 기준 cohort, 835거래일의 8,350개 원시 시가·종가·거래대금 행은
+일치했다. 현재 S3 객체는 준비 당시 객체와 달라 조정종가 6,680행이 바뀌었고,
+종목별 차이는 일정한 배율이었다. 원래 객체 버전 ID와 원천 공개시각·실제
+체결 조건은 미확인이다. 상세 결과와 재현 스크립트는
+[첫 과제 데이터 근거 공백](FIRST-TASK-DATA-GAP-20260929.md)에 기록했다.
+데이터 직원의 `blocked`와 director의 `waiting` 판단을 변경하지 않았으며,
+미션·예약·과학 시행은 여전히 0건이다.

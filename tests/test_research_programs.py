@@ -162,12 +162,19 @@ def test_program_stage_requires_current_attempt_original_read_and_survives_resta
         "allowed_predecessor_mission_ids"] == []
     response = ProviderResponse(request_id=identity, provider="fixture", decision=AgentDecision(say="", status="complete",
         artifacts=[{"title": "Synthetic proposal", "content": json.dumps(task_proposal())}]))
+    assert h.company.commit_turn(identity, response)["incomplete_source"]
+    with h.company.db.transaction() as conn:
+        current = conn.execute("SELECT error,attempt FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+        read_turn = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                     (stage["task_id"],)).fetchone()["id"])
+    assert current["attempt"] == 1 and current["error"].startswith("cited_source_unread:")
+    assert "read_first_chunk" in h.company.prepare_turn(read_turn)["request"]["prompt"]
     with pytest.raises(PolicyError, match="not been read"):
-        h.company.commit_turn(identity, response)
+        h.company.commit_turn(read_turn, response.model_copy(update={"request_id": read_turn}))
     file = stage["context"]["evidence_sources"][0]["file"]
-    read = ProviderResponse(request_id=identity, provider="fixture", decision=AgentDecision(say="", status="continue",
+    read = ProviderResponse(request_id=read_turn, provider="fixture", decision=AgentDecision(say="", status="continue",
         tools=[{"name": "research_control", "arguments": {"action": "read_stage_file", "path": file, "offset": 0}}]))
-    h.company.commit_turn(identity, read)
+    h.company.commit_turn(read_turn, read)
     h.company = Company(h.company.settings, h.company.roles)
     with h.company.db.transaction() as conn:
         next_id = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'", (stage["task_id"],)).fetchone()["id"])

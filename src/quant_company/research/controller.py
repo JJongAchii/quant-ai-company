@@ -536,15 +536,17 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
                 progress = conn.execute("""SELECT next_offset FROM research_stage_reads WHERE stage_id=%s
                     AND attempt=%s AND path=%s ORDER BY character_offset DESC LIMIT 1""",
                     (row["id"], row["attempt"], paths[source])).fetchone()
-                if progress and progress["next_offset"] is not None:
-                    hint = f"cited_source_incomplete:{paths[source]}@{progress['next_offset']};read_next_chunk"
-                    if row["error"] != hint:
-                        conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s",
-                                     (hint, row["id"]))
-                        conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
-                                     (Jsonb(response.model_dump(mode="json")), turn["id"]))
-                        company._new_turn(conn, task)
-                        return {"state": "completed", "incomplete_source": True}
+                hint = (f"cited_source_incomplete:{paths[source]}@{progress['next_offset']};read_next_chunk"
+                        if progress else f"cited_source_unread:{paths[source]}@0;read_first_chunk")
+                # One identical premature proposal still fails. A new read receipt
+                # clears this hint and lets the same employee attempt continue.
+                if row["error"] != hint:
+                    conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s",
+                                 (hint, row["id"]))
+                    conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                                 (Jsonb(response.model_dump(mode="json")), turn["id"]))
+                    company._new_turn(conn, task)
+                    return {"state": "completed", "incomplete_source": True}
             raise PolicyError("Cited source has not been read completely in this employee attempt")
     if enabled(row):
         if commit_review(company, conn, row, turn, response, value):
