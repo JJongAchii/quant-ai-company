@@ -96,7 +96,7 @@
         },
         {
           "path": "docs/project/FIRST-TASK-DATA-GAP-20260929.md",
-          "sha256": "978689cce1a7"
+          "sha256": "c3e87edf7c1b"
         },
         {
           "path": "docs/project/evidence/research-programs-20260929/etf-input-contract-readback.json",
@@ -148,7 +148,7 @@
         },
         {
           "path": "docs/project/RESEARCH-PROGRAMS-POST-APPROVAL-20260929.md",
-          "sha256": "85f8ad7a8f0f"
+          "sha256": "46d3e13a2d59"
         },
         {
           "path": "docs/project/evidence/research-programs-20260929/etf-data-evidence-note.json",
@@ -197,11 +197,43 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/data-evidence-researcher-read-depth.json",
           "sha256": "731194257004"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/etf-s3-version-history-readback.json",
+          "sha256": "24970ad5f509"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-third-task-first-review.json",
+          "sha256": "6a54f377c39e"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-third-task-second-review.json",
+          "sha256": "32e5357961c1"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-precutover-stage.json",
+          "sha256": "d19a7547c47f"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-validation.json",
+          "sha256": "7e0a6c845a59"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-cutover-precheck.json",
+          "sha256": "a60553d4bb38"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-cutover.json",
+          "sha256": "43db89608b88"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-postcheck.json",
+          "sha256": "4cdad6047ef4"
         }
       ],
-      "note": "Signed program active. Two ETF tasks remain waiting. The worker now serves a digest-bound packet; researcher actually completed reads of packet identity, frozen engine, three reports and two original sources, and sampled both frozen inputs. Five declared gaps continue to block real-profile ready. Zero missions, reservations and scientific trials.",
+      "note": "Signed owner program active. Third ETF hypothesis aligns its fill window with the frozen engine, but six data review attempts have produced no accepted assessment; required packet reads and cited original reads remain distinct. S3 offers only current null versions for the source objects. Five declared data gaps continue to block real-profile ready. Zero missions, reservations and scientific trials.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T05:37:36.360920+00:00"
+      "updatedAt": "2026-09-29T06:29:56.797567+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -328,16 +360,44 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/program-post-unread-source.json",
           "sha256": "265d135cf0f3"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-release-staged.json",
+          "sha256": "abcaeee217c1"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-built.json",
+          "sha256": "86f0c426a429"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-qualified.json",
+          "sha256": "4028ef573874"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-validation.json",
+          "sha256": "7e0a6c845a59"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-cutover-precheck.json",
+          "sha256": "a60553d4bb38"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-cutover.json",
+          "sha256": "43db89608b88"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-postcheck.json",
+          "sha256": "4cdad6047ef4"
         }
       ],
-      "note": "The unread-source same-attempt continuation patch passed 1312 local tests, lint and PR service CI. Guarded worker-only cutover from eec5 to cd6d completed after all turns were idle; installed controller hash and official ChatGPT route were read back. Other service container IDs stayed fixed.",
+      "note": "One-bounded data source ID correction passed 1371 local tests, lint and PR service CI. Guarded worker-only cutover to a09ce0f completed with zero running turns, stages, jobs, ambiguous model calls, missions and reservations; 12 installed source hashes and official ChatGPT route were read back. Other service container IDs stayed fixed.",
       "status": "verified",
-      "updatedAt": "2026-09-29T04:54:52.965400+00:00"
+      "updatedAt": "2026-09-29T06:29:56.797567+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T05:37:36.360920+00:00"
+  "updatedAt": "2026-09-29T06:29:56.797567+00:00"
 }
