@@ -28,7 +28,7 @@ def prepare_session(request, directory: Path, profile, revision, *, read_json, w
     else:
         if request.session.previous_request_id is not None:
             reject()
-        state = {**binding, "head": None, "thread_id": None, "inflight": None}
+        state = {**binding, "head": None, "thread_id": None, "inflight": None, "usage": {}}
     previous = request.session.previous_request_id
     if previous:
         receipt_path = directory / (previous + ".json")
@@ -40,16 +40,18 @@ def prepare_session(request, directory: Path, profile, revision, *, read_json, w
                     or receipt.get("session", {}).get("id") != identity
                     or receipt.get("requested_execution") != {
                         "model": request.model, "reasoning_effort": request.reasoning_effort}
-                    or result.request_id != previous or not result.thread_id):
+                    or result.request_id != previous or not result.thread_id
+                    or not isinstance(receipt.get("session_usage"), dict)):
                 reject()
         except (OSError, ValueError, TypeError, KeyError):
             reject()
         if state["inflight"] == previous:
             # Recover only the receipt/session commit window, never model inference.
-            state.update(head=previous, thread_id=result.thread_id, inflight=None)
+            state.update(head=previous, thread_id=result.thread_id, inflight=None, usage=receipt["session_usage"])
             write_json(path, state)
         if state["head"] != previous or state["thread_id"] != result.thread_id:
             reject()
+        state["usage"] = receipt["session_usage"]
     elif state["head"] is not None:
         reject()
     if state["inflight"] not in (None, request.request_id):
@@ -57,3 +59,18 @@ def prepare_session(request, directory: Path, profile, revision, *, read_json, w
     work = root / "work"
     work.mkdir(exist_ok=True, mode=0o700)
     return path, state, work
+
+
+def turn_usage(cumulative, previous):
+    """CLI 0.154.0 resume reports session totals, including earlier paid turns."""
+    if not {"input_tokens", "output_tokens"} <= cumulative.keys():
+        raise ProviderFault("uncertain", "Codex did not report bounded session usage.")
+    delta = {}
+    for key in cumulative.keys() | previous.keys():
+        current, before = cumulative.get(key, 0), previous.get(key, 0)
+        if type(current) is not int or type(before) is not int or not 0 <= before <= current:
+            raise ProviderFault("uncertain", "Codex session usage needs reconciliation.")
+        delta[key] = current - before
+    if delta.get("cached_input_tokens", 0) > delta["input_tokens"]:
+        raise ProviderFault("uncertain", "Codex session cache usage needs reconciliation.")
+    return delta
