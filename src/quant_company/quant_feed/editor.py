@@ -14,7 +14,7 @@ from .contracts import (
     ResearchDraft,
 )
 
-EVIDENCE_SCOPE = "미기재·확인 불가는 제공된 원문 텍스트 기준이며, 원문 전체에 없다는 단정이 아닙니다."
+EVIDENCE_SCOPE = "미기재·확인 불가는 검토에 제공된 원문 텍스트·발췌 기준이며, 원문 전체에 없다는 단정이 아닙니다."
 
 INSTRUCTIONS = """You are Quant Scout, an evidence-first Korean-language research curator for Korean and US equities.
 Return the requested JSON object directly, without an AgentDecision wrapper or an encoded JSON string.
@@ -158,7 +158,7 @@ def prompt(bundle, stage):
             "Repair only the deterministic validation issues in previous_critique. The failed draft is supplied; "
             "preserve its supported content and any earlier editorial corrections. Do not introduce new claims."
             if stage == "repair" else
-            "Produce one research brief. If a prior critique exists, correct its issues in this single allowed revision. "
+            "Produce one research brief. If a prior critique exists, correct its issues in this bounded revision. "
             "Use the supplied draft: preserve unaffected supported facts and fix every occurrence of a flagged claim "
             "across the brief and evidence, not just the field explicitly named. Do not add unrelated claims.")
     metadata = bundle.get("metadata") or {}
@@ -261,7 +261,7 @@ BOUND_FIELDS = ("market", "why_read", "idea", "data_period", "validation", "auth
 INTERPRETIVE_FIELDS = {"why_read", "validation", "limitations", "application"}
 
 
-def _bound_brief(draft, pages, corrections):
+def _bound_brief(draft, pages, corrections, *, context_clipped=False):
     spans = {span["span_id"]: span for span in source_spans(pages)}
     result = draft.model_dump(mode="json")
     evidence, issues = [], []
@@ -270,7 +270,11 @@ def _bound_brief(draft, pages, corrections):
         texts = []
         for index, statement in enumerate(statements):
             path = f"{field}[{index}]"
-            texts.append(statement.text.strip())
+            text = statement.text.strip()
+            if statement.basis == "qualified_gap" and context_clipped and "제공 원문" in text:
+                text = text.replace("제공 원문", "제공 발췌")
+                corrections.append({"kind": "clipped_gap_scope_narrowed", "field": path})
+            texts.append(text)
             ids = statement.span_ids
             if statement.basis == "source":
                 if not ids or len(set(ids)) != len(ids) or any(identity not in spans for identity in ids):
@@ -288,6 +292,8 @@ def _bound_brief(draft, pages, corrections):
             elif statement.basis == "qualified_gap" and not any(
                     marker in statement.text for marker in ("제공", "미기재", "해당 없음")):
                 issues.append({"code": "quant_gap_scope_missing", "field": path})
+            elif statement.basis == "qualified_gap" and context_clipped and "제공 발췌" not in text:
+                issues.append({"code": "quant_clipped_gap_requires_excerpt_scope", "field": path})
             elif re.search(r"\d", statement.text):
                 issues.append({"code": "quant_numeric_interpretation_requires_source", "field": path})
         result[field] = texts if field == "limitations" else " ".join(texts)
@@ -335,7 +341,8 @@ def validate(response, bundle, stage, *, audit=None):
     corrections = []
     if decision.artifacts[0].title == "quant_brief_v4":
         draft = _proposal(FieldBoundResearchDraft, decision.artifacts[0].content)
-        brief = _bound_brief(draft, bundle["pages"], corrections)
+        brief = _bound_brief(draft, bundle["pages"], corrections,
+                             context_clipped=bundle.get("context_clipped", False))
     elif decision.artifacts[0].title in {"quant_brief_v2", "quant_brief_v3"}:
         grouped = decision.artifacts[0].title == "quant_brief_v3"
         draft = _proposal(GroupedResearchDraft if grouped else ResearchDraft, decision.artifacts[0].content)
@@ -502,6 +509,6 @@ def render(brief, document, previous_url=None):
     related = list(dict.fromkeys(url for url in brief.related_urls if url != document["url"]))
     if related:
         lines.append(" · ".join(link(url, f"추가 자료 {index}") for index, url in enumerate(related[:2], 1)))
-    lines.append("_미기재·확인 불가: 제공된 원문 텍스트 기준_")
+    lines.append("_미기재·확인 불가: 검토에 제공된 원문 텍스트·발췌 기준_")
     lines.append("_원문 대조 AI 요약·별도 AI 검토; 독립 재현·투자 검증 아님_")
     return "\n".join(lines)

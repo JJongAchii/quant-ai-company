@@ -15,7 +15,7 @@ from ..web_tools import search_prompt, search_result
 from . import schedule
 from .contracts import QUANT_FEED_AGENT, TOPICS, ResearchBrief, load_sources
 from .editor import ProposalValidationError, output_contract, prompt, render, validate
-from .feeds import aliases
+from .feeds import aliases, obvious_nonresearch_title
 
 LOCK = 71350249
 
@@ -99,7 +99,7 @@ class QuantFeedStore:
 
     def policy(self):
         s = self.company.settings
-        return fingerprint({"version": 18, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
+        return fingerprint({"version": 19, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
                             "owner": s.quant_feed_owner_user, "channel": s.quant_feed_channel_id,
                             "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
                             "web": s.company_web_enabled, "sources": [x.model_dump() for x in self.sources().values()],
@@ -115,6 +115,16 @@ class QuantFeedStore:
                 enabled=excluded.enabled,next_at=CASE WHEN quant_feed_sources.config_digest=excluded.config_digest
                 THEN quant_feed_sources.next_at ELSE now() END""",
                          (source.id, Jsonb(source.model_dump()), digest, source.enabled))
+        conn.execute("""UPDATE quant_feed_documents d SET state='held',error='source_disabled_requires_requalification'
+            FROM quant_feed_candidates c JOIN quant_feed_sources s ON s.id=c.source_id
+            WHERE d.candidate_id=c.id AND d.state='ready' AND NOT s.enabled""")
+        candidates = conn.execute("""SELECT d.id,c.title FROM quant_feed_documents d
+            JOIN quant_feed_candidates c ON c.id=d.candidate_id
+            WHERE d.state='ready' AND c.source_id='two-sigma'""").fetchall()
+        held = [row["id"] for row in candidates if obvious_nonresearch_title("two-sigma", row["title"])]
+        if held:
+            conn.execute("""UPDATE quant_feed_documents SET state='held',error='source_title_nonresearch_precheck'
+                WHERE id=ANY(%s) AND state='ready'""", (held,))
 
     def claim_source(self):
         if not self.authorized():
@@ -128,6 +138,8 @@ class QuantFeedStore:
                 RETURNING *""", (uuid4(),)).fetchone()
 
     def add_candidate(self, conn, source, entry):
+        if obvious_nonresearch_title(source.id, entry["title"]):
+            return False
         url = canonical_url(entry["url"])
         if not source.allows(url):
             return False
@@ -411,9 +423,9 @@ class QuantFeedStore:
             return {"document_state": state, "document_id": document["id"],
                     "source_corrections": corrections}
         state = "held"
-        if value.disposition == "revise" and document["revision"] == 0:
+        if value.disposition == "revise" and document["revision"] < 2:
             state = "ready"
-            conn.execute("UPDATE quant_feed_documents SET revision=1,stage='revision' WHERE id=%s", (document["id"],))
+            conn.execute("UPDATE quant_feed_documents SET revision=revision+1,stage='revision' WHERE id=%s", (document["id"],))
         elif value.disposition == "pass":
             state = "approved" if self.company.settings.quant_feed_publish_enabled else "preview"
         conn.execute("UPDATE quant_feed_documents SET critique=%s,state=%s,reviewed_at=now() WHERE id=%s",

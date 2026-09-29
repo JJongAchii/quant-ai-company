@@ -130,6 +130,7 @@ def test_qualification_preserves_draft_and_editorial_budget_after_repair(qualifi
     replies = [critique(disposition="hold", direct_quant_scope=False, substantive_research=False),
                brief(disposition="reject" if negative_passed else "hold"), invalid, brief(),
                critique(disposition="revise", claims_supported=False, issues=["idea: qualify"]),
+               brief(), critique(disposition="revise", claims_supported=False, issues=["validation: qualify"]),
                brief(), critique()]
     calls = []
 
@@ -143,8 +144,9 @@ def test_qualification_preserves_draft_and_editorial_budget_after_repair(qualifi
     assert result["state"] == ("passed" if negative_passed else "not_passed")
     assert result["case_results"]["positive"]["state"] == "passed"
     assert [row["stage"] for row in result["calls"]] == [
-        "critique", "review", "review", "repair", "critique", "revision", "critique"]
-    assert len(calls) == 7 and len({r.request_id for r in calls}) == 7
+        "critique", "review", "review", "repair", "critique", "revision", "critique", "revision", "critique"]
+    assert result["editorial_revisions_used"] == 2
+    assert len(calls) == 9 and len({r.request_id for r in calls}) == 9
     assert result["calls"][2]["validation_issues"][0]["field"] == "evidence[0]"
     assert all(r.output_contract != "agent_decision" for r in calls)
 
@@ -189,16 +191,20 @@ def test_revalidate_settled_layout_failure_without_reissuing_completed_model_cal
 
     class Provider:
         async def run(self, request):
-            assert request.output_contract == "quant_critique_v2"
             called.append(request.request_id)
-            verdict = (critique(disposition="revise", claims_supported=False, issues=["material error remains"])
-                       if already_revised else critique())
+            if already_revised:
+                verdict = (draft if request.output_contract == "quant_brief_v4" else
+                           critique(disposition="revise", claims_supported=False, issues=["material error remains"]))
+            else:
+                assert request.output_contract == "quant_critique_v2"
+                verdict = critique()
             return ProviderResponse(request_id=request.request_id, decision=AgentDecision(
                 status="complete", say="", artifacts=[ArtifactDraft(title="test", content=json.dumps(verdict))]))
 
     result = asyncio.run(qualification.qualify(company(), "negative", "positive", output,
                                                provider=Provider(), reuse=seed_path))
-    assert result["state"] == ("not_passed" if already_revised else "passed") and len(called) == 1
+    assert result["state"] == ("not_passed" if already_revised else "passed")
+    assert len(called) == (3 if already_revised else 1)
     assert len(result["revalidated_responses"]) == 3
     assert all(row["model_reissued"] is False for row in result["revalidated_responses"])
     assert result["revalidated_responses"][-1]["source_corrections"][0]["kind"] == "pdf_line_wrap_hyphen_match"
@@ -209,7 +215,7 @@ def test_revalidate_settled_layout_failure_without_reissuing_completed_model_cal
     with pytest.raises(ValueError, match="changed_policy"):
         asyncio.run(qualification.qualify(company(), "negative", "positive", tmp_path / "repeat.json",
                                          provider=Provider(), reuse=seed_path))
-    assert len(called) == 1  # No repeated judge shopping under an unchanged policy.
+    assert len(called) == (3 if already_revised else 1)  # No repeated judge shopping under an unchanged policy.
 
 
 @pytest.mark.parametrize("state,call_state", [("blocked", "returned"), ("not_passed", "requested")])
