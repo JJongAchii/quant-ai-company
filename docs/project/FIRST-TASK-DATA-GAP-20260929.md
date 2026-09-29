@@ -144,3 +144,20 @@ director 역시 [두 번째 과제의 최종 판단](evidence/research-programs-
 취급하지 않았다. 세 과제 모두 `waiting`이며 미션·예약·과학 시행은 0건이다.
 [director 원문·엔진 읽기](evidence/research-programs-20260929/third-task-director-read-depth.json),
 [최종 선정 판단](evidence/research-programs-20260929/third-task-final-decision.json).
+
+## 네 번째 과제와 남은 증명
+
+이전 워커의 단계별 패킷 버전 계산 때문에 세 번째 과제 보류 뒤 새 자료 없이
+네 번째 제안이 한 번 열렸다. 새 워커에서 독립 데이터 직원은 제공된 범위를
+확인해 `coverage=true`로 기록했으나 원천 공개시각·원본 변환 계보·실제 체결
+조건이 미확인이라 나머지 세 플래그를 `false`로 두고 `blocked`를 제출했다.
+[데이터 심사](evidence/research-programs-20260929/fourth-task-data-assessment.json).
+director는 원문 두 건과 엔진을 완독한 뒤, 이번 제안의 시가 간 평가 계약은
+맞지만 원천·변환 이력 및 실제 신호 사용 행의 09:00 이전 이용 가능성은
+증명되지 않았다고 판단해 `wait`를 기록했다. 실제 호가 체결은 이번 이론적
+평가의 입증 범위와 구분했다.
+[읽기 깊이](evidence/research-programs-20260929/fourth-task-director-read-depth.json),
+[최종 판단](evidence/research-programs-20260929/fourth-task-final-decision.json).
+과학 시행은 없고 네 과제가 대기 중이다. 수정 워커에서는 선정 종료 뒤 새
+자료 없이 제안 단계가 반복되지 않음을 세 번의 운영 스냅샷으로 확인했다.
+[반복 방지 영수증](evidence/research-programs-20260929/packet-version-postcutover-no-loop.json).
