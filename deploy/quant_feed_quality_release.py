@@ -154,19 +154,22 @@ def stage(args, previous, target, journal, helper):
         runtime = json.loads(run(["docker", "inspect", "quant-company-codex-runtime-1"]))[0]
         app = json.loads(run(["docker", "inspect", "quant-company-api-1"]))[0]
         runtime_commit = runtime["Config"]["Labels"].get("org.opencontainers.image.revision")
+        app_commit = app["Config"]["Labels"].get("org.opencontainers.image.revision")
         if (not re.fullmatch(r"[a-f0-9]{40}", runtime_commit or "")
-                or app["Config"]["Labels"].get("org.opencontainers.image.revision") != args.base
+                or not re.fullmatch(r"[a-f0-9]{40}", app_commit or "")
                 or runtime["Image"] != before["quant-company-codex-runtime-1"]["image_id"]
                 or app["Image"] != before["quant-company-api-1"]["image_id"]):
             raise ValueError("quant_stage_base_image_changed")
         runtime_source = CURRENT.parent / "releases" / runtime_commit
+        app_source = CURRENT.parent / "releases" / app_commit
         fixed_inputs = ("pyproject.toml", "uv.lock", "deploy/Dockerfile", "deploy/Dockerfile.code-update",
                         "deploy/entrypoint.py",
                         "deploy/qdata-source.json")
-        if not runtime_source.is_dir() or any(
+        if not runtime_source.is_dir() or not app_source.is_dir() or any(
                 (target / name).read_bytes() != (base / name).read_bytes()
-                for base in (previous, runtime_source) for name in fixed_inputs):
+                for base in (previous, app_source, runtime_source) for name in fixed_inputs):
             raise ValueError("quant_stage_base_dependencies_changed")
+        record.update(base_app_commit=app_commit, base_runtime_commit=runtime_commit)
         expected = quant.source_inventory(target / "src/quant_company")
         probe = ("import hashlib,importlib.util,json,pathlib;"
                  "root=pathlib.Path(importlib.util.find_spec('quant_company').origin).parent;"

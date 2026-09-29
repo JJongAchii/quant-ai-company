@@ -32,11 +32,12 @@ def test_stage_builds_only_dependency_identical_app_and_dedicated_runtime(releas
     import hashlib
 
     base, target = tmp_path / "base", tmp_path / "target"
-    runtime_commit, commit = "c" * 40, "b" * 40
+    runtime_commit, app_commit, commit = "c" * 40, "d" * 40, "b" * 40
     runtime_source = tmp_path / "releases" / runtime_commit
+    app_source = tmp_path / "releases" / app_commit
     fixed = ("pyproject.toml", "uv.lock", "deploy/Dockerfile", "deploy/Dockerfile.code-update",
              "deploy/entrypoint.py", "deploy/qdata-source.json")
-    for root in (base, runtime_source):
+    for root in (base, app_source, runtime_source):
         for name in fixed:
             file = root / name
             file.parent.mkdir(parents=True, exist_ok=True)
@@ -75,7 +76,7 @@ def test_stage_builds_only_dependency_identical_app_and_dedicated_runtime(releas
                 "org.opencontainers.image.revision": runtime_commit}}}])
         if command[:3] == ["docker", "inspect", "quant-company-api-1"]:
             return json.dumps([{"Image": "sha256:app", "Config": {"Labels": {
-                "org.opencontainers.image.revision": args.base}}}])
+                "org.opencontainers.image.revision": app_commit}}}])
         if command[:2] == ["docker", "run"]:
             return json.dumps(expected)
         if command[:3] == ["docker", "image", "inspect"]:
@@ -91,6 +92,7 @@ def test_stage_builds_only_dependency_identical_app_and_dedicated_runtime(releas
     release.stage(args, base, target, journal, helper)
     result = json.loads(journal.read_text())
     assert result["phase"] == "staged"
+    assert result["base_app_commit"] == app_commit
     assert [image["target"] for image in result["images"]] == ["app", "codex"]
     builds = [command for command in commands if command[:2] == ["docker", "build"]]
     assert len(builds) == 2 and all("--network=none" in command for command in builds)
