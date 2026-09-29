@@ -230,7 +230,107 @@ def test_program_stage_requires_current_attempt_original_read_and_survives_resta
     assert ProgramController(h.company).tick()["state"] == "completed"
     assert ProgramController(h.company).tick()["state"] == "running"
     with h.company.db.transaction() as conn:
-        assert conn.execute("SELECT actor FROM research_mission_stages WHERE state='running'").fetchone()["actor"] == "data"
+        data_stage = conn.execute("SELECT * FROM research_mission_stages WHERE state='running'").fetchone()
+        assert data_stage["actor"] == "data"
+        assert data_stage["context"]["task"]["id"] not in {
+            item["id"] for item in data_stage["context"]["prior_tasks"]}
+
+
+def test_prior_program_task_keeps_decision_without_repeating_source_quote(program):
+    h = program
+    with h.company.db.transaction() as conn:
+        task_id = h.program_store.propose(conn, h.program_id, task_proposal(), actor="researcher_kr")
+        h.program_store.assess(conn, h.program_id, task_id, ready(decision="blocked", point_in_time=False),
+                               actor="data")
+        h.program_store.decide(conn, h.program_id, task_id,
+                               {"decision": "revise", "rationale": "Original timing is unresolved"}, actor="director")
+    assert ProgramController(h.company).tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+    previous = stage["context"]["prior_tasks"][0]
+    assert previous["id"] == task_id and previous["state"] == "rejected"
+    assert previous["decision"]["rationale"] == "Original timing is unresolved"
+    assert previous["proposal"]["source_ids"] == ["fixture:baseline"]
+    assert previous["citation_locations"] == [{"source_id": "fixture:baseline", "location": "char:0"}]
+    assert "quote" not in json.dumps(previous)
+
+
+def test_invalid_program_proposal_corrects_without_rereading_source(program):
+    h = program
+    controller = ProgramController(h.company)
+    assert controller.tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+        first = str(conn.execute("SELECT id FROM turns WHERE task_id=%s", (stage["task_id"],)).fetchone()["id"])
+    h.company.prepare_turn(first)
+    path = stage["context"]["evidence_sources"][0]["file"]
+    h.company.commit_turn(first, ProviderResponse(request_id=first, provider="fixture", decision=AgentDecision(
+        say="", status="continue", tools=[{"name": "research_control", "arguments": {
+            "action": "read_stage_file", "path": path, "offset": 0}}])))
+    with h.company.db.transaction() as conn:
+        second = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                  (stage["task_id"],)).fetchone()["id"])
+    h.company.prepare_turn(second)
+    bad = task_proposal(citations=[{"source_id": "fixture:baseline", "location": "char:0",
+                                    "quote": "this quote is absent from the original"}])
+    result = h.company.commit_turn(second, ProviderResponse(request_id=second, provider="fixture",
+        decision=AgentDecision(say="", status="complete", artifacts=[{"title": "proposal",
+            "content": json.dumps(bad)}])))
+    assert result["proposal_rejected"]
+    with h.company.db.transaction() as conn:
+        current = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+        third = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                 (stage["task_id"],)).fetchone()["id"])
+        assert current["attempt"] == 1 and current["state"] == "running"
+        assert current["context"]["_proposal_rejections"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM research_stage_reads WHERE stage_id=%s",
+                            (stage["id"],)).fetchone()["n"] == 1
+    prompt = h.company.prepare_turn(third)["request"]["prompt"]
+    assert "Citation does not occur at the specified original location" in prompt
+    h.company.commit_turn(third, ProviderResponse(request_id=third, provider="fixture",
+        decision=AgentDecision(say="", status="complete", artifacts=[{"title": "proposal",
+            "content": json.dumps(task_proposal())}])))
+    assert controller.tick()["state"] == "completed"
+    with h.company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM research_program_tasks").fetchone()["n"] == 1
+        assert conn.execute("SELECT attempt FROM research_mission_stages WHERE id=%s",
+                            (stage["id"],)).fetchone()["attempt"] == 1
+
+
+def test_repeated_invalid_program_proposals_hold_until_evidence_changes(program):
+    h = program
+    controller = ProgramController(h.company)
+    assert controller.tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+    path = stage["context"]["evidence_sources"][0]["file"]
+    for index in range(4):
+        with h.company.db.transaction() as conn:
+            turn_id = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                       (stage["task_id"],)).fetchone()["id"])
+        h.company.prepare_turn(turn_id)
+        decision = (AgentDecision(say="", status="continue", tools=[{"name": "research_control",
+                    "arguments": {"action": "read_stage_file", "path": path, "offset": 0}}]) if index == 0 else
+                    AgentDecision(say="", status="complete", artifacts=[{"title": "proposal", "content": json.dumps(
+                        task_proposal(citations=[{"source_id": "fixture:baseline", "location": "char:0",
+                                                 "quote": "not in the source"}]))}]))
+        result = h.company.commit_turn(turn_id, ProviderResponse(request_id=turn_id, provider="fixture",
+                                                                    decision=decision))
+    assert result["proposal_held"]
+    with h.company.db.transaction() as conn:
+        held = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+        assert held["state"] == "waiting" and held["retry_at"] is None and held["attempt"] == 1
+        assert held["context"]["_program_hold"]["rejections"] == 3
+        assert conn.execute("SELECT count(*) AS n FROM research_stage_reads WHERE stage_id=%s",
+                            (stage["id"],)).fetchone()["n"] == 1
+    assert controller.tick()["reason"] == "proposal_contract_requires_remediation"
+    with h.company.db.transaction() as conn:
+        conn.execute("UPDATE sources SET content=content || ' new evidence' WHERE id='fixture:baseline'")
+    assert controller.tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        fresh = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s AND state='running'",
+                             (h.program_id,)).fetchone()
+        assert fresh["id"] != stage["id"] and fresh["attempt"] == 1
 
 
 def test_partial_original_and_literal_newline_continue_same_attempt(program):
