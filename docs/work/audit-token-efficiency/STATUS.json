@@ -3,11 +3,45 @@
   "slug": "audit-token-efficiency",
   "state": "approved",
   "currentIntent": "INTENT-v1.json",
-  "approval": {"id": "owner-chat-optimize-20260929", "sourceRequest": "그래 최적화해줘", "recordedAt": "2026-09-29T00:19:29Z"},
+  "approval": {
+    "id": "owner-chat-optimize-20260929",
+    "sourceRequest": "그래 최적화해줘",
+    "recordedAt": "2026-09-29T00:19:29Z"
+  },
   "deliverables": {
-    "RETRY": {"status": "in_progress", "evidence": ["src/quant_company/research/audit_delivery.py"], "note": "Production stage held with event 445; regression checks in progress."},
-    "EVIDENCE": {"status": "in_progress", "evidence": ["tests/test_research_audit_delivery.py"], "note": "Packet coverage and final resident bytes tested on real PostgreSQL."},
-    "CONTEXT": {"status": "in_progress", "evidence": ["tests/test_audit_sessions.py"], "note": "Fake-provider receipt tests and real CLI 0.154.0 configuration probes pass."},
-    "OPERATIONS": {"status": "in_progress", "evidence": [], "note": "Retain deployed research code at 382284512ade2c0750c79494389a0899d2b46688."}
-  }
+    "RETRY": {
+      "status": "verified",
+      "updatedAt": "2026-09-29T02:15:31.338073+00:00",
+      "evidence": [
+        "docs/project/evidence/audit-efficiency-deployment.json",
+        "docs/project/AUDIT-TOKEN-OPTIMIZATION-20260929.md"
+      ]
+    },
+    "EVIDENCE": {
+      "status": "verified",
+      "updatedAt": "2026-09-29T02:15:31.338073+00:00",
+      "evidence": [
+        "docs/project/evidence/audit-efficiency-replay.json",
+        "docs/project/AUDIT-TOKEN-OPTIMIZATION-20260929.md"
+      ]
+    },
+    "CONTEXT": {
+      "status": "verified",
+      "updatedAt": "2026-09-29T02:15:31.338073+00:00",
+      "evidence": [
+        "docs/project/evidence/audit-efficiency-live-smoke.json",
+        "docs/project/AUDIT-TOKEN-OPTIMIZATION-20260929.md"
+      ]
+    },
+    "OPERATIONS": {
+      "status": "verified",
+      "updatedAt": "2026-09-29T02:15:31.338073+00:00",
+      "evidence": [
+        "docs/project/evidence/audit-efficiency-tests.json",
+        "docs/project/AUDIT-TOKEN-OPTIMIZATION-20260929.md"
+      ]
+    }
+  },
+  "intentDigest": "53a0216841ba",
+  "updatedAt": "2026-09-29T02:15:31.338073+00:00"
 }
