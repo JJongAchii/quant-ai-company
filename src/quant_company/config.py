@@ -46,6 +46,7 @@ class Settings(BaseSettings):
     research_artifact_dir: Path = Path("/var/lib/quant-company/research")
     research_report_bucket: str = ""
     research_report_prefix: str = "company/research/executions"
+    research_library_channel_id: str = ""
     research_s3_credentials_file: Path | None = None
     company_web_enabled: bool = True
     company_news_enabled: bool = False
@@ -63,6 +64,12 @@ class Settings(BaseSettings):
     tech_feed_channel_id: str = ""
     tech_feed_owner_user: str = ""
     tech_feed_sources_file: Path | None = None
+    housing_feed_enabled: bool = False
+    housing_feed_publish_enabled: bool = False
+    housing_feed_channel_id: str = ""
+    housing_feed_owner_user: str = ""
+    housing_feed_allowed_channels: list[str] = Field(default_factory=list)
+    housing_map_panel_enabled: bool = False
     quant_feed_enabled: bool = False
     quant_feed_publish_enabled: bool = False
     quant_feed_channel_id: str = ""
@@ -77,7 +84,8 @@ class Settings(BaseSettings):
     staff_review_daily_limit: int = Field(default=2, ge=1, le=12)
     company_max_task_turns: int = Field(default=8, ge=1, le=30)
     company_max_depth: int = Field(default=3, ge=0, le=5)
-    company_max_project_tasks: int = Field(default=40, ge=1, le=500)
+    # Zero disables the project-wide task quota; individual task and depth limits remain.
+    company_max_project_tasks: int = Field(default=0, ge=0, le=500)
     company_model_timeout_seconds: int = Field(default=960, ge=10, le=1800)
     fixture_mode: bool = False
 

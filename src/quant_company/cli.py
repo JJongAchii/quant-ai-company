@@ -34,6 +34,7 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
         if role.id == "reporter":
             value["display_information"]["name"] = "Reporter"
             value["features"]["bot_user"]["display_name"] = "reporter"
+            value["settings"]["event_subscriptions"]["bot_events"].append("entity_details_requested")
         if role.id == TECH_FEED_AGENT:
             value = {
                 "display_information": {"name": "Tech Scout", "description": role.mission[:140]},
@@ -82,6 +83,7 @@ def main():
     serve.add_argument("--port", type=int, default=8000)
     sub.add_parser("worker")
     sub.add_parser("data-watch-worker")
+    sub.add_parser("housing-feed-worker")
     sub.add_parser("news-worker")
     sub.add_parser("quant-feed-worker")
     sub.add_parser("dispatch")
@@ -92,6 +94,9 @@ def main():
     tech_feed = sub.add_parser("tech-feed")
     tech_feed.add_argument("action", choices=["status", "collect", "probe"])
     tech_feed.add_argument("--output", type=Path)
+    housing_feed = sub.add_parser("housing-feed")
+    housing_feed.add_argument("action", choices=["status", "collect", "probe"])
+    housing_feed.add_argument("--output", type=Path)
     quant_feed = sub.add_parser("quant-feed")
     quant_feed.add_argument("action", choices=["status", "probe", "preview"])
     quant_feed.add_argument("--live", action="store_true")
@@ -133,6 +138,10 @@ def main():
         from .runtime import data_watch_worker_main
 
         asyncio.run(data_watch_worker_main(settings))
+    elif args.command == "housing-feed-worker":
+        from .runtime import housing_feed_worker_main
+
+        asyncio.run(housing_feed_worker_main(settings))
     elif args.command == "news-worker":
         from .runtime import news_worker_main
 
@@ -150,11 +159,13 @@ def main():
             parser.error("Slack public callback URL must use HTTPS")
         manifests(Company(settings), args.base_url, args.output, args.transport,
                   args.include_reporter, args.include_tech_scout)
-    elif args.command in {"news", "tech-feed", "quant-feed"}:
+    elif args.command in {"news", "tech-feed", "quant-feed", "housing-feed"}:
         if args.command == "news":
             from .news.commands import command
         elif args.command == "tech-feed":
             from .tech_feed.commands import command
+        elif args.command == "housing-feed":
+            from .housing_feed.commands import command
         else:
             from .quant_feed.commands import command
 

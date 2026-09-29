@@ -123,6 +123,8 @@ def qualification_from_file(path: Path, manifest: AdaptiveManifest,
             or value.input_files != {name: manifest.plan.input_files[name]
                                      for name in profile.qualification_input_names}):
         raise ExecutionBlocked("adaptive-qualification-identity-mismatch")
+    if value.primary_unit != manifest.spec.objective.unit:
+        raise ExecutionBlocked("adaptive-qualification-unit-mismatch")
     if len(value.json_dates) != value.sample_count or len(value.json_datetimes) != value.sample_count:
         raise ExecutionBlocked("adaptive-qualification-sample-count-mismatch")
     if not {"date", "datetime"} <= set(value.typed_schema.values()):
@@ -169,6 +171,16 @@ def validate_result_files(root: Path, manifest: AdaptiveManifest) -> AdaptiveRes
         artifact = checked_path(root, name)
         if not artifact.is_file() or sha_file(artifact) != digest:
             raise ExecutionBlocked("adaptive-result-artifact-mismatch")
+    if result.observations is not None:
+        from .evaluation import evaluate_observations
+
+        measured = evaluate_observations(checked_path(root, result.observations).read_bytes(),
+                                        manifest.spec.evaluation, manifest.plan.development)
+        if (result.metrics.primary.model_dump(exclude={"value"}) != manifest.spec.objective.model_dump()
+                or not math.isclose(measured["value"], result.metrics.primary.value, rel_tol=0, abs_tol=1e-12)
+                or measured["sample_count"] != result.metrics.sample_count):
+            raise ExecutionBlocked("adaptive-scientific-metric-mismatch")
+        return result
     base = read_return_series(checked_path(root, result.base_returns.path).read_bytes())
     stress = read_return_series(checked_path(root, result.stress_returns.path).read_bytes())
     if [row[0] for row in base] != [row[0] for row in stress] or len(base) != result.metrics.sample_count:

@@ -41,6 +41,10 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 대화형 직원이나 AI 봇이 아니며 `chat:write`만 갖습니다. 초기 활성화 기본값은 꺼짐입니다.
 [설정·데모·복구](docs/tech-feed.md), [검증 및 운영 상태](docs/project/TECH-FEED-VALIDATION.md)를 참고하세요.
 
+`housing-feed`는 서울·경기 청약홈·LH·SH의 공식 분양 공고를 1시간마다 확인하고,
+신규·변경 공고와 접수 전날·당일 알림을 Reporter 앱으로 전달합니다.
+API 키나 모델 호출은 필요하지 않습니다. [범위·일정·운영](docs/housing-feed.md)을 참고하세요.
+
 ## 동작
 
 회사 공용 Codex의 기본·예비 계정을 총괄 DM에서 수동 선택하는 기능을 추가했습니다.
@@ -101,6 +105,12 @@ flowchart LR
 실제 소유자 Slack 승인을 거친 **고정 P11 재현**은 [인수 완료](docs/project/RESEARCH-OWNER-ACCEPTANCE-20260921.md)했습니다.
 새 자율 연구는 아직 운영에 활성화하지 않았습니다. [구현·검증 상태](docs/project/AUTONOMOUS-RESEARCH-20260921.md),
 [배포·롤백 절차](docs/runbooks/autonomous-research.md), [설계 결정](docs/adr/0031-persistent-autonomous-research.md)을 따릅니다.
+
+자료에서 과제를 만드는 **연구 프로그램**도 구현했습니다. 한 번 승인한 범위·예산 안에서
+원문 읽기 → 데이터 검토 → 가설·독립 반론 → 실험 → 인과성 감사·별도 해석 → 후속 연구를 연결합니다.
+국내 ETF·주식의 전략/주장/재현 평가와 부정적 결과 보존을 지원합니다.
+[새 구현의 검증 범위·운영 준비 상태](docs/project/RESEARCH-PROGRAMS-VALIDATION-20260928.md)와
+[첫 프로그램 준비안](docs/project/FIRST-RESEARCH-PROGRAM-20260928.md)을 확인하세요.
 
 모델 배치는 평가 전 초기값입니다. 금융전략에는 거시·채권·주식·회계·파생·리스크·시장구조의
 직무, 검증된 출처 검색, 계산 도구, [전문 시험 사례](docs/financial-specialist.md)를 제공합니다.

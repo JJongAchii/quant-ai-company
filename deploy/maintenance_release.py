@@ -62,16 +62,20 @@ def services(root):
              and (root/'src/quant_company/quant_feed').is_dir())
     data = (envfile.exists() and 'DATA_WATCH_ENABLED=true' in envfile.read_text().splitlines()
             and (root/'src/quant_company/data_watch/worker.py').is_file())
+    housing = (envfile.exists() and 'HOUSING_FEED_ENABLED=true' in envfile.read_text().splitlines()
+               and (root/'src/quant_company/housing_feed/workflow.py').is_file())
     accounts = any(line.strip() == 'MODEL_ACCOUNTS_ENABLED=true'
                    for line in envfile.read_text().splitlines()) if envfile.exists() else False
     return (SERVICES + (['claude-runtime'] if enabled and supported else [])
             + (['quant-feed-worker'] if quant else []) + (['data-watch-worker'] if data else [])
+            + (['housing-feed-worker'] if housing else [])
             + (['account-gateway'] if accounts else []))
 
 
 def compose_command(root):
     envfile = STATE/'config/runtime.env'
     command = ['docker', 'compose', '--profile', 'maintenance', '--profile', 'claude', '--profile', 'quant-feed',
+               '--profile', 'housing-feed',
                '--env-file', str(envfile), '-f', str(root/'deploy/compose.yaml')]
     research = any(line.strip() == 'COMPANY_RESEARCH_ENABLED=true'
                    for line in envfile.read_text().splitlines()) if envfile.exists() else False

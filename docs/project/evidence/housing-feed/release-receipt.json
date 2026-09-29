@@ -1,0 +1,112 @@
+{
+  "phase": "activated",
+  "base": "12398af25dc111fd93d99fa3408fbc66cb699121",
+  "commit": "ccdcc43c2a0985dcc035262f33d19e0ae979f0a1",
+  "archive_sha256": "a02f208a347831eb2ae274cc3c5ebb65abc4545069f99b1debb7e71a08ea4ef5",
+  "env_sha256": "0b9ccb2539ff181e3334c697a9948bb2903d0b689030b4a871b2710b9ef4c966",
+  "access": {
+    "team": "T0C1YRDRPNF",
+    "bot_user": "U0C2FLSUUMV",
+    "channel": "C0C4UV5C14J",
+    "history_access": true
+  },
+  "preview": {
+    "state": "collected",
+    "sources": [
+      {
+        "source": "applyhome-apt",
+        "state": "collected",
+        "notices": 2,
+        "queued": 0
+      },
+      {
+        "source": "applyhome-remndr",
+        "state": "collected",
+        "notices": 7,
+        "queued": 0
+      },
+      {
+        "source": "lh-sale",
+        "state": "collected",
+        "notices": 1,
+        "queued": 0
+      },
+      {
+        "source": "sh-sale",
+        "state": "collected",
+        "notices": 0,
+        "queued": 0
+      }
+    ],
+    "reminders": 0
+  },
+  "build": {
+    "mode": "unchanged_dependencies",
+    "base_image": "sha256:a3e1a890e90eba3d395414bf29711a5778f189a0ff9e02a79948aacda94184a4"
+  },
+  "services": {
+    "dispatch": {
+      "id": "7f247a5c5c3b9c0c9396302c3afe26b5d1d3552316c5568e5691620d49ebf3e5",
+      "running": true,
+      "restarts": 0,
+      "oom": false,
+      "image": "quant-company:ccdcc43c2a0985dcc035262f33d19e0ae979f0a1"
+    },
+    "housing-feed-worker": {
+      "id": "e15a4c40a6e88c09474b5077b223ffe4797e344daa51b2c96c8e03ed7281205a",
+      "running": true,
+      "restarts": 0,
+      "oom": false,
+      "image": "quant-company:ccdcc43c2a0985dcc035262f33d19e0ae979f0a1"
+    }
+  },
+  "unrelated_services_preserved": true,
+  "staging_settings": {
+    "RELEASE_COMMIT": "ccdcc43c2a0985dcc035262f33d19e0ae979f0a1",
+    "HOUSING_FEED_ENABLED": "true",
+    "HOUSING_FEED_PUBLISH_ENABLED": "false",
+    "HOUSING_FEED_CHANNEL_ID": "C0C4UV5C14J",
+    "HOUSING_FEED_OWNER_USER": "U0C250E23NW",
+    "HOUSING_FEED_ALLOWED_CHANNELS": "[\"C0C4UV5C14J\"]",
+    "QDATA_BUILD_CONTEXT": "/opt/quant-company/releases/ccdcc43c2a0985dcc035262f33d19e0ae979f0a1/qdata"
+  },
+  "effective_housing_settings": {
+    "HOUSING_FEED_ALLOWED_CHANNELS": "[\"C0C4UV5C14J\"]",
+    "HOUSING_FEED_CHANNEL_ID": "C0C4UV5C14J",
+    "HOUSING_FEED_ENABLED": "true",
+    "HOUSING_FEED_OWNER_USER": "U0C250E23NW",
+    "HOUSING_FEED_PUBLISH_ENABLED": "true"
+  },
+  "runtime_services": [
+    {
+      "name": "/quant-company-housing-feed-worker-1",
+      "id": "e15a4c40a6e88c09474b5077b223ffe4797e344daa51b2c96c8e03ed7281205a",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "image_id": "sha256:6179ed7e7528e4fac51fa7f2220e4ff4bfd5432f34baf943ad4cfe1af23fbd9d",
+      "image": "quant-company:ccdcc43c2a0985dcc035262f33d19e0ae979f0a1",
+      "memory_limit": 201326592,
+      "secrets": [
+        "/run/secrets/database_password",
+        "/run/secrets/temporal_api_key"
+      ]
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "id": "7f247a5c5c3b9c0c9396302c3afe26b5d1d3552316c5568e5691620d49ebf3e5",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "image_id": "sha256:6179ed7e7528e4fac51fa7f2220e4ff4bfd5432f34baf943ad4cfe1af23fbd9d",
+      "image": "quant-company:ccdcc43c2a0985dcc035262f33d19e0ae979f0a1",
+      "memory_limit": 201326592,
+      "secrets": [
+        "/run/secrets/database_password",
+        "/run/secrets/slack_credentials",
+        "/run/secrets/temporal_api_key"
+      ]
+    }
+  ],
+  "checked_at": "2026-09-28T03:17:01.086650+00:00"
+}

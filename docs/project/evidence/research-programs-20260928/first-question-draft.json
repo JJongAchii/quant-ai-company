@@ -1,0 +1,32 @@
+{
+  "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "proposal": {
+    "citations": [
+      {
+        "location": "char:9331",
+        "quote": "기준선·초과성과는 미측정이다.",
+        "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+      }
+    ],
+    "departures": "원 P11의 정확한 재현을 주장하지 않는다. 2022년 말 시점별 거래대금 기준 ETF 10종과 2023~2025년 개발구간, 가격수익 평가기로 이전 자료의 측정 공백을 검증한다. 총수익·배당 재투자·2026년 봉인 성과는 주장하지 않는다.",
+    "envelope": "etf_strategy",
+    "falsification": "30bp 스트레스 순절대 CAGR이 0 이하이거나 월 블록 신뢰 구간이 양의 효과를 뒷받침하지 못하면 가설을 지지하지 않는다. 시점별 가용성·거래 가능성·거래비용·리밸런싱 구현에 해결되지 않은 반론이 있으면 결론을 보류한다. 이후 변형의 다중 시행과 기준선 비교를 독립 검토한다.",
+    "method": "연구자가 월간 동일가중 리밸런싱과 현금 보유·거래비용 적용을 명세하고, 데이터 담당이 당시 ETF 10종·시가·거래 가능성·배당 제외 가격수익 계약을 독립 확인한다. 엔지니어는 승인된 candidate.py 범위에서 구현한다. 고정된 개발구간과 10/30bp 비용, 30개 월 블록을 사용해 기본 기준선부터 측정하고 이후 가설을 별도 trial로 비교한다.",
+    "mode": "novel_hypothesis",
+    "original_claim": "이전 승인된 고정 P11 결과는 개발구간 동등 재현이며 기준선·초과성과를 측정하지 않았다. 새 경제적 우위 주장은 아직 없다.",
+    "predecessor_mission_ids": [],
+    "question": "2022-12-29까지의 거래대금만으로 고정한 국내 ETF 10종을 대상으로, 시점별로 이용 가능한 가격만 사용한 월간 동일가중 규칙은 2023~2025년 개발구간에서 30bp 스트레스 거래비용을 뺀 연율 절대수익률이 0보다 큰가?",
+    "source_ids": [
+      "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+    ],
+    "title": "ETF 10종의 비용 반영 월간 동일가중 기준선 검증"
+  },
+  "proposal_digest": "9897cc62a2af1088071940c8c596eec954871b88e541db5eb20057a2237ab15d",
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "source_approved_at_live_audit": true,
+  "source_content_sha256": "aaffedd1643b16ec0a97d5f4bb0ef6084c6fc0fdc2b4ad75f707b808d0725379",
+  "source_is_prior_equivalent_replay_not_positive_science": true,
+  "state": "seed_question_for_employee_review_not_submitted"
+}

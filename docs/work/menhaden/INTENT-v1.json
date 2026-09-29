@@ -1,0 +1,17 @@
+{
+  "constraints": ["기존 PostgreSQL·Temporal·Slack outbox 사용", "공식 공개 공고만 수집하고 출처와 확인시각 보존", "모델 호출·유료 API 사용 없음", "회사 저장소에만 구현·증거 기록", "비밀 값 출력·Git 저장 금지"],
+  "createdAt": "2026-09-28T01:58:00.735890+00:00",
+  "decisionGates": ["사용자가 서울·경기 Slack 피드와 새 housing-feed 채널을 지정했다. 실제 접근·연결 검증 후 활성화하며, 필요한 외부 인증은 사용자에게 요청한다."],
+  "deliverables": [
+    {"id": "IMPLEMENTATION", "description": "서울·경기 공식 분양 공고 수집과 Slack 알림", "acceptance": ["신규·변경 공고, 접수 전날·당일 알림과 원문 링크", "영속 중복 방지·허용 채널 검사·불명 발송 보존", "소스 실패를 공고 없음으로 해석하지 않음"]},
+    {"id": "VALIDATION", "description": "공식 소스와 실행 경로 검증", "acceptance": ["실제 공개 페이지 확인과 파서·지역·날짜 검증", "사용 가능한 실제 PostgreSQL·Temporal에서 재시도 및 중복 검사", "모의 Slack과 실제 Slack 검증 구분"]},
+    {"id": "ACTIVATION", "description": "새 housing-feed 채널 연결과 운영 증거", "acceptance": ["사용자가 지정한 workspace의 housing-feed 채널 생성·확인", "서버 수집·실제 Slack 게시 확인", "운영 상태와 남은 외부 조건을 정직하게 기록"]}
+  ],
+  "nonGoals": ["청약 자동 접수", "개인 자격 판정", "연구·매매 코드 변경"],
+  "outcome": "우리나라 주택 청약 일정과 분양 정보를 피드처럼 받아 청약할 수 있도록, 서울·경기를 대상으로 새 Slack 채널 housing-feed에서 받아보려고 한다.",
+  "revision": 1,
+  "schemaVersion": 1,
+  "slug": "menhaden",
+  "sourceRequest": "슬랙으로 받아보려고 하는거야. 그리고 관심지역은 서울, 경기 권\n새 채널. housing-feed 로 가자\n계정·키 모두 없음",
+  "stopConditions": ["로그인·API 키 등 필요한 외부 조건이 없으면 해당 연결 상태를 명시", "불명 Slack 발송은 자동 반복하지 않음"]
+}

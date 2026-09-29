@@ -1,0 +1,40 @@
+{
+  "active_registry_sha256": "221cb9a6d5d8f383e328ec26d72493c07a5a5e4f1989f25aba10ada38571a043",
+  "candidate_registry_sha256": "22a5fd7aa0fcd440730258f3a828720c04bf496ac28846354c84ee81e92d0779",
+  "checks": [
+    {
+      "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+      "bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+      "envelope": "etf_strategy",
+      "profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+      "profile_id": "kr-etf-research-v2"
+    },
+    {
+      "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+      "bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+      "envelope": "etf_claim",
+      "profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+      "profile_id": "kr-etf-research-v2"
+    },
+    {
+      "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+      "bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+      "envelope": "stock_strategy",
+      "profile_digest": "07056f8607ea990c09de6ade29a6230f60c3c0055c980728d95705e538dd21a3",
+      "profile_id": "kr-stock-research-v2"
+    },
+    {
+      "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+      "bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+      "envelope": "stock_claim",
+      "profile_digest": "07056f8607ea990c09de6ade29a6230f60c3c0055c980728d95705e538dd21a3",
+      "profile_id": "kr-stock-research-v2"
+    }
+  ],
+  "company_commit": "2b4034db126ff13ff936c8e3def3ae89c7456824",
+  "observed_at": "2026-09-28T08:06:00.430759+00:00",
+  "old_profile_identical": true,
+  "production_registered": false,
+  "schema_version": 1,
+  "state": "passed_integrated_candidate_profile_validation"
+}

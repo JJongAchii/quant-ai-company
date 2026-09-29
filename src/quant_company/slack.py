@@ -13,6 +13,15 @@ from .quant_feed.contracts import QUANT_FEED_AGENT
 from .tech_feed.contracts import TECH_FEED_AGENT
 
 
+def _status_request(text: str, target: str) -> bool:
+    normalized = re.sub(r"\s+", "", text).lower().rstrip("?!。.")
+    if normalized in {"상태", "진행상황", "status"}:
+        return True
+    if target in {"maintainer", "data"} and normalized in {"목록", "list"}:
+        return True
+    return bool(re.fullmatch(r"(?:현재)?진행상황이어떻게(?:돼|되(?:니|나요|어)?|됐(?:어|나요)?)", normalized))
+
+
 class SlackIngress:
     def __init__(self, settings: Settings, company: Company, credentials: dict | None = None):
         self.settings = settings
@@ -50,12 +59,19 @@ class SlackIngress:
         if (not self.settings.slack_team_id or payload.get("team_id") != self.settings.slack_team_id
                 or payload.get("api_app_id") != credential["app_id"]):
             raise PolicyError("Unexpected Slack workspace or app")
+        event = payload.get("event")
+        if isinstance(event, dict) and event.get("type") == "entity_details_requested":
+            if role != "reporter":
+                return {"ok": True, "ignored": True}
+            from .housing_feed.panel import HousingMapPanel
+
+            return HousingMapPanel(self.company, self.credentials).accept(payload, event, credential)
         if role == TECH_FEED_AGENT:
             # Outbound-only identity: even an accidentally configured callback never creates model work.
             return {"ok": True, "ignored": True, "reason": "tech_feed_delivery_identity_is_not_interactive"}
         if role == QUANT_FEED_AGENT:
             return {"ok": True, "ignored": True, "reason": "quant_feed_delivery_identity_is_not_interactive"}
-        event = payload.get("event", {})
+        event = event if isinstance(event, dict) else {}
         if (event.get("type") not in {"app_mention", "message"}
                 or event.get("bot_id") or event.get("subtype") or not event.get("user")):
             return {"ok": True, "ignored": True}
@@ -171,8 +187,7 @@ class SlackIngress:
         result = self.company.ingest(
             event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}",
             text=text, owner=user, agent=target, channel=channel, thread_ts=thread_ts, revise=revise,
-            status_only=text.strip().lower() in ({"상태", "진행 상황", "status", "목록", "list"}
-                                               if target in {"maintainer", "data"} else {"상태", "진행 상황", "status"}),
+            status_only=_status_request(text, target),
             interpret=target == 'director' and not revise,
             control_action=immediate(text) if target == 'director' and not revise else None,
             approval_context=approval_context if target == "director" else None,
@@ -273,6 +288,10 @@ class SlackOutbox:
                 from .tech_feed.store import TechFeedStore
 
                 return TechFeedStore(self.company).gate(conn, row, claimed=True)
+            if row["message_kind"] == "housing_feed":
+                from .housing_feed.store import HousingFeedStore
+
+                return HousingFeedStore(self.company).gate(conn, row, claimed=True)
             if row["message_kind"] == "quant_feed":
                 from .quant_feed.store import QuantFeedStore
 
@@ -309,6 +328,11 @@ class SlackOutbox:
                 from .tech_feed.store import TechFeedStore
 
                 if not TechFeedStore(self.company).gate(conn, row):
+                    return None
+            if row["message_kind"] == "housing_feed":
+                from .housing_feed.store import HousingFeedStore
+
+                if not HousingFeedStore(self.company).gate(conn, row):
                     return None
             if row["message_kind"] == "quant_feed":
                 from .quant_feed.store import QuantFeedStore
@@ -386,6 +410,13 @@ class SlackOutbox:
         blocks = await asyncio.to_thread(blocks_for_outbox, self.company, row, self.credentials[row["agent"]])
         if blocks:
             body["blocks"] = blocks
+        if row.get("message_kind") == "housing_feed" and self.company.settings.housing_map_panel_enabled:
+            from .housing_feed.maps import work_object
+            from .housing_feed.store import HousingFeedStore
+
+            notice = await asyncio.to_thread(HousingFeedStore(self.company).notice_for_message, row["id"])
+            if notice and notice.map_location:
+                body["metadata"] = {"entities": [work_object(notice)]}
         if row["thread_ts"] is None:
             del body["thread_ts"]
         elif row.get("news_broadcast"):
@@ -412,15 +443,15 @@ class SlackOutbox:
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_server_error")
                 return True
             result = response.json()
-            requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed", "data_watch"}
+            requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed", "data_watch", "housing_feed"}
                                 or row["agent"] == "maintainer")
             if row.get("update_ts") and result.get("ts") != row["update_ts"] and result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_update_receipt_mismatch")
-            elif row.get("message_kind") == "data_watch" and result.get("ok") and (
+            elif row.get("message_kind") in {"data_watch", "housing_feed"} and result.get("ok") and (
                 not isinstance(result.get("ts"), str) or not re.fullmatch(r"\d+\.\d+", result["ts"])
-                or result.get("channel", row["channel"]) != row["channel"]
+                or result.get("channel", None if row["message_kind"] == "housing_feed" else row["channel"]) != row["channel"]
             ):
-                await asyncio.to_thread(self.settle, row, "uncertain", error="data_watch_delivery_receipt_mismatch")
+                await asyncio.to_thread(self.settle, row, "uncertain", error=f"{row['message_kind']}_delivery_receipt_mismatch")
             elif result.get("ok") and (not requires_receipt or result.get("ts")):
                 await asyncio.to_thread(self.settle, row, "delivered", sent_ts=result.get("ts"))
             elif result.get("ok"):

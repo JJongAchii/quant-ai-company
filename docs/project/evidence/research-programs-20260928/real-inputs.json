@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "state": "real_inputs_and_profiles_prepared_not_activated",
+  "source_kind": "pinned_qdata_api_read_only_s3_clean",
+  "sealed_data_mounted": false,
+  "performance_read": false,
+  "scientific_trials_added": 0,
+  "production_profiles_registered": false,
+  "markets": {
+    "kr_etf": {
+      "state": "ready",
+      "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+      "lake_uri": "s3://insight-invest-datalake/qdata",
+      "source": {
+        "krx_etf": {
+          "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf.parquet",
+          "size_bytes": 78684160,
+          "last_modified": "2026-09-25T11:06:48+00:00",
+          "etag": "\"d063a814e88d88d2d7dc21bc676e8255\"",
+          "version_id": null
+        },
+        "krx_etf_meta": {
+          "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf_meta.parquet",
+          "size_bytes": 24474548,
+          "last_modified": "2026-09-25T11:06:49+00:00",
+          "etag": "\"5a4a8afe695dc41458b81faecdb0a490\"",
+          "version_id": null
+        }
+      },
+      "selection_date": "2022-12-29",
+      "cohort_rule": "top_20_session_average_traded_value_asof_selection_date; stock KOSPI common suffix 0; ETF no leverage/inverse",
+      "cohort": [
+        "069500",
+        "229200",
+        "153130",
+        "214980",
+        "196230",
+        "157450",
+        "371460",
+        "102110",
+        "357870",
+        "305720"
+      ],
+      "warmup_start": "2022-08-01",
+      "development_start": "2023-01-02",
+      "development_end": "2025-12-30",
+      "warmup_rows": 1040,
+      "development_rows": 7310,
+      "development_months": 36,
+      "nontrading_rows": 0,
+      "bad_rows": 0,
+      "missing_rows": 0,
+      "input_files": {
+        "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81",
+        "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+      },
+      "data_receipt_sha256": "c4dfc0bcd294ccbf4fe7b42d6fe957f453eda6a017c17edda648b1922778713a",
+      "profile": {
+        "execution_profile": "kr-etf-research-v2",
+        "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+        "source_bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+        "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+        "protected_files": {
+          "labs/company-domestic-research/domestic_statistics.py": "8ea1021082bc8b4656e3df9dafe24dec655f861692240a5542e587fe0b7628ff",
+          "labs/company-domestic-research/engine.py": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+        }
+      }
+    },
+    "kr_stock": {
+      "state": "ready",
+      "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+      "lake_uri": "s3://insight-invest-datalake/qdata",
+      "source": {
+        "krx_prices": {
+          "uri": "s3://insight-invest-datalake/qdata/clean/krx_prices.parquet",
+          "size_bytes": 322121844,
+          "last_modified": "2026-09-25T11:06:56+00:00",
+          "etag": "\"5c16cb9d08065bdefd40e74992c6c19a-7\"",
+          "version_id": null
+        }
+      },
+      "selection_date": "2022-12-29",
+      "cohort_rule": "top_20_session_average_traded_value_asof_selection_date; stock KOSPI common suffix 0; ETF no leverage/inverse",
+      "cohort": [
+        "005930",
+        "323410",
+        "000660",
+        "373220",
+        "006400",
+        "035420",
+        "003670",
+        "051910",
+        "005490",
+        "249420",
+        "377300",
+        "005380",
+        "035720",
+        "001570",
+        "006220",
+        "000270",
+        "064350",
+        "066570",
+        "011070",
+        "105560"
+      ],
+      "warmup_start": "2022-02-01",
+      "development_start": "2023-01-02",
+      "development_end": "2025-12-30",
+      "warmup_rows": 4520,
+      "development_rows": 14620,
+      "development_months": 36,
+      "nontrading_rows": 194,
+      "bad_rows": 0,
+      "missing_rows": 0,
+      "input_files": {
+        "warmup.json": "9ee0e7cf017ef4b81b2028d8d9b09616d8ade89fd9706374b4ed6d053fd7d442",
+        "development.json": "1a0802b498d29e0a4557e0e1ac1c2c205dc33ad2e013bab70b65b0d54484fd85"
+      },
+      "data_receipt_sha256": "b087961ecfd4975f66672b95835d1002e809e85dc1a1b6f324fdd88501f57d94",
+      "profile": {
+        "execution_profile": "kr-stock-research-v2",
+        "execution_profile_digest": "07056f8607ea990c09de6ade29a6230f60c3c0055c980728d95705e538dd21a3",
+        "source_bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+        "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+        "protected_files": {
+          "labs/company-domestic-research/domestic_statistics.py": "8ea1021082bc8b4656e3df9dafe24dec655f861692240a5542e587fe0b7628ff",
+          "labs/company-domestic-research/engine.py": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+        }
+      }
+    }
+  }
+}

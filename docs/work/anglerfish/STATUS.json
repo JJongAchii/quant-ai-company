@@ -1,28 +1,22 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v2.json",
-  "state": "completed",
+  "currentIntent": "INTENT-v4.json",
+  "state": "slack_replies_verified_project_task_quota_removal_prepared",
+  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
   "deliverables": {
-    "CONTROL": {
-      "status": "completed"
-    },
-    "RUNTIME": {
-      "status": "completed"
-    },
-    "VALIDATION": {
-      "status": "completed"
-    },
-    "DEPLOYMENT": {
-      "status": "completed",
-      "commit": "fde7681e0286501d8713e08e30a96991a88b9151"
-    },
-    "ENROLLMENT": {
-      "status": "completed",
-      "method": "official_browser_oauth_over_ssh_callback",
-      "distinctAccountsVerified": true
-    }
+    "DIAGNOSIS": {"status": "completed"},
+    "APPLICATION": {"status": "prepared", "commit": "ae132c3", "base": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce"},
+    "PINNED_WORKER": {"status": "prepared", "commit": "e53b771aa994a54c1f4be6a2610856ea7a298816", "temporaryOverlay": "deploy/pinned-worker-roles-compat.compose.yaml"},
+    "VALIDATION": {"status": "completed", "realPostgresTests": 16, "pinnedWorkerTests": 1},
+    "CUTOVER": {"status": "applied", "commit": "d571734e161c39f7c26252005231f93b619b3749"},
+    "LIVE_REPLY": {"status": "completed", "financialStrategistDm": "two delivered messages confirmed in real Slack", "researchCenter": "two delivered messages confirmed in real Slack"},
+    "TASK_LIMIT": {"status": "prepared", "default": "unlimited", "realPostgresTests": 3, "fullSuitePassed": 1226, "fullSuiteSkipped": 38, "lint": "passed"},
+    "TASK_LIMIT_RELEASE": {"status": "pending", "reason": "Pinned research worker requires a qualified release with historical job pins preserved"}
   },
-  "operationalStatus": "Private ai-account-switch channel active in production. The owner's explicit switch selected the backup ChatGPT account at revision 1, backup model calls completed, and an unsupported phrase received a deterministic Slack command guide without changing the selection. All 12 services healthy with no restarts.",
-  "evidence": "../../project/evidence/model-accounts-20260923/live-account-control.json"
+  "operationalStatus": "Both named Slack threads have real delivered bot replies. The 40-task project quota remains in production pending a reviewed app and research-capable worker release. Source and real-PostgreSQL tests now support an unlimited default.",
+  "evidence": "../../project/evidence/slack-reply-cutover-20260928.json",
+  "previousIntent": "INTENT-v3.json",
+  "previousState": "completed",
+  "previousEvidence": "../../project/evidence/model-accounts-20260923/live-account-control.json"
 }
