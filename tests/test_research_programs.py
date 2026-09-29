@@ -507,7 +507,12 @@ def test_data_assessment_can_correct_one_unregistered_source_id_after_packet_rea
         h.company.commit_turn(correction_id, assess(correction_id, "data/etf/engine"))
 
     source = stage["context"]["evidence_sources"][0]
-    h.company.commit_turn(correction_id, read(correction_id, source["file"]))
+    assert h.company.commit_turn(correction_id, assess(correction_id, source["source_id"]))["incomplete_source"]
+    read_id = queued()
+    h.company.prepare_turn(read_id)
+    with pytest.raises(PolicyError, match="outside this stage's approved library"):
+        h.company.commit_turn(read_id, assess(read_id, "data/etf/engine"))
+    h.company.commit_turn(read_id, read(read_id, source["file"]))
     final_id = queued()
     h.company.prepare_turn(final_id)
     assert h.company.commit_turn(final_id, assess(final_id, source["source_id"]))["state"] == "completed"

@@ -547,15 +547,16 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         paths = {entry["source_id"]: entry["file"] for entry in row["context"].get("evidence_sources", [])}
         for source in cited:
             if not isinstance(source, str) or source not in paths:
+                if row["stage"] != "program_data" or row["context"].get("_unregistered_source_hint_used"):
+                    raise PolicyError("Cited source ID is outside this stage's approved library")
                 hint = "unregistered_source_id;use_evidence_sources.source_id_not_packet_path"
-                if row["error"] != hint:
-                    conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s",
-                                 (hint, row["id"]))
-                    conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
-                                 (Jsonb(response.model_dump(mode="json")), turn["id"]))
-                    company._new_turn(conn, task)
-                    return {"state": "completed", "incomplete_source": True}
-                raise PolicyError("Cited source ID is outside this stage's approved library")
+                context = {**row["context"], "_unregistered_source_hint_used": True}
+                conn.execute("UPDATE research_mission_stages SET context=%s,error=%s,updated_at=now() WHERE id=%s",
+                             (Jsonb(context), hint, row["id"]))
+                conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                             (Jsonb(response.model_dump(mode="json")), turn["id"]))
+                company._new_turn(conn, task)
+                return {"state": "completed", "incomplete_source": True}
             if conn.execute("""SELECT 1 FROM research_stage_reads
                 WHERE stage_id=%s AND attempt=%s AND path=%s AND next_offset IS NULL""",
                 (row["id"], row["attempt"], paths[source])).fetchone():
