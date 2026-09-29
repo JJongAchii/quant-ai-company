@@ -183,6 +183,8 @@ def reconcile_audit_retry(company, conn, project, task, reconciliation_note):
         WHERE a.task_id=%s FOR UPDATE OF s""", (task["id"],)).fetchone()
     if not binding or binding["stage"] != "audit" or binding["actor"] != "validator":
         return None
+    if binding["context"].get("_audit", {}).get("delivery_version") == 2:
+        raise PolicyError("Packet audit retry requires reconciliation of the exact provider session receipt")
     failed = conn.execute("SELECT * FROM turns WHERE task_id=%s ORDER BY sequence DESC LIMIT 1",
                           (task["id"],)).fetchone()
     if (task["agent"] != "validator" or task["error"] != "stage_response_rejected"
@@ -203,6 +205,7 @@ def reconcile_audit_retry(company, conn, project, task, reconciliation_note):
         conn.execute("UPDATE turns SET status='stale',error=%s,updated_at=now() WHERE id=%s",
                      (AUDIT_RECONCILED_ERROR, failed["id"]))
         conn.execute("""UPDATE research_mission_stages SET state='running',error=NULL,retry_at=NULL,
+            context=context-'_audit_hold',
             updated_at=now() WHERE id=%s""", (binding["stage_id"],))
         turn_id = company._new_turn(conn, task)
         reused_count = len(source_reads)
@@ -250,7 +253,7 @@ def reconcile_audit_retry(company, conn, project, task, reconciliation_note):
     }
 
 
-def stage_prompt(company, conn, task):
+def stage_prompt(company, conn, task, turn=None):
     from ..staff.packs import coaching, employee_pack
 
     row = _stage(conn, task["id"])
@@ -297,6 +300,12 @@ def stage_prompt(company, conn, task):
         "Read all required_meaning_reads, the interpretation and challenge responses. List every unperformed "
         "test obligation and unresolved objection. Choose inconclusive when required evidence is missing. "
         "Support is development evidence only, never confirmation or an investment recommendation.")
+    from .audit_delivery import enabled, prepare_packet
+
+    if enabled(row):
+        if turn is None:
+            raise PolicyError("audit_packet_requires_bound_turn")
+        return role, prepare_packet(company, conn, row, turn, instructions["audit"])
     context = {**{key: value for key, value in row["context"].items() if not key.startswith("_")},
                "stage_id": str(row["id"]), "actor": row["actor"], "last_error": row["error"]}
     if row["stage"] == "audit":
@@ -398,7 +407,9 @@ def stage_prompt(company, conn, task):
         elif value["path"] in important_paths and len(value["content"]) <= 8000:
             priority = max(priority, 3)
         if index == len(values) - 1:
-            priority = max(priority, 4)
+            # The fetched bytes must reach a model request, even under pressure
+            # from resident code. A bounded failure is preferable to false coverage.
+            priority = max(priority, 5)
         if priority:
             retained.append(value)
             priorities.append(priority)
@@ -445,10 +456,14 @@ def stage_prompt(company, conn, task):
 
 def commit_stage(company, conn, project, task, turn, response: ProviderResponse):
     row = _stage(conn, task["id"])
+    from .audit_delivery import commit_review, enabled, packet_data
+
     decision = response.decision
     if (decision.say.strip() or decision.delegations or decision.messages or decision.memories or decision.follow_up):
         raise PolicyError("Research stage output must stay in its private typed artifact")
     if decision.tools:
+        if enabled(row):
+            raise PolicyError("Audit packet pagination is owned by the service")
         if decision.artifacts or len(decision.tools) != 1:
             raise PolicyError("Read one scoped evidence chunk per turn")
         request = decision.tools[0]
@@ -492,6 +507,11 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
     value = json.loads(decision.artifacts[0].content)
     if not isinstance(value, dict):
         raise PolicyError("Research artifact must be an object")
+    if enabled(row):
+        if commit_review(company, conn, row, turn, response, value):
+            return {"state": "completed", "audit_packet_reviewed": True}
+        if packet_data(turn["request"]["prompt"]).get("phase") != "final":
+            raise PolicyError("audit_final_before_evidence_review")
     for path in row["context"].get("required_meaning_reads", []):
         if not conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
             AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
@@ -539,7 +559,7 @@ class MissionController:
         key = self._key(snapshot)
         identity = stable(f"mission-stage:{snapshot['id']}:{key}")
         row = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s FOR UPDATE", (identity,)).fetchone()
-        if row and row["state"] in {"running", "received", "completed"}:
+        if row and (row["state"] in {"running", "received", "completed"} or row["context"].get("_audit_hold")):
             return row
         if row and row["retry_at"] and row["retry_at"] > now():
             return row
@@ -658,6 +678,14 @@ class MissionController:
         with self.company.db.transaction() as conn:
             mission = conn.execute("SELECT project_id FROM research_missions WHERE id=%s", (row["mission_id"],)).fetchone()
             self.company._project(conn, mission["project_id"])
+            if row["stage"] == "audit":
+                from .audit_delivery import hold_audit
+
+                current = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s FOR UPDATE",
+                                       (row["id"],)).fetchone()
+                if current["state"] == "received" and current["attempt"] == row["attempt"]:
+                    hold_audit(self.company, conn, current, "audit_contract_requires_remediation", diagnostic=reason)
+                return
             delay = min(3600, 60 * 2 ** min(row["attempt"], 6))
             conn.execute("""UPDATE research_mission_stages SET state='waiting',error=%s,retry_at=%s,
                 updated_at=now() WHERE id=%s AND state='received'""", (reason, now() + timedelta(seconds=delay), row["id"]))
@@ -689,7 +717,7 @@ class MissionController:
                                (candidate["id"], self._key(snapshot))).fetchone()
             conn.execute("UPDATE research_missions SET updated_at=now() WHERE id=%s", (candidate["id"],))
         stage = snapshot["stage"]["stage"]
-        if row and (row["state"] == "completed" or row["state"] == "running"
+        if row and (row["state"] == "completed" or row["state"] == "running" or row["context"].get("_audit_hold")
                     or (row["state"] == "waiting" and row["retry_at"] and row["retry_at"] > now())):
             return {"state": "waiting", "stage": stage}
         if row and row["state"] == "received":

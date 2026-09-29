@@ -78,6 +78,10 @@ class RuntimeClient:
         if request.output_contract == "agent_decision":
             # Legacy callers remain compatible with older runtime deployments.
             payload.pop("output_contract", None)
+        # Other pinned subscription runtimes still use the older strict request
+        # schema. Ordinary requests retain their original wire shape.
+        if request.session is None:
+            payload.pop("session", None)
         if account is not None:
             headers.update({"X-Company-Account": account["profile"], "X-Company-Account-Revision": str(account["revision"])})
         try:

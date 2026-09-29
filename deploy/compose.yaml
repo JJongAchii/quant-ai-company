@@ -317,7 +317,7 @@ services:
 
   codex-runtime:
     <<: *runtime
-    image: quant-company-codex:${RELEASE_COMMIT:-unqualified}
+    image: ${PINNED_CODEX_RUNTIME_IMAGE:-quant-company-codex:${RELEASE_COMMIT:-unqualified}}
     build:
       context: ..
       dockerfile: deploy/Dockerfile

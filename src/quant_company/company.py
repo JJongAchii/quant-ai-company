@@ -643,6 +643,16 @@ class Company:
                 return {"state": "defer", "seconds": max(1, (pause["paused_until"] - now()).total_seconds())}
             if turn["due_at"] > now():
                 return {"state": "defer", "seconds": max(1, (turn["due_at"] - now()).total_seconds())}
+            if task["kind"] == "research_stage" and not turn["request"]:
+                from .research.audit_delivery import budget_reason, hold_audit
+                from .research.controller import _stage
+
+                stage = _stage(conn, task["id"])
+                if stage["stage"] == "audit" and (reason := budget_reason(self, conn, stage)):
+                    hold_audit(self, conn, stage, reason)
+                    conn.execute("UPDATE turns SET status='blocked',error=%s WHERE id=%s", (reason, turn_id))
+                    conn.execute("UPDATE tasks SET status='blocked',error=%s WHERE id=%s", (reason, task["id"]))
+                    return {"state": "done", "status": "blocked", "reason": reason}
             if task["priority"] > 0 and conn.execute("""SELECT 1 FROM turns t JOIN tasks k ON k.id=t.task_id
                 JOIN projects p ON p.id=k.project_id WHERE t.status IN ('queued','waiting') AND t.due_at<=now()
                 AND k.priority<%s AND k.revision=p.revision
@@ -661,10 +671,15 @@ class Company:
                     return {"state": "defer", "seconds": 3600, "reason": "daily_turn_budget"}
                 conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             if not turn["request"]:
+                session = None
                 if task['kind'] == 'research_stage':
-                    from .research.controller import stage_prompt
+                    from .research.audit_delivery import enabled, session_for
+                    from .research.controller import _stage, stage_prompt
 
-                    role, prompt = stage_prompt(self, conn, task)
+                    role, prompt = stage_prompt(self, conn, task, turn)
+                    stage = _stage(conn, task["id"])
+                    if enabled(stage):
+                        session = session_for(conn, stage, turn)
                 elif task['kind'] == 'routing':
                     from .task_control import routing_prompt
 
@@ -702,7 +717,7 @@ class Company:
                         "TASK DATA JSON:\n" + json.dumps(context, ensure_ascii=False)
                     )
                 request = ProviderRequest(request_id=turn_id, model=role.model,
-                                          reasoning_effort=role.reasoning_effort, prompt=prompt)
+                                          reasoning_effort=role.reasoning_effort, prompt=prompt, session=session)
                 conn.execute("UPDATE turns SET request=%s WHERE id=%s", (Jsonb(request.model_dump()), turn_id))
             else:
                 request = ProviderRequest.model_validate(turn["request"])
@@ -744,6 +759,14 @@ class Company:
                 return
             conn.execute("UPDATE tasks SET status='blocked',error=%s WHERE id=%s", (reason, task["id"]))
             if task["kind"] == "research_stage":
+                stage = conn.execute("SELECT * FROM research_mission_stages WHERE task_id=%s FOR UPDATE",
+                                     (task["id"],)).fetchone()
+                if stage and stage["stage"] == "audit":
+                    from .research.audit_delivery import hold_audit
+
+                    hold_audit(self, conn, stage, "audit_runtime_requires_reconciliation",
+                               diagnostic=private_reason[:1500])
+                    return
                 # Failed structured output is a technical repair, not a public performance artifact.
                 # Keep the exact provider evidence in private stage attempts and retry after backoff.
                 conn.execute("""UPDATE research_mission_stages SET state='waiting',error=%s,
