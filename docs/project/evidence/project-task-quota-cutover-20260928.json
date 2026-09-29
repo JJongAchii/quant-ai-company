@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "recordedAt": "2026-09-29T00:12:16Z",
+  "updatedAt": "2026-09-29T00:57:28Z",
   "state": "activated_then_superseded_by_compatible_release",
   "sourceCommit": "2e1b5c783319c69e384a4a37c79af24a5441c422",
   "reviewPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
@@ -68,6 +69,18 @@
     "openPr87ContainsUnlimitedQuotaCommit": "ae7a17f9778810428cec6093a77ed4e527bb8afa",
     "mainMergePending": true,
     "risk": "A new deployment built directly from current main could restore the 40-task default until an approved main integration lands."
+  },
+  "mainIntegration": {
+    "pr": "https://github.com/JJongAchii/quant-ai-company/pull/88",
+    "state": "merged",
+    "mergedAt": "2026-09-29T00:56:47Z",
+    "mergeCommit": "8df81cb72cd523868c2fb91d5b5dd5baa4ab6a94",
+    "ciServiceCheck": "success",
+    "mainProjectTaskLimitDefault": 0,
+    "mainTaskAndControlGuardsPresent": true,
+    "runningAppAndModelWorkerProjectTaskLimitAt005728Z": [0, 0],
+    "laterResearchReleaseAlsoUsesUnlimitedDefault": true,
+    "remainingCondition": "Every future deployment candidate must contain this change or an equivalent unlimited setting; deploying a divergent older commit can still restore the cap."
   },
   "validation": {
     "preCutoverRealPostgresSuite": "1226 passed, 38 skipped, 0 failed; Ruff passed",
