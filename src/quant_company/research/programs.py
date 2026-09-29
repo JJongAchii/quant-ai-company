@@ -112,7 +112,7 @@ class ProgramStore:
                        "missions": spec.max_missions},
             "missions": [MissionStore(self.company).snapshot(conn, m["id"]) for m in missions]})
 
-    def propose(self, conn, program_id, value, *, actor):
+    def validate_proposal(self, conn, program_id, value, *, actor):
         project, row, spec = self.locked(conn, program_id, active=True)
         MissionStore(self.company)._actor(actor, "researcher_kr")
         proposal = typed(ResearchTaskProposal, value)
@@ -132,6 +132,10 @@ class ProgramStore:
         identity = stable(f"program-task:{program_id}:{digest}")
         if conn.execute("SELECT 1 FROM research_program_tasks WHERE id=%s", (identity,)).fetchone():
             raise PolicyError("Task already considered; use prior evidence to change the question")
+        return identity, payload, digest
+
+    def propose(self, conn, program_id, value, *, actor):
+        identity, payload, digest = self.validate_proposal(conn, program_id, value, actor=actor)
         conn.execute("INSERT INTO research_program_tasks(id,program_id,proposal,digest) VALUES(%s,%s,%s,%s)",
                      (identity, program_id, Jsonb(payload), digest))
         return str(identity)

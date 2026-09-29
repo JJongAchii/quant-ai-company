@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-09-29T04:59:11Z",
+  "source": "read-only production PostgreSQL aggregates; no prompt bodies or credentials exported",
+  "sinceUtc": "2026-09-29T02:02:02Z",
+  "codexUsage": {
+    "program_proposal": {"responses": 37, "inputTokens": 977402, "cachedInputTokens": 141312, "outputTokens": 169834},
+    "program_selection": {"responses": 14, "inputTokens": 471131, "cachedInputTokens": 47104, "outputTokens": 23284},
+    "program_data": {"responses": 5, "inputTokens": 129919, "cachedInputTokens": 9728, "outputTokens": 1811}
+  },
+  "duplicateCurrentTask": {
+    "program_data": {"stages": 3, "stagesWithDuplicate": 3, "taskFieldCharacters": 24492},
+    "program_selection": {"stages": 2, "stagesWithDuplicate": 2, "taskFieldCharacters": 16559},
+    "interpretation": "Stage context characters, not a measured per-call token reduction."
+  },
+  "proposalRepeat": {
+    "stageId": "85f6e5a3-1d37-5a98-81b3-b25ea221633a",
+    "attempts": 13,
+    "attempts7Through13": "Each had seven turns including repeated original-source reads."
+  },
+  "verification": {
+    "postgresql": "isolated real PostgreSQL 14 in /private/tmp",
+    "relatedTests": {"passed": 54},
+    "fullTests": {"passed": 1286, "skipped": 46},
+    "lint": "ruff check . passed",
+    "modelCalls": 0,
+    "researchExecutions": 0,
+    "actualPostDeploymentTokenReductionMeasured": false
+  }
+}
