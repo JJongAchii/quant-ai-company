@@ -28,10 +28,11 @@ def test_activity_uses_database_container_when_api_is_stopped(release, monkeypat
     assert "quant_feed_calls" in commands[0][-1]
 
 
-@pytest.mark.parametrize("fail_setenv", [False, True])
+@pytest.mark.parametrize("failure", [None, "setenv", "protocol"])
 def test_cutover_recreates_only_selected_services_and_preserves_publication_pause(
-    release, monkeypatch, tmp_path, fail_setenv
+    release, monkeypatch, tmp_path, failure
 ):
+    fail_setenv = failure == "setenv"
     base, target, state = (tmp_path / name for name in ("base", "target", "state"))
     for path in (base, target, state / "config"):
         path.mkdir(parents=True)
@@ -94,6 +95,16 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
             raise RuntimeError("synthetic environment write failure")
 
     helper = SimpleNamespace(atomic=lambda path, value: path.write_bytes(value), link=linked.append)
+    probed = []
+
+    def protocol(image):
+        probed.append(image)
+        assert not commands and not linked
+        if failure == "protocol":
+            raise ValueError("runtime_protocol_mismatch")
+        return {"quant_brief_v3": "a" * 64, "quant_critique_v2": "b" * 64}
+
+    monkeypatch.setattr(release, "protocol_preflight", protocol)
     monkeypatch.setattr(release, "run", run)
     monkeypatch.setattr(release, "compose", compose)
     monkeypatch.setattr(release, "module", lambda path: SimpleNamespace(setenv=setenv))
@@ -105,6 +116,13 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
     )
     monkeypatch.setattr(release.time, "sleep", lambda seconds: None)
     args = SimpleNamespace(base="a" * 40, commit=commit)
+    if failure == "protocol":
+        original = env.read_bytes()
+        with pytest.raises(ValueError, match="runtime_protocol_mismatch"):
+            release.cutover(args, base, target, journal, helper)
+        assert probed == ["new-image"] and not commands and not linked
+        assert env.read_bytes() == original and json.loads(journal.read_text())["phase"] == "staged"
+        return
     if fail_setenv:
         with pytest.raises(RuntimeError, match="synthetic"):
             release.cutover(args, base, target, journal, helper)
@@ -131,3 +149,31 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
     assert linked == ([base] if fail_setenv else [target])
     assert "QUANT_FEED_PUBLISH_ENABLED=false" in env.read_text()
     assert json.loads(journal.read_text())["phase"] == ("rolled_back" if fail_setenv else "preview_active")
+    assert probed == ["new-image"]
+
+
+@pytest.mark.parametrize("runtime", ["matching", "different", "legacy", "empty"])
+def test_native_protocol_probes_both_installed_schemas_without_model_calls(release, monkeypatch, runtime):
+    schema = {"quant_brief_v3": "a" * 64, "quant_critique_v2": "b" * 64}
+    commands = []
+
+    def run(command, **kwargs):
+        commands.append(command)
+        if command[1] == "exec":
+            if runtime == "legacy":
+                raise RuntimeError("legacy runtime cannot import native contract")
+            return json.dumps(schema if runtime == "matching" else {} if runtime == "empty"
+                              else {**schema, "quant_brief_v3": "c" * 64})
+        return json.dumps(schema)
+
+    monkeypatch.setattr(release, "run", run)
+    if runtime == "matching":
+        assert release.protocol_preflight("sha256:target") == schema
+    else:
+        with pytest.raises(ValueError, match="matching_runtime_before_cutover"):
+            release.protocol_preflight("sha256:target")
+    assert commands[0][:5] == ["docker", "run", "--rm", "--network", "none"]
+    assert commands[1][:3] == ["docker", "exec", "quant-company-codex-runtime-1"]
+    assert all(command[-1] == release.PROTOCOL_PROBE for command in commands)
+    assert "CodexRunner" not in release.PROTOCOL_PROBE
+    assert not any("--mount" in command or "--volume" in command for command in commands)

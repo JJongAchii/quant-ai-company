@@ -16,6 +16,20 @@ from pathlib import Path
 STATE = Path("/var/lib/quant-company")
 CURRENT = Path("/opt/quant-company/current")
 SELECTED = ("api", "dispatch", "quant-feed-worker")
+PROTOCOL_PROBE = """
+import hashlib, json
+from quant_company.contracts import ProviderRequest
+from quant_company.providers.codex_runner import output_schema
+from quant_company.quant_feed.editor import output_contract
+contracts = {}
+for stage in ('review', 'critique'):
+    contract = output_contract(stage)
+    request = ProviderRequest(request_id='quant-feed-protocol-probe', model='probe', prompt='probe',
+                              output_contract=contract)
+    schema = json.dumps(output_schema(request), sort_keys=True, separators=(',', ':'))
+    contracts[contract] = hashlib.sha256(schema.encode()).hexdigest()
+print(json.dumps(contracts, sort_keys=True))
+"""
 
 
 def run(command, **kwargs):
@@ -88,6 +102,30 @@ def activity():
     )
 
 
+def protocol_preflight(app_image_id):
+    """Compare actual producer/consumer schemas without auth mounts or model calls.
+
+    This operator preserves the shared runtime. A compatible runtime must already
+    be deployed through its separately coordinated, drained release path.
+    """
+    try:
+        consumer = json.loads(run([
+            "docker", "run", "--rm", "--network", "none", "--read-only", "--cap-drop=ALL",
+            "--security-opt=no-new-privileges:true", "--pids-limit=32", "--memory=128m",
+            "--entrypoint", "python", app_image_id, "-c", PROTOCOL_PROBE,
+        ]))
+        producer = json.loads(run([
+            "docker", "exec", "quant-company-codex-runtime-1", "python", "-c", PROTOCOL_PROBE,
+        ]))
+        if (not isinstance(consumer, dict) or set(consumer) != {"quant_brief_v3", "quant_critique_v2"}
+                or not all(isinstance(value, str) and re.fullmatch(r"[a-f0-9]{64}", value)
+                           for value in consumer.values()) or consumer != producer):
+            raise ValueError("schema_mismatch")
+    except (RuntimeError, ValueError):
+        raise ValueError("quant_native_protocol_requires_matching_runtime_before_cutover") from None
+    return consumer
+
+
 def compose(helper, root, *args):
     overlay = root / "deploy/data-watch.compose.yaml"
     if not overlay.is_file():
@@ -154,6 +192,8 @@ def cutover(args, previous, target, journal, helper):
         raise ValueError("quality_release_service_not_running")
     if any(activity().values()):
         raise ValueError("quality_release_activity_not_drained")
+    # Never stop a service or write release state before proving compatibility.
+    protocol = protocol_preflight(app_images[0])
     # Stop only the Quant consumer first. Its durable workflow may start a final
     # activity between the first idle check and shutdown; inspect it again.
     run(["docker", "stop", "--time", "900", "quant-company-quant-feed-worker-1"])
@@ -171,6 +211,7 @@ def cutover(args, previous, target, journal, helper):
             phase="cutover_started",
             cutover_started_at=time.time(),
             original_env_sha256=hashlib.sha256(original).hexdigest(),
+            quant_native_protocol=protocol,
             independent_before={key: value for key, value in before.items() if key not in selected},
         )
         helper.atomic(journal, json.dumps(record).encode())
