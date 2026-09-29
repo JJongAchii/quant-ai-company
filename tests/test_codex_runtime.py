@@ -139,15 +139,21 @@ def test_search_disabled_keeps_legacy_request_identity(request_model):
     assert request_digest(request_model.model_copy(update={"reasoning_effort": "max"})) != legacy
 
 
-@pytest.mark.parametrize("contract", ["quant_brief_v1", "quant_brief_v2", "quant_critique_v1"])
+@pytest.mark.parametrize("contract", ["quant_brief_v1", "quant_brief_v2", "quant_critique_v1", "quant_critique_v2"])
 async def test_quant_direct_schema_is_tool_free_and_durable(fake_codex, contract):
-    from quant_company.quant_feed.contracts import EvidenceCritique, ResearchBrief, ResearchDraft
+    from quant_company.quant_feed.contracts import (
+        EditorialCritique,
+        EvidenceCritique,
+        ResearchBrief,
+        ResearchDraft,
+    )
 
     config, configure, calls = fake_codex
     brief_model = ResearchDraft if contract == "quant_brief_v2" else ResearchBrief
+    critic_model = EditorialCritique if contract == "quant_critique_v2" else EvidenceCritique
     value = (brief_model(disposition="reject", reason="out of scope", kind="institutional",
                            maturity="institutional_research", topic="research_validity", vintage="recent")
-             if contract.startswith("quant_brief_") else EvidenceCritique(
+             if contract.startswith("quant_brief_") else critic_model(
                  disposition="hold", reason="out of scope", original_sufficient=True, claims_supported=True,
                  dates_authors_verified=True, limitations_honest=True, direct_quant_scope=False,
                  substantive_research=False, relevance_and_value=False, no_investment_advice=True,

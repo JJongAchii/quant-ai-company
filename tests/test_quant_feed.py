@@ -13,7 +13,13 @@ from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 from quant_company.company import fingerprint
 from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderResponse, Role
 from quant_company.quant_feed import schedule
-from quant_company.quant_feed.contracts import EvidenceCritique, QuantSource, ResearchBrief, load_sources
+from quant_company.quant_feed.contracts import (
+    EditorialCritique,
+    EvidenceCritique,
+    QuantSource,
+    ResearchBrief,
+    load_sources,
+)
 from quant_company.quant_feed.editor import (
     INSTRUCTIONS,
     ProposalValidationError,
@@ -410,7 +416,7 @@ def test_technical_repair_and_editorial_revision_have_separate_bounded_budgets(q
         quant.commit(response(quant.prepare(), critic))
         quant.commit(response(quant.prepare(), brief()))
     final = quant.prepare()
-    assert final["request"]["output_contract"] == "quant_critique_v1"
+    assert final["request"]["output_contract"] == "quant_critique_v2"
     assert quant.commit(response(final, critic))["document_state"] == "held"
     with quant.db.transaction() as conn:
         assert conn.execute("SELECT count(*) AS n FROM quant_feed_calls WHERE stage='repair'").fetchone()["n"] == 1
@@ -763,6 +769,20 @@ def test_critic_cannot_pass_unsupported_or_out_of_scope_research(failed_check):
         EvidenceCritique.model_validate(critique(**{failed_check: False}))
     assert "General AI governance" in INSTRUCTIONS
     assert "direct_quant_scope and substantive_research separately" in prompt({}, "critique")
+
+
+def test_editorial_suggestions_do_not_block_but_cannot_hide_material_errors():
+    assert EditorialCritique.model_validate(critique(suggestions=["Optional shorter headline"])).disposition == "pass"
+    with pytest.raises(ValueError, match="quant_incomplete_critique"):
+        EditorialCritique.model_validate(critique(claims_supported=False, suggestions=["Invented return is a fact error"]))
+    with pytest.raises(ValueError, match="quant_incomplete_critique"):
+        EditorialCritique.model_validate(critique(issues=["Wrong confidence interval"], suggestions=[]))
+    rules = prompt({}, "critique")
+    assert "do not require a quotation proving absence" in rules
+    assert "tradability or guarantees remain MATERIAL" in rules
+    card = render(ResearchBrief.model_validate(brief(costs_turnover="비용 미기재")),
+                  {"publisher": "Example", "url": "https://example.org/paper"})
+    assert "미기재·확인 불가: 제공된 원문 텍스트 기준" in card
 
 
 def test_arxiv_date_and_clipped_context_are_explicit_in_editor_prompt():

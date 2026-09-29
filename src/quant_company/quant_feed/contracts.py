@@ -155,3 +155,9 @@ class EvidenceCritique(StrictModel):
                 self.no_investment_advice))):
             raise ValueError("quant_incomplete_critique")
         return self
+
+
+class EditorialCritique(EvidenceCritique):
+    """Material issues block publication; optional wording improvements do not."""
+
+    suggestions: list[str] = Field(default_factory=list, max_length=6)

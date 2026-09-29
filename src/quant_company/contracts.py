@@ -84,7 +84,8 @@ class ProviderRequest(StrictModel):
     reasoning_effort: ReasoningEffort | None = None
     prompt: str = Field(min_length=1, max_length=90000)
     web_search: bool = False
-    output_contract: Literal["agent_decision", "quant_brief_v1", "quant_brief_v2", "quant_critique_v1"] = "agent_decision"
+    output_contract: Literal["agent_decision", "quant_brief_v1", "quant_brief_v2",
+                             "quant_critique_v1", "quant_critique_v2"] = "agent_decision"
 
     @model_validator(mode="after")
     def scoped_output(self):

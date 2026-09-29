@@ -41,10 +41,8 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None, r
         if (reused["state"] != "not_passed"
                 or reused["inputs"]["negative"]["document_id"] != negative_id
                 or reused["inputs"]["positive"]["document_id"] != positive_id
-                or any(row["state"] not in {"returned", "validated"} for row in reused["calls"])
-                or any(row["stage"] not in {"review", "repair"} for row in reused["calls"]
-                       if row["case"].startswith("positive-"))):
-            raise ValueError("only_settled_pre_critique_drafts_may_be_revalidated")
+                or any(row["state"] not in {"returned", "validated"} for row in reused["calls"])):
+            raise ValueError("only_settled_drafts_may_be_revalidated")
     if output.exists():
         receipt = json.loads(output.read_text())
         if (
@@ -78,7 +76,7 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None, r
 
     def revalidate(label, bundle, stage):
         rows = [r for r in reused["calls"] if (r["case"] == label if label.startswith("negative-")
-                                               else r["case"].startswith("positive-"))]
+                                               else r["case"].startswith("positive-") and r["stage"] != "critique")]
         row = rows[-1]
         response = ProviderResponse.model_validate(row["response"])
         if response.request_id != row["request_id"]:
@@ -197,7 +195,8 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None, r
             raise ValueError("positive_original_not_publishable")
         positive["draft"] = draft.model_dump(mode="json")
         critic = await call("positive-critic", positive, "critique")
-        if critic.disposition == "revise":
+        revision_used = reused is not None and any(r["stage"] == "revision" for r in reused["calls"])
+        if critic.disposition == "revise" and not revision_used:
             positive["previous_critique"] = critic.model_dump(mode="json")
             draft = await review_positive("revision")
             if draft.disposition != "publish":
@@ -239,7 +238,7 @@ async def main():
     parser.add_argument("--positive", required=True)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--live", required=True, action="store_true")
-    parser.add_argument("--reuse", type=Path, help="Revalidate a settled pre-critique draft without reissuing its calls")
+    parser.add_argument("--reuse", type=Path, help="Revalidate a settled draft without reissuing calls or resetting its revision budget")
     args = parser.parse_args()
     receipt = await qualify(Company(Settings()), args.negative, args.positive, args.output, reuse=args.reuse)
     print(json.dumps({key: receipt.get(key) for key in ("state", "fault", "error", "slack_writes")}))

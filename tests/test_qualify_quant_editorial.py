@@ -158,7 +158,8 @@ def test_qualification_identity_binds_model_effort_contract_and_policy(qualifica
     assert first.request_id != qualification.qualification_request(role, "case", {}, "review", "policy-1").request_id
 
 
-def test_revalidate_settled_layout_failure_without_reissuing_completed_model_calls(qualification, tmp_path):
+@pytest.mark.parametrize("already_revised", [False, True])
+def test_revalidate_settled_layout_failure_without_reissuing_completed_model_calls(qualification, tmp_path, already_revised):
     seed_path, output = tmp_path / "settled.json", tmp_path / "new.json"
     seed(seed_path, qualification, "returned")
     record = json.loads(seed_path.read_text())
@@ -174,7 +175,8 @@ def test_revalidate_settled_layout_failure_without_reissuing_completed_model_cal
     for index, (label, stage, value) in enumerate([
         ("negative-critic", "critique", critique(disposition="hold", direct_quant_scope=False, substantive_research=False)),
         ("negative-review", "review", brief(disposition="reject")),
-        ("positive-review-repair", "repair", draft),
+        ("positive-revision" if already_revised else "positive-review-repair",
+         "revision" if already_revised else "repair", draft),
     ]):
         identity = "quant-feed-old-" + str(index)
         record["calls"].append({"case": label, "stage": stage, "state": "returned", "request_id": identity,
@@ -186,14 +188,16 @@ def test_revalidate_settled_layout_failure_without_reissuing_completed_model_cal
 
     class Provider:
         async def run(self, request):
-            assert request.output_contract == "quant_critique_v1"
+            assert request.output_contract == "quant_critique_v2"
             called.append(request.request_id)
+            verdict = (critique(disposition="revise", claims_supported=False, issues=["material error remains"])
+                       if already_revised else critique())
             return ProviderResponse(request_id=request.request_id, decision=AgentDecision(
-                status="complete", say="", artifacts=[ArtifactDraft(title="test", content=json.dumps(critique()))]))
+                status="complete", say="", artifacts=[ArtifactDraft(title="test", content=json.dumps(verdict))]))
 
     result = asyncio.run(qualification.qualify(company(), "negative", "positive", output,
                                                provider=Provider(), reuse=seed_path))
-    assert result["state"] == "passed" and len(called) == 1
+    assert result["state"] == ("not_passed" if already_revised else "passed") and len(called) == 1
     assert len(result["revalidated_responses"]) == 3
     assert all(row["model_reissued"] is False for row in result["revalidated_responses"])
     assert result["revalidated_responses"][-1]["source_corrections"][0]["kind"] == "pdf_line_wrap_hyphen_match"

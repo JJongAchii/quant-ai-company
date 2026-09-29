@@ -4,7 +4,9 @@ import unicodedata
 from datetime import date
 from html import escape
 
-from .contracts import EvidenceCritique, ResearchBrief, ResearchDraft
+from .contracts import EditorialCritique, ResearchBrief, ResearchDraft
+
+EVIDENCE_SCOPE = "미기재·확인 불가는 제공된 원문 텍스트 기준이며, 원문 전체에 없다는 단정이 아닙니다."
 
 INSTRUCTIONS = """You are Quant Scout, an evidence-first Korean-language research curator for Korean and US equities.
 Return the requested JSON object directly, without an AgentDecision wrapper or an encoded JSON string.
@@ -26,8 +28,11 @@ practices are not substantive research. Other markets are allowed only with hone
 Distinguish peer review, working papers, commercial research and hypotheses.
 An author-reported backtest is NOT a locally reproduced or tradable result. Code availability is NOT replication.
 Empirical claims need market, sample period, baseline, information timing, validation/split methodology,
-costs/turnover and limitations. Explicitly say '미기재' when authors omit costs, borrow, impact, capacity, splits,
-multiple-testing correction or delistings. Do not invent these. A disclosed omission is a limitation, not an
+costs/turnover and limitations. If costs, borrow, impact, capacity, splits, multiple-testing correction or delistings
+cannot be established, say '제공 원문에서 확인되지 않음' (or '미기재' under the displayed evidence_scope).
+This reports an evidence gap in the provided text, NOT a factual assertion that the authors omitted it from the
+entire work. Do not invent these details or demand a positive quotation proving such a qualified absence.
+Evidence entries support positive source claims, not absence claims. A disclosed evidence gap is a limitation, not an
 automatic reason to hold: this is research curation, not a deployment gate. Hold only when missing evidence
 prevents a faithful account of the central contribution or results. Local reproduction is not required to share
 a valuable paper; label author-reported results and the lack of reproduction honestly. Theory/method papers do not require a backtest:
@@ -93,7 +98,7 @@ def source_spans(pages):
 
 
 def prompt(bundle, stage):
-    schema = EvidenceCritique if stage == "critique" else ResearchDraft
+    schema = EditorialCritique if stage == "critique" else ResearchDraft
     task = ("Critique the offered draft afresh against the original. Audit EACH brief field and EACH evidence "
             "entry against its exact quote; check every claim component, number, author and date. Enumerate "
             "ALL material issues in one response, not only the most salient one. Start each issue with the "
@@ -106,7 +111,14 @@ def prompt(bundle, stage):
             "Check research value, missing limitations, copyright and material-change claims. This is a separate AI "
             "evidence check, NOT independent reproduction. If a bounded rewrite can fix unsupported/overstated "
             "content choose revise and name every issue; unavailable necessary evidence means hold. Only all "
-            "checks true and no issues permits pass." if stage == "critique" else
+            "checks true and no material issues permits pass. Put optional phrasing improvements in suggestions, "
+            "not issues. A suggestion must not make a check false or require revise. why_read and application "
+            "are editorial relevance/conditional interpretation, not author-reported findings: judge whether "
+            "they follow reasonably from the source, not whether their phrasing appears verbatim. Unsupported "
+            "numbers, causality, predictive skill, tradability or guarantees remain MATERIAL even in those fields. "
+            "Respect the displayed evidence_scope: qualified gaps do not require a quotation proving absence. "
+            "If a supposedly missing detail IS disclosed in the supplied spans, that is still a material error. "
+            "Do not demand an unchanged or already-correct field be revised." if stage == "critique" else
             "Repair only the deterministic validation issues in previous_critique. The failed draft is supplied; "
             "preserve its supported content and any earlier editorial corrections. Do not introduce new claims."
             if stage == "repair" else
@@ -129,6 +141,7 @@ def prompt(bundle, stage):
         if not date_guard:
             date_guard = "\nDATE_GUARD: arXiv date metadata is incomplete or conflicting. Verify the original v1 date or hold."
     view = {key: value for key, value in bundle.items() if key != "pages"}
+    view["evidence_scope"] = EVIDENCE_SCOPE
     spans = source_spans(bundle.get("pages", []))
     view["source_spans"] = spans
     if stage != "critique" and bundle.get("draft"):
@@ -192,7 +205,7 @@ def _proposal(schema, content):
 
 
 def output_contract(stage):
-    return "quant_critique_v1" if stage == "critique" else "quant_brief_v2"
+    return "quant_critique_v2" if stage == "critique" else "quant_brief_v2"
 
 
 class ProposalValidationError(ValueError):
@@ -213,7 +226,7 @@ def validate(response, bundle, stage, *, audit=None):
             or decision.messages or decision.memories or decision.follow_up or decision.artifacts[0].source_ids):
         raise ValueError("quant_artifact_only")
     if stage == "critique":
-        value = _proposal(EvidenceCritique, decision.artifacts[0].content)
+        value = _proposal(EditorialCritique, decision.artifacts[0].content)
         draft = bundle.get("draft") or {}
         needs_change_check = bool(bundle.get("prior")) or draft.get("change") in {"material", "correction", "retraction"}
         if value.disposition == "pass" and needs_change_check and not value.material_change_verified:
@@ -371,5 +384,6 @@ def render(brief, document, previous_url=None):
     related = list(dict.fromkeys(url for url in brief.related_urls if url != document["url"]))
     if related:
         lines.append(" · ".join(link(url, f"추가 자료 {index}") for index, url in enumerate(related[:2], 1)))
+    lines.append("_미기재·확인 불가: 제공된 원문 텍스트 기준_")
     lines.append("_원문 대조 AI 요약·별도 AI 검토; 독립 재현·투자 검증 아님_")
     return "\n".join(lines)
