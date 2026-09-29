@@ -39,10 +39,14 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None, r
         reuse_digest = hashlib.sha256(raw).hexdigest()
         reused = json.loads(raw)
         if (reused["state"] != "not_passed"
+                or reused["policy"] == store.policy()
                 or reused["inputs"]["negative"]["document_id"] != negative_id
                 or reused["inputs"]["positive"]["document_id"] != positive_id
+                or not {"negative-critic", "negative-review"} <= {row["case"] for row in reused["calls"]}
+                or not any(row["case"].startswith("positive-") and row["stage"] in {"review", "repair", "revision"}
+                           for row in reused["calls"])
                 or any(row["state"] not in {"returned", "validated"} for row in reused["calls"])):
-            raise ValueError("only_settled_drafts_may_be_revalidated")
+            raise ValueError("only_settled_complete_cases_under_a_changed_policy_may_be_revalidated")
     if output.exists():
         receipt = json.loads(output.read_text())
         if (

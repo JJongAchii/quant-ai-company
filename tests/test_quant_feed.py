@@ -210,7 +210,7 @@ def test_native_references_resolve_exact_original_and_keep_ids_in_revision_promp
         revised_bundle = quant.bundle(conn, doc)
     assert doc["brief"]["evidence"][0]["quote"] == spans[0]["text"]
     view = json.loads(prompt(revised_bundle, "revision").split("\nDATA:\n")[1])
-    assert view["draft"]["evidence"] == value["evidence"]
+    assert view["draft"]["evidence"] == [{"claim": e["claim"], "span_ids": [e["span_id"]]} for e in value["evidence"]]
     # Exact quotation is not semantic support: the separate critic can still refuse it.
     held = critique(disposition="hold", claims_supported=False, issues=["claim not supported by selected passage"])
     assert quant.commit(response(quant.prepare(), held))["document_state"] == "held"
@@ -229,6 +229,32 @@ def test_unknown_source_span_is_actionable_and_never_becomes_evidence(quant):
     with quant.db.transaction() as conn:
         assert conn.execute("SELECT revision FROM quant_feed_documents").fetchone()["revision"] == 0
         assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
+
+
+def test_a_compound_claim_can_bind_multiple_exact_source_spans_without_duplicate_prompt_text():
+    pages = [{"location": "PDF p.1", "text": "The study runs 100000 callbacks on 10000 paths."},
+             {"location": "PDF p.2", "text": "The outputs are volatility and collapse probability. Costs are not estimated."}]
+    bundle = {"pages": pages, "as_of": "2026-09-29", "links": [], "commercial": False,
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
+    value = brief(evidence=[{"claim": "Runs and both defined observables", "span_ids": ["p1-s1", "p2-s1"]},
+                            {"claim": "Costs not estimated", "span_ids": ["p2-s1"]}])
+    proposed = response({"request": {"request_id": "quant-feed-grouped"}}, value)
+    proposed.decision.artifacts[0].title = "quant_brief_v3"
+    audit = []
+    resolved = validate(proposed, bundle, "review", audit=audit)
+    assert [span.quote for span in resolved.evidence[0].source_spans] == [page["text"] for page in pages]
+    assert len(audit) == 3
+    assert "PDF p.1, PDF p.2" in render(resolved, bundle["metadata"])
+    bundle["draft"] = resolved.model_dump()
+    for stage in ("revision", "critique"):
+        view = json.loads(prompt(bundle, stage).split("\nDATA:\n")[1])
+        assert view["draft"]["evidence"] == value["evidence"]
+        assert all(set(item) == {"claim", "span_ids"} for item in view["draft"]["evidence"])
+    tampered = resolved.model_dump()
+    tampered["evidence"][0]["source_spans"][1]["quote"] = "An invented result that is absent from the original."
+    forged = response({"request": {"request_id": "quant-feed-forged"}}, tampered)
+    with pytest.raises(ProposalValidationError, match="quant_evidence_span_mismatch"):
+        validate(forged, bundle, "review")
 
 
 def test_page_budget_redistributes_short_pages_and_remains_bounded():
@@ -386,7 +412,7 @@ def test_one_deterministic_proposal_repair_then_fail_closed(quant):
     with quant.db.transaction() as conn:
         document = conn.execute("SELECT state,stage,revision,critique,brief FROM quant_feed_documents").fetchone()
     assert (document["state"], document["stage"], document["revision"]) == ("ready", "repair", 0)
-    assert document["brief"]["evidence"] == [{**item, "span_id": ""} for item in invalid["evidence"]]
+    assert document["brief"]["evidence"] == [{**item, "span_id": "", "source_spans": []} for item in invalid["evidence"]]
     assert [i["field"] for i in document["critique"]["issues"]] == ["evidence[0]", "evidence[1]"]
     second = quant.prepare()
     with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
@@ -404,7 +430,7 @@ def test_technical_repair_and_editorial_revision_have_separate_bounded_budgets(q
         quant.commit(response(quant.prepare(), brief()))
         quant.commit(response(quant.prepare(), critic))
     ready = quant.prepare()
-    assert ready["request"]["output_contract"] == "quant_brief_v2"
+    assert ready["request"]["output_contract"] == "quant_brief_v3"
     quant.commit(response(ready, bad))
     with quant.db.transaction() as conn:
         doc = conn.execute("SELECT * FROM quant_feed_documents").fetchone()

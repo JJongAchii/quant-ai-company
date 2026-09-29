@@ -4,7 +4,7 @@ import unicodedata
 from datetime import date
 from html import escape
 
-from .contracts import EditorialCritique, ResearchBrief, ResearchDraft
+from .contracts import EditorialCritique, GroupedResearchDraft, ResearchBrief, ResearchDraft
 
 EVIDENCE_SCOPE = "미기재·확인 불가는 제공된 원문 텍스트 기준이며, 원문 전체에 없다는 단정이 아닙니다."
 
@@ -47,9 +47,11 @@ If citation_date and citation_online_date agree, use that original date for publ
 revised_on only when an actual revision is established; unresolved date conflicts mean hold, not guess.
 Use vintage=classic for old foundational work; why_read must explain why it matters NOW, not call it new.
 Every substantive claim and reported number must be supported by evidence: select a supplied source_spans
-entry by span_id. The service inserts the exact quote and location; DO NOT write or modify quotations yourself.
-Each selected source span must directly support the WHOLE associated claim, including its
-sample, target, horizon and result; split compound claims across evidence entries when needed. Evidence claims
+entries by span_ids (one to four per claim). The service inserts exact quotes and locations; DO NOT write or
+modify quotations yourself. All selected spans JOINTLY must directly support the WHOLE associated claim,
+including its sample, target, horizon and result. Add supporting spans instead of replacing one needed span
+with another. Each component needs support, but an individual span need not prove every component by itself.
+Split or narrow compound claims that need more than four spans. Evidence claims
 in Korean should map explicitly to the brief. No unsupported
 numeric performance, invented links, broad copied passages, or buy/sell instructions. For revisions, preserve
 existing supported span references; change them only when the claim changes or critique identifies a mismatch.
@@ -98,9 +100,10 @@ def source_spans(pages):
 
 
 def prompt(bundle, stage):
-    schema = EditorialCritique if stage == "critique" else ResearchDraft
+    schema = EditorialCritique if stage == "critique" else GroupedResearchDraft
     task = ("Critique the offered draft afresh against the original. Audit EACH brief field and EACH evidence "
-            "entry against its exact quote; check every claim component, number, author and date. Enumerate "
+            "entry against its referenced source_spans, jointly across the selected spans; check every claim "
+            "component, number, author and date. Enumerate "
             "ALL material issues in one response, not only the most salient one. Start each issue with the "
             "affected field paths (for example why_read, idea, evidence[0].claim), and specify the supported "
             "correction and original location. After a revision, re-audit "
@@ -144,14 +147,20 @@ def prompt(bundle, stage):
     view["evidence_scope"] = EVIDENCE_SCOPE
     spans = source_spans(bundle.get("pages", []))
     view["source_spans"] = spans
-    if stage != "critique" and bundle.get("draft"):
+    if bundle.get("draft"):
         evidence = []
         for item in bundle["draft"].get("evidence", []):
+            if item.get("source_spans"):
+                evidence.append({"claim": item["claim"], "span_ids": [s["span_id"] for s in item["source_spans"]]})
+                continue
+            if item.get("span_ids"):
+                evidence.append(item)
+                continue
             if item.get("span_id"):
-                evidence.append({"claim": item["claim"], "span_id": item["span_id"]})
+                evidence.append({"claim": item["claim"], "span_ids": [item["span_id"]]})
                 continue
             matching = [s for s in spans if s["location"] == item.get("location") and s["text"] == item.get("quote")]
-            evidence.append({"claim": item["claim"], "span_id": matching[0]["span_id"]} if len(matching) == 1 else item)
+            evidence.append({"claim": item["claim"], "span_ids": [matching[0]["span_id"]]} if len(matching) == 1 else item)
         view["draft"] = {**bundle["draft"], "evidence": evidence}
     result = (INSTRUCTIONS + "\nTASK: " + task + date_guard + "\nSCHEMA:\n"
               + json.dumps(schema.model_json_schema(), ensure_ascii=False)
@@ -205,7 +214,7 @@ def _proposal(schema, content):
 
 
 def output_contract(stage):
-    return "quant_critique_v2" if stage == "critique" else "quant_brief_v2"
+    return "quant_critique_v2" if stage == "critique" else "quant_brief_v3"
 
 
 class ProposalValidationError(ValueError):
@@ -233,20 +242,24 @@ def validate(response, bundle, stage, *, audit=None):
             raise ValueError("quant_unverified_material_change")
         return value
     corrections = []
-    if decision.artifacts[0].title == "quant_brief_v2":
-        draft = _proposal(ResearchDraft, decision.artifacts[0].content)
+    if decision.artifacts[0].title in {"quant_brief_v2", "quant_brief_v3"}:
+        grouped = decision.artifacts[0].title == "quant_brief_v3"
+        draft = _proposal(GroupedResearchDraft if grouped else ResearchDraft, decision.artifacts[0].content)
         spans = {s["span_id"]: s for s in source_spans(bundle["pages"])}
-        issues = [{"code": "quant_unknown_evidence_span", "field": f"evidence[{i}].span_id"}
-                  for i, item in enumerate(draft.evidence) if item.span_id not in spans]
+        references = [item.span_ids if grouped else [item.span_id] for item in draft.evidence]
+        issues = [{"code": "quant_unknown_evidence_span", "field": f"evidence[{i}]." + ("span_ids" if grouped else "span_id")}
+                  for i, ids in enumerate(references) if any(identity not in spans for identity in ids)]
         if issues:
             raise ProposalValidationError(draft, issues)
         resolved = []
-        for i, item in enumerate(draft.evidence):
-            span = spans[item.span_id]
-            resolved.append({"claim": item.claim, "span_id": item.span_id,
-                             "location": span["location"], "quote": span["text"]})
-            corrections.append({"kind": "source_span_resolved", "evidence_index": i,
-                                "span_id": item.span_id, "location": span["location"]})
+        for i, (item, ids) in enumerate(zip(draft.evidence, references, strict=True)):
+            selected = []
+            for identity in dict.fromkeys(ids):
+                span = spans[identity]
+                selected.append({"span_id": identity, "location": span["location"], "quote": span["text"]})
+                corrections.append({"kind": "source_span_resolved", "evidence_index": i,
+                                    "span_id": identity, "location": span["location"]})
+            resolved.append({"claim": item.claim, **({"source_spans": selected} if grouped else selected[0])})
         brief = ResearchBrief.model_validate({**draft.model_dump(), "evidence": resolved})
     else:
         # Historical durable responses remain revalidatable; no old call is reissued.
@@ -264,6 +277,12 @@ def validate(response, bundle, stage, *, audit=None):
     layout = {p["location"]: _layout_text(p["text"]) for p in bundle["pages"]}
     spans = {s["span_id"]: s for s in source_spans(bundle["pages"])}
     for index, evidence in enumerate(brief.evidence):
+        if evidence.source_spans:
+            for item in evidence.source_spans:
+                span = spans.get(item.span_id)
+                if not span or span["location"] != item.location or _quote_text(span["text"]) != _quote_text(item.quote):
+                    issues.append({"code": "quant_evidence_span_mismatch", "field": f"evidence[{index}].source_spans"})
+            continue
         quote = _quote_text(evidence.quote)
         if evidence.span_id:
             span = spans.get(evidence.span_id)
@@ -379,8 +398,9 @@ def render(brief, document, previous_url=None):
     lines.append("")
     if previous_url:
         lines.append(link(previous_url, "이전 게시"))
-    lines.append(link(document["url"], "원문") + " · 근거 "
-                 + safe(", ".join(dict.fromkeys(e.location for e in brief.evidence))))
+    locations = [location for e in brief.evidence
+                 for location in ([s.location for s in e.source_spans] if e.source_spans else [e.location])]
+    lines.append(link(document["url"], "원문") + " · 근거 " + safe(", ".join(dict.fromkeys(locations))))
     related = list(dict.fromkeys(url for url in brief.related_urls if url != document["url"]))
     if related:
         lines.append(" · ".join(link(url, f"추가 자료 {index}") for index, url in enumerate(related[:2], 1)))

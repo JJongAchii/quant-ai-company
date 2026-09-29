@@ -2,7 +2,7 @@ import json
 import re
 from datetime import date
 from importlib.resources import files
-from typing import Literal
+from typing import Annotated, Literal
 from urllib.parse import urlsplit
 
 from pydantic import Field, field_validator, model_validator
@@ -57,11 +57,31 @@ def load_sources(path=None):
     return sources
 
 
-class Evidence(StrictModel):
-    claim: str = Field(min_length=1, max_length=800)
+SpanId = Annotated[str, Field(pattern=r"^p[1-9][0-9]{0,2}-s[1-9][0-9]{0,3}$")]
+
+
+class EvidenceSpan(StrictModel):
+    span_id: SpanId
     location: str = Field(min_length=1, max_length=50)
     quote: str = Field(min_length=8, max_length=600)
+
+
+class Evidence(StrictModel):
+    claim: str = Field(min_length=1, max_length=800)
+    location: str = Field(default="", max_length=50)
+    quote: str = Field(default="", max_length=600)
     span_id: str = Field(default="", pattern=r"^(?:p[1-9][0-9]{0,2}-s[1-9][0-9]{0,3})?$")
+    source_spans: list[EvidenceSpan] = Field(default_factory=list, max_length=4)
+
+    @model_validator(mode="after")
+    def one_representation(self):
+        if self.source_spans:
+            ids = [span.span_id for span in self.source_spans]
+            if self.quote or self.location or self.span_id or len(set(ids)) != len(ids):
+                raise ValueError("quant_conflicting_evidence_representations")
+        elif not self.location or len(self.quote) < 8:
+            raise ValueError("quant_evidence_requires_original")
+        return self
 
 
 class ResearchBrief(StrictModel):
@@ -130,6 +150,15 @@ class ResearchDraft(ResearchBrief):
     """Model selects immutable source spans; only the service writes actual quotations."""
 
     evidence: list[EvidenceReference] = Field(default_factory=list, max_length=12)
+
+
+class EvidenceGroupReference(StrictModel):
+    claim: str = Field(min_length=1, max_length=800)
+    span_ids: list[SpanId] = Field(min_length=1, max_length=4)
+
+
+class GroupedResearchDraft(ResearchBrief):
+    evidence: list[EvidenceGroupReference] = Field(default_factory=list, max_length=12)
 
 
 class EvidenceCritique(StrictModel):

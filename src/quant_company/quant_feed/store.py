@@ -98,7 +98,7 @@ class QuantFeedStore:
 
     def policy(self):
         s = self.company.settings
-        return fingerprint({"version": 14, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
+        return fingerprint({"version": 15, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
                             "owner": s.quant_feed_owner_user, "channel": s.quant_feed_channel_id,
                             "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
                             "web": s.company_web_enabled, "sources": [x.model_dump() for x in self.sources().values()],

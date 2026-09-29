@@ -169,6 +169,7 @@ def test_revalidate_settled_layout_failure_without_reissuing_completed_model_cal
                       metadata={"publisher": "Example", "url": "https://example.org/paper"}, as_of="2026-09-29")
     record["inputs"]["negative"]["draft"] = brief()
     record["state"] = "not_passed"
+    record["policy"] = "prior-policy"
     record["calls"] = []
     draft = brief()
     draft["evidence"][0] = {"claim": "설정 한계", "location": "PDF p.1", "quote": "Fixed settings limit the test."}
@@ -203,6 +204,12 @@ def test_revalidate_settled_layout_failure_without_reissuing_completed_model_cal
     assert result["revalidated_responses"][-1]["source_corrections"][0]["kind"] == "pdf_line_wrap_hyphen_match"
     assert result["reuse_receipt_sha256"]
     assert seed_path.read_text() == json.dumps(record)
+    record["policy"] = "policy-1"
+    seed_path.write_text(json.dumps(record))
+    with pytest.raises(ValueError, match="changed_policy"):
+        asyncio.run(qualification.qualify(company(), "negative", "positive", tmp_path / "repeat.json",
+                                         provider=Provider(), reuse=seed_path))
+    assert len(called) == 1  # No repeated judge shopping under an unchanged policy.
 
 
 @pytest.mark.parametrize("state,call_state", [("blocked", "returned"), ("not_passed", "requested")])
