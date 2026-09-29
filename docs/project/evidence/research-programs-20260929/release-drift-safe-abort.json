@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "source": "production read-only inspection after guarded cutover abort",
+  "attempted_candidate_commit": "a7ddf0ec5ee2b7e681dfe1046160140a68be1b82",
+  "expected_active_release": "2d2ee42ffc41dabb505020ada896e4d9760a8ab1",
+  "guard_error": "release_or_journal_drift",
+  "cutover_journal_created": false,
+  "runtime_backup_created": false,
+  "runtime_or_service_mutated_by_aborted_attempt": false,
+  "observed_active_release": "fac61efe624f843c2edc5aec51b8d1e0c7c989cb",
+  "observed_active_worker_image": "quant-company-autonomous:d790b2ecf203b63a76425b8b2703c9d10250ff44",
+  "observed_active_worker_image_id": "sha256:99dd435617437a6e58c9570181a2f7e1ac71deb3bc77e92096f6963f7264b162",
+  "observed_runtime_sha256": "4692a2b5c4371f6ecb39c800288bbabd19034dfee0d9f39321d1439681d02e16",
+  "observed_worker_route": "http://codex-runtime:8080",
+  "observed_current_source_has_citation_prompt": false,
+  "response": "Candidate kept inactive; merged the active release source with the citation guidance before constructing another image."
+}

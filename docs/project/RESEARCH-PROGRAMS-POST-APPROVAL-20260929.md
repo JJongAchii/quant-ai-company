@@ -52,6 +52,56 @@ account-gateway 등의 컨테이너 ID는 그대로다. 현재 릴리스 포인�
 한다. 운영에서는 과제·미션·예약·과학 시행 0건을 유지했고, 다음 직원 시도가 자동 시작됐다.
 [인용 위치 거부 영수증](evidence/research-programs-20260929/citation-location-rejection.json).
 
+8회차도 같은 인용 위치 오류로 과제 등록 전에 거부됐다. 커밋
+`a7ddf0ec5ee2b7e681dfe1046160140a68be1b82`에서 제안 프롬프트에 페이지 `location`
+필드와 `char:0` 위치 형식을 명시했다. 인용 검증 코드는 유지했고 전체 테스트 1,289건,
+lint, PR 서비스 CI가 통과했다. [검증 영수증](evidence/research-programs-20260929/citation-prompt-validation.json).
+
+이 수정본을 운영에 적용하려던 사전 검사에서 릴리스 포인터가 다른 감사 작업의
+`fac61efe624f843c2edc5aec51b8d1e0c7c989cb`으로 바뀐 것을 발견했다. 검사 단계에서
+중단돼 이 작업의 운영 설정·컨테이너는 변경되지 않았다.
+[안전 중단 영수증](evidence/research-programs-20260929/release-drift-safe-abort.json).
+현재 운영 워커 `d790b2e`의 코드를 포함하도록 소스를 병합한 `6dfbdcc` 후보를 만들었다.
+첫 이미지 빌드는 서버 디스크 공간 부족으로 실패했다. 이번 작업의 미사용 이미지 두 개와
+오래된 빌드 캐시 일부만 정리한 뒤 재빌드가 성공했고, 새 워커 설정 후보의 Codex runtime
+직접 경로를 검증했다. **후보는 아직 운영에 적용되지 않았다.**
+[통합 후보 영수증](evidence/research-programs-20260929/citation-integrated-candidate.json).
+
+9회차도 인용 위치 오류로 거부됐다. 통합 후보를 적용하려던 다음 사전 검사에서도 별도
+감사 릴리스 `5fcd4353b8adab3e3fb6f11fda3f08fef7aea801`이 먼저 활성화돼 변경 전
+중단됐다. 운영 설정과 컨테이너는 이 전환 시도로 변경되지 않았다.
+[두 번째 안전 중단 영수증](evidence/research-programs-20260929/second-release-drift-safe-abort.json).
+당시 다른 배포 브랜치도 새 감사 릴리스와 동일한 인용 안내를 통합 중이었다. 이후
+운영 전환 직전에 실제 활성 이미지와 연구 기록을 다시 대조했다.
+
+추가로 현 활성 릴리스 `5fcd435`에 인용 안내 파일만 더한 `0072b57` 후보를 준비했다.
+처음 만든 얇은 이미지는 소스 경로만 바꾸고 실제 설치 패키지의 import 경로를 놓쳤다.
+배포 전 import 해시 검사에서 발견해 그 이미지를 제거했다. 수정한 후보는 두 경로의
+파일 해시가 일치하고, 운영 설정 후보에서도 공식 ChatGPT용 Codex runtime 직접 경로를
+유지한다. 이 후보 준비 시점에는 운영에 적용하지 않았다.
+[단일 파일 이미지 후보 영수증](evidence/research-programs-20260929/citation-overlay-candidate.json).
+
+10회차도 기존 워커에서 인용 위치 오류로 거부됐다. 후보 `0072b57`의 전체 테스트
+1,307 통과·13 건너뜀, lint와 PR #87 CI 통과를 확인한 뒤, 11:39:13 KST에
+안전 사전 검사와 함께 **연구 워커 한 개만** 새 이미지로 교체했다. 승인 digest·서명된
+Slack 이벤트·프로그램 활성 상태, 대기 중인 단계, 실행 중인 턴·작업·불확실한 모델
+호출이 0건인 것을 검사했다. 나머지 서비스의 컨테이너 ID는 그대로였고, 적용 후 실제
+워커가 설치 패키지에서 수정된 파일 해시를 import하는 것을 읽기 전용으로 확인했다.
+[후보 검증](evidence/research-programs-20260929/citation-overlay-validation.json),
+[운영 전환 영수증](evidence/research-programs-20260929/citation-overlay-cutover.json),
+[적용 후 확인](evidence/research-programs-20260929/citation-overlay-post-check.json).
+11회차 자동 재시도는 11:43 KST에 새 워커에서 시작됐다. 11:53 KST 읽기 전용
+조회에서는 일곱 개의 고정 모델 요청 모두에 정확한 인용 안내와 `PDF p.6` 예시가
+들어 있었다. 연구자는 재현 보고서와 선택한 논문의 마지막 구간까지 읽었고, 최종
+제안 턴은 실행 중이었다. 과제·미션·예약·과학 시행은 0건이다.
+[11회차 요청·완독 영수증](evidence/research-programs-20260929/citation-guidance-attempt11.json).
+검증을 통과한 제안이나 독립 검토 결과는 아직 없다.
+
+최신 main을 병합한 PR #87의 커밋 `716cbc1`에서 전체 테스트 1,307 통과·13 건너뜀,
+lint와 서비스 CI 성공, 병합 가능 상태를 확인했다. 운영 후보 `6dfbdcc`와 PR HEAD의
+연구 controller·프로그램 controller·배포 경로 파일은 동일하다.
+[통합 검증 영수증](evidence/research-programs-20260929/citation-integrated-validation.json).
+
 배포 설정 회귀 검사는 통과했다. 첫 수정의 전체 `uv run pytest -q` 결과는 1,288 통과·13 건너뜀,
 `uv run ruff check .`도 통과했고 PR #87의 커밋 `0742e88` CI는 성공했다.
 이 수치는 전략 성과나 가설 검증 결과가 아니다.
