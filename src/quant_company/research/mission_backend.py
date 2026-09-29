@@ -496,7 +496,7 @@ class MissionBackend:
                       "scope": sorted(package.scope_files), "validator_request_id": request_id,
                       "binding_file": "audit/scope/binding.json", "requires_all_text_files_read": True,
                       "resident_evidence_paths": sorted(resident_paths)},
-            "_audit": {"root": str(package.root), "binding": binding.model_dump(mode="json"),
+            "_audit": {"delivery_version": 2, "root": str(package.root), "binding": binding.model_dump(mode="json"),
                        "history": history.to_dict(), "issued": issued, "required_reads": required_reads,
                        "qlab_commit": qlab_profile.commit, "profile_digest": digest_model(profile.public_profile)},
         }
@@ -508,6 +508,11 @@ class MissionBackend:
         turns = self._actor_turns(conn, row["task_id"], "validator", snapshot)
         if audit["binding"]["validator_request_id"] != str(turns[0]["id"]):
             raise PolicyError("mission_validator_request_changed")
+        from .audit_delivery import check_delivery, enabled
+
+        if enabled(row):
+            check_delivery(conn, row, turns)
+            return
         current_ids = {UUID(stable("stage-read:" + str(turn["id"]))) for turn in turns}
         attempts = [row["attempt"]]
         allowed_ids = set(current_ids)
@@ -553,6 +558,17 @@ class MissionBackend:
         # from the failed task remain auditable recovery evidence, but only bytes
         # delivered in this attempt can satisfy the validator's evidence contract.
         current_reads = [item for item in reads if item["attempt"] == row["attempt"]]
+        delivered = set()
+        for turn in turns:
+            try:
+                data = json.loads(turn["request"]["prompt"].split("\nMISSION DATA JSON:\n", 1)[1])
+                for chunk in data.get("read_chunks", []):
+                    delivered.add((chunk["path"], chunk["offset"], chunk["content"], chunk["next_offset"]))
+            except (ValueError, IndexError, KeyError, TypeError):
+                raise PolicyError("mission_audit_prompt_delivery_invalid") from None
+        if any((item["path"], item["character_offset"], item["content"], item["next_offset"]) not in delivered
+               for item in current_reads):
+            raise PolicyError("mission_audit_evidence_not_delivered")
         for path, expected in audit["required_reads"].items():
             position = 0
             file_reads = [item for item in current_reads if item["path"] == path]
@@ -583,7 +599,13 @@ class MissionBackend:
 
     def _publish_audit(self, row, snapshot):
         from .adaptive_report import build_adaptive_report
-        from .audit import AuditBinding, audit_publication, verify_audit_package, write_audit
+        from .audit import (
+            AuditBinding,
+            audit_publication,
+            inspect_audit_verdict,
+            verify_audit_package,
+            write_audit,
+        )
         from .mission_contracts import EvidenceRef
 
         if set(row["result"]) != {"markdown"} or not isinstance(row["result"]["markdown"], str):
@@ -603,6 +625,16 @@ class MissionBackend:
         issued = datetime.fromisoformat(context["issued"]).date()
         audit_path = write_audit(package_root, row["result"]["markdown"], expected=expected,
                                  qlab_profile=qlab_profile, issued=issued, rendered_at=now())
+        verdict = inspect_audit_verdict(package_root, audit_path, expected=expected, qlab_profile=qlab_profile)
+        if verdict != "pass":
+            from .audit_delivery import hold_audit
+
+            with self.company.db.transaction() as conn:
+                self._current_stage(conn, row, snapshot)
+                hold_audit(self.company, conn, row, "audit_" + verdict, verdict=verdict,
+                           audit_path=str(audit_path.relative_to(package_root)), audit_sha256=sha_file(audit_path),
+                           scope_digest=row["context"]["audit"]["scope_digest"])
+            return {"state": "waiting", "verdict": verdict, "requires_remediation": True}
         verified = verify_audit_package(package_root, audit_path, expected=expected, qlab_profile=qlab_profile)
         report = build_adaptive_report(trials, audit=verified, history=history)
         report_path = self._file(package_root / "report.html", report["html"].encode())

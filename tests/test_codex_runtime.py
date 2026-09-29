@@ -65,7 +65,7 @@ if mode == 'large':
     time.sleep(30)
 def event(value):
     print(json.dumps(value), flush=True)
-event({'type': 'thread.started', 'thread_id': 'test-thread'})
+event({'type': 'thread.started', 'thread_id': control.get('thread_id', 'test-thread')})
 event({'type': 'turn.started'})
 for index, message in enumerate(control.get('diagnostics', [])):
     event({'type': 'item.completed', 'item': {'id': f'diagnostic-{index}', 'type': 'error', 'message': message}})
@@ -130,7 +130,7 @@ async def test_scoped_native_search_preserves_observed_events(fake_codex, reques
 def test_search_disabled_keeps_legacy_request_identity(request_model):
     import hashlib
 
-    old = request_model.model_dump(exclude={"web_search", "reasoning_effort"})
+    old = request_model.model_dump(exclude={"web_search", "reasoning_effort", "session"})
     legacy = hashlib.sha256(json.dumps(old, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
     assert request_digest(request_model) == legacy
     assert request_digest(request_model.model_copy(update={"web_search": True})) != legacy

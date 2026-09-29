@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     company_code_commit: str = "unknown"
     company_research_enabled: bool = False
     company_autonomous_research_enabled: bool = False
+    research_audit_max_turns: int = Field(default=64, ge=2, le=128)
+    research_audit_max_uncached_tokens: int = Field(default=750000, ge=10000, le=2000000)
+    research_audit_max_output_tokens: int = Field(default=100000, ge=1000, le=200000)
     # Operator-provisioned, immutable execution profiles. Never a model-selected path.
     research_profiles_file: Path | None = None
     research_qlab_profile_file: Path | None = None

@@ -22,6 +22,15 @@ CREATE TABLE IF NOT EXISTS research_stage_reads (
  next_offset integer, sha256 text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE research_stage_reads ADD COLUMN IF NOT EXISTS attempt integer NOT NULL DEFAULT 1;
+-- A packet is prepared atomically with its frozen request. Only a completed,
+-- digest-bound review makes its bytes eligible for audit coverage.
+CREATE TABLE IF NOT EXISTS research_audit_packets (
+ turn_id uuid PRIMARY KEY REFERENCES turns(id),
+ stage_id uuid NOT NULL REFERENCES research_mission_stages(id), attempt integer NOT NULL,
+ chunks jsonb NOT NULL, digest text NOT NULL, notes text,
+ created_at timestamptz NOT NULL DEFAULT now(), reviewed_at timestamptz
+);
+CREATE INDEX IF NOT EXISTS research_audit_packet_stage ON research_audit_packets(stage_id,attempt);
 -- Multiple scientific trials inherit one mission approval; replay still permits one job per event.
 ALTER TABLE research_jobs DROP CONSTRAINT IF EXISTS research_jobs_approval_event_id_key;
 CREATE UNIQUE INDEX IF NOT EXISTS research_replay_approval_event ON research_jobs(approval_event_id)

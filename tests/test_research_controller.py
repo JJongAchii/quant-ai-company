@@ -398,6 +398,8 @@ def test_operator_reconciles_timeout_into_started_audit_attempt_with_current_thr
                      (stage["id"], second_task_id))
         second_turn = company._new_turn(conn, second_task)
         context = dict(prior["context"])
+        # Emulate an already-started successor from before automatic holds existed.
+        context.pop("_audit_hold", None)
         context["audit"] = {**context["audit"], "validator_request_id": str(second_turn)}
         context["_audit"] = {**context["_audit"],
                              "binding": {"validator_request_id": str(second_turn)}}

@@ -5,7 +5,7 @@ import shutil
 
 import pytest
 
-from quant_company.contracts import ProviderRequest
+from quant_company.contracts import ProviderRequest, ProviderSession
 from quant_company.providers.codex_runner import (
     SUPPORTED_CLI_VERSION,
     CodexRunner,
@@ -35,5 +35,8 @@ async def test_real_cli_accepts_required_configuration_without_inference(tmp_pat
     assert version.stdout.strip() == f"codex-cli {SUPPORTED_CLI_VERSION}".encode()
     request = ProviderRequest(request_id="configuration-probe", model=model, reasoning_effort=effort, prompt="Never sent")
     await runner._configuration_preflight(request, work_dir, env)
+    request.session = ProviderSession(id="audit-config-probe")
+    await runner._configuration_preflight(request, work_dir, env)
+    await runner._configuration_preflight(request, work_dir, env, "00000000-0000-4000-8000-000000000001")
     assert not config.jobs_dir.exists()
     assert not list(auth.glob("auth*"))
