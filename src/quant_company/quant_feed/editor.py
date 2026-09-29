@@ -477,14 +477,18 @@ def render(brief, document, previous_url=None):
         vintage = " · 정정·철회"
     authors = ", ".join(brief.authors[:3]) + (f" 외 {len(brief.authors) - 3}명" if len(brief.authors) > 3 else "")
     date_line = brief.published_on + (f" (개정 {brief.revised_on})" if brief.revised_on else "")
-    limitations = " / ".join(safe(value) for value in brief.limitations)
     lines = [f"*{labels[brief.maturity]}{vintage}*", f"*{safe(brief.title)}*",
-             f"{safe(document['publisher'])} · {safe(authors)} · {safe(date_line)} · {safe(brief.market)}",
+             f"{safe(document['publisher'])} · {safe(authors)} · {safe(date_line)}",
+             "*대상* " + safe(brief.market),
              "", "*왜 읽나* " + safe(brief.why_read), "*핵심* " + safe(brief.idea),
-             "", "*데이터·검증* " + safe(brief.data_period) + " · " + safe(brief.validation),
-             "*저자 보고* " + safe(brief.author_results),
-             "", "*주의* " + limitations + " · 비용/회전율: " + safe(brief.costs_turnover),
-             "*적용 전* " + safe(brief.application)]
+             "", "*데이터* " + safe(brief.data_period),
+             "*검증* " + safe(brief.validation),
+             "*저자 보고* " + safe(brief.author_results), ""]
+    if brief.limitations:
+        lines.append("*주의* " + safe(brief.limitations[0]))
+        lines.extend("• " + safe(value) for value in brief.limitations[1:])
+    lines.extend(["*비용·회전율* " + safe(brief.costs_turnover),
+                  "*적용 전* " + safe(brief.application)])
     if brief.commercial_bias:
         lines.append("*이해관계* " + safe(brief.commercial_bias))
     if brief.change_summary:

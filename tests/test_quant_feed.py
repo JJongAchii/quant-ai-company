@@ -952,8 +952,13 @@ def test_render_is_scan_friendly_and_does_not_duplicate_or_mislabel_links():
                   limitations=["거래비용 미반영", "표본 편향 가능성", "시장 충격 미기재"])
     rendered = render(ResearchBrief.model_validate(value),
                       {"publisher": "Example", "url": "https://example.org/paper"})
-    assert "*왜 읽나*" in rendered and "\n\n*데이터·검증*" in rendered
-    assert "*저자 보고*" in rendered and "*주의*" in rendered
+    assert "*왜 읽나*" in rendered and "\n\n*데이터*" in rendered
+    assert "\n*검증*" in rendered and "\n*저자 보고*" in rendered
+    assert "\n*주의*" in rendered and "\n*비용·회전율*" in rendered
+    assert "\n*대상*" in rendered
+    two_limits = render(ResearchBrief.model_validate(brief(limitations=["첫 번째", "두 번째"])),
+                        {"publisher": "Example", "url": "https://example.org/paper"})
+    assert "*주의* 첫 번째\n• 두 번째\n*비용·회전율*" in two_limits
     assert "시장 충격 미기재" in rendered
     assert "*적용 전*" in rendered and "독립 재현·투자 검증 아님" in rendered
     assert rendered.count("<https://example.org/paper|") == 1
