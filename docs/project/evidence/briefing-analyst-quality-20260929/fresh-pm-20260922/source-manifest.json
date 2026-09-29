@@ -1,0 +1,143 @@
+{
+  "case": "pm-20260922-fresh-analyst-quality",
+  "cutoff": "2026-09-22T10:30:00+00:00",
+  "raw_sha256": "b39438ae7a63875c90b8026e010c982e20937638de82de2c5d66841298fd6e34",
+  "bundle_sha256": "dcd987fa05cad34d8bbc02a9163ef9333ce088bc1b5512f12879fe6d4d30f32c",
+  "raw_article_count": 194,
+  "eligible_count": 194,
+  "candidate_count": 96,
+  "initial_selected_count": 16,
+  "candidate_market_close_reports": 6,
+  "selected": [
+    {
+      "id": "128202d1c644ee110f1f5526935127319ae82b56",
+      "title": "'전강후약' 코스피, 2%대까지 오르다 강보합…'7천피'는 사수(종합)",
+      "publisher": "연합뉴스",
+      "published_at": "2026-09-22T07:16:25+00:00",
+      "retrieved_at": "2026-09-22T07:29:35.124773+00:00",
+      "sha256": "48daaf38ee4dec72b301598ec3f22161f35889797ca6792672692e9ea4b046e1"
+    },
+    {
+      "id": "bbd821f9a5d0dcb025ff3f262b5738fcb11cdc3b",
+      "title": "KOSPI Up 0.15% Tuesday",
+      "publisher": "KBS World",
+      "published_at": "2026-09-22T07:06:32+00:00",
+      "retrieved_at": "2026-09-22T07:07:54.316870+00:00",
+      "sha256": "557154c751367d70e692b4ea16c2bc5020e85779f3a343a90d228e9847a1d074"
+    },
+    {
+      "id": "022d1a5e0b70b29988487c9fbfffe74bd2ecb7cf",
+      "title": "비트코인, 입법ㆍ금리 불안 딛고 8개월 만에 최고⋯ETF 자금도 복귀",
+      "publisher": "이투데이",
+      "published_at": "2026-09-22T06:10:00+00:00",
+      "retrieved_at": "2026-09-22T06:17:51.459087+00:00",
+      "sha256": "e12423eaf3ebee80265d893d79c54b5e59ab4988602e6836d208627d252f6c75"
+    },
+    {
+      "id": "43bf891cba1bc0c15eae2b65579fec3c020bbd08",
+      "title": "U.S. Treasury yields ease as investors await fresh jobs data, Fed comments",
+      "publisher": "CNBC",
+      "published_at": "2026-09-22T09:16:10+00:00",
+      "retrieved_at": "2026-09-22T09:20:35.965609+00:00",
+      "sha256": "46ed2d45606da80bd07b464a627aab0aed6d6fbe5aa5eaf421014a8c3685cdfb"
+    },
+    {
+      "id": "f1818cb2a7d4987092f5737169be48c54d5e8af2",
+      "title": "유가 변동에 국고채 금리 혼조세…3년물 연 4.040%(종합)",
+      "publisher": "연합뉴스",
+      "published_at": "2026-09-22T08:02:36+00:00",
+      "retrieved_at": "2026-09-22T08:10:45.258109+00:00",
+      "sha256": "7220adf33aa93b9a3e1b5dc0abd9c7534ad96295a635c2f27dfabaa821bbed73"
+    },
+    {
+      "id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+      "title": "Oil prices reverse gains as United Nations General Assembly meeting lifts hopes for Iran war diplomacy",
+      "publisher": "CNBC",
+      "published_at": "2026-09-22T09:30:24+00:00",
+      "retrieved_at": "2026-09-22T09:30:42.364090+00:00",
+      "sha256": "9564061afae093c88d2f1288a8a4842c6576fe0dcd875db1fcdf76e30d927f0e"
+    },
+    {
+      "id": "bcd38a44e1d59abe520c4af5eeb5407041d85138",
+      "title": "U.S. threatens to 'shut down' Iranian airlines as Houthis tighten pressure on oil route",
+      "publisher": "CNBC",
+      "published_at": "2026-09-22T07:55:26+00:00",
+      "retrieved_at": "2026-09-22T07:59:29.328006+00:00",
+      "sha256": "122f18a554ac98920063f4826e7ee6525fa2086d271b0f3f5ef5a4d6780f1def"
+    },
+    {
+      "id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+      "title": "뉴욕증시, AI 수요 지속 기대에 상승⋯나스닥, 사상 최고치 [글로벌마켓 모닝 브리핑]",
+      "publisher": "이투데이",
+      "published_at": "2026-09-21T23:46:00+00:00",
+      "retrieved_at": "2026-09-21T23:48:54.055887+00:00",
+      "sha256": "5b5072967b2ef1cc450fe0adcf57c41f004106d6b7179b0b822077ff338ee60d"
+    },
+    {
+      "id": "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+      "title": "[뉴욕증시] AI·반도체 랠리…국제유가 대폭 하락",
+      "publisher": "SBS 뉴스",
+      "published_at": "2026-09-21T22:48:00+00:00",
+      "retrieved_at": "2026-09-21T22:53:49.739167+00:00",
+      "sha256": "02e2131d3d65f8ce52588523950cc708c97b272055d63bf55dabbd8101b8a375"
+    },
+    {
+      "id": "5982d891ae70be91e596a2f5feb2e950f3a78969",
+      "title": "환율 이틀 연속 급락해 1,350원대로…달러매도·중동대화 기대",
+      "publisher": "연합뉴스",
+      "published_at": "2026-09-22T07:23:26+00:00",
+      "retrieved_at": "2026-09-22T07:29:37.736842+00:00",
+      "sha256": "d1494c04899adb43c179a3566b1d295c00a9aebf16b3065b99b5823aac1b5822"
+    },
+    {
+      "id": "d661fad1506a2ca9d31b15eb65fe5ad41d686804",
+      "title": "\"국민연금, 인도 국채 투자 허가 절차 진행 중…협상 막바지\"",
+      "publisher": "SBS 뉴스",
+      "published_at": "2026-09-22T09:01:00+00:00",
+      "retrieved_at": "2026-09-22T09:11:40.799770+00:00",
+      "sha256": "b1d280070b8ce02fdd7666bdf0dba99ebe5b0c2656961d9639f8adc3739aeb54"
+    },
+    {
+      "id": "38d50b2f2dc68f56597da11f5a17da41902a4bf3",
+      "title": "Businesses struggle to profit as fuel prices soar",
+      "publisher": "BBC News",
+      "published_at": "2026-09-22T08:33:49+00:00",
+      "retrieved_at": "2026-09-22T08:41:24.150491+00:00",
+      "sha256": "b1e0c45740a8100cadbbd4a6e141f572fa8078fe01eb08aeb72b9eb2578c729a"
+    },
+    {
+      "id": "1bfb70a9e26c4dd1d3cd41b53b12f30e13264828",
+      "title": "미국 베선트 \"'미중 AI 대화' 공식화…중국, 이란 제재 많이 관여\"",
+      "publisher": "SBS 뉴스",
+      "published_at": "2026-09-22T08:25:00+00:00",
+      "retrieved_at": "2026-09-22T08:30:58.567219+00:00",
+      "sha256": "31a08c478658bbb5f1f5b60665b6d9e3be5e2bf83012bfcbe7bad081839bb376"
+    },
+    {
+      "id": "39155a878b1ae500c2a2df24a4c77dc25a8b0f83",
+      "title": "아시아증시, AI 훈풍에 소폭 강세⋯일본증시는 휴장",
+      "publisher": "이투데이",
+      "published_at": "2026-09-22T07:59:00+00:00",
+      "retrieved_at": "2026-09-22T08:00:27.078202+00:00",
+      "sha256": "aaa3cd3cf486efb4e8fa7d70bf933cfce280544b79e3f0b61dc102bd6068f6e9"
+    },
+    {
+      "id": "d8d032fb5ceba798fecf9f56cd3c01e1fd40b4ef",
+      "title": "Iran must stop arming Houthis in Yemen, G7 says ahead of UN General Assembly",
+      "publisher": "BBC News",
+      "published_at": "2026-09-22T05:16:07+00:00",
+      "retrieved_at": "2026-09-22T05:37:23.458039+00:00",
+      "sha256": "cd08f9a4c124749a17bd0636d356fc4e99e792ed1883390ece771fb65004df96"
+    },
+    {
+      "id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151",
+      "title": "Paramount settles lawsuit with US states, clearing way for $110bn merger with Warner Bros",
+      "publisher": "BBC News",
+      "published_at": "2026-09-21T21:06:26+00:00",
+      "retrieved_at": "2026-09-21T21:15:16.076748+00:00",
+      "sha256": "b69083e003219c97b6455dc9730da833e378742c464e3a3ff8aaba3cabd4c8bd"
+    }
+  ],
+  "model_calls": 0,
+  "slack": "not_called"
+}

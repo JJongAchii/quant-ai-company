@@ -169,6 +169,13 @@ def prose_numbers_supported(text, quotes):
     if not valid:
         return False
     supported = numbers(" ".join(quotes))
+    # A source may write "2.70% 내린" while the brief writes "-2.70%".
+    # Require the same magnitude and an explicit downward predicate in a quote.
+    negative_percent = r"(?<![\d.,])[-−]\s*(\d[\d,]*(?:\.\d+)?)\s*%(?!\s*(?:[pP]\b|포인트))"
+    for match in re.finditer(negative_percent, remaining):
+        amount = -Decimal(match[1].replace(",", ""))
+        if reported_change_supported(amount, "%", quotes):
+            supported.add(amount)
     # A quoted negative fund flow is naturally reported as a positive magnitude
     # followed by an explicit Korean outflow word. Never extend this to inflows.
     korean_amount = NUMBER+r"(?:\s*[십백천만억조](?:\s*\d[\d,]*(?:\.\d+)?)?)+"

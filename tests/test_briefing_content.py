@@ -1,7 +1,7 @@
 import json
 import sys
 from copy import deepcopy
-from datetime import timedelta
+from datetime import date, timedelta
 from decimal import Decimal
 
 import pytest
@@ -17,6 +17,10 @@ from quant_company.briefing.coverage import inventory, select_documents, topics
 from quant_company.briefing.editor import (
     apply_condition_patch,
     artifact,
+    calendar_equivalent_numbers,
+    canonical_source_quote,
+    claims_wti_price,
+    main_post_item_ids,
     non_session_korean_listed_price,
     prune,
     render,
@@ -24,6 +28,7 @@ from quant_company.briefing.editor import (
     validate_review,
 )
 from quant_company.briefing.inputs import market_report
+from quant_company.briefing.market_rules import expired_wti_contract
 from quant_company.briefing.numeric import numbers, prose_numbers_supported, reported_change_supported
 from quant_company.briefing.qualification import qualify
 from quant_company.config import Settings
@@ -68,6 +73,18 @@ def test_bank_name_does_not_masquerade_as_central_bank_and_small_ipo_is_demoted(
     assert selected == [central_bank]
 
 
+def test_english_kospi_close_can_be_second_report_before_older_korean_recap():
+    end = definition().cutoff
+    full = doc("full", "코스피 마감·코스닥 종가와 투자자별 수급", content="코스피와 코스닥이 마감했다.",
+               published_at=end-timedelta(minutes=5))
+    english = doc("english", "KOSPI and KOSDAQ close higher", content="Both indexes closed higher.",
+                  published_at=end-timedelta(minutes=6))
+    recap = doc("recap", "코스피 상승 마감", content="코스피가 마감했다.",
+                published_at=end-timedelta(minutes=10))
+    selected = select_documents([recap, english, full], "pm", limit=2)
+    assert [item.id for item in selected] == ["full", "english"]
+
+
 def test_month_named_in_source_can_support_its_exact_korean_month_without_modal_false_positive():
     assert Decimal(7) in numbers("Saudi crude accounted for 34.1% of imports in July.")
     assert Decimal(5) not in numbers("The committee may change its policy.")
@@ -102,6 +119,96 @@ def test_compact_percent_ranges_preserve_upper_bounds_without_erasing_negative_v
     assert Decimal("-4") not in numbers(source)
     assert Decimal("-3") in numbers("The change was 5% -3%")
     assert not prose_numbers_supported("목표범위 3.75~4%", ["The target changed 3.75% -4%"])
+
+
+def test_signed_decline_in_prose_requires_same_magnitude_and_downward_quote():
+    quote = "코스피는 전 거래일보다 191.18포인트(2.70%) 내린 6,889.74로 마감했다."
+    assert prose_numbers_supported("전일 코스피는 6,889.74(-2.70%)였습니다.", [quote])
+    assert not prose_numbers_supported("전일 코스피는 6,889.74(-3.70%)였습니다.", [quote])
+    assert not prose_numbers_supported("코스피는 -2.70%였습니다.", ["코스피는 2.70% 올랐다."])
+
+
+def test_wti_delivery_month_cannot_settle_after_certain_expiry():
+    assert expired_wti_contract("10월물 WTI 마감 92.60달러", date(2026, 9, 28))
+    assert expired_wti_contract("10월 인도분 미국 서부텍사스산원유(WTI)", date(2026, 9, 28))
+    assert not expired_wti_contract("10월물 WTI 마감 92.60달러", date(2026, 9, 21))
+    assert not expired_wti_contract("11월물 WTI 마감 92.60달러", date(2026, 9, 28))
+    assert not expired_wti_contract("10월물 브렌트유 마감 92.60달러", date(2026, 9, 28))
+    assert not expired_wti_contract("2027년 10월물 WTI 마감 92.60달러", date(2026, 9, 28))
+    assert expired_wti_contract("1월물 WTI 마감 92.60달러", date(2026, 12, 28))
+    assert expired_wti_contract("WTI 10월물 마감 92.60달러", date(2026, 9, 28))
+
+
+def test_expired_wti_price_is_rejected_even_when_original_quotes_it():
+    p, data = analytical_proposal(), bundle()
+    quote = "뉴욕상업거래소에서 9월물 WTI는 배럴당 92.60달러에 마감했다."
+    data["documents"][0]["content"] += "\n"+quote
+    p.overview[0].text = "9월물 WTI는 배럴당 92.60달러에 마감했습니다."
+    p.overview[0].evidence[0].quote = quote
+    assert validate(p, data)[p.overview[0].id] == "expired_wti_delivery_contract"
+    p.overview[0].text = "WTI는 배럴당 92.60달러에 마감했습니다."
+    assert validate(p, data)[p.overview[0].id] == "expired_wti_delivery_contract"
+
+    valid = quote.replace("9월물", "10월물")
+    data["documents"][0]["content"] += "\n"+valid
+    p.overview[0].text = "10월물 WTI는 배럴당 92.60달러에 마감했습니다."
+    p.overview[0].evidence[0].quote = valid
+    assert p.overview[0].id not in validate(p, data)
+
+    p.overview[0].text = "WTI는 보도된 인도월과 거래일이 맞지 않아 종가를 제시하지 않습니다."
+    p.overview[0].evidence[0].quote = quote
+    assert not claims_wti_price(p.overview[0].text)
+    assert p.overview[0].id not in validate(p, data)
+
+
+def test_long_quote_repairs_only_unambiguous_final_period_or_comma():
+    source = ("If an airline lands, you cannot provide it fuel, landing services or ticket sales, "
+              "or you will be knocked out of the dollar system.")
+    wrong_end = source[:-1]+","
+    assert canonical_source_quote(wrong_end, [source]) == source
+    assert canonical_source_quote(source.replace("cannot", "can"), [source]) is None
+    assert canonical_source_quote("This is a short quote,", ["This is a short quote."]) is None
+    assert canonical_source_quote(wrong_end, [source, source[:-1]+","]) == wrong_end
+    p, data = proposal(), bundle()
+    data["documents"][0]["content"] += "\n"+source
+    p.summary[0].text = "항공사 지원 제한은 달러 결제 접근을 위협합니다."
+    p.summary[0].evidence[0].quote = wrong_end
+    assert p.summary[0].id not in validate(p, data)
+    assert p.summary[0].evidence[0].quote == source
+
+
+def test_issue_specific_next_check_is_in_main_when_separate_watchpoint_exists():
+    p, data = proposal(), bundle()
+    parts, quality = render(p, data)
+    assert p.issues[0].next_check.text in parts[0]
+    assert p.issues[0].next_check.id in main_post_item_ids(p, data)
+    assert p.issues[0].next_check.text not in "\n".join(parts[1:])
+    assert quality["format_version"] == 12
+
+
+def test_korean_relative_calendar_date_and_afternoon_time_are_exactly_equivalent():
+    source = "내달 2일 미 동부시간 오전 8시 30분(한국시간 오후 9시 30분) 발표한다."
+    published = SourceDocument.model_validate(bundle()["documents"][0]).published_at
+    equivalent = calendar_equivalent_numbers(source, published)
+    assert "10월 2일" in equivalent
+    assert "한국 21:30" in equivalent
+    assert prose_numbers_supported("10월 2일 한국 21:30 발표", [equivalent])
+    assert not prose_numbers_supported("10월 3일 한국 21:30 발표", [equivalent])
+    assert not prose_numbers_supported("10월 2일 한국 20:30 발표", [equivalent])
+
+
+def test_major_release_three_days_ahead_remains_eligible_for_daily_brief():
+    p, data = proposal(), bundle()
+    quote = "고용보고서는 사흘 뒤 발표될 예정이다."
+    data["documents"][0]["content"] += "\n"+quote
+    p.calendar = [CalendarEvent.model_validate({
+        "id": "jobs_release", "title": "고용보고서", "at": (definition().cutoff+timedelta(days=3)).isoformat(),
+        "source_timezone": "Asia/Seoul", "status": "scheduled",
+        "evidence": [{"source_id": "source-1", "quote": quote}],
+    })]
+    assert "jobs_release" not in validate(p, data)
+    p.calendar[0].at = definition().cutoff+timedelta(days=8)
+    assert validate(p, data)["jobs_release"] == "event_outside_window"
 
 
 def test_valid_translation_keeps_market_issue_but_changed_amount_removes_it():

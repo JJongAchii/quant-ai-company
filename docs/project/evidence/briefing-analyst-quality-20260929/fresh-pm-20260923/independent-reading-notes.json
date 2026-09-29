@@ -1,0 +1,38 @@
+{
+  "written_before_writer_response": "2026-09-29T05:46:53+00:00",
+  "selected_bundle_sha256": "213452ae17ed647da94c10277f4d692768ea8f175bdcbcff7b8c212fc4fdec08",
+  "writer_request_id": "news-brief-eval-1f0c48f09fb528b207037c819a916032",
+  "mode": "independent_original_to_visible_main_checklist",
+  "main_post_requirements": [
+    "KOSPI 7080.92 +0.90% and KOSDAQ 844.48 +1.21% close; independent same-close reports are available. Say the opening +1.94% narrowed and some sectors fell, so index gain is not uniform strength.",
+    "Distinguish 15:30 USD/KRW 1358.4 (+0.2 won) from its 1347.1 intraday low and distinguish KRX equities from Korean sovereign yields. Do not infer oil alone caused both.",
+    "Explain that the US-Iran mediator talks reported no breakthrough, while Hormuz flow remained far below prewar; Saudi pipeline restart and Brent decline are offsetting, not a confirmed reopening.",
+    "Tell the reader why the next Korea session is delayed by Chuseok, and what to check during the closure, without manufacturing a scheduled close or a timed release.",
+    "Fed Collins supported a past hike but is not a current voter; October hike 53.1% is a market estimate, not a decision. Xi-Trump meeting and any diesel export ban remain prospective.",
+    "Separate crude spot/futures retreat from record tanker charter and diesel costs. Name Kpler as an estimate source if using its Hormuz volume."
+  ],
+  "selected_source_notes": {
+    "3155236565fe5ca068f1f32cfd14e3c9138f8631": "Core Korea close and breadth: KOSPI +0.90% to 7080.92, KOSDAQ +1.21% to 844.48; KOSPI opening +1.94% faded. Institution +3169억원 and other corporations +1조6323억원 KRX; foreign -5047억원, individual -1조4396억원. Samsung +3.25%, Hynix +1.20%; construction -5.66%, machinery -3.22%, IT service -2.40%. Reported analyst attributes early relief to oil; this is attribution, not proof. The article's WTI October 22 September close is near expiry, so do not extrapolate to September 23.",
+    "19f0d6ace0af4c4a8ddf74fbd39d5fc4790f26f4": "First US-Iran talks since June through Qatari mediator; no breakthrough reported. Trump threat and claimed later deal contrast with Iran's demand to end war/aggression. Strait closure and continuing attacks make future supply relief uncertain; no agreement or reopening is established.",
+    "683de28fb21798717272b41827388c7830b04b36": "Iran military rejects US threats and threatens strikes. Tehran demands end to aggression, blockade, economic pressure and asset release; week-long reopening is conditional. Kpler estimates confirmed Hormuz transits 6.98m bpd to September 20 vs 18.3m prewar; do not call this a verified complete flow. Brent 99.90 and WTI 90.42 are Wednesday intraday observations, not settlement.",
+    "0adced8a9ab4952362d4566f2993c74ad32bd5ac": "US secondary sanctions may apply to foreign aviation fuel/airport providers after September 23; Treasury blacklisted Mahan agents and 27 smaller airlines. China/Russia flights reported continuing, limiting any claim of total isolation. This is a sanctions/logistics risk, not a completed oil supply change.",
+    "f66c7cfedb6e00c0f257002b5cf9eb7f8e90be55": "AP interviews as reported by SBS allege greater IRGC involvement in Houthi Red Sea campaign. Distinguish reported military claims from verified shipping stoppage. Consequence is alternative Red Sea route risk even if Saudi East-West pipeline restarts; do not repeat every tactical detail.",
+    "eb3111063f0bb5b7afb63af1e0fc236cedff3cb3": "September 22 Brent November settlement $99.25, -1.1%, under $100; Saudi East-West pipeline restarting but export recovery is forecast for later. WTI October $94.59 on September 22 is near contract expiry; avoid using as September 23 quote. Kpler-reported loading and Trump escort claim have distinct evidentiary status.",
+    "cd2c1e8a1a44601c39098212daf0b2332e231e7d": "Fed Collins backed last week's quarter-point hike, says inflation could remain above 2%; not a current FOMC voter. FedWatch October 25bp hike probability 53.1% is market pricing, not a policy decision. ECB Lane warns energy could keep inflation higher, but future curve baseline sees some improvement; this is the competing condition.",
+    "f6c388d4c3e60dfbf95d7ff707848e22cf5b3abe": "USD/KRW 15:30 reference 1358.4, +0.2 won after 1347.1 intraday low; news attributes rebound to dollar buying/Fed expectations and holiday exporter dollar selling. Do not label 15:30 FX a night close. DXY 100.750 +0.204 is separately timed.",
+    "45a1ff52fbbb9fb1027751e918bb1f72a1bda0b9": "September 23 Korea sovereign 3y 4.006% -3.4bp, 10y 4.392% -6.9bp. Article attributes moves mainly to lower oil; analyst notes usual pre-holiday position changes might have raised yields. Separate cash bond yields from foreign futures contracts.",
+    "f2a295d28f66f5771a0bd10d82117c591f0f9ec5": "Previous September 22 US close: Dow -0.36%, S&P 500 approximately flat, Nasdaq +0.45% record. Previous session background for Korea PM, not tonight's US result. US-Iran 3h talks had no concrete deal. Oil and Saudi recovery claims are forecast/attribution, not certainty.",
+    "421424411390597a789c24bd24b9fc71c3a0a3e5": "Tekever private fundraising $580m at $6.4bn valuation and reported 50k Ukraine flight hours. Materiality to this day's broad Korean market is limited; mention only if specific defense-technology channel is justified.",
+    "d82bc4ea5b494eef3e6d969e311434d4b393da71": "Xi departed September 23 for US visit; Trump meeting scheduled September 24 local. AI notification mechanism and trade truce extension are proposals; advanced-chip export restrictions and rare earths remain disputed. Korean semiconductor exposure makes the exact outcome relevant; no settlement yet.",
+    "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb": "US administration is examining feasibility of full/partial diesel export ban; no ban yet. Diesel $6.53/gallon per AAA and $207/barrel Tuesday versus crude illustrates product-market stress despite falling crude; US refiners currently export.",
+    "c55f25ea7edb2d9c314bbb37f5edc2413158b276": "FT via Yonhap: VLCC charter over $1.2m/day, roughly double from late August; longer alternate sourcing and Oman waiting extend voyages. Clarkson estimates about 15% fleet waiting; one Chinese refiner reportedly cut 400k-bpd plant utilization to 80%. Oil price relief and delivered fuel-cost pressure can diverge.",
+    "fe72914073bd83fd9449a449f39c3859": "KBS independent English close quotes KOSPI +0.90% to 7080.92, KOSDAQ +1.21% to 844.48, USD/KRW 1358.4 at 15:30. English spoken-number transcription needs exact unit and value interpretation.",
+    "4c858feaad66c47bc229df23e405fbb732c682c1": "SBS independent KOSPI/KOSDAQ close repeats levels and opening fade. Thin reprint may not count as wholly independent because caption credits Yonhap; prefer KBS plus Yonhap when claiming separate origins."
+  },
+  "unselected_title_only_watchlist": [
+    "Samsung/Hynix close article may add direct quote/sector context; title is discovery only.",
+    "CNBC Trump-Xi AI article may supply the other side's position and operative detail; title is discovery only.",
+    "SBS/Iran conditions articles may supply distinct deadline or counterproposal; title is discovery only.",
+    "Separate September 23 KOSDAQ close headline is redundant if selected full report supplies exact level."
+  ]
+}

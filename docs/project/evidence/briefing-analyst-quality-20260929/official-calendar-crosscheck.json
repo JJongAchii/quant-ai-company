@@ -1,0 +1,20 @@
+{
+  "stage": "independent_post_cutoff_development_crosscheck",
+  "edition": "2026-09-29-am",
+  "findings": [
+    {
+      "event": "September 2026 US Employment Situation",
+      "scheduled_at": "2026-10-02T08:30:00-04:00",
+      "official_source": "https://www.bls.gov/schedule/news_release/empsit.htm",
+      "comparison": "Matches the selected media original and the revised event timestamp."
+    },
+    {
+      "event": "August 2026 US Personal Income and Outlays / PCE",
+      "scheduled_at": "2026-09-30T08:30:00-04:00",
+      "official_source": "https://www.bea.gov/news/schedule/full",
+      "comparison": "The revised brief correctly gives the date but leaves the exact release time unconfirmed because the frozen edition did not contain this official calendar original. Do not backfill the post-cutoff check into that edition."
+    }
+  ],
+  "collector_gap": "The September BLS monthly page visibly includes the October 2 employment release, so the current-month URL alone does not explain this edition's missing official calendar. A local production-style fetch of that BLS page returned HTTP 403; Fed, BEA and BOK pages succeeded. The installed worker host also returned HTTP 403 with the collector's User-Agent. Cross-month coverage and the 3,000-character excerpt cannot be qualified from an inaccessible original; official BLS schedule coverage remains unavailable through this route.",
+  "scope": "External verification after the saved cutoff, not a replacement for point-in-time source collection or a passing editorial review."
+}

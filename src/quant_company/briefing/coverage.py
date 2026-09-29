@@ -19,7 +19,7 @@ NOISE = re.compile(r"^\[(?:인사|부고|게시판|표)\]|^\[특징주\].*상장
 
 def priority(title):
     # Prefer economy-wide/market developments over local publicity with incidental finance keywords.
-    patterns = (r"증시|코스피|코스닥|nasdaq|s&p|stocks|markets",
+    patterns = (r"증시|코스피|코스닥|kospi|kosdaq|nasdaq|s&p|stocks|markets",
                 r"연준|(?<![가-힣])한은|한국은행|물가|기준금리|(?<![가-힣])고용|inflation|payroll|federal reserve|central bank",
                 r"호르무즈|전쟁|이란|미중|미·중|관세|제재|iran|tariff|sanction|trump.*xi",
                 r"유가|국채|환율|oil|crude|treasury|yields",

@@ -16,10 +16,21 @@ Select at most 16 unique supplied IDs, including every required_source_id, withi
 source_chars is the size the writer will receive; the excerpts here are only a discovery aid, not full
 originals. Never invent facts or assume a missing fact does not exist in the unshown text.
 Keep a full market-close report with investor flows/sector breadth and independent core-price support.
+For PM, the two close reports should provide a substantive session account and corroborating index closes
+from a separate original. A third short close recap is usually a duplicate; use that slot for a distinct
+listed-sector move, macro/policy change or opposing development. Korean and English KOSPI/KOSDAQ reports
+have equal priority. Check whether a caption credits another outlet before calling reports independent.
 Then prioritize material policy changes, geopolitical actions AND opposing developments, significant
 rate/FX/commodity changes, and earnings/industry developments. Include a second article on an event
 when it supplies a distinct baseline, operative detail, denial or contrary evidence. Do not spend slots
 on reprints, routine issuance, local publicity or personal-interest stories while those are missing.
+Give weight to newly released hard economic data and market-participation evidence that can overturn an
+index-only story, including China's activity and the prior Korean session when relevant to the reader.
+When source slots are tight, prefer these over a proposal with no near-term action or a routine disclosure
+roundup. A headline about market breadth is a question to inspect, not proof of a same-day move.
+Do not let several angles on one ongoing conflict crowd out the day's market breadth and cross-asset
+divergence. A private startup funding round needs a concrete link to this edition's traded markets before
+it displaces a direct listed-company or sector development.
 Prioritize major newly announced corporate transactions over routine fund flows or old incidents. Compare
 event time with publication time: distinguish a new event, new material disclosure about an older event,
 and repeated background. Check after-close developments without treating them as causes of that close.
