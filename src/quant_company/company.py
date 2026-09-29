@@ -265,12 +265,12 @@ class Company:
         return project
 
     def _message(self, conn, project, task_id, author, kind, text, recipient=None, message_id=None,
-                 *, notify_owner=False):
+                 *, notify_owner=False, publish=True):
         message_id = message_id or str(uuid4())
         conn.execute("""INSERT INTO messages(id,project_id,task_id,revision,author,recipient,kind,text)
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
                      (message_id, project["id"], task_id, project["revision"], author, recipient, kind, text))
-        if project["channel"] and author in self.roles:
+        if publish and project["channel"] and author in self.roles:
             # Persist the rendered text now: delayed progress must not turn into a completion ping.
             owner = project["owner_user"]
             may_notify = author == "director" or (
@@ -707,7 +707,8 @@ class Company:
                         "Use tools to obtain evidence; never claim a tool/experiment was run without its receipt.\n"
                         + ("This is a follow-up question. Answer the owner's actual question directly. "
                            "Use current research_programs in TASK DATA JSON for program progress, "
-                           "distinguish a newly approved program from older missions, and distinguish "
+                           "including task_details for candidate titles and hold reasons. "
+                           "Distinguish a newly approved program from older missions, and distinguish "
                            "approval from task selection and trial execution. Do not start duplicate work "
                            "just to answer. If a fact is absent, say what is known.\n"
                            if task["agent"] == "director" and task["kind"] == "answer" else "") +
@@ -1003,7 +1004,8 @@ class Company:
                 if len(say) > 6000:
                     say = say[:5900] + "\n(일부 생략. 전체 결과는 이 업무의 산출물 기록에 보관했습니다.)"
             if say.strip():
-                self._message(conn, project, task["id"], task["agent"], "answer", say, notify_owner=final)
+                self._message(conn, project, task["id"], task["agent"], "answer", say,
+                              notify_owner=final, publish=task["kind"] != "answer" or final)
             for action in decision.messages:
                 self._message(conn, project, task["id"], task["agent"], "peer", action.text, action.agent)
             for index, action in enumerate(decision.delegations):
