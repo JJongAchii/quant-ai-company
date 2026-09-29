@@ -69,11 +69,15 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-post-check.json",
           "sha256": "fd0c8587762a"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-guidance-attempt13.json",
+          "sha256": "75839fc5b43e"
         }
       ],
-      "note": "Attempt 12 repeated the out-of-program predecessor rejection before task creation. The corrected worker is now active after an idle guarded cutover; attempt 13 is scheduled automatically. No task, mission, reservation or scientific trial is recorded.",
+      "note": "Attempt 13 began on the corrected worker, read the selected originals completely and is preparing its final proposal. No task, mission, reservation or scientific trial is recorded yet.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T03:26:19.290272+00:00"
+      "updatedAt": "2026-09-29T03:41:39.893831+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -160,16 +164,20 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-post-check.json",
           "sha256": "fd0c8587762a"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-guidance-attempt13.json",
+          "sha256": "75839fc5b43e"
         }
       ],
-      "note": "Commit ac44bf5 passed 1307 local tests, lint and PR service CI. A guarded worker-only cutover activated the explicit allowed predecessor list; readback verified the installed module hash and unchanged other service IDs.",
+      "note": "The active worker uses the new installed module. Attempt 13 frozen model requests include the exact empty allowed predecessor list and instruction; the selected report and paper were fully read.",
       "status": "verified",
-      "updatedAt": "2026-09-29T03:26:19.290272+00:00"
+      "updatedAt": "2026-09-29T03:41:39.893831+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T03:26:19.290272+00:00"
+  "updatedAt": "2026-09-29T03:41:39.893831+00:00"
 }

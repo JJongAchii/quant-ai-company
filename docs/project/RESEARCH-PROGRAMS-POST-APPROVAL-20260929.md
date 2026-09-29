@@ -122,6 +122,12 @@ import하는 것을 확인했다. 다음 자동 재시도는 12:29:22 KST 예정
 [전환 영수증](evidence/research-programs-20260929/predecessor-overlay-cutover.json),
 [적용 후 확인](evidence/research-programs-20260929/predecessor-overlay-post-check.json).
 
+13회차 자동 재시도는 12:29 KST에 새 워커에서 시작됐다. 고정된 모델 요청에
+`allowed_predecessor_mission_ids=[]`와 첫 과제의 빈 선행 미션 목록 지시가 들어
+있다. 12:39 KST에는 재현 보고서와 선택한 논문을 모두 완독했고 최종 제안 턴이
+실행 중이었다. 이 시점의 과제·미션·예약·과학 시행은 0건이다.
+[13회차 요청·완독 영수증](evidence/research-programs-20260929/predecessor-guidance-attempt13.json).
+
 최신 main을 병합한 PR #87의 커밋 `716cbc1`에서 전체 테스트 1,307 통과·13 건너뜀,
 lint와 서비스 CI 성공, 병합 가능 상태를 확인했다. 운영 후보 `6dfbdcc`와 PR HEAD의
 연구 controller·프로그램 controller·배포 경로 파일은 동일하다.
