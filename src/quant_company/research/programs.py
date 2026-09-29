@@ -12,6 +12,26 @@ from .missions import MissionStore, typed
 from .program_contracts import DataAssessment, ResearchProgram, ResearchTaskProposal, TaskDecision
 
 
+def public_progress(conn, project_id, *, limit=3):
+    """Bounded, service-owned program state for owner conversation and status commands."""
+    programs = conn.execute("""SELECT id,revision,state,approved_at,spec FROM research_programs
+        WHERE project_id=%s ORDER BY created_at DESC,id DESC LIMIT %s""", (project_id, limit)).fetchall()
+    result = []
+    for program in programs:
+        stage = conn.execute("""SELECT stage,actor,state,attempt,updated_at
+            FROM research_mission_stages WHERE program_id=%s
+            ORDER BY updated_at DESC,id DESC LIMIT 1""", (program["id"],)).fetchone()
+        tasks = conn.execute("""SELECT state,count(*) AS n FROM research_program_tasks
+            WHERE program_id=%s GROUP BY state ORDER BY state""", (program["id"],)).fetchall()
+        missions = conn.execute("SELECT count(*) AS n FROM research_missions WHERE program_id=%s",
+                                (program["id"],)).fetchone()["n"]
+        result.append(as_json({"id": program["id"], "title": program["spec"]["title"],
+                               "revision": program["revision"], "state": program["state"],
+                               "approved_at": program["approved_at"], "stage": stage,
+                               "task_states": tasks, "mission_count": missions}))
+    return result
+
+
 class ProgramStore:
     def __init__(self, company):
         self.company = company

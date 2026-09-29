@@ -560,6 +560,10 @@ class Company:
         context["professional_feedback"] = as_json(coaching(
             conn, project["owner_user"], task["agent"], self.roles[task["agent"]].model,
             self.roles[task["agent"]].reasoning_effort))
+        if task["agent"] == "director" and task["kind"] == "answer":
+            from .research.programs import public_progress
+
+            context["research_programs"] = public_progress(conn, project["id"])
         if task["agent"] in {"director", "maintainer"}:
             from .maintenance.requests import permitted, record_source, status
             from .system_state import current_system
@@ -686,6 +690,12 @@ class Company:
                         "Do not infer executable capabilities or proven expertise from role names.\n"
                         "Propose only the typed AgentDecision. You cannot run code, trade, send Slack, or approve yourself.\n"
                         "Use tools to obtain evidence; never claim a tool/experiment was run without its receipt.\n"
+                        + ("This is a follow-up question. Answer the owner's actual question directly. "
+                           "Use current research_programs in TASK DATA JSON for program progress, "
+                           "distinguish a newly approved program from older missions, and distinguish "
+                           "approval from task selection and trial execution. Do not start duplicate work "
+                           "just to answer. If a fact is absent, say what is known.\n"
+                           if task["agent"] == "director" and task["kind"] == "answer" else "") +
                         "Source IDs must come from approved_sources. Copy each ID verbatim; never shorten or reconstruct it. "
                         "Synthetic sources are test fixtures, not market evidence.\n"
                         "Delegate directly to authorized peers when needed. Await child results before completing.\n"
