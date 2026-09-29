@@ -1,0 +1,54 @@
+{
+  "attempt": 6,
+  "error": "proposal_rejected:Cited source has not been read completely in this employee attempt",
+  "mission_count": 0,
+  "observed_at": "2026-09-29T06:27:55.908752+00:00",
+  "read_depth": [
+    {
+      "chunks": 2,
+      "complete": true,
+      "max_character_offset": 12000,
+      "path": "data/etf_strategy/engine"
+    },
+    {
+      "chunks": 1,
+      "complete": true,
+      "max_character_offset": 0,
+      "path": "data/etf_strategy/identity.json"
+    },
+    {
+      "chunks": 1,
+      "complete": true,
+      "max_character_offset": 0,
+      "path": "data/etf_strategy/reports/input-check.json"
+    },
+    {
+      "chunks": 1,
+      "complete": true,
+      "max_character_offset": 0,
+      "path": "data/etf_strategy/reports/limitations.json"
+    },
+    {
+      "chunks": 1,
+      "complete": true,
+      "max_character_offset": 0,
+      "path": "data/etf_strategy/reports/qdata-readback.json"
+    }
+  ],
+  "required_data_reads": [
+    "data/etf_strategy/identity.json",
+    "data/etf_strategy/engine",
+    "data/etf_strategy/reports/input-check.json",
+    "data/etf_strategy/reports/limitations.json",
+    "data/etf_strategy/reports/qdata-readback.json"
+  ],
+  "reservation_count": 0,
+  "retry_at": "2026-09-29T06:31:10.469591+00:00",
+  "schema_version": 1,
+  "source_read_paths": [],
+  "stage": "program_data",
+  "stage_id": "bbb2e13c-4ca7-5ef3-bfd3-aa6459e68228",
+  "stage_state": "waiting",
+  "task_id": "875a7d41-e6e5-5a67-94cf-8b7d9d8c2d00",
+  "task_state": "proposed"
+}

@@ -242,3 +242,29 @@ Codex 런타임은 다시 올라왔다. 종료 원인은 이 읽기 전용 조�
 첫 청크만 읽은 것으로 기록됐다. 원문 두 건도 완독했다. 이 시점에 제안 단계는
 진행 중이었고 새 데이터 심사나 과학 시행은 없다.
 [직원 읽기 깊이](evidence/research-programs-20260929/data-evidence-researcher-read-depth.json).
+
+05:43 UTC에는 연구자가 ETF `069500`의 고정 입력을 쓰는 세 번째 가설 과제를
+등록했다. 이번 설계는 승인된 엔진의 당일 시가부터 다음 시가까지의 평가와
+비용을 명시했다. 첫 두 과제는 계속 `waiting`이고 새 과제는 `proposed`다.
+데이터 직원 1·2·4~6회차는 필수 패킷을 읽었지만 원문 출처 읽기 없이 인용해
+거절됐고, 3회차는 구조화 산출물 형식 오류로 거절됐다.
+[과제와 심사 세부 영수증](FIRST-TASK-DATA-GAP-20260929.md).
+
+미등록 출처 ID를 패킷 경로로 혼동했을 가능성에 대비해 데이터 단계 프롬프트에
+허용된 `evidence_sources.source_id`를 명시하고, 잘못된 ID의 보완 힌트를
+**직원 시도당 한 번**으로 제한했다. 실제 원문 완독 요구와 데이터 준비 차단은
+유지한다. 원래 실패 응답의 출처 ID는 보존되지 않아 혼동 원인은 추정이다.
+로컬 전체 테스트 1,371건 통과·13건 건너뜀, lint, PR #87 서비스 CI 성공을
+확인했다. [검증 영수증](evidence/research-programs-20260929/source-guidance-validation.json).
+
+06:27 UTC에는 승인 digest·서명된 Slack 승인 이벤트·기존 프로그램 대기 상태와
+실행 중 턴·단계·작업·불확실한 모델 호출 0건을 다시 확인했다. 다음 자동
+재시도까지 여유가 있는 상태에서 **연구 워커만** `a09ce0f` 이미지로 교체했다.
+다른 서비스의 컨테이너 ID는 유지됐고 설치 패키지의 소스 12개가 후보 릴리스
+해시와 일치했다. 공식 ChatGPT runtime과 패킷 경로도 유지됐다.
+[후보 검증](evidence/research-programs-20260929/source-guidance-worker-qualified.json),
+[최종 사전 검사](evidence/research-programs-20260929/source-guidance-cutover-precheck.json),
+[워커 전환](evidence/research-programs-20260929/source-guidance-worker-cutover.json),
+[적용 후 확인](evidence/research-programs-20260929/source-guidance-worker-postcheck.json).
+이 시점에 미션·예약·과학 시행은 0건이다. 새 안내를 이용한 데이터 직원의
+다음 시도는 아직 완료되지 않았다.

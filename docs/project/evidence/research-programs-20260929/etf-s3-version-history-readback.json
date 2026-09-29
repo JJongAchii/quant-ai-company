@@ -1,0 +1,38 @@
+{
+  "bucket": "insight-invest-datalake",
+  "bucket_versioning": {},
+  "conclusion": "Only the current null version is listed for each exact key; the preparation-time object bytes cannot be recovered by S3 VersionId from this bucket.",
+  "objects": {
+    "qdata/clean/krx_etf.parquet": {
+      "delete_markers": [],
+      "is_truncated": false,
+      "versions": [
+        {
+          "ETag": "\"871485f2df3fb2316a66795d0ae79dad\"",
+          "IsLatest": true,
+          "Key": "qdata/clean/krx_etf.parquet",
+          "LastModified": "2026-09-28T10:23:41+00:00",
+          "Size": 78729334,
+          "VersionId": "null"
+        }
+      ]
+    },
+    "qdata/clean/krx_etf_meta.parquet": {
+      "delete_markers": [],
+      "is_truncated": false,
+      "versions": [
+        {
+          "ETag": "\"7f536e83b7f86e8a23b347b05e169eaf\"",
+          "IsLatest": true,
+          "Key": "qdata/clean/krx_etf_meta.parquet",
+          "LastModified": "2026-09-28T10:23:42+00:00",
+          "Size": 24480642,
+          "VersionId": "null"
+        }
+      ]
+    }
+  },
+  "observed_at": "2026-09-29T05:58:43.568378+00:00",
+  "schema_version": 1,
+  "scope": "read_only_s3_object_version_provenance"
+}

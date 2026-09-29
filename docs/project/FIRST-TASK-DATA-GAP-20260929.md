@@ -47,6 +47,10 @@
 따라서 **당시 객체를 지정해 다시 읽었다고 주장할 수 없다.**
 [독립 qdata 대조 영수증](evidence/research-programs-20260929/etf-qdata-independent-readback.json),
 [재현 스크립트](evidence/research-programs-20260929/verify-etf-against-qdata.py).
+이후 읽기 전용 [S3 버전 이력 조회](evidence/research-programs-20260929/etf-s3-version-history-readback.json)에서도
+두 객체 키마다 현재 `null` 버전 한 개만 확인됐다. 목록은 잘리지 않았고 버킷의
+버전 관리 응답에는 활성 상태가 표시되지 않았다. 따라서 이 버킷의 VersionId로
+준비 당시 객체 바이트를 복구할 수 없다.
 
 현재 객체의 2022-12-29 당시 전체 ETF 일별 시세와 메타로 20거래일 거래대금 순위를
 다시 계산한 결과, 승인된 10종목 cohort와 순서까지 같았다. 준비·개발 835거래일의
@@ -97,3 +101,29 @@ director 역시 [두 번째 과제의 최종 판단](evidence/research-programs-
 고정 실행 코드와 이 차이를 함께 제공해야 하며, 시가 체결로 과제를 재설계할지
 종가 체결이 가능한 새 실행 계약을 소유자에게 승인받을지는 연구 설계 검토 뒤
 결정해야 한다. 종가 체결을 현재 프로필이 지원한다고 가정해 과제를 실행하지 않는다.
+
+## 패킷을 읽은 후속 과제
+
+2026-09-29 14:43 KST에 연구자가 세 번째 `novel_hypothesis` ETF 과제를 제안했다.
+제안 방법은 승인된 엔진과 같은 **당일 시가부터 다음 관측 시가**까지의 수익과 비용을
+명시해 두 번째 과제의 종가 체결 불일치를 반복하지 않았다. 그러나 제안 자체는
+데이터 적합성이나 실험 개시 승인이 아니다.
+[첫 데이터 검토 영수증](evidence/research-programs-20260929/data-evidence-third-task-first-review.json).
+
+독립 데이터 직원의 1·2회차 시도는 패킷 식별자, 보호된 엔진, 세 보고서를 끝까지
+읽었지만 인용한 원문을 이번 시도에서 완독한 영수증 없이 제출해 차단됐다.
+[두 번째 검토 영수증](evidence/research-programs-20260929/data-evidence-third-task-second-review.json).
+3회차는 구조화된 최종 산출물 형식 오류로 대기했다. 따라서 세 번째 과제는
+`proposed`이며 데이터 심사·director 선정은 아직 없다. 미션·자원 예약·과학 시행도
+0건이다. [3회차 상태 영수증](evidence/research-programs-20260929/data-evidence-third-task-third-review.json).
+위 출처 공개시각과 원본 객체 복구 공백은 계속 남아 있다.
+
+4~6회차도 데이터 심사를 기록하지 못했다. 특히 6회차에는 필수 패킷 다섯 파일을
+완독했지만 원문 출처 파일 읽기 기록은 0건이고 인용 검증에서 거절됐다.
+[전환 직전 단계 영수증](evidence/research-programs-20260929/source-guidance-precutover-stage.json).
+서비스는 미등록 출처 ID를 데이터 직원에게 한 번만 바로잡도록 안내하고, 이후에도
+원문 완독 없이는 심사를 받지 않도록 수정됐다. 이 수정은 데이터 적합성을 승인하지 않는다.
+[검증 결과](evidence/research-programs-20260929/source-guidance-validation.json),
+[워커 전환](evidence/research-programs-20260929/source-guidance-worker-cutover.json),
+[적용 후 코드·프로그램 확인](evidence/research-programs-20260929/source-guidance-worker-postcheck.json).
+2026-09-29 15:27 KST 현재 과제는 `proposed`이고 다음 데이터 재시도를 기다린다.
