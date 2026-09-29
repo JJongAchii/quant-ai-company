@@ -1,0 +1,1 @@
+{"deploy_pending_applications": 0, "held_receipt_state": "timers_temporarily_held_for_approved_cutover", "observed_at": "2026-09-28T23:57:18.106850+00:00", "schema_version": 1, "state": "operating_timers_restored", "timers": {"quant-company-backup.timer": "active", "quant-company-release.timer": "active"}}

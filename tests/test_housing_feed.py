@@ -200,11 +200,10 @@ def test_disabled_map_panel_keeps_existing_publication_policy(housing):
 
 
 def test_reminders_are_durable_and_initial_connection_does_not_double_post(housing):
-    collect(housing)
-    # first_seen defaults to PostgreSQL's real clock; align it with this fixture's
-    # simulated first collection before advancing the reminder clock by one day.
+    notice = collect(housing)
+    # first_seen is a database wall-clock default; align it with the frozen test clock.
     with housing.db.transaction() as conn:
-        conn.execute("UPDATE housing_feed_notices SET first_seen=%s", (housing.clock[0],))
+        conn.execute("UPDATE housing_feed_notices SET first_seen=%s WHERE id=%s", (housing.clock[0], notice.id))
     assert housing.reminders() == 0
     housing.clock[0] += timedelta(days=1)
     collect(housing, example(housing.clock[0].date() - timedelta(days=1)))

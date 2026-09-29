@@ -95,7 +95,7 @@ flowchart LR
 운영 요청에는 서버의 실제 역할 설정을 보존합니다. 개발·검증의 자율 연구 배치는 아래 기능을
 검토 후 활성화해야 시작합니다. 직원별 모델 이름만으로 전문성이나 수익성이 입증되지는 않습니다.
 
-### 지속형 자율 연구 — 검토 중
+### 지속형 자율 연구 — 첫 프로그램 승인 대기
 
 승인한 상위 목표 안에서 가설 → 독립 반론 → 실행 선택 → 격리 구현 → 3070 실험 → 해석 →
 독립 감사·보고 → 다음 가설을 PostgreSQL과 Temporal에 보존합니다. 가설과 핵심 반론은 해당
@@ -103,14 +103,17 @@ flowchart LR
 연구의 최선은 보존하며, 기존 기준선은 별도 출처로 유지합니다.
 
 실제 소유자 Slack 승인을 거친 **고정 P11 재현**은 [인수 완료](docs/project/RESEARCH-OWNER-ACCEPTANCE-20260921.md)했습니다.
-새 자율 연구는 아직 운영에 활성화하지 않았습니다. [구현·검증 상태](docs/project/AUTONOMOUS-RESEARCH-20260921.md),
-[배포·롤백 절차](docs/runbooks/autonomous-research.md), [설계 결정](docs/adr/0031-persistent-autonomous-research.md)을 따릅니다.
+자료 기반 연구 서비스는 [운영에 활성화](docs/project/RESEARCH-PROGRAMS-ACTIVATION-20260929.md)했고,
+첫 프로그램의 Slack 소유자 승인 요청을 게시했습니다. 프로그램 자체는 아직 `draft`이며 새 과학
+실험은 시작하지 않았습니다. [배포·롤백 절차](docs/runbooks/autonomous-research.md)와
+[설계 결정](docs/adr/0031-persistent-autonomous-research.md)을 따릅니다.
 
 자료에서 과제를 만드는 **연구 프로그램**도 구현했습니다. 한 번 승인한 범위·예산 안에서
 원문 읽기 → 데이터 검토 → 가설·독립 반론 → 실험 → 인과성 감사·별도 해석 → 후속 연구를 연결합니다.
 국내 ETF·주식의 전략/주장/재현 평가와 부정적 결과 보존을 지원합니다.
 [새 구현의 검증 범위·운영 준비 상태](docs/project/RESEARCH-PROGRAMS-VALIDATION-20260928.md)와
-[첫 프로그램 준비안](docs/project/FIRST-RESEARCH-PROGRAM-20260928.md)을 확인하세요.
+[첫 프로그램 준비안](docs/project/FIRST-RESEARCH-PROGRAM-20260928.md)과
+[현재 운영 상태](docs/project/RESEARCH-PROGRAMS-ACTIVATION-20260929.md)를 확인하세요.
 
 모델 배치는 평가 전 초기값입니다. 금융전략에는 거시·채권·주식·회계·파생·리스크·시장구조의
 직무, 검증된 출처 검색, 계산 도구, [전문 시험 사례](docs/financial-specialist.md)를 제공합니다.

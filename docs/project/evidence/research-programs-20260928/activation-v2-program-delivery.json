@@ -1,0 +1,28 @@
+{
+  "binding": {
+    "app_id_bound": true,
+    "attempts": 1,
+    "error_code": null,
+    "id": "21f480c4-d59f-45e7-ac2e-2cf91aa109e8",
+    "manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+    "message_id": "9910b837-9889-4fdf-874a-6eb57ee38990",
+    "outbox_status": "delivered",
+    "sent_ts": "1790639676.639789",
+    "target_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+    "target_kind": "program"
+  },
+  "observed_at": "2026-09-29T00:00:26.938516+00:00",
+  "old_mission_trials": 1,
+  "program": {
+    "approval_event_id": null,
+    "id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+    "manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+    "state": "draft"
+  },
+  "program_missions": 0,
+  "program_reservations": 0,
+  "program_tasks": 0,
+  "schema_version": 1,
+  "state": "approval_request_delivered_program_still_draft",
+  "worker_seen": "2026-09-28T23:55:03.976517+00:00"
+}
