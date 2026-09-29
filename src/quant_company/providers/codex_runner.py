@@ -55,9 +55,10 @@ CLI_OUTPUT_SCHEMA = {
 
 def quant_output_model(contract):
     # Fixed, service-owned contracts only; callers cannot supply arbitrary schemas.
-    from quant_company.quant_feed.contracts import EvidenceCritique, ResearchBrief
+    from quant_company.quant_feed.contracts import EvidenceCritique, ResearchBrief, ResearchDraft
 
-    return {"quant_brief_v1": ResearchBrief, "quant_critique_v1": EvidenceCritique}[contract]
+    return {"quant_brief_v1": ResearchBrief, "quant_brief_v2": ResearchDraft,
+            "quant_critique_v1": EvidenceCritique}[contract]
 
 
 def output_schema(request):

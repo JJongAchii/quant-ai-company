@@ -61,6 +61,7 @@ class Evidence(StrictModel):
     claim: str = Field(min_length=1, max_length=800)
     location: str = Field(min_length=1, max_length=50)
     quote: str = Field(min_length=8, max_length=600)
+    span_id: str = Field(default="", pattern=r"^(?:p[1-9][0-9]{0,2}-s[1-9][0-9]{0,3})?$")
 
 
 class ResearchBrief(StrictModel):
@@ -118,6 +119,17 @@ class ResearchBrief(StrictModel):
         if any(len(v) > 700 for v in self.limitations) or any(len(v) > 160 for v in self.authors):
             raise ValueError("quant_field_too_long")
         return self
+
+
+class EvidenceReference(StrictModel):
+    claim: str = Field(min_length=1, max_length=800)
+    span_id: str = Field(pattern=r"^p[1-9][0-9]{0,2}-s[1-9][0-9]{0,3}$")
+
+
+class ResearchDraft(ResearchBrief):
+    """Model selects immutable source spans; only the service writes actual quotations."""
+
+    evidence: list[EvidenceReference] = Field(default_factory=list, max_length=12)
 
 
 class EvidenceCritique(StrictModel):

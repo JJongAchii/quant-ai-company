@@ -14,7 +14,14 @@ from quant_company.company import fingerprint
 from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderResponse, Role
 from quant_company.quant_feed import schedule
 from quant_company.quant_feed.contracts import EvidenceCritique, QuantSource, ResearchBrief, load_sources
-from quant_company.quant_feed.editor import INSTRUCTIONS, ProposalValidationError, prompt, render, validate
+from quant_company.quant_feed.editor import (
+    INSTRUCTIONS,
+    ProposalValidationError,
+    prompt,
+    render,
+    source_spans,
+    validate,
+)
 from quant_company.quant_feed.feeds import aliases, collect
 from quant_company.quant_feed.originals import download, extract_pdf, fetch_original, parse_html
 from quant_company.quant_feed.store import QuantFeedStore, _bounded_pages
@@ -164,6 +171,58 @@ def test_uneven_full_original_is_not_unnecessarily_clipped():
     pages = [{"location": "PDF p.1", "text": "x" * 30000},
              {"location": "PDF p.2", "text": "y" * 1000}]
     assert _bounded_pages(pages) == (pages, False)
+
+
+def test_source_spans_are_lossless_bounded_and_deterministic():
+    pages = [{"location": "PDF p.1", "text": TEXT + "end"},
+             {"location": "PDF p.2", "text": "A long uninterrupted word " * 80}]
+    spans = source_spans(pages)
+    assert spans == source_spans(pages)
+    assert len({s["span_id"] for s in spans}) == len(spans)
+    assert all(8 <= len(s["text"]) <= 507 for s in spans)
+    for page in pages:
+        assert "".join(s["text"] for s in spans if s["location"] == page["location"]) == page["text"]
+    data = json.loads(prompt({"pages": pages}, "review").split("\nDATA:\n")[1])
+    assert "pages" not in data and data["source_spans"] == spans
+
+
+def test_native_references_resolve_exact_original_and_keep_ids_in_revision_prompt(quant):
+    original(quant)
+    ready = quant.prepare()
+    with quant.db.transaction() as conn:
+        bundle = conn.execute("SELECT bundle FROM quant_feed_calls WHERE id=%s",
+                              (ready["request"]["request_id"],)).fetchone()["bundle"]
+    spans = source_spans(bundle["pages"])
+    value = brief(evidence=[{"claim": "원문 기간", "span_id": spans[0]["span_id"]},
+                            {"claim": "원문 한계", "span_id": spans[1]["span_id"]}])
+    proposed = response(ready, value)
+    proposed.decision.artifacts[0].title = "quant_brief_v2"
+    result = quant.commit(proposed)
+    assert [r["kind"] for r in result["source_corrections"]] == ["source_span_resolved"] * 2
+    with quant.db.transaction() as conn:
+        doc = conn.execute("SELECT * FROM quant_feed_documents").fetchone()
+        revised_bundle = quant.bundle(conn, doc)
+    assert doc["brief"]["evidence"][0]["quote"] == spans[0]["text"]
+    view = json.loads(prompt(revised_bundle, "revision").split("\nDATA:\n")[1])
+    assert view["draft"]["evidence"] == value["evidence"]
+    # Exact quotation is not semantic support: the separate critic can still refuse it.
+    held = critique(disposition="hold", claims_supported=False, issues=["claim not supported by selected passage"])
+    assert quant.commit(response(quant.prepare(), held))["document_state"] == "held"
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
+
+
+def test_unknown_source_span_is_actionable_and_never_becomes_evidence(quant):
+    original(quant)
+    ready = quant.prepare()
+    proposed = response(ready, brief(evidence=[{"claim": "invented reference", "span_id": "p999-s999"}] * 2))
+    proposed.decision.artifacts[0].title = "quant_brief_v2"
+    result = quant.commit(proposed)
+    assert result["validation_issue"] == "quant_unknown_evidence_span"
+    assert result["validation_issues"][0]["field"] == "evidence[0].span_id"
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT revision FROM quant_feed_documents").fetchone()["revision"] == 0
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
 
 
 def test_page_budget_redistributes_short_pages_and_remains_bounded():
@@ -321,7 +380,7 @@ def test_one_deterministic_proposal_repair_then_fail_closed(quant):
     with quant.db.transaction() as conn:
         document = conn.execute("SELECT state,stage,revision,critique,brief FROM quant_feed_documents").fetchone()
     assert (document["state"], document["stage"], document["revision"]) == ("ready", "repair", 0)
-    assert document["brief"]["evidence"] == invalid["evidence"]
+    assert document["brief"]["evidence"] == [{**item, "span_id": ""} for item in invalid["evidence"]]
     assert [i["field"] for i in document["critique"]["issues"]] == ["evidence[0]", "evidence[1]"]
     second = quant.prepare()
     with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
@@ -339,7 +398,7 @@ def test_technical_repair_and_editorial_revision_have_separate_bounded_budgets(q
         quant.commit(response(quant.prepare(), brief()))
         quant.commit(response(quant.prepare(), critic))
     ready = quant.prepare()
-    assert ready["request"]["output_contract"] == "quant_brief_v1"
+    assert ready["request"]["output_contract"] == "quant_brief_v2"
     quant.commit(response(ready, bad))
     with quant.db.transaction() as conn:
         doc = conn.execute("SELECT * FROM quant_feed_documents").fetchone()

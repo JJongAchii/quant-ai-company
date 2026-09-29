@@ -4,7 +4,7 @@ import unicodedata
 from datetime import date
 from html import escape
 
-from .contracts import EvidenceCritique, ResearchBrief
+from .contracts import EvidenceCritique, ResearchBrief, ResearchDraft
 
 INSTRUCTIONS = """You are Quant Scout, an evidence-first Korean-language research curator for Korean and US equities.
 Return the requested JSON object directly, without an AgentDecision wrapper or an encoded JSON string.
@@ -41,13 +41,14 @@ For arXiv, distinguish the original v1 submission date from a later feed publish
 If citation_date and citation_online_date agree, use that original date for published_on. A later date belongs in
 revised_on only when an actual revision is established; unresolved date conflicts mean hold, not guess.
 Use vintage=classic for old foundational work; why_read must explain why it matters NOW, not call it new.
-Every substantive claim and reported number must be supported by evidence: an exact short quote and the
-supplied page/section location. Each quote must directly support the WHOLE associated claim, including its
+Every substantive claim and reported number must be supported by evidence: select a supplied source_spans
+entry by span_id. The service inserts the exact quote and location; DO NOT write or modify quotations yourself.
+Each selected source span must directly support the WHOLE associated claim, including its
 sample, target, horizon and result; split compound claims across evidence entries when needed. Evidence claims
 in Korean should map explicitly to the brief. No unsupported
-numeric performance, invented links, broad copied passages, or buy/sell instructions. Copy quote wording
-literally from the supplied excerpt; do not fix grammar or substitute articles/words. Layout whitespace may be
-normalized. Write concise Korean: keep each brief field to one or two short sentences, put the most important
+numeric performance, invented links, broad copied passages, or buy/sell instructions. For revisions, preserve
+existing supported span references; change them only when the claim changes or critique identifies a mismatch.
+Write concise Korean: keep each brief field to one or two short sentences, put the most important
 limitation first, and avoid repeating the same disclaimer across fields. The rendered Slack card must fit in
 2400 characters including links and labels; aim for 1400-1800 characters. Compress wording without omitting
 material caveats, costs or the distinction between author results and verified results.
@@ -70,8 +71,29 @@ of a preprint without substantive change is cosmetic. Honest unresolved uncertai
 """
 
 
+def source_spans(pages):
+    """Lossless, bounded passages with stable IDs in each frozen source bundle."""
+    result = []
+    for page_index, page in enumerate(pages, 1):
+        text, start, pieces = page["text"], 0, []
+        while start < len(text):
+            end = min(len(text), start + 500)
+            if end < len(text):
+                segment = text[start+250:end]
+                boundaries = list(re.finditer(r"[.!?]\s+", segment)) or list(re.finditer(r"(?<!-)\n", segment))
+                if boundaries:
+                    end = start + 250 + boundaries[-1].end()
+            pieces.append(text[start:end])
+            start = end
+        if len(pieces) > 1 and len(pieces[-1]) < 8:
+            pieces[-2:] = [pieces[-2] + pieces[-1]]
+        for span_index, text in enumerate(pieces, 1):
+            result.append({"span_id": f"p{page_index}-s{span_index}", "location": page["location"], "text": text})
+    return result
+
+
 def prompt(bundle, stage):
-    schema = EvidenceCritique if stage == "critique" else ResearchBrief
+    schema = EvidenceCritique if stage == "critique" else ResearchDraft
     task = ("Critique the offered draft afresh against the original. Audit EACH brief field and EACH evidence "
             "entry against its exact quote; check every claim component, number, author and date. Enumerate "
             "ALL material issues in one response, not only the most salient one. Start each issue with the "
@@ -106,9 +128,21 @@ def prompt(bundle, stage):
                 date_guard = "\nDATE_GUARD: arXiv original citation date is " + stamp + ". Use it for published_on; do not substitute feed published/updated."
         if not date_guard:
             date_guard = "\nDATE_GUARD: arXiv date metadata is incomplete or conflicting. Verify the original v1 date or hold."
+    view = {key: value for key, value in bundle.items() if key != "pages"}
+    spans = source_spans(bundle.get("pages", []))
+    view["source_spans"] = spans
+    if stage != "critique" and bundle.get("draft"):
+        evidence = []
+        for item in bundle["draft"].get("evidence", []):
+            if item.get("span_id"):
+                evidence.append({"claim": item["claim"], "span_id": item["span_id"]})
+                continue
+            matching = [s for s in spans if s["location"] == item.get("location") and s["text"] == item.get("quote")]
+            evidence.append({"claim": item["claim"], "span_id": matching[0]["span_id"]} if len(matching) == 1 else item)
+        view["draft"] = {**bundle["draft"], "evidence": evidence}
     result = (INSTRUCTIONS + "\nTASK: " + task + date_guard + "\nSCHEMA:\n"
               + json.dumps(schema.model_json_schema(), ensure_ascii=False)
-              + "\nDATA:\n" + json.dumps(bundle, ensure_ascii=False, default=str))
+              + "\nDATA:\n" + json.dumps(view, ensure_ascii=False, default=str))
     if len(result) > 89000:
         raise ValueError("quant_context_limit")
     return result
@@ -158,7 +192,7 @@ def _proposal(schema, content):
 
 
 def output_contract(stage):
-    return "quant_critique_v1" if stage == "critique" else "quant_brief_v1"
+    return "quant_critique_v1" if stage == "critique" else "quant_brief_v2"
 
 
 class ProposalValidationError(ValueError):
@@ -185,10 +219,28 @@ def validate(response, bundle, stage, *, audit=None):
         if value.disposition == "pass" and needs_change_check and not value.material_change_verified:
             raise ValueError("quant_unverified_material_change")
         return value
-    brief = _proposal(ResearchBrief, decision.artifacts[0].content)
+    corrections = []
+    if decision.artifacts[0].title == "quant_brief_v2":
+        draft = _proposal(ResearchDraft, decision.artifacts[0].content)
+        spans = {s["span_id"]: s for s in source_spans(bundle["pages"])}
+        issues = [{"code": "quant_unknown_evidence_span", "field": f"evidence[{i}].span_id"}
+                  for i, item in enumerate(draft.evidence) if item.span_id not in spans]
+        if issues:
+            raise ProposalValidationError(draft, issues)
+        resolved = []
+        for i, item in enumerate(draft.evidence):
+            span = spans[item.span_id]
+            resolved.append({"claim": item.claim, "span_id": item.span_id,
+                             "location": span["location"], "quote": span["text"]})
+            corrections.append({"kind": "source_span_resolved", "evidence_index": i,
+                                "span_id": item.span_id, "location": span["location"]})
+        brief = ResearchBrief.model_validate({**draft.model_dump(), "evidence": resolved})
+    else:
+        # Historical durable responses remain revalidatable; no old call is reissued.
+        brief = _proposal(ResearchBrief, decision.artifacts[0].content)
     if brief.disposition != "publish":
         return brief
-    corrections, issues = [], []
+    issues = []
     # PDF extractors may split words across layout whitespace or emit compatibility
     # glyphs. A model may also capitalize the first ASCII letter of a sentence
     # fragment. Ignore only these presentation differences; every subsequent
@@ -197,8 +249,14 @@ def validate(response, bundle, stage, *, audit=None):
     # supplied excerpt; ambiguous or unsupported quotes still fail.
     pages = {p["location"]: _quote_text(p["text"]) for p in bundle["pages"]}
     layout = {p["location"]: _layout_text(p["text"]) for p in bundle["pages"]}
+    spans = {s["span_id"]: s for s in source_spans(bundle["pages"])}
     for index, evidence in enumerate(brief.evidence):
         quote = _quote_text(evidence.quote)
+        if evidence.span_id:
+            span = spans.get(evidence.span_id)
+            if not span or span["location"] != evidence.location or _quote_text(span["text"]) != quote:
+                issues.append({"code": "quant_evidence_span_mismatch", "field": f"evidence[{index}]"})
+                continue
         if not quote:
             issues.append({"code": "quant_quote_not_in_original_version", "field": f"evidence[{index}].quote"})
             continue
