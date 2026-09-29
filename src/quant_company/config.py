@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     research_audit_max_output_tokens: int = Field(default=100000, ge=1000, le=200000)
     # Operator-provisioned, immutable execution profiles. Never a model-selected path.
     research_profiles_file: Path | None = None
+    research_data_evidence_file: Path | None = None
     research_qlab_profile_file: Path | None = None
     research_worker_token: SecretStr = SecretStr("")
     research_artifact_dir: Path = Path("/var/lib/quant-company/research")
