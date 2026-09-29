@@ -96,16 +96,20 @@
         },
         {
           "path": "docs/project/FIRST-TASK-DATA-GAP-20260929.md",
-          "sha256": "28298643ac5a"
+          "sha256": "44d85daff463"
         },
         {
           "path": "docs/project/evidence/research-programs-20260929/etf-input-contract-readback.json",
-          "sha256": "349b95934d5d"
+          "sha256": "d968bb626775"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/verify-etf-input-contract.py",
+          "sha256": "f35940658315"
         }
       ],
-      "note": "Exact prepared ETF JSON files match the approved hashes and pass bounded schema/calendar checks. This does not independently prove source publication timing, point-in-time universe or execution; data review remains blocked, director chose wait, and no mission or scientific trial exists.",
+      "note": "Exact approved ETF input hashes, row schema, cohort rows and field timing were checked by a committed read-only script. Origin timestamps, PIT universe and execution remain unverified; director wait and zero scientific trials remain.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T03:58:53.665718+00:00"
+      "updatedAt": "2026-09-29T04:00:02.885822+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -211,5 +215,5 @@
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T03:58:53.665718+00:00"
+  "updatedAt": "2026-09-29T04:00:02.885822+00:00"
 }

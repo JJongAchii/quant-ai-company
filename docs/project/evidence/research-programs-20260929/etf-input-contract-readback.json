@@ -50,5 +50,7 @@
   "schema_version": 1,
   "scope": "read-only exact prepared ETF JSON input contract",
   "sealed_input_read": false,
-  "source_publication_time_independently_verified": false
+  "source_publication_time_independently_verified": false,
+  "verification_command": "python3 docs/project/evidence/research-programs-20260929/verify-etf-input-contract.py",
+  "verification_script_sha256": "f3594065831536dda1ff27e12dc689aa072a941234625e983226acbde79536f1"
 }
