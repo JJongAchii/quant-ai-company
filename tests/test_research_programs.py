@@ -154,7 +154,12 @@ def test_program_stage_requires_current_attempt_original_read_and_survives_resta
         stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
         turn = conn.execute("SELECT id FROM turns WHERE task_id=%s", (stage["task_id"],)).fetchone()
     identity = str(turn["id"])
-    assert h.company.prepare_turn(identity)["state"] == "ready"
+    assert stage["context"]["allowed_predecessor_mission_ids"] == []
+    prepared = h.company.prepare_turn(identity)
+    assert prepared["state"] == "ready"
+    assert "If that list is empty, set predecessor_mission_ids to []" in prepared["request"]["prompt"]
+    assert json.loads(prepared["request"]["prompt"].split("MISSION DATA JSON:\n", 1)[1])[
+        "allowed_predecessor_mission_ids"] == []
     response = ProviderResponse(request_id=identity, provider="fixture", decision=AgentDecision(say="", status="complete",
         artifacts=[{"title": "Synthetic proposal", "content": json.dumps(task_proposal())}]))
     with pytest.raises(PolicyError, match="not been read"):
