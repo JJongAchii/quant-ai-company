@@ -4,7 +4,15 @@ import unicodedata
 from datetime import date
 from html import escape
 
-from .contracts import EditorialCritique, GroupedResearchDraft, ResearchBrief, ResearchDraft
+from pydantic import ValidationError
+
+from .contracts import (
+    EditorialCritique,
+    FieldBoundResearchDraft,
+    GroupedResearchDraft,
+    ResearchBrief,
+    ResearchDraft,
+)
 
 EVIDENCE_SCOPE = "미기재·확인 불가는 제공된 원문 텍스트 기준이며, 원문 전체에 없다는 단정이 아닙니다."
 
@@ -53,15 +61,19 @@ For arXiv, distinguish the original v1 submission date from a later feed publish
 If citation_date and citation_online_date agree, use that original date for published_on. A later date belongs in
 revised_on only when an actual revision is established; unresolved date conflicts mean hold, not guess.
 Use vintage=classic for old foundational work; why_read must explain why it matters NOW, not call it new.
-Every substantive claim and reported number must be supported by evidence: select a supplied source_spans
-entries by span_ids (one to four per claim). The service inserts exact quotes and locations; DO NOT write or
-modify quotations yourself. All selected spans JOINTLY must directly support the WHOLE associated claim,
-including its sample, target, horizon and result. Add supporting spans instead of replacing one needed span
-with another. Each component needs support, but an individual span need not prove every component by itself.
-Split or narrow compound claims that need more than four spans. Evidence claims
-in Korean should map explicitly to the brief. No unsupported
-numeric performance, invented links, broad copied passages, or buy/sell instructions. For revisions, preserve
-existing supported span references; change them only when the claim changes or critique identifies a mismatch.
+Write the research fields as arrays of atomic SourceStatement objects. Their text is the final brief text;
+there is no independently editable evidence list. Set evidence=[] exactly. For a factual statement, use
+basis=source and select one to four supplied source_spans by span_ids. The service inserts exact quotations and
+locations; DO NOT write or modify quotations yourself. Selected spans JOINTLY must support the WHOLE statement,
+including its sample, target, horizon, numbers and result. If one statement needs more than four spans, split it
+into separate statements, each with its own sources. Never replace a needed span in one statement just to make
+room for a different result; add another statement. Use basis=qualified_gap with no span_ids only for a clearly
+qualified omission in the supplied text; do not claim the full original lacks it. Use basis=interpretation with
+no span_ids only for a conditional editorial application or limitation, not for author results or numeric facts.
+Keep at most 12 source-backed statements in the whole brief. Every author-reported result and number must be in
+its own source-backed statement. Preserve unaffected statements and their span_ids in a revision; correct only
+the criticized statement and any other statement containing the same error. No unsupported performance,
+invented links, broad copied passages, or buy/sell instructions.
 Write concise Korean: keep each brief field to one or two short sentences, put the most important
 limitation first, and avoid repeating the same disclaimer across fields. The rendered Slack card must fit in
 2400 characters including links and labels; aim for 1400-1800 characters. Compress wording without omitting
@@ -107,12 +119,12 @@ def source_spans(pages):
 
 
 def prompt(bundle, stage):
-    schema = EditorialCritique if stage == "critique" else GroupedResearchDraft
+    schema = EditorialCritique if stage == "critique" else FieldBoundResearchDraft
     task = ("Critique the offered draft afresh against the original. Audit EACH brief field and EACH evidence "
-            "entry against its referenced source_spans, jointly across the selected spans; check every claim "
+            "entry against its referenced source_spans, jointly across the selected spans and its field_path; check every claim "
             "component, number, author and date. Enumerate "
             "ALL material issues in one response, not only the most salient one. Start each issue with the "
-            "affected field paths (for example why_read, idea, evidence[0].claim), and specify the supported "
+            "affected field paths (for example validation, author_results[1], evidence[0].claim), and specify the supported "
             "correction and original location. After a revision, re-audit "
             "the entire brief, including newly worded claims, uncertainty and previously unchecked quotes. "
             "Check direct_quant_scope and substantive_research separately from evidence accuracy and general "
@@ -154,15 +166,18 @@ def prompt(bundle, stage):
                 date_guard = "\nDATE_GUARD: arXiv original citation date is " + stamp + ". Use it for published_on; do not substitute feed published/updated."
         if not date_guard:
             date_guard = "\nDATE_GUARD: arXiv date metadata is incomplete or conflicting. Verify the original v1 date or hold."
-    view = {key: value for key, value in bundle.items() if key != "pages"}
+    view = {key: value for key, value in bundle.items() if key not in {"pages", "source_draft"}}
     view["evidence_scope"] = EVIDENCE_SCOPE
     spans = source_spans(bundle.get("pages", []))
     view["source_spans"] = spans
-    if bundle.get("draft"):
+    if stage == "revision" and bundle.get("source_draft"):
+        view["draft"] = bundle["source_draft"]
+    elif bundle.get("draft"):
         evidence = []
         for item in bundle["draft"].get("evidence", []):
             if item.get("source_spans"):
-                evidence.append({"claim": item["claim"], "span_ids": [s["span_id"] for s in item["source_spans"]]})
+                evidence.append({"claim": item["claim"], "span_ids": [s["span_id"] for s in item["source_spans"]],
+                                 **({"field_path": item["field_path"]} if item.get("field_path") else {})})
                 continue
             if item.get("span_ids"):
                 evidence.append(item)
@@ -225,7 +240,59 @@ def _proposal(schema, content):
 
 
 def output_contract(stage):
-    return "quant_critique_v2" if stage == "critique" else "quant_brief_v3"
+    return "quant_critique_v2" if stage == "critique" else "quant_brief_v4"
+
+
+BOUND_FIELDS = ("market", "why_read", "idea", "data_period", "validation", "author_results",
+                "costs_turnover", "limitations", "application")
+INTERPRETIVE_FIELDS = {"why_read", "validation", "limitations", "application"}
+
+
+def _bound_brief(draft, pages, corrections):
+    spans = {span["span_id"]: span for span in source_spans(pages)}
+    result = draft.model_dump(mode="json")
+    evidence, issues = [], []
+    for field in BOUND_FIELDS:
+        statements = getattr(draft, field)
+        texts = []
+        for index, statement in enumerate(statements):
+            path = f"{field}[{index}]"
+            texts.append(statement.text.strip())
+            ids = statement.span_ids
+            if statement.basis == "source":
+                if not ids or len(set(ids)) != len(ids) or any(identity not in spans for identity in ids):
+                    issues.append({"code": "quant_statement_source_invalid", "field": path + ".span_ids"})
+                    continue
+                selected = [{"span_id": identity, "location": spans[identity]["location"],
+                             "quote": spans[identity]["text"]} for identity in ids]
+                evidence.append({"claim": statement.text, "field_path": path, "source_spans": selected})
+                for identity in ids:
+                    corrections.append({"kind": "source_span_resolved", "field": path, "span_id": identity,
+                                        "location": spans[identity]["location"]})
+            elif (ids or (statement.basis == "interpretation" and field not in INTERPRETIVE_FIELDS)
+                  or (statement.basis == "qualified_gap" and field in {"idea", "author_results"})):
+                issues.append({"code": "quant_statement_basis_invalid", "field": path})
+            elif statement.basis == "qualified_gap" and not any(
+                    marker in statement.text for marker in ("제공", "미기재", "해당 없음")):
+                issues.append({"code": "quant_gap_scope_missing", "field": path})
+            elif re.search(r"\d", statement.text):
+                issues.append({"code": "quant_numeric_interpretation_requires_source", "field": path})
+        result[field] = texts if field == "limitations" else " ".join(texts)
+    result["evidence"] = evidence
+    if draft.disposition == "publish":
+        for field in ("idea", "author_results"):
+            if not any(item["field_path"].startswith(field + "[") for item in evidence):
+                issues.append({"code": "quant_central_claim_requires_source", "field": field})
+        if len(evidence) > 12:
+            issues.append({"code": "quant_too_many_source_statements", "field": "evidence"})
+    if issues:
+        raise ProposalValidationError(draft, issues)
+    try:
+        return ResearchBrief.model_validate(result)
+    except ValidationError as exc:
+        issues = [{"code": "quant_derived_brief_invalid", "field": ".".join(map(str, error["loc"]))}
+                  for error in exc.errors()]
+        raise ProposalValidationError(draft, issues) from None
 
 
 class ProposalValidationError(ValueError):
@@ -253,7 +320,10 @@ def validate(response, bundle, stage, *, audit=None):
             raise ValueError("quant_unverified_material_change")
         return value
     corrections = []
-    if decision.artifacts[0].title in {"quant_brief_v2", "quant_brief_v3"}:
+    if decision.artifacts[0].title == "quant_brief_v4":
+        draft = _proposal(FieldBoundResearchDraft, decision.artifacts[0].content)
+        brief = _bound_brief(draft, bundle["pages"], corrections)
+    elif decision.artifacts[0].title in {"quant_brief_v2", "quant_brief_v3"}:
         grouped = decision.artifacts[0].title == "quant_brief_v3"
         draft = _proposal(GroupedResearchDraft if grouped else ResearchDraft, decision.artifacts[0].content)
         spans = {s["span_id"]: s for s in source_spans(bundle["pages"])}

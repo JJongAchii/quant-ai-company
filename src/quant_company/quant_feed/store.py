@@ -1,5 +1,6 @@
 """PostgreSQL owns candidate versions, frozen model calls and atomic outbox effects."""
 
+import json
 import re
 from datetime import timedelta
 from uuid import uuid4
@@ -98,7 +99,7 @@ class QuantFeedStore:
 
     def policy(self):
         s = self.company.settings
-        return fingerprint({"version": 16, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
+        return fingerprint({"version": 17, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
                             "owner": s.quant_feed_owner_user, "channel": s.quant_feed_channel_id,
                             "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
                             "web": s.company_web_enabled, "sources": [x.model_dump() for x in self.sources().values()],
@@ -228,12 +229,22 @@ class QuantFeedStore:
                              (document["work_id"], self.company.settings.quant_feed_channel_id)).fetchone()
         bibliographic = {k: v for k, v in metadata.items() if k not in {"links"}}
         links = metadata["links"][:30]
+        source_draft = None
+        if document["stage"] == "revision":
+            saved = conn.execute("""SELECT response->'decision'->'artifacts'->0->>'content' AS content
+                FROM quant_feed_calls WHERE document_id=%s AND state='completed'
+                AND stage IN ('review','repair','revision')
+                AND request->>'output_contract'='quant_brief_v4'
+                ORDER BY created_at DESC,id DESC LIMIT 1""", (document["id"],)).fetchone()
+            if saved and saved["content"]:
+                source_draft = json.loads(saved["content"])
         return as_json({"document_id": document["id"], "as_of": schedule.utcnow(), "metadata": bibliographic,
                         "pages": clipped, "original_sha256": document["receipt"]["original_sha256"],
                         "truncated": document["receipt"].get("truncated", False),
                         "context_clipped": context_clipped,
                         "retrieval": document["receipt"], "links": links, "commercial": metadata["commercial"],
-                        "prior": prior, "draft": document["brief"], "previous_critique": document["critique"]})
+                        "prior": prior, "draft": document["brief"], "source_draft": source_draft,
+                        "previous_critique": document["critique"]})
 
     def search_bundle(self, conn, stage, slot):
         n = conn.execute("SELECT count(*) AS n FROM quant_feed_calls WHERE stage IN ('discover','weekly')").fetchone()["n"]

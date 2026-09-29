@@ -52,6 +52,33 @@ def brief(**updates):
     return value
 
 
+def bound_brief(*, first="p1-s1", second="p1-s2", **updates):
+    def source(text, *ids):
+        return {"text": text, "basis": "source", "span_ids": list(ids)}
+
+    def gap(text):
+        return {"text": text, "basis": "qualified_gap", "span_ids": []}
+
+    def interpretation(text):
+        return {"text": text, "basis": "interpretation", "span_ids": []}
+
+    value = brief(
+        market=[source("미국 주식시장", first)],
+        why_read=[interpretation("시장 검증 방식에 참고할 만하다.")],
+        idea=[source("시점별 분할 검증을 비교한다.", first)],
+        data_period=[source("미국 주식 표본을 사용한다.", first)],
+        validation=[source("시간 순 홀드아웃을 사용했다.", first)],
+        author_results=[source("학습 표본과 검증 표본을 비교했다.", first),
+                        source("검증 성과는 학습보다 약했다.", second)],
+        costs_turnover=[gap("비용 추정은 제공 원문에서 확인되지 않음.")],
+        limitations=[interpretation("실거래 적용에는 별도 검증이 필요하다.")],
+        application=[interpretation("시점별 한국 시장자료로 후속 검증을 고려할 수 있다.")],
+        evidence=[],
+    )
+    value.update(updates)
+    return value
+
+
 def critique(**updates):
     value = dict(disposition="pass", reason="원문과 주장 일치", original_sufficient=True, claims_supported=True,
                  dates_authors_verified=True, limitations_honest=True, direct_quant_scope=True,
@@ -257,6 +284,61 @@ def test_a_compound_claim_can_bind_multiple_exact_source_spans_without_duplicate
         validate(forged, bundle, "review")
 
 
+def test_field_bound_results_cannot_lose_a_different_result_when_references_change():
+    bundle = {"pages": [{"location": "PDF p.1", "text": "A method compares training and holdout samples. "
+                         "The training result exceeds the holdout result."},
+                        {"location": "PDF p.2", "text": "A balanced result appears only in this second passage."}],
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"},
+              "as_of": "2026-09-29", "links": [], "commercial": False}
+    value = bound_brief(first="p1-s1", second="p2-s1", author_results=[
+        {"text": "학습 결과가 검증 결과보다 높았다.", "basis": "source", "span_ids": ["p1-s1"]},
+        {"text": "균형 결과도 보고했다.", "basis": "source", "span_ids": ["p2-s1"]},
+    ])
+    proposed = response({"request": {"request_id": "quant-feed-bound"}}, value)
+    proposed.decision.artifacts[0].title = "quant_brief_v4"
+    resolved = validate(proposed, bundle, "review")
+    assert resolved.author_results == "학습 결과가 검증 결과보다 높았다. 균형 결과도 보고했다."
+    assert [(item.field_path, [span.span_id for span in item.source_spans]) for item in resolved.evidence
+            if item.field_path.startswith("author_results")] == [
+                ("author_results[0]", ["p1-s1"]), ("author_results[1]", ["p2-s1"])]
+    bundle["draft"], bundle["source_draft"] = resolved.model_dump(), value
+    revision = json.loads(prompt(bundle, "revision").split("\nDATA:\n")[1])
+    criticism = json.loads(prompt(bundle, "critique").split("\nDATA:\n")[1])
+    assert revision["draft"] == value and "source_draft" not in revision
+    assert criticism["draft"]["evidence"][-1]["field_path"] == "author_results[1]"
+    value["author_results"][1]["span_ids"] = ["p99-s1"]
+    proposed.decision.artifacts[0].content = json.dumps(value, ensure_ascii=False)
+    with pytest.raises(ProposalValidationError) as error:
+        validate(proposed, bundle, "revision")
+    assert error.value.issues[0]["field"] == "author_results[1].span_ids"
+    value["author_results"][1].update(basis="qualified_gap", span_ids=[])
+    proposed.decision.artifacts[0].content = json.dumps(value, ensure_ascii=False)
+    with pytest.raises(ProposalValidationError) as error:
+        validate(proposed, bundle, "revision")
+    assert error.value.issues[0]["field"] == "author_results[1]"
+
+
+def test_field_bound_revision_survives_real_postgres_without_source_draft_column(quant):
+    original(quant)
+    first = quant.prepare()
+    with quant.db.transaction() as conn:
+        frozen = conn.execute("SELECT bundle FROM quant_feed_calls WHERE id=%s", (first["request"]["request_id"],)).fetchone()["bundle"]
+    ids = [span["span_id"] for span in source_spans(frozen["pages"])]
+    value = bound_brief(first=ids[0], second=ids[1])
+    draft = response(first, value)
+    draft.decision.artifacts[0].title = "quant_brief_v4"
+    assert quant.commit(draft)["document_state"] == "ready"
+    requested = critique(disposition="revise", claims_supported=False, issues=["author_results[1]: qualify"])
+    quant.commit(response(quant.prepare(), requested))
+    revising = quant.prepare()
+    view = json.loads(revising["request"]["prompt"].split("\nDATA:\n")[1])
+    assert view["draft"] == value
+    assert view["previous_critique"]["issues"] == requested["issues"]
+    with quant.db.transaction() as conn:
+        saved = conn.execute("SELECT brief FROM quant_feed_documents").fetchone()["brief"]
+    assert saved["author_results"] == "학습 표본과 검증 표본을 비교했다. 검증 성과는 학습보다 약했다."
+
+
 def test_page_budget_redistributes_short_pages_and_remains_bounded():
     pages = [{"location": "PDF p.1", "text": "A" * 50000},
              {"location": "PDF p.2", "text": "B" * 1000}]
@@ -412,7 +494,8 @@ def test_one_deterministic_proposal_repair_then_fail_closed(quant):
     with quant.db.transaction() as conn:
         document = conn.execute("SELECT state,stage,revision,critique,brief FROM quant_feed_documents").fetchone()
     assert (document["state"], document["stage"], document["revision"]) == ("ready", "repair", 0)
-    assert document["brief"]["evidence"] == [{**item, "span_id": "", "source_spans": []} for item in invalid["evidence"]]
+    assert document["brief"]["evidence"] == [
+        {**item, "span_id": "", "field_path": "", "source_spans": []} for item in invalid["evidence"]]
     assert [i["field"] for i in document["critique"]["issues"]] == ["evidence[0]", "evidence[1]"]
     second = quant.prepare()
     with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
@@ -430,7 +513,7 @@ def test_technical_repair_and_editorial_revision_have_separate_bounded_budgets(q
         quant.commit(response(quant.prepare(), brief()))
         quant.commit(response(quant.prepare(), critic))
     ready = quant.prepare()
-    assert ready["request"]["output_contract"] == "quant_brief_v3"
+    assert ready["request"]["output_contract"] == "quant_brief_v4"
     quant.commit(response(ready, bad))
     with quant.db.transaction() as conn:
         doc = conn.execute("SELECT * FROM quant_feed_documents").fetchone()
@@ -851,7 +934,7 @@ def test_editor_audits_uncertainty_and_entire_evidence_claim():
     review = prompt({}, "review")
     assert "uncertainty intervals and inconclusive results" in review
     assert "do not by themselves isolate dynamic or causal skill" in review
-    assert "directly support the WHOLE associated claim" in review
+    assert "JOINTLY must support the WHOLE statement" in review
     critique = prompt({}, "critique")
     assert "Audit EACH brief field and EACH evidence" in critique
     assert "Enumerate ALL material issues" in critique

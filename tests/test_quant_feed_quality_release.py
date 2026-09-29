@@ -102,7 +102,7 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
         assert not commands and not linked
         if failure == "protocol":
             raise ValueError("runtime_protocol_mismatch")
-        return {"quant_brief_v3": "a" * 64, "quant_critique_v2": "b" * 64}
+        return {"quant_brief_v4": "a" * 64, "quant_critique_v2": "b" * 64}
 
     monkeypatch.setattr(release, "protocol_preflight", protocol)
     monkeypatch.setattr(release, "run", run)
@@ -154,7 +154,7 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
 
 @pytest.mark.parametrize("runtime", ["matching", "different", "legacy", "empty"])
 def test_native_protocol_probes_both_installed_schemas_without_model_calls(release, monkeypatch, runtime):
-    schema = {"quant_brief_v3": "a" * 64, "quant_critique_v2": "b" * 64}
+    schema = {"quant_brief_v4": "a" * 64, "quant_critique_v2": "b" * 64}
     commands = []
 
     def run(command, **kwargs):
@@ -163,7 +163,7 @@ def test_native_protocol_probes_both_installed_schemas_without_model_calls(relea
             if runtime == "legacy":
                 raise RuntimeError("legacy runtime cannot import native contract")
             return json.dumps(schema if runtime == "matching" else {} if runtime == "empty"
-                              else {**schema, "quant_brief_v3": "c" * 64})
+                              else {**schema, "quant_brief_v4": "c" * 64})
         return json.dumps(schema)
 
     monkeypatch.setattr(release, "run", run)

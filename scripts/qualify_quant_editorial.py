@@ -87,6 +87,8 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None, r
             raise ValueError("qualification_receipt_response_mismatch")
         audit = []
         value = validate(response, bundle, stage, audit=audit)
+        if response.decision.artifacts[0].title == "quant_brief_v4" and stage != "critique":
+            bundle["source_draft"] = json.loads(response.decision.artifacts[0].content)
         receipt.setdefault("revalidated_responses", []).append({
             "case": label, "original_request_id": response.request_id, "model_reissued": False,
             "source_corrections": audit, "disposition": value.disposition})
@@ -154,6 +156,8 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None, r
             save()
             raise
         row.update(state="validated", disposition=value.disposition, source_corrections=corrections)
+        if response.decision.artifacts[0].title == "quant_brief_v4" and stage != "critique":
+            bundle["source_draft"] = json.loads(response.decision.artifacts[0].content)
         save()
         return value
 

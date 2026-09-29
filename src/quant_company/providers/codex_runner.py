@@ -59,12 +59,14 @@ def quant_output_model(contract):
     from quant_company.quant_feed.contracts import (
         EditorialCritique,
         EvidenceCritique,
+        FieldBoundResearchDraft,
         GroupedResearchDraft,
         ResearchBrief,
         ResearchDraft,
     )
 
     return {"quant_brief_v1": ResearchBrief, "quant_brief_v2": ResearchDraft, "quant_brief_v3": GroupedResearchDraft,
+            "quant_brief_v4": FieldBoundResearchDraft,
             "quant_critique_v1": EvidenceCritique, "quant_critique_v2": EditorialCritique}[contract]
 
 

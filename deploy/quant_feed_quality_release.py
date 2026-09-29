@@ -117,7 +117,7 @@ def protocol_preflight(app_image_id):
         producer = json.loads(run([
             "docker", "exec", "quant-company-codex-runtime-1", "python", "-c", PROTOCOL_PROBE,
         ]))
-        if (not isinstance(consumer, dict) or set(consumer) != {"quant_brief_v3", "quant_critique_v2"}
+        if (not isinstance(consumer, dict) or set(consumer) != {"quant_brief_v4", "quant_critique_v2"}
                 or not all(isinstance(value, str) and re.fullmatch(r"[a-f0-9]{64}", value)
                            for value in consumer.values()) or consumer != producer):
             raise ValueError("schema_mismatch")

@@ -68,6 +68,7 @@ class EvidenceSpan(StrictModel):
 
 class Evidence(StrictModel):
     claim: str = Field(min_length=1, max_length=800)
+    field_path: str = Field(default="", max_length=60)
     location: str = Field(default="", max_length=50)
     quote: str = Field(default="", max_length=600)
     span_id: str = Field(default="", pattern=r"^(?:p[1-9][0-9]{0,2}-s[1-9][0-9]{0,3})?$")
@@ -159,6 +160,34 @@ class EvidenceGroupReference(StrictModel):
 
 class GroupedResearchDraft(ResearchBrief):
     evidence: list[EvidenceGroupReference] = Field(default_factory=list, max_length=12)
+
+
+class SourceStatement(StrictModel):
+    """One sentence and its own references; no separately authored evidence list."""
+
+    text: str = Field(min_length=1, max_length=700)
+    basis: Literal["source", "qualified_gap", "interpretation"]
+    span_ids: list[SpanId] = Field(default_factory=list, max_length=4)
+
+
+class FieldBoundResearchDraft(ResearchBrief):
+    """The service derives prose and evidence from these same statements."""
+
+    market: list[SourceStatement] = Field(default_factory=list, max_length=3)
+    why_read: list[SourceStatement] = Field(default_factory=list, max_length=3)
+    idea: list[SourceStatement] = Field(default_factory=list, max_length=3)
+    data_period: list[SourceStatement] = Field(default_factory=list, max_length=3)
+    validation: list[SourceStatement] = Field(default_factory=list, max_length=4)
+    author_results: list[SourceStatement] = Field(default_factory=list, max_length=6)
+    costs_turnover: list[SourceStatement] = Field(default_factory=list, max_length=3)
+    limitations: list[SourceStatement] = Field(default_factory=list, max_length=8)
+    application: list[SourceStatement] = Field(default_factory=list, max_length=3)
+    evidence: list[Evidence] = Field(default_factory=list, max_length=0)
+
+    @model_validator(mode="after")
+    def publishable(self):
+        # ResearchBrief validation is performed on the service-derived prose.
+        return self
 
 
 class EvidenceCritique(StrictModel):
