@@ -114,6 +114,29 @@ def test_owner_followup_sees_current_program_stage(program):
     assert context["research_programs"] == progress
 
 
+def test_owner_progress_exposes_waiting_candidate_reason(program):
+    h = program
+    with h.company.db.transaction() as conn:
+        task_id = h.program_store.propose(conn, h.program_id,
+            task_proposal(title="Synthetic waiting candidate"), actor="researcher_kr")
+        h.program_store.assess(conn, h.program_id, task_id, {
+            "decision": "blocked", "rationale": "Input receipts are missing",
+            "source_ids": ["fixture:baseline"], "point_in_time": False,
+            "coverage": False, "executable_prices": False, "original_conditions": False}, actor="data")
+        h.program_store.decide(conn, h.program_id, task_id, {
+            "decision": "wait", "rationale": "Await verified input receipts"}, actor="director")
+        progress = public_progress(conn, h.project["project_id"])[0]
+        snapshot = h.program_store.snapshot(conn, h.program_id)
+    for view in (progress, snapshot):
+        detail = view["task_details"][0]
+        assert detail["title"] == "Synthetic waiting candidate"
+        assert detail["state"] == "waiting"
+        assert detail["data_decision"] == "blocked"
+        assert detail["selection_decision"] == "wait"
+        assert detail["selection_rationale_excerpt"] == "Await verified input receipts"
+        assert not view["task_details_truncated"]
+
+
 def test_program_inherits_bound_owner_authority_and_rejects_self_approval(program):
     h = program
     create_task(h)

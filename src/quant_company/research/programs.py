@@ -12,6 +12,16 @@ from .missions import MissionStore, typed
 from .program_contracts import DataAssessment, ResearchProgram, ResearchTaskProposal, TaskDecision
 
 
+def _task_details(conn, program_id, *, limit=10):
+    rows = conn.execute("""SELECT id,LEFT(proposal->>'title',200) AS title,state,mission_id,
+        data_assessment->>'decision' AS data_decision,
+        decision->>'decision' AS selection_decision,
+        LEFT(decision->>'rationale',650) AS selection_rationale_excerpt
+        FROM research_program_tasks WHERE program_id=%s
+        ORDER BY created_at DESC,id DESC LIMIT %s""", (program_id, limit + 1)).fetchall()
+    return {"task_details": as_json(rows[:limit]), "task_details_truncated": len(rows) > limit}
+
+
 def public_progress(conn, project_id, *, limit=3):
     """Bounded, service-owned program state for owner conversation and status commands."""
     programs = conn.execute("""SELECT id,revision,state,approved_at,spec FROM research_programs
@@ -28,7 +38,8 @@ def public_progress(conn, project_id, *, limit=3):
         result.append(as_json({"id": program["id"], "title": program["spec"]["title"],
                                "revision": program["revision"], "state": program["state"],
                                "approved_at": program["approved_at"], "stage": stage,
-                               "task_states": tasks, "mission_count": missions}))
+                               "task_states": tasks, "mission_count": missions,
+                               **_task_details(conn, program["id"])}))
     return result
 
 
@@ -109,6 +120,7 @@ class ProgramStore:
             "title": spec.title, "usage": self.usage(conn, program_id),
             "limits": {"trials": spec.max_total_trials, "compute_seconds": spec.max_compute_seconds,
                        "missions": spec.max_missions},
+            **_task_details(conn, program_id),
             "missions": [MissionStore(self.company).snapshot(conn, m["id"]) for m in missions]})
 
     def propose(self, conn, program_id, value, *, actor):
