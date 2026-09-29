@@ -96,7 +96,7 @@
         },
         {
           "path": "docs/project/FIRST-TASK-DATA-GAP-20260929.md",
-          "sha256": "44d85daff463"
+          "sha256": "373ba5960dc7"
         },
         {
           "path": "docs/project/evidence/research-programs-20260929/etf-input-contract-readback.json",
@@ -105,11 +105,55 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/verify-etf-input-contract.py",
           "sha256": "f35940658315"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/second-task-proposal-summary.json",
+          "sha256": "d0c28d1e4a1a"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/second-task-data-assessment.json",
+          "sha256": "42ee4b68422b"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/second-task-final-decision.json",
+          "sha256": "8893499919b6"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/etf-qdata-independent-readback.json",
+          "sha256": "7b18376afed4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/service-restart-recovery.json",
+          "sha256": "797e2bd73183"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-validation.json",
+          "sha256": "2c71dbdb5c38"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-cutover-held.json",
+          "sha256": "df5cb4a98b16"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-cutover.json",
+          "sha256": "ece9ca787115"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-post-check.json",
+          "sha256": "1dd3b8408bec"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/program-post-unread-source.json",
+          "sha256": "265d135cf0f3"
+        },
+        {
+          "path": "docs/project/RESEARCH-PROGRAMS-POST-APPROVAL-20260929.md",
+          "sha256": "cc5082ebc7d9"
         }
       ],
-      "note": "Exact approved ETF input hashes, row schema, cohort rows and field timing were checked by a committed read-only script. Origin timestamps, PIT universe and execution remain unverified; director wait and zero scientific trials remain.",
+      "note": "Signed owner program is active. Two literature-grounded ETF tasks passed proposal validation, received independent blocked data assessments, and were held by the director. The frozen ETF inputs were checked against pinned qdata; publication provenance and task/profile execution compatibility remain unresolved. Zero missions, reservations and scientific trials.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T04:00:02.885822+00:00"
+      "updatedAt": "2026-09-29T04:54:52.965400+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -204,16 +248,48 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/first-task-independent-review.json",
           "sha256": "0fd3c3fb25e4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-stage.json",
+          "sha256": "40db713d0bb5"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-build.json",
+          "sha256": "9aa832a1159d"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-runtime.json",
+          "sha256": "9c9c88ce0f25"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-validation.json",
+          "sha256": "2c71dbdb5c38"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-cutover-held.json",
+          "sha256": "df5cb4a98b16"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-cutover.json",
+          "sha256": "ece9ca787115"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-post-check.json",
+          "sha256": "1dd3b8408bec"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/program-post-unread-source.json",
+          "sha256": "265d135cf0f3"
         }
       ],
-      "note": "The live corrected worker produced a validated first task with seven citations and zero predecessor missions; independent data and director stages then executed. The code and CI gates passed.",
+      "note": "The unread-source same-attempt continuation patch passed 1312 local tests, lint and PR service CI. Guarded worker-only cutover from eec5 to cd6d completed after all turns were idle; installed controller hash and official ChatGPT route were read back. Other service container IDs stayed fixed.",
       "status": "verified",
-      "updatedAt": "2026-09-29T03:55:48.641393+00:00"
+      "updatedAt": "2026-09-29T04:54:52.965400+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T04:00:02.885822+00:00"
+  "updatedAt": "2026-09-29T04:54:52.965400+00:00"
 }

@@ -514,6 +514,23 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         value = json.loads(content, strict=False)
     if not isinstance(value, dict):
         raise PolicyError("Research artifact must be an object")
+    for path in row["context"].get("required_data_reads", []):
+        if conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
+            AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
+            continue
+        progress = conn.execute("""SELECT next_offset FROM research_stage_reads WHERE stage_id=%s
+            AND attempt=%s AND path=%s ORDER BY character_offset DESC LIMIT 1""",
+            (row["id"], row["attempt"], path)).fetchone()
+        hint = (f"data_evidence_incomplete:{path}@{progress['next_offset']};read_next_chunk"
+                if progress else f"data_evidence_unread:{path}@0;read_first_chunk")
+        if row["error"] != hint:
+            conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s",
+                         (hint, row["id"]))
+            conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                         (Jsonb(response.model_dump(mode="json")), turn["id"]))
+            company._new_turn(conn, task)
+            return {"state": "completed", "incomplete_data_evidence": True}
+        raise PolicyError("Data assessment requires complete reads of the approved input evidence")
     for path in row["context"].get("required_meaning_reads", []):
         if not conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
             AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():

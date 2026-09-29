@@ -1,9 +1,12 @@
 """Real PostgreSQL/Git; scripted employees and synthetic data, no live research."""
 
+import hashlib
 import json
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
+from pathlib import Path
+from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
@@ -13,6 +16,7 @@ from quant_company.company import Company, PolicyError, now
 from quant_company.contracts import AgentDecision, ProviderResponse
 from quant_company.research.adaptive_contracts import digest_model
 from quant_company.research.builds import ServerResearchProfile
+from quant_company.research.data_evidence import load_packets
 from quant_company.research.feedback import resolve_challenges
 from quant_company.research.mission_contracts import MissionSpec
 from quant_company.research.program_contracts import ResearchProgram
@@ -85,6 +89,31 @@ def task_proposal(**changes):
 def ready(**changes):
     return {"decision": "ready", "rationale": "Synthetic fixture data verified", "source_ids": ["fixture:baseline"],
         "point_in_time": True, "coverage": True, "executable_prices": True, "original_conditions": False, **changes}
+
+
+def provision_data_packet(h):
+    root = h.company.settings.research_artifact_dir / "provisioned" / "data-evidence"
+    root.mkdir(parents=True)
+    inputs = {"qualification.json": b'{"synthetic_fixture":true}', "development.csv": b"synthetic\n"}
+    engine = h.original[4]["code/evaluator.py"]
+    reports = {"limitations.txt": b"Synthetic fixture only. No market data readiness claim."}
+
+    def place(name, content):
+        path = root / name
+        path.write_bytes(content)
+        return {"path": str(path), "sha256": hashlib.sha256(content).hexdigest()}
+
+    spec = h.program_spec.envelopes[0].template
+    packet = {"program_digest": h.digest, "envelope": "etf",
+        "execution_profile_digest": spec.execution_profile_digest, "lake_id": spec.data.lake_id,
+        "blocking_gaps": ["Synthetic fixture cannot establish market provenance"],
+        "input_files": {name: place(name, content) for name, content in inputs.items()},
+        "engine": place("evaluator.py", engine),
+        "reports": {name: place(name, content) for name, content in reports.items()}}
+    registry = root / "registry.json"
+    registry.write_text(json.dumps({"schema_version": 1, "packets": [packet]}))
+    h.company.settings.research_data_evidence_file = registry
+    return packet
 
 
 def create_task(h, **changes):
@@ -258,6 +287,101 @@ def test_partial_original_and_literal_newline_continue_same_attempt(program):
         assert conn.execute("SELECT count(*) AS n FROM research_program_tasks").fetchone()["n"] == 1
         assert conn.execute("SELECT count(*) AS n FROM research_stage_reads WHERE stage_id=%s",
                             (stage["id"],)).fetchone()["n"] == 2
+
+
+def test_data_packet_is_bound_read_and_keeps_blocked_assessment_independent(program):
+    h = program
+    packet = provision_data_packet(h)
+    with h.company.db.transaction() as conn:
+        program_row = conn.execute("SELECT * FROM research_programs WHERE id=%s", (h.program_id,)).fetchone()
+    assert set(load_packets(h.company, program_row, {"etf": h.program_spec.envelopes[0]})) == {"etf"}
+    with h.company.db.transaction() as conn:
+        task_id = h.program_store.propose(conn, h.program_id, task_proposal(), actor="researcher_kr")
+    controller = ProgramController(h.company)
+    assert controller.tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+        turn_id = str(conn.execute("SELECT id FROM turns WHERE task_id=%s", (stage["task_id"],)).fetchone()["id"])
+    assert stage["stage"] == "program_data"
+    required = stage["context"]["required_data_reads"]
+    assert len(required) == 3 and stage["context"]["data_evidence_packets"][0]["envelope"] == "etf"
+    assert "data/etf/inputs/development.csv" in stage["context"]["_private_files"]
+    blocked = {"decision": "blocked", "rationale": "Synthetic packet cannot establish market provenance",
+        "source_ids": ["fixture:baseline"], "point_in_time": False, "coverage": False,
+        "executable_prices": False, "original_conditions": False}
+
+    def reply(identity, *, path=None):
+        decision = (AgentDecision(say="", status="continue", tools=[{"name": "research_control",
+            "arguments": {"action": "read_stage_file", "path": path, "offset": 0}}]) if path else
+            AgentDecision(say="", status="complete", artifacts=[{"title": "Synthetic assessment",
+                "content": json.dumps(blocked)}]))
+        return ProviderResponse(request_id=identity, provider="fixture", decision=decision)
+
+    h.company.prepare_turn(turn_id)
+    assert h.company.commit_turn(turn_id, reply(turn_id))["incomplete_data_evidence"]
+    for path in [*required, stage["context"]["evidence_sources"][0]["file"]]:
+        with h.company.db.transaction() as conn:
+            current = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                (stage["task_id"],)).fetchone()["id"])
+        h.company.prepare_turn(current)
+        h.company.commit_turn(current, reply(current, path=path))
+    with h.company.db.transaction() as conn:
+        final = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+            (stage["task_id"],)).fetchone()["id"])
+    h.company.prepare_turn(final)
+    assert h.company.commit_turn(final, reply(final))["state"] == "completed"
+    assert controller.tick()["state"] == "completed"
+    with h.company.db.transaction() as conn:
+        task = conn.execute("SELECT * FROM research_program_tasks WHERE id=%s", (task_id,)).fetchone()
+        assert task["data_assessment"]["decision"] == "blocked"
+        assert conn.execute("SELECT count(*) AS n FROM research_stage_reads WHERE stage_id=%s",
+            (stage["id"],)).fetchone()["n"] == len(required) + 1
+    assert packet["program_digest"] == h.digest
+
+
+def test_data_packet_rejects_changed_files_and_unapproved_input_identity(program):
+    h = program
+    packet = provision_data_packet(h)
+    with h.company.db.transaction() as conn:
+        program_row = conn.execute("SELECT * FROM research_programs WHERE id=%s", (h.program_id,)).fetchone()
+    envelopes = {"etf": h.program_spec.envelopes[0]}
+    report = Path(packet["reports"]["limitations.txt"]["path"])
+    report.write_text("Changed after registration")
+    with pytest.raises(PolicyError, match="changed"):
+        load_packets(h.company, program_row, envelopes)
+    packet["reports"]["limitations.txt"]["sha256"] = hashlib.sha256(report.read_bytes()).hexdigest()
+    packet["input_files"]["development.csv"]["sha256"] = "0" * 64
+    h.company.settings.research_data_evidence_file.write_text(json.dumps({"packets": [packet]}))
+    with pytest.raises(PolicyError, match="approved program"):
+        load_packets(h.company, program_row, envelopes)
+
+
+def test_real_profile_ready_rejects_missing_or_blocked_packet(program, monkeypatch):
+    h = program
+    with h.company.db.transaction() as conn:
+        task_id = h.program_store.propose(conn, h.program_id, task_proposal(), actor="researcher_kr")
+    monkeypatch.setattr("quant_company.research.programs.profile_for",
+        lambda *_: SimpleNamespace(public_profile=SimpleNamespace(fixture_only=False)))
+    with pytest.raises(PolicyError, match="verified input evidence packet"):
+        with h.company.db.transaction() as conn:
+            h.program_store.assess(conn, h.program_id, task_id, ready(), actor="data")
+    provision_data_packet(h)
+    with pytest.raises(PolicyError, match="blocking gaps"):
+        with h.company.db.transaction() as conn:
+            h.program_store.assess(conn, h.program_id, task_id, ready(), actor="data")
+
+
+def test_data_packet_rejects_file_outside_managed_store(program):
+    h = program
+    packet = provision_data_packet(h)
+    outside = h.company.settings.research_artifact_dir.parent / "evaluator.py"
+    outside.write_bytes(Path(packet["engine"]["path"]).read_bytes())
+    packet["engine"]["path"] = str(outside)
+    h.company.settings.research_data_evidence_file.write_text(json.dumps({"packets": [packet]}))
+    with h.company.db.transaction() as conn:
+        program_row = conn.execute("SELECT * FROM research_programs WHERE id=%s", (h.program_id,)).fetchone()
+    with pytest.raises(PolicyError, match="outside the managed store"):
+        load_packets(h.company, program_row, {"etf": h.program_spec.envelopes[0]})
 
 
 def test_concurrent_budget_reservations_are_serialized_and_uncertain_jobs_hold_budget(program):

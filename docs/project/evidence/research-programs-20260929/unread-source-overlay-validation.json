@@ -1,0 +1,37 @@
+{
+  "active_base_release": "eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+  "candidate_commit": "cd6d293e78eb9152b9ff7d56b2d702d7681e353d",
+  "candidate_image_id": "sha256:e150087779bfaa445020a2bcbc738a7ac3cd1ba25f21739983307c9767c12fa2",
+  "candidate_runtime_sha256": "921f820f6e85382e00d981e41d2173c04c5d589e64dda2fc710289a779255aa6",
+  "changed_deploy_paths": [],
+  "changed_source_paths": [
+    "src/quant_company/research/controller.py"
+  ],
+  "controller_sha256": "006f8fe940c465dfdc5a2e4859580af394a0db4436c686db8ff55ca3c3c170e3",
+  "held_reason": "one director answer turn was running; no runtime or container change",
+  "local_commands": [
+    {
+      "command": "uv run pytest -q tests/test_research_programs.py tests/test_task_control.py tests/test_slack.py",
+      "result": "48 passed, 2 warnings"
+    },
+    {
+      "command": "uv run pytest -q",
+      "result": "1312 passed, 13 skipped, 2 warnings in 414.17s"
+    },
+    {
+      "command": "uv run ruff check .",
+      "result": "All checks passed!"
+    }
+  ],
+  "observed_at": "2026-09-29T04:49:57.446126+00:00",
+  "pr": {
+    "head": "cd6d293e78eb9152b9ff7d56b2d702d7681e353d",
+    "isDraft": true,
+    "mergeStateStatus": "CLEAN",
+    "service_ci": "SUCCESS",
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/87"
+  },
+  "production_cutover_held": true,
+  "schema_version": 1,
+  "state": "candidate_validated_not_active"
+}
