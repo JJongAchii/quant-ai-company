@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-29T00:12:16Z",
+  "state": "activated_then_superseded_by_compatible_release",
+  "sourceCommit": "2e1b5c783319c69e384a4a37c79af24a5441c422",
+  "reviewPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
+  "approval": "Owner approved the updated PR #83 and scoped production application in this conversation.",
+  "preparationEvidence": "project-task-quota-preparation-20260928.json",
+  "lightsail": {
+    "cutoverReceipt": "/var/lib/quant-company/releases/project-task-quota-2e1b5c783319c69e384a4a37c79af24a5441c422-resume-20260928T2307Z.json",
+    "cutoverReceiptSha256": "a3a4689b4023fdcad9547ce7dea9700d94b2c01eee24eac83e984996c2ec7bbf",
+    "databaseBackup": "/var/lib/quant-company/backups/project-task-quota-20260928T230907Z/database.dump",
+    "databaseBackupSha256": "938dadd3fc4d9f1e745d7f24bb61df4b03b26da1a3e7b742b7d19b3cc9418650",
+    "preparedEffects": {"runningTurns": 0, "activeResearchJobs": 0, "sendingOutbox": 0},
+    "activatedAt": "2026-09-28T23:10:48.487511Z",
+    "appAndSlackSocket": {
+      "image": "quant-company:2e1b5c783319c69e384a4a37c79af24a5441c422",
+      "imageId": "sha256:9ef6d12b7b39796dc7ee1bbcb41cb9644d251395ec0402ce9f63673690e58714",
+      "appHealthy": true,
+      "runningProjectTaskLimit": 0
+    },
+    "modelWorker": {
+      "image": "quant-company-autonomous:2e1b5c783319c69e384a4a37c79af24a5441c422",
+      "imageId": "sha256:468512d7bd125b372737039f784951ab579629dedc9032f66120408baa2819c7",
+      "runningProjectTaskLimit": 0,
+      "rolesFile": "/etc/quant-company/roles.json",
+      "temporaryPinnedRolesOverlayRemoved": true
+    },
+    "unrelatedExistingContainersPreservedAtCutoverChecks": true,
+    "newUnrelatedEphemeralContainerAppearedAfterChecks": true,
+    "postCutoverWorkerAndSocketErrorMatches": 0,
+    "operatorModelPauseCleared": true,
+    "runtimeControlPausedUntilAndReason": [null, null]
+  },
+  "research3070": {
+    "activationReceipt": "/home/achii/quant-company-qualification/autonomous-20260921/release-candidates/operator-backup-project-task-quota-2e1b5c783319c69e384a4a37c79af24a5441c422/receipt.json",
+    "activatedAt": "2026-09-28T08:30:26.120317Z",
+    "activeCompanyCommit": "2e1b5c783319c69e384a4a37c79af24a5441c422",
+    "serviceActive": true,
+    "activeConfigSha256": "9741cdeec6b9a26c7e4ed15e7e7d39d25081d44fb34c6eaead84a7894fa058e6",
+    "activeDropinSha256": "53cac82f4ac991e3f8e6eb649ec57999048a8aed52b732e55d3b5fd4f56b5407",
+    "projectTaskLimitEnvironmentOverride": "absent",
+    "codeDefaultProjectTaskLimit": 0,
+    "releaseRegistryEntries": 15,
+    "oldAndHistoricalJobCommitsPreserved": true
+  },
+  "subsequentReleaseObserved": {
+    "observedAt": "2026-09-29T00:12:16Z",
+    "commit": "382284512ade2c0750c79494389a0899d2b46688",
+    "appAndSlackSocketImageId": "sha256:1a9150c1826e715e92f48d32b15fec876ec29ec62baec261fe08772777e28401",
+    "modelWorkerImageId": "sha256:8f47ea3ddf91de161eda9ce40d1be70eeb061f73b4d2d1a1f746d0f2858ec6cd",
+    "apiHealthy": true,
+    "runningAppProjectTaskLimit": 0,
+    "runningModelWorkerProjectTaskLimit": 0,
+    "runningAppTaskAndControlGuardsPresent": true,
+    "research3070Active": true,
+    "research3070WorkingDirectoryCommit": "382284512ade2c0750c79494389a0899d2b46688",
+    "research3070CodeDefaultProjectTaskLimit": 0,
+    "research3070ProjectTaskLimitEnvironmentOverride": "absent",
+    "relationshipToThisCutover": "A separate later deployment replaced the three Lightsail containers and active 3070 release. Its observed code and runtime retain the unlimited project-task behavior."
+  },
+  "validation": {
+    "preCutoverRealPostgresSuite": "1226 passed, 38 skipped, 0 failed; Ruff passed",
+    "postCutoverApiHealth": "healthy",
+    "postCutoverSlackIngressAndDelivery": "No inbound row was recorded for any project between the candidate cutover and the 00:10 UTC check; a new owner Slack question has not been verified.",
+    "previousRejectedSlackMessagesReplayed": false
+  }
+}
