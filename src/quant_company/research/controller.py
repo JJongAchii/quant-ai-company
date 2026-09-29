@@ -36,6 +36,7 @@ STAGE_TEXT = {
 }
 
 AUDIT_RECONCILED_ERROR = "audit_runtime_failure_reconciled"
+MAX_PROGRAM_PROPOSAL_REJECTIONS = 3
 
 
 def stage_role(company, actor):
@@ -545,26 +546,70 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
             cited = row["context"]["task"]["proposal"]["source_ids"]
         paths = {entry["source_id"]: entry["file"] for entry in row["context"].get("evidence_sources", [])}
         for source in cited:
-            if source in paths and conn.execute("""SELECT 1 FROM research_stage_reads
+            if not isinstance(source, str) or source not in paths:
+                if row["stage"] != "program_data" or row["context"].get("_unregistered_source_hint_used"):
+                    raise PolicyError("Cited source ID is outside this stage's approved library")
+                hint = "unregistered_source_id;use_evidence_sources.source_id_not_packet_path"
+                context = {**row["context"], "_unregistered_source_hint_used": True}
+                conn.execute("UPDATE research_mission_stages SET context=%s,error=%s,updated_at=now() WHERE id=%s",
+                             (Jsonb(context), hint, row["id"]))
+                conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                             (Jsonb(response.model_dump(mode="json")), turn["id"]))
+                company._new_turn(conn, task)
+                return {"state": "completed", "incomplete_source": True}
+            if conn.execute("""SELECT 1 FROM research_stage_reads
                 WHERE stage_id=%s AND attempt=%s AND path=%s AND next_offset IS NULL""",
                 (row["id"], row["attempt"], paths[source])).fetchone():
                 continue
-            if source in paths:
-                progress = conn.execute("""SELECT next_offset FROM research_stage_reads WHERE stage_id=%s
-                    AND attempt=%s AND path=%s ORDER BY character_offset DESC LIMIT 1""",
-                    (row["id"], row["attempt"], paths[source])).fetchone()
-                hint = (f"cited_source_incomplete:{paths[source]}@{progress['next_offset']};read_next_chunk"
-                        if progress else f"cited_source_unread:{paths[source]}@0;read_first_chunk")
-                # One identical premature proposal still fails. A new read receipt
-                # clears this hint and lets the same employee attempt continue.
-                if row["error"] != hint:
-                    conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s",
-                                 (hint, row["id"]))
-                    conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
-                                 (Jsonb(response.model_dump(mode="json")), turn["id"]))
-                    company._new_turn(conn, task)
-                    return {"state": "completed", "incomplete_source": True}
+            progress = conn.execute("""SELECT next_offset FROM research_stage_reads WHERE stage_id=%s
+                AND attempt=%s AND path=%s ORDER BY character_offset DESC LIMIT 1""",
+                (row["id"], row["attempt"], paths[source])).fetchone()
+            hint = (f"cited_source_incomplete:{paths[source]}@{progress['next_offset']};read_next_chunk"
+                    if progress else f"cited_source_unread:{paths[source]}@0;read_first_chunk")
+            # One identical premature proposal still fails. A new read receipt
+            # clears this hint and lets the same employee attempt continue.
+            if row["error"] != hint:
+                conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s",
+                             (hint, row["id"]))
+                conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                             (Jsonb(response.model_dump(mode="json")), turn["id"]))
+                company._new_turn(conn, task)
+                return {"state": "completed", "incomplete_source": True}
             raise PolicyError("Cited source has not been read completely in this employee attempt")
+    if row["stage"] == "program_proposal":
+        from .programs import ProgramStore
+
+        try:
+            ProgramStore(company).validate_proposal(conn, row["program_id"], value, actor=row["actor"])
+        except (PolicyError, ValidationError) as exc:
+            if isinstance(exc, ValidationError):
+                detail = "; ".join(f"{'.'.join(map(str, item['loc']))}: {item['msg']}"
+                                   for item in exc.errors(include_input=False))
+            else:
+                detail = str(exc)
+            count = row["context"].get("_proposal_rejections", 0) + 1
+            context = {**row["context"], "_proposal_rejections": count}
+            reason = "proposal_contract_rejected: " + detail[:600]
+            conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                         (Jsonb(response.model_dump(mode="json")), turn["id"]))
+            if count < MAX_PROGRAM_PROPOSAL_REJECTIONS:
+                conn.execute("UPDATE research_mission_stages SET context=%s,error=%s,updated_at=now() WHERE id=%s",
+                             (Jsonb(context), reason, row["id"]))
+                company._new_turn(conn, task)
+                return {"state": "completed", "proposal_rejected": True}
+            context["_program_hold"] = {"reason": "proposal_contract_requires_remediation",
+                                        "rejections": count}
+            conn.execute("""UPDATE research_mission_stages SET state='waiting',context=%s,error=%s,
+                retry_at=NULL,updated_at=now() WHERE id=%s""", (Jsonb(context), reason, row["id"]))
+            conn.execute("UPDATE research_stage_attempts SET error=%s WHERE stage_id=%s AND attempt=%s",
+                         ("proposal_contract_requires_remediation", row["id"], row["attempt"]))
+            conn.execute("UPDATE tasks SET status='blocked',error=%s WHERE id=%s",
+                         ("proposal_contract_requires_remediation", task["id"]))
+            company._event(conn, "research_program_proposal_held", {
+                "stage_id": str(row["id"]), "attempt": row["attempt"],
+                "reason": "proposal_contract_requires_remediation", "rejections": count,
+            }, task["project_id"])
+            return {"state": "completed", "proposal_held": True}
     if enabled(row):
         if commit_review(company, conn, row, turn, response, value):
             return {"state": "completed", "audit_packet_reviewed": True}

@@ -29,7 +29,7 @@ from .test_research_missions import Harness
 
 
 @pytest.fixture
-def program(company, tmp_path):
+def program(company, tmp_path, request):
     company.settings.company_research_enabled = True
     company.settings.company_autonomous_research_enabled = True
     company.settings.research_artifact_dir = tmp_path / "artifacts"
@@ -61,8 +61,11 @@ def program(company, tmp_path):
     h = Harness(company)
     h.original, h.public = original, public
     h.program_store = ProgramStore(company)
+    envelopes = [{"name": "etf", "market": "kr_etf", "template": spec}]
+    if getattr(request, "param", False):
+        envelopes.append({"name": "etf_alt", "market": "kr_etf", "template": spec})
     h.program_spec = ResearchProgram(title="Synthetic bounded program", objective="Exercise research authority",
-        envelopes=[{"name": "etf", "market": "kr_etf", "template": spec}], max_total_trials=2,
+        envelopes=envelopes, max_total_trials=2,
         max_compute_seconds=10000, max_missions=2, source_ids=["fixture:baseline"], include_quant_feed=False)
     with company.db.transaction() as conn:
         project = company._project(conn, h.project["project_id"])
@@ -141,6 +144,29 @@ def test_owner_followup_sees_current_program_stage(program):
     answer = h.company.prepare_turn(turn_for(h.company, question["task_id"]))
     context = json.loads(answer["request"]["prompt"].split("TASK DATA JSON:\n")[1])
     assert context["research_programs"] == progress
+
+
+def test_owner_progress_exposes_waiting_candidate_reason(program):
+    h = program
+    with h.company.db.transaction() as conn:
+        task_id = h.program_store.propose(conn, h.program_id,
+            task_proposal(title="Synthetic waiting candidate"), actor="researcher_kr")
+        h.program_store.assess(conn, h.program_id, task_id, {
+            "decision": "blocked", "rationale": "Input receipts are missing",
+            "source_ids": ["fixture:baseline"], "point_in_time": False,
+            "coverage": False, "executable_prices": False, "original_conditions": False}, actor="data")
+        h.program_store.decide(conn, h.program_id, task_id, {
+            "decision": "wait", "rationale": "Await verified input receipts"}, actor="director")
+        progress = public_progress(conn, h.project["project_id"])[0]
+        snapshot = h.program_store.snapshot(conn, h.program_id)
+    for view in (progress, snapshot):
+        detail = view["task_details"][0]
+        assert detail["title"] == "Synthetic waiting candidate"
+        assert detail["state"] == "waiting"
+        assert detail["data_decision"] == "blocked"
+        assert detail["selection_decision"] == "wait"
+        assert detail["selection_rationale_excerpt"] == "Await verified input receipts"
+        assert not view["task_details_truncated"]
 
 
 def test_program_inherits_bound_owner_authority_and_rejects_self_approval(program):
@@ -230,7 +256,107 @@ def test_program_stage_requires_current_attempt_original_read_and_survives_resta
     assert ProgramController(h.company).tick()["state"] == "completed"
     assert ProgramController(h.company).tick()["state"] == "running"
     with h.company.db.transaction() as conn:
-        assert conn.execute("SELECT actor FROM research_mission_stages WHERE state='running'").fetchone()["actor"] == "data"
+        data_stage = conn.execute("SELECT * FROM research_mission_stages WHERE state='running'").fetchone()
+        assert data_stage["actor"] == "data"
+        assert data_stage["context"]["task"]["id"] not in {
+            item["id"] for item in data_stage["context"]["prior_tasks"]}
+
+
+def test_prior_program_task_keeps_decision_without_repeating_source_quote(program):
+    h = program
+    with h.company.db.transaction() as conn:
+        task_id = h.program_store.propose(conn, h.program_id, task_proposal(), actor="researcher_kr")
+        h.program_store.assess(conn, h.program_id, task_id, ready(decision="blocked", point_in_time=False),
+                               actor="data")
+        h.program_store.decide(conn, h.program_id, task_id,
+                               {"decision": "revise", "rationale": "Original timing is unresolved"}, actor="director")
+    assert ProgramController(h.company).tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+    previous = stage["context"]["prior_tasks"][0]
+    assert previous["id"] == task_id and previous["state"] == "rejected"
+    assert previous["decision"]["rationale"] == "Original timing is unresolved"
+    assert previous["proposal"]["source_ids"] == ["fixture:baseline"]
+    assert previous["citation_locations"] == [{"source_id": "fixture:baseline", "location": "char:0"}]
+    assert "quote" not in json.dumps(previous)
+
+
+def test_invalid_program_proposal_corrects_without_rereading_source(program):
+    h = program
+    controller = ProgramController(h.company)
+    assert controller.tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+        first = str(conn.execute("SELECT id FROM turns WHERE task_id=%s", (stage["task_id"],)).fetchone()["id"])
+    h.company.prepare_turn(first)
+    path = stage["context"]["evidence_sources"][0]["file"]
+    h.company.commit_turn(first, ProviderResponse(request_id=first, provider="fixture", decision=AgentDecision(
+        say="", status="continue", tools=[{"name": "research_control", "arguments": {
+            "action": "read_stage_file", "path": path, "offset": 0}}])))
+    with h.company.db.transaction() as conn:
+        second = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                  (stage["task_id"],)).fetchone()["id"])
+    h.company.prepare_turn(second)
+    bad = task_proposal(citations=[{"source_id": "fixture:baseline", "location": "char:0",
+                                    "quote": "this quote is absent from the original"}])
+    result = h.company.commit_turn(second, ProviderResponse(request_id=second, provider="fixture",
+        decision=AgentDecision(say="", status="complete", artifacts=[{"title": "proposal",
+            "content": json.dumps(bad)}])))
+    assert result["proposal_rejected"]
+    with h.company.db.transaction() as conn:
+        current = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+        third = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                 (stage["task_id"],)).fetchone()["id"])
+        assert current["attempt"] == 1 and current["state"] == "running"
+        assert current["context"]["_proposal_rejections"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM research_stage_reads WHERE stage_id=%s",
+                            (stage["id"],)).fetchone()["n"] == 1
+    prompt = h.company.prepare_turn(third)["request"]["prompt"]
+    assert "Citation does not occur at the specified original location" in prompt
+    h.company.commit_turn(third, ProviderResponse(request_id=third, provider="fixture",
+        decision=AgentDecision(say="", status="complete", artifacts=[{"title": "proposal",
+            "content": json.dumps(task_proposal())}])))
+    assert controller.tick()["state"] == "completed"
+    with h.company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM research_program_tasks").fetchone()["n"] == 1
+        assert conn.execute("SELECT attempt FROM research_mission_stages WHERE id=%s",
+                            (stage["id"],)).fetchone()["attempt"] == 1
+
+
+def test_repeated_invalid_program_proposals_hold_until_evidence_changes(program):
+    h = program
+    controller = ProgramController(h.company)
+    assert controller.tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+    path = stage["context"]["evidence_sources"][0]["file"]
+    for index in range(4):
+        with h.company.db.transaction() as conn:
+            turn_id = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                       (stage["task_id"],)).fetchone()["id"])
+        h.company.prepare_turn(turn_id)
+        decision = (AgentDecision(say="", status="continue", tools=[{"name": "research_control",
+                    "arguments": {"action": "read_stage_file", "path": path, "offset": 0}}]) if index == 0 else
+                    AgentDecision(say="", status="complete", artifacts=[{"title": "proposal", "content": json.dumps(
+                        task_proposal(citations=[{"source_id": "fixture:baseline", "location": "char:0",
+                                                 "quote": "not in the source"}]))}]))
+        result = h.company.commit_turn(turn_id, ProviderResponse(request_id=turn_id, provider="fixture",
+                                                                    decision=decision))
+    assert result["proposal_held"]
+    with h.company.db.transaction() as conn:
+        held = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+        assert held["state"] == "waiting" and held["retry_at"] is None and held["attempt"] == 1
+        assert held["context"]["_program_hold"]["rejections"] == 3
+        assert conn.execute("SELECT count(*) AS n FROM research_stage_reads WHERE stage_id=%s",
+                            (stage["id"],)).fetchone()["n"] == 1
+    assert controller.tick()["reason"] == "proposal_contract_requires_remediation"
+    with h.company.db.transaction() as conn:
+        conn.execute("UPDATE sources SET content=content || ' new evidence' WHERE id='fixture:baseline'")
+    assert controller.tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        fresh = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s AND state='running'",
+                             (h.program_id,)).fetchone()
+        assert fresh["id"] != stage["id"] and fresh["attempt"] == 1
 
 
 def test_partial_original_and_literal_newline_continue_same_attempt(program):
@@ -337,6 +463,128 @@ def test_data_packet_is_bound_read_and_keeps_blocked_assessment_independent(prog
         assert conn.execute("SELECT count(*) AS n FROM research_stage_reads WHERE stage_id=%s",
             (stage["id"],)).fetchone()["n"] == len(required) + 1
     assert packet["program_digest"] == h.digest
+
+
+def test_data_assessment_can_correct_one_unregistered_source_id_after_packet_reads(program):
+    h = program
+    provision_data_packet(h)
+    with h.company.db.transaction() as conn:
+        task_id = h.program_store.propose(conn, h.program_id, task_proposal(), actor="researcher_kr")
+    controller = ProgramController(h.company)
+    assert controller.tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+    assert stage["stage"] == "program_data"
+
+    def queued():
+        with h.company.db.transaction() as conn:
+            return str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                    (stage["task_id"],)).fetchone()["id"])
+
+    def read(identity, path):
+        return ProviderResponse(request_id=identity, provider="fixture", decision=AgentDecision(
+            say="", status="continue", tools=[{"name": "research_control", "arguments": {
+                "action": "read_stage_file", "path": path, "offset": 0}}]))
+
+    def assess(identity, source_id):
+        return ProviderResponse(request_id=identity, provider="fixture", decision=AgentDecision(
+            say="", status="complete", artifacts=[{"title": "Synthetic assessment", "content": json.dumps({
+                "decision": "blocked", "rationale": "Synthetic packet does not establish market provenance",
+                "source_ids": [source_id], "point_in_time": False, "coverage": False,
+                "executable_prices": False, "original_conditions": False})}]))
+
+    for path in stage["context"]["required_data_reads"]:
+        turn_id = queued()
+        prompt = h.company.prepare_turn(turn_id)["request"]["prompt"]
+        assert "use only evidence_sources.source_id values" in prompt
+        h.company.commit_turn(turn_id, read(turn_id, path))
+
+    invalid_id = stage["context"]["data_evidence_packets"][0]["identity_file"]
+    turn_id = queued()
+    h.company.prepare_turn(turn_id)
+    assert h.company.commit_turn(turn_id, assess(turn_id, invalid_id))["incomplete_source"]
+    correction_id = queued()
+    correction_prompt = h.company.prepare_turn(correction_id)["request"]["prompt"]
+    assert "unregistered_source_id;use_evidence_sources.source_id_not_packet_path" in correction_prompt
+    with pytest.raises(PolicyError, match="outside this stage's approved library"):
+        h.company.commit_turn(correction_id, assess(correction_id, "data/etf/engine"))
+
+    source = stage["context"]["evidence_sources"][0]
+    assert h.company.commit_turn(correction_id, assess(correction_id, source["source_id"]))["incomplete_source"]
+    read_id = queued()
+    h.company.prepare_turn(read_id)
+    with pytest.raises(PolicyError, match="outside this stage's approved library"):
+        h.company.commit_turn(read_id, assess(read_id, "data/etf/engine"))
+    h.company.commit_turn(read_id, read(read_id, source["file"]))
+    final_id = queued()
+    h.company.prepare_turn(final_id)
+    assert h.company.commit_turn(final_id, assess(final_id, source["source_id"]))["state"] == "completed"
+    assert controller.tick()["state"] == "completed"
+    with h.company.db.transaction() as conn:
+        task = conn.execute("SELECT * FROM research_program_tasks WHERE id=%s", (task_id,)).fetchone()
+        current = conn.execute("SELECT attempt,state FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+    assert task["data_assessment"]["decision"] == "blocked"
+    assert current["attempt"] == 1 and current["state"] == "completed"
+
+
+@pytest.mark.parametrize("program", [True], indirect=True)
+def test_waiting_multi_envelope_program_needs_new_evidence_before_another_proposal(program):
+    h = program
+    packet = provision_data_packet(h)
+    registry = h.company.settings.research_data_evidence_file
+    registry.write_text(json.dumps({"schema_version": 1, "packets": [
+        packet, {**packet, "envelope": "etf_alt"}]}))
+    with h.company.db.transaction() as conn:
+        task_id = h.program_store.propose(conn, h.program_id, task_proposal(), actor="researcher_kr")
+    controller = ProgramController(h.company)
+    assert controller.tick()["state"] == "running"
+
+    def running_stage():
+        with h.company.db.transaction() as conn:
+            return conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s AND state='running'",
+                                (h.program_id,)).fetchone()
+
+    def queued(stage):
+        with h.company.db.transaction() as conn:
+            return str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                    (stage["task_id"],)).fetchone()["id"])
+
+    def read(stage, path):
+        identity = queued(stage)
+        h.company.prepare_turn(identity)
+        h.company.commit_turn(identity, ProviderResponse(request_id=identity, provider="fixture",
+            decision=AgentDecision(say="", status="continue", tools=[{"name": "research_control",
+                "arguments": {"action": "read_stage_file", "path": path, "offset": 0}}])))
+
+    def finish(stage, value):
+        identity = queued(stage)
+        h.company.prepare_turn(identity)
+        assert h.company.commit_turn(identity, ProviderResponse(request_id=identity, provider="fixture",
+            decision=AgentDecision(say="", status="complete", artifacts=[{"title": "Stage result",
+                "content": json.dumps(value)}])))["state"] == "completed"
+        assert controller.tick()["state"] == "completed"
+
+    data = running_stage()
+    assert data["stage"] == "program_data"
+    assert [item["envelope"] for item in data["context"]["data_evidence_packets"]] == ["etf"]
+    for path in [*data["context"]["required_data_reads"], data["context"]["evidence_sources"][0]["file"]]:
+        read(data, path)
+    finish(data, {"decision": "blocked", "rationale": "Synthetic provenance is incomplete",
+                  "source_ids": ["fixture:baseline"], "point_in_time": False, "coverage": False,
+                  "executable_prices": False, "original_conditions": False})
+
+    assert controller.tick()["state"] == "running"
+    selection = running_stage()
+    assert selection["stage"] == "program_selection"
+    read(selection, selection["context"]["evidence_sources"][0]["file"])
+    finish(selection, {"decision": "wait", "rationale": "Independent data review remains blocked"})
+    with h.company.db.transaction() as conn:
+        task = conn.execute("SELECT state FROM research_program_tasks WHERE id=%s", (task_id,)).fetchone()
+    assert task["state"] == "waiting"
+    assert controller.tick() == {"state": "waiting", "reason": "new_evidence_required"}
+    with h.company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM research_mission_stages WHERE program_id=%s AND stage='program_proposal'",
+                            (h.program_id,)).fetchone()["n"] == 0
 
 
 def test_data_packet_rejects_changed_files_and_unapproved_input_identity(program):

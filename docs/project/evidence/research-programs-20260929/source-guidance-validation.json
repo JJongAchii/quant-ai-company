@@ -1,0 +1,25 @@
+{
+  "candidate_commit": "a09ce0fa70021bb497a844d1aa4dfb8a15cb1f4b",
+  "checks": [
+    {
+      "conclusion": "SUCCESS",
+      "name": "service",
+      "status": "COMPLETED"
+    }
+  ],
+  "code_or_deploy_paths_changed_after_candidate": [],
+  "local_full_pytest": {
+    "passed": 1371,
+    "skipped": 13,
+    "warnings": 2
+  },
+  "observed_at": "2026-09-29T06:25:17.183524+00:00",
+  "pr_head": "56a33a291aa4792d1f9824a6d6066411931e4b3d",
+  "pr_merge_state": "CLEAN",
+  "ruff": "passed",
+  "schema_version": 1,
+  "targeted_pytest": {
+    "passed": 43,
+    "warnings": 2
+  }
+}

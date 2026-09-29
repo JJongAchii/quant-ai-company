@@ -1,0 +1,1 @@
+{"observed_at": "2026-09-29T06:32:00.964776+00:00", "stage": {"attempt": 7, "error": null, "stage": "program_data", "state": "running"}, "turn": {"id": "07f46f02-62ee-5aac-bfd7-2a1394291f8e", "prompt_has_last_error": true, "prompt_has_packet_path_rule": true, "prompt_has_source_id_rule": true, "status": "running"}}

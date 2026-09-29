@@ -97,6 +97,30 @@ def test_natural_progress_question_gets_answer_even_if_router_proposes_status(co
     assert 'Answer the owner\'s actual question directly' in answer['request']['prompt']
 
 
+def test_followup_publishes_only_the_final_answer(company):
+    first = submit(company, 'first', '새 연구를 진행해줘')
+    follow = submit(company, 'follow', '새 연구는 어디까지 진행됐어?', first['project_id'])
+    route(company, follow, 'followup')
+    interim = turn_for(company, follow['task_id'])
+    company.prepare_turn(interim)
+    company.commit_turn(interim, ProviderResponse(request_id=interim, decision=AgentDecision(
+        status='continue', say='상세 기록을 확인하겠습니다.')))
+    with company.db.transaction() as conn:
+        assert conn.execute('SELECT count(*) AS n FROM outbox o JOIN messages m ON m.id=o.id '
+                            'WHERE m.task_id=%s', (follow['task_id'],)).fetchone()['n'] == 0
+        assert conn.execute('SELECT count(*) AS n FROM messages WHERE task_id=%s AND kind=%s',
+                            (follow['task_id'], 'answer')).fetchone()['n'] == 1
+    final = turn_for(company, follow['task_id'])
+    company.prepare_turn(final)
+    company.commit_turn(final, ProviderResponse(request_id=final, decision=AgentDecision(
+        status='complete', say='선정 검토 중이며 실행은 아직 시작되지 않았습니다.')))
+    with company.db.transaction() as conn:
+        replies = conn.execute('SELECT o.text FROM outbox o JOIN messages m ON m.id=o.id '
+                               'WHERE m.task_id=%s', (follow['task_id'],)).fetchall()
+    assert len(replies) == 1
+    assert '선정 검토 중' in replies[0]['text']
+
+
 def test_running_response_held_for_question_is_reused_after_restart(company):
     first = submit(company, 'first', 'Work')
     old = turn_for(company, first['task_id'])

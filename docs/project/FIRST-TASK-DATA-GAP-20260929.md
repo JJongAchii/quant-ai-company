@@ -47,6 +47,10 @@
 따라서 **당시 객체를 지정해 다시 읽었다고 주장할 수 없다.**
 [독립 qdata 대조 영수증](evidence/research-programs-20260929/etf-qdata-independent-readback.json),
 [재현 스크립트](evidence/research-programs-20260929/verify-etf-against-qdata.py).
+이후 읽기 전용 [S3 버전 이력 조회](evidence/research-programs-20260929/etf-s3-version-history-readback.json)에서도
+두 객체 키마다 현재 `null` 버전 한 개만 확인됐다. 목록은 잘리지 않았고 버킷의
+버전 관리 응답에는 활성 상태가 표시되지 않았다. 따라서 이 버킷의 VersionId로
+준비 당시 객체 바이트를 복구할 수 없다.
 
 현재 객체의 2022-12-29 당시 전체 ETF 일별 시세와 메타로 20거래일 거래대금 순위를
 다시 계산한 결과, 승인된 10종목 cohort와 순서까지 같았다. 준비·개발 835거래일의
@@ -63,12 +67,23 @@
 거래일 시가까지의 가격을 사용하며 거래 비용을 적용한다. 실제 주문 호가·정지·
 상폐 정산과 원천 공개시각은 이 검사로 확인되지 않는다. 성과·봉인 구간은 읽지 않았다.
 
-다음 구현 단위는 **이미 승인된 입력 해시와 실행 프로필에 묶인 읽기 전용 데이터
-증거 패킷**이다. 위 대조의 한계와 원천 공개시각·체결 조건을 함께 담고,
-패킷의 해시와 출처를 서비스가 검증한 뒤 데이터 직원에게 제공해야 한다.
-`real-inputs.json`의 집계나 현재 레이크 대조만으로 `ready`를 자동 부여해서는 안 된다.
+05:27 UTC에 이미 승인된 입력 해시와 실행 프로필에 묶인 읽기 전용
+[데이터 증거 패킷](evidence/research-programs-20260929/etf-data-evidence-registry.json)을
+연구 워커에 연결했다. 서비스는 실제 `warmup.json`·`development.json`·보호된
+엔진과 세 보고서의 바이트를 검증해 불변 단계 파일로 복사한다. 데이터 직원이
+패킷 식별자, 엔진, 보고서를 이번 시도에서 끝까지 읽은 영수증이 없으면 심사를
+제출할 수 없다. 패킷은 [미확인 사항 5건](evidence/research-programs-20260929/etf-data-evidence-note.json)을
+명시하며, 남아 있는 동안 서비스가 실제 프로필의 `ready`를 거부한다.
+[후보 실파일 검증](evidence/research-programs-20260929/data-evidence-worker-qualified.json),
+[워커 전환](evidence/research-programs-20260929/data-evidence-worker-cutover.json),
+[운영 읽기 확인](evidence/research-programs-20260929/data-evidence-worker-postcheck.json).
+`real-inputs.json`의 집계나 현재 레이크 대조로 `ready`가 자동 부여되지는 않는다.
 프로그램의 허용 원문 목록이나 입력 계약을 바꾼다면 새 digest에 대한 소유자 승인이
-필요하다. 그 전까지 현재 과제를 실행 대상으로 승격하지 않는다.
+필요하다. 기존 두 과제는 `waiting`을 유지하며 새 패킷을 본 연구자 제안 단계가
+시작됐다. 연구자는 패킷 식별자·보호된 엔진·보고서 세 건을 끝까지 읽고, 고정
+입력 두 파일의 첫 청크를 읽었다. 입력 전체를 완독했다고 주장하지 않는다.
+[직원 읽기 깊이](evidence/research-programs-20260929/data-evidence-researcher-read-depth.json).
+미션·예약·과학 시행은 0건이다.
 
 director 보류 직후 새 검토 자료 1편이 유입돼 다음 연구자 제안 단계가 열렸다.
 [자료 버전 변경 영수증](evidence/research-programs-20260929/new-literature-trigger.json)은
@@ -86,3 +101,29 @@ director 역시 [두 번째 과제의 최종 판단](evidence/research-programs-
 고정 실행 코드와 이 차이를 함께 제공해야 하며, 시가 체결로 과제를 재설계할지
 종가 체결이 가능한 새 실행 계약을 소유자에게 승인받을지는 연구 설계 검토 뒤
 결정해야 한다. 종가 체결을 현재 프로필이 지원한다고 가정해 과제를 실행하지 않는다.
+
+## 패킷을 읽은 후속 과제
+
+2026-09-29 14:43 KST에 연구자가 세 번째 `novel_hypothesis` ETF 과제를 제안했다.
+제안 방법은 승인된 엔진과 같은 **당일 시가부터 다음 관측 시가**까지의 수익과 비용을
+명시해 두 번째 과제의 종가 체결 불일치를 반복하지 않았다. 그러나 제안 자체는
+데이터 적합성이나 실험 개시 승인이 아니다.
+[첫 데이터 검토 영수증](evidence/research-programs-20260929/data-evidence-third-task-first-review.json).
+
+독립 데이터 직원의 1·2회차 시도는 패킷 식별자, 보호된 엔진, 세 보고서를 끝까지
+읽었지만 인용한 원문을 이번 시도에서 완독한 영수증 없이 제출해 차단됐다.
+[두 번째 검토 영수증](evidence/research-programs-20260929/data-evidence-third-task-second-review.json).
+3회차는 구조화된 최종 산출물 형식 오류로 대기했다. 따라서 세 번째 과제는
+`proposed`이며 데이터 심사·director 선정은 아직 없다. 미션·자원 예약·과학 시행도
+0건이다. [3회차 상태 영수증](evidence/research-programs-20260929/data-evidence-third-task-third-review.json).
+위 출처 공개시각과 원본 객체 복구 공백은 계속 남아 있다.
+
+4~6회차도 데이터 심사를 기록하지 못했다. 특히 6회차에는 필수 패킷 다섯 파일을
+완독했지만 원문 출처 파일 읽기 기록은 0건이고 인용 검증에서 거절됐다.
+[전환 직전 단계 영수증](evidence/research-programs-20260929/source-guidance-precutover-stage.json).
+서비스는 미등록 출처 ID를 데이터 직원에게 한 번만 바로잡도록 안내하고, 이후에도
+원문 완독 없이는 심사를 받지 않도록 수정됐다. 이 수정은 데이터 적합성을 승인하지 않는다.
+[검증 결과](evidence/research-programs-20260929/source-guidance-validation.json),
+[워커 전환](evidence/research-programs-20260929/source-guidance-worker-cutover.json),
+[적용 후 코드·프로그램 확인](evidence/research-programs-20260929/source-guidance-worker-postcheck.json).
+2026-09-29 15:27 KST 현재 과제는 `proposed`이고 다음 데이터 재시도를 기다린다.

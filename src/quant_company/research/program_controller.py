@@ -31,6 +31,8 @@ PROGRAM_STAGES = {
     "program_data": ("data", DataAssessment,
         "Independently check the task's data prerequisites against actual source evidence and frozen inputs. "
         "Read every required_data_reads path completely. A checked file hash proves identity, not source timing or readiness. "
+        "For source_ids use only evidence_sources.source_id values and read each mapped original completely. "
+        "Data packet file paths are evidence files, not source_ids. "
         "Check point-in-time availability, delistings, corporate actions, coverage and executable prices. "
         "For exact replication check original conditions. Unknown checks are false; block missing evidence."),
     "program_selection": ("director", TaskDecision,
@@ -39,6 +41,16 @@ PROGRAM_STAGES = {
         "Accept only a feasible, distinct task inside the approved envelope and remaining program budget. "
         "A negative scientific result is useful evidence. Do not infer data readiness from employee agreement."),
 }
+
+
+def _prior_task_context(row):
+    value = as_json(row)
+    proposal = value["proposal"]
+    return {key: value[key] for key in ("id", "state", "mission_id", "data_assessment", "decision")} | {
+        "proposal": {key: item for key, item in proposal.items() if key != "citations"},
+        "citation_locations": [{"source_id": item["source_id"], "location": item["location"]}
+                               for item in proposal["citations"]],
+    }
 
 
 class ProgramApprovalAdapter:
@@ -135,9 +147,10 @@ class ProgramController:
             envelopes = {e.name: e for e in spec.envelopes}
             chosen = envelopes if task is None else {task["proposal"]["envelope"]:
                 envelopes[task["proposal"]["envelope"]]}
-            packets = load_packets(self.company, program, chosen)
+            all_packets = load_packets(self.company, program, envelopes)
+            packets = {name: all_packets[name] for name in chosen if name in all_packets}
             packet_versions = sorted((name, fingerprint(packet.model_dump(mode="json")))
-                                     for name, (packet, _) in packets.items())
+                                     for name, (packet, _) in all_packets.items())
             source_version = [(s["id"], fingerprint(s["content"])) for s in sources]
             evidence_version = fingerprint([source_version, evidence_missions]
                                            + ([packet_versions] if packet_versions else []))
@@ -153,12 +166,14 @@ class ProgramController:
                     return {"state": "waiting", "reason": "new_evidence_required"}
             identity = stable(f"program-stage:{program['id']}:{key}")
             row = conn.execute("""SELECT * FROM research_mission_stages WHERE program_id=%s AND stage=%s
-                AND state IN ('running','received','waiting') ORDER BY created_at,id LIMIT 1 FOR UPDATE""",
-                (program["id"], stage)).fetchone()
+                AND (state IN ('running','received') OR (state='waiting' AND stage_key=%s))
+                ORDER BY created_at,id LIMIT 1 FOR UPDATE""", (program["id"], stage, key)).fetchone()
             if row:
                 identity, key = str(row["id"]), row["stage_key"]
             else:
                 row = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s FOR UPDATE", (identity,)).fetchone()
+            if row and row["context"].get("_program_hold"):
+                return {"state": "waiting", "reason": row["context"]["_program_hold"]["reason"]}
             if row and row["state"] == "received":
                 try:
                     with conn.transaction():
@@ -201,7 +216,7 @@ class ProgramController:
                 if stage == "program_data":
                     required_data_reads.extend(prefix + name for name in required)
             context = {"program": as_json(program), "usage": status, "task": as_json(task),
-                "prior_tasks": as_json(tasks[-12:]),
+                "prior_tasks": [_prior_task_context(item) for item in tasks if not task or item["id"] != task["id"]][-12:],
                 "allowed_predecessor_mission_ids": [m["id"] for m in status["missions"]],
                 "evidence_sources": index, "_private_files": mappings,
                 "data_evidence_packets": packet_index, "required_data_reads": required_data_reads,
