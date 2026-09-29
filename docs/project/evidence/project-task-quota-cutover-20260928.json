@@ -59,10 +59,21 @@
     "research3070ProjectTaskLimitEnvironmentOverride": "absent",
     "relationshipToThisCutover": "A separate later deployment replaced the three Lightsail containers and active 3070 release. Its observed code and runtime retain the unlimited project-task behavior."
   },
+  "repositoryIntegration": {
+    "checkedAt": "2026-09-29T00:23:32Z",
+    "mainCommit": "c5d8181300f581536f15b357157d2ee6264a765d",
+    "mainProjectTaskLimitDefault": 40,
+    "openPr83Base": "deploy/data-watch-housing-integration-20260928",
+    "openPr87Base": "main",
+    "openPr87ContainsUnlimitedQuotaCommit": "ae7a17f9778810428cec6093a77ed4e527bb8afa",
+    "mainMergePending": true,
+    "risk": "A new deployment built directly from current main could restore the 40-task default until an approved main integration lands."
+  },
   "validation": {
     "preCutoverRealPostgresSuite": "1226 passed, 38 skipped, 0 failed; Ruff passed",
     "postCutoverApiHealth": "healthy",
     "postCutoverSlackIngressAndDelivery": "No inbound row was recorded for any project between the candidate cutover and the 00:10 UTC check; a new owner Slack question has not been verified.",
+    "laterSlackAction": "At 00:21 UTC one research-center approval action was ingested, its control task completed and its outbox was delivered; this was not a general question and was verified from PostgreSQL receipts only.",
     "previousRejectedSlackMessagesReplayed": false
   }
 }
