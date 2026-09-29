@@ -1,0 +1,28 @@
+{
+  "cause": "Attempt 11 proposal referenced one predecessor mission while the approved program has zero missions.",
+  "commands": [
+    {
+      "command": "uv run pytest -q tests/test_research_programs.py",
+      "passed": 8,
+      "result": "pass"
+    },
+    {
+      "command": "uv run pytest -q",
+      "passed": 1307,
+      "result": "pass",
+      "skipped": 13,
+      "warnings": 2
+    },
+    {
+      "command": "uv run ruff check .",
+      "result": "pass"
+    }
+  ],
+  "commit": "ac44bf5b66b3016021e13c34ffc75b8db215bfc3",
+  "image_import_sha256": "1399083b64baa8d243c6ce9c196eb7c699a5229b1c64f2a0116d596dae135f66",
+  "production_activation_at_validation": false,
+  "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/87",
+  "schema_version": 1,
+  "scientific_performance_claims": 0,
+  "validator_boundary": "Only missions belonging to the program remain valid; no validator change."
+}

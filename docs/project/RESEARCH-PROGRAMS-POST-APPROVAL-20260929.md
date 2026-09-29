@@ -97,6 +97,19 @@ Slack 이벤트·프로그램 활성 상태, 대기 중인 단계, 실행 중인
 [11회차 요청·완독 영수증](evidence/research-programs-20260929/citation-guidance-attempt11.json).
 검증을 통과한 제안이나 독립 검토 결과는 아직 없다.
 
+11회차의 최종 제안은 인용 검증을 통과했지만 선행 미션 검증에서 거부됐다. 운영
+프로그램의 미션은 0건인데 제안의 `predecessor_mission_ids`에 1건이 들어 있었다.
+완료된 모델 호출 7건에는 불확실한 호출이 없고 과제는 생성되지 않았다.
+[선행 미션 거부 영수증](evidence/research-programs-20260929/predecessor-rejection-attempt11.json).
+커밋 `ac44bf5`는 제안 요청에 이 프로그램의 허용된 선행 미션 ID 목록을 명시하고,
+첫 과제처럼 목록이 비었으면 `[]`를 요구한다. 선행 미션 검증 규칙은 그대로다.
+실제 PostgreSQL 테스트를 포함한 전체 1,307 통과·13 건너뜀, lint가 통과했다.
+현 워커 `0072b57`를 바탕으로 실행 소스 한 파일만 바꾼 이미지를 만들고, 설치된
+패키지의 import 해시와 공식 ChatGPT용 Codex runtime 직접 경로를 검증했다.
+12:09 KST 현재 후보는 운영에 적용하지 않았으며, 12회차는 기존 워커에서 실행 중이다.
+[후보 영수증](evidence/research-programs-20260929/predecessor-overlay-candidate.json),
+[후보 검증](evidence/research-programs-20260929/predecessor-overlay-validation.json).
+
 최신 main을 병합한 PR #87의 커밋 `716cbc1`에서 전체 테스트 1,307 통과·13 건너뜀,
 lint와 서비스 CI 성공, 병합 가능 상태를 확인했다. 운영 후보 `6dfbdcc`와 PR HEAD의
 연구 controller·프로그램 controller·배포 경로 파일은 동일하다.

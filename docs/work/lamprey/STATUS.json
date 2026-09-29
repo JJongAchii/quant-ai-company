@@ -53,11 +53,15 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/citation-guidance-attempt11.json",
           "sha256": "2df7b309c0d4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt11.json",
+          "sha256": "e870643a3688"
         }
       ],
-      "note": "Attempt 11 started automatically with verified prompt guidance and read both selected originals to completion. Its final proposal turn is running; no research task, mission, reservation or scientific trial is recorded yet.",
+      "note": "Attempt 11 read selected originals, passed citation checks, then failed because it named a predecessor outside this empty program. Attempt 12 started on the prior worker; no task, mission, reservation or scientific trial is recorded.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T02:54:42.116629+00:00"
+      "updatedAt": "2026-09-29T03:10:03.186363+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -120,16 +124,28 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/citation-guidance-attempt11.json",
           "sha256": "2df7b309c0d4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt11.json",
+          "sha256": "e870643a3688"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-candidate.json",
+          "sha256": "d2adefe52b55"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-validation.json",
+          "sha256": "897007909651"
         }
       ],
-      "note": "Active worker imported the citation guidance fix; production attempt 11 frozen requests all contain the exact citation location instruction and page example. The read guard recorded complete reads of the selected report and paper.",
+      "note": "The program boundary correctly rejected a predecessor from outside the program. Commit ac44bf5 now provides the exact allowed predecessor IDs and empty-list instruction; 1307 local tests and lint pass, image candidate is built but awaits an idle cutover.",
       "status": "verified",
-      "updatedAt": "2026-09-29T02:54:42.116629+00:00"
+      "updatedAt": "2026-09-29T03:10:03.186363+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T02:54:42.116629+00:00"
+  "updatedAt": "2026-09-29T03:10:03.186363+00:00"
 }
