@@ -156,3 +156,58 @@ def test_qualification_identity_binds_model_effort_contract_and_policy(qualifica
     assert first.request_id != qualification.qualification_request(role, "case", {}, "review", "policy-2").request_id
     role.reasoning_effort = "max"
     assert first.request_id != qualification.qualification_request(role, "case", {}, "review", "policy-1").request_id
+
+
+def test_revalidate_settled_layout_failure_without_reissuing_completed_model_calls(qualification, tmp_path):
+    seed_path, output = tmp_path / "settled.json", tmp_path / "new.json"
+    seed(seed_path, qualification, "returned")
+    record = json.loads(seed_path.read_text())
+    for bundle in record["inputs"].values():
+        bundle.update(pages=[{"location": "PDF p.1", "text": "Fixed set-\ntings limit the test. " + TEXT}],
+                      links=[], commercial=False, prior=None, previous_critique=None,
+                      metadata={"publisher": "Example", "url": "https://example.org/paper"}, as_of="2026-09-29")
+    record["inputs"]["negative"]["draft"] = brief()
+    record["state"] = "not_passed"
+    record["calls"] = []
+    draft = brief()
+    draft["evidence"][0] = {"claim": "설정 한계", "location": "PDF p.1", "quote": "Fixed settings limit the test."}
+    for index, (label, stage, value) in enumerate([
+        ("negative-critic", "critique", critique(disposition="hold", direct_quant_scope=False, substantive_research=False)),
+        ("negative-review", "review", brief(disposition="reject")),
+        ("positive-review-repair", "repair", draft),
+    ]):
+        identity = "quant-feed-old-" + str(index)
+        record["calls"].append({"case": label, "stage": stage, "state": "returned", "request_id": identity,
+                                "response": ProviderResponse(request_id=identity, decision=AgentDecision(
+                                    status="complete", say="", artifacts=[ArtifactDraft(
+                                        title="saved", content=json.dumps(value))])).model_dump(mode="json")})
+    seed_path.write_text(json.dumps(record))
+    called = []
+
+    class Provider:
+        async def run(self, request):
+            assert request.output_contract == "quant_critique_v1"
+            called.append(request.request_id)
+            return ProviderResponse(request_id=request.request_id, decision=AgentDecision(
+                status="complete", say="", artifacts=[ArtifactDraft(title="test", content=json.dumps(critique()))]))
+
+    result = asyncio.run(qualification.qualify(company(), "negative", "positive", output,
+                                               provider=Provider(), reuse=seed_path))
+    assert result["state"] == "passed" and len(called) == 1
+    assert len(result["revalidated_responses"]) == 3
+    assert all(row["model_reissued"] is False for row in result["revalidated_responses"])
+    assert result["revalidated_responses"][-1]["source_corrections"][0]["kind"] == "pdf_line_wrap_hyphen_match"
+    assert result["reuse_receipt_sha256"]
+    assert seed_path.read_text() == json.dumps(record)
+
+
+@pytest.mark.parametrize("state,call_state", [("blocked", "returned"), ("not_passed", "requested")])
+def test_unknown_outcomes_are_never_accepted_for_draft_revalidation(qualification, tmp_path, state, call_state):
+    path = tmp_path / "prior.json"
+    seed(path, qualification, call_state)
+    record = json.loads(path.read_text())
+    record["state"] = state
+    path.write_text(json.dumps(record))
+    with pytest.raises(ValueError, match="only_settled"):
+        asyncio.run(qualification.qualify(company(), "negative", "positive", tmp_path / "new.json",
+                                         provider=object(), reuse=path))

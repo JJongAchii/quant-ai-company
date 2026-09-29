@@ -118,6 +118,22 @@ def _quote_text(value):
     return re.sub(r"\s+", "", unicodedata.normalize("NFKC", value))
 
 
+def _layout_text(value):
+    # Mark only physical end-of-line hyphens between multi-letter word fragments.
+    # Never treat inline punctuation, numeric minus signs or a one-letter formula
+    # as optional. Original source text remains untouched in its durable receipt.
+    if "\x00" in value:
+        return ""
+    value = unicodedata.normalize("NFKC", value)
+    return _quote_text(re.sub(r"(?<=[A-Za-z]{2})-[ \t]*\r?\n[ \t]*(?=[a-z]{2})", "\x00", value))
+
+
+def _layout_pattern(quote):
+    # Each marked source boundary may keep or omit its hyphen, independently.
+    # This handles 'set-\ntings' and 'time-\nvarying' in the SAME quotation.
+    return re.compile("".join("\x00*" + ("(?:-|\x00)" if char == "-" else re.escape(char)) for char in quote))
+
+
 def _initial_case_variant(value):
     """Allow only an ASCII initial-letter case change, not reworded evidence."""
     if value and ("A" <= value[0] <= "Z" or "a" <= value[0] <= "z"):
@@ -180,6 +196,7 @@ def validate(response, bundle, stage, *, audit=None):
     # location can be corrected only when the quote occurs in one and only one
     # supplied excerpt; ambiguous or unsupported quotes still fail.
     pages = {p["location"]: _quote_text(p["text"]) for p in bundle["pages"]}
+    layout = {p["location"]: _layout_text(p["text"]) for p in bundle["pages"]}
     for index, evidence in enumerate(brief.evidence):
         quote = _quote_text(evidence.quote)
         if not quote:
@@ -189,21 +206,37 @@ def validate(response, bundle, stage, *, audit=None):
         if initial_case := _initial_case_variant(quote):
             variants.append(initial_case)
         for variant in variants:
-            if variant in pages.get(evidence.location, ""):
+            pattern = _layout_pattern(variant)
+
+            def match(location, variant=variant, pattern=pattern):
+                if variant in pages.get(location, ""):
+                    return "literal"
+                text = layout.get(location, "")
+                if "\x00" in text and pattern.search(text):
+                    return "pdf_line_wrap_hyphen_match"
+                return None
+
+            kind = match(evidence.location)
+            if kind:
+                if kind != "literal":
+                    corrections.append({"kind": kind, "evidence_index": index, "location": evidence.location})
                 if variant != quote:
                     corrections.append({"kind": "initial_case_quote_match", "evidence_index": index,
                                         "location": evidence.location})
                 break
-            matches = [location for location, text in pages.items() if variant in text]
+            matches = [(location, kind) for location in pages if (kind := match(location))]
             if len(matches) > 1:
                 continue
             if len(matches) == 1:
+                location, kind = matches[0]
                 corrections.append({"kind": "unique_quote_location", "evidence_index": index,
-                                    "from": evidence.location, "to": matches[0]})
+                                    "from": evidence.location, "to": location})
+                if kind != "literal":
+                    corrections.append({"kind": kind, "evidence_index": index, "location": location})
                 if variant != quote:
                     corrections.append({"kind": "initial_case_quote_match", "evidence_index": index,
-                                        "location": matches[0]})
-                evidence.location = matches[0]
+                                        "location": location})
+                evidence.location = location
                 break
         else:
             issues.append({"code": "quant_quote_not_in_original_version", "field": f"evidence[{index}]",

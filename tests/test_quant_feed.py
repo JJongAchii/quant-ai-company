@@ -282,6 +282,32 @@ def test_raw_json_control_characters_are_only_normalized_inside_strings():
     assert validate(value, bundle, "review").reason == "검증 한계 연구적 가치"
 
 
+@pytest.mark.parametrize("source,quote,accepted", [
+    ("Fixed set-\ntings cannot correct time-\nvarying bias.", "Fixed settings cannot correct time-varying bias.", True),
+    ("The result is statis-\ntically inconclusive.", "The result is statistically inconclusive.", True),
+    ("The result is statistically inconclusive.", "The result is statistically conclusive.", False),
+    ("A long-term result was reported.", "A longterm result was reported.", False),
+    ("The result was -\n12 percent.", "The result was 12 percent.", False),
+    ("The equation is x-\ny in this study.", "The equation is xy in this study.", False),
+    ("The result was inconclusive. Further data are needed.", "The result was inconclusive...data are needed.", False),
+])
+def test_pdf_line_wrap_normalization_does_not_allow_semantic_rewording(source, quote, accepted):
+    value = response({"request": {"request_id": "quant-feed-layout"}},
+                     brief(evidence=[{"claim": "원문 주장", "location": "PDF p.1", "quote": quote},
+                                     {"claim": "한계", "location": "PDF p.1", "quote": "Transaction costs are not estimated."}]))
+    bundle = {"pages": [{"location": "PDF p.1", "text": source + "\n" + TEXT}],
+              "as_of": "2026-09-29", "links": [], "commercial": False,
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
+    audit = []
+    if accepted:
+        assert validate(value, bundle, "review", audit=audit).disposition == "publish"
+        assert audit == [{"kind": "pdf_line_wrap_hyphen_match", "evidence_index": 0, "location": "PDF p.1"}]
+        assert bundle["pages"][0]["text"].startswith(source)
+    else:
+        with pytest.raises(ProposalValidationError):
+            validate(value, bundle, "review", audit=audit)
+
+
 def test_one_deterministic_proposal_repair_then_fail_closed(quant):
     original(quant)
     invalid = brief(evidence=[

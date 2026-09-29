@@ -84,6 +84,7 @@ def main():
     parser.add_argument("--positive", required=True)
     parser.add_argument("--label", required=True)
     parser.add_argument("--live", action="store_true", required=True)
+    parser.add_argument("--reuse", help="Name of a settled private receipt in this operation's preview directory")
     args = parser.parse_args()
     if (os.geteuid() != 0 or CURRENT.resolve().name != args.base
             or not re.fullmatch(r"[a-z0-9-]{1,50}", args.label)
@@ -111,6 +112,8 @@ def main():
     output = receipts / (args.label + ".json")
     if output.exists():
         raise ValueError("existing_receipt_requires_reconciliation")
+    if args.reuse and (not re.fullmatch(r"[a-z0-9-]{1,50}\.json", args.reuse) or not (receipts / args.reuse).is_file()):
+        raise ValueError("invalid_revalidation_receipt")
     allowed = {"/state/auth", "/state/backup-auth", "/state/jobs", "/run/secrets/model_runtime_token"}
     runtime_mounts = runtime["Mounts"]
     if {row["Destination"] for row in runtime_mounts} != allowed:
@@ -139,9 +142,11 @@ def main():
     client_env["MODEL_RUNTIME_URL"] = f"http://{RUNTIME}:8080"
     client_mounts = [*client["Mounts"], {"Type": "bind", "Source": str(receipts),
                                       "Destination": "/qualification/receipts", "RW": True}]
-    create(CLIENT, client, source, client_env, client_mounts, client_networks,
-           ["python", "/qualification/source/scripts/qualify_quant_editorial.py", "--negative", NEGATIVE,
-            "--positive", args.positive, "--output", "/qualification/receipts/" + output.name, "--live"], "384m")
+    command = ["python", "/qualification/source/scripts/qualify_quant_editorial.py", "--negative", NEGATIVE,
+               "--positive", args.positive, "--output", "/qualification/receipts/" + output.name, "--live"]
+    if args.reuse:
+        command.extend(["--reuse", "/qualification/receipts/" + args.reuse])
+    create(CLIENT, client, source, client_env, client_mounts, client_networks, command, "384m")
     run(["docker", "start", CLIENT])
     print(json.dumps({"state": "running", "label": args.label, "publication_enabled": False,
                       "new_image_builds": 0, "shared_quant_lane_lock": True}), flush=True)

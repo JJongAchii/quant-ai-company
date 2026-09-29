@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 import copy
+import hashlib
 import json
 import os
 from datetime import UTC, datetime
@@ -23,7 +24,7 @@ def qualification_request(role, label, bundle, stage, policy):
     return ProviderRequest(request_id="quant-feed-qualify-" + fingerprint([label, policy, body])[:40], **body)
 
 
-async def qualify(company, negative_id, positive_id, output, *, provider=None):
+async def qualify(company, negative_id, positive_id, output, *, provider=None, reuse=None):
     if company.settings.quant_feed_publish_enabled or company.settings.model_provider != "codex":
         raise ValueError("qualification_requires_subscription_preview")
     store = QuantFeedStore(company)
@@ -31,41 +32,63 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None):
         raise ValueError("quant_not_authorized")
     provider = provider or provider_for(company)
     role = company.roles[QUANT_FEED_AGENT]
+    reused = None
+    reuse_digest = None
+    if reuse is not None:
+        raw = reuse.read_bytes()
+        reuse_digest = hashlib.sha256(raw).hexdigest()
+        reused = json.loads(raw)
+        if (reused["state"] != "not_passed"
+                or reused["inputs"]["negative"]["document_id"] != negative_id
+                or reused["inputs"]["positive"]["document_id"] != positive_id
+                or any(row["state"] not in {"returned", "validated"} for row in reused["calls"])
+                or any(row["stage"] not in {"review", "repair"} for row in reused["calls"]
+                       if row["case"].startswith("positive-"))):
+            raise ValueError("only_settled_pre_critique_drafts_may_be_revalidated")
     if output.exists():
         receipt = json.loads(output.read_text())
         if (
             receipt["policy"] != store.policy()
             or receipt["inputs"]["negative"]["document_id"] != negative_id
             or receipt["inputs"]["positive"]["document_id"] != positive_id
+            or receipt.get("reuse_receipt_sha256") != reuse_digest
         ):
             raise ValueError("qualification_receipt_inputs_changed")
         if receipt["state"] != "running":
             return receipt  # A blocked/uncertain attempt needs reconciliation, never a new ID.
     else:
-        with company.db.transaction() as conn:
-            inputs = {}
-            for label, identity in (("negative", negative_id), ("positive", positive_id)):
-                document = conn.execute(
-                    "SELECT * FROM quant_feed_documents WHERE id=%s", (identity,)
-                ).fetchone()
-                if not document:
-                    raise ValueError("qualification_document_missing")
-                inputs[label] = store.bundle(conn, document)
-            # Evaluate as fresh candidates; do not change the stored documents.
-            for bundle in inputs.values():
-                bundle.update(prior=None, previous_critique=None)
+        if reused is not None:
+            inputs = copy.deepcopy(reused["inputs"])
+        else:
+            inputs = load_inputs(company, store, negative_id, positive_id)
         receipt = {
             "checked_at": datetime.now(UTC).isoformat(),
             "policy": store.policy(),
             "inputs": inputs,
+            "reuse_receipt_sha256": reuse_digest,
             "mode": "subscription-frozen-originals",
             "publication_enabled": False,
             "document_writes": False,
             "slack_writes": False,
             "calls": [],
+            "revalidated_responses": [],
             "state": "running",
         }
     bundles = copy.deepcopy(receipt["inputs"])
+
+    def revalidate(label, bundle, stage):
+        rows = [r for r in reused["calls"] if (r["case"] == label if label.startswith("negative-")
+                                               else r["case"].startswith("positive-"))]
+        row = rows[-1]
+        response = ProviderResponse.model_validate(row["response"])
+        if response.request_id != row["request_id"]:
+            raise ValueError("qualification_receipt_response_mismatch")
+        audit = []
+        value = validate(response, bundle, stage, audit=audit)
+        receipt.setdefault("revalidated_responses", []).append({
+            "case": label, "original_request_id": response.request_id, "model_reissued": False,
+            "source_corrections": audit, "disposition": value.disposition})
+        return value
 
     def save():
         output.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -139,11 +162,13 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None):
             negative = bundles["negative"]
             if not negative.get("draft"):
                 raise ValueError("negative_case_requires_previous_false_positive")
-            rejected = await call("negative-critic", negative, "critique")
+            rejected = (revalidate("negative-critic", negative, "critique") if reused is not None
+                        else await call("negative-critic", negative, "critique"))
             if rejected.disposition == "pass" or (rejected.direct_quant_scope and rejected.substantive_research):
                 raise ValueError("negative_critic_missed_scope_or_depth")
             negative.update(draft=None, previous_critique=None)
-            review = await call("negative-review", negative, "review")
+            review = (revalidate("negative-review", negative, "review") if reused is not None
+                      else await call("negative-review", negative, "review"))
             if review.disposition != "reject":
                 raise ValueError("negative_review_not_rejected")
             receipt["case_results"]["negative"] = {"state": "passed"}
@@ -153,7 +178,7 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None):
         active_case = "positive"
         positive = bundles["positive"]
         positive.update(draft=None)
-        repair_used = False
+        repair_used = reused is not None  # Reusing a repaired draft must not reset its technical budget.
 
         async def review_positive(stage):
             nonlocal repair_used
@@ -166,7 +191,8 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None):
                 positive.update(draft=exc.draft, previous_critique=exc.feedback(positive.get("previous_critique")))
                 return await call("positive-" + stage + "-repair", positive, "repair")
 
-        draft = await review_positive("review")
+        draft = (revalidate("positive-draft", positive, "review") if reused is not None
+                 else await review_positive("review"))
         if draft.disposition != "publish":
             raise ValueError("positive_original_not_publishable")
         positive["draft"] = draft.model_dump(mode="json")
@@ -194,14 +220,28 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None):
     return receipt
 
 
+def load_inputs(company, store, negative_id, positive_id):
+    with company.db.transaction() as conn:
+        inputs = {}
+        for label, identity in (("negative", negative_id), ("positive", positive_id)):
+            document = conn.execute("SELECT * FROM quant_feed_documents WHERE id=%s", (identity,)).fetchone()
+            if not document:
+                raise ValueError("qualification_document_missing")
+            inputs[label] = store.bundle(conn, document)
+        for bundle in inputs.values():
+            bundle.update(prior=None, previous_critique=None)
+        return inputs
+
+
 async def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--negative", required=True)
     parser.add_argument("--positive", required=True)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--live", required=True, action="store_true")
+    parser.add_argument("--reuse", type=Path, help="Revalidate a settled pre-critique draft without reissuing its calls")
     args = parser.parse_args()
-    receipt = await qualify(Company(Settings()), args.negative, args.positive, args.output)
+    receipt = await qualify(Company(Settings()), args.negative, args.positive, args.output, reuse=args.reuse)
     print(json.dumps({key: receipt.get(key) for key in ("state", "fault", "error", "slack_writes")}))
     if receipt["state"] != "passed":
         raise SystemExit(1)
