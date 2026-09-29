@@ -1,0 +1,161 @@
+{
+  "source": {
+    "stage_id": "e6d49c02-b55f-57ff-833d-ba5b4fcfecfe",
+    "attempt": 29,
+    "archive_sha256": "2bd46e9eca9952d7c74359d88ca81163a8542114273cc6bcc6cf38995afea7c1"
+  },
+  "mode": "Real PostgreSQL delivery replay; synthetic model decisions, zero inference calls",
+  "old": {
+    "completed_model_calls": 123,
+    "submitted_prompt_characters": 9965638,
+    "read_chunks": 122,
+    "fetched_characters": 1154771,
+    "undelivered_chunks": 95,
+    "undelivered_characters": 1069420,
+    "usage": {
+      "input_tokens": 4015162,
+      "cached_input_tokens": 677120,
+      "output_tokens": 68272
+    }
+  },
+  "new": {
+    "planned_model_calls": 32,
+    "submitted_prompt_characters": 1732155,
+    "largest_prompt_characters": 88521,
+    "notes_characters_per_packet": 6000,
+    "packets": [
+      {
+        "chunks": 6,
+        "characters": 43992
+      },
+      {
+        "chunks": 14,
+        "characters": 37603
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 4,
+        "characters": 44333
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 33289
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 29961
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 4,
+        "characters": 41961
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 4,
+        "characters": 41060
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 5,
+        "characters": 41824
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 4,
+        "characters": 41654
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 3,
+        "characters": 36000
+      },
+      {
+        "chunks": 12,
+        "characters": 43094
+      }
+    ],
+    "covered_files": 35,
+    "covered_characters": 1154771,
+    "full_digest_and_delivery_validation": "passed"
+  },
+  "limits": [
+    "Model reasoning quality and cache hits are not measured by this replay.",
+    "Submitted prompt characters exclude resumed history and CLI wrapper; they are not billed input tokens.",
+    "Original private evidence bytes remain outside Git."
+  ]
+}
