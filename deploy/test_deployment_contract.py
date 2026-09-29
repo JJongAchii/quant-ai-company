@@ -125,13 +125,15 @@ def test_account_selection_reaches_all_consumers_without_sharing_auth_with_slack
 def test_account_gateway_overlay_preserves_research_code_pin_and_auth_boundary(tmp_path):
     env = tmp_path / "pinned.env"
     pin = "quant-company-autonomous:" + "3" * 40
+    runtime_pin = "quant-company-codex:" + "4" * 40
     env.write_text('MODEL_ACCOUNTS_ENABLED=true\nMODEL_ACCOUNTS_OWNER_USER=UOWNER\n'
                    'SLACK_ALLOWED_USERS=["UOWNER"]\nRESEARCH_REPORT_BUCKET=synthetic-backup-bucket\n'
-                   'PINNED_COMPANY_WORKER_IMAGE=' + pin + '\n')
+                   'PINNED_COMPANY_WORKER_IMAGE=' + pin + '\nPINNED_CODEX_RUNTIME_IMAGE=' + runtime_pin + '\n')
     services = compose_config(extra_env=env, overlays=("research.compose.yaml", "autonomous-research.compose.yaml",
                                                       "model-accounts.compose.yaml"))["services"]
     worker, gateway, model = (services[name] for name in ("worker", "account-gateway", "codex-runtime"))
     assert worker["image"] == pin
+    assert model["image"] == runtime_pin
     assert worker["environment"]["MODEL_ACCOUNTS_ENABLED"] == "true"
     assert worker["environment"]["MODEL_RUNTIME_URL"] == "http://codex-runtime:8080"
     assert "COMPANY_CODE_COMMIT" not in worker["environment"]  # Inherited truthfully from the pinned image.
