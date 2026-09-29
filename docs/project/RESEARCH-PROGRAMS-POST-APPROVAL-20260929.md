@@ -165,8 +165,12 @@ lint와 서비스 CI 성공, 병합 가능 상태를 확인했다. 운영 후보
 다섯 번째 데이터 직원 시도는 13:34 KST에 유효한 독립 심사로 완료됐고,
 시점·커버리지·실행 가능 가격·원문 조건 네 항목을 모두 미확인으로 판단해
 `blocked`를 기록했다. 직원이 실제 고정 ETF 입력과 실행 프로필을 조회한
-증거가 없다는 이유다. 13:35 KST에는 director 선정 단계가 진행 중이었다.
+증거가 없다는 이유다. director는 두 번째 제안을 첫 보류 과제의 설계 보완안으로
+판단했고, 입력 증거가 새로 확보되지 않았으므로 13:42 KST에 다시 `wait`를
+기록했다. 제안이 요구하는 당일 종가 체결도 현재 고정 엔진의 시가 간 평가
+계약과 다르다. 미션·예약·과학 시행은 0건이다.
 [두 번째 과제 데이터 심사](evidence/research-programs-20260929/second-task-data-assessment.json).
+[director 최종 판단](evidence/research-programs-20260929/second-task-final-decision.json).
 
 04:08 UTC에 연구 워커·작업 배포기·Slack 소켓 컨테이너가 종료됐고 API와
 Codex 런타임은 다시 올라왔다. 종료 원인은 이 읽기 전용 조사만으로 확정하지
@@ -180,6 +184,20 @@ Codex 런타임은 다시 올라왔다. 종료 원인은 이 읽기 전용 조�
 수정본과 같음을 확인했다. 이번 원문 이어 읽기 수정은 새 릴리스와 통합해
 검증해야 한다.
 [활성 릴리스 확인](evidence/research-programs-20260929/active-release-drift-20260929.json).
+
+커밋 `cd6d293`에서 인용 원문이 아예 열리지 않은 경우에도 같은 직원 시도에서
+첫 청크를 읽을 기회 한 번을 주도록 연구 controller를 수정했다. 같은 미완독
+제안을 반복하면 기존처럼 거부하고, 원문 완독 검증은 유지한다. 새 운영 릴리스와
+병합한 회귀 검사 48건, 전체 테스트 1,312 통과·13 건너뜀, lint 및 PR #87
+서비스 CI가 통과했다. 활성 `eec5e23` 이미지를 바탕으로 실행 소스 한 파일만
+바꾼 후보를 만들고 설치 패키지의 import 해시와 공식 ChatGPT runtime 경로를
+검증했다. [소스 준비](evidence/research-programs-20260929/unread-source-overlay-stage.json),
+[이미지 검증](evidence/research-programs-20260929/unread-source-overlay-build.json),
+[실행 설정 후보](evidence/research-programs-20260929/unread-source-overlay-runtime.json),
+[통합 검증](evidence/research-programs-20260929/unread-source-overlay-validation.json).
+04:45 UTC 전환 사전 검사에서는 director의 Slack 후속 답변 턴 1건이 실행 중이라
+적용 전에 중단됐다. 이 검사로 운영 설정이나 컨테이너가 변경되지는 않았다.
+[안전 보류 영수증](evidence/research-programs-20260929/unread-source-cutover-held.json).
 
 13:24 KST에는 승인된 ETF 입력을 고정 qdata API와 현재 S3 객체로 대조했다.
 당시 20거래일 기준 cohort, 835거래일의 8,350개 원시 시가·종가·거래대금 행은
