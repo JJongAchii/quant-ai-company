@@ -301,3 +301,115 @@ image build was running. No image or cache was pruned by this task. Further Quan
 activation await safe storage headroom, a coordinated Housing-compatible release, a successful
 fresh positive qualification, 48-hour observation and explicit owner approval. Compact evidence
 is in `evidence/quant-feed-initial-case-20260928/`.
+
+## Continuation after disk cleanup, later 28 September
+
+Lightsail disk headroom recovered to about 20 GB, so storage no longer blocks the next
+qualification. The existing combined `0e09b85` app image was independently rechecked against
+its installed package source and qdata revision; it contains the newer Quant quality policy and
+the Housing/data-watch integration. A new arXiv portfolio-cost paper with a full PDF, verified
+authors and source metadata was selected for a fresh positive preview. The no-call preview
+preflight passed, and 121 focused tests (one skip) plus Ruff passed. Two previously saved Quant
+briefs still render source-valid cards of 1,653 and 1,855 characters. The original Robeco post
+remains the sole delivered Quant post, and publication stays disabled.
+
+An existing Quant review initially remained `running` with a `quota` error, while the shared
+runtime quota pause kept renewing. After both cleared, one real subscription preview ran with
+publication disabled. The old generic Robeco item was held by the independent critic and
+rejected on fresh review. The new portfolio-cost paper's first draft failed the source
+contract; its one allowed revision passed exact-source validation, but the independent critic
+requested date and limitation corrections, so the fresh positive did **not** pass. No new Slack
+post or release cutover occurred. The unchanged-service check also failed because the separately
+operated maintenance container OOM-restarted at its 128 MiB limit during the preview; causation
+by this preview is unproven. The API had independently changed to `d571734` before this call;
+the Quant worker and Housing worker were not changed by this task. The exact private receipt,
+check-only runner, candidate metadata and open gates are under
+`evidence/quant-feed-continuation-20260928/`.
+
+An offline replay identified the initial draft failure as an exact quotation absent from the
+supplied excerpt. A full-context PDF shortlist was then assembled without another model call.
+The next local patch makes arXiv's original citation date explicit in the prompt and forbids
+claiming a full-paper omission from clipped-excerpt silence; the Quant policy fingerprint is
+version 9. This change passed focused regressions and Ruff but remains **undeployed and without
+a fresh positive qualification**. The failed version-8 private receipt must not be retried.
+
+The next isolated version-9 preview used an exact-source image and the full original of an
+arXiv cryptocurrency-volatility study. Negative controls held/rejected the old generic item.
+The positive draft and its one revision both passed source-contract validation, but independent
+final criticism still found an overstatement about dynamic predictive ability, an omitted
+inconclusive confidence interval and a quote that did not support its entire associated claim.
+The v9 receipt is final `not_passed`; all running services, the current release, the publication
+count and the disabled publication setting were preserved. The host image was built only for this
+isolated preview; after the receipt was durable, its unused image and scoped buildx builder were
+removed, restoring disk headroom to about 17 GB. The local next patch adds general comparison-uncertainty, residual-confounding,
+whole-claim evidence and full-field critic checks (policy version 10). It is not yet deployed or
+qualified. The local version-10 patch passed 1,179 full tests (38 skipped) and Ruff. Both failed
+receipts remain private and must not be replayed.
+
+An exact-source version-10 image was built for a different full-context limit-order-book paper.
+Its preflight passed with publication disabled and no Quant call, pending outbox item or quota
+pause. The first negative-control model call failed the Codex decision envelope contract with
+`invalid_output (decision_contract:invalid_shape)`, so this trial never reached the positive
+paper and proves nothing about version-10 editorial quality. The request and final blocked
+receipt were not retried. The unchanged-service, release-link and publication checks passed;
+the disposable image and its scoped builder were then removed, leaving about 15 GB free.
+The version-10 code passed local tests/Ruff and GitHub service CI, but remains undeployed and
+unqualified. Further review needs the provider fault reconciled and a genuinely new request
+series, then a passing positive and 48-hour publication-off observation before owner approval.
+
+## Structural diagnosis and repair, 29 September
+
+The owner's request was to identify whether the blocker was Quant Scout itself,
+document processing, or another component, then improve the responsible path.
+The confirmed technical defects were the nested generic company output contract,
+unnecessary clipping of uneven pages, model-written exact quotations, and technical
+quote repair consuming the sole content revision. Quant now uses direct typed
+output; the service creates the safe artifact wrapper, redistributes the unchanged
+42,000-character input budget, and resolves exact quotations from immutable source
+span IDs. A claim may bind multiple spans. Technical repair and editorial revision
+have separate bounded budgets; failed drafts and field-specific feedback survive.
+Generic company/news wire formats and old request digests remain compatible.
+
+The real trials also exposed inconsistent treatment of qualified missing evidence,
+optional wording, and the authors' claims of simulation realism versus actual
+market-data validation. The shared writer/critic policy now distinguishes these
+without relaxing false-number, causal-skill, tradability or direct-quant-scope gates.
+The concise Korean card retains its 2,400-character cap and explicitly states the
+extracted-text evidence boundary. This is curation, not local strategy reproduction.
+
+Seven private development trials used 31 actual subscription calls, with no new
+Docker images or Slack posts. The latest fresh v16 trial rejected the old generic
+Robeco article and completed review, independent critique, one revision and final
+critique without format or source-resolution failures. However, its positive was
+**still held**: a critic-requested four-span substitution removed support for another
+retained result, and final criticism requested narrower validation-gap wording.
+The remaining processing defect is the separately editable prose/evidence mapping
+and a non-convergent free-form revision path. No further same-policy retry, manual
+pass, erased failure, model switch or budget reset was used. A source-backed
+sentence representation and dependency-aware edits are the next design target;
+that replacement is **not implemented or qualified** in this checkpoint.
+
+At source `94b4281`, the full local suite passed 1,308 tests (46 skipped); focused
+native output/Quant/audit-session checks passed 183 (one skipped), and Ruff passed.
+A subsequent deployment-only guard at `2782abe` passed eight tests: before any
+service stop or release-state write, it compares actual producer/consumer schema
+hashes and refuses a mismatched runtime. These tests use simulated model/Slack
+responses; the private subscription trials above are distinct real checks.
+Linux service CI `36511874627` passed on final code `2782abe`: 1,348 passed,
+44 skipped and one live test deselected (7m49s).
+
+At 02:20:42 UTC, the Quant worker was still `12398af`, collection was enabled,
+publication disabled, one old post remained and there were no running Quant calls,
+pending Quant outbox entries or preview containers. The shared runtime exposed only
+the legacy `agent_decision` contract. The production baseline changed independently
+to `5fcd435` during v16, so that trial's service/release-preservation checks failed
+honestly; no production worker or release link was changed by this task. Available
+disk was 6.15 GiB and memory 1.96 GiB at the final observation. No coordinated native
+runtime/consumer release, positive editorial qualification, elapsed 48-hour
+observation or publication resumption is claimed. Detailed diagnosis, immutable
+receipt hashes and read-only operational probes are in
+`evidence/quant-feed-structural-20260929/`.
+The 03:48:57 UTC handoff readback again confirmed publication off, collection on,
+one old post and no preview containers; one natural Quant review was running.
+The separately advanced baseline was `ac44bf5`, with the same old Quant worker
+and legacy-only runtime. This task did not recreate either service.

@@ -16,6 +16,8 @@ from quant_company.providers.codex_runner import (
     CodexRunner,
     RunnerConfig,
     atomic_json,
+    cli_prompt,
+    output_schema,
     request_digest,
 )
 from quant_company.providers.codex_runtime import create_app, runner_from_environment
@@ -38,7 +40,7 @@ if not schema.exists():
     sys.exit(1)
 with (base / 'calls.jsonl').open('a') as stream:
     stream.write(json.dumps({'args': sys.argv[1:], 'environment': dict(os.environ),
-                            'stdin': sys.stdin.read()}) + '\n')
+                            'stdin': sys.stdin.read(), 'schema': json.loads(schema.read_text())}) + '\n')
 mode = control.get('mode', 'success')
 if mode == 'hang':
     child = subprocess.Popen([sys.executable, '-c',
@@ -78,7 +80,7 @@ if control.get('tool_type'):
 if mode == 'nonfinite':
     decision = {'say': '', 'status': 'continue', 'tools': [{'name': 'calculate', 'arguments': {'x': float('nan')}}]}
 event({'type': 'item.completed', 'item': {'id': 'i1', 'type': 'agent_message',
-    'text': json.dumps({'decision_json': json.dumps(decision)})}})
+    'text': json.dumps(control.get('direct', {'decision_json': json.dumps(decision)}))}})
 if control.get('failed_event'):
     event({'type': 'turn.failed', 'error': {'message': 'Failed after an intermediate message'}})
 if control.get('top_level_error'):
@@ -130,11 +132,79 @@ async def test_scoped_native_search_preserves_observed_events(fake_codex, reques
 def test_search_disabled_keeps_legacy_request_identity(request_model):
     import hashlib
 
-    old = request_model.model_dump(exclude={"web_search", "reasoning_effort", "session"})
+    old = request_model.model_dump(exclude={"web_search", "reasoning_effort", "output_contract", "session"})
     legacy = hashlib.sha256(json.dumps(old, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
     assert request_digest(request_model) == legacy
     assert request_digest(request_model.model_copy(update={"web_search": True})) != legacy
     assert request_digest(request_model.model_copy(update={"reasoning_effort": "max"})) != legacy
+
+
+@pytest.mark.parametrize("contract", ["quant_brief_v1", "quant_brief_v2", "quant_brief_v3", "quant_brief_v4",
+                                      "quant_critique_v1", "quant_critique_v2"])
+async def test_quant_direct_schema_is_tool_free_and_durable(fake_codex, contract):
+    from quant_company.quant_feed.contracts import (
+        EditorialCritique,
+        EvidenceCritique,
+        FieldBoundResearchDraft,
+        GroupedResearchDraft,
+        ResearchBrief,
+        ResearchDraft,
+    )
+
+    config, configure, calls = fake_codex
+    brief_model = {"quant_brief_v2": ResearchDraft, "quant_brief_v3": GroupedResearchDraft,
+                   "quant_brief_v4": FieldBoundResearchDraft}.get(contract, ResearchBrief)
+    critic_model = EditorialCritique if contract == "quant_critique_v2" else EvidenceCritique
+    value = (brief_model(disposition="reject", reason="out of scope", kind="institutional",
+                           maturity="institutional_research", topic="research_validity", vintage="recent")
+             if contract.startswith("quant_brief_") else critic_model(
+                 disposition="hold", reason="out of scope", original_sufficient=True, claims_supported=True,
+                 dates_authors_verified=True, limitations_honest=True, direct_quant_scope=False,
+                 substantive_research=False, relevance_and_value=False, no_investment_advice=True,
+                 material_change_verified=False, issues=["idea: no quant research"]))
+    configure(direct=value.model_dump())
+    request = ProviderRequest(request_id="quant-feed-direct", model="model", prompt="Review source",
+                              output_contract=contract)
+    result = await runner_for(config).run(request)
+    assert json.loads(result.decision.artifacts[0].content) == value.model_dump()
+    assert result.decision.status == "complete" and not result.decision.tools and not result.decision.say
+    assert await runner_for(config).run(request) == result
+    assert len(calls()) == 1
+    schema = calls()[0]["schema"]
+    assert "decision_json" not in schema["properties"]
+
+    def check(node):
+        if isinstance(node, dict):
+            assert "default" not in node
+            if node.get("type") == "object":
+                assert set(node["required"]) == set(node["properties"])
+                assert node["additionalProperties"] is False
+            for child in node.values():
+                check(child)
+        elif isinstance(node, list):
+            for child in node:
+                check(child)
+
+    check(schema)
+    assert schema == output_schema(request)
+    assert b"field decision_json" not in cli_prompt(request)
+    with pytest.raises(ProviderFault, match="different input"):
+        await runner_for(config).run(request.model_copy(update={"output_contract": "agent_decision"}))
+
+
+@pytest.mark.parametrize("identity,search", [("company-turn", False), ("quant-feed-test", True)])
+def test_quant_output_contract_cannot_expand_to_tools(identity, search):
+    with pytest.raises(ValueError, match="tool-free Quant"):
+        ProviderRequest(request_id=identity, model="model", prompt="test", web_search=search,
+                        output_contract="quant_brief_v1")
+
+
+async def test_quant_structured_output_rejects_company_action(fake_codex):
+    config, configure, _ = fake_codex
+    configure(direct={"say": "ignored", "status": "continue", "tools": [{"name": "calculate", "arguments": {}}]})
+    with pytest.raises(ProviderFault, match="quant_contract:invalid_shape"):
+        await runner_for(config).run(ProviderRequest(request_id="quant-feed-invalid", model="model", prompt="test",
+                                                     output_contract="quant_brief_v1"))
 
 
 async def test_max_effort_is_explicit_and_bound_to_the_durable_request(fake_codex, request_model):

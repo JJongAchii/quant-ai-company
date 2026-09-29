@@ -133,9 +133,9 @@ def test_account_gateway_overlay_preserves_research_code_pin_and_auth_boundary(t
                                                       "model-accounts.compose.yaml"))["services"]
     worker, gateway, model = (services[name] for name in ("worker", "account-gateway", "codex-runtime"))
     assert worker["image"] == pin
-    assert model["image"] == runtime_pin
     assert worker["environment"]["MODEL_ACCOUNTS_ENABLED"] == "true"
     assert worker["environment"]["MODEL_RUNTIME_URL"] == "http://codex-runtime:8080"
+    assert model["image"] == runtime_pin
     assert "COMPANY_CODE_COMMIT" not in worker["environment"]  # Inherited truthfully from the pinned image.
     assert gateway["environment"]["MODEL_RUNTIME_URL"] == "http://codex-runtime:8080"
     assert {s["source"] for s in gateway["secrets"]} == {"database_password", "temporal_api_key", "model_runtime_token"}
@@ -222,13 +222,24 @@ def test_news_worker_is_independent_and_has_only_news_runtime_credentials():
 
 def test_quant_worker_is_opt_in_and_has_no_slack_or_lake_secrets():
     assert "quant-feed-worker" not in compose_config()["services"]
-    service = compose_config("quant-feed")["services"]["quant-feed-worker"]
+    assert "quant-codex-runtime" not in compose_config()["services"]
+    services = compose_config("quant-feed")["services"]
+    service = services["quant-feed-worker"]
+    model = services["quant-codex-runtime"]
     assert service["command"] == ["quant-company", "quant-feed-worker"]
+    assert service["environment"]["MODEL_RUNTIME_URL"] == "http://quant-codex-runtime:8080"
+    assert "quant-codex-runtime" in service["depends_on"]
     assert int(service["mem_limit"]) == 256 * 1024 * 1024
     assert {item["source"] for item in service["secrets"]} == {
         "database_password", "temporal_api_key", "model_runtime_token"}
     assert "worker" not in service["depends_on"]
+    assert model["image"].startswith("quant-company-codex:")
+    assert {item["source"] for item in model["secrets"]} == {"model_runtime_token"}
+    assert set(model["networks"]) == {"model", "model_egress"}
+    assert not model.get("ports")
+    assert all("/codex/" in item["source"] for item in model["volumes"])
     assert "quant-feed-worker" in backup.APP_SERVICES
+    assert "quant-codex-runtime" in backup.APP_SERVICES
     assert "account-gateway" in backup.APP_SERVICES
 
 

@@ -75,6 +75,9 @@ class RuntimeClient:
     async def run(self, request: ProviderRequest, *, account: dict | None = None) -> ProviderResponse:
         headers = {"Authorization": f"Bearer {self.token}"}
         payload = request.model_dump(mode="json")
+        if request.output_contract == "agent_decision":
+            # Legacy callers remain compatible with older runtime deployments.
+            payload.pop("output_contract", None)
         # Other pinned subscription runtimes still use the older strict request
         # schema. Ordinary requests retain their original wire shape.
         if request.session is None:

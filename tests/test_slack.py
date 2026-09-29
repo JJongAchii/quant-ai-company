@@ -140,7 +140,8 @@ def test_status_request_works_without_inference_during_quota_pause(company, cred
     assert all(turn["attempts"] == 0 for turn in state["turns"])
 
 
-@pytest.mark.parametrize("phrase", ["진행상황이 어떻게 되니?", "진행중이야?"])
+@pytest.mark.parametrize("phrase", ["진행상황이 어떻게되니?", "진행상황이 어떻게되?",
+                                    "진행상황이 어떻게 되니?", "진행중이야?"])
 def test_natural_progress_question_enters_conversation_router(company, credentials, phrase):
     seed = company.ingest(event_key="seed", text="Research", owner="UHUMAN",
                           channel="CQUANT", thread_ts="100.001")

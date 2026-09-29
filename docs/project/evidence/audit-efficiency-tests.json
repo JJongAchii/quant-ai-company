@@ -1,0 +1,86 @@
+{
+  "runs": [
+    {
+      "file": "audit-efficiency-tests.xml",
+      "sha256": "b1e14fb7c21432e9eb1ebe20ddbf413bd07f90186fd5cc1e2b7fbf06d70b8c87",
+      "counts": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "10",
+        "tests": "1346",
+        "time": "436.225",
+        "timestamp": "2026-09-29T10:10:41.339501+09:00",
+        "hostname": "MacBook-Pro.local"
+      },
+      "failures": [
+        "test_reminders_are_durable_and_initial_connection_does_not_double_post"
+      ]
+    },
+    {
+      "file": "audit-efficiency-final-regressions.xml",
+      "sha256": "2775cc5a4e20827cde1e74a78b8979cf8838d9a9a466c858180b48d62332d9a7",
+      "counts": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "131",
+        "time": "59.138",
+        "timestamp": "2026-09-29T10:20:57.531327+09:00",
+        "hostname": "MacBook-Pro.local"
+      },
+      "failures": []
+    },
+    {
+      "file": "audit-efficiency-integration.xml",
+      "sha256": "a6068f88fd8de21a5c9a9584a26b9541e2498ecb3478bdcf56f4b45331afe508",
+      "counts": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "147",
+        "time": "61.526",
+        "timestamp": "2026-09-29T10:30:12.198919+09:00",
+        "hostname": "MacBook-Pro.local"
+      },
+      "failures": []
+    },
+    {
+      "file": "audit-efficiency-playbook-tests.xml",
+      "sha256": "27d49432d8bd36bcbfe6f640ab7854bc107550f2884d794d46685a908df49de2",
+      "counts": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "5",
+        "time": "1.740",
+        "timestamp": "2026-09-29T11:08:25.456598+09:00",
+        "hostname": "MacBook-Pro.local"
+      },
+      "failures": []
+    }
+  ],
+  "additional_passes": {
+    "runtime_usage_regressions": 76,
+    "deployment_and_host_health": 56
+  },
+  "full_suite_failure": "Existing housing fixture mixed frozen application time with PostgreSQL first_seen; the independent clock fix was preserved, and all affected tests subsequently passed.",
+  "services": {
+    "postgresql": "real disposable cluster",
+    "temporal": "real local service",
+    "qlab": "actual checkout pinned to 857e4243c54d86067c2bf8519eee1162cbd02189",
+    "codex_configuration": "real CLI 0.154.0, no inference in configuration probes",
+    "model_decisions": "synthetic except the separate two-call Astra smoke",
+    "slack": "simulated"
+  },
+  "main_ci": {
+    "status": "success",
+    "head": "2acaeea5aa6282958bea1f1b06c891f767930f63",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36509744875/job/109219096740"
+  },
+  "lint": "uv run --frozen ruff check . passed",
+  "recorded_at": "2026-09-29T02:15:31.338073+00:00"
+}
