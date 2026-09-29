@@ -53,6 +53,45 @@
 
 ## 활성화와 인수
 
+### 승인된 데이터 증거 패킷
+
+운영자는 `/state/research/provisioned/data-evidence/registry.json`에 아래 형식의
+패킷 목록을 둔다. `input_files`에는 이미 승인된 `warmup.json`·`development.json`
+같은 파일만 넣고, 경로는 같은 `data-evidence` 디렉터리 안의 절대 경로를 쓴다.
+`engine`은 승인된 프로필의 보호된 실행 엔트리포인트 원본이다. `reports`는
+출처·수집 시점·유니버스·결손·실행 조건의 검증 영수증과 미확인 사항을 담는다.
+
+```json
+{
+  "schema_version": 1,
+  "packets": [{
+    "schema_version": 1,
+    "program_digest": "<approved program SHA-256>",
+    "envelope": "etf_strategy",
+    "execution_profile_digest": "<approved profile SHA-256>",
+    "lake_id": "<approved lake ID>",
+    "input_files": {"warmup.json": {"path": "/state/research/provisioned/data-evidence/warmup.json", "sha256": "<approved input SHA-256>"}},
+    "engine": {"path": "/state/research/provisioned/data-evidence/engine.py", "sha256": "<approved entrypoint SHA-256>"},
+    "reports": {"limitations.json": {"path": "/state/research/provisioned/data-evidence/limitations.json", "sha256": "<report SHA-256>"}},
+    "blocking_gaps": ["Original publication time remains unverified"]
+  }]
+}
+```
+
+서비스는 현재 승인 명세와 패킷의 프로그램·프로필·레이크·입력·엔진 해시를
+대조하고, 모든 파일 바이트를 다시 해시한 뒤 관리 저장소의 불변 파일로 복사한다.
+데이터 직원은 패킷 식별자, 실행 코드, 보고서 원문을 이번 시도에서 끝까지 읽어야
+심사를 제출할 수 있다. 실제 읽기 청크는 `research_stage_reads`에 남는다.
+입력 전체도 직원에게 읽기 전용으로 제공되지만 완독을 자동 주장하지 않는다.
+패킷의 존재나 파일 해시 일치만으로 `ready`가 되지 않는다. 실제 프로필에서
+패킷이 없거나 `blocking_gaps`가 남아 있으면 서비스도 `ready`를 거부한다.
+원천 공개 시점과 체결 가능성이 미확인이라면 `blocked`가 맞다. 이미 `waiting`인 과제는 자동
+승격하지 않으며, 새 증거 버전은 새로운 과제 제안을 시작할 수 있다.
+
+현재 ETF 패킷의 미확인 사항은
+[ETF 데이터 증거 노트](../project/evidence/research-programs-20260929/etf-data-evidence-note.json)에
+기록했다. 종가 체결을 쓰는 제안은 승인된 시가 체결 엔진과 별도로 검토한다.
+
 1. 실제 서버/3070 commit·등록 프로필·진행 중 job을 관측하고 동시 변경과 통합한다.
 2. 일회용 DB의 migration 반복 실행, 전체 `uv run pytest`, `uv run ruff check .`,
    실제 3070의 새 프로필 격리 자격검사를 통과시킨다. 각 결과의 정확한 commit을 기록한다.

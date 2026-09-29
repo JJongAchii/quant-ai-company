@@ -6,6 +6,7 @@ from psycopg.types.json import Jsonb
 
 from ..company import PolicyError, as_json, fingerprint, stable
 from .builds import profile_for
+from .data_evidence import load_packets
 from .library import available_sources, require_current, verify_citations
 from .mission_contracts import MissionSpec
 from .missions import MissionStore, typed
@@ -148,7 +149,7 @@ class ProgramStore:
         return str(identity)
 
     def assess(self, conn, program_id, task_id, payload, *, actor):
-        project, _, _ = self.locked(conn, program_id, active=True)
+        project, program, spec = self.locked(conn, program_id, active=True)
         MissionStore(self.company)._actor(actor, "data")
         value = typed(DataAssessment, payload)
         self.company._check_sources(conn, project["id"], value.source_ids)
@@ -156,6 +157,15 @@ class ProgramStore:
                             (task_id, program_id)).fetchone()
         if not task or task["state"] != "proposed":
             raise PolicyError("Data assessment requires an unassessed proposal")
+        envelope = next(e for e in spec.envelopes if e.name == task["proposal"]["envelope"])
+        if value.decision == "ready":
+            profile = profile_for(self.company, envelope.template)
+            if not profile.public_profile.fixture_only:
+                packet = load_packets(self.company, program, {envelope.name: envelope}).get(envelope.name)
+                if packet is None:
+                    raise PolicyError("Real data readiness requires a verified input evidence packet")
+                if packet[0].blocking_gaps:
+                    raise PolicyError("Data evidence packet still records blocking gaps")
         if (task["proposal"]["mode"] == "exact_replication" and value.decision == "ready"
                 and not value.original_conditions):
             raise PolicyError("Exact replication requires the original conditions; register a transfer instead")
