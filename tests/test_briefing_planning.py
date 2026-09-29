@@ -105,6 +105,28 @@ def test_material_fact_requires_real_original_and_cannot_be_silently_unchecked()
         validate_review(BriefReview.model_validate(original), proposal(), bundle())
 
 
+def test_negative_review_can_describe_a_rejected_paragraph_without_crediting_coverage():
+    original = review().model_dump()
+    original["source_assessments"][0]["material_facts"][0]["main_item_ids"] = ["fact"]
+    original["rejected_ids"] = ["fact"]
+    with pytest.raises(ValueError, match="missing_fact_cannot_pass"):
+        validate_review(BriefReview.model_validate(original), proposal(), bundle())
+    original.update(verdict="reduce", concerns=["문단의 숫자는 제외하고 별도로 근거가 있는 사실을 복구해야 합니다."])
+    original["checks"]["coverage"] = False
+    critique = BriefReview.model_validate(original)
+    validate_review(critique, proposal(), bundle())
+    feedback = revision_bundle(bundle(), proposal().model_dump(mode="json"), critique,
+                               {"fact": "semantic_review"})["revision_feedback"]
+    assert feedback["source_assessments"][0]["material_facts"][0]["main_item_ids"] == ["fact"]
+    data = {**bundle(), "revision_feedback": feedback}
+    before = deepcopy(data)
+    payload = json.loads(prompt(data, "revise").split("BRIEF DATA JSON:\n")[1])
+    key = payload["revision_feedback"]["previous_draft"]["summary"][0]["evidence"][0]
+    assert payload["previous_draft_sources"][key] == "source-1"
+    assert payload["documents"][0]["content"] == data["documents"][0]["content"]
+    assert data == before
+
+
 def test_review_compression_preserves_exact_quotes_and_raw_proposal():
     p = proposal().model_dump(mode="json")
     before = deepcopy(p)

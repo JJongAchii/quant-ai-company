@@ -153,7 +153,7 @@ def test_synthetic_checks_never_certify_unmeasured_analyst_judgment():
 
 def test_writer_receives_same_professional_procedure_as_followup_role():
     assert pack(BRIEFER)["digest"] in prompt(bundle(), "write")
-    assert "actual-vs-consensus" in prompt(bundle(), "write")
+    assert "surprise versus consensus differs from change versus prior" in prompt(bundle(), "write")
     assert CONTENT in prompt(bundle(), "review", analytical_proposal().model_dump(mode="json"))
 
 
