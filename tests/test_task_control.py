@@ -123,6 +123,20 @@ def test_fifo_router_survives_revision_and_cannot_reserve_out_of_order(company):
     assert len([t for t in state['tasks'] if t['status'] == 'pending']) == 1
 
 
+def test_new_instruction_keeps_project_active_after_forty_tasks(company):
+    assert company.settings.company_max_project_tasks == 0
+    first = submit(company, 'first', 'Original work')
+    for index in range(40):
+        company.ingest(event_key=f'extra-{index}', text='More work', owner='UHUMAN',
+                       project_id=first['project_id'])
+    request = submit(company, 'replace', '새 지시로 진행해줘', first['project_id'])
+    assert route(company, request, 'new')['intent']['state'] == 'applied'
+    state = company.project_state(first['project_id'])
+    assert state['project']['status'] == 'active'
+    assert any(task['kind'] == 'work' and task['instruction'] == '새 지시로 진행해줘'
+               and task['status'] == 'pending' for task in state['tasks'])
+
+
 def test_ambiguity_holds_work_and_reply_resolves_with_saved_question(company):
     first = submit(company, 'first', '국내 ETF 비교')
     old = turn_for(company, first['task_id'])

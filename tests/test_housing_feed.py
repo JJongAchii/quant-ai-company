@@ -151,7 +151,7 @@ def housing(company, monkeypatch):
     company.roles["reporter"] = Role(id="reporter", name="Reporter", mission="Fixture", model="unused",
                                      instructions="Fixture", tools=[], can_delegate_to=[], active=False)
     store = HousingFeedStore(company)
-    store.clock = [datetime.now(UTC).astimezone(schedule.KST).replace(hour=10, minute=0, second=0, microsecond=0)]
+    store.clock = [datetime(2026, 9, 28, 10, tzinfo=schedule.KST)]
     monkeypatch.setattr(schedule, "utcnow", lambda: store.clock[0])
     return store
 
@@ -200,7 +200,10 @@ def test_disabled_map_panel_keeps_existing_publication_policy(housing):
 
 
 def test_reminders_are_durable_and_initial_connection_does_not_double_post(housing):
-    collect(housing)
+    notice = collect(housing)
+    # first_seen is a database wall-clock default; align it with the frozen test clock.
+    with housing.db.transaction() as conn:
+        conn.execute("UPDATE housing_feed_notices SET first_seen=%s WHERE id=%s", (housing.clock[0], notice.id))
     assert housing.reminders() == 0
     housing.clock[0] += timedelta(days=1)
     collect(housing, example(housing.clock[0].date() - timedelta(days=1)))

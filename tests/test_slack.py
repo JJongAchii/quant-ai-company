@@ -138,3 +138,19 @@ def test_status_request_works_without_inference_during_quota_pause(company, cred
     status = next(message for message in state["messages"] if message["kind"] == "status")
     assert "quota" in status["text"]
     assert all(turn["attempts"] == 0 for turn in state["turns"])
+
+
+def test_signed_slack_question_after_forty_tasks_queues_a_turn(company, credentials):
+    assert company.settings.company_max_project_tasks == 0
+    seed = company.ingest(event_key="seed", text="Research", owner="UHUMAN",
+                          channel="CQUANT", thread_ts="100.001")
+    for index in range(40):
+        company.ingest(event_key=f"history-{index}", text="Prior work", owner="UHUMAN",
+                       project_id=seed["project_id"])
+    payload = event(credentials, text="새 질문입니다", ts="101.001", thread_ts="100.001", type="message")
+    raw, headers = signed(payload, credentials["director"])
+    response = TestClient(create_app(company.settings, company, credentials)).post(
+        "/slack/events/director", content=raw, headers=headers)
+    assert response.status_code == 200
+    state = company.project_state(seed["project_id"])
+    assert len(state["turns"]) == 42
