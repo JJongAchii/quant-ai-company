@@ -158,11 +158,15 @@ lint와 서비스 CI 성공, 병합 가능 상태를 확인했다. 운영 후보
 첫 데이터 직원 시도는 인용한 원문을 끝까지 읽지 않아 차단됐고, 두 번째·세 번째
 시도는 Codex 응답의 회사 결정 계약 형식 오류로 차단됐다. 네 번째 시도도 인용한
 원문을 열지 않은 상태로 결론을 제시해 차단됐다. 각 시도의 호출 영수증은
-정상 완료와 형식 거부를 구별한다. 두 번째 과제는 13:29 KST 현재 `proposed`
-상태이고, 다음 자동 재시도는 13:34 KST 예정이다.
+정상 완료와 형식 거부를 구별한다. 네 번째 시도 직후 과제는 `proposed`였다.
 [첫 차단 영수증](evidence/research-programs-20260929/second-task-data-read-rejection.json),
 [재시도 호출 영수증](evidence/research-programs-20260929/second-task-data-retry-faults.json),
 [네 번째 시도 상태](evidence/research-programs-20260929/second-task-data-attempt4.json).
+다섯 번째 데이터 직원 시도는 13:34 KST에 유효한 독립 심사로 완료됐고,
+시점·커버리지·실행 가능 가격·원문 조건 네 항목을 모두 미확인으로 판단해
+`blocked`를 기록했다. 직원이 실제 고정 ETF 입력과 실행 프로필을 조회한
+증거가 없다는 이유다. 13:35 KST에는 director 선정 단계가 진행 중이었다.
+[두 번째 과제 데이터 심사](evidence/research-programs-20260929/second-task-data-assessment.json).
 
 04:08 UTC에 연구 워커·작업 배포기·Slack 소켓 컨테이너가 종료됐고 API와
 Codex 런타임은 다시 올라왔다. 종료 원인은 이 읽기 전용 조사만으로 확정하지

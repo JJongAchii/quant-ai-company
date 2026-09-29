@@ -73,4 +73,6 @@
 director 보류 직후 새 검토 자료 1편이 유입돼 다음 연구자 제안 단계가 열렸다.
 [자료 버전 변경 영수증](evidence/research-programs-20260929/new-literature-trigger.json)은
 새 자료가 암호화폐 변동성 예측 논문임을 기록한다. 이 유입은 국내 ETF 입력의
-위 공백을 해소했다는 증거가 아니다.
+위 공백을 해소했다는 증거가 아니다. 뒤이어 등록된 두 번째 ETF 과제의
+[독립 데이터 심사](evidence/research-programs-20260929/second-task-data-assessment.json)도
+고정 ETF 입력과 실행 조건의 과제별 조회 근거가 없어 `blocked`를 기록했다.
