@@ -6,7 +6,7 @@
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/90",
   "deliverables": {
     "DIAGNOSIS": {"status": "completed"},
-    "APPLICATION": {"status": "completed", "integratedBase": "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9", "concurrentWorkerCommitIncluded": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801"},
+    "APPLICATION": {"status": "completed", "integratedBase": "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9", "concurrentWorkerCommitIncluded": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801", "latestConcurrentReleaseIncluded": "ac44bf5b66b3016021e13c34ffc75b8db215bfc3"},
     "VALIDATION": {"status": "completed", "focusedRealPostgresTests": 28, "lint": "passed"},
     "REVIEW": {"status": "completed", "pr": "https://github.com/JJongAchii/quant-ai-company/pull/90"},
     "LIVE_CHECK": {"status": "pending", "reason": "Integrated release is being qualified for production cutover"}

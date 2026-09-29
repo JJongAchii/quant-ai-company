@@ -10,6 +10,7 @@
   "candidateBase": "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9",
   "integrationNote": "The fix includes the active audit and token-accounting release, research citation guidance, and the concurrent validator audit-packet release; the earlier PR remains the focused review of the fix.",
   "concurrentWorkerCommitIncluded": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801",
+  "latestConcurrentReleaseIncluded": "ac44bf5b66b3016021e13c34ffc75b8db215bfc3",
   "sourceKinds": {
     "messages": "read-only production PostgreSQL records for the affected project",
     "program": "read-only production PostgreSQL research_programs and research_mission_stages",
