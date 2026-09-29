@@ -229,6 +229,22 @@ def test_status_remains_available_when_project_budget_is_exhausted(company):
         company.ingest(event_key="extra-work", text="More work", owner="user", project_id=req["project_id"])
 
 
+def test_unlimited_project_accepts_work_and_delegation_after_forty_tasks(company):
+    assert company.settings.company_max_project_tasks == 0
+    first = company.ingest(event_key="work-0", text="Work", owner="user")
+    for index in range(1, 42):
+        company.ingest(event_key=f"work-{index}", text="More work", owner="user",
+                       project_id=first["project_id"])
+    with company.db.transaction() as conn:
+        project = company._project(conn, first["project_id"])
+        parent = conn.execute("SELECT * FROM tasks WHERE id=%s", (first["task_id"],)).fetchone()
+        company._new_task(conn, project, "data", "Investigate", parent=parent)
+    state = company.project_state(first["project_id"])
+    assert len(state["turns"]) == 43
+    assert any(task["agent"] == "data" and task["parent_id"] == first["task_id"]
+               for task in state["tasks"])
+
+
 def test_blocked_retry_preserves_operator_reconciliation_and_prior_receipt(company):
     req = company.ingest(event_key="ambiguous", text="Work", owner="user")
     old = queued_turns(company, req["project_id"])[0]
