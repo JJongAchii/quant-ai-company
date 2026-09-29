@@ -339,6 +339,63 @@ def test_data_packet_is_bound_read_and_keeps_blocked_assessment_independent(prog
     assert packet["program_digest"] == h.digest
 
 
+def test_data_assessment_can_correct_one_unregistered_source_id_after_packet_reads(program):
+    h = program
+    provision_data_packet(h)
+    with h.company.db.transaction() as conn:
+        task_id = h.program_store.propose(conn, h.program_id, task_proposal(), actor="researcher_kr")
+    controller = ProgramController(h.company)
+    assert controller.tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+    assert stage["stage"] == "program_data"
+
+    def queued():
+        with h.company.db.transaction() as conn:
+            return str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                    (stage["task_id"],)).fetchone()["id"])
+
+    def read(identity, path):
+        return ProviderResponse(request_id=identity, provider="fixture", decision=AgentDecision(
+            say="", status="continue", tools=[{"name": "research_control", "arguments": {
+                "action": "read_stage_file", "path": path, "offset": 0}}]))
+
+    def assess(identity, source_id):
+        return ProviderResponse(request_id=identity, provider="fixture", decision=AgentDecision(
+            say="", status="complete", artifacts=[{"title": "Synthetic assessment", "content": json.dumps({
+                "decision": "blocked", "rationale": "Synthetic packet does not establish market provenance",
+                "source_ids": [source_id], "point_in_time": False, "coverage": False,
+                "executable_prices": False, "original_conditions": False})}]))
+
+    for path in stage["context"]["required_data_reads"]:
+        turn_id = queued()
+        prompt = h.company.prepare_turn(turn_id)["request"]["prompt"]
+        assert "use only evidence_sources.source_id values" in prompt
+        h.company.commit_turn(turn_id, read(turn_id, path))
+
+    invalid_id = stage["context"]["data_evidence_packets"][0]["identity_file"]
+    turn_id = queued()
+    h.company.prepare_turn(turn_id)
+    assert h.company.commit_turn(turn_id, assess(turn_id, invalid_id))["incomplete_source"]
+    correction_id = queued()
+    correction_prompt = h.company.prepare_turn(correction_id)["request"]["prompt"]
+    assert "unregistered_source_id;use_evidence_sources.source_id_not_packet_path" in correction_prompt
+    with pytest.raises(PolicyError, match="outside this stage's approved library"):
+        h.company.commit_turn(correction_id, assess(correction_id, "data/etf/engine"))
+
+    source = stage["context"]["evidence_sources"][0]
+    h.company.commit_turn(correction_id, read(correction_id, source["file"]))
+    final_id = queued()
+    h.company.prepare_turn(final_id)
+    assert h.company.commit_turn(final_id, assess(final_id, source["source_id"]))["state"] == "completed"
+    assert controller.tick()["state"] == "completed"
+    with h.company.db.transaction() as conn:
+        task = conn.execute("SELECT * FROM research_program_tasks WHERE id=%s", (task_id,)).fetchone()
+        current = conn.execute("SELECT attempt,state FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+    assert task["data_assessment"]["decision"] == "blocked"
+    assert current["attempt"] == 1 and current["state"] == "completed"
+
+
 def test_data_packet_rejects_changed_files_and_unapproved_input_identity(program):
     h = program
     packet = provision_data_packet(h)

@@ -545,18 +545,8 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
             cited = row["context"]["task"]["proposal"]["source_ids"]
         paths = {entry["source_id"]: entry["file"] for entry in row["context"].get("evidence_sources", [])}
         for source in cited:
-            if source in paths and conn.execute("""SELECT 1 FROM research_stage_reads
-                WHERE stage_id=%s AND attempt=%s AND path=%s AND next_offset IS NULL""",
-                (row["id"], row["attempt"], paths[source])).fetchone():
-                continue
-            if source in paths:
-                progress = conn.execute("""SELECT next_offset FROM research_stage_reads WHERE stage_id=%s
-                    AND attempt=%s AND path=%s ORDER BY character_offset DESC LIMIT 1""",
-                    (row["id"], row["attempt"], paths[source])).fetchone()
-                hint = (f"cited_source_incomplete:{paths[source]}@{progress['next_offset']};read_next_chunk"
-                        if progress else f"cited_source_unread:{paths[source]}@0;read_first_chunk")
-                # One identical premature proposal still fails. A new read receipt
-                # clears this hint and lets the same employee attempt continue.
+            if not isinstance(source, str) or source not in paths:
+                hint = "unregistered_source_id;use_evidence_sources.source_id_not_packet_path"
                 if row["error"] != hint:
                     conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s",
                                  (hint, row["id"]))
@@ -564,6 +554,25 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
                                  (Jsonb(response.model_dump(mode="json")), turn["id"]))
                     company._new_turn(conn, task)
                     return {"state": "completed", "incomplete_source": True}
+                raise PolicyError("Cited source ID is outside this stage's approved library")
+            if conn.execute("""SELECT 1 FROM research_stage_reads
+                WHERE stage_id=%s AND attempt=%s AND path=%s AND next_offset IS NULL""",
+                (row["id"], row["attempt"], paths[source])).fetchone():
+                continue
+            progress = conn.execute("""SELECT next_offset FROM research_stage_reads WHERE stage_id=%s
+                AND attempt=%s AND path=%s ORDER BY character_offset DESC LIMIT 1""",
+                (row["id"], row["attempt"], paths[source])).fetchone()
+            hint = (f"cited_source_incomplete:{paths[source]}@{progress['next_offset']};read_next_chunk"
+                    if progress else f"cited_source_unread:{paths[source]}@0;read_first_chunk")
+            # One identical premature proposal still fails. A new read receipt
+            # clears this hint and lets the same employee attempt continue.
+            if row["error"] != hint:
+                conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s",
+                             (hint, row["id"]))
+                conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                             (Jsonb(response.model_dump(mode="json")), turn["id"]))
+                company._new_turn(conn, task)
+                return {"state": "completed", "incomplete_source": True}
             raise PolicyError("Cited source has not been read completely in this employee attempt")
     if enabled(row):
         if commit_review(company, conn, row, turn, response, value):

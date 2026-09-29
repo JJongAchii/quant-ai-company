@@ -31,6 +31,8 @@ PROGRAM_STAGES = {
     "program_data": ("data", DataAssessment,
         "Independently check the task's data prerequisites against actual source evidence and frozen inputs. "
         "Read every required_data_reads path completely. A checked file hash proves identity, not source timing or readiness. "
+        "For source_ids use only evidence_sources.source_id values and read each mapped original completely. "
+        "Data packet file paths are evidence files, not source_ids. "
         "Check point-in-time availability, delistings, corporate actions, coverage and executable prices. "
         "For exact replication check original conditions. Unknown checks are false; block missing evidence."),
     "program_selection": ("director", TaskDecision,
