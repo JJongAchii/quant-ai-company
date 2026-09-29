@@ -147,9 +147,10 @@ class ProgramController:
             envelopes = {e.name: e for e in spec.envelopes}
             chosen = envelopes if task is None else {task["proposal"]["envelope"]:
                 envelopes[task["proposal"]["envelope"]]}
-            packets = load_packets(self.company, program, chosen)
+            all_packets = load_packets(self.company, program, envelopes)
+            packets = {name: all_packets[name] for name in chosen if name in all_packets}
             packet_versions = sorted((name, fingerprint(packet.model_dump(mode="json")))
-                                     for name, (packet, _) in packets.items())
+                                     for name, (packet, _) in all_packets.items())
             source_version = [(s["id"], fingerprint(s["content"])) for s in sources]
             evidence_version = fingerprint([source_version, evidence_missions]
                                            + ([packet_versions] if packet_versions else []))

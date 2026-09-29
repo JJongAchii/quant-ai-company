@@ -29,7 +29,7 @@ from .test_research_missions import Harness
 
 
 @pytest.fixture
-def program(company, tmp_path):
+def program(company, tmp_path, request):
     company.settings.company_research_enabled = True
     company.settings.company_autonomous_research_enabled = True
     company.settings.research_artifact_dir = tmp_path / "artifacts"
@@ -61,8 +61,11 @@ def program(company, tmp_path):
     h = Harness(company)
     h.original, h.public = original, public
     h.program_store = ProgramStore(company)
+    envelopes = [{"name": "etf", "market": "kr_etf", "template": spec}]
+    if getattr(request, "param", False):
+        envelopes.append({"name": "etf_alt", "market": "kr_etf", "template": spec})
     h.program_spec = ResearchProgram(title="Synthetic bounded program", objective="Exercise research authority",
-        envelopes=[{"name": "etf", "market": "kr_etf", "template": spec}], max_total_trials=2,
+        envelopes=envelopes, max_total_trials=2,
         max_compute_seconds=10000, max_missions=2, source_ids=["fixture:baseline"], include_quant_feed=False)
     with company.db.transaction() as conn:
         project = company._project(conn, h.project["project_id"])
@@ -522,6 +525,66 @@ def test_data_assessment_can_correct_one_unregistered_source_id_after_packet_rea
         current = conn.execute("SELECT attempt,state FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
     assert task["data_assessment"]["decision"] == "blocked"
     assert current["attempt"] == 1 and current["state"] == "completed"
+
+
+@pytest.mark.parametrize("program", [True], indirect=True)
+def test_waiting_multi_envelope_program_needs_new_evidence_before_another_proposal(program):
+    h = program
+    packet = provision_data_packet(h)
+    registry = h.company.settings.research_data_evidence_file
+    registry.write_text(json.dumps({"schema_version": 1, "packets": [
+        packet, {**packet, "envelope": "etf_alt"}]}))
+    with h.company.db.transaction() as conn:
+        task_id = h.program_store.propose(conn, h.program_id, task_proposal(), actor="researcher_kr")
+    controller = ProgramController(h.company)
+    assert controller.tick()["state"] == "running"
+
+    def running_stage():
+        with h.company.db.transaction() as conn:
+            return conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s AND state='running'",
+                                (h.program_id,)).fetchone()
+
+    def queued(stage):
+        with h.company.db.transaction() as conn:
+            return str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                    (stage["task_id"],)).fetchone()["id"])
+
+    def read(stage, path):
+        identity = queued(stage)
+        h.company.prepare_turn(identity)
+        h.company.commit_turn(identity, ProviderResponse(request_id=identity, provider="fixture",
+            decision=AgentDecision(say="", status="continue", tools=[{"name": "research_control",
+                "arguments": {"action": "read_stage_file", "path": path, "offset": 0}}])))
+
+    def finish(stage, value):
+        identity = queued(stage)
+        h.company.prepare_turn(identity)
+        assert h.company.commit_turn(identity, ProviderResponse(request_id=identity, provider="fixture",
+            decision=AgentDecision(say="", status="complete", artifacts=[{"title": "Stage result",
+                "content": json.dumps(value)}])))["state"] == "completed"
+        assert controller.tick()["state"] == "completed"
+
+    data = running_stage()
+    assert data["stage"] == "program_data"
+    assert [item["envelope"] for item in data["context"]["data_evidence_packets"]] == ["etf"]
+    for path in [*data["context"]["required_data_reads"], data["context"]["evidence_sources"][0]["file"]]:
+        read(data, path)
+    finish(data, {"decision": "blocked", "rationale": "Synthetic provenance is incomplete",
+                  "source_ids": ["fixture:baseline"], "point_in_time": False, "coverage": False,
+                  "executable_prices": False, "original_conditions": False})
+
+    assert controller.tick()["state"] == "running"
+    selection = running_stage()
+    assert selection["stage"] == "program_selection"
+    read(selection, selection["context"]["evidence_sources"][0]["file"])
+    finish(selection, {"decision": "wait", "rationale": "Independent data review remains blocked"})
+    with h.company.db.transaction() as conn:
+        task = conn.execute("SELECT state FROM research_program_tasks WHERE id=%s", (task_id,)).fetchone()
+    assert task["state"] == "waiting"
+    assert controller.tick() == {"state": "waiting", "reason": "new_evidence_required"}
+    with h.company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM research_mission_stages WHERE program_id=%s AND stage='program_proposal'",
+                            (h.program_id,)).fetchone()["n"] == 0
 
 
 def test_data_packet_rejects_changed_files_and_unapproved_input_identity(program):
