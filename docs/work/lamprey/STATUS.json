@@ -1,10 +1,135 @@
 {
-  "approval": null,
+  "approval": {
+    "approvedAt": "2026-09-28T23:28:10.414494+00:00",
+    "id": "chat-20260929-owner-approved-integrated-release-and-program-request"
+  },
   "currentIntent": "INTENT-v5.json",
-  "deliverables": {},
-  "intentDigest": null,
+  "deliverables": {
+    "ACTIVATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-migration.json",
+          "sha256": "98155dab6b5f"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-config-swap.json",
+          "sha256": "9159d0e75fa2"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-server-start.json",
+          "sha256": "a62b5263770d"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-worker-start.json",
+          "sha256": "057796667c15"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-worker-path-repair.json",
+          "sha256": "ed6f8f4aa4ce"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-runtime-acceptance.json",
+          "sha256": "c447a0c67928"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-codex-auth.json",
+          "sha256": "e5eecf60d5fa"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-temporal-connect.json",
+          "sha256": "c4406f9bac13"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-slack-ingress-gate.json",
+          "sha256": "c6b9528c726c"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-timers-restored.json",
+          "sha256": "86cf759f44fe"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-final-server.json",
+          "sha256": "2169a6927f9b"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-final-worker.json",
+          "sha256": "b456f1e83187"
+        }
+      ],
+      "note": "Exact 3822845 server and 3070 candidate active after initial systemd path repair; previous worker release resolves, timers restored, API and Temporal RPC healthy, ChatGPT login confirmed. Invalid Slack signatures rejected; real positive owner callback and real Codex model turn remain unexercised until owner action.",
+      "status": "verified",
+      "updatedAt": "2026-09-29T00:02:16.176067+00:00"
+    },
+    "PRE_ACTIVATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-live-server-preflight.json",
+          "sha256": "68ec4899d592"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-worker-preflight.json",
+          "sha256": "f66515ec73cc"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-server-drift.json",
+          "sha256": "f659d079be71"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-active-image-validation.json",
+          "sha256": "6190726fbb9c"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-server-baseline.json",
+          "sha256": "f0caa74205d4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-timer-hold.json",
+          "sha256": "8fccb3814397"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-backup.json",
+          "sha256": "b0104ba5705f"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-backup-verification.json",
+          "sha256": "17dd34c123b2"
+        }
+      ],
+      "note": "Fresh active2e1b server and 3070 pins, exact image source, zero active work, private rollback baseline, and 292882930-byte PostgreSQL/research backup verified locally and in S3; old attempt stopped on drift before this fresh preflight.",
+      "status": "verified",
+      "updatedAt": "2026-09-28T23:38:28.872514+00:00"
+    },
+    "PROGRAM_REQUEST": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/research-programs-20260928/first-program-draft.json",
+          "sha256": "98e588c4698b"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-program-submit.json",
+          "sha256": "aa8155f0c347"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-program-delivery.json",
+          "sha256": "ec0646e0c975"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-slack-readback.json",
+          "sha256": "1b0f265fe1ec"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260928/activation-v2-final-server.json",
+          "sha256": "2169a6927f9b"
+        }
+      ],
+      "note": "Frozen digest 53392822 program draft committed under active project revision 5; one Slack delivery accepted and read back with approval/cancel buttons. Program approval_event_id null, zero program tasks/missions/reservations, prior mission trial count unchanged at 1. Separate signed owner approval remains required.",
+      "status": "verified",
+      "updatedAt": "2026-09-29T00:02:16.176831+00:00"
+    }
+  },
+  "intentDigest": "b1427cdb9ab5",
   "schemaVersion": 1,
   "slug": "lamprey",
-  "state": "draft",
-  "updatedAt": "2026-09-28T23:09:13.779216+00:00"
+  "state": "approved",
+  "updatedAt": "2026-09-29T00:02:16.176831+00:00"
 }
