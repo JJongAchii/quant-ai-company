@@ -583,12 +583,18 @@ class CodexRunner:
                     result = parse_result(request, output, self.config.quota_retry_seconds)
                     if session is not None and (not result.thread_id or (resume_thread and result.thread_id != resume_thread)):
                         raise ProviderFault("uncertain", "Codex did not confirm the bound audit session.")
+                    if session is not None:
+                        from .codex_sessions import turn_usage
+
+                        receipt["session_usage"] = dict(result.usage)
+                        result = result.model_copy(update={"usage": turn_usage(result.usage, session["usage"])})
                     atomic_json(receipt_path, {**receipt, "state": "complete", "completed_at": time.time(),
                                                "result": result.model_dump(mode="json")})
                     if session is not None:
                         try:
                             atomic_json(session_path, {**session, "head": request.request_id,
-                                                      "thread_id": result.thread_id, "inflight": None})
+                                                      "thread_id": result.thread_id, "inflight": None,
+                                                      "usage": receipt["session_usage"]})
                         except OSError:
                             # The completed receipt is already authoritative. The
                             # next continuation reconciles this window without inference.
