@@ -63,12 +63,23 @@
 거래일 시가까지의 가격을 사용하며 거래 비용을 적용한다. 실제 주문 호가·정지·
 상폐 정산과 원천 공개시각은 이 검사로 확인되지 않는다. 성과·봉인 구간은 읽지 않았다.
 
-다음 구현 단위는 **이미 승인된 입력 해시와 실행 프로필에 묶인 읽기 전용 데이터
-증거 패킷**이다. 위 대조의 한계와 원천 공개시각·체결 조건을 함께 담고,
-패킷의 해시와 출처를 서비스가 검증한 뒤 데이터 직원에게 제공해야 한다.
-`real-inputs.json`의 집계나 현재 레이크 대조만으로 `ready`를 자동 부여해서는 안 된다.
+05:27 UTC에 이미 승인된 입력 해시와 실행 프로필에 묶인 읽기 전용
+[데이터 증거 패킷](evidence/research-programs-20260929/etf-data-evidence-registry.json)을
+연구 워커에 연결했다. 서비스는 실제 `warmup.json`·`development.json`·보호된
+엔진과 세 보고서의 바이트를 검증해 불변 단계 파일로 복사한다. 데이터 직원이
+패킷 식별자, 엔진, 보고서를 이번 시도에서 끝까지 읽은 영수증이 없으면 심사를
+제출할 수 없다. 패킷은 [미확인 사항 5건](evidence/research-programs-20260929/etf-data-evidence-note.json)을
+명시하며, 남아 있는 동안 서비스가 실제 프로필의 `ready`를 거부한다.
+[후보 실파일 검증](evidence/research-programs-20260929/data-evidence-worker-qualified.json),
+[워커 전환](evidence/research-programs-20260929/data-evidence-worker-cutover.json),
+[운영 읽기 확인](evidence/research-programs-20260929/data-evidence-worker-postcheck.json).
+`real-inputs.json`의 집계나 현재 레이크 대조로 `ready`가 자동 부여되지는 않는다.
 프로그램의 허용 원문 목록이나 입력 계약을 바꾼다면 새 digest에 대한 소유자 승인이
-필요하다. 그 전까지 현재 과제를 실행 대상으로 승격하지 않는다.
+필요하다. 기존 두 과제는 `waiting`을 유지하며 새 패킷을 본 연구자 제안 단계가
+시작됐다. 연구자는 패킷 식별자·보호된 엔진·보고서 세 건을 끝까지 읽고, 고정
+입력 두 파일의 첫 청크를 읽었다. 입력 전체를 완독했다고 주장하지 않는다.
+[직원 읽기 깊이](evidence/research-programs-20260929/data-evidence-researcher-read-depth.json).
+미션·예약·과학 시행은 0건이다.
 
 director 보류 직후 새 검토 자료 1편이 유입돼 다음 연구자 제안 단계가 열렸다.
 [자료 버전 변경 영수증](evidence/research-programs-20260929/new-literature-trigger.json)은

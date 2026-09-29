@@ -216,3 +216,29 @@ Codex 런타임은 다시 올라왔다. 종료 원인은 이 읽기 전용 조�
 [첫 과제 데이터 근거 공백](FIRST-TASK-DATA-GAP-20260929.md)에 기록했다.
 데이터 직원의 `blocked`와 director의 `waiting` 판단을 변경하지 않았으며,
 미션·예약·과학 시행은 여전히 0건이다.
+
+05:27 UTC에는 승인된 프로그램 digest, ETF 입력 SHA 두 개, 실행 프로필 digest,
+보호된 엔진 SHA에 묶인 데이터 증거 패킷을 연구 워커에 적용했다. 입력·엔진·
+독립 대조 영수증·미확인 사항 노트를 운영 저장소의 별도 디렉터리에 배치하고
+후보 컨테이너에서 실제 파일 바이트와 두 ETF envelope를 검증했다. 파일 해시
+일치가 원천 공개시각이나 체결 가능성을 증명한다고 해석하지 않는다.
+[패킷 배치](evidence/research-programs-20260929/etf-data-evidence-staged.json),
+[후보 검증](evidence/research-programs-20260929/data-evidence-worker-qualified.json).
+
+소스 커밋 `e3e26e9`는 로컬 전체 테스트 1,315건 통과·13건 건너뜀,
+추가 회귀 13건 통과, lint, PR #87 서비스 CI 성공을 거쳤다. 서명된 소유자
+승인과 실행 중 턴·단계·잡·미션·예약 0건을 재확인한 뒤 워커 하나만 교체했다.
+다른 서비스 컨테이너 ID와 공식 ChatGPT runtime 경로는 유지됐다.
+[최종 사전 검사](evidence/research-programs-20260929/data-evidence-cutover-precheck-final.json),
+[워커 전환](evidence/research-programs-20260929/data-evidence-worker-cutover.json),
+[설치 코드·DB 재확인](evidence/research-programs-20260929/data-evidence-worker-postcheck.json).
+
+운영에서 패킷 목록을 포함한 새 연구자 제안 단계가 시작됐다. 기존 두 과제의
+`waiting` 상태는 바뀌지 않았고 미션·예약·과학 시행은 0건이다. 새 데이터
+직원 심사가 `ready`를 내더라도 패킷의 미해결 항목이 남은 동안 서비스가
+실제 프로필의 승격을 거부한다. 원천 공개시각·원본 객체 버전과 실행 가격
+조건을 해결해야 연구 실험으로 넘어갈 수 있다. 05:35 UTC의 읽기 영수증에는
+연구자가 패킷 식별자·보호된 엔진·보고서 세 건을 완독하고 고정 입력 두 파일은
+첫 청크만 읽은 것으로 기록됐다. 원문 두 건도 완독했다. 이 시점에 제안 단계는
+진행 중이었고 새 데이터 심사나 과학 시행은 없다.
+[직원 읽기 깊이](evidence/research-programs-20260929/data-evidence-researcher-read-depth.json).

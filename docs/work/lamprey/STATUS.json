@@ -96,7 +96,7 @@
         },
         {
           "path": "docs/project/FIRST-TASK-DATA-GAP-20260929.md",
-          "sha256": "373ba5960dc7"
+          "sha256": "978689cce1a7"
         },
         {
           "path": "docs/project/evidence/research-programs-20260929/etf-input-contract-readback.json",
@@ -148,12 +148,60 @@
         },
         {
           "path": "docs/project/RESEARCH-PROGRAMS-POST-APPROVAL-20260929.md",
-          "sha256": "cc5082ebc7d9"
+          "sha256": "85f8ad7a8f0f"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/etf-data-evidence-note.json",
+          "sha256": "c0b1635d6300"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/etf-data-evidence-registry.json",
+          "sha256": "3ff9e81e3f4c"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/etf-data-evidence-staged.json",
+          "sha256": "1dde504b7006"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-release-staged.json",
+          "sha256": "7ebd0ea19950"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-build.json",
+          "sha256": "c3dd4acf9118"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-qualified.json",
+          "sha256": "a7ce33d26e1a"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-cutover-precheck-final.json",
+          "sha256": "6d230f76e7e0"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-cutover.json",
+          "sha256": "7062a93ea7e5"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-postcheck.json",
+          "sha256": "3cea0563d689"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-postcheck-later.json",
+          "sha256": "997e5615326d"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-progress.json",
+          "sha256": "ac06cc645d92"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-researcher-read-depth.json",
+          "sha256": "731194257004"
         }
       ],
-      "note": "Signed owner program is active. Two literature-grounded ETF tasks passed proposal validation, received independent blocked data assessments, and were held by the director. The frozen ETF inputs were checked against pinned qdata; publication provenance and task/profile execution compatibility remain unresolved. Zero missions, reservations and scientific trials.",
+      "note": "Signed program active. Two ETF tasks remain waiting. The worker now serves a digest-bound packet; researcher actually completed reads of packet identity, frozen engine, three reports and two original sources, and sampled both frozen inputs. Five declared gaps continue to block real-profile ready. Zero missions, reservations and scientific trials.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T04:54:52.965400+00:00"
+      "updatedAt": "2026-09-29T05:37:36.360920+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -291,5 +339,5 @@
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T04:54:52.965400+00:00"
+  "updatedAt": "2026-09-29T05:37:36.360920+00:00"
 }
