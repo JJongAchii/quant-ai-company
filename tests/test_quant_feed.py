@@ -14,10 +14,10 @@ from quant_company.company import fingerprint
 from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderResponse, Role
 from quant_company.quant_feed import schedule
 from quant_company.quant_feed.contracts import EvidenceCritique, QuantSource, ResearchBrief, load_sources
-from quant_company.quant_feed.editor import INSTRUCTIONS, prompt, render, validate
+from quant_company.quant_feed.editor import INSTRUCTIONS, ProposalValidationError, prompt, render, validate
 from quant_company.quant_feed.feeds import aliases, collect
 from quant_company.quant_feed.originals import download, extract_pdf, fetch_original, parse_html
-from quant_company.quant_feed.store import QuantFeedStore
+from quant_company.quant_feed.store import QuantFeedStore, _bounded_pages
 from quant_company.slack import SlackIngress, SlackOutbox
 
 TEXT = ("A study by Example Author, published 2026-09-01. US equities from 2000 to 2020. "
@@ -160,6 +160,23 @@ def test_bundle_distinguishes_original_truncation_from_bounded_context(quant):
     assert bundle["pages"][-1]["text"].endswith("TAIL")
 
 
+def test_uneven_full_original_is_not_unnecessarily_clipped():
+    pages = [{"location": "PDF p.1", "text": "x" * 30000},
+             {"location": "PDF p.2", "text": "y" * 1000}]
+    assert _bounded_pages(pages) == (pages, False)
+
+
+def test_page_budget_redistributes_short_pages_and_remains_bounded():
+    pages = [{"location": "PDF p.1", "text": "A" * 50000},
+             {"location": "PDF p.2", "text": "B" * 1000}]
+    bounded, clipped = _bounded_pages(pages)
+    total = sum(len(p["text"]) for p in bounded)
+    assert clipped and 41997 <= total <= 42000
+    assert bounded[-1] == pages[-1]
+    small, clipped = _bounded_pages(pages * 10, budget=7)
+    assert clipped and sum(len(p["text"]) for p in small) <= 7
+
+
 def test_nul_in_extracted_text_is_replaced_and_receipted(quant):
     assert original(quant, text=TEXT + "\x00equation")["state"] == "ready"
     with quant.db.transaction() as conn:
@@ -276,14 +293,43 @@ def test_one_deterministic_proposal_repair_then_fail_closed(quant):
     assert repaired["document_state"] == "ready"
     assert repaired["validation_issue"] == "quant_quote_not_in_original_version"
     with quant.db.transaction() as conn:
-        document = conn.execute("SELECT state,stage,revision,critique FROM quant_feed_documents").fetchone()
-    assert (document["state"], document["stage"], document["revision"]) == ("ready", "revision", 1)
-    assert document["critique"]["issues"] == ["quant_quote_not_in_original_version"]
+        document = conn.execute("SELECT state,stage,revision,critique,brief FROM quant_feed_documents").fetchone()
+    assert (document["state"], document["stage"], document["revision"]) == ("ready", "repair", 0)
+    assert document["brief"]["evidence"] == invalid["evidence"]
+    assert [i["field"] for i in document["critique"]["issues"]] == ["evidence[0]", "evidence[1]"]
     second = quant.prepare()
     with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
         quant.commit(response(second, invalid))
     quant.fault(second["request"]["request_id"], "invalid_quant_proposal")
     assert quant.prepare()["state"] == "idle"
+
+
+@pytest.mark.parametrize("repair_after_revision", [False, True])
+def test_technical_repair_and_editorial_revision_have_separate_bounded_budgets(quant, repair_after_revision):
+    original(quant)
+    bad = brief(evidence=[{"claim": "bad", "location": "PDF p.1", "quote": "Invented unsupported result"}] * 2)
+    critic = critique(disposition="revise", claims_supported=False, issues=["idea: qualify the conclusion"])
+    if repair_after_revision:
+        quant.commit(response(quant.prepare(), brief()))
+        quant.commit(response(quant.prepare(), critic))
+    ready = quant.prepare()
+    assert ready["request"]["output_contract"] == "quant_brief_v1"
+    quant.commit(response(ready, bad))
+    with quant.db.transaction() as conn:
+        doc = conn.execute("SELECT * FROM quant_feed_documents").fetchone()
+        assert doc["revision"] == int(repair_after_revision)
+        if repair_after_revision:
+            assert doc["critique"]["editorial_critique"]["issues"] == critic["issues"]
+    quant.commit(response(quant.prepare(), brief()))
+    if not repair_after_revision:
+        quant.commit(response(quant.prepare(), critic))
+        quant.commit(response(quant.prepare(), brief()))
+    final = quant.prepare()
+    assert final["request"]["output_contract"] == "quant_critique_v1"
+    assert quant.commit(response(final, critic))["document_state"] == "held"
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM quant_feed_calls WHERE stage='repair'").fetchone()["n"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
 
 
 def test_unique_quote_location_correction_is_audited_before_critic(quant):
@@ -643,6 +689,19 @@ def test_arxiv_date_and_clipped_context_are_explicit_in_editor_prompt():
     assert "제공 발췌에서 확인되지 않음" in instructions
     bundle["metadata"]["citation_online_date"] = ["2026/09/23"]
     assert "arXiv date metadata is incomplete or conflicting" in prompt(bundle, "review")
+
+
+def test_confirmed_arxiv_original_date_is_checked_without_silent_rewriting():
+    bundle = {"metadata": {"publisher": "arXiv", "url": "https://arxiv.org/abs/2609.12345",
+                           "citation_date": ["2026/09/01"], "citation_online_date": ["2026/09/01"]},
+              "pages": [{"location": "PDF p.1", "text": TEXT}], "as_of": "2026-09-29", "links": [],
+              "commercial": False}
+    value = response({"request": {"request_id": "quant-feed-date"}}, brief(published_on="2026-09-03"))
+    with pytest.raises(ProposalValidationError) as failure:
+        validate(value, bundle, "review")
+    assert failure.value.issues == [{"code": "quant_original_publication_date_mismatch",
+                                     "field": "published_on", "expected": "2026-09-01"}]
+    assert failure.value.draft["published_on"] == "2026-09-03"
 
 
 def test_editor_audits_uncertainty_and_entire_evidence_claim():

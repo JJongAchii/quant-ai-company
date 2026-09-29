@@ -1,0 +1,27 @@
+{
+  "owner_request": "Determine whether Quant Scout, document processing or another component is preventing high-quality feeds, then improve the responsible components.",
+  "diagnosis": [
+    "v8 deterministic quote repair consumed the single editorial revision and discarded the failed draft",
+    "v9 independent critique found unsupported interpretation across multiple brief fields",
+    "v10 stopped before positive review at the generic nested AgentDecision output boundary; the precise invalid field is unknown",
+    "equal per-page allowances clipped uneven originals even when their total text fit the context budget"
+  ],
+  "changes": [
+    "Quant-only direct structured response with service-owned action wrapping; legacy provider requests unchanged",
+    "redistribute original page budget without unnecessary clipping",
+    "one technical repair plus one editorial revision, preserving failed drafts and field-specific feedback",
+    "deterministic arXiv original-date check and field-addressed independent critique",
+    "case-level qualification outcomes and request IDs bound to model, effort, output contract, policy and prompt"
+  ],
+  "verification": [
+    "real PostgreSQL transitions, full regression suite, real Temporal replay where available",
+    "private real-subscription qualification against the existing negative control and previous failed positive originals",
+    "production services and publication pause preserved; no selection of a new easy positive to erase prior failures"
+  ],
+  "constraints": [
+    "Quant Slack publication remains disabled; retain the existing post",
+    "no paid API, provider/model switch, broad host cleanup or independent-service replacement",
+    "retain previous failed and uncertain receipts without replay",
+    "isolate changed runtime during qualification and share the existing durable Quant lane lock"
+  ]
+}

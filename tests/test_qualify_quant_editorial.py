@@ -6,9 +6,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from quant_company.company import fingerprint
 from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderFault, ProviderResponse
 from quant_company.quant_feed.contracts import QUANT_FEED_AGENT
+from tests.test_quant_feed import TEXT, brief, critique
 
 
 @pytest.fixture
@@ -40,7 +40,8 @@ def company():
 
 
 def seed(path, module, state):
-    request_id = "quant-feed-qualify-" + fingerprint(["negative-critic", "fixed prompt"])[:40]
+    request_id = module.qualification_request(company().roles[QUANT_FEED_AGENT], "negative-critic", {},
+                                              "critique", "policy-1").request_id
     negative = {
         "document_id": "negative",
         "original_sha256": "negative-hash",
@@ -111,3 +112,47 @@ def test_saved_response_is_validated_without_second_model_call(qualification, mo
     assert result["state"] == "blocked" and result["fault"] == "unavailable"
     assert result["calls"][0]["state"] == "validated"
     assert calls and prior not in calls
+
+
+@pytest.mark.parametrize("negative_passed", [True, False])
+def test_qualification_preserves_draft_and_editorial_budget_after_repair(qualification, tmp_path, negative_passed):
+    path = tmp_path / "receipt.json"
+    seed(path, qualification, "requested")
+    receipt = json.loads(path.read_text())
+    receipt["calls"] = []
+    for bundle in receipt["inputs"].values():
+        bundle.update(pages=[{"location": "PDF p.1", "text": TEXT}], links=[], commercial=False,
+                      metadata={"publisher": "Example", "url": "https://example.org/paper"},
+                      as_of="2026-09-29", prior=None, previous_critique=None)
+    receipt["inputs"]["negative"]["draft"] = brief()
+    path.write_text(json.dumps(receipt))
+    invalid = brief(evidence=[{"claim": "invented", "location": "PDF p.1", "quote": "Invented exact quotation"}] * 2)
+    replies = [critique(disposition="hold", direct_quant_scope=False, substantive_research=False),
+               brief(disposition="reject" if negative_passed else "hold"), invalid, brief(),
+               critique(disposition="revise", claims_supported=False, issues=["idea: qualify"]),
+               brief(), critique()]
+    calls = []
+
+    class Provider:
+        async def run(self, request):
+            calls.append(request)
+            return ProviderResponse(request_id=request.request_id, decision=AgentDecision(
+                status="complete", say="", artifacts=[ArtifactDraft(title="test", content=json.dumps(replies.pop(0)))]))
+
+    result = asyncio.run(qualification.qualify(company(), "negative", "positive", path, provider=Provider()))
+    assert result["state"] == ("passed" if negative_passed else "not_passed")
+    assert result["case_results"]["positive"]["state"] == "passed"
+    assert [row["stage"] for row in result["calls"]] == [
+        "critique", "review", "review", "repair", "critique", "revision", "critique"]
+    assert len(calls) == 7 and len({r.request_id for r in calls}) == 7
+    assert result["calls"][2]["validation_issues"][0]["field"] == "evidence[0]"
+    assert all(r.output_contract != "agent_decision" for r in calls)
+
+
+def test_qualification_identity_binds_model_effort_contract_and_policy(qualification):
+    role = company().roles[QUANT_FEED_AGENT]
+    first = qualification.qualification_request(role, "case", {}, "review", "policy-1")
+    assert first.request_id != qualification.qualification_request(role, "case", {}, "critique", "policy-1").request_id
+    assert first.request_id != qualification.qualification_request(role, "case", {}, "review", "policy-2").request_id
+    role.reasoning_effort = "max"
+    assert first.request_id != qualification.qualification_request(role, "case", {}, "review", "policy-1").request_id

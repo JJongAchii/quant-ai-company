@@ -84,6 +84,14 @@ class ProviderRequest(StrictModel):
     reasoning_effort: ReasoningEffort | None = None
     prompt: str = Field(min_length=1, max_length=90000)
     web_search: bool = False
+    output_contract: Literal["agent_decision", "quant_brief_v1", "quant_critique_v1"] = "agent_decision"
+
+    @model_validator(mode="after")
+    def scoped_output(self):
+        if self.output_contract != "agent_decision" and (
+                not self.request_id.startswith("quant-feed-") or self.web_search):
+            raise ValueError("Quant structured output requires a tool-free Quant request")
+        return self
 
 
 class WebSearchEvent(StrictModel):

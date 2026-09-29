@@ -13,8 +13,14 @@ from quant_company.config import Settings
 from quant_company.contracts import ProviderFault, ProviderRequest, ProviderResponse
 from quant_company.execution import provider_for
 from quant_company.quant_feed.contracts import QUANT_FEED_AGENT
-from quant_company.quant_feed.editor import prompt, render, validate
-from quant_company.quant_feed.store import REPAIRABLE_PROPOSAL_ERRORS, QuantFeedStore
+from quant_company.quant_feed.editor import ProposalValidationError, output_contract, prompt, render, validate
+from quant_company.quant_feed.store import QuantFeedStore
+
+
+def qualification_request(role, label, bundle, stage, policy):
+    body = dict(model=role.model, reasoning_effort=role.reasoning_effort,
+                prompt=prompt(bundle, stage), output_contract=output_contract(stage))
+    return ProviderRequest(request_id="quant-feed-qualify-" + fingerprint([label, policy, body])[:40], **body)
 
 
 async def qualify(company, negative_id, positive_id, output, *, provider=None):
@@ -77,12 +83,7 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None):
             os.close(directory)
 
     async def call(label, bundle, stage):
-        request = ProviderRequest(
-            request_id="quant-feed-qualify-" + fingerprint([label, prompt(bundle, stage)])[:40],
-            model=role.model,
-            reasoning_effort=role.reasoning_effort,
-            prompt=prompt(bundle, stage),
-        )
+        request = qualification_request(role, label, bundle, stage, receipt["policy"])
         row = {
             "case": label,
             "stage": stage,
@@ -90,6 +91,7 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None):
             "document_id": bundle["document_id"],
             "original_sha256": bundle["original_sha256"],
             "prompt_sha256": fingerprint(request.prompt),
+            "output_contract": request.output_contract,
             "state": "requested",
         }
         previous = next((item for item in receipt["calls"] if item["request_id"] == request.request_id), None)
@@ -117,51 +119,75 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None):
                 raise ProviderFault("uncertain", "Runtime outcome requires reconciliation.") from exc
             row.update(state="returned", response=response.model_dump(mode="json"))
             save()
+        if response.request_id != request.request_id:
+            raise ValueError("qualification_receipt_response_mismatch")
         corrections = []
-        value = validate(response, bundle, stage, audit=corrections)
+        try:
+            value = validate(response, bundle, stage, audit=corrections)
+        except ProposalValidationError as exc:
+            row.update(validation_issues=exc.issues)
+            save()
+            raise
         row.update(state="validated", disposition=value.disposition, source_corrections=corrections)
         save()
         return value
 
+    receipt["case_results"] = {"negative": {"state": "not_run"}, "positive": {"state": "not_run"}}
+    active_case = "negative"
     try:
-        negative = bundles["negative"]
-        if not negative.get("draft"):
-            raise ValueError("negative_case_requires_previous_false_positive")
-        rejected = await call("negative-critic", negative, "critique")
-        if rejected.disposition == "pass" or (rejected.direct_quant_scope and rejected.substantive_research):
-            raise ValueError("negative_critic_missed_scope_or_depth")
-        negative.update(draft=None, previous_critique=None)
-        review = await call("negative-review", negative, "review")
-        if review.disposition != "reject":
-            raise ValueError("negative_review_not_rejected")
+        try:
+            negative = bundles["negative"]
+            if not negative.get("draft"):
+                raise ValueError("negative_case_requires_previous_false_positive")
+            rejected = await call("negative-critic", negative, "critique")
+            if rejected.disposition == "pass" or (rejected.direct_quant_scope and rejected.substantive_research):
+                raise ValueError("negative_critic_missed_scope_or_depth")
+            negative.update(draft=None, previous_critique=None)
+            review = await call("negative-review", negative, "review")
+            if review.disposition != "reject":
+                raise ValueError("negative_review_not_rejected")
+            receipt["case_results"]["negative"] = {"state": "passed"}
+        except ValueError as exc:
+            receipt["case_results"]["negative"] = {"state": "not_passed", "error": str(exc)}
+        save()
+        active_case = "positive"
         positive = bundles["positive"]
         positive.update(draft=None)
-        revision_used = False
-        try:
-            draft = await call("positive-review", positive, "review")
-        except ValueError as exc:
-            if str(exc) not in REPAIRABLE_PROPOSAL_ERRORS:
-                raise
-            positive["previous_critique"] = {"disposition": "revise", "issues": [str(exc)]}
-            draft = await call("positive-contract-revision", positive, "revision")
-            revision_used = True
+        repair_used = False
+
+        async def review_positive(stage):
+            nonlocal repair_used
+            try:
+                return await call("positive-" + stage, positive, stage)
+            except ProposalValidationError as exc:
+                if repair_used:
+                    raise
+                repair_used = True
+                positive.update(draft=exc.draft, previous_critique=exc.feedback(positive.get("previous_critique")))
+                return await call("positive-" + stage + "-repair", positive, "repair")
+
+        draft = await review_positive("review")
         if draft.disposition != "publish":
             raise ValueError("positive_original_not_publishable")
         positive["draft"] = draft.model_dump(mode="json")
         critic = await call("positive-critic", positive, "critique")
-        if critic.disposition == "revise" and not revision_used:
+        if critic.disposition == "revise":
             positive["previous_critique"] = critic.model_dump(mode="json")
-            draft = await call("positive-revision", positive, "revision")
+            draft = await review_positive("revision")
             if draft.disposition != "publish":
                 raise ValueError("positive_revision_not_publishable")
             positive["draft"] = draft.model_dump(mode="json")
             critic = await call("positive-final-critic", positive, "critique")
         if critic.disposition != "pass":
             raise ValueError("positive_critique_not_passed")
-        receipt.update(state="passed", card=render(draft, positive["metadata"]))
+        receipt["case_results"]["positive"] = {"state": "passed"}
+        receipt.update(state="passed" if receipt["case_results"]["negative"]["state"] == "passed"
+                       else "not_passed", card=render(draft, positive["metadata"]))
     except ProviderFault as exc:
+        receipt["case_results"][active_case] = {"state": "blocked", "fault": exc.code}
         receipt.update(state="blocked", fault=exc.code)
     except ValueError as exc:
+        receipt["case_results"][active_case] = {"state": "not_passed", "error": str(exc)}
         receipt.update(state="not_passed", error=str(exc))
     finally:
         save()
