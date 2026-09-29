@@ -74,6 +74,12 @@ Keep at most 12 source-backed statements in the whole brief. Every author-report
 its own source-backed statement. Preserve unaffected statements and their span_ids in a revision; correct only
 the criticized statement and any other statement containing the same error. No unsupported performance,
 invented links, broad copied passages, or buy/sell instructions.
+Keep market to the actual market/asset or simulated venue, not a summary of agent behaviors. Never project a
+property of one agent class, sample, regime or test onto every class or the entire market. Separate positive
+source facts from unknowns: a simulation path count does not prove that a real-market sample period is
+inapplicable or absent. Put the observed design in a source statement and a scoped missing period in a
+different qualified_gap statement. Likewise separate an author's claim of realism from a qualified_gap about
+unverified external-market comparison or independent reproduction; do not combine them under source basis.
 Write concise Korean: keep each brief field to one or two short sentences, put the most important
 limitation first, and avoid repeating the same disclaimer across fields. The rendered Slack card must fit in
 2400 characters including links and labels; aim for 1400-1800 characters. Compress wording without omitting
@@ -120,13 +126,17 @@ def source_spans(pages):
 
 def prompt(bundle, stage):
     schema = EditorialCritique if stage == "critique" else FieldBoundResearchDraft
-    task = ("Critique the offered draft afresh against the original. Audit EACH brief field and EACH evidence "
+    task = ("Critique ONLY the current offered draft afresh against the original. Audit EACH brief field and EACH evidence "
             "entry against its referenced source_spans, jointly across the selected spans and its field_path; check every claim "
             "component, number, author and date. Enumerate "
             "ALL material issues in one response, not only the most salient one. Start each issue with the "
-            "affected field paths (for example validation, author_results[1], evidence[0].claim), and specify the supported "
+            "affected field paths (for example validation, author_results[1], evidence[0].claim), quote the exact "
+            "current sentence being challenged, and specify the supported "
             "correction and original location. After a revision, re-audit "
-            "the entire brief, including newly worded claims, uncertainty and previously unchecked quotes. "
+            "the entire current brief, including newly worded claims, uncertainty and previously unchecked quotes. "
+            "Do not repeat a historical objection if the current draft separated its positive source claim from a "
+            "qualified gap. Check market subject scope, data-period claims, and the basis of each validation "
+            "sentence explicitly before deciding pass or revise. "
             "Check direct_quant_scope and substantive_research separately from evidence accuracy and general "
             "relevance. Set either false for a generic AI governance or organizational insight, even from an "
             "asset manager, when it lacks a concrete quantitative market method, data, model or testable mechanism. "
@@ -166,7 +176,10 @@ def prompt(bundle, stage):
                 date_guard = "\nDATE_GUARD: arXiv original citation date is " + stamp + ". Use it for published_on; do not substitute feed published/updated."
         if not date_guard:
             date_guard = "\nDATE_GUARD: arXiv date metadata is incomplete or conflicting. Verify the original v1 date or hold."
-    view = {key: value for key, value in bundle.items() if key not in {"pages", "source_draft"}}
+    hidden = {"pages", "source_draft"}
+    if stage == "critique":
+        hidden.add("previous_critique")  # Prevent the final critic from inheriting stale objections.
+    view = {key: value for key, value in bundle.items() if key not in hidden}
     view["evidence_scope"] = EVIDENCE_SCOPE
     spans = source_spans(bundle.get("pages", []))
     view["source_spans"] = spans

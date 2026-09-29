@@ -302,9 +302,12 @@ def test_field_bound_results_cannot_lose_a_different_result_when_references_chan
             if item.field_path.startswith("author_results")] == [
                 ("author_results[0]", ["p1-s1"]), ("author_results[1]", ["p2-s1"])]
     bundle["draft"], bundle["source_draft"] = resolved.model_dump(), value
+    bundle["previous_critique"] = {"issues": ["old objection"]}
     revision = json.loads(prompt(bundle, "revision").split("\nDATA:\n")[1])
     criticism = json.loads(prompt(bundle, "critique").split("\nDATA:\n")[1])
     assert revision["draft"] == value and "source_draft" not in revision
+    assert revision["previous_critique"]["issues"] == ["old objection"]
+    assert "previous_critique" not in criticism
     assert criticism["draft"]["evidence"][-1]["field_path"] == "author_results[1]"
     value["author_results"][1]["span_ids"] = ["p99-s1"]
     proposed.decision.artifacts[0].content = json.dumps(value, ensure_ascii=False)
@@ -935,9 +938,12 @@ def test_editor_audits_uncertainty_and_entire_evidence_claim():
     assert "uncertainty intervals and inconclusive results" in review
     assert "do not by themselves isolate dynamic or causal skill" in review
     assert "JOINTLY must support the WHOLE statement" in review
+    assert "Never project a" in review
+    assert "source statement and a scoped missing period" in review
     critique = prompt({}, "critique")
     assert "Audit EACH brief field and EACH evidence" in critique
     assert "Enumerate ALL material issues" in critique
+    assert "quote the exact current sentence" in critique
     assert "After a revision, re-audit" in critique
 
 
