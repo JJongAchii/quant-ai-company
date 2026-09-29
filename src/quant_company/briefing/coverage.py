@@ -3,7 +3,7 @@
 import re
 from difflib import SequenceMatcher
 
-COVERAGE_VERSION = 4
+COVERAGE_VERSION = 5
 
 PATTERNS = {
     "market": r"stocks?|markets?|nasdaq|dow\b|s&p|kospi|kosdaq|증시|코스피|코스닥|장종료",
@@ -93,8 +93,7 @@ def select_documents(documents, kind, limit=16):
             continue
         candidates = [d for d in ranked if key in topics(d) and not NOISE.search(d.title)]
         if key != "market":
-            candidates.sort(key=lambda d: (market_report(d, kind),
-                            key in {"macro_policy", "geopolitics"} and "cross_asset" in topics(d)))
+            candidates.sort(key=lambda d: market_report(d, kind))
         count = 0
         for doc in candidates:
             before = len(selected)

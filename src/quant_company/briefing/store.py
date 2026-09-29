@@ -10,7 +10,7 @@ from ..owner_controls import effective_limits
 from ..staff.packs import coaching, pack
 from ..web_tools import search_prompt, search_result
 from . import schedule
-from .contracts import BRIEFER, BriefProposal, BriefReview, ConditionPatch, SourceDocument
+from .contracts import BRIEFER, BriefProposal, BriefReview, ConditionPatch, SourceDocument, SourcePlan
 from .coverage import COVERAGE_VERSION, inventory
 from .editor import (
     FORMAT_VERSION,
@@ -28,6 +28,7 @@ from .editor import (
     validate_review,
 )
 from .inputs import market_report, registrations, source_policy
+from .planning import PLAN, apply_plan, plan_prompt
 from .quality import reconcile
 
 LOCK = 71350241
@@ -48,7 +49,7 @@ class BriefStore:
         s = self.company.settings
         return fingerprint({"version": FORMAT_VERSION, "validation_version": VALIDATION_VERSION,
                             "selection_version": COVERAGE_VERSION,
-                            "editorial_contract": fingerprint([WRITE, REVIEW, PATCH]),
+                            "editorial_contract": fingerprint([PLAN, WRITE, REVIEW, PATCH]),
                             "enabled": s.briefing_enabled, "publish": s.briefing_publish_enabled,
                             "analyst_procedure": pack(BRIEFER)["digest"],
                             "lake": s.company_lake_uri,
@@ -167,7 +168,7 @@ class BriefStore:
             conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK,))
             if conn.execute("SELECT 1 FROM runtime_control WHERE paused_until>%s", (at,)).fetchone():
                 return {"state": "defer"}
-            row = conn.execute("""SELECT * FROM brief_editions WHERE state IN ('collecting','writing','reviewing','revising','final_reviewing')
+            row = conn.execute("""SELECT * FROM brief_editions WHERE state IN ('collecting','planning','writing','reviewing','revising','final_reviewing')
                 AND committed_at IS NULL AND policy_digest=%s AND due_at+interval '10 minutes'>%s
                 ORDER BY due_at LIMIT 1 FOR UPDATE""", (policy, at)).fetchone()
             if not row:
@@ -203,12 +204,15 @@ class BriefStore:
                 bundle["search_arguments"] = args
             else:
                 phase = {"reviewing": "review", "revising": "revise", "final_reviewing": "final_review"}.get(row["state"], "write")
-                bundle = self._freeze(conn, row) if phase == "write" else row["bundle"]
+                bundle = self._freeze(conn, row) if row["state"] == "collecting" else row["bundle"]
+                if row["state"] in {"collecting", "planning"} and bundle.get("candidate_documents"):
+                    phase = "plan"
                 if not bundle.get("documents"):
                     conn.execute("UPDATE brief_editions SET state='blocked',error='no_current_originals',bundle=%s WHERE id=%s",
                                  (Jsonb(bundle), row["id"]))
                     return {"state": "blocked", "reason": "no_current_originals"}
-                model_prompt = prompt(bundle, phase, row["proposal"] if phase in {"review", "final_review"} else None)
+                model_prompt = (plan_prompt(bundle) if phase == "plan" else
+                                prompt(bundle, phase, row["proposal"] if phase in {"review", "final_review"} else None))
             identity = f"news-brief-{row['id']}-{phase}"
             if conn.execute("SELECT 1 FROM brief_calls WHERE id=%s", (identity,)).fetchone():
                 return {"state": "blocked", "reason": "phase_already_attempted"}
@@ -224,7 +228,7 @@ class BriefStore:
             conn.execute("INSERT INTO brief_calls(id,edition_id,phase,request,next_at) VALUES(%s,%s,%s,%s,%s)",
                          (identity, row["id"], phase, Jsonb(request.model_dump()), at))
             conn.execute("UPDATE brief_editions SET state=%s,bundle=%s WHERE id=%s",
-                         ({"search": "collecting", "write": "writing", "review": "reviewing",
+                         ({"search": "collecting", "plan": "planning", "write": "writing", "review": "reviewing",
                            "revise": "revising", "final_review": "final_reviewing"}[phase], Jsonb(bundle), row["id"]))
             return {"state": "ready", "request": request.model_dump()}
 
@@ -252,6 +256,14 @@ class BriefStore:
             if call["phase"] == "search":
                 result = search_result(response, row["bundle"]["search_arguments"])
                 conn.execute("UPDATE brief_editions SET next_collection=%s WHERE id=%s", (at, row["id"]))
+            elif call["phase"] == "plan":
+                plan = artifact(response, SourcePlan)
+                selected = apply_plan(row["bundle"], plan)
+                # Check the actual writer context before spending another call.
+                prompt(selected, "write")
+                result = plan.model_dump(mode="json")
+                conn.execute("UPDATE brief_editions SET state='writing',bundle=%s WHERE id=%s",
+                             (Jsonb(selected), row["id"]))
             elif call["phase"] in {"write", "revise"}:
                 feedback = row["bundle"].get("revision_feedback", {})
                 if call["phase"] == "revise" and feedback.get("repair_mode") == "conditions_only":
@@ -446,5 +458,5 @@ def priority_pending(company):
         return False
     with company.db.transaction() as conn:
         return bool(conn.execute("""SELECT 1 FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
-            AND state IN ('collecting','writing','reviewing','revising','final_reviewing') AND due_at>=%s AND due_at<=%s LIMIT 1""",
-                                 (policy, at-timedelta(minutes=10), at+timedelta(minutes=40))).fetchone())
+            AND state IN ('collecting','planning','writing','reviewing','revising','final_reviewing') AND due_at>=%s AND due_at<=%s LIMIT 1""",
+                                 (policy, at-timedelta(minutes=10), at+timedelta(minutes=50))).fetchone())

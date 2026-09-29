@@ -88,7 +88,7 @@ def test_main_post_pairs_economic_effect_and_alternative_without_repeating_appli
     assert p.issues[0].analysis.alternative.text in parts[0]
     assert p.issues[0].analysis.alternative.text not in "\n".join(parts[1:])
     assert "수일~수주" in parts[1]
-    assert len(parts[0]) < 2000 and quality["format_version"] == 9
+    assert len(parts[0]) < 2000 and quality["format_version"] == 10
     payload = json.loads(prompt(bundle(), "review", p.model_dump(mode="json")).split("BRIEF DATA JSON:\n")[1])
     assert payload["main_post_preview"] == parts[0]
 

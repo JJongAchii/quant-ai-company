@@ -13,15 +13,27 @@ from .test_temporal import temporal_environment  # noqa: F401
 
 
 @pytest.mark.integration
-async def test_real_temporal_postgres_brief_write_review_and_replay(brief, temporal_environment):  # noqa: F811
+@pytest.mark.parametrize("with_plan", [False, True])
+async def test_real_temporal_postgres_brief_write_review_and_replay(brief, temporal_environment, with_plan):  # noqa: F811
     store, clock = brief
     edition = seed(brief)
+    if with_plan:
+        from psycopg.types.json import Jsonb
+
+        from .test_briefing_planning import planning_bundle
+
+        with store.db.transaction() as conn:
+            conn.execute("UPDATE brief_editions SET bundle=%s WHERE id=%s", (Jsonb(planning_bundle()), edition.id))
     store.company.settings.temporal_task_queue = "brief-runtime-"+uuid4().hex
     called = []
 
     class Provider:
         async def run(self, request):
             called.append(request.request_id)
+            if request.request_id.endswith("-plan"):
+                from .test_briefing_planning import plan
+
+                return response(request.model_dump(), plan("source-1"))
             return response(request.model_dump())
 
     client = temporal_environment.client
@@ -36,7 +48,8 @@ async def test_real_temporal_postgres_brief_write_review_and_replay(brief, tempo
                     if state == "ready":
                         break
                     await asyncio.sleep(0.1)
-            assert called == [f"news-brief-{edition.id}-write", f"news-brief-{edition.id}-review"]
+            phases = ["plan", "write", "review"] if with_plan else ["write", "review"]
+            assert called == [f"news-brief-{edition.id}-{phase}" for phase in phases]
             clock["at"] = edition.due_at
             store.flush()
             assert store.status()["deliveries"][0]["status"] == "pending"

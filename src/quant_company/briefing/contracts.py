@@ -52,6 +52,17 @@ class Evidence(StrictModel):
     quote: str = Field(min_length=10, max_length=650)
 
 
+class SourceChoice(StrictModel):
+    source_id: str
+    reason: str = Field(min_length=10, max_length=240)
+
+
+class SourcePlan(StrictModel):
+    selections: list[SourceChoice] = Field(min_length=1, max_length=16)
+    # Editorial priorities are questions for the writer, never additional evidence.
+    priorities: list[str] = Field(min_length=1, max_length=6)
+
+
 class Supported(StrictModel):
     id: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,39}$")
     evidence: list[Evidence] = Field(min_length=1, max_length=4)
@@ -166,11 +177,19 @@ class ReviewChecks(TypedDict):
     readability: bool
 
 
+class FactAssessment(StrictModel):
+    fact: str = Field(min_length=5, max_length=240)
+    quote: str = Field(min_length=10, max_length=400)
+    main_item_ids: list[str] = Field(max_length=6)
+
+
 class SourceAssessment(StrictModel):
     source_id: str
     treatment: Literal["covered", "background", "not_material"]
     reason: str = Field(min_length=10, max_length=300)
     item_ids: list[str] = Field(default_factory=list, max_length=12)
+    # An empty list is appropriate only when no distinct material fact needs coverage.
+    material_facts: list[FactAssessment] = Field(max_length=6)
 
 
 class BriefReview(StrictModel):
@@ -178,6 +197,7 @@ class BriefReview(StrictModel):
     # Each criterion must be considered explicitly, never inferred from an empty rejection list.
     checks: ReviewChecks
     source_assessments: list[SourceAssessment] = Field(default_factory=list, max_length=24)
+    source_requests: list[SourceChoice] = Field(default_factory=list, max_length=4)
     rejected_ids: list[str] = Field(default_factory=list, max_length=80)
     concerns: list[str] = Field(default_factory=list, max_length=8)
 

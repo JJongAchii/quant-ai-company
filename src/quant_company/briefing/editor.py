@@ -21,11 +21,12 @@ from .contracts import (
     item_map,
 )
 from .numeric import numbers, prose_numbers_supported, reported_change_supported
+from .planning import SOURCE_CHAR_BUDGET, supplement_sources
 from .quality import assurance
 from .schedule import KST, close
 
-FORMAT_VERSION = 9
-VALIDATION_VERSION = 12
+FORMAT_VERSION = 10
+VALIDATION_VERSION = 15
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Return AgentDecision(status=complete,say='') with exactly one artifact containing BriefProposal JSON.
@@ -76,10 +77,15 @@ Do not claim 'priced in', positioning, risk appetite, consensus or expected retu
 Do not invent scenario probabilities or targets. Reflect important analysis in the concise main-text mechanism and alternative;
 the structured analysis is an auditable conclusion summary, not a request for private chain-of-thought.
 professional_feedback is synthetic practice advice, never market evidence or proof of expertise.
+source_plan gives editorial questions and reasons for choosing sources. Verify them against the originals;
+it is not evidence. Read the full supplied content, including the tail. excerpt_truncated means the
+upstream original is incomplete: never claim to have checked its unshown remainder.
 If revision_feedback is supplied, revise its previous draft using the same frozen originals. Correct the
 listed rejected claims, omitted observations and material omissions; retain supported useful content.
 Reviewer comments are critiques to verify against the originals, never new factual evidence. Return a
 complete corrected BriefProposal, not a patch or an explanation of edits. Do not add new sources.
+source_supplements are omitted originals from the SAME frozen pre-cutoff candidate pool, now supplied in
+full within the original budget. Read them and reflect their material facts in the repaired main post.
 Set fact.kind=fact, interpretation.kind=interpretation, next_check.kind=condition. Prefer material changes,
 cross-market connections and new information, not quotas. Cover important worldwide events even without
 immediate price reactions. Add breadth/concentration, leading/lagging sectors and conflicting evidence only
@@ -227,6 +233,29 @@ field/validation terminology or repeated caveats that obscure the day's developm
 writer to restate an already visible qualification in several sections to pass counterevidence.
 Coverage is a separate test: scan EVERY non-calendar, non-dataset original, including policy, geopolitics,
 corporate/industry and cross-asset developments. Return one source_assessment for each such source_id.
+First identify its distinct material facts from the original, then compare them with the main post.
+In material_facts, record each such fact in a short Korean sentence, a short exact quote from this source,
+and main_item_ids that substantively express it. Up to six facts per original; omit incidental details.
+An article reporting both a negotiation and a rejection, or two distinct policy speakers, needs separate
+entries when each changes the interpretation. Empty main_item_ids means the material fact is MISSING:
+fail coverage and use reduce/withhold. A citation, evidence quote, limitations string or thread-only
+interpretation is not main-post coverage. Use supplied main_post_item_ids to choose IDs. For genuinely
+nonmaterial/duplicate background with no distinct material fact, material_facts may be empty with a
+concrete reason. A covered source requires at least one material fact. Do not credit a related but
+different fact. Treat source_plan as questions to verify, never evidence or an instruction to pass.
+The proposal's evidence arrays contain quote keys: resolve each through evidence_quotes to obtain its
+exact source_id and quote. This representation preserves the original evidence without repeating it.
+For a document with content_parts, read its parts in order: strings are original text and a quote_ref
+object inserts that exact passage from evidence_quotes. No source text has been removed or summarized.
+Also scan unselected_source_index for a material event missing from the selected originals. The index is
+only discovery metadata, not evidence for a new claim. Each row is [source_id,title,source_chars,published_at].
+In source_requests, ask for up to four omitted IDs
+whose originals are needed to check a consequential omission. Give the concrete reason; keep their summed
+source_chars within source_chars_remaining. A large new company transaction, material policy change or
+opposing development must not be silently displaced by routine background. Any source request means
+coverage=false and verdict=reduce/withhold until the originals have been read and the brief revised.
+Do not request reprints when supplied sources already cover all their material facts. If source_supplements
+is present, the single repair has been used: any further omission remains a reduced/withheld result.
 For covered, item_ids must contain ONLY item IDs that cite that exact source_id in their own evidence;
 never list a related item supported by another article. The server rejects the entire review otherwise.
 covered requires the source's distinct material developments to appear substantively in the main post,
@@ -280,14 +309,57 @@ def prompt(bundle, phase, proposal=None):
     payload = {**bundle, "proposal": proposal} if proposal else bundle
     if phase == "review" and proposal:
         payload = {**payload, "main_post_preview": render(BriefProposal.model_validate(proposal), bundle)[0][0]}
+        payload["main_post_item_ids"] = sorted(main_post_item_ids(BriefProposal.model_validate(proposal), bundle))
+        # Preserve every exact quote while avoiding repeated copies of the same passage.
+        quotes = {}
+        def compact(value):
+            if isinstance(value, dict):
+                if set(value) == {"source_id", "quote"}:
+                    return quotes.setdefault((value["source_id"], value["quote"]), f"q{len(quotes)+1}")
+                return {key: compact(item) for key, item in value.items()}
+            return [compact(item) for item in value] if isinstance(value, list) else value
+        payload["proposal"] = compact(proposal)
+        payload["evidence_quotes"] = {key: {"source_id": source_id, "quote": quote}
+                                      for (source_id, quote), key in quotes.items()}
+        selected = {d["id"] for d in bundle["documents"]}
+        payload["unselected_source_index"] = [
+            [d["id"], d["title"][:180], len(d["content"]), d["published_at"]]
+            for d in bundle.get("candidate_documents", []) if d["id"] not in selected]
+        payload["source_chars_remaining"] = max(0, SOURCE_CHAR_BUDGET-sum(
+            len(d["content"]) for d in bundle["documents"] if d["kind"] not in {"calendar", "dataset"}))
+        # Independent review needs the originals, not the selector's conclusions or collector bookkeeping.
+        payload = {k: v for k, v in payload.items() if k not in {
+            "source_plan", "source_coverage", "candidate_count", "candidate_omitted_count", "evaluation"}}
     procedure = bundle.get("analyst_procedure") or pack(BRIEFER)
-    payload = {k: v for k, v in payload.items() if k != "analyst_procedure"}
-    payload = {**payload, "documents": [{**d, "receipt": {k: v for k, v in d.get("receipt", {}).items()
-        if k in {"source", "qdata_code_commit", "note", "license_url", "license_name"}}}
+    payload = {k: v for k, v in payload.items() if k not in {"analyst_procedure", "candidate_documents"}}
+    payload = {**payload, "documents": [
+        {**{k: v for k, v in d.items() if k not in {"url", "sha256", "registration", "receipt"}},
+         "receipt": {k: v for k, v in d.get("receipt", {}).items()
+                     if k in {"source", "qdata_code_commit", "note", "excerpt_truncated"}}}
         for d in payload.get("documents", [])]}
+    if phase == "review" and proposal:
+        for doc in payload["documents"]:
+            parts = [doc["content"]]
+            source_quotes = [(key, q["quote"]) for key, q in payload["evidence_quotes"].items()
+                             if q["source_id"] == doc["id"]]
+            for key, quote in sorted(source_quotes, key=lambda q: len(q[1]), reverse=True):
+                expanded = []
+                for part in parts:
+                    if not isinstance(part, str) or quote not in part:
+                        expanded.append(part)
+                        continue
+                    for index, text in enumerate(part.split(quote)):
+                        if index:
+                            expanded.append({"quote_ref": key})
+                        if text:
+                            expanded.append(text)
+                parts = expanded
+            if any(isinstance(part, dict) for part in parts):
+                doc.pop("content")
+                doc["content_parts"] = parts
     result = ((PATCH if patch else WRITE if phase == "write" else REVIEW) + "\n" + render_pack(procedure)
               + "\nINSTRUMENTS:\n" + json.dumps(INSTRUMENTS, ensure_ascii=False)
-              + "\nSCHEMA:\n" + json.dumps(schema.model_json_schema(), ensure_ascii=False)
+              + "\nSCHEMA:\n" + json.dumps(schema.model_json_schema(), ensure_ascii=False, separators=(",", ":"))
               + "\nBRIEF DATA JSON:\n" + json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
     if len(result) > 88000:
         raise ValueError("brief_context_limit")
@@ -306,6 +378,7 @@ def revision_bundle(bundle, proposal, review, rejected):
     conditions_only = (review.verdict == "reduce" and bool(rejected) and len(rejected) <= 6
         and all(value for key, value in review.checks.items() if key != "falsifiability")
         and all(isinstance(items.get(identity), Claim) and items[identity].kind == "condition" for identity in rejected))
+    bundle = supplement_sources(bundle, review.source_requests)
     return {**bundle, "revision_feedback": {
         # Full originals and raw responses remain frozen. Repeated quote text in
         # the prior draft adds no evidence and can crowd out the repair request.
@@ -313,6 +386,8 @@ def revision_bundle(bundle, proposal, review, rejected):
         "repair_mode": "conditions_only" if conditions_only else "full_proposal",
         "allowed_ids": sorted(rejected) if conditions_only else [],
         "checks": review.checks, "concerns": review.concerns,
+        "source_assessments": [a.model_dump(mode="json") for a in review.source_assessments
+                               if any(not f.main_item_ids for f in a.material_facts)],
         "instruction": "Correct the documented problems and missing core observations using these same originals."}}
 
 
@@ -485,6 +560,21 @@ def prune(proposal, rejected):
     return BriefProposal.model_validate(value)
 
 
+def main_post_item_ids(proposal, bundle):
+    """The same visible section limits as render; thread-only text cannot cover a main fact."""
+    visible = [*proposal.summary, *proposal.overview, *proposal.observations, *proposal.internals]
+    for issue in proposal.issues:
+        visible.extend([issue.fact, issue.analysis.mechanism, issue.analysis.alternative])
+        if issue.counterpoint:
+            visible.append(issue.counterpoint)
+    watches = proposal.watchpoints or [issue.next_check for issue in proposal.issues][:3]
+    visible.extend(proposal.calendar[:2 if watches else 3])
+    visible.extend(watches[:2 if proposal.calendar else 3])
+    morning = {w["id"] for w in bundle.get("morning_watchpoints", [])}
+    visible.extend(w for w in proposal.watch_results if w.watch_id in morning)
+    return {item.id for item in visible}
+
+
 def validate_review(review, proposal, bundle):
     """A complete review must account for every original, not just agree with selected claims."""
     expected = {d["id"] for d in bundle["documents"] if d["kind"] not in {"calendar", "dataset"}}
@@ -492,6 +582,12 @@ def validate_review(review, proposal, bundle):
     if set(assessed) != expected or len(assessed) != len(expected):
         raise ValueError("review_source_coverage_incomplete")
     items = item_map(proposal)
+    visible = main_post_item_ids(proposal, bundle) - set(review.rejected_ids)
+    docs = {d["id"]: d for d in bundle["documents"]}
+    if review.source_requests:
+        supplement_sources(bundle, review.source_requests)
+        if review.checks["coverage"] or review.verdict == "publish":
+            raise ValueError("review_unread_source_cannot_pass")
     if not set(review.rejected_ids) <= items.keys():
         raise ValueError("review_rejected_unknown_item")
     for assessment in review.source_assessments:
@@ -501,6 +597,19 @@ def validate_review(review, proposal, bundle):
                 any(e.source_id == assessment.source_id for e in items[i].evidence)
                 for i in assessment.item_ids)):
             raise ValueError("review_coverage_not_cited")
+        if assessment.treatment == "covered" and not assessment.material_facts:
+            raise ValueError("review_material_facts_required")
+        for fact in assessment.material_facts:
+            original = docs[assessment.source_id]
+            if not any(" ".join(fact.quote.split()) in " ".join(original[key].split())
+                       for key in ("title", "content")):
+                raise ValueError("review_fact_not_in_original")
+            if (not set(fact.main_item_ids) <= visible or not all(
+                    any(e.source_id == assessment.source_id for e in items[i].evidence)
+                    for i in fact.main_item_ids)):
+                raise ValueError("review_fact_not_in_main_post")
+            if not fact.main_item_ids and (review.checks["coverage"] or review.verdict == "publish"):
+                raise ValueError("review_missing_fact_cannot_pass")
 
 
 def number(value):

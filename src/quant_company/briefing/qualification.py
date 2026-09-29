@@ -4,14 +4,19 @@ from datetime import timedelta
 
 from ..company import as_json
 from . import schedule
-from .contracts import BriefProposal, BriefReview
+from .contracts import BriefProposal, BriefReview, SourcePlan
 from .editor import FORMAT_VERSION, render, validate, validate_review
+from .planning import apply_plan
 
 
 def replay(row):
     try:
         if not row["quality"] or row["quality"].get("format_version") != FORMAT_VERSION:
             return {"ok": False, "reason": "unqualified_format_version"}
+        if row["bundle"].get("candidate_documents"):
+            selected = apply_plan(row["bundle"], SourcePlan.model_validate(row["bundle"].get("source_plan")))
+            if selected["documents"] != row["bundle"]["documents"]:
+                return {"ok": False, "reason": "source_selection_changed"}
         proposal = BriefProposal.model_validate(row["proposal"]) if row["proposal"] else None
         review = BriefReview.model_validate(row["review"]) if row["review"] else None
         if proposal and review:
@@ -93,6 +98,10 @@ def qualify(company, *, at=None):
             real_phases = {c["phase"] for c in edition_calls
                            if c["state"] == "completed" and c["provider"] == "codex"}
             required_phases = {"write", "review"}
+            if (row["bundle"] or {}).get("candidate_documents"):
+                required_phases.add("plan")
+                if not (row["bundle"] or {}).get("source_plan"):
+                    reasons.append("source_selection_not_reviewed")
             if quality.get("revision_used") or any(c["phase"] in {"revise", "final_review"} for c in edition_calls):
                 required_phases |= {"revise", "final_review"}
             if not required_phases <= real_phases:

@@ -1,0 +1,16 @@
+{
+  "checked_before_writer": "2026-09-29T01:19:44.119684+00:00",
+  "result": "insufficient_selection_coverage",
+  "positive": [
+    "Completed US session reports",
+    "Treasury/FX/Korean bond amounts",
+    "Iran denial and conditional relief",
+    "Saudi physical supply recovery",
+    "AI policy and trade details"
+  ],
+  "material_gap": {
+    "source_id": "df3a633ac3b71b46af3b1e7c2c5c23f1759db6c2",
+    "finding": "The newly announced AMD $8.2bn World Labs agreement is available in the frozen candidate pool but not selected; prior-Korean-session company forecasts and a two-week-old attack disclosure use slots. The first selector result is not a full content pass."
+  },
+  "response": "Add omitted-candidate title review and bounded same-pool source supplementation within the one existing repair; continue as development evaluation, not fresh qualification."
+}

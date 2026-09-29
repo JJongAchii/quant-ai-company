@@ -13,7 +13,7 @@ import re
 from html import unescape
 from pathlib import Path
 
-from quant_company.briefing.contracts import BriefProposal, BriefReview, ConditionPatch
+from quant_company.briefing.contracts import BriefProposal, BriefReview, ConditionPatch, SourcePlan
 from quant_company.briefing.editor import (
     FORMAT_VERSION,
     apply_condition_patch,
@@ -25,6 +25,7 @@ from quant_company.briefing.editor import (
     validate,
     validate_review,
 )
+from quant_company.briefing.planning import apply_plan, plan_prompt
 from quant_company.briefing.quality import reconcile
 from quant_company.company import fingerprint
 from quant_company.config import Settings
@@ -49,7 +50,7 @@ def provider_response(path):
 
 
 def request(bundle, phase, proposal=None):
-    text = prompt(bundle, phase, proposal)
+    text = plan_prompt(bundle) if phase == "plan" else prompt(bundle, phase, proposal)
     return ProviderRequest(request_id="news-brief-eval-"+fingerprint([FORMAT_VERSION, phase, text])[:32],
                            model="gpt-6-astra", reasoning_effort="high", prompt=text)
 
@@ -112,6 +113,7 @@ async def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bundle")
     parser.add_argument("--writer")
+    parser.add_argument("--planner", help="Actual source-selection receipt for the frozen candidate bundle")
     parser.add_argument("--reviewer")
     parser.add_argument("--previous-writer", help="Original writer receipt when --writer contains a condition patch")
     parser.add_argument("--correction-review", help="Review permitting only the named condition replacements")
@@ -143,6 +145,14 @@ async def main():
         return
     args.output.mkdir(parents=True, exist_ok=True)
     bundle = read(args.bundle)
+    if args.planner:
+        bundle = apply_plan(bundle, artifact(provider_response(args.planner), SourcePlan))
+        save(args.output/"selected-bundle.json", bundle)
+    if bundle.get("candidate_documents") and not bundle.get("source_plan"):
+        if args.writer:
+            raise ValueError("Candidate bundle requires its source planner receipt before writing")
+        save(args.output/"plan-request.json", request(bundle, "plan").model_dump(mode="json"))
+        return
     if not args.writer:
         save(args.output/"write-request.json", request(bundle, "write").model_dump(mode="json"))
         return

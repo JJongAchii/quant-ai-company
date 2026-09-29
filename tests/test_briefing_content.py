@@ -421,7 +421,8 @@ def test_source_coverage_cannot_be_empty_duplicated_or_claim_uncited_items():
     b["documents"].append(doc("uncited", "Iran war and oil supplies").model_dump(mode="json"))
     v = review().model_dump()
     v["source_assessments"].append({"source_id": "uncited", "treatment": "covered",
-                                   "reason": "이 기사를 인용했다고 잘못 주장한 검토", "item_ids": ["summary"]})
+                                   "reason": "이 기사를 인용했다고 잘못 주장한 검토", "item_ids": ["summary"],
+                                   "material_facts": []})
     with pytest.raises(ValueError, match="review_coverage_not_cited"):
         validate_review(BriefReview.model_validate(v), p, b)
 

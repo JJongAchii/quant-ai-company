@@ -84,7 +84,10 @@ def response(request, value=None, **kwargs):
 def review(**updates):
     return BriefReview(verdict="publish", checks=dict.fromkeys(sorted(REVIEW_CHECKS), True),
         source_assessments=[{"source_id": "source-1", "treatment": "covered",
-                             "reason": "합성 마감 원문의 내용이 핵심 요약에 반영됨", "item_ids": ["summary"]}], **updates)
+                             "reason": "합성 마감 원문의 내용이 핵심 요약에 반영됨", "item_ids": ["summary"],
+                             "material_facts": [{"fact": "반도체가 상승을 주도했고 기술주 밖의 참여는 혼조",
+                                 "quote": "Semiconductor shares led the advance, but participation outside technology was mixed.",
+                                 "main_item_ids": ["summary"]}]}], **updates)
 
 
 @pytest.fixture

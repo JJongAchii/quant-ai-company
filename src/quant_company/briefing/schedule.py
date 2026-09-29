@@ -65,7 +65,7 @@ def editions(day, channel, owner, changes=None):
             continue
         result.append(BriefEdition(
             id=stable(f"brief:{channel}:{owner}:{day}:{kind}"), day=day, kind=kind,
-            due_at=due, starts_at=due-timedelta(minutes=40), cutoff=due-timedelta(minutes=20),
+            due_at=due, starts_at=due-timedelta(minutes=50), cutoff=due-timedelta(minutes=30),
             expires_at=due+timedelta(hours=1), us_session=us_session if kind == "am" else None,
             kr_session=day if kr_close else None,
             previous_us_session=previous("US", us_session, changes) if us_session and kind == "am" else None,

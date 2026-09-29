@@ -50,13 +50,15 @@ def document(receipt, registration, publisher, kind, *, title=None, published=No
     retrieved = timestamp(receipt.get("retrieved_at"))
     if retrieved is None or not receipt.get("content") or not receipt.get("original_sha256"):
         return None
-    content = receipt["content"][:3000]
+    limit = 3000 if kind == "calendar" else 6000
+    content = receipt["content"][:limit]
     return SourceDocument(
         id=fingerprint([registration, receipt["url"], receipt["original_sha256"]])[:40],
         url=receipt["url"], title=title or receipt.get("title", publisher), publisher=publisher, kind=kind,
         content=content, origin_group=origin_group, published_at=published or timestamp(receipt.get("published_at")),
         retrieved_at=retrieved, sha256=receipt["original_sha256"], registration=registration,
-        receipt={k: v for k, v in receipt.items() if k not in {"content", "links"}})
+        receipt={**{k: v for k, v in receipt.items() if k not in {"content", "links"}},
+                 "excerpt_truncated": bool(receipt.get("excerpt_truncated") or len(receipt["content"]) > limit)})
 
 
 def collect(company, edition, existing=None, candidates=(), *, at, page_fetch=fetch_original,
@@ -68,7 +70,7 @@ def collect(company, edition, existing=None, candidates=(), *, at, page_fetch=fe
     docs = {}
     errors = []
     lower = edition.cutoff-timedelta(hours=72 if edition.weekly else 30)
-    for value in (existing or {}).get("documents", []):
+    for value in [*(existing or {}).get("candidate_documents", []), *(existing or {}).get("documents", [])]:
         doc = SourceDocument.model_validate(value)
         if doc.kind == "calendar" or (doc.registration in spec_map and doc.published_at
                                       and lower <= doc.published_at <= min(at, edition.cutoff)):
@@ -164,9 +166,16 @@ def collect(company, edition, existing=None, candidates=(), *, at, page_fetch=fe
             errors.append({"source": identity, "url": url, "error": receipt.get("error", "calendar_failed")})
     # Sources completed after the cutoff cannot silently enter a frozen edition.
     eligible = [d for d in docs.values() if d.retrieved_at <= edition.cutoff]
-    media = select_documents([d for d in eligible if d.kind != "calendar"], edition.kind)
+    from .planning import candidates
+
+    originals = [d for d in eligible if d.kind != "calendar"]
+    pool = candidates(originals, edition.kind)
+    media = select_documents(originals, edition.kind)
     selected = media + [d for d in eligible if d.kind == "calendar"][:4]
-    return {"documents": [d.model_dump(mode="json") for d in selected], "collection_errors": errors,
+    return {"documents": [d.model_dump(mode="json") for d in selected],
+            "candidate_documents": [d.model_dump(mode="json") for d in pool],
+            "candidate_count": len(originals), "candidate_omitted_count": len(originals)-len(pool),
+            "collection_errors": errors,
             "collected_at": at.isoformat(), "source_count": len(selected), "source_coverage": inventory(selected)}
 
 
