@@ -11,6 +11,7 @@ from quant_company.company import PolicyError
 from quant_company.contracts import AgentDecision, ProviderResponse
 from quant_company.research.audit_delivery import check_delivery, packet_data
 from quant_company.research.controller import MissionController
+from quant_company.staff.packs import employee_pack
 
 from .test_research_controller import FixtureBackend, active, mission  # noqa: F401 -- real PG fixture
 
@@ -54,6 +55,7 @@ def test_complete_evidence_delivered_in_batches_with_notes_and_resident_final_co
     while True:
         request = company.prepare_turn(identity)["request"]
         prompts.append(request["prompt"])
+        assert employee_pack("validator") in request["prompt"]
         assert request["session"] == {"id": str(row["task_id"]), "previous_request_id": previous}
         assert len(request["prompt"]) <= 90000
         data = packet_data(request["prompt"])
