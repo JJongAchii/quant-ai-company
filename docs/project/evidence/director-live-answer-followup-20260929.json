@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-09-29T05:12:26Z",
+  "source": "read-only production PostgreSQL tasks, turns, research records and Slack outbox",
+  "projectId": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "channel": "C0C2B9EUEGM",
+  "threadTs": "1789633942.673909",
+  "questions": [
+    {
+      "taskId": "78310758-22f0-5dea-922e-aefe67397d76",
+      "text": "현재 어떻게 진행중이야?",
+      "kind": "answer",
+      "status": "completed",
+      "turns": 5,
+      "deliveredReplies": 4,
+      "finalSlackTs": "1790657556.554349"
+    },
+    {
+      "taskId": "01df92df-3be2-53a5-859f-4f864c0d98cf",
+      "text": "방금 승인한 새 연구는 지금 어느 단계야? 실제로 선정하거나 실행한 과제도 알려줘.",
+      "kind": "answer",
+      "status": "completed",
+      "turns": 4,
+      "deliveredReplies": 3,
+      "finalSlackTs": "1790657486.551289"
+    }
+  ],
+  "program": {
+    "id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+    "state": "active",
+    "lastStage": "program_selection",
+    "lastStageState": "completed",
+    "tasks": {"waiting": 2},
+    "candidateRelationship": "The two waiting proposals are the original and a revised version of the same KOSPI200 ETF GMM hypothesis.",
+    "dataGate": "Both independent data assessments are blocked because the designated warmup/development inputs and execution profile lack verified schema, digest, point-in-time and execution evidence.",
+    "missions": 0,
+    "researchJobs": 0
+  },
+  "observedDefects": [
+    "Director published each intermediate continue answer to Slack before its final answer.",
+    "The final answers said candidate titles and hold reasons were unavailable, although research_program_tasks stores them; owner-facing program snapshots omitted those fields."
+  ],
+  "candidateCommit": "a1d9821387d7349c37fcba915739258b19f7539e",
+  "candidateBehavior": "Retain intermediate answer messages in PostgreSQL but publish only final follow-up answers; expose bounded task titles, states, decisions and hold rationale excerpts in program snapshots.",
+  "validation": {
+    "realPostgresFullSuite": "1281 passed, 46 skipped",
+    "ruff": "passed",
+    "liveSlackAfterCandidate": "not deployed or retested"
+  }
+}
