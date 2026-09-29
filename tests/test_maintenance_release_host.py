@@ -24,6 +24,25 @@ def archive(files):
     return stream.getvalue()
 
 
+def test_health_preserves_the_reviewed_codex_pin_across_other_releases(tmp_path, monkeypatch):
+    (tmp_path / 'config').mkdir()
+    pin = 'quant-company-codex:' + 'a' * 40
+    (tmp_path / 'config/runtime.env').write_text('PINNED_CODEX_RUNTIME_IMAGE=' + pin + '\n')
+    monkeypatch.setattr(release, 'STATE', tmp_path)
+    monkeypatch.setattr(release, 'CURRENT', tmp_path)
+    monkeypatch.setattr(release, 'services', lambda root: ['codex-runtime'])
+    rows = [
+        {'Name': '/quant-company-postgres-1', 'Id': 'same-postgres', 'State': {'Running': True, 'OOMKilled': False}},
+        {'Name': '/quant-company-codex-runtime-1', 'State': {'Running': True, 'OOMKilled': False},
+         'Config': {'Image': pin, 'Labels': {'org.opencontainers.image.revision': 'a' * 40}}},
+    ]
+    monkeypatch.setattr(release, 'run', lambda args: json.dumps(rows).encode())
+    assert release.health('b' * 40, 'same-postgres')['healthy_services'] == 2
+    rows[1]['Config']['Image'] = 'quant-company-codex:' + 'b' * 40
+    with pytest.raises(ValueError, match='release_pinned_codex_changed'):
+        release.health('b' * 40, 'same-postgres')
+
+
 def test_release_archive_remains_readable_by_container_user_with_private_umask(tmp_path):
     target = tmp_path/'release'
     original_umask = os.umask(0o077)
