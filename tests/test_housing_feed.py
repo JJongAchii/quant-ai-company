@@ -125,7 +125,14 @@ def housing(company, monkeypatch):
     company.roles["reporter"] = Role(id="reporter", name="Reporter", mission="Fixture", model="unused",
                                      instructions="Fixture", tools=[], can_delegate_to=[], active=False)
     store = HousingFeedStore(company)
-    store.clock = [datetime.now(UTC).astimezone(schedule.KST).replace(hour=10, minute=0, second=0, microsecond=0)]
+    at = datetime.now(UTC).astimezone(schedule.KST)
+    if at.hour < 9:
+        at = (at - timedelta(days=1)).replace(hour=10, minute=0, second=0, microsecond=0)
+    elif at.hour < 10:
+        at = at.replace(second=0, microsecond=0)
+    else:
+        at = at.replace(hour=10, minute=0, second=0, microsecond=0)
+    store.clock = [at]
     monkeypatch.setattr(schedule, "utcnow", lambda: store.clock[0])
     return store
 

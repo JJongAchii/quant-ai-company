@@ -3,7 +3,7 @@
 import re
 from difflib import SequenceMatcher
 
-COVERAGE_VERSION = 3
+COVERAGE_VERSION = 4
 
 PATTERNS = {
     "market": r"stocks?|markets?|nasdaq|dow\b|s&p|kospi|kosdaq|증시|코스피|코스닥|장종료",
@@ -14,7 +14,7 @@ PATTERNS = {
 }
 NOISE = re.compile(r"^\[(?:인사|부고|게시판|표)\]|^\[특징주\].*상장 첫날|ETF 구성종목.*교체|"
                    r"채용|체육관|시세표|상장예비심사|상장예심|"
-                   r"시민단체|준공|기탁|나눔|basketball|football|olympic|asian games", re.I)
+                   r"신규 상장|시민단체|준공|기탁|나눔|basketball|football|olympic|asian games", re.I)
 
 
 def priority(title):
@@ -48,11 +48,18 @@ def select_documents(documents, kind, limit=16):
     selected, hashes = [], set()
 
     def duplicate(doc):
-        return doc.sha256 in hashes or any(
-            (d.origin_group or d.publisher) == (doc.origin_group or doc.publisher)
-            and SequenceMatcher(None, re.sub(r"\[[^]]*\]|\([^)]*\)", "", d.title),
-                                re.sub(r"\[[^]]*\]|\([^)]*\)", "", doc.title)).ratio() > .72
-            for d in selected)
+        if doc.sha256 in hashes:
+            return True
+        title = re.sub(r"\[[^]]*\]|\([^)]*\)", "", doc.title)
+        for existing in selected:
+            other = re.sub(r"\[[^]]*\]|\([^)]*\)", "", existing.title)
+            similarity = SequenceMatcher(None, other, title).ratio()
+            same_origin = (existing.origin_group or existing.publisher) == (doc.origin_group or doc.publisher)
+            if same_origin and similarity > .72:
+                return True
+            if similarity > .9 and not (market_report(existing, kind) and market_report(doc, kind)):
+                return True
+        return False
 
     def add(doc):
         if len(selected) < limit and not duplicate(doc):
@@ -69,6 +76,18 @@ def select_documents(documents, kind, limit=16):
             closing_origins.add(origin)
             if len(closing_origins) == 2:
                 break
+    # A market-wide flow story is distinct from the session close. Preserve one
+    # when the two close slots would otherwise exhaust the market topic sample.
+    if kind == "pm":
+        for doc in ranked:
+            if (not NOISE.search(doc.title)
+                    and re.search(r"ETF|상장지수펀드|외국인|기관|수급", doc.title, re.I)
+                    and re.search(r"순유출|순유입|순매수|순매도|자금.{0,20}(?:유출|유입|이탈)",
+                                  doc.title+" "+doc.content, re.I)):
+                before = len(selected)
+                add(doc)
+                if len(selected) > before:
+                    break
     for key in PATTERNS:
         if key == "market" and len(closing_origins) == 2:
             continue

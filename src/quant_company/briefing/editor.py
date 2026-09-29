@@ -25,7 +25,7 @@ from .quality import assurance
 from .schedule import KST, close
 
 FORMAT_VERSION = 9
-VALIDATION_VERSION = 11
+VALIDATION_VERSION = 12
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Return AgentDecision(status=complete,say='') with exactly one artifact containing BriefProposal JSON.

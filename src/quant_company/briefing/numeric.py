@@ -74,6 +74,9 @@ def numbers(text):
         lambda m: str(CARDINALS.index(m[1].lower())*1000+int(m[2]))+"."
                   +(str(CARDINALS.index(m[3].lower())) if m[3].lower() in CARDINALS else m[3]),
         text, flags=re.I)
+    quarters = {"first": "1", "second": "2", "third": "3", "fourth": "4"}
+    text = re.sub(r"\b(first|second|third|fourth)\s+quarter\b",
+                  lambda m: quarters[m[1].lower()]+" quarter", text, flags=re.I)
     text = written_fractions(written_counts(text))
     # Some broadcasters spell decimal points as hyphenated words/numbers.
     text = re.sub(r"(?<![A-Za-z0-9])(\d+)-point-(\d+)\b", r"\1.\2", text, flags=re.I)
@@ -107,7 +110,8 @@ def numbers(text):
 
 def reported_change_supported(value, unit, quotes):
     units = {"%": r"%(?!p|포인트)|percent(?!age|\s+points?)", "bp": r"bp\b|basis points?", "pt": r"pt\b|points?|포인트"}
-    down = r"하락|내린|내렸|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|fell|fall|down|declin\w*|lost|slipped"
+    down = (r"하락|급락|내린|내렸|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|"
+            r"fell|fall|down|declin\w*|lost|slipped|shed|slump\w*|(?:was|were|is|are)\s+off")
     up = r"상승|오른|올랐|높아|늘었|뛴|뛰었|뛰며|rose|ris\w*|up|gain\w*|advanced|jumped|surged"
     for quote in quotes:
         for match in re.finditer("("+NUMBER+r")\s*(?:"+units[unit]+")", quote, re.I):
@@ -157,4 +161,16 @@ def prose_numbers_supported(text, quotes):
         return re.sub(rate, " ", match[0])
 
     remaining = re.sub(series, check, text)
-    return valid and numbers(remaining) <= numbers(" ".join(quotes))
+    if not valid:
+        return False
+    supported = numbers(" ".join(quotes))
+    # A quoted negative fund flow is naturally reported as a positive magnitude
+    # followed by an explicit Korean outflow word. Never extend this to inflows.
+    korean_amount = NUMBER+r"(?:\s*[십백천만억조](?:\s*\d[\d,]*(?:\.\d+)?)?)+"
+    outflow = (r"(?<![A-Za-z0-9])("+korean_amount+r")(?:원|달러)?(?:[이가은는])?\s*"
+               r"(?:순유출|유출|빠졌|빠진|감소|하락)")
+    for match in re.finditer(outflow, remaining):
+        magnitude = quantity(match[1])
+        if magnitude > 0 and -magnitude in supported:
+            supported.add(magnitude)
+    return numbers(remaining) <= supported

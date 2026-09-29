@@ -216,6 +216,59 @@ def test_us_story_and_korean_open_cannot_replace_korean_closing_report():
     assert select_documents([us, opening, closing], "pm")[0].id == "close"
 
 
+def test_etf_flow_story_with_syndicated_close_caption_does_not_take_closing_report_slot():
+    etf = doc(
+        "etf-flow", "'하락 예감?' 코스피·반도체 추종 ETF서 한 주간 뭉칫돈 이탈",
+        content="사진 설명: 코스피 6,889.74로 마감, 코스닥 846.58로 마감. "
+                "본문: 18∼23일 KODEX 200에서 2천199억원 순유출됐다.",
+        published_at="2026-09-28T08:04:00Z",
+    )
+    closing = doc(
+        "kr-close", "연휴서 돌아온 코스피, 2.7%↓…다시 7천피 밑으로",
+        content="28일 코스피는 6,889.74로 마감했다. 코스닥은 846.58로 마감했다. "
+                "외국인과 기관은 순매도하고 개인은 순매수했다.",
+        published_at="2026-09-28T07:19:35Z",
+    )
+    assert not market_report(etf, "pm")
+    assert market_report(closing, "pm")
+    second_close = doc(
+        "kr-close-b", "코스피 2.7% 하락 마감",
+        content="28일 코스피는 6,889.74로 마감했고 코스닥은 846.58로 상승 마감했다.",
+        published_at="2026-09-28T07:09:00Z",
+    )
+    assert [d.id for d in select_documents([etf, closing, second_close], "pm", limit=3)] == [
+        "kr-close", "kr-close-b", "etf-flow",
+    ]
+
+
+def test_cross_publisher_reprint_uses_one_slot_but_close_corrob_keeps_two():
+    story = doc("story", "카타르, 호르무즈 대치 속 LNG 공급 불가항력 선언 추가 연장")
+    reprint = doc("reprint", '"카타르, 호르무즈 대치 속 LNG 공급 불가항력 선언 추가 연장"')
+    selected = select_documents([story, reprint], "pm")
+    assert len(selected) == 1
+    close_a = doc("close-a", "코스피 2.7% 하락 마감", content="28일 코스피와 코스닥은 마감했다.",
+                  published_at="2026-09-28T07:09:00Z")
+    close_b = doc("close-b", "코스피 2.7% 하락 마감", content="28일 코스피와 코스닥은 마감했다.",
+                  published_at="2026-09-28T07:09:00Z")
+    assert len(select_documents([close_a, close_b], "pm")) == 2
+
+
+def test_market_decline_language_and_quarter_wording_keep_supported_numbers():
+    assert reported_change_supported(Decimal("-5.08"), "%", ["삼성전자 주가는 5.08% 급락했다."])
+    assert reported_change_supported(Decimal("-3.27"), "%", ["spot gold prices were off by 3.27%"])
+    assert reported_change_supported(Decimal("-4.92"), "%", ["spot silver had shed 4.92%"])
+    assert prose_numbers_supported(
+        "세계 중앙은행의 2분기 금 매입은 289톤이었다.",
+        ["global central banks purchased a record 289 metric tons in the second quarter"],
+    )
+
+
+def test_negative_etf_flow_quote_supports_positive_outflow_magnitude_only():
+    quote = "TIGER 200이 -1천404억원으로 자금 순유출 2위를 차지했다."
+    assert prose_numbers_supported("TIGER 200에서 1천404억원이 순유출됐다.", [quote])
+    assert not prose_numbers_supported("TIGER 200에서 1천404억원이 순유입됐다.", [quote])
+
+
 def test_overview_is_validated_and_thin_brief_cannot_claim_complete_content():
     p = proposal()
     p.overview = []

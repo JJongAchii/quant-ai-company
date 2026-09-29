@@ -36,6 +36,8 @@ def market_report(doc, kind):
     names = (r"S&P|스탠더드|나스닥|Nasdaq|뉴욕증시|stock market" if kind == "am" else r"코스피|코스닥|KOSPI|KOSDAQ")
     published = doc.published_at if isinstance(doc, SourceDocument) else timestamp(doc.get("published_at"))
     published = published.astimezone(UTC) if published else None
+    if re.search(r"ETF|상장지수펀드", title, re.I):
+        return False
     if kind == "pm" and published and (published.hour, published.minute) < (6, 30):
         return False
     return bool(re.search(names, title, re.I)
