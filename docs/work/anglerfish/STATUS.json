@@ -1,10 +1,45 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v6.json",
-  "state": "private_output_worker_deployed_data_gate_blocked",
-  "previousIntent": "INTENT-v5.json",
+  "currentIntent": "INTENT-v8.json",
+  "state": "exploratory_review_ready",
+  "previousIntent": "INTENT-v7.json",
   "deliverables": {
+    "POLICY": {
+      "status": "completed",
+      "codeCommit": "3c848af95dc33b7da444a55018fd41d374c10025"
+    },
+    "RESULT_SCOPE": {
+      "status": "completed",
+      "producerConsumerAuditMeaningLibrary": "passed"
+    },
+    "REVIEW_PACKET": {
+      "status": "prepared",
+      "spec": "../../project/evidence/etf-exploration-20260930/candidate-program.json",
+      "programDigest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162"
+    }
+  },
+  "operationalStatus": "Exact retrospective ETF specification and code prepared; old strict program remains waiting with zero missions/trials/reservations. New policy not deployed or signed.",
+  "evidence": "../../project/evidence/etf-exploration-20260930/validation.json",
+  "nextStage": {
+    "stage": "owner_review_of_exploratory_proposal",
+    "programDigest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162"
+  },
+  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/97",
+  "exploratoryPreparation": {
+    "policy": "completed",
+    "researchSpec": "frozen",
+    "validation": {
+      "passed": 1427,
+      "skipped": 13,
+      "lint": "passed",
+      "qlabCommit": "37abfceb07f5b684d7c3210548fecef156e3f9fc"
+    },
+    "reviewPr": "pending_publication",
+    "productionActivated": false,
+    "scientificTrialsAdded": 0
+  },
+  "previousDeliverables": {
     "DIAGNOSIS": {
       "status": "completed"
     },
@@ -38,14 +73,5 @@
       "dataDecision": "blocked",
       "liveCorrectionTriggered": false
     }
-  },
-  "operationalStatus": "Owner-approved worker active with persistent image pin; other container IDs and profiles preserved; runtime pause restored. Live independent data review completed in one attempt and director selection resumed. Data provenance/PIT still blocked; scientific missions zero.",
-  "evidence": "../../project/evidence/private-output-cutover-20260930.json",
-  "nextStage": {
-    "stage": "program_selection",
-    "task": "da7cd027-b603-5d9d-9665-77b3b844e6d2",
-    "candidate": "2733156b-0a7e-50dc-995c-93cf58bf114b",
-    "observedAt": "2026-09-30T07:55:06.134951Z"
-  },
-  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/97"
+  }
 }

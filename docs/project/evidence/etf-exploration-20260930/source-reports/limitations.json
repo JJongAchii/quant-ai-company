@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "scope": "approved ETF warmup and development inputs, frozen evaluator, and current pinned-qdata readback",
+  "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+  "input_identity": {
+    "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81",
+    "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+  },
+  "protected_engine_sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+  "independent_checks": [
+    "Frozen input hashes, required columns, duplicate keys and recorded availability times were checked against the approved template.",
+    "Pinned qdata API readback of current lake objects matched the frozen cohort and all 8350 open, close, value and tradability rows.",
+    "The frozen evaluator source hash was checked. It uses available history before 09:00 and open-to-next-open prices with costs."
+  ],
+  "unresolved": [
+    "The original lake objects have no pinned S3 VersionId. Current lake object identities differ from the preparation receipt.",
+    "Original source publication timestamps are not independently verified. The input's available_at field alone does not prove source release time.",
+    "The 6680 adj_close differences have a constant per-ticker ratio consistent with asof rebasing, but the original source bytes were not recovered.",
+    "The frozen evaluator does not establish live order-book fill, trading halt, delisting settlement or cash-dividend handling.",
+    "The second waiting task requests same-day close fill after an 08:30 decision, while the approved evaluator uses open-to-next-open prices."
+  ],
+  "decision": "no_data_readiness_decision",
+  "sealed_input_read": false,
+  "performance_read": false
+}
