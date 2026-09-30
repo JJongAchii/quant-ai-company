@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v6.json",
-  "state": "private_output_fix_validation",
+  "state": "private_output_release_prepared_review_required",
   "previousIntent": "INTENT-v5.json",
   "deliverables": {
     "DIAGNOSIS": {
@@ -15,19 +15,25 @@
       "privateOutputCorrection": "implemented"
     },
     "VALIDATION": {
-      "status": "in_progress",
-      "deployedHistoryFixTests": 33,
-      "newCandidateFullSuite": "running"
+      "status": "completed",
+      "targetedRealPostgresTests": 35,
+      "fullRealPostgresTests": 1342,
+      "skipped": 46,
+      "lint": "passed",
+      "inactiveImageImport": "passed"
     },
     "REVIEW": {
-      "status": "in_progress",
-      "reason": "New bounded correction requires exact worker release review under autonomous-research runbook"
+      "status": "prepared",
+      "pr": "https://github.com/JJongAchii/quant-ai-company/pull/97",
+      "candidateCommit": "0286ba3e7426ff6546b90e6926124ae65e71ba79",
+      "reason": "Await owner review for new exact worker-only operating change under autonomous-research runbook"
     },
     "LIVE_CHECK": {
       "status": "completed",
       "task": "f173f628-29f6-5ad7-b94c-f673676e812f",
       "turnsCompleted": 10,
-      "stageState": "completed"
+      "stageState": "completed",
+      "privateOutputFix": "pending_owner_review_not_active"
     }
   },
   "operationalStatus": "Planning recovered. Two independent data attempts rejected nonempty private say; candidate adds one same-attempt correction with no reads/messages applied for rejected output. Program missions zero.",

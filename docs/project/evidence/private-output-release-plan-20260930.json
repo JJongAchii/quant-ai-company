@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "state": "review_required_not_active",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/97",
+  "candidate_commit": "0286ba3e7426ff6546b90e6926124ae65e71ba79",
+  "archive_sha256": "88f67433ee6a53c063775b058de7849ee4f38247e97cbe8264b93c7b4630d788",
+  "git_bundle_sha256": "30511ccd771256c798975969895fd2c549a3ecfa560765bbcc8079935a1f0575",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "qlab_commit": "37abfceb07f5b684d7c3210548fecef156e3f9fc",
+  "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+  "input_files": {
+    "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81",
+    "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+  },
+  "protected_engine_sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+  "validation": {
+    "targeted_real_postgresql_passed": 35,
+    "full_real_postgresql_passed": 1342,
+    "full_skipped": 46,
+    "lint": "passed",
+    "live_candidate_check": "not_active_not_tested",
+    "3070_scope": "No changed 3070 code, data, profile, runtime or new scientific execution; no new 3070 check claimed"
+  },
+  "activation": {
+    "services": [
+      "quant-company-worker-1"
+    ],
+    "image": "quant-company-autonomous:0286ba3e7426ff6546b90e6926124ae65e71ba79",
+    "worker_env_override": {
+      "COMPANY_CODE_COMMIT": "0286ba3e7426ff6546b90e6926124ae65e71ba79"
+    },
+    "preserved": [
+      "current app release and symlink",
+      "API, Slack socket, dispatch, Quant Feed, accounts and other workers",
+      "PostgreSQL and Temporal state",
+      "frozen research and qlab config mounts",
+      "3070 release registry and active configuration",
+      "role settings, model route, official account selection"
+    ],
+    "preflight": [
+      "Acquire deployment/backup lock; reread latest worker, application image and compose labels",
+      "Record all container IDs and active requests/jobs and compare immutable input/packet identities",
+      "Create consistent DB/config/research/qlab backup with existing state_backup tool",
+      "Use actual active compose files with worker-only image and COMPANY_CODE_COMMIT overlay",
+      "If code/config pins changed concurrently, stop and integrate before activation"
+    ],
+    "postcheck": [
+      "Inspect installed source SHA and code/qdata pins",
+      "Verify prior stage attempt receipts remain and same-attempt correction preserves file_progress",
+      "Verify rejected say causes no Slack write and one corrected response uses empty say",
+      "Verify other container IDs/configs unchanged and no mission/job invented"
+    ]
+  },
+  "rollback": {
+    "worker_image": "quant-company-autonomous:73fcfc34a6876e0a80c14fa72edae2cdb8413b0c",
+    "worker_company_code_commit": "73fcfc34a6876e0a80c14fa72edae2cdb8413b0c",
+    "method": "Restore saved worker-only image/env/compose overlay; retain all DB/read/model receipts. Do not reset stable request IDs or replay uncertain effects."
+  },
+  "qlab_profile_sha256": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
+  "strategy_source_base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+  "candidate_image_id": "sha256:95562e94f6967a484a32647af00695375b22682e8ed413359c651430f0e8ff6b",
+  "candidate_installed_controller_sha256": "05daf0776922a9af9b06f21af8ee15980a93fa14e7b93593b982c56de9904dd7",
+  "candidate_build_log_sha256": "745b9a3164ecdb954d2a565e90e92f8ce3444fc8bf10ceb40254ecc0707179f8",
+  "image_preparation": "built_and_import_qualified_without_active_services"
+}
