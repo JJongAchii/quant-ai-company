@@ -1,0 +1,353 @@
+{
+  "state": "review_draft_not_submitted",
+  "source_anchor_verification": "pending_live_project_check",
+  "production_profiles_registered": false,
+  "scientific_runs": 0,
+  "exact_replication_envelope": "requires_an_actual_paper_with_matching_estimand_and_reference",
+  "program": {
+    "schema_version": 1,
+    "title": "국내 ETF·주식 자료 기반 가설 연구",
+    "objective": "원문과 이전 감사 결과를 읽고, ETF·주식의 실행 가능한 전략 또는 예측 주장을 검증해 다음 과제를 선택한다.",
+    "envelopes": [
+      {
+        "name": "etf_strategy",
+        "market": "kr_etf",
+        "template": {
+          "schema_version": 2,
+          "title": "kr_etf literature-grounded strategy development",
+          "kind": "strategy",
+          "objective": {
+            "metric": "stress-net-absolute-cagr",
+            "direction": "maximize",
+            "unit": "fraction-per-year"
+          },
+          "base_cost_bps": 10.0,
+          "stress_cost_bps": 30.0,
+          "risk_constraints": [
+            {
+              "metric": "gross_exposure",
+              "maximum": 1.0,
+              "unit": "multiple"
+            }
+          ],
+          "development": {
+            "start": "2023-01-02",
+            "end": "2025-12-30"
+          },
+          "sealed": [
+            {
+              "start": "2026-01-02",
+              "end": "2026-09-23"
+            }
+          ],
+          "data": {
+            "lake_id": "krx-s3-kr_etf-30784209bf06e53313b8",
+            "input_files": {
+              "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81",
+              "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+            }
+          },
+          "code": {
+            "repository": "quant-lab",
+            "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+            "write_paths": [
+              "labs/company-domestic-research/candidate.py",
+              "labs/company-domestic-research/config.json"
+            ]
+          },
+          "allowed_changes": [
+            "features",
+            "model",
+            "implementation",
+            "portfolio"
+          ],
+          "execution_profile": "kr-etf-research-v2",
+          "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+          "resources": {
+            "worker_id": "worker",
+            "priority": "autonomous"
+          },
+          "search": {
+            "max_trials_per_cycle": 2,
+            "max_total_trials": 4,
+            "patience": 2,
+            "min_improvement": 0.001,
+            "continuous": true
+          },
+          "baseline_source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "evaluation": {
+            "schema_version": 1,
+            "kind": "strategy",
+            "metric": "stress-net-absolute-cagr",
+            "target": null,
+            "tolerance": null,
+            "minimum_effect": 0.0,
+            "minimum_blocks": 30,
+            "block": "calendar-month",
+            "confidence": 0.95,
+            "scope": "development"
+          },
+          "market": "kr_etf"
+        }
+      },
+      {
+        "name": "etf_claim",
+        "market": "kr_etf",
+        "template": {
+          "schema_version": 2,
+          "title": "kr_etf literature-grounded claim development",
+          "kind": "claim",
+          "objective": {
+            "metric": "mean-effect",
+            "direction": "maximize",
+            "unit": "fraction"
+          },
+          "base_cost_bps": 0.0,
+          "stress_cost_bps": 0.0,
+          "risk_constraints": [],
+          "development": {
+            "start": "2023-01-02",
+            "end": "2025-12-30"
+          },
+          "sealed": [
+            {
+              "start": "2026-01-02",
+              "end": "2026-09-23"
+            }
+          ],
+          "data": {
+            "lake_id": "krx-s3-kr_etf-30784209bf06e53313b8",
+            "input_files": {
+              "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81",
+              "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+            }
+          },
+          "code": {
+            "repository": "quant-lab",
+            "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+            "write_paths": [
+              "labs/company-domestic-research/candidate.py",
+              "labs/company-domestic-research/config.json"
+            ]
+          },
+          "allowed_changes": [
+            "features",
+            "model",
+            "implementation"
+          ],
+          "execution_profile": "kr-etf-research-v2",
+          "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+          "resources": {
+            "worker_id": "worker",
+            "priority": "autonomous"
+          },
+          "search": {
+            "max_trials_per_cycle": 2,
+            "max_total_trials": 4,
+            "patience": 2,
+            "min_improvement": 0.001,
+            "continuous": true
+          },
+          "baseline_source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "evaluation": {
+            "schema_version": 1,
+            "kind": "claim",
+            "metric": "mean-effect",
+            "target": null,
+            "tolerance": null,
+            "minimum_effect": 0.0,
+            "minimum_blocks": 30,
+            "block": "calendar-month",
+            "confidence": 0.95,
+            "scope": "development"
+          },
+          "market": "kr_etf"
+        }
+      },
+      {
+        "name": "stock_strategy",
+        "market": "kr_stock",
+        "template": {
+          "schema_version": 2,
+          "title": "kr_stock literature-grounded strategy development",
+          "kind": "strategy",
+          "objective": {
+            "metric": "stress-net-absolute-cagr",
+            "direction": "maximize",
+            "unit": "fraction-per-year"
+          },
+          "base_cost_bps": 10.0,
+          "stress_cost_bps": 30.0,
+          "risk_constraints": [
+            {
+              "metric": "gross_exposure",
+              "maximum": 1.0,
+              "unit": "multiple"
+            }
+          ],
+          "development": {
+            "start": "2023-01-02",
+            "end": "2025-12-30"
+          },
+          "sealed": [
+            {
+              "start": "2026-01-02",
+              "end": "2026-09-23"
+            }
+          ],
+          "data": {
+            "lake_id": "krx-s3-kr_stock-cf689d34e7776edc1b97",
+            "input_files": {
+              "warmup.json": "9ee0e7cf017ef4b81b2028d8d9b09616d8ade89fd9706374b4ed6d053fd7d442",
+              "development.json": "1a0802b498d29e0a4557e0e1ac1c2c205dc33ad2e013bab70b65b0d54484fd85"
+            }
+          },
+          "code": {
+            "repository": "quant-lab",
+            "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+            "write_paths": [
+              "labs/company-domestic-research/candidate.py",
+              "labs/company-domestic-research/config.json"
+            ]
+          },
+          "allowed_changes": [
+            "features",
+            "model",
+            "implementation",
+            "portfolio"
+          ],
+          "execution_profile": "kr-stock-research-v2",
+          "execution_profile_digest": "07056f8607ea990c09de6ade29a6230f60c3c0055c980728d95705e538dd21a3",
+          "resources": {
+            "worker_id": "worker",
+            "priority": "autonomous"
+          },
+          "search": {
+            "max_trials_per_cycle": 2,
+            "max_total_trials": 4,
+            "patience": 2,
+            "min_improvement": 0.001,
+            "continuous": true
+          },
+          "baseline_source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "evaluation": {
+            "schema_version": 1,
+            "kind": "strategy",
+            "metric": "stress-net-absolute-cagr",
+            "target": null,
+            "tolerance": null,
+            "minimum_effect": 0.0,
+            "minimum_blocks": 30,
+            "block": "calendar-month",
+            "confidence": 0.95,
+            "scope": "development"
+          },
+          "market": "kr_stock"
+        }
+      },
+      {
+        "name": "stock_claim",
+        "market": "kr_stock",
+        "template": {
+          "schema_version": 2,
+          "title": "kr_stock literature-grounded claim development",
+          "kind": "claim",
+          "objective": {
+            "metric": "mean-effect",
+            "direction": "maximize",
+            "unit": "fraction"
+          },
+          "base_cost_bps": 0.0,
+          "stress_cost_bps": 0.0,
+          "risk_constraints": [],
+          "development": {
+            "start": "2023-01-02",
+            "end": "2025-12-30"
+          },
+          "sealed": [
+            {
+              "start": "2026-01-02",
+              "end": "2026-09-23"
+            }
+          ],
+          "data": {
+            "lake_id": "krx-s3-kr_stock-cf689d34e7776edc1b97",
+            "input_files": {
+              "warmup.json": "9ee0e7cf017ef4b81b2028d8d9b09616d8ade89fd9706374b4ed6d053fd7d442",
+              "development.json": "1a0802b498d29e0a4557e0e1ac1c2c205dc33ad2e013bab70b65b0d54484fd85"
+            }
+          },
+          "code": {
+            "repository": "quant-lab",
+            "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+            "write_paths": [
+              "labs/company-domestic-research/candidate.py",
+              "labs/company-domestic-research/config.json"
+            ]
+          },
+          "allowed_changes": [
+            "features",
+            "model",
+            "implementation"
+          ],
+          "execution_profile": "kr-stock-research-v2",
+          "execution_profile_digest": "07056f8607ea990c09de6ade29a6230f60c3c0055c980728d95705e538dd21a3",
+          "resources": {
+            "worker_id": "worker",
+            "priority": "autonomous"
+          },
+          "search": {
+            "max_trials_per_cycle": 2,
+            "max_total_trials": 4,
+            "patience": 2,
+            "min_improvement": 0.001,
+            "continuous": true
+          },
+          "baseline_source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "evaluation": {
+            "schema_version": 1,
+            "kind": "claim",
+            "metric": "mean-effect",
+            "target": null,
+            "tolerance": null,
+            "minimum_effect": 0.0,
+            "minimum_blocks": 30,
+            "block": "calendar-month",
+            "confidence": 0.95,
+            "scope": "development"
+          },
+          "market": "kr_stock"
+        }
+      }
+    ],
+    "max_total_trials": 24,
+    "max_compute_seconds": 36000,
+    "max_missions": 6,
+    "max_parallel_missions": 1,
+    "source_ids": [
+      "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+    ],
+    "include_quant_feed": true
+  },
+  "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "profile_identities": {
+    "kr-etf-research-v2": {
+      "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+      "source_bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+      "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11"
+    },
+    "kr-stock-research-v2": {
+      "execution_profile_digest": "07056f8607ea990c09de6ade29a6230f60c3c0055c980728d95705e538dd21a3",
+      "source_bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+      "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11"
+    }
+  }
+}

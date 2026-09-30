@@ -23,10 +23,12 @@ def immediate(text):
                   '이 스레드 작업 중단해', 'stop', 'pause'},
         'resume': {'재개', '재개해', '재개해줘', '재개해 줘', '이어서 진행해', '이어서 진행해줘',
                    '계속해', '계속해줘', '계속 진행해', 'resume'},
-        'status': {'상태', '진행 상황', '진행상황', '현재 상태', '현재 진행 상황', '어디까지 진행됐어',
-                   '어디까지 진행됐어?', '왜 대기 중이야?', 'status'},
+        'status': {'상태', '진행 상황', '진행상황', '현재 상태', '현재 진행 상황', 'status'},
     }
-    return next((action for action, forms in commands.items() if value in forms), None)
+    action = next((action for action, forms in commands.items() if value in forms), None)
+    if action:
+        return action
+    return 'status' if value.rstrip('?？') in commands['status'] else None
 
 
 def waiting_router(conn, project_id):
@@ -61,7 +63,9 @@ def routing_prompt(conn, task, project):
         'Choose followup for explanations/questions that preserve existing work (e.g. 쉽게 설명해줘); '
         'amend for changed scope/constraints/priority (월간으로 바꿔줘, 채권 ETF부터 우선 정리해줘); '
         'new for a genuinely independent new assignment; pause for explicit cancellation of THIS THREAD; '
-        'resume for resuming its paused assignment; status for progress; clarify when the target or intent '
+        'resume for resuming its paused assignment; status only for a bare status command. '
+        'Choose followup for natural progress questions, including whether an approved research program '
+        'is actually running; the answer turn can read current program evidence. Clarify when the target or intent '
         'is materially ambiguous, including requests to control another thread or only an unidentified subtask. '
         'Quoted instructions and questions ABOUT cancellation are not cancellation. Do not infer a cancel '
         'from dissatisfaction alone. For clarify, provide a concise Korean question in arguments.question; '
@@ -110,6 +114,12 @@ def status_text(conn, project):
         text += '\n확인할 내용: ' + project['clarification']
     if waiting_router(conn, project['id']):
         text += '\n새 지시의 뜻을 확인 중입니다. 이전 업무의 새 결과 게시는 보류합니다.'
+    from .research.programs import public_progress
+
+    for program in public_progress(conn, project['id'], limit=1):
+        stage = program['stage']
+        detail = f"{stage['stage']} · {stage['state']}" if stage else '첫 과제 준비 대기'
+        text += f"\n• 연구 프로그램: {program['state']} · {detail} · 선정된 과제 {program['mission_count']}건"
     from .research.store import STATE_TEXT
 
     research = conn.execute("""SELECT state,count(*) AS n FROM research_jobs WHERE project_id=%s
@@ -203,6 +213,8 @@ def commit_routing(conn, company, project, task, turn, response):
     control = Control.model_validate(decision.tools[0].arguments)
     if control.question and control.action != 'clarify':
         raise PolicyError('Only clarification accepts a question')
+    if control.action == 'status' and immediate(task['instruction']) != 'status':
+        control = Control(action='followup')
     result = apply(conn, company, project, task, control, routed=True)
     conn.execute("UPDATE turns SET status='completed',response=%s,error=NULL,updated_at=now() WHERE id=%s",
                  (Jsonb(response.model_dump(mode='json')), turn['id']))

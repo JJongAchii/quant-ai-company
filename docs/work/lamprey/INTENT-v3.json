@@ -1,0 +1,55 @@
+{
+  "constraints": [
+    "PostgreSQL and Temporal durable workflow; official subscription authentication",
+    "Preserve legacy mission digests and receipts",
+    "Heavy research only on approved 3070 worker; production and scientific program approval after reviewable preparation",
+    "Company evidence only in this repository; no secrets"
+  ],
+  "createdAt": "2026-09-28T07:32:23.380520+00:00",
+  "decisionGates": [
+    "Review exact deployment and first scientific program before activation"
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "Read-only observation of the actual Lightsail release, process state and in-flight research work",
+        "Check the proposed source ID against the live owner's approved source record or record the exact access failure",
+        "Store only nonsecret receipt fields and preserve prior release identity"
+      ],
+      "description": "Live server and source anchor audit",
+      "id": "LIVE_AUDIT"
+    },
+    {
+      "acceptance": [
+        "Pin the exact server and 3070 company commit, canonical source bundle and both execution profiles",
+        "Prepare a nonsecret release manifest, migration and rollback checklist without activating it",
+        "Validate the candidate profile registry against the frozen first-program draft"
+      ],
+      "description": "Exact server and worker deployment review packet",
+      "id": "RELEASE_PACKET"
+    },
+    {
+      "acceptance": [
+        "Present the complete bounded program, its source approval state and a first testable question",
+        "Identify exact unresolved operator decisions and evidence links",
+        "Do not activate production or begin a scientific trial before the recorded decision gate"
+      ],
+      "description": "First scientific program review packet",
+      "id": "PROGRAM_REVIEW"
+    }
+  ],
+  "nonGoals": [],
+  "outcome": "Audit the live company server and approved research source, then prepare an exact server/worker release and first-program review packet without premature activation.",
+  "revision": 3,
+  "revisionReason": "User authorized pre-activation follow-through: verify the live company release and approved source, prepare exact server/worker deployment and first-program review packet, and keep activation behind the existing review gate.",
+  "schemaVersion": 1,
+  "slug": "lamprey",
+  "sourceRequest": "응 진행해 — verify the live company state and research source, prepare the exact activation review packet, and locate an operator access path directly.",
+  "stopConditions": [
+    "Do not activate production or new scientific experiments before concrete review; preserve ambiguous effect receipts"
+  ],
+  "supersedes": {
+    "intentDigest": "1ecaae9be488",
+    "intentFile": "INTENT-v2.json"
+  }
+}

@@ -13,6 +13,15 @@ from .quant_feed.contracts import QUANT_FEED_AGENT
 from .tech_feed.contracts import TECH_FEED_AGENT
 
 
+def _status_request(text: str, target: str) -> bool:
+    normalized = re.sub(r"\s+", "", text).lower().rstrip("?!。.")
+    if normalized in {"상태", "진행상황", "status"}:
+        return True
+    if target in {"maintainer", "data"} and normalized in {"목록", "list"}:
+        return True
+    return False
+
+
 class SlackIngress:
     def __init__(self, settings: Settings, company: Company, credentials: dict | None = None):
         self.settings = settings
@@ -178,8 +187,7 @@ class SlackIngress:
         result = self.company.ingest(
             event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}",
             text=text, owner=user, agent=target, channel=channel, thread_ts=thread_ts, revise=revise,
-            status_only=text.strip().lower() in ({"상태", "진행 상황", "status", "목록", "list"}
-                                               if target in {"maintainer", "data"} else {"상태", "진행 상황", "status"}),
+            status_only=_status_request(text, target),
             interpret=target == 'director' and not revise,
             control_action=immediate(text) if target == 'director' and not revise else None,
             approval_context=approval_context if target == "director" else None,

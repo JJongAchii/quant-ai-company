@@ -80,8 +80,9 @@ class Company:
         self.db = Database(settings.database_url)
         self.roles = roles if roles is not None else load_roles(settings)
         from .research.controller import MissionApprovalAdapter
+        from .research.program_controller import ProgramApprovalAdapter
 
-        self.research_approval_adapters = (MissionApprovalAdapter(self),)
+        self.research_approval_adapters = (MissionApprovalAdapter(self), ProgramApprovalAdapter(self))
 
     def role(self, name: str) -> Role:
         role = self.roles.get(name)
@@ -135,14 +136,19 @@ class Company:
                 },
                 "autonomous_research": {
                     "enabled": self.settings.company_autonomous_research_enabled,
-                    "usage": 'Director research_control: {action:"mission_status"} reads public state. '
+                    "usage": 'Director research_control: {action:"program_catalog"} reads the program schema and provisioned profiles. '
+                             '{action:"program_draft",spec:<ResearchProgram>} prepares bounded program authority for owner approval; '
+                             '{action:"program_status"} reads budgets and tasks. Program staff read original sources, propose tasks, '
+                             'check data, resolve independent challenges and perform validity then meaning reviews. '
+                             '{action:"mission_status"} reads public mission state. '
                              '{action:"mission_draft",spec:<complete MissionSpec>} prepares a frozen mission '
                              'only when an operator execution profile is provisioned. Never invent missing '
                              'scientific parameters or approval. Authenticated Slack approval is required. '
                              'The durable service schedules proposal, independent challenge, selection, '
                              'scoped implementation, 3070 qualification/evaluation, interpretation and audit. '
                              'Unverified metrics remain private. Reports are checkpoints; continuous '
-                             'follow-up is limited to the approved search scope. Model/claim execution is unavailable.',
+                             'follow-up is limited to the approved search scope. Version 2 supports provisioned domestic '
+                             'strategy and scientific evaluation profiles; unavailable profiles cannot execute.',
                     "internal_staff": [
                         {"role": name, "model": self.roles[name].model,
                          "reasoning_effort": self.roles[name].reasoning_effort,
@@ -259,12 +265,12 @@ class Company:
         return project
 
     def _message(self, conn, project, task_id, author, kind, text, recipient=None, message_id=None,
-                 *, notify_owner=False):
+                 *, notify_owner=False, publish=True):
         message_id = message_id or str(uuid4())
         conn.execute("""INSERT INTO messages(id,project_id,task_id,revision,author,recipient,kind,text)
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
                      (message_id, project["id"], task_id, project["revision"], author, recipient, kind, text))
-        if project["channel"] and author in self.roles:
+        if publish and project["channel"] and author in self.roles:
             # Persist the rendered text now: delayed progress must not turn into a completion ping.
             owner = project["owner_user"]
             may_notify = author == "director" or (
@@ -420,13 +426,27 @@ class Company:
 
                 project = advance(conn, self, project, instruction=text)
                 self._event(conn, "project_revised", {"revision": project["revision"], "by": owner}, project_id)
-            task = self._new_task(conn, project, agent, text, task_id=stable("task:" + event_key),
-                                  status_only=status_only, kind='routing' if routing else 'control' if status_only else 'work',
-                                  priority=-100 if routing else None)
+            limit_exhausted = False
+            try:
+                task = self._new_task(conn, project, agent, text, task_id=stable("task:" + event_key),
+                                      status_only=status_only,
+                                      kind='routing' if routing else 'control' if status_only else 'work',
+                                      priority=-100 if routing else None)
+            except PolicyError as exc:
+                if str(exc) != "Project task limit exhausted" or not event_key.startswith("slack:") or revise:
+                    raise
+                limit_exhausted = True
+                task = self._new_task(conn, project, agent, text, task_id=stable("task:" + event_key),
+                                      status_only=True, kind='control')
             conn.execute("INSERT INTO inbound(event_key,project_id,task_id,payload_digest) VALUES (%s,%s,%s,%s)",
                          (event_key, project_id, task["id"], digest))
             self._message(conn, project, task["id"], owner, "human", text)
-            if account_command is not None:
+            if limit_exhausted:
+                notice = (f"이 스레드의 일반 업무 한도 {self.settings.company_max_project_tasks}건에 도달했습니다. "
+                          "새 질문은 새 스레드에서 요청해 주세요. 이 스레드의 현황은 '상태'로 확인할 수 있습니다.")
+                conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (notice, task["id"]))
+                self._message(conn, project, task["id"], agent, "status", notice)
+            elif account_command is not None:
                 from .accounts import enqueue
 
                 enqueue(conn, self, project, task, event_key, account_command)
@@ -540,6 +560,10 @@ class Company:
         context["professional_feedback"] = as_json(coaching(
             conn, project["owner_user"], task["agent"], self.roles[task["agent"]].model,
             self.roles[task["agent"]].reasoning_effort))
+        if task["agent"] == "director" and task["kind"] == "answer":
+            from .research.programs import public_progress
+
+            context["research_programs"] = public_progress(conn, project["id"])
         if task["agent"] in {"director", "maintainer"}:
             from .maintenance.requests import permitted, record_source, status
             from .system_state import current_system
@@ -681,6 +705,13 @@ class Company:
                         "Do not infer executable capabilities or proven expertise from role names.\n"
                         "Propose only the typed AgentDecision. You cannot run code, trade, send Slack, or approve yourself.\n"
                         "Use tools to obtain evidence; never claim a tool/experiment was run without its receipt.\n"
+                        + ("This is a follow-up question. Answer the owner's actual question directly. "
+                           "Use current research_programs in TASK DATA JSON for program progress, "
+                           "including task_details for candidate titles and hold reasons. "
+                           "Distinguish a newly approved program from older missions, and distinguish "
+                           "approval from task selection and trial execution. Do not start duplicate work "
+                           "just to answer. If a fact is absent, say what is known.\n"
+                           if task["agent"] == "director" and task["kind"] == "answer" else "") +
                         "Source IDs must come from approved_sources. Copy each ID verbatim; never shorten or reconstruct it. "
                         "Synthetic sources are test fixtures, not market evidence.\n"
                         "Delegate directly to authorized peers when needed. Await child results before completing.\n"
@@ -778,6 +809,10 @@ class Company:
 
             if not task:
                 raise PolicyError("Research control requires a task")
+            if arguments.get("action", "").startswith("program_"):
+                from .research.program_controller import program_tool
+
+                return program_tool(self, conn, self._project(conn, project_id, lock=False), task, arguments)
             if arguments.get("action", "").startswith("mission_"):
                 from .research.controller import mission_tool
 
@@ -969,7 +1004,8 @@ class Company:
                 if len(say) > 6000:
                     say = say[:5900] + "\n(일부 생략. 전체 결과는 이 업무의 산출물 기록에 보관했습니다.)"
             if say.strip():
-                self._message(conn, project, task["id"], task["agent"], "answer", say, notify_owner=final)
+                self._message(conn, project, task["id"], task["agent"], "answer", say,
+                              notify_owner=final, publish=task["kind"] != "answer" or final)
             for action in decision.messages:
                 self._message(conn, project, task["id"], task["agent"], "peer", action.text, action.agent)
             for index, action in enumerate(decision.delegations):

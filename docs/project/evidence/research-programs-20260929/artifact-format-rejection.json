@@ -1,0 +1,30 @@
+{
+  "artifact_content_characters": 7932,
+  "artifact_count": 1,
+  "cited_literature_complete_read_in_attempt": false,
+  "codex_receipt_state": "complete",
+  "codex_request_id": "c893b86f-ceb0-500d-b49a-9cc3bdda261a",
+  "lenient_json_parse": {
+    "citation_count": 9,
+    "object": true,
+    "source_ids": [
+      "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e",
+      "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+    ]
+  },
+  "literal_control_characters": {
+    "LF": 12,
+    "other": 0
+  },
+  "observed_at": "2026-09-29T00:59:15.988139+00:00",
+  "outer_decision_status": "complete",
+  "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+  "raw_model_artifact_included": false,
+  "research_tasks_created": 0,
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "source": "production PostgreSQL read-only stage query and Codex durable receipt metadata",
+  "stage_attempt": 5,
+  "stage_error": "proposal_rejected:Invalid control character at: line 1 column 1114 (char 1113)",
+  "typed_proposal_accepted": false
+}

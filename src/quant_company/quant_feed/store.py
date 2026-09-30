@@ -1,5 +1,6 @@
 """PostgreSQL owns candidate versions, frozen model calls and atomic outbox effects."""
 
+import json
 import re
 from datetime import timedelta
 from uuid import uuid4
@@ -12,13 +13,11 @@ from ..news.feeds import canonical_url
 from ..owner_controls import effective_limits
 from ..web_tools import search_prompt, search_result
 from . import schedule
-from .contracts import QUANT_FEED_AGENT, TOPICS, EvidenceCritique, ResearchBrief, load_sources
-from .editor import prompt, render, validate
-from .feeds import aliases
+from .contracts import QUANT_FEED_AGENT, TOPICS, ResearchBrief, load_sources
+from .editor import ProposalValidationError, output_contract, prompt, render, validate
+from .feeds import aliases, obvious_nonresearch_title
 
 LOCK = 71350249
-REPAIRABLE_PROPOSAL_ERRORS = {"quant_quote_not_in_original_version", "quant_unretrieved_related_link",
-                              "quant_card_too_long", "quant_malformed_title"}
 
 
 def _sanitize_original_text(receipt):
@@ -37,19 +36,35 @@ def _sanitize_original_text(receipt):
 
 
 def _bounded_pages(pages, budget=42000):
-    """Sample long pages across their full span without exceeding the model budget."""
-    allowance = max(100, budget // max(1, len(pages)))
+    """Keep all text that fits; redistribute unused page allowances before sampling."""
+    if budget < 1:
+        raise ValueError("quant_invalid_page_budget")
+    allowances = [0] * len(pages)
+    remaining = budget
+    pending = set(range(len(pages)))
+    while pending:
+        share = remaining // len(pending)
+        short = {i for i in pending if len(pages[i]["text"]) <= share}
+        if not short:
+            for position, i in enumerate(sorted(pending)):
+                allowances[i] = share + (position < remaining % len(pending))
+            break
+        for i in short:
+            allowances[i] = len(pages[i]["text"])
+            remaining -= allowances[i]
+        pending -= short
     bounded, clipped = [], False
-    for page in pages:
+    for page, allowance in zip(pages, allowances, strict=True):
         text, location = page["text"], page["location"]
         if len(text) <= allowance:
             bounded.append({"location": location, "text": text})
             continue
         clipped = True
-        count = 2 if len(text) <= allowance * 2 else 3
-        width = max(1, allowance // count)
-        starts = ([0, len(text) - width] if count == 2
-                  else [0, (len(text) - width) // 2, len(text) - width])
+        if not allowance:
+            continue
+        count = min(allowance, 2 if len(text) <= allowance * 2 else 3)
+        width = allowance // count
+        starts = [i * (len(text) - width) // max(1, count - 1) for i in range(count)]
         for index, start in enumerate(starts, 1):
             suffix = f" [{index}/{count}]"
             bounded.append({"location": location[:50-len(suffix)] + suffix,
@@ -84,7 +99,7 @@ class QuantFeedStore:
 
     def policy(self):
         s = self.company.settings
-        return fingerprint({"version": 8, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
+        return fingerprint({"version": 20, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
                             "owner": s.quant_feed_owner_user, "channel": s.quant_feed_channel_id,
                             "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
                             "web": s.company_web_enabled, "sources": [x.model_dump() for x in self.sources().values()],
@@ -100,6 +115,16 @@ class QuantFeedStore:
                 enabled=excluded.enabled,next_at=CASE WHEN quant_feed_sources.config_digest=excluded.config_digest
                 THEN quant_feed_sources.next_at ELSE now() END""",
                          (source.id, Jsonb(source.model_dump()), digest, source.enabled))
+        conn.execute("""UPDATE quant_feed_documents d SET state='held',error='source_disabled_requires_requalification'
+            FROM quant_feed_candidates c JOIN quant_feed_sources s ON s.id=c.source_id
+            WHERE d.candidate_id=c.id AND d.state='ready' AND NOT s.enabled""")
+        candidates = conn.execute("""SELECT d.id,c.title FROM quant_feed_documents d
+            JOIN quant_feed_candidates c ON c.id=d.candidate_id
+            WHERE d.state='ready' AND c.source_id='two-sigma'""").fetchall()
+        held = [row["id"] for row in candidates if obvious_nonresearch_title("two-sigma", row["title"])]
+        if held:
+            conn.execute("""UPDATE quant_feed_documents SET state='held',error='source_title_nonresearch_precheck'
+                WHERE id=ANY(%s) AND state='ready'""", (held,))
 
     def claim_source(self):
         if not self.authorized():
@@ -113,6 +138,8 @@ class QuantFeedStore:
                 RETURNING *""", (uuid4(),)).fetchone()
 
     def add_candidate(self, conn, source, entry):
+        if obvious_nonresearch_title(source.id, entry["title"]):
+            return False
         url = canonical_url(entry["url"])
         if not source.allows(url):
             return False
@@ -214,12 +241,22 @@ class QuantFeedStore:
                              (document["work_id"], self.company.settings.quant_feed_channel_id)).fetchone()
         bibliographic = {k: v for k, v in metadata.items() if k not in {"links"}}
         links = metadata["links"][:30]
+        source_draft = None
+        if document["stage"] == "revision":
+            saved = conn.execute("""SELECT response->'decision'->'artifacts'->0->>'content' AS content
+                FROM quant_feed_calls WHERE document_id=%s AND state='completed'
+                AND stage IN ('review','repair','revision')
+                AND request->>'output_contract'='quant_brief_v4'
+                ORDER BY created_at DESC,id DESC LIMIT 1""", (document["id"],)).fetchone()
+            if saved and saved["content"]:
+                source_draft = json.loads(saved["content"])
         return as_json({"document_id": document["id"], "as_of": schedule.utcnow(), "metadata": bibliographic,
                         "pages": clipped, "original_sha256": document["receipt"]["original_sha256"],
                         "truncated": document["receipt"].get("truncated", False),
                         "context_clipped": context_clipped,
                         "retrieval": document["receipt"], "links": links, "commercial": metadata["commercial"],
-                        "prior": prior, "draft": document["brief"], "previous_critique": document["critique"]})
+                        "prior": prior, "draft": document["brief"], "source_draft": source_draft,
+                        "previous_critique": document["critique"]})
 
     def search_bundle(self, conn, stage, slot):
         n = conn.execute("SELECT count(*) AS n FROM quant_feed_calls WHERE stage IN ('discover','weekly')").fetchone()["n"]
@@ -287,6 +324,7 @@ class QuantFeedStore:
             searching = stage in {"discover", "weekly"}
             request = ProviderRequest(request_id="quant-feed-" + str(uuid4()), model=role.model,
                                       reasoning_effort=role.reasoning_effort, web_search=searching,
+                                      output_contract="agent_decision" if searching else output_contract(stage),
                                       prompt=search_prompt({"query": bundle["query"], "limit": bundle["limit"]}) if searching
                                       else prompt(bundle, stage))
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
@@ -349,8 +387,8 @@ class QuantFeedStore:
             else:
                 try:
                     result = self.commit_document(conn, saved, response)
-                except ValueError as exc:
-                    result = self.repair_validation(conn, saved, str(exc))
+                except ProposalValidationError as exc:
+                    result = self.repair_validation(conn, saved, exc)
                     if result is None:
                         raise
             conn.execute("""UPDATE quant_feed_calls SET state=CASE WHEN state='running' THEN 'completed' ELSE state END,
@@ -358,23 +396,19 @@ class QuantFeedStore:
             return {"state": "completed", **result}
 
     @staticmethod
-    def repair_validation(conn, saved, code):
-        if saved["stage"] != "review" or code not in REPAIRABLE_PROPOSAL_ERRORS:
+    def repair_validation(conn, saved, error):
+        if saved["stage"] not in {"review", "revision"}:
             return None
         document = conn.execute("SELECT * FROM quant_feed_documents WHERE id=%s FOR UPDATE",
                                 (saved["document_id"],)).fetchone()
-        if document["revision"] != 0:
+        if conn.execute("SELECT 1 FROM quant_feed_calls WHERE document_id=%s AND stage='repair'",
+                        (document["id"],)).fetchone():
             return None
-        feedback = EvidenceCritique(disposition="revise",
-                                    reason="계약 검증 실패: 원문 인용·제공된 링크·카드 길이 중 issues에 명시된 항목을 1회 수정",
-                                    original_sufficient=True, claims_supported=False,
-                                    dates_authors_verified=True, limitations_honest=True,
-                                    direct_quant_scope=False, substantive_research=False,
-                                    relevance_and_value=True, no_investment_advice=True,
-                                    material_change_verified=False, issues=[code]).model_dump()
-        conn.execute("""UPDATE quant_feed_documents SET state='ready',stage='revision',revision=1,
-            critique=%s,reviewed_at=now() WHERE id=%s""", (Jsonb(feedback), document["id"]))
-        return {"document_state": "ready", "document_id": document["id"], "validation_issue": code}
+        feedback = error.feedback(saved["bundle"].get("previous_critique"))
+        conn.execute("""UPDATE quant_feed_documents SET state='ready',stage='repair',brief=%s,
+            critique=%s,reviewed_at=now() WHERE id=%s""", (Jsonb(error.draft), Jsonb(feedback), document["id"]))
+        return {"document_state": "ready", "document_id": document["id"], "validation_issue": str(error),
+                "validation_issues": error.issues}
 
     def commit_document(self, conn, saved, response):
         document = conn.execute("SELECT * FROM quant_feed_documents WHERE id=%s FOR UPDATE", (saved["document_id"],)).fetchone()
@@ -389,9 +423,9 @@ class QuantFeedStore:
             return {"document_state": state, "document_id": document["id"],
                     "source_corrections": corrections}
         state = "held"
-        if value.disposition == "revise" and document["revision"] == 0:
+        if value.disposition == "revise" and document["revision"] < 2:
             state = "ready"
-            conn.execute("UPDATE quant_feed_documents SET revision=1,stage='revision' WHERE id=%s", (document["id"],))
+            conn.execute("UPDATE quant_feed_documents SET revision=revision+1,stage='revision' WHERE id=%s", (document["id"],))
         elif value.disposition == "pass":
             state = "approved" if self.company.settings.quant_feed_publish_enabled else "preview"
         conn.execute("UPDATE quant_feed_documents SET critique=%s,state=%s,reviewed_at=now() WHERE id=%s",

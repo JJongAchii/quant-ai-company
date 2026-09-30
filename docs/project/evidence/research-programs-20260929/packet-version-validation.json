@@ -1,0 +1,23 @@
+{
+  "candidate_commit": "f1947f4bf22471816a352ec848d373c4d6d97267",
+  "checks": [
+    {
+      "conclusion": "SUCCESS",
+      "name": "service",
+      "status": "COMPLETED"
+    }
+  ],
+  "local_full_pytest": {
+    "passed": 1372,
+    "skipped": 13,
+    "warnings": 2
+  },
+  "observed_at": "2026-09-29T06:57:15.275413+00:00",
+  "pr_merge_state": "CLEAN",
+  "ruff": "passed",
+  "schema_version": 1,
+  "targeted_pytest": {
+    "passed": 19,
+    "warnings": 2
+  }
+}

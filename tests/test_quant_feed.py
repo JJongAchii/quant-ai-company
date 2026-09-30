@@ -13,11 +13,24 @@ from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 from quant_company.company import fingerprint
 from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderResponse, Role
 from quant_company.quant_feed import schedule
-from quant_company.quant_feed.contracts import EvidenceCritique, QuantSource, ResearchBrief, load_sources
-from quant_company.quant_feed.editor import INSTRUCTIONS, prompt, render, validate
-from quant_company.quant_feed.feeds import aliases, collect
+from quant_company.quant_feed.contracts import (
+    EditorialCritique,
+    EvidenceCritique,
+    QuantSource,
+    ResearchBrief,
+    load_sources,
+)
+from quant_company.quant_feed.editor import (
+    INSTRUCTIONS,
+    ProposalValidationError,
+    prompt,
+    render,
+    source_spans,
+    validate,
+)
+from quant_company.quant_feed.feeds import aliases, collect, obvious_nonresearch_title
 from quant_company.quant_feed.originals import download, extract_pdf, fetch_original, parse_html
-from quant_company.quant_feed.store import QuantFeedStore
+from quant_company.quant_feed.store import QuantFeedStore, _bounded_pages
 from quant_company.slack import SlackIngress, SlackOutbox
 
 TEXT = ("A study by Example Author, published 2026-09-01. US equities from 2000 to 2020. "
@@ -35,6 +48,33 @@ def brief(**updates):
                  application="한국 적용에는 시점별 종목·가격 데이터 필요. 로컬 가용성 미확인.",
                  evidence=[{"claim": "기간", "location": "PDF p.1", "quote": "US equities from 2000 to 2020."},
                            {"claim": "한계", "location": "PDF p.1", "quote": "Transaction costs are not estimated."}])
+    value.update(updates)
+    return value
+
+
+def bound_brief(*, first="p1-s1", second="p1-s2", **updates):
+    def source(text, *ids):
+        return {"text": text, "basis": "source", "span_ids": list(ids)}
+
+    def gap(text):
+        return {"text": text, "basis": "qualified_gap", "span_ids": []}
+
+    def interpretation(text):
+        return {"text": text, "basis": "interpretation", "span_ids": []}
+
+    value = brief(
+        market=[source("미국 주식시장", first)],
+        why_read=[interpretation("시장 검증 방식에 참고할 만하다.")],
+        idea=[source("시점별 분할 검증을 비교한다.", first)],
+        data_period=[source("미국 주식 표본을 사용한다.", first)],
+        validation=[source("시간 순 홀드아웃을 사용했다.", first)],
+        author_results=[source("학습 표본과 검증 표본을 비교했다.", first),
+                        source("검증 성과는 학습보다 약했다.", second)],
+        costs_turnover=[gap("비용 추정은 제공 원문에서 확인되지 않음.")],
+        limitations=[interpretation("실거래 적용에는 별도 검증이 필요하다.")],
+        application=[interpretation("시점별 한국 시장자료로 후속 검증을 고려할 수 있다.")],
+        evidence=[],
+    )
     value.update(updates)
     return value
 
@@ -129,14 +169,57 @@ def test_failed_document_does_not_block_next_or_replay_uncertain(quant):
         assert conn.execute("SELECT count(*) AS n FROM quant_feed_documents WHERE state='held'").fetchone()["n"] == 1
 
 
-def test_one_revision_then_hold(quant):
+def test_disabled_source_quarantines_existing_ready_original_without_deleting_it(quant):
+    original(quant)
+    source = quant.sources()["example"].model_copy(update={"enabled": False})
+    quant.company.settings.quant_feed_sources_file.write_text(json.dumps([source.model_dump()]))
+    assert quant.prepare()["state"] == "idle"
+    with quant.db.transaction() as conn:
+        document = conn.execute("SELECT state,error FROM quant_feed_documents").fetchone()
+    assert (document["state"], document["error"]) == ("held", "source_disabled_requires_requalification")
+
+
+def test_obvious_two_sigma_nonresearch_is_quarantined_without_model_call(quant):
+    original(quant)
+    source = next(s for s in load_sources() if s.id == "two-sigma")
+    quant.company.settings.quant_feed_sources_file.write_text(json.dumps([
+        quant.sources()["example"].model_dump(), source.model_dump()]))
+    with quant.db.transaction() as conn:
+        quant.sync_sources(conn)
+        conn.execute("UPDATE quant_feed_candidates SET source_id=%s,title=%s",
+                     ("two-sigma", "Office Hours with a Portfolio Manager"))
+    assert quant.prepare()["state"] == "idle"
+    with quant.db.transaction() as conn:
+        document = conn.execute("SELECT state,error FROM quant_feed_documents").fetchone()
+        calls = conn.execute("SELECT count(*) AS n FROM quant_feed_calls").fetchone()["n"]
+    assert (document["state"], document["error"], calls) == ("held", "source_title_nonresearch_precheck", 0)
+    assert not obvious_nonresearch_title("two-sigma", "Thematic Research: Forecasting Factor Returns")
+
+
+def test_two_bounded_revisions_then_hold(quant):
     original(quant)
     quant.commit(response(quant.prepare(), brief()))
     revision = critique(disposition="revise", claims_supported=False, issues=["claim overstatement"])
     quant.commit(response(quant.prepare(), revision))
     quant.commit(response(quant.prepare(), brief()))
+    assert quant.commit(response(quant.prepare(), revision))["document_state"] == "ready"
+    quant.commit(response(quant.prepare(), brief()))
     assert quant.commit(response(quant.prepare(), revision))["document_state"] == "held"
     assert quant.prepare()["state"] == "idle"
+
+
+def test_second_revision_can_pass_but_never_skips_independent_critique(quant):
+    original(quant)
+    quant.commit(response(quant.prepare(), brief()))
+    revision = critique(disposition="revise", claims_supported=False, issues=["claim overstatement"])
+    quant.commit(response(quant.prepare(), revision))
+    quant.commit(response(quant.prepare(), brief()))
+    quant.commit(response(quant.prepare(), revision))
+    quant.commit(response(quant.prepare(), brief()))
+    with quant.db.transaction() as conn:
+        document = conn.execute("SELECT state,revision FROM quant_feed_documents").fetchone()
+    assert (document["state"], document["revision"]) == ("ready", 2)
+    assert quant.commit(response(quant.prepare(), critique()))["document_state"] == "queued"
 
 
 def test_preview_never_queues_and_activation_does_not_replay_it(quant):
@@ -158,6 +241,203 @@ def test_bundle_distinguishes_original_truncation_from_bounded_context(quant):
     assert len(bundle["pages"]) == 3
     assert bundle["pages"][0]["text"].startswith("HEAD")
     assert bundle["pages"][-1]["text"].endswith("TAIL")
+
+
+def test_uneven_full_original_is_not_unnecessarily_clipped():
+    pages = [{"location": "PDF p.1", "text": "x" * 30000},
+             {"location": "PDF p.2", "text": "y" * 1000}]
+    assert _bounded_pages(pages) == (pages, False)
+
+
+def test_source_spans_are_lossless_bounded_and_deterministic():
+    pages = [{"location": "PDF p.1", "text": TEXT + "end"},
+             {"location": "PDF p.2", "text": "A long uninterrupted word " * 80}]
+    spans = source_spans(pages)
+    assert spans == source_spans(pages)
+    assert len({s["span_id"] for s in spans}) == len(spans)
+    assert all(8 <= len(s["text"]) <= 507 for s in spans)
+    for page in pages:
+        assert "".join(s["text"] for s in spans if s["location"] == page["location"]) == page["text"]
+    data = json.loads(prompt({"pages": pages}, "review").split("\nDATA:\n")[1])
+    assert "pages" not in data and data["source_spans"] == spans
+
+
+def test_native_references_resolve_exact_original_and_keep_ids_in_revision_prompt(quant):
+    original(quant)
+    ready = quant.prepare()
+    with quant.db.transaction() as conn:
+        bundle = conn.execute("SELECT bundle FROM quant_feed_calls WHERE id=%s",
+                              (ready["request"]["request_id"],)).fetchone()["bundle"]
+    spans = source_spans(bundle["pages"])
+    value = brief(evidence=[{"claim": "원문 기간", "span_id": spans[0]["span_id"]},
+                            {"claim": "원문 한계", "span_id": spans[1]["span_id"]}])
+    proposed = response(ready, value)
+    proposed.decision.artifacts[0].title = "quant_brief_v2"
+    result = quant.commit(proposed)
+    assert [r["kind"] for r in result["source_corrections"]] == ["source_span_resolved"] * 2
+    with quant.db.transaction() as conn:
+        doc = conn.execute("SELECT * FROM quant_feed_documents").fetchone()
+        revised_bundle = quant.bundle(conn, doc)
+    assert doc["brief"]["evidence"][0]["quote"] == spans[0]["text"]
+    view = json.loads(prompt(revised_bundle, "revision").split("\nDATA:\n")[1])
+    assert view["draft"]["evidence"] == [{"claim": e["claim"], "span_ids": [e["span_id"]]} for e in value["evidence"]]
+    # Exact quotation is not semantic support: the separate critic can still refuse it.
+    held = critique(disposition="hold", claims_supported=False, issues=["claim not supported by selected passage"])
+    assert quant.commit(response(quant.prepare(), held))["document_state"] == "held"
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
+
+
+def test_unknown_source_span_is_actionable_and_never_becomes_evidence(quant):
+    original(quant)
+    ready = quant.prepare()
+    proposed = response(ready, brief(evidence=[{"claim": "invented reference", "span_id": "p999-s999"}] * 2))
+    proposed.decision.artifacts[0].title = "quant_brief_v2"
+    result = quant.commit(proposed)
+    assert result["validation_issue"] == "quant_unknown_evidence_span"
+    assert result["validation_issues"][0]["field"] == "evidence[0].span_id"
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT revision FROM quant_feed_documents").fetchone()["revision"] == 0
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
+
+
+def test_a_compound_claim_can_bind_multiple_exact_source_spans_without_duplicate_prompt_text():
+    pages = [{"location": "PDF p.1", "text": "The study runs 100000 callbacks on 10000 paths."},
+             {"location": "PDF p.2", "text": "The outputs are volatility and collapse probability. Costs are not estimated."}]
+    bundle = {"pages": pages, "as_of": "2026-09-29", "links": [], "commercial": False,
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
+    value = brief(evidence=[{"claim": "Runs and both defined observables", "span_ids": ["p1-s1", "p2-s1"]},
+                            {"claim": "Costs not estimated", "span_ids": ["p2-s1"]}])
+    proposed = response({"request": {"request_id": "quant-feed-grouped"}}, value)
+    proposed.decision.artifacts[0].title = "quant_brief_v3"
+    audit = []
+    resolved = validate(proposed, bundle, "review", audit=audit)
+    assert [span.quote for span in resolved.evidence[0].source_spans] == [page["text"] for page in pages]
+    assert len(audit) == 3
+    assert "PDF p.1–2" in render(resolved, bundle["metadata"])
+    bundle["draft"] = resolved.model_dump()
+    for stage in ("revision", "critique"):
+        view = json.loads(prompt(bundle, stage).split("\nDATA:\n")[1])
+        assert view["draft"]["evidence"] == value["evidence"]
+        assert all(set(item) == {"claim", "span_ids"} for item in view["draft"]["evidence"])
+    tampered = resolved.model_dump()
+    tampered["evidence"][0]["source_spans"][1]["quote"] = "An invented result that is absent from the original."
+    forged = response({"request": {"request_id": "quant-feed-forged"}}, tampered)
+    with pytest.raises(ProposalValidationError, match="quant_evidence_span_mismatch"):
+        validate(forged, bundle, "review")
+
+
+def test_field_bound_results_cannot_lose_a_different_result_when_references_change():
+    bundle = {"pages": [{"location": "PDF p.1", "text": "A method compares training and holdout samples. "
+                         "The training result exceeds the holdout result."},
+                        {"location": "PDF p.2", "text": "A balanced result appears only in this second passage."}],
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"},
+              "as_of": "2026-09-29", "links": [], "commercial": False}
+    value = bound_brief(first="p1-s1", second="p2-s1", author_results=[
+        {"text": "학습 결과가 검증 결과보다 높았다.", "basis": "source", "span_ids": ["p1-s1"]},
+        {"text": "균형 결과도 보고했다.", "basis": "source", "span_ids": ["p2-s1"]},
+    ])
+    proposed = response({"request": {"request_id": "quant-feed-bound"}}, value)
+    proposed.decision.artifacts[0].title = "quant_brief_v4"
+    resolved = validate(proposed, bundle, "review")
+    assert resolved.author_results == "학습 결과가 검증 결과보다 높았다. 균형 결과도 보고했다."
+    assert [(item.field_path, [span.span_id for span in item.source_spans]) for item in resolved.evidence
+            if item.field_path.startswith("author_results")] == [
+                ("author_results[0]", ["p1-s1"]), ("author_results[1]", ["p2-s1"])]
+    bundle["draft"], bundle["source_draft"] = resolved.model_dump(), value
+    bundle["previous_critique"] = {"issues": ["old objection"]}
+    revision = json.loads(prompt(bundle, "revision").split("\nDATA:\n")[1])
+    criticism = json.loads(prompt(bundle, "critique").split("\nDATA:\n")[1])
+    assert revision["draft"] == value and "source_draft" not in revision
+    assert revision["previous_critique"]["issues"] == ["old objection"]
+    assert "previous_critique" not in criticism
+    assert criticism["draft"]["evidence"][-1]["field_path"] == "author_results[1]"
+    value["author_results"][1]["span_ids"] = ["p99-s1"]
+    proposed.decision.artifacts[0].content = json.dumps(value, ensure_ascii=False)
+    with pytest.raises(ProposalValidationError) as error:
+        validate(proposed, bundle, "revision")
+    assert error.value.issues[0]["field"] == "author_results[1].span_ids"
+    value["author_results"][1].update(basis="qualified_gap", span_ids=[])
+    proposed.decision.artifacts[0].content = json.dumps(value, ensure_ascii=False)
+    with pytest.raises(ProposalValidationError) as error:
+        validate(proposed, bundle, "revision")
+    assert error.value.issues[0]["field"] == "author_results[1]"
+
+
+def test_atomic_field_evidence_can_exceed_legacy_limit_without_losing_source_bindings():
+    bundle = {"pages": [{"location": "PDF p.1", "text": TEXT}],
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"},
+              "as_of": "2026-09-29", "links": [], "commercial": False}
+    value = bound_brief()
+    value["author_results"].extend([
+        {"text": text, "basis": "source", "span_ids": ["p1-s1"]}
+        for text in ("검증 결과를 보고했다.", "학습 결과를 보고했다.", "비용을 추정하지 않았다.", "실거래를 검증하지 않았다.")])
+    value["limitations"] = [{"text": text, "basis": "source", "span_ids": ["p1-s1"]}
+                            for text in ("비용을 추정하지 않았다.", "실거래를 검증하지 않았다.", "검증 성과가 약했다.")]
+    proposed = response({"request": {"request_id": "quant-feed-atomic-capacity"}}, value)
+    proposed.decision.artifacts[0].title = "quant_brief_v4"
+    resolved = validate(proposed, bundle, "review")
+    assert len(resolved.evidence) == 13
+    assert {e.field_path for e in resolved.evidence if e.field_path.startswith("author_results")} == {
+        f"author_results[{index}]" for index in range(6)}
+    assert all(e.source_spans[0].quote in TEXT for e in resolved.evidence)
+    value["limitations"][0]["span_ids"] = ["p99-s1"]
+    proposed.decision.artifacts[0].content = json.dumps(value, ensure_ascii=False)
+    with pytest.raises(ProposalValidationError, match="quant_statement_source_invalid"):
+        validate(proposed, bundle, "review")
+
+
+def test_clipped_original_gap_must_name_the_supplied_excerpts():
+    bundle = {"pages": [{"location": "PDF p.1", "text": TEXT}], "context_clipped": True,
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"},
+              "as_of": "2026-09-29", "links": [], "commercial": False}
+    value = bound_brief(costs_turnover=[{"text": "거래비용은 제공 원문에서 확인되지 않는다.",
+                                           "basis": "qualified_gap", "span_ids": []}])
+    proposed = response({"request": {"request_id": "quant-feed-clipped"}}, value)
+    proposed.decision.artifacts[0].title = "quant_brief_v4"
+    audit = []
+    assert validate(proposed, bundle, "review", audit=audit).costs_turnover == "거래비용은 제공 발췌에서 확인되지 않는다."
+    assert {"kind": "clipped_gap_scope_narrowed", "field": "costs_turnover[0]"} in audit
+    value["costs_turnover"][0]["text"] = "제공된 원문 전체에 거래비용 검증이 없다."
+    proposed.decision.artifacts[0].content = json.dumps(value, ensure_ascii=False)
+    with pytest.raises(ProposalValidationError) as error:
+        validate(proposed, bundle, "review")
+    assert {"code": "quant_clipped_gap_requires_excerpt_scope", "field": "costs_turnover[0]"} in error.value.issues
+    value["costs_turnover"][0]["text"] = "거래비용은 제공 발췌에서 확인되지 않는다."
+    proposed.decision.artifacts[0].content = json.dumps(value, ensure_ascii=False)
+    assert validate(proposed, bundle, "review").costs_turnover == "거래비용은 제공 발췌에서 확인되지 않는다."
+
+
+def test_field_bound_revision_survives_real_postgres_without_source_draft_column(quant):
+    original(quant)
+    first = quant.prepare()
+    with quant.db.transaction() as conn:
+        frozen = conn.execute("SELECT bundle FROM quant_feed_calls WHERE id=%s", (first["request"]["request_id"],)).fetchone()["bundle"]
+    ids = [span["span_id"] for span in source_spans(frozen["pages"])]
+    value = bound_brief(first=ids[0], second=ids[1])
+    draft = response(first, value)
+    draft.decision.artifacts[0].title = "quant_brief_v4"
+    assert quant.commit(draft)["document_state"] == "ready"
+    requested = critique(disposition="revise", claims_supported=False, issues=["author_results[1]: qualify"])
+    quant.commit(response(quant.prepare(), requested))
+    revising = quant.prepare()
+    view = json.loads(revising["request"]["prompt"].split("\nDATA:\n")[1])
+    assert view["draft"] == value
+    assert view["previous_critique"]["issues"] == requested["issues"]
+    with quant.db.transaction() as conn:
+        saved = conn.execute("SELECT brief FROM quant_feed_documents").fetchone()["brief"]
+    assert saved["author_results"] == "학습 표본과 검증 표본을 비교했다. 검증 성과는 학습보다 약했다."
+
+
+def test_page_budget_redistributes_short_pages_and_remains_bounded():
+    pages = [{"location": "PDF p.1", "text": "A" * 50000},
+             {"location": "PDF p.2", "text": "B" * 1000}]
+    bounded, clipped = _bounded_pages(pages)
+    total = sum(len(p["text"]) for p in bounded)
+    assert clipped and 41997 <= total <= 42000
+    assert bounded[-1] == pages[-1]
+    small, clipped = _bounded_pages(pages * 10, budget=7)
+    assert clipped and sum(len(p["text"]) for p in small) <= 7
 
 
 def test_nul_in_extracted_text_is_replaced_and_receipted(quant):
@@ -265,6 +545,32 @@ def test_raw_json_control_characters_are_only_normalized_inside_strings():
     assert validate(value, bundle, "review").reason == "검증 한계 연구적 가치"
 
 
+@pytest.mark.parametrize("source,quote,accepted", [
+    ("Fixed set-\ntings cannot correct time-\nvarying bias.", "Fixed settings cannot correct time-varying bias.", True),
+    ("The result is statis-\ntically inconclusive.", "The result is statistically inconclusive.", True),
+    ("The result is statistically inconclusive.", "The result is statistically conclusive.", False),
+    ("A long-term result was reported.", "A longterm result was reported.", False),
+    ("The result was -\n12 percent.", "The result was 12 percent.", False),
+    ("The equation is x-\ny in this study.", "The equation is xy in this study.", False),
+    ("The result was inconclusive. Further data are needed.", "The result was inconclusive...data are needed.", False),
+])
+def test_pdf_line_wrap_normalization_does_not_allow_semantic_rewording(source, quote, accepted):
+    value = response({"request": {"request_id": "quant-feed-layout"}},
+                     brief(evidence=[{"claim": "원문 주장", "location": "PDF p.1", "quote": quote},
+                                     {"claim": "한계", "location": "PDF p.1", "quote": "Transaction costs are not estimated."}]))
+    bundle = {"pages": [{"location": "PDF p.1", "text": source + "\n" + TEXT}],
+              "as_of": "2026-09-29", "links": [], "commercial": False,
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"}}
+    audit = []
+    if accepted:
+        assert validate(value, bundle, "review", audit=audit).disposition == "publish"
+        assert audit == [{"kind": "pdf_line_wrap_hyphen_match", "evidence_index": 0, "location": "PDF p.1"}]
+        assert bundle["pages"][0]["text"].startswith(source)
+    else:
+        with pytest.raises(ProposalValidationError):
+            validate(value, bundle, "review", audit=audit)
+
+
 def test_one_deterministic_proposal_repair_then_fail_closed(quant):
     original(quant)
     invalid = brief(evidence=[
@@ -276,14 +582,46 @@ def test_one_deterministic_proposal_repair_then_fail_closed(quant):
     assert repaired["document_state"] == "ready"
     assert repaired["validation_issue"] == "quant_quote_not_in_original_version"
     with quant.db.transaction() as conn:
-        document = conn.execute("SELECT state,stage,revision,critique FROM quant_feed_documents").fetchone()
-    assert (document["state"], document["stage"], document["revision"]) == ("ready", "revision", 1)
-    assert document["critique"]["issues"] == ["quant_quote_not_in_original_version"]
+        document = conn.execute("SELECT state,stage,revision,critique,brief FROM quant_feed_documents").fetchone()
+    assert (document["state"], document["stage"], document["revision"]) == ("ready", "repair", 0)
+    assert document["brief"]["evidence"] == [
+        {**item, "span_id": "", "field_path": "", "source_spans": []} for item in invalid["evidence"]]
+    assert [i["field"] for i in document["critique"]["issues"]] == ["evidence[0]", "evidence[1]"]
     second = quant.prepare()
     with pytest.raises(ValueError, match="quant_quote_not_in_original_version"):
         quant.commit(response(second, invalid))
     quant.fault(second["request"]["request_id"], "invalid_quant_proposal")
     assert quant.prepare()["state"] == "idle"
+
+
+@pytest.mark.parametrize("repair_after_revision", [False, True])
+def test_technical_repair_and_editorial_revision_have_separate_bounded_budgets(quant, repair_after_revision):
+    original(quant)
+    bad = brief(evidence=[{"claim": "bad", "location": "PDF p.1", "quote": "Invented unsupported result"}] * 2)
+    critic = critique(disposition="revise", claims_supported=False, issues=["idea: qualify the conclusion"])
+    if repair_after_revision:
+        quant.commit(response(quant.prepare(), brief()))
+        quant.commit(response(quant.prepare(), critic))
+    ready = quant.prepare()
+    assert ready["request"]["output_contract"] == "quant_brief_v4"
+    quant.commit(response(ready, bad))
+    with quant.db.transaction() as conn:
+        doc = conn.execute("SELECT * FROM quant_feed_documents").fetchone()
+        assert doc["revision"] == int(repair_after_revision)
+        if repair_after_revision:
+            assert doc["critique"]["editorial_critique"]["issues"] == critic["issues"]
+    quant.commit(response(quant.prepare(), brief()))
+    if not repair_after_revision:
+        quant.commit(response(quant.prepare(), critic))
+        quant.commit(response(quant.prepare(), brief()))
+    final = quant.prepare()
+    assert final["request"]["output_contract"] == "quant_critique_v2"
+    assert quant.commit(response(final, critic))["document_state"] == "ready"
+    quant.commit(response(quant.prepare(), brief()))
+    assert quant.commit(response(quant.prepare(), critic))["document_state"] == "held"
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM quant_feed_calls WHERE stage='repair'").fetchone()["n"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
 
 
 def test_unique_quote_location_correction_is_audited_before_critic(quant):
@@ -528,6 +866,7 @@ def test_registry_and_strict_feed_boundaries():
     two_sigma = next(s for s in sources if s.id == "two-sigma")
     assert two_sigma.url == "https://www.twosigma.com/topic/markets-economy/"
     assert two_sigma.paths == ["/articles/"]
+    assert not next(s for s in sources if s.id == "research-affiliates").enabled
     assert "Reject unrelated infrastructure, cloud security, careers" in INSTRUCTIONS
     source = sources[0]
     receipt = collect(source, lambda url: ({"ok": True}, b"<!DOCTYPE a><feed></feed>"))
@@ -541,6 +880,20 @@ def test_research_link_title_excludes_embedded_style_text():
     _, content, links = parse_html(raw, {"url": "https://example.org/index", "content_type": "text/html"})
     assert links == [{"url": "https://example.org/paper", "title": "An Evidence-Based Research Paper"}]
     assert "@keyframes" not in content
+
+
+def test_two_sigma_collects_only_titles_inside_article_listing_cards():
+    source = next(s for s in load_sources() if s.id == "two-sigma")
+    raw = (b'<nav><a href="/articles/company-news/">Company News</a></nav>'
+           b'<a href="/articles/new-ceo/">New CEO Named at Two Sigma</a>'
+           b'<article class="pb-sm"><h3><a href="/articles/office-hours/">Office Hours with a Leader</a></h3></article>'
+           b'<article class="pb-sm"><a href="/articles/market-model/">image</a>'
+           b'<h3 class="h3"><a href="/articles/market-model/">A Market Risk Model</a></h3></article>'
+           b'<footer><a href="/articles/careers/">Careers</a></footer>')
+    receipt = collect(source, lambda url: ({"ok": True, "url": url, "content_type": "text/html"}, raw))
+    assert receipt["ok"]
+    assert receipt["entries"] == [{"url": "https://www.twosigma.com/articles/market-model/",
+                                   "title": "A Market Risk Model", "metadata": {}}]
 
 
 def test_corrupt_pdf_falls_back_only_to_existing_html_evidence():
@@ -634,16 +987,94 @@ def test_critic_cannot_pass_unsupported_or_out_of_scope_research(failed_check):
     assert "direct_quant_scope and substantive_research separately" in prompt({}, "critique")
 
 
+def test_editorial_suggestions_do_not_block_but_cannot_hide_material_errors():
+    assert EditorialCritique.model_validate(critique(suggestions=["Optional shorter headline"])).disposition == "pass"
+    with pytest.raises(ValueError, match="quant_incomplete_critique"):
+        EditorialCritique.model_validate(critique(claims_supported=False, suggestions=["Invented return is a fact error"]))
+    with pytest.raises(ValueError, match="quant_incomplete_critique"):
+        EditorialCritique.model_validate(critique(issues=["Wrong confidence interval"], suggestions=[]))
+    rules = prompt({}, "critique")
+    assert "do not require a quotation proving absence" in rules
+    assert "tradability or guarantees remain MATERIAL" in rules
+    card = render(ResearchBrief.model_validate(brief(costs_turnover="비용 미기재")),
+                  {"publisher": "Example", "url": "https://example.org/paper"})
+    assert "미기재·확인 불가: 검토에 제공된 원문 텍스트·발췌 기준" in card
+
+
+def test_arxiv_date_and_clipped_context_are_explicit_in_editor_prompt():
+    bundle = {"metadata": {"publisher": "arXiv", "citation_date": ["2026/09/22"],
+                           "citation_online_date": ["2026/09/22"], "published": "2026-09-24"}}
+    instructions = prompt(bundle, "review")
+    assert "DATE_GUARD: arXiv original citation date is 2026-09-22" in instructions
+    assert "do not substitute feed published/updated" in instructions
+    assert "제공 발췌에서 확인되지 않음" in instructions
+    bundle["metadata"]["citation_online_date"] = ["2026/09/23"]
+    assert "arXiv date metadata is incomplete or conflicting" in prompt(bundle, "review")
+
+
+def test_editorial_validation_types_depend_on_design_not_authors_validation_word():
+    # Prompt regression only; semantic model accuracy is checked separately on real originals.
+    for stage in ("review", "revision", "critique"):
+        rules = prompt({}, stage)
+        assert "internal simulation diagnostics" in rules
+        assert "do not erase an actual empirical comparison" in rules
+        assert "authors' word 'validate' alone does not establish a market-data" in rules
+    rules = prompt({}, "critique")
+    assert "data or test design that contradicts the statement" in rules
+    assert "adding another equivalent author assertion is optional" in rules
+
+
+def test_confirmed_arxiv_original_date_is_checked_without_silent_rewriting():
+    bundle = {"metadata": {"publisher": "arXiv", "url": "https://arxiv.org/abs/2609.12345",
+                           "citation_date": ["2026/09/01"], "citation_online_date": ["2026/09/01"]},
+              "pages": [{"location": "PDF p.1", "text": TEXT}], "as_of": "2026-09-29", "links": [],
+              "commercial": False}
+    value = response({"request": {"request_id": "quant-feed-date"}}, brief(published_on="2026-09-03"))
+    with pytest.raises(ProposalValidationError) as failure:
+        validate(value, bundle, "review")
+    assert failure.value.issues == [{"code": "quant_original_publication_date_mismatch",
+                                     "field": "published_on", "expected": "2026-09-01"}]
+    assert failure.value.draft["published_on"] == "2026-09-03"
+
+
+def test_editor_audits_uncertainty_and_entire_evidence_claim():
+    review = prompt({}, "review")
+    assert "uncertainty intervals and inconclusive results" in review
+    assert "do not by themselves isolate dynamic or causal skill" in review
+    assert "JOINTLY must support the WHOLE statement" in review
+    assert "Never project a" in review
+    assert "source statement and a scoped missing period" in review
+    critique = prompt({}, "critique")
+    assert "Audit EACH brief field and EACH evidence" in critique
+    assert "Enumerate ALL material issues" in critique
+    assert "quote the exact current sentence" in critique
+    assert "After a revision, re-audit" in critique
+
+
 def test_render_is_scan_friendly_and_does_not_duplicate_or_mislabel_links():
     value = brief(related_urls=["https://example.org/paper", "https://example.org/code"],
                   limitations=["거래비용 미반영", "표본 편향 가능성", "시장 충격 미기재"])
     rendered = render(ResearchBrief.model_validate(value),
                       {"publisher": "Example", "url": "https://example.org/paper"})
-    assert "*왜 읽나*" in rendered and "\n\n*데이터·검증*" in rendered
-    assert "*저자 보고*" in rendered and "*주의*" in rendered
+    assert "\n\n*핵심*\n" in rendered and "\n\n*왜 읽나*\n" in rendered
+    assert "\n\n*연구 설계·결과*\n• *대상*" in rendered
+    assert "\n• *데이터*" in rendered and "\n• *검증*" in rendered
+    assert "\n• *저자 보고*" in rendered and "\n\n*주의점*\n" in rendered
+    two_limits = render(ResearchBrief.model_validate(brief(limitations=["첫 번째", "두 번째"])),
+                        {"publisher": "Example", "url": "https://example.org/paper"})
+    assert "*주의점*\n• 첫 번째\n• 두 번째\n• *비용·회전율*" in two_limits
     assert "시장 충격 미기재" in rendered
     assert "*적용 전*" in rendered and "독립 재현·투자 검증 아님" in rendered
     assert rendered.count("<https://example.org/paper|") == 1
     assert "<https://example.org/code|추가 자료 1>" in rendered
     assert "관련 코드·데이터" not in rendered and "research_validity" not in rendered
     assert "Transaction costs" not in rendered  # Evidence quotes retained privately, not republished.
+
+
+def test_slack_locations_preserve_page_coverage_without_repeating_extraction_chunks():
+    from quant_company.quant_feed.editor import display_locations
+
+    assert display_locations(["PDF p.19 [1/3]", "PDF p.1 [2/3]", "PDF p.2 [2/3]", "PDF p.2 [3/3]",
+                              "PDF p.11 [2/2]", "PDF p.27 [3/3]", "PDF p.28 [2/3]"]) == "PDF p.1–2, 11, 19, 27–28"
+    assert display_locations(["HTML section Results", "HTML section Results", "PDF p.8"]) == (
+        "PDF p.8 · HTML section Results")

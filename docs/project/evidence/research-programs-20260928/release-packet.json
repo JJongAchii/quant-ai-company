@@ -1,0 +1,126 @@
+{
+  "candidate": {
+    "canonical_research_bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+    "canonical_research_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+    "company_commit": "2b4034db126ff13ff936c8e3def3ae89c7456824",
+    "git_bundle_sha256": "83f148a6793a38ba24b240aa4e7ec40587890da5d5665449820e0d447c00fe57",
+    "profile_digests": {
+      "kr-etf-research-v2": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+      "kr-stock-research-v2": "07056f8607ea990c09de6ade29a6230f60c3c0055c980728d95705e538dd21a3"
+    },
+    "profile_registry_sha256": "22a5fd7aa0fcd440730258f3a828720c04bf496ac28846354c84ee81e92d0779",
+    "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "server_bundle_path": "/var/lib/quant-company/release-prep/2b4034db126ff13ff936c8e3def3ae89c7456824.bundle",
+    "server_profile_candidate_path": "/var/lib/quant-company/release-prep/research-profiles-2b4034.json",
+    "worker_config_sha256": "45cb81892a5e5e0bd9b5a0d5e183c00f6b04ff7e3f16b028adb7b0a4c1c44161",
+    "worker_release_receipt_sha256": "e88fc450e8cab95a90d17dffed9a5e938fe83388d7becbbd628dab9909aa0058"
+  },
+  "created_at": "2026-09-28T08:09:50.785332+00:00",
+  "decision_gate": "Review exact deployment and first scientific program before production activation or scientific trial",
+  "evidence": {
+    "first-program-draft.json": "98e588c4698be002c0d574b0b6bf7a08ae062aac54d825d1b757d711fa347c7f",
+    "first-question-draft.json": "70ca4d7aaee9993fe1f5aba4fb1f7767cd41d52b947ce44e9d966a3587e602f2",
+    "integrated-migration-test.json": "4c070c4c9e76f2a1241ab75f1a7c60da8fb8485b91b74495515853aafedbce18",
+    "integrated-profile-validation.json": "7431353ad67cc7434baec3d00c7c46c021123c7bbfd7a9c6c47c9926adce059d",
+    "integrated-server-stage.json": "9f75ef629ec1a08b36794e58c629af64dbc65e77fc9c1bee23aac184c9cd1bf8",
+    "integrated-worker-stage.json": "bbab1b5717182552858aefd3051eb2de3f17a4fd1fc6cd5d6e0ce5b102826565",
+    "integrated-worker-warmup.json": "720422238914b746ce2e5f45f78e0f8674a555ad7b77c6a8fac484121ca26870",
+    "live-server-audit-final.json": "a4912f21729902defeda88a811497959073c7097ff6b426c32a523cc9b43ca94",
+    "server-profile-registry-candidate.json": "22a5fd7aa0fcd440730258f3a828720c04bf496ac28846354c84ee81e92d0779",
+    "source-anchor-verification.json": "c70030e04f0545877a49b4eb6dba1fe2352c1461b91c79398c26574529ff0f93"
+  },
+  "observed_production": {
+    "3070_active_company_commit": "31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
+    "3070_active_config_sha256": "e615f9ffcda1732cb69dd7e1cb2146f50300cb0098d63e3f859168d7e0c2006b",
+    "api_image": "quant-company:d571734e161c39f7c26252005231f93b619b3749",
+    "existing_project_missions": [
+      {
+        "cumulative_trials": 1,
+        "id": "4462aff3-c7fe-5e66-a003-4aca2e8f3330",
+        "state": "active",
+        "updated_at": "2026-09-28T08:04:27.995354+00:00"
+      }
+    ],
+    "observed_at": "2026-09-28T08:04:46.600743+00:00",
+    "research_jobs_by_state": [
+      {
+        "count": 1,
+        "state": "cancelled"
+      },
+      {
+        "count": 1,
+        "state": "completed"
+      },
+      {
+        "count": 1,
+        "state": "received"
+      }
+    ],
+    "research_program_table_exists": false,
+    "server_active_profile_ids": [
+      "kr-etf-monthly-python-v1"
+    ],
+    "server_active_profile_sha256": "221cb9a6d5d8f383e328ec26d72493c07a5a5e4f1989f25aba10ada38571a043",
+    "server_worker_image": "quant-company-autonomous:31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
+    "source_approved": true,
+    "source_content_sha256": "aaffedd1643b16ec0a97d5f4bb0ef6084c6fc0fdc2b4ad75f707b808d0725379",
+    "source_synthetic": false
+  },
+  "schema_version": 1,
+  "staging": {
+    "production_migration_applied": false,
+    "production_profile_registered": false,
+    "production_server_image_built": false,
+    "program_submitted": false,
+    "scientific_trial_started": false,
+    "server_candidate_profile_registry": true,
+    "server_canonical_research_bundle": true,
+    "server_company_bundle": true,
+    "worker_activated": false,
+    "worker_exact_release": true
+  },
+  "state": "ready_for_owner_review_not_activated",
+  "verification": {
+    "3070_warmup": {
+      "cases": 4,
+      "development_mounted": false,
+      "passed": true,
+      "scientific_trials_added": 0
+    },
+    "candidate_profiles_match_program_envelopes": 4,
+    "disposable_postgresql_migration": {
+      "migrations_after_seed": 2,
+      "passed": true,
+      "seed_commit": "d571734e161c39f7c26252005231f93b619b3749",
+      "target_commit": "2b4034db126ff13ff936c8e3def3ae89c7456824"
+    },
+    "full_pytest": {
+      "commit": "2b4034db126ff13ff936c8e3def3ae89c7456824",
+      "exit_code": 0,
+      "passed": 1253,
+      "runtime": "real PostgreSQL available; environment-dependent tests skipped",
+      "skipped": 45
+    },
+    "real_codex_new_release_checked": false,
+    "real_slack_new_release_checked": false,
+    "research_focused_postgresql": {
+      "exit_code": 0,
+      "passed": 23,
+      "skip_reason": "pinned qlab unavailable in initial candidate environment; later targeted qlab checks passed",
+      "skipped": 1
+    },
+    "research_temporal": {
+      "exit_code": 0,
+      "passed": 1
+    },
+    "ruff": {
+      "exit_code": 0
+    },
+    "targeted_qlab": {
+      "exit_code": 0,
+      "passed": 32,
+      "real_pinned_checkout": true,
+      "skipped": 0
+    }
+  }
+}

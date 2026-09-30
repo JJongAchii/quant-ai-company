@@ -1,0 +1,67 @@
+{
+  "recorded_at": "2026-09-30T08:01:19+00:00",
+  "user_instruction": "Make the repository public.",
+  "repository": "JJongAchii/quant-ai-company",
+  "url": "https://github.com/JJongAchii/quant-ai-company",
+  "before": {
+    "visibility": "private",
+    "private": true,
+    "owner_type": "User",
+    "admin_permission": true
+  },
+  "secret_preflight": {
+    "tool": "gitleaks",
+    "version": "8.30.1",
+    "source": "Latest origin branches fetched; git scan with --log-opts=--all, --ignore-gitleaks-allow and full redaction",
+    "reachable_commits": 589,
+    "scanner_reported_commits": 443,
+    "scanner_exit_code": 1,
+    "first_scan_bytes_approximate": 117469279,
+    "archive_scan_bytes_approximate": 126488036,
+    "archive_depth": 2,
+    "redacted_report_sha256": "c3a71977d426c82d840caf2ccced16ba3a424b1e58006053c7359c3b31f8a7d9",
+    "redacted_archive_report_sha256": "794bf8629785251fc93ba6c048d7c655726f76089edfd88f092320167b16dfb6",
+    "findings": 21,
+    "archive_findings_unchanged": true,
+    "all_findings_rule": "generic-api-key",
+    "triage": {
+      "file_or_receipt_sha256": 17,
+      "git_commit_identifier": 1,
+      "sql_identifier_expression": 1,
+      "adjacent_json_field_name": 2,
+      "confirmed_credentials": 0
+    },
+    "limitation": "Automated pattern scanning and contextual triage do not prove absence of all confidential content. GitHub-hosted Actions logs and artifacts were not exhaustively scanned. The owner authorized publication of the repository and its history."
+  },
+  "change": {
+    "command": "gh repo edit JJongAchii/quant-ai-company --visibility public --accept-visibility-change-consequences",
+    "exit_code": 0,
+    "authenticated_readback": {"visibility": "public", "private": false},
+    "unauthenticated_readback": {"visibility": "public", "private": false},
+    "verified_at": "2026-09-30T07:53:26+00:00"
+  },
+  "ci_recheck": {
+    "run_id": 36679570477,
+    "commit": "5defb8cb9dd7c655214663b05670cd2896006b30",
+    "attempt": 2,
+    "job_id": 109792979448,
+    "job_started_at": "2026-09-30T07:53:36Z",
+    "runner_assigned": true,
+    "status": "completed",
+    "conclusion": "success",
+    "dependency_install": "passed",
+    "lint": "passed",
+    "full_suite": "passed",
+    "run_updated_at": "2026-09-30T08:01:01Z",
+    "last_checked_at": "2026-09-30T08:01:19+00:00",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36679570477"
+  },
+  "scope": {
+    "payment_method_added": false,
+    "paid_plan_enabled": false,
+    "spending_limit_changed": false,
+    "production_services_changed": false,
+    "slack_publication_gate_changed": false,
+    "unrelated_worktree_edits_preserved": true
+  }
+}

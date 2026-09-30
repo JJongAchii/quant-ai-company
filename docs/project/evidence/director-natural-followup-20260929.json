@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-09-29T01:22:13Z",
+  "scope": "research-center director owner follow-up",
+  "productionSourceCommitAtDiagnosis": "382284512ade2c0750c79494389a0899d2b46688",
+  "productionImagesAtReview": {
+    "apiAndSlackSocket": "quant-company:382284512ade2c0750c79494389a0899d2b46688",
+    "modelWorker": "quant-company-autonomous:2d2ee42ffc41dabb505020ada896e4d9760a8ab1"
+  },
+  "candidateBase": "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9",
+  "integrationNote": "The fix includes the active audit and token-accounting release, research citation guidance, and the concurrent validator audit-packet release; the earlier PR remains the focused review of the fix.",
+  "concurrentWorkerCommitIncluded": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801",
+  "latestConcurrentReleaseIncluded": "ac44bf5b66b3016021e13c34ffc75b8db215bfc3",
+  "sourceKinds": {
+    "messages": "read-only production PostgreSQL records for the affected project",
+    "program": "read-only production PostgreSQL research_programs and research_mission_stages",
+    "tests": "local real PostgreSQL; simulated signed Slack and model proposals"
+  },
+  "inboundObservations": [
+    {"at": "2026-09-29T01:14:53Z", "intent": "natural progress question", "outcome": "completed fixed status control"},
+    {"at": "2026-09-29T01:16:00Z", "intent": "clarified question about newly approved research", "outcome": "completed fixed status control"}
+  ],
+  "newResearchProgram": {
+    "approvedAt": "2026-09-29T00:21:12Z",
+    "state": "active",
+    "stage": "program_proposal",
+    "stageState": "running",
+    "actor": "researcher_kr",
+    "selectedTasks": 0,
+    "childMissions": 0
+  },
+  "separateOlderMission": "Earlier audit stage waiting; it does not describe the newly approved program.",
+  "candidateBehavior": "Natural owner progress questions create an answer turn with current bounded program state, even if the routing model proposes status. Bare status commands remain deterministic.",
+  "validation": {
+    "focusedRealPostgresTests": 28,
+    "focusedResult": "passed",
+    "fullSuite": "1261 passed, 45 skipped; real local PostgreSQL; 2026-09-29",
+    "lint": "ruff check . passed",
+    "realSlackAfterChange": "pending deployment"
+  },
+  "operationalState": "candidate only; no production deployment or automatic replay"
+}

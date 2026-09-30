@@ -1,0 +1,27 @@
+{
+  "commands": [
+    {
+      "command": "uv run pytest -q tests/test_research_programs.py -k 'partial_original or stage_requires_current'",
+      "deselected": 6,
+      "passed": 2,
+      "result": "pass"
+    },
+    {
+      "command": "uv run pytest -q",
+      "passed": 1289,
+      "result": "pass",
+      "skipped": 13,
+      "warnings": 2
+    },
+    {
+      "command": "uv run ruff check .",
+      "result": "pass"
+    }
+  ],
+  "commit": "2d2ee42ffc41dabb505020ada896e4d9760a8ab1",
+  "production_codex_auth": "official ChatGPT profiles only",
+  "recorded_at": "2026-09-29T01:22:17.133435+00:00",
+  "schema_version": 1,
+  "scientific_performance_claims": 0,
+  "scope": "local company checkout"
+}

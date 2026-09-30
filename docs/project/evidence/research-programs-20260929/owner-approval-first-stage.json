@@ -1,0 +1,71 @@
+{
+  "active_jobs": 0,
+  "active_turns": 0,
+  "approval_binding": {
+    "app_id_bound": true,
+    "id": "21f480c4-d59f-45e7-ac2e-2cf91aa109e8",
+    "message_id": "9910b837-9889-4fdf-874a-6eb57ee38990",
+    "outbox_status": "delivered",
+    "sent_ts": "1790639676.639789"
+  },
+  "authorization": {
+    "action": "approve",
+    "binding": "21f480c4-d59f-45e7-ac2e-2cf91aa109e8",
+    "channel": "C0C2B9EUEGM",
+    "created_at": "2026-09-29T00:21:12.470514+00:00",
+    "event_id": 440,
+    "message_ts": "1790639676.639789",
+    "origin": "block_actions",
+    "owner": "U0C250E23NW",
+    "target_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+    "target_kind": "program"
+  },
+  "inbound": {
+    "created_at": "2026-09-29T00:21:12.470514+00:00",
+    "event_key": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1790641272.310813:director:action:21f480c4-d59f-45e7-ac2e-2cf91aa109e8:approve",
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "task_id": "8abfaa0f-4eb4-5155-be5c-3df81e5d498d"
+  },
+  "missions": [],
+  "observed_at": "2026-09-29T00:22:57.658303+00:00",
+  "program": {
+    "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1790641272.310813:director:action:21f480c4-d59f-45e7-ac2e-2cf91aa109e8:approve",
+    "approved_at": "2026-09-29T00:21:12.470514+00:00",
+    "id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+    "manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+    "owner_user": "U0C250E23NW",
+    "revision": 5,
+    "state": "active"
+  },
+  "program_stages": [
+    {
+      "actor": "researcher_kr",
+      "attempt": 1,
+      "created_at": "2026-09-29T00:21:23.888172+00:00",
+      "error": "auth",
+      "id": "85f6e5a3-1d37-5a98-81b3-b25ea221633a",
+      "stage": "program_proposal",
+      "state": "waiting",
+      "task_id": "e6d49ecd-3395-5158-beeb-3dcd34c86c30",
+      "updated_at": "2026-09-29T00:21:24.417504+00:00"
+    }
+  ],
+  "research_tasks": [],
+  "reservations": {
+    "count": 0,
+    "reserved_seconds": 0,
+    "scientific_trials": 0
+  },
+  "schema_version": 1,
+  "source": "production PostgreSQL read-only transaction",
+  "stage_turns": [
+    {
+      "agent": "researcher_kr",
+      "created_at": "2026-09-29T00:21:23.888172+00:00",
+      "task_id": "e6d49ecd-3395-5158-beeb-3dcd34c86c30",
+      "task_status": "blocked",
+      "turn_status": "blocked"
+    }
+  ],
+  "worker_last_seen": "2026-09-29T00:22:56.520222+00:00"
+}

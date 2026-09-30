@@ -21,6 +21,7 @@ ACTORS = {
     "proposal": "researcher_kr", "challenge": "financial_strategist", "selection": "director",
     "implementation": "engineer", "repair": "engineer", "interpretation": "researcher_kr",
     "audit": "validator", "cycle_review": "director",
+    "meaning": "financial_strategist",
 }
 STAGE_TEXT = {
     "proposal": "연구 담당자가 근거와 반증 조건을 갖춘 다음 가설을 준비합니다.",
@@ -31,14 +32,16 @@ STAGE_TEXT = {
     "interpretation": "연구 담당자가 수신한 결과를 해석하고 다음 가설을 기록합니다. 성과는 감사 후 공개합니다.",
     "audit": "독립 검증 담당자가 코드·입력·결과의 고정된 감사 묶음을 검토합니다.",
     "cycle_review": "총괄이 이번 연구 주기의 증거와 남은 가설을 검토합니다.",
+    "meaning": "유효성 검증 후 과적합·비용·대안 설명과 미해결 반론을 검토합니다.",
 }
 
 AUDIT_RECONCILED_ERROR = "audit_runtime_failure_reconciled"
+MAX_PROGRAM_PROPOSAL_REJECTIONS = 3
 
 
 def stage_role(company, actor):
     role = company.roles.get(actor)
-    if not role or actor not in set(ACTORS.values()):
+    if not role or actor not in set(ACTORS.values()) | {"data"}:
         raise PolicyError("Unknown mission employee")
     if not role.active and actor not in {"engineer", "validator"}:
         raise PolicyError("Mission employee is inactive")
@@ -290,13 +293,28 @@ def stage_prompt(company, conn, task, turn=None):
                         "within the frozen scope. Exhausted scope requires wait; do not rename the same experiment.",
     }
     from .audit_delivery import enabled, prepare_packet
+    from .program_controller import PROGRAM_STAGES, prior_task_navigation
 
+    instructions.update({key: value[2] for key, value in PROGRAM_STAGES.items()})
+    if row["stage"] in PROGRAM_STAGES:
+        instructions[row["stage"]] += (
+            " Prior task navigation contains excerpts only. Read the corresponding evidence_file "
+            "for complete methods, data assessments and decisions before relying on their details.")
+    instructions["meaning"] = (
+        "Return MeaningReview for the exact trial and outcome digest. Causal validity already passed; "
+        "independently assess multiple testing, costs and executability, alternative mechanisms and uncertainty. "
+        "Read all required_meaning_reads, the interpretation and challenge responses. List every unperformed "
+        "test obligation and unresolved objection. Choose inconclusive when required evidence is missing. "
+        "Support is development evidence only, never confirmation or an investment recommendation.")
     if enabled(row):
         if turn is None:
             raise PolicyError("audit_packet_requires_bound_turn")
         return role, prepare_packet(company, conn, row, turn, instructions["audit"])
+    prior_tasks = prior_task_navigation(company, conn, row) if row["stage"] in PROGRAM_STAGES else None
     context = {**{key: value for key, value in row["context"].items() if not key.startswith("_")},
                "stage_id": str(row["id"]), "actor": row["actor"], "last_error": row["error"]}
+    if prior_tasks is not None:
+        context["prior_tasks"] = prior_tasks
     if row["stage"] == "audit":
         # The immutable audit package contains the complete mission, sources and trial
         # history.  Keep only the navigation identity here so the final prompt can retain
@@ -325,6 +343,24 @@ def stage_prompt(company, conn, task, turn=None):
         conn, project["owner_user"], role.id, role.model, role.reasoning_effort))
     output_type = {"proposal": HypothesisProposal, "challenge": Challenge,
                    "interpretation": Interpretation}.get(row["stage"])
+    if row["stage"] in PROGRAM_STAGES:
+        output_type = PROGRAM_STAGES[row["stage"]][1]
+    if row["stage"] == "meaning":
+        from .program_contracts import MeaningReview
+
+        output_type = MeaningReview
+    if row["context"].get("mission", {}).get("program_id"):
+        if row["stage"] in {"proposal", "challenge"}:
+            instructions[row["stage"]] = instructions[row["stage"]].replace(
+                "only a registered change", "a new testable change").replace(
+                "reject any unregistered formula or parameter", "check new formulas against the approved code and evaluation scope")
+        if row["stage"] == "selection":
+            from .program_contracts import ReviewDecision
+
+            output_type = ReviewDecision
+            instructions["selection"] = ("Return ReviewDecision. Resolve EVERY challenge as revise, test, or reject. "
+                "Provide evidence and a concrete test plan where needed. Required revisions prevent execution. "
+                "New feature/model/portfolio code is allowed only inside approved paths. Evaluator and data stay frozen.")
     if output_type:
         context["output_schema"] = output_type.model_json_schema()
     # A new attempt owns a new provider thread. Prior read receipts remain useful
@@ -443,6 +479,14 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         from .builds import read_stage_file
 
         receipt = read_stage_file(company, row, request.arguments)
+        previous = conn.execute("""SELECT next_offset FROM research_stage_reads WHERE stage_id=%s
+            AND attempt=%s AND path=%s ORDER BY character_offset DESC LIMIT 1""",
+            (row["id"], row["attempt"], receipt["path"])).fetchone()
+        expected_offset = previous["next_offset"] if previous else 0
+        if receipt["offset"] != expected_offset and not conn.execute("""SELECT 1 FROM research_stage_reads
+            WHERE stage_id=%s AND attempt=%s AND path=%s AND character_offset=%s""",
+            (row["id"], row["attempt"], receipt["path"], receipt["offset"])).fetchone():
+            raise PolicyError("Evidence reads must be contiguous from the first byte")
         if conn.execute("""SELECT 1 FROM research_stage_reads
             WHERE stage_id=%s AND attempt=%s AND path=%s AND character_offset=%s""",
                         (row["id"], row["attempt"], receipt["path"], receipt["offset"])).fetchone():
@@ -467,9 +511,112 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         return {"state": "completed"}
     if decision.status != "complete" or len(decision.artifacts) != 1:
         raise PolicyError("Research stage requires exactly one complete structured artifact")
-    value = json.loads(decision.artifacts[0].content)
+    content = decision.artifacts[0].content
+    try:
+        value = json.loads(content)
+    except json.JSONDecodeError as exc:
+        # The outer decision is already typed. Preserve harmless literal newlines
+        # in an artifact string while keeping every other JSON error fail-closed.
+        if exc.msg != "Invalid control character at" or any(ord(char) < 32 and char != "\n" for char in content):
+            raise
+        value = json.loads(content, strict=False)
     if not isinstance(value, dict):
         raise PolicyError("Research artifact must be an object")
+    for path in row["context"].get("required_data_reads", []):
+        if conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
+            AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
+            continue
+        progress = conn.execute("""SELECT next_offset FROM research_stage_reads WHERE stage_id=%s
+            AND attempt=%s AND path=%s ORDER BY character_offset DESC LIMIT 1""",
+            (row["id"], row["attempt"], path)).fetchone()
+        hint = (f"data_evidence_incomplete:{path}@{progress['next_offset']};read_next_chunk"
+                if progress else f"data_evidence_unread:{path}@0;read_first_chunk")
+        if row["error"] != hint:
+            conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s",
+                         (hint, row["id"]))
+            conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                         (Jsonb(response.model_dump(mode="json")), turn["id"]))
+            company._new_turn(conn, task)
+            return {"state": "completed", "incomplete_data_evidence": True}
+        raise PolicyError("Data assessment requires complete reads of the approved input evidence")
+    for path in row["context"].get("required_meaning_reads", []):
+        if not conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
+            AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
+            raise PolicyError("Independent meaning review requires the actual validated artifacts")
+    if row.get("program_id") or row["context"].get("mission", {}).get("program_id"):
+        # Each cited original must actually have reached this provider attempt. An index,
+        # previous employee's summary or old attempt's receipt is not a read receipt.
+        cited = value.get("source_ids", [])
+        if row["stage"] == "selection":
+            cited = sorted({source for response in value.get("responses", []) for source in response.get("source_ids", [])})
+        if row["stage"] == "program_selection":
+            cited = row["context"]["task"]["proposal"]["source_ids"]
+        paths = {entry["source_id"]: entry["file"] for entry in row["context"].get("evidence_sources", [])}
+        for source in cited:
+            if not isinstance(source, str) or source not in paths:
+                if row["stage"] != "program_data" or row["context"].get("_unregistered_source_hint_used"):
+                    raise PolicyError("Cited source ID is outside this stage's approved library")
+                hint = "unregistered_source_id;use_evidence_sources.source_id_not_packet_path"
+                context = {**row["context"], "_unregistered_source_hint_used": True}
+                conn.execute("UPDATE research_mission_stages SET context=%s,error=%s,updated_at=now() WHERE id=%s",
+                             (Jsonb(context), hint, row["id"]))
+                conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                             (Jsonb(response.model_dump(mode="json")), turn["id"]))
+                company._new_turn(conn, task)
+                return {"state": "completed", "incomplete_source": True}
+            if conn.execute("""SELECT 1 FROM research_stage_reads
+                WHERE stage_id=%s AND attempt=%s AND path=%s AND next_offset IS NULL""",
+                (row["id"], row["attempt"], paths[source])).fetchone():
+                continue
+            progress = conn.execute("""SELECT next_offset FROM research_stage_reads WHERE stage_id=%s
+                AND attempt=%s AND path=%s ORDER BY character_offset DESC LIMIT 1""",
+                (row["id"], row["attempt"], paths[source])).fetchone()
+            hint = (f"cited_source_incomplete:{paths[source]}@{progress['next_offset']};read_next_chunk"
+                    if progress else f"cited_source_unread:{paths[source]}@0;read_first_chunk")
+            # One identical premature proposal still fails. A new read receipt
+            # clears this hint and lets the same employee attempt continue.
+            if row["error"] != hint:
+                conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s",
+                             (hint, row["id"]))
+                conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                             (Jsonb(response.model_dump(mode="json")), turn["id"]))
+                company._new_turn(conn, task)
+                return {"state": "completed", "incomplete_source": True}
+            raise PolicyError("Cited source has not been read completely in this employee attempt")
+    if row["stage"] == "program_proposal":
+        from .programs import ProgramStore
+
+        try:
+            ProgramStore(company).validate_proposal(conn, row["program_id"], value, actor=row["actor"])
+        except (PolicyError, ValidationError) as exc:
+            if isinstance(exc, ValidationError):
+                detail = "; ".join(f"{'.'.join(map(str, item['loc']))}: {item['msg']}"
+                                   for item in exc.errors(include_input=False))
+            else:
+                detail = str(exc)
+            count = row["context"].get("_proposal_rejections", 0) + 1
+            context = {**row["context"], "_proposal_rejections": count}
+            reason = "proposal_contract_rejected: " + detail[:600]
+            conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                         (Jsonb(response.model_dump(mode="json")), turn["id"]))
+            if count < MAX_PROGRAM_PROPOSAL_REJECTIONS:
+                conn.execute("UPDATE research_mission_stages SET context=%s,error=%s,updated_at=now() WHERE id=%s",
+                             (Jsonb(context), reason, row["id"]))
+                company._new_turn(conn, task)
+                return {"state": "completed", "proposal_rejected": True}
+            context["_program_hold"] = {"reason": "proposal_contract_requires_remediation",
+                                        "rejections": count}
+            conn.execute("""UPDATE research_mission_stages SET state='waiting',context=%s,error=%s,
+                retry_at=NULL,updated_at=now() WHERE id=%s""", (Jsonb(context), reason, row["id"]))
+            conn.execute("UPDATE research_stage_attempts SET error=%s WHERE stage_id=%s AND attempt=%s",
+                         ("proposal_contract_requires_remediation", row["id"], row["attempt"]))
+            conn.execute("UPDATE tasks SET status='blocked',error=%s WHERE id=%s",
+                         ("proposal_contract_requires_remediation", task["id"]))
+            company._event(conn, "research_program_proposal_held", {
+                "stage_id": str(row["id"]), "attempt": row["attempt"],
+                "reason": "proposal_contract_requires_remediation", "rejections": count,
+            }, task["project_id"])
+            return {"state": "completed", "proposal_held": True}
     if enabled(row):
         if commit_review(company, conn, row, turn, response, value):
             return {"state": "completed", "audit_packet_reviewed": True}
@@ -579,6 +726,11 @@ class MissionController:
                 raise PolicyError("Challenge points to another proposal")
             self.store.add_challenge(conn, mission_id, value, actor=actor)
         elif stage == "selection":
+            if snapshot.get("program_id"):
+                from .feedback import resolve_challenges
+
+                data = resolve_challenges(self.company, conn, snapshot, current["proposal_id"], data, actor)
+                row = {**row, "result": data}
             if set(data) != {"decision", "rationale", "challenge_ids"}:
                 raise PolicyError("Invalid selection fields")
             if data["decision"] == "revise":

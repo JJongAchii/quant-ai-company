@@ -1,0 +1,17 @@
+{
+  "database_name_persisted": false,
+  "migrations_after_seed": 2,
+  "observed_at": "2026-09-28T08:01:46.415495+00:00",
+  "production_database_touched": false,
+  "program_table_before": false,
+  "schema_version": 1,
+  "seed_code_commit": "d571734e161c39f7c26252005231f93b619b3749",
+  "state": "passed_disposable_real_postgresql",
+  "tables_after": {
+    "research_meaning_reviews": true,
+    "research_mission_trials": true,
+    "research_missions": true,
+    "research_programs": true
+  },
+  "target_code_commit": "2b4034db126ff13ff936c8e3def3ae89c7456824"
+}

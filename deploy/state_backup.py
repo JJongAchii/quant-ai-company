@@ -15,7 +15,7 @@ from pathlib import Path, PurePosixPath
 from uuid import uuid4
 
 DEPLOY = Path(__file__).resolve().parent
-APP_SERVICES = ("slack-socket", "maintenance", "worker", "news-worker", "quant-feed-worker",
+APP_SERVICES = ("slack-socket", "maintenance", "worker", "news-worker", "quant-codex-runtime", "quant-feed-worker",
                 "data-watch-worker", "dispatch", "api", "account-gateway", "codex-runtime", "claude-runtime")
 
 

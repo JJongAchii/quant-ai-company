@@ -34,7 +34,8 @@ def route(company, request, action, **arguments):
 
 
 @pytest.mark.parametrize(('text', 'action'), [
-    ('중단해줘', 'pause'), ('이어서 진행해.', 'resume'), ('어디까지 진행됐어?', 'status'),
+    ('중단해줘', 'pause'), ('이어서 진행해.', 'resume'), ('상태', 'status'), ('상태?', 'status'),
+    ('어디까지 진행됐어?', None), ('왜 대기 중이야?', None),
     ('중단하지 마', None), ('"중단해"라고 하면 어떻게 돼?', None), ('다른 스레드 중단해', None),
     ('중단해도 괜찮을까?', None), ('월간으로 바꿔줘', None),
 ])
@@ -76,6 +77,48 @@ def test_question_releases_existing_response_and_outbox_without_replacing_mandat
     with company.db.transaction() as conn:
         assert conn.execute('SELECT status FROM outbox WHERE id=%s', (claimed['id'],)).fetchone()['status'] == 'sending'
     assert original['request_id'] == old
+
+
+@pytest.mark.parametrize('question', [
+    '진행중이야?', '내가 좀 전에 승인했잖아. 그 새 연구를 진행중에 있냐고 지금',
+])
+def test_natural_progress_question_gets_answer_even_if_router_proposes_status(company, question):
+    first = submit(company, 'first', '새 연구 프로그램을 준비해줘')
+    follow = submit(company, 'progress', question, first['project_id'])
+    result = route(company, follow, 'status')
+    assert result['intent']['action'] == 'followup'
+    state = company.project_state(first['project_id'])
+    assert state['project']['revision'] == 1
+    assert state['project']['instruction'] == '새 연구 프로그램을 준비해줘'
+    assert not any(message['author'] == 'director' and message['kind'] == 'status'
+                   for message in state['messages'])
+    answer = company.prepare_turn(turn_for(company, follow['task_id']))
+    assert answer['state'] == 'ready'
+    assert 'Answer the owner\'s actual question directly' in answer['request']['prompt']
+
+
+def test_followup_publishes_only_the_final_answer(company):
+    first = submit(company, 'first', '새 연구를 진행해줘')
+    follow = submit(company, 'follow', '새 연구는 어디까지 진행됐어?', first['project_id'])
+    route(company, follow, 'followup')
+    interim = turn_for(company, follow['task_id'])
+    company.prepare_turn(interim)
+    company.commit_turn(interim, ProviderResponse(request_id=interim, decision=AgentDecision(
+        status='continue', say='상세 기록을 확인하겠습니다.')))
+    with company.db.transaction() as conn:
+        assert conn.execute('SELECT count(*) AS n FROM outbox o JOIN messages m ON m.id=o.id '
+                            'WHERE m.task_id=%s', (follow['task_id'],)).fetchone()['n'] == 0
+        assert conn.execute('SELECT count(*) AS n FROM messages WHERE task_id=%s AND kind=%s',
+                            (follow['task_id'], 'answer')).fetchone()['n'] == 1
+    final = turn_for(company, follow['task_id'])
+    company.prepare_turn(final)
+    company.commit_turn(final, ProviderResponse(request_id=final, decision=AgentDecision(
+        status='complete', say='선정 검토 중이며 실행은 아직 시작되지 않았습니다.')))
+    with company.db.transaction() as conn:
+        replies = conn.execute('SELECT o.text FROM outbox o JOIN messages m ON m.id=o.id '
+                               'WHERE m.task_id=%s', (follow['task_id'],)).fetchall()
+    assert len(replies) == 1
+    assert '선정 검토 중' in replies[0]['text']
 
 
 def test_running_response_held_for_question_is_reused_after_restart(company):

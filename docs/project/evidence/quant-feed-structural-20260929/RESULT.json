@@ -1,0 +1,826 @@
+{
+  "recorded_at": "2026-09-29T03:48:57Z",
+  "handoff_observation": "handoff-observation.json",
+  "outcome": "technical_improvements_verified_editorial_qualification_not_passed",
+  "editorial_source_commit": "94b428173cd204cb1a6e08e987644e2a9ebf85cf",
+  "deployment_guard_commit": "2782abea7735e9a1e5f2547b51024ac106265608",
+  "policy_version": 16,
+  "deployment_performed": false,
+  "publication_resumed": false,
+  "new_slack_writes": 0,
+  "new_image_builds": 0,
+  "new_subscription_calls": 31,
+  "verification": {
+    "full_local": {
+      "passed": 1308,
+      "skipped": 46,
+      "source_commit": "94b428173cd204cb1a6e08e987644e2a9ebf85cf",
+      "actual_models": false,
+      "actual_slack": false
+    },
+    "focused_native_contracts_and_quant": {
+      "passed": 183,
+      "skipped": 1
+    },
+    "deployment_guard": {
+      "passed": 8
+    },
+    "ruff": "passed",
+    "ci": {
+      "run_id": 36511874627,
+      "source_commit": "2782abea7735e9a1e5f2547b51024ac106265608",
+      "status": "passed",
+      "duration": "7m49s",
+      "passed": 1348,
+      "skipped": 44,
+      "deselected": 1
+    }
+  },
+  "remaining": [
+    "Fresh positive still held: revision obeyed a four-span substitution request but dropped support needed by another sentence; free-form body/evidence edits did not converge.",
+    "The final critic also requested narrower distinction between qualitative resemblance and direct quantitative market-data tests; no human override or additional same-policy retry was issued.",
+    "Production runtime only accepts agent_decision; native Quant contracts require coordinated runtime and consumer rollout.",
+    "No matched deployment, 48-hour observation or authorized publication resumption has occurred."
+  ],
+  "production_snapshot": {
+    "checked_at": "2026-09-29T02:20:42.871002+00:00",
+    "current_release": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801",
+    "quant_collection_enabled": true,
+    "quant_publication_enabled": false,
+    "quant_worker_revision": "12398af25dc111fd93d99fa3408fbc66cb699121",
+    "runtime_output_contracts": [
+      "agent_decision"
+    ],
+    "activity": {
+      "running": 0,
+      "pending": 0,
+      "paused": false,
+      "publications": 1
+    },
+    "disk_available_bytes": 6608736256,
+    "memory_kib": {
+      "MemTotal": 3924236,
+      "MemAvailable": 2052768
+    },
+    "preview_containers_present": [],
+    "services": {
+      "/quant-company-worker-1": {
+        "id": "2eb16f91b5ccab1b74bc66bb230e252b5bb8fb87b7e7b3aa9340be4d515acdff",
+        "image": "sha256:833d0baf7605d4682a61f0747a0821fd7c4c7bfda67b9049a62b5a6b4e305e7a",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      "/quant-company-codex-runtime-1": {
+        "id": "cbf51d0f25f732b2a3660cff19a19240594931cb85a886acf0674a3bc14daeef",
+        "image": "sha256:877ac62283dcaabe221c3b738e904ab38a8311461f3e851b593e6441e703b0dd",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      "/quant-company-dispatch-1": {
+        "id": "245fbdcbc6e41181513f47d4505bd29af132aa4a4896a31615b50b5f6031c0f4",
+        "image": "sha256:1a9150c1826e715e92f48d32b15fec876ec29ec62baec261fe08772777e28401",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      "/quant-company-slack-socket-1": {
+        "id": "6a12461028ed806ebc0add1866e8897d7ef1b9eb0c51cc3944d3ed3f55298fb5",
+        "image": "sha256:1a9150c1826e715e92f48d32b15fec876ec29ec62baec261fe08772777e28401",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      "/quant-company-api-1": {
+        "id": "387cf35a9314ad366d5e0d2ec35aad9c80e60a9b3359287994a603301a6ffe5c",
+        "image": "sha256:1a9150c1826e715e92f48d32b15fec876ec29ec62baec261fe08772777e28401",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      "/quant-company-data-watch-worker-1": {
+        "id": "b900ca1d55f31c7c29f5eef62e5f5587ccb6c137019104e362cd14da92af274b",
+        "image": "sha256:7c834100fdefc0ecd09c2c8810c2b9630c93976ffa3fa739c78a87e71d752309",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      "/quant-company-housing-feed-worker-1": {
+        "id": "7df307ee748d54371c6c9bb2fee6a5ac17e7f5b341d1f137db7af89eb69e74ab",
+        "image": "sha256:db3c79878edf68a0115c8f0b893d41a92fa78e91f1a59bf76f92b60c8a69a589",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      "/quant-company-quant-feed-worker-1": {
+        "id": "2362677fb7633c2f80219956d8855e8542cd91e4ece1fa0d7e2c41a7805b5f70",
+        "image": "sha256:a3e1a890e90eba3d395414bf29711a5778f189a0ff9e02a79948aacda94184a4",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      "/quant-company-maintenance-1": {
+        "id": "7266163c1e8120facda28c18764423801d68c11e60d43eb388356a700ea25f5d",
+        "image": "sha256:50124cabdc3db809bfc799e14aa9af1c155d86b6a577f910d18b49d6e5f226f5",
+        "running": true,
+        "oom": false,
+        "restarts": 2
+      },
+      "/quant-company-account-gateway-1": {
+        "id": "54b595660ad3366baf3bec5133bd6383c9fa757c20bd77ec9eda93c133fb9e4b",
+        "image": "sha256:942a896a92f6a2c6e3d5b4743ad670808da62be448136d77f2e75455f7668b24",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      "/quant-company-news-worker-1": {
+        "id": "879e0263e71a29109ee3ecca0e8d99e82cc262fbab24924ebcb388cb7b9aef44",
+        "image": "sha256:942a896a92f6a2c6e3d5b4743ad670808da62be448136d77f2e75455f7668b24",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      "/quant-company-claude-runtime-1": {
+        "id": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+        "image": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      "/quant-company-postgres-1": {
+        "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+        "image": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      }
+    }
+  },
+  "trials": [
+    {
+      "label": "crypto-volatility-v11",
+      "receipt_sha256": "59168f7218d37c85e0efbec260e0278c55673b5d6be06f7802343727dae8a55c",
+      "state": "not_passed",
+      "checked_at": "2026-09-29T00:33:18.301700+00:00",
+      "policy_digest": "7710e6a39f131d9a41998e39838251e52ca5bd936454d69d311bef11b17674c8",
+      "error": "quant_quote_not_in_original_version",
+      "fault": null,
+      "case_results": {
+        "negative": {
+          "state": "passed"
+        },
+        "positive": {
+          "state": "not_passed",
+          "error": "quant_quote_not_in_original_version"
+        }
+      },
+      "inputs": {
+        "negative": {
+          "document_id": "eab01733dab66494bd5391d6b47154a3c80633108993eb4c0bf85210e59a6003",
+          "original_sha256": "775dd5f601010525b7262cda15299b6ae8c50a3e17d58aa930c2b2b2c79524a4"
+        },
+        "positive": {
+          "document_id": "1dabb1c146c0ddd1afa86349399df38f1d50d1bd35e84810099042247736adef",
+          "original_sha256": "02e04ffa9761918a377b1f76e55e1f9cb58ae4d19b0d018440799da603b7b8a8"
+        }
+      },
+      "new_calls": [
+        {
+          "case": "negative-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-9a83a60a72f1a4ba7d21910d64a8ce9a7b026241",
+          "prompt_sha256": "9897af05e4ab0a2445433d558116b9fd4eda802c40c3ccd2db5f8fad23dbb511",
+          "output_contract": "quant_critique_v1",
+          "state": "validated",
+          "disposition": "hold"
+        },
+        {
+          "case": "negative-review",
+          "stage": "review",
+          "request_id": "quant-feed-qualify-f91e1f505a8b3efa31ce8776c2588fb466036d5e",
+          "prompt_sha256": "04b4742708632503c3a3c8f91ce3716e9c3bdb9517b8a690473753359c738047",
+          "output_contract": "quant_brief_v1",
+          "state": "validated",
+          "disposition": "reject"
+        },
+        {
+          "case": "positive-review",
+          "stage": "review",
+          "request_id": "quant-feed-qualify-61a26c7a9275cc1992c654847944a58e5fd14e8c",
+          "prompt_sha256": "4df7e16ab473968caaeee8029774c1f7d7435f87dec2a75fd67c6532722529d8",
+          "output_contract": "quant_brief_v1",
+          "state": "returned",
+          "disposition": null
+        },
+        {
+          "case": "positive-review-repair",
+          "stage": "repair",
+          "request_id": "quant-feed-qualify-f1c120c8f2b2be15854f19fef0ad4f77400ad9dc",
+          "prompt_sha256": "831299621facaa91d40e19ac0db5e1f4fd8763638b5d2cacc61e51d587f05f15",
+          "output_contract": "quant_brief_v1",
+          "state": "returned",
+          "disposition": null
+        }
+      ],
+      "revalidated_response_count": 0,
+      "card_characters": null,
+      "operation": {
+        "label": "crypto-volatility-v11",
+        "source": "source-f4179a5",
+        "source_digest": "69d5db58a61af96a8a90008f48aad0c289ae731f26fe68dbe4b12162eeb41853",
+        "runtime_base_image": "sha256:ecc4fb4ea8d3294e5bd029b18fe60b505092d9090f8b496261ea9f6d141748a6",
+        "client_base_image": "sha256:a3e1a890e90eba3d395414bf29711a5778f189a0ff9e02a79948aacda94184a4",
+        "receipt_state": "not_passed",
+        "returncode": 1,
+        "case_results": {
+          "negative": {
+            "state": "passed"
+          },
+          "positive": {
+            "state": "not_passed",
+            "error": "quant_quote_not_in_original_version"
+          }
+        },
+        "call_count": 4,
+        "services_preserved": false,
+        "current_release_preserved": false,
+        "publication_count_preserved": true,
+        "publication_enabled": false
+      }
+    },
+    {
+      "label": "crypto-volatility-v12",
+      "receipt_sha256": "4fb875e803d00c7e49ad703bdae6d2465c535307cda71d673ef9b410d23b0a1d",
+      "state": "not_passed",
+      "checked_at": "2026-09-29T00:49:07.746933+00:00",
+      "policy_digest": "255b3353eef9751e322acf347736b5ac3c3b4e9617207609e9b160412abe5238",
+      "error": "quant_quote_not_in_original_version",
+      "fault": null,
+      "case_results": {
+        "negative": {
+          "state": "passed"
+        },
+        "positive": {
+          "state": "not_passed",
+          "error": "quant_quote_not_in_original_version"
+        }
+      },
+      "inputs": {
+        "negative": {
+          "document_id": "eab01733dab66494bd5391d6b47154a3c80633108993eb4c0bf85210e59a6003",
+          "original_sha256": "775dd5f601010525b7262cda15299b6ae8c50a3e17d58aa930c2b2b2c79524a4"
+        },
+        "positive": {
+          "document_id": "1dabb1c146c0ddd1afa86349399df38f1d50d1bd35e84810099042247736adef",
+          "original_sha256": "02e04ffa9761918a377b1f76e55e1f9cb58ae4d19b0d018440799da603b7b8a8"
+        }
+      },
+      "new_calls": [
+        {
+          "case": "positive-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-d7deaaa77761d3f4b62f68cec18248ab170a6843",
+          "prompt_sha256": "134b504f0d6fa7e3e78b7d11619a31751fc8f53fdeb808e618dcbfed3d701fa8",
+          "output_contract": "quant_critique_v1",
+          "state": "validated",
+          "disposition": "revise"
+        },
+        {
+          "case": "positive-revision",
+          "stage": "revision",
+          "request_id": "quant-feed-qualify-020c6563ca5cb20c58395b206d5ed9e5065c6572",
+          "prompt_sha256": "cc9595c3fef534e2edee1e0c9c12eacc477fb38f6269f3bddc68887bd6e1c39b",
+          "output_contract": "quant_brief_v1",
+          "state": "returned",
+          "disposition": null
+        }
+      ],
+      "revalidated_response_count": 3,
+      "card_characters": null,
+      "operation": {
+        "label": "crypto-volatility-v12",
+        "source": "source-3bce377",
+        "source_digest": "86af27d74c8010ad8f65de6b4ffcab77db746f2966dc0fdcfbaf996924bca6cf",
+        "runtime_base_image": "sha256:ecc4fb4ea8d3294e5bd029b18fe60b505092d9090f8b496261ea9f6d141748a6",
+        "client_base_image": "sha256:a3e1a890e90eba3d395414bf29711a5778f189a0ff9e02a79948aacda94184a4",
+        "receipt_state": "not_passed",
+        "returncode": 1,
+        "case_results": {
+          "negative": {
+            "state": "passed"
+          },
+          "positive": {
+            "state": "not_passed",
+            "error": "quant_quote_not_in_original_version"
+          }
+        },
+        "call_count": 2,
+        "services_preserved": true,
+        "current_release_preserved": true,
+        "publication_count_preserved": true,
+        "publication_enabled": false
+      }
+    },
+    {
+      "label": "crypto-volatility-v13",
+      "receipt_sha256": "fe72c56da5722e7355b94fdcdda012cccba1168fd4b8bf4dc5f38cf179f5b02a",
+      "state": "not_passed",
+      "checked_at": "2026-09-29T01:16:41.227701+00:00",
+      "policy_digest": "b29ac6ec27c75dc18942ec55d8cd75f1134e89031669bce11961536448b5aa21",
+      "error": "positive_critique_not_passed",
+      "fault": null,
+      "case_results": {
+        "negative": {
+          "state": "passed"
+        },
+        "positive": {
+          "state": "not_passed",
+          "error": "positive_critique_not_passed"
+        }
+      },
+      "inputs": {
+        "negative": {
+          "document_id": "eab01733dab66494bd5391d6b47154a3c80633108993eb4c0bf85210e59a6003",
+          "original_sha256": "775dd5f601010525b7262cda15299b6ae8c50a3e17d58aa930c2b2b2c79524a4"
+        },
+        "positive": {
+          "document_id": "1dabb1c146c0ddd1afa86349399df38f1d50d1bd35e84810099042247736adef",
+          "original_sha256": "02e04ffa9761918a377b1f76e55e1f9cb58ae4d19b0d018440799da603b7b8a8"
+        }
+      },
+      "new_calls": [
+        {
+          "case": "negative-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-068b86f28b37fec0a0388b128968d49e242c173a",
+          "prompt_sha256": "cdf7ad3bc858810c6ef08e4256a8bc2bbbc0dcd7eec3d85a994dbf498ccb654b",
+          "output_contract": "quant_critique_v1",
+          "state": "validated",
+          "disposition": "hold"
+        },
+        {
+          "case": "negative-review",
+          "stage": "review",
+          "request_id": "quant-feed-qualify-431c9dcb6e3a62205622eaf9391307eae21c7c99",
+          "prompt_sha256": "21b730cb1c65197717bcd3296fdb42d478b5a3a61cc24a14a19623e5218400e8",
+          "output_contract": "quant_brief_v2",
+          "state": "validated",
+          "disposition": "reject"
+        },
+        {
+          "case": "positive-review",
+          "stage": "review",
+          "request_id": "quant-feed-qualify-e4dbeb1fb3d45eacb246a56bec740a926e1839de",
+          "prompt_sha256": "828be44190abcadc6e4269380fba07cdaadf868228fcbccfeac6adc7ef33477c",
+          "output_contract": "quant_brief_v2",
+          "state": "validated",
+          "disposition": "publish"
+        },
+        {
+          "case": "positive-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-5a54771cb5e786bb7d9bf46ea37223990a84cf92",
+          "prompt_sha256": "b6c435a5db141fa52959b892f8b43a0a5c421a18e8c8a16a61f5ee71705bea3b",
+          "output_contract": "quant_critique_v1",
+          "state": "validated",
+          "disposition": "revise"
+        },
+        {
+          "case": "positive-revision",
+          "stage": "revision",
+          "request_id": "quant-feed-qualify-9f980e335402d0fd04f192219c85653ad390b385",
+          "prompt_sha256": "f2ed53145b72b8314b10bbd93f96855129573450b32189ff3b360af9ce968d81",
+          "output_contract": "quant_brief_v2",
+          "state": "validated",
+          "disposition": "publish"
+        },
+        {
+          "case": "positive-final-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-29dc512d1d25170a60ffa2c6c282bd4e1ec11be0",
+          "prompt_sha256": "9e079f3a2dba27f88152b014079c8c5b1d64cd8b67518324b93b98719382524a",
+          "output_contract": "quant_critique_v1",
+          "state": "validated",
+          "disposition": "revise"
+        }
+      ],
+      "revalidated_response_count": 0,
+      "card_characters": null,
+      "operation": {
+        "label": "crypto-volatility-v13",
+        "source": "source-4bca573",
+        "source_digest": "d37d31a52fd9ff40280144fee93b91d84a6b1eea8cce3606b80ed954331efb3a",
+        "runtime_base_image": "sha256:ecc4fb4ea8d3294e5bd029b18fe60b505092d9090f8b496261ea9f6d141748a6",
+        "client_base_image": "sha256:a3e1a890e90eba3d395414bf29711a5778f189a0ff9e02a79948aacda94184a4",
+        "receipt_state": "not_passed",
+        "returncode": 1,
+        "case_results": {
+          "negative": {
+            "state": "passed"
+          },
+          "positive": {
+            "state": "not_passed",
+            "error": "positive_critique_not_passed"
+          }
+        },
+        "call_count": 6,
+        "services_preserved": true,
+        "current_release_preserved": true,
+        "publication_count_preserved": true,
+        "publication_enabled": false
+      }
+    },
+    {
+      "label": "crypto-volatility-v14",
+      "receipt_sha256": "2b6e1269a48d282bcbdffadb4a3a75f967ef82482852a296e418140ce8d03b1f",
+      "state": "not_passed",
+      "checked_at": "2026-09-29T01:34:04.990401+00:00",
+      "policy_digest": "1b47341c7c229faebc1b79b59c2871ee8748168b8dfe9930bdd07c895e87a480",
+      "error": "positive_critique_not_passed",
+      "fault": null,
+      "case_results": {
+        "negative": {
+          "state": "passed"
+        },
+        "positive": {
+          "state": "not_passed",
+          "error": "positive_critique_not_passed"
+        }
+      },
+      "inputs": {
+        "negative": {
+          "document_id": "eab01733dab66494bd5391d6b47154a3c80633108993eb4c0bf85210e59a6003",
+          "original_sha256": "775dd5f601010525b7262cda15299b6ae8c50a3e17d58aa930c2b2b2c79524a4"
+        },
+        "positive": {
+          "document_id": "1dabb1c146c0ddd1afa86349399df38f1d50d1bd35e84810099042247736adef",
+          "original_sha256": "02e04ffa9761918a377b1f76e55e1f9cb58ae4d19b0d018440799da603b7b8a8"
+        }
+      },
+      "new_calls": [
+        {
+          "case": "positive-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-23568db6825bfaec697077b0c6e392e2d08dd079",
+          "prompt_sha256": "e7fde8dd46b42858138da84c89cb8fca850ec8fbc3c7e895d9cf12a4e0f348ff",
+          "output_contract": "quant_critique_v2",
+          "state": "validated",
+          "disposition": "revise"
+        }
+      ],
+      "revalidated_response_count": 3,
+      "card_characters": null,
+      "operation": {
+        "label": "crypto-volatility-v14",
+        "source": "source-81bc86c",
+        "source_digest": "34f16535549045f9185eb7b980705c0ce68405f0bbed8143e0a84571c9ecdeb3",
+        "runtime_base_image": "sha256:ecc4fb4ea8d3294e5bd029b18fe60b505092d9090f8b496261ea9f6d141748a6",
+        "client_base_image": "sha256:a3e1a890e90eba3d395414bf29711a5778f189a0ff9e02a79948aacda94184a4",
+        "receipt_state": "not_passed",
+        "returncode": 1,
+        "case_results": {
+          "negative": {
+            "state": "passed"
+          },
+          "positive": {
+            "state": "not_passed",
+            "error": "positive_critique_not_passed"
+          }
+        },
+        "call_count": 1,
+        "services_preserved": false,
+        "current_release_preserved": true,
+        "publication_count_preserved": true,
+        "publication_enabled": false
+      }
+    },
+    {
+      "label": "agentic-lob-v14",
+      "receipt_sha256": "5b46153502f6aca1ead6bff0092ef0aaf28f78975f6cff53e5be63f1a061f9d6",
+      "state": "not_passed",
+      "checked_at": "2026-09-29T01:36:36.365878+00:00",
+      "policy_digest": "1b47341c7c229faebc1b79b59c2871ee8748168b8dfe9930bdd07c895e87a480",
+      "error": "positive_critique_not_passed",
+      "fault": null,
+      "case_results": {
+        "negative": {
+          "state": "passed"
+        },
+        "positive": {
+          "state": "not_passed",
+          "error": "positive_critique_not_passed"
+        }
+      },
+      "inputs": {
+        "negative": {
+          "document_id": "eab01733dab66494bd5391d6b47154a3c80633108993eb4c0bf85210e59a6003",
+          "original_sha256": "775dd5f601010525b7262cda15299b6ae8c50a3e17d58aa930c2b2b2c79524a4"
+        },
+        "positive": {
+          "document_id": "32879918c5c174b3777913287bcd3a2304bf33c6681c7fb8c2cbf1938d1612e9",
+          "original_sha256": "792c622cacd26d0a7cb3d010d06ff457bd4e2ef3ce7d168de0ec4a62c8fad9da"
+        }
+      },
+      "new_calls": [
+        {
+          "case": "negative-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-a9da04be5ecbed395f8ce15ec93a392798a03fb9",
+          "prompt_sha256": "1a56fcdb5a714810cebdd62c1bb024fe016981c29414d54644fd4e8b33b4cf2d",
+          "output_contract": "quant_critique_v2",
+          "state": "validated",
+          "disposition": "hold"
+        },
+        {
+          "case": "negative-review",
+          "stage": "review",
+          "request_id": "quant-feed-qualify-6703fa01b84d48eecc72762879d219cf816681fd",
+          "prompt_sha256": "7761b0018f44cd4aeb4adacfd24d8f34d3ae247477b4e22da161f1b3d528c01e",
+          "output_contract": "quant_brief_v2",
+          "state": "validated",
+          "disposition": "reject"
+        },
+        {
+          "case": "positive-review",
+          "stage": "review",
+          "request_id": "quant-feed-qualify-88d73f8b34663ec1ee10f8cf3bbe2b1fdff8fd40",
+          "prompt_sha256": "a200fc1900f64b0284928e1ea9e8849301fb53bd6ed37a16251755c2170d917e",
+          "output_contract": "quant_brief_v2",
+          "state": "validated",
+          "disposition": "publish"
+        },
+        {
+          "case": "positive-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-f126b8140ba8fc99eac8c075bd830dfb9f05bd17",
+          "prompt_sha256": "0e1165867903dcb63b272fae72aae0c5071a2ff4da4ccd67c3ba352c4c16f61f",
+          "output_contract": "quant_critique_v2",
+          "state": "validated",
+          "disposition": "revise"
+        },
+        {
+          "case": "positive-revision",
+          "stage": "revision",
+          "request_id": "quant-feed-qualify-97b01dd94feae72e8bc3971270c3c6d55913c707",
+          "prompt_sha256": "78ce772b2b44c8561120e2b6fffb03e19d5d842e4ff22a947df39190ba9962c0",
+          "output_contract": "quant_brief_v2",
+          "state": "validated",
+          "disposition": "publish"
+        },
+        {
+          "case": "positive-final-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-b8bf6b7c85a61cfbfb23cb3c7cae9a202497c343",
+          "prompt_sha256": "d35e6623a12457ea966cb34d61ee24e7eab7b4644182967957c2d3fc3ef6c471",
+          "output_contract": "quant_critique_v2",
+          "state": "validated",
+          "disposition": "revise"
+        }
+      ],
+      "revalidated_response_count": 0,
+      "card_characters": null,
+      "operation": {
+        "label": "agentic-lob-v14",
+        "source": "source-81bc86c",
+        "source_digest": "34f16535549045f9185eb7b980705c0ce68405f0bbed8143e0a84571c9ecdeb3",
+        "runtime_base_image": "sha256:ecc4fb4ea8d3294e5bd029b18fe60b505092d9090f8b496261ea9f6d141748a6",
+        "client_base_image": "sha256:a3e1a890e90eba3d395414bf29711a5778f189a0ff9e02a79948aacda94184a4",
+        "receipt_state": "not_passed",
+        "returncode": 1,
+        "case_results": {
+          "negative": {
+            "state": "passed"
+          },
+          "positive": {
+            "state": "not_passed",
+            "error": "positive_critique_not_passed"
+          }
+        },
+        "call_count": 6,
+        "services_preserved": true,
+        "current_release_preserved": true,
+        "publication_count_preserved": true,
+        "publication_enabled": false
+      }
+    },
+    {
+      "label": "agentic-lob-v15",
+      "receipt_sha256": "0381693cfac469355778bd0edba510a13064dc66f2a8254e709146a86d41e029",
+      "state": "not_passed",
+      "checked_at": "2026-09-29T01:58:12.647071+00:00",
+      "policy_digest": "8335e26762cc1db5d143e4051db7b3355ca19c7d61fa3738ec431a523c551b18",
+      "error": "positive_critique_not_passed",
+      "fault": null,
+      "case_results": {
+        "negative": {
+          "state": "passed"
+        },
+        "positive": {
+          "state": "not_passed",
+          "error": "positive_critique_not_passed"
+        }
+      },
+      "inputs": {
+        "negative": {
+          "document_id": "eab01733dab66494bd5391d6b47154a3c80633108993eb4c0bf85210e59a6003",
+          "original_sha256": "775dd5f601010525b7262cda15299b6ae8c50a3e17d58aa930c2b2b2c79524a4"
+        },
+        "positive": {
+          "document_id": "32879918c5c174b3777913287bcd3a2304bf33c6681c7fb8c2cbf1938d1612e9",
+          "original_sha256": "792c622cacd26d0a7cb3d010d06ff457bd4e2ef3ce7d168de0ec4a62c8fad9da"
+        }
+      },
+      "new_calls": [
+        {
+          "case": "negative-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-ff379fba02976d8c0cf76e25e346bd12cd40c6fb",
+          "prompt_sha256": "18cb91fe54d16d7d848e4d9afdd31014942e9f5cd510ae4831c122ef5197711a",
+          "output_contract": "quant_critique_v2",
+          "state": "validated",
+          "disposition": "hold"
+        },
+        {
+          "case": "negative-review",
+          "stage": "review",
+          "request_id": "quant-feed-qualify-c054ea3519cbc147a8cf02dcf620c1c4771d924e",
+          "prompt_sha256": "7fb215950c63e63df4fbe7346886ba357407b21d43b0d650836cafe7eafb9240",
+          "output_contract": "quant_brief_v3",
+          "state": "validated",
+          "disposition": "reject"
+        },
+        {
+          "case": "positive-review",
+          "stage": "review",
+          "request_id": "quant-feed-qualify-3f27a31da500ac714b52f7859407dbe808d970d3",
+          "prompt_sha256": "4639338649356d64a94a8fe1a4e8370fb3a808bef7ba67cc4a6933964e9a53ac",
+          "output_contract": "quant_brief_v3",
+          "state": "validated",
+          "disposition": "publish"
+        },
+        {
+          "case": "positive-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-85b81c6e691bf4aa67703c33e0d0b06088a5d877",
+          "prompt_sha256": "18889414bd3d230f29b0494455db60008fdf840bf6cb3a4715323ce566541c99",
+          "output_contract": "quant_critique_v2",
+          "state": "validated",
+          "disposition": "revise"
+        },
+        {
+          "case": "positive-revision",
+          "stage": "revision",
+          "request_id": "quant-feed-qualify-f3949d45dd0aac52193f60fb8a3ae37fe80825d1",
+          "prompt_sha256": "d530980f22fc3531e2950d3dafc3379369a331940dd06046ea991032ad0c0701",
+          "output_contract": "quant_brief_v3",
+          "state": "validated",
+          "disposition": "publish"
+        },
+        {
+          "case": "positive-final-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-9b16fde91199c699904b7ef6229b108363528463",
+          "prompt_sha256": "aff32b9ba060126d41a513896e50f280ad46ef0eebc0e6a0ff54001bb02bf306",
+          "output_contract": "quant_critique_v2",
+          "state": "validated",
+          "disposition": "revise"
+        }
+      ],
+      "revalidated_response_count": 0,
+      "card_characters": null,
+      "operation": {
+        "label": "agentic-lob-v15",
+        "source": "source-8281c1d",
+        "source_digest": "1fd6905723c56eb6a2afb95f553afe78af49b3e4a76719ed31271b890269d92b",
+        "runtime_base_image": "sha256:877ac62283dcaabe221c3b738e904ab38a8311461f3e851b593e6441e703b0dd",
+        "client_base_image": "sha256:a3e1a890e90eba3d395414bf29711a5778f189a0ff9e02a79948aacda94184a4",
+        "receipt_state": "not_passed",
+        "returncode": 1,
+        "case_results": {
+          "negative": {
+            "state": "passed"
+          },
+          "positive": {
+            "state": "not_passed",
+            "error": "positive_critique_not_passed"
+          }
+        },
+        "call_count": 6,
+        "services_preserved": true,
+        "current_release_preserved": true,
+        "publication_count_preserved": true,
+        "publication_enabled": false
+      }
+    },
+    {
+      "label": "agentic-lob-v16",
+      "receipt_sha256": "909115cc48746063201ad1c0ee0e48af28c5850411b0af4e40e805365272b7af",
+      "state": "not_passed",
+      "checked_at": "2026-09-29T02:12:15.685329+00:00",
+      "policy_digest": "280d8cd19c5353bc24f1b7ecfe1a1e0db07fbbe9b1a978ce0c2ac83fba305587",
+      "error": "positive_critique_not_passed",
+      "fault": null,
+      "case_results": {
+        "negative": {
+          "state": "passed"
+        },
+        "positive": {
+          "state": "not_passed",
+          "error": "positive_critique_not_passed"
+        }
+      },
+      "inputs": {
+        "negative": {
+          "document_id": "eab01733dab66494bd5391d6b47154a3c80633108993eb4c0bf85210e59a6003",
+          "original_sha256": "775dd5f601010525b7262cda15299b6ae8c50a3e17d58aa930c2b2b2c79524a4"
+        },
+        "positive": {
+          "document_id": "32879918c5c174b3777913287bcd3a2304bf33c6681c7fb8c2cbf1938d1612e9",
+          "original_sha256": "792c622cacd26d0a7cb3d010d06ff457bd4e2ef3ce7d168de0ec4a62c8fad9da"
+        }
+      },
+      "new_calls": [
+        {
+          "case": "negative-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-5673679056e2e29730a05934f6c755dd28aca5ca",
+          "prompt_sha256": "f3ade7ea193f79bcbe6bc30d8cce0120a7a81dfd743ed7402e995dbf350618c2",
+          "output_contract": "quant_critique_v2",
+          "state": "validated",
+          "disposition": "hold"
+        },
+        {
+          "case": "negative-review",
+          "stage": "review",
+          "request_id": "quant-feed-qualify-eaf3b5fb212462b8148678ba5beb92a9382de6c6",
+          "prompt_sha256": "7bebffce25ae064394584dd00b56479376de27a04193a7c748fe53dd0022fe8f",
+          "output_contract": "quant_brief_v3",
+          "state": "validated",
+          "disposition": "reject"
+        },
+        {
+          "case": "positive-review",
+          "stage": "review",
+          "request_id": "quant-feed-qualify-adc48f76c2e933c57e33bdb1f93f67c2f62e737b",
+          "prompt_sha256": "a5ca03a0bf20f26daf92318eb23c187b9c30fb3480ebeb5ca263937f4c7dac35",
+          "output_contract": "quant_brief_v3",
+          "state": "validated",
+          "disposition": "publish"
+        },
+        {
+          "case": "positive-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-337263579f5918d4f6c9f340f14d4619ec28c73b",
+          "prompt_sha256": "5a52fee9b1222739d1bc11b79c3e7b62a33af1bfb552af86f7bc51a9cd9aef5e",
+          "output_contract": "quant_critique_v2",
+          "state": "validated",
+          "disposition": "revise"
+        },
+        {
+          "case": "positive-revision",
+          "stage": "revision",
+          "request_id": "quant-feed-qualify-2e3bd6bd6566292b46611c3f7f41d5dcdd5a8b28",
+          "prompt_sha256": "d0d1cfa9c00f10a3d1791e21696c48903b2128edcf1a201f1dd3eb8419c0b29f",
+          "output_contract": "quant_brief_v3",
+          "state": "validated",
+          "disposition": "publish"
+        },
+        {
+          "case": "positive-final-critic",
+          "stage": "critique",
+          "request_id": "quant-feed-qualify-039f59a14c0f6c3e040aba7851c67957a7f47869",
+          "prompt_sha256": "a72706930c834d1b4e2cd435fff2be9c854c48fe86add9230df22ab673206f4b",
+          "output_contract": "quant_critique_v2",
+          "state": "validated",
+          "disposition": "revise"
+        }
+      ],
+      "revalidated_response_count": 0,
+      "card_characters": null,
+      "operation": {
+        "label": "agentic-lob-v16",
+        "source": "source-94b4281",
+        "source_digest": "6a1d4fdaa235e9a67ce11865eba7e4655c7197904b2577730541c4e77a1061ae",
+        "runtime_base_image": "sha256:877ac62283dcaabe221c3b738e904ab38a8311461f3e851b593e6441e703b0dd",
+        "client_base_image": "sha256:a3e1a890e90eba3d395414bf29711a5778f189a0ff9e02a79948aacda94184a4",
+        "receipt_state": "not_passed",
+        "returncode": 1,
+        "case_results": {
+          "negative": {
+            "state": "passed"
+          },
+          "positive": {
+            "state": "not_passed",
+            "error": "positive_critique_not_passed"
+          }
+        },
+        "call_count": 6,
+        "services_preserved": false,
+        "current_release_preserved": false,
+        "publication_count_preserved": true,
+        "publication_enabled": false
+      }
+    }
+  ]
+}

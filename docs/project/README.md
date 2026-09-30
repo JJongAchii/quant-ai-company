@@ -9,6 +9,8 @@
 - [data-watch 운영자 현황 문구 개선](DATA-WATCH-STATUS-CLARITY-20260928.md)
 - [data-watch 소스별 마지막 날짜와 갱신 점검](DATA-WATCH-SOURCE-STATUS-20260928.md)
 - [회사 서버·3070 연구 실행 연결과 실제 복구 검증](RESEARCH-EXECUTION-20260921.md)
+- [자료 기반 연구 프로그램 운영 반영 검토](RESEARCH-PROGRAMS-LIVE-REVIEW-20260928.md)
+- [자료 기반 연구 프로그램 활성화·Slack 승인 요청 결과](RESEARCH-PROGRAMS-ACTIVATION-20260929.md)
 - [hot-news Reporter 무료 매체·검색과 원래 뉴스 범위 복원](HOT-NEWS-SCOPE-RESTORATION.md)
 - [hot-news Reporter 운영 게시·스레드·재시작 인수](HOT-NEWS-ACTIVATION.md)
 - [hot-news Reporter 구현·소스·실제 모델 검증](HOT-NEWS-VALIDATION.md)
