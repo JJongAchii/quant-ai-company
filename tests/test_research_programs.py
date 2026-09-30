@@ -281,6 +281,50 @@ def test_prior_program_task_keeps_decision_without_repeating_source_quote(progra
     assert "quote" not in json.dumps(previous)
 
 
+def test_large_prior_task_history_remains_readable_on_existing_program_stage(program):
+    h = program
+    assert ProgramController(h.company).tick()["state"] == "running"
+    prior = [{"id": str(uuid4()), "state": "waiting", "mission_id": None,
+        "proposal": task_proposal(), "data_assessment": ready(decision="blocked", rationale="D" * 6000),
+        "decision": {"decision": "wait", "rationale": "R" * 6000}, "citation_locations": []}
+        for _ in range(12)]
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+        context = stage["context"] | {"prior_tasks": prior}
+        conn.execute("UPDATE research_mission_stages SET context=%s WHERE id=%s", (Jsonb(context), stage["id"]))
+        turn_id = str(conn.execute("SELECT id FROM turns WHERE task_id=%s", (stage["task_id"],)).fetchone()["id"])
+    assert len(json.dumps(context)) > 90000
+    prepared = h.company.prepare_turn(turn_id)
+    prompt = prepared["request"]["prompt"]
+    assert prepared["state"] == "ready" and len(prompt) < 88000
+    rendered = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
+    assert len(rendered["prior_tasks"]) == 12
+    assert rendered["prior_tasks"][0]["selection_rationale_excerpt"] == "R" * 650
+    path = rendered["prior_tasks"][0]["evidence_file"]
+    with h.company.db.transaction() as conn:
+        stored = conn.execute("SELECT context FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()["context"]
+    assert stored["prior_tasks"] == prior
+    assert json.loads(Path(stored["_private_files"][path]["path"]).read_text()) == prior[0]
+    full_read = ""
+    offset = 0
+    while offset is not None:
+        h.company.commit_turn(turn_id, ProviderResponse(request_id=turn_id, provider="fixture", decision=AgentDecision(
+            say="", status="continue", tools=[{"name": "research_control", "arguments": {
+                "action": "read_stage_file", "path": path, "offset": offset}}])))
+        with h.company.db.transaction() as conn:
+            chunk = conn.execute("SELECT content,next_offset FROM research_stage_reads WHERE stage_id=%s AND path=%s AND character_offset=%s",
+                                 (stage["id"], path, offset)).fetchone()
+            turn_id = str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'", (stage["task_id"],)).fetchone()["id"])
+        full_read += chunk["content"]
+        offset = chunk["next_offset"]
+        next_prompt = h.company.prepare_turn(turn_id)["request"]["prompt"]
+        assert len(next_prompt) < 88000
+        next_context = json.loads(next_prompt.split("MISSION DATA JSON:\n", 1)[1])
+        assert len([f for f in next_context["available_files"] if f["name"] == path]) == 1
+    assert json.loads(full_read) == prior[0]
+    assert next_context["file_progress"][path]["next_offset"] is None
+
+
 def test_invalid_program_proposal_corrects_without_rereading_source(program):
     h = program
     controller = ProgramController(h.company)

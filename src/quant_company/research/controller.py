@@ -293,9 +293,13 @@ def stage_prompt(company, conn, task, turn=None):
                         "within the frozen scope. Exhausted scope requires wait; do not rename the same experiment.",
     }
     from .audit_delivery import enabled, prepare_packet
-    from .program_controller import PROGRAM_STAGES
+    from .program_controller import PROGRAM_STAGES, prior_task_navigation
 
     instructions.update({key: value[2] for key, value in PROGRAM_STAGES.items()})
+    if row["stage"] in PROGRAM_STAGES:
+        instructions[row["stage"]] += (
+            " Prior task navigation contains excerpts only. Read the corresponding evidence_file "
+            "for complete methods, data assessments and decisions before relying on their details.")
     instructions["meaning"] = (
         "Return MeaningReview for the exact trial and outcome digest. Causal validity already passed; "
         "independently assess multiple testing, costs and executability, alternative mechanisms and uncertainty. "
@@ -306,8 +310,11 @@ def stage_prompt(company, conn, task, turn=None):
         if turn is None:
             raise PolicyError("audit_packet_requires_bound_turn")
         return role, prepare_packet(company, conn, row, turn, instructions["audit"])
+    prior_tasks = prior_task_navigation(company, conn, row) if row["stage"] in PROGRAM_STAGES else None
     context = {**{key: value for key, value in row["context"].items() if not key.startswith("_")},
                "stage_id": str(row["id"]), "actor": row["actor"], "last_error": row["error"]}
+    if prior_tasks is not None:
+        context["prior_tasks"] = prior_tasks
     if row["stage"] == "audit":
         # The immutable audit package contains the complete mission, sources and trial
         # history.  Keep only the navigation identity here so the final prompt can retain

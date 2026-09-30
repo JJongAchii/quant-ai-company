@@ -53,6 +53,34 @@ def _prior_task_context(row):
     }
 
 
+def prior_task_navigation(company, conn, row):
+    """Keep complete predecessor evidence in immutable, readable stage files."""
+    context = dict(row["context"])
+    mappings = dict(context.get("_private_files", {}))
+    available = {item["name"]: item for item in context.get("available_files", [])}
+    backend = MissionBackend(company)
+    directory = backend.root / "programs" / str(row["program_id"])
+    navigation = []
+    for item in context.get("prior_tasks", []):
+        path = "prior-tasks/" + str(item["id"]) + ".json"
+        entry = backend._entry(backend._blob(directory, "prior-task", item))
+        if path in mappings and mappings[path] != entry:
+            raise PolicyError("Prior task evidence changed")
+        mappings[path] = entry
+        available[path] = {"name": path, "sha256": entry["sha256"], "size": entry["size"]}
+        assessment, decision = item.get("data_assessment") or {}, item.get("decision") or {}
+        navigation.append({"id": item["id"], "state": item["state"], "mission_id": item.get("mission_id"),
+            "title_excerpt": item["proposal"].get("title", "")[:240],
+            "data_decision": assessment.get("decision"), "selection_decision": decision.get("decision"),
+            "selection_rationale_excerpt": decision.get("rationale", "")[:650], "evidence_file": path})
+    if mappings != context.get("_private_files", {}):
+        context["_private_files"] = mappings
+        context["available_files"] = list(available.values())
+        conn.execute("UPDATE research_mission_stages SET context=%s WHERE id=%s", (Jsonb(context), row["id"]))
+        row["context"] = context
+    return navigation
+
+
 class ProgramApprovalAdapter:
     kind = "program"
 
