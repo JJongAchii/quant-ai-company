@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "state": "review_required_not_active",
+  "state": "active",
   "pr": "https://github.com/JJongAchii/quant-ai-company/pull/97",
   "candidate_commit": "0286ba3e7426ff6546b90e6926124ae65e71ba79",
   "archive_sha256": "88f67433ee6a53c063775b058de7849ee4f38247e97cbe8264b93c7b4630d788",
@@ -19,7 +19,7 @@
     "full_real_postgresql_passed": 1342,
     "full_skipped": 46,
     "lint": "passed",
-    "live_candidate_check": "not_active_not_tested",
+    "live_candidate_check": "live data review completed, attempt 1, nine turns; private correction not triggered in this observed review",
     "3070_scope": "No changed 3070 code, data, profile, runtime or new scientific execution; no new 3070 check claimed"
   },
   "activation": {
@@ -50,17 +50,23 @@
       "Verify prior stage attempt receipts remain and same-attempt correction preserves file_progress",
       "Verify rejected say causes no Slack write and one corrected response uses empty say",
       "Verify other container IDs/configs unchanged and no mission/job invented"
-    ]
+    ],
+    "persistent_pin": "PINNED_COMPANY_WORKER_IMAGE=quant-company-autonomous:0286ba3e7426ff6546b90e6926124ae65e71ba79"
   },
   "rollback": {
     "worker_image": "quant-company-autonomous:73fcfc34a6876e0a80c14fa72edae2cdb8413b0c",
-    "worker_company_code_commit": "73fcfc34a6876e0a80c14fa72edae2cdb8413b0c",
-    "method": "Restore saved worker-only image/env/compose overlay; retain all DB/read/model receipts. Do not reset stable request IDs or replay uncertain effects."
+    "worker_company_code_commit": "f2fa96f518b2eb04937e6fd7fc7a86a26b85052c",
+    "method": "Restore saved worker-only image/env/compose overlay; retain all DB/read/model receipts. Do not reset stable request IDs or replay uncertain effects.",
+    "note": "Actual previous worker image was 73fcfc3 but its inherited COMPANY_CODE_COMMIT was f2fa96f. Restore exact saved environment for rollback; do not invent a different prior pin."
   },
   "qlab_profile_sha256": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
   "strategy_source_base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
   "candidate_image_id": "sha256:95562e94f6967a484a32647af00695375b22682e8ed413359c651430f0e8ff6b",
   "candidate_installed_controller_sha256": "05daf0776922a9af9b06f21af8ee15980a93fa14e7b93593b982c56de9904dd7",
   "candidate_build_log_sha256": "745b9a3164ecdb954d2a565e90e92f8ce3444fc8bf10ceb40254ecc0707179f8",
-  "image_preparation": "built_and_import_qualified_without_active_services"
+  "image_preparation": "built_and_import_qualified_without_active_services",
+  "owner_approval": "승인할게",
+  "pr_merge_commit": "d2010230eda9b6cf1128b0fc650bdcbc8c8309b3",
+  "activated_at": "2026-09-30T07:45:14.044733+00:00",
+  "activation_receipt": "private-output-cutover-20260930.json"
 }

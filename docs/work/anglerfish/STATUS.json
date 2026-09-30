@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v6.json",
-  "state": "private_output_release_prepared_review_required",
+  "state": "private_output_worker_deployed_data_gate_blocked",
   "previousIntent": "INTENT-v5.json",
   "deliverables": {
     "DIAGNOSIS": {
@@ -23,27 +23,29 @@
       "inactiveImageImport": "passed"
     },
     "REVIEW": {
-      "status": "prepared",
+      "status": "approved",
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/97",
+      "mergedCommit": "d2010230eda9b6cf1128b0fc650bdcbc8c8309b3",
       "candidateCommit": "0286ba3e7426ff6546b90e6926124ae65e71ba79",
-      "reason": "Await owner review for new exact worker-only operating change under autonomous-research runbook"
+      "ownerApproval": "승인할게"
     },
     "LIVE_CHECK": {
       "status": "completed",
-      "task": "f173f628-29f6-5ad7-b94c-f673676e812f",
-      "turnsCompleted": 10,
-      "stageState": "completed",
-      "privateOutputFix": "pending_owner_review_not_active"
+      "privateOutputFix": "active",
+      "dataReviewTask": "14bf1d1f-16e7-5023-a281-0a045721d9ff",
+      "dataReviewAttempt": 1,
+      "turnsCompleted": 9,
+      "dataDecision": "blocked",
+      "liveCorrectionTriggered": false
     }
   },
-  "operationalStatus": "Planning recovered. Two independent data attempts rejected nonempty private say; candidate adds one same-attempt correction with no reads/messages applied for rejected output. Program missions zero.",
-  "evidence": "../../project/evidence/program-recovery-readback-20260930.json",
+  "operationalStatus": "Owner-approved worker active with persistent image pin; other container IDs and profiles preserved; runtime pause restored. Live independent data review completed in one attempt and director selection resumed. Data provenance/PIT still blocked; scientific missions zero.",
+  "evidence": "../../project/evidence/private-output-cutover-20260930.json",
   "nextStage": {
-    "stage": "program_data",
-    "task": "1348a61f-9d0c-5a90-899c-5ceec37b5651",
-    "candidate": "b5ce3cb7-d71b-5720-9f2d-72c9b1df7d18",
-    "observedAt": "2026-09-30T06:52:10.392095Z",
-    "attempt": 2
+    "stage": "program_selection",
+    "task": "da7cd027-b603-5d9d-9665-77b3b844e6d2",
+    "candidate": "2733156b-0a7e-50dc-995c-93cf58bf114b",
+    "observedAt": "2026-09-30T07:55:06.134951Z"
   },
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/97"
 }
