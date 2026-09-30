@@ -73,6 +73,10 @@ def quantity(text):
     return sign*(total+section+(current if current is not None else 0))
 
 
+def decimal_points(text):
+    return re.sub(r"(?<![A-Za-z0-9])(\d+)-point-(\d+)\b", r"\1.\2", text, flags=re.I)
+
+
 def numbers(text):
     def dotted_date(match):
         try:
@@ -103,7 +107,7 @@ def numbers(text):
         lambda m: m[1]+" kilobarrels"+m["context"]+m[3]+" kilobarrels", text, flags=re.I,
     )
     # Some broadcasters spell decimal points as hyphenated words/numbers.
-    text = re.sub(r"(?<![A-Za-z0-9])(\d+)-point-(\d+)\b", r"\1.\2", text, flags=re.I)
+    text = decimal_points(text)
     # A compact percent range uses a hyphen as a separator, not the sign of
     # its upper bound. Keep a spaced "5% -3%" as a genuinely negative value.
     text = re.sub(r"(?<=%)-(?=\d[\d,]*(?:\.\d+)?%)", " to ", text)
@@ -133,7 +137,7 @@ def numbers(text):
                          r"(?:report|data|figures|reading|release)\b")
         if (re.search(dated, text, re.I)
                 or re.search(release_month, text, re.I)
-                or re.search(r"\b(?:in|of|during|as of|by|for|last|this|next|since|until|on)\s+"+names+r"\b", text, re.I)):
+                or re.search(r"\b(?:in|of|from|during|as of|by|for|last|this|next|since|until|on)\s+"+names+r"\b", text, re.I)):
             result.add(Decimal(month))
     return result
 
@@ -144,6 +148,7 @@ def reported_change_supported(value, unit, quotes):
             r"fell|fall|down|declin\w*|lost|slipped|shed|slump\w*|(?:was|were|is|are)\s+off")
     up = r"상승|오른|올랐|높아|늘었|뛴|뛰었|뛰며|rose|ris\w*|up|gain\w*|advanced|jumped|surged"
     for quote in quotes:
+        quote = decimal_points(written_counts(quote))
         for match in re.finditer("("+NUMBER+r")\s*(?:"+units[unit]+")", quote, re.I):
             raw = match[1]
             amount = Decimal(raw.replace(",", "").replace("−", "-"))
@@ -160,6 +165,13 @@ def reported_change_supported(value, unit, quotes):
             after = re.sub(r"^\s*\([^()]{0,40}\)", "", after)
             if (re.search("(?:"+direction+r")(?:\s+(?:by|about|roughly|nearly))?\s*$", before, re.I)
                     or re.match(r"^[\s)\]]*(?:(?:가|나|만큼)\s*)?(?:"+direction+")", after, re.I)):
+                return True
+            # Broadcasters give one move in points and then its percentage:
+            # "gained six-point-11 points, or zero-point-72 percent".
+            # Require the same adjacent predicate and an explicit first unit.
+            equivalent = ("(?:"+direction+r")(?:\s+(?:by|about|roughly|nearly))?\s+"
+                          +NUMBER+r"\s*(?:points?|percent|bp|basis points?)\s*,?\s+or\s*$")
+            if re.search(equivalent, before, re.I):
                 return True
             # A coordinated list can share its final direction: "A 1.3%, B 2.4% 내렸다".
             shared = (r"(?:\s*,\s*[가-힣A-Za-z·\s]{0,60}"+NUMBER+r"\s*(?:"+units[unit]+r"))+"

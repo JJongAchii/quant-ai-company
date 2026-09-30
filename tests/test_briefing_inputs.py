@@ -5,7 +5,7 @@ from datetime import date, timedelta
 
 from psycopg.types.json import Jsonb
 
-from quant_company.briefing.inputs import collect
+from quant_company.briefing.inputs import collect, document
 from quant_company.briefing.schedule import editions
 from quant_company.news.contracts import NewsSource
 from quant_company.news.store import NewsStore
@@ -84,3 +84,30 @@ def test_news_reuse_selects_latest_eligible_original_and_current_source_policy(c
                      article_fetch=unexpected_fetch, feed_fetch=lambda _: {"ok": True, "entries": []})
     assert len(result["documents"]) == 1
     assert result["documents"][0]["sha256"] == "latest"
+
+
+def test_collector_keeps_complete_tail_and_rejects_partial_postgres_and_edition_cache(company, tmp_path):
+    spec, edition = setup_source(company, tmp_path)
+    content = "Synthetic Nasdaq closing market report "*170+"The proposed restriction was withdrawn."
+    assert 6000 < len(content) < 12000
+    receipt = original("https://fixture.example.org/complete", edition, content=content,
+                       excerpt_truncated=False, article_chars=len(content))
+    cached = document({**receipt, "url": "https://fixture.example.org/edition-partial"},
+                      spec.id, spec.publisher, spec.kind, origin_group=spec.origin_group).model_dump(mode="json")
+    cached["receipt"]["excerpt_truncated"] = True
+    with company.db.transaction() as conn:
+        digest = conn.execute("SELECT config_digest FROM news_sources WHERE id=%s", (spec.id,)).fetchone()["config_digest"]
+        for identity, partial in (("complete", False), ("database-partial", True)):
+            stored = {**receipt, "url": "https://fixture.example.org/"+identity,
+                      "excerpt_truncated": partial}
+            conn.execute("""INSERT INTO news_articles(id,source_id,url,title,summary,feed_digest,
+                published_at,collected_at,source_digest,state,content,retrieval)
+                VALUES(%s,%s,%s,'Nasdaq market close','',%s,%s,%s,%s,'ready',%s,%s)""",
+                         (identity, spec.id, stored["url"], identity, stored["published_at"],
+                          stored["retrieved_at"], digest, content[:6000] if partial else content, Jsonb(stored)))
+    result = collect(company, edition, existing={"documents": [cached]}, at=edition.cutoff,
+                     page_fetch=no_calendar, feed_fetch=lambda _: {"ok": True, "entries": []})
+    assert len(result["documents"]) == 1
+    assert result["documents"][0]["content"] == content
+    assert {e["url"] for e in result["collection_errors"] if e["error"] == "original_body_incomplete"} == {
+        "https://fixture.example.org/database-partial", "https://fixture.example.org/edition-partial"}

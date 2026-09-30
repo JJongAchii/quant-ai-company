@@ -29,7 +29,7 @@ from .quality import assurance
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 38
+VALIDATION_VERSION = 39
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Before composing, check each original for facts that change the market read, exposure or next decision.
@@ -98,6 +98,10 @@ meetings, statements, proposals, binding decisions and enforcement. For changed 
 truces or deadlines give BOTH the old baseline and new term when sourced, including a baseline supplied
 by an otherwise duplicate article. A proposal or party's demand is not an agreement. Include a material
 time-bounded counterproposal's conditions/deadline. Do not force incidental diplomatic ceremonies.
+For investment, fiscal or aid announcements, say whether the headline amount is additional funding,
+an allocation inside an existing commitment or a revised forecast when the originals establish it.
+Preserve that relationship and the operative total in visible prose; two adjacent amounts alone do not
+explain the change in exposure. Do not turn an announced allocation into disbursed cash or booked revenue.
 For material corporate earnings, state the reported revenue or margin driver, such as volume, utilization,
 price, product mix or currency for the period discussed; generic industry demand is not a substitute.
 For a material acquisition, identify the target's capability and buyer's stated use, and distinguish the
@@ -145,6 +149,8 @@ useful conclusions as a 30-second orientation. Overview (1-3 paragraphs) connect
 cross-asset agreement or divergence, change since the previous session and the Korea/global link. Observations
 hold exact market levels. Use up to six material issues, normally 4-6 on a busy day and fewer on a quiet day.
 Each issue's fact uses 2-3 concrete sentences for the actual development, scale and necessary background.
+Group developments by their economic link, not a shared keyword. An earnings release and an unrelated
+product-safety investigation need distinct treatment unless the originals connect their consequences.
 Do not retell that fact pattern in every section. Internals adds sourced sector/breadth/flow information
 not already explained; otherwise leave it empty. Main-post guidance is 1800-3500 Korean prose characters,
 excluding links/evidence, not a quota. Use short sentences, concrete nouns and brief explanations of unfamiliar
@@ -221,6 +227,8 @@ is not an agreement. Retain material counterproposals/conflicts and policy speak
 that changes the signal's weight. Check scale, offsetting flows, breadth, dated FX/asset moves and relevant
 rate baselines against the narrative without mixing observation times. Check known releases and material
 trade/supply-chain meetings in next checkpoints. Do not demand absent, incidental or duplicate details.
+For investment/fiscal announcements, verify whether the amount is new funding, an existing commitment's
+allocation or a revised forecast. If that sourced relationship changes exposure, it must be stated visibly.
 Call a missing fact material only if it changes the day-level market read, economic transmission, risk
 balance or next decision point. Explain that effect in its assessment; source exhaustiveness is not the goal.
 

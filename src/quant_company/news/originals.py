@@ -1,4 +1,4 @@
-"""Extract article regions before taking a bounded excerpt for editorial review."""
+"""Extract and preserve article bodies within the source-document size bound."""
 
 import json
 import re
@@ -9,6 +9,7 @@ from ..web_fetch import MAX_TEXT, fetch
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 IGNORE = {"script", "style", "noscript", "svg", "nav", "header", "footer", "aside", "form", "button"}
 BLOCK = {"p", "div", "br", "li", "h1", "h2", "h3", "h4", "tr", "article", "section"}
+MAX_ARTICLE_TEXT = 12000
 
 
 def supported_article_body(receipt):
@@ -129,5 +130,6 @@ def fetch_original(url):
         return {**receipt, "ok": False, "content": "", "error": "article_body_not_found"}, raw
     if not supported_article_body({**receipt, "article_extraction": method}):
         return {**receipt, "ok": False, "content": "", "error": "article_body_not_found"}, raw
-    return {**receipt, "content": content[:6000], "content_truncated": len(content) > MAX_TEXT,
-            "article_extraction": method, "article_chars": len(content), "excerpt_truncated": len(content) > 6000}, raw
+    return {**receipt, "content": content[:MAX_ARTICLE_TEXT], "content_truncated": len(content) > MAX_TEXT,
+            "article_extraction": method, "article_chars": len(content),
+            "excerpt_truncated": len(content) > MAX_ARTICLE_TEXT}, raw

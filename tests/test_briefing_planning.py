@@ -39,17 +39,18 @@ def plan(*ids):
                       priorities=["협상 기대와 거절 보도가 어떤 시점에 해당하는가?"])
 
 
-def test_original_tail_is_preserved_and_upstream_truncation_is_visible():
+def test_complete_original_tail_is_preserved_and_partial_original_is_rejected():
     edition = definition()
-    text = "Market background. "*180 + "The proposed talks were subsequently rejected."
-    result = document({"ok": True, "url": "https://example.org/source", "content": text,
-                       "original_sha256": "a"*64, "retrieved_at": edition.cutoff.isoformat(),
-                       "excerpt_truncated": True}, "fixture", "fixture", "media")
-    assert result.content == text and len(text) > 3000
+    text = "Market background. "*340 + "The proposed talks were subsequently rejected."
+    receipt = {"ok": True, "url": "https://example.org/source", "content": text,
+               "original_sha256": "a"*64, "retrieved_at": edition.cutoff.isoformat(),
+               "excerpt_truncated": False, "article_chars": len(text)}
+    result = document(receipt, "fixture", "fixture", "media")
+    assert result.content == text and len(text) > 6000
     data = bundle()
     data["documents"] = [result.model_dump(mode="json")]
     assert "subsequently rejected" in prompt(data, "write")
-    assert '"excerpt_truncated":true' in prompt(data, "write")
+    assert document({**receipt, "excerpt_truncated": True}, "fixture", "fixture", "media") is None
 
 
 def test_plan_only_selects_frozen_ids_and_cannot_drop_required_close():

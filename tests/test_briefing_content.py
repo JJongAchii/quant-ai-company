@@ -69,6 +69,20 @@ def test_cached_broad_etoday_page_cannot_enter_briefing_source_budget():
     assert document(receipt, "etoday-global", "Etoday", "media").content == receipt["content"]
 
 
+def test_analyst_rejects_known_or_unmarked_partial_originals():
+    receipt = {"ok": True, "content": "Complete bounded original "*260,
+               "original_sha256": "a"*64, "url": "https://example.org/article",
+               "retrieved_at": "2026-09-30T21:00:00Z", "published_at": "2026-09-30T20:00:00Z"}
+    assert len(receipt["content"]) > 6000
+    assert document(receipt, "fixture", "Fixture", "media").content == receipt["content"]
+    receipt["excerpt_truncated"] = True
+    assert document(receipt, "fixture", "Fixture", "media") is None
+    receipt.update(excerpt_truncated=False, article_chars=len(receipt["content"])+1)
+    assert document(receipt, "fixture", "Fixture", "media") is None
+    receipt.update(excerpt_truncated=False, content="x"*12001)
+    assert document(receipt, "fixture", "Fixture", "media") is None
+
+
 def test_coordinated_fraction_range_requires_explicit_unit_and_exact_endpoints():
     quote = "Revised lower by two or three tenths of a percentage point."
     assert prose_numbers_supported("0.2~0.3%포인트 하향 예상", [quote])
@@ -953,6 +967,18 @@ def test_spoken_market_decimal_and_shared_change_predicate():
                                        ["우버는 1.3%, 리프트는 2.4% 올랐다."])
 
 
+@pytest.mark.parametrize("verb,sign", [("gained", 1), ("fell", -1)])
+def test_spoken_decimal_change_keeps_adjacent_direction_and_explicit_unit(verb, sign):
+    quote = f"The KOSDAQ {verb} six-point-11 points, or zero-point-72 percent, to close at 855-point-91."
+    assert reported_change_supported(sign*Decimal(".72"), "%", [quote])
+    assert reported_change_supported(sign*Decimal("6.11"), "pt", [quote])
+    assert not reported_change_supported(-sign*Decimal(".72"), "%", [quote])
+    assert not reported_change_supported(sign*Decimal(".72"), "bp", [quote])
+    assert not reported_change_supported(sign*Decimal(".73"), "%", [quote])
+    assert not reported_change_supported(sign*Decimal(".72"), "%", [
+        f"KOSDAQ {verb} six-point-11 points, while KOSPI was flat at zero-point-72 percent."])
+
+
 def test_spelled_out_counts_and_entity_names_are_not_false_price_errors():
     assert numbers("in the last five days") == numbers("최근 5일")
     assert numbers("twenty-one days and one million downloads") == {Decimal(21), Decimal(1000000)}
@@ -961,6 +987,13 @@ def test_spelled_out_counts_and_entity_names_are_not_false_price_errors():
     assert numbers("스탠더드앤드푸어스(S&P) 500지수 5300") == {Decimal(5300)}
     assert numbers("six days") != numbers("5일")
     assert numbers("two hundred and five") == set()
+
+
+def test_explicit_month_of_prior_agreement_does_not_need_an_invented_day():
+    quote = "Iran offered reopening in seven days if the U.S. returns to the memorandum of understanding from June."
+    assert prose_numbers_supported("이란은 6월 양해각서로 복귀하면 7일 안에 열겠다고 제안했다.", [quote])
+    assert not prose_numbers_supported("이란은 6월 1일 합의로 복귀하면 7일 안에 열겠다고 제안했다.", [quote])
+    assert not prose_numbers_supported("이란은 5월 양해각서로 복귀하면 7일 안에 열겠다고 제안했다.", [quote])
 
 
 def test_reported_change_uses_local_direction_and_actual_unit():

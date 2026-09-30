@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 from ..company import fingerprint
 from ..news.contracts import load_sources
 from ..news.feeds import fetch_feed, timestamp
-from ..news.originals import fetch_original, supported_article_body
+from ..news.originals import MAX_ARTICLE_TEXT, fetch_original, supported_article_body
 from .contracts import SourceDocument
 from .coverage import PATTERNS, inventory, select_documents, topics
 
@@ -44,13 +44,21 @@ def market_report(doc, kind):
                 and re.search(r"마감|종가|장종료|clos(?:e|ed|ing)", text, re.I))
 
 
+def complete_original(receipt, content):
+    expected = receipt.get("article_chars")
+    return (not receipt.get("excerpt_truncated") and len(content) <= MAX_ARTICLE_TEXT
+            and (not isinstance(expected, int) or expected <= len(content)))
+
+
 def document(receipt, registration, publisher, kind, *, title=None, published=None, origin_group=""):
     if not receipt.get("ok") or receipt.get("content_truncated") or not supported_article_body(receipt):
         return None
     retrieved = timestamp(receipt.get("retrieved_at"))
     if retrieved is None or not receipt.get("content") or not receipt.get("original_sha256"):
         return None
-    limit = 3000 if kind == "calendar" else 6000
+    limit = 3000 if kind == "calendar" else MAX_ARTICLE_TEXT
+    if kind != "calendar" and not complete_original(receipt, receipt["content"]):
+        return None
     content = receipt["content"][:limit]
     return SourceDocument(
         id=fingerprint([registration, receipt["url"], receipt["original_sha256"]])[:40],
@@ -72,8 +80,13 @@ def collect(company, edition, existing=None, candidates=(), *, at, page_fetch=fe
     lower = edition.cutoff-timedelta(hours=72 if edition.weekly else 30)
     for value in [*(existing or {}).get("candidate_documents", []), *(existing or {}).get("documents", [])]:
         doc = SourceDocument.model_validate(value)
-        if supported_article_body(doc.receipt) and (doc.kind == "calendar" or (doc.registration in spec_map and doc.published_at
-                                      and lower <= doc.published_at <= min(at, edition.cutoff))):
+        if not supported_article_body(doc.receipt):
+            continue
+        if doc.kind != "calendar" and not complete_original(doc.receipt, doc.content):
+            errors.append({"source": doc.registration, "url": doc.url, "error": "original_body_incomplete"})
+            continue
+        if doc.kind == "calendar" or (doc.registration in spec_map and doc.published_at
+                                      and lower <= doc.published_at <= min(at, edition.cutoff)):
             docs[doc.url] = doc
     with company.db.transaction() as conn:
         rows = conn.execute("""WITH originals AS (SELECT DISTINCT ON (a.url) a.*,s.config
@@ -91,6 +104,9 @@ def collect(company, edition, existing=None, candidates=(), *, at, page_fetch=fe
         spec = spec_map.get(row["source_id"])
         receipt = row["retrieval"] or {}
         if not spec or not spec.allows_article(row["url"]) or not receipt.get("ok"):
+            continue
+        if not complete_original(receipt, row["content"]):
+            errors.append({"source": spec.id, "url": row["url"], "error": "original_body_incomplete"})
             continue
         doc = document({**receipt, "url": row["url"], "content": row["content"],
                         "license_url": spec.license_url, "license_name": spec.license_name}, spec.id,
@@ -141,6 +157,9 @@ def collect(company, edition, existing=None, candidates=(), *, at, page_fetch=fe
         original_date = timestamp(receipt.get("published_at"))
         if original_date and published and abs(original_date-published) > timedelta(days=1):
             errors.append({"source": spec.id, "error": "publication_date_conflict"})
+            continue
+        if not complete_original(receipt, receipt.get("content", "")):
+            errors.append({"source": spec.id, "url": url, "error": "original_body_incomplete"})
             continue
         doc = document({**receipt, "license_url": spec.license_url, "license_name": spec.license_name},
                        spec.id, spec.publisher, spec.kind, title=title, published=published, origin_group=spec.origin_group)
