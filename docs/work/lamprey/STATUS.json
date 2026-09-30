@@ -296,7 +296,7 @@
         },
         {
           "path": "docs/project/RESEARCH-PROGRAMS-CONTINUATION-20260930.md",
-          "sha256": "cba1a5ec7cde"
+          "sha256": "d5c81949caf1"
         },
         {
           "path": "docs/project/evidence/research-programs-20260930/trace-etf-provenance.py",
@@ -425,11 +425,127 @@
         {
           "path": "docs/project/evidence/etf-raw-lineage-20260930/access-cleanup.json",
           "sha256": "fe60107189ab"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/admission-draft-review-before-clarification.json",
+          "sha256": "0b91aedacb48"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/admission-draft-review.json",
+          "sha256": "eed0ad8d263c"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/availability-survey.json",
+          "sha256": "a10ed59d63a9"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/bind-implementation-spec.py",
+          "sha256": "4559551ba817"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/data-draft-review-before-clarification.json",
+          "sha256": "2f965f434fb5"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/data-draft-review.json",
+          "sha256": "f805a420c66c"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/data-policy-draft.json",
+          "sha256": "66a888ac98ba"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/digest-encoding.json",
+          "sha256": "cdba583517b2"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/final-package-receipt.json",
+          "sha256": "9f4fbd598c31"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/finalize-package.py",
+          "sha256": "887010d1ff81"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/implementation-spec-before-admission-clarification.md",
+          "sha256": "3d4fc5a24ddc"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/implementation-spec.md",
+          "sha256": "be306232e85f"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/official-source-review.json",
+          "sha256": "c14d6e0eb60a"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/package-amendment.json",
+          "sha256": "19a89d8e27f3"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/preparation-receipt.json",
+          "sha256": "29d9090b7af9"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/prepare-draft.py",
+          "sha256": "1600fa259b83"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/program-schema-preview.json",
+          "sha256": "74b7bdbfe7f1"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/public-profile-draft.json",
+          "sha256": "0c995d823b1e"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/review-package-before-admission-clarification.json",
+          "sha256": "b43fca312d4f"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/review-package-initial.json",
+          "sha256": "1adef9d2eed0"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/review-package.json",
+          "sha256": "44b0e8063b1d"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/review-validation.json",
+          "sha256": "fd17b53f7f92"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/survey-availability.py",
+          "sha256": "2afd85e6a73d"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/validate-draft.py",
+          "sha256": "d55697e957dc"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/validation-before-admission-clarification.json",
+          "sha256": "7fe35ff75068"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/validation-initial.json",
+          "sha256": "3b77e39abcbe"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/validation.json",
+          "sha256": "abc81597b597"
+        },
+        {
+          "path": "docs/project/evidence/etf-execution-contract-20260930/verify-draft-reviews.py",
+          "sha256": "38798297b712"
+        },
+        {
+          "path": "docs/project/ETF-EXECUTION-CONTRACT-20261001.md",
+          "sha256": "69cee3e5d9ea"
         }
       ],
-      "note": "Raw-body lineage investigation completed: 835 current objects hashed; 698359 raw rows preserved through pinned builders; all 8350 approved non-adjustment input fields and reanchored curve shapes matched; the selection-prefix-only cohort matched. Researcher, independent data employee and director completed all three new-report reads and stage outcomes in attempt 1; 34 actual Codex turns completed, maximum prompt 86138 under the 90000 contract. The new task remained waiting with data blocked and director wait; eight tasks waiting, zero missions/reservations/scientific trials. Current transformation evidence was accepted while historical publication/revision evidence and preparation-time source bytes remain missing. No active input, engine, blocking gap or readiness grant changed.",
+      "note": "Completed the bounded availability recovery survey and a hash-bound conditional retrospective ETF research draft. Seven named S3 archive prefixes and known local receipt/vintage paths yielded no historical publication receipts; six key version lists exposed only null current versions. Official KRX feed/API descriptions did not prove historical MDCSTAT04301 publication times. Final review digest d8520114b1adb978fe672847ac97c08dcd6eee3446bfcd555b8f0f9fd920c503 binds inputs, assumptions, evaluation and a concrete future implementation specification. Two actual independent local draft-review files verified as reviewable, 26 current schema/factory/hash checks and full lint passed. The initial admission review identified four specification gaps; amendments and fresh reviews are preserved. Current runtime admission, historical PIT, production staff readiness and new owner approval remain false. The program cap is four; continuous=false and a two-result cycle end this proposed first mission after at most two scientific results. Zero performance runs, scientific trials, production mutations or sealed price reads in this phase. Existing signed program, inputs, profile and readiness gates remain unchanged; typed policy implementation, real services/worker qualification, staff assessment and fresh canonical signed approval are required next.",
       "status": "in_progress",
-      "updatedAt": "2026-09-30T12:08:38.585728+00:00"
+      "updatedAt": "2026-09-30T23:13:39.645776+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -671,7 +787,7 @@
         },
         {
           "path": "docs/project/RESEARCH-PROGRAMS-CONTINUATION-20260930.md",
-          "sha256": "cba1a5ec7cde"
+          "sha256": "d5c81949caf1"
         },
         {
           "path": "docs/project/evidence/research-programs-20260930/ci-recovered.json",
@@ -691,5 +807,5 @@
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-30T12:08:38.585728+00:00"
+  "updatedAt": "2026-09-30T23:13:39.645776+00:00"
 }

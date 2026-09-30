@@ -1,0 +1,28 @@
+{
+  "all_passed": true,
+  "observed_at": "2026-09-30T23:12:47.473577+00:00",
+  "production_assessment": false,
+  "readiness_granted": false,
+  "review_digest": "d8520114b1adb978fe672847ac97c08dcd6eee3446bfcd555b8f0f9fd920c503",
+  "reviews": [
+    {
+      "files_verified": 14,
+      "path": "docs/project/evidence/etf-execution-contract-20260930/data-draft-review.json",
+      "reviewer": "local_independent_data_draft",
+      "sha256": "f805a420c66cdbbca8ad6e71b5a4d9531044cbc6c76ca6a4a50d150d5262f2f7",
+      "verdict": "reviewable_draft"
+    },
+    {
+      "files_verified": 20,
+      "path": "docs/project/evidence/etf-execution-contract-20260930/admission-draft-review.json",
+      "reviewer": "local_independent_admission_draft",
+      "sha256": "eed0ad8d263ce833a9d2424c10a189511155d645b2b5feca9dd301a20b86225a",
+      "verdict": "reviewable_draft"
+    }
+  ],
+  "runtime_admissible": false,
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "scope": "actual_local_independent_draft_review_files_not_production_staff_assessments",
+  "script_sha256": "38798297b712301f671b1cd82973fd03fc5f24bafc861f2b7f4958c2b819a82f"
+}
