@@ -10,11 +10,15 @@
         {
           "path": "docs/project/evidence/quant-feed-quality-20260929/RESULT-v20.json",
           "sha256": "8b63616133f0"
+        },
+        {
+          "path": "docs/project/evidence/quant-feed-quality-20260929/OBSERVATION-WAIVER-20260930.json",
+          "sha256": "b67805166867"
         }
       ],
-      "note": "Exact 5defb8c policy v20 deployed publication-off; all independent service IDs/images preserved. Shared dispatch calendar-mount fault recovered. Read-only 5-minute observation timer is active; healthy baseline 2026-09-30 07:00:14 UTC, earliest 48h review 2026-10-02 16:00:14 KST. One historic post remains; publication resumption and live Slack delivery are incomplete.",
+      "note": "Exact 5defb8c policy v20 deployed publication-off; all independent service IDs/images preserved. Shared dispatch calendar-mount fault recovered. User waived the added 48h observation prerequisite on 30 September; its timer is verified inactive/disabled and historic samples retained. One historic post remains; publication resumption and live Slack delivery are incomplete. This status/billing clarification did not change the publication gate.",
       "status": "in_progress",
-      "updatedAt": "2026-09-30T07:09:53+00:00"
+      "updatedAt": "2026-09-30T07:31:44+00:00"
     },
     "QUANT_FEED": {
       "evidence": [
@@ -32,16 +36,24 @@
         {
           "path": "docs/project/evidence/quant-feed-quality-20260929/RESULT-v20.json",
           "sha256": "8b63616133f0"
+        },
+        {
+          "path": "docs/project/evidence/quant-feed-quality-20260929/OBSERVATION-WAIVER-20260930.json",
+          "sha256": "b67805166867"
+        },
+        {
+          "path": "docs/project/evidence/repository-public-20260930.json",
+          "sha256": "92c3acb5f1ab"
         }
       ],
-      "note": "Merged-head local worktree suite 1356 passed/46 skipped and Ruff passed; identical Quant code b907846 passed Linux CI 36678839349. Final merge CI 36679570477 never started due GitHub account payment/spending-limit refusal; billing unchanged. Staged installed-source and live native-schema checks passed. HARN/LOB and negative controls qualified; private drift/failures remain recorded. Final merged Linux CI, elapsed 48h and live Slack delivery remain unverified.",
+      "note": "Merged-head local worktree suite 1356 passed/46 skipped and Ruff passed; identical Quant code b907846 passed Linux CI 36678839349. At owner request JJongAchii/quant-ai-company is now public, verified with authenticated and unauthenticated readback after redacted history/archive secret preflight; 21 generic findings were non-credential hashes/identifiers. Original final-merge CI 36679570477 attempt 1 never started; public recheck attempt 2 completed SUCCESS on exact deployed 5defb8c, including dependency installation, lint and the full PostgreSQL/Temporal/service suite. GitHub CI startup blocker resolved without billing or production setting changes. Staged installed-source and live native-schema checks passed; HARN/LOB and negative controls qualified. User waived 48h observation. Live Quant Slack delivery remains unverified and publication is still off.",
       "status": "in_progress",
-      "updatedAt": "2026-09-30T07:09:53+00:00"
+      "updatedAt": "2026-09-30T08:01:19+00:00"
     }
   },
   "intentDigest": "c402037885c5",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-30T07:09:53+00:00"
+  "updatedAt": "2026-09-30T08:01:19+00:00"
 }

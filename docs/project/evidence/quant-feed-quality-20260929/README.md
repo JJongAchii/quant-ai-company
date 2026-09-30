@@ -101,3 +101,40 @@ Its first two samples succeeded without flags. Earliest elapsed-window review is
 Planned backup pauses, missing samples, restarts and independently changed containers
 must be reviewed before interpreting the window. See [RESULT-v20.json](RESULT-v20.json)
 for receipt hashes and the outstanding Linux/elapsed-observation limitations.
+
+## 30 September observation waiver and billing clarification
+
+The owner rejected the added 48-hour observation prerequisite. It is no longer
+required for publication resumption. Only `quant-feed-v20-observe.timer` was
+disabled and stopped; readback confirmed `ActiveState=inactive` and
+`UnitFileState=disabled`. Historic samples remain, and no other service or
+publication setting was changed by this clarification.
+
+The CI diagnostic is not proof of an unpaid invoice or a requirement to subscribe.
+The repository is personal and private, using the standard `ubuntu-latest` runner.
+[GitHub's billing documentation](https://docs.github.com/en/billing/concepts/product-billing/github-actions)
+states that accounts without a payment method are blocked after exhausting their
+included allowance. This is a possible explanation, not a verified account total.
+The usage-summary API returned HTTP 404 and the CLI explicitly required an
+additional `user` scope; no scope refresh, card registration, plan upgrade or
+budget change was performed. See
+[OBSERVATION-WAIVER-20260930.json](OBSERVATION-WAIVER-20260930.json).
+
+## 30 September public repository and CI recheck
+
+At the owner's explicit request, `JJongAchii/quant-ai-company` was changed from
+private to public. Authenticated and unauthenticated API readbacks both confirmed
+`visibility=public` and `private=false`. Redacted Gitleaks history scanning,
+including a second archive-aware pass, found 21 generic matches; contextual checks
+identified only hashes, commit IDs, SQL syntax and adjacent JSON field names.
+This does not prove the absence of all confidential content or exhaustively audit
+GitHub-hosted logs and artifacts.
+
+Run `36679570477` for the exact deployed `5defb8c` was rerun as attempt 2. It now
+has a GitHub-hosted Linux runner, and dependency installation and lint passed;
+the full regression suite also passed, with run conclusion `success` verified at
+08:01:19 UTC. The original attempt's no-runner refusal remains historical evidence,
+but no longer describes the recheck. No payment, paid plan, budget or production
+service was changed. Live Quant Slack delivery remains unverified and its posting
+gate was not changed by this repository operation.
+See [repository-public-20260930.json](../repository-public-20260930.json).
