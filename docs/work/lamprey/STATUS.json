@@ -296,12 +296,56 @@
         },
         {
           "path": "docs/project/RESEARCH-PROGRAMS-CONTINUATION-20260930.md",
-          "sha256": "60445094e3f6"
+          "sha256": "ad8387b192fc"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/trace-etf-provenance.py",
+          "sha256": "151c2d6119e2"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/etf-provenance-recovery.json",
+          "sha256": "c813a2e9c4e7"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/etf-raw-object-manifest.json",
+          "sha256": "963dc1ea3420"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/attach-etf-provenance.py",
+          "sha256": "657d120ec876"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/etf-provenance-attached.json",
+          "sha256": "8acb49ed55d4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/etf-provenance-evidence-registry.json",
+          "sha256": "d3822b1df7d1"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/etf-provenance-initial-lock-readback.json",
+          "sha256": "2ed9d399acd1"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/read-etf-provenance-stage.py",
+          "sha256": "10139471c601"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/etf-provenance-staff-readback.json",
+          "sha256": "ba77545a8d33"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/etf-provenance-validation.json",
+          "sha256": "fc48875746bc"
+        },
+        {
+          "path": "docs/project/ETF-PROVENANCE-RECOVERY-20260930.md",
+          "sha256": "c80493d4dd39"
         }
       ],
-      "note": "Signed owner program remains active. Two new original sources changed the program evidence version from 11 to 12 to 13 sources; common source hashes stayed fixed. Fifth ETF task independently blocked and director wait. Next proposal stage resumed after a same-turn prompt-size repair. Five tasks waiting; zero missions, reservations and scientific trials.",
+      "note": "Approved ETF raw metadata covers all 835 sessions; pinned transformation matches all 8350 rebased input rows. Original clean bytes and historical publication/revision vintages remain unverified. New report attached without changing inputs, engine or five blocking gaps. Researcher, data and director each completed its report read; 27 real Codex turns completed. Seven tasks waiting, zero missions/reservations/scientific trials.",
       "status": "in_progress",
-      "updatedAt": "2026-09-30T06:44:14.381739+00:00"
+      "updatedAt": "2026-09-30T08:18:17.740154+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -543,17 +587,21 @@
         },
         {
           "path": "docs/project/RESEARCH-PROGRAMS-CONTINUATION-20260930.md",
-          "sha256": "60445094e3f6"
+          "sha256": "ad8387b192fc"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/ci-recovered.json",
+          "sha256": "b01bf1d5aba5"
         }
       ],
-      "note": "Temporal repeatedly failed before model dispatch because prior task history exceeded the prompt contract. Immutable full prior-task files and bounded navigation passed 20 PostgreSQL regressions, 1373 full tests/13 skips, lint and service CI. Worker-only cutover to 73fcfc3 preserved all other services and same stage/attempt/turn IDs. The stalled turn completed with actual Codex using a 47130-character prompt; all five prior files matched original DB records.",
+      "note": "Prior same-turn prompt recovery remains verified. Integrated 9089a7c preserved the separately owner-approved private-output correction; service CI including lint and PostgreSQL/Temporal regression passed after the user resolved the GitHub account start block. Provenance attachment qualified against ten installed source hashes and all frozen contract bindings; no service recreated by this task.",
       "status": "verified",
-      "updatedAt": "2026-09-30T06:44:14.381739+00:00"
+      "updatedAt": "2026-09-30T08:18:17.740154+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-30T06:44:14.381739+00:00"
+  "updatedAt": "2026-09-30T08:18:17.740154+00:00"
 }
