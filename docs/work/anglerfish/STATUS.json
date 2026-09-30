@@ -14,9 +14,10 @@
       "producerConsumerAuditMeaningLibrary": "passed"
     },
     "REVIEW_PACKET": {
-      "status": "prepared",
+      "status": "completed",
       "spec": "../../project/evidence/etf-exploration-20260930/candidate-program.json",
-      "programDigest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162"
+      "programDigest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
+      "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
   "operationalStatus": "Exact retrospective ETF specification and code prepared; old strict program remains waiting with zero missions/trials/reservations. New policy not deployed or signed.",
@@ -25,7 +26,7 @@
     "stage": "owner_review_of_exploratory_proposal",
     "programDigest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162"
   },
-  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/97",
+  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/99",
   "exploratoryPreparation": {
     "policy": "completed",
     "researchSpec": "frozen",
@@ -35,7 +36,7 @@
       "lint": "passed",
       "qlabCommit": "37abfceb07f5b684d7c3210548fecef156e3f9fc"
     },
-    "reviewPr": "pending_publication",
+    "reviewPr": "https://github.com/JJongAchii/quant-ai-company/pull/99",
     "productionActivated": false,
     "scientificTrialsAdded": 0
   },
