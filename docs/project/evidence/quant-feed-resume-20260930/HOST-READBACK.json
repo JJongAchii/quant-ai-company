@@ -1,0 +1,205 @@
+{
+  "checked_at": "2026-09-30T12:03:20.715497+00:00",
+  "checks": {
+    "current_release_unchanged": true,
+    "publication_gate_active": true,
+    "selected_services_healthy": true,
+    "no_service_oom": true,
+    "memory_above_activation_floor": true,
+    "waived_observation_timer_disabled": true
+  },
+  "current_release": "5defb8cb9dd7c655214663b05670cd2896006b30",
+  "publication_probe": {
+    "authorized": true,
+    "channel": "C0C3K8ZB9PB",
+    "publish_enabled": true,
+    "policy": "567a9c8c20501bc1783b66179ebed0e35fc25727ca00bce1d252e60735cfb7eb",
+    "live_policy": "567a9c8c20501bc1783b66179ebed0e35fc25727ca00bce1d252e60735cfb7eb"
+  },
+  "activation_journal_sha256": "91f77ae9716a42982dc09b7a907ff6584be95c1e6add2be68141bc248a6390ab",
+  "operator_sha256": "d4433e5a891c20953e02a3673a55e2be03480bf400abf406d5337a31ffb85f7a",
+  "activation_phase": "live_active",
+  "activation_started_at": 1790757127.1491082,
+  "activation_completed_at": 1790757166.9625313,
+  "independent_services_preserved_at_activation": true,
+  "independent_inventory_still_unchanged": {
+    "quant-company-worker-1": true,
+    "quant-company-quant-codex-runtime-1": true,
+    "quant-company-slack-socket-1": true,
+    "quant-company-codex-runtime-1": true,
+    "quant-company-data-watch-worker-1": true,
+    "quant-company-housing-feed-worker-1": true,
+    "quant-company-maintenance-1": false,
+    "quant-company-account-gateway-1": true,
+    "quant-company-news-worker-1": true,
+    "quant-company-claude-runtime-1": true,
+    "buildx_buildkit_quant-feed-75f1b100ab760": true,
+    "quant-company-postgres-1": true
+  },
+  "services": {
+    "quant-company-quant-feed-worker-1": {
+      "id": "6ea69ece5fb2e3ca744e36df55ddf30328cd6114a5c5d42a8144ce8df167817e",
+      "image_id": "sha256:e423f8fa284f7da085c0f1c64e29d6598b713494967d6fb4b53ad2a2d47570f6",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "image_revision": "5defb8cb9dd7c655214663b05670cd2896006b30",
+      "quant_publish": "true"
+    },
+    "quant-company-api-1": {
+      "id": "04bf679177689dc7df8ce6e3b1a4b0bf43b0d508d4b3e969b60ce46f77ece325",
+      "image_id": "sha256:e423f8fa284f7da085c0f1c64e29d6598b713494967d6fb4b53ad2a2d47570f6",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": "healthy",
+      "image_revision": "5defb8cb9dd7c655214663b05670cd2896006b30",
+      "quant_publish": "true"
+    },
+    "quant-company-dispatch-1": {
+      "id": "b49e248c61ceb5b2ce118dfa159f9c93612b43afc0bacfb10e696dafec6594c3",
+      "image_id": "sha256:e423f8fa284f7da085c0f1c64e29d6598b713494967d6fb4b53ad2a2d47570f6",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "image_revision": "5defb8cb9dd7c655214663b05670cd2896006b30",
+      "quant_publish": "true"
+    },
+    "quant-company-worker-1": {
+      "id": "308eee976969d61f9db75455bdf8da9a94666007fb736747173e2a3484110e9f",
+      "image_id": "sha256:95562e94f6967a484a32647af00695375b22682e8ed413359c651430f0e8ff6b",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "image_revision": "0286ba3e7426ff6546b90e6926124ae65e71ba79",
+      "quant_publish": "false"
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "b3fb07a97b269728543d01937090bd3437704febce0422bace87ccf0ecd238c2",
+      "image_id": "sha256:fd446c1b4201b6b81a53461668d0c3b8ce57388564dd68d412408abd1b7b9a7c",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": "healthy",
+      "image_revision": "5defb8cb9dd7c655214663b05670cd2896006b30",
+      "quant_publish": null
+    },
+    "quant-company-slack-socket-1": {
+      "id": "3b9ad1e60c01b212a22ce8f0b53b03c26746d9b6be1457895494c32f01ad2c57",
+      "image_id": "sha256:8c7d429f187c1d749d8afdef7c55286c5421b9b54b89545877f317bfe66f2658",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "image_revision": "eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+      "quant_publish": "false"
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "cbf51d0f25f732b2a3660cff19a19240594931cb85a886acf0674a3bc14daeef",
+      "image_id": "sha256:877ac62283dcaabe221c3b738e904ab38a8311461f3e851b593e6441e703b0dd",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": "healthy",
+      "image_revision": "d790b2ecf203b63a76425b8b2703c9d10250ff44",
+      "quant_publish": null
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "b900ca1d55f31c7c29f5eef62e5f5587ccb6c137019104e362cd14da92af274b",
+      "image_id": "sha256:7c834100fdefc0ecd09c2c8810c2b9630c93976ffa3fa739c78a87e71d752309",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "image_revision": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+      "quant_publish": "false"
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "7df307ee748d54371c6c9bb2fee6a5ac17e7f5b341d1f137db7af89eb69e74ab",
+      "image_id": "sha256:db3c79878edf68a0115c8f0b893d41a92fa78e91f1a59bf76f92b60c8a69a589",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "image_revision": "c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+      "quant_publish": "false"
+    },
+    "quant-company-maintenance-1": {
+      "id": "7266163c1e8120facda28c18764423801d68c11e60d43eb388356a700ea25f5d",
+      "image_id": "sha256:50124cabdc3db809bfc799e14aa9af1c155d86b6a577f910d18b49d6e5f226f5",
+      "running": true,
+      "oom": false,
+      "restarts": 3,
+      "health": null,
+      "image_revision": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "quant_publish": "false"
+    },
+    "quant-company-account-gateway-1": {
+      "id": "54b595660ad3366baf3bec5133bd6383c9fa757c20bd77ec9eda93c133fb9e4b",
+      "image_id": "sha256:942a896a92f6a2c6e3d5b4743ad670808da62be448136d77f2e75455f7668b24",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": "healthy",
+      "image_revision": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "quant_publish": "false"
+    },
+    "quant-company-news-worker-1": {
+      "id": "879e0263e71a29109ee3ecca0e8d99e82cc262fbab24924ebcb388cb7b9aef44",
+      "image_id": "sha256:942a896a92f6a2c6e3d5b4743ad670808da62be448136d77f2e75455f7668b24",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "image_revision": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "quant_publish": "false"
+    },
+    "quant-company-claude-runtime-1": {
+      "id": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+      "image_id": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": "healthy",
+      "image_revision": "fde7681e0286501d8713e08e30a96991a88b9151",
+      "quant_publish": null
+    },
+    "buildx_buildkit_quant-feed-75f1b100ab760": {
+      "id": "7052944e196632d3891716ab41f38a0fb574b5aa1c4fa18352bbb0102a75ecb9",
+      "image_id": "sha256:28a898719c18a33f4e8000685287fa36fd0dd9560c6440227d3a732d79bb41d8",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "image_revision": null,
+      "quant_publish": null
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image_id": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": "healthy",
+      "image_revision": null,
+      "quant_publish": null
+    }
+  },
+  "disk_available_bytes": 8707768320,
+  "memory_kib": {
+    "MemTotal": 3924236,
+    "MemAvailable": 1938732
+  },
+  "observation_timer": {
+    "is-active": "inactive",
+    "is-enabled": "disabled"
+  },
+  "model_calls": 0,
+  "slack_writes": 0,
+  "service_mutations": 0,
+  "verifier_sha256": "f1fcd44b2f14487d874cab244a7072233e2ea8d06c318d8a216dc80b4750be2f",
+  "inventory_drift_note": "At activation every independent service was unchanged. At the later readback maintenance retained its container ID and image but its restart count increased from 1 to 3; this operation did not restart it. All other independent inventory entries remained identical."
+}

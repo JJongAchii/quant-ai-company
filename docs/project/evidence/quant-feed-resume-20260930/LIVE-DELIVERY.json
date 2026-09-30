@@ -1,0 +1,145 @@
+{
+  "checked_at": "2026-09-30T11:44:38.294617+00:00",
+  "checks": {
+    "publication_enabled": true,
+    "collection_enabled": true,
+    "authorized": true,
+    "policy_current": true,
+    "delivered_with_timestamp": true,
+    "one_send_attempt": true,
+    "quant_bot_author": true,
+    "slack_permalink_confirmed": true,
+    "fresh_current_policy_calls": true,
+    "independent_critic_passed": true,
+    "central_quant_scope": true,
+    "substantive_research": true,
+    "claims_supported": true,
+    "card_budget": true,
+    "grouped_card": true,
+    "historic_post_preserved": true
+  },
+  "publication": {
+    "id": "6e519886-a55a-5d66-b6df-d0224d766672",
+    "document_id": "96e1499827bf453e9f37785ae5daadcd08992622cab63e0768134f57eaa5cdc3",
+    "channel": "C0C3K8ZB9PB",
+    "policy_digest": "567a9c8c20501bc1783b66179ebed0e35fc25727ca00bce1d252e60735cfb7eb",
+    "status": "delivered",
+    "sent_ts": "1790765996.984039",
+    "error": null,
+    "attempts": 1,
+    "created_at": "2026-09-30 10:59:55.885858+00:00",
+    "next_at": "2026-09-30 10:59:57.127139+00:00",
+    "agent": "quant_scout",
+    "title": "From Factor Models to Deep Learning: Machine Learning in Reshaping Empirical Asset Pricing",
+    "url": "https://arxiv.org/abs/2403.06779",
+    "original_sha256": "3321f4327a248cfc4f2e26f4f4db591bcbcde526705a585b8899160401eb5df2"
+  },
+  "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1790765996984039",
+  "card_sha256": "19df959042ee8b1af2da60d0445626959ab19ea2d14474e11ec93579eb0aa8ab",
+  "card_characters": 2088,
+  "card_lines": 32,
+  "stage_receipts": [
+    {
+      "id": "quant-feed-aaea757e-1cb0-4365-bc7a-967a1506d01e",
+      "stage": "review",
+      "state": "completed",
+      "error": null,
+      "policy_digest": "567a9c8c20501bc1783b66179ebed0e35fc25727ca00bce1d252e60735cfb7eb",
+      "created_at": "2026-09-30 10:53:26.959609+00:00",
+      "completed_at": "2026-09-30 10:54:29.363479+00:00",
+      "receipt_summary": {
+        "document_state": "ready",
+        "source_correction_count": 31
+      }
+    },
+    {
+      "id": "quant-feed-7e737be4-63ac-4211-8cc9-b2c43bb91d09",
+      "stage": "critique",
+      "state": "completed",
+      "error": null,
+      "policy_digest": "567a9c8c20501bc1783b66179ebed0e35fc25727ca00bce1d252e60735cfb7eb",
+      "created_at": "2026-09-30 10:54:49.601486+00:00",
+      "completed_at": "2026-09-30 10:57:15.047585+00:00",
+      "receipt_summary": {
+        "document_state": "ready",
+        "source_correction_count": 0
+      }
+    },
+    {
+      "id": "quant-feed-ab183ee7-962b-4ec9-95c7-fa3ff9398e1f",
+      "stage": "revision",
+      "state": "completed",
+      "error": null,
+      "policy_digest": "567a9c8c20501bc1783b66179ebed0e35fc25727ca00bce1d252e60735cfb7eb",
+      "created_at": "2026-09-30 10:57:35.202759+00:00",
+      "completed_at": "2026-09-30 10:58:41.759044+00:00",
+      "receipt_summary": {
+        "document_state": "ready",
+        "source_correction_count": 32
+      }
+    },
+    {
+      "id": "quant-feed-56a8cd30-7b28-46d4-a80d-f72deb5ebfe3",
+      "stage": "critique",
+      "state": "completed",
+      "error": null,
+      "policy_digest": "567a9c8c20501bc1783b66179ebed0e35fc25727ca00bce1d252e60735cfb7eb",
+      "created_at": "2026-09-30 10:59:02.005618+00:00",
+      "completed_at": "2026-09-30 10:59:55.885858+00:00",
+      "receipt_summary": {
+        "document_state": "queued",
+        "source_correction_count": 0
+      }
+    }
+  ],
+  "published_on": "2024-03-11",
+  "maturity": "working_paper",
+  "critic": {
+    "issues": [],
+    "reason": "제공 원문과 발췌는 리뷰의 범위, 방법론, 사례 및 저자·날짜를 충분히 뒷받침한다. 저자 보고 결과와 독립 재현·거래가능성의 부재를 구분했고, 비용·분할·포인트인타임 등 확인되지 않은 사항도 조건부 한계로 정직하게 표시했다. 모든 evidence의 span 연결도 해당 주장의 구성요소를 공동으로 지지한다.",
+    "disposition": "pass",
+    "suggestions": [],
+    "claims_supported": true,
+    "direct_quant_scope": true,
+    "limitations_honest": true,
+    "original_sufficient": true,
+    "relevance_and_value": true,
+    "no_investment_advice": true,
+    "substantive_research": true,
+    "dates_authors_verified": true,
+    "material_change_verified": true
+  },
+  "document_states": [
+    {
+      "state": "held",
+      "count": 403
+    },
+    {
+      "state": "preview",
+      "count": 11
+    },
+    {
+      "state": "queued",
+      "count": 2
+    },
+    {
+      "state": "ready",
+      "count": 67
+    },
+    {
+      "state": "rejected",
+      "count": 77
+    }
+  ],
+  "slack_history_readback": "not_permitted_by_chat_write_only_bot",
+  "slack_writes_by_verifier": 0,
+  "model_calls_by_verifier": 0,
+  "database_writes_by_verifier": 0,
+  "verifier_sha256": "92758af5615cf8dcb8a8b963ac6a8ac8af7f739490c979fc0663a65c0b7d1080",
+  "verification_limits": [
+    "Slack accepted the actual production send; getPermalink confirmed its URL. The chat:write-only bot cannot independently read channel history.",
+    "The critic is a separate model review, not independent reproduction or evidence of investment profitability.",
+    "One delivered card proves this live path, not feed-wide precision or exhaustive coverage.",
+    "The bounded extra verification workflow was not started; normal existing Temporal scheduling produced this publication."
+  ]
+}
