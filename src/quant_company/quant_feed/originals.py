@@ -70,12 +70,17 @@ class ResearchPage(Page):
     def __init__(self):
         super().__init__()
         self.metadata, self.labeled_links, self.anchor = {}, [], None
+        self.in_listing_card, self.in_card_title = False, False
 
     def handle_starttag(self, tag, attrs):
         if tag in {"nav", "footer"}:
             self.ignored += 1
         super().handle_starttag(tag, attrs)
         attrs = dict(attrs)
+        if tag == "article" and "pb-sm" in attrs.get("class", "").split():
+            self.in_listing_card = True
+        if tag == "h3" and self.in_listing_card:
+            self.in_card_title = True
         if tag == "meta":
             name = (attrs.get("name") or attrs.get("property") or "").lower()
             if name.startswith(("citation_", "dc.", "article:")):
@@ -87,7 +92,7 @@ class ResearchPage(Page):
                                   attrs.get("onclick", ""))
             if report:
                 href = "/report/report_view?report_no=" + report[1]
-            self.anchor = {"url": href, "title": ""}
+            self.anchor = {"url": href, "title": "", "listing_card": self.in_card_title}
 
     def handle_data(self, data):
         super().handle_data(data)
@@ -102,9 +107,13 @@ class ResearchPage(Page):
             if len(self.labeled_links) < 1000:
                 self.labeled_links.append(self.anchor)
             self.anchor = None
+        if tag == "h3":
+            self.in_card_title = False
+        if tag == "article":
+            self.in_listing_card = False
 
 
-def parse_html(raw, receipt):
+def parse_html(raw, receipt, *, listing_cards_only=False):
     charset = re.search(r"charset=[\"']?([\w-]+)", receipt["content_type"])
     text = raw.decode(charset[1] if charset else "utf-8")
     page = ResearchPage()
@@ -112,6 +121,8 @@ def parse_html(raw, receipt):
     content = "\n".join(" ".join(line.split()) for line in "".join(page.parts).splitlines() if line.strip())
     links = []
     for item in page.labeled_links:
+        if listing_cards_only and not item["listing_card"]:
+            continue
         try:
             links.append({"url": public_url(urljoin(receipt["url"], item["url"])),
                           "title": " ".join(item["title"].split())[:500]})
