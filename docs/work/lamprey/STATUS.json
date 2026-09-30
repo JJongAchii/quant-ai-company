@@ -96,7 +96,7 @@
         },
         {
           "path": "docs/project/FIRST-TASK-DATA-GAP-20260929.md",
-          "sha256": "c3e87edf7c1b"
+          "sha256": "755acf546efa"
         },
         {
           "path": "docs/project/evidence/research-programs-20260929/etf-input-contract-readback.json",
@@ -148,7 +148,7 @@
         },
         {
           "path": "docs/project/RESEARCH-PROGRAMS-POST-APPROVAL-20260929.md",
-          "sha256": "51e30b90bed4"
+          "sha256": "ddac9acf3b72"
         },
         {
           "path": "docs/project/evidence/research-programs-20260929/etf-data-evidence-note.json",
@@ -233,11 +233,59 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/source-guidance-live-prompt.json",
           "sha256": "1a415add969f"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-live-original-read.json",
+          "sha256": "c49d7c313028"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/third-task-data-assessment.json",
+          "sha256": "5271a6bdec7c"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/third-task-director-read-depth.json",
+          "sha256": "81703b8c9457"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/third-task-final-decision.json",
+          "sha256": "718cb26376ac"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-loop-diagnosis.json",
+          "sha256": "22fd67e82c8e"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/fourth-task-data-assessment.json",
+          "sha256": "711c44ac8459"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-cutover-precheck.json",
+          "sha256": "addec2cc0ae2"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-cutover.json",
+          "sha256": "21d989a7d11b"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-postcheck.json",
+          "sha256": "c803002d3eeb"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/fourth-task-director-read-depth.json",
+          "sha256": "395dcbd3fdc9"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/fourth-task-final-decision.json",
+          "sha256": "6a5761105d7a"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-postcutover-no-loop.json",
+          "sha256": "a3efeb730993"
         }
       ],
-      "note": "Signed owner program active. Third ETF task remains proposed after six rejected data attempts. Guarded source guidance worker cutover verified; the seventh live data prompt contains approved source-ID and packet-path guidance. No accepted assessment yet. Five data gaps block real-profile ready; zero missions, reservations and scientific trials.",
+      "note": "Signed owner program remains active. All four ETF tasks are waiting after independent blocked data assessments and director waits. Fourth director read two originals and the frozen engine; no fifth proposal appeared across three worker-active snapshots over 175 seconds after selection. Zero missions, reservations and scientific trials. Source timing, original bytes and execution evidence remain unresolved.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T06:32:43.181807+00:00"
+      "updatedAt": "2026-09-29T07:19:49.857221+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -392,16 +440,60 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-postcheck.json",
           "sha256": "4cdad6047ef4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-loop-diagnosis.json",
+          "sha256": "22fd67e82c8e"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-release-staged.json",
+          "sha256": "e030ef8ee056"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-built.json",
+          "sha256": "b17f280bea98"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-qualified.json",
+          "sha256": "04038c792c25"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-validation.json",
+          "sha256": "f92925a090c2"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-cutover-precheck.json",
+          "sha256": "addec2cc0ae2"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-cutover.json",
+          "sha256": "21d989a7d11b"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-postcheck.json",
+          "sha256": "c803002d3eeb"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-postcutover-no-loop.json",
+          "sha256": "a3efeb730993"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-no-loop-readback.py",
+          "sha256": "de3261c5c116"
+        },
+        {
+          "path": "docs/project/RESEARCH-PROGRAMS-POST-APPROVAL-20260929.md",
+          "sha256": "ddac9acf3b72"
         }
       ],
-      "note": "One-bounded data source ID correction passed 1371 local tests, lint and PR service CI. Guarded worker-only cutover to a09ce0f completed with zero running turns, stages, jobs, ambiguous model calls, missions and reservations; 12 installed source hashes and official ChatGPT route were read back. Other service container IDs stayed fixed.",
+      "note": "Program-wide packet evidence-version worker f1947f4 is live. The preceding proposal and post-cutover selection have the same evidence version, 11 source file hashes and selected ETF packet digest; three read-only snapshots over 175 seconds show no fifth proposal while worker heartbeats advanced. Regression 19 passed, full suite 1372 passed/13 skipped, lint and PR service CI passed.",
       "status": "verified",
-      "updatedAt": "2026-09-29T06:29:56.797567+00:00"
+      "updatedAt": "2026-09-29T07:19:49.857221+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T06:32:43.181807+00:00"
+  "updatedAt": "2026-09-29T07:19:49.857221+00:00"
 }

@@ -270,4 +270,54 @@ Codex 런타임은 다시 올라왔다. 종료 원인은 이 읽기 전용 조�
 7회차가 06:31 UTC에 시작됐다. 실제 모델 요청에 허용 출처 ID와 패킷 경로의
 차이를 알리는 두 문장이 포함됐다.
 [운영 요청 확인](evidence/research-programs-20260929/source-guidance-live-prompt.json).
-이 시도의 데이터 심사 결과는 아직 없다.
+서비스가 미완독 원문을 안내하자 데이터 직원은 같은 7회차에서 원문을 끝까지 읽고
+`coverage=true`, `point_in_time=false`, `executable_prices=false`,
+`original_conditions=false`의 `blocked` 심사를 제출했다. 패킷 해시만으로
+시점성과 실제 체결을 승인하지 않은 독립 판단이다.
+[원문 읽기](evidence/research-programs-20260929/source-guidance-live-original-read.json),
+[심사 영수증](evidence/research-programs-20260929/third-task-data-assessment.json).
+director는 제안 근거 논문·기존 연구 보고서·고정 엔진을 완독한 뒤 `wait`로
+선정 단계를 마쳤다. 고정 체결 방식과의 일치는 인정했고, 독립 데이터 차단은
+유지했다. 세 과제 모두 대기 중이며 미션·예약·과학 시행은 0건이다.
+[director 읽기](evidence/research-programs-20260929/third-task-director-read-depth.json),
+[선정 결과](evidence/research-programs-20260929/third-task-final-decision.json).
+
+선정 직후 별도 자료 유입 없이 새 제안 단계가 열린 이유를 조사했다. 제안 단계는
+ETF 패킷 두 건, 선정 단계는 해당 과제 패킷 한 건만 증거 버전에 넣어 서로 다른
+값을 만들었다. 같은 ETF 패킷의 digest와 원문 출처 ID 집합은 그대로였다.
+[반복 원인 영수증](evidence/research-programs-20260929/packet-version-loop-diagnosis.json).
+프로그램 전체 패킷 집합으로 동일한 증거 버전을 계산하도록 수정하고,
+두 envelope의 과제가 `wait`로 끝난 뒤 새 증거 없이 제안 단계를 만들지 않는
+실제 PostgreSQL 회귀 검사를 추가했다. 운영 적용은 검증 후 별도 영수증으로
+기록한다.
+
+수정 커밋 `f1947f4`는 회귀 19건, 전체 테스트 1,372건 통과·13건 건너뜀,
+lint 및 PR #87 서비스 CI 성공을 거쳤다. 07:03 UTC에 승인 digest와 서명된
+Slack 이벤트, 실행 중 턴·단계·작업·불확실한 모델 호출 0건을 재확인한 뒤
+연구 워커 한 개만 교체했다. 다른 서비스의 컨테이너 ID는 그대로였고,
+설치 소스 12개와 공식 ChatGPT runtime·ETF 패킷 경로를 읽어 확인했다.
+[후보 검증](evidence/research-programs-20260929/packet-version-worker-qualified.json),
+[안전 사전 검사](evidence/research-programs-20260929/packet-version-cutover-precheck.json),
+[워커 전환](evidence/research-programs-20260929/packet-version-worker-cutover.json),
+[적용 후 확인](evidence/research-programs-20260929/packet-version-worker-postcheck.json).
+
+전환 직전 이전 로직이 이미 만든 네 번째 ETF 과제는 새 워커에서 독립 데이터
+심사를 받았다. 범위 확인과 시점성·체결·원본 조건 미확인을 분리한 `blocked`
+판단이다.
+[네 번째 과제 데이터 심사](evidence/research-programs-20260929/fourth-task-data-assessment.json).
+director는 원문 두 건과 동결 엔진을 완독하고 이번 방법의 시가 간 평가 계약
+정합성을 인정했지만, 원천·변환 이력과 실제 신호 시점의 이용 가능성 증명이
+없어 `wait`로 마쳤다. 실제 주문 체결을 이론적 평가의 보증으로 오인하지
+않았으며 보류를 수익성 실패로 계상하지 않았다.
+[director 읽기](evidence/research-programs-20260929/fourth-task-director-read-depth.json),
+[최종 판단](evidence/research-programs-20260929/fourth-task-final-decision.json).
+네 과제 모두 `waiting`이고 미션·예약·과학 시행은 0건이다.
+
+선정이 끝난 뒤 175초 동안 워커 heartbeat가 갱신되는 상태에서 읽기 전용
+PostgreSQL 스냅샷을 세 번 확인했다. 과제·제안 단계는 각각 4개로 유지됐고
+다섯 번째 제안은 열리지 않았다. 이전 제안과 수정 후 선정 단계의 증거 버전,
+원문 11개 파일 해시, 선택된 ETF 패킷 digest가 같아 반복을 유발하던 단계별
+버전 차이가 사라졌다. 현재 자료를 기준으로 한 동작 확인이며 향후 새 원문이나
+패킷이 들어오면 새 제안은 승인된 프로그램 규칙에 따라 다시 가능하다.
+[운영 반복 방지 영수증](evidence/research-programs-20260929/packet-version-postcutover-no-loop.json),
+[재현 조회](evidence/research-programs-20260929/packet-version-no-loop-readback.py).
