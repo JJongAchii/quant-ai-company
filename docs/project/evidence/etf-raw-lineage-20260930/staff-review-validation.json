@@ -1,0 +1,58 @@
+{
+  "actual_completed_codex_turns": 34,
+  "completed_report_reads_by_actor": {
+    "data": 1,
+    "director": 1,
+    "researcher_kr": 1
+  },
+  "completed_stages": [
+    {
+      "actor": "researcher_kr",
+      "attempt": 1,
+      "id": "57faceef-485d-5d07-b388-a3a16548d260",
+      "stage": "program_proposal",
+      "state": "completed"
+    },
+    {
+      "actor": "data",
+      "attempt": 1,
+      "id": "be1421b1-2ad1-5755-816a-62f140ec1ef2",
+      "stage": "program_data",
+      "state": "completed"
+    },
+    {
+      "actor": "director",
+      "attempt": 1,
+      "id": "a663653c-638b-5611-873f-bdfc2e4469dc",
+      "stage": "program_selection",
+      "state": "completed"
+    }
+  ],
+  "data_assessment": {
+    "coverage": true,
+    "decision": "blocked",
+    "executable_prices": false,
+    "original_conditions": false,
+    "point_in_time": false
+  },
+  "data_readiness_granted": false,
+  "director_decision": "wait",
+  "exact_staff_report_files": 4,
+  "max_prompt_chars": 86138,
+  "mission_count": 0,
+  "new_report_sha256": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a",
+  "new_task_id": "3487f863-0d39-50a0-8fd5-15b67332a7a9",
+  "observed_at": "2026-09-30T12:06:45.110180+00:00",
+  "performance_computed_by_operator": false,
+  "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "readback_observed_at": "2026-09-30T12:03:11.962464+00:00",
+  "registry_sha256": "bdef77801a3b65f7588bf00a3916a1a67f7b7e59657db0f1587c8999842646a3",
+  "report_bytes": 14490,
+  "reservation_count": 0,
+  "schema_version": 1,
+  "scientific_trials": 0,
+  "staff_readback_sha256": "50b3bc9a5c7d951973f951444da303c63e347d843e6d71c315678dc1240ca43b",
+  "task_state_counts": {
+    "waiting": 8
+  }
+}
