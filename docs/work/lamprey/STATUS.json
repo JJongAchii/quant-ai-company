@@ -296,7 +296,7 @@
         },
         {
           "path": "docs/project/RESEARCH-PROGRAMS-CONTINUATION-20260930.md",
-          "sha256": "ad8387b192fc"
+          "sha256": "bfbc8232c2ef"
         },
         {
           "path": "docs/project/evidence/research-programs-20260930/trace-etf-provenance.py",
@@ -340,12 +340,76 @@
         },
         {
           "path": "docs/project/ETF-PROVENANCE-RECOVERY-20260930.md",
-          "sha256": "c80493d4dd39"
+          "sha256": "0be5334d6d96"
+        },
+        {
+          "path": "docs/project/ETF-RAW-LINEAGE-20260930.md",
+          "sha256": "e5d6052a4194"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/trace-raw-lineage.py",
+          "sha256": "b7d0c9e75ad3"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/raw-lineage-receipt.json",
+          "sha256": "f8a0595989be"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/raw-body-manifest.json",
+          "sha256": "d1d0b0f87230"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/raw-schema-and-keys.json",
+          "sha256": "d703d2fad3e4"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/network-rejection-note.json",
+          "sha256": "633f558e737c"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/read-attachment-precheck.py",
+          "sha256": "62114d9b6ed6"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/attachment-precheck.json",
+          "sha256": "924eb0ffd7fb"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/attachment-package.json",
+          "sha256": "2a4cc5cbf58a"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/attach-raw-lineage.py",
+          "sha256": "5f28d4a0f68e"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/raw-lineage-attached.json",
+          "sha256": "9df11d86eab4"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/raw-lineage-evidence-registry.json",
+          "sha256": "bdef77801a3b"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/read-raw-lineage-staff.py",
+          "sha256": "0bfb37371175"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/staff-readback-initial.json",
+          "sha256": "bd0e2691a220"
+        },
+        {
+          "path": "docs/project/evidence/etf-raw-lineage-20260930/validation.json",
+          "sha256": "554901cc3902"
+        },
+        {
+          "path": "tests/test_etf_raw_lineage_operator.py",
+          "sha256": "369d93daf9aa"
         }
       ],
-      "note": "Approved ETF raw metadata covers all 835 sessions; pinned transformation matches all 8350 rebased input rows. Original clean bytes and historical publication/revision vintages remain unverified. New report attached without changing inputs, engine or five blocking gaps. Researcher, data and director each completed its report read; 27 real Codex turns completed. Seven tasks waiting, zero missions/reservations/scientific trials.",
+      "note": "Actual bodies for exactly 835 approved sessions were conditionally downloaded and hashed. Pinned builders preserved 698359 raw rows; all 8350 approved input raw fields and rebased curve shapes matched. Selection using only 104 predevelopment sessions reproduced the approved ten tickers. A new report was atomically attached after installed-source and signed-contract checks, preserving all five blocking gaps and all original input/engine bindings. At initial live readback the researcher completed one new-report path; data/director review remained pending. Historical publication/revision receipts and preparation-time source bytes remain unverified; zero missions/reservations/scientific trials.",
       "status": "in_progress",
-      "updatedAt": "2026-09-30T08:18:17.740154+00:00"
+      "updatedAt": "2026-09-30T11:08:04.538990+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -587,7 +651,7 @@
         },
         {
           "path": "docs/project/RESEARCH-PROGRAMS-CONTINUATION-20260930.md",
-          "sha256": "ad8387b192fc"
+          "sha256": "bfbc8232c2ef"
         },
         {
           "path": "docs/project/evidence/research-programs-20260930/ci-recovered.json",
@@ -603,5 +667,5 @@
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-30T08:18:17.740154+00:00"
+  "updatedAt": "2026-09-30T11:08:04.538990+00:00"
 }
