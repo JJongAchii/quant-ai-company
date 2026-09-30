@@ -1,28 +1,17 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v2.json",
-  "state": "completed",
+  "currentIntent": "INTENT-v5.json",
+  "state": "director_natural_followup_release_prepared",
+  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/90",
   "deliverables": {
-    "CONTROL": {
-      "status": "completed"
-    },
-    "RUNTIME": {
-      "status": "completed"
-    },
-    "VALIDATION": {
-      "status": "completed"
-    },
-    "DEPLOYMENT": {
-      "status": "completed",
-      "commit": "fde7681e0286501d8713e08e30a96991a88b9151"
-    },
-    "ENROLLMENT": {
-      "status": "completed",
-      "method": "official_browser_oauth_over_ssh_callback",
-      "distinctAccountsVerified": true
-    }
+    "DIAGNOSIS": {"status": "completed"},
+    "APPLICATION": {"status": "completed", "integratedBase": "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9", "concurrentWorkerCommitIncluded": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801", "latestConcurrentReleaseIncluded": "ac44bf5b66b3016021e13c34ffc75b8db215bfc3"},
+    "VALIDATION": {"status": "completed", "focusedRealPostgresTests": 28, "lint": "passed"},
+    "REVIEW": {"status": "completed", "pr": "https://github.com/JJongAchii/quant-ai-company/pull/90"},
+    "LIVE_CHECK": {"status": "pending", "reason": "Integrated release is being qualified for production cutover"}
   },
-  "operationalStatus": "Private ai-account-switch channel active in production. The owner's explicit switch selected the backup ChatGPT account at revision 1, backup model calls completed, and an unsupported phrase received a deterministic Slack command guide without changing the selection. All 12 services healthy with no restarts.",
-  "evidence": "../../project/evidence/model-accounts-20260923/live-account-control.json"
+  "operationalStatus": "Natural owner progress questions still need the integrated company release on the app and model worker; prior messages are not replayed.",
+  "evidence": "../../project/evidence/director-natural-followup-20260929.json",
+  "previousIntent": "INTENT-v4.json"
 }

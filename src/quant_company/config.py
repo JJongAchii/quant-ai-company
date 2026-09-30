@@ -39,13 +39,18 @@ class Settings(BaseSettings):
     company_code_commit: str = "unknown"
     company_research_enabled: bool = False
     company_autonomous_research_enabled: bool = False
+    research_audit_max_turns: int = Field(default=64, ge=2, le=128)
+    research_audit_max_uncached_tokens: int = Field(default=750000, ge=10000, le=2000000)
+    research_audit_max_output_tokens: int = Field(default=100000, ge=1000, le=200000)
     # Operator-provisioned, immutable execution profiles. Never a model-selected path.
     research_profiles_file: Path | None = None
+    research_data_evidence_file: Path | None = None
     research_qlab_profile_file: Path | None = None
     research_worker_token: SecretStr = SecretStr("")
     research_artifact_dir: Path = Path("/var/lib/quant-company/research")
     research_report_bucket: str = ""
     research_report_prefix: str = "company/research/executions"
+    research_library_channel_id: str = ""
     research_s3_credentials_file: Path | None = None
     company_web_enabled: bool = True
     company_news_enabled: bool = False
@@ -89,7 +94,7 @@ class Settings(BaseSettings):
     staff_review_daily_limit: int = Field(default=2, ge=1, le=12)
     company_max_task_turns: int = Field(default=8, ge=1, le=30)
     company_max_depth: int = Field(default=3, ge=0, le=5)
-    # Zero disables the project-wide task quota.
+    # Zero disables the project-wide task quota; individual task and depth limits remain.
     company_max_project_tasks: int = Field(default=0, ge=0, le=500)
     company_model_timeout_seconds: int = Field(default=960, ge=10, le=1800)
     fixture_mode: bool = False

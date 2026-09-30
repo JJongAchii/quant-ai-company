@@ -1,0 +1,48 @@
+{
+  "constraints": [
+    "PostgreSQL and Temporal durable workflow; official subscription authentication",
+    "Preserve legacy mission digests and receipts",
+    "Heavy research only on approved 3070 worker; production and scientific program approval after reviewable preparation",
+    "Company evidence only in this repository; no secrets"
+  ],
+  "createdAt": "2026-09-28T05:35:06.895134+00:00",
+  "decisionGates": [
+    "Review exact deployment and first scientific program before activation"
+  ],
+  "deliverables": [
+    {
+      "id": "PLATFORM",
+      "description": "Program authority, literature, feedback and evaluator contracts",
+      "acceptance": [
+        "Authenticated bounded programs",
+        "Source read provenance and resolved independent challenges",
+        "ETF and stock worker protocol with typed evaluation"
+      ]
+    },
+    {
+      "id": "VALIDATION",
+      "description": "Integration and regression evidence",
+      "acceptance": [
+        "Real PostgreSQL and Temporal; fixture/live distinction",
+        "Budget, restart, isolation, causality, legacy compatibility"
+      ]
+    },
+    {
+      "id": "ROLLOUT",
+      "description": "Reviewable rollout and scientific program preparation",
+      "acceptance": [
+        "Versioned deployment and rollback runbook",
+        "Explicit live acceptance status and remaining external prerequisites"
+      ]
+    }
+  ],
+  "nonGoals": [],
+  "outcome": "Implement approved literature-grounded autonomous research programs: domestic ETFs and stocks, replication/claim/strategy evaluation, bounded program authority, independent feedback, immutable evidence, real integration checks and reviewable rollout.",
+  "revision": 1,
+  "schemaVersion": 1,
+  "slug": "lamprey",
+  "sourceRequest": "Implement the plan. Approved plan: 자료에서 가설·실험·협업·검증으로 이어지는 자율 연구 회사.",
+  "stopConditions": [
+    "Do not activate production or new scientific experiments before concrete review; preserve ambiguous effect receipts"
+  ]
+}

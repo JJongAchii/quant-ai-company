@@ -100,8 +100,13 @@ class ResearchRunner:
                 row = as_json(row)
         if row is None:
             from .controller import MissionController
+            from .program_controller import ProgramController
 
-            return MissionController(self.company).tick() if self.company.settings.company_autonomous_research_enabled else {"state": "idle"}
+            if not self.company.settings.company_autonomous_research_enabled:
+                return {"state": "idle"}
+            program = ProgramController(self.company).tick()
+            mission = MissionController(self.company).tick()
+            return mission if mission["state"] not in {"idle", "waiting"} else program
         from .report import build_report, validate_bundle
 
         assignment = Assignment(job_id=row["id"], project_id=row["project_id"], revision=row["revision"],

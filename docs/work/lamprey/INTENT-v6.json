@@ -1,0 +1,59 @@
+{
+  "constraints": [
+    "Only the signed Slack owner event authorizes this exact program digest and budget",
+    "Official ChatGPT authentication; no paid API credential or unsandboxed Codex fallback",
+    "PostgreSQL owns records, Temporal owns retry/timer execution, and each model request keeps a durable receipt",
+    "Company operational evidence belongs in this repository under docs/project/evidence"
+  ],
+  "createdAt": "2026-09-29T01:21:52.515610+00:00",
+  "decisionGates": [
+    "Signed owner event slack:T0C1YRDRPNF:C0C2B9EUEGM:1790641272.310813:director:action:21f480c4-d59f-45e7-ac2e-2cf91aa109e8:approve is recorded for program e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+    "Any research result still requires its own independent scientific and deployment audits before claims or allocation"
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "Match Slack action origin, allowed owner and channel, approval binding, message timestamp, project revision and frozen digest in production PostgreSQL",
+        "Confirm program active and no scientific work was attributed to the approval request before the signed event"
+      ],
+      "description": "Verify the owner-signed program approval and exact program binding",
+      "id": "OWNER_APPROVAL"
+    },
+    {
+      "acceptance": [
+        "Correct double account routing without changing account selection or secrets",
+        "Preserve failed and completed request receipts, keep complete-original citation validation, and allow partial reads to continue only within the same employee attempt",
+        "Verify exact source/image pins, worker-only cutovers, real PostgreSQL regression, full tests and lint"
+      ],
+      "description": "Repair the blocked official ChatGPT research path with durable receipts",
+      "id": "TECHNICAL_RECOVERY"
+    },
+    {
+      "acceptance": [
+        "Read back source-read receipts, typed task state and next independent data/selection stage from production records",
+        "Report scientific trial and budget usage exactly, with no backtest or strategy performance claim before audits",
+        "Keep uncertain execution receipts for reconciliation rather than replaying a charge or write"
+      ],
+      "description": "Observe the first source-grounded program task through independent data review or record the exact blocker",
+      "id": "PROGRAM_PROGRESS"
+    }
+  ],
+  "nonGoals": [
+    "No self-approval, manual scientific trial, paper/live allocation, 5090 fallback or strategy performance claim"
+  ],
+  "outcome": "Verify the signed approval of the exact first research program, restore its official ChatGPT execution path, and observe the first evidence-grounded proposal and independent checks without weakening source or science gates.",
+  "revision": 6,
+  "revisionReason": "Signed Slack owner approval activated the bounded research program; post-approval execution exposed account routing and source-read retry defects.",
+  "schemaVersion": 1,
+  "slug": "lamprey",
+  "sourceRequest": "slack 에서 승인 눌렀음",
+  "stopConditions": [
+    "Stop worker replacement while any model turn or research job is active or uncertain",
+    "Do not relax complete original source reads or exact program budget and profile pins",
+    "Preserve and reconcile ambiguous external charges or writes before any replacement request"
+  ],
+  "supersedes": {
+    "intentDigest": "b1427cdb9ab5",
+    "intentFile": "INTENT-v5.json"
+  }
+}

@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 from uuid import uuid4
 
 import pytest
@@ -92,7 +93,9 @@ async def test_brief_collection_timer_survives_worker_restart(temporal_environme
 
 
 @pytest.mark.integration
-async def test_real_temporal_data_worker_freezes_numbers_for_model_consumer(brief, temporal_environment):  # noqa: F811
+@pytest.mark.parametrize("standalone", [False, True])
+async def test_real_temporal_data_worker_freezes_numbers_for_model_consumer(
+        brief, temporal_environment, monkeypatch, standalone):  # noqa: F811
     from datetime import timedelta
 
     from quant_company.briefing.data import BriefDataCollector
@@ -109,7 +112,34 @@ async def test_real_temporal_data_worker_freezes_numbers_for_model_consumer(brie
     reader = BriefDataCollector(store.company, lambda root, e: snapshot(e))
     client = temporal_environment.client
     queue = store.company.settings.temporal_task_queue+"-brief-data"
-    async with make_brief_data_worker(client, store.company, reader):
+    async with contextlib.AsyncExitStack() as stack:
+        if standalone:
+            from quant_company import runtime
+
+            async def connect(settings):
+                return client
+
+            def worker(client, company):
+                return make_brief_data_worker(client, company, reader)
+
+            def unrelated_worker(*args, **kwargs):
+                raise AssertionError("Standalone brief data process must not start unrelated workers")
+
+            monkeypatch.setattr(runtime, "Company", lambda settings: store.company)
+            monkeypatch.setattr(runtime, "connect", connect)
+            monkeypatch.setattr(runtime, "make_brief_data_worker", worker)
+            monkeypatch.setattr(runtime, "make_worker", unrelated_worker)
+            monkeypatch.setattr(runtime, "make_research_worker", unrelated_worker)
+            process = asyncio.create_task(runtime.brief_data_worker_main(store.company.settings))
+
+            async def stop():
+                process.cancel()
+                with contextlib.suppress(asyncio.CancelledError):
+                    await process
+
+            stack.push_async_callback(stop)
+        else:
+            await stack.enter_async_context(make_brief_data_worker(client, store.company, reader))
         handle = await client.start_workflow(BriefDataWorkflow.run, id=queue, task_queue=queue)
         try:
             async with asyncio.timeout(15):

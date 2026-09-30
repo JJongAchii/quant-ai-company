@@ -1,0 +1,1 @@
+{"checks": [], "company_commit": "b4b9304129c80aa45fe4f9eb5419dfed4362e6fd", "failure_code": "git-command-failed", "failure_type": "WorkspaceError", "host": "DESKTOP-5T00NAF", "observed_at": "2026-09-28T07:15:26.754416+00:00", "scientific_trials_added": 0, "state": "blocked"}

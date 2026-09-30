@@ -1,0 +1,55 @@
+{
+  "constraints": [
+    "PostgreSQL and Temporal durable workflow; official subscription authentication",
+    "Preserve legacy mission digests and receipts",
+    "Heavy research only on approved 3070 worker; production and scientific program approval after reviewable preparation",
+    "Company evidence only in this repository; no secrets"
+  ],
+  "createdAt": "2026-09-28T07:07:34.235654+00:00",
+  "decisionGates": [
+    "Review exact deployment and first scientific program before activation"
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "Pinned qdata API reads and input SHA for both markets",
+        "Point-in-time selection and explicit nontrading/coverage receipts",
+        "No development performance read or silent sample replacement"
+      ],
+      "description": "Real ETF and stock inputs with causal quality evidence",
+      "id": "DATA_PROFILES"
+    },
+    {
+      "acceptance": [
+        "New evaluator code and real input identities prepared on isolated 3070",
+        "Actual qualification stays distinct from scientific execution",
+        "Active worker configuration and previous release preserved"
+      ],
+      "description": "Isolated worker profile and release preparation",
+      "id": "WORKER_QUAL"
+    },
+    {
+      "acceptance": [
+        "Typed program draft with exact profile and scope digests",
+        "Source and server prerequisites verified or explicitly unresolved",
+        "No production activation or scientific trial without its decision gate"
+      ],
+      "description": "Reviewable first research program and honest live status",
+      "id": "PROGRAM_DRAFT"
+    }
+  ],
+  "nonGoals": [],
+  "outcome": "Prepare real point-in-time Korean ETF and stock inputs, pin executable worker profiles, and produce a validated first research program draft with exact remaining deployment and scientific approval requirements.",
+  "revision": 2,
+  "revisionReason": "User authorized next preparation step: pin real Korean equity/ETF data and worker profiles, validate provenance, and prepare a reviewable first research program without activation",
+  "schemaVersion": 1,
+  "slug": "lamprey",
+  "sourceRequest": "다음 진행해 그럼 — continue the approved research company plan through real data and first-program preparation.",
+  "stopConditions": [
+    "Do not activate production or new scientific experiments before concrete review; preserve ambiguous effect receipts"
+  ],
+  "supersedes": {
+    "intentDigest": "94e00c09e763",
+    "intentFile": "INTENT-v1.json"
+  }
+}

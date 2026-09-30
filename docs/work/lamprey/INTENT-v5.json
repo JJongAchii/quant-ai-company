@@ -1,0 +1,60 @@
+{
+  "constraints": [
+    "Python 3.11+, FastAPI, PostgreSQL and Temporal durable execution; official ChatGPT subscription authentication",
+    "Keep company code/evidence in this repository and preserve legacy missions, receipts and uncertain effects",
+    "Use the approved 3070 only for heavy research; retain exact source, profile and input pins",
+    "No secrets in Git or tool output; do not self-approve the Slack program or start a scientific trial"
+  ],
+  "createdAt": "2026-09-28T23:09:13.779216+00:00",
+  "decisionGates": [
+    "Fresh owner approval for exact release 382284512ade2c0750c79494389a0899d2b46688 and program approval-request posting is pending",
+    "Signed Slack owner approval of program digest 53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b is required before scientific trials"
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "Reobserve server and 3070 active images, config SHA, profile SHA, source, mission and uncertain job states; stop on drift",
+        "Verify exact 3822845 bundle, quant-data archive, candidate image labels, worker release and four warmup receipts",
+        "Back up PostgreSQL, runtime config, research state and current 3070 config/unit before active cutover"
+      ],
+      "description": "Fresh live preflight and durable rollback baseline for release 3822845",
+      "id": "PRE_ACTIVATION"
+    },
+    {
+      "acceptance": [
+        "Apply additive migration and reviewed profile registry, then select matched server images and 3070 release while retaining previous versions",
+        "Verify live API, Slack signed ingress, Temporal worker, Codex subscription path and research control without scientific execution",
+        "Record rollback or fail-closed state if any external effect is uncertain"
+      ],
+      "description": "Exact integrated server and 3070 release activation",
+      "id": "ACTIVATION"
+    },
+    {
+      "acceptance": [
+        "Post program digest 53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b with four envelopes and 24-trial/36000-second/6-mission/1-parallel bounds to the configured owner channel",
+        "Read back the posted approval identity and source/project binding",
+        "Do not click the approval button, self-approve or start any scientific trial; report the exact pending state"
+      ],
+      "description": "Post bounded program owner-approval request",
+      "id": "PROGRAM_REQUEST"
+    }
+  ],
+  "nonGoals": [
+    "No scientific trial, deployment to 5090, live order or strategy performance claim in this revision"
+  ],
+  "outcome": "After fresh owner approval, activate exact company release 382284512ade2c0750c79494389a0899d2b46688 on the existing Lightsail and 3070 with rollback receipts, verify live paths, then post the unchanged bounded first research program for separate signed Slack owner approval without starting scientific trials.",
+  "revision": 5,
+  "revisionReason": "Reviewed 2b4034 activation stopped when the active 3070 release moved to 2e1b5c78; integrated and qualified a new exact 3822845 candidate for fresh owner review.",
+  "schemaVersion": 1,
+  "slug": "lamprey",
+  "sourceRequest": "Follow-up to the owner-approved deployment after the active 3070 release changed; new exact candidate requires fresh review.",
+  "stopConditions": [
+    "Stop activation if either server or 3070 exact active pins drift again or backups fail",
+    "Preserve and reconcile uncertain external writes or charges rather than automatically replaying them",
+    "Stop before any scientific trial until a separate signed Slack owner approval of this exact program is recorded"
+  ],
+  "supersedes": {
+    "intentDigest": "5bd4603853d3",
+    "intentFile": "INTENT-v4.json"
+  }
+}

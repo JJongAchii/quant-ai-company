@@ -1,0 +1,136 @@
+{
+  "target_commit": "a09ce0fa70021bb497a844d1aa4dfb8a15cb1f4b",
+  "target_image": "quant-company-autonomous:a09ce0fa70021bb497a844d1aa4dfb8a15cb1f4b-verified",
+  "target_image_id": "sha256:3bc24a25c86f38cdf0c811a3c44a3ef65dbd047f5d757fece4bbf6344ffe4f81",
+  "phase": "active",
+  "started_at": "2026-09-29T06:31:12.076975+00:00",
+  "before": {
+    "quant-company-worker-1": {
+      "id": "3b30b47df5fb",
+      "image": "quant-company-autonomous:a09ce0fa70021bb497a844d1aa4dfb8a15cb1f4b"
+    },
+    "quant-company-api-1": {
+      "id": "be7e02287166",
+      "image": "quant-company:dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf"
+    },
+    "quant-company-dispatch-1": {
+      "id": "c774f1e466d7",
+      "image": "quant-company:dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf"
+    },
+    "quant-company-quant-feed-worker-1": {
+      "id": "081d43562fbd",
+      "image": "quant-company:dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf"
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "5eeb16f5b680",
+      "image": "quant-company-codex:dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf"
+    },
+    "quant-company-slack-socket-1": {
+      "id": "3b9ad1e60c01",
+      "image": "quant-company:eec5e2326dc5ecfcfe8bc7a98840afec0820242a"
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "cbf51d0f25f7",
+      "image": "quant-company-codex:d790b2ecf203b63a76425b8b2703c9d10250ff44"
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "b900ca1d55f3",
+      "image": "quant-company:0e09b852e6a36e2fee52fb1cc7baab1c83a757ce"
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "7df307ee748d",
+      "image": "quant-company:c54667e2827506d50b4cbfaa63d924f2b69f21ab"
+    },
+    "quant-company-maintenance-1": {
+      "id": "7266163c1e81",
+      "image": "quant-company-maintenance:837ac72a76cf94625afa2b4ccbee5eb103ae6e03"
+    },
+    "quant-company-account-gateway-1": {
+      "id": "54b595660ad3",
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03"
+    },
+    "quant-company-news-worker-1": {
+      "id": "879e0263e71a",
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03"
+    },
+    "quant-company-claude-runtime-1": {
+      "id": "02252b5adc5f",
+      "image": "quant-company-claude:fde7681e0286501d8713e08e30a96991a88b9151"
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076",
+      "image": "bb3e1a57e540"
+    }
+  },
+  "active_before": [
+    0,
+    0,
+    0
+  ],
+  "config_backup": "/var/lib/quant-company/config/runtime.env.program-token-a09.before",
+  "after": {
+    "quant-company-worker-1": {
+      "id": "6f148beb022d",
+      "image": "quant-company-autonomous:a09ce0fa70021bb497a844d1aa4dfb8a15cb1f4b-verified"
+    },
+    "quant-company-api-1": {
+      "id": "be7e02287166",
+      "image": "quant-company:dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf"
+    },
+    "quant-company-dispatch-1": {
+      "id": "c774f1e466d7",
+      "image": "quant-company:dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf"
+    },
+    "quant-company-quant-feed-worker-1": {
+      "id": "081d43562fbd",
+      "image": "quant-company:dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf"
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "5eeb16f5b680",
+      "image": "quant-company-codex:dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf"
+    },
+    "quant-company-slack-socket-1": {
+      "id": "3b9ad1e60c01",
+      "image": "quant-company:eec5e2326dc5ecfcfe8bc7a98840afec0820242a"
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "cbf51d0f25f7",
+      "image": "quant-company-codex:d790b2ecf203b63a76425b8b2703c9d10250ff44"
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "b900ca1d55f3",
+      "image": "quant-company:0e09b852e6a36e2fee52fb1cc7baab1c83a757ce"
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "7df307ee748d",
+      "image": "quant-company:c54667e2827506d50b4cbfaa63d924f2b69f21ab"
+    },
+    "quant-company-maintenance-1": {
+      "id": "7266163c1e81",
+      "image": "quant-company-maintenance:837ac72a76cf94625afa2b4ccbee5eb103ae6e03"
+    },
+    "quant-company-account-gateway-1": {
+      "id": "54b595660ad3",
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03"
+    },
+    "quant-company-news-worker-1": {
+      "id": "879e0263e71a",
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03"
+    },
+    "quant-company-claude-runtime-1": {
+      "id": "02252b5adc5f",
+      "image": "quant-company-claude:fde7681e0286501d8713e08e30a96991a88b9151"
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076",
+      "image": "bb3e1a57e540"
+    }
+  },
+  "unrelated_ids_unchanged": true,
+  "active_after": [
+    0,
+    0,
+    0
+  ],
+  "completed_at": "2026-09-29T06:31:15.521475+00:00"
+}

@@ -103,7 +103,7 @@ class BackendHarness(Harness):
 
     def respond(self, row, payload=None, *, read_path=None, offset=0):
         with self.company.db.transaction() as conn:
-            turn = conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued' ORDER BY sequence LIMIT 1",
+            turn = conn.execute("SELECT id FROM turns WHERE task_id=%s AND status IN ('queued','running') ORDER BY sequence LIMIT 1",
                                 (row["task_id"],)).fetchone()
         identity = str(turn["id"])
         assert self.company.prepare_turn(identity)["state"] == "ready"
@@ -206,9 +206,18 @@ class BackendHarness(Harness):
     def audit_response(self, *, read=True, verdict="pass"):
         row, snapshot = self.schedule()
         if read:
-            for name, item in row["context"]["_audit"]["required_reads"].items():
-                for offset in range(0, max(1, item["characters"]), 12000):
-                    row = self.respond(row, read_path=name, offset=offset)
+            from quant_company.research.audit_delivery import packet_data
+
+            while True:
+                with self.company.db.transaction() as conn:
+                    turn = conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                        (row["task_id"],)).fetchone()
+                prepared = self.company.prepare_turn(str(turn["id"]))
+                data = packet_data(prepared["request"]["prompt"])
+                if data["phase"] == "final":
+                    break
+                row = self.respond(row, {"packet_digest": data["packet_digest"],
+                                         "notes": "Synthetic fixture reviewed; no actual research judgment."})
         value = row["context"]["audit"]
         frontmatter = {key: value[key] for key in ("judge", "target", "issued", "scope", "scope_digest", "objective_digest")}
         frontmatter.update(verdict=verdict, findings=[] if verdict == "pass" else [
@@ -300,18 +309,29 @@ def test_actual_failure_receipt_is_separate_from_trials_and_unchanged_repair_is_
     assert len(h.snapshot()["attempts"]) == 2 and h.snapshot()["cumulative_trials"] == 0
 
 
-@pytest.mark.parametrize("failure", ["unread", "unverified", "missing_qlab"])
+@pytest.mark.parametrize("failure", ["unread", "unverified", "fail", "missing_qlab"])
 def test_missing_read_evidence_and_nonpass_audit_cannot_publish(backend_fixture, failure):
     h = backend_fixture
     h.build()
     h.deliver()
     assert h.backend.reconcile()["state"] == "received"
     h.interpret_current()
-    row, snapshot = h.audit_response(read=failure != "unread", verdict="unverified" if failure == "unverified" else "pass")
-    if failure == "missing_qlab":
-        h.company.settings.research_qlab_profile_file = None
-    with pytest.raises(ValueError):
-        h.backend.apply_stage(row, snapshot)
+    if failure == "unread":
+        with pytest.raises(ValueError, match="audit_packet_review_invalid"):
+            h.audit_response(read=False)
+    else:
+        row, snapshot = h.audit_response(verdict=failure if failure in {"fail", "unverified"} else "pass")
+        if failure == "missing_qlab":
+            h.company.settings.research_qlab_profile_file = None
+            with pytest.raises(ValueError):
+                h.backend.apply_stage(row, snapshot)
+        else:
+            assert h.backend.apply_stage(row, snapshot) == {
+                "state": "waiting", "verdict": failure, "requires_remediation": True}
+            assert h.stage_row()["context"]["_audit_hold"]["verdict"] == failure
+            for _ in range(3):
+                assert h.controller.tick()["state"] == "waiting"
+            assert h.stage_row()["attempt"] == row["attempt"]
     assert not h.snapshot()["publications"]
     with h.company.db.transaction() as conn:
         assert conn.execute("SELECT count(*) AS n FROM sources WHERE id LIKE 'mission-report:%'").fetchone()["n"] == 0

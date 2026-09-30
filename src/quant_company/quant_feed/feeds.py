@@ -7,6 +7,15 @@ from xml.etree import ElementTree as ET
 from ..news.feeds import canonical_url
 from .originals import download, parse_html
 
+_TWO_SIGMA_NON_RESEARCH = re.compile(
+    r"\b(?:office hours|named ceo|careers?|interns?|phd fellows|fellowship|chief people officer|"
+    r"leadership changes|announces acquisition|podcast|games we love|music room|world cup)\b", re.I)
+
+
+def obvious_nonresearch_title(source_id, title):
+    """High-precision source-specific exclusions; ambiguous titles still get reviewed."""
+    return source_id == "two-sigma" and bool(_TWO_SIGMA_NON_RESEARCH.search(title))
+
 
 def collect(source, downloader=download):
     try:
@@ -41,8 +50,9 @@ def collect(source, downloader=download):
                                                          for a in item.get("author", [])][:20],
                                              "metadata_only": True}})
         else:
-            _, _, links = parse_html(raw, receipt)
+            _, _, links = parse_html(raw, receipt, listing_cards_only=source.id == "two-sigma")
             entries = [{**item, "metadata": {}} for item in links if source.selects(item["url"])
+                       and not obvious_nonresearch_title(source.id, item["title"])
                        and canonical_url(item["url"]) != canonical_url(source.url) and len(item["title"]) > 6]
         unique = {}
         for entry in entries:

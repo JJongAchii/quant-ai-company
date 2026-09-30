@@ -1,0 +1,68 @@
+{
+  "company_commit": "b4b9304129c80aa45fe4f9eb5419dfed4362e6fd",
+  "data": {
+    "kr_etf": {
+      "development_rows": 7310,
+      "input_files": {
+        "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574",
+        "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81"
+      },
+      "nontrading_rows": 0,
+      "profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+      "receipt_sha256": "c4dfc0bcd294ccbf4fe7b42d6fe957f453eda6a017c17edda648b1922778713a",
+      "warmup_rows": 1040
+    },
+    "kr_stock": {
+      "development_rows": 14620,
+      "input_files": {
+        "development.json": "1a0802b498d29e0a4557e0e1ac1c2c205dc33ad2e013bab70b65b0d54484fd85",
+        "warmup.json": "9ee0e7cf017ef4b81b2028d8d9b09616d8ade89fd9706374b4ed6d053fd7d442"
+      },
+      "nontrading_rows": 194,
+      "profile_digest": "07056f8607ea990c09de6ade29a6230f60c3c0055c980728d95705e538dd21a3",
+      "receipt_sha256": "b087961ecfd4975f66672b95835d1002e809e85dc1a1b6f324fdd88501f57d94",
+      "warmup_rows": 4520
+    }
+  },
+  "prepared_worker_config_sha256": "c0f8ee6186170ca496ee3e084b6b2ebeb8dcc90a8c5b5810baaf4602cb9e08e8",
+  "production_profiles_registered": false,
+  "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "qualification": {
+    "etf_claim": {
+      "manifest_sha256": "d30c2a98e58cc1c58d415cc9688d3f2ba6c9bb8c6a55d2417d6a9aba70d1cb57",
+      "qualification_sha256": "806760d72b28bc1805c506da8e6552a8191d9578ffa67567e29ffec6bb53e103",
+      "sample_count": 104,
+      "sandbox_spec_digest": "2a8f04eb42b884d2b30dc64f6cdbc35c741f2f8494a52a011607a10ec53c5a73"
+    },
+    "etf_strategy": {
+      "manifest_sha256": "d503cfdb7d30c3cf39fcd6218dfbfbc5f1749870d9a04b2e8f5ecbcc6e0da069",
+      "qualification_sha256": "c290480b02b7503c6f1d08d42adce2f7685ff4c6d30a4740739150e9339b4aca",
+      "sample_count": 104,
+      "sandbox_spec_digest": "bc98ba54686492cc6dd166795aff0d2a8a9d2c11183622b984586d29f02d8ee3"
+    },
+    "stock_claim": {
+      "manifest_sha256": "378bf0e9b61d7f9092a01f00b3ce71f6cb030ec362368a67358d2e47230b52b7",
+      "qualification_sha256": "a89523d1a3e28d0cb6f3505db6bf8ed4adf5595ffe298a28eeed220e454a2c8d",
+      "sample_count": 226,
+      "sandbox_spec_digest": "eaf611c93f4e480159765f9ce5ee16d919bec3fb70b8f0dbac31a3ae16e98b4c"
+    },
+    "stock_strategy": {
+      "manifest_sha256": "aff8952ce05e035080a85f4e260b8368813eb60f1831590232be454a9169ba9b",
+      "qualification_sha256": "6be8341c700ebe461d56d1d79073e9489da8ce9989ce56f4632bc43a943ff019",
+      "sample_count": 226,
+      "sandbox_spec_digest": "38bc8351159e0d56056c7961b69e5af608943afe9c292f2c243953e85ea37304"
+    }
+  },
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "sealed_read": false,
+  "source_anchor_verified_in_live_project": false,
+  "state": "real_input_and_warmup_qualification_verified_predeployment",
+  "tests": {
+    "failed": 0,
+    "junit_sha256": "388fa2a1232bd8a89a0d4c53b89fb59af6d336a6df2460c480e2fa00e93af8a4",
+    "passed": 1237,
+    "skipped": 13
+  },
+  "worker_active_config_sha256": "e615f9ffcda1732cb69dd7e1cb2146f50300cb0098d63e3f859168d7e0c2006b"
+}

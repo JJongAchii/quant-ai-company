@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "scope": "production Lightsail candidate only",
+  "commit": "a7ddf0ec5ee2b7e681dfe1046160140a68be1b82",
+  "bundle_sha256": "fe867f09b22068c667f88b672bf56fbab3e4dca03f3b4d1d82a2881685138706",
+  "candidate_source_staged_at": "2026-09-29T01:41:35.275812+00:00",
+  "program_controller_sha256": "bbb48087c931f1fd569fd2b00e163536ce1bad6fdf5490b1119f849e3d9b7875",
+  "candidate_image_built_at": "2026-09-29T01:45:16.112302+00:00",
+  "candidate_image": "quant-company-autonomous:a7ddf0ec5ee2b7e681dfe1046160140a68be1b82",
+  "candidate_image_id": "sha256:78f51d2bc747bc241a5bc445562536b66baba2b9c4502d00d72e43bd913a0539",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "build_log_sha256": "4b25a722b04ac6863e9e73cd6af1e486b16d344665bcfe535c791a33828ee95d",
+  "candidate_runtime_prepared_at": "2026-09-29T01:45:59.194002+00:00",
+  "active_runtime_sha256": "56513a47d061be784f0a01cdcc7e3a7a5d03e87ba8032de537eda1ab866b8d73",
+  "candidate_runtime_sha256": "028eabd467f76aa0ee7e98f042d23349c7e465a87505e48bbbd275e2e6206515",
+  "candidate_worker_route": "http://codex-runtime:8080",
+  "active_release_at_preparation": "2d2ee42ffc41dabb505020ada896e4d9760a8ab1",
+  "services_recreated": false
+}

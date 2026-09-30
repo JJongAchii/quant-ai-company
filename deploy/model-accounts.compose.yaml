@@ -20,7 +20,8 @@ services:
   worker:
     image: ${PINNED_COMPANY_WORKER_IMAGE:?Preserve the current research worker image}
     environment:
-      MODEL_RUNTIME_URL: http://account-gateway:8080
+      # This worker already selects the account when MODEL_ACCOUNTS_ENABLED=true.
+      MODEL_RUNTIME_URL: http://codex-runtime:8080
     depends_on:
       account-gateway:
         condition: service_healthy

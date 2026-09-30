@@ -272,6 +272,23 @@ services:
     depends_on:
       postgres: {condition: service_healthy}
 
+  briefing-data-worker:
+    <<: *app
+    profiles: [briefing]
+    command: [quant-company, briefing-data-worker]
+    environment:
+      <<: [*db-env, *temporal-env]
+      AWS_SHARED_CREDENTIALS_FILE: /run/secrets/lake_read_credentials
+      AWS_DEFAULT_REGION: ap-northeast-2
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+    secrets: [database_password, temporal_api_key, lake_read_credentials]
+    networks: [core, service_egress]
+    mem_limit: 192m
+    cpus: 0.25
+    depends_on:
+      postgres: {condition: service_healthy}
+
   news-worker:
     <<: *app
     command: [quant-company, news-worker]
@@ -295,7 +312,7 @@ services:
     command: [quant-company, quant-feed-worker]
     environment:
       <<: [*db-env, *temporal-env]
-      MODEL_RUNTIME_URL: http://codex-runtime:8080
+      MODEL_RUNTIME_URL: http://quant-codex-runtime:8080
       MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
       SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
       SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
@@ -305,7 +322,7 @@ services:
     cpus: 0.5
     depends_on:
       postgres: {condition: service_healthy}
-      codex-runtime: {condition: service_healthy}
+      quant-codex-runtime: {condition: service_healthy}
 
   dispatch:
     <<: *app
@@ -323,7 +340,7 @@ services:
 
   codex-runtime:
     <<: *runtime
-    image: quant-company-codex:${RELEASE_COMMIT:-unqualified}
+    image: ${PINNED_CODEX_RUNTIME_IMAGE:-quant-company-codex:${RELEASE_COMMIT:-unqualified}}
     build:
       context: ..
       dockerfile: deploy/Dockerfile
@@ -349,6 +366,44 @@ services:
       - ${STATE_DIR:-/var/lib/quant-company}/codex/jobs:/state/jobs
     networks: [model, model_egress]
     mem_limit: ${CODEX_MEMORY_LIMIT:-1g}
+    cpus: 1.0
+    stop_grace_period: 360s
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
+  quant-codex-runtime:
+    <<: *runtime
+    profiles: [quant-feed]
+    image: quant-company-codex:${RELEASE_COMMIT:-unqualified}
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      target: codex
+      additional_contexts:
+        qdata: ${QDATA_BUILD_CONTEXT:-../../quant-data}
+      args:
+        RELEASE_COMMIT: ${RELEASE_COMMIT:-unqualified}
+        QDATA_COMMIT: ${QDATA_COMMIT:-unqualified}
+    environment:
+      CODEX_HOME: /state/auth
+      CODEX_BACKUP_HOME: /state/backup-auth
+      CODEX_BIN: codex
+      CODEX_JOBS_DIR: /state/jobs
+      CODEX_TIMEOUT_SECONDS: ${CODEX_TIMEOUT_SECONDS:-900}
+      WEB_CONCURRENCY: "1"
+      WORKERS: "1"
+      MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
+    secrets: [model_runtime_token]
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/codex/auth:/state/auth
+      - ${STATE_DIR:-/var/lib/quant-company}/codex/backup-auth:/state/backup-auth
+      - ${STATE_DIR:-/var/lib/quant-company}/codex/jobs:/state/jobs
+    networks: [model, model_egress]
+    mem_limit: 1g
     cpus: 1.0
     stop_grace_period: 360s
     healthcheck:

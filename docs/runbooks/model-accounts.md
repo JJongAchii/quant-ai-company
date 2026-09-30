@@ -61,9 +61,10 @@
    모델 runtime token을 추가하지 않는다.
    연구 코드가 고정된 worker를 유지할 때는 그 컨테이너의 정확한 image를
    `PINNED_COMPANY_WORKER_IMAGE`에 기록하고 `model-accounts.compose.yaml`을 마지막 overlay로
-   적용한다. private `account-gateway`가 기존 worker의 모델 요청을 DB의 선택 계정으로 보내고
-   별도 계정 제어 Temporal queue도 담당한다. worker의 이미지와 `COMPANY_CODE_COMMIT`은 유지한다.
-   해당 worker의 URL만 gateway로 바뀌며, 다른 최신 클라이언트는 기존 Codex runtime을 사용한다.
+   적용한다. `MODEL_ACCOUNTS_ENABLED=true`인 worker는 PostgreSQL에서 계정을 선택해
+   Codex runtime으로 직접 보낸다. account-gateway는 별도 계정 제어 Temporal queue를 담당한다.
+   계정을 이미 선택한 worker 요청을 gateway로 다시 보내면 HTTP 401이 발생한다.
+   worker의 이미지와 `COMPANY_CODE_COMMIT`은 유지한다.
    이전 worker는 계정 대기를 30초 간격으로 다시 확인하되 실제 모델 cooldown은 DB에 보존한다.
    첫 배포 전에 기록된 타이머는 한 번 기존 남은 시간을 기다릴 수 있다.
 7. 실제 소유자가 전용 채널에서 상태 → 예비 전환을 보낸다. 적용 기록과 다음 정상 업무 응답을

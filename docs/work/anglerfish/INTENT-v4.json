@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 4,
+  "sourceRequest": "업무 한도 40건은 뭐냐? 이런거 제한 제거해버려",
+  "outcome": "Remove the default project-wide 40-task quota from Slack ingress, owner control and employee delegation, then verify the production research worker can use the same policy without changing historical research receipts.",
+  "deliverables": [
+    {"id": "APPLICATION", "description": "Zero means no project-wide task quota; retain per-task turn and delegation-depth bounds"},
+    {"id": "VALIDATION", "description": "Real PostgreSQL tests past task 40, full suite and lint"},
+    {"id": "RELEASE", "description": "Review and qualify app and research-capable worker images with preserved job pins and rollback receipts"},
+    {"id": "LIVE_CHECK", "description": "Read back actual acceptance and Slack delivery of a new question in the affected thread"}
+  ],
+  "constraints": [
+    "Preserve existing research job company commits, release registry and uncertain external-effect receipts",
+    "Do not replay previously rejected Slack messages",
+    "No credentials or Slack message bodies in evidence",
+    "Company evidence stays in this repository"
+  ],
+  "workspace": "Existing isolated qws attachment; historical Quant provenance is unchanged.",
+  "previousIntent": "INTENT-v3.json"
+}

@@ -4,12 +4,14 @@ services:
   api:
     environment:
       COMPANY_AUTONOMOUS_RESEARCH_ENABLED: ${COMPANY_AUTONOMOUS_RESEARCH_ENABLED:-false}
+      RESEARCH_LIBRARY_CHANNEL_ID: ${RESEARCH_LIBRARY_CHANNEL_ID:-}
       RESEARCH_PROFILES_FILE: /etc/quant-company/research-profiles.json
     volumes:
       - ${STATE_DIR:-/var/lib/quant-company}/config/research-profiles.json:/etc/quant-company/research-profiles.json:ro
   slack-socket:
     environment:
       COMPANY_AUTONOMOUS_RESEARCH_ENABLED: ${COMPANY_AUTONOMOUS_RESEARCH_ENABLED:-false}
+      RESEARCH_LIBRARY_CHANNEL_ID: ${RESEARCH_LIBRARY_CHANNEL_ID:-}
       RESEARCH_PROFILES_FILE: /etc/quant-company/research-profiles.json
       RESEARCH_ARTIFACT_DIR: /state/research
     volumes:
@@ -21,7 +23,9 @@ services:
       target: autonomous-research
     environment:
       COMPANY_AUTONOMOUS_RESEARCH_ENABLED: ${COMPANY_AUTONOMOUS_RESEARCH_ENABLED:-false}
+      RESEARCH_LIBRARY_CHANNEL_ID: ${RESEARCH_LIBRARY_CHANNEL_ID:-}
       RESEARCH_PROFILES_FILE: /etc/quant-company/research-profiles.json
+      RESEARCH_DATA_EVIDENCE_FILE: /state/research/provisioned/data-evidence/registry.json
       RESEARCH_QLAB_PROFILE_FILE: /etc/quant-company/research-qlab.json
     volumes:
       - ${STATE_DIR:-/var/lib/quant-company}/config/research-profiles.json:/etc/quant-company/research-profiles.json:ro

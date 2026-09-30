@@ -1,0 +1,35 @@
+{
+  "approved_source_content_sha256": "aaffedd1643b16ec0a97d5f4bb0ef6084c6fc0fdc2b4ad75f707b808d0725379",
+  "approved_source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+  "bounds": {
+    "max_compute_seconds": 36000,
+    "max_missions": 6,
+    "max_parallel_missions": 1,
+    "max_total_trials": 24
+  },
+  "created_at": "2026-09-28T08:09:50.785332+00:00",
+  "deployment_review_packet_sha256": "f3bf2b1103cdaa42ab9ce2815723700fa9a405d6e881c9f61fc122845a2cad6a",
+  "employee_hypothesis_and_peer_review_required_after_approval": true,
+  "envelopes": [
+    "etf_strategy",
+    "etf_claim",
+    "stock_strategy",
+    "stock_claim"
+  ],
+  "exact_replication_envelope_included": false,
+  "first_question_digest": "9897cc62a2af1088071940c8c596eec954871b88e541db5eb20057a2237ab15d",
+  "first_question_envelope": "etf_strategy",
+  "first_question_file": "first-question-draft.json",
+  "first_question_mode": "novel_hypothesis",
+  "live_existing_mission_preserved": true,
+  "live_program_table_exists": false,
+  "program_approval_received": false,
+  "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "program_file": "first-program-draft.json",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "schema_version": 1,
+  "scientific_trials_started": false,
+  "source_prior_baseline_measured": false,
+  "source_prior_scientific_trials_added": 0,
+  "state": "owner_review_required_not_submitted"
+}

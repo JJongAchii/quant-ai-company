@@ -77,6 +77,11 @@ class AgentDecision(StrictModel):
         return self
 
 
+class ProviderSession(StrictModel):
+    id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,80}$")
+    previous_request_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9_-]{1,80}$")
+
+
 class ProviderRequest(StrictModel):
     request_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,80}$")
     model: str = Field(min_length=1, max_length=80)
@@ -84,6 +89,17 @@ class ProviderRequest(StrictModel):
     reasoning_effort: ReasoningEffort | None = None
     prompt: str = Field(min_length=1, max_length=90000)
     web_search: bool = False
+    # Service-owned continuation, resolved against durable runtime receipts.
+    session: ProviderSession | None = None
+    output_contract: Literal["agent_decision", "quant_brief_v1", "quant_brief_v2", "quant_brief_v3", "quant_brief_v4",
+                             "quant_critique_v1", "quant_critique_v2"] = "agent_decision"
+
+    @model_validator(mode="after")
+    def scoped_output(self):
+        if self.output_contract != "agent_decision" and (
+                not self.request_id.startswith("quant-feed-") or self.web_search):
+            raise ValueError("Quant structured output requires a tool-free Quant request")
+        return self
 
 
 class WebSearchEvent(StrictModel):

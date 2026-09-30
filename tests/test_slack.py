@@ -140,7 +140,48 @@ def test_status_request_works_without_inference_during_quota_pause(company, cred
     assert all(turn["attempts"] == 0 for turn in state["turns"])
 
 
-def test_signed_slack_question_after_forty_tasks_queues_a_turn(company, credentials):
+@pytest.mark.parametrize("phrase", ["진행상황이 어떻게되니?", "진행상황이 어떻게되?",
+                                    "진행상황이 어떻게 되니?", "진행중이야?"])
+def test_natural_progress_question_enters_conversation_router(company, credentials, phrase):
+    seed = company.ingest(event_key="seed", text="Research", owner="UHUMAN",
+                          channel="CQUANT", thread_ts="100.001")
+    payload = event(credentials, text=phrase, ts="101.001", thread_ts="100.001", type="message")
+    raw, headers = signed(payload, credentials["director"])
+    client = TestClient(create_app(company.settings, company, credentials))
+    response = client.post("/slack/events/director", content=raw, headers=headers)
+    assert response.status_code == 200
+    assert response.json()["project_id"] == seed["project_id"]
+    assert client.post("/slack/events/director", content=raw, headers=headers).json()["duplicate"] is True
+    state = company.project_state(seed["project_id"])
+    assert len(state["turns"]) == 2
+    assert any(task["kind"] == "routing" and task["instruction"] == phrase
+               for task in state["tasks"])
+    assert not any(message["kind"] == "status" and message["author"] == "director"
+                   for message in state["messages"])
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
+
+
+def test_slack_question_at_project_task_limit_gets_one_visible_notice(company, credentials):
+    company.settings.company_max_project_tasks = 1
+    seed = company.ingest(event_key="seed", text="Research", owner="UHUMAN",
+                          channel="CQUANT", thread_ts="100.001")
+    payload = event(credentials, text="새 질문입니다", ts="101.001", thread_ts="100.001", type="message")
+    raw, headers = signed(payload, credentials["director"])
+    client = TestClient(create_app(company.settings, company, credentials))
+    response = client.post("/slack/events/director", content=raw, headers=headers)
+    assert response.status_code == 200
+    assert response.json()["project_id"] == seed["project_id"]
+    assert client.post("/slack/events/director", content=raw, headers=headers).json()["duplicate"] is True
+    state = company.project_state(seed["project_id"])
+    assert len(state["turns"]) == 1
+    assert any(message["kind"] == "status" and "새 스레드" in message["text"]
+               for message in state["messages"])
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 1
+
+
+def test_slack_question_after_forty_tasks_queues_a_real_turn(company, credentials):
     assert company.settings.company_max_project_tasks == 0
     seed = company.ingest(event_key="seed", text="Research", owner="UHUMAN",
                           channel="CQUANT", thread_ts="100.001")
@@ -154,3 +195,4 @@ def test_signed_slack_question_after_forty_tasks_queues_a_turn(company, credenti
     assert response.status_code == 200
     state = company.project_state(seed["project_id"])
     assert len(state["turns"]) == 42
+    assert not any("업무 한도" in message["text"] for message in state["messages"])

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9",
+  "pull_request_head_after_main_merge": "716cbc180b2b959dc6f91a4e805ad4003708c4c1",
+  "critical_runtime_files_identical_between_candidate_and_pull_request_head": [
+    "src/quant_company/research/controller.py",
+    "src/quant_company/research/program_controller.py",
+    "deploy/compose.yaml",
+    "deploy/model-accounts.compose.yaml"
+  ],
+  "local_pre_main_merge_full_suite": {
+    "command": "uv run pytest -q",
+    "passed": 1307,
+    "skipped": 13,
+    "warnings": 2,
+    "result": "pass"
+  },
+  "local_post_main_merge_full_suite": {
+    "command": "uv run pytest -q",
+    "passed": 1307,
+    "skipped": 13,
+    "warnings": 2,
+    "result": "pass"
+  },
+  "post_main_merge_focused_tests": {
+    "command": "uv run pytest -q tests/test_research_programs.py deploy/test_deployment_contract.py",
+    "passed": 39,
+    "result": "pass"
+  },
+  "ruff": "pass",
+  "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/87",
+  "pull_request_service_ci": "SUCCESS",
+  "pull_request_merge_state": "CLEAN",
+  "scientific_performance_claims": 0
+}

@@ -11,6 +11,7 @@ from pydantic import AfterValidator, ConfigDict, Field, FiniteFloat, field_valid
 
 from ..contracts import StrictModel
 from .contracts import Commit, Digest
+from .evaluation import EvaluationSpec
 
 
 def relative_path(value: str) -> str:
@@ -53,9 +54,17 @@ class DateWindow(MissionModel):
 
 
 class Objective(MissionModel):
-    metric: Literal["stress-net-absolute-cagr"]
-    direction: Literal["maximize"]
-    unit: Literal["fraction-per-year"]
+    metric: Literal["stress-net-absolute-cagr", "absolute-replication-error", "mean-effect"]
+    direction: Literal["maximize", "minimize"]
+    unit: Literal["fraction-per-year", "fraction"]
+
+    @model_validator(mode="after")
+    def metric_contract(self):
+        expected = ("minimize", "fraction") if self.metric == "absolute-replication-error" else (
+            ("maximize", "fraction") if self.metric == "mean-effect" else ("maximize", "fraction-per-year"))
+        if (self.direction, self.unit) != expected:
+            raise ValueError("Objective direction or unit disagrees with metric")
+        return self
 
 
 class RiskConstraint(MissionModel):
@@ -104,7 +113,7 @@ class SearchPolicy(MissionModel):
 
 
 class MissionSpec(MissionModel):
-    schema_version: Literal[1] = 1
+    schema_version: Literal[1, 2] = 1
     title: Text
     kind: Literal["strategy", "model", "claim"]
     objective: Objective
@@ -121,9 +130,20 @@ class MissionSpec(MissionModel):
     resources: ResourcePolicy
     search: SearchPolicy
     baseline_source_ids: SourceIds
+    evaluation: EvaluationSpec | None = Field(default=None, exclude_if=lambda v: v is None)
+    market: Literal["kr_etf", "kr_stock"] | None = Field(default=None, exclude_if=lambda v: v is None)
 
     @model_validator(mode="after")
     def scope_consistency(self):
+        if self.schema_version == 2:
+            if self.evaluation is None or self.market is None or self.evaluation.metric != self.objective.metric:
+                raise ValueError("Version 2 requires a market and matching evaluation contract")
+            if (self.kind == "strategy") != (self.evaluation.kind == "strategy"):
+                raise ValueError("Strategy and scientific evaluation contracts cannot be mixed")
+            if self.kind != "strategy" and self.risk_constraints:
+                raise ValueError("Scientific effects are not executable portfolio risk measurements")
+        elif self.evaluation is not None or self.market is not None or self.objective.metric != "stress-net-absolute-cagr":
+            raise ValueError("New scientific contracts require mission version 2")
         if self.stress_cost_bps < self.base_cost_bps:
             raise ValueError("Stress cost must be at least the base cost")
         if len({risk.metric for risk in self.risk_constraints}) != len(self.risk_constraints):

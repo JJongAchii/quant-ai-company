@@ -88,6 +88,7 @@ def main():
     serve.add_argument("--port", type=int, default=8000)
     sub.add_parser("worker")
     sub.add_parser("data-watch-worker")
+    sub.add_parser("briefing-data-worker")
     sub.add_parser("housing-feed-worker")
     sub.add_parser("news-worker")
     sub.add_parser("quant-feed-worker")
@@ -147,6 +148,10 @@ def main():
         from .runtime import data_watch_worker_main
 
         asyncio.run(data_watch_worker_main(settings))
+    elif args.command == "briefing-data-worker":
+        from .runtime import brief_data_worker_main
+
+        asyncio.run(brief_data_worker_main(settings))
     elif args.command == "housing-feed-worker":
         from .runtime import housing_feed_worker_main
 

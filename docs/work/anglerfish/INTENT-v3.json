@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 3,
+  "sourceRequest": "Slack DM과 research-center 스레드에서 직원 답변이 돌아오지 않는 문제 조사",
+  "outcome": "Trace the named Slack messages through ingress, PostgreSQL, Temporal and the pinned worker; prepare a scoped repair that restores visible replies while preserving research execution and delivery receipts.",
+  "deliverables": [
+    {"id": "DIAGNOSIS", "description": "Real Slack and production readback for both linked threads"},
+    {"id": "APPLICATION", "description": "Durable progress responses and an owner-visible project-limit notice"},
+    {"id": "PINNED_WORKER", "description": "One-line outbound-role compatibility repair against the exact pinned research worker source"},
+    {"id": "VALIDATION", "description": "Real PostgreSQL regression tests, lint, and explicit simulated-versus-live evidence"},
+    {"id": "CUTOVER", "description": "Review current release and in-flight effects, then apply and verify only the approved production change"}
+  ],
+  "constraints": [
+    "Preserve the active research mission, old worker pin, stable turn IDs and ambiguous-effect receipts",
+    "Do not replay rejected Slack events or uncertain model/Slack effects automatically",
+    "No credentials, user message bodies or research performance figures in incident evidence",
+    "Company evidence stays in this repository; research integrations remain read-only"
+  ],
+  "workspace": "Existing isolated qws attachment; the historical Quant contract is unchanged.",
+  "approval": "Read-only diagnosis and local repair preparation are complete. Production cutover requires review under the autonomous-research runbook."
+}

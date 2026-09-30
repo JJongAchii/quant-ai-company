@@ -5,6 +5,7 @@ from __future__ import annotations
 import calendar
 import html
 import io
+import json
 import math
 import re
 import zipfile
@@ -70,8 +71,8 @@ class ValidatedAdaptiveTrial:
     result: AdaptiveResult
     profile: AdaptiveExecutionProfile
     contents: Mapping[str, bytes]
-    base: AdaptiveSeries
-    stress: AdaptiveSeries
+    base: AdaptiveSeries | None
+    stress: AdaptiveSeries | None
     archive_sha256: str
     archive: bytes
 
@@ -294,6 +295,19 @@ def validate_adaptive_bundle(
         _require(receipt.started_at <= start <= end <= receipt.completed_at, "sandbox_execution_time_mismatch")
         phases.append((start, end))
     _require(phases[0][1] <= phases[1][0], "qualification_not_before_evaluation")
+    _require(result.metrics.primary.model_dump(exclude={"value"}) == manifest.spec.objective.model_dump()
+             and qualification.primary_unit == manifest.spec.objective.unit, "result_objective_mismatch")
+    if result.observations is not None:
+        from .evaluation import evaluate_observations
+
+        _require(manifest.spec.evaluation is not None, "scientific_evaluation_required")
+        measured = evaluate_observations(contents[f"outputs/{result.observations}"],
+                                        manifest.spec.evaluation, manifest.spec.development)
+        _require(math.isclose(measured["value"], result.metrics.primary.value, rel_tol=0, abs_tol=1e-12)
+                 and measured["sample_count"] == result.metrics.sample_count
+                 and result.metrics.sample_window == manifest.spec.development, "scientific_measurement_mismatch")
+        return ValidatedAdaptiveTrial(manifest.model_copy(deep=True), receipt, qualification, result, profile,
+                                      MappingProxyType(contents), None, None, archive_sha, raw)
     base = _series(contents[f"outputs/{result.base_returns.path}"], manifest)
     stress = _series(contents[f"outputs/{result.stress_returns.path}"], manifest)
     _require(tuple(day for day, _ in base.daily) == tuple(day for day, _ in stress.daily),
@@ -375,13 +389,35 @@ def build_adaptive_report(
         eligible = [trial for trial in sorted(trials, key=lambda item: (item.receipt.started_at, str(item.manifest.trial_id)))
                     if all(trial.result.metrics.risks[risk.metric] <= risk.maximum
                            for risk in trial.manifest.spec.risk_constraints)]
-        best = max(eligible, key=lambda trial: trial.stress.absolute_cagr) if eligible else None
-        _require(history.best_trial_id == (best.manifest.trial_id if best else None), "reported_best_trial_mismatch")
+        best = max(eligible, key=lambda trial: trial.result.metrics.primary.value * (
+            -1 if trial.manifest.spec.objective.direction == "minimize" else 1)) if eligible else None
+        incumbent = next((trial for trial in eligible if trial.manifest.trial_id == history.best_trial_id), None)
+        # The audited company history preserves the earlier incumbent on a tie. Worker
+        # timestamps can coincide; UUID ordering cannot replace that durable decision.
+        _require((best is None and history.best_trial_id is None)
+                 or (best is not None and incumbent is not None
+                     and incumbent.result.metrics.primary.value == best.result.metrics.primary.value),
+                 "reported_best_trial_mismatch")
         for trial in trials:
             trial_id = str(trial.manifest.trial_id)
             role = "best" if trial.manifest.trial_id == history.best_trial_id else "candidate"
             if trial.manifest.trial_id == history.last_trial_id:
                 role += " / last"
+            if trial.result.observations is not None:
+                from .evaluation import evaluate_observations
+
+                measured = evaluate_observations(trial.contents[f"outputs/{trial.result.observations}"],
+                    trial.manifest.spec.evaluation, trial.manifest.spec.development)
+                summary["trials"].append({"trial_id": trial_id, "cycle": history.trial_cycles[trial_id],
+                    "selection": role, "code_commit": trial.receipt.code_commit,
+                    "archive_sha256": trial.archive_sha256, "evaluation": measured})
+                sections.append(f'<section><h2>{html.escape(trial_id)} · {role}</h2>'
+                    f'<p>평가: {html.escape(trial.manifest.spec.evaluation.kind)} · '
+                    f'{html.escape(measured["conclusion"])}</p>'
+                    f'<pre>{html.escape(json.dumps(measured, ensure_ascii=False, indent=2))}</pre>'
+                    '<p>월별 블록의 기술적 신뢰구간입니다. 누적 가설 탐색에 따른 다중검정 보정이나 '
+                    '미관측 구간 검증을 대신하지 않습니다.</p></section>')
+                continue
             item = {
                 "trial_id": trial_id, "cycle": history.trial_cycles[trial_id], "selection": role,
                 "code_commit": trial.receipt.code_commit, "archive_sha256": trial.archive_sha256,
@@ -408,6 +444,13 @@ def build_adaptive_report(
                 f'<tbody>{rows}</tbody></table><p>Exact code: <code>{trial.receipt.code_commit}</code></p></section>'
             )
         summary["audit"] = audit.public_receipt()
+    return_convention = (
+        '<p>initial-zero-calendar-cagr-v1: 첫 수익률은 0, 시작자산은 1. '
+        'CAGR = 최종자산^(365.25 / 실제 경과일수) − 1. 낙폭은 자산 / 누적 최고자산 − 1. '
+        '월 수익률은 월말 마지막 관측 자산 / 전월말 자산 − 1 (첫 달 분모 1).</p>'
+        '<p>월별 관측이 빠졌거나 전월 자산이 0이면 해당 월의 수익률은 미측정으로 표시합니다.</p>'
+        if any(trial.result.observations is None for trial in trials) else ''
+    )
     document = (
         '<!doctype html><html lang="ko"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
@@ -422,10 +465,7 @@ def build_adaptive_report(
         f'<p>누적 과학 시행 {history.cumulative_scientific_trials}회 · '
         f'기술 시도 {history.cumulative_technical_attempts}회 · 현재 cycle {history.current_cycle}.</p>'
         '<p>벤치마크·초과수익은 미측정입니다. 확증 통과 또는 실거래 성과를 뜻하지 않습니다.</p>'
-        '<p>initial-zero-calendar-cagr-v1: 첫 수익률은 0, 시작자산은 1. '
-        'CAGR = 최종자산^(365.25 / 실제 경과일수) − 1. 낙폭은 자산 / 누적 최고자산 − 1. '
-        '월 수익률은 월말 마지막 관측 자산 / 전월말 자산 − 1 (첫 달 분모 1).</p>'
-        '<p>월별 관측이 빠졌거나 전월 자산이 0이면 해당 월의 수익률은 미측정으로 표시합니다.</p>'
+        f'{return_convention}'
         f'{"".join(sections)}<footer><p>다음 단계: 승인된 목표와 연구 예산 안에서 근거를 검토하고 '
         '후속 가설을 선택합니다.</p></footer></body></html>'
     )

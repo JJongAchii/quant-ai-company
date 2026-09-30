@@ -260,6 +260,14 @@ async def data_watch_worker_main(settings=None):
         await asyncio.Event().wait()
 
 
+async def brief_data_worker_main(settings=None):
+    settings = settings or Settings()
+    company = Company(settings)
+    client = await connect(settings)
+    async with make_brief_data_worker(client, company):
+        await asyncio.Event().wait()
+
+
 async def housing_feed_worker_main(settings=None):
     settings = settings or Settings()
     company = Company(settings)

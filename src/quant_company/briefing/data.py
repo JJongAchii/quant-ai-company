@@ -1,4 +1,4 @@
-"""Credential-isolated data activity in the existing lake-enabled worker."""
+"""Credential-isolated data activity for the lake-enabled briefing worker."""
 
 import asyncio
 import json

@@ -1,0 +1,499 @@
+{
+  "approval": {
+    "approvedAt": "2026-09-29T01:21:52.515610+00:00",
+    "id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1790641272.310813:director:action:21f480c4-d59f-45e7-ac2e-2cf91aa109e8:approve"
+  },
+  "currentIntent": "INTENT-v6.json",
+  "deliverables": {
+    "OWNER_APPROVAL": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/research-programs-20260929/owner-approval-first-stage.json",
+          "sha256": "6c681f7efce4"
+        }
+      ],
+      "note": "Signed owner block action bound the exact program digest and set program active before any new scientific trial.",
+      "status": "verified",
+      "updatedAt": "2026-09-29T01:22:43.972894+00:00"
+    },
+    "PROGRAM_PROGRESS": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/research-programs-20260929/read-fix-cutover.json",
+          "sha256": "79b8ec78d7cf"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/same-attempt-source-continuation.json",
+          "sha256": "5b52bbfdd120"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-location-rejection.json",
+          "sha256": "0363480aee63"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/release-drift-safe-abort.json",
+          "sha256": "375bf8998105"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-integrated-candidate.json",
+          "sha256": "5e6e62ea34d2"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/second-release-drift-safe-abort.json",
+          "sha256": "8c1e3fe3bff4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-cutover.json",
+          "sha256": "b8f5c33d45ff"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-post-check.json",
+          "sha256": "70f1b286cd25"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-guidance-attempt11.json",
+          "sha256": "2df7b309c0d4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt11.json",
+          "sha256": "e870643a3688"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt12.json",
+          "sha256": "5a997ffc0f55"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-cutover.json",
+          "sha256": "459c316f1935"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-post-check.json",
+          "sha256": "fd0c8587762a"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-guidance-attempt13.json",
+          "sha256": "75839fc5b43e"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/first-task-independent-review.json",
+          "sha256": "0fd3c3fb25e4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/first-task-data-assessment.json",
+          "sha256": "a1e46b92dcb0"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/first-task-final-decision.json",
+          "sha256": "17d2f9a1cf22"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/first-task-wait-new-evidence.json",
+          "sha256": "9713eda8945e"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/new-literature-trigger.json",
+          "sha256": "29c002f78701"
+        },
+        {
+          "path": "docs/project/FIRST-TASK-DATA-GAP-20260929.md",
+          "sha256": "755acf546efa"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/etf-input-contract-readback.json",
+          "sha256": "d968bb626775"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/verify-etf-input-contract.py",
+          "sha256": "f35940658315"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/second-task-proposal-summary.json",
+          "sha256": "d0c28d1e4a1a"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/second-task-data-assessment.json",
+          "sha256": "42ee4b68422b"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/second-task-final-decision.json",
+          "sha256": "8893499919b6"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/etf-qdata-independent-readback.json",
+          "sha256": "7b18376afed4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/service-restart-recovery.json",
+          "sha256": "797e2bd73183"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-validation.json",
+          "sha256": "2c71dbdb5c38"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-cutover-held.json",
+          "sha256": "df5cb4a98b16"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-cutover.json",
+          "sha256": "ece9ca787115"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-post-check.json",
+          "sha256": "1dd3b8408bec"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/program-post-unread-source.json",
+          "sha256": "265d135cf0f3"
+        },
+        {
+          "path": "docs/project/RESEARCH-PROGRAMS-POST-APPROVAL-20260929.md",
+          "sha256": "ddac9acf3b72"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/etf-data-evidence-note.json",
+          "sha256": "c0b1635d6300"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/etf-data-evidence-registry.json",
+          "sha256": "3ff9e81e3f4c"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/etf-data-evidence-staged.json",
+          "sha256": "1dde504b7006"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-release-staged.json",
+          "sha256": "7ebd0ea19950"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-build.json",
+          "sha256": "c3dd4acf9118"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-qualified.json",
+          "sha256": "a7ce33d26e1a"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-cutover-precheck-final.json",
+          "sha256": "6d230f76e7e0"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-cutover.json",
+          "sha256": "7062a93ea7e5"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-postcheck.json",
+          "sha256": "3cea0563d689"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-postcheck-later.json",
+          "sha256": "997e5615326d"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-progress.json",
+          "sha256": "ac06cc645d92"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-researcher-read-depth.json",
+          "sha256": "731194257004"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/etf-s3-version-history-readback.json",
+          "sha256": "24970ad5f509"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-third-task-first-review.json",
+          "sha256": "6a54f377c39e"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/data-evidence-third-task-second-review.json",
+          "sha256": "32e5357961c1"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-precutover-stage.json",
+          "sha256": "d19a7547c47f"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-validation.json",
+          "sha256": "7e0a6c845a59"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-cutover-precheck.json",
+          "sha256": "a60553d4bb38"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-cutover.json",
+          "sha256": "43db89608b88"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-postcheck.json",
+          "sha256": "4cdad6047ef4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-live-prompt.json",
+          "sha256": "1a415add969f"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-live-original-read.json",
+          "sha256": "c49d7c313028"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/third-task-data-assessment.json",
+          "sha256": "5271a6bdec7c"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/third-task-director-read-depth.json",
+          "sha256": "81703b8c9457"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/third-task-final-decision.json",
+          "sha256": "718cb26376ac"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-loop-diagnosis.json",
+          "sha256": "22fd67e82c8e"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/fourth-task-data-assessment.json",
+          "sha256": "711c44ac8459"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-cutover-precheck.json",
+          "sha256": "addec2cc0ae2"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-cutover.json",
+          "sha256": "21d989a7d11b"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-postcheck.json",
+          "sha256": "c803002d3eeb"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/fourth-task-director-read-depth.json",
+          "sha256": "395dcbd3fdc9"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/fourth-task-final-decision.json",
+          "sha256": "6a5761105d7a"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-postcutover-no-loop.json",
+          "sha256": "a3efeb730993"
+        }
+      ],
+      "note": "Signed owner program remains active. All four ETF tasks are waiting after independent blocked data assessments and director waits. Fourth director read two originals and the frozen engine; no fifth proposal appeared across three worker-active snapshots over 175 seconds after selection. Zero missions, reservations and scientific trials. Source timing, original bytes and execution evidence remain unresolved.",
+      "status": "in_progress",
+      "updatedAt": "2026-09-29T07:19:49.857221+00:00"
+    },
+    "TECHNICAL_RECOVERY": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/research-programs-20260929/routing-diagnosis.json",
+          "sha256": "20c5ab2e168a"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/route-fix-cutover.json",
+          "sha256": "7f6408f5437f"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/artifact-format-rejection.json",
+          "sha256": "f41e55e9d06d"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-read-rejection.json",
+          "sha256": "7df71644ffce"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/read-fix-validation.json",
+          "sha256": "b17a3417b373"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/read-fix-image-build.json",
+          "sha256": "bfc3c377826c"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/read-fix-cutover.json",
+          "sha256": "79b8ec78d7cf"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/merge-validation.json",
+          "sha256": "649dcac4bed2"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/same-attempt-source-continuation.json",
+          "sha256": "5b52bbfdd120"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-integrated-validation.json",
+          "sha256": "c8eb0b63258c"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-candidate.json",
+          "sha256": "6536e7084bff"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-validation.json",
+          "sha256": "376a9ca4991b"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-cutover.json",
+          "sha256": "b8f5c33d45ff"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-post-check.json",
+          "sha256": "70f1b286cd25"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/citation-guidance-attempt11.json",
+          "sha256": "2df7b309c0d4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt11.json",
+          "sha256": "e870643a3688"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-candidate.json",
+          "sha256": "d2adefe52b55"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-validation.json",
+          "sha256": "b8bc0103abbb"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt12.json",
+          "sha256": "5a997ffc0f55"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-cutover.json",
+          "sha256": "459c316f1935"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-post-check.json",
+          "sha256": "fd0c8587762a"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/predecessor-guidance-attempt13.json",
+          "sha256": "75839fc5b43e"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/first-task-independent-review.json",
+          "sha256": "0fd3c3fb25e4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-stage.json",
+          "sha256": "40db713d0bb5"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-build.json",
+          "sha256": "9aa832a1159d"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-runtime.json",
+          "sha256": "9c9c88ce0f25"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-validation.json",
+          "sha256": "2c71dbdb5c38"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-cutover-held.json",
+          "sha256": "df5cb4a98b16"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-cutover.json",
+          "sha256": "ece9ca787115"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-post-check.json",
+          "sha256": "1dd3b8408bec"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/program-post-unread-source.json",
+          "sha256": "265d135cf0f3"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-release-staged.json",
+          "sha256": "abcaeee217c1"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-built.json",
+          "sha256": "86f0c426a429"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-qualified.json",
+          "sha256": "4028ef573874"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-validation.json",
+          "sha256": "7e0a6c845a59"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-cutover-precheck.json",
+          "sha256": "a60553d4bb38"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-cutover.json",
+          "sha256": "43db89608b88"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-postcheck.json",
+          "sha256": "4cdad6047ef4"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-loop-diagnosis.json",
+          "sha256": "22fd67e82c8e"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-release-staged.json",
+          "sha256": "e030ef8ee056"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-built.json",
+          "sha256": "b17f280bea98"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-qualified.json",
+          "sha256": "04038c792c25"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-validation.json",
+          "sha256": "f92925a090c2"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-cutover-precheck.json",
+          "sha256": "addec2cc0ae2"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-cutover.json",
+          "sha256": "21d989a7d11b"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-postcheck.json",
+          "sha256": "c803002d3eeb"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-postcutover-no-loop.json",
+          "sha256": "a3efeb730993"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260929/packet-version-no-loop-readback.py",
+          "sha256": "de3261c5c116"
+        },
+        {
+          "path": "docs/project/RESEARCH-PROGRAMS-POST-APPROVAL-20260929.md",
+          "sha256": "ddac9acf3b72"
+        }
+      ],
+      "note": "Program-wide packet evidence-version worker f1947f4 is live. The preceding proposal and post-cutover selection have the same evidence version, 11 source file hashes and selected ETF packet digest; three read-only snapshots over 175 seconds show no fifth proposal while worker heartbeats advanced. Regression 19 passed, full suite 1372 passed/13 skipped, lint and PR service CI passed.",
+      "status": "verified",
+      "updatedAt": "2026-09-29T07:19:49.857221+00:00"
+    }
+  },
+  "intentDigest": "b3c652b7b56b",
+  "schemaVersion": 1,
+  "slug": "lamprey",
+  "state": "approved",
+  "updatedAt": "2026-09-29T07:19:49.857221+00:00"
+}

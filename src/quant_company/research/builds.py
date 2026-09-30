@@ -8,7 +8,14 @@ from pydantic import Field
 
 from ..company import PolicyError
 from ..contracts import StrictModel
-from .adaptive_contracts import AdaptiveExecutionProfile, AdaptiveManifest, digest_model, record_digest
+from .adaptive_contracts import (
+    ADAPTIVE_RECIPE,
+    RESEARCH_RECIPE,
+    AdaptiveExecutionProfile,
+    AdaptiveManifest,
+    digest_model,
+    record_digest,
+)
 from .contracts import Commit, Digest
 from .mission_contracts import MissionSpec, TrialPlan
 from .worker import atomic_json, read_json, sha_file
@@ -141,7 +148,8 @@ def build_trial(company, row, snapshot):
         config_files={name: files[name] for name in profile.config_files}, input_files=spec.data.input_files,
         lake_id=spec.data.lake_id, development=spec.development, worker_id="worker",
         hostname="DESKTOP-5T00NAF", gpu="NVIDIA GeForce RTX 3070")
-    manifest = AdaptiveManifest(mission_id=snapshot["id"], mission_digest=snapshot["manifest_digest"],
+    manifest = AdaptiveManifest(id=RESEARCH_RECIPE if spec.schema_version == 2 else ADAPTIVE_RECIPE,
+        mission_id=snapshot["id"], mission_digest=snapshot["manifest_digest"],
         trial_id=trial_id, plan_digest=record_digest(plan), plan=plan, spec=spec, code_files=files,
         bundle_sha256=prepared.bundle_sha256, config_path=profile.config_path,
         company_commit=company.settings.company_code_commit)

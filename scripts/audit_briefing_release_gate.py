@@ -11,6 +11,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+RUNTIME_PATHS = ("src", "deploy", "slack-apps", "pyproject.toml", "uv.lock", "README.md", "AGENTS.md")
 
 
 def git(*args):
@@ -24,11 +25,46 @@ def snapshot(commit, target, archive):
         source.extractall(target, filter="data")
 
 
+def runtime_archive(commit, target):
+    """Export exact committed build inputs, not a substitute maintenance checkout."""
+    if target.exists():
+        raise ValueError("runtime_archive_exists")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="briefing-runtime-archive-") as temp:
+        archive = Path(temp) / "runtime.tar.gz"
+        with archive.open("wb") as output:
+            subprocess.run(["git", "archive", "--format=tar.gz", "--prefix=company/", commit,
+                            *RUNTIME_PATHS], cwd=ROOT, check=True, stdout=output)
+        inventory = {}
+        with tarfile.open(archive, "r:gz") as source:
+            for member in source.getmembers():
+                if member.isdir():
+                    continue
+                if not member.isfile():
+                    raise ValueError("runtime_archive_nonregular_file")
+                relative = Path(member.name).relative_to("company").as_posix()
+                inventory[relative] = {"bytes": member.size,
+                    "sha256": hashlib.sha256(source.extractfile(member).read()).hexdigest()}
+        total = sum(row["bytes"] for row in inventory.values())
+        if total > 32 * 1024 * 1024:
+            raise ValueError("runtime_archive_exceeds_installed_size_bound")
+        data = archive.read_bytes()
+        with target.open("xb") as output:
+            output.write(data)
+    return {"scope": "Runtime build inputs only; not a full checkout or maintenance-policy approval",
+            "commit": commit, "archive": str(target), "archive_sha256": hashlib.sha256(data).hexdigest(),
+            "compressed_bytes": len(data), "uncompressed_bytes": total, "files": inventory,
+            "historical_evidence": "Preserved in Git, excluded from runtime build inputs",
+            "host_modified": False}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--previous", required=True, help="commit installed on the host")
     parser.add_argument("--candidate", required=True, help="reviewable candidate commit")
     parser.add_argument("--output", type=Path, help="optional JSON receipt path")
+    parser.add_argument("--runtime-archive", type=Path,
+                        help="optional bounded runtime artifact; does not authorize a protected release")
     args = parser.parse_args()
     previous = git("rev-parse", "--verify", args.previous + "^{commit}")
     candidate = git("rev-parse", "--verify", args.candidate + "^{commit}")
@@ -76,6 +112,8 @@ def main():
             "host_modified": False,
         }
 
+    if args.runtime_archive:
+        receipt["runtime_artifact"] = runtime_archive(candidate, args.runtime_archive)
     rendered = json.dumps(receipt, ensure_ascii=False, indent=2) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

@@ -67,7 +67,8 @@ def services(root):
     accounts = any(line.strip() == 'MODEL_ACCOUNTS_ENABLED=true'
                    for line in envfile.read_text().splitlines()) if envfile.exists() else False
     return (SERVICES + (['claude-runtime'] if enabled and supported else [])
-            + (['quant-feed-worker'] if quant else []) + (['data-watch-worker'] if data else [])
+            + (['quant-codex-runtime', 'quant-feed-worker'] if quant else [])
+            + (['data-watch-worker'] if data else [])
             + (['housing-feed-worker'] if housing else [])
             + (['account-gateway'] if accounts else []))
 
@@ -201,6 +202,7 @@ def health(commit, postgres_id):
     configuration = dict(line.split('=', 1) for line in envfile.read_text().splitlines()
                          if '=' in line and not line.lstrip().startswith('#')) if envfile.exists() else {}
     pinned = configuration.get('PINNED_COMPANY_WORKER_IMAGE') if configuration.get('MODEL_ACCOUNTS_ENABLED') == 'true' else None
+    codex_pin = configuration.get('PINNED_CODEX_RUNTIME_IMAGE')
     rows = json.loads(run(['docker', 'inspect', *['quant-company-'+s+'-1' for s in ['postgres', *services(CURRENT.resolve())]]]))
     for row in rows:
         state = row['State']
@@ -213,6 +215,10 @@ def health(commit, postgres_id):
             if (row['Config'].get('Image') != pinned
                     or row['Config']['Labels'].get('org.opencontainers.image.revision') != pinned.rsplit(':', 1)[-1]):
                 raise ValueError('release_pinned_worker_changed')
+        elif row['Name'] == '/quant-company-codex-runtime-1' and codex_pin:
+            if (row['Config'].get('Image') != codex_pin
+                    or row['Config']['Labels'].get('org.opencontainers.image.revision') != codex_pin.rsplit(':', 1)[-1]):
+                raise ValueError('release_pinned_codex_changed')
         elif row['Config']['Labels'].get('org.opencontainers.image.revision') != commit:
             raise ValueError('release_image_revision_mismatch')
     return {'healthy_services': len(rows), 'postgres_recreated': False}

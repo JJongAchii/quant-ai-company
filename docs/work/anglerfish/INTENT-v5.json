@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 5,
+  "sourceRequest": "총괄이 승인한 새 연구의 진행 여부에 자연스럽게 답하도록 할 수 없느냐",
+  "outcome": "Route natural owner progress questions to a contextual director answer and expose current approved research program progress without changing research authority or replaying old Slack messages.",
+  "deliverables": [
+    {"id": "DIAGNOSIS", "description": "Read affected production ingress, routing, program and stage records"},
+    {"id": "APPLICATION", "description": "Keep bare status command deterministic; give natural follow-ups a model answer with current program state"},
+    {"id": "VALIDATION", "description": "Signed Slack, wrong model classification and approved program progress regression in real PostgreSQL"},
+    {"id": "REVIEW", "description": "Prepare focused PR and research-safe release plan for owner review"},
+    {"id": "LIVE_CHECK", "description": "After approved activation, verify a new natural Slack question and delivered contextual answer"}
+  ],
+  "constraints": [
+    "Preserve existing approved research program and historical job pins",
+    "Do not replay previous Slack questions or expose unverified research metrics",
+    "Respect the reviewed research deployment runbook before live cutover"
+  ],
+  "workspace": "Existing isolated qws attachment; company evidence stays in this repository.",
+  "previousIntent": "INTENT-v4.json"
+}
