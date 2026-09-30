@@ -1,17 +1,40 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v5.json",
-  "state": "director_natural_followup_release_prepared",
-  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/90",
+  "currentIntent": "INTENT-v6.json",
+  "state": "program_planning_recovered_data_gate_pending",
+  "previousIntent": "INTENT-v5.json",
   "deliverables": {
-    "DIAGNOSIS": {"status": "completed"},
-    "APPLICATION": {"status": "completed", "integratedBase": "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9", "concurrentWorkerCommitIncluded": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801", "latestConcurrentReleaseIncluded": "ac44bf5b66b3016021e13c34ffc75b8db215bfc3"},
-    "VALIDATION": {"status": "completed", "focusedRealPostgresTests": 28, "lint": "passed"},
-    "REVIEW": {"status": "completed", "pr": "https://github.com/JJongAchii/quant-ai-company/pull/90"},
-    "LIVE_CHECK": {"status": "pending", "reason": "Integrated release is being qualified for production cutover"}
+    "DIAGNOSIS": {
+      "status": "completed"
+    },
+    "APPLICATION": {
+      "status": "completed",
+      "integratedCommit": "73fcfc34a6876e0a80c14fa72edae2cdb8413b0c",
+      "localDuplicateDiscarded": true
+    },
+    "VALIDATION": {
+      "status": "completed",
+      "focusedRealPostgresTests": 33,
+      "lint": "passed"
+    },
+    "REVIEW": {
+      "status": "completed",
+      "reason": "Concurrent reviewed deployment already active; no additional cutover requested"
+    },
+    "LIVE_CHECK": {
+      "status": "completed",
+      "task": "f173f628-29f6-5ad7-b94c-f673676e812f",
+      "turnsCompleted": 10,
+      "stageState": "completed"
+    }
   },
-  "operationalStatus": "Natural owner progress questions still need the integrated company release on the app and model worker; prior messages are not replayed.",
-  "evidence": "../../project/evidence/director-natural-followup-20260929.json",
-  "previousIntent": "INTENT-v4.json"
+  "operationalStatus": "Same stalled proposal completed and registered; new independent data stage running. Five previous candidates waiting; program missions zero.",
+  "evidence": "../../project/evidence/program-recovery-readback-20260930.json",
+  "nextStage": {
+    "stage": "program_data",
+    "task": "fc13b603-ad76-5644-9fa8-800323883726",
+    "candidate": "b5ce3cb7-d71b-5720-9f2d-72c9b1df7d18",
+    "observedAt": "2026-09-30T06:45:41.490290Z"
+  }
 }

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 6,
+  "sourceRequest": "이어서 진행해줘",
+  "outcome": "Verify recovery of the approved research program after a concurrent integrated worker fix; preserve evidence and identify the remaining data-readiness gate.",
+  "deliverables": [
+    {
+      "id": "DIAGNOSIS",
+      "description": "Read production stage, turn and dispatch receipts"
+    },
+    {
+      "id": "APPLICATION",
+      "description": "Integrate deployed prior-task navigation fix; discard duplicate local implementation"
+    },
+    {
+      "id": "VALIDATION",
+      "description": "Real PostgreSQL continuation and full history identity regression; full company tests and lint"
+    },
+    {
+      "id": "REVIEW",
+      "description": "Record exact deployed source and operational receipt"
+    },
+    {
+      "id": "LIVE_CHECK",
+      "description": "After reviewed activation verify the same queued turn resumes without replay"
+    }
+  ],
+  "constraints": [
+    "No changes to program digest, frozen inputs, evaluator, roles, account selection or scientific budget",
+    "No uncertain charge/write replay; keep existing stable turn ID",
+    "Company evidence stays in this repository"
+  ],
+  "workspace": "Existing isolated qws attachment",
+  "previousIntent": "INTENT-v5.json"
+}
