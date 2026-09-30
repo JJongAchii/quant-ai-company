@@ -109,7 +109,9 @@ class ResearchBrief(StrictModel):
     change: Literal["new", "cosmetic", "material", "correction", "retraction"] = "new"
     change_summary: str = Field(default="", max_length=700)
     related_urls: list[str] = Field(default_factory=list, max_length=8)
-    evidence: list[Evidence] = Field(default_factory=list, max_length=12)
+    # Atomic field-bound statements can use all 36 slots across the nine fields.
+    # Legacy model-written evidence protocols retain their own 12-entry limit.
+    evidence: list[Evidence] = Field(default_factory=list, max_length=36)
 
     @field_validator("related_urls")
     @classmethod

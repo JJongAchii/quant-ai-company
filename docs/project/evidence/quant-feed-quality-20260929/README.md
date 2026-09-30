@@ -29,3 +29,37 @@ no Slack writes; and a source/quality/operations readback before any publication
 approval. The existing 48-hour operational clock will restart if the deployed Quant
 code or policy changes. Passing software tests or a single positive preview does
 not establish long-run curation precision.
+
+## 30 September continuation
+
+The v19 HARN subscription case passed after one editorial revision (six calls,
+including the negative control). Its operational preservation check failed because
+the shared dispatch was crash-looping; the publication count and release link stayed
+unchanged. The later v19 LOB case preserved all services and held at deterministic
+validation: review selected 16 atomic source statements, and its sole technical repair
+selected 13. Both exceeded the inherited 12-entry legacy evidence limit before any
+positive semantic critique. These failures remain in their immutable receipts.
+
+The field-bound schema already permits 36 atomic statements across nine fields.
+Policy v20 aligns the derived evidence capacity with those existing field limits,
+while retaining exact span validation, the 2,400-character rendered-card limit and
+the independent semantic critic. Legacy model-written evidence protocols still cap
+their entries at 12. The renderer groups research design/results, warnings and
+application; its footer merges extraction chunks into exact PDF page coverage.
+Every original statement and detailed source binding remains stored.
+
+The dispatch fault was a read-only JSON bind mount whose host source was an empty
+directory, created on 23 September. API and dispatch alone were recreated from the
+same images and environment after verifying no `sending` outbox row. The directory
+was retained privately and replaced with the documented unregistered calendar `[]`.
+The first post-check erroneously compared ordered environment lists; reconciliation
+checked the unchanged Compose values, source file, exact images and independent
+service IDs without repeating the repair. Both services recovered with zero restarts.
+The overlay now prevents Docker from auto-creating a directory for a missing file;
+the Quant release also refuses a non-file calendar before stopping services.
+
+The scoped release supports upgrading the installed dedicated Quant runtime using
+its own dependency-identical image, and restores it on a safe rollback. It preserves
+the separately owned general runtime and workers. Posting stays disabled. The prior
+48-hour observation is invalidated by the dispatch outage and the pending policy
+update; a new clock begins only after a verified all-running cutover.

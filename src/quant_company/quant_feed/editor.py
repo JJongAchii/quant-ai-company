@@ -70,7 +70,8 @@ into separate statements, each with its own sources. Never replace a needed span
 room for a different result; add another statement. Use basis=qualified_gap with no span_ids only for a clearly
 qualified omission in the supplied text; do not claim the full original lacks it. Use basis=interpretation with
 no span_ids only for a conditional editorial application or limitation, not for author results or numeric facts.
-Keep at most 12 source-backed statements in the whole brief. Every author-reported result and number must be in
+Respect each field's statement limit and the rendered-card budget; do not add unnecessary statements.
+Every author-reported result and number must be in
 its own source-backed statement. Preserve unaffected statements and their span_ids in a revision; correct only
 the criticized statement and any other statement containing the same error. No unsupported performance,
 invented links, broad copied passages, or buy/sell instructions.
@@ -302,8 +303,6 @@ def _bound_brief(draft, pages, corrections, *, context_clipped=False):
         for field in ("idea", "author_results"):
             if not any(item["field_path"].startswith(field + "[") for item in evidence):
                 issues.append({"code": "quant_central_claim_requires_source", "field": field})
-        if len(evidence) > 12:
-            issues.append({"code": "quant_too_many_source_statements", "field": "evidence"})
     if issues:
         raise ProposalValidationError(draft, issues)
     try:
@@ -467,6 +466,27 @@ def validate(response, bundle, stage, *, audit=None):
     return brief
 
 
+def display_locations(locations):
+    """Collapse PDF extraction chunks to exact page coverage for the Slack footer."""
+    pages, other = set(), []
+    for location in dict.fromkeys(locations):
+        match = re.fullmatch(r"PDF p\.(\d+)(?: \[\d+/\d+\])?", location)
+        if match:
+            pages.add(int(match[1]))
+        else:
+            other.append(location)
+    ranges = []
+    for page in sorted(pages):
+        if ranges and page == ranges[-1][1] + 1:
+            ranges[-1][1] = page
+        else:
+            ranges.append([page, page])
+    if ranges:
+        other.insert(0, "PDF p." + ", ".join(str(start) if start == end else f"{start}–{end}"
+                                            for start, end in ranges))
+    return " · ".join(other)
+
+
 def render(brief, document, previous_url=None):
     def safe(value):
         # Escape Slack controls and mentions, not just HTML.
@@ -486,18 +506,19 @@ def render(brief, document, previous_url=None):
     date_line = brief.published_on + (f" (개정 {brief.revised_on})" if brief.revised_on else "")
     lines = [f"*{labels[brief.maturity]}{vintage}*", f"*{safe(brief.title)}*",
              f"{safe(document['publisher'])} · {safe(authors)} · {safe(date_line)}",
-             "*대상* " + safe(brief.market),
-             "", "*왜 읽나* " + safe(brief.why_read), "*핵심* " + safe(brief.idea),
-             "", "*데이터* " + safe(brief.data_period),
-             "*검증* " + safe(brief.validation),
-             "*저자 보고* " + safe(brief.author_results), ""]
+             "", "*핵심*", safe(brief.idea),
+             "", "*왜 읽나*", safe(brief.why_read),
+             "", "*연구 설계·결과*",
+             "• *대상* " + safe(brief.market),
+             "• *데이터* " + safe(brief.data_period),
+             "• *검증* " + safe(brief.validation),
+             "• *저자 보고* " + safe(brief.author_results), "", "*주의점*"]
     if brief.limitations:
-        lines.append("*주의* " + safe(brief.limitations[0]))
-        lines.extend("• " + safe(value) for value in brief.limitations[1:])
-    lines.extend(["*비용·회전율* " + safe(brief.costs_turnover),
-                  "*적용 전* " + safe(brief.application)])
+        lines.extend("• " + safe(value) for value in brief.limitations)
+    lines.append("• *비용·회전율* " + safe(brief.costs_turnover))
     if brief.commercial_bias:
-        lines.append("*이해관계* " + safe(brief.commercial_bias))
+        lines.append("• *이해관계* " + safe(brief.commercial_bias))
+    lines.extend(["", "*적용 전*", safe(brief.application)])
     if brief.change_summary:
         lines.append("*달라진 점* " + safe(brief.change_summary))
     lines.append("")
@@ -505,10 +526,11 @@ def render(brief, document, previous_url=None):
         lines.append(link(previous_url, "이전 게시"))
     locations = [location for e in brief.evidence
                  for location in ([s.location for s in e.source_spans] if e.source_spans else [e.location])]
-    lines.append(link(document["url"], "원문") + " · 근거 " + safe(", ".join(dict.fromkeys(locations))))
+    lines.append(link(document["url"], "원문"))
     related = list(dict.fromkeys(url for url in brief.related_urls if url != document["url"]))
     if related:
         lines.append(" · ".join(link(url, f"추가 자료 {index}") for index, url in enumerate(related[:2], 1)))
+    lines.append("근거: " + safe(display_locations(locations)))
     lines.append("_미기재·확인 불가: 검토에 제공된 원문 텍스트·발췌 기준_")
     lines.append("_원문 대조 AI 요약·별도 AI 검토; 독립 재현·투자 검증 아님_")
     return "\n".join(lines)

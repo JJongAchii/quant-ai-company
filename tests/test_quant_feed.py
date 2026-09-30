@@ -314,7 +314,7 @@ def test_a_compound_claim_can_bind_multiple_exact_source_spans_without_duplicate
     resolved = validate(proposed, bundle, "review", audit=audit)
     assert [span.quote for span in resolved.evidence[0].source_spans] == [page["text"] for page in pages]
     assert len(audit) == 3
-    assert "PDF p.1, PDF p.2" in render(resolved, bundle["metadata"])
+    assert "PDF p.1–2" in render(resolved, bundle["metadata"])
     bundle["draft"] = resolved.model_dump()
     for stage in ("revision", "critique"):
         view = json.loads(prompt(bundle, stage).split("\nDATA:\n")[1])
@@ -362,6 +362,29 @@ def test_field_bound_results_cannot_lose_a_different_result_when_references_chan
     with pytest.raises(ProposalValidationError) as error:
         validate(proposed, bundle, "revision")
     assert error.value.issues[0]["field"] == "author_results[1]"
+
+
+def test_atomic_field_evidence_can_exceed_legacy_limit_without_losing_source_bindings():
+    bundle = {"pages": [{"location": "PDF p.1", "text": TEXT}],
+              "metadata": {"publisher": "Example", "url": "https://example.org/paper"},
+              "as_of": "2026-09-29", "links": [], "commercial": False}
+    value = bound_brief()
+    value["author_results"].extend([
+        {"text": text, "basis": "source", "span_ids": ["p1-s1"]}
+        for text in ("검증 결과를 보고했다.", "학습 결과를 보고했다.", "비용을 추정하지 않았다.", "실거래를 검증하지 않았다.")])
+    value["limitations"] = [{"text": text, "basis": "source", "span_ids": ["p1-s1"]}
+                            for text in ("비용을 추정하지 않았다.", "실거래를 검증하지 않았다.", "검증 성과가 약했다.")]
+    proposed = response({"request": {"request_id": "quant-feed-atomic-capacity"}}, value)
+    proposed.decision.artifacts[0].title = "quant_brief_v4"
+    resolved = validate(proposed, bundle, "review")
+    assert len(resolved.evidence) == 13
+    assert {e.field_path for e in resolved.evidence if e.field_path.startswith("author_results")} == {
+        f"author_results[{index}]" for index in range(6)}
+    assert all(e.source_spans[0].quote in TEXT for e in resolved.evidence)
+    value["limitations"][0]["span_ids"] = ["p99-s1"]
+    proposed.decision.artifacts[0].content = json.dumps(value, ensure_ascii=False)
+    with pytest.raises(ProposalValidationError, match="quant_statement_source_invalid"):
+        validate(proposed, bundle, "review")
 
 
 def test_clipped_original_gap_must_name_the_supplied_excerpts():
@@ -1033,16 +1056,25 @@ def test_render_is_scan_friendly_and_does_not_duplicate_or_mislabel_links():
                   limitations=["거래비용 미반영", "표본 편향 가능성", "시장 충격 미기재"])
     rendered = render(ResearchBrief.model_validate(value),
                       {"publisher": "Example", "url": "https://example.org/paper"})
-    assert "*왜 읽나*" in rendered and "\n\n*데이터*" in rendered
-    assert "\n*검증*" in rendered and "\n*저자 보고*" in rendered
-    assert "\n*주의*" in rendered and "\n*비용·회전율*" in rendered
-    assert "\n*대상*" in rendered
+    assert "\n\n*핵심*\n" in rendered and "\n\n*왜 읽나*\n" in rendered
+    assert "\n\n*연구 설계·결과*\n• *대상*" in rendered
+    assert "\n• *데이터*" in rendered and "\n• *검증*" in rendered
+    assert "\n• *저자 보고*" in rendered and "\n\n*주의점*\n" in rendered
     two_limits = render(ResearchBrief.model_validate(brief(limitations=["첫 번째", "두 번째"])),
                         {"publisher": "Example", "url": "https://example.org/paper"})
-    assert "*주의* 첫 번째\n• 두 번째\n*비용·회전율*" in two_limits
+    assert "*주의점*\n• 첫 번째\n• 두 번째\n• *비용·회전율*" in two_limits
     assert "시장 충격 미기재" in rendered
     assert "*적용 전*" in rendered and "독립 재현·투자 검증 아님" in rendered
     assert rendered.count("<https://example.org/paper|") == 1
     assert "<https://example.org/code|추가 자료 1>" in rendered
     assert "관련 코드·데이터" not in rendered and "research_validity" not in rendered
     assert "Transaction costs" not in rendered  # Evidence quotes retained privately, not republished.
+
+
+def test_slack_locations_preserve_page_coverage_without_repeating_extraction_chunks():
+    from quant_company.quant_feed.editor import display_locations
+
+    assert display_locations(["PDF p.19 [1/3]", "PDF p.1 [2/3]", "PDF p.2 [2/3]", "PDF p.2 [3/3]",
+                              "PDF p.11 [2/2]", "PDF p.27 [3/3]", "PDF p.28 [2/3]"]) == "PDF p.1–2, 11, 19, 27–28"
+    assert display_locations(["HTML section Results", "HTML section Results", "PDF p.8"]) == (
+        "PDF p.8 · HTML section Results")

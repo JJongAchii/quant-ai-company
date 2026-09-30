@@ -136,8 +136,8 @@ def stage(args, previous, target, journal, helper):
     if hashlib.sha256(data).hexdigest() != args.archive_sha256:
         raise ValueError("quant_stage_archive_digest_mismatch")
     before = inventory()
-    if "quant-company-quant-codex-runtime-1" in before:
-        raise ValueError("quant_dedicated_runtime_already_installed")
+    runtime_service = (DEDICATED_RUNTIME if "quant-company-" + DEDICATED_RUNTIME + "-1" in before
+                       else "codex-runtime")
     target.mkdir()
     record = {"phase": "staging", "commit": args.commit, "previous": str(previous),
               "archive_sha256": args.archive_sha256, "images": [], "build_method": "unchanged_dependency_code_update",
@@ -151,13 +151,14 @@ def stage(args, previous, target, journal, helper):
         shutil.copytree(previous / "qdata", target / "qdata")
         record["qdata_commit"] = json.loads((target / "deploy/qdata-source.json").read_text())["commit"]
         record["qdata_tree_sha256"] = args.qdata_tree_sha256
-        runtime = json.loads(run(["docker", "inspect", "quant-company-codex-runtime-1"]))[0]
+        runtime_name = "quant-company-" + runtime_service + "-1"
+        runtime = json.loads(run(["docker", "inspect", runtime_name]))[0]
         app = json.loads(run(["docker", "inspect", "quant-company-api-1"]))[0]
         runtime_commit = runtime["Config"]["Labels"].get("org.opencontainers.image.revision")
         app_commit = app["Config"]["Labels"].get("org.opencontainers.image.revision")
         if (not re.fullmatch(r"[a-f0-9]{40}", runtime_commit or "")
                 or not re.fullmatch(r"[a-f0-9]{40}", app_commit or "")
-                or runtime["Image"] != before["quant-company-codex-runtime-1"]["image_id"]
+                or runtime["Image"] != before[runtime_name]["image_id"]
                 or app["Image"] != before["quant-company-api-1"]["image_id"]):
             raise ValueError("quant_stage_base_image_changed")
         runtime_source = CURRENT.parent / "releases" / runtime_commit
@@ -169,7 +170,8 @@ def stage(args, previous, target, journal, helper):
                 (target / name).read_bytes() != (base / name).read_bytes()
                 for base in (previous, app_source, runtime_source) for name in fixed_inputs):
             raise ValueError("quant_stage_base_dependencies_changed")
-        record.update(base_app_commit=app_commit, base_runtime_commit=runtime_commit)
+        record.update(base_app_commit=app_commit, base_runtime_commit=runtime_commit,
+                      base_runtime_service=runtime_service)
         expected = quant.source_inventory(target / "src/quant_company")
         probe = ("import hashlib,importlib.util,json,pathlib;"
                  "root=pathlib.Path(importlib.util.find_spec('quant_company').origin).parent;"
@@ -208,6 +210,8 @@ def compose(helper, root, *args):
     overlay = root / "deploy/data-watch.compose.yaml"
     if not overlay.is_file():
         raise ValueError("data_watch_overlay_missing")
+    if not (STATE / "config/data-watch-contracts.json").is_file():
+        raise ValueError("data_watch_calendar_must_be_a_file")
     return run([*helper.compose_command(root), "--profile", "data-watch", "-f", str(overlay), *args])
 
 
@@ -219,6 +223,8 @@ def check(before, commit, app_image_id, runtime_image_id):
     selected = {"quant-company-" + name + "-1" for name in SELECTED}
     for name, expected in before.items():
         row = after[name]
+        if name == dedicated:
+            continue
         if name in selected:
             if (
                 not row["running"]
@@ -271,13 +277,21 @@ def cutover(args, previous, target, journal, helper):
         or values.get("QUANT_FEED_PUBLISH_ENABLED") != "false"
     ):
         raise ValueError("quality_release_environment_changed")
+    if not (STATE / "config/data-watch-contracts.json").is_file():
+        raise ValueError("data_watch_calendar_must_be_a_file")
+    runtime_service = record.get("base_runtime_service", "codex-runtime")
+    runtime_name = "quant-company-" + runtime_service + "-1"
     if (
         before["quant-company-api-1"]["image_id"] != app_images[0]["base_id"]
-        or before["quant-company-codex-runtime-1"]["image_id"] != runtime_images[0]["base_id"]
+        or before[runtime_name]["image_id"] != runtime_images[0]["base_id"]
     ):
         raise ValueError("quality_release_base_image_changed")
+    if (runtime_service == DEDICATED_RUNTIME
+            and before[runtime_name]["image_revision"] != values.get("RELEASE_COMMIT")):
+        raise ValueError("quality_release_runtime_rollback_revision_mismatch")
     selected = {"quant-company-" + name + "-1" for name in SELECTED}
-    if any(not before[name]["running"] or before[name]["oom"] for name in selected):
+    required = selected | ({runtime_name} if runtime_service == DEDICATED_RUNTIME else set())
+    if any(not before[name]["running"] or before[name]["oom"] for name in required):
         raise ValueError("quality_release_service_not_running")
     if any(activity().values()):
         raise ValueError("quality_release_activity_not_drained")
@@ -301,7 +315,8 @@ def cutover(args, previous, target, journal, helper):
             cutover_started_at=time.time(),
             original_env_sha256=hashlib.sha256(original).hexdigest(),
             quant_native_protocol=protocol,
-            independent_before={key: value for key, value in before.items() if key not in selected},
+            independent_before={key: value for key, value in before.items()
+                                if key not in selected and key != "quant-company-" + DEDICATED_RUNTIME + "-1"},
         )
         helper.atomic(journal, json.dumps(record).encode())
         run(["docker", "stop", "--time", "360", "quant-company-dispatch-1", "quant-company-api-1"])
@@ -367,6 +382,9 @@ def cutover(args, previous, target, journal, helper):
             helper.link(previous)
             with contextlib.suppress(Exception):
                 compose(helper, target, "stop", DEDICATED_RUNTIME)
+            if runtime_service == DEDICATED_RUNTIME:
+                compose(helper, previous, "up", "-d", "--no-deps", "--force-recreate", "--wait",
+                        "--wait-timeout", "120", DEDICATED_RUNTIME)
         compose(
             helper,
             previous,
