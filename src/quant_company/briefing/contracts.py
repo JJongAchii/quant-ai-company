@@ -77,6 +77,26 @@ class ConditionPatch(StrictModel):
     replacements: list[Claim] = Field(min_length=1, max_length=6)
 
 
+class FactAddition(StrictModel):
+    id: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,39}$")
+    text: str = Field(min_length=1, max_length=240)
+    evidence: list[Evidence] = Field(default_factory=list, max_length=3)
+
+
+class MaterialFactPatch(StrictModel):
+    additions: list[FactAddition] = Field(min_length=1, max_length=6)
+
+
+class ClaimEdit(StrictModel):
+    id: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,39}$")
+    text: str = Field(min_length=1, max_length=500)
+    evidence: list[Evidence] = Field(default_factory=list, max_length=3)
+
+
+class EditorialPatch(StrictModel):
+    edits: list[ClaimEdit] = Field(min_length=1, max_length=12)
+
+
 class MarketObservation(Supported):
     instrument: str
     value: Decimal

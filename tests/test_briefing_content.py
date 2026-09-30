@@ -11,11 +11,16 @@ from quant_company.briefing.contracts import (
     BriefReview,
     CalendarEvent,
     ConditionPatch,
+    EditorialPatch,
+    MarketObservation,
+    MaterialFactPatch,
     SourceDocument,
 )
 from quant_company.briefing.coverage import inventory, select_documents, topics
 from quant_company.briefing.editor import (
     apply_condition_patch,
+    apply_editorial_patch,
+    apply_material_fact_patch,
     artifact,
     calendar_equivalent_numbers,
     canonical_source_quote,
@@ -24,10 +29,11 @@ from quant_company.briefing.editor import (
     non_session_korean_listed_price,
     prune,
     render,
+    revision_bundle,
     validate,
     validate_review,
 )
-from quant_company.briefing.inputs import market_report
+from quant_company.briefing.inputs import document, market_report
 from quant_company.briefing.market_rules import expired_wti_contract
 from quant_company.briefing.numeric import numbers, prose_numbers_supported, reported_change_supported
 from quant_company.briefing.qualification import qualify
@@ -44,6 +50,97 @@ def doc(identity, title, **updates):
     value.update(id=identity, title=title, sha256=identity, publisher=identity, origin_group=identity,
                  url="https://example.org/"+identity, **updates)
     return SourceDocument.model_validate(value)
+
+
+def test_exact_dotted_date_supports_korean_month_and_day_without_inference():
+    assert prose_numbers_supported("9월 29일 전일장", ["기준일 2026.9.29."])
+    assert not prose_numbers_supported("9월 30일 전일장", ["기준일 2026.9.29."])
+    assert not prose_numbers_supported("9월 29일", ["지수는 2026.9에 마감했다."])
+    assert not prose_numbers_supported("2월 29일", ["2026.2.29"])
+
+
+def test_cached_broad_etoday_page_cannot_enter_briefing_source_budget():
+    receipt = {"ok": True, "publisher_host": "www.etoday.co.kr", "content_type": "text/html",
+               "article_extraction": "article", "content": "Unrelated market widgets "*100,
+               "original_sha256": "a"*64, "url": "https://www.etoday.co.kr/news/view/123",
+               "retrieved_at": "2026-09-21T21:00:00Z", "published_at": "2026-09-21T20:00:00Z"}
+    assert document(receipt, "etoday-global", "Etoday", "media") is None
+    receipt.update(article_extraction="articleBody", content="Verified article body "*20)
+    assert document(receipt, "etoday-global", "Etoday", "media").content == receipt["content"]
+
+
+def test_coordinated_fraction_range_requires_explicit_unit_and_exact_endpoints():
+    quote = "Revised lower by two or three tenths of a percentage point."
+    assert prose_numbers_supported("0.2~0.3%포인트 하향 예상", [quote])
+    assert not prose_numbers_supported("0.1~0.3%포인트 하향 예상", [quote])
+    assert not prose_numbers_supported("0.2~0.4%포인트 하향 예상", [quote])
+    assert not prose_numbers_supported("0.2%포인트", ["two or three tenths of employees"])
+    assert numbers("second quarter revenue") == {Decimal(2)}
+
+
+def test_am_previous_korean_close_requires_frozen_time_and_visible_date():
+    b, p = bundle(), proposal()
+    day = date.fromisoformat(b["edition"]["previous_kr_session"])
+    from quant_company.briefing.schedule import close
+
+    at = close("KR", day)
+    quote = "코스피는 전장보다 0.27% 내린 6870.81에 마감했다."
+    b["documents"][0]["content"] += "\n"+quote
+    obs = MarketObservation.model_validate({
+        "id": "prior_kospi", "instrument": "kospi", "value": "6870.81", "unit": "pt",
+        "session_date": day, "as_of": at, "basis": "close", "venue": "KRX",
+        "reported_change": "-0.27", "change_unit": "%",
+        "evidence": [{"source_id": b["documents"][0]["id"], "quote": quote}],
+    })
+    p.observations.append(obs)
+    assert validate(p, b)[obs.id] == "previous_close_time_unavailable"
+    b["exchange_closes"] = {"KR_previous": at.isoformat()}
+    assert obs.id not in validate(p, b)
+    assert f"한국 전일장 {day:%m/%d} · 코스피" in render(p, b)[0][0]
+    obs.as_of += timedelta(minutes=1)
+    assert validate(p, b)[obs.id] == "wrong_equity_close_time"
+    obs.as_of = at
+    obs.previous_value = obs.value
+    obs.previous_session_date = day
+    assert validate(p, b)[obs.id] == "incompatible_comparison"
+    obs.previous_value = None
+    obs.previous_session_date = None
+    obs.session_date -= timedelta(days=1)
+    assert validate(p, b)[obs.id] == "wrong_close_session"
+
+
+def test_am_freezes_previous_korean_close_in_producer_bundle(brief):  # noqa: F811
+    from quant_company.briefing.schedule import close
+
+    store, _ = brief
+    edition = seed(brief)
+    store.prepare()
+    with store.db.transaction() as conn:
+        frozen = conn.execute("SELECT bundle FROM brief_editions WHERE id=%s", (edition.id,)).fetchone()["bundle"]
+    assert frozen["exchange_closes"]["KR_previous"] == close("KR", edition.previous_kr_session).isoformat()
+
+
+def test_am_previous_fx_reference_requires_exact_frozen_time_and_visible_timestamp():
+    from quant_company.briefing.schedule import close
+
+    b, p = bundle(), proposal()
+    day = date.fromisoformat(b["edition"]["previous_kr_session"])
+    at = close("KR", day)
+    quote = "서울 외환시장의 오후 3시 30분 기준가는 달러당 1356.7원이었다."
+    b["documents"][0]["content"] += "\n"+quote
+    obs = MarketObservation.model_validate({
+        "id": "prior_fx", "instrument": "usdkrw", "value": "1356.7", "unit": "KRW/USD",
+        "session_date": day, "as_of": at, "basis": "intraday", "venue": "서울 외환시장",
+        "evidence": [{"source_id": b["documents"][0]["id"], "quote": quote}],
+    })
+    p.observations.append(obs)
+    assert validate(p, b)[obs.id] == "previous_close_time_unavailable"
+    b["exchange_closes"] = {"KR_previous": at.isoformat()}
+    assert obs.id not in validate(p, b)
+    main = render(p, b)[0][0]
+    assert "한국 전일 참고 · 달러/원" in main and f"{day:%m/%d} 15:30 KST" in main
+    obs.as_of += timedelta(minutes=1)
+    assert validate(p, b)[obs.id] == "wrong_previous_reference_time"
 
 
 def test_topic_sampling_keeps_major_issues_when_local_news_are_newest():
@@ -183,7 +280,27 @@ def test_issue_specific_next_check_is_in_main_when_separate_watchpoint_exists():
     assert p.issues[0].next_check.text in parts[0]
     assert p.issues[0].next_check.id in main_post_item_ids(p, data)
     assert p.issues[0].next_check.text not in "\n".join(parts[1:])
-    assert quality["format_version"] == 12
+    assert quality["format_version"] == 15
+
+
+def test_supported_rate_baseline_in_issue_assessment_survives_to_reviewed_main():
+    p, data = analytical_proposal(), bundle()
+    quote = "다음 달 인상 확률은 70.3%로 일주일 전 57.6%보다 높아졌다."
+    data["documents"][0]["content"] += "\n"+quote
+    assessment = p.issues[0].interpretation
+    assessment.text = quote+" 금리선물 평가이며 확정된 정책 결정은 아닙니다."
+    assessment.evidence[0].quote = quote
+    assert validate(p, data) == {}
+    parts, _ = render(p, data)
+    assert assessment.text in parts[0]
+    assert assessment.id in main_post_item_ids(p, data)
+    assert assessment.text not in "\n".join(parts[1:])
+    verdict = review().model_dump(mode="json")
+    verdict["source_assessments"][0].update(item_ids=[assessment.id], material_facts=[{
+        "fact": "인상 확률의 이전 기준과 현재 수준", "quote": quote,
+        "main_item_ids": [assessment.id],
+    }])
+    validate_review(BriefReview.model_validate(verdict), p, data)
 
 
 def test_korean_relative_calendar_date_and_afternoon_time_are_exactly_equivalent():
@@ -596,6 +713,150 @@ def test_confirmed_editorial_failure_gets_only_one_frozen_repair_and_recheck(bri
         check = next(c for c in result["editions"] if c["id"] == edition.id)
         assert "real_codex_not_verified" not in check["reasons"]
     assert store.prepare()["state"] == "idle"
+
+
+def test_exact_kilobarrel_flow_and_explicit_prewar_baseline_normalize_without_estimation():
+    source = ("Clearance stood at 10,591 kilobarrels a day on Saturday, "
+              "against a pre-war baseline of 17,133.")
+    assert numbers("하루 1,059만1천배럴, 전쟁 전 1,713만3천배럴") <= numbers(source)
+    assert Decimal(10591000) in numbers("10,591 kilobarrels")
+    assert Decimal(17133000) not in numbers("10,591 kilobarrels a day. A separate baseline of 17,133.")
+    assert Decimal(17133000) not in numbers("10,591 kilobarrels a day, against a pre-war baseline of 17,133 percent.")
+    assert Decimal(17133000) not in numbers("10,591 kilobarrels a day, against a pre-war baseline of 17,133 barrels.")
+    assert Decimal(10590000) not in numbers(source)
+
+
+def test_material_fact_patch_preserves_existing_text_prices_and_conditions():
+    original = proposal()
+    patch = MaterialFactPatch.model_validate({"additions": [{
+        "id": "fact", "text": "시장 참여는 혼조였습니다.",
+        "evidence": [original.issues[0].fact.evidence[0].model_dump()],
+    }]})
+    corrected = apply_material_fact_patch(original, patch, {"fact": ["source-1"]})
+    expected = original.model_dump()
+    expected["issues"][0]["fact"]["text"] += " 시장 참여는 혼조였습니다."
+    assert corrected.model_dump() == expected
+    assert original.issues[0].fact.text != corrected.issues[0].fact.text
+    bad = MaterialFactPatch.model_validate({"additions": [{"id": "fact", "text": "추가 기준은 9999%입니다."}]})
+    assert validate(apply_material_fact_patch(original, bad, {"fact": ["source-1"]}), bundle())["fact"] == "unsupported_prose_number"
+
+
+@pytest.mark.parametrize("values,scope", [
+    ([{"id": "condition", "text": "바꾼 조건"}], {"condition": ["source-1"]}),
+    ([{"id": "sp500", "text": "바꾼 가격"}], {"sp500": ["source-1"]}),
+    ([{"id": "fact", "text": "추가 사실"}], {"view": ["source-1"]}),
+    ([{"id": "fact", "text": "추가 사실"}, {"id": "fact", "text": "중복 사실"}], {"fact": ["source-1"]}),
+    ([{"id": "fact", "text": "추가 사실", "evidence": [{"source_id": "outside", "quote": "An unauthorized source passage."}]}], {"fact": ["source-1"]}),
+])
+def test_material_fact_patch_cannot_escape_verified_append_scope(values, scope):
+    with pytest.raises(ValueError, match="material_patch_scope_rejected"):
+        apply_material_fact_patch(proposal(), MaterialFactPatch.model_validate({"additions": values}), scope)
+
+
+def test_material_patch_cannot_exceed_original_claim_limits():
+    p = proposal()
+    p.issues[0].fact.text = "가"*490
+    patch = MaterialFactPatch.model_validate({"additions": [{"id": "fact", "text": "나"*20}]})
+    with pytest.raises(ValueError):
+        apply_material_fact_patch(p, patch, {"fact": ["source-1"]})
+
+
+def test_verified_material_append_round_trip_requires_full_review(brief):  # noqa: F811
+    store, _ = brief
+    edition = seed(brief)
+    original = proposal()
+    store.commit(response(store.prepare()["request"], original))
+    with store.db.transaction() as conn:
+        accepted = BriefProposal.model_validate(conn.execute(
+            "SELECT proposal FROM brief_editions WHERE id=%s", (edition.id,),
+        ).fetchone()["proposal"])
+    value = review().model_dump()
+    value.update(verdict="reduce", concerns=["제공된 원문의 중요한 반대 근거를 본문에 보완해야 합니다."])
+    value["checks"]["coverage"] = False
+    value["source_assessments"][0]["material_facts"].append({
+        "fact": "시장 참여에 대한 반대 근거", "quote": bundle()["documents"][0]["content"][:100], "main_item_ids": [],
+    })
+    failed = BriefReview.model_validate(value)
+    store.commit(response(store.prepare()["request"], failed))
+    request = store.prepare()["request"]
+    data = json.loads(request["prompt"].split("BRIEF DATA JSON:\n")[1])
+    assert data["revision_feedback"]["repair_mode"] == "material_append"
+    assert "MaterialFactPatch" in request["prompt"]
+    assert "condition" not in data["revision_feedback"]["allowed_ids"]
+    patch = MaterialFactPatch.model_validate({"additions": [{"id": "fact", "text": "시장 참여는 혼조였습니다."}]})
+    store.commit(response(request, patch))
+    final = store.prepare()["request"]
+    assert final["request_id"].endswith("-final_review")
+    store.commit(response(final))
+    with store.db.transaction() as conn:
+        saved = conn.execute("SELECT * FROM brief_editions WHERE id=%s", (edition.id,)).fetchone()
+    corrected = BriefProposal.model_validate(saved["proposal"])
+    assert corrected.observations == accepted.observations
+    assert corrected.issues[0].next_check == original.issues[0].next_check
+    assert corrected.issues[0].fact.text.startswith(original.issues[0].fact.text+" ")
+    assert not saved["quality"]["reduced"] and saved["quality"]["revision_used"]
+    offline = evaluate_briefing.assess(bundle(), response(request, patch), response(final),
+                                     previous=response({"request_id": "fixture-write"}, original),
+                                     correction_review=response({"request_id": "fixture-review"}, failed))
+    assert offline["passed"] and offline["correction"]["mode"] == "material_append"
+
+
+def test_material_patch_requires_valid_claims_and_preserves_full_repair_for_other_failures():
+    value = review().model_dump()
+    value.update(verdict="reduce", concerns=["원문의 중요한 사실이 본문에서 누락됐습니다."])
+    value["checks"]["coverage"] = False
+    value["source_assessments"][0]["material_facts"][0]["main_item_ids"] = []
+    p, b = proposal().model_dump(mode="json"), bundle()
+    r = BriefReview.model_validate(value)
+    assert revision_bundle(b, p, r, {})["revision_feedback"]["repair_mode"] == "material_append"
+    assert revision_bundle(b, p, r, {"fact": "unsupported_prose_number"})["revision_feedback"]["repair_mode"] == "full_proposal"
+    value["checks"]["readability"] = False
+    assert revision_bundle(b, p, BriefReview.model_validate(value), {})["revision_feedback"]["repair_mode"] == "editorial_patch"
+
+
+def test_editorial_patch_preserves_prices_quotes_kind_and_all_unedited_fields():
+    p = proposal()
+    p.issues[0].fact.text += " 나스닥은 17,100입니다."
+    patch = EditorialPatch.model_validate({"edits": [{"id": "fact", "text": p.issues[0].fact.text+" 시장 참여는 혼조였습니다."}]})
+    amended = apply_editorial_patch(p, patch, {"fact": ["source-1"]})
+    expected = p.model_dump()
+    expected["issues"][0]["fact"]["text"] = patch.edits[0].text
+    assert amended.model_dump() == expected
+    with pytest.raises(ValueError, match="editorial_patch_loses_verified_numbers"):
+        apply_editorial_patch(p, EditorialPatch.model_validate({"edits": [{"id": "fact", "text": "단순한 시장 요약입니다."}]}), {"fact": ["source-1"]})
+    with pytest.raises(ValueError, match="editorial_patch_scope_rejected"):
+        apply_editorial_patch(p, EditorialPatch.model_validate({"edits": [{"id": "condition", "text": "새 조건"}]}), {"condition": ["source-1"]})
+
+
+def test_readability_editorial_patch_round_trip_is_reviewed_in_postgres(brief):  # noqa: F811
+    store, _ = brief
+    edition = seed(brief)
+    p = proposal()
+    store.commit(response(store.prepare()["request"], p))
+    value = review().model_dump()
+    value.update(verdict="reduce", concerns=["시장 수급 문장에서 진단을 줄여 가독성을 보완해야 합니다."])
+    value["checks"]["readability"] = False
+    value["source_assessments"][0]["material_facts"][0]["main_item_ids"] = ["fact"]
+    critique = BriefReview.model_validate(value)
+    store.commit(response(store.prepare()["request"], critique))
+    req = store.prepare()["request"]
+    data = json.loads(req["prompt"].split("BRIEF DATA JSON:\n")[1])
+    feedback = data["revision_feedback"]
+    assert feedback["repair_mode"] == "editorial_patch" and "previous_draft" not in feedback
+    assert "unchanged_context" in feedback and feedback["protected_material_facts"]
+    assert feedback["allowed_source_ids"] == ["source-1"]
+    assert not {"summary", "condition", "sp500"} & set(feedback["allowed_ids"])
+    patch = EditorialPatch.model_validate({"edits": [{"id": "fact", "text": p.issues[0].fact.text+" 시장 참여는 혼조였습니다."}]})
+    store.commit(response(req, patch))
+    final = store.prepare()["request"]
+    assert final["request_id"].endswith("-final_review")
+    store.commit(response(final))
+    with store.db.transaction() as conn:
+        row = conn.execute("SELECT * FROM brief_editions WHERE id=%s", (edition.id,)).fetchone()
+    assert not row["quality"]["reduced"] and row["quality"]["revision_used"]
+    offline = evaluate_briefing.assess(bundle(), response(req, patch), response(final),
+        previous=response({"request_id": "write"}, p), correction_review=response({"request_id": "review"}, critique))
+    assert offline["passed"] and offline["correction"]["mode"] == "editorial_patch"
 
 
 def test_uncertain_revision_is_not_replaced_with_another_model_call(brief):  # noqa: F811

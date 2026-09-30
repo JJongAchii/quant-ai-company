@@ -78,18 +78,18 @@ def test_professional_review_cannot_omit_transmission_alternatives_or_falsifiabi
     assert len(REVIEW_CHECKS) == 12
 
 
-def test_main_post_pairs_economic_effect_and_alternative_without_repeating_application():
+def test_main_post_keeps_assessment_effect_and_alternative_visible_without_thread_duplication():
     p = analytical_proposal()
     parts, quality = render(p, bundle())
     assert "Analyst · AI 시장분석" in parts[0] and "해석·가설" in parts[0]
     assert p.issues[0].next_check.text in parts[0]
     assert p.issues[0].analysis.mechanism.text in parts[0]
-    assert p.issues[0].interpretation.text not in parts[0]
-    assert p.issues[0].interpretation.text in "\n".join(parts[1:])
+    assert p.issues[0].interpretation.text in parts[0]
+    assert p.issues[0].interpretation.text not in "\n".join(parts[1:])
     assert p.issues[0].analysis.alternative.text in parts[0]
     assert p.issues[0].analysis.alternative.text not in "\n".join(parts[1:])
     assert "수일~수주" in parts[1]
-    assert len(parts[0]) < 2000 and quality["format_version"] == 12
+    assert len(parts[0]) < 2000 and quality["format_version"] == 15
     payload = json.loads(prompt(bundle(), "review", p.model_dump(mode="json")).split("BRIEF DATA JSON:\n")[1])
     items = item_map(p)
     preview = "".join(part if isinstance(part, str) else escape(items[part["item_text"]].text, quote=False)

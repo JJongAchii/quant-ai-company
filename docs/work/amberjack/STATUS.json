@@ -8,53 +8,59 @@
   "deliverables": {
     "CONTENT_REPAIR": {
       "status": "implemented_unqualified",
-      "updatedAt": "2026-09-29T06:53:16.019360+00:00",
+      "updatedAt": "2026-09-30T11:48:40.249021+00:00",
       "evidence": [
-        "docs/project/ANALYST-QUALITY-CONTINUATION-20260929.md",
-        "docs/project/evidence/briefing-analyst-quality-20260929/fresh-pm-20260922/development-v28-reviewed/assessment.json",
-        "docs/project/evidence/briefing-analyst-quality-20260929/regression-v31.json"
+        "docs/project/ANALYST-ROOT-CAUSE-20260930.md",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v37.json",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v38-targeted.json",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/development-v37/outcome.json"
       ],
       "evidenceSha256": {
-        "docs/project/ANALYST-QUALITY-CONTINUATION-20260929.md": "1bdc58a9de4b1414ea67a84c5bce8d2d5012fe8aca8a8bce06b3036e9f287c23",
-        "docs/project/evidence/briefing-analyst-quality-20260929/fresh-pm-20260922/development-v28-reviewed/assessment.json": "3744c8507365a7b2443f0a68d8c9508b6dbf4ca75dfd805892b85c36cacd3686",
-        "docs/project/evidence/briefing-analyst-quality-20260929/regression-v31.json": "7e70f26e66c6e5bef6cf41a5f6a9d81385be1fd145f459023129b709a0f8840a"
+        "docs/project/ANALYST-ROOT-CAUSE-20260930.md": "40fb98f84325ce970843be4db904a394f0f7c4b5c40caa070e34bf458426b7bf",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v37.json": "9d8f69f872afea8038fdcf27e3a762981b5c1c8c1745feb059090282d7b4c627",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v38-targeted.json": "511a033291104706e3bdc2cc5e14747ac913fb1d0a513f445f8cf4b2a6bf748a",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/development-v37/outcome.json": "0d96d2956ae6fe4c70b3f1791c987b507dde018b45d7b964f768dae31c4f2bd4"
       },
-      "note": "Writer/reviewer and format changes passed 1373 local tests. Actual September 22 PM same-source development review passed 8/12 only; the latest visible next-check layout has not been evaluated by a real model."
+      "note": "Format15 validation38: preserve main interpretation, supported prose/quotes/numbers in scoped append/editorial patch; new numeric own-quote instructions. Fullv37 1396pass/38skip and post-change127pass. Actual scopedv37 patch rejected2; no expert/fresh qualification."
     },
     "FRESH_EVALUATION": {
-      "status": "in_progress",
-      "updatedAt": "2026-09-29T06:53:16.019360+00:00",
+      "status": "evaluated_failed",
+      "updatedAt": "2026-09-30T11:48:40.249021+00:00",
       "evidence": [
-        "docs/project/evidence/briefing-analyst-quality-20260929/fresh-pm-20260922-policy.json",
-        "docs/project/evidence/briefing-analyst-quality-20260929/fresh-pm-20260922/development-v28-reviewed/assessment.json",
-        "docs/project/evidence/briefing-analyst-quality-20260929/fresh-pm-20260923/transport-incident.json"
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/am-20260930/frozen-case-outcome.json",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36-policy.json",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/source-manifest.json",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/frozen-case-outcome.json"
       ],
       "evidenceSha256": {
-        "docs/project/evidence/briefing-analyst-quality-20260929/fresh-pm-20260922-policy.json": "513ad951bcf97d0dce6f4dc252c0c15fa235eb41aa3923f53466fd40582da90f",
-        "docs/project/evidence/briefing-analyst-quality-20260929/fresh-pm-20260922/development-v28-reviewed/assessment.json": "3744c8507365a7b2443f0a68d8c9508b6dbf4ca75dfd805892b85c36cacd3686",
-        "docs/project/evidence/briefing-analyst-quality-20260929/fresh-pm-20260923/transport-incident.json": "578c43d5cbf363bdb6f84052e7552903ea3a7d58b59eddfc221c0cc8e91377a5"
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/am-20260930/frozen-case-outcome.json": "c528803e4aa6145e9e9a4e7b5e2f3138b49bbb7553e96eaf8e17ea443ee094f0",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36-policy.json": "3ad567dff32bb1ccc9a596e0e0592e55b736157dda5b3a88de819f89cdd79737",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/source-manifest.json": "415d7ca38373a66e699eac51709b81f342c55a07a61cda95884cefe122eb4156",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/frozen-case-outcome.json": "0def99d07d4c57709019c23c50980c20dbb080c09ae3decfd6bb2ea4ba02b9dc"
       },
-      "note": "September 22 PM previously unused source snapshot was frozen and actually written/reviewed; valid development replay failed 8/12. September 23 writer remains uncertain after backup; September 24 PM was a holiday. No fresh content qualification pass."
+      "note": "Freshly frozen PM final9/12 failed materiality/coverage/readability, max5completedcalls reached. AM originalv31 failed; same-source AMdevelopment11/12 alsofailed. Bothcases same marketdate. No newwriter/review on mechanically invalid PMdevelopment. September23 uncertain request unreplayed."
     },
     "PREVIEW_READINESS": {
-      "status": "in_progress",
-      "updatedAt": "2026-09-29T06:53:16.019360+00:00",
+      "status": "not_ready",
+      "updatedAt": "2026-09-30T11:48:40.249021+00:00",
       "evidence": [
-        "docs/project/evidence/briefing-analyst-quality-20260929/calendar-fetch-probe.json",
-        "docs/project/evidence/briefing-analyst-quality-20260929/preview-release-gate.json",
-        "docs/project/evidence/briefing-analyst-quality-20260929/regression-v31.json"
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/runtime-release-identity-0754.json",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/release-gate-0754.json",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/release-feature-presence.json",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/runtime-calendar-probe.json"
       ],
       "evidenceSha256": {
-        "docs/project/evidence/briefing-analyst-quality-20260929/calendar-fetch-probe.json": "5376cfbf6644e42f788f8e75b6d999e9e85478689b54f8b80a37c9ff1c8eb2a8",
-        "docs/project/evidence/briefing-analyst-quality-20260929/preview-release-gate.json": "d2df36d9a624c1070f1d49b2ba4e8dfc36665eaaccfd994c69ce9f04c025b2db",
-        "docs/project/evidence/briefing-analyst-quality-20260929/regression-v31.json": "7e70f26e66c6e5bef6cf41a5f6a9d81385be1fd145f459023129b709a0f8840a"
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/runtime-release-identity-0754.json": "e90f0b9090809b2c94b4c45c1cdd84bd2d4817121268bba2aa2402ae3137f86f",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/release-gate-0754.json": "3cb9f80f235fc8cb395e74f014043fa745957705a63bf58c86ea0c03d13f96dc",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/release-feature-presence.json": "c80112a0b8fda895bd3260c560308b262e841a15e4e2c73198a11b60a2621d64",
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/runtime-calendar-probe.json": "1dce54b38b72b729dd2911806f287949d8228c6d0afbf7b41578e65b21ddc67d"
       },
-      "note": "Installed release policy rejects protected changes; Analyst role/channel/publish remain inactive, and BLS returned HTTP 403. No deploy, scheduled preview, or Slack send."
+      "note": "Observed link and running worker labels differ; referenced source trees lack Analyst module. Direct oldbranchreplacement violates installed policy. Source-preserving integration, official calendar, role/channel, preview/timing/delivery remain unverified. No deploy or Slack send."
     }
   },
   "intentDigest": "74760db38665",
   "schemaVersion": 1,
   "slug": "amberjack",
   "state": "approved",
-  "updatedAt": "2026-09-29T06:53:16.019360+00:00"
+  "updatedAt": "2026-09-30T11:48:40.249021+00:00"
 }

@@ -1,0 +1,9 @@
+{
+  "raw_sha256": "564265462ae15b599a411897755a8ecc828edef1b9887408a4d0709474b73e93",
+  "raw_count": 199,
+  "eligible_count": 199,
+  "candidate_count": 96,
+  "cutoff": "2026-09-29T19:30:00+09:00",
+  "source_bundle_sha256": "8db0bea6ae2ab7ca77ad5debaabe3a1aab38f5c52ab9ed21bfbccf65b88ed66e",
+  "selected_by_model": false
+}

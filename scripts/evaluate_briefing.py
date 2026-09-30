@@ -13,10 +13,19 @@ import re
 from html import unescape
 from pathlib import Path
 
-from quant_company.briefing.contracts import BriefProposal, BriefReview, ConditionPatch, SourcePlan
+from quant_company.briefing.contracts import (
+    BriefProposal,
+    BriefReview,
+    ConditionPatch,
+    EditorialPatch,
+    MaterialFactPatch,
+    SourcePlan,
+)
 from quant_company.briefing.editor import (
     FORMAT_VERSION,
     apply_condition_patch,
+    apply_editorial_patch,
+    apply_material_fact_patch,
     artifact,
     prompt,
     prune,
@@ -71,16 +80,22 @@ def assess(bundle, written, reviewed=None, *, previous=None, correction_review=N
     correction = None
     if previous or correction_review:
         if not previous or not correction_review:
-            raise ValueError("Condition repair requires both the previous writer and correction review")
+            raise ValueError("Isolated repair requires both the previous writer and correction review")
         initial = assess(bundle, previous)
         prior, critique = BriefProposal.model_validate(initial["proposal"]), artifact(correction_review, BriefReview)
         validate_review(critique, prior, initial["bundle"])
         rejected = {**initial["rejected"], **dict.fromkeys(critique.rejected_ids, "semantic_review")}
-        feedback = revision_bundle(initial["bundle"], initial["proposal"], critique, rejected)["revision_feedback"]
-        if feedback["repair_mode"] != "conditions_only":
-            raise ValueError("Review does not authorize an isolated condition repair")
-        proposed = apply_condition_patch(prior, artifact(written, ConditionPatch), feedback["allowed_ids"])
-        correction = {"mode": "conditions_only", "previous_request_id": previous.request_id,
+        bundle = revision_bundle(initial["bundle"], initial["proposal"], critique, rejected)
+        feedback = bundle["revision_feedback"]
+        if feedback["repair_mode"] == "conditions_only":
+            proposed = apply_condition_patch(prior, artifact(written, ConditionPatch), feedback["allowed_ids"])
+        elif feedback["repair_mode"] == "material_append":
+            proposed = apply_material_fact_patch(prior, artifact(written, MaterialFactPatch), feedback["allowed_sources"])
+        elif feedback["repair_mode"] == "editorial_patch":
+            proposed = apply_editorial_patch(prior, artifact(written, EditorialPatch), feedback["allowed_sources"])
+        else:
+            raise ValueError("Review does not authorize an isolated repair")
+        correction = {"mode": feedback["repair_mode"], "previous_request_id": previous.request_id,
                       "patch_request_id": written.request_id, "allowed_ids": feedback["allowed_ids"]}
     else:
         proposed = artifact(written, BriefProposal)
@@ -115,8 +130,8 @@ async def main():
     parser.add_argument("--writer")
     parser.add_argument("--planner", help="Actual source-selection receipt for the frozen candidate bundle")
     parser.add_argument("--reviewer")
-    parser.add_argument("--previous-writer", help="Original writer receipt when --writer contains a condition patch")
-    parser.add_argument("--correction-review", help="Review permitting only the named condition replacements")
+    parser.add_argument("--previous-writer", help="Original writer receipt when --writer contains an isolated patch")
+    parser.add_argument("--correction-review", help="Review permitting only the named condition replacements or material additions")
     parser.add_argument("--prepare-revision", action="store_true",
                         help="Save one offline repair request using the service's accepted draft; does not run it or qualify timing")
     parser.add_argument("--output", required=True, type=Path)

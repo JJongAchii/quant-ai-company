@@ -526,6 +526,29 @@ def test_article_extraction_skips_long_navigation_before_excerpting(monkeypatch)
     assert page.article() == ("", "missing")
 
 
+def test_short_declared_body_does_not_fall_back_to_unrelated_news(monkeypatch):
+    from quant_company.news import originals
+
+    raw = ("<article><h1>Investment may be announced</h1>"
+           "<div itemprop='articleBody'>Investment may be announced</div>"
+           "<div class='relation_newslist'>" + CONTENT*3 + "</div></article>").encode()
+    monkeypatch.setattr(originals, "fetch", lambda url: (
+        {"ok": True, "content": "Unrelated news "*100, "content_type": "text/html; charset=utf-8",
+         "original_sha256": "b"*64}, raw))
+    receipt, original = fetch_original("https://official.example.org/flash")
+    assert not receipt["ok"] and receipt["error"] == "article_body_not_found"
+    assert receipt["content"] == "" and original == raw
+
+
+def test_declared_body_without_enough_text_cannot_use_outer_main():
+    page = ArticlePage()
+    page.feed("<main>" + CONTENT + "<div itemprop='articleBody'></div></main>")
+    assert page.article() == ("", "missing")
+    page = ArticlePage()
+    page.feed("<article>" + CONTENT + "</article>")
+    assert page.article()[0] == CONTENT.strip()
+
+
 def test_large_editorial_batch_preserves_primary_ids_with_bounded_excerpts():
     from quant_company.news.editor import bounded_prompt
 

@@ -1,6 +1,7 @@
 """Exact written-unit/date normalization; no estimation or market-price inference."""
 
 import re
+from datetime import date
 from decimal import Decimal
 
 NUMBER = r"[+\-−]?\d[\d,]*(?:\.\d+)?"
@@ -16,6 +17,12 @@ def written_fractions(text):
               "quarter": Decimal("0.25"), "quarters": Decimal("0.25"),
               "fifth": Decimal("0.2"), "fifths": Decimal("0.2"),
               "tenth": Decimal("0.1"), "tenths": Decimal("0.1")}
+    # Expand the shared denominator only for an explicitly labelled point/percent
+    # range: "2 or 3 tenths of a percentage point" has two exact endpoints.
+    text = re.sub(r"\b(\d+)\s+or\s+(\d+)\s+("+"|".join(values)+r")"
+                  r"(?P<unit>\s+(?:of\s+(?:a|one)\s+)?(?:percentage[-\s]+)?(?:points?|percent)\b)",
+                  lambda m: f"{m[1]} {m[3]}{m['unit']} or {m[2]} {m[3]}{m['unit']}",
+                  text, flags=re.I)
     pattern = (r"\b(?:(a|an|\d+)\s+)?("+"|".join(values)+r")\b"
                r"(?=[-\s]+(of\b|(?:percentage[-\s]+)?points?\b|percent\b))")
 
@@ -67,6 +74,16 @@ def quantity(text):
 
 
 def numbers(text):
+    def dotted_date(match):
+        try:
+            year, month, day = (int(part) for part in match.groups())
+            date(year, month, day)
+        except ValueError:
+            return match[0]
+        return f"{year}년 {month}월 {day}일"
+
+    text = re.sub(r"(?<![\d.])((?:19|20)\d{2})\.(\d{1,2})\.(\d{1,2})(?!\d|\.\d)",
+                  dotted_date, text)
     # Canonicalize entire quantities so 2.5 million == 250만, not the unrelated bare digits 2.5/250.
     digit_words = "|".join(CARDINALS[:10])
     thousands = r"\b("+"|".join(CARDINALS[1:10])+r")-thousand-(\d{1,3})-point-("+digit_words+r"|\d+)\b"
@@ -78,6 +95,13 @@ def numbers(text):
     text = re.sub(r"\b(first|second|third|fourth)\s+quarter\b",
                   lambda m: quarters[m[1].lower()]+" quarter", text, flags=re.I)
     text = written_fractions(written_counts(text))
+    # A same-sentence pre-war comparison inherits this explicit flow unit.
+    # Do not propagate it to another sentence, a percent or a labelled unit.
+    text = re.sub(
+        "("+NUMBER+r")\s+kilobarrels(?P<context>\s+(?:a|per)\s+day[^.!?\n]{0,80}?,"
+        r"\s*against\s+a\s+pre-war\s+baseline\s+of\s+)("+NUMBER+r")(?=\.(?!\d)|[,;]|$)",
+        lambda m: m[1]+" kilobarrels"+m["context"]+m[3]+" kilobarrels", text, flags=re.I,
+    )
     # Some broadcasters spell decimal points as hyphenated words/numbers.
     text = re.sub(r"(?<![A-Za-z0-9])(\d+)-point-(\d+)\b", r"\1.\2", text, flags=re.I)
     # A compact percent range uses a hyphen as a separator, not the sign of
@@ -91,8 +115,9 @@ def numbers(text):
     normalized = re.sub(r"(?<![A-Za-z0-9])(?:US)?\$\s*("+NUMBER+r")m\b",
         lambda m: str(Decimal(m[1].replace(",", "").replace("−", "-"))*1000000),
         normalized, flags=re.I)
-    scales = {"million": 10**6, "billion": 10**9, "trillion": 10**12, "bn": 10**9, "tn": 10**12}
-    normalized = re.sub("("+NUMBER+r")\s*(million|billion|trillion|bn|tn)\b",
+    scales = {"million": 10**6, "billion": 10**9, "trillion": 10**12, "bn": 10**9, "tn": 10**12,
+              "kilobarrels": 1000}
+    normalized = re.sub("("+NUMBER+r")\s*(million|billion|trillion|bn|tn|kilobarrels)\b",
         lambda m: str(Decimal(m[1].replace(",", "").replace("−", "-"))*scales[m[2].lower()]),
         normalized, flags=re.I)
     # G7, H200 and similar names are semantic entities, not quantities. The

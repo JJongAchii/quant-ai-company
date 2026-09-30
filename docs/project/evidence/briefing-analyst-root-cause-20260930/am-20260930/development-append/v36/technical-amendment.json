@@ -1,0 +1,15 @@
+{
+  "at": "2026-09-30T10:24:11.635235+00:00",
+  "validation_version": 36,
+  "scope": "Post-output technical fix and source-preserving review serialization; NOT a fresh case",
+  "prior_failure_preserved": "../draft/assessment.json",
+  "new_writer_call": false,
+  "changes": [
+    "Exact kilobarrel-to-barrel conversion, with a same-sentence explicitly inherited pre-war flow baseline; mismatched units remain rejected",
+    "Independent review includes every used instrument definition; writer still receives full catalog; all18 original contents, all main claims, all12 criteria retained"
+  ],
+  "prior_review_context_over_limit": 88361,
+  "review_prompt_chars": 87948,
+  "request_id": "news-brief-eval-5219ccb79b903293c234533a404a7540",
+  "slack": "not_called"
+}

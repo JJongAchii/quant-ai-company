@@ -12,7 +12,7 @@ from quant_company.briefing.contracts import (
     BriefProposal,
     BriefReview,
     CalendarEvent,
-    Claim,
+    EditorialPatch,
     SourcePlan,
     item_map,
 )
@@ -89,10 +89,14 @@ def test_plan_context_is_bounded_and_does_not_send_full_candidate_corpus():
 
 
 def test_material_fact_must_be_visible_not_only_in_thread_or_a_citation():
+    p, data = proposal(), bundle()
+    p.calendar = [CalendarEvent(id="release", title="경제지표 발표", at=None,
+        source_timezone="미국 현지", status="time_unconfirmed", evidence=p.watchpoints[0].evidence)]
+    p.watchpoints += [p.watchpoints[0].model_copy(update={"id": identity}) for identity in ("watch2", "watch3")]
     original = review().model_dump()
-    original["source_assessments"][0]["material_facts"][0]["main_item_ids"] = ["view"]
+    original["source_assessments"][0]["material_facts"][0]["main_item_ids"] = ["watch3"]
     with pytest.raises(ValueError, match="not_in_main_post"):
-        validate_review(BriefReview.model_validate(original), proposal(), bundle())
+        validate_review(BriefReview.model_validate(original), p, data)
     original["source_assessments"][0]["material_facts"][0]["main_item_ids"] = []
     with pytest.raises(ValueError, match="missing_fact_cannot_pass"):
         validate_review(BriefReview.model_validate(original), proposal(), bundle())
@@ -150,8 +154,28 @@ def test_review_compression_preserves_exact_quotes_and_raw_proposal():
     main = "".join(part if isinstance(part, str) else escape(items[part["item_text"]].text, quote=False)
                    for part in payload["main_post_preview"])
     assert main == render(proposal(), bundle())[0][0]
-    assert "view" not in payload["main_post_item_ids"] and "fact" in payload["main_post_item_ids"]
+    assert "view" in payload["main_post_item_ids"] and "fact" in payload["main_post_item_ids"]
     assert p == before
+    schema = json.loads(request.split("SCHEMA:\n")[1].split("\nBRIEF DATA JSON:\n")[0])
+    assert len(schema["$defs"]["ReviewChecks"]["required"]) == 12
+    assert schema["$defs"]["FactAssessment"]["properties"]["quote"]["minLength"] == 10
+    procedure = json.loads(request.split("SPECIALIST PROCEDURE JSON:\n")[1].split("\nINSTRUMENTS:\n")[0])
+    assert procedure["employee"] == "market_brief" and procedure["digest"]
+    assert "procedure" not in procedure
+
+
+def test_repeated_visible_claims_compact_without_losing_text_or_actual_item_ids():
+    p, data = proposal(), bundle()
+    p.summary[0].text = p.issues[0].interpretation.text
+    request = prompt(data, "review", p.model_dump(mode="json"))
+    payload = json.loads(request.split("BRIEF DATA JSON:\n")[1])
+    items = item_map(p)
+    main = "".join(part if isinstance(part, str) else escape(items[part["item_text"]].text, quote=False)
+                   for part in payload["main_post_preview"])
+    assert main == render(p, data)[0][0]
+    assert {"view", "summary"} <= set(payload["main_post_item_ids"])
+    assert sum(isinstance(part, dict) and items[part["item_text"]].text == p.summary[0].text
+               for part in payload["main_post_preview"]) == 2
 
 
 def test_unknown_event_time_does_not_require_an_invented_iana_timezone():
@@ -175,6 +199,17 @@ def test_expanded_real_source_packet_fits_and_keeps_the_third_calendar_in_main()
     assert len(request) <= 88000 and len(payload["documents"]) == 20
     assert "pce" in payload["main_post_item_ids"]
     assert "PCE" in render(BriefProposal.model_validate(data["proposal"]), data["bundle"])[0][0]
+
+
+def test_reviewer_keeps_all_used_instrument_definitions_and_writer_keeps_catalog():
+    p = proposal()
+    reviewed = prompt(bundle(), "review", p.model_dump(mode="json"))
+    definitions = json.loads(reviewed.split("INSTRUMENTS:\n")[1].split("\nSCHEMA:\n")[0])
+    assert set(definitions) == {o.instrument for o in p.observations}
+    assert definitions["sp500"] == ["S&P 500", "pt", "US"]
+    written = prompt(bundle(), "write")
+    catalog = json.loads(written.split("INSTRUMENTS:\n")[1].split("\nSCHEMA:\n")[0])
+    assert "btc" in catalog and "kospi" in catalog
 
 
 def test_reviewer_can_request_only_frozen_omitted_originals_and_cannot_publish_them_unread():
@@ -259,13 +294,14 @@ def test_real_store_repair_reads_omitted_original_and_reviews_the_expanded_bundl
     store.commit(response(store.prepare()["request"], BriefReview.model_validate(critique)))
     repair = store.prepare()["request"]
     assert repair["request_id"].endswith("-revise") and denial in repair["prompt"]
-    revised = proposal()
-    revised.issues[0].counterpoint = Claim(id="denial", text="당국자는 직접 회담 일정이 잡혔다는 주장을 부인했습니다.",
-                                         evidence=[{"source_id": "opposing", "quote": denial}])
-    store.commit(response(repair, revised))
+    revised = proposal().issues[0].interpretation
+    text = revised.text+" 당국자는 직접 회담 일정이 잡혔다는 주장을 부인했습니다."
+    patch = EditorialPatch.model_validate({"edits": [{"id": revised.id, "text": text,
+        "evidence": [{"source_id": "opposing", "quote": denial}]}]})
+    store.commit(response(repair, patch))
     final = review().model_dump()
     final["source_assessments"].append({"source_id": "opposing", "treatment": "covered", "reason": "추가 원문의 협상 부인이 본문 반대 근거에 반영됨",
-        "item_ids": ["denial"], "material_facts": [{"fact": "당국자가 직접 회담 일정을 부인함", "quote": denial, "main_item_ids": ["denial"]}]})
+        "item_ids": [revised.id], "material_facts": [{"fact": "당국자가 직접 회담 일정을 부인함", "quote": denial, "main_item_ids": [revised.id]}]})
     store.commit(response(store.prepare()["request"], BriefReview.model_validate(final)))
     clock["at"] = edition.due_at
     store.flush()
@@ -274,8 +310,12 @@ def test_real_store_repair_reads_omitted_original_and_reviews_the_expanded_bundl
         first = conn.execute("SELECT request FROM brief_calls WHERE phase='write'").fetchone()["request"]
     assert first == original_request
     assert row["quality"]["revision_used"] and not row["quality"]["reduced"]
-    assert revised.issues[0].counterpoint.text in row["rendered"][0]
+    assert text in row["rendered"][0]
     assert replay(row)["ok"]
+    from scripts import evaluate_briefing
+    offline = evaluate_briefing.assess(data, response(repair, patch), response({"request_id": "final-review"}, BriefReview.model_validate(final)),
+        previous=response(original_request), correction_review=response({"request_id": "review"}, BriefReview.model_validate(critique)))
+    assert offline["passed"] and {d["id"] for d in offline["bundle"]["documents"]} == {"source-1", "opposing"}
 
 
 @pytest.mark.asyncio

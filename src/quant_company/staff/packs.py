@@ -22,7 +22,7 @@ def pack(employee: str) -> dict:
 
 
 def pack_content(employee: str, text: str) -> dict:
-    return {"employee": employee, "version": "2026-09-22.1" if employee == "market_brief" else PACK_VERSION,
+    return {"employee": employee, "version": "2026-09-30.1" if employee == "market_brief" else PACK_VERSION,
             "digest": hashlib.sha256(text.encode()).hexdigest(), "procedure": text,
             "meaning": "Reviewed work procedure, not a qualification certificate or new tool permission."}
 

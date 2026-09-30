@@ -10,15 +10,28 @@ from ..owner_controls import effective_limits
 from ..staff.packs import coaching, pack
 from ..web_tools import search_prompt, search_result
 from . import schedule
-from .contracts import BRIEFER, BriefProposal, BriefReview, ConditionPatch, SourceDocument, SourcePlan
+from .contracts import (
+    BRIEFER,
+    BriefProposal,
+    BriefReview,
+    ConditionPatch,
+    EditorialPatch,
+    MaterialFactPatch,
+    SourceDocument,
+    SourcePlan,
+)
 from .coverage import COVERAGE_VERSION, inventory
 from .editor import (
+    EDITORIAL_PATCH,
+    FACT_PATCH,
     FORMAT_VERSION,
     PATCH,
     REVIEW,
     VALIDATION_VERSION,
     WRITE,
     apply_condition_patch,
+    apply_editorial_patch,
+    apply_material_fact_patch,
     artifact,
     prompt,
     prune,
@@ -50,7 +63,7 @@ class BriefStore:
         return fingerprint({"version": FORMAT_VERSION, "validation_version": VALIDATION_VERSION,
                             "selection_version": COVERAGE_VERSION,
                             "schedule_version": schedule.SCHEDULE_VERSION,
-                            "editorial_contract": fingerprint([PLAN, WRITE, REVIEW, PATCH]),
+                            "editorial_contract": fingerprint([PLAN, WRITE, REVIEW, PATCH, FACT_PATCH, EDITORIAL_PATCH]),
                             "enabled": s.briefing_enabled, "publish": s.briefing_publish_enabled,
                             "analyst_procedure": pack(BRIEFER)["digest"],
                             "lake": s.company_lake_uri,
@@ -124,6 +137,9 @@ class BriefStore:
             market: schedule.close(market, date.fromisoformat(definition[key]), changes).isoformat()
             for market, key in (("US", "us_session"), ("KR", "kr_session")) if definition.get(key)
         }
+        if row["kind"] == "am" and definition.get("previous_kr_session"):
+            bundle["exchange_closes"]["KR_previous"] = schedule.close(
+                "KR", date.fromisoformat(definition["previous_kr_session"]), changes).isoformat()
         morning = conn.execute("""SELECT proposal FROM brief_editions a WHERE a.channel=%s AND a.owner_user=%s
             AND a.day=%s AND a.kind='am' AND a.committed_at IS NOT NULL AND a.proposal IS NOT NULL
             AND (NOT a.publish OR EXISTS(SELECT 1 FROM brief_messages m JOIN outbox o ON o.id=m.id
@@ -270,6 +286,12 @@ class BriefStore:
                 if call["phase"] == "revise" and feedback.get("repair_mode") == "conditions_only":
                     proposed = apply_condition_patch(BriefProposal.model_validate(row["proposal"]),
                         artifact(response, ConditionPatch), feedback["allowed_ids"])
+                elif call["phase"] == "revise" and feedback.get("repair_mode") == "material_append":
+                    proposed = apply_material_fact_patch(BriefProposal.model_validate(row["proposal"]),
+                        artifact(response, MaterialFactPatch), feedback["allowed_sources"])
+                elif call["phase"] == "revise" and feedback.get("repair_mode") == "editorial_patch":
+                    proposed = apply_editorial_patch(BriefProposal.model_validate(row["proposal"]),
+                        artifact(response, EditorialPatch), feedback["allowed_sources"])
                 else:
                     proposed = artifact(response, BriefProposal)
                 rejected = validate(proposed, row["bundle"])

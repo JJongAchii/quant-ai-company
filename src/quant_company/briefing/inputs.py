@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 from ..company import fingerprint
 from ..news.contracts import load_sources
 from ..news.feeds import fetch_feed, timestamp
-from ..news.originals import fetch_original
+from ..news.originals import fetch_original, supported_article_body
 from .contracts import SourceDocument
 from .coverage import PATTERNS, inventory, select_documents, topics
 
@@ -45,7 +45,7 @@ def market_report(doc, kind):
 
 
 def document(receipt, registration, publisher, kind, *, title=None, published=None, origin_group=""):
-    if not receipt.get("ok") or receipt.get("content_truncated"):
+    if not receipt.get("ok") or receipt.get("content_truncated") or not supported_article_body(receipt):
         return None
     retrieved = timestamp(receipt.get("retrieved_at"))
     if retrieved is None or not receipt.get("content") or not receipt.get("original_sha256"):
@@ -72,8 +72,8 @@ def collect(company, edition, existing=None, candidates=(), *, at, page_fetch=fe
     lower = edition.cutoff-timedelta(hours=72 if edition.weekly else 30)
     for value in [*(existing or {}).get("candidate_documents", []), *(existing or {}).get("documents", [])]:
         doc = SourceDocument.model_validate(value)
-        if doc.kind == "calendar" or (doc.registration in spec_map and doc.published_at
-                                      and lower <= doc.published_at <= min(at, edition.cutoff)):
+        if supported_article_body(doc.receipt) and (doc.kind == "calendar" or (doc.registration in spec_map and doc.published_at
+                                      and lower <= doc.published_at <= min(at, edition.cutoff))):
             docs[doc.url] = doc
     with company.db.transaction() as conn:
         rows = conn.execute("""WITH originals AS (SELECT DISTINCT ON (a.url) a.*,s.config
