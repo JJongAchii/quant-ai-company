@@ -290,3 +290,130 @@ def test_native_protocol_probes_both_staged_images_without_model_calls(release, 
     assert all(command[-1] == release.PROTOCOL_PROBE for command in commands)
     assert "CodexRunner" not in release.PROTOCOL_PROBE
     assert not any("--mount" in command or "--volume" in command for command in commands)
+
+
+@pytest.mark.parametrize("failure", [None, "digest", "policy", "identity", "busy", "race",
+                                     "unsettled", "propagation", "independent", "ambiguous"])
+def test_resume_preserves_historic_posts_and_only_recreates_selected_services(
+    release, monkeypatch, tmp_path, failure
+):
+    import hashlib
+
+    state, current = tmp_path / "state", tmp_path / "release"
+    commit, old_policy, live_policy = "a" * 40, "b" * 64, "c" * 64
+    for directory in (state / "config", state / "secrets", state / "releases", state / "operations", current):
+        directory.mkdir(parents=True)
+    monkeypatch.setattr(release, "STATE", state)
+    env = state / "config/runtime.env"
+    original = ("RELEASE_COMMIT=" + commit + "\nQUANT_FEED_ENABLED=true\n"
+                "QUANT_FEED_PUBLISH_ENABLED=false\nQUANT_FEED_CHANNEL_ID=CQUANT\nSLACK_TEAM_ID=TTEST\n")
+    env.write_text(original)
+    for name in ("secrets/slack-credentials.json", "config/roles.json", "config/research-profiles.json",
+                 "config/research-qlab.json", "config/data-watch-contracts.json"):
+        (state / name).write_text("{}")
+    deployed = state / "deployment.json"
+    deployed.write_text(json.dumps({"commit": commit, "phase": "preview_active"}))
+    specifications = []
+    for number in range(2):
+        proof = state / "operations" / (str(number) + ".json")
+        proof.write_text(json.dumps({"state": "passed", "slack_writes": False,
+            "policy": ("d" * 64 if failure == "policy" else old_policy) if number == 0 else None,
+            "case_results": {"positive": {"state": "passed"}, "negative": {"state": "passed"}},
+            "case_number": number}))
+        digest = hashlib.sha256(proof.read_bytes()).hexdigest()
+        specifications.append(str(proof) + ":" + ("e" * 64 if failure == "digest" else digest))
+    args = SimpleNamespace(base=commit, commit=commit, channel="CQUANT", qualification=specifications)
+    selected = {"quant-company-" + name + "-1" for name in release.SELECTED}
+    rows = {name: {"id": name, "image_id": "fixed-image", "running": True, "oom": False,
+                   "restarts": 0, "health": "healthy", "image_revision": commit, "quant_publish": "false"}
+            for name in selected | {"quant-company-quant-codex-runtime-1", "quant-company-news-worker-1",
+                                    "quant-company-worker-1", "quant-company-postgres-1"}}
+    commands, activity_calls = [], []
+    interrupted = False
+
+    def run(command, **kwargs):
+        commands.append(command)
+        if command[:2] == ["docker", "stop"]:
+            rows["quant-company-quant-feed-worker-1"]["running"] = False
+        if command[:2] == ["docker", "start"]:
+            rows["quant-company-quant-feed-worker-1"]["running"] = True
+        if "psql" in command:
+            # A delivered historic publication is allowed. Only unresolved
+            # statuses are counted, rather than imposing first-activation zero.
+            assert "NOT IN ('delivered','stale')" in command[-1]
+            return "1" if failure == "unsettled" else "0"
+        if command[-1] == release.SLACK_PROBE:
+            return json.dumps({"ok": True, "user_id": "WRONG" if failure == "identity" else "UBOT",
+                               "app_id": "AAPP", "team_id": "TTEST"})
+        return ""
+
+    def activity():
+        activity_calls.append(True)
+        busy = (failure == "busy" or failure == "race" and len(activity_calls) > 1 or interrupted)
+        return {"running_quant_calls": int(busy), "pending_quant_outbox": 0, "sending_outbox": 0}
+
+    def probe():
+        enabled = "QUANT_FEED_PUBLISH_ENABLED=true" in env.read_text()
+        return {"authorized": True, "channel": "CQUANT", "publish_enabled":
+                enabled and failure != "propagation", "policy": live_policy if enabled else old_policy,
+                "live_policy": live_policy}
+
+    def compose(helper, root, *command):
+        nonlocal interrupted
+        commands.append(["compose", *command])
+        assert root == current
+        if failure == "ambiguous":
+            interrupted = True
+            raise RuntimeError("possible new frozen call; do not replay")
+        enabled = "QUANT_FEED_PUBLISH_ENABLED=true" in env.read_text()
+        for service in command[command.index("120") + 1:]:
+            assert service in release.SELECTED
+            rows["quant-company-" + service + "-1"].update(
+                id="recreated-" + service, running=True, quant_publish="true" if enabled else "false")
+        if failure == "independent":
+            rows["quant-company-news-worker-1"]["id"] = "changed-by-another-owner"
+
+    helper = SimpleNamespace(atomic=lambda path, value: path.write_bytes(value))
+
+    def setenv(helper, updates):
+        assert updates == {"QUANT_FEED_PUBLISH_ENABLED": "true"}
+        helper.atomic(env, env.read_bytes().replace(b"QUANT_FEED_PUBLISH_ENABLED=false",
+                                                  b"QUANT_FEED_PUBLISH_ENABLED=true"))
+
+    monkeypatch.setattr(release, "run", run)
+    monkeypatch.setattr(release, "activity", activity)
+    monkeypatch.setattr(release, "publication_probe", probe)
+    monkeypatch.setattr(release, "compose", compose)
+    monkeypatch.setattr(release, "inventory", lambda: {name: row.copy() for name, row in rows.items()})
+    monkeypatch.setattr(release, "module", lambda path: SimpleNamespace(
+        setenv=setenv, APP_ID="AAPP", BOT_USER_ID="UBOT"))
+    journal = state / "releases" / ("quant-feed-resume-" + commit + ".json")
+    if failure:
+        with pytest.raises((ValueError, RuntimeError)):
+            release.resume(args, current, deployed, helper)
+        if failure == "ambiguous":
+            assert "QUANT_FEED_PUBLISH_ENABLED=true" in env.read_text()
+            assert json.loads(journal.read_text())["phase"] == "intervention_required"
+        else:
+            assert env.read_text() == original
+        if failure in {"digest", "policy", "identity", "busy"}:
+            assert not journal.exists()
+            assert not any(command[:2] == ["docker", "stop"] for command in commands)
+        elif failure != "ambiguous":
+            assert json.loads(journal.read_text())["phase"] == "rolled_back"
+            assert rows["quant-company-quant-feed-worker-1"]["running"]
+    else:
+        release.resume(args, current, deployed, helper)
+        result = json.loads(journal.read_text())
+        assert result["phase"] == "live_active" and result["old_documents_untouched"]
+        assert result["independent_services_preserved"]
+        assert "QUANT_FEED_PUBLISH_ENABLED=true" in env.read_text()
+        assert len([command for command in commands if command[0] == "compose"]) == 2
+        before_retry = len(commands)
+        release.resume(args, current, deployed, helper)
+        assert len(commands) == before_retry
+    assert all(command[-1] == "quant-company-quant-feed-worker-1" for command in commands
+               if command[:2] in (["docker", "stop"], ["docker", "start"]))
+    assert (state / "secrets/slack-credentials.json").read_text() == "{}"
+    assert not any("UPDATE quant_feed_documents" in str(command) or "INSERT INTO quant_feed_calls" in str(command)
+                   for command in commands)
