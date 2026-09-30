@@ -23,6 +23,12 @@ Slack 답변 전달을 증명하는 기록은 아니다.
 
 [운영 영수증](evidence/program-recovery-readback-20260930.json)
 
+새 데이터 단계는 필수 패킷 파일을 읽은 뒤 06:46:19 UTC 출력 형식 오류로 waiting이
+됐다. 원문 파일을 요청하는 응답에 안내 문장 `say`가 함께 들어가 내부 연구 계약에서
+거절됐다. Slack 발송·위임·기억 변경 요청은 없었다. 모델 완료 영수증은 보존됐고
+06:52:10 UTC 서비스가 2회차를 시작했다. 데이터 심사 결과의 완료를 아직 주장하지 않는다.
+[단계 상태 영수증](evidence/program-data-stage-started-20260930.json)
+
 ## 검증 범위
 
 실제 배포된 `73fcfc3`의 프로그램·controller 검사 33개와 전체 Ruff가 통과했다.

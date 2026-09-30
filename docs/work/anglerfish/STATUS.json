@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v6.json",
-  "state": "program_planning_recovered_data_gate_pending",
+  "state": "proposal_recovered_data_review_retrying",
   "previousIntent": "INTENT-v5.json",
   "deliverables": {
     "DIAGNOSIS": {
@@ -29,12 +29,13 @@
       "stageState": "completed"
     }
   },
-  "operationalStatus": "Same stalled proposal completed and registered; new independent data stage running. Five previous candidates waiting; program missions zero.",
+  "operationalStatus": "Proposal recovered and registered; first data attempt rejected a private-read response with nonempty say; second attempt started. No scientific mission.",
   "evidence": "../../project/evidence/program-recovery-readback-20260930.json",
   "nextStage": {
     "stage": "program_data",
-    "task": "fc13b603-ad76-5644-9fa8-800323883726",
+    "task": "1348a61f-9d0c-5a90-899c-5ceec37b5651",
     "candidate": "b5ce3cb7-d71b-5720-9f2d-72c9b1df7d18",
-    "observedAt": "2026-09-30T06:45:41.490290Z"
+    "observedAt": "2026-09-30T06:52:10.392095Z",
+    "attempt": 2
   }
 }
