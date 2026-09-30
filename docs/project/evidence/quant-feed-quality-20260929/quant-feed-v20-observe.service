@@ -1,0 +1,9 @@
+[Unit]
+Description=Read-only Quant feed deployment observation
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /var/lib/quant-company/operations/quant-feed-quality-20260930/collect_observation.py --directory /var/lib/quant-company/operations/quant-feed-quality-20260930/observation
+TimeoutStartSec=55
+Nice=10
