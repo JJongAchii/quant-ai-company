@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v6.json",
-  "state": "proposal_recovered_data_review_retrying",
+  "state": "private_output_fix_validation",
   "previousIntent": "INTENT-v5.json",
   "deliverables": {
     "DIAGNOSIS": {
@@ -11,16 +11,17 @@
     "APPLICATION": {
       "status": "completed",
       "integratedCommit": "73fcfc34a6876e0a80c14fa72edae2cdb8413b0c",
-      "localDuplicateDiscarded": true
+      "localDuplicateDiscarded": true,
+      "privateOutputCorrection": "implemented"
     },
     "VALIDATION": {
-      "status": "completed",
-      "focusedRealPostgresTests": 33,
-      "lint": "passed"
+      "status": "in_progress",
+      "deployedHistoryFixTests": 33,
+      "newCandidateFullSuite": "running"
     },
     "REVIEW": {
-      "status": "completed",
-      "reason": "Concurrent reviewed deployment already active; no additional cutover requested"
+      "status": "in_progress",
+      "reason": "New bounded correction requires exact worker release review under autonomous-research runbook"
     },
     "LIVE_CHECK": {
       "status": "completed",
@@ -29,7 +30,7 @@
       "stageState": "completed"
     }
   },
-  "operationalStatus": "Proposal recovered and registered; first data attempt rejected a private-read response with nonempty say; second attempt started. No scientific mission.",
+  "operationalStatus": "Planning recovered. Two independent data attempts rejected nonempty private say; candidate adds one same-attempt correction with no reads/messages applied for rejected output. Program missions zero.",
   "evidence": "../../project/evidence/program-recovery-readback-20260930.json",
   "nextStage": {
     "stage": "program_data",
@@ -37,5 +38,6 @@
     "candidate": "b5ce3cb7-d71b-5720-9f2d-72c9b1df7d18",
     "observedAt": "2026-09-30T06:52:10.392095Z",
     "attempt": 2
-  }
+  },
+  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/97"
 }

@@ -3,7 +3,7 @@
   "slug": "anglerfish",
   "revision": 6,
   "sourceRequest": "이어서 진행해줘",
-  "outcome": "Verify recovery of the approved research program after a concurrent integrated worker fix; preserve evidence and identify the remaining data-readiness gate.",
+  "outcome": "Recover approved research planning and data review without discarding source reads after a narration-only output rejection.",
   "deliverables": [
     {
       "id": "DIAGNOSIS",
@@ -11,7 +11,7 @@
     },
     {
       "id": "APPLICATION",
-      "description": "Integrate deployed prior-task navigation fix; discard duplicate local implementation"
+      "description": "Integrate deployed prior-task navigation fix and add one bounded same-attempt private-output correction"
     },
     {
       "id": "VALIDATION",
@@ -19,7 +19,7 @@
     },
     {
       "id": "REVIEW",
-      "description": "Record exact deployed source and operational receipt"
+      "description": "Prepare reviewed PR and exact worker-only release for the new correction"
     },
     {
       "id": "LIVE_CHECK",
