@@ -467,6 +467,24 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
 
     decision = response.decision
     if (decision.say.strip() or decision.delegations or decision.messages or decision.memories or decision.follow_up):
+        from .program_controller import PROGRAM_STAGES
+
+        # A harmless narration on a private read must not discard this attempt's
+        # completed source reads. Reject its effects, retain the response, and let
+        # the employee correct the envelope once using the same evidence thread.
+        if (decision.say.strip() and row["stage"] in PROGRAM_STAGES
+                and not (decision.delegations or decision.messages or decision.memories or decision.follow_up)
+                and row["context"].get("_private_output_hint_attempt") != row["attempt"]):
+            context = {**row["context"], "_private_output_hint_attempt": row["attempt"]}
+            hint = ('private_output_rejected: set say="". For a file read return one research_control tool, '
+                    'status="continue", artifacts=[]; for completion return one JSON artifact. '
+                    'The rejected response performed no file read or public message. Continue from file_progress.')
+            conn.execute("UPDATE research_mission_stages SET context=%s,error=%s,updated_at=now() WHERE id=%s",
+                         (Jsonb(context), hint, row["id"]))
+            conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                         (Jsonb(response.model_dump(mode="json")), turn["id"]))
+            company._new_turn(conn, task)
+            return {"state": "completed", "private_output_rejected": True}
         raise PolicyError("Research stage output must stay in its private typed artifact")
     if decision.tools:
         if enabled(row):
