@@ -281,11 +281,27 @@
         {
           "path": "docs/project/evidence/research-programs-20260929/packet-version-postcutover-no-loop.json",
           "sha256": "a3efeb730993"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/program-continuation-diagnosis.json",
+          "sha256": "7fb4c91bb767"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/new-source-stage-transitions.json",
+          "sha256": "8484cd7ffc95"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-live-readback.json",
+          "sha256": "a632d89f565f"
+        },
+        {
+          "path": "docs/project/RESEARCH-PROGRAMS-CONTINUATION-20260930.md",
+          "sha256": "60445094e3f6"
         }
       ],
-      "note": "Signed owner program remains active. All four ETF tasks are waiting after independent blocked data assessments and director waits. Fourth director read two originals and the frozen engine; no fifth proposal appeared across three worker-active snapshots over 175 seconds after selection. Zero missions, reservations and scientific trials. Source timing, original bytes and execution evidence remain unresolved.",
+      "note": "Signed owner program remains active. Two new original sources changed the program evidence version from 11 to 12 to 13 sources; common source hashes stayed fixed. Fifth ETF task independently blocked and director wait. Next proposal stage resumed after a same-turn prompt-size repair. Five tasks waiting; zero missions, reservations and scientific trials.",
       "status": "in_progress",
-      "updatedAt": "2026-09-29T07:19:49.857221+00:00"
+      "updatedAt": "2026-09-30T06:44:14.381739+00:00"
     },
     "TECHNICAL_RECOVERY": {
       "evidence": [
@@ -484,16 +500,60 @@
         {
           "path": "docs/project/RESEARCH-PROGRAMS-POST-APPROVAL-20260929.md",
           "sha256": "ddac9acf3b72"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/program-temporal-readback.json",
+          "sha256": "8539085e5e56"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-validation.json",
+          "sha256": "94ec492fd196"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-staged.json",
+          "sha256": "703b7c3d0088"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-built.json",
+          "sha256": "a2b945555beb"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-qualified.json",
+          "sha256": "78a0061e9fbc"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-precheck.json",
+          "sha256": "b0c8cf2f53d7"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-cutover.json",
+          "sha256": "5d33e3d1e800"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-postcheck.json",
+          "sha256": "995c630ba6be"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-live-readback.json",
+          "sha256": "a632d89f565f"
+        },
+        {
+          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-live-readback.py",
+          "sha256": "e09af29ddbd4"
+        },
+        {
+          "path": "docs/project/RESEARCH-PROGRAMS-CONTINUATION-20260930.md",
+          "sha256": "60445094e3f6"
         }
       ],
-      "note": "Program-wide packet evidence-version worker f1947f4 is live. The preceding proposal and post-cutover selection have the same evidence version, 11 source file hashes and selected ETF packet digest; three read-only snapshots over 175 seconds show no fifth proposal while worker heartbeats advanced. Regression 19 passed, full suite 1372 passed/13 skipped, lint and PR service CI passed.",
+      "note": "Temporal repeatedly failed before model dispatch because prior task history exceeded the prompt contract. Immutable full prior-task files and bounded navigation passed 20 PostgreSQL regressions, 1373 full tests/13 skips, lint and service CI. Worker-only cutover to 73fcfc3 preserved all other services and same stage/attempt/turn IDs. The stalled turn completed with actual Codex using a 47130-character prompt; all five prior files matched original DB records.",
       "status": "verified",
-      "updatedAt": "2026-09-29T07:19:49.857221+00:00"
+      "updatedAt": "2026-09-30T06:44:14.381739+00:00"
     }
   },
   "intentDigest": "b3c652b7b56b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-29T07:19:49.857221+00:00"
+  "updatedAt": "2026-09-30T06:44:14.381739+00:00"
 }
