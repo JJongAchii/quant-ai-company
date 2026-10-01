@@ -28,7 +28,8 @@ def test_activity_uses_database_container_when_api_is_stopped(release, monkeypat
     assert "quant_feed_calls" in commands[0][-1]
 
 
-def test_stage_builds_only_dependency_identical_app_and_dedicated_runtime(release, monkeypatch, tmp_path):
+@pytest.mark.parametrize("installed", [False, True])
+def test_stage_builds_only_dependency_identical_app_and_dedicated_runtime(release, monkeypatch, tmp_path, installed):
     import hashlib
 
     base, target = tmp_path / "base", tmp_path / "target"
@@ -54,6 +55,9 @@ def test_stage_builds_only_dependency_identical_app_and_dedicated_runtime(releas
     journal = tmp_path / "journal.json"
     before = {"quant-company-api-1": {"image_id": "sha256:app"},
               "quant-company-codex-runtime-1": {"image_id": "sha256:runtime"}}
+    runtime_name = "quant-company-quant-codex-runtime-1" if installed else "quant-company-codex-runtime-1"
+    if installed:
+        before[runtime_name] = {"image_id": "sha256:runtime"}
     commands = []
     expected = {"quant_company/sample.py": "d" * 64}
 
@@ -71,7 +75,7 @@ def test_stage_builds_only_dependency_identical_app_and_dedicated_runtime(releas
 
     def run(command, **kwargs):
         commands.append(command)
-        if command[:3] == ["docker", "inspect", "quant-company-codex-runtime-1"]:
+        if command[:3] == ["docker", "inspect", runtime_name]:
             return json.dumps([{"Image": "sha256:runtime", "Config": {"Labels": {
                 "org.opencontainers.image.revision": runtime_commit}}}])
         if command[:3] == ["docker", "inspect", "quant-company-api-1"]:
@@ -93,6 +97,7 @@ def test_stage_builds_only_dependency_identical_app_and_dedicated_runtime(releas
     result = json.loads(journal.read_text())
     assert result["phase"] == "staged"
     assert result["base_app_commit"] == app_commit
+    assert result["base_runtime_service"] == ("quant-codex-runtime" if installed else "codex-runtime")
     assert [image["target"] for image in result["images"]] == ["app", "codex"]
     builds = [command for command in commands if command[:2] == ["docker", "build"]]
     assert len(builds) == 2 and all("--network=none" in command for command in builds)
@@ -100,9 +105,10 @@ def test_stage_builds_only_dependency_identical_app_and_dedicated_runtime(releas
     assert not any(command[:2] == ["docker", "stop"] for command in commands)
 
 
-@pytest.mark.parametrize("failure", [None, "pinned", "environment", "base_image", "setenv", "protocol"])
+@pytest.mark.parametrize("failure", [None, "pinned", "environment", "base_image", "setenv", "protocol", "calendar"])
+@pytest.mark.parametrize("installed", [False, True])
 def test_cutover_recreates_only_selected_services_and_preserves_publication_pause(
-    release, monkeypatch, tmp_path, failure
+    release, monkeypatch, tmp_path, failure, installed
 ):
     fail_setenv = failure == "setenv"
     old_app_commit = "d" * 40 if failure == "pinned" else "a" * 40
@@ -115,6 +121,10 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
     env.write_text(
         "RELEASE_COMMIT=" + env_commit + "\nQUANT_FEED_ENABLED=true\nQUANT_FEED_PUBLISH_ENABLED=false\n"
     )
+    (state / "config/data-watch-contracts.json").write_text("[]\n")
+    if failure == "calendar":
+        (state / "config/data-watch-contracts.json").unlink()
+        (state / "config/data-watch-contracts.json").mkdir()
     journal = state / "journal.json"
     commit = "b" * 40
     journal.write_text(
@@ -124,6 +134,7 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
                 "commit": commit,
                 "previous": str(base),
                 "qdata_commit": "qdata",
+                "base_runtime_service": "quant-codex-runtime" if installed else "codex-runtime",
                 "images": [{"target": "app", "id": "new-image", "base_id":
                             "wrong-image" if failure == "base_image" else "old-image"},
                            {"target": "codex", "id": "new-runtime-image", "base_id": "old-runtime-image"}],
@@ -152,6 +163,11 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
     }
     rows["quant-company-api-1"]["image_revision"] = old_app_commit
     rows["quant-company-codex-runtime-1"]["image_id"] = "old-runtime-image"
+    if installed:
+        rows["quant-company-quant-codex-runtime-1"] = {
+            **rows["quant-company-codex-runtime-1"], "id": "old-dedicated-runtime",
+            "image_revision": old_app_commit,
+        }
     commands = []
     linked = []
 
@@ -203,9 +219,10 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
     )
     monkeypatch.setattr(release.time, "sleep", lambda seconds: None)
     args = SimpleNamespace(base="a" * 40, commit=commit)
-    if failure in ("environment", "base_image"):
+    if failure in ("environment", "base_image", "calendar"):
         original = env.read_bytes()
-        with pytest.raises(ValueError, match="quality_release_" + failure + "_changed"):
+        code = "data_watch_calendar_must_be_a_file" if failure == "calendar" else "quality_release_" + failure + "_changed"
+        with pytest.raises(ValueError, match=code):
             release.cutover(args, base, target, journal, helper)
         assert not probed and not commands and not linked
         assert env.read_bytes() == original and json.loads(journal.read_text())["phase"] == "staged"
@@ -226,6 +243,8 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
     if fail_setenv:
         assert compositions == [
             ["compose", str(target), "stop", release.DEDICATED_RUNTIME],
+            *([["compose", str(base), "up", "-d", "--no-deps", "--force-recreate", "--wait",
+                "--wait-timeout", "120", release.DEDICATED_RUNTIME]] if installed else []),
             ["compose", str(base), "up", "-d", "--no-deps", "--force-recreate", "--wait",
              "--wait-timeout", "120", *release.SELECTED],
         ]

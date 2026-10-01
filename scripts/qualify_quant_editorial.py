@@ -186,16 +186,17 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None, r
         positive.update(draft=None)
         repair_used = reused is not None  # Reusing a repaired draft must not reset its technical budget.
 
-        async def review_positive(stage):
+        async def review_positive(stage, label=None):
             nonlocal repair_used
+            label = "positive-" + (label or stage)
             try:
-                return await call("positive-" + stage, positive, stage)
+                return await call(label, positive, stage)
             except ProposalValidationError as exc:
                 if repair_used:
                     raise
                 repair_used = True
                 positive.update(draft=exc.draft, previous_critique=exc.feedback(positive.get("previous_critique")))
-                return await call("positive-" + stage + "-repair", positive, "repair")
+                return await call(label + "-repair", positive, "repair")
 
         draft = (revalidate("positive-draft", positive, "review") if reused is not None
                  else await review_positive("review"))
@@ -203,14 +204,17 @@ async def qualify(company, negative_id, positive_id, output, *, provider=None, r
             raise ValueError("positive_original_not_publishable")
         positive["draft"] = draft.model_dump(mode="json")
         critic = await call("positive-critic", positive, "critique")
-        revision_used = reused is not None and any(r["stage"] == "revision" for r in reused["calls"])
-        if critic.disposition == "revise" and not revision_used:
+        revisions_used = sum(r["stage"] == "revision" for r in reused["calls"]) if reused is not None else 0
+        while critic.disposition == "revise" and revisions_used < 2:
+            revisions_used += 1
             positive["previous_critique"] = critic.model_dump(mode="json")
-            draft = await review_positive("revision")
+            draft = await review_positive("revision", "revision" if revisions_used == 1 else "revision-2")
             if draft.disposition != "publish":
                 raise ValueError("positive_revision_not_publishable")
             positive["draft"] = draft.model_dump(mode="json")
-            critic = await call("positive-final-critic", positive, "critique")
+            critic = await call("positive-final-critic" + ("" if revisions_used == 1 else "-2"),
+                                positive, "critique")
+        receipt["editorial_revisions_used"] = revisions_used
         if critic.disposition != "pass":
             raise ValueError("positive_critique_not_passed")
         receipt["case_results"]["positive"] = {"state": "passed"}

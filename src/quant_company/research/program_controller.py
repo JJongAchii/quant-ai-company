@@ -34,12 +34,20 @@ PROGRAM_STAGES = {
         "For source_ids use only evidence_sources.source_id values and read each mapped original completely. "
         "Data packet file paths are evidence files, not source_ids. "
         "Check point-in-time availability, delistings, corporate actions, coverage and executable prices. "
-        "For exact replication check original conditions. Unknown checks are false; block missing evidence."),
+        "For exact replication check original conditions. Unknown checks are false; block missing evidence. "
+        "Only when the envelope has an explicit data.policy may its stated historical timing/vintage "
+        "assumptions be acknowledged for retrospective exploration. Verify coverage and theoretical evaluation "
+        "prices independently; keep point_in_time, executable_prices and original_conditions false. "
+        "Return exploratory_only with evaluation_prices=true and the exact data_policy_digest from the packet "
+        "identity only if that limited scope is supported and no other blocking gaps remain. Otherwise block. "
+        "An exploratory policy never permits ready or exact replication."),
     "program_selection": ("director", TaskDecision,
         "Select accept, revise or wait using the original evidence, task and independent data assessment. "
         "Compare the proposed fill method with the frozen engine in data_evidence_packets when available. "
         "Accept only a feasible, distinct task inside the approved envelope and remaining program budget. "
-        "A negative scientific result is useful evidence. Do not infer data readiness from employee agreement."),
+        "A negative scientific result is useful evidence. Do not infer data readiness from employee agreement. "
+        "exploratory_only is admissible solely inside the exact owner-approved retrospective data policy; "
+        "it is hypothesis generation and cannot authorize confirmation or deployment."),
 }
 
 
@@ -101,6 +109,11 @@ class ProgramApprovalAdapter:
             revision=target.revision, manifest_digest=target.manifest_digest, event_key=event_key, action=action)
         text = ("연구 프로그램을 승인했습니다. 자료 검토·데이터 확인·과제 선정 후 승인된 예산 안에서 연구합니다."
                 if action == "approve" else "프로그램의 새 연구를 중단하고 진행 중 실행의 취소와 대사를 요청했습니다.")
+        if action == "approve":
+            _, _, spec = ProgramStore(self.company).locked(conn, target.target_id)
+            if any(e.template.data.policy is not None for e in spec.envelopes):
+                text = ("한계를 명시한 탐색 연구 프로그램을 승인했습니다. 독립 데이터 검토 후 승인된 예산 안에서 "
+                        "가설을 탐색합니다. 당시 공개 시각·수정 이력은 미확인이고, 확증·운영 승격의 근거로 인정하지 않습니다.")
         conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (text, task["id"]))
         self.company._message(conn, project, task["id"], "director", "status", text)
 

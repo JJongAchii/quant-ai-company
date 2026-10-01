@@ -14,7 +14,7 @@ from .contracts import (
     ResearchDraft,
 )
 
-EVIDENCE_SCOPE = "미기재·확인 불가는 제공된 원문 텍스트 기준이며, 원문 전체에 없다는 단정이 아닙니다."
+EVIDENCE_SCOPE = "미기재·확인 불가는 검토에 제공된 원문 텍스트·발췌 기준이며, 원문 전체에 없다는 단정이 아닙니다."
 
 INSTRUCTIONS = """You are Quant Scout, an evidence-first Korean-language research curator for Korean and US equities.
 Return the requested JSON object directly, without an AgentDecision wrapper or an encoded JSON string.
@@ -70,7 +70,8 @@ into separate statements, each with its own sources. Never replace a needed span
 room for a different result; add another statement. Use basis=qualified_gap with no span_ids only for a clearly
 qualified omission in the supplied text; do not claim the full original lacks it. Use basis=interpretation with
 no span_ids only for a conditional editorial application or limitation, not for author results or numeric facts.
-Keep at most 12 source-backed statements in the whole brief. Every author-reported result and number must be in
+Respect each field's statement limit and the rendered-card budget; do not add unnecessary statements.
+Every author-reported result and number must be in
 its own source-backed statement. Preserve unaffected statements and their span_ids in a revision; correct only
 the criticized statement and any other statement containing the same error. No unsupported performance,
 invented links, broad copied passages, or buy/sell instructions.
@@ -158,7 +159,7 @@ def prompt(bundle, stage):
             "Repair only the deterministic validation issues in previous_critique. The failed draft is supplied; "
             "preserve its supported content and any earlier editorial corrections. Do not introduce new claims."
             if stage == "repair" else
-            "Produce one research brief. If a prior critique exists, correct its issues in this single allowed revision. "
+            "Produce one research brief. If a prior critique exists, correct its issues in this bounded revision. "
             "Use the supplied draft: preserve unaffected supported facts and fix every occurrence of a flagged claim "
             "across the brief and evidence, not just the field explicitly named. Do not add unrelated claims.")
     metadata = bundle.get("metadata") or {}
@@ -261,7 +262,7 @@ BOUND_FIELDS = ("market", "why_read", "idea", "data_period", "validation", "auth
 INTERPRETIVE_FIELDS = {"why_read", "validation", "limitations", "application"}
 
 
-def _bound_brief(draft, pages, corrections):
+def _bound_brief(draft, pages, corrections, *, context_clipped=False):
     spans = {span["span_id"]: span for span in source_spans(pages)}
     result = draft.model_dump(mode="json")
     evidence, issues = [], []
@@ -270,7 +271,11 @@ def _bound_brief(draft, pages, corrections):
         texts = []
         for index, statement in enumerate(statements):
             path = f"{field}[{index}]"
-            texts.append(statement.text.strip())
+            text = statement.text.strip()
+            if statement.basis == "qualified_gap" and context_clipped and "제공 원문" in text:
+                text = text.replace("제공 원문", "제공 발췌")
+                corrections.append({"kind": "clipped_gap_scope_narrowed", "field": path})
+            texts.append(text)
             ids = statement.span_ids
             if statement.basis == "source":
                 if not ids or len(set(ids)) != len(ids) or any(identity not in spans for identity in ids):
@@ -288,6 +293,8 @@ def _bound_brief(draft, pages, corrections):
             elif statement.basis == "qualified_gap" and not any(
                     marker in statement.text for marker in ("제공", "미기재", "해당 없음")):
                 issues.append({"code": "quant_gap_scope_missing", "field": path})
+            elif statement.basis == "qualified_gap" and context_clipped and "제공 발췌" not in text:
+                issues.append({"code": "quant_clipped_gap_requires_excerpt_scope", "field": path})
             elif re.search(r"\d", statement.text):
                 issues.append({"code": "quant_numeric_interpretation_requires_source", "field": path})
         result[field] = texts if field == "limitations" else " ".join(texts)
@@ -296,8 +303,6 @@ def _bound_brief(draft, pages, corrections):
         for field in ("idea", "author_results"):
             if not any(item["field_path"].startswith(field + "[") for item in evidence):
                 issues.append({"code": "quant_central_claim_requires_source", "field": field})
-        if len(evidence) > 12:
-            issues.append({"code": "quant_too_many_source_statements", "field": "evidence"})
     if issues:
         raise ProposalValidationError(draft, issues)
     try:
@@ -335,7 +340,8 @@ def validate(response, bundle, stage, *, audit=None):
     corrections = []
     if decision.artifacts[0].title == "quant_brief_v4":
         draft = _proposal(FieldBoundResearchDraft, decision.artifacts[0].content)
-        brief = _bound_brief(draft, bundle["pages"], corrections)
+        brief = _bound_brief(draft, bundle["pages"], corrections,
+                             context_clipped=bundle.get("context_clipped", False))
     elif decision.artifacts[0].title in {"quant_brief_v2", "quant_brief_v3"}:
         grouped = decision.artifacts[0].title == "quant_brief_v3"
         draft = _proposal(GroupedResearchDraft if grouped else ResearchDraft, decision.artifacts[0].content)
@@ -460,6 +466,27 @@ def validate(response, bundle, stage, *, audit=None):
     return brief
 
 
+def display_locations(locations):
+    """Collapse PDF extraction chunks to exact page coverage for the Slack footer."""
+    pages, other = set(), []
+    for location in dict.fromkeys(locations):
+        match = re.fullmatch(r"PDF p\.(\d+)(?: \[\d+/\d+\])?", location)
+        if match:
+            pages.add(int(match[1]))
+        else:
+            other.append(location)
+    ranges = []
+    for page in sorted(pages):
+        if ranges and page == ranges[-1][1] + 1:
+            ranges[-1][1] = page
+        else:
+            ranges.append([page, page])
+    if ranges:
+        other.insert(0, "PDF p." + ", ".join(str(start) if start == end else f"{start}–{end}"
+                                            for start, end in ranges))
+    return " · ".join(other)
+
+
 def render(brief, document, previous_url=None):
     def safe(value):
         # Escape Slack controls and mentions, not just HTML.
@@ -479,18 +506,19 @@ def render(brief, document, previous_url=None):
     date_line = brief.published_on + (f" (개정 {brief.revised_on})" if brief.revised_on else "")
     lines = [f"*{labels[brief.maturity]}{vintage}*", f"*{safe(brief.title)}*",
              f"{safe(document['publisher'])} · {safe(authors)} · {safe(date_line)}",
-             "*대상* " + safe(brief.market),
-             "", "*왜 읽나* " + safe(brief.why_read), "*핵심* " + safe(brief.idea),
-             "", "*데이터* " + safe(brief.data_period),
-             "*검증* " + safe(brief.validation),
-             "*저자 보고* " + safe(brief.author_results), ""]
+             "", "*핵심*", safe(brief.idea),
+             "", "*왜 읽나*", safe(brief.why_read),
+             "", "*연구 설계·결과*",
+             "• *대상* " + safe(brief.market),
+             "• *데이터* " + safe(brief.data_period),
+             "• *검증* " + safe(brief.validation),
+             "• *저자 보고* " + safe(brief.author_results), "", "*주의점*"]
     if brief.limitations:
-        lines.append("*주의* " + safe(brief.limitations[0]))
-        lines.extend("• " + safe(value) for value in brief.limitations[1:])
-    lines.extend(["*비용·회전율* " + safe(brief.costs_turnover),
-                  "*적용 전* " + safe(brief.application)])
+        lines.extend("• " + safe(value) for value in brief.limitations)
+    lines.append("• *비용·회전율* " + safe(brief.costs_turnover))
     if brief.commercial_bias:
-        lines.append("*이해관계* " + safe(brief.commercial_bias))
+        lines.append("• *이해관계* " + safe(brief.commercial_bias))
+    lines.extend(["", "*적용 전*", safe(brief.application)])
     if brief.change_summary:
         lines.append("*달라진 점* " + safe(brief.change_summary))
     lines.append("")
@@ -498,10 +526,11 @@ def render(brief, document, previous_url=None):
         lines.append(link(previous_url, "이전 게시"))
     locations = [location for e in brief.evidence
                  for location in ([s.location for s in e.source_spans] if e.source_spans else [e.location])]
-    lines.append(link(document["url"], "원문") + " · 근거 " + safe(", ".join(dict.fromkeys(locations))))
+    lines.append(link(document["url"], "원문"))
     related = list(dict.fromkeys(url for url in brief.related_urls if url != document["url"]))
     if related:
         lines.append(" · ".join(link(url, f"추가 자료 {index}") for index, url in enumerate(related[:2], 1)))
-    lines.append("_미기재·확인 불가: 제공된 원문 텍스트 기준_")
+    lines.append("근거: " + safe(display_locations(locations)))
+    lines.append("_미기재·확인 불가: 검토에 제공된 원문 텍스트·발췌 기준_")
     lines.append("_원문 대조 AI 요약·별도 AI 검토; 독립 재현·투자 검증 아님_")
     return "\n".join(lines)

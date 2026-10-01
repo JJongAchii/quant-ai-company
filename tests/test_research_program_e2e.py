@@ -2,19 +2,29 @@
 
 import json
 from pathlib import Path
+from urllib.parse import urlparse
 from uuid import UUID
 
+import pytest
+
+from quant_company.company import PolicyError
 from quant_company.research.feedback import resolve_challenges
 from quant_company.research.mission_contracts import MissionSpec
 
 from .test_research_audit import qlab_profile  # noqa: F401
+from .test_research_exploration import create_exploratory_task, prepare_exploratory_program
 from .test_research_mission_backend import BackendHarness
 from .test_research_programs import create_task, program  # noqa: F401
 
 
-def test_two_program_trials_wait_for_independent_meaning_review_before_publication(program, qlab_profile):  # noqa: F811
+@pytest.mark.parametrize("exploratory", [False, True])
+def test_two_program_trials_wait_for_independent_meaning_review_before_publication(program, qlab_profile, exploratory):  # noqa: F811
     p = program
-    create_task(p)
+    if exploratory:
+        prepare_exploratory_program(p)
+        create_exploratory_task(p)
+    else:
+        create_task(p)
     qlab = p.company.settings.research_artifact_dir / "qlab.json"
     qlab.write_text(json.dumps({"root": str(qlab_profile.root), "commit": qlab_profile.commit,
                                 "python_executable": str(qlab_profile.python_executable)}))
@@ -56,14 +66,20 @@ def test_two_program_trials_wait_for_independent_meaning_review_before_publicati
             for offset in range(0, max(1, size), 12000):
                 row = h.respond(row, read_path=name, offset=offset)
         outcome = h.snapshot()["outcomes"][-1]
-        h.respond(row, {"trial_id": outcome["trial_id"], "outcome_digest": outcome["digest"],
+        review = {"trial_id": outcome["trial_id"], "outcome_digest": outcome["digest"],
             "conclusion": "inconclusive", "rationale": "Synthetic fixture has no financial meaning",
             "multiple_testing": "All fixture trials retained", "execution_costs": "No real market fills",
             "alternative_explanations": "Scripted transport fixture", "unresolved": ["Real scientific research not executed"],
             "tests": [{"challenge_id": response["challenge_id"], "conclusion": "unresolved", "evidence_paths": [],
                        "rationale": "Synthetic fixtures do not establish scientific validity"}
                       for response in h.snapshot()["challenge_responses"]
-                      if response["proposal_id"] == h.snapshot()["trials"][-1]["proposal_id"]]})
+                      if response["proposal_id"] == h.snapshot()["trials"][-1]["proposal_id"]]}
+        if exploratory:
+            assert any("scope/supplements/exploratory-data/limitations.txt" in name
+                       for name in row["context"]["required_meaning_reads"])
+            with pytest.raises(PolicyError, match="cannot establish supported"):
+                h.respond(row, review | {"conclusion": "supported", "unresolved": [], "tests": []})
+        h.respond(row, review)
         published = h.backend.apply_stage(audit_row, snapshot)
         assert published["state"] == "completed"
         if best is None:
@@ -71,12 +87,19 @@ def test_two_program_trials_wait_for_independent_meaning_review_before_publicati
         assert h.snapshot()["incumbent_trial_id"] == best
         with h.company.db.transaction() as conn:
             source = conn.execute("SELECT content FROM sources WHERE id=%s", (published["source_id"],)).fetchone()
-            assert json.loads(source["content"])["summary"]["meaning_review"]["conclusion"] == "inconclusive"
+            summary = json.loads(source["content"])["summary"]
+            assert summary["meaning_review"]["conclusion"] == "inconclusive"
+            if exploratory:
+                assert summary["exploratory_only"] and not summary["historical_point_in_time_verified"]
+                assert not summary["confirmation_eligible"] and not summary["deployment_eligible"]
+                assert summary["data_policy"] == current["spec"]["data"]["policy"]
+                uri = json.loads(source["content"])["report"]["uri"]
+                assert "한계를 명시한 탐색 연구" in Path(urlparse(uri).path).read_text()
             library = conn.execute("SELECT content FROM sources WHERE id=%s",
                                    (published["source_id"] + ":library",)).fetchone()
             assert library["content"] == source["content"]
             assert conn.execute("SELECT count(*) AS n FROM outbox WHERE text LIKE %s",
-                                ("검증된 연구 기록 · 결론 보류%",)).fetchone()["n"] == number
+                                ("탐색 연구 기록 · 결론 보류%" if exploratory else "검증된 연구 기록 · 결론 보류%",)).fetchone()["n"] == number
             # Ordinary director delivery is independently tested by the legacy producer/consumer gate.
             conn.execute("UPDATE turns SET status='stale' WHERE status='queued'")
             conn.execute("UPDATE tasks SET status='completed'")
