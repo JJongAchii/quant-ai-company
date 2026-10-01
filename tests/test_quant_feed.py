@@ -276,6 +276,18 @@ def test_actual_serialized_limit_includes_json_escaping_and_metadata():
     assert caught.value.characters > MAX_PROMPT_CHARACTERS
 
 
+def test_prior_comparison_preserves_prose_without_duplicating_old_quotations():
+    prior = {"id": "previous", "brief": brief(evidence=[{"quote": TEXT * 100}]), "status": "delivered"}
+    bundle = {"pages": [{"location": "PDF p.1", "text": TEXT}], "prior": prior}
+    before = copy.deepcopy(bundle)
+    data = json.loads(prompt(bundle, "critique").split("\nDATA:\n", 1)[1])
+    assert data["prior"]["brief"] == {k: v for k, v in prior["brief"].items() if k != "evidence"}
+    assert data["prior"]["id"] == "previous" and data["prior"]["status"] == "delivered"
+    assert "not current-original evidence" in data["prior_evidence_scope"]
+    assert data["source_spans"] == source_spans(bundle["pages"])
+    assert bundle == before
+
+
 def test_preparation_limit_is_durable_local_hold_without_call_or_budget(quant):
     saved = original(quant, receipt_updates={"metadata": {"oversized": "x" * 90000}})
     original(quant, "-healthy")

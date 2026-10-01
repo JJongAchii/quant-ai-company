@@ -47,7 +47,9 @@ def main(args):
     if RUNTIME in existing.splitlines() or CLIENT in existing.splitlines():
         raise ValueError("existing_private_containers_require_reconciliation")
     OPERATION.mkdir(mode=0o700, parents=True, exist_ok=True)
-    receipts = OPERATION / "private-receipts"
+    if not re.fullmatch(r"[a-z0-9-]{1,40}", args.label):
+        raise ValueError("private_receipt_label_required")
+    receipts = OPERATION / ("private-receipts-" + args.label)
     receipts.mkdir(mode=0o700)
     os.chown(receipts, 10001, 10001)
     before = helper.inventory()
@@ -77,9 +79,17 @@ def main(args):
     client_env["MODEL_RUNTIME_URL"] = "http://" + RUNTIME + ":8080"
     mounts = [*client["Mounts"], {"Type": "bind", "Source": str(receipts),
                                 "Destination": "/qualification/receipts", "RW": True}]
+    command = ["python", "/qualification/source/scripts/qualify_quant_recovery.py", "--output",
+               "/qualification/receipts/qualification.json"]
+    if args.reuse:
+        previous = args.reuse.resolve()
+        if not previous.is_relative_to(OPERATION) or not previous.is_file():
+            raise ValueError("private_reuse_path_required")
+        mounts.append({"Type": "bind", "Source": str(previous),
+                       "Destination": "/qualification/reuse.json", "RW": False})
+        command.extend(["--reuse", "/qualification/reuse.json"])
     helper.create(CLIENT, client, source, client_env, mounts, list(client["NetworkSettings"]["Networks"]),
-                  ["python", "/qualification/source/scripts/qualify_quant_recovery.py", "--output",
-                   "/qualification/receipts/qualification.json"], "384m")
+                  command, "384m")
     helper.run(["docker", "start", CLIENT])
     print(json.dumps({"state": "running", "production_services_replaced": 0, "slack_writes": 0}), flush=True)
     result = subprocess.run(["docker", "wait", CLIENT], capture_output=True, text=True, timeout=1800)
@@ -94,7 +104,7 @@ def main(args):
                    production_services_preserved=preserved, returncode=int(result.stdout.strip()),
                    call_count=len(receipt.get("calls", [])),
                    private_receipt_sha256=hashlib.sha256(output.read_bytes()).hexdigest() if output.exists() else None)
-    (OPERATION / "SUMMARY.json").write_text(json.dumps(summary, indent=2) + "\n")
+    (OPERATION / ("SUMMARY-" + args.label + ".json")).write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary), flush=True)
     # Never remove a runtime whose invocation may still be uncertain.
     if receipt["state"] == "passed" and int(result.stdout.strip()) == 0:
@@ -108,6 +118,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("base")
     parser.add_argument("commit")
+    parser.add_argument("--label", default="initial")
+    parser.add_argument("--reuse", type=Path)
     args = parser.parse_args()
     os.umask(0o077)
     with (STATE / ".backup.lock").open("a") as lock:
