@@ -1,7 +1,7 @@
 # 조건부 연구 경로 구현·검증 — 2026-10-01
 
-검토된 ETF 실행 명세를 서비스 코드에 구현했다. 자격검증과 최종 독립 검토를 진행 중이다.
-운영 반영·실제 직원의 새 데이터 판정·새 프로그램의 Slack 승인·시장 실험은 아직 없다.
+검토된 ETF 실행 명세를 서비스 코드에 구현하고 통합 검증을 수행했다. 최종 독립 검토와 CI를 진행 중이다.
+이번 구현 작업에서는 운영 변경·실제 직원의 v3 데이터 판정·v3 프로그램의 Slack 승인·시장 실험을 하지 않았다.
 
 ## 구현 범위
 
@@ -34,6 +34,20 @@ JSON과 legacy assessment encoding은 회귀 검사에서 일치했다. protecte
 과거 조사·초안·기존 입력·서명 기록은 보존한다. 이전 회사 STATUS도 `STATUS-v6.json`에
 바이트 그대로 남기고, 새 구현 작업은 INTENT v7에서 추적한다.
 
+## 병행 변경과 정책 호환
+
+원격 `76c8abc`에 별도로 승인·자격검증된 기존 버전의 ETF 탐색 기능이 추가되어,
+새 구현을 먼저 `aa7c146`에 보존한 뒤 `4f3bdb7`에서 통합했다. 기존 승인·운영 근거를 보존했다.
+그 탐색 기능의 승인이나 운영 상태를 새 v3 경로의 승인으로 사용하지 않는다.
+
+| 계약 | 데이터 수락 | 결과 제한 |
+| --- | --- | --- |
+| MissionSpec v1/v2 `data.policy` | `exploratory_only`, 검증한 정책 digest | 가설 생성 전용, `supported` 거절 |
+| MissionSpec v3 `data_policy`·`scientific_lineage` | record v2 `conditional_ready`, packet digest·scope | 누적 계보의 조건부 개발구간 근거; 역사적/PIT/체결/배치 승격 금지 |
+
+한 v3 미션·packet·assessment에 두 계약을 섞으면 거절한다. 기존 탐색 프로그램의 JSON과
+digest `04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162`도 보존했다.
+
 ## 독립 검토와 수정
 
 기존 독립 데이터·권한 검토자에게 구현 검토를 이어 맡겼다. 이들은 운영 직원이나 실제
@@ -49,6 +63,12 @@ consumer에 sample 수·typed schema·warmup 날짜 및 sealed 제외 검사를 
 영수증이 확인될 때 후속 프로그램에 승계할 수 있다. 미확인 예약이나 실행 중 job이 남으면
 계속 차단한다. 실패의 구성·이력·계산 charge는 삭제하지 않는다.
 
+통합 데이터 검토에서는 기존 탐색 보고서의 `metadata.data_policy`를 strict 프로그램에서
+원조건 재현/시장 이전 근거로 재사용할 수 있는 결함을 지적했다. 실제 PostgreSQL의 합성
+거절 검사 두 개가 실패하고, 신규 scope의 거절 및 양쪽 가설 생성 대조 네 개는 통과했다.
+두 metadata 형식을 같은 재사용 제한에 포함하도록 수정했다. 재현 전후 입력과 근거는
+별도 파일에 보존하며, 수정 후 관련 검사 108개가 모두 통과했다.
+
 ## 검증과 활성화 경계
 
 - 실제 PostgreSQL에서 계약·수락·예약·정산·새 프로그램의 부정 결과 상속을 검사한다.
@@ -58,6 +78,12 @@ consumer에 sample 수·typed schema·warmup 날짜 및 sealed 제외 검사를 
   고정된 코드 커밋과 생성한 소형 합성 입력으로 수행한다. 시장 자료·봉인 가격은 입력에 없다.
 - qlab 파일 검증 API와 synthetic audit receipt 변환 검사는 실제 로컬 pinned 코드를 사용한다.
   fixture pass 파일은 금융 연구의 독립 판단을 뜻하지 않는다.
+
+`4f3bdb7`의 전체 non-live 회귀는 1,512개 통과·선택적 검사 13개 생략이었다.
+actual 3070 격리 sandbox 검사는 1개 통과했고, 수집한 원본 ZIP의 SHA를 대조한 뒤
+로컬 strict consumer도 통과했다. 최종 수정 커밋의 실제 호스트 검사와 CI도 별도로 기록한다.
+dirty 코드 상태의 초기 회귀에서 committed-source 자격검증이 거절한 결과도 보존했다.
+이를 통과로 바꾸거나 자격검증 조건을 완화하지 않았다.
 
 검토 입력과 각 판정·검사 영수증은
 [evidence 디렉터리](evidence/conditional-research-20261001)에 보존한다.

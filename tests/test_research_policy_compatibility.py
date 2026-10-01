@@ -24,7 +24,8 @@ def test_frozen_exploratory_candidate_encoding_and_identity_remain_exact():
     raw = json.loads(path.read_bytes())
     parsed = ResearchProgram.model_validate(raw).model_dump(mode="json")
     assert parsed == raw
-    assert fingerprint(parsed) == fingerprint(raw)
+    plan = json.loads((path.parent / "release-plan.json").read_bytes())
+    assert fingerprint(parsed) == plan["program_digest"]
 
 
 def test_scoped_mission_cannot_carry_both_owner_policy_contracts(conditional):  # noqa: F811

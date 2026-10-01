@@ -167,7 +167,8 @@ class ProgramStore:
             raise PolicyError("Task cites sources outside the program library")
         require_current(conn, proposal.source_ids)
         conditional_source = conn.execute("""SELECT 1 FROM sources WHERE id=ANY(%s)
-            AND metadata->'research_scope'->>'result_scope'='conditional_retrospective_development'""",
+            AND (metadata->'research_scope'->>'result_scope'='conditional_retrospective_development'
+                 OR metadata->'data_policy'->>'result_use'='hypothesis_generation_only')""",
             (proposal.source_ids,)).fetchone()
         if conditional_source and proposal.mode != "novel_hypothesis":
             raise PolicyError("Conditional source evidence cannot establish original replication or transfer conditions")
