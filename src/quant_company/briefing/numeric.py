@@ -228,11 +228,21 @@ def prose_numbers_supported(text, quotes):
              2: r"\bsecond[-\s]+(?:largest|biggest)\b",
              3: r"\bthird[-\s]+(?:largest|biggest)\b"}
 
+    def english_rank_supported(value, quote):
+        if value not in ranks:
+            return False
+        if value == 1:
+            # "largest" inside a higher ordinal, even with spaces rather than
+            # a hyphen, cannot establish the leading rank.
+            quote = re.sub(r"\b(?:second|third|[a-z]+th|(?!(?:1st)\b)\d+(?:st|nd|rd|th))"
+                           r"[-\s]+(?:largest|biggest)\b", " ", quote, flags=re.I)
+        return bool(re.search(ranks[value], quote, re.I))
+
     def check_rank(match):
         nonlocal valid
         value = int(match[1])
         korean = re.escape(match[1])+r"\s*위(?=$|[\s,.]|[의인로를은가였다])"
-        if any(re.search(korean, quote) or (value in ranks and re.search(ranks[value], quote, re.I))
+        if any(re.search(korean, quote) or english_rank_supported(value, quote)
                for quote in quotes):
             return "위"
         valid = False

@@ -30,7 +30,7 @@ from .quotations import QUOTE_REFERENCE_VERSION, reference_payload, resolve_quot
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 46
+VALIDATION_VERSION = 47
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Before composing, check each original for facts that change the market read, exposure or next decision.

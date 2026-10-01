@@ -1074,6 +1074,10 @@ def test_english_ranking_only_supports_an_explicit_matching_korean_rank():
     assert prose_numbers_supported("러시아는 세계 2위 경유 공급원이었다.", [quote])
     assert not prose_numbers_supported("러시아는 세계 3위 경유 공급원이었다.", [quote])
     assert not prose_numbers_supported("러시아는 세계 1위 경유 공급원이었다.", [quote])
+    assert not prose_numbers_supported("러시아는 세계 1위 경유 공급원이었다.",
+                                       [quote.replace("second-largest", "second largest")])
+    assert not prose_numbers_supported("러시아는 세계 1위 경유 공급원이었다.",
+                                       [quote.replace("second-largest", "fourth largest")])
     assert not prose_numbers_supported("경유는 2달러였다.", [quote])
     assert not prose_numbers_supported("경유는 2% 올랐다.", [quote])
     assert not prose_numbers_supported("세계 2위였다.", ["It was a second-tier supplier with 2 factories."])
