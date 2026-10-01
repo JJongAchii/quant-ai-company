@@ -77,6 +77,29 @@ def decimal_points(text):
     return re.sub(r"(?<![A-Za-z0-9])(\d+)-point-(\d+)\b", r"\1.\2", text, flags=re.I)
 
 
+def months(text):
+    result = {Decimal(m[1]) for m in re.finditer(r"(?<![\d.])(0?[1-9]|1[0-2])월", text)}
+    for match in re.finditer(r"(?<!\d)((?:19|20)\d{2})[./-](\d{1,2})[./-](\d{1,2})(?!\d)", text):
+        try:
+            dated = date(*(int(part) for part in match.groups()))
+        except ValueError:
+            continue
+        result.add(Decimal(dated.month))
+    for month, name in enumerate(MONTHS, 1):
+        names = name if name == "May" else "(?:"+name+"|"+name[:3]+r"\.?"+(r"|Sept\.?" if month == 9 else "")+")"
+        dated = r"\b(?:\d{1,2}(?:st|nd|rd|th)?\s+"+names+"|"+names+r"\s+(?:\d{4}|\d{1,2}(?:st|nd|rd|th)?))\b"
+        release_month = (r"\b"+names+r"['’]s\s+(?:(?:CPI|PPI|PCE|JOLTS|jobs|payrolls?|inflation)\s+)?"
+                         r"(?:report|data|figures|reading|release)\b")
+        labelled_release = (r"\b"+names+r"\s+(?:(?:U\.S\.|US|U\.K\.|UK)\s+)?"
+                            r"(?:CPI|PPI|PCE|JOLTS|jobs|payrolls?|inflation|employment)\s+"
+                            r"(?:report|data|figures|reading|release)\b")
+        if (re.search(dated, text, re.I) or re.search(release_month, text, re.I)
+                or re.search(labelled_release, text, re.I)
+                or re.search(r"\b(?:in|of|from|during|as of|by|for|last|this|next|since|until|on)\s+"+names+r"\b", text, re.I)):
+            result.add(Decimal(month))
+    return result
+
+
 def numbers(text):
     def dotted_date(match):
         try:
@@ -96,7 +119,7 @@ def numbers(text):
                   +(str(CARDINALS.index(m[3].lower())) if m[3].lower() in CARDINALS else m[3]),
         text, flags=re.I)
     quarters = {"first": "1", "second": "2", "third": "3", "fourth": "4"}
-    text = re.sub(r"\b(first|second|third|fourth)\s+quarter\b",
+    text = re.sub(r"\b(first|second|third|fourth)[-\s]+quarter\b",
                   lambda m: quarters[m[1].lower()]+" quarter", text, flags=re.I)
     text = written_fractions(written_counts(text))
     # A same-sentence pre-war comparison inherits this explicit flow unit.
@@ -108,6 +131,13 @@ def numbers(text):
     )
     # Some broadcasters spell decimal points as hyphenated words/numbers.
     text = decimal_points(text)
+    # Basis points and percentage points express the same exact rate distance.
+    # Canonicalize both source/prose bp values without treating 4bp as 4%.
+    text = re.sub(r"(?<![A-Za-z0-9])("+NUMBER+r")\s*(?:bps?(?![A-Za-z])|basis points?\b)",
+                  lambda m: str(Decimal(m[1].replace(",", "").replace("−", "-"))/100), text, flags=re.I)
+    # In "301조 관세", 조 names a legal section, not a trillion-unit amount.
+    # Keep the section number checked; "301조원" stays a monetary quantity.
+    text = re.sub(r"(?<![\d.])(\d+)\s*조(?=\s*관세)", r"\1 article", text)
     # A compact percent range uses a hyphen as a separator, not the sign of
     # its upper bound. Keep a spaced "5% -3%" as a genuinely negative value.
     text = re.sub(r"(?<=%)-(?=\d[\d,]*(?:\.\d+)?%)", " to ", text)
@@ -128,22 +158,11 @@ def numbers(text):
     # independent review still checks entity identity against the originals.
     result = {Decimal(n.replace(",", "").replace("−", "-"))
               for n in re.findall(r"(?<![A-Za-z0-9.,])"+NUMBER, normalized)}
-    for month, name in enumerate(MONTHS, 1):
-        names = name if name == "May" else "(?:"+name+"|"+name[:3]+r"\.?"+(r"|Sept\.?" if month == 9 else "")+")"
-        dated = r"\b(?:\d{1,2}(?:st|nd|rd|th)?\s+"+names+"|"+names+r"\s+(?:\d{4}|\d{1,2}(?:st|nd|rd|th)?))\b"
-        # A possessive month labels an economic release, without inventing its
-        # day or time. Require release context, not just a possessive name.
-        release_month = (r"\b"+names+r"['’]s\s+(?:(?:CPI|PPI|PCE|JOLTS|jobs|payrolls?|inflation)\s+)?"
-                         r"(?:report|data|figures|reading|release)\b")
-        if (re.search(dated, text, re.I)
-                or re.search(release_month, text, re.I)
-                or re.search(r"\b(?:in|of|from|during|as of|by|for|last|this|next|since|until|on)\s+"+names+r"\b", text, re.I)):
-            result.add(Decimal(month))
-    return result
+    return result | months(text)
 
 
 def reported_change_supported(value, unit, quotes):
-    units = {"%": r"%(?!p|포인트)|percent(?!age|\s+points?)", "bp": r"bp\b|basis points?", "pt": r"pt\b|points?|포인트"}
+    units = {"%": r"%(?!p|포인트)|percent(?!age|\s+points?)", "bp": r"bps?(?![A-Za-z])|basis points?", "pt": r"pt\b|points?|포인트"}
     down = (r"하락|급락|내린|내렸|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|"
             r"fell|fall|down|declin\w*|lost|slipped|shed|slump\w*|(?:was|were|is|are)\s+off")
     up = r"상승|오른|올랐|높아|늘었|뛴|뛰었|뛰며|rose|ris\w*|up|gain\w*|advanced|jumped|surged"
@@ -204,6 +223,10 @@ def prose_numbers_supported(text, quotes):
 
     remaining = re.sub(series, check, text)
     if not valid:
+        return False
+    # A time such as 8:30 cannot support an August release label merely because
+    # the same bare digit appears; require an actual month in the own quotes.
+    if not months(remaining) <= months(" ".join(quotes)):
         return False
     supported = numbers(" ".join(quotes))
     # A source may write "2.70% 내린" while the brief writes "-2.70%".

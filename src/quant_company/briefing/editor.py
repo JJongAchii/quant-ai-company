@@ -29,7 +29,7 @@ from .quality import assurance
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 39
+VALIDATION_VERSION = 40
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Before composing, check each original for facts that change the market read, exposure or next decision.

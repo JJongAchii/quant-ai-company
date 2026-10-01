@@ -996,6 +996,41 @@ def test_explicit_month_of_prior_agreement_does_not_need_an_invented_day():
     assert not prose_numbers_supported("이란은 5월 양해각서로 복귀하면 7일 안에 열겠다고 제안했다.", [quote])
 
 
+def test_basis_points_are_exact_rate_distance_not_bare_percentage():
+    quote = "미 국채 2년물 금리는 4bp 하락한 4.84% 수준이었다."
+    assert prose_numbers_supported("미 국채 2년물은 0.04%포인트 내린 4.84%였다.", [quote])
+    assert prose_numbers_supported("미 국채 2년물은 4bp 내린 4.84%였다.", [quote])
+    assert not prose_numbers_supported("미 국채 2년물은 0.4%포인트 내린 4.84%였다.", [quote])
+    assert not prose_numbers_supported("미 국채 2년물은 4% 내린 4.84%였다.", [quote])
+    assert numbers("10 basis points") == numbers("0.1%포인트")
+    assert numbers("-10bp") == {Decimal("-0.1")}
+    assert numbers("1bp는 0.01%포인트") == {Decimal("0.01")}
+    assert numbers("10bpm") == {Decimal(10)}
+    assert reported_change_supported(Decimal("-4"), "bp", [quote])
+
+
+def test_hyphenated_fiscal_quarter_preserves_actual_period():
+    quote = "Fourth-quarter DRAM revenue increased 343% from a year ago."
+    assert prose_numbers_supported("회계연도 4분기 DRAM 매출은 전년 대비 343% 증가했다.", [quote])
+    assert not prose_numbers_supported("회계연도 3분기 DRAM 매출은 전년 대비 343% 증가했다.", [quote])
+
+
+def test_release_label_supports_written_month_without_inventing_a_day():
+    quote = "the September U.S. jobs report, due Friday at 8:30 a.m. ET"
+    assert prose_numbers_supported("미국 9월 고용보고서", [quote])
+    assert not prose_numbers_supported("미국 8월 고용보고서", [quote])
+    assert not prose_numbers_supported("미국 9월 1일 고용보고서", [quote])
+    assert numbers("officials may report job losses") == set()
+
+
+def test_legal_section_and_trillion_won_remain_distinct_quantities():
+    quote = 'a hearing on "Section 301" tariffs'
+    assert prose_numbers_supported("301조 관세의 적법성 심리가 진행됐다.", [quote])
+    assert not prose_numbers_supported("122조 관세의 적법성 심리가 진행됐다.", [quote])
+    assert not prose_numbers_supported("301조원 규모였다.", [quote])
+    assert numbers("301조원") == {Decimal(301000000000000)}
+
+
 def test_reported_change_uses_local_direction_and_actual_unit():
     quote = "이날 코스닥 지수는 1.89포인트(0.23%) 내린 834.38로 마감했다."
     assert reported_change_supported(Decimal("-.23"), "%", [quote])
