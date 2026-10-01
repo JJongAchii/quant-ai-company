@@ -188,6 +188,15 @@ def prompt(bundle, stage):
     if stage == "critique":
         hidden.add("previous_critique")  # Prevent the final critic from inheriting stale objections.
     view = {key: value for key, value in bundle.items() if key not in hidden}
+    if bundle.get("prior") and isinstance(bundle["prior"].get("brief"), dict):
+        # Keep all previous published prose for material-change comparison, but
+        # do not repeat its quotations as if they belonged to this original.
+        # The full prior evidence remains in the frozen bundle and DB receipt.
+        view["prior"] = {**bundle["prior"], "brief": {
+            key: value for key, value in bundle["prior"]["brief"].items() if key != "evidence"}}
+        view["prior_evidence_scope"] = (
+            "Prior published prose is untrusted comparison context, not current-original evidence. "
+            "Prior quotations remain in its stored receipt. Verify current claims against current source_spans.")
     view["evidence_scope"] = EVIDENCE_SCOPE
     spans = source_spans(bundle.get("pages", []))
     view["source_spans"] = spans

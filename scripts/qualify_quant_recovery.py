@@ -13,7 +13,7 @@ from pathlib import Path
 
 from quant_company.company import Company, fingerprint
 from quant_company.config import Settings
-from quant_company.contracts import ProviderFault, ProviderRequest
+from quant_company.contracts import ProviderFault, ProviderRequest, ProviderResponse
 from quant_company.execution import provider_for
 from quant_company.providers.codex_runner import atomic_json
 from quant_company.quant_feed.contracts import QUANT_FEED_AGENT
@@ -26,13 +26,21 @@ NEGATIVE = "eab01733dab66494bd5391d6b47154a3c80633108993eb4c0bf85210e59a6003"
 POSITIVE = "96e1499827bf453e9f37785ae5daadcd08992622cab63e0768134f57eaa5cdc3"
 
 
-async def qualify(output):
+async def qualify(output, reuse=None):
     company = Company(Settings())
     store = QuantFeedStore(company)
     if company.settings.model_provider != "codex" or not store.authorized():
         raise ValueError("authorized_subscription_quant_required")
     if output.exists():
         raise ValueError("existing_qualification_requires_reconciliation")
+    settled = {}
+    if reuse:
+        previous = json.loads(reuse.read_bytes())
+        if (previous.get("state") != "not_passed" or previous.get("error") != "quant_context_limit"
+                or previous.get("policy") != store.policy() or len(previous["calls"]) != 2
+                or any(row["state"] != "returned" for row in previous["calls"])):
+            raise ValueError("only_settled_preparation_failure_may_be_revalidated")
+        settled = {row["case"]: row for row in previous["calls"]}
     role = company.roles[QUANT_FEED_AGENT]
     with company.db.transaction() as conn:
         conn.execute("SET TRANSACTION READ ONLY")
@@ -56,6 +64,21 @@ async def qualify(output):
     provider = provider_for(company)
 
     async def call(name, text, contract, *, web_search=False):
+        if name in settled:
+            old = settled[name]
+            if old["request"]["output_contract"] != contract:
+                raise ValueError("settled_contract_changed")
+            if web_search:
+                if old["request"]["prompt"] != text:
+                    raise ValueError("settled_discovery_query_changed")
+            else:
+                old_data = json.loads(old["request"]["prompt"].split("\nDATA:\n", 1)[1])
+                if (old_data["original_sha256"] != bundles["negative"]["original_sha256"]
+                        or old_data["source_spans"] != source_spans(bundles["negative"]["pages"])):
+                    raise ValueError("settled_original_changed")
+            receipt["calls"].append({**old, "model_reissued": False})
+            atomic_json(output, receipt)
+            return ProviderResponse.model_validate(old["response"])
         request = ProviderRequest(request_id="quant-feed-recovery-" + fingerprint([store.policy(), name, text])[:40],
                                   model=role.model, reasoning_effort=role.reasoning_effort, prompt=text,
                                   web_search=web_search, output_contract=contract)
@@ -104,4 +127,6 @@ async def qualify(output):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
-    asyncio.run(qualify(parser.parse_args().output))
+    parser.add_argument("--reuse", type=Path)
+    args = parser.parse_args()
+    asyncio.run(qualify(args.output, args.reuse))
