@@ -4,13 +4,14 @@ import hashlib
 from pathlib import Path
 from typing import Annotated, Literal
 
-from pydantic import Field, ValidationError
+from pydantic import Field, ValidationError, model_validator
 
 from ..company import PolicyError, fingerprint
 from .adaptive_contracts import digest_model
 from .builds import profile_for
 from .contracts import Digest
 from .mission_contracts import MissionModel, Text, relative_path
+from .policy_contracts import SCOPE_GAPS, ScopedRecord, require_scope
 
 
 class EvidenceFile(MissionModel):
@@ -18,8 +19,15 @@ class EvidenceFile(MissionModel):
     sha256: Digest
 
 
-class DataEvidencePacket(MissionModel):
-    schema_version: Literal[1] = 1
+class DataEvidenceGap(MissionModel):
+    code: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]{1,79}$")]
+    description: Text
+    report_names: Annotated[list[str], Field(min_length=1, max_length=12)]
+    input_files: Annotated[dict[str, Digest], Field(min_length=1)]
+
+
+class DataEvidencePacket(ScopedRecord):
+    schema_version: Literal[1, 2] = 1
     program_digest: Digest
     envelope: str
     execution_profile_digest: Digest
@@ -28,6 +36,21 @@ class DataEvidencePacket(MissionModel):
     engine: EvidenceFile
     reports: Annotated[dict[str, EvidenceFile], Field(min_length=1, max_length=12)]
     blocking_gaps: Annotated[list[Text], Field(max_length=20)] = []
+    gaps: Annotated[list[DataEvidenceGap] | None, Field(max_length=20)] = Field(
+        default=None, exclude_if=lambda v: v is None)
+
+    @model_validator(mode="after")
+    def gap_version(self):
+        if (self.schema_version == 2) != (self.gaps is not None):
+            raise ValueError("Typed data gaps require packet version 2")
+        if self.gaps is not None:
+            if len({gap.code for gap in self.gaps}) != len(self.gaps):
+                raise ValueError("Duplicate evidence gap code")
+            inputs = {name: item.sha256 for name, item in self.input_files.items()}
+            for gap in self.gaps:
+                if gap.input_files != inputs or not set(gap.report_names) <= self.reports.keys():
+                    raise ValueError("Evidence gap must cite verified reports and exact input hashes")
+        return self
 
 
 class DataEvidenceRegistry(MissionModel):
@@ -80,6 +103,10 @@ def load_packets(company, program, envelopes):
             raise PolicyError("Duplicate data evidence packet for an envelope")
         envelope = envelopes[packet.envelope]
         spec = envelope.template
+        try:
+            require_scope(spec, packet)
+        except ValueError as exc:
+            raise PolicyError(str(exc)) from exc
         profile_key = (spec.execution_profile, spec.execution_profile_digest, spec.code.base_commit,
                        tuple(spec.code.write_paths), tuple(sorted(spec.data.input_files)))
         if profile_key not in profiles:
@@ -102,6 +129,11 @@ def load_packets(company, program, envelopes):
                       for name, item in packet.input_files.items()})
         files.update({"reports/" + name: checked(item, limit=1_000_000)
                       for name, item in packet.reports.items()})
+        if spec.data_policy is not None:
+            for ref in spec.data_policy.evidence_refs:
+                report = packet.reports.get(ref.name)
+                if report is None or report.sha256 != ref.sha256:
+                    raise PolicyError("Data policy evidence differs from the verified packet")
         result[packet.envelope] = (packet, files)
     return result
 
@@ -119,8 +151,26 @@ def attach_packet(backend, directory, packet, files):
         "verified_sha256": {name: hashlib.sha256(data).hexdigest() for name, data in sorted(files.items())},
         "scope": "File identity and approved-contract binding only; source claims and data readiness need review.",
     }
+    if packet.research_scope is not None:
+        identity.update(schema_version=2, research_scope=packet.research_scope.model_dump(mode="json"),
+                        gaps=[gap.model_dump(mode="json") for gap in packet.gaps])
     mappings = {"identity.json": backend._entry(backend._blob(root, "identity", identity))}
     for name, data in files.items():
         mappings[name] = backend._entry(backend._file(root / (hashlib.sha256(data).hexdigest() + ".txt"), data))
     required = ["identity.json", "engine", *("reports/" + name for name in sorted(packet.reports))]
     return mappings, required, packet_digest
+
+
+def require_admissible_gaps(packet, spec):
+    """Only owner-signed, evidence-bound scope codes can remain in a conditional packet."""
+    if packet.blocking_gaps:
+        raise PolicyError("Data evidence packet still records blocking gaps")
+    if spec.data_policy is None:
+        return
+    codes = {gap.code for gap in packet.gaps}
+    allowed = set(spec.data_policy.acknowledged_gap_codes)
+    if not codes <= SCOPE_GAPS or codes != allowed:
+        raise PolicyError("Unclassified or unresolved typed data evidence gap")
+    refs = {ref.name for ref in spec.data_policy.evidence_refs}
+    if any(not set(gap.report_names) <= refs for gap in packet.gaps):
+        raise PolicyError("Scope limitations require owner-bound evidence references")

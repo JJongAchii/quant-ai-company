@@ -20,6 +20,7 @@ from .mission_contracts import (
     TrialOutcome,
     TrialPlan,
 )
+from .policy_contracts import require_scope
 
 EXECUTION_PROFILE = "kr-etf-monthly-python-v1"
 PROTECTED = {"AGENTS.md", "PREREG.md", "LEDGER.md", "SEARCH.jsonl", "docs/objective.md"}
@@ -75,6 +76,8 @@ class MissionStore:
             raise PolicyError("Mission requires the current active project revision and owner")
         if active and (row["state"] != "active" or not row["approval_event_id"]):
             raise PolicyError("Mission is not active and approved")
+        if active and spec.schema_version == 3 and not row.get("program_id"):
+            raise PolicyError("Policy missions require independent data review and signed program authority")
         if active and row.get("program_id"):
             from .programs import ProgramStore
 
@@ -154,6 +157,8 @@ class MissionStore:
 
     def approve(self, conn, mission_id, *, owner, revision, manifest_digest, event_key):
         project, row, spec = self._locked(conn, mission_id)
+        if spec.schema_version == 3:
+            raise PolicyError("Policy missions require independent data review and signed program authority")
         self._owner(conn, project, row, owner=owner, revision=revision, manifest_digest=manifest_digest,
                     event_key=event_key, action="approve")
         if not ((spec.kind == "strategy" and spec.execution_profile == EXECUTION_PROFILE)
@@ -375,6 +380,10 @@ class MissionStore:
         project, row, spec = self._locked(conn, mission_id, active=True)
         trial = self._trial(conn, mission_id, trial_id)
         self._actor(actor, "engineer")
+        try:
+            require_scope(spec, plan)
+        except ValueError as exc:
+            raise PolicyError(str(exc)) from exc
         if (plan.implementer != actor or str(plan.trial_id) != str(trial_id)
                 or str(plan.proposal_id) != str(trial["proposal_id"]) or plan.mission_digest != row["manifest_digest"]
                 or plan.execution_profile != spec.execution_profile or plan.repository != spec.code.repository
@@ -413,7 +422,7 @@ class MissionStore:
         expected = {"mission_id": str(mission_id), "mission_digest": row["manifest_digest"],
                     "trial_id": str(trial_id), "plan_digest": trial["plan_digest"]}
         if (not job or str(job["project_id"]) != str(project["id"]) or job["revision"] != row["revision"]
-                or job["recipe_id"] != ("kr-research-python-v2" if spec.schema_version == 2 else spec.execution_profile)
+                or job["recipe_id"] != ("kr-research-python-v2" if spec.schema_version >= 2 else spec.execution_profile)
                 or job["state"] != "queued"
                 or job["approval_event_id"] != row["approval_event_id"]
                 or job["approved_by"] != row["owner_user"]
@@ -438,6 +447,10 @@ class MissionStore:
         outcome = typed(TrialOutcome, outcome)
         project, row, spec = self._locked(conn, mission_id, active=True)
         trial = self._trial(conn, mission_id, trial_id)
+        try:
+            require_scope(spec, outcome)
+        except ValueError as exc:
+            raise PolicyError(str(exc)) from exc
         payload, digest = outcome.model_dump(mode="json"), fingerprint(outcome.model_dump(mode="json"))
         old = conn.execute("SELECT * FROM research_mission_outcomes WHERE id=%s", (outcome.id,)).fetchone()
         if old:
@@ -478,6 +491,10 @@ class MissionStore:
         project, row, spec = self._locked(conn, mission_id, active=True)
         trial = self._trial(conn, mission_id, trial_id)
         self._actor(actor)
+        try:
+            require_scope(spec, value)
+        except ValueError as exc:
+            raise PolicyError(str(exc)) from exc
         if value.author != actor or str(value.trial_id) != str(trial_id) or actor == (trial["plan"] or {}).get("implementer"):
             raise PolicyError("Interpretation requires a separate authenticated research role")
         payload = value.model_dump(mode="json")
@@ -489,7 +506,9 @@ class MissionStore:
         if trial["state"] != "received" or not result or result["digest"] != value.outcome_digest:
             raise PolicyError("Interpretation requires the exact completed result")
         self._sources(conn, project["id"], value.source_ids)
-        metrics = typed(TrialOutcome, result["payload"]).metrics
+        completed = typed(TrialOutcome, result["payload"])
+        require_scope(spec, completed)
+        metrics = completed.metrics
         feasible = all(metrics.risks[risk.metric] <= risk.maximum for risk in spec.risk_constraints)
         incumbent = None
         if row["incumbent_trial_id"]:
@@ -497,6 +516,8 @@ class MissionStore:
                 JOIN research_mission_outcomes o ON o.id=t.result_id WHERE t.id=%s""",
                                      (row["incumbent_trial_id"],)).fetchone()
         incumbent_value = typed(TrialOutcome, incumbent["payload"]).metrics.primary.value if incumbent else None
+        if incumbent:
+            require_scope(spec, typed(TrialOutcome, incumbent["payload"]))
         score = metrics.primary.value
         delta = (score - incumbent_value) if incumbent_value is not None else None
         if delta is not None and spec.objective.direction == "minimize":
@@ -521,7 +542,7 @@ class MissionStore:
         AuditPublication and registering its approved source. This store binds that result
         to the exact immutable outcome and enforces implementer/validator independence.
         """
-        project, row, _ = self._locked(conn, mission_id, active=True)
+        project, row, spec = self._locked(conn, mission_id, active=True)
         trial = self._trial(conn, mission_id, trial_id)
         if trial["state"] not in {"interpreted", "reported"}:
             raise PolicyError("Publication requires an interpreted result")
@@ -529,6 +550,10 @@ class MissionStore:
         if not isinstance(verified, AuditPublication):
             raise PolicyError("Trusted verifier must return a bound AuditPublication, not a pass claim")
         value = typed(AuditPublication, verified)
+        try:
+            require_scope(spec, value)
+        except ValueError as exc:
+            raise PolicyError(str(exc)) from exc
         self._actor(value.verifier_role, "validator")
         result = conn.execute("SELECT digest FROM research_mission_outcomes WHERE id=%s", (trial["result_id"],)).fetchone()
         if (str(value.trial_id) != str(trial_id) or value.mission_digest != row["manifest_digest"]
@@ -536,7 +561,10 @@ class MissionStore:
                 or value.published_at > now() or value.audit_files.get(value.verification.path) != value.verification.sha256):
             raise PolicyError("Verified publication is not bound to this exact independent audit scope")
         self._sources(conn, project["id"], [value.source_id])
-        source = conn.execute("SELECT synthetic FROM sources WHERE id=%s", (value.source_id,)).fetchone()
+        source = conn.execute("SELECT synthetic,metadata FROM sources WHERE id=%s", (value.source_id,)).fetchone()
+        if spec.research_scope is not None and source["metadata"].get("research_scope") != spec.research_scope.model_dump(
+                mode="json"):
+            raise PolicyError("Published source must preserve the approved research scope")
         if source["synthetic"] and not self.company.settings.fixture_mode:
             raise PolicyError("Synthetic audit sources cannot publish real research")
         payload = value.model_dump(mode="json")
@@ -604,6 +632,10 @@ class MissionStore:
             required_time = profile.qualification_timeout_seconds + profile.evaluation_timeout_seconds
             program_exhausted = (usage["trials"] >= program_spec.max_total_trials
                 or usage["compute_seconds"] + required_time > program_spec.max_compute_seconds)
+            if spec.scientific_lineage is not None:
+                from .scientific_lineages import usage as lineage_usage
+
+                program_exhausted |= lineage_usage(conn, spec.scientific_lineage.id) >= spec.scientific_lineage.max_total_trials
         trial = conn.execute("""SELECT * FROM research_mission_trials WHERE mission_id=%s AND state<>'reported'
             ORDER BY created_at,id LIMIT 1""", (mission_id,)).fetchone()
         if trial:
@@ -632,7 +664,7 @@ class MissionStore:
         return {**result, "stage": "proposal"}
 
     def snapshot(self, conn, mission_id, *, public=True):
-        _, row, _ = self._locked(conn, mission_id, current=False)
+        _, row, spec = self._locked(conn, mission_id, current=False)
         trials = conn.execute("SELECT * FROM research_mission_trials WHERE mission_id=%s ORDER BY created_at,id",
                               (mission_id,)).fetchall()
         publications = conn.execute("""SELECT p.* FROM research_mission_publications p
@@ -644,6 +676,8 @@ class MissionStore:
             incumbent = str(row["incumbent_trial_id"]) if row["incumbent_trial_id"] else None
             return as_json({key: row[key] for key in ("id", "project_id", "revision", "manifest_digest", "state", "cycle",
                                                      "cycle_trials", "cumulative_trials", "created_at", "updated_at")} | {
+                **({"research_scope": spec.research_scope.model_dump(mode="json")}
+                   if spec.research_scope is not None else {}),
                 "stage": self.next_stage(conn, mission_id)["stage"],
                 "incumbent_trial_id": incumbent if incumbent in published else None,
                 "trials": [{"id": str(trial["id"]), "state": trial["state"], "cycle": trial["cycle"],
@@ -651,6 +685,10 @@ class MissionStore:
                             **({"source_id": published[str(trial["id"])]["source_id"]}
                                if str(trial["id"]) in published else {})} for trial in trials]})
         result = as_json(row)
+        if spec.scientific_lineage is not None:
+            from .scientific_lineages import overview
+
+            result["scientific_lineage"] = overview(conn, row["project_id"], spec.scientific_lineage.id)
         result["stage"] = self.next_stage(conn, mission_id)
         result["trials"] = as_json(trials)
         result["challenge_responses"] = as_json(conn.execute("""SELECT * FROM research_challenge_responses

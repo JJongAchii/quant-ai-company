@@ -24,6 +24,7 @@ from .adaptive_contracts import AdaptiveAssignment, AdaptiveManifest, digest_mod
 from .builds import base_workspace, build_trial, profile_for
 from .mission_contracts import MissionSpec, TrialOutcome
 from .missions import MissionStore
+from .policy_contracts import require_scope, scoped_kwargs
 from .runner import ReportPublisher
 from .worker import read_json, sha_file
 from .workspace import canonical_path
@@ -101,6 +102,14 @@ class MissionBackend:
         if snapshot.get("program_id"):
             result["program_id"] = snapshot["program_id"]
         result["spec"] = snapshot["spec"]
+        spec = MissionSpec.model_validate(snapshot["spec"])
+        if spec.research_scope is not None:
+            result["research_scope"] = spec.research_scope.model_dump(mode="json")
+        if snapshot.get("scientific_lineage") is not None:
+            from .scientific_lineages import summary
+
+            result["scientific_lineage"] = summary(snapshot["scientific_lineage"])
+            result["scientific_lineage"]["full_history_file"] = "mission/scientific-lineage.json"
         result["full_history_file"] = "mission/history.json"
         result["full_spec_file"] = "mission/spec.json"
         result["incumbent_scope"] = (
@@ -140,6 +149,9 @@ class MissionBackend:
             "mission/history.json": self._entry(self._blob(directory, "history", snapshot)),
             "mission/spec.json": self._entry(self._blob(directory, "spec", snapshot["spec"])),
         }
+        if snapshot.get("scientific_lineage") is not None:
+            mappings["mission/scientific-lineage.json"] = self._entry(self._blob(
+                directory, "scientific-lineage", snapshot["scientific_lineage"]))
         sources = self._sources(snapshot)
         source_index = []
         for source in sources:
@@ -148,6 +160,8 @@ class MissionBackend:
             source_index.append({"source_id": source["id"], "file": name, "title": source["title"][:200]})
         stage = snapshot["stage"]["stage"]
         extra = {"mission": self._compact(snapshot), "evidence_sources": source_index}
+        if snapshot.get("scientific_lineage", {}).get("origins"):
+            extra["required_lineage_reads"] = ["mission/scientific-lineage.json"]
         # Staff can inspect the specific predecessor/critique without paging through
         # the entire append-only history. Full history remains available for older evidence.
         relevant = {}
@@ -277,6 +291,11 @@ class MissionBackend:
                 kwargs = {"repair_source_ids": row["result"]["repair_source_ids"],
                           "repair_rationale": row["result"]["rationale"]}
             self.store.set_plan(conn, current["id"], manifest.trial_id, manifest.plan, actor="engineer", **kwargs)
+            if manifest.spec.scientific_lineage is not None:
+                from .scientific_lineages import bind_experiment
+
+                bind_experiment(conn, project["id"], manifest.spec.scientific_lineage.id,
+                                manifest.trial_id, receipt["code_signature"])
             result = {"proposal": row["result"], "build_receipt": receipt}
             conn.execute("""UPDATE research_mission_stages SET state='completed',result=%s,error=NULL,updated_at=now()
                 WHERE id=%s""", (Jsonb(result), row["id"]))
@@ -363,7 +382,8 @@ class MissionBackend:
                     "worker_id", "claimed_at", "heartbeat_at", "sequence", "updated_at")}
         evidence.update(state="failed", reason=reason, source="terminal_worker_state_record")
         path = self._blob(self.root / "failures" / str(job["id"]), "failure", evidence)
-        return TrialOutcome(id=stable("mission-failure:" + str(job["id"])), plan=manifest.plan,
+        return TrialOutcome(**scoped_kwargs(manifest.spec), id=stable("mission-failure:" + str(job["id"])),
+            plan=manifest.plan,
             status="technical_failure", started_at=job["claimed_at"] or job["created_at"],
             finished_at=job["heartbeat_at"] or job["updated_at"],
             evidence_files={str(path.relative_to(self.root)): sha_file(path)}, failure_code=reason,
@@ -386,6 +406,7 @@ class MissionBackend:
                 validated = self._validated(job)
                 references = {name: hashlib.sha256(content).hexdigest() for name, content in validated.contents.items()}
                 outcome = TrialOutcome(id=stable("mission-outcome:" + str(job["id"]) + ":" + job["artifact_sha256"]),
+                    **scoped_kwargs(validated.manifest.spec),
                     plan=validated.manifest.plan, status="result", started_at=validated.receipt.started_at,
                     finished_at=validated.receipt.completed_at, evidence_files=references,
                     qualification={"path": "qualification.json", "sha256": validated.receipt.qualification_sha256},
@@ -476,7 +497,8 @@ class MissionBackend:
             bindings.append(AuditTrialBinding(trial_id=row["trial_id"], plan_digest=value.manifest.plan_digest,
                 outcome_digest=row["digest"], archive_sha256=value.archive_sha256,
                 implementer_request_id=actors[row["trial_id"]]))
-        binding = AuditBinding(mission_id=snapshot["id"], revision=snapshot["revision"],
+        binding = AuditBinding(**scoped_kwargs(MissionSpec.model_validate(snapshot["spec"])),
+            mission_id=snapshot["id"], revision=snapshot["revision"],
             mission_digest=snapshot["manifest_digest"], validator_request_id=validator_request_id, trials=tuple(bindings))
         history = ReportHistory(current_cycle=snapshot["cycle"],
             cumulative_scientific_trials=sum(trial.receipt.scientific_trials_added for trial in trials),
@@ -484,6 +506,10 @@ class MissionBackend:
             trial_cycles={str(trial.manifest.trial_id): _trial(snapshot, trial.manifest.trial_id)["cycle"] for trial in trials},
             best_trial_id=UUID(snapshot["incumbent_trial_id"]) if snapshot["incumbent_trial_id"] else None,
             last_trial_id=UUID(snapshot["stage"]["trial_id"]))
+        if snapshot.get("scientific_lineage") is not None:
+            from dataclasses import replace
+
+            history = replace(history, scientific_lineage=snapshot["scientific_lineage"])
         return tuple(trials), binding, history
 
     def _audit_context(self, snapshot, row, profile, mappings):
@@ -693,6 +719,13 @@ class MissionBackend:
                   "revision": snapshot["revision"], "manifest_digest": snapshot["manifest_digest"],
                   "summary": report["summary"], "report": published,
                   "interpretation": "독립 감사 파일에 연결된 개발구간 연구입니다. 확증·투자 승인은 포함하지 않습니다."}
+        scope = MissionSpec.model_validate(snapshot["spec"]).research_scope
+        scope_metadata = {"research_scope": scope.model_dump(mode="json")} if scope is not None else {}
+        source.update(scope_metadata)
+        if scope is not None and scope.data_mode == "frozen_vintage_retrospective":
+            source["interpretation"] = (
+                "고정 수정본과 가정된 가용 시각의 조건부 사후 연구입니다. 과거 실제 알파·정확 재현·"
+                "분배금 총수익·실제 체결·배치·2026 미노출 확인을 입증하지 않습니다.")
         content = _json(source).decode()
         if len(content) > 100000:
             raise PolicyError("mission_verified_source_too_large")
@@ -707,7 +740,7 @@ class MissionBackend:
             conn.execute("""INSERT INTO sources(id,title,uri,content,available_at,project_id,approved,synthetic,metadata)
                 VALUES (%s,%s,%s,%s,now(),%s,true,%s,%s)""",
                          (source_id, "자율 연구 개발구간 보고서", published["uri"], content, project["id"],
-                          self.company.settings.fixture_mode, Jsonb({"kind": "adaptive_discovery",
+                          self.company.settings.fixture_mode, Jsonb({**scope_metadata, "kind": "adaptive_discovery",
                           "mission_id": current["id"], "trial_id": live_trial["id"],
                           "manifest_digest": current["manifest_digest"], "audit_scope_digest": verified.package.scope_digest})))
             self.store.checkpoint(conn, current["id"], live_trial["id"], verify=lambda: publication)
@@ -746,6 +779,7 @@ class MissionBackend:
                                (snapshot["id"], key)).fetchone()
             if row and row["state"] in {"received", "completed"}:
                 value = MeaningReview.model_validate(row["result"])
+                require_scope(MissionSpec.model_validate(snapshot["spec"]), value)
                 result = next(o for o in snapshot["outcomes"] if o["id"] == current_trial["result_id"])
                 if str(value.trial_id) != current_trial["id"] or value.outcome_digest != result["digest"]:
                     raise PolicyError("Meaning review is not bound to the validated outcome")

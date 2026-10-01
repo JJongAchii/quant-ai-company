@@ -118,7 +118,7 @@ def producer(tmp_path):
     qualification = AdaptiveQualification(
         trial_id=trial, plan_digest=manifest.plan_digest, code_commit=commit, config_files=plan.config_files,
         input_files={"qualification.json": inputs["qualification.json"]}, sample_count=1,
-        json_dates=["2024-01-01"], json_datetimes=["2024-01-01T00:00:00Z"],
+        json_dates=["2023-12-31"], json_datetimes=["2023-12-31T00:00:00Z"],
         typed_schema={"date": "date", "timestamp": "datetime", "value": "float"}, primary_unit="fraction-per-year",
         empty_sample_rejected=True, non_finite_rejected=True, json_roundtrip_passed=True,
         performance_read=False, sealed_read=False,
