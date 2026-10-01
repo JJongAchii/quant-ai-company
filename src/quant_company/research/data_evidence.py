@@ -10,7 +10,7 @@ from ..company import PolicyError, fingerprint
 from .adaptive_contracts import digest_model
 from .builds import profile_for
 from .contracts import Digest
-from .mission_contracts import MissionModel, Text, relative_path
+from .mission_contracts import MissionModel, RetrospectiveDataPolicy, Text, relative_path
 
 
 class EvidenceFile(MissionModel):
@@ -28,6 +28,7 @@ class DataEvidencePacket(MissionModel):
     engine: EvidenceFile
     reports: Annotated[dict[str, EvidenceFile], Field(min_length=1, max_length=12)]
     blocking_gaps: Annotated[list[Text], Field(max_length=20)] = []
+    data_policy: RetrospectiveDataPolicy | None = Field(default=None, exclude_if=lambda v: v is None)
 
 
 class DataEvidenceRegistry(MissionModel):
@@ -88,8 +89,14 @@ def load_packets(company, program, envelopes):
         if (packet.execution_profile_digest != digest_model(profile.public_profile)
                 or packet.lake_id != spec.data.lake_id
                 or {name: item.sha256 for name, item in packet.input_files.items()} != spec.data.input_files
-                or packet.engine.sha256 != profile.public_profile.entrypoint_sha256):
+                or packet.engine.sha256 != profile.public_profile.entrypoint_sha256
+                or packet.data_policy != spec.data.policy):
             raise PolicyError("Data evidence packet differs from the approved program")
+        if packet.data_policy is not None and any(
+            name not in packet.reports or packet.reports[name].sha256 != digest
+            for name, digest in packet.data_policy.evidence_reports.items()
+        ):
+            raise PolicyError("Exploratory policy reports are missing or changed")
         try:
             for name in (*packet.input_files, *packet.reports):
                 relative_path(name)
@@ -119,6 +126,9 @@ def attach_packet(backend, directory, packet, files):
         "verified_sha256": {name: hashlib.sha256(data).hexdigest() for name, data in sorted(files.items())},
         "scope": "File identity and approved-contract binding only; source claims and data readiness need review.",
     }
+    if packet.data_policy is not None:
+        identity["data_policy"] = packet.data_policy.model_dump(mode="json")
+        identity["data_policy_digest"] = digest_model(packet.data_policy)
     mappings = {"identity.json": backend._entry(backend._blob(root, "identity", identity))}
     for name, data in files.items():
         mappings[name] = backend._entry(backend._file(root / (hashlib.sha256(data).hexdigest() + ".txt"), data))
