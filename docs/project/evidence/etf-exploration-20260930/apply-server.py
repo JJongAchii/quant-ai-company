@@ -22,8 +22,8 @@ OLD_REGISTRY = "bdef77801a3b65f7588bf00a3916a1a67f7b7e59657db0f1587c8999842646a3
 OLD_PROGRAM = "e06537d3-fac3-5c8c-bf25-ddabb3c7e282"
 OLD_DIGEST = "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b"
 NEW_DIGEST = "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162"
-RECORD = STATE / "releases" / ("exploration-cutover-" + COMMIT + ".json")
-OVERRIDE = STATE / "config" / ("exploration-" + COMMIT + ".compose.json")
+RECORD = STATE / "releases" / ("exploration-cutover-" + COMMIT + "-attempt2.json")
+OVERRIDE = STATE / "config" / ("exploration-" + COMMIT + "-attempt2.compose.json")
 SELECTED = ["api", "dispatch", "slack-socket", "worker"]
 EXPECTED = {
     "api": "sha256:830d346cb469c977188f6d5891eb1fb25977a8712618ba99311d469b7a6ed5a8",
@@ -359,7 +359,7 @@ with (STATE / ".backup.lock").open("a") as lock:
             if n not in {"quant-company-" + s + "-1" for s in SELECTED}
         ), "unrelated_container_recreated"
         # The additional packet is operator evidence, not a data-readiness or scientific approval.
-        staging = P("/tmp/exploration-review-staged")
+        staging = P("/tmp/exploration-review-staged-attempt2")
         staging.mkdir()
         with tarfile.open("/tmp/review.tar") as tf:
             for m in tf.getmembers():
@@ -400,19 +400,11 @@ with (STATE / ".backup.lock").open("a") as lock:
         atomic(REGISTRY, (json.dumps(registry, ensure_ascii=False, indent=2) + "\n").encode())
         registry_changed = True
         # Preserve the old packet bytes and prove new-policy parsing plus exact source/profile admission.
-        verify = r"""import json,pathlib;from quant_company.company import Company,fingerprint;from quant_company.config import Settings;from quant_company.research.program_contracts import ResearchProgram;from quant_company.research.builds import profile_for;from quant_company.research.data_evidence import load_packets;from quant_company.research.programs import ProgramStore;company=Company(Settings());spec=ResearchProgram.model_validate_json(pathlib.Path('/tmp/candidate-program.json').read_text());digest=fingerprint(spec.model_dump(mode='json'));assert digest=='04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162';envelopes={e.name:e for e in spec.envelopes};packet=load_packets(company,{'manifest_digest':digest},envelopes);assert len(packet)==1;assert not packet['etf_strategy'][0].blocking_gaps;
+        verify = r"""import json,sys;from quant_company.company import Company,fingerprint;from quant_company.config import Settings;from quant_company.research.program_contracts import ResearchProgram;from quant_company.research.builds import profile_for;from quant_company.research.data_evidence import load_packets;from quant_company.research.programs import ProgramStore;company=Company(Settings());spec=ResearchProgram.model_validate_json(sys.argv[1]);digest=fingerprint(spec.model_dump(mode='json'));assert digest=='04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162';envelopes={e.name:e for e in spec.envelopes};packet=load_packets(company,{'manifest_digest':digest},envelopes);assert len(packet)==1;assert not packet['etf_strategy'][0].blocking_gaps;
 with company.db.transaction() as conn:
  project=company._project(conn,'9aac0de4-2b97-5195-a720-287d324234f3');assert project['revision']==5;company._check_sources(conn,project['id'],spec.source_ids);[profile_for(company,e.template) for e in spec.envelopes];old=ProgramStore(company).snapshot(conn,'e06537d3-fac3-5c8c-bf25-ddabb3c7e282');assert old['usage']['trials']==0
 print(json.dumps({'program_digest':digest,'packet_count':len(packet),'old_program_readable':True,'exact_sources_profiles_reports_inputs_engine_verified':True,'scientific_authority_granted':False}))
 """
-        run(
-            [
-                "docker",
-                "cp",
-                str(staging / "candidate-program.json"),
-                "quant-company-worker-1:/tmp/candidate-program.json",
-            ]
-        )
         proof = json.loads(
             run(
                 [
@@ -424,6 +416,7 @@ print(json.dumps({'program_digest':digest,'packet_count':len(packet),'old_progra
                     "python",
                     "-c",
                     verify,
+                    (staging / "candidate-program.json").read_text(),
                 ]
             )
         )
