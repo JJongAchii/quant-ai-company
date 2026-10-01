@@ -70,7 +70,7 @@ def prepare_revision(bundle, written, reviewed):
     # Match BriefStore.commit: repair the mechanically accepted draft, before
     # semantic pruning, with both mechanical and editorial failures preserved.
     initial = assess(bundle, written)
-    critique = artifact(reviewed, BriefReview)
+    critique = artifact(reviewed, BriefReview, bundle)
     validate_review(critique, BriefProposal.model_validate(initial["proposal"]), initial["bundle"])
     rejected = {**initial["rejected"], **dict.fromkeys(critique.rejected_ids, "semantic_review")}
     return revision_bundle(initial["bundle"], initial["proposal"], critique, rejected)
@@ -82,29 +82,29 @@ def assess(bundle, written, reviewed=None, *, previous=None, correction_review=N
         if not previous or not correction_review:
             raise ValueError("Isolated repair requires both the previous writer and correction review")
         initial = assess(bundle, previous)
-        prior, critique = BriefProposal.model_validate(initial["proposal"]), artifact(correction_review, BriefReview)
+        prior, critique = BriefProposal.model_validate(initial["proposal"]), artifact(correction_review, BriefReview, bundle)
         validate_review(critique, prior, initial["bundle"])
         rejected = {**initial["rejected"], **dict.fromkeys(critique.rejected_ids, "semantic_review")}
         bundle = revision_bundle(initial["bundle"], initial["proposal"], critique, rejected)
         feedback = bundle["revision_feedback"]
         if feedback["repair_mode"] == "conditions_only":
-            proposed = apply_condition_patch(prior, artifact(written, ConditionPatch), feedback["allowed_ids"])
+            proposed = apply_condition_patch(prior, artifact(written, ConditionPatch, bundle), feedback["allowed_ids"])
         elif feedback["repair_mode"] == "material_append":
-            proposed = apply_material_fact_patch(prior, artifact(written, MaterialFactPatch), feedback["allowed_sources"])
+            proposed = apply_material_fact_patch(prior, artifact(written, MaterialFactPatch, bundle), feedback["allowed_sources"])
         elif feedback["repair_mode"] == "editorial_patch":
-            proposed = apply_editorial_patch(prior, artifact(written, EditorialPatch), feedback["allowed_sources"])
+            proposed = apply_editorial_patch(prior, artifact(written, EditorialPatch, bundle), feedback["allowed_sources"])
         else:
             raise ValueError("Review does not authorize an isolated repair")
         correction = {"mode": feedback["repair_mode"], "previous_request_id": previous.request_id,
                       "patch_request_id": written.request_id, "allowed_ids": feedback["allowed_ids"]}
     else:
-        proposed = artifact(written, BriefProposal)
+        proposed = artifact(written, BriefProposal, bundle)
     rejected = validate(proposed, bundle)
     accepted = prune(proposed, rejected)
     accepted, conflicts = reconcile(accepted, bundle)
     bundle = {**{key: value for key, value in bundle.items() if key != "revision_feedback"},
               "quote_conflicts": conflicts}
-    review = artifact(reviewed, BriefReview) if reviewed else None
+    review = artifact(reviewed, BriefReview, bundle) if reviewed else None
     if review:
         validate_review(review, accepted, bundle)
         rejected.update(dict.fromkeys(review.rejected_ids, "semantic_review"))

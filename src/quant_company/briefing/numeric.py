@@ -222,6 +222,23 @@ def prose_numbers_supported(text, quotes):
         return re.sub(rate, " ", match[0])
 
     remaining = re.sub(series, check, text)
+    # A ranking is not a price or quantity: English "second-largest" supports
+    # Korean "2위", but never a bare 2, a 2% change or a second-tier label.
+    ranks = {1: r"(?<![\w-])(?:the\s+)?(?:largest|biggest)\b",
+             2: r"\bsecond[-\s]+(?:largest|biggest)\b",
+             3: r"\bthird[-\s]+(?:largest|biggest)\b"}
+
+    def check_rank(match):
+        nonlocal valid
+        value = int(match[1])
+        korean = re.escape(match[1])+r"\s*위(?=$|[\s,.]|[의인로를은가였다])"
+        if any(re.search(korean, quote) or (value in ranks and re.search(ranks[value], quote, re.I))
+               for quote in quotes):
+            return "위"
+        valid = False
+        return match[0]
+
+    remaining = re.sub(r"(?<![\d.,])([1-9]\d*)\s*위(?=$|[\s,.]|[의인로를은가였다])", check_rank, remaining)
     if not valid:
         return False
     # A time such as 8:30 cannot support an August release label merely because

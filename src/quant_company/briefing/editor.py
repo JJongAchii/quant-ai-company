@@ -26,10 +26,11 @@ from .market_rules import expired_wti_contract
 from .numeric import numbers, prose_numbers_supported, reported_change_supported
 from .planning import SOURCE_CHAR_BUDGET, supplement_sources
 from .quality import assurance
+from .quotations import QUOTE_REFERENCE_VERSION, reference_payload, resolve_quotations
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 43
+VALIDATION_VERSION = 45
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Before composing, check each original for facts that change the market read, exposure or next decision.
@@ -406,7 +407,8 @@ def prompt(bundle, phase, proposal=None):
          "receipt": {k: v for k, v in d.get("receipt", {}).items()
                      if k in {"source", "qdata_code_commit", "note", "excerpt_truncated"}}}
         for d in payload.get("documents", [])]}
-    if phase == "review" and proposal:
+    references = bundle.get("quote_reference_version") == QUOTE_REFERENCE_VERSION
+    if phase == "review" and proposal and not references:
         for index, doc in enumerate(payload["documents"]):
             parts = [doc["content"]]
             source_quotes = [(key, q[1]) for key, q in payload["evidence_quotes"].items() if q[0] == index]
@@ -425,6 +427,8 @@ def prompt(bundle, phase, proposal=None):
             if any(isinstance(part, dict) for part in parts):
                 doc.pop("content")
                 doc["content_parts"] = parts
+    if references:
+        payload = reference_payload(payload, bundle)
     schema_value = schema.model_json_schema()
     if phase == "review":
         def omit_schema_labels(value):
@@ -439,7 +443,14 @@ def prompt(bundle, phase, proposal=None):
         # needs every definition used in this draft, not unused lookup entries.
         instruments = {key: INSTRUMENTS[key] for key in INSTRUMENTS
                        if key in {o.instrument for o in draft.observations}}
-    result = ((PATCH if patch else FACT_PATCH if fact_patch else EDITORIAL_PATCH if editorial_patch else WRITE if phase == "write" else REVIEW) + "\n" + render_pack(procedure)
+    reference_instruction = ("\nFor this edition, original_quotes maps @original IDs to [document_index, exact text]. "
+        "Join documents.original_quote_refs in order through original_quotes to read the COMPLETE original. "
+        "In your output quote fields, select a supplied @original ID instead of retyping the text. "
+        "The server restores that exact span and checks its source_id; never invent or cross-assign IDs. "
+        "This applies to evidence and material_facts quotes, not reader-facing prose. "
+        "evidence_quotes may point to an @original ID instead of literal text. All other checks still apply.\n"
+        if references else "")
+    result = ((PATCH if patch else FACT_PATCH if fact_patch else EDITORIAL_PATCH if editorial_patch else WRITE if phase == "write" else REVIEW) + reference_instruction + "\n" + render_pack(procedure)
               + "\nINSTRUMENTS:\n" + json.dumps(instruments, ensure_ascii=False, separators=(",", ":"))
               + "\nSCHEMA:\n" + json.dumps(schema_value, ensure_ascii=False, separators=(",", ":"))
               + "\nBRIEF DATA JSON:\n" + json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
@@ -583,7 +594,7 @@ def apply_editorial_patch(proposal, patch, allowed_sources):
     return BriefProposal.model_validate(replace(proposal.model_dump(mode="json")))
 
 
-def artifact(response, schema):
+def artifact(response, schema, bundle=None):
     d = response.decision
     if (d.status != "complete" or len(d.artifacts) != 1 or d.tools or d.messages or d.delegations
             or d.memories or d.follow_up or d.artifacts[0].source_ids):
@@ -599,6 +610,8 @@ def artifact(response, schema):
                 ord(char) < 32 and char not in "\n\r\t" for char in content):
             raise
         value = json.loads(content, strict=False)
+    if bundle and bundle.get("quote_reference_version") == QUOTE_REFERENCE_VERSION:
+        value = resolve_quotations(value, bundle)
     return schema.model_validate(value)
 
 

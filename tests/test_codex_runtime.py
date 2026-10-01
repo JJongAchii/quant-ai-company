@@ -599,6 +599,50 @@ async def test_three_independent_single_slots_with_durable_receipts(fake_codex, 
         await asyncio.gather(*operations, return_exceptions=True)
 
 
+async def test_briefing_has_its_own_single_slot_and_preserves_other_lanes(fake_codex, request_model):
+    config, configure, calls = fake_codex
+    configure(mode="delay", delay_seconds=2)
+    requests = [request_model.model_copy(update={"request_id": identity})
+                for identity in ("company-brief-test", "news-screen-test", "quant-feed-test", "news-brief-test-write")]
+    operations = [asyncio.create_task(runner_for(config).run(request)) for request in requests]
+    try:
+        async with asyncio.timeout(5):
+            while len(calls()) < 4:
+                await asyncio.sleep(0.01)
+        assert all(not operation.done() for operation in operations)
+        for identity in ("news-brief-test-write", "news-brief-other-review", "news-screen-other",
+                         "quant-feed-other", "company-other"):
+            with pytest.raises(ProviderFault) as caught:
+                await runner_for(config).run(request_model.model_copy(update={"request_id": identity}))
+            assert caught.value.code == "busy"
+        results = await asyncio.gather(*operations)
+        for request, result in zip(requests, results, strict=True):
+            assert await runner_for(config).run(request) == result
+        assert len(calls()) == 4
+        assert {json.loads(p.read_text())["execution_lane"] for p in config.jobs_dir.glob("*.json")} == {
+            "company", "news", "quant", "brief",
+        }
+    finally:
+        for operation in operations:
+            operation.cancel()
+        await asyncio.gather(*operations, return_exceptions=True)
+
+
+async def test_old_running_brief_receipt_blocks_execution_after_lane_change(fake_codex, request_model):
+    config, _, calls = fake_codex
+    request = request_model.model_copy(update={"request_id": "news-brief-before-cutover"})
+    config.jobs_dir.mkdir()
+    path = config.jobs_dir / (request.request_id + ".json")
+    receipt = {"version": 1, "request_id": request.request_id, "input_digest": request_digest(request),
+               "state": "running", "execution_lane": "news", "started_at": time.time()}
+    atomic_json(path, receipt)
+    with pytest.raises(ProviderFault) as caught:
+        await runner_for(config).run(request)
+    assert caught.value.code == "uncertain"
+    assert json.loads(path.read_text()) == receipt
+    assert not calls()
+
+
 async def test_cancelling_news_does_not_cancel_company_lane(fake_codex, request_model):
     config, configure, calls = fake_codex
     configure(mode="delay", delay_seconds=1)

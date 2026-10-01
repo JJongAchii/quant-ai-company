@@ -43,6 +43,7 @@ from .editor import (
 from .inputs import market_report, registrations, source_policy
 from .planning import PLAN, apply_plan, plan_prompt
 from .quality import reconcile
+from .quotations import QUOTE_REFERENCE_VERSION
 
 LOCK = 71350241
 TERMINAL = {"committed", "previewed", "missed", "stale"}
@@ -120,6 +121,7 @@ class BriefStore:
     def _freeze(self, conn, row):
         bundle = {**(row["bundle"] or {"documents": [], "collection_errors": []}), "edition": row["definition"]}
         bundle["analyst_procedure"] = pack(BRIEFER)
+        bundle["quote_reference_version"] = QUOTE_REFERENCE_VERSION
         role = self.company.role(BRIEFER)
         bundle["professional_feedback"] = as_json(coaching(conn, row["owner_user"], BRIEFER,
                                                           role.model, role.reasoning_effort))
@@ -285,15 +287,15 @@ class BriefStore:
                 feedback = row["bundle"].get("revision_feedback", {})
                 if call["phase"] == "revise" and feedback.get("repair_mode") == "conditions_only":
                     proposed = apply_condition_patch(BriefProposal.model_validate(row["proposal"]),
-                        artifact(response, ConditionPatch), feedback["allowed_ids"])
+                        artifact(response, ConditionPatch, row["bundle"]), feedback["allowed_ids"])
                 elif call["phase"] == "revise" and feedback.get("repair_mode") == "material_append":
                     proposed = apply_material_fact_patch(BriefProposal.model_validate(row["proposal"]),
-                        artifact(response, MaterialFactPatch), feedback["allowed_sources"])
+                        artifact(response, MaterialFactPatch, row["bundle"]), feedback["allowed_sources"])
                 elif call["phase"] == "revise" and feedback.get("repair_mode") == "editorial_patch":
                     proposed = apply_editorial_patch(BriefProposal.model_validate(row["proposal"]),
-                        artifact(response, EditorialPatch), feedback["allowed_sources"])
+                        artifact(response, EditorialPatch, row["bundle"]), feedback["allowed_sources"])
                 else:
-                    proposed = artifact(response, BriefProposal)
+                    proposed = artifact(response, BriefProposal, row["bundle"])
                 rejected = validate(proposed, row["bundle"])
                 proposal = prune(proposed, rejected)
                 proposal, conflicts = reconcile(proposal, row["bundle"])
@@ -304,7 +306,7 @@ class BriefStore:
                 conn.execute("UPDATE brief_editions SET state=%s,proposal=%s,quality=%s,bundle=%s WHERE id=%s",
                              (next_state, Jsonb(proposal.model_dump(mode="json")), Jsonb(result), Jsonb(row["bundle"]), row["id"]))
             else:
-                review = artifact(response, BriefReview)
+                review = artifact(response, BriefReview, row["bundle"])
                 proposal = BriefProposal.model_validate(row["proposal"])
                 validate_review(review, proposal, row["bundle"])
                 rejected = {**(row["quality"] or {}).get("rejected", {}),

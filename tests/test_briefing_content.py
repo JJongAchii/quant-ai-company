@@ -699,7 +699,9 @@ def test_confirmed_editorial_failure_gets_only_one_frozen_repair_and_recheck(bri
     assert "revision_feedback" in revision["prompt"] and "previous_draft" in revision["prompt"]
     payload = json.loads(revision["prompt"].split("BRIEF DATA JSON:\n")[1])
     assert "quote" not in payload["revision_feedback"]["previous_draft"]["summary"][0]["evidence"][0]
-    assert payload["documents"][0]["content"] == bundle()["documents"][0]["content"]
+    original = "".join(payload["original_quotes"][reference][1]
+                       for reference in payload["documents"][0]["original_quote_refs"])
+    assert original == bundle()["documents"][0]["content"]
     assert store.prepare()["request"] == revision
     store.commit(response(revision))
     final = store.prepare()["request"]
@@ -1065,6 +1067,17 @@ def test_vw_margin_range_and_adjacent_english_decline_survive_prose_validation()
     assert prose_numbers_supported(claim, [quote])
     assert not prose_numbers_supported(claim.replace("0.5%", "0.6%"), [quote])
     assert not prose_numbers_supported(claim, [quote.replace("0.5% lower", "0.5% higher")])
+
+
+def test_english_ranking_only_supports_an_explicit_matching_korean_rank():
+    quote = "Moscow's ban removed the second-largest source of diesel from the global market."
+    assert prose_numbers_supported("러시아는 세계 2위 경유 공급원이었다.", [quote])
+    assert not prose_numbers_supported("러시아는 세계 3위 경유 공급원이었다.", [quote])
+    assert not prose_numbers_supported("러시아는 세계 1위 경유 공급원이었다.", [quote])
+    assert not prose_numbers_supported("경유는 2달러였다.", [quote])
+    assert not prose_numbers_supported("경유는 2% 올랐다.", [quote])
+    assert not prose_numbers_supported("세계 2위였다.", ["It was a second-tier supplier with 2 factories."])
+    assert prose_numbers_supported("세계 2위 공급원이었다.", ["세계 2위 경유 공급원이다."])
 
 
 def test_crypto_rolling_window_uses_korean_reporting_date_not_us_equity_session():
