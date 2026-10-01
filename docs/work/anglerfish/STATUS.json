@@ -1,17 +1,51 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v5.json",
-  "state": "director_natural_followup_release_prepared",
-  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/90",
+  "currentIntent": "INTENT-v6.json",
+  "state": "private_output_worker_deployed_data_gate_blocked",
+  "previousIntent": "INTENT-v5.json",
   "deliverables": {
-    "DIAGNOSIS": {"status": "completed"},
-    "APPLICATION": {"status": "completed", "integratedBase": "6dfbdcc35a5d5dd7fa82f7bfc97d4cb0780156e9", "concurrentWorkerCommitIncluded": "5fcd4353b8adab3e3fb6f11fda3f08fef7aea801", "latestConcurrentReleaseIncluded": "ac44bf5b66b3016021e13c34ffc75b8db215bfc3"},
-    "VALIDATION": {"status": "completed", "focusedRealPostgresTests": 28, "lint": "passed"},
-    "REVIEW": {"status": "completed", "pr": "https://github.com/JJongAchii/quant-ai-company/pull/90"},
-    "LIVE_CHECK": {"status": "pending", "reason": "Integrated release is being qualified for production cutover"}
+    "DIAGNOSIS": {
+      "status": "completed"
+    },
+    "APPLICATION": {
+      "status": "completed",
+      "integratedCommit": "73fcfc34a6876e0a80c14fa72edae2cdb8413b0c",
+      "localDuplicateDiscarded": true,
+      "privateOutputCorrection": "implemented"
+    },
+    "VALIDATION": {
+      "status": "completed",
+      "targetedRealPostgresTests": 35,
+      "fullRealPostgresTests": 1342,
+      "skipped": 46,
+      "lint": "passed",
+      "inactiveImageImport": "passed"
+    },
+    "REVIEW": {
+      "status": "approved",
+      "pr": "https://github.com/JJongAchii/quant-ai-company/pull/97",
+      "mergedCommit": "d2010230eda9b6cf1128b0fc650bdcbc8c8309b3",
+      "candidateCommit": "0286ba3e7426ff6546b90e6926124ae65e71ba79",
+      "ownerApproval": "승인할게"
+    },
+    "LIVE_CHECK": {
+      "status": "completed",
+      "privateOutputFix": "active",
+      "dataReviewTask": "14bf1d1f-16e7-5023-a281-0a045721d9ff",
+      "dataReviewAttempt": 1,
+      "turnsCompleted": 9,
+      "dataDecision": "blocked",
+      "liveCorrectionTriggered": false
+    }
   },
-  "operationalStatus": "Natural owner progress questions still need the integrated company release on the app and model worker; prior messages are not replayed.",
-  "evidence": "../../project/evidence/director-natural-followup-20260929.json",
-  "previousIntent": "INTENT-v4.json"
+  "operationalStatus": "Owner-approved worker active with persistent image pin; other container IDs and profiles preserved; runtime pause restored. Live independent data review completed in one attempt and director selection resumed. Data provenance/PIT still blocked; scientific missions zero.",
+  "evidence": "../../project/evidence/private-output-cutover-20260930.json",
+  "nextStage": {
+    "stage": "program_selection",
+    "task": "da7cd027-b603-5d9d-9665-77b3b844e6d2",
+    "candidate": "2733156b-0a7e-50dc-995c-93cf58bf114b",
+    "observedAt": "2026-09-30T07:55:06.134951Z"
+  },
+  "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/97"
 }

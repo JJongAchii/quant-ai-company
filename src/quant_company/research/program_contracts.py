@@ -75,18 +75,25 @@ class TaskDecision(MissionModel):
 
 
 class DataAssessment(MissionModel):
-    decision: Literal["ready", "blocked"]
+    decision: Literal["ready", "exploratory_only", "blocked"]
     rationale: Text
     source_ids: SourceIds
     point_in_time: bool
     coverage: bool
     executable_prices: bool
     original_conditions: bool
+    data_policy_digest: Digest | None = Field(default=None, exclude_if=lambda v: v is None)
+    evaluation_prices: bool | None = Field(default=None, strict=True, exclude_if=lambda v: v is None)
 
     @model_validator(mode="after")
     def ready(self):
         if self.decision == "ready" and not all((self.point_in_time, self.coverage, self.executable_prices)):
             raise ValueError("Ready requires PIT, coverage and execution evidence")
+        if self.decision == "exploratory_only" and (
+            not self.coverage or self.evaluation_prices is not True or self.data_policy_digest is None
+            or self.point_in_time or self.executable_prices or self.original_conditions
+        ):
+            raise ValueError("Exploration requires verified coverage/evaluation prices, a policy digest and unverified historical flags")
         return self
 
 

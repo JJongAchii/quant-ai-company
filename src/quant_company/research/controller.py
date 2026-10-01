@@ -306,6 +306,17 @@ def stage_prompt(company, conn, task, turn=None):
         "Read all required_meaning_reads, the interpretation and challenge responses. List every unperformed "
         "test obligation and unresolved objection. Choose inconclusive when required evidence is missing. "
         "Support is development evidence only, never confirmation or an investment recommendation.")
+    policy = row["context"].get("mission", {}).get("spec", {}).get("data", {}).get("policy")
+    if policy:
+        instructions[row["stage"]] += (
+            " This is owner-approved retrospective exploration under the exact data.policy assumptions. "
+            "Historical publication times, revision vintages and preparation source bytes remain unverified. "
+            "Evaluate chronology within frozen inputs under the declared availability assumption; never "
+            "attest to actual historical PIT or real fills. A validity pass concerns only that conditional "
+            "scope. Other missing causal evidence or code leakage still requires fail/unverified. "
+            "Preserve these limitations and do not claim confirmation, deployment eligibility or full support.")
+        if row["stage"] == "meaning":
+            instructions["meaning"] += " Choose inconclusive or not_supported; supported is inadmissible in this scope."
     if enabled(row):
         if turn is None:
             raise PolicyError("audit_packet_requires_bound_turn")
@@ -467,6 +478,24 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
 
     decision = response.decision
     if (decision.say.strip() or decision.delegations or decision.messages or decision.memories or decision.follow_up):
+        from .program_controller import PROGRAM_STAGES
+
+        # A harmless narration on a private read must not discard this attempt's
+        # completed source reads. Reject its effects, retain the response, and let
+        # the employee correct the envelope once using the same evidence thread.
+        if (decision.say.strip() and row["stage"] in PROGRAM_STAGES
+                and not (decision.delegations or decision.messages or decision.memories or decision.follow_up)
+                and row["context"].get("_private_output_hint_attempt") != row["attempt"]):
+            context = {**row["context"], "_private_output_hint_attempt": row["attempt"]}
+            hint = ('private_output_rejected: set say="". For a file read return one research_control tool, '
+                    'status="continue", artifacts=[]; for completion return one JSON artifact. '
+                    'The rejected response performed no file read or public message. Continue from file_progress.')
+            conn.execute("UPDATE research_mission_stages SET context=%s,error=%s,updated_at=now() WHERE id=%s",
+                         (Jsonb(context), hint, row["id"]))
+            conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                         (Jsonb(response.model_dump(mode="json")), turn["id"]))
+            company._new_turn(conn, task)
+            return {"state": "completed", "private_output_rejected": True}
         raise PolicyError("Research stage output must stay in its private typed artifact")
     if decision.tools:
         if enabled(row):
@@ -522,6 +551,9 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         value = json.loads(content, strict=False)
     if not isinstance(value, dict):
         raise PolicyError("Research artifact must be an object")
+    if (row["stage"] == "meaning" and value.get("conclusion") == "supported"
+            and row["context"].get("mission", {}).get("spec", {}).get("data", {}).get("policy")):
+        raise PolicyError("Retrospective exploration cannot establish supported findings")
     for path in row["context"].get("required_data_reads", []):
         if conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
             AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():

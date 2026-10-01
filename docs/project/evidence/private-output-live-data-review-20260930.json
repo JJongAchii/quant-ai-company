@@ -1,0 +1,239 @@
+{
+  "now": "2026-09-30T07:57:33.128157+00:00",
+  "data_stage": {
+    "id": "edf65919-3ab1-5e98-bdb2-412509ff9f98",
+    "task_id": "14bf1d1f-16e7-5023-a281-0a045721d9ff",
+    "state": "completed",
+    "attempt": 1,
+    "error": null,
+    "updated_at": "2026-09-30T07:54:29.062867+00:00",
+    "private_hint_attempt": null
+  },
+  "turns": [
+    {
+      "id": "f93ff49b-ddc5-50b5-b67d-fd33572b2658",
+      "sequence": 1,
+      "status": "completed",
+      "say_chars": 0,
+      "tools": [
+        {
+          "name": "research_control",
+          "arguments": {
+            "path": "data/etf_strategy/identity.json",
+            "action": "read_stage_file",
+            "offset": 0
+          }
+        }
+      ],
+      "error": null,
+      "updated_at": "2026-09-30T07:53:04.73379+00:00"
+    },
+    {
+      "id": "fa0081d2-893e-507b-b39a-630e42fbea84",
+      "sequence": 2,
+      "status": "completed",
+      "say_chars": 0,
+      "tools": [
+        {
+          "name": "research_control",
+          "arguments": {
+            "path": "data/etf_strategy/engine",
+            "action": "read_stage_file",
+            "offset": 0
+          }
+        }
+      ],
+      "error": null,
+      "updated_at": "2026-09-30T07:53:13.12304+00:00"
+    },
+    {
+      "id": "95d28a0b-9320-50a6-9dba-a2a9ea59e9a7",
+      "sequence": 3,
+      "status": "completed",
+      "say_chars": 0,
+      "tools": [
+        {
+          "name": "research_control",
+          "arguments": {
+            "path": "data/etf_strategy/engine",
+            "action": "read_stage_file",
+            "offset": 12000
+          }
+        }
+      ],
+      "error": null,
+      "updated_at": "2026-09-30T07:53:19.702751+00:00"
+    },
+    {
+      "id": "aa378d82-8024-59ce-995c-e0379097c0f4",
+      "sequence": 4,
+      "status": "completed",
+      "say_chars": 0,
+      "tools": [
+        {
+          "name": "research_control",
+          "arguments": {
+            "path": "data/etf_strategy/reports/input-check.json",
+            "action": "read_stage_file",
+            "offset": 0
+          }
+        }
+      ],
+      "error": null,
+      "updated_at": "2026-09-30T07:53:29.507739+00:00"
+    },
+    {
+      "id": "23ac8480-58f5-53e2-b8a0-da93dc12b37e",
+      "sequence": 5,
+      "status": "completed",
+      "say_chars": 0,
+      "tools": [
+        {
+          "name": "research_control",
+          "arguments": {
+            "path": "data/etf_strategy/reports/limitations.json",
+            "action": "read_stage_file",
+            "offset": 0
+          }
+        }
+      ],
+      "error": null,
+      "updated_at": "2026-09-30T07:53:36.847534+00:00"
+    },
+    {
+      "id": "3dc03cd9-0f3a-5ff8-9e2a-66c12ba33503",
+      "sequence": 6,
+      "status": "completed",
+      "say_chars": 0,
+      "tools": [
+        {
+          "name": "research_control",
+          "arguments": {
+            "path": "data/etf_strategy/reports/provenance-recovery-c813a2e9c4e7.json",
+            "action": "read_stage_file",
+            "offset": 0
+          }
+        }
+      ],
+      "error": null,
+      "updated_at": "2026-09-30T07:53:44.691987+00:00"
+    },
+    {
+      "id": "cbbb6d1f-fcbe-5b8c-afff-c716b29364b4",
+      "sequence": 7,
+      "status": "completed",
+      "say_chars": 0,
+      "tools": [
+        {
+          "name": "research_control",
+          "arguments": {
+            "path": "data/etf_strategy/reports/qdata-readback.json",
+            "action": "read_stage_file",
+            "offset": 0
+          }
+        }
+      ],
+      "error": null,
+      "updated_at": "2026-09-30T07:53:51.063517+00:00"
+    },
+    {
+      "id": "be320aec-fa14-5d57-8b8f-b2b3f831ec33",
+      "sequence": 8,
+      "status": "completed",
+      "say_chars": 0,
+      "tools": [
+        {
+          "name": "research_control",
+          "arguments": {
+            "path": "sources/a92aa4eac500d55b1e4b8879d57d7bd33fb476b0488b493e8de52ffd6c8c0b89.json",
+            "action": "read_stage_file",
+            "offset": 0
+          }
+        }
+      ],
+      "error": null,
+      "updated_at": "2026-09-30T07:53:59.992378+00:00"
+    },
+    {
+      "id": "7bd220f1-fe08-5dce-8a22-38ce7f28aa34",
+      "sequence": 9,
+      "status": "completed",
+      "say_chars": 0,
+      "tools": [],
+      "error": null,
+      "updated_at": "2026-09-30T07:54:15.567569+00:00"
+    }
+  ],
+  "reads": [
+    {
+      "id": "4c27e06f-697c-5ff1-aa28-3de0230cea22",
+      "path": "data/etf_strategy/identity.json",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-09-30T07:53:04.73379+00:00"
+    },
+    {
+      "id": "0988387b-96d9-56f6-8719-c4114b7b4c40",
+      "path": "data/etf_strategy/engine",
+      "character_offset": 0,
+      "next_offset": 12000,
+      "created_at": "2026-09-30T07:53:13.12304+00:00"
+    },
+    {
+      "id": "1120ed17-861a-55a0-9b36-17b8f0d9242c",
+      "path": "data/etf_strategy/engine",
+      "character_offset": 12000,
+      "next_offset": null,
+      "created_at": "2026-09-30T07:53:19.702751+00:00"
+    },
+    {
+      "id": "4e1df6a2-d69f-5ed2-b0c1-f4bab1983e9e",
+      "path": "data/etf_strategy/reports/input-check.json",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-09-30T07:53:29.507739+00:00"
+    },
+    {
+      "id": "3280f882-eac7-5798-be91-05713f65b62e",
+      "path": "data/etf_strategy/reports/limitations.json",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-09-30T07:53:36.847534+00:00"
+    },
+    {
+      "id": "039ba387-1cdd-514e-8c1b-64176acf9835",
+      "path": "data/etf_strategy/reports/provenance-recovery-c813a2e9c4e7.json",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-09-30T07:53:44.691987+00:00"
+    },
+    {
+      "id": "e3eca84c-d154-5c08-a703-87d1af4da03b",
+      "path": "data/etf_strategy/reports/qdata-readback.json",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-09-30T07:53:51.063517+00:00"
+    },
+    {
+      "id": "a1ecb377-588f-50e7-bb71-42e1a05e8d97",
+      "path": "sources/a92aa4eac500d55b1e4b8879d57d7bd33fb476b0488b493e8de52ffd6c8c0b89.json",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-09-30T07:53:59.992378+00:00"
+    }
+  ],
+  "assessment": {
+    "coverage": true,
+    "decision": "blocked",
+    "rationale": "고정 입력의 식별성과 범위는 확인되었다. warmup은 104세션·1,040행, development는 731세션·7,310행이며 각 10종목, 중복 date/ticker 및 cohort 누락은 0이다. 현재 대조에서도 8,350행과 cohort 누락 0은 확인되어 coverage는 제한된 입력 범위에서 충족한다. 그러나 원본 clean 객체의 S3 VersionId가 없고 준비 시점 객체와 현재 객체 정체성이 다르며, adj_close 불일치(현재 대조 7,515행; 이전 readback 6,680행)의 원본 바이트 및 raw-to-clean 계보가 복구되지 않았다. available_at은 생성기의 다음날 23:59 KST 가정일 뿐 원천 발표·수집 receipt가 아니고, historical publication receipt와 revision vintage도 미검증이다. 따라서 date<d 및 available_at<09:00 KST 필터가 당시 실제 이용가능성을 증명하지 못한다. 또한 동결 평가기는 open-to-next-open 계산 규칙은 제공하지만 실제 주문장 체결, 거래정지·상폐 정산, 현금배당 처리를 입증하지 않는다. 해시 검증은 동결 파일의 동일성만 증명하므로 원래 조건 또는 실행가능 가격의 증거를 대체하지 못한다. 원천 버전 고정·원본/변환 계보·과거 발표시각 및 평가가격/거래가능성·기업행사 처리가 독립적으로 입증되기 전에는 과학 시행과 성과 계산을 차단한다.",
+    "source_ids": [
+      "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+    ],
+    "point_in_time": false,
+    "executable_prices": false,
+    "original_conditions": false
+  },
+  "stage_outbox": 1,
+  "live_same_attempt_correction_observed": false,
+  "validation_scope": "Live post-deployment data review completed in one attempt without narration rejection; bounded correction itself remains covered by real-PostgreSQL fixture regression."
+}
