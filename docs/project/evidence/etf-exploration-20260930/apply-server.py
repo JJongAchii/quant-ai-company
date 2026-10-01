@@ -276,7 +276,7 @@ with (STATE / ".backup.lock").open("a") as lock:
         )
         assert all(sha(STATE / "config" / n) == h for n, h in profiles.items())
         updates = {}
-        for n, r in before.items():
+        for r in before.values():
             service = r["Config"]["Labels"].get("com.docker.compose.service")
             if not service or service == "postgres":
                 continue
@@ -288,9 +288,9 @@ with (STATE / ".backup.lock").open("a") as lock:
             updates[service] = {"image": image, "environment": env}
         atomic(OVERRIDE, json.dumps({"services": updates}).encode())
         lines = [
-            l
-            for l in oldenv.decode().splitlines()
-            if l.split("=", 1)[0] not in ["RELEASE_COMMIT", "PINNED_COMPANY_WORKER_IMAGE"]
+            line
+            for line in oldenv.decode().splitlines()
+            if line.split("=", 1)[0] not in ["RELEASE_COMMIT", "PINNED_COMPANY_WORKER_IMAGE"]
         ]
         atomic(
             ENV,
@@ -463,7 +463,7 @@ print(json.dumps({'program_digest':digest,'packet_count':len(packet),'old_progra
         atomic(ENV, oldenv)
         if OVERRIDE.exists():
             rollback = {}
-            for n, r in before.items():
+            for r in before.values():
                 s = r["Config"]["Labels"].get("com.docker.compose.service")
                 if s and s != "postgres":
                     rollback[s] = {

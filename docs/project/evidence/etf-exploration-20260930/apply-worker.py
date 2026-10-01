@@ -11,7 +11,11 @@ DIRECTORY = BASE / "release-candidates" / COMMIT
 ACTIVE = P("/home/achii/.config/quant-company/research-worker.json")
 sys.path.insert(0, str(DIRECTORY / "code/src"))
 # Import the verified candidate release selected above.
-from quant_company.research.releases import PreparedRelease, activate_release, resolve_release_config  # noqa: E402
+from quant_company.research.releases import (  # noqa: E402
+    PreparedRelease,
+    activate_release,
+    resolve_release_config,
+)
 from quant_company.research.worker import WorkerConfig, atomic_json, sha_file  # noqa: E402
 
 assert sha_file(ACTIVE) == "23920eaaaa415ac1e2c2ddbe918f908955de20a54223b9b04a1a76644da5deef", (
