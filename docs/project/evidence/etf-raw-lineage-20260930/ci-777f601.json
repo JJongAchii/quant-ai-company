@@ -1,0 +1,17 @@
+{
+  "completed_at": "2026-09-30T11:15:48Z",
+  "conclusion": "success",
+  "covers": "777f601 raw lineage operator, guards and initial production evidence; later final staff receipts are subsequent evidence additions",
+  "created_at": "2026-09-30T11:08:54Z",
+  "head_sha": "777f60112ce480219aad5f9fc2f287e165d94776",
+  "job_id": 109858624467,
+  "job_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36706733603/job/109858624467",
+  "lint": "success",
+  "observed_at": "2026-09-30T12:06:45.110180+00:00",
+  "postgresql_temporal_service_regression": "success",
+  "regression_reproduces_on_base": "skipped",
+  "run_id": 36706733603,
+  "schema_version": 1,
+  "source": "gh run view 36706733603 --repo JJongAchii/quant-ai-company --json databaseId,headSha,status,conclusion,url,createdAt,updatedAt,jobs",
+  "status": "completed"
+}

@@ -1,0 +1,41 @@
+{
+  "data_readiness_granted": false,
+  "head_ci": "pending_new_evidence_commit",
+  "lint": {
+    "command": ".venv/bin/ruff check .",
+    "exit_code": 0
+  },
+  "observed_at": "2026-09-30T11:08:04.538990+00:00",
+  "real_execution": {
+    "actual_company_service_load_packets_used": true,
+    "approved_input_rows_checked": 8350,
+    "company_host_worker_source_files_verified": 10,
+    "completed_conditional_downloads": 835,
+    "database": "real PostgreSQL",
+    "new_report_staff_review": "running_at_initial_readback",
+    "pinned_qdata_package_files_verified": 47,
+    "raw_schema_keys_and_builder_rows_checked": 698359,
+    "source": "AWS S3 current raw objects"
+  },
+  "receipt_binding_check": {
+    "approved_input_sha_unchanged": true,
+    "attached_report_and_registry_sha_verified": true,
+    "audit_input_sha_verified": true,
+    "body_manifest_sha_verified": true,
+    "download_and_comparison_script_sha_equal": true,
+    "passed": true
+  },
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "scope": "raw_lineage_operator_and_executed_receipt_binding",
+  "sealed_price_rows_read": false,
+  "service_code_changed": false,
+  "strategy_performance_computed": false,
+  "tests": {
+    "command": ".venv/bin/pytest -q tests/test_etf_raw_lineage_operator.py",
+    "duration_seconds": 0.69,
+    "exit_code": 0,
+    "passed": 8,
+    "simulated_component": "S3 response fault guards only; no simulated cloud deployment claim"
+  }
+}

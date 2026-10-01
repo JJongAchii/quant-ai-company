@@ -5,6 +5,7 @@ import math
 from psycopg.types.json import Jsonb
 
 from ..company import PolicyError, as_json, fingerprint, stable
+from .adaptive_contracts import digest_model
 from .builds import profile_for
 from .data_evidence import load_packets
 from .library import available_sources, require_current, verify_citations
@@ -89,6 +90,11 @@ class ProgramStore:
                 return self.snapshot(conn, program_id)
             if row["state"] != "draft":
                 raise PolicyError("Program approval requires a draft")
+            if any(e.template.data.policy is not None for e in spec.envelopes) and conn.execute(
+                "SELECT 1 FROM research_programs WHERE project_id=%s AND revision=%s AND state='active' AND id<>%s",
+                (project["id"], row["revision"], program_id),
+            ).fetchone():
+                raise PolicyError("Exploratory replacement requires cancellation of the prior active program")
             for envelope in spec.envelopes:
                 profile_for(self.company, envelope.template)
             conn.execute("""UPDATE research_programs SET state='active',approval_event_id=%s,approved_at=now(),
@@ -128,8 +134,11 @@ class ProgramStore:
         project, row, spec = self.locked(conn, program_id, active=True)
         MissionStore(self.company)._actor(actor, "researcher_kr")
         proposal = typed(ResearchTaskProposal, value)
-        if proposal.envelope not in {e.name for e in spec.envelopes}:
+        envelope = next((e for e in spec.envelopes if e.name == proposal.envelope), None)
+        if envelope is None:
             raise PolicyError("Task selects an unapproved envelope")
+        if envelope.template.data.policy is not None and proposal.mode == "exact_replication":
+            raise PolicyError("Retrospective exploration cannot claim exact replication")
         allowed = {s["id"] for s in available_sources(self.company, conn, project, spec, program_id)}
         if not set(proposal.source_ids) <= allowed:
             raise PolicyError("Task cites sources outside the program library")
@@ -162,19 +171,29 @@ class ProgramStore:
         if not task or task["state"] != "proposed":
             raise PolicyError("Data assessment requires an unassessed proposal")
         envelope = next(e for e in spec.envelopes if e.name == task["proposal"]["envelope"])
-        if value.decision == "ready":
-            profile = profile_for(self.company, envelope.template)
-            if not profile.public_profile.fixture_only:
-                packet = load_packets(self.company, program, {envelope.name: envelope}).get(envelope.name)
-                if packet is None:
-                    raise PolicyError("Real data readiness requires a verified input evidence packet")
-                if packet[0].blocking_gaps:
-                    raise PolicyError("Data evidence packet still records blocking gaps")
+        self._check_data_decision(program, envelope, value)
         if (task["proposal"]["mode"] == "exact_replication" and value.decision == "ready"
                 and not value.original_conditions):
             raise PolicyError("Exact replication requires the original conditions; register a transfer instead")
         conn.execute("UPDATE research_program_tasks SET data_assessment=%s,state='assessed' WHERE id=%s",
                      (Jsonb(value.model_dump(mode="json")), task_id))
+
+    def _check_data_decision(self, program, envelope, value):
+        policy = envelope.template.data.policy
+        if value.decision == "blocked":
+            return
+        if value.decision == "exploratory_only":
+            if policy is None or value.data_policy_digest != digest_model(policy):
+                raise PolicyError("Exploration requires the exact owner-approved data policy")
+        elif policy is not None:
+            raise PolicyError("Exploratory data policy cannot establish strict data readiness")
+        profile = profile_for(self.company, envelope.template)
+        if value.decision == "exploratory_only" or not profile.public_profile.fixture_only:
+            packet = load_packets(self.company, program, {envelope.name: envelope}).get(envelope.name)
+            if packet is None:
+                raise PolicyError("Real data readiness requires a verified input evidence packet")
+            if packet[0].blocking_gaps:
+                raise PolicyError("Data evidence packet still records blocking gaps")
 
     def decide(self, conn, program_id, task_id, payload, *, actor):
         project, row, spec = self.locked(conn, program_id, active=True)
@@ -188,8 +207,13 @@ class ProgramStore:
             conn.execute("UPDATE research_program_tasks SET state=%s,decision=%s WHERE id=%s",
                 ("waiting" if decision.decision == "wait" else "rejected", Jsonb(decision.model_dump()), task_id))
             return
-        if task["data_assessment"]["decision"] != "ready":
+        assessment = typed(DataAssessment, task["data_assessment"])
+        if assessment.decision not in {"ready", "exploratory_only"}:
             raise PolicyError("Data prerequisites are unresolved")
+        proposal = typed(ResearchTaskProposal, task["proposal"])
+        envelope = next(e for e in spec.envelopes if e.name == proposal.envelope)
+        if assessment.decision == "exploratory_only":
+            self._check_data_decision(row, envelope, assessment)
         used = self.usage(conn, program_id)
         count = conn.execute("SELECT count(*) AS n FROM research_missions WHERE program_id=%s", (program_id,)).fetchone()["n"]
         if count >= spec.max_missions or used["trials"] >= spec.max_total_trials or used["compute_seconds"] >= spec.max_compute_seconds:
@@ -198,8 +222,6 @@ class ProgramStore:
                   if m["stage"] not in {"owner_review", "cancelled"}]
         if len(active) >= spec.max_parallel_missions:
             raise PolicyError("Program parallel mission limit reached")
-        proposal = typed(ResearchTaskProposal, task["proposal"])
-        envelope = next(e for e in spec.envelopes if e.name == proposal.envelope)
         require_current(conn, proposal.source_ids)
         mission_spec = envelope.template.model_dump(mode="json")
         mission_spec.update(title=proposal.title, baseline_source_ids=sorted(set(

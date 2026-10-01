@@ -11,6 +11,8 @@ EDITORIAL_FOLLOWUP_DELAY_SECONDS = 20
 
 
 def editorial_delay(result):
+    if result.get("state") == "held" and result.get("reason") == "quant_context_limit":
+        return EDITORIAL_FOLLOWUP_DELAY_SECONDS
     if result.get("document_state") == "ready":
         return EDITORIAL_FOLLOWUP_DELAY_SECONDS
     if result.get("state") in {"idle", "defer"}:
