@@ -29,7 +29,7 @@ from .quality import assurance
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 40
+VALIDATION_VERSION = 41
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Before composing, check each original for facts that change the market read, exposure or next decision.
@@ -84,6 +84,8 @@ is not a verified close. Withhold the precise conflicting price/return until ind
 Market_context comparisons are separately dated server calculations. Do not call ETFs their indices,
 adjusted prices actual closes, macro observation dates release timestamps, or old data today's close.
 Leave return calculations to the service. Do not conceal quote_conflicts or missing data in prose.
+Preserve the source's observation-time precision: 'after the release' does not establish 'immediately
+after'. A later reported yield or probability is not an immediate reaction or the session close.
 
 EDITORIAL SELECTION AND DEPTH
 Read every supplied original, including its tail, for DISTINCT material developments, not just its headline.
@@ -208,6 +210,8 @@ close of that contract even when an article quotes it; do not substitute an unso
 Edition/exchange_closes support session labels, not news/release times. AM null kr_session/us_session means
 no Korean/new US session; PM null us_session does NOT prove a US holiday. Do not infer release times or
 Korean dayparts from recurring schedules or unlocated foreign dates.
+Reject narrowed timing claims: 'after the release' cannot support 'immediately after', and a later
+reported market level cannot establish an immediate reaction or a session close.
 Reject changed morning watchpoints, unsupported causes, 'priced in', positioning, probabilities or targets.
 Distinguish surprise/prior change/revisions/base effects, nominal/real rates, earnings/valuation and FX
 translation/operations. Verify economic links, exposure, alternatives and observable disconfirming conditions.
