@@ -11,3 +11,17 @@ dist/
 *.egg-info/
 secrets/
 receipts/
+# Original articles and raw model prompts/receipts remain local evidence. The
+# repository is public; commit only reviewable summaries, hashes and diagnostics.
+/docs/project/evidence/briefing-analyst-quality-20261001/**
+!/docs/project/evidence/briefing-analyst-quality-20261001/**/
+!/docs/project/evidence/briefing-analyst-quality-20261001/*-policy.json
+!/docs/project/evidence/briefing-analyst-quality-20261001/*-availability.json
+!/docs/project/evidence/briefing-analyst-quality-20261001/regression-*.json
+!/docs/project/evidence/briefing-analyst-quality-20261001/*.xml
+!/docs/project/evidence/briefing-analyst-quality-20261001/github-ci-*.json
+!/docs/project/evidence/briefing-analyst-quality-20261001/release-gate-and-artifact-*.json
+!/docs/project/evidence/briefing-analyst-quality-20261001/source-preservation-and-preview-manifest-*.json
+!/docs/project/evidence/briefing-analyst-quality-20261001/public-artifact-manifest.json
+!/docs/project/evidence/briefing-analyst-quality-20261001/quality-summary.json
+!/docs/project/evidence/briefing-analyst-quality-20261001/**/frozen-case-outcome.json

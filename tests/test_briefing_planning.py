@@ -18,7 +18,7 @@ from quant_company.briefing.contracts import (
 )
 from quant_company.briefing.editor import prompt, render, revision_bundle, validate, validate_review
 from quant_company.briefing.inputs import document
-from quant_company.briefing.planning import apply_plan, plan_prompt, required_sources
+from quant_company.briefing.planning import apply_plan, discovery_spans, plan_prompt, required_sources
 from quant_company.briefing.qualification import replay
 from quant_company.briefing.runner import BriefEditor
 from quant_company.briefing.store import priority_pending
@@ -87,6 +87,56 @@ def test_plan_context_is_bounded_and_does_not_send_full_candidate_corpus():
     request = plan_prompt(data)
     assert len(request) < 88000 and "x"*401 not in request
     assert len(json.loads(request.split("CANDIDATES:\n")[1])["candidates"]) == 96
+
+
+def test_source_discovery_exposes_middle_counterevidence_and_body_tail_before_footer():
+    opposing = "However, existing inventory can absorb the disruption for two weeks."
+    tail = "The policymaker's baseline assumes energy supply improves later, with considerable uncertainty."
+    text = ("New investment announcement.\n"*35 + opposing + "\n" + "Operational background.\n"*40
+            + tail + "\nChoose CNBC as your preferred source on Google and never miss a moment.\n")
+    spans = discovery_spans(text)
+    assert all(excerpt == text[start:end] for start, end, excerpt in spans)
+    assert sum(len(excerpt) for _, _, excerpt in spans) <= 520
+    assert opposing in "\n".join(excerpt for _, _, excerpt in spans)
+    assert tail in "\n".join(excerpt for _, _, excerpt in spans)
+    assert all("Choose CNBC" not in excerpt for _, _, excerpt in spans)
+
+
+def test_source_discovery_keeps_korean_exception_and_full_writer_original():
+    data = planning_bundle()
+    text = ("원유 공급 차질과 운송비 부담이 커질 수 있다는 발표 내용입니다.\n"*18
+            + "다만 이미 대체 항로를 이용하고 있어 당장의 공급 감소로 확정할 수 없습니다.\n"
+            + "시장 전반의 수요를 확인하려면 서로 다른 업종의 참여도와 비용 변화를 살펴야 합니다.\n"*12
+            + "일부 기업은 요건을 충족하면 코넥스로 이전할 수 있어 곧바로 퇴출되는 것은 아닙니다.\n"
+            + "<저작권자(c) 연합뉴스, 무단 전재-재배포, AI 학습 및 활용 금지>\n공유하기\n")
+    data["candidate_documents"][1]["content"] = text
+    original = deepcopy(data)
+    payload = json.loads(plan_prompt(data).split("CANDIDATES:\n")[1])
+    candidate = payload["candidates"][1]
+    excerpts = "\n".join(part[2] for part in candidate["discovery_spans"])
+    assert "이미 대체 항로" in excerpts and "코넥스로 이전" in excerpts
+    assert "저작권자" not in excerpts and not candidate["discovery_complete"]
+    assert data == original
+    assert apply_plan(data, plan("source-1", "opposing"))["documents"][1]["content"] == text
+
+
+def test_source_discovery_shrinks_only_samples_for_long_metadata_without_losing_candidates():
+    data = planning_bundle()
+    data["candidate_documents"] = [doc(f"s{i}", "정책 발표와 공급 여건 "*30,
+        content="Reported facts.\n"*100 + "However, the funding still requires approval.\n" + "Background.\n"*100
+                + "The final implementation date remains conditional and has not been agreed.").model_dump(mode="json")
+        for i in range(96)]
+    for source in data["candidate_documents"]:
+        source.update(publisher="Publisher"*20, origin_group="Origin"*30, id=source["id"]+"a"*60)
+    before = deepcopy(data)
+    raw = plan_prompt(data)
+    rows = json.loads(raw.split("CANDIDATES:\n")[1])["candidates"]
+    assert len(raw) <= 88000 and len(rows) == 96 and data == before
+    for row, source in zip(rows, data["candidate_documents"], strict=True):
+        assert row["id"] == source["id"] and row["source_chars"] == len(source["content"])
+        assert not row["discovery_complete"]
+        assert all(part[2] == source["content"][part[0]:part[1]] for part in row["discovery_spans"])
+        assert "funding still requires approval" in "\n".join(part[2] for part in row["discovery_spans"])
 
 
 def test_material_fact_must_be_visible_not_only_in_thread_or_a_citation():

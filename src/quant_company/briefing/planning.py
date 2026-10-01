@@ -1,6 +1,7 @@
 """A bounded, evidence-constrained editorial choice before prose generation."""
 
 import json
+import re
 
 from .contracts import BriefEdition, SourceChoice, SourceDocument, SourcePlan
 from .coverage import inventory, select_documents
@@ -15,6 +16,9 @@ world events, Korea/global transmission and next checkpoints. Rank selections by
 Select at most 16 unique supplied IDs, including every required_source_id, within source_char_budget.
 source_chars is the size the writer will receive; the excerpts here are only a discovery aid, not full
 originals. Never invent facts or assume a missing fact does not exist in the unshown text.
+discovery_spans are [start,end,exact_text] slices of the unchanged original, normally its lead,
+an opposing/conditional passage and its last substantive paragraph. They are not a complete read.
+Use these passages to discover limiting conditions, second actors and exceptions beyond the headline.
 Keep a full market-close report with investor flows/sector breadth and independent core-price support.
 For PM, the two close reports should provide a substantive session account and corroborating index closes
 from a separate original. A third short close recap is usually a duplicate; use that slot for a distinct
@@ -68,19 +72,50 @@ def required_sources(bundle):
 
 
 def plan_prompt(bundle):
-    rows = []
-    for doc in bundle["candidate_documents"]:
-        content = doc["content"]
-        rows.append({"id": doc["id"], "title": doc["title"][:180],
-                     "publisher": doc["publisher"][:60], "origin_group": doc.get("origin_group", "")[:60],
-                     "published_at": doc["published_at"], "source_chars": len(content),
-                     "lead": content[:280], "tail": content[-120:] if len(content) > 400 else ""})
+    # Keep candidate identities and mandatory reports when metadata is long.
+    # Only discovery samples shrink; full writer bodies stay intact.
+    for budget in (520, 440, 360, 280):
+        text = _plan_prompt(bundle, budget)
+        if len(text) <= 88000:
+            return text
+    raise ValueError("brief_plan_context_limit")
+
+
+def discovery_spans(content, budget=520):
+    """Expose bounded opposing/body-tail context without rewriting originals."""
+    if len(content) <= budget:
+        return [[0, len(content), content]]
+    lead_size, middle_size = budget*5//13, budget*9//26
+    tail_size = budget-lead_size-middle_size
+    footer = re.compile(r"^\s*(?:<저작권자|제보(?:는|$)|#|공유하기|URL이 복사|본문 글자|"
+                        r"Choose CNBC|watch now|VIDEO\d|202\d년\d|이미지 확대)", re.I)
+    paragraphs = [p for p in re.finditer(r"[^\n]+", content)
+                  if len(p[0].strip()) >= 40 and not footer.search(p[0])]
+    end = paragraphs[-1].end() if paragraphs else len(content)
+    tail = [max(lead_size, end-tail_size), end]
+    spans = [[0, lead_size]]
+    opposing = re.compile(r"다만|그러나|반면|하지만|불확실|예외|지연|제약|조건|완충|"
+                          r"\b(?:however|but|even so|although|uncertain|offset|delay|conditional)\b", re.I)
+    for match in opposing.finditer(content, lead_size, tail[0]):
+        start = max(lead_size, match.start()-30)
+        spans.append([start, min(start+middle_size, tail[0])])
+        break
+    if tail[0] < tail[1]:
+        spans.append(tail)
+    return [[start, end, content[start:end]] for start, end in spans if start < end]
+
+
+def _plan_prompt(bundle, budget):
+    rows = [{"id": doc["id"], "title": doc["title"][:180],
+             "publisher": doc["publisher"][:60], "origin_group": doc.get("origin_group", "")[:60],
+             "published_at": doc["published_at"], "source_chars": len(doc["content"]),
+             "discovery_spans": discovery_spans(doc["content"], budget),
+             "discovery_complete": len(doc["content"]) <= budget}
+            for doc in bundle["candidate_documents"]]
     payload = {"edition": bundle["edition"], "candidates": rows,
                "required_source_ids": required_sources(bundle), "source_char_budget": SOURCE_CHAR_BUDGET}
     text = (PLAN + "\nSCHEMA:\n" + json.dumps(SourcePlan.model_json_schema(), ensure_ascii=False)
             + "\nCANDIDATES:\n" + json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
-    if len(text) > 88000:
-        raise ValueError("brief_plan_context_limit")
     return text
 
 

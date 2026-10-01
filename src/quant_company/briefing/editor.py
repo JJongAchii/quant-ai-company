@@ -30,7 +30,7 @@ from .quotations import QUOTE_REFERENCE_VERSION, reference_payload, resolve_quot
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 45
+VALIDATION_VERSION = 46
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Before composing, check each original for facts that change the market read, exposure or next decision.
@@ -127,6 +127,9 @@ When investor flows matter, retain sourced investor-group amounts, offsetting fl
 status. Include breadth/concentration and leading/lagging sectors when available; simultaneous flows alone
 do not prove a price cause. Distinguish encouraging and limiting adoption/earnings evidence. A single cited
 fact does not cover a source's separate policy action, effective date, denial or material second speaker.
+When a material policymaker warns about the shock but gives a conditional baseline for its easing,
+retain both the warning and that baseline's uncertainty in the visible conclusion. Do not convert
+the baseline into a realized improvement, or omit it while presenting the source's growth outlook.
 An index close and one semiconductor quote do not establish the whole market's participation: use sourced
 mega-cap and sector breadth where it changes the day-level assessment.
 
