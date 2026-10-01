@@ -24,6 +24,9 @@ Then prioritize material policy changes, geopolitical actions AND opposing devel
 rate/FX/commodity changes, and earnings/industry developments. Include a second article on an event
 when it supplies a distinct baseline, operative detail, denial or contrary evidence. Do not spend slots
 on reprints, routine issuance, local publicity or personal-interest stories while those are missing.
+When demand or investment supports an optimistic story, prioritize originals about financing, execution
+or supply constraints that could overturn it. Routine structural tables or small pilots should not displace
+such conclusion-changing opposing evidence. Judge materiality from the supplied discovery text, not hype.
 Give weight to newly released hard economic data and market-participation evidence that can overturn an
 index-only story, including China's activity and the prior Korean session when relevant to the reader.
 When source slots are tight, prefer these over a proposal with no near-term action or a routine disclosure

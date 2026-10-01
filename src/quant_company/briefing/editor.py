@@ -29,7 +29,7 @@ from .quality import assurance
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 42
+VALIDATION_VERSION = 43
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Before composing, check each original for facts that change the market read, exposure or next decision.
@@ -231,6 +231,9 @@ Assess EVERY non-calendar/dataset original exactly once. List up to six DISTINCT
 each with an EXACT short quote and main_item_ids that express it and cite that source. A related fact,
 keyword, quote or thread is insufficient. Empty IDs or rejected-only facts mean coverage=false. Covered
 sources need cited item_ids and a material fact; background/not_material needs a concrete reason.
+Keep each fact's quote to a short contiguous original span, normally 80-200 characters, never over 400.
+If its required clauses exceed that bound, choose a narrower fact or a shorter complete supporting span;
+never rewrite, concatenate or insert ellipses into the quote. The quote limit counts characters, not words.
 Check distinct actions, opposing views, operative terms and effective dates. Changed rates/restrictions/
 truces/deadlines need sourced old AND new terms, even from a duplicate article. A proposal, demand or meeting
 is not an agreement. Retain material counterproposals/conflicts and policy speakers, including another voice
