@@ -1044,6 +1044,29 @@ def test_reported_change_uses_local_direction_and_actual_unit():
     assert reported_change_supported(Decimal("2.3"), "%", ["599.55포인트(2.3%) 뛴 27,122.09로 마감했다."])
 
 
+@pytest.mark.parametrize("direction,sign", [("lower", -1), ("higher", 1)])
+def test_adjacent_english_comparative_preserves_change_sign_and_unit(direction, sign):
+    quote = f"Shares were 0.5% {direction} in mid-morning deals."
+    assert reported_change_supported(sign*Decimal(".5"), "%", [quote])
+    assert not reported_change_supported(-sign*Decimal(".5"), "%", [quote])
+    assert not reported_change_supported(sign*Decimal(".6"), "%", [quote])
+    assert not reported_change_supported(sign*Decimal(".5"), "bp", [quote])
+    assert not reported_change_supported(sign*Decimal(".5"), "%", [
+        f"Shares were at 0.5%, while the margin forecast was {direction}."])
+    assert not reported_change_supported(sign*Decimal(".5"), "%", [
+        f"The 0.5% {direction}case label describes a chart."])
+
+
+def test_vw_margin_range_and_adjacent_english_decline_survive_prose_validation():
+    quote = ("Shares were 0.5% lower in mid-morning deals, extending Friday's 8.3% decline "
+             "after Volkswagen downgraded its expected operating return on sales to 1%, "
+             "from a previous forecast of 4% to 5.5%.")
+    claim = "폭스바겐은 연간 영업이익률 전망을 4∼5.5%에서 1%로 낮췄고, 주가는 월요일 오전 장중 0.5% 내렸습니다."
+    assert prose_numbers_supported(claim, [quote])
+    assert not prose_numbers_supported(claim.replace("0.5%", "0.6%"), [quote])
+    assert not prose_numbers_supported(claim, [quote.replace("0.5% lower", "0.5% higher")])
+
+
 def test_crypto_rolling_window_uses_korean_reporting_date_not_us_equity_session():
     p, b = proposal(), bundle()
     b["documents"][0]["content"] += " 비트코인 22일 오전 6시 28분 현재 100달러, 24시간 대비 2% 상승."

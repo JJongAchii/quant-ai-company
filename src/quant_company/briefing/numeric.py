@@ -164,8 +164,8 @@ def numbers(text):
 def reported_change_supported(value, unit, quotes):
     units = {"%": r"%(?!p|포인트)|percent(?!age|\s+points?)", "bp": r"bps?(?![A-Za-z])|basis points?", "pt": r"pt\b|points?|포인트"}
     down = (r"하락|급락|내린|내렸|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|"
-            r"fell|fall|down|declin\w*|lost|slipped|shed|slump\w*|(?:was|were|is|are)\s+off")
-    up = r"상승|오른|올랐|높아|늘었|뛴|뛰었|뛰며|rose|ris\w*|up|gain\w*|advanced|jumped|surged"
+            r"fell|fall|down|lower\b|declin\w*|lost|slipped|shed|slump\w*|(?:was|were|is|are)\s+off")
+    up = r"상승|오른|올랐|높아|늘었|뛴|뛰었|뛰며|rose|ris\w*|up|higher\b|gain\w*|advanced|jumped|surged"
     for quote in quotes:
         quote = decimal_points(written_counts(quote))
         for match in re.finditer("("+NUMBER+r")\s*(?:"+units[unit]+")", quote, re.I):

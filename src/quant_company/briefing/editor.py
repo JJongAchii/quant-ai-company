@@ -29,7 +29,7 @@ from .quality import assurance
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 41
+VALIDATION_VERSION = 42
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Before composing, check each original for facts that change the market read, exposure or next decision.
@@ -50,6 +50,8 @@ Separate what has happened from what is forecast, proposed or feared. A current 
 possible future household bill are different facts: never describe the future burden as already realized.
 Apply this distinction to summary, fact, interpretation and counterpoint alike; a quote supporting the
 forecast does not support a realized outcome.
+An expert identifying warning signs does not establish that those signs have already been observed.
+Attribute the warning and retain its uncertainty unless the original reports an actual measured change.
 
 SESSION AND MARKET FACTS
 Populate observations first. Include available S&P 500 and Nasdaq Composite session closes for AM with a
@@ -118,6 +120,8 @@ Name the source and measurement caveat for material estimates, such as inferred 
 estimate into a confirmed reopening. Put a material denial, offsetting policy view or competing rate driver
 in the visible main when it changes the conclusion, not only in the detail thread. If the day's rate story
 turns on a sourced probability shift or bond-supply alternative, give that context visibly.
+For disruptions, retain sourced inventory buffers, substitution/repair timing and conflicting estimates
+when they change the exposure horizon; a generic shortage warning does not convey those conditions.
 When investor flows matter, retain sourced investor-group amounts, offsetting flows, venue and provisional
 status. Include breadth/concentration and leading/lagging sectors when available; simultaneous flows alone
 do not prove a price cause. Distinguish encouraging and limiting adoption/earnings evidence. A single cited
@@ -217,7 +221,9 @@ Distinguish surprise/prior change/revisions/base effects, nominal/real rates, ea
 translation/operations. Verify economic links, exposure, alternatives and observable disconfirming conditions.
 Correlation is not causal proof; observed mitigation must not become only a hypothetical future event.
 Compare every visible claim's tense with its quote: a current price, proposal, forecast cost and realized
-burden differ. Material earnings/acquisitions need their sourced
+burden differ. An expert's warning signs are not measured current changes; reject wording that turns them
+into already-observed costs. Check buffers and conflicting repair/substitution timing when they change
+the risk horizon. Material earnings/acquisitions need their sourced
 operating drivers or target capability in visible prose, not generic demand language.
 
 FACT COVERAGE
