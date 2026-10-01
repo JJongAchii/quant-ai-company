@@ -1,7 +1,8 @@
 # 조건부 연구 경로 구현·검증 — 2026-10-01
 
-검토된 ETF 실행 명세를 서비스 코드에 구현하고 통합 검증을 수행했다. 최종 독립 검토와 CI를 진행 중이다.
+검토된 ETF 실행 명세의 구현, 통합 검증, 두 독립 구현 감사, 실제 3070 공학 자격검증과 소스 CI를 완료했다.
 이번 구현 작업에서는 운영 변경·실제 직원의 v3 데이터 판정·v3 프로그램의 Slack 승인·시장 실험을 하지 않았다.
+검증된 소스 커밋은 `492788077481f34c315ce99eec0e39d0bcde9588`이며, 이후 근거 정리 커밋과 구분한다.
 
 ## 구현 범위
 
@@ -81,9 +82,30 @@ consumer에 sample 수·typed schema·warmup 날짜 및 sealed 제외 검사를 
 
 `4f3bdb7`의 전체 non-live 회귀는 1,512개 통과·선택적 검사 13개 생략이었다.
 actual 3070 격리 sandbox 검사는 1개 통과했고, 수집한 원본 ZIP의 SHA를 대조한 뒤
-로컬 strict consumer도 통과했다. 최종 수정 커밋의 실제 호스트 검사와 CI도 별도로 기록한다.
+로컬 strict consumer도 통과했다. 최종 수정 커밋의 실제 호스트 검사와 CI도 별도로 기록했다.
 dirty 코드 상태의 초기 회귀에서 committed-source 자격검증이 거절한 결과도 보존했다.
 이를 통과로 바꾸거나 자격검증 조건을 완화하지 않았다.
+
+| 최종 근거 | 결과 | 범위 |
+| --- | --- | --- |
+| 관련 통합 검사 | 108 통과, 생략 0 | 실제 PG·Temporal, 합성 직원·Slack, 실제 pinned qlab |
+| 독립 권한 검토 | 56 통과, 차단 결함 0 | 최종 27개 파일·엔진 해시 시작/끝 대조 |
+| 독립 데이터 검토 | 12 통과, 차단 결함 0 | F1/F2 해소, 원본 producer/wrapper/ZIP 재검증 |
+| 최종 3070 sandbox | 1 통과, 생략 0 | 실제 Linux/RTX3070/bubblewrap, 소형 합성 입력만 사용 |
+| 소스 CI | 1,484 통과, 47 생략, live 1 제외 | 실제 CI PostgreSQL, 선택적 외부/호스트 검사는 별도 근거 |
+| lint·보호 바이트 | 통과 | 보호 엔진·기존 두 프로그램 digest 보존 |
+
+독립 검토자의 초기 stdin PG probe는 sandbox 접속 거절 후 완료되지 않았다.
+이 시도는 통과 검사로 집계하지 않았고, 최종 승인된 pytest 재실행 결과와 구분했다.
+47개 CI 생략을 자격검증 성공으로 간주하지 않는다. 실제 로컬 pinned integration과
+3070 검증은 따로 실행한 영수증으로 확인한다.
+
+최종 판정: [권한 감사](evidence/conditional-research-20261001/admission-implementation-review-integrated-final.json),
+[데이터 감사](evidence/conditional-research-20261001/data-implementation-review-integrated-final.json),
+[실제 호스트 검사](evidence/conditional-research-20261001/worker-final-qualification.json),
+[소스 CI](evidence/conditional-research-20261001/ci-source-validation.json).
+[PR #87](https://github.com/JJongAchii/quant-ai-company/pull/87)과
+[검증한 CI 실행](https://github.com/JJongAchii/quant-ai-company/actions/runs/36819082348)에 코드를 게시했다.
 
 검토 입력과 각 판정·검사 영수증은
 [evidence 디렉터리](evidence/conditional-research-20261001)에 보존한다.
