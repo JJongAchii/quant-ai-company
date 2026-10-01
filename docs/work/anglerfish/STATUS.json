@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v8.json",
-  "state": "exploratory_review_ready",
-  "previousIntent": "INTENT-v7.json",
+  "currentIntent": "INTENT-v9.json",
+  "state": "exploratory_activation_preparing",
+  "previousIntent": "INTENT-v8.json",
   "deliverables": {
     "POLICY": {
       "status": "completed",
@@ -74,5 +74,12 @@
       "dataDecision": "blocked",
       "liveCorrectionTriggered": false
     }
+  },
+  "activation": {
+    "ownerAuthorization": "응 진행해",
+    "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99",
+    "qualification": "in_progress",
+    "productionActivated": false,
+    "signedScientificApproval": false
   }
 }
