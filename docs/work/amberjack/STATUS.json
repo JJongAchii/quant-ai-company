@@ -8,59 +8,95 @@
   "deliverables": {
     "CONTENT_REPAIR": {
       "status": "implemented_unqualified",
-      "updatedAt": "2026-09-30T11:48:40.249021+00:00",
+      "updatedAt": "2026-10-01T04:54:32.186223+00:00",
       "evidence": [
         "docs/project/ANALYST-ROOT-CAUSE-20260930.md",
         "docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v37.json",
         "docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v38-targeted.json",
-        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/development-v37/outcome.json"
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/development-v37/outcome.json",
+        "docs/project/ANALYST-INTEGRATION-20261001.md",
+        "docs/project/evidence/briefing-analyst-integration-20260930/regression-v40.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/observation-time-v41.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/github-ci-v41.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/development-v40/numeric-diagnostic.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/development-v40/outcome.json"
       ],
       "evidenceSha256": {
         "docs/project/ANALYST-ROOT-CAUSE-20260930.md": "40fb98f84325ce970843be4db904a394f0f7c4b5c40caa070e34bf458426b7bf",
         "docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v37.json": "9d8f69f872afea8038fdcf27e3a762981b5c1c8c1745feb059090282d7b4c627",
         "docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v38-targeted.json": "511a033291104706e3bdc2cc5e14747ac913fb1d0a513f445f8cf4b2a6bf748a",
-        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/development-v37/outcome.json": "0d96d2956ae6fe4c70b3f1791c987b507dde018b45d7b964f768dae31c4f2bd4"
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/development-v37/outcome.json": "0d96d2956ae6fe4c70b3f1791c987b507dde018b45d7b964f768dae31c4f2bd4",
+        "docs/project/ANALYST-INTEGRATION-20261001.md": "c37290252c4db1875c6c0eeaca65cebd85685a12cb44f6151889760d731c883c",
+        "docs/project/evidence/briefing-analyst-integration-20260930/regression-v40.json": "a5af72298bd3031306ed6472dfcaf86eecd28a2047385a6823090f3b56bdd039",
+        "docs/project/evidence/briefing-analyst-integration-20260930/observation-time-v41.json": "c96fad08d608d81eaea848ff777f9aeb27fd097508581f70804455befce8d845",
+        "docs/project/evidence/briefing-analyst-integration-20260930/github-ci-v41.json": "99699c866d41e5cc656935a87816897371a1e8fc79857c8f3b1ecdb369bcbc65",
+        "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/development-v40/numeric-diagnostic.json": "7f68d4f2393d5ab66e203076df255728d587566f1fd3fac48b2b5adc9afa91bb",
+        "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/development-v40/outcome.json": "841005385c17fdf241c857c0dc038d18abf9c8dec3df6bfc9df742c0b37c758d"
       },
-      "note": "Format15 validation38: preserve main interpretation, supported prose/quotes/numbers in scoped append/editorial patch; new numeric own-quote instructions. Fullv37 1396pass/38skip and post-change127pass. Actual scopedv37 patch rejected2; no expert/fresh qualification."
+      "note": "Format15 validation41; complete bounded originals preserved through fetch/PostgreSQL/Analyst up to12000chars, known partials excluded, exact written numeric units/quarters/months/legal sections supported with wrong-value/unit/date/ID rejection retained. New funding versus existing allocation and economic-link grouping instructions plus source observation-time precision. Validation40 full1544pass46skip; validation41 focused173pass and committed-code CIpass. Saved v38 writer development review9/12 failed timing/materiality/coverage; no fresh/expert qualification."
     },
     "FRESH_EVALUATION": {
       "status": "evaluated_failed",
-      "updatedAt": "2026-09-30T11:48:40.249021+00:00",
+      "updatedAt": "2026-10-01T04:54:32.186223+00:00",
       "evidence": [
         "docs/project/evidence/briefing-analyst-root-cause-20260930/am-20260930/frozen-case-outcome.json",
         "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36-policy.json",
         "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/source-manifest.json",
-        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/frozen-case-outcome.json"
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/frozen-case-outcome.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/fresh-am-20261001-policy.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/source-manifest.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/independent-main-audit-before-review.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/frozen-case-outcome.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/development-v40/outcome.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/fresh-pm-20261001-v41-policy.json"
       ],
       "evidenceSha256": {
         "docs/project/evidence/briefing-analyst-root-cause-20260930/am-20260930/frozen-case-outcome.json": "c528803e4aa6145e9e9a4e7b5e2f3138b49bbb7553e96eaf8e17ea443ee094f0",
         "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36-policy.json": "3ad567dff32bb1ccc9a596e0e0592e55b736157dda5b3a88de819f89cdd79737",
         "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/source-manifest.json": "415d7ca38373a66e699eac51709b81f342c55a07a61cda95884cefe122eb4156",
-        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/frozen-case-outcome.json": "0def99d07d4c57709019c23c50980c20dbb080c09ae3decfd6bb2ea4ba02b9dc"
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/pm-20260930-v36/frozen-case-outcome.json": "0def99d07d4c57709019c23c50980c20dbb080c09ae3decfd6bb2ea4ba02b9dc",
+        "docs/project/evidence/briefing-analyst-integration-20260930/fresh-am-20261001-policy.json": "5c7b70b002501bdfb4f4159aac87435ddf18fa17e35df116d9d7291a66a311a0",
+        "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/source-manifest.json": "c4823a0de2f35c1cd181c3d7a489f9f28e1419b53e307d7d5141285e625f3e2e",
+        "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/independent-main-audit-before-review.json": "bbf88af59317670835d50e80d692ce21b5bc3f012bc1dccc3668a83b828d0479",
+        "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/frozen-case-outcome.json": "88e30e494e5da5d17f10e5fc0a90c8d66b65212806afc1cc5590be744510328b",
+        "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/development-v40/outcome.json": "841005385c17fdf241c857c0dc038d18abf9c8dec3df6bfc9df742c0b37c758d",
+        "docs/project/evidence/briefing-analyst-integration-20260930/fresh-pm-20261001-v41-policy.json": "14046e0b433ea6f99e7b72c107837a81006b81bd1611eb5d42cadba8561e5e81"
       },
-      "note": "Freshly frozen PM final9/12 failed materiality/coverage/readability, max5completedcalls reached. AM originalv31 failed; same-source AMdevelopment11/12 alsofailed. Bothcases same marketdate. No newwriter/review on mechanically invalid PMdevelopment. September23 uncertain request unreplayed."
+      "note": "Freshly frozen AM20261001 validation38 first review8/12, one correction left6mechanical rejects and one known partial original; closed failed with4completed calls. Unchanged saved writer development40 had0mechanical rejects then actualreview9/12 reduce with1semantic rejected item. Four original plus one development call reaches max5; no further same-cohort calls/repair or retrospective backfill. Future PM20261001 validation41 policy frozen before original titles/content/cutoff, awaits19:30KST; not run, not queued as scheduled live preview, not fresh acceptance. Earlier Sept23 uncertain request remains unreplayed."
     },
     "PREVIEW_READINESS": {
       "status": "not_ready",
-      "updatedAt": "2026-09-30T11:48:40.249021+00:00",
+      "updatedAt": "2026-10-01T04:54:32.186223+00:00",
       "evidence": [
         "docs/project/evidence/briefing-analyst-root-cause-20260930/runtime-release-identity-0754.json",
         "docs/project/evidence/briefing-analyst-root-cause-20260930/release-gate-0754.json",
         "docs/project/evidence/briefing-analyst-root-cause-20260930/release-feature-presence.json",
-        "docs/project/evidence/briefing-analyst-root-cause-20260930/runtime-calendar-probe.json"
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/runtime-calendar-probe.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/source-preservation-and-preview-manifest-v41.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/qdata-manifest-identity-clarification.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/release-gate-and-artifact-v41.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/runtime-observation-20261001.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/host-admission.json",
+        "docs/project/evidence/briefing-analyst-integration-20260930/slack-read-access.json"
       ],
       "evidenceSha256": {
         "docs/project/evidence/briefing-analyst-root-cause-20260930/runtime-release-identity-0754.json": "e90f0b9090809b2c94b4c45c1cdd84bd2d4817121268bba2aa2402ae3137f86f",
         "docs/project/evidence/briefing-analyst-root-cause-20260930/release-gate-0754.json": "3cb9f80f235fc8cb395e74f014043fa745957705a63bf58c86ea0c03d13f96dc",
         "docs/project/evidence/briefing-analyst-root-cause-20260930/release-feature-presence.json": "c80112a0b8fda895bd3260c560308b262e841a15e4e2c73198a11b60a2621d64",
-        "docs/project/evidence/briefing-analyst-root-cause-20260930/runtime-calendar-probe.json": "1dce54b38b72b729dd2911806f287949d8228c6d0afbf7b41578e65b21ddc67d"
+        "docs/project/evidence/briefing-analyst-root-cause-20260930/runtime-calendar-probe.json": "1dce54b38b72b729dd2911806f287949d8228c6d0afbf7b41578e65b21ddc67d",
+        "docs/project/evidence/briefing-analyst-integration-20260930/source-preservation-and-preview-manifest-v41.json": "a0274c8c61fc168ebdb1c9138c21bb66b961598594959664ca9938b2f144f23a",
+        "docs/project/evidence/briefing-analyst-integration-20260930/qdata-manifest-identity-clarification.json": "5a6dbfc1bcd15456b3570a7ed0ccd2868c4e8f16bb5d13c3f1893c0e8ec10e7a",
+        "docs/project/evidence/briefing-analyst-integration-20260930/release-gate-and-artifact-v41.json": "f91410afe622b7ee65b02ee93c2d124299833164840f597d9357427ec4acdc2b",
+        "docs/project/evidence/briefing-analyst-integration-20260930/runtime-observation-20261001.json": "8fcde9b8854189586f6790842527a38c9423f175ca45a2746ea8e439c7e6a633",
+        "docs/project/evidence/briefing-analyst-integration-20260930/host-admission.json": "3679aa08b40eecc1240a7c7929c090c2d93caa1e940a28a3be1331c96f0f37aa",
+        "docs/project/evidence/briefing-analyst-integration-20260930/slack-read-access.json": "0a4d9aee590bb2fd634c0461276fe28a182daf690f0f1cc287427c92c6f84a9a"
       },
-      "note": "Observed link and running worker labels differ; referenced source trees lack Analyst module. Direct oldbranchreplacement violates installed policy. Source-preserving integration, official calendar, role/channel, preview/timing/delivery remain unverified. No deploy or Slack send."
+      "note": "Exact source-preserving protected preview candidate14e603eef5d7a0b71178e173a60747238e97321d with0deleted paths, existing roles/subsystems/qdata code/archive identity preserved and269file SHA-pinned11.33MB runtime artifact. Installed5def validator still rejects protected files; no policy bypass or host install/configuration changes. Actual Analyst auth matches expected workspace and existing channel history read succeeds, not channel membership metadata or Slack delivery. Proposed updates onlyapi/news-worker/dispatch plus dedicated briefing-data-worker; preserve research/other workers/models/PostgreSQL and other channel/role permissions; publishfalse. Role/channel configuration still absent on observed host. Protected release approval, fresh source-content pass, live preview, five trading days, actual delivery receipts and human review remain."
     }
   },
   "intentDigest": "74760db38665",
   "schemaVersion": 1,
   "slug": "amberjack",
   "state": "approved",
-  "updatedAt": "2026-09-30T11:48:40.249021+00:00"
+  "updatedAt": "2026-10-01T04:54:32.186223+00:00"
 }
