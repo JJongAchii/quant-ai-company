@@ -1,6 +1,15 @@
 # Quant-feed implementation / qualification
 
-Current status, 2026-09-30: policy v20 is deployed and Quant Scout publication is active.
+Current status, 2026-10-02: policy v21 is deployed on exact `ea092f4` and Quant Scout
+publication remains active. Context-limit failures are now document-local holds,
+not queue-wide stalls; normal Temporal processing has moved to another paper.
+Native discovery uses a matched direct schema. Real subscription accuracy,
+negative-scope and duplicate controls passed; Linux CI passed 1,464 tests.
+The first large paper still exceeded the later revision guard and was held;
+no new v21 delivery or long-run quality claim is made by the recovery snapshot.
+See [recovery evidence](evidence/quant-feed-recovery-20261001/README.md).
+
+Previous activation, 2026-09-30: policy v20 was deployed with publication active.
 The normal Temporal pipeline delivered a market-research card after review, critique,
 revision and final critique; real Slack acceptance and permalink were verified.
 Historic posts and old previews are preserved. The owner waived the added 48-hour
