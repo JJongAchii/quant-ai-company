@@ -57,6 +57,23 @@ def load_sources(path=None):
     return sources
 
 
+class QuantSearchCandidate(StrictModel):
+    url: str = Field(min_length=1, max_length=2500)
+    title: str = Field(min_length=1, max_length=2500)
+    snippet: str = Field(max_length=2500)
+
+    @field_validator("url")
+    @classmethod
+    def public(cls, value):
+        return public_url(value)
+
+
+class QuantSearchResults(StrictModel):
+    """Discovery only: neither snippets nor publisher prestige approve evidence."""
+
+    results: list[QuantSearchCandidate] = Field(max_length=8)
+
+
 SpanId = Annotated[str, Field(pattern=r"^p[1-9][0-9]{0,2}-s[1-9][0-9]{0,3}$")]
 
 
