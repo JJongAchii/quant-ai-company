@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "file_sha256": "SHA256 of exact file bytes, including indentation and final newline",
+  "review_digest": {
+    "input": "review-package.json package object only",
+    "implementation": "quant_company.company.fingerprint",
+    "encoding": "UTF-8 json.dumps(value, sort_keys=True, ensure_ascii=False); default separators: comma-space and colon-space"
+  },
+  "policy_digest": {
+    "input": "data-policy-draft.json parsed object",
+    "implementation": "quant_company.company.fingerprint",
+    "encoding": "Same service record encoding as review_digest"
+  },
+  "program_schema_preview_digest": {
+    "input": "ResearchProgram.model_dump(mode='json') after validating program-schema-preview.json",
+    "implementation": "quant_company.company.fingerprint",
+    "encoding": "Same service record encoding as review_digest"
+  },
+  "profile_digest": {
+    "input": "AdaptiveExecutionProfile.model_dump(mode='json') after validating public-profile-draft.json",
+    "implementation": "quant_company.research.adaptive_contracts.digest_model",
+    "encoding": "UTF-8 json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False)"
+  },
+  "approval_state": "No digest in this draft is a signed owner approval or an execution authorization."
+}
