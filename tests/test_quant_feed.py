@@ -22,6 +22,8 @@ from quant_company.quant_feed.contracts import (
 )
 from quant_company.quant_feed.editor import (
     INSTRUCTIONS,
+    MAX_PROMPT_CHARACTERS,
+    PromptContextLimit,
     ProposalValidationError,
     prompt,
     render,
@@ -247,6 +249,77 @@ def test_uneven_full_original_is_not_unnecessarily_clipped():
     pages = [{"location": "PDF p.1", "text": "x" * 30000},
              {"location": "PDF p.2", "text": "y" * 1000}]
     assert _bounded_pages(pages) == (pages, False)
+
+
+def test_fragmented_repair_context_fits_without_changing_any_source_span():
+    # Reproduce the failure shape: 42k sampled text fragmented over hundreds
+    # of excerpts, plus the repair draft. JSON framing must not drop evidence.
+    pages = [{"location": f"PDF p.{index // 3 + 1} [{index % 3 + 1}/3]", "text": TEXT[:130]}
+             for index in range(323)]
+    bundle = {"pages": pages, "draft": bound_brief(), "previous_critique": {"issues": ["card too long"]},
+              "metadata": {"title": "Long research " * 100}, "links": ["https://example.org/" + "x" * 60] * 30,
+              "context_clipped": True}
+    before = copy.deepcopy(bundle)
+    for stage in ("review", "repair", "critique", "revision"):
+        rendered = prompt(bundle, stage)
+        assert len(rendered) <= MAX_PROMPT_CHARACTERS
+        data = json.loads(rendered.split("\nDATA:\n", 1)[1])
+        assert data["source_spans"] == source_spans(pages)
+        assert len(data["source_spans"]) == 323
+    assert bundle == before
+
+
+def test_actual_serialized_limit_includes_json_escaping_and_metadata():
+    pages = [{"location": "PDF p.1", "text": "\\\"\n" * 10000}]
+    with pytest.raises(PromptContextLimit) as caught:
+        prompt({"pages": pages, "metadata": {"title": "x" * 30000}}, "review")
+    assert caught.value.characters > MAX_PROMPT_CHARACTERS
+
+
+def test_preparation_limit_is_durable_local_hold_without_call_or_budget(quant):
+    saved = original(quant, receipt_updates={"metadata": {"oversized": "x" * 90000}})
+    original(quant, "-healthy")
+    with quant.db.transaction() as conn:
+        before = conn.execute("SELECT pages,receipt FROM quant_feed_documents WHERE id=%s", (saved["document_id"],)).fetchone()
+    held = quant.prepare()
+    assert held == {"state": "held", "reason": "quant_context_limit", "document_id": saved["document_id"]}
+    with quant.db.transaction() as conn:
+        document = conn.execute("SELECT state,error,pages,receipt FROM quant_feed_documents WHERE id=%s",
+                                (saved["document_id"],)).fetchone()
+        assert (document["state"], document["error"]) == ("held", "quant_context_limit")
+        assert document["pages"] == before["pages"] and document["receipt"] == before["receipt"]
+        assert conn.execute("SELECT count(*) AS n FROM quant_feed_calls").fetchone()["n"] == 0
+        assert conn.execute("SELECT COALESCE(sum(reserved),0) AS n FROM daily_usage").fetchone()["n"] == 0
+    next_ready = quant.prepare()
+    assert next_ready["state"] == "ready"
+    assert next_ready["request"]["output_contract"] == "quant_brief_v4"
+    assert quant.prepare() == next_ready
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT sum(reserved) AS n FROM daily_usage").fetchone()["n"] == 1
+
+
+def test_quant_discovery_uses_direct_schema_but_retains_native_search_and_candidate_gate(quant, monkeypatch):
+    from quant_company.contracts import WebSearchEvent
+
+    quant.company.settings.company_web_enabled = True
+    monkeypatch.setattr(schedule, "weekly_slot", lambda: None)
+    monkeypatch.setattr(schedule, "discovery_slot", lambda: "2026-10-01-20")
+    prepared = quant.prepare()
+    assert prepared["request"]["web_search"] is True
+    assert prepared["request"]["output_contract"] == "quant_search_v1"
+    assert quant.prepare() == prepared
+    result = response(prepared, {"results": [
+        {"url": "https://example.org/paper-new", "title": "Research", "snippet": "Unverified discovery"},
+        {"url": "https://unregistered.org/paper", "title": "Research", "snippet": "Not an allowed publisher"},
+    ]})
+    result.web_searches = [WebSearchEvent(id="search-1", action={"type": "search", "queries": ["quant research"]})]
+    committed = quant.commit(result)
+    assert committed["added"] == 1
+    with quant.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM quant_feed_candidates").fetchone()["n"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM quant_feed_documents").fetchone()["n"] == 0
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 0
+    assert quant.prepare()["state"] == "idle"
 
 
 def test_source_spans_are_lossless_bounded_and_deterministic():
