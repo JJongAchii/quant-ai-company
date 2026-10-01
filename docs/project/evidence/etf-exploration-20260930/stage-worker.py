@@ -1,22 +1,33 @@
-import hashlib, json, os, pathlib, subprocess, sys
+import json
+import os
+import pathlib
+import subprocess
+import sys
 from datetime import UTC, datetime
 
 P = pathlib.Path
-COMMIT = '3c848af95dc33b7da444a55018fd41d374c10025'
-ACTIVE = P('/home/achii/.config/quant-company/research-worker.json')
-BASE = P('/home/achii/quant-company-qualification/exploration-20261001')
-sys.path.insert(0, json.loads(ACTIVE.read_text())['company_repo']+'/src')
-from quant_company.research.worker import WorkerConfig, sha_file, atomic_json
-from quant_company.research.releases import prepare_release
+COMMIT = "3c848af95dc33b7da444a55018fd41d374c10025"
+ACTIVE = P("/home/achii/.config/quant-company/research-worker.json")
+BASE = P("/home/achii/quant-company-qualification/exploration-20261001")
+sys.path.insert(0, json.loads(ACTIVE.read_text())["company_repo"] + "/src")
+# Import from the captured operating checkout after selecting its exact path.
+from quant_company.research.releases import prepare_release  # noqa: E402
+from quant_company.research.worker import WorkerConfig, atomic_json, sha_file  # noqa: E402
 
-assert sha_file(ACTIVE) == '23920eaaaa415ac1e2c2ddbe918f908955de20a54223b9b04a1a76644da5deef', 'active_config_changed'
+assert sha_file(ACTIVE) == "23920eaaaa415ac1e2c2ddbe918f908955de20a54223b9b04a1a76644da5deef", (
+    "active_config_changed"
+)
 old = WorkerConfig.from_file(ACTIVE)
 BASE.mkdir(mode=0o700, exist_ok=True)
-release_root = BASE / 'release-candidates'
+release_root = BASE / "release-candidates"
 release_root.mkdir(mode=0o700, exist_ok=True)
-prepared = prepare_release(source_snapshot=P('/tmp/company.bundle'),
-    snapshot_sha256='aa49d49f075af2410d0000348094b784228b16a08d9e30c7902ebd813b1c8c04',
-    commit=COMMIT, release_root=release_root, config=old)
+prepared = prepare_release(
+    source_snapshot=P("/tmp/company.bundle"),
+    snapshot_sha256="aa49d49f075af2410d0000348094b784228b16a08d9e30c7902ebd813b1c8c04",
+    commit=COMMIT,
+    release_root=release_root,
+    config=old,
+)
 
 # Qualification subprocess imports the exact candidate, not the operating source.
 code = r'''
@@ -73,16 +84,29 @@ assert receipt.exit_code==0 and not receipt.timed_out, 'real_namespace_fixture_f
 assert MissionSpec.model_validate_json((output/'roundtrip.json').read_text())==mission
 print(json.dumps({'sandbox':receipt.to_dict(),'sandbox_mocked':False,'synthetic_policy_roundtrip':True,'research_price_rows_read':False,'scientific_trials_added':0,'data_policy_digest':fingerprint(mission.data.policy.model_dump(mode='json')),'profile_sha256':hashlib.sha256(P(old['adaptive_profiles']['kr-etf-research-v2']).read_bytes()).hexdigest()}))
 '''
-env = dict(os.environ, PYTHONPATH=str(prepared.directory/'code/src'), PYTHONDONTWRITEBYTECODE='1')
-result = subprocess.run([sys.executable,'-B','-c',code,str(BASE),str(ACTIVE)],capture_output=True,text=True,timeout=180,env=env)
+env = dict(os.environ, PYTHONPATH=str(prepared.directory / "code/src"), PYTHONDONTWRITEBYTECODE="1")
+result = subprocess.run(
+    [sys.executable, "-B", "-c", code, str(BASE), str(ACTIVE)],
+    capture_output=True,
+    text=True,
+    timeout=180,
+    env=env,
+)
 if result.returncode:
-    (BASE/'qualification.failure.log').write_text(result.stderr)
-    raise RuntimeError('candidate_qualification_failed_private_log_retained')
+    (BASE / "qualification.failure.log").write_text(result.stderr)
+    raise RuntimeError("candidate_qualification_failed_private_log_retained")
 proof = json.loads(result.stdout)
-assert sha_file(ACTIVE)=='23920eaaaa415ac1e2c2ddbe918f908955de20a54223b9b04a1a76644da5deef'
-proof.update(state='exact_worker_release_qualified_not_active',candidate_company_commit=COMMIT,
-    candidate_directory=str(prepared.directory),candidate_config_sha256=prepared.config_sha256,
-    release_receipt_sha256=sha_file(prepared.directory/'release.json'),active_config_unchanged=True,
-    active_company_commit=old.company_commit,observed_at=datetime.now(UTC).isoformat(),hostname=subprocess.check_output(['hostname'],text=True).strip())
-atomic_json(BASE/'stage.json',proof)
+assert sha_file(ACTIVE) == "23920eaaaa415ac1e2c2ddbe918f908955de20a54223b9b04a1a76644da5deef"
+proof.update(
+    state="exact_worker_release_qualified_not_active",
+    candidate_company_commit=COMMIT,
+    candidate_directory=str(prepared.directory),
+    candidate_config_sha256=prepared.config_sha256,
+    release_receipt_sha256=sha_file(prepared.directory / "release.json"),
+    active_config_unchanged=True,
+    active_company_commit=old.company_commit,
+    observed_at=datetime.now(UTC).isoformat(),
+    hostname=subprocess.check_output(["hostname"], text=True).strip(),
+)
+atomic_json(BASE / "stage.json", proof)
 print(json.dumps(proof))
