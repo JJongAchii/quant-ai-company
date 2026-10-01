@@ -501,6 +501,8 @@ def test_data_watch_configuration_reaches_existing_processes_without_new_credent
         assert settings.data_watch_contracts_file.name == "data-watch-contracts.json"
         assert not settings.data_watch_core_enabled
         assert any(v["target"].endswith("data-watch-contracts.json") and v["read_only"] for v in services[name]["volumes"])
+        calendar = next(v for v in services[name]["volumes"] if v["target"].endswith("data-watch-contracts.json"))
+        assert calendar.get("bind", {}).get("create_host_path", False) is False
     standalone = services["data-watch-worker"]
     assert standalone["command"] == ["quant-company", "data-watch-worker"]
     assert standalone["environment"]["DATA_WATCH_ENABLED"] == "true"

@@ -4,7 +4,12 @@ x-calendar: &calendar
   environment:
     DATA_WATCH_CONTRACTS_FILE: /etc/quant-company/data-watch-contracts.json
   volumes:
-    - ${STATE_DIR:-/var/lib/quant-company}/config/data-watch-contracts.json:/etc/quant-company/data-watch-contracts.json:ro
+    - type: bind
+      source: ${STATE_DIR:-/var/lib/quant-company}/config/data-watch-contracts.json
+      target: /etc/quant-company/data-watch-contracts.json
+      read_only: true
+      bind:
+        create_host_path: false
 services:
   api: *calendar
   worker: *calendar

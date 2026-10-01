@@ -82,7 +82,7 @@ class TaskDecision(MissionModel):
 
 class DataAssessment(ScopedRecord):
     schema_version: Literal[1, 2] = Field(default=1, exclude_if=lambda v: v == 1)
-    decision: Literal["ready", "conditional_ready", "blocked"]
+    decision: Literal["ready", "conditional_ready", "exploratory_only", "blocked"]
     rationale: Text
     source_ids: SourceIds
     point_in_time: bool
@@ -91,9 +91,14 @@ class DataAssessment(ScopedRecord):
     original_conditions: bool
     packet_digest: Digest | None = Field(default=None, exclude_if=lambda v: v is None)
     evaluation_price_contract_verified: bool | None = Field(default=None, exclude_if=lambda v: v is None)
+    data_policy_digest: Digest | None = Field(default=None, exclude_if=lambda v: v is None)
+    evaluation_prices: bool | None = Field(default=None, strict=True, exclude_if=lambda v: v is None)
 
     @model_validator(mode="after")
     def ready(self):
+        if self.schema_version == 2 and (self.decision == "exploratory_only" or self.data_policy_digest is not None
+                                         or self.evaluation_prices is not None):
+            raise ValueError("Scoped assessments cannot carry a legacy exploratory decision or policy fields")
         if self.schema_version == 1 and (self.decision == "conditional_ready" or self.packet_digest is not None
                                          or self.evaluation_price_contract_verified is not None):
             raise ValueError("Legacy assessments cannot admit conditional research")
@@ -108,6 +113,11 @@ class DataAssessment(ScopedRecord):
             raise ValueError("Conditional evidence cannot become historical ready")
         if self.decision == "ready" and not all((self.point_in_time, self.coverage, self.executable_prices)):
             raise ValueError("Ready requires PIT, coverage and execution evidence")
+        if self.decision == "exploratory_only" and (
+            not self.coverage or self.evaluation_prices is not True or self.data_policy_digest is None
+            or self.point_in_time or self.executable_prices or self.original_conditions
+        ):
+            raise ValueError("Exploration requires verified coverage/evaluation prices, a policy digest and unverified historical flags")
         return self
 
 

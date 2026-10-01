@@ -413,3 +413,69 @@ The 03:48:57 UTC handoff readback again confirmed publication off, collection on
 one old post and no preview containers; one natural Quant review was running.
 The separately advanced baseline was `ac44bf5`, with the same old Quant worker
 and legacy-only runtime. This task did not recreate either service.
+
+## v18 structural fix and guarded production preview, 29 September
+
+The earlier v16 no-candidate checkpoint above has been superseded. `quant_brief_v4`
+binds each research statement to its own source spans and basis; the service renders
+the prose and citations from that single typed structure. Policy v18 strengthens
+subject scope and simulation-versus-market-data wording while retaining independent
+critique. In a fresh private real-subscription trial, a LOB paper passed review and
+critique and the previously mispublished generic AI-governance case was held. A
+separate crypto-volatility paper was held after final critique. No Quant Slack post
+was made in these trials; one positive is not a long-run precision estimate.
+
+The release operator now accepts an intentionally pinned running API image when
+its environment revision matches that image, not merely the newer release-directory
+link; it also rejects changed staged base images before stopping services. The
+other team's current research-program release `e3e26e9` was merged into the exact
+target `dccf7a7`. Local full tests passed 1,332 with 46 skipped, Ruff passed, and
+Linux CI `36526443940` succeeded on that exact target. Its app and dedicated
+Quant Codex images were source-verified, and the effective production Compose
+configuration was valid.
+
+At 05:42:03 UTC the scoped release journal reached `preview_active`. The API,
+dispatch, Quant worker and a new Quant-only subscription runtime were replaced;
+news, general research, housing and the shared Codex runtime retained their
+container IDs and images. Native producer/consumer schema hashes matched. A
+separate 05:43:29 UTC readback confirmed collection on, publication off, one
+historic Robeco post, zero pending Quant publications, zero running Quant calls,
+zero preview containers, and no OOM/restarts in the new services. Host free disk
+was 4,013,797,376 bytes and available memory 1,960,816 KiB.
+
+This is **not yet public-feed completion**: the new release must complete an
+actual 48-hour publication-off observation, then pass an operational/quality
+readback and receive explicit owner
+approval before posting resumes. No live Slack delivery from v18 is claimed.
+The detailed machine-readable receipt is
+`evidence/quant-feed-structural-20260929/RESULT-v18.json`.
+
+A separate manual consistent backup started at 05:50:50 UTC and temporarily
+stopped writers, including Quant and news. The backup process finished and every
+service was running again at the 06:01:34 UTC readback, with unchanged container
+IDs/images and Quant publication still disabled. Its remote upload success was
+not independently checked in this task. The conservative 48-hour clock therefore
+starts at **06:01:34 UTC**, with earliest review **2026-10-01 15:01:34 KST** if
+the restored service state remains stable.
+The daily 18:10 UTC backup will create planned pauses inside that window. Its
+receipt and complete recovery must be checked; a successful bounded maintenance
+pause does not restart the clock. Failed recovery, an unplanned Quant outage or a
+Quant code/policy/image change invalidates the observation. Unrelated worker
+deployments are recorded separately rather than mistaken for Quant changes.
+
+The natural production Quant lane then completed review, technical repair,
+independent critique, one editorial revision and final critique without call or
+commit errors. It held a relevant paper because two claims still overstated the
+clipped source's trading-cost evidence and under-described the original's
+event-time alignment. Publication count stayed at one. This is a successful
+fail-closed quality decision, not an accepted article or a live delivery test.
+
+At 06:16:48 UTC, free disk had fallen to 2.25 GB during other work; Quant itself
+had not changed, although the separately owned general worker image had. We
+verified no active Docker build and removed only reclaimable cache from the
+Quant-specific BuildKit builder (about 7.633 GB; a 24-hour-limited first pass had
+removed about 5.9 MB). Images, containers, volumes, backups and receipts were
+left intact. At 06:20:45 UTC, free disk was 9.87 GB, Quant and other services
+were running, Quant publication remained off, and the historic post count was
+still one. Cache regeneration could make a future build slower, but no source
+or operational record was deleted.

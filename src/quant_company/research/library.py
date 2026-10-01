@@ -112,6 +112,9 @@ def publish_library(company, conn, original_project, source_id, report, conclusi
         ON CONFLICT DO NOTHING""", (project_id, original_project["owner_user"], channel))
     project = company._project(conn, project_id)
     library_source = source_id + ":library"
+    policy = source["metadata"].get("data_policy")
+    if policy and conclusion == "supported":
+        raise PolicyError("Retrospective exploration cannot establish supported findings")
     conn.execute("""INSERT INTO sources(id,title,uri,content,available_at,project_id,approved,synthetic,metadata)
         VALUES(%s,%s,%s,%s,%s,%s,true,%s,%s) ON CONFLICT DO NOTHING""",
         (library_source, source["title"], source["uri"], source["content"], source["available_at"], project_id,
@@ -122,6 +125,9 @@ def publish_library(company, conn, original_project, source_id, report, conclusi
         label = {"supported": "개발구간 근거 있음", "not_supported": "가설 지지 안 됨", "inconclusive": "결론 보류"}[conclusion]
         if source["metadata"].get("research_scope", {}).get("result_scope") == "conditional_retrospective_development":
             label = "조건부 사후 연구 · " + label
+        heading = "탐색 연구 기록" if policy else "검증된 연구 기록"
         company._message(conn, project, None, "director", "status",
-            f"검증된 연구 기록 · {label}\n{report['view_url']}\n근거: {library_source}\n"
-            "원문 주장·실측 결과·미해결 반론·재검토 조건은 보고서에 보존했습니다.", message_id=identity)
+            f"{heading} · {label}\n{report['view_url']}\n근거: {library_source}\n"
+            "원문 주장·실측 결과·미해결 반론·재검토 조건은 보고서에 보존했습니다."
+            + ("\n당시 공개 시각·수정 이력은 미확인입니다. 가설 생성 전용이며 확증·운영 승격 근거가 아닙니다."
+               if policy else ""), message_id=identity)

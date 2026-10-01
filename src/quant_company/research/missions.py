@@ -161,6 +161,8 @@ class MissionStore:
             raise PolicyError("Policy missions require independent data review and signed program authority")
         self._owner(conn, project, row, owner=owner, revision=revision, manifest_digest=manifest_digest,
                     event_key=event_key, action="approve")
+        if spec.data.policy is not None:
+            raise PolicyError("Retrospective exploration requires program authority and a separate data assessment")
         if not ((spec.kind == "strategy" and spec.execution_profile == EXECUTION_PROFILE)
                 or spec.schema_version == 2):
             raise PolicyError("This mission kind or execution profile is draft-only")

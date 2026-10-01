@@ -404,6 +404,8 @@ def build_adaptive_report(
     else:
         _require(history.scientific_lineage is None, "legacy_report_cannot_carry_scoped_lineage")
     ids = {str(trial.manifest.trial_id) for trial in trials}
+    policy = trials[0].manifest.spec.data.policy
+    _require(all(trial.manifest.spec.data.policy == policy for trial in trials), "report_data_policy_mismatch")
     _require(len(ids) == len(trials) and set(history.trial_cycles) == ids
              and history.current_cycle >= 1
              and history.cumulative_scientific_trials >= sum(trial.receipt.scientific_trials_added for trial in trials)
@@ -435,6 +437,19 @@ def build_adaptive_report(
             f'<p>누적 계보 완료 {history.scientific_lineage["completed_trials"]}회 · '
             f'미확인 예약 포함 {history.scientific_lineage["charged_trials"]}회 · '
             f'서명된 상한 {history.scientific_lineage["trial_limit"]}회.</p></section>')
+    if policy is not None:
+        summary.update(exploratory_only=True, historical_point_in_time_verified=False,
+                       confirmation_eligible=False, deployment_eligible=False,
+                       data_policy=policy.model_dump(mode="json"))
+        sections.append('<section><h2>한계를 명시한 탐색 연구 · 가정하 결과</h2>'
+                        '<p>가설 생성에만 사용합니다. 확증이나 운영 승격의 근거로 인정하지 않습니다.</p>'
+                        '<p>available_at은 거래일 23:59 KST라는 가정입니다. 당시 실제 공개 시각·수정 이력과 '
+                        '준비 당시 원천 파일 바이트는 미확인입니다. 고정 입력의 가격 곡선 재현은 그 한계를 해소하지 않습니다.</p>'
+                        '<p>KRX 기준가격 등락률로 조정한 시가→다음 시가의 이론적 평가입니다. '
+                        '현금 분배금 재투자 총수익이나 실제 체결 성과를 입증하지 않습니다.</p>'
+                        '<p>독립 감사 통과도 이 가정하의 코드·산출물 인과성에 한정됩니다.</p>'
+                        '<pre>' + html.escape(json.dumps(policy.model_dump(mode="json"), ensure_ascii=False, indent=2))
+                        + '</pre></section>')
     if audit is None:
         sections.append('<section><h2>성과 비공개</h2><p>현재 산출물에 연결된 독립 감사가 검증되지 않았습니다. '
                         '수익률·낙폭·연구 해석은 공개하지 않습니다.</p></section>')

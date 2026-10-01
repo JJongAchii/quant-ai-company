@@ -315,6 +315,17 @@ def stage_prompt(company, conn, task, turn=None):
         "fills, deployment readiness or untouched 2026 confirmation. Never promote its scope in prose.")
     for stage in instructions:
         instructions[stage] += scope_instruction
+    policy = row["context"].get("mission", {}).get("spec", {}).get("data", {}).get("policy")
+    if policy:
+        instructions[row["stage"]] += (
+            " This is owner-approved retrospective exploration under the exact data.policy assumptions. "
+            "Historical publication times, revision vintages and preparation source bytes remain unverified. "
+            "Evaluate chronology within frozen inputs under the declared availability assumption; never "
+            "attest to actual historical PIT or real fills. A validity pass concerns only that conditional "
+            "scope. Other missing causal evidence or code leakage still requires fail/unverified. "
+            "Preserve these limitations and do not claim confirmation, deployment eligibility or full support.")
+        if row["stage"] == "meaning":
+            instructions["meaning"] += " Choose inconclusive or not_supported; supported is inadmissible in this scope."
     if enabled(row):
         if turn is None:
             raise PolicyError("audit_packet_requires_bound_turn")
@@ -549,6 +560,9 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         value = json.loads(content, strict=False)
     if not isinstance(value, dict):
         raise PolicyError("Research artifact must be an object")
+    if (row["stage"] == "meaning" and value.get("conclusion") == "supported"
+            and row["context"].get("mission", {}).get("spec", {}).get("data", {}).get("policy")):
+        raise PolicyError("Retrospective exploration cannot establish supported findings")
     for path in row["context"].get("required_data_reads", []):
         if conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
             AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():

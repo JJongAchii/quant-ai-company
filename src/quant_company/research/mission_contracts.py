@@ -87,9 +87,32 @@ class RiskConstraint(MissionModel):
         return self
 
 
+class RetrospectiveDataPolicy(MissionModel):
+    """Owner-approved assumptions for hypothesis generation, never historical PIT proof."""
+
+    mode: Literal["retrospective_exploration"] = "retrospective_exploration"
+    availability: Literal["assumed_trade_date_2359_kst"] = "assumed_trade_date_2359_kst"
+    revision_vintages: Literal["unverified"] = "unverified"
+    source_identity: Literal["frozen_inputs_reconstructed_curve"] = "frozen_inputs_reconstructed_curve"
+    prices: Literal["krx_reference_adjusted_open_to_next_open"] = "krx_reference_adjusted_open_to_next_open"
+    result_use: Literal["hypothesis_generation_only"] = "hypothesis_generation_only"
+    confirmation_eligible: Literal[False] = False
+    deployment_eligible: Literal[False] = False
+    evidence_reports: Annotated[dict[Path, Digest], Field(min_length=1, max_length=12)]
+
+    @field_validator("evidence_reports")
+    @classmethod
+    def flat_reports(cls, value):
+        if any("/" in name for name in value):
+            raise ValueError("Exploratory evidence report names must be flat")
+        return value
+
+
 class DataScope(MissionModel):
     lake_id: Text
     input_files: FileMap
+    # Omission preserves previously approved mission/program and ZIP digests.
+    policy: RetrospectiveDataPolicy | None = Field(default=None, exclude_if=lambda v: v is None)
 
 
 class CodeScope(MissionModel):
@@ -152,6 +175,8 @@ class MissionSpec(MissionModel):
 
     @model_validator(mode="after")
     def scope_consistency(self):
+        if self.data.policy is not None and (self.kind != "strategy" or (self.market or "kr_etf") != "kr_etf"):
+            raise ValueError("Retrospective data policy is limited to ETF strategy exploration")
         if self.schema_version >= 2:
             if self.evaluation is None or self.market is None or self.evaluation.metric != self.objective.metric:
                 raise ValueError("Version 2 requires a market and matching evaluation contract")
@@ -162,6 +187,8 @@ class MissionSpec(MissionModel):
         elif self.evaluation is not None or self.market is not None or self.objective.metric != "stress-net-absolute-cagr":
             raise ValueError("New scientific contracts require mission version 2")
         if self.schema_version == 3:
+            if self.data.policy is not None:
+                raise ValueError("Version 3 cannot mix a legacy exploratory policy with its signed data policy")
             if self.data_policy is None or self.scientific_lineage is None:
                 raise ValueError("Mission version 3 requires signed data policy and scientific lineage authority")
             if self.data_policy.input_files != self.data.input_files:

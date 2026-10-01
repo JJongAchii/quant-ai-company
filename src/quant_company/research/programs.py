@@ -5,6 +5,7 @@ import math
 from psycopg.types.json import Jsonb
 
 from ..company import PolicyError, as_json, fingerprint, stable
+from .adaptive_contracts import digest_model
 from .builds import profile_for
 from .data_evidence import load_packets, require_admissible_gaps
 from .library import available_sources, require_current, verify_citations
@@ -105,6 +106,11 @@ class ProgramStore:
                 return self.snapshot(conn, program_id)
             if row["state"] != "draft":
                 raise PolicyError("Program approval requires a draft")
+            if any(e.template.data.policy is not None for e in spec.envelopes) and conn.execute(
+                "SELECT 1 FROM research_programs WHERE project_id=%s AND revision=%s AND state='active' AND id<>%s",
+                (project["id"], row["revision"], program_id),
+            ).fetchone():
+                raise PolicyError("Exploratory replacement requires cancellation of the prior active program")
             for envelope in spec.envelopes:
                 profile_for(self.company, envelope.template)
                 authorize(conn, project["id"], program_id, envelope)
@@ -148,12 +154,14 @@ class ProgramStore:
         project, row, spec = self.locked(conn, program_id, active=True)
         MissionStore(self.company)._actor(actor, "researcher_kr")
         proposal = typed(ResearchTaskProposal, value)
-        if proposal.envelope not in {e.name for e in spec.envelopes}:
+        envelope = next((e for e in spec.envelopes if e.name == proposal.envelope), None)
+        if envelope is None:
             raise PolicyError("Task selects an unapproved envelope")
-        envelope = next(e for e in spec.envelopes if e.name == proposal.envelope)
         policy = envelope.template.data_policy
         if policy is not None and policy.mode == "frozen_vintage_retrospective" and proposal.mode != "novel_hypothesis":
             raise PolicyError("Conditional retrospective research admits novel hypotheses only")
+        if envelope.template.data.policy is not None and proposal.mode == "exact_replication":
+            raise PolicyError("Retrospective exploration cannot claim exact replication")
         allowed = {s["id"] for s in available_sources(self.company, conn, project, spec, program_id)}
         if not set(proposal.source_ids) <= allowed:
             raise PolicyError("Task cites sources outside the program library")
@@ -205,14 +213,20 @@ class ProgramStore:
             if allow_blocked:
                 return
             raise PolicyError("Data prerequisites are unresolved")
-        expected = "conditional_ready" if (spec.data_policy is not None
-            and spec.data_policy.mode == "frozen_vintage_retrospective") else "ready"
+        if value.decision == "exploratory_only" and (
+                spec.data.policy is None or value.data_policy_digest != digest_model(spec.data.policy)):
+            raise PolicyError("Exploration requires the exact owner-approved data policy")
+        if spec.data.policy is not None and value.decision != "exploratory_only":
+            raise PolicyError("Exploratory data policy cannot establish strict data readiness")
+        expected = "exploratory_only" if spec.data.policy is not None else (
+            "conditional_ready" if (spec.data_policy is not None
+            and spec.data_policy.mode == "frozen_vintage_retrospective") else "ready")
         if value.decision != expected:
             raise PolicyError("Data readiness does not match the signed research policy")
         if value.decision == "conditional_ready" and task["proposal"]["mode"] != "novel_hypothesis":
             raise PolicyError("Conditional evidence cannot authorize replication or transfer")
         profile = profile_for(self.company, spec)
-        if spec.schema_version == 3 or not profile.public_profile.fixture_only:
+        if spec.schema_version == 3 or value.decision == "exploratory_only" or not profile.public_profile.fixture_only:
             found = load_packets(self.company, program, {envelope.name: envelope}).get(envelope.name)
             if found is None:
                 raise PolicyError("Real data readiness requires a verified input evidence packet")
@@ -238,6 +252,7 @@ class ProgramStore:
         envelope = next(e for e in spec.envelopes if e.name == task["proposal"]["envelope"])
         self._assessment(conn, row, envelope, task, typed(DataAssessment, task["data_assessment"]))
         require_authority(conn, project["id"], program_id, envelope)
+        proposal = typed(ResearchTaskProposal, task["proposal"])
         used = self.usage(conn, program_id)
         count = conn.execute("SELECT count(*) AS n FROM research_missions WHERE program_id=%s", (program_id,)).fetchone()["n"]
         if count >= spec.max_missions or used["trials"] >= spec.max_total_trials or used["compute_seconds"] >= spec.max_compute_seconds:
@@ -246,8 +261,6 @@ class ProgramStore:
                   if m["stage"] not in {"owner_review", "cancelled"}]
         if len(active) >= spec.max_parallel_missions:
             raise PolicyError("Program parallel mission limit reached")
-        proposal = typed(ResearchTaskProposal, task["proposal"])
-        envelope = next(e for e in spec.envelopes if e.name == proposal.envelope)
         require_current(conn, proposal.source_ids)
         mission_spec = envelope.template.model_dump(mode="json")
         mission_spec.update(title=proposal.title, baseline_source_ids=sorted(set(
