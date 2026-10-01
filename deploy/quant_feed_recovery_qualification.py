@@ -88,7 +88,7 @@ def main(args):
     output = receipts / "qualification.json"
     receipt = json.loads(output.read_bytes()) if output.is_file() else {"state": "missing"}
     preserved = helper.inventory() == before and CURRENT.resolve().name == args.base
-    summary = {key: receipt.get(key) for key in ("state", "policy", "slack_writes", "database_writes", "cases",
+    summary = {key: receipt.get(key) for key in ("state", "policy", "slack_writes", "document_writes", "account_ledger_writes", "cases",
                                                 "stalled_input", "fault", "error")}
     summary.update(commit=args.commit, base=args.base, producer_consumer_matched=True,
                    production_services_preserved=preserved, returncode=int(result.stdout.strip()),

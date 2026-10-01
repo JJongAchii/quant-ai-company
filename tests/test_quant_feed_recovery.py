@@ -50,7 +50,8 @@ async def test_private_recovery_qualification_is_read_only_and_does_not_replay_f
         await module.qualify(output)
     receipt = json.loads(output.read_text())
     assert receipt["state"] == ("blocked" if fault else "passed")
-    assert receipt["slack_writes"] is False and receipt["database_writes"] is False
+    assert receipt["slack_writes"] is False and receipt["document_writes"] is False
+    assert receipt["account_ledger_writes"] is False  # This fixture has no live account router.
     assert len(calls) == (1 if fault else 3)
     count = len(calls)
     with pytest.raises(ValueError, match="existing_qualification_requires_reconciliation"):

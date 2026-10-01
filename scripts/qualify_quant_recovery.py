@@ -1,4 +1,4 @@
-"""Private subscription qualification; no database mutations or Slack delivery.
+"""Private subscription qualification; no document mutations or Slack delivery.
 
 Run only through a scoped operator with a staged producer/consumer pair. Raw
 originals and model responses remain in the host's private receipt directory.
@@ -47,7 +47,8 @@ async def qualify(output):
     if data["source_spans"] != source_spans(bundles["stalled"]["pages"]):
         raise ValueError("source_spans_changed")
     receipt = {"state": "running", "checked_at": datetime.now(UTC).isoformat(), "policy": store.policy(),
-               "slack_writes": False, "database_writes": False, "calls": [], "cases": {},
+               "slack_writes": False, "document_writes": False,
+               "account_ledger_writes": company.settings.model_accounts_enabled, "calls": [], "cases": {},
                "stalled_input": {"document_id": STALLED, "original_sha256": bundles["stalled"]["original_sha256"],
                                  "repair_prompt_characters": len(prompt(bundles["stalled"], "repair")),
                                  "source_span_count": len(data["source_spans"]), "source_spans_preserved": True}}
@@ -92,7 +93,7 @@ async def qualify(output):
         receipt.update(state="not_passed", error=str(error))
     finally:
         atomic_json(output, receipt)
-    summary = {key: receipt.get(key) for key in ("state", "policy", "slack_writes", "database_writes", "cases",
+    summary = {key: receipt.get(key) for key in ("state", "policy", "slack_writes", "document_writes", "account_ledger_writes", "cases",
                                                 "stalled_input", "fault", "error")}
     summary.update(call_count=len(receipt["calls"]), receipt_sha256=hashlib.sha256(output.read_bytes()).hexdigest())
     print(json.dumps(summary))
