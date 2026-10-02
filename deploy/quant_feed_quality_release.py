@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scoped Quant editorial release; keep publication off and preserve other workers."""
+"""Scoped Quant release and qualified publication resumption; preserve other workers."""
 
 import argparse
 import contextlib
@@ -31,7 +31,34 @@ for stage in ('review', 'critique'):
                               output_contract=contract)
     schema = json.dumps(output_schema(request), sort_keys=True, separators=(',', ':'))
     contracts[contract] = hashlib.sha256(schema.encode()).hexdigest()
+request = ProviderRequest(request_id='quant-feed-protocol-probe', model='probe', prompt='probe',
+                          web_search=True, output_contract='quant_search_v1')
+schema = json.dumps(output_schema(request), sort_keys=True, separators=(',', ':'))
+contracts[request.output_contract] = hashlib.sha256(schema.encode()).hexdigest()
 print(json.dumps(contracts, sort_keys=True))
+"""
+PUBLICATION_PROBE = """
+import json
+from quant_company.company import Company
+from quant_company.config import Settings
+from quant_company.quant_feed.store import QuantFeedStore
+c = Company(Settings()); store = QuantFeedStore(c)
+current = store.policy()
+published = c.settings.quant_feed_publish_enabled
+c.settings.quant_feed_publish_enabled = True
+live = store.policy()
+c.settings.quant_feed_publish_enabled = published
+print(json.dumps({'authorized': store.authorized(), 'channel': c.settings.quant_feed_channel_id,
+                  'publish_enabled': published, 'policy': current, 'live_policy': live}))
+"""
+SLACK_PROBE = """
+import httpx,json
+from quant_company.config import Settings
+s=Settings(); credential=json.loads(s.slack_credentials_file.read_text())['quant_scout']
+r=httpx.post('https://slack.com/api/auth.test',
+ headers={'Authorization':'Bearer '+credential['bot_token']},timeout=12).json()
+print(json.dumps({'ok':r.get('ok') is True,'user_id':r.get('user_id'),
+ 'team_id':r.get('team_id'),'app_id':credential.get('app_id')}))
 """
 
 
@@ -118,7 +145,7 @@ def protocol_preflight(app_image_id, runtime_image_id):
             "--security-opt=no-new-privileges:true", "--pids-limit=32", "--memory=128m",
             "--entrypoint", "python", runtime_image_id, "-c", PROTOCOL_PROBE,
         ]))
-        if (not isinstance(consumer, dict) or set(consumer) != {"quant_brief_v4", "quant_critique_v2"}
+        if (not isinstance(consumer, dict) or set(consumer) != {"quant_brief_v4", "quant_critique_v2", "quant_search_v1"}
                 or not all(isinstance(value, str) and re.fullmatch(r"[a-f0-9]{64}", value)
                            for value in consumer.values()) or consumer != producer):
             raise ValueError("schema_mismatch")
@@ -206,16 +233,19 @@ def stage(args, previous, target, journal, helper):
                       "independent_services_preserved": True}), flush=True)
 
 
-def compose(helper, root, *args):
+def compose(helper, root, *args, image_overrides=None):
     overlay = root / "deploy/data-watch.compose.yaml"
     if not overlay.is_file():
         raise ValueError("data_watch_overlay_missing")
     if not (STATE / "config/data-watch-contracts.json").is_file():
         raise ValueError("data_watch_calendar_must_be_a_file")
-    return run([*helper.compose_command(root), "--profile", "data-watch", "-f", str(overlay), *args])
+    command = [*helper.compose_command(root), "--profile", "data-watch", "-f", str(overlay)]
+    if image_overrides:
+        command.extend(["-f", str(image_overrides)])
+    return run([*command, *args])
 
 
-def check(before, commit, app_image_id, runtime_image_id):
+def check(before, commit, app_image_id, runtime_image_id, publication_enabled=False):
     after = inventory()
     dedicated = "quant-company-" + DEDICATED_RUNTIME + "-1"
     if set(after) != set(before) | {dedicated}:
@@ -232,7 +262,7 @@ def check(before, commit, app_image_id, runtime_image_id):
                 or row["health"] not in (None, "healthy")
                 or row["image_revision"] != commit
                 or row["image_id"] != app_image_id
-                or row["quant_publish"] != "false"
+                or row["quant_publish"] != str(publication_enabled).lower()
             ):
                 raise ValueError("quant_release_service_unhealthy")
         elif {key: row[key] for key in ("id", "image_id", "running", "oom", "restarts")} != {
@@ -246,7 +276,7 @@ def check(before, commit, app_image_id, runtime_image_id):
     return {
         "selected": [DEDICATED_RUNTIME, *SELECTED],
         "independent_service_ids_preserved": True,
-        "publication_enabled": False,
+        "publication_enabled": publication_enabled,
     }
 
 
@@ -271,10 +301,12 @@ def cutover(args, previous, target, journal, helper):
         if "=" in line and not line.startswith("#")
     )
     before = inventory()
+    publication_enabled = values.get("QUANT_FEED_PUBLISH_ENABLED") == "true"
     if (
         values.get("RELEASE_COMMIT") != before["quant-company-api-1"]["image_revision"]
         or values.get("QUANT_FEED_ENABLED") != "true"
-        or values.get("QUANT_FEED_PUBLISH_ENABLED") != "false"
+        or values.get("QUANT_FEED_PUBLISH_ENABLED") not in {"true", "false"}
+        or publication_enabled and not getattr(args, "preserve_publication", False)
     ):
         raise ValueError("quality_release_environment_changed")
     if not (STATE / "config/data-watch-contracts.json").is_file():
@@ -286,9 +318,6 @@ def cutover(args, previous, target, journal, helper):
         or before[runtime_name]["image_id"] != runtime_images[0]["base_id"]
     ):
         raise ValueError("quality_release_base_image_changed")
-    if (runtime_service == DEDICATED_RUNTIME
-            and before[runtime_name]["image_revision"] != values.get("RELEASE_COMMIT")):
-        raise ValueError("quality_release_runtime_rollback_revision_mismatch")
     selected = {"quant-company-" + name + "-1" for name in SELECTED}
     required = selected | ({runtime_name} if runtime_service == DEDICATED_RUNTIME else set())
     if any(not before[name]["running"] or before[name]["oom"] for name in required):
@@ -297,6 +326,14 @@ def cutover(args, previous, target, journal, helper):
         raise ValueError("quality_release_activity_not_drained")
     # Never stop a service or write release state before proving compatibility.
     protocol = protocol_preflight(app_images[0]["id"], runtime_images[0]["id"])
+    # Other deployments can leave Quant pinned to older exact images. Restore
+    # those images on rollback rather than inferring them from RELEASE_COMMIT.
+    rollback_images = journal.with_suffix(".rollback.compose.json")
+    rollback_services = {name: {"image": before["quant-company-" + name + "-1"]["image_id"]}
+                         for name in SELECTED}
+    if runtime_service == DEDICATED_RUNTIME:
+        rollback_services[DEDICATED_RUNTIME] = {"image": before[runtime_name]["image_id"]}
+    helper.atomic(rollback_images, json.dumps({"services": rollback_services}).encode())
     # Stop only the Quant consumer first. Its durable workflow may start a final
     # activity between the first idle check and shutdown; inspect it again.
     run(["docker", "stop", "--time", "900", "quant-company-quant-feed-worker-1"])
@@ -315,6 +352,8 @@ def cutover(args, previous, target, journal, helper):
             cutover_started_at=time.time(),
             original_env_sha256=hashlib.sha256(original).hexdigest(),
             quant_native_protocol=protocol,
+            publication_enabled=publication_enabled,
+            rollback_image_overrides=str(rollback_images),
             independent_before={key: value for key, value in before.items()
                                 if key not in selected and key != "quant-company-" + DEDICATED_RUNTIME + "-1"},
         )
@@ -353,14 +392,14 @@ def cutover(args, previous, target, journal, helper):
             "120",
             *SELECTED,
         )
-        result = check(before, args.commit, app_images[0]["id"], runtime_images[0]["id"])
+        result = check(before, args.commit, app_images[0]["id"], runtime_images[0]["id"], publication_enabled)
         for _ in range(2):
             time.sleep(5)
-            result = check(before, args.commit, app_images[0]["id"], runtime_images[0]["id"])
-        if any(activity()[key] for key in ("pending_quant_outbox", "sending_outbox")):
+            result = check(before, args.commit, app_images[0]["id"], runtime_images[0]["id"], publication_enabled)
+        if not publication_enabled and any(activity()[key] for key in ("pending_quant_outbox", "sending_outbox")):
             raise ValueError("quality_release_unexpected_outbox_activity")
         record.update(
-            phase="preview_active",
+            phase="live_active" if publication_enabled else "preview_active",
             cutover_completed_at=time.time(),
             result=result,
             original_roles_and_credentials_preserved=True,
@@ -369,7 +408,7 @@ def cutover(args, previous, target, journal, helper):
         print(json.dumps({"phase": record["phase"], "commit": args.commit, **result}), flush=True)
     except BaseException as exc:
         try:
-            unresolved = changed and activity()["running_quant_calls"]
+            unresolved = changed and any(activity().values())
         except Exception:
             unresolved = changed
         if unresolved:
@@ -384,7 +423,7 @@ def cutover(args, previous, target, journal, helper):
                 compose(helper, target, "stop", DEDICATED_RUNTIME)
             if runtime_service == DEDICATED_RUNTIME:
                 compose(helper, previous, "up", "-d", "--no-deps", "--force-recreate", "--wait",
-                        "--wait-timeout", "120", DEDICATED_RUNTIME)
+                        "--wait-timeout", "120", DEDICATED_RUNTIME, image_overrides=rollback_images)
         compose(
             helper,
             previous,
@@ -396,20 +435,156 @@ def cutover(args, previous, target, journal, helper):
             "--wait-timeout",
             "120",
             *SELECTED,
+            image_overrides=rollback_images,
         )
         record.update(phase="rolled_back", error=type(exc).__name__)
         helper.atomic(journal, json.dumps(record).encode())
         raise
 
 
+def publication_probe():
+    return json.loads(run(["docker", "exec", "quant-company-api-1", "python",
+                           "/app/entrypoint.py", "python", "-c", PUBLICATION_PROBE]))
+
+
+def resume(args, current, deployment_journal, helper):
+    """Change only the publication gate; never enqueue or revive old documents."""
+    journal = STATE / "releases" / ("quant-feed-resume-" + args.commit + ".json")
+    if journal.exists():
+        saved = json.loads(journal.read_text())
+        if (saved.get("phase") == "live_active" and publication_probe()["publish_enabled"] is True):
+            print(json.dumps(saved), flush=True)
+            return
+        raise ValueError("quant_resume_requires_manual_reconciliation")
+    deployed = json.loads(deployment_journal.read_text())
+    if (args.base != args.commit or deployed.get("commit") != args.commit
+            or deployed.get("phase") != "preview_active" or not args.channel
+            or not re.fullmatch(r"[CG][A-Z0-9]+", args.channel)):
+        raise ValueError("quant_resume_release_precondition")
+    env = STATE / "config/runtime.env"
+    original = env.read_bytes()
+    values = dict(line.split("=", 1) for line in original.decode().splitlines()
+                  if "=" in line and not line.startswith("#"))
+    if (values.get("RELEASE_COMMIT") != args.commit or values.get("QUANT_FEED_ENABLED") != "true"
+            or values.get("QUANT_FEED_PUBLISH_ENABLED") != "false"
+            or values.get("QUANT_FEED_CHANNEL_ID") != args.channel
+            or not (STATE / "config/data-watch-contracts.json").is_file()):
+        raise ValueError("quant_resume_environment_mismatch")
+    before = inventory()
+    selected = {"quant-company-" + name + "-1" for name in SELECTED}
+    dedicated = "quant-company-" + DEDICATED_RUNTIME + "-1"
+    if any(name not in before or not before[name]["running"] or before[name]["oom"]
+           or before[name]["image_revision"] != args.commit for name in selected | {dedicated}):
+        raise ValueError("quant_resume_services_not_qualified")
+    probe = publication_probe()
+    if (not probe["authorized"] or probe["publish_enabled"] or probe["channel"] != args.channel):
+        raise ValueError("quant_resume_policy_precondition")
+    proofs = []
+    for item in args.qualification or []:
+        path, digest = item.rsplit(":", 1)
+        path = Path(path)
+        if (not path.resolve().is_relative_to(STATE / "operations")
+                or not re.fullmatch(r"[a-f0-9]{64}", digest)):
+            raise ValueError("quant_resume_qualification_path")
+        raw = path.read_bytes()
+        proof = json.loads(raw)
+        if (hashlib.sha256(raw).hexdigest() != digest or proof.get("state") != "passed"
+                or proof.get("slack_writes") not in (0, False)
+                or proof.get("document_writes", False) not in (0, False)):
+            raise ValueError("quant_resume_qualification_failed")
+        proofs.append({"sha256": digest, "policy": proof.get("policy"),
+                       "cases": proof.get("case_results", {})})
+    if len({p["sha256"] for p in proofs}) < 2 or not any(
+            p["policy"] == probe["policy"] and p["cases"].get("positive", {}).get("state") == "passed"
+            and p["cases"].get("negative", {}).get("state") == "passed" for p in proofs):
+        raise ValueError("quant_resume_current_policy_qualification_missing")
+    quant = module(current / "deploy/quant_feed_release.py")
+    slack = json.loads(run(["docker", "exec", "quant-company-dispatch-1", "python",
+                            "/app/entrypoint.py", "python", "-c", SLACK_PROBE]))
+    if slack != {"ok": True, "user_id": quant.BOT_USER_ID, "app_id": quant.APP_ID,
+                 "team_id": values.get("SLACK_TEAM_ID")}:
+        raise ValueError("quant_resume_slack_identity")
+    if any(activity().values()):
+        raise ValueError("quant_resume_activity_not_drained")
+    preserved = {name: (STATE / name).read_bytes() for name in (
+        "secrets/slack-credentials.json", "config/roles.json", "config/research-profiles.json",
+        "config/research-qlab.json")}
+    changed = False
+    run(["docker", "stop", "--time", "900", "quant-company-quant-feed-worker-1"])
+    record = {"phase": "prepared", "commit": args.commit, "channel": args.channel,
+              "operator_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+              "qualifications": proofs, "policy_before": probe["policy"], "policy_after": probe["live_policy"],
+              "service_inventory_before": before, "started_at": time.time()}
+    try:
+        if any(activity().values()):
+            raise ValueError("quant_resume_activity_started_during_stop")
+        unresolved = run(["docker", "exec", "-u", "postgres", "quant-company-postgres-1", "psql",
+                          "-XAt", "-v", "ON_ERROR_STOP=1", "-d", "quant_company", "-c",
+                          "SELECT count(*) FROM quant_feed_publications p JOIN outbox o ON o.id=p.id "
+                          "WHERE o.status NOT IN ('delivered','stale')"])
+        if unresolved != "0":
+            raise ValueError("quant_resume_prior_delivery_unresolved")
+        helper.atomic(journal.with_suffix(".env"), original)
+        record["phase"] = "activating"
+        helper.atomic(journal, json.dumps(record).encode())
+        changed = True
+        quant.setenv(helper, {"QUANT_FEED_PUBLISH_ENABLED": "true"})
+        compose(helper, current, "up", "-d", "--no-deps", "--force-recreate", "--wait",
+                "--wait-timeout", "120", "api", "dispatch")
+        after_probe = publication_probe()
+        if (not after_probe["authorized"] or not after_probe["publish_enabled"]
+                or after_probe["channel"] != args.channel or after_probe["policy"] != probe["live_policy"]):
+            raise ValueError("quant_resume_gate_not_propagated")
+        compose(helper, current, "up", "-d", "--no-deps", "--force-recreate", "--wait",
+                "--wait-timeout", "120", "quant-feed-worker")
+        after = inventory()
+        if set(after) != set(before):
+            raise ValueError("quant_resume_inventory_changed")
+        for name, previous in before.items():
+            row = after[name]
+            if name in selected:
+                if (not row["running"] or row["oom"] or row["image_id"] != previous["image_id"]
+                        or row["image_revision"] != args.commit or row["quant_publish"] != "true"
+                        or row["health"] not in (None, "healthy")):
+                    raise ValueError("quant_resume_selected_service_unhealthy")
+            elif row != previous:
+                raise ValueError("quant_resume_independent_service_changed")
+        if any((STATE / name).read_bytes() != raw for name, raw in preserved.items()):
+            raise ValueError("quant_resume_unrelated_config_changed")
+        record.update(phase="live_active", publication_enabled=True, completed_at=time.time(),
+                      independent_services_preserved=True, old_documents_untouched=True)
+        helper.atomic(journal, json.dumps(record).encode())
+        print(json.dumps(record), flush=True)
+    except BaseException as exc:
+        # Once production has begun work, do not replay a call or assume a Slack
+        # write did not happen. Preserve the journal for explicit reconciliation.
+        if changed and any(activity().values()):
+            record.update(phase="intervention_required", error=type(exc).__name__)
+            helper.atomic(journal, json.dumps(record).encode())
+            raise
+        if changed:
+            helper.atomic(env, original)
+            compose(helper, current, "up", "-d", "--no-deps", "--force-recreate", "--wait",
+                    "--wait-timeout", "120", *SELECTED)
+        else:
+            run(["docker", "start", "quant-company-quant-feed-worker-1"])
+        record.update(phase="rolled_back", publication_enabled=False, error=type(exc).__name__)
+        helper.atomic(journal, json.dumps(record).encode())
+        raise
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("stage", "cutover"))
+    parser.add_argument("action", choices=("stage", "cutover", "resume"))
     parser.add_argument("base")
     parser.add_argument("commit")
     parser.add_argument("--archive")
     parser.add_argument("--archive-sha256")
     parser.add_argument("--qdata-tree-sha256")
+    parser.add_argument("--channel")
+    parser.add_argument("--qualification", action="append")
+    parser.add_argument("--preserve-publication", action="store_true",
+                        help="Cut over without changing an already-active publication gate after protocol qualification")
     args = parser.parse_args()
     if not all(re.fullmatch(r"[0-9a-f]{40}", value) for value in (args.base, args.commit)):
         raise ValueError("invalid_release_commit")
@@ -428,8 +603,10 @@ def main():
             if not args.archive or not args.archive_sha256 or not args.qdata_tree_sha256 or journal.exists():
                 raise ValueError("quality_stage_requires_new_exact_inputs")
             stage(args, previous, target, journal, helper)
-        else:
+        elif args.action == "cutover":
             cutover(args, previous, target, journal, helper)
+        else:
+            resume(args, previous, journal, helper)
 
 
 if __name__ == "__main__":

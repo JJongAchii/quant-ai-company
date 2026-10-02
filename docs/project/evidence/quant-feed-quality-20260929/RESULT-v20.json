@@ -1,0 +1,91 @@
+{
+  "deployed_commit": "5defb8cb9dd7c655214663b05670cd2896006b30",
+  "editorial_policy_version": 20,
+  "phase": "preview_active",
+  "publication_enabled": false,
+  "new_slack_writes": 0,
+  "historic_publications": 1,
+  "independent_service_ids_preserved_at_cutover": true,
+  "deployment_journal_sha256": "d63b6ad09a633c5566346c5ad9f74c81ada2921acccfc28941234627218a4359",
+  "private_trials": [
+    {
+      "label": "quality-v19-harn",
+      "state": "passed",
+      "receipt_sha256": "e42da3a656cf2f0c164ec1aac7f53c022c416de5abccd697cd0f5403a25e46ec",
+      "new_subscription_calls": 6,
+      "negative_control": "passed",
+      "services_preserved": false,
+      "current_release_preserved": true
+    },
+    {
+      "label": "quality-v19-lob",
+      "state": "not_passed",
+      "reason": "quant_too_many_source_statements",
+      "receipt_sha256": "2afbbe9de2bce0afc35418f648cc44b7b0e835c6a03b17b5e8ff2fe6efbca44b",
+      "new_subscription_calls": 4,
+      "negative_control": "passed",
+      "services_preserved": true,
+      "current_release_preserved": true
+    },
+    {
+      "label": "quality-v20-lob",
+      "state": "passed",
+      "receipt_sha256": "eb0371df82f7fa57e8c4bc233b32068d796e978c593a1d309c8128d27ae60983",
+      "new_subscription_calls": 3,
+      "stored_responses_revalidated": 3,
+      "editorial_revisions": 1,
+      "negative_control": "passed",
+      "card_characters": 1974,
+      "services_preserved": false,
+      "current_release_preserved": false,
+      "overlapping_independent_release": "73fcfc34a6876e0a80c14fa72edae2cdb8413b0c"
+    },
+    {
+      "label": "quality-v20-harn-view",
+      "state": "passed",
+      "mode": "stored_response_revalidation_and_render",
+      "receipt_sha256": "a22872022fa42415527ec92180a5d82c4df7f0269c2e811e78805de9e6a89efe",
+      "new_subscription_calls": 0,
+      "card_characters_before": 2172,
+      "card_characters_after": 1968
+    }
+  ],
+  "software_checks": {
+    "final_merged_local_passed": 1356,
+    "final_merged_local_skipped": 46,
+    "ruff": "passed",
+    "quant_code_linux_ci": {"commit": "b907846af6b513b2266588d46719e9595ed582da", "run": 36678839349, "state": "success"},
+    "merged_head_linux_ci": {"commit": "5defb8cb9dd7c655214663b05670cd2896006b30", "run": 36679570477, "state": "not_started", "reason": "GitHub account payment or spending-limit refusal; no runner or test steps started"},
+    "quant_code_unchanged_by_research_merge": true,
+    "slack_in_tests": "simulated",
+    "unrelated_user_deployment_edits_preserved_in_local_worktree": true
+  },
+  "production_source_readback": {
+    "disabled_source_ready": 0,
+    "disabled_source_held": 232,
+    "nonresearch_title_held": 22,
+    "research_affiliates_enabled": false,
+    "originals_and_receipts_retained": true
+  },
+  "observation": {
+    "baseline_at": "2026-09-30T07:00:14.019246+00:00",
+    "baseline_sha256": "ed2dc3dea6b9b97e354a2d18aefd801fb452dc7337e326eb0164e17c31a0c818",
+    "deadline": "2026-10-02T07:00:14.019246+00:00",
+    "timer": "quant-feed-v20-observe.timer",
+    "interval_minutes": 5,
+    "state": "observing",
+    "verified_samples": 2,
+    "latest_flags": [],
+    "timer_service_result": "success",
+    "baseline_disk_available_bytes": 9136857088,
+    "baseline_mem_available_kib": 2008252,
+    "elapsed_48_hours": false,
+    "automatic_publication_activation": false
+  },
+  "limits": [
+    "Development originals are not a held-out estimate of editorial precision.",
+    "No live Quant Slack delivery or completed 48-hour observation is claimed.",
+    "The final merged head did not run on GitHub's Linux runner; its local full suite passed and the identical Quant code passed earlier Linux CI.",
+    "Sampled operational flags, planned backup pauses and unrelated deployments require review; the timer never approves or publishes."
+  ]
+}

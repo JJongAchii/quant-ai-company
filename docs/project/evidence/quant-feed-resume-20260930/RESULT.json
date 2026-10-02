@@ -1,0 +1,114 @@
+{
+  "completed_at": "2026-09-30T12:03:20.715497+00:00",
+  "phase": "live_active",
+  "deployed_commit": "5defb8cb9dd7c655214663b05670cd2896006b30",
+  "editorial_policy_version": 20,
+  "operator_commit": "558e8556e292059d87fb845caf01513728e62581",
+  "operator_sha256": "d4433e5a891c20953e02a3673a55e2be03480bf400abf406d5337a31ffb85f7a",
+  "activation_journal_sha256": "91f77ae9716a42982dc09b7a907ff6584be95c1e6add2be68141bc248a6390ab",
+  "publication_enabled": true,
+  "publication_policy": "567a9c8c20501bc1783b66179ebed0e35fc25727ca00bce1d252e60735cfb7eb",
+  "publication_channel": "C0C3K8ZB9PB",
+  "publication_activation_completed_at": "2026-09-30T08:32:46.962Z",
+  "historic_post_preserved": true,
+  "old_previews_replayed": 0,
+  "held_documents_reset": 0,
+  "publication_of_old_previews_authorized": false,
+  "real_live_delivery": {
+    "id": "6e519886-a55a-5d66-b6df-d0224d766672",
+    "document_id": "96e1499827bf453e9f37785ae5daadcd08992622cab63e0768134f57eaa5cdc3",
+    "title": "From Factor Models to Deep Learning: Machine Learning in Reshaping Empirical Asset Pricing",
+    "published_on": "2024-03-11",
+    "slack_sent_ts": "1790765996.984039",
+    "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1790765996984039",
+    "attempts": 1,
+    "stage_sequence": [
+      "review",
+      "critique",
+      "revision",
+      "critique"
+    ],
+    "model_calls_from_normal_workflow": 4,
+    "manual_model_calls": 0,
+    "direct_operator_slack_posts": 0,
+    "card_characters": 2088,
+    "card_sha256": "19df959042ee8b1af2da60d0445626959ab19ea2d14474e11ec93579eb0aa8ab"
+  },
+  "private_qualification_receipts": [
+    {
+      "sha256": "eb0371df82f7fa57e8c4bc233b32068d796e978c593a1d309c8128d27ae60983",
+      "state": "passed",
+      "policy": "3e1337e875d71fc964439c59d44cad356faca0ca11be1d4c023fe8c68f1a83d7",
+      "positive": "passed",
+      "negative": "passed",
+      "slack_writes": 0,
+      "document_writes": 0
+    },
+    {
+      "sha256": "a22872022fa42415527ec92180a5d82c4df7f0269c2e811e78805de9e6a89efe",
+      "state": "passed",
+      "mode": "stored_response_revalidation_and_render",
+      "new_model_calls": 0
+    }
+  ],
+  "software_checks": {
+    "resume_operator_unit_tests": 48,
+    "real_postgresql_temporal_regressions": 6,
+    "regression_slack": "simulated",
+    "resume_operator_ci": {
+      "run": 36690096059,
+      "commit": "558e8556e292059d87fb845caf01513728e62581",
+      "state": "success",
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36690096059",
+      "completed_at": "2026-09-30T08:35:49Z"
+    },
+    "deployed_application_ci": {
+      "run": 36679570477,
+      "attempt": 2,
+      "commit": "5defb8cb9dd7c655214663b05670cd2896006b30",
+      "state": "success"
+    },
+    "ruff": "passed",
+    "live_verification": "real production PostgreSQL and Slack acceptance/permalink; no fixture model or Slack"
+  },
+  "operations": {
+    "independent_services_preserved_at_activation": true,
+    "news_worker_unchanged": true,
+    "housing_worker_unchanged": true,
+    "general_worker_unchanged": true,
+    "quant_worker_restarts": 0,
+    "oom": false,
+    "disk_available_bytes": 8707768320,
+    "mem_available_kib": 1938732,
+    "observation_timer": {
+      "is-active": "inactive",
+      "is-enabled": "disabled"
+    },
+    "waiver": "User waived the added 48h observation prerequisite; no elapsed-48h claim or timer-based approval.",
+    "resource_changes_this_resumption": 0,
+    "application_image_rebuilds_this_resumption": 0,
+    "maintenance_drift": "At activation every independent service was unchanged. At the later readback maintenance retained its container ID and image but its restart count increased from 1 to 3; this operation did not restart it. All other independent inventory entries remained identical."
+  },
+  "known_fail_closed_cases": [
+    {
+      "request_id": "quant-feed-cfcbd47b-573a-4261-ad06-6349fad25ec7",
+      "runtime_receipt_sha256": "012c6344353c9ef94eb5796e4662fc0a2b8584a7c902c17a8c51b35c503d68b2",
+      "deterministic_error": "quant_card_too_long",
+      "state": "held",
+      "reissued": false
+    },
+    {
+      "request_id": "quant-feed-6ca8c31b-2642-4812-ae14-861e203fa392",
+      "runtime_receipt_sha256": "ed1b292a346820bc4d7613224f13d9784927ce7a0144817098ee3ce3ecd92ceb",
+      "deterministic_error": "quant_clipped_gap_requires_excerpt_scope",
+      "state": "held",
+      "reissued": false
+    }
+  ],
+  "limits": [
+    "Slack accepted the actual production send; getPermalink confirmed its URL. The chat:write-only bot cannot independently read channel history.",
+    "The critic is a separate model review, not independent reproduction or evidence of investment profitability.",
+    "One delivered card proves this live path, not feed-wide precision or exhaustive coverage.",
+    "The bounded extra verification workflow was not started; normal existing Temporal scheduling produced this publication."
+  ]
+}

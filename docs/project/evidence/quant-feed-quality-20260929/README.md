@@ -63,3 +63,78 @@ its own dependency-identical image, and restores it on a safe rollback. It prese
 the separately owned general runtime and workers. Posting stays disabled. The prior
 48-hour observation is invalidated by the dispatch outage and the pending policy
 update; a new clock begins only after a verified all-running cutover.
+
+## Deployed result
+
+Policy v20's LOB revalidation retained the three settled negative/draft responses
+without replaying their model requests. A fresh critic identified four concrete
+source/condition issues; one editorial revision and the final critic passed (three
+new subscription calls). HARN's already-passed draft and critic were source-checked
+and rendered with the final format without any new model call: 2,172 to 1,968
+characters, with all statements retained. LOB's card is 1,974 characters. These
+development cases do not measure long-run curation precision.
+
+The LOB preview overlapped the independent research worker release `73fcfc3`, so its
+service/release preservation fields honestly remain false. The stage operator refused
+the outdated production baseline before making changes. That research commit was
+merged into the Quant target; Quant code and the release operator were unchanged by
+the merge. Final `5defb8c` passed 1,356 local tests (46 skipped) and Ruff. Quant source
+`b907846` passed Linux CI `36678839349`. The final merge's CI `36679570477` did not start
+a runner or any test step: GitHub reported failed account payments or a spending
+limit. No billing setting was changed. The full merged-source local PostgreSQL suite
+passed; the final merged head's Linux CI remains unverified.
+
+The exact merged archive and installed app/runtime source hashes were verified.
+The scoped cutover reached `preview_active`; its live producer/consumer schemas
+matched. API, dispatch, Quant worker and dedicated Quant runtime are on `5defb8c`.
+The cutover preserved all independent service IDs/images and kept publication off.
+Readback found zero ready documents from disabled sources, 232 held by the disabled
+source gate and 22 held by the nonresearch-title gate. Originals were retained.
+
+At 07:00:14 UTC on 30 September, the healthy all-running observation baseline had
+9.14 GB free disk, about 1.92 GiB available memory, zero running Quant calls/pending
+publications and one unchanged historic post. The installed systemd timer collects
+read-only snapshots every five minutes with no model call or Slack write, stops
+itself after the 48-hour deadline, and never approves or activates publication.
+Its first two samples succeeded without flags. Earliest elapsed-window review is
+**2 October 2026, 16:00:14 KST**; this is a future deadline, not completed evidence.
+Planned backup pauses, missing samples, restarts and independently changed containers
+must be reviewed before interpreting the window. See [RESULT-v20.json](RESULT-v20.json)
+for receipt hashes and the outstanding Linux/elapsed-observation limitations.
+
+## 30 September observation waiver and billing clarification
+
+The owner rejected the added 48-hour observation prerequisite. It is no longer
+required for publication resumption. Only `quant-feed-v20-observe.timer` was
+disabled and stopped; readback confirmed `ActiveState=inactive` and
+`UnitFileState=disabled`. Historic samples remain, and no other service or
+publication setting was changed by this clarification.
+
+The CI diagnostic is not proof of an unpaid invoice or a requirement to subscribe.
+The repository is personal and private, using the standard `ubuntu-latest` runner.
+[GitHub's billing documentation](https://docs.github.com/en/billing/concepts/product-billing/github-actions)
+states that accounts without a payment method are blocked after exhausting their
+included allowance. This is a possible explanation, not a verified account total.
+The usage-summary API returned HTTP 404 and the CLI explicitly required an
+additional `user` scope; no scope refresh, card registration, plan upgrade or
+budget change was performed. See
+[OBSERVATION-WAIVER-20260930.json](OBSERVATION-WAIVER-20260930.json).
+
+## 30 September public repository and CI recheck
+
+At the owner's explicit request, `JJongAchii/quant-ai-company` was changed from
+private to public. Authenticated and unauthenticated API readbacks both confirmed
+`visibility=public` and `private=false`. Redacted Gitleaks history scanning,
+including a second archive-aware pass, found 21 generic matches; contextual checks
+identified only hashes, commit IDs, SQL syntax and adjacent JSON field names.
+This does not prove the absence of all confidential content or exhaustively audit
+GitHub-hosted logs and artifacts.
+
+Run `36679570477` for the exact deployed `5defb8c` was rerun as attempt 2. It now
+has a GitHub-hosted Linux runner, and dependency installation and lint passed;
+the full regression suite also passed, with run conclusion `success` verified at
+08:01:19 UTC. The original attempt's no-runner refusal remains historical evidence,
+but no longer describes the recheck. No payment, paid plan, budget or production
+service was changed. Live Quant Slack delivery remains unverified and its posting
+gate was not changed by this repository operation.
+See [repository-public-20260930.json](../repository-public-20260930.json).

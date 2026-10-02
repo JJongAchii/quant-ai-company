@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "slug": "audit-causality-triage",
+  "revision": 1,
+  "createdAt": "2026-09-29T04:46:52Z",
+  "sourceRequest": "그래",
+  "context": "Owner accepted inspection of the held ETF audit's original-vintage and opening-price evidence before any resumed audit.",
+  "outcome": "Determine whether the held ETF research audit can safely continue and record the exact evidence or new experiment needed.",
+  "constraints": [
+    "Do not replay the blocked provider request or publish unverified performance",
+    "Preserve the frozen mission, trial artifacts and independent audit verdict",
+    "Read research repositories and lake contracts without changing them",
+    "No new model inference, backtest or order in this triage"
+  ],
+  "deliverables": [
+    {
+      "id": "EVIDENCE",
+      "description": "Read the actual held request, prior verdict and ETF source contract",
+      "acceptance": ["Bind status to exact stage and attempt", "State both unresolved causal findings", "Distinguish missing local vintage evidence from global source unavailability"]
+    },
+    {
+      "id": "DECISION",
+      "description": "Record safe resume condition and current stop state",
+      "acceptance": ["Do not release the held request", "Specify the evidence or new experiment needed before a fresh audit", "Do not claim measured investment performance"]
+    }
+  ],
+  "decisionGates": ["A new scientific search needs an approved discovery brief and immutable scope"],
+  "stopConditions": ["Historical availability cannot be inferred from trade-date backfill", "Opening fill cannot use an adjustment known only after the open"]
+}
