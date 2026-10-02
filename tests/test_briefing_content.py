@@ -862,17 +862,62 @@ def test_readability_editorial_patch_round_trip_is_reviewed_in_postgres(brief): 
     assert "unchanged_context" in feedback and feedback["protected_material_facts"]
     assert feedback["allowed_source_ids"] == ["source-1"]
     assert not {"summary", "condition", "sp500"} & set(feedback["allowed_ids"])
-    patch = EditorialPatch.model_validate({"edits": [{"id": "fact", "text": p.issues[0].fact.text+" 시장 참여는 혼조였습니다."}]})
+    patch = EditorialPatch.model_validate({"edits": [{"id": "fact", "text": p.issues[0].fact.text+" 시장 참여는 혼조였습니다."}],
+        "context_additions": [{"issue_fact_id": "fact", "claim": {"id": "market_context",
+            "text": "미 국채 금리는 하락했고 기술주 밖의 상승 참여는 혼조였습니다.", "kind": "fact",
+            "evidence": [{"source_id": "source-1", "quote": bundle()["documents"][0]["content"]}]}}]})
     store.commit(response(req, patch))
     final = store.prepare()["request"]
     assert final["request_id"].endswith("-final_review")
+    final_data = json.loads(final["prompt"].split("BRIEF DATA JSON:\n")[1])
+    assert "market_context" in final_data["main_post_item_ids"]
     store.commit(response(final))
     with store.db.transaction() as conn:
         row = conn.execute("SELECT * FROM brief_editions WHERE id=%s", (edition.id,)).fetchone()
     assert not row["quality"]["reduced"] and row["quality"]["revision_used"]
+    assert row["proposal"]["issues"][0]["context"][0]["id"] == "market_context"
+    assert patch.context_additions[0].claim.text in row["rendered"][0]
     offline = evaluate_briefing.assess(bundle(), response(req, patch), response(final),
         previous=response({"request_id": "write"}, p), correction_review=response({"request_id": "review"}, critique))
     assert offline["passed"] and offline["correction"]["mode"] == "editorial_patch"
+
+
+def test_editorial_story_context_is_anchored_bounded_and_has_its_own_numeric_proof():
+    p, b = proposal(), bundle()
+    original = p.model_dump()
+    content = "HBM 투자 계획은 250억달러이며 새 공장은 2027년 가동할 예정입니다."
+    b["documents"].append({**b["documents"][0], "id": "source-2", "content": content})
+    change = {"issue_fact_id": "fact", "claim": {"id": "capex_context", "text": content, "kind": "fact",
+                                                "evidence": [{"source_id": "source-2", "quote": content}]}}
+    patch = EditorialPatch.model_validate({"context_additions": [change]})
+    result = apply_editorial_patch(p, patch, {"fact": ["source-1", "source-2"]})
+    assert p.model_dump() == original
+    assert result.issues[0].fact == p.issues[0].fact and result.observations == p.observations
+    assert validate(result, b) == {}
+    assert "capex_context" in main_post_item_ids(result, b)
+    assert render(result, b)[0][0].index(content) < render(result, b)[0][0].index("다음 확인")
+    with pytest.raises(ValueError, match="editorial_context_scope_rejected"):
+        apply_editorial_patch(p, patch, {"fact": ["source-1"]})
+    for anchor, identity in [("condition", "new_context"), ("fact", "summary")]:
+        bad = deepcopy(change)
+        bad["issue_fact_id"], bad["claim"]["id"] = anchor, identity
+        with pytest.raises(ValueError, match="editorial_context_scope_rejected"):
+            apply_editorial_patch(p, EditorialPatch.model_validate({"context_additions": [bad]}),
+                                  {anchor: ["source-2"]})
+    bad = deepcopy(change)
+    bad["claim"]["text"] = content.replace("250", "260")
+    rejected = apply_editorial_patch(p, EditorialPatch.model_validate({"context_additions": [bad]}),
+                                    {"fact": ["source-2"]})
+    errors = validate(rejected, b)
+    assert errors["capex_context"] == "unsupported_prose_number"
+    assert prune(rejected, errors).model_dump() == original
+    duplicate = deepcopy(change)
+    duplicate["claim"]["id"] = "second_context"
+    third = deepcopy(change)
+    third["claim"]["id"] = "third_context"
+    with pytest.raises(ValueError):
+        apply_editorial_patch(p, EditorialPatch.model_validate({"context_additions": [change, duplicate, third]}),
+                              {"fact": ["source-2"]})
 
 
 def test_uncertain_revision_is_not_replaced_with_another_model_call(brief):  # noqa: F811

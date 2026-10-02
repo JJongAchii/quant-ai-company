@@ -35,7 +35,7 @@ from .quotations import (
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 49
+VALIDATION_VERSION = 50
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Before composing, check each original for facts that change the market read, exposure or next decision.
@@ -105,6 +105,14 @@ after'. A later reported yield or probability is not an immediate reaction or th
 
 EDITORIAL SELECTION AND DEPTH
 Read every supplied original, including its tail, for DISTINCT material developments, not just its headline.
+Before drafting, account for each original's decision-changing facts, scale/product mix, timing and offsets.
+For an earnings-led story compare operating segments and their share, capex/production timelines and
+competitor expansion when sourced and material to the shortage/margin horizon. For trade-led moves check
+the overall trade change and concentration, not only the strongest sector; for an investment compare the
+target's capability/geographic access with its cost. Preserve differences between firm plans and outcomes.
+Use up to four short context paragraphs across the brief, at most two per issue and300characters each,
+only for consequential supporting facts or interpretations that cannot fit coherently in its other prose.
+Place them in that issue; do not put policy/investment facts in market internals to fill available space.
 source_plan is a set of questions, not evidence. excerpt_truncated means unshown content was not checked.
 Rank information by newness, magnitude/persistence, affected markets and proximity of the next event.
 Compare previous briefs only to identify changes; they are not new evidence. Include consequential world
@@ -325,6 +333,15 @@ For signed net transactions retain the source's signed amount and explain its di
 a quoted negative amount with an unsigned magnitude absent from the quotes. Check merged evidence before editing.
 Read newly supplied originals for material quantities, comparison baselines, operative conditions and
 already observed mitigation. Address all critique gaps using originals, never the critique as evidence.
+The reason a supplement was requested is only a discovery question: read its COMPLETE body for every
+other conclusion-changing fact too. Include material product mix, capex/production timelines, competing
+supply and target capabilities; do not repair only the examples named by the first critic.
+When the old claim's character/quote limit prevents coherent coverage, use context_additions with a supplied
+allowed_context_issue_id as issue_fact_id and a new unique claim ID. Add at most four300-character paragraphs
+across the brief, two per issue, with exact own evidence from allowed_source_ids. Preserve existing context.
+Keep each addition beside the relevant issue, not in unrelated overview/internals. Do not duplicate existing
+prose or imply planned new supply is already operational or certainly surplus. The independent review still
+checks the complete resulting main post and every original, including facts not flagged by the first critic.
 Do not invent unavailable prior values, economic drivers or release times to satisfy a requested comparison.
 Keep flow/sector/market direction before methodological caveats. An attributed range can concisely show
 conflicting reported amounts. Keep material uncertainty, but remove repeated 'provided data', missing
@@ -352,7 +369,8 @@ def prompt(bundle, phase, proposal=None):
                     "interpretation_id": i["interpretation"]["id"],
                     "mechanism": i["analysis"]["mechanism"]["text"],
                     "alternative": i["analysis"]["alternative"]["text"],
-                    "next_check": i["next_check"]["text"]} for i in previous["issues"]]}}}
+                    "next_check": i["next_check"]["text"],
+                    "context": [c["text"] for c in i.get("context", [])]} for i in previous["issues"]]}}}
     if phase == "review" and proposal:
         draft = BriefProposal.model_validate(proposal)
         parts = [render(draft, bundle)[0][0]]
@@ -503,13 +521,13 @@ def revision_bundle(bundle, proposal, review, rejected):
             and all(value for key, value in review.checks.items()
                     if key not in {"materiality", "counterevidence", "coverage", "depth"})):
         for issue in draft.issues:
-            claims = [issue.fact, issue.interpretation, issue.next_check,
+            claims = [issue.fact, issue.interpretation, issue.next_check, *issue.context,
                       issue.analysis.mechanism, issue.analysis.alternative]
             if issue.counterpoint:
                 claims.append(issue.counterpoint)
             related = {e.source_id for c in claims for e in c.evidence} & missing_sources
             if related:
-                for claim in [issue.fact, issue.interpretation, issue.counterpoint]:
+                for claim in [issue.fact, issue.interpretation, issue.counterpoint, *issue.context]:
                     if claim:
                         allowed_sources[claim.id] = sorted(related)
         for claim in [*draft.overview, *draft.internals]:
@@ -525,7 +543,7 @@ def revision_bundle(bundle, proposal, review, rejected):
     if editorial_patch:
         fields = [*draft.overview, *draft.internals]
         for issue in draft.issues:
-            fields.extend([issue.fact, issue.interpretation])
+            fields.extend([issue.fact, issue.interpretation, *issue.context])
             if issue.counterpoint:
                 fields.append(issue.counterpoint)
         sources = sorted(d["id"] for d in bundle["documents"])
@@ -537,6 +555,8 @@ def revision_bundle(bundle, proposal, review, rejected):
         "repair_mode": "conditions_only" if conditions_only else "editorial_patch" if editorial_patch else "material_append" if allowed_sources else "full_proposal",
         "allowed_ids": sorted(rejected) if conditions_only else sorted(allowed_sources),
         "allowed_sources": allowed_sources,
+        "allowed_context_issue_ids": [issue.fact.id for issue in draft.issues
+                                      if editorial_patch and issue.fact.id in allowed_sources],
         "protected_claims": [items[identity].model_dump(mode="json") for identity in sorted(allowed_sources)],
         "protected_material_facts": [[a.source_id, [[f.fact, f.main_item_ids] for f in a.material_facts
             if set(f.main_item_ids) & set(allowed_sources) & retained]] for a in review.source_assessments
@@ -613,7 +633,17 @@ def apply_editorial_patch(proposal, patch, allowed_sources):
             return {key: replace(item) for key, item in value.items()}
         return [replace(item) for item in value] if isinstance(value, list) else value
 
-    return BriefProposal.model_validate(replace(proposal.model_dump(mode="json")))
+    value = replace(proposal.model_dump(mode="json"))
+    issues = {issue['fact']['id']: issue for issue in value['issues']}
+    new_ids = set()
+    for addition in patch.context_additions:
+        claim, anchor = addition.claim, addition.issue_fact_id
+        if (anchor not in issues or anchor not in allowed_sources or claim.id in items or claim.id in new_ids
+                or any(e.source_id not in allowed_sources[anchor] for e in claim.evidence)):
+            raise ValueError("editorial_context_scope_rejected")
+        new_ids.add(claim.id)
+        issues[anchor]['context'].append(claim.model_dump(mode='json'))
+    return BriefProposal.model_validate(value)
 
 
 def artifact(response, schema, bundle=None):
@@ -841,6 +871,7 @@ def prune(proposal, rejected):
     value["issues"] = [i for i in value["issues"] if not any(part["id"] in rejected for part in
         (i["fact"], i["interpretation"], i["next_check"], i["analysis"]["mechanism"], i["analysis"]["alternative"]))]
     for issue in value["issues"]:
+        issue['context'] = [c for c in issue['context'] if c['id'] not in rejected]
         if issue.get("counterpoint") and issue["counterpoint"]["id"] in rejected:
             issue["counterpoint"] = None
     return BriefProposal.model_validate(value)
@@ -851,7 +882,7 @@ def main_post_item_ids(proposal, bundle):
     visible = [*proposal.summary, *proposal.overview, *proposal.observations, *proposal.internals]
     for issue in proposal.issues:
         visible.extend([issue.fact, issue.interpretation, issue.analysis.mechanism,
-                        issue.analysis.alternative, issue.next_check])
+                        issue.analysis.alternative, issue.next_check, *issue.context])
         if issue.counterpoint:
             visible.append(issue.counterpoint)
     watches = proposal.watchpoints or [issue.next_check for issue in proposal.issues][:3]
@@ -1010,6 +1041,8 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
             basis = {"reported_explanation": "보도 해석", "conditional_hypothesis": "해석·가설",
                      "unresolved": "원인 판단 유보"}[issue.analysis.causal_basis]
             add("*"+escape(issue.headline, quote=False)+"*\n"+supported(issue.fact, issue.fact.text)
+                +"".join("\n"+('해석 · ' if claim.kind == 'interpretation' else '')
+                         +supported(claim, claim.text) for claim in issue.context)
                 +"\n"+basis+" · "+supported(issue.interpretation, issue.interpretation.text)
                 +" "+supported(issue.analysis.mechanism, issue.analysis.mechanism.text)
                 +" "+supported(issue.analysis.alternative, issue.analysis.alternative.text)+"\n")

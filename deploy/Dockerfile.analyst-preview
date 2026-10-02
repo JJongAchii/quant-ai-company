@@ -7,7 +7,7 @@ USER root
 WORKDIR /opt/company
 COPY pyproject.toml uv.lock ./
 COPY src ./src
-RUN UV_COMPILE_BYTECODE=0 uv sync --frozen --no-dev --no-editable --extra lake
+RUN UV_COMPILE_BYTECODE=0 uv sync --frozen --no-dev --no-editable --extra lake --reinstall-package quant-company
 USER 10001:10001
 ENV COMPANY_CODE_COMMIT=$RELEASE_COMMIT
 LABEL org.opencontainers.image.revision=$RELEASE_COMMIT

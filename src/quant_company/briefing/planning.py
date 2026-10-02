@@ -16,6 +16,9 @@ world events, Korea/global transmission and next checkpoints. Rank selections by
 Select at most 16 unique supplied IDs, including every required_source_id, within source_char_budget.
 source_chars is the size the writer will receive; the excerpts here are only a discovery aid, not full
 originals. Never invent facts or assume a missing fact does not exist in the unshown text.
+For material earnings/investment stories prefer full operating results, guidance and capability/financing
+originals over several brief commentaries on the same headline. Check Asian session/holiday developments
+when they change regional participation or which markets can confirm the next move; no geographic quota.
 discovery_spans are [start,end,exact_text] slices of the unchanged original, normally its lead,
 an opposing/conditional passage and its last substantive paragraph. They are not a complete read.
 Use these passages to discover limiting conditions, second actors and exceptions beyond the headline.

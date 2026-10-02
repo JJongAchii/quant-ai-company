@@ -93,8 +93,25 @@ class ClaimEdit(StrictModel):
     evidence: list[Evidence] = Field(default_factory=list, max_length=3)
 
 
+class StoryContext(Claim):
+    text: str = Field(min_length=1, max_length=300)
+    kind: Literal["fact", "interpretation"] = "fact"
+
+
+class StoryContextAddition(StrictModel):
+    issue_fact_id: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,39}$")
+    claim: StoryContext
+
+
 class EditorialPatch(StrictModel):
-    edits: list[ClaimEdit] = Field(min_length=1, max_length=12)
+    edits: list[ClaimEdit] = Field(default_factory=list, max_length=12)
+    context_additions: list[StoryContextAddition] = Field(default_factory=list, max_length=4)
+
+    @model_validator(mode="after")
+    def nonempty(self):
+        if not self.edits and not self.context_additions:
+            raise ValueError("editorial_patch_requires_change")
+        return self
 
 
 class MarketObservation(Supported):
@@ -158,6 +175,7 @@ class Issue(StrictModel):
     next_check: Claim
     analysis: AnalystAnalysis
     counterpoint: Claim | None = None
+    context: list[StoryContext] = Field(default_factory=list, max_length=2)
 
 
 class WatchResult(Supported):
@@ -176,6 +194,12 @@ class BriefProposal(StrictModel):
     watch_results: list[WatchResult] = Field(max_length=3)
     calendar: list[CalendarEvent] = Field(max_length=6)
     limitations: list[str] = Field(default_factory=list, max_length=8)
+
+    @model_validator(mode="after")
+    def bounded_story_context(self):
+        if sum(len(issue.context) for issue in self.issues) > 4:
+            raise ValueError("brief_story_context_limit")
+        return self
 
 
 REVIEW_CHECKS = {"numbers", "sources", "timing", "causality", "materiality", "counterevidence",
@@ -271,7 +295,7 @@ def item_map(proposal):
              *proposal.watchpoints, *proposal.watch_results, *proposal.calendar]
     for issue in proposal.issues:
         items.extend([issue.fact, issue.interpretation, issue.next_check,
-                      issue.analysis.mechanism, issue.analysis.alternative])
+                      issue.analysis.mechanism, issue.analysis.alternative, *issue.context])
         if issue.counterpoint:
             items.append(issue.counterpoint)
     if len({item.id for item in items}) != len(items):
