@@ -325,6 +325,68 @@ def test_large_prior_task_history_remains_readable_on_existing_program_stage(pro
     assert next_context["file_progress"][path]["next_offset"] is None
 
 
+def test_private_read_narration_corrects_once_without_losing_attempt_reads(program):
+    h = program
+    with h.company.db.transaction() as conn:
+        conn.execute("UPDATE sources SET content=%s WHERE id='fixture:baseline'", ("x" * 25000,))
+    assert ProgramController(h.company).tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+        conn.execute("UPDATE research_mission_stages SET stage='program_data' WHERE id=%s", (stage["id"],))
+        first = str(conn.execute("SELECT id FROM turns WHERE task_id=%s", (stage["task_id"],)).fetchone()["id"])
+        outbox_before = conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"]
+    path = stage["context"]["evidence_sources"][0]["file"]
+
+    def read(turn_id, offset, say=""):
+        return ProviderResponse(request_id=turn_id, provider="fixture", decision=AgentDecision(
+            say=say, status="continue", tools=[{"name": "research_control", "arguments": {
+                "action": "read_stage_file", "path": path, "offset": offset}}]))
+
+    def queued():
+        with h.company.db.transaction() as conn:
+            return str(conn.execute("SELECT id FROM turns WHERE task_id=%s AND status='queued'",
+                                    (stage["task_id"],)).fetchone()["id"])
+
+    h.company.prepare_turn(first)
+    h.company.commit_turn(first, read(first, 0))
+    second = queued()
+    h.company.prepare_turn(second)
+    rejected = read(second, 12000, "원문을 이어서 읽겠습니다.")
+    assert h.company.commit_turn(second, rejected)["private_output_rejected"]
+    with h.company.db.transaction() as conn:
+        current = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+        assert current["attempt"] == 1 and current["state"] == "running"
+        assert conn.execute("SELECT response FROM turns WHERE id=%s", (second,)).fetchone()["response"] == rejected.model_dump(mode="json")
+        assert conn.execute("SELECT count(*) AS n FROM research_stage_reads WHERE stage_id=%s", (stage["id"],)).fetchone()["n"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == outbox_before
+    third = queued()
+    prompt = h.company.prepare_turn(third)["request"]["prompt"]
+    assert 'set say=\\"\\"' in prompt and '"next_offset": 12000' in prompt
+    h.company.commit_turn(third, read(third, 12000))
+    fourth = queued()
+    h.company.prepare_turn(fourth)
+    with pytest.raises(PolicyError, match="private typed artifact"):
+        h.company.commit_turn(fourth, read(fourth, 24000, "원문을 이어서 읽겠습니다."))
+    with h.company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM research_stage_reads WHERE stage_id=%s", (stage["id"],)).fetchone()["n"] == 2
+
+
+def test_private_narration_correction_does_not_accept_message_effect(program):
+    h = program
+    assert ProgramController(h.company).tick()["state"] == "running"
+    with h.company.db.transaction() as conn:
+        stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
+        turn_id = str(conn.execute("SELECT id FROM turns WHERE task_id=%s", (stage["task_id"],)).fetchone()["id"])
+    h.company.prepare_turn(turn_id)
+    with pytest.raises(PolicyError, match="private typed artifact"):
+        h.company.commit_turn(turn_id, ProviderResponse(request_id=turn_id, provider="fixture", decision=AgentDecision(
+            say="안내", status="continue", messages=[{"agent": "director", "text": "게시 요청"}])))
+    with h.company.db.transaction() as conn:
+        context = conn.execute("SELECT context FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()["context"]
+        assert "_private_output_hint_attempt" not in context
+        assert conn.execute("SELECT count(*) AS n FROM turns WHERE task_id=%s", (stage["task_id"],)).fetchone()["n"] == 1
+
+
 def test_invalid_program_proposal_corrects_without_rereading_source(program):
     h = program
     controller = ProgramController(h.company)

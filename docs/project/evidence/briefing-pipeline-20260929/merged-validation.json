@@ -1,0 +1,35 @@
+{
+  "recorded_at": "2026-09-29T02:04:48.541825+00:00",
+  "commit": "f238f21abd3c518857b2adfe862f9e7b12a32210",
+  "main_parent": "8df81cb72cd523868c2fb91d5b5dd5baa4ab6a94",
+  "suite": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "38",
+    "tests": "1401",
+    "time": "393.760",
+    "timestamp": "2026-09-29T10:57:44.086354+09:00",
+    "hostname": "MacBook-Pro.local"
+  },
+  "passed": 1363,
+  "raw_xml_sha256": "ce8fe64a49844a4399bebd22dc489d7a834851e6f01dbaeec94066ff531a89ba",
+  "raw_xml_location": ".local/briefing-pipeline-raw-evidence/merged-regression.xml",
+  "skip_reasons": {
+    "Set CODEX_CONFIG_PROBE=1 for the local CLI probe": 2,
+    "Hard PDF memory qualification requires Linux RLIMIT_AS": 1,
+    "Requires explicit operator runtime profile on the registered Linux 3070": 1,
+    "Real pinned qlab checkout required: QUANT_TEST_QLAB_ROOT": 31,
+    "Opt-in real 3070, committed ETF checkout and prepared science runtime required": 1,
+    "Requires explicit operator-reviewed runtime profile on the 3070; no Mac fallback": 1,
+    "Opt-in real Codex subscription test": 1
+  },
+  "lint": "uv run ruff check .: passed",
+  "lock": "uv lock --check: passed (93 packages)",
+  "diff": "git diff --check and staged check: passed",
+  "integration_scope": "Real local PostgreSQL and Temporal. Slack/model fixtures in regression; actual subscription calls have separate receipts. No live Slack delivery or deployment.",
+  "merge_conflicts": [
+    "cli.py preserves Reporter entity_details_requested and Analyst identity",
+    "test_housing_feed.py preserves clock relative to current date instead of an expired fixed date"
+  ]
+}

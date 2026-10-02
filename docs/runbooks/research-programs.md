@@ -10,6 +10,8 @@
 - `program_catalog`: 실제 등록 프로필과 `ResearchProgram` JSON schema를 조회한다.
 - `program_draft` + `spec`: 전체 명세를 고정하고 기존 Slack 승인 버튼을 게시한다.
 - `program_status`: 과제, 검증 상태, 누적 실험과 계산시간 예약/정산을 조회한다.
+- `program_lineage_history` + `scientific_lineage_id`, `originating_task_refs`: 같은 프로젝트의 실제
+  과제·결과·실패 이력과 새 서명에 쓸 `history_digest`를 조회한다. 조회로 권한이 생기지 않는다.
 
 모델은 승인 동작을 호출할 수 없다. 승인 버튼은 사용자·채널·스레드·버전·digest에
 묶인다. 취소는 자식 과제의 새 실행을 멈추고 진행 중 작업의 취소/대사를 요청한다.
@@ -52,6 +54,44 @@
 한다. 다른 추정량의 논문을 이 evaluator에 넣어 원문 재현이라고 부르지 않는다.
 
 ## 활성화와 인수
+
+### 조건부 사후 연구 계약 v2
+
+구현과 검증 상태는 [조건부 연구 구현 기록](../project/CONDITIONAL-RESEARCH-IMPLEMENTATION-20261001.md)에
+남긴다. 이 경로를 운영에 반영하려면 별도 릴리스 인수와 새 프로그램 서명이 필요하다.
+
+- `ResearchProgram.schema_version=2`의 각 envelope는 `MissionSpec.schema_version=3`을 갖는다.
+  정책 전체 `data_policy`와 누적 예산 권한 전체 `scientific_lineage`는 envelope의 template에
+  포함되어 서명된다. 중복 선언 대신 서비스가 이 값에서 canonical `research_scope`를 계산한다.
+- `data_policy.mode=frozen_vintage_retrospective`,
+  `result_scope=conditional_retrospective_development`는 **가정된 공개 시각과 고정 수정본에 대한
+  개발 연구**다. 과제 모드는 `novel_hypothesis`만 허용한다.
+- 새 프로필 public schema v2는 `data_policy_digest`와 `result_scope`를 고정한다.
+  `domestic_profile --data-policy PATH --policy-evidence-root DIR`는 이미 준비된 bundle을 재사용하고
+  보호된 엔진·통계 파일 바이트를 다시 대조한다. 새 ID는 ETF `kr-etf-retrospective-v1`이다.
+  실제 입력에는 별도 숫자 품질 `ready` 영수증도 필요하다. `review_draft_not_ready`는 거절하며,
+  준비 영수증은 `qualified=false`, `activated=false`를 유지한다.
+- evidence packet v2는 `research_scope`와 typed `gaps`를 갖는다. gap마다 검증 보고서와 정확한
+  입력 SHA가 필요하다. 승인 가능한 한계는 과거 공개 시점 미증명, 과거 수정 빈티지 미증명,
+  원래 준비 바이트 미복구의 세 코드뿐이다. 기존 `blocking_gaps` 및 나머지·미분류 공백은 차단한다.
+- 독립 data 직원의 `DataAssessment` v2 `conditional_ready`는 `packet_digest`를 고정하고,
+  coverage·이론적 평가 가격 계약 검증을 참으로 요구한다. PIT·원래 조건·실제 체결 가능성은
+  거짓으로 유지한다. director의 동의나 품질 파일만으로 이 판정을 대체할 수 없다.
+- 계획·성과/실패·해석·감사·보고는 record v2의 같은 `research_scope`를 필수로 갖는다.
+  보호된 producer의 원본 JSON v1은 그대로 보존하고, 신뢰된 worker가 외부 record v2에 scope와
+  `producer_sha256`를 붙인다. archive consumer는 두 표현의 내용·SHA·warmup 날짜를 재대조한다.
+- 동일 후보의 기존 task ref는 실제 `{program_id,task_id,task_digest}`로 연결한다.
+  이미 연결된 이력을 생략하거나 다른 lineage로 옮길 수 없다. program 예약과 누적 lineage
+  한도는 같은 PostgreSQL 트랜잭션에서 검사한다. 미확인 예약은 계속 차감하고 동일 trial을
+  새 job으로 중복 예약하지 않는다. 정산된 terminal 기술 실패의 과학 slot은 해제하되 기록과
+  계산시간은 남긴다. 새 program/title/input SHA로 기존 결과를 초기화하지 않는다.
+- supported·incumbent는 이 조건부 대상에만 적용된다. 출처·library·후속 과제에서도 범위를
+  보존한다. 과거 실제 alpha·정확 재현·현금 분배금 재투자 총수익·실제 체결·배치 준비·2026
+  미노출 확인을 입증하는 자료로 승격할 수 없다.
+
+이번 검토안의 4회는 상위 cap이다. `max_trials_per_cycle=2`, `continuous=false`이므로 첫 미션은
+첫 회차 최대 2과학 result에서 종료한다. 실제 연구에는 새 canonical 프로그램에 대한 인증된
+소유자 서명이 필요하며, 합성 자격검사로 연구 승인이나 운영 직원의 데이터 판정이 생기지 않는다.
 
 ### 승인된 데이터 증거 패킷
 

@@ -1,0 +1,8 @@
+{
+  "scope": "Actual local PostgreSQL and Temporal; provider/data fixtures, Slack not connected; no cloud deployment",
+  "command": ".venv/bin/pytest -q tests/test_briefing_temporal.py --tb=short --junitxml=docs/project/evidence/briefing-analyst-integration-20260930/temporal.xml",
+  "passed": 5,
+  "failed": 0,
+  "elapsed_seconds": 40.16,
+  "new_case": "Standalone brief_data_worker_main collects into PostgreSQL on its own Temporal queue, replay succeeds, generic/research workers are not started"
+}

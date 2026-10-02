@@ -1,0 +1,17 @@
+{
+  "observed_at": "2026-09-30T06:49:24.846393+00:00",
+  "stage": {
+    "stage": "program_data",
+    "state": "waiting",
+    "attempt": 1,
+    "task_id": "fc13b603-ad76-5644-9fa8-800323883726",
+    "error": "proposal_rejected:Research stage output must stay in its private typed artifact",
+    "updated_at": "2026-09-30T06:46:19.013461+00:00"
+  },
+  "candidate": {
+    "id": "b5ce3cb7-d71b-5720-9f2d-72c9b1df7d18",
+    "state": "proposed",
+    "title": "고정 ETF 069500의 GMM 노출조절: 데이터 차단 해소 후 조건부 개발검증"
+  },
+  "mission_count": 0
+}

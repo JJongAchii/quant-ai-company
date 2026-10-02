@@ -1,0 +1,135 @@
+{
+  "allowed_task_modes": [
+    "novel_hypothesis"
+  ],
+  "availability_survey": {
+    "path": "docs/project/evidence/etf-execution-contract-20260930/availability-survey.json",
+    "sha256": "a10ed59d63a934ef1bec39dc17042a891936b3ca9c6eab72230af42c3adbc924"
+  },
+  "current_bytes_observed_end_utc": "2026-09-30T10:42:51.575178+00:00",
+  "current_bytes_observed_start_utc": "2026-09-30T10:42:26.083479+00:00",
+  "development": {
+    "end": "2025-12-30",
+    "rows": 7310,
+    "sessions": 731,
+    "start": "2023-01-02"
+  },
+  "evaluation_inputs": [
+    "development.json",
+    "warmup.json"
+  ],
+  "excluded_claims": [
+    "historically_tradable_alpha",
+    "verified_historical_point_in_time",
+    "exact_original_replication",
+    "cash_distribution_reinvested_total_return",
+    "live_fill_feasibility",
+    "paper_or_live_deployment_readiness",
+    "untouched_2026_confirmation"
+  ],
+  "execution_price_contract": {
+    "adjusted_open": "open * adj_close / close",
+    "base_cost_bps": 10,
+    "cost": "(1 - turnover * bps / 10000) * gross_return_factor - 1",
+    "events": "missing held prices or nontradable current/next rows abort; no event settlement adapter",
+    "history_scale": "per ticker rebased to its last visible raw close",
+    "initial_observation": "2023-01-02 zero; elapsed-calendar-day CAGR",
+    "return": "next observed session adjusted_open / current adjusted_open - 1",
+    "signal_cutoff": "trade_day_09:00_KST; history date < trade day and available_at < cutoff",
+    "stress_cost_bps": 30,
+    "terminal_liquidation_cost": "not charged by the frozen engine; no extra liquidation claim",
+    "terminal_session": "2025-12-30 supplies the last valuation open; no signal on that session",
+    "turnover": "sum(abs(proposed_weight - pretrade_weight)) including sells",
+    "weights": "long-only; gross <= 1; residual cash return zero"
+  },
+  "historical_availability_assumption": "trade_day_T23:59:00+09:00",
+  "historical_point_in_time_verified": false,
+  "historical_revision_history": null,
+  "id": "kr-etf-frozen-vintage-retrospective-v1",
+  "input_files": {
+    "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+    "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+  },
+  "lineage_receipt": {
+    "path": "docs/project/evidence/etf-raw-lineage-20260930/raw-lineage-receipt.json",
+    "sha256": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a"
+  },
+  "official_source_review": {
+    "path": "docs/project/evidence/etf-execution-contract-20260930/official-source-review.json",
+    "sha256": "c14d6e0eb60aa39de78ac7921c172e6a5809abc1e6c780afb10ada3fe33cab36"
+  },
+  "permitted_claim": "Conditional behavior on these frozen bytes under the stated assumptions only.",
+  "proposed_mode": "frozen_vintage_retrospective",
+  "protected_engine_sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+  "qualification_inputs": [
+    "warmup.json"
+  ],
+  "raw_manifest": {
+    "objects": 835,
+    "path": "docs/project/evidence/etf-raw-lineage-20260930/raw-body-manifest.json",
+    "sha256": "d1d0b0f87230f075582324ac3882fe5ee041bb3d0d978fda4707f58aa634ff31"
+  },
+  "required_future_admission_checks": [
+    "Signed new program binds the typed policy, exact inputs, mode, profile and economic contract.",
+    "Independent data assessment records PIT unverified and conditional admission as distinct facts.",
+    "Only historical publication/revision absence and old-preparation identity are explicit scope limits.",
+    "All other numerical, coverage, provenance, price-estimand and causal-code gaps remain hard blockers.",
+    "No existing blocked packet, PIT flag or signed program is rewritten to ready.",
+    "Independent director accepts a sourced falsifiable question; duplicate candidates share trial history.",
+    "Qualified producer-consumer run checks hashes, prefix causality, costs and result scope without sealed data.",
+    "Every result, audit, report and adoption decision retains the conditional result scope."
+  ],
+  "required_result_scope": "conditional_retrospective_development",
+  "s3_last_modified_role": "mirror_object_upload_metadata_not_source_publication_time",
+  "schema_version": 1,
+  "sealed": [
+    {
+      "end": "2026-09-23",
+      "start": "2026-01-02"
+    }
+  ],
+  "sealed_status": "price rows not read by this work; earlier P11 aggregate results known to staff",
+  "source_publication_time": null,
+  "transform": {
+    "bounded_clean_files": {
+      "krx_etf": "16392c97dec1a205722a8e6e6a8e02a6c83847894604c5ab67f5960913289f2e",
+      "krx_etf_meta": "065703b7d1bb32014229806e4b8639dcd3b17a1bc1209be0f4f751ef483b728d"
+    },
+    "builder_sha256": "38b72a68fb8e20e3583b5fc70b82768548e99fea7ead2622ee8b0e5ecfad9833",
+    "generator_sha256": "976b105b9c8cc245ce9c1e91b04915322548faddac41b2b40852d44baf51dc7b",
+    "numeric_normalizer_sha256": "cf2373bb82574e6c4524e786285991a52bff5aa2dfc7866d1a7430fb3791c254",
+    "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "verified_package_files": 47
+  },
+  "universe_contract": {
+    "metadata_availability": "frozen historical classification; publication/revision vintage unverified",
+    "reselection_during_development": false,
+    "selected_tickers": [
+      "069500",
+      "229200",
+      "153130",
+      "214980",
+      "196230",
+      "157450",
+      "371460",
+      "102110",
+      "357870",
+      "305720"
+    ],
+    "selection_basis": "mean raw trading value; complete valid rows; nonleveraged noninverse metadata",
+    "selection_cutoff": "2022-12-29",
+    "selection_prefix_after_cutoff_objects": 0,
+    "selection_sessions": 20
+  },
+  "unverified_assumptions": [
+    "Historical values were available by the synthetic trade-day 23:59 KST cutoff.",
+    "Later revisions to FLUC_RT, raw prices, liquidity and ETF classifications are immaterial.",
+    "Observed daily opens and the reference-adjusted series represent the stated theoretical estimand."
+  ],
+  "warmup": {
+    "end": "2022-12-29",
+    "rows": 1040,
+    "sessions": 104,
+    "start": "2022-08-01"
+  }
+}

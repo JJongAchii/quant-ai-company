@@ -1,0 +1,84 @@
+{
+  "closed_at": "2026-10-01T06:33:11.074729+00:00",
+  "case": "heldout-pm-20260921-v41",
+  "frozen_validation_version": 41,
+  "status": "failed_unqualified",
+  "passed": false,
+  "failure_causes": [
+    "False mechanical rejection of own exact 0.5% lower source",
+    "Independent visible-main audit found warning-as-observation wording and material operative-term omissions",
+    "Actual reviewer artifact violates FactAssessment.quote hard maximum; no valid semantic review and no accepted grade"
+  ],
+  "mechanical_rejected": {
+    "vw_fact": "unsupported_prose_number"
+  },
+  "review_schema_error": [
+    {
+      "source_id": "caf8c64c1b18cb19dd9ea8dee0095bfc27bc31bc",
+      "fact": "미국 재무부의 신약 거래 허용 초안은 병원체나 무기화 가능한 바이오 기술을 제외하며 아직 확정되지 않았다.",
+      "quote_chars": 419,
+      "hard_max": 400
+    }
+  ],
+  "raw_reviewer_diagnostic_only": {
+    "verdict": "reduce",
+    "self_reported_checks": {
+      "numbers": true,
+      "sources": true,
+      "timing": true,
+      "causality": true,
+      "materiality": false,
+      "counterevidence": false,
+      "transmission": true,
+      "alternatives": true,
+      "falsifiability": true,
+      "coverage": false,
+      "depth": false,
+      "readability": true
+    },
+    "source_requests": [
+      {
+        "source_id": "d96f07834ae4579f6b42e36ac42b8bc9731d2d64",
+        "reason": "제목이 예고한 데이터센터 투자액은 신규 자금인가, 기존 계획인가? 자본 부담 평가가 AI 수주 확산 서사의 중요한 반대 근거인지 원문 확인이 필요하다."
+      },
+      {
+        "source_id": "ab930cb9f78cb640e99b4ca5b30a8597f8774e2e",
+        "reason": "미중 정상회담 의제가 현대차·기아의 미국 생산·경쟁 조건을 바꿀 구체적 제안이나 요구를 포함하는지 확인해야 한다. 제목만으로 정책 변화를 단정하지 않는다."
+      },
+      {
+        "source_id": "4fe7155e232674dc793cf873c2e2ab7b20ac53e4",
+        "reason": "이란 대통령의 유엔 방문에 확인된 접촉 일정이나 조건이 있는지, 미국의 경고와 어떤 충돌이 있는지 확인해 원유·외교의 다음 판단 지점을 보완한다."
+      },
+      {
+        "source_id": "d213e688871accad7132307883325fa84b9cc163",
+        "reason": "삼성바이오 사후조정의 일정과 양측 입장, 생산 영향의 확인 여부를 읽어 국내 바이오 위험과 다음 날 확인 일정에 넣을 사안인지 판단한다."
+      }
+    ],
+    "accepted_grade": null
+  },
+  "completed_actual_model_calls": 3,
+  "call_limit": 5,
+  "busy_unexecuted_attempts": 1,
+  "repair_calls": 0,
+  "budget_unused": 2,
+  "closure_reason": "Frozen41 has a confirmed implementation/parser defect and invalid typed review. Preserve failure; implement prospective repair and evaluate another previously unwritten edition rather than altering this case or requesting further same-case calls.",
+  "request_ids": {
+    "plan": "news-brief-eval-e5379c85ac95da0c76503517502988bf",
+    "write": "news-brief-eval-bc5b2028943b9a9a88c20ec0a8316830",
+    "review": "news-brief-eval-8ba147d046153784ef78a80c58e759f8"
+  },
+  "receipt_hashes": {
+    "plan-receipt.json": "e176aceb356eb07b901353cea87bdf5fb7fa074d53ac01466645b5fba05686c8",
+    "writer-receipt-attempt2.json": "e1b59afcab03350a92a14da9d92c74baf7f80d32a98082fc0bf2e6ad4956d897",
+    "review-receipt.json": "c699f1981df312cd29aed9579bb6438b901610c43d7857dc6ff1f4cef3543844"
+  },
+  "source_manifest": "source-manifest.json",
+  "selected_complete_originals": 16,
+  "new_selected_originals": 8,
+  "prior_candidate_overlap_selected": 8,
+  "prospective_changes": "Committed60af285 validation42; numeric and warning/horizon instructions. Typed-review short-quote reliability remains to be assessed and fixed prospectively.",
+  "slack": "not_called",
+  "deployment": "not_performed",
+  "expert_certification": false,
+  "scheduled_five_day_acceptance": false
+}

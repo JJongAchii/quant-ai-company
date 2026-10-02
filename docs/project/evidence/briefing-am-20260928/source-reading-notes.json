@@ -1,0 +1,46 @@
+{
+  "case": "am-20260928-fresh-format9-validation10",
+  "written_before_model_response_at": "2026-09-28T07:45:49+00:00",
+  "selected_count": 16,
+  "selected_id_overlap_with_20260922_23_25_26_am": 0,
+  "edition_context": [
+    "Monday AM has no newly completed US regular session; do not label Friday's close as today's US close.",
+    "Korean market was closed for the holiday after 2026-09-23 and has not yet completed Monday trading. The edition has no locked market observations or historical lake snapshot; do not invent current KOSPI, KOSDAQ, dollar/won, flow or sector closes.",
+    "The main post must distinguish weekend policy/news developments from actual prices, prior-period background and forecasts."
+  ],
+  "material_checks": [
+    {
+      "source_ids": ["24aa686f207525bcdb913f6247c3eaf9165fb0b6", "7e05f7d340dfe4f3a375f2d628eeeff781c6c4c1"],
+      "topic": "bond_yield_and_policy_split",
+      "expect": "The reported October hike probability rose from 8.9% one month earlier to 64.2%; US 10-year yields touched about 5.22% on September 24, not a new Monday close. The cited September PMI was 58.4. Barr favored further adjustment; Hammack gave growth, debt and hike expectations as three possible yield drivers. Stocks may be resilient under growth-driven yields but vulnerable under inflation/tightening; historical analogies are not a forecast."
+    },
+    {
+      "source_ids": ["9d7df865e48cc4abb5fc3f53d7df8c6d6ec97c3a", "f72f5b80378fea799b32a2b4fc9065d16b8a0c3d", "f418653fd734a0a7ad1262bedc0ed60ddaa11596", "933da0069ebe4907fc024db3836353ee7cc29855", "bd2105f35e5c08dcb1b76b148327227bb5428c70"],
+      "topic": "iran_strait_negotiation_and_opposing_risk",
+      "expect": "Trump rejected Iran's conditional seven-day Hormuz reopening proposal but expected another round of talks this week; talks or oil transit claims are not a deal or verified unrestricted reopening. Iran awaits a formal response; its foreign minister keeps diplomacy open while warning of war, and Iran's president says a June MOU could be implemented in stages if US intentions change. The US wants nuclear concessions while Iran wants relief from maritime blockade; US officials dispute the proposal. Explain oil/shipping/inflation transmission and opposing military risk, with future talks or actual shipments as checks. The BBC source uniquely mentions possible UN nuclear-inspector access."
+    },
+    {
+      "source_ids": ["622f4a74bd1092e9343237c13390e1ca53fa9cc8"],
+      "topic": "korean_settlement_collateral",
+      "expect": "KSD plans to allow stocks and bonds instead of cash for settlement collateral from month-end; government bonds may receive up to 98% recognition, with daily value adjustment and margin calls. Next month expected incoming same-day shares may be recognized. The stated 50%+ reduction is KSD's estimate, not realized flow. Link to foreign institutions' KRW funding and liquidity without claiming a market rally."
+    },
+    {
+      "source_ids": ["a5515fb0ed52ddac583fd05b478ef875530320e9", "b3c48c0418e82b9c0202a2a0848fa0796fd1d257"],
+      "topic": "ai_business_and_policy",
+      "expect": "Meta Muse can reduce forgotten digital subscriptions, potentially changing recurring revenue rather than proving subscriber loss. CNBC cites about $157 average monthly subscription spending and a research mechanism of cancellation friction. A separate report says a planned Trump-Amodei dinner follows an appeals-court decision upholding the Pentagon's Anthropic blacklist; a reported dinner is not a policy reversal. Cover if material, or give a specific exclusion reason."
+    },
+    {
+      "source_ids": ["04b7af7effa70fd1cb57b30c74725b47084f3449", "f72f5b80378fea799b32a2b4fc9065d16b8a0c3d"],
+      "topic": "us_china_korea_wording",
+      "expect": "The White House summary of the latest US-China summit omitted the May formulation that denuclearization was a shared Korea goal while still saying North Korea was discussed. This is a change in published wording, not proof of a changed US policy or confirmed Trump-Kim talks. Include only if its Korea policy and market relevance is made concrete, otherwise explain exclusion."
+    }
+  ],
+  "source_specific_context": [
+    {"id": "e09e615b222049450980166cf9b0b3c88603f8c7", "expect": "KOSPI200 ETF year-to-date return of 80.76% was measured through September 20, before the holiday; it is past-period performance, not a fresh Monday close."},
+    {"id": "6ceba6098836e9245f6461534ff67f7e2feba2d6", "expect": "Bank of Korea staff data breach is a cyber and institutional issue, with no evidenced immediate macro-price channel; background or exclude with reason."},
+    {"id": "0a29d0b746f78fd37bdea746c0ed635bc1e9b562", "expect": "New Korean economic-policy meeting discussed EV policy and retirement pensions but announced no binding change; label as discussion, not enacted policy."},
+    {"id": "cd8ee43875f68e1245babea0ce685d2d2bdb9c3e", "expect": "Five arrests near a UK base; authorities had not publicly confirmed motive. Do not report an Iranian link as established; likely background to conflict risk."},
+    {"id": "4cd1ba7cf9a5eef33608b800c2c79532a50505eb", "expect": "Jeju duty-free declining sales are narrow local data, not a broad Korean market close; exclude or use as labeled background."}
+  ],
+  "independent_decision_rule": "Fail for a materially missing source-supported development, invented or stale market observation, unsupported cause, misleading proposal-versus-action status, or unavailable old/new baseline. Duplicates and narrow local items may be excluded with concrete reasons. A model publish verdict alone is insufficient."
+}

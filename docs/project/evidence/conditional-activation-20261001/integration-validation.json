@@ -1,0 +1,28 @@
+{
+  "actual_disposable_PostgreSQL_and_Temporal": true,
+  "all_27_previous_reviewed_source_and_test_file_hashes_preserved": true,
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 1,
+    "tests": 321
+  },
+  "elapsed_seconds": 84.623,
+  "junit_sha256": "6b67f062cf48fac42ef4d398b13b2eaf0d35869ea6b6011ad0f7c547494cedd3",
+  "market_performance_computed": false,
+  "passed": 320,
+  "real_Slack_or_model_calls": false,
+  "recorded_at": "2026-10-02T00:58:46.448527+00:00",
+  "ruff": "passed",
+  "schema_version": 1,
+  "skipped_tests": [
+    {
+      "reason": "Hard PDF memory qualification requires Linux RLIMIT_AS",
+      "test": "tests.test_quant_feed.test_real_pdf_subprocess_limits_and_pages"
+    }
+  ],
+  "source_CI": "pending_remote_run",
+  "source_commit": "19807db8d1817a3a495ac10eee34b1bac2d287fe",
+  "test_command": ".venv/bin/pytest -q conditional/program/policy/source-scope/exploration + Quant feed/Temporal/recovery/quality/Codex integration modules",
+  "worker_3070_new_input_qualification": "awaiting_connectivity"
+}

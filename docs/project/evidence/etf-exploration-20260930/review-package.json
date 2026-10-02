@@ -1,0 +1,57 @@
+{
+  "baseline_observed_at": "2026-09-30T22:50:50.764674+00:00",
+  "baseline_registry_sha256": "bdef77801a3b65f7588bf00a3916a1a67f7b7e59657db0f1587c8999842646a3",
+  "budget_basis": "old program zero used/reserved; cancel its authority before signing the replacement; abort cutover if usage or revision drifts",
+  "data_policy_digest": "f3c28a83c7e45c615505dd24e858c58aa7a559a99a896b2feaf773e6f3c1af1d",
+  "data_readiness_decision": "not_made",
+  "limits": {
+    "max_compute_seconds": 36000,
+    "max_missions": 6,
+    "max_parallel_missions": 1,
+    "max_total_trials": 24
+  },
+  "old_program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "old_program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+  "old_signature_reusable": false,
+  "packet_digest": "ae6b9c001bf8fc9ae74ea73a2ded32aa5a7b5ac94a184f6d7e0d1158ab7c9f80",
+  "packet_file_sha256": "02c9297a54d261a717f77d47c57a1ac6bdb5d063901df9d1ecf08103bc84106e",
+  "production_mutated": false,
+  "program_digest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "proposed_program_id": "a9854436-e65c-5b5d-a811-4bbccd74f542",
+  "reports": {
+    "exploration-assumptions-3b42f60976aa.json": {
+      "path": "/state/research/provisioned/data-evidence/exploration-assumptions-3b42f60976aa.json",
+      "sha256": "3b42f60976aa98127dc968c648b864e3e4108ab05076e64c0d919e50b12d36e1"
+    },
+    "history-proof-eba944f4686c.json": {
+      "path": "/state/research/provisioned/data-evidence/history-proof-eba944f4686c.json",
+      "sha256": "eba944f4686c8b5fe60f0f363118e81156f26d9dfcd0689811226671d6284667"
+    },
+    "input-check.json": {
+      "path": "/state/research/provisioned/data-evidence/input-check.json",
+      "sha256": "d968bb62677540c0c8b85ce3f7d7ac8c2930f1bfa4dd240804af1c25de82d07a"
+    },
+    "limitations.json": {
+      "path": "/state/research/provisioned/data-evidence/limitations.json",
+      "sha256": "c0b1635d630091443b191d1b90da8d4ee86452e19ac09650ab7d492469945fe2"
+    },
+    "provenance-recovery-c813a2e9c4e7.json": {
+      "path": "/state/research/provisioned/data-evidence/provenance-recovery-c813a2e9c4e7.json",
+      "sha256": "c813a2e9c4e7f6e39aeece7e325283451c71281eb2decb004883962a4718d170"
+    },
+    "qdata-readback.json": {
+      "path": "/state/research/provisioned/data-evidence/qdata-readback.json",
+      "sha256": "7b18376afed4ded3ec565df2530e27af915992e2abd9973f6f9f09f04aef1979"
+    },
+    "raw-lineage-f8a0595989be.json": {
+      "path": "/state/research/provisioned/data-evidence/raw-lineage-f8a0595989be.json",
+      "sha256": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a"
+    }
+  },
+  "revision": 5,
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "spec_file_sha256": "d8da112ab939dbaca20df26bc19bd5e06b144a27da2d96b2406bfb36245d51fd",
+  "state": "prepared_not_submitted_or_approved"
+}

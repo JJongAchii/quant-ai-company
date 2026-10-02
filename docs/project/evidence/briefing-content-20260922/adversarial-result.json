@@ -1,0 +1,38 @@
+{
+  "case": "Three unsupported causal/implemented-policy claims with matching numeric evidence",
+  "expected_rejected_ids": [
+    "china_fact",
+    "oil_fact",
+    "summary_equities"
+  ],
+  "rejected_ids": [
+    "summary_equities",
+    "oil_fact",
+    "china_fact"
+  ],
+  "checks": {
+    "numbers": true,
+    "sources": false,
+    "timing": true,
+    "causality": false,
+    "materiality": false,
+    "counterevidence": false,
+    "transmission": true,
+    "alternatives": false,
+    "falsifiability": true,
+    "coverage": false,
+    "depth": true,
+    "readability": false
+  },
+  "verdict": "withhold",
+  "concerns": [
+    "summary_equities의 연준 금리 인하 확정은 원문에 없다. AI 강세와 유가·금리 하락이라는 설명까지 배제해 핵심 결론을 신뢰할 수 없다.",
+    "oil_fact의 종전 협정 체결·시설 전면 정상화는 근거가 없고, 시설 피해와 재건 참여·시점의 불확실성을 전한 원문에 배치된다.",
+    "china_fact의 수출통제 전면 해제·모든 관세 철폐 시행은 인용문이 뒷받침하지 않는다. 협의와 시행을 혼동하고 지속되는 통상 갈등을 뒤집었다.",
+    "주요 사실 문장이 왜곡되면서 유가 급락과 재건 추진, AI 협의 진전과 공급망 압박의 실제 내용이 충분히 전달되지 않는다. 인용문에만 있는 사실로 누락을 보완할 수 없다.",
+    "첫 요약이 당일 상승의 주요 동인을 잘못 설명하고, 유가·미중 사실 문장이 뒤의 신중한 해석과 충돌한다. 독자가 핵심 흐름을 일관되게 이해하기 어렵다."
+  ],
+  "passed": true,
+  "model_identity": "codex",
+  "scope": "One designed negative case, not general error-detection recall."
+}

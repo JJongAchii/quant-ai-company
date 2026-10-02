@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-02T02:42:23.985167+00:00",
+  "source_commit": "4242f36ed5c16cec08814d76cc81608c6479fa5c",
+  "validation_version": 50,
+  "testsuite": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "283",
+    "time": "80.153",
+    "timestamp": "2026-10-02T10:45:29.082862+09:00",
+    "hostname": "MacBook-Pro.local"
+  },
+  "junit_sha256": "aa56068a6e9e221621e2421422a794223585ea4f2311515a31c6d7f8f43a60df",
+  "lint": "passed",
+  "PostgreSQL": "real",
+  "Temporal": "real local workflow/producer-consumer/replay; test model/Slack simulated",
+  "qualification": "technical, not expert content or cloud delivery"
+}

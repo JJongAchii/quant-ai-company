@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 8,
+  "sourceRequest": "한계를 명시한 탐색 연구부터 준비 (권장)",
+  "outcome": "Prepare an exact, owner-reviewable retrospective ETF exploration specification and change PR that preserves unverified historical timing and prevents confirmation or deployment claims.",
+  "deliverables": [
+    {"id": "POLICY", "description": "Typed, digest-bound exploratory data policy and independent admission gates"},
+    {"id": "RESULT_SCOPE", "description": "Preserve limitations in child manifests, audits, reports and library records"},
+    {"id": "REVIEW_PACKET", "description": "Frozen research specification, release plan, meaningful tests and draft PR"}
+  ],
+  "constraints": [
+    "Preparation only; no new production policy activation or scientific program approval",
+    "No sealed-period data reads, performance calculation, training or scientific trial",
+    "Do not alter existing signed programs, frozen inputs, protected evaluator, execution profile or old approval records",
+    "Keep source and data assessment plus independent result audits mandatory",
+    "No automatic replay of uncertain external effects; preserve concurrent operator changes",
+    "Research repositories are read-only integration targets; company evidence belongs here"
+  ],
+  "workspace": "Existing isolated qws attachment",
+  "previousIntent": "INTENT-v7.json"
+}

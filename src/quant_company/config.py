@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import Field, SecretStr, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -63,6 +63,15 @@ class Settings(BaseSettings):
     news_sources_file: Path | None = None
     news_max_age_hours: int = Field(default=24, ge=1, le=72)
     news_initial_lookback_minutes: int = Field(default=120, ge=0, le=1440)
+    briefing_enabled: bool = False
+    briefing_publish_enabled: bool = False
+    briefing_source_notes_enabled: bool = False
+    briefing_max_revisions: int = Field(default=1, ge=0, le=1)
+    briefing_evaluation_edition_id: str = Field(default='', pattern=r'^(?:|[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})$')
+    briefing_search_enabled: bool = True
+    briefing_channel_id: str = ""
+    briefing_owner_user: str = ""
+    briefing_calendar_overrides_file: Path | None = None
     tech_feed_enabled: bool = False
     tech_feed_publish_enabled: bool = False
     tech_feed_channel_id: str = ""
@@ -92,6 +101,11 @@ class Settings(BaseSettings):
     company_max_project_tasks: int = Field(default=0, ge=0, le=500)
     company_model_timeout_seconds: int = Field(default=960, ge=10, le=1800)
     fixture_mode: bool = False
+
+    @field_validator("briefing_calendar_overrides_file", mode="before")
+    @classmethod
+    def empty_briefing_overrides(cls, value):
+        return None if value == "" else value
 
     @model_validator(mode="after")
     def explicit_simulation(self) -> "Settings":

@@ -1,0 +1,15 @@
+{
+  "scope": "Actual local full suite after format14/validation33 and previous-close producer/consumer integration; not cloud/Slack deployment qualification",
+  "command": ".venv/bin/pytest -q -x --tb=short --junitxml=docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v33.xml",
+  "passed": 1381,
+  "skipped": 38,
+  "failed": 0,
+  "warnings": 12,
+  "elapsed_seconds": 366.57,
+  "targeted_briefing_previous_run_passed": 149,
+  "producer_consumer_close_checks_passed": 2,
+  "lint": "All checks passed!",
+  "format_version": 14,
+  "validation_version": 33,
+  "note": "The production path freezes previous KRX close before proposing a table observation; tests use real local PostgreSQL. 38 skipped checks are not claimed as real cloud, model or Slack success."
+}

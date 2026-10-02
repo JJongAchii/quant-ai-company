@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-09-22T06:26:11.478227+00:00",
+  "scope": "local implementation environment; no credential contents read",
+  "model_provider": "codex",
+  "company_runtime_token_configured": false,
+  "briefing_enabled": false,
+  "briefing_publish_enabled": false,
+  "briefing_channel_configured": false,
+  "briefing_owner_configured": false,
+  "slack_credentials_path_configured": false,
+  "live_model_called": false,
+  "slack_message_sent": false
+}

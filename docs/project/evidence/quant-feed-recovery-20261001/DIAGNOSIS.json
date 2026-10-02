@@ -1,0 +1,34 @@
+{
+  "mode": "read-only production diagnosis",
+  "checked_at": "2026-10-01",
+  "production_base": "3c848af95dc33b7da444a55018fd41d374c10025",
+  "quant_installed_revision": "5defb8cb9dd7c655214663b05670cd2896006b30",
+  "publication_active": true,
+  "stalled_document": {
+    "id": "c3f27c35c3ff8f16ef7bbfbc60593649bd2b3ca4cd4d5367d83487123f7b9b60",
+    "stage": "repair",
+    "original_sha256": "660444d311e850f8f96bb2bbc653d609c0d9cb26df7b9da4740c161f8243591f",
+    "source_page_characters": 177370,
+    "bounded_page_characters": 41797,
+    "bounded_pages": 323,
+    "previous_prompt_characters": 90903,
+    "compact_prompt_characters": 88148,
+    "limit_characters": 89000,
+    "source_spans_preserved": true,
+    "cause": "pre-request context-limit exception rolled back its transaction and left the same document at the queue head"
+  },
+  "failed_discovery": {
+    "request_id": "quant-feed-afbd28d8-d9af-433b-92d9-b82efcf770f1",
+    "slot": "2026-10-01-20",
+    "state": "failed",
+    "fault": "invalid_output",
+    "fault_phase": "decision_json:invalid_shape",
+    "immutable_receipt_sha256": "a41406c589d77dd0bff2e4b79e30685ccf138dddfa889ca8223d625f848cbc4d",
+    "replayed": false
+  },
+  "source_status": {"enabled": 16, "failures": 0, "candidates_added_last_24h": 18},
+  "model_calls_by_diagnosis": 0,
+  "database_writes_by_diagnosis": 0,
+  "slack_writes_by_diagnosis": 0,
+  "limitations": "A snapshot and input-size proof, not long-run quality or collection-coverage measurement. Some failed diagnostic invocations were corrected before the successful read-only probe."
+}

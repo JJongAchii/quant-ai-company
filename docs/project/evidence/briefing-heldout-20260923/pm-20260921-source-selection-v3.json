@@ -1,0 +1,116 @@
+{
+  "cutoff": "2026-09-21T10:40:00+00:00",
+  "raw_originals_sha256": "08576c88e2edc261d3eebdbade92ff913a80b72e5a8cab653998fd04d5c95fb0",
+  "selection_version": 3,
+  "selected_count": 16,
+  "added": [
+    {
+      "id": "d96f07834ae4579f6b42e36ac42b8bc9731d2d64",
+      "title": "S&P \"韓 데이터센터 1200조 투자…기업 자본 부담 키울 것\""
+    },
+    {
+      "id": "03eee886ab32a8872fc3e2c815f35860234e4401",
+      "title": "\"호르무즈서 정체불명 발사체에 유조선 피격…선원 2명 부상\""
+    },
+    {
+      "id": "5919cbbde924a39b239d7e95e09ba6aa95982bb9",
+      "title": "원/달러 환율, 8거래일 만에 하락…2.3원 내린 1,381.0원"
+    }
+  ],
+  "removed": [
+    {
+      "id": "a75052c1bc9cbfe8361a3e2577352f4098db284b",
+      "title": "신한금융, 신한은행장 등 자회사 대표이사 승계절차 개시"
+    },
+    {
+      "id": "5bcf48b4a1fe57b62dc09a31a86e137b2fc65fe4",
+      "title": "삼성전자, 5% 급등 '27만전자' 회복…SK하이닉스 0.6%↑"
+    },
+    {
+      "id": "66febe9b10fdbdc4ee424bd7089a6c93b1fdd579",
+      "title": "[특징주] 네오사피엔스, 코스닥 상장 첫날 243% 급등(종합)"
+    }
+  ],
+  "selected": [
+    {
+      "id": "d3c13a1dd642cbad0be2f3a6cbde732c881df876",
+      "title": "코스피, 국내외 호재에 '7천피' 탈환…7,007.72 마감(종합)",
+      "sha256": "be93ca59cfc46f9779e34e04fe7f0b130b1f83cf808764e5dff5a13e4a3fed42"
+    },
+    {
+      "id": "b2033f1cb5e9f929308763838c1a5287ea191866",
+      "title": "KOSPI Reclaims 7,000 Mark after 7 Trading Sessions",
+      "sha256": "487b72088fdb3bdecfc0ed17275a1aa2cb5887cfb79567050a784bfa1251a95f"
+    },
+    {
+      "id": "ff8917a4601610247c5ae78e6bd2c3db76e600f4",
+      "title": "Eurosystem brings central bank money to tokenised finance",
+      "sha256": "0a6a41717f762f0c4f79b8fd938744ee54b133a6e1fa9db7a1016725324d03d6"
+    },
+    {
+      "id": "996dd9f805b4d6647f9d5c845116b895f9f1408c",
+      "title": "미·중, 정상회담 앞두고 뉴욕서 무역협상⋯관세ㆍAIㆍ희토류 테이블에",
+      "sha256": "0d093ec3137598439ac0efe311bc9959037de74e580f8ccbfb080899e4f9795b"
+    },
+    {
+      "id": "5b0c211f02b9f11ccd0b7e5fce3ddf4c0852e9b4",
+      "title": "전쟁 이후 첫 러시아 총선서 집권당 압승…더 강해진 푸틴",
+      "sha256": "d8f391bc8645143e613ba1ef4f50ed299de2972be0e094c19f74ea942dec2dee"
+    },
+    {
+      "id": "46855144bd2ba8b5a9b97a66e528ae2c612a85a5",
+      "title": "\"호르무즈 지나던 유조선, 정체불명 발사체에 피격\"",
+      "sha256": "764931fc864e90013428dc70d434fd8198f88e6ee8b43cf29d44ebb16dfec4ef"
+    },
+    {
+      "id": "d96f07834ae4579f6b42e36ac42b8bc9731d2d64",
+      "title": "S&P \"韓 데이터센터 1200조 투자…기업 자본 부담 키울 것\"",
+      "sha256": "3afe5e8915e0c43c48294f85876284c95f6e60a56dbbeb054384c303603e3320"
+    },
+    {
+      "id": "db09a5fd2fb3bed514c728a8e75dc3bef8bb2aa8",
+      "title": "Volkswagen woes deepen as blue-chip index exit follows latest profit warning",
+      "sha256": "4790777ce62aec3539ece079111b39fa1b5f619266a65f9de709a389cd41dd35"
+    },
+    {
+      "id": "d79adecddbc46a0bbed707f3de3c9a9976d11f80",
+      "title": "Here's what the Saudi East-West pipeline shutdown means for Asia's biggest crude importers",
+      "sha256": "84a0d11f3933033690188e89a37802f6b99e710352d4dbca2b75e8bf9aa5fd02"
+    },
+    {
+      "id": "4b1941defec32725eeb8d4e5ff682b4f295a50ab",
+      "title": "Treasury yields ease as global borrowing costs tumble",
+      "sha256": "d94a6e512679c69b4eb7242a7a11fe3a9d9ecdb60eade0a728585aa8041ff331"
+    },
+    {
+      "id": "03eee886ab32a8872fc3e2c815f35860234e4401",
+      "title": "\"호르무즈서 정체불명 발사체에 유조선 피격…선원 2명 부상\"",
+      "sha256": "367a0078ede930201aec445e5f79935159eb1d3cca4ca47c48557535193f7dec"
+    },
+    {
+      "id": "ab930cb9f78cb640e99b4ca5b30a8597f8774e2e",
+      "title": "美 현지 생산에 문 두드리는 중국차…현대차·기아, 미중 정상회담 촉각",
+      "sha256": "a6030090a9c40a9cdf02ddc07479b53873442f5cd2bd001988681583e2ac24ef"
+    },
+    {
+      "id": "5919cbbde924a39b239d7e95e09ba6aa95982bb9",
+      "title": "원/달러 환율, 8거래일 만에 하락…2.3원 내린 1,381.0원",
+      "sha256": "7fa2f8ff04a4fb7c7b90f26d07101fa1bd01d8d8a2e53e61a6cd8fc517336d77"
+    },
+    {
+      "id": "2d53927f8b09f4a1c09f0496a3ce35a92281e6e4",
+      "title": "아시아증시, 美ㆍ中 정상회담 기대감 속 일제히 상승",
+      "sha256": "c25058fc8824a4adf06f2cd034d7b1581cb764855432860d5148de6ea55c2006"
+    },
+    {
+      "id": "cbfd307b9bce27dece44175b2f8a28086c0e14a4",
+      "title": "US and China discuss AI safety plan ahead of Trump-Xi summit",
+      "sha256": "bcb6db652047e321117c14a8c3e1bd2e0ed7d34f72f3255e1e88b7e67a70fc43"
+    },
+    {
+      "id": "d6e3d9d266b9914fc9e4883f03ca0ab7a4262795",
+      "title": "Nvidia boss rejects AI extinction fears as 'doomsday narratives'",
+      "sha256": "26a20d23def0797f354694c25fff549a8388428f8bbb7cae1bee0e6122aca857"
+    }
+  ]
+}

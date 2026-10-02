@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "state": "review_preparation_not_active",
+  "candidate_commit": "3c848af95dc33b7da444a55018fd41d374c10025",
+  "git_bundle_sha256": "aa49d49f075af2410d0000348094b784228b16a08d9e30c7902ebd813b1c8c04",
+  "archive_sha256": "e3c458d2e9e704739b27e60795b1786ef13a2525eb889e04c0b33212e767684d",
+  "program_digest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
+  "data_policy_digest": "f3c28a83c7e45c615505dd24e858c58aa7a559a99a896b2feaf773e6f3c1af1d",
+  "strategy_source_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+  "strategy_bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "qlab_commit": "37abfceb07f5b684d7c3210548fecef156e3f9fc",
+  "qlab_profile_sha256": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
+  "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+  "input_files": {
+    "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574",
+    "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81"
+  },
+  "protected_engine_sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+  "operating_baseline": {
+    "observed_at": "2026-09-30T22:50:50.764674+00:00",
+    "app_release": "/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30",
+    "worker_image": "quant-company-autonomous:0286ba3e7426ff6546b90e6926124ae65e71ba79",
+    "registry_sha256": "bdef77801a3b65f7588bf00a3916a1a67f7b7e59657db0f1587c8999842646a3",
+    "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+    "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+    "revision": 5,
+    "usage": {
+      "reservations": 0,
+      "scientific_trials": 0,
+      "outstanding": 0,
+      "compute_seconds": 0
+    }
+  },
+  "integrated_production_code": {
+    "app_commit": "5defb8cb9dd7c655214663b05670cd2896006b30",
+    "research_worker_commit": "0286ba3e7426ff6546b90e6926124ae65e71ba79",
+    "quant_feed_changes": "preserved_from_active_app"
+  },
+  "pre_activation_gates": [
+    "Reviewed PR and this exact release plan",
+    "Reread actual app/worker/3070 release, project revision, registry and all in-flight jobs; abort on drift",
+    "Full committed-code PG/Git/qlab checks and actual 3070 sandbox qualification; mark unavailable cloud/Slack checks separately",
+    "Build exact app and autonomous-research images; prepare compatible 3070 release without changing active config",
+    "Take existing consistent DB/config/research/qlab backup under deployment lock",
+    "Keep auth/accounts/model routing and existing tokens/state/receipts; no paid API or unsandboxed Codex fallback"
+  ],
+  "activation_order": [
+    "Hold new research submissions and reconcile in-flight jobs",
+    "Select prepared app and research-worker images plus correct source pins",
+    "Select prepared 3070 consumer release and restart only intended services",
+    "Append the new program-bound packet while retaining all existing packets and verify every input/engine/report digest",
+    "Publish exact new owner review target only after the release is healthy; no program execution authority granted by deployment",
+    "Owner cancels the old program and signs the full new digest; any usage/revision drift requires a revised remaining-budget proposal",
+    "Observe actual proposal, independent data decision, selection, one execution and independent audits without replaying old rejected effects"
+  ],
+  "rollback": {
+    "before_new_policy_records": "Restore the captured images/pins/3070 config; preserve durable records and reconcile uncertain effects",
+    "after_new_policy_records": "Hold autonomous research and retain compatible policy parsers; apply a reviewed forward repair. Do not restore an old parser over new policy JSON or erase receipts."
+  },
+  "preparation_did_not_activate": true,
+  "scientific_trials_added": 0
+}

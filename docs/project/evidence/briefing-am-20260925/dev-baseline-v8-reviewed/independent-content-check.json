@@ -1,0 +1,25 @@
+{
+  "case": "am-20260925-development",
+  "basis": "Frozen source-reading notes and saved original CNBC article, checked after the model review; this is an assistant content audit, not independent human expert certification.",
+  "model_review": {
+    "verdict": "publish",
+    "all_twelve_checks_true": true,
+    "mechanical_rejections": 0
+  },
+  "manual_verdict": "fail_coverage",
+  "findings": [
+    {
+      "source_id": "b47144f5dfceba7cfbbcdeb291fd852db06180d3",
+      "topic": "distinct Federal Reserve speaker omitted",
+      "observed": "The main post names Philadelphia Fed President Anna Paulson and explains her conditional tightening view, but does not mention New York Fed President John Williams's separate view that another hike this year would be reasonable.",
+      "why_material": "Two named policy speakers support the day's tightening narrative. Leaving the second out makes the evidence look like one person's view, while the reviewer claims the source's material policy signals are covered.",
+      "reviewer_miss": "The review marked the Fed source covered and coverage/depth true despite this omission.",
+      "disposition": "Do not count the model's publish verdict as an independently verified expert-quality pass. Preserve it as a reviewer false positive and strengthen the general source-completeness check before a new blinded evaluation."
+    }
+  ],
+  "corrected_previous_failures": [
+    "The main post now states the 0.25 percentage point Fed move to 3.75%-4% and underlying inflation of 2.5%-3%.",
+    "The main post now compares the November 10 US-China truce expiry with January 10."
+  ],
+  "slack": "not_called"
+}

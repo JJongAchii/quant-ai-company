@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-09-30T07:23:45.128050+00:00",
+  "scope": "Same-source development, not frozen-case acceptance or fresh qualification",
+  "format_version": 14,
+  "validation_version": 33,
+  "reason": "Prior-session table values are now explicitly labelled with date, permitted only for KOSPI/KOSDAQ and with exact frozen KR_previous close; unsupported current/future/stale rows and incompatible comparisons still rejected. Independent review keeps all12 criteria and complete originals, with duplicated writer procedure/schema labels removed.",
+  "previous_context_incident": "../context-incident.json",
+  "whitespace_hypothesis": "Tested and did not reduce the actual input; experimental change reverted.",
+  "market_sources_or_prices_added": false,
+  "calendar_metadata_added": {
+    "KR_previous": "2026-09-29T06:30:00+00:00"
+  },
+  "mechanical_rejections": {},
+  "review_prompt_characters": 87823,
+  "completed_calls_limit": 2,
+  "completed_before_review": 1,
+  "review_prompt_sha256": "5f6595e78f20bf7793912a0acb5520270bac0c18a8e1e51f8eabf6eaafaf8603",
+  "slack": "not_called"
+}

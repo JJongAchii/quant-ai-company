@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-09-29T06:32:15+00:00",
+  "before_reviewer_response": true,
+  "scope": "Same frozen 2026-09-22 PM originals and same writer response, replayed under validation 28 after a terminal-punctuation-only quote correction. This is development evidence, not a fresh qualification.",
+  "mechanical_rejections": 0,
+  "quote_correction": "The original sentence uniquely ends with a period. A long quote from the writer ended with a comma; the validator replaced only that final punctuation with the exact original before checking and forwarding the proposal.",
+  "material_recovered": "The visible main now distinguishes Iran's conditional seven-day proposal from a deal, notes the US aviation-service threat and Iran's denial of a leaders' meeting, and contrasts the prior Brent decline with the later intraday rebound and Red Sea route risk.",
+  "remaining_independent_concerns": [
+    "The Paramount/WBD merger occupies a full main issue although its connection to this Korean session and near-term reader decisions is weak.",
+    "BOK's quantified bank-capital offset and the meaning of interest coverage appear only indirectly or in the thread. The main uses HBM and other specialized terms without brief definitions.",
+    "An exact next Korean session date is absent from frozen source text; do not fabricate it. The post should at least make the holiday gap clear if the service calendar supplies it."
+  ],
+  "disposition": "not_yet_qualified_requires_new_independent_review_and_no_slack_send"
+}

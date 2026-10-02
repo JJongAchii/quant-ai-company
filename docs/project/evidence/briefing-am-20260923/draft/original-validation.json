@@ -1,0 +1,20 @@
+{
+  "case": "am-20260923-fresh-format9-validation9",
+  "policy": "evaluation-policy.json, format 9, validation 9",
+  "writer_request_id": "news-brief-eval-dfae52ed93f0cf16b86cd0a01351007b",
+  "provider": "codex",
+  "elapsed_seconds": 643.73,
+  "typed_proposal_valid": true,
+  "mechanical_rejections": {
+    "overview_korea_crypto": "unsupported_prose_number",
+    "usdkrw_tuesday": "numeric_value_not_in_evidence",
+    "ai_fact": "unsupported_prose_number"
+  },
+  "diagnosis": [
+    "The Korean prior-session source spells 1,358.2 and 22.8 as one-thousand-358-point-two and 22-point-eight. The exact values were not normalized.",
+    "The AI-stock quote gives Uber 1.3% and Lyft 2.4% with a shared final decline predicate. The validator required a separate local decline verb for the first value."
+  ],
+  "policy_result": "fail",
+  "next_action": "Narrowly normalize those exact spoken-number and shared-predicate forms with negative controls, then replay the identical saved writer only as a development check. Do not relabel this frozen edition as a fresh pass.",
+  "slack": "not_called"
+}

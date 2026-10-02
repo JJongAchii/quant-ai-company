@@ -1,0 +1,100 @@
+{
+  "at": "2026-10-02T03:58:14.594262+00:00",
+  "installed_commit": "289dc70c6858ea229476216d7ea4c1c10ece68ff",
+  "validation_version": 50,
+  "format_version": 15,
+  "automatic_publication": false,
+  "deployment": "preview_active_actual_cloud",
+  "latest_completed_content_case": {
+    "case": "late-am-20261002-v47",
+    "outcome": "closed_failed_semantic_omissions",
+    "initial_passed_checks": 8,
+    "final_passed_checks": 8,
+    "failed_checks": [
+      "materiality",
+      "counterevidence",
+      "coverage",
+      "depth"
+    ],
+    "completed_calls": 5,
+    "remaining_same_cohort_calls": 0,
+    "mechanical_rejected_ids": {},
+    "original_body_chars": 36435,
+    "candidate_chars_before_final_review": 7532,
+    "qualification": "Development48 repair with lossless49 final-review transport; not a fresh50writer, on-time run, five-day acceptance, expert certification or Slack delivery."
+  },
+  "latest_content_change": "Validation50 own-evidenced bounded story contexts and whole supplementary-body auditing; no completed fresh50 quality evaluation yet",
+  "next_frozen_policy": "prospective-pm-20261002-v50-operating-policy.json",
+  "next_schedule_kst": {
+    "collection": "2026-10-02 19:10",
+    "cutoff": "2026-10-02 19:30",
+    "due": "2026-10-02 20:15"
+  },
+  "technical": {
+    "validation50_focused_passed": 283,
+    "validation50_seconds_junit": 80.153,
+    "latest_deployment_focused_passed": 5,
+    "ci_runs_success": [
+      36952396557,
+      36955322244,
+      36958320184
+    ],
+    "PostgreSQL": "real",
+    "Temporal_local_tests": "real",
+    "tests_model_and_slack": "simulated",
+    "cloud": "actual installed source/dependencies, qdata API reads and Temporal workflow inspection"
+  },
+  "remaining": [
+    "Actual new50 main/original comparison and all12 content criteria",
+    "Scheduled on-time preview and five trading days qualification",
+    "Real channel delivery/followup receipts and owner content acceptance before authorized publication"
+  ],
+  "historical_cases": [
+    {
+      "case": "heldout-pm-20260921-v41",
+      "scope": "historical frozen41",
+      "outcome": "failed_invalid_review_quote_exceeds400",
+      "completed_calls": 3,
+      "fresh_quality_pass": false
+    },
+    {
+      "case": "heldout-am-20260924-v42",
+      "scope": "historical frozen42",
+      "outcome": "closed_failed",
+      "original_completed_calls": 4,
+      "development45_last_review_checks": 9,
+      "development45_failed_checks": [
+        "materiality",
+        "counterevidence",
+        "coverage"
+      ],
+      "combined_completed_calls": 5,
+      "fresh_quality_pass": false
+    },
+    {
+      "case": "heldout-am-20260921-v45",
+      "outcome": "source_unavailable_0articles",
+      "model_calls": 0,
+      "fresh_quality_pass": false
+    },
+    {
+      "case": "development-am-20260926-v45",
+      "scope": "historically evaluatedday, newfirst45writer on complete frozenoriginals",
+      "outcome": "containerrestart interruptedwriter, boundreceipt runninguncertain",
+      "completed_new_calls_confirmed": 1,
+      "uncertain_new_effects": 1,
+      "repair_or_replay": false,
+      "fresh_quality_pass": false
+    },
+    {
+      "case": "pm-20261001-v46",
+      "scope": "prospectivepolicy frozen beforetitles/content/cutoff",
+      "cutoff": "2026-10-01T19:30:00+09:00",
+      "outcome": "notqueued_or_executed",
+      "model_calls": 0,
+      "fresh_quality_pass": false
+    }
+  ],
+  "historical_summary_sha256": "0d9d05dfc1ea656d0d7fc69f77481b3eae1215cf6dd11447984e8ab12a8da4c5",
+  "new_raw_evidence": "Private Gitignored local evidence. Public records contain hashes/counts/outcomes, no full originals/prompts/responses."
+}

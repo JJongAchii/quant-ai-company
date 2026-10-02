@@ -1,0 +1,65 @@
+{
+  "constraints": [
+    "Company repository only; preserve frozen research provenance",
+    "Existing official subscription authentication; no paid resources",
+    "PostgreSQL records and Temporal execution; preserve ambiguous receipts",
+    "Use 07:45/20:15 KST scheduling with 07:00/19:30 cutoffs and 45 minutes for editorial preparation; Analyst display identity retains stable market_brief technical ID and existing receipt routing",
+    "Publication disabled until real-data and Slack qualification",
+    "Read qdata only through its public API in the existing credential-isolated worker; bounded small datasets, no full large-table scans",
+    "Use only historical originals collected before the selected edition cutoff; do not backfill current lake or search results into a past edition; keep Slack publication disabled"
+  ],
+  "createdAt": "2026-09-29T02:33:39.819589+00:00",
+  "decisionGates": [
+    "Real Slack activation requires the configured dedicated app and successful source and five-trading-day qualification.",
+    "A publication-disabled preview release must pass the existing company release contract; do not bypass its protected-file or approval rules.",
+    "Content quality requires valid typed writer/reviewer artifacts, all twelve semantic checks, no mechanical rejections, an independent original-to-main-post audit and a fresh edition under a frozen policy; a same-source replay alone is not qualification."
+  ],
+  "deliverables": [
+    {
+      "id": "DIAGNOSIS",
+      "description": "Evidence-based pipeline diagnosis",
+      "acceptance": [
+        "Trace Quant Scout and Reporter/Analyst ownership from code",
+        "Measure loss between cached originals, selected documents and visible post on preserved cases"
+      ]
+    },
+    {
+      "id": "PIPELINE",
+      "description": "Implement the missing editorial controls",
+      "acceptance": [
+        "Validated source plan over bounded frozen candidate pool before writing",
+        "Preserve available 6000-character originals, upstream truncation flags and immutable receipts",
+        "Fact-level review links to visible main text and carries omissions into one repair",
+        "Use 07:45/20:15 delivery and 07:00/19:30 cutoffs; allow 45 minutes for selection/write/review, based on observed model latency"
+      ]
+    },
+    {
+      "id": "VERIFY",
+      "description": "Meaningful regression and real output verification",
+      "acceptance": [
+        "Real PostgreSQL regression plus Temporal when available, lint and diff checks",
+        "Freeze an unused date before inspecting originals; actual subscription source-plan/writer/reviewer with at most one confirmed repair",
+        "Independent original-to-main-post audit, latency report and honest remaining gates; no Slack publication"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "Trading, training, backtests, portfolio access",
+    "Automatic strategist work",
+    "Pretending fixtures or five future observation days have been verified"
+  ],
+  "outcome": "Diagnose collection versus selection versus writing failures; implement source planning, preserve available original text, enforce fact-level main-post review, and verify actual subscription output.",
+  "revision": 15,
+  "revisionReason": "The user explicitly asked the assistant to design suitable morning/evening timing and prioritize briefing quality. Four confirmed model phases alone took 1912.194 seconds, before final review. Extend preparation to 45 minutes and implement 07:45/20:15 publication targets with unchanged 07:00/19:30 source cutoffs; runtime publication remains disabled.",
+  "schemaVersion": 1,
+  "slug": "amberjack",
+  "sourceRequest": "quant scout를 좀 더 보완하는 방법이 더 가까운지 글 처리 방식을 보완해야하는 것인지 아님 다른 부분을 개선해야하는건지 제대로 파악해서 보완을해",
+  "stopConditions": [
+    "Preserve an uncertain model or Slack result without automatic new-ID replay.",
+    "Record unavailable real integration conditions; keep publishing disabled until qualification."
+  ],
+  "supersedes": {
+    "intentFile": "INTENT-v14.json",
+    "intentDigest": "9d4763c63479"
+  }
+}

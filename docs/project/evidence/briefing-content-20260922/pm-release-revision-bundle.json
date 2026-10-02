@@ -1,0 +1,1382 @@
+{
+  "edition": {
+    "id": "0ffd1f17-a331-5dbd-b636-4647b3ac7856",
+    "day": "2026-09-22",
+    "kind": "pm",
+    "due_at": "2026-09-22T08:17:47.313760Z",
+    "starts_at": "2026-09-22T07:37:47.313760Z",
+    "cutoff": "2026-09-22T07:57:47.313760Z",
+    "expires_at": "2026-09-22T08:57:47.313760Z",
+    "us_session": null,
+    "kr_session": "2026-09-22",
+    "previous_us_session": null,
+    "previous_kr_session": "2026-09-21",
+    "weekly": null
+  },
+  "documents": [
+    {
+      "id": "128202d1c644ee110f1f5526935127319ae82b56",
+      "url": "https://www.yna.co.kr/view/AKR20260922145651008",
+      "title": "'전강후약' 코스피, 2%대까지 오르다 강보합…'7천피'는 사수(종합)",
+      "publisher": "연합뉴스",
+      "kind": "media",
+      "origin_group": "yonhap",
+      "content": "김유향기자\n추석 연휴 앞두고 차익실현 등 숨고르기…삼전↑, 하이닉스↓\n외국인, 3거래일 연속 '사자'…기관, 장중 '팔자'로 전환\n코스닥 하락전환, 6거래일만에 하락\n이미지 확대\n코스피, 2%대 상승 출발\n(서울=연합뉴스) 김주형 기자 = 코스피가 미국 반도체 관련주 강세 등에 힘입어 장 초반 2%대 상승세를 나타내고 있는 22일 서울 중구 하나은행 딜링룸 현황판에 코스피와 코스닥, 원/달러 환율이 표시되고 있다.\n이날 오전 09시 01분 현재 코스피 지수는 전장 대비 153.89포인트(2.20%) 오른 7,161.61로 출발해 오름세를 이어가고 있다. 같은 시각 코스닥 지수는 9.98포인트(1.19%) 오른 846.25다. 2026.9.22 kjhpress@yna.co.kr\n(서울=연합뉴스) 김유향 기자 = 코스피는 22일 미국 반도체 관련주 강세 등에 힘입어 장 초반 강세를 나타냈지만 이후 상승폭을 줄인 채 강보합으로 마감했다.\n이날 코스피는 전날보다 10.19포인트(0.15%) 오른 7,017.91로 장을 마쳤다.\n지수는 전장 대비 153.89포인트(2.20%) 오른 7,161.61로 출발해 한때 7,171.44(+2.34%)까지 뛰기도 했지만, 이후 상승 탄력이 다소 둔화한 모습을 나타냈다. 오후장 들어 잠시 하락 전환하기도 했다.\n추석 연휴를 앞두고 일부 차익실현 등 숨고르기 양상을 보였다.\n다만 3거래일 연속 상승세를 이어가며 '7천피'를 사수했다.\n이날 오후 3시 30분 기준 서울 외환시장에서 달러 대비 원화 환율은 전날 기준가보다 22.8원 내린 1,358.2원을 나타냈다.\n유가증권시장에서는 외국인이 이날까지 3거래일 연속 매수 우위를 나타냈다. 정규장 마감 시점 기준으로 외국인은 850억원을 순매수했다.\n반면 장 초반 매수 우위였던 기관은 순매도 전환해 1천190억원 매도 우위를 보인다. 개인도 1조6천89억원을 순매도하며 지수 상단을 제한했다.\n외국인은 코스피200선물시장에서도 2천227억원 매수 우위로 '사자' 흐름을 이어갔다.\n간밤 뉴욕증시는 인공지능(AI) 관련주 강세에 힘입어 3대 주가지수가 동반 상승했다. 특히 기술주 중심의 나스닥 종합지수는 전장보다 2.3% 뛰어 27,122.09로 마감하며 종가 기준 사상 최고치를 경신했다.\n다우존스30 산업평균지수와 스탠더드앤드푸어스(S&P) 500지수도 각각 0.7%와 1.5% 오른 채 마감했다.\n종목별로 보면 메타의 개인용 업무 수행 AI에이전트 '뮤즈'가 애플 앱스토어 무료 앱 부문 1위에 오르며 돌풍을 일으킨 영향 등으로 주가가 11.43% 뛰었다.\n이에 AI 확산과 투자에 대한 기대가 최근 부각된 'AI 속도조절론' 우려를 일부 상쇄하자 AI 관련 종목들이 강세를 나타냈다. 특히 반도체 기업 AMD(9.95%)와 인텔(12.14%) 등이 급등했으며, 필라델피아 반도체 지수는 4.29% 올랐다.\n간밤 미국과 이란 간 평화 협상에 대한 기대감이 커진 점도 투자심리에 활기를 불어넣었다.\n유엔총회를 앞두고 미국과 이란 간 정상급 만남이 성사될 것이라는 기대에 서부 텍사스산 원유(WTI) 10월 인도분은 4.5% 하락했으며 브렌트유 11월 인도분도 3.4% 내렸다.\n글로벌 금리의 척도가 되는 10년 만기 미 국채 금리는 2bp(1bp=0.01%포인트) 떨어진 4.972%를 기록했다.\n다만 이날 장중 WTI 선물 가격은 다시 상승세를 나타내며 대외환경(매크로) 리스크를 키웠다. 현재 WTI 10월 인도분은 전날보다 1.69% 오른 배럴당 97.40달러를 나타내고 있다.\n이미지 확대\n국제유가 상승 (PG)\n[제작 조혜인] 일러스트\n이에 국내 증시는 장 초반 반도체 대형주 중심의 강세에 상승 탄력을 받았지만, 이후 상승폭을 다소 줄였다.\n현대차증권 김재승 연구원은 \"국내 양 지수는 상승 출발했지만, 장중 하락 전환하기도 했다\"면서 \"미-이란 협상 기대감이 커지며 유가가 하락했지만, 이날 오전장부터 여전히 존재하는 공급차질에 대한 불안감에 유가가 소폭 반등한 영향으로 풀이된다\"고 말했다.\n삼성전자[005930]는 전날보다 0.91% 오른 27만6천500원에 거래를 마쳤다. 개장부터 3.28% 오른 주가는 장중 한때 28만3천500원(+3.47%)까지 뛰기도 했지만, 오름폭을 일부 반납한 채 마감했다.\n삼성전자의 3분기 배당기준일인 이번 달 말까지 몇 거래일 남지 않았다는 점도 주가를 밀어올렸을 수 있다. 삼성전자는 지난달 약 30조원 규모의 현금배당을 시행할 계획이라고 밝힌 바 있다.\nSK하이닉스[000660]는 1.50% 내린 184만원이다. 2%대로 상승 출발해 장 초반 한때 193만5천원(+3.59%)까지 치솟았지만, 이후 하락세로 돌아섰다.\n한편 산업통상부는 이날 대미 투자 협상과 관련해 추진하기로 결정한 프로젝트 1건과 추진 계획을 마련한 프로젝트 2건에 대해 국회에 보고했다. 이에 한전기술[052690](6.56%), 현대건설[000720](4.54%), 대우건설[047040](2.79%), 두산에너빌리티[034020](1.41%) 등 원전 관련 종목들이 줄줄이 상승했다.\n다른 시가총액 상위 종목 중에서는 SK스퀘어[402340](0.53%), 삼성전기[009150](3.99%), 현대차[005380](0.42%) 등이 올랐으며 LG에너지솔루션[373220](-0.43%), 삼성바이오로직스[207940](-0.78%), KB금융[105560](-1.01%)은 내렸다.\n업종별로 보면 건설(2.51%), IT서비스(2.27%), 운송·창고(2.18%)의 상승률이 가장 높았다. 오락·문화(-2.08%)와 제약(-1.00%), 금속(-0.63%) 등은 하락했다.\n이날 코스닥 지수는 1.89포인트(0.23%) 내린 834.38로 마감했다. 6거래일만의 하락이다.\n지수는 9.87포인트(1.18%) 오른 846.14로 출발해 장중 하락 전환했다.\n코스닥 시장에서는 외국인과 기관이 각각 579억원과 945억원 매도 우위를 나타냈다. 개인은 1천563억원을 순매수하며 지수 하단을 지탱했다.\n알테오젠[196170](-2.16%), 주성엔지니어링[036930](-0.97%), 레인보우로보틱스[277810](-0.34%)",
+      "published_at": "2026-09-22T07:16:25Z",
+      "retrieved_at": "2026-09-22T07:29:35.124773Z",
+      "sha256": "48daaf38ee4dec72b301598ec3f22161f35889797ca6792672692e9ea4b046e1",
+      "registration": "yonhap-economy",
+      "receipt": {
+        "ok": true,
+        "url": "https://www.yna.co.kr/view/AKR20260922145651008",
+        "title": "'전강후약' 코스피, 2%대까지 오르다 강보합…'7천피'는 사수(종합) | 연합뉴스",
+        "bylines": [
+          "김유향"
+        ],
+        "redirects": [],
+        "content_type": "text/html;charset=utf-8",
+        "published_at": "2026-09-22T16:16:25+09:00",
+        "retrieved_at": "2026-09-22T07:29:35.124773+00:00",
+        "article_chars": 3347,
+        "last_modified": null,
+        "requested_url": "https://www.yna.co.kr/view/AKR20260922145651008",
+        "original_bytes": 167923,
+        "publisher_host": "www.yna.co.kr",
+        "original_sha256": "48daaf38ee4dec72b301598ec3f22161f35889797ca6792672692e9ea4b046e1",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "article",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "bbd821f9a5d0dcb025ff3f262b5738fcb11cdc3b",
+      "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204428&lang=e",
+      "title": "KOSPI Up 0.15% Tuesday",
+      "publisher": "KBS World",
+      "kind": "media",
+      "origin_group": "kbs",
+      "content": "The benchmark Korea Composite Stock Price Index rose ten-point-19 points, or zero-point-15 percent, on Tuesday to close at seven-thousand-17-point-91.\nThe tech-heavy KOSDAQ lost one-point-89 points, or zero-point-23 percent, to close at 834-point-38.\nThe South Korean won strengthened against the U.S. dollar by 22-point-eight won, trading at one-thousand-358-point-two won per dollar as of 3:30 p.m.",
+      "published_at": "2026-09-22T07:06:32Z",
+      "retrieved_at": "2026-09-22T07:07:54.316870Z",
+      "sha256": "557154c751367d70e692b4ea16c2bc5020e85779f3a343a90d228e9847a1d074",
+      "registration": "kbs-economy",
+      "receipt": {
+        "ok": true,
+        "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204428&lang=e",
+        "title": "KOSPI Up 0.15% Tuesday l KBS WORLD",
+        "bylines": [],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": null,
+        "retrieved_at": "2026-09-22T07:07:54.316870+00:00",
+        "article_chars": 400,
+        "last_modified": null,
+        "requested_url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204428&lang=e",
+        "original_bytes": 66096,
+        "publisher_host": "world.kbs.co.kr",
+        "original_sha256": "557154c751367d70e692b4ea16c2bc5020e85779f3a343a90d228e9847a1d074",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "kbs_body_txt",
+        "publication_time_basis": "unknown"
+      }
+    },
+    {
+      "id": "82b028a344fdeb87ff250448189320fcefc618df",
+      "url": "https://www.etoday.co.kr/news/view/2628640",
+      "title": "이형일 “경제 리스크 원점 재점검…물가 안정이 민생 기본”",
+      "publisher": "이투데이",
+      "kind": "media",
+      "origin_group": "etoday",
+      "content": "취임 직후 첫 간부회의…실물·부동산·금융·외환시장 선제 대응 주문\n“성장의 온기 지역·계층·산업 전반으로”…별도 취임식 없이 업무 돌입\n▲이형일 경제부총리 겸 재정경제부 장관이 9월 22일 서울 종로구 정부서울청사에서 열린 재정경제부 주요간부회의를 주재하고 있다. (사진제공=재정경제부)\n이형일 경제부총리 겸 재정경제부 장관이 22일 취임 직후 경제 리스크를 원점에서 재점검하고 물가 안정과 양극화 완화에 정책 역량을 집중하겠다고 밝혔다. 별도의 취임식 없이 첫 간부회의를 주재하며 대미 투자 프로젝트 등 당면 현안도 차질 없이 추진할 것을 주문했다.\n이형일 부총리는 이날 정부서울청사에서 주요 간부회의를 주재하고 경제 상황과 주요 현안을 점검했다.\n이 부총리는 최근 우리 경제가 전반적인 경기 개선 흐름을 이어가고 있지만 반도체 업황과 글로벌 자본 흐름 변화, 지정학적 위험 등으로 대내외 불확실성이 여전히 높다고 평가했다.\n이에 눈앞의 지표에 안주하지 말고 거시경제 분석·전망 역량을 한층 높이라고 지시했다. 실물경제와 부동산·금융·외환시장 전반의 위험 요인을 원점에서 재점검하고 필요한 대응책을 선제적으로 마련할 것도 주문했다.\n대미 투자 프로젝트를 비롯한 당면 현안에 대해서도 업무 공백 없이 차질 없이 대응해야 한다고 강조했다.\n이 부총리는 물가 안정을 민생 안정의 기본으로 삼겠다는 방침도 재확인했다. 우리 사회의 핵심 과제인 양극화 완화에도 재정경제부가 경제팀의 컨트롤타워로서 적극적으로 나서야 한다고 밝혔다.\n그는 경기 회복으로 확보되는 정책 여력을 활용해 성장의 온기가 지역과 계층, 산업 전반으로 확산돼야 한다고 강조했다. 정책이 국민이 체감할 수 있는 구체적인 성과로 이어지도록 실효성 있는 대책을 마련하라고 당부했다.\n조직 운영과 관련해서는 세제·국고관리·국제금융·공공정책 등 재정경제부 고유 업무와 경제정책 발굴, 부처 간 조정, 대외 협력 등 부총리의 경제정책 총괄 기능이 유기적으로 맞물리도록 협업을 강화할 것을 주문했다. 직원들이 들인 노력과 성과에 따라 보상받는 조직을 만들겠다는 뜻도 밝혔다.\n이 부총리는 “정책은 국민이 체감하는 변화로 이어져야 한다”며 “민생의 목소리에 귀 기울이고 현장에서 답을 찾는 자세로 일해 달라”고 말했다.",
+      "published_at": "2026-09-22T06:30:00Z",
+      "retrieved_at": "2026-09-22T06:38:12.019314Z",
+      "sha256": "c4470e47b742378291c268ca853aa7016340b7ae63990756b2ce3f356067681e",
+      "registration": "etoday-economy",
+      "receipt": {
+        "ok": true,
+        "url": "https://www.etoday.co.kr/news/view/2628640",
+        "title": "이형일 “경제 리스크 원점 재점검…물가 안정이 민생 기본” - 이투데이",
+        "bylines": [
+          "세종=곽도흔"
+        ],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": "2026-09-22T15:30:00+09:00",
+        "retrieved_at": "2026-09-22T06:38:12.019314+00:00",
+        "article_chars": 1101,
+        "last_modified": null,
+        "requested_url": "https://www.etoday.co.kr/news/view/2628640",
+        "original_bytes": 142024,
+        "publisher_host": "www.etoday.co.kr",
+        "original_sha256": "c4470e47b742378291c268ca853aa7016340b7ae63990756b2ce3f356067681e",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "articleBody",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "4181f0c2af11004abab7c2db85851bfb7886cf5d",
+      "url": "https://www.etoday.co.kr/news/view/2628560",
+      "title": "한은 \"GDP 대비 가계부채비율, 연말 70%대로 하락⋯관리 기조 지속\" [종합]",
+      "publisher": "이투데이",
+      "kind": "media",
+      "origin_group": "etoday",
+      "content": "장정수 부총재보 “명목 GDP 증가 착시⋯한계기업·취약계층 부담 가중”\n\"'금리인상' 기업이 더 타격⋯FSIㆍFVI 상승, 통화정책 통상적 전달경로\"\n원·달러환율 하락 흐름엔 \"은행 자본여력 확충, 기업 대출 여력도 뒷받침\"\n▲장정수 부총재보가 22일 오전 서울 중구 한국은행에서 열린 금융안정 상황(2026년 9월) 설명회에서 발언하고 있다. (사진제공=한국은행)\n한국은행이 명목 국내총생산(GDP)의 가파른 성장에 힘입어 올 연말까지 명목GDP 대비 가계부채 비율이 70% 중후반대까지 하락할 것으로 전망했다. 그러나 한은은 부채 비율 하락이 실질적인 가계 상환능력 개선이 아닌 분모(GDP) 확대에 따른 착시효과가 크다고 보고 금융당국의 엄격한 가계부채 관리 기조는 흔들림 없이 유지돼야 한다고 강조했다.\n◇\"GDP 확대에 가계부채비율 착시⋯연말 하락 기대감 속 관리 기조 지속\"\n장정수 한은 부총재보는 22일 금융통화위원회 금융안정 회의 직후 열린 설명회 질의응답에서 “가계부채 비율이 소비와 성장을 제약하는 임계치(80~85%)를 밑돌 가능성이 크지만, 가계부채 관리 기조는 계속 유지돼야 한다는 입장에는 변함이 없다”고 밝혔다.\n장 부총재보는 가계부채 비율 하락세가 실물경제 체감과는 괴리가 있다는 점을 명확히 짚었다. 장 부총재보는 \"1분기 명목 GDP 대비 가계부채 비율이 85%였고, 10월 초 자금순환 통계가 나와봐야겠지만 2분기는 81% 수준까지 크게 낮아진 것으로 추정된다\"면서 \"가계부채 증가율을 연 3% 내외로 통제하고 두 자릿수에 달하는 명목 GDP 성장률을 감안하면 연말 70%대 중후반까지 떨어질 수 있다”고 진단했다.\n그러나 수치 개선에 안주해서는 안 된다는 점을 거듭 강조했다. 그는 \"가계부채 비율 급락은 가계부채 자체를 억제한 측면도 있지만 분모인 명목 GDP가 크게 증가한 영향이 더 크다\"며 \"소득 개선의 온기가 부문별로 고르게 퍼지지 않았고, 수도권을 중심으로 부동산 가격 상승 기대가 여전한 만큼 긴장의 끈을 늦춰서는 안 된다\"고 설명했다.\n▲22일 오전 서울 중구 한국은행에서 열린 금융안정 상황(2026년 9월) 설명회사진 왼쪽부터 김신영 외환분석부장, 이정연 금융안정기획부장, 장정수 부총재보, 임광규 금융안정국장, 조성민 금융안정국 안정총괄팀장 (사진제공=한국은행)\n◇ “3분기 FVI 추가 상승 추정…7·8월 금리 인상이 상승폭 제약할 것”\n금융불균형 누증에 대한 경고도 내놨다. 올해 2분기 중장기 금융 불균형 누증 정도를 나타내는 금융취약성지수(FVI)는 46.5를 기록, 장기 평균치에 도달한 데 이어 3분기에도 오름세를 이어간 것으로 추정됐다. 이에 대해 장 부총재보는 \"FVI는 2024년 1분기 37을 기록한 이후 지난 2분기까지 9분기 연속 상승해 장기 평균 수준에 도달했다\"며 \"3분기에도 상승세가 이어지는 것으로 파악된다\"고 말했다.\n그는 다만 최근 백투백(연속 인상)으로 단행된 통화 긴축과 부동산 대책이 상방 압력을 억제할 것으로 평가했다. 장 부총재보는 \"7~8월 연속 기준금리 인상, 정부의 부동산 시장 안정화 대책, 주가 조정 과정에서의 디레버리징(부채 축소) 등이 복합적으로 작용해 FVI 상승을 다소 제약하는 요인이 될 것\"이라며 \"8월 가계대출 둔화 등 실제 지표에서도 이러한 흐름이 관측되고 있다\"고 밝혔다.\n단기 지표인 금융불안지수(FSI)와 중장기 지수인 FVI가 동반 상승하는 흐름에 대해선 통화정책의 통상적인 전달 경로라는 입장이다. 장 부총재보는 \"기준금리를 인상하면 취약계층의 원리금 상환 부담이 늘고 자산 가격이 조정을 받으면서 단기적으로 FSI가 오르는 특징이 있다\"며 \"시차를 두고 금융 불균형이 축소되면 FVI가 낮아지면서 금융불안도 점차 완화될 것\"이라고 내다봤다.\n◇ “가계보다 기업 리스크 더 취약…환율 안정은 대출 여력에 긍정적”\n이날 장 부총재보는 금리 인상 국면에서 가계보다 기업, 특히 한계기업의 부실 리스크에 목소리를 높였다. 그는 \"가계는 변동금리 비중과 취약 차주 비중이 과거 인상기 대비 축소된 반면, 기업 부문은 3년 연속 이자보상배율이 1 미만인 한계기업 비중이 19% 안팎까지 오르는 등 상승세를 지속하고 있다\"면서 \"기업의 변동금리 대출 비중과 연체율이 모두 높아 금리 상승에 따른 부담은 가계보다 기업이 훨씬 더 크다\"고 진단했다.\n그러면서 향후 기업 재무건전성 개선 변수로는 \"반도체 경기 개선에 따른 낙수효과가 확산하고, 은행권이 생산적 금융으로의 자금 공급을 지속하는지 여부가 될 것\"이라고 덧붙였다.\n최근 원·달러 환율 추이와 관련해서는 국내 은행의 자본 여력을 확충해 기업 대출 여력을 뒷받침하는 긍정적 요인이 될 것으로 평가했다. 올 상반기 외국인 주식 매도 등으로 상승세를 지속하며 한때 1560원대를 터치했던 원·달러 환율은 외환 수급 개선과 펀더멘털을 반영한 되돌림 현상으로 7월 이후 하락세를 이어가고 있다.\n장 부총재보는 \"2022년 이후 환율 급등기에는 국내 은행 자본비율이 약 1.5%p 하락 압력을 받았으나, 최근 환율 하락은 자본비율을 끌어올리는 요인\"이라며 \"환율이 100원 하락할 때 은행 자본비율은 약 0.3~0.4%포인트 개선되는 만큼, 자본 건전성 관리에 여유가 생긴 은행들이 중소기업 대출 공급을 늘릴 수 있는 여력이 커질 것\"이라고 설명했다.",
+      "published_at": "2026-09-22T06:30:00Z",
+      "retrieved_at": "2026-09-22T06:38:14.574105Z",
+      "sha256": "08fd0773ebeb2be8ca974d5c8f9ec021f7b1ae189a06acb0e22626864d35f998",
+      "registration": "etoday-economy",
+      "receipt": {
+        "ok": true,
+        "url": "https://www.etoday.co.kr/news/view/2628560",
+        "title": "한은 \"GDP 대비 가계부채비율, 연말 70%대로 하락⋯관리 기조 지속\" [종합] - 이투데이",
+        "bylines": [
+          "배근미"
+        ],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": "2026-09-22T15:30:00+09:00",
+        "retrieved_at": "2026-09-22T06:38:14.574105+00:00",
+        "article_chars": 2583,
+        "last_modified": null,
+        "requested_url": "https://www.etoday.co.kr/news/view/2628560",
+        "original_bytes": 146417,
+        "publisher_host": "www.etoday.co.kr",
+        "original_sha256": "08fd0773ebeb2be8ca974d5c8f9ec021f7b1ae189a06acb0e22626864d35f998",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "articleBody",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "488bdafa950e4a9501e9b8251b255cd6698c8570",
+      "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766296",
+      "title": "\"이란, 미국 군사 압박 완화 조건으로 7일 내 호르무즈 개방 제안\"",
+      "publisher": "SBS 뉴스",
+      "kind": "media",
+      "origin_group": "sbs",
+      "content": "▲ 이란 테헤란에서 오토바이 운전자들이 반(反)트럼프 대형 광고판 앞을 지나가고 있다.\n이란이 교착 상태에 빠진 미국과의 종전 협상 불씨를 되살리기 위해 미국의 군사적 압박 완화를 조건으로 7일 이내 호르무즈 해협 재개 방안을 제안했다고 교도통신이 22일(현지시간) 보도했습니다.\n이란 정부 고위 당국자는 교도통신에 미국이 군사적 압박을 낮추는 초기 조치에 나선다면 1주일 내로 호르무즈 해협을 다시 열겠다고 제안했다고 전했습니다.\n이는 미국과의 대화를 재개하기 위해 이란 측이 외교적 노력을 한층 강화하겠다는 뜻으로 풀이됩니다.\n이 당국자에 따르면, 이란은 중재국을 통해 이미 미국에 전달한 이번 제안에서 양국 간의 적대 관계 영구 종식을 위한 대화 재개를 요구했습니다.\n이란 정부는 이번 주 미국 뉴욕에서 열리는 유엔총회를 계기로 중재국들과 관련 협의를 진행할 계획입니다.\n이 당국자는 이번 총회를 계기로 마수드 페제시키안 이란 대통령과 도널드 트럼프 미국 대통령이 만날 가능성은 일축하면서도, 양국 간 합의를 향한 상황 진전은 여전히 가능할 것으로 내다봤습니다.\n그는 \"합의를 향해 나아갈 가능성이 존재한다\"면서 \"외교적 진전을 이루기 위해서는 미국 측이 진정성과 약속 이행 의지를 보여줘야 한다\"고 덧붙였습니다.\n페제시키안 대통령은 이날 유엔총회 참석을 위해 출국하기에 앞서 국영 방송과 인터뷰에서 \"국제무대에서 이란의 입장을 강력하게 피력하겠다\"고 천명했습니다.\n그는 \"이번 유엔총회에서 이란 국민이 겪은 부당함과 그간 자행된 범죄, 국제사회에 조성된 불신 문제를 집중적으로 제기할 것\"이라고 말했습니다.\n페제시키안 대통령은 이어 \"적들은 이란 국민의 항복을 받아내기 위해 모든 통로를 차단하려 시도 중이다.\n군사적 수단으로 목표 달성에 실패하자 내부 약화를 유도하고 있다\"며 \"화합과 단결을 통해 적들의 기도를 반드시 좌절시킬 것\"이라고 강조했습니다.\n(사진=AP, 연합뉴스)",
+      "published_at": "2026-09-22T07:45:00Z",
+      "retrieved_at": "2026-09-22T07:50:23.363469Z",
+      "sha256": "1a143b9204d0f34ebc19630f3aa73963e5803bc0466d6b1423c88513451ac653",
+      "registration": "sbs-world",
+      "receipt": {
+        "ok": true,
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766296",
+        "title": "\"이란, 미국 군사 압박 완화 조건으로 7일 내 호르무즈 개방 제안\"",
+        "bylines": [
+          "김민표 기자"
+        ],
+        "redirects": [],
+        "content_type": "text/html;charset=utf-8",
+        "published_at": "2026-09-22T16:44:59+09:00",
+        "retrieved_at": "2026-09-22T07:50:23.363469+00:00",
+        "article_chars": 944,
+        "last_modified": null,
+        "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766296",
+        "original_bytes": 122158,
+        "publisher_host": "news.sbs.co.kr",
+        "original_sha256": "1a143b9204d0f34ebc19630f3aa73963e5803bc0466d6b1423c88513451ac653",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "articleBody",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a",
+      "url": "https://www.yna.co.kr/view/AKR20260922073251017",
+      "title": "[AI프리즘] '보안 특화 AI' 착수…\"미중 프론티어 AI와 동급 성능 목표\"(종합)",
+      "publisher": "연합뉴스",
+      "kind": "media",
+      "origin_group": "yonhap",
+      "content": "권하영기자\n네이버클라우드 컨소시엄, 사이버보안 특화 모델 개발\n현장 보안 노하우 결합…국가 핵심시설 즉시 투입 목표\n이미지 확대\n사이버보안 특화 AI모델 개발사업 착수간담회\n(서울=연합뉴스) 배경훈 부총리 겸 과학기술정보통신부 장관이 22일 서울 중구 롯데호텔에서 열린 '사이버보안 특화 AI모델 개발사업 착수간담회'에서 발언하고 있다. 2026.9.22 [과학기술정보통신부 제공. 재판매 및 DB 금지] photo@yna.co.kr\n(서울=연합뉴스) 권하영 기자 = 네이버클라우드가 미국과 중국의 프론티어 AI 모델과 어깨를 나란히 하는 사이버보안 특화 AI 모델 개발을 선언했다.\n국가 핵심 인프라와 산업 현장에 즉시 투입할 수 있는 보안 AI를 10개월 안에 구축해 국내 보안 기업과 공공기관 전반에 공급하겠다는 구상이다.\n과학기술정보통신부는 22일 서울 더 그랜드 롯데 호텔에서 '사이버보안 특화 AI 모델 개발' 프로젝트 착수 간담회를 열고 네이버클라우드 컨소시엄의 개발 계획을 공유했다.\n컨소시엄 주관사인 네이버클라우드는 국내 보안기업들의 현장 데이터와 전문가 방어 노하우를 결합해 국가 핵심시설과 산업 현장에 즉시 투입할 수 있는 사이버보안 AI 모델을 개발하겠다는 목표를 밝혔다.\n이미지 확대\n사이버보안 특화 AI모델 개발사업 착수간담회\n(서울=연합뉴스) 배경훈 부총리 겸 과학기술정보통신부 장관이 22일 서울 중구 롯데호텔에서 열린 '사이버보안 특화 AI모델 개발사업 착수간담회'에서 발언하고 있다. 2026.9.22 [과학기술정보통신부 제공. 재판매 및 DB 금지] photo@yna.co.kr\n◇ 공격·방어 특화 모델 동시 개발…글로벌 프론티어급 정조준\n김진휘 네이버클라우드 전무는 이날 발표에서 공격(오펜시브)과 방어(디펜시브) 능력을 각각 특화한 2개의 보안 AI 모델을 동시에 개발하고, 각 모델의 벤치마크 목표로 세계 최고 수준의 프론티어 모델을 설정했다고 밝혔다.\n공격 능력을 강화하는 LG AI연구원의 엑사원은 취약점 발굴 분야의 최상위 벤치마크인 '사이버짐'에서 1단계 평가(2027년 2월 17일)까지 즈푸의 'GLM 5.3' 모델 대비 80% 수준을 달성하고, 최종 2단계 평가(2027년 7월 17일)에서는 100% 수준에 도달하는 것을 목표로 한다.\n방어 능력을 강화하는 네이버클라우드의 하이퍼클로바X는 침해사고 조사 분야의 상위 벤치마크인 '엑사이틴 벤치'에서 1단계 평가까지 스페이스XAI의 '그록4' 수준을 달성하고, 최종 2단계 평가에서는 리더보드 최상급인 '클로드 오푸스 4.5' 수준을 목표로 삼았다.\n컨소시엄은 모델 성능을 한국인정기구(KOLAS) 인증 공인기관의 객관적 검증을 거쳐 재현 가능한 수치로 증명한다는 방침이다.\n배경훈 부총리 겸 과기정통부 장관은 발표 직후 \"네이버클라우드가 독자파운데이션모델(독파모) 사업 이후 칼을 들었다\"며 \"당초 기대했던 것보다 훨씬 높은, 거의 프론티어급에 준하는 보안 특화 모델이 나올 것으로 기대한다\"고 말했다.\n김유원 네이버클라우드 대표는 \"우리의 통제권 안에 있는 보안 특화 모델이 필요하고, 여기에 우리의 데이터와 자료를 학습시킬 수 있는 환경이 구축되면 훨씬 더 안전한 미래를 보장할 수 있다\"고 강조했다.\n이어 \"이번 사업으로 만들어진 결과물이 네이버클라우드나 참여 기관만의 독점으로 활용돼선 안 된다\"며 \"보안 기업, 정부 공공기관, 학교, 병원 등 국내 전반에서 널리 쓰일 수 있도록 준비하겠다\"고 말했다.\n이미지 확대\n사이버보안 특화 AI모델 개발사업 착수간담회\n(서울=연합뉴스) 배경훈 부총리 겸 과학기술정보통신부 장관이 22일 서울 중구 롯데호텔에서 열린 '사이버보안 특화 AI모델 개발사업 착수간담회'에서 김유원 네이버클라우드 대표 및 참석자들과 기념 촬영하고 있다. 2026.9.22 [과학기술정보통신부 제공. 재판매 및 DB 금지] photo@yna.co.kr\n◇ 41개 기관·GPU 4천512장 투입…10개월 내 실증 목표\n이번 개발에는 33개 참여 기관과 8개 협력기관 등 총 41개 기관이 참여해 원팀 체제로 사업을 추진한다.\n국내 보안기업들의 현장 데이터와 전문가 방어 노하우를 집약한 '우리만의 AI 보안 모델'을 구축해 사이버 위협에 즉각 대응하겠다는 방침이다.\nGPU 자원으로는 정부가 제공하는 B200 그래픽처리장치(GPU) 256장에 네이버클라우드가 자체 보유한 B200 GPU 4천 장을 더해 지난 8월부터 모델 개발에 투입하고 있다. LG AI연구원도 H200 256장을 추가로 투입할 계획이어서 총 4천512장의 GPU가 즉시 가동된다.\n보안 학습 데이터는 단일 기관으로는 확보하기 어려운 최대 규모인 약 830테라바이트를 우선 확보했다.\n총 사업 기간은 10개월로, 내년 2월 1단계 평가를 거쳐 같은 해 6월 실증을 시작하고 7월 2단계 평가를 완료할 계획이다.\n이날 착수 간담회에서는 발표에 이어 컨소시엄 참여사들을 중심으로 사이버보안 특화 모델의 경쟁력 확보 전략과 정부 지원 요청사항 등을 주제로 한 자유토론도 진행됐다.\n배경훈 부총리는 \"AI 보안 주권 확립과 안보 전략자산으로서 우리만의 AI 보안 모델 확보는 필수적\"이라며 \"최근 부각된 AI 속도조절론 속에서도 프론티어 AI 역량 보유 여부가 한 국가의 미래를 좌우하는 만큼 속도 조절이 아니라 과감한 도전을 계속해야 한다\"고 강조했다.\n또한 \"정부는 사이버보안 특화모델 개발 컨소시엄과 합심해 인프라 지원, 경쟁력 확보, 활용 및 확산 등 모든 사항을 함께 고민하고 적극 지원할 예정\"이라며 \"이번 사업을 통해 안전 신뢰의 토대 위에 AI 혁신을 주도하는 대한민국 AI를 만들어 갈 수 있도록 민관이 함께 힘을 모아달라\"고 당부했다.\nkwonhy@yna.co.kr\n제보는 카카오톡 okjebo\n<저작권자(c) 연합뉴스,\n무단 전재-재배포, AI 학습 및 활용 금지>\n2026년09월22일 16시23분 송고\n#사이버보안\n#AI\n공유하기\nURL이 복사되었습니다.\n본문 글자 크기 조정\n제보",
+      "published_at": "2026-09-22T07:23:32Z",
+      "retrieved_at": "2026-09-22T07:29:48.322224Z",
+      "sha256": "e860ed4c095011074a0abf3c1eb80d2b2c9c77ae0a2299b442bd1dd186a586bb",
+      "registration": "yonhap-industry",
+      "receipt": {
+        "ok": true,
+        "url": "https://www.yna.co.kr/view/AKR20260922073251017",
+        "title": "[AI프리즘] '보안 특화 AI' 착수…\"미중 프론티어 AI와 동급 성능 목표\"(종합) | 연합뉴스",
+        "bylines": [
+          "권하영"
+        ],
+        "redirects": [],
+        "content_type": "text/html;charset=utf-8",
+        "published_at": "2026-09-22T16:23:32+09:00",
+        "retrieved_at": "2026-09-22T07:29:48.322224+00:00",
+        "article_chars": 2907,
+        "last_modified": null,
+        "requested_url": "https://www.yna.co.kr/view/AKR20260922073251017",
+        "original_bytes": 170410,
+        "publisher_host": "www.yna.co.kr",
+        "original_sha256": "e860ed4c095011074a0abf3c1eb80d2b2c9c77ae0a2299b442bd1dd186a586bb",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "article",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+      "url": "https://www.etoday.co.kr/news/view/2628308",
+      "title": "뉴욕증시, AI 수요 지속 기대에 상승⋯나스닥, 사상 최고치 [글로벌마켓 모닝 브리핑]",
+      "publisher": "이투데이",
+      "kind": "media",
+      "origin_group": "etoday",
+      "content": "▲미국 뉴욕증권거래소(NYSE)에서 트레이더들이 근무하고 있다. (뉴욕/UPI연합뉴스)\n뉴욕증시 마감\n뉴욕증시는 AI 관련주가 급등하자 상승했다.\n21일(현지시간) 뉴욕증권거래소에서 다우지수는 전 거래일 대비 366.19포인트(0.7%) 오른 5만2048.83에 마감했다. S&P500지수는 114.20포인트(1.5%) 오른 7764.70, 기술주 중심의 나스닥지수는 599.55포인트(2.3%) 상승한 2만7122.09에 거래를 마쳤다. 나스닥지수는 종가 기준 사상 최고치를 경신했다.\n주요 종목으로는 마이크로소프트가 1.59% 상승했고 애플은 0.85% 올랐다. 엔비디아는 2.30%, 테슬라는 3.03% 상승했다.\n특히 AI주가 강세를 보였다. 인텔은 12.14% 상승했고 AMD는 9.95% 올랐다. AMD는 시가총액이 1조 달러를 돌파했다. 퀄컴도 9.29% 올랐다.\n미국 안팎에서 AI 개발 속도 조절론과 인류멸망론으로 인해 여러 논쟁이 벌어지고 있지만, 여전히 AI가 기업 실적의 토대가 될 거라는 시장의 기대는 여전한 상황이다.\n이런 가운데 젠슨 황 엔비디아 최고경영자(CEO)는 AI가 인류를 멸종시킬 거라는 우려를 일축했다. 그는 전날 CBS뉴스 인터뷰에서 “2030년 세상이 종말할 리가 없다”며 “세상 종말 가능성은 0%”라고 말했다. 그는 “사람들을 겁주는 건 불필요하고 무책임한 행동”이라고 덧붙였다.\nAI주 강세와 더불어 국제유가와 국채 금리가 하락한 점도 주가를 떠받쳤다고 CNBC방송은 설명했다.\n미국 국채 금리는 하락했다. 뉴욕 채권시장에서 10년물 금리는 5bp(1bp=0.01%포인트) 하락한 4.95%를 기록했다.\n달러는 상승했다. 유로ㆍ달러 환율은 0.2% 하락한 1.1464달러, 파운드ㆍ달러 환율은 0.2% 내린 1.3367달러를 기록했다. 달러ㆍ엔 환율은 0.4% 상승한 157.43엔으로 집계됐다.\n국제유가\n국제유가는 미국과 이란이 대화를 통한 외교적 해법을 모색할 거라는 기대감에 급락했다.\n21일(현지시간) 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다. 런던 ICE선물거래소에서 11월물 브렌트유는 3.53달러(3.4%) 내린 배럴당 100.34달러로 집계됐다.\n앞서 도널드 트럼프 미국 대통령은 폭스뉴스 인터뷰에서 ‘유엔총회 참석을 계기로 이란 대통령과 회담할 가능성’에 관한 질문에 “아마도 열려 있을 것”이라고 답했다. 트럼프 대통령은 “내가 궁금한 건 이란이라는 나라 전체를 진짜 날려버려야 하느냐는 것”이라며 “그들이 얌전히 행동하는 게 좋을 것”이라고 설명했다.\n뉴욕타임스(NYT)는 트럼프 행정부 관계자들을 인용해 사우디아라비아 요청에도 불구하고 트럼프 대통령이 당분간 친이란 성향의 후티 반군에 대한 폭격을 자제하기로 했다고 보도하기도 했다.\n한편 JP모건체이스는 보고서에서 사우디가 테러 공격을 받아 동서 송유관을 폐쇄했지만, 중동 지역의 원유 수출이 회복력을 보인다고 밝혔다. TD증권 역시 호르무즈 해협을 통한 수출이 꾸준히 늘고 있고 중동 지역 전반에서 유입되는 물량이 전쟁 이전 수준의 약 80%에 달했다고 전했다.\n뉴욕금값 마감\n뉴욕금값이 21일(현지시간) 미국 연방준비제도(Fedㆍ연준)의 추가 연속 금리 인상 가능성을 저울질하면서 1% 가까이 내렸다.\n뉴욕상품거래소(COMEX)에서 12월 인도분 금 선물 가격은 전 거래일 대비 41.00달러(0.93%) 하락한 온스당 4383.90달러에 마감했다. 4거래일 만에 아래로 향했다.\n국제유가가 100달러 아래로 떨어졌음에도 투자자들이 연준의 추가 연속 금리 인상 위험을 주시하면서 금값이 약세를 보였다는 분석이다.\n앞서 지난주 연준은 9월 연방공개시장위원회(FOMC)에서 만장일치로 기준금리를 3.75∼4.00%로 0.25%포인트(1bp=0.01%포인트) 인상했다. 함께 공개된 점도표에서는 올해 말 기준금리 중간값이 4.1%로 제시되며 연내 한 차례 추가 인상이 단행될 것임을 시사했다.\n오스탄 굴스비 미국 시카고연방준비은행 총재는 공급 충격이 반복되고 장기화하면 연준도 금리 인상 등으로 대응해야 한다고 봤다. 또 물가 상승에 수요 과열까지 가세했다면 연준이 예고한 한 차례 추가 인상만으로는 부족할 수 있다고 진단했다. 굴스비는 올해 FOMC 투표권이 없지만 내년에는 표결권을 갖는다.\n블룸버그통신에 따르면 굴스비 총재는 이날 런던에서 열린 ‘오피셜 통화 금융기관 포럼’에서 “공급 충격은 더 빈번하게 발생하고, 더 큰 충격을 주며, 더 오래 지속되고 있다”며 “인플레이션을 유발하는 공급 충격이 지속성을 띠기 시작하면 이를 일시적인 현상으로 보고 넘길 수 있다는 논리는 더 이상 성립하지 않는다”고 말했다. 이어 “이러한 충격과 그로 인해 발생하는 인플레이션에 대한 연준의 대응이 수요 과열에 대응할 때만큼 공격적일 필요는 없지만, 그렇다고 고통 없이 이뤄질 수 있는 것은 아니다”고 설명했다.\n그는 또 “물가 상승 압력이 수요 과열에서도 비롯되고 있다면 연준이 중간값 전망으로 제시한 한 차례의 추가 금리 인상만으로는 물가 안정을 회복하기에 충분하지 않을 수 있다”고 언급했다.\n전일에는 연준 내 대표적 매파 인사로 꼽히는 닐 카시카리 미국 미니애폴리스 연방준비은행(연은) 총재가 미국 경제의 인플레이션이 단순히 유가 상승에 따른 것이 아니라, 경제 전반의 모든 부문에서 지나치게 높은 수준이라고 진단했다.\n존 윌리엄스 뉴욕 연은 총재는 22일 뉴욕에서 열리는 2026년 미국 국채시장 콘퍼런스에서 연설할 예정이다.\n아울러 트레이더들에 따르면 런던 금시장 가격 결정 경매에서 매수 희망 물량의 4배에 달하는 금이 매물로 나온 것도 금값에 하락 압력을 가했다.\n글로벌X ETF의 저스틴 린 애널리스트는 “케빈 워시 연준 의장이 금리를 인상한 이후 연준 독립성을 둘러싼 논란은 대체로 지나갔고, 향후 금리 경로에 관한 지침도 전반적으로 예상에 부합했다”며 “이에 따라 금시장에는 뚜렷한 서사가 없고 단기적으로 새로운 촉매도 비교적 부족한 상황”이라고 말했다. 이어 “이처럼 별다른 재료가 없는 상황에서 금값은 유가 움직임과 전반",
+      "published_at": "2026-09-21T23:46:00Z",
+      "retrieved_at": "2026-09-21T23:48:54.055887Z",
+      "sha256": "5b5072967b2ef1cc450fe0adcf57c41f004106d6b7179b0b822077ff338ee60d",
+      "registration": "etoday-global",
+      "receipt": {
+        "ok": true,
+        "url": "https://www.etoday.co.kr/news/view/2628308",
+        "title": "뉴욕증시, AI 수요 지속 기대에 상승⋯나스닥, 사상 최고치 [글로벌마켓 모닝 브리핑] - 이투데이",
+        "bylines": [
+          "배준호"
+        ],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": "2026-09-22T08:46:00+09:00",
+        "retrieved_at": "2026-09-21T23:48:54.055887+00:00",
+        "article_chars": 3254,
+        "last_modified": null,
+        "requested_url": "https://www.etoday.co.kr/news/view/2628308",
+        "original_bytes": 144802,
+        "publisher_host": "www.etoday.co.kr",
+        "original_sha256": "5b5072967b2ef1cc450fe0adcf57c41f004106d6b7179b0b822077ff338ee60d",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "articleBody",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+      "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764907",
+      "title": "[뉴욕증시] AI·반도체 랠리…국제유가 대폭 하락",
+      "publisher": "SBS 뉴스",
+      "kind": "media",
+      "origin_group": "sbs",
+      "content": "뉴욕증시입니다.\n미 증시 3대지수가 일제히 상승했습니다.\n나스닥은 2.26% 오르며 사상 최대치를 경신했고 S&P500은 7천7백선을 회복했습니다.\n업종별로는 커뮤니케이션이 3%, 기술주가 2% 오른 반면 에너지는 유가 하락 여파로 2% 약세를 보였습니다.\n뉴욕증시가 인공지능과 반도체주의 랠리에 힘입어 일제히 상승했습니다.\n증시를 짓눌렀던 국제유가와 국채금리가 동반 하락하면서 투자 심리가 빠르게 안정을 찾았습니다.\n오늘 시장 관심은 중동발 리스크 '완화'에 쏠렸습니다.\n트럼프 미국 대통령이 이번 유엔 총회 기간 이란 대통령과의 회담 가능성을 내비치면서 지정학적 긴장감이 완화되었고, 원유 공급 회복 기대도 겹치면서 서부텍사스산원유와 브렌트유가 큰 폭으로 떨어졌습니다.\n유가 안정은 곧바로 인플레이션 압박을 낮춰 미 10년 만기 국채금리를 심리적 저항선인 5% 아래로 끌어내렸고, 고금리 타격을 입었던 성장주들에 강력한 호재로 작용했습니다.\n종목별로는 AI 반도체주의 활약이 돋보였는데요, 차세대 AI 인프라 확충과 연산 수요 급증에 힘입어 AMD가 10%에 가까운 급등세를 탔고 사상 처음으로 시가총액 1조 달러 고지를 밟았습니다.\n메타 역시 자체 개발한 AI 에이전트 '뮤즈'가 앱스토어 다운로드 1위를 석권하며 흥행 돌풍을 일으키자 11% 넘게 폭등했습니다.\n이번 주 열릴 미·중 정상회담과 중동 외교전의 결과에 따라 증시의 추가 상승 여부가 판가름날 전망입니다.",
+      "published_at": "2026-09-21T22:48:00Z",
+      "retrieved_at": "2026-09-21T22:53:49.739167Z",
+      "sha256": "02e2131d3d65f8ce52588523950cc708c97b272055d63bf55dabbd8101b8a375",
+      "registration": "sbs-economy",
+      "receipt": {
+        "ok": true,
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764907",
+        "title": "[뉴욕증시] AI·반도체 랠리…국제유가 대폭 하락",
+        "bylines": [
+          "SBS NEWS"
+        ],
+        "redirects": [],
+        "content_type": "text/html;charset=utf-8",
+        "published_at": "2026-09-22T07:48:58+09:00",
+        "retrieved_at": "2026-09-21T22:53:49.739167+00:00",
+        "article_chars": 712,
+        "last_modified": null,
+        "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764907",
+        "original_bytes": 124735,
+        "publisher_host": "news.sbs.co.kr",
+        "original_sha256": "02e2131d3d65f8ce52588523950cc708c97b272055d63bf55dabbd8101b8a375",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "articleBody",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+      "url": "https://www.etoday.co.kr/news/view/2628228",
+      "title": "국제유가, 미국ㆍ이란 대화 기대감에 급락⋯WTI 4.51%↓ [상보]",
+      "publisher": "이투데이",
+      "kind": "media",
+      "origin_group": "etoday",
+      "content": "▲미국 텍사스에 펌프잭이 보인다. 텍사스/로이터연합뉴스\n국제유가는 미국과 이란이 대화를 통한 외교적 해법을 모색할 거라는 기대감에 급락했다.\n21일(현지시간) 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다. 런던 ICE선물거래소에서 11월물 브렌트유는 3.53달러(3.4%) 내린 배럴당 100.34달러로 집계됐다.\n앞서 도널드 트럼프 미국 대통령은 폭스뉴스 인터뷰에서 ‘유엔총회 참석을 계기로 이란 대통령과 회담할 가능성’에 관한 질문에 “아마도 열려 있을 것”이라고 답했다. 트럼프 대통령은 “내가 궁금한 건 이란이라는 나라 전체를 진짜 날려버려야 하느냐는 것”이라며 “그들이 얌전히 행동하는 게 좋을 것”이라고 설명했다.\n뉴욕타임스(NYT)는 트럼프 행정부 관계자들을 인용해 사우디아라비아 요청에도 불구하고 트럼프 대통령이 당분간 친이란 성향의 후티 반군에 대한 폭격을 자제하기로 했다고 보도하기도 했다.\n한편 JP모건체이스는 보고서에서 사우디가 테러 공격을 받아 동서 송유관을 폐쇄했지만, 중동 지역의 원유 수출이 회복력을 보인다고 밝혔다. TD증권 역시 호르무즈 해협을 통한 수출이 꾸준히 늘고 있고 중동 지역 전반에서 유입되는 물량이 전쟁 이전 수준의 약 80%에 달했다고 전했다.",
+      "published_at": "2026-09-21T21:21:00Z",
+      "retrieved_at": "2026-09-21T21:22:30.270757Z",
+      "sha256": "c1a48d9f063012afe5f0f11cddc36ea468561921ff7c56b998e5ffea0991f7f8",
+      "registration": "etoday-global",
+      "receipt": {
+        "ok": true,
+        "url": "https://www.etoday.co.kr/news/view/2628228",
+        "title": "국제유가, 미국ㆍ이란 대화 기대감에 급락⋯WTI 4.51%↓ [상보] - 이투데이",
+        "bylines": [
+          "고대영"
+        ],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": "2026-09-22T06:21:00+09:00",
+        "retrieved_at": "2026-09-21T21:22:30.270757+00:00",
+        "article_chars": 665,
+        "last_modified": null,
+        "requested_url": "https://www.etoday.co.kr/news/view/2628228",
+        "original_bytes": 137238,
+        "publisher_host": "www.etoday.co.kr",
+        "original_sha256": "c1a48d9f063012afe5f0f11cddc36ea468561921ff7c56b998e5ffea0991f7f8",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "articleBody",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "c47ace294846384d3e56e44072728e783537800e",
+      "url": "https://www.cnbc.com/2026/09/22/oil-iran-us-bessent-un-crude.html",
+      "title": "Oil rises amid worries of growing Iran-U.S. tensions after Bessent issues Iranian airline shutdown warning",
+      "publisher": "CNBC",
+      "kind": "media",
+      "origin_group": "cnbc",
+      "content": "Key Points\nU.S. Treasury Secretary Scott Bessent told CNBC that all Iranian airlines will be shut down from Wednesday.\nInvestors are still keeping an eye on a possible diplomatic solution as Iranian President Masoud Pezeshkian is set to fly to the United Nations in New York.\nIn this article\n@LCO26X\nFuel tankers carrying Iraqi oil arrive at the coastal storage facilities of the Baniyas Oil Terminal in Tartus province, Syria, on September 13, 2026.\nHasan Belal | Anadolu | Getty Images\nOil rose Tuesday amid concerns of growing Iran-U.S. tensions, after U.S. Treasury Secretary Scott Bessent told CNBC that all Iranian airlines will be shut down from Wednesday.\nFutures for international benchmark Brent crude for November delivery gained 1.53% at $101.88 a barrel as of 1:37 a.m. ET. U.S. West Texas Intermediate futures for October advanced 1.5% at $97.22 per barrel.\nBrent\nBessent told CNBC that all Iranian airlines will be shut down from Wednesday. \"How do we do that? That if they land, you cannot provide them with fuel. You cannot provide them with landing services, you cannot sell them tickets, or you will be knocked out of the dollar system,\" Bessent said on CNBC's \"Squawk Box.\"\nInvestors are still eyeing a possible diplomatic solution to the Mideast conflict, following news that Iranian president Masoud Pezeshkian is set to fly to the United Nations in New York.\nPezeshkian will address the assembly and present Iran's positions on \"international developments,\" with a particular focus on its war with the U.S. and Israel, according to the country's semi-official Tasnim news agency. Talks with the leaders of several countries are also scheduled to take place Sept. 22 to 26, and 28, on the sidelines of the event.\nWTI\nAttention will likely remain focused on diplomatic developments, said Lukman Otunuga, head of market research at online brokerage FXTM.\n\"Confirmation of direct talks between Washington and Tehran could place additional selling pressure on prices by improving expectations for regional supply,\" Otunuga said.\n\"Conversely, Tehran has warned that renewed escalation would trigger a significant response, which could push crude prices higher,\" he added.\n—CNBC's Anniek Bao contributed to the report.\nChoose CNBC as your preferred source on Google and never miss a moment from the most trusted name in business news.",
+      "published_at": "2026-09-22T05:55:48Z",
+      "retrieved_at": "2026-09-22T06:27:12.572266Z",
+      "sha256": "776eb98710042bb68f120cacc57d0c9b88c3884367e616669336701ca1c11c5d",
+      "registration": "cnbc-world",
+      "receipt": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/22/oil-iran-us-bessent-un-crude.html",
+        "title": "oil, iran, us, bessent, UN, crude",
+        "bylines": [
+          "Justina Lee"
+        ],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": "2026-09-22T04:22:20+0000",
+        "retrieved_at": "2026-09-22T06:27:12.572266+00:00",
+        "article_chars": 2350,
+        "last_modified": null,
+        "requested_url": "https://www.cnbc.com/2026/09/22/oil-iran-us-bessent-un-crude.html",
+        "original_bytes": 766078,
+        "publisher_host": "www.cnbc.com",
+        "original_sha256": "776eb98710042bb68f120cacc57d0c9b88c3884367e616669336701ca1c11c5d",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "main",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+      "url": "https://www.yna.co.kr/view/AKR20260922006551075",
+      "title": "뉴욕증시, 'AI낙관론'에 메타·인텔 급등…나스닥 사상 최고치(종합)",
+      "publisher": "연합뉴스",
+      "kind": "media",
+      "origin_group": "yonhap",
+      "content": "김경윤기자\nAI에이전트 소비자 반응에 메타 11%↑…AMD 시가총액 1조 달러 돌파\n미·이란 협상 기대에 국제유가 큰폭 하락…10년물 美국채 금리도 5% 아래로\n이미지 확대\n월스트리트\n[UPI=연합뉴스. 재판매 및 DB 금지]\n(로스앤젤레스=연합뉴스) 김경윤 특파원 = 인공지능(AI) 관련주가 급등하고 유가가 하락하면서 21일(현지시간) 미국 뉴욕증시 3대 지수가 일제히 강세로 마감했다.\n이날 뉴욕증권거래소(NYSE)에서 기술주 중심의 나스닥 종합지수는 전장보다 599.55포인트(2.3%) 뛴 27,122.09로 마감하며 종가 기준 사상 최고치를 경신했다.\n상승률은 지난달 4일(2.6%) 이후 가장 컸다.\n스탠더드앤드푸어스(S&P) 500지수 종가는 전장 대비 114.20포인트(1.5%) 오른 7,764.70으로 집계됐다.\n다우존스30 산업평균지수는 366.19포인트(0.7%) 오른 52,048.83으로 거래를 마쳤다.\n이날 투자자들이 AI 낙관론에 베팅하면서 관련주가 큰 폭으로 상승했다.\n우선 메타의 개인용 업무 수행 AI에이전트 '뮤즈'가 애플 앱스토어 무료 애플리케이션(앱) 부문 1위에 오르며 좋은 반응을 얻은 것이 연쇄적으로 관련 주에도 영향을 끼쳤다.\n메타의 주가는 이날 11.4% 뛰며, 지난해 4월 이래 가장 큰 급등세를 보였다.\n이와 함께 반도체 기업 AMD 주가는 이날 10% 상승한 615.52달러로 마감하며 시가총액 1조 달러(약 1천375조원)를 넘겼다.\nAMD는 엔비디아, 브로드컴, 마이크론에 이어 시가총액 1조 달러를 달성한 미국 반도체 기업 대열에 들게 됐다.\n인텔 주가는 무려 12.1% 올랐고, 퀄컴도 9.3%의 상승세를 기록했다.\n매슈 브라이슨 웨드부시 애널리스트는 \"AI 에이전트의 실질적인 연산장치 제조사는 인텔과 AMD 단 두 곳뿐\"이라며 AI에 필수적인 중앙처리장치(CPU) 제조사가 주목받은 이유를 설명했다.\n여기에 더해 AI 속도 조절론 속에서도 여전히 주요 기업들이 AI 지출을 줄이지 않는 것을 보고 시장에 낙관론이 퍼진 것도 영향을 줬다.\n이미지 확대\n메타\n[로이터=연합뉴스. 재판매 및 DB 금지]\n유가가 4거래일 연속 하락세를 이어가고 국채 금리가 반락하면서 주식시장의 상승세를 떠받쳤다\n유엔총회를 앞두고 미국과 이란 전쟁이 외교적 해법을 찾을지도 모른다는 기대에 이날 국제유가는 큰 폭으로 떨어졌다.\n서부 텍사스산 원유(WTI) 10월 인도분은 4.5% 내린 배럴당 95.78달러, 브렌트유 11월 인도분은 3.4% 내린 배럴당 100.34달러로 마감했다.\n인플레이션(물가 상승) 우려가 완화되면서 고공 행진하던 미 국채 금리도 안정되는 모습을 보였다.\n10년 만기 미 국채 금리는 2bp(1bp=0.01%포인트) 떨어진 4.972%를 기록했다. 30년 만기 국채 금리는 5.305%였다.\n아트 호건 B.라일리 웰스 수석 시장 전략가는 \"유가와 미국 10년물 국채 금리 두 요소만 본다면 단기적으로 시장이 역풍에서 순풍으로 전환됐다\"고 설명했다.\nheeva@yna.co.kr\n제보는 카카오톡 okjebo\n<저작권자(c) 연합뉴스,\n무단 전재-재배포, AI 학습 및 활용 금지>\n2026년09월22일 06시24분 송고\n#뉴욕증시\n#마감\n공유하기\nURL이 복사되었습니다.\n본문 글자 크기 조정\n제보",
+      "published_at": "2026-09-21T21:24:26Z",
+      "retrieved_at": "2026-09-21T21:32:53.660026Z",
+      "sha256": "b1ab176c77aae47099d2162ff64fd5e50dc503339df658e282040b63c829fd16",
+      "registration": "yonhap-international",
+      "receipt": {
+        "ok": true,
+        "url": "https://www.yna.co.kr/view/AKR20260922006551075",
+        "title": "뉴욕증시, 'AI낙관론'에 메타·인텔 급등…나스닥 사상 최고치(종합) | 연합뉴스",
+        "bylines": [
+          "김경윤"
+        ],
+        "redirects": [],
+        "content_type": "text/html;charset=utf-8",
+        "published_at": "2026-09-22T06:24:26+09:00",
+        "retrieved_at": "2026-09-21T21:32:53.660026+00:00",
+        "article_chars": 1603,
+        "last_modified": null,
+        "requested_url": "https://www.yna.co.kr/view/AKR20260922006551075",
+        "original_bytes": 163179,
+        "publisher_host": "www.yna.co.kr",
+        "original_sha256": "b1ab176c77aae47099d2162ff64fd5e50dc503339df658e282040b63c829fd16",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "article",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "f6a6901325618500df86580eedff17f0d8e64b76",
+      "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766074",
+      "title": "유엔총회 출국길 오른 이란 대통령 \"고개 당당히 들고 이겨냈다\"",
+      "publisher": "SBS 뉴스",
+      "kind": "media",
+      "origin_group": "sbs",
+      "content": "▲ 마수드 페제시키안 이란 대통령\n마수드 페제시키안 이란 대통령은 22일(현지시간) 유엔 총회 참석을 위해 출국하면서 강경한 입장을 재차 밝혔습니다.\n이란 국영방송에 따르면 페제시키안 대통령은 \"우리는 고개를 당당히 들고 이겨냈으며 이는 우리의 존엄과 자부심의 원천\"이라며 \"국제무대에서 우리 입장을 단호히 수호할 것\"이라고 말했습니다.\n그는 \"유엔 총회에서 우리가 제기한 사안은 이란 국민의 피해, 그간 자행된 (미국·이스라엘의) 범죄들, 그리고 쌓여온 불신을 규명하는 것\"이라고 강조했습니다.\n이어 \"그들은 자신들이 저지른 범죄가 폭로되는 것을 두려워한다\"며 \"이 때문에 이란 취재진의 동행을 막았지만 현장에 있을 수많은 국제 언론을 통해 우리 메시지를 잘 관리해 전달하면 이란 국민의 목소리를 충분히 알릴 수 있다\"고 덧붙였습니다.\n그는 \"우리는 여러 차례 협상장에 나갔고 합의문에 서명했다\"면서 \"안타깝게도 온 세상이 봤듯 약속은 이행되지 않았고 서명한 합의문들은 짓밟혔다\"고 지적했습니다.\n또 \"적들은 가능한 모든 방법으로 이란 국민을 굴복시키려 하고 있다\"며 \"군사적 수단으로 실패하자 미디어와 분열을 악용하고 우리의 약점을 최대한 이용해 내부로부터 우리를 약하게 하려 한다\"고 주장했습니다.\n페제시키안 대통령은 현지시간으로 22일 뉴욕에서 이스라엘을 포함한 중동 전쟁 당사국 정상들이 모인 가운데 개막하는 유엔총회 고위급 회기에 참석할 예정이며, 23일 오전에는 연단에 올라 연설할 예정입니다.",
+      "published_at": "2026-09-22T06:17:00Z",
+      "retrieved_at": "2026-09-22T06:28:20.258169Z",
+      "sha256": "db6b4dd0192c58c38b47afad58b7c646328610f7c2c429026c98bb7c5698e9b9",
+      "registration": "sbs-world",
+      "receipt": {
+        "ok": true,
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766074",
+        "title": "유엔총회 출국길 오른 이란 대통령 \"고개 당당히 들고 이겨냈다\"",
+        "bylines": [
+          "김민표 기자"
+        ],
+        "redirects": [],
+        "content_type": "text/html;charset=utf-8",
+        "published_at": "2026-09-22T15:17:28+09:00",
+        "retrieved_at": "2026-09-22T06:28:20.258169+00:00",
+        "article_chars": 731,
+        "last_modified": null,
+        "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766074",
+        "original_bytes": 121113,
+        "publisher_host": "news.sbs.co.kr",
+        "original_sha256": "db6b4dd0192c58c38b47afad58b7c646328610f7c2c429026c98bb7c5698e9b9",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "articleBody",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37",
+      "url": "https://www.cnbc.com/2026/09/22/cnbc-daily-open-ai-meta-muse.html",
+      "title": "CNBC Daily Open: AI trade goes Meta after Muse launch",
+      "publisher": "CNBC",
+      "kind": "media",
+      "origin_group": "cnbc",
+      "content": "Key Points\nA rally in Meta shares helps lift the Nasdaq to a fresh record high.\nMeta's Muse AI agent downloads surge following its release.\nOil prices push higher after Brent briefly dipped below $100 a barrel.\nThe UN General Assembly gets underway in New York, with President Donald Trump due to hold Middle East and Ukraine meetings.\nU.S. CEOs prepare to attend the state dinner between President Trump and Chinese President Xi Jinping on Thursday.\nIn this article\nONON\nON\nNKE\nSamuel Boivin | Nurphoto | Getty Images\nHello, this is Leonie Kidd coming to you from London. Welcome to another edition of CNBC's Daily Open.\nA new AI darling has emerged in the form of Meta's Muse.\nMark Zuckerberg's group has surged ahead in the AI race with a new model that has overtaken its peers in download popularity and helped drive the Mag Seven and Nasdaq back to record highs.\nBut with AI still a flashpoint for global leaders meeting stateside this week, will the gains be short-lived?\nRead on for more.\nWhat you need to know today\nThe Nasdaq hit a fresh record high on Monday, driven by a rally in Meta shares, which logged their best day in more than a year.\nMark Zuckerberg's group is catching a bid after the successful launch of its new AI model. Meta's Muse agent overtook ChatGPT as the leading iOS free app on Friday, with over 730,000 downloads in the last five days.\nTrading volumes in the stock surged, with shares up over 20% since the details of the AI assistant were released.\nThe moves led the broader Magnificent Seven group of stocks higher, with the Roundhill Magnificent Seven ETF hitting a record level for the second straight session.\nBrent is back\nOil prices are rising in early trade on Tuesday, bouncing back after futures for international benchmark Brent crude briefly dipped below the $100 a barrel mark.\nIt comes with the UN General Assembly set to get underway in New York on Tuesday. President Donald Trump will hold meetings on the sidelines with Gulf leaders, while Iran's President Masoud Pezeshkian is expected to address the event.\nPresident Trump is also due to hold bilateral meetings with U.K. Prime Minister Andy Burnham and Ukrainian President Volodymyr Zelenskyy.\nDinner date\nPreparations are also underway for the much-anticipated state dinner between President Trump and Chinese President Xi Jinping. The U.S. has announced that several American tech and banking CEOs will join the event, but Beijing is yet to share the names of any Chinese companies joining the state visit.\nWhile a trade truce between the two nations seems to be holding, AI and Iran could present flashpoints for the two leaders as they meet in Washington D.C.\nWeighing up the competition\nIn corporate news, shares in Novo are set to open after a volatile session on Monday. The stock sank at the start of the week as investors were skeptical about the Danish drug-maker's growth strategy and competition in the weight-loss market.\nSquawk Box Europe will speak with the CEO following the capita",
+      "published_at": "2026-09-22T06:09:14Z",
+      "retrieved_at": "2026-09-22T06:16:52.926827Z",
+      "sha256": "30d8d05b132e77083f8c2f571a621103cafaaa67bee56076779dccfe925792ba",
+      "registration": "cnbc-world",
+      "receipt": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/22/cnbc-daily-open-ai-meta-muse.html",
+        "title": "CNBC Daily Open: AI trade goes Meta after Muse launch",
+        "bylines": [
+          "Leonie Kidd"
+        ],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": "2026-09-22T06:09:14+0000",
+        "retrieved_at": "2026-09-22T06:16:52.926827+00:00",
+        "article_chars": 4152,
+        "last_modified": null,
+        "requested_url": "https://www.cnbc.com/2026/09/22/cnbc-daily-open-ai-meta-muse.html",
+        "original_bytes": 925955,
+        "publisher_host": "www.cnbc.com",
+        "original_sha256": "30d8d05b132e77083f8c2f571a621103cafaaa67bee56076779dccfe925792ba",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "main",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "d8d032fb5ceba798fecf9f56cd3c01e1fd40b4ef",
+      "url": "https://www.bbc.co.uk/news/articles/cwm2qpmepmlzo",
+      "title": "Iran must stop arming Houthis in Yemen, G7 says ahead of UN General Assembly",
+      "publisher": "BBC News",
+      "kind": "media",
+      "origin_group": "bbc",
+      "content": "Image source, EPA\nByTabby Wilson\nPublished\n22 September 2026, 05:21 BST\nUpdated 14 minutes ago\nIran must \"end its arming of and support\" for the Houthis in Yemen, the foreign ministers of G7 nations have said in a joint statement.\nThe G7 also condemned \"in the strongest terms\" Houthi attacks on Saudi Arabia, adding that the recent escalation in fighting against Saudi-backed forces in Yemen represented a threat to regional and global energy security.\nThousands of refugees have fled Yemen in recent days after the Iran-backed group seized territory along the country's Red Sea coastline, including near the Bab al-Mandab Strait, a critical shipping route for global trade.\nThe statement comes ahead of the annual UN General Assembly in New York, where senior Iranian officials are due to speak.\n\"We call on the Houthis to immediately cease all military actions, all threats and attacks against civilian shipping, and to return to the political process in good faith,\" said the foreign ministers of the UK, Canada, France, Germany, Italy, Japan and the United States.\nIt went on: \"Their reprehensible actions constitute a dangerous pattern of escalation that risks further exacerbating the conflict, undermining international trade and creating global economic instability.\"\n\"Looking forward, we will continue to support the legitimate Government of Yemen and reaffirm our strong commitment to the unity, sovereignty, independence, and territorial integrity of Yemen,\" the ministers said.\nTheir statement was issued following a meeting on the sidelines of the UN General Assembly.\nYemenis flee across Red Sea as Houthis and Saudi-backed forces escalate war\nPublished\n15 hours ago\nHouthis say they targeted Saudi capital with ballistic missiles\nPublished\n2 days ago\nMeanwhile, at least six people were killed in Saudi strikes on the strategic Yemeni city of Mokha, the AFP news agency reported, citing Houthi-affiliated media.\nTwo children and a woman were among the dead, while eight others were injured in the attack on the city, which the Houthis seized from pro-government forces earlier this month.\nSaudi Arabia, which backs the internationally recognised government of Yemen, has not yet commented on the reported strikes.\nThe UN estimates that in all, more than 120,000 Yemenis have been displaced by the sudden surge in fighting along Yemen's Red Sea coast.\nEarlier this month, the Houthis, who had already seized most of the populated parts of Yemen, took control of Bab al-Mandab, a narrow, maritime chokepoint where the southern Red Sea flows into the Gulf of Aden and the wider Indian Ocean.\nFigure caption,\nWatch: Inside a camp for Yemeni refugees in Djibouti\nSaudi Arabia has retaliated with hundreds of air strikes in the region.\nThe Houthis have also launched hundreds of drones and missiles at cities and infrastructure in south-western Saudi Arabia, including the capital city, Riyadh.\nPrime Minister Andy Burnham has said the UK will provide \"defensive air-to-air refuelling\" supp",
+      "published_at": "2026-09-22T05:16:07Z",
+      "retrieved_at": "2026-09-22T05:37:23.458039Z",
+      "sha256": "cd08f9a4c124749a17bd0636d356fc4e99e792ed1883390ece771fb65004df96",
+      "registration": "bbc-world",
+      "receipt": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/cwm2qpmepmlzo",
+        "title": "Iran must stop arming Houthis in Yemen, G7 says ahead of UN General Assembly - BBC News",
+        "bylines": [
+          "Tabby Wilson"
+        ],
+        "redirects": [],
+        "content_type": "text/html",
+        "published_at": "2026-09-22T04:21:11.661Z",
+        "retrieved_at": "2026-09-22T05:37:23.458039+00:00",
+        "article_chars": 4380,
+        "last_modified": null,
+        "requested_url": "https://www.bbc.co.uk/news/articles/cwm2qpmepmlzo",
+        "original_bytes": 410595,
+        "publisher_host": "www.bbc.co.uk",
+        "original_sha256": "cd08f9a4c124749a17bd0636d356fc4e99e792ed1883390ece771fb65004df96",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "article",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "f45edfbad52e19fd3b724efbcae4a9573af35fda",
+      "url": "https://www.cnbc.com/2026/09/22/india-nse-ipo-billion-nasdaq.html",
+      "title": "Investors rush into India’s National Stock Exchange IPO at valuation multiple above Nasdaq",
+      "publisher": "CNBC",
+      "kind": "media",
+      "origin_group": "cnbc",
+      "content": "Key Points\nThe National Stock Exchange's $2.3 billion IPO has attracted total bids worth more than $10 billion.\nThe offer was 5.7 times over-subscribed on Monday, thanks to strong demand from institutional and high-net-worth buyers.\nNSE is valued at a higher price-to-earnings multiple than U.S. stock exchange companies such as Nasdaq and Intercontinental Exchange.\nThe atrium inside the National Stock Exchange (NSE) building in Mumbai, India, on Wednesday, Sept. 9, 2026. NSE, the operator of the world's largest derivatives exchange by trading volume, is seeking a valuation of as much as 5.26 trillion rupees ($55 billion) in its planned initial public offering, according to people familiar with the matter.\nBloomberg | Bloomberg | Getty Images\nThe $2.3 billion initial public offer of shares in India's National Stock Exchange has received a frenzied response from investors, drawing bids worth more than $10 billion despite its hefty price-to-earnings multiple, which values it above several U.S. stock exchange businesses such as Nasdaq.\nDriven by strong demand from institutional and high-net-worth buyers, the NSE IPO secured bids for 505.81 million shares on Monday, 5.7 times the 88.64 million shares on offer.\nAs part of the IPO, the company also raised 67.5 billion rupees ($704 million) last week from anchor investors such as the Monetary Authority of Singapore, the Abu Dhabi Investment Authority and India's top life insurer Life Insurance Corporation of India.\nThe NSE IPO is the country's biggest listing so far this year and the second largest ever after Hyundai Motor India's share offer of $3.3 billion in 2024.\nThe offer has been one of the most anticipated large listings this year in India and has been in the works since 2016. The business offers investors a strong play on India's broadening retail participation in capital markets.\nAccording to the country's economic survey released earlier this year, equity investments, which were once a limited part of household balance sheets, have become a \"significant component of financial wealth.\" The share of equity and mutual funds in annual household financial savings increased to 15.2% in the financial year ending March 2025 from 2% in the financial year ending March 2012, it said.\nIndia is among the top 10 equity markets globally with a total market cap of around 492 trillion rupees ($5.1 trillion), and NSE is the main exchange. It commands a 93% share of India's cash market and accounts for nearly 100% of the country's equity futures trading, alongside 75% of equity options trading, according to the IPO filing.\nNSE's \"asset-light business model enables consistently high margins and cash generation,\" Indian brokerage Geojit Financial Services said in a report on Sept. 16, asking investors to subscribe to the IPO.\nThe report added that the growing capital market participation and \"increasing financialization\" in India provided NSE with \"a strong long-term growth runway.\"\nNSE is valued at a price-to-earni",
+      "published_at": "2026-09-22T04:00:28Z",
+      "retrieved_at": "2026-09-22T04:03:47.148394Z",
+      "sha256": "ece31f755c495d6c6ae7780650d6938a11347cc18a109ac233c14b3b8d78a651",
+      "registration": "cnbc-world",
+      "receipt": {
+        "ok": true,
+        "url": "https://www.cnbc.com/2026/09/22/india-nse-ipo-billion-nasdaq.html",
+        "title": "Investors rush into India’s National Stock Exchange IPO at valuation multiple above Nasdaq",
+        "bylines": [
+          "Priyanka Salve"
+        ],
+        "redirects": [],
+        "content_type": "text/html; charset=utf-8",
+        "published_at": "2026-09-22T04:00:28+0000",
+        "retrieved_at": "2026-09-22T04:03:47.148394+00:00",
+        "article_chars": 4014,
+        "last_modified": null,
+        "requested_url": "https://www.cnbc.com/2026/09/22/india-nse-ipo-billion-nasdaq.html",
+        "original_bytes": 760846,
+        "publisher_host": "www.cnbc.com",
+        "original_sha256": "ece31f755c495d6c6ae7780650d6938a11347cc18a109ac233c14b3b8d78a651",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "main",
+        "publication_time_basis": "page_metadata"
+      }
+    },
+    {
+      "id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151",
+      "url": "https://www.bbc.co.uk/news/articles/cm4gjr1qepr8o",
+      "title": "Paramount settles lawsuit with US states, clearing way for $110bn merger with Warner Bros",
+      "publisher": "BBC News",
+      "kind": "media",
+      "origin_group": "bbc",
+      "content": "Image source, Getty Images\nImage caption,\nA coalition of states led by California had challenged the deal, raising concerns over competition across film and television.\nByFrancisco Velasquez\nBusiness reporterReporting fromNew York\nPublished\n21 September 2026, 18:30 BST\nUpdated 18 minutes ago\nParamount Skydance has settled a lawsuit with dozens of US states, removing a major hurdle to its $110bn (£82.8bn) merger with Warner Bros Discovery.\nCalifornia Attorney General Rob Bonta told a news conference that state officials agreed to terms after securing commitments to protect competition across film and television, and broadcasting.\nStill, \"the settlement is not a vote of support for this merger,\" Bonta said. \"I don't think these two companies should merge.\"\nParamount chief executive David Ellison hailed the resolution, saying: \"Our shared aim was an outcome that best serves consumers, workers and - most importantly -the creative community so vital to the art of visual storytelling.\"\nIn a statement, Ellison said that now the state attorneys general and the Writers Guild of America (WGA) concerns had been addressed, \"we have complete clearance for this merger and look forward to putting these commitments into action\".\nEllison had previously threatened to move studio operations out of California.\nHowever, the WGA said it continues to believe the deal \"will cause damage to writers and the industry at large\".\nThe guild said it was forced to settle its own lawsuit because, as a non-profit, it could not afford to fight the merger alone without government support.\nThe studio is set to pay $17.5m into the WGA health fund, cover legal fees, and prohibit writer layoffs at CBS News Broadcast for five years.\nBonta said the settlement will help boost film production in the US. Under the agreement, Paramount must release at least 30 films each year.\nTo prevent the studio from fulfilling its annual quota with low-budget or automated content, Bonta said there were strict guardrails against \"AI-generated\" films.\nOfficials wanted to guarantee \"real, robust movies\" that generate economic activity and put people back to work, he added.\nIf Paramount fails to meet its annual production quota, it will be forced to sell its 49% stake in Miramax.\n\"Divestitures are part of our solutions to all three markets,\" Bonta said, arguing the deal turned what could have been a \"falling off the cliff in domestic production into a huge increase,\" leading to more movies, jobs, and economic activity.\nThough Ellison previously indicated the merged company would keep its headquarters in California for the foreseeable future, Bonta clarified that this commitment was not written into the legal agreement.\n\"It's not part of the deal,\" Bonta said.\nTo ensure remaining terms are enforced, Paramount has agreed to the appointment of an independent monitor to oversee ongoing compliance with the settlement.\nCalifornia led the legal push alongside a coalition of state attorneys general from Arizona, Col",
+      "published_at": "2026-09-21T21:06:26Z",
+      "retrieved_at": "2026-09-21T21:15:16.076748Z",
+      "sha256": "b69083e003219c97b6455dc9730da833e378742c464e3a3ff8aaba3cabd4c8bd",
+      "registration": "bbc-business",
+      "receipt": {
+        "ok": true,
+        "url": "https://www.bbc.co.uk/news/articles/cm4gjr1qepr8o",
+        "title": "Paramount reaches settlement with states in $110bn Warner Bros merger - BBC News",
+        "bylines": [
+          "Francisco Velasquez"
+        ],
+        "redirects": [],
+        "content_type": "text/html",
+        "published_at": "2026-09-21T17:30:15.707Z",
+        "retrieved_at": "2026-09-21T21:15:16.076748+00:00",
+        "article_chars": 3787,
+        "last_modified": null,
+        "requested_url": "https://www.bbc.co.uk/news/articles/cm4gjr1qepr8o",
+        "original_bytes": 396870,
+        "publisher_host": "www.bbc.co.uk",
+        "original_sha256": "b69083e003219c97b6455dc9730da833e378742c464e3a3ff8aaba3cabd4c8bd",
+        "content_truncated": false,
+        "excerpt_truncated": false,
+        "article_extraction": "article",
+        "publication_time_basis": "page_metadata"
+      }
+    }
+  ],
+  "source_coverage": {
+    "topic_sources": {
+      "market": [
+        "128202d1c644ee110f1f5526935127319ae82b56",
+        "bbd821f9a5d0dcb025ff3f262b5738fcb11cdc3b",
+        "ccb3c80db4440c17ab55825873c042f6bbe24735",
+        "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+        "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+        "f45edfbad52e19fd3b724efbcae4a9573af35fda"
+      ],
+      "macro_policy": [
+        "82b028a344fdeb87ff250448189320fcefc618df",
+        "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+      ],
+      "geopolitics": [
+        "488bdafa950e4a9501e9b8251b255cd6698c8570",
+        "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a",
+        "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+        "c47ace294846384d3e56e44072728e783537800e",
+        "f6a6901325618500df86580eedff17f0d8e64b76",
+        "d8d032fb5ceba798fecf9f56cd3c01e1fd40b4ef"
+      ],
+      "corporate": [
+        "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a",
+        "ccb3c80db4440c17ab55825873c042f6bbe24735",
+        "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+        "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+        "bde80c5a4779a8f7b707d39454d3c8481cc6ff37",
+        "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"
+      ],
+      "cross_asset": [
+        "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+        "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+        "c47ace294846384d3e56e44072728e783537800e"
+      ]
+    },
+    "missing_topics": [],
+    "meaning": "Headline-based collection coverage only; the reviewer must assess materiality and omissions."
+  },
+  "collection_errors": [],
+  "morning_watchpoints": [],
+  "analyst_procedure": {
+    "employee": "market_brief",
+    "version": "2026-09-22.1",
+    "digest": "3f945a68b61dcc528fdf9dd5a24a9176ed710ccc2408c2088fef8ca1edcf25e2",
+    "procedure": "# Analyst — 애널리스트\n\n담당: 미국·한국 시장을 경제적 근거로 분석하고, 첫 메시지만 읽어도 그날의 시황과 핵심 변화를\n이해할 수 있는 브리핑 및 후속 답변을 만든다. 뉴스 선정의 기준은 변화의 중요도와 근거의 질이다.\n이 절차와 합성 사례 통과는 자격증·실제 전문가 역량·예측 정확도를 증명하지 않는다.\n\n## 분석 절차\n\n1. 미국/한국 거래일·자료 기준 시각·원문 발행일을 확인한다. 정규장, 시간외, 잠정 값과 관측 시점을\n   구분한다. 오래된 수치를 오늘 값으로 쓰거나 ETF를 지수로 바꾸지 않는다.\n2. 무엇이 새로 바뀌었는지 식별한다. 경제지표는 전기 대비 변화와 컨센서스 대비 차이를 구분하고\n   수정치·기저효과·계절조정·전월/전년 비교를 확인한다. 예상치가 없으면 서프라이즈를 단정하지 않는다.\n3. 중요한 사건마다 경제적 전달 경로를 제시한다. 정책/지표/기업 사건이 매출·마진·현금흐름,\n   할인율·위험 프리미엄, 자금조달·유동성, 수요·공급 중 무엇을 통해 어느 자산/업종에 영향을 주는지\n   구체적으로 설명한다. 근거 없는 중간 연결은 가설로 표시하고, 원인을 구분할 수 없으면 판단을 유보한다.\n4. 분야별로 필요한 관점을 선택한다. 금리는 명목/실질·기대 인플레이션·기간 프리미엄을, 주식은\n   이익 전망/밸류에이션·지수 기여도/상승 종목 분포를, 실적은 일회성/반복 이익·가이던스를,\n   환율은 환산 효과/수출입 비용·외화 부채를 구분한다. 유가·정책은 공급/수요와 시행 시점을 확인한다.\n   근거가 없는 세부 지표를 필수 칸을 채우기 위해 만들어 내지 않는다.\n5. 미국 사건을 한국 시장에 연결할 때 환율·업종별 수요·원가·자금조달 중 실제 연결 고리를 설명한다.\n   미국 지수가 올랐다는 이유만으로 한국 지수 상승을 예측하지 않는다. 영향의 시계는 당일/수일~수주/\n   수개월로 구분하며 개인의 보유 자산·투자 기간·위험 선호를 추정하지 않는다.\n6. 핵심 설명마다 그럴듯한 다른 설명을 검토한다. 반대 근거가 실제로 있으면 우선 다루고, 대안이\n   가설이면 가설이라고 쓴다. 가격과 뉴스가 동시에 움직였다는 사실만으로 인과관계를 확정하지 않는다.\n   '이미 반영됐다', '위험 선호가 회복됐다', '수급 때문에'라는 표현도 해당 증거가 필요하다.\n7. 어떤 관측이 현재 해석을 약화시키거나 바꿀지 정한다. 발표·시각이 확인되면 함께 적고,\n   막연한 '추가 모니터링'으로 끝내지 않는다. 근거 없는 목표가·수익률·시나리오 확률은 쓰지 않는다.\n8. 사실, 매체의 설명, 자체 가설과 불확실성을 구분한다. 근거를 인용한 짧은 분석 결론을 제공하며\n   숨겨진 사고과정은 요청하거나 노출하지 않는다. 숫자 계산은 도구/서비스 결과를 사용한다.\n\n## 읽기와 후속 점검\n\n- 본문은 핵심 결론 → 시장 전체 흐름 → 주요 숫자 → 주요 이슈와 배경 → 다음 확인할 일이다. 전문용어는 짧게 풀고\n  같은 사실을 반복하지 않는다. 다섯 가지 분석 소제목을 모든 이슈에 반복하지 않는다.\n- 핵심 세 줄은 본문을 대체하지 않는다. 시장·거시 정책·국제 정세·기업/업종·자산 간 흐름을 검토하고\n  중요한 사안은 최대 여섯 이슈까지 충분히 설명한다. 사건이 많은 날을 세 이슈로 잘라 내지 않는다.\n  확인된 사건과 배경, 지금 중요한 이유와 영향을 받는 대상을 자연스러운 문단으로 연결한다.\n- 검토자는 제공된 각 원문이 반영됐는지, 배경인지, 왜 중요하지 않은지 기록한다. 사실이 맞아도\n  중요한 사건을 빠뜨린 초안이나 제목만 늘어놓은 초안은 완성된 브리핑으로 통과시키지 않는다.\n- 결론을 바꿀 반대 근거는 본문에 반영한다. 상세 전달 경로·다른 설명·출처는 스레드에서 확인 가능하게 한다.\n- 아침 관찰의 원래 문장을 보존한다. 저녁의 결과가 판단을 바꿨다면 무엇 때문에 바뀌었는지 설명한다.\n  자료가 부족하면 판단 불가로 남기며, 조건부 전망이 맞았다는 것과 원인 설명이 입증됐다는 것을 구분한다.\n- 정기 작성/검토는 고정 입력과 지정 JSON 계약만 사용하며 도구를 호출하지 않는다. 대화에서는\n  제공된 원문을 read_source로 읽고, 최신 사실은 web_search/web_read 또는 finance_search/finance_read로\n  확인한다. 계산이 필요하면 calculate/finance_compute의 결과를 확인한다. 새 조회와 원래 기준 시각을 구분한다.\n- 정정은 같은 스레드에 원래 주장·바뀐 내용·근거·확인 시각을 남긴다. say에 실제 답을 적는다.\n- 전문역량 사례의 피드백은 실수 방지에 사용하며 시황 근거로 인용하지 않는다. 미측정 분야를 숙련으로\n  주장하지 않는다. 실제 평가 이력은 총괄의 staff_status에서 확인하며 합성 점수를 전문가 인증으로 바꾸지 않는다.\n- 발간 상태는 briefing_status의 영수증으로 확인한다. previewed/queued/uncertain은 전달 완료가 아니다.\n  자동 동료 위임·예약·거래·백테스트·모델 학습·설정 변경 권한은 없다. 사용자의 직접 멘션 또는\n  `금융전략 검토: 요청 내용`만 서비스가 금융전략 팀장에게 연결한다.\n",
+    "meaning": "Reviewed work procedure, not a qualification certificate or new tool permission."
+  },
+  "locked_observations": [],
+  "market_context": [],
+  "data_diagnostics": [
+    {
+      "error": "intraday_evaluation_original_sources_only"
+    }
+  ],
+  "exchange_closes": {
+    "KR": "2026-09-22T06:30:00+00:00"
+  },
+  "evaluation": {
+    "mode": "actual_cached_originals",
+    "slack": "not_connected",
+    "scheduled_publication": false,
+    "snapshot_at": "2026-09-22T07:57:47.313760+00:00"
+  },
+  "quote_conflicts": [],
+  "revision_feedback": {
+    "previous_draft": {
+      "summary": [
+        {
+          "id": "summary_kr",
+          "evidence": [
+            {
+              "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+            },
+            {
+              "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+            },
+            {
+              "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+            }
+          ],
+          "text": "코스피는 7,017.91로 0.15% 상승, 코스닥은 834.38로 0.23% 하락했다. 미국 AI 랠리 뒤 강하게 출발했지만 상승세를 지키지 못했다.",
+          "kind": "fact"
+        },
+        {
+          "id": "summary_oil",
+          "evidence": [
+            {
+              "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43"
+            },
+            {
+              "source_id": "488bdafa950e4a9501e9b8251b255cd6698c8570"
+            },
+            {
+              "source_id": "c47ace294846384d3e56e44072728e783537800e"
+            }
+          ],
+          "text": "유가가 반등해 공급 위험 해소 판단은 이르다. 트럼프는 정상회담에 열려 있다고 했지만 이란 당국자는 만남 가능성을 부인했고, 미국의 항공사 제재 경고도 나왔다.",
+          "kind": "interpretation"
+        },
+        {
+          "id": "summary_policy",
+          "evidence": [
+            {
+              "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+            },
+            {
+              "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+            },
+            {
+              "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735"
+            },
+            {
+              "source_id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37"
+            }
+          ],
+          "text": "원화 강세의 금융 여력 개선 가능성에도 한은의 기업 신용 경고와 연준의 추가 긴축 가능성은 남았다. 이번 주 미·중 회동은 AI·교역 전망을 바꿀 조건이다.",
+          "kind": "interpretation"
+        }
+      ],
+      "overview": [
+        {
+          "id": "overview_kr",
+          "evidence": [
+            {
+              "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+            },
+            {
+              "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+            },
+            {
+              "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+            },
+            {
+              "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+            }
+          ],
+          "text": "한국장은 전강후약이었다. 코스피는 2.20% 상승 출발했으나 오름폭을 대부분 반납했다. 연합뉴스는 연휴 전 차익실현과 장중 유가 반등을 둔화 배경으로 제시했다. 외국인의 유가증권시장 매수에도 기관은 매도로 돌아섰고 코스닥에서는 양쪽 모두 매도했다. 원·달러는 오후 3시 30분 1,358.2원으로 전날 기준가보다 22.8원 낮았다. 원화 강세와 주가 둔화가 함께 나타나 환율만으로 시장을 설명할 수 없으며, 상승 종목 수가 없어 참여 폭도 확정하기 어렵다.",
+          "kind": "interpretation"
+        },
+        {
+          "id": "overview_us",
+          "evidence": [
+            {
+              "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89"
+            },
+            {
+              "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89"
+            },
+            {
+              "source_id": "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6"
+            },
+            {
+              "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89"
+            }
+          ],
+          "text": "배경인 미국 현지 21일 장에서 S&P 500은 7,764.70, 나스닥 종합은 사상 최고인 27,122.09로 마감했다. 메타 뮤즈의 무료 앱 순위 상승과 AMD의 시가총액 1조 달러 돌파가 AI 랠리의 중심이었다. 유가·명목 국채금리도 하락했지만 미국 에너지 업종은 약세여서 업종 방향은 같지 않았다. 오늘 밤 미국장은 아직 개장 전이다. 현지 22일 윌리엄스 연설과 유엔총회 관련 회동은 정확한 시각이 없어 한국 시간의 특정 구간에 배정하지 않는다.",
+          "kind": "fact"
+        }
+      ],
+      "observations": [
+        {
+          "id": "kospi_close",
+          "evidence": [
+            {
+              "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+            },
+            {
+              "source_id": "bbd821f9a5d0dcb025ff3f262b5738fcb11cdc3b"
+            }
+          ],
+          "instrument": "kospi",
+          "value": "7017.91",
+          "unit": "pt",
+          "session_date": "2026-09-22",
+          "as_of": "2026-09-22T06:30:00Z",
+          "basis": "close",
+          "venue": "KRX 유가증권시장",
+          "previous_value": null,
+          "previous_session_date": null,
+          "reported_change": "0.15",
+          "change_unit": "%"
+        },
+        {
+          "id": "kosdaq_close",
+          "evidence": [
+            {
+              "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+            },
+            {
+              "source_id": "bbd821f9a5d0dcb025ff3f262b5738fcb11cdc3b"
+            }
+          ],
+          "instrument": "kosdaq",
+          "value": "834.38",
+          "unit": "pt",
+          "session_date": "2026-09-22",
+          "as_of": "2026-09-22T06:30:00Z",
+          "basis": "close",
+          "venue": "KRX 코스닥시장",
+          "previous_value": null,
+          "previous_session_date": null,
+          "reported_change": "-0.23",
+          "change_unit": "%"
+        },
+        {
+          "id": "usdkrw_snapshot",
+          "evidence": [
+            {
+              "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+            }
+          ],
+          "instrument": "usdkrw",
+          "value": "1358.2",
+          "unit": "KRW/USD",
+          "session_date": "2026-09-22",
+          "as_of": "2026-09-22T15:30:00+09:00",
+          "basis": "intraday",
+          "venue": "서울 외환시장",
+          "previous_value": null,
+          "previous_session_date": null,
+          "reported_change": null,
+          "change_unit": null
+        }
+      ],
+      "issues": [
+        {
+          "headline": "반도체는 엇갈리고 원전·건설은 별도 재료로 상승",
+          "fact": {
+            "id": "kr_fact",
+            "evidence": [
+              {
+                "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+              },
+              {
+                "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+              },
+              {
+                "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+              },
+              {
+                "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+              }
+            ],
+            "text": "삼성전자는 0.91% 상승했지만 SK하이닉스는 1.50% 하락했다. 대미 투자 프로젝트의 국회 보고와 함께 원전주가 올랐고, 건설·IT서비스·운송·창고가 업종 상승을 이끈 반면 제약·금속 등은 하락했다.",
+            "kind": "fact"
+          },
+          "interpretation": {
+            "id": "kr_interpretation",
+            "evidence": [
+              {
+                "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+              },
+              {
+                "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+              }
+            ],
+            "text": "미국 AI 흥행이 국내 반도체 전체의 이익 개선으로 연결됐다고 단정하기 어렵다. 삼성전자는 이달 말 배당기준일도 변수다. 원전·건설은 프로젝트가 실제 계약으로 이어질 때 수주와 현금흐름 근거가 생긴다.",
+            "kind": "interpretation"
+          },
+          "next_check": {
+            "id": "kr_check",
+            "evidence": [
+              {
+                "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+              },
+              {
+                "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+              }
+            ],
+            "text": "다음 한국장에서 반도체 동반 강세와 상승 종목 수 확대를 확인한다. 원전주의 계약 금액·착공 일정이 구체화되지 않으면 실적 개선 해석은 유보한다.",
+            "kind": "condition"
+          },
+          "analysis": {
+            "horizon": "days_weeks",
+            "causal_basis": "unresolved",
+            "mechanism": {
+              "id": "kr_mechanism",
+              "evidence": [
+                {
+                  "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+                }
+              ],
+              "text": "프로젝트 집행이 기업별 계약으로 전환된다면 미래 매출 기반이 확대될 수 있다. 정책 보고와 주가 상승의 동행만으로 이익 증가를 입증할 수는 없다.",
+              "kind": "interpretation"
+            },
+            "alternative": {
+              "id": "kr_alternative",
+              "evidence": [
+                {
+                  "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+                },
+                {
+                  "source_id": "128202d1c644ee110f1f5526935127319ae82b56"
+                }
+              ],
+              "text": "배당 일정과 연휴 전 매매가 더 중요했다면 당일 차별화는 업황 변화보다 단기 주식 수요·공급에서 비롯됐을 수 있다.",
+              "kind": "interpretation"
+            }
+          },
+          "counterpoint": null
+        },
+        {
+          "headline": "유가 급락 뒤 반등…해협 재개는 조건부 제안",
+          "fact": {
+            "id": "oil_fact",
+            "evidence": [
+              {
+                "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43"
+              },
+              {
+                "source_id": "c47ace294846384d3e56e44072728e783537800e"
+              },
+              {
+                "source_id": "488bdafa950e4a9501e9b8251b255cd6698c8570"
+              },
+              {
+                "source_id": "c47ace294846384d3e56e44072728e783537800e"
+              }
+            ],
+            "text": "현지 21일 NYMEX WTI 10월물은 95.78달러로 4.51%, ICE 브렌트 11월물은 100.34달러로 3.4% 하락 마감했다. 그러나 22일 미국 동부시간 오전 1시 37분 보도에서 WTI는 97.22달러로 1.5%, 브렌트는 101.88달러로 1.53% 반등했다. 이란의 1주일 내 해협 재개 제안은 미국의 군사적 압박 완화가 전제이며, 베선트는 수요일부터 이란 항공사 차단을 경고했다.",
+            "kind": "fact"
+          },
+          "interpretation": {
+            "id": "oil_interpretation",
+            "evidence": [
+              {
+                "source_id": "d8d032fb5ceba798fecf9f56cd3c01e1fd40b4ef"
+              },
+              {
+                "source_id": "d8d032fb5ceba798fecf9f56cd3c01e1fd40b4ef"
+              },
+              {
+                "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43"
+              }
+            ],
+            "text": "항공 제재와 후티의 홍해 요충지 장악이 물류 차질로 이어지면 한국 수입·운송기업의 비용 부담이 남는다. G7도 에너지 안보 위험을 경고했다. 다만 중동 유입 물량이 전쟁 이전의 약 80%라는 TD증권 설명은 공급 악화만으로 유가를 설명하기 어렵게 한다.",
+            "kind": "interpretation"
+          },
+          "next_check": {
+            "id": "oil_check",
+            "evidence": [
+              {
+                "source_id": "488bdafa950e4a9501e9b8251b255cd6698c8570"
+              },
+              {
+                "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43"
+              }
+            ],
+            "text": "제재 집행 공지와 미국의 제안 수용 여부, 실제 해협 통항·원유 출하를 확인한다. 긴장 발언에도 출하가 유지되고 유가가 하락한다면 실물 공급 악화 해석은 약해진다.",
+            "kind": "condition"
+          },
+          "analysis": {
+            "horizon": "days_weeks",
+            "causal_basis": "conditional_hypothesis",
+            "mechanism": {
+              "id": "oil_mechanism",
+              "evidence": [
+                {
+                  "source_id": "d8d032fb5ceba798fecf9f56cd3c01e1fd40b4ef"
+                }
+              ],
+              "text": "항로 제약이 운송 지연과 조달비 상승으로 이어진다면 에너지 수입기업의 마진을 압박할 수 있다. 가격 반등 자체는 물량 감소의 증거가 아니다.",
+              "kind": "interpretation"
+            },
+            "alternative": {
+              "id": "oil_alternative",
+              "evidence": [
+                {
+                  "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43"
+                }
+              ],
+              "text": "수출 회복력이 유지된다면 유가 반등은 실제 공급 감소보다 외교 뉴스에 따른 위험 평가 변화일 수 있다.",
+              "kind": "interpretation"
+            }
+          },
+          "counterpoint": null
+        },
+        {
+          "headline": "부채비율 하락에도 기업 신용 위험과 긴축 부담 지속",
+          "fact": {
+            "id": "credit_fact",
+            "evidence": [
+              {
+                "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+              },
+              {
+                "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+              },
+              {
+                "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+              },
+              {
+                "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+              }
+            ],
+            "text": "한은은 가계부채비율을 1분기 85%, 2분기 약 81%로 추정하고 연말 70%대 중후반을 전망했지만 명목 GDP 확대 효과가 크다고 설명했다. 금융취약성지수 FVI는 2분기 46.5로 9분기 연속 상승했고, 한계기업 비중은 19% 안팎이다. 7~8월 연속 금리 인상은 금융불균형을 억제하면서 취약 차주의 부담을 높이는 요인으로 제시됐다.",
+            "kind": "fact"
+          },
+          "interpretation": {
+            "id": "credit_interpretation",
+            "evidence": [
+              {
+                "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+              },
+              {
+                "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+              },
+              {
+                "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+              },
+              {
+                "source_id": "82b028a344fdeb87ff250448189320fcefc618df"
+              }
+            ],
+            "text": "부채비율의 분모 확대는 상환소득 증가와 다르다. 원화 강세가 은행 자본 여력을 높여도 변동금리 기업의 이자 부담이 사라지지는 않는다. 신임 경제부총리의 위험 재점검·물가 안정 방침 역시 구체적 재정 지출이나 기업 이익 개선으로 확정할 단계는 아니다.",
+            "kind": "interpretation"
+          },
+          "next_check": {
+            "id": "credit_check",
+            "evidence": [
+              {
+                "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+              },
+              {
+                "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+              }
+            ],
+            "text": "10월 초 자금순환 통계와 기업 연체율·대출 공급을 확인한다. 부채비율만 낮아지고 연체가 늘면 실질 신용 개선으로 해석하기 어렵다.",
+            "kind": "condition"
+          },
+          "analysis": {
+            "horizon": "months",
+            "causal_basis": "reported_explanation",
+            "mechanism": {
+              "id": "credit_mechanism",
+              "evidence": [
+                {
+                  "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+                },
+                {
+                  "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+                }
+              ],
+              "text": "한은 설명대로라면 환율 하락은 은행의 신용 공급 여력을 높일 수 있지만 기업 변동금리 대출의 이자 부담은 영업 현금흐름을 제약할 수 있다.",
+              "kind": "interpretation"
+            },
+            "alternative": {
+              "id": "credit_alternative",
+              "evidence": [
+                {
+                  "source_id": "4181f0c2af11004abab7c2db85851bfb7886cf5d"
+                }
+              ],
+              "text": "반도체 회복이 기업 소득으로 확산된다면 금융 여력보다 영업 현금흐름 개선이 부실 위험을 낮추는 주된 경로가 될 수 있다.",
+              "kind": "interpretation"
+            }
+          },
+          "counterpoint": null
+        },
+        {
+          "headline": "AI 흥행과 별개로 금리·미중 정책 조건을 확인할 때",
+          "fact": {
+            "id": "us_policy_fact",
+            "evidence": [
+              {
+                "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735"
+              },
+              {
+                "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735"
+              },
+              {
+                "source_id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37"
+              },
+              {
+                "source_id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37"
+              }
+            ],
+            "text": "연준은 지난주 기준금리를 0.25%포인트 올려 3.75~4.00%로 정했고, 연말 점도표 중간값 4.1%는 연내 한 차례 추가 인상을 시사했다. 전일 COMEX 12월물 금 선물은 4,383.90달러로 0.93% 하락했다. CNBC는 목요일 트럼프·시진핑 국빈 만찬에 미국 기술·금융기업 경영진이 참석하며 AI와 이란이 갈등 요인이 될 수 있다고 전했다.",
+            "kind": "fact"
+          },
+          "interpretation": {
+            "id": "us_policy_interpretation",
+            "evidence": [
+              {
+                "source_id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37"
+              },
+              {
+                "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735"
+              },
+              {
+                "source_id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37"
+              }
+            ],
+            "text": "뮤즈 다운로드 증가는 매출이나 이익 확정이 아니다. AI 수요가 수익으로 연결돼도 긴축이 이어지면 미래 이익의 현재가치를 낮추는 할인율 부담이 남을 수 있다. 미·중 회동에서 AI·교역 조건이 달라진다면 한국 반도체의 판매 기회에도 영향을 줄 수 있지만 합의는 아직 확인되지 않았다.",
+            "kind": "interpretation"
+          },
+          "next_check": {
+            "id": "us_policy_check",
+            "evidence": [
+              {
+                "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735"
+              },
+              {
+                "source_id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37"
+              }
+            ],
+            "text": "현지 22일 윌리엄스 연설과 목요일 미·중 회동의 정책 문구를 확인한다. 금리 부담 완화나 구체적 교역 합의가 확인되면 제약 해석을 낮춘다. 정확한 행사 시각은 미확인이다.",
+            "kind": "condition"
+          },
+          "analysis": {
+            "horizon": "days_weeks",
+            "causal_basis": "conditional_hypothesis",
+            "mechanism": {
+              "id": "us_policy_mechanism",
+              "evidence": [
+                {
+                  "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735"
+                },
+                {
+                  "source_id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37"
+                }
+              ],
+              "text": "지속적인 긴축은 할인율을 통해 성장주 가치평가를 제약할 수 있다. AI 관련 정책은 시장 접근과 매출 전망의 경로로 작용할 수 있으나 구체적인 조치는 미확인이다.",
+              "kind": "interpretation"
+            },
+            "alternative": {
+              "id": "us_policy_alternative",
+              "evidence": [
+                {
+                  "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89"
+                }
+              ],
+              "text": "AI 지출 유지가 실제 이익 성장으로 이어진다면 할인율 부담보다 현금흐름 개선이 주가에 더 중요할 수 있다. 현재 자료로 두 효과의 기여도는 분리할 수 없다.",
+              "kind": "interpretation"
+            }
+          },
+          "counterpoint": null
+        },
+        {
+          "headline": "국내 보안 AI 착수, 투자 규모와 수익화는 구분",
+          "fact": {
+            "id": "security_fact",
+            "evidence": [
+              {
+                "source_id": "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a"
+              },
+              {
+                "source_id": "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a"
+              },
+              {
+                "source_id": "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a"
+              }
+            ],
+            "text": "네이버클라우드 컨소시엄은 국가 핵심시설에 투입할 보안 AI 개발 계획을 공개했다. 정부 제공 B200 GPU 256장과 자체 보유 4천 장을 활용하고 LG AI연구원은 H200 256장 추가 투입을 계획했다. 성능 평가는 2027년 2월 17일과 7월 17일이 목표다.",
+            "kind": "fact"
+          },
+          "interpretation": {
+            "id": "security_interpretation",
+            "evidence": [
+              {
+                "source_id": "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a"
+              },
+              {
+                "source_id": "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a"
+              }
+            ],
+            "text": "현장 성능이 유료 도입으로 연결된다면 클라우드·보안기업에 반복 매출 기회가 생긴다. 다만 기존 장비도 활용하므로 개발 착수를 새 반도체 주문으로 볼 수 없고, 넓은 공공 보급이 참여기업의 이익으로 얼마나 돌아올지도 미확인이다.",
+            "kind": "interpretation"
+          },
+          "next_check": {
+            "id": "security_check",
+            "evidence": [
+              {
+                "source_id": "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a"
+              },
+              {
+                "source_id": "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a"
+              }
+            ],
+            "text": "공인 성능평가와 내년 6월 실증에서 성능·운영비·유료 계약을 확인한다. 성능 달성에도 유료 도입이 없으면 수익화 해석은 약해진다.",
+            "kind": "condition"
+          },
+          "analysis": {
+            "horizon": "months",
+            "causal_basis": "conditional_hypothesis",
+            "mechanism": {
+              "id": "security_mechanism",
+              "evidence": [
+                {
+                  "source_id": "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a"
+                }
+              ],
+              "text": "기관 도입이 유료 서비스로 전환되면 클라우드 사용료와 보안 매출이 늘 수 있다. 계획 단계에서는 현금흐름을 확정할 수 없다.",
+              "kind": "interpretation"
+            },
+            "alternative": {
+              "id": "security_alternative",
+              "evidence": [
+                {
+                  "source_id": "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a"
+                }
+              ],
+              "text": "공공 보급이 중심이고 비용 회수가 늦어진다면 기술 성과에도 참여기업 이익은 제한될 수 있다.",
+              "kind": "interpretation"
+            }
+          },
+          "counterpoint": null
+        },
+        {
+          "headline": "파라마운트 합병 진전에도 제작·고용 의무는 남아",
+          "fact": {
+            "id": "merger_fact",
+            "evidence": [
+              {
+                "source_id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"
+              },
+              {
+                "source_id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"
+              },
+              {
+                "source_id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"
+              },
+              {
+                "source_id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"
+              }
+            ],
+            "text": "파라마운트는 미국 주정부들과 합의해 워너브러더스 디스커버리와의 1,100억 달러 합병 장애물을 줄였다. 연간 최소 30편 개봉 의무와 AI 제작물에 대한 제한이 붙었으며, 의무를 지키지 못하면 미라맥스 지분 49%를 매각해야 한다.",
+            "kind": "fact"
+          },
+          "interpretation": {
+            "id": "merger_interpretation",
+            "evidence": [
+              {
+                "source_id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"
+              },
+              {
+                "source_id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"
+              },
+              {
+                "source_id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"
+              }
+            ],
+            "text": "법적 진전은 거래 불확실성을 줄일 수 있지만 제작·고용 보호 비용은 절감 여력을 제한할 수 있다. 작가조합도 산업 피해 우려를 유지했다. AI 확산이 모든 산업에서 자유로운 비용 절감으로 연결된다는 해석을 경계할 사례다.",
+            "kind": "interpretation"
+          },
+          "next_check": {
+            "id": "merger_check",
+            "evidence": [
+              {
+                "source_id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"
+              }
+            ],
+            "text": "거래 종결과 통합 예산에서 제작·고용 의무 비용을 확인한다. 비용이 절감액을 상쇄하면 합병의 이익 개선 해석은 약해진다.",
+            "kind": "condition"
+          },
+          "analysis": {
+            "horizon": "months",
+            "causal_basis": "conditional_hypothesis",
+            "mechanism": {
+              "id": "merger_mechanism",
+              "evidence": [
+                {
+                  "source_id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"
+                },
+                {
+                  "source_id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"
+                }
+              ],
+              "text": "소송 합의는 통합 실행 가능성을 높일 수 있으나 현금흐름 효과는 통합 편익과 의무 이행 비용의 차이에 달려 있다.",
+              "kind": "interpretation"
+            },
+            "alternative": {
+              "id": "merger_alternative",
+              "evidence": [
+                {
+                  "source_id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"
+                }
+              ],
+              "text": "제작과 고용 보호 비용이 통합 효율을 넘는다면 승인 진전에도 이익은 개선되지 않을 수 있다.",
+              "kind": "interpretation"
+            }
+          },
+          "counterpoint": null
+        }
+      ],
+      "internals": [
+        {
+          "id": "nse_background",
+          "evidence": [
+            {
+              "source_id": "f45edfbad52e19fd3b724efbcae4a9573af35fda"
+            },
+            {
+              "source_id": "f45edfbad52e19fd3b724efbcae4a9573af35fda"
+            },
+            {
+              "source_id": "f45edfbad52e19fd3b724efbcae4a9573af35fda"
+            }
+          ],
+          "text": "인도 거래소 운영사 NSE의 공모는 월요일 5.7배 청약을 받았지만 미국 거래소 운영사보다 높은 주가수익비율이다. 개인 참여 확대가 지속적인 거래·이익 증가로 연결될 때 평가를 뒷받침할 수 있다. 공모 수요만으로 인도 지수 상승이나 한국 자금 이탈을 추론할 수 없다.",
+          "kind": "interpretation"
+        }
+      ],
+      "watchpoints": [],
+      "watch_results": [],
+      "calendar": [
+        {
+          "id": "williams_speech",
+          "evidence": [
+            {
+              "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735"
+            }
+          ],
+          "title": "윌리엄스 뉴욕 연은 총재 연설",
+          "at": null,
+          "source_timezone": "America/New_York",
+          "status": "time_unconfirmed",
+          "note": "현지 9월 22일 예정. 정확한 시각이 없어 한국의 오늘 밤 일정으로 확정하지 않는다."
+        },
+        {
+          "id": "un_meetings",
+          "evidence": [
+            {
+              "source_id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37"
+            },
+            {
+              "source_id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37"
+            }
+          ],
+          "title": "유엔총회 계기 트럼프의 중동·우크라이나 회동",
+          "at": null,
+          "source_timezone": "America/New_York",
+          "status": "time_unconfirmed",
+          "note": "화요일 유엔총회 개막 관련 보도. 개별 회동 시각과 한국 시간 구간은 미확인."
+        },
+        {
+          "id": "iran_address",
+          "evidence": [
+            {
+              "source_id": "f6a6901325618500df86580eedff17f0d8e64b76"
+            }
+          ],
+          "title": "이란 대통령 유엔총회 연설",
+          "at": null,
+          "source_timezone": "America/New_York",
+          "status": "time_unconfirmed",
+          "note": "현지 9월 23일 오전 예정. 정확한 시각은 미확인."
+        },
+        {
+          "id": "us_china_dinner",
+          "evidence": [
+            {
+              "source_id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37"
+            },
+            {
+              "source_id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37"
+            }
+          ],
+          "title": "트럼프·시진핑 국빈 만찬",
+          "at": null,
+          "source_timezone": "America/New_York",
+          "status": "time_unconfirmed",
+          "note": "워싱턴 현지 목요일 예정. 정확한 시각과 합의 내용은 미확인."
+        }
+      ],
+      "limitations": [
+        "한국 양대 지수 종가는 연합뉴스와 KBS가 교차 확인하며 제공된 정규장 종료 시각을 사용했다. 미국 현지 21일 종가는 한국장 배경으로 본문에 보존했다. 미국 거래소 종료 시각이 제공되지 않아 별도 미국 종가 관측은 만들지 않았다.",
+        "quote_conflicts: 미국 10년물 명목 국채금리는 연합뉴스가 4.972%·2bp 하락, 이투데이가 4.95%·5bp 하락으로 보도했다. 시점 차이를 확인할 수 없어 단일 수준·변화폭을 채택하지 않았다. 실질금리·기대물가 분해 자료도 없다.",
+        "quote_conflicts: 나스닥 상승률은 SBS 2.26%와 다른 기사 2.3%로 정밀도가 다르다. 연합뉴스 한국장 기사 안에서도 코스닥 개장 수치가 사진 설명 846.25와 본문 846.14로 다르다. 해당 상승률·개장 수치는 관측에 사용하지 않았다.",
+        "WTI 전일 종가는 계약·거래소가 확인되나 정확한 마감 시각이 없고 CNBC 장중 호가는 거래소가 명시되지 않아 구조화 관측에서 제외했다. CNBC의 97.22달러와 연합뉴스의 97.40달러는 시점이 다른 장중 보도로 합치지 않았다. 금 자료는 선물이므로 등록된 금 현물 관측으로 전환하지 않았다. 브렌트는 등록 관측 대상이 아니어서 본문에만 기재했다.",
+        "등락 종목 수·지수 기여도·KRX 전체 거래대금이 없다. 투자자 매매는 시장별 보도 방향으로만 설명했으며 집계 범위를 대조할 수 없어 KRX 전체 또는 KRX+NXT 합계로 변환하지 않았다. 환율은 오후 3시 30분 관측으로 외환시장 전체 세션 종가가 아니다.",
+        "아침 관찰 문장과 이전 발행 브리핑이 제공되지 않아 watch_results는 비웠다. 수정 전 초안은 검토 대상으로만 사용하고 시장 증거로 인용하지 않았다. 전일 대비와 장중 변화는 원문 보도에 한정했다.",
+        "미국 경제지표의 정확한 발표 시각·예상치·수정치는 제공되지 않았다. 연설·외교 행사의 현지 날짜를 한국의 오늘 밤이나 다음 날 아침으로 변환하지 않았다. 해협 재개 제안의 1주일은 조건 충족 이후의 제안 기간이며 확정 개방일이 아니다.",
+        "원전 보고·보안 AI 개발·미디어 합병을 실제 수주·수익 증가로 간주하지 않았다. 인도 NSE 공모는 보조 배경으로 반영했다. 암호자산 가격 원문은 없으며 일부 해외 기사는 잘린 본문 이후 내용을 추정하지 않았다. 매체의 원인 설명과 자체 조건부 해석 모두 인과 입증을 뜻하지 않는다."
+      ]
+    },
+    "rejected": {
+      "overview_us": "unsupported_prose_number",
+      "williams_speech": "unsupported_event_number",
+      "iran_address": "unsupported_event_number",
+      "oil_fact": "unsupported_prose_number",
+      "credit_fact": "evidence_not_in_frozen_original"
+    },
+    "checks": {
+      "numbers": true,
+      "sources": true,
+      "timing": false,
+      "causality": true,
+      "materiality": true,
+      "counterevidence": true,
+      "transmission": true,
+      "alternatives": true,
+      "falsifiability": true,
+      "coverage": true,
+      "depth": true,
+      "readability": true
+    },
+    "concerns": [
+      "윌리엄스 연설은 뉴욕 현지 22일이라는 날짜만 확인된다. summary_credit와 overview_us_context의 ‘오늘 밤’은 원문에 없는 시간대이며, 정확한 시각 미확인이라는 단서로 보완되지 않는다."
+    ],
+    "instruction": "Correct the documented problems and missing core observations using these same originals.",
+    "independent_critique": "포함된 사실은 정확하지만 본문만 읽는 독자에게 결론을 바꿀 만한 누락이 있습니다. 첫째, [8]이 '이번 주 미·중 정상회담과 중동 외교전의 결과에 따라 증시 추가 상승 여부가 판가름'난다고 명시했는데 본문에는 미·중 정상회담이 전혀 없고 부록 일정에만 한 줄 있습니다. 오늘 밤·이번 주 위험을 파악하려는 목적에 직접 걸리는 결손입니다. 둘째, 당일 최대 국내 정책 이슈인 한은 금융안정 설명회가 수치 없이 서술됩니다. 가계부채비율 1분기 85%→2분기 81% 추정→연말 70%대 중후반, 한계기업 비중 19%, FVI 46.5로 9분기 연속 상승, 7·8월 연속 기준금리 인상이 모두 빠져 본문·부록 어디에도 없습니다. 셋째, 유가가 핵심 테마인데 WTI·브렌트 수준과 전일 낙폭(95.78달러 -4.51%, 100.34달러 -3.4%), 당일 반등폭이 전혀 제시되지 않고, 연준 3.75~4.00% 인상과 연내 1회 추가 점도표도 없어 '추가 긴축' 서술이 공중에 뜹니다. 넷째, 전일 랠리의 실제 동인(메타 뮤즈, AMD 시총 1조 달러, 나스닥 사상 최고)이 본문에서 '미국 반도체주 강세', 'AI주 상승'으로만 처리됩니다. 다섯째, 본문 '다음 확인할 것'과 부록 '판단을 다시 볼 조건'이 문장 단위로 동일해 중복이 큽니다. 다만 군더더기 문장이나 무관한 채움글은 적고, 미확인 항목을 명시하는 절제는 장점입니다.",
+    "editorial_instruction": "Resolve each concrete omission against the originals. Include central quantitative context in main prose without repetition. Copy short quotes EXACTLY including curly punctuation. Any date number requires evidence in its own quote: do not invent a month or add a publication-day inference. Never turn the critique into market evidence.",
+    "previous_failure_note": "The prior revision lost two central issues and calendar entries to exact-quote/date-number validation. Re-copy the BOK quote with the original curly closing quotation mark or use a shorter verbatim substring. Include the actual dated passage when referring to prior US session or oil intraday date; use local 22일/23일 rather than uncited 9월. Separate future events from the US background overview unless each has its own cited evidence."
+  }
+}

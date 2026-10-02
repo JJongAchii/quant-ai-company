@@ -1,0 +1,145 @@
+{
+  "mode": "historical_originals_before_exact_scheduled_cutoff",
+  "raw_originals_sha256": "f96c8b4712775c7f286a4ad01490176f3f0765f1e93901b6418e8d94e97da51a",
+  "model": "not_yet_called",
+  "slack": "not_connected",
+  "snapshots": {
+    "am-20260922": {
+      "cutoff": "2026-09-21T22:10:00+00:00",
+      "raw_article_count": 149,
+      "eligible_count": 149,
+      "selected_count": 16,
+      "bundle_sha256": "87ed44b21d03d66a036ef3e239dca5e0eafe2ee20322c4470c322a8dd9a2cd19",
+      "selected": [
+        {
+          "id": "08bba8a5854670b32d1d37c5ca5c5eef877d9669",
+          "title": "뉴욕증시, AI주 급등에 상승⋯나스닥 최고치 경신 [종합]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-21T21:31:00+00:00",
+          "retrieved_at": "2026-09-21T21:32:39.224195+00:00",
+          "sha256": "fa27457d538ba885418c05ff217730a9628262877ef25aab5f55da58c74f6530"
+        },
+        {
+          "id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+          "title": "뉴욕증시, 'AI낙관론'에 메타·인텔 급등…나스닥 사상 최고치(종합)",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-21T21:24:26+00:00",
+          "retrieved_at": "2026-09-21T21:32:53.660026+00:00",
+          "sha256": "b1ab176c77aae47099d2162ff64fd5e50dc503339df658e282040b63c829fd16"
+        },
+        {
+          "id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+          "title": "Trump, Xi seek trade stability and deals, but AI, tariffs and Iran loom large. What to watch",
+          "publisher": "CNBC",
+          "published_at": "2026-09-21T21:21:21+00:00",
+          "retrieved_at": "2026-09-21T21:35:44.702823+00:00",
+          "sha256": "f1678d98a797f6af4e22e55f1a871370c3800b347088e2b2a0f34455d29f19ea"
+        },
+        {
+          "id": "ff8917a4601610247c5ae78e6bd2c3db76e600f4",
+          "title": "Eurosystem brings central bank money to tokenised finance",
+          "publisher": "European Central Bank",
+          "published_at": "2026-09-21T10:00:00+00:00",
+          "retrieved_at": "2026-09-21T10:00:51.762476+00:00",
+          "sha256": "0a6a41717f762f0c4f79b8fd938744ee54b133a6e1fa9db7a1016725324d03d6"
+        },
+        {
+          "id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+          "title": "'미중 AI 대화' 공식화…B-2 띄우고 시진핑 극진 환대",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-21T21:20:00+00:00",
+          "retrieved_at": "2026-09-21T21:32:46.265911+00:00",
+          "sha256": "866dfdaf5adea37601b326a2b27d9e585920f9dd2b649fed2a62c9f10bd7b9ca"
+        },
+        {
+          "id": "0023ecad6e84f1d23292db0078e5912145e1852f",
+          "title": "\"美, 이란전 피해 중동 에너지시설 재건에 6.8조원 출자 추진\"",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-21T21:11:03+00:00",
+          "retrieved_at": "2026-09-21T21:22:47.460389+00:00",
+          "sha256": "ce8874bd5c6104e8ad38c628de6b5b679494a51d47508e85c40e756c7316e153"
+        },
+        {
+          "id": "558b8b51bb4ac18d42abcf1722733ccd2b718ba4",
+          "title": "‘엔비디아 경쟁사’ AMD, 시총 1조 달러 돌파 [마켓핫]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-21T21:41:00+00:00",
+          "retrieved_at": "2026-09-21T21:42:46.577169+00:00",
+          "sha256": "2d4133a2c4389473fbbb0009e21221943b597e073a5f6022a37891ce42db8fde"
+        },
+        {
+          "id": "7f4f853766b5dc50bf53c1c88ee6a23f93411328",
+          "title": "Meta's Muse AI agent downloads are surging. Here's how it compares to ChatGPT, Grok and Claude",
+          "publisher": "CNBC",
+          "published_at": "2026-09-21T21:25:11+00:00",
+          "retrieved_at": "2026-09-21T21:25:36.889041+00:00",
+          "sha256": "49041af212a97105a33acf3ef186ef1082b6c5252127645c97534a804429e0bb"
+        },
+        {
+          "id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+          "title": "국제유가, 미국ㆍ이란 대화 기대감에 급락⋯WTI 4.51%↓ [상보]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-21T21:21:00+00:00",
+          "retrieved_at": "2026-09-21T21:22:30.270757+00:00",
+          "sha256": "c1a48d9f063012afe5f0f11cddc36ea468561921ff7c56b998e5ffea0991f7f8"
+        },
+        {
+          "id": "57b4e958756bfd076e4ffe0a2c39a8121f88a694",
+          "title": "[속보] 국제유가, 급락⋯WTI 4.51%↓",
+          "publisher": "이투데이",
+          "published_at": "2026-09-21T21:04:00+00:00",
+          "retrieved_at": "2026-09-21T21:12:24.347981+00:00",
+          "sha256": "3fd5a2b54bab8e9e6cc45ad0979585a54ba9cc07781c102a220713d3ef91ee93"
+        },
+        {
+          "id": "c6c3354fb2013f469d8065e51066fee65821c56f",
+          "title": "뉴욕증시, AI주 급등에 '들썩'…나스닥 2.3% 뛰며 최고치 마감",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-21T20:16:13+00:00",
+          "retrieved_at": "2026-09-21T20:22:05.259901+00:00",
+          "sha256": "f2d6ce0f348074620236612e67bcd14ee200c73a3d60c91ce305f1849d65b252"
+        },
+        {
+          "id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151",
+          "title": "Paramount settles lawsuit with US states, clearing way for $110bn merger with Warner Bros",
+          "publisher": "BBC News",
+          "published_at": "2026-09-21T21:06:26+00:00",
+          "retrieved_at": "2026-09-21T21:15:16.076748+00:00",
+          "sha256": "b69083e003219c97b6455dc9730da833e378742c464e3a3ff8aaba3cabd4c8bd"
+        },
+        {
+          "id": "3dde2b5129d47d1e1f8d374fed1d73a36529f3ac",
+          "title": "\"경제 강압 반대\"…미중정상회담 앞두고 중국 견제 목소리",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-21T20:26:00+00:00",
+          "retrieved_at": "2026-09-21T20:32:03.148480+00:00",
+          "sha256": "c4735801f15c9f3bf28f862c6279fe81cd7296a854d405fd8e1947cbceb0c561"
+        },
+        {
+          "id": "53be9c4c65a0f487c3d094677c68d367d04dfedd",
+          "title": "이란 매체 \"미, 이란 유엔 총회 대표단 일부 비자 거부\"",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-21T19:16:00+00:00",
+          "retrieved_at": "2026-09-21T19:21:14.505152+00:00",
+          "sha256": "2cc574a2f5099cf65755b8d61569e0d01500248f7abfdff46a0f8db0052d101c"
+        },
+        {
+          "id": "49134ea9e806961c96d90a905e435a2b6ca8ad79",
+          "title": "UN Human Rights Council 63: UK Statement for the Interactive Dialogue on Iran",
+          "publisher": "UK Foreign, Commonwealth & Development Office",
+          "published_at": "2026-09-21T14:32:02+00:00",
+          "retrieved_at": "2026-09-21T14:37:34.901744+00:00",
+          "sha256": "95b22dfcc890175be84cb20e1a32dda5c0092239d7b6bc62aaa5cef6e36dd5b3"
+        },
+        {
+          "id": "bf4a2f2fa3a60d1f38b1fa44fb392a5a6dce4f25",
+          "title": "Trump-Xi summit preparations, outlets fight White House ban, Nissan's U.S. ambitions and more in Morning Squawk",
+          "publisher": "CNBC",
+          "published_at": "2026-09-21T12:35:50+00:00",
+          "retrieved_at": "2026-09-21T12:39:25.390887+00:00",
+          "sha256": "bbb6dc96a02d3db319f0a32f3172c5e3c77ea98ddf84ae8a8af2e95ef29de1f9"
+        }
+      ]
+    }
+  }
+}
