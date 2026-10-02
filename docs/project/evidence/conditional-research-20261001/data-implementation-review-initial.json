@@ -1,0 +1,305 @@
+{
+  "actual_production_staff_assessment": false,
+  "auxiliary_file_hashes_observed_after_root_fixes": {
+    "tests/conftest.py": "ef0a8b80d08128e2ac48de1dfc5c34ebb2d82244f7e5866ab7f9f79ecbcfe616",
+    "tests/test_research_adaptive_report.py": "888451be6c8f968cba2cb93918c3f6238b40a069727eacab99041363a8bca554",
+    "tests/test_research_audit.py": "1edb6e6fc93c88baf3b626b1cc770d793a3e2b43075361750aceb47e79d5844e",
+    "tests/test_research_conditional.py": "affdbd54416a7faae68eb6f96ad2eed2e1eb4067ee551fffa9e41b5bf9551403",
+    "tests/test_research_domestic_engine.py": "2d200e3d1d07f810c18ca74fb18fc68d5224ea91e6f0cafe02670a02e5461b6e",
+    "tests/test_research_domestic_profile.py": "b5ca1bd2040a49b2af8b8426fbda0d0598bfd336108760022d0b484540127995"
+  },
+  "base_commit": "71a9e1d84d76d9fbd467ce08f1d4171f1f116609",
+  "causality_guard_limits": [
+    "Read backtest-hygiene SKILL.md and references/guards.md. A green synthetic fixture or single cutoff is not a complete causal verdict.",
+    "No qlab truncation/perturbation/asof guard was run against a real candidate or market panel. Existing synthetic history/rank checks are engineering regressions only.",
+    "Row-correspondence and date-boundary requirements, early-warmup cuts and rank/sign/argmax blind spots remain requirements for future candidate audits. This review does not convert manual long-panel comparisons into a qlab guard pass.",
+    "Reference-adjusted open valuation remains a retrospective theoretical estimand from same-session close/FLUC_RT adjustment values; unchanged source hashes do not make historical fills or cash total return verified."
+  ],
+  "clearances": [
+    {
+      "evidence": "Retrospective policy requires unverified historical availability, the synthetic 23:59 rule and conditional result scope. Mission v3 binds identical input hashes and signed lineage authority. conditional_ready requires coverage and theoretical-price verification while keeping PIT, original conditions and executable_prices false. Current schema modes cannot silently upgrade conditional evidence to historical ready.",
+      "locations": [
+        "src/quant_company/research/policy_contracts.py:62",
+        "src/quant_company/research/mission_contracts.py:164",
+        "src/quant_company/research/program_contracts.py:100",
+        "src/quant_company/research/programs.py:198"
+      ],
+      "topic": "Typed policy and fact preservation"
+    },
+    {
+      "evidence": "Managed-store paths, actual file SHA, program/profile/lake/input/engine identity and policy report references are checked. Typed gaps cite exact verified reports and input hashes. Legacy blocking_gaps reject; conditional codes must equal the owner-bound acknowledged set and remain inside the three-code allowlist. No source timing readiness is inferred from a hash.",
+      "locations": [
+        "src/quant_company/research/data_evidence.py:43",
+        "src/quant_company/research/data_evidence.py:106",
+        "src/quant_company/research/data_evidence.py:132",
+        "src/quant_company/research/data_evidence.py:164"
+      ],
+      "topic": "Evidence packet binding and gap allowlist"
+    },
+    {
+      "evidence": "Policy profiles use distinct IDs and require matching actual input/evidence hashes and a ready numeric receipt for non-fixtures. Policy preparation makes no patches and requires the original protected engine/statistics hashes. Preparation records qualified=false and activated=false. Protected engine source remains exactly 1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc.",
+      "locations": [
+        "src/quant_company/research/domestic_profile.py:44",
+        "src/quant_company/research/domestic_profile.py:55",
+        "src/quant_company/research/domestic_profile.py:75",
+        "src/quant_company/research/domestic_profile.py:89",
+        "src/quant_company/research/domestic_profile.py:94"
+      ],
+      "topic": "Protected engine and preparation"
+    },
+    {
+      "evidence": "Producer records must remain schema 1 without self-declared scope. The trusted wrapper adds exact manifest scope and hashes the original bytes; the archive preserves producer originals. The consumer compares original content and SHA to the scoped envelope, and verifies receipt, qualification, result, runtime and both sandbox phase scopes and profile policy. Qualification mounts a strict input subset; post-run hashes recheck inputs and code. Initial qualification time consistency is the separate F1 finding.",
+      "locations": [
+        "src/quant_company/research/adaptive_executor.py:169",
+        "src/quant_company/research/adaptive_executor.py:180",
+        "src/quant_company/research/adaptive_executor.py:228",
+        "src/quant_company/research/adaptive_executor.py:345",
+        "src/quant_company/research/adaptive_report.py:228",
+        "src/quant_company/research/adaptive_report.py:234"
+      ],
+      "topic": "Trusted wrapper and strict consumer scope binding"
+    },
+    {
+      "evidence": "Scoped outcomes, interpretations, audit bindings, public receipts and publications retain exact mission scope. Audit packages bind complete mission and lineage history and copied immutable trial archives; reloading rechecks scope and archived manifests. Publication requires matching source metadata and actual verified audit/report files. The code does not use candidate pass claims as a verified audit.",
+      "locations": [
+        "src/quant_company/research/mission_backend.py:390",
+        "src/quant_company/research/mission_backend.py:488",
+        "src/quant_company/research/mission_backend.py:719",
+        "src/quant_company/research/missions.py:495",
+        "src/quant_company/research/missions.py:554",
+        "src/quant_company/research/missions.py:565",
+        "src/quant_company/research/audit.py:230",
+        "src/quant_company/research/audit.py:252",
+        "src/quant_company/research/audit.py:316",
+        "src/quant_company/research/audit.py:501"
+      ],
+      "topic": "Outcome, interpretation, audit and publication scope"
+    },
+    {
+      "evidence": "Reports reject mixed scopes/lineages, preserve earlier lineage publications, keep PIT/original/executable/deployment flags false for conditional evidence, and hide metrics until verified independent audit binding. Library copies original source metadata and labels conditional records. Conditional source evidence is barred from original replication and transfer claims in program admission.",
+      "locations": [
+        "src/quant_company/research/adaptive_report.py:389",
+        "src/quant_company/research/adaptive_report.py:407",
+        "src/quant_company/research/adaptive_report.py:430",
+        "src/quant_company/research/library.py:115",
+        "src/quant_company/research/library.py:123"
+      ],
+      "topic": "Report and library preservation"
+    },
+    {
+      "evidence": "The numerical engine bytes are unchanged. Candidate history filters date < trade day and available_at < 09:00 KST and rebases to the latest visible per-ticker close. Qualification uses warmup only; protected-engine run rejects sealed observations before importing candidate code. Three targeted synthetic exclusion/rank/date fixtures pass. These checks establish local engineering behavior under synthetic availability assumptions and do not establish historical PIT or arbitrary candidate causality.",
+      "locations": [
+        "src/quant_company/research/reference/domestic_engine.py:57",
+        "src/quant_company/research/reference/domestic_engine.py:175",
+        "src/quant_company/research/adaptive_executor.py:231",
+        "tests/test_research_domestic_engine.py:27",
+        "tests/test_research_domestic_engine.py:68"
+      ],
+      "topic": "Feature time and sealed access risk"
+    }
+  ],
+  "commands_and_results": [
+    {
+      "command": ".venv/bin/pytest -q --tb=short tests/test_research_conditional.py",
+      "exit_code": 0,
+      "output": "32 passed in 10.72s",
+      "scope": "Engineering fixtures using disposable real PostgreSQL, scripted employees and the actual pinned local qlab file/receipt API over synthetic artifacts. No live sandbox/Slack/production staff assessment. The test file had gained two checks after the initial 30-test instruction; exact test-file hash at this run was not captured."
+    },
+    {
+      "command": ".venv/bin/pytest -q --tb=short tests/test_research_domestic_engine.py -k 'future_rows_and_late_publications or later_adjustment_rebases or duplicate_snapshot'",
+      "exit_code": 0,
+      "output": "3 passed, 9 deselected in 0.04s",
+      "scope": "Synthetic history filtering, multi-cutoff level/rank rebasing, and invalid-date/duplicate rejection; no performance numbers reported."
+    },
+    {
+      "command": ".venv/bin/python - <<'PYPROBE'\nimport json,tempfile\nfrom pathlib import Path\nfrom tests.test_research_conditional import conditional_producer\nfrom tests.test_research_adaptive_report import encoded,mutate,sha,validate\nfrom quant_company.research.adaptive_executor import qualification_from_file,ExecutionBlocked\nwith tempfile.TemporaryDirectory(prefix='conditional-review-qualification-') as directory:\n    fixture=conditional_producer(Path(directory))\n    path,assignment,manifest,profile,contents=fixture\n    sealed_date=manifest.spec.sealed[0].start.isoformat()\n    replacements={'json_dates':[sealed_date],'json_datetimes':[sealed_date+'T18:00:00+09:00'],'sample_count':1}\n    contents['producer-qualification.json']=encoded(json.loads(contents['producer-qualification.json'])|replacements)\n    mutate(fixture,'qualification.json',lambda payload:payload.update(**replacements,producer_sha256=sha(contents['producer-qualification.json'])))\n    source=Path(directory)/'check-producer-qualification.json'\n    source.write_bytes(contents['producer-qualification.json'])\n    try:\n        qualification_from_file(source,manifest,profile,producer=True)\n    except ExecutionBlocked as exc:worker={'accepted':False,'reason':str(exc)}\n    else:worker={'accepted':True}\n    try:\n        trial=validate(fixture)\n    except Exception as exc:consumer={'accepted':False,'exception':type(exc).__name__,'reason':str(exc)}\n    else:consumer={'accepted':True,'sealed_read':trial.qualification.sealed_read,'scientific_trials_added':trial.receipt.scientific_trials_added}\n    print(json.dumps({'worker':worker,'consumer':consumer,'market_price_rows_read':False}))\nPYPROBE",
+      "exit_code": 0,
+      "output": {
+        "consumer": {
+          "accepted": true,
+          "scientific_trials_added": 0,
+          "sealed_read": false,
+          "synthetic_sealed_timestamp": "2025-01-02"
+        },
+        "worker": {
+          "accepted": false,
+          "reason": "qualification-outside-warmup"
+        }
+      },
+      "source_sha256": "e8d3250e6efdfc6ad3e16c8449dca55a103b0d6276252abf75fdff4bfac3ce8a"
+    },
+    {
+      "command": "Same inline synthetic tamper probe after first verifying the unmodified fixture baseline via validate(fixture).",
+      "exit_code": 0,
+      "output": {
+        "baseline_accepted": true,
+        "consumer_accepted": false,
+        "consumer_reason": "Replay validation failed: qualification_outside_warmup",
+        "worker_accepted": false,
+        "worker_reason": "qualification-outside-warmup"
+      },
+      "source_sha256": "de7464befe747942b19baf96f8f2f4ad09fd93399b65b84807a3124dbc1f45c3"
+    }
+  ],
+  "current_runtime_admissible": false,
+  "final_package_recheck_required": true,
+  "findings": [
+    {
+      "blocking_for_initial_snapshot": true,
+      "claim": "The initial consumer accepts qualification dates inside the sealed window after producer/wrapper/receipt hashes are synchronized, while the worker rejects the same qualification. Consumer verification omitted date/datetime count, typed-schema and warmup/sealed checks.",
+      "code_evidence": [
+        "_require(qualification.config_files == manifest.plan.config_files, \"qualification_config_mismatch\")",
+        "qualification_raw = _json(contents[\"qualification.json\"], assignment.lease_token)",
+        "The initial consumer then checks boolean fields and input bindings but never checks qualification.json_dates or json_datetimes.",
+        "Worker: if len(value.json_dates) != value.sample_count or len(value.json_datetimes) != value.sample_count: raise ExecutionBlocked(\"adaptive-qualification-sample-count-mismatch\")",
+        "Worker: if any(day >= manifest.spec.development.start or any(window.start <= day <= window.end for window in manifest.spec.sealed) for day in dates): raise ExecutionBlocked(\"qualification-outside-warmup\")"
+      ],
+      "confirmed_market_data_leak": false,
+      "id": "F1",
+      "initial_file_sha256": "e8d3250e6efdfc6ad3e16c8449dca55a103b0d6276252abf75fdff4bfac3ce8a",
+      "location": "src/quant_company/research/adaptive_report.py:261",
+      "narrow_fix_recheck": {
+        "adaptive_report_sha256": "de7464befe747942b19baf96f8f2f4ad09fd93399b65b84807a3124dbc1f45c3",
+        "baseline_accepted": true,
+        "complete_final_package_review": false,
+        "consumer_accepted": false,
+        "consumer_reason": "Replay validation failed: qualification_outside_warmup",
+        "worker_accepted": false,
+        "worker_reason": "qualification-outside-warmup"
+      },
+      "related_locations": [
+        "src/quant_company/research/adaptive_report.py:265",
+        "src/quant_company/research/adaptive_executor.py:134",
+        "src/quant_company/research/adaptive_executor.py:139"
+      ],
+      "reproduction": {
+        "command": ".venv/bin/python - <<'PYPROBE'\nimport json,tempfile\nfrom pathlib import Path\nfrom tests.test_research_conditional import conditional_producer\nfrom tests.test_research_adaptive_report import encoded,mutate,sha,validate\nfrom quant_company.research.adaptive_executor import qualification_from_file,ExecutionBlocked\nwith tempfile.TemporaryDirectory(prefix='conditional-review-qualification-') as directory:\n    fixture=conditional_producer(Path(directory))\n    path,assignment,manifest,profile,contents=fixture\n    sealed_date=manifest.spec.sealed[0].start.isoformat()\n    replacements={'json_dates':[sealed_date],'json_datetimes':[sealed_date+'T18:00:00+09:00'],'sample_count':1}\n    contents['producer-qualification.json']=encoded(json.loads(contents['producer-qualification.json'])|replacements)\n    mutate(fixture,'qualification.json',lambda payload:payload.update(**replacements,producer_sha256=sha(contents['producer-qualification.json'])))\n    source=Path(directory)/'check-producer-qualification.json'\n    source.write_bytes(contents['producer-qualification.json'])\n    try:\n        qualification_from_file(source,manifest,profile,producer=True)\n    except ExecutionBlocked as exc:worker={'accepted':False,'reason':str(exc)}\n    else:worker={'accepted':True}\n    try:\n        trial=validate(fixture)\n    except Exception as exc:consumer={'accepted':False,'exception':type(exc).__name__,'reason':str(exc)}\n    else:consumer={'accepted':True,'sealed_read':trial.qualification.sealed_read,'scientific_trials_added':trial.receipt.scientific_trials_added}\n    print(json.dumps({'worker':worker,'consumer':consumer,'market_price_rows_read':False}))\nPYPROBE",
+        "data_kind": "Synthetic engineered artifacts only; sealed marker is 2025-01-02, not an actual market observation.",
+        "initial_result": {
+          "consumer_accepted": true,
+          "consumer_sealed_read_claim": false,
+          "scientific_trials_added": 0,
+          "worker_accepted": false,
+          "worker_reason": "qualification-outside-warmup"
+        }
+      },
+      "required_change": "Independently enforce worker-equivalent qualification date/datetime counts, required typed schema, pre-development cutoff and sealed exclusion in the consumer, and test with synchronized artifact hashes. Use a valid warmup baseline in the synthetic fixture.",
+      "severity": "major",
+      "status": "Root changed the consumer and fixture after this finding; the identical sealed-date probe now rejects. Final package validation is pending."
+    }
+  ],
+  "historical_point_in_time_verified": false,
+  "initial_manifest_identity_verification": {
+    "all_matched_when_review_started": true,
+    "files_checked": 18,
+    "identity_only_other_files": [
+      "src/quant_company/research/program_schema.sql",
+      "src/quant_company/research/scientific_lineages.py"
+    ],
+    "protected_engine_matched": true
+  },
+  "input_path": "docs/project/evidence/conditional-research-20261001/implementation-review-input-initial.json",
+  "input_sha256": "cc2e41bd29f93f57aa44211959dd96061413a6159e80e6b38b328fbe4078fa5e",
+  "kind": "local-implementation-audit-initial",
+  "limitations": [
+    "Initial local code review only. Code changed during the review, so no final frozen implementation package is approved. The original F1 and its original source hash are retained even though a narrow fix probe now rejects.",
+    "Current programs.py and program_controller.py hashes also differ from the initial review input. Their final source revisions require a final-package delta review; identity checks alone are insufficient.",
+    "The observed test executions use engineering fixtures. Actual production data/director employees, signed operational approval, production PostgreSQL/Temporal, live worker sandbox execution and deployment have not been exercised by this reviewer.",
+    "No lake prices, market snapshots, sealed price rows, heavy research run, Slack effect, production mutation or scientific trial was performed. Synthetic series are not financial strategy results.",
+    "Review covers the stated policy/scope/producer/consumer/report/audit/lineage-interface paths, not every underlying database or sandbox implementation. Final integration and qws ownership remain with root."
+  ],
+  "market_price_rows_read": false,
+  "observed_at": "2026-10-01T04:36:56.691812+00:00",
+  "post_change_source_sha256": {
+    "src/quant_company/research/adaptive_contracts.py": "686eb806008d01e82750913354864208e3942fd34fbaee761eea15febcb5e8e3",
+    "src/quant_company/research/adaptive_executor.py": "965956c2ebfba2a668011baecf5f57bd188b4dff8f6f6b376a0f45a2f3fb3385",
+    "src/quant_company/research/adaptive_report.py": "de7464befe747942b19baf96f8f2f4ad09fd93399b65b84807a3124dbc1f45c3",
+    "src/quant_company/research/audit.py": "544837f262f54f6321fedad319aa5a8385be6c8b96bf4073296951b83e531889",
+    "src/quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+    "src/quant_company/research/controller.py": "75e82f5b3fa8d3afa0cba30256a026586e730d9c9bd9d06d22490644f1cb1019",
+    "src/quant_company/research/data_evidence.py": "ad0f319239f88f21be33ff29ca974bde12096c23b47a451eaa7b0c7af7c7ef0f",
+    "src/quant_company/research/domestic_profile.py": "ed4eb85cdcd722fd466a7bf77f25119d8cab8be96869ce85c4c06da291bc56bf",
+    "src/quant_company/research/library.py": "d5b9b783b65150bd858fcd1215f421b4030518f33fc02df9d22ec89004053649",
+    "src/quant_company/research/mission_backend.py": "b28833f525600fb729bc5549ddc8ee52d086ac5b9b9de25ead98da5c8da86989",
+    "src/quant_company/research/mission_contracts.py": "97e85461656f8b662ead0b7624aeafacc6073733552cf64144ae7a264c60fd27",
+    "src/quant_company/research/missions.py": "a2a35a20b381214027f53cb228d809ce20fbf939099667bea2c18daa93883eac",
+    "src/quant_company/research/policy_contracts.py": "2c3a46581218ee968ad453c20a08eb78fa5145d0f52f12034c9f8dc07c1c1df0",
+    "src/quant_company/research/program_contracts.py": "1ea6c131332aea90c996e2365acfe6edb1975ea454085cf58c436cba79d15892",
+    "src/quant_company/research/program_controller.py": "0ca369c19bee069622094b8668c774c0a72490144c595c167b392d64eb77fd6b",
+    "src/quant_company/research/program_schema.sql": "302f91cffabe929ae3ccda05056f92add9e309a32a400105d15f15b9800960d3",
+    "src/quant_company/research/programs.py": "1b5fb05689e8cb03523a803e9b6a950083be1dc693ad64cb1a4d8414b0ebc9d8",
+    "src/quant_company/research/scientific_lineages.py": "301c64e2404435929c25bd973c72da59b4ca8d8ae1dafbea2a16846217dd941c"
+  },
+  "production_assessment": false,
+  "production_mutated": false,
+  "readiness_granted": false,
+  "repository_code_modified_by_reviewer": false,
+  "reviewed_file_sha256": {
+    "docs/project/evidence/conditional-research-20261001/implementation-review-input-initial.json": "cc2e41bd29f93f57aa44211959dd96061413a6159e80e6b38b328fbe4078fa5e",
+    "docs/project/evidence/etf-execution-contract-20260930/implementation-spec.md": "be306232e85f6fae4107c3fc78283e41a6520b9b330ec4f724ed39f32ed49d6d",
+    "src/quant_company/research/adaptive_contracts.py": "686eb806008d01e82750913354864208e3942fd34fbaee761eea15febcb5e8e3",
+    "src/quant_company/research/adaptive_executor.py": "965956c2ebfba2a668011baecf5f57bd188b4dff8f6f6b376a0f45a2f3fb3385",
+    "src/quant_company/research/adaptive_report.py": "e8d3250e6efdfc6ad3e16c8449dca55a103b0d6276252abf75fdff4bfac3ce8a",
+    "src/quant_company/research/audit.py": "544837f262f54f6321fedad319aa5a8385be6c8b96bf4073296951b83e531889",
+    "src/quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+    "src/quant_company/research/controller.py": "75e82f5b3fa8d3afa0cba30256a026586e730d9c9bd9d06d22490644f1cb1019",
+    "src/quant_company/research/data_evidence.py": "ad0f319239f88f21be33ff29ca974bde12096c23b47a451eaa7b0c7af7c7ef0f",
+    "src/quant_company/research/domestic_profile.py": "ed4eb85cdcd722fd466a7bf77f25119d8cab8be96869ce85c4c06da291bc56bf",
+    "src/quant_company/research/library.py": "d5b9b783b65150bd858fcd1215f421b4030518f33fc02df9d22ec89004053649",
+    "src/quant_company/research/mission_backend.py": "b28833f525600fb729bc5549ddc8ee52d086ac5b9b9de25ead98da5c8da86989",
+    "src/quant_company/research/mission_contracts.py": "97e85461656f8b662ead0b7624aeafacc6073733552cf64144ae7a264c60fd27",
+    "src/quant_company/research/missions.py": "a2a35a20b381214027f53cb228d809ce20fbf939099667bea2c18daa93883eac",
+    "src/quant_company/research/policy_contracts.py": "2c3a46581218ee968ad453c20a08eb78fa5145d0f52f12034c9f8dc07c1c1df0",
+    "src/quant_company/research/program_contracts.py": "1ea6c131332aea90c996e2365acfe6edb1975ea454085cf58c436cba79d15892",
+    "src/quant_company/research/program_controller.py": "af391aa67c084bebb49c8a5da71574b06791527d8a911af2c535d97143794538",
+    "src/quant_company/research/programs.py": "1eb5cb424aa4ffef1dd6cf4f088610e19cdb249cb8426373a8cca1d6fcf93824",
+    "src/quant_company/research/reference/domestic_engine.py": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+  },
+  "reviewer": "local_independent_data_implementation",
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "sealed_price_rows_read": false,
+  "semantic_reviewed_files": [
+    "src/quant_company/research/adaptive_contracts.py",
+    "src/quant_company/research/adaptive_executor.py",
+    "src/quant_company/research/adaptive_report.py",
+    "src/quant_company/research/audit.py",
+    "src/quant_company/research/builds.py",
+    "src/quant_company/research/controller.py",
+    "src/quant_company/research/data_evidence.py",
+    "src/quant_company/research/domestic_profile.py",
+    "src/quant_company/research/library.py",
+    "src/quant_company/research/mission_backend.py",
+    "src/quant_company/research/mission_contracts.py",
+    "src/quant_company/research/missions.py",
+    "src/quant_company/research/policy_contracts.py",
+    "src/quant_company/research/program_contracts.py",
+    "src/quant_company/research/program_controller.py",
+    "src/quant_company/research/programs.py",
+    "src/quant_company/research/reference/domestic_engine.py"
+  ],
+  "source_changes_observed_during_review": [
+    {
+      "initial_sha256": "e8d3250e6efdfc6ad3e16c8449dca55a103b0d6276252abf75fdff4bfac3ce8a",
+      "observed_current_sha256": "de7464befe747942b19baf96f8f2f4ad09fd93399b65b84807a3124dbc1f45c3",
+      "path": "src/quant_company/research/adaptive_report.py"
+    },
+    {
+      "initial_sha256": "af391aa67c084bebb49c8a5da71574b06791527d8a911af2c535d97143794538",
+      "observed_current_sha256": "0ca369c19bee069622094b8668c774c0a72490144c595c167b392d64eb77fd6b",
+      "path": "src/quant_company/research/program_controller.py"
+    },
+    {
+      "initial_sha256": "1eb5cb424aa4ffef1dd6cf4f088610e19cdb249cb8426373a8cca1d6fcf93824",
+      "observed_current_sha256": "1b5fb05689e8cb03523a803e9b6a950083be1dc693ad64cb1a4d8414b0ebc9d8",
+      "path": "src/quant_company/research/programs.py"
+    },
+    {
+      "initial_sha256": "e7c0d7bf109434f9302043f96a6acb9d418d50f04e04b11b19d733dfe6d26c66",
+      "observed_current_sha256": "301c64e2404435929c25bd973c72da59b4ca8d8ae1dafbea2a16846217dd941c",
+      "path": "src/quant_company/research/scientific_lineages.py"
+    }
+  ],
+  "strategy_performance_reported": false,
+  "verdict": "revision_required_for_initial_snapshot"
+}

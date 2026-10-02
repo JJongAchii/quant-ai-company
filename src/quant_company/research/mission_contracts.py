@@ -12,6 +12,13 @@ from pydantic import AfterValidator, ConfigDict, Field, FiniteFloat, field_valid
 from ..contracts import StrictModel
 from .contracts import Commit, Digest
 from .evaluation import EvaluationSpec
+from .policy_contracts import (
+    ResearchDataPolicy,
+    ResearchScope,
+    ScientificLineageAuthority,
+    ScopedRecord,
+    record_digest,
+)
 
 
 def relative_path(value: str) -> str:
@@ -136,7 +143,7 @@ class SearchPolicy(MissionModel):
 
 
 class MissionSpec(MissionModel):
-    schema_version: Literal[1, 2] = 1
+    schema_version: Literal[1, 2, 3] = 1
     title: Text
     kind: Literal["strategy", "model", "claim"]
     objective: Objective
@@ -155,12 +162,22 @@ class MissionSpec(MissionModel):
     baseline_source_ids: SourceIds
     evaluation: EvaluationSpec | None = Field(default=None, exclude_if=lambda v: v is None)
     market: Literal["kr_etf", "kr_stock"] | None = Field(default=None, exclude_if=lambda v: v is None)
+    data_policy: ResearchDataPolicy | None = Field(default=None, exclude_if=lambda v: v is None)
+    scientific_lineage: ScientificLineageAuthority | None = Field(default=None, exclude_if=lambda v: v is None)
+
+    @property
+    def research_scope(self):
+        if self.data_policy is None:
+            return None
+        return ResearchScope(data_policy_digest=record_digest(self.data_policy), data_mode=self.data_policy.mode,
+            result_scope=self.data_policy.result_scope, scientific_lineage_id=self.scientific_lineage.id,
+            acknowledged_gap_codes=self.data_policy.acknowledged_gap_codes)
 
     @model_validator(mode="after")
     def scope_consistency(self):
         if self.data.policy is not None and (self.kind != "strategy" or (self.market or "kr_etf") != "kr_etf"):
             raise ValueError("Retrospective data policy is limited to ETF strategy exploration")
-        if self.schema_version == 2:
+        if self.schema_version >= 2:
             if self.evaluation is None or self.market is None or self.evaluation.metric != self.objective.metric:
                 raise ValueError("Version 2 requires a market and matching evaluation contract")
             if (self.kind == "strategy") != (self.evaluation.kind == "strategy"):
@@ -169,6 +186,19 @@ class MissionSpec(MissionModel):
                 raise ValueError("Scientific effects are not executable portfolio risk measurements")
         elif self.evaluation is not None or self.market is not None or self.objective.metric != "stress-net-absolute-cagr":
             raise ValueError("New scientific contracts require mission version 2")
+        if self.schema_version == 3:
+            if self.data.policy is not None:
+                raise ValueError("Version 3 cannot mix a legacy exploratory policy with its signed data policy")
+            if self.data_policy is None or self.scientific_lineage is None:
+                raise ValueError("Mission version 3 requires signed data policy and scientific lineage authority")
+            if self.data_policy.input_files != self.data.input_files:
+                raise ValueError("Data policy inputs differ from mission inputs")
+            if self.data_policy.mode == "frozen_vintage_retrospective" and self.evaluation.kind == "replication":
+                raise ValueError("Conditional evidence cannot authorize an original replication estimand")
+            if self.search.max_total_trials is None or self.search.max_total_trials > self.scientific_lineage.max_total_trials:
+                raise ValueError("Mission trial scope exceeds signed scientific lineage authority")
+        elif self.data_policy is not None or self.scientific_lineage is not None:
+            raise ValueError("Legacy missions cannot carry a new data policy or lineage authority")
         if self.stress_cost_bps < self.base_cost_bps:
             raise ValueError("Stress cost must be at least the base cost")
         if len({risk.metric for risk in self.risk_constraints}) != len(self.risk_constraints):
@@ -210,8 +240,8 @@ class EvidenceRef(MissionModel):
     sha256: Digest
 
 
-class TrialPlan(MissionModel):
-    schema_version: Literal[1] = 1
+class TrialPlan(ScopedRecord):
+    schema_version: Literal[1, 2] = 1
     trial_id: UUID
     proposal_id: UUID
     mission_digest: Digest
@@ -240,8 +270,8 @@ class TrialMetrics(MissionModel):
     sample_window: DateWindow
 
 
-class TrialOutcome(MissionModel):
-    schema_version: Literal[1] = 1
+class TrialOutcome(ScopedRecord):
+    schema_version: Literal[1, 2] = 1
     id: UUID
     plan: TrialPlan
     status: Literal["result", "technical_failure"]
@@ -263,6 +293,8 @@ class TrialOutcome(MissionModel):
 
     @model_validator(mode="after")
     def complete_evidence(self):
+        if self.research_scope != self.plan.research_scope:
+            raise ValueError("Outcome scope differs from its plan")
         if self.finished_at < self.started_at:
             raise ValueError("Execution timestamps are reversed")
         if self.status == "result":
@@ -281,8 +313,8 @@ class TrialOutcome(MissionModel):
         return self
 
 
-class Interpretation(MissionModel):
-    schema_version: Literal[1] = 1
+class Interpretation(ScopedRecord):
+    schema_version: Literal[1, 2] = 1
     trial_id: UUID
     author: Text
     outcome_digest: Digest
@@ -291,10 +323,10 @@ class Interpretation(MissionModel):
     source_ids: SourceIds
 
 
-class AuditPublication(MissionModel):
+class AuditPublication(ScopedRecord):
     """Only an internal verifier may produce this after checking the actual audit files."""
 
-    schema_version: Literal[1] = 1
+    schema_version: Literal[1, 2] = 1
     trial_id: UUID
     mission_digest: Digest
     outcome_digest: Digest

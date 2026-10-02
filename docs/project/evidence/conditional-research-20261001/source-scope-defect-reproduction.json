@@ -1,0 +1,24 @@
+{
+  "counts": {
+    "errors": 0,
+    "failures": 2,
+    "skipped": 0,
+    "tests": 6
+  },
+  "financial_performance_claims": false,
+  "finding": "legacy_hypothesis_only_source_reuse",
+  "fixed_verification": "pending final targeted run and independent re-review",
+  "fixture_only": true,
+  "input_sha256": "40fe642804055e0bd8e50586cfe04ab9581eb4aaa9feaf13fda45410b1f70f0c",
+  "junit_sha256": "3673343a680f477526a3156f46179a1cb5c46ce3ac462795bdba98bb3c99c32a",
+  "kind": "reproduced-integration-scope-defect",
+  "mechanism": "The strict program accepted exact_replication and market_transfer using a legacy data_policy hypothesis_generation_only source; novel_hypothesis and new-scope controls behaved as intended.",
+  "postgres": "actual disposable PG",
+  "production_changed_by_this_slice": false,
+  "recorded_at": "2026-10-01T05:13:19.871384+00:00",
+  "repair": "Preserve both versioned source metadata formats and reject non-novel task modes for either hypothesis-only source scope.",
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "source_commit": "4f3bdb762d371455ea0883a73643ddfaf36b921a",
+  "test_file_sha256": "b6de79b782cb77677d1c3f1e21c4bb53ed7ea3303b136e2eb6ef813f34e686d5"
+}
