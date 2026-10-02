@@ -5,7 +5,12 @@ import pytest
 
 from quant_company.briefing.contracts import BriefProposal, BriefReview
 from quant_company.briefing.editor import artifact, prompt, validate, validate_review
-from quant_company.briefing.quotations import quotation_index, resolve_quotations, source_spans
+from quant_company.briefing.quotations import (
+    quotation_index,
+    reference_payload,
+    resolve_quotations,
+    source_spans,
+)
 
 from .test_briefing import CONTENT, brief, bundle, proposal, response, review, seed  # noqa: F401
 
@@ -70,6 +75,52 @@ def test_reference_review_prompt_preserves_original_and_evidence_without_duplica
     assert reference in {q[1] for q in data["evidence_quotes"].values()}
     assert "".join(data["original_quotes"][reference][1]
                    for reference in data["documents"][0]["original_quote_refs"]) == CONTENT
+
+
+def test_nested_repair_protection_preserves_exact_quotes_without_mutating_frozen_feedback():
+    b = referenced_bundle()
+    reference, exact = source_spans(b['documents'][0])[0]
+    payload = {'documents': deepcopy(b['documents']), 'revision_feedback': {
+        'protected_claims': [{'id': 'fact', 'text': '검증된 원래 문장', 'evidence': [
+            {'source_id': 'source-1', 'quote': exact}]}],
+        'source_assessments': [{'source_id': 'source-1', 'material_facts': [
+            {'fact': '본문에서 누락된 사실', 'quote': exact, 'main_item_ids': []}]}]}}
+    frozen = deepcopy(payload)
+    encoded = reference_payload(payload, b)
+    protection = encoded['revision_feedback']['protected_claims'][0]
+    assert protection['evidence'][0]['quote'] == reference
+    assert encoded['revision_feedback']['source_assessments'][0]['material_facts'][0]['quote'] == reference
+    assert resolve_quotations(encoded['revision_feedback'], b) == frozen['revision_feedback']
+    assert payload['revision_feedback'] == frozen['revision_feedback']
+    assert b['documents'][0]['content'] == CONTENT
+
+
+def test_repair_context_keeps_twenty_complete_originals_and_reconstructible_protected_claims():
+    b = referenced_bundle()
+    b['documents'] = [{**b['documents'][0], 'id': f'source-{i}',
+                       'content': (f'Synthetic original {i} has a baseline, a revision, a funding limit and a supply offset.\n' * 20)}
+                      for i in range(20)]
+    protected = []
+    for i in range(26):
+        document = b['documents'][i % 20]
+        protected.append({'id': f'protected-{i}', 'text': '이미 검증한 경제적 변화와 조건을 보존합니다.',
+                          'kind': 'fact', 'evidence': [{'source_id': document['id'], 'quote': text}
+                                                     for _, text in source_spans(document)[:4]]})
+    previous = proposal().model_dump(mode='json')
+    b['revision_feedback'] = {'repair_mode': 'editorial_patch', 'previous_draft': previous,
+                             'allowed_sources': {item['id']: [e['source_id'] for e in item['evidence']]
+                                                 for item in protected},
+                             'allowed_ids': [item['id'] for item in protected],
+                             'protected_claims': protected, 'checks': {}, 'concerns': [],
+                             'source_assessments': [], 'protected_material_facts': []}
+    original = deepcopy(b)
+    request_text = prompt(b, 'revise')
+    assert len(request_text) <= 88000
+    data = json.loads(request_text.split('BRIEF DATA JSON:\n')[1])
+    assert resolve_quotations(data['revision_feedback']['protected_claims'], b) == protected
+    for source, document in zip(original['documents'], data['documents'], strict=True):
+        assert ''.join(data['original_quotes'][ref][1] for ref in document['original_quote_refs']) == source['content']
+    assert b == original
 
 
 def test_real_postgresql_producer_consumer_preserves_exact_quotes_and_raw_receipts(brief):  # noqa: F811

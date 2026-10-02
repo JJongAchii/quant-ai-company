@@ -39,7 +39,7 @@ def quotation_index(bundle):
 
 def reference_payload(payload, bundle):
     """Transmit each character once, with references the model can select."""
-    originals, by_text = {}, {}
+    originals, by_text, by_source = {}, {}, {}
     for position, (document, original) in enumerate(zip(payload["documents"], bundle["documents"], strict=True)):
         spans = source_spans(original)
         document.pop("content", None)
@@ -48,11 +48,27 @@ def reference_payload(payload, bundle):
         for reference, text in spans:
             originals[reference] = [position, text]
             by_text[(position, text)] = reference
+            by_source[(original['id'], text)] = reference
     for position_and_quote in payload.get("evidence_quotes", {}).values():
         position, quote = position_and_quote
         if reference := by_text.get((position, quote)):
             position_and_quote[1] = reference
-    return {**payload, "original_quotes": originals}
+    def compact(item, source_id=None):
+        if isinstance(item, list):
+            return [compact(part, source_id) for part in item]
+        if not isinstance(item, dict):
+            return item
+        source_id = item.get('source_id', source_id)
+        result = {key: compact(part, source_id) for key, part in item.items()}
+        quote = result.get('quote')
+        if isinstance(quote, str) and (reference := by_source.get((source_id, quote))):
+            result['quote'] = reference
+        return result
+
+    # Repair protection retains every prior claim and quote on the server. Its
+    # repeated spans need the same lossless references as the original bodies;
+    # recursively copy, never mutate the frozen bundle or the raw receipts.
+    return {**compact(payload), "original_quotes": originals}
 
 
 def resolve_quotations(value, bundle):
