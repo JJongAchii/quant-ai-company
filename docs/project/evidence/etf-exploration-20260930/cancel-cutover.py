@@ -7,30 +7,29 @@ import json
 import os
 import pathlib
 import subprocess
-import tarfile
 import time
 from datetime import UTC, datetime
 from types import SimpleNamespace
 
 P = pathlib.Path
 STATE = P("/var/lib/quant-company")
-COMMIT = "3c848af95dc33b7da444a55018fd41d374c10025"
+COMMIT = "79586479aeef07554be311951e40bbe00c33cafe"
 TARGET = P("/opt/quant-company/releases") / COMMIT
 ENV = STATE / "config/runtime.env"
 REGISTRY = STATE / "research/provisioned/data-evidence/registry.json"
-OLD_REGISTRY = "bdef77801a3b65f7588bf00a3916a1a67f7b7e59657db0f1587c8999842646a3"
+OLD_REGISTRY = "023aa88c3cb1b5ed61794ecbca9c3770b1288ec125ceef51e1722ea68db4eb66"
 OLD_PROGRAM = "e06537d3-fac3-5c8c-bf25-ddabb3c7e282"
 OLD_DIGEST = "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b"
 NEW_DIGEST = "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162"
-RECORD = STATE / "releases" / ("exploration-cutover-" + COMMIT + "-attempt2.json")
-OVERRIDE = STATE / "config" / ("exploration-" + COMMIT + "-attempt2.compose.json")
-SELECTED = ["api", "dispatch", "slack-socket", "worker"]
+RECORD = STATE / "releases" / ("exploration-cutover-" + COMMIT + "-cancel.json")
+OVERRIDE = STATE / "config" / ("exploration-" + COMMIT + "-cancel.compose.json")
+SELECTED = ["api", "slack-socket"]
 EXPECTED = {
-    "api": "sha256:830d346cb469c977188f6d5891eb1fb25977a8712618ba99311d469b7a6ed5a8",
+    "api": "sha256:9c6be6fdc4d385c44b1ebbfafdb5c2d11f16a28d84f31014acfd462abeed1005",
     "worker": "sha256:6dce9a55e60b2a2b9f1a27aa99cd9a97c35bebe1b0c4c1bc9a1cccad2757f378",
 }
 APP = "quant-company:" + COMMIT
-WORKER = "quant-company-autonomous:" + COMMIT
+WORKER = "quant-company-autonomous:3c848af95dc33b7da444a55018fd41d374c10025"
 
 
 def run(args, **kw):
@@ -147,10 +146,10 @@ with (STATE / ".backup.lock").open("a") as lock:
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     assert not RECORD.exists() and not OVERRIDE.exists(), "cutover_already_attempted"
     oldroot = P("/opt/quant-company/current").resolve()
-    assert oldroot.name == "5defb8cb9dd7c655214663b05670cd2896006b30", "app_changed"
+    assert oldroot.name == "ea092f419b4b679df4c25e479a8cb361b4d046ff", "app_changed"
     oldenv = ENV.read_bytes()
     oldregistry = REGISTRY.read_bytes()
-    assert sha(ENV) == "ab086c6612eb404bcccc3610606f2e4c14bc80fa1d596fcfd0b7319039df8b4b", "runtime_changed"
+    assert sha(ENV) == "2e1cd1f8df2270bdca5427f630195df5b49db64b34ffcaccd18cd3cc310842d6", "runtime_changed"
     assert sha(REGISTRY) == OLD_REGISTRY, "registry_changed"
     profiles = {
         n: sha(STATE / "config" / n) for n in ["roles.json", "research-profiles.json", "research-qlab.json"]
@@ -161,28 +160,28 @@ with (STATE / ".backup.lock").open("a") as lock:
     before = inspect()
     assert (
         before["quant-company-worker-1"]["Config"]["Image"]
-        == "quant-company-autonomous:0286ba3e7426ff6546b90e6926124ae65e71ba79"
+        == "quant-company-autonomous:3c848af95dc33b7da444a55018fd41d374c10025"
     )
-    for service, image in [("api", APP), ("worker", WORKER)]:
+    for service, image in [("api", APP)]:
         assert json.loads(run(["docker", "image", "inspect", image]))[0]["Id"] == EXPECTED[service]
     prior_pause = sql(
         "SELECT row_to_json(c) FROM (SELECT paused_until,reason FROM runtime_control WHERE id=1)c"
     )
     assert prior_pause["paused_until"] is None, "runtime_already_paused"
     until = sql(
-        "WITH c AS (UPDATE runtime_control SET paused_until=now()+interval '15 minutes',reason='approved_pr99_cutover' WHERE id=1 AND paused_until IS NULL RETURNING paused_until) SELECT json_build_object('until',(SELECT paused_until FROM c))"
+        "WITH c AS (UPDATE runtime_control SET paused_until=now()+interval '15 minutes',reason='approved_program_cancel_repair' WHERE id=1 AND paused_until IS NULL RETURNING paused_until) SELECT json_build_object('until',(SELECT paused_until FROM c))"
     )["until"]
     assert until, "pause_ownership_changed"
     record = {
         "phase": "draining",
         "commit": COMMIT,
-        "owner_authorization": "응 진행해; PR #99 operating application authorized on 2026-10-01",
+        "owner_authorization": "Owner requested continuation of reviewed PR99 operating activation and required signed replacement workflow; no scientific authority granted",
         "started_at": datetime.now(UTC).isoformat(),
         "before": public(before),
         "previous_app": str(oldroot),
         "profiles": profiles,
         "pause_until": until,
-        "pause_reason": "approved_pr99_cutover",
+        "pause_reason": "approved_program_cancel_repair",
         "registry_before_sha256": OLD_REGISTRY,
         "program_digest": NEW_DIGEST,
         "new_scientific_authority_granted": False,
@@ -208,7 +207,7 @@ with (STATE / ".backup.lock").open("a") as lock:
                 "-v",
                 "ON_ERROR_STOP=1",
                 "-c",
-                "UPDATE runtime_control SET paused_until=NULL,reason=NULL WHERE id=1 AND reason='approved_pr99_cutover' AND paused_until="
+                "UPDATE runtime_control SET paused_until=NULL,reason=NULL WHERE id=1 AND reason='approved_program_cancel_repair' AND paused_until="
                 + literal(until)
                 + "::timestamptz",
             ]
@@ -216,7 +215,6 @@ with (STATE / ".backup.lock").open("a") as lock:
 
     changed = []
     stopped = []
-    registry_changed = False
     save()
     try:
         deadline = time.monotonic() + 360
@@ -358,101 +356,39 @@ with (STATE / ".backup.lock").open("a") as lock:
             for n, r in before.items()
             if n not in {"quant-company-" + s + "-1" for s in SELECTED}
         ), "unrelated_container_recreated"
-        # The additional packet is operator evidence, not a data-readiness or scientific approval.
-        staging = P("/tmp/exploration-review-staged-attempt2")
-        staging.mkdir()
-        with tarfile.open("/tmp/review.tar") as tf:
-            for m in tf.getmembers():
-                path = pathlib.PurePosixPath(m.name)
-                assert m.isfile() and not path.is_absolute() and ".." not in path.parts
-                target = staging.joinpath(*path.parts)
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(tf.extractfile(m).read())
-                target.chmod(0o444)
-        package = json.loads((staging / "review-package.json").read_text())
-        assert (
-            package["program_digest"] == NEW_DIGEST
-            and sha(staging / "candidate-program.json") == package["spec_file_sha256"]
-        )
-        packet = json.loads((staging / "candidate-evidence-packet.json").read_text())
-        assert (
-            sha(staging / "candidate-evidence-packet.json") == package["packet_file_sha256"]
-            and packet["program_digest"] == NEW_DIGEST
-        )
-        assert REGISTRY.read_bytes() == oldregistry, "registry_concurrent_change"
-        for name, e in packet["reports"].items():
-            dest = REGISTRY.parent / name
-            src = staging / "source-reports" / name
-            assert (
-                sha(src) == e["sha256"] and e["path"] == "/state/research/provisioned/data-evidence/" + name
-            )
-            if dest.exists():
-                assert sha(dest) == e["sha256"], "existing_report_changed"
-            else:
-                dest.write_bytes(src.read_bytes())
-                os.chown(dest, 10001, 10001)
-                dest.chmod(0o444)
-        registry = json.loads(oldregistry)
-        assert len(registry["packets"]) == 2 and not any(
-            p["program_digest"] == NEW_DIGEST for p in registry["packets"]
-        )
-        registry["packets"].append(packet)
-        atomic(REGISTRY, (json.dumps(registry, ensure_ascii=False, indent=2) + "\n").encode())
-        registry_changed = True
-        # Preserve the old packet bytes and prove new-policy parsing plus exact source/profile admission.
-        verify = r"""import json,sys;from quant_company.company import Company,fingerprint;from quant_company.config import Settings;from quant_company.research.program_contracts import ResearchProgram;from quant_company.research.builds import profile_for;from quant_company.research.data_evidence import load_packets;from quant_company.research.programs import ProgramStore;company=Company(Settings());spec=ResearchProgram.model_validate_json(sys.argv[1]);digest=fingerprint(spec.model_dump(mode='json'));assert digest=='04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162';envelopes={e.name:e for e in spec.envelopes};packet=load_packets(company,{'manifest_digest':digest},envelopes);assert len(packet)==1;assert not packet['etf_strategy'][0].blocking_gaps;
-with company.db.transaction() as conn:
- project=company._project(conn,'9aac0de4-2b97-5195-a720-287d324234f3');assert project['revision']==5;company._check_sources(conn,project['id'],spec.source_ids);[profile_for(company,e.template) for e in spec.envelopes];old=ProgramStore(company).snapshot(conn,'e06537d3-fac3-5c8c-bf25-ddabb3c7e282');assert old['usage']['trials']==0
-print(json.dumps({'program_digest':digest,'packet_count':len(packet),'old_program_readable':True,'exact_sources_profiles_reports_inputs_engine_verified':True,'scientific_authority_granted':False}))
-"""
         proof = json.loads(
             run(
                 [
                     "docker",
                     "exec",
-                    "quant-company-worker-1",
-                    "python",
-                    "/app/entrypoint.py",
+                    "quant-company-api-1",
                     "python",
                     "-c",
-                    verify,
-                    (staging / "candidate-program.json").read_text(),
+                    'import json,os;from quant_company.research.approvals import short_command;value=short_command("연구 프로그램 취소 e06537d3-fac3-5c8c-bf25-ddabb3c7e282 53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b");assert value["action"]=="cancel_program";print(json.dumps({"company_commit":os.environ["COMPANY_CODE_COMMIT"],"exact_cancel_parser":True}))',
                 ]
             )
         )
-        assert all(sha(STATE / "config" / n) == h for n, h in profiles.items())
-        assert activity()["reservations"] == 0 and activity()["missions"] == 0
+        assert sha(REGISTRY) == OLD_REGISTRY and all(
+            sha(STATE / "config" / n) == h for n, h in profiles.items()
+        )
+        restore_pause()
         save(
-            phase="active_waiting_for_3070_and_pause_release",
+            phase="active",
             after=public(after),
             verification=proof,
             registry_after_sha256=sha(REGISTRY),
-            registry_packets=3,
+            research_worker_and_3070_unchanged=True,
             completed_at=datetime.now(UTC).isoformat(),
         )
         print(
             json.dumps(
-                {
-                    "phase": record["phase"],
-                    "receipt": str(RECORD),
-                    "backup": receipt,
-                    "registry_after_sha256": record["registry_after_sha256"],
-                    "verification": proof,
-                }
+                {"phase": record["phase"], "receipt": str(RECORD), "backup": receipt, "verification": proof}
             ),
             flush=True,
         )
     except Exception as exc:
         if stopped:
             run(["docker", "start", *reversed(stopped)], stderr=subprocess.STDOUT)
-        if registry_changed:
-            assert (
-                sha(REGISTRY)
-                == hashlib.sha256(
-                    (json.dumps(registry, ensure_ascii=False, indent=2) + "\n").encode()
-                ).hexdigest()
-            ), "rollback_registry_ownership_changed"
-            atomic(REGISTRY, oldregistry)
         atomic(ENV, oldenv)
         if OVERRIDE.exists():
             rollback = {}

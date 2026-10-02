@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v9.json",
-  "state": "exploratory_activation_preparing",
+  "state": "exploratory_active_owner_review_preparing",
   "previousIntent": "INTENT-v8.json",
   "deliverables": {
     "POLICY": {
@@ -20,7 +20,7 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Exact retrospective ETF specification and code prepared; old strict program remains waiting with zero missions/trials/reservations. New policy not deployed or signed.",
+  "operationalStatus": "PR99 operating source3c active on server and3070; immutable packet added, old strict programme unchanged; signed owner replacement not approved.",
   "evidence": "../../project/evidence/etf-exploration-20260930/validation.json",
   "nextStage": {
     "stage": "owner_review_of_exploratory_proposal",
@@ -78,8 +78,11 @@
   "activation": {
     "ownerAuthorization": "응 진행해",
     "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99",
-    "qualification": "in_progress",
-    "productionActivated": false,
-    "signedScientificApproval": false
+    "qualification": "completed",
+    "productionActivated": true,
+    "signedScientificApproval": false,
+    "scientificTrialsAdded": 0,
+    "ownerReview": "preparing",
+    "requiredRepair": "Signed full-digest cancellation of active programs before replacement approval"
   }
 }
