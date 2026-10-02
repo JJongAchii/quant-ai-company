@@ -33,6 +33,7 @@ from quant_company.briefing.editor import (
     revision_bundle,
     validate,
     validate_review,
+    validate_source_notes,
 )
 from quant_company.briefing.planning import apply_plan, plan_prompt
 from quant_company.briefing.quality import reconcile
@@ -102,6 +103,7 @@ def assess(bundle, written, reviewed=None, *, previous=None, correction_review=N
     rejected = validate(proposed, bundle)
     accepted = prune(proposed, rejected)
     accepted, conflicts = reconcile(accepted, bundle)
+    validate_source_notes(accepted, bundle)
     bundle = {**{key: value for key, value in bundle.items() if key != "revision_feedback"},
               "quote_conflicts": conflicts}
     review = artifact(reviewed, BriefReview, bundle) if reviewed else None

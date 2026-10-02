@@ -26,7 +26,13 @@ NEW_SERVICE = 'briefing-data-worker'
 ROLE = 'market_brief'
 SETTINGS = {'RELEASE_COMMIT', 'QDATA_BUILD_CONTEXT', 'PINNED_CODEX_RUNTIME_IMAGE',
             'BRIEFING_ENABLED', 'BRIEFING_PUBLISH_ENABLED', 'BRIEFING_CHANNEL_ID',
-            'BRIEFING_OWNER_USER', 'SLACK_ALLOWED_CHANNELS'}
+            'BRIEFING_OWNER_USER', 'SLACK_ALLOWED_CHANNELS', 'BRIEFING_SOURCE_NOTES_ENABLED',
+            'BRIEFING_MAX_REVISIONS', 'BRIEFING_EVALUATION_EDITION_ID'}
+BASE_INPUTS = ('pyproject.toml', 'uv.lock', 'deploy/qdata-source.json', 'deploy/Dockerfile', 'deploy/entrypoint.py')
+
+
+def code_only_build(manifest):
+    return not any(row['path'] in BASE_INPUTS for row in manifest['runtime_changes'])
 
 
 def run(command, **kwargs):
@@ -137,12 +143,14 @@ def available_memory():
 def stage(args, previous, target, module, journal):
     if target.exists() or journal.exists() or available_memory() < 640:
         raise ValueError('preview_stage_exists_or_memory_admission')
-    if shutil.disk_usage(target.parent).free < 2 * 1024**3:
-        raise ValueError('preview_disk_admission')
     data = args.archive.read_bytes()
     manifest = json.loads(args.manifest.read_text())
     if digest(data) != args.sha256 or digest(args.manifest.read_bytes()) != args.manifest_sha256:
         raise ValueError('preview_artifact_digest')
+    code_only = code_only_build(manifest)
+    minimum_disk = (768 * 1024**2) if code_only else (2 * 1024**3)
+    if shutil.disk_usage(target.parent).free < minimum_disk:
+        raise ValueError('preview_disk_admission')
     raw = (STATE / 'config/runtime.env').read_bytes()
     values = configuration(raw)
     if args.owner not in json.loads(values['SLACK_ALLOWED_USERS']):
@@ -161,19 +169,23 @@ def stage(args, previous, target, module, journal):
                'owner_approval': args.approval, 'publication_enabled': False,
                'archive_sha256': args.sha256, 'manifest_sha256': args.manifest_sha256,
                'env_sha256': digest(raw), 'roles_sha256': digest((STATE / 'config/roles.json').read_bytes()),
-               'started_at': time.time(), 'images': []}
+               'started_at': time.time(), 'images': [], 'evaluation_edition': args.evaluation_edition,
+               'build_mode': 'code_only_identical_lock' if code_only else 'locked_dependency_sync',
+               'minimum_disk_bytes': minimum_disk}
     module.atomic(journal, json.dumps(receipt).encode())
     target.mkdir()
     module.unpack(data, target)
     receipt['source_changes'] = validate_candidate(previous, target, manifest, args.commit)
+    if code_only and any((previous / name).read_bytes() != (target / name).read_bytes() for name in BASE_INPUTS):
+        raise ValueError('preview_code_only_base_identity_changed')
     qdata = Path(values['QDATA_BUILD_CONTEXT']).resolve()
     if not qdata.is_dir() or any(p.is_symlink() for p in qdata.rglob('*')):
         raise ValueError('preview_qdata_context_invalid')
     shutil.copytree(qdata, target / 'qdata')
     try:
-        # qdata and entrypoint are inherited only when byte-identical to the
-        # installed source. Dependencies are genuinely synced to the NEW lock;
-        # this is not the no-dependency-change fast code installer.
+        # The source-only build inherits the installed environment only when
+        # every dependency/build input is byte-identical. Otherwise sync the
+        # candidate lock in the normal preview build.
         for name in ('deploy/Dockerfile', 'deploy/entrypoint.py'):
             if (previous / name).read_bytes() != (target / name).read_bytes():
                 raise ValueError('preview_base_runtime_changed')
@@ -188,7 +200,8 @@ def stage(args, previous, target, module, journal):
                 raise ValueError('preview_base_qdata_revision_mismatch')
             command = ['docker', 'build', '--memory=512m', '--memory-swap=512m', '--cpu-quota=100000',
                        '--build-arg', 'BASE_IMAGE=' + base_tag, '--build-arg', 'RELEASE_COMMIT=' + args.commit,
-                       '-f', str(target / 'deploy/Dockerfile.analyst-preview'), '-t', tag, str(target)]
+                       '-f', str(target / ('deploy/Dockerfile.analyst-code-preview' if code_only
+                                           else 'deploy/Dockerfile.analyst-preview')), '-t', tag, str(target)]
             log = journal.with_name(journal.stem + '-' + build_target + '.log')
             with log.open('wb') as output:
                 subprocess.run(command, check=True, stdout=output, stderr=subprocess.STDOUT, timeout=1800,
@@ -232,7 +245,9 @@ def cutover(args, previous, target, module, journal):
     raw = (STATE / 'config/runtime.env').read_bytes()
     roles = (STATE / 'config/roles.json').read_bytes()
     if (receipt['phase'] != 'staged' or receipt['base'] != args.base or receipt['commit'] != args.commit
-            or receipt['owner_approval'] != args.approval or digest(raw) != receipt['env_sha256']
+            or receipt['owner_approval'] != args.approval
+            or receipt.get('evaluation_edition') != args.evaluation_edition
+            or digest(raw) != receipt['env_sha256']
             or digest(roles) != receipt['roles_sha256']):
         raise ValueError('preview_staged_configuration_changed')
     values = configuration(raw)
@@ -240,6 +255,8 @@ def cutover(args, previous, target, module, journal):
     settings = {'RELEASE_COMMIT': args.commit, 'QDATA_BUILD_CONTEXT': str(target / 'qdata'),
                 'PINNED_CODEX_RUNTIME_IMAGE': 'quant-company-codex:' + args.commit,
                 'BRIEFING_ENABLED': 'true', 'BRIEFING_PUBLISH_ENABLED': 'false',
+                'BRIEFING_SOURCE_NOTES_ENABLED': 'true', 'BRIEFING_MAX_REVISIONS': '0',
+                'BRIEFING_EVALUATION_EDITION_ID': args.evaluation_edition,
                 'BRIEFING_CHANNEL_ID': args.channel, 'BRIEFING_OWNER_USER': args.owner,
                 'SLACK_ALLOWED_CHANNELS': json.dumps([*channels, *([] if args.channel in channels else [args.channel])])}
     new_roles = merged_roles(json.loads(roles), json.loads((target / 'src/quant_company/roles.json').read_text()))
@@ -346,6 +363,7 @@ def main():
     parser.add_argument('--sha256')
     parser.add_argument('--manifest', type=Path)
     parser.add_argument('--manifest-sha256')
+    parser.add_argument('--evaluation-edition', required=True)
     args = parser.parse_args()
     if not all(re.fullmatch('[0-9a-f]{40}', value) for value in (args.base, args.commit)):
         raise ValueError('preview_invalid_revision')
@@ -353,6 +371,8 @@ def main():
         raise ValueError('preview_invalid_destination')
     if not re.fullmatch('[a-zA-Z0-9_-]{8,120}', args.approval):
         raise ValueError('preview_explicit_owner_approval_required')
+    if not re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', args.evaluation_edition):
+        raise ValueError('preview_evaluation_edition_required')
     previous, target = CURRENT.resolve(), CURRENT.parent / 'releases' / args.commit
     with (STATE / '.backup.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)

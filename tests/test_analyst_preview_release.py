@@ -68,9 +68,10 @@ def test_busy_model_drain_restores_only_stopped_workers_without_killing_primary(
     journal = state / 'preview.json'
     journal.write_text(json.dumps({'phase': 'staged', 'base': previous.name, 'commit': target.name,
                                   'owner_approval': 'user-preview-approved',
+                                  'evaluation_edition': '00000000-0000-0000-0000-000000000000',
                                   'env_sha256': release.digest(raw), 'roles_sha256': release.digest(roles)}))
     args = SimpleNamespace(base=previous.name, commit=target.name, approval='user-preview-approved',
-                           channel='CBRIEF', owner='UOWNER')
+                           channel='CBRIEF', owner='UOWNER', evaluation_edition='00000000-0000-0000-0000-000000000000')
     before = {'/quant-company-' + name + '-1': {'running': True, 'image': 'old-' + name}
               for name in release.SERVICES}
     calls = []
@@ -87,3 +88,27 @@ def test_busy_model_drain_restores_only_stopped_workers_without_killing_primary(
     assert all('codex-runtime' not in a and 'api' not in a for a, _ in calls)
     assert (state / 'config/runtime.env').read_bytes() == raw
     assert (state / 'config/roles.json').read_bytes() == roles
+
+
+@pytest.mark.parametrize('name', release.BASE_INPUTS)
+def test_code_only_build_never_inherits_changed_base_input(name):
+    assert release.code_only_build({'runtime_changes': [{'path': 'src/quant_company/briefing/editor.py'}]})
+    assert not release.code_only_build({'runtime_changes': [{'path': name}]})
+
+
+def test_cutover_rejects_different_evaluation_before_stopping_services(tmp_path, monkeypatch):
+    state = tmp_path / 'state'
+    (state / 'config').mkdir(parents=True)
+    raw, roles = b'', b'[]'
+    (state / 'config/runtime.env').write_bytes(raw)
+    (state / 'config/roles.json').write_bytes(roles)
+    previous, target, _ = trees(tmp_path)
+    journal = state / 'preview.json'
+    journal.write_text(json.dumps({'phase': 'staged', 'base': previous.name, 'commit': target.name,
+                                  'owner_approval': 'user-preview-approved', 'evaluation_edition': 'old',
+                                  'env_sha256': release.digest(raw), 'roles_sha256': release.digest(roles)}))
+    args = SimpleNamespace(base=previous.name, commit=target.name, approval='user-preview-approved',
+                           evaluation_edition='new')
+    monkeypatch.setattr(release, 'STATE', state)
+    with pytest.raises(ValueError, match='staged_configuration_changed'):
+        release.cutover(args, previous, target, SimpleNamespace(), journal)

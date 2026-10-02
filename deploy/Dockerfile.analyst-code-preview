@@ -1,0 +1,11 @@
+# Only for a verified byte-identical project/lock/qdata/entrypoint base.
+# Inherit its locked packages and native binaries; replace company source only.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+ARG RELEASE_COMMIT
+USER root
+WORKDIR /opt/company
+COPY src ./src
+USER 10001:10001
+ENV COMPANY_CODE_COMMIT=$RELEASE_COMMIT PYTHONPATH=/opt/company/src
+LABEL org.opencontainers.image.revision=$RELEASE_COMMIT
