@@ -1,0 +1,38 @@
+{
+  "recorded_at": "2026-09-30T07:31:44+00:00",
+  "user_instruction": "48-hour observation is unnecessary; ignore it.",
+  "observation": {
+    "required_for_publication": false,
+    "timer": "quant-feed-v20-observe.timer",
+    "action": "systemctl disable --now quant-feed-v20-observe.timer",
+    "verified_active_state": "inactive",
+    "verified_unit_file_state": "disabled",
+    "historic_samples_retained": true,
+    "other_services_mutated": false,
+    "publication_gate_mutated": false
+  },
+  "github_ci": {
+    "repository": "JJongAchii/quant-ai-company",
+    "repository_private": true,
+    "owner_type": "User",
+    "runner": "ubuntu-latest",
+    "verified_blocked_run": 36679570477,
+    "check_run": 109771855602,
+    "diagnostic": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+    "exact_billing_cause_verified": false,
+    "usage_query": "GET /users/JJongAchii/settings/billing/usage/summary?year=2026&month=9&product=Actions",
+    "usage_query_result": "HTTP 404; GitHub CLI reports the user scope is required",
+    "account_plan_verified": false,
+    "payment_method_added": false,
+    "spending_limit_changed": false,
+    "subscription_changed": false,
+    "authentication_scope_changed": false,
+    "documentation": "https://docs.github.com/en/billing/concepts/product-billing/github-actions",
+    "interpretation": "A private repository can exhaust included Actions usage without a payment method. Free-allowance exhaustion is a hypothesis, not a verified account balance or invoice. CI runner access is separate from production Quant runtime operation."
+  },
+  "limits": [
+    "No completed 48-hour observation is claimed or required.",
+    "No account invoice, outstanding debt, exhausted minute total or paid-use requirement was verified.",
+    "The publication switch was not changed by this status/billing clarification."
+  ]
+}

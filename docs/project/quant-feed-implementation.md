@@ -1,15 +1,20 @@
 # Quant-feed implementation / qualification
 
-2026-09-23. Implemented and activated in scoter, then reactivated after an independently owned
-combined-channel release. The first natural Slack delivery exposed an editorial false positive;
-Quant Scout publication is now paused while collection continues. The elapsed 48-hour observation
-and a quality-approved resumption remain pending.
+Current status, 2026-09-30: policy v20 is deployed and Quant Scout publication is active.
+The normal Temporal pipeline delivered a market-research card after review, critique,
+revision and final critique; real Slack acceptance and permalink were verified.
+Historic posts and old previews are preserved. The owner waived the added 48-hour
+observation requirement; its timer is inactive/disabled. See
+[the final resumption evidence](evidence/quant-feed-resume-20260930/README.md).
+The dated sections below retain the implementation and earlier failure history.
 
 Implemented: dedicated source registry and collection leases, original HTML/PDF retrieval,
 DOI/arXiv version aliases, Korean typed brief, separate AI evidence critique, one bounded rewrite,
 per-document holds, atomic Slack outbox, KST window/pacing, correction links/priority, native
 search slots, status/probe/explicit live preview, independent third Codex lock and Temporal worker.
 No daily publication cap. Defaults are disabled. Separate Quant Scout manifest and matching avatar.
+Two bounded editorial revisions are supported by the current policy; the original
+one-rewrite implementation described above is historical.
 
 The deployed code passed **1,057 local tests with 37 explicit skips** and Ruff passed. After merging
 the latest main branch, the combined suite passed **1,137 with 37 skips and one opt-in live test
