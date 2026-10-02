@@ -1,0 +1,31 @@
+{
+  "current_worker_release_verified": false,
+  "designated_worker": "quant-worker",
+  "fallback_used": false,
+  "host_contract": "DESKTOP-5T00NAF / NVIDIA GeForce RTX 3070",
+  "network": {
+    "network_running": true,
+    "peers": [
+      {
+        "DNSName": "quant-worker.taila9fd1e.ts.net.",
+        "HostName": "quant-worker",
+        "LastSeen": "2026-10-01T22:39:12.1Z",
+        "OS": "linux",
+        "Online": false,
+        "TailscaleIPs": [
+          "100.65.37.101",
+          "fd7a:115c:a1e0::4601:25db"
+        ]
+      }
+    ]
+  },
+  "observed_at": "2026-10-02T00:54:26.643621+00:00",
+  "resume_condition": "designated 3070 SSH and runtime available for real frozen-input qualification",
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "ssh": {
+    "connect_timeout_seconds": 8,
+    "exit_code": 255,
+    "reason": "connection_timed_out"
+  }
+}

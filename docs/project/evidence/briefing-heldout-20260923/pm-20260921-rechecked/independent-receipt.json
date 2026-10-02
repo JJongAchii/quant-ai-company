@@ -1,0 +1,15 @@
+{
+  "request_id": "brief-heldout-independent-a8a888d7120a770e0ef3039f",
+  "request_sha256": "be7fc61c2bb8449a5802180f19e03dd53e3605e2cc0052867b296bbbfaf8547d",
+  "elapsed_seconds": 158.248,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "http_status": 409,
+    "fault": {
+      "code": "uncertain",
+      "message": "Claude did not confirm a complete review; reconcile its original ID.",
+      "retry_after_seconds": 0
+    }
+  }
+}

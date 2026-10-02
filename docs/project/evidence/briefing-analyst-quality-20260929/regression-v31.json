@@ -1,0 +1,15 @@
+{
+  "recorded_at": "2026-09-29T06:52:33Z",
+  "scope": "Local full repository regression after Analyst format 12 and validation 31 changes",
+  "test_command": "uv run pytest -q -x --tb=short",
+  "test_result": {
+    "exit_code": 0,
+    "passed": 1373,
+    "skipped": 38,
+    "warnings": 12,
+    "duration_seconds": 369.56
+  },
+  "lint_command": "uv run ruff check .",
+  "lint_result": "All checks passed!",
+  "limits": "Fixture model and Slack tests do not establish real model editorial quality, production deployment, scheduled delivery, or Slack acceptance."
+}

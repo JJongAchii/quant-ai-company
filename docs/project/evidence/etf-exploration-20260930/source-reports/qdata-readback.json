@@ -1,0 +1,116 @@
+{
+  "approved_execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+  "approved_input_files": {
+    "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574",
+    "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81"
+  },
+  "approved_program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "data_readiness_decision": "not_made",
+  "execution_policy_independently_checked": false,
+  "lake_source_at_preparation": {
+    "krx_etf": {
+      "etag": "\"d063a814e88d88d2d7dc21bc676e8255\"",
+      "last_modified": "2026-09-25T11:06:48+00:00",
+      "size_bytes": 78684160,
+      "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf.parquet",
+      "version_id": null
+    },
+    "krx_etf_meta": {
+      "etag": "\"5a4a8afe695dc41458b81faecdb0a490\"",
+      "last_modified": "2026-09-25T11:06:49+00:00",
+      "size_bytes": 24474548,
+      "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf_meta.parquet",
+      "version_id": null
+    }
+  },
+  "lake_source_identity_matches_preparation": false,
+  "lake_source_now": {
+    "krx_etf": {
+      "etag": "\"871485f2df3fb2316a66795d0ae79dad\"",
+      "last_modified": "2026-09-28T10:23:41+00:00",
+      "size_bytes": 78729334,
+      "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf.parquet",
+      "version_id": null
+    },
+    "krx_etf_meta": {
+      "etag": "\"7f536e83b7f86e8a23b347b05e169eaf\"",
+      "last_modified": "2026-09-28T10:23:42+00:00",
+      "size_bytes": 24480642,
+      "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf_meta.parquet",
+      "version_id": null
+    }
+  },
+  "lake_source_version_ids_present": false,
+  "observed_at": "2026-09-29T04:27:23.168799+00:00",
+  "panel": {
+    "adjustment_ratio_constant_by_ticker": true,
+    "current_rows": 8350,
+    "first_mismatch_keys": {
+      "adj_close": {
+        "date": "2023-01-02",
+        "ticker": "069500"
+      }
+    },
+    "frozen_rows": 8350,
+    "frozen_sessions": 835,
+    "mismatch_counts": {
+      "adj_close": 6680
+    },
+    "missing_frozen_cohort_rows": 0,
+    "nonconstant_adjustment_tickers": []
+  },
+  "performance_read": false,
+  "pinned_package_files_verified": 47,
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "schema_version": 1,
+  "scope": "read_only_approved_etf_input_vs_pinned_qdata_api",
+  "sealed_input_read": false,
+  "selection": {
+    "approved_cohort_matches": true,
+    "eligible_complete_tickers": 533,
+    "excluded_bad_tickers": 40,
+    "metadata_tickers": 666,
+    "selected_tickers": [
+      "069500",
+      "229200",
+      "153130",
+      "214980",
+      "196230",
+      "157450",
+      "371460",
+      "102110",
+      "357870",
+      "305720"
+    ],
+    "selection_sessions": [
+      "2022-12-02",
+      "2022-12-05",
+      "2022-12-06",
+      "2022-12-07",
+      "2022-12-08",
+      "2022-12-09",
+      "2022-12-12",
+      "2022-12-13",
+      "2022-12-14",
+      "2022-12-15",
+      "2022-12-16",
+      "2022-12-19",
+      "2022-12-20",
+      "2022-12-21",
+      "2022-12-22",
+      "2022-12-23",
+      "2022-12-26",
+      "2022-12-27",
+      "2022-12-28",
+      "2022-12-29"
+    ]
+  },
+  "timing": {
+    "last_session_unchecked_rows": 10,
+    "late_rows": 0,
+    "next_session_0830_checked_rows": 8340,
+    "origin_publication_timestamp_independently_verified": false
+  },
+  "verification_command": "QDATA_LAKE=s3://insight-invest-datalake/qdata PYTHONPATH=<pinned-archive>/src uv run --extra lake python docs/project/evidence/research-programs-20260929/verify-etf-against-qdata.py --qdata-repo <qdata-git-repo> --qdata-source-root <pinned-archive>/src",
+  "verification_script_sha256": "a7f9cc80010354386d09cb06c5659e15558d6ea35565148e62544d05b74c93e4"
+}

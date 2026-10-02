@@ -1,0 +1,371 @@
+{
+  "scope": "Historical original-source offline development evaluation; no five-day scheduled preview, human certification or Slack delivery.",
+  "snapshot": {
+    "path": "source-snapshots.json",
+    "sha256": "a1a88625be32c7d500bdb71fcd8993210b9324ee96deeb0325437dc582cec360"
+  },
+  "selection_note": "AM and PM source selection v3 was changed after titles from these dates were inspected; final-policy unseen-date performance is unmeasured.",
+  "repair_note": "PM offline repair feedback included the raw first proposal; production feedback uses the mechanically accepted proposal. Do not count the repair as an exact live workflow replay.",
+  "assessments": {
+    "am_initial": {
+      "path": "am-20260923-reviewed/assessment.json",
+      "passed": false,
+      "quality": {
+        "substantive": false,
+        "reduced": true,
+        "issue_count": 0,
+        "missing_core": [
+          "nasdaq",
+          "sp500"
+        ],
+        "fallback": "editorial_review_withheld",
+        "assurance": {}
+      },
+      "rejected": {},
+      "review_verdict": "reduce",
+      "failed_checks": [
+        "counterevidence",
+        "coverage",
+        "depth"
+      ],
+      "source_assessment_count": 16
+    },
+    "am_revised": {
+      "path": "am-20260923-final-review-replay-v6/assessment.json",
+      "passed": false,
+      "quality": {
+        "substantive": true,
+        "reduced": true,
+        "issue_count": 5,
+        "missing_core": [],
+        "fallback": null,
+        "assurance": {
+          "dow": "single_source",
+          "nasdaq": "single_source",
+          "sp500": "single_source"
+        }
+      },
+      "rejected": {
+        "oil_counterproposal": "semantic_review"
+      },
+      "review_verdict": "reduce",
+      "failed_checks": [
+        "counterevidence",
+        "coverage",
+        "depth",
+        "readability"
+      ],
+      "source_assessment_count": 16
+    },
+    "am_final_policy_initial": {
+      "path": "am-20260923-final-policy-reviewed/assessment.json",
+      "passed": false,
+      "quality": {
+        "substantive": false,
+        "reduced": true,
+        "issue_count": 0,
+        "missing_core": [
+          "nasdaq",
+          "sp500"
+        ],
+        "fallback": "editorial_review_withheld",
+        "assurance": {}
+      },
+      "rejected": {},
+      "review_verdict": "reduce",
+      "failed_checks": [
+        "counterevidence",
+        "coverage",
+        "depth"
+      ],
+      "source_assessment_count": 16
+    },
+    "am_final_policy_revised": {
+      "path": "am-20260923-final-policy-revised-final/assessment.json",
+      "passed": false,
+      "quality": {
+        "substantive": true,
+        "reduced": true,
+        "issue_count": 4,
+        "missing_core": [],
+        "fallback": null,
+        "assurance": {
+          "dow": "single_source",
+          "nasdaq": "single_source",
+          "sp500": "single_source"
+        }
+      },
+      "rejected": {
+        "korea_interpretation": "semantic_review",
+        "index_quote_conflict": "semantic_review"
+      },
+      "review_verdict": "reduce",
+      "failed_checks": [
+        "counterevidence",
+        "coverage",
+        "depth",
+        "readability"
+      ],
+      "source_assessment_count": 16
+    },
+    "pm_initial": {
+      "path": "pm-20260921-reviewed/assessment.json",
+      "passed": false,
+      "quality": {
+        "substantive": false,
+        "reduced": true,
+        "issue_count": 0,
+        "missing_core": [
+          "kosdaq",
+          "kospi"
+        ],
+        "fallback": "editorial_review_withheld",
+        "assurance": {}
+      },
+      "rejected": {
+        "trade_fact": "unsupported_prose_number",
+        "rates_fact": "unsupported_prose_number"
+      },
+      "review_verdict": "reduce",
+      "failed_checks": [
+        "materiality",
+        "counterevidence",
+        "coverage",
+        "depth"
+      ],
+      "source_assessment_count": 16
+    },
+    "pm_revised": {
+      "path": "pm-20260921-final-v4-replay/assessment.json",
+      "passed": true,
+      "quality": {
+        "substantive": true,
+        "reduced": false,
+        "issue_count": 6,
+        "missing_core": [],
+        "fallback": null,
+        "assurance": {
+          "kosdaq": "single_source",
+          "kospi": "single_source",
+          "usdkrw": "single_source"
+        }
+      },
+      "rejected": {},
+      "review_verdict": "publish",
+      "failed_checks": [],
+      "source_assessment_count": 16
+    }
+  },
+  "receipts": [
+    {
+      "path": "am-20260923/write-receipt.json",
+      "sha256": "18e6bde606d244e79d5f689136b6e24ec71fd72956a28c906e9ae0f4eee0d663",
+      "request_id": "news-brief-eval-1a6505a3296ebf3d6afe2e5a21901cf9",
+      "request_sha256": "ce90bee8c9601c0884be1ad4996a0c5675c6ceb4754fe8b32d8aad939904743b",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923/review-corrected-receipt.json",
+      "sha256": "5658a5827e01025d2df3c9b868296373660a26676ecb1328ca1b5c1238fc6190",
+      "request_id": "news-brief-eval-b4adf9a96e9d1108e1b9500eb323cb77",
+      "request_sha256": "b7db80f0350e423a2027b686f32c79ff7bb5636a8980d9fe8bfe7f302ea0220b",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923/revise-receipt.json",
+      "sha256": "c23be37141ec379ae9c1d0eb3ad17b5634477f1258d8c76835bf2ca6af9a74d1",
+      "request_id": "news-brief-eval-ac9fc906eac551ab05d22b10644fc38c",
+      "request_sha256": "8150c16adbf164e885a66f04e2923fc64e3e076c68ce526e330a64c9666be501",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923-revised/review-receipt-replay-1790142663.json",
+      "sha256": "e8e4d19acc009ce68578d1db583f5d8ce5362dde6d6bc96bf67306b0b1a90a81",
+      "request_id": "news-brief-eval-f70d32ce1ea1aa0b7b303016120a0ecf",
+      "request_sha256": "48f4e53d82780dada44d045f8ca5b4f63daa1dea687e3ee137796e49511d9184",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923/independent-receipt.json",
+      "sha256": "fa26103f5eba8a0c92d5280c9b56b43e54b901a760f37afb2313089348de9f28",
+      "request_id": "brief-heldout-independent-78f8b8b1ecfe95aadd48e50b",
+      "request_sha256": "ef3edfd22657acd9e850a937d583660630b13f4fbf4f88d7f25fab3dada58743",
+      "provider": "claude",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923-revised/independent-receipt.json",
+      "sha256": "a6433b60de9da91207da86c857283eb9f7951d6085970303c8a66abde7c5ccb4",
+      "request_id": "brief-heldout-independent-b44d24b7867b03112ba95756",
+      "request_sha256": "44584426a337c2dccbad60a56cc14aab8c6d4dec3b9f16586cb9c87dba72062b",
+      "provider": "claude",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923-final-policy/write-receipt.json",
+      "sha256": "eaa0d008136aa57ebf7dfd03f0b724afd4bae21a5b5f766f68506d3466c41aa7",
+      "request_id": "news-brief-eval-f2dc186f72551f8348784a935418f7e1",
+      "request_sha256": "099998753abe4394899aba29ae9dc48344948d4ed3cac300b5726820f6d160de",
+      "provider": null,
+      "fault": "busy",
+      "transport": null
+    },
+    {
+      "path": "am-20260923-final-policy/write-receipt-replay-1790146613.json",
+      "sha256": "a518bce0f3f082fb374021645bf28b334fb5de8002ce2e69cb64d6b343f5b354",
+      "request_id": "news-brief-eval-f2dc186f72551f8348784a935418f7e1",
+      "request_sha256": "099998753abe4394899aba29ae9dc48344948d4ed3cac300b5726820f6d160de",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923-final-policy-rechecked/review-receipt.json",
+      "sha256": "41d9c55b1fbe95021ef3790009be24d410934792ea256c74a4eed26bb0b4b19f",
+      "request_id": "news-brief-eval-bb709572a57e7c5b75e2235d8905040e",
+      "request_sha256": "9c0cbdb93e6dfb46e4f4649071b3b8f1ff0216bf78d677a61b953396de6b873c",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923-final-policy-revised/revise-receipt.json",
+      "sha256": "e76df958e86a8905bdf39274569a09fc4e3e389255ceb5b93ca2f6879283b49b",
+      "request_id": "news-brief-eval-0e53233be26097aa7e7ff67f5f070ad1",
+      "request_sha256": "cf58b7078b913885d0122fb69dc92a4054110f6a549fdeb77dc459e5f39330cc",
+      "provider": null,
+      "fault": "busy",
+      "transport": null
+    },
+    {
+      "path": "am-20260923-final-policy-revised/revise-receipt-replay-1790149657.json",
+      "sha256": "72bd259c882fd7f51fc31a045cf48366b39f2e54b0d15fe064c75357e9e036a8",
+      "request_id": "news-brief-eval-0e53233be26097aa7e7ff67f5f070ad1",
+      "request_sha256": "cf58b7078b913885d0122fb69dc92a4054110f6a549fdeb77dc459e5f39330cc",
+      "provider": null,
+      "fault": "busy",
+      "transport": null
+    },
+    {
+      "path": "am-20260923-final-policy-revised/revise-receipt-replay-1790149718.json",
+      "sha256": "cacbb3da162adc8f51d56ebeb4f66f6ed5479bad5dec174af850b2b99cf21b26",
+      "request_id": "news-brief-eval-0e53233be26097aa7e7ff67f5f070ad1",
+      "request_sha256": "cf58b7078b913885d0122fb69dc92a4054110f6a549fdeb77dc459e5f39330cc",
+      "provider": null,
+      "fault": "busy",
+      "transport": null
+    },
+    {
+      "path": "am-20260923-final-policy-revised/revise-receipt-replay-1790149802.json",
+      "sha256": "c92e2a9f9234e5c7b06c96f287669b0bb84eb43d4e7c42a0108b57a8708d6066",
+      "request_id": "news-brief-eval-0e53233be26097aa7e7ff67f5f070ad1",
+      "request_sha256": "cf58b7078b913885d0122fb69dc92a4054110f6a549fdeb77dc459e5f39330cc",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923-final-policy-revised/review-receipt.json",
+      "sha256": "d2e213bdda56933d8648610e19b7f42aa8d33b09152caed65fae7009168c15f6",
+      "request_id": "news-brief-eval-f48b8346bb676761ea4a25df7ef24326",
+      "request_sha256": "bc5291ec254221171cc8f293433fa6268fa298cc1048045cedcd03da5211710c",
+      "provider": null,
+      "fault": null,
+      "transport": "uncertain"
+    },
+    {
+      "path": "am-20260923-final-policy-revised/review-receipt-replay-1790150358.json",
+      "sha256": "ae175c914b03766279392ebbd4b0f90245a4d1add3b1141054ec862753562307",
+      "request_id": "news-brief-eval-f48b8346bb676761ea4a25df7ef24326",
+      "request_sha256": "bc5291ec254221171cc8f293433fa6268fa298cc1048045cedcd03da5211710c",
+      "provider": null,
+      "fault": null,
+      "transport": "uncertain"
+    },
+    {
+      "path": "am-20260923-final-policy-revised/review-receipt-replay-1790150433.json",
+      "sha256": "ba3394f6d44c56b8966d3dee975937c9e2b19edea5db6beeaa3cb556ebdc0e89",
+      "request_id": "news-brief-eval-f48b8346bb676761ea4a25df7ef24326",
+      "request_sha256": "bc5291ec254221171cc8f293433fa6268fa298cc1048045cedcd03da5211710c",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "pm-20260921-final-v6/write-receipt.json",
+      "sha256": "a4a2f97b31cafecef204267bd94a2bcf95b4475cc952c3716c0293d760195c74",
+      "request_id": "news-brief-eval-55671064f63a31ad64b6be7c5ee5e351",
+      "request_sha256": "72ab619eb5fd11548d16f5875a174c0297071aca2f9a40cd73f8c8fec4c7888e",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "pm-20260921-rechecked/review-receipt.json",
+      "sha256": "884961226191e09cf92cf0b754102b5482987fca8c50728c4dac95f226f11833",
+      "request_id": "news-brief-eval-55325893eb1259d161bdf507d6ee38e5",
+      "request_sha256": "09deea5bb8bdc21674b40a889aa34a9e8911d913dc9060a86041ecf58c656673",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "pm-20260921-rechecked/independent-receipt.json",
+      "sha256": "fc000f73caa476d677af4116484a795f1c1f26fcb7197ca51f33c19f2b71ffef",
+      "request_id": "brief-heldout-independent-a8a888d7120a770e0ef3039f",
+      "request_sha256": "be7fc61c2bb8449a5802180f19e03dd53e3605e2cc0052867b296bbbfaf8547d",
+      "provider": null,
+      "fault": "uncertain",
+      "transport": null
+    },
+    {
+      "path": "pm-20260921-revised/revise-receipt.json",
+      "sha256": "5777d9660a019ba77ed23c55ff6848f4a0df7e639b6c1d4115937a7311b3b42a",
+      "request_id": "news-brief-eval-9d69a9abc22e491d853c9c2df0735bc0",
+      "request_sha256": "ddc572d2db6e70f0b365e2c27fe0b00e35c02faf7488c004cae50255432b1697",
+      "provider": null,
+      "fault": null,
+      "transport": "uncertain"
+    },
+    {
+      "path": "pm-20260921-revised/revise-receipt-replay-1790144367.json",
+      "sha256": "b19ceb14a77d12f96e5436d95426bba804333c64d9e602709fdce996575c9744",
+      "request_id": "news-brief-eval-9d69a9abc22e491d853c9c2df0735bc0",
+      "request_sha256": "ddc572d2db6e70f0b365e2c27fe0b00e35c02faf7488c004cae50255432b1697",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "pm-20260921-revised-rechecked/review-receipt.json",
+      "sha256": "06be1b5c56835fdda2512f196b0cc3a7605cdf5daaf980cae4879b5bd6f09c09",
+      "request_id": "news-brief-eval-a8f86d85bad6a16abc5a1a90b36d7d91",
+      "request_sha256": "754588c5ddf92316d0a023e5242544bdb1f09ab576589fe934961f3ab6c6fd57",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    }
+  ],
+  "validation": {
+    "command": "UV_CACHE_DIR=/private/tmp/uv-cache uv run pytest -q --junitxml=docs/project/evidence/briefing-heldout-20260923/regression-validation-v4.xml",
+    "tests": 1112,
+    "passed": 1076,
+    "skipped": 36,
+    "failures": 0,
+    "errors": 0,
+    "briefing_temporal_tests": 3,
+    "briefing_temporal_skipped": 0,
+    "junit_sha256": "85def8e49f089096f064ea63740b745a5b28f65e15ca6bade3ca32da21446246"
+  },
+  "publication": "disabled"
+}

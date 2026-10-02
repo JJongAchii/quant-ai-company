@@ -1,0 +1,35 @@
+{
+  "request_id": "news-brief-eval-d1f27d9987ba3a9982b7a20c3eae4e3e",
+  "request_sha256": "8e67a185ee583bb42de247933263afacdf7a23c9f1ca395cca70888e08a76f14",
+  "elapsed_seconds": 113.201,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "request_id": "news-brief-eval-d1f27d9987ba3a9982b7a20c3eae4e3e",
+    "decision": {
+      "say": "",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [
+        {
+          "title": "BriefReview",
+          "content": "{\"verdict\":\"reduce\",\"checks\":{\"numbers\":true,\"sources\":true,\"timing\":true,\"causality\":true,\"materiality\":true,\"counterevidence\":true,\"transmission\":true,\"alternatives\":true,\"falsifiability\":false,\"coverage\":true,\"depth\":true,\"readability\":true},\"source_assessments\":[{\"source_id\":\"128202d1c644ee110f1f5526935127319ae82b56\",\"treatment\":\"covered\",\"reason\":\"한국장 상승폭 축소, 종가·환율, 반도체 차별화와 원전 정책 재료 및 시장별 수급을 반영했다.\",\"item_ids\":[\"summary_kr\",\"overview_kr\",\"kospi_close\",\"kosdaq_close\",\"usdkrw_snapshot\",\"kr_fact\",\"kr_interpretation\",\"kr_check\",\"kr_mechanism\",\"kr_alternative\",\"kr_participation\",\"oil_fact\"]},{\"source_id\":\"bbd821f9a5d0dcb025ff3f262b5738fcb11cdc3b\",\"treatment\":\"background\",\"reason\":\"연합뉴스로 인용한 양대 지수 종가와 오후 3시 30분 환율을 재확인하며 별도 신규 전개는 없다.\",\"item_ids\":[]},{\"source_id\":\"82b028a344fdeb87ff250448189320fcefc618df\",\"treatment\":\"covered\",\"reason\":\"신임 부총리의 위험 재점검·물가 안정 지시를 구체적인 지출이나 이익 개선과 구분했다.\",\"item_ids\":[\"government_policy\"]},{\"source_id\":\"4181f0c2af11004abab7c2db85851bfb7886cf5d\",\"treatment\":\"covered\",\"reason\":\"부채비율의 명목 GDP 분모 효과와 금융취약성·기업 이자 부담, 환율 하락의 대출 여력 효과를 함께 다뤘다.\",\"item_ids\":[\"summary_credit\",\"credit_fact\",\"credit_interpretation\",\"credit_check\",\"credit_mechanism\",\"credit_alternative\",\"credit_counterpoint\"]},{\"source_id\":\"488bdafa950e4a9501e9b8251b255cd6698c8570\",\"treatment\":\"covered\",\"reason\":\"해협 재개 제안의 군사적 압박 완화 조건과 정상 간 만남 가능성 부인을 반영했다.\",\"item_ids\":[\"summary_oil\",\"oil_interpretation\"]},{\"source_id\":\"f38495fa69b6b6dc59bc35b47dc9135056a5cb2a\",\"treatment\":\"covered\",\"reason\":\"보안 AI 개발과 평가 일정을 소개하고 기존 장비 활용·공공 보급을 신규 주문 및 수익화와 구분했다.\",\"item_ids\":[\"security_fact\",\"security_interpretation\",\"security_check\",\"security_mechanism\",\"security_alternative\"]},{\"source_id\":\"ccb3c80db4440c17ab55825873c042f6bbe24735\",\"treatment\":\"covered\",\"reason\":\"미국장 종가, 연준 인상과 추가 긴축 가능성, 금 선물 및 연설 일정을 반영하고 국채금리 보도 차이를 공개했다.\",\"item_ids\":[\"summary_credit\",\"overview_us\",\"us_policy_fact\",\"us_policy_interpretation\",\"us_policy_mechanism\",\"williams_speech\"]},{\"source_id\":\"3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6\",\"treatment\":\"covered\",\"reason\":\"미국 기술·커뮤니케이션 강세와 에너지 약세 및 미·중 회동의 정책 변수를 반영했다.\",\"item_ids\":[\"overview_us\",\"summary_credit\"]},{\"source_id\":\"ee106e6206f30aea0a6c4d0999349aeef2df0e43\",\"treatment\":\"covered\",\"reason\":\"원유 계약별 전일 마감과 중동 수출 회복력, 전쟁 이전 대비 약 80% 물량이라는 반대 근거를 반영했다.\",\"item_ids\":[\"oil_fact\",\"oil_check\",\"oil_alternative\",\"oil_counterpoint\"]},{\"source_id\":\"c47ace294846384d3e56e44072728e783537800e\",\"treatment\":\"covered\",\"reason\":\"시각이 명시된 장중 유가 반등과 항공 서비스 제재 경고를 전일 마감 및 실제 집행과 구분했다.\",\"item_ids\":[\"summary_oil\",\"oil_fact\",\"oil_interpretation\",\"oil_check\"]},{\"source_id\":\"2b7e91ad74af68290f4a95af3dae32d237c17a89\",\"treatment\":\"covered\",\"reason\":\"AMD 시가총액과 AI 지출 유지의 대안 설명을 반영하고 다른 보도와 국채금리 수치가 다름을 밝혔다.\",\"item_ids\":[\"overview_us\",\"us_policy_fact\",\"us_policy_alternative\"]},{\"source_id\":\"f6a6901325618500df86580eedff17f0d8e64b76\",\"treatment\":\"covered\",\"reason\":\"이란 대통령 연설의 현지 날짜와 오전 예정만 반영했다. 강경 발언은 후속 해협 제안 기사와 맥락이 겹친다.\",\"item_ids\":[\"iran_address\"]},{\"source_id\":\"bde80c5a4779a8f7b707d39454d3c8481cc6ff37\",\"treatment\":\"covered\",\"reason\":\"뮤즈 다운로드 규모와 미·중 만찬, 유엔총회 회동을 반영하면서 채택과 이익 확정을 구분했다.\",\"item_ids\":[\"us_policy_fact\",\"us_policy_interpretation\",\"us_policy_mechanism\",\"un_meetings\",\"us_china_dinner\"]},{\"source_id\":\"d8d032fb5ceba798fecf9f56cd3c01e1fd40b4ef\",\"treatment\":\"covered\",\"reason\":\"후티의 항로 요충지 장악과 G7의 에너지 안보 경고를 반영하고 수입기업 비용 영향은 조건부로 제시했다.\",\"item_ids\":[\"oil_interpretation\",\"oil_mechanism\",\"oil_counterpoint\"]},{\"source_id\":\"f45edfbad52e19fd3b724efbcae4a9573af35fda\",\"treatment\":\"covered\",\"reason\":\"NSE 청약 배수와 높은 가치평가를 함께 제시하고 공모 수요를 지수 상승이나 한국 자금 이탈로 확대하지 않았다.\",\"item_ids\":[\"nse_background\"]},{\"source_id\":\"0a9d4bdb6f69a621c79e1c7b31bb248b4b108151\",\"treatment\":\"covered\",\"reason\":\"합병 규모와 소송 합의, 제작 의무·지분 매각 조건 및 작가조합의 반대 입장을 반영했다.\",\"item_ids\":[\"merger_fact\",\"merger_interpretation\",\"merger_check\",\"merger_mechanism\",\"merger_alternative\"]}],\"rejected_ids\":[\"us_policy_check\"],\"concerns\":[\"us_policy_check는 금리·AI주 움직임과 정책 문구를 확인한다고만 한다. 어떤 방향의 관측이나 정책 변화가 긴축·교역 제약 해석을 약화시키는지 명시하지 않았다.\"]}",
+          "source_ids": []
+        }
+      ],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0cb7d-4e02-7472-9595-aa19795decc9",
+    "usage": {
+      "input_tokens": 44471,
+      "cached_input_tokens": 0,
+      "output_tokens": 3572,
+      "reasoning_output_tokens": 1361
+    },
+    "provider": "codex",
+    "web_searches": []
+  }
+}

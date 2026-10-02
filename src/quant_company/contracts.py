@@ -33,7 +33,7 @@ class ToolRequest(StrictModel):
     name: Literal["calculate", "knowledge_search", "read_source", "lake_catalog", "lake_describe", "lake_sample",
                   "company_history", "maintenance_review", "maintenance_status", "system_status", "repository_read",
                   "task_control", "finance_search", "finance_read", "web_search", "web_read",
-                  "finance_compute", "data_quality", "staff_status", "news_status", "research_control"]
+                  "finance_compute", "data_quality", "staff_status", "news_status", "briefing_status", "research_control"]
     arguments: dict[str, Any]
 
 
@@ -92,11 +92,14 @@ class ProviderRequest(StrictModel):
     # Service-owned continuation, resolved against durable runtime receipts.
     session: ProviderSession | None = None
     output_contract: Literal["agent_decision", "quant_brief_v1", "quant_brief_v2", "quant_brief_v3", "quant_brief_v4",
-                             "quant_critique_v1", "quant_critique_v2"] = "agent_decision"
+                             "quant_critique_v1", "quant_critique_v2", "quant_search_v1"] = "agent_decision"
 
     @model_validator(mode="after")
     def scoped_output(self):
-        if self.output_contract != "agent_decision" and (
+        if self.output_contract == "quant_search_v1":
+            if not self.request_id.startswith("quant-feed-") or not self.web_search:
+                raise ValueError("Quant discovery output requires a native-search Quant request")
+        elif self.output_contract != "agent_decision" and (
                 not self.request_id.startswith("quant-feed-") or self.web_search):
             raise ValueError("Quant structured output requires a tool-free Quant request")
         return self

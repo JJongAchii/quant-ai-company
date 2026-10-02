@@ -1,0 +1,110 @@
+{
+  "checked_at": "2026-09-22 07:17:17.396416+00:00",
+  "completed_trading_days": [
+    "2026-09-21",
+    "2026-09-18",
+    "2026-09-17",
+    "2026-09-16",
+    "2026-09-15"
+  ],
+  "required_days": 5,
+  "editions": [
+    {
+      "day": "2026-09-21",
+      "kind": "am",
+      "id": "b34974cb-e288-54c6-914b-e45e34de8230",
+      "passed": false,
+      "reasons": [
+        "edition_not_committed"
+      ]
+    },
+    {
+      "day": "2026-09-21",
+      "kind": "pm",
+      "id": "2ec349cf-4af0-5920-b8a7-3180ef7f0198",
+      "passed": false,
+      "reasons": [
+        "edition_not_committed"
+      ]
+    },
+    {
+      "day": "2026-09-18",
+      "kind": "am",
+      "id": "abad0141-59da-5a1f-85fc-ca228f2a481f",
+      "passed": false,
+      "reasons": [
+        "edition_not_committed"
+      ]
+    },
+    {
+      "day": "2026-09-18",
+      "kind": "pm",
+      "id": "4a930434-6f7d-5f09-8836-6f2a91a43b2b",
+      "passed": false,
+      "reasons": [
+        "edition_not_committed"
+      ]
+    },
+    {
+      "day": "2026-09-17",
+      "kind": "am",
+      "id": "944738bc-e334-5b30-b9bf-0c99c0b2409e",
+      "passed": false,
+      "reasons": [
+        "edition_not_committed"
+      ]
+    },
+    {
+      "day": "2026-09-17",
+      "kind": "pm",
+      "id": "a5a91a4a-c51c-5a72-8710-773b33222b96",
+      "passed": false,
+      "reasons": [
+        "edition_not_committed"
+      ]
+    },
+    {
+      "day": "2026-09-16",
+      "kind": "am",
+      "id": "65077e6c-f4a0-597e-bc1f-32b389a48cfb",
+      "passed": false,
+      "reasons": [
+        "edition_not_committed"
+      ]
+    },
+    {
+      "day": "2026-09-16",
+      "kind": "pm",
+      "id": "4f285c9f-4fa6-59e2-8252-139b712e4cfe",
+      "passed": false,
+      "reasons": [
+        "edition_not_committed"
+      ]
+    },
+    {
+      "day": "2026-09-15",
+      "kind": "am",
+      "id": "e7884c6f-308d-5908-afb7-494653c2e2fe",
+      "passed": false,
+      "reasons": [
+        "edition_not_committed"
+      ]
+    },
+    {
+      "day": "2026-09-15",
+      "kind": "pm",
+      "id": "3d54d387-1783-5893-9a19-d4742bbc8373",
+      "passed": false,
+      "reasons": [
+        "edition_not_committed"
+      ]
+    }
+  ],
+  "ready_for_slack_acceptance": false,
+  "publishing_changed": false,
+  "slack_acceptance": "separate real delivery verification required",
+  "note": "Saved-input replay is not a fresh inference or proof of independent editorial correctness.",
+  "evidence_scope": "Real qualification code and disposable local PostgreSQL; empty history, not production evidence.",
+  "model": "not_called",
+  "slack": "not_connected"
+}

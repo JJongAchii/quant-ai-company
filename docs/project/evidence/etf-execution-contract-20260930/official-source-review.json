@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "reviewed_on_utc": "2026-09-30",
+  "method": "public_primary_KRX_pages_read_without_authenticated_data_requests",
+  "actual_ingestion_channel": "pykrx_MDCSTAT04301_via_pinned_qdata",
+  "sources": [
+    {
+      "title": "KRX Data Marketplace 데이터 상품 안내",
+      "url": "https://openapi.krx.co.kr/contents/OPP/DATA/OPPDATA002.jsp",
+      "channel": "KRX_data_distribution_feed",
+      "facts": {
+        "securities_product_includes_ETFs": true,
+        "day_market_end_of_day_distribution_KST": ["16:00", "18:10"],
+        "night_market_distribution_KST": "next_day_02:00"
+      },
+      "limits": [
+        "Current feed schedule is not a receipt for the MDCSTAT04301 web query.",
+        "It does not identify the bytes or publication time of any of the 835 historical sessions.",
+        "It does not prove that the same schedule or values applied throughout 2022-2025."
+      ]
+    },
+    {
+      "title": "KRX OPEN API ETF 일별매매정보",
+      "url": "https://openapi.krx.co.kr/contents/OPP/USES/service/OPPUSES003_S2.cmd?BO_ID=nrEpCLaZpoLCTzPUMxuF",
+      "channel": "KRX_authenticated_OpenAPI_service_description",
+      "facts": {
+        "data_start_date": "2010-01-04",
+        "service_registration_date": "2020-09-22",
+        "service_page_last_modified_date": "2026-01-16"
+      },
+      "limits": [
+        "Service-page modification date is not an ETF observation revision timestamp.",
+        "This channel is distinct from the pinned ingestion channel; no new channel was adopted.",
+        "The public page does not recover per-session historical publication or revision receipts."
+      ]
+    },
+    {
+      "title": "KRX OPEN API 이용약관",
+      "url": "https://openapi.krx.co.kr/contents/OPP/INFO/OPPINFO002.jsp",
+      "channel": "OpenAPI_terms",
+      "facts": {
+        "effective_date": "2025-12-26",
+        "service_uptime_statement_is_not_per_row_publication_deadline": true,
+        "data_accuracy_completeness_and_continuity_are_not_guaranteed": true
+      },
+      "limits": [
+        "These terms neither prove a historical correction occurred nor identify a revision history.",
+        "They do not establish historical availability of the frozen input values."
+      ]
+    },
+    {
+      "title": "KRX 정보데이터시스템 ETF 전종목 시세",
+      "url": "https://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201030101",
+      "channel": "legacy_MDC_query_page",
+      "facts": {"browser_extracted_text_lines": 0},
+      "limits": [
+        "The browser could not extract the dynamic page; this is an access limitation, not proof of absence.",
+        "No historical prices or sealed-period price rows were requested."
+      ]
+    }
+  ],
+  "historical_publication_receipts_recovered": false,
+  "historical_revision_receipts_recovered": false,
+  "trade_day_2359_availability_proven": false,
+  "new_authenticated_source_adopted": false,
+  "price_rows_read": false,
+  "production_mutated": false,
+  "scientific_trials_added": 0
+}

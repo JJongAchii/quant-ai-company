@@ -1,0 +1,24 @@
+{
+  "checked_at": "2026-09-30T06:45:52.833951+00:00",
+  "scope": "Independent supplement-original audit during confirmed repair; not new evidence supplied to the model",
+  "findings": [
+    {
+      "source_id": "788b6891bfe5dd744d39e68266c0711672992262",
+      "source_chars": 4241,
+      "finding": "Stored original contains headline-only flash followed by related-news menus and unrelated market widgets. Investment amount/announcement remains a reported possibility; no commitment terms or confirmation appear in the actual article. Model must not use surrounding headlines/widgets as article evidence.",
+      "parser_cause": "Explicit articleBody below 120 chars was skipped, then a larger outer article region containing menus was selected.",
+      "future_fix": "When a declared articleBody exists, insufficient body must not fall back to outer main/article. Existing frozen source is not rewritten."
+    },
+    {
+      "source_id": "aeaa4557f3b05691d33fbab08cb7daad4ba5e947",
+      "source_chars": 1436,
+      "finding": "October 8 gathering is under consideration, not finalized. Meetings with Korean NPU firms, government and Samsung are proposed/being arranged; July MOU is historical. No booked supply deal or revenue amount."
+    }
+  ],
+  "current_public_dom_probe": {
+    "url": "https://www.etoday.co.kr/news/view/2630607",
+    "structure": "div.articleView[itemprop=articleBody], followed by relation_newslist/reporters/marketinfo regions",
+    "scope": "Current DOM inspection only, not historical evaluation backfill"
+  },
+  "receipt_policy": "Preserve frozen 4241-char source and already issued repair request. Parser correction affects future collection only."
+}

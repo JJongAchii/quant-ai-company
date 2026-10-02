@@ -1,0 +1,10 @@
+{
+  "case": "pm-20260918-fresh-format9-validation10",
+  "cutoff": "2026-09-18T19:40:00+09:00",
+  "read_only_company_store_query": true,
+  "retrieved_at": "2026-09-28T07:42:01+00:00",
+  "candidate_count": 0,
+  "raw_snapshot_sha256": "fd0869aced171e31a6917a522c3039e41c535ddfa4b2e4f338e981e0e0fb90b1",
+  "decision": "source_unavailable_no_model_call",
+  "explanation": "The bounded historical-original query returned no rows for this old completed Korean PM cutoff. The empty bundle is not a briefing quality test; no source or market content was fabricated or backfilled."
+}

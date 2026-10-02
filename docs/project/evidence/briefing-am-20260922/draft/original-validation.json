@@ -1,0 +1,15 @@
+{
+  "case": "am-20260922-fresh-after-contract-repair",
+  "policy": "evaluation-policy.json, validation version 8",
+  "writer_request_id": "news-brief-eval-5b1953bf18bd5c733354f42da61a427d",
+  "provider": "codex",
+  "elapsed_seconds": 495.67,
+  "typed_proposal_valid": true,
+  "mechanical_rejections": {
+    "merger_counterpoint": "unsupported_prose_number"
+  },
+  "diagnosis": "The original states $17.5m and the claim states the exactly equivalent 1,750만 달러; numeric validation did not normalize the attached dollar-million suffix. This is a validator false rejection, not permission to waive the number check.",
+  "policy_result": "fail",
+  "next_action": "Add narrowly scoped US-dollar m-suffix normalization with a negative control, then replay the identical saved writer as a development check under a new validation policy. The frozen 2026-09-22 outcome remains failed.",
+  "slack": "not_called"
+}

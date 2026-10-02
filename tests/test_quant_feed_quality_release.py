@@ -107,8 +107,9 @@ def test_stage_builds_only_dependency_identical_app_and_dedicated_runtime(releas
 
 @pytest.mark.parametrize("failure", [None, "pinned", "environment", "base_image", "setenv", "protocol", "calendar"])
 @pytest.mark.parametrize("installed", [False, True])
+@pytest.mark.parametrize("publication", [False, True])
 def test_cutover_recreates_only_selected_services_and_preserves_publication_pause(
-    release, monkeypatch, tmp_path, failure, installed
+    release, monkeypatch, tmp_path, failure, installed, publication
 ):
     fail_setenv = failure == "setenv"
     old_app_commit = "d" * 40 if failure == "pinned" else "a" * 40
@@ -119,7 +120,8 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
     monkeypatch.setattr(release, "STATE", state)
     env = state / "config/runtime.env"
     env.write_text(
-        "RELEASE_COMMIT=" + env_commit + "\nQUANT_FEED_ENABLED=true\nQUANT_FEED_PUBLISH_ENABLED=false\n"
+        "RELEASE_COMMIT=" + env_commit + "\nQUANT_FEED_ENABLED=true\nQUANT_FEED_PUBLISH_ENABLED="
+        + str(publication).lower() + "\n"
     )
     (state / "config/data-watch-contracts.json").write_text("[]\n")
     if failure == "calendar":
@@ -151,7 +153,7 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
             "restarts": 0,
             "health": "healthy",
             "image_revision": "a" * 40,
-            "quant_publish": "false",
+            "quant_publish": str(publication).lower(),
         }
         for name in [
             *selected,
@@ -174,11 +176,16 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
     def run(command, **kwargs):
         commands.append(command)
         if command[:3] == ["docker", "exec", "quant-company-quant-codex-runtime-1"]:
-            return json.dumps({"quant_brief_v4": "a" * 64, "quant_critique_v2": "b" * 64})
+            return json.dumps({"quant_brief_v4": "a" * 64, "quant_critique_v2": "b" * 64, "quant_search_v1": "c" * 64})
         return ""
 
-    def compose(helper, root, *command):
+    def compose(helper, root, *command, image_overrides=None):
         commands.append(["compose", str(root), *command])
+        if image_overrides:
+            pinned = json.loads(image_overrides.read_text())["services"]
+            assert pinned["quant-feed-worker"]["image"] == "old-image"
+            if installed:
+                assert pinned[release.DEDICATED_RUNTIME]["image"] == "old-runtime-image"
         if root == target:
             if command[-1] == release.DEDICATED_RUNTIME and command[0] == "up":
                 rows["quant-company-quant-codex-runtime-1"] = {
@@ -205,7 +212,7 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
         assert not commands and not linked
         if failure == "protocol":
             raise ValueError("runtime_protocol_mismatch")
-        return {"quant_brief_v4": "a" * 64, "quant_critique_v2": "b" * 64}
+        return {"quant_brief_v4": "a" * 64, "quant_critique_v2": "b" * 64, "quant_search_v1": "c" * 64}
 
     monkeypatch.setattr(release, "protocol_preflight", protocol)
     monkeypatch.setattr(release, "run", run)
@@ -218,7 +225,7 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
         lambda: {"running_quant_calls": 0, "pending_quant_outbox": 0, "sending_outbox": 0},
     )
     monkeypatch.setattr(release.time, "sleep", lambda seconds: None)
-    args = SimpleNamespace(base="a" * 40, commit=commit)
+    args = SimpleNamespace(base="a" * 40, commit=commit, preserve_publication=publication)
     if failure in ("environment", "base_image", "calendar"):
         original = env.read_bytes()
         code = "data_watch_calendar_must_be_a_file" if failure == "calendar" else "quality_release_" + failure + "_changed"
@@ -260,14 +267,15 @@ def test_cutover_recreates_only_selected_services_and_preserves_publication_paus
         ["--time", "360", "quant-company-dispatch-1", "quant-company-api-1"],
     ]
     assert linked == ([base] if fail_setenv else [target])
-    assert "QUANT_FEED_PUBLISH_ENABLED=false" in env.read_text()
-    assert json.loads(journal.read_text())["phase"] == ("rolled_back" if fail_setenv else "preview_active")
+    assert "QUANT_FEED_PUBLISH_ENABLED=" + str(publication).lower() in env.read_text()
+    assert json.loads(journal.read_text())["phase"] == (
+        "rolled_back" if fail_setenv else "live_active" if publication else "preview_active")
     assert probed == [("new-image", "new-runtime-image")]
 
 
 @pytest.mark.parametrize("runtime", ["matching", "different", "legacy", "empty"])
 def test_native_protocol_probes_both_staged_images_without_model_calls(release, monkeypatch, runtime):
-    schema = {"quant_brief_v4": "a" * 64, "quant_critique_v2": "b" * 64}
+    schema = {"quant_brief_v4": "a" * 64, "quant_critique_v2": "b" * 64, "quant_search_v1": "c" * 64}
     commands = []
 
     def run(command, **kwargs):

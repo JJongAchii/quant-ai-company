@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 9,
+  "sourceRequest": "응 진행해",
+  "outcome": "Activate the reviewed PR #99 retrospective ETF policy on the company server and fixed 3070 consumer, then prepare the exact signed Slack owner review target.",
+  "deliverables": [
+    {"id": "QUALIFICATION", "description": "Fresh production inventory, exact inactive images and real 3070 sandbox qualification"},
+    {"id": "ACTIVATION", "description": "Consistent backup and guarded app/research-worker/3070 activation with durable receipts"},
+    {"id": "OWNER_REVIEW", "description": "Publish the exact exploratory specification for signed Slack review without granting scientific authority"}
+  ],
+  "constraints": [
+    "Preserve concurrent releases, model routing, accounts, profiles, inputs, tokens and durable receipts",
+    "No new scientific execution before signed Slack approval of the exact new program digest",
+    "No sealed-period data reads, training, performance calculations or research-repository writes",
+    "Append program-bound evidence without replacing existing packets",
+    "After new policy records exist, retain compatible parsers during any forward repair",
+    "Do not automatically replay uncertain external effects"
+  ],
+  "programDigest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
+  "reviewPr": "https://github.com/JJongAchii/quant-ai-company/pull/99",
+  "previousIntent": "INTENT-v8.json"
+}

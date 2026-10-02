@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "source_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+  "exit_code": 1,
+  "failed_phase": "baseline_container_identity_check",
+  "target_created": false,
+  "images_built": false,
+  "production_mutated": false,
+  "old_slack_image": "quant-company:3c848af95dc33b7da444a55018fd41d374c10025",
+  "actual_slack_image": "quant-company:79586479aeef07554be311951e40bbe00c33cafe",
+  "same_operating_app": true,
+  "config_hashes_unchanged": true,
+  "recorded_at": "2026-10-02T04:39:24.374446+00:00"
+}

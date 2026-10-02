@@ -1,0 +1,145 @@
+{
+  "mode": "historical_originals_before_exact_scheduled_cutoff",
+  "raw_originals_sha256": "ac9e4b810559b8b62b48d0cb76ff2e14aa12658fd58dd8624ccfdc97f778dc6b",
+  "model": "not_yet_called",
+  "slack": "not_connected",
+  "snapshots": {
+    "am-20260925": {
+      "cutoff": "2026-09-24T22:10:00+00:00",
+      "raw_article_count": 151,
+      "eligible_count": 151,
+      "selected_count": 16,
+      "bundle_sha256": "36fb70adcd8312f461c0c2150e9f94fae4c78d36c360fab1ac0dd77550eb1bc1",
+      "selected": [
+        {
+          "id": "11ce598df15a677b051393a431aa3fd347f00252",
+          "title": "뉴욕증시, 연준 추가 인상 우려ㆍ국채금리 급등에 하락 [종합]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-23T22:33:00+00:00",
+          "retrieved_at": "2026-09-23T22:34:43.380551+00:00",
+          "sha256": "36807771ac9985013736ad71409988f280d4645d614f660e50663852acfe96b6"
+        },
+        {
+          "id": "6628c5bbf737f74bb55fb562c84adfa2d3bdf4a8",
+          "title": "뉴욕증시, 연준 추가 금리인상 우려·국채금리 급등에 하락",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-23T20:53:00+00:00",
+          "retrieved_at": "2026-09-23T21:03:28.523356+00:00",
+          "sha256": "0f0eea62b56c8b409ac50f0821494685b21298a95ae60490fdfdeed107b92730"
+        },
+        {
+          "id": "b47144f5dfceba7cfbbcdeb291fd852db06180d3",
+          "title": "Philadelphia Fed's Anna Paulson says 'modest' rate moves likely ahead to tame inflation",
+          "publisher": "CNBC",
+          "published_at": "2026-09-24T14:26:05+00:00",
+          "retrieved_at": "2026-09-24T14:29:00.990943+00:00",
+          "sha256": "d384c3c9cf3dd5df956ecf3369a9631aebedfbacb9bafb6c20f958d2c544f7d3"
+        },
+        {
+          "id": "a763382baa1a82f3e13d5e4dece127752a145b19",
+          "title": "'Proteinflation': Meet the people paying up to £100 for a bag of protein",
+          "publisher": "BBC News",
+          "published_at": "2026-09-23T23:12:01+00:00",
+          "retrieved_at": "2026-09-23T23:15:56.822521+00:00",
+          "sha256": "2ee0a9c0492b83202bea7f06545b71213d174fdc2e1d5835d5b5db8324ed5fdd"
+        },
+        {
+          "id": "c61eaf99f60f69c23199675ab1ba91456da9270b",
+          "title": "UAE, 이란 항공편 운항 전면중단…역내 최대 교역국 결국 동참",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-24T21:59:45+00:00",
+          "retrieved_at": "2026-09-24T22:04:32.954093+00:00",
+          "sha256": "379f0b531ab2794f8dfd8db98af2d93e52000286904422b02a7cdedccda28b48"
+        },
+        {
+          "id": "c34d5114acf20fd5a23c9f7af3904a770e9cd2d0",
+          "title": "\"미국·이란, 호르무즈 해협 재개방 위한 단계적 합의 모색\"",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-24T21:43:10+00:00",
+          "retrieved_at": "2026-09-24T21:54:25.382903+00:00",
+          "sha256": "396a6f5c5b5b269adabe1f31d1f4e0da8708bfc4612b9fe8643107f74a1c73ce"
+        },
+        {
+          "id": "1967640a2f14c5514bdc9b6b7261d070852c918f",
+          "title": "Meta gets to consumer AI device market before OpenAI, but Zuckerberg's strategy remains unproven",
+          "publisher": "CNBC",
+          "published_at": "2026-09-24T21:17:08+00:00",
+          "retrieved_at": "2026-09-24T21:22:46.526993+00:00",
+          "sha256": "bef380fcf080c7e5aa53440bc05e2b56e060b702355189c0fa4686a788921b5e"
+        },
+        {
+          "id": "d69e577eaa0cc62c8fe4f7350f263ad2b3e11f51",
+          "title": "[미중정상회담] \"中기업인들 시진핑과 따로 워싱턴행…만찬 참석 불투명\"",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-24T19:29:10+00:00",
+          "retrieved_at": "2026-09-24T19:42:38.384655+00:00",
+          "sha256": "3a2f68cbb7215ebe947bb9562adff0561c5c5406317572a4f6e29a2cc296f484"
+        },
+        {
+          "id": "9f63f545a8b9669e83a500622e169061558889d4",
+          "title": "국제유가, 미국·이란 긴장에 반등…브렌트 3.9% 급등",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-23T20:53:00+00:00",
+          "retrieved_at": "2026-09-23T21:03:31.209480+00:00",
+          "sha256": "41da431258f4822c63adc5d915d1e74691bedd2fcbc917411f97b7c5a09d251a"
+        },
+        {
+          "id": "16c55d1cd566fe27d9db9fa6fc040e14fc84409b",
+          "title": "[속보] 국제유가, 급등⋯브렌트유 3.4%↑",
+          "publisher": "이투데이",
+          "published_at": "2026-09-24T21:07:00+00:00",
+          "retrieved_at": "2026-09-24T21:14:07.483603+00:00",
+          "sha256": "e225d7da7c712f34bee819acc762e8ee4bcdc8345c84e3512cf949455b6f61e9"
+        },
+        {
+          "id": "cb1935f3c257cc9d30f087d4831d94c833258a13",
+          "title": "[속보] 뉴욕증시, 국채금리 급등 속 혼조 마감...다우 0.31%↓",
+          "publisher": "이투데이",
+          "published_at": "2026-09-24T21:00:00+00:00",
+          "retrieved_at": "2026-09-24T21:03:57.165665+00:00",
+          "sha256": "bbf2fef5172f871c1451f40b7cd2a78a8dd676430759c966268a83ff8e315e08"
+        },
+        {
+          "id": "71888117cb7419ed2fe3bb41c3cac0e1b855f447",
+          "title": "후티 반군, 사우디 미사일 공격 소식에…국제유가 3% 넘게 급등",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-24T20:17:00+00:00",
+          "retrieved_at": "2026-09-24T20:23:33.334678+00:00",
+          "sha256": "12dc948ab32c1f8c8a297b920c951e17f4f7dde996071fc30f7eb1d2db7f82ea"
+        },
+        {
+          "id": "019bd754a0a8ab3b9ad5cf97f8fafaee10954cb0",
+          "title": "Oil prices rise, snap five day losing streak as Iran vows it will not surrender",
+          "publisher": "CNBC",
+          "published_at": "2026-09-23T19:16:31+00:00",
+          "retrieved_at": "2026-09-23T19:21:02.890872+00:00",
+          "sha256": "998de2a88fdafff3849c5fae9422d41b0297b482ff6855a38c5a263ad797f51a"
+        },
+        {
+          "id": "c1df4eaebf98b3a2d1cfc5365e91049b2e031a4b",
+          "title": "Trump Rolls out Red Carpet for Xi in Rare Reception ahead of Summit",
+          "publisher": "KBS World",
+          "published_at": "2026-09-24T04:22:30+00:00",
+          "retrieved_at": "2026-09-24T05:00:44.200373+00:00",
+          "sha256": "41dd330590c8a970bd39d0d76be54f714349aa91576d6465ec997517953c3692"
+        },
+        {
+          "id": "db79dcd892523894edbbcd725da431626925cbf9",
+          "title": "Trump offers warm welcome as China's Xi arrives for US visit",
+          "publisher": "BBC News",
+          "published_at": "2026-09-24T03:52:21+00:00",
+          "retrieved_at": "2026-09-24T09:24:25.843091+00:00",
+          "sha256": "bc143a4512c4c5d361ff724b85b42fe6fec85960f1270522e339e37dfb3db085"
+        },
+        {
+          "id": "b9193ca2ca75bd5bd63cd94bb32bed3bd5349b7d",
+          "title": "How the oil capital of the US welcomed a solar power boom",
+          "publisher": "BBC News",
+          "published_at": "2026-09-23T23:12:22+00:00",
+          "retrieved_at": "2026-09-23T23:15:59.194387+00:00",
+          "sha256": "716007c267a53a59042c7f5c231a557bbdc440b55708446b890a17604cdf7ac1"
+        }
+      ]
+    }
+  }
+}

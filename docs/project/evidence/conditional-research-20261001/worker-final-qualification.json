@@ -1,0 +1,29 @@
+{
+  "archive_sha256": "0fcff77ba83fad0dc0b32b3eb0b123acd3b3906eb1c534252be1748473acc8dc",
+  "assignment": "Controlled synthetic engineering assignment, reconstructed locally from its receipt; no real owner authority.",
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 1
+  },
+  "financial_performance_claims": false,
+  "fixture_only": true,
+  "host_check_mocked": false,
+  "junit_sha256": "063a09631c48c53b2784026cc2a6eae1025184602731f8da61a7bdaa39a5d3d3",
+  "kind": "final-actual-3070-and-local-consumer-qualification",
+  "producer_original_bytes_verified": true,
+  "production_changed_by_this_slice": false,
+  "protected_engine_unchanged": true,
+  "real_snapshot_reads": 0,
+  "recorded_at": "2026-10-01T05:23:12.786256+00:00",
+  "research_program_authorization": false,
+  "review_input_sha256": "dd5bdd3b3d798e4861d1e3f95fb36579a77c279945bae31f99fa63b7b00c4a26",
+  "sandbox_mocked": false,
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "sealed_price_reads": 0,
+  "source_company_commit": "492788077481f34c315ce99eec0e39d0bcde9588",
+  "strict_local_consumer_passed": true,
+  "worker_receipt_sha256": "bffa59363dc35ca06a14587cb7c0b7e121f3b63e774bbd0f263bb86c45d18e93"
+}

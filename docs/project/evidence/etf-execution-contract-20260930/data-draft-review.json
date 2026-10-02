@@ -1,0 +1,176 @@
+{
+  "blocking_findings": [],
+  "checked_clearances": [
+    {
+      "locations": [
+        "docs/project/evidence/etf-execution-contract-20260930/availability-survey.json#/scope",
+        "docs/project/evidence/etf-execution-contract-20260930/data-policy-draft.json#/historical_point_in_time_verified"
+      ],
+      "observation": "Current raw-to-clean-to-input lineage is distinct from historical source-publication and revision evidence. ETag, null version IDs, upload timestamps and filesystem timestamps are not promoted to per-session publication receipts. Other unlisted backups remain unknown.",
+      "topic": "Current bytes and historical vintages"
+    },
+    {
+      "locations": [
+        "docs/project/evidence/etf-execution-contract-20260930/official-source-review.json#/actual_ingestion_channel",
+        "docs/project/evidence/etf-execution-contract-20260930/official-source-review.json#/sources"
+      ],
+      "observation": "Current distribution-feed times and authenticated OpenAPI service pages are explicitly distinct from pykrx MDCSTAT04301 ingestion. Neither page dates nor feed policy are claimed as receipts for the historical query responses. Dynamic-page extraction failure is correctly recorded as an access limitation.",
+      "topic": "KRX feed and actual ingestion channels"
+    },
+    {
+      "locations": [
+        "src/quant_company/research/domestic_snapshot.py#build_rows",
+        "src/quant_company/research/reference/domestic_engine.py#history_at"
+      ],
+      "observation": "The generator assigns trade-day 23:59 KST rather than observing it. History is restricted to dates before the trade day and available_at strictly before 09:00 KST. Rebasing uses the latest visible historical close per ticker. Prefix causality is conditional on synthetic availability and frozen-value assumptions; actual historical availability is not verified.",
+      "topic": "Synthetic availability and signal causality"
+    },
+    {
+      "locations": [
+        "docs/project/evidence/etf-execution-contract-20260930/data-policy-draft.json#/universe_contract",
+        "docs/project/evidence/etf-raw-lineage-20260930/raw-lineage-receipt.json#/selection_prefix_check",
+        "src/quant_company/research/domestic_snapshot.py#select_cohort"
+      ],
+      "observation": "The draft matches the 2022-12-29 cutoff, final 20 prefix sessions, complete valid rows, raw traded-value ranking, same-cutoff leverage/inverse metadata and ordered ten-ticker cohort. The supplied receipt reports zero post-cutoff raw objects. There is no development-period reselection; historical classification vintages remain unverified.",
+      "topic": "Selection prefix"
+    },
+    {
+      "locations": [
+        "src/quant_company/research/reference/krx-etf-source-contract.json#/evidence_excerpts",
+        "src/quant_company/research/reference/domestic_engine.py#adjusted_open",
+        "docs/project/evidence/etf-execution-contract-20260930/data-policy-draft.json#/execution_price_contract"
+      ],
+      "observation": "The builder chains FLUC_RT and anchors at the last close. The stated estimand matches next adjusted_open/current adjusted_open - 1 with adjusted_open = open*adj_close/close. This is a derived retrospective valuation level and is not exact cash-distribution reinvestment total return or an actionable historical open fill. Positive per-ticker rescaling cancels from ratios and history rebasing if underlying past returns are unchanged; it does not prove absence of corrections.",
+      "topic": "Reference-adjusted valuation"
+    },
+    {
+      "locations": [
+        "src/quant_company/research/reference/domestic_engine.py#simulate",
+        "docs/project/evidence/etf-execution-contract-20260930/data-policy-draft.json#/execution_price_contract"
+      ],
+      "observation": "Long-only weights with sum <= 1, zero return on residual cash, absolute pretrade weight-change turnover including sells, and multiplicative 10/30-bps costs match the engine. The first observation is zero and CAGR uses elapsed calendar days. The terminal session provides the final valuation open, with no final signal or liquidation cost. Both-session missing/nontradable checks cover proposed tickers union prior positions, including current-open full sales and explicit zero-weight tickers. Missing holdings are never silently dropped or assigned synthetic settlement.",
+      "topic": "Costs, cash, final valuation and events"
+    },
+    {
+      "locations": [
+        "docs/project/evidence/etf-execution-contract-20260930/review-package.json#/package",
+        "docs/project/evidence/etf-execution-contract-20260930/program-schema-preview.json#/objective",
+        "docs/project/evidence/etf-execution-contract-20260930/implementation-spec.md"
+      ],
+      "observation": "New input hashes agree across policy, package, preview, preparation and audit-only lineage receipts, and differ from old approved inputs. New profile/lake identities, null owner approval, activation=false and runtime_admissible=false prevent this draft from claiming old approval. The implementation specification requires distinct conditional_ready, strict policy/digest/scope propagation, separate theoretical valuation assessment and fresh signed canonical-program approval. Only the three named historical/original-preparation gaps may be acknowledged; unknown, numerical, lineage, causal and price-estimand gaps remain blockers. Existing PIT/executable facts are not raised by conditional admission.",
+      "topic": "Input and approval isolation"
+    },
+    {
+      "locations": [
+        "docs/project/evidence/etf-execution-contract-20260930/implementation-spec.md#3-기존-후보와-예산-이력",
+        "docs/project/evidence/etf-execution-contract-20260930/implementation-spec.md#4-실행과-결과-전파",
+        "docs/project/evidence/etf-execution-contract-20260930/program-schema-preview.json#/envelopes/0/template/search"
+      ],
+      "observation": "The clarification preserves protected engine result bytes and requires a separately qualified trusted wrapper to bind typed policy/scope/lineage from the signed canonical manifest, with consumer manifest and internal-file SHA revalidation. Candidate self-declarations cannot determine scope. The unchanged program upper cap is four while max_trials_per_cycle=2 and continuous=false stop this mission after its first cycle of at most two scientific results, subject to earlier stops. Lineage limits and history baselines are signed typed contract fields; increases, reassignment or additional cycles require verified changes and fresh signing. These are unimplemented requirements, not verified runtime behavior.",
+      "topic": "Final wrapper, cycle and lineage clarification"
+    }
+  ],
+  "clarification_review": {
+    "all_other_previously_reviewed_files_byte_identical": true,
+    "changed_reviewed_files": [
+      {
+        "current_sha256": "be306232e85f6fae4107c3fc78283e41a6520b9b330ec4f724ed39f32ed49d6d",
+        "path": "docs/project/evidence/etf-execution-contract-20260930/implementation-spec.md",
+        "previous_sha256": "3d4fc5a24ddc45dc8ace679d9cc9e8a61792fc8e667d2d7b76aff3b57755ef5d"
+      },
+      {
+        "current_sha256": "44b0e8063b1d0ff92f235b1745c17d2cb192b85b748b37f0a1f60b8c0a183413",
+        "path": "docs/project/evidence/etf-execution-contract-20260930/review-package.json",
+        "previous_sha256": "b43fca312d4f24bffde03cbc5367f875f623dc373a32b1197f3fa40e8de2c9e4"
+      }
+    ],
+    "previous_review_digest": "7cf3713a1972e90842e2758fd8bbc03da30d11044f7ff95dae5c19bf4ef13376",
+    "previous_review_path": "docs/project/evidence/etf-execution-contract-20260930/data-draft-review-before-clarification.json",
+    "previous_review_sha256": "2f965f434fb537dbbf90a07aecd5f5eb3f854316c2a02282084ccd10751f421f",
+    "scope": "Re-review of final package digest and implementation-spec clarification; inherited local data-draft conclusions retained only for byte-identical files."
+  },
+  "current_runtime_admissible": false,
+  "digest_rules": {
+    "file_sha256": "Exact bytes including indentation and trailing newline.",
+    "public_profile": "Adaptive digest_model: UTF-8 sorted JSON with compact separators, ensure_ascii=False and allow_nan=False, no trailing newline.",
+    "review_policy_preview": "Service fingerprint: UTF-8 json.dumps(value, sort_keys=True, ensure_ascii=False), default separators, no trailing newline."
+  },
+  "historical_point_in_time_verified": false,
+  "integrity_checks": {
+    "bound_file_byte_hashes": true,
+    "clarification_changes_limited_to_package_and_specification": true,
+    "cost_binding": true,
+    "generator_hash": true,
+    "new_input_hashes_consistent": true,
+    "no_admission_or_approval": true,
+    "old_approved_input_hashes_separate": true,
+    "policy_digest": true,
+    "program_cycle_and_upper_caps_consistent": true,
+    "program_preview_digest": true,
+    "protected_engine_hash": true,
+    "public_profile_digest": true,
+    "qualification_evaluation_names": true,
+    "review_digest": true,
+    "selection_prefix": true,
+    "synthetic_availability_not_verified": true,
+    "window_binding": true
+  },
+  "limitations": [
+    "This is a local independent draft review, not an actual PostgreSQL data-employee assessment, director decision, preparation approval or runtime admission.",
+    "Per-session historical publication receipts, correction vintages, original preparation clean bytes and the original preparation execution manifest have not been recovered. Present-byte lineage cannot establish historical point-in-time identity.",
+    "The metadata survey covers six exact mirror keys, named archive/receipt prefixes and known local paths. Unlisted archives remain unknown; no global absence claim was verified.",
+    "Supplied official-source and lineage receipts were reviewed locally. This reviewer did not independently fetch KRX pages, download lake objects, rerun reconstruction or read/re-hash staged price-input rows.",
+    "Adjusted-open valuation uses same-session close/FLUC_RT-derived adjustments. Rounding, source corrections, cash distributions and actual execution effects are not resolved by this theoretical contract.",
+    "No candidate, numerical run, truncation/perturbation guard or producer-consumer E2E was executed. Source prefix filtering does not certify future candidate causality or any performance result.",
+    "Typed conditional-policy enforcement and propagation remain unimplemented. Draft consistency does not prove production enforcement. Real PostgreSQL/Temporal checks, an isolated worker E2E, actual independent employee judgments and fresh owner approval remain mandatory.",
+    "No sealed 2026 price rows were read by this review. Staff already know earlier P11 aggregate results, so untouched-2026 confirmation is correctly excluded.",
+    "Inherited reconstruction and comparison assertions were not independently reproduced here. No scientific result, preparation readiness or deployment readiness is granted.",
+    "The final wrapper and lineage/cycle clarifications were reviewed as specification requirements only. No wrapper/protocol implementation, mission execution, budget mutation or runtime cycle behavior was tested or approved."
+  ],
+  "non_blocking_recommendations": [
+    {
+      "location": "docs/project/evidence/etf-execution-contract-20260930/data-policy-draft.json#/execution_price_contract/adjusted_open",
+      "required_change": "In the final explanatory report, explicitly call adjusted_open a derived retrospective valuation level and retain the exclusions for actionable fills and cash-distribution total return.",
+      "severity": "minor"
+    },
+    {
+      "location": "docs/project/evidence/etf-execution-contract-20260930/data-policy-draft.json#/execution_price_contract/events",
+      "required_change": "In implementation tests and final documentation, state the exact proposed-union-prior-positions and both-session checks, including fully sold and zero-weight tickers.",
+      "severity": "minor"
+    }
+  ],
+  "observed_at": "2026-09-30T23:11:28.822433+00:00",
+  "price_input_rows_read_by_this_reviewer": false,
+  "production_assessment": false,
+  "production_mutated": false,
+  "readiness_granted": false,
+  "review_digest": "d8520114b1adb978fe672847ac97c08dcd6eee3446bfcd555b8f0f9fd920c503",
+  "review_process": {
+    "final_package_reread_and_verified": true,
+    "initial_output_written": false,
+    "initial_package_digest": "49487dae09d5bcf968de552a0c70d0523794dbf14f5389424a149a1cfb0f3334",
+    "package_changed_before_output": true
+  },
+  "reviewed_file_sha256": {
+    "docs/project/ETF-RAW-LINEAGE-20260930.md": "4c60bef26fc97aa97f6f78168da2b65eff370c7be66dcecef43dce659b13ef66",
+    "docs/project/evidence/etf-execution-contract-20260930/availability-survey.json": "a10ed59d63a934ef1bec39dc17042a891936b3ca9c6eab72230af42c3adbc924",
+    "docs/project/evidence/etf-execution-contract-20260930/data-policy-draft.json": "66a888ac98ba420685b41b7bc45d011b59eef857c1f057e2239d34cef86c463f",
+    "docs/project/evidence/etf-execution-contract-20260930/digest-encoding.json": "cdba583517b289fb5bebe1a06e23c2475331d3ee593c5aabbd55980e5e219540",
+    "docs/project/evidence/etf-execution-contract-20260930/implementation-spec.md": "be306232e85f6fae4107c3fc78283e41a6520b9b330ec4f724ed39f32ed49d6d",
+    "docs/project/evidence/etf-execution-contract-20260930/official-source-review.json": "c14d6e0eb60aa39de78ac7921c172e6a5809abc1e6c780afb10ada3fe33cab36",
+    "docs/project/evidence/etf-execution-contract-20260930/preparation-receipt.json": "29d9090b7af9a8655667bac8b03b4066557cffc0a96382fde086e6c57ec68694",
+    "docs/project/evidence/etf-execution-contract-20260930/program-schema-preview.json": "74b7bdbfe7f111868cf69d64a0626cd6762c6aa893d308e1283752309f375a86",
+    "docs/project/evidence/etf-execution-contract-20260930/public-profile-draft.json": "0c995d823b1e65e5bb2723edd1643848348f629c300ea911fe453099d817cb48",
+    "docs/project/evidence/etf-execution-contract-20260930/review-package.json": "44b0e8063b1d0ff92f235b1745c17d2cb192b85b748b37f0a1f60b8c0a183413",
+    "docs/project/evidence/etf-raw-lineage-20260930/raw-lineage-receipt.json": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a",
+    "src/quant_company/research/domestic_snapshot.py": "976b105b9c8cc245ce9c1e91b04915322548faddac41b2b40852d44baf51dc7b",
+    "src/quant_company/research/reference/domestic_engine.py": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+    "src/quant_company/research/reference/krx-etf-source-contract.json": "861dadaa80513c21109302990754efe6f8de123b0c9e9c176ef9cce2078d28cb"
+  },
+  "reviewer": "local_independent_data_draft",
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "sealed_price_rows_read": false,
+  "strategy_performance_computed": false,
+  "verdict": "reviewable_draft"
+}

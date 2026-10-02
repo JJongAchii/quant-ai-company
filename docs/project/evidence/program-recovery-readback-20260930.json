@@ -1,0 +1,217 @@
+{
+  "containers": [
+    {
+      "name": "/quant-company-worker-1",
+      "image": "quant-company-autonomous:73fcfc34a6876e0a80c14fa72edae2cdb8413b0c",
+      "status": "running",
+      "started_at": "2026-09-30T06:35:25.605813411Z",
+      "restart_count": 0,
+      "health": null
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "image": "quant-company:dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf",
+      "status": "running",
+      "started_at": "2026-09-30T05:53:31.493498826Z",
+      "restart_count": 0,
+      "health": null
+    },
+    {
+      "name": "/quant-company-api-1",
+      "image": "quant-company:dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf",
+      "status": "running",
+      "started_at": "2026-09-30T05:53:31.697018752Z",
+      "restart_count": 0,
+      "health": "healthy"
+    }
+  ],
+  "database": {
+    "program": {
+      "id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+      "state": "active",
+      "manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b"
+    },
+    "stages": [
+      {
+        "stage": "program_proposal",
+        "state": "received",
+        "attempt": 1,
+        "task_id": "f173f628-29f6-5ad7-b94c-f673676e812f",
+        "error": null,
+        "updated_at": "2026-09-30T06:44:28.452368+00:00"
+      },
+      {
+        "stage": "program_selection",
+        "state": "completed",
+        "attempt": 1,
+        "task_id": "7d539089-60b1-5d53-8768-fd4cb220490b",
+        "error": null,
+        "updated_at": "2026-09-29T15:47:13.42404+00:00"
+      },
+      {
+        "stage": "program_data",
+        "state": "completed",
+        "attempt": 4,
+        "task_id": "2081e567-6022-57f1-b9b9-6e1371621470",
+        "error": null,
+        "updated_at": "2026-09-29T15:34:32.406521+00:00"
+      }
+    ],
+    "latest_turns": [
+      {
+        "id": "9c1c273f-c521-5855-a0a4-d9434eb9c52c",
+        "status": "completed",
+        "sequence": 10,
+        "workflow_started": true,
+        "request_prepared": true,
+        "updated_at": "2026-09-30T06:44:28.452368+00:00",
+        "error": null
+      },
+      {
+        "id": "13a9b7af-34e5-5b84-a95a-02fe219044b4",
+        "status": "completed",
+        "sequence": 9,
+        "workflow_started": true,
+        "request_prepared": true,
+        "updated_at": "2026-09-30T06:38:59.163549+00:00",
+        "error": null
+      },
+      {
+        "id": "3594a3bc-b5ad-5d23-b17c-358924052678",
+        "status": "completed",
+        "sequence": 8,
+        "workflow_started": true,
+        "request_prepared": true,
+        "updated_at": "2026-09-30T06:38:25.731795+00:00",
+        "error": null
+      }
+    ],
+    "tasks": [
+      {
+        "id": "dae4bd01-7477-55c7-810e-9e4fbec59dfb",
+        "state": "waiting",
+        "title": "국내 KOSPI200 ETF의 GMM 위험확률 노출조절: 비용 후 절대수익 개발검증",
+        "data_decision": "blocked",
+        "point_in_time": false,
+        "coverage": false,
+        "selection_decision": "wait"
+      },
+      {
+        "id": "dc0e9eac-040d-5eac-9a6d-69fd2c32a0f6",
+        "state": "waiting",
+        "title": "국내 KOSPI200 ETF의 GMM 위험확률 노출조절: 비용 후 절대수익 개발검증",
+        "data_decision": "blocked",
+        "point_in_time": false,
+        "coverage": false,
+        "selection_decision": "wait"
+      },
+      {
+        "id": "875a7d41-e6e5-5a67-94cf-8b7d9d8c2d00",
+        "state": "waiting",
+        "title": "고정 ETF 069500의 일별 GMM 노출조절: 스트레스 비용 후 절대수익 개발검증",
+        "data_decision": "blocked",
+        "point_in_time": false,
+        "coverage": true,
+        "selection_decision": "wait"
+      },
+      {
+        "id": "fc6f31a6-b04e-5878-ada1-a113ccb5bd8d",
+        "state": "waiting",
+        "title": "고정 ETF 069500의 일별 GMM 노출조절: 스트레스 비용 후 절대수익 개발검증",
+        "data_decision": "blocked",
+        "point_in_time": false,
+        "coverage": true,
+        "selection_decision": "wait"
+      },
+      {
+        "id": "3bf21cca-034b-5927-992a-6a62c7d72972",
+        "state": "waiting",
+        "title": "고정 ETF 069500의 일별 GMM 노출조절: 스트레스 비용 후 절대수익 개발검증",
+        "data_decision": "blocked",
+        "point_in_time": false,
+        "coverage": true,
+        "selection_decision": "wait"
+      }
+    ],
+    "mission_count": 0,
+    "reads": [
+      {
+        "path": "sources/ab27e984cd85fe4262ce35c4ca82a96aeb270f14bfb77791c35e8a17ec720a65.json",
+        "character_offset": 0,
+        "next_offset": 12000,
+        "chars": 12000
+      },
+      {
+        "path": "sources/ab27e984cd85fe4262ce35c4ca82a96aeb270f14bfb77791c35e8a17ec720a65.json",
+        "character_offset": 12000,
+        "next_offset": 24000,
+        "chars": 12000
+      },
+      {
+        "path": "sources/ab27e984cd85fe4262ce35c4ca82a96aeb270f14bfb77791c35e8a17ec720a65.json",
+        "character_offset": 24000,
+        "next_offset": 36000,
+        "chars": 12000
+      },
+      {
+        "path": "data/etf_strategy/engine",
+        "character_offset": 0,
+        "next_offset": 12000,
+        "chars": 12000
+      },
+      {
+        "path": "data/etf_strategy/engine",
+        "character_offset": 12000,
+        "next_offset": null,
+        "chars": 554
+      },
+      {
+        "path": "data/etf_strategy/reports/input-check.json",
+        "character_offset": 0,
+        "next_offset": null,
+        "chars": 2037
+      },
+      {
+        "path": "prior-tasks/3bf21cca-034b-5927-992a-6a62c7d72972.json",
+        "character_offset": 0,
+        "next_offset": null,
+        "chars": 11763
+      },
+      {
+        "path": "sources/ab27e984cd85fe4262ce35c4ca82a96aeb270f14bfb77791c35e8a17ec720a65.json",
+        "character_offset": 36000,
+        "next_offset": null,
+        "chars": 6683
+      },
+      {
+        "path": "sources/a92aa4eac500d55b1e4b8879d57d7bd33fb476b0488b493e8de52ffd6c8c0b89.json",
+        "character_offset": 0,
+        "next_offset": null,
+        "chars": 10236
+      }
+    ],
+    "outbox24h": [
+      {
+        "status": "delivered",
+        "count": 339
+      },
+      {
+        "status": "stale",
+        "count": 1
+      }
+    ],
+    "observed_at": "2026-09-30T06:44:30.529509+00:00"
+  },
+  "scope": "Read-only operational observation; no service mutation by this attachment.",
+  "validation": {
+    "deployed_commit": "73fcfc34a6876e0a80c14fa72edae2cdb8413b0c",
+    "real_postgresql_targeted_passed": 33,
+    "ruff": "passed",
+    "model": "Live official runtime response observed in durable turns; local tests use synthetic model responses.",
+    "discarded_candidate_full_tests": {
+      "passed": 1341,
+      "skipped": 46,
+      "scope": "Superseded local implementation only; not the deployed code qualification."
+    }
+  }
+}

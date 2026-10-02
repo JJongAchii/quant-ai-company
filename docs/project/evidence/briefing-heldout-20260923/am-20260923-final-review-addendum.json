@@ -1,0 +1,17 @@
+{
+  "request_id": "news-brief-eval-f70d32ce1ea1aa0b7b303016120a0ecf",
+  "same_request_id_and_body_reused": true,
+  "definitive_pre_inference_quota_refusals": [
+    "am-20260923-revised/review-receipt.json",
+    "am-20260923-revised/review-receipt-replay-1790129676.json"
+  ],
+  "completed_response": "am-20260923-revised/review-receipt-replay-1790142663.json",
+  "completed_provider": "codex",
+  "review_verdict": "reduce",
+  "failed_checks": ["counterevidence", "coverage", "depth", "readability"],
+  "rejected_ids": ["oil_counterproposal"],
+  "current_renderer_replay": "am-20260923-final-review-replay-v6/assessment.json",
+  "current_renderer_replay_passed": false,
+  "publication": false,
+  "scope": "Development sample from the earlier source selection and reviewer prompt; not a final-policy scheduled preview"
+}

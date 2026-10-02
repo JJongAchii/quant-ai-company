@@ -1,0 +1,23 @@
+{
+  "at": "2026-09-30T10:24:11.635574+00:00",
+  "scope": "Deterministic immutable-draft/source audit before independent actual review; not expert certification",
+  "changed_ids": [
+    "consumer_fact",
+    "oil_interpretation",
+    "ai_fact"
+  ],
+  "all_existing_text_preserved": true,
+  "all_prior_evidence_preserved": true,
+  "prices_calendar_watchpoints_unchanged": true,
+  "documents": 18,
+  "rejected": {},
+  "quote_conflicts": [],
+  "checks": [
+    "PCE July annual revision 0.2~0.3 percentage points remains Wall Street forecast rather than realized release",
+    "Hormuz Saturday10591 kilobarrels/day versus17133 pre-war baseline exactly converted, separate from regional exports percentage",
+    "Potential export ban1.2million barrels/day retained as Kpler estimate, not already implemented restriction",
+    "July AMD-government MOU and CPU/GPU/domesticNPU infrastructure, researchbase and talent plan visible; future October visit remains unconfirmed"
+  ],
+  "new_market_data_or_sources": false,
+  "review_result_known": false
+}

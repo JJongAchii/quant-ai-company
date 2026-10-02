@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from datetime import timedelta
 
 from temporalio.client import Client
@@ -8,6 +9,8 @@ from temporalio.worker import Worker
 
 from .account_workflow import AccountControlWorkflow
 from .accounts import AccountControl
+from .briefing.runner import BriefCollector, BriefEditor
+from .briefing.workflow import BriefCollectionWorkflow, BriefDataWorkflow, BriefEditorialWorkflow
 from .company import Company
 from .config import Settings
 from .data_watch.runner import DataWatchRunner
@@ -69,10 +72,29 @@ def make_news_collector(client, company, collector=None):
 def make_news_model_worker(client, company, provider=None):
     editor = NewsEditor(company, provider)
     discovery = NewsDiscovery(company, editor.provider)
+    brief = BriefEditor(company, editor.provider)
     return Worker(client, task_queue=company.settings.temporal_task_queue + "-news-model",
-                  workflows=[NewsEditorialWorkflow, NewsDiscoveryWorkflow],
-                  activities=[editor.activity_tick, discovery.activity_tick],
+                  workflows=[NewsEditorialWorkflow, NewsDiscoveryWorkflow, BriefEditorialWorkflow],
+                  activities=[editor.activity_tick, discovery.activity_tick, brief.activity_tick],
                   max_concurrent_activities=1, max_cached_workflows=10,
+                  graceful_shutdown_timeout=timedelta(seconds=10))
+
+
+def make_brief_collector(client, company, collector=None):
+    collector = collector or BriefCollector(company)
+    return Worker(client, task_queue=company.settings.temporal_task_queue + "-brief-collection",
+                  workflows=[BriefCollectionWorkflow], activities=[collector.activity_tick],
+                  max_concurrent_activities=1, max_cached_workflows=10,
+                  graceful_shutdown_timeout=timedelta(seconds=10))
+
+
+def make_brief_data_worker(client, company, collector=None):
+    from .briefing.data import BriefDataCollector
+
+    collector = collector or BriefDataCollector(company)
+    return Worker(client, task_queue=company.settings.temporal_task_queue+"-brief-data",
+                  workflows=[BriefDataWorkflow], activities=[collector.activity_tick],
+                  max_concurrent_activities=1, max_cached_workflows=2,
                   graceful_shutdown_timeout=timedelta(seconds=10))
 
 
@@ -109,6 +131,26 @@ def make_housing_feed_worker(client, company, collector=None):
 
 
 async def dispatch_once(client, company):
+    if getattr(company.settings, "briefing_enabled", False):
+        from .briefing.store import BriefStore
+
+        if not getattr(company, "_brief_workflows_started", False):
+            for workflow, identity, queue in (
+                (BriefCollectionWorkflow.run, "company-brief-collection-v1", "-brief-collection"),
+                (BriefEditorialWorkflow.run, "company-brief-editorial-v1", "-news-model"),
+                (BriefDataWorkflow.run, "company-brief-data-v1", "-brief-data"),
+            ):
+                try:
+                    await client.start_workflow(workflow, id=identity,
+                        task_queue=company.settings.temporal_task_queue+queue,
+                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+                except WorkflowAlreadyStartedError:
+                    pass
+            company._brief_workflows_started = True
+        try:
+            await asyncio.to_thread(BriefStore(company).flush)
+        except (ValueError, OSError) as exc:
+            logging.getLogger(__name__).error("Briefing configuration unavailable: %s", type(exc).__name__)
     if getattr(company.settings, "housing_feed_enabled", False) and not getattr(company, "_housing_feed_started", False):
         try:
             await client.start_workflow(HousingFeedWorkflow.run, id="company-housing-feed-v1",
@@ -206,7 +248,7 @@ async def worker_main(settings=None):
     client = await connect(settings)
     async with (make_worker(client, company), make_research_worker(client, company),
                 make_tech_feed_collector(client, company), make_data_watch_worker(client, company),
-                make_accounts_worker(client, company)):
+                make_accounts_worker(client, company), make_brief_data_worker(client, company)):
         await asyncio.Event().wait()
 
 
@@ -215,6 +257,14 @@ async def data_watch_worker_main(settings=None):
     company = Company(settings)
     client = await connect(settings)
     async with make_data_watch_worker(client, company):
+        await asyncio.Event().wait()
+
+
+async def brief_data_worker_main(settings=None):
+    settings = settings or Settings()
+    company = Company(settings)
+    client = await connect(settings)
+    async with make_brief_data_worker(client, company):
         await asyncio.Event().wait()
 
 
@@ -230,7 +280,8 @@ async def news_worker_main(settings=None):
     settings = settings or Settings()
     company = Company(settings)
     client = await connect(settings)
-    async with (make_news_model_worker(client, company), make_news_collector(client, company)):
+    async with (make_news_model_worker(client, company), make_news_collector(client, company),
+                make_brief_collector(client, company)):
         await asyncio.Event().wait()
 
 

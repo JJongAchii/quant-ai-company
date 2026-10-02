@@ -1,0 +1,18 @@
+{
+  "activated": false,
+  "numeric_receipt_state": "review_draft_not_ready",
+  "observed_at": "2026-09-30T22:57:17.236404+00:00",
+  "original_inputs_preserved": true,
+  "performance_computed": false,
+  "protected_engine_sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+  "readiness_granted": false,
+  "scientific_trials_added": 0,
+  "script_sha256": "1600fa259b834487a35fb345bcf9f000464ca52214498bd6a69170fba5ba271b",
+  "source_bundle_matches_original_profile": true,
+  "source_bundle_sha256": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+  "staged_input_directory": ".local/etf-execution-contract-20260930/inputs",
+  "staged_input_files": {
+    "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+    "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+  }
+}

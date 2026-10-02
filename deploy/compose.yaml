@@ -62,6 +62,12 @@ x-db-env: &db-env
   NEWS_OWNER_USER: ${NEWS_OWNER_USER:-}
   NEWS_MAX_AGE_HOURS: ${NEWS_MAX_AGE_HOURS:-24}
   NEWS_INITIAL_LOOKBACK_MINUTES: ${NEWS_INITIAL_LOOKBACK_MINUTES:-120}
+  BRIEFING_ENABLED: ${BRIEFING_ENABLED:-false}
+  BRIEFING_PUBLISH_ENABLED: ${BRIEFING_PUBLISH_ENABLED:-false}
+  BRIEFING_SEARCH_ENABLED: ${BRIEFING_SEARCH_ENABLED:-true}
+  BRIEFING_CHANNEL_ID: ${BRIEFING_CHANNEL_ID:-}
+  BRIEFING_OWNER_USER: ${BRIEFING_OWNER_USER:-}
+  BRIEFING_CALENDAR_OVERRIDES_FILE: ${BRIEFING_CALENDAR_OVERRIDES_FILE:-}
   TECH_FEED_ENABLED: ${TECH_FEED_ENABLED:-false}
   TECH_FEED_PUBLISH_ENABLED: ${TECH_FEED_PUBLISH_ENABLED:-false}
   TECH_FEED_CHANNEL_ID: ${TECH_FEED_CHANNEL_ID:-}
@@ -262,6 +268,23 @@ services:
     secrets: [database_password, temporal_api_key]
     networks: [core, service_egress]
     mem_limit: 192m
+    cpus: 0.25
+    depends_on:
+      postgres: {condition: service_healthy}
+
+  briefing-data-worker:
+    <<: *app
+    profiles: [briefing]
+    command: [quant-company, briefing-data-worker]
+    environment:
+      <<: [*db-env, *temporal-env]
+      AWS_SHARED_CREDENTIALS_FILE: /run/secrets/lake_read_credentials
+      AWS_DEFAULT_REGION: ap-northeast-2
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+    secrets: [database_password, temporal_api_key, lake_read_credentials]
+    networks: [core, service_egress]
+    mem_limit: 384m
     cpus: 0.25
     depends_on:
       postgres: {condition: service_healthy}

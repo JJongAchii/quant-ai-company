@@ -1,0 +1,35 @@
+{
+  "request_id": "news-brief-eval-08bcec6600ff4e3ddfbb167db425d021",
+  "request_sha256": "58fde7627c1de4a70ff3ba87f8f175d2be7ea5db4a23e12e423f4ee0921fa799",
+  "elapsed_seconds": 77.802,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "request_id": "news-brief-eval-08bcec6600ff4e3ddfbb167db425d021",
+    "decision": {
+      "say": "",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [
+        {
+          "title": "BriefReview",
+          "content": "{\"verdict\":\"publish\",\"checks\":{\"numbers\":true,\"sources\":true,\"timing\":true,\"causality\":true,\"materiality\":true,\"counterevidence\":true,\"transmission\":true,\"alternatives\":true,\"falsifiability\":true,\"coverage\":true,\"depth\":true,\"readability\":true},\"source_assessments\":[{\"source_id\":\"08bba8a5854670b32d1d37c5ca5c5eef877d9669\",\"treatment\":\"covered\",\"reason\":\"금리 보도 차이와 달러 강세를 본문에 반영하고 가상자산의 실제 관측시각·24시간 비교를 구분했다.\",\"item_ids\":[\"overview_rates\",\"overview_currency\",\"btc_rolling\",\"eth_rolling\",\"digital_fact\"]},{\"source_id\":\"2b7e91ad74af68290f4a95af3dae32d237c17a89\",\"treatment\":\"covered\",\"reason\":\"미국 정규장 지수와 AI 종목 상승, 투자 지속 및 유가·금리 하락을 핵심 흐름으로 설명했다.\",\"item_ids\":[\"summary_market\",\"overview_equities\",\"overview_rates\",\"dow_close\",\"nasdaq_close\",\"sp500_close\",\"ai_fact\",\"ai_interpretation\"]},{\"source_id\":\"bbe3e842d0ad3533bf684a7ff088a84361eff9b7\",\"treatment\":\"covered\",\"reason\":\"합의 미이행은 베선트의 발언으로 귀속하고 과거 관세 정점과 현재 협상의 쟁점을 구분했다.\",\"item_ids\":[\"trade_fact\",\"trade_interpretation\",\"trade_mechanism\",\"trade_alternative\",\"trade_next\",\"us_china_summit\"]},{\"source_id\":\"ff8917a4601610247c5ae78e6bd2c3db76e600f4\",\"treatment\":\"covered\",\"reason\":\"Pontes 출범과 단계적 구현을 다루고 중앙은행 결제 인프라와 공개 가상자산 가격의 인과관계를 유보했다.\",\"item_ids\":[\"digital_fact\",\"digital_interpretation\",\"digital_mechanism\",\"digital_next\"]},{\"source_id\":\"ec3c41e2376f8cf67dd34138bea5a14683cdc849\",\"treatment\":\"covered\",\"reason\":\"AI 위험 대응 협의와 대이란 결제망 제재 경고를 반영하고 회담 일정의 내부 불일치를 공개했다.\",\"item_ids\":[\"safety_interpretation\",\"safety_next\",\"safety_alternative\",\"trade_fact\",\"trade_interpretation\",\"us_china_summit\"]},{\"source_id\":\"0023ecad6e84f1d23292db0078e5912145e1852f\",\"treatment\":\"covered\",\"reason\":\"재건 출자·기금 규모와 미확정 상태를 제시하고 시설 피해로 공급난이 지속될 가능성을 핵심 해석에 반영했다.\",\"item_ids\":[\"summary_constraints\",\"oil_fact\",\"oil_interpretation\",\"oil_mechanism\",\"oil_next\"]},{\"source_id\":\"7f4f853766b5dc50bf53c1c88ee6a23f93411328\",\"treatment\":\"covered\",\"reason\":\"뮤즈 다운로드 규모와 비교 앱 수치·플랫폼 차이를 제시하며 이용 증가를 이익 증가와 구분했다.\",\"item_ids\":[\"ai_fact\",\"ai_interpretation\",\"ai_counterpoint\",\"ai_next\"]},{\"source_id\":\"0a9d4bdb6f69a621c79e1c7b31bb248b4b108151\",\"treatment\":\"covered\",\"reason\":\"합병 규모와 소송 합의, 제작 의무·지분 매각 조건 및 작가조합의 반대를 함께 설명했다.\",\"item_ids\":[\"merger_fact\",\"merger_interpretation\",\"merger_mechanism\",\"merger_alternative\",\"merger_counterpoint\",\"merger_next\"]},{\"source_id\":\"ee106e6206f30aea0a6c4d0999349aeef2df0e43\",\"treatment\":\"covered\",\"reason\":\"원유 계약월·거래소·가격과 하락률을 정확히 제시하고 외교 기대 외에 실제 수출 회복도 검토했다.\",\"item_ids\":[\"oil_fact\",\"oil_interpretation\",\"oil_alternative\",\"oil_counterpoint\",\"oil_next\",\"kr_energy_fx\"]},{\"source_id\":\"57b4e958756bfd076e4ffe0a2c39a8121f88a694\",\"treatment\":\"background\",\"reason\":\"같은 매체의 후속 유가 상보와 계약·가격·등락률이 중복되는 속보로 별도 신규 정보가 없다.\",\"item_ids\":[]},{\"source_id\":\"c6c3354fb2013f469d8065e51066fee65821c56f\",\"treatment\":\"background\",\"reason\":\"연합뉴스 후속 종합기사와 지수 종가 및 등락률이 중복된다. 독립적인 추가 확인으로 세지 않았다.\",\"item_ids\":[]},{\"source_id\":\"3dde2b5129d47d1e1f8d374fed1d73a36529f3ac\",\"treatment\":\"covered\",\"reason\":\"한미일 성명의 수출제한·경제적 강압 반대 입장을 협상과 병행되는 공급망 압박으로 반영했다.\",\"item_ids\":[\"trade_counterpoint\"]},{\"source_id\":\"53be9c4c65a0f487c3d094677c68d367d04dfedd\",\"treatment\":\"covered\",\"reason\":\"대표단 일부 비자 거부를 보도로 한정해 언급하고 대화 기대를 종전 합의로 확대하지 않았다.\",\"item_ids\":[\"oil_interpretation\"]},{\"source_id\":\"49134ea9e806961c96d90a905e435a2b6ca8ad79\",\"treatment\":\"not_material\",\"reason\":\"이란 인권 상황에 대한 영국의 입장 표명으로, 새로운 경제 조치나 당일 시장 반응을 확인할 근거가 없다.\",\"item_ids\":[]},{\"source_id\":\"bf4a2f2fa3a60d1f38b1fa44fb392a5a6dce4f25\",\"treatment\":\"covered\",\"reason\":\"AI 무단 해킹 공개와 안전 평가 역량 부족을 반대 근거로 반영했다. 장전 선물과 정규장 종가를 혼동하지 않았다.\",\"item_ids\":[\"summary_constraints\",\"overview_rates\",\"safety_fact\",\"safety_interpretation\",\"safety_mechanism\"]},{\"source_id\":\"cbfd307b9bce27dece44175b2f8a28086c0e14a4\",\"treatment\":\"covered\",\"reason\":\"관세 휴전 만료일을 원문대로 명시했다. AI 협의 관련 내용은 후속 SBS 보도와 겹친다.\",\"item_ids\":[\"trade_fact\"]}],\"rejected_ids\":[],\"concerns\":[]}",
+          "source_ids": []
+        }
+      ],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0cb7f-ab32-7cb1-ac22-1e59d4cac33d",
+    "usage": {
+      "input_tokens": 38939,
+      "cached_input_tokens": 0,
+      "output_tokens": 2390,
+      "reasoning_output_tokens": 270
+    },
+    "provider": "codex",
+    "web_searches": []
+  }
+}

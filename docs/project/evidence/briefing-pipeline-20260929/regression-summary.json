@@ -1,0 +1,55 @@
+{
+  "scope": "Real PostgreSQL and Temporal regression; model and Slack in these tests are fixtures. Actual subscription calls have separate receipts.",
+  "runs": [
+    {
+      "name": "regression.xml",
+      "suite": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "38",
+        "tests": "1386",
+        "time": "378.435",
+        "timestamp": "2026-09-29T10:08:26.655271+09:00",
+        "hostname": "MacBook-Pro.local"
+      },
+      "passed": 1348,
+      "skip_reasons": {
+        "Set CODEX_CONFIG_PROBE=1 for the local CLI probe": 2,
+        "Hard PDF memory qualification requires Linux RLIMIT_AS": 1,
+        "Requires explicit operator runtime profile on the registered Linux 3070": 1,
+        "Real pinned qlab checkout required: QUANT_TEST_QLAB_ROOT": 31,
+        "Opt-in real 3070, committed ETF checkout and prepared science runtime required": 1,
+        "Requires explicit operator-reviewed runtime profile on the 3070; no Mac fallback": 1,
+        "Opt-in real Codex subscription test": 1
+      },
+      "raw_xml_sha256": "d1228cb5c8d41b768d8527656616fbe7395f04123df4de6431ac46f7550984d6",
+      "raw_xml_location": ".local/briefing-pipeline-raw-evidence/regression.xml"
+    },
+    {
+      "name": "final-regression.xml",
+      "suite": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "38",
+        "tests": "1389",
+        "time": "359.071",
+        "timestamp": "2026-09-29T10:25:16.811834+09:00",
+        "hostname": "MacBook-Pro.local"
+      },
+      "passed": 1351,
+      "skip_reasons": {
+        "Set CODEX_CONFIG_PROBE=1 for the local CLI probe": 2,
+        "Hard PDF memory qualification requires Linux RLIMIT_AS": 1,
+        "Requires explicit operator runtime profile on the registered Linux 3070": 1,
+        "Real pinned qlab checkout required: QUANT_TEST_QLAB_ROOT": 31,
+        "Opt-in real 3070, committed ETF checkout and prepared science runtime required": 1,
+        "Requires explicit operator-reviewed runtime profile on the 3070; no Mac fallback": 1,
+        "Opt-in real Codex subscription test": 1
+      },
+      "raw_xml_sha256": "12fe6763de8ea84ff6cc6e4ffc8455253b362e36007c85c7ef7118d123d60357",
+      "raw_xml_location": ".local/briefing-pipeline-raw-evidence/final-regression.xml"
+    }
+  ]
+}

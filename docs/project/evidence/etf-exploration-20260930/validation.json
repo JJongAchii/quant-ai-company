@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-30T23:24:01.309456+00:00",
+  "company_code_commit": "3c848af95dc33b7da444a55018fd41d374c10025",
+  "operating_app_baseline_integrated": "5defb8cb9dd7c655214663b05670cd2896006b30",
+  "command": "TEST_DATABASE_URL=<local disposable PostgreSQL> QUANT_TEST_QLAB_ROOT=.local/qlab-audit-37abfceb QUANT_TEST_QLAB_PYTHON=<existing qlab environment> uv run pytest -q",
+  "full_suite": {
+    "passed": 1427,
+    "skipped": 13,
+    "warnings": 2,
+    "seconds": 437.11,
+    "result": "pass"
+  },
+  "postgresql": "real disposable local databases on PostgreSQL port 55444",
+  "git": "real committed producer/consumer and restart qualification",
+  "qlab": {
+    "kind": "actual pinned API over synthetic artifacts",
+    "commit": "37abfceb07f5b684d7c3210548fecef156e3f9fc"
+  },
+  "lint": "uv run ruff check .: All checks passed",
+  "git_diff_check": "passed",
+  "slack": "scripted fixtures; no new live Slack effect",
+  "codex": "not invoked for this new policy qualification",
+  "cloud_deployment": "not performed",
+  "worker_execution": "synthetic worker ZIPs; real 3070 new-policy sandbox check required before activation",
+  "frozen_review": {
+    "program_digest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
+    "all_seven_report_bytes_verified": true,
+    "policy_and_proposed_id_verified": true
+  },
+  "source_sha256": {
+    "src/quant_company/research/adaptive_report.py": "c23a2b9bf760ad80c3c376116863dd7d0e82e3c55434f70585ff6c76d5279779",
+    "src/quant_company/research/controller.py": "30b59ef196de7f72d814898c902f2e788e6e14af38cbfadcc2633cfe0640604d",
+    "src/quant_company/research/data_evidence.py": "03a5cedcfba1b5cf05f84a4a07a397215765fd1dc226826dbd642755926b15b8",
+    "src/quant_company/research/library.py": "36e77783ea2e907d5e8f3146205ca17433cee5967516afafa9183c42ac465fa3",
+    "src/quant_company/research/mission_backend.py": "cfc7ff9231d1a49a2c9256799517c4248216841b352154628c61b2fdf6d11158",
+    "src/quant_company/research/mission_contracts.py": "935b8e7d97fb82354ba05fb8329017fd4ebd264ab50e8ff333df20fadb3e4027",
+    "src/quant_company/research/missions.py": "2576479f2230267809f151b1c3beb9bdbe630cc0f4401cec41db1fcdd4f6f163",
+    "src/quant_company/research/program_contracts.py": "03e76bd1e05d822c7d507b2cf7aeec8409a3f47f3337dd7eae39a13091830a88",
+    "src/quant_company/research/program_controller.py": "eca45cf919c7bd92063084e4508b3735d5c96f0c5aa9ad6c4e97b0180ed89d04",
+    "src/quant_company/research/programs.py": "d0d603b4bc445335dbd167f27032ff163c27a41a5e768301e0d5a027d3f285b6"
+  },
+  "earlier_runs": [
+    {
+      "targeted_passed": 28,
+      "qlab_commit": "857e4243c54d86067c2bf8519eee1162cbd02189",
+      "scope": "initial engineering checks; superseded by final committed-code run against operating qlab pin"
+    },
+    {
+      "passed": 1408,
+      "skipped": 13,
+      "failed": 2,
+      "failure_reason": "required producer/consumer qualification refused uncommitted source files",
+      "resolution": "committed code and integrated active app before final full run"
+    }
+  ],
+  "production_mutated": false,
+  "scientific_trials_added": 0,
+  "performance_numbers_reported": false
+}

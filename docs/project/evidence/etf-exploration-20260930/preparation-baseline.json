@@ -1,0 +1,451 @@
+{
+  "program": {
+    "id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "revision": 5,
+    "state": "active",
+    "spec": {
+      "title": "국내 ETF·주식 자료 기반 가설 연구",
+      "envelopes": [
+        {
+          "name": "etf_strategy",
+          "market": "kr_etf",
+          "template": {
+            "code": {
+              "repository": "quant-lab",
+              "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+              "write_paths": [
+                "labs/company-domestic-research/candidate.py",
+                "labs/company-domestic-research/config.json"
+              ]
+            },
+            "data": {
+              "lake_id": "krx-s3-kr_etf-30784209bf06e53313b8",
+              "input_files": {
+                "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81",
+                "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+              }
+            },
+            "kind": "strategy",
+            "title": "kr_etf literature-grounded strategy development",
+            "market": "kr_etf",
+            "sealed": [
+              {
+                "end": "2026-09-23",
+                "start": "2026-01-02"
+              }
+            ],
+            "search": {
+              "patience": 2,
+              "continuous": true,
+              "min_improvement": 0.001,
+              "max_total_trials": 4,
+              "max_trials_per_cycle": 2
+            },
+            "objective": {
+              "unit": "fraction-per-year",
+              "metric": "stress-net-absolute-cagr",
+              "direction": "maximize"
+            },
+            "resources": {
+              "priority": "autonomous",
+              "worker_id": "worker"
+            },
+            "evaluation": {
+              "kind": "strategy",
+              "block": "calendar-month",
+              "scope": "development",
+              "metric": "stress-net-absolute-cagr",
+              "target": null,
+              "tolerance": null,
+              "confidence": 0.95,
+              "minimum_blocks": 30,
+              "minimum_effect": 0.0,
+              "schema_version": 1
+            },
+            "development": {
+              "end": "2025-12-30",
+              "start": "2023-01-02"
+            },
+            "base_cost_bps": 10.0,
+            "schema_version": 2,
+            "allowed_changes": [
+              "features",
+              "model",
+              "implementation",
+              "portfolio"
+            ],
+            "stress_cost_bps": 30.0,
+            "risk_constraints": [
+              {
+                "unit": "multiple",
+                "metric": "gross_exposure",
+                "maximum": 1.0
+              }
+            ],
+            "execution_profile": "kr-etf-research-v2",
+            "baseline_source_ids": [
+              "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            ],
+            "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf"
+          }
+        },
+        {
+          "name": "etf_claim",
+          "market": "kr_etf",
+          "template": {
+            "code": {
+              "repository": "quant-lab",
+              "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+              "write_paths": [
+                "labs/company-domestic-research/candidate.py",
+                "labs/company-domestic-research/config.json"
+              ]
+            },
+            "data": {
+              "lake_id": "krx-s3-kr_etf-30784209bf06e53313b8",
+              "input_files": {
+                "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81",
+                "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+              }
+            },
+            "kind": "claim",
+            "title": "kr_etf literature-grounded claim development",
+            "market": "kr_etf",
+            "sealed": [
+              {
+                "end": "2026-09-23",
+                "start": "2026-01-02"
+              }
+            ],
+            "search": {
+              "patience": 2,
+              "continuous": true,
+              "min_improvement": 0.001,
+              "max_total_trials": 4,
+              "max_trials_per_cycle": 2
+            },
+            "objective": {
+              "unit": "fraction",
+              "metric": "mean-effect",
+              "direction": "maximize"
+            },
+            "resources": {
+              "priority": "autonomous",
+              "worker_id": "worker"
+            },
+            "evaluation": {
+              "kind": "claim",
+              "block": "calendar-month",
+              "scope": "development",
+              "metric": "mean-effect",
+              "target": null,
+              "tolerance": null,
+              "confidence": 0.95,
+              "minimum_blocks": 30,
+              "minimum_effect": 0.0,
+              "schema_version": 1
+            },
+            "development": {
+              "end": "2025-12-30",
+              "start": "2023-01-02"
+            },
+            "base_cost_bps": 0.0,
+            "schema_version": 2,
+            "allowed_changes": [
+              "features",
+              "model",
+              "implementation"
+            ],
+            "stress_cost_bps": 0.0,
+            "risk_constraints": [],
+            "execution_profile": "kr-etf-research-v2",
+            "baseline_source_ids": [
+              "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            ],
+            "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf"
+          }
+        },
+        {
+          "name": "stock_strategy",
+          "market": "kr_stock",
+          "template": {
+            "code": {
+              "repository": "quant-lab",
+              "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+              "write_paths": [
+                "labs/company-domestic-research/candidate.py",
+                "labs/company-domestic-research/config.json"
+              ]
+            },
+            "data": {
+              "lake_id": "krx-s3-kr_stock-cf689d34e7776edc1b97",
+              "input_files": {
+                "warmup.json": "9ee0e7cf017ef4b81b2028d8d9b09616d8ade89fd9706374b4ed6d053fd7d442",
+                "development.json": "1a0802b498d29e0a4557e0e1ac1c2c205dc33ad2e013bab70b65b0d54484fd85"
+              }
+            },
+            "kind": "strategy",
+            "title": "kr_stock literature-grounded strategy development",
+            "market": "kr_stock",
+            "sealed": [
+              {
+                "end": "2026-09-23",
+                "start": "2026-01-02"
+              }
+            ],
+            "search": {
+              "patience": 2,
+              "continuous": true,
+              "min_improvement": 0.001,
+              "max_total_trials": 4,
+              "max_trials_per_cycle": 2
+            },
+            "objective": {
+              "unit": "fraction-per-year",
+              "metric": "stress-net-absolute-cagr",
+              "direction": "maximize"
+            },
+            "resources": {
+              "priority": "autonomous",
+              "worker_id": "worker"
+            },
+            "evaluation": {
+              "kind": "strategy",
+              "block": "calendar-month",
+              "scope": "development",
+              "metric": "stress-net-absolute-cagr",
+              "target": null,
+              "tolerance": null,
+              "confidence": 0.95,
+              "minimum_blocks": 30,
+              "minimum_effect": 0.0,
+              "schema_version": 1
+            },
+            "development": {
+              "end": "2025-12-30",
+              "start": "2023-01-02"
+            },
+            "base_cost_bps": 10.0,
+            "schema_version": 2,
+            "allowed_changes": [
+              "features",
+              "model",
+              "implementation",
+              "portfolio"
+            ],
+            "stress_cost_bps": 30.0,
+            "risk_constraints": [
+              {
+                "unit": "multiple",
+                "metric": "gross_exposure",
+                "maximum": 1.0
+              }
+            ],
+            "execution_profile": "kr-stock-research-v2",
+            "baseline_source_ids": [
+              "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            ],
+            "execution_profile_digest": "07056f8607ea990c09de6ade29a6230f60c3c0055c980728d95705e538dd21a3"
+          }
+        },
+        {
+          "name": "stock_claim",
+          "market": "kr_stock",
+          "template": {
+            "code": {
+              "repository": "quant-lab",
+              "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+              "write_paths": [
+                "labs/company-domestic-research/candidate.py",
+                "labs/company-domestic-research/config.json"
+              ]
+            },
+            "data": {
+              "lake_id": "krx-s3-kr_stock-cf689d34e7776edc1b97",
+              "input_files": {
+                "warmup.json": "9ee0e7cf017ef4b81b2028d8d9b09616d8ade89fd9706374b4ed6d053fd7d442",
+                "development.json": "1a0802b498d29e0a4557e0e1ac1c2c205dc33ad2e013bab70b65b0d54484fd85"
+              }
+            },
+            "kind": "claim",
+            "title": "kr_stock literature-grounded claim development",
+            "market": "kr_stock",
+            "sealed": [
+              {
+                "end": "2026-09-23",
+                "start": "2026-01-02"
+              }
+            ],
+            "search": {
+              "patience": 2,
+              "continuous": true,
+              "min_improvement": 0.001,
+              "max_total_trials": 4,
+              "max_trials_per_cycle": 2
+            },
+            "objective": {
+              "unit": "fraction",
+              "metric": "mean-effect",
+              "direction": "maximize"
+            },
+            "resources": {
+              "priority": "autonomous",
+              "worker_id": "worker"
+            },
+            "evaluation": {
+              "kind": "claim",
+              "block": "calendar-month",
+              "scope": "development",
+              "metric": "mean-effect",
+              "target": null,
+              "tolerance": null,
+              "confidence": 0.95,
+              "minimum_blocks": 30,
+              "minimum_effect": 0.0,
+              "schema_version": 1
+            },
+            "development": {
+              "end": "2025-12-30",
+              "start": "2023-01-02"
+            },
+            "base_cost_bps": 0.0,
+            "schema_version": 2,
+            "allowed_changes": [
+              "features",
+              "model",
+              "implementation"
+            ],
+            "stress_cost_bps": 0.0,
+            "risk_constraints": [],
+            "execution_profile": "kr-stock-research-v2",
+            "baseline_source_ids": [
+              "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            ],
+            "execution_profile_digest": "07056f8607ea990c09de6ade29a6230f60c3c0055c980728d95705e538dd21a3"
+          }
+        }
+      ],
+      "objective": "원문과 이전 감사 결과를 읽고, ETF·주식의 실행 가능한 전략 또는 예측 주장을 검증해 다음 과제를 선택한다.",
+      "source_ids": [
+        "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+      ],
+      "max_missions": 6,
+      "schema_version": 1,
+      "max_total_trials": 24,
+      "include_quant_feed": true,
+      "max_compute_seconds": 36000,
+      "max_parallel_missions": 1
+    },
+    "manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+    "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1790641272.310813:director:action:21f480c4-d59f-45e7-ac2e-2cf91aa109e8:approve",
+    "approved_at": "2026-09-29T00:21:12.470514+00:00"
+  },
+  "mission_count": 0,
+  "usage": {
+    "reservations": 0,
+    "scientific_trials": 0,
+    "outstanding": 0,
+    "compute_seconds": 0
+  },
+  "latest_task": {
+    "id": "1a9683ac-5e26-57ad-acba-6d9dc05da416",
+    "state": "waiting",
+    "title": "고정 ETF 069500의 GMM 노출조절: 원천·시점성 검증을 전제로 한 절대수익 개발설계",
+    "data_assessment": {
+      "coverage": true,
+      "decision": "blocked",
+      "rationale": "입력 해시·범위·선정 cohort의 현재 재현 근거는 있으나, 역사적 원천 발표/이용가능시각과 revision vintage가 독립 검증되지 않았고 available_at은 생성기 가정이다. 준비 당시 clean 객체와 현재 객체의 정체성이 다르며 S3 VersionId와 원본 바이트·raw-to-clean 실행 계보가 복구되지 않았다. 또한 동결 평가기는 실제 주문 체결, 거래정지·상폐 정산 및 현금배당 처리를 인증하지 않는다. 따라서 coverage만 확인되며 시점성, 실행가격, 원조건 재현은 미확인으로 차단한다.",
+      "source_ids": [
+        "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+      ],
+      "point_in_time": false,
+      "executable_prices": false,
+      "original_conditions": false
+    },
+    "decision": {
+      "decision": "wait",
+      "rationale": "과제 선택을 보류한다. 검증 질문은 고정 ETF 069500의 GMM 노출조절이 2023-01-02~2025-12-30 개발기간에 30bp 스트레스 비용 후 양의 절대 CAGR을 내는지다. 현재 독립 데이터 평가는 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false인 blocked다. 이번 제안에는 차단을 해소한 새 검증 근거가 없다. 이는 검증 근거 부족이며 데이터 부재·접근 불가·전략 손실의 판정과 구별한다. 성과는 미측정이다.\n\n제공된 data/etf_strategy/engine 전체 본문과 비교하면 현재 평가 방식은 정합적이다. history_at은 date<d 및 available_at<d의 09:00 Asia/Seoul 조건으로 이력을 제한하고 종목별 최신 이용가능 종가 기준으로 adj_close를 재조정한다. 후보는 일별 목표 비중을 반환하며, 엔진은 A_d=open_d*adj_close_d/close_d와 R_d=A_next/A_d-1을 적용한다. 직전 수익으로 갱신된 기존 비중 대비 회전율 T, 순수익 (1-c*T)*(1+sum(w_new*R))-1, 기본 c=0.001·스트레스 c=0.003, 초기 빈 포지션·현금수익 0, 마지막 2025-12-30 시가까지의 평가와 추가 청산비용 없음도 일치한다. 과거 08:30 결정·당일 종가 체결의 불일치는 현재안의 보류 사유가 아니다. 조정시가는 평가가격이며 실제 주문 체결의 인증은 아니다.\n\n완독 자료인 prior-tasks/a226d13d-cd5e-5324-a202-71791215d3bd.json은 현재 원시자료 계보 대조, 승인 패널의 cohort 누락 0, 개발 전 선정 prefix 일치 등 복구 진전을 기록한다. 이를 역사적 시점성 인증으로 확대할 수는 없다. 준비 당시와 현재 객체의 정체성이 다르고 S3 VersionId가 고정되지 않았으며, 준비 당시 원본·변환 실행기록과 역사적 발표시각·수정 vintage의 공백이 남는다. available_at의 다음날 23:59 KST 값은 생성기 가정이다. 종목별 정확한 상수배라면 수익률과 조정시가 비율은 불변일 수 있으므로 조정주가 차이만으로 손익 왜곡을 단정하지 않는다. 그러나 비례성과 엔진의 재조정만으로 당시 이용가능성을 입증할 수 없다. 평가가격·tradable 및 관련 기업행사 처리도 독립 검증이 필요하다.\n\n원문 재현보고서는 equivalent_replay로서 고정 P11 결과의 재현과 신규 과학 시행 추가 0건을 기록한다. 기준선·초과성과는 미측정이며 이 결과는 GMM의 성과 증거가 아니다. 현재 규칙의 novel_hypothesis 분류는 타당하지만, 최신 선행 과제 전체 방법과 비교하면 동일 종목·특징·GMM·노출공식·대조군을 유지한 조건부 설계 보완이다. 원문 인용을 정리한 것만으로 구별되는 신규 과학 과제에 중복 시행을 배정할 근거는 없다.\n\n제안은 revision 5의 etf_strategy 개발기간, 목적함수, 10/30bp 비용, 총노출 상한 1.0, 동결 입력·실행 프로필과 허용 코드 경로를 유지한다. 제공된 사용량 기준 잔여 예산은 24회·6미션·36,000초다. 후보와 세 대조군의 계획 상한 1미션·4회는 건수 예산 안에 있으나 환경 의존성과 계산시간 내 실행 가능성은 미검증이다. 주기당 최대 2회, patience=2, min_improvement=0.001과 동시 미션 1개 제한을 유지하며 네 구성 모두의 측정을 보장하지 않는다. 허용 선행 미션이 없으므로 predecessor_mission_ids=[]가 맞다.\n\n재검토에는 준비 당시 원본 정체성 또는 동등한 증거와 변환 계보, 실제 신호 사용 행의 발표·수집·이용가능시각 및 수정 이력, 최초 81개 연속 유효 가격과 특징의 수치 유효성, 평가가격·거래가능성·기업행사 처리에 대한 독립 검증이 필요하다. 최종 세션이 평가가격으로만 쓰이면 이후 신호시각의 가용성을 요구하지 않는다. 동결 엔진의 strategy 분기는 일별 순수익과 CAGR을 산출하지만 월별 블록의 95% 불확실성 판단을 직접 산출하지 않으므로, 재개 시 고정 evaluation 계약의 최소 30개 유효 월과 불확실성 판단을 충족하는 서비스 검증 근거도 확인해야 한다.\n\n유효한 평가에서 GMM의 스트레스 순 CAGR이 0 이하라면 유용한 음의 과학 결과로 보존한다. 기술 차단은 손실이나 수익률 0으로 계상하지 않는다. 양의 점추정치만으로 양의 효과나 GMM의 추가 가치를 결론 내리지 않으며 미실행 대조군은 미측정으로 남긴다. 기준보고서의 집계기간 2014-01-02~2026-08-31은 현 봉인기간과 겹치므로 그 집계성과를 선택·튜닝에 사용하지 않고 봉인을 완전히 미노출된 확증 표본으로 표현하지 않는다. 이번 완료 범위는 선택 판단이며, 연구 실행과 성과는 서비스 receipt·원시 산출물·독립 감사로 별도 확인할 대상이다."
+    },
+    "mission_id": null
+  },
+  "observed_at": "2026-09-30T22:50:50.764674+00:00",
+  "app_release": "/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30",
+  "worker_image": "quant-company-autonomous:0286ba3e7426ff6546b90e6926124ae65e71ba79",
+  "registry_sha256": "bdef77801a3b65f7588bf00a3916a1a67f7b7e59657db0f1587c8999842646a3",
+  "packet": {
+    "blocking_gaps": [
+      "The original lake objects have no pinned S3 VersionId. Current lake object identities differ from the preparation receipt.",
+      "Original source publication timestamps are not independently verified. The input's available_at field alone does not prove source release time.",
+      "The 6680 adj_close differences have a constant per-ticker ratio consistent with asof rebasing, but the original source bytes were not recovered.",
+      "The frozen evaluator does not establish live order-book fill, trading halt, delisting settlement or cash-dividend handling.",
+      "The second waiting task requests same-day close fill after an 08:30 decision, while the approved evaluator uses open-to-next-open prices."
+    ],
+    "engine": {
+      "path": "/state/research/provisioned/data-evidence/engine.py",
+      "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+    },
+    "envelope": "etf_strategy",
+    "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+    "input_files": {
+      "development.json": {
+        "path": "/state/research/provisioned/data-evidence/development.json",
+        "sha256": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+      },
+      "warmup.json": {
+        "path": "/state/research/provisioned/data-evidence/warmup.json",
+        "sha256": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81"
+      }
+    },
+    "lake_id": "krx-s3-kr_etf-30784209bf06e53313b8",
+    "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+    "reports": {
+      "input-check.json": {
+        "path": "/state/research/provisioned/data-evidence/input-check.json",
+        "sha256": "d968bb62677540c0c8b85ce3f7d7ac8c2930f1bfa4dd240804af1c25de82d07a"
+      },
+      "limitations.json": {
+        "path": "/state/research/provisioned/data-evidence/limitations.json",
+        "sha256": "c0b1635d630091443b191d1b90da8d4ee86452e19ac09650ab7d492469945fe2"
+      },
+      "provenance-recovery-c813a2e9c4e7.json": {
+        "path": "/state/research/provisioned/data-evidence/provenance-recovery-c813a2e9c4e7.json",
+        "sha256": "c813a2e9c4e7f6e39aeece7e325283451c71281eb2decb004883962a4718d170"
+      },
+      "qdata-readback.json": {
+        "path": "/state/research/provisioned/data-evidence/qdata-readback.json",
+        "sha256": "7b18376afed4ded3ec565df2530e27af915992e2abd9973f6f9f09f04aef1979"
+      },
+      "raw-lineage-f8a0595989be.json": {
+        "path": "/state/research/provisioned/data-evidence/raw-lineage-f8a0595989be.json",
+        "sha256": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a"
+      }
+    },
+    "schema_version": 1
+  },
+  "production_mutated": false,
+  "sealed_price_rows_read": false,
+  "strategy_performance_computed": false,
+  "report_readback": {
+    "input-check.json": {
+      "sha256": "d968bb62677540c0c8b85ce3f7d7ac8c2930f1bfa4dd240804af1c25de82d07a",
+      "bytes": 2037
+    },
+    "limitations.json": {
+      "sha256": "c0b1635d630091443b191d1b90da8d4ee86452e19ac09650ab7d492469945fe2",
+      "bytes": 1895
+    },
+    "provenance-recovery-c813a2e9c4e7.json": {
+      "sha256": "c813a2e9c4e7f6e39aeece7e325283451c71281eb2decb004883962a4718d170",
+      "bytes": 11085
+    },
+    "qdata-readback.json": {
+      "sha256": "7b18376afed4ded3ec565df2530e27af915992e2abd9973f6f9f09f04aef1979",
+      "bytes": 3777
+    },
+    "raw-lineage-f8a0595989be.json": {
+      "sha256": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a",
+      "bytes": 14490
+    }
+  }
+}
