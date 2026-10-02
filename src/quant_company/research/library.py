@@ -50,6 +50,14 @@ def available_sources(company, conn, project, spec, program_id=None):
             FROM research_mission_publications p JOIN research_mission_trials t ON t.id=p.trial_id
             JOIN research_missions m ON m.id=t.mission_id WHERE m.program_id=%s ORDER BY p.created_at DESC LIMIT 20""",
             (program_id,)))
+        lineage_ids = [envelope.template.scientific_lineage.id for envelope in spec.envelopes
+                       if envelope.template.scientific_lineage is not None]
+        if lineage_ids:
+            identities.extend(row["source_id"] for row in conn.execute("""SELECT p.payload->>'source_id' AS source_id
+                FROM research_mission_publications p JOIN research_scientific_lineage_trials l ON l.trial_id=p.trial_id
+                JOIN research_scientific_lineages s ON s.id=l.lineage_id
+                WHERE s.project_id=%s AND s.id=ANY(%s) ORDER BY p.created_at,p.trial_id""",
+                (project["id"], lineage_ids)))
     if spec.include_quant_feed:
         sync_library(company, conn, project)
         identities.extend(row["source_id"] for row in conn.execute("""SELECT source_id FROM research_literature
@@ -110,11 +118,13 @@ def publish_library(company, conn, original_project, source_id, report, conclusi
     conn.execute("""INSERT INTO sources(id,title,uri,content,available_at,project_id,approved,synthetic,metadata)
         VALUES(%s,%s,%s,%s,%s,%s,true,%s,%s) ON CONFLICT DO NOTHING""",
         (library_source, source["title"], source["uri"], source["content"], source["available_at"], project_id,
-         source["synthetic"], Jsonb({"original_source_id": source_id, "content_digest": fingerprint(source["content"]),
-                                   **({"data_policy": policy} if policy else {})})))
+         source["synthetic"], Jsonb({**source["metadata"], "original_source_id": source_id,
+                                     "content_digest": fingerprint(source["content"])})))
     identity = stable("research-library-publication:" + source_id)
     if not conn.execute("SELECT 1 FROM messages WHERE id=%s", (identity,)).fetchone():
         label = {"supported": "개발구간 근거 있음", "not_supported": "가설 지지 안 됨", "inconclusive": "결론 보류"}[conclusion]
+        if source["metadata"].get("research_scope", {}).get("result_scope") == "conditional_retrospective_development":
+            label = "조건부 사후 연구 · " + label
         heading = "탐색 연구 기록" if policy else "검증된 연구 기록"
         company._message(conn, project, None, "director", "status",
             f"{heading} · {label}\n{report['view_url']}\n근거: {library_source}\n"

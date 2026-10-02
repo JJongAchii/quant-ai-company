@@ -306,6 +306,15 @@ def stage_prompt(company, conn, task, turn=None):
         "Read all required_meaning_reads, the interpretation and challenge responses. List every unperformed "
         "test obligation and unresolved objection. Choose inconclusive when required evidence is missing. "
         "Support is development evidence only, never confirmation or an investment recommendation.")
+    scope_instruction = (
+        " For MissionSpec v3, read the canonical data_policy and scientific_lineage in the approved spec. "
+        "Read every required_lineage_reads file completely; prior negative results and charged reservations persist. "
+        "Interpretation and MeaningReview must use schema_version=2 and copy the exact canonical research_scope. "
+        "A conditional_retrospective_development result remains conditional even when supported or incumbent: "
+        "it cannot establish historical alpha, exact replication, distribution-reinvested returns, executable "
+        "fills, deployment readiness or untouched 2026 confirmation. Never promote its scope in prose.")
+    for stage in instructions:
+        instructions[stage] += scope_instruction
     policy = row["context"].get("mission", {}).get("spec", {}).get("data", {}).get("policy")
     if policy:
         instructions[row["stage"]] += (
@@ -571,6 +580,10 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
             company._new_turn(conn, task)
             return {"state": "completed", "incomplete_data_evidence": True}
         raise PolicyError("Data assessment requires complete reads of the approved input evidence")
+    for path in row["context"].get("required_lineage_reads", []):
+        if not conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
+            AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
+            raise PolicyError("Scientific lineage review requires complete prior evidence reads")
     for path in row["context"].get("required_meaning_reads", []):
         if not conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
             AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():

@@ -34,6 +34,7 @@ from .adaptive_contracts import (
 )
 from .executor import MAX_ARCHIVE_BYTES, MAX_EXPANDED_BYTES, ExecutionBlocked, checked_path, verify_repository
 from .mission_contracts import Path as RepoPath
+from .policy_contracts import require_profile_policy, require_scope, scoped_kwargs
 from .sandbox import InputMount, SandboxError, SandboxSpec, profile_from_dict, run_sandbox
 from .worker import WorkerConfig, atomic_json, sha_file, sync_directory, utc_now
 from .workspace import WorkspaceError, _git, canonical_path, prepare_workspace, snapshot_files
@@ -91,6 +92,10 @@ def load_profile(config: WorkerConfig, manifest: AdaptiveManifest) -> AdaptivePr
     public = profile.public_profile
     if public.id != name or digest_model(public) != manifest.spec.execution_profile_digest:
         raise ExecutionBlocked("adaptive-profile-digest-mismatch")
+    try:
+        require_profile_policy(manifest.spec, public)
+    except ValueError:
+        raise ExecutionBlocked("adaptive-profile-policy-mismatch") from None
     if set(public.evaluation_input_names) != set(manifest.plan.input_files):
         raise ExecutionBlocked("adaptive-profile-input-scope-mismatch")
     if set(manifest.code_files) != set(public.code_paths):
@@ -116,8 +121,9 @@ def verify_host(manifest: AdaptiveManifest) -> None:
 
 
 def qualification_from_file(path: Path, manifest: AdaptiveManifest,
-                            profile: AdaptiveExecutionProfile) -> AdaptiveQualification:
+                            profile: AdaptiveExecutionProfile, *, producer: bool = False) -> AdaptiveQualification:
     value = AdaptiveQualification.model_validate_json(path.read_text())
+    _producer_scope(value, manifest, producer)
     if (value.trial_id != manifest.trial_id or value.plan_digest != manifest.plan_digest
             or value.code_commit != manifest.plan.code_commit or value.config_files != manifest.plan.config_files
             or value.input_files != {name: manifest.plan.input_files[name]
@@ -160,9 +166,31 @@ def read_return_series(content: bytes) -> list[tuple[date, float]]:
         raise ExecutionBlocked("invalid-dated-return-series") from None
 
 
-def validate_result_files(root: Path, manifest: AdaptiveManifest) -> AdaptiveResult:
+def _producer_scope(value, manifest: AdaptiveManifest, producer: bool) -> None:
+    if producer and manifest.spec.research_scope is not None:
+        if value.schema_version != 1 or value.research_scope is not None:
+            raise ExecutionBlocked("protected-producer-cannot-declare-research-scope")
+    else:
+        try:
+            require_scope(manifest.spec, value)
+        except ValueError:
+            raise ExecutionBlocked("adaptive-record-scope-mismatch") from None
+
+
+def bind_producer_record(value, source: Path, manifest: AdaptiveManifest):
+    """Trusted worker binds unchanged producer bytes to the approved scope."""
+    _producer_scope(value, manifest, True)
+    if manifest.spec.research_scope is None:
+        return value
+    return type(value).model_validate({
+        **value.model_dump(mode="json"), **scoped_kwargs(manifest.spec), "producer_sha256": sha_file(source),
+    })
+
+
+def validate_result_files(root: Path, manifest: AdaptiveManifest, *, producer: bool = False) -> AdaptiveResult:
     path = checked_path(root, "result.json")
     result = AdaptiveResult.model_validate_json(path.read_text())
+    _producer_scope(result, manifest, producer)
     if (result.trial_id != manifest.trial_id or result.plan_digest != manifest.plan_digest
             or result.code_commit != manifest.plan.code_commit
             or result.metrics.sample_window != manifest.plan.development):
@@ -220,7 +248,9 @@ def _sandbox_spec(profile: AdaptiveProfile, manifest: AdaptiveManifest, checkout
 def _public_sandbox_receipt(receipt, action: str, spec: SandboxSpec, manifest: AdaptiveManifest) -> dict:
     value = receipt.to_dict()
     # Host mount roots and output paths are deliberately absent from the package.
-    return {**value, "stdout_path": action + "/stdout.log", "stderr_path": action + "/stderr.log",
+    scope = manifest.spec.research_scope
+    return {**value, **({"research_scope": scope.model_dump(mode="json")} if scope else {}),
+            "stdout_path": action + "/stdout.log", "stderr_path": action + "/stderr.log",
             "action": action, "execution_profile_digest": manifest.spec.execution_profile_digest,
             "manifest_digest": digest_model(manifest),
             "input_files": {mount.target: mount.sha256 for mount in spec.input_mounts
@@ -236,6 +266,8 @@ def build_adaptive_archive(job: Path, manifest: AdaptiveManifest, profile: Adapt
         "sandbox-qualification.json", "sandbox-evaluation.json",
     )}
     members["result.json"] = job / "adaptive-result.json"
+    if manifest.spec.research_scope is not None:
+        members.update({name: job / name for name in ("producer-qualification.json", "producer-result.json")})
     members.update({"code/" + name: checked_path(checkout, name) for name in manifest.code_files})
     members.update({"outputs/" + name: checked_path(job / "evaluate", name) for name in result.output_files})
     atomic_json(job / "receipt.json", receipt.model_dump(mode="json"))
@@ -292,6 +324,8 @@ def execute_adaptive(config: WorkerConfig, assignment: AdaptiveAssignment, manif
             raise ExecutionBlocked("adaptive-actual-changes-differ-from-plan")
         atomic_json(job / "manifest.json", manifest.model_dump(mode="json"))
         atomic_json(job / "runtime.json", {
+            **({"research_scope": manifest.spec.research_scope.model_dump(mode="json")}
+               if manifest.spec.research_scope is not None else {}),
             "schema_version": 1, "execution_profile_digest": manifest.spec.execution_profile_digest,
             "worker_id": "worker", "hostname": platform.node(), "gpu": manifest.plan.gpu,
             "code_commit": manifest.plan.code_commit, "company_commit": config.company_commit,
@@ -310,10 +344,22 @@ def execute_adaptive(config: WorkerConfig, assignment: AdaptiveAssignment, manif
                 raise ExecutionBlocked(f"adaptive-{label}-failed")
             if action == "qualify":
                 source = checked_path(job / action, "qualification.json")
-                qualification_from_file(source, manifest, profile.public_profile)
-                shutil.copyfile(source, job / "qualification.json")
-        result = validate_result_files(job / "evaluate", manifest)
-        shutil.copyfile(checked_path(job / "evaluate", "result.json"), job / "adaptive-result.json")
+                value = qualification_from_file(source, manifest, profile.public_profile, producer=True)
+                if manifest.spec.research_scope is None:
+                    shutil.copyfile(source, job / "qualification.json")
+                else:
+                    shutil.copyfile(source, job / "producer-qualification.json")
+                    atomic_json(job / "qualification.json", bind_producer_record(value, source, manifest).model_dump(
+                        mode="json"))
+                    qualification_from_file(job / "qualification.json", manifest, profile.public_profile)
+        producer = validate_result_files(job / "evaluate", manifest, producer=True)
+        source = checked_path(job / "evaluate", "result.json")
+        result = bind_producer_record(producer, source, manifest)
+        if manifest.spec.research_scope is None:
+            shutil.copyfile(source, job / "adaptive-result.json")
+        else:
+            shutil.copyfile(source, job / "producer-result.json")
+            atomic_json(job / "adaptive-result.json", result.model_dump(mode="json"))
         actual_files = snapshot_files(checkout, manifest.plan.code_commit)
         if {name: actual_files.get(name) for name in manifest.code_files} != manifest.code_files:
             raise ExecutionBlocked("adaptive-code-changed-after-execution")
@@ -323,6 +369,7 @@ def execute_adaptive(config: WorkerConfig, assignment: AdaptiveAssignment, manif
                 raise ExecutionBlocked("adaptive-input-changed-after-execution")
         receipt = AdaptiveExecutionReceipt(
             **assignment.model_dump(exclude={"action", "lease_token", "manifest"}),
+            **scoped_kwargs(manifest.spec),
             mission_id=manifest.mission_id, mission_digest=manifest.mission_digest, trial_id=manifest.trial_id,
             plan_digest=manifest.plan_digest, execution_profile_digest=manifest.spec.execution_profile_digest,
             worker_id="worker", hostname=manifest.plan.hostname, gpu=manifest.plan.gpu,

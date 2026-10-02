@@ -46,3 +46,30 @@ CREATE TABLE IF NOT EXISTS research_meaning_reviews (
  trial_id uuid PRIMARY KEY REFERENCES research_mission_trials(id), payload jsonb NOT NULL,
  digest text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS research_scientific_lineages (
+ id uuid PRIMARY KEY, project_id uuid NOT NULL REFERENCES projects(id),
+ trial_limit integer NOT NULL CHECK(trial_limit>0), created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS research_scientific_lineage_origins (
+ task_id uuid PRIMARY KEY REFERENCES research_program_tasks(id),
+ lineage_id uuid NOT NULL REFERENCES research_scientific_lineages(id), task_digest text NOT NULL
+);
+CREATE TABLE IF NOT EXISTS research_scientific_lineage_trials (
+ trial_id uuid PRIMARY KEY REFERENCES research_mission_trials(id),
+ lineage_id uuid NOT NULL REFERENCES research_scientific_lineages(id)
+);
+CREATE TABLE IF NOT EXISTS research_program_lineage_authorizations (
+ program_id uuid NOT NULL REFERENCES research_programs(id), envelope text NOT NULL,
+ lineage_id uuid NOT NULL REFERENCES research_scientific_lineages(id), authority_digest text NOT NULL,
+ PRIMARY KEY(program_id,envelope)
+);
+
+CREATE TABLE IF NOT EXISTS research_scientific_lineage_experiments (
+    project_id uuid NOT NULL REFERENCES projects(id),
+    code_signature text NOT NULL CHECK (code_signature ~ '^[a-f0-9]{64}$'),
+    lineage_id uuid NOT NULL REFERENCES research_scientific_lineages(id),
+    trial_id uuid NOT NULL REFERENCES research_mission_trials(id),
+    created_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (project_id, code_signature)
+);

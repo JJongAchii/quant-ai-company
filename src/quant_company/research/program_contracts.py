@@ -7,6 +7,7 @@ from pydantic import Field, model_validator
 
 from .contracts import Digest
 from .mission_contracts import MissionModel, MissionSpec, SourceIds, Text
+from .policy_contracts import ScopedRecord
 
 
 class ProgramEnvelope(MissionModel):
@@ -24,7 +25,7 @@ class ProgramEnvelope(MissionModel):
 
 
 class ResearchProgram(MissionModel):
-    schema_version: Literal[1] = 1
+    schema_version: Literal[1, 2] = 1
     title: Text
     objective: Text
     envelopes: Annotated[list[ProgramEnvelope], Field(min_length=1, max_length=12)]
@@ -41,7 +42,12 @@ class ResearchProgram(MissionModel):
             raise ValueError("Program envelope names must be unique")
         if self.max_parallel_missions > self.max_missions:
             raise ValueError("Concurrent missions exceed total mission allowance")
+        if self.schema_version == 2 and len({e.template.scientific_lineage.id for e in self.envelopes
+                if e.template.scientific_lineage is not None}) != len(self.envelopes):
+            raise ValueError("Each policy envelope requires a distinct signed scientific lineage")
         for envelope in self.envelopes:
+            if (self.schema_version == 2) != (envelope.template.schema_version == 3):
+                raise ValueError("New program policies require version 2 and mission version 3")
             if envelope.template.search.max_total_trials is None:
                 raise ValueError("Each program task needs a finite scientific scope")
             if envelope.template.search.max_total_trials > self.max_total_trials:
@@ -74,19 +80,37 @@ class TaskDecision(MissionModel):
     rationale: Text
 
 
-class DataAssessment(MissionModel):
-    decision: Literal["ready", "exploratory_only", "blocked"]
+class DataAssessment(ScopedRecord):
+    schema_version: Literal[1, 2] = Field(default=1, exclude_if=lambda v: v == 1)
+    decision: Literal["ready", "conditional_ready", "exploratory_only", "blocked"]
     rationale: Text
     source_ids: SourceIds
     point_in_time: bool
     coverage: bool
     executable_prices: bool
     original_conditions: bool
+    packet_digest: Digest | None = Field(default=None, exclude_if=lambda v: v is None)
+    evaluation_price_contract_verified: bool | None = Field(default=None, exclude_if=lambda v: v is None)
     data_policy_digest: Digest | None = Field(default=None, exclude_if=lambda v: v is None)
     evaluation_prices: bool | None = Field(default=None, strict=True, exclude_if=lambda v: v is None)
 
     @model_validator(mode="after")
     def ready(self):
+        if self.schema_version == 2 and (self.decision == "exploratory_only" or self.data_policy_digest is not None
+                                         or self.evaluation_prices is not None):
+            raise ValueError("Scoped assessments cannot carry a legacy exploratory decision or policy fields")
+        if self.schema_version == 1 and (self.decision == "conditional_ready" or self.packet_digest is not None
+                                         or self.evaluation_price_contract_verified is not None):
+            raise ValueError("Legacy assessments cannot admit conditional research")
+        if self.decision == "conditional_ready":
+            if (self.research_scope is None or self.research_scope.data_mode != "frozen_vintage_retrospective"
+                    or self.point_in_time or self.original_conditions or self.executable_prices
+                    or not self.coverage or self.evaluation_price_contract_verified is not True
+                    or self.packet_digest is None):
+                raise ValueError("Conditional admission requires coverage and theoretical prices while retaining unverified PIT")
+        if (self.decision == "ready" and self.research_scope is not None
+                and self.research_scope.data_mode != "historical_point_in_time"):
+            raise ValueError("Conditional evidence cannot become historical ready")
         if self.decision == "ready" and not all((self.point_in_time, self.coverage, self.executable_prices)):
             raise ValueError("Ready requires PIT, coverage and execution evidence")
         if self.decision == "exploratory_only" and (
@@ -130,7 +154,8 @@ class TestAssessment(MissionModel):
         return self
 
 
-class MeaningReview(MissionModel):
+class MeaningReview(ScopedRecord):
+    schema_version: Literal[1, 2] = Field(default=1, exclude_if=lambda v: v == 1)
     trial_id: UUID
     outcome_digest: Digest
     conclusion: Literal["supported", "not_supported", "inconclusive"]

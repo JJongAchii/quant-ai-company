@@ -1,0 +1,26 @@
+{
+  "ci_log_sha256": "ffea1493aa2be70c6e48fbc11b8baad9cf87abe9ea6e14e94b26a5819e300316",
+  "ci_metadata_sha256": "0550a398027621ee54fc7ba72a6f2de203c84adae6bd67dda97cfc53f9833c66",
+  "conclusion": "success",
+  "counts": {
+    "deselected": 1,
+    "passed": 1484,
+    "skipped": 47
+  },
+  "duration_seconds": 432.65,
+  "financial_performance_claims": false,
+  "job_id": 110230515491,
+  "job_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36819082348/job/110230515491",
+  "kind": "ci-source-validation",
+  "lint_passed": true,
+  "production_deployed": false,
+  "recorded_at": "2026-10-01T07:35:11.625689+00:00",
+  "run_id": 36819082348,
+  "schema_version": 1,
+  "scope": "Core non-live service tests with real CI PostgreSQL and local Temporal test servers where required; fixture Slack/model and opt-in integrations are distinct.",
+  "skips": "Unavailable pinned integration checkouts and opt-in live/host checks remain skipped; root pinned integration and actual3070 evidence are separate.",
+  "source_commit": "492788077481f34c315ce99eec0e39d0bcde9588",
+  "status": "completed",
+  "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36819082348",
+  "v3_research_program_authorization": false
+}

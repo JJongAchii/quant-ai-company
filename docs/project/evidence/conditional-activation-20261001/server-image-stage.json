@@ -1,0 +1,51 @@
+{
+  "active_changed": false,
+  "completed_at": "2026-10-02T01:05:32.433100+00:00",
+  "failed_attempt": {
+    "failed_image_preserved": true,
+    "image_id": "sha256:84d790966e66eee752c1f4b58f812faf3bb3d504e3c099a8f5de2b532165554e",
+    "initial_stage_exit_code": 1,
+    "reason": "inherited_PYTHONPATH_selected_old_opt_quant_code_instead_of_new_wheel",
+    "receipt_sha256": "a8f315224164f7e2d8c94e5ce48035cdc7e620f1d9ce446d9273b29aa8696aa8"
+  },
+  "images": [
+    {
+      "base_image": "quant-company:ea092f419b4b679df4c25e479a8cb361b4d046ff",
+      "base_image_id": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+      "build_log_sha256": "cad09ca5454bf6308cf6007c6a65102bb3da5f995714617562f9bc219fa8d79d",
+      "image": "quant-company:19807db8d1817a3a495ac10eee34b1bac2d287fe-intake2",
+      "image_id": "sha256:473bc10f99ad57add2faf8c833cf083294ebb7c6c2da6288d9491ed1eef61ba4",
+      "isolated_parser_verification": {
+        "import_root": "/opt/quant-code/src/quant_company",
+        "program_digest": "be0d940bf5904c417d213898617b3f6c0fed19d2bfddd78460ec315e92b216af",
+        "schema3_parser_verified": true,
+        "source_commit": "19807db8d1817a3a495ac10eee34b1bac2d287fe"
+      },
+      "package_tree_sha256": "262d679d3d58bd49c5759b2ff77984070e60d3ac50c150ef7c8380e11eddd7b5",
+      "service": "api"
+    },
+    {
+      "base_image": "quant-company-autonomous:3c848af95dc33b7da444a55018fd41d374c10025",
+      "base_image_id": "sha256:6dce9a55e60b2a2b9f1a27aa99cd9a97c35bebe1b0c4c1bc9a1cccad2757f378",
+      "build_log_sha256": "c467f2454838da14a165ca98bd7f405fe95651df227d5bf3f538b7772a3b9ccf",
+      "image": "quant-company-autonomous:19807db8d1817a3a495ac10eee34b1bac2d287fe-intake2",
+      "image_id": "sha256:0e78f330d34f9cfbd77804491bd74ef3ea41c3eff02cccec0229fa0a782ae10a",
+      "isolated_parser_verification": {
+        "import_root": "/opt/quant-code/src/quant_company",
+        "program_digest": "be0d940bf5904c417d213898617b3f6c0fed19d2bfddd78460ec315e92b216af",
+        "schema3_parser_verified": true,
+        "source_commit": "19807db8d1817a3a495ac10eee34b1bac2d287fe"
+      },
+      "package_tree_sha256": "262d679d3d58bd49c5759b2ff77984070e60d3ac50c150ef7c8380e11eddd7b5",
+      "service": "worker"
+    }
+  ],
+  "market_backtest_executed": false,
+  "phase": "compatible_images_staged_not_active",
+  "previous_app": "/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff",
+  "production_database_mutated": false,
+  "schema_version": 1,
+  "scientific_authority_granted": false,
+  "source_commit": "19807db8d1817a3a495ac10eee34b1bac2d287fe",
+  "started_at": "2026-10-02T01:05:25.618285+00:00"
+}

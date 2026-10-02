@@ -1,0 +1,45 @@
+{
+  "package": {
+    "activation": false,
+    "active_input_files_unchanged": {
+      "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574",
+      "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81"
+    },
+    "current_runtime_admissible": false,
+    "files": {
+      "data-policy-draft.json": "66a888ac98ba420685b41b7bc45d011b59eef857c1f057e2239d34cef86c463f",
+      "program-schema-preview.json": "74b7bdbfe7f111868cf69d64a0626cd6762c6aa893d308e1283752309f375a86",
+      "public-profile-draft.json": "0c995d823b1e65e5bb2723edd1643848348f629c300ea911fe453099d817cb48"
+    },
+    "future_prospective_receipt_requirements": [
+      "Actual request start/end and source-observed UTC/KST times; endpoint and collector code/version.",
+      "Append-only byte-hashed response and per-date revision identities; preserve every observed replacement.",
+      "As-known-at query selects only versions actually observed before the signal cutoff.",
+      "Do not backdate receipts or use current policy/ETag/filemtime as historical publication evidence."
+    ],
+    "implementation_gates": [
+      "Versioned typed policy in program/envelope, mission, assessment and result; existing PIT path unchanged.",
+      "Assess/decide/admission enforce a distinct conditional path, exact mode/digest and scoped gap codes.",
+      "Profile preparation supports new distinct ID and verified policy/quality receipts; register only after E2E.",
+      "Audits and reports cannot promote conditional evidence to historical/live or exact replication claims.",
+      "Real PostgreSQL/Temporal and isolated worker E2E prove approval, recovery, budget and scope propagation.",
+      "Fresh signed owner approval covers the implemented canonical program, not this schema preview."
+    ],
+    "input_files": {
+      "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+      "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+    },
+    "owner_approval": null,
+    "policy_binding_in_current_schema": "text_reference_only_not_enforced",
+    "policy_digest": "bf7375634052314c041375a2ad44cefeacbea5c5444531de7ce65de56d15b1c1",
+    "production_mutated": false,
+    "production_profiles_registered": false,
+    "profile_digest": "946bd511d131777f3366ebea4eb91d3738ae53ae32ad22bb8cd31d8e4b79d5df",
+    "program_schema_preview_digest": "1096e6bda03d19e05348799c6b828eebf6ae2182b59084562beb951f54f7758a",
+    "schema_version": 1,
+    "scientific_trials_added": 0,
+    "state": "implementation_and_new_signed_approval_required",
+    "strategy_performance_computed": false
+  },
+  "review_digest": "49487dae09d5bcf968de552a0c70d0523794dbf14f5389424a149a1cfb0f3334"
+}

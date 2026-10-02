@@ -1,695 +1,75 @@
 {
   "approval": {
-    "approvedAt": "2026-09-29T01:21:52.515610+00:00",
-    "id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1790641272.310813:director:action:21f480c4-d59f-45e7-ac2e-2cf91aa109e8:approve"
+    "approvedAt": "2026-10-01T08:08:09.092598+00:00",
+    "id": "conversation:user:2026-10-01:conditional-operational-intake"
   },
-  "currentIntent": "INTENT-v6.json",
+  "currentIntent": "INTENT-v8.json",
   "deliverables": {
-    "OWNER_APPROVAL": {
+    "PROGRAM_REVIEW": {
       "evidence": [
         {
-          "path": "docs/project/evidence/research-programs-20260929/owner-approval-first-stage.json",
-          "sha256": "6c681f7efce4"
+          "path": "docs/project/evidence/conditional-activation-20261001/review-package.json",
+          "sha256": "16db707b6c17"
+        },
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/lineage-preimage-preview.json",
+          "sha256": "d2609443ce15"
+        },
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/intake-preparation-acceptance.json",
+          "sha256": "536dc72834d3"
         }
       ],
-      "note": "Signed owner block action bound the exact program digest and set program active before any new scientific trial.",
-      "status": "verified",
-      "updatedAt": "2026-09-29T01:22:43.972894+00:00"
-    },
-    "PROGRAM_PROGRESS": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/research-programs-20260929/read-fix-cutover.json",
-          "sha256": "79b8ec78d7cf"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/same-attempt-source-continuation.json",
-          "sha256": "5b52bbfdd120"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/citation-location-rejection.json",
-          "sha256": "0363480aee63"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/release-drift-safe-abort.json",
-          "sha256": "375bf8998105"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/citation-integrated-candidate.json",
-          "sha256": "5e6e62ea34d2"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/second-release-drift-safe-abort.json",
-          "sha256": "8c1e3fe3bff4"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-cutover.json",
-          "sha256": "b8f5c33d45ff"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-post-check.json",
-          "sha256": "70f1b286cd25"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/citation-guidance-attempt11.json",
-          "sha256": "2df7b309c0d4"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt11.json",
-          "sha256": "e870643a3688"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt12.json",
-          "sha256": "5a997ffc0f55"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-cutover.json",
-          "sha256": "459c316f1935"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-post-check.json",
-          "sha256": "fd0c8587762a"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/predecessor-guidance-attempt13.json",
-          "sha256": "75839fc5b43e"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/first-task-independent-review.json",
-          "sha256": "0fd3c3fb25e4"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/first-task-data-assessment.json",
-          "sha256": "a1e46b92dcb0"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/first-task-final-decision.json",
-          "sha256": "17d2f9a1cf22"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/first-task-wait-new-evidence.json",
-          "sha256": "9713eda8945e"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/new-literature-trigger.json",
-          "sha256": "29c002f78701"
-        },
-        {
-          "path": "docs/project/FIRST-TASK-DATA-GAP-20260929.md",
-          "sha256": "755acf546efa"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/etf-input-contract-readback.json",
-          "sha256": "d968bb626775"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/verify-etf-input-contract.py",
-          "sha256": "f35940658315"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/second-task-proposal-summary.json",
-          "sha256": "d0c28d1e4a1a"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/second-task-data-assessment.json",
-          "sha256": "42ee4b68422b"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/second-task-final-decision.json",
-          "sha256": "8893499919b6"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/etf-qdata-independent-readback.json",
-          "sha256": "7b18376afed4"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/service-restart-recovery.json",
-          "sha256": "797e2bd73183"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-validation.json",
-          "sha256": "2c71dbdb5c38"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/unread-source-cutover-held.json",
-          "sha256": "df5cb4a98b16"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-cutover.json",
-          "sha256": "ece9ca787115"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-post-check.json",
-          "sha256": "1dd3b8408bec"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/program-post-unread-source.json",
-          "sha256": "265d135cf0f3"
-        },
-        {
-          "path": "docs/project/RESEARCH-PROGRAMS-POST-APPROVAL-20260929.md",
-          "sha256": "ddac9acf3b72"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/etf-data-evidence-note.json",
-          "sha256": "c0b1635d6300"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/etf-data-evidence-registry.json",
-          "sha256": "3ff9e81e3f4c"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/etf-data-evidence-staged.json",
-          "sha256": "1dde504b7006"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/data-evidence-release-staged.json",
-          "sha256": "7ebd0ea19950"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-build.json",
-          "sha256": "c3dd4acf9118"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-qualified.json",
-          "sha256": "a7ce33d26e1a"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/data-evidence-cutover-precheck-final.json",
-          "sha256": "6d230f76e7e0"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-cutover.json",
-          "sha256": "7062a93ea7e5"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-postcheck.json",
-          "sha256": "3cea0563d689"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-postcheck-later.json",
-          "sha256": "997e5615326d"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/data-evidence-worker-progress.json",
-          "sha256": "ac06cc645d92"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/data-evidence-researcher-read-depth.json",
-          "sha256": "731194257004"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/etf-s3-version-history-readback.json",
-          "sha256": "24970ad5f509"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/data-evidence-third-task-first-review.json",
-          "sha256": "6a54f377c39e"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/data-evidence-third-task-second-review.json",
-          "sha256": "32e5357961c1"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-precutover-stage.json",
-          "sha256": "d19a7547c47f"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-validation.json",
-          "sha256": "7e0a6c845a59"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-cutover-precheck.json",
-          "sha256": "a60553d4bb38"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-cutover.json",
-          "sha256": "43db89608b88"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-postcheck.json",
-          "sha256": "4cdad6047ef4"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-live-prompt.json",
-          "sha256": "1a415add969f"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-live-original-read.json",
-          "sha256": "c49d7c313028"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/third-task-data-assessment.json",
-          "sha256": "5271a6bdec7c"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/third-task-director-read-depth.json",
-          "sha256": "81703b8c9457"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/third-task-final-decision.json",
-          "sha256": "718cb26376ac"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-loop-diagnosis.json",
-          "sha256": "22fd67e82c8e"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/fourth-task-data-assessment.json",
-          "sha256": "711c44ac8459"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-cutover-precheck.json",
-          "sha256": "addec2cc0ae2"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-cutover.json",
-          "sha256": "21d989a7d11b"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-postcheck.json",
-          "sha256": "c803002d3eeb"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/fourth-task-director-read-depth.json",
-          "sha256": "395dcbd3fdc9"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/fourth-task-final-decision.json",
-          "sha256": "6a5761105d7a"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-postcutover-no-loop.json",
-          "sha256": "a3efeb730993"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/program-continuation-diagnosis.json",
-          "sha256": "7fb4c91bb767"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/new-source-stage-transitions.json",
-          "sha256": "8484cd7ffc95"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-live-readback.json",
-          "sha256": "a632d89f565f"
-        },
-        {
-          "path": "docs/project/RESEARCH-PROGRAMS-CONTINUATION-20260930.md",
-          "sha256": "cba1a5ec7cde"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/trace-etf-provenance.py",
-          "sha256": "151c2d6119e2"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/etf-provenance-recovery.json",
-          "sha256": "c813a2e9c4e7"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/etf-raw-object-manifest.json",
-          "sha256": "963dc1ea3420"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/attach-etf-provenance.py",
-          "sha256": "657d120ec876"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/etf-provenance-attached.json",
-          "sha256": "8acb49ed55d4"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/etf-provenance-evidence-registry.json",
-          "sha256": "d3822b1df7d1"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/etf-provenance-initial-lock-readback.json",
-          "sha256": "2ed9d399acd1"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/read-etf-provenance-stage.py",
-          "sha256": "10139471c601"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/etf-provenance-staff-readback.json",
-          "sha256": "ba77545a8d33"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/etf-provenance-validation.json",
-          "sha256": "fc48875746bc"
-        },
-        {
-          "path": "docs/project/ETF-PROVENANCE-RECOVERY-20260930.md",
-          "sha256": "0be5334d6d96"
-        },
-        {
-          "path": "docs/project/ETF-RAW-LINEAGE-20260930.md",
-          "sha256": "4c60bef26fc9"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/trace-raw-lineage.py",
-          "sha256": "b7d0c9e75ad3"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/raw-lineage-receipt.json",
-          "sha256": "f8a0595989be"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/raw-body-manifest.json",
-          "sha256": "d1d0b0f87230"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/raw-schema-and-keys.json",
-          "sha256": "d703d2fad3e4"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/network-rejection-note.json",
-          "sha256": "633f558e737c"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/read-attachment-precheck.py",
-          "sha256": "62114d9b6ed6"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/attachment-precheck.json",
-          "sha256": "924eb0ffd7fb"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/attachment-package.json",
-          "sha256": "2a4cc5cbf58a"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/attach-raw-lineage.py",
-          "sha256": "5f28d4a0f68e"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/raw-lineage-attached.json",
-          "sha256": "9df11d86eab4"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/raw-lineage-evidence-registry.json",
-          "sha256": "bdef77801a3b"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/read-raw-lineage-staff.py",
-          "sha256": "0bfb37371175"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/staff-readback-initial.json",
-          "sha256": "bd0e2691a220"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/validation.json",
-          "sha256": "554901cc3902"
-        },
-        {
-          "path": "tests/test_etf_raw_lineage_operator.py",
-          "sha256": "369d93daf9aa"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/staff-readback-final.json",
-          "sha256": "50b3bc9a5c7d"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/staff-readback-ssh-expiry.json",
-          "sha256": "53f943ec6679"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/staff-review-validation.json",
-          "sha256": "b16834b9c837"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/ci-777f601.json",
-          "sha256": "2aacbee3e496"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/access-cleanup.json",
-          "sha256": "fe60107189ab"
-        }
-      ],
-      "note": "Raw-body lineage investigation completed: 835 current objects hashed; 698359 raw rows preserved through pinned builders; all 8350 approved non-adjustment input fields and reanchored curve shapes matched; the selection-prefix-only cohort matched. Researcher, independent data employee and director completed all three new-report reads and stage outcomes in attempt 1; 34 actual Codex turns completed, maximum prompt 86138 under the 90000 contract. The new task remained waiting with data blocked and director wait; eight tasks waiting, zero missions/reservations/scientific trials. Current transformation evidence was accepted while historical publication/revision evidence and preparation-time source bytes remain missing. No active input, engine, blocking gap or readiness grant changed.",
+      "note": "Canonical program and actual ten prior origins prepared. Deployed history check, fresh signed Slack owner approval and actual data/director decisions remain pending worker recovery and release intake.",
       "status": "in_progress",
-      "updatedAt": "2026-09-30T12:08:38.585728+00:00"
+      "updatedAt": "2026-10-02T02:26:11.337009+00:00"
     },
-    "TECHNICAL_RECOVERY": {
+    "REAL_DATA_PACKET": {
       "evidence": [
         {
-          "path": "docs/project/evidence/research-programs-20260929/routing-diagnosis.json",
-          "sha256": "20c5ab2e168a"
+          "path": "docs/project/evidence/conditional-activation-20261001/numeric-quality.json",
+          "sha256": "99404f6ce4f7"
         },
         {
-          "path": "docs/project/evidence/research-programs-20260929/route-fix-cutover.json",
-          "sha256": "7f6408f5437f"
+          "path": "docs/project/evidence/conditional-activation-20261001/review-package.json",
+          "sha256": "16db707b6c17"
         },
         {
-          "path": "docs/project/evidence/research-programs-20260929/artifact-format-rejection.json",
-          "sha256": "f41e55e9d06d"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-read-rejection.json",
-          "sha256": "7df71644ffce"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/read-fix-validation.json",
-          "sha256": "b17a3417b373"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/read-fix-image-build.json",
-          "sha256": "bfc3c377826c"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/read-fix-cutover.json",
-          "sha256": "79b8ec78d7cf"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/merge-validation.json",
-          "sha256": "649dcac4bed2"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/same-attempt-source-continuation.json",
-          "sha256": "5b52bbfdd120"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/citation-integrated-validation.json",
-          "sha256": "c8eb0b63258c"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-candidate.json",
-          "sha256": "6536e7084bff"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-validation.json",
-          "sha256": "376a9ca4991b"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-cutover.json",
-          "sha256": "b8f5c33d45ff"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/citation-overlay-post-check.json",
-          "sha256": "70f1b286cd25"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/citation-guidance-attempt11.json",
-          "sha256": "2df7b309c0d4"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt11.json",
-          "sha256": "e870643a3688"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-candidate.json",
-          "sha256": "d2adefe52b55"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-validation.json",
-          "sha256": "b8bc0103abbb"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/predecessor-rejection-attempt12.json",
-          "sha256": "5a997ffc0f55"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-cutover.json",
-          "sha256": "459c316f1935"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/predecessor-overlay-post-check.json",
-          "sha256": "fd0c8587762a"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/predecessor-guidance-attempt13.json",
-          "sha256": "75839fc5b43e"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/first-task-independent-review.json",
-          "sha256": "0fd3c3fb25e4"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-stage.json",
-          "sha256": "40db713d0bb5"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-build.json",
-          "sha256": "9aa832a1159d"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-runtime.json",
-          "sha256": "9c9c88ce0f25"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-validation.json",
-          "sha256": "2c71dbdb5c38"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/unread-source-cutover-held.json",
-          "sha256": "df5cb4a98b16"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-cutover.json",
-          "sha256": "ece9ca787115"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/unread-source-overlay-post-check.json",
-          "sha256": "1dd3b8408bec"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/program-post-unread-source.json",
-          "sha256": "265d135cf0f3"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-release-staged.json",
-          "sha256": "abcaeee217c1"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-built.json",
-          "sha256": "86f0c426a429"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-qualified.json",
-          "sha256": "4028ef573874"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-validation.json",
-          "sha256": "7e0a6c845a59"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-cutover-precheck.json",
-          "sha256": "a60553d4bb38"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-cutover.json",
-          "sha256": "43db89608b88"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/source-guidance-worker-postcheck.json",
-          "sha256": "4cdad6047ef4"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-loop-diagnosis.json",
-          "sha256": "22fd67e82c8e"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-release-staged.json",
-          "sha256": "e030ef8ee056"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-built.json",
-          "sha256": "b17f280bea98"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-qualified.json",
-          "sha256": "04038c792c25"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-validation.json",
-          "sha256": "f92925a090c2"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-cutover-precheck.json",
-          "sha256": "addec2cc0ae2"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-cutover.json",
-          "sha256": "21d989a7d11b"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-worker-postcheck.json",
-          "sha256": "c803002d3eeb"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-postcutover-no-loop.json",
-          "sha256": "a3efeb730993"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260929/packet-version-no-loop-readback.py",
-          "sha256": "de3261c5c116"
-        },
-        {
-          "path": "docs/project/RESEARCH-PROGRAMS-POST-APPROVAL-20260929.md",
-          "sha256": "ddac9acf3b72"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/program-temporal-readback.json",
-          "sha256": "8539085e5e56"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-validation.json",
-          "sha256": "94ec492fd196"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-staged.json",
-          "sha256": "703b7c3d0088"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-built.json",
-          "sha256": "a2b945555beb"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-qualified.json",
-          "sha256": "78a0061e9fbc"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-precheck.json",
-          "sha256": "b0c8cf2f53d7"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-cutover.json",
-          "sha256": "5d33e3d1e800"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-postcheck.json",
-          "sha256": "995c630ba6be"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-live-readback.json",
-          "sha256": "a632d89f565f"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/prior-evidence-live-readback.py",
-          "sha256": "e09af29ddbd4"
-        },
-        {
-          "path": "docs/project/RESEARCH-PROGRAMS-CONTINUATION-20260930.md",
-          "sha256": "cba1a5ec7cde"
-        },
-        {
-          "path": "docs/project/evidence/research-programs-20260930/ci-recovered.json",
-          "sha256": "b01bf1d5aba5"
-        },
-        {
-          "path": "docs/project/evidence/etf-raw-lineage-20260930/ci-777f601.json",
-          "sha256": "2aacbee3e496"
+          "path": "docs/project/evidence/conditional-activation-20261001/worker-package-validation.json",
+          "sha256": "828d120e10b3"
         }
       ],
-      "note": "Prior same-turn prompt recovery remains verified. Integrated 9089a7c preserved the separately owner-approved private-output correction; service CI including lint and PostgreSQL/Temporal regression passed after the user resolved the GitHub account start block. Provenance attachment qualified against ten installed source hashes and all frozen contract bindings; no service recreated by this task. Commit 777f601 with raw lineage operators and eight failure guards passed actual service CI lint and PostgreSQL/Temporal regression. Final staff-readback additions are subsequent evidence.",
+      "note": "Immutable real numeric inputs, canonical policy/report bytes and compatible profile prepared; this does not grant staff admission or actual worker qualification.",
       "status": "verified",
-      "updatedAt": "2026-09-30T12:08:38.585728+00:00"
+      "updatedAt": "2026-10-02T02:26:11.337009+00:00"
+    },
+    "RELEASE_INTAKE": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/source-ci.json",
+          "sha256": "99bbf86f3373"
+        },
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/server-image-stage.json",
+          "sha256": "d5db21a30b2e"
+        },
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/release-plan.json",
+          "sha256": "58b37c5d9036"
+        },
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/worker-connectivity-final-20261002.json",
+          "sha256": "7ad90ea99d13"
+        }
+      ],
+      "note": "Integrated source19807 passed CI and two server images are staged. Designated 3070 remains unreachable; no cutover, migration, profile registration or fresh backup performed.",
+      "status": "blocked",
+      "updatedAt": "2026-10-02T02:26:11.337009+00:00"
     }
   },
-  "intentDigest": "b3c652b7b56b",
+  "intentDigest": "7bcf0b05d97b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-09-30T12:08:38.585728+00:00"
+  "updatedAt": "2026-10-02T02:26:11.337009+00:00"
 }
