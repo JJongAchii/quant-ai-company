@@ -284,7 +284,7 @@ services:
       SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
     secrets: [database_password, temporal_api_key, lake_read_credentials]
     networks: [core, service_egress]
-    mem_limit: 192m
+    mem_limit: 384m
     cpus: 0.25
     depends_on:
       postgres: {condition: service_healthy}

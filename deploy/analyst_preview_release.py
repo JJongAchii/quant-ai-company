@@ -152,7 +152,11 @@ def stage(args, previous, target, module, journal):
         raise ValueError('preview_analyst_credentials_missing')
     before = inventory()
     if '/quant-company-' + NEW_SERVICE + '-1' in before:
-        raise ValueError('preview_data_worker_already_present')
+        prior = STATE / 'releases' / ('analyst-preview-' + args.base + '.json')
+        owned = json.loads(prior.read_text()) if prior.is_file() else {}
+        if (owned.get('phase') != 'preview_active' or owned.get('owner_approval') != args.approval
+                or values.get('BRIEFING_ENABLED') != 'true' or values.get('BRIEFING_PUBLISH_ENABLED') != 'false'):
+            raise ValueError('preview_data_worker_not_owned')
     receipt = {'phase': 'staging', 'base': args.base, 'commit': args.commit,
                'owner_approval': args.approval, 'publication_enabled': False,
                'archive_sha256': args.sha256, 'manifest_sha256': args.manifest_sha256,
@@ -240,6 +244,7 @@ def cutover(args, previous, target, module, journal):
                 'SLACK_ALLOWED_CHANNELS': json.dumps([*channels, *([] if args.channel in channels else [args.channel])])}
     new_roles = merged_roles(json.loads(roles), json.loads((target / 'src/quant_company/roles.json').read_text()))
     before = inventory()
+    drains = ('news-worker', 'dispatch', *((NEW_SERVICE,) if '/quant-company-' + NEW_SERVICE + '-1' in before else ()))
     if any(not before['/quant-company-' + name + '-1']['running'] for name in SERVICES):
         raise ValueError('preview_required_service_not_running')
     if available_memory() < 384:
@@ -253,7 +258,7 @@ def cutover(args, previous, target, module, journal):
     primary_stopped = False
     switched = False
     try:
-        compose(module, previous, 'stop', '-t', '1100', 'news-worker', 'dispatch')
+        compose(module, previous, 'stop', '-t', '1100', *drains)
         for name in ('.runtime.lock', '.runtime-news.lock', '.runtime-brief.lock'):
             lock = (STATE / 'codex/jobs' / name).open('a')
             locks.append(lock)
@@ -321,7 +326,7 @@ print('briefing_schema_ready')"""
         overlay = journal.with_suffix('.rollback.compose.json')
         module.atomic(overlay, json.dumps({'services': {name: {'image': before['/quant-company-' + name + '-1']['image']}
                                                         for name in SERVICES}}).encode())
-        restore = SERVICES if primary_stopped else ('news-worker', 'dispatch')
+        restore = (*SERVICES, *((NEW_SERVICE,) if NEW_SERVICE in drains else ())) if primary_stopped else drains
         compose(module, previous, 'up', '-d', '--no-deps', '--force-recreate', '--wait', '--wait-timeout', '120',
                 *restore, overlay=overlay)
         receipt.update(phase='rolled_back', error=type(exc).__name__, publication_enabled=False)
