@@ -165,9 +165,15 @@ def stage(args, previous, target, module, journal):
         raise ValueError('preview_analyst_credentials_missing')
     before = inventory()
     if '/quant-company-' + NEW_SERVICE + '-1' in before:
-        prior = STATE / 'releases' / ('analyst-preview-' + args.base + '.json')
+        worker = before['/quant-company-' + NEW_SERVICE + '-1']
+        image = json.loads(run(['docker', 'image', 'inspect', worker['image']]))[0]
+        revision = image['Config']['Labels'].get('org.opencontainers.image.revision', '')
+        if not re.fullmatch('[0-9a-f]{40}', revision):
+            raise ValueError('preview_data_worker_revision_missing')
+        prior = STATE / 'releases' / ('analyst-preview-' + revision + '.json')
         owned = json.loads(prior.read_text()) if prior.is_file() else {}
         if (owned.get('phase') != 'preview_active' or owned.get('owner_approval') != args.approval
+                or not any(row['target'] == 'app' and row['id'] == image['Id'] for row in owned.get('images', []))
                 or values.get('BRIEFING_ENABLED') != 'true' or values.get('BRIEFING_PUBLISH_ENABLED') != 'false'):
             raise ValueError('preview_data_worker_not_owned')
     receipt = {'phase': 'staging', 'base': args.base, 'commit': args.commit,
