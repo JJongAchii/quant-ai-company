@@ -1,0 +1,10 @@
+{
+  "recorded_at": "2026-10-02T03:58:14.594262+00:00",
+  "conclusion": "success",
+  "headSha": "289dc70c6858ea229476216d7ea4c1c10ece68ff",
+  "status": "completed",
+  "updatedAt": "2026-10-02T03:09:27Z",
+  "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36958320184",
+  "scope": "Actual committed-source GitHub CI; no claim of real model content or Slack delivery",
+  "exact_test_counts": "not_extracted_for_this_receipt"
+}

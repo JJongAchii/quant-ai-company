@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-01T06:46:00.447377+00:00",
+  "code_commit": "f55eeba9c6ab9333e16d8b519cea82ad7703c7f2",
+  "validation_version": 43,
+  "format_version": 15,
+  "command": ".venv/bin/pytest tests/test_briefing.py tests/test_briefing_content.py tests/test_briefing_analyst.py tests/test_briefing_planning.py tests/test_briefing_quality.py --junitxml=docs/project/evidence/briefing-analyst-quality-20261001/regression-v43.xml -q",
+  "counts": {
+    "tests": 176,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsed_seconds_reported": 13.9,
+  "xml_sha256": "7881546b8d500e98520d55e81d7c91bb6c237ada27a252461934c8c074be4b9a",
+  "scope": "Real local PostgreSQL briefing contracts, fixture originals and model decisions. New material-opposition source selection and explicit review quote bound remain prospective, not actual model quality certification.",
+  "typed_quote_maximum_unchanged": 400,
+  "rubric_checks_unchanged": 12,
+  "lint": "All checks passed",
+  "source_hashes": {
+    "src/quant_company/briefing/editor.py": "56273dfaf3a8017e096093e5597c25652f9101cf1b153b467f8c413a627b9f7e",
+    "src/quant_company/briefing/planning.py": "1fe1ac644e997437d3303328663074fe00eb5914588f7cd8e27727840a64906c"
+  }
+}

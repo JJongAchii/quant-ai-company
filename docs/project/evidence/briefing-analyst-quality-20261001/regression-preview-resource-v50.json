@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-02T03:58:14.594262+00:00",
+  "source_commit": "289dc70c6858ea229476216d7ea4c1c10ece68ff",
+  "testsuite": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "5",
+    "time": "0.282",
+    "timestamp": "2026-10-02T11:59:55.768324+09:00",
+    "hostname": "MacBook-Pro.local"
+  },
+  "junit_sha256": "960c4b0f951cbbafc882ba067b54447112cf8800b6f11a31bb7a55dd83b471fa",
+  "scope": "Focused preview installation, source preservation and corrective data-worker resource tests; not content certification"
+}

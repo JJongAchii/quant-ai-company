@@ -1,0 +1,16 @@
+{
+  "recorded_at": "2026-10-02T04:01:26.585136+00:00",
+  "outcome": "failed_initial_sandbox_run_preserved",
+  "testsuite": {
+    "name": "pytest",
+    "errors": "620",
+    "failures": "22",
+    "skipped": "33",
+    "tests": "1678",
+    "time": "271.214",
+    "timestamp": "2026-10-02T09:12:22.558892+09:00",
+    "hostname": "MacBook-Pro.local"
+  },
+  "raw_junit_sha256": "92fd39cc3f2af76aeaee1639ddc02eb40304e4129e60285ef0d7085dc3869ead",
+  "raw_scope": "Full initial failure trace kept private Gitignored; corrected real PostgreSQL/Temporal run recorded separately, not replaced or scored successful"
+}
