@@ -90,3 +90,11 @@ def resolve_quotations(value, bundle):
         return result
 
     return resolve(value)
+
+
+def ordered_reference_payload(payload):
+    """Remove the duplicate reference lists, retaining every ordered text span."""
+    return {**payload, 'documents': [{k: v for k, v in d.items() if k != 'original_quote_refs'}
+                                    for d in payload['documents']],
+            'original_quote_layout': 'ordered_rows',
+            'original_quotes': [[reference, *value] for reference, value in payload['original_quotes'].items()]}

@@ -26,11 +26,16 @@ from .market_rules import expired_wti_contract
 from .numeric import numbers, prose_numbers_supported, reported_change_supported
 from .planning import SOURCE_CHAR_BUDGET, supplement_sources
 from .quality import assurance
-from .quotations import QUOTE_REFERENCE_VERSION, reference_payload, resolve_quotations
+from .quotations import (
+    QUOTE_REFERENCE_VERSION,
+    ordered_reference_payload,
+    reference_payload,
+    resolve_quotations,
+)
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 48
+VALIDATION_VERSION = 49
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 Before composing, check each original for facts that change the market read, exposure or next decision.
@@ -454,17 +459,23 @@ def prompt(bundle, phase, proposal=None):
         # needs every definition used in this draft, not unused lookup entries.
         instruments = {key: INSTRUMENTS[key] for key in INSTRUMENTS
                        if key in {o.instrument for o in draft.observations}}
-    reference_instruction = ("\nFor this edition, original_quotes maps @original IDs to [document_index, exact text]. "
-        "Join documents.original_quote_refs in order through original_quotes to read the COMPLETE original. "
+    reference_instruction = ("\nFor this edition, original_quotes either maps @original IDs to [document_index, exact text], "
+        "or is an ordered array of [@original ID, document_index, exact text] rows. "
+        "For the map join documents.original_quote_refs in order; for rows join each document_index's rows "
+        "in array order to read the COMPLETE original. "
         "In your output quote fields, select a supplied @original ID instead of retyping the text. "
         "The server restores that exact span and checks its source_id; never invent or cross-assign IDs. "
         "This applies to evidence and material_facts quotes, not reader-facing prose. "
         "evidence_quotes may point to an @original ID instead of literal text. All other checks still apply.\n"
         if references else "")
-    result = ((PATCH if patch else FACT_PATCH if fact_patch else EDITORIAL_PATCH if editorial_patch else WRITE if phase == "write" else REVIEW) + reference_instruction + "\n" + render_pack(procedure)
+    header = ((PATCH if patch else FACT_PATCH if fact_patch else EDITORIAL_PATCH if editorial_patch else WRITE if phase == "write" else REVIEW) + reference_instruction + "\n" + render_pack(procedure)
               + "\nINSTRUMENTS:\n" + json.dumps(instruments, ensure_ascii=False, separators=(",", ":"))
               + "\nSCHEMA:\n" + json.dumps(schema_value, ensure_ascii=False, separators=(",", ":"))
-              + "\nBRIEF DATA JSON:\n" + json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
+              + "\nBRIEF DATA JSON:\n")
+    result = header + json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    if len(result) > 88000 and references:
+        payload = ordered_reference_payload(payload)
+        result = header + json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     if len(result) > 88000:
         raise ValueError("brief_context_limit")
     return result

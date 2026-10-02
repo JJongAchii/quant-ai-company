@@ -123,6 +123,37 @@ def test_repair_context_keeps_twenty_complete_originals_and_reconstructible_prot
     assert b == original
 
 
+def test_large_final_review_retains_complete_originals_and_entire_unselected_catalog():
+    b = referenced_bundle()
+    b['documents'] = [{**b['documents'][0], 'id': f'source-{i}', 'content': CONTENT * 6}
+                      for i in range(20)]
+    b['candidate_documents'] = [*b['documents'], *[{**b['documents'][0], 'id': f'unselected-{i}',
+        'title': ('Synthetic policy and market story with contrasting evidence ' + str(i)).ljust(150, 'x')}
+                                                for i in range(76)]]
+    p = proposal().model_dump(mode='json')
+    sentence = '정책과 성장 전망의 변화는 가격과 자금조달 부담에 서로 다른 영향을 주므로 조건과 반대 근거를 함께 판단합니다. '
+    p['issues'] = [deepcopy(p['issues'][0]) for _ in range(6)]
+    for i, issue in enumerate(p['issues']):
+        for field, length in [('fact', 250), ('interpretation', 300), ('next_check', 75)]:
+            issue[field]['id'] += f'_{i}'
+            issue[field]['text'] = (sentence * 12)[:length]
+        for field in ['mechanism', 'alternative']:
+            issue['analysis'][field]['id'] += f'_{i}'
+            issue['analysis'][field]['text'] = (sentence * 12)[:150]
+    p['overview'] = [{**deepcopy(p['overview'][0]), 'id': f'overview_{i}', 'text': (sentence * 12)[:500]}
+                     for i in range(2)]
+    p['internals'] = [{**deepcopy(p['overview'][0]), 'id': f'internal_{i}', 'text': (sentence * 12)[:500]}
+                      for i in range(2)]
+    text = prompt(b, 'final_review', p)
+    data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
+    assert len(text) <= 88000
+    assert data['original_quote_layout'] == 'ordered_rows'
+    for index, source in enumerate(b['documents']):
+        assert ''.join(row[2] for row in data['original_quotes'] if row[1] == index) == source['content']
+    assert len(data['unselected_source_index']) == 76
+    assert {row[0] for row in data['unselected_source_index']} == {f'unselected-{i}' for i in range(76)}
+
+
 def test_real_postgresql_producer_consumer_preserves_exact_quotes_and_raw_receipts(brief):  # noqa: F811
     store, _ = brief
     edition = seed(brief)

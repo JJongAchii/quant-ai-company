@@ -137,7 +137,7 @@ def available_memory():
 def stage(args, previous, target, module, journal):
     if target.exists() or journal.exists() or available_memory() < 640:
         raise ValueError('preview_stage_exists_or_memory_admission')
-    if shutil.disk_usage(target.parent).free < 10 * 1024**3:
+    if shutil.disk_usage(target.parent).free < 2 * 1024**3:
         raise ValueError('preview_disk_admission')
     data = args.archive.read_bytes()
     manifest = json.loads(args.manifest.read_text())
@@ -166,21 +166,29 @@ def stage(args, previous, target, module, journal):
     if not qdata.is_dir() or any(p.is_symlink() for p in qdata.rglob('*')):
         raise ValueError('preview_qdata_context_invalid')
     shutil.copytree(qdata, target / 'qdata')
-    builder = 'analyst-preview-' + args.commit[:12]
     try:
-        run(['docker', 'buildx', 'create', '--name', builder, '--driver', 'docker-container',
-             '--driver-opt', 'memory=512m,memory-swap=512m,cpu-period=100000,cpu-quota=100000,restart-policy=no'])
+        # qdata and entrypoint are inherited only when byte-identical to the
+        # installed source. Dependencies are genuinely synced to the NEW lock;
+        # this is not the no-dependency-change fast code installer.
+        for name in ('deploy/Dockerfile', 'deploy/entrypoint.py'):
+            if (previous / name).read_bytes() != (target / name).read_bytes():
+                raise ValueError('preview_base_runtime_changed')
         for build_target, repository in [('app', 'quant-company'), ('codex', 'quant-company-codex')]:
             tag = repository + ':' + args.commit
             if subprocess.run(['docker', 'image', 'inspect', tag], capture_output=True).returncode == 0:
                 raise ValueError('preview_image_tag_already_exists')
-            command = ['docker', 'buildx', 'build', '--builder', builder, '--load', '--progress', 'plain',
-                       '--build-context', 'qdata=' + str(target / 'qdata'), '--build-arg', 'RELEASE_COMMIT=' + args.commit,
-                       '--build-arg', 'QDATA_COMMIT=' + values['QDATA_COMMIT'], '--target', build_target,
-                       '-f', str(target / 'deploy/Dockerfile'), '-t', tag, str(target)]
+            service = 'api' if build_target == 'app' else 'codex-runtime'
+            base_tag = before['/quant-company-' + service + '-1']['image']
+            base_image = json.loads(run(['docker', 'image', 'inspect', base_tag]))[0]
+            if base_image['Config']['Labels'].get('org.quant-company.qdata-revision') != values['QDATA_COMMIT']:
+                raise ValueError('preview_base_qdata_revision_mismatch')
+            command = ['docker', 'build', '--memory=512m', '--memory-swap=512m', '--cpu-quota=100000',
+                       '--build-arg', 'BASE_IMAGE=' + base_tag, '--build-arg', 'RELEASE_COMMIT=' + args.commit,
+                       '-f', str(target / 'deploy/Dockerfile.analyst-preview'), '-t', tag, str(target)]
             log = journal.with_name(journal.stem + '-' + build_target + '.log')
             with log.open('wb') as output:
-                subprocess.run(command, check=True, stdout=output, stderr=subprocess.STDOUT, timeout=1800)
+                subprocess.run(command, check=True, stdout=output, stderr=subprocess.STDOUT, timeout=1800,
+                               env={**os.environ, 'DOCKER_BUILDKIT': '0'})
             expected = {str(p.relative_to(target / 'src')): digest(p.read_bytes())
                         for p in (target / 'src/quant_company').rglob('*') if p.is_file() and '__pycache__' not in p.parts}
             code = """import hashlib,importlib.util,json,pathlib
@@ -191,8 +199,19 @@ for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts}))"""
                                     '--entrypoint', 'python', tag, '-c', code]))
             if actual != expected:
                 raise ValueError('preview_image_source_mismatch')
+            if json.loads(run(['docker', 'image', 'inspect', base_tag]))[0]['Id'] != base_image['Id']:
+                raise ValueError('preview_base_image_changed')
+            verify_dependencies = """import exchange_calendars,importlib.metadata,json,os
+print(json.dumps({'calendar':importlib.metadata.version('exchange-calendars'),
+'qdata_commit':os.environ.get('QDATA_CODE_COMMIT')}))"""
+            dependencies = json.loads(run(['docker', 'run', '--rm', '--network=none', '--memory=128m',
+                                           '--entrypoint', 'python', tag, '-c', verify_dependencies]))
+            if dependencies['qdata_commit'] != values['QDATA_COMMIT']:
+                raise ValueError('preview_image_qdata_revision_changed')
             image = json.loads(run(['docker', 'image', 'inspect', tag]))[0]
-            receipt['images'].append({'target': build_target, 'id': image['Id'], 'source_verified': True})
+            receipt['images'].append({'target': build_target, 'id': image['Id'], 'source_verified': True,
+                                      'base_image_id': base_image['Id'], 'base_image_preserved': True,
+                                      'locked_dependencies': dependencies})
             module.atomic(journal, json.dumps(receipt).encode())
         preserved(before, inventory())
         receipt.update(phase='staged', staged_at=time.time(), running_services_unchanged=True)
@@ -200,8 +219,6 @@ for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts}))"""
         receipt.update(phase='stage_failed', error=type(exc).__name__)
         raise
     finally:
-        with contextlib.suppress(Exception):
-            run(['docker', 'buildx', 'stop', builder])
         module.atomic(journal, json.dumps(receipt).encode())
     return receipt
 
