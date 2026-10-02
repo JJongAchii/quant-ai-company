@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "slug": "audit-causality-triage",
+  "state": "blocked",
+  "currentIntent": "INTENT-v1.json",
+  "approval": {
+    "sourceRequest": "그래",
+    "scope": "Inspect the held ETF audit and make a safe resume decision"
+  },
+  "deliverables": {
+    "EVIDENCE": {
+      "status": "verified",
+      "evidence": ["docs/project/evidence/etf-audit-resume-triage-20260929.json"]
+    },
+    "DECISION": {
+      "status": "blocked",
+      "evidence": ["docs/project/ETF-AUDIT-RESUME-DECISION-20260929.md"],
+      "resumeCondition": "Obtain timestamped historical source vintages and ex-ante opening-price adjustment evidence, or register and run a causally redesigned experiment."
+    }
+  }
+}

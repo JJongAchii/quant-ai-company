@@ -1,0 +1,11 @@
+[Unit]
+Description=Sample Quant feed operation every five minutes for 48 hours
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=5min
+AccuracySec=30s
+Unit=quant-feed-v20-observe.service
+
+[Install]
+WantedBy=timers.target
