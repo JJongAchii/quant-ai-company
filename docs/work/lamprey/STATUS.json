@@ -6,24 +6,70 @@
   "currentIntent": "INTENT-v8.json",
   "deliverables": {
     "PROGRAM_REVIEW": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/review-package.json",
+          "sha256": "16db707b6c17"
+        },
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/lineage-preimage-preview.json",
+          "sha256": "d2609443ce15"
+        },
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/intake-preparation-acceptance.json",
+          "sha256": "536dc72834d3"
+        }
+      ],
+      "note": "Canonical program and actual ten prior origins prepared. Deployed history check, fresh signed Slack owner approval and actual data/director decisions remain pending worker recovery and release intake.",
+      "status": "in_progress",
+      "updatedAt": "2026-10-02T02:26:11.337009+00:00"
     },
     "REAL_DATA_PACKET": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/numeric-quality.json",
+          "sha256": "99404f6ce4f7"
+        },
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/review-package.json",
+          "sha256": "16db707b6c17"
+        },
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/worker-package-validation.json",
+          "sha256": "828d120e10b3"
+        }
+      ],
+      "note": "Immutable real numeric inputs, canonical policy/report bytes and compatible profile prepared; this does not grant staff admission or actual worker qualification.",
+      "status": "verified",
+      "updatedAt": "2026-10-02T02:26:11.337009+00:00"
     },
     "RELEASE_INTAKE": {
-      "evidence": [],
-      "note": null,
-      "status": "in_progress"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/source-ci.json",
+          "sha256": "99bbf86f3373"
+        },
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/server-image-stage.json",
+          "sha256": "d5db21a30b2e"
+        },
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/release-plan.json",
+          "sha256": "58b37c5d9036"
+        },
+        {
+          "path": "docs/project/evidence/conditional-activation-20261001/worker-connectivity-final-20261002.json",
+          "sha256": "7ad90ea99d13"
+        }
+      ],
+      "note": "Integrated source19807 passed CI and two server images are staged. Designated 3070 remains unreachable; no cutover, migration, profile registration or fresh backup performed.",
+      "status": "blocked",
+      "updatedAt": "2026-10-02T02:26:11.337009+00:00"
     }
   },
   "intentDigest": "7bcf0b05d97b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-10-01T08:08:09.092598+00:00"
+  "updatedAt": "2026-10-02T02:26:11.337009+00:00"
 }

@@ -1,0 +1,13 @@
+{
+  "actual_new_input_qualification": false,
+  "alternative_worker_selected": false,
+  "power_state": "unknown",
+  "previous_network_observation": "worker-connectivity-20261002.json",
+  "recorded_at": "2026-10-02T02:26:11.337009+00:00",
+  "resume_condition": "designated_3070_WSL_Tailscale_and_SSH_available",
+  "schema_version": 1,
+  "ssh_error": "ssh: connect to host quant-worker port 22: Operation timed out",
+  "ssh_exit_code": 255,
+  "state": "ssh_unreachable",
+  "worker": "worker"
+}
