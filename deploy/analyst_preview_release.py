@@ -355,7 +355,8 @@ print('briefing_schema_ready')"""
         module.link(previous)
         overlay = journal.with_suffix('.rollback.compose.json')
         module.atomic(overlay, json.dumps({'services': {name: {'image': before['/quant-company-' + name + '-1']['image']}
-                                                        for name in SERVICES}}).encode())
+                                                        for name in (*SERVICES, NEW_SERVICE)
+                                                        if '/quant-company-' + name + '-1' in before}}).encode())
         restore = (*SERVICES, *((NEW_SERVICE,) if NEW_SERVICE in drains else ())) if primary_stopped else drains
         compose(module, previous, 'up', '-d', '--no-deps', '--force-recreate', '--wait', '--wait-timeout', '120',
                 *restore, overlay=overlay)

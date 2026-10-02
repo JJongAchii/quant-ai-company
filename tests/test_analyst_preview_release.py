@@ -86,6 +86,7 @@ def test_busy_model_drain_restores_only_stopped_workers_without_killing_primary(
                            channel='CBRIEF', owner='UOWNER', evaluation_edition='00000000-0000-0000-0000-000000000000')
     before = {'/quant-company-' + name + '-1': {'running': True, 'image': 'old-' + name}
               for name in release.SERVICES}
+    before['/quant-company-' + release.NEW_SERVICE + '-1'] = {'running': True, 'image': 'owned-older-data-image'}
     calls = []
     module = SimpleNamespace(atomic=lambda path, data: path.write_bytes(data), link=lambda path: None)
     monkeypatch.setattr(release, 'STATE', state)
@@ -95,8 +96,10 @@ def test_busy_model_drain_restores_only_stopped_workers_without_killing_primary(
     monkeypatch.setattr(release.fcntl, 'flock', lambda *a: (_ for _ in ()).throw(BlockingIOError('model busy')))
     with pytest.raises(BlockingIOError):
         release.cutover(args, previous, target, module, journal)
-    assert calls[0][0] == ('stop', '-t', '1100', 'news-worker', 'dispatch')
-    assert calls[1][0][-2:] == ('news-worker', 'dispatch')
+    assert calls[0][0] == ('stop', '-t', '1100', 'news-worker', 'dispatch', release.NEW_SERVICE)
+    assert calls[1][0][-3:] == ('news-worker', 'dispatch', release.NEW_SERVICE)
+    overlay = json.loads(journal.with_suffix('.rollback.compose.json').read_text())
+    assert overlay['services'][release.NEW_SERVICE]['image'] == 'owned-older-data-image'
     assert all('codex-runtime' not in a and 'api' not in a for a, _ in calls)
     assert (state / 'config/runtime.env').read_bytes() == raw
     assert (state / 'config/roles.json').read_bytes() == roles
