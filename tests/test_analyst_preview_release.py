@@ -56,6 +56,18 @@ def test_owner_preview_preserves_live_roles_and_unrelated_configuration():
         release.updated(raw, values)
 
 
+def test_only_canonical_owned_analyst_can_receive_permission_correction():
+    director = {'id': 'director', 'active': True, 'tools': ['custom_tool']}
+    prior = {'id': release.ROLE, 'active': False, 'tools': ['read_source', 'briefing_status']}
+    proposed = {**prior, 'tools': ['read_source']}
+    existing = [director, {**prior, 'active': True}]
+    assert release.merged_roles(existing, [director, proposed], [director, prior]) == [
+        director, {**proposed, 'active': True}]
+    custom = [director, {**prior, 'active': True, 'mission': 'owner customized'}]
+    with pytest.raises(ValueError, match='configured_differently'):
+        release.merged_roles(custom, [director, proposed], [director, prior])
+
+
 def test_busy_model_drain_restores_only_stopped_workers_without_killing_primary(tmp_path, monkeypatch):
     state = tmp_path / 'state'
     (state / 'config').mkdir(parents=True)

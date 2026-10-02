@@ -62,12 +62,17 @@ def updated(data, values):
     return ('\n'.join(lines + [key + '=' + value for key, value in values.items()]) + '\n').encode()
 
 
-def merged_roles(existing, proposed):
+def merged_roles(existing, proposed, prior=None):
     candidate = next(r for r in proposed if r['id'] == ROLE)
     old = next((r for r in existing if r['id'] == ROLE), None)
-    if old is not None and old != {**candidate, 'active': True}:
+    if old == {**candidate, 'active': True}:
+        return existing
+    canonical_prior = next((r for r in (prior or []) if r['id'] == ROLE), None)
+    if old is not None and (canonical_prior is None or old != {**canonical_prior, 'active': True}):
         raise ValueError('analyst_already_configured_differently')
-    return existing if old else [*existing, {**candidate, 'active': True}]
+    if old:
+        return [{**candidate, 'active': True} if r['id'] == ROLE else r for r in existing]
+    return [*existing, {**candidate, 'active': True}]
 
 
 def validate_candidate(previous, target, manifest, commit):
@@ -101,7 +106,7 @@ def validate_candidate(previous, target, manifest, commit):
         raise ValueError('preview_manifest_changed_paths')
     before = {r['id']: r for r in json.loads((previous / 'src/quant_company/roles.json').read_text())}
     after = {r['id']: r for r in json.loads((target / 'src/quant_company/roles.json').read_text())}
-    if set(after) != set(before) | {ROLE} or any(after[key] != value for key, value in before.items()):
+    if set(after) != set(before) | {ROLE} or any(after[key] != value for key, value in before.items() if key != ROLE):
         raise ValueError('preview_existing_role_changed')
     old_pin = json.loads((previous / 'deploy/qdata-source.json').read_text())
     new_pin = json.loads((target / 'deploy/qdata-source.json').read_text())
@@ -171,7 +176,7 @@ def stage(args, previous, target, module, journal):
                'env_sha256': digest(raw), 'roles_sha256': digest((STATE / 'config/roles.json').read_bytes()),
                'started_at': time.time(), 'images': [], 'evaluation_edition': args.evaluation_edition,
                'build_mode': 'code_only_identical_lock' if code_only else 'locked_dependency_sync',
-               'minimum_disk_bytes': minimum_disk}
+               'minimum_disk_bytes': minimum_disk, 'service_inventory_before': before}
     module.atomic(journal, json.dumps(receipt).encode())
     target.mkdir()
     module.unpack(data, target)
@@ -230,7 +235,8 @@ print(json.dumps({'calendar':importlib.metadata.version('exchange-calendars'),
                                       'base_image_id': base_image['Id'], 'base_image_preserved': True,
                                       'locked_dependencies': dependencies})
             module.atomic(journal, json.dumps(receipt).encode())
-        preserved(before, inventory())
+        receipt['service_inventory_after'] = inventory()
+        preserved(before, receipt['service_inventory_after'])
         receipt.update(phase='staged', staged_at=time.time(), running_services_unchanged=True)
     except Exception as exc:
         receipt.update(phase='stage_failed', error=type(exc).__name__)
@@ -259,7 +265,8 @@ def cutover(args, previous, target, module, journal):
                 'BRIEFING_EVALUATION_EDITION_ID': args.evaluation_edition,
                 'BRIEFING_CHANNEL_ID': args.channel, 'BRIEFING_OWNER_USER': args.owner,
                 'SLACK_ALLOWED_CHANNELS': json.dumps([*channels, *([] if args.channel in channels else [args.channel])])}
-    new_roles = merged_roles(json.loads(roles), json.loads((target / 'src/quant_company/roles.json').read_text()))
+    new_roles = merged_roles(json.loads(roles), json.loads((target / 'src/quant_company/roles.json').read_text()),
+                             json.loads((previous / 'src/quant_company/roles.json').read_text()))
     before = inventory()
     drains = ('news-worker', 'dispatch', *((NEW_SERVICE,) if '/quant-company-' + NEW_SERVICE + '-1' in before else ()))
     if any(not before['/quant-company-' + name + '-1']['running'] for name in SERVICES):
