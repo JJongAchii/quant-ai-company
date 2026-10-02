@@ -576,12 +576,14 @@ class CodexRunner:
         if cached is not None:
             return cached
         try:
-            # The service owns request IDs. All news stages share one reserved slot;
-            # ordinary turns/maintenance retain the original single-slot lock.
+            # Scheduled Analyst stages need capacity independent of news screening.
+            # Existing company, news and Quant work retain their original locks.
             # Do not change the request digest or receipt path at this cutover.
-            lane = ("quant" if request.request_id.startswith("quant-feed-") else
+            lane = ("brief" if request.request_id.startswith("news-brief-") else
+                    "quant" if request.request_id.startswith("quant-feed-") else
                     "news" if request.request_id.startswith("news-") else "company")
-            lock_name = {"company": ".runtime.lock", "news": ".runtime-news.lock", "quant": ".runtime-quant.lock"}[lane]
+            lock_name = {"company": ".runtime.lock", "news": ".runtime-news.lock", "quant": ".runtime-quant.lock",
+                         "brief": ".runtime-brief.lock"}[lane]
             lock_fd = os.open(directory / lock_name, os.O_CREAT | os.O_RDWR, 0o600)
         except OSError:
             raise ProviderFault("unavailable", "The durable runtime lock is unavailable.") from None

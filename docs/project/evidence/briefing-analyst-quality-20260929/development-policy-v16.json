@@ -1,0 +1,25 @@
+{
+  "case": "am-20260929-same-source-development-v16",
+  "frozen_at": "2026-09-29T04:23:02.962827+00:00",
+  "mode": "development_replay_not_fresh_content_qualification",
+  "reason": "Re-evaluate the actual previous failed 2026-09-29 AM input after targeted temporal/mechanism writing and reviewer revisions. The original frozen evaluation remains failed and this date has already been inspected.",
+  "candidate_bundle_sha256": "10531f07a0c48753532bb627fa47042c61b5d37c22de50c390815b143b41975c",
+  "max_completed_calls": 5,
+  "steps": [
+    "plan",
+    "write",
+    "review",
+    "at most one revise",
+    "final review"
+  ],
+  "repair": "One confirmed full or condition repair. Preserve uncertain request ID and exact request bytes, never start a new ID to evade ambiguity.",
+  "pass": "Compare new actual output with previous 6/12 reduced result, original source notes, each of 12 checks, visible main post and material temporal/mechanism errors. Even a complete pass here remains same-source development evidence, not a new-date acceptance.",
+  "files_sha256": {
+    "src/quant_company/briefing/editor.py": "0e311695f898a3d8403aec150a3b662eafdf70666124fc044ec4868c67303590",
+    "src/quant_company/briefing/planning.py": "07830d5cb435fcbc8bea58f2a4ece891e539e9b1b77ac3e7cc53ad328438c2b1",
+    "src/quant_company/briefing/contracts.py": "ae7b9b24495f15474d46c26f545d6d4276b8b829909af1847130515b91c85f4d",
+    "scripts/evaluate_briefing.py": "215e9994c2ad5545af5395bb0618a150de87e4c89a6f3aa1ec8ac752c5f30aeb"
+  },
+  "slack": "not_called",
+  "market_data_backfill": "not_allowed"
+}

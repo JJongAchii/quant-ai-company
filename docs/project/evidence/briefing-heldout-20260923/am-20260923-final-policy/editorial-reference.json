@@ -1,0 +1,36 @@
+{
+  "scope": "Editorial checks fixed after the AM selection-v3 originals were frozen and before this final-policy writer response; development case, not an independent final-policy held-out date.",
+  "central_checks": [
+    {
+      "topic": "Completed US session and stale background",
+      "source_ids": ["7b2633bde4fa7b1522f48fb74eeee469b0c0a755", "f4387486e1fa6d90c353e52e06b53cb2778929fb", "ccb3c80db4440c17ab55825873c042f6bbe24735", "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6"],
+      "check": "Use the 22 September US close for today's S&P 500 and Nasdaq Composite, including the Nasdaq rise versus flat/slightly lower S&P and falling Dow. The large all-index gains in the 21 September articles are previous-session context, not today's return. Do not add unsourced breadth or mix the two sessions."
+    },
+    {
+      "topic": "Leadership and limits",
+      "source_ids": ["7b2633bde4fa7b1522f48fb74eeee469b0c0a755", "f4387486e1fa6d90c353e52e06b53cb2778929fb"],
+      "check": "Explain AI/selected technology leadership and material laggards such as consumer-app or ride-hailing names when they change the claim of market-wide strength. Separate observed moves from causal inference."
+    },
+    {
+      "topic": "Iran diplomacy, energy and opposed risk",
+      "source_ids": ["7b2633bde4fa7b1522f48fb74eeee469b0c0a755", "76c87a7da794dadc1beffc3c11122d11392e15fc", "6dbf4493e26ac8a2f17dff96e4039bc24ef10966", "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0", "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb"],
+      "check": "Distinguish a three-hour US-Iran meeting with no confirmed deal, the reported conditional seven-day Hormuz reopening proposal, US threats/sanction steps and Iranian military retaliation. Use the 22 September oil close where available and keep the preceding 21 September oil move dated. A diesel export ban is under examination, not enacted. Explain which energy and Korean exposures could change and what would disconfirm the risk or relief reading."
+    },
+    {
+      "topic": "Monetary policy baseline and scope of Fed statements",
+      "source_ids": ["ccb3c80db4440c17ab55825873c042f6bbe24735", "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf", "a96e22be34e9eb130b8c45be6abbce429c0eae7b"],
+      "check": "If Fed warnings are material, state the reported current 3.75-4.00% range, latest 0.25 percentage-point increase and 4.1% year-end dot-plot median as a projection. Collins/Barkin discuss inflation and possible policy restraint; Williams discusses rate-control operating tools, not a rate-cut signal. Do not flatten these different scopes into one firm policy decision. Use the Korean central-bank rate-burden estimate only with its conditional basis and horizon."
+    },
+    {
+      "topic": "Korean reader's cross-market checkpoint",
+      "source_ids": ["ccb3c80db4440c17ab55825873c042f6bbe24735", "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6"],
+      "check": "Mention the sourced dollar rise as a previous-session observation, not a fabricated current USD/KRW close. The supplied SBS article links this week's US-China summit to the next market checkpoint but does not establish an exact release time; avoid inventing one. State why either would matter for Korean exposure, with appropriate uncertainty."
+    }
+  ],
+  "failure_rules": [
+    "Unsupported close, session, price basis, binding-policy or agreement claim is a factual failure.",
+    "Omitting a conclusion-changing Iran counterproposal, active Fed baseline or near-term trade checkpoint fails substantive coverage even if included claims are true.",
+    "A long headline list without economic transmission, opposing evidence and observable next checks is not a substantive brief."
+  ],
+  "not_human_expert_certification": true
+}

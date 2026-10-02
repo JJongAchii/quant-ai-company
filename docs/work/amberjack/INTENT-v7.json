@@ -1,0 +1,68 @@
+{
+  "constraints": [
+    "Company repository only; preserve frozen research provenance",
+    "Existing official subscription authentication; no paid resources",
+    "PostgreSQL records and Temporal execution; preserve ambiguous receipts",
+    "Keep 07:30/20:00 KST scheduling; Analyst display identity retains stable market_brief technical ID and existing receipt routing",
+    "Publication disabled until real-data and Slack qualification",
+    "Read qdata only through its public API in the existing credential-isolated worker; bounded small datasets, no full large-table scans"
+  ],
+  "createdAt": "2026-09-28T01:49:46.562961+00:00",
+  "decisionGates": [
+    "Real Slack activation requires the configured dedicated app and successful source and five-trading-day qualification.",
+    "A publication-disabled preview release must pass the existing company release contract; do not bypass its protected-file or approval rules."
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "Select a previously unused completed morning edition and freeze its exact scheduled cutoff, source snapshot, policy hashes and success criteria before opening the original contents",
+        "Use the final format 8 / validation 7 procedure and actual subscription writer and reviewer; preserve failure and one possible repair without uncertain replay"
+      ],
+      "description": "Fresh morning content evaluation",
+      "id": "AM-EVALUATION"
+    },
+    {
+      "acceptance": [
+        "Compare this attachment against the current company release and identify protected-file and schema conflicts without discarding work in other attachments",
+        "Prepare an exact reviewable release candidate or record the precise release gate that prevents it"
+      ],
+      "description": "Current release integration",
+      "id": "RELEASE-BASELINE"
+    },
+    {
+      "acceptance": [
+        "Check current host package, authorized Slack channel and owner configuration, core index source availability and publication flag using read-only probes first",
+        "If the existing release process accepts the candidate, start scheduled preview with publication disabled and preserve actual service receipts; otherwise leave a concrete runnable preparation artifact"
+      ],
+      "description": "New-host publication-disabled preview preparation",
+      "id": "PREVIEW-SETUP"
+    },
+    {
+      "acceptance": [
+        "Run focused tests and required lint against the integrated candidate, distinguishing local PostgreSQL/Temporal, actual model checks and any simulated Slack",
+        "Report the new morning result, exact server state, measured latency, and the remaining five-trading-day and real Slack gates"
+      ],
+      "description": "Validation and honest next gate",
+      "id": "VALIDATION"
+    }
+  ],
+  "nonGoals": [
+    "Trading, training, backtests, portfolio access",
+    "Automatic strategist work",
+    "Pretending fixtures or five future observation days have been verified"
+  ],
+  "outcome": "Qualify one fresh morning edition on the current editorial policy, integrate the briefing slice with the current company release, and start or prepare a publication-disabled scheduled preview on the replacement Lightsail host with preserved receipts and explicit blockers.",
+  "revision": 7,
+  "revisionReason": "Continue user-authorized Analyst briefing work: evaluate one new completed morning edition on final policy and prepare the new Lightsail host for publication-disabled scheduled preview without bypassing the existing release controls.",
+  "schemaVersion": 1,
+  "slug": "amberjack",
+  "sourceRequest": "그래 진행해봐 — 새 날짜 아침판을 재검증하고 새 Lightsail에서 게시를 끈 정시 미리보기를 준비한다.",
+  "stopConditions": [
+    "Preserve an uncertain model or Slack result without automatic new-ID replay.",
+    "Record unavailable real integration conditions; keep publishing disabled until qualification."
+  ],
+  "supersedes": {
+    "intentDigest": "d9100f3eddab",
+    "intentFile": "INTENT-v6.json"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "written_before_writer_response": "2026-09-29T04:27:33.448889+00:00",
+  "mode": "independent_source_to_main_checklist",
+  "selected_bundle_sha256": "1e91d1ee3a43cce73262e7d064d240cb336bb174778d0c68848eb9c6d552e6ca",
+  "writer_request_id": "news-brief-eval-7299b5a2ebffa19ce0ea4f3ed9d8c43f",
+  "notes": {
+    "7749fe93a900fb36780cd09f8495a9b1607192d6": [
+      "US 2026-09-28 Dow -0.67%, S&P 500 -0.77%, Nasdaq Composite -0.92%; distinguish close from afternoon yield observations.",
+      "Ten-year Treasury 5.241% at 3pm +6.1bp, DXY 101.219 up and gold spot -3.61%; do not claim a common close time.",
+      "Nvidia +1.68% exception, Tesla -3.94% and Boeing -6.91%; bond and oil pressure is reported market explanation, not experimentally proven cause."
+    ],
+    "584a1c794f77cc0b80f80e9e5ca8789382b8e338": [
+      "Independent publication reports same three US index closes; record both independent citations where exact values agree.",
+      "October hike priced probability 70.3% versus 57.6% one week earlier, not a decision.",
+      "Six of seven M7 stocks fell except Nvidia; semiconductor index -1.61%, Boeing certification delay, Tesla delivery concern."
+    ],
+    "c4805b63bb785aa49baeefaa00db7b7100fc208a": [
+      "Separate earlier CNBC Treasury observations: 10-year 5.234%, 30-year 5.56%, 2-year 4.918%, not later close.",
+      "August JOLTS forecast 7.24m versus July 7.27m on Tuesday; do not treat forecast as actual."
+    ],
+    "bad5dd772395c3c99c41a2e81b397c55cd363a46": [
+      "Previous Korean 2026-09-28 close appears in dated photo caption: KOSPI 6,889.74 -2.70%, KOSDAQ 846.58 +0.25%; label previous session.",
+      "USD/KRW 1,365.1 at 15:30 KST, +7.6 versus previous same-time benchmark, not current US-session FX close.",
+      "Foreign KRX net sale 3.2295 trillion won is reported, not a proven sole cause of FX movement."
+    ],
+    "2f9e315361ffa560806543acd4c907b0eb6cf5d7": [
+      "KR 2026-09-28 3-year sovereign close 4.119% +11.3bp; 10-year 4.539% +14.7bp after holiday catch-up.",
+      "Article also cites US Treasury supply/auction and fiscal worries, not only oil and inflation, as alternative rate pressure.",
+      "Foreign Korean bond futures net sales are reported contracts, separate from cash KRX equity flows."
+    ],
+    "71ffce7919e2cb5454d5afc32344603461065de0": [
+      "US-China published $30bn each tariff lists; over 90% selected items move to MFN after domestic procedures and simultaneous implementation, not already in effect.",
+      "Soybeans remain excluded at 10% tariff; earlier coal import quantity in White House account absent from China account.",
+      "New agriculture working group by year-end, financial-services application review principles, next AI dialogue before end-November, truce prior Nov10 extended to Jan10.",
+      "Scale is $60bn selected goods relative to broader trade; avoid suggesting a full tariff settlement."
+    ],
+    "36aca3ef6704a4b44d528b7aec193b22fefc9da6": [
+      "Iran source denies a new direct US meeting in delegation agenda; Reuters separately reports possible individual mediator meetings on 28/29, not a reached agreement.",
+      "Trump rejected the original 7-day proposal; Iranian foreign minister said it awaits formal response through mediator."
+    ],
+    "5712145636c251729f04144b76577ed2e0772b2a": [
+      "US sanctions relief and frozen-funds release are conditional on concrete nuclear concessions; Axios cites officials, not a completed policy.",
+      "Iran reportedly shows little readiness to discuss nuclear programme; Qatar/Pakistan mediator contacts are planned, not agreement."
+    ],
+    "527e9cdf701add700af4b2fa5bff8af5d93f06c4": [
+      "Saudi East-West pipeline flows reportedly restored to at least 3.5m bpd out of 7m capacity; distinct from Hormuz ship transits.",
+      "Brent intraday $108.83 then $105.69 at this report; WTI intraday $96.54 then $93.31 at this report, not settlement.",
+      "Iran 7-day reopening offer carried blockade/aggression/asset-release conditions; rejection and possible talks remain distinct.",
+      "Article reports expectation of potential strikes after election via unnamed source, not a scheduled action."
+    ],
+    "09e24b0727ec06db4de910d618075f316dfdea66": [
+      "Brent November settlement reported $105.28 +0.92%; WTI October settlement reported $92.60 +0.21%, but WTI contract-month plausibility requires independent resolution before precise claim.",
+      "Negotiation expectation after original 7-day-plan rejection is only a potential mediator contact."
+    ],
+    "df3a633ac3b71b46af3b1e7c2c5c23f1759db6c2": [
+      "AMD agreed to acquire World Labs for $8.2bn all stock; article posted after US regular close, deal expected to close later and must not be called completed or a cause of same-day AMD close.",
+      "Target makes 3D world models for robotics/physical AI; Fei-Fei Li expected chief scientist, buyer says research guides future chip capabilities."
+    ],
+    "b0f48035fff19831f03849bd21d596e5af2a513d": [
+      "Khanna plans to introduce AI safety bill; strict liability, recursive self-improvement ban until safeguards; not enacted or imminent market restriction.",
+      "Potential training/deployment licensing and advanced-chip oversight are draft proposals; article says vote unlikely before midterm election."
+    ],
+    "e1f902b7a4d3db2cf42f16c46609a4142d778fae": [
+      "Qatar force-majeure extension and named buyer shipment delays are current; some shipments cancelled through Nov/early Dec.",
+      "Europe/Asia LNG prices already rose to highest since late 2022, but winter household energy-bill burden is a forward-looking concern, NOT an already realized cost.",
+      "Some shipments through Hormuz increased, still below pre-war volume: present offsetting evidence."
+    ],
+    "bf30ef2919921ff1f6394969bf817145f63da58f": [
+      "Nvidia authorized additional $150bn share repurchases for total $235bn; authorization is not execution or realized spending."
+    ],
+    "266cbae1f3221f0fc600509cc666eedc1120d3a8": [
+      "Prior Korean-session disclosures: Samsung Electro-Mechanics planned 4.2tr won Sejong package-substrate investment; separate from earnings utilization/mix story.",
+      "Hanwha Ocean two LNG carrier orders and 2.9tr won month tally; do not claim same-session share-price cause without prices."
+    ],
+    "d9147bb241a05e9fbf6d6170ba1c1e006aef2b8c": [
+      "Upcoming Sep30 August headline/core PCE month-on-month forecasts 0.4%/0.3%; actual values not yet available. Exact release time not in selected source.",
+      "Oct2 US employment release 08:30 ET/21:30 KST and forecast about 100k payroll additions; August wage data is historical.",
+      "Current Fed target range 3.75-4.00% after 0.25 point rise; Collins and Musalem are distinct voices supporting further tightening; no new FOMC decision."
+    ]
+  },
+  "unselected_discovery_watchlist": [
+    "Prior close recap candidate 4ca2c256 is mostly a duplicate of dated KR close in bad5d; inspect only if needed.",
+    "Nvidia/Hugging Face bidding article 22704ca4 may contain a distinct newly reported competitive process; title alone is not proof.",
+    "Samsung earnings article 05ec0a43 may contain distinct operating drivers not present in the selected prior-session disclosure.",
+    "Hormuz transit recovery 21ef907b may add a distinct supply offset beyond the selected Saudi pipeline report; do not add the two flow measures.",
+    "Steel investment e35e6800 and OCTG tariff fe46e6db are potential material industry events; need full original before claiming facts."
+  ]
+}

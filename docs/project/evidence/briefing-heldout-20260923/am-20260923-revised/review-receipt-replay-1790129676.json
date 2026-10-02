@@ -1,0 +1,15 @@
+{
+  "request_id": "news-brief-eval-f70d32ce1ea1aa0b7b303016120a0ecf",
+  "request_sha256": "48f4e53d82780dada44d045f8ca5b4f63daa1dea687e3ee137796e49511d9184",
+  "elapsed_seconds": 3.698,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "http_status": 429,
+    "fault": {
+      "code": "quota",
+      "message": "Codex subscription allowance is temporarily unavailable.",
+      "retry_after_seconds": 900
+    }
+  }
+}

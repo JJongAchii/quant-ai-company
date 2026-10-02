@@ -1,0 +1,34 @@
+{
+  "case": "pm-20260929",
+  "frozen_at": "2026-09-30T05:56:47.445558+00:00",
+  "selection_reason": "Previously unused scheduled edition chosen before querying original titles/content; AM and PM test the source-to-main fix independently.",
+  "edition": {
+    "id": "4611a569-a20d-5559-8e38-3cc7139db8f3",
+    "day": "2026-09-29",
+    "kind": "pm",
+    "due_at": "2026-09-29T20:15:00+09:00",
+    "starts_at": "2026-09-29T19:10:00+09:00",
+    "cutoff": "2026-09-29T19:30:00+09:00",
+    "expires_at": "2026-09-29T21:15:00+09:00",
+    "us_session": null,
+    "kr_session": "2026-09-29",
+    "previous_us_session": null,
+    "previous_kr_session": "2026-09-28",
+    "weekly": null
+  },
+  "format_version": 13,
+  "validation_version": 31,
+  "editorial_sha256": "013725f275db1c5fce0141968ff66e0cf7a3d7d9b5d4bd39738c39be2ac9454b",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_completed_calls": 5,
+  "repair": "At most one confirmed full editorial repair; planner, writer, reviewer, repair and final review. Preserve stable IDs and uncertain effects.",
+  "source_rule": "Registered originals published and stored by the exact cutoff, no historical lake reconstruction or current external search backfill.",
+  "acceptance": [
+    "All twelve independent semantic checks; zero mechanical rejections and no quote conflicts",
+    "Independent source-to-visible-main review before model critique; substantive source-backed coverage and readable standalone post",
+    "No retrospective same-source tuning counted as fresh qualification"
+  ],
+  "slack": "not_called",
+  "deployment": "not_performed"
+}

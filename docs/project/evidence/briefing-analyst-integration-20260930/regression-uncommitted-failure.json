@@ -1,0 +1,9 @@
+{
+  "scope": "Local full suite while installed-release merge was still uncommitted; preserved failed preflight, not application/research quality finding",
+  "passed": 1011,
+  "skipped": 43,
+  "failed": 1,
+  "elapsed_seconds": 262.72,
+  "error": "Existing research mission qualification asserts committed source files; incoming unchanged installed code not yet committed",
+  "action": "Commit the integration, then rerun unchanged suite. No test condition relaxed."
+}

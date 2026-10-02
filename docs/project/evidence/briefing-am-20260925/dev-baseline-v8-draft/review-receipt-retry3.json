@@ -1,0 +1,35 @@
+{
+  "request_id": "news-brief-eval-3474e842d7a082ad1c25bb282ffa8ad0",
+  "request_sha256": "7b233d9bfbf969adc886fdd451c9628b143d3674ed1ae0d16dfa3ba606897faf",
+  "elapsed_seconds": 123.166,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "request_id": "news-brief-eval-3474e842d7a082ad1c25bb282ffa8ad0",
+    "decision": {
+      "say": "",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [
+        {
+          "title": "시장 브리핑 독립 검토",
+          "content": "{\"verdict\":\"publish\",\"checks\":{\"numbers\":true,\"sources\":true,\"timing\":true,\"causality\":true,\"materiality\":true,\"counterevidence\":true,\"transmission\":true,\"alternatives\":true,\"falsifiability\":true,\"coverage\":true,\"depth\":true,\"readability\":true},\"source_assessments\":[{\"source_id\":\"11ce598df15a677b051393a431aa3fd347f00252\",\"treatment\":\"covered\",\"reason\":\"23일 주가·국채금리·달러 움직임을 이전 거래일 배경으로 명시했다. PMI 등 전일 설명을 오늘의 새 재료로 옮기지 않았다.\",\"item_ids\":[\"overview_equities\",\"overview_fx\",\"fed_fact\"]},{\"source_id\":\"6628c5bbf737f74bb55fb562c84adfa2d3bdf4a8\",\"treatment\":\"background\",\"reason\":\"이전 거래일 지수 하락을 전하는 중복 기사로, 24일 종가나 별도의 새 시장 재료가 아니다.\",\"item_ids\":[]},{\"source_id\":\"b47144f5dfceba7cfbbcdeb291fd852db06180d3\",\"treatment\":\"covered\",\"reason\":\"정책금리 수준과 인상 폭, 추가 긴축 발언, 기조물가와 견조한 생산·고용을 본문에 반영했다. 금리 부담과 매출 상쇄 경로도 구분했다.\",\"item_ids\":[\"fed_fact\",\"fed_mechanism\",\"fed_alternative\",\"fed_counterpoint\"]},{\"source_id\":\"a763382baa1a82f3e13d5e4dece127752a145b19\",\"treatment\":\"not_material\",\"reason\":\"유청 단백질 가격과 소비 사례를 다룬 산업 기사다. 제공된 부분에는 당일 미국·한국 시장의 주요 변화를 설명할 직접 연결이 없다.\",\"item_ids\":[]},{\"source_id\":\"c61eaf99f60f69c23199675ab1ba91456da9270b\",\"treatment\":\"covered\",\"reason\":\"UAE 운항 중단의 대상과 당일 시행, 외국 서비스 기업 제재와 항공사 27개 추가를 반영했다. 잔존 국제선과 재개 협의도 실제 상황으로 제시했다.\",\"item_ids\":[\"sanctions_fact\",\"sanctions_mechanism\",\"sanctions_counterpoint\"]},{\"source_id\":\"c34d5114acf20fd5a23c9f7af3904a770e9cd2d0\",\"treatment\":\"covered\",\"reason\":\"해협 재개방과 봉쇄 해제의 교환 논의, 실행 순서와 동결자금 접근의 이견을 반영했다. 협상 보도를 합의 완료로 단정하지 않았다.\",\"item_ids\":[\"oil_counterpoint\",\"oil_next\"]},{\"source_id\":\"1967640a2f14c5514bdc9b6b7261d070852c918f\",\"treatment\":\"covered\",\"reason\":\"뮤즈 인기도와 기사상 주가 상승, 기기 가격 미공개·설계 미완료를 반영했다. 유통 독립과 주가 배수 확대를 실제 이익 증가와 구분했다.\",\"item_ids\":[\"meta_fact\",\"meta_mechanism\",\"meta_alternative\"]},{\"source_id\":\"d69e577eaa0cc62c8fe4f7350f263ad2b3e11f51\",\"treatment\":\"covered\",\"reason\":\"휴전의 두 달 연장과 새 만료일, 대미 투자 이견과 AI 경영진의 보안 우려를 반영했다. 만찬 참석 자체를 투자 성과로 해석하지 않았다.\",\"item_ids\":[\"trade_fact\",\"trade_counterpoint\",\"us_china_summit\"]},{\"source_id\":\"9f63f545a8b9669e83a500622e169061558889d4\",\"treatment\":\"background\",\"reason\":\"전일 유가 반등 기사로 최신 거래일 기사에 앞선 배경이다. 경유 수출 금지 구상은 백악관이 부인한 보도이며 새 시행 정책이 아니다.\",\"item_ids\":[]},{\"source_id\":\"16c55d1cd566fe27d9db9fa6fc040e14fc84409b\",\"treatment\":\"covered\",\"reason\":\"24일 WTI·브렌트 11월물의 거래소, 가격과 상승률을 본문에 반영했다. 주식시장 마감 시각을 선물 관측 시각으로 대입하지 않았다.\",\"item_ids\":[\"oil_fact\"]},{\"source_id\":\"cb1935f3c257cc9d30f087d4831d94c833258a13\",\"treatment\":\"covered\",\"reason\":\"24일 세 지수 종가와 포인트 변동을 반영했다. 나스닥의 모순된 상승률은 제외하고 불일치를 독자에게 설명했다.\",\"item_ids\":[\"summary_market\",\"overview_equities\",\"dow_close\",\"nasdaq_close\",\"sp500_close\"]},{\"source_id\":\"71888117cb7419ed2fe3bb41c3cac0e1b855f447\",\"treatment\":\"covered\",\"reason\":\"얀부 위협과 요격 발표, 공급 우려의 전달 경로를 반영했다. 협상 소식 이후 유가 상승폭 축소도 본문에서 관측된 상쇄 요인으로 명시했다.\",\"item_ids\":[\"oil_fact\",\"oil_mechanism\",\"oil_counterpoint\"]},{\"source_id\":\"019bd754a0a8ab3b9ad5cf97f8fafaee10954cb0\",\"treatment\":\"covered\",\"reason\":\"군사 압박 완화와 봉쇄 해제를 조건으로 한 일주일 내 재개방 방안을 이전 보도로 반영했다. 전일 유가 수치를 최신 가격으로 사용하지 않았다.\",\"item_ids\":[\"oil_counterpoint\"]},{\"source_id\":\"c1df4eaebf98b3a2d1cfc5365e91049b2e031a4b\",\"treatment\":\"covered\",\"reason\":\"부산 합의의 관세 인상·핵심광물 신규 수출통제 유예 내용과 연장 효과를 반영했다. 환영 의전이나 추측성 외교 일정은 핵심 재료로 확대하지 않았다.\",\"item_ids\":[\"trade_fact\",\"trade_mechanism\"]},{\"source_id\":\"db79dcd892523894edbbcd725da431626925cbf9\",\"treatment\":\"covered\",\"reason\":\"기존 만료일인 11월 10일을 새 만료일과 비교했다. 정상회담의 무역·기술 논의 결과를 본문 확인 항목에 반영했다.\",\"item_ids\":[\"trade_fact\",\"us_china_summit\"]},{\"source_id\":\"b9193ca2ca75bd5bd63cd94bb32bed3bd5349b7d\",\"treatment\":\"not_material\",\"reason\":\"텍사스 태양광 보급의 장기 구조와 농가 사례를 다룬 기사다. 당일 시장 재료와 직접 연결되지 않으며 사례의 연도 서술도 앞뒤가 맞지 않는다.\",\"item_ids\":[]}],\"rejected_ids\":[],\"concerns\":[]}",
+          "source_ids": []
+        }
+      ],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0e68f-043d-7cf2-9649-ecb8a218e6c0",
+    "usage": {
+      "input_tokens": 38192,
+      "cached_input_tokens": 5888,
+      "output_tokens": 2740,
+      "reasoning_output_tokens": 626
+    },
+    "provider": "codex",
+    "web_searches": []
+  }
+}

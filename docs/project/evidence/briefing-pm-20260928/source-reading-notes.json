@@ -1,0 +1,53 @@
+{
+  "case": "pm-20260928-fresh-format9-validation11",
+  "written_before_model_response_at": "2026-09-28T23:04:03+00:00",
+  "selected_count": 16,
+  "input_gate_finding": "The selection reserves two supposed PM closing reports, but both are near-duplicate September 18-23 ETF-flow articles. One has a September 28 index close in a syndicated photo caption and both mention that close in the body; neither is a complete market-session report. A full September 28 closing report with KOSPI/KOSDAQ, foreign/institution/retail flow and sector drivers was eligible before the cutoff but omitted. This is a material source-selection defect. Keep this frozen case intact; no retrospective source replacement.",
+  "edition_context": [
+    "Completed KRX session is September 28. The included SBS/Reuters-style caption and ETF stories give KOSPI 6,889.74 (-191.18 pt, -2.70%) and KOSDAQ 846.58 (+2.10 pt, +0.25%), with Samsung Electronics -5.08% and SK Hynix -5.05%. Do not call these independent qdata observations.",
+    "Dollar/won 1,365.1 is the 15:30 KST reference, +7.6 won versus prior same-time reference; one FX article says foreign KOSPI net selling 3.2295 trillion won. Do not turn an intraday/15:30 quote into an unspecified end-of-day market data close.",
+    "September 18-23 ETF outflows are a prior-week flow, not September 28 flow. The preceding US regular close is background; tonight's US session was not complete at the 19:40 KST cutoff.",
+    "No independently identified historical qdata snapshot is attached; all market numbers require exact contemporary article citations."
+  ],
+  "material_checks": [
+    {
+      "source_ids": ["a8bb2955dacb6326497ce375c6936d62d28f2b83", "4e6c898ea8e794e90a0f50a3b058df8ff36a9e4b"],
+      "topic": "kr_close_and_etf_flow",
+      "expect": "Lead with the split September 28 close: KOSPI 6,889.74 (-2.70%) and KOSDAQ 846.58 (+0.25%), Samsung Electronics -5.08% and SK Hynix -5.05%. The articles separately report KODEX 200 -219.9 billion won and TIGER 200 -140.4 billion won of September 18-23 ETF net outflow, offset by inflows into US index ETFs; do not treat these as today's KRX investor flow or as proof of tomorrow's direction. The two selected stories largely duplicate one underlying report."
+    },
+    {
+      "source_ids": ["7a4dd7675e8440fc3e82132147a6e35c849deeb6", "bad5dd772395c3c99c41a2e81b397c55cd363a46", "d0f578f4b32f057c1a38b308e3e972727c3d0dde"],
+      "topic": "bond_yield_fx_and_kr_flow",
+      "expect": "BOK reported US Treasury ten-year +20bp and two-year +10bp over September 23-25; German/UK ten-year +14/+13bp, with S&P 500 -0.3% and Nasdaq -0.6% over that cited holiday window, not current US closes. Dollar/won September 28 15:30 reference 1,365.1 versus 1,357.5 prior same-time (+7.6); FX articles report roughly 3.23 trillion won foreign KOSPI net selling, but no full market breadth or institutional flow. BOK said domestic fundamentals were sound while watching global yield, war and AI risks. Avoid treating the source's single-cause explanation as proven causality."
+    },
+    {
+      "source_ids": ["65d5c4cde943a2b3a14a7023d6f3b04262be9ab7", "e1f902b7a4d3db2cf42f16c46609a4142d778fae", "e9f5464d8ac6f9bc6078f00882303e95442806fd", "ca4018ae5261ba2a446838a22e48d64161719e69"],
+      "topic": "iran_hormuz_lng_oil",
+      "expect": "Trump rejected Iran's conditional seven-day Hormuz reopening offer; he expects more talks but also said strikes remain possible. Mediators reportedly pressed Iran for nuclear concessions, with Iran showing little willingness. Qatar LNG force-majeure extension to November/early December is reported by customers, not a verified company announcement; partial shipping recovery remains below prewar levels. Brent $107.34 and WTI $94.14 are Monday 02:23 ET futures snapshots, not regular-session closes. Explain Korean import-cost/inflation and energy/transport transmission plus negotiation and physical shipments as opposing checks."
+    },
+    {
+      "source_ids": ["db3f6973cdcad0e4174b2f46e6bde9a3809d2a1c", "717958b329bc0f09e8d09e9895772e0f48ef4325"],
+      "topic": "us_china_tariff_scope",
+      "expect": "US and China announced planned reciprocal tariff reductions on $30 billion of goods each ($60 billion total); product scope differs, effective date and duty cut are unclear. BBC reports the truce through January 10, AI dialogue/incident channel and lack of joint statement. This is not an implemented general tariff reset. State exposed Korea export/technology channels and the limited scope or implementation uncertainty."
+    },
+    {
+      "source_ids": ["001fb4a35b80e29633aa66d2259720598a7cded2"],
+      "topic": "gold_silver_rates",
+      "expect": "Gold futures -3.34% and spot -3.27% at about 05:40 ET Monday; silver futures -5.1% and spot -4.92%; mining stocks were US premarket. Higher global yields provide a reported interpretation, but inflation/economic stress and central-bank reserve demand are counterpoints. Do not label premarket/spot levels as US session close."
+    }
+  ],
+  "source_specific_context": [
+    {"id": "c8b3788f5c3d3999e611642334653056e09eeca1", "expect": "BOK October monetary-stabilization bond issuance plan up to 7 trillion won is unchanged versus prior month; 2 trillion won early redemption planned. The figure is an issuance plan, not a sudden policy-tightening event."},
+    {"id": "05ec0a430c63cb6d848f6a952e583e0fe6664596", "expect": "Samsung Electro-Mechanics Q3 sales 3.7877 trillion won and operating profit 605.1 billion won are analyst consensus, not reported earnings. A higher 650-660 billion won forecast is another estimate. MLCC/FC-BGA demand and price rises are a plausible company channel, not verified sector-wide realized profit."},
+    {"id": "aa7381758cb1ef1c17031e94e5e2e8e88878b795", "expect": "Deoksan Nepcores September 30 KOSDAQ listing at 14,600 won is a narrow issuer calendar item; may exclude unless tied to a concrete broad-market condition."},
+    {"id": "534a6eeeb57ab843f1715dd0ad7fcb99edd1c719", "expect": "Northern Ireland household heating oil prices show real-economy transmission but are geographically narrow; may omit from main post if the Qatar LNG and oil futures items cover energy better."}
+  ],
+  "eligible_but_unselected_critical_source": {
+    "raw_id": "8ba0cef064f50f467960082a5ceea821e2c79bd275c8645a69f5f86af8e7440a",
+    "title": "연휴서 돌아온 코스피, 美금리 악재에 2.7%↓…다시 '7천피' 밑으로(종합)",
+    "published_at": "2026-09-28T07:19:35+00:00",
+    "retrieved_at": "2026-09-28T07:22:31.052605+00:00",
+    "facts_absent_from_selected_close_articles": "Full session report gives KOSPI investor groups (retail +2.6 trillion won, foreign -3.238 trillion won, institutions -1.0175 trillion won), intraday/wider sector drivers and quantitative market close. Its exclusion means source selection cannot claim full Korean market coverage."
+  },
+  "independent_decision_rule": "Fail for a materially missing close/flow or development, invented or stale market observation, unsupported cause, misleading plan-versus-action status, or unavailable old/new baseline. Duplicates and narrow items may be excluded with concrete reasons. A model publish verdict alone is insufficient."
+}

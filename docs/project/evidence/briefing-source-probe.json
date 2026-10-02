@@ -1,0 +1,99 @@
+{
+  "checked_at": "2026-09-22T05:59:12.474706+00:00",
+  "network": "real-public-sources",
+  "model": "not-called",
+  "slack": "not-connected",
+  "calendars": [
+    {
+      "source": "fed",
+      "publisher": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "ok": true,
+      "error": null,
+      "sha256": "c54d85dbb72c183b16616235f08f945c2f4f74dbfdbaff7e4323180a0cfd7ecb",
+      "retrieved_at": "2026-09-22T05:59:10.979857+00:00",
+      "characters": 16843
+    },
+    {
+      "source": "bls",
+      "publisher": "BLS",
+      "url": "https://www.bls.gov/schedule/2026/09_sched.htm",
+      "ok": false,
+      "error": "http_status",
+      "sha256": null,
+      "retrieved_at": null,
+      "characters": 0
+    },
+    {
+      "source": "bea",
+      "publisher": "BEA",
+      "url": "https://www.bea.gov/news/schedule",
+      "ok": true,
+      "error": null,
+      "sha256": "11ad366a9fe05739652f523ab7b4c44180d80f27912135dfb72542371b49fd2a",
+      "retrieved_at": "2026-09-22T05:59:12.114018+00:00",
+      "characters": 3671
+    },
+    {
+      "source": "bok",
+      "publisher": "한국은행",
+      "url": "https://www.bok.or.kr/portal/singl/crncyPolicyDrcMtg/listYear.do?menuNo=200755&mtgSe=A",
+      "ok": true,
+      "error": null,
+      "sha256": "b8de7a5a2396d178b868b1041a564f84972f67b489d4b63ffa2ddff3bbd31db8",
+      "retrieved_at": "2026-09-22T05:59:11.046209+00:00",
+      "characters": 11553
+    }
+  ],
+  "feeds": [
+    {
+      "source": "cnbc-world",
+      "url": "https://www.cnbc.com/id/100727362/device/rss/rss.html",
+      "ok": true,
+      "error": null,
+      "entries": 30,
+      "sha256": "7df312e2b7c3f591c63057b5d622caa3125bee6a7657a0f09994538246257e4c"
+    },
+    {
+      "source": "cnbc-economy",
+      "url": "https://www.cnbc.com/id/20910258/device/rss/rss.html",
+      "ok": true,
+      "error": null,
+      "entries": 30,
+      "sha256": "5764de7f253ac89aa64bc0c4e2f7bfa17ad59392091564d93370cbfe64fba1a0"
+    },
+    {
+      "source": "cnbc-finance",
+      "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
+      "ok": true,
+      "error": null,
+      "entries": 30,
+      "sha256": "480636d40924f21d461ec3072cc7f774f46a19ab404b45803670b0498b4b72fe"
+    },
+    {
+      "source": "cnbc-technology",
+      "url": "https://www.cnbc.com/id/19854910/device/rss/rss.html",
+      "ok": true,
+      "error": null,
+      "entries": 30,
+      "sha256": "f7163efaf4b8ef6a58ee084e72b9b50413a657d66335c27a9c0834aeaaba2121"
+    },
+    {
+      "source": "yonhap-economy",
+      "url": "https://www.yna.co.kr/rss/economy.xml",
+      "ok": true,
+      "error": null,
+      "entries": 120,
+      "sha256": "584c142e65ef871741b35f9643dcb4b37d8fec8c30198e8a912972477234ae32"
+    },
+    {
+      "source": "yonhap-market",
+      "url": "https://www.yna.co.kr/rss/market.xml",
+      "ok": true,
+      "error": null,
+      "entries": 120,
+      "sha256": "cc81a840227d1d01822e009b197119159df256a05a1419ca05659fa8dc7b00f7"
+    }
+  ],
+  "meaning": "Connectivity only; not core quote coverage, review, or five-day qualification."
+}

@@ -8,11 +8,12 @@ from importlib.resources import files
 STAFF = (
     "director", "financial_strategist", "data", "researcher_kr", "maintainer",
     "engineer", "validator", "risk", "researcher_global", "researcher_crypto", "operations",
+    "market_brief",
 )
 PACK_VERSION = "2026-09-17.1"
 
 
-@lru_cache(maxsize=12)
+@lru_cache(maxsize=13)
 def pack(employee: str) -> dict:
     if employee not in (*STAFF, "reporter"):
         raise ValueError("Unknown specialist")
@@ -21,7 +22,7 @@ def pack(employee: str) -> dict:
 
 
 def pack_content(employee: str, text: str) -> dict:
-    return {"employee": employee, "version": PACK_VERSION,
+    return {"employee": employee, "version": "2026-09-30.1" if employee == "market_brief" else PACK_VERSION,
             "digest": hashlib.sha256(text.encode()).hexdigest(), "procedure": text,
             "meaning": "Reviewed work procedure, not a qualification certificate or new tool permission."}
 

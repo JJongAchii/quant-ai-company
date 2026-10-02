@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-09-29T04:22:48.474598+00:00",
+  "case": "am-20260919-analyst-quality",
+  "raw_sha256": "26daf77834064b53c5906571e403f2058b77f1fd825901b566850cb6d2315900",
+  "exact_cutoff": "2026-09-18T22:00:00+00:00",
+  "eligible_originals": 0,
+  "outcome": "unavailable",
+  "model_calls": 0,
+  "slack": "not_called",
+  "conclusion": "No source selection or briefing quality claim can be made for this date. Next newly completed edition requires a separate frozen policy."
+}
