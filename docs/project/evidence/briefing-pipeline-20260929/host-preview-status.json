@@ -1,0 +1,19 @@
+{
+  "recorded_at": "2026-09-29T02:07:43.428644+00:00",
+  "read_only": true,
+  "source": "existing non-secret host inventory via SSH",
+  "release_commit": "382284512ade2c0750c79494389a0899d2b46688",
+  "current_release": "/opt/quant-company/releases/fac61efe624f843c2edc5aec51b8d1e0c7c989cb",
+  "briefing_enabled": false,
+  "briefing_publish_enabled": false,
+  "briefing_channel_id": "",
+  "briefing_owner_user": "",
+  "expected_channel_id": "C0C2E59B1AA",
+  "allowed_channel": false,
+  "allowed_owner": true,
+  "role_present": false,
+  "credential_present": true,
+  "slack_send": "not_called",
+  "deployment_changed": false,
+  "note": "Dedicated Analyst credentials remain installed; runtime role/channel and publishing are not activated. Concurrent runtime restart observed, not performed by this task."
+}

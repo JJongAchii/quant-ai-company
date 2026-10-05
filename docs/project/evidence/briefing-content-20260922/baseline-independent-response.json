@@ -1,0 +1,15 @@
+{
+  "request_id": "brief-content-independent-870f1b35a9262c18850913b2",
+  "request_sha256": "ca66153e31a1b5c146b8ab69cacfc9b1a9496df0ca8ad66388cda3608122d594",
+  "elapsed_seconds": 11.097,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "http_status": 409,
+    "fault": {
+      "code": "uncertain",
+      "message": "Claude did not confirm a complete review; reconcile its original ID.",
+      "retry_after_seconds": 0
+    }
+  }
+}

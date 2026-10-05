@@ -1,0 +1,19 @@
+{
+  "case": "am-20260922-development-after-numeric-repair",
+  "writer_request_id": "news-brief-eval-5b1953bf18bd5c733354f42da61a427d",
+  "review_request_id": "news-brief-eval-126b080f375608dd23a493ec135bd856",
+  "provider": "codex",
+  "review_elapsed_seconds": 123.862,
+  "result": "fail_invalid_review",
+  "typed_validation_error": {
+    "condition": "BriefReview requires exactly twelve editorial checks; readability is missing.",
+    "model_verdict": "reduce"
+  },
+  "content_concerns_from_invalid_review": [
+    "The US-China article's continuing retaliatory measures and Bessent's statement about unfulfilled prior commitments were omitted.",
+    "The US-Japan-Korea statement's softer Taiwan and South China Sea language versus last year was omitted.",
+    "AMD's $1tn market-value milestone and comparative significance were omitted."
+  ],
+  "decision": "Do not fill in readability or count this as a valid review. The model identified material omissions, but both content and typed-review acceptance fail. Make all twelve checks required in the exposed schema and evaluate a newly frozen edition.",
+  "slack": "not_called"
+}

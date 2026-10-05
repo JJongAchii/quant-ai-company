@@ -1,0 +1,23 @@
+{
+  "case": "am-20260923-development-after-validation10-and-one_repair",
+  "basis": "Source-reading-notes.json was written before the original model output; the assistant compared it with the saved final rendered main post after the model's final review. This is not independent human expert certification.",
+  "model_review": {
+    "verdict": "publish",
+    "all_twelve_checks_true": true,
+    "mechanical_rejections": 0,
+    "quote_conflicts": 0
+  },
+  "assistant_content_verdict": "pass_for_saved_development_case_only",
+  "material_checks": {
+    "us_close_and_conflicting_points": "passed: Nasdaq record and mixed Dow/S&P direction, exact index closes, and contradictory reported point changes are visible",
+    "technology_dispersion": "passed: memory stocks versus consumer platforms are named without claiming whole-market breadth",
+    "us_iran_status": "passed: direct talks, no agreement, opposing military threats, conditional reopening and next observable actions are distinct",
+    "oil_and_diesel": "passed: later WTI/Brent contracts and closes, partial Saudi restart, diesel-ban proposal and product-price gap are distinct from implementation",
+    "fed_and_europe": "passed: Collins and Barkin's distinct rate views, ECB Lane's second energy shock and expected inflation horizon are visible",
+    "korean_context": "passed: prior-day dollar/won is dated as background; BlackRock-linked 20tn won is a nonbinding investment intention rather than funded construction",
+    "other_material_policy": "passed: limited EU delistings with extension for other targets, and Paramount's prior merger delay versus proposed near-term close are visible"
+  },
+  "non_disqualifying_detail": "The original reports that the direct US-Iran meeting lasted about three hours. The main post says direct talks occurred but omits their duration; the absence of agreement, military threats and conditional reopening remain clear, so this detail does not reverse the market interpretation.",
+  "qualification_limit": "The 2026-09-23 frozen format-9/validation-9 case failed before this validator repair. This same-source revision is development evidence only; the historical bundle has no current independent lake snapshot and the model's own reviewer is not an external human expert.",
+  "slack": "not_called"
+}

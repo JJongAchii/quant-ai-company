@@ -1,0 +1,34 @@
+{
+  "scope": "Same-frozen-PM posthoc scoped editorial repair; NOT fresh qualification",
+  "format_version": 15,
+  "validation_version": 37,
+  "passed": false,
+  "reason": "Mechanical own-claim numeric evidence failed; independent final semantic review not called on invalid proposal",
+  "completed_calls": 1,
+  "max_completed_calls": 2,
+  "patch_elapsed_seconds": 171.468,
+  "request_id": "news-brief-eval-b1ce25e3c4687d82d0922efd48d4d148",
+  "assessment_sha256": "b8f8ca0c282de11f52191a2643c0615a74a0cc07e1227db316005decd9c274ad",
+  "rejected": {
+    "kr_flows": "unsupported_prose_number",
+    "oil_fact": "unsupported_prose_number"
+  },
+  "findings": [
+    {
+      "id": "kr_flows",
+      "difference": "prose +13628000000 vs source -13628000000",
+      "classification": "Signed net-sale to unsigned magnitude unsupported by current narrow normalization; retain original sign instead of weakening validator."
+    },
+    {
+      "id": "oil_fact",
+      "difference": "new day 29 absent from this claim’s own quotes",
+      "classification": "Genuine claim-level citation gap, even if date exists elsewhere in original."
+    }
+  ],
+  "final_review": "not_called_mechanical_failure",
+  "no_new_writer_retry": true,
+  "slack": "not_called",
+  "deployment": "not_performed",
+  "subsequent_prompt_version": 38,
+  "subsequent_prompt_change": "Explicit NEW numeric/date own-quote support; signed net transactions preserve source signed amount. Not retrospectively applied to v37 result."
+}

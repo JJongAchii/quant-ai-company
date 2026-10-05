@@ -1,0 +1,29 @@
+{
+  "recorded_at": "2026-09-23T07:48:08.859386+00:00",
+  "suite": {
+    "command": "UV_CACHE_DIR=/private/tmp/uv-cache uv run pytest -q --junitxml=docs/project/evidence/briefing-heldout-20260923/regression-validation-v4.xml",
+    "tests": 1112,
+    "passed": 1076,
+    "skipped": 36,
+    "failures": 0,
+    "errors": 0,
+    "briefing_temporal_tests": 3,
+    "briefing_temporal_skipped": 0,
+    "junit_sha256": "85def8e49f089096f064ea63740b745a5b28f65e15ca6bade3ca32da21446246"
+  },
+  "late_qualification_check": "passed in the full suite against local PostgreSQL",
+  "ruff": "uv run ruff check . passed after code changes",
+  "files_sha256": {
+    "src/quant_company/briefing/editor.py": "b8436b7375cda878cd5cb54cc0db67ba1e21f8a2edc2f3e4344eb1e7c5509857",
+    "src/quant_company/briefing/coverage.py": "f7736f6f848531c35c115656585bc7a8b4a8e06c9617fba07ff651ec4d412496",
+    "src/quant_company/briefing/numeric.py": "3d0146632f7dbf5937a61d0a0b17444cbea5df7968ae07e8d2591865852c5990",
+    "src/quant_company/briefing/store.py": "aa2cbbe158b430ec78efc7a2e3527519dcae61f9ff3231e9dad6c75932ab11eb",
+    "src/quant_company/briefing/qualification.py": "95615bb26a45e191011a4af22d5c4a2a08911633e1006aa46c7e7dac69334b93",
+    "scripts/evaluate_briefing.py": "096e3393573e0e5af126369fe171ae65340f4bb9e4d42b3e8e6ef92c80a3a858",
+    "tests/test_briefing_analyst.py": "bf6377e54369200e0ae0071cd8355b09bb4c89e7f9656b93b82d8881cf33bfbf",
+    "tests/test_briefing_content.py": "e599427a00804cde95a39e80c68d801c5ba89c97a339a1144e9a0694ca775a2f",
+    "tests/test_briefing_quality.py": "f23ac4b5056633fd5147fa1d430b2063fc24311791c121b441eaf5ed8f951686"
+  },
+  "source_snapshot_sha256": "08576c88e2edc261d3eebdbade92ff913a80b72e5a8cab653998fd04d5c95fb0",
+  "model_and_slack_scope": "The pytest suite uses fixture model and simulated Slack; actual subscription-model receipts are evaluated separately. No Slack send."
+}

@@ -1,0 +1,30 @@
+{
+  "scope": "Read-only diagnostic of rejected context; no runtime call or limit bypass",
+  "prompt_characters": 90506,
+  "limit": 88000,
+  "mechanical_rejections": {
+    "kospi_previous_close": "wrong_close_session",
+    "kosdaq_previous_close": "wrong_close_session"
+  },
+  "main_characters": 6836,
+  "issue_count": 6,
+  "top_level_chars": {
+    "edition": 367,
+    "documents": 37732,
+    "collection_errors": 2,
+    "morning_watchpoints": 2,
+    "locked_observations": 2,
+    "market_context": 2,
+    "data_diagnostics": 60,
+    "exchange_closes": 67,
+    "quote_conflicts": 2,
+    "source_supplements": 87,
+    "proposal": 12010,
+    "main_post_preview": 3713,
+    "main_post_item_ids": 898,
+    "evidence_quotes": 13744,
+    "unselected_source_index": 9685,
+    "source_chars_remaining": 3
+  },
+  "schema_chars": 2807
+}

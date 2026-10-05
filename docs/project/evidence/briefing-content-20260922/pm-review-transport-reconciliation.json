@@ -1,0 +1,7 @@
+{
+  "receipt_exists": false,
+  "state": null,
+  "request_id": "news-brief-eval-d1f27d9987ba3a9982b7a20c3eae4e3e",
+  "transport_diagnosis": "Docker exec refused because the news worker was stopped; no worker Python process or HTTP request was launched.",
+  "action": "Recover using unchanged frozen request ID through the existing credential-isolated general worker; retain original fault receipt."
+}

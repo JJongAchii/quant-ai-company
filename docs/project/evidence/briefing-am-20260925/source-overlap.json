@@ -1,0 +1,17 @@
+{
+  "case": "am-20260925",
+  "versus": "am-20260924",
+  "selected_count": 16,
+  "shared_original_ids": [
+    "6628c5bbf737f74bb55fb562c84adfa2d3bdf4a8",
+    "9f63f545a8b9669e83a500622e169061558889d4",
+    "019bd754a0a8ab3b9ad5cf97f8fafaee10954cb0"
+  ],
+  "shared_url_count": 3,
+  "shared_urls": [
+    "https://news.sbs.co.kr/news/endPage.do?news_id=N1008768606",
+    "https://news.sbs.co.kr/news/endPage.do?news_id=N1008768605",
+    "https://www.cnbc.com/2026/09/23/iran-us-talks-crude-oil-un-wti.html"
+  ],
+  "reading": "Input overlap recorded before new model output; a new edition need not contain 16 unseen URLs."
+}

@@ -1,0 +1,127 @@
+{
+  "mode": "synthetic_case_bank_examples",
+  "model_called": false,
+  "actual_model_competence": "unassessed",
+  "profile": {
+    "employee": "market_brief",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "pack_digest": "c3a73d7fddfc750c62270cbec007281c3821f35ac68e9d398d2ba6bd8e339bcb",
+    "suite_version": "staff-objective-v2",
+    "families": [
+      {
+        "family": "macro_surprises_and_causality",
+        "state": "unassessed",
+        "completed": 0,
+        "consecutive_fresh_passes": 0,
+        "latest_run_id": null,
+        "latest_failure_id": null,
+        "weaknesses": [],
+        "blocked": 0,
+        "disputed": 0
+      },
+      {
+        "family": "earnings_fx_and_breadth",
+        "state": "unassessed",
+        "completed": 0,
+        "consecutive_fresh_passes": 0,
+        "latest_run_id": null,
+        "latest_failure_id": null,
+        "weaknesses": [],
+        "blocked": 0,
+        "disputed": 0
+      }
+    ],
+    "unmeasured_requirements": [
+      "실제 시황의 중요도 판단",
+      "인과·대안 설명의 타당성",
+      "기업 공시·업종별 민감도",
+      "실시간 원문 검증과 가독성",
+      "조건부 전망의 장기 점검"
+    ],
+    "explanation_review": "unscored_requires_independent_review",
+    "recheck_passes_required": 3,
+    "meaning": "Bounded practice evidence for this exact configuration; not expertise or improvement proof."
+  },
+  "public_cases": [
+    {
+      "suite": "staff-objective-v2",
+      "family": "macro_surprises_and_causality",
+      "synthetic": true,
+      "question": "합성 물가 전년비: 실제 3.5%, 발표 전 컨센서스 3.6%, 전월 최초 3.9%, 전월 수정 3.8%. 같은 관측창의 명목 국채 수익률 3.77% → 3.6%. surprise_pp, change_from_revised_pp, yield_change_bp를 계산하세요. 성장주가 올랐다는 관측 외에 실질금리·기업이익·포지셔닝·다른 사건 자료는 없습니다.",
+      "assumptions": "All records and financial values are synthetic. No real research execution or market claims.",
+      "decision_rule": "숫자는 제공된 비교 기준을 지키세요. 제공 자료만으로 성립하지 않거나 인과를 확정하는 주장의 id를 reject_ids에 넣으세요. 조건부 설명을 관측된 사실로 바꾸지 마세요.",
+      "records": [
+        {
+          "id": "item-5f1ab0dab9",
+          "claim": "물가 상승률이 둔화했으므로 물가 수준도 전년보다 하락했다."
+        },
+        {
+          "id": "item-c504776175",
+          "claim": "컨센서스 대비 차이와 수정된 전월 값 대비 변화는 서로 다른 비교다."
+        },
+        {
+          "id": "item-8074be9d1a",
+          "claim": "명목금리 하락만으로 실질금리도 같은 폭 하락했다고 확정할 수 있다."
+        },
+        {
+          "id": "item-2078558d40",
+          "claim": "다른 조건이 같다면 할인율 하락은 미래 현금흐름의 현재가치에 우호적이지만, 실제 원인 확정에는 다른 증거가 필요하다."
+        },
+        {
+          "id": "item-a137180010",
+          "claim": "물가 둔화와 성장주 상승이 함께 관측됐으므로 물가가 상승의 유일한 원인으로 입증됐다."
+        }
+      ],
+      "answer_format": {
+        "metrics": {
+          "surprise_pp": "number",
+          "change_from_revised_pp": "number",
+          "yield_change_bp": "number"
+        },
+        "reject_ids": "array of exact record ids",
+        "explanation": "Korean explanation of calculations, assumptions and limitations"
+      }
+    },
+    {
+      "suite": "staff-objective-v2",
+      "family": "earnings_fx_and_breadth",
+      "synthetic": true,
+      "question": "합성 EPS: 실제 13, 발표 전 예상 16, 전년 동기 12, 동일 회계 기준. 달러/원(KRW/USD) 1300 → 1316. 시가총액 가중지수 2882 → 2919, 상승 종목 411/1000. earnings_surprise_pct, index_return_pct, advancer_share_pct 계산. 수출기업의 원가·외화부채·헤지·주가 반응 자료는 없습니다.",
+      "assumptions": "All records and financial values are synthetic. No real research execution or market claims.",
+      "decision_rule": "숫자는 제공된 비교 기준을 지키세요. 제공 자료만으로 성립하지 않거나 인과를 확정하는 주장의 id를 reject_ids에 넣으세요. 조건부 설명을 관측된 사실로 바꾸지 마세요.",
+      "records": [
+        {
+          "id": "item-c504776175",
+          "claim": "달러/원 상승은 원화 강세를 뜻한다."
+        },
+        {
+          "id": "item-8074be9d1a",
+          "claim": "EPS가 전년보다 증가했으므로 시장 예상 대비로도 긍정적인 서프라이즈다."
+        },
+        {
+          "id": "item-2078558d40",
+          "claim": "시가총액 가중지수가 올랐으므로 대부분의 종목이 상승했다."
+        },
+        {
+          "id": "item-70a4d68777",
+          "claim": "EPS의 전년 비교와 예상 대비 차이는 다를 수 있으며, 환율의 순이익 효과는 비용·부채·헤지에 따라 달라진다."
+        },
+        {
+          "id": "item-7f2980a86e",
+          "claim": "원화 약세이면 모든 수출기업의 이익과 주가가 반드시 오른다."
+        }
+      ],
+      "answer_format": {
+        "metrics": {
+          "earnings_surprise_pct": "number",
+          "index_return_pct": "number",
+          "advancer_share_pct": "number"
+        },
+        "reject_ids": "array of exact record ids",
+        "explanation": "Korean explanation of calculations, assumptions and limitations"
+      }
+    }
+  ],
+  "note": "No answer keys are included. Numerical grading is tested separately; no model or expert result is claimed."
+}

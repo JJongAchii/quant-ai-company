@@ -51,7 +51,7 @@ def load_roles(settings: Settings) -> dict[str, Role]:
                      "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
                      "finance_search", "finance_read", "web_search", "web_read",
                      "finance_compute", "data_quality", "staff_status", "news_status", "research_control",
-                     "data_watch_status"} | LAKE_TOOLS
+                     "data_watch_status", "briefing_status"} | LAKE_TOOLS
     for role in roles:
         if role.id == "quant_scout" and (role.active or role.tools or role.can_delegate_to):
             raise ValueError("Quant Scout must remain an outbound-only identity")
@@ -59,6 +59,8 @@ def load_roles(settings: Settings) -> dict[str, Role]:
             raise ValueError(f"Invalid permissions in role {role.id}")
     if "reporter" in by_id and settings.company_news_enabled:
         by_id["reporter"] = by_id["reporter"].model_copy(update={"active": True})
+    if "market_brief" in by_id and settings.briefing_enabled:
+        by_id["market_brief"] = by_id["market_brief"].model_copy(update={"active": True})
     if settings.company_research_enabled and "director" in by_id:
         role = by_id["director"]
         by_id["director"] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "research_control"]))})
@@ -161,6 +163,11 @@ class Company:
                 },
                 "news_reporting": {"enabled": self.settings.company_news_enabled,
                                    "publish_enabled": self.settings.news_publish_enabled},
+                "market_briefing": {"enabled": self.settings.briefing_enabled,
+                                    "publish_enabled": self.settings.briefing_publish_enabled,
+                                    "display_name": "Analyst", "professional_procedure": "market_brief",
+                                    "owner": "market_brief", "schedule": "07:45 KST; 20:15 KST after collected KRX data",
+                                    "strategy_handoff": "human request only"},
                 "staff_status": "Director only: {employee?: exact employee id or maintainer}. "
                                 "Reads actual training schedule, versioned synthetic assessments and their limits. "
                                 "No exam keys. A passed exercise is not broad expertise certification.",
@@ -821,6 +828,14 @@ class Company:
 
                 return mission_tool(self, conn, self._project(conn, project_id, lock=False), task, arguments)
             return ResearchStore(self).tool(conn, self._project(conn, project_id, lock=False), task, arguments)
+        if request.name == "briefing_status":
+            from .briefing.store import BriefStore
+
+            project = self._project(conn, project_id, lock=False)
+            if (arguments or not task or task["agent"] != "market_brief"
+                    or project["owner_user"] != self.settings.briefing_owner_user):
+                raise PolicyError("briefing_status requires the configured briefing owner and briefer")
+            return BriefStore(self).status()
         if request.name == "news_status":
             from .news.store import NewsStore
 
@@ -933,6 +948,8 @@ class Company:
 
     def validate_decision(self, conn, project, task, decision):
         role = self.role(task["agent"])
+        if task["agent"] == "market_brief" and (decision.follow_up or decision.memories):
+            raise PolicyError("Analyst cannot schedule work or propose persistent memories")
         for action in decision.delegations:
             if action.agent not in role.can_delegate_to:
                 raise PolicyError(f"Unauthorized peer: {action.agent}")

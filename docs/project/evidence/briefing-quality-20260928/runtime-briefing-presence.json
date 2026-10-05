@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-09-28T01:19:19.257950+00:00",
+  "instance": "quant-company-host-4gb-20260928",
+  "container": "quant-company-worker-1",
+  "briefing_package_present": false,
+  "briefing_enabled_env": "unset",
+  "briefing_publish_enabled_env": "unset",
+  "briefing_channel_configured": false,
+  "briefing_owner_configured": false,
+  "scope": "Read-only package and selected non-secret environment inspection in the existing credential-loading entrypoint. Does not inspect Slack credentials or change any setting.",
+  "conclusion": "Existing subscription runtime can evaluate frozen requests; this worker does not yet contain or run this briefing feature."
+}

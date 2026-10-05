@@ -1,0 +1,19 @@
+{
+  "scope": "2026-09-28 PM Analyst offline evaluation and subsequent development repairs",
+  "commands": {
+    "briefing_regression": "UV_CACHE_DIR=/private/tmp/amberjack-uv-cache uv run pytest tests/test_briefing_content.py tests/test_briefing_inputs.py tests/test_briefing_quality.py tests/test_briefing.py -q",
+    "briefing_regression_result": "111 passed against disposable local PostgreSQL",
+    "housing_time_fixture": "UV_CACHE_DIR=/private/tmp/amberjack-uv-cache uv run pytest tests/test_housing_feed.py -q",
+    "housing_time_fixture_result": "28 passed against disposable local PostgreSQL",
+    "full_suite": "UV_CACHE_DIR=/private/tmp/amberjack-uv-cache uv run pytest -q",
+    "full_suite_result": "1338 passed, 38 skipped, 12 warnings in 371.10s against disposable local PostgreSQL",
+    "lint": "UV_CACHE_DIR=/private/tmp/amberjack-uv-cache uv run ruff check .",
+    "lint_result": "All checks passed",
+    "lock": "UV_CACHE_DIR=/private/tmp/amberjack-uv-cache uv lock --check",
+    "lock_result": "Resolved 93 packages",
+    "diff": "git diff --check",
+    "diff_result": "passed"
+  },
+  "integration_boundary": "PostgreSQL was real local test infrastructure. Slack HTTP in tests was simulated; actual Analyst Slack publication remains disabled. Actual subscription model calls have separate provider receipts in this directory.",
+  "initial_full_suite_failure": "An earlier run at 09:17 KST passed 1325 and skipped 38 but had 13 unrelated housing tests fail because their fixed 10:00 KST clock was in the future relative to PostgreSQL now(). The housing test fixture was repaired and the entire suite then passed."
+}

@@ -17,6 +17,10 @@ class StaffRunner:
     async def tick(self, heartbeat=False, manual=False):
         if not manual and not self.store.company.settings.company_staff_development_enabled:
             return {"state": "paused"}
+        from ..briefing.store import priority_pending
+
+        if await asyncio.to_thread(priority_pending, self.store.company):
+            return {"state": "defer", "reason": "scheduled_briefing_priority"}
         await asyncio.to_thread(self.store.schedule)
         ready = await asyncio.to_thread(self.store.prepare)
         if ready["state"] == "idle" and self.store.company.settings.company_staff_review_enabled:

@@ -1,0 +1,9 @@
+{
+  "checked_at": "2026-09-27T23:53:14.731497+00:00",
+  "original_request_id": "news-brief-eval-41dda06bbd18a391caa5e15ed01534ae",
+  "receipt": "pm-format8-draft/review-receipt.json",
+  "outcome": "not_submitted",
+  "evidence": "SSH failed establishing its initial TCP connection to port 22. No remote command or HTTP request could execute.",
+  "resolution": "Preserve obsolete validation-5 request; prepare a different validation-6 accepted-draft review because no prior model execution occurred.",
+  "not_applicable_to": "Claude independent review returned an actual provider uncertain fault and must not be retried."
+}

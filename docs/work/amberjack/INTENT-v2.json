@@ -1,0 +1,62 @@
+{
+  "constraints": [
+    "Company repository only; preserve frozen research provenance",
+    "Existing official subscription authentication; no paid resources",
+    "PostgreSQL records and Temporal execution; preserve ambiguous receipts",
+    "07:30 KST and a data-aware 20:00 KST Korean market edition; dedicated Market Briefer",
+    "Publication disabled until real-data and Slack qualification",
+    "Read qdata only through its public API in the existing credential-isolated worker; bounded small datasets, no full large-table scans"
+  ],
+  "createdAt": "2026-09-22T06:37:07.207959+00:00",
+  "decisionGates": [
+    "Real Slack activation requires the configured dedicated app and successful source and five-trading-day qualification."
+  ],
+  "deliverables": [
+    {
+      "id": "DATA",
+      "description": "Real collected data integrated into briefings",
+      "acceptance": [
+        "Real API coverage and arrival-time survey saved",
+        "Bounded qdata consumer with source identity and cutoff checks",
+        "Deterministic index changes and separately dated ETF/macro context; no proxy substitution"
+      ]
+    },
+    {
+      "id": "QUALITY",
+      "description": "Grounded and timely editorial quality",
+      "acceptance": [
+        "Service-controlled numbers, conflicts and freshness visible",
+        "Diverse original evidence and quality-aware timing",
+        "Saved-input replay and coverage qualification report"
+      ]
+    },
+    {
+      "id": "VALIDATION",
+      "description": "Qualified local integration and honest rollout limits",
+      "acceptance": [
+        "Real PostgreSQL/Temporal integration tests and regression",
+        "Real source read receipts, mocked model/Slack labelled",
+        "Operational documentation and existing disabled activation gates preserved"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "Trading, training, backtests, portfolio access",
+    "Automatic strategist work",
+    "Pretending fixtures or five future observation days have been verified"
+  ],
+  "outcome": "Improve briefing quality with verified collected market data, explicit freshness and conflicts, diversified original reporting, and auditable publication quality.",
+  "revision": 2,
+  "revisionReason": "User requested the highest-quality briefing structure: integrate collected market data with timely source-backed news, explicit freshness and conflict handling, and validate actual available data.",
+  "schemaVersion": 1,
+  "slug": "amberjack",
+  "sourceRequest": "가장 최고의 품질의 브리핑을 할 수 있는 구조로 해줘.",
+  "stopConditions": [
+    "Preserve an uncertain model or Slack result without automatic new-ID replay.",
+    "Record unavailable real integration conditions; keep publishing disabled until qualification."
+  ],
+  "supersedes": {
+    "intentDigest": "5a8e06efbe13",
+    "intentFile": "INTENT-v1.json"
+  }
+}

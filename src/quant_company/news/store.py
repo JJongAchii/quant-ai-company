@@ -12,6 +12,7 @@ from . import schedule
 from .contracts import NEWS_TOPICS, NewsSource, load_sources
 from .editor import bounded_prompt, render, validate_review
 from .feeds import timestamp
+from .originals import MAX_ARTICLE_TEXT
 
 
 class NewsStore:
@@ -152,7 +153,7 @@ class NewsStore:
         with self.db.transaction() as conn:
             conn.execute("""UPDATE news_articles SET state=%s,content=%s,retrieval=%s,error=%s,published_at=%s,
                 next_at=now()+interval '5 minutes' WHERE id=%s AND state='fetching'""",
-                         ("ready" if ok else failed_state, receipt.get("content", "")[:6000] if ok else None,
+                         ("ready" if ok else failed_state, receipt.get("content", "")[:MAX_ARTICLE_TEXT] if ok else None,
                           Jsonb(as_json({k: v for k, v in receipt.items() if k not in {"content", "links"}})),
                           None if ok else receipt.get("error", "original_not_usable"), published, article["id"]))
 
@@ -177,6 +178,10 @@ class NewsStore:
                     return {"state": "defer"}
                 return {"state": "ready", "request": active["request"]}
             # A held item is revisited only when new material arrives, not on an unbounded model timer.
+            from ..briefing.store import priority_pending
+
+            if priority_pending(self.company):
+                return {"state": "defer", "reason": "briefing_priority", "next_delay": 30}
             optimized = self.company.settings.news_optimization_enabled
             primary_state = "selected" if optimized else "ready"
             rows = []
@@ -202,8 +207,9 @@ class NewsStore:
                     WHERE a.id=ANY(%s) AND a.state IN ('held','selected','ignored') AND s.enabled AND a.source_digest=s.config_digest
                     AND a.published_at>=now()-make_interval(hours=>%s)""",
                                          (related, self.company.settings.news_max_age_hours)).fetchall())
-            articles = [{"id": r["id"], "url": r["url"], "title": r["title"], "content": r["content"],
-                         "excerpt_truncated": bool((r["retrieval"] or {}).get("excerpt_truncated")),
+            articles = [{"id": r["id"], "url": r["url"], "title": r["title"], "content": r["content"][:6000],
+                         "excerpt_truncated": bool((r["retrieval"] or {}).get("excerpt_truncated")
+                                                   or len(r["content"]) > 6000),
                          "bylines": (r["retrieval"] or {}).get("bylines", []),
                          "published_at": r["published_at"], "publisher": r["config"]["publisher"],
                          "license_url": r["config"].get("license_url"), "license_name": r["config"].get("license_name", ""),

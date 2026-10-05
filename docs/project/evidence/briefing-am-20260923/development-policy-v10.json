@@ -1,0 +1,16 @@
+{
+  "case": "am-20260923-development-after-numeric-repair",
+  "recorded_at": "2026-09-28T07:11:31+00:00",
+  "original_policy": "evaluation-policy.json, format 9, validation 9, failed",
+  "change": "Exact normalization of the source's spoken market decimals and shared Korean percentage-direction predicate; validation version 10. The same original writer receipt is replayed, so this is development evidence, not a new held-out pass.",
+  "files_sha256": {
+    "src/quant_company/briefing/editor.py": "f4c45dd71df0b7dd8778d3a24e36919c076a47e915362b975a833c93c68fcb75",
+    "src/quant_company/briefing/numeric.py": "27d7d76ce40b420df8790906852c29aaca7865e54fa17324ab2464dadd78dcbc",
+    "src/quant_company/briefing/contracts.py": "9e91ac2adcda91fb2fedfa2e238b5e1b1a756ad0dcbf195a55f536599d79c930"
+  },
+  "writer_request_id": "news-brief-eval-dfae52ed93f0cf16b86cd0a01351007b",
+  "initial_review_request_id": "news-brief-eval-b0326874727daa43528eef1e429772d7",
+  "repair_limit": "At most one actual revised proposal and one final review; do not change the frozen originals or manually edit the writer output.",
+  "pass": "Valid typed final proposal/review, no mechanical or reviewer rejected claims, all twelve semantic checks true, reviewer verdict publish, and independent source-reading notes show no material omissions. A development success is not fresh qualification.",
+  "slack": "not_called"
+}

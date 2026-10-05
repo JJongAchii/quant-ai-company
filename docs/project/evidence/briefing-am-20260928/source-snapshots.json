@@ -1,0 +1,145 @@
+{
+  "mode": "historical_originals_before_exact_scheduled_cutoff",
+  "raw_originals_sha256": "181cf6853bf11bea5b5ebcf0903f20f94f0aaeafd48229e6984e6c434eff15e0",
+  "model": "not_yet_called",
+  "slack": "not_connected",
+  "snapshots": {
+    "am-20260928": {
+      "cutoff": "2026-09-27T22:10:00+00:00",
+      "raw_article_count": 102,
+      "eligible_count": 102,
+      "selected_count": 16,
+      "bundle_sha256": "97a4b9a13c625d2930a8e57b7b01622e6d16f64d06cda4fd437b9e2115ce59b1",
+      "selected": [
+        {
+          "id": "7e05f7d340dfe4f3a375f2d628eeeff781c6c4c1",
+          "title": "美국채 금리 급등에도 버티는 뉴욕증시…과거는 어땠나",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-27T20:28:56+00:00",
+          "retrieved_at": "2026-09-27T20:42:26.844191+00:00",
+          "sha256": "7bf241fb074a84304f4cc95ca1c60cb1097ca38e54a06b40d3f4be398ccc875c"
+        },
+        {
+          "id": "e09e615b222049450980166cf9b0b3c88603f8c7",
+          "title": "올해 주요 재테크 수익률 1위는 코스피200 ETF",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-27T00:46:00+00:00",
+          "retrieved_at": "2026-09-27T00:56:28.728372+00:00",
+          "sha256": "30e45f33d8ea8e3f2e585b773c99e642d08d9cc8b938e1e82260ddfb4f8afcf8"
+        },
+        {
+          "id": "6ceba6098836e9245f6461534ff67f7e2feba2d6",
+          "title": "한은 직원 개인정보 무더기 유출…5년여간 해킹 시도 2천번",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-27T20:53:01+00:00",
+          "retrieved_at": "2026-09-27T21:03:25.967179+00:00",
+          "sha256": "e017a5815d1764c5e3d37223ca03a03cf164699e68effea93bd34e06a1b3e81a"
+        },
+        {
+          "id": "0a29d0b746f78fd37bdea746c0ed635bc1e9b562",
+          "title": "이형일, 첫 경제현안간담회…전기차 정책·퇴직연금 개선 논의",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-27T11:04:30+00:00",
+          "retrieved_at": "2026-09-27T11:15:25.961890+00:00",
+          "sha256": "fdc8a2097ac52fd3c7b7d999c29e8084f52e973f0e1cd7dca1eb44f23cd15e97"
+        },
+        {
+          "id": "cd8ee43875f68e1245babea0ce685d2d2bdb9c3e",
+          "title": "트럼프 “英 미군기지 테러 용의자들, 막대한 피해 노려”⋯이란 연계 가능성 수사",
+          "publisher": "이투데이",
+          "published_at": "2026-09-27T21:39:00+00:00",
+          "retrieved_at": "2026-09-27T21:43:30.240221+00:00",
+          "sha256": "5fdae0284b24425e9c468997843ab3323141b6007d3a72d11a398b10c831a3df"
+        },
+        {
+          "id": "9d7df865e48cc4abb5fc3f53d7df8c6d6ec97c3a",
+          "title": "트럼프, 이란 제안 거부 하루 만에 “이번주 추가 회담 예상”",
+          "publisher": "이투데이",
+          "published_at": "2026-09-27T21:25:00+00:00",
+          "retrieved_at": "2026-09-27T21:33:21.800139+00:00",
+          "sha256": "f6ff59ca9c2ec20a620e2d6006ff4d7959d8f6bed0e0b6a358708d28c2819f8d"
+        },
+        {
+          "id": "4cd1ba7cf9a5eef33608b800c2c79532a50505eb",
+          "title": "신성범 \"제주 면세점 실적, 코로나 종료 후 매년 급감\"",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-27T21:00:12+00:00",
+          "retrieved_at": "2026-09-27T21:14:03.128134+00:00",
+          "sha256": "43659bd570c8033e175457d7fa85b06be78095195d322960323d86ac23d54834"
+        },
+        {
+          "id": "a5515fb0ed52ddac583fd05b478ef875530320e9",
+          "title": "Meta's Muse agent is attacking one of the economy's most profitable weak spots",
+          "publisher": "CNBC",
+          "published_at": "2026-09-27T14:33:22+00:00",
+          "retrieved_at": "2026-09-27T14:51:11.376444+00:00",
+          "sha256": "fa1d5a8eb4d5f34ad6bc6c21e4cfca46055e9c04d05c754456c77616514b5fa7"
+        },
+        {
+          "id": "24aa686f207525bcdb913f6247c3eaf9165fb0b6",
+          "title": "미국 연준, 10월 금리인상 확률 60% 넘어⋯글로벌 국채금리 일제히 급등",
+          "publisher": "이투데이",
+          "published_at": "2026-09-27T05:59:00+00:00",
+          "retrieved_at": "2026-09-27T06:01:00.463089+00:00",
+          "sha256": "a33a65afae7d34006c07a0e501555c97eb5324f4ef54fb9703420c1a164838a4"
+        },
+        {
+          "id": "622f4a74bd1092e9343237c13390e1ca53fa9cc8",
+          "title": "예탁원, 결제촉진대금에 증권납부 허용…국채 담보인정 최대 98%",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-27T11:28:02+00:00",
+          "retrieved_at": "2026-09-27T11:35:44.453438+00:00",
+          "sha256": "230da2b1c7e0105873b0907ae211987f53efa8af705956dbc9f07e39e36aa4df"
+        },
+        {
+          "id": "f72f5b80378fea799b32a2b4fc9065d16b8a0c3d",
+          "title": "\"이번 주 이란과 추가 회담\"…입장차 좁혀질까?",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-27T21:24:00+00:00",
+          "retrieved_at": "2026-09-27T21:33:29.022558+00:00",
+          "sha256": "6bb36f06b6bcd0fcf09cc249ea0ac85cac97fc2f5c88501cd185c10b1250ebf4"
+        },
+        {
+          "id": "b3c48c0418e82b9c0202a2a0848fa0796fd1d257",
+          "title": "Trump to have dinner with Anthropic CEO Amodei at the White House, Axios reports",
+          "publisher": "CNBC",
+          "published_at": "2026-09-27T18:44:07+00:00",
+          "retrieved_at": "2026-09-27T18:54:19.318710+00:00",
+          "sha256": "369beaa319c29beaf2e7ed6768943cbe6b935b8408c336e227c2a69280553c7f"
+        },
+        {
+          "id": "f418653fd734a0a7ad1262bedc0ed60ddaa11596",
+          "title": "Iran's foreign minister says Tehran ready for 'doomsday' war with U.S., but leaves diplomacy on the table",
+          "publisher": "CNBC",
+          "published_at": "2026-09-27T16:15:45+00:00",
+          "retrieved_at": "2026-09-27T16:17:48.493454+00:00",
+          "sha256": "22e58a66467d99d1c84baad5a4d3d7ea9cdf4acafebb6362207b6f37e91308d0"
+        },
+        {
+          "id": "04b7af7effa70fd1cb57b30c74725b47084f3449",
+          "title": "넉 달 전과 달리 미중정상회담 백악관 발표에 '북한 비핵화' 빠져",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-27T14:08:00+00:00",
+          "retrieved_at": "2026-09-27T14:17:51.287492+00:00",
+          "sha256": "100058b6ce2d4b96b750f43004e30bbd83b8518d50ff6cfc8bf8a13c96a2e264"
+        },
+        {
+          "id": "933da0069ebe4907fc024db3836353ee7cc29855",
+          "title": "Iranian minister says only negotiation can end conflict after Trump rejects Hormuz deal",
+          "publisher": "BBC News",
+          "published_at": "2026-09-27T07:44:11+00:00",
+          "retrieved_at": "2026-09-27T07:52:48.673700+00:00",
+          "sha256": "77bacd82059e7cb29fcb109fec4d2b7017d26192d72161f1529cb84da33d0d81"
+        },
+        {
+          "id": "bd2105f35e5c08dcb1b76b148327227bb5428c70",
+          "title": "Trump rejects Iran deal to reopen Strait of Hormuz in seven days",
+          "publisher": "BBC News",
+          "published_at": "2026-09-26T16:16:29+00:00",
+          "retrieved_at": "2026-09-26T16:19:42.389034+00:00",
+          "sha256": "854f524a5a92e08549b98d040d07b5c01ab71be364dbbafd0147767ca535ed5b"
+        }
+      ]
+    }
+  }
+}

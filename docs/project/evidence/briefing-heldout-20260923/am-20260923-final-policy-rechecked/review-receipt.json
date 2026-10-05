@@ -1,0 +1,35 @@
+{
+  "request_id": "news-brief-eval-bb709572a57e7c5b75e2235d8905040e",
+  "request_sha256": "9c0cbdb93e6dfb46e4f4649071b3b8f1ff0216bf78d677a61b953396de6b873c",
+  "elapsed_seconds": 161.505,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "request_id": "news-brief-eval-bb709572a57e7c5b75e2235d8905040e",
+    "decision": {
+      "say": "",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [
+        {
+          "title": "BriefReview",
+          "content": "{\"verdict\":\"reduce\",\"checks\":{\"numbers\":true,\"sources\":true,\"timing\":true,\"causality\":true,\"materiality\":true,\"counterevidence\":false,\"transmission\":true,\"alternatives\":true,\"falsifiability\":true,\"coverage\":false,\"depth\":false,\"readability\":true},\"source_assessments\":[{\"source_id\":\"7b2633bde4fa7b1522f48fb74eeee469b0c0a755\",\"treatment\":\"covered\",\"reason\":\"지수 혼조, 반도체 상승과 플랫폼 약세, 유가 하락 및 조건부 해협 재개방 제안을 본문에 반영했다.\",\"item_ids\":[\"summary_equities\",\"overview_session\",\"oil_fact\",\"ai_fact\"]},{\"source_id\":\"ccb3c80db4440c17ab55825873c042f6bbe24735\",\"treatment\":\"background\",\"reason\":\"21일 전장 기사다. 금리·달러의 당시 방향과 기존 연준 인상·점도표를 날짜를 구분한 배경으로 활용했고 최신 종가로 대체하지 않았다.\",\"item_ids\":[\"overview_cross_asset\",\"fed_fact\",\"fed_counterpoint\"]},{\"source_id\":\"a96e22be34e9eb130b8c45be6abbce429c0eae7b\",\"treatment\":\"covered\",\"reason\":\"가계·기업 이자 부담 규모, 전달 시차, 기업 취약성과 자산가격 안정 효과를 설명했다. 가계 대응 여력과 원문의 날짜 충돌도 공개했다.\",\"item_ids\":[\"korea_fact\",\"korea_interpretation\",\"korea_counterpoint\"]},{\"source_id\":\"f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf\",\"treatment\":\"covered\",\"reason\":\"콜린스·바킨의 물가 경고와 추가 인상 판단 유보를 함께 반영했다. 윌리엄스의 정책 집행 도구 평가를 금리 인하 신호와 구별했다.\",\"item_ids\":[\"fed_fact\",\"fed_interpretation\",\"fed_counterpoint\"]},{\"source_id\":\"f4387486e1fa6d90c353e52e06b53cb2778929fb\",\"treatment\":\"background\",\"reason\":\"최신 지수 혼조와 협상 불확실성은 다른 원문과 중복된다. 지수 하락 포인트가 연합뉴스와 다른 점은 독자에게 공개했다.\",\"item_ids\":[\"index_quote_conflict\"]},{\"source_id\":\"76c87a7da794dadc1beffc3c11122d11392e15fc\",\"treatment\":\"covered\",\"reason\":\"회담과 구체적 합의 공개를 구분하고 협상 기대가 해협 정상화의 증거는 아니라는 핵심 불확실성을 본문에 반영했다.\",\"item_ids\":[\"oil_fact\",\"oil_interpretation\"]},{\"source_id\":\"3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6\",\"treatment\":\"background\",\"reason\":\"전장 AI·반도체 랠리의 배경 기사로 최신 세션 수치가 아니다. 연산 수요의 전달 경로에 활용했고 미·중 회담은 별도 최신 기사로 본문 일정에 반영됐다.\",\"item_ids\":[\"ai_interpretation\",\"ai_mechanism\",\"watch_diplomacy\"]},{\"source_id\":\"4751ea68d07334f3b7c147b60b27dae2f9780c40\",\"treatment\":\"background\",\"reason\":\"이란 압박과 AI 규제 반대 발언은 다른 기사와 중복된다. 그린란드 군사협정·쿠바 발언에는 이 브리핑의 주요 자산에 연결할 구체적 경제 노출이 제시되지 않았다.\",\"item_ids\":[]},{\"source_id\":\"ee106e6206f30aea0a6c4d0999349aeef2df0e43\",\"treatment\":\"background\",\"reason\":\"21일 유가 하락과 당시 중동 수출 회복의 배경이다. 최신 22일 유가와 사우디 공급 상황을 설명하는 기사와 구분할 필요가 있다.\",\"item_ids\":[]},{\"source_id\":\"f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0\",\"treatment\":\"background\",\"reason\":\"유가·금 종가, 장기금리 상승과 26일 공급 회복 계획은 반영했다. 그러나 송유관이 소량 재가동되기 시작했다는 별도의 실제 진전 보도가 빠져 완전한 반영으로 인정하기 어렵다.\",\"item_ids\":[\"oil_fact\",\"oil_interpretation\",\"overview_cross_asset\",\"fed_fact\"]},{\"source_id\":\"e4f6973d27e0f37d0797fc75204ec5eb8b1e842d\",\"treatment\":\"covered\",\"reason\":\"항공사 서비스 차단 예고의 수요일 시행 시점과 연료·착륙·발권 제공자에 대한 달러 시스템 배제 방식을 반영했다. 장중 유가를 종가로 사용하지 않았다.\",\"item_ids\":[\"summary_energy\",\"policy_fact\",\"iran_airline_measures\"]},{\"source_id\":\"6dbf4493e26ac8a2f17dff96e4039bc24ef10966\",\"treatment\":\"background\",\"reason\":\"AI 규제 반대, 합의 전망의 한계와 미·중 정상회담 일정은 반영했다. 그러나 이란 군부의 군사적 보복 경고라는 중요한 반대 신호가 본문에서 빠졌다.\",\"item_ids\":[\"ai_fact\",\"oil_counterpoint\",\"us_china_meeting\"]},{\"source_id\":\"d28b9c42f8e81f1f69abcafd2dbff333da1d9e44\",\"treatment\":\"background\",\"reason\":\"트럼프의 압박·합의 전망과 미·이란 접촉은 다른 원문과 중복된다. 이란 국영방송의 접촉 확인도 별도 SBS 기사에 있어 독립된 추가 합의로 볼 수 없다.\",\"item_ids\":[]},{\"source_id\":\"f6b2d1709b0c605a88e0c34b63e5ecc8ed649f69\",\"treatment\":\"covered\",\"reason\":\"해상 봉쇄 해제, 동결자산 반환, 관련 전선 종전이라는 이란 측 요구를 본문에 명시해 회담 개최와 조건 수용을 구별했다.\",\"item_ids\":[\"oil_counterpoint\"]},{\"source_id\":\"54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb\",\"treatment\":\"covered\",\"reason\":\"경유 수출 제한의 검토 단계, 경유·원유 가격 차, 정제 능력 손상과 미국 밖 운송·농업 및 한국 정유업 노출을 본문에 설명했다.\",\"item_ids\":[\"summary_energy\",\"policy_fact\",\"policy_interpretation\"]},{\"source_id\":\"fd9fea4d91f006ff807a5234d4e563808c26e2bd\",\"treatment\":\"covered\",\"reason\":\"두 인물의 제재 해제와 다른 대상의 3년 연장, 라트비아 독자 제재를 함께 반영해 전반적 제재 완화라는 오해를 방지했다.\",\"item_ids\":[\"eu_sanctions\"]}],\"rejected_ids\":[],\"concerns\":[\"사우디 공급 회복을 기대·계획 중심으로 설명하면서 송유관의 소량 재가동 보도를 누락했다. 이미 보도된 진전과 향후 수출 확인을 구분하는 깊이가 부족하다.\",\"이란 군부의 군사적 보복 경고가 본문에 없다. 협상 조건과 제재 위험은 다뤘지만 별도의 중요한 군사적 반대 신호에 대한 커버리지는 부족하다.\"]}",
+          "source_ids": []
+        }
+      ],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0cd25-8d22-7c63-9154-a966cf8a245c",
+    "usage": {
+      "input_tokens": 40828,
+      "cached_input_tokens": 0,
+      "output_tokens": 5194,
+      "reasoning_output_tokens": 2906
+    },
+    "provider": "codex",
+    "web_searches": []
+  }
+}
