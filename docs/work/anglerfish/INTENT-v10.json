@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 10,
+  "sourceRequest": "응 진행해; subsequent actual signed Slack cancellation and canonical conditional program approval",
+  "outcome": "Restore the already-qualified current runtime, reconcile the actual signed canonical approval, and correct our duplicate owner notice with preserved receipts.",
+  "deliverables": [
+    {"id": "CURRENT_RUNTIME", "description": "Resume existing containers without changing exact sources, images, profiles, models or accounts; verify actual Slack transport and delivery"},
+    {"id": "OWNER_AUTHORITY", "description": "Preserve the actual signed cancellation and c3ba5268 canonical program approval; withdraw only our own duplicate notice through the normal update outbox"},
+    {"id": "CURRENT_STAGE", "description": "Record the actual proposal/data stage and any concrete operating faults without granting approvals or claiming scientific execution"},
+    {"id": "FINAL_INTEGRATION", "description": "Commit company evidence and update qws status and the historical preparation summary"}
+  ],
+  "constraints": [
+    "Preserve current 231d6ba parsers and all concurrent service pins and configuration",
+    "Never fabricate a signed owner event or directly change program authority",
+    "No replay of uncertain external effects",
+    "No new scientific budget, evaluation changes, data reads or research-repository writes by this operator",
+    "Record real Slack and real subscription-model evidence separately from simulation"
+  ],
+  "signedProgramId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "previousIntent": "INTENT-v9.json"
+}

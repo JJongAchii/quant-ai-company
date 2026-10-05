@@ -1,0 +1,30 @@
+{
+  "program": {
+    "id": "a9854436-e65c-5b5d-a811-4bbccd74f542",
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "revision": 5,
+    "manifest_digest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
+    "state": "draft",
+    "title": "한계를 명시한 ETF 탐색 연구 (2023~2025)",
+    "usage": {
+      "compute_seconds": 0,
+      "trials": 0,
+      "outstanding": 0
+    },
+    "limits": {
+      "trials": 24,
+      "compute_seconds": 36000,
+      "missions": 6
+    },
+    "task_details": [],
+    "task_details_truncated": false,
+    "missions": []
+  },
+  "previous_program_state": "cancelled",
+  "binding_id": "3a25a542-f194-49f5-9f86-e36132d9f060",
+  "message_id": "d6e1a9c8-16ee-4a2c-924b-fd0880cc9360",
+  "outbox_status": "pending",
+  "sent_ts": null,
+  "owner_authority_granted": false,
+  "scientific_trials_added": 0
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "candidate_app_commit": "79586479aeef07554be311951e40bbe00c33cafe",
-  "operating_app_preserved": "ea092f419b4b679df4c25e479a8cb361b4d046ff",
+  "qualified_source_base_app": "ea092f419b4b679df4c25e479a8cb361b4d046ff",
   "source_delta_from_actual_app": [
     "src/quant_company/research/approvals.py"
   ],
@@ -24,9 +24,14 @@
   "research_worker_company_commit": "3c848af95dc33b7da444a55018fd41d374c10025",
   "worker_3070_company_commit": "3c848af95dc33b7da444a55018fd41d374c10025",
   "selected_services": [
-    "api",
     "slack-socket"
   ],
+  "scope_amendment": {
+    "date": "2026-10-02",
+    "previous_selection": ["api", "slack-socket"],
+    "reason": "The global app advanced again after exact candidate qualification. The signed Socket Mode receiver remained on3c, so activate only the cancellation ingress and preserve the independently updated API, dispatch, current symlink and runtime.env.",
+    "guard": "Capture current container identities and configuration under the backup lock. All nonselected container IDs and global config must remain identical; research worker and3070 stay on3c."
+  },
   "new_program_digest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
   "scientific_approval": "requires fresh signed Slack owner action after exact prior cancellation"
 }

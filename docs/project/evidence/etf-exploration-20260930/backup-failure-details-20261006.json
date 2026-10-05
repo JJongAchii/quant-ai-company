@@ -1,0 +1,548 @@
+{
+  "observed_at": "2026-10-05T23:30:25.337052+00:00",
+  "disks": {
+    "/": {
+      "total": 82086711296,
+      "used": 46775631872,
+      "free": 35294302208
+    },
+    "/var/lib/quant-company": {
+      "total": 82086711296,
+      "used": 46775631872,
+      "free": 35294302208
+    },
+    "/var/lib/docker": {
+      "total": 82086711296,
+      "used": 46775631872,
+      "free": 35294302208
+    }
+  },
+  "inodes": "Filesystem       Inodes  IUsed   IFree IUse% Mounted on\n/dev/root      10354688 844977 9509711    9% /\n/dev/root      10354688 844977 9509711    9% /\n",
+  "docker_usage": [
+    {
+      "Active": "13",
+      "Reclaimable": "10.06GB (36%)",
+      "Size": "27.45GB",
+      "TotalCount": "64",
+      "Type": "Images"
+    },
+    {
+      "Active": "16",
+      "Reclaimable": "0B (0%)",
+      "Size": "569.3kB",
+      "TotalCount": "16",
+      "Type": "Containers"
+    },
+    {
+      "Active": "1",
+      "Reclaimable": "0B (0%)",
+      "Size": "16.24MB",
+      "TotalCount": "1",
+      "Type": "Local Volumes"
+    },
+    {
+      "Active": "0",
+      "Reclaimable": "1.886GB",
+      "Size": "4.578GB",
+      "TotalCount": "56",
+      "Type": "Build Cache"
+    }
+  ],
+  "state_top_level_bytes": "4385386496\t/var/lib/quant-company/backups\n225280\t/var/lib/quant-company/qualification\n61440\t/var/lib/quant-company/secrets\n126443520\t/var/lib/quant-company/release-prep\n17002496\t/var/lib/quant-company/research-audit\n331776\t/var/lib/quant-company/claude\n32768\t/var/lib/quant-company/ssh\n333238272\t/var/lib/quant-company/research\n913408\t/var/lib/quant-company/config\n734691328\t/var/lib/quant-company/operations\n682586112\t/var/lib/quant-company/postgres\n54915072\t/var/lib/quant-company/codex\n12288\t/var/lib/quant-company/caddy\n8192\t/var/lib/quant-company/commissioning\n524984320\t/var/lib/quant-company/releases\n6860836864\t/var/lib/quant-company\n",
+  "state_apparent_bytes": "4375076084\t/var/lib/quant-company/backups\n200855\t/var/lib/quant-company/qualification\n8709\t/var/lib/quant-company/secrets\n126209515\t/var/lib/quant-company/release-prep\n14156595\t/var/lib/quant-company/research-audit\n176198\t/var/lib/quant-company/claude\n4960\t/var/lib/quant-company/ssh\n311448656\t/var/lib/quant-company/research\n753822\t/var/lib/quant-company/config\n702852091\t/var/lib/quant-company/operations\n681655229\t/var/lib/quant-company/postgres\n28665542\t/var/lib/quant-company/codex\n0\t/var/lib/quant-company/caddy\n264\t/var/lib/quant-company/commissioning\n524177961\t/var/lib/quant-company/releases\n6765386481\t/var/lib/quant-company\n",
+  "backups": [
+    {
+      "name": "company-20260928T233509Z-49bec673.tar.gz",
+      "bytes": 292882930
+    },
+    {
+      "name": "company-20260928T233509Z-49bec673.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20260929T040850Z-3e2c397b.tar.gz",
+      "bytes": 305023230
+    },
+    {
+      "name": "company-20260929T040850Z-3e2c397b.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20260929T055051Z-e9afd518.tar.gz",
+      "bytes": 308933207
+    },
+    {
+      "name": "company-20260929T055051Z-e9afd518.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20260929T181236Z-c3a7f483.tar.gz",
+      "bytes": 318143523
+    },
+    {
+      "name": "company-20260929T181236Z-c3a7f483.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20260930T073752Z-220a8bf1.tar.gz",
+      "bytes": 326723227
+    },
+    {
+      "name": "company-20260930T073752Z-220a8bf1.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20260930T181216Z-76b4ba1b.tar.gz",
+      "bytes": 339168554
+    },
+    {
+      "name": "company-20260930T181216Z-76b4ba1b.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20261001T035906Z-e06f37e1.tar.gz",
+      "bytes": 345669218
+    },
+    {
+      "name": "company-20261001T035906Z-e06f37e1.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20261001T075934Z-8f17fddb.tar.gz",
+      "bytes": 347563622
+    },
+    {
+      "name": "company-20261001T075934Z-8f17fddb.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20261002T041704Z-f548c5c8.tar.gz",
+      "bytes": 355686174
+    },
+    {
+      "name": "company-20261002T041704Z-f548c5c8.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20261002T055421Z-b447b3e5.tar.gz",
+      "bytes": 356171053
+    },
+    {
+      "name": "company-20261002T055421Z-b447b3e5.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20261002T061641Z-d6404b48.tar.gz",
+      "bytes": 360385596
+    },
+    {
+      "name": "company-20261002T061641Z-d6404b48.tar.gz.sha256",
+      "bytes": 107
+    }
+  ],
+  "backup_failure_trace": [
+    {
+      "file": "state_backup.py",
+      "line": 169,
+      "function": "backup"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 92,
+      "function": "copy_research_state"
+    },
+    {
+      "file": "shutil.py",
+      "line": 600,
+      "function": "copytree"
+    },
+    {
+      "file": "shutil.py",
+      "line": 554,
+      "function": "_copytree"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 256,
+      "function": "main"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 172,
+      "function": "backup"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 69,
+      "function": "run"
+    },
+    {
+      "file": "subprocess.py",
+      "line": 571,
+      "function": "run"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 169,
+      "function": "backup"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 92,
+      "function": "copy_research_state"
+    },
+    {
+      "file": "shutil.py",
+      "line": 600,
+      "function": "copytree"
+    },
+    {
+      "file": "shutil.py",
+      "line": 554,
+      "function": "_copytree"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 256,
+      "function": "main"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 172,
+      "function": "backup"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 69,
+      "function": "run"
+    },
+    {
+      "file": "subprocess.py",
+      "line": 571,
+      "function": "run"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 256,
+      "function": "main"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 169,
+      "function": "backup"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 92,
+      "function": "copy_research_state"
+    },
+    {
+      "file": "shutil.py",
+      "line": 600,
+      "function": "copytree"
+    },
+    {
+      "file": "shutil.py",
+      "line": 554,
+      "function": "_copytree"
+    }
+  ],
+  "copy_error_prefixes": {
+    "research/missions/4462aff3-c7fe-5e66-a003-4aca2e8f3330": 221
+  },
+  "error_counts": {
+    "No space left on device": 7724,
+    "failed to start": 0,
+    "CalledProcessError": 4,
+    "ValueError": 0,
+    "Timed out": 0
+  },
+  "failed_compose_operations": [
+    [
+      "start",
+      "1"
+    ],
+    [
+      "start",
+      "1"
+    ]
+  ],
+  "database": {
+    "tasks": [
+      {
+        "id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "parent_id": null,
+        "agent": "researcher_kr",
+        "kind": "research_stage",
+        "status": "running",
+        "error": null,
+        "turn_count": 42,
+        "created_at": "2026-10-05T23:14:20.894205+00:00",
+        "instruction": "program_proposal",
+        "result": null
+      },
+      {
+        "id": "acd43aae-238e-5498-aeff-ba7f613c9cf1",
+        "parent_id": null,
+        "agent": "director",
+        "kind": "control",
+        "status": "completed",
+        "error": null,
+        "turn_count": 0,
+        "created_at": "2026-10-05T23:13:50.984607+00:00",
+        "instruction": "승인",
+        "result": "조건부 사후 연구 프로그램을 승인했습니다. 독립 데이터 판정과 누적 계보 예산 확인 후 가설을 탐색합니다. 당시 공개 시각·수정 이력은 미확인이고, 역사적 알파·실제 체결·배치 승인은 포함하지 않습니다."
+      },
+      {
+        "id": "7a1c2d6a-8a6c-560a-9272-0be8ab1e94c9",
+        "parent_id": null,
+        "agent": "director",
+        "kind": "operator_program_draft",
+        "status": "completed",
+        "error": null,
+        "turn_count": 0,
+        "created_at": "2026-10-05T23:04:59.797396+00:00",
+        "instruction": "User 2026-10-06 requested sending and proceeding. Publish this exact bounded canonical draft; a fresh actual Slack owner event grants authority.",
+        "result": "Exact current canonical draft queued for a fresh actual Slack owner decision."
+      },
+      {
+        "id": "493a8dc5-3aa6-5833-9c0b-02f6804b951d",
+        "parent_id": null,
+        "agent": "director",
+        "kind": "control",
+        "status": "completed",
+        "error": null,
+        "turn_count": 0,
+        "created_at": "2026-10-05T22:55:03.91123+00:00",
+        "instruction": "연구 프로그램 취소 e06537d3-fac3-5c8c-bf25-ddabb3c7e282 53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+        "result": "프로그램의 새 연구를 중단하고 진행 중 실행의 취소와 대사를 요청했습니다."
+      },
+      {
+        "id": "0f31c8d7-6b56-5da3-9c6b-989d0e0d4cff",
+        "parent_id": null,
+        "agent": "data",
+        "kind": "research_stage",
+        "status": "blocked",
+        "error": "stage_response_rejected",
+        "turn_count": 4,
+        "created_at": "2026-10-03T18:11:25.370022+00:00",
+        "instruction": "program_data",
+        "result": null
+      },
+      {
+        "id": "f4e83504-ba3d-5fbe-9cd6-163019b770c7",
+        "parent_id": null,
+        "agent": "data",
+        "kind": "research_stage",
+        "status": "blocked",
+        "error": "stage_response_rejected",
+        "turn_count": 8,
+        "created_at": "2026-10-03T18:05:18.920501+00:00",
+        "instruction": "program_data",
+        "result": null
+      },
+      {
+        "id": "deda3c34-5559-5f70-aef8-2cf3b043213f",
+        "parent_id": null,
+        "agent": "data",
+        "kind": "research_stage",
+        "status": "blocked",
+        "error": "stage_response_rejected",
+        "turn_count": 6,
+        "created_at": "2026-10-03T17:59:10.560896+00:00",
+        "instruction": "program_data",
+        "result": null
+      },
+      {
+        "id": "2b3b51ee-6739-537d-905a-7e5f7ab0d200",
+        "parent_id": null,
+        "agent": "data",
+        "kind": "research_stage",
+        "status": "blocked",
+        "error": "stage_response_rejected",
+        "turn_count": 14,
+        "created_at": "2026-10-03T17:50:59.451283+00:00",
+        "instruction": "program_data",
+        "result": null
+      },
+      {
+        "id": "0fe17b25-0bc1-5a65-80fc-7370412dd26e",
+        "parent_id": null,
+        "agent": "data",
+        "kind": "research_stage",
+        "status": "completed",
+        "error": null,
+        "turn_count": 11,
+        "created_at": "2026-10-03T17:43:50.315712+00:00",
+        "instruction": "program_data",
+        "result": "private research artifact"
+      },
+      {
+        "id": "75189369-5f69-516b-9870-bc67aaf49c5d",
+        "parent_id": null,
+        "agent": "data",
+        "kind": "research_stage",
+        "status": "blocked",
+        "error": "stage_response_rejected",
+        "turn_count": 6,
+        "created_at": "2026-10-03T17:37:43.040698+00:00",
+        "instruction": "program_data",
+        "result": null
+      }
+    ],
+    "turns": [
+      {
+        "id": "517fc93c-8207-5861-86cc-c8965c8a6c26",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "running",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:29:12.444041+00:00",
+        "updated_at": "2026-10-05T23:29:12.788279+00:00"
+      },
+      {
+        "id": "002aa268-292e-5b12-ad8e-066d49a85daa",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:28:52.303046+00:00",
+        "updated_at": "2026-10-05T23:29:12.429133+00:00"
+      },
+      {
+        "id": "3407a4fa-0862-5233-bdef-c595ad0e2a23",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:28:31.599617+00:00",
+        "updated_at": "2026-10-05T23:28:52.287476+00:00"
+      },
+      {
+        "id": "a81a075c-3ee8-5f60-b8c6-3801bd8bc960",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:27:48.587056+00:00",
+        "updated_at": "2026-10-05T23:28:31.585816+00:00"
+      },
+      {
+        "id": "d85eb0d3-ce73-5fff-a796-67108af84409",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:27:03.35957+00:00",
+        "updated_at": "2026-10-05T23:27:48.571598+00:00"
+      },
+      {
+        "id": "cd7d3e81-9f9a-581e-8242-7a0ca455ffd6",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:26:22.276112+00:00",
+        "updated_at": "2026-10-05T23:27:03.344265+00:00"
+      },
+      {
+        "id": "d6807abf-99ca-5703-ba1e-322e1b6e61c3",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:25:59.141749+00:00",
+        "updated_at": "2026-10-05T23:26:22.262651+00:00"
+      },
+      {
+        "id": "92edad21-ce37-54e4-8dd6-4326837eda11",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:25:34.257204+00:00",
+        "updated_at": "2026-10-05T23:25:59.103987+00:00"
+      },
+      {
+        "id": "a34bf987-76f2-5eb0-8f2e-480be235e65c",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:25:12.116148+00:00",
+        "updated_at": "2026-10-05T23:25:34.242062+00:00"
+      },
+      {
+        "id": "7058fb37-6fe3-5c85-98fb-a7b19af72d95",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:24:51.056099+00:00",
+        "updated_at": "2026-10-05T23:25:12.100212+00:00"
+      }
+    ],
+    "review_correction": [
+      {
+        "id": "5280eb92-d91d-5d2a-b463-c8401865dc5e",
+        "status": "delivered",
+        "update_ts": "1791241541.860959",
+        "sent_ts": "1791241541.860959",
+        "attempts": 1,
+        "error": null
+      }
+    ],
+    "proposal_trace": [
+      {
+        "id": "517fc93c-8207-5861-86cc-c8965c8a6c26",
+        "sequence": 42,
+        "status": "running",
+        "decision_status": null,
+        "decision_error": null,
+        "tool_calls": null,
+        "summary": null,
+        "result": null
+      },
+      {
+        "id": "002aa268-292e-5b12-ad8e-066d49a85daa",
+        "sequence": 41,
+        "status": "completed",
+        "decision_status": null,
+        "decision_error": null,
+        "tool_calls": null,
+        "summary": null,
+        "result": null
+      },
+      {
+        "id": "3407a4fa-0862-5233-bdef-c595ad0e2a23",
+        "sequence": 40,
+        "status": "completed",
+        "decision_status": null,
+        "decision_error": null,
+        "tool_calls": null,
+        "summary": null,
+        "result": null
+      },
+      {
+        "id": "a81a075c-3ee8-5f60-b8c6-3801bd8bc960",
+        "sequence": 39,
+        "status": "completed",
+        "decision_status": null,
+        "decision_error": null,
+        "tool_calls": null,
+        "summary": null,
+        "result": null
+      },
+      {
+        "id": "d85eb0d3-ce73-5fff-a796-67108af84409",
+        "sequence": 38,
+        "status": "completed",
+        "decision_status": null,
+        "decision_error": null,
+        "tool_calls": null,
+        "summary": null,
+        "result": null
+      }
+    ]
+  }
+}
