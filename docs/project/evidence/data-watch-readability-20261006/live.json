@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-06 01:37:20.278429+00:00",
+  "presentationCommit": "8508954320877144e8f24cb52c8353c0e18f514a",
+  "scope": "Two data-watch presentation files; existing dates and freshness criteria retained",
+  "deliveryChecks": {
+    "outboxDelivered": true,
+    "matchingClientMsgId": true,
+    "matchingSlackTs": true,
+    "matchingNormalizedText": true,
+    "matchingBotUser": true
+  },
+  "deployment": {
+    "archive_sha256": "698956fe9b152855d6e656fdfddadd1e019983d26bd4fac833541ee1066e1f9b",
+    "at": 1791250018.3256924,
+    "current": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+    "cutover": {
+      "at": 1791250443.4745529,
+      "service": "data-watch-worker",
+      "state": "verified"
+    },
+    "images": {
+      "sha256:5d4da72ef6d01e32096c4fb32d7832bf362e5f1b588f4ef072aa2a94dbe15836": {
+        "id": "sha256:a7613a647406fc6f9ca81a8ddaff32a69b46f37e0cea4b0429ce52cf4f364e7d",
+        "only_changed_files": [
+          "data_watch/coverage.py",
+          "data_watch/reporting.py"
+        ],
+        "source_files": 168,
+        "tag": "quant-company-data-watch:8508954320877144e8f24cb52c8353c0e18f514a-5d4da72ef6d0"
+      },
+      "sha256:7c834100fdefc0ecd09c2c8810c2b9630c93976ffa3fa739c78a87e71d752309": {
+        "id": "sha256:2a2aff76ac41d84fa53f0b323565303f967806e6cb797387f7384f4666ae3e9e",
+        "only_changed_files": [
+          "data_watch/coverage.py",
+          "data_watch/reporting.py"
+        ],
+        "source_files": 135,
+        "tag": "quant-company-data-watch:8508954320877144e8f24cb52c8353c0e18f514a-7c834100fdef"
+      }
+    },
+    "presentation_commit": "8508954320877144e8f24cb52c8353c0e18f514a",
+    "state": "live",
+    "targets": {
+      "api": {
+        "base_image": "sha256:5d4da72ef6d01e32096c4fb32d7832bf362e5f1b588f4ef072aa2a94dbe15836",
+        "base_tag": "quant-company-native-app:5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+        "id": "b5ade8aab2efce9fcf1d7651a191461da42860d61ea1978b4919c3ec03a86ba9",
+        "live": true,
+        "new_id": "eda7117119966319a26f751f2266517b20af22d267caf40bdf9e0e40c1fe8d8e",
+        "new_image": "sha256:a7613a647406fc6f9ca81a8ddaff32a69b46f37e0cea4b0429ce52cf4f364e7d",
+        "other_service_ids_preserved": true,
+        "preserved_runtime_spec": true,
+        "source_revision": "5c44ad07273adc780a56a47d7d35114fd0dc32c8"
+      },
+      "data-watch-worker": {
+        "base_image": "sha256:7c834100fdefc0ecd09c2c8810c2b9630c93976ffa3fa739c78a87e71d752309",
+        "base_tag": "quant-company:0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+        "id": "b900ca1d55f31c7c29f5eef62e5f5587ccb6c137019104e362cd14da92af274b",
+        "live": true,
+        "new_id": "b8ee09473da6f0343942a4b993d3b9586870faa511d2bb58377e4f77a6cad24a",
+        "new_image": "sha256:2a2aff76ac41d84fa53f0b323565303f967806e6cb797387f7384f4666ae3e9e",
+        "other_service_ids_preserved": true,
+        "preserved_runtime_spec": true,
+        "source_revision": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce"
+      },
+      "slack-socket": {
+        "base_image": "sha256:5d4da72ef6d01e32096c4fb32d7832bf362e5f1b588f4ef072aa2a94dbe15836",
+        "base_tag": "quant-company-native-app:5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+        "id": "68a7dbe43a2e0dfbdb9b6c91e716d8817c8f752e99c9d39c62c113a2a69aeae1",
+        "live": true,
+        "new_id": "cf44c3290ba8cef30179330ca019fa43fb53823b1f425fa7d9c05d28f6f2ed7e",
+        "new_image": "sha256:a7613a647406fc6f9ca81a8ddaff32a69b46f37e0cea4b0429ce52cf4f364e7d",
+        "other_service_ids_preserved": true,
+        "preserved_runtime_spec": true,
+        "source_revision": "5c44ad07273adc780a56a47d7d35114fd0dc32c8"
+      }
+    }
+  },
+  "health": {
+    "current": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+    "releaseTimerActive": true,
+    "targets": [
+      {
+        "name": "/quant-company-api-1",
+        "image": "sha256:a7613a647406fc6f9ca81a8ddaff32a69b46f37e0cea4b0429ce52cf4f364e7d",
+        "running": true,
+        "health": "healthy",
+        "restarts": 0,
+        "baseSourceRevision": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+        "presentationRevision": "8508954320877144e8f24cb52c8353c0e18f514a"
+      },
+      {
+        "name": "/quant-company-slack-socket-1",
+        "image": "sha256:a7613a647406fc6f9ca81a8ddaff32a69b46f37e0cea4b0429ce52cf4f364e7d",
+        "running": true,
+        "health": null,
+        "restarts": 0,
+        "baseSourceRevision": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+        "presentationRevision": "8508954320877144e8f24cb52c8353c0e18f514a"
+      },
+      {
+        "name": "/quant-company-data-watch-worker-1",
+        "image": "sha256:2a2aff76ac41d84fa53f0b323565303f967806e6cb797387f7384f4666ae3e9e",
+        "running": true,
+        "health": null,
+        "restarts": 0,
+        "baseSourceRevision": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+        "presentationRevision": "8508954320877144e8f24cb52c8353c0e18f514a"
+      }
+    ]
+  },
+  "live": {
+    "observedAt": "2026-10-06 01:37:20.278429+00:00",
+    "inventory": {
+      "ok": true,
+      "checked_at": "2026-10-06 01:33:02.702266+00:00"
+    },
+    "datasetCount": 38,
+    "sourceHashes": {
+      "coverage.py": "41193a8d356070e27d075233ad1ede11888c9018a2bc76bacc5b09ac167d775b",
+      "reporting.py": "83499abbf1da29ae6ea974fa1f5da47eb4d05f2f029c607228aa10e9423c9fe5"
+    },
+    "currentSummary": "*데이터 업데이트 현황* · 10/06 10:37 KST\n\n*수집·반영 경로 점검*\n🔴 *미국 재무 공시(SEC)*: 03/31 제출분까지 → 2026년 2분기 자료 미반영\n🔴 *미국 기관 보유내역(13F)*: 05/29 제출분까지 → 2026년 6~8월 자료 미반영\n🔴 *미국 내부자 거래*: 03/31 제출분까지 → 2026년 2분기 자료 미반영\n\n*갱신 일정 확인 필요*\n🟠 *미국 가격·공매도량*: 10/01 거래분까지 → 5일째 새 날짜 없음\n🟠 *SEC 상장사 목록*: 07/31 기준 → 67일째 새 날짜 없음\n\n*읽기·날짜 확인 문제*\n⚪ *미국 전종목 가격*: 파일 정보 읽기 한도 초과 → 검사 도구 점검\n\n*그 밖의 주요 데이터는 여기까지*\n• 한국시장 주식·ETF·수급·지수: 10/02 거래분까지\n• 미국 펀드 자료(N-PORT): 06/30 제출분까지\n• 미국 배당·주식분할: 10/05 기준\n• 한국 기업 공시(DART): 07/24 반영분까지\n• 한국 경제지표(ECOS): 10/03 관측분까지\n• 미국 경제지표(FRED): 10/02 관측분까지\n• 경기선행지수(OECD): 2026년 8월\n\n전체 38개 날짜·파일 교체일은 `목록`\n목록 조회 10/06 10:33 KST · 다음 확인 10/06 11:00 KST",
+    "currentSummaryCharacters": 640,
+    "currentList": "*전체 데이터 목록 · 38개*\n조회 10/06 10:33 KST\n자료 날짜 · 파일 교체일 (MM/DD는 올해 날짜)\n\n*한국 시장*\n• 한국 ETF 가격: 10/02 거래분까지 · 파일 10/05\n• 한국 ETF 거래 정보: 10/02 거래분까지 · 파일 10/05\n• 한국 ETF 기본 정보: 10/05 기준 · 파일 10/05\n• 한국 투자자별 수급: 10/02 거래분까지 · 파일 10/05\n• 한국 주식 투자지표: 10/02 거래분까지 · 파일 10/05\n• 한국 지수 정보: 10/02 거래분까지 · 파일 10/05\n• 한국 지수 투자지표: 10/02 거래분까지 · 파일 10/05\n• 한국 지수 목록: 10/05 기준 · 파일 10/05\n• 한국 지수 가격: 10/02 거래분까지 · 파일 10/05\n• 한국 주식 가격: 10/02 거래분까지 · 파일 10/05\n• 한국 업종 분류: 10/02 거래분까지 · 파일 10/05\n• 한국 종목 목록: 10/02 기준 · 파일 10/05\n\n*미국 시장*\n🟠 미국 ETF·주가: 10/01 거래분까지 · 파일 10/02\n• 미국 배당 정보: 10/05 기준 · 파일 10/05\n⚪ 미국 전종목 가격: 날짜 확인 실패 · 파일 10/05\n🟠 미국 공매도 거래량: 10/01 거래분까지 · 파일 10/02\n• 미국 주식분할 정보: 10/05 기준 · 파일 10/05\n• 미국 종목 코드 목록: 10/02 기준 · 파일 10/02\n• 미국 종목 상세 정보: 09/02 기준 · 파일 10/02\n• 미국 종목 변경 정보: 08/04 기준 · 파일 08/05\n• 미국 상장 종목 목록: 10/02 기준 · 파일 10/02\n\n*경제지표*\n• 한국 경제지표(ECOS): 10/03 관측분까지 · 파일 10/05\n• 미국 경제지표(FRED): 10/02 관측분까지 · 파일 10/05\n• 경기선행지수(OECD): 2026년 8월 · 파일 10/02\n\n*한국 기업 공시*\n• 한국 기업 공시(DART): 07/24 반영분까지 · 파일 08/03\n\n*미국 기업 공시·펀드*\n🔴 미국 기관 보유내역(13F): 05/29 제출분까지 · 파일 08/26\n🔴 미국 재무 공시 제출목록: 03/31 제출분까지 · 파일 08/03\n🔴 미국 재무 공시 재무값: 03/31 제출분까지 · 파일 08/03\n🔴 미국 내부자 거래: 03/31 제출분까지 · 파일 08/20\n• 미국 펀드 보유내역: 06/30 제출분까지 · 파일 08/26\n• 미국 펀드 기본 정보: 06/30 제출분까지 · 파일 08/26\n🟠 SEC 상장사 목록: 07/31 기준 · 파일 08/03\n\n*고정·이력 자료*\n• 가상자산 선물 가격 이력: 2025-06-30 거래시각 · 파일 10/02\n• 미국 증권 식별번호 매핑: 고정 매핑 · 파일 10/02\n• 한국 종목 연결 이력 범위: 2023-12-28 이력 종료일 · 파일 10/02\n• 한국 종목 변경 사건 이력: 2024-03-27 이력 사건일 · 파일 10/02\n• 한국 종목 승계 연결 이력: 2024-03-29 이력 사건일 · 파일 10/02\n• 미국 종목 코드 변경 이력: 09/02 이력 변경일 · 파일 10/02\n\n🔴 공개분/등록 기준 미달 · 🟠 갱신 일정 점검 · ⚪ 날짜 확인 실패\n자료 날짜는 데이터셋 전체의 최대 날짜이며, 파일 교체일과 다릅니다.",
+    "currentListCharacters": 1634,
+    "dailyOutbox": {
+      "id": "8229fb0c-b9e2-56cd-b1a4-85f3b6e6b7e6",
+      "status": "delivered",
+      "sent_ts": "1791250578.956599",
+      "text": "*데이터 업데이트 현황* · 10/06 10:36 KST\n\n*수집·반영 경로 점검*\n🔴 *미국 재무 공시(SEC)*: 03/31 제출분까지 → 2026년 2분기 자료 미반영\n🔴 *미국 기관 보유내역(13F)*: 05/29 제출분까지 → 2026년 6~8월 자료 미반영\n🔴 *미국 내부자 거래*: 03/31 제출분까지 → 2026년 2분기 자료 미반영\n\n*갱신 일정 확인 필요*\n🟠 *미국 가격·공매도량*: 10/01 거래분까지 → 5일째 새 날짜 없음\n🟠 *SEC 상장사 목록*: 07/31 기준 → 67일째 새 날짜 없음\n\n*읽기·날짜 확인 문제*\n⚪ *미국 전종목 가격*: 파일 정보 읽기 한도 초과 → 검사 도구 점검\n\n*그 밖의 주요 데이터는 여기까지*\n• 한국시장 주식·ETF·수급·지수: 10/02 거래분까지\n• 미국 펀드 자료(N-PORT): 06/30 제출분까지\n• 미국 배당·주식분할: 10/05 기준\n• 한국 기업 공시(DART): 07/24 반영분까지\n• 한국 경제지표(ECOS): 10/03 관측분까지\n• 미국 경제지표(FRED): 10/02 관측분까지\n• 경기선행지수(OECD): 2026년 8월\n\n전체 38개 날짜·파일 교체일은 `목록`\n목록 조회 10/06 10:33 KST · 다음 확인 10/06 11:00 KST",
+      "created_at": "2026-10-06 01:36:17.626019+00:00"
+    },
+    "slackReadback": {
+      "ts": "1791250578.956599",
+      "client_msg_id": "8229fb0c-b9e2-56cd-b1a4-85f3b6e6b7e6",
+      "text": "*데이터 업데이트 현황* · 10/06 10:36 KST\n\n*수집·반영 경로 점검*\n:red_circle: *미국 재무 공시(SEC)*: 03/31 제출분까지 → 2026년 2분기 자료 미반영\n:red_circle: *미국 기관 보유내역(13F)*: 05/29 제출분까지 → 2026년 6~8월 자료 미반영\n:red_circle: *미국 내부자 거래*: 03/31 제출분까지 → 2026년 2분기 자료 미반영\n\n*갱신 일정 확인 필요*\n:large_orange_circle: *미국 가격·공매도량*: 10/01 거래분까지 → 5일째 새 날짜 없음\n:large_orange_circle: *SEC 상장사 목록*: 07/31 기준 → 67일째 새 날짜 없음\n\n*읽기·날짜 확인 문제*\n:white_circle: *미국 전종목 가격*: 파일 정보 읽기 한도 초과 → 검사 도구 점검\n\n*그 밖의 주요 데이터는 여기까지*\n• 한국시장 주식·ETF·수급·지수: 10/02 거래분까지\n• 미국 펀드 자료(N-PORT): 06/30 제출분까지\n• 미국 배당·주식분할: 10/05 기준\n• 한국 기업 공시(DART): 07/24 반영분까지\n• 한국 경제지표(ECOS): 10/03 관측분까지\n• 미국 경제지표(FRED): 10/02 관측분까지\n• 경기선행지수(OECD): 2026년 8월\n\n전체 38개 날짜·파일 교체일은 `목록`\n목록 조회 10/06 10:33 KST · 다음 확인 10/06 11:00 KST",
+      "bot_user_matched": true
+    },
+    "ownerTypedCommandE2E": "not performed; current text was rendered read-only"
+  },
+  "verification": {
+    "postgresql": "real",
+    "temporal": "real",
+    "focusedTests": 38,
+    "serviceAndDeploymentTests": 66,
+    "slackTransportTests": "simulated",
+    "actualSlackDelivery": "readback verified",
+    "sourceCi": {
+      "pullRequest": 104,
+      "runId": "37398717538",
+      "conclusion": "SUCCESS"
+    },
+    "realOwnerCommandE2E": "not performed"
+  }
+}
