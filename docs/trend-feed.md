@@ -122,8 +122,11 @@ uv run --frozen quant-company trend-feed status
 회사 큐의 `-trend-collection`에서 실행한다. 편집 ID는 `company-trend-feed-editorial-v1`이며
 기존 `-news-model` 큐에서 실행한다. 새 런타임은 이 세 workflow를 함께 등록한다.
 
-3일간 미리보기에서 관측 누락·후보 품질·08시 확정·원문 제한을 확인하고, 실제 Codex 실행과
+기본 전환은 3일간 미리보기에서 관측 누락·후보 품질·08시 확정·원문 제한을 확인하고, 실제 Codex 실행과
 전용 Slack 앱의 실제 채널 발송 영수증을 확인한 후 `TREND_FEED_PUBLISH_ENABLED=true`로 전환한다.
+운영자가 즉시 실제 발송·직접 확인 후 활성화를 명시적으로 승인하면 해당 수락 기준으로 변경할 수 있다.
+실제 자료·원문·구독 모델·예산·본문·Slack 영수증과 화면을 확인하고 승인·검사·전환 근거를 보존한다.
+2026-10-06 운영 전환은 이 즉시 검증으로 완료했다. [현재 운영 기록](project/TREND-FEED-ACTIVATION.md).
 이미 확정한 미리보기는 활성화해도 재발송하지 않으므로 전환 후 다음 날부터 수신한다.
 비활성화는 `TREND_FEED_ENABLED=false`와 `TREND_FEED_PUBLISH_ENABLED=false`를 적용한다.
 

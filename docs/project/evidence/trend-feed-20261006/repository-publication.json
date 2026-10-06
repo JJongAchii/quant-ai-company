@@ -8,7 +8,7 @@
   "expected_visibility_from_instructions": "private",
   "pushed_this_work": true,
   "visibility_changed_this_work": false,
-  "publication_state": "feature_branch_pushed_draft_pr_open",
+  "publication_state": "feature_branch_published_pr_ready_for_review",
   "production_preview_continues": true,
   "user_upload_authorized": true,
   "authorization": "chat user: 나중에 비공개 전환할거라 신경쓰지말고 원격에 올려줘",
@@ -20,7 +20,10 @@
   "pull_request": {
     "number": 113,
     "url": "https://github.com/JJongAchii/quant-ai-company/pull/113",
-    "isDraft": true,
-    "remaining_acceptance": "Three actual consecutive qualified morning previews and first regular-delivery receipt have not elapsed."
+    "isDraft": false,
+    "original_remaining_acceptance": "Three actual consecutive qualified morning previews and first regular-delivery receipt have not elapsed.",
+    "remaining_acceptance": null,
+    "acceptance_replaced_by_user": "INTENT-v2: immediate real briefing delivery/direct inspection and active regular operation verified; first future daily receipt observed separately",
+    "ready_for_review_verified_at": "2026-10-06T13:01:54.677204+00:00"
   }
 }

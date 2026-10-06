@@ -50,9 +50,9 @@ def main():
     if cutover["state"] == "publication_enabled":
         record = json.loads(JOURNAL.read_text())
         day = datetime.date.fromisoformat(record["first_scheduled_day"])
-        receipt = operator.sql("SELECT row_to_json(s) FROM (SELECT d.day,d.state,o.status,o.sent_ts "
+        receipt = operator.sql("SELECT coalesce((SELECT row_to_json(s) FROM (SELECT d.day,d.state,o.status,o.sent_ts "
                                "FROM trend_feed_digests d LEFT JOIN outbox o ON o.id=d.id "
-                               "WHERE d.channel='C0C6WTA9ECV' AND d.day='" + str(day) + "')s")
+                               "WHERE d.channel='C0C6WTA9ECV' AND d.geo='KR' AND d.day='" + str(day) + "')s),'null'::json)")
         record["first_delivery"] = receipt
         if receipt and receipt["status"] == "delivered" and receipt["sent_ts"]:
             record["first_delivery_verified"] = True

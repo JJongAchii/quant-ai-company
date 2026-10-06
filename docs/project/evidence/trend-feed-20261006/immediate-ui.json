@@ -3,5 +3,12 @@
   "sent_ts": "1791289915.099149",
   "body_matches": true,
   "links_match": true,
-  "same_ts_visible_messages": 1
+  "same_ts_visible_messages": 1,
+  "visual_inspection_passed": true,
+  "visible_briefing_and_footer_checked": true,
+  "screenshots_kept_git_external": true,
+  "screenshot_sha256": {
+    "trend-immediate-slack-visible.png": "f87cbb6f05961a75f3a4b64330c435853096684709e84cdfbed2b5f6684c5934",
+    "trend-immediate-slack-bottom.png": "75e83d427bddabaa6179cdaf1215ec7644a83192c2dcd0cd70c2dc111814cb2f"
+  }
 }

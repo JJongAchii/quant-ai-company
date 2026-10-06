@@ -86,15 +86,37 @@ Trend Scout의 본문에 회사 지시 버전 접두사가 붙지 않도록 수�
   [별도 기록](evidence/trend-feed-20261006/model-runtime-peer-change.json)에 현재 건강 상태를 보존했다.
   앞선 로컬 0.154.0 실호출을 새 운영 모델 런타임의 실호출 검사로 간주하지 않는다.
 
-`TREND_FEED_PUBLISH_ENABLED=false`다. 실제 아침 편집·최종 본문·예산·불변성 검증은 남아 있다.
-설치한 timer는 10월 7일부터 매일 08:10·08:20·08:30 KST에 실제 PostgreSQL 기록을 읽는다.
-3개 연속 날짜의 완료된 편집·원문 근거·네이버 응답·예산·확정 본문과 두 번의 관측이 모두 통과하고,
-시험 발송 영수증과 배포 기준이 유지되면 이미 승인한 정기 발송 플래그를 켠다.
-7·8·9일 통과 시 10월 10일 **08:00 KST·최대 8개**부터 발송하며, 미리보기를 소급 발송하지 않는다.
-시간 미경과·검증 실패·불명 결과가 있으면 미리보기를 유지한다. 첫 실제 발송 영수증도 같은 timer가 확인한다.
-[예약 영수증](evidence/trend-feed-20261006/preview-timer.json),
-[초기 관측: 완료 날짜 0개](evidence/trend-feed-20261006/preview-observation-initial.json),
-[발송 전환 설정 검사: 적용하지 않음](evidence/trend-feed-20261006/publication-dry-config.json).
+최초에는 발송 false와 3일 미리보기 gate를 설치했다. [초기 0일 관측](evidence/trend-feed-20261006/preview-observation-initial.json)은 역사적 기록이다.
+
+## 사용자 변경 기준에 따른 즉시 검증 완료
+
+사용자가 3일 대기를 **지금 실제 발송·직접 확인 후 활성화**로 변경했다. INTENT-v1을 보존하고
+INTENT-v2(`5473004989f2`)로 승인 기준을 개정했다. 실제 자료 마감은 10월 6일 21:24 KST다.
+운영 구독 모델 1건이 실제 `codex` 공급자로 정상 완료됐다. 허용 원문 6건과 최종 배경 설명 4개를
+대조했고 네이버 같은 응답의 수치·자료 날짜·비교 불가 표시, 수집 이력 부족과 본문 전체를 확인했다.
+모델 1회·네이버 19회로 당일 제한 안이다. 이 즉시 검사는 시간 이동 없이 수행했다.
+
+직접 점검에서 원문이 없는 카드에 연관성 미확인 기사 링크가 붙는 것을 발견했다.
+검증된 원문이 없음을 표시하고 해당 키워드의 뉴스 검색 링크로 바꿨다. PostgreSQL의
+추가 회귀 **28개**가 통과했으며, 허용 원문 링크의 본문 길이 제한과 검색어/멘션 인코딩도 확인했다.
+[추가 검사](evidence/trend-feed-20261006/immediate-pytest.txt).
+
+21:31 KST에 실제 8개 주제 브리핑을 발송했다. PostgreSQL의 `delivered`, 시도 1회, 채널과
+Slack `ts`를 실제 화면과 대조했다. 전체 본문·8개 링크·동일 ts 메시지 1개와 보이는 화면을 확인했다.
+[수락 검사](evidence/trend-feed-20261006/immediate-review.json), [화면 대조](evidence/trend-feed-20261006/immediate-ui.json).
+스크린샷은 Git 밖에 두고 해시·판정만 기록했다. 원문 전체를 새 증거 파일에 복제하지 않았다.
+
+실제 부모 이미지의 220개 소스를 대조해 `trend_feed/editor.py`만 변경한 수정본을 만들었다.
+두 소비자의 이미지·발송 플래그만 전환하고 실행 설정·PID 한도·다른 컨테이너 ID를 보존했다.
+현재 `TREND_FEED_PUBLISH_ENABLED=true`이며 회사 컨테이너가 모두 실행 중이다.
+실제 Temporal의 세 workflow가 RUNNING이고 확정 timer는 **10월 7일 08:00 KST**다.
+[활성화](evidence/trend-feed-20261006/immediate-activation.json),
+[현재 실행·실제 timer](evidence/trend-feed-20261006/immediate-active-probe.json).
+
+3일 관측을 완료했다고 간주하지 않는다. 변경된 즉시 수락 검사를 완료하고 정기 운영을 켰다.
+첫 정기 발송은 예약 상태이며 아직 발송 시각이 지나지 않았다. 호스트 관측기가 이후 영수증을
+확인한다. 미래 행이 없을 때도 정상 대기하도록 보완하고 실제 systemd 실행 성공을 확인했다.
+[첫 정기 발송 관측](evidence/trend-feed-20261006/immediate-first-delivery-watch.json).
 
 [운영 전환 기록](TREND-FEED-ACTIVATION.md), [설정·데모·복구](../trend-feed.md),
 [설계 결정](../adr/0041-korean-search-trends-briefing.md).
