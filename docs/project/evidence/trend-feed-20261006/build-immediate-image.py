@@ -23,6 +23,8 @@ if __name__ == "__main__":
         if len(bases) != 1:
             raise RuntimeError("consumer_images_differ")
         base = bases.pop()
+        base_tag = "quant-company-trend-base:" + base.split(":", 1)[1][:16]
+        operator.run(["docker", "tag", base, base_tag])
         commit = sys.argv[1]
         if len(commit) != 40 or any(c not in "0123456789abcdef" for c in commit):
             raise RuntimeError("commit_not_frozen")
@@ -30,7 +32,7 @@ if __name__ == "__main__":
         context.mkdir(exist_ok=True)
         source = (ROOT / "immediate-editor.py").read_bytes()
         operator.atomic(context / "editor.py", source, mode=0o644)
-        dockerfile = (f"FROM {base}\nUSER root\nCOPY editor.py {PACKAGE}/trend_feed/editor.py\n"
+        dockerfile = (f"FROM {base_tag}\nUSER root\nCOPY editor.py {PACKAGE}/trend_feed/editor.py\n"
                       f"RUN chmod 644 {PACKAGE}/trend_feed/editor.py && "
                       f"python -c 'from pathlib import Path; [p.unlink() for p in Path(\"{PACKAGE}/trend_feed/__pycache__\").glob(\"editor.*.pyc\")]'\n"
                       "USER 10001:10001\n"
@@ -38,7 +40,8 @@ if __name__ == "__main__":
                       f"LABEL io.quant-company.trend-feed.base-id={base}\n")
         operator.atomic(context / "Dockerfile", dockerfile.encode(), mode=0o644)
         tag = "quant-company-trend:" + commit + "-immediate"
-        operator.run(["docker", "build", "--network", "none", "--pull=false", "--tag", tag, str(context)], timeout=180)
+        operator.run(["env", "DOCKER_BUILDKIT=0", "docker", "build", "--network", "none", "--pull=false",
+                      "--tag", tag, str(context)], timeout=180)
         image = json.loads(operator.run(["docker", "image", "inspect", tag]))[0]
         parent = json.loads(operator.run(["docker", "image", "inspect", base]))[0]
         config_preserved = all(image["Config"].get(k) == parent["Config"].get(k)
