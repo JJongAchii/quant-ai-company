@@ -119,7 +119,7 @@ services:
       - ${STATE_DIR:-/var/lib/quant-company}/config/maintenance.json:/etc/quant-company/maintenance.json:ro
     secrets: [database_password, model_runtime_token, temporal_api_key, maintenance_github_key]
     networks: [core, model, service_egress]
-    mem_limit: ${MAINTENANCE_MEMORY_LIMIT:-128m}
+    mem_limit: ${MAINTENANCE_MEMORY_LIMIT:-256m}
     cpus: 0.25
 
   caddy:

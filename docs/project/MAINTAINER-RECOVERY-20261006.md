@@ -42,3 +42,17 @@ A separate trusted diagnostic container reproduced `ValueError: Unknown speciali
 Heavy Python verification inside the production service's 128MiB limit caused resource pressure. Subsequent diagnostics use a separate one-off container, and live readback uses Docker metadata and PostgreSQL only. Image/source validation takes place before service activation. The compatibility patch is being qualified and will receive its own exact image/cutover receipt.
 
 Evidence: [actual intake and preparation failure](evidence/maintainer-recovery-20261006/first-intake-and-preparation-failure.json), [catalog diagnosis](evidence/maintainer-recovery-20261006/catalog-diagnosis.json).
+
+## Final state
+
+The final code image is **`46d853cbefd4ce808fc247a0ebba1f5df33f0cd8`**, activated at 16:18 KST. Its isolated check with the actual production configuration validates `current_system`, `diagnosis_context` and the actual GitHub snapshot. Full regression tests: **1,406 passed, 46 skipped**; catalog-related tests: **62 passed**; deployment contract after the memory-template correction: **31 passed**. GitHub CI for the final code commit passed. The first production image is historical and was superseded by this catalog fix.
+
+Kernel evidence also confirmed that the service itself exceeded its old 128MiB cgroup during diagnostic preparation. The existing host has about 4GiB RAM and had about 1.8GiB available. The Maintainer limit is now **256MiB** using a final persistent Compose overlay; only `mem_limit` differs. The code image, host, auth, CPU, security, mounts and other services are preserved. No instance was provisioned. The repository template uses the same 256MiB default. A postcheck initially compared environment-list ordering; normalized mappings confirmed equal values and the journal was reconciled by readback without replaying a cutover.
+
+Three newly blocked preparation jobs were restored under their original IDs after current case authorization and zero reserved model calls were checked. This includes the extra review-failure case created while the catalog patch was being qualified. Operator recovery receipts are additive; the original uncertain review calls were not retried.
+
+At **16:31 KST**, the final image was running at 256MiB with **zero restarts** since the memory correction. The three new diagnostic jobs were in `triage`; the currently selected owner review reported `company_work_has_priority`. All ten original uncertain review hashes and all 56 original maintenance-call hashes were preserved. There were **zero new maintenance model requests**. Company turns remain queued/running and keep their existing precedence.
+
+The real repair PR is [#106](https://github.com/JJongAchii/quant-ai-company/pull/106). The live automatic diagnosis → patch → bot PR has not completed while company work has priority. The full pipeline is qualified with real PostgreSQL/Temporal and synthetic model/Slack/GitHub responses; those fixture receipts are not claimed as live generated PRs. Resume behavior, uncertainty reconciliation and signed approval gates retain their existing rules.
+
+Final evidence: [qualification and scope](evidence/maintainer-recovery-20261006/qualification.json), [actual candidate diagnosis](evidence/maintainer-recovery-20261006/catalog-candidate-production-diagnosis.json), [catalog cutover](evidence/maintainer-recovery-20261006/catalog-cutover.json), [memory cutover](evidence/maintainer-recovery-20261006/memory-cutover.json), [live state](evidence/maintainer-recovery-20261006/final-live.json).
