@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_existing_completion_navigation",
+  "reviewed_at": "2026-10-06T06:37:40+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "stage_id": "c3050fd0-0139-53ec-8669-56dff53ab630",
+  "task_id": "d7df0261-af8f-5c89-b8ef-a59e3bb9b6f1",
+  "attempt": 1,
+  "observed_artifact_then_partial_source_repetition": [
+    {
+      "id": "8ffc746c-d213-5fae-af1b-25d463107376",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T06:30:43.198102+00:00",
+      "updated_at": "2026-10-06T06:34:47.586707+00:00",
+      "artifact_count": 1,
+      "tool_count": 0,
+      "response_status": "complete",
+      "read": null
+    },
+    {
+      "id": "4d5f02b9-6e4c-59b9-9c16-6939cdfd76d4",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T06:25:43.197667+00:00",
+      "updated_at": "2026-10-06T06:30:26.118095+00:00",
+      "artifact_count": 1,
+      "tool_count": 0,
+      "response_status": "complete",
+      "read": null
+    },
+    {
+      "id": "2b0a09d5-33f5-5758-ac9b-2bbe97b6b051",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T06:20:53.782796+00:00",
+      "updated_at": "2026-10-06T06:25:23.449246+00:00",
+      "artifact_count": 1,
+      "tool_count": 0,
+      "response_status": "complete",
+      "read": null
+    },
+    {
+      "id": "32cdb075-6608-5ef2-b27c-f9050cd6637c",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T06:15:28.419673+00:00",
+      "updated_at": "2026-10-06T06:20:33.837409+00:00",
+      "artifact_count": 1,
+      "tool_count": 0,
+      "response_status": "complete",
+      "read": null
+    }
+  ],
+  "planned_change": "Only source_completion_navigation metadata on the current running proposal stage; explain existing complete-original-source rule before drafting another artifact.",
+  "service_source_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "production_code_change": false,
+  "exact_sha_human_approval_claimed": false,
+  "source_gate_waived": false,
+  "source_bytes_or_model_requests_changed": false,
+  "scientific_decision_or_budget_change": false,
+  "no_new_call_or_job_enqueue": true,
+  "authority": "Existing owner continue/deploy and urgent first-experiment requests; concrete root review in PR105",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105"
+}
