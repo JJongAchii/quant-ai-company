@@ -260,11 +260,16 @@
     "repository_publication": {
       "remote_visibility": "PUBLIC",
       "local_committed": true,
-      "remote_push": false,
+      "remote_push": true,
       "user_choice_pending": false,
       "reason": "User explicitly approved upload with current public visibility; repository visibility unchanged",
       "production_gate_unaffected": true,
-      "user_authorized_public_upload": true
+      "user_authorized_public_upload": true,
+      "remote_branch": "search-trends-source-research",
+      "initially_published_commit": "aeb1ff79697532d0b05216f608213060536cf879",
+      "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/113",
+      "pull_request_draft": true,
+      "remote_publication_verified_at": "2026-10-06T12:11:53.119104+00:00"
     }
   },
   "integrated_with": "457a9c20f4e1b95a407dca3f1c0b20070142c0ae",

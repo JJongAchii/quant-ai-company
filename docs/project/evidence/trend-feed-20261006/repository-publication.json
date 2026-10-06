@@ -6,12 +6,21 @@
   "viewerPermission": "ADMIN",
   "visibility": "PUBLIC",
   "expected_visibility_from_instructions": "private",
-  "pushed_this_work": false,
+  "pushed_this_work": true,
   "visibility_changed_this_work": false,
-  "publication_state": "authorized_remote_upload_pending",
+  "publication_state": "feature_branch_pushed_draft_pr_open",
   "production_preview_continues": true,
   "user_upload_authorized": true,
   "authorization": "chat user: 나중에 비공개 전환할거라 신경쓰지말고 원격에 올려줘",
   "authorization_recorded_at": "2026-10-06T12:07:50.971426+00:00",
-  "visibility_change_requested": false
+  "visibility_change_requested": false,
+  "remote_branch": "search-trends-source-research",
+  "initially_published_commit": "aeb1ff79697532d0b05216f608213060536cf879",
+  "remote_publication_verified_at": "2026-10-06T12:11:53.119104+00:00",
+  "pull_request": {
+    "number": 113,
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/113",
+    "isDraft": true,
+    "remaining_acceptance": "Three actual consecutive qualified morning previews and first regular-delivery receipt have not elapsed."
+  }
 }
