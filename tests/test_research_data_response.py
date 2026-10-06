@@ -40,7 +40,7 @@ def test_data_request_freezes_new_contract_and_preserves_legacy_request(program)
     _, stage = data_stage(h)
     turn_id = pending_turn(h.company, stage["task_id"])
     prepared = h.company.prepare_turn(turn_id)["request"]
-    assert prepared["output_contract"] == "research_data_v1"
+    assert prepared["output_contract"] == "research_stage_v1"
     assert prepared["model"] == h.company.roles["data"].model
     # Represent an already-frozen pre-cutover request, without the optional field.
     legacy = prepared | {"output_contract": "agent_decision"}
@@ -58,8 +58,8 @@ def test_native_data_artifact_still_requires_evidence_and_independent_gate(progr
     task_id, stage = data_stage(h)
     turn_id = pending_turn(h.company, stage["task_id"])
     prepared = h.company.prepare_turn(turn_id)["request"]
-    response = native_response(prepared, {"kind": "complete", "path": "", "offset": 0,
-                                          "result_json": json.dumps(ready())})
+    response = native_response(prepared, {"action": "complete", "read_path": None, "read_offset": None,
+                                          "artifact_json": json.dumps(ready())})
     result = h.company.commit_turn(turn_id, response)
     assert result["incomplete_source"]
     with h.company.db.transaction() as conn:
@@ -70,13 +70,13 @@ def test_native_data_artifact_still_requires_evidence_and_independent_gate(progr
     turn_id = pending_turn(h.company, stage["task_id"])
     prepared = h.company.prepare_turn(turn_id)["request"]
     h.company.commit_turn(turn_id, native_response(prepared, {
-        "kind": "read", "path": path, "offset": 0, "result_json": ""}))
+        "action": "read", "read_path": path, "read_offset": 0, "artifact_json": None}))
     assessment = ready(decision="blocked", rationale="Synthetic evidence is not market readiness",
                        point_in_time=False, coverage=False, executable_prices=False)
     turn_id = pending_turn(h.company, stage["task_id"])
     prepared = h.company.prepare_turn(turn_id)["request"]
     h.company.commit_turn(turn_id, native_response(prepared, {
-        "kind": "complete", "path": "", "offset": 0, "result_json": json.dumps(assessment)}))
+        "action": "complete", "read_path": None, "read_offset": None, "artifact_json": json.dumps(assessment)}))
     assert ProgramController(h.company).tick()["state"] == "completed"
     with h.company.db.transaction() as conn:
         actual = conn.execute("SELECT data_assessment,state FROM research_program_tasks WHERE id=%s", (task_id,)).fetchone()

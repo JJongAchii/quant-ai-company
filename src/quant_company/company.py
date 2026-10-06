@@ -693,8 +693,8 @@ class Company:
 
                     role, prompt = stage_prompt(self, conn, task, turn)
                     stage = _stage(conn, task["id"])
-                    if stage["stage"] == "program_data" and stage["actor"] == "data":
-                        output_contract = "research_data_v1"
+                    if stage["stage"] == "program_data":
+                        output_contract = "research_stage_v1"
                     if enabled(stage):
                         session = session_for(conn, stage, turn)
                 elif task['kind'] == 'routing':
@@ -791,6 +791,24 @@ class Company:
 
                     hold_audit(self, conn, stage, "audit_runtime_requires_reconciliation",
                                diagnostic=private_reason[:1500])
+                    return
+                if stage and stage["stage"] == "program_data" and private_reason == "invalid_output":
+                    failures = stage["context"].get("_data_output_failures", 0) + 1
+                    context = {**stage["context"], "_data_output_failures": failures}
+                    if failures >= 3:
+                        context["_program_hold"] = {"reason": "repeated_data_output_contract_failure",
+                                                    "failure_count": failures}
+                    conn.execute("""UPDATE research_mission_stages SET state='waiting',context=%s,error=%s,
+                        retry_at=CASE WHEN %s THEN NULL ELSE now()+interval '5 minutes' END,
+                        updated_at=now() WHERE id=%s""",
+                                 (Jsonb(context), private_reason, failures >= 3, stage["id"]))
+                    conn.execute("UPDATE research_stage_attempts SET error='stage_response_rejected' WHERE task_id=%s",
+                                 (task["id"],))
+                    self._event(conn, "research_program_stage_held" if failures >= 3 else "research_stage_waiting",
+                                {"stage_id": str(stage["id"]), "task_id": str(task["id"]),
+                                 "employee": task["agent"], "reason": "repeated_data_output_contract_failure"
+                                 if failures >= 3 else "stage_response_rejected", "failure_count": failures,
+                                 "scope": "Operational output failure; no research judgment."}, project["id"])
                     return
                 # Failed structured output is a technical repair, not a public performance artifact.
                 # Keep the exact provider evidence in private stage attempts and retry after backoff.
