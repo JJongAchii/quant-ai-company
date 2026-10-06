@@ -249,6 +249,22 @@ class ProgramController:
                         else:
                             self.store.decide(conn, program["id"], task["id"], row["result"], actor=row["actor"])
                 except (PolicyError, ValidationError) as exc:
+                    if stage == "program_data":
+                        failures = row["context"].get("_data_output_failures", 0) + 1
+                        context = {**row["context"], "_data_output_failures": failures}
+                        if failures >= 3:
+                            context["_program_hold"] = {"reason": "repeated_data_output_contract_failure",
+                                                        "failure_count": failures}
+                        conn.execute("""UPDATE research_mission_stages SET state='waiting',context=%s,error=%s,
+                            retry_at=%s,updated_at=now() WHERE id=%s""",
+                                     (Jsonb(context), str(exc)[:1200],
+                                      None if failures >= 3 else now() + timedelta(minutes=5), identity))
+                        if failures >= 3:
+                            self.company._event(conn, "research_program_stage_held", {
+                                "stage_id": str(identity), "reason": "repeated_data_output_contract_failure",
+                                "failure_count": failures, "scope": "Data artifact contract failure; no research judgment."},
+                                project["id"])
+                        return {"state": "waiting"}
                     conn.execute("""UPDATE research_mission_stages SET state='waiting',error=%s,retry_at=%s
                         WHERE id=%s""", (str(exc)[:1200], now() + timedelta(minutes=5), identity))
                     return {"state": "waiting"}
@@ -308,6 +324,8 @@ class ProgramController:
                 "evidence_version": evidence_version,
                 "available_files": [{"name": name, "sha256": item["sha256"], "size": item["size"]}
                                     for name, item in mappings.items()]}
+            if row and "_data_output_failures" in row["context"]:
+                context["_data_output_failures"] = row["context"]["_data_output_failures"]
             actor = PROGRAM_STAGES[stage][0]
             MissionStore(self.company)._actor(actor)
             if not row:

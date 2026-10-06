@@ -6,6 +6,7 @@ import os
 import sys
 import time
 from pathlib import Path
+from uuid import uuid4
 
 import httpx
 import pytest
@@ -138,6 +139,65 @@ def test_search_disabled_keeps_legacy_request_identity(request_model):
     assert request_digest(request_model) == legacy
     assert request_digest(request_model.model_copy(update={"web_search": True})) != legacy
     assert request_digest(request_model.model_copy(update={"reasoning_effort": "max"})) != legacy
+
+
+@pytest.mark.parametrize('payload', [
+    {'action': 'read', 'read_path': 'data/etf/engine', 'read_offset': 12000, 'artifact_json': None},
+    {'action': 'complete', 'read_path': None, 'read_offset': None,
+     'artifact_json': '{"decision":"blocked","rationale":"Synthetic fixture only"}'},
+])
+async def test_private_research_output_constructs_only_read_or_artifact_and_caches(fake_codex, payload):
+    config, configure, calls = fake_codex
+    configure(direct=payload)
+    request = ProviderRequest(request_id=str(uuid4()), model='gpt-5.6-terra',
+                              prompt='Synthetic research contract fixture', output_contract='research_stage_v1')
+    result = await runner_for(config).run(request)
+    decision = result.decision
+    assert decision.say == '' and not decision.messages and not decision.delegations and not decision.memories
+    if payload['action'] == 'read':
+        assert decision.status == 'continue' and not decision.artifacts
+        assert decision.tools[0].name == 'research_control'
+        assert decision.tools[0].arguments == {'action': 'read_stage_file', 'path': payload['read_path'],
+                                              'offset': payload['read_offset']}
+    else:
+        assert decision.status == 'complete' and not decision.tools
+        assert decision.artifacts[0].content == payload['artifact_json']
+    assert await runner_for(config).run(request) == result and len(calls()) == 1
+    schema = calls()[0]['schema']
+    assert set(schema['required']) == {'action', 'read_path', 'read_offset', 'artifact_json'}
+    assert schema['additionalProperties'] is False and 'decision_json' not in schema['properties']
+    assert 'features.shell_tool=false' in calls()[0]['args']
+
+
+@pytest.mark.parametrize('payload', [
+    {'action': 'read', 'read_path': 'SECRET-PATH', 'read_offset': True, 'artifact_json': None},
+    {'action': 'read', 'read_path': 'SECRET-PATH', 'read_offset': 0, 'artifact_json': 'SECRET-RAW'},
+    {'action': 'complete', 'read_path': None, 'read_offset': None, 'artifact_json': {'SECRET': 'RAW'}},
+    {'action': 'complete', 'read_path': None, 'read_offset': None, 'artifact_json': 'SECRET-RAW'},
+    {'action': 'complete', 'read_path': None, 'read_offset': None, 'artifact_json': '["SECRET-RAW"]'},
+    {'action': 'complete', 'read_path': None, 'read_offset': None, 'artifact_json': 'SECRET-RAW',
+     'say': 'SECRET-FIELD'},
+])
+async def test_private_research_format_failure_is_terminal_and_keeps_no_raw_output(fake_codex, payload):
+    config, configure, calls = fake_codex
+    configure(direct=payload)
+    request = ProviderRequest(request_id=str(uuid4()), model='gpt-5.6-terra',
+                              prompt='Synthetic research contract fixture', output_contract='research_stage_v1')
+    for _ in range(2):
+        with pytest.raises(ProviderFault, match='research_stage_contract:invalid_shape'):
+            await runner_for(config).run(request)
+    receipt = (config.jobs_dir / f'{request.request_id}.json').read_text()
+    assert 'SECRET' not in receipt and json.loads(receipt)['state'] == 'failed'
+    assert len(calls()) == 1
+
+
+@pytest.mark.parametrize('changes', [
+    {'request_id': 'quant-feed-test'}, {'web_search': True}, {'session': {'id': 'test-session'}},
+])
+def test_private_research_output_cannot_enable_search_or_provider_sessions(changes):
+    with pytest.raises(ValueError):
+        ProviderRequest(**({'request_id': str(uuid4()), 'model': 'gpt-5.6-terra', 'prompt': 'Fixture',
+                            'output_contract': 'research_stage_v1'} | changes))
 
 
 @pytest.mark.parametrize("contract", ["quant_brief_v1", "quant_brief_v2", "quant_brief_v3", "quant_brief_v4",
