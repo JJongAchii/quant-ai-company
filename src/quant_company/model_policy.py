@@ -11,7 +11,8 @@ MODEL_ID = r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}"
 EFFORT = "(?:" + "|".join(get_args(ReasoningEffort)) + ")"
 ALIASES = {"총괄": "director", "개발": "engineer", "데이터": "data", "금융전략": "financial_strategist",
            "국내연구": "researcher_kr", "글로벌연구": "researcher_global", "가상자산연구": "researcher_crypto",
-           "검증": "validator", "리스크": "risk", "운영": "operations", "뉴스": "reporter", "개선": "maintainer"}
+           "검증": "validator", "리스크": "risk", "운영": "operations", "뉴스": "reporter", "개선": "maintainer",
+           "브리핑": "market_brief"}
 HELP_TEXT = ("모델 배정 명령:\n• `모델 목록` · `모델 배정 상태` · `모델 배정 이력`\n"
              "• `모델 지정 개발 gpt-6.1-sol max`\n• `모델 자동 개발` (고정 해제, 기본 배정 사용)\n"
              "• `모델 배정 복원 2` (이력 번호)\n"

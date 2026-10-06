@@ -6,24 +6,54 @@
   "currentIntent": "INTENT-v2.json",
   "deliverables": {
     "IMPLEMENTATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "src/quant_company/model_policy.py",
+          "sha256": "173de699cc1c"
+        },
+        {
+          "path": "src/quant_company/model_control.py",
+          "sha256": "9a638de467ef"
+        },
+        {
+          "path": "docs/runbooks/model-assignments.md",
+          "sha256": "5d38bad844b7"
+        }
+      ],
+      "note": "Model assignment implementation integrated with current main; Korean briefing alias added. Production request producers are merged per image, preserving native contracts and frozen calls.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T08:18:53.545566+00:00"
     },
     "PRODUCTION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/production-overlay-manifest.json",
+          "sha256": "16e2ad8b7c9e"
+        }
+      ],
+      "note": "Actual fleet audited. Nine image-derived source cohorts qualified; preserve per-service code, native output contracts, auth profiles and frozen requests. Building reviewed overlays before activation.",
+      "status": "in_progress",
+      "updatedAt": "2026-10-06T08:18:10.470462+00:00"
     },
     "VALIDATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/production-qualification.json",
+          "sha256": "20d6009fd3b8"
+        },
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/integrated-pytest.txt",
+          "sha256": "72646579c2e9"
+        }
+      ],
+      "note": "Current main integration full suite 1484 passed/47 skipped. Final feature slice 45 passed; deployed source cohorts 46 or 45 passed, plus both runtime-only checks. Real PostgreSQL/Temporal; synthetic Slack/RPC; live activation still pending.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T08:18:53.736271+00:00"
     }
   },
   "intentDigest": "120eac18b054",
   "schemaVersion": 1,
   "slug": "manatee",
   "state": "approved",
-  "updatedAt": "2026-10-06T07:53:56.619444+00:00"
+  "updatedAt": "2026-10-06T08:18:53.736271+00:00"
 }

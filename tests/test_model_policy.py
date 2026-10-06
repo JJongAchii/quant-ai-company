@@ -10,10 +10,13 @@ from temporalio.worker import Replayer
 
 from quant_company.account_workflow import AccountControlWorkflow
 from quant_company.api import create_app
-from quant_company.company import Company, PolicyError
-from quant_company.contracts import AgentDecision, ProviderRequest, ProviderResponse, ProviderSession
+from quant_company.company import Company, PolicyError, fingerprint
+from quant_company.contracts import AgentDecision, ProviderRequest, ProviderResponse, ProviderSession, Role
 from quant_company.model_control import ModelControl
 from quant_company.model_policy import bind, effective_role, parse_command, policy, selection
+from quant_company.quant_feed import schedule
+from quant_company.quant_feed.contracts import QuantSource
+from quant_company.quant_feed.store import QuantFeedStore
 from quant_company.runtime import make_accounts_worker
 from quant_company.web_tools import prepare as web_prepare
 
@@ -23,8 +26,6 @@ from .test_accounts import fake_codex as fake_codex
 from .test_maintenance import make_maintainer
 from .test_news import news as news
 from .test_news import ready_article, source
-from .test_quant_feed import original
-from .test_quant_feed import quant as quant
 from .test_research_audit_delivery import complete as complete_audit
 from .test_research_audit_delivery import setup_audit
 from .test_research_controller import active as active_audit
@@ -32,6 +33,39 @@ from .test_research_controller import mission as mission
 from .test_slack import event, signed
 from .test_staff_development import staff_company as staff_company
 from .test_temporal import temporal_environment as temporal_environment
+
+
+@pytest.fixture
+def quant(company, tmp_path, monkeypatch):
+    company.settings.quant_feed_enabled = True
+    company.settings.quant_feed_publish_enabled = True
+    company.settings.quant_feed_channel_id = "CQUANT"
+    company.settings.quant_feed_owner_user = "UHUMAN"
+    company.settings.company_web_enabled = False
+    company.roles["quant_scout"] = Role(id="quant_scout", name="Quant Scout", mission="Synthetic assignment test",
+                                       model="gpt-5.6-luna", instructions="Delivery only", tools=[], can_delegate_to=[])
+    source = QuantSource(id="example", publisher="Example research", kind="seed", url="https://example.org/paper",
+                         article_hosts=["example.org", "arxiv.org"])
+    path = tmp_path / "sources.json"
+    path.write_text(json.dumps([source.model_dump()]))
+    company.settings.quant_feed_sources_file = path
+    monkeypatch.setattr(schedule, "delivery_time", lambda at: at)
+    return QuantFeedStore(company)
+
+
+def original(store):
+    text = ("Synthetic study by Example Author, published 2026-09-01. US equities from 2000 to 2020. "
+            "No performance or tradability claim is tested in this model assignment fixture. ") * 5
+    claimed = store.claim_source()
+    source = store.sources()["example"]
+    store.save_source(claimed, {"ok": True, "entries": [{"url": source.url, "title": "Research", "metadata": {}}]})
+    candidate = store.claim_candidate()
+    return store.save_original(candidate, {"ok": True, "url": candidate["url"], "original_sha256": fingerprint(text),
+        "pages": [{"location": "PDF p.1", "text": text}], "metadata": {}, "links": [], "truncated": False})
+
+
+def test_briefing_alias():
+    assert parse_command("모델 지정 브리핑 candidate-a high")["target"] == "market_brief"
 
 
 @pytest.fixture

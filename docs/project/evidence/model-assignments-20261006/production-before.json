@@ -1,0 +1,454 @@
+{
+  "at": "2026-10-06T07:56:23.774089+00:00",
+  "current": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264",
+  "runtime_env_sha256": "dea098958d9c1d824e1bbd885184755727af15141625049a459402648d48c91c",
+  "services": {
+    "maintenance": {
+      "id": "ff999c06352a6f374822d15db9d49884af0cb49d5b4f02e24fa6b53d978c7848",
+      "image": "sha256:955bcafa236a5baf9631447651c9ceb57f2cbdb2f0b51c43230627dcdf166f82",
+      "tag": "quant-company-maintenance:46d853cbefd4ce808fc247a0ebba1f5df33f0cd8",
+      "revision": "46d853cbefd4ce808fc247a0ebba1f5df33f0cd8",
+      "compose_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml,/var/lib/quant-company/config/maintainer-recovery-fadc0e54be0c470068bb18011cc6a1a9ec8ee971.compose.json,/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8.compose.json,/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8-memory.compose.json",
+      "running": true,
+      "oom": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 268435456,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "46d853cbefd4ce808fc247a0ebba1f5df33f0cd8",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
+        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
+        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\",\"C0C2B9EUEGM\",\"C0C2J1SSX09\",\"C0C2KPB76KE\",\"C0C3K8ZB9PB\",\"C0C3Q7BFQCE\",\"C0C3Q7H30HL\",\"C0C3C6ELJ0P\"]",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080"
+      }
+    },
+    "news-worker": {
+      "id": "910813dca9d500ea086541dc87a1fff61d5204ac596d63e7f773490c91ebd356",
+      "image": "sha256:cd08cf471a5854c927bdb3d9e383ad61d07d9edb8b81adf282f6c371d2ab64ea",
+      "tag": "quant-company:971f872a23f4989ddd1628bc28c59868a1c29264",
+      "revision": "971f872a23f4989ddd1628bc28c59868a1c29264",
+      "compose_files": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/research.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/data-watch.compose.yaml",
+      "running": true,
+      "oom": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 201326592,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "971f872a23f4989ddd1628bc28c59868a1c29264",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
+        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
+        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\", \"C0C2B9EUEGM\", \"C0C2J1SSX09\", \"C0C2KPB76KE\", \"C0C3K8ZB9PB\", \"C0C3Q7BFQCE\", \"C0C3Q7H30HL\", \"C0C3C6ELJ0P\", \"C0C2E59B1AA\"]",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080"
+      }
+    },
+    "dispatch": {
+      "id": "11d219b2492091f1c215d057dca252868068e03b3861f63d788fc9f055a4c154",
+      "image": "sha256:cd08cf471a5854c927bdb3d9e383ad61d07d9edb8b81adf282f6c371d2ab64ea",
+      "tag": "quant-company:971f872a23f4989ddd1628bc28c59868a1c29264",
+      "revision": "971f872a23f4989ddd1628bc28c59868a1c29264",
+      "compose_files": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/research.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/data-watch.compose.yaml",
+      "running": true,
+      "oom": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 201326592,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "971f872a23f4989ddd1628bc28c59868a1c29264",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
+        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
+        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\", \"C0C2B9EUEGM\", \"C0C2J1SSX09\", \"C0C2KPB76KE\", \"C0C3K8ZB9PB\", \"C0C3Q7BFQCE\", \"C0C3Q7H30HL\", \"C0C3C6ELJ0P\", \"C0C2E59B1AA\"]"
+      }
+    },
+    "briefing-data-worker": {
+      "id": "e26078301296e69b5251e1cacd0d7e88facba0e4fdc9c9d9cd62c0cbcf7304b9",
+      "image": "sha256:cd08cf471a5854c927bdb3d9e383ad61d07d9edb8b81adf282f6c371d2ab64ea",
+      "tag": "quant-company:971f872a23f4989ddd1628bc28c59868a1c29264",
+      "revision": "971f872a23f4989ddd1628bc28c59868a1c29264",
+      "compose_files": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/research.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/data-watch.compose.yaml",
+      "running": true,
+      "oom": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 402653184,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "971f872a23f4989ddd1628bc28c59868a1c29264",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
+        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
+        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\", \"C0C2B9EUEGM\", \"C0C2J1SSX09\", \"C0C2KPB76KE\", \"C0C3K8ZB9PB\", \"C0C3Q7BFQCE\", \"C0C3Q7H30HL\", \"C0C3C6ELJ0P\", \"C0C2E59B1AA\"]"
+      }
+    },
+    "worker": {
+      "id": "9318351fe35099796fd0324295b4038f327844cf9b516204d4bee7a79727f75f",
+      "image": "sha256:6edd5c056625e66cd6a26da6b33a5451372b301f2c9a71894e5d20506de8aba5",
+      "tag": "quant-company-autonomous:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "revision": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+      "compose_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json,/var/lib/quant-company/config/native-output-5c44ad07273adc780a56a47d7d35114fd0dc32c8-02.compose.json,/var/lib/quant-company/config/data-watch-readable-v6-8508954320877144e8f24cb52c8353c0e18f514a-api.compose.json,/var/lib/quant-company/config/scoped-data-86aea8cdf03b5543666813c97689acb1e8158a6d.compose.json,/var/lib/quant-company/config/held-audit-ec1fbeb29a49420a367f06af596283e6ead4ab72.compose.json",
+      "running": true,
+      "oom": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 402653184,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
+        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
+        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\",\"C0C2B9EUEGM\",\"C0C2J1SSX09\",\"C0C2KPB76KE\",\"C0C3K8ZB9PB\",\"C0C3Q7BFQCE\",\"C0C3Q7H30HL\",\"C0C3C6ELJ0P\"]",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080"
+      }
+    },
+    "account-gateway": {
+      "id": "95328322c7036fe29d944a833d9e67dbaa4adfcfbf6ab1794b993fe26edc34a6",
+      "image": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "tag": "quant-company:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "revision": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+      "compose_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json,/var/lib/quant-company/config/native-output-5c44ad07273adc780a56a47d7d35114fd0dc32c8-02.compose.json,/var/lib/quant-company/config/data-watch-readable-v6-8508954320877144e8f24cb52c8353c0e18f514a-api.compose.json,/var/lib/quant-company/config/scoped-data-86aea8cdf03b5543666813c97689acb1e8158a6d.compose.json,/var/lib/quant-company/config/held-audit-ec1fbeb29a49420a367f06af596283e6ead4ab72.compose.json",
+      "running": true,
+      "oom": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 134217728,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
+        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
+        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\",\"C0C2B9EUEGM\",\"C0C2J1SSX09\",\"C0C2KPB76KE\",\"C0C3K8ZB9PB\",\"C0C3Q7BFQCE\",\"C0C3Q7H30HL\",\"C0C3C6ELJ0P\"]",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080"
+      }
+    },
+    "api": {
+      "id": "933117a07749bb6cb8bc4309b9d068bf5665b5e0eb4e42976af59181aad8e544",
+      "image": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "tag": "quant-company:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "revision": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+      "compose_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json,/var/lib/quant-company/config/native-output-5c44ad07273adc780a56a47d7d35114fd0dc32c8-02.compose.json,/var/lib/quant-company/config/data-watch-readable-v6-8508954320877144e8f24cb52c8353c0e18f514a-api.compose.json,/var/lib/quant-company/config/scoped-data-86aea8cdf03b5543666813c97689acb1e8158a6d.compose.json,/var/lib/quant-company/config/held-audit-ec1fbeb29a49420a367f06af596283e6ead4ab72.compose.json",
+      "running": true,
+      "oom": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 134217728,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
+        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
+        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\", \"C0C2B9EUEGM\", \"C0C2J1SSX09\", \"C0C2KPB76KE\", \"C0C3K8ZB9PB\", \"C0C3Q7BFQCE\", \"C0C3Q7H30HL\", \"C0C3C6ELJ0P\", \"C0C2E59B1AA\"]"
+      }
+    },
+    "slack-socket": {
+      "id": "9ea8cbab7c58ca3a91e5172f57adf9bcd5202607271d45beb5e610a042b41dbd",
+      "image": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "tag": "quant-company:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "revision": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+      "compose_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json,/var/lib/quant-company/config/native-output-5c44ad07273adc780a56a47d7d35114fd0dc32c8-02.compose.json,/var/lib/quant-company/config/data-watch-readable-v6-8508954320877144e8f24cb52c8353c0e18f514a-api.compose.json,/var/lib/quant-company/config/scoped-data-86aea8cdf03b5543666813c97689acb1e8158a6d.compose.json,/var/lib/quant-company/config/held-audit-ec1fbeb29a49420a367f06af596283e6ead4ab72.compose.json",
+      "running": true,
+      "oom": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 201326592,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
+        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
+        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\",\"C0C2B9EUEGM\",\"C0C2J1SSX09\",\"C0C2KPB76KE\",\"C0C3K8ZB9PB\",\"C0C3Q7BFQCE\",\"C0C3Q7H30HL\",\"C0C3C6ELJ0P\"]"
+      }
+    },
+    "codex-runtime": {
+      "id": "aaefe41a0b06f10d92363fc94b850ad8bc5fb4e2ce259c79ffcd3a89528b76f0",
+      "image": "sha256:a4bc2f4e24fb143db994b8b201a538dc3acce4e651e9bfbdc46550ea6be5f239",
+      "tag": "quant-company-codex:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "revision": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+      "compose_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json,/var/lib/quant-company/config/native-output-5c44ad07273adc780a56a47d7d35114fd0dc32c8-02.compose.json,/var/lib/quant-company/config/data-watch-readable-v6-8508954320877144e8f24cb52c8353c0e18f514a-api.compose.json,/var/lib/quant-company/config/scoped-data-86aea8cdf03b5543666813c97689acb1e8158a6d.compose.json,/var/lib/quant-company/config/held-audit-ec1fbeb29a49420a367f06af596283e6ead4ab72.compose.json",
+      "running": true,
+      "oom": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 536870912,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+      }
+    },
+    "data-watch-worker": {
+      "id": "b8ee09473da6f0343942a4b993d3b9586870faa511d2bb58377e4f77a6cad24a",
+      "image": "sha256:2a2aff76ac41d84fa53f0b323565303f967806e6cb797387f7384f4666ae3e9e",
+      "tag": "quant-company-data-watch:8508954320877144e8f24cb52c8353c0e18f514a-7c834100fdef",
+      "revision": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+      "compose_files": "/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/model-accounts.compose.yaml,/var/lib/quant-company/config/data-watch-readable-v6-8508954320877144e8f24cb52c8353c0e18f514a-data-watch-worker.compose.json",
+      "running": true,
+      "oom": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 268435456,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
+        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
+        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\",\"C0C2B9EUEGM\",\"C0C2J1SSX09\",\"C0C2KPB76KE\",\"C0C3K8ZB9PB\",\"C0C3Q7BFQCE\",\"C0C3Q7H30HL\",\"C0C3C6ELJ0P\"]"
+      }
+    },
+    "quant-feed-worker": {
+      "id": "eeb6a2568820a5c4c10abc8ed668d7e4a14532fa141536f5b686de0c34a6ac6c",
+      "image": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+      "tag": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+      "revision": "ea092f419b4b679df4c25e479a8cb361b4d046ff",
+      "compose_files": "/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/research.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/quant-parity-20261006.compose.json",
+      "running": true,
+      "oom": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 268435456,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "ea092f419b4b679df4c25e479a8cb361b4d046ff",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
+        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
+        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\", \"C0C2B9EUEGM\", \"C0C2J1SSX09\", \"C0C2KPB76KE\", \"C0C3K8ZB9PB\", \"C0C3Q7BFQCE\", \"C0C3Q7H30HL\", \"C0C3C6ELJ0P\", \"C0C2E59B1AA\"]",
+        "MODEL_RUNTIME_URL": "http://quant-codex-runtime:8080"
+      }
+    },
+    "quant-codex-runtime": {
+      "id": "ce8b1dfdab1bd595aeb7e7446e0d1e1a38f5f8457b14969620d93edb11841190",
+      "image": "sha256:c983c63235365a43ae1afa8eaba37bd7708e49b43afc2089aa824bad242f02e7",
+      "tag": "quant-company-codex:ea092f419b4b679df4c25e479a8cb361b4d046ff",
+      "revision": "ea092f419b4b679df4c25e479a8cb361b4d046ff",
+      "compose_files": "/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/research.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/data-watch.compose.yaml",
+      "running": true,
+      "oom": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 1073741824,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "ea092f419b4b679df4c25e479a8cb361b4d046ff"
+      }
+    },
+    "housing-feed-worker": {
+      "id": "7df307ee748d54371c6c9bb2fee6a5ac17e7f5b341d1f137db7af89eb69e74ab",
+      "image": "sha256:db3c79878edf68a0115c8f0b893d41a92fa78e91f1a59bf76f92b60c8a69a589",
+      "tag": "quant-company:c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+      "revision": "c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+      "compose_files": "/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/model-accounts.compose.yaml",
+      "running": true,
+      "oom": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 201326592,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
+        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
+        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\",\"C0C2B9EUEGM\",\"C0C2J1SSX09\",\"C0C2KPB76KE\",\"C0C3K8ZB9PB\",\"C0C3Q7BFQCE\",\"C0C3Q7H30HL\",\"C0C3C6ELJ0P\"]"
+      }
+    },
+    "claude-runtime": {
+      "id": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+      "image": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+      "tag": "quant-company-claude:fde7681e0286501d8713e08e30a96991a88b9151",
+      "revision": "fde7681e0286501d8713e08e30a96991a88b9151",
+      "compose_files": "/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/research.compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/model-accounts.compose.yaml",
+      "running": true,
+      "oom": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 536870912,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "fde7681e0286501d8713e08e30a96991a88b9151"
+      }
+    },
+    "postgres": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "tag": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "revision": null,
+      "compose_files": "/opt/quant-company/releases/8883e32812c027a6da6eaf31a6b31fa8ce5ecdc4/deploy/compose.yaml,/opt/quant-company/releases/8883e32812c027a6da6eaf31a6b31fa8ce5ecdc4/deploy/research.compose.yaml",
+      "running": true,
+      "oom": false,
+      "health": "healthy",
+      "restarts": 0,
+      "memory_limit": 268435456,
+      "model_assignments_overlay": null,
+      "config": {}
+    }
+  },
+  "database": {
+    "turns": [
+      {
+        "status": "completed",
+        "count": 7043
+      },
+      {
+        "status": "stale",
+        "count": 4
+      },
+      {
+        "status": "queued",
+        "count": 2
+      },
+      {
+        "status": "blocked",
+        "count": 195
+      },
+      {
+        "status": "running",
+        "count": 1
+      }
+    ],
+    "tasks": [
+      {
+        "status": "superseded",
+        "count": 5
+      },
+      {
+        "status": "completed",
+        "count": 332
+      },
+      {
+        "status": "pending",
+        "count": 2
+      },
+      {
+        "status": "blocked",
+        "count": 191
+      },
+      {
+        "status": "running",
+        "count": 1
+      }
+    ],
+    "outbox": [
+      {
+        "status": "blocked",
+        "count": 8
+      },
+      {
+        "status": "delivered",
+        "count": 3211
+      },
+      {
+        "status": "stale",
+        "count": 201
+      }
+    ],
+    "model_account_calls": [
+      {
+        "state": "auth",
+        "count": 11
+      },
+      {
+        "state": "dispatching",
+        "count": 1
+      },
+      {
+        "state": "uncertain",
+        "count": 1
+      },
+      {
+        "state": "busy",
+        "count": 2
+      },
+      {
+        "state": "unavailable",
+        "count": 2
+      },
+      {
+        "state": "invalid_output",
+        "count": 169
+      },
+      {
+        "state": "timeout",
+        "count": 1
+      },
+      {
+        "state": "completed",
+        "count": 8200
+      }
+    ],
+    "maintenance_jobs": [
+      {
+        "state": "superseded",
+        "count": 1
+      },
+      {
+        "state": "triage",
+        "count": 3
+      },
+      {
+        "state": "closed",
+        "count": 1
+      },
+      {
+        "state": "applied",
+        "count": 1
+      },
+      {
+        "state": "blocked",
+        "count": 47
+      },
+      {
+        "state": "done",
+        "count": 19
+      }
+    ],
+    "quant_feed_calls": [
+      {
+        "state": "blocked",
+        "count": 138
+      },
+      {
+        "state": "completed",
+        "count": 536
+      }
+    ],
+    "news_reviews": [
+      {
+        "state": "blocked",
+        "count": 100
+      },
+      {
+        "state": "completed",
+        "count": 785
+      }
+    ],
+    "account_policy": {
+      "profile": "primary",
+      "revision": 2
+    },
+    "frozen_request_count": 7242
+  },
+  "timer": "active",
+  "release_service": "inactive",
+  "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/root        77G   63G   14G  82% /\n",
+  "memory": "               total        used        free      shared  buff/cache   available\nMem:            3832        2133         270          75        1807        1698\nSwap:              0           0           0\n"
+}
