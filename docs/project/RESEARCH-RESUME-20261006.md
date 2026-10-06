@@ -302,3 +302,23 @@ PR105에 게시·root 검토한 뒤 기존 진행 권한으로 urgency와 factua
 대사했다([event699](evidence/etf-exploration-20260930/first-mission-challenge-preparation-applied-20261006.json)).
 원문·가설·반론·선정·구현·승인·예산을 operator가 쓰지 않았다. 정상 모델이 평가 엔진을
 실제로 읽는 것을15:54에 확인했다. 현재 actual scientific job/trial/reservation은 여전히0이다.
+
+### 16:06~16:21 KST — 독립 선정 후 과제 범위 수정
+
+challenge가 완료되자 director의 selection `0236729d-3188-5802-8a60-d48e96bd119e`가
+생성됐다. 현재 준비 task와 요청을 PR105에서 구체적으로 검토하고 기존 urgency/완료 안내만
+대사했다([event709](evidence/etf-exploration-20260930/first-mission-selection-preparation-applied-20261006.json)).
+중간 queued 요청56de의 실제 Temporal은 정상 completed이며 실패나 runtime pause/routing은 없었다.
+
+director는16:16에 revise를 정상 기록했다. 최초 제안이 선정된 단일 ETF·현금 노출 조절에서
+종목 간 역변동성 정규화로 범위를 바꿨고, 종목집합·첫 개발일 초기화가 확정되지 않았기 때문이다.
+이 과학 판단을 root가 덮어쓰지 않는다. 고정된 평가기·데이터·목적·비용·위험기준과 원래 과제를
+유지한 수정 가설은 연구자가 제안하고 다시 독립 검토·선정을 거친다. 결과 측정은 아직 없다.
+
+정상 서비스가 만든 수정 proposal `2e334964-f7db-5f00-9044-d3d86c44a24e`/attempt1,
+task `3173feae-397b-563d-8a30-57f5746ff79c`도priority100/미요청이었다.
+[구체적 검토](evidence/etf-exploration-20260930/first-mission-revised-proposal-preparation-review-20261006.json) 뒤
+같은 bounded operator의 역할 확인에 proposal만 추가해 현재 준비를 대사했다
+([event711](evidence/etf-exploration-20260930/first-mission-revised-proposal-preparation-applied-20261006.json)).
+과학 판단·원문·read receipt·승인·예산·job을 operator가 쓰지 않았다. 수정 업무는 실제 critique를
+읽으며 정상 진행 중이다. 실제 과학 job/trial/reservation은 여전히0이며 INTENT-v15는 미완료다.

@@ -113,7 +113,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "ec_active_proposal_completed_challenge_running",
+    "phase": "ec_active_director_revision_preserved_revised_proposal_running",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
@@ -122,6 +122,8 @@
     "preparationProgressReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-preparation-read-progress-20261006.json",
     "sourceNavigationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-source-navigation-applied-20261006.json",
     "challengePreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-challenge-preparation-applied-20261006.json",
+    "selectionPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-selection-preparation-applied-20261006.json",
+    "revisedProposalPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-revised-proposal-preparation-applied-20261006.json",
     "workerPreviousCommit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
     "scientificTrials": 0,
     "releaseTimerTemporarilyPaused": false,
