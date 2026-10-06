@@ -129,6 +129,8 @@ class BriefStore:
                           claimed["id"], claimed["lease"], self.policy()))
 
     def _freeze(self, conn, row):
+        if (row['bundle'] or {}).get('inputs_frozen'):
+            return row['bundle']
         bundle = {**(row["bundle"] or {"documents": [], "collection_errors": []}), "edition": row["definition"]}
         bundle["analyst_procedure"] = pack(BRIEFER)
         bundle["quote_reference_version"] = QUOTE_REFERENCE_VERSION
@@ -164,6 +166,7 @@ class BriefStore:
             AND committed_at IS NOT NULL ORDER BY due_at DESC LIMIT 3""",
                               (row["channel"], row["owner_user"], row["due_at"])).fetchall()
         bundle["previous_briefs_context_only"] = as_json(recent)
+        bundle['inputs_frozen'] = True
         return bundle
 
     def claim_data(self):

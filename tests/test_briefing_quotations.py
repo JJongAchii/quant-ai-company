@@ -150,14 +150,31 @@ def large_review_case():
     return b, p
 
 
+def original_body(data, index):
+    quotes = data['original_quotes']
+    if isinstance(quotes, dict):
+        return ''.join(text for position, text in quotes.values() if position == index)
+    if data.get('original_quote_layout') == 'grouped_documents':
+        return ''.join(text for _, text in quotes[index])
+    return ''.join(text for _, position, text in quotes if position == index)
+
+
+def input_proposal(data):
+    names = data.get('proposal_key_map', {})
+    def expand(value):
+        if isinstance(value, dict):
+            return {names.get(key, key): expand(item) for key, item in value.items()}
+        return [expand(item) for item in value] if isinstance(value, list) else value
+    return expand(data['proposal'])
+
+
 def test_large_final_review_retains_complete_originals_and_entire_unselected_catalog():
     b, p = large_review_case()
     text = prompt(b, 'final_review', p)
     data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
     assert len(text) <= 88000
-    assert data['original_quote_layout'] == 'ordered_rows'
     for index, source in enumerate(b['documents']):
-        assert ''.join(row[2] for row in data['original_quotes'] if row[1] == index) == source['content']
+        assert original_body(data, index) == source['content']
     assert len(data['unselected_source_index']) == 76
     assert {row[0] for row in data['unselected_source_index']} == {f'unselected-{i}' for i in range(76)}
 
@@ -170,18 +187,25 @@ def test_compact_final_review_preserves_long_catalog_identities_and_all_original
     frozen = deepcopy(b)
     text = prompt(b, 'final_review', p)
     data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
-    assert len(text) <= 88000 and data['original_quote_layout'] == 'compact_ordered_rows'
-    assert 'source_notes' not in data['proposal']
-    assert [i['fact']['text'] for i in data['proposal']['issues']] == [i['fact']['text'] for i in p['issues']]
-    assert [i['interpretation']['text'] for i in data['proposal']['issues']] == [i['interpretation']['text'] for i in p['issues']]
+    assert len(text) <= 88000
+    decoded_proposal = input_proposal(data)
+    assert 'source_notes' not in decoded_proposal
+    assert [i['fact']['text'] for i in decoded_proposal['issues']] == [i['fact']['text'] for i in p['issues']]
+    assert [i['interpretation']['text'] for i in decoded_proposal['issues']] == [i['interpretation']['text'] for i in p['issues']]
     for i, original in enumerate(b['documents']):
-        assert ''.join(row[2] for row in data['original_quotes'] if row[1] == i) == original['content']
+        assert original_body(data, i) == original['content']
     for context, encoded in zip(b['market_context'], data['market_context'], strict=True):
-        start, end = encoded['original_text_range']
-        assert frozen['documents'][int(context['source_id'].split('-')[1])]['content'][start:end] == context['text']
+        if 'original_text_range' in encoded:
+            start, end = encoded['original_text_range']
+            assert frozen['documents'][int(context['source_id'].split('-')[1])]['content'][start:end] == context['text']
+        else:
+            assert encoded['text'] == context['text']
+    restored_ids = set()
     for identity, *_ in data['unselected_source_index']:
+        identity = data.get('unselected_source_prefix', '')+str(identity)
         decoded = resolve_candidate_requests({'source_requests': [{'source_id': identity}]}, b)
-        assert decoded['source_requests'][0]['source_id'] in {d['id'] for d in b['candidate_documents'][20:]}
+        restored_ids.add(decoded['source_requests'][0]['source_id'])
+    assert restored_ids == {d['id'] for d in b['candidate_documents'][20:]}
     assert b == frozen
 
 

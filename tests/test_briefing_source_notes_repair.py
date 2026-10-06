@@ -146,3 +146,27 @@ def test_real_postgres_no_patch_without_time_or_authorized_budget(brief):  # noq
     with store.db.transaction() as conn:
         assert conn.execute('SELECT count(*) AS n FROM brief_calls WHERE edition_id=%s',
                             (edition.id,)).fetchone()['n'] == 1
+
+
+def test_real_postgres_deadline_preserves_frozen_data_once_and_does_not_refresh_inputs(brief):  # noqa: F811
+    store, clock = brief
+    store.company.settings.briefing_publish_enabled = False
+    store.company.settings.briefing_source_notes_enabled = True
+    store.company.settings.briefing_max_revisions = 0
+    edition = seed(brief)
+    b, p, _ = failed_case()
+    dataset = {**deepcopy(b['documents'][0]), 'id': 'collected-context', 'kind': 'dataset'}
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE brief_editions SET bundle=%s,market_data=%s WHERE id=%s',
+            (Jsonb(b), Jsonb({'documents': [dataset], 'observations': [], 'contexts': [], 'diagnostics': []}), edition.id))
+    first = store.prepare()
+    store.commit(response(first['request'], p))
+    assert store.prepare()['state'] == 'blocked'
+    with store.db.transaction() as conn:
+        frozen = conn.execute('SELECT bundle FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()['bundle']
+    assert frozen['inputs_frozen'] and len(frozen['documents']) == 2
+    clock['at'] = edition.due_at+timedelta(minutes=10)
+    store.flush()
+    with store.db.transaction() as conn:
+        final = conn.execute('SELECT bundle FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()['bundle']
+    assert final == frozen

@@ -58,7 +58,7 @@ class SourceChoice(StrictModel):
 
 
 class SourcePlan(StrictModel):
-    selections: list[SourceChoice] = Field(min_length=1, max_length=16)
+    selections: list[SourceChoice] = Field(min_length=1, max_length=20)
     # Editorial priorities are questions for the writer, never additional evidence.
     priorities: list[str] = Field(min_length=1, max_length=6)
 

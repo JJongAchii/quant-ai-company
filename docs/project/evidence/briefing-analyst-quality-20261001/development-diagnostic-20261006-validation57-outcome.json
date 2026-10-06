@@ -1,0 +1,58 @@
+{
+  "recorded_at": "2026-10-06T11:48:10.877180+00:00",
+  "scope": "One independent real Codex development review; previously inspected sources, not a fresh qualification.",
+  "policy": "development-diagnostic-20261006-validation57-policy.json",
+  "request_id": "news-brief-development-diagnostic-54829133e8cf26eb2f4e1c83",
+  "receipt_sha256": "474021eb6e12844dbd02910ecf79ad97c5f75014bb19299cc4448818ac368eb3",
+  "review_sha256": "40bf0558638b4dd353bf18e871cd444d40d4f1936ea7bacd57095540af06d2cf",
+  "verdict": "reduce",
+  "checks": {
+    "numbers": true,
+    "sources": true,
+    "timing": true,
+    "causality": true,
+    "materiality": false,
+    "counterevidence": true,
+    "transmission": true,
+    "alternatives": true,
+    "falsifiability": true,
+    "coverage": false,
+    "depth": true,
+    "readability": false
+  },
+  "passed_checks": 9,
+  "rejected_ids_count": 0,
+  "usage": {
+    "input_tokens": 46798,
+    "cached_input_tokens": 0,
+    "output_tokens": 12468,
+    "reasoning_output_tokens": 4660
+  },
+  "elapsed_seconds": 356.376,
+  "real_model_calls": 1,
+  "fresh_qualification_passed": false,
+  "slack_writes": 0,
+  "failures": [
+    "Materiality: financing sequence depended on an IPO condition absent from visible main.",
+    "Coverage: four distinct available originals needed reading before a full coverage verdict.",
+    "Readability: technical acronyms needed plain-language categories or sourced explanations."
+  ],
+  "requested_original_ids": [
+    "461fbedfb78588b2c199f2a7f374b63440e976b4",
+    "e6a2e637991bb30dae5c59cef7b20e7827807bc2",
+    "c6bc25a95b5645c7dad96e8b0da5f3eb03dc9085",
+    "b3ede323a2afbad6ff3382aa2f0f4a914e8e61fd"
+  ],
+  "prospective_validation58_changes": [
+    "Select up to20 complete news originals under the same42000character source budget.",
+    "Check leading-story financing/customer, concentration, trade and rates dependencies.",
+    "Preserve funding prerequisites and explain jargon in concise Korean.",
+    "Shorten duplicate procedures and losslessly encode metadata, never shorten selected original bodies.",
+    "Freeze editorial inputs once; fallback does not append datasets again."
+  ],
+  "today_total_real_model_calls": 3,
+  "today_total_input_plus_output_tokens": 169770,
+  "additional_model_calls_after_diagnostic": 0,
+  "raw_originals_and_brief_kept_private": true,
+  "professional_quality_claim": "not yet qualified"
+}
