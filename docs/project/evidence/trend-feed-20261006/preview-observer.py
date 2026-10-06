@@ -41,12 +41,26 @@ def completed_days(days):
 
 def main():
     cutover = json.loads(CUTOVER.read_text())
-    if cutover["state"] != "preview_active":
+    if cutover["state"] not in {"preview_active", "publication_enabled"}:
         print(json.dumps({"state": "not_preview_active", "cutover": cutover["state"]}))
         return
     spec = importlib.util.spec_from_file_location("trend_operator", ROOT / "production-cutover.py")
     operator = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(operator)
+    if cutover["state"] == "publication_enabled":
+        record = json.loads(JOURNAL.read_text())
+        day = datetime.date.fromisoformat(record["first_scheduled_day"])
+        receipt = operator.sql("SELECT row_to_json(s) FROM (SELECT d.day,d.state,o.status,o.sent_ts "
+                               "FROM trend_feed_digests d LEFT JOIN outbox o ON o.id=d.id "
+                               "WHERE d.channel='C0C6WTA9ECV' AND d.day='" + str(day) + "')s")
+        record["first_delivery"] = receipt
+        if receipt and receipt["status"] == "delivered" and receipt["sent_ts"]:
+            record["first_delivery_verified"] = True
+        save(record)
+        print(json.dumps({"state": record["state"], "first_delivery": receipt,
+                          "first_delivery_verified": record.get("first_delivery_verified", False),
+                          "automatic_message_replay": False}))
+        return
     now = datetime.datetime.now(datetime.UTC)
     first_day = (datetime.datetime.fromisoformat(cutover["completed_at"]).astimezone(ZoneInfo("Asia/Seoul"))
                  + datetime.timedelta(days=1)).date().isoformat()
@@ -55,7 +69,11 @@ def main():
     if record["state"] != "observing":
         print(json.dumps({"state": record["state"], "automatic_retry": False}))
         return
-    output = operator.run(["docker", "exec", "-i", "quant-company-news-worker-1", "python", "-", first_day],
+    reader = operator.inspect()["news-worker"]
+    override = STATE / "config/trend-feed-20261006-news-worker.compose.json"
+    # A second Python interpreter must not consume the resident worker's memory limit.
+    output = operator.run([*operator.compose(reader, override), "run", "--rm", "--no-deps", "--pull", "never",
+                           "-T", "news-worker", "python", "-", first_day],
                           input=(ROOT / "preview-validator.py").read_text())
     observed = json.loads(output)
     if observed["publish_enabled"] or not observed["authorized"]:
@@ -76,6 +94,10 @@ def main():
     if not eligible:
         print(json.dumps({"state": "observing", "start_day": first_day, "days": record["days"],
                           "publish_enabled": False}))
+        return
+    connection = cutover.get("connection_test", {})
+    if connection.get("status") != "delivered" or not connection.get("sent_ts") or connection.get("channel") != "C0C6WTA9ECV":
+        print(json.dumps({"state": "waiting_for_connection_receipt", "publish_enabled": False}))
         return
     before = operator.inspect()
     if (operator.lanes_busy(before) or operator.sql("SELECT count(*) FROM outbox WHERE status='sending'")
