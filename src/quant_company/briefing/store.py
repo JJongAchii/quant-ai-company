@@ -249,6 +249,17 @@ class BriefStore:
                     conn.execute("UPDATE brief_editions SET state='blocked',error='no_current_originals',bundle=%s WHERE id=%s",
                                  (Jsonb(bundle), row["id"]))
                     return {"state": "blocked", "reason": "no_current_originals"}
+                if phase == 'plan' and self.company.settings.briefing_evaluation_edition_id:
+                    originals = [SourceDocument.model_validate(d) for d in bundle['candidate_documents']
+                                 if d['kind'] not in {'calendar', 'dataset'}]
+                    origins = {d.origin_group or d.publisher for d in originals}
+                    closes = {d.origin_group or d.publisher for d in originals if market_report(d, row['kind'])}
+                    needs_close = row['kind'] == 'pm' or bool(row['definition']['us_session'])
+                    if len({d.id for d in originals}) < 8 or len(origins) < 2 or (needs_close and len(closes) < 2):
+                        reason = 'evaluation_source_coverage_incomplete'
+                        conn.execute("UPDATE brief_editions SET state='blocked',error=%s,bundle=%s WHERE id=%s",
+                                     (reason, Jsonb(bundle), row['id']))
+                        return {'state': 'blocked', 'reason': reason}
                 model_prompt = (plan_prompt(bundle) if phase == "plan" else
                                 prompt(bundle, phase, row["proposal"] if phase in {"review", "final_review"} else None))
             identity = f"news-brief-{row['id']}-{phase}"

@@ -273,6 +273,21 @@ def test_bounded_evaluation_does_not_spend_a_search_before_inputs_are_sealed(bri
         assert conn.execute('SELECT count(*) AS n FROM brief_calls').fetchone()['n'] == 0
 
 
+def test_bounded_evaluation_blocks_thin_originals_before_the_planner(brief):  # noqa: F811
+    from psycopg.types.json import Jsonb
+
+    store, _ = brief
+    store.company.settings.briefing_evaluation_edition_id = definition().id
+    edition = seed(brief)
+    frozen = bundle(edition)
+    frozen['candidate_documents'] = deepcopy(frozen['documents'])
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE brief_editions SET bundle=%s WHERE id=%s', (Jsonb(frozen), edition.id))
+    assert store.prepare() == {'state': 'blocked', 'reason': 'evaluation_source_coverage_incomplete'}
+    with store.db.transaction() as conn:
+        assert conn.execute('SELECT count(*) AS n FROM brief_calls').fetchone()['n'] == 0
+
+
 def test_real_postgres_zero_repair_budget_closes_failed_review(brief):  # noqa: F811
     store, _ = brief
     store.company.settings.briefing_max_revisions = 0
