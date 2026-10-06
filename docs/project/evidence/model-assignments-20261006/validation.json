@@ -1,0 +1,96 @@
+{
+  "checked_at": "2026-10-06T07:44:02.448733+00:00",
+  "state": "verified_locally_not_deployed",
+  "base_commit": "2dc72afb2e4088112f77a764fdcfeebb8e4919ca",
+  "branch": "design-dynamic-model-allocation",
+  "source_sha256": {
+    "deploy/.env.example": "36bdd093748b240f5788c9ef302e490dcb2f546927ecaee520760e4a3ba899fe",
+    "deploy/compose.yaml": "6b3cb61fa5605b2854517ed0a79925fae9a9a8a8524ab705e19a88d8114aea61",
+    "src/quant_company/accounts.py": "d2e83581778717544052aa7e420ccba1d516703b76762c7138d3aead7fdd18b2",
+    "src/quant_company/api.py": "6c4ad9b52fa87979c9c208a4cc613cf444ba87f4d88792855d1e0d15a5862f9f",
+    "src/quant_company/company.py": "2d8ad56a93b7fe180ea9a192fa4f95c571a5d92d53fa9bbf7aae2e28f153a587",
+    "src/quant_company/config.py": "e41d778b0a81012393779151d268aa00da6aa13f5f5738b6550e3706a6882a37",
+    "src/quant_company/db.py": "6666b101f63ae5a2f26e308c1e8971cb260169ee966f01d4396fb2840b715875",
+    "src/quant_company/maintenance/store.py": "96399ea474174d94d6356ceebbdffd960ac4cc969a16b55d96002b4fb3638e10",
+    "src/quant_company/model_control.py": "9a638de467ef35b87d11c5d02c1eb3e6104db43734bc0a028b4414927c76d17c",
+    "src/quant_company/model_policy.py": "e0708d7b1c7e702d0f85bab6c1f6aa49e62bcf52d75554d9af46c0ecc55322cd",
+    "src/quant_company/model_policy_schema.sql": "9480a3959d1278517de68d26ef65a6b5accc8981809603287da1f5fc5a4c22f6",
+    "src/quant_company/news/discovery.py": "84a9bebb0e4de08e238e279b5af8eed9eaeee39e38e92f5cacee9521d442d418",
+    "src/quant_company/news/screening.py": "e7e281c3ccd1d09f293f23098d8fe2ee87e917dfbed27355dc69039bc8a35aed",
+    "src/quant_company/news/store.py": "a162e063c99c7af8c3510f5fbcc44f83af46c6319922901d68ab84f172a9b3a4",
+    "src/quant_company/providers/client.py": "b7cd9de0dace134453751844dbed7e4dda35b647355221a1d4d17ea231877196",
+    "src/quant_company/providers/codex_runtime.py": "50a59ca449ee207bc451f0604c3c54b576928289e8773454516b47110e517ccf",
+    "src/quant_company/providers/model_catalog.py": "a3e3580c86ead4f22442ed0821ba572cf3f8ccff5afa96b858ea2983e7569dab",
+    "src/quant_company/quant_feed/store.py": "8a3c94fea0308819db1d8e85871d9a922721f667ceccec80ee8e6bff4eba3c48",
+    "src/quant_company/research/controller.py": "b283a21b1cca6d08fe2a962e2942237de7c4f131ea225cc55d7573dbca4f9a6e",
+    "src/quant_company/slack.py": "96e04aa3f0cd98ec0211ad9ac7f9c626a108390f58c5ee22e6dbee526522fa1d",
+    "src/quant_company/staff/comparisons.py": "115ea45b5c1fe326f11f576091c452e8a56fa44f2c35d696d7449dd57ac8cb7e",
+    "src/quant_company/staff/store.py": "703e6c5c3c01e281c674ce2a0cdc8e9319dae4b76fb05cfa0404ff88fc10b21a",
+    "src/quant_company/web_tools.py": "1ff86ead3244f6e552d10d92cd46d64e89ce2473727fc89a5002ec556bfe7747",
+    "tests/test_codex_runtime.py": "371311c3597c51572e02b5746a998c9a3bfc9366e9a0f08616d851d8cba2d548",
+    "tests/test_model_catalog.py": "0a7c47dc5c2b1d812e64e93e952722157ac74d70127c85ee326484c4d56a961f",
+    "tests/test_model_policy.py": "240f95feecd34e73feaf9e4562e4b99aa47b343209d552771d1e53caa04e9f0b"
+  },
+  "validation": [
+    {
+      "command": "uv run pytest -q --disable-warnings --maxfail=3",
+      "passed": 1430,
+      "skipped": 47,
+      "warnings": 2,
+      "seconds": 368.7,
+      "output": "pytest.txt"
+    },
+    {
+      "command": "uv run pytest tests/test_model_policy.py::test_audit_producer_keeps_session_selection_across_policy_change tests/test_model_policy.py::test_director_can_select_new_supported_model_and_status_works_without_catalog -q --disable-warnings --maxfail=1",
+      "passed": 2,
+      "skipped": 0,
+      "warnings": 2,
+      "seconds": 3.08,
+      "note": "Added after full-suite collection; source implementation unchanged."
+    },
+    {
+      "command": "uv run ruff check .",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "CODEX_CATALOG_PROBE_BIN=/Users/achii/.npm/_npx/4897a91091a83573/node_modules/.bin/codex uv run pytest tests/test_model_policy.py tests/test_model_catalog.py -q --disable-warnings --maxfail=3",
+      "passed": 35,
+      "skipped": 0,
+      "warnings": 2,
+      "seconds": 11.58,
+      "note": "Earlier focused suite includes real CLI 0.154.0 config/protocol probe. Catalog implementation unchanged since probe."
+    }
+  ],
+  "integration": {
+    "postgresql": "real disposable local PostgreSQL 14.23",
+    "temporal": "real local server and history replay",
+    "slack": "signed synthetic events; no external messages sent",
+    "codex_subprocess": "synthetic model and account output, including catalog pagination",
+    "codex_cli_probe": "real 0.154.0 with empty authentication directory and simulated login gate; initialize/model/list only",
+    "real_model_inference": false,
+    "real_account_availability_verified": false,
+    "production_deployed": false
+  },
+  "coverage": [
+    "Owner/workspace/channel/signature checks and bot-echo exclusion",
+    "Model-free, durable, deduplicated commands and changed account revision rejection",
+    "Exact model/effort validation with no substitute; director max constraint",
+    "Role pins, reset, revision restore and history across restarted Company instances",
+    "Task selection across turns and web search; separate delegation/global settings",
+    "New staff/maintenance/news/Quant producer requests and frozen replay preservation",
+    "Actual audit producer continuation after a global model change",
+    "Real Temporal account-control activity and replay",
+    "Bounded private model catalog RPC with pagination and disabled execution capabilities"
+  ],
+  "limits": [
+    "Default deployment feature flag remains disabled",
+    "All request-producing workers, including pinned research images, require this code before activation",
+    "Catalog app-server requires an authentication profile without config.toml",
+    "Independent Claude reviewer is managed separately",
+    "Automatic ranking, recurring model evaluations and automatic upgrades are not included in this first slice"
+  ]
+}

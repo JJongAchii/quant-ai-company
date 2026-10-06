@@ -87,9 +87,14 @@ class SlackIngress:
         if not text.strip() or not timestamp:
             return {"ok": True, "ignored": True}
         from .accounts import parse_command as parse_account_command
+        from .model_policy import authorized as model_authorized
+        from .model_policy import parse_command as parse_model_command
 
         account_text = re.sub(r"<@[A-Z0-9]+>", "", text).strip()
         account_command = parse_account_command(account_text)
+        model_command = parse_model_command(account_text)
+        if model_command and not model_authorized(self.company, user, channel, role, model_command):
+            return {"ok": True, "ignored": True, "reason": "model_assignment_scope"}
         account_channel = channel == self.settings.model_accounts_channel_id
         if account_channel:
             if role != "director" or user != self.settings.model_accounts_owner_user:
@@ -143,6 +148,11 @@ class SlackIngress:
                             "app_id": payload["api_app_id"], "owner": user, "channel": channel,
                             "thread_ts": thread_ts, "event_ts": timestamp,
                             "provider_event_id": payload.get("event_id"), "original_text": original_text}
+        if model_command:
+            result = self.company.ingest(
+                event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,
+                owner=user, agent=target, channel=channel, thread_ts=thread_ts, model_command=model_command)
+            return {"ok": True, "owner_control": True, **result}
         if target == "maintainer":
             from .maintenance.applications import accept_approval
 

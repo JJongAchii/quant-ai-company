@@ -93,7 +93,13 @@ def prepare(company, turn_id, decision):
                         raise ProviderFault("busy", "Company model budget is waiting for renewal.", 3600)
                     provider_request = ProviderRequest(request_id=identity, model=role.model,
                                                        reasoning_effort=role.reasoning_effort,
-                                                       prompt=search_prompt(args), web_search=True).model_dump()
+                                                       prompt=search_prompt(args), web_search=True)
+                    from .model_policy import bind
+
+                    inherited = ({**{key: turn["request"].get(key) for key in ("model", "reasoning_effort")},
+                                  "source": "parent_turn", "request_id": str(turn_id)} if turn["request"] else None)
+                    provider_request = bind(company, conn, provider_request, task["agent"],
+                                            task=task, inherited=inherited).model_dump()
                     conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
                 saved = conn.execute("""INSERT INTO web_requests(id,turn_id,operation,arguments,provider_request)
                     VALUES (%s,%s,%s,%s,%s) RETURNING *""",
