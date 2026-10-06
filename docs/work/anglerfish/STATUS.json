@@ -20,10 +20,10 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Qualified ec remains active. Revised proposal and independent challenge completed. The director selection attempt1 was rejected for missing exact current challenge dispositions; normal attempt2 is running after root-reviewed factual current challenge identity/source-completion navigation and preparation urgency event717. No scientific jobs/trials/reservations at latest programme observation. Original scope, approval, budget, source bytes and independent judgment remain intact.",
+  "operationalStatus": "Qualified ec remains active. Director selection retry completed with a second scientific revise at17:16KST, requiring implementation check evidence before execution. That decision is preserved. The normal second revised proposal a7d0/attempt1 is running after event719 current urgency plus factual read completion and existing implementation/qualification sequence navigation. This guidance is not a decision or passed check. Actual scientific jobs/trials/reservations remain zero at last programme observation.",
   "evidence": "../../project/evidence/etf-exploration-20260930/first-research-mission-accepted-20261006.json",
   "nextStage": {
-    "stage": "revised_selection_implementation_then_actual_execution",
+    "stage": "second_revised_proposal_challenge_selection_implementation_then_execution",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false,
@@ -113,7 +113,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "ec_active_revised_selection_contract_retry_running",
+    "phase": "ec_active_second_revision_preparation_running",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
@@ -133,6 +133,7 @@
     "sixServicesReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-six-services-active-20261006.json",
     "revisedChallengePreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-revised-challenge-preparation-applied-20261006.json",
     "revisedSelectionPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-revised-selection-preparation-applied-20261006.json",
-    "selectionRetryPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-selection-retry-applied-20261006.json"
+    "selectionRetryPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-selection-retry-applied-20261006.json",
+    "secondRevisedProposalPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-second-revised-proposal-applied-20261006.json"
   }
 }

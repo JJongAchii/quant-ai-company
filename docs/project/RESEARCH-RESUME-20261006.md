@@ -337,3 +337,20 @@ one disposition`으로 거절됐다. 새로운 과학 판단이나 측정 결과
 원문·read receipt·동결 요청·이전 실패·과학 판단·승인·예산을 보존한다. operator는 정확한
 attempt2/기존 오류/최신 stage/첫 과학 job 이전을 검증하며 새 call/job을 만들지 않는다. 실제
 모델 호출은 재개됐다. 현재 승인 programme의 실제 science job/trial/reservation은 아직0이다.
+
+### 17:16~17:20 KST — 구현 검사 요구와 기존 실행 경로 안내
+
+selection attempt2는 정확한 current challenge에 응답했고17:16에 두 번째 과학 revise를
+기록했다. 이번 가설의 단일 ETF/현금 신호와 초기화는 선정 설계에 맞지만 상태 재생·수치
+경계·정보시점·비용 분해의 실행 전 검사 증거가 필요하다는 판단이다. root는 이를 지우거나
+실행 결정으로 대체하지 않는다. 현재 구현은 execute 선정 뒤에야 가능하므로, 앞 단계에서
+수행하지 않은 검사를 수행했다고 주장해서도 안 된다.
+
+정상 생성된 proposal a7d0d2f6/attempt1/taske659a17e의 실제 상태와 이전 결정 SHA를
+[검토](evidence/etf-exploration-20260930/first-mission-second-revised-proposal-review-20261006.json)·PR105에
+게시한 뒤, [event719](evidence/etf-exploration-20260930/first-mission-second-revised-proposal-applied-20261006.json)로
+현재 준비 urgency와 factual source 완료·기존 도구/실행 순서 안내를 대사했다. 현재 앞 단계는
+immutable read만 가능하고 engineer 구현 뒤 worker qualification을 거쳐 개발 평가한다.
+기존 test disposition의 test_plan은 미래의 검사 의무이며 통과 증거가 아니고 자동 해소되지
+않는다. revise는 구현을 막는다는 기존 gate도 그대로다. 이 안내는 어느 disposition이나
+채택 판단을 공급하지 않는다. 실제 검사나 과학 시행을 root가 만들었다고 주장하지 않는다.
