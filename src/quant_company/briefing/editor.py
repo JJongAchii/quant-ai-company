@@ -36,7 +36,7 @@ from .quotations import (
 )
 from .schedule import KST, close
 
-FORMAT_VERSION = 16
+FORMAT_VERSION = 17
 VALIDATION_VERSION = 56
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
@@ -53,6 +53,10 @@ Before returning, compare EVERY number, signed change and operative date in each
 with the text of its own main_item_ids. A forecast range needs its applicable day in that paragraph;
 the briefing header alone does not establish the forecast horizon. Do not reconstruct dataset rows:
 copy the complete locked_observations including previous values, or omit them for server insertion.
+For a dated forecast, start its own claim with the supported applicable day or period, then give the
+range and attribution: '[적용일] 달러/원 예상 범위는 [하한]~[상한]원이며, [발표자]의 전망입니다.'
+These are placeholders, never evidence. Keep that day in the same claim as its range and cite the exact
+supporting passage. Do not substitute the article date, retrieval time or briefing title for the forecast day.
 Before composing, check each original for facts that change the market read, exposure or next decision.
 Named winners do not establish participation: retain sourced sector/market breadth and opposing sectors.
 For oil, distinguish crude supply/prices from already-observed retail/refined-fuel costs; a prospective
@@ -130,6 +134,10 @@ only for consequential supporting facts or interpretations that cannot fit coher
 Place them in that issue; do not put policy/investment facts in market internals to fill available space.
 source_plan is a set of questions, not evidence. excerpt_truncated means unshown content was not checked.
 Rank information by newness, magnitude/persistence, affected markets and proximity of the next event.
+Put the one or two issues most consequential for this completed session and the reader's next decisions
+FIRST. The renderer distinguishes those lead issues from subsequent material developments. Their order
+must follow economic significance, not article order or how vivid a headline is. Remaining issues supply
+useful corporate/world context; do not repeat the lead issues to fill slots. On quiet days use fewer issues.
 Compare previous briefs only to identify changes; they are not new evidence. Include consequential world
 news without forcing a price reaction. Do not fill topic quotas or let routine structural news displace
 major company transactions, asset moves, policy changes or opposing evidence. Oil/gold/crypto/China/Europe
@@ -1147,8 +1155,10 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
             for claim in proposal.overview:
                 add(supported(claim, claim.text)+"\n")
         if proposal.issues:
-            add("\n*오늘 짚어볼 이슈*")
+            add("\n*핵심 이슈*")
         for index, issue in enumerate(proposal.issues, 1):
+            if index == 3:
+                add("\n*함께 볼 이슈*")
             basis = {"reported_explanation": "보도 해석", "conditional_hypothesis": "Analyst 해석",
                      "unresolved": "원인 판단 유보"}[issue.analysis.causal_basis]
             horizon = {"session": "당일", "days_weeks": "수일~수주", "months": "수개월"}[issue.analysis.horizon]

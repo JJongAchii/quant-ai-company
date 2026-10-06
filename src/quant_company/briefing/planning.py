@@ -46,6 +46,9 @@ event time with publication time: distinguish a new event, new material disclosu
 and repeated background. Check after-close developments without treating them as causes of that close.
 For each choice give a short Korean reason naming the distinct information the writer should check.
 Give up to six short Korean editorial priorities as questions to verify, not factual conclusions.
+The first two priorities should identify the session's most consequential questions and next-market
+implications. Explain distinct marginal information in each selection; secondary context should not
+receive the same prominence as evidence needed to understand the day.
 For AM without a new US session, focus on weekend changes and the next session; do not invent a close.
 For PM, the preceding US session is background and tonight's US session is upcoming.
 Keep dates, proposal/decision/implementation and source independence distinct.

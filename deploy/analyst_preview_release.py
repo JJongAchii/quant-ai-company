@@ -52,7 +52,8 @@ def validate_preserved_runtime(manifest):
         return
     permitted = {'deploy/.env.example', 'deploy/Dockerfile.analyst-code-preview',
                  'deploy/analyst_preview_release.py', 'deploy/compose.yaml',
-                 'src/quant_company/config.py', 'src/quant_company/roles.json'}
+                 'src/quant_company/config.py', 'src/quant_company/roles.json',
+                 'src/quant_company/slack.py'}
     if not code_only_build(manifest) or any(
             row['path'] not in permitted and not row['path'].startswith('src/quant_company/briefing/')
             for row in manifest['runtime_changes']):

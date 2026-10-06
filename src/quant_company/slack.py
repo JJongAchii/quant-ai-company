@@ -430,6 +430,16 @@ class SlackOutbox:
         blocks = await asyncio.to_thread(blocks_for_outbox, self.company, row, self.credentials[row["agent"]])
         if blocks:
             body["blocks"] = blocks
+        if row.get("message_kind") == "briefing":
+            from .briefing.slack_blocks import blocks as briefing_blocks
+
+            try:
+                body["blocks"] = briefing_blocks(row["text"])
+            except ValueError as error:
+                await asyncio.to_thread(self.settle, row, "blocked", error=str(error))
+                return True
+            # Slack builds accessible fallback text from these complete sections.
+            body.pop("text")
         if row.get("message_kind") == "housing_feed" and self.company.settings.housing_map_panel_enabled:
             from .housing_feed.maps import work_object
             from .housing_feed.store import HousingFeedStore
@@ -444,7 +454,8 @@ class SlackOutbox:
         method = "chat.postMessage"
         if row.get("update_ts"):
             method = "chat.update"
-            body = {key: body[key] for key in ("channel", "text")}
+            keys = ("channel", "blocks") if row.get("message_kind") == "briefing" else ("channel", "text")
+            body = {key: body[key] for key in keys}
             body["ts"] = row["update_ts"]
         try:
             async with httpx.AsyncClient(timeout=12, transport=self.transport) as client:

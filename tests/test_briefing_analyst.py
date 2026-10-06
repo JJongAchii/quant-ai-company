@@ -90,12 +90,31 @@ def test_main_post_keeps_assessment_effect_and_alternative_visible_without_threa
     assert p.issues[0].analysis.alternative.text not in "\n".join(parts[1:])
     assert "수일~수주" in parts[0]
     assert p.issues[0].headline not in "\n".join(parts[1:])
-    assert len(parts[0]) < 2000 and quality["format_version"] == 16
+    assert len(parts[0]) < 2000 and quality["format_version"] == 17
     payload = json.loads(prompt(bundle(), "review", p.model_dump(mode="json")).split("BRIEF DATA JSON:\n")[1])
     items = item_map(p)
     preview = "".join(part if isinstance(part, str) else escape(items[part["item_text"]].text, quote=False)
                       for part in payload["main_post_preview"])
     assert preview == parts[0]
+
+
+def test_primary_issue_order_and_secondary_context_keep_all_analysis_in_main():
+    value = analytical_proposal().model_dump(mode="json")
+    first = value["issues"][0]
+    value["issues"] = []
+    for index in range(4):
+        issue = json.loads(json.dumps(first))
+        issue["headline"] = f"서로 다른 시장 이슈 {index}"
+        for claim in (issue["fact"], issue["interpretation"], issue["next_check"],
+                      issue["analysis"]["mechanism"], issue["analysis"]["alternative"]):
+            claim["id"] += f"-{index}"
+        value["issues"].append(issue)
+    p = BriefProposal.model_validate(value)
+    main = render(p, bundle())[0][0]
+    assert main.index("핵심 이슈") < main.index(p.issues[0].headline)
+    assert main.index(p.issues[1].headline) < main.index("함께 볼 이슈") < main.index(p.issues[2].headline)
+    for issue in p.issues:
+        assert issue.interpretation.text in main and issue.analysis.alternative.text in main
 
 
 def test_frozen_procedure_is_used_by_writer_and_reviewer(brief, monkeypatch):  # noqa: F811

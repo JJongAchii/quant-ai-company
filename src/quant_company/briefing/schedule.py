@@ -10,7 +10,7 @@ from .contracts import BriefEdition, CalendarOverride
 
 KST = ZoneInfo("Asia/Seoul")
 NY = ZoneInfo("America/New_York")
-SCHEDULE_VERSION = 2
+SCHEDULE_VERSION = 3
 PREPARATION_MINUTES = 45
 COLLECTION_MINUTES = 20
 
@@ -61,9 +61,10 @@ def editions(day, channel, owner, changes=None):
     us_session = us_day if us_close and us_close.astimezone(KST).date() == day and us_close < morning else None
     kr_close = close("KR", day, changes)
     result = []
-    # Observed clean KRX publication is around 19:24 KST; leave collection/review time after it.
+    # Corroborated session-close reports support a timely PM edition. Lake values
+    # that arrive later remain dated context, never substitutes for today's close.
     lead = PREPARATION_MINUTES+COLLECTION_MINUTES
-    evening = max(datetime.combine(day, time(20, 15), KST), kr_close+timedelta(minutes=lead)) if kr_close else None
+    evening = max(datetime.combine(day, time(17, 45), KST), kr_close+timedelta(minutes=lead)) if kr_close else None
     for kind, due in (("am", morning), ("pm", evening)):
         if due is None or (kind == "am" and not (us_session or kr_close or day.weekday() == 0)):
             continue

@@ -149,10 +149,14 @@ def test_calendar_official_override_delayed_close_and_closure():
     change = CalendarOverride(market="KR", day=day, close_at="2026-11-19T16:30:00+09:00",
                               source_url="https://global.krx.co.kr/fixture-official-notice")
     rows = schedule.editions(day, "C", "U", {("KR", day): change})
-    assert rows[-1].due_at.astimezone(schedule.KST).strftime("%H:%M") == "20:15"
+    assert rows[-1].due_at.astimezone(schedule.KST).strftime("%H:%M") == "17:45"
     assert rows[0].due_at.astimezone(schedule.KST).strftime("%H:%M") == "07:45"
-    assert [e.cutoff.astimezone(schedule.KST).strftime("%H:%M") for e in rows] == ["07:00", "19:30"]
-    assert [e.starts_at.astimezone(schedule.KST).strftime("%H:%M") for e in rows] == ["06:40", "19:10"]
+    assert [e.cutoff.astimezone(schedule.KST).strftime("%H:%M") for e in rows] == ["07:00", "17:00"]
+    assert [e.starts_at.astimezone(schedule.KST).strftime("%H:%M") for e in rows] == ["06:40", "16:40"]
+    later = change.model_copy(update={"close_at": datetime.fromisoformat("2026-11-19T17:00:00+09:00")})
+    delayed = schedule.editions(day, "C", "U", {("KR", day): later})[-1]
+    assert delayed.due_at.astimezone(schedule.KST).strftime("%H:%M") == "18:05"
+    assert delayed.starts_at == later.close_at
     closed = change.model_copy(update={"closed": True, "close_at": None})
     assert [e.kind for e in schedule.editions(day, "C", "U", {("KR", day): closed})] == ["am"]
 
@@ -357,7 +361,8 @@ async def test_simulated_slack_parent_receipt_precedes_details_and_question_rout
     def post(request):
         payload = json.loads(request.content)
         sent.append(payload)
-        assert "<@" not in payload["text"] and "[지시" not in payload["text"]
+        text = ''.join(block['text']['text'] for block in payload['blocks'])
+        assert 'text' not in payload and "<@" not in text and "[지시" not in text
         return httpx.Response(200, json={"ok": True, "ts": "100.001" if len(sent) == 1 else "100.002"})
 
     outbox = SlackOutbox(store.company, credentials, httpx.MockTransport(post))

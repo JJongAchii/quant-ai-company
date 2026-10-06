@@ -17,7 +17,7 @@ from .test_briefing import brief, bundle, complete, definition, proposal, respon
 
 
 def snapshot(edition=None):
-    edition = edition or definition("pm")
+    edition = edition or collected_pm()
     day = edition.day
     dates = [day]
     for _ in range(21):
@@ -32,12 +32,26 @@ def snapshot(edition=None):
 
 
 def data_bundle(edition=None):
-    edition = edition or definition("pm")
+    edition = edition or collected_pm()
     derived = summarize(snapshot(edition), edition)
     data = bundle(edition)
     data.update(documents=derived["documents"], locked_observations=derived["observations"],
                 market_context=derived["contexts"], data_diagnostics=derived["diagnostics"])
     return data
+
+
+def collected_pm():
+    # Collected same-day lake closes require their conservative availability time;
+    # the earlier normal PM edition relies on independent closing reports instead.
+    edition = definition("pm")
+    return edition.model_copy(update={"cutoff": edition.cutoff.replace(hour=18, minute=30)})
+
+
+def test_early_pm_lake_keeps_only_dated_previous_session_context():
+    data = data_bundle(definition("pm"))
+    assert data['locked_observations'] == []
+    assert any(d['error'] == 'stale_session' for d in data['data_diagnostics'])
+    assert all(str(definition("pm").day) not in c['text'] for c in data['market_context'])
 
 
 def empty_proposal():
@@ -151,7 +165,7 @@ def test_mobile_render_keeps_summary_numbers_and_next_steps_in_main_post():
     assert all(label in parts[0] for label in ("오늘의 핵심", "주요 숫자", "다음 확인할 것"))
     assert "[1]" in parts[0] and "Synthetic fixture" not in parts[0]
     assert len(parts[0]) < 1800 and len(parts) <= 3
-    assert quality["format_version"] == 16
+    assert quality["format_version"] == 17
 
 
 def test_first_visible_citation_links_from_main_even_when_watchpoints_are_built_first():
@@ -307,7 +321,7 @@ def test_model_prompt_uses_verified_data_summary_without_raw_table_duplication()
 
 def test_data_freezes_with_edition_and_late_collection_cannot_replace_it(brief):  # noqa: F811
     store, clock = brief
-    edition = definition("pm")
+    edition = definition("am")
     clock["at"] = edition.cutoff-timedelta(minutes=10)
     claim = store.claim_data()
     data = summarize(snapshot(edition), edition)
