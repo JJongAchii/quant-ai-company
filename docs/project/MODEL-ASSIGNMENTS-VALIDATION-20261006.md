@@ -1,6 +1,8 @@
 # 직원 모델 배정 검증 — 2026-10-06
 
-상태: **로컬 구현·검증 완료, 운영 미배포**. 배포 기본값은 `MODEL_ASSIGNMENTS_ENABLED=false`입니다.
+상태: **구현·검증 완료, 운영 활성화 완료**. 이 문서는 테스트 범위를 기록하며
+실제 운영 확인은 [별도 배포 기록](MODEL-ASSIGNMENTS-PRODUCTION-20261006.md)에 남겼습니다.
+새 환경의 배포 기본값은 `MODEL_ASSIGNMENTS_ENABLED=false`입니다.
 
 사용자가 승인한 첫 구현 범위는 직원별 모델·추론 강도 고정, 이번 업무 한정 지정,
 모델 목록·배정 현황·변경 이력 조회, 고정 해제와 과거 배정 복원입니다.
@@ -10,13 +12,15 @@
 
 | 검사 | 결과 | 검증 범위 |
 |---|---|---|
-| 전체 pytest | 1,430 passed, 47 skipped, 2 warnings | 실제 폐기 가능한 PostgreSQL 및 로컬 Temporal 포함 |
+| 최종 기능 CI | 1,521 passed, 46 skipped, 1 deselected, 2 warnings | 실제 PostgreSQL 및 로컬 Temporal; [CI 영수증](evidence/model-assignments-20261006/feature-ci.json) |
+| main 통합 로컬 전체 pytest | 1,484 passed, 47 skipped, 2 warnings | 실제 폐기 가능한 PostgreSQL 및 로컬 Temporal 포함 |
+| 최초 구현 전체 pytest | 1,430 passed, 47 skipped, 2 warnings | 실제 폐기 가능한 PostgreSQL 및 로컬 Temporal 포함 |
 | 추가 회귀 2건 | 2 passed | 실제 감사 요청 생산자의 세션 모델 유지, 총괄 교체와 목록 장애 중 현황 조회 |
 | Ruff | 통과 | 전체 저장소 |
 | diff whitespace 검사 | 통과 | 최종 변경 |
 | 실제 Codex CLI 0.154.0 | 설정·프로토콜 검사 통과 | 빈 인증 디렉터리와 모의 로그인 확인; `initialize`/`model/list`만 실행 |
 
-추가 2건은 전체 테스트의 수집이 끝난 뒤 추가한 테스트이며 구현 코드는 동일합니다.
+추가 2건은 최초 전체 테스트의 수집이 끝난 뒤 추가한 테스트이며 당시 구현 코드는 동일합니다.
 실제 CLI 검사는 앞선 집중 테스트 35건 통과에 포함됩니다. 이후 catalog 구현은 변경되지 않았습니다.
 건너뛴 검사는 통과로 간주하지 않습니다.
 
@@ -31,9 +35,10 @@
 - 일반 대화·연구 요청 생산자·직원 연습·개선 작업·뉴스 편집/선별/검색·Quant 편집의 연결.
 - 모델 목록은 인증된 private runtime에서 페이지 단위로 조회하며 추론 thread/turn을 시작하지 않음.
 
-Slack 이벤트, 계정 상태와 모델 응답은 합성 fixture입니다. 실제 Slack 메시지를 보내지 않았고,
-실제 구독 모델 추론과 운영 계정의 사용 가능 여부도 검사하지 않았습니다. 실제 CLI 검사는
-지원 옵션과 RPC 동작의 증거이며 로그인·추론·운영 배포 증거가 아닙니다.
+위 테스트의 Slack 이벤트, 계정 상태와 모델 응답은 합성 fixture입니다. 빈 인증 디렉터리의 CLI
+검사는 지원 옵션과 RPC 동작의 증거입니다. 이후 운영 계정의 실제 목록·인증·서비스 상태도
+확인했으며 해당 증거는 별도 배포 기록에 구분했습니다. 소유자의 실제 배정 명령과 지정 모델
+실행은 첫 사용자 입력을 기다립니다. 점검용 Slack 메시지를 보내지 않았습니다.
 
 ## 운영 반영 조건
 
@@ -42,8 +47,8 @@ Slack 이벤트, 계정 상태와 모델 응답은 합성 fixture입니다. 실�
 혼합 버전에서 기능을 켜면 구버전 worker는 저장된 배정을 해석하지 못합니다.
 인증 profile에 `config.toml`이 있으면 모델 목록 조회는 거절됩니다.
 
-운영 활성화·실제 모델 smoke·Slack 확인은 별도입니다. 배정의 일반 복원은 기능 플래그를 끄는
-대신 `모델 배정 복원 번호`를 사용합니다.
+운영 활성화와 실제 모델·Slack 확인 범위는 별도 기록을 참고합니다. 배정의 일반 복원은
+`모델 배정 복원 번호`를 사용합니다.
 
 - [사용 명령과 운영 절차](../runbooks/model-assignments.md)
 - [설계 결정](../adr/0038-owner-controlled-model-assignments.md)

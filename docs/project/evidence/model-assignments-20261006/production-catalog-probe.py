@@ -22,7 +22,11 @@ if profile not in {"primary", "backup"}:
 for name in ("codex-runtime", "quant-codex-runtime"):
     before = next(r for r in stage["targets"] if r["Name"] == "/quant-company-" + name + "-1")
     image = stage["images"][before["Image"]]
-    network = next(n for n in before["NetworkSettings"]["Networks"] if n.endswith("codex_egress"))
+    networks = json.loads(run(["docker", "network", "inspect", *before["NetworkSettings"]["Networks"]]))
+    egress = [n["Name"] for n in networks if not n["Internal"]]
+    if len(egress) != 1:
+        raise RuntimeError("catalog_probe_egress_ambiguous")
+    network = egress[0]
     args = ["docker", "run", "--rm", "--read-only", "--memory=384m", "--cpus=.5", "--cap-drop=ALL",
             "--security-opt=no-new-privileges:true", "--network=" + network, "--tmpfs", "/tmp:size=64m,mode=1777"]
     env = dict(item.split("=", 1) for item in before["Config"]["Env"])

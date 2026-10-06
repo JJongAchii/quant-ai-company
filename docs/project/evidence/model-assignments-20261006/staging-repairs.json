@@ -1,5 +1,6 @@
 {
-  "activation_performed": false,
+  "stage_failures_occurred_before_activation": true,
+  "final_deployment_state": "active",
   "events": [
     {
       "attempt": 1,
@@ -10,6 +11,17 @@
       "attempt": 2,
       "cause": "Inventory gate found the installed package differed from the active Quant source selected by PYTHONPATH",
       "repair": "Read actual import roots on every running service; merge and inspect only those source roots; no service changes"
+    },
+    {
+      "attempt": 3,
+      "cause": "The catalog probe assumed a codex_egress network name; the existing fleet uses model_egress",
+      "repair": "Inspect actual networks and require exactly one non-internal egress network. Resume only the matching fully staged receipt with no cutover journal; no service changes before both real account probes passed"
+    }
+  ],
+  "verification_adjustments": [
+    {
+      "cause": "Socket Mode startup INFO is suppressed by the existing logging configuration",
+      "repair": "Verify the running process, its seven owned established TLS sockets, and real auth.test for all seven active employee bots. Actual owner command remains pending"
     }
   ]
 }

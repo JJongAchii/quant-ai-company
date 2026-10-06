@@ -17,43 +17,63 @@
         },
         {
           "path": "docs/runbooks/model-assignments.md",
-          "sha256": "5d38bad844b7"
+          "sha256": "f9f6b209e023"
         }
       ],
-      "note": "Model assignment implementation integrated with current main; Korean briefing alias added. Production request producers are merged per image, preserving native contracts and frozen calls.",
+      "note": "Owner-controlled employee pins and task overrides implemented and active. Selected-account catalog validates each change; frozen requests and sessions preserve their original model. Defaults remain unchanged until an owner command.",
       "status": "verified",
-      "updatedAt": "2026-10-06T08:18:53.545566+00:00"
+      "updatedAt": "2026-10-06T10:31:51.052025+00:00"
     },
     "PRODUCTION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/model-assignments-20261006/production-overlay-manifest.json",
-          "sha256": "16e2ad8b7c9e"
+          "path": "docs/project/MODEL-ASSIGNMENTS-PRODUCTION-20261006.md",
+          "sha256": "b74b07c7dedd"
+        },
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/production-verification.json",
+          "sha256": "3820071f3305"
+        },
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/production-receipts.json",
+          "sha256": "aaa9610d12a2"
+        },
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/backup-confirmation.json",
+          "sha256": "43ab2212dd0d"
+        },
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/owner-control-readback.json",
+          "sha256": "3ec6eaa0f928"
         }
       ],
-      "note": "Actual fleet audited. Nine image-derived source cohorts qualified; preserve per-service code, native output contracts, auth profiles and frozen requests. Building reviewed overlays before activation.",
-      "status": "in_progress",
-      "updatedAt": "2026-10-06T08:18:10.470462+00:00"
+      "note": "Authorized production activation completed: 9 image cohorts, 13 services replaced, 15 stable. Actual operator/private model catalog, Temporal account-control pollers and seven Slack auth/TLS connections verified. 10058 frozen requests and DB/Claude preserved; encrypted S3 backup confirmed. Owner Slack model command and chosen-model smoke pending first input. Old automatic code cutover guarded; maintenance and PR preparation continue.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T10:31:51.483913+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
+          "path": "docs/project/evidence/model-assignments-20261006/feature-ci.json",
+          "sha256": "0d299cf0940c"
+        },
+        {
           "path": "docs/project/evidence/model-assignments-20261006/production-qualification.json",
-          "sha256": "20d6009fd3b8"
+          "sha256": "5827f806f63a"
         },
         {
           "path": "docs/project/evidence/model-assignments-20261006/integrated-pytest.txt",
           "sha256": "72646579c2e9"
         }
       ],
-      "note": "Current main integration full suite 1484 passed/47 skipped. Final feature slice 45 passed; deployed source cohorts 46 or 45 passed, plus both runtime-only checks. Real PostgreSQL/Temporal; synthetic Slack/RPC; live activation still pending.",
+      "note": "Final feature CI 1521 passed, 46 skipped, 1 deselected. Real disposable PostgreSQL/Temporal and qualified actual production source cohorts; synthetic Slack and model fixtures labeled. Real official CLI and selected account catalog separately verified during deployment.",
       "status": "verified",
-      "updatedAt": "2026-10-06T08:18:53.736271+00:00"
+      "updatedAt": "2026-10-06T10:31:51.282589+00:00"
     }
   },
   "intentDigest": "120eac18b054",
   "schemaVersion": 1,
   "slug": "manatee",
   "state": "approved",
-  "updatedAt": "2026-10-06T08:18:53.736271+00:00"
+  "updatedAt": "2026-10-06T10:31:51.483913+00:00"
 }
