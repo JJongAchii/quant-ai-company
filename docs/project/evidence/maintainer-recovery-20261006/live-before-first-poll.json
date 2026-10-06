@@ -1,0 +1,66 @@
+{
+  "captured_at": "2026-10-06T06:39:22.545312+00:00",
+  "scope": "Real production PostgreSQL/container readback; no manual model calls or external writes",
+  "container": {
+    "id": "c1469d4fc3511d07c2a3b5b70eb06f2d663c4e5fbb7056a89c69771b023dc489",
+    "image_id": "sha256:b13f2bc9ad2258acc53b679258f4a6bb5d0ad81019cd4605bc1aaeed63df868c",
+    "running": true,
+    "oom_killed": false,
+    "restart_count": 0
+  },
+  "installed_code": {
+    "commit": "fadc0e54be0c470068bb18011cc6a1a9ec8ee971",
+    "problems_module_sha256": "ed6f1b8016ee8ed5dd7bacdac70484a4a3bbbe8a35dd78f05896e2a357636357"
+  },
+  "control": {
+    "id": 1,
+    "runtime": {
+      "enabled": true,
+      "heartbeat_at": "2026-10-06 06:37:05.843600+00:00",
+      "poll_seconds": 300,
+      "allowed_owners": [
+        "U0C250E23NW"
+      ],
+      "report_seconds": 60,
+      "max_daily_calls": 0,
+      "reporter_heartbeat_at": "2026-10-06T06:38:25.852011+00:00",
+      "improvements_started_at": "2026-09-23T01:13:29.900538+00:00"
+    },
+    "next_observe_at": "2026-10-06T06:45:56.636937+00:00"
+  },
+  "new_jobs": [],
+  "technical_observations": [],
+  "new_cases": [],
+  "new_calls": [],
+  "company_priority_turns": [
+    {
+      "id": "ffc34b0d-5504-5463-b6dc-2e954cbb408b",
+      "kind": "work",
+      "agent": "director",
+      "due_at": "2026-10-06T04:28:18.394677+00:00",
+      "status": "queued",
+      "task_status": "pending",
+      "project_status": "active"
+    },
+    {
+      "id": "2e4de4d4-00b8-50d6-8dc4-1765a28e1807",
+      "kind": "answer",
+      "agent": "director",
+      "due_at": "2026-10-06T04:47:48.101897+00:00",
+      "status": "queued",
+      "task_status": "pending",
+      "project_status": "active"
+    },
+    {
+      "id": "8e86ff9a-8e21-59b5-8a55-155edc808e4b",
+      "kind": "research_stage",
+      "agent": "researcher_kr",
+      "due_at": "2026-10-06T06:39:06.511336+00:00",
+      "status": "running",
+      "task_status": "running",
+      "project_status": "active"
+    }
+  ],
+  "original_uncertain_reviews_unchanged": true,
+  "original_maintenance_calls_unchanged": true
+}
