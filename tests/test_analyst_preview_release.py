@@ -86,6 +86,22 @@ def test_profile_schema_run_uses_an_already_verified_image_without_replacing_api
     assert release.schema_service_overlay({'source_profiles': []}) is None
 
 
+def test_effect_drain_reads_postgres_without_loading_another_live_api_runtime(monkeypatch):
+    commands = []
+
+    def run(command, **kwargs):
+        commands.append(command)
+        return b'{"sending":2}\n'
+
+    monkeypatch.setattr(release, 'run', run)
+    assert release.sending_effects({'DATABASE_NAME': 'company_records'}) == {'sending': 2}
+    command = commands[0]
+    assert command[:4] == ['docker', 'exec', 'quant-company-postgres-1', 'psql']
+    assert command[command.index('-d') + 1] == 'company_records'
+    assert command[-1].startswith('SELECT ') and "status='sending'" in command[-1]
+    assert 'quant-company-api-1' not in command
+
+
 def test_only_canonical_owned_analyst_can_receive_permission_correction():
     director = {'id': 'director', 'active': True, 'tools': ['custom_tool']}
     prior = {'id': release.ROLE, 'active': False, 'tools': ['read_source', 'briefing_status']}

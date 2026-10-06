@@ -251,6 +251,14 @@ def schema_service_overlay(receipt):
     return {'services': {'api': {'image': image['tag']}}}
 
 
+def sending_effects(values):
+    # Do not load a second Python runtime inside the memory-limited live API.
+    command = ['docker', 'exec', 'quant-company-postgres-1', 'psql', '-U', 'postgres',
+               '-d', values.get('DATABASE_NAME', 'quant_company'), '-X', '-Atc',
+               "SELECT json_build_object('sending',count(*)) FROM outbox WHERE status='sending'"]
+    return json.loads(run(command))
+
+
 def runtime_overlay(rows, images, settings):
     result = {}
     for name, image in images.items():
@@ -505,12 +513,7 @@ def cutover(args, previous, target, module, journal):
             lock = runtime_lock(STATE / 'codex/jobs' / name)
             locks.append(lock)
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        code = """import json
-from quant_company.config import Settings
-from quant_company.db import Database
-with Database(Settings().database_url).transaction() as conn:
- print(json.dumps({'sending':conn.execute("SELECT count(*) AS n FROM outbox WHERE status='sending'").fetchone()['n']}))"""
-        effects = json.loads(run(['docker', 'exec', 'quant-company-api-1', 'python', '/app/entrypoint.py', 'python', '-c', code]))
+        effects = sending_effects(values)
         if effects['sending']:
             raise ValueError('preview_external_effect_not_drained')
         backup = journal.with_suffix('.postgres.dump')

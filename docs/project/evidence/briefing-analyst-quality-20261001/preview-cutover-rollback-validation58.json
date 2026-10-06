@@ -1,0 +1,25 @@
+{
+  "recorded_at": "2026-10-06T13:09:55.844849Z",
+  "candidate_commit": "ace96abde02fd67bf2ac7c3f5a9785cbde9feb48",
+  "canonical_host_receipt_sha256": "a33b492a6f8e08490d93605da25f1337db2e1936a654564beedc824c7ad3dd83",
+  "phase": "rolled_back",
+  "installed_source_root": "971f872a23f4989ddd1628bc28c59868a1c29264",
+  "failure": "API-container Python database-status process exited137; existing API restarted once under its128MiB memory limit.",
+  "database_backup_created": false,
+  "candidate_source_activated": false,
+  "publication_enabled": false,
+  "read_only_reconciliation": {
+    "all_five_required_services_running": true,
+    "worker_images_and_configuration_restored": true,
+    "api_container_id_and_image_unchanged": true,
+    "api_restarts": 1,
+    "codex_runtime_unchanged": true
+  },
+  "correction": "Read the pending-effect count with psql in the database container; do not load another Python process inside the live API.",
+  "corrected_read_only_query_actual_result": {"sending": 0},
+  "deployment_helper_tests": {"tests": 23, "failures": 0, "errors": 0},
+  "lint": "passed",
+  "model_calls_by_installation": 0,
+  "slack_writes_by_installation": 0,
+  "fresh_content_qualification": false
+}
