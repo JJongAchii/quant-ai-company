@@ -59,7 +59,15 @@ class TurnExecutor:
         self.provider = provider if provider is not None else provider_for(company)
 
     async def execute(self, turn_id: str, heartbeat=False) -> dict:
-        prepared = await asyncio.to_thread(self.company.prepare_turn, turn_id)
+        try:
+            prepared = await asyncio.to_thread(self.company.prepare_turn, turn_id)
+        except (PolicyError, ValidationError) as exc:
+            # A deterministic input error cannot improve with infrastructure retries.
+            # No model request was dispatched; keep the stable turn and an explicit fault.
+            detail = ("; ".join(error["msg"] for error in exc.errors(include_input=False, include_url=False))
+                      if isinstance(exc, ValidationError) else str(exc))
+            await asyncio.to_thread(self.company.block_turn, turn_id, "request_preparation_rejected:" + detail[:160])
+            return {"state": "blocked", "reason": "request_preparation_rejected"}
         if prepared["state"] != "ready":
             return prepared
         request = ProviderRequest.model_validate(prepared["request"])
