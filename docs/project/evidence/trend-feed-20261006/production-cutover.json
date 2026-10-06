@@ -1,6 +1,6 @@
 {
   "state": "preview_active",
-  "commit": "b8c3f8867ff7df793f70f70d2f929c9fe84b2332",
+  "commit": "bfb64afd81549634979a4af45ee07fabd3e3dae1",
   "current": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264",
   "started_at": "2026-10-06T11:28:01.477054+00:00",
   "replaced": [
@@ -9,7 +9,7 @@
   ],
   "authorized_scope": "preview, one connection message, conditional daily publication after three real preview days",
   "publish_enabled": false,
-  "messages_sent": 0,
+  "messages_sent": 1,
   "old_pause": {
     "paused_until": null,
     "reason": null
@@ -33,11 +33,20 @@
   "existing_roles_preserved": true,
   "runtime_env_sha256": "f61b8a1260a5a6febc78a47603bf80268d535aedbe58a2558a1d1e0d822ca3c7",
   "target_ids": {
-    "news-worker": "ad6bd39652a6ae6ba567cf043183032b24e45887c2aa49220541d9858ae519c1",
-    "dispatch": "82a070f40b546a3c131a8cdfc29483182645f313443c7ab5a851a25a840b198a"
+    "news-worker": "46d91a07bdf4c2f99273889c2f5bcffbf7e587703edc84818fa4b7e7d8c08286",
+    "dispatch": "7472dbb5a55f7b0bd72d11088734996a15bfafa840846c55d66b718da01cf50a"
   },
   "timers_restored": [
     "quant-company-release.timer",
     "quant-company-backup.timer"
-  ]
+  ],
+  "resource_repair": "/var/lib/quant-company/releases/trend-feed-20261006-repair.json",
+  "connection_test": {
+    "id": "c68f0f89-ba27-52e6-a541-d30b9e4e636a",
+    "status": "delivered",
+    "channel": "C0C6WTA9ECV",
+    "sent_ts": "1791287349.325639",
+    "error": null,
+    "attempts": 1
+  }
 }

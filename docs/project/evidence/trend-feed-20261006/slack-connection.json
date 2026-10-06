@@ -9,13 +9,14 @@
     "chat:write"
   ],
   "auth_test": "passed",
-  "credential_storage": "local secret file, mode 0600; not Git or model context",
+  "credential_storage": "Git-external local 0600; server root-only directory and UID10001 0400 file; values never recorded",
   "channel_id": "C0C6WTA9ECV",
   "channel_name": "search-trends",
   "channel_membership": "verified in channel Agents and Apps list",
-  "messages_sent": 0,
-  "deployed": false,
+  "messages_sent": 1,
+  "deployed": true,
   "channel_url": "https://app.slack.com/client/T0C1YRDRPNF/C0C6WTA9ECV",
   "app_installation": "installed; bot auth.test passed",
-  "legacy_verification_token_rotation": "manual completion pending after repeated Slack reauthentication"
+  "legacy_verification_token_rotation": "activated and verified after reload",
+  "delivery_receipt": "slack-test-receipt.json"
 }

@@ -1,0 +1,11 @@
+{
+  "observer_exit": 0,
+  "observation": {
+    "state": "observing",
+    "start_day": "2026-10-07",
+    "first_observations": {},
+    "days": [],
+    "checked_at": "2026-10-06T11:46:49.744155+00:00"
+  },
+  "service_state": "success"
+}

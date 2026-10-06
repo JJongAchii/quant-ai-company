@@ -9,55 +9,59 @@
       "evidence": [
         {
           "path": "docs/project/TREND-FEED-ACTIVATION.md",
-          "sha256": "4f9daba70516"
+          "sha256": "51ca958720a7"
         },
         {
-          "path": "docs/project/evidence/trend-feed-20261006/production-stage.json",
-          "sha256": "547a2432116a"
+          "path": "docs/project/evidence/trend-feed-20261006/production-final.json",
+          "sha256": "9102d96538f1"
         },
         {
-          "path": "docs/project/evidence/trend-feed-20261006/naver-connection.json",
-          "sha256": "7f6ce248e1b2"
+          "path": "docs/project/evidence/trend-feed-20261006/slack-test-receipt.json",
+          "sha256": "9d7a8554b055"
         },
         {
-          "path": "docs/project/evidence/trend-feed-20261006/slack-connection.json",
-          "sha256": "ca10430bd29f"
+          "path": "docs/project/evidence/trend-feed-20261006/preview-timer.json",
+          "sha256": "b6d100a7080a"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-20261006/preview-observation-initial.json",
+          "sha256": "749d9737513d"
         }
       ],
-      "note": "Concrete production preview candidate staged against actual news-worker/dispatch image. Running services unchanged; credentials local, no Slack messages. Preview cutover and test message scope require confirmation after earlier implementation/validation-only selection; 3 actual days and legacy-token replacement remain.",
+      "note": "Authorized production preview active; actual single connection message delivered, rotated token verified. Persistent real-day gate enabled from 2026-10-07; publication remains false with 0 completed morning previews. Earliest regular date 2026-10-10 conditional on three qualified stable days and first-delivery receipt observation. Remote publication pending actual PUBLIC repository choice.",
       "status": "in_progress",
-      "updatedAt": "2026-10-06T11:10:23.719767+00:00"
+      "updatedAt": "2026-10-06T12:05:07.471573+00:00"
     },
     "IMPLEMENTATION": {
       "evidence": [
         {
           "path": "docs/project/evidence/trend-feed-20261006/RESULT.json",
-          "sha256": "f4680ccf3572"
+          "sha256": "9588c42b7a49"
         }
       ],
-      "note": "Integrated latest main 457a9c20f4e1; Reporter owner model policy honored and frozen; NAVER overlay retained by release and backup paths. Candidate application commit b8c3f8867ff7.",
+      "note": "Preview implementation and scoped production repair complete; official subscription workflow retained. Local source/operational evidence preserved; actual GitHub repository PUBLIC despite private-source instruction, so no remote push pending user choice.",
       "status": "verified",
-      "updatedAt": "2026-10-06T11:10:23.270226+00:00"
+      "updatedAt": "2026-10-06T12:05:07.011805+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
           "path": "docs/project/TREND-FEED-VALIDATION.md",
-          "sha256": "773c61ec1604"
+          "sha256": "41447a021bf7"
         },
         {
           "path": "docs/project/evidence/trend-feed-20261006/RESULT.json",
-          "sha256": "f4680ccf3572"
+          "sha256": "9588c42b7a49"
         }
       ],
-      "note": "1514 passed, 47 skipped, 1 deselected; targeted 95 passed; image-derived candidate 176 passed, 1 skipped. Real staged image inventory/runtime/import checks passed; live RSS, NAVER and prior Codex/Slack auth verified separately.",
+      "note": "Prior integration suite 1514; image-source suite 176; new source/image-source regressions 43 each. Actual production RSS, NAVER, cloud workflows and single Slack delivery/UI verified; scheduled units and future flag config match. Three real morning quality checks pending.",
       "status": "verified",
-      "updatedAt": "2026-10-06T11:10:23.505371+00:00"
+      "updatedAt": "2026-10-06T12:05:07.244787+00:00"
     }
   },
   "intentDigest": "98fa902262d1",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-06T11:10:23.719767+00:00"
+  "updatedAt": "2026-10-06T12:05:07.471573+00:00"
 }
