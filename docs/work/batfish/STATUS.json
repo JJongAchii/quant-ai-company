@@ -1,23 +1,15 @@
 {
   "approval": {
-    "approvedAt": "2026-10-06T13:11:43.328214+00:00",
-    "id": "chat-user-exclude-sports-20261006"
+    "approvedAt": "2026-10-06T13:47:29.447744+00:00",
+    "id": "chat-user-send-sports-now-20261006"
   },
-  "currentIntent": "INTENT-v3.json",
+  "currentIntent": "INTENT-v4.json",
   "deliverables": {
     "ACTIVATION": {
       "evidence": [
         {
-          "path": "docs/project/TREND-FEED-ACTIVATION.md",
-          "sha256": "5d5c21e174e1"
-        },
-        {
           "path": "docs/project/evidence/trend-feed-sports-20261006/activation.json",
           "sha256": "2a4b4a334e3a"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/reconciliation.json",
-          "sha256": "f1d68ffaafd2"
         },
         {
           "path": "docs/project/evidence/trend-feed-sports-20261006/active-probe.json",
@@ -26,11 +18,30 @@
         {
           "path": "docs/project/evidence/trend-feed-sports-20261006/naver-mount.json",
           "sha256": "1e0b53811f7b"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-sports-20261006/send-now-delivery.json",
+          "sha256": "ad34bccb9c29"
         }
       ],
-      "note": "Both actual consumers on qualified sports image, publication true, actual next timer Oct7 08:00 KST, three workflows RUNNING and collection13/13. First-stage strict config check reconciled: only difference was restoring previously approved NAVER mount lost in peer release; first stage not repeated, dispatch completed, other IDs/config/requests retained during reconciliation, pause restored. Prior delivered body preserved; first future regular receipt remains not due.",
+      "note": "Regular operation unchanged, existing delivered body retained, next Oct7 08:00 KST confirmed in dispatch Settings on explicit immediate send. Immediate message is a separate user-authorized status delivery of the labeled21:24 source.",
       "status": "verified",
-      "updatedAt": "2026-10-06T13:41:51.872480+00:00"
+      "updatedAt": "2026-10-06T13:57:06.806488+00:00"
+    },
+    "IMMEDIATE_DELIVERY": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-feed-sports-20261006/send-now-delivery.json",
+          "sha256": "ad34bccb9c29"
+        },
+        {
+          "path": "docs/project/TREND-FEED-SPORTS.md",
+          "sha256": "ba2da69850ac"
+        }
+      ],
+      "note": "User-now request fulfilled at22:52 KST: 4 topics, sports0; durable new message1c6feec1, delivered toC0C6WTA9ECV, attempts1, ts1791294778.643269. Exact screen message1/body/four links checked, sourcecutoff21:24 explicitly labeled. First preflight rejected before writes in collector with no workspace env; moved to configured dispatch without changing configuration. No automatic uncertain replay.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T13:57:07.049807+00:00"
     },
     "IMPLEMENTATION": {
       "evidence": [
@@ -41,21 +52,17 @@
         {
           "path": "docs/project/evidence/trend-feed-sports-20261006/image.json",
           "sha256": "e46e2862a691"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/RESULT.json",
-          "sha256": "48951201a65c"
         }
       ],
-      "note": "INTENT-v3: category-based sports exclusion before eight-topic cap; complete typed coverage retained, unclassified fallback withheld, editorial policy invalidates older pending text. Actual latest peer parent retained; reviewed editor/store only among 220 files; current source hashes match native image.",
+      "note": "INTENT-v4 retains verified sports-policy implementation and deployed two-file native source qualification; immediate send requires no service/image changes.",
       "status": "verified",
-      "updatedAt": "2026-10-06T13:41:51.425704+00:00"
+      "updatedAt": "2026-10-06T13:57:06.361651+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
           "path": "docs/project/TREND-FEED-SPORTS.md",
-          "sha256": "3779c04beea4"
+          "sha256": "ba2da69850ac"
         },
         {
           "path": "docs/project/evidence/trend-feed-sports-20261006/RESULT.json",
@@ -66,22 +73,18 @@
           "sha256": "84c2ee7c3b70"
         },
         {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/preview.json",
-          "sha256": "3629fc81b8cc"
-        },
-        {
-          "path": "docs/project/TREND-FEED-VALIDATION.md",
-          "sha256": "efc0ac3f9167"
+          "path": "docs/project/evidence/trend-feed-sports-20261006/send-now-delivery.json",
+          "sha256": "ad34bccb9c29"
         }
       ],
-      "note": "Real local PostgreSQL/Temporal regressions 36 and Ruff passed; HTTP/models/Slack simulated. Separately, real persisted subscription draft and source evidence validated in native candidate and active image: 14 candidates, 10 sports excluded, four non-sports, zero new API/model/Slack calls.",
+      "note": "Prior real PostgreSQL/Temporal regressions36 and native four-topic filter preview retained. Additional real Slack delivered receipt and exact timestamp/body/four-link UI match verified; no new model/NAVER calls. No service code changes requiring new test sweep.",
       "status": "verified",
-      "updatedAt": "2026-10-06T13:41:51.653743+00:00"
+      "updatedAt": "2026-10-06T13:57:06.580894+00:00"
     }
   },
-  "intentDigest": "c14b669999f1",
+  "intentDigest": "bb0b96b30ec7",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-06T13:41:51.872480+00:00"
+  "updatedAt": "2026-10-06T13:57:07.049807+00:00"
 }

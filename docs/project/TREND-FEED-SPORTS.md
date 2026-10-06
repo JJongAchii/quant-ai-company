@@ -44,3 +44,18 @@ Temporal 3개 workflow가 RUNNING이며 확정 workflow의 실제 다음 timer�
 기존 네이버 19회·트렌드 모델 1회이며 회사 일시 중지는 복구됐다.
 [실제 상태·예약](evidence/trend-feed-sports-20261006/active-probe.json).
 첫 정기 발송 시각은 아직 지나지 않아 새 정기 발송 완료로 기록하지 않는다.
+
+## 사용자가 요청한 즉시 추가 발송
+
+후속 “지금 보내봐” 요청을 INTENT-v4와 별도 승인 event에 기록하고 **22:52 KST**에
+스포츠 제외 브리핑 1건을 보냈다. 직전 검증에서 사용한 **21:24 KST 마감 자료**를 사용한다는
+문구를 본문에 표시했으며 4개 주제·스포츠 0개다. 새로운 stable ID로 기존 프로젝트의 영속 outbox에
+먼저 커밋했고 기존 전달 메시지와 당일 아침 슬롯은 수정하지 않았다. 새 모델·네이버 호출은 0개다.
+
+실제 Slack 영수증은 `delivered`, 채널 `C0C6WTA9ECV`, 시도 1회, `ts=1791294778.643269`다.
+채널 화면에서 동일 ts의 메시지 1개와 본문·4개 링크 일치를 확인했다.
+최초 사전검사는 워크스페이스 ID가 없는 news-worker에서 멈췄고 DB·Slack 효과는 없었다.
+설정은 바꾸지 않고 해당 ID가 설정된 dispatch에서 검사·기록했다. 불명 전송을 반복하지 않았다.
+[실제 메시지](https://achiisquantresearch.slack.com/archives/C0C6WTA9ECV/p1791294778643269),
+[발송·화면 확인 영수증](evidence/trend-feed-sports-20261006/send-now-delivery.json).
+정기 발송은 계속 활성화 상태이며 다음 예약은 10월 7일 08:00 KST다.
