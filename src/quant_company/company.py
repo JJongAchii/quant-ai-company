@@ -686,12 +686,15 @@ class Company:
                 conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             if not turn["request"]:
                 session = None
+                output_contract = "agent_decision"
                 if task['kind'] == 'research_stage':
                     from .research.audit_delivery import enabled, session_for
                     from .research.controller import _stage, stage_prompt
 
                     role, prompt = stage_prompt(self, conn, task, turn)
                     stage = _stage(conn, task["id"])
+                    if stage["stage"] == "program_data" and stage["actor"] == "data":
+                        output_contract = "research_data_v1"
                     if enabled(stage):
                         session = session_for(conn, stage, turn)
                 elif task['kind'] == 'routing':
@@ -738,7 +741,8 @@ class Company:
                         "TASK DATA JSON:\n" + json.dumps(context, ensure_ascii=False)
                     )
                 request = ProviderRequest(request_id=turn_id, model=role.model,
-                                          reasoning_effort=role.reasoning_effort, prompt=prompt, session=session)
+                                          reasoning_effort=role.reasoning_effort, prompt=prompt, session=session,
+                                          output_contract=output_contract)
                 conn.execute("UPDATE turns SET request=%s WHERE id=%s", (Jsonb(request.model_dump()), turn_id))
             else:
                 request = ProviderRequest.model_validate(turn["request"])

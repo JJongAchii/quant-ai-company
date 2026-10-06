@@ -6,9 +6,11 @@ import os
 import sys
 import time
 from pathlib import Path
+from uuid import uuid4
 
 import httpx
 import pytest
+from pydantic import ValidationError
 
 from quant_company.contracts import ProviderFault, ProviderRequest
 from quant_company.providers.client import RuntimeClient
@@ -280,6 +282,74 @@ def request_model():
 
 def runner_for(config, **kwargs):
     return CodexRunner(config, environment={"PATH": os.environ["PATH"], "HOME": str(config.codex_home.parent)}, **kwargs)
+
+
+@pytest.mark.parametrize("extra", [
+    {"request_id": "quant-feed-data"},
+    {"web_search": True},
+    {"session": {"id": "audit-data"}},
+])
+def test_data_native_request_rejects_other_lanes_or_execution_tools(extra):
+    request = {"request_id": str(uuid4()), "model": "gpt-5.6-terra", "prompt": "Bound data review.",
+               "output_contract": "research_data_v1"}
+    with pytest.raises(ValidationError):
+        ProviderRequest.model_validate(request | extra)
+
+
+async def test_data_native_schema_maps_only_one_private_read_and_preserves_receipt(fake_codex):
+    config, configure, calls = fake_codex
+    configure(direct={"kind": "read", "path": "data/etf/identity.json", "offset": 12000, "result_json": ""})
+    request = ProviderRequest(request_id=str(uuid4()), model="gpt-5.6-terra", reasoning_effort="high",
+                              prompt="Read the next approved evidence chunk.", output_contract="research_data_v1")
+    response = await runner_for(config).run(request)
+    assert response.decision.status == "continue" and response.decision.say == ""
+    assert [tool.model_dump() for tool in response.decision.tools] == [{
+        "name": "research_control", "arguments": {"action": "read_stage_file", "path": "data/etf/identity.json",
+                                                    "offset": 12000}}]
+    assert not response.decision.artifacts and not response.decision.delegations and not response.decision.messages
+    assert set(calls()[0]["schema"]["properties"]) == {"kind", "path", "offset", "result_json"}
+    assert calls()[0]["schema"]["additionalProperties"] is False
+    assert await runner_for(config).run(request) == response
+    assert len(calls()) == 1
+    legacy = request.model_copy(update={"output_contract": "agent_decision"})
+    with pytest.raises(ProviderFault, match="different input"):
+        await runner_for(config).run(legacy)
+
+
+async def test_data_native_completion_is_an_untrusted_private_artifact(fake_codex):
+    config, configure, _ = fake_codex
+    result = '{"decision":"blocked","rationale":"Missing evidence remains blocking"}'
+    configure(direct={"kind": "complete", "path": "", "offset": 0, "result_json": result})
+    request = ProviderRequest(request_id=str(uuid4()), model="gpt-5.6-terra", prompt="Assess the supplied evidence.",
+                              output_contract="research_data_v1")
+    response = await runner_for(config).run(request)
+    assert response.decision.status == "complete" and response.decision.say == ""
+    assert len(response.decision.artifacts) == 1 and response.decision.artifacts[0].content == result
+    assert not response.decision.tools and not response.decision.messages and not response.decision.delegations
+
+
+@pytest.mark.parametrize("direct", [
+    {"kind": "approve", "path": "", "offset": 0, "result_json": "{}"},
+    {"kind": "read", "path": "data/x", "offset": 0, "result_json": "{}"},
+    {"kind": "read", "path": "", "offset": 0, "result_json": ""},
+    {"kind": "read", "path": "data/x", "offset": True, "result_json": ""},
+    {"kind": "read", "path": "data/x", "offset": 0, "result_json": "", "tools": [{"name": "unsafe"}]},
+    {"kind": "complete", "path": "data/x", "offset": 0, "result_json": "{}"},
+    {"kind": "complete", "path": "", "offset": 1, "result_json": "{}"},
+    {"kind": "complete", "path": "", "offset": 0, "result_json": "[]"},
+    {"kind": "complete", "path": "", "offset": 0, "result_json": '{"x":NaN}'},
+    {"kind": "complete", "path": "", "offset": 0, "result_json": '{"x":1,"x":2}'},
+])
+async def test_data_native_mixed_or_privileged_shapes_fail_without_replay(fake_codex, direct):
+    config, configure, calls = fake_codex
+    configure(direct=direct)
+    request = ProviderRequest(request_id=str(uuid4()), model="gpt-5.6-terra", prompt="Untrusted fixture.",
+                              output_contract="research_data_v1")
+    for _ in range(2):
+        with pytest.raises(ProviderFault, match="research_data_contract") as caught:
+            await runner_for(config).run(request)
+        assert caught.value.code == "invalid_output"
+    assert len(calls()) == 1
 
 
 def test_runtime_default_allows_long_validator_completion(monkeypatch, tmp_path):

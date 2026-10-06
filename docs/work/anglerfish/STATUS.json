@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v10.json",
-  "state": "current_runtime_restored_data_response_reconciliation",
-  "previousIntent": "INTENT-v9.json",
+  "currentIntent": "INTENT-v11.json",
+  "state": "data_response_contract_qualification",
+  "previousIntent": "INTENT-v10.json",
   "deliverables": {
     "POLICY": {
       "status": "completed",
@@ -20,10 +20,10 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Existing qualified source231 restored with unchanged container identities and configuration. Actual Slack owner cancelled the old program and approved canonical c3ba5268. Our duplicate04 approval notice was corrected by a delivered durable update and its buttons removed. Proposal completed; independent data stage has invalid_output contract faults under reconciliation. No scientific execution has started.",
+  "operationalStatus": "Qualified source231 restored and canonical c3ba5268 approval remains valid. Repeated data response format failures are held through the existing program hold mechanism. A narrow research_data_v1 response contract is implemented for new data-stage turns, preserving frozen legacy requests. Targeted real PostgreSQL/subprocess checks passed95, additional lane/tool scope checks passed3 and lint passed; full regression and real subscription qualification are in progress. No scientific execution has started.",
   "evidence": "../../project/evidence/etf-exploration-20260930/validation.json",
   "nextStage": {
-    "stage": "independent_data_assessment_contract_reconciliation",
+    "stage": "data_response_repair_review_preparation",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false

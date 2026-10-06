@@ -77,6 +77,24 @@ class AgentDecision(StrictModel):
         return self
 
 
+class ResearchDataResponse(StrictModel):
+    """A data reviewer can only request one evidence read or return an artifact."""
+
+    kind: Literal["read", "complete"]
+    path: str = Field(max_length=600)
+    offset: int = Field(strict=True, ge=0, le=10**9)
+    result_json: str = Field(max_length=60000)
+
+    @model_validator(mode="after")
+    def exclusive_effect(self):
+        if self.kind == "read":
+            if not self.path.strip() or self.result_json:
+                raise ValueError("Data evidence read requires a path and no result")
+        elif self.path or self.offset != 0 or not self.result_json.strip():
+            raise ValueError("Data completion requires only a result")
+        return self
+
+
 class ProviderSession(StrictModel):
     id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,80}$")
     previous_request_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9_-]{1,80}$")
@@ -92,11 +110,20 @@ class ProviderRequest(StrictModel):
     # Service-owned continuation, resolved against durable runtime receipts.
     session: ProviderSession | None = None
     output_contract: Literal["agent_decision", "quant_brief_v1", "quant_brief_v2", "quant_brief_v3", "quant_brief_v4",
-                             "quant_critique_v1", "quant_critique_v2", "quant_search_v1"] = "agent_decision"
+                             "quant_critique_v1", "quant_critique_v2", "quant_search_v1", "research_data_v1"] = "agent_decision"
 
     @model_validator(mode="after")
     def scoped_output(self):
-        if self.output_contract == "quant_search_v1":
+        if self.output_contract == "research_data_v1":
+            from uuid import UUID
+
+            if self.web_search or self.session is not None:
+                raise ValueError("Research data output requires a tool-free standalone request")
+            try:
+                UUID(self.request_id)
+            except ValueError as exc:
+                raise ValueError("Research data output requires a bound company turn ID") from exc
+        elif self.output_contract == "quant_search_v1":
             if not self.request_id.startswith("quant-feed-") or not self.web_search:
                 raise ValueError("Quant discovery output requires a native-search Quant request")
         elif self.output_contract != "agent_decision" and (
