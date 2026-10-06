@@ -167,6 +167,121 @@ def preserved(before, after, services=SERVICES):
         raise ValueError('preview_unrelated_service_changed')
 
 
+def source_inventory(root):
+    if any(p.is_symlink() for p in root.rglob('*')):
+        raise ValueError('preview_runtime_source_symlink')
+    return {str(p.relative_to(root)): digest(p.read_bytes())
+            for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts}
+
+
+def image_sources(image):
+    code = """import importlib.util,json,pathlib,hashlib
+root=pathlib.Path(importlib.util.find_spec('quant_company').origin).parent
+print(json.dumps({'quant_company/'+str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest()
+for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts}))"""
+    return json.loads(run(['docker','run','--rm','--network=none','--memory=128m',
+                          '--entrypoint','python',image,'-c',code]))
+
+
+def validate_source_profiles(target, manifest, before):
+    profiles = manifest.get('source_profiles', [])
+    if not profiles:
+        return []
+    if not manifest.get('preserve_api') or not manifest.get('preserve_codex_runtime'):
+        raise ValueError('preview_source_profiles_require_preserved_primary')
+    permitted = {r['path'].removeprefix('src/') for r in manifest['runtime_changes']
+                 if r['path'].startswith('src/quant_company/')}
+    services = []
+    for profile in profiles:
+        if (not re.fullmatch(r'sha256:[0-9a-f]{64}', profile['base_image_id'])
+                or profile['source_root'] != 'runtime-source/'+profile['base_image_id'][7:19]+'/src'
+                or not profile['services']):
+            raise ValueError('preview_source_profile_identity')
+        for name in profile['services']:
+            if name not in ('news-worker','dispatch',NEW_SERVICE):
+                raise ValueError('preview_source_profile_service')
+            current = before['/quant-company-'+name+'-1']
+            if current['image'] != profile['base_image_tag']:
+                raise ValueError('preview_source_profile_base_changed')
+        actual_image = json.loads(run(['docker','image','inspect',profile['base_image_tag']]))[0]
+        if (actual_image['Id'] != profile['base_image_id']
+                or image_sources(profile['base_image_id']) != profile['before']):
+            raise ValueError('preview_source_profile_inventory_changed')
+        actual = source_inventory(target/profile['source_root'])
+        if actual != profile['after'] or not set(profile['before']) <= set(actual):
+            raise ValueError('preview_source_profile_manifest')
+        changed = {name for name,value in actual.items() if profile['before'].get(name) != value}
+        if changed != set(profile['changed']) or not changed <= permitted:
+            raise ValueError('preview_source_profile_outside_analyst_scope')
+        services.extend(profile['services'])
+    if sorted(services) != sorted(('news-worker','dispatch',NEW_SERVICE)):
+        raise ValueError('preview_source_profiles_incomplete_or_duplicate')
+    return profiles
+
+
+def owned_model_overlay(image, owned, approval):
+    """Verify the later installed overlay against its root-owned effect receipts."""
+    labels = image['Config']['Labels']
+    base = labels.get('io.quant-company.model-assignments.base-id')
+    commit = labels.get('io.quant-company.model-assignments')
+    if (owned.get('phase') != 'preview_active' or owned.get('owner_approval') != approval
+            or not any(r['target'] == 'app' and r['id'] == base for r in owned.get('images', []))):
+        return False
+    stage_path = STATE/'releases/model-assignments-20261006-stage.json'
+    cutover_path = STATE/'releases/model-assignments-20261006-cutover.json'
+    if not stage_path.is_file() or not cutover_path.is_file():
+        return False
+    stage, cutover = json.loads(stage_path.read_text()), json.loads(cutover_path.read_text())
+    row = stage.get('images', {}).get(base, {})
+    return bool(stage.get('state') == 'staged' and cutover.get('state') == 'active'
+                and stage.get('commit') == cutover.get('commit') == commit
+                and row.get('id') == image['Id'] and NEW_SERVICE in row.get('services', []))
+
+
+def service_images(receipt):
+    return {name: row['tag'] for row in receipt.get('images', []) for name in row.get('services', [])}
+
+
+def runtime_overlay(rows, images, settings):
+    result = {}
+    for name, image in images.items():
+        row = rows['/quant-company-'+name+'-1']
+        env = configuration(('\n'.join(row['Config']['Env'])+'\n').encode())
+        env.update({k:v for k,v in settings.items() if k in env or k.startswith('BRIEFING_')})
+        if settings:
+            env['COMPANY_CODE_COMMIT'] = settings['RELEASE_COMMIT']
+        result[name] = {'image':image, 'environment':env, 'command':row['Config']['Cmd'],
+                        'entrypoint':row['Config']['Entrypoint'], 'user':row['Config']['User'],
+                        'working_dir':row['Config']['WorkingDir'],
+                        'volumes':[{'type':m['Type'], 'source':m.get('Name',m['Source']) if m['Type']=='volume' else m['Source'],
+                                    'target':m['Destination'], 'read_only':not m['RW']}
+                                   for m in row['Mounts'] if m['Type'] in {'bind','volume'}
+                                   and not m['Destination'].startswith('/run/secrets/')]}
+        host = row.get('HostConfig', {})
+        for field,key in (('Memory','mem_limit'),('MemorySwap','memswap_limit'),('PidsLimit','pids_limit')):
+            if host.get(field) is not None:
+                result[name][key] = host[field]
+        if 'NanoCpus' in host:
+            result[name]['cpus'] = host['NanoCpus']/1000000000
+    return {'services':result}
+
+
+def verify_profile_runtime(before, after, images, settings):
+    expected = runtime_overlay(before, images, settings)['services']
+    def mounts(row):
+        return sorted((m['Type'],m['Source'],m['Destination'],m['RW']) for m in row['Mounts'])
+    for name,value in expected.items():
+        old, new = before['/quant-company-'+name+'-1'], after['/quant-company-'+name+'-1']
+        env = configuration(('\n'.join(new['Config']['Env'])+'\n').encode())
+        fields = ('Cmd','Entrypoint','User','WorkingDir')
+        if (env != value['environment'] or any(new['Config'][key] != old['Config'][key] for key in fields)
+                or mounts(new) != mounts(old)
+                or any(new.get('HostConfig',{}).get(key) != old.get('HostConfig',{}).get(key)
+                       for key in ('Memory','MemorySwap','NanoCpus','PidsLimit','ReadonlyRootfs','CapDrop',
+                                   'SecurityOpt','RestartPolicy','PortBindings','Init','Privileged','NetworkMode'))):
+            raise ValueError('preview_existing_runtime_binding_changed')
+
+
 def compose(module, root, *args, env=None, overlay=None):
     command = [*module.compose_command(root), '--profile', 'briefing']
     values = configuration((STATE / 'config/runtime.env').read_bytes())
@@ -230,10 +345,14 @@ def stage(args, previous, target, module, journal):
             raise ValueError('preview_data_worker_revision_missing')
         prior = STATE / 'releases' / ('analyst-preview-' + revision + '.json')
         owned = json.loads(prior.read_text()) if prior.is_file() else {}
-        if (owned.get('phase') != 'preview_active' or owned.get('owner_approval') != args.approval
-                or not any(row['target'] == 'app' and row['id'] == image['Id'] for row in owned.get('images', []))
+        original = (owned.get('phase') == 'preview_active' and owned.get('owner_approval') == args.approval
+                    and any(row['target'] == 'app' and row['id'] == image['Id'] for row in owned.get('images', [])))
+        inherited = owned_model_overlay(image, owned, args.approval)
+        if (not (original or inherited)
                 or values.get('BRIEFING_ENABLED') != 'true' or values.get('BRIEFING_PUBLISH_ENABLED') != 'false'):
             raise ValueError('preview_data_worker_not_owned')
+        if inherited and not original and not manifest.get('source_profiles'):
+            raise ValueError('preview_installed_overlay_requires_source_profiles')
     receipt = {'phase': 'staging', 'base': args.base, 'commit': args.commit,
                'owner_approval': args.approval, 'publication_enabled': False,
                'archive_sha256': args.sha256, 'manifest_sha256': args.manifest_sha256,
@@ -249,6 +368,8 @@ def stage(args, previous, target, module, journal):
     target.mkdir()
     module.unpack(data, target)
     receipt['source_changes'] = validate_candidate(previous, target, manifest, args.commit)
+    profiles = validate_source_profiles(target, manifest, before)
+    receipt['source_profiles'] = profiles
     if code_only and any((previous / name).read_bytes() != (target / name).read_bytes() for name in BASE_INPUTS):
         raise ValueError('preview_code_only_base_identity_changed')
     qdata = Path(values['QDATA_BUILD_CONTEXT']).resolve()
@@ -262,27 +383,28 @@ def stage(args, previous, target, module, journal):
         for name in ('deploy/Dockerfile', 'deploy/entrypoint.py'):
             if (previous / name).read_bytes() != (target / name).read_bytes():
                 raise ValueError('preview_base_runtime_changed')
-        builds = [('app', 'quant-company')]
+        builds = [('app', 'quant-company', profile) for profile in profiles] if profiles else [('app','quant-company',None)]
         if not receipt['preserve_codex_runtime']:
-            builds.append(('codex', 'quant-company-codex'))
-        for build_target, repository in builds:
-            tag = repository + ':' + args.commit
+            builds.append(('codex', 'quant-company-codex', None))
+        for position, (build_target, repository, profile) in enumerate(builds):
+            tag = repository + ':' + args.commit + ('-profile'+str(position) if profile else '')
             if subprocess.run(['docker', 'image', 'inspect', tag], capture_output=True).returncode == 0:
                 raise ValueError('preview_image_tag_already_exists')
             service = 'api' if build_target == 'app' else 'codex-runtime'
-            base_tag = before['/quant-company-' + service + '-1']['image']
+            base_tag = profile['base_image_tag'] if profile else before['/quant-company-' + service + '-1']['image']
             base_image = json.loads(run(['docker', 'image', 'inspect', base_tag]))[0]
             if base_image['Config']['Labels'].get('org.quant-company.qdata-revision') != values['QDATA_COMMIT']:
                 raise ValueError('preview_base_qdata_revision_mismatch')
             command = ['docker', 'build', '--memory=512m', '--memory-swap=512m', '--cpu-quota=100000',
                        '--build-arg', 'BASE_IMAGE=' + base_tag, '--build-arg', 'RELEASE_COMMIT=' + args.commit,
+                       '--build-arg', 'SOURCE_DIR='+profile['source_root'] if profile else 'SOURCE_DIR=src',
                        '-f', str(target / ('deploy/Dockerfile.analyst-code-preview' if code_only
                                            else 'deploy/Dockerfile.analyst-preview')), '-t', tag, str(target)]
-            log = journal.with_name(journal.stem + '-' + build_target + '.log')
+            log = journal.with_name(journal.stem + '-' + build_target + '-'+str(position)+'.log')
             with log.open('wb') as output:
                 subprocess.run(command, check=True, stdout=output, stderr=subprocess.STDOUT, timeout=1800,
                                env={**os.environ, 'DOCKER_BUILDKIT': '0'})
-            expected = {str(p.relative_to(target / 'src')): digest(p.read_bytes())
+            expected = profile['after'] if profile else {str(p.relative_to(target / 'src')): digest(p.read_bytes())
                         for p in (target / 'src/quant_company').rglob('*') if p.is_file() and '__pycache__' not in p.parts}
             code = """import hashlib,importlib.util,json,pathlib
 root=pathlib.Path(importlib.util.find_spec('quant_company').origin).parent
@@ -303,6 +425,7 @@ print(json.dumps({'calendar':importlib.metadata.version('exchange-calendars'),
                 raise ValueError('preview_image_qdata_revision_changed')
             image = json.loads(run(['docker', 'image', 'inspect', tag]))[0]
             receipt['images'].append({'target': build_target, 'id': image['Id'], 'source_verified': True,
+                                      'tag': tag, 'services': profile['services'] if profile else [],
                                       'base_image_id': base_image['Id'], 'base_image_preserved': True,
                                       'locked_dependencies': dependencies})
             module.atomic(journal, json.dumps(receipt).encode())
@@ -344,6 +467,14 @@ def cutover(args, previous, target, module, journal):
     new_roles = merged_roles(json.loads(roles), json.loads((target / 'src/quant_company/roles.json').read_text()),
                              json.loads((previous / 'src/quant_company/roles.json').read_text()))
     before = inventory()
+    runtime_rows = None
+    if receipt.get('source_profiles'):
+        names = ('news-worker','dispatch',NEW_SERVICE)
+        if any(before['/quant-company-'+name+'-1'] != receipt['service_inventory_after']['/quant-company-'+name+'-1']
+               for name in names):
+            raise ValueError('preview_staged_services_changed')
+        runtime_rows = {r['Name']:r for r in json.loads(run(['docker','inspect',
+                        *['quant-company-'+name+'-1' for name in names]]))}
     drains = ('news-worker', 'dispatch', *((NEW_SERVICE,) if '/quant-company-' + NEW_SERVICE + '-1' in before else ()))
     if any(not before['/quant-company-' + name + '-1']['running'] for name in SERVICES):
         raise ValueError('preview_required_service_not_running')
@@ -400,15 +531,24 @@ print('briefing_schema_ready')"""
         module.atomic(STATE / 'config/roles.json', json.dumps(new_roles, ensure_ascii=False).encode())
         module.link(target)
         switched = True
+        live_overlay = None
+        if runtime_rows:
+            live_overlay = journal.with_suffix('.runtime.compose.json')
+            module.atomic(live_overlay, json.dumps(runtime_overlay(runtime_rows, service_images(receipt), settings)).encode())
         compose(module, target, 'up', '-d', '--no-deps', '--force-recreate', '--wait', '--wait-timeout', '120',
-                *services, NEW_SERVICE)
+                *services, NEW_SERVICE, overlay=live_overlay)
         after = inventory()
         preserved(before, after, services)
+        if runtime_rows:
+            raw_after = {r['Name']:r for r in json.loads(run(['docker','inspect',
+                         *['quant-company-'+name+'-1' for name in service_images(receipt)]]))}
+            verify_profile_runtime(runtime_rows, raw_after, service_images(receipt), settings)
+            receipt['existing_feature_environment_and_runtime_preserved'] = True
         for name in (*services, NEW_SERVICE):
             row = after['/quant-company-' + name + '-1']
             if not row['running'] or row['oom'] or row['restarts']:
                 raise ValueError('preview_service_unhealthy')
-            expected = ('quant-company-codex:' if name == 'codex-runtime' else 'quant-company:') + args.commit
+            expected = service_images(receipt).get(name) or ('quant-company-codex:' if name == 'codex-runtime' else 'quant-company:') + args.commit
             if row['image'] != expected:
                 raise ValueError('preview_image_revision_mismatch')
             if name == 'codex-runtime' and row['mounts'] != before['/quant-company-codex-runtime-1']['mounts']:
@@ -428,9 +568,11 @@ print('briefing_schema_ready')"""
         module.atomic(STATE / 'config/roles.json', roles)
         module.link(previous)
         overlay = journal.with_suffix('.rollback.compose.json')
-        module.atomic(overlay, json.dumps({'services': {name: {'image': before['/quant-company-' + name + '-1']['image']}
-                                                        for name in (*services, NEW_SERVICE)
-                                                        if '/quant-company-' + name + '-1' in before}}).encode())
+        rollback = (runtime_overlay(runtime_rows, {name:before['/quant-company-'+name+'-1']['image']
+                    for name in (*services,NEW_SERVICE)}, {}) if runtime_rows else {'services': {
+                        name:{'image':before['/quant-company-'+name+'-1']['image']}
+                        for name in (*services,NEW_SERVICE) if '/quant-company-'+name+'-1' in before}})
+        module.atomic(overlay, json.dumps(rollback).encode())
         restore = (*services, *((NEW_SERVICE,) if NEW_SERVICE in drains else ())) if primary_stopped else drains
         compose(module, previous, 'up', '-d', '--no-deps', '--force-recreate', '--wait', '--wait-timeout', '120',
                 *restore, overlay=overlay)
