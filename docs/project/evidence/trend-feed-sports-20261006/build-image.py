@@ -73,6 +73,7 @@ if __name__ == '__main__':
         candidate_override = operator.STATE / 'releases/trend-feed-sports-preview.compose.json'
         content = json.loads(override.read_text())
         content['services']['news-worker']['image'] = tag
+        content['services']['news-worker']['environment'] = dict(e.split('=', 1) for e in before['news-worker']['Config']['Env'])
         operator.atomic(candidate_override, json.dumps(content).encode())
         preview = json.loads(operator.run([*operator.compose(before['news-worker'], candidate_override), 'run', '--rm',
                                            '--no-deps', '--pull', 'never', '-T', 'news-worker', 'python', '-'],

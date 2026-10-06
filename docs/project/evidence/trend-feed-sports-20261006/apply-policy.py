@@ -60,6 +60,8 @@ def main(operator):
             content = json.loads(path.read_text())
             operator.atomic(STATE / 'releases' / ('trend-feed-sports-' + name + '.before.json'), path.read_bytes())
             content['services'][name]['image'] = candidate['image_tag']
+            # Preserve the exact active environment even if another operator has changed shared compose inputs.
+            content['services'][name]['environment'] = dict(e.split('=', 1) for e in before[name]['Config']['Env'])
             operator.atomic(path, json.dumps(content).encode())
             operator.run([*operator.compose(before[name], path), 'up', '-d', '--no-deps', '--no-build', '--pull', 'never',
                           '--force-recreate', '--wait', '--wait-timeout', '120', name], timeout=180)
