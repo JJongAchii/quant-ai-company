@@ -1,0 +1,43 @@
+{
+  "recorded_at": "2026-10-06T06:34:34.099504+00:00",
+  "authorization": "slack 에 보내줘봐",
+  "workspace": "Achii's Quant Research",
+  "team_id": "T0C1YRDRPNF",
+  "channel_id": "C0C2E59B1AA",
+  "sender_user_id": "U0C4PJDR8G3",
+  "mode": "explicit_one_time_readability_preview",
+  "format_version": 16,
+  "content_qualified": false,
+  "permalink": "https://achiisquantresearch.slack.com/archives/C0C2E59B1AA/p1791267128901869",
+  "api_post_calls": 3,
+  "visible_main_messages": 2,
+  "detail_replies": 2,
+  "main_auto_split": {
+    "observed": true,
+    "parts": [
+      {
+        "ts": "1791267128.901869",
+        "characters": 3964,
+        "source_offset": 0
+      },
+      {
+        "ts": "1791267128.930389",
+        "characters": 4001,
+        "source_offset": 3965
+      }
+    ],
+    "gap_characters": [
+      0,
+      1
+    ],
+    "gaps_whitespace_only": true
+  },
+  "all_main_text_preserved": true,
+  "detail_text_unchanged": true,
+  "live_readback_verified": true,
+  "scheduled_policy_changed": false,
+  "automatic_publication_enabled": false,
+  "new_model_calls": 0,
+  "private_delivery_receipt_sha256": "fa397512be03a870aa9d0696bf07aa54ad9c22537ba346e10fb158ebfb726f27",
+  "scope": "Actual one-time Slack preview delivery and content readback, not expert content acceptance or automatic publication qualification."
+}
