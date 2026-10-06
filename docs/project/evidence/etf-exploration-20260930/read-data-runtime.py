@@ -35,18 +35,20 @@ for row in rows:
     message = fault.get("message", "")
     row["runtime"]["parse_phase"] = re.findall(r"\(([a-z_]+):([a-z_]+)\)", message)
 stage_query = """
+WITH latest_stage AS (
+ SELECT * FROM research_mission_stages
+ WHERE program_id='f7deaf96-e677-5afe-93d4-18ac387043bb' AND stage='program_data'
+ ORDER BY created_at DESC,id DESC LIMIT 1
+)
 SELECT json_build_object(
  'stage',(SELECT row_to_json(s) FROM (SELECT id,state,attempt,error,retry_at,task_id,
    context->'required_data_reads' AS required_data_reads
-   FROM research_mission_stages WHERE program_id='f7deaf96-e677-5afe-93d4-18ac387043bb'
-   AND stage='program_data' ORDER BY created_at DESC LIMIT 1)s),
+   FROM latest_stage)s),
  'recent_reads',(SELECT json_agg(r) FROM (SELECT r.path,r.character_offset,r.next_offset,r.created_at
-   FROM research_stage_reads r JOIN research_mission_stages s ON s.id=r.stage_id
-   WHERE s.program_id='f7deaf96-e677-5afe-93d4-18ac387043bb' AND s.stage='program_data' AND r.attempt=s.attempt
+   FROM research_stage_reads r JOIN latest_stage s ON s.id=r.stage_id AND r.attempt=s.attempt
    ORDER BY r.created_at DESC LIMIT 8)r),
  'progress',(SELECT json_agg(r) FROM (SELECT DISTINCT ON(r.path) r.path,r.next_offset
-   FROM research_stage_reads r JOIN research_mission_stages s ON s.id=r.stage_id
-   WHERE s.program_id='f7deaf96-e677-5afe-93d4-18ac387043bb' AND s.stage='program_data' AND r.attempt=s.attempt
+   FROM research_stage_reads r JOIN latest_stage s ON s.id=r.stage_id AND r.attempt=s.attempt
    ORDER BY r.path,r.character_offset DESC)r))
 """
 stage = json.loads(subprocess.check_output([

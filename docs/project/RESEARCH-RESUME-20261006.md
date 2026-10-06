@@ -143,3 +143,21 @@ DataAssessment 버전만 노출한다. version2의 최상위 legacy 필드는 �
 원래 승인이 active이고 새 연구자 제안 단계가 running이며 오류가 없음을 확인한다.
 과학 시행·예약·mission·계산시간은 여전히 0이다. 서버 current는 소스5c를 유지한다.
 복구·검사·증거 통합은 완료됐으며 연구 후보 수정과 이후 독립 검토는 서비스가 기존 승인 안에서 계속 수행한다.
+
+## 실제 실행 추적 — 2026-10-06 12:10 KST
+
+후속 후보 ‘목표비중 10%p 갱신 유예’의 data 직원은 세 번의 응답 형식 오류로 자동 재시도가 보류됐다.
+과제는 proposed이며 readiness·선정·mission·3070 작업은 없다. 앞 절의 완료는 이전 복구·검사 범위이며
+현재 사용자가 요구한 실제 과학 시행은 0이다. [보류 관측](evidence/etf-exploration-20260930/scoped-data-program-held-20261006.json).
+
+소스86의 버전별 응답 스키마 수정은 운영5c 대비 src 두 파일, 24행 추가·1행 삭제다.
+[정확한 이미지 준비](evidence/etf-exploration-20260930/scoped-data-server-qualified-20261006.json),
+[3070 합성 입력 qualification](evidence/etf-exploration-20260930/scoped-data-worker-qualified-20261006.json),
+[실제 subscription의 scoped 최종 응답 검증](evidence/etf-exploration-20260930/scoped-data-native-qualified-20261006.json)이 완료됐다.
+진단 응답은 프로그램에 적용하지 않았다. 실제 입력 연구나 readiness 결정은 이 검증으로 대체하지 않는다.
+
+root는 [준비된 운영 명세](evidence/etf-exploration-20260930/scoped-data-review-20261006.json)와
+[적용 순서·권한·실패 처리](evidence/etf-exploration-20260930/scoped-data-apply-review-20261006.json)를 검토했다.
+기존 소유자의 배포·진행 요청에 따라 이 호환 형식 수리를 적용한다. 신규 exact-SHA 소유자 승인을 받았다고
+기록하지 않는다. signed c3 프로그램의 예산·범위·입력·직원 판단은 유지한다.
+현재 이 명세 작성 시점에는 운영 current가5c이며, 이후 활성화 영수증을 별도로 기록한다.

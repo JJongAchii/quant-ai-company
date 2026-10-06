@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 15,
+  "previousIntent": "INTENT-v14.json",
+  "sourceRequest": "근데 도대체 실제 실험은 언제하고 내가 실제로 사용은 언제하냐? 한달동안 진전된게 하나도 없네;;",
+  "outcome": "Follow the already-approved company programme to its first actual scientific worker execution, identify any concrete execution blocker, and report research use and live allocation readiness separately.",
+  "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "deliverables": [
+    {"id": "EXECUTION_DIAGNOSIS", "description": "Trace the accepted proposal, independent data review, selection and worker launch path against actual records"},
+    {"id": "FIRST_REAL_EXECUTION", "description": "Verify an actual approved worker job and preserve its launch/result receipts; zero scientific runs is still pending"},
+    {"id": "PRACTICAL_USE_STATUS", "description": "State what research output exists and the exact remaining conditions for practical use without inventing a deployment date"}
+  ],
+  "constraints": [
+    "Preserve the signed scope, four-trial/7200-second programme budget and approved inputs",
+    "No operator hypothesis selection, data readiness decision or replacement of staff judgment",
+    "Never substitute fixture qualification or service test passes for actual scientific progress",
+    "No replay of uncertain launch, model call or write; no orders or 5090 fallback",
+    "Read only execution metadata until independent result audits permit performance reporting",
+    "Do not start another approval loop for the existing scientific authority"
+  ]
+}
