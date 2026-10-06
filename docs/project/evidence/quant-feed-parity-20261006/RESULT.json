@@ -1,0 +1,196 @@
+{
+  "state": "restored",
+  "checked_at": "2026-10-06 00:30:04.161184+00:00",
+  "scope": "Quant worker allowlist only; existing application/runtime images and all independent containers preserved",
+  "root_cause": {
+    "component": "SLACK_ALLOWED_CHANNELS",
+    "quant_previous_count": 8,
+    "dispatch_current_count": 9,
+    "policy_before": "0c3a76a09091720ad899d2b9c4d1aefe4aa6f36d58d0d47528076f034c38f5f6",
+    "policy_after": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+    "previous_error": "quant_feed_policy_changed"
+  },
+  "alignment": {
+    "state": "aligned",
+    "changed_environment_keys": [
+      "SLACK_ALLOWED_CHANNELS"
+    ],
+    "worker_image": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+    "independent_services_preserved": true
+  },
+  "reconciliation": {
+    "plan_digest": "d45d2d6c6173155ceba8d7fe288aeb59c3bd39d537909a034557d3dd4e88dd3d",
+    "operator_source_sha256": "94d1c59333ccffc180e461540fc7ed9cff5c0c71cc1d9913fcdd51d10b6e496d",
+    "revalidated": 7,
+    "database_updates": 14,
+    "model_calls": 0,
+    "direct_slack_writes": 0,
+    "old_calls_or_evidence_modified": false,
+    "only_confirmed_unsent_records": true
+  },
+  "delivery": {
+    "real_slack": true,
+    "count": 7,
+    "checks": {
+      "authorized": true,
+      "publication_enabled": true,
+      "seven_rows": true,
+      "all_delivered": true,
+      "all_current_policy": true,
+      "all_independent_critics_passed": true,
+      "one_send_each": true,
+      "card_budgets": true,
+      "historic_bad_post_unchanged": true,
+      "all_slack_links_confirmed": true,
+      "correct_quant_bot": true
+    },
+    "publications": [
+      {
+        "id": "5d5e81ce-b0c0-5013-b42e-902a73f47858",
+        "title": "From Intraday Orderbook to Imbalance Price: Understanding Cross-Market Interaction",
+        "sent_kst": "2026-10-06T09:02:27.921039+09:00",
+        "attempts": 1,
+        "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791244947921039",
+        "original_sha256": "99c9497fc3b27d88a7b4bf77c360015186daf0b605a9868b2d322696073ca687",
+        "card_sha256": "d9996c477615e9efecbc8fef0e1c80efdf510bb6803715abffce0d403d5f88cd",
+        "card_characters": 2376
+      },
+      {
+        "id": "9e85fbec-71ae-5db4-b18b-d4d0f2d7941d",
+        "title": "A Generalized Langevin Model of Latent Liquidity and Concave Price Impact",
+        "sent_kst": "2026-10-06T09:03:28.967099+09:00",
+        "attempts": 1,
+        "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791245008967099",
+        "original_sha256": "dc0ec51b5360eb3c488aa12b77432f904df9b371e84f123b24a86358c83a112e",
+        "card_sha256": "3a8fb7ac08faec34639325b86ad5fe9ae9c300da816d6b42f5c4e5d41ed98cbb",
+        "card_characters": 2086
+      },
+      {
+        "id": "d4a8fb1e-b071-537f-9dc5-2e0c6a82b6df",
+        "title": "Understanding Order Flow",
+        "sent_kst": "2026-10-06T09:04:30.069959+09:00",
+        "attempts": 1,
+        "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791245070069959",
+        "original_sha256": "67b6d4c94f0941ca8faa9768166cb9ea55359f04de8c24bebc5fdec6ca89ace1",
+        "card_sha256": "42b09762feed0c61699e825b5a2437561efd83fa3996d0b602449ba1d4ae7b99",
+        "card_characters": 2245
+      },
+      {
+        "id": "5770b8a4-050e-5753-9d23-d62cecefef25",
+        "title": "When Hedging Changes the Payoff: Option Replication with Price Impact and Execution Costs",
+        "sent_kst": "2026-10-06T09:05:31.192679+09:00",
+        "attempts": 1,
+        "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791245131192679",
+        "original_sha256": "ba3618e947cc1f56d8088d2217ad9dbb5c018216cd772a92ed4a936eb8e5534c",
+        "card_sha256": "d48fab598487749f35f85311e35d5e4d91484e236a26f39ee9cd831ee957325a",
+        "card_characters": 1973
+      },
+      {
+        "id": "bcb61b6f-1bf5-5308-8859-1aa70dc21f4e",
+        "title": "Stochastic Knothe-Rosenblatt: Light-speed Calibration of Stochastic Local Volatility Models",
+        "sent_kst": "2026-10-06T09:06:32.520369+09:00",
+        "attempts": 1,
+        "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791245192520369",
+        "original_sha256": "c36ed23a857d3d0b9a3fef7a840c276cf11b0a4ea3a8efd3c73cde869353dee1",
+        "card_sha256": "0bf782fec243e72d3398cb9051d2fe2601ded5578a5a6fc96ae12f4e8c350a6b",
+        "card_characters": 2092
+      },
+      {
+        "id": "94e0dac9-d677-5a11-aafb-f971c7990711",
+        "title": "Price Discovery at the Boundary of Contractual Decidability: Terminal-Value Gaps, Trading Availability, and Venue Finality on Kalshi",
+        "sent_kst": "2026-10-06T09:07:33.615139+09:00",
+        "attempts": 1,
+        "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791245253615139",
+        "original_sha256": "563bbe2ef873ac46ac2ad11a087ffd8aa53f66299d1d57c9b8569eed140205e9",
+        "card_sha256": "30794fe10d07af9a85907a9ff11f6e1404e135a00781a23bc847cdd137bc71ce",
+        "card_characters": 2390
+      },
+      {
+        "id": "f81016bb-f7ec-5d4f-b53c-f3c9a1219882",
+        "title": "Oracle-Parametrized Constant Function Market Makers: From Price Feeds to Pricing Rules",
+        "sent_kst": "2026-10-06T09:08:34.272139+09:00",
+        "attempts": 1,
+        "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791245314272139",
+        "original_sha256": "f921bd983866ae43c2c409058c4220605f42437ad752bcdaf22418a8d646d3e4",
+        "card_sha256": "123f85feff11f4d907aedaf37c6b448282ce022e2a463a7d7d19e391de11e176",
+        "card_characters": 2012
+      }
+    ]
+  },
+  "runtime": {
+    "checked_at": "2026-10-06 00:30:57.989710+00:00",
+    "policy": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+    "publication_enabled": true,
+    "authorized": true,
+    "workflows": [
+      {
+        "id": "company-quant-feed-collection-v1",
+        "status": "RUNNING",
+        "task_queue": "quant-company-quant-collection",
+        "latest_events": [
+          {
+            "id": 416,
+            "type": "EVENT_TYPE_MARKER_RECORDED",
+            "time": "2026-10-06 00:26:53.002375"
+          },
+          {
+            "id": 417,
+            "type": "EVENT_TYPE_UPSERT_WORKFLOW_SEARCH_ATTRIBUTES",
+            "time": "2026-10-06 00:26:53.002498"
+          },
+          {
+            "id": 418,
+            "type": "EVENT_TYPE_TIMER_STARTED",
+            "time": "2026-10-06 00:26:53.002540",
+            "timer_seconds": 300
+          }
+        ]
+      },
+      {
+        "id": "company-quant-feed-editorial-v1",
+        "status": "RUNNING",
+        "task_queue": "quant-company-quant-model",
+        "latest_events": [
+          {
+            "id": 1186,
+            "type": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+            "time": "2026-10-06 00:27:57.949058"
+          },
+          {
+            "id": 1187,
+            "type": "EVENT_TYPE_MARKER_RECORDED",
+            "time": "2026-10-06 00:27:57.949162"
+          },
+          {
+            "id": 1188,
+            "type": "EVENT_TYPE_TIMER_STARTED",
+            "time": "2026-10-06 00:27:57.949176",
+            "timer_seconds": 1800
+          }
+        ]
+      }
+    ],
+    "sources_enabled": 16,
+    "sources_with_failures": 0
+  },
+  "tests": {
+    "postgresql": "real disposable PostgreSQL databases",
+    "model_and_slack_fixtures": "simulated in regression tests; production delivery separately verified",
+    "full": {
+      "passed": 1437,
+      "skipped": 46,
+      "deselected_live": 1
+    },
+    "targeted": {
+      "passed": 163,
+      "skipped": 1
+    },
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "limitations": [
+    "Slack history readback is unavailable with the existing chat:write-only bot; auth.test and chat.getPermalink were verified instead.",
+    "This recovery revalidates settled evidence and does not independently reproduce paper performance or make a long-run quality claim.",
+    "The v21 policy still fingerprints the global allowlist. Future allowlist changes must synchronize preserved workers and dispatch; arbitrary digest replacement or uncertain-send replay is prohibited."
+  ]
+}
