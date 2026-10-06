@@ -1,71 +1,71 @@
 {
   "approval": {
-    "approvedAt": "2026-10-06T12:12:42.758125+00:00",
-    "id": "chat-slack-command-help-20261006"
+    "approvedAt": "2026-10-06T12:59:11.326885+00:00",
+    "id": "chat-sol-allocation-20261006"
   },
-  "currentIntent": "INTENT-v4.json",
+  "currentIntent": "INTENT-v5.json",
   "deliverables": {
-    "GUIDE": {
+    "APPLY": {
       "evidence": [
         {
-          "path": "src/quant_company/command_help.py",
-          "sha256": "d792a843ff0c"
+          "path": "docs/project/evidence/sol-allocation-20261006/apply.json",
+          "sha256": "5c4bdc6eb9e7"
         },
         {
-          "path": "src/quant_company/slack.py",
-          "sha256": "e7430082c6b4"
+          "path": "docs/project/evidence/sol-allocation-20261006/receipt.json",
+          "sha256": "000fe49b9680"
         },
         {
-          "path": "docs/runbooks/model-assignments.md",
-          "sha256": "f81dbc03dbb4"
+          "path": "docs/project/evidence/sol-allocation-20261006/operator-allocation.py",
+          "sha256": "57687315faa0"
         }
       ],
-      "note": "모델·계정 통합 guide를 제어 채널의 명시적 도움말 별칭과 계정·모델 문법 오류가 공유한다. 일반 메시지 도움말이며 native slash 등록은 하지 않았다.",
+      "note": "Authenticated operator action committed policy revision 1 with all 16 Sol bindings in one PostgreSQL transaction; stable operation receipt readback returned cached true; separate operator origin with nullable Slack command ID.",
       "status": "verified",
-      "updatedAt": "2026-10-06T12:35:18.218157+00:00"
+      "updatedAt": "2026-10-06T13:20:50.993839+00:00"
     },
-    "INTEGRATION": {
+    "PLAN": {
       "evidence": [
         {
-          "path": "docs/project/COMMAND-HELP-20261006.md",
-          "sha256": "cb00923df235"
+          "path": "docs/project/evidence/sol-allocation-20261006/plan.json",
+          "sha256": "c0ab94075bfc"
         },
         {
-          "path": "docs/project/evidence/command-help-20261006/production-cutover.json",
-          "sha256": "e09f05231e1b"
+          "path": "docs/project/evidence/sol-allocation-20261006/catalog.json",
+          "sha256": "9d8c3aa294bc"
         },
         {
-          "path": "docs/project/evidence/command-help-20261006/production-verification.json",
-          "sha256": "f7474f9a6963"
+          "path": "docs/project/evidence/sol-allocation-20261006/preview.json",
+          "sha256": "521f15d94f8e"
         }
       ],
-      "note": "21:30 KST 실제 3개 제어 서비스 반영, 15개 fleet/API/실제 Slack 7개 인증과 TLS 7개/Temporal 2 poller 확인. 10156 frozen requests, 기존 receipt/session, 계정 primary revision2·배정 revision0 및 non-target 컨테이너 12개 유지. PR114 merged; 새 소유자 도움말 전달은 아직 합성하지 않았다고 명시.",
+      "note": "Live primary revision 2 catalog and deployed validators accepted all 16 gpt-6.1-sol assignments; max director and expected policy revision 0; preview wrote zero records.",
       "status": "verified",
-      "updatedAt": "2026-10-06T12:35:18.387084+00:00"
+      "updatedAt": "2026-10-06T13:13:13.116666+00:00"
     },
-    "VALIDATION": {
+    "VERIFY": {
       "evidence": [
         {
-          "path": "docs/project/evidence/command-help-20261006/validation.json",
-          "sha256": "575c52d6e880"
+          "path": "docs/project/evidence/sol-allocation-20261006/verify.json",
+          "sha256": "d928ac4bc7a4"
         },
         {
-          "path": "tests/test_accounts.py",
-          "sha256": "6088a5980777"
+          "path": "docs/project/evidence/sol-allocation-20261006/production-verify.py",
+          "sha256": "1ed2100ebfcc"
         },
         {
-          "path": "tests/test_model_policy.py",
-          "sha256": "1f06018895a4"
+          "path": "docs/project/SOL-MODEL-ALLOCATION-20261006.md",
+          "sha256": "b2c55534f59c"
         }
       ],
-      "note": "회사·운영 cohort 실제 PG/Temporal 각각 127 passed; Linux CI 서비스 1551 passed, 47 skipped, 1 deselected 및 빈 인증 CLI 9 passed. 합성 Slack/Codex 범위를 명시했고 도움말의 추론·정책 변경 0회를 확인했다.",
+      "note": "Authenticated live API and four deployed producer images agree on all 16 assignments; 10,167 frozen requests, seven active roles and primary account revision 2 preserved. Single durable revision/event; API preview OOM and separate Analyst three-service deployment explicitly recorded.",
       "status": "verified",
-      "updatedAt": "2026-10-06T12:35:18.048762+00:00"
+      "updatedAt": "2026-10-06T13:25:23.764690+00:00"
     }
   },
-  "intentDigest": "a087b4d3be2e",
+  "intentDigest": "05278d070f35",
   "schemaVersion": 1,
   "slug": "manatee",
   "state": "approved",
-  "updatedAt": "2026-10-06T12:35:18.387084+00:00"
+  "updatedAt": "2026-10-06T13:25:23.764690+00:00"
 }
