@@ -1,0 +1,17 @@
+{
+  "constraints": ["회사 저장소 안에서만 구현·기록", "기존 구독 인증과 실행 경로 사용; 유료 AI API 자동 전환 금지", "모델 요청 KST 하루 최대 2개, 네이버 HTTP 하루 100회 이하", "영속 DB·Temporal·발송 영수증 사용", "비밀 출력·Git 저장 금지"],
+  "createdAt": "2026-10-06T07:54:06.518980+00:00",
+  "decisionGates": ["사용자의 Implement the plan으로 설계의 구현·검증을 승인받음", "실제 운영 발송은 3일 미리보기 관측·구독 모델·전용 Slack 채널 영수증을 확인한 후 활성화"],
+  "deliverables": [
+    {"id": "IMPLEMENTATION", "description": "한국 종합 검색 트렌드 수집·동결·편집·아침 브리핑과 CLI·설정", "acceptance": ["Google KR 관측, 네이버 같은 응답 내 추이, 허용 원문 근거", "07:30 동결·08:00 확정·09:00 만료", "최대 8개, 기존 구독 최대 2회, 늦은 편집의 대체 브리핑"]},
+    {"id": "VALIDATION", "description": "실제 PostgreSQL·Temporal 회귀와 공개 소스·구독 실행 자격검사", "acceptance": ["재시작·재생·중복·권한 변경·불명 결과 검사", "실제 공개 자료·실제 구독·모의 Slack 범위 구분", "운영 설정·복구 문서 및 근거 보존"]},
+    {"id": "ACTIVATION", "description": "전용 앱·키 연결 및 미리보기 관측 후 운영 발송", "acceptance": ["실제 3일 미리보기", "실제 네이버 키·전용 Slack 채널 연결과 발송 영수증", "검증된 운영 설정으로 활성화"]}
+  ],
+  "nonGoals": ["전체 플랫폼 검색량 순위", "자동 유료 API 전환", "연구·백테스트·실거래", "기존 뉴스 피드의 편집 정책 변경"],
+  "outcome": "Implement the plan. 한국 종합 검색 트렌드를 전용 Slack 채널에서 매일 08:00 KST에 최대 8개와 짧은 배경으로 수신한다. Google Trends KR RSS, NAVER 검색어 트렌드와 뉴스 API, 기존 PostgreSQL/Temporal/구독 모델/Slack 영수증을 통합하고 검증한다.",
+  "revision": 1,
+  "schemaVersion": 1,
+  "slug": "batfish",
+  "sourceRequest": "Implement the plan. 한국 종합 검색 트렌드를 전용 Slack 채널에서 매일 08:00 KST에 최대 8개와 짧은 배경으로 수신한다. Google Trends KR RSS, NAVER 검색어 트렌드와 뉴스 API, 기존 PostgreSQL/Temporal/구독 모델/Slack 영수증을 통합하고 검증한다.",
+  "stopConditions": ["외부 연결이나 관측 기간이 충족되지 않으면 미완료 상태와 필요한 조건을 기록", "불명 모델 호출·Slack 전송을 새 요청으로 자동 반복하지 않음"]
+}

@@ -1,0 +1,59 @@
+{
+  "approval": {
+    "approvedAt": "2026-10-06T08:22:57.825339+00:00",
+    "id": "chat-user-implement-plan-20261006"
+  },
+  "currentIntent": "INTENT-v1.json",
+  "deliverables": {
+    "ACTIVATION": {
+      "evidence": [
+        {
+          "path": "docs/project/TREND-FEED-VALIDATION.md",
+          "sha256": "9cc584354cf2"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-20261006/slack-connection.json",
+          "sha256": "ca10430bd29f"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-20261006/naver-connection.json",
+          "sha256": "7f6ce248e1b2"
+        }
+      ],
+      "note": "Slack app/channel connected; user-provided local NAVER keys verified against both actual API HUB endpoints. Production secret mount, manual legacy-token replacement, 3-day observation and live delivery remain. No deployment or messages.",
+      "status": "in_progress",
+      "updatedAt": "2026-10-06T10:42:54.453283+00:00"
+    },
+    "IMPLEMENTATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-feed-20261006/RESULT.json",
+          "sha256": "5dc0f0aa9638"
+        }
+      ],
+      "note": "Daily trend service implemented and tested; source/AI/Slack controls default off. Source manifest pinned in evidence.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T10:42:53.977375+00:00"
+    },
+    "VALIDATION": {
+      "evidence": [
+        {
+          "path": "docs/project/TREND-FEED-VALIDATION.md",
+          "sha256": "9cc584354cf2"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-20261006/RESULT.json",
+          "sha256": "5dc0f0aa9638"
+        }
+      ],
+      "note": "1448 passed, 45 skipped, 1 deselected; Ruff/Compose passed. Real RSS, one completed Codex call and Slack auth. NAVER search-trend and news both passed actual HTTP 200; no delivery.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T10:42:54.224985+00:00"
+    }
+  },
+  "intentDigest": "98fa902262d1",
+  "schemaVersion": 1,
+  "slug": "batfish",
+  "state": "approved",
+  "updatedAt": "2026-10-06T10:42:54.453283+00:00"
+}

@@ -41,6 +41,11 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 대화형 직원이나 AI 봇이 아니며 `chat:write`만 갖습니다. 초기 활성화 기본값은 꺼짐입니다.
 [설정·데모·복구](docs/tech-feed.md), [검증 및 운영 상태](docs/project/TECH-FEED-VALIDATION.md)를 참고하세요.
 
+`trend-feed`는 Google 한국 검색 트렌드·네이버 추이·허용 언론 원문을 모아 **08:00 KST에 최대 8개**를
+전용 **Trend Scout** 앱으로 전달하는 아침 브리핑입니다. 기존 구독 모델을 하루 최대 2회 사용하며,
+편집이 늦으면 숫자·링크 중심으로 확정합니다. 수집·발송 기본값은 꺼짐입니다.
+[설정·미리보기·복구](docs/trend-feed.md), [검증 및 연결 상태](docs/project/TREND-FEED-VALIDATION.md)를 참고하세요.
+
 `housing-feed`는 서울·경기 청약홈·LH·SH의 공식 분양 공고를 1시간마다 확인하고,
 신규·변경 공고와 접수 전날·당일 알림을 Reporter 앱으로 전달합니다.
 API 키나 모델 호출은 필요하지 않습니다. [범위·일정·운영](docs/housing-feed.md)을 참고하세요.

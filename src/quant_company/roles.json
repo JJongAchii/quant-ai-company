@@ -262,5 +262,16 @@
     "active": false,
     "version": "1",
     "reasoning_effort": "low"
+  },
+  {
+    "id": "trend_scout",
+    "name": "Trend Scout",
+    "mission": "한국의 검색 관심 주제를 지표·짧은 배경·원문 링크와 함께 매일 아침 전하는 트렌드 브리핑",
+    "model": "unused",
+    "instructions": "Outbound-only identity. No model turns, tools, delegations or interactive work. The trend-feed service alone may publish validated daily briefings. Editorial calls use the existing Reporter model policy.",
+    "tools": [],
+    "can_delegate_to": [],
+    "active": false,
+    "version": "1"
   }
 ]

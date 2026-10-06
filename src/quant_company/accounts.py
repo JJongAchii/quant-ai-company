@@ -130,7 +130,7 @@ def resume_quota_waits(conn, command_id, revision):
     for row in rows:
         conn.execute("""INSERT INTO model_account_wakes(command_id,turn_id,revision) VALUES (%s,%s,%s)
             ON CONFLICT DO NOTHING""", (command_id, row["id"], revision))
-    for table in ("news_triages", "news_reviews", "news_searches", "staff_runs", "quant_feed_calls"):
+    for table in ("news_triages", "news_reviews", "news_searches", "staff_runs", "quant_feed_calls", "trend_feed_calls"):
         if not conn.execute("SELECT to_regclass(%s) AS name", ("public." + table,)).fetchone()["name"]:
             continue
         conn.execute(sql.SQL("UPDATE {} SET next_at=now() WHERE error='quota' AND state IN ('running','queued')")

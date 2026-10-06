@@ -1,0 +1,21 @@
+{
+  "checked_at": "2026-10-06T10:09:09.645566+00:00",
+  "app_id": "A0C7VRH8JV6",
+  "workspace_id": "T0C1YRDRPNF",
+  "bot_user_id": "U0C7VT8TN1W",
+  "bot_id": "B0C7572KPEY",
+  "bot_name": "trendscout",
+  "scopes": [
+    "chat:write"
+  ],
+  "auth_test": "passed",
+  "credential_storage": "local secret file, mode 0600; not Git or model context",
+  "channel_id": "C0C6WTA9ECV",
+  "channel_name": "search-trends",
+  "channel_membership": "verified in channel Agents and Apps list",
+  "messages_sent": 0,
+  "deployed": false,
+  "channel_url": "https://app.slack.com/client/T0C1YRDRPNF/C0C6WTA9ECV",
+  "app_installation": "installed; bot auth.test passed",
+  "legacy_verification_token_rotation": "manual completion pending after repeated Slack reauthentication"
+}

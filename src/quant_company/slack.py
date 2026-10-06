@@ -71,6 +71,8 @@ class SlackIngress:
             return {"ok": True, "ignored": True, "reason": "tech_feed_delivery_identity_is_not_interactive"}
         if role == QUANT_FEED_AGENT:
             return {"ok": True, "ignored": True, "reason": "quant_feed_delivery_identity_is_not_interactive"}
+        if role == "trend_scout":
+            return {"ok": True, "ignored": True, "reason": "trend_feed_delivery_identity_is_not_interactive"}
         event = event if isinstance(event, dict) else {}
         if (event.get("type") not in {"app_mention", "message"}
                 or event.get("bot_id") or event.get("subtype") or not event.get("user")):
@@ -288,6 +290,10 @@ class SlackOutbox:
                 from .tech_feed.store import TechFeedStore
 
                 return TechFeedStore(self.company).gate(conn, row, claimed=True)
+            if row["message_kind"] == "trend_feed":
+                from .trend_feed.store import TrendFeedStore
+
+                return TrendFeedStore(self.company).gate(conn, row, claimed=True)
             if row["message_kind"] == "housing_feed":
                 from .housing_feed.store import HousingFeedStore
 
@@ -328,6 +334,11 @@ class SlackOutbox:
                 from .tech_feed.store import TechFeedStore
 
                 if not TechFeedStore(self.company).gate(conn, row):
+                    return None
+            if row["message_kind"] == "trend_feed":
+                from .trend_feed.store import TrendFeedStore
+
+                if not TrendFeedStore(self.company).gate(conn, row):
                     return None
             if row["message_kind"] == "housing_feed":
                 from .housing_feed.store import HousingFeedStore
@@ -443,13 +454,13 @@ class SlackOutbox:
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_server_error")
                 return True
             result = response.json()
-            requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed", "data_watch", "housing_feed"}
+            requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed", "data_watch", "housing_feed", "trend_feed"}
                                 or row["agent"] == "maintainer")
             if row.get("update_ts") and result.get("ts") != row["update_ts"] and result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_update_receipt_mismatch")
-            elif row.get("message_kind") in {"data_watch", "housing_feed"} and result.get("ok") and (
+            elif row.get("message_kind") in {"data_watch", "housing_feed", "trend_feed"} and result.get("ok") and (
                 not isinstance(result.get("ts"), str) or not re.fullmatch(r"\d+\.\d+", result["ts"])
-                or result.get("channel", None if row["message_kind"] == "housing_feed" else row["channel"]) != row["channel"]
+                or result.get("channel", None if row["message_kind"] in {"housing_feed", "trend_feed"} else row["channel"]) != row["channel"]
             ):
                 await asyncio.to_thread(self.settle, row, "uncertain", error=f"{row['message_kind']}_delivery_receipt_mismatch")
             elif result.get("ok") and (not requires_receipt or result.get("ts")):

@@ -1,0 +1,105 @@
+{
+  "checked_at": "2026-10-06T08:20:43.777891+00:00",
+  "state": "failed",
+  "database": "real-disposable-postgresql",
+  "network": "real-public-rss-and-permitted-originals",
+  "model": "real-codex-subscription",
+  "naver": "not-connected",
+  "slack": "not-connected",
+  "deployed": false,
+  "clock": "synthetic next-morning cutoff; source timestamps unchanged",
+  "code_commit": "afe3e88b5b055b60e364715835a43d3a751e2de7",
+  "uncommitted_code": true,
+  "qualification_scope": "One frozen daily briefing, up to two calls, preview only; not 3-day observation",
+  "rss": {
+    "ok": true,
+    "skipped": 0,
+    "etag": "",
+    "modified": "",
+    "sha256": "e2edeb4ebd09c04f82a4ffca80cc99b9ce6c2693b07f928082a099e408d1ee8f",
+    "bytes": 20607,
+    "entries": 10
+  },
+  "input": [
+    {
+      "id": "f8bb7beaba4ec624693239d8",
+      "title": "주식",
+      "traffic": "10000+",
+      "articles": []
+    },
+    {
+      "id": "c1e07cfb723ea7b747ad8d97",
+      "title": "jyp엔터테인먼트",
+      "traffic": "2000+",
+      "articles": []
+    },
+    {
+      "id": "51f3f5a2c596b240b124b192",
+      "title": "비상사태",
+      "traffic": "2000+",
+      "articles": []
+    },
+    {
+      "id": "53406ee1c4d72d5bdf70e98a",
+      "title": "식이",
+      "traffic": "2000+",
+      "articles": []
+    },
+    {
+      "id": "2fdf493a0d9041561be6d821",
+      "title": "창신메모리테크놀로지",
+      "traffic": "2000+",
+      "articles": []
+    },
+    {
+      "id": "a3a2eb522942efe7a2c496b9",
+      "title": "엑스포츠뉴스",
+      "traffic": "1000+",
+      "articles": []
+    },
+    {
+      "id": "eed9f37a0e0232f79662f73e",
+      "title": "위원장",
+      "traffic": "1000+",
+      "articles": []
+    },
+    {
+      "id": "efa28977b8a31f9378d06496",
+      "title": "재산세",
+      "traffic": "1000+",
+      "articles": []
+    },
+    {
+      "id": "056dc522c4bef9bf4c33be98",
+      "title": "퇴직금",
+      "traffic": "1000+",
+      "articles": []
+    },
+    {
+      "id": "a162e830c79c11ad5048a756",
+      "title": "nba",
+      "traffic": "200+",
+      "articles": []
+    }
+  ],
+  "configured_model": {
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high"
+  },
+  "finalize": {
+    "state": "preview",
+    "id": "dd562c74-8620-5d74-adfb-153dc9deea7a",
+    "items": 8
+  },
+  "preview": "*한국 검색 트렌드 · 10/07 아침*\n지난 24시간에 관측한 급상승 주제 · Google 한국 기준\n\n*1. 주식*\n관측 이력 부족 · Google 규모 표시 10000+ (구간 내 최대 표시)\n네이버 추이 확인 불가\n배경 확인 제한 · 관련 기사 제목과 링크\n<https://www.mk.co.kr/news/economy/12169058|“다들 주가 떨어져 울상인데”…석 달 새 1조 넘게 불어난 ‘이 사람’ 무슨 일?>\n\n*2. jyp엔터테인먼트*\n관측 이력 부족 · Google 규모 표시 2000+ (구간 내 최대 표시)\n네이버 추이 확인 불가\n배경 확인 제한 · 관련 기사 제목과 링크\n<https://www.donga.com/news/Society/article/all/20261006/134793419/2|‘무보수’ 논란 박진영 “월 200만원 받는 줄 몰랐다”>\n\n*3. 비상사태*\n관측 이력 부족 · Google 규모 표시 2000+ (구간 내 최대 표시)\n네이버 추이 확인 불가\n배경 확인 제한 · 관련 기사 제목과 링크\n<https://v.daum.net/v/20261006093605841|'백신 거부'가 불러온 보건 재앙…美 뉴욕주, 홍역 비상사태>\n\n*4. 식이*\n관측 이력 부족 · Google 규모 표시 2000+ (구간 내 최대 표시)\n네이버 추이 확인 불가\n배경 확인 제한 · 관련 기사 제목과 링크\n<https://health.chosun.com/site/data/html_dir/2026/10/06/2026100601795.html|“장 건강 위한다면”… 소녀시대 유리가 ‘수육에 곁들인’ 식품>\n\n*5. 창신메모리테크놀로지*\n관측 이력 부족 · Google 규모 표시 2000+ (구간 내 최대 표시)\n네이버 추이 확인 불가\n배경 확인 제한 · 관련 기사 제목과 링크\n<https://www.donga.com/news/Economy/article/all/20261006/134791630/1|삼전하닉 핵심 27명 中 CXMT로…이직후 3년도 안돼 퇴출>\n\n*6. 엑스포츠뉴스*\n관측 이력 부족 · Google 규모 표시 1000+ (구간 내 최대 표시)\n네이버 추이 확인 불가\n배경 확인 제한 · 관련 기사 제목과 링크\n<https://www.mt.co.kr/world/2026/10/05/2026100510044671636|8세 日 아이돌 연습생, 무대 선 지 5일 만에…'독감 합병증' 사망 - 머니투데이>\n\n*7. 위원장*\n관측 이력 부족 · Google 규모 표시 1000+ (구간 내 최대 표시)\n네이버 추이 확인 불가\n배경 확인 제한 · 관련 기사 제목과 링크\n<https://imnews.imbc.com/news/2026/society/article/6855993_36918.html|경찰, 삼성전자 노조위원장 '장인 회사 계약 논란' 수사 착수>\n\n*8. 재산세*\n관측 이력 부족 · Google 규모 표시 1000+ (구간 내 최대 표시)\n네이버 추이 확인 불가\n배경 확인 제한 · 관련 기사 제목과 링크\n<https://biz.newdaily.co.kr/site/data/html/2026/10/05/2026100500023.html|집값 계속 뛰면 서울 외곽도 재산세 폭탄 … 2030년 노도강 연 57만원 더 낸다>\n\n자료 마감 10/07 07:30 KST · 수집 시작 10/06 17:20 KST\n수집 공백 있음: 집계 구간에 30분을 넘는 수집 공백이 있습니다.\n숫자·링크 중심 브리핑 · AI 배경 설명 미포함\n검색 규모는 Google 제공 표시이며 전체 검색량 순위가 아닙니다. 네이버 지수와 합산하지 않습니다.",
+  "calls": [
+    {
+      "id": "news-trends-1e7a4c26-2c31-4166-b7ba-f996e491462c",
+      "stage": 0,
+      "state": "queued",
+      "error": "unavailable",
+      "response": null
+    }
+  ],
+  "outbox_count": 0
+}
