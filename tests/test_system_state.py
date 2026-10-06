@@ -78,6 +78,42 @@ def test_repository_prompt_lists_only_paths_available_to_bounded_inspection():
     ]
 
 
+def test_repository_catalog_cannot_exhaust_the_diagnostic_budget_and_preserves_current_paths():
+    relevant = 'src/quant_company/maintenance/runner.py'
+    paths = [f'docs/project/evidence/operational-record-{i:04d}-' + 'x'*70 + '.json' for i in range(3000)]
+    paths.append(relevant)
+    payload = {
+        'observations': [{'key': 'research-contract:current', 'text': 'Current response contract fails'}],
+        'editable_paths': paths, 'repository_paths': paths,
+        'history': {'evidence': [{'key': f'message:{i}', 'text': 'h'*1800} for i in range(12)]},
+        'current_implementation': {'key': 'system:current', 'system': {'runtime': {'code_commit': 'a'*40}},
+            'source_files': [{'path': relevant, 'key': 'code:current:runner', 'content': 's'*58815}]},
+    }
+    before = digest(payload)
+    material, prompt = proposal_material(payload, Triage)
+    ProviderRequest(request_id='catalog-production-shape', model='fixture', prompt=prompt)
+    assert len(prompt) <= 88000 and digest(payload) == before
+    assert material['observations'] == payload['observations']
+    for name in ('editable_paths', 'repository_paths'):
+        assert relevant in material[name]
+        assert material['prompt_path_catalog'][name]['total'] == len(paths)
+        assert material['prompt_path_catalog'][name]['omitted'] == len(paths)-len(material[name])
+
+
+def test_large_observation_detail_is_excerpted_without_losing_evidence_identity():
+    key = 'research-contract:' + 'a'*200
+    payload = {'observations': [{'key': key, 'kind': 'research_contract_failure',
+                                'detail': {'diagnostic': 'd'*120000}}],
+               'current_implementation': {'system': {}, 'source_files': []}}
+    before = digest(payload)
+    material, prompt = proposal_material(payload, Triage)
+    assert len(prompt) <= 88000 and digest(payload) == before
+    assert material['observations'][0]['key'] == key
+    assert material['observations'][0]['kind'] == 'research_contract_failure'
+    assert material['observations'][0]['prompt_excerpted']
+    assert '[PROMPT EXCERPT]' in material['observations'][0]['detail']['diagnostic']
+
+
 @pytest.mark.integration
 async def test_explicit_current_citation_in_single_artifact_is_carried_into_finding_without_rewriting_response(company):
     class EnvelopeCitation(ModelFixture):
