@@ -1,67 +1,29 @@
 {
   "approval": {
-    "approvedAt": "2026-10-06T08:22:57.825339+00:00",
-    "id": "chat-user-implement-plan-20261006"
+    "approvedAt": "2026-10-06T12:19:29.537923+00:00",
+    "id": "chat-user-immediate-brief-inspect-activate-20261006"
   },
-  "currentIntent": "INTENT-v1.json",
+  "currentIntent": "INTENT-v2.json",
   "deliverables": {
     "ACTIVATION": {
-      "evidence": [
-        {
-          "path": "docs/project/TREND-FEED-ACTIVATION.md",
-          "sha256": "e69df8a3e75a"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/production-final.json",
-          "sha256": "9102d96538f1"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/slack-test-receipt.json",
-          "sha256": "9d7a8554b055"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/preview-timer.json",
-          "sha256": "b6d100a7080a"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/preview-observation-initial.json",
-          "sha256": "749d9737513d"
-        }
-      ],
-      "note": "Authorized preview and single test delivery complete; persistent real-day gate starts 2026-10-07 with 0 elapsed morning dates. Earliest regular publication 2026-10-10 conditional on three qualified stable dates; first actual delivery also observed. Branch pushed and PR113 kept Draft pending actual future acceptance.",
-      "status": "in_progress",
-      "updatedAt": "2026-10-06T12:12:10.043035+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
     "IMPLEMENTATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/RESULT.json",
-          "sha256": "b2fecd6a1058"
-        }
-      ],
-      "note": "Implementation and preview deployment complete. Feature branch pushed and Draft PR113 opened with explicit user approval for current PUBLIC visibility; repository visibility unchanged. Application bfb64af and observer 41f733f active.",
-      "status": "verified",
-      "updatedAt": "2026-10-06T12:12:09.587022+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
     "VALIDATION": {
-      "evidence": [
-        {
-          "path": "docs/project/TREND-FEED-VALIDATION.md",
-          "sha256": "41447a021bf7"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/RESULT.json",
-          "sha256": "b2fecd6a1058"
-        }
-      ],
-      "note": "Prior full 1514 and image-source 176; source and image-source regression suites 43 each. Actual production Google/NAVER/Temporal and one Slack delivery receipt/UI verified separately. Evidence published in PR113; three-day editor quality remains gated.",
-      "status": "verified",
-      "updatedAt": "2026-10-06T12:12:09.818506+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     }
   },
-  "intentDigest": "98fa902262d1",
+  "intentDigest": "5473004989f2",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-06T12:12:10.043035+00:00"
+  "updatedAt": "2026-10-06T12:19:29.537923+00:00"
 }

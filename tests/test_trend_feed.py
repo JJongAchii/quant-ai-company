@@ -206,9 +206,32 @@ def test_message_limit_preserves_complete_cards_and_coverage_footer(trend):
     ingest(trend)
     morning(trend)
     bundle = trend.freeze()["bundle"]
-    bundle["candidates"][0]["news"][0]["url"] += "/" + "x" * 12000
-    text = render(bundle)
+    candidate = bundle["candidates"][0]
+    candidate["articles"] = [{"id": "original", "url": "https://example.org/" + "x" * 12000,
+                              "publisher": "Example", "content": "원문으로 확인한 경기 소식"}]
+    draft = {"items": [{"member_ids": [candidate["id"]], "category": "스포츠",
+                        "background": "Example에 따르면 경기 소식이 전해졌습니다.",
+                        "evidence": [{"article_id": "original", "quote": "경기 소식"}]}]}
+    text = render(bundle, draft)
     assert len(text) < 12000 and "길이 제한" in text and "자료 마감" in text
+
+
+@pytest.mark.parametrize("title,search_term", [("두산 대 롯데", "두산 대 롯데"),
+                                             ("<@here> 한화 & 삼성|KIA", "< @here> 한화 & 삼성|KIA")])
+def test_unverified_news_links_do_not_imply_a_related_article(trend, title, search_term):
+    from urllib.parse import parse_qs, urlparse
+
+    ingest(trend, title=title)
+    morning(trend)
+    bundle = trend.freeze()["bundle"]
+    bundle["candidates"][0]["news"] = [{"url": "https://example.org/unrelated",
+                                       "title": "한화 선수의 멀티이닝 등판", "publisher": "Example"}]
+    text = render(bundle)
+    assert "한화 선수의 멀티이닝 등판" not in text and "example.org/unrelated" not in text
+    assert "검증된 관련 원문 없음" in text and "뉴스 검색>" in text
+    link = next(line.split("|", 1)[0][1:] for line in text.splitlines() if line.startswith("<https://search.naver.com/"))
+    assert parse_qs(urlparse(link).query) == {"where": ["news"], "query": [search_term]}
+    assert "<@here>" not in text
 
 
 async def test_cancelled_model_call_is_uncertain_and_not_replayed(trend):

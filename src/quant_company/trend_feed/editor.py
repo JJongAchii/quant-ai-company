@@ -1,5 +1,6 @@
 import json
 from html import escape
+from urllib.parse import urlencode
 
 from ..company import as_json
 from ..news.feeds import timestamp
@@ -106,9 +107,9 @@ def render(bundle, draft=None):
                 article = originals[key]
                 card.append(f"<{article['url'].replace('|', '%7C')}|{safe(article['publisher'])} 원문>")
         else:
-            card.append("배경 확인 제한 · 관련 기사 제목과 링크")
-            for link in candidate["news"][:1]:
-                card.append(f"<{link['url'].replace('|', '%7C')}|{safe(link['title'][:100] or link['publisher'])}>")
+            card.append("배경 확인 제한 · 검증된 관련 원문 없음")
+            query = urlencode({"where": "news", "query": candidate["title"]})
+            card.append(f"<https://search.naver.com/search.naver?{query}|{safe(candidate['title'])} 뉴스 검색>")
         # Keep complete cards and citations; reserve room for the coverage/footer text.
         if len("\n".join([*lines, *card])) > 11000:
             lines.append("\n메시지 길이 제한으로 나머지 주제를 생략했습니다.")
