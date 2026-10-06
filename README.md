@@ -52,6 +52,14 @@ API 키나 모델 호출은 필요하지 않습니다. [범위·일정·운영](
 [명령·설정·복구](docs/runbooks/model-accounts.md),
 [검증 및 운영 반영 상태](docs/project/MODEL-ACCOUNTS-VALIDATION.md)를 참고하세요.
 
+직원 모델을 직접 고정하거나 이번 업무에만 지정하는 기능은 2026-10-06 운영에서 활성화했습니다.
+소유자가 #ai-account-switch에서 `모델 목록`, `모델 지정 개발 gpt-6-astra max`,
+`모델 배정 이력`, `모델 배정 복원 2`를 사용합니다.
+업무 메시지는 첫 줄에 `이번 작업 모델 gpt-6-astra high`, 다음 줄에 업무를 적습니다.
+사용 가능 여부를 확인한 뒤 새 요청부터 적용하며 기존 요청·재시도는 원래 설정을 보존합니다.
+새 환경의 기본값은 비활성화입니다. [명령·활성화·제약](docs/runbooks/model-assignments.md),
+[운영 증거와 실제 Slack 확인 범위](docs/project/MODEL-ASSIGNMENTS-PRODUCTION-20261006.md)를 확인하세요.
+
 ```mermaid
 flowchart LR
     U[사용자 · 휴대폰 Slack] <--> S[직원별 Slack 앱 4개]

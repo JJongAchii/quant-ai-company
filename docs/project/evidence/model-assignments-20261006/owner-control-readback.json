@@ -1,0 +1,12 @@
+{
+  "owner_user": "U0C250E23NW",
+  "channel_id": "C0C3C6ELJ0P",
+  "channel_name": null,
+  "director_is_member": null,
+  "owner_allowed": true,
+  "channel_allowed": true,
+  "assignments_enabled": true,
+  "accounts_enabled": true,
+  "actual_owner_model_command": "pending_owner_input",
+  "channel_metadata_probe": "missing_scope"
+}

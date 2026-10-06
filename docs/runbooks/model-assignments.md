@@ -1,0 +1,121 @@
+# 직원 모델 지정과 복원
+
+2026-10-06 운영에서 활성화했습니다. 소유자는 기존 **#ai-account-switch** 채널에서
+명령을 보냅니다. 모델 목록은 선택한 ChatGPT 계정에서 조회합니다.
+현재 배정은 기존 기본값이며 고정 배정은 없습니다(revision 0).
+[배포·실제 조회 증거](../project/MODEL-ASSIGNMENTS-PRODUCTION-20261006.md)를 참고하세요.
+
+## 사용 방법
+
+전용 계정 제어 채널에서 아래 문장을 그대로 보냅니다. 모델 ID는 `모델 목록` 결과에서 고릅니다.
+아래 ID는 2026-10-06 선택 계정의 목록에서 확인했습니다. 지정할 때마다 현재 목록으로 다시 검증합니다.
+
+| 명령 | 동작 |
+|---|---|
+| `모델 목록` | 선택 계정의 모델 ID와 지원 추론 강도 조회 |
+| `모델 배정 상태` | 직원·배경 작업별 현재 배정과 고정 여부 조회 |
+| `모델 지정 개발 gpt-6-astra max` | 개발 담당의 모델과 추론 강도 고정 |
+| `모델 지정 director gpt-6-astra max` | 총괄의 모델 지정; 총괄은 max 필수 |
+| `모델 자동 개발` | 개발 담당의 고정 해제, 기본 배정 사용 |
+| `모델 배정 이력` | 최근 10개 배정 이력 조회 |
+| `모델 배정 복원 2` | #2의 고정 배정들을 새 revision으로 복원 |
+
+일반 업무 채널에서 해당 직원을 멘션하거나 DM을 보내면 이번 작업만 지정할 수 있습니다.
+첫 줄에 모델과 추론 강도를 적고 **줄을 바꿔** 업무를 적습니다.
+
+```text
+@데이터 이번 작업 모델 gpt-6-astra high
+이번 자료의 누락과 날짜 범위를 확인해줘.
+```
+
+우선순위는 **이번 작업 지정 → 직원별 고정 → 기본 배정**입니다. 이번 작업 지정은
+같은 업무 ID의 후속 턴과 웹검색에 유지됩니다. 동료 위임과 별도로 생성된 후속·예약 업무는
+각 직원 배정을 사용합니다. 고정 배정은 직접 변경·해제·복원하기 전까지 유지됩니다.
+
+추론 강도 입력은 `low`, `medium`, `high`, `xhigh`, `max` 중 해당 모델이 지원하는 값을 씁니다.
+목록에 다른 강도가 보여도 현재 회사 실행 계약에서 검증한 값만 입력할 수 있습니다.
+사용할 수 없는 모델·강도는 거절하고 기존 배정을 유지합니다. 반영 안내 전에는 처리 대기일
+수 있습니다. 상태·이력·지정 명령은 모델 추론 없이 처리하므로 구독 한도 대기 중에도 동작합니다.
+
+직원 ID 외에 `총괄`, `개발`, `데이터`, `금융전략`, `국내연구`, `글로벌연구`, `가상자산연구`,
+`검증`, `리스크`, `운영`, `뉴스`, `개선`, `브리핑` 별칭을 지원합니다. 배정은 비활성 직원을 활성화하지 않습니다.
+운영에 등록된 `market_brief`(브리핑)도 별도 배정하며 새 브리핑 요청에 적용합니다.
+
+배경 작업에는 `maintainer`(개선), `news_screening`(뉴스 선별), `news_search`(뉴스 검색),
+`quant_scout`(Quant 편집·검색)을 지정할 수 있습니다. 별도 고정이 없으면 개선 담당은 개발 담당을
+따릅니다. 최적화된 뉴스 선별·검색은 기본 소형 모델을 사용하며 Reporter의 고정과 별개입니다.
+최적화되지 않은 뉴스 검색은 Reporter를 따릅니다. Tech Scout는 모델을 사용하지 않습니다.
+독립 Claude 설명 검토 모델 변경은 이 기능에 포함되지 않습니다.
+
+`모델 자동`은 고정 해제입니다. 새 모델의 자동 순위 평가나 정기 교체 기능은 아직 없습니다.
+신모델이 출시되면 먼저 `모델 목록`으로 해당 계정·설치된 Codex에서 사용할 수 있는지 확인합니다.
+목록에 없으면 공식 CLI와 계정의 지원 여부를 확인한 뒤 런타임을 갱신해야 합니다.
+
+## 현재 운영 상태
+
+선택 계정은 primary이며 계정 revision은 2입니다. 실제 목록에는 `gpt-6-astra`, `gpt-5.6-sol`,
+`gpt-5.6-terra`, `gpt-5.6-luna`가 있습니다. `ultra`도 반환되는 모델이 있지만 현재 회사의
+추론 강도 계약은 `low`부터 `max`까지입니다.
+
+모든 모델 요청 생산자와 두 Codex runtime을 기존 이미지별 코드 위에 갱신했습니다.
+이미지의 별도 `io.quant-company.model-assignments` 라벨은
+`bc123cad48f5dc9aabb8570c9b4c49cdfa38e968`이며 원래 코드 revision도 유지합니다.
+서비스별 최종 Compose override는 `/var/lib/quant-company/config/model-assignments-20261006-*.compose.json`입니다.
+재생성할 때 해당 서비스의 기존 Compose 파일들과 이 마지막 override를 함께 사용합니다.
+
+기존 자동 코드 배포기는 이 여러 이미지의 구성을 보존하지 못하므로 host의
+`quant-company-release.service.d/model-assignments.conf`에서 코드 교체를 보류합니다.
+timer, 유지보수 점검과 PR 준비는 계속됩니다. 자동 배포를 다시 허용하기 전에는 release executor가
+현재 이미지·별도 소스 경로·모델 배정 코드를 모두 보존하도록 통합하고 검증해야 합니다.
+guard를 제거하거나 구버전 Compose만으로 재배포하면 배정 기능을 잃을 수 있습니다.
+
+API·목록 인증, 실제 Slack 봇 인증과 Socket Mode 연결, Temporal 계정 제어 워커는 확인했습니다.
+2026-10-06 소유자의 실제 `모델 목록` 명령 완료와 Slack delivered receipt도 확인했습니다.
+직접 고정·작업 지정한 모델의 실제 업무 실행은 첫 지정 뒤 확인해야 합니다.
+점검용 Slack 메시지나 모델 추론을 따로 시작하지 않았습니다.
+[최신 모델 누락 원인과 Codex 갱신 계획](../project/CODEX-UPDATE-DIAGNOSIS-20261006.md)을 참고하세요.
+
+## 새 환경의 운영 활성화
+
+1. 정상 백업 후 `quant-company migrate`로 추가 테이블과 `tasks.model_selection`을 적용합니다.
+2. API/Slack ingress, account-control worker 또는 account-gateway, 일반·연구·뉴스·Quant·직원·개선
+   모델 요청 생산자와 private Codex runtime을 모두 같은 기능이 포함된 코드로 갱신합니다.
+   `PINNED_COMPANY_WORKER_IMAGE`를 사용하는 배포에서는 그 이미지도 이 코드를 포함해야 합니다.
+   혼합 버전에서 모델 지정을 활성화하지 않습니다. 기존 연구 실행물의 코드를 변경하라는 뜻은 아닙니다.
+3. 계정 제어의 owner/channel allowlist를 확인한 후 모든 회사 프로세스에
+   `MODEL_ACCOUNTS_ENABLED=true`, `MODEL_ASSIGNMENTS_ENABLED=true`를 적용합니다.
+   Codex runtime에는 Slack·DB 설정을 전달하지 않습니다.
+4. 각 인증 profile은 공식 로그인 파일만 있는 경로를 사용합니다. `config.toml`이 있으면 모델
+   목록 조회가 거절됩니다. 자동으로 파일을 지우거나 다른 인증으로 전환하지 않습니다.
+5. 소유자가 `모델 목록`, `모델 배정 상태`를 실행하고 지정 명령의 실제 DB/outbox 결과를 확인합니다.
+   이어서 승인된 작은 실제 업무에서 요청 ID와 model/effort를 확인합니다. 모의 검사는 운영 증거가 아닙니다.
+
+private runtime: `GET /v1/models/primary`, `GET /v1/models/backup` (기존 runtime bearer 필수).
+운영 API: `GET /v1/model-assignments`, `GET /v1/agents` (operator bearer 필수).
+일반 직원 API는 활성화 시 유효 배정을 반환합니다. `/v1/model-assignments`는 정책 revision과
+배경 작업의 상속 관계도 반환합니다. 모델 출력에는 배정 변경 권한이 없습니다.
+
+## 복원과 장애
+
+- 잘못된 배정은 `모델 배정 복원 번호`로 되돌립니다. 과거에 사용했어도 현재 계정에서 사용할 수
+  없으면 복원이 거절됩니다. 이때 새로 사용 가능한 모델을 명시적으로 지정합니다.
+- 이미 준비한 요청·재시도·직원 연습·감사 세션은 원래 설정을 유지합니다. 복원은 기존 실행을
+  취소하거나 불명 결과를 재실행하지 않습니다.
+- 목록 조회 중 계정을 전환하면 배정 요청을 거절합니다. 현재 계정 기준으로 다시 요청합니다.
+  계정 목록 확인만으로 실제 추론 성공이나 구독 잔여량을 보장하지 않습니다.
+- `MODEL_ASSIGNMENTS_ENABLED=false`는 기본 파일 배정으로 돌아가므로 일반적인 복원 방법으로
+  사용하지 않습니다. 비활성화·구버전 코드 복귀 전에는 업무를 멈추고 남은 작업 지정을 대사합니다.
+- Slack 발송 결과가 불명확하면 기존 outbox 운영 절차를 따릅니다. 새 명령 ID로 같은 변경을
+  반복하기 전에 DB의 `model_assignment_commands.receipt`와 현재 revision을 확인합니다.
+
+## 검증
+
+```bash
+uv run pytest tests/test_model_policy.py tests/test_model_catalog.py
+uv run ruff check .
+```
+
+PostgreSQL 테스트는 기존 `TEST_DATABASE_URL` 또는 `.local/test-env.json`의 폐기 가능한 클러스터를
+사용합니다. Temporal 검사는 실제 로컬 서버를 띄웁니다. Slack과 모델 응답은 합성 fixture입니다.
+`CODEX_CATALOG_PROBE_BIN`에 검증 버전 Codex 실행 파일 경로를 주면 빈 인증 디렉터리에서
+실제 CLI의 설정·RPC만 추가 검사합니다. 로그인 확인을 모의 처리하므로 실제 계정 사용권 검사가 아닙니다.

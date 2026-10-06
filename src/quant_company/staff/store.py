@@ -42,11 +42,15 @@ class StaffStore:
             if existing["owner_user"] != owner or existing["employee"] != employee:
                 raise ValueError("Exercise identity conflict")
             return str(existing["id"])
-        role = self.company.roles["engineer" if employee == "maintainer" else employee]
+        from ..model_policy import effective_role, selection
+
+        role = effective_role(self.company, conn, employee)
         curriculum = development(conn, owner, employee, role.model, role.reasoning_effort)["next_practice"]
         variant = curriculum["family_index"]
         public, key = make_case(employee, identity, variant)
         frozen = role.model_dump(mode="json")
+        if self.company.settings.model_assignments_enabled:
+            frozen["model_selection"] = selection(self.company, conn, employee)
         frozen["exercise_tools"] = sorted(set(role.tools) & {"calculate", *TOOL_GUIDE})
         if employee == "maintainer":
             # The background maintainer has its own instructions, not the inactive quant engineer's.
@@ -139,6 +143,11 @@ class StaffStore:
             request = ProviderRequest(request_id=f"staff-{run['id']}-{len(calls)+1}", model=run["model"],
                                       reasoning_effort=role.get("reasoning_effort"),
                                       prompt=ASSESSMENT + "EXERCISE JSON:\n" + json.dumps(as_json(material), ensure_ascii=False))
+            from ..model_policy import bind
+
+            frozen_selection = role.get("model_selection") or {
+                "model": request.model, "reasoning_effort": request.reasoning_effort, "source": "staff_snapshot"}
+            request = bind(self.company, conn, request, run["employee"], inherited=frozen_selection)
             conn.execute("""INSERT INTO staff_calls(id,run_id,sequence,request) VALUES(%s,%s,%s,%s)""",
                          (request.request_id, run["id"], len(calls)+1, Jsonb(request.model_dump())))
             conn.execute("UPDATE staff_runs SET state='running' WHERE id=%s", (run["id"],))
@@ -247,6 +256,8 @@ def status(conn, company, owner, employee=None):
                 SELECT 1 FROM jsonb_array_elements(payload->'observations') o
                 WHERE o->>'kind'='staff_assessment' AND (%s::text IS NULL OR o->>'author'=%s))
             ORDER BY updated_at DESC LIMIT 10""", (Jsonb([owner]), employee, employee)).fetchall()
+    from ..model_policy import effective_role
+
     return {"enabled": company.settings.company_staff_development_enabled,
             "schedule": {"timezone": "Asia/Seoul", "after_hour": company.settings.staff_schedule_hour_kst,
                          "daily_exercises": company.settings.staff_daily_exercises,
@@ -256,8 +267,8 @@ def status(conn, company, owner, employee=None):
                         "families": FAMILIES[r], "operational_active":
                         None if r == "maintainer" else company.roles[r].active} for r in STAFF
                        if (r == employee or employee is None) and (r == "maintainer" or r in company.roles)],
-            "development": [development(conn, owner, r, company.roles["engineer" if r == "maintainer" else r].model,
-                                        company.roles["engineer" if r == "maintainer" else r].reasoning_effort)
+            "development": [development(conn, owner, r, effective_role(company, conn, r).model,
+                                        effective_role(company, conn, r).reasoning_effort)
                             for r in STAFF if (r == employee or employee is None)
                             and ("engineer" if r == "maintainer" else r) in company.roles],
             "recent_exercises": rows,

@@ -231,7 +231,11 @@ class AccountControl:
                          (row["command_id"], row["turn_id"]))
 
     async def tick(self):
-        pending = await asyncio.to_thread(self.pending)
+        from .model_control import ModelControl
+
+        # Existing activity/queue keeps Temporal histories unchanged and works during inference quota waits.
+        processed = await ModelControl(self.company, self.client).tick()
+        pending = None if processed else await asyncio.to_thread(self.pending)
         if pending:
             if self.client is None:
                 self.client = RuntimeClient(self.company.settings.model_runtime_url,
