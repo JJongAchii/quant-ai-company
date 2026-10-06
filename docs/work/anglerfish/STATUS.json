@@ -20,10 +20,10 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Actual signed c3ba5268 programme remains active with zero trials, reservations, missions and jobs. Candidate2 data stage is held after three output-format failures. Exact source86 images and 3070 release are qualified, including a separate actual subscription final-schema check with no proposal effects. Root reviewed the narrow two-file formatting repair and prepared cutover packet under existing owner deploy/continue authority. Apply source86, align 3070, then durably reconcile only the technical hold and follow normal staff selection to an actual job.",
-  "evidence": "../../project/evidence/etf-exploration-20260930/scoped-data-program-held-20261006.json",
+  "operationalStatus": "Source86 is active on all six server services with 205 source files verified each, core healthy, 15 services running. Qualified3070 source/config/unit aligned; existing registry and detached executions retained. Fresh pre-cutover backup SHA2763660b verified and S3 receipt recorded. Formatting hold reconciled durably as project event667, preserving all three failed attempts and signed authority. A fresh normal program_data stage e68ac24e/attempt1 is reading actual required evidence; zero jobs/missions/scientific trials. Original failed stage0b9b history remains intact. Follow staff selection to an actual approved job.",
+  "evidence": "../../project/evidence/etf-exploration-20260930/scoped-data-program-resumed-20261006.json",
   "nextStage": {
-    "stage": "apply_scoped_schema_and_reconcile_technical_hold",
+    "stage": "independent_data_then_staff_selection_then_first_actual_job",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false
@@ -97,7 +97,7 @@
     "signedScientificApproval": true,
     "scientificTrialsAdded": 0,
     "ownerReview": "actual_signed_canonical_program_approved",
-    "sourceCommit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+    "sourceCommit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
     "resumeReceipt": "../../project/evidence/etf-exploration-20260930/resume-reconciled-20261006.json",
     "signedProgramReceipt": "../../project/evidence/etf-exploration-20260930/approved-canonical-program-20261006.json",
     "duplicateNoticeCorrection": "../../project/evidence/etf-exploration-20260930/owner-review-correction-readback-20261006.json",
@@ -110,8 +110,9 @@
   "currentOperation": {
     "sourceCommit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
     "previousCommit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
-    "phase": "prepared_reviewed",
+    "phase": "server_and_worker_active_hold_reconciled",
     "review": "../../project/evidence/etf-exploration-20260930/scoped-data-apply-review-20261006.json",
-    "exactShaHumanApprovalClaimed": false
+    "exactShaHumanApprovalClaimed": false,
+    "activationReceipt": "../../project/evidence/etf-exploration-20260930/scoped-data-cutover-active-20261006.json"
   }
 }

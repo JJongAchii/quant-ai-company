@@ -161,3 +161,19 @@ root는 [준비된 운영 명세](evidence/etf-exploration-20260930/scoped-data-
 기존 소유자의 배포·진행 요청에 따라 이 호환 형식 수리를 적용한다. 신규 exact-SHA 소유자 승인을 받았다고
 기록하지 않는다. signed c3 프로그램의 예산·범위·입력·직원 판단은 유지한다.
 현재 이 명세 작성 시점에는 운영 current가5c이며, 이후 활성화 영수증을 별도로 기록한다.
+
+### 적용 완료와 실제 검토 재개 — 13:01 KST
+
+[활성화 영수증](evidence/etf-exploration-20260930/scoped-data-cutover-active-20261006.json)은 source86 서버·3070 정렬 완료를 기록한다.
+[여섯 서비스의 실제205파일 대조](evidence/etf-exploration-20260930/scoped-data-six-services-active-20261006.json),
+[3070 정렬](evidence/etf-exploration-20260930/scoped-data-worker-active-20261006.json),
+새 백업 SHA2763660bed9afe718ef737580a687f02f74fd3c41242b12e1abd9a9dba0442b9를 보존한다.
+최초 backup lock 경합은 변경 전에 끝났고 journal/current로 대사했다. 후속 worker 재개 잠금 경합도
+기존 phase가 유지됐음을 확인했다. 기술 보류 대사의 첫 호출은 secret-reference entrypoint 없이 실행돼
+DB 연결 전에 실패했다. 정상 entrypoint로 재개한 [durable event667](evidence/etf-exploration-20260930/scoped-data-hold-reconciled-20261006.json)은
+원본 응답·attempts·reads·승인·예산을 보존하고 형식 오류 보류만 해제한다.
+
+[실제 재개 관측](evidence/etf-exploration-20260930/scoped-data-program-resumed-20261006.json)은 새 program_data stage
+`e68ac24e-2f55-5812-bf45-cdedd1a985b4`의 정상 attempt1과 승인 프로그램 active를 확인한다.
+기존 stage0b9b를 덮어 과거 읽기를 새 증거로 재사용하지 않았다. 이 시점 readiness·mission·job·과학 시행은 아직0이다.
+현재 root의 실행 추적 목표는 진행 중이다.

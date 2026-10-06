@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "source_commit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+  "state": "backup_lock_busy_before_any_cutover",
+  "failure_type": "BlockingIOError",
+  "journal_created": false,
+  "production_changed": false,
+  "reconciliation": "Read confirmed no cutover journal, current source5c, no lock holder; next attempt may acquire the unchanged prepared review packet. Backup service was failed and release service inactive."
+}
