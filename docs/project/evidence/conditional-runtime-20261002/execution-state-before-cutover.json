@@ -1,0 +1,22 @@
+{
+  "observed_at": "2026-10-02T05:40:40.184218+00:00",
+  "running_turns": 0,
+  "active_jobs": 0,
+  "sending_outbox": 0,
+  "model_calls": [
+    {
+      "request_id": "quant-feed-eed90a79-7864-4486-948b-66abc03686fd",
+      "profile": "primary",
+      "revision": 2,
+      "state": "dispatching",
+      "updated_at": "2026-10-02T04:15:37.257023+00:00"
+    }
+  ],
+  "runtime_pause": {
+    "id": 1,
+    "paused_until": null,
+    "reason": null
+  },
+  "production_mutated": false,
+  "model_requests_replayed": 0
+}

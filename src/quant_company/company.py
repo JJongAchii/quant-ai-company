@@ -686,12 +686,15 @@ class Company:
                 conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             if not turn["request"]:
                 session = None
+                output_contract = "agent_decision"
                 if task['kind'] == 'research_stage':
                     from .research.audit_delivery import enabled, session_for
                     from .research.controller import _stage, stage_prompt
 
                     role, prompt = stage_prompt(self, conn, task, turn)
                     stage = _stage(conn, task["id"])
+                    if stage["stage"] == "program_data":
+                        output_contract = "research_stage_v1"
                     if enabled(stage):
                         session = session_for(conn, stage, turn)
                 elif task['kind'] == 'routing':
@@ -738,7 +741,8 @@ class Company:
                         "TASK DATA JSON:\n" + json.dumps(context, ensure_ascii=False)
                     )
                 request = ProviderRequest(request_id=turn_id, model=role.model,
-                                          reasoning_effort=role.reasoning_effort, prompt=prompt, session=session)
+                                          reasoning_effort=role.reasoning_effort, prompt=prompt, session=session,
+                                          output_contract=output_contract)
                 conn.execute("UPDATE turns SET request=%s WHERE id=%s", (Jsonb(request.model_dump()), turn_id))
             else:
                 request = ProviderRequest.model_validate(turn["request"])
@@ -787,6 +791,24 @@ class Company:
 
                     hold_audit(self, conn, stage, "audit_runtime_requires_reconciliation",
                                diagnostic=private_reason[:1500])
+                    return
+                if stage and stage["stage"] == "program_data" and private_reason == "invalid_output":
+                    failures = stage["context"].get("_data_output_failures", 0) + 1
+                    context = {**stage["context"], "_data_output_failures": failures}
+                    if failures >= 3:
+                        context["_program_hold"] = {"reason": "repeated_data_output_contract_failure",
+                                                    "failure_count": failures}
+                    conn.execute("""UPDATE research_mission_stages SET state='waiting',context=%s,error=%s,
+                        retry_at=CASE WHEN %s THEN NULL ELSE now()+interval '5 minutes' END,
+                        updated_at=now() WHERE id=%s""",
+                                 (Jsonb(context), private_reason, failures >= 3, stage["id"]))
+                    conn.execute("UPDATE research_stage_attempts SET error='stage_response_rejected' WHERE task_id=%s",
+                                 (task["id"],))
+                    self._event(conn, "research_program_stage_held" if failures >= 3 else "research_stage_waiting",
+                                {"stage_id": str(stage["id"]), "task_id": str(task["id"]),
+                                 "employee": task["agent"], "reason": "repeated_data_output_contract_failure"
+                                 if failures >= 3 else "stage_response_rejected", "failure_count": failures,
+                                 "scope": "Operational output failure; no research judgment."}, project["id"])
                     return
                 # Failed structured output is a technical repair, not a public performance artifact.
                 # Keep the exact provider evidence in private stage attempts and retry after backoff.

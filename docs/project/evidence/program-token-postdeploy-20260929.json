@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-09-29T07:07:05Z",
+  "cutoverAtUtc": "2026-09-29T06:31:15Z",
+  "source": "read-only production PostgreSQL aggregates from research_mission_stages, research_stage_attempts, and turns; no prompt or credential bodies exported",
+  "newStageContexts": {
+    "program_data": {"stages": 2, "duplicateCurrentTaskStages": 0},
+    "program_proposal": {"stages": 1, "duplicateCurrentTaskStages": 0},
+    "program_selection": {"stages": 1, "duplicateCurrentTaskStages": 0}
+  },
+  "usageByStageAndState": [
+    {"stage": "program_data", "state": "received", "stages": 1, "responses": 8,
+      "inputTokens": 319701, "cachedInputTokens": 38912, "outputTokens": 1859},
+    {"stage": "program_data", "state": "waiting", "stages": 1, "responses": 1,
+      "inputTokens": 35691, "cachedInputTokens": 4864, "outputTokens": 117},
+    {"stage": "program_proposal", "state": "completed", "stages": 1, "responses": 11,
+      "inputTokens": 446875, "cachedInputTokens": 47104, "outputTokens": 32236},
+    {"stage": "program_selection", "state": "completed", "stages": 1, "responses": 10,
+      "inputTokens": 377171, "cachedInputTokens": 35328, "outputTokens": 19747}
+  ],
+  "totals": {"stages": 4, "responses": 30, "inputTokens": 1179438,
+    "cachedInputTokens": 126208, "outputTokens": 53959},
+  "interpretation": "No new stage duplicates the current task in prior_tasks. These are observed usage counts, not a measured savings rate; workload and stage mix differ from the pre-deployment sample. Original-source reading and other repeated context still consume substantial input."
+}
