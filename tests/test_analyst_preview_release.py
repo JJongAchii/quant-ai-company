@@ -120,6 +120,11 @@ def test_preserved_runtime_rejects_provider_or_dependency_changes_and_checks_its
             release.validate_preserved_runtime({**manifest, 'runtime_changes': [{'path': name}]})
     with pytest.raises(ValueError, match='preserved_runtime_mode'):
         release.validate_preserved_runtime({**manifest, 'preserve_codex_runtime': 'false'})
+    for invalid in ({**manifest, 'preserve_api': 'false'},
+                    {**manifest, 'preserve_api': True, 'preserve_codex_runtime': False}):
+        with pytest.raises(ValueError, match='preserved_api_mode'):
+            release.validate_preserved_runtime(invalid)
+    assert release.selected_services({**manifest, 'preserve_api': True}) == ('news-worker', 'dispatch')
     before = {'/quant-company-codex-runtime-1': {'id': 'unchanged', 'image': 'pinned'}}
     release.preserved(before, deepcopy_inventory := {k: dict(v) for k, v in before.items()}, release.selected_services(manifest))
     deepcopy_inventory['/quant-company-codex-runtime-1']['id'] = 'replaced'
@@ -127,7 +132,8 @@ def test_preserved_runtime_rejects_provider_or_dependency_changes_and_checks_its
         release.preserved(before, deepcopy_inventory, release.selected_services(manifest))
 
 
-def test_worker_only_cutover_keeps_a_busy_primary_runtime_and_its_image(tmp_path, monkeypatch):
+@pytest.mark.parametrize('preserve_api', [False, True])
+def test_worker_only_cutover_keeps_a_busy_primary_runtime_and_its_image(tmp_path, monkeypatch, preserve_api):
     state = tmp_path/'state'
     (state/'config').mkdir(parents=True)
     (state/'codex/jobs').mkdir(parents=True)
@@ -139,6 +145,7 @@ def test_worker_only_cutover_keeps_a_busy_primary_runtime_and_its_image(tmp_path
     journal = state/'preview.json'
     journal.write_text(json.dumps({'phase': 'staged', 'base': previous.name, 'commit': target.name,
         'owner_approval': 'approved', 'evaluation_edition': 'case', 'preserve_codex_runtime': True,
+        'preserve_api': preserve_api,
         'env_sha256': release.digest(raw), 'roles_sha256': release.digest(roles)}))
     args = SimpleNamespace(base=previous.name, commit=target.name, approval='approved',
                            channel='CBRIEF', owner='UOWNER', evaluation_edition='case')
@@ -151,7 +158,7 @@ def test_worker_only_cutover_keeps_a_busy_primary_runtime_and_its_image(tmp_path
     def compose(module, root, *command, **kwargs):
         calls.append(command)
         if root == target and command[:2] == ('up', '-d'):
-            for service in (*release.selected_services({'preserve_codex_runtime': True}), release.NEW_SERVICE):
+            for service in (*release.selected_services({'preserve_codex_runtime': True, 'preserve_api': preserve_api}), release.NEW_SERVICE):
                 after['/quant-company-'+service+'-1'].update(image='quant-company:'+target.name, id='new-'+service)
 
     def dump(command, **kwargs):
@@ -171,7 +178,14 @@ def test_worker_only_cutover_keeps_a_busy_primary_runtime_and_its_image(tmp_path
     assert all('codex-runtime' not in command for command in calls)
     assert after['/quant-company-codex-runtime-1'] == before['/quant-company-codex-runtime-1']
     assert release.configuration((state/'config/runtime.env').read_bytes())['PINNED_CODEX_RUNTIME_IMAGE'] == 'old-codex-runtime'
-    assert set(result['selected_services']) == {'api', 'news-worker', 'dispatch', release.NEW_SERVICE}
+    expected = {'news-worker', 'dispatch', release.NEW_SERVICE}
+    if preserve_api:
+        assert after['/quant-company-api-1'] == before['/quant-company-api-1']
+        assert all('api' not in command for command in calls if command[0] in {'stop', 'up'})
+        assert all(len(command) > 4 for command in calls if command[0] == 'stop')
+    else:
+        expected.add('api')
+    assert set(result['selected_services']) == expected
 
 
 @pytest.mark.parametrize('name', release.BASE_INPUTS)

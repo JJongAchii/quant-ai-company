@@ -38,12 +38,16 @@ def code_only_build(manifest):
 
 def selected_services(receipt):
     return tuple(name for name in SERVICES
-                 if name != 'codex-runtime' or not receipt.get('preserve_codex_runtime'))
+                 if not (name == 'codex-runtime' and receipt.get('preserve_codex_runtime'))
+                 and not (name == 'api' and receipt.get('preserve_api')))
 
 
 def validate_preserved_runtime(manifest):
     if not isinstance(manifest.get('preserve_codex_runtime', False), bool):
         raise ValueError('preview_preserved_runtime_mode')
+    if (not isinstance(manifest.get('preserve_api', False), bool)
+            or (manifest.get('preserve_api') and not manifest.get('preserve_codex_runtime'))):
+        raise ValueError('preview_preserved_api_mode')
     if not manifest.get('preserve_codex_runtime'):
         return
     permitted = {'deploy/.env.example', 'deploy/Dockerfile.analyst-code-preview',
@@ -225,6 +229,7 @@ def stage(args, previous, target, module, journal):
                'build_mode': 'code_only_identical_lock' if code_only else 'locked_dependency_sync',
                'minimum_disk_bytes': minimum_disk, 'service_inventory_before': before}
     receipt['preserve_codex_runtime'] = bool(manifest.get('preserve_codex_runtime'))
+    receipt['preserve_api'] = bool(manifest.get('preserve_api'))
     module.atomic(journal, json.dumps(receipt).encode())
     target.mkdir()
     module.unpack(data, target)
@@ -367,11 +372,12 @@ with Database(Settings().database_url).transaction() as conn:
  conn.execute(files('quant_company.briefing').joinpath('schema.sql').read_text())
 print('briefing_schema_ready')"""
         compose(module, target, 'run', '--rm', '--no-deps', '-T', 'api', 'python', '-c', schema, env=env)
-        primary_stopped = True
         receipt.update(phase='cutover_started', cutover_started_at=time.time())
         module.atomic(journal, json.dumps(receipt).encode())
         primary = tuple(name for name in ('api', 'codex-runtime') if name in services)
-        compose(module, previous, 'stop', '-t', '360', *primary)
+        if primary:
+            primary_stopped = True
+            compose(module, previous, 'stop', '-t', '360', *primary)
         module.atomic(STATE / 'config/runtime.env', updated(raw, settings))
         module.atomic(STATE / 'config/roles.json', json.dumps(new_roles, ensure_ascii=False).encode())
         module.link(target)
