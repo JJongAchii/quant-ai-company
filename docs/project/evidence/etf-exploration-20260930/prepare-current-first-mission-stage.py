@@ -59,6 +59,16 @@ with company.db.transaction() as conn:
         assert task['priority'] in {0,100}
         navigation={
             'operation_id':operation,
+            'existing_service_sequence':
+                'Proposal, challenge and selection can read immutable evidence; they have no code execution tool. '
+                'An execute selection enables engineer implementation, not immediate development evaluation. '
+                'The trusted backend builds that implementation and the worker must pass profile qualification '
+                'before evaluating development inputs. ReviewDecision responses with disposition test carry '
+                'prospective executable test_plan obligations; these are not completed test evidence and are '
+                'not automatically discharged. A required revise disposition prevents implementation. '
+                'Distinguish actual static source evidence from planned implementation checks and never claim '
+                'unperformed checks passed. This describes existing capabilities and supplies no disposition '
+                'or execute/revise recommendation; scientific judgment remains yours.',
             'existing_service_requirement':
                 'Every source_id referenced in a final artifact, including selection.responses source_ids, '
                 'requires a complete read of its corresponding evidence_sources file in this attempt. '
@@ -74,6 +84,13 @@ with company.db.transaction() as conn:
                 'For a revised proposal, read relevant_evidence.rejections and the actual independent '
                 'criticism before drafting; respond to that recorded decision within the selected study.',
         }
+        if stage_type=='selection':
+            proposal=str(UUID(stage['context']['mission']['stage']['proposal_id']))
+            challenges=conn.execute('SELECT id FROM research_mission_challenges WHERE mission_id=%s '
+                'AND proposal_id=%s ORDER BY created_at,id',(mission['id'],proposal)).fetchall()
+            navigation['current_proposal_id']=proposal
+            navigation['current_challenge_ids']=[str(c['id']) for c in challenges]
+            navigation['selection_response_identity_rule']='Exactly one responses entry per current_challenge_ids UUID; no historical or duplicate IDs.'
         previous_priority=task['priority']
         context={**stage['context'],'source_completion_navigation':navigation}
         conn.execute('UPDATE tasks SET priority=0 WHERE id=%s',(task_id,))

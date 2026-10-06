@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_current_second_revision_preparation",
+  "reviewed_at": "2026-10-06T08:17:09.186774+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "before": {
+    "observed_at": "2026-10-06T08:17:09.186774+00:00",
+    "stage": {
+      "id": "a7d0d2f6-e39a-502c-b5e3-6d1b472df996",
+      "stage": "proposal",
+      "actor": "researcher_kr",
+      "state": "running",
+      "attempt": 1,
+      "error": null,
+      "retry_at": null,
+      "task_id": "e659a17e-fc4a-5f77-b749-b83264290f61",
+      "created_at": "2026-10-06T08:16:27.925276+00:00",
+      "updated_at": "2026-10-06T08:16:27.925276+00:00"
+    },
+    "task": {
+      "id": "e659a17e-fc4a-5f77-b749-b83264290f61",
+      "agent": "researcher_kr",
+      "status": "pending",
+      "priority": 100,
+      "revision": 5
+    },
+    "last_turn": {
+      "id": "f8241687-9870-5efb-a9d7-f3620fa50626",
+      "status": "queued",
+      "created_at": "2026-10-06T08:16:27.925276+00:00",
+      "updated_at": "2026-10-06T08:16:27.925276+00:00",
+      "request_id": null
+    }
+  },
+  "recorded_scientific_revision": {
+    "observed_at": "2026-10-06T08:17:09.111245+00:00",
+    "revisions": [
+      {
+        "proposal_id": "a3e207ea-d615-4b40-96c0-1b92d1ae5124",
+        "actor": "director",
+        "created_at": "2026-10-06T08:16:24.666872+00:00",
+        "rationale_sha256": "fdad640ad12ee1869aaff9964d465c9bb48562377f229695aa6d60290c572d95",
+        "numeric_prose_redacted": "현재 제안 a[number]e[number]ea-d[number]b[number]c[number]b[number]d[number]ae[number]는 필수 수정 후 재선정 대상이다. evidence/proposals/a[number]e[number]ea-d[number]b[number]c[number]b[number]d[number]ae[number]json의 [number]·현금, [number] 시간가중 비중심 제곱수익 평균, 연 [number] 변동성 목표와 첫 개발일 초기화는 mission/scientific-lineage.json에 기록된 선정 설계와 부합한다. 그러나 제안의 falsification은 구현 검증이 계획 단계이고 실제 결과와 증거 위치가 미제공이라고 명시한다. 현재 챌린지 evidence/challenges/[number]b[number]d[number]d[number]fe[number]a[number]a[number]a[number]eec[number]json이 요구한 상태 재생·Decimal 경계·정보시점 검증과 누적 비용 분해를 구체화하고, 실행 전 검사 증거를 제출해야 한다. 이 필수 수정과 재선정 전 검증이 충족되기 전에는 A/B 과학 시행으로 진행할 수 없다. 원본 research:[number]a[number]df[number]e[number]c[number]f-aa[number]a-a[number]a[number]e[number]f[number]는 equivalent_replay, scientific_trials_added=[number] baseline_measured=false, excess_return=null 및 기존 감사 재사용을 기록한다. 이번 후보의 구현·비용절감·통계적 지지를 입증하는 자료가 아니다. 현행 frozen_vintage_retrospective 정책에서 인정한 역사적 공표시각·수정 빈티지·원 준비 바이트의 공백은 조건부 결과의 한계로 유지한다. 과거 정책의 차단 판단과 현재 정책을 혼합하지 않는다. 완료 범위는 선정 검토이며, 구현 검증과 연구 성과는 미확인이다."
+      },
+      {
+        "proposal_id": "6d9a3c7b-52e4-4f81-b267-85d094eb6a30",
+        "actor": "director",
+        "created_at": "2026-10-06T07:16:37.068907+00:00",
+        "rationale_sha256": "d298ca55dbe0f5a7b6efc1cc0adf1db6213bcf8c9eaf856d96f69feb6925ef9c",
+        "numeric_prose_redacted": "현재 제안은 필수 수정과 재검토 전까지 실행으로 넘길 수 없다. 새 특징·포트폴리오 구현은 허용 경로에서 가능하지만, 종목 간 역변동성 정규화는 계보에서 선정된 단일 ETF·현금 노출조절과 다른 실험이며 종목집합과 초기화 계약도 확정되지 않았다. 이번 수정에서는 선정된 [number]·현금 신호와 첫 개발일 초기화를 복원하고, A/B의 차이를 [number]p 목표 갱신 유예에 한정하도록 요구한다. 구현 경로는 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json뿐이다. 평가기·데이터·목적·비용·위험기준은 동결한다. 제공된 현 미션의 trials와 outcomes는 비어 있으며, 이번 완료 범위는 선정 검토다. 아래 시험은 수행 결과가 아닌 요구사항이다."
+      }
+    ]
+  },
+  "operator": "prepare-current-first-mission-stage.py",
+  "arguments": [
+    "a7d0d2f6-e39a-502c-b5e3-6d1b472df996",
+    "e659a17e-fc4a-5f77-b749-b83264290f61",
+    "proposal"
+  ],
+  "planned_change": "Only current task urgency and factual existing source completion, current challenge identity, and available execution sequence navigation. Preserve director required revision; no operator scientific choice or claimed test result.",
+  "authority": "Existing owner urgent first experiment and continue instructions; root review of observed operation in PR105",
+  "scientific_judgment_or_budget_or_approval_changed": false,
+  "new_call_or_job_enqueued_by_operator": false,
+  "exact_sha_human_approval_claimed": false
+}
