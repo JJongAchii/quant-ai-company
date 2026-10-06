@@ -157,7 +157,7 @@ def inventory():
     names = run(['docker', 'ps', '-a', '--filter', 'name=quant-company-', '--format', '{{.Names}}']).decode().splitlines()
     return {r['Name']: {'id': r['Id'], 'running': r['State']['Running'], 'restarts': r['RestartCount'],
                         'oom': r['State']['OOMKilled'], 'image': r['Config']['Image'],
-                        'mounts': sorted((m['Source'], m['Destination'], m['RW']) for m in r['Mounts'])}
+                        'mounts': sorted([m['Source'], m['Destination'], m['RW']] for m in r['Mounts'])}
             for r in json.loads(run(['docker', 'inspect', *names]))}
 
 
@@ -240,6 +240,15 @@ def owned_model_overlay(image, owned, approval):
 
 def service_images(receipt):
     return {name: row['tag'] for row in receipt.get('images', []) for name in row.get('services', [])}
+
+
+def schema_service_overlay(receipt):
+    if not receipt.get('source_profiles'):
+        return None
+    image = next((r for r in receipt.get('images', []) if 'news-worker' in r.get('services', [])), None)
+    if not image or image.get('target') != 'app' or image.get('source_verified') is not True:
+        raise ValueError('preview_schema_image_not_verified')
+    return {'services': {'api': {'image': image['tag']}}}
 
 
 def runtime_overlay(rows, images, settings):
@@ -520,7 +529,12 @@ with Database(Settings().database_url).transaction() as conn:
  conn.execute('SELECT pg_advisory_xact_lock(71350219)')
  conn.execute(files('quant_company.briefing').joinpath('schema.sql').read_text())
 print('briefing_schema_ready')"""
-        compose(module, target, 'run', '--rm', '--no-deps', '-T', 'api', 'python', '-c', schema, env=env)
+        schema_overlay = None
+        if schema_service_overlay(receipt) is not None:
+            schema_overlay = journal.with_suffix('.schema.compose.json')
+            module.atomic(schema_overlay, json.dumps(schema_service_overlay(receipt)).encode())
+        compose(module, target, 'run', '--rm', '--no-deps', '-T', 'api', 'python', '-c', schema,
+                env=env, overlay=schema_overlay)
         receipt.update(phase='cutover_started', cutover_started_at=time.time())
         module.atomic(journal, json.dumps(receipt).encode())
         primary = tuple(name for name in ('api', 'codex-runtime') if name in services)

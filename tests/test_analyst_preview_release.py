@@ -59,6 +59,33 @@ def test_owner_preview_preserves_live_roles_and_unrelated_configuration():
         release.updated(raw, values)
 
 
+def test_live_inventory_survives_staged_json_receipt_and_still_detects_drift(monkeypatch):
+    row = {'Name': '/quant-company-news-worker-1', 'Id': 'container', 'RestartCount': 0,
+           'State': {'Running': True, 'OOMKilled': False}, 'Config': {'Image': 'verified-image'},
+           'Mounts': [{'Source': '/state/roles', 'Destination': '/etc/roles', 'RW': False}]}
+
+    def run(command, **kwargs):
+        return (b'quant-company-news-worker-1\n' if command[1] == 'ps'
+                else json.dumps([row]).encode())
+
+    monkeypatch.setattr(release, 'run', run)
+    staged = json.loads(json.dumps(release.inventory()))
+    assert release.inventory() == staged
+    row['Mounts'][0]['RW'] = True
+    assert release.inventory() != staged
+
+
+def test_profile_schema_run_uses_an_already_verified_image_without_replacing_api():
+    receipt = {'source_profiles': [{'services': ['news-worker']}],
+               'images': [{'target': 'app', 'tag': 'verified-profile', 'source_verified': True,
+                           'services': ['news-worker', 'dispatch']}]}
+    assert release.schema_service_overlay(receipt) == {'services': {'api': {'image': 'verified-profile'}}}
+    receipt['images'][0]['source_verified'] = False
+    with pytest.raises(ValueError, match='schema_image_not_verified'):
+        release.schema_service_overlay(receipt)
+    assert release.schema_service_overlay({'source_profiles': []}) is None
+
+
 def test_only_canonical_owned_analyst_can_receive_permission_correction():
     director = {'id': 'director', 'active': True, 'tools': ['custom_tool']}
     prior = {'id': release.ROLE, 'active': False, 'tools': ['read_source', 'briefing_status']}

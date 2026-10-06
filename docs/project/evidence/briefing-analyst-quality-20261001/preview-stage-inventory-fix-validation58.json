@@ -1,0 +1,26 @@
+{
+  "observed_candidate_commit": "5825e82f776b96d66b1381679fe354fb96b05c6d",
+  "observed_phase": "staged_not_activated",
+  "guard_failure": "preview_staged_services_changed",
+  "read_only_reconciliation": {
+    "configuration_unchanged": true,
+    "roles_unchanged": true,
+    "actual_service_differences": [],
+    "all_five_required_services_running": true,
+    "changes_applied_by_failed_cutover": false
+  },
+  "root_cause": "Live inventory represented mounts as tuples; JSON stage receipts restored them as lists. Direct equality rejected an unchanged service.",
+  "correction": "Keep mount rows JSON-stable at inventory creation. Resource, environment, image, container identity and mount drift guards remain enforced.",
+  "schema_run_correction": "A profiled release uses its already source-verified app image for the isolated schema command. It does not request an absent unprofiled image or replace the running API.",
+  "tests": 22,
+  "failures": 0,
+  "errors": 0,
+  "regression_cases": [
+    "Real inventory structure survives persisted stage receipt and detects changed mount permissions",
+    "Isolated schema command selects a verified profile and rejects unverified images"
+  ],
+  "lint": "passed",
+  "model_calls": 0,
+  "slack_writes": 0,
+  "fresh_content_qualification": false
+}
