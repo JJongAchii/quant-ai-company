@@ -420,7 +420,7 @@ class SlackOutbox:
         token = self.credentials[row["agent"]]["bot_token"]
         # The stable client_msg_id helps correlation; it is not an exactly-once guarantee.
         body = {"channel": row["channel"], "thread_ts": row["thread_ts"],
-                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, QUANT_FEED_AGENT, "maintainer"}
+                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, QUANT_FEED_AGENT, "trend_scout", "maintainer"}
                 or row["message_kind"] == "data_watch"
                 else f"[지시 v{row['revision']}] {row['text']}",
                 "client_msg_id": row["id"],

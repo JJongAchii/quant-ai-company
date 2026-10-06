@@ -1,4 +1,5 @@
 import asyncio
+import importlib.util
 import json
 from datetime import UTC, datetime, timedelta
 from email.utils import format_datetime
@@ -267,6 +268,56 @@ async def test_full_producer_consumer_and_single_outbox(trend):
     text = trend.preview()["text"]
     assert "관련 배경:" in text and "+100%" in text and "스포츠" in text
     assert not trend.status()["model_calls"][0]["error"]
+    sent = []
+
+    def slack(request):
+        body = json.loads(request.content)
+        sent.append(body)
+        return httpx.Response(200, json={"ok": True, "channel": "CTRENDS", "ts": "100.123"})
+
+    force_due(trend)
+    sender = SlackOutbox(trend.company, {"trend_scout": {"bot_token": "synthetic"}}, httpx.MockTransport(slack))
+    assert await sender.send_one()
+    assert sent[0]["text"] == text
+    assert outgoing(trend)[0]["sent_ts"] == "100.123"
+
+
+async def test_real_preview_validation_requires_receipts_and_immutable_body(trend):
+    trend.company.settings.trend_feed_publish_enabled = False
+    ingest(trend)
+    morning(trend)
+    collector = TrendFeedCollector(trend.company, naver=FixtureNaver(), reader=lambda *args: {"ok": False})
+    await collector.enrich(trend.claim_enrichment())
+    call = trend.prepare_call()
+    trend.finish_call(call, response(call["id"], trend.freeze()["bundle"]))
+    trend.clock[0] = schedule.times(trend.clock[0])[1].astimezone(UTC)
+    assert trend.finalize()["state"] == "preview"
+    path = Path(__file__).parents[1] / "docs/project/evidence/trend-feed-20261006/preview-validator.py"
+    spec = importlib.util.spec_from_file_location("preview_validator", path)
+    validator = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(validator)
+    with trend.db.transaction() as conn:
+        row = conn.execute("SELECT * FROM trend_feed_digests").fetchone()
+        assert validator.validate_day(trend, conn, row)["valid"]
+        row["content"] += "무단으로 추가한 배경 설명"
+        assert "final_body_changed" in validator.validate_day(trend, conn, row)["reasons"]
+
+
+def test_promotion_requires_three_consecutive_stable_real_previews():
+    path = Path(__file__).parents[1] / "docs/project/evidence/trend-feed-20261006/preview-observer.py"
+    spec = importlib.util.spec_from_file_location("preview_observer", path)
+    observer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(observer)
+    days = [{"day": "2026-10-07", "valid": True, "stable": True},
+            {"day": "2026-10-08", "valid": True, "stable": True},
+            {"day": "2026-10-09", "valid": True, "stable": False}]
+    assert not observer.completed_days(days)
+    days[2]["stable"] = True
+    assert observer.completed_days(days) == days
+    days[1]["valid"] = False
+    assert not observer.completed_days(days)
+    days[1].update(valid=True, day="2026-10-10")
+    assert not observer.completed_days(days)
 
 
 def test_shared_article_merge_and_unknown_quotes_are_rejected(trend):

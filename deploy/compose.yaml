@@ -274,6 +274,7 @@ services:
 
   news-worker:
     <<: *app
+    pids_limit: 256
     command: [quant-company, news-worker]
     environment:
       <<: [*db-env, *temporal-env]
