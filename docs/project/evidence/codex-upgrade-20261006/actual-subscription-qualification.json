@@ -1,0 +1,378 @@
+{
+  "real_model_turns": 5,
+  "model_calls": "official ChatGPT subscription, no paid API",
+  "slack_messages": 0,
+  "company_effects": false,
+  "calls": [
+    {
+      "case": "legacy_seed",
+      "cli_version": "0.154.0",
+      "request_id": "codex-upgrade1601-legacy-seed",
+      "input_digest": "f5dfb91bbfff44d80a93ad85701c426f9074173bc65f1179530474bf53aaf1fc",
+      "account": {
+        "profile": "primary",
+        "revision": 2
+      },
+      "state": "passed",
+      "started_at": "2026-10-06T11:26:25.515380+00:00",
+      "real_chatgpt_subscription": true,
+      "company_effects": false,
+      "slack_messages": 0,
+      "completed_at": "2026-10-06T11:27:01.814501+00:00",
+      "result": {
+        "request_id": "codex-upgrade1601-legacy-seed",
+        "decision": {
+          "say": "compatibility-1601-confirmed",
+          "status": "complete",
+          "delegations": [],
+          "messages": [],
+          "artifacts": [],
+          "tools": [],
+          "memories": [],
+          "follow_up": null
+        },
+        "thread_id": "01a110f7-8215-7b92-94c8-8ecccebb2931",
+        "usage": {
+          "output_tokens": 117,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 57,
+          "input_tokens": 7049
+        },
+        "provider": "codex",
+        "web_searches": []
+      },
+      "observed_cli_events": [
+        {
+          "events": [
+            "thread.started",
+            "item.completed",
+            "item.completed",
+            "turn.started",
+            "item.completed",
+            "turn.completed"
+          ],
+          "completed_usage": [
+            {
+              "input_tokens": 7049,
+              "cached_input_tokens": 0,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 117,
+              "reasoning_output_tokens": 57
+            }
+          ],
+          "items": [
+            "error",
+            "error",
+            "agent_message"
+          ]
+        }
+      ],
+      "cached_replay_equal": true,
+      "session_continuity_verified": false,
+      "runtime": "codex-runtime",
+      "image": "sha256:13caa3f9f7936529335af8b92d9ddbb78f28ef6a45eed0b2e2054b43acb33938",
+      "qualification_script_sha256": "61273a1b14a1c95380946196e241fb542da5bc0ff7df86ddc45a0a237c3d16ba"
+    },
+    {
+      "case": "legacy_resume",
+      "cli_version": "0.160.1",
+      "request_id": "codex-upgrade1601-legacy-resume",
+      "input_digest": "ca984c1b2456809054c118910bc675fbf39430e41336a301c72b8e978140d813",
+      "account": {
+        "profile": "primary",
+        "revision": 2
+      },
+      "state": "passed",
+      "started_at": "2026-10-06T11:33:25.004518+00:00",
+      "real_chatgpt_subscription": true,
+      "company_effects": false,
+      "slack_messages": 0,
+      "completed_at": "2026-10-06T11:33:32.583611+00:00",
+      "result": {
+        "request_id": "codex-upgrade1601-legacy-resume",
+        "decision": {
+          "say": "compatibility-1601-confirmed",
+          "status": "complete",
+          "delegations": [],
+          "messages": [],
+          "artifacts": [],
+          "tools": [],
+          "memories": [],
+          "follow_up": null
+        },
+        "thread_id": "01a110f7-8215-7b92-94c8-8ecccebb2931",
+        "usage": {
+          "reasoning_output_tokens": 16,
+          "output_tokens": 76,
+          "cached_input_tokens": 6912,
+          "input_tokens": 8785
+        },
+        "provider": "codex",
+        "web_searches": []
+      },
+      "observed_cli_events": [
+        {
+          "events": [
+            "thread.started",
+            "item.completed",
+            "item.completed",
+            "turn.started",
+            "item.completed",
+            "turn.completed"
+          ],
+          "completed_usage": [
+            {
+              "input_tokens": 15834,
+              "cached_input_tokens": 6912,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 193,
+              "reasoning_output_tokens": 73
+            }
+          ],
+          "items": [
+            "error",
+            "error",
+            "agent_message"
+          ]
+        }
+      ],
+      "cached_replay_equal": true,
+      "session_continuity_verified": true,
+      "runtime": "codex-runtime",
+      "image": "sha256:1da677f0627c690e3ecaadba4f368aad9271bfa581d71b20b1f07deb872ec8e6",
+      "qualification_script_sha256": "61273a1b14a1c95380946196e241fb542da5bc0ff7df86ddc45a0a237c3d16ba"
+    },
+    {
+      "case": "structured",
+      "cli_version": "0.160.1",
+      "request_id": "codex-upgrade1601-structured",
+      "input_digest": "37108c4c142b044fa84f619d39c07c4a7ed2acb3462436caedd9f9c4a8bf4164",
+      "account": {
+        "profile": "primary",
+        "revision": 2
+      },
+      "state": "passed",
+      "started_at": "2026-10-06T11:34:23.779792+00:00",
+      "real_chatgpt_subscription": true,
+      "company_effects": false,
+      "slack_messages": 0,
+      "completed_at": "2026-10-06T11:34:30.738678+00:00",
+      "result": {
+        "request_id": "codex-upgrade1601-structured",
+        "decision": {
+          "say": "새 버전 연결 확인 완료",
+          "status": "complete",
+          "delegations": [],
+          "messages": [],
+          "artifacts": [],
+          "tools": [],
+          "memories": [],
+          "follow_up": null
+        },
+        "thread_id": "01a110fe-52ad-7d20-8ca0-170c6b14c649",
+        "usage": {
+          "input_tokens": 8082,
+          "cached_input_tokens": 0,
+          "output_tokens": 57,
+          "reasoning_output_tokens": 0
+        },
+        "provider": "codex",
+        "web_searches": []
+      },
+      "observed_cli_events": [
+        {
+          "events": [
+            "thread.started",
+            "item.completed",
+            "item.completed",
+            "turn.started",
+            "item.completed",
+            "turn.completed"
+          ],
+          "completed_usage": [
+            {
+              "input_tokens": 8082,
+              "cached_input_tokens": 0,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 57,
+              "reasoning_output_tokens": 0
+            }
+          ],
+          "items": [
+            "error",
+            "error",
+            "agent_message"
+          ]
+        }
+      ],
+      "cached_replay_equal": true,
+      "session_continuity_verified": false,
+      "runtime": "codex-runtime",
+      "image": "sha256:1da677f0627c690e3ecaadba4f368aad9271bfa581d71b20b1f07deb872ec8e6",
+      "qualification_script_sha256": "61273a1b14a1c95380946196e241fb542da5bc0ff7df86ddc45a0a237c3d16ba"
+    },
+    {
+      "case": "native_quant",
+      "cli_version": "0.160.1",
+      "request_id": "quant-feed-codex-upgrade1601-native",
+      "input_digest": "caa128224bf8c3846e9d76c296e505e93af66da2f317ce83dd0b1431a71e6542",
+      "account": {
+        "profile": "primary",
+        "revision": 2
+      },
+      "state": "passed",
+      "started_at": "2026-10-06T11:35:32.843811+00:00",
+      "real_chatgpt_subscription": true,
+      "company_effects": false,
+      "slack_messages": 0,
+      "completed_at": "2026-10-06T11:36:02.641055+00:00",
+      "result": {
+        "request_id": "quant-feed-codex-upgrade1601-native",
+        "decision": {
+          "say": "",
+          "status": "complete",
+          "delegations": [],
+          "messages": [],
+          "artifacts": [
+            {
+              "title": "quant_brief_v4",
+              "content": "{\"disposition\":\"hold\",\"reason\":\"Synthetic runtime qualification only; no research conclusion.\",\"title\":\"\",\"authors\":[],\"published_on\":\"\",\"revised_on\":\"\",\"kind\":\"hypothesis\",\"maturity\":\"hypothesis\",\"market\":[],\"topic\":\"research_validity\",\"vintage\":\"recent\",\"why_read\":[],\"idea\":[],\"data_period\":[],\"validation\":[],\"author_results\":[],\"costs_turnover\":[],\"limitations\":[],\"application\":[],\"commercial_bias\":\"\",\"change\":\"new\",\"change_summary\":\"\",\"related_urls\":[],\"evidence\":[]}",
+              "source_ids": []
+            }
+          ],
+          "tools": [],
+          "memories": [],
+          "follow_up": null
+        },
+        "thread_id": "01a110ff-b4c6-75e1-abd5-95cfb9efc146",
+        "usage": {
+          "input_tokens": 7874,
+          "cached_input_tokens": 0,
+          "output_tokens": 112,
+          "reasoning_output_tokens": 0
+        },
+        "provider": "codex",
+        "web_searches": []
+      },
+      "observed_cli_events": [
+        {
+          "events": [
+            "thread.started",
+            "item.completed",
+            "item.completed",
+            "turn.started",
+            "item.completed",
+            "turn.completed"
+          ],
+          "completed_usage": [
+            {
+              "input_tokens": 7874,
+              "cached_input_tokens": 0,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 112,
+              "reasoning_output_tokens": 0
+            }
+          ],
+          "items": [
+            "error",
+            "error",
+            "agent_message"
+          ]
+        }
+      ],
+      "cached_replay_equal": true,
+      "session_continuity_verified": false,
+      "runtime": "quant-codex-runtime",
+      "image": "sha256:94d32ec482ea0ba9cfd7890ef9f13113403beec858380ab8e3205d7b400e8fa1",
+      "qualification_script_sha256": "61273a1b14a1c95380946196e241fb542da5bc0ff7df86ddc45a0a237c3d16ba"
+    },
+    {
+      "case": "web_quant",
+      "cli_version": "0.160.1",
+      "request_id": "quant-feed-codex-upgrade1601-web",
+      "input_digest": "f2947da6fcbfc0769b90e1cc3ef65b2d9f9ac3ea999816f9bf37643244184135",
+      "account": {
+        "profile": "primary",
+        "revision": 2
+      },
+      "state": "passed",
+      "started_at": "2026-10-06T11:36:50.513653+00:00",
+      "real_chatgpt_subscription": true,
+      "company_effects": false,
+      "slack_messages": 0,
+      "completed_at": "2026-10-06T11:37:06.918749+00:00",
+      "result": {
+        "request_id": "quant-feed-codex-upgrade1601-web",
+        "decision": {
+          "say": "",
+          "status": "complete",
+          "delegations": [],
+          "messages": [],
+          "artifacts": [
+            {
+              "title": "quant_search_v1",
+              "content": "{\"results\":[{\"url\":\"https://learn.chatgpt.com/docs/changelog\",\"title\":\"ChatGPT & Codex changelog | ChatGPT Learn\",\"snippet\":\"The changelog page was retrieved, but its returned excerpt did not include CLI 0.160.1, so the release date could not be verified.\"}]}",
+              "source_ids": []
+            }
+          ],
+          "tools": [],
+          "memories": [],
+          "follow_up": null
+        },
+        "thread_id": "01a11100-8ee8-74f1-9d49-a9a24aaf03ad",
+        "usage": {
+          "input_tokens": 31705,
+          "cached_input_tokens": 9344,
+          "output_tokens": 268,
+          "reasoning_output_tokens": 120
+        },
+        "provider": "codex",
+        "web_searches": [
+          {
+            "id": "exec-5eaf8bfe-b6d4-4ee7-a78d-0bac37634119",
+            "query": "https://learn.chatgpt.com/docs/changelog",
+            "action": {
+              "type": "open_page",
+              "url": "https://learn.chatgpt.com/docs/changelog"
+            }
+          }
+        ]
+      },
+      "observed_cli_events": [
+        {
+          "events": [
+            "thread.started",
+            "item.completed",
+            "turn.started",
+            "item.completed",
+            "item.started",
+            "item.completed",
+            "item.completed",
+            "turn.completed"
+          ],
+          "completed_usage": [
+            {
+              "input_tokens": 31705,
+              "cached_input_tokens": 9344,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 268,
+              "reasoning_output_tokens": 120
+            }
+          ],
+          "items": [
+            "error",
+            "agent_message",
+            "web_search",
+            "web_search",
+            "agent_message"
+          ]
+        }
+      ],
+      "cached_replay_equal": true,
+      "session_continuity_verified": false,
+      "runtime": "quant-codex-runtime",
+      "image": "sha256:94d32ec482ea0ba9cfd7890ef9f13113403beec858380ab8e3205d7b400e8fa1",
+      "qualification_script_sha256": "61273a1b14a1c95380946196e241fb542da5bc0ff7df86ddc45a0a237c3d16ba"
+    }
+  ]
+}

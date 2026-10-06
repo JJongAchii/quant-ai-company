@@ -6,24 +6,74 @@
   "currentIntent": "INTENT-v3.json",
   "deliverables": {
     "QUALIFICATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/codex-upgrade-20261006/source-validation.json",
+          "sha256": "95d97dbfd4f9"
+        },
+        {
+          "path": "docs/project/evidence/codex-upgrade-20261006/actual-subscription-qualification.json",
+          "sha256": "b640e54d6277"
+        },
+        {
+          "path": "docs/project/evidence/codex-upgrade-20261006/candidate-account-catalog.json",
+          "sha256": "90f67a136f16"
+        }
+      ],
+      "note": "CI 90fc51d: core real PG/Temporal 1532 passed; real Linux empty-auth protocol 9 passed. Real selected ChatGPT account lists gpt-6.1-sol on both candidates. Five bounded actual calls: legacy seed on 0.154, continuation on 0.160.1 preserving thread and cumulative usage, typed gpt-6.1 output, native Quant v4, native web search. Completed receipts read back from cache; no ambiguous call replay.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T11:39:20.933598+00:00"
     },
     "UPGRADE": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/codex-upgrade-20261006/production-verification.json",
+          "sha256": "7f8e2c75c351"
+        },
+        {
+          "path": "docs/project/evidence/codex-upgrade-20261006/production-cutover-receipt.json",
+          "sha256": "34157048f579"
+        },
+        {
+          "path": "docs/project/evidence/codex-upgrade-20261006/backup-verification.json",
+          "sha256": "03e84845f24b"
+        },
+        {
+          "path": "docs/project/CODEX-UPGRADE-20261006.md",
+          "sha256": "ce52994edf1c"
+        }
+      ],
+      "note": "Locked fresh-baseline cutover active 20:43 KST. Both runtime images/CLI 0.160.1/integrity and actual selected-account HTTP catalogs verified; 15 services stable. Preserved 10121 frozen requests, receipt/session hashes, assignment revision0, account primary revision2, all non-target container IDs/images and concurrent trend-feed changes. Real S3/archive backup verified. Existing mixed-fleet automatic code-release guard preserved.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T11:52:39.958540+00:00"
     },
     "VERSION_MANAGEMENT": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "src/quant_company/providers/codex_release.json",
+          "sha256": "7212dc360e4a"
+        },
+        {
+          "path": "deploy/install-codex.cjs",
+          "sha256": "98fa3be24c8a"
+        },
+        {
+          "path": ".github/workflows/codex-release-watch.yml",
+          "sha256": "855dce7bb7b4"
+        },
+        {
+          "path": "docs/project/evidence/codex-upgrade-20261006/release-watch-activation.json",
+          "sha256": "4b44d1b73081"
+        }
+      ],
+      "note": "Merged PR111. Manifest consumed by installer and runtime gates; actual HTTP models metadata verified. Daily candidate-only workflow active; real main dispatch 37458722137 succeeded with current 0.160.1 and no newer candidate. Default workflow permission read retained; repository PR creation permission read back enabled.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T11:52:39.782771+00:00"
     }
   },
   "intentDigest": "43a59b65a1d3",
   "schemaVersion": 1,
   "slug": "manatee",
   "state": "approved",
-  "updatedAt": "2026-10-06T11:06:41.275657+00:00"
+  "updatedAt": "2026-10-06T11:52:39.958540+00:00"
 }
