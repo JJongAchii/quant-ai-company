@@ -288,3 +288,17 @@ artifact를 작성하고, 완료 gate 뒤 한 조각 읽기를 거쳐 다시 작
 UPDATE 전에 rollback됐고, 활성 controller와 같은 LF 한정 처리로 맞춰 정상 적용했다.
 이미 실행 중인 요청은 유지하며 다음 정상 요청부터 안내를 받는다. 이 안내가 반복을 줄이는지와
 첫 actual scientific execution을 계속 확인한다. 과학 결과나 실사용 준비성은 아직 주장할 수 없다.
+
+### 15:53 KST — proposal 완료와 독립 challenge 시작
+
+event694 안내가 실제 모델 요청에 도달한 뒤 남은 원문 여섯 조각을 약92초 동안 연속으로
+읽어15:45:52에 완독했다([readback](evidence/etf-exploration-20260930/first-mission-source-navigation-readback-20261006.json)).
+최종 proposal은15:50:29에 정상 received,15:50:54에 completed됐다. 정상 controller가
+financial_strategist의 challenge `22a36fab-5daa-594a-a964-c5df15cbe611`을 만들었다.
+
+새 준비 task `1c4ed96a-9961-585c-b832-46590b949545`도priority100이며 실제 Temporal이
+higher_priority_request/2초 대기를 반복했다. 이 구체적 [현재 단계 명세](evidence/etf-exploration-20260930/first-mission-challenge-preparation-review-20261006.json)를
+PR105에 게시·root 검토한 뒤 기존 진행 권한으로 urgency와 factual source/lineage 완료 안내만
+대사했다([event699](evidence/etf-exploration-20260930/first-mission-challenge-preparation-applied-20261006.json)).
+원문·가설·반론·선정·구현·승인·예산을 operator가 쓰지 않았다. 정상 모델이 평가 엔진을
+실제로 읽는 것을15:54에 확인했다. 현재 actual scientific job/trial/reservation은 여전히0이다.
