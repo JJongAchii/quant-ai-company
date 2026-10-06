@@ -20,10 +20,10 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Third proposal bed77124 and independent challenge a9d38fd5 completed. Third selection268a repeated the exact-disposition contract failure three times. Normal attempt4 task8ef7 is running after root-reviewed current proposal/challenge identity, source-completion and existing implementation capability navigation event729 at19:04KST. This repairs metadata only and supplies no scientific decision. Worker concurrent director context overlay remains observed; core research hashes and registered scientific commit are ec. No scientific job exists at the operator guard.",
+  "operationalStatus": "Selection268a attempt4 returned execute with exactly current challenge a9d38fd5 and was normally applied after the concurrent model-assignment deployment. Engineer implementation98ca/task6966 started19:19KST and is actually running. Concurrent deployment assigns engineer gpt-5.6-sol/max; this thread changed no model configuration. Registered scientific source remains ec and3070 worker is active. A selected/preparing trial is not scientific execution; actual job launch is still pending.",
   "evidence": "../../project/evidence/etf-exploration-20260930/first-research-mission-accepted-20261006.json",
   "nextStage": {
-    "stage": "third_selection_implementation_then_actual_execution",
+    "stage": "implementation_qualification_actual_execution",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false,
@@ -113,7 +113,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "third_selection_attempt4_running_after_exact_identity_navigation",
+    "phase": "selection_applied_engineer_implementation_running",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
@@ -139,6 +139,8 @@
     "concurrentCompanyWorkerImage": "quant-company-autonomous:director-context-87e774fbb5caafb6cf56bc14af678699ccacea10",
     "workerRegisteredScientificCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "criticalResearchSourceHashesRemainEc": true,
-    "thirdSelectionRetryReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-third-selection-retry-applied-20261006.json"
+    "thirdSelectionRetryReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-third-selection-retry-applied-20261006.json",
+    "selectionAppliedReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-selection-applied-implementation-running-20261006.json",
+    "concurrentModelAssignmentsImagePrefix": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968"
   }
 }

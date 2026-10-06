@@ -18,6 +18,9 @@ SELECT json_build_object(
    ORDER BY a.attempt DESC LIMIT 3)a),
  'context_navigation_present',(SELECT context ? 'source_completion_navigation' FROM latest),
  'source_contract_hint',(SELECT context->'_source_completion_hint' FROM latest),
+ 'received_decision',(SELECT result->>'decision' FROM latest),
+ 'received_response_challenge_ids',(SELECT coalesce(json_agg(r->>'challenge_id'),'[]'::json)
+   FROM latest s,jsonb_array_elements(coalesce(s.result->'responses','[]'::jsonb))r),
  'challenges',(SELECT coalesce(json_agg(c),'[]'::json) FROM (
    SELECT id,proposal_id,payload->>'reviewer' AS reviewer,created_at
    FROM research_mission_challenges WHERE mission_id='2ce40574-6368-5cef-b706-b4e67441b3de'
