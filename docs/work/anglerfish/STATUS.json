@@ -20,7 +20,7 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Qualified ec remains active. Initial proposal and independent challenge completed; director preserved the selected single ETF/cash scope by revising a cross-sectional proposal. Revised proposal completed at16:33KST. Current independent challenge3cfa is running after root-reviewed current task urgency/source completion navigation event713. Original scientific authority, budget, evidence and director judgment remain intact. No scientific job/trial/reservation yet; continue to actual3070 evaluation.",
+  "operationalStatus": "Qualified ec remains active. Revised proposal and independent challenge completed. The director selection attempt1 was rejected for missing exact current challenge dispositions; normal attempt2 is running after root-reviewed factual current challenge identity/source-completion navigation and preparation urgency event717. No scientific jobs/trials/reservations at latest programme observation. Original scope, approval, budget, source bytes and independent judgment remain intact.",
   "evidence": "../../project/evidence/etf-exploration-20260930/first-research-mission-accepted-20261006.json",
   "nextStage": {
     "stage": "revised_selection_implementation_then_actual_execution",
@@ -113,7 +113,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "ec_active_revised_challenge_completed_revised_selection_running",
+    "phase": "ec_active_revised_selection_contract_retry_running",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
@@ -132,6 +132,7 @@
     "workerAlignmentReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-worker-active-20261006.json",
     "sixServicesReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-six-services-active-20261006.json",
     "revisedChallengePreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-revised-challenge-preparation-applied-20261006.json",
-    "revisedSelectionPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-revised-selection-preparation-applied-20261006.json"
+    "revisedSelectionPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-revised-selection-preparation-applied-20261006.json",
+    "selectionRetryPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-selection-retry-applied-20261006.json"
   }
 }

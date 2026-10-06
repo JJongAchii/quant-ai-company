@@ -322,3 +322,18 @@ task `3173feae-397b-563d-8a30-57f5746ff79c`도priority100/미요청이었다.
 ([event711](evidence/etf-exploration-20260930/first-mission-revised-proposal-preparation-applied-20261006.json)).
 과학 판단·원문·read receipt·승인·예산·job을 operator가 쓰지 않았다. 수정 업무는 실제 critique를
 읽으며 정상 진행 중이다. 실제 과학 job/trial/reservation은 여전히0이며 INTENT-v15는 미완료다.
+
+### 16:33~17:08 KST — 수정안 검토 완료와 선택 응답 형식 수리
+
+수정 proposal은16:33에 완료됐고 독립 challenge는16:50에 완료됐다. 새 selection6e125dec의
+첫 응답은17:01 received였으나 실제 적용 단계에서 `Every independent challenge needs exactly
+one disposition`으로 거절됐다. 새로운 과학 판단이나 측정 결과가 아니다. 정상 서비스가17:03에
+생성한 attempt2/task07d30ebc가 priority100/queued였고 이전 실패 안내가 새 context에 없었다.
+
+[구체적 검토](evidence/etf-exploration-20260930/first-mission-selection-retry-review-20261006.json)와
+[한정 operator](evidence/etf-exploration-20260930/repair-current-selection-retry.py)를 PR105에 게시한
+뒤,17:07:40 [event717](evidence/etf-exploration-20260930/first-mission-selection-retry-applied-20261006.json)로
+현재 task urgency와 현재 proposal/challenge 식별자 및 기존 source 완료 조건 안내만 대사했다.
+원문·read receipt·동결 요청·이전 실패·과학 판단·승인·예산을 보존한다. operator는 정확한
+attempt2/기존 오류/최신 stage/첫 과학 job 이전을 검증하며 새 call/job을 만들지 않는다. 실제
+모델 호출은 재개됐다. 현재 승인 programme의 실제 science job/trial/reservation은 아직0이다.

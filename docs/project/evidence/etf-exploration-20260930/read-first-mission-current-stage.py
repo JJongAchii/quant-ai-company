@@ -19,7 +19,8 @@ SELECT json_build_object(
  t.request->>'request_id' AS request_id,t.request->>'model' AS model,
  t.request->>'reasoning_effort' AS reasoning_effort,
  (position('first-mission-source-completion-navigation:c3050fd0:20261006' IN t.request->>'prompt')>0
- OR position('first-mission-preparation-navigation:'||s.id::text||':20261006' IN t.request->>'prompt')>0)
+ OR position('first-mission-preparation-navigation:'||s.id::text||':20261006' IN t.request->>'prompt')>0
+ OR position(s.context->'source_completion_navigation'->>'operation_id' IN t.request->>'prompt')>0)
    AS source_completion_navigation_visible FROM turns t JOIN latest s ON s.task_id=t.task_id
  ORDER BY t.created_at DESC LIMIT 3)x),
  'reads',(SELECT coalesce(json_agg(x),'[]'::json) FROM (SELECT r.path,r.character_offset,r.next_offset,r.created_at
