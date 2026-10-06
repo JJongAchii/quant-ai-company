@@ -119,3 +119,10 @@ PostgreSQL 테스트는 기존 `TEST_DATABASE_URL` 또는 `.local/test-env.json`
 사용합니다. Temporal 검사는 실제 로컬 서버를 띄웁니다. Slack과 모델 응답은 합성 fixture입니다.
 `CODEX_CATALOG_PROBE_BIN`에 검증 버전 Codex 실행 파일 경로를 주면 빈 인증 디렉터리에서
 실제 CLI의 설정·RPC만 추가 검사합니다. 로그인 확인을 모의 처리하므로 실제 계정 사용권 검사가 아닙니다.
+
+## Codex 프로그램 버전
+
+운영 두 Codex 실행기는 2026-10-06에 0.160.1로 갱신됐습니다. 실제 선택 계정 목록에
+`gpt-6.1-sol`이 나타납니다. 직원 배정 변경과 프로그램 갱신은 별도이며, 이후 신버전은 매일
+갱신 후보 PR로 감지합니다. [프로그램 갱신 runbook](codex-upgrades.md)과
+[실제 운영 갱신 기록](../project/CODEX-UPGRADE-20261006.md)을 참고합니다.
