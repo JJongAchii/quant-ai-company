@@ -34,7 +34,7 @@ class TrendFeedCollector:
 
     async def enrich(self, digest):
         bundle = digest["bundle"]
-        candidates = bundle["candidates"]
+        candidates = [c for c in bundle["candidates"] if c.get("kind") != "major_issue"]
         for start in range(0, len(candidates), 5):
             if schedule.utcnow() >= digest["send_at"]:
                 break
@@ -49,8 +49,11 @@ class TrendFeedCollector:
                 candidate["naver"] = (trend_summary(matches[0], payload) if len(matches) == 1 else
                                        {"state": "unavailable", "reason": receipt.get("error", "no_data")})
         semaphore, reads = asyncio.Semaphore(4), {}
+        cached = {a["url"]: a for c in bundle["candidates"] if c.get("kind") == "major_issue" for a in c["articles"]}
 
         async def original(link):
+            if link["url"] in cached:
+                return cached[link["url"]]
             async with semaphore:
                 if schedule.utcnow() >= digest["send_at"]:
                     return None

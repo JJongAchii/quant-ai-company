@@ -12,8 +12,9 @@ from ..news.contracts import load_sources
 from ..news.feeds import timestamp
 from ..owner_controls import effective_limits
 from . import schedule
-from .contracts import TREND_FEED_AGENT
+from .contracts import GOOGLE_CANDIDATE_LIMIT, TREND_FEED_AGENT
 from .editor import EDITORIAL_POLICY_VERSION, prompt, publication_items, render, response_json, validate_draft
+from .supplement import major_issues
 
 LOCK = 71351006
 FINAL = {"queued", "preview", "expired", "stale"}
@@ -40,6 +41,7 @@ class TrendFeedStore:
         return fingerprint({"version": 1, "enabled": s.trend_feed_enabled, "publish": s.trend_feed_publish_enabled,
             "editorial_policy": EDITORIAL_POLICY_VERSION,
             "channel": s.trend_feed_channel_id, "owner": s.trend_feed_owner_user,
+            "supplement_channel": s.news_channel_id, "supplement_owner": s.news_owner_user,
             "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
             "naver": s.trend_feed_naver_enabled, "model": reporter.model if reporter else None,
             "effort": reporter.reasoning_effort if reporter else None,
@@ -110,7 +112,7 @@ class TrendFeedStore:
             item = row["item"]
             c = candidates.get(row["keyword"])
             if c is None:
-                c = {"id": fingerprint(row["keyword"])[:24], "title": item["title"], "traffic": "",
+                c = {"id": fingerprint(row["keyword"])[:24], "kind": "rising_search", "title": item["title"], "traffic": "",
                      "traffic_floor": None, "peak_snapshot": str(row["snapshot_id"]),
                      "first_seen": row["first_seen"], "new": row["first_seen"] >= start,
                      "articles": [], "naver": {"state": "unavailable", "reason": "not_checked"}}
@@ -121,14 +123,15 @@ class TrendFeedStore:
                          peak_snapshot=str(row["snapshot_id"]))
             c.update(last_seen=row["observed_at"], news=item["news"], latest_snapshot=str(row["snapshot_id"]))
         ordered = sorted(candidates.values(), key=lambda c: (-(c["traffic_floor"] or 0),
-                         -c["last_seen"].timestamp(), c["title"]))[:20]
+                         -c["last_seen"].timestamp(), c["title"]))[:GOOGLE_CANDIDATE_LIMIT]
+        supplements = major_issues(conn, self.company.settings, cutoff)
         source = conn.execute("SELECT started_at FROM trend_feed_source WHERE id=1").fetchone()
         successes = [r["observed_at"] for r in conn.execute("""SELECT observed_at FROM trend_feed_snapshots
             WHERE ok AND observed_at>=%s AND observed_at<%s ORDER BY observed_at""", (start, cutoff)).fetchall()]
         coverage = max(start, source["started_at"]) if source["started_at"] else start
         boundaries = [min(coverage, cutoff), *successes, cutoff]
         gap = not successes or any(b - a > timedelta(minutes=30) for a, b in pairwise(boundaries))
-        return as_json({"cutoff": cutoff, "candidates": ordered, "coverage_start": source["started_at"],
+        return as_json({"cutoff": cutoff, "candidates": ordered + supplements, "coverage_start": source["started_at"],
                         "partial_history": not source["started_at"] or source["started_at"] > start,
                         "last_success": successes[-1] if successes else None, "collection_gap": gap,
                         "snapshot_ids": sorted({c[k] for c in ordered for k in ("peak_snapshot", "latest_snapshot")})})
@@ -296,7 +299,7 @@ class TrendFeedStore:
                 conn.execute("UPDATE outbox SET next_at=%s WHERE id=%s", (row["send_at"], row["id"]))
             state = "queued" if publish else "preview"
             conn.execute("UPDATE trend_feed_digests SET state=%s,content=%s WHERE id=%s", (state, text, row["id"]))
-            return {"state": state, "id": str(row["id"]), "items": len(publication_items(row["draft"]))}
+            return {"state": state, "id": str(row["id"]), "items": len(publication_items(row["draft"], row["bundle"]))}
 
     def gate(self, conn, row, *, claimed=False):
         at = schedule.utcnow()

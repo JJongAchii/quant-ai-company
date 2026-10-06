@@ -238,7 +238,7 @@ def test_unverified_news_links_do_not_imply_a_related_article(trend, title, sear
     assert "<@here>" not in text
 
 
-def test_sports_are_filtered_before_eight_topic_limit_and_keep_frozen_order(trend):
+def test_sports_are_filtered_before_ten_topic_limit_and_keep_frozen_order(trend):
     ingest(trend)
     morning(trend)
     bundle = trend.freeze()["bundle"]
@@ -257,9 +257,9 @@ def test_sports_are_filtered_before_eight_topic_limit_and_keep_frozen_order(tren
     text = render(bundle, classified)
     for title in sports:
         assert title not in text
-    for i in range(1, 9):
+    for i in range(1, 11):
         assert f"*{i}. 신기술 발표 {i} · 기술*" in text
-    assert "신기술 발표 9" not in text and "스포츠 주제 제외" in text
+    assert "신기술 발표 11" not in text and "스포츠 주제 제외" in text
     draft["items"] = draft["items"][len(sports):]
     result.decision.artifacts[0].content = json.dumps(draft)
     with pytest.raises(ValueError, match="covered_once"):

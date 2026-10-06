@@ -1,90 +1,34 @@
 {
   "approval": {
-    "approvedAt": "2026-10-06T13:47:29.447744+00:00",
-    "id": "chat-user-send-sports-now-20261006"
+    "approvedAt": "2026-10-06T14:08:58.376632+00:00",
+    "id": "chat-user-ten-topics-20261006"
   },
-  "currentIntent": "INTENT-v4.json",
+  "currentIntent": "INTENT-v5.json",
   "deliverables": {
     "ACTIVATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/activation.json",
-          "sha256": "2a4b4a334e3a"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/active-probe.json",
-          "sha256": "a9d844fd8111"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/naver-mount.json",
-          "sha256": "1e0b53811f7b"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/send-now-delivery.json",
-          "sha256": "ad34bccb9c29"
-        }
-      ],
-      "note": "Regular operation unchanged, existing delivered body retained, next Oct7 08:00 KST confirmed in dispatch Settings on explicit immediate send. Immediate message is a separate user-authorized status delivery of the labeled21:24 source.",
-      "status": "verified",
-      "updatedAt": "2026-10-06T13:57:06.806488+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
     "IMMEDIATE_DELIVERY": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/send-now-delivery.json",
-          "sha256": "ad34bccb9c29"
-        },
-        {
-          "path": "docs/project/TREND-FEED-SPORTS.md",
-          "sha256": "ba2da69850ac"
-        }
-      ],
-      "note": "User-now request fulfilled at22:52 KST: 4 topics, sports0; durable new message1c6feec1, delivered toC0C6WTA9ECV, attempts1, ts1791294778.643269. Exact screen message1/body/four links checked, sourcecutoff21:24 explicitly labeled. First preflight rejected before writes in collector with no workspace env; moved to configured dispatch without changing configuration. No automatic uncertain replay.",
-      "status": "verified",
-      "updatedAt": "2026-10-06T13:57:07.049807+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
     "IMPLEMENTATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/RESULT.json",
-          "sha256": "ad9e4dc414fb"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/image.json",
-          "sha256": "e46e2862a691"
-        }
-      ],
-      "note": "INTENT-v4 retains verified sports-policy implementation and deployed two-file native source qualification; immediate send requires no service/image changes.",
-      "status": "verified",
-      "updatedAt": "2026-10-06T13:57:06.361651+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
     "VALIDATION": {
-      "evidence": [
-        {
-          "path": "docs/project/TREND-FEED-SPORTS.md",
-          "sha256": "ba2da69850ac"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/RESULT.json",
-          "sha256": "ad9e4dc414fb"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/pytest.txt",
-          "sha256": "84c2ee7c3b70"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/send-now-delivery.json",
-          "sha256": "ad34bccb9c29"
-        }
-      ],
-      "note": "Prior real PostgreSQL/Temporal regressions36 and native four-topic filter preview retained. Additional real Slack delivered receipt and exact timestamp/body/four-link UI match verified; no new model/NAVER calls. No service code changes requiring new test sweep.",
-      "status": "verified",
-      "updatedAt": "2026-10-06T13:57:06.580894+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     }
   },
-  "intentDigest": "bb0b96b30ec7",
+  "intentDigest": "b958dbc59fad",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-06T13:57:07.049807+00:00"
+  "updatedAt": "2026-10-06T14:08:58.376632+00:00"
 }

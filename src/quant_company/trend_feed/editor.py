@@ -4,10 +4,10 @@ from urllib.parse import urlencode
 
 from ..company import as_json
 from ..news.feeds import timestamp
-from .contracts import TrendBriefDraft
+from .contracts import TOPIC_TARGET, TrendBriefDraft
 from .schedule import KST
 
-EDITORIAL_POLICY_VERSION = 2
+EDITORIAL_POLICY_VERSION = 3
 
 INSTRUCTIONS = """Write a Korean morning search-interest briefing. Return AgentDecision(status=complete),
 exactly one artifact containing TrendBriefDraft JSON with source_ids=[] on the envelope artifact.
@@ -23,19 +23,28 @@ evidence are required when context cannot be established. Do not report allegati
 casualty numbers, forecasts or medical advice as established facts. Do not infer WHY searching increased:
 describe related reporting, not search causality. Do not write metrics, rankings, URLs, or novelty labels;
 the service renders those. Do not claim complete coverage or independent fact-checking.
+Candidates marked major_issue are already accepted news events, offered ONLY to fill missing topics.
+Summarize only their approved_facts; do not add other claims from the retrieved passage. They are not
+evidence of rising searches. Still classify and cover these IDs, including any sports, exactly once.
 """
 
 
 def prompt(bundle, prior_error=None):
     # Only editorial inputs, not credentials, API receipts or raw XML.
     view = {"cutoff": bundle["cutoff"], "candidates": [
-        {k: c[k] for k in ("id", "title", "articles")} for c in bundle["candidates"]]}
-    text = (INSTRUCTIONS + "\nSCHEMA:\n" + json.dumps(TrendBriefDraft.model_json_schema(), ensure_ascii=False)
-            + "\nDATA:\n" + json.dumps(view, ensure_ascii=False))
-    if prior_error:
-        text += "\nThe previous completed output failed validation: " + prior_error
-    if len(text) > 80000:
-        raise ValueError("trend_context_limit")
+        {"id": c["id"], "title": c["title"], "kind": c.get("kind", "rising_search"),
+         "articles": [dict(a) for a in c["articles"]],
+         **({"approved_facts": c["approved_facts"]} if c.get("kind") == "major_issue" else {})}
+        for c in bundle["candidates"]]}
+    prefix = INSTRUCTIONS + "\nSCHEMA:\n" + json.dumps(TrendBriefDraft.model_json_schema(), ensure_ascii=False) + "\nDATA:\n"
+    suffix = "\nThe previous completed output failed validation: " + prior_error if prior_error else ""
+    while len(text := prefix + json.dumps(view, ensure_ascii=False) + suffix) > 80000:
+        articles = [a for c in view["candidates"] for a in c["articles"]]
+        largest = max(articles, key=lambda a: len(a["content"]), default=None)
+        if not largest or len(largest["content"]) <= 300:
+            raise ValueError("trend_context_limit")
+        largest["content"] = largest["content"][:max(300, len(largest["content"]) * 2 // 3)]
+        largest["excerpt_truncated"] = True
     return text
 
 
@@ -80,43 +89,68 @@ def safe(value):
     return escape(str(value), quote=False).replace("|", "¦").replace("@", "＠")
 
 
-def publication_items(draft):
-    # Filter the complete classified pool before selecting eight; do not publish unclassified fallback topics.
-    return [item for item in draft["items"] if item["category"] != "스포츠"][:8] if draft else []
+def publication_items(draft, bundle=None):
+    # Search candidates precede supplements in the frozen pool; retain that order after filtering.
+    candidates = {c["id"]: c for c in bundle["candidates"]} if bundle else {}
+    selected, urls, events = [], set(), set()
+    for item in draft["items"] if draft else []:
+        if item["category"] == "스포츠":
+            continue
+        members = [candidates[key] for key in item["member_ids"]] if bundle else []
+        item_urls = {a["url"] for c in members for a in c["articles"]}
+        item_events = {c["event_id"] for c in members if c.get("event_id")}
+        supplemental = members and all(c.get("kind") == "major_issue" for c in members)
+        if supplemental and (item_urls.intersection(urls) or item_events.intersection(events)):
+            continue
+        selected.append(item)
+        urls.update(item_urls)
+        events.update(item_events)
+        if len(selected) == TOPIC_TARGET:
+            break
+    return selected
 
 
 def render(bundle, draft=None):
     candidates = {c["id"]: c for c in bundle["candidates"]}
-    items = publication_items(draft)
+    items = publication_items(draft, bundle)
     cutoff = timestamp(bundle["cutoff"]).astimezone(KST)
-    lines = [f"*한국 검색 트렌드 · {cutoff:%m/%d} 아침*", "지난 24시간에 관측한 급상승 주제 · Google 한국 기준"]
+    lines = [f"*한국 검색 트렌드 · {cutoff:%m/%d} 아침*", "검색 급상승 우선 · 부족한 수는 검증된 주요 이슈로 보충"]
     if not candidates:
         lines.append("집계 구간에 유효한 관측이 없어 오늘은 검색 트렌드를 제공하지 못했습니다. 수집 상태를 확인 중입니다.")
     elif not draft:
         lines.append("주제 분류를 확인하지 못해 오늘의 항목을 생략했습니다. 스포츠 제외 설정을 유지합니다.")
     elif not items:
         lines.append("관측한 후보가 모두 스포츠로 분류되어 오늘은 소개할 주제가 없습니다.")
+    rising_count, issue_count = 0, 0
     for n, item in enumerate(items, 1):
         card = []
         members = [candidates[key] for key in item["member_ids"]]
         candidate = members[0]
-        titles = " · ".join(c["title"] for c in members)[:600]
+        rising = [c for c in members if c.get("kind") != "major_issue"]
+        titles = " · ".join(c["title"] for c in (rising or members))[:600]
         label = " · " + item["category"] if item["category"] else ""
         card.append(f"\n*{n}. {safe(titles)}{safe(label)}*")
-        novelty = ("관측 이력 부족" if bundle["partial_history"] else
-                   "처음 포착" if candidate["new"] else "계속 관측")
-        card.append(f"{novelty} · Google 규모 표시 {safe(candidate['traffic'] or '미제공')} (구간 내 최대 표시)")
-        trend = candidate.get("naver", {})
-        if trend.get("state") == "available":
-            card.append(f"네이버 최근 7일 평균 / 이전 7일 평균: {trend['change_percent']:+.0f}% · {trend['as_of']} 기준")
+        if rising:
+            novelty = ("관측 이력 부족" if bundle["partial_history"] else
+                       "처음 포착" if candidate["new"] else "계속 관측")
+            card.append(f"검색 급상승 · {novelty} · Google 규모 표시 {safe(candidate['traffic'] or '미제공')} (구간 내 최대 표시)")
+            trend = candidate.get("naver", {})
+            if trend.get("state") == "available":
+                card.append(f"네이버 최근 7일 평균 / 이전 7일 평균: {trend['change_percent']:+.0f}% · {trend['as_of']} 기준")
+            else:
+                reason = "비교 기준 부족" if trend.get("reason") in {"zero_baseline", "incomplete_comparison"} else "추이 확인 불가"
+                card.append("네이버 " + reason + (" · " + trend["as_of"] + " 기준" if trend.get("as_of") else ""))
         else:
-            reason = "비교 기준 부족" if trend.get("reason") in {"zero_baseline", "incomplete_comparison"} else "추이 확인 불가"
-            card.append("네이버 " + reason + (" · " + trend["as_of"] + " 기준" if trend.get("as_of") else ""))
+            card.append("주요 이슈 · 검증된 보도에서 보충 · 검색 급상승 확인 항목 아님")
         if item["background"]:
             card.append("관련 배경: " + safe(item["background"]))
             originals = {a["id"]: a for c in members for a in c["articles"]}
             for key in dict.fromkeys(e["article_id"] for e in item["evidence"]):
                 article = originals[key]
+                card.append(f"<{article['url'].replace('|', '%7C')}|{safe(article['publisher'])} 원문>")
+        elif not rising:
+            card.append("확인한 보도 제목 · 추가 배경 요약 없음")
+            for article in candidate["articles"]:
                 card.append(f"<{article['url'].replace('|', '%7C')}|{safe(article['publisher'])} 원문>")
         else:
             card.append("배경 확인 제한 · 검증된 관련 원문 없음")
@@ -127,11 +161,16 @@ def render(bundle, draft=None):
             lines.append("\n메시지 길이 제한으로 나머지 주제를 생략했습니다.")
             break
         lines.extend(card)
+        rising_count += bool(rising)
+        issue_count += not rising
     start = timestamp(bundle["coverage_start"]).astimezone(KST) if bundle.get("coverage_start") else None
     lines.append(f"\n자료 마감 {cutoff:%m/%d %H:%M KST} · 수집 시작 " + (f"{start:%m/%d %H:%M KST}" if start else "미확인"))
     if bundle["collection_gap"]:
         lines.append("수집 공백 있음: 집계 구간에 30분을 넘는 수집 공백이 있습니다.")
-    lines.append("스포츠 주제 제외 · 분류한 후보 중 최대 8개")
+    lines.append(f"검색 급상승 {rising_count}개 · 주요 이슈 {issue_count}개")
+    if rising_count + issue_count < TOPIC_TARGET:
+        lines.append(f"오늘 제공한 비스포츠 주제 {rising_count + issue_count}개 · {TOPIC_TARGET}개 목표에 필요한 자료 또는 메시지 공간 부족")
+    lines.append(f"스포츠 주제 제외 · 하루 {TOPIC_TARGET}개 목표")
     lines.append("검색 규모는 Google 제공 표시이며 전체 검색량 순위가 아닙니다. 네이버 지수와 합산하지 않습니다.")
     text = "\n".join(lines)
     if len(text) > 12000:
