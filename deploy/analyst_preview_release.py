@@ -36,6 +36,25 @@ def code_only_build(manifest):
     return not any(row['path'] in BASE_INPUTS for row in manifest['runtime_changes'])
 
 
+def selected_services(receipt):
+    return tuple(name for name in SERVICES
+                 if name != 'codex-runtime' or not receipt.get('preserve_codex_runtime'))
+
+
+def validate_preserved_runtime(manifest):
+    if not isinstance(manifest.get('preserve_codex_runtime', False), bool):
+        raise ValueError('preview_preserved_runtime_mode')
+    if not manifest.get('preserve_codex_runtime'):
+        return
+    permitted = {'deploy/.env.example', 'deploy/Dockerfile.analyst-code-preview',
+                 'deploy/analyst_preview_release.py', 'deploy/compose.yaml',
+                 'src/quant_company/config.py', 'src/quant_company/roles.json'}
+    if not code_only_build(manifest) or any(
+            row['path'] not in permitted and not row['path'].startswith('src/quant_company/briefing/')
+            for row in manifest['runtime_changes']):
+        raise ValueError('preview_preserved_runtime_incompatible_source')
+
+
 def run(command, **kwargs):
     return subprocess.run(command, check=True, capture_output=True, timeout=1800, **kwargs).stdout
 
@@ -125,8 +144,8 @@ def inventory():
             for r in json.loads(run(['docker', 'inspect', *names]))}
 
 
-def preserved(before, after):
-    selected = {'/quant-company-' + name + '-1' for name in (*SERVICES, NEW_SERVICE)}
+def preserved(before, after, services=SERVICES):
+    selected = {'/quant-company-' + name + '-1' for name in (*services, NEW_SERVICE)}
     if any(after.get(name) != value for name, value in before.items() if name not in selected):
         raise ValueError('preview_unrelated_service_changed')
 
@@ -174,6 +193,7 @@ def stage(args, previous, target, module, journal):
     if digest(data) != args.sha256 or digest(args.manifest.read_bytes()) != args.manifest_sha256:
         raise ValueError('preview_artifact_digest')
     code_only = code_only_build(manifest)
+    validate_preserved_runtime(manifest)
     minimum_disk = (768 * 1024**2) if code_only else (2 * 1024**3)
     if shutil.disk_usage(target.parent).free < minimum_disk:
         raise ValueError('preview_disk_admission')
@@ -204,6 +224,7 @@ def stage(args, previous, target, module, journal):
                'started_at': time.time(), 'images': [], 'evaluation_edition': args.evaluation_edition,
                'build_mode': 'code_only_identical_lock' if code_only else 'locked_dependency_sync',
                'minimum_disk_bytes': minimum_disk, 'service_inventory_before': before}
+    receipt['preserve_codex_runtime'] = bool(manifest.get('preserve_codex_runtime'))
     module.atomic(journal, json.dumps(receipt).encode())
     target.mkdir()
     module.unpack(data, target)
@@ -221,7 +242,10 @@ def stage(args, previous, target, module, journal):
         for name in ('deploy/Dockerfile', 'deploy/entrypoint.py'):
             if (previous / name).read_bytes() != (target / name).read_bytes():
                 raise ValueError('preview_base_runtime_changed')
-        for build_target, repository in [('app', 'quant-company'), ('codex', 'quant-company-codex')]:
+        builds = [('app', 'quant-company')]
+        if not receipt['preserve_codex_runtime']:
+            builds.append(('codex', 'quant-company-codex'))
+        for build_target, repository in builds:
             tag = repository + ':' + args.commit
             if subprocess.run(['docker', 'image', 'inspect', tag], capture_output=True).returncode == 0:
                 raise ValueError('preview_image_tag_already_exists')
@@ -263,7 +287,7 @@ print(json.dumps({'calendar':importlib.metadata.version('exchange-calendars'),
                                       'locked_dependencies': dependencies})
             module.atomic(journal, json.dumps(receipt).encode())
         receipt['service_inventory_after'] = inventory()
-        preserved(before, receipt['service_inventory_after'])
+        preserved(before, receipt['service_inventory_after'], selected_services(receipt))
         receipt.update(phase='staged', staged_at=time.time(), running_services_unchanged=True)
     except Exception as exc:
         receipt.update(phase='stage_failed', error=type(exc).__name__)
@@ -275,6 +299,7 @@ print(json.dumps({'calendar':importlib.metadata.version('exchange-calendars'),
 
 def cutover(args, previous, target, module, journal):
     receipt = json.loads(journal.read_text())
+    services = selected_services(receipt)
     raw = (STATE / 'config/runtime.env').read_bytes()
     roles = (STATE / 'config/roles.json').read_bytes()
     if (receipt['phase'] != 'staged' or receipt['base'] != args.base or receipt['commit'] != args.commit
@@ -286,7 +311,8 @@ def cutover(args, previous, target, module, journal):
     values = configuration(raw)
     channels = json.loads(values['SLACK_ALLOWED_CHANNELS'])
     settings = {'RELEASE_COMMIT': args.commit, 'QDATA_BUILD_CONTEXT': str(target / 'qdata'),
-                'PINNED_CODEX_RUNTIME_IMAGE': 'quant-company-codex:' + args.commit,
+                'PINNED_CODEX_RUNTIME_IMAGE': (values['PINNED_CODEX_RUNTIME_IMAGE']
+                    if receipt.get('preserve_codex_runtime') else 'quant-company-codex:' + args.commit),
                 'BRIEFING_ENABLED': 'true', 'BRIEFING_PUBLISH_ENABLED': 'false',
                 'BRIEFING_SOURCE_NOTES_ENABLED': 'true', 'BRIEFING_MAX_REVISIONS': '0',
                 'BRIEFING_EVALUATION_EDITION_ID': args.evaluation_edition,
@@ -310,7 +336,9 @@ def cutover(args, previous, target, module, journal):
     switched = False
     try:
         compose(module, previous, 'stop', '-t', '1100', *drains)
-        for name in ('.runtime.lock', '.runtime-news.lock', '.runtime-brief.lock'):
+        drain_locks = (('.runtime-brief.lock',) if receipt.get('preserve_codex_runtime') else
+                       ('.runtime.lock', '.runtime-news.lock', '.runtime-brief.lock'))
+        for name in drain_locks:
             lock = runtime_lock(STATE / 'codex/jobs' / name)
             locks.append(lock)
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -342,16 +370,17 @@ print('briefing_schema_ready')"""
         primary_stopped = True
         receipt.update(phase='cutover_started', cutover_started_at=time.time())
         module.atomic(journal, json.dumps(receipt).encode())
-        compose(module, previous, 'stop', '-t', '360', 'api', 'codex-runtime')
+        primary = tuple(name for name in ('api', 'codex-runtime') if name in services)
+        compose(module, previous, 'stop', '-t', '360', *primary)
         module.atomic(STATE / 'config/runtime.env', updated(raw, settings))
         module.atomic(STATE / 'config/roles.json', json.dumps(new_roles, ensure_ascii=False).encode())
         module.link(target)
         switched = True
         compose(module, target, 'up', '-d', '--no-deps', '--force-recreate', '--wait', '--wait-timeout', '120',
-                *SERVICES, NEW_SERVICE)
+                *services, NEW_SERVICE)
         after = inventory()
-        preserved(before, after)
-        for name in (*SERVICES, NEW_SERVICE):
+        preserved(before, after, services)
+        for name in (*services, NEW_SERVICE):
             row = after['/quant-company-' + name + '-1']
             if not row['running'] or row['oom'] or row['restarts']:
                 raise ValueError('preview_service_unhealthy')
@@ -362,7 +391,7 @@ print('briefing_schema_ready')"""
                 raise ValueError('preview_model_volumes_changed')
         receipt.update(phase='preview_active', activated_at=time.time(), publication_enabled=False,
                        unrelated_services_preserved=True, selected_services={name: after['/quant-company-' + name + '-1']
-                                                                           for name in (*SERVICES, NEW_SERVICE)},
+                                                                           for name in (*services, NEW_SERVICE)},
                        followup_delivery='not qualified on preserved generic worker/socket',
                        quality_and_slack_acceptance='separate; not certified by installation')
         module.atomic(journal, json.dumps(receipt).encode())
@@ -370,15 +399,15 @@ print('briefing_schema_ready')"""
     except Exception as exc:
         if switched:
             with contextlib.suppress(Exception):
-                compose(module, target, 'stop', '-t', '1100', *SERVICES, NEW_SERVICE)
+                compose(module, target, 'stop', '-t', '1100', *services, NEW_SERVICE)
         module.atomic(STATE / 'config/runtime.env', raw)
         module.atomic(STATE / 'config/roles.json', roles)
         module.link(previous)
         overlay = journal.with_suffix('.rollback.compose.json')
         module.atomic(overlay, json.dumps({'services': {name: {'image': before['/quant-company-' + name + '-1']['image']}
-                                                        for name in (*SERVICES, NEW_SERVICE)
+                                                        for name in (*services, NEW_SERVICE)
                                                         if '/quant-company-' + name + '-1' in before}}).encode())
-        restore = (*SERVICES, *((NEW_SERVICE,) if NEW_SERVICE in drains else ())) if primary_stopped else drains
+        restore = (*services, *((NEW_SERVICE,) if NEW_SERVICE in drains else ())) if primary_stopped else drains
         compose(module, previous, 'up', '-d', '--no-deps', '--force-recreate', '--wait', '--wait-timeout', '120',
                 *restore, overlay=overlay)
         receipt.update(phase='rolled_back', error=type(exc).__name__, publication_enabled=False)

@@ -1,5 +1,6 @@
 import json
 from copy import deepcopy
+from datetime import timedelta
 
 import pytest
 
@@ -201,9 +202,11 @@ def test_pruning_never_hides_invented_references_or_missing_material_numbers():
         validate_source_notes(p, b)
 
 
-def test_real_postgres_missing_inventory_blocks_without_reserving_review(brief):  # noqa: F811
-    store, _ = brief
+@pytest.mark.parametrize('publication', [False, True])
+def test_real_postgres_missing_inventory_blocks_without_reserving_review(brief, publication):  # noqa: F811
+    store, clock = brief
     store.company.settings.briefing_source_notes_enabled = True
+    store.company.settings.briefing_publish_enabled = publication
     edition = seed(brief)
     first = store.prepare()
     store.commit(response(first['request']))
@@ -214,8 +217,22 @@ def test_real_postgres_missing_inventory_blocks_without_reserving_review(brief):
     with store.db.transaction() as conn:
         assert conn.execute('SELECT count(*) AS n FROM brief_calls WHERE edition_id=%s', (edition.id,)).fetchone()['n'] == before == 1
         saved = conn.execute('SELECT state,error,proposal FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()
-    assert saved['state'] == 'blocked' and saved['error'] == 'source_notes_incomplete_or_duplicate'
-    assert saved['proposal']
+        assert saved['state'] == 'blocked' and saved['error'] == 'source_notes_incomplete_or_duplicate'
+        assert saved['proposal']
+    clock['at'] = edition.due_at+timedelta(minutes=10)
+    store.flush()
+    with store.db.transaction() as conn:
+        saved = conn.execute('SELECT state,proposal,rendered,quality FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()
+        assert saved['state'] == ('committed' if publication else 'previewed') and saved['proposal'] is None
+        assert saved['quality']['reduced']
+        if publication:
+            assert not saved['quality'].get('unreviewed_draft_preserved')
+            assert '미국 증시는 반도체가 주도했으며' not in saved['rendered'][0]
+        else:
+            assert saved['quality']['unreviewed_draft_preserved']
+            assert '품질 검사 미통과 초안' in saved['rendered'][0]
+            assert '미국 증시는 반도체가 주도했으며' in saved['rendered'][0]
+            assert conn.execute('SELECT count(*) AS n FROM brief_messages').fetchone()['n'] == 0
 
 
 def test_real_postgres_valid_inventory_reaches_independent_review(brief):  # noqa: F811
@@ -239,6 +256,18 @@ def test_real_postgres_single_edition_scope_never_reserves_other_cases(brief):  
     store, _ = brief
     store.company.settings.briefing_evaluation_edition_id = '00000000-0000-0000-0000-000000000000'
     seed(brief)
+    assert store.prepare() == {'state': 'idle'}
+    with store.db.transaction() as conn:
+        assert conn.execute('SELECT count(*) AS n FROM brief_calls').fetchone()['n'] == 0
+
+
+def test_bounded_evaluation_does_not_spend_a_search_before_inputs_are_sealed(brief):  # noqa: F811
+    store, clock = brief
+    store.company.settings.briefing_evaluation_edition_id = definition().id
+    store.company.settings.briefing_search_enabled = True
+    store.company.settings.company_web_enabled = True
+    edition = seed(brief)
+    clock['at'] = edition.cutoff-timedelta(seconds=30)
     assert store.prepare() == {'state': 'idle'}
     with store.db.transaction() as conn:
         assert conn.execute('SELECT count(*) AS n FROM brief_calls').fetchone()['n'] == 0

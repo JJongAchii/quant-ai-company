@@ -28,14 +28,16 @@ from .planning import SOURCE_CHAR_BUDGET, supplement_sources
 from .quality import assurance
 from .quotations import (
     QUOTE_REFERENCE_VERSION,
+    compact_reference_payload,
     ordered_reference_payload,
     reference_payload,
+    resolve_candidate_requests,
     resolve_quotations,
 )
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 55
+VALIDATION_VERSION = 56
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 If source_notes_required, populate source_notes BEFORE composing prose, in this same response.
@@ -516,6 +518,14 @@ def prompt(bundle, phase, proposal=None):
     if references and (bundle.get('source_notes_required') or len(result) > 88000):
         payload = ordered_reference_payload(payload)
         result = header + json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    if references and len(result) > 88000:
+        payload = compact_reference_payload(payload, bundle)
+        instructions = ("Compact layout: @q:N is a supplied original quote ID; its ordered row contains the unchanged "
+            "span and document_index. Use it in output quote fields; the server restores that source-bound span. "
+            "@candidate:N binds an unselected_source_index entry to its frozen candidate; use it only in source_requests. "
+            "market_context.original_text_range=[start,end] selects characters from that source's COMPLETE joined original.\n")
+        header = header.removesuffix('BRIEF DATA JSON:\n')+instructions+'BRIEF DATA JSON:\n'
+        result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     if len(result) > 88000:
         raise ValueError("brief_context_limit")
     return result
@@ -689,6 +699,8 @@ def artifact(response, schema, bundle=None):
         value = json.loads(content, strict=False)
     if bundle and bundle.get("quote_reference_version") == QUOTE_REFERENCE_VERSION:
         value = resolve_quotations(value, bundle)
+        if schema is BriefReview:
+            value = resolve_candidate_requests(value, bundle)
     return schema.model_validate(value)
 
 

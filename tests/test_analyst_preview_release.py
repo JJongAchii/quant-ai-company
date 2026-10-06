@@ -70,11 +70,12 @@ def test_only_canonical_owned_analyst_can_receive_permission_correction():
         release.merged_roles(custom, [director, proposed], [director, prior])
 
 
-def test_busy_model_drain_restores_only_stopped_workers_without_killing_primary(tmp_path, monkeypatch):
+@pytest.mark.parametrize('preserve_runtime', [False, True])
+def test_busy_model_drain_restores_only_stopped_workers_without_killing_primary(tmp_path, monkeypatch, preserve_runtime):
     state = tmp_path / 'state'
     (state / 'config').mkdir(parents=True)
     (state / 'codex/jobs').mkdir(parents=True)
-    raw = b'SLACK_ALLOWED_CHANNELS=["CEXISTING"]\n'
+    raw = b'SLACK_ALLOWED_CHANNELS=["CEXISTING"]\nPINNED_CODEX_RUNTIME_IMAGE=old-codex-runtime\n'
     roles = b'[{"id":"director","active":true}]'
     (state / 'config/runtime.env').write_bytes(raw)
     (state / 'config/roles.json').write_bytes(roles)
@@ -83,6 +84,7 @@ def test_busy_model_drain_restores_only_stopped_workers_without_killing_primary(
     journal.write_text(json.dumps({'phase': 'staged', 'base': previous.name, 'commit': target.name,
                                   'owner_approval': 'user-preview-approved',
                                   'evaluation_edition': '00000000-0000-0000-0000-000000000000',
+                                  'preserve_codex_runtime': preserve_runtime,
                                   'env_sha256': release.digest(raw), 'roles_sha256': release.digest(roles)}))
     args = SimpleNamespace(base=previous.name, commit=target.name, approval='user-preview-approved',
                            channel='CBRIEF', owner='UOWNER', evaluation_edition='00000000-0000-0000-0000-000000000000')
@@ -102,9 +104,74 @@ def test_busy_model_drain_restores_only_stopped_workers_without_killing_primary(
     assert calls[1][0][-3:] == ('news-worker', 'dispatch', release.NEW_SERVICE)
     overlay = json.loads(journal.with_suffix('.rollback.compose.json').read_text())
     assert overlay['services'][release.NEW_SERVICE]['image'] == 'owned-older-data-image'
+    assert ('codex-runtime' in overlay['services']) is not preserve_runtime
     assert all('codex-runtime' not in a and 'api' not in a for a, _ in calls)
     assert (state / 'config/runtime.env').read_bytes() == raw
     assert (state / 'config/roles.json').read_bytes() == roles
+
+
+def test_preserved_runtime_rejects_provider_or_dependency_changes_and_checks_its_inventory():
+    manifest = {'preserve_codex_runtime': True, 'runtime_changes': [
+        {'path': 'src/quant_company/briefing/quotations.py'}]}
+    release.validate_preserved_runtime(manifest)
+    assert release.selected_services(manifest) == ('api', 'news-worker', 'dispatch')
+    for name in ('uv.lock', 'src/quant_company/providers/codex_runner.py', 'src/quant_company/contracts.py'):
+        with pytest.raises(ValueError, match='preserved_runtime_incompatible'):
+            release.validate_preserved_runtime({**manifest, 'runtime_changes': [{'path': name}]})
+    with pytest.raises(ValueError, match='preserved_runtime_mode'):
+        release.validate_preserved_runtime({**manifest, 'preserve_codex_runtime': 'false'})
+    before = {'/quant-company-codex-runtime-1': {'id': 'unchanged', 'image': 'pinned'}}
+    release.preserved(before, deepcopy_inventory := {k: dict(v) for k, v in before.items()}, release.selected_services(manifest))
+    deepcopy_inventory['/quant-company-codex-runtime-1']['id'] = 'replaced'
+    with pytest.raises(ValueError, match='unrelated_service_changed'):
+        release.preserved(before, deepcopy_inventory, release.selected_services(manifest))
+
+
+def test_worker_only_cutover_keeps_a_busy_primary_runtime_and_its_image(tmp_path, monkeypatch):
+    state = tmp_path/'state'
+    (state/'config').mkdir(parents=True)
+    (state/'codex/jobs').mkdir(parents=True)
+    raw = b'SLACK_ALLOWED_CHANNELS=["CEXISTING"]\nPINNED_CODEX_RUNTIME_IMAGE=old-codex-runtime\n'
+    roles = b'[{"id":"director","active":true}]'
+    (state/'config/runtime.env').write_bytes(raw)
+    (state/'config/roles.json').write_bytes(roles)
+    previous, target, _ = trees(tmp_path)
+    journal = state/'preview.json'
+    journal.write_text(json.dumps({'phase': 'staged', 'base': previous.name, 'commit': target.name,
+        'owner_approval': 'approved', 'evaluation_edition': 'case', 'preserve_codex_runtime': True,
+        'env_sha256': release.digest(raw), 'roles_sha256': release.digest(roles)}))
+    args = SimpleNamespace(base=previous.name, commit=target.name, approval='approved',
+                           channel='CBRIEF', owner='UOWNER', evaluation_edition='case')
+    before = {'/quant-company-'+name+'-1': {'running': True, 'image': 'old-'+name,
+              'restarts': 0, 'oom': False, 'id': 'old-id-'+name, 'mounts': ['preserved']}
+              for name in (*release.SERVICES, release.NEW_SERVICE)}
+    after = {name: dict(row) for name, row in before.items()}
+    calls = []
+
+    def compose(module, root, *command, **kwargs):
+        calls.append(command)
+        if root == target and command[:2] == ('up', '-d'):
+            for service in (*release.selected_services({'preserve_codex_runtime': True}), release.NEW_SERVICE):
+                after['/quant-company-'+service+'-1'].update(image='quant-company:'+target.name, id='new-'+service)
+
+    def dump(command, **kwargs):
+        kwargs['stdout'].write(b'simulated PostgreSQL backup')
+
+    module = SimpleNamespace(atomic=lambda path, data: path.write_bytes(data), link=lambda path: None)
+    monkeypatch.setattr(release, 'STATE', state)
+    monkeypatch.setattr(release, 'inventory', lambda: {name: dict(row) for name, row in after.items()})
+    monkeypatch.setattr(release, 'available_memory', lambda: 2048)
+    monkeypatch.setattr(release, 'compose', compose)
+    monkeypatch.setattr(release, 'run', lambda *a, **kw: b'{"sending":0}')
+    monkeypatch.setattr(release.subprocess, 'run', dump)
+    with (state/'codex/jobs/.runtime.lock').open('a') as busy:
+        release.fcntl.flock(busy, release.fcntl.LOCK_EX | release.fcntl.LOCK_NB)
+        result = release.cutover(args, previous, target, module, journal)
+    assert result['phase'] == 'preview_active'
+    assert all('codex-runtime' not in command for command in calls)
+    assert after['/quant-company-codex-runtime-1'] == before['/quant-company-codex-runtime-1']
+    assert release.configuration((state/'config/runtime.env').read_bytes())['PINNED_CODEX_RUNTIME_IMAGE'] == 'old-codex-runtime'
+    assert set(result['selected_services']) == {'api', 'news-worker', 'dispatch', release.NEW_SERVICE}
 
 
 @pytest.mark.parametrize('name', release.BASE_INPUTS)

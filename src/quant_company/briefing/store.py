@@ -209,6 +209,8 @@ class BriefStore:
                         else {"state": "ready", "request": active["request"]})
             if row["state"] == "collecting" and at < row["cutoff"]:
                 s = self.company.settings
+                if s.briefing_evaluation_edition_id:
+                    return {'state': 'idle'}  # Bounded evaluations use plan/write/review on sealed inputs.
                 if not (s.briefing_search_enabled and s.company_web_enabled and row["collected_at"]):
                     return {"state": "idle"}
                 if conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='search'", (row["id"],)).fetchone():
@@ -398,7 +400,13 @@ class BriefStore:
             for row in rows:
                 if row["state"] != "ready":
                     bundle = self._freeze(conn, row)
-                    parts, quality = render(None, bundle, fallback=row["error"] or "deadline")
+                    preview = (BriefProposal.model_validate(row['proposal'])
+                               if not row['publish'] and row['proposal'] else None)
+                    parts, quality = render(preview, bundle, fallback=row["error"] or "deadline",
+                                            review_reduced=bool(preview))
+                    if preview:
+                        parts[0] = '*품질 검사 미통과 초안 · Slack 미발송*\n\n'+parts[0]
+                        quality['unreviewed_draft_preserved'] = True
                     # A partial, unreviewed proposal must never become the next edition's morning evidence.
                     row.update(bundle=bundle, rendered=parts, quality=quality, proposal=None)
                 if row["publish"]:
