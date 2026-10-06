@@ -20,13 +20,14 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Scoped data review completed on source86 first attempt with actual required evidence and a canonical conditional_ready assessment. Programme task6c54 is assessed; director selection e566 is running. Its pending source completion turn55aa was repeatedly deferred for higher_priority_request; root-reviewed current planning task urgency100→0 committed event680. The original turn then read the final original-source chunk and a normal final selection call is running. No mission, job, reservation or scientific trial exists yet. Independent briefing release0ff now owns global current; it includes86 and research/company/contracts/runtime code matches86. Research API/worker/runtime/socket/gateway remain86, dispatch uses0ff. Keep scope/budget/input and hardware resource priority unchanged.",
-  "evidence": "../../project/evidence/etf-exploration-20260930/scoped-data-completed-first-attempt-20261006.json",
+  "operationalStatus": "Programme task6c54 accepted and signed active mission2ce40574 created; still0 scientific jobs, reservations and trials. Old owner audit hold4462 monopolized scheduler selection. Initial05c8030 excluded held audits and failed5 existing waiting-response assertions; it was not activated. Finaldefd4833 orders runnable missions before held audit missions, retaining existing waiting response and owner priority among runnable missions. All29 related PostgreSQL/audit/backend tests pass; full exact final company regression is running. Exact final3070/server qualifications prepare in inactive paths. Actual currentglobal0ff and active3070 source86 remain. No scientific approval, authority, budget, source scope or old audit hold changed.",
+  "evidence": "../../project/evidence/etf-exploration-20260930/first-research-mission-accepted-20261006.json",
   "nextStage": {
-    "stage": "complete_staff_selection_then_first_actual_execution",
+    "stage": "qualify_activate_scheduler_then_first_actual_execution",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
-    "additionalOwnerApprovalRequired": false
+    "additionalOwnerApprovalRequired": false,
+    "missionId": "2ce40574-6368-5cef-b706-b4e67441b3de"
   },
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
   "finalIntegration": {
@@ -39,7 +40,9 @@
       "skipped": 14,
       "lint": "passed"
     },
-    "scientificResultClaimed": false
+    "scientificResultClaimed": false,
+    "intent": "INTENT-v14.json",
+    "currentIntentComplete": false
   },
   "exploratoryPreparation": {
     "policy": "completed",
@@ -108,13 +111,15 @@
     "currentProgrammeReceipt": "../../project/evidence/etf-exploration-20260930/canonical-final-program-progress-20261006.json"
   },
   "currentOperation": {
-    "sourceCommit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
-    "previousCommit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
-    "phase": "data_completed_selection_running_current_preparation_priority_reconciled",
+    "sourceCommit": "defd4833adea6a0191412121a5a5c6e8265c58ba",
+    "previousCommit": "0ff6657f98b175162609259394b1cec20382904a",
+    "phase": "eligible_mission_order_repair_full_regression_running",
     "review": "../../project/evidence/etf-exploration-20260930/scoped-data-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/scoped-data-cutover-active-20261006.json",
     "globalCurrentAfterIndependentBriefingRelease": "0ff6657f98b175162609259394b1cec20382904a",
-    "priorityReceipt": "../../project/evidence/etf-exploration-20260930/research-preparation-priority-applied-20261006.json"
+    "priorityReceipt": "../../project/evidence/etf-exploration-20260930/research-preparation-priority-applied-20261006.json",
+    "workerPreviousCommit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+    "scientificTrials": 0
   }
 }
