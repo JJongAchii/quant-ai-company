@@ -1,0 +1,243 @@
+{
+  "observed_at": "2026-10-06T01:42:09.845091+00:00",
+  "requests": [
+    {
+      "id": "4a543c93-cbd4-539d-bcf1-d74aa613c9c6",
+      "task_id": "a6c52e6a-91bc-5d55-980a-141cdfb15477",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T01:37:36.555635+00:00",
+      "updated_at": "2026-10-06T01:38:02.694841+00:00",
+      "request_id": "4a543c93-cbd4-539d-bcf1-d74aa613c9c6",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "prompt_characters": 82959,
+      "runtime_receipt_present": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791250657.9764562,
+        "completed_at": 1791250682.600443,
+        "cli_version": "0.154.0",
+        "requested_execution": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high"
+        },
+        "fault_code": null,
+        "parse_phase": []
+      }
+    },
+    {
+      "id": "5877a693-387d-5bd7-95b9-a7e23d1ee1e5",
+      "task_id": "a6c52e6a-91bc-5d55-980a-141cdfb15477",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T01:37:22.765436+00:00",
+      "updated_at": "2026-10-06T01:37:36.555635+00:00",
+      "request_id": "5877a693-387d-5bd7-95b9-a7e23d1ee1e5",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "prompt_characters": 83650,
+      "runtime_receipt_present": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791250643.4576807,
+        "completed_at": 1791250656.416623,
+        "cli_version": "0.154.0",
+        "requested_execution": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high"
+        },
+        "fault_code": null,
+        "parse_phase": []
+      }
+    },
+    {
+      "id": "eba4bbe7-128c-5f06-8de4-07b02eae64b8",
+      "task_id": "a6c52e6a-91bc-5d55-980a-141cdfb15477",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T01:37:12.821163+00:00",
+      "updated_at": "2026-10-06T01:37:22.765436+00:00",
+      "request_id": "eba4bbe7-128c-5f06-8de4-07b02eae64b8",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "prompt_characters": 84125,
+      "runtime_receipt_present": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791250634.6679955,
+        "completed_at": 1791250642.6980696,
+        "cli_version": "0.154.0",
+        "requested_execution": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high"
+        },
+        "fault_code": null,
+        "parse_phase": []
+      }
+    },
+    {
+      "id": "e04e64d7-9369-5a3c-9a49-1b704cd06345",
+      "task_id": "a6c52e6a-91bc-5d55-980a-141cdfb15477",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T01:37:04.218087+00:00",
+      "updated_at": "2026-10-06T01:37:12.821163+00:00",
+      "request_id": "e04e64d7-9369-5a3c-9a49-1b704cd06345",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "prompt_characters": 84155,
+      "runtime_receipt_present": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791250626.0782897,
+        "completed_at": 1791250632.7212298,
+        "cli_version": "0.154.0",
+        "requested_execution": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high"
+        },
+        "fault_code": null,
+        "parse_phase": []
+      }
+    },
+    {
+      "id": "a3be0e29-089b-50cd-910a-9be0c5d52445",
+      "task_id": "a6c52e6a-91bc-5d55-980a-141cdfb15477",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T01:36:59.878521+00:00",
+      "updated_at": "2026-10-06T01:37:04.218087+00:00",
+      "request_id": "a3be0e29-089b-50cd-910a-9be0c5d52445",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "prompt_characters": 84086,
+      "runtime_receipt_present": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791250620.807608,
+        "completed_at": 1791250624.1244912,
+        "cli_version": "0.154.0",
+        "requested_execution": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high"
+        },
+        "fault_code": null,
+        "parse_phase": []
+      }
+    }
+  ],
+  "stage_progress": {
+    "stage": {
+      "id": "ce867fc3-a194-5327-b312-864b93538d34",
+      "state": "completed",
+      "attempt": 6,
+      "error": null,
+      "retry_at": null,
+      "task_id": "a6c52e6a-91bc-5d55-980a-141cdfb15477",
+      "required_data_reads": [
+        "data/etf_strategy/identity.json",
+        "data/etf_strategy/engine",
+        "data/etf_strategy/reports/availability-survey-a10ed59d63a9.json",
+        "data/etf_strategy/reports/data-policy-draft-66a888ac98ba.json",
+        "data/etf_strategy/reports/official-source-review-c14d6e0eb60a.json",
+        "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json",
+        "data/etf_strategy/reports/raw-lineage-receipt-f8a0595989be.json",
+        "data/etf_strategy/reports/receipt-99404f6ce4f7.json",
+        "scientific-lineages/b6a31ea2-8da9-5f67-97dd-2e304cde30c3.json"
+      ]
+    },
+    "recent_reads": [
+      {
+        "path": "sources/a92aa4eac500d55b1e4b8879d57d7bd33fb476b0488b493e8de52ffd6c8c0b89.json",
+        "character_offset": 0,
+        "next_offset": null,
+        "created_at": "2026-10-06T01:37:36.555635+00:00"
+      },
+      {
+        "path": "scientific-lineages/b6a31ea2-8da9-5f67-97dd-2e304cde30c3.json",
+        "character_offset": 120000,
+        "next_offset": null,
+        "created_at": "2026-10-06T01:37:22.765436+00:00"
+      },
+      {
+        "path": "scientific-lineages/b6a31ea2-8da9-5f67-97dd-2e304cde30c3.json",
+        "character_offset": 108000,
+        "next_offset": 120000,
+        "created_at": "2026-10-06T01:37:12.821163+00:00"
+      },
+      {
+        "path": "scientific-lineages/b6a31ea2-8da9-5f67-97dd-2e304cde30c3.json",
+        "character_offset": 96000,
+        "next_offset": 108000,
+        "created_at": "2026-10-06T01:37:04.218087+00:00"
+      },
+      {
+        "path": "scientific-lineages/b6a31ea2-8da9-5f67-97dd-2e304cde30c3.json",
+        "character_offset": 84000,
+        "next_offset": 96000,
+        "created_at": "2026-10-06T01:36:59.878521+00:00"
+      },
+      {
+        "path": "scientific-lineages/b6a31ea2-8da9-5f67-97dd-2e304cde30c3.json",
+        "character_offset": 72000,
+        "next_offset": 84000,
+        "created_at": "2026-10-06T01:36:52.392597+00:00"
+      },
+      {
+        "path": "scientific-lineages/b6a31ea2-8da9-5f67-97dd-2e304cde30c3.json",
+        "character_offset": 60000,
+        "next_offset": 72000,
+        "created_at": "2026-10-06T01:36:44.559987+00:00"
+      },
+      {
+        "path": "scientific-lineages/b6a31ea2-8da9-5f67-97dd-2e304cde30c3.json",
+        "character_offset": 48000,
+        "next_offset": 60000,
+        "created_at": "2026-10-06T01:36:33.6468+00:00"
+      }
+    ],
+    "progress": [
+      {
+        "path": "data/etf_strategy/engine",
+        "next_offset": null
+      },
+      {
+        "path": "data/etf_strategy/identity.json",
+        "next_offset": null
+      },
+      {
+        "path": "data/etf_strategy/reports/availability-survey-a10ed59d63a9.json",
+        "next_offset": null
+      },
+      {
+        "path": "data/etf_strategy/reports/data-policy-draft-66a888ac98ba.json",
+        "next_offset": null
+      },
+      {
+        "path": "data/etf_strategy/reports/official-source-review-c14d6e0eb60a.json",
+        "next_offset": null
+      },
+      {
+        "path": "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json",
+        "next_offset": null
+      },
+      {
+        "path": "data/etf_strategy/reports/raw-lineage-receipt-f8a0595989be.json",
+        "next_offset": null
+      },
+      {
+        "path": "data/etf_strategy/reports/receipt-99404f6ce4f7.json",
+        "next_offset": null
+      },
+      {
+        "path": "scientific-lineages/b6a31ea2-8da9-5f67-97dd-2e304cde30c3.json",
+        "next_offset": null
+      },
+      {
+        "path": "sources/a92aa4eac500d55b1e4b8879d57d7bd33fb476b0488b493e8de52ffd6c8c0b89.json",
+        "next_offset": null
+      }
+    ]
+  }
+}

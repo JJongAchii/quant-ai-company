@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v11.json",
-  "state": "data_response_contract_qualification",
-  "previousIntent": "INTENT-v10.json",
+  "currentIntent": "INTENT-v14.json",
+  "state": "restored_research_revising_evidence_pr_preparation",
+  "previousIntent": "INTENT-v13.json",
   "deliverables": {
     "POLICY": {
       "status": "completed",
@@ -20,10 +20,10 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Qualified source231 restored and canonical c3ba5268 approval remains valid. Repeated data response format failures are held through the existing program hold mechanism. A narrow research_data_v1 response contract is implemented for new data-stage turns, preserving frozen legacy requests. Targeted real PostgreSQL/subprocess checks passed95, additional lane/tool scope checks passed3 and lint passed; full regression and real subscription qualification are in progress. No scientific execution has started.",
-  "evidence": "../../project/evidence/etf-exploration-20260930/validation.json",
+  "operationalStatus": "Canonical source5c44ad0 is active on six server services and the3070 config/unit; old releases and detached executor receipts are retained. The actual signed c3ba5268 programme remains active. Data attempt5 mixed scoped and legacy fields and was rejected; attempt6 completed actual required reads and recorded employee conditional_ready. Director selection completed with revise for predecessor distinction and frozen engine alignment; a fresh researcher program_proposal is running. Scientific reservations, missions, trials and compute are zero at2026-10-06T01:49:22Z. Follow-up schema repair86aea8c is integrated atc2a5fe1; production code matches that upstream exactly. Final full regression passed1775/14skip with real PostgreSQL, Temporal and pinned qlab; lint passed. Actual data/director Slack status notifications were read back in the configured thread. Root did not deploy prototype5f/bb or claim source86 is active.",
+  "evidence": "../../project/evidence/etf-exploration-20260930/restoration-final-validation-20261006.json",
   "nextStage": {
-    "stage": "data_response_repair_review_preparation",
+    "stage": "program_proposal_after_revision",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false
@@ -85,10 +85,14 @@
     "signedScientificApproval": true,
     "scientificTrialsAdded": 0,
     "ownerReview": "actual_signed_canonical_program_approved",
-    "sourceCommit": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+    "sourceCommit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
     "resumeReceipt": "../../project/evidence/etf-exploration-20260930/resume-reconciled-20261006.json",
     "signedProgramReceipt": "../../project/evidence/etf-exploration-20260930/approved-canonical-program-20261006.json",
     "duplicateNoticeCorrection": "../../project/evidence/etf-exploration-20260930/owner-review-correction-readback-20261006.json",
-    "requiredRepair": "Reconcile repeated data-role decision_contract invalid_shape faults without changing the approved research scope"
+    "requiredRepair": "Actual data review completed; finish evidence/regression PR without repeating scientific approval",
+    "canonicalCutoverReceipt": "../../project/evidence/etf-exploration-20260930/canonical-cutover-public-receipt-20261006.json",
+    "workerAlignmentReceipt": "../../project/evidence/etf-exploration-20260930/canonical-worker-aligned-20261006.json",
+    "dataReviewReceipt": "../../project/evidence/etf-exploration-20260930/canonical-data-completed-attempt6-20261006.json",
+    "currentProgrammeReceipt": "../../project/evidence/etf-exploration-20260930/canonical-program-revision-requested-20261006.json"
   }
 }

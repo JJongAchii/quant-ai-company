@@ -32,7 +32,7 @@
 ## 독립 데이터 검토의 형식 오류
 
 연구자는 원문과 입력 증거를 읽고 **‘분산예측 수준 보정이 ETF의 스트레스 비용 후 절대수익을 개선하는가’**를
-제안했다. 독립 데이터 검토에서 `gpt-5.6-terra /high`의 `AgentDecision` 응답 검증 오류가 세 차례 발생했다.
+제안했다. 초기 독립 데이터 검토에서 `gpt-5.6-terra /high`의 `AgentDecision` 응답 검증 오류가 네 차례 발생했다.
 정상 파일 읽기도 확인됐으나 각 새 시도의 읽기는 해당 시도의 증거로만 인정된다.
 이는 과학 결과나 데이터 적합성 판정이 아니다. 연구 예약·과학 시행·실제 계산시간은 이 관측에서 0이다.
 
@@ -47,7 +47,8 @@
 일부 실패에는 서비스 `start`도 실패한 기록이 있다. 현재 root filesystem은 약 82GB,
 가용 공간은 약 35GB이며 inode 사용은 9%다.
 [실제 공간·오류 단계 기록](evidence/etf-exploration-20260930/backup-failure-details-20261006.json)을 보존했다.
-이 복구에서 백업 정책을 변경하거나 파일·이미지를 삭제하지 않았고, 새 백업 성공을 주장하지 않는다.
+이 복구에서 백업 정책을 변경하거나 파일·이미지를 삭제하지 않았다. 이후 다른 운영 작업에서 만든
+성공 백업의 실제 영수증은 아래 후속 운영 확인에 별도로 기록했다.
 
 ## 역사적 배포의 구분
 
@@ -58,3 +59,78 @@ PR99의 `3c848af9…` 탐색 정책 적용과 PR101의 `79586479…` Socket 취�
 
 이번 운영 관측은 실제 PostgreSQL·Slack·현재 컨테이너와 3070의 읽기 확인이다.
 이전 signed simulated Slack·toy worker 검증과 실제 운영 관측을 구분한다. 새 성과 수치는 없다.
+
+## 후속 운영 확인 — 2026-10-06 10:44 KST
+
+다른 운영 작업이 회사 소스 `5c44ad07273adc780a56a47d7d35114fd0dc32c8`을 서버의 여섯 서비스에
+적용했다. 실제 import 경로와 소스 파일 205개의 바이트 대조를 보존한
+[운영 배포 영수증](evidence/etf-exploration-20260930/canonical-cutover-public-receipt-20261006.json)의
+상태는 `active_data_review_resumed`이다. 이 root는 중복 후보 `5f84e57` 또는 `bb1e42e`을 서버에 배포하지 않았다.
+현재 API·모델 gateway·Codex runtime은 healthy이며 활성 서비스 15개와 직원 7명의 Socket TLS 연결을 확인했다.
+권한·역할·모델·계정·공개 연구 프로필과 입력은 승인된 설정을 유지한다.
+
+3070의 설정과 실행 unit은 당시 이전 소스 231을 사용했다. 새 소스5c에 이미 등록된 release가 있어
+root가 준비한 별도 경로를 최초로 선택하려는 작업은 `ReleaseError`로 거절됐다.
+[최초 실패](evidence/etf-exploration-20260930/canonical-worker-alignment-first-failure-20261006.json)를 보존하고
+이전 poller를 정상 재개했다. 등록된 release의 코드 파일과 qualification 영수증을 대조한 뒤,
+이동된 입력 경로의 두 파일이 승인된 SHA-256과 동일함을 검증하여 그 release를 선택했다.
+[완료 영수증](evidence/etf-exploration-20260930/canonical-worker-aligned-20261006.json)의 상태는
+`active_worker_aligned`이다. 실제 unit의 `WorkingDirectory`·`PYTHONPATH`도 소스5c 경로이고 poller는 active다.
+`KillMode=process`와 이전 registry 항목을 유지했으며 분리된 실행 프로세스를 종료하지 않았다.
+
+실제 독립 data 직원은 새 native `research_stage_v1` 응답으로 필수 파일을 읽었다.
+시도5의 최종 응답은 version2에 이전 버전의 최상위 `data_policy_digest`·`evaluation_prices`를 섞어
+기존 검증기가 거절했다. [그 관측](evidence/etf-exploration-20260930/canonical-data-mixed-version-rejected-20261006.json)을
+보존했으며 응답을 수정하거나 readiness를 대신 결정하지 않았다. 시도6에서는 필수 원문·패킷·계보 읽기를
+완료하고 직원이 만든 올바른 version2 판정이 적용됐다.
+
+[현재 프로그램 관측](evidence/etf-exploration-20260930/canonical-program-selection-20261006.json)은
+데이터 판정 `conditional_ready`, 과제 상태 `assessed`, 총괄의 `program_selection` 실행을 확인한다.
+이 판정은 당시 공개·수정 이력과 실제 체결을 입증하지 않는 승인된 조건부 개발 범위다.
+과제 선정 결정·mission·예약·과학 시행·계산시간은 이 관측에서 아직 없다. 추가 과학 승인은 필요하지 않다.
+
+10:49 KST [후속 관측](evidence/etf-exploration-20260930/canonical-program-revision-requested-20261006.json)에서는
+총괄의 선정 단계가 정상 완료되고 `revise` 결정이 기록됐다. 기존 같은 문헌·종목·개발기간·월별 수준 보정
+제안과의 차이 및 현재 평가 엔진의 정보 경계·보유수익·비용 처리 연결을 명시하라는 요구다.
+원래 과제는 `rejected`로 이력을 유지하고 새 `program_proposal`이 실행 중이다.
+이는 연구 내용의 수정 결정이며 `stage_response_rejected` 같은 수신 오류가 아니다.
+이후 시행을 임의로 시작하거나 제안·검토 판단을 operator가 바꾸지 않았다. 예약·시행·계산시간은 여전히 0이다.
+10:51 KST 실제 Slack 읽기에서는 data의 검토 알림과 director의 선정 알림 모두 동일 스레드·해당 bot 작성자로
+수신됐고 outbox는 각각 첫 시도에 delivered다. 전송부가 붙이는 `[지시 v5]` 접두사는 raw outbox 본문과
+구별한다. [최초 raw 본문 관측](evidence/etf-exploration-20260930/canonical-progress-slack-readback-20261006.json)과
+[실제 전송 형식 대조](evidence/etf-exploration-20260930/canonical-progress-slack-rendered-readback-20261006.json)를
+구분해 보존했다.
+
+정기 백업 정책 수리는 이 root의 범위에 포함하지 않았다. 다른 운영 작업의 성공 영수증에는
+`company-20261006T005804Z-16dc9f8d.tar.gz`, SHA-256
+`8331d198bba7996201ce79614138eea862bb86e167d9454ec4994d6dd4c12212`, 동일한 S3 대상과
+`secrets_included=false`가 기록됐다. 기존 ENOSPC 관측은 그대로 남긴다.
+
+## 형식 재발 방지와 검사 구분
+
+저장소의 후속 소스 `86aea8cdf03b5543666813c97689acb1e8158a6d`은 새 data 요청에 해당 과제가 허용한
+DataAssessment 버전만 노출한다. version2의 최상위 legacy 필드는 제외되며 기존 business validator와
+독립 증거·과제 선정 gate는 유지된다. root는 동일 문제의 별도 수정 대신 이 변경을 통합했다.
+이 문서는 후속 소스86의 신규 운영 적용을 주장하지 않는다. 현재 데이터 검토 완료는 운영 소스5c에서 일어났다.
+
+- 통합 소스 `bb1e42e`의 회사 소스는 운영5c와 동일하다. 전체 실제 임시 PostgreSQL 및 고정 qlab 검사:
+  **1,769 passed /14 skipped**. [JUnit](evidence/etf-exploration-20260930/data-response-integrated-full-tests-20261006.xml).
+- 실제 3070의 소스5c 합성 ETF producer→consumer와 Linux sandbox qualification은 통과했다.
+  [영수증](evidence/etf-exploration-20260930/canonical-worker-qualified-20261006.json)의 과학 시행·실제 시장 입력 읽기는 0이다.
+- 별도 실제 ChatGPT subscription 진단 두 건은 첫 호출 `events:invalid_shape` 실패, 긴 입력 호출은 정상 읽기
+  제안이었다. [두 영수증](evidence/etf-exploration-20260930/canonical-native-qualification-20261006.json)을 함께 보존했다.
+  이 진단 제안은 적용하지 않았으며 성공 1건을 반복 실패 해결이나 연구 완료로 표시하지 않는다.
+- 실제 운영의 시도6 완료와 `conditional_ready`는 위 진단·모의 CLI 검사와 별개의 PostgreSQL 관측이다.
+  새 성과 수치는 없다.
+- 소스86과 회사 코드가 동일한 통합 `c2a5fe1385d634db95207e230d2f0090f4386d74`에서,
+  추가 회귀 검사를 포함한 **1,775 passed /14 skipped**, Ruff 통과를 확인했다.
+  실제 임시 PostgreSQL·Temporal 및 고정 qlab을 사용했다. 모의 provider/Slack과 실제 subscription·Slack 관측을
+  구별한다. 전체 검사에서 opt-in 실제 모델 호출과 Linux 워커 검사는 제외됐다.
+  [최종 JUnit](evidence/etf-exploration-20260930/data-response-scoped-integrated-full-tests-20261006.xml).
+  신규 scoped 판정에 legacy 필드가 섞이면 계속 거절되며, 올바른 blocked 판정은 기록되고 mission·job은 생성되지
+  않는 사례 및 이전 요청이 그대로 동결되는 사례를 검증했다.
+
+[최종 검사 영수증](evidence/etf-exploration-20260930/restoration-final-validation-20261006.json)과
+[현재 운영·후속 검토 명세](evidence/etf-exploration-20260930/restoration-and-followup-manifest-20261006.json)에
+현재 소스5c, 후속 소스86, 승인된 입력·예산 및 적용한 운영 효과를 구별해 고정했다.
+이 root의 PR은 후속 소스86과 비교해 추가 테스트·문서·증거만 포함하며 새로운 서버 cutover를 요구하지 않는다.
