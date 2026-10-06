@@ -28,6 +28,7 @@ from .adaptive_contracts import (
     AdaptiveResult,
     digest_model,
 )
+from .policy_contracts import require_profile_policy, require_scope
 from .report import (
     MAX_ARCHIVE_BYTES,
     MAX_MEMBER_BYTES,
@@ -85,9 +86,11 @@ class ReportHistory:
     trial_cycles: Mapping[str, int]
     best_trial_id: UUID | None
     last_trial_id: UUID
+    scientific_lineage: Mapping[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            **({"scientific_lineage": dict(self.scientific_lineage)} if self.scientific_lineage is not None else {}),
             "current_cycle": self.current_cycle,
             "cumulative_scientific_trials": self.cumulative_scientific_trials,
             "cumulative_technical_attempts": self.cumulative_technical_attempts,
@@ -208,6 +211,8 @@ def validate_adaptive_bundle(
     names = STATIC_MEMBERS | {f"code/{name}" for name in manifest.code_files} | {
         f"outputs/{name}" for name in result_preview.output_files
     }
+    if manifest.spec.research_scope is not None:
+        names |= {"producer-qualification.json", "producer-result.json"}
     contents, archive_sha = _archive(path, names, assignment.lease_token)
     _require(archive_sha == _sha256(raw), "archive_changed_during_validation")
     receipt = _model(AdaptiveExecutionReceipt, contents["receipt.json"], assignment.lease_token)
@@ -220,6 +225,21 @@ def validate_adaptive_bundle(
     qualification = _model(AdaptiveQualification, contents["qualification.json"], assignment.lease_token)
     result = _model(AdaptiveResult, contents["result.json"], assignment.lease_token)
     _require(actual_manifest == manifest and profile == execution_profile, "manifest_or_profile_mismatch")
+    try:
+        require_profile_policy(manifest.spec, profile)
+        for value in (receipt, qualification, result):
+            require_scope(manifest.spec, value)
+    except ValueError:
+        raise ValidationError("research_scope_or_profile_mismatch") from None
+    if manifest.spec.research_scope is not None:
+        for value, cls, name in ((qualification, AdaptiveQualification, "producer-qualification.json"),
+                                 (result, AdaptiveResult, "producer-result.json")):
+            original = _model(cls, contents[name], assignment.lease_token)
+            payload = value.model_dump(mode="json", exclude={"research_scope", "producer_sha256"})
+            payload["schema_version"] = 1
+            _require(original.schema_version == 1 and original.research_scope is None
+                     and value.producer_sha256 == _sha256(contents[name])
+                     and payload == original.model_dump(mode="json"), "producer_scope_binding_mismatch")
     for field in ("job_id", "project_id", "revision", "recipe_id", "manifest_digest", "approval_event_id"):
         _require(getattr(receipt, field) == getattr(assignment, field), "assignment_identity_mismatch")
     for field in ("mission_id", "mission_digest", "trial_id", "plan_digest", "company_commit"):
@@ -242,6 +262,14 @@ def validate_adaptive_bundle(
     _require(all(type(qualification_raw[key]) is bool for key in (
         "empty_sample_rejected", "non_finite_rejected", "json_roundtrip_passed", "performance_read", "sealed_read",
     )), "qualification_boolean_contract_mismatch")
+    _require(len(qualification.json_dates) == qualification.sample_count
+             and len(qualification.json_datetimes) == qualification.sample_count
+             and {"date", "datetime"} <= set(qualification.typed_schema.values()),
+             "qualification_sample_or_schema_mismatch")
+    qualification_dates = [*qualification.json_dates, *(value.date() for value in qualification.json_datetimes)]
+    _require(not any(day >= manifest.spec.development.start
+        or any(window.start <= day <= window.end for window in manifest.spec.sealed)
+        for day in qualification_dates), "qualification_outside_warmup")
     _require(qualification.input_files == {
         key: manifest.plan.input_files[key] for key in profile.qualification_input_names
         if key in manifest.plan.input_files
@@ -256,6 +284,8 @@ def validate_adaptive_bundle(
             _json(content, assignment.lease_token)
     runtime = _json(contents["runtime.json"], assignment.lease_token)
     _require(runtime == {
+        **({"research_scope": manifest.spec.research_scope.model_dump(mode="json")}
+           if manifest.spec.research_scope is not None else {}),
         "schema_version": 1, "execution_profile_digest": digest_model(profile),
         "worker_id": receipt.worker_id, "hostname": receipt.hostname, "gpu": receipt.gpu,
         "code_commit": receipt.code_commit, "company_commit": receipt.company_commit,
@@ -270,6 +300,8 @@ def validate_adaptive_bundle(
                  "sandbox_execution_failed")
         expected_names = profile.qualification_input_names if action == "qualify" else profile.evaluation_input_names
         expected_fields = {
+            **({"research_scope": manifest.spec.research_scope.model_dump(mode="json")}
+               if manifest.spec.research_scope is not None else {}),
             "schema_version": 1, "code_commit": manifest.plan.code_commit, "profile_id": profile.id,
             "action": action, "execution_profile_digest": digest_model(profile),
             "manifest_digest": digest_model(manifest),
@@ -362,7 +394,18 @@ def build_adaptive_report(
 
     _require(bool(trials) and all(isinstance(trial, ValidatedAdaptiveTrial) for trial in trials),
              "validated_trials_required")
+    scope = trials[0].manifest.spec.research_scope
+    _require(all(trial.manifest.spec.research_scope == scope and trial.receipt.research_scope == scope
+                 and trial.result.research_scope == scope for trial in trials), "mixed_research_scopes")
+    if scope is not None:
+        _require(history.scientific_lineage is not None
+                 and history.scientific_lineage.get("scientific_lineage_id") == str(scope.scientific_lineage_id),
+                 "scientific_lineage_history_required")
+    else:
+        _require(history.scientific_lineage is None, "legacy_report_cannot_carry_scoped_lineage")
     ids = {str(trial.manifest.trial_id) for trial in trials}
+    policy = trials[0].manifest.spec.data.policy
+    _require(all(trial.manifest.spec.data.policy == policy for trial in trials), "report_data_policy_mismatch")
     _require(len(ids) == len(trials) and set(history.trial_cycles) == ids
              and history.current_cycle >= 1
              and history.cumulative_scientific_trials >= sum(trial.receipt.scientific_trials_added for trial in trials)
@@ -372,6 +415,13 @@ def build_adaptive_report(
              and str(history.last_trial_id) in ids
              and (history.best_trial_id is None or str(history.best_trial_id) in ids), "report_history_mismatch")
     summary = {
+        **({"research_scope": scope.model_dump(mode="json"), "point_in_time": False,
+            "original_conditions": False, "executable_prices": False, "deployment_ready": False,
+            "scientific_lineage": {key: history.scientific_lineage[key] for key in (
+                "scientific_lineage_id", "trial_limit", "charged_trials", "completed_trials", "technical_failures")},
+            "prior_publication_refs": history.scientific_lineage["publications"]}
+           if scope is not None and scope.data_mode == "frozen_vintage_retrospective"
+           else ({"research_scope": scope.model_dump(mode="json")} if scope is not None else {})),
         "kind": "adaptive_discovery", "development_only": True, "performance_visible": audit is not None,
         "synthetic": all(trial.receipt.fixture_only for trial in trials),
         "baseline_measured": False, "excess_return": None, "confirmation_claim": False, "live_claim": False,
@@ -379,6 +429,27 @@ def build_adaptive_report(
         "cumulative_technical_attempts": history.cumulative_technical_attempts, "trials": [],
     }
     sections = []
+    if scope is not None and scope.data_mode == "frozen_vintage_retrospective":
+        sections.append('<section><h2>조건부 사후 연구</h2><p>고정된 수정본과 가정된 자료 가용 시각에 대한 '
+            '개발구간 평가입니다. 당시 공개 시각과 수정 이력은 미검증입니다. 과거 실제 알파·정확 재현·'
+            '현금 분배금 재투자 총수익·실제 체결·배치 준비·2026 미노출 확인을 입증하지 않습니다.</p>'
+            '<p>원래 자료의 결과와 합치지 않습니다. 이전 시행과 부정 결과는 별도 누적 계보에 보존됩니다.</p>'
+            f'<p>누적 계보 완료 {history.scientific_lineage["completed_trials"]}회 · '
+            f'미확인 예약 포함 {history.scientific_lineage["charged_trials"]}회 · '
+            f'서명된 상한 {history.scientific_lineage["trial_limit"]}회.</p></section>')
+    if policy is not None:
+        summary.update(exploratory_only=True, historical_point_in_time_verified=False,
+                       confirmation_eligible=False, deployment_eligible=False,
+                       data_policy=policy.model_dump(mode="json"))
+        sections.append('<section><h2>한계를 명시한 탐색 연구 · 가정하 결과</h2>'
+                        '<p>가설 생성에만 사용합니다. 확증이나 운영 승격의 근거로 인정하지 않습니다.</p>'
+                        '<p>available_at은 거래일 23:59 KST라는 가정입니다. 당시 실제 공개 시각·수정 이력과 '
+                        '준비 당시 원천 파일 바이트는 미확인입니다. 고정 입력의 가격 곡선 재현은 그 한계를 해소하지 않습니다.</p>'
+                        '<p>KRX 기준가격 등락률로 조정한 시가→다음 시가의 이론적 평가입니다. '
+                        '현금 분배금 재투자 총수익이나 실제 체결 성과를 입증하지 않습니다.</p>'
+                        '<p>독립 감사 통과도 이 가정하의 코드·산출물 인과성에 한정됩니다.</p>'
+                        '<pre>' + html.escape(json.dumps(policy.model_dump(mode="json"), ensure_ascii=False, indent=2))
+                        + '</pre></section>')
     if audit is None:
         sections.append('<section><h2>성과 비공개</h2><p>현재 산출물에 연결된 독립 감사가 검증되지 않았습니다. '
                         '수익률·낙폭·연구 해석은 공개하지 않습니다.</p></section>')

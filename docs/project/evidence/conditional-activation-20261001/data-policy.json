@@ -1,0 +1,42 @@
+{
+  "acknowledged_gap_codes": [
+    "historical_publication_unverified",
+    "historical_revision_vintage_unverified",
+    "original_preparation_bytes_unavailable"
+  ],
+  "assumed_available_at_rule": "trade_day_T23:59:00+09:00",
+  "availability_status": "unverified_historical",
+  "evidence_refs": [
+    {
+      "name": "receipt-99404f6ce4f7.json",
+      "sha256": "99404f6ce4f715308cb88317eac5aed38e89d0ddf623dc1606c0d6b922f8e808"
+    },
+    {
+      "name": "data-policy-draft-66a888ac98ba.json",
+      "sha256": "66a888ac98ba420685b41b7bc45d011b59eef857c1f057e2239d34cef86c463f"
+    },
+    {
+      "name": "raw-lineage-receipt-f8a0595989be.json",
+      "sha256": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a"
+    },
+    {
+      "name": "raw-body-manifest-d1d0b0f87230.json",
+      "sha256": "d1d0b0f87230f075582324ac3882fe5ee041bb3d0d978fda4707f58aa634ff31"
+    },
+    {
+      "name": "availability-survey-a10ed59d63a9.json",
+      "sha256": "a10ed59d63a934ef1bec39dc17042a891936b3ca9c6eab72230af42c3adbc924"
+    },
+    {
+      "name": "official-source-review-c14d6e0eb60a.json",
+      "sha256": "c14d6e0eb60aa39de78ac7921c172e6a5809abc1e6c780afb10ada3fe33cab36"
+    }
+  ],
+  "input_files": {
+    "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+    "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+  },
+  "mode": "frozen_vintage_retrospective",
+  "result_scope": "conditional_retrospective_development",
+  "schema_version": 1
+}

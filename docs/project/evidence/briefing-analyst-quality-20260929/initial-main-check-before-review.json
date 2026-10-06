@@ -1,0 +1,19 @@
+{
+  "recorded_before_reviewer_response": "2026-09-29T04:47:09.618127+00:00",
+  "assessment_sha256": "a0b4cd239543e2f887e604ed7d9d6286807b197289f022526dfa51a08d1f8122",
+  "scope": "Independent source-to-visible-main spot check of actual first draft after exact numeric repair; reviewer may add or disagree.",
+  "observed_improvements": [
+    "LNG price rise is current; future winter bill cost remains a concern rather than a realized bill.",
+    "AMD World Labs all-stock agreement is visible; after-close disclosure is not attributed to regular-session AMD stock decline.",
+    "S&P 500, Nasdaq Composite and Dow closes cite two separately published originals; previous dated Korean close returns after signed-percent validator repair.",
+    "PCE 30 September and forecast headline/core values are visible in the main, not hidden by calendar limit."
+  ],
+  "remaining_concerns": [
+    "Oil paragraph still reports an October WTI futures settlement on 28 September. The cited original does not independently resolve whether that contract is valid then; precise value should not be treated as qualified.",
+    "The trade original has separate financial-services review and pre-November AI dialogue facts that remain outside the main. Their materiality must be judged, not inferred from a citation.",
+    "The selected Treasury article gives a 2-year yield; the main contrasts 10-year observations only.",
+    "AMD target purpose is called virtual-world modeling in main; explicit robotics/physical-AI application appears only in the detail thread, potentially weakening standalone understanding.",
+    "Selected AI bill is a proposal unlikely to vote before the election; assess whether it deserves a full major-issue slot relative to omitted consequential industry originals."
+  ],
+  "quality_claim": "none before independent reviewer"
+}

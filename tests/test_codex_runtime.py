@@ -6,6 +6,7 @@ import os
 import sys
 import time
 from pathlib import Path
+from uuid import uuid4
 
 import httpx
 import pytest
@@ -76,7 +77,8 @@ decision = control.get('decision', {'say': '검토 결과를 저장했습니다.
 if mode == 'tool':
     event({'type': 'item.started', 'item': {'type': 'command_execution', 'command': 'unsafe'}})
 if control.get('tool_type'):
-    event({'type': 'item.completed', 'item': {'id': 'tool-1', 'type': control['tool_type']}})
+    event({'type': 'item.completed', 'item': {'id': 'tool-1', 'type': control['tool_type'],
+        **({'action': control['tool_action']} if 'tool_action' in control else {})}})
 if mode == 'nonfinite':
     decision = {'say': '', 'status': 'continue', 'tools': [{'name': 'calculate', 'arguments': {'x': float('nan')}}]}
 event({'type': 'item.completed', 'item': {'id': 'i1', 'type': 'agent_message',
@@ -139,6 +141,65 @@ def test_search_disabled_keeps_legacy_request_identity(request_model):
     assert request_digest(request_model.model_copy(update={"reasoning_effort": "max"})) != legacy
 
 
+@pytest.mark.parametrize('payload', [
+    {'action': 'read', 'read_path': 'data/etf/engine', 'read_offset': 12000, 'artifact_json': None},
+    {'action': 'complete', 'read_path': None, 'read_offset': None,
+     'artifact_json': '{"decision":"blocked","rationale":"Synthetic fixture only"}'},
+])
+async def test_private_research_output_constructs_only_read_or_artifact_and_caches(fake_codex, payload):
+    config, configure, calls = fake_codex
+    configure(direct=payload)
+    request = ProviderRequest(request_id=str(uuid4()), model='gpt-5.6-terra',
+                              prompt='Synthetic research contract fixture', output_contract='research_stage_v1')
+    result = await runner_for(config).run(request)
+    decision = result.decision
+    assert decision.say == '' and not decision.messages and not decision.delegations and not decision.memories
+    if payload['action'] == 'read':
+        assert decision.status == 'continue' and not decision.artifacts
+        assert decision.tools[0].name == 'research_control'
+        assert decision.tools[0].arguments == {'action': 'read_stage_file', 'path': payload['read_path'],
+                                              'offset': payload['read_offset']}
+    else:
+        assert decision.status == 'complete' and not decision.tools
+        assert decision.artifacts[0].content == payload['artifact_json']
+    assert await runner_for(config).run(request) == result and len(calls()) == 1
+    schema = calls()[0]['schema']
+    assert set(schema['required']) == {'action', 'read_path', 'read_offset', 'artifact_json'}
+    assert schema['additionalProperties'] is False and 'decision_json' not in schema['properties']
+    assert 'features.shell_tool=false' in calls()[0]['args']
+
+
+@pytest.mark.parametrize('payload', [
+    {'action': 'read', 'read_path': 'SECRET-PATH', 'read_offset': True, 'artifact_json': None},
+    {'action': 'read', 'read_path': 'SECRET-PATH', 'read_offset': 0, 'artifact_json': 'SECRET-RAW'},
+    {'action': 'complete', 'read_path': None, 'read_offset': None, 'artifact_json': {'SECRET': 'RAW'}},
+    {'action': 'complete', 'read_path': None, 'read_offset': None, 'artifact_json': 'SECRET-RAW'},
+    {'action': 'complete', 'read_path': None, 'read_offset': None, 'artifact_json': '["SECRET-RAW"]'},
+    {'action': 'complete', 'read_path': None, 'read_offset': None, 'artifact_json': 'SECRET-RAW',
+     'say': 'SECRET-FIELD'},
+])
+async def test_private_research_format_failure_is_terminal_and_keeps_no_raw_output(fake_codex, payload):
+    config, configure, calls = fake_codex
+    configure(direct=payload)
+    request = ProviderRequest(request_id=str(uuid4()), model='gpt-5.6-terra',
+                              prompt='Synthetic research contract fixture', output_contract='research_stage_v1')
+    for _ in range(2):
+        with pytest.raises(ProviderFault, match='research_stage_contract:invalid_shape'):
+            await runner_for(config).run(request)
+    receipt = (config.jobs_dir / f'{request.request_id}.json').read_text()
+    assert 'SECRET' not in receipt and json.loads(receipt)['state'] == 'failed'
+    assert len(calls()) == 1
+
+
+@pytest.mark.parametrize('changes', [
+    {'request_id': 'quant-feed-test'}, {'web_search': True}, {'session': {'id': 'test-session'}},
+])
+def test_private_research_output_cannot_enable_search_or_provider_sessions(changes):
+    with pytest.raises(ValueError):
+        ProviderRequest(**({'request_id': str(uuid4()), 'model': 'gpt-5.6-terra', 'prompt': 'Fixture',
+                            'output_contract': 'research_stage_v1'} | changes))
+
+
 @pytest.mark.parametrize("contract", ["quant_brief_v1", "quant_brief_v2", "quant_brief_v3", "quant_brief_v4",
                                       "quant_critique_v1", "quant_critique_v2"])
 async def test_quant_direct_schema_is_tool_free_and_durable(fake_codex, contract):
@@ -197,6 +258,47 @@ def test_quant_output_contract_cannot_expand_to_tools(identity, search):
     with pytest.raises(ValueError, match="tool-free Quant"):
         ProviderRequest(request_id=identity, model="model", prompt="test", web_search=search,
                         output_contract="quant_brief_v1")
+
+
+@pytest.mark.parametrize("identity,search", [("company-turn", True), ("quant-feed-test", False)])
+def test_direct_discovery_contract_is_scoped_to_quant_native_search(identity, search):
+    with pytest.raises(ValueError, match="native-search Quant"):
+        ProviderRequest(request_id=identity, model="model", prompt="search", web_search=search,
+                        output_contract="quant_search_v1")
+
+
+async def test_direct_quant_discovery_preserves_native_trace_and_immutable_receipt(fake_codex):
+    from quant_company.web_tools import search_result
+
+    config, configure, calls = fake_codex
+    value = {"results": [{"url": "https://arxiv.org/abs/2609.12345", "title": "Research", "snippet": "Candidate"}]}
+    configure(direct=value, tool_type="web_search", tool_action={"type": "search", "queries": ["quant research"]})
+    request = ProviderRequest(request_id="quant-feed-search", model="model", prompt="Find papers", web_search=True,
+                              output_contract="quant_search_v1")
+    result = await runner_for(config).run(request)
+    assert json.loads(result.decision.artifacts[0].content) == value
+    assert result.decision.artifacts[0].source_ids == []
+    assert not result.decision.tools and not result.decision.delegations and not result.decision.messages
+    candidates = search_result(result, {"query": "quant research", "limit": 8})
+    assert candidates["ok"] and candidates["verified"] is False
+    assert candidates["results"][0]["verified"] is False
+    assert await runner_for(config).run(request) == result
+    assert len(calls()) == 1
+    assert calls()[0]["schema"]["properties"]["results"]["maxItems"] == 8
+    assert 'web_search="live"' in calls()[0]["args"]
+    assert b"Your only native execution tool is live web search" in cli_prompt(request)
+    with pytest.raises(ProviderFault, match="different input"):
+        await runner_for(config).run(request.model_copy(update={"output_contract": "agent_decision"}))
+
+
+@pytest.mark.parametrize("direct", [{"results": [], "tools": []}, {"results": [{
+    "url": "https://127.0.0.1/private", "title": "Invalid", "snippet": "Not public"}]}])
+async def test_quant_discovery_rejects_actions_and_private_urls(fake_codex, direct):
+    config, configure, _ = fake_codex
+    configure(direct=direct)
+    with pytest.raises(ProviderFault, match="quant_contract:invalid_shape"):
+        await runner_for(config).run(ProviderRequest(request_id="quant-feed-bad-search", model="model", prompt="Search",
+                                                     web_search=True, output_contract="quant_search_v1"))
 
 
 async def test_quant_structured_output_rejects_company_action(fake_codex):
@@ -597,6 +699,50 @@ async def test_three_independent_single_slots_with_durable_receipts(fake_codex, 
         for operation in operations:
             operation.cancel()
         await asyncio.gather(*operations, return_exceptions=True)
+
+
+async def test_briefing_has_its_own_single_slot_and_preserves_other_lanes(fake_codex, request_model):
+    config, configure, calls = fake_codex
+    configure(mode="delay", delay_seconds=2)
+    requests = [request_model.model_copy(update={"request_id": identity})
+                for identity in ("company-brief-test", "news-screen-test", "quant-feed-test", "news-brief-test-write")]
+    operations = [asyncio.create_task(runner_for(config).run(request)) for request in requests]
+    try:
+        async with asyncio.timeout(5):
+            while len(calls()) < 4:
+                await asyncio.sleep(0.01)
+        assert all(not operation.done() for operation in operations)
+        for identity in ("news-brief-test-write", "news-brief-other-review", "news-screen-other",
+                         "quant-feed-other", "company-other"):
+            with pytest.raises(ProviderFault) as caught:
+                await runner_for(config).run(request_model.model_copy(update={"request_id": identity}))
+            assert caught.value.code == "busy"
+        results = await asyncio.gather(*operations)
+        for request, result in zip(requests, results, strict=True):
+            assert await runner_for(config).run(request) == result
+        assert len(calls()) == 4
+        assert {json.loads(p.read_text())["execution_lane"] for p in config.jobs_dir.glob("*.json")} == {
+            "company", "news", "quant", "brief",
+        }
+    finally:
+        for operation in operations:
+            operation.cancel()
+        await asyncio.gather(*operations, return_exceptions=True)
+
+
+async def test_old_running_brief_receipt_blocks_execution_after_lane_change(fake_codex, request_model):
+    config, _, calls = fake_codex
+    request = request_model.model_copy(update={"request_id": "news-brief-before-cutover"})
+    config.jobs_dir.mkdir()
+    path = config.jobs_dir / (request.request_id + ".json")
+    receipt = {"version": 1, "request_id": request.request_id, "input_digest": request_digest(request),
+               "state": "running", "execution_lane": "news", "started_at": time.time()}
+    atomic_json(path, receipt)
+    with pytest.raises(ProviderFault) as caught:
+        await runner_for(config).run(request)
+    assert caught.value.code == "uncertain"
+    assert json.loads(path.read_text()) == receipt
+    assert not calls()
 
 
 async def test_cancelling_news_does_not_cancel_company_lane(fake_codex, request_model):

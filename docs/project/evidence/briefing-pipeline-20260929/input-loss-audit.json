@@ -1,0 +1,281 @@
+{
+  "scope": "Development input transformation on exactly the previously selected source IDs; does not change old verdicts or prove all restored text is material.",
+  "cases": [
+    {
+      "edition": "am-20260928",
+      "original_input_sha256": "97a4b9a13c625d2930a8e57b7b01622e6d16f64d06cda4fd437b9e2115ce59b1",
+      "old_supplied_chars": 27747,
+      "new_supplied_chars": 37794,
+      "restored_chars": 10047,
+      "restored_articles": 4,
+      "documents": [
+        {
+          "id": "7e05f7d340dfe4f3a375f2d628eeeff781c6c4c1",
+          "title": "美국채 금리 급등에도 버티는 뉴욕증시…과거는 어땠나",
+          "available_cached_chars": 1696,
+          "old_supplied_chars": 1696,
+          "new_supplied_chars": 1696,
+          "upstream_truncated": false
+        },
+        {
+          "id": "e09e615b222049450980166cf9b0b3c88603f8c7",
+          "title": "올해 주요 재테크 수익률 1위는 코스피200 ETF",
+          "available_cached_chars": 899,
+          "old_supplied_chars": 899,
+          "new_supplied_chars": 899,
+          "upstream_truncated": false
+        },
+        {
+          "id": "6ceba6098836e9245f6461534ff67f7e2feba2d6",
+          "title": "한은 직원 개인정보 무더기 유출…5년여간 해킹 시도 2천번",
+          "available_cached_chars": 1909,
+          "old_supplied_chars": 1909,
+          "new_supplied_chars": 1909,
+          "upstream_truncated": false
+        },
+        {
+          "id": "0a29d0b746f78fd37bdea746c0ed635bc1e9b562",
+          "title": "이형일, 첫 경제현안간담회…전기차 정책·퇴직연금 개선 논의",
+          "available_cached_chars": 1115,
+          "old_supplied_chars": 1115,
+          "new_supplied_chars": 1115,
+          "upstream_truncated": false
+        },
+        {
+          "id": "cd8ee43875f68e1245babea0ce685d2d2bdb9c3e",
+          "title": "트럼프 “英 미군기지 테러 용의자들, 막대한 피해 노려”⋯이란 연계 가능성 수사",
+          "available_cached_chars": 701,
+          "old_supplied_chars": 701,
+          "new_supplied_chars": 701,
+          "upstream_truncated": false
+        },
+        {
+          "id": "9d7df865e48cc4abb5fc3f53d7df8c6d6ec97c3a",
+          "title": "트럼프, 이란 제안 거부 하루 만에 “이번주 추가 회담 예상”",
+          "available_cached_chars": 1080,
+          "old_supplied_chars": 1080,
+          "new_supplied_chars": 1080,
+          "upstream_truncated": false
+        },
+        {
+          "id": "4cd1ba7cf9a5eef33608b800c2c79532a50505eb",
+          "title": "신성범 \"제주 면세점 실적, 코로나 종료 후 매년 급감\"",
+          "available_cached_chars": 1231,
+          "old_supplied_chars": 1231,
+          "new_supplied_chars": 1231,
+          "upstream_truncated": false
+        },
+        {
+          "id": "a5515fb0ed52ddac583fd05b478ef875530320e9",
+          "title": "Meta's Muse agent is attacking one of the economy's most profitable weak spots",
+          "available_cached_chars": 6000,
+          "old_supplied_chars": 3000,
+          "new_supplied_chars": 6000,
+          "upstream_truncated": true
+        },
+        {
+          "id": "24aa686f207525bcdb913f6247c3eaf9165fb0b6",
+          "title": "미국 연준, 10월 금리인상 확률 60% 넘어⋯글로벌 국채금리 일제히 급등",
+          "available_cached_chars": 1518,
+          "old_supplied_chars": 1518,
+          "new_supplied_chars": 1518,
+          "upstream_truncated": false
+        },
+        {
+          "id": "622f4a74bd1092e9343237c13390e1ca53fa9cc8",
+          "title": "예탁원, 결제촉진대금에 증권납부 허용…국채 담보인정 최대 98%",
+          "available_cached_chars": 1129,
+          "old_supplied_chars": 1129,
+          "new_supplied_chars": 1129,
+          "upstream_truncated": false
+        },
+        {
+          "id": "f72f5b80378fea799b32a2b4fc9065d16b8a0c3d",
+          "title": "\"이번 주 이란과 추가 회담\"…입장차 좁혀질까?",
+          "available_cached_chars": 1148,
+          "old_supplied_chars": 1148,
+          "new_supplied_chars": 1148,
+          "upstream_truncated": false
+        },
+        {
+          "id": "b3c48c0418e82b9c0202a2a0848fa0796fd1d257",
+          "title": "Trump to have dinner with Anthropic CEO Amodei at the White House, Axios reports",
+          "available_cached_chars": 1921,
+          "old_supplied_chars": 1921,
+          "new_supplied_chars": 1921,
+          "upstream_truncated": false
+        },
+        {
+          "id": "f418653fd734a0a7ad1262bedc0ed60ddaa11596",
+          "title": "Iran's foreign minister says Tehran ready for 'doomsday' war with U.S., but leaves diplomacy on the table",
+          "available_cached_chars": 5979,
+          "old_supplied_chars": 3000,
+          "new_supplied_chars": 5979,
+          "upstream_truncated": false
+        },
+        {
+          "id": "04b7af7effa70fd1cb57b30c74725b47084f3449",
+          "title": "넉 달 전과 달리 미중정상회담 백악관 발표에 '북한 비핵화' 빠져",
+          "available_cached_chars": 1400,
+          "old_supplied_chars": 1400,
+          "new_supplied_chars": 1400,
+          "upstream_truncated": false
+        },
+        {
+          "id": "933da0069ebe4907fc024db3836353ee7cc29855",
+          "title": "Iranian minister says only negotiation can end conflict after Trump rejects Hormuz deal",
+          "available_cached_chars": 4661,
+          "old_supplied_chars": 3000,
+          "new_supplied_chars": 4661,
+          "upstream_truncated": false
+        },
+        {
+          "id": "bd2105f35e5c08dcb1b76b148327227bb5428c70",
+          "title": "Trump rejects Iran deal to reopen Strait of Hormuz in seven days",
+          "available_cached_chars": 5407,
+          "old_supplied_chars": 3000,
+          "new_supplied_chars": 5407,
+          "upstream_truncated": false
+        }
+      ]
+    },
+    {
+      "edition": "pm-20260928",
+      "original_input_sha256": "4157263de0fdfe5bd5fd7fa970f69fbab05be21f82f300a39a7d32b8fba3068c",
+      "old_supplied_chars": 25207,
+      "new_supplied_chars": 31777,
+      "restored_chars": 6570,
+      "restored_articles": 3,
+      "documents": [
+        {
+          "id": "a8bb2955dacb6326497ce375c6936d62d28f2b83",
+          "title": "'하락 예감?' 코스피·반도체 추종 ETF서 한 주간 뭉칫돈 이탈",
+          "available_cached_chars": 1225,
+          "old_supplied_chars": 1225,
+          "new_supplied_chars": 1225,
+          "upstream_truncated": false
+        },
+        {
+          "id": "4e6c898ea8e794e90a0f50a3b058df8ff36a9e4b",
+          "title": "'하락 예감?' 코스피·반도체 추종 ETF서 한주간 뭉칫돈 이탈",
+          "available_cached_chars": 1376,
+          "old_supplied_chars": 1376,
+          "new_supplied_chars": 1376,
+          "upstream_truncated": false
+        },
+        {
+          "id": "c8b3788f5c3d3999e611642334653056e09eeca1",
+          "title": "한은, 10월 통안증권 최대 7조원 발행한다⋯중도환매 2조",
+          "available_cached_chars": 746,
+          "old_supplied_chars": 746,
+          "new_supplied_chars": 746,
+          "upstream_truncated": false
+        },
+        {
+          "id": "db3f6973cdcad0e4174b2f46e6bde9a3809d2a1c",
+          "title": "U.S., China to lower tariffs on $60 billion of goods. Here's what qualifies",
+          "available_cached_chars": 4076,
+          "old_supplied_chars": 3000,
+          "new_supplied_chars": 4076,
+          "upstream_truncated": false
+        },
+        {
+          "id": "65d5c4cde943a2b3a14a7023d6f3b04262be9ab7",
+          "title": "\"미국·이란 중재국, 전면전 우려해 이란에 '핵 양보' 촉구\"",
+          "available_cached_chars": 1170,
+          "old_supplied_chars": 1170,
+          "new_supplied_chars": 1170,
+          "upstream_truncated": false
+        },
+        {
+          "id": "e1f902b7a4d3db2cf42f16c46609a4142d778fae",
+          "title": "\"카타르, 호르무즈 대치 속 LNG 공급 '불가항력' 선언 추가 연장\"",
+          "available_cached_chars": 878,
+          "old_supplied_chars": 878,
+          "new_supplied_chars": 878,
+          "upstream_truncated": false
+        },
+        {
+          "id": "001fb4a35b80e29633aa66d2259720598a7cded2",
+          "title": "Gold and silver prices fall sharply as higher bond yields weigh on metals",
+          "available_cached_chars": 2018,
+          "old_supplied_chars": 2018,
+          "new_supplied_chars": 2018,
+          "upstream_truncated": false
+        },
+        {
+          "id": "05ec0a430c63cb6d848f6a952e583e0fe6664596",
+          "title": "환율 내려도 실적 눈높이는 ‘쑥’⋯삼성전기, AI 부품 타고 최대실적 예고",
+          "available_cached_chars": 1717,
+          "old_supplied_chars": 1717,
+          "new_supplied_chars": 1717,
+          "upstream_truncated": false
+        },
+        {
+          "id": "7a4dd7675e8440fc3e82132147a6e35c849deeb6",
+          "title": "한은 \"추석 연휴 글로벌 국채금리 급등⋯시장 불확실성 확대 경계\"",
+          "available_cached_chars": 852,
+          "old_supplied_chars": 852,
+          "new_supplied_chars": 852,
+          "upstream_truncated": false
+        },
+        {
+          "id": "bad5dd772395c3c99c41a2e81b397c55cd363a46",
+          "title": "추석 연휴 미 국채 금리 급등에…환율 1,360원대 중반으로",
+          "available_cached_chars": 1192,
+          "old_supplied_chars": 1192,
+          "new_supplied_chars": 1192,
+          "upstream_truncated": false
+        },
+        {
+          "id": "d0f578f4b32f057c1a38b308e3e972727c3d0dde",
+          "title": "추석 연휴 美국채 금리 급등에…환율 1,360원대 중반으로",
+          "available_cached_chars": 1369,
+          "old_supplied_chars": 1369,
+          "new_supplied_chars": 1369,
+          "upstream_truncated": false
+        },
+        {
+          "id": "e9f5464d8ac6f9bc6078f00882303e95442806fd",
+          "title": "Brent crude tops $107 as Trump rejects Iranian proposal to reopen Hormuz Strait",
+          "available_cached_chars": 2388,
+          "old_supplied_chars": 2388,
+          "new_supplied_chars": 2388,
+          "upstream_truncated": false
+        },
+        {
+          "id": "aa7381758cb1ef1c17031e94e5e2e8e88878b795",
+          "title": "항재밍 솔루션기업 덕산넵코어스, 30일 코스닥 신규 상장",
+          "available_cached_chars": 419,
+          "old_supplied_chars": 419,
+          "new_supplied_chars": 419,
+          "upstream_truncated": false
+        },
+        {
+          "id": "534a6eeeb57ab843f1715dd0ad7fcb99edd1c719",
+          "title": "Childminder facing 'severe financial burden' as heating oil costs rise",
+          "available_cached_chars": 5494,
+          "old_supplied_chars": 3000,
+          "new_supplied_chars": 5494,
+          "upstream_truncated": false
+        },
+        {
+          "id": "ca4018ae5261ba2a446838a22e48d64161719e69",
+          "title": "Axios: Trump Expects More Talks with Iran This Week",
+          "available_cached_chars": 857,
+          "old_supplied_chars": 857,
+          "new_supplied_chars": 857,
+          "upstream_truncated": false
+        },
+        {
+          "id": "717958b329bc0f09e8d09e9895772e0f48ef4325",
+          "title": "Trump-Xi summit: What wasn't said might matter the most",
+          "available_cached_chars": 6000,
+          "old_supplied_chars": 3000,
+          "new_supplied_chars": 6000,
+          "upstream_truncated": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "implementation-code-review-input",
+  "base_commit": "71a9e1d84d76d9fbd467ce08f1d4171f1f116609",
+  "files": {
+    "src/quant_company/research/adaptive_contracts.py": "686eb806008d01e82750913354864208e3942fd34fbaee761eea15febcb5e8e3",
+    "src/quant_company/research/adaptive_executor.py": "965956c2ebfba2a668011baecf5f57bd188b4dff8f6f6b376a0f45a2f3fb3385",
+    "src/quant_company/research/adaptive_report.py": "e8d3250e6efdfc6ad3e16c8449dca55a103b0d6276252abf75fdff4bfac3ce8a",
+    "src/quant_company/research/audit.py": "544837f262f54f6321fedad319aa5a8385be6c8b96bf4073296951b83e531889",
+    "src/quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+    "src/quant_company/research/controller.py": "75e82f5b3fa8d3afa0cba30256a026586e730d9c9bd9d06d22490644f1cb1019",
+    "src/quant_company/research/data_evidence.py": "ad0f319239f88f21be33ff29ca974bde12096c23b47a451eaa7b0c7af7c7ef0f",
+    "src/quant_company/research/domestic_profile.py": "ed4eb85cdcd722fd466a7bf77f25119d8cab8be96869ce85c4c06da291bc56bf",
+    "src/quant_company/research/library.py": "d5b9b783b65150bd858fcd1215f421b4030518f33fc02df9d22ec89004053649",
+    "src/quant_company/research/mission_backend.py": "b28833f525600fb729bc5549ddc8ee52d086ac5b9b9de25ead98da5c8da86989",
+    "src/quant_company/research/mission_contracts.py": "97e85461656f8b662ead0b7624aeafacc6073733552cf64144ae7a264c60fd27",
+    "src/quant_company/research/missions.py": "a2a35a20b381214027f53cb228d809ce20fbf939099667bea2c18daa93883eac",
+    "src/quant_company/research/policy_contracts.py": "2c3a46581218ee968ad453c20a08eb78fa5145d0f52f12034c9f8dc07c1c1df0",
+    "src/quant_company/research/program_contracts.py": "1ea6c131332aea90c996e2365acfe6edb1975ea454085cf58c436cba79d15892",
+    "src/quant_company/research/program_controller.py": "af391aa67c084bebb49c8a5da71574b06791527d8a911af2c535d97143794538",
+    "src/quant_company/research/program_schema.sql": "302f91cffabe929ae3ccda05056f92add9e309a32a400105d15f15b9800960d3",
+    "src/quant_company/research/programs.py": "1eb5cb424aa4ffef1dd6cf4f088610e19cdb249cb8426373a8cca1d6fcf93824",
+    "src/quant_company/research/scientific_lineages.py": "e7c0d7bf109434f9302043f96a6acb9d418d50f04e04b11b19d733dfe6d26c66"
+  },
+  "protected_engine": {
+    "path": "src/quant_company/research/reference/domestic_engine.py",
+    "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+  },
+  "limitations": [
+    "Local implementation review; no production staff assessment or research approval",
+    "Synthetic qualification only; zero market snapshot reads"
+  ]
+}

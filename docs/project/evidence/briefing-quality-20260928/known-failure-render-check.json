@@ -1,0 +1,32 @@
+{
+  "old_assessment_sha256": "ce0cb51815c504561b75e73fc249931840aaad412a0e2a23d8a89ae8e2416adf",
+  "format_version": 7,
+  "checks": [
+    {
+      "id": "oil_alternative",
+      "visible_in_main": true,
+      "repeated_in_detail": false
+    },
+    {
+      "id": "policy_alternative",
+      "visible_in_main": true,
+      "repeated_in_detail": false
+    },
+    {
+      "id": "ai_alternative",
+      "visible_in_main": true,
+      "repeated_in_detail": false
+    },
+    {
+      "id": "fed_alternative",
+      "visible_in_main": true,
+      "repeated_in_detail": false
+    },
+    {
+      "id": "korea_alternative",
+      "visible_in_main": true,
+      "repeated_in_detail": false
+    }
+  ],
+  "scope": "Deterministic rendering of the prior failed raw draft only. No new model content or semantic pass. Old internal prose is intentionally not rewritten."
+}

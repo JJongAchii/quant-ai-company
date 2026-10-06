@@ -1,0 +1,14 @@
+{
+  "purpose": "Repair feedback only; not a validation-5 semantic pass.",
+  "prior_review_policy": "format 7 / validation 4",
+  "repair_policy": "format 7 / validation 5",
+  "difference": "Exact fraction/month normalization restores the originally written rates and oil issues. The prior review is retained as a critique of the pruned draft, with its genuine additional omissions. The full validated original draft is supplied to the one repair.",
+  "mechanical_rejections_in_original_draft_v4": {
+    "rates_fact": "unsupported_prose_number",
+    "rates_check": "unsupported_prose_number",
+    "oil_fact": "unsupported_prose_number"
+  },
+  "mechanical_rejections_after_exact_normalization_v5": {},
+  "fresh_final_review_required": true,
+  "prior_review_not_reused_as_final": true
+}

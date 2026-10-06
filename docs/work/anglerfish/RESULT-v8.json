@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "intent": "INTENT-v8.json",
+  "result": "prepared_for_owner_review",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99",
+  "reviewPacketCommit": "1c0b69765404d30a8d18039b211eaa4d21b827b4",
+  "codeCommit": "3c848af95dc33b7da444a55018fd41d374c10025",
+  "programDigest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
+  "validation": {
+    "passed": 1427,
+    "skipped": 13,
+    "lint": "passed",
+    "qlabCommit": "37abfceb07f5b684d7c3210548fecef156e3f9fc",
+    "scope": "actual PG/Git/qlab with scripted opinions, Slack and synthetic worker artifacts"
+  },
+  "productionActivated": false,
+  "newProgramSubmitted": false,
+  "scientificTrialsAdded": 0,
+  "nextStep": "Review prepared PR and release plan; qualify actual deployment consumers before operating cutover, then obtain signed owner cancellation/replacement program approval",
+  "recordedAt": "2026-09-30T23:34:53.580791+00:00"
+}

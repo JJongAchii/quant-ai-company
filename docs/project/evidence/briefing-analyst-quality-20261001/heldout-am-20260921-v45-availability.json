@@ -1,0 +1,10 @@
+{
+  "case": "heldout-am-20260921-v45",
+  "checked_at": "2026-10-01T07:43:58.601777+00:00",
+  "raw_sha256": "92a589a74bb1e5ebdde8ed55c7d20570fddce471b3c2c85e8e19ba0934a0f7c4",
+  "source_count": 0,
+  "decision": "source_unavailable_no_model_call",
+  "model_calls": 0,
+  "slack": "not_called",
+  "not_a_quality_failure_or_pass": true
+}

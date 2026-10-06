@@ -1,0 +1,52 @@
+{
+  "base_commit": "4f3bdb762d371455ea0883a73643ddfaf36b921a",
+  "change_reason": "Independent legacy hypothesis-only source reuse finding reproduced on actual PG; guard extended and rejection/positive controls added.",
+  "files": {
+    "src/quant_company/company.py": "b44afd4ab31eddeca30cd6277568a0701be364cec1d04a497993d180a16308b3",
+    "src/quant_company/research/adaptive_contracts.py": "686eb806008d01e82750913354864208e3942fd34fbaee761eea15febcb5e8e3",
+    "src/quant_company/research/adaptive_executor.py": "965956c2ebfba2a668011baecf5f57bd188b4dff8f6f6b376a0f45a2f3fb3385",
+    "src/quant_company/research/adaptive_report.py": "aa76abd5489da737bb57a2a4946459da551ef7b01ac2d1f4886a6ad5ec773d20",
+    "src/quant_company/research/audit.py": "544837f262f54f6321fedad319aa5a8385be6c8b96bf4073296951b83e531889",
+    "src/quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+    "src/quant_company/research/controller.py": "c59d573de8d2e7ec713e32ffb37cefae2aeb65bdafc758798b1c4d5316bbe885",
+    "src/quant_company/research/data_evidence.py": "22310df3dfbb65faaa4ae8bd8b98c5c3b895b9135feb8881b2038e02bf254401",
+    "src/quant_company/research/domestic_profile.py": "ed4eb85cdcd722fd466a7bf77f25119d8cab8be96869ce85c4c06da291bc56bf",
+    "src/quant_company/research/library.py": "d01959a6c2f55c21c715b9554be67eff32f4cca74fceccd718a273cd4a8fe64b",
+    "src/quant_company/research/mission_backend.py": "21e5f7734e4699e909a0f4fa314c18792c1b0278e12034633bc0f0be06e6fa8c",
+    "src/quant_company/research/mission_contracts.py": "2c2ec1aa27c9de196cab109413eb8a6f14071327c59e2912ab80a3a27bcf31c2",
+    "src/quant_company/research/missions.py": "008ba22fa498ed5ddcb8fd1239f27021c63e2067472d7d336dd785dc5b9d912a",
+    "src/quant_company/research/policy_contracts.py": "2c3a46581218ee968ad453c20a08eb78fa5145d0f52f12034c9f8dc07c1c1df0",
+    "src/quant_company/research/program_contracts.py": "415a4bd091059cc925db0e51976c4a0a426ab8764dd2e635b17a272446868fc0",
+    "src/quant_company/research/program_controller.py": "e081fc0cfc764737efa9104ce66000b0740b964ae857eab39c0c99671750e381",
+    "src/quant_company/research/program_schema.sql": "302f91cffabe929ae3ccda05056f92add9e309a32a400105d15f15b9800960d3",
+    "src/quant_company/research/programs.py": "575042ea0b2a470148cfbca71e3eab9af78bd6c8b759e3f237090827ed35637f",
+    "src/quant_company/research/scientific_lineages.py": "301c64e2404435929c25bd973c72da59b4ca8d8ae1dafbea2a16846217dd941c",
+    "tests/test_research_adaptive_report.py": "888451be6c8f968cba2cb93918c3f6238b40a069727eacab99041363a8bca554",
+    "tests/test_research_conditional.py": "68c5272b6bbb02bf0ae8d5b3ff354e332e42a84ade08cb03345748116a67d6ad",
+    "tests/test_research_conditional_temporal.py": "7c98e02f427184e633ac819dbe2e9f5efdcac05bd04fa7cea5ab8aaf01789984",
+    "tests/test_research_domestic_linux.py": "dbe39c5cfe91368ad362fef5eddb98ce608b14777d91cd4f9d1a5849af2cee33",
+    "tests/test_research_exploration.py": "97dd9e8f88529e7614ab0ab1e220325fabd32cf8331da2a37e45318cf069d6b4",
+    "tests/test_research_policy_compatibility.py": "b9d1de03c05392f952ed232a99dc794c829c7ca12bef5f9ebcd7c970b6460c61",
+    "tests/test_research_program_e2e.py": "0324b12a9ab5d12c299231fc730afad7fc70e83abaf447c4b532a503f8c7309a",
+    "tests/test_research_source_scope.py": "b6de79b782cb77677d1c3f1e21c4bb53ed7ea3303b136e2eb6ef813f34e686d5"
+  },
+  "integration": {
+    "added_policy": "MissionSpec v3 data_policy with scientific_lineage",
+    "mixed_policy_contracts": "rejected",
+    "preserved_policy": "MissionSpec v1/v2 data.policy retrospective_exploration",
+    "production_changes_by_this_slice": false,
+    "remote_commit": "76c8abce5c5c4d696aca2b0fbbeee7a0b9dcfd53"
+  },
+  "kind": "integrated-implementation-code-review-input",
+  "limitations": [
+    "Local implementation review only; no research, production staff or deployment approval",
+    "Zero real snapshot reads and zero financial performance reported"
+  ],
+  "previous_input_sha256": "40fe642804055e0bd8e50586cfe04ab9581eb4aaa9feaf13fda45410b1f70f0c",
+  "protected_engine": {
+    "path": "src/quant_company/research/reference/domestic_engine.py",
+    "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+  },
+  "schema_version": 1,
+  "supersedes": "implementation-review-input-integrated.json"
+}

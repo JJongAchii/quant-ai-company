@@ -1,0 +1,28 @@
+{
+  "at": "2026-09-30T11:30:51.850626+00:00",
+  "scope": "Pre-call technical fixes, no market-original changes or acceptance relaxation",
+  "initial_context_diagnostic_chars": 102059,
+  "bounded_context_chars": 81909,
+  "fix": "Represent the same common allowed source set once instead of23 IDs repeated per editable claim; source permissions unchanged",
+  "editorial_patch_sha256": "bdbd40864a4c7f4b0ed59a1d6f6509f82ecf16c7c795d9597db6a3f38abfe92e",
+  "prompt_sha256": "1de6d263cc9f4e2101a36a0f01267f92e1d45355d31836f66523d93062361602",
+  "mechanical_failure_tests": "Do not drop existing numbers, edit observations/conditions, alter kind or escape allowed sources",
+  "added_originals_audit": [
+    {
+      "source_id": "96d7885e2dd80c9c36a3e6bc8066836bd609840a",
+      "notes": "JP Morgan1750万barrels/day98%regionalexports vsKplerHormuz1310万/1710万77% andproducts58%; scope/period/method cannotbe merged with1632.8万 or claimed fullnormalization. Shuttle cost/risk andSPR284millionlow, AAA6.44/gallon attributed29Sept."
+    },
+    {
+      "source_id": "0f84bfd389779ba1fe41a8c4f5458079649ddb28",
+      "notes": "Tax estimate478.6trillionvs415.4budget,63.2difference; corporate136.4forecast/35increase. Proposedfuturefund law pending; transfer base is domestic taxes with exclusions, not totalextra63.2 allcommitted."
+    },
+    {
+      "source_id": "86d456a12997c53f06e31ba2b90dd5807b851ca6",
+      "notes": "Sept29 infrastructure safety threat conditional on security/ability tosell oil; rhetoric not observed strike. CurrentSept30mediation laterdoesnotremove priorwarning; partydenial not independent nuclear findings."
+    }
+  ],
+  "new_source_chars": 6099,
+  "total_source_chars": 41017,
+  "slack": "not_called",
+  "patch_result_known": false
+}

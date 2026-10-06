@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "source_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+  "phase": "guarded_before_mutation",
+  "exit_code": 1,
+  "reason": "shared_deployment_backup_lock_busy",
+  "production_mutated": false,
+  "pause_created": false,
+  "backup_created": false,
+  "recorded_at": "2026-10-02T05:33:28.182887+00:00"
+}

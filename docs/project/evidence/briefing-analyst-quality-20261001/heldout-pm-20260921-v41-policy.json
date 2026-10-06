@@ -1,0 +1,52 @@
+{
+  "case": "heldout-pm-20260921-v41",
+  "frozen_at": "2026-10-01T05:42:06.718502+00:00",
+  "scope": "Previously unevaluated historical Korean-session edition. Policy frozen before reading its original titles/content, after historical cutoff. Only company originals published and stored before that cutoff, complete bounded bodies. Not prospective cutoff preregistration, on-time delivery, separate live trading-day observation or expert certification.",
+  "edition": {
+    "id": "578d9c5a-2f24-5d25-840c-b46a3ce8f0f1",
+    "day": "2026-09-21",
+    "kind": "pm",
+    "due_at": "2026-09-21T20:15:00+09:00",
+    "starts_at": "2026-09-21T19:10:00+09:00",
+    "cutoff": "2026-09-21T19:30:00+09:00",
+    "expires_at": "2026-09-21T21:15:00+09:00",
+    "us_session": null,
+    "kr_session": "2026-09-21",
+    "previous_us_session": null,
+    "previous_kr_session": "2026-09-18",
+    "weekly": null
+  },
+  "schedule_version": 2,
+  "format_version": 15,
+  "validation_version": 41,
+  "writer_sha256": "ab6f5e5e591247e6957927d6364546e5f9b35143f7aa6f62b5438964bf88d482",
+  "reviewer_sha256": "737912262bd2900b99dda9b07363bacf62eae3ba7901880643bd1b67305ca98b",
+  "editorial_patch_sha256": "8467811bacceb8cee83ef25c9e484070870add96fdf534dd669faea327a11ba2",
+  "analyst_pack_sha256": "a718301296872cd0dd2dab402a88cd917b4f93ab08c6645f8da1bfdf244707c1",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_completed_calls": 5,
+  "repair": "At most one confirmed repair: planner, writer, reviewer, repair, final review. Never replay uncertain effect with newID. Only confirmed unexecuted busy may retry exactsameID.",
+  "source_rule": "Registered enabled digest-matching company originals, published and stored before exact cutoff within30hours; freeze candidate identities/content and existing pre-cutoff market snapshot. No current search/lake historical backfill. Max96candidates,16selected,42000source chars. Requested frozen supplements remain within same budget.",
+  "acceptance": [
+    "All12 checks and publish verdict; zero mechanical or semantic rejects, quote conflicts",
+    "Independent original-to-visible-main audit before critique; all actual response receipts",
+    "No same-source development score counted as fresh qualification",
+    "All selected original bodies independently read in full and checked against visible main; newly evaluated edition/source overlap must be explicitly reported."
+  ],
+  "slack": "not_called",
+  "deployment": "not_performed",
+  "status": "awaiting_read_only_original_snapshot",
+  "code_commit": "ccea316120bf5e1544b1abf690ceb17d82e30773",
+  "complete_original_rule": "Known partial originals, article_chars beyond supplied body or bodies beyond12000characters are excluded. No manual untruncation of old cache; no retrospective current search/lake backfill.",
+  "known_source_overlap": "Record all overlap with prior evaluated candidates; historical context can overlap. If all selected originals already evaluated, do not call fresh original-content acceptance.",
+  "implementation_hashes": {
+    "src/quant_company/briefing/editor.py": "abf1bd26bec3c727524306014e74c535fdee41da6d06028f56fe054685f0dc44",
+    "src/quant_company/briefing/inputs.py": "ae863c274588e03152cfd3cf67cc9fea8058228d1b6b13f6f6ab3928cb871b14",
+    "src/quant_company/briefing/numeric.py": "540b30570020efaa326f2737efb0f0a6ba33f492a1ae355828f0e9a688a17005",
+    "src/quant_company/news/originals.py": "5b17e4099447c6c95c62dcdb55465cec587a8c0c51cecf2415c10ab84132ee1f",
+    "src/quant_company/news/store.py": "cc7984dac995abe2ec85a5fb2bfe3b743d63a9f4631200bc3ca7cf24a7c7d387"
+  },
+  "historical_code_scope": "Runtime source exactly14e603e; subsequent ccea316 contains only evidence/docs/status",
+  "separate_from_closed_am_case": "AM20261001-v38 and its developmentv40 remain closed failed. No new call on that saved response or source bundle."
+}

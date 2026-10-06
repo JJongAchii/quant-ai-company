@@ -1,0 +1,57 @@
+{
+  "case": "pm-20261001-v42",
+  "frozen_at": "2026-10-01T06:16:54.902815+00:00",
+  "scope": "Prospective scheduled new Korean session. Frozen before future cutoff or original titles/content for that session; no model call, server configuration or Slack effect.",
+  "edition": {
+    "id": "a6c3dfce-2850-5cca-88e1-aa94fd3c48fb",
+    "day": "2026-10-01",
+    "kind": "pm",
+    "due_at": "2026-10-01T20:15:00+09:00",
+    "starts_at": "2026-10-01T19:10:00+09:00",
+    "cutoff": "2026-10-01T19:30:00+09:00",
+    "expires_at": "2026-10-01T21:15:00+09:00",
+    "us_session": null,
+    "kr_session": "2026-10-01",
+    "previous_us_session": null,
+    "previous_kr_session": "2026-09-30",
+    "weekly": null
+  },
+  "schedule_version": 2,
+  "format_version": 15,
+  "validation_version": 42,
+  "writer_sha256": "a174a14baba5e99f3864873eaf32d12e60f387db923c48095c29733acc51c30b",
+  "reviewer_sha256": "b388747d01efc83ff244626c791818f230b0f2a7f14e4386f1086ae68b8a8185",
+  "editorial_patch_sha256": "8467811bacceb8cee83ef25c9e484070870add96fdf534dd669faea327a11ba2",
+  "analyst_pack_sha256": "a718301296872cd0dd2dab402a88cd917b4f93ab08c6645f8da1bfdf244707c1",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_completed_calls": 5,
+  "repair": "At most one confirmed repair: planner, writer, reviewer, repair, final review. Never replay uncertain effect with newID. Only confirmed unexecuted busy may retry exactsameID.",
+  "source_rule": "Registered enabled digest-matching company originals, published and stored before exact cutoff within30hours; freeze candidate identities/content and existing pre-cutoff market snapshot. No current search/lake historical backfill. Max96candidates,16selected,42000source chars. Requested frozen supplements remain within same budget.",
+  "acceptance": [
+    "All12 checks and publish verdict; zero mechanical or semantic rejects, quote conflicts",
+    "Independent original-to-visible-main audit before critique; all actual response receipts",
+    "No same-source development score counted as fresh qualification"
+  ],
+  "slack": "not_called",
+  "deployment": "not_performed",
+  "status": "awaiting19:30KSTcutoff_not_queued_or_executed",
+  "code_commit": "60af2857a46d1156e80e05c6a2cc65e2970274b6",
+  "complete_original_rule": "Known partial originals, article_chars beyond supplied body or bodies beyond12000characters are excluded. No manual untruncation of old cache; no retrospective current search/lake backfill.",
+  "known_source_overlap": "Some earlier-session originals within the allowed30-hour range have been read in prior cases. Record exact overlap in the later manifest; do not call those unseen originals or a separate trading day.",
+  "implementation_hashes": {
+    "src/quant_company/briefing/editor.py": "bec08b7856cb604f2d0f5afdf4505a930667437a633dec90007c786dc2b26e06",
+    "src/quant_company/briefing/inputs.py": "ae863c274588e03152cfd3cf67cc9fea8058228d1b6b13f6f6ab3928cb871b14",
+    "src/quant_company/briefing/numeric.py": "019b11e44d2e5bc917dd1658c03faebdeb6a5f2181a87276975acfe08ad40da1",
+    "src/quant_company/news/originals.py": "5b17e4099447c6c95c62dcdb55465cec587a8c0c51cecf2415c10ab84132ee1f",
+    "src/quant_company/news/store.py": "cc7984dac995abe2ec85a5fb2bfe3b743d63a9f4631200bc3ca7cf24a7c7d387"
+  },
+  "supersedes_unexecuted_policy": "fresh-pm-20261001-v40-policy.json",
+  "amendment_reason": "The completed development critique of the unchanged saved AM38 repair found unsupported immediate-reaction wording. Prospective writer/reviewer observation-time precision added before any PM original titles/content inspection or cutoff. Closed AM38 and development40 outcomes are not reclassified.",
+  "supersedes_before_execution": {
+    "policy": "docs/project/evidence/briefing-analyst-integration-20260930/fresh-pm-20261001-v41-policy.json",
+    "sha256": "14046e0b433ea6f99e7b72c107837a81006b81bd1611eb5d42cadba8561e5e81",
+    "reason": "Confirmed English comparative numeric false rejection and warning-as-observation wording from separate frozen historical edition. No PM20261001 titles/content read; old policies kept unexecuted.",
+    "fresh_case_calls_used": 0
+  }
+}

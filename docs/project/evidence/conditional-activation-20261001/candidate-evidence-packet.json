@@ -1,0 +1,100 @@
+{
+  "blocking_gaps": [],
+  "engine": {
+    "path": "/state/research/provisioned/data-evidence/conditional-20261001/engine.py",
+    "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+  },
+  "envelope": "etf_strategy",
+  "execution_profile_digest": "71ee4ce63770fb20205675d42cae4db2719394c0d4e31218484a5d4348f06dd1",
+  "gaps": [
+    {
+      "code": "historical_publication_unverified",
+      "description": "Actual historical publication/collection timestamps are unavailable; same-day 23:59 KST is an assumption.",
+      "input_files": {
+        "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+        "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+      },
+      "report_names": [
+        "data-policy-draft-66a888ac98ba.json",
+        "raw-lineage-receipt-f8a0595989be.json",
+        "availability-survey-a10ed59d63a9.json"
+      ]
+    },
+    {
+      "code": "historical_revision_vintage_unverified",
+      "description": "Historical revision vintages are unavailable; the current frozen reference-price chain is the declared estimand.",
+      "input_files": {
+        "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+        "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+      },
+      "report_names": [
+        "data-policy-draft-66a888ac98ba.json",
+        "raw-lineage-receipt-f8a0595989be.json",
+        "availability-survey-a10ed59d63a9.json"
+      ]
+    },
+    {
+      "code": "original_preparation_bytes_unavailable",
+      "description": "Original preparation clean bytes and absolute adjustment anchor were not recovered; these are new independently checked input hashes.",
+      "input_files": {
+        "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+        "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+      },
+      "report_names": [
+        "data-policy-draft-66a888ac98ba.json",
+        "raw-lineage-receipt-f8a0595989be.json",
+        "availability-survey-a10ed59d63a9.json"
+      ]
+    }
+  ],
+  "input_files": {
+    "development.json": {
+      "path": "/state/research/provisioned/data-evidence/conditional-20261001/development.json",
+      "sha256": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b"
+    },
+    "warmup.json": {
+      "path": "/state/research/provisioned/data-evidence/conditional-20261001/warmup.json",
+      "sha256": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+    }
+  },
+  "lake_id": "krx-etf-frozen-vintage-20260930",
+  "program_digest": "be0d940bf5904c417d213898617b3f6c0fed19d2bfddd78460ec315e92b216af",
+  "reports": {
+    "availability-survey-a10ed59d63a9.json": {
+      "path": "/state/research/provisioned/data-evidence/conditional-20261001/availability-survey-a10ed59d63a9.json",
+      "sha256": "a10ed59d63a934ef1bec39dc17042a891936b3ca9c6eab72230af42c3adbc924"
+    },
+    "data-policy-draft-66a888ac98ba.json": {
+      "path": "/state/research/provisioned/data-evidence/conditional-20261001/data-policy-draft-66a888ac98ba.json",
+      "sha256": "66a888ac98ba420685b41b7bc45d011b59eef857c1f057e2239d34cef86c463f"
+    },
+    "official-source-review-c14d6e0eb60a.json": {
+      "path": "/state/research/provisioned/data-evidence/conditional-20261001/official-source-review-c14d6e0eb60a.json",
+      "sha256": "c14d6e0eb60aa39de78ac7921c172e6a5809abc1e6c780afb10ada3fe33cab36"
+    },
+    "raw-body-manifest-d1d0b0f87230.json": {
+      "path": "/state/research/provisioned/data-evidence/conditional-20261001/raw-body-manifest-d1d0b0f87230.json",
+      "sha256": "d1d0b0f87230f075582324ac3882fe5ee041bb3d0d978fda4707f58aa634ff31"
+    },
+    "raw-lineage-receipt-f8a0595989be.json": {
+      "path": "/state/research/provisioned/data-evidence/conditional-20261001/raw-lineage-receipt-f8a0595989be.json",
+      "sha256": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a"
+    },
+    "receipt-99404f6ce4f7.json": {
+      "path": "/state/research/provisioned/data-evidence/conditional-20261001/receipt-99404f6ce4f7.json",
+      "sha256": "99404f6ce4f715308cb88317eac5aed38e89d0ddf623dc1606c0d6b922f8e808"
+    }
+  },
+  "research_scope": {
+    "acknowledged_gap_codes": [
+      "historical_publication_unverified",
+      "historical_revision_vintage_unverified",
+      "original_preparation_bytes_unavailable"
+    ],
+    "data_mode": "frozen_vintage_retrospective",
+    "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+    "result_scope": "conditional_retrospective_development",
+    "scientific_lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3"
+  },
+  "schema_version": 2
+}

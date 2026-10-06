@@ -1,0 +1,136 @@
+{
+  "blocking_findings": [],
+  "current_runtime_admissible": false,
+  "implementation_requirements": [
+    {
+      "id": "ADM-I01",
+      "requirement": "Implement the revised typed conditional contract without changing legacy program, mission, input, profile, packet or outcome identities. Omitted future fields must not alter legacy model_dump or stored digest verification; legacy PIT ready still requires PIT, coverage and executable prices. original_conditions is additionally required only when an exact_replication task is ready."
+    },
+    {
+      "id": "ADM-I02",
+      "requirement": "Provision a distinct server and worker profile, versioned preparation adapter and policy/quality receipt. Keep review_draft_not_ready inadmissible. Qualification must bind the new policy/profile/runtime, exact reconstructed inputs and protected engine, verify producer-consumer hashes and causal cutoff rules using approved inputs, and register the profile only after the required E2E qualification receipt."
+    },
+    {
+      "id": "ADM-I03",
+      "requirement": "Only the implemented canonical contract may enter service draft submission. Activation and execution authority require the qualified distinct profile, fresh owner-signed canonical program digest, matching independent conditional data assessment and director acceptance. The schema preview is inadmissible. Reusing the prior approval event, toggling existing packet gaps or PIT facts, or relying on objective prose cannot grant authority. Enforce policy/economic/input/profile identity at create, approve, assess, decide, require_authorized, plan admission, reservation and receipt ingestion."
+    },
+    {
+      "id": "ADM-I04",
+      "requirement": "Required future tests must exercise real PostgreSQL/Temporal authorization, separate authenticated data/director roles, missing or stale signatures/revisions, digest and gap-code mismatches, wrong task modes, receipt tampering, budget denial, cancellation, restart/uncertain execution handling and unchanged scope through result/audit/report/adoption. Label local schema/byte checks separately from worker E2E, real signed Slack and production deployment evidence."
+    },
+    {
+      "id": "ADM-I05",
+      "requirement": "Make the declared search limits explicit in the approval view: program scientific cap 4, compute cap 7200 seconds, one mission and one concurrent mission; per cycle cap 2 and continuous=false. The current mission can stop at two trials or earlier and cannot automatically consume all four by renewing a cycle. Reservation charges include 120+900 seconds per full attempt and uncertain attempts remain charged until a trusted terminal receipt. Technical failures add no scientific result but consume actual compute."
+    },
+    {
+      "id": "ADM-I06",
+      "requirement": "Implement service-owned scientific lineage and candidate identity checks, including verified cross-program task references, inherited positive/negative evidence and duplicate configurations. Signed typed lineage caps and history baselines govern reservations jointly with the signed program limits. New lineages, cap changes or history-reset attempts require explicit authenticated review and a new canonical signature; employees cannot increase their allowance. Preserve prior records and show inherited scientific trials in multiple-testing, audits and reports."
+    },
+    {
+      "id": "ADM-I07",
+      "requirement": "Implement the trusted wrapper and consumers as versioned, qualified protocol code. Derive policy digest, data mode, result scope and lineage from the verified canonical manifest, verify the actual protected engine result SHA and reject omission/mismatch/stronger claims in qualification, result envelope, execution receipt, TrialOutcome, interpretation/incumbent selection, meaning review, audit publication, reports and downstream source/adoption decisions. A supported conditional finding cannot establish historical PIT, tradable historical alpha, exact replication, reinvested distribution total return, untouched 2026 confirmation or paper/live allocation."
+    }
+  ],
+  "observed_at": "2026-09-30T23:11:22.053861+00:00",
+  "owner_approval_granted": false,
+  "production_assessment": false,
+  "readiness_granted": false,
+  "resolved_draft_findings": [
+    {
+      "id": "ADM-D01",
+      "resolution": "implementation-spec.md sections 1 and 2 define versioned policy/mission/assessment/profile/result fields, exact binding checks, a distinct conditional_ready path, unchanged legacy ready and task-mode restrictions. digest-encoding.json distinguishes byte, record and compact-profile hashes."
+    },
+    {
+      "id": "ADM-D02",
+      "resolution": "implementation-spec.md section 2 limits acknowledged historical scope gaps to three typed codes with source/hash applicability and blocks every other or unknown gap. Existing packets remain blocked; the old close-fill task does not become feasible by substituting the new open contract."
+    },
+    {
+      "id": "ADM-D03",
+      "resolution": "implementation-spec.md section 4 defines a trusted manifest-derived typed result envelope around unchanged protected engine bytes, actual output-hash checks by the consumer, immutable propagation through DB/audit/report, and restricted support claims. The broader policy requires the same limits in every future adoption decision."
+    },
+    {
+      "id": "ADM-D04",
+      "resolution": "implementation-spec.md section 3 defines service-verified originating_task_refs, PostgreSQL scientific lineage records, joint lineage/program reservation locks and freshly signed lineage caps/history baselines. A new program or title cannot erase prior trials."
+    }
+  ],
+  "review_actions": {
+    "Slack_or_credentials_accessed": false,
+    "candidate_performance_computed": false,
+    "deployment_performed": false,
+    "modified_contract_or_runtime": false,
+    "modified_qws_or_research_repositories": false,
+    "production_database_or_Temporal_accessed": false,
+    "sealed_price_rows_read": false
+  },
+  "review_digest": "d8520114b1adb978fe672847ac97c08dcd6eee3446bfcd555b8f0f9fd920c503",
+  "review_digest_verification": {
+    "matches": true,
+    "method": "quant_company.company.fingerprint(package); default JSON separators, sorted keys, UTF-8, ensure_ascii=false",
+    "recomputed": "d8520114b1adb978fe672847ac97c08dcd6eee3446bfcd555b8f0f9fd920c503"
+  },
+  "review_scope": "Local review of the finalized execution-contract draft and future implementation specification. The draft is concrete enough for implementation review. This is not a production data assessment, director decision, profile qualification, owner approval, result audit or adoption decision.",
+  "reviewed_file_sha256": {
+    "docs/project/evidence/etf-execution-contract-20260930/data-policy-draft.json": "66a888ac98ba420685b41b7bc45d011b59eef857c1f057e2239d34cef86c463f",
+    "docs/project/evidence/etf-execution-contract-20260930/digest-encoding.json": "cdba583517b289fb5bebe1a06e23c2475331d3ee593c5aabbd55980e5e219540",
+    "docs/project/evidence/etf-execution-contract-20260930/implementation-spec.md": "be306232e85f6fae4107c3fc78283e41a6520b9b330ec4f724ed39f32ed49d6d",
+    "docs/project/evidence/etf-execution-contract-20260930/preparation-receipt.json": "29d9090b7af9a8655667bac8b03b4066557cffc0a96382fde086e6c57ec68694",
+    "docs/project/evidence/etf-execution-contract-20260930/program-schema-preview.json": "74b7bdbfe7f111868cf69d64a0626cd6762c6aa893d308e1283752309f375a86",
+    "docs/project/evidence/etf-execution-contract-20260930/public-profile-draft.json": "0c995d823b1e65e5bb2723edd1643848348f629c300ea911fe453099d817cb48",
+    "docs/project/evidence/etf-execution-contract-20260930/review-package.json": "44b0e8063b1d0ff92f235b1745c17d2cb192b85b748b37f0a1f60b8c0a183413"
+  },
+  "reviewed_runtime_source_sha256": {
+    "src/quant_company/research/adaptive_contracts.py": "557cc5f86cffc23e3f1bd9bf14590150574f271494cbc0ab9a9f251a20201b3c",
+    "src/quant_company/research/adaptive_executor.py": "caa4f9a4dd09c893df688fd56cd00aa06389b1cc0233fa258e74bafc0c3783ea",
+    "src/quant_company/research/adaptive_report.py": "2b07f56c711c9fbc1e9b9ee2fce4bb9b581b1699048e698a856fb742970eda67",
+    "src/quant_company/research/approvals.py": "e6b238e75f683b1aa9d10ef56c32ed338cc82c211e0c1692569a7da42dd43e8f",
+    "src/quant_company/research/audit.py": "592a7a066c1e8287f00d413f125a96d34bb3172c5f29e17e459e126b7c041d99",
+    "src/quant_company/research/builds.py": "b67dab677278be939b9c1bc7addad7cc1599eca00731b6cc13ceb96fe44a60df",
+    "src/quant_company/research/data_evidence.py": "df998a04aae39d844ed71e8cfac035be65b3a2fa563a6f1b4797ce40677afeee",
+    "src/quant_company/research/domestic_profile.py": "664c33d148f5a32c4c8d99093c5455c9a021c1f2e1a0e724de9157715ea1f1c9",
+    "src/quant_company/research/mission_contracts.py": "e9db73be4c36e354922f3be72a64f7d187f64135d439cdf0ca8d81a9243f93fd",
+    "src/quant_company/research/missions.py": "10a41c9d5818a193cc2fdb5eb2a41fac9e520a1e1b1111cbab53d29d4d72f8a1",
+    "src/quant_company/research/program_contracts.py": "20fb50ef1e0fcaecbd86af0d343c99da4432b039ec65041814cbe163a07b90e2",
+    "src/quant_company/research/program_controller.py": "bfe0061ecabee0c85af86c6feb443be7bbdd11c94a107c9568e5c0d469c21a57",
+    "src/quant_company/research/programs.py": "0e35b01c21f1427f9571bc769135ad1ca55c140d6a96d6ded41578770d0824d0"
+  },
+  "reviewer": "local_independent_admission_draft",
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "verdict": "reviewable_draft",
+  "verified_observations": {
+    "PIT_false_ready_rejected_by_current_DataAssessment": true,
+    "PIT_true_original_conditions_false_ready_accepted_by_common_model": true,
+    "conditional_fields_and_readiness_branch_specified_but_unimplemented": true,
+    "current_noncontinuous_mission_scientific_result_ceiling": 2,
+    "current_program_schema_validation_passes_without_granting_authority": true,
+    "cycle_stop_evidence": [
+      "src/quant_company/research/missions.py:285",
+      "src/quant_company/research/missions.py:462",
+      "src/quant_company/research/missions.py:566",
+      "src/quant_company/research/missions.py:618"
+    ],
+    "exact_replication_original_conditions_enforced_separately_in_assess": true,
+    "file_sha256_and_all_declared_canonical_digests_match": true,
+    "final_implementation_spec_and_digest_encoding_bound_by_package_file_hashes": true,
+    "four_full_attempts_reserved_seconds": 4080,
+    "full_attempt_reserved_seconds": 1020,
+    "historical_PIT_unverified_and_current_runtime_inadmissibility_explicit": true,
+    "legacy_original_conditions_requirement": "DataAssessment.ready checks PIT, coverage and executable_prices for all ready assessments. ProgramStore.assess additionally requires original_conditions only when an exact_replication task is ready.",
+    "lineage_limits_and_cap_changes_require_fresh_canonical_signature_in_spec": true,
+    "local_bytes_do_not_establish_current_production_state": true,
+    "new_public_profile_differs_from_original_only_in_id": true,
+    "original_approved_input_byte_hashes_preserved": true,
+    "original_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+    "original_profile_id": "kr-etf-research-v2",
+    "original_program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+    "original_program_file_sha256": "98e588c4698be002c0d574b0b6bf7a08ae062aac54d825d1b757d711fa347c7f",
+    "original_program_profile_binding_matches_local_original_profile": true,
+    "original_source_bundle_bytes_and_protected_reference_engine_preserved": true,
+    "program_compute_cap_seconds": 7200,
+    "program_scientific_cap": 4,
+    "protected_engine_scope_wrapper_plan_is_explicit": true,
+    "staged_input_byte_hashes_match_policy_preview_and_package": true,
+    "staged_receipt_state": "review_draft_not_ready",
+    "unknown_gap_codes_must_block_in_proposed_contract": true
+  }
+}

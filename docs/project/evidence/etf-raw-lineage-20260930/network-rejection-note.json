@@ -1,0 +1,9 @@
+{
+  "failed_receipt_sha256": "1cd99419aae649801eef8b08b48252b20839cfb719b8c11112a66d158075fa80",
+  "failed_receipt_script_sha256": "f5db018643fac7e3ff5ddac040da507ed41afe33b68b8be58731b6260ecd6c1e",
+  "error_type": "EndpointConnectionError",
+  "completed_downloads": 0,
+  "actual_raw_bodies_read": false,
+  "correction": "The failed receipt raw_price_bodies_read=true field is an unconditional script flag, not evidence of a body read. All 835 head requests failed before GET. The next script revision records completed downloads explicitly.",
+  "strategy_or_sealed_prices_read": false
+}

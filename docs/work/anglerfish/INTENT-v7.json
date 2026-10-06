@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 7,
+  "sourceRequest": "이어서 진행해",
+  "outcome": "Recover verifiable ETF source and availability evidence for the approved research program, or prepare an exact reviewable amendment if the original evidence cannot be recovered.",
+  "deliverables": [
+    {"id": "LIVE_STATUS", "description": "Record the latest independent data assessment and director decision"},
+    {"id": "PROVENANCE", "description": "Inspect existing recovery reports, pinned producer code and bounded immutable archive candidates"},
+    {"id": "RESOLUTION", "description": "Attach recovered evidence within existing authority, or freeze the remaining gap and a concrete owner review proposal"}
+  ],
+  "constraints": [
+    "Read research repositories and data via their approved interfaces; no research repository writes",
+    "No sealed-period price reads, strategy performance computation, scientific trials or uncertain-effect replay",
+    "Keep approved program, inputs, evaluator, execution profile and budgets unchanged during investigation",
+    "Company operational evidence belongs in this repository"
+  ],
+  "workspace": "Existing isolated qws attachment",
+  "previousIntent": "INTENT-v6.json"
+}

@@ -1,0 +1,29 @@
+{
+  "scope": "Actual independent semantic review of same-source development; failure preserved",
+  "passed": false,
+  "score": 9,
+  "checks": {
+    "numbers": true,
+    "sources": true,
+    "timing": true,
+    "causality": true,
+    "materiality": false,
+    "counterevidence": false,
+    "transmission": true,
+    "alternatives": true,
+    "falsifiability": true,
+    "coverage": false,
+    "depth": true,
+    "readability": true
+  },
+  "rejected": {},
+  "concerns": [
+    "중심 결론은 원문으로 뒷받침되고 조건부 전달경로도 유용하다. 다만 중요한 원문 사실이 본문에서 빠져 reduce이며 현 상태로 발행할 수 없다. 누락 때문에 지지되는 항목까지 기각하지는 않는다.",
+    "materiality·coverage 실패: 국내 상승 업종이 세 곳뿐이었다는 참여 범위와 미국 에너지주의 반대 움직임이 빠졌다. 개별 대형주 사례와 기술주 집중만으로는 시장 내부의 약세 범위와 업종별 유가 노출을 충분히 설명하지 못한다.",
+    "counterevidence·coverage 실패: 원문에 있는 갤런당 6.53달러 부근의 미국 소매 경유 가격이 빠졌다. 경유 수출금지의 미래 위험만으로는 이미 남아 있는 연료비 부담을 대신할 수 없다. 원유 하락의 물가·비용 완화 효과를 판단할 때 현재의 정제제품 가격을 함께 보여줘야 한다.",
+    "coverage 실패: 미국과 이란이 중재자들과 각각 접촉했다는 실제 외교 진전이 빠졌다. 미국의 거부·제재와 이란의 회신 기대만 남기면 협상 경로의 상태를 충분히 전달하지 못한다. 접촉은 합의와 구분해 보완해야 한다.",
+    "보충 원문을 사용한 뒤에도 추가 확인 여지가 남는다. 잔여 예산은 130자이며 source_requests의 합계는 0자다. 1,310자인 ‘핵 양보 시 제재 완화 의향’ 원문에 거부 해석을 바꿀 조건이 있는가? 2,221자인 최신 AI 에이전트 공개 원문이 신모델 출시 취소와 함께 볼 새로운 사업 신호를 담는가? 제목만으로 답을 확정할 수 없다."
+  ],
+  "next_iteration": "../../development-coverage/policy.json",
+  "slack": "not_called"
+}

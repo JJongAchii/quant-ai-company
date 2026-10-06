@@ -33,7 +33,13 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 [설정·데모와 소스별 확인 상태](docs/news.md), [범위 복원과 실제 검증](docs/project/HOT-NEWS-SCOPE-RESTORATION.md),
 [최초 운영 인수·보안 정리](docs/project/HOT-NEWS-ACTIVATION.md)를 참고하세요.
 토큰 절약과 KST 06:00~24:00 발송·야간 모음의 설정 및 검증 상태는 [최적화 인수 기록](docs/project/HOT-NEWS-EFFICIENCY.md)에 남깁니다.
-정기 브리핑은 추후 `daily-brief`에서 다룹니다.
+**Analyst**의 `daily_brief` 정기 브리핑 구현을 추가했습니다. 한국 시간 07:45와 한국
+거래일 20:15에 자료를 종합합니다. 수집 데이터로 계산한 숫자와 뉴스 원문을 연결하며,
+핵심 요약·시장 전체 흐름·주요 숫자·최대 여섯 핵심 이슈·다음 확인 사항을 본문에, 상세 근거를 스레드에 제공합니다.
+원문별 누락 점검과 내용 깊이 검토를 추가했으며 [실제 출력 평가 기준](docs/project/BRIEFING-CONTENT-EVALUATION.md)을 따릅니다.
+기존 원문을 실제 구독 모델로 작성·검토한 [내용 평가와 읽을 수 있는 결과](docs/project/BRIEFING-CONTENT-RESULTS.md)를 보존합니다.
+기본값은 비활성이고 실제 운영 발송과 5거래일 관찰은 아직 검증하지 않았습니다.
+[브리핑 설정·복구·데모](docs/briefing.md)를 참고하세요.
 
 `tech-feed`에는 **AI 호출 없이** 국내외 기술 RSS·Atom의 원문 제목·링크·짧은 발췌를 전달하는
 별도 구독 기능을 추가했습니다. 12개 소스를 10분 대기 간격으로 수집하고 KST 06~24시에 한 건씩
@@ -240,8 +246,9 @@ PR 알림 스레드에서 소유자가 `반영해`라고 승인하면 해당 커
 서버 배포를 이어갑니다. 총괄에게 개선 진단을 요청하거나 보관 이력·진행 상태를 조회할 수 있습니다.
 범위와 검증 한계는 [개선 BOT 운영](docs/maintenance.md)을 보세요.
 
-아침 정기 시황 브리핑과 요청형 시장 분석 BOT은 [후속 로드맵](docs/project/NEXT-STEPS.md)에
-등록했습니다. 두 기능의 구현·활성화는 추후 진행합니다.
+정기 시황 브리핑은 Analyst의 구현과 실제 모델 내용 평가를 진행했으며 운영 발송 인수가 남아 있습니다.
+요청형 시장 분석 BOT은 [후속 로드맵](docs/project/NEXT-STEPS.md)의 별도 미구현 항목입니다.
+
 # 채널 구조와 전용 개선 담당
 
 [회사 Slack 최종 구조](docs/project/SLACK-COMPANY-DESIGN.md)와

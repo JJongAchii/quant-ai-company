@@ -1,0 +1,13 @@
+{
+  "scope": "Actual full local suite after scoped append protocol, before kilobarrel technical amendment; not cloud/Slack qualification",
+  "passed": 1392,
+  "skipped": 38,
+  "failed": 0,
+  "warnings": 12,
+  "elapsed_seconds": 513.45,
+  "format_version": 15,
+  "validation_version": 35,
+  "lint": "All checks passed!",
+  "junit": "regression-v35.xml",
+  "real_postgresql": true
+}

@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-01T04:47:05.194295+00:00",
+  "code_commit": "14e603eef5d7a0b71178e173a60747238e97321d",
+  "format_version": 15,
+  "validation_version": 41,
+  "command": ".venv/bin/pytest tests/test_briefing.py tests/test_briefing_content.py tests/test_briefing_analyst.py tests/test_briefing_planning.py tests/test_briefing_quality.py --junitxml=docs/project/evidence/briefing-analyst-integration-20260930/observation-time-v41.xml -q",
+  "counts": {
+    "tests": 173,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsed_seconds_reported": 14.33,
+  "scope": "Existing PostgreSQL briefing contract/rendering/review/prompt-budget regressions after prospective observation-time instruction change. Fixture originals and model responses, no real Slack/model call or deployment.",
+  "xml_sha256": "f1fb13f584ab53566ed2b9065b921c30aa90d62f1dca5afa7d2d8373ae99a0ce",
+  "ruff": "All checks passed"
+}

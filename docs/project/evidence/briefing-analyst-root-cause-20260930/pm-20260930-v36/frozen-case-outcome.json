@@ -1,0 +1,40 @@
+{
+  "scope": "Freshly frozen PM case at v36, failed; max5 completedcalls reached",
+  "format_version": 15,
+  "validation_version": 36,
+  "passed": false,
+  "checks": {
+    "numbers": true,
+    "sources": true,
+    "timing": true,
+    "causality": true,
+    "materiality": false,
+    "counterevidence": true,
+    "transmission": true,
+    "alternatives": true,
+    "falsifiability": true,
+    "coverage": false,
+    "depth": true,
+    "readability": false
+  },
+  "checks_passed": 9,
+  "rejected": {},
+  "quote_conflicts": [],
+  "completed_calls": 5,
+  "requests_not_applied": [
+    {
+      "source_id": "96d7885e2dd80c9c36a3e6bc8066836bd609840a",
+      "reason": "제목이 제시하는 전쟁 전 대비 회복률의 기준·기간을 확인해야 한다. 기존 절대 수출량에 없는 비교 기준이 공급 정상화 판단을 바꿀 수 있어 별도 원문을 요청한다."
+    },
+    {
+      "source_id": "0f84bfd389779ba1fe41a8c4f5458079649ddb28",
+      "reason": "초과세수의 미래기금 활용 조건과 국채 축소에 실제 쓸 수 있는 재원을 확인하려 한다. 제목만으로 배분이 확정됐다고 판단하지 않는다."
+    },
+    {
+      "source_id": "86d456a12997c53f06e31ba2b90dd5807b851ca6",
+      "reason": "협상단장의 안전 보장 조건과 인프라 관련 발언의 정확한 내용·시점을 확인하려 한다. 중재 진전과 병존하는 공급 위험을 바꿀 수 있는 별도 발언이다."
+    }
+  ],
+  "no_second_repair": true,
+  "slack": "not_called"
+}

@@ -1,0 +1,92 @@
+{
+  "checked_at": "2026-09-29T01:40:53.353412+00:00",
+  "previous_prompt_chars": 104431,
+  "current_prompt_chars": 86140,
+  "all_selected_originals_preserved": true,
+  "source_count": 16,
+  "unselected_candidates": 80,
+  "checks": [
+    {
+      "source_id": "7749fe93a900fb36780cd09f8495a9b1607192d6",
+      "exact_original_preserved": true,
+      "content_chars": 1499
+    },
+    {
+      "source_id": "584a1c794f77cc0b80f80e9e5ca8789382b8e338",
+      "exact_original_preserved": true,
+      "content_chars": 1481
+    },
+    {
+      "source_id": "c4805b63bb785aa49baeefaa00db7b7100fc208a",
+      "exact_original_preserved": true,
+      "content_chars": 1700
+    },
+    {
+      "source_id": "71ffce7919e2cb5454d5afc32344603461065de0",
+      "exact_original_preserved": true,
+      "content_chars": 2675
+    },
+    {
+      "source_id": "36aca3ef6704a4b44d528b7aec193b22fefc9da6",
+      "exact_original_preserved": true,
+      "content_chars": 1342
+    },
+    {
+      "source_id": "5712145636c251729f04144b76577ed2e0772b2a",
+      "exact_original_preserved": true,
+      "content_chars": 1188
+    },
+    {
+      "source_id": "527e9cdf701add700af4b2fa5bff8af5d93f06c4",
+      "exact_original_preserved": true,
+      "content_chars": 3294
+    },
+    {
+      "source_id": "3239ad3aa03b6f977c7bbbde4389eb0755fdc89a",
+      "exact_original_preserved": true,
+      "content_chars": 551
+    },
+    {
+      "source_id": "2f9e315361ffa560806543acd4c907b0eb6cf5d7",
+      "exact_original_preserved": true,
+      "content_chars": 1680
+    },
+    {
+      "source_id": "bad5dd772395c3c99c41a2e81b397c55cd363a46",
+      "exact_original_preserved": true,
+      "content_chars": 1192
+    },
+    {
+      "source_id": "a8bb2955dacb6326497ce375c6936d62d28f2b83",
+      "exact_original_preserved": true,
+      "content_chars": 1225
+    },
+    {
+      "source_id": "e1f902b7a4d3db2cf42f16c46609a4142d778fae",
+      "exact_original_preserved": true,
+      "content_chars": 878
+    },
+    {
+      "source_id": "fe46e6dbf42c481fcf3d9040a8f083e4f3fd6f0b",
+      "exact_original_preserved": true,
+      "content_chars": 1679
+    },
+    {
+      "source_id": "b0f48035fff19831f03849bd21d596e5af2a513d",
+      "exact_original_preserved": true,
+      "content_chars": 4856
+    },
+    {
+      "source_id": "05ec0a430c63cb6d848f6a952e583e0fe6664596",
+      "exact_original_preserved": true,
+      "content_chars": 1717
+    },
+    {
+      "source_id": "d9147bb241a05e9fbf6d6170ba1c1e006aef2b8c",
+      "exact_original_preserved": true,
+      "content_chars": 1937
+    }
+  ],
+  "request_sha256": "bed0f859b3ff758c05ee698c4c54c1f9ba276befcde45ca1fa0d51ea145ccd45",
+  "mode": "Development repair of context projection; no factual or rejection changes."
+}

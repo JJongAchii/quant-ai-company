@@ -1,0 +1,278 @@
+{
+  "recorded_at": "2026-10-02T03:58:14.594262+00:00",
+  "installed_commit": "289dc70c6858ea229476216d7ea4c1c10ece68ff",
+  "phase": "preview_active",
+  "activated_at": "2026-10-02T03:35:33.146621+00:00",
+  "owner_approval_id": "chat-analyst-preview-approved-20261002",
+  "publication_enabled": false,
+  "archive_sha256": "addf961c7ad4b6fecc4c7e423a58ab615f078e46b0208f04119b857bcad4e68c",
+  "manifest_sha256": "5a28b1a27f6e96584df36286a760ee0d8b078ffb11e80e78a96b81bc9c84493f",
+  "previous_preview_commit": "92d2fce30161263d39e7a5ddbfcb0968691a2ae8",
+  "runtime_changes": 2,
+  "source_and_locked_dependencies": [
+    {
+      "target": "app",
+      "id": "sha256:5d0d7c42de26e9b89e8909001a4376577b91acb4d996342018486713cc837e53",
+      "source_verified": true,
+      "base_image_id": "sha256:3ac146d7d55b678a9e40c6d8e1943638d715069a393f057fc99c3c8c081aa47e",
+      "base_image_preserved": true,
+      "locked_dependencies": {
+        "calendar": "4.13.2",
+        "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    {
+      "target": "codex",
+      "id": "sha256:c1d123ee1c525a7d02375fb1172e1d955fec8c555e0285255c5da4b80b834ea4",
+      "source_verified": true,
+      "base_image_id": "sha256:7aedc5ed53e8d732f8e4507563b1fa5a50c687ee3a43396502e935c8093e494d",
+      "base_image_preserved": true,
+      "locked_dependencies": {
+        "calendar": "4.13.2",
+        "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    }
+  ],
+  "database_backup": {
+    "bytes": 236432609,
+    "sha256": "c24c8c938739a57ab2c36bd15005c51fffb9e356f8456d6ae786f03cded2dc17"
+  },
+  "unrelated_services_preserved": true,
+  "primary_auth_account_job_volumes_preserved": true,
+  "protected_autonomous_release_policy": "Unchanged; explicit owner-authorized operator installation",
+  "data_worker": {
+    "running": true,
+    "oom": false,
+    "restarts": 0,
+    "memory_bytes": 402653184,
+    "image": "quant-company:289dc70c6858ea229476216d7ea4c1c10ece68ff"
+  },
+  "briefing_status": {
+    "enabled": true,
+    "publish_enabled": false,
+    "authorized": true,
+    "model_call_count_observed": 0,
+    "edition_states": [
+      {
+        "id": "0b4fb37d-d899-5032-a8e7-edb93a3b155b",
+        "state": "missed"
+      },
+      {
+        "id": "a6c3dfce-2850-5cca-88e1-aa94fd3c48fb",
+        "state": "missed"
+      },
+      {
+        "id": "29ce50b2-377e-587c-bd27-8038c9f1b649",
+        "state": "missed"
+      }
+    ]
+  },
+  "actual_qdata_read": {
+    "ok": true,
+    "observed_at": "2026-10-02T03:55:18.217503+00:00",
+    "qdata_code_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "datasets": {
+      "krx_index": {
+        "rows": 60,
+        "date_bounds": {
+          "date": {
+            "statistics_complete": true,
+            "min": "2016-01-04T00:00:00",
+            "max": "2026-10-01T00:00:00",
+            "null_count": 0
+          }
+        }
+      },
+      "prices": {
+        "rows": 279,
+        "date_bounds": {
+          "date": {
+            "statistics_complete": true,
+            "min": "2006-01-03T00:00:00",
+            "max": "2026-09-30T00:00:00",
+            "null_count": 0
+          }
+        }
+      },
+      "fred": {
+        "rows": 62,
+        "date_bounds": {
+          "date": {
+            "statistics_complete": true,
+            "min": "1980-01-01T00:00:00",
+            "max": "2026-09-30T00:00:00",
+            "null_count": 0
+          }
+        }
+      },
+      "ecos": {
+        "rows": 107,
+        "date_bounds": {
+          "date": {
+            "statistics_complete": true,
+            "min": "2000-01-01T00:00:00",
+            "max": "2026-10-01T00:00:00",
+            "null_count": 0
+          }
+        }
+      }
+    },
+    "errors": [],
+    "current_observations": 0,
+    "dated_contexts": 16,
+    "diagnostics": [
+      {
+        "dataset": "krx_index",
+        "error": "stale_session",
+        "instrument": "kospi",
+        "latest": "2026-10-01",
+        "expected": "2026-10-02"
+      },
+      {
+        "dataset": "krx_index",
+        "error": "stale_session",
+        "instrument": "kosdaq",
+        "latest": "2026-10-01",
+        "expected": "2026-10-02"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "DBC",
+        "latest": "2026-09-30",
+        "expected": "2026-10-01"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "EEM",
+        "latest": "2026-09-30",
+        "expected": "2026-10-01"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "EFA",
+        "latest": "2026-09-30",
+        "expected": "2026-10-01"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "GLD",
+        "latest": "2026-09-30",
+        "expected": "2026-10-01"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "HYG",
+        "latest": "2026-09-30",
+        "expected": "2026-10-01"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "IWM",
+        "latest": "2026-09-30",
+        "expected": "2026-10-01"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "QQQ",
+        "latest": "2026-09-30",
+        "expected": "2026-10-01"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "SPY",
+        "latest": "2026-09-30",
+        "expected": "2026-10-01"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "TLT",
+        "latest": "2026-09-30",
+        "expected": "2026-10-01"
+      }
+    ],
+    "scope": "Live integration read before KR close; not a full current-edition market coverage or quality pass"
+  },
+  "actual_temporal": [
+    {
+      "id": "company-brief-collection-v1",
+      "status": "RUNNING",
+      "task_queue": "quant-company-brief-collection",
+      "run_id": "ed58a039-1c18-438f-bd39-0ad12c91be70",
+      "history_events": 418,
+      "event_types": {
+        "EVENT_TYPE_WORKFLOW_EXECUTION_STARTED": 1,
+        "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED": 76,
+        "EVENT_TYPE_WORKFLOW_TASK_STARTED": 76,
+        "EVENT_TYPE_WORKFLOW_TASK_COMPLETED": 76,
+        "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED": 38,
+        "EVENT_TYPE_ACTIVITY_TASK_STARTED": 38,
+        "EVENT_TYPE_ACTIVITY_TASK_COMPLETED": 38,
+        "EVENT_TYPE_TIMER_STARTED": 38,
+        "EVENT_TYPE_TIMER_FIRED": 37
+      }
+    },
+    {
+      "id": "company-brief-editorial-v1",
+      "status": "RUNNING",
+      "task_queue": "quant-company-news-model",
+      "run_id": "583a1637-3116-4a60-82f3-b30279d23dd8",
+      "history_events": 27,
+      "event_types": {
+        "EVENT_TYPE_WORKFLOW_EXECUTION_STARTED": 1,
+        "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED": 5,
+        "EVENT_TYPE_WORKFLOW_TASK_STARTED": 5,
+        "EVENT_TYPE_WORKFLOW_TASK_COMPLETED": 5,
+        "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED": 3,
+        "EVENT_TYPE_ACTIVITY_TASK_STARTED": 2,
+        "EVENT_TYPE_ACTIVITY_TASK_COMPLETED": 2,
+        "EVENT_TYPE_TIMER_STARTED": 2,
+        "EVENT_TYPE_TIMER_FIRED": 2
+      }
+    },
+    {
+      "id": "company-brief-data-v1",
+      "status": "RUNNING",
+      "task_queue": "quant-company-brief-data",
+      "run_id": "491df91b-c07b-405c-88ab-1a5e67dc8c88",
+      "history_events": 407,
+      "event_types": {
+        "EVENT_TYPE_WORKFLOW_EXECUTION_STARTED": 1,
+        "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED": 74,
+        "EVENT_TYPE_WORKFLOW_TASK_STARTED": 74,
+        "EVENT_TYPE_WORKFLOW_TASK_COMPLETED": 74,
+        "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED": 37,
+        "EVENT_TYPE_ACTIVITY_TASK_STARTED": 37,
+        "EVENT_TYPE_ACTIVITY_TASK_COMPLETED": 37,
+        "EVENT_TYPE_TIMER_STARTED": 37,
+        "EVENT_TYPE_TIMER_FIRED": 36
+      }
+    }
+  ],
+  "earlier_resource_probe": {
+    "192MiB_probe_exit": 137,
+    "worker_restarted": true,
+    "oom_counter_not_observed": true,
+    "temporary_docker_update": "384MiB",
+    "minimal_isolated_reader_returncode": 0,
+    "compose_recreation_limit_now_persisted": "384MiB"
+  },
+  "private_receipts": {
+    "activation_sha256": "b1d9eef667beab549228a298d36d82f6d3ff5ba32b78eab48dc03a65044e33dd",
+    "postinstall_probe_sha256": "55222906f63d81867aff22226590f1cad67f02bcc3eba5d4654f20189356ec81"
+  },
+  "slack": "not_called",
+  "model_during_installation_or_probe": "not_called",
+  "expert_content_acceptance": false,
+  "five_trading_day_acceptance": false,
+  "followup_delivery": "not qualified on preserved generic worker/socket",
+  "scope": "Actual cloud preview installation and read-only integration checks; no Slack delivery or content certification"
+}

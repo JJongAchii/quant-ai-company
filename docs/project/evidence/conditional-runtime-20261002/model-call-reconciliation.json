@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-02T05:52:58.136202+00:00",
+  "request_id": "quant-feed-eed90a79-7864-4486-948b-66abc03686fd",
+  "actual_codex_receipt": true,
+  "runtime_receipt_sha256": "5b8c02b50018f1979072b22307d4ce45b190aa249b267a920459808850ad6f8d",
+  "account_call_state": "completed",
+  "account_rows_reconciled": 1,
+  "exact_input_and_account_binding_verified": true,
+  "quant_feed_state_preserved": true,
+  "quant_feed_commit_invoked": false,
+  "model_requests_replayed": 0,
+  "isolated_networkless_validation": {
+    "request_and_response_types_verified": true,
+    "input_digest": "7d4c5226d23512c0fdf2f9843d29aa0910afa18544e9db05bc1011edef2485f0",
+    "provider": "codex",
+    "request_id": "quant-feed-eed90a79-7864-4486-948b-66abc03686fd"
+  }
+}

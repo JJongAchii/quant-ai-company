@@ -1,4 +1,4 @@
-"""Extract article regions before taking a bounded excerpt for editorial review."""
+"""Extract and preserve article bodies within the source-document size bound."""
 
 import json
 import re
@@ -9,6 +9,14 @@ from ..web_fetch import MAX_TEXT, fetch
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 IGNORE = {"script", "style", "noscript", "svg", "nav", "header", "footer", "aside", "form", "button"}
 BLOCK = {"p", "div", "br", "li", "h1", "h2", "h3", "h4", "tr", "article", "section"}
+MAX_ARTICLE_TEXT = 12000
+
+
+def supported_article_body(receipt):
+    """Reject cached broad-page fallbacks for the verified Etoday body contract."""
+    return not (receipt.get("publisher_host") == "www.etoday.co.kr"
+                and "html" in receipt.get("content_type", "")
+                and receipt.get("article_extraction") != "articleBody")
 
 
 class ArticlePage(HTMLParser):
@@ -89,7 +97,11 @@ class ArticlePage(HTMLParser):
                 region["chars"] += len(data)
 
     def article(self):
+        # An explicitly marked body may be empty or a headline-only flash.
+        # Do not replace it with a larger outer region containing other news.
+        declared_rank = max((r["rank"] for r in self.regions), default=0)
         usable = [r for r in self.regions if r["chars"] >= 120
+                  and (declared_rank < 3 or r["rank"] == declared_rank)
                   and (self.host != "world.kbs.co.kr" or r["rank"] == 4)]
         if not usable:
             return "", "missing"
@@ -116,5 +128,8 @@ def fetch_original(url):
             receipt = {**receipt, "published_at": page.published_at, "publication_time_basis": "page_metadata"}
     if len(content) < 120:
         return {**receipt, "ok": False, "content": "", "error": "article_body_not_found"}, raw
-    return {**receipt, "content": content[:6000], "content_truncated": len(content) > MAX_TEXT,
-            "article_extraction": method, "article_chars": len(content), "excerpt_truncated": len(content) > 6000}, raw
+    if not supported_article_body({**receipt, "article_extraction": method}):
+        return {**receipt, "ok": False, "content": "", "error": "article_body_not_found"}, raw
+    return {**receipt, "content": content[:MAX_ARTICLE_TEXT], "content_truncated": len(content) > MAX_TEXT,
+            "article_extraction": method, "article_chars": len(content),
+            "excerpt_truncated": len(content) > MAX_ARTICLE_TEXT}, raw

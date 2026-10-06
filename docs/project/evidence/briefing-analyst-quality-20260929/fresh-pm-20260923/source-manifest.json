@@ -1,0 +1,143 @@
+{
+  "case": "pm-20260923-fresh-analyst-quality",
+  "cutoff": "2026-09-23T10:30:00+00:00",
+  "raw_sha256": "459ff90b031dabe751082ddecdb8ec377c700db481eeca42bd63b71035bd291e",
+  "bundle_sha256": "5b4c932f2728455854f56b5afc3cb0b2acbde31851f3436f69b6d7e4de1b5f1e",
+  "raw_article_count": 199,
+  "eligible_count": 199,
+  "candidate_count": 96,
+  "initial_selected_count": 16,
+  "candidate_market_close_reports": 6,
+  "selected": [
+    {
+      "id": "3155236565fe5ca068f1f32cfd14e3c9138f8631",
+      "title": "코스피, 추석연휴 앞두고 또 '전강후약'…0.9% 올라 7,080(종합)",
+      "publisher": "연합뉴스",
+      "published_at": "2026-09-23T07:07:39+00:00",
+      "retrieved_at": "2026-09-23T07:12:05.245985+00:00",
+      "sha256": "9f12d55f0fa86bea827ce0dfab79ee666717c319fec1d4bb501b1f02388dc211"
+    },
+    {
+      "id": "4c858feaad66c47bc229df23e405fbb732c682c1",
+      "title": "코스피, 0.9% 올라 7,080…4거래일 연속 상승",
+      "publisher": "SBS 뉴스",
+      "published_at": "2026-09-23T06:51:00+00:00",
+      "retrieved_at": "2026-09-23T07:01:40.416158+00:00",
+      "sha256": "7e2ef45554b4051e60caf8c9b0458fa1e386f50f6a2c95891e7e661690c70c54"
+    },
+    {
+      "id": "a135df313f2e5f19f874e876364936b47e18d518",
+      "title": "한은 \"추석 앞두고 3조 6천억 원 규모 화폐 공급\"",
+      "publisher": "SBS 뉴스",
+      "published_at": "2026-09-23T04:27:00+00:00",
+      "retrieved_at": "2026-09-23T04:38:51.202970+00:00",
+      "sha256": "7d7d1da1a4784a79bdec4d69344a4b94b4c1bc18f2cff92a8839936e0e6b8bab"
+    },
+    {
+      "id": "45a1ff52fbbb9fb1027751e918bb1f72a1bda0b9",
+      "title": "국고채 금리 유가 하락에 동반 하락…3년물 연 4.006%(종합)",
+      "publisher": "연합뉴스",
+      "published_at": "2026-09-23T08:14:01+00:00",
+      "retrieved_at": "2026-09-23T08:23:05.652280+00:00",
+      "sha256": "ca0d0d9ee1665494100385d5bd656293531b9434097aedba4c21b25e3a0c38a1"
+    },
+    {
+      "id": "eef15b24bd15c7bf6a25828bcca2fdffcfc1ba69",
+      "title": "[뉴욕증시] 이란과 대화 재개에 유가 하락…혼조세 마감",
+      "publisher": "SBS 뉴스",
+      "published_at": "2026-09-22T22:39:00+00:00",
+      "retrieved_at": "2026-09-22T22:50:59.911749+00:00",
+      "sha256": "5434dbccc9f827b8bd37725e1346840b3e4f5925464f35353d431dff439fc145"
+    },
+    {
+      "id": "c5e584c5bce41c36808bf1d12ecc932dee7c4076",
+      "title": "Oil prices mixed after U.S. and Iran talk for hours at UN meeting",
+      "publisher": "CNBC",
+      "published_at": "2026-09-23T08:36:50+00:00",
+      "retrieved_at": "2026-09-23T08:42:13.445587+00:00",
+      "sha256": "3b5692f7372715aad4f363169dc84fe0ec4961bef066bd41cc5537e098510fe7"
+    },
+    {
+      "id": "51a0c4bb7995086f0fc121be0977a3cb237055b8",
+      "title": "Trump-Xi summit puts AI safety talks on the table but neither side wants to slow down",
+      "publisher": "CNBC",
+      "published_at": "2026-09-23T07:36:47+00:00",
+      "retrieved_at": "2026-09-23T07:45:54.443270+00:00",
+      "sha256": "6c4e867b55cb69febb34c8bf45aa42b42769d5591caac20c2ff341fcf05e244e"
+    },
+    {
+      "id": "2df6c7ce5ada6411de8a78f510d30d3cb38fa989",
+      "title": "삼성전자, 연휴 앞두고 3%대 급등마감…SK하이닉스도 1.2%↑",
+      "publisher": "SBS 뉴스",
+      "published_at": "2026-09-23T06:58:00+00:00",
+      "retrieved_at": "2026-09-23T07:11:52.235411+00:00",
+      "sha256": "3fe775ba4cee7d1b4e262000479a5da405e449fa541e215432e9e733a31464c1"
+    },
+    {
+      "id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+      "title": "국제유가, 사우디 원유수출 회복 기대에 하락⋯미ㆍ이란 협상도 영향 [상보]",
+      "publisher": "이투데이",
+      "published_at": "2026-09-22T21:50:00+00:00",
+      "retrieved_at": "2026-09-22T22:00:01.916771+00:00",
+      "sha256": "25d9f47f307bda856fc66514df97d17bb5a3369ee166cac09d42e47e9045031b"
+    },
+    {
+      "id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+      "title": "Oil prices reverse gains as United Nations General Assembly meeting lifts hopes for Iran war diplomacy",
+      "publisher": "CNBC",
+      "published_at": "2026-09-22T09:30:24+00:00",
+      "retrieved_at": "2026-09-22T09:30:42.364090+00:00",
+      "sha256": "9564061afae093c88d2f1288a8a4842c6576fe0dcd875db1fcdf76e30d927f0e"
+    },
+    {
+      "id": "f2a295d28f66f5771a0bd10d82117c591f0f9ec5",
+      "title": "뉴욕증시, 미ㆍ이란 3시간 담판에도 숨고르기⋯다우↓ㆍ나스닥 사상 최고 [종합]",
+      "publisher": "이투데이",
+      "published_at": "2026-09-22T22:39:00+00:00",
+      "retrieved_at": "2026-09-22T22:40:39.354506+00:00",
+      "sha256": "61250fe2281a00925bce18a9bf04e40aa96c54e35be09fa97e08349d8eb4f94f"
+    },
+    {
+      "id": "0a6279dfea2dbe7a7c1c0d8b940331f0f290a7ab",
+      "title": "뉴욕증시, 미ㆍ이란 ‘3시간 협상’에도 혼조⋯나스닥 0.45%↑[상보]",
+      "publisher": "이투데이",
+      "published_at": "2026-09-22T22:20:00+00:00",
+      "retrieved_at": "2026-09-22T22:30:31.211241+00:00",
+      "sha256": "a2cb313e27d56b912704b01632865d7794012e00e23eaef9236b61ac84bfb54a"
+    },
+    {
+      "id": "852b93b97dd7694a7408a9c264dc9fcfcfcda062",
+      "title": "마크롱, 호르무즈 파병 가능성 시사…\"더 개입할 준비 돼있어\"",
+      "publisher": "연합뉴스",
+      "published_at": "2026-09-23T08:37:03+00:00",
+      "retrieved_at": "2026-09-23T08:42:56.844163+00:00",
+      "sha256": "2056582306908c1f65a8927923741ea6972d68744142d1cd50b4668c197528e1"
+    },
+    {
+      "id": "54e036895c2164dc95a2a71d79c2f4c36cb710c7",
+      "title": "S. Korea to Cut Middle East Oil Dependence to 50% by 2035, Expand Reserves",
+      "publisher": "KBS World",
+      "published_at": "2026-09-23T06:18:45+00:00",
+      "retrieved_at": "2026-09-23T06:31:22.730220+00:00",
+      "sha256": "c4e413f1a3bf0ca2ea05097720c05bc81a2bed2f57f9bb6d56fc1c6239ad6e47"
+    },
+    {
+      "id": "19f0d6ace0af4c4a8ddf74fbd39d5fc4790f26f4",
+      "title": "US and Iran hold first talks since June after Trump's 'annihilation' threat",
+      "publisher": "BBC News",
+      "published_at": "2026-09-23T06:12:56+00:00",
+      "retrieved_at": "2026-09-23T06:31:19.885561+00:00",
+      "sha256": "78ab647622900d18f2ac226a8b76f8a7dfd2ff701cea59db3cfbf4d288f14c68"
+    },
+    {
+      "id": "356e4030df1cb13e0cf53545b91014fa124f7007",
+      "title": "US, Iranian Officials Hold Talks amid UNGA Meetings in New York",
+      "publisher": "KBS World",
+      "published_at": "2026-09-23T04:24:38+00:00",
+      "retrieved_at": "2026-09-23T04:39:04.043293+00:00",
+      "sha256": "8b301c20bdfb81ca740067d918ff9fb2394ed4199bc9213a238764da9d1d0fad"
+    }
+  ],
+  "model_calls": 0,
+  "slack": "not_called"
+}

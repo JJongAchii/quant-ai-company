@@ -1,0 +1,4 @@
+{
+  "test_environment_removed": true,
+  "owned_postgres": "stopped"
+}

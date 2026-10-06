@@ -9,11 +9,13 @@ from .config import Settings
 from .tech_feed.contracts import TECH_FEED_AGENT
 
 
-def manifests(company, base_url, output, transport="socket", include_reporter=False, include_tech_scout=False):
+def manifests(company, base_url, output, transport="socket", include_reporter=False, include_tech_scout=False,
+              include_market_brief=False):
     output.mkdir(parents=True, exist_ok=True)
     for role in company.roles.values():
         optional = ((include_reporter and role.id == "reporter")
-                    or (include_tech_scout and role.id == TECH_FEED_AGENT))
+                    or (include_tech_scout and role.id == TECH_FEED_AGENT)
+                    or (include_market_brief and role.id == "market_brief"))
         if not role.active and not optional:
             continue
         value = {
@@ -35,6 +37,9 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
             value["display_information"]["name"] = "Reporter"
             value["features"]["bot_user"]["display_name"] = "reporter"
             value["settings"]["event_subscriptions"]["bot_events"].append("entity_details_requested")
+        if role.id == "market_brief":
+            value["display_information"]["name"] = "Analyst"
+            value["features"]["bot_user"]["display_name"] = "analyst"
         if role.id == TECH_FEED_AGENT:
             value = {
                 "display_information": {"name": "Tech Scout", "description": role.mission[:140]},
@@ -83,6 +88,7 @@ def main():
     serve.add_argument("--port", type=int, default=8000)
     sub.add_parser("worker")
     sub.add_parser("data-watch-worker")
+    sub.add_parser("briefing-data-worker")
     sub.add_parser("housing-feed-worker")
     sub.add_parser("news-worker")
     sub.add_parser("quant-feed-worker")
@@ -91,6 +97,9 @@ def main():
     news = sub.add_parser("news")
     news.add_argument("action", choices=["status", "collect", "review", "probe"])
     news.add_argument("--output", type=Path)
+    briefing = sub.add_parser("briefing")
+    briefing.add_argument("action", choices=["status", "preview", "collect", "data", "review", "probe", "data-probe", "qualify"])
+    briefing.add_argument("--output", type=Path)
     tech_feed = sub.add_parser("tech-feed")
     tech_feed.add_argument("action", choices=["status", "collect", "probe"])
     tech_feed.add_argument("--output", type=Path)
@@ -122,6 +131,7 @@ def main():
     slack.add_argument("--output", type=Path, default=Path(".local/slack-manifests"))
     slack.add_argument("--include-reporter", action="store_true")
     slack.add_argument("--include-tech-scout", action="store_true")
+    slack.add_argument("--include-market-brief", action="store_true")
     args = parser.parse_args()
     settings = Settings()
     if args.command == "migrate":
@@ -138,6 +148,10 @@ def main():
         from .runtime import data_watch_worker_main
 
         asyncio.run(data_watch_worker_main(settings))
+    elif args.command == "briefing-data-worker":
+        from .runtime import brief_data_worker_main
+
+        asyncio.run(brief_data_worker_main(settings))
     elif args.command == "housing-feed-worker":
         from .runtime import housing_feed_worker_main
 
@@ -158,10 +172,12 @@ def main():
         if args.transport == "http" and not (args.base_url or "").startswith("https://"):
             parser.error("Slack public callback URL must use HTTPS")
         manifests(Company(settings), args.base_url, args.output, args.transport,
-                  args.include_reporter, args.include_tech_scout)
-    elif args.command in {"news", "tech-feed", "quant-feed", "housing-feed"}:
+                  args.include_reporter, args.include_tech_scout, args.include_market_brief)
+    elif args.command in {"news", "tech-feed", "briefing", "quant-feed", "housing-feed"}:
         if args.command == "news":
             from .news.commands import command
+        elif args.command == "briefing":
+            from .briefing.commands import command
         elif args.command == "tech-feed":
             from .tech_feed.commands import command
         elif args.command == "housing-feed":

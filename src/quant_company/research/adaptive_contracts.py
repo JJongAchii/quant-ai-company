@@ -18,6 +18,7 @@ from pydantic import ConfigDict, Field, FiniteFloat, field_validator, model_vali
 from ..contracts import StrictModel
 from .contracts import Assignment, Commit, Digest
 from .mission_contracts import FileMap, MissionSpec, Path, TrialMetrics, TrialPlan
+from .policy_contracts import ResultScope, ScopedRecord, require_scope
 
 ADAPTIVE_RECIPE = "kr-etf-monthly-python-v1"
 RESEARCH_RECIPE = "kr-research-python-v2"
@@ -72,7 +73,7 @@ class RuntimeMountIdentity(AdaptiveModel):
 class AdaptiveExecutionProfile(AdaptiveModel):
     """Public, hash-bound operator policy. Local filesystem paths are separate."""
 
-    schema_version: Literal[1] = 1
+    schema_version: Literal[1, 2] = 1
     id: Annotated[str, Field(pattern=r"^[a-z][a-z0-9-]{1,79}$")]
     protocol: Literal["quant-company-adaptive-v1"] = "quant-company-adaptive-v1"
     return_series_contract: Literal["initial-zero-calendar-cagr-v1"] = "initial-zero-calendar-cagr-v1"
@@ -88,11 +89,18 @@ class AdaptiveExecutionProfile(AdaptiveModel):
     qualification_timeout_seconds: Annotated[FiniteFloat, Field(gt=0)]
     evaluation_timeout_seconds: Annotated[FiniteFloat, Field(gt=0)]
     fixture_only: bool = Field(strict=True)
+    data_policy_digest: Digest | None = Field(default=None, exclude_if=lambda v: v is None)
+    result_scope: ResultScope | None = Field(default=None, exclude_if=lambda v: v is None)
 
     _python = field_validator("python_executable")(_guest_path)
 
     @model_validator(mode="after")
     def bounded(self):
+        if self.schema_version == 2:
+            if self.data_policy_digest is None or self.result_scope is None:
+                raise ValueError("Policy profiles require a policy digest and result scope")
+        elif self.data_policy_digest is not None or self.result_scope is not None:
+            raise ValueError("Legacy profiles cannot carry a new data policy")
         if not self.entrypoint.endswith(".py"):
             raise ValueError("python-entrypoint-required")
         if not any(self.entrypoint == path or self.entrypoint.startswith(path + "/")
@@ -131,8 +139,9 @@ class AdaptiveManifest(AdaptiveModel):
     def identities(self):
         if self.id == ADAPTIVE_RECIPE and self.spec.kind != "strategy":
             raise ValueError("only-strategy-missions-executable")
-        if (self.id == RESEARCH_RECIPE) != (self.spec.schema_version == 2):
+        if (self.id == RESEARCH_RECIPE) != (self.spec.schema_version >= 2):
             raise ValueError("adaptive-profile-version-mismatch")
+        require_scope(self.spec, self.plan)
         if self.mission_digest != record_digest(self.spec) or self.plan_digest != record_digest(self.plan):
             raise ValueError("adaptive-manifest-digest-mismatch")
         if self.plan.mission_digest != self.mission_digest or self.plan.trial_id != self.trial_id:
@@ -180,8 +189,8 @@ def parse_assignment(value: dict[str, Any]) -> Assignment | AdaptiveAssignment:
     return Assignment.model_validate(value)
 
 
-class AdaptiveQualification(AdaptiveModel):
-    schema_version: Literal[1] = 1
+class AdaptiveQualification(ScopedRecord):
+    schema_version: Literal[1, 2] = 1
     kind: Literal["adaptive_qualification"] = "adaptive_qualification"
     trial_id: UUID
     plan_digest: Digest
@@ -199,6 +208,13 @@ class AdaptiveQualification(AdaptiveModel):
     json_roundtrip_passed: Literal[True]
     performance_read: Literal[False]
     sealed_read: Literal[False]
+    producer_sha256: Digest | None = Field(default=None, exclude_if=lambda v: v is None)
+
+    @model_validator(mode="after")
+    def producer_binding(self):
+        if (self.schema_version == 2) != (self.producer_sha256 is not None):
+            raise ValueError("Scoped qualification requires exact protected producer bytes")
+        return self
 
     @field_validator("json_dates", mode="before")
     @classmethod
@@ -226,8 +242,8 @@ class ReturnSeriesRef(AdaptiveModel):
         return self
 
 
-class AdaptiveResult(AdaptiveModel):
-    schema_version: Literal[1] = 1
+class AdaptiveResult(ScopedRecord):
+    schema_version: Literal[1, 2] = 1
     kind: Literal["adaptive_result"] = "adaptive_result"
     trial_id: UUID
     plan_digest: Digest
@@ -237,9 +253,12 @@ class AdaptiveResult(AdaptiveModel):
     stress_returns: ReturnSeriesRef | None = Field(default=None, exclude_if=lambda v: v is None)
     observations: Path | None = Field(default=None, exclude_if=lambda v: v is None)
     output_files: Annotated[FileMap, Field(max_length=MAX_OUTPUT_FILES)]
+    producer_sha256: Digest | None = Field(default=None, exclude_if=lambda v: v is None)
 
     @model_validator(mode="after")
     def series_contract(self):
+        if (self.schema_version == 2) != (self.producer_sha256 is not None):
+            raise ValueError("Scoped results require exact protected producer bytes")
         if self.metrics.sample_count < 2:
             raise ValueError("dated-return-series-needs-two-observations")
         if self.metrics.primary.metric != "stress-net-absolute-cagr":
@@ -262,8 +281,8 @@ class AdaptiveResult(AdaptiveModel):
         return self
 
 
-class AdaptiveExecutionReceipt(AdaptiveModel):
-    schema_version: Literal[1] = 1
+class AdaptiveExecutionReceipt(ScopedRecord):
+    schema_version: Literal[1, 2] = 1
     kind: Literal["adaptive_discovery"] = "adaptive_discovery"
     job_id: UUID
     project_id: UUID
