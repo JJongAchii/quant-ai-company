@@ -5,6 +5,7 @@
 회사 운영 검증 기록을 여기로 모았습니다. 이후 회사 기록은 quant-workspace에 추가하지 않습니다.
 
 - [현재 사용 범위와 로드맵](NEXT-STEPS.md)
+- [서버 디스크 정리·S3 백업 검증·매일 보관 정책 적용](SERVER-STORAGE-20261006.json)
 - [data-watch 운영 게시와 메시지 해석](DATA-WATCH-PRODUCTION-20260928.md)
 - [data-watch 운영자 현황 문구 개선](DATA-WATCH-STATUS-CLARITY-20260928.md)
 - [data-watch 소스별 마지막 날짜와 갱신 점검](DATA-WATCH-SOURCE-STATUS-20260928.md)

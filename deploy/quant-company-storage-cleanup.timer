@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Quant Company storage cleanup, approximately 03:40 KST
+
+[Timer]
+OnCalendar=*-*-* 18:40:00 UTC
+RandomizedDelaySec=5min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

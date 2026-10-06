@@ -1,0 +1,15 @@
+[Unit]
+Description=Bounded Quant Company image/cache and verified local backup retention
+After=docker.service network-online.target
+Wants=network-online.target
+ConditionPathExists=/var/lib/quant-company/config/runtime.env
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/quant-company/operations/storage-cleanup/storage_cleanup.py --protect-commit eec5e2326dc5ecfcfe8bc7a98840afec0820242a --apply
+Environment=AWS_DEFAULT_REGION=ap-northeast-2
+TimeoutStartSec=30min
+Nice=10
+IOSchedulingClass=idle
+UMask=0077
+NoNewPrivileges=true
