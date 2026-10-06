@@ -52,5 +52,27 @@ jobs:
           uv run --frozen pytest -q -m 'not live'
           tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py
 
+
+  codex-protocol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff # v6
+      - name: Install the reviewed Linux distribution
+        env:
+          NPM_CONFIG_PREFIX: ${{ runner.temp }}/company-codex
+        run: |
+          node deploy/install-codex.cjs src/quant_company/providers/codex_release.json
+          echo "$NPM_CONFIG_PREFIX/bin" >> "$GITHUB_PATH"
+      - name: Real CLI config and catalog protocol; empty auth, no inference
+        env:
+          CODEX_CONFIG_PROBE: '1'
+          CODEX_CATALOG_PROBE_BIN: ${{ runner.temp }}/company-codex/bin/codex
+        run: uv run --frozen pytest -q --basetemp "$RUNNER_TEMP/codex-protocol-tests" tests/test_codex_config_probe.py tests/test_model_catalog.py
+
 # No repository/production secrets, model calls, deployments or PR write token.
 # qdata integration is separately pinned and verified; core tests need no private checkout.

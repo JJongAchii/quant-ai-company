@@ -1,83 +1,29 @@
 {
   "approval": {
-    "approvedAt": "2026-10-06T07:53:56.619444+00:00",
-    "id": "chat-model-assignments-deploy-20261006"
+    "approvedAt": "2026-10-06T11:06:41.275657+00:00",
+    "id": "chat-codex-upgrade-20261006"
   },
-  "currentIntent": "INTENT-v2.json",
+  "currentIntent": "INTENT-v3.json",
   "deliverables": {
-    "IMPLEMENTATION": {
-      "evidence": [
-        {
-          "path": "src/quant_company/model_policy.py",
-          "sha256": "173de699cc1c"
-        },
-        {
-          "path": "src/quant_company/model_control.py",
-          "sha256": "9a638de467ef"
-        },
-        {
-          "path": "docs/runbooks/model-assignments.md",
-          "sha256": "f6d2b0afeb9e"
-        }
-      ],
-      "note": "Owner-controlled assignments remain active with existing defaults. Actual owner catalog command and delivered response now verified; pin/task model inference awaits an actual designation. CLI update diagnosis is separate from employee assignments.",
-      "status": "verified",
-      "updatedAt": "2026-10-06T10:55:49.601409+00:00"
+    "QUALIFICATION": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
-    "PRODUCTION": {
-      "evidence": [
-        {
-          "path": "docs/project/MODEL-ASSIGNMENTS-PRODUCTION-20261006.md",
-          "sha256": "b74b07c7dedd"
-        },
-        {
-          "path": "docs/project/evidence/model-assignments-20261006/production-verification.json",
-          "sha256": "3820071f3305"
-        },
-        {
-          "path": "docs/project/evidence/model-assignments-20261006/production-receipts.json",
-          "sha256": "aaa9610d12a2"
-        },
-        {
-          "path": "docs/project/evidence/model-assignments-20261006/backup-confirmation.json",
-          "sha256": "43ab2212dd0d"
-        },
-        {
-          "path": "docs/project/evidence/model-assignments-20261006/owner-control-readback.json",
-          "sha256": "3ec6eaa0f928"
-        },
-        {
-          "path": "docs/project/evidence/codex-update-20261006/owner-catalog-delivery.json",
-          "sha256": "7dc00267515e"
-        }
-      ],
-      "note": "Production activation remains verified; actual owner catalog command completed and delivered once. Both runtimes still use qualified CLI 0.154.0. New 0.160.1 local syntax/catalog probe passes with empty auth and simulated login gate; account availability, actual execution and production upgrade not claimed. Existing assignments and release guard unchanged.",
-      "status": "verified",
-      "updatedAt": "2026-10-06T10:55:49.863373+00:00"
+    "UPGRADE": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
-    "VALIDATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/model-assignments-20261006/feature-ci.json",
-          "sha256": "0d299cf0940c"
-        },
-        {
-          "path": "docs/project/evidence/model-assignments-20261006/production-qualification.json",
-          "sha256": "5827f806f63a"
-        },
-        {
-          "path": "docs/project/evidence/model-assignments-20261006/integrated-pytest.txt",
-          "sha256": "72646579c2e9"
-        }
-      ],
-      "note": "Final feature CI 1521 passed, 46 skipped, 1 deselected. Real disposable PostgreSQL/Temporal and qualified actual production source cohorts; synthetic Slack and model fixtures labeled. Real official CLI and selected account catalog separately verified during deployment.",
-      "status": "verified",
-      "updatedAt": "2026-10-06T10:31:51.282589+00:00"
+    "VERSION_MANAGEMENT": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     }
   },
-  "intentDigest": "120eac18b054",
+  "intentDigest": "43a59b65a1d3",
   "schemaVersion": 1,
   "slug": "manatee",
   "state": "approved",
-  "updatedAt": "2026-10-06T10:55:49.863373+00:00"
+  "updatedAt": "2026-10-06T11:06:41.275657+00:00"
 }

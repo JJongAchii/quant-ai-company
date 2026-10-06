@@ -12,6 +12,7 @@ import pytest
 
 from quant_company.contracts import ProviderFault, ProviderRequest
 from quant_company.providers.client import RuntimeClient
+from quant_company.providers.codex_release import SUPPORTED_CLI_VERSION
 from quant_company.providers.codex_runner import (
     CodexRunner,
     RunnerConfig,
@@ -28,7 +29,7 @@ from pathlib import Path
 base = Path(__file__).parent
 control = json.loads((base / 'control.json').read_text())
 if '--version' in sys.argv:
-    print('codex-cli ' + control.get('version', '0.154.0'))
+    print('codex-cli ' + control['version'])
     sys.exit(0)
 if 'login' in sys.argv:
     print(control.get('login', 'Logged in using ChatGPT'), file=sys.stderr)
@@ -121,13 +122,13 @@ def fake_codex(tmp_path):
     binary.write_text(f"#!{sys.executable}\n{FAKE_CODEX}")
     binary.chmod(0o700)
     control_path = tmp_path / "control.json"
-    control_path.write_text("{}")
+    control_path.write_text(json.dumps({"version": SUPPORTED_CLI_VERSION}))
     auth = tmp_path / "auth"
     auth.mkdir()
     config = RunnerConfig(codex_home=auth, jobs_dir=tmp_path / "jobs", codex_bin=str(binary), timeout_seconds=5)
 
     def configure(**values):
-        control_path.write_text(json.dumps(values))
+        control_path.write_text(json.dumps({"version": SUPPORTED_CLI_VERSION, **values}))
 
     def calls():
         path = tmp_path / "calls.jsonl"
@@ -449,6 +450,8 @@ async def test_api_credentials_are_rejected_before_process(fake_codex, request_m
     ({"login": "Logged in using API key: SECRET-API"}, "auth"),
     ({"login": "Not logged in", "login_exit": 1}, "auth"),
     ({"version": "0.100.0"}, "unavailable"),
+    ({"version": "0.154.0"}, "unavailable"),
+    ({"version": "0.160.2"}, "unavailable"),
 ])
 async def test_auth_or_cli_mismatch_prevents_inference(fake_codex, request_model, control, code):
     config, configure, calls = fake_codex

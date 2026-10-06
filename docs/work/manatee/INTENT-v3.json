@@ -1,0 +1,61 @@
+{
+  "constraints": [
+    "Official ChatGPT authentication in isolated runtime only",
+    "PostgreSQL owns policy and receipts; Temporal owns command processing",
+    "No silent model/account/API fallback; existing frozen requests are immutable",
+    "Company repository only; no research repository writes"
+  ],
+  "createdAt": "2026-10-06T11:05:41.344973+00:00",
+  "decisionGates": [
+    "User authorized implementation and production Codex upgrade after the concrete diagnosis/plan: 그래 진행해줘.",
+    "Future candidate PR is not a deployment approval; actual-account qualification and operator authorization remain required."
+  ],
+  "deliverables": [
+    {
+      "id": "VERSION_MANAGEMENT",
+      "description": "Single validated CLI manifest, private version status and stable-release candidate PR detection",
+      "acceptance": [
+        "Docker install and both runtime version gates consume one committed version/integrity manifest",
+        "Daily detection opens or updates an unqualified candidate PR without production secrets or automatic deployment",
+        "Authenticated runtime catalog exposes the checked CLI version and timestamp; existing model clients remain compatible"
+      ]
+    },
+    {
+      "id": "QUALIFICATION",
+      "description": "Linux and account compatibility qualification",
+      "acceptance": [
+        "Core real PostgreSQL/Temporal regression tests and Linux runtime-source cohort tests pass",
+        "Real selected ChatGPT account lists gpt-6.1-sol and bounded actual structured/native Quant, web/usage and legacy-session checks are labeled and receipted",
+        "Security configuration and immutable request digests survive, with no automatic uncertain inference replay"
+      ]
+    },
+    {
+      "id": "UPGRADE",
+      "description": "Locked runtime-only production rollout and integration",
+      "acceptance": [
+        "Fresh backup and immutable-image deployment receipt; current mixed fleet paths/config and model policy are preserved",
+        "Both production Codex runtimes report 0.160.1 with authenticated account catalog and healthy fleet",
+        "Runbook, evidence, qws status and code integrated in company repository; remaining operational limits reported"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "Automatic model ranking or employee assignment changes",
+    "Training, backtests, orders, unsolicited Slack messages or research repository writes",
+    "Changing Claude runtime or removing the mixed-fleet auto-release protection guard"
+  ],
+  "outcome": "Codex 0.160.1을 단일 검증 버전 manifest로 관리하고 Linux 운영 이미지·실제 ChatGPT 계정으로 자격검증 후 두 운영 Codex 실행기에 배포한다. 신버전 안정 릴리스를 매일 감지해 갱신 후보 PR을 만들며 자동 운영 교체·직원 배정 변경은 하지 않는다. 기존 원장·입력 digest·세션·외부 효과 영수증·격리를 보존한다.",
+  "revision": 3,
+  "revisionReason": "사용자가 Codex 0.160.1의 Linux·실제 계정 검증과 운영 교체, 버전 통합 관리 및 신버전 후보 감지 절차를 안내받고 그래 진행해줘라고 승인했다. 직원 배정과 기존 외부 효과를 보존한다.",
+  "schemaVersion": 1,
+  "slug": "manatee",
+  "sourceRequest": "최신 모델이 모델 목록에 빠지는 원인을 개선하고 Codex 프로그램 갱신과 직원 모델 배정을 분리한다. 사용자는 0.160.1 검증·운영 교체 및 신버전 감지 개선안을 안내받은 뒤 그래 진행해줘라고 승인했다.",
+  "stopConditions": [
+    "Never replay an ambiguous model call or overwrite frozen requests",
+    "Do not claim deployment or account compatibility without actual evidence"
+  ],
+  "supersedes": {
+    "intentDigest": "120eac18b054",
+    "intentFile": "INTENT-v2.json"
+  }
+}

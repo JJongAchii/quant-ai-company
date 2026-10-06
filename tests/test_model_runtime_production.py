@@ -6,6 +6,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from quant_company.providers.codex_release import SUPPORTED_CLI_VERSION
 from quant_company.providers.codex_runner import CodexRunner, RunnerConfig
 from quant_company.providers.codex_runtime import create_app
 
@@ -16,10 +17,10 @@ def test_runtime_catalog_does_not_require_a_company_request_client(tmp_path):
         path.mkdir()
     calls = tmp_path / "calls.jsonl"
     executable = tmp_path / "catalog-cli"
-    executable.write_text(f"#!{sys.executable}\n" + f"calls={str(calls)!r}\n" + r'''
+    executable.write_text(f"#!{sys.executable}\n" + f"calls={str(calls)!r}\nversion={SUPPORTED_CLI_VERSION!r}\n" + r'''
 import json,os,sys
 if '--version' in sys.argv:
-    print('codex-cli 0.154.0')
+    print('codex-cli ' + version)
 elif 'login' in sys.argv:
     print('Logged in using ChatGPT',file=sys.stderr)
 elif 'app-server' in sys.argv:
@@ -42,8 +43,10 @@ else: raise RuntimeError('Unexpected CLI command')
         assert client.get("/v1/models/backup").status_code == 401
         response = client.get("/v1/models/backup", headers={"Authorization": "Bearer runtime-fixture-token"})
         assert response.status_code == 200
-        assert response.json() == {"profile": "backup", "models": [
-            {"model": "runtime-candidate", "reasoning_efforts": ["high"]}]}
+        data = response.json()
+        assert data["profile"] == "backup" and data["models"] == [
+            {"model": "runtime-candidate", "reasoning_efforts": ["high"]}]
+        assert data["cli_version"] == SUPPORTED_CLI_VERSION and data["checked_at"]
     observed = [json.loads(line) for line in calls.read_text().splitlines()]
     assert [r["method"] for r in observed] == ["initialize", "initialized", "model/list"]
     assert all(Path(r["home"]) == backup for r in observed)
