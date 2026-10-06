@@ -1,0 +1,26 @@
+{
+  "recorded_at": "2026-10-06T01:24:58.376407+00:00",
+  "previous_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "candidate_commit": "c4541ddd395982039726781b047f7e63a15b6859",
+  "owner_approval": "chat-analyst-preview-approved-20261002",
+  "automatic_release_policy": "Unchanged; protected changes use the previously approved operator preview path.",
+  "runtime_artifact": {
+    "scope": [
+      "src",
+      "deploy",
+      "pyproject.toml",
+      "uv.lock",
+      "README.md"
+    ],
+    "archive_sha256": "ca0116160351172e95df8c21fa6806745bfca075040fc1b924fbe5f7b20feba4",
+    "compressed_bytes": 842051,
+    "commit": "c4541ddd395982039726781b047f7e63a15b6859",
+    "historical_evidence": "Preserved in Git, excluded from runtime build inputs"
+  },
+  "manifest_sha256": "c04f6750a2bb41bf06511b786a5523ec52145afcd0236207d9581ec4937c89d9",
+  "base_build_inputs_byte_identical": true,
+  "installed_company_research_provider_source_preserved": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "deployment": "not_performed"
+}

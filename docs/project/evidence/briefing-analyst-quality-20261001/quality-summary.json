@@ -1,53 +1,178 @@
 {
-  "at": "2026-10-02T03:58:14.594262+00:00",
-  "installed_commit": "289dc70c6858ea229476216d7ea4c1c10ece68ff",
-  "validation_version": 50,
+  "at": "2026-10-06T05:11:05.126670+00:00",
+  "installed_commit": "0ff6657f98b175162609259394b1cec20382904a",
+  "validation_version": 56,
   "format_version": 15,
   "automatic_publication": false,
   "deployment": "preview_active_actual_cloud",
+  "source_ci_run": 37411764420,
   "latest_completed_content_case": {
-    "case": "late-am-20261002-v47",
-    "outcome": "closed_failed_semantic_omissions",
-    "initial_passed_checks": 8,
-    "final_passed_checks": 8,
-    "failed_checks": [
-      "materiality",
-      "counterevidence",
-      "coverage",
-      "depth"
+    "case": "on-demand-am-20261006-v51",
+    "outcome": "closed_writer_preflight_failed",
+    "quality_passed": false,
+    "independent_check_score": null,
+    "completed_calls": 2,
+    "critic_calls": 0,
+    "repairs": 0,
+    "remaining_same_case_calls": 0,
+    "main_characters": 7632,
+    "issues": 6,
+    "material_facts": 62,
+    "selected_news_body_characters": 29687,
+    "selected_all_body_characters": 38634,
+    "mechanical_rejected_ids": {
+      "obs_kospi": "collected_observation_modified",
+      "obs_kosdaq": "collected_observation_modified"
+    },
+    "source_notes_violations": [
+      {
+        "reason": "source_notes_material_numbers_missing_from_main",
+        "source_id": "61ecfa057519ba7b3923b463ac65e786b6bd5b0c",
+        "fact_index": 0,
+        "main_item_ids": [
+          "rates_interpretation"
+        ]
+      }
     ],
-    "completed_calls": 5,
-    "remaining_same_cohort_calls": 0,
-    "mechanical_rejected_ids": {},
-    "original_body_chars": 36435,
-    "candidate_chars_before_final_review": 7532,
-    "qualification": "Development48 repair with lossless49 final-review transport; not a fresh50writer, on-time run, five-day acceptance, expert certification or Slack delivery."
+    "tokens": {
+      "input": 87681,
+      "output": 29808,
+      "total": 117489
+    },
+    "token_scope": "Only completed real plan/write calls; excludes editing-thread Codex usage.",
+    "readable_preview": "Private .local/analyst-on-demand-am-20261006-v51/draft-v55/brief.md; failed and never Slack-published."
   },
-  "latest_content_change": "Validation50 own-evidenced bounded story contexts and whole supplementary-body auditing; no completed fresh50 quality evaluation yet",
-  "next_frozen_policy": "prospective-pm-20261002-v50-operating-policy.json",
+  "next_frozen_policy": "prospective-pm-20261006-v56-integrated-policy.json",
+  "next_content_status": "pending_not_yet_collected_or_evaluated",
   "next_schedule_kst": {
-    "collection": "2026-10-02 19:10",
-    "cutoff": "2026-10-02 19:30",
-    "due": "2026-10-02 20:15"
+    "collection": "2026-10-06 19:10",
+    "cutoff": "2026-10-06 19:30",
+    "due": "2026-10-06 20:15"
+  },
+  "next_edition_id": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+  "bounded_execution": {
+    "max_distinct_requests": 3,
+    "max_completed_model_calls": 3,
+    "max_repairs": 0,
+    "native_model_search_calls": 0,
+    "model_calls_for_other_editions": 0,
+    "input_coverage_gate_before_planning": true,
+    "current_policy_model_call_count_at_probe": 0
+  },
+  "operating": {
+    "api_and_codex_preserved": {
+      "api": true,
+      "codex-runtime": true
+    },
+    "non_analyst_roles_preserved": true,
+    "non_preview_env_preserved": true,
+    "actual_lake_previous_krx_observations": [
+      {
+        "instrument": "kospi",
+        "session_date": "2026-10-02",
+        "previous_session_date": "2026-10-01",
+        "as_of": "2026-10-02T06:30:00+00:00"
+      },
+      {
+        "instrument": "kosdaq",
+        "session_date": "2026-10-02",
+        "previous_session_date": "2026-10-01",
+        "as_of": "2026-10-02T06:30:00+00:00"
+      }
+    ],
+    "actual_lake_rejected": {},
+    "lake_diagnostics": [
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "DBC",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "EEM",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "EFA",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "GLD",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "HYG",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "IWM",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "QQQ",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "SPY",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "TLT",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      }
+    ],
+    "temporal": [
+      {
+        "id": "company-brief-collection-v1",
+        "status": "RUNNING"
+      },
+      {
+        "id": "company-brief-editorial-v1",
+        "status": "RUNNING"
+      },
+      {
+        "id": "company-brief-data-v1",
+        "status": "RUNNING"
+      }
+    ],
+    "verification_receipt": "preview-installation-v56-live-probe.json"
   },
   "technical": {
-    "validation50_focused_passed": 283,
-    "validation50_seconds_junit": 80.153,
-    "latest_deployment_focused_passed": 5,
-    "ci_runs_success": [
-      36952396557,
-      36955322244,
-      36958320184
-    ],
+    "regression_receipt": "regression-v56.json",
     "PostgreSQL": "real",
     "Temporal_local_tests": "real",
     "tests_model_and_slack": "simulated",
-    "cloud": "actual installed source/dependencies, qdata API reads and Temporal workflow inspection"
+    "cloud": "Actual installed workers, source verification, lake API read and Temporal workflow inspection"
   },
   "remaining": [
-    "Actual new50 main/original comparison and all12 content criteria",
-    "Scheduled on-time preview and five trading days qualification",
-    "Real channel delivery/followup receipts and owner content acceptance before authorized publication"
+    "Fresh PM original-to-visible-main review and all12 criteria with zero mechanical rejection.",
+    "On-time preview and five trading days operating qualification.",
+    "Real channel delivery/followup receipts and owner content acceptance before authorized publication."
   ],
   "historical_cases": [
     {
@@ -93,8 +218,26 @@
       "outcome": "notqueued_or_executed",
       "model_calls": 0,
       "fresh_quality_pass": false
+    },
+    {
+      "case": "late-am-20261002-v47",
+      "outcome": "closed_failed_semantic_omissions",
+      "initial_passed_checks": 8,
+      "final_passed_checks": 8,
+      "failed_checks": [
+        "materiality",
+        "counterevidence",
+        "coverage",
+        "depth"
+      ],
+      "completed_calls": 5,
+      "remaining_same_cohort_calls": 0,
+      "mechanical_rejected_ids": {},
+      "original_body_chars": 36435,
+      "candidate_chars_before_final_review": 7532,
+      "qualification": "Development48 repair with lossless49 final-review transport; not a fresh50writer, on-time run, five-day acceptance, expert certification or Slack delivery."
     }
   ],
-  "historical_summary_sha256": "0d9d05dfc1ea656d0d7fc69f77481b3eae1215cf6dd11447984e8ab12a8da4c5",
-  "new_raw_evidence": "Private Gitignored local evidence. Public records contain hashes/counts/outcomes, no full originals/prompts/responses."
+  "historical_summary_sha256": "498bba4e12b48efbba55bca0158fdad7f5883c764ef06d8e76fa66a4f124ceb4",
+  "new_raw_evidence": "Private Gitignored originals, requests, responses and readable draft; public metadata only."
 }

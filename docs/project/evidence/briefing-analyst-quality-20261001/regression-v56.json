@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-06T04:07:24.155603+00:00",
+  "source_commit": "0ff6657f98b175162609259394b1cec20382904a",
+  "suites": {
+    "analyst-v56-operating-final": {
+      "tests": 340,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 87.906,
+      "report_sha256": "3c488e6c6cdddd1273d63f5d2731abf967fd02d076a41c059ddf47d595520690"
+    },
+    "analyst-v56-preview-and-transport-final": {
+      "tests": 54,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 4.315,
+      "report_sha256": "618517203ac8b8497eb2566f5569083de6560bdbfe8fe04d8824ca58622ea9ca"
+    },
+    "analyst-v56-frozen-input-final": {
+      "tests": 48,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 6.038,
+      "report_sha256": "7bbd8d8259c73af774ee636e27c5af7e693a66d84735b160f80a401145800004"
+    },
+    "analyst-v56-api-preservation": {
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.06,
+      "report_sha256": "22bd4f231d5850bd45098058e350fee6977235cd1f736dc71360ed4155da4108"
+    }
+  },
+  "scope": "Overlapping focused suites; do not add their counts. Real local PostgreSQL/Temporal; model/Slack and cloud-cutover tests simulated. Final integrated source requires exact-head CI.",
+  "original_body_review_transport": {
+    "before_chars": 95130,
+    "after_chars": 87319,
+    "limit": 88000,
+    "all_original_documents": 23,
+    "all_source_spans": 138,
+    "all_unselected_title_index": 80,
+    "full_originals_and_visible_main_unchanged": true,
+    "model_calls": 0
+  }
+}

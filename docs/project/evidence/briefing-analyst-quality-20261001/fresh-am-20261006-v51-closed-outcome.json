@@ -1,0 +1,120 @@
+{
+  "recorded_at": "2026-10-06T01:36:54.584612+00:00",
+  "case": "on-demand-am-20261006-v51",
+  "edition_id": "c6e91fb0-984b-51bb-ab5c-24a9efb2c3a0",
+  "scope": "One fresh late on-demand AM collection; writer failed the declared-fact preflight. No independent12-check score or fresh acceptance.",
+  "outcome": "closed_writer_preflight_failed",
+  "quality_passed": false,
+  "source_policy": "fresh-am-20261006-v51-policy.json",
+  "policy_sha256": "d0f71ee23e35e771f5cee2b4923b1a1c7680d40286bffa5342117acdf49cffa9",
+  "originals": {
+    "candidate_full_originals": 96,
+    "selected_news_originals": 16,
+    "selected_original_characters": 29687,
+    "selected_all_documents": 23
+  },
+  "model_calls": [
+    {
+      "phase": "plan",
+      "request_id": "news-brief-eval-ae17df89c97136513c1690cc38490757",
+      "request_sha256": "d159c1ed30ef3bb0b98fc4d30c073c67bc6ee879aa41bf2f67f88e1733672467",
+      "receipt_sha256": "a1739899c0bc63139629530cefa24e63d5f6c28b27350d6b4fbe187c99093cfd",
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 43451,
+        "cached_input_tokens": 0,
+        "output_tokens": 2234,
+        "reasoning_output_tokens": 516
+      },
+      "elapsed_seconds": 64.044
+    },
+    {
+      "phase": "write",
+      "request_id": "news-brief-eval-04f3f5f8dac4a4ac1885ce90534794d3",
+      "request_sha256": "cc9e9d8270c077b03c5e3f53f32aadbe9a5794781df39d0386458a36ade07c95",
+      "receipt_sha256": "978506b4d5ccd264c9ce24c8bec60b0fca5a6be1dd76451078c5f32143053185",
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 44230,
+        "cached_input_tokens": 0,
+        "output_tokens": 27574,
+        "reasoning_output_tokens": 5696
+      },
+      "elapsed_seconds": 590.893
+    }
+  ],
+  "completed_model_calls": 2,
+  "pre_model_HTTP_faults": 1,
+  "total_HTTP_submissions": 3,
+  "critic_calls": 0,
+  "repairs": 0,
+  "remaining_same_case_calls": 0,
+  "unused_critic_call": "Not submitted because the writer did not pass the deterministic source-fact to main-text guard.",
+  "tokens": {
+    "input": 87681,
+    "output": 29808,
+    "total": 117489
+  },
+  "content": {
+    "main_characters": 7632,
+    "issues": 6,
+    "source_inventory_facts": 62,
+    "mechanical_rejections": {
+      "obs_kospi": "collected_observation_modified",
+      "obs_kosdaq": "collected_observation_modified"
+    },
+    "source_notes_violations": [
+      {
+        "reason": "source_notes_material_numbers_missing_from_main",
+        "source_id": "61ecfa057519ba7b3923b463ac65e786b6bd5b0c",
+        "fact_index": 0,
+        "main_item_ids": [
+          "rates_interpretation"
+        ]
+      }
+    ],
+    "data_diagnostic_count": 9
+  },
+  "root_causes": [
+    {
+      "kind": "operating",
+      "reason": "Empty root-owned brief-lane lock blocked the non-root runtime before model execution; corrected inode-preserving ownership."
+    },
+    {
+      "kind": "validator",
+      "reason": "Undated official calendars, explicit late-October translation and Korean decrease notation generated technical failures or false rejections; fixed without changing saved prose."
+    },
+    {
+      "kind": "data_contract",
+      "reason": "AM collector exposed valid previous KRX rows only as context; new data reader canonically locks their exact previous trading session and comparison row."
+    },
+    {
+      "kind": "actual_content",
+      "reason": "Writer inventory declares a6th-day FX forecast, but the mapped main paragraph omits its applicable day. The guard remains closed and the new writer contract checks operative dates."
+    }
+  ],
+  "subsequent_implementation": {
+    "source_commit": "c4541ddd395982039726781b047f7e63a15b6859",
+    "validation_version": 55,
+    "writing_version": 52,
+    "saved_writer_unchanged": true,
+    "saved_selected_originals_unchanged": true,
+    "fresh55_quality_acceptance": false
+  },
+  "private_artifacts": {
+    "saved_writer_sha256": "978506b4d5ccd264c9ce24c8bec60b0fca5a6be1dd76451078c5f32143053185",
+    "assessment_sha256": "1a9cda6a14f0477f11683af8fac67928f4d8cf1f83dba12b7a5b13acb271f2ef",
+    "readable_preview_sha256": "16f41d8902f287bb6870d16e9ad80aafa40ad4a43778a237c5dc398786a3e0b3",
+    "full_originals_requests_responses": "Gitignored private only"
+  },
+  "transport": {
+    "review_transport_error": "brief_context_limit",
+    "request_generated": false,
+    "model_called": false
+  },
+  "slack": "not_called",
+  "database_mutations": "none_for_content_case",
+  "scheduled_on_time": false,
+  "five_day_acceptance": false,
+  "human_expert_acceptance": false
+}

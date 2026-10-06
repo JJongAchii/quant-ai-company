@@ -1,5 +1,5 @@
 {
-  "recorded_at": "2026-10-02T04:04:00.247120+00:00",
+  "recorded_at": "2026-10-06T05:11:05.126670+00:00",
   "repository_visibility": "PUBLIC confirmed20261001",
   "scope": "Metadata only. Complete originals/prompts/responses/assessments/data rows remain local Gitignored. Not a content certificate.",
   "private_local_gitignored": [
@@ -661,14 +661,34 @@
       "sha256": "359de3a960ebc338da4666bc0664f81d5b7fa42ae4b0e001c9ca259ec670ad97"
     },
     {
+      "path": "development-am-20260926-v45-policy.json",
+      "bytes": 5421,
+      "sha256": "96385f4fc7536f4a68e70a72f7fe08cf78b6b001672a2452611d40aebd607512"
+    },
+    {
       "path": "development-am-20260926-v45/frozen-case-outcome.json",
       "bytes": 1592,
       "sha256": "b797749919daf8817f50f597bb30648814592f39b97bdb4ed8b2fa97596d227f"
     },
     {
-      "path": "development-am-20260926-v45-policy.json",
-      "bytes": 5421,
-      "sha256": "96385f4fc7536f4a68e70a72f7fe08cf78b6b001672a2452611d40aebd607512"
+      "path": "fresh-am-20261006-v51-closed-outcome.json",
+      "bytes": 4532,
+      "sha256": "7dd7f7c5eea0851ae1112b76d119208a02b8334a3778f8f55713158efa2c7bda"
+    },
+    {
+      "path": "fresh-am-20261006-v51-policy.json",
+      "bytes": 3823,
+      "sha256": "d0f71ee23e35e771f5cee2b4923b1a1c7680d40286bffa5342117acdf49cffa9"
+    },
+    {
+      "path": "fresh-am-20261006-v51-same-id-recovery-policy.json",
+      "bytes": 1510,
+      "sha256": "30b259aa0715f373ef8acae0d702a8906bcd91ce8a83c6e33ed4ebc5cc2d98c1"
+    },
+    {
+      "path": "fresh-am-20261006-v52-transport-policy.json",
+      "bytes": 1593,
+      "sha256": "9f8f4b8f4b599070d01c9d1d4af9a6221edf398371056bff0fe0136c099d9026"
     },
     {
       "path": "fresh-pm-20261001-v42-policy.json",
@@ -736,6 +756,11 @@
       "sha256": "7ec6c5e9763cf7ff08f7c3ae888af37b3fb1d9ed9789cc29ebc9879fbbf10ae7"
     },
     {
+      "path": "github-ci-v56-integrated.json",
+      "bytes": 396,
+      "sha256": "790b5071542ae9907cd4375ea8ff767403586bae0d9342ea07caaa2a27923b74"
+    },
+    {
       "path": "heldout-am-20260921-v45-availability.json",
       "bytes": 333,
       "sha256": "70cc482ca7ec6937eedea696cf23fa4e48a78758c3ac9bf4fb96d12bc12d1d1d"
@@ -746,14 +771,19 @@
       "sha256": "06a0185a2ba3ac829511fc6503d24369bb3f899c4c5b1d00e721b878856a190e"
     },
     {
+      "path": "heldout-am-20260924-v42-policy.json",
+      "bytes": 4190,
+      "sha256": "5164b6c654245528b08a3297bc5fb978bf98598e2f8c8fe39f8efd6299f3ebd7"
+    },
+    {
       "path": "heldout-am-20260924-v42/frozen-case-outcome.json",
       "bytes": 1075,
       "sha256": "52da9d378b7c6623f5128c7dc6f8c92c5df9216d4d927dc5b8a42cc36445cbe0"
     },
     {
-      "path": "heldout-am-20260924-v42-policy.json",
-      "bytes": 4190,
-      "sha256": "5164b6c654245528b08a3297bc5fb978bf98598e2f8c8fe39f8efd6299f3ebd7"
+      "path": "heldout-pm-20260921-v41-policy.json",
+      "bytes": 3864,
+      "sha256": "5b8c2949720dd8a878dc53539ca4fafd7b42d50c5ea131595e7f7c03f0a16e93"
     },
     {
       "path": "heldout-pm-20260921-v41/frozen-case-outcome.json",
@@ -761,9 +791,9 @@
       "sha256": "45d4fa58fbed7eab904e9d6fbffd1efb0a641018f94bfc956cff73ab7964adad"
     },
     {
-      "path": "heldout-pm-20260921-v41-policy.json",
-      "bytes": 3864,
-      "sha256": "5b8c2949720dd8a878dc53539ca4fafd7b42d50c5ea131595e7f7c03f0a16e93"
+      "path": "late-am-20261002-v47-policy.json",
+      "bytes": 5195,
+      "sha256": "9421f019401962737e0654507ed51452627b789c827a6846c5d563028d945764"
     },
     {
       "path": "late-am-20261002-v47/development-v49/frozen-case-outcome.json",
@@ -776,14 +806,24 @@
       "sha256": "e5d27c147eca012f87d1bef3fccb6b1f5a3e8b3677ad8c40f23693dc08f8d8ff"
     },
     {
-      "path": "late-am-20261002-v47-policy.json",
-      "bytes": 5195,
-      "sha256": "9421f019401962737e0654507ed51452627b789c827a6846c5d563028d945764"
-    },
-    {
       "path": "preview-installation-v50.json",
       "bytes": 8692,
       "sha256": "88f530b48e0abf87516411477ba7d6e4d2bbcb743e09e060f44b31cac1ee7a4b"
+    },
+    {
+      "path": "preview-installation-v56-integrated.json",
+      "bytes": 2006,
+      "sha256": "fac611ed868571d2ef83021029f7710f8dbd49127b20216cfdfdd9c702b7918d"
+    },
+    {
+      "path": "preview-installation-v56-live-probe.json",
+      "bytes": 7300,
+      "sha256": "d35c2341d93756b88d5f73a95f8dce753d51cf9ddc5b036925d045b284accdb3"
+    },
+    {
+      "path": "preview-installation-v56-stage.json",
+      "bytes": 1000,
+      "sha256": "7b62e50449aaa16bca2ca07a0c7d50b6ba5cee6614026b109fd62c7687508e73"
     },
     {
       "path": "preview-resource-v50.xml",
@@ -801,9 +841,14 @@
       "sha256": "e9108130c6065c100f0b707fc25d25da0a0288cdfba03afbbede63ee7044bb13"
     },
     {
+      "path": "prospective-pm-20261006-v56-integrated-policy.json",
+      "bytes": 3656,
+      "sha256": "fc34451b29fa2c92ee499850ea5e0704eae7256d4ffcc5d00d73eb37e17d5b74"
+    },
+    {
       "path": "quality-summary.json",
-      "bytes": 3667,
-      "sha256": "498bba4e12b48efbba55bca0158fdad7f5883c764ef06d8e76fa66a4f124ceb4"
+      "bytes": 7567,
+      "sha256": "193daa30c814a41f12f0e5a59477bf6e7087835db4be425c1e769b4b939c8108"
     },
     {
       "path": "regression-preview-resource-v50.json",
@@ -911,6 +956,16 @@
       "sha256": "aa56068a6e9e221621e2421422a794223585ea4f2311515a31c6d7f8f43a60df"
     },
     {
+      "path": "regression-v56.json",
+      "bytes": 1580,
+      "sha256": "19f08f1726a525f2a29d3bd61e99aa2f189d050c57629fbe544fd4fc3aafd227"
+    },
+    {
+      "path": "release-artifact-v55-prefix-correction.json",
+      "bytes": 774,
+      "sha256": "c2b1e1fd3d88a87fd31fadcd810f9f437452c26a8c0c49f9bebc914dbb57b137"
+    },
+    {
       "path": "release-gate-and-artifact-v42.json",
       "bytes": 45852,
       "sha256": "3cffcd0a0154bb5bed5161e551bd10687edb29ef9cd6e155368faf44f1b5c99c"
@@ -959,6 +1014,16 @@
       "path": "release-gate-and-artifact-v50.json",
       "bytes": 46601,
       "sha256": "c84197cd1c5b30715fa7feb4a16f9d9da08ef9c08fe4013476e799b95b7064dc"
+    },
+    {
+      "path": "release-gate-and-artifact-v55.json",
+      "bytes": 1033,
+      "sha256": "7becd5d8f02dec816fb9d11dd8fd05e290192fe581264f1fda5afc23e81de0b5"
+    },
+    {
+      "path": "release-gate-and-artifact-v56-integrated.json",
+      "bytes": 1069,
+      "sha256": "891e7b13d683d34e026d9904397925686575b347ea9ed2a3617a352f3381a50d"
     },
     {
       "path": "repair-and-preview-v48.xml",
@@ -1011,6 +1076,16 @@
       "sha256": "c44f44baddb17f60d58b0d16349db8be534878b3c04266c332d7c0aa312ba56d"
     },
     {
+      "path": "source-preservation-and-preview-manifest-v55.json",
+      "bytes": 7295,
+      "sha256": "c04f6750a2bb41bf06511b786a5523ec52145afcd0236207d9581ec4937c89d9"
+    },
+    {
+      "path": "source-preservation-and-preview-manifest-v56-integrated.json",
+      "bytes": 6481,
+      "sha256": "7ff8cb8e3b45a6681bcef8fa0642af3844d1519d2a795756dc69ce8631894b35"
+    },
+    {
       "path": "story-context-and-preview-v50.xml",
       "bytes": 18696,
       "sha256": "a83488f035713f764854ccefbb2e363482a2686c7fa24618a6904451d792b4e8"
@@ -1022,5 +1097,5 @@
     }
   ],
   "private_artifact_count": 130,
-  "public_artifact_count": 73
+  "public_artifact_count": 88
 }

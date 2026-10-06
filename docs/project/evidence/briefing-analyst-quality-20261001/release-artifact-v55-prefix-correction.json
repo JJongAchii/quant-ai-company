@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-10-06T01:27:13.550560+00:00",
+  "commit": "c4541ddd395982039726781b047f7e63a15b6859",
+  "prior_archive_sha256": "ca0116160351172e95df8c21fa6806745bfca075040fc1b924fbe5f7b20feba4",
+  "corrected_archive_sha256": "08721706a95e0f99523d39abc09d1140876fbb14944ab327430e8a92a94f88ec",
+  "manifest_sha256": "c04f6750a2bb41bf06511b786a5523ec52145afcd0236207d9581ec4937c89d9",
+  "correction": "Add the single archive root required by installed maintenance_release.unpack; source file bytes and manifest unchanged.",
+  "prior_failure": "release_archive_roots before unpack, image build or cutover. Preserve original archive, empty stage directory and journal under a distinct attempt receipt.",
+  "model_calls": 0,
+  "slack_calls": 0,
+  "service_changes": 0
+}

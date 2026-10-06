@@ -1,0 +1,240 @@
+{
+  "commit": "0ff6657f98b175162609259394b1cec20382904a",
+  "phase": "preview_active",
+  "journal_sha256": "5bdaec54e2421c7ff826b9a229c9cccde6b39911b862a70aa16a343cb87023c8",
+  "unrelated_services_preserved_during_cutover": true,
+  "unrelated_container_ids_images_mounts_preserved_since_stage": true,
+  "stage_to_probe_counter_changes": [
+    {
+      "name": "/quant-company-maintenance-1",
+      "fields": {
+        "restarts": {
+          "before": 1,
+          "after": 6
+        }
+      },
+      "scope": "Counter changed between initial stage snapshot and later probe; cutover itself independently asserted unrelated inventory unchanged."
+    }
+  ],
+  "api_and_codex_preserved": {
+    "api": true,
+    "codex-runtime": true
+  },
+  "non_analyst_roles_preserved": true,
+  "non_preview_env_preserved": true,
+  "existing_codex_image_pin_preserved": true,
+  "data_worker": {
+    "image": "quant-company:0ff6657f98b175162609259394b1cec20382904a",
+    "running": true,
+    "oom": true,
+    "restarts": 0,
+    "memory_bytes": 402653184
+  },
+  "probe": {
+    "version": 56,
+    "publish_enabled": false,
+    "enabled": true,
+    "authorized": true,
+    "source_notes": true,
+    "max_revisions": 0,
+    "evaluation_edition": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "semantic_checks": [
+      "alternatives",
+      "causality",
+      "counterevidence",
+      "coverage",
+      "depth",
+      "falsifiability",
+      "materiality",
+      "numbers",
+      "readability",
+      "sources",
+      "timing",
+      "transmission"
+    ],
+    "prospective_pm": {
+      "id": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+      "day": "2026-10-06",
+      "kind": "pm",
+      "due_at": "2026-10-06T20:15:00+09:00",
+      "starts_at": "2026-10-06T19:10:00+09:00",
+      "cutoff": "2026-10-06T19:30:00+09:00",
+      "expires_at": "2026-10-06T21:15:00+09:00",
+      "us_session": null,
+      "kr_session": "2026-10-06",
+      "previous_us_session": null,
+      "previous_kr_session": "2026-10-02",
+      "weekly": null
+    },
+    "pm_row": null,
+    "pm_calls": [],
+    "current_policy_call_count": 0,
+    "temporal": [
+      {
+        "id": "company-brief-collection-v1",
+        "status": "RUNNING",
+        "task_queue": "quant-company-brief-collection",
+        "run_id": "84cc41f1-f5a3-4517-96cd-e4efdb7ea815"
+      },
+      {
+        "id": "company-brief-editorial-v1",
+        "status": "RUNNING",
+        "task_queue": "quant-company-news-model",
+        "run_id": "06656664-bba5-46af-bef1-0a6a7f6e3e3e"
+      },
+      {
+        "id": "company-brief-data-v1",
+        "status": "RUNNING",
+        "task_queue": "quant-company-brief-data",
+        "run_id": "34254d61-67fe-4e58-96ae-e6e62286d00b"
+      }
+    ],
+    "lake_probe": {
+      "scope": "Read-only current AM previous-KRX contract check; not a content quality case or historical backfill.",
+      "ok": true,
+      "errors": [],
+      "datasets": {
+        "krx_index": {
+          "row_count": 54,
+          "date_bounds": {
+            "date": {
+              "statistics_complete": true,
+              "min": "2016-01-04T00:00:00",
+              "max": "2026-10-02T00:00:00",
+              "null_count": 0
+            }
+          },
+          "object_identity_sha256": "d4fcf158135c6f8183464f5f924770d47eec71735fbf886d064e2a83750c88ab"
+        },
+        "prices": {
+          "row_count": 252,
+          "date_bounds": {
+            "date": {
+              "statistics_complete": true,
+              "min": "2006-01-03T00:00:00",
+              "max": "2026-10-01T00:00:00",
+              "null_count": 0
+            }
+          },
+          "object_identity_sha256": "c0368791ce85ec32d4f2d499acba5a5eaedecff4f23e0f47aac08ee837622c0c"
+        },
+        "fred": {
+          "row_count": 58,
+          "date_bounds": {
+            "date": {
+              "statistics_complete": true,
+              "min": "1980-01-01T00:00:00",
+              "max": "2026-10-02T00:00:00",
+              "null_count": 0
+            }
+          },
+          "object_identity_sha256": "8fbb85a001b068c77e9d648710112b5794a5c37234d411828b3d7fbd77b55de1"
+        },
+        "ecos": {
+          "row_count": 99,
+          "date_bounds": {
+            "date": {
+              "statistics_complete": true,
+              "min": "2000-01-01T00:00:00",
+              "max": "2026-10-03T00:00:00",
+              "null_count": 0
+            }
+          },
+          "object_identity_sha256": "fba4fb4aa87eb435d2777fbb7dfd7dc9c1979db0b97da6689494cef0bc270bb1"
+        }
+      },
+      "locked_observations": [
+        {
+          "instrument": "kospi",
+          "session_date": "2026-10-02",
+          "previous_session_date": "2026-10-01",
+          "as_of": "2026-10-02T06:30:00+00:00"
+        },
+        {
+          "instrument": "kosdaq",
+          "session_date": "2026-10-02",
+          "previous_session_date": "2026-10-01",
+          "as_of": "2026-10-02T06:30:00+00:00"
+        }
+      ],
+      "rejected": {},
+      "diagnostics": [
+        {
+          "dataset": "prices",
+          "error": "stale_context",
+          "series": "DBC",
+          "latest": "2026-10-01",
+          "expected": "2026-10-05"
+        },
+        {
+          "dataset": "prices",
+          "error": "stale_context",
+          "series": "EEM",
+          "latest": "2026-10-01",
+          "expected": "2026-10-05"
+        },
+        {
+          "dataset": "prices",
+          "error": "stale_context",
+          "series": "EFA",
+          "latest": "2026-10-01",
+          "expected": "2026-10-05"
+        },
+        {
+          "dataset": "prices",
+          "error": "stale_context",
+          "series": "GLD",
+          "latest": "2026-10-01",
+          "expected": "2026-10-05"
+        },
+        {
+          "dataset": "prices",
+          "error": "stale_context",
+          "series": "HYG",
+          "latest": "2026-10-01",
+          "expected": "2026-10-05"
+        },
+        {
+          "dataset": "prices",
+          "error": "stale_context",
+          "series": "IWM",
+          "latest": "2026-10-01",
+          "expected": "2026-10-05"
+        },
+        {
+          "dataset": "prices",
+          "error": "stale_context",
+          "series": "QQQ",
+          "latest": "2026-10-01",
+          "expected": "2026-10-05"
+        },
+        {
+          "dataset": "prices",
+          "error": "stale_context",
+          "series": "SPY",
+          "latest": "2026-10-01",
+          "expected": "2026-10-05"
+        },
+        {
+          "dataset": "prices",
+          "error": "stale_context",
+          "series": "TLT",
+          "latest": "2026-10-01",
+          "expected": "2026-10-05"
+        }
+      ],
+      "dated_context_count": 16
+    }
+  },
+  "probe_model_calls": 0,
+  "probe_slack_calls": 0,
+  "recorded_at": "2026-10-06T05:11:05.126670+00:00",
+  "scope": "Actual read-only installed cloud/lake/Temporal verification; zero probe model/Slack calls. Not content qualification.",
+  "prior_probe_faults": [
+    "Inventory JSON tuple/list representation required normalization; maintenance counter delta explicitly retained.",
+    "Separate probe process exited139 with default numeric-library thread count; rerun limited its threads. Installed workers remained running; no model call."
+  ]
+}

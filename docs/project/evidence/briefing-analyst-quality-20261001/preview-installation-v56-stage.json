@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-06T04:07:24.155848+00:00",
+  "phase": "staged",
+  "candidate_commit": "0ff6657f98b175162609259394b1cec20382904a",
+  "base_commit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+  "app_image_id": "sha256:322a0419d96a2cd036858f6bbb9a64ba12fe47d625546e06724d5be73f626925",
+  "app_source_verified": true,
+  "source_changes": 12,
+  "preserve_api": true,
+  "preserve_codex_runtime": true,
+  "publication_enabled": false,
+  "evaluation_edition": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+  "deployment_model_calls": 0,
+  "deployment_slack_calls": 0,
+  "activation": "pending_exact_source_CI_and_cutover",
+  "earlier_attempts": {
+    "v55": "staged then rolled back because shared model lane busy; no API/Codex replacement or source activation",
+    "v56_operating": "source changed before stage began; no journal/image/service mutations",
+    "v56_integrated": "first shell invoked before transfer finished, no operator execution; then successful stage with fresh source digest checks"
+  }
+}
