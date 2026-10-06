@@ -135,10 +135,10 @@ async def test_inventory_failure_preserves_previous_presence_and_changed_object_
     failed = watch.store.status()
     assert failed["datasets"][0]["inspection"] == "metadata_checked"
     failed_text = status_text(failed)
-    assert "현재 목록 조회 실패" in failed_text
-    assert "아래 날짜와 숫자는 09/22 09:00 KST 마지막 성공 기록 기준" in failed_text
-    assert "한국시장: ETF 2026-09-21" in failed_text
-    assert "이번 목록 조회 실패" in list_text(failed)
+    assert "현재 조회 오류" in failed_text
+    assert "아래는 09/22 09:00 KST 마지막 성공 기록" in failed_text
+    assert "한국 ETF 가격: 09/21 거래분까지" in failed_text
+    assert "현재 조회가 끝나지 않았거나 실패" in list_text(failed)
     assert rows(watch, "data_watch_incidents")[0]["state"] == "active"
     watch.clock[0] += timedelta(minutes=30)
     item = catalog(watch, etag="new")
@@ -181,7 +181,7 @@ def test_known_qdata_footer_budget_is_reported_as_an_inspection_limit(watch):
     watch.store.report()
     incident = next(row["text"] for row in rows(watch, "outbox") if "점검 필요" in row["text"])
     assert "2 MiB 검사 한도" in incident
-    assert "원본 데이터 손상" in incident
+    assert "다음 조치: 파일 정보 읽기 한도를 점검" in incident
     assert "descriptor_unavailable_or_changed" not in incident
     assert "version:" not in incident
 
@@ -212,19 +212,17 @@ def test_daily_summary_shows_actual_source_dates_and_the_right_date_axis():
     summary = status_text(snapshot)
     listing = list_text(snapshot)
     assert len(summary) < 3000 and len(listing) < 3000
-    assert "공개분 미반영 5건 · 날짜 미확인 1건" in summary
-    assert "한국시장: 주식 2026-09-23" in summary
-    assert "09/24~27 추석 휴장" in summary
-    assert ("미국 일별: 미국 ETF·주가 2026-09-24, 미국 전종목 미확인, "
-            "FINRA 공매도량 2026-09-24") in summary
-    assert "sec_fundamental: 제출일 2026-03-31" in summary
-    assert "us_prices: 거래일 미확인" in summary and "2 MiB" in summary
-    assert "FINRA가 9/25분을 공개한 뒤에도" in summary
-    assert "2026 Q2 공개본이 레이크" in summary
-    assert "SEC 2026년 6~8월 13F 공개본이 레이크" in summary
-    assert "SEC 분기 Form 3·4·5의 2026 Q2 공개본이 레이크" in summary
-    assert "09/28 13:30 KST 성공" in summary
-    assert "파일 교체 2026-09-25" in listing and "sec_fundamental 제출일 2026-03-31" in listing
+    assert "수집·반영 경로 점검" in summary
+    assert "한국 주식 가격: 09/23 거래분까지" in summary
+    assert "미국 가격·공매도량*: 09/24 거래분까지 → 9/25 거래분 미반영" in summary
+    assert "미국 재무 공시 재무값*: 03/31 제출분까지" in summary
+    assert "미국 전종목 가격*: 파일 정보 읽기 한도 초과" in summary
+    assert "2026년 2분기 자료 미반영" in summary
+    assert "2026년 6~8월 자료 미반영" in summary
+    assert "미국 내부자 거래*: 03/31 제출분까지" in summary
+    assert "목록 조회 09/28 13:30 KST" in summary
+    assert "파일 09/25" in listing and "미국 재무 공시 재무값: 03/31 제출분까지" in listing
+    assert "2215" not in summary and "2030" not in summary
     assert dataset_date(data[3]) == date(2026, 3, 31)
     assert dataset_date(data[6]) == date(2026, 9, 28)
     assert observed(data[0], snapshot["checked_at"])["state"] == "observed"
@@ -256,7 +254,7 @@ async def test_incident_dedup_recovery_thread_and_ambiguous_root(watch, credenti
     await drain(box)
     assert len(calls) == 2 and rows(watch, "data_watch_incidents")[0]["state"] == "recovered"
     assert all(row["status"] == "uncertain" for row in rows(watch, "outbox"))
-    assert "미확인" in calls[0]["text"]
+    assert "파일 정보 읽기 재검사" in calls[0]["text"]
 
 
 async def test_recovery_and_recurrence_use_same_receipted_thread_and_revocation_blocks(watch, credentials):
@@ -311,13 +309,13 @@ async def test_data_is_channel_lead_and_status_does_not_invoke_model(watch, cred
     payload["api_app_id"] = credentials["director"]["app_id"]
     assert ingress.accept("director", payload, credentials["director"])["ignored"]
     assert not rows(watch, "turns")
-    assert "첫 목록 조회 대기" in watch.company.project_state(first["project_id"])["tasks"][0]["result"]
+    assert "첫 데이터 목록을 아직 받지 못했습니다" in watch.company.project_state(first["project_id"])["tasks"][0]["result"]
     await tick(watch)
     payload["api_app_id"] = credentials["data"]["app_id"]
     payload["event"]["ts"] = "12.2"
     payload["event"]["text"] = "목록"
     listed = ingress.accept("data", payload, credentials["data"])
-    assert any("krx_etf" in task["result"] for task in watch.company.project_state(listed["project_id"])["tasks"])
+    assert any("한국 ETF 가격" in task["result"] for task in watch.company.project_state(listed["project_id"])["tasks"])
     assert not rows(watch, "turns")
 
 
@@ -387,7 +385,7 @@ def test_worker_producer_service_consumer_full_input_and_idempotent_receipt(core
     assert first.status_code == 200, first.text
     assert client.post(path, headers=headers, json=receipt.model_dump(mode="json")).json()["duplicate"]
     assert core.store.status()["core_checks"][0]["problem"] is None
-    assert "전체 입력 검사 완료" in status_text(core.store.status())
+    assert "연구 고정입력 검사" in status_text(core.store.status())
     assert len(rows(core, "data_watch_checks")) == 1
 
 

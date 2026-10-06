@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "baseSourceCommit": "4aee2d86e08931f29d3b9b57ef9594faf719ded9",
+  "files": {
+    "src/quant_company/data_watch/coverage.py": {
+      "before": "082c66f3bdc96eb1a369ca054b7f8020d8abf4511c39d462b253be7bb86ed974",
+      "after": "41193a8d356070e27d075233ad1ede11888c9018a2bc76bacc5b09ac167d775b"
+    },
+    "src/quant_company/data_watch/reporting.py": {
+      "before": "a75e035523d90c414aef8d683dadd931e3adae5be233f1754690767a325d3392",
+      "after": "83499abbf1da29ae6ea974fa1f5da47eb4d05f2f029c607228aa10e9423c9fe5"
+    }
+  },
+  "summaryCharacters": 640,
+  "previousSummaryCharacters": 1350,
+  "listCharacters": 1634,
+  "datasetCount": 38,
+  "verification": {
+    "postgresql": "real",
+    "temporal": "real",
+    "slackTests": "simulated",
+    "focusedTests": 38,
+    "ruff": "passed",
+    "ci": "pending",
+    "live": "pending"
+  }
+}

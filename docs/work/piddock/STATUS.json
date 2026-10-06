@@ -2,41 +2,36 @@
   "schemaVersion": 1,
   "slug": "piddock",
   "state": "approved",
-  "currentIntent": "INTENT-v5.json",
-  "intentDigest": "d58266017d28",
+  "currentIntent": "INTENT-v6.json",
+  "intentDigest": "61ef2638f087",
   "approval": {
-    "id": "chat-data-watch-source-status",
-    "sourceRequest": "어떤 데이터 소스가 어디까지 업데이트되었는지 또는 어떤 데이터가 어떻게 데이터 최신화가 안되었는지",
-    "recordedAt": "2026-09-28T05:13:47+00:00"
+    "id": "chat-data-watch-readability-20261006",
+    "sourceRequest": "근데 아직도 가독성이 많이 떨어져서 내가 현황파악하기가 쉽지않아.",
+    "recordedAt": "2026-10-06T01:13:25.941308+00:00"
   },
   "deliverables": {
-    "SOURCE_EVIDENCE": {
+    "READABLE_MESSAGES": {
       "status": "verified",
-      "updatedAt": "2026-09-28T06:56:48+00:00",
+      "updatedAt": "2026-10-06T01:20:20.735471+00:00",
       "evidence": [
-        "docs/project/evidence/data-watch-source-coverage-20260928.json",
-        "docs/project/DATA-WATCH-SOURCE-STATUS-20260928.md"
+        "docs/project/evidence/data-watch-readability-20261006/summary-preview.txt",
+        "docs/project/evidence/data-watch-readability-20261006/list-preview.txt",
+        "tests/test_data_watch_readability.py"
       ],
-      "note": "38 bounded dataset dates and file replacement dates recorded; KRX, NYSE, FINRA, SEC FSDS, 13F and insider source checkpoints verified. Producer failure stages remain unverified."
+      "note": "The actual 38-dataset observation renders below 1300 characters; divergent members, age-only hints and reading failures remain distinct. Live application is pending."
     },
-    "MESSAGE": {
-      "status": "verified",
-      "updatedAt": "2026-09-28T07:13:00+00:00",
-      "evidence": [
-        "src/quant_company/data_watch/reporting.py",
-        "docs/project/evidence/data-watch-source-status-live-20260928.json"
-      ],
-      "note": "Source-date daily summaries reached real Slack; read-only production render shows all 38 dated dataset lines in one list message. The actual owner-typed on-demand Slack round trip remains untested."
+    "VALIDATION": {
+      "status": "in_progress",
+      "updatedAt": "2026-10-06T01:13:25.941308+00:00",
+      "evidence": [],
+      "note": "Readable presentation is implemented; verification and live application are pending."
     },
-    "OPERATIONS": {
-      "status": "verified",
-      "updatedAt": "2026-09-28T07:13:00+00:00",
-      "evidence": [
-        "docs/project/evidence/data-watch-source-status-live-20260928.json",
-        "docs/project/DATA-WATCH-SOURCE-STATUS-20260928.md"
-      ],
-      "note": "Integrated API, Slack socket and data-watch worker are live; real Slack summary and recovery receipts match PostgreSQL. Real owner-typed 목록 delivery is an explicit unverified E2E boundary."
+    "LIVE": {
+      "status": "in_progress",
+      "updatedAt": "2026-10-06T01:13:25.941308+00:00",
+      "evidence": [],
+      "note": "Readable presentation is implemented; verification and live application are pending."
     }
   },
-  "updatedAt": "2026-09-28T07:13:00+00:00"
+  "updatedAt": "2026-10-06T01:20:20.735471+00:00"
 }

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "slug": "piddock",
+  "revision": 6,
+  "createdAt": "2026-10-06T01:02:06+00:00",
+  "revisionReason": "The user still cannot quickly understand the data-watch update status.",
+  "sourceRequest": "근데 아직도 가독성이 많이 떨어져서 내가 현황파악하기가 쉽지않아.",
+  "supersedes": {
+    "intentFile": "INTENT-v5.json",
+    "intentDigest": "d58266017d28"
+  },
+  "outcome": "Make data-watch readable at a glance with human data names, concise last-data dates and concrete missing-update or inspection actions; deploy the reviewed presentation to the existing runtime.",
+  "constraints": [
+    "Keep the existing date axes, source checkpoints and conservative freshness decisions unchanged.",
+    "Merge display items only when their data date, state and problem agree; never hide a divergent or failed member.",
+    "Keep published-source gaps, age-only investigation hints and date-reading failures visibly distinct.",
+    "Daily status omits file replacement dates and empty frozen-research checks; the full list retains data dates and file replacement dates.",
+    "Use stored bounded observation receipts and read-only Slack verification; do not read or expose credentials.",
+    "Apply only reviewed data-watch presentation files over each production service's current source; preserve all other running service images and policies.",
+    "Do not replay uncertain Slack writes or claim a real owner-command E2E was tested when it was not."
+  ],
+  "deliverables": [
+    {
+      "id": "READABLE_MESSAGES",
+      "description": "Short daily status, grouped human dataset list and clear incident text",
+      "acceptance": [
+        "The actual 38-dataset production snapshot renders a daily status below 1300 characters with distinct action sections and no internal dataset keys.",
+        "Matching KRX dates and duplicated SEC FSDS dates are combined; differing dates or failure states remain visible.",
+        "The on-demand list shows all 38 datasets using human names, data dates and file replacement dates under source headings.",
+        "Failed or initial catalog states label cached data honestly; age-only hints never assert a missing published period."
+      ]
+    },
+    {
+      "id": "VALIDATION",
+      "description": "Meaningful rendering and service regression",
+      "acceptance": [
+        "Correct-date-axis, future-date, divergent-group and failed-catalog regressions pass.",
+        "Data-watch tests use real PostgreSQL and Temporal where available; simulated Slack is labelled separately.",
+        "Ruff, repository diff checks and CI pass."
+      ]
+    },
+    {
+      "id": "LIVE",
+      "description": "Guarded operational application and actual delivery evidence",
+      "acceptance": [
+        "Production data-watch worker, API and Slack ingress render the reviewed presentation while preserving their other source files and settings.",
+        "Actual new daily message matches PostgreSQL outbox and Slack readback receipts.",
+        "Remaining real-owner on-demand verification boundary is stated explicitly."
+      ]
+    }
+  ],
+  "nonGoals": [
+    "Upstream ingest repair or source calendar redesign",
+    "Per-instrument completeness audit",
+    "Training, strategy evaluation or orders"
+  ],
+  "decisionGates": [],
+  "stopConditions": [
+    "Do not deploy across a changed production baseline without fresh comparison.",
+    "Do not claim actual Slack delivery without matching durable receipts."
+  ]
+}

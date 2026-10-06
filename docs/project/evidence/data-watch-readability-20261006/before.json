@@ -1,0 +1,1017 @@
+{
+  "datasets": [
+    {
+      "source": {
+        "last_modified": "2026-10-02T11:10:26Z"
+      },
+      "dataset": "binance_usdtm_klines",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "event_time": {
+          "max": "2025-06-30T23:00:00+00:00",
+          "min": "2020-01-07T00:00:00+00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "available_at": {
+          "max": "2025-07-01T00:00:00+00:00",
+          "min": "2020-01-07T01:00:00+00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "retrieved_at": {
+          "max": "2026-08-26T05:17:59.760289+00:00",
+          "min": "2026-08-26T04:55:54.239348+00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-02T11:30:23.406627+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-02T11:10:26Z"
+      },
+      "dataset": "cusip_map",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {},
+      "described_at": "2026-10-02T11:30:33.606736+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-08-03T06:38:17Z"
+      },
+      "dataset": "dart_fundamental",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "period_end": {
+          "max": "2026-05-31T00:00:00",
+          "min": "2015-03-31T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "effective_dt": {
+          "max": "2026-07-24T00:00:00",
+          "min": "2015-06-24T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-09-23T01:14:15.560704+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:01:53Z"
+      },
+      "dataset": "ecos",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-03T00:00:00",
+          "min": "2000-01-01T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T22:55:15.378533+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:02:43Z"
+      },
+      "dataset": "fred",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-02T00:00:00",
+          "min": "1980-01-01T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T22:55:22.294107+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:24:29Z"
+      },
+      "dataset": "krx_etf",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-02T00:00:00",
+          "min": "2012-01-02T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T22:55:29.53167+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:24:29Z"
+      },
+      "dataset": "krx_etf_meta",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-02T00:00:00",
+          "min": "2012-01-02T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T22:55:33.397972+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:24:30Z"
+      },
+      "dataset": "krx_etf_profile",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "asof": {
+          "max": "2026-10-05T00:00:00",
+          "min": "2026-07-28T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "listing_date": {
+          "max": "2026-09-22T00:00:00",
+          "min": "2002-10-14T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T22:56:58.796796+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:24:30Z"
+      },
+      "dataset": "krx_flows",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-02T00:00:00",
+          "min": "2006-01-02T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T22:57:13.477762+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:24:32Z"
+      },
+      "dataset": "krx_fundamental",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-02T00:00:00",
+          "min": "2006-01-02T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T22:57:24.277763+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:24:33Z"
+      },
+      "dataset": "krx_index",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-02T00:00:00",
+          "min": "2016-01-04T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T22:57:35.377998+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:24:33Z"
+      },
+      "dataset": "krx_index_fundamental",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-02T00:00:00",
+          "min": "1990-01-03T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T22:58:40.624152+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:24:33Z"
+      },
+      "dataset": "krx_index_master",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "asof": {
+          "max": "2026-10-05T00:00:00",
+          "min": "2026-07-28T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "base_date": {
+          "max": "2025-01-02T00:00:00",
+          "min": "1980-01-04T00:00:00",
+          "null_count": 192,
+          "statistics_complete": true
+        },
+        "launch_date": {
+          "max": "2026-09-14T00:00:00",
+          "min": "1983-01-04T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T22:58:44.098811+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:24:33Z"
+      },
+      "dataset": "krx_index_prices",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-02T00:00:00",
+          "min": "1990-01-03T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T22:58:47.737465+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:24:33Z"
+      },
+      "dataset": "krx_prices",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-02T00:00:00",
+          "min": "2006-01-02T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T22:58:51.498031+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:24:36Z"
+      },
+      "dataset": "krx_sector",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-02T00:00:00",
+          "min": "2006-01-02T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T23:00:05.453127+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-02T11:10:37Z"
+      },
+      "dataset": "krx_security_continuity_coverage",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "window_end": {
+          "max": "2023-12-28T00:00:00",
+          "min": "2023-12-28T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "source_asof": {
+          "max": "2026-09-04T07:49:02.689765",
+          "min": "2026-09-04T07:49:02.689765",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "window_start": {
+          "max": "2015-01-02T00:00:00",
+          "min": "2015-01-02T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "last_source_date": {
+          "max": "2023-12-28T00:00:00",
+          "min": "2023-12-28T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "first_source_date": {
+          "max": "2015-01-02T00:00:00",
+          "min": "2015-01-02T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-02T11:34:57.837311+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-02T11:10:37Z"
+      },
+      "dataset": "krx_security_continuity_events",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "decision_date": {
+          "max": "2023-12-27T00:00:00",
+          "min": "2015-12-03T00:00:00",
+          "null_count": 1741,
+          "statistics_complete": true
+        },
+        "effective_date": {
+          "max": "2024-03-27T00:00:00",
+          "min": "2016-02-01T00:00:00",
+          "null_count": 1788,
+          "statistics_complete": true
+        },
+        "suspension_end": {
+          "max": "2024-03-28T00:00:00",
+          "min": "2016-03-14T00:00:00",
+          "null_count": 2648,
+          "statistics_complete": true
+        },
+        "krx_outcome_asof": {
+          "max": "2026-09-07T14:11:14.211866",
+          "min": "2026-09-07T14:11:11.227531",
+          "null_count": 2495,
+          "statistics_complete": true
+        },
+        "suspension_start": {
+          "max": "2024-03-08T00:00:00",
+          "min": "2016-02-25T00:00:00",
+          "null_count": 2647,
+          "statistics_complete": true
+        },
+        "source_delist_date": {
+          "max": "2023-12-21T00:00:00",
+          "min": "2015-04-15T00:00:00",
+          "null_count": 2495,
+          "statistics_complete": true
+        },
+        "terms_available_at": {
+          "max": "2023-12-28T00:00:00",
+          "min": "2015-01-06T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "successor_list_date": {
+          "max": "2024-03-29T00:00:00",
+          "min": "2016-03-15T00:00:00",
+          "null_count": 2389,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-02T11:35:01.383437+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-02T11:10:37Z"
+      },
+      "dataset": "krx_security_continuity_legs",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "cash_payment_date": {
+          "max": null,
+          "min": null,
+          "null_count": 2743,
+          "statistics_complete": true
+        },
+        "successor_available_date": {
+          "max": "2024-03-29T00:00:00",
+          "min": "2016-03-15T00:00:00",
+          "null_count": 2389,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-02T11:35:05.48407+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T10:24:36Z"
+      },
+      "dataset": "krx_stock_master",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "asof": {
+          "max": "2026-10-02T00:00:00",
+          "min": "2026-08-19T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T23:00:16.000834+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-02T11:10:37Z"
+      },
+      "dataset": "oecd_cli",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "period": {
+          "max": "2026-08-01T00:00:00",
+          "min": "1990-01-01T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-02T11:36:25.125579+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-02T11:10:37Z"
+      },
+      "dataset": "prices",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-01T00:00:00",
+          "min": "2006-01-03T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-02T11:36:34.926527+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-08-26T04:56:13Z"
+      },
+      "dataset": "sec_13f",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "filed": {
+          "max": "2026-05-29T00:00:00",
+          "min": "2013-05-20T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "period": {
+          "max": "2026-03-31T00:00:00",
+          "min": "1987-03-31T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-09-23T01:22:21.438227+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-08-03T06:38:20Z"
+      },
+      "dataset": "sec_filings",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "filed": {
+          "max": "2026-03-31T00:00:00",
+          "min": "2009-04-15T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "period": {
+          "max": "2026-02-28T00:00:00",
+          "min": "2004-12-31T00:00:00",
+          "null_count": 13,
+          "statistics_complete": true
+        },
+        "accepted": {
+          "max": "2026-03-31T17:31:00",
+          "min": "2009-04-15T16:44:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-09-23T01:22:30.837877+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-08-03T06:38:21Z"
+      },
+      "dataset": "sec_fundamental",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "ddate": {
+          "max": "2215-09-30T00:00:00",
+          "min": "1927-02-28T00:00:00",
+          "null_count": 8,
+          "statistics_complete": true
+        },
+        "filed": {
+          "max": "2026-03-31T00:00:00",
+          "min": "2009-04-15T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-09-23T01:23:40.821802+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-08-20T02:18:59Z"
+      },
+      "dataset": "sec_insider",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "filed": {
+          "max": "2026-03-31T00:00:00",
+          "min": "2006-01-03T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "trans_date": {
+          "max": "2047-05-24T00:00:00",
+          "min": "1982-03-01T00:00:00",
+          "null_count": 55,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-09-23T01:23:50.128449+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-08-26T06:45:55Z"
+      },
+      "dataset": "sec_nport",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "filed": {
+          "max": "2026-06-30T00:00:00",
+          "min": "2019-10-22T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "period": {
+          "max": "2026-05-31T00:00:00",
+          "min": "2019-09-30T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-09-23T01:23:59.221161+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-08-26T06:55:26Z"
+      },
+      "dataset": "sec_nport_fund",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "filed": {
+          "max": "2026-06-30T00:00:00",
+          "min": "2019-10-22T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "period": {
+          "max": "2026-05-31T00:00:00",
+          "min": "2019-09-30T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "month_end": {
+          "max": "2026-05-31T00:00:00",
+          "min": "2019-07-31T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-09-23T01:24:09.53507+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-08-03T06:38:34Z"
+      },
+      "dataset": "sec_tickers",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "asof": {
+          "max": "2026-07-31T00:00:00",
+          "min": "2026-07-31T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-09-23T01:25:19.02306+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T00:16:35Z"
+      },
+      "dataset": "us_dividends",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "asof": {
+          "max": "2026-10-05T00:00:00",
+          "min": "2026-08-04T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "ex_date": {
+          "max": "2030-12-13T00:00:00",
+          "min": "2003-01-02T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "pay_date": {
+          "max": "2030-12-31T00:00:00",
+          "min": "2003-01-12T00:00:00",
+          "null_count": 4580,
+          "statistics_complete": true
+        },
+        "record_date": {
+          "max": "2030-12-15T00:00:00",
+          "min": "2003-01-02T00:00:00",
+          "null_count": 1151,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T23:00:26.477965+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T00:16:35Z"
+      },
+      "dataset": "us_prices",
+      "problem": "parquet_footer_limit",
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "unchecked",
+      "date_bounds": {},
+      "described_at": "2026-10-06T00:32:36.69692+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-02T11:11:01Z"
+      },
+      "dataset": "us_shortvol",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-01T00:00:00",
+          "min": "2019-01-02T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-02T11:38:06.506603+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-05T00:16:45Z"
+      },
+      "dataset": "us_splits",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "asof": {
+          "max": "2026-10-05T00:00:00",
+          "min": "2026-08-03T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "execution_date": {
+          "max": "2026-12-17T00:00:00",
+          "min": "2003-01-02T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-05T23:02:03.578777+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-02T11:11:03Z"
+      },
+      "dataset": "us_symbols",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "date": {
+          "max": "2026-10-02T00:00:00",
+          "min": "2026-07-30T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-02T11:38:26.706634+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-02T11:11:04Z"
+      },
+      "dataset": "us_ticker_details",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "asof": {
+          "max": "2026-09-02T00:00:00",
+          "min": "2026-08-04T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "list_date": {
+          "max": "2026-08-28T00:00:00",
+          "min": "1900-01-01T00:00:00",
+          "null_count": 1088,
+          "statistics_complete": true
+        },
+        "last_updated_at": {
+          "max": null,
+          "min": null,
+          "null_count": 27180,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-02T11:39:30.012412+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-08-05T02:06:55Z"
+      },
+      "dataset": "us_ticker_events",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "asof": {
+          "max": "2026-08-04T00:00:00",
+          "min": "2026-08-04T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "event_date": {
+          "max": "2026-08-03T00:00:00",
+          "min": "2003-09-10T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-09-23T01:27:23.938251+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-02T11:11:04Z"
+      },
+      "dataset": "us_ticker_history",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "valid_to": {
+          "max": "2026-09-02T00:00:00",
+          "min": "2003-09-10T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "valid_from": {
+          "max": "2026-09-02T00:00:00",
+          "min": "2003-09-10T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "source_collected_to": {
+          "max": "2026-09-03T10:47:03.071300",
+          "min": "2026-08-27T06:44:23.263582",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "source_collected_from": {
+          "max": "2026-09-03T10:47:03.071300",
+          "min": "2026-08-27T06:44:23.263582",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-02T11:39:33.441761+00:00"
+    },
+    {
+      "source": {
+        "last_modified": "2026-10-02T11:11:04Z"
+      },
+      "dataset": "us_tickers",
+      "problem": null,
+      "freshness": {
+        "state": "unregistered"
+      },
+      "inspection": "metadata_checked",
+      "date_bounds": {
+        "asof": {
+          "max": "2026-10-02T00:00:00",
+          "min": "2026-08-03T00:00:00",
+          "null_count": 0,
+          "statistics_complete": true
+        },
+        "delisted_at": {
+          "max": "2026-10-01T00:00:00",
+          "min": "2003-09-11T04:00:00",
+          "null_count": 451508,
+          "statistics_complete": true
+        },
+        "last_updated_at": {
+          "max": "2026-10-02T06:11:31.448310198",
+          "min": "2024-11-20T23:13:26.179640",
+          "null_count": 0,
+          "statistics_complete": true
+        }
+      },
+      "described_at": "2026-10-02T11:39:36.672023+00:00"
+    }
+  ],
+  "summaries": [
+    {
+      "id": "e897ab34-af33-50d3-987a-5f363ffc2f3c",
+      "text": "*데이터 현황 · 공개분 미반영 4건 · 날짜 미확인 1건 · 갱신 확인 3건* · 10/06 09:02 KST\n*목록 검사* 10/06 09:01 KST 성공 · 38개 데이터셋\n*소스별 마지막 데이터 날짜* (파일 업로드 날짜와 다름)\n• 한국시장: 주식 2026-10-02, ETF 2026-10-02, 수급 2026-10-02, 지수 2026-10-02\n• 미국 일별: 미국 ETF·주가 2026-10-01, 미국 전종목 미확인, FINRA 공매도량 2026-10-01\n• 거시: FRED 2026-10-02, ECOS 2026-10-03, OECD CLI 2026-08-01\n• 공시: DART 2026-07-24, SEC 분기 FSDS 2026-03-31, SEC 13F 2026-05-29, SEC N-PORT 2026-06-30\n• 미국 기업행사: 배당 스냅샷 2026-10-05, 분할 스냅샷 2026-10-05\n*갱신 점검 항목*\n• sec_13f: 제출일 2026-05-29 · 파일 교체 2026-08-26 · SEC 2026년 6~8월 13F 공개본이 레이크 최대 제출일에 반영되지 않음\n• sec_filings: 제출일 2026-03-31 · 파일 교체 2026-08-03 · SEC 분기 FSDS의 2026 Q2 공개본이 레이크 최대 제출일에 반영되지 않음\n• sec_fundamental: 제출일 2026-03-31 · 파일 교체 2026-08-03 · SEC 분기 FSDS의 2026 Q2 공개본이 레이크 최대 제출일에 반영되지 않음\n• sec_insider: 제출일 2026-03-31 · 파일 교체 2026-08-20 · SEC 분기 Form 3·4·5의 2026 Q2 공개본이 레이크 최대 제출일에 반영되지 않음\n• us_prices: 거래일 미확인 · 파일 교체 2026-10-05 · 파일 정보를 읽는 검사 도구의 2 MiB 검사 한도에 걸려 확인하지 못함\n• prices: 거래일 2026-10-01 · 파일 교체 2026-10-02 · 5일째 새 날짜가 없어 갱신 경로 확인 필요\n• sec_tickers: 스냅샷일 2026-07-31 · 파일 교체 2026-08-03 · 67일째 새 날짜가 없어 갱신 경로 확인 필요\n• us_shortvol: 거래일 2026-10-01 · 파일 교체 2026-10-02 · 5일째 새 날짜가 없어 갱신 경로 확인 필요\n파일 정보 확인 37/38개 · 개별 종목 누락 검사와는 별개\n고정 연구 입력 6개는 이 알림의 검사 대상이 아니며 아직 검사 전\n⚠는 공개 자료·저녁 수집 시각·경과일 기준 점검 요청입니다. 종목별 누락 검사는 별개입니다.\n전체 38개 날짜·파일 교체일은 `목록` · 다음 목록 검사 10/06 09:30 KST",
+      "status": "delivered",
+      "sent_ts": "1791244926.998019",
+      "created_at": "2026-10-06T00:02:06.48098+00:00"
+    },
+    {
+      "id": "be38a65a-d5ce-546c-9ec9-12946d894ff3",
+      "text": "*데이터 현황 · 공개분 미반영 4건 · 날짜 미확인 1건 · 갱신 확인 3건* · 10/06 09:00 KST\n*목록 검사* 10/06 09:00 KST 성공 · 38개 데이터셋\n*소스별 마지막 데이터 날짜* (파일 업로드 날짜와 다름)\n• 한국시장: 주식 2026-10-02, ETF 2026-10-02, 수급 2026-10-02, 지수 2026-10-02\n• 미국 일별: 미국 ETF·주가 2026-10-01, 미국 전종목 미확인, FINRA 공매도량 2026-10-01\n• 거시: FRED 2026-10-02, ECOS 2026-10-03, OECD CLI 2026-08-01\n• 공시: DART 2026-07-24, SEC 분기 FSDS 2026-03-31, SEC 13F 2026-05-29, SEC N-PORT 2026-06-30\n• 미국 기업행사: 배당 스냅샷 2026-10-05, 분할 스냅샷 2026-10-05\n*갱신 점검 항목*\n• sec_13f: 제출일 2026-05-29 · 파일 교체 2026-08-26 · SEC 2026년 6~8월 13F 공개본이 레이크 최대 제출일에 반영되지 않음\n• sec_filings: 제출일 2026-03-31 · 파일 교체 2026-08-03 · SEC 분기 FSDS의 2026 Q2 공개본이 레이크 최대 제출일에 반영되지 않음\n• sec_fundamental: 제출일 2026-03-31 · 파일 교체 2026-08-03 · SEC 분기 FSDS의 2026 Q2 공개본이 레이크 최대 제출일에 반영되지 않음\n• sec_insider: 제출일 2026-03-31 · 파일 교체 2026-08-20 · SEC 분기 Form 3·4·5의 2026 Q2 공개본이 레이크 최대 제출일에 반영되지 않음\n• us_prices: 거래일 미확인 · 파일 교체 2026-10-05 · 파일 정보를 읽는 검사 도구의 2 MiB 검사 한도에 걸려 확인하지 못함\n• prices: 거래일 2026-10-01 · 파일 교체 2026-10-02 · 5일째 새 날짜가 없어 갱신 경로 확인 필요\n• sec_tickers: 스냅샷일 2026-07-31 · 파일 교체 2026-08-03 · 67일째 새 날짜가 없어 갱신 경로 확인 필요\n• us_shortvol: 거래일 2026-10-01 · 파일 교체 2026-10-02 · 5일째 새 날짜가 없어 갱신 경로 확인 필요\n파일 정보 확인 37/38개 · 개별 종목 누락 검사와는 별개\n고정 연구 입력 6개는 이 알림의 검사 대상이 아니며 아직 검사 전\n⚠는 공개 자료·저녁 수집 시각·경과일 기준 점검 요청입니다. 종목별 누락 검사는 별개입니다.\n전체 38개 날짜·파일 교체일은 `목록` · 다음 목록 검사 10/06 09:30 KST",
+      "status": "stale",
+      "sent_ts": null,
+      "created_at": "2026-10-06T00:00:44.68434+00:00"
+    }
+  ],
+  "checked_at": "2026-10-06T01:02:06.415506+00:00",
+  "inventories": [
+    {
+      "ok": true,
+      "error": null,
+      "checked_at": "2026-10-06T01:01:32.505619+00:00"
+    },
+    {
+      "ok": true,
+      "error": null,
+      "checked_at": "2026-10-06T00:31:26.715584+00:00"
+    },
+    {
+      "ok": true,
+      "error": null,
+      "checked_at": "2026-10-06T00:30:22.777781+00:00"
+    },
+    {
+      "ok": true,
+      "error": null,
+      "checked_at": "2026-10-06T00:01:55.316509+00:00"
+    }
+  ]
+}
