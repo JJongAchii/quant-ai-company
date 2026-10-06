@@ -1,0 +1,11 @@
+{
+  "native_image_imports": "passed",
+  "package_root": "/opt/company/src/quant_company/__init__.py",
+  "trend_role_outbound_only": true,
+  "existing_market_briefing_preserved": true,
+  "model": "not-called",
+  "database": "not-connected",
+  "slack": "not-connected",
+  "credential_mounts": 0,
+  "image_id": "sha256:0dc4f13cb968e2706a105e2d52a054a736003f6aaa361e4278b58ccf9cf5307e"
+}

@@ -31,7 +31,9 @@ Google과 네이버를 더한 점수·전체 플랫폼 순위도 만들지 않�
 네이버 검색 결과로 원문 허용 목록을 우회하지 않는다. 허용 원문 범위에 따라 연예·스포츠
 등의 배경 설명이 제한될 수 있지만 키워드 자체를 경제 주제로 필터링하지 않는다.
 
-기존 Reporter에 설정된 모델·reasoning effort로 한 번 편집한다. 완료된 제안이 계약 검증에
+기존 Reporter에 설정된 모델·reasoning effort로 한 번 편집한다. 소유자의 모델 배정 기능이
+활성화돼 있으면 Reporter 배정을 요청 준비 때 동결하고 같은 요청의 대기·재시도에 유지한다.
+Trend Scout 자체는 모델 배정 대상이 아니다. 완료된 제안이 계약 검증에
 실패한 경우에만 한 번 더 요청한다. 기능 전체에서 KST 하루 최대 2개 모델 요청이며 회사
 공통 호출 예산과 뉴스 모델 실행 경로를 공유한다. 추가 유료 AI API로 전환하지 않는다.
 모델은 `AgentDecision.artifacts` 안의 `TrendBriefDraft`만 반환한다. 모든 후보를 한 번씩
@@ -97,6 +99,8 @@ TREND_FEED_NAVER_ENABLED=true
 `news-worker`에만 읽기 전용 secret으로 연결된다. Codex 컨테이너에는 연결하지 않는다.
 로컬 실행은 `TREND_FEED_NAVER_CREDENTIALS_FILE`로 서버 프로세스의 파일 경로를 지정한다.
 키가 없거나 비활성화되면 Google 자료는 계속 처리하고 네이버 추이는 확인 불가로 표시한다.
+회사 릴리스·백업 경로도 네이버 활성화 시 이 overlay를 포함한다. 활성화된 릴리스에서
+overlay가 빠지면 릴리스를 거부하며, 구버전 복구 시에는 네이버 플래그도 함께 끈다.
 
 ```bash
 uv sync --frozen

@@ -1,21 +1,21 @@
 {
-  "checked_at": "2026-10-06T10:42:17.228984+00:00",
+  "checked_at": "2026-10-06T11:08:32.841591+00:00",
   "base_commit": "afe3e88b5b055b60e364715835a43d3a751e2de7",
   "code_sha256": {
-    "deploy/.env.example": "16655e6b6cf0b20d64d979082343f2a8c101558d88b4f2e26beba2204ec814a8",
-    "deploy/compose.yaml": "51e720d261d71423728f39259e47c7a0ecf5b4462a39d6c602caeaa2d7f3ba90",
+    "deploy/.env.example": "4ebc38d7ec96f501b5dbbb02d55807da886aa52bacfc3d5a69dcf0c6c14f4d45",
+    "deploy/compose.yaml": "f71c72014c97f25b7512e8fdf2bbf15a820db54cfa285a1e92357d0becb7987b",
     "deploy/trend-feed.compose.yaml": "630ee9a57864605fa8036053eedcecc3cd304492628dd7ceb07574530d2172a0",
     "deploy/trend-naver-credentials.example.json": "e435d8938dab97470afa89584995d2b3de5abaae39bd38d6afddb6c2c304b451",
     "scripts/qualify_trend_feed.py": "cd6035dc0e9987d298fccdf3cd791dc47d651ee39e96c638439eb86666d9f68a",
     "slack-apps/trend_scout.json": "2d2bc55ea5eaf9b77d9a4d36daf4cd8a051730623df56e7aca455e1b10add63c",
-    "src/quant_company/accounts.py": "18eaf7d3fded426e520b5f1ecdc57e5cf8859c13b310f73c62b7112227a8c72e",
+    "src/quant_company/accounts.py": "7e7eaf4e86b908fda4aa979abc16b7ee71d047d0b5dde47c54968ec43f0d6fae",
     "src/quant_company/cli.py": "ac0603b7e01fd40bafc8f1a200c3778559d935dfc2c4e704d18f9c3906072b88",
-    "src/quant_company/company.py": "18f2ab020eecd125aab8d48472d207f911607eb92dec3225115f387f7e032b22",
-    "src/quant_company/config.py": "6cd91125024a2aea0fe6ab2276399c7e9616a6df311f7dc559449baf9b033c93",
-    "src/quant_company/db.py": "fa8a9fdc6719d9c6c3e49861652407c0c2813d76999b7a707bb199413ce223a7",
+    "src/quant_company/company.py": "c96e93f05c4ff251c19a2d1cee1a4fa5fe7853141f65f625f6590d6b57b488e4",
+    "src/quant_company/config.py": "1e5f733ee5e70427e374c4c99f0183da5092251ddfdb2fa6ab4f6ff378283fc0",
+    "src/quant_company/db.py": "1e50290f0ed953bc9996c8b58ad96eb58216653ab7e81ad66dadf6b37f07f4e9",
     "src/quant_company/roles.json": "4bc38214190f11d1503361102a8f44750b778b8b6f5c202c4658a835f28c7bf3",
     "src/quant_company/runtime.py": "3964884dfc8b03bfaff3c21824e7049e49edcdea5fc56ada805d7775ecbc3544",
-    "src/quant_company/slack.py": "c494d6d7c01749aa96d032f4a09f4db463008efc2eb7ea75e3e906975cd73ca8",
+    "src/quant_company/slack.py": "e99da747d74960c135fb2b0fca0882c49f1688fd692bfbde13036694eba37441",
     "src/quant_company/trend_feed/__init__.py": "c8f2af3cba1b234ba253454f09dd97ae067ecb8c1658da38d7e1dc5125376c2a",
     "src/quant_company/trend_feed/commands.py": "a67dcbd2dae4262494cbc61868d64c600946fa1677174f7ecf2cbd6a1182e88e",
     "src/quant_company/trend_feed/contracts.py": "fb4f5fa2862f539d1e72417ca46052cf684d44cf68d6eeed7abaae052359e5d8",
@@ -24,19 +24,26 @@
     "src/quant_company/trend_feed/schedule.py": "c2348d7452aa974dd90997bba7d9ec5a863af32cd68ee25491b73ebacec7ce8e",
     "src/quant_company/trend_feed/schema.sql": "b3c4aa1012cf78806b486604711fec8b43b92537c78474d544a89e9bdd005965",
     "src/quant_company/trend_feed/sources.py": "327affb0259a173cbf9db3cc31692488c278854df883c5b171941d2cb8ea175f",
-    "src/quant_company/trend_feed/store.py": "d8495c71341ae643b4030a289d4464bd7c43e79e303d9f5e240197a1e9547f15",
+    "src/quant_company/trend_feed/store.py": "599f3ceb0abbe64ef48b80d66228fd031b384f1c0870771154cfd46107037ddc",
     "src/quant_company/trend_feed/workflow.py": "603bcefe9c6ba3e24ba3c340429b07ad7940cf857a2fb7368122a20c5047d023",
     "tests/test_roles.py": "48d1efd45749c47e8226c32772bd7969f55e2811b4da05aaa39d04b699779c6b",
-    "tests/test_trend_feed.py": "94c625dd63c1f0e048337cd528153e03618adf06960d1b42362068d1fbc97f1d",
-    "tests/test_trend_feed_temporal.py": "6523ba94953af982ea19a9848eeae12e1f11dbab5142333181c31de762d7bfe8"
+    "tests/test_trend_feed.py": "b7e41af589bdec8b624657e78fb6d50f86cfd187a07d610c6a90a0650b3479af",
+    "tests/test_trend_feed_temporal.py": "6523ba94953af982ea19a9848eeae12e1f11dbab5142333181c31de762d7bfe8",
+    "deploy/Dockerfile.trend-feed": "ab0a293832c7b61fe2f42131bfbb0ce37a4f6d9b38942b919b2b6da4c43026fa",
+    "deploy/maintenance_release.py": "ad19f0e70acdd3d0606d5a12c20d4187cae62d89a67828571ab0238ceb239073",
+    "deploy/state_backup.py": "07f677194c2f3eb5f549d7b5e30b2e88819d99b11702634acca84abf8b002544",
+    "src/quant_company/model_policy.py": "ab1a4ba1a0ac67c2b118f50f9b2f839d762da3a6e477c8863b344f66eee75a7a",
+    "tests/test_maintenance_release_host.py": "95eb6b8497bf6b6d6bcf0980172f83ebfc8021a6f4c8431a02c8f764f2e669d2",
+    "docs/project/evidence/trend-feed-20261006/production-overlay.py": "57b1194582895aa3b90aa03b9a4219a9dae2a032f8b0f5b1a2b190f57c31ba4e",
+    "docs/project/evidence/trend-feed-20261006/production-stage.py": "73ab32749cffdbbe7f69e62db45e05a951b55af95ee5547757f41302946fbb0a"
   },
   "automated": {
     "targeted": {
       "passed": 67
     },
     "full": {
-      "passed": 1448,
-      "skipped": 45,
+      "passed": 1514,
+      "skipped": 47,
       "deselected": 1,
       "warnings": 2
     },
@@ -47,7 +54,23 @@
     "slack_http": "simulated",
     "ruff": "passed",
     "git_diff_check": "passed",
-    "compose": "parsed; default-off flags shared, NAVER secret only news-worker"
+    "compose": "parsed; default-off flags shared, NAVER secret only news-worker",
+    "initial_full": {
+      "passed": 1448,
+      "skipped": 45,
+      "deselected": 1,
+      "warnings": 2
+    },
+    "integrated_targeted": {
+      "passed": 95,
+      "warnings": 2
+    },
+    "image_derived_candidate": {
+      "passed": 176,
+      "skipped": 1,
+      "warnings": 2,
+      "scope": "Actual image-derived source with reviewed trend delta, real local PostgreSQL and Temporal; HTTP/model/Slack simulated."
+    }
   },
   "live_checks": {
     "google_rss": {
@@ -102,6 +125,23 @@
     "channel": "created C0C6WTA9ECV; Trend Scout membership verified",
     "publish_enabled": false,
     "naver_secret": "user-configured local file, mode 0600; values not recorded; production mount pending",
-    "legacy_verification_token_rotation": "manual completion pending"
-  }
+    "legacy_verification_token_rotation": "manual completion pending",
+    "production_stage": {
+      "state": "staged",
+      "image": "sha256:0dc4f13cb968e2706a105e2d52a054a736003f6aaa361e4278b58ccf9cf5307e",
+      "targets": [
+        "news-worker",
+        "dispatch"
+      ],
+      "runtime_config_preserved": true,
+      "source_inventory_verified": true,
+      "native_image_check": "passed",
+      "running_services_changed": false,
+      "credentials_installed": false,
+      "messages_sent": 0
+    },
+    "preview_activation": "prepared; permission pending per earlier implementation-and-validation-only selection"
+  },
+  "integrated_with": "457a9c20f4e1b95a407dca3f1c0b20070142c0ae",
+  "implementation_commit": "b8c3f8867ff7df793f70f70d2f929c9fe84b2332"
 }

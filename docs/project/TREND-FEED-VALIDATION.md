@@ -1,6 +1,7 @@
 # 한국 검색 트렌드 브리핑 검증
 
-2026-10-06, 독립 회사 worktree `batfish`, 기준 commit `afe3e88` 위 변경 사항.
+2026-10-06, 독립 회사 worktree `batfish`, 최초 기준 commit `afe3e88` 위 변경 사항.
+운영 준비 중 최신 `origin/main`의 `457a9c20f4e1`을 통합해 새 모델 배정·개선 담당 복구를 보존했다.
 사용자가 설계 구현을 승인했고, 후속 요청으로 기존 Slack 워크스페이스의 전용 채널·앱 생성도 승인했다.
 [실행 근거와 코드 SHA-256](evidence/trend-feed-20261006/RESULT.json).
 
@@ -13,7 +14,10 @@ Google KR 관측, 07:30 KST 동결, 네이버 같은 응답 내 추이, 허용 �
 | 검사 | 결과 | 실제/모의 범위 |
 |---|---|---|
 | 신규 기능·관련 기술 피드·역할 회귀 | 67 통과 | 실제 PostgreSQL·로컬 Temporal, HTTP/모델/Slack 모의 |
-| 전체 회귀 `pytest -q -m 'not live'` | 1,448 통과, 45 skip, 1 deselect | 기존 선택적 외부 연동 skip, opt-in 모델 검사는 별도 |
+| 최초 전체 회귀 `pytest -q -m 'not live'` | 1,448 통과, 45 skip, 1 deselect | 최초 기준 위 검사 |
+| 최신 모델 배정·릴리스 통합 회귀 | 95 통과 | 실제 PostgreSQL·로컬 Temporal, HTTP/모델/Slack 모의 |
+| 통합 후 전체 회귀 `pytest -q -m 'not live'` | 1,514 통과, 47 skip, 1 deselect | 선택적 외부 연동 skip, opt-in 모델 검사는 별도 |
+| 실제 운영 이미지에서 추출한 소스 + 트렌드 변경 | 176 통과, 1 skip | 기존 시장 브리핑을 보존한 후보 소스, 실제 로컬 PostgreSQL·Temporal |
 | Ruff·`git diff --check` | 통과 | 전체 저장소 |
 | 기본 Compose + 네이버 overlay | 파싱 통과 | 수집/발송 기본 off, secret은 news-worker에만 연결 |
 
@@ -22,7 +26,11 @@ Temporal worker 재시작, 커밋 후 activity 재시도와 이력 재생, 수�
 합치기 거부·모델 2회 제한·quota 대기 ID 유지·취소/불명 호출의 자동 대체 금지·늦은 응답·네이버
 100회 제한·정책 변경·만료·Slack 429/불명 영수증·전용 앱 이벤트 차단도 확인했다.
 첫 전체 검사에서 기존 최소 설정 fixture에 새 플래그가 없는 문제를 발견해 기본 off 처리를 보완하고
-전체 검사를 다시 통과했다. [최종 pytest 출력](evidence/trend-feed-20261006/pytest.txt).
+전체 검사를 다시 통과했다. [최초 pytest 출력](evidence/trend-feed-20261006/pytest.txt),
+[최신 통합 pytest 출력](evidence/trend-feed-20261006/integrated-pytest.txt),
+[운영 이미지 소스 회귀](evidence/trend-feed-20261006/image-derived-pytest.txt).
+Reporter 모델 배정의 동결·quota 대기와 발송 전용 계정의 배정 제외,
+후속 릴리스에서 네이버 secret overlay의 누락 거부도 확인했다.
 
 ## 실제 외부 확인
 
@@ -63,4 +71,14 @@ Trend Scout 설치와 채널의 앱 목록 등록을 확인했다. 실제 `auth.
 API HUB의 검색어 트렌드·뉴스 검색 실제 인증과 조회를 확인했으며 키 값은 검증 기록에 포함하지
 않는다. 운영 서버 secret 연결, 전용 채널 실제 발송 영수증, 3일 미리보기 관측은 남아 있다.
 
-[설정·데모·복구](../trend-feed.md), [설계 결정](../adr/0038-korean-search-trends-briefing.md).
+실제 4GB 운영 서버를 읽기 전용으로 조사해 `news-worker`·`dispatch`의 현재 이미지 소스를
+추출했다. 해당 소스에 검토된 트렌드 변경만 합친 후보의 회귀 176개가 통과했다.
+서버에서 후보 이미지를 실제 빌드하고 파일 inventory·환경·명령·사용자·기존 revision label을
+대조했다. 네트워크·자격증명 마운트 없이 네이티브 모듈 import와 기존 시장 브리핑 보존도
+확인했다. [staging](evidence/trend-feed-20261006/production-stage.json),
+[네이티브 이미지 검사](evidence/trend-feed-20261006/native-image-check.json).
+실행 중인 서비스·설정·키 마운트·메시지는 바꾸지 않았다.
+[운영 전환안](TREND-FEED-ACTIVATION.md)을 준비했고 앞서 선택한 구현·검증 범위를 넘어서는
+운영 미리보기·실제 발송 범위의 확인이 남아 있다.
+
+[설정·데모·복구](../trend-feed.md), [설계 결정](../adr/0041-korean-search-trends-briefing.md).
