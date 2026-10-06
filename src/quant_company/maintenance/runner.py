@@ -75,6 +75,33 @@ def repository_prompt_paths(entries):
     return sorted(path for path in entries if readable(path))
 
 
+def compact_path_catalog(material):
+    """Keep relevant paths and a bounded catalog; inspect(query=...) can find omitted code."""
+    relevant = {row.get("path") for key in ("investigated_code", "inspected_excerpts")
+                for row in material.get(key, [])}
+    relevant.update(row.get("path") for row in material.get("current_implementation", {}).get("source_files", []))
+    for name in ("editable_paths", "repository_paths"):
+        paths = material.get(name, [])
+        if len(paths) <= 32:
+            continue
+        limit = max(32, len(paths) // 2)
+        ordered = [p for p in paths if p in relevant] + [p for p in paths if p not in relevant]
+        # Relevant inspected paths are retained even if they exceed the catalog target.
+        included = ordered[:max(limit, sum(p in relevant for p in paths))]
+        if len(included) == len(paths):
+            continue
+        prior = material.setdefault("prompt_path_catalog", {}).get(name, {})
+        total = prior.get("total", len(paths))
+        material["prompt_path_catalog"][name] = {
+            "total": total, "included": len(included), "omitted": total-len(included),
+            "lookup": "Omitted paths remain in the exact repository snapshot. Use inspect(query=...) "
+                      "to find relevant code; an omitted path does not establish absence.",
+        }
+        material[name] = included
+        return True
+    return False
+
+
 def proposal_material(payload, schema):
     """Share a finite provider context budget; retain full evidence and reserved prompts in the DB."""
     material = copy.deepcopy(payload)
@@ -114,6 +141,20 @@ def proposal_material(payload, schema):
             material["prompt_system_compaction"] = stage + 1
             material["prompt_excerpted"] = True
         else:
+            if compact_path_catalog(material):
+                material["prompt_excerpted"] = True
+                continue
+            if material.get("prompt_observation_compaction", 0) < 3:
+                stage = material.get("prompt_observation_compaction", 0)
+                string_chars, list_items = [(1000, 8), (400, 4), (160, 2)][stage]
+                material["observations"] = [
+                    {**compact_prompt_value(row, string_chars=string_chars, list_items=list_items),
+                     "key": row["key"], "prompt_excerpted": True}
+                    for row in material.get("observations", [])
+                ]
+                material["prompt_observation_compaction"] = stage + 1
+                material["prompt_excerpted"] = True
+                continue
             # Preserve current configuration/assessments. Omit older history records explicitly.
             history = material.get("history", {}).get("evidence", [])
             candidates = [r for r in history if not r.get("omitted")]

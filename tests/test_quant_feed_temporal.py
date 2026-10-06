@@ -23,6 +23,7 @@ def test_quant_editorial_cadence_finishes_one_document_then_paces_candidates():
     assert editorial_delay({"state": "defer"}) == 300
     assert editorial_delay({"state": "completed", "document_state": "held"}) == 1800
     assert editorial_delay({"state": "blocked"}) == 1800
+    assert editorial_delay({"state": "held", "reason": "quant_context_limit"}) == 20
 
 
 async def test_quant_and_account_workflows_start_once_together():

@@ -8,72 +8,40 @@
     "ACTIVATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/quant-feed-quality-20260929/RESULT-v20.json",
-          "sha256": "8b63616133f0"
-        },
-        {
-          "path": "docs/project/evidence/quant-feed-quality-20260929/OBSERVATION-WAIVER-20260930.json",
-          "sha256": "b67805166867"
-        },
-        {
-          "path": "docs/project/evidence/quant-feed-resume-20260930/RESULT.json",
-          "sha256": "5e6dbdbb07f3"
-        },
-        {
-          "path": "docs/project/evidence/quant-feed-resume-20260930/LIVE-DELIVERY.json",
-          "sha256": "5911a7db4b53"
+          "path": "docs/project/evidence/quant-feed-parity-20261006/RESULT.json",
+          "sha256": "0b532394af26"
         }
       ],
-      "note": "Publication resumed on exact installed 5defb8c/v20 after current-policy private qualifications, bot identity and drained-call/outbox checks. Normal Temporal review, critique, revision and final critique produced a real Quant Scout delivery at 10:59:56 UTC; Slack acceptance timestamp and permalink verified. Historic post retained, 11 old previews not replayed and held documents not reset. News, housing and general workers retained IDs/images. User-waived 48h timer remains inactive/disabled; no elapsed-48h or feed-wide precision claim.",
+      "note": "Seven real Quant Scout deliveries 2026-10-06 09:02-09:08 KST, one recorded attempt each, all Slack permalinks and bot identity confirmed. Quant and dispatch policy a7ce1ed match; collection/editorial RUNNING with 16 source failure counters zero. Historic bad post unchanged; no 48h prerequisite.",
       "status": "verified",
-      "updatedAt": "2026-09-30T12:03:20+00:00"
+      "updatedAt": "2026-10-06T00:33:14.332315+00:00"
     },
     "QUANT_FEED": {
       "evidence": [
         {
-          "path": "docs/project/evidence/quant-feed-quality-20260929/RESULT-v20.json",
-          "sha256": "8b63616133f0"
-        },
-        {
-          "path": "docs/project/evidence/quant-feed-resume-20260930/RESULT.json",
-          "sha256": "5e6dbdbb07f3"
+          "path": "docs/project/evidence/quant-feed-parity-20261006/RESULT.json",
+          "sha256": "0b532394af26"
         }
       ],
-      "note": "Policy v20 source filtering, scoped gaps, bounded independent revisions, atomic evidence capacity and grouped cards are active with matching dedicated producer/consumer. HARN and LOB private subscription cases passed; generic AI governance remained rejected. Source exclusions and original receipts are retained. Real accepted card is 2088 characters, divided into core, research design/results, caveats and application. Publication is active, without quota pressure or replay of old previews.",
+      "note": "Allowlist-only parity repair kept verified app/runtime images and all independent services. Seven certainly-unsent cards revalidated against unchanged frozen originals, drafts and independent critics; no model call replay or gate bypass.",
       "status": "verified",
-      "updatedAt": "2026-09-30T12:03:20+00:00"
+      "updatedAt": "2026-10-06T00:33:13.980651+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/quant-feed-quality-20260929/RESULT-v20.json",
-          "sha256": "8b63616133f0"
-        },
-        {
-          "path": "docs/project/evidence/quant-feed-quality-20260929/OBSERVATION-WAIVER-20260930.json",
-          "sha256": "b67805166867"
-        },
-        {
-          "path": "docs/project/evidence/repository-public-20260930.json",
-          "sha256": "92c3acb5f1ab"
-        },
-        {
-          "path": "docs/project/evidence/quant-feed-resume-20260930/LIVE-DELIVERY.json",
-          "sha256": "5911a7db4b53"
-        },
-        {
-          "path": "docs/project/evidence/quant-feed-resume-20260930/HOST-READBACK.json",
-          "sha256": "2b9fc33e37f3"
+          "path": "docs/project/evidence/quant-feed-parity-20261006/RESULT.json",
+          "sha256": "0b532394af26"
         }
       ],
-      "note": "Deployed 5defb8c Linux CI 36679570477 attempt 2 passed after owner-authorized public conversion without billing changes. Resume operator 558e855 CI 36690096059 passed, with 48 targeted operator tests and 6 real PostgreSQL/Temporal regressions (Slack simulated in regressions). Private subscription positives/negative controls qualified. Real normal-workflow Quant delivery has fresh current-policy calls and passing independent critique; Slack identity, acceptance receipt and permalink verified (history readback unavailable under chat:write-only scope). Final host readback: active gate, healthy Quant services, 0 Quant restarts/OOM, 1938732 KiB available memory and 8707768320 bytes disk. Later maintenance restart-count drift recorded separately. No exhaustive coverage, independent investment reproduction or long-run precision claim.",
+      "note": "Full local regression 1437 passed/46 skipped/1 opt-in live deselected; targeted 163 passed/1 skipped; real PostgreSQL reconciliation with simulated model/Slack fixtures separately labeled; Ruff and diff checks passed.",
       "status": "verified",
-      "updatedAt": "2026-09-30T12:03:20+00:00"
+      "updatedAt": "2026-10-06T00:33:14.162475+00:00"
     }
   },
   "intentDigest": "c402037885c5",
   "schemaVersion": 1,
   "slug": "scoter",
   "state": "approved",
-  "updatedAt": "2026-09-30T12:03:20+00:00"
+  "updatedAt": "2026-10-06T00:33:14.332315+00:00"
 }

@@ -100,7 +100,8 @@ decision = control.get('decision', {'say': '검토 결과를 저장했습니다.
 if mode == 'tool':
     event({'type': 'item.started', 'item': {'type': 'command_execution', 'command': 'unsafe'}})
 if control.get('tool_type'):
-    event({'type': 'item.completed', 'item': {'id': 'tool-1', 'type': control['tool_type']}})
+    event({'type': 'item.completed', 'item': {'id': 'tool-1', 'type': control['tool_type'],
+        **({'action': control['tool_action']} if 'tool_action' in control else {})}})
 if mode == 'nonfinite':
     decision = {'say': '', 'status': 'continue', 'tools': [{'name': 'calculate', 'arguments': {'x': float('nan')}}]}
 event({'type': 'item.completed', 'item': {'id': 'i1', 'type': 'agent_message',
@@ -221,6 +222,47 @@ def test_quant_output_contract_cannot_expand_to_tools(identity, search):
     with pytest.raises(ValueError, match="tool-free Quant"):
         ProviderRequest(request_id=identity, model="model", prompt="test", web_search=search,
                         output_contract="quant_brief_v1")
+
+
+@pytest.mark.parametrize("identity,search", [("company-turn", True), ("quant-feed-test", False)])
+def test_direct_discovery_contract_is_scoped_to_quant_native_search(identity, search):
+    with pytest.raises(ValueError, match="native-search Quant"):
+        ProviderRequest(request_id=identity, model="model", prompt="search", web_search=search,
+                        output_contract="quant_search_v1")
+
+
+async def test_direct_quant_discovery_preserves_native_trace_and_immutable_receipt(fake_codex):
+    from quant_company.web_tools import search_result
+
+    config, configure, calls = fake_codex
+    value = {"results": [{"url": "https://arxiv.org/abs/2609.12345", "title": "Research", "snippet": "Candidate"}]}
+    configure(direct=value, tool_type="web_search", tool_action={"type": "search", "queries": ["quant research"]})
+    request = ProviderRequest(request_id="quant-feed-search", model="model", prompt="Find papers", web_search=True,
+                              output_contract="quant_search_v1")
+    result = await runner_for(config).run(request)
+    assert json.loads(result.decision.artifacts[0].content) == value
+    assert result.decision.artifacts[0].source_ids == []
+    assert not result.decision.tools and not result.decision.delegations and not result.decision.messages
+    candidates = search_result(result, {"query": "quant research", "limit": 8})
+    assert candidates["ok"] and candidates["verified"] is False
+    assert candidates["results"][0]["verified"] is False
+    assert await runner_for(config).run(request) == result
+    assert len(calls()) == 1
+    assert calls()[0]["schema"]["properties"]["results"]["maxItems"] == 8
+    assert 'web_search="live"' in calls()[0]["args"]
+    assert b"Your only native execution tool is live web search" in cli_prompt(request)
+    with pytest.raises(ProviderFault, match="different input"):
+        await runner_for(config).run(request.model_copy(update={"output_contract": "agent_decision"}))
+
+
+@pytest.mark.parametrize("direct", [{"results": [], "tools": []}, {"results": [{
+    "url": "https://127.0.0.1/private", "title": "Invalid", "snippet": "Not public"}]}])
+async def test_quant_discovery_rejects_actions_and_private_urls(fake_codex, direct):
+    config, configure, _ = fake_codex
+    configure(direct=direct)
+    with pytest.raises(ProviderFault, match="quant_contract:invalid_shape"):
+        await runner_for(config).run(ProviderRequest(request_id="quant-feed-bad-search", model="model", prompt="Search",
+                                                     web_search=True, output_contract="quant_search_v1"))
 
 
 async def test_quant_structured_output_rejects_company_action(fake_codex):
