@@ -175,6 +175,49 @@ def test_background_stages_wait_for_direct_owner_work(mission):
     assert company.prepare_turn(turn_id) == {"state": "defer", "seconds": 2, "reason": "higher_priority_request"}
 
 
+def test_held_owner_audit_does_not_starve_another_authorized_mission(mission):
+    company = mission.company
+    controller = MissionController(company, backend=FixtureBackend(company))
+    owner_id = mission.mission_id
+    trial_id, plan = mission.prepare()
+    outcome = mission.outcome(plan)  # Synthetic contract values, never a research result.
+    mission.invoke("record_outcome", owner_id, trial_id, outcome)
+    mission.interpret(trial_id, outcome)
+    assert controller.tick()["state"] == "running"
+    owner_stage, _ = active(mission)
+    assert owner_stage["stage"] == "audit"
+    context = {**owner_stage["context"], "_audit_hold": {"reason": "audit_runtime_requires_reconciliation"}}
+    with company.db.transaction() as conn:
+        conn.execute("""UPDATE research_mission_stages SET state='waiting',context=%s,
+            error='audit_runtime_requires_reconciliation',retry_at='2100-01-01' WHERE id=%s""",
+            (Jsonb(context), owner_stage["id"]))
+        conn.execute("UPDATE tasks SET status='blocked' WHERE id=%s", (owner_stage["task_id"],))
+        held = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s", (owner_stage["id"],)).fetchone()
+
+    payload = spec_payload()
+    payload["title"] = "Independent authorized background fixture"
+    payload["resources"]["priority"] = "autonomous"
+    background_id = mission.mission(spec=payload)
+    assert controller.tick()["state"] == "running"
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT * FROM research_mission_stages WHERE id=%s", (owner_stage["id"],)).fetchone() == held
+        background = conn.execute("SELECT * FROM research_mission_stages WHERE mission_id=%s", (background_id,)).fetchone()
+        assert background["stage"] == "proposal" and background["state"] == "running"
+        assert not conn.execute("SELECT 1 FROM research_mission_publications WHERE trial_id=%s", (trial_id,)).fetchone()
+        assert conn.execute("SELECT count(*) AS n FROM research_mission_trials WHERE mission_id=%s", (background_id,)).fetchone()["n"] == 0
+
+        # After the normal operator hold reconciliation, owner priority is eligible again.
+        conn.execute("""UPDATE research_mission_stages SET context=context-'_audit_hold',retry_at=NULL
+            WHERE id=%s""", (owner_stage["id"],))
+    assert controller.tick()["state"] == "running"
+    with company.db.transaction() as conn:
+        resumed = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s", (owner_stage["id"],)).fetchone()
+        assert resumed["stage"] == "audit" and resumed["state"] == "running"
+        assert resumed["attempt"] == held["attempt"] + 1
+        assert not resumed["context"].get("_audit_hold")
+        assert not conn.execute("SELECT 1 FROM research_mission_publications WHERE trial_id=%s", (trial_id,)).fetchone()
+
+
 def test_evidence_prompt_preserves_manifest_with_bounded_chunks(mission):
     company = mission.company
     controller = MissionController(company, backend=FixtureBackend(company))

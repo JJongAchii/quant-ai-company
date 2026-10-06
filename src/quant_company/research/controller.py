@@ -858,6 +858,8 @@ class MissionController:
                 WHERE m.state='active' AND p.status='active' AND m.revision=p.revision
                 AND NOT EXISTS(SELECT 1 FROM tasks t WHERE t.project_id=p.id AND t.kind='routing'
                     AND t.status NOT IN ('completed','superseded'))
+                AND NOT EXISTS(SELECT 1 FROM research_mission_stages held WHERE held.mission_id=m.id
+                    AND held.stage='audit' AND held.state='waiting' AND held.context ? '_audit_hold')
                 ORDER BY CASE m.spec->'resources'->>'priority' WHEN 'owner' THEN 0 ELSE 1 END,m.updated_at,m.id
                 LIMIT 1""").fetchone()
             if not candidate:
