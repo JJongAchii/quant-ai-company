@@ -475,10 +475,11 @@ class Company:
 
                 enqueue(conn, self, project, task, event_key, account_command)
             elif account_help:
-                from .accounts import HELP_TEXT
+                from .accounts import help_text
 
-                conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (HELP_TEXT, task["id"]))
-                self._message(conn, project, task["id"], agent, "status", HELP_TEXT)
+                guide = help_text(text)
+                conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (guide, task["id"]))
+                self._message(conn, project, task["id"], agent, "status", guide)
             elif research_command:
                 from .research.approvals import apply_owner_command
 

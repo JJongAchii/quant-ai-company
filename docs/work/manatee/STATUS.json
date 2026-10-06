@@ -1,83 +1,75 @@
 {
   "approval": {
-    "approvedAt": "2026-10-06T07:53:56.619444+00:00",
-    "id": "chat-model-assignments-deploy-20261006"
+    "approvedAt": "2026-10-06T13:43:25.900946+00:00",
+    "id": "chat-mixed-allocation-correction-20261006"
   },
-  "currentIntent": "INTENT-v2.json",
+  "currentIntent": "INTENT-v6.json",
   "deliverables": {
-    "IMPLEMENTATION": {
+    "APPLY": {
       "evidence": [
         {
-          "path": "src/quant_company/model_policy.py",
-          "sha256": "173de699cc1c"
+          "path": "docs/project/evidence/mixed-allocation-20261006/apply.json",
+          "sha256": "ce7c300f4542"
         },
         {
-          "path": "src/quant_company/model_control.py",
-          "sha256": "9a638de467ef"
+          "path": "docs/project/evidence/mixed-allocation-20261006/receipt.json",
+          "sha256": "2ee2cbf7f6c5"
         },
         {
-          "path": "docs/runbooks/model-assignments.md",
-          "sha256": "f6d2b0afeb9e"
+          "path": "docs/project/evidence/mixed-allocation-20261006/operator-allocation.py",
+          "sha256": "39e30bf42b37"
         }
       ],
-      "note": "Owner-controlled assignments remain active with existing defaults. Actual owner catalog command and delivered response now verified; pin/task model inference awaits an actual designation. CLI update diagnosis is separate from employee assignments.",
+      "note": "Owner correction committed revision 2 once with nine original Astra roles restored and seven non-Astra targets on GPT-6.1 Sol; same operation receipt returned cached true; revisions 0/1 retained and no Slack ingress or inference was created.",
       "status": "verified",
-      "updatedAt": "2026-10-06T10:55:49.601409+00:00"
+      "updatedAt": "2026-10-06T13:48:52.723306+00:00"
     },
-    "PRODUCTION": {
+    "PLAN": {
       "evidence": [
         {
-          "path": "docs/project/MODEL-ASSIGNMENTS-PRODUCTION-20261006.md",
-          "sha256": "b74b07c7dedd"
+          "path": "docs/project/evidence/mixed-allocation-20261006/plan.json",
+          "sha256": "79aa0bc74504"
         },
         {
-          "path": "docs/project/evidence/model-assignments-20261006/production-verification.json",
-          "sha256": "3820071f3305"
+          "path": "docs/project/evidence/mixed-allocation-20261006/baseline.json",
+          "sha256": "c7233ea2ba60"
         },
         {
-          "path": "docs/project/evidence/model-assignments-20261006/production-receipts.json",
-          "sha256": "aaa9610d12a2"
+          "path": "docs/project/evidence/mixed-allocation-20261006/catalog.json",
+          "sha256": "fc933d1c3ba4"
         },
         {
-          "path": "docs/project/evidence/model-assignments-20261006/backup-confirmation.json",
-          "sha256": "43ab2212dd0d"
-        },
-        {
-          "path": "docs/project/evidence/model-assignments-20261006/owner-control-readback.json",
-          "sha256": "3ec6eaa0f928"
-        },
-        {
-          "path": "docs/project/evidence/codex-update-20261006/owner-catalog-delivery.json",
-          "sha256": "7dc00267515e"
+          "path": "docs/project/evidence/mixed-allocation-20261006/preview.json",
+          "sha256": "ec03c76daaac"
         }
       ],
-      "note": "Production activation remains verified; actual owner catalog command completed and delivered once. Both runtimes still use qualified CLI 0.154.0. New 0.160.1 local syntax/catalog probe passes with empty auth and simulated login gate; account availability, actual execution and production upgrade not claimed. Existing assignments and release guard unchanged.",
+      "note": "Historical policy 0 identifies nine original Astra and seven other targets. Fresh primary revision 2 catalog and deployed validators accept the mixed plan and effort tiers; live role baselines match provenance; preview is zero writes.",
       "status": "verified",
-      "updatedAt": "2026-10-06T10:55:49.863373+00:00"
+      "updatedAt": "2026-10-06T13:45:01.533186+00:00"
     },
-    "VALIDATION": {
+    "VERIFY": {
       "evidence": [
         {
-          "path": "docs/project/evidence/model-assignments-20261006/feature-ci.json",
-          "sha256": "0d299cf0940c"
+          "path": "docs/project/evidence/mixed-allocation-20261006/verify.json",
+          "sha256": "eab4dd555134"
         },
         {
-          "path": "docs/project/evidence/model-assignments-20261006/production-qualification.json",
-          "sha256": "5827f806f63a"
+          "path": "docs/project/evidence/mixed-allocation-20261006/production-verify.py",
+          "sha256": "1b29b2cba8f4"
         },
         {
-          "path": "docs/project/evidence/model-assignments-20261006/integrated-pytest.txt",
-          "sha256": "72646579c2e9"
+          "path": "docs/project/MIXED-MODEL-ALLOCATION-20261006.md",
+          "sha256": "cc356f3188a8"
         }
       ],
-      "note": "Final feature CI 1521 passed, 46 skipped, 1 deselected. Real disposable PostgreSQL/Temporal and qualified actual production source cohorts; synthetic Slack and model fixtures labeled. Real official CLI and selected account catalog separately verified during deployment.",
+      "note": "Live API and four deployed images agree on Astra 9 / GPT-6.1 Sol 7 with the revised role efforts. All 15 service IDs/images/configuration/restart counts, seven active roles, primary account revision 2 and 10,175 frozen requests preserved; one durable revision/event and previous policy history retained.",
       "status": "verified",
-      "updatedAt": "2026-10-06T10:31:51.282589+00:00"
+      "updatedAt": "2026-10-06T13:53:15.354065+00:00"
     }
   },
-  "intentDigest": "120eac18b054",
+  "intentDigest": "02ec770c1c55",
   "schemaVersion": 1,
   "slug": "manatee",
   "state": "approved",
-  "updatedAt": "2026-10-06T10:55:49.863373+00:00"
+  "updatedAt": "2026-10-06T13:53:15.354065+00:00"
 }

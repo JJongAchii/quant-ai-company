@@ -1,0 +1,19 @@
+{
+  "workflow": "Codex stable release watch",
+  "state": "active",
+  "schedule": "17 0 * * *",
+  "timezone_display": "09:17 Asia/Seoul; GitHub scheduled runs can be delayed",
+  "manual_dispatch": {
+    "run": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37458722137",
+    "commit": "c7a258d4557d7c10ad89973d516b39562bf0998b",
+    "conclusion": "success",
+    "current": "0.160.1",
+    "candidate": null
+  },
+  "repository_workflow_permissions": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": true
+  },
+  "behavior": "candidate PR metadata only; no model calls, production credentials, deployment or employee assignment changes",
+  "candidate_pr_opened": false
+}

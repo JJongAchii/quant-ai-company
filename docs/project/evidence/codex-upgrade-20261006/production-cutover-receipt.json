@@ -1,0 +1,80 @@
+{
+  "state": "active",
+  "commit": "b77dc9511fb6aae2beff68df1c0ba7852bac6bd4",
+  "current": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264",
+  "started_at": "2026-10-06T11:39:23.030905+00:00",
+  "replaced": [
+    "codex-runtime",
+    "quant-codex-runtime"
+  ],
+  "target_names": [
+    "codex-runtime",
+    "quant-codex-runtime"
+  ],
+  "old_pause": {
+    "paused_until": null,
+    "reason": null
+  },
+  "baseline_environment_sha256": "f61b8a1260a5a6febc78a47603bf80268d535aedbe58a2558a1d1e0d822ca3c7",
+  "baseline_container_ids": {
+    "dispatch": "82a070f40b546a3c131a8cdfc29483182645f313443c7ab5a851a25a840b198a",
+    "news-worker": "ad6bd39652a6ae6ba567cf043183032b24e45887c2aa49220541d9858ae519c1",
+    "slack-socket": "52ffe59e1e616ae57d40017e7724c64701d63271565e52bfd753f70a6e0256ce",
+    "worker": "10c0dddd3876fa6a3d00fd7cc96c63a89444cfacc1c6c0e3e43aa6f3536f4fcd",
+    "quant-feed-worker": "383235319c4c89abff43184354eda9348f9144eb1c1b9ac709bae9ea33406177",
+    "maintenance": "501a599be10e74a4153cce17fa83109883f413bc2a7fd983f09319f25488b64c",
+    "housing-feed-worker": "ea689da5606e2dff95314e59fe8eabbebdd5e0d01c075b66f7675bce58907f27",
+    "data-watch-worker": "0035b399d40a6c0032e2f9d4bb5e15e180672676a08719af22265a50c00c9615",
+    "briefing-data-worker": "c12dd0c4415c284a0101fb3d2053d79ad49de970c3f1ba1b863e0ae16689fe1d",
+    "account-gateway": "ac70b94c3626f82ca1fdd067761f77b9732beea5f8d7b940ca1d5830f128a72b",
+    "api": "7fccb45c6b23b8a970735428f47784660f97584275fc79ae2ad60f6af288d4fe",
+    "quant-codex-runtime": "0bcc9bc870a6f00be424bb1f3abf862893e260de39b0cb98797ab7e378d165cf",
+    "codex-runtime": "6ed1055de6e14099de81331a325749a2395d9d46ec1702bb811b4063c7e95827",
+    "claude-runtime": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+    "postgres": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4"
+  },
+  "baseline_images": {
+    "dispatch": "sha256:0dc4f13cb968e2706a105e2d52a054a736003f6aaa361e4278b58ccf9cf5307e",
+    "news-worker": "sha256:0dc4f13cb968e2706a105e2d52a054a736003f6aaa361e4278b58ccf9cf5307e",
+    "slack-socket": "sha256:758d04ea1f66cde8d45eaf43ee3b905c7b479a27352cd2ebb25ec1c11e6b7755",
+    "worker": "sha256:b2ff111d761da5d0fd4bd3903522d3b23a6ab75396787e8ab2dcb5603c924a4f",
+    "quant-feed-worker": "sha256:05a3dab71ce4a0177342c0ec82a10f6b20c25aa9429217085e040207ecc516a9",
+    "maintenance": "sha256:0b80b476471ba92bb1eb21f82704e26ba28fd88826add4110facc61158c25b9e",
+    "housing-feed-worker": "sha256:0aa5d5887d8f1f24b29c6ab8d5bf52c8798987532528f60020f9c41e25c47f9c",
+    "data-watch-worker": "sha256:9b2f758c58445594badac690c24de418282bfdbc8523c3c1e06b1613ba5440fc",
+    "briefing-data-worker": "sha256:5659edbbd0b86c7be97ec1753631653a2559e28e1723fb81a21af7656bf271e2",
+    "account-gateway": "sha256:758d04ea1f66cde8d45eaf43ee3b905c7b479a27352cd2ebb25ec1c11e6b7755",
+    "api": "sha256:758d04ea1f66cde8d45eaf43ee3b905c7b479a27352cd2ebb25ec1c11e6b7755",
+    "quant-codex-runtime": "sha256:9d215e4309aca0f0e448f6595a9d53af268f80f7e8bc3a7880337f631a777233",
+    "codex-runtime": "sha256:13caa3f9f7936529335af8b92d9ddbb78f28ef6a45eed0b2e2054b43acb33938",
+    "claude-runtime": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+    "postgres": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825"
+  },
+  "assignment_policy": {
+    "revision": 0,
+    "bindings": {}
+  },
+  "account_policy": {
+    "profile": "primary",
+    "revision": 2
+  },
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20261006T113947Z-f0b8974e.tar.gz",
+    "sha256": "a8bea0b5350730c8d54628b995f04d7aaade2072ba9450972dadbf862e3d98e4",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20261006T113947Z-f0b8974e.tar.gz",
+    "release_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+    "secrets_included": false
+  },
+  "quant_receipt_backup": {
+    "included_in_standard_backup": true,
+    "shared_jobs_path": "/var/lib/quant-company/codex/jobs"
+  },
+  "release_guard_preserved": "/etc/systemd/system/quant-company-release.service.d/model-assignments.conf",
+  "cli_version": "0.160.1",
+  "completed_at": "2026-10-06T11:43:14.174476+00:00",
+  "frozen_requests_preserved": true,
+  "database_and_claude_preserved": true,
+  "existing_roles_and_research_artifacts_preserved": true,
+  "employee_assignments_preserved": true,
+  "existing_receipts_preserved": true
+}

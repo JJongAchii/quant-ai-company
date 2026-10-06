@@ -104,6 +104,27 @@ def test_incomplete_or_unsupported_syntax_is_help_not_inference(text):
     assert parse_command(text) == {"action": "help"}
 
 
+async def test_malformed_assignment_returns_complete_guide_without_changing_policy(office, credentials):
+    company, control, _, _, _, calls = office
+    body, headers = signed(event(credentials, text="모델 지정 개발", type="message", channel="CACC"),
+                           credentials["director"])
+    client = TestClient(create_app(company.settings, company, credentials))
+    first = client.post("/slack/events/director", content=body, headers=headers)
+    assert first.status_code == 200 and first.json()["owner_control"]
+    assert client.post("/slack/events/director", content=body, headers=headers).json()["duplicate"]
+    before = current(company)
+    await control.tick()
+    assert current(company) == before
+    assert receipt(company, first.json())["outcome"] == "help"
+    with company.db.transaction() as conn:
+        row = conn.execute("SELECT text FROM outbox").fetchone()
+        assert "`도움말`" in row["text"] and "`모델 목록`" in row["text"]
+        assert "`모델 계정 예비로 전환`" in row["text"]
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM turns").fetchone()["n"] == 0
+    assert calls() == []
+
+
 async def test_pin_is_owner_authenticated_model_free_idempotent_and_shared(office, credentials):
     company, control, _, _, _, calls = office
     client = TestClient(create_app(company.settings, company, credentials))
