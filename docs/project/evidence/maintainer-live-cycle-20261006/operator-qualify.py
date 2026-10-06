@@ -102,13 +102,15 @@ def replay(image, worker):
 os.umask(0o077)
 worker = json.loads(run(["docker", "inspect", WORKER]))[0]
 assert worker["Image"] == MANIFEST["base_image_id"], "Production worker image changed"
+assert json.loads(run(["docker", "image", "inspect", worker["Config"]["Image"]]))[0]["Id"] == worker["Image"]
 baseline = replay(worker["Image"], worker)
 assert all(row["state"] == "validation_error" and row["prompt_characters"] > 90000 for row in baseline["turns"])
 for name, expected in MANIFEST["candidate_module_sha256"].items():
     assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == expected
-run(["docker", "build", "--network", "none", "--build-arg", "BASE_IMAGE=" + worker["Image"],
+run(["docker", "build", "--network", "none", "--build-arg", "BASE_IMAGE=" + worker["Config"]["Image"],
      "--build-arg", "MODULE_ROOT=" + MANIFEST["module_root"], "--build-arg", "PATCH_COMMIT=" + MANIFEST["patch_commit"],
      "-t", MANIFEST["target_image"], str(ROOT)], timeout=120)
+assert json.loads(run(["docker", "image", "inspect", worker["Config"]["Image"]]))[0]["Id"] == worker["Image"]
 image = json.loads(run(["docker", "image", "inspect", MANIFEST["target_image"]]))[0]
 candidate = replay(image["Id"], worker)
 assert all(row["state"] == "ready" and row["prompt_characters"] <= 90000 for row in candidate["turns"])
