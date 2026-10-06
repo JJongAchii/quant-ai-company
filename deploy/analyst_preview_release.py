@@ -240,6 +240,7 @@ def stage(args, previous, target, module, journal):
                'env_sha256': digest(raw), 'roles_sha256': digest((STATE / 'config/roles.json').read_bytes()),
                'started_at': time.time(), 'images': [], 'evaluation_edition': args.evaluation_edition,
                'evaluation_editions': evaluation_editions(args),
+               'max_revisions': getattr(args, 'max_revisions', 0),
                'build_mode': 'code_only_identical_lock' if code_only else 'locked_dependency_sync',
                'minimum_disk_bytes': minimum_disk, 'service_inventory_before': before}
     receipt['preserve_codex_runtime'] = bool(manifest.get('preserve_codex_runtime'))
@@ -325,6 +326,7 @@ def cutover(args, previous, target, module, journal):
             or receipt['owner_approval'] != args.approval
             or receipt.get('evaluation_edition') != args.evaluation_edition
             or receipt.get('evaluation_editions', []) != evaluation_editions(args)
+            or receipt.get('max_revisions', 0) != getattr(args, 'max_revisions', 0)
             or digest(raw) != receipt['env_sha256']
             or digest(roles) != receipt['roles_sha256']):
         raise ValueError('preview_staged_configuration_changed')
@@ -334,7 +336,7 @@ def cutover(args, previous, target, module, journal):
                 'PINNED_CODEX_RUNTIME_IMAGE': (values['PINNED_CODEX_RUNTIME_IMAGE']
                     if receipt.get('preserve_codex_runtime') else 'quant-company-codex:' + args.commit),
                 'BRIEFING_ENABLED': 'true', 'BRIEFING_PUBLISH_ENABLED': 'false',
-                'BRIEFING_SOURCE_NOTES_ENABLED': 'true', 'BRIEFING_MAX_REVISIONS': '0',
+                'BRIEFING_SOURCE_NOTES_ENABLED': 'true', 'BRIEFING_MAX_REVISIONS': str(getattr(args, 'max_revisions', 0)),
                 'BRIEFING_EVALUATION_EDITION_ID': '' if evaluation_editions(args) else args.evaluation_edition,
                 'BRIEFING_EVALUATION_EDITION_IDS': json.dumps(evaluation_editions(args)),
                 'BRIEFING_CHANNEL_ID': args.channel, 'BRIEFING_OWNER_USER': args.owner,
@@ -451,6 +453,7 @@ def main():
     parser.add_argument('--manifest-sha256')
     parser.add_argument('--evaluation-edition', required=True)
     parser.add_argument('--evaluation-editions-file', type=Path)
+    parser.add_argument('--max-revisions', type=int, choices=(0, 1), default=0)
     args = parser.parse_args()
     if not all(re.fullmatch('[0-9a-f]{40}', value) for value in (args.base, args.commit)):
         raise ValueError('preview_invalid_revision')

@@ -18,6 +18,7 @@ from .contracts import (
     EditorialPatch,
     MaterialFactPatch,
     SourceDocument,
+    SourceNotesPatch,
     SourcePlan,
 )
 from .coverage import COVERAGE_VERSION, inventory
@@ -27,16 +28,20 @@ from .editor import (
     FORMAT_VERSION,
     PATCH,
     REVIEW,
+    SOURCE_NOTES_PATCH,
     VALIDATION_VERSION,
     WRITE,
+    SourceNotesValidationError,
     apply_condition_patch,
     apply_editorial_patch,
     apply_material_fact_patch,
+    apply_source_notes_patch,
     artifact,
     prompt,
     prune,
     render,
     revision_bundle,
+    source_notes_revision_bundle,
     validate,
     validate_review,
     validate_source_notes,
@@ -65,7 +70,7 @@ class BriefStore:
         return fingerprint({"version": FORMAT_VERSION, "validation_version": VALIDATION_VERSION,
                             "selection_version": COVERAGE_VERSION,
                             "schedule_version": schedule.SCHEDULE_VERSION,
-                            "editorial_contract": fingerprint([PLAN, WRITE, REVIEW, PATCH, FACT_PATCH, EDITORIAL_PATCH]),
+                            "editorial_contract": fingerprint([PLAN, WRITE, REVIEW, PATCH, FACT_PATCH, EDITORIAL_PATCH, SOURCE_NOTES_PATCH]),
                             "enabled": s.briefing_enabled, "publish": s.briefing_publish_enabled,
                             "analyst_procedure": pack(BRIEFER)["digest"],
                             "lake": s.company_lake_uri,
@@ -240,10 +245,22 @@ class BriefStore:
                 if phase in {'review', 'final_review'}:
                     try:
                         validate_source_notes(BriefProposal.model_validate(row['proposal']), bundle)
-                    except ValueError as exc:
-                        conn.execute("UPDATE brief_editions SET state='blocked',error=%s WHERE id=%s",
-                                     (str(exc), row['id']))
-                        return {'state': 'blocked', 'reason': str(exc)}
+                    except SourceNotesValidationError as exc:
+                        repair = (self.company.settings.briefing_max_revisions > 0 and phase == 'review'
+                                  and at+timedelta(minutes=15) < row['due_at']+timedelta(minutes=10)
+                                  and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
+                                                       (row['id'],)).fetchone())
+                        if repair:
+                            revised_bundle = source_notes_revision_bundle(bundle, row['proposal'], exc.violations)
+                            try:
+                                prompt(revised_bundle, 'revise')
+                            except ValueError:
+                                repair = False
+                        if not repair:
+                            conn.execute("UPDATE brief_editions SET state='blocked',error=%s WHERE id=%s",
+                                         (str(exc), row['id']))
+                            return {'state': 'blocked', 'reason': str(exc)}
+                        bundle, phase = revised_bundle, 'revise'
                 if row["state"] in {"collecting", "planning"} and bundle.get("candidate_documents"):
                     phase = "plan"
                 if not bundle.get("documents"):
@@ -316,7 +333,10 @@ class BriefStore:
                              (Jsonb(selected), row["id"]))
             elif call["phase"] in {"write", "revise"}:
                 feedback = row["bundle"].get("revision_feedback", {})
-                if call["phase"] == "revise" and feedback.get("repair_mode") == "conditions_only":
+                if call['phase'] == 'revise' and feedback.get('repair_mode') == 'source_notes_patch':
+                    proposed = apply_source_notes_patch(BriefProposal.model_validate(row['proposal']),
+                        artifact(response, SourceNotesPatch, row['bundle']), feedback)
+                elif call["phase"] == "revise" and feedback.get("repair_mode") == "conditions_only":
                     proposed = apply_condition_patch(BriefProposal.model_validate(row["proposal"]),
                         artifact(response, ConditionPatch, row["bundle"]), feedback["allowed_ids"])
                 elif call["phase"] == "revise" and feedback.get("repair_mode") == "material_append":
@@ -328,6 +348,8 @@ class BriefStore:
                 else:
                     proposed = artifact(response, BriefProposal, row["bundle"])
                 rejected = validate(proposed, row["bundle"])
+                if call['phase'] == 'revise' and feedback.get('repair_mode') == 'source_notes_patch':
+                    rejected = {**(row['quality'] or {}).get('rejected', {}), **rejected}
                 proposal = prune(proposed, rejected)
                 proposal, conflicts = reconcile(proposal, row["bundle"])
                 row["bundle"]["quote_conflicts"] = conflicts
@@ -369,6 +391,7 @@ class BriefStore:
                                  (Jsonb(revised_bundle), Jsonb(result), Jsonb(quality), row["id"]))
                 else:
                     quality["revision_used"] = call["phase"] == "final_review"
+                    quality['source_notes_repair_used'] = bool(row['bundle'].get('source_notes_repair'))
                     conn.execute("""UPDATE brief_editions SET state='ready',proposal=%s,review=%s,rendered=%s,quality=%s
                     WHERE id=%s""", (Jsonb(proposal.model_dump(mode="json")) if proposal else None,
                                      Jsonb(result), Jsonb(parts), Jsonb(quality), row["id"]))

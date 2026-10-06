@@ -1,0 +1,54 @@
+{
+  "recorded_at": "2026-10-06T08:40:34.120499+00:00",
+  "edition_id": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+  "source_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+  "policy_digest": "4519dc189ec4296f8ba5c6aa81dcdbc305ab29f4a078bfac4fbff2beb61da75f",
+  "frozen_before_original_inspection": true,
+  "source_snapshot_sha256": "10c64d8f1034b234b14112f2dbd6bcab4ccd01d7fd945e8645fe2215585fcc85",
+  "scope": "Actual frozen cloud PM case, closed without regrading or repair.",
+  "state": "blocked",
+  "error": "source_notes_material_numbers_missing_from_main",
+  "fresh_qualification_passed": false,
+  "independent_review_completed_in_this_case": false,
+  "publication_enabled": false,
+  "completed_calls": [
+    {
+      "id": "news-brief-63d1c281-c4a1-5022-8e43-35a1aea0cd92-plan",
+      "phase": "plan",
+      "state": "completed",
+      "completed_at": "2026-10-06 08:01:45.687813+00:00",
+      "usage": {
+        "input_tokens": 43113,
+        "output_tokens": 2672,
+        "cached_input_tokens": 5888,
+        "reasoning_output_tokens": 700
+      }
+    },
+    {
+      "id": "news-brief-63d1c281-c4a1-5022-8e43-35a1aea0cd92-write",
+      "phase": "write",
+      "state": "completed",
+      "completed_at": "2026-10-06 08:09:11.247061+00:00",
+      "usage": {
+        "input_tokens": 40592,
+        "output_tokens": 24127,
+        "cached_input_tokens": 5888,
+        "reasoning_output_tokens": 5303
+      }
+    }
+  ],
+  "original_calls": 2,
+  "repairs": 0,
+  "native_searches": 0,
+  "slack_writes": 0,
+  "selected_documents": 23,
+  "selected_news_originals": 16,
+  "root_causes": [
+    "Validator did not recognize a terse percentage decline as the equivalent signed visible move.",
+    "Validator did not recognize an explicitly named English meeting month; this pruned a supported calendar and then its inventory mapping.",
+    "Writer mapped a corroborating FX fact to a paragraph citing a different original and to a row that omitted its move."
+  ],
+  "prospective_fix": "Validation57: exact sign/meeting-month recognition and one scoped source-notes/prose patch before mandatory independent review. No deadline, content, source or publication gate relaxed.",
+  "private_raw_source_storage": true,
+  "article_bodies_or_brief_text_in_this_receipt": false
+}

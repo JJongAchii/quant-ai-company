@@ -153,8 +153,8 @@ class Settings(BaseSettings):
             raise ValueError("Data watch requires a dedicated allowed Slack channel and owner")
         if self.data_watch_core_enabled and not self.data_watch_enabled:
             raise ValueError("Data watch core checks require data watch")
-        if self.briefing_evaluation_edition_ids and (self.briefing_evaluation_edition_id or self.briefing_max_revisions):
-            raise ValueError('Bounded briefing observation requires a single ID list and zero repairs')
+        if self.briefing_evaluation_edition_ids and self.briefing_evaluation_edition_id:
+            raise ValueError('Bounded briefing observation requires a single ID list')
         return self
 
     def require_operator_token(self) -> str:

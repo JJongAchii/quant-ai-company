@@ -1158,6 +1158,26 @@ def test_english_ranking_only_supports_an_explicit_matching_korean_rank():
     assert prose_numbers_supported("세계 2위 공급원이었다.", ["세계 2위 경유 공급원이다."])
 
 
+def test_named_meeting_month_is_translatable_without_inventing_a_date_or_quantity():
+    quote = "The minutes from its September meeting will be released on Wednesday."
+    assert prose_numbers_supported("9월 회의 의사록은 수요일 공개 예정이다.", [quote])
+    assert not prose_numbers_supported("8월 회의 의사록은 수요일 공개 예정이다.", [quote])
+    assert not prose_numbers_supported("9월 7일 회의 의사록", [quote])
+    assert not prose_numbers_supported("회의에서 9% 인상을 결정했다.", [quote])
+    assert not prose_numbers_supported("5월 회의", ["The committee may meet on Wednesday."])
+
+
+def test_terse_decline_matches_a_signed_row_and_never_an_advance():
+    assert prose_numbers_supported("코스피 0.89% 하락, 코스닥 2.98% 상승",
+                                   ["코스피 -0.89%", "코스닥 +2.98%"])
+    assert not prose_numbers_supported("코스피 0.89% 하락",
+                                       ["코스피 +0.89%"])
+    assert prose_numbers_supported("코스피 0.89% 하락",
+                                   ["The index slid 62.35 points, or 0.89 percent."])
+    assert not prose_numbers_supported("코스피 0.89% 하락",
+                                       ["The index gained 62.35 points, or 0.89 percent."])
+
+
 def test_crypto_rolling_window_uses_korean_reporting_date_not_us_equity_session():
     p, b = proposal(), bundle()
     b["documents"][0]["content"] += " 비트코인 22일 오전 6시 28분 현재 100달러, 24시간 대비 2% 상승."

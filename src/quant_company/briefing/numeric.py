@@ -12,6 +12,13 @@ CARDINALS = "zero one two three four five six seven eight nine ten eleven twelve
 TENS = "twenty thirty forty fifty sixty seventy eighty ninety".split()
 
 
+def meeting_month_pattern(name):
+    # An explicitly named meeting establishes its month even in "its September
+    # meeting". A bare month name or modal "may" does not establish a date.
+    return (r"\b"+name+r"\s+(?:(?:FOMC|Fed|Federal Reserve|policy|monetary policy)\s+)?"
+            r"(?:meeting|meeting minutes|minutes)\b")
+
+
 def written_fractions(text):
     values = {"half": Decimal("0.5"), "halves": Decimal("0.5"),
               "quarter": Decimal("0.25"), "quarters": Decimal("0.25"),
@@ -77,7 +84,7 @@ def decimal_points(text):
     return re.sub(r"(?<![A-Za-z0-9])(\d+)-point-(\d+)\b", r"\1.\2", text, flags=re.I)
 
 
-def months(text):
+def months(text, *, meetings=True):
     result = {Decimal(m[1]) for m in re.finditer(r"(?<![\d.])(0?[1-9]|1[0-2])월", text)}
     for match in re.finditer(r"(?<!\d)((?:19|20)\d{2})[./-](\d{1,2})[./-](\d{1,2})(?!\d)", text):
         try:
@@ -95,6 +102,7 @@ def months(text):
                             r"(?:report|data|figures|reading|release)\b")
         if (re.search(dated, text, re.I) or re.search(release_month, text, re.I)
                 or re.search(labelled_release, text, re.I)
+                or (meetings and re.search(meeting_month_pattern(name), text, re.I))
                 or re.search(r"\b(?:in|of|from|during|as of|by|for|last|this|next|since|until|on)\s+"+names+r"\b", text, re.I)):
             result.add(Decimal(month))
     return result
@@ -158,13 +166,14 @@ def numbers(text):
     # independent review still checks entity identity against the originals.
     result = {Decimal(n.replace(",", "").replace("−", "-"))
               for n in re.findall(r"(?<![A-Za-z0-9.,])"+NUMBER, normalized)}
-    return result | months(text)
+    # The named meeting can prove "9월", but not an unrelated quantity of 9.
+    return result | months(text, meetings=False)
 
 
 def reported_change_supported(value, unit, quotes):
     units = {"%": r"%(?!p|포인트)|percent(?!age|\s+points?)", "bp": r"bps?(?![A-Za-z])|basis points?", "pt": r"pt\b|points?|포인트"}
     down = (r"하락|급락|감소|내린|내렸|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|"
-            r"fell|fall|down|lower\b|declin\w*|lost|slipped|shed|slump\w*|(?:was|were|is|are)\s+off")
+            r"fell|fall|down|lower\b|declin\w*|lost|slid|slipped|shed|slump\w*|(?:was|were|is|are)\s+off")
     up = r"상승|오른|올랐|높아|늘었|뛴|뛰었|뛰며|rose|ris\w*|up|higher\b|gain\w*|advanced|jumped|surged"
     for quote in quotes:
         quote = decimal_points(written_counts(quote))
@@ -217,11 +226,13 @@ def prose_numbers_supported(text, quotes):
         temporal = (rf'\b(?:(?:in|by|during|until|through|before|after)\s+'
                     rf'(?:(?:early|mid|late)[\s-]+)?|(?:early|mid|late)[\s-]+){name}\b'
                     rf'|\b{name}\s+\d{{1,2}}\b')
-        if any(re.search(temporal, quote, re.I) for quote in quotes):
+        if any(re.search(temporal, quote, re.I)
+               or re.search(meeting_month_pattern(name), quote, re.I) for quote in quotes):
             text = re.sub(rf'(?<!\d){month}\s*월', name, text)
     rate = r"(?<![\d.,+\-−])\d[\d,]*(?:\.\d+)?\s*%(?!\s*(?:[pP]\b|포인트))"
     label = r"[가-힣A-Za-z·\s]{0,60}"
-    decline = r"\s*(?:하락(?:했습니다|했다|했고|한)|내렸(?:습니다|다)|내린)"
+    decline = (r"\s*(?:하락(?:했습니다|했다|했고|한)|내렸(?:습니다|다)|내린"
+               r"|하락(?=$|[\s,.;·]))")
     series = rate+r"(?:\s*,\s*"+label+rate+r")*"+decline
     valid = True
 

@@ -42,9 +42,15 @@ def test_observation_window_advances_to_next_frozen_edition_then_stops(brief):  
     {'briefing_evaluation_edition_ids': ['00000000-0000-0000-0000-000000000000']*2},
     {'briefing_evaluation_edition_ids': ['00000000-0000-0000-0000-000000000000'],
      'briefing_evaluation_edition_id': '00000000-0000-0000-0000-000000000001'},
-    {'briefing_evaluation_edition_ids': ['00000000-0000-0000-0000-000000000000'],
-     'briefing_max_revisions': 1},
 ])
 def test_observation_scope_cannot_be_ambiguous_or_open_ended(values):
     with pytest.raises(ValueError):
         Settings(**{'briefing_max_revisions': 0, **values})
+
+
+def test_observation_can_allow_exactly_one_bounded_repair():
+    settings = Settings(briefing_evaluation_edition_ids=['00000000-0000-0000-0000-000000000000'],
+                        briefing_max_revisions=1)
+    assert settings.briefing_max_revisions == 1
+    with pytest.raises(ValueError):
+        Settings(briefing_max_revisions=2)

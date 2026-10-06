@@ -1,6 +1,7 @@
 import json
 from copy import deepcopy
 from datetime import timedelta
+from decimal import Decimal
 
 import pytest
 
@@ -27,6 +28,30 @@ def notes_case():
 def test_source_notes_supported_material_fact_maps_to_visible_main():
     b, p = notes_case()
     validate_source_notes(p, b)
+
+
+def test_observation_inventory_checks_the_visible_signed_row_not_hidden_previous_value():
+    b, p = notes_case()
+    quote = 'The S&P 500 closed at 5300.00 points, down 0.89 percent.'
+    b['documents'][0]['content'] += '\n'+quote
+    obs = p.observations[0]
+    obs.evidence[0].quote = quote
+    obs.previous_value = obs.previous_session_date = None
+    obs.reported_change, obs.change_unit = Decimal('-0.89'), '%'
+    obs = type(obs).model_validate(obs.model_dump())
+    p.observations[0] = obs
+    fact = p.source_notes[0].material_facts[0]
+    fact.fact, fact.quote, fact.main_item_ids = 'S&P 500 5300.00·0.89% 하락', quote, [obs.id]
+    validate_source_notes(p, b)
+    fact.fact = 'S&P 500 5300.00·0.88% 하락'
+    with pytest.raises(SourceNotesValidationError, match='source_notes_fact_not_supported'):
+        validate_source_notes(p, b)
+    # The previous close is an input to the displayed return, not a visible row.
+    original = proposal().observations[0]
+    p.observations[0] = original
+    fact.fact, fact.quote = '직전 종가는 5200.00이었다.', original.evidence[0].quote
+    with pytest.raises(SourceNotesValidationError, match='source_notes_material_numbers_missing_from_main'):
+        validate_source_notes(p, b)
 
 
 def test_signed_decline_inventory_matches_explicit_korean_decrease_in_main():
@@ -206,6 +231,7 @@ def test_pruning_never_hides_invented_references_or_missing_material_numbers():
 def test_real_postgres_missing_inventory_blocks_without_reserving_review(brief, publication):  # noqa: F811
     store, clock = brief
     store.company.settings.briefing_source_notes_enabled = True
+    store.company.settings.briefing_max_revisions = 0
     store.company.settings.briefing_publish_enabled = publication
     edition = seed(brief)
     first = store.prepare()

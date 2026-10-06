@@ -115,6 +115,14 @@ class EditorialPatch(StrictModel):
         return self
 
 
+class SourceNotesPatch(StrictModel):
+    # Only the failed originals' inventory and related prose can be repaired.
+    # Unaffected notes, quotes, prices and sections remain server-owned.
+    source_notes: list["SourceAssessment"] = Field(min_length=1, max_length=24)
+    edits: list[ClaimEdit] = Field(default_factory=list, max_length=8)
+    context_additions: list[StoryContextAddition] = Field(default_factory=list, max_length=2)
+
+
 class MarketObservation(Supported):
     instrument: str
     value: Decimal

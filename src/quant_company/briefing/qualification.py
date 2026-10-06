@@ -5,7 +5,7 @@ from datetime import timedelta
 from ..company import as_json
 from . import schedule
 from .contracts import BriefProposal, BriefReview, SourcePlan
-from .editor import FORMAT_VERSION, render, validate, validate_review
+from .editor import FORMAT_VERSION, render, validate, validate_review, validate_source_notes
 from .planning import apply_plan
 
 
@@ -20,6 +20,7 @@ def replay(row):
         proposal = BriefProposal.model_validate(row["proposal"]) if row["proposal"] else None
         review = BriefReview.model_validate(row["review"]) if row["review"] else None
         if proposal and review:
+            validate_source_notes(proposal, row['bundle'])
             validate_review(review, proposal, row["bundle"])
         rejected = validate(proposal, row["bundle"]) if proposal else {}
         parts, _ = render(proposal, row["bundle"], fallback=row["quality"].get("fallback"),
@@ -87,8 +88,10 @@ def qualify(company, *, at=None):
                 reasons.append(result["reason"])
             if quality.get("reduced") or quality.get("quote_conflicts"):
                 reasons.append("reduced_or_conflicting_coverage")
-            if not quality.get("substantive") or not all((row["review"] or {}).get("checks", {}).get(k)
-                    for k in ("coverage", "depth", "readability")):
+            if (not quality.get('substantive') or quality.get('rejected')
+                    or (row['review'] or {}).get('verdict') != 'publish'
+                    or not all((row['review'] or {}).get('checks', {}).values())
+                    or len((row['review'] or {}).get('checks', {})) != 12):
                 reasons.append("content_quality_not_verified")
             core = ["sp500", "nasdaq"] if definition.kind == "am" and definition.us_session else (
                 ["kospi", "kosdaq"] if definition.kind == "pm" else [])
@@ -104,6 +107,8 @@ def qualify(company, *, at=None):
                     reasons.append("source_selection_not_reviewed")
             if quality.get("revision_used") or any(c["phase"] in {"revise", "final_review"} for c in edition_calls):
                 required_phases |= {"revise", "final_review"}
+                if (row['bundle'] or {}).get('source_notes_repair', {}).get('before_independent_review'):
+                    required_phases.discard('review')
             if not required_phases <= real_phases:
                 reasons.append("real_codex_not_verified")
             if s.fixture_mode or any(d.get("receipt", {}).get("synthetic") for d in row["bundle"].get("documents", [])):
