@@ -35,7 +35,7 @@ from .quotations import (
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 51
+VALIDATION_VERSION = 52
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 If source_notes_required, populate source_notes BEFORE composing prose, in this same response.
@@ -447,7 +447,11 @@ def prompt(bundle, phase, proposal=None):
         # The independent review has its own complete twelve-criterion procedure
         # in REVIEW. Retain writer-pack provenance without repeating its playbook.
         procedure = {key: value for key, value in procedure.items() if key not in {"procedure", "meaning"}}
-    payload = {k: v for k, v in payload.items() if k not in {"analyst_procedure", "candidate_documents"}}
+    # Collection bookkeeping is not source evidence or an editorial priority.
+    # Retain full originals, source-plan reasons and every data-quality warning.
+    payload = {k: v for k, v in payload.items() if k not in {
+        "analyst_procedure", "candidate_documents", "candidate_count", "candidate_omitted_count",
+        "source_count", "source_coverage", "collection_errors", "collected_at", "evaluation"}}
     hidden = {"url", "sha256", "registration", "receipt"}
     if phase == "review":
         hidden.add("retrieved_at")  # Cutoff eligibility is checked by the service; retain the original publication time.

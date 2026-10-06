@@ -101,6 +101,28 @@ def test_new_note_transport_keeps_every_original_character_once():
     assert b == original
 
 
+@pytest.mark.parametrize('phase', ['write', 'review'])
+def test_large_collector_metadata_cannot_displace_originals_or_data_warnings(phase):
+    b, p = notes_case()
+    b['quote_reference_version'] = 1
+    b['source_coverage'] = {'collector_only': 'unused-keyword-map' * 10000}
+    b['collection_errors'] = [{'error': 'collector_only' * 10000}]
+    b['evaluation'] = {'scope': 'collector_only' * 10000}
+    b['source_plan'] = {'priorities': ['KEEP_EDITORIAL_PRIORITY']}
+    b['data_diagnostics'] = [{'error': 'KEEP_STALE_MARKET_DATA_WARNING'}]
+    original = deepcopy(b)
+    text = prompt(b, phase, p.model_dump(mode='json') if phase == 'review' else None)
+    data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
+    assert len(text) <= 88000
+    assert not {'source_coverage', 'collection_errors', 'evaluation'} & data.keys()
+    assert data['data_diagnostics'] == b['data_diagnostics']
+    if phase == 'write':
+        assert data['source_plan'] == b['source_plan']
+    for index, doc in enumerate(original['documents']):
+        assert ''.join(s for _, position, s in data['original_quotes'] if position == index) == doc['content']
+    assert b == original
+
+
 def test_removed_issue_cannot_cover_a_fact_through_a_surviving_id():
     b, p = notes_case()
     p.issues[0].next_check.text = '금리가 999%까지 상승하는지 확인한다.'
