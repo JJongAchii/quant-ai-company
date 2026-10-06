@@ -57,6 +57,7 @@
   "planned_change": "Only source_completion_navigation metadata on the current running proposal stage; explain existing complete-original-source rule before drafting another artifact.",
   "service_source_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
   "production_code_change": false,
+  "operator_format_compatibility": "Matches active controller parsing: only harmless literal LF inside the artifact is accepted; other JSON errors fail closed. First attempt rolled back with JSONDecodeError before any UPDATE.",
   "exact_sha_human_approval_claimed": false,
   "source_gate_waived": false,
   "source_bytes_or_model_requests_changed": false,

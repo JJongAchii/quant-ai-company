@@ -44,7 +44,14 @@ with company.db.transaction() as conn:
             ('8ffc746c-d213-5fae-af1b-25d463107376',task['id'],'completed')).fetchone()
         decision=rejected['response']['decision']
         assert decision['status']=='complete' and len(decision['artifacts'])==1 and not decision['tools']
-        source_ids=json.loads(decision['artifacts'][0]['content'])['source_ids']
+        content=decision['artifacts'][0]['content']
+        try:
+            artifact=json.loads(content)
+        except json.JSONDecodeError as exc:
+            assert exc.msg=='Invalid control character at'
+            assert not any(ord(char)<32 and char!='\n' for char in content)
+            artifact=json.loads(content,strict=False)
+        source_ids=artifact['source_ids']
         mappings={item['source_id']:item['file'] for item in stage['context']['evidence_sources']}
         assert source_ids and all(source in mappings for source in source_ids)
         incomplete=[]
