@@ -36,6 +36,18 @@ class Capture(ProcessRunner):
         return result
 
 
+async def run_request(runner, request, *, profile, revision):
+    # Busy is denied before inference. Preserve the same stable ID while waiting.
+    for _ in range(120):
+        try:
+            return await runner.run(request, profile=profile, revision=revision)
+        except ProviderFault as exc:
+            if exc.code != "busy":
+                raise
+            await asyncio.sleep(1)
+    raise RuntimeError("qualification_lane_busy")
+
+
 def seed():
     return ProviderRequest(request_id=PREFIX + '-legacy-seed', model='gpt-5.6-luna', reasoning_effort='high',
         session=ProviderSession(id=PREFIX + '-legacy'),
@@ -56,7 +68,7 @@ async def main():
         request, expected = seed(), MARKER
     elif case == 'legacy_resume':
         # Read the completed old-version seed by its unchanged ID; no new inference.
-        prior = await runner.run(seed(), profile=profile, revision=revision)
+        prior = await run_request(runner, seed(), profile=profile, revision=revision)
         old = strict_json((jobs / (seed().request_id + '.json')).read_bytes())
         assert old['cli_version'] == '0.154.0'
         request = ProviderRequest(request_id=PREFIX + '-legacy-resume', model='gpt-5.6-luna', reasoning_effort='high',
@@ -71,7 +83,7 @@ async def main():
         contract = 'quant_brief_v4'
         model = quant_output_model(contract)
         value = model(disposition='hold', reason='Synthetic runtime qualification only; no research conclusion.',
-                      kind='hypothesis', maturity='hypothesis', topic='research_validity').model_dump_json()
+                      kind='hypothesis', maturity='hypothesis', topic='research_validity', vintage='recent').model_dump_json()
         request = ProviderRequest(request_id='quant-feed-' + PREFIX + '-native', model='gpt-6.1-sol',
                                   reasoning_effort='high', output_contract=contract,
                                   prompt='Return this synthetic compatibility object exactly; no research evaluation:\n' + value)
@@ -98,7 +110,7 @@ async def main():
               'real_chatgpt_subscription': True, 'company_effects': False, 'slack_messages': 0}
     atomic_json(receipt, record)
     try:
-        response = await runner.run(request, profile=profile, revision=revision)
+        response = await run_request(runner, request, profile=profile, revision=revision)
         assert response.decision.status == 'complete'
         assert not any((response.decision.tools, response.decision.delegations,
                         response.decision.messages, response.decision.memories, response.decision.follow_up))
@@ -120,7 +132,7 @@ async def main():
             else:
                 assert response.web_searches and len(value.results) == 1
                 assert value.results[0].url == 'https://learn.chatgpt.com/docs/changelog'
-        assert await runner.run(request, profile=profile, revision=revision) == response
+        assert await run_request(runner, request, profile=profile, revision=revision) == response
         record.update(state='passed', completed_at=datetime.now(UTC).isoformat(),
                       result=response.model_dump(mode='json'), observed_cli_events=capture.trace,
                       cached_replay_equal=True, session_continuity_verified=case == 'legacy_resume')

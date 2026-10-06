@@ -72,7 +72,7 @@ jobs:
         env:
           CODEX_CONFIG_PROBE: '1'
           CODEX_CATALOG_PROBE_BIN: ${{ runner.temp }}/company-codex/bin/codex
-        run: uv run --frozen pytest -q tests/test_codex_config_probe.py tests/test_model_catalog.py
+        run: uv run --frozen pytest -q --basetemp "$RUNNER_TEMP/codex-protocol-tests" tests/test_codex_config_probe.py tests/test_model_catalog.py
 
 # No repository/production secrets, model calls, deployments or PR write token.
 # qdata integration is separately pinned and verified; core tests need no private checkout.
