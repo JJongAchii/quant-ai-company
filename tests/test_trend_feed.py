@@ -29,11 +29,11 @@ from quant_company.trend_feed.sources import (
 from quant_company.trend_feed.store import TrendFeedStore
 
 
-def rss(at, title="한국 야구", traffic="10,000+", url="https://example.org/story"):
+def rss(at, title="신기술 발표", traffic="10,000+", url="https://example.org/story"):
     return (f'<rss xmlns:ht="https://trends.google.com/trending/rss"><channel><item>'
             f'<title>{escape(title)}</title><pubDate>{format_datetime(at)}</pubDate>'
             f'<ht:approx_traffic>{traffic}</ht:approx_traffic><ht:news_item>'
-            f'<ht:news_item_title>경기 결과 발표</ht:news_item_title><ht:news_item_url>{url}</ht:news_item_url>'
+            f'<ht:news_item_title>신기술 공개</ht:news_item_title><ht:news_item_url>{url}</ht:news_item_url>'
             '<ht:news_item_source>Example</ht:news_item_source></ht:news_item></item></channel></rss>').encode()
 
 
@@ -58,7 +58,7 @@ def trend(company, tmp_path, monkeypatch):
     return store
 
 
-def ingest(store, *, title="한국 야구", traffic="10,000+", receipt=None):
+def ingest(store, *, title="신기술 발표", traffic="10,000+", receipt=None):
     with store.db.transaction() as conn:
         conn.execute("UPDATE trend_feed_source SET next_at=%s", (store.clock[0],))
     claimed = store.claim_source()
@@ -87,8 +87,8 @@ def response(identity, bundle, *, background=False):
     items = []
     for c in bundle["candidates"]:
         article = c["articles"][0] if c["articles"] else None
-        items.append({"member_ids": [c["id"]], "category": "스포츠",
-                      "background": "Example 보도에 따르면 경기 결과가 발표됐습니다." if background and article else "",
+        items.append({"member_ids": [c["id"]], "category": "기술",
+                      "background": "Example 보도에 따르면 신기술이 공개됐습니다." if background and article else "",
                       "evidence": [{"article_id": article["id"], "quote": article["content"][:30]}]
                       if background and article else []})
     return ProviderResponse(request_id=identity, decision=AgentDecision(status="complete", say="",
@@ -175,7 +175,10 @@ def test_cutoff_uses_observations_not_sum_and_first_day_is_partial(trend):
     assert c["traffic_floor"] == 20000 and row["bundle"]["partial_history"]
     ingest(trend, title="마감 이후", traffic="1M+")
     assert trend.freeze()["bundle"] == row["bundle"]
-    assert "20,000+" in trend.preview()["text"] and "관측 이력 부족" in trend.preview()["text"]
+    draft = validate_draft(response("fixture", row["bundle"]), row["bundle"]).model_dump()
+    text = render(row["bundle"], draft)
+    assert "20,000+" in text and "관측 이력 부족" in text
+    assert "주제 분류를 확인하지 못해" in trend.preview()["text"]
 
 
 def test_304_keeps_observation_and_restart_retry_is_idempotent(trend):
@@ -208,16 +211,16 @@ def test_message_limit_preserves_complete_cards_and_coverage_footer(trend):
     bundle = trend.freeze()["bundle"]
     candidate = bundle["candidates"][0]
     candidate["articles"] = [{"id": "original", "url": "https://example.org/" + "x" * 12000,
-                              "publisher": "Example", "content": "원문으로 확인한 경기 소식"}]
-    draft = {"items": [{"member_ids": [candidate["id"]], "category": "스포츠",
-                        "background": "Example에 따르면 경기 소식이 전해졌습니다.",
-                        "evidence": [{"article_id": "original", "quote": "경기 소식"}]}]}
+                              "publisher": "Example", "content": "원문으로 확인한 신기술 소식"}]
+    draft = {"items": [{"member_ids": [candidate["id"]], "category": "기술",
+                        "background": "Example에 따르면 신기술 소식이 전해졌습니다.",
+                        "evidence": [{"article_id": "original", "quote": "신기술 소식"}]}]}
     text = render(bundle, draft)
     assert len(text) < 12000 and "길이 제한" in text and "자료 마감" in text
 
 
-@pytest.mark.parametrize("title,search_term", [("두산 대 롯데", "두산 대 롯데"),
-                                             ("<@here> 한화 & 삼성|KIA", "< @here> 한화 & 삼성|KIA")])
+@pytest.mark.parametrize("title,search_term", [("신기술 발표", "신기술 발표"),
+                                             ("<@here> 기술 & 소비|문화", "< @here> 기술 & 소비|문화")])
 def test_unverified_news_links_do_not_imply_a_related_article(trend, title, search_term):
     from urllib.parse import parse_qs, urlparse
 
@@ -226,12 +229,107 @@ def test_unverified_news_links_do_not_imply_a_related_article(trend, title, sear
     bundle = trend.freeze()["bundle"]
     bundle["candidates"][0]["news"] = [{"url": "https://example.org/unrelated",
                                        "title": "한화 선수의 멀티이닝 등판", "publisher": "Example"}]
-    text = render(bundle)
+    draft = validate_draft(response("fixture", bundle), bundle).model_dump()
+    text = render(bundle, draft)
     assert "한화 선수의 멀티이닝 등판" not in text and "example.org/unrelated" not in text
     assert "검증된 관련 원문 없음" in text and "뉴스 검색>" in text
     link = next(line.split("|", 1)[0][1:] for line in text.splitlines() if line.startswith("<https://search.naver.com/"))
     assert parse_qs(urlparse(link).query) == {"where": ["news"], "query": [search_term]}
     assert "<@here>" not in text
+
+
+def test_sports_are_filtered_before_eight_topic_limit_and_keep_frozen_order(trend):
+    ingest(trend)
+    morning(trend)
+    bundle = trend.freeze()["bundle"]
+    original = bundle["candidates"][0]
+    sports = ["한국 대 우즈베키스탄", "삼성 대 kia", "ssg 대 한화", "두산 대 롯데",
+              "카를로스 알카라스", "선수 영입", "대표팀 명단", "리그 경기 결과", "테니스 기록"]
+    titles = sports + [f"신기술 발표 {i}" for i in range(1, 12)]
+    bundle["candidates"] = [{**original, "id": str(i), "title": title} for i, title in enumerate(titles)]
+    result = response("fixture", bundle)
+    draft = json.loads(result.decision.artifacts[0].content)
+    for item in draft["items"][:len(sports)]:
+        item["category"] = "스포츠"
+    result.decision.artifacts[0].content = json.dumps(draft)
+    classified = validate_draft(result, bundle).model_dump()
+    assert len(classified["items"]) == 20  # All candidates remain accounted for in the typed proposal.
+    text = render(bundle, classified)
+    for title in sports:
+        assert title not in text
+    for i in range(1, 9):
+        assert f"*{i}. 신기술 발표 {i} · 기술*" in text
+    assert "신기술 발표 9" not in text and "스포츠 주제 제외" in text
+    draft["items"] = draft["items"][len(sports):]
+    result.decision.artifacts[0].content = json.dumps(draft)
+    with pytest.raises(ValueError, match="covered_once"):
+        validate_draft(result, bundle)
+
+
+def test_all_sports_candidates_produce_an_honest_empty_brief(trend):
+    ingest(trend, title="카를로스 알카라스")
+    morning(trend)
+    bundle = trend.freeze()["bundle"]
+    draft = validate_draft(response("fixture", bundle), bundle).model_dump()
+    draft["items"][0]["category"] = "스포츠"
+    text = render(bundle, draft)
+    assert "모두 스포츠로 분류" in text and "자료 마감" in text
+    assert "카를로스 알카라스" not in text and "뉴스 검색>" not in text
+    assert "유효한 관측이 없어" not in text
+
+
+def test_unclassified_fallback_withholds_topics_without_requiring_sports_title_tokens(trend):
+    ingest(trend, title="카를로스 알카라스")
+    ingest(trend, title="유해진")
+    morning(trend)
+    trend.freeze()
+    trend.clock[0] = schedule.times(trend.clock[0])[1].astimezone(UTC)
+    assert trend.finalize()["items"] == 0
+    text = trend.preview()["text"]
+    assert "주제 분류를 확인하지 못해" in text and "자료 마감" in text
+    assert "카를로스 알카라스" not in text and "유해진" not in text
+    assert "뉴스 검색>" not in text and "관련 배경:" not in text
+    assert len(outgoing(trend)) == 1 and outgoing(trend)[0]["status"] == "pending"
+
+
+def test_editorial_policy_change_invalidates_pending_sports_brief(trend, monkeypatch):
+    from quant_company.trend_feed import store as store_module
+
+    current = store_module.EDITORIAL_POLICY_VERSION
+    monkeypatch.setattr(store_module, "EDITORIAL_POLICY_VERSION", current - 1)
+    ingest(trend)
+    morning(trend)
+    trend.freeze()
+    trend.clock[0] = schedule.times(trend.clock[0])[1].astimezone(UTC)
+    trend.finalize()
+    monkeypatch.setattr(store_module, "EDITORIAL_POLICY_VERSION", current)
+    with trend.db.transaction() as conn:
+        message = {**outgoing(trend)[0], "agent": "trend_scout"}
+        assert not trend.gate(conn, message)
+    assert outgoing(trend)[0]["status"] == "stale"
+
+
+def test_classified_non_sports_are_the_only_topics_committed_to_outbox(trend):
+    ingest(trend, title="카를로스 알카라스")
+    ingest(trend, title="신기술 발표")
+    morning(trend)
+    claimed = trend.claim_enrichment()
+    trend.save_enrichment(claimed, claimed["bundle"])
+    call = trend.prepare_call()
+    result = response(call["id"], claimed["bundle"])
+    draft = json.loads(result.decision.artifacts[0].content)
+    candidates = {c["id"]: c for c in claimed["bundle"]["candidates"]}
+    for item in draft["items"]:
+        if candidates[item["member_ids"][0]]["title"] == "카를로스 알카라스":
+            item["category"] = "스포츠"
+    result.decision.artifacts[0].content = json.dumps(draft)
+    trend.finish_call(call, result)
+    trend.clock[0] = schedule.times(trend.clock[0])[1].astimezone(UTC)
+    assert trend.finalize()["items"] == 1
+    with trend.db.transaction() as conn:
+        text = conn.execute("SELECT text FROM messages WHERE id=%s", (outgoing(trend)[0]["id"],)).fetchone()["text"]
+    assert "*1. 신기술 발표 · 기술*" in text and "카를로스 알카라스" not in text
+    assert trend.preview()["text"] == text
 
 
 async def test_cancelled_model_call_is_uncertain_and_not_replayed(trend):
@@ -264,7 +362,7 @@ async def test_full_producer_consumer_and_single_outbox(trend):
     naver = FixtureNaver()
 
     def reader(link, settings):
-        return {"ok": True, "content": "한국 야구 경기의 결과가 공식 발표됐습니다. " * 10,
+        return {"ok": True, "content": "한국 기업의 신기술이 공식 발표됐습니다. " * 10,
                 "publisher": "Example", "published_at": trend.clock[0].isoformat()}
 
     collector = TrendFeedCollector(trend.company, naver=naver, reader=reader)
@@ -289,7 +387,7 @@ async def test_full_producer_consumer_and_single_outbox(trend):
     assert TrendFeedStore(trend.company).finalize()["state"] == "queued"
     assert len(outgoing(trend)) == 1
     text = trend.preview()["text"]
-    assert "관련 배경:" in text and "+100%" in text and "스포츠" in text
+    assert "관련 배경:" in text and "+100%" in text and "신기술 발표 · 기술" in text
     assert not trend.status()["model_calls"][0]["error"]
     sent = []
 

@@ -13,7 +13,7 @@ from ..news.feeds import timestamp
 from ..owner_controls import effective_limits
 from . import schedule
 from .contracts import TREND_FEED_AGENT
-from .editor import prompt, render, response_json, validate_draft
+from .editor import EDITORIAL_POLICY_VERSION, prompt, publication_items, render, response_json, validate_draft
 
 LOCK = 71351006
 FINAL = {"queued", "preview", "expired", "stale"}
@@ -38,6 +38,7 @@ class TrendFeedStore:
         s = self.company.settings
         reporter = self.company.roles.get("reporter")
         return fingerprint({"version": 1, "enabled": s.trend_feed_enabled, "publish": s.trend_feed_publish_enabled,
+            "editorial_policy": EDITORIAL_POLICY_VERSION,
             "channel": s.trend_feed_channel_id, "owner": s.trend_feed_owner_user,
             "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
             "naver": s.trend_feed_naver_enabled, "model": reporter.model if reporter else None,
@@ -295,7 +296,7 @@ class TrendFeedStore:
                 conn.execute("UPDATE outbox SET next_at=%s WHERE id=%s", (row["send_at"], row["id"]))
             state = "queued" if publish else "preview"
             conn.execute("UPDATE trend_feed_digests SET state=%s,content=%s WHERE id=%s", (state, text, row["id"]))
-            return {"state": state, "id": str(row["id"]), "items": min(8, len(row["bundle"]["candidates"]))}
+            return {"state": state, "id": str(row["id"]), "items": len(publication_items(row["draft"]))}
 
     def gate(self, conn, row, *, claimed=False):
         at = schedule.utcnow()

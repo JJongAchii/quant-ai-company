@@ -107,7 +107,7 @@ async def test_publisher_runs_while_enrichment_is_waiting(trend, temporal_enviro
         await asyncio.wait_for(waiting.wait(), 10)
         digest = await client.start_workflow(TrendFeedDigestWorkflow.run, id=queue + "-digest", task_queue=queue)
         await asyncio.wait_for(published.wait(), 10)
-        assert len(outgoing(trend)) == 1 and "숫자·링크 중심" in trend.preview()["text"]
+        assert len(outgoing(trend)) == 1 and "주제 분류를 확인하지 못해" in trend.preview()["text"]
         release.set()
         await collection.cancel()
         await digest.cancel()

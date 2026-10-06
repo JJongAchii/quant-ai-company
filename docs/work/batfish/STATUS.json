@@ -1,75 +1,29 @@
 {
   "approval": {
-    "approvedAt": "2026-10-06T12:19:29.537923+00:00",
-    "id": "chat-user-immediate-brief-inspect-activate-20261006"
+    "approvedAt": "2026-10-06T13:11:43.328214+00:00",
+    "id": "chat-user-exclude-sports-20261006"
   },
-  "currentIntent": "INTENT-v2.json",
+  "currentIntent": "INTENT-v3.json",
   "deliverables": {
     "ACTIVATION": {
-      "evidence": [
-        {
-          "path": "docs/project/TREND-FEED-ACTIVATION.md",
-          "sha256": "9179cc2b206e"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/immediate-activation.json",
-          "sha256": "91281d17a63e"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/immediate-active-probe.json",
-          "sha256": "11865e9aa8ea"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/immediate-first-delivery-watch.json",
-          "sha256": "93cb84dcec4e"
-        }
-      ],
-      "note": "Explicit user-revised acceptance completed; no claim of three elapsed preview days. Both consumers publication-enabled with exact renderer/config and unrelated IDs retained. Actual next Temporal timer 2026-10-07 08:00 KST, three workflows RUNNING, pre-first-delivery observer systemd success. First future daily receipt monitoring continues independently.",
-      "status": "verified",
-      "updatedAt": "2026-10-06T13:01:55.434436+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
     "IMPLEMENTATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/RESULT.json",
-          "sha256": "48951201a65c"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/immediate-image.json",
-          "sha256": "d7743db54ade"
-        }
-      ],
-      "note": "INTENT-v2 implementation verified. Scoped renderer repair from actual parent image: only one file changed among 220, base config retained. PR113 updated to final operating behavior and ready for review.",
-      "status": "verified",
-      "updatedAt": "2026-10-06T13:01:54.938817+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
     "VALIDATION": {
-      "evidence": [
-        {
-          "path": "docs/project/TREND-FEED-VALIDATION.md",
-          "sha256": "e31f5030c51e"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/RESULT.json",
-          "sha256": "48951201a65c"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/immediate-review.json",
-          "sha256": "793e219609be"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-20261006/immediate-ui.json",
-          "sha256": "56d2a6b19406"
-        }
-      ],
-      "note": "Historical integration/image checks retained; new real PostgreSQL regression 28 and Ruff passed. Operating subscription completion, four original-backed backgrounds, daily model1/NAVER19, delivered eight-topic Slack message and exact screen body/links verified.",
-      "status": "verified",
-      "updatedAt": "2026-10-06T13:01:55.179865+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     }
   },
-  "intentDigest": "5473004989f2",
+  "intentDigest": "c14b669999f1",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-06T13:01:55.434436+00:00"
+  "updatedAt": "2026-10-06T13:11:43.328214+00:00"
 }
