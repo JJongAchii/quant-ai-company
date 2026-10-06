@@ -20,10 +20,10 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Source86 is active on all six server services with 205 source files verified each, core healthy, 15 services running. Qualified3070 source/config/unit aligned; existing registry and detached executions retained. Fresh pre-cutover backup SHA2763660b verified and S3 receipt recorded. Formatting hold reconciled durably as project event667, preserving all three failed attempts and signed authority. A fresh normal program_data stage e68ac24e/attempt1 is reading actual required evidence; zero jobs/missions/scientific trials. Original failed stage0b9b history remains intact. Follow staff selection to an actual approved job.",
-  "evidence": "../../project/evidence/etf-exploration-20260930/scoped-data-program-resumed-20261006.json",
+  "operationalStatus": "Scoped data review completed on source86 first attempt with actual required evidence and a canonical conditional_ready assessment. Programme task6c54 is assessed; director selection e566 is running. Its pending source completion turn55aa was repeatedly deferred for higher_priority_request; root-reviewed current planning task urgency100→0 committed event680. The original turn then read the final original-source chunk and a normal final selection call is running. No mission, job, reservation or scientific trial exists yet. Independent briefing release0ff now owns global current; it includes86 and research/company/contracts/runtime code matches86. Research API/worker/runtime/socket/gateway remain86, dispatch uses0ff. Keep scope/budget/input and hardware resource priority unchanged.",
+  "evidence": "../../project/evidence/etf-exploration-20260930/scoped-data-completed-first-attempt-20261006.json",
   "nextStage": {
-    "stage": "independent_data_then_staff_selection_then_first_actual_job",
+    "stage": "complete_staff_selection_then_first_actual_execution",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false
@@ -110,9 +110,11 @@
   "currentOperation": {
     "sourceCommit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
     "previousCommit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
-    "phase": "server_and_worker_active_hold_reconciled",
+    "phase": "data_completed_selection_running_current_preparation_priority_reconciled",
     "review": "../../project/evidence/etf-exploration-20260930/scoped-data-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
-    "activationReceipt": "../../project/evidence/etf-exploration-20260930/scoped-data-cutover-active-20261006.json"
+    "activationReceipt": "../../project/evidence/etf-exploration-20260930/scoped-data-cutover-active-20261006.json",
+    "globalCurrentAfterIndependentBriefingRelease": "0ff6657f98b175162609259394b1cec20382904a",
+    "priorityReceipt": "../../project/evidence/etf-exploration-20260930/research-preparation-priority-applied-20261006.json"
   }
 }

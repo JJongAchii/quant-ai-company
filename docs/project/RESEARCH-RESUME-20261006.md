@@ -177,3 +177,25 @@ DB 연결 전에 실패했다. 정상 entrypoint로 재개한 [durable event667]
 `e68ac24e-2f55-5812-bf45-cdedd1a985b4`의 정상 attempt1과 승인 프로그램 active를 확인한다.
 기존 stage0b9b를 덮어 과거 읽기를 새 증거로 재사용하지 않았다. 이 시점 readiness·mission·job·과학 시행은 아직0이다.
 현재 root의 실행 추적 목표는 진행 중이다.
+
+### 데이터 검토 완료와 준비 대기 해소 — 13:33 KST
+
+[source86 실제 검토 완료](evidence/etf-exploration-20260930/scoped-data-completed-first-attempt-20261006.json)는
+새 data stage의 첫 시도에서 전체 필수 증거와 원문을 읽고 scoped conditional_ready를 정상 기록했음을 확인한다.
+이후 director의 선정 응답은 원문 마지막 부분을 남겨 source completion gate가 보완 읽기를 요청했다.
+보완 turn55aa는 workflow가 시작됐지만 모델 요청은 생성되지 않았고,
+[실제 Temporal history](evidence/etf-exploration-20260930/research-preparation-starvation-20261006.json)에
+higher_priority_request/2초 defer가 반복됐다.
+
+최신 소유자의 실제 실험 진행 요구 안에서 root가 현재 준비 task af28의 queue priority만100→0으로
+[검토](evidence/etf-exploration-20260930/research-preparation-priority-review-20261006.json)하고
+[event680 적용](evidence/etf-exploration-20260930/research-preparation-priority-applied-20261006.json)했다.
+signed 프로그램의 resources.priority=autonomous, 과학 예산·입력·자료 판정·선정 gate는 변경하지 않았다.
+root가 새 모델 호출이나 과학 job을 enqueue하지 않았다. 기존 turn55aa는13:33에 실제 마지막 원문 읽기를
+완료했고 최종 선정 호출이 정상 실행 중이다. mission·job·과학 시행은 아직0이다.
+
+별도 브리핑 배포0ff6657이 이 구간에 전역 current를 변경했다. 이 소스는86을 포함하고
+research/company/contracts/runtime 코드는86과 동일하며 config 추가3개는 briefing용이다.
+13:15 관측의 dispatch는0ff, 연구 API/worker/socket/gateway/runtime은86이었다.
+앞서 여섯 서비스 전체86 바이트 대조는13:03 당시 사실로 보존한다.
+독립 브리핑 배포를 되돌리지 않았으며 이 root의3070 source86 정렬은 유지한다.
