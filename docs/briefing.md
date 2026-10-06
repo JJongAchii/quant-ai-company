@@ -35,7 +35,7 @@ manifest 파일이나 코드를 바꾼 것만으로 실제 Slack 앱의 이름�
 합한 12회다. 원문을 보기 전에 [회차와 기준을 고정](project/evidence/briefing-analyst-quality-20261001/prospective-operating-20261007-20261014-validation58-dbcheck-policy.json)했다.
 회차당 보완은 한 번, 모델 요청은 최대 다섯 개이며 등록한 회차 밖에서 평가 호출을 만들지 않는다.
 예약 처리는 실제 작성·독립 검토·마감 결과를 저장하며, 관찰 종료 결과는 데이터베이스의
-`briefing_observation_finished` 기록에 남긴다. 이 기록이 자동 발송을 켜지는 않는다.
+`briefing_observation_finished` 기록에 남긴다. 관찰 종료 기록은 자동 발송 설정을 변경하지 않는다.
 
 10월 6일 오후판의 실패는 그대로 보존한다. 같은 원문을 사용한 개발 진단은 12개 중 9개가
 통과했고 중요도·범위·가독성이 미통과였다. 이를 새 회차의 품질 합격으로 인정하지 않는다.
