@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "phase": "active_worker_aligned",
+  "source_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "previous_commit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+  "qualification_sha256": "7bb3a6a803492b29afbb1f243848f09af9991c53d5fb9060a2d3d0096dee5b0b",
+  "previous_config_sha256": "a8c02cd0b983c71a4524038a6eba7c370d6f1588b33ff18da86c7480f5bd5e93",
+  "previous_dropin_sha256": "460bf3af5319a66875a75eed69def5e4f6c08da1ebd5625e4e760e19dc11b412",
+  "candidate_config_sha256": "37a90b3f38bcc19c8ebd68be35c625fac2bf6028942a45ef9454433166a3ce14",
+  "company_repo": "/home/achii/quant-company-qualification/held-audit-20261006/release-candidates/ec1fbeb29a49420a367f06af596283e6ead4ab72/code",
+  "input_sha256": {
+    "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882",
+    "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b"
+  },
+  "authority": "Existing owner deployment and continuation request; reviewed PR105 held-audit scheduler operation",
+  "detached_execution_killed": false,
+  "scientific_trials_added_by_operator": 0,
+  "started_at": "2026-10-06T05:51:05.318861+00:00",
+  "active_config_sha256": "37a90b3f38bcc19c8ebd68be35c625fac2bf6028942a45ef9454433166a3ce14",
+  "active_dropin_sha256": "2ad30514ed2c605aee5a9fcaefc8ace484713bdae488d532f4d73df982af25ff",
+  "previous_releases_retained": true,
+  "completed_at": "2026-10-06T05:51:07.535423+00:00"
+}
