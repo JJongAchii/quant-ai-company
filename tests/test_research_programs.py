@@ -328,11 +328,13 @@ def test_large_prior_task_history_remains_readable_on_existing_program_stage(pro
 def test_private_read_narration_corrects_once_without_losing_attempt_reads(program):
     h = program
     with h.company.db.transaction() as conn:
-        conn.execute("UPDATE sources SET content=%s WHERE id='fixture:baseline'", ("x" * 25000,))
+        conn.execute("UPDATE sources SET content=%s WHERE id='fixture:baseline'",
+                     ("Synthetic original: point-in-time fixture data. " + "x" * 25000,))
+        h.program_store.propose(conn, h.program_id, task_proposal(), actor="researcher_kr")
     assert ProgramController(h.company).tick()["state"] == "running"
     with h.company.db.transaction() as conn:
         stage = conn.execute("SELECT * FROM research_mission_stages WHERE program_id=%s", (h.program_id,)).fetchone()
-        conn.execute("UPDATE research_mission_stages SET stage='program_data' WHERE id=%s", (stage["id"],))
+        assert stage["stage"] == "program_data"
         first = str(conn.execute("SELECT id FROM turns WHERE task_id=%s", (stage["task_id"],)).fetchone()["id"])
         outbox_before = conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"]
     path = stage["context"]["evidence_sources"][0]["file"]

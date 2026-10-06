@@ -10,6 +10,7 @@ from quant_company.providers.codex_runner import ProcessResult, parse_result
 from quant_company.research.mission_backend import MissionBackend
 from quant_company.research.program_controller import ProgramController
 
+from .test_research_conditional import conditional  # noqa: F401
 from .test_research_programs import program, provision_data_packet, task_proposal  # noqa: F401
 
 
@@ -146,3 +147,38 @@ def test_invalid_data_assessment_cannot_retry_forever_or_grant_admission(program
             assert controller.tick()['state'] == 'running'
     assert controller.tick() == {'state': 'waiting', 'reason': 'repeated_data_output_contract_failure'}
     assert actual['retry_at'] is None
+
+
+def test_scoped_employee_prompt_excludes_the_legacy_fields_that_failed_in_production(conditional):  # noqa: F811
+    company = conditional.company
+    with company.db.transaction() as conn:
+        conditional.program_store.propose(conn, conditional.program_id,
+            task_proposal(mode='novel_hypothesis'), actor='researcher_kr')
+    assert ProgramController(company).tick()['state'] == 'running'
+    _, turn_id = pending(company)
+    prepared = company.prepare_turn(turn_id)
+    context = json.loads(prepared['request']['prompt'].split('MISSION DATA JSON:\n', 1)[1])
+    schema = context['output_schema']
+    assert prepared['request']['output_contract'] == 'research_stage_v1'
+    assert schema['properties']['schema_version'] == {'type': 'integer', 'const': 2}
+    assert {'schema_version', 'research_scope'} <= set(schema['required'])
+    assert 'data_policy_digest' not in schema['properties'] and 'evaluation_prices' not in schema['properties']
+    assert 'packet_digest' in schema['properties'] and 'evaluation_price_contract_verified' in schema['properties']
+    assert schema['properties']['decision']['enum'] == ['ready', 'conditional_ready', 'blocked']
+    assert context['research_scopes']['etf'] == conditional.program_spec.envelopes[0].template.research_scope.model_dump(
+        mode='json')
+    with company.db.transaction() as conn:
+        task = conn.execute('SELECT * FROM research_program_tasks WHERE program_id=%s', (conditional.program_id,)).fetchone()
+        assert task['data_assessment'] is None and task['decision'] is None and task['mission_id'] is None
+
+
+def test_legacy_employee_prompt_retains_its_signed_assessment_contract(program):  # noqa: F811
+    begin_data(program)
+    _, turn_id = pending(program.company)
+    context = json.loads(program.company.prepare_turn(turn_id)['request']['prompt'].split('MISSION DATA JSON:\n', 1)[1])
+    schema = context['output_schema']
+    assert schema['properties']['schema_version'] == {'type': 'integer', 'const': 1}
+    assert 'schema_version' in schema['required']
+    assert {'data_policy_digest', 'evaluation_prices'} <= set(schema['properties'])
+    assert not {'research_scope', 'packet_digest', 'evaluation_price_contract_verified'} & set(schema['properties'])
+    assert schema['properties']['decision']['enum'] == ['ready', 'exploratory_only', 'blocked']
