@@ -1,0 +1,61 @@
+{
+  "state": "complete",
+  "approval": "chat-user-exclude-sports-20261006",
+  "editorial_policy_version": 2,
+  "scope": "ordinary sports excluded from daily search-trend briefing, with current operating schedule preserved",
+  "checks": {
+    "real_postgresql_and_local_temporal": {
+      "passed": 36,
+      "http_models_slack": "simulated"
+    },
+    "ruff": "passed",
+    "real_persisted_briefing_preview": {
+      "classified": 14,
+      "excluded_sports": 10,
+      "selected_non_sports": 4,
+      "sports_selected": 0,
+      "source_cutoff": "2026-10-06 12:24:10.854371+00:00",
+      "new_api_model_or_slack_calls": 0
+    },
+    "actual_native_image": {
+      "image": "sha256:e036d78baa61b0072e8ed0c541ce5900452346e8c72a2d1723419d956d52832f",
+      "base_image": "sha256:8fc94968656bceebe2242dc8ad8d646922be19aa4d5feb4db323201c4474e655",
+      "changed_files": [
+        "trend_feed/editor.py",
+        "trend_feed/store.py"
+      ],
+      "source_file_count": 220,
+      "base_config_preserved": true
+    },
+    "actual_production": {
+      "both_targets_active": true,
+      "publish_enabled": true,
+      "next_publication": "2026-10-07 08:00:00+09:00",
+      "actual_digest_timer": "2026-10-06T23:00:00.351035+00:00",
+      "three_temporal_workflows_running": true,
+      "all_company_containers_running": true,
+      "runtime_pause_restored": true,
+      "collection_successes": 13,
+      "collection_failures": 0,
+      "naver_read_only_mount_restored_and_readable_by_service_user": true,
+      "naver_mount_only_in_news_worker": true,
+      "new_model_calls": 0,
+      "new_naver_calls": 0,
+      "new_slack_messages": 0,
+      "previous_delivered_body_preserved": true,
+      "first_future_daily_receipt": "not_yet_due"
+    }
+  },
+  "qualification_history": "qualification-rebase.json",
+  "known_first_stage_mount_difference": "previously authorized NAVER mount was missing after peer release; first leg restored it, exact remaining signature matched prior digest; reconciled without repeating first leg",
+  "source_sha256": {
+    "src/quant_company/trend_feed/editor.py": "62738b83711e9485852644984b0376dcfdb821b51dfbeb40f89b9277b73ad137",
+    "src/quant_company/trend_feed/store.py": "300f7f4b3a44a57816007ada5ef51bf91417304a27f9ddde35df64065a256bc2",
+    "tests/test_trend_feed.py": "794c7896d8f3d496386318745761754f66bed0628119d42026ed5fa98763a9f3",
+    "tests/test_trend_feed_temporal.py": "dca9967e6c4632957cc71439069e5abc572948dddc775067769f96b347b7389c",
+    "docs/project/evidence/trend-feed-sports-20261006/preview.py": "74b7116c3cf7cffa5b3ec969066f4393fdf2bbcb6f0d8f31a52ef08de06dffee",
+    "docs/project/evidence/trend-feed-sports-20261006/build-image.py": "c981dd260ad5b1e8bf9b3f6fc218593ef033f0d80f55e5307a27ff7571a57418",
+    "docs/project/evidence/trend-feed-sports-20261006/apply-policy.py": "7d020173967cbd4b4179408f2befcd1e0f1e6d1eb9c84d030d85305b5eda3bf1",
+    "docs/project/evidence/trend-feed-sports-20261006/reconcile.py": "8d9889944de9f8a3527e7cfacc8fc7b5f95dd92d2053954b3a85c59e957bdb17"
+  }
+}

@@ -52,6 +52,7 @@ def main(operator):
         operator.atomic(JOURNAL, (json.dumps(record, indent=2) + '\n').encode())
 
     save()
+    operator.atomic(STATE / 'releases/trend-feed-sports-before-containers.json', json.dumps(before).encode())
     try:
         operator.sql("WITH s AS (UPDATE runtime_control SET paused_until=now()+interval '5 minutes',"
                      "reason='deployment_trend_feed_sports_policy' WHERE id=1 RETURNING id) SELECT json_agg(id) FROM s")
@@ -66,8 +67,14 @@ def main(operator):
             operator.run([*operator.compose(before[name], path), 'up', '-d', '--no-deps', '--no-build', '--pull', 'never',
                           '--force-recreate', '--wait', '--wait-timeout', '120', name], timeout=180)
             fresh = operator.inspect()[name]
+            expected = operator.signature(before[name])
+            if name == 'news-worker' and not any(m[2] == '/run/secrets/trend_naver_credentials' for m in expected['mounts']):
+                expected['mounts'].append(('bind', str(STATE / 'secrets/trend-naver-credentials.json'),
+                                          '/run/secrets/trend_naver_credentials', False))
+                expected['mounts'].sort()
+                record['previously_authorized_naver_mount_restored'] = True
             if (fresh['Image'] != candidate['image'] or not fresh['State']['Running'] or fresh['State']['OOMKilled']
-                    or operator.signature(fresh) != operator.signature(before[name])):
+                    or operator.signature(fresh) != expected):
                 raise RuntimeError('sports_policy_runtime_drift')
         fresh = operator.inspect()
         if any(fresh[n]['Id'] != row['Id'] for n, row in before.items() if n not in operator.TARGETS):

@@ -6,24 +6,82 @@
   "currentIntent": "INTENT-v3.json",
   "deliverables": {
     "ACTIVATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/TREND-FEED-ACTIVATION.md",
+          "sha256": "5d5c21e174e1"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-sports-20261006/activation.json",
+          "sha256": "2a4b4a334e3a"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-sports-20261006/reconciliation.json",
+          "sha256": "f1d68ffaafd2"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-sports-20261006/active-probe.json",
+          "sha256": "a9d844fd8111"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-sports-20261006/naver-mount.json",
+          "sha256": "1e0b53811f7b"
+        }
+      ],
+      "note": "Both actual consumers on qualified sports image, publication true, actual next timer Oct7 08:00 KST, three workflows RUNNING and collection13/13. First-stage strict config check reconciled: only difference was restoring previously approved NAVER mount lost in peer release; first stage not repeated, dispatch completed, other IDs/config/requests retained during reconciliation, pause restored. Prior delivered body preserved; first future regular receipt remains not due.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T13:41:51.872480+00:00"
     },
     "IMPLEMENTATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-feed-sports-20261006/RESULT.json",
+          "sha256": "ad9e4dc414fb"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-sports-20261006/image.json",
+          "sha256": "e46e2862a691"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-20261006/RESULT.json",
+          "sha256": "48951201a65c"
+        }
+      ],
+      "note": "INTENT-v3: category-based sports exclusion before eight-topic cap; complete typed coverage retained, unclassified fallback withheld, editorial policy invalidates older pending text. Actual latest peer parent retained; reviewed editor/store only among 220 files; current source hashes match native image.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T13:41:51.425704+00:00"
     },
     "VALIDATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/TREND-FEED-SPORTS.md",
+          "sha256": "3779c04beea4"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-sports-20261006/RESULT.json",
+          "sha256": "ad9e4dc414fb"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-sports-20261006/pytest.txt",
+          "sha256": "84c2ee7c3b70"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-sports-20261006/preview.json",
+          "sha256": "3629fc81b8cc"
+        },
+        {
+          "path": "docs/project/TREND-FEED-VALIDATION.md",
+          "sha256": "efc0ac3f9167"
+        }
+      ],
+      "note": "Real local PostgreSQL/Temporal regressions 36 and Ruff passed; HTTP/models/Slack simulated. Separately, real persisted subscription draft and source evidence validated in native candidate and active image: 14 candidates, 10 sports excluded, four non-sports, zero new API/model/Slack calls.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T13:41:51.653743+00:00"
     }
   },
   "intentDigest": "c14b669999f1",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-06T13:11:43.328214+00:00"
+  "updatedAt": "2026-10-06T13:41:51.872480+00:00"
 }
