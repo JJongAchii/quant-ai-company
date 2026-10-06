@@ -1,0 +1,69 @@
+{
+  "recorded_at": "2026-10-01T04:44:44.122631+00:00",
+  "scope": "Development-only critique of an unchanged saved v38 writer output under validation40. Not a freshly written v40 edition, fresh acceptance, complete-original qualification, five-day qualification, human expert certification or Slack delivery.",
+  "format_version": 15,
+  "validation_version": 40,
+  "candidate_code_commit": "bbabee0e3516e0d514b9b3d6d4ba95f1aaa01c6f",
+  "fresh_acceptance": false,
+  "original_case_closed": true,
+  "original_case_completed_model_calls": 4,
+  "development_completed_model_calls": 1,
+  "total_completed_model_calls_on_this_cohort": 5,
+  "maximum_completed_model_calls": 5,
+  "further_model_calls_or_repairs_on_this_cohort": "not_permitted",
+  "writer_output_unchanged": true,
+  "originals_unchanged": true,
+  "known_partial_originals": 1,
+  "mechanical_rejected_before_review": {},
+  "semantic_rejected": {
+    "macro_interpretation": "semantic_review"
+  },
+  "review_verdict": "reduce",
+  "checks": {
+    "numbers": true,
+    "sources": true,
+    "timing": false,
+    "causality": true,
+    "materiality": false,
+    "counterevidence": true,
+    "transmission": true,
+    "alternatives": true,
+    "falsifiability": true,
+    "coverage": false,
+    "depth": true,
+    "readability": true
+  },
+  "checks_passed": 9,
+  "checks_total": 12,
+  "passed": false,
+  "concerns": [
+    "발행 보류 후 보완이 필요하다. 중심 해석과 대부분의 수치는 유용해 reduce로 판단한다. 원문 인용을 문서에 복원하고 본문 항목만으로 점검했으며, 제한사항이나 스레드를 누락 보완으로 인정하지 않았다.",
+    "timing: macro_interpretation의 ‘발표 직후’는 원문의 ‘발표 이후’보다 좁은 시점을 단정한다. 2년물 4.84%의 즉시 관측 근거가 없으므로 ‘발표 이후 보도에서’로 고쳐야 한다. 같은 항목의 금리 수치와 CME 확률 자체는 지지된다. 이 오류에 의존하지 않는 요약은 기각하지 않았다.",
+    "materiality·coverage: 2,000억달러가 기존 약정 중 전략투자 몫이라는 관계를 명시해야 한다. 총액을 나란히 쓰는 것만으로 신규 투자와 기존 배분을 구분하기 어렵다. 원전의 1,200억달러 규모와 장관이 설명한 알래스카 기자재 관세 혜택도 자금 노출과 사업성 판단을 바꾼다.",
+    "coverage: 호르무즈 우회 비중의 전쟁 전 17%→약 40% 변화가 빠졌다. 환적과 송유관 복구를 이미 반영한 점은 적절하지만, 이 수치는 공급 완충의 규모를 보여준다. 301조 관세도 이전 10% 관세에서 7월 새 체계로 전환된 관계와 현행 적용 범위를 보완해야 한다. 누락 때문에 참인 기존 항목을 기각하지는 않았다.",
+    "추가 원문 요청은 774자+882자=1,656자로 남은 2,058자 이내다. 잔여 예산은 402자다. 제목은 발견 단서로만 사용했으며 요청한 내용이 사실이라고 확정하지 않았다. 보충 원문을 이미 사용한 상태이므로 추가 확인과 본문 수정 전에는 발행할 수 없다.",
+    "원유·정제품 구분, 실제 디젤 부담, 관세 보장 발언의 귀속, 실적의 DRAM 동력, 감독 논쟁의 반대 목소리와 관찰 가능한 반증 조건은 보존됐다. 9월30일의 11월 WTI 계약은 만기 규칙에 어긋나지 않으며, 한국 전일장·외환 기준가·미국 시간외 반응도 구분돼 있다."
+  ],
+  "additional_source_requests": [
+    {
+      "source_id": "cdbbb226efb1f5c03b4aeba5daa86d86535c2c51",
+      "reason": "외환당국 개입 공시 원문을 확인해 한국 환율의 정책 완충과 부담을 점검한다. 2분기 관측을 전일 환율 하락의 원인으로 섞지 않고, 현재 위험 판단에 필요한 배경인지 판단한다."
+    },
+    {
+      "source_id": "3771478fb9df090b712048c351eb61aef29226e8",
+      "reason": "독일 물가 원문에서 실제 수치·비교 기준과 ECB 관련 평가를 확인한다. 미국 물가 안도와 다른 유럽의 긴축 위험이 글로벌 금리 판단을 바꾸는지 검토한다."
+    }
+  ],
+  "additional_sources_read_or_called": false,
+  "slack": "not_called",
+  "host_modified": false,
+  "evidence_sha256": {
+    "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/first-review/revise-bundle.json": "16a01a8c5e769c11a8d8da05226ff71f8a21835124a935e0ed418572a1403e5f",
+    "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/revise-receipt-attempt2.json": "557f857c59de2ba6b8dcde8f4c7ae15dbb6d15fd50a5cdab797a814603b12658",
+    "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/development-v40/review-receipt-attempt3.json": "088381279db4ddd403334efa118a1bdcfc7b8bd2de3afb7967df03d4267f9f80",
+    "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/development-v40/reviewed/assessment.json": "6fe78e009bfe793e06ff461d31c5dda72e8d1b4d9326f4fc921df1a438f843aa",
+    "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/development-v40/independent-before-review.json": "a780ba3e2837dd239b7b7fba43e62d9036cb8179d6dc27f1ad6e24e37ef44411",
+    "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/development-v40/numeric-diagnostic.json": "7f68d4f2393d5ab66e203076df255728d587566f1fd3fac48b2b5adc9afa91bb",
+    "docs/project/evidence/briefing-analyst-integration-20260930/am-20261001-v38/frozen-case-outcome.json": "88e30e494e5da5d17f10e5fc0a90c8d66b65212806afc1cc5590be744510328b"
+  }
+}

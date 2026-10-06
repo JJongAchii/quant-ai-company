@@ -1,0 +1,347 @@
+{
+  "adjusted_curve_shape_check": {
+    "absolute_original_anchor_recovered": false,
+    "max_relative_error": 3.6615875732538375e-15,
+    "mismatches": 0,
+    "rows_checked": 8350
+  },
+  "approved_input_files": {
+    "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574",
+    "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81"
+  },
+  "availability": {
+    "historical_publication_receipts_recovered": false,
+    "input_field_source": "snapshot_generator_day_plus_23_59_KST_assumption",
+    "source_collector_policy": "skip_current_day_before_18_00_KST"
+  },
+  "current_panel": {
+    "adjustment_ratio_constant_by_ticker": true,
+    "current_rows": 8350,
+    "first_mismatch_keys": {
+      "adj_close": {
+        "date": "2022-08-01",
+        "ticker": "069500"
+      }
+    },
+    "frozen_rows": 8350,
+    "frozen_sessions": 835,
+    "mismatch_counts": {
+      "adj_close": 7515
+    },
+    "missing_frozen_cohort_rows": 0,
+    "nonconstant_adjustment_tickers": []
+  },
+  "current_source": {
+    "etag": "\"4e1f8436a55d247057256ffe0948ea3b\"",
+    "last_modified": "2026-09-29T11:05:46+00:00",
+    "size_bytes": 78807515,
+    "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf.parquet",
+    "version_id": null
+  },
+  "data_readiness_decision": "not_made",
+  "local_copy": {
+    "inspection": {
+      "krx_etf": {
+        "columns": [
+          {
+            "name": "date",
+            "type": "timestamp[ms]"
+          },
+          {
+            "name": "ticker",
+            "type": "string"
+          },
+          {
+            "name": "nav",
+            "type": "double"
+          },
+          {
+            "name": "open",
+            "type": "int64"
+          },
+          {
+            "name": "high",
+            "type": "int64"
+          },
+          {
+            "name": "low",
+            "type": "int64"
+          },
+          {
+            "name": "close",
+            "type": "int64"
+          },
+          {
+            "name": "volume",
+            "type": "int64"
+          },
+          {
+            "name": "value",
+            "type": "int64"
+          },
+          {
+            "name": "index_value",
+            "type": "double"
+          }
+        ],
+        "dataset": "krx_etf",
+        "date_bounds": {
+          "date": {
+            "max": "2026-07-27T00:00:00",
+            "min": "2012-01-02T00:00:00",
+            "null_count": 0,
+            "statistics_complete": true
+          }
+        },
+        "limitations": [
+          "Bounds are dataset-wide, not per instrument or trading-calendar coverage.",
+          "Observation/trade dates are not publication-availability timestamps.",
+          "ETag is object identity metadata, not a computed content hash."
+        ],
+        "method": "parquet_footer_statistics",
+        "observed_at": "2026-09-30T07:09:00.859324+00:00",
+        "reader_bytes": 65544,
+        "row_count": 1631657,
+        "sample": null,
+        "source": {
+          "etag": null,
+          "last_modified": 1785196779.4935443,
+          "size_bytes": 46738957,
+          "uri": "/Users/achii/Quant/data-lake/clean/krx_etf.parquet",
+          "version_id": null
+        }
+      },
+      "krx_etf_meta": {
+        "columns": [
+          {
+            "name": "date",
+            "type": "timestamp[ms]"
+          },
+          {
+            "name": "ticker",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "index_name",
+            "type": "string"
+          },
+          {
+            "name": "index_kind",
+            "type": "string"
+          },
+          {
+            "name": "aum",
+            "type": "int64"
+          },
+          {
+            "name": "mktcap",
+            "type": "int64"
+          },
+          {
+            "name": "shares",
+            "type": "int64"
+          },
+          {
+            "name": "is_leveraged",
+            "type": "bool"
+          },
+          {
+            "name": "is_inverse",
+            "type": "bool"
+          }
+        ],
+        "dataset": "krx_etf_meta",
+        "date_bounds": {
+          "date": {
+            "max": "2026-07-27T00:00:00",
+            "min": "2012-01-02T00:00:00",
+            "null_count": 0,
+            "statistics_complete": true
+          }
+        },
+        "limitations": [
+          "Bounds are dataset-wide, not per instrument or trading-calendar coverage.",
+          "Observation/trade dates are not publication-availability timestamps.",
+          "ETag is object identity metadata, not a computed content hash."
+        ],
+        "method": "parquet_footer_statistics",
+        "observed_at": "2026-09-30T07:09:00.864193+00:00",
+        "reader_bytes": 65544,
+        "row_count": 1631657,
+        "sample": null,
+        "source": {
+          "etag": null,
+          "last_modified": 1785196850.4588387,
+          "size_bytes": 23884176,
+          "uri": "/Users/achii/Quant/data-lake/clean/krx_etf_meta.parquet",
+          "version_id": null
+        }
+      }
+    },
+    "original_bytes_recovered": false,
+    "sizes_match_preparation": {
+      "krx_etf": false,
+      "krx_etf_meta": false
+    }
+  },
+  "observed_at": "2026-09-30T07:09:18.459572+00:00",
+  "pinned_source_files": {
+    "src/qdata/api.py": "55e53c8ffe22dbf8538bd14ac9e5fc889fbc604682f6b59e6c0fb0edf8db56d1",
+    "src/qdata/ingest/krx.py": "30077c12a6307268a62369a0f37b0ffc498826d398b4eab542a756739748f3be",
+    "src/qdata/ingest/krx_etf.py": "cd0ef00baf401c0b33f655213db6933964bc51a62c7067401b170e0e864898dd",
+    "src/qdata/store/krx_etf.py": "38b72a68fb8e20e3583b5fc70b82768548e99fea7ead2622ee8b0e5ecfad9833",
+    "src/qdata/store/lake.py": "cb2daf6824c33417212bc1d90c55f5214d9497e8e78a4bc534195aa6bd65eabd",
+    "src/qdata/store/mirror.py": "0e831b32eb0357974298ca98dabbeb1cc9ba54e8aa1b45145dc73ec646cd4794"
+  },
+  "pipeline_log": {
+    "excerpts": [
+      {
+        "line": 1,
+        "text": "===== pipeline start 2026-09-25 10:00:58 UTC mode=full"
+      },
+      {
+        "line": 58,
+        "text": "[krx_etf backfill] 대상 1일 중 미수집 0일"
+      },
+      {
+        "line": 59,
+        "text": "[krx_etf] 프로필(총보수·운용사·자산분류) 스냅샷 수집 완료"
+      },
+      {
+        "line": 294,
+        "text": "  krx_etf.parquet (75.0 MB) → s3://insight-invest-datalake/qdata/clean/krx_etf.parquet"
+      },
+      {
+        "line": 295,
+        "text": "  krx_etf_meta.parquet (23.3 MB) → s3://insight-invest-datalake/qdata/clean/krx_etf_meta.parquet"
+      },
+      {
+        "line": 296,
+        "text": "  krx_etf_profile.parquet (0.5 MB) → s3://insight-invest-datalake/qdata/clean/krx_etf_profile.parquet"
+      },
+      {
+        "line": 594,
+        "text": "  krx_etf.parquet (75.0 MB) → s3://insight-invest-datalake/qdata/clean/krx_etf.parquet"
+      },
+      {
+        "line": 595,
+        "text": "  krx_etf_meta.parquet (23.3 MB) → s3://insight-invest-datalake/qdata/clean/krx_etf_meta.parquet"
+      },
+      {
+        "line": 596,
+        "text": "  krx_etf_profile.parquet (0.5 MB) → s3://insight-invest-datalake/qdata/clean/krx_etf_profile.parquet"
+      },
+      {
+        "line": 727,
+        "text": "===== pipeline done 2026-09-25 11:15:21 mode=full OK=0"
+      },
+      {
+        "line": 728,
+        "text": "===== finalizer 2026-09-25 11:15:21 UTC service=exit-code success=0"
+      }
+    ],
+    "head": {
+      "ContentLength": 85849,
+      "ETag": "\"ba75df3387698fae119bb5a7aa233bb1\"",
+      "LastModified": "2026-09-25T11:15:24+00:00",
+      "Metadata": {},
+      "VersionId": null
+    },
+    "objects": [
+      {
+        "ChecksumAlgorithm": [
+          "CRC64NVME"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "ETag": "\"7c77c62f050b167dc50e6368e3aeceeb\"",
+        "Key": "qdata-raw/logs/pipeline-20260925-0000.log",
+        "LastModified": "2026-09-25T00:10:03+00:00",
+        "Size": 1983,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "ChecksumAlgorithm": [
+          "CRC64NVME"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "ETag": "\"ba75df3387698fae119bb5a7aa233bb1\"",
+        "Key": "qdata-raw/logs/pipeline-20260925-1000.log",
+        "LastModified": "2026-09-25T11:15:24+00:00",
+        "Size": 85849,
+        "StorageClass": "STANDARD"
+      }
+    ],
+    "original_clean_object_hash_recorded": false,
+    "sha256": "2a82feb23656674fdc7d7d4ebc8ebc8564d93d3718fd41cb7d7d46d303dd9083",
+    "uri": "s3://insight-invest-datalake/qdata-raw/logs/pipeline-20260925-1000.log"
+  },
+  "prior_verifier_sha256": "a7f9cc80010354386d09cb06c5659e15558d6ea35565148e62544d05b74c93e4",
+  "production_mutated": false,
+  "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "raw_archive": {
+    "covered_sessions": 835,
+    "listing_pages": 4,
+    "manifest_path": "docs/project/evidence/research-programs-20260930/etf-raw-object-manifest.json",
+    "manifest_sha256": "963dc1ea3420fb46802ba9ab50fea9d0f8c098777eaa0f67b603b4aa81235b68",
+    "missing_dates": [],
+    "original_publication_times_verified": false,
+    "preparation_raw_content_hashes_recorded": false,
+    "sample_heads": {
+      "2022-08-01": {
+        "ContentLength": 96594,
+        "ETag": "\"f32fe591b5ec11d0e5904fc7eec10c3f\"",
+        "LastModified": "2026-07-29T00:09:25+00:00",
+        "Metadata": {},
+        "VersionId": null
+      },
+      "2022-12-29": {
+        "ContentLength": 107351,
+        "ETag": "\"bc0b24032cb19dcbebf4fc8224d8ab07\"",
+        "LastModified": "2026-07-29T00:09:26+00:00",
+        "Metadata": {},
+        "VersionId": null
+      },
+      "2023-01-02": {
+        "ContentLength": 106918,
+        "ETag": "\"ff9a67c692fa592bb61eedc0e6f3c68b\"",
+        "LastModified": "2026-07-29T00:09:26+00:00",
+        "Metadata": {},
+        "VersionId": null
+      },
+      "2025-12-30": {
+        "ContentLength": 168265,
+        "ETag": "\"411c2d5a3995da545e6cc1ee7380e816\"",
+        "LastModified": "2026-07-29T00:09:34+00:00",
+        "Metadata": {},
+        "VersionId": null
+      }
+    },
+    "session_count": 835,
+    "upload_date_counts": {
+      "2026-07-29": 835
+    },
+    "uri": "s3://insight-invest-datalake/qdata-raw/raw/krx_etf/snapshot/"
+  },
+  "raw_price_bodies_read": false,
+  "remaining_gaps": [
+    "preparation_clean_object_bytes_and_raw_to_clean_manifest",
+    "historical_source_availability_and_revision_vintages"
+  ],
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "scope": "approved_etf_provenance_recovery_read_only",
+  "script_sha256": "151c2d6119e2ee96c1bf99b7c2c2a8728068e68739a500a625412a293eea3bdc",
+  "sealed_price_rows_read": false,
+  "snapshot_generator": {
+    "commit": "b4b9304129c80aa45fe4f9eb5419dfed4362e6fd",
+    "path": "src/quant_company/research/domestic_snapshot.py",
+    "sha256": "976b105b9c8cc245ce9c1e91b04915322548faddac41b2b40852d44baf51dc7b"
+  },
+  "strategy_performance_computed": false,
+  "verified_package_file_count": 47
+}

@@ -1,0 +1,21 @@
+{
+  "company_commit": "3c848af95dc33b7da444a55018fd41d374c10025",
+  "phase": "active",
+  "previous_commit": "eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+  "prior_config_sha256": "23920eaaaa415ac1e2c2ddbe918f908955de20a54223b9b04a1a76644da5deef",
+  "prior_dropin_sha256": "f34d4b1694e8cda60228fa623a7a8c673a9e1764ddd3ccb7582054668d7f6d96",
+  "started_at": "2026-10-01T08:03:39.024427+00:00",
+  "config_sha256": "67659f99fa6ce5400410c54c597fd9e2c906d54d7ec222ad064264004a9289c9",
+  "systemd_unit": {
+    "ActiveState": "active",
+    "MainPID": "607205",
+    "Environment": "PYTHONPATH=/home/achii/quant-company-qualification/exploration-20261001/release-candidates/3c848af95dc33b7da444a55018fd41d374c10025/code/src PYTHONDONTWRITEBYTECODE=1 PATH=/home/achii/quant-company-research/company/.venv/bin:/usr/local/bin:/usr/bin:/bin:/usr/lib/wsl/lib",
+    "WorkingDirectory": "/home/achii/quant-company-qualification/exploration-20261001/release-candidates/3c848af95dc33b7da444a55018fd41d374c10025/code",
+    "KillMode": "process"
+  },
+  "process_cwd_read": "permission_denied; verified systemd WorkingDirectory and PYTHONPATH, exact clean release and active process instead",
+  "previous_release_resolvable": true,
+  "transport_runtime_profiles_preserved": true,
+  "scientific_trials_added": 0,
+  "completed_at": "2026-10-01T08:13:44.201261+00:00"
+}

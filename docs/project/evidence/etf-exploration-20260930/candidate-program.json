@@ -1,0 +1,114 @@
+{
+  "envelopes": [
+    {
+      "market": "kr_etf",
+      "name": "etf_strategy",
+      "template": {
+        "allowed_changes": [
+          "features",
+          "model",
+          "implementation",
+          "portfolio"
+        ],
+        "base_cost_bps": 10.0,
+        "baseline_source_ids": [
+          "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+        ],
+        "code": {
+          "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+          "repository": "quant-lab",
+          "write_paths": [
+            "labs/company-domestic-research/candidate.py",
+            "labs/company-domestic-research/config.json"
+          ]
+        },
+        "data": {
+          "input_files": {
+            "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574",
+            "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81"
+          },
+          "lake_id": "krx-s3-kr_etf-30784209bf06e53313b8",
+          "policy": {
+            "availability": "assumed_trade_date_2359_kst",
+            "confirmation_eligible": false,
+            "deployment_eligible": false,
+            "evidence_reports": {
+              "exploration-assumptions-3b42f60976aa.json": "3b42f60976aa98127dc968c648b864e3e4108ab05076e64c0d919e50b12d36e1",
+              "history-proof-eba944f4686c.json": "eba944f4686c8b5fe60f0f363118e81156f26d9dfcd0689811226671d6284667",
+              "input-check.json": "d968bb62677540c0c8b85ce3f7d7ac8c2930f1bfa4dd240804af1c25de82d07a",
+              "raw-lineage-f8a0595989be.json": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a"
+            },
+            "mode": "retrospective_exploration",
+            "prices": "krx_reference_adjusted_open_to_next_open",
+            "result_use": "hypothesis_generation_only",
+            "revision_vintages": "unverified",
+            "source_identity": "frozen_inputs_reconstructed_curve"
+          }
+        },
+        "development": {
+          "end": "2025-12-30",
+          "start": "2023-01-02"
+        },
+        "evaluation": {
+          "block": "calendar-month",
+          "confidence": 0.95,
+          "kind": "strategy",
+          "metric": "stress-net-absolute-cagr",
+          "minimum_blocks": 30,
+          "minimum_effect": 0.0,
+          "schema_version": 1,
+          "scope": "development",
+          "target": null,
+          "tolerance": null
+        },
+        "execution_profile": "kr-etf-research-v2",
+        "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+        "kind": "strategy",
+        "market": "kr_etf",
+        "objective": {
+          "direction": "maximize",
+          "metric": "stress-net-absolute-cagr",
+          "unit": "fraction-per-year"
+        },
+        "resources": {
+          "priority": "autonomous",
+          "worker_id": "worker"
+        },
+        "risk_constraints": [
+          {
+            "maximum": 1.0,
+            "metric": "gross_exposure",
+            "unit": "multiple"
+          }
+        ],
+        "schema_version": 2,
+        "sealed": [
+          {
+            "end": "2026-09-23",
+            "start": "2026-01-02"
+          }
+        ],
+        "search": {
+          "continuous": true,
+          "max_total_trials": 4,
+          "max_trials_per_cycle": 2,
+          "min_improvement": 0.001,
+          "patience": 2
+        },
+        "stress_cost_bps": 30.0,
+        "title": "KR ETF retrospective strategy hypothesis generation"
+      }
+    }
+  ],
+  "include_quant_feed": true,
+  "max_compute_seconds": 36000,
+  "max_missions": 6,
+  "max_parallel_missions": 1,
+  "max_total_trials": 24,
+  "objective": "당시 공개 시각·수정 이력이 미확인인 고정 ETF 자료의 가정하에서 가설을 탐색한다. 결과는 가설 생성에만 사용하며 확증·운영 승격의 근거로 인정하지 않는다.",
+  "schema_version": 1,
+  "source_ids": [
+    "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+  ],
+  "title": "한계를 명시한 ETF 탐색 연구 (2023~2025)"
+}

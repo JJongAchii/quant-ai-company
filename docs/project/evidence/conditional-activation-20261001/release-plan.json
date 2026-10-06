@@ -1,0 +1,114 @@
+{
+  "activation_order": [
+    "After the gates pass, migrate only additive company tables using the pinned compatible code",
+    "Select the staged images for the four intended services; select the prepared 3070 consumer release and preserve all legacy release mappings",
+    "Append the new profile and program-bound packet; retain every existing profile, input, report, packet and receipt",
+    "Verify exact installed source/profile/input/engine/report hashes, API health, Temporal connection and worker heartbeat",
+    "Call deployed scientific_lineages.history against actual PostgreSQL and match the exact ten origins, zero prior trials and canonical preimage before draft submission",
+    "Publish the full canonical program digest through the validated company approval path; owner cancels the prior program and signs the fresh canonical target",
+    "Observe actual independent data assessment and director task selection before any experiment can receive authority"
+  ],
+  "actual_3070_new_input_qualification": false,
+  "actual_staff_review_completed": false,
+  "archive_sha256": "ee53642382b9406d7d572a854b76c8ff4bb960efb32778624518a16feea826d8",
+  "backup_taken_for_this_cutover": false,
+  "ci_receipt_sha256": "99bbf86f33739ffc521191a189bf8fda32e5d03cac204b52a46ce6fb4b13b5d9",
+  "company_tree_sha256": "262d679d3d58bd49c5759b2ff77984070e60d3ac50c150ef7c8380e11eddd7b5",
+  "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+  "execution_profile_digest": "71ee4ce63770fb20205675d42cae4db2719394c0d4e31218484a5d4348f06dd1",
+  "input_files": {
+    "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+    "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+  },
+  "intended_restarted_services": [
+    "api",
+    "dispatch",
+    "slack-socket",
+    "worker"
+  ],
+  "lineage_history_digest": "50fc1f64e78541f0a867e070df20d5b179546b246377a8c30f302cdb28d22a8e",
+  "market_performance_computed": false,
+  "old_program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "old_program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+  "operating_baseline_sha256": "3ab44de4eb3097fe56dd849462231ccba542dd5eaab1a8a31391e18cffc4fa0f",
+  "operating_config_hashes": {
+    "research-profiles.json": "22a5fd7aa0fcd440730258f3a828720c04bf496ac28846354c84ee81e92d0779",
+    "research-qlab.json": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
+    "roles.json": "95fdee86cc0e59fdf4f68abb4200a582520cfc3cdb801c5c5f44c1a8af544a3c",
+    "runtime.env": "2e1cd1f8df2270bdca5427f630195df5b49db64b34ffcaccd18cd3cc310842d6"
+  },
+  "operating_registry_sha256": "023aa88c3cb1b5ed61794ecbca9c3770b1288ec125ceef51e1722ea68db4eb66",
+  "operating_services_restarted": false,
+  "origin_task_count": 10,
+  "owner_Slack_request_sent": false,
+  "owner_program_approval": null,
+  "packet_digest": "d17a0f1a023962b8244df35b72f68bc045e256255c16906a54886a3766f64e63",
+  "pre_activation_gates": [
+    "Designated DESKTOP-5T00NAF RTX3070 connects; recheck actual active config, release, runtime and job receipts",
+    "Verify every portable package hash and qualify the real warmup input through actual bubblewrap and strict producer/consumer checks",
+    "Reread source CI, all actual container/config identities, revision, jobs, reservations, stages and ambiguous model/outbox effects; abort on drift",
+    "Hold new research submissions and reconcile execution; take a consistent existing DB/config/research backup under the shared deployment lock",
+    "Use only prepared compatible images and source pins; preserve official ChatGPT authentication and all tokens/model routing"
+  ],
+  "preserve_other_service_container_ids": {
+    "quant-company-account-gateway-1": "54b595660ad3366baf3bec5133bd6383c9fa757c20bd77ec9eda93c133fb9e4b",
+    "quant-company-claude-runtime-1": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+    "quant-company-codex-runtime-1": "cbf51d0f25f732b2a3660cff19a19240594931cb85a886acf0674a3bc14daeef",
+    "quant-company-data-watch-worker-1": "b900ca1d55f31c7c29f5eef62e5f5587ccb6c137019104e362cd14da92af274b",
+    "quant-company-housing-feed-worker-1": "7df307ee748d54371c6c9bb2fee6a5ac17e7f5b341d1f137db7af89eb69e74ab",
+    "quant-company-maintenance-1": "7266163c1e8120facda28c18764423801d68c11e60d43eb388356a700ea25f5d",
+    "quant-company-news-worker-1": "879e0263e71a29109ee3ecca0e8d99e82cc262fbab24924ebcb388cb7b9aef44",
+    "quant-company-postgres-1": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+    "quant-company-quant-codex-runtime-1": "ce8b1dfdab1bd595aeb7e7446e0d1e1a38f5f8457b14969620d93edb11841190",
+    "quant-company-quant-feed-worker-1": "cf361400513b2df61ea985bdf081cf57079a9fee09e76f7db8adfe8cf7407bed"
+  },
+  "prior_compute_seconds": 0,
+  "prior_scientific_trials": 0,
+  "production_database_mutated": false,
+  "program_digest": "be0d940bf5904c417d213898617b3f6c0fed19d2bfddd78460ec315e92b216af",
+  "recorded_at": "2026-10-02T02:26:11.337009+00:00",
+  "rollback": {
+    "after_new_conditional_records": "Hold research, retain compatible parsers and apply a qualified forward repair; never restore a legacy parser over schema3 JSON",
+    "before_new_conditional_records": "Use captured compatible images/config only after reconciliation; retain all durable receipts and uncertain effects"
+  },
+  "schema_version": 1,
+  "scientific_authority_granted": false,
+  "scientific_trials_added": 0,
+  "sealed_prices_read": false,
+  "source_base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+  "source_commit": "19807db8d1817a3a495ac10eee34b1bac2d287fe",
+  "staged_images": [
+    {
+      "base_image": "quant-company:ea092f419b4b679df4c25e479a8cb361b4d046ff",
+      "base_image_id": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+      "build_log_sha256": "cad09ca5454bf6308cf6007c6a65102bb3da5f995714617562f9bc219fa8d79d",
+      "image": "quant-company:19807db8d1817a3a495ac10eee34b1bac2d287fe-intake2",
+      "image_id": "sha256:473bc10f99ad57add2faf8c833cf083294ebb7c6c2da6288d9491ed1eef61ba4",
+      "isolated_parser_verification": {
+        "import_root": "/opt/quant-code/src/quant_company",
+        "program_digest": "be0d940bf5904c417d213898617b3f6c0fed19d2bfddd78460ec315e92b216af",
+        "schema3_parser_verified": true,
+        "source_commit": "19807db8d1817a3a495ac10eee34b1bac2d287fe"
+      },
+      "package_tree_sha256": "262d679d3d58bd49c5759b2ff77984070e60d3ac50c150ef7c8380e11eddd7b5",
+      "service": "api"
+    },
+    {
+      "base_image": "quant-company-autonomous:3c848af95dc33b7da444a55018fd41d374c10025",
+      "base_image_id": "sha256:6dce9a55e60b2a2b9f1a27aa99cd9a97c35bebe1b0c4c1bc9a1cccad2757f378",
+      "build_log_sha256": "c467f2454838da14a165ca98bd7f405fe95651df227d5bf3f538b7772a3b9ccf",
+      "image": "quant-company-autonomous:19807db8d1817a3a495ac10eee34b1bac2d287fe-intake2",
+      "image_id": "sha256:0e78f330d34f9cfbd77804491bd74ef3ea41c3eff02cccec0229fa0a782ae10a",
+      "isolated_parser_verification": {
+        "import_root": "/opt/quant-code/src/quant_company",
+        "program_digest": "be0d940bf5904c417d213898617b3f6c0fed19d2bfddd78460ec315e92b216af",
+        "schema3_parser_verified": true,
+        "source_commit": "19807db8d1817a3a495ac10eee34b1bac2d287fe"
+      },
+      "package_tree_sha256": "262d679d3d58bd49c5759b2ff77984070e60d3ac50c150ef7c8380e11eddd7b5",
+      "service": "worker"
+    }
+  ],
+  "state": "prepared_awaiting_designated_worker",
+  "worker_package_sha256": "1b91e1c52f5379528000485d33c4a581d5772fdfaa01ba364ba9db862727636e"
+}

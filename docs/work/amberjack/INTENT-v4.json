@@ -1,0 +1,68 @@
+{
+  "constraints": [
+    "Company repository only; preserve frozen research provenance",
+    "Existing official subscription authentication; no paid resources",
+    "PostgreSQL records and Temporal execution; preserve ambiguous receipts",
+    "Keep 07:30/20:00 KST scheduling; Analyst display identity retains stable market_brief technical ID and existing receipt routing",
+    "Publication disabled until real-data and Slack qualification",
+    "Read qdata only through its public API in the existing credential-isolated worker; bounded small datasets, no full large-table scans"
+  ],
+  "createdAt": "2026-09-22T07:49:17.782547+00:00",
+  "decisionGates": [
+    "Real Slack activation requires the configured dedicated app and successful source and five-trading-day qualification."
+  ],
+  "deliverables": [
+    {
+      "id": "COVERAGE",
+      "description": "Coverage-aware source collection and substantial readable brief",
+      "acceptance": [
+        "Bounded source diversity across market, macro/policy, international affairs and companies/sectors; record missing coverage",
+        "Main post explains the day and important issue context without arbitrary three-issue truncation; evidence remains attributable"
+      ]
+    },
+    {
+      "id": "QUALITY",
+      "description": "Explicit content-quality gate and evaluation rubric",
+      "acceptance": [
+        "Assess factual accuracy, major-issue omissions, analytical support and standalone readability separately from mechanical tests",
+        "Missing central coverage or thin output cannot pass as a full quality briefing; no length-only quality claim"
+      ]
+    },
+    {
+      "id": "REAL-EVAL",
+      "description": "Actual subscription-model evaluation with original sources",
+      "acceptance": [
+        "Use existing credential-isolated runtime, preserve immutable request IDs, outputs and review receipts without Slack publication",
+        "Record real-source results, challenge-case findings and remaining failures honestly; model grades are not expert human certification"
+      ]
+    },
+    {
+      "id": "VALIDATION",
+      "description": "Integrated regression and reviewable evidence",
+      "acceptance": [
+        "Run relevant unit/integration tests with real PostgreSQL and Temporal where available",
+        "Publish local readable actual-model examples and evidence report; keep Slack disabled until existing activation qualification",
+        "Complete qws records with measured results and limitations"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "Trading, training, backtests, portfolio access",
+    "Automatic strategist work",
+    "Pretending fixtures or five future observation days have been verified"
+  ],
+  "outcome": "Produce and assess real subscription-model market briefs against frozen original sources; fix source coverage, depth and readability, and prevent thin or materially incomplete drafts from qualifying as complete briefs.",
+  "revision": 4,
+  "revisionReason": "User rejects thin synthetic previews and asks to verify actual professional briefing quality first, with substantive market, geopolitical, policy and issue coverage.",
+  "schemaVersion": 1,
+  "slug": "amberjack",
+  "sourceRequest": "전문가 수준의 품질을 먼저 제대로 확인하고, 금일 시장·정세·주요 이슈를 충분히 이해할 수 있는 실질적인 브리핑으로 보강한다.",
+  "stopConditions": [
+    "Preserve an uncertain model or Slack result without automatic new-ID replay.",
+    "Record unavailable real integration conditions; keep publishing disabled until qualification."
+  ],
+  "supersedes": {
+    "intentDigest": "40b616885f29",
+    "intentFile": "INTENT-v3.json"
+  }
+}

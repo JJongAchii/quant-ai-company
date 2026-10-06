@@ -47,8 +47,8 @@ PR [#94](https://github.com/JJongAchii/quant-ai-company/pull/94)는 05:52 UTC에
 커밋과 이미지 표기를 모두 `a09ce0f`로 맞췄다.
 
 전환 직전·직후 실행 중 turn, 연구 job, 진행 중 연구 단계는 각각 0건이었다. worker만 새
-컨테이너로 바뀌었고 다른 서비스 ID는 그대로였다. API와 Codex 런타임은 정상이며 기존
-독립 감사 단계는 `waiting`, 시도 37로 유지됐다. 운영 worker 이미지와 설정 pin은
+컨테이너로 바뀌었고 다른 서비스 ID는 그대로였다. 당시 API와 Codex 런타임은 정상이었고 기존
+독립 감사 단계는 `waiting`, 시도 37로 유지됐다. 전환 직후 worker 이미지와 설정 pin은
 `quant-company-autonomous:a09ce0fa70021bb497a844d1aa4dfb8a15cb1f4b-verified`로
 일치한다. 이전 설정은 서버에 보관했고, 비밀값은 증거 파일에 포함하지 않았다.
 [전환 영수증](evidence/program-token-deployment-20260929.json)의 서버 원본 SHA-256은
@@ -56,3 +56,9 @@ PR [#94](https://github.com/JJongAchii/quant-ai-company/pull/94)는 05:52 UTC에
 
 실제 배포 후 토큰 절감률은 아직 측정하지 않았다. 새 프로그램 단계가 실행되면 동일한
 단계 유형의 입력·캐시·출력 토큰과 반복 시도 수를 사전 집계와 비교해야 한다.
+
+07:07 UTC 읽기 전용 사후 집계에서 배포 후 생성된 프로그램 단계 4개 모두 현재 과제를
+`prior_tasks`에 중복하지 않았다. 이 단계의 모델 응답 30개에는 입력 1,179,438토큰
+(캐시 126,208), 출력 53,959토큰이 기록됐다. [사후 집계](evidence/program-token-postdeploy-20260929.json)
+작업과 단계 구성이 배포 전과 달라 이 수치로 절감률을 계산하지 않는다. 원문 읽기와
+단계 시도 내부의 반복 컨텍스트는 여전히 큰 입력 비용을 만든다.

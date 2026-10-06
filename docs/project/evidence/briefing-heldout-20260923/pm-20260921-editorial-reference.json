@@ -1,0 +1,42 @@
+{
+  "scope": "Editorial reference fixed before any PM writer response; derived only from the 19:40 KST source-selection-v3 bundle. This is not a finished brief or an answer key for the model.",
+  "status": "writer_not_called",
+  "central_checks": [
+    {
+      "topic": "Korean close, breadth and flows",
+      "source_ids": ["d3c13a1dd642cbad0be2f3a6cbde732c881df876", "b2033f1cb5e9f929308763838c1a5287ea191866"],
+      "check": "Give KOSPI and KOSDAQ closes with the correct session; explain why the rise was broad or concentrated only where the originals support it. Include the very large individual selling, opposing institutional and other-corporate buying, and venue-specific KOSDAQ flows. Do not treat coincident flows as proven causes."
+    },
+    {
+      "topic": "Currency and source timing",
+      "source_ids": ["5919cbbde924a39b239d7e95e09ba6aa95982bb9", "d3c13a1dd642cbad0be2f3a6cbde732c881df876"],
+      "check": "State the 1,381.0 KRW/USD 15:30 observation and the 2.3 won decline with its time basis. Distinguish broad dollar strength from won-specific exporter selling and do not relabel the 15:30 observation as a final FX close."
+    },
+    {
+      "topic": "Energy supply and Korea exposure",
+      "source_ids": ["46855144bd2ba8b5a9b97a66e528ae2c612a85a5", "03eee886ab32a8872fc3e2c815f35860234e4401", "d79adecddbc46a0bbed707f3de3c9a9976d11f80"],
+      "check": "Cover the tanker strike and Saudi East-West pipeline shutdown as separate developments; retain the unknown attacker and the fact that the tanker continued. Assess Korea's Saudi crude exposure using the dated 34.1% figure and distinguish spot/freight pressure from proven physical unavailability."
+    },
+    {
+      "topic": "US-China meeting and operative policy details",
+      "source_ids": ["996dd9f805b4d6647f9d5c845116b895f9f1408c", "cbfd307b9bce27dece44175b2f8a28086c0e14a4"],
+      "check": "Name the officially reported 24 September summit as a future checkpoint. Distinguish the AI incident-reporting proposal, trade-committee operation and proposed tariff negotiations from an enacted tariff cut; state unresolved rare-earth and purchase terms if material."
+    },
+    {
+      "topic": "Data-centre capital burden",
+      "source_ids": ["d96f07834ae4579f6b42e36ac42b8bc9731d2d64"],
+      "check": "If included, identify S&P's 1,200 trillion won by-2035 projection as a forecast, not completed spending; explain financing and credit-risk implications alongside potential demand. Do not turn an industry projection into immediate earnings."
+    }
+  ],
+  "secondary_candidates": [
+    "ECB Pontes was launched for wholesale tokenised-asset settlement; distinguish launch from future adoption scale.",
+    "Volkswagen's warning and index exit may matter for global autos but should not displace Korean close, energy or the summit without a stronger transmission link.",
+    "Nvidia's AI safety comments and Chinese car production plans should be included only when they change the main exposure or counterevidence."
+  ],
+  "failure_rules": [
+    "Unsupported close, sign, date, price basis or binding-policy claim is a factual failure.",
+    "Omitting a dominant Korean close or a conclusion-changing energy or trade development fails substantive coverage even if every included claim is true.",
+    "A long list of headlines without market exposure, opposing evidence and observable next checks is not a substantive brief."
+  ],
+  "not_human_expert_certification": true
+}

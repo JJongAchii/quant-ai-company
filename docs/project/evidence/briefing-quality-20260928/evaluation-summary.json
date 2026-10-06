@@ -1,0 +1,417 @@
+{
+  "recorded_at": "2026-09-28T01:42:14.993582+00:00",
+  "policy": "evaluation-policy-v7.json",
+  "sources": "source-snapshots.json",
+  "overlap": "source-overlap.json",
+  "pre_output_assistant_notes": "source-reading-notes.json",
+  "calls": [
+    {
+      "case": "am",
+      "phase": "write",
+      "receipt": "am-initial/write-receipt.json",
+      "request_id": "news-brief-eval-4aa65293203b27bad546268b69a60a98",
+      "elapsed_seconds": 512.722,
+      "provider": "codex",
+      "fault": null,
+      "usage": {
+        "input_tokens": 27093,
+        "cached_input_tokens": 0,
+        "output_tokens": 16888,
+        "reasoning_output_tokens": 4319
+      },
+      "state": "completed"
+    },
+    {
+      "case": "am",
+      "phase": "review",
+      "receipt": "am-draft/review-receipt.json",
+      "request_id": "news-brief-eval-be780ca8df4c572fe284bcaa99feab53",
+      "elapsed_seconds": 115.01,
+      "provider": "codex",
+      "fault": null,
+      "usage": {
+        "input_tokens": 33163,
+        "cached_input_tokens": 5888,
+        "output_tokens": 3646,
+        "reasoning_output_tokens": 1034
+      },
+      "state": "completed"
+    },
+    {
+      "case": "am",
+      "phase": "revise",
+      "receipt": "am-repair-input-v5/revise-receipt.json",
+      "request_id": "news-brief-eval-21543749acf82b4994233aa043d38407",
+      "elapsed_seconds": 469.757,
+      "provider": "codex",
+      "fault": null,
+      "usage": {
+        "input_tokens": 33832,
+        "cached_input_tokens": 0,
+        "output_tokens": 15387,
+        "reasoning_output_tokens": 1938
+      },
+      "state": "completed"
+    },
+    {
+      "case": "am",
+      "phase": "final_review",
+      "receipt": "am-revised/review-receipt.json",
+      "request_id": "news-brief-eval-d6ee39b2d0fe8f3dee110f52f3a765b1",
+      "elapsed_seconds": 89.717,
+      "provider": "codex",
+      "fault": null,
+      "usage": {
+        "input_tokens": 37469,
+        "cached_input_tokens": 0,
+        "output_tokens": 2737,
+        "reasoning_output_tokens": 503
+      },
+      "state": "completed"
+    },
+    {
+      "case": "am",
+      "phase": "additional_render_review",
+      "receipt": "am-format8-draft/review-receipt.json",
+      "request_id": "news-brief-eval-ac2f8fba1e44e4e83e9a95a42d117af6",
+      "elapsed_seconds": 129.59,
+      "provider": "codex",
+      "fault": null,
+      "usage": {
+        "input_tokens": 37362,
+        "cached_input_tokens": 0,
+        "output_tokens": 4106,
+        "reasoning_output_tokens": 1985
+      },
+      "state": "completed"
+    },
+    {
+      "case": "am",
+      "phase": "independent_review",
+      "receipt": "am-independent-receipt.json",
+      "request_id": "brief-heldout-independent-d8f7077d0556c28ef993d727",
+      "elapsed_seconds": 11.211,
+      "provider": null,
+      "fault": {
+        "code": "uncertain",
+        "message": "Claude did not confirm a complete review; reconcile its original ID.",
+        "retry_after_seconds": 0
+      },
+      "usage": null,
+      "state": "uncertain"
+    },
+    {
+      "case": "pm",
+      "phase": "write",
+      "receipt": "pm-format8-initial/write-receipt.json",
+      "request_id": "news-brief-eval-6556d89cd479a972245920e41c58fdff",
+      "elapsed_seconds": 435.706,
+      "provider": "codex",
+      "fault": null,
+      "usage": {
+        "input_tokens": 29804,
+        "cached_input_tokens": 5888,
+        "output_tokens": 14292,
+        "reasoning_output_tokens": 2070
+      },
+      "state": "completed"
+    },
+    {
+      "case": "pm",
+      "phase": "unsubmitted_validation5_review",
+      "receipt": "pm-format8-draft/review-receipt.json",
+      "request_id": "news-brief-eval-41dda06bbd18a391caa5e15ed01534ae",
+      "elapsed_seconds": null,
+      "provider": null,
+      "fault": null,
+      "usage": null,
+      "state": "not_submitted"
+    },
+    {
+      "case": "pm",
+      "phase": "review",
+      "receipt": "pm-final-draft/review-receipt.json",
+      "request_id": "news-brief-eval-c77f1b68fd44d842787829918e724431",
+      "elapsed_seconds": 112.603,
+      "provider": "codex",
+      "fault": null,
+      "usage": {
+        "input_tokens": 39392,
+        "cached_input_tokens": 0,
+        "output_tokens": 3547,
+        "reasoning_output_tokens": 1244
+      },
+      "state": "completed"
+    },
+    {
+      "case": "pm",
+      "phase": "revise",
+      "receipt": "pm-first-reviewed/revise-receipt.json",
+      "request_id": "news-brief-eval-ca2feaa0a4596c9c8cfeaafd57feaaa4",
+      "elapsed_seconds": 459.132,
+      "provider": "codex",
+      "fault": null,
+      "usage": {
+        "input_tokens": 36328,
+        "cached_input_tokens": 0,
+        "output_tokens": 14562,
+        "reasoning_output_tokens": 2133
+      },
+      "state": "completed"
+    },
+    {
+      "case": "pm",
+      "phase": "final_review",
+      "receipt": "pm-revised-v7/review-receipt.json",
+      "request_id": "news-brief-eval-01e542ba99dff3118360d40b510fb4b9",
+      "elapsed_seconds": 94.198,
+      "provider": "codex",
+      "fault": null,
+      "usage": {
+        "input_tokens": 39688,
+        "cached_input_tokens": 0,
+        "output_tokens": 2900,
+        "reasoning_output_tokens": 687
+      },
+      "state": "completed"
+    }
+  ],
+  "assessments": [
+    {
+      "case": "am_initial_four_call_trial",
+      "assessment": "am-final-format7/assessment.json",
+      "passed": false,
+      "verdict": "reduce",
+      "checks": {
+        "numbers": true,
+        "sources": true,
+        "timing": true,
+        "causality": true,
+        "materiality": false,
+        "counterevidence": true,
+        "transmission": true,
+        "alternatives": true,
+        "falsifiability": true,
+        "coverage": true,
+        "depth": true,
+        "readability": false
+      },
+      "concerns": [
+        "가독성: 여섯 이슈에서 해석 끝의 상쇄 조건을 바로 다음 대안 문장이 반복합니다. 나열한 대안 ID는 사실 오류가 아니라 본문 중복으로 제외합니다.",
+        "중요도·선별성: 새 정보 없는 대안 문장의 반복이 핵심 전개를 가립니다. 기존 해석과 함께 볼 점에 반대 근거가 남으므로 중복을 줄여도 균형은 유지됩니다."
+      ],
+      "mechanical_or_semantic_rejections": {
+        "rates_alternative": "semantic_review",
+        "oil_alternative": "semantic_review",
+        "summit_alternative": "semantic_review",
+        "ai_alternative": "semantic_review",
+        "resource_alternative": "semantic_review",
+        "sanctions_alternative": "semantic_review"
+      },
+      "quality": {
+        "format_version": 7,
+        "reduced": true,
+        "substantive": false,
+        "issue_count": 0,
+        "missing_core": [],
+        "rejected": {
+          "rates_alternative": "semantic_review",
+          "oil_alternative": "semantic_review",
+          "summit_alternative": "semantic_review",
+          "ai_alternative": "semantic_review",
+          "resource_alternative": "semantic_review",
+          "sanctions_alternative": "semantic_review"
+        },
+        "source_count": 8,
+        "fallback": null,
+        "assurance": {
+          "dow": "single_source",
+          "nasdaq": "single_source",
+          "sp500": "single_source"
+        },
+        "quote_conflicts": [],
+        "data_diagnostics": [
+          {
+            "error": "historical_current_lake_snapshot_not_available"
+          }
+        ],
+        "calendar_items": 1
+      },
+      "main_characters_with_links": 1559
+    },
+    {
+      "case": "am_additional_format8_review",
+      "assessment": "am-format8-final/assessment.json",
+      "passed": false,
+      "verdict": "reduce",
+      "checks": {
+        "numbers": true,
+        "sources": false,
+        "timing": false,
+        "causality": true,
+        "materiality": true,
+        "counterevidence": true,
+        "transmission": true,
+        "alternatives": true,
+        "falsifiability": true,
+        "coverage": true,
+        "depth": true,
+        "readability": true
+      },
+      "concerns": [
+        "본문 첫머리의 ‘한국 정규장: 휴장’은 제공된 원문이나 거래소 일정으로 확인되지 않습니다. 해당 문구에는 제공된 항목 ID가 없어 거절 목록에 넣지 않았습니다."
+      ],
+      "mechanical_or_semantic_rejections": {},
+      "quality": {
+        "format_version": 8,
+        "reduced": true,
+        "substantive": false,
+        "issue_count": 0,
+        "missing_core": [
+          "nasdaq",
+          "sp500"
+        ],
+        "rejected": {},
+        "source_count": 0,
+        "fallback": "editorial_review_withheld",
+        "assurance": {},
+        "quote_conflicts": [],
+        "data_diagnostics": [
+          {
+            "error": "historical_current_lake_snapshot_not_available"
+          }
+        ],
+        "calendar_items": 0
+      },
+      "main_characters_with_links": 202
+    },
+    {
+      "case": "pm_first_review",
+      "assessment": "pm-first-reviewed/assessment.json",
+      "passed": false,
+      "verdict": "reduce",
+      "checks": {
+        "numbers": true,
+        "sources": true,
+        "timing": true,
+        "causality": true,
+        "materiality": true,
+        "counterevidence": true,
+        "transmission": true,
+        "alternatives": true,
+        "falsifiability": true,
+        "coverage": false,
+        "depth": false,
+        "readability": true
+      },
+      "concerns": [
+        "coverage: 양사의 자사주 매입이 실제 진행 중이라는 사실이 본문에 명시되지 않았다. 조건부 대안만으로 해당 조치를 충분히 전달하지 못한다.",
+        "depth: 기타법인 전체 순매수는 제시했지만 전기·전자에 집중된 1조6,224억원은 빠졌다. 반도체 상승을 업황 기대와 기업 관련 매수로 나눠 평가할 핵심 수급 맥락이 약하다."
+      ],
+      "mechanical_or_semantic_rejections": {},
+      "quality": {
+        "format_version": 8,
+        "reduced": true,
+        "substantive": true,
+        "issue_count": 5,
+        "missing_core": [],
+        "rejected": {},
+        "source_count": 12,
+        "fallback": null,
+        "assurance": {
+          "kosdaq": "single_source",
+          "kospi": "single_source",
+          "usdkrw": "single_source"
+        },
+        "quote_conflicts": [],
+        "data_diagnostics": [
+          {
+            "error": "historical_current_lake_snapshot_not_available"
+          }
+        ],
+        "calendar_items": 2
+      },
+      "main_characters_with_links": 4708
+    },
+    {
+      "case": "pm_one_repair_final",
+      "assessment": "pm-final-v7/assessment.json",
+      "passed": true,
+      "verdict": "publish",
+      "checks": {
+        "numbers": true,
+        "sources": true,
+        "timing": true,
+        "causality": true,
+        "materiality": true,
+        "counterevidence": true,
+        "transmission": true,
+        "alternatives": true,
+        "falsifiability": true,
+        "coverage": true,
+        "depth": true,
+        "readability": true
+      },
+      "concerns": [],
+      "mechanical_or_semantic_rejections": {},
+      "quality": {
+        "format_version": 8,
+        "reduced": false,
+        "substantive": true,
+        "issue_count": 5,
+        "missing_core": [],
+        "rejected": {},
+        "source_count": 12,
+        "fallback": null,
+        "assurance": {
+          "kosdaq": "single_source",
+          "kospi": "single_source",
+          "usdkrw": "single_source"
+        },
+        "quote_conflicts": [],
+        "data_diagnostics": [
+          {
+            "error": "historical_current_lake_snapshot_not_available"
+          }
+        ],
+        "calendar_items": 2
+      },
+      "main_characters_with_links": 4820
+    }
+  ],
+  "readable_artifacts": {
+    "am_unapproved_candidate": "am-preview.md",
+    "pm_content_pass": "pm-final-v7/brief.md"
+  },
+  "latency": {
+    "am_first_four_seconds": 1187.206,
+    "am_codex_including_extra_render_review_seconds": 1316.796,
+    "pm_four_call_seconds": 1101.639,
+    "nominal_seconds": 1200,
+    "maximum_with_allowed_lateness_seconds": 1800,
+    "scope": "Observed offline model/transport durations only. Collection, execution-slot queues, operator gaps, migration and Slack delivery are excluded; these are not scheduled delivery measurements."
+  },
+  "readiness": {
+    "human_expert_certification": false,
+    "am_current_policy_all_checks_pass": false,
+    "independent_review_confirmed": false,
+    "pm_current_policy_content_pass": true,
+    "core_quotes_collected_or_corroborated": false,
+    "five_scheduled_trading_days_observed": false,
+    "real_slack_delivery_accepted": false,
+    "feature_deployed_to_current_worker": false,
+    "publication_enabled_by_this_work": false
+  },
+  "validation": "validation-v7.json",
+  "instance_migration": "instance-migration-reconciliation.json",
+  "runtime_feature_presence": "runtime-briefing-presence.json",
+  "limitations": [
+    "Small development evaluation; original failures and policy changes are preserved, not a statistically estimated unseen-day pass rate.",
+    "AM writer/repair outputs were seen before later formatting and validator changes.",
+    "PM repair was prompted with first-review concerns; technical numeric fixes crossed validation versions without extra generation or source changes.",
+    "Same-model reviewer is a separate call, not independent human expert certification.",
+    "Historical lake snapshots, live search and official calendar-page fetches are absent; current data was not backfilled.",
+    "Core observed closes have single-outlet assurance and cannot qualify live publication.",
+    "Original Claude failed/uncertain receipt was found after migration; no completed independent review and no automatic replay."
+  ]
+}

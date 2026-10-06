@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from typing import Any, Literal
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -33,7 +34,7 @@ class ToolRequest(StrictModel):
     name: Literal["calculate", "knowledge_search", "read_source", "lake_catalog", "lake_describe", "lake_sample",
                   "company_history", "maintenance_review", "maintenance_status", "system_status", "repository_read",
                   "task_control", "finance_search", "finance_read", "web_search", "web_read",
-                  "finance_compute", "data_quality", "staff_status", "news_status", "research_control"]
+                  "finance_compute", "data_quality", "staff_status", "news_status", "briefing_status", "research_control"]
     arguments: dict[str, Any]
 
 
@@ -82,6 +83,24 @@ class ProviderSession(StrictModel):
     previous_request_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9_-]{1,80}$")
 
 
+class ResearchStageOutput(StrictModel):
+    """A private file read or artifact; the service constructs the AgentDecision."""
+
+    action: Literal["read", "complete"]
+    read_path: str | None = Field(default=None, min_length=1, max_length=500)
+    read_offset: int | None = Field(default=None, ge=0, strict=True)
+    artifact_json: str | None = Field(default=None, min_length=1, max_length=60000)
+
+    @model_validator(mode="after")
+    def one_action(self):
+        if self.action == "read":
+            if self.read_path is None or self.read_offset is None or self.artifact_json is not None:
+                raise ValueError("A research read requires only a path and offset")
+        elif self.read_path is not None or self.read_offset is not None or self.artifact_json is None:
+            raise ValueError("Research completion requires only a serialized artifact")
+        return self
+
+
 class ProviderRequest(StrictModel):
     request_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,80}$")
     model: str = Field(min_length=1, max_length=80)
@@ -92,11 +111,22 @@ class ProviderRequest(StrictModel):
     # Service-owned continuation, resolved against durable runtime receipts.
     session: ProviderSession | None = None
     output_contract: Literal["agent_decision", "quant_brief_v1", "quant_brief_v2", "quant_brief_v3", "quant_brief_v4",
-                             "quant_critique_v1", "quant_critique_v2"] = "agent_decision"
+                             "quant_critique_v1", "quant_critique_v2", "quant_search_v1",
+                             "research_stage_v1"] = "agent_decision"
 
     @model_validator(mode="after")
     def scoped_output(self):
-        if self.output_contract != "agent_decision" and (
+        if self.output_contract == "research_stage_v1":
+            try:
+                canonical_id = str(UUID(self.request_id))
+            except ValueError:
+                raise ValueError("Research output requires a canonical company turn ID") from None
+            if canonical_id != self.request_id or self.web_search or self.session is not None:
+                raise ValueError("Research structured output requires a tool-free company turn")
+        elif self.output_contract == "quant_search_v1":
+            if not self.request_id.startswith("quant-feed-") or not self.web_search:
+                raise ValueError("Quant discovery output requires a native-search Quant request")
+        elif self.output_contract != "agent_decision" and (
                 not self.request_id.startswith("quant-feed-") or self.web_search):
             raise ValueError("Quant structured output requires a tool-free Quant request")
         return self

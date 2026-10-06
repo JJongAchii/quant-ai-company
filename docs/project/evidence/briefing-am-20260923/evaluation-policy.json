@@ -1,0 +1,31 @@
+{
+  "case": "am-20260923-fresh-format9-validation9",
+  "frozen_at": "2026-09-28T06:51:31+00:00",
+  "selection_reason": "Next unused completed weekday AM after the 2026-09-22 development failure, selected before opening the 2026-09-23 original titles or contents. Adjacent-day market context was seen in other cases, so this is a fresh original-source evaluation, not a wholly isolated blind market period.",
+  "day": "2026-09-23",
+  "edition_kind": "am",
+  "us_session": "2026-09-22",
+  "cutoff": "2026-09-23T07:10:00+09:00",
+  "due_at": "2026-09-23T07:30:00+09:00",
+  "format_version": 9,
+  "validation_version": 9,
+  "selection_version": 3,
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_writer_reviewer_calls": 4,
+  "repair": "At most one full proposal or condition repair after a valid proposal and confirmed valid review failure. Invalid typed writer/reviewer output fails this case. Preserve uncertain calls without a new request ID.",
+  "source_selection": "Use only historical originals both retrieved and published by the exact cutoff, published within 30 hours, from registered enabled use_for_summary sources with matching digest. Read at most 48 per origin and 600 total, then apply unchanged selection version 3 to at most 16 excerpts. Do not backfill current lake or web search into this old edition.",
+  "pass": "Typed proposal and review valid, all twelve semantic checks true, reviewer verdict publish, no mechanical rejections, available core US closes observed or explicitly missing, no quote conflicts, and independent assistant original-to-main-post check finds no material omission. Same-model review is not independent human expert certification; one passed date is not five-day qualification.",
+  "files_sha256": {
+    "src/quant_company/briefing/editor.py": "66ba775fede4729c8d15a048452df0a6c1c460cbe01d00b89c4c90b61decc2b2",
+    "src/quant_company/briefing/numeric.py": "c2428ffd7604a323c8886d0a23b4f31184fc42b5b2a8141854c194b943f54d1d",
+    "src/quant_company/briefing/contracts.py": "9e91ac2adcda91fb2fedfa2e238b5e1b1a756ad0dcbf195a55f536599d79c930",
+    "src/quant_company/briefing/coverage.py": "f7736f6f848531c35c115656585bc7a8b4a8e06c9617fba07ff651ec4d412496",
+    "src/quant_company/briefing/inputs.py": "955c814c29c4bc1e723ea4b59f790c1b6e9449643570ca304b648d331cc8286a",
+    "src/quant_company/briefing/schedule.py": "06b93dfd30cda89388b7b475d554058a9330f1b09dd4c175059b0426e4911ff0",
+    "src/quant_company/roles.json": "ae7ba58e4bc018cc34707d137c7bf4a9ffe32b2002f8bd2e95fa94e765c90318",
+    "src/quant_company/staff/packs.py": "f8318bd6d32acfe7315b7328186b745f86f95eeaa65b4839b9c0a5809dbe108d",
+    "scripts/evaluate_briefing.py": "27e89836b776fda68e1c13035f3f12fe3afa6ed2d46e92898e807cd60d3b65c1"
+  },
+  "offline_scope": "Actual cached originals and existing subscription writer/reviewer; no Slack post, no database mutation, no paid API key fallback."
+}

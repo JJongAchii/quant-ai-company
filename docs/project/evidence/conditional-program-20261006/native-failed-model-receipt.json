@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06T01:33:24.901211+00:00",
+  "receipt": {
+    "request_id": "86e01053-793c-5784-b944-dea0ba1d5349",
+    "state": "failed",
+    "input_digest": "ad16d5ca334bee384382d09504250a65a3eca5d58390907668a9d27e6c0eb5fc",
+    "cli_version": "0.154.0",
+    "account": {
+      "profile": "primary",
+      "revision": 2
+    },
+    "requested_execution": {
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high"
+    },
+    "fault": {
+      "code": "invalid_output",
+      "message": "Codex output did not satisfy the company decision contract (events:invalid_shape).",
+      "retry_after_seconds": 0
+    },
+    "error": null,
+    "receipt_sha256": "bb3a25b02aa50fb897d43f5e49491638c05e969136bdb85c39ed7720c422c40f"
+  },
+  "credentials_read": false,
+  "model_requests_replayed": 0
+}

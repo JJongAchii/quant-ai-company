@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-05 23:47:42.177622+00:00",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "data_attempts": [
+    {
+      "id": "ce867fc3-a194-5327-b312-864b93538d34",
+      "state": "waiting",
+      "error": "invalid_output",
+      "attempt": 1,
+      "attempt_error": "stage_response_rejected",
+      "task_id": "7163f55e-3e00-5435-9caa-dd6e51149895",
+      "response_present": false
+    },
+    {
+      "id": "ce867fc3-a194-5327-b312-864b93538d34",
+      "state": "waiting",
+      "error": "invalid_output",
+      "attempt": 2,
+      "attempt_error": "stage_response_rejected",
+      "task_id": "ba505560-94e4-51c2-8d94-3f08c6492f2c",
+      "response_present": false
+    },
+    {
+      "id": "ce867fc3-a194-5327-b312-864b93538d34",
+      "state": "waiting",
+      "error": "invalid_output",
+      "attempt": 3,
+      "attempt_error": "stage_response_rejected",
+      "task_id": "ae3e7835-7739-5c42-8926-46e89420c923",
+      "response_present": false
+    }
+  ],
+  "transaction_read_only": true,
+  "employee_decision_applied": false,
+  "model_call_replayed": false
+}

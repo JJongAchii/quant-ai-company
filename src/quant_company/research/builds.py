@@ -18,6 +18,7 @@ from .adaptive_contracts import (
 )
 from .contracts import Commit, Digest
 from .mission_contracts import MissionSpec, TrialPlan
+from .policy_contracts import require_profile_policy, scoped_kwargs
 from .worker import atomic_json, read_json, sha_file
 from .workspace import PreparedWorkspace, TextPatch, prepare_workspace, safe_relative_path, snapshot_files
 
@@ -41,6 +42,10 @@ def profile_for(company, spec: MissionSpec) -> ServerResearchProfile:
         raise PolicyError("Research execution profile is unavailable")
     profile = ServerResearchProfile.model_validate(value[spec.execution_profile])
     public = profile.public_profile
+    try:
+        require_profile_policy(spec, public)
+    except ValueError as exc:
+        raise PolicyError(str(exc)) from exc
     if (public.id != spec.execution_profile or digest_model(public) != spec.execution_profile_digest
             or profile.base_commit != spec.code.base_commit
             or set(profile.allowed_write_paths) != set(spec.code.write_paths)
@@ -142,13 +147,13 @@ def build_trial(company, row, snapshot):
     if files.get(profile.public_profile.entrypoint) != profile.public_profile.entrypoint_sha256:
         raise PolicyError("Protected evaluator entrypoint changed")
     trial_id = snapshot["stage"]["trial_id"]
-    plan = TrialPlan(trial_id=trial_id, proposal_id=snapshot["stage"]["proposal_id"],
+    plan = TrialPlan(**scoped_kwargs(spec), trial_id=trial_id, proposal_id=snapshot["stage"]["proposal_id"],
         mission_digest=snapshot["manifest_digest"], execution_profile=spec.execution_profile, implementer="engineer",
         repository=spec.code.repository, code_commit=prepared.commit, changed_paths=[patch.path for patch in patches],
         config_files={name: files[name] for name in profile.config_files}, input_files=spec.data.input_files,
         lake_id=spec.data.lake_id, development=spec.development, worker_id="worker",
         hostname="DESKTOP-5T00NAF", gpu="NVIDIA GeForce RTX 3070")
-    manifest = AdaptiveManifest(id=RESEARCH_RECIPE if spec.schema_version == 2 else ADAPTIVE_RECIPE,
+    manifest = AdaptiveManifest(id=RESEARCH_RECIPE if spec.schema_version >= 2 else ADAPTIVE_RECIPE,
         mission_id=snapshot["id"], mission_digest=snapshot["manifest_digest"],
         trial_id=trial_id, plan_digest=record_digest(plan), plan=plan, spec=spec, code_files=files,
         bundle_sha256=prepared.bundle_sha256, config_path=profile.config_path,

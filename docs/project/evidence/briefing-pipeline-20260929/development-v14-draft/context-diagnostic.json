@@ -1,0 +1,67 @@
+{
+  "rejected": {
+    "ust10y_afternoon": "stale_intraday_observation",
+    "usdkrw_reference": "stale_intraday_observation",
+    "kospi_previous_close": "wrong_close_session",
+    "kosdaq_previous_close": "wrong_close_session",
+    "jolts": "unsupported_event_number",
+    "employment_report": "event_outside_window"
+  },
+  "quality": {
+    "format_version": 10,
+    "reduced": true,
+    "substantive": true,
+    "issue_count": 6,
+    "missing_core": [],
+    "rejected": {
+      "ust10y_afternoon": "stale_intraday_observation",
+      "usdkrw_reference": "stale_intraday_observation",
+      "kospi_previous_close": "wrong_close_session",
+      "kosdaq_previous_close": "wrong_close_session",
+      "jolts": "unsupported_event_number",
+      "employment_report": "event_outside_window"
+    },
+    "source_count": 14,
+    "fallback": null,
+    "assurance": {
+      "dow": "single_source",
+      "nasdaq": "single_source",
+      "sp500": "single_source"
+    },
+    "quote_conflicts": [],
+    "data_diagnostics": [
+      {
+        "error": "historical_lake_snapshot_not_available"
+      }
+    ],
+    "calendar_items": 1
+  },
+  "review_prompt_chars": 104431,
+  "components": {
+    "edition": 367,
+    "documents": 37364,
+    "source_coverage": 1250,
+    "candidate_count": 3,
+    "candidate_omitted_count": 2,
+    "collection_errors": 2,
+    "morning_watchpoints": 2,
+    "locked_observations": 2,
+    "market_context": 2,
+    "data_diagnostics": 52,
+    "exchange_closes": 67,
+    "evaluation": 88,
+    "source_plan": 2473,
+    "quote_conflicts": 2,
+    "proposal": 18565,
+    "main_post_preview": 4873,
+    "main_post_item_ids": 580,
+    "evidence_quotes": 8551,
+    "unselected_source_index": 13137,
+    "source_chars_remaining": 5
+  },
+  "parts_chars": [
+    4815,
+    3492,
+    316
+  ]
+}

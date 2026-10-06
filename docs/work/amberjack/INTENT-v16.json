@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "slug": "amberjack",
+  "revision": 16,
+  "createdAt": "2026-09-29T04:21:07.870544+00:00",
+  "sourceRequest": "헐 내가 잘못말했었네,,, quant scout는 지금 우리 작업과 전혀 관련이 없는데 말이야.... 아무튼 analyst 보완 관련해서 최종목표를 달성할 수 있게 개선해줘",
+  "supersedes": {
+    "intentFile": "INTENT-v15.json",
+    "intentDigest": "7cf9aaeae71c"
+  },
+  "outcome": "Improve the actual Analyst daily brief content quality, validate a newly frozen real-source edition and prepare safe preview release toward useful scheduled Slack delivery.",
+  "constraints": [
+    "Company repository only; preserve research provenance",
+    "Official subscription runtime only; no paid API or unsandboxed fallback",
+    "Use frozen pre-cutoff registered originals and existing market data; no retrospective current lake or search backfill",
+    "Preserve stable model request IDs and uncertain receipts; at most one confirmed editorial repair",
+    "Keep Slack publication disabled until real content, preview, five-day timing and acceptance gates pass"
+  ],
+  "deliverables": [
+    {
+      "id": "CONTENT_REPAIR",
+      "description": "Correct observed forecast-versus-realized and missing economic-mechanism failures",
+      "acceptance": [
+        "Source-supported temporal claims and corporate mechanism in writer/reviewer contract",
+        "Real 20-source review request remains within 88000 characters",
+        "Relevant PostgreSQL regression passes"
+      ]
+    },
+    {
+      "id": "FRESH_EVALUATION",
+      "description": "Evaluate a previously unused pre-cutoff original-source edition",
+      "acceptance": [
+        "Freeze case and policy before inspecting original titles/content",
+        "Real source plan, writer and reviewer receipts with no more than one confirmed repair",
+        "Independent original-to-visible-main audit and honest failure/pass record"
+      ]
+    },
+    {
+      "id": "PREVIEW_READINESS",
+      "description": "Prepare a safe path for operational preview",
+      "acceptance": [
+        "Read-only installed-release policy and role/channel check",
+        "Document exact remaining publication gates and do not claim deployment or Slack delivery without receipts"
+      ]
+    }
+  ],
+  "decisionGates": [
+    "Full content qualification requires all twelve semantic checks, zero mechanical rejection and independent original-to-main audit on a freshly frozen edition.",
+    "A protected preview release uses the installed company release contract; no bypass of protected-file approval.",
+    "Automatic Slack publishing requires app/channel validation, live preview, recent five trading days, actual delivery receipts and human content review."
+  ],
+  "nonGoals": [
+    "Quant Scout or research feed work",
+    "Trading, orders, backtests, training or portfolio allocation",
+    "Reclassifying earlier same-source development repairs as fresh acceptance"
+  ],
+  "stopConditions": [
+    "An uncertain model/Slack effect remains unreplayed with a new ID",
+    "Unavailable historical originals or operating prerequisites are recorded, not silently backfilled"
+  ]
+}

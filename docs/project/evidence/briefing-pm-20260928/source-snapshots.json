@@ -1,0 +1,145 @@
+{
+  "mode": "historical_originals_before_exact_scheduled_cutoff",
+  "raw_originals_sha256": "57445bf709fcbf9d79ebb9303ab3fc7388301200e1811772c554106c811d4aff",
+  "model": "not_yet_called",
+  "slack": "not_connected",
+  "snapshots": {
+    "pm-20260928": {
+      "cutoff": "2026-09-28T10:40:00+00:00",
+      "raw_article_count": 151,
+      "eligible_count": 151,
+      "selected_count": 16,
+      "bundle_sha256": "4157263de0fdfe5bd5fd7fa970f69fbab05be21f82f300a39a7d32b8fba3068c",
+      "selected": [
+        {
+          "id": "a8bb2955dacb6326497ce375c6936d62d28f2b83",
+          "title": "'하락 예감?' 코스피·반도체 추종 ETF서 한 주간 뭉칫돈 이탈",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-28T08:04:00+00:00",
+          "retrieved_at": "2026-09-28T08:13:38.138130+00:00",
+          "sha256": "724c6d6020d8af83af4d70c3cf4734223f1b41e5c4b6b31f1c59d86647466574"
+        },
+        {
+          "id": "4e6c898ea8e794e90a0f50a3b058df8ff36a9e4b",
+          "title": "'하락 예감?' 코스피·반도체 추종 ETF서 한주간 뭉칫돈 이탈",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-28T07:44:15+00:00",
+          "retrieved_at": "2026-09-28T07:53:17.715136+00:00",
+          "sha256": "347e68c6946248443b9e9d4f721c54b5be43a1f5e4b8db583783ab9baaae77a1"
+        },
+        {
+          "id": "c8b3788f5c3d3999e611642334653056e09eeca1",
+          "title": "한은, 10월 통안증권 최대 7조원 발행한다⋯중도환매 2조",
+          "publisher": "이투데이",
+          "published_at": "2026-09-28T08:18:00+00:00",
+          "retrieved_at": "2026-09-28T08:22:44.435472+00:00",
+          "sha256": "244258036fa6e49a616d3a0c43d027054c690ff4d37bcad1d5562a2811db12f0"
+        },
+        {
+          "id": "db3f6973cdcad0e4174b2f46e6bde9a3809d2a1c",
+          "title": "U.S., China to lower tariffs on $60 billion of goods. Here's what qualifies",
+          "publisher": "CNBC",
+          "published_at": "2026-09-28T08:31:33+00:00",
+          "retrieved_at": "2026-09-28T08:40:38.351244+00:00",
+          "sha256": "3a6f505b41cc5d170082956d763d74c68317b1fbf40ad4c34f6b5a3dbc69a0ef"
+        },
+        {
+          "id": "65d5c4cde943a2b3a14a7023d6f3b04262be9ab7",
+          "title": "\"미국·이란 중재국, 전면전 우려해 이란에 '핵 양보' 촉구\"",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-28T09:17:00+00:00",
+          "retrieved_at": "2026-09-28T09:25:46.644460+00:00",
+          "sha256": "e03f5b9a4e9b588aa3fd46ccf044c794a82597b3a6a664c99694b617b29c2912"
+        },
+        {
+          "id": "e1f902b7a4d3db2cf42f16c46609a4142d778fae",
+          "title": "\"카타르, 호르무즈 대치 속 LNG 공급 '불가항력' 선언 추가 연장\"",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-28T09:11:00+00:00",
+          "retrieved_at": "2026-09-28T09:15:29.502956+00:00",
+          "sha256": "d28bdb4b9e64025d533162e0d716665197423415386048f701dcdc09ffdbef58"
+        },
+        {
+          "id": "001fb4a35b80e29633aa66d2259720598a7cded2",
+          "title": "Gold and silver prices fall sharply as higher bond yields weigh on metals",
+          "publisher": "CNBC",
+          "published_at": "2026-09-28T09:56:44+00:00",
+          "retrieved_at": "2026-09-28T10:12:29.717032+00:00",
+          "sha256": "0795f99df59c3ec973dcd3701fae7a5096c5f8011c03c58dcbd97e17a5b8df91"
+        },
+        {
+          "id": "05ec0a430c63cb6d848f6a952e583e0fe6664596",
+          "title": "환율 내려도 실적 눈높이는 ‘쑥’⋯삼성전기, AI 부품 타고 최대실적 예고",
+          "publisher": "이투데이",
+          "published_at": "2026-09-28T08:01:00+00:00",
+          "retrieved_at": "2026-09-28T08:02:22.930752+00:00",
+          "sha256": "e6b7844b1575a1f6416e3c436fb566034e4fe48b11de925cd2efda28431ca406"
+        },
+        {
+          "id": "7a4dd7675e8440fc3e82132147a6e35c849deeb6",
+          "title": "한은 \"추석 연휴 글로벌 국채금리 급등⋯시장 불확실성 확대 경계\"",
+          "publisher": "이투데이",
+          "published_at": "2026-09-28T00:19:00+00:00",
+          "retrieved_at": "2026-09-28T00:59:10.590344+00:00",
+          "sha256": "e8e999a4ba5cf1b32a4fb523640abf133e9afc365c374ada25446bdaa9fde86e"
+        },
+        {
+          "id": "bad5dd772395c3c99c41a2e81b397c55cd363a46",
+          "title": "추석 연휴 미 국채 금리 급등에…환율 1,360원대 중반으로",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-28T07:12:00+00:00",
+          "retrieved_at": "2026-09-28T07:22:20.740206+00:00",
+          "sha256": "07bb42268f410c680aabd56e0eb5d3f7cb791b5524b055c20a80d62a07d53efc"
+        },
+        {
+          "id": "d0f578f4b32f057c1a38b308e3e972727c3d0dde",
+          "title": "추석 연휴 美국채 금리 급등에…환율 1,360원대 중반으로",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-28T06:53:12+00:00",
+          "retrieved_at": "2026-09-28T07:01:59.072651+00:00",
+          "sha256": "1572d46a6910a7bbe1ea432bd2f6e5a4aa1742e0016a54647ea66fd6093f96d4"
+        },
+        {
+          "id": "e9f5464d8ac6f9bc6078f00882303e95442806fd",
+          "title": "Brent crude tops $107 as Trump rejects Iranian proposal to reopen Hormuz Strait",
+          "publisher": "CNBC",
+          "published_at": "2026-09-28T06:34:26+00:00",
+          "retrieved_at": "2026-09-28T06:36:41.409634+00:00",
+          "sha256": "364df4105d0cfa6bb57f0bbad3ff4fa71b47c01db141d5bf322fd8c78436a96c"
+        },
+        {
+          "id": "aa7381758cb1ef1c17031e94e5e2e8e88878b795",
+          "title": "항재밍 솔루션기업 덕산넵코어스, 30일 코스닥 신규 상장",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-28T09:15:07+00:00",
+          "retrieved_at": "2026-09-28T09:26:22.147349+00:00",
+          "sha256": "5839cf53e6a3e3ed34cfb3eb616403e27fdde71da46c622ba3ec322793c1257e"
+        },
+        {
+          "id": "534a6eeeb57ab843f1715dd0ad7fcb99edd1c719",
+          "title": "Childminder facing 'severe financial burden' as heating oil costs rise",
+          "publisher": "BBC News",
+          "published_at": "2026-09-28T09:01:12+00:00",
+          "retrieved_at": "2026-09-28T09:06:33.400368+00:00",
+          "sha256": "732cd35c7e4b7beb63ae77e282dc1d63adf1d69ad1560350752c8b079a5151e6"
+        },
+        {
+          "id": "ca4018ae5261ba2a446838a22e48d64161719e69",
+          "title": "Axios: Trump Expects More Talks with Iran This Week",
+          "publisher": "KBS World",
+          "published_at": "2026-09-28T08:38:10+00:00",
+          "retrieved_at": "2026-09-28T10:07:08.983740+00:00",
+          "sha256": "f1ea60733914b533cca08ac5bf3a191493af316114e6fcbf111f60c07dedb1b1"
+        },
+        {
+          "id": "717958b329bc0f09e8d09e9895772e0f48ef4325",
+          "title": "Trump-Xi summit: What wasn't said might matter the most",
+          "publisher": "BBC News",
+          "published_at": "2026-09-28T07:52:23+00:00",
+          "retrieved_at": "2026-09-28T08:45:37.781443+00:00",
+          "sha256": "adb6ce0f8fc5c677fb8e6e14968fbb26c3ad23e87aadcaa6aa1d1ac93e3a1389"
+        }
+      ]
+    }
+  }
+}

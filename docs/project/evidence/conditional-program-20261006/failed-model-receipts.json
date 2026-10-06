@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-05T23:57:51.329897+00:00",
+  "failed_receipts": [
+    {
+      "request_id": "dff80fd7-40c6-5ee2-96a8-1ac8e3913c38",
+      "receipt_sha256": "eae84f781128dd1b9651a30c3c99885dd80b48a7375b4fbde8c171f5602e463e",
+      "state": "failed",
+      "input_digest": "557d3d613d7054a5e6351a035716c5567ab2e84b25474013978b3484dd0fad4a",
+      "cli_version": "0.154.0",
+      "account": {
+        "profile": "primary",
+        "revision": 2
+      },
+      "requested_execution": {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high"
+      },
+      "fault": {
+        "code": "invalid_output",
+        "message": "Codex output did not satisfy the company decision contract (decision_contract:invalid_shape).",
+        "retry_after_seconds": 0
+      },
+      "error": null
+    },
+    {
+      "request_id": "da444092-a806-5047-bc21-65411f92fe1c",
+      "receipt_sha256": "b817af88111ab0d980690c75db7e75835fcadb4e12db1a687cacec408d8b2010",
+      "state": "failed",
+      "input_digest": "8a73f55ea5e5b68e96990fa7187246085986d9a05f7d3742b3954d29cf86a4de",
+      "cli_version": "0.154.0",
+      "account": {
+        "profile": "primary",
+        "revision": 2
+      },
+      "requested_execution": {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high"
+      },
+      "fault": {
+        "code": "invalid_output",
+        "message": "Codex output did not satisfy the company decision contract (decision_contract:invalid_shape).",
+        "retry_after_seconds": 0
+      },
+      "error": null
+    },
+    {
+      "request_id": "40ba5eb0-f9aa-5b0d-9c21-6de04989d4b1",
+      "receipt_sha256": "2f32ce11288eb8820aa9c66725f692e26aed1931d01807385272843a903a4df4",
+      "state": "failed",
+      "input_digest": "7dac2c851a8c52a8d11854441a8c5b1423e68d321134003ed326815346dc6987",
+      "cli_version": "0.154.0",
+      "account": {
+        "profile": "primary",
+        "revision": 2
+      },
+      "requested_execution": {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high"
+      },
+      "fault": {
+        "code": "invalid_output",
+        "message": "Codex output did not satisfy the company decision contract (decision_contract:invalid_shape).",
+        "retry_after_seconds": 0
+      },
+      "error": null
+    },
+    {
+      "request_id": "578a8874-b2f8-5762-b872-37aec557dc76",
+      "receipt_sha256": "9dd3b5ee0161c45993891a52fa79d5775c13382277825c59029881e664841e61",
+      "state": "failed",
+      "input_digest": "b7b0be91b031ce3200ff1195b202bf73f4d89c302ee2cadff23e0a60de17948a",
+      "cli_version": "0.154.0",
+      "account": {
+        "profile": "primary",
+        "revision": 2
+      },
+      "requested_execution": {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high"
+      },
+      "fault": {
+        "code": "invalid_output",
+        "message": "Codex output did not satisfy the company decision contract (decision_contract:invalid_shape).",
+        "retry_after_seconds": 0
+      },
+      "error": null
+    }
+  ],
+  "model_calls_replayed": 0,
+  "credentials_read": false
+}

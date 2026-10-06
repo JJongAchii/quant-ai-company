@@ -49,6 +49,10 @@ class NewsScreeningStore(NewsStore):
                     return {"state": "blocked", "reason": "screen_policy_changed"}
                 return ({"state": "defer"} if active["next_at"] > at
                         else {"state": "ready", "request": active["request"]})
+            from ..briefing.store import priority_pending
+
+            if priority_pending(self.company):
+                return {"state": "defer", "reason": "briefing_priority", "next_delay": 30}
             last = conn.execute("SELECT max(completed_at) AS at FROM news_triages WHERE state='completed'").fetchone()["at"]
             morning_pending = (not schedule.quiet(self.company.settings, at)
                                and self.company.settings.news_delivery_window_enabled

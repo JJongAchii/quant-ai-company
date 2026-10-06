@@ -1,0 +1,210 @@
+{
+  "checked_at": "2026-09-22T06:27:14.373496+00:00",
+  "branch": "JJongAchii/daily-brief-market-summary",
+  "base_commit": "08b84d4d14d823d77b3af4ee2fab83a18a72c516",
+  "implementation_state": "local uncommitted implementation; file hashes identify the tested changes",
+  "tests": {
+    "tests": 1081,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 36,
+    "passed": 1045,
+    "seconds": 315.76,
+    "file": "docs/project/evidence/briefing-tests.xml",
+    "sha256": "7737dbcdbff5f8d38137e73a5753dd7090fb8882f90d0ff489ec1c0fdfaa214f",
+    "skip_reasons": {
+      "Set CODEX_CONFIG_PROBE=1 for the local CLI probe": 2,
+      "Requires explicit operator runtime profile on the registered Linux 3070": 1,
+      "Real pinned qlab checkout required: QUANT_TEST_QLAB_ROOT": 30,
+      "Opt-in real 3070, committed ETF checkout and prepared science runtime required": 1,
+      "Requires explicit operator-reviewed runtime profile on the 3070; no Mac fallback": 1,
+      "Opt-in real Codex subscription test": 1
+    }
+  },
+  "final_targeted_regression": {
+    "tests": 107,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 107,
+    "seconds": 16.761,
+    "file": "docs/project/evidence/briefing-final-regression.xml",
+    "sha256": "6c767b0775d35a839f2d49c2264adc856455b3709ee6fc157d0541ba57c93ffa",
+    "skip_reasons": {}
+  },
+  "lint": {
+    "command": "uv run ruff check .",
+    "exit_code": 0
+  },
+  "lock": {
+    "command": "uv lock --check",
+    "exit_code": 0
+  },
+  "build": {
+    "command": "uv build --wheel --out-dir .local/briefing-dist",
+    "exit_code": 0,
+    "wheel": "quant_company-0.1.0-py3-none-any.whl",
+    "sha256": "6424ec7e87a100d2e0daf55c7c1b512a1f1276abec7ff03f59688554590052e1",
+    "briefing_package_resources_present": true
+  },
+  "environment": {
+    "python": "3.12.13",
+    "platform": "Darwin",
+    "postgresql": "14.23 (Homebrew)",
+    "temporal": "real local development server",
+    "temporal_sdk": "1.33.0",
+    "exchange_calendars": "4.13.2"
+  },
+  "evidence_boundaries": {
+    "market_test_data": "synthetic",
+    "model_responses": "mocked",
+    "slack": "simulated HTTP; no real message sent",
+    "public_source_probe": "real network, connectivity only",
+    "real_codex": "not run; company runtime not configured in this worktree",
+    "production_deployment": "not performed",
+    "five_trading_day_observation": "not performed",
+    "core_real_quote_coverage": "not qualified"
+  },
+  "publication_defaults": {
+    "enabled": false,
+    "publish_enabled": false
+  },
+  "source_probe": {
+    "file": "docs/project/evidence/briefing-source-probe.json",
+    "sha256": "b7d334f6aa5e95575a960deb0cd7449733e703c52414013cc9444e5da08a8dab"
+  },
+  "configuration_presence": {
+    "file": "docs/project/evidence/briefing-environment-check.json",
+    "sha256": "4d96732713944ecec0cad1855c455838e829843d558df69fe06d8444f2345cbd"
+  },
+  "implementation_files": [
+    {
+      "path": "deploy/.env.example",
+      "sha256": "e6cbb4bdcf297ce41a4fe9ae5ff6109737bee02f318e6138481336ef09823ee2"
+    },
+    {
+      "path": "deploy/compose.yaml",
+      "sha256": "b2aa99a2172fc0ea77024e6dca66c380c356c8585c61f679b997eedd5243be95"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "8c5260484d8246302656499484b01a2392be0d3b90f0b6f3ea63af951fccd5ff"
+    },
+    {
+      "path": "slack-apps/market_brief.json",
+      "sha256": "4c313fa945f02375221a95f4de0645dddd287d0b8eaac1da82034fe091f15ee9"
+    },
+    {
+      "path": "src/quant_company/briefing/__init__.py",
+      "sha256": "5b1c5470916d1d6682bea5680c78255d7ee3e2043011043ee728383a23541abf"
+    },
+    {
+      "path": "src/quant_company/briefing/commands.py",
+      "sha256": "6fd7109840774b7b50d6d640aa2e7734cdec4fd7986437457c78bcc00e9961cb"
+    },
+    {
+      "path": "src/quant_company/briefing/contracts.py",
+      "sha256": "831e666b75661581c2fcebf5947f7b8f4ce08cd3a1f0c3c1b3621eefa4c4ffff"
+    },
+    {
+      "path": "src/quant_company/briefing/editor.py",
+      "sha256": "3eb8fb936f59e52e8d3b11443288acc7f9afe50aedc1ef5bd17f42d315450cc6"
+    },
+    {
+      "path": "src/quant_company/briefing/inputs.py",
+      "sha256": "b6a4921623acfe918de1f2edb73ce4b178757a27d5e3ed37660b8c935d650416"
+    },
+    {
+      "path": "src/quant_company/briefing/runner.py",
+      "sha256": "40c7c2671cc2223e0f3ca546655a6b117a244362ca58308007ddde7f8c4b169e"
+    },
+    {
+      "path": "src/quant_company/briefing/schedule.py",
+      "sha256": "0bf1e7252ff07cb2669f9a059920236eaacaba57f05bfeac99b9f74e07d1e421"
+    },
+    {
+      "path": "src/quant_company/briefing/schema.sql",
+      "sha256": "16f808ddabefbf1815b924c8b90ac2aa1486fddb47531e3f81d4fbaac9071bf2"
+    },
+    {
+      "path": "src/quant_company/briefing/store.py",
+      "sha256": "afd1f746fad6fa4ec295a1e67c48e93ae8a542e08d5a1d171a2aeb96db5d3201"
+    },
+    {
+      "path": "src/quant_company/briefing/workflow.py",
+      "sha256": "4f33064638b285b332a674266de921d2da13562cae01154ff2a55c254234d7ce"
+    },
+    {
+      "path": "src/quant_company/cli.py",
+      "sha256": "2bfb2ac237c21f06c8c926aabfacac8eca4453e7a8cee55bf922815fcd3bbe62"
+    },
+    {
+      "path": "src/quant_company/company.py",
+      "sha256": "94603c7677c87c939b8111bacf8d80b42b5ad6334203e8fc935364ee2abc773f"
+    },
+    {
+      "path": "src/quant_company/config.py",
+      "sha256": "76f0745573eb3d0b3904a0c2e98f30e49b54d449c0b0f0c7742216e1838ea36b"
+    },
+    {
+      "path": "src/quant_company/contracts.py",
+      "sha256": "65a3e92a57f514eb37a417b284751ed61dcc8e00accdc7766db13f622e8b191c"
+    },
+    {
+      "path": "src/quant_company/db.py",
+      "sha256": "720171639383a37c639d847e6787e08e53e75ccea6480e5b7436c7323b6b3033"
+    },
+    {
+      "path": "src/quant_company/news/discovery.py",
+      "sha256": "f56cfe94a9503c15dfc9ed8c3dcd7ef24afea499580232bb8aaf7f7b9de8fd67"
+    },
+    {
+      "path": "src/quant_company/news/screening.py",
+      "sha256": "2352bd1b10cd10433a7ec98a6963e4d6e33b92959643119926452153fb46f6f0"
+    },
+    {
+      "path": "src/quant_company/news/store.py",
+      "sha256": "bb5b664369b96b5af77ce8a5c2015ecd68763735798c4c7819c871ca5ea889ae"
+    },
+    {
+      "path": "src/quant_company/roles.json",
+      "sha256": "ac9949946fb855244df1d25406dccdccbb38a248584710bff193a3520a2458eb"
+    },
+    {
+      "path": "src/quant_company/runtime.py",
+      "sha256": "5f721d8b98365b19d85af053d9620ef614f3d694454a30985c8e0463e84b3677"
+    },
+    {
+      "path": "src/quant_company/slack.py",
+      "sha256": "b5e10c4bb982ffc14adf04f7e9b5ea11ddb12ed31c914a4c7c44a324da0a57cb"
+    },
+    {
+      "path": "src/quant_company/staff/packs.py",
+      "sha256": "66e77089ef99773f81104392cfb79fa2d20d67d00bd73cf074f2f2d47544ffc5"
+    },
+    {
+      "path": "src/quant_company/staff/playbooks/market_brief.md",
+      "sha256": "d064e1170be09d621df2f4ad49a8bb1f5acdb6fd136ad8ae2091450031eb995b"
+    },
+    {
+      "path": "tests/test_briefing.py",
+      "sha256": "d8f81364e137e5d9262996200571a2b7d0783ba61a56f73b804c0907b19f5492"
+    },
+    {
+      "path": "tests/test_briefing_inputs.py",
+      "sha256": "c4de1a651d06faf5c5efc3f365ce678ef1e1919cc76e2cc5cdb046ac64d5208c"
+    },
+    {
+      "path": "tests/test_briefing_temporal.py",
+      "sha256": "39b86ac1dfabaaaab4c26efe1218389aac207bf40733d680cb7f6ddb5d21cb66"
+    },
+    {
+      "path": "tests/test_roles.py",
+      "sha256": "2b2d16885c237f944e670460722390b15533b77486c82930cce2e4d80bd01506"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "91700b4d2566707e0facbe5493117b186ccac3dbc7536be07f5705c6303cd499"
+    }
+  ]
+}

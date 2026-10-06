@@ -11,10 +11,18 @@ from ..company import as_json, fingerprint, stable
 from ..contracts import ProviderRequest
 from ..news.feeds import canonical_url
 from ..owner_controls import effective_limits
-from ..web_tools import search_prompt, search_result
+from ..web_tools import search_result
 from . import schedule
 from .contracts import QUANT_FEED_AGENT, TOPICS, ResearchBrief, load_sources
-from .editor import ProposalValidationError, output_contract, prompt, render, validate
+from .editor import (
+    PromptContextLimit,
+    ProposalValidationError,
+    discovery_prompt,
+    output_contract,
+    prompt,
+    render,
+    validate,
+)
 from .feeds import aliases, obvious_nonresearch_title
 
 LOCK = 71350249
@@ -99,7 +107,7 @@ class QuantFeedStore:
 
     def policy(self):
         s = self.company.settings
-        return fingerprint({"version": 20, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
+        return fingerprint({"version": 21, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
                             "owner": s.quant_feed_owner_user, "channel": s.quant_feed_channel_id,
                             "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
                             "web": s.company_web_enabled, "sources": [x.model_dump() for x in self.sources().values()],
@@ -315,18 +323,25 @@ class QuantFeedStore:
                 if bundle["prior"] and bundle["prior"]["status"] != "delivered":
                     conn.execute("UPDATE quant_feed_documents SET state='held',error='prior_delivery_unresolved' WHERE id=%s", (document["id"],))
                     return {"state": "held", "reason": "prior_delivery_unresolved"}
+            searching = stage in {"discover", "weekly"}
+            try:
+                text = discovery_prompt(bundle) if searching else prompt(bundle, stage)
+            except PromptContextLimit:
+                # No provider call or budget reservation exists yet. Commit a
+                # document-local failure instead of rolling back the queue head
+                # forever. Its original pages and all earlier receipts survive.
+                conn.execute("""UPDATE quant_feed_documents SET state='held',error='quant_context_limit',
+                    reviewed_at=now() WHERE id=%s AND state='ready'""", (document["id"],))
+                return {"state": "held", "reason": "quant_context_limit", "document_id": document["id"]}
             conn.execute("INSERT INTO daily_usage(day,reserved) VALUES(CURRENT_DATE,0) ON CONFLICT DO NOTHING")
             used = conn.execute("SELECT reserved FROM daily_usage WHERE day=CURRENT_DATE FOR UPDATE").fetchone()["reserved"]
             cap = effective_limits(conn, self.company)["company"]
             if cap is not None and used >= cap:
                 return {"state": "defer", "reason": "daily_model_budget"}
             role = self.company.roles[QUANT_FEED_AGENT]
-            searching = stage in {"discover", "weekly"}
             request = ProviderRequest(request_id="quant-feed-" + str(uuid4()), model=role.model,
                                       reasoning_effort=role.reasoning_effort, web_search=searching,
-                                      output_contract="agent_decision" if searching else output_contract(stage),
-                                      prompt=search_prompt({"query": bundle["query"], "limit": bundle["limit"]}) if searching
-                                      else prompt(bundle, stage))
+                                      output_contract="quant_search_v1" if searching else output_contract(stage), prompt=text)
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             conn.execute("""INSERT INTO quant_feed_calls(id,document_id,stage,slot,request,bundle,policy_digest)
                 VALUES(%s,%s,%s,%s,%s,%s,%s)""", (request.request_id, document["id"] if document else None,

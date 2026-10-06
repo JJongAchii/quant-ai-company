@@ -1,0 +1,52 @@
+{
+  "command": ".venv/bin/pytest -q -m 'not live' tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py --junitxml=.local/conditional-integrated-regression.xml --maxfail=3",
+  "financial_performance_claims": false,
+  "independent_reviews": "not superseded by test-suite success",
+  "kind": "integrated-service-regression",
+  "new_program_research_authorization": false,
+  "postgres": "actual disposable local databases",
+  "production_changed_by_this_slice": false,
+  "recorded_at": "2026-10-01T05:08:24.594946+00:00",
+  "runs": [
+    {
+      "counts": {
+        "errors": 0,
+        "failures": 1,
+        "skipped": 13,
+        "tests": 1470
+      },
+      "duration_seconds": 433.161,
+      "failure_tests": [
+        {
+          "class": "tests.test_research_mission_backend",
+          "name": "test_qualification_real_git_pg_restart_audit_report_and_no_duplicate_experiment"
+        }
+      ],
+      "junit_path": ".local/conditional-precommit-regression.xml",
+      "junit_sha256": "bdbc3b394feed431d137ee88a1ad912239a0584190c150cadadf63533c536597",
+      "label": "precommit",
+      "note": "Committed-source prerequisite rejected dirty implementation; preserved without weakening the gate.",
+      "source": "71a9e1d84d76d9fbd467ce08f1d4171f1f116609 with uncommitted reviewed implementation"
+    },
+    {
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 13,
+        "tests": 1525
+      },
+      "duration_seconds": 444.13,
+      "failure_tests": [],
+      "junit_path": ".local/conditional-integrated-regression.xml",
+      "junit_sha256": "5e9cc099fa339b3551f64ae28111a94c5bad7980d791d6faee7667df9e8a120c",
+      "label": "integrated",
+      "note": "Complete local non-live suite passed on the committed integration; independent semantic review continues.",
+      "source": "4f3bdb762d371455ea0883a73643ddfaf36b921a"
+    }
+  ],
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "skips": "Opt-in actual host, live model and unavailable integrations are not marked passed; actual 3070 qualified separately.",
+  "slack_and_employees": "simulated/scripted; no production employees assessed",
+  "temporal": "actual local test server where required"
+}

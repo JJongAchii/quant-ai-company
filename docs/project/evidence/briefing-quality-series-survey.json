@@ -1,0 +1,188 @@
+{
+  "prices": {
+    "columns": [
+      "date",
+      "ticker",
+      "adj_close",
+      "volume"
+    ],
+    "sample": {
+      "selection": "first physical rows; not a latest-date or representative sample",
+      "rows": [
+        {
+          "ticker": "ACWI",
+          "date": "2008-03-28T00:00:00",
+          "adj_close": 35.43872833251953
+        },
+        {
+          "ticker": "ACWI",
+          "date": "2008-03-31T00:00:00",
+          "adj_close": 34.88698959350586
+        },
+        {
+          "ticker": "ACWI",
+          "date": "2008-04-01T00:00:00",
+          "adj_close": 35.827781677246094
+        }
+      ],
+      "limit": 3,
+      "columns": [
+        "ticker",
+        "date",
+        "adj_close"
+      ]
+    }
+  },
+  "fred": {
+    "columns": [
+      "date",
+      "series",
+      "value"
+    ],
+    "sample": {
+      "selection": "first physical rows; not a latest-date or representative sample",
+      "rows": [
+        {
+          "series": "BAMLH0A0HYM2",
+          "date": "2023-07-11T00:00:00",
+          "value": 4.05
+        },
+        {
+          "series": "BAMLH0A0HYM2",
+          "date": "2023-07-12T00:00:00",
+          "value": 3.95
+        },
+        {
+          "series": "BAMLH0A0HYM2",
+          "date": "2023-07-13T00:00:00",
+          "value": 3.97
+        }
+      ],
+      "limit": 3,
+      "columns": [
+        "series",
+        "date",
+        "value"
+      ]
+    }
+  },
+  "ecos": {
+    "columns": [
+      "series",
+      "date",
+      "value",
+      "asof"
+    ],
+    "sample": {
+      "selection": "first physical rows; not a latest-date or representative sample",
+      "rows": [
+        {
+          "series": "base_rate",
+          "date": "2000-01-01T00:00:00",
+          "value": 4.75
+        },
+        {
+          "series": "base_rate",
+          "date": "2000-01-02T00:00:00",
+          "value": 4.75
+        },
+        {
+          "series": "base_rate",
+          "date": "2000-01-03T00:00:00",
+          "value": 4.75
+        }
+      ],
+      "limit": 3,
+      "columns": [
+        "series",
+        "date",
+        "value"
+      ]
+    }
+  },
+  "krx_index": {
+    "columns": [
+      "date",
+      "index",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "value"
+    ],
+    "sample": {
+      "selection": "first physical rows; not a latest-date or representative sample",
+      "rows": [
+        {
+          "index": "KOSDAQ",
+          "date": "2016-01-04T00:00:00",
+          "close": 677.79,
+          "value": 3118308272650
+        },
+        {
+          "index": "KOSDAQ",
+          "date": "2016-01-05T00:00:00",
+          "close": 684.07,
+          "value": 3293186009887
+        },
+        {
+          "index": "KOSDAQ",
+          "date": "2016-01-06T00:00:00",
+          "close": 687.27,
+          "value": 4133372498792
+        }
+      ],
+      "limit": 3,
+      "columns": [
+        "index",
+        "date",
+        "close",
+        "value"
+      ]
+    }
+  },
+  "us_instruments": [
+    "ACWI",
+    "BIL",
+    "DBC",
+    "EEM",
+    "EFA",
+    "GLD",
+    "HYG",
+    "IEF",
+    "IWM",
+    "LQD",
+    "QQQ",
+    "SHY",
+    "SPY",
+    "TLT",
+    "VEA",
+    "VWEHX"
+  ],
+  "us_sample_shape": [
+    3,
+    16
+  ],
+  "fred_series": {
+    "SP500": {
+      "error": "KeyError"
+    },
+    "NASDAQCOM": {
+      "error": "KeyError"
+    },
+    "VIXCLS": {
+      "rows": 6,
+      "latest": "2026-09-17 00:00:00"
+    },
+    "DGS2": {
+      "error": "KeyError"
+    },
+    "DGS10": {
+      "error": "KeyError"
+    },
+    "DEXKOUS": {
+      "error": "KeyError"
+    }
+  }
+}

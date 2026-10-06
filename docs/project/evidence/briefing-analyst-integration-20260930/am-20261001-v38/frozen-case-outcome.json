@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-01T03:47:43.823166+00:00",
+  "format_version": 15,
+  "validation_version": 38,
+  "completed_model_calls": 4,
+  "frozen_policy_unchanged": true,
+  "fresh_acceptance": false,
+  "stop_reason": "single_repair_failed_mechanical_validation_and_original_completeness",
+  "first_review_passed_checks": 8,
+  "first_review_total_checks": 12,
+  "after_one_repair_rejected": {
+    "kosdaq_previous": "reported_change_direction_or_unit_not_in_evidence",
+    "us_september_jobs": "unsupported_event_number",
+    "macro_interpretation": "unsupported_prose_number",
+    "diplomacy_counterpoint": "unsupported_prose_number",
+    "trade_counterpoint": "unsupported_prose_number",
+    "tech_fact": "unsupported_prose_number"
+  },
+  "repair_source_count": 19,
+  "source_chars": 39942,
+  "complete_originals": 18,
+  "partial_originals": 1,
+  "fresh_final_review": "not_called: zero-rejection/full-original acceptance already impossible; no further writer or repair",
+  "later_diagnostics": "Clearly separated saved-source development, not a fresh case, different trading day or acceptance-policy retest",
+  "automatic_qualification": false,
+  "scheduled_timing": "not_qualified_offline_calls",
+  "deployment": "not_performed",
+  "slack": "not_called"
+}

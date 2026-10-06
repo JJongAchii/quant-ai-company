@@ -1,0 +1,35 @@
+{
+  "request_id": "news-brief-eval-168187cd22d8e4f2bc2dbb7fac2e187f",
+  "request_sha256": "9cb2423e5e02ab38da1ed0bccdf96e18d2986525fe77e881e50a41969d9e0045",
+  "elapsed_seconds": 102.646,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "request_id": "news-brief-eval-168187cd22d8e4f2bc2dbb7fac2e187f",
+    "decision": {
+      "say": "",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [
+        {
+          "title": "BriefReview",
+          "content": "{\"verdict\":\"reduce\",\"checks\":{\"numbers\":true,\"sources\":true,\"timing\":false,\"causality\":true,\"materiality\":true,\"counterevidence\":true,\"transmission\":true,\"alternatives\":true,\"falsifiability\":true,\"coverage\":true,\"depth\":true,\"readability\":true},\"rejected_ids\":[\"summary_credit\",\"overview_us_context\"],\"concerns\":[\"윌리엄스 연설은 뉴욕 현지 22일이라는 날짜만 확인된다. summary_credit와 overview_us_context의 ‘오늘 밤’은 원문에 없는 시간대이며, 정확한 시각 미확인이라는 단서로 보완되지 않는다.\"],\"source_assessments\":[{\"source_id\":\"128202d1c644ee110f1f5526935127319ae82b56\",\"treatment\":\"covered\",\"reason\":\"한국장 상승폭 축소, 시장별 매매 방향, 반도체 차별화와 원전 재료를 반영했다. 장중·종가 및 환율 관측을 구분했다.\",\"item_ids\":[\"summary_session\",\"overview_kr\",\"kospi_close\",\"kosdaq_close\",\"usdkrw_snapshot\",\"kr_divergence_fact\",\"kr_divergence_interpretation\"]},{\"source_id\":\"bbd821f9a5d0dcb025ff3f262b5738fcb11cdc3b\",\"treatment\":\"covered\",\"reason\":\"코스닥 종가와 하락률의 인용 근거로 반영했고, 다른 시장 수치도 채택한 원문과 일치한다.\",\"item_ids\":[\"kosdaq_close\"]},{\"source_id\":\"82b028a344fdeb87ff250448189320fcefc618df\",\"treatment\":\"covered\",\"reason\":\"신임 부총리의 위험 재점검과 물가 안정 방침을 반영하고, 정책 방향과 구체적 지출·이익 효과를 구분했다.\",\"item_ids\":[\"credit_fact\",\"credit_interpretation\"]},{\"source_id\":\"4181f0c2af11004abab7c2db85851bfb7886cf5d\",\"treatment\":\"covered\",\"reason\":\"명목 GDP에 따른 부채비율 하락, 기업 상환 부담, 환율과 은행 대출 여력의 연결을 구분해 설명했다.\",\"item_ids\":[\"credit_fact\",\"credit_interpretation\",\"credit_check\",\"credit_mechanism\",\"credit_alternative\"]},{\"source_id\":\"488bdafa950e4a9501e9b8251b255cd6698c8570\",\"treatment\":\"covered\",\"reason\":\"조건부 해협 재개 제안과 정상 만남 가능성 부인을 요약과 본문에 반영했으며 실제 합의로 단정하지 않았다.\",\"item_ids\":[\"summary_oil\",\"mideast_fact\",\"mideast_check\"]},{\"source_id\":\"f38495fa69b6b6dc59bc35b47dc9135056a5cb2a\",\"treatment\":\"covered\",\"reason\":\"보안 AI 개발 착수와 검증 계획을 반영하고, 목표 성능·기존 장비 활용·유료 도입의 차이를 설명했다.\",\"item_ids\":[\"security_ai_fact\",\"security_ai_interpretation\",\"security_ai_check\",\"security_ai_mechanism\",\"security_ai_alternative\"]},{\"source_id\":\"ccb3c80db4440c17ab55825873c042f6bbe24735\",\"treatment\":\"covered\",\"reason\":\"전일 미국장과 추가 긴축 가능성을 다뤘고 연설 일정도 인용했다. 다만 연설을 한국시간 오늘 밤으로 특정한 문장은 배제 대상이다.\",\"item_ids\":[\"overview_us_context\",\"summary_credit\",\"williams_speech\"]},{\"source_id\":\"3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6\",\"treatment\":\"background\",\"reason\":\"전일 AI·반도체 상승과 유가 하락은 다른 미국장 원문과 중복된다. 상승률 정밀도 차이와 강한 인과 설명을 별도 확정 근거로 쓰지 않은 처리가 적절하다.\",\"item_ids\":[]},{\"source_id\":\"ee106e6206f30aea0a6c4d0999349aeef2df0e43\",\"treatment\":\"covered\",\"reason\":\"중동 수출 회복력을 공급 악화 해석의 반대 근거로 본문에 반영하고 출하 확인 조건과 연결했다.\",\"item_ids\":[\"mideast_interpretation\",\"mideast_check\",\"mideast_alternative\"]},{\"source_id\":\"c47ace294846384d3e56e44072728e783537800e\",\"treatment\":\"covered\",\"reason\":\"항공사 서비스 차단 경고와 유가 반등을 반영했다. 경고를 실제 집행이나 물량 감소의 확인으로 바꾸지 않았다.\",\"item_ids\":[\"summary_oil\",\"mideast_fact\",\"mideast_check\"]},{\"source_id\":\"2b7e91ad74af68290f4a95af3dae32d237c17a89\",\"treatment\":\"covered\",\"reason\":\"AI주 상승 및 유가·금리 하락을 한국장에 앞선 미국장 배경으로 반영했다. 충돌하는 국채금리 수치는 채택하지 않았다.\",\"item_ids\":[\"overview_us_context\"]},{\"source_id\":\"f6a6901325618500df86580eedff17f0d8e64b76\",\"treatment\":\"covered\",\"reason\":\"이란 대통령의 현지 23일 오전 연설 일정을 구분했다. 강경 발언의 배경은 다른 중동 원문의 협상 불확실성과 겹친다.\",\"item_ids\":[\"iran_un_address\"]},{\"source_id\":\"bde80c5a4779a8f7b707d39454d3c8481cc6ff37\",\"treatment\":\"covered\",\"reason\":\"유엔총회 회동과 미중 국빈 만찬을 일정에 반영했다. 메타 상승과 유가 반등은 다른 원문에서 다룬 시장 배경과 중복된다.\",\"item_ids\":[\"un_diplomacy\",\"us_china_dinner\"]},{\"source_id\":\"d8d032fb5ceba798fecf9f56cd3c01e1fd40b4ef\",\"treatment\":\"covered\",\"reason\":\"홍해 연안 충돌과 주요국 성명을 반영하고 운송 지연·조달비를 통한 조건부 비용 경로를 설명했다. 성명을 상대방 행위의 독립 검증으로 삼지 않았다.\",\"item_ids\":[\"mideast_fact\",\"mideast_interpretation\",\"mideast_mechanism\"]},{\"source_id\":\"f45edfbad52e19fd3b724efbcae4a9573af35fda\",\"treatment\":\"covered\",\"reason\":\"NSE 청약 흥행과 높은 평가배수를 반영했다. 거래소 운영사와 지수를 구분하고 청약 수요를 지속적 이익 성장으로 단정하지 않았다.\",\"item_ids\":[\"nse_fact\",\"nse_interpretation\",\"nse_check\",\"nse_mechanism\",\"nse_alternative\"]},{\"source_id\":\"0a9d4bdb6f69a621c79e1c7b31bb248b4b108151\",\"treatment\":\"covered\",\"reason\":\"합병 소송 합의와 제작·고용 의무를 함께 다뤘다. 작가조합의 반대와 비용 부담도 반영해 법적 진전과 현금흐름 개선을 구분했다.\",\"item_ids\":[\"media_merger_fact\",\"media_merger_interpretation\",\"media_merger_check\",\"media_merger_mechanism\",\"media_merger_alternative\"]}]}",
+          "source_ids": []
+        }
+      ],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0cb53-7227-71f3-9a04-88033ddee731",
+    "usage": {
+      "input_tokens": 39709,
+      "cached_input_tokens": 0,
+      "output_tokens": 3223,
+      "reasoning_output_tokens": 941
+    },
+    "provider": "codex",
+    "web_searches": []
+  }
+}

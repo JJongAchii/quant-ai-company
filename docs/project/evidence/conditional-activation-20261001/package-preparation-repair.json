@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "source_commit": "19807db8d1817a3a495ac10eee34b1bac2d287fe",
+  "failed_attempt": {
+    "exit_code": 128,
+    "error": "fatal: Refusing to create empty bundle.",
+    "reason": "git_bundle_requires_a_named_reference_instead_of_a_raw_commit_hash",
+    "partial_local_directories_preserved": [
+      ".local/conditional-activation-20261001/qualification-source",
+      ".local/conditional-activation-20261001/worker-package"
+    ],
+    "remote_execution_started": false,
+    "scientific_trials_added": 0
+  },
+  "repair": {
+    "require_source_commit_to_be_ancestor_of_HEAD": true,
+    "bundle_reference": "HEAD",
+    "attempt": 2,
+    "state": "portable_package_prepared_not_executed",
+    "qualification_source": ".local/conditional-activation-20261001/qualification-source-02",
+    "package": ".local/conditional-activation-20261001/worker-package-02",
+    "actual_3070_qualification": false,
+    "operating_worker_config_changed": false,
+    "scientific_trials_added": 0
+  }
+}

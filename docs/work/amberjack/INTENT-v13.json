@@ -1,0 +1,70 @@
+{
+  "constraints": [
+    "Company repository only; preserve frozen research provenance",
+    "Existing official subscription authentication; no paid resources",
+    "PostgreSQL records and Temporal execution; preserve ambiguous receipts",
+    "Keep 07:30/20:00 KST scheduling; Analyst display identity retains stable market_brief technical ID and existing receipt routing",
+    "Publication disabled until real-data and Slack qualification",
+    "Read qdata only through its public API in the existing credential-isolated worker; bounded small datasets, no full large-table scans",
+    "Use only historical originals collected before the selected edition cutoff; do not backfill current lake or search results into a past edition; keep Slack publication disabled"
+  ],
+  "createdAt": "2026-09-28T22:42:27.415806+00:00",
+  "decisionGates": [
+    "Real Slack activation requires the configured dedicated app and successful source and five-trading-day qualification.",
+    "A publication-disabled preview release must pass the existing company release contract; do not bypass its protected-file or approval rules.",
+    "Content quality requires valid typed writer/reviewer artifacts, all twelve semantic checks, no mechanical rejections, an independent original-to-main-post audit and a fresh edition under a frozen policy; a same-source replay alone is not qualification."
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "Preserve the 2026-09-28 AM independent-audit failure; choose the unused completed 2026-09-28 Monday PM edition before reading its selected originals",
+        "Freeze exact cutoff, unchanged selection, current code hashes, model budget and pass/fail policy before any writer call"
+      ],
+      "description": "Freeze a completed Monday PM evaluation policy",
+      "id": "SOURCE-FREEZE"
+    },
+    {
+      "acceptance": [
+        "Read only cached originals available by 2026-09-28 19:40 KST through the existing credential-isolated worker; use historical qdata only if its at-cutoff identity and availability are independently proven",
+        "Apply unchanged source selection version 3; write a source-by-source independent reading checklist before seeing model output"
+      ],
+      "description": "Capture and independently inspect the frozen source bundle",
+      "id": "SOURCE-AUDIT"
+    },
+    {
+      "acceptance": [
+        "Run actual existing subscription writer and reviewer on current format 9 / validation 11 with at most one permitted repair after a valid response",
+        "Preserve requests, started markers, provider receipts, typed validation, mechanical rejection and all twelve review checks; never replay an uncertain external effect"
+      ],
+      "description": "Fresh Monday PM content evaluation",
+      "id": "PM-EVAL"
+    },
+    {
+      "acceptance": [
+        "Compare the final visible post against the pre-output source notes and the frozen pass conditions; classify any failure without turning a development repair into a new first-attempt pass",
+        "Update the Company quality report and PR, keep production publication disabled, and preserve the release/Slack/five-trading-day gates"
+      ],
+      "description": "Independent decision and quality report",
+      "id": "PM-DECISION"
+    }
+  ],
+  "nonGoals": [
+    "Trading, training, backtests, portfolio access",
+    "Automatic strategist work",
+    "Pretending fixtures or five future observation days have been verified"
+  ],
+  "outcome": "Run the unused 2026-09-28 Monday PM edition through the current editorial contract, compare it with frozen original-source notes, and report content quality while publication stays disabled.",
+  "revision": 13,
+  "revisionReason": "Evaluate unused 2026-09-28 PM edition under validation 11 with frozen policy and historical cutoff sources; preserve no-publication and prior AM failure",
+  "schemaVersion": 1,
+  "slug": "amberjack",
+  "sourceRequest": "그래 진행해봐",
+  "stopConditions": [
+    "Preserve an uncertain model or Slack result without automatic new-ID replay.",
+    "Record unavailable real integration conditions; keep publishing disabled until qualification."
+  ],
+  "supersedes": {
+    "intentDigest": "6d310938f630",
+    "intentFile": "INTENT-v12.json"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06 01:27:43.773977+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "stage_id": "ce867fc3-a194-5327-b312-864b93538d34",
+  "attempt": 6,
+  "rejected_attempt": 5,
+  "guidance_digest": "ac64814929d90b1f22f23d08e0ef38189136191014192d039bc208170c04985f",
+  "rejected_artifact_digest": "005b86bed443a47f1799e259f051e3c21c4dda385e68cd5d1a4a4b431b071784",
+  "scope": "Artifact serialization feedback for future unfrozen employee turns only.",
+  "guidance": {
+    "rejected_attempt": 5,
+    "validation_error": "Scoped assessments cannot carry a legacy exploratory decision or policy fields",
+    "schema_version": 2,
+    "canonical_research_scope": {
+      "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+      "data_mode": "frozen_vintage_retrospective",
+      "result_scope": "conditional_retrospective_development",
+      "scientific_lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+      "acknowledged_gap_codes": [
+        "historical_publication_unverified",
+        "historical_revision_vintage_unverified",
+        "original_preparation_bytes_unavailable"
+      ]
+    },
+    "field_constraints": {
+      "data_policy_digest": "Omit or set null. The policy digest belongs inside canonical research_scope.",
+      "evaluation_prices": "Omit or set null. For scoped assessments use evaluation_price_contract_verified.",
+      "decision": "Use the version 2 contract. exploratory_only is a legacy decision and is invalid here."
+    },
+    "rejected_artifact": {
+      "schema_version": 2,
+      "research_scope": {
+        "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+        "data_mode": "frozen_vintage_retrospective",
+        "result_scope": "conditional_retrospective_development",
+        "scientific_lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "acknowledged_gap_codes": [
+          "historical_publication_unverified",
+          "historical_revision_vintage_unverified",
+          "original_preparation_bytes_unavailable"
+        ]
+      },
+      "decision": "conditional_ready",
+      "rationale": "동결 패킷(c35803d79a7607adcc14a853b334ed3a96ad008afbaf6b44b0525aa1494684cd)의 입력·엔진·보고서 식별자가 승인 범위와 결속되어 있고, 단일 종목 069500의 개발 구간·warmup 범위 및 누락/상폐 보유가격 거부 규칙이 평가 계약에 포함된다. 엔진은 신호 이력에 정보 경계를 적용하고, 보유 구간의 adjusted-open 가격과 tradable을 검증하며, 결측 보유가격·상폐 정산 부재·비거래 가격을 거부한다. 따라서 조건부 회고 개발의 이론적 평가가격 계약과 커버리지는 확인된다. 다만 실제 역사 공표/수집시각, 당시 수정 빈티지, 원래 준비 바이트는 검증되지 않았고 실제 체결가격도 입증되지 않았다. 이 세 승인된 소유 범위 공백만 남으므로 결과는 conditional_retrospective_development에 한정되며 PIT, 정확 재현, 실행가능 체결 또는 배포 준비성을 뜻하지 않는다.",
+      "source_ids": [
+        "literature:a9b009dea31a7956b6a8cac671d986f9fe3ad7666dacca0829d43151c1146e56"
+      ],
+      "point_in_time": false,
+      "coverage": true,
+      "executable_prices": false,
+      "original_conditions": false,
+      "packet_digest": "c35803d79a7607adcc14a853b334ed3a96ad008afbaf6b44b0525aa1494684cd",
+      "evaluation_price_contract_verified": true,
+      "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+      "evaluation_prices": true
+    },
+    "decision_scope": "Schema feedback only. Independently re-evaluate the unchanged evidence and return your own DataAssessment. This feedback grants no readiness, acceptance, execution or scope promotion."
+  },
+  "existing_turns_digest": "e1f99cab353d6d098fe084e74911c96f66568af5f8e59835ec7d7354750c952b",
+  "frozen_requests_and_responses_preserved": true,
+  "employee_decision_applied": false,
+  "failure_count_preserved": 1,
+  "scientific_budget_reset": false,
+  "model_requests_replayed": 0
+}

@@ -1,0 +1,6 @@
+{
+  "request_id": "news-brief-eval-d1f27d9987ba3a9982b7a20c3eae4e3e",
+  "request_sha256": "8e67a185ee583bb42de247933263afacdf7a23c9f1ca395cca70888e08a76f14",
+  "transport": "uncertain",
+  "stderr": "Error response from daemon: container aaa883fceb2e7be728cd2bd9398efe7e363f0c0944cd0745bad6da4184504e06 is not running\n"
+}

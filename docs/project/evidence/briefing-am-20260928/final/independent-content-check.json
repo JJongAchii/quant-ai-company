@@ -1,0 +1,29 @@
+{
+  "case": "am-20260928-fresh-format9-validation10",
+  "method": "Compare the final visible post with the 16-source pre-output reading notes, then verify a detected source-price date against the exchange calendar. This check is separate from the model review.",
+  "model_review": {
+    "verdict": "publish",
+    "checks_true": 12,
+    "mechanical_rejections": 0,
+    "quote_conflicts": 0
+  },
+  "covered_material_developments": [
+    "Monday AM correctly says there is no newly completed US regular session and does not invent a current KRX close.",
+    "After one permitted repair, the main post includes the 58.4 PMI, its 62-month context, the 8.9%-to-64.2% rate-path shift, dated US yields, Japan/Germany bond spread, and both Barr and Hammack.",
+    "It distinguishes Trump's rejection of Iran's conditional seven-day proposal, possible renewed talks, staged diplomacy, reported oil transit, and the separately reported post-midterm military-risk scenario from any agreement or confirmed reopening.",
+    "It explains the staged Korean settlement-collateral change and AI subscription versus procurement effects with opposing evidence and future checks."
+  ],
+  "disqualifying_finding": {
+    "code": "unverified_non_session_price_date",
+    "source_id": "e09e615b222049450980166cf9b0b3c88603f8c7",
+    "source_issue": "The source ties the KODEX200 price and 80.76% year-to-date return to September 20, 2026; its comparison period explicitly ends on that date. That date was Sunday and not a KRX session.",
+    "final_post_issue": "The final main post repeats the 80.76% return as a September 20 comparison and adds a WTI comparison from the same source without flagging the source-date inconsistency or obtaining an independent point-in-time price.",
+    "model_false_positive": "The model reviewer marked numbers, timing, sources and coverage true and listed this source as covered; this does not resolve the calendar contradiction.",
+    "required_resolution": "Exclude the precise ETF price/return and linked comparison until a separate historical market-price source establishes the valid session date and values, or prominently identify the discrepancy rather than presenting them as reliable historical returns."
+  },
+  "independent_pass": false,
+  "overall_content_qualification": "fail",
+  "first_attempt_status": "failed_model_coverage_depth_before_repair",
+  "one_repair_status": "model_passed_but_independent_audit_failed",
+  "offline_scope": "No Slack post or live scheduling qualification; current historical lake snapshot was unavailable."
+}

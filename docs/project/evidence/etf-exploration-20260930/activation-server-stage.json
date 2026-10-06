@@ -1,0 +1,31 @@
+{
+  "phase": "exact_images_qualified_not_active",
+  "commit": "3c848af95dc33b7da444a55018fd41d374c10025",
+  "archive_sha256": "e3c458d2e9e704739b27e60795b1786ef13a2525eb889e04c0b33212e767684d",
+  "previous": "/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "qdata_tree_sha256": "528251801f09b120d9c33baeb6956a6a84e49b2c09aeb15420e5994fa170e396",
+  "started_at": "2026-10-01T03:46:49.448777+00:00",
+  "images": [
+    {
+      "target": "app",
+      "image": "quant-company:3c848af95dc33b7da444a55018fd41d374c10025",
+      "id": "sha256:830d346cb469c977188f6d5891eb1fb25977a8712618ba99311d469b7a6ed5a8",
+      "source_files_sha256": "cc20c721376f2b61e1364dd0fa7b5b1faf390706a4c512c42677ea246f7eb43a",
+      "source_matches_archive": true,
+      "uid": "10001:10001",
+      "build_log_sha256": "096c2f0a6b22628f202a874a0cf7163cc0ab16eaa8aaa4587eda563179f93756"
+    },
+    {
+      "target": "autonomous-research",
+      "image": "quant-company-autonomous:3c848af95dc33b7da444a55018fd41d374c10025",
+      "id": "sha256:6dce9a55e60b2a2b9f1a27aa99cd9a97c35bebe1b0c4c1bc9a1cccad2757f378",
+      "source_files_sha256": "cc20c721376f2b61e1364dd0fa7b5b1faf390706a4c512c42677ea246f7eb43a",
+      "source_matches_archive": true,
+      "uid": "10001:10001",
+      "build_log_sha256": "36c00574e72afec3518a0a26c41424ba9e30428851997330df78f0bc186dfbce"
+    }
+  ],
+  "active_changed": false,
+  "completed_at": "2026-10-01T03:50:04.629301+00:00"
+}

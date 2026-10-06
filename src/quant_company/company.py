@@ -51,7 +51,7 @@ def load_roles(settings: Settings) -> dict[str, Role]:
                      "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
                      "finance_search", "finance_read", "web_search", "web_read",
                      "finance_compute", "data_quality", "staff_status", "news_status", "research_control",
-                     "data_watch_status"} | LAKE_TOOLS
+                     "data_watch_status", "briefing_status"} | LAKE_TOOLS
     for role in roles:
         if role.id == "quant_scout" and (role.active or role.tools or role.can_delegate_to):
             raise ValueError("Quant Scout must remain an outbound-only identity")
@@ -59,6 +59,8 @@ def load_roles(settings: Settings) -> dict[str, Role]:
             raise ValueError(f"Invalid permissions in role {role.id}")
     if "reporter" in by_id and settings.company_news_enabled:
         by_id["reporter"] = by_id["reporter"].model_copy(update={"active": True})
+    if "market_brief" in by_id and settings.briefing_enabled:
+        by_id["market_brief"] = by_id["market_brief"].model_copy(update={"active": True})
     if settings.company_research_enabled and "director" in by_id:
         role = by_id["director"]
         by_id["director"] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "research_control"]))})
@@ -139,6 +141,9 @@ class Company:
                     "usage": 'Director research_control: {action:"program_catalog"} reads the program schema and provisioned profiles. '
                              '{action:"program_draft",spec:<ResearchProgram>} prepares bounded program authority for owner approval; '
                              '{action:"program_status"} reads budgets and tasks. Program staff read original sources, propose tasks, '
+                             '{action:"program_lineage_history",scientific_lineage_id:<uuid>,originating_task_refs:[...]} '
+                             'reads the current same-project history digest for a fresh signed lineage authority. '
+                             'Version 2 programs bind a complete data policy and preserve conditional retrospective scope. '
                              'check data, resolve independent challenges and perform validity then meaning reviews. '
                              '{action:"mission_status"} reads public mission state. '
                              '{action:"mission_draft",spec:<complete MissionSpec>} prepares a frozen mission '
@@ -158,6 +163,11 @@ class Company:
                 },
                 "news_reporting": {"enabled": self.settings.company_news_enabled,
                                    "publish_enabled": self.settings.news_publish_enabled},
+                "market_briefing": {"enabled": self.settings.briefing_enabled,
+                                    "publish_enabled": self.settings.briefing_publish_enabled,
+                                    "display_name": "Analyst", "professional_procedure": "market_brief",
+                                    "owner": "market_brief", "schedule": "07:45 KST; 20:15 KST after collected KRX data",
+                                    "strategy_handoff": "human request only"},
                 "staff_status": "Director only: {employee?: exact employee id or maintainer}. "
                                 "Reads actual training schedule, versioned synthetic assessments and their limits. "
                                 "No exam keys. A passed exercise is not broad expertise certification.",
@@ -676,12 +686,15 @@ class Company:
                 conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             if not turn["request"]:
                 session = None
+                output_contract = "agent_decision"
                 if task['kind'] == 'research_stage':
                     from .research.audit_delivery import enabled, session_for
                     from .research.controller import _stage, stage_prompt
 
                     role, prompt = stage_prompt(self, conn, task, turn)
                     stage = _stage(conn, task["id"])
+                    if stage["stage"] == "program_data":
+                        output_contract = "research_stage_v1"
                     if enabled(stage):
                         session = session_for(conn, stage, turn)
                 elif task['kind'] == 'routing':
@@ -728,7 +741,8 @@ class Company:
                         "TASK DATA JSON:\n" + json.dumps(context, ensure_ascii=False)
                     )
                 request = ProviderRequest(request_id=turn_id, model=role.model,
-                                          reasoning_effort=role.reasoning_effort, prompt=prompt, session=session)
+                                          reasoning_effort=role.reasoning_effort, prompt=prompt, session=session,
+                                          output_contract=output_contract)
                 conn.execute("UPDATE turns SET request=%s WHERE id=%s", (Jsonb(request.model_dump()), turn_id))
             else:
                 request = ProviderRequest.model_validate(turn["request"])
@@ -778,6 +792,24 @@ class Company:
                     hold_audit(self, conn, stage, "audit_runtime_requires_reconciliation",
                                diagnostic=private_reason[:1500])
                     return
+                if stage and stage["stage"] == "program_data" and private_reason == "invalid_output":
+                    failures = stage["context"].get("_data_output_failures", 0) + 1
+                    context = {**stage["context"], "_data_output_failures": failures}
+                    if failures >= 3:
+                        context["_program_hold"] = {"reason": "repeated_data_output_contract_failure",
+                                                    "failure_count": failures}
+                    conn.execute("""UPDATE research_mission_stages SET state='waiting',context=%s,error=%s,
+                        retry_at=CASE WHEN %s THEN NULL ELSE now()+interval '5 minutes' END,
+                        updated_at=now() WHERE id=%s""",
+                                 (Jsonb(context), private_reason, failures >= 3, stage["id"]))
+                    conn.execute("UPDATE research_stage_attempts SET error='stage_response_rejected' WHERE task_id=%s",
+                                 (task["id"],))
+                    self._event(conn, "research_program_stage_held" if failures >= 3 else "research_stage_waiting",
+                                {"stage_id": str(stage["id"]), "task_id": str(task["id"]),
+                                 "employee": task["agent"], "reason": "repeated_data_output_contract_failure"
+                                 if failures >= 3 else "stage_response_rejected", "failure_count": failures,
+                                 "scope": "Operational output failure; no research judgment."}, project["id"])
+                    return
                 # Failed structured output is a technical repair, not a public performance artifact.
                 # Keep the exact provider evidence in private stage attempts and retry after backoff.
                 conn.execute("""UPDATE research_mission_stages SET state='waiting',error=%s,
@@ -818,6 +850,14 @@ class Company:
 
                 return mission_tool(self, conn, self._project(conn, project_id, lock=False), task, arguments)
             return ResearchStore(self).tool(conn, self._project(conn, project_id, lock=False), task, arguments)
+        if request.name == "briefing_status":
+            from .briefing.store import BriefStore
+
+            project = self._project(conn, project_id, lock=False)
+            if (arguments or not task or task["agent"] != "market_brief"
+                    or project["owner_user"] != self.settings.briefing_owner_user):
+                raise PolicyError("briefing_status requires the configured briefing owner and briefer")
+            return BriefStore(self).status()
         if request.name == "news_status":
             from .news.store import NewsStore
 
@@ -930,6 +970,8 @@ class Company:
 
     def validate_decision(self, conn, project, task, decision):
         role = self.role(task["agent"])
+        if task["agent"] == "market_brief" and (decision.follow_up or decision.memories):
+            raise PolicyError("Analyst cannot schedule work or propose persistent memories")
         for action in decision.delegations:
             if action.agent not in role.can_delegate_to:
                 raise PolicyError(f"Unauthorized peer: {action.agent}")

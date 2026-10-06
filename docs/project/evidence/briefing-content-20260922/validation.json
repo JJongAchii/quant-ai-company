@@ -1,0 +1,50 @@
+{
+  "qws_intent_digest": "c94b06032fa9",
+  "current_full_suite": {
+    "tests": 1106,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 36,
+    "passed": 1070
+  },
+  "briefing_tests_passed": 83,
+  "ruff": "passed",
+  "lock_check": "passed",
+  "git_diff_check": "passed",
+  "package_check": {
+    "wheel": "quant_company-0.1.0-py3-none-any.whl",
+    "sha256": "9ce043e8e718c0b262fe4f88179602d75bf58d5c6f3e64d0bce624adec34532d",
+    "source_files_byte_identical": 138,
+    "slack": "not_called"
+  },
+  "real_model_evaluation": "evaluation-summary.json",
+  "actual_originals": "source-snapshots.json",
+  "codex_and_claude_completed_unique_requests": 19,
+  "uncertain_prior_review_preserved": true,
+  "all_final_case_automated_checks_passed": true,
+  "independent_content_concerns_remain": true,
+  "expert_level_certified": false,
+  "five_day_qualification": false,
+  "real_slack_delivery": false,
+  "production_deployed": false,
+  "files_sha256": {
+    "scripts/evaluate_briefing.py": "604c80758ba9cd5f5bf9fa3c96f8feb633196e41e86e136467e2b47ecfa64505",
+    "src/quant_company/briefing/__init__.py": "5b1c5470916d1d6682bea5680c78255d7ee3e2043011043ee728383a23541abf",
+    "src/quant_company/briefing/commands.py": "695070e4bce8749597720286543cd8c9faff938d7f7fb9724dd08bf301846886",
+    "src/quant_company/briefing/contracts.py": "e1d44020431c772c6106a844363088de03e1372f63d2f8d474d0a70387766d64",
+    "src/quant_company/briefing/coverage.py": "42a45331ce81bdb3cf79caf279141f4b716ce48a48503e3045cd29b9ab53eb80",
+    "src/quant_company/briefing/data.py": "8b03e898503e77a76b964bfa07255607fa0049c8da693b8a2ea8d90ab570d095",
+    "src/quant_company/briefing/data_reader.py": "d0c9e41719db033e1c9f7c77656d6a35bc07133ec644c121c2953428f4bccd69",
+    "src/quant_company/briefing/editor.py": "d25a6d10716aba63caa6bd9c9844a7dce6223802c44eefa011391cc99a39ed81",
+    "src/quant_company/briefing/inputs.py": "955c814c29c4bc1e723ea4b59f790c1b6e9449643570ca304b648d331cc8286a",
+    "src/quant_company/briefing/numeric.py": "9943413d726451e96175fd9e2499e2917421b1a1be03722d1a0ee79179a79257",
+    "src/quant_company/briefing/qualification.py": "7707a744864ba0bb4eb24e8a4278317a90c7fd995f21f1e920f031f22c16f7a5",
+    "src/quant_company/briefing/quality.py": "20cbdc194007ebf73fd690264f81270116138d2db393ef211e6fad14f9878960",
+    "src/quant_company/briefing/runner.py": "40c7c2671cc2223e0f3ca546655a6b117a244362ca58308007ddde7f8c4b169e",
+    "src/quant_company/briefing/schedule.py": "06b93dfd30cda89388b7b475d554058a9330f1b09dd4c175059b0426e4911ff0",
+    "src/quant_company/briefing/schema.sql": "a1e01cba1f41366ab7ce54ece8880529a2cb5c147c2aacc2cffadc6c35d44757",
+    "src/quant_company/briefing/store.py": "4de90fc8af717653005913edf0853a30a52e0970210787271db1229927b006cd",
+    "src/quant_company/briefing/workflow.py": "76713c503ed4c414b330f539002cc7384981f485d7fab0a9ae22b577a37fff9b",
+    "src/quant_company/staff/playbooks/market_brief.md": "3f945a68b61dcc528fdf9dd5a24a9176ed710ccc2408c2088fef8ca1edcf25e2"
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "reviewer": "local_independent_admission_draft",
+  "observed_at": "2026-09-30T23:03:09+00:00",
+  "review_digest": "49487dae09d5bcf968de552a0c70d0523794dbf14f5389424a149a1cfb0f3334",
+  "review_digest_verification": {
+    "method": "quant_company.company.fingerprint(package); default JSON separators, sorted keys, UTF-8, ensure_ascii=false",
+    "recomputed": "49487dae09d5bcf968de552a0c70d0523794dbf14f5389424a149a1cfb0f3334",
+    "matches": true
+  },
+  "reviewed_file_sha256": {
+    "docs/project/evidence/etf-execution-contract-20260930/data-policy-draft.json": "66a888ac98ba420685b41b7bc45d011b59eef857c1f057e2239d34cef86c463f",
+    "docs/project/evidence/etf-execution-contract-20260930/program-schema-preview.json": "74b7bdbfe7f111868cf69d64a0626cd6762c6aa893d308e1283752309f375a86",
+    "docs/project/evidence/etf-execution-contract-20260930/review-package.json": "1adef9d2eed0d03e3cb87243223910d33a58d460d82e9e133f92b82dbbfc2388",
+    "docs/project/evidence/etf-execution-contract-20260930/public-profile-draft.json": "0c995d823b1e65e5bb2723edd1643848348f629c300ea911fe453099d817cb48",
+    "docs/project/evidence/etf-execution-contract-20260930/preparation-receipt.json": "29d9090b7af9a8655667bac8b03b4066557cffc0a96382fde086e6c57ec68694"
+  },
+  "verdict": "revision_required",
+  "current_runtime_admissible": false,
+  "owner_approval_granted": false,
+  "readiness_granted": false,
+  "production_assessment": false,
+  "scientific_trials_added": 0,
+  "review_scope": "Local service authorization and execution-contract draft review. Findings request a concrete future implementation specification. This is not a production data assessment, director decision, profile qualification, owner approval, result audit or adoption decision.",
+  "blocking_findings": [
+    {
+      "id": "ADM-D01",
+      "severity": "high",
+      "location": [
+        "review-package.json:package.implementation_gates[0..1]",
+        "data-policy-draft.json:required_future_admission_checks[0..1]",
+        "src/quant_company/research/program_contracts.py:26,77",
+        "src/quant_company/research/programs.py:155,179,227"
+      ],
+      "finding": "The future conditional path is described by prose gates without an exact versioned field contract or admissibility truth table. The current program and mission schemas forbid data_policy, the current assessment forbids conditional_ready, and decide accepts only ready. No precise field equality or authorization rule yet defines the new path.",
+      "required_revision": "Add a reviewable implementation specification with field names, types, versions, canonical digest encoding and rejection rules for program/envelope policy, mission binding, task mode, evidence packet and conditional data assessment. Specify that historical PIT stays false and that a conditional decision is admitted only for the signed frozen_vintage_retrospective policy, permitted novel_hypothesis task mode, matching policy/input/profile/economic identities, verified numerical coverage and causal evidence, no hard gaps and a separate director acceptance. Bind the same policy at create, approve, assess, decide, require_authorized and reserve; preserve all legacy manifest encodings. Runtime implementation may remain pending in this draft."
+    },
+    {
+      "id": "ADM-D02",
+      "severity": "high",
+      "location": [
+        "data-policy-draft.json:required_future_admission_checks[2..3]",
+        "data-policy-draft.json:excluded_claims",
+        "review-package.json:package.implementation_gates[1]",
+        "src/quant_company/research/data_evidence.py:21,171",
+        "docs/project/evidence/etf-raw-lineage-20260930/raw-lineage-evidence-registry.json:packets[].blocking_gaps"
+      ],
+      "finding": "The draft names scoped gap codes but defines no codes or exhaustive classification. Existing blocking_gaps are free text and combine missing historical publication/original bytes, changed adjusted values, unavailable live/event/dividend evidence and a task fill rule incompatible with the protected open-to-next-open evaluator. A blanket waiver based on the two prose scope limitations would be ambiguous.",
+      "required_revision": "Define a typed allowlist of historical scope limitations separately from hard blockers and excluded claims, with evidence requirements for each code. Map all five legacy gap descriptions explicitly. Current-byte provenance/numeric closure must be independently verified, same-day close-fill mismatch must stay blocked, missing held/nontradable rows must abort, and missing live fills or reinvested distributions must prohibit those claims rather than establish their feasibility. Unknown or unclassified codes must block. Preserve the existing blocked packets and create a separately bound packet for the new program."
+    },
+    {
+      "id": "ADM-D03",
+      "severity": "high",
+      "location": [
+        "data-policy-draft.json:required_result_scope,required_future_admission_checks[7]",
+        "review-package.json:package.implementation_gates[0,3]",
+        "src/quant_company/research/adaptive_contracts.py:229,265",
+        "src/quant_company/research/mission_contracts.py:227,270",
+        "src/quant_company/research/missions.py:437,475,519",
+        "src/quant_company/research/adaptive_report.py:375"
+      ],
+      "finding": "The policy requires conditional scope in every result and adoption decision, but the implementation draft does not enumerate immutable producer/consumer fields or their verification points. Current result, execution receipt, TrialOutcome and AuditPublication have no typed conditional policy/scope identity; the report summary marks development_only and live_claim=false but does not carry this narrower retrospective scope.",
+      "required_revision": "Specify the policy digest, data mode, result scope and retained limitations in assignment/manifest, qualification identity, producer result or trusted wrapper, execution receipt, TrialOutcome, interpretation/incumbent comparison, meaning review, audit scope/publication, HTML/JSON report and downstream source/adoption decisions. Define equality checks and rejection of missing, mismatched or strengthened scope. Document whether the trusted service wrapper carries new scope around the unchanged protected producer or a newly audited evaluator/profile is required; do not silently change the frozen engine hash. Conditional evidence may support only its frozen retrospective estimand and cannot authorize historical PIT, exact replication, untouched confirmation or paper/live adoption."
+    },
+    {
+      "id": "ADM-D04",
+      "severity": "medium",
+      "location": [
+        "data-policy-draft.json:required_future_admission_checks[5]",
+        "src/quant_company/research/programs.py:127,138,144,109",
+        "src/quant_company/research/builds.py:96,156",
+        "src/quant_company/research/program_controller.py:24"
+      ],
+      "finding": "The requirement that duplicate candidates share trial history has no defined mechanism across the newly signed program boundary. Current predecessor_mission_ids must belong to the same program, task identity includes the program and proposal text, build duplicate checks use the current mission history, and program usage counts reservations only for that program. Renaming/re-registering a prior candidate could therefore omit its prior evidence or reset its apparent trial history.",
+      "required_revision": "Specify a service-owned scientific candidate identity and read-only cross-program provenance reference separate from the existing same-program predecessor field. Define how prior positive and negative evidence, duplicate configurations and total scientific tests enter the new task context, reports and multiple-testing history. A duplicate must not count as fresh evidence or gain a budget reset by changing its title/program. State how genuine new scientific trials consume the fresh signed program cap while inherited trials remain recorded in cumulative research history. Preserve legacy records."
+    }
+  ],
+  "implementation_requirements": [
+    {
+      "id": "ADM-I01",
+      "requirement": "Implement the revised typed conditional contract without changing legacy program, mission, input, profile, packet or outcome identities. Omitted future fields must not alter legacy model_dump or stored digest verification; legacy PIT ready still requires PIT, coverage and executable prices. original_conditions is additionally required only when an exact_replication task is ready."
+    },
+    {
+      "id": "ADM-I02",
+      "requirement": "Provision a distinct server and worker profile, versioned preparation adapter and policy/quality receipt. Keep review_draft_not_ready inadmissible. Qualification must bind the new policy/profile/runtime, exact reconstructed inputs and protected engine, verify producer-consumer hashes and causal cutoff rules using approved inputs, and register the profile only after the required E2E qualification receipt."
+    },
+    {
+      "id": "ADM-I03",
+      "requirement": "Keep submission, approval activation, task admission and execution blocked until implemented contract checks, operator profile qualification and a fresh owner-signed canonical program digest all exist. Reusing the prior owner's approval event, returning conditional_ready in the old schema, toggling the existing packet gaps/PIT flag or relying on prose objective text is inadmissible."
+    },
+    {
+      "id": "ADM-I04",
+      "requirement": "Required future tests must exercise real PostgreSQL/Temporal authorization, separate authenticated data/director roles, missing or stale signatures/revisions, digest and gap-code mismatches, wrong task modes, receipt tampering, budget denial, cancellation, restart/uncertain execution handling and unchanged scope through result/audit/report/adoption. Label local schema/byte checks separately from worker E2E, real signed Slack and production deployment evidence."
+    },
+    {
+      "id": "ADM-I05",
+      "requirement": "Make the declared search limits explicit in the approval view: program scientific cap 4, compute cap 7200 seconds, one mission and one concurrent mission; per cycle cap 2 and continuous=false. The current mission can stop at two trials or earlier and cannot automatically consume all four by renewing a cycle. Reservation charges include 120+900 seconds per full attempt and uncertain attempts remain charged until a trusted terminal receipt. Technical failures add no scientific result but consume actual compute."
+    }
+  ],
+  "verified_observations": {
+    "file_sha256_and_all_declared_canonical_digests_match": true,
+    "current_program_schema_validation_passes_without_granting_authority": true,
+    "PIT_false_ready_rejected_by_current_DataAssessment": true,
+    "PIT_true_original_conditions_false_ready_accepted_by_common_model": true,
+    "exact_replication_original_conditions_enforced_separately_in_assess": true,
+    "historical_PIT_unverified_and_current_runtime_inadmissibility_explicit": true,
+    "original_program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+    "original_program_file_sha256": "98e588c4698be002c0d574b0b6bf7a08ae062aac54d825d1b757d711fa347c7f",
+    "original_profile_id": "kr-etf-research-v2",
+    "original_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+    "original_program_profile_binding_matches_local_original_profile": true,
+    "original_approved_input_byte_hashes_preserved": true,
+    "staged_input_byte_hashes_match_policy_preview_and_package": true,
+    "staged_receipt_state": "review_draft_not_ready",
+    "new_public_profile_differs_from_original_only_in_id": true,
+    "original_source_bundle_bytes_and_protected_reference_engine_preserved": true,
+    "full_attempt_reserved_seconds": 1020,
+    "four_full_attempts_reserved_seconds": 4080,
+    "program_compute_cap_seconds": 7200,
+    "local_bytes_do_not_establish_current_production_state": true
+  },
+  "review_actions": {
+    "modified_contract_or_runtime": false,
+    "modified_qws_or_research_repositories": false,
+    "production_database_or_Temporal_accessed": false,
+    "Slack_or_credentials_accessed": false,
+    "candidate_performance_computed": false,
+    "sealed_price_rows_read": false,
+    "deployment_performed": false
+  }
+}
