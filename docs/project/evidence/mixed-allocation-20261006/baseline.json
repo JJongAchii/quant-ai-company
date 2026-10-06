@@ -1,0 +1,103 @@
+{
+  "source": "docs/project/evidence/model-assignments-20261006/production-verification.json",
+  "sha256": "3820071f33057bd45a9d97d5744f9565413e560bc95c10db4b9877718f50be69",
+  "policy_revision": 0,
+  "original_assignments": {
+    "data": {
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "source": "default",
+      "revision": 0
+    },
+    "director": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "source": "default",
+      "revision": 0
+    },
+    "engineer": {
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "source": "default",
+      "revision": 0
+    },
+    "financial_strategist": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "source": "default",
+      "revision": 0
+    },
+    "maintainer": {
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "source": "default",
+      "revision": 0
+    },
+    "market_brief": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "source": "default",
+      "revision": 0
+    },
+    "news_screening": {
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "low",
+      "source": "default",
+      "revision": 0
+    },
+    "news_search": {
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "low",
+      "source": "default",
+      "revision": 0
+    },
+    "operations": {
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "source": "default",
+      "revision": 0
+    },
+    "quant_scout": {
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "high",
+      "source": "default",
+      "revision": 0
+    },
+    "reporter": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "source": "default",
+      "revision": 0
+    },
+    "researcher_crypto": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "source": "default",
+      "revision": 0
+    },
+    "researcher_global": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "source": "default",
+      "revision": 0
+    },
+    "researcher_kr": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "source": "default",
+      "revision": 0
+    },
+    "risk": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "source": "default",
+      "revision": 0
+    },
+    "validator": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "source": "default",
+      "revision": 0
+    }
+  }
+}
