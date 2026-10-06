@@ -38,6 +38,7 @@ PROGRAM_STAGES = {
         "Check point-in-time availability, delistings, corporate actions, coverage and executable prices. "
         "For exact replication check original conditions. Unknown checks are false; block missing evidence. "
         "For MissionSpec v3 copy its canonical research_scope and use DataAssessment schema_version=2. "
+        "Do not include top-level data_policy_digest or evaluation_prices in version 2; those are legacy fields. "
         "Retrospective conditional_ready requires packet_digest and evaluation_price_contract_verified=true, "
         "coverage=true, point_in_time=false, original_conditions=false, executable_prices=false. "
         "Only the exact owner-bound typed historical gap codes may remain; every other gap blocks. "
@@ -56,6 +57,26 @@ PROGRAM_STAGES = {
         "exploratory_only is admissible solely inside the exact owner-approved retrospective data policy; "
         "it is hypothesis generation and cannot authorize confirmation or deployment."),
 }
+
+
+def data_assessment_output_schema(context):
+    """Expose only the assessment version authorized for this program task."""
+    envelope = context["task"]["proposal"]["envelope"]
+    scoped = context.get("research_scopes", {}).get(envelope) is not None
+    schema = DataAssessment.model_json_schema()
+    properties = schema["properties"]
+    properties["schema_version"] = {"type": "integer", "const": 2 if scoped else 1}
+    schema["required"].append("schema_version")
+    incompatible = ("data_policy_digest", "evaluation_prices") if scoped else (
+        "research_scope", "packet_digest", "evaluation_price_contract_verified")
+    for field in incompatible:
+        properties.pop(field)
+    if scoped:
+        properties["research_scope"] = {"$ref": "#/$defs/ResearchScope"}
+        schema["required"].append("research_scope")
+    properties["decision"]["enum"] = [
+        "ready", "conditional_ready" if scoped else "exploratory_only", "blocked"]
+    return schema
 
 
 def _prior_task_context(row):
