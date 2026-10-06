@@ -10,7 +10,7 @@ from .contracts import BriefEdition, CalendarOverride
 
 KST = ZoneInfo("Asia/Seoul")
 NY = ZoneInfo("America/New_York")
-SCHEDULE_VERSION = 3
+SCHEDULE_VERSION = 4
 PREPARATION_MINUTES = 45
 COLLECTION_MINUTES = 20
 
@@ -74,7 +74,7 @@ def editions(day, channel, owner, changes=None):
             expires_at=due+timedelta(hours=1), us_session=us_session if kind == "am" else None,
             kr_session=day if kr_close else None,
             previous_us_session=previous("US", us_session, changes) if us_session and kind == "am" else None,
-            previous_kr_session=previous("KR", day, changes) if kr_close else None,
+            previous_kr_session=previous("KR", day, changes) if kr_close or kind == "am" else None,
             weekly=("outlook" if day.weekday() == 0 else "review" if day.weekday() == 5 else None)
             if kind == "am" else None))
     return result

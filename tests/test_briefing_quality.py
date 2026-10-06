@@ -71,8 +71,9 @@ def test_index_levels_and_comparisons_are_computed_from_same_frozen_data():
     assert validate(p, data)[kospi.id] == "collected_observation_modified"
 
 
-def test_morning_locks_prior_kr_close_and_renders_its_actual_session():
-    edition = definition()
+@pytest.mark.parametrize('day', [date(2026, 9, 22), date(2026, 10, 9), date(2026, 10, 10)])
+def test_morning_locks_prior_kr_close_and_renders_its_actual_session(day):
+    edition = definition(day=day)
     data = data_bundle(edition)
     assert len(data["locked_observations"]) == 2
     assert {v['session_date'] for v in data['locked_observations']} == {str(edition.previous_kr_session)}
