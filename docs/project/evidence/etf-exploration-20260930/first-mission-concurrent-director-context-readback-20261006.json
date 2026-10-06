@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06 08:35:14 UTC",
+  "observed_other_worker_image": "quant-company-autonomous:director-context-87e774fbb5caafb6cf56bc14af678699ccacea10",
+  "registered_company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "research_controller_backend_feedback_contract_hashes_matched_active_ec": true,
+  "operator_source_change_applied_by_this_thread": false,
+  "poison_owner_work_temporal": {
+    "workflow_id": "company-turn-ffc34b0d-5504-5463-b6dc-2e954cbb408b",
+    "run_id": "61410464-51a5-421d-b38e-d14ba35b8ee6",
+    "status": "RUNNING",
+    "recent_activity_results": [],
+    "recent_failures": [
+      [
+        {
+          "type": "ValidationError",
+          "message_sha256": "b7864abd73930b16410de39e469aff13106ee5fdb1382164cb7afc4eafc88646",
+          "frames": []
+        }
+      ],
+      [
+        {
+          "type": "ValidationError",
+          "message_sha256": "b7864abd73930b16410de39e469aff13106ee5fdb1382164cb7afc4eafc88646",
+          "frames": []
+        }
+      ],
+      [
+        {
+          "type": "ValidationError",
+          "message_sha256": "b7864abd73930b16410de39e469aff13106ee5fdb1382164cb7afc4eafc88646",
+          "frames": []
+        }
+      ]
+    ],
+    "pending_activities": []
+  },
+  "poison_owner_answer_temporal": {
+    "workflow_id": "company-turn-2e4de4d4-00b8-50d6-8dc4-1765a28e1807",
+    "run_id": "f77243cd-3c58-4191-a8c9-ef5690bda74e",
+    "status": "RUNNING",
+    "recent_activity_results": [],
+    "recent_failures": [
+      [
+        {
+          "type": "ValidationError",
+          "message_sha256": "b7864abd73930b16410de39e469aff13106ee5fdb1382164cb7afc4eafc88646",
+          "frames": [],
+          "validation_schema": "1 validation error for ProviderRequest",
+          "validation_error_types": [
+            "string_too_long"
+          ],
+          "validation_locations": [
+            "prompt"
+          ]
+        }
+      ],
+      [
+        {
+          "type": "ValidationError",
+          "message_sha256": "b7864abd73930b16410de39e469aff13106ee5fdb1382164cb7afc4eafc88646",
+          "frames": [],
+          "validation_schema": "1 validation error for ProviderRequest",
+          "validation_error_types": [
+            "string_too_long"
+          ],
+          "validation_locations": [
+            "prompt"
+          ]
+        }
+      ],
+      [
+        {
+          "type": "ValidationError",
+          "message_sha256": "b7864abd73930b16410de39e469aff13106ee5fdb1382164cb7afc4eafc88646",
+          "frames": [],
+          "validation_schema": "1 validation error for ProviderRequest",
+          "validation_error_types": [
+            "string_too_long"
+          ],
+          "validation_locations": [
+            "prompt"
+          ]
+        }
+      ]
+    ],
+    "pending_activities": [
+      {
+        "id": "23",
+        "type": "company_execute_turn",
+        "state": 1,
+        "attempt": 1,
+        "scheduled_time": "2026-10-06T08:27:22.269879073Z",
+        "last_started_time": "1970-01-01T00:00:00Z",
+        "last_failure_type": ""
+      }
+    ]
+  },
+  "latest_request_metadata": {
+    "observed_at": "2026-10-06T08:29:26.128312+00:00",
+    "requests": [
+      {
+        "turn_id": "ffc34b0d-5504-5463-b6dc-2e954cbb408b",
+        "turn_status": "completed",
+        "request_absent": false,
+        "prompt_characters": 79028,
+        "model": "gpt-6-astra",
+        "workflow_started": true,
+        "due_at": "2026-10-06T08:28:16.203138+00:00",
+        "task_id": "07100e40-20b9-5504-b60d-fe9d923d6afa",
+        "agent": "director",
+        "kind": "work",
+        "task_status": "pending",
+        "priority": 0,
+        "task_revision": 1,
+        "project_id": "c77ab6c8-9883-5180-82f1-564291f8df54",
+        "project_revision": 1,
+        "project_status": "active",
+        "owner_user": "U0C250E23NW",
+        "channel": "D0C3035UKKJ",
+        "thread_ts": "1791260390.390789",
+        "same_owner": true
+      },
+      {
+        "turn_id": "2e4de4d4-00b8-50d6-8dc4-1765a28e1807",
+        "turn_status": "running",
+        "request_absent": false,
+        "prompt_characters": 78156,
+        "model": "gpt-6-astra",
+        "workflow_started": true,
+        "due_at": "2026-10-06T08:28:17.16337+00:00",
+        "task_id": "8fceac96-cc16-5268-bef8-9ebf177e109e",
+        "agent": "director",
+        "kind": "answer",
+        "task_status": "running",
+        "priority": 0,
+        "task_revision": 1,
+        "project_id": "c77ab6c8-9883-5180-82f1-564291f8df54",
+        "project_revision": 1,
+        "project_status": "active",
+        "owner_user": "U0C250E23NW",
+        "channel": "D0C3035UKKJ",
+        "thread_ts": "1791260390.390789",
+        "same_owner": true
+      }
+    ]
+  },
+  "existing_current_research_turn_reconciled_normally": true,
+  "scientific_trials_or_jobs_claimed": false
+}
