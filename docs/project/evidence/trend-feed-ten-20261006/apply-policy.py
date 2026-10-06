@@ -23,7 +23,6 @@ def main(operator):
     preview = json.loads((STATE / 'releases/trend-feed-ten-20261006-preview.json').read_text())
     if (not preview['valid'] or preview['sports_selected'] or preview['editorial_policy_version'] != 3 or preview['cards'] != 10
             or not candidate['base_config_preserved'] or preview['source_sha256'] != candidate['source_sha256']
-            
             or candidate['changed_files'] != ['trend_feed/contracts.py', 'trend_feed/editor.py', 'trend_feed/runner.py', 'trend_feed/store.py', 'trend_feed/supplement.py']):
         raise RuntimeError('qualified_ten_topic_preview_missing')
     before = operator.inspect()

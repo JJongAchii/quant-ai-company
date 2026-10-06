@@ -74,7 +74,7 @@ if __name__ == '__main__':
         result = {'checked_at': datetime.datetime.now(datetime.UTC).isoformat(), 'commit': commit,
                   'base_image': base, 'image': image['Id'], 'image_tag': tag, 'base_config_preserved': config_preserved,
                   'changed_files': changed, 'source_file_count': len(new), 'source_sha256': expected,
-                  'before_sha256': {k: old[k] for k in expected}, 'running_services_changed': False,
+                  'before_sha256': {k: old.get(k) for k in expected}, 'running_services_changed': False,
                   'target_ids': {n: before[n]['Id'] for n in operator.TARGETS},
                   'target_signature_sha256': {n: hashlib.sha256(json.dumps(operator.signature(before[n]), sort_keys=True).encode()).hexdigest()
                                               for n in operator.TARGETS}}
