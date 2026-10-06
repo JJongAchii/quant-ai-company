@@ -1,0 +1,29 @@
+{
+  "approval": {
+    "approvedAt": "2026-10-06T07:53:56.619444+00:00",
+    "id": "chat-model-assignments-deploy-20261006"
+  },
+  "currentIntent": "INTENT-v2.json",
+  "deliverables": {
+    "IMPLEMENTATION": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "PRODUCTION": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "VALIDATION": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    }
+  },
+  "intentDigest": "120eac18b054",
+  "schemaVersion": 1,
+  "slug": "manatee",
+  "state": "approved",
+  "updatedAt": "2026-10-06T07:53:56.619444+00:00"
+}

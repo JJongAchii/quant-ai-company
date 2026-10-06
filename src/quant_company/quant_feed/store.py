@@ -327,6 +327,9 @@ class QuantFeedStore:
                                       output_contract="agent_decision" if searching else output_contract(stage),
                                       prompt=search_prompt({"query": bundle["query"], "limit": bundle["limit"]}) if searching
                                       else prompt(bundle, stage))
+            from ..model_policy import bind
+
+            request = bind(self.company, conn, request, "quant_scout")
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             conn.execute("""INSERT INTO quant_feed_calls(id,document_id,stage,slot,request,bundle,policy_digest)
                 VALUES(%s,%s,%s,%s,%s,%s,%s)""", (request.request_id, document["id"] if document else None,

@@ -84,6 +84,9 @@ class NewsScreeningStore(NewsStore):
             cap = effective_limits(conn, self.company)["company"]
             if cap is not None and used >= cap:
                 return {"state": "defer"}
+            from ..model_policy import bind
+
+            request = bind(self.company, conn, request, "news_screening")
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             conn.execute("INSERT INTO news_triages(id,request,bundle,policy_digest) VALUES(%s,%s,%s,%s)",
                          (request.request_id, Jsonb(request.model_dump()), Jsonb(bundle), policy))
