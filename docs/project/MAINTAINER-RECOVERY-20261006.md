@@ -32,3 +32,13 @@ The first readback at 15:39 KST found the new service running without a restart 
 Evidence: [qualified image](evidence/maintainer-recovery-20261006/image-qualified.json), [cutover and rollback](evidence/maintainer-recovery-20261006/cutover.json), [first live readback](evidence/maintainer-recovery-20261006/live-before-first-poll.json). The operator programs in that directory are formatted copies of the one-off commands used; they are not scheduled jobs. Their journal guards prevent replaying an unresolved cutover.
 
 The override path is recorded in the running container's Compose labels and survives normal container/host restart. Future operator Compose releases must retain this maintenance override or explicitly qualify its replacement. Bot-generated repair deployment remains bound to the exact existing signed owner approval rules. Company-work priority, uncertain-effect reconciliation and evidence-change guards remain active.
+
+## Actual first observation and catalog compatibility
+
+At **15:46 KST**, the automatic observation registered the current DataAssessment contract failure and four uncertain independent reviews in case `a4aabd4e-1263-4435-ae26-78820f18f5b0`. The original review/call hashes stayed unchanged. No maintenance inference was reserved. Diagnostic preparation then failed with `invalid_maintenance_input`.
+
+A separate trusted diagnostic container reproduced `ValueError: Unknown specialist` in `current_system` → `runtime_facts` → `Company.runtime_context` → `staff.packs.pack`. The actual configured delivery identity was `market_brief`; it has no staff assessment pack. GitHub's actual snapshot read succeeded. Runtime evidence now keeps such identities and shows null specialist-pack metadata. Known specialist packs, tools, permissions and objective grading are unchanged.
+
+Heavy Python verification inside the production service's 128MiB limit caused resource pressure. Subsequent diagnostics use a separate one-off container, and live readback uses Docker metadata and PostgreSQL only. Image/source validation takes place before service activation. The compatibility patch is being qualified and will receive its own exact image/cutover receipt.
+
+Evidence: [actual intake and preparation failure](evidence/maintainer-recovery-20261006/first-intake-and-preparation-failure.json), [catalog diagnosis](evidence/maintainer-recovery-20261006/catalog-diagnosis.json).

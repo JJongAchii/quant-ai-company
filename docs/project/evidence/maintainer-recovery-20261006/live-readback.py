@@ -80,18 +80,11 @@ priority = sql("""SELECT COALESCE(jsonb_agg(to_jsonb(s)),'[]'::jsonb) FROM (
  ORDER BY t.due_at LIMIT 8)s""")
 control = sql("SELECT to_jsonb(c) FROM maintenance_control c WHERE id=1")
 container = json.loads(run(["docker", "inspect", "quant-company-maintenance-1"]))[0]
-proof = json.loads(
-    run(
-        [
-            "docker",
-            "exec",
-            "quant-company-maintenance-1",
-            "python",
-            "-c",
-            "import os,inspect,json,hashlib;from quant_company.maintenance.problems import failure_observations; print(json.dumps({'commit':os.environ.get('COMPANY_CODE_COMMIT'),'problems_module_sha256':hashlib.sha256(inspect.getsource(failure_observations).encode()).hexdigest()}))",
-        ]
-    )
-)
+proof = {
+    "commit": container["Config"].get("Labels", {}).get("org.opencontainers.image.revision"),
+    "verification": "Compare immutable image ID with the isolated image qualification receipt. "
+                    "Do not launch additional Python imports inside the 128MiB production service.",
+}
 print(
     json.dumps(
         {

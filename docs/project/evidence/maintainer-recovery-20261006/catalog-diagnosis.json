@@ -1,0 +1,73 @@
+{
+  "scope": "Separate trusted one-off container, actual production config and read-only DB/GitHub; no model/Git/Slack writes",
+  "boundaries": {
+    "scope": "Read-only production diagnosis boundaries; no model call or Git/Slack write",
+    "current_system": {
+      "valid": false,
+      "class": "ValueError",
+      "message": "Unknown specialist",
+      "frames": [
+        {
+          "file": "system_state.py",
+          "function": "current_system",
+          "line": 72
+        },
+        {
+          "file": "system_state.py",
+          "function": "runtime_facts",
+          "line": 48
+        },
+        {
+          "file": "company.py",
+          "function": "runtime_context",
+          "line": 108
+        },
+        {
+          "file": "packs.py",
+          "function": "pack",
+          "line": 18
+        }
+      ]
+    },
+    "diagnosis_context": {
+      "valid": false,
+      "class": "ValueError",
+      "message": "Unknown specialist",
+      "frames": [
+        {
+          "file": "system_state.py",
+          "function": "current_system",
+          "line": 72
+        },
+        {
+          "file": "system_state.py",
+          "function": "runtime_facts",
+          "line": 48
+        },
+        {
+          "file": "company.py",
+          "function": "runtime_context",
+          "line": 108
+        },
+        {
+          "file": "packs.py",
+          "function": "pack",
+          "line": 18
+        }
+      ]
+    },
+    "github_snapshot": {
+      "valid": true,
+      "commit": "2dc72afb2e4088112f77a764fdcfeebb8e4919ca",
+      "path_count": 234
+    }
+  },
+  "actual_role": {
+    "unsupported_specialist_roles": [
+      "market_brief"
+    ],
+    "scope": "Read-only production diagnosis boundaries; no model call or Git/Slack write"
+  },
+  "followup": "Production market_brief delivery identity has no staff pack. Runtime evidence must retain identity with null pack metadata; ordinary specialist packs, permissions and grades remain unchanged.",
+  "probe_limit": "Heavy Python probes inside the 128MiB service caused resource pressure. Subsequent diagnostics use a separate one-off container; live readback uses Docker metadata and PostgreSQL only."
+}

@@ -23,6 +23,22 @@ from .test_maintenance import SOURCE, ModelFixture, config, make_maintainer
 from .test_slack import event, signed
 
 
+def test_runtime_evidence_accepts_delivery_roles_without_fabricating_specialist_packs(company):
+    from quant_company.staff.packs import pack
+
+    delivery = company.roles['director'].model_copy(update={
+        'id': 'market_brief', 'active': False, 'tools': [], 'can_delegate_to': [],
+    })
+    company.roles[delivery.id] = delivery
+    with company.db.transaction() as conn:
+        system = current_system(conn, company, ['UHUMAN'])
+    employees = {row['id']: row for row in system['runtime']['configuration']['employees']}
+    assert employees[delivery.id]['specialist_pack_version'] is None
+    assert employees[delivery.id]['specialist_pack_digest'] is None
+    assert employees[delivery.id]['active'] is False and employees[delivery.id]['tools'] == []
+    assert employees['director']['specialist_pack_digest'] == pack('director')['digest']
+
+
 def test_history_and_current_code_share_the_real_provider_input_budget_without_mutating_evidence():
     # Production shape: ~36k history + ~25k system facts + ~58k source excerpts exceeded 90k.
     payload = {'observations': [{'key': 'message:original', 'text': 'Keep the explicit owner request'}],
