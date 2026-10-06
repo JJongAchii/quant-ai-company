@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "scope": "real PostgreSQL and Temporal; synthetic signed Slack and Codex fixtures",
+  "source_test_command": "uv run pytest tests/test_accounts.py tests/test_model_policy.py tests/test_slack.py tests/test_socket_mode.py tests/test_research_approval_socket.py -q --tb=short --maxfail=2",
+  "source_result": "127 passed, 2 dependency deprecation warnings in 37.13s",
+  "source_log_sha256": "3c574f7996e5f0c98ee1ea4dfe2722a4cb0c61df7c393769bb0ba77b462e3189",
+  "lint": "uv run ruff check . passed",
+  "external_slack_messages_sent": 0,
+  "actual_model_inference_calls": 0
+}
