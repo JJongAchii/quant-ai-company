@@ -12,7 +12,7 @@ from uuid import UUID
 
 stage_id, task_id = (str(UUID(value)) for value in sys.argv[1:3])
 stage_type = sys.argv[3]
-assert stage_type in {'challenge', 'selection', 'implementation'}
+assert stage_type in {'proposal', 'challenge', 'selection', 'implementation'}
 
 CODE = r'''
 import json,sys
@@ -23,7 +23,7 @@ from quant_company.company import Company
 from quant_company.config import Settings
 stage_id,task_id=(str(UUID(value)) for value in sys.argv[1:3])
 stage_type=sys.argv[3]
-actors={'challenge':'financial_strategist','selection':'director','implementation':'engineer'}
+actors={'proposal':'researcher_kr','challenge':'financial_strategist','selection':'director','implementation':'engineer'}
 actor=actors[stage_type]
 company=Company(Settings())
 operation='first-mission-preparation-navigation:'+stage_id+':20261006'
@@ -70,7 +70,9 @@ with company.db.transaction() as conn:
                 'the final artifact. A single successful chunk does not finish a longer source. '
                 'Do not regenerate a complete artifact between remaining source chunks. Read only '
                 'the evidence needed and the explicitly required files. This explains existing service '
-                'gates and supplies no hypothesis, objection, selection, patch or scientific judgment.',
+                'gates and supplies no hypothesis, objection, selection, patch or scientific judgment. '
+                'For a revised proposal, read relevant_evidence.rejections and the actual independent '
+                'criticism before drafting; respond to that recorded decision within the selected study.',
         }
         previous_priority=task['priority']
         context={**stage['context'],'source_completion_navigation':navigation}
