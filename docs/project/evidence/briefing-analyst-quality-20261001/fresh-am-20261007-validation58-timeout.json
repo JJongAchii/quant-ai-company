@@ -1,0 +1,220 @@
+{
+  "recorded_at": "2026-10-06T23:25:54.189924+00:00",
+  "edition_id": "b72483f9-d52b-51d6-92ba-25625a9cb50e",
+  "day": "2026-10-07",
+  "kind": "am",
+  "installed_source_root": "0ea670b7b0637d91a46714b73ef8df96d979cc6f",
+  "state": "previewed",
+  "publish": false,
+  "publication_enabled": "false",
+  "policy_digest": "b80ed41957125de8f73c2c80cebefcedb5dded8762188f21c77c1543efb5b0ff",
+  "due_at": "2026-10-06T22:45:00+00:00",
+  "committed_at": "2026-10-06T22:55:00.124842+00:00",
+  "error": "timeout",
+  "candidate_documents": 96,
+  "selected_documents": 27,
+  "inputs_frozen": true,
+  "collection_error_count": 4,
+  "model_calls": [
+    {
+      "id": "news-brief-b72483f9-d52b-51d6-92ba-25625a9cb50e-plan",
+      "phase": "plan",
+      "state": "completed",
+      "error": null,
+      "completed_at": "2026-10-06T22:04:09.147767+00:00",
+      "next_at": "2026-10-06T22:00:06.407317+00:00",
+      "prompt_chars": 77775,
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 42448,
+        "output_tokens": 8659,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 6435
+      }
+    },
+    {
+      "id": "news-brief-b72483f9-d52b-51d6-92ba-25625a9cb50e-write",
+      "phase": "write",
+      "state": "blocked",
+      "error": "timeout",
+      "completed_at": null,
+      "next_at": "2026-10-06T22:04:10.608692+00:00",
+      "prompt_chars": 85225,
+      "provider": null,
+      "usage": null
+    }
+  ],
+  "runtime_receipts": [
+    {
+      "request_id": "news-brief-b72483f9-d52b-51d6-92ba-25625a9cb50e-plan",
+      "state": "complete",
+      "input_digest": "cd0bf919d6c96c6601a9ccd51fd4aff73f57f83243b200b3d3c0d1c7e6f3175b",
+      "started_at": 1791324007.1338096,
+      "completed_at": 1791324249.102359,
+      "failed_at": null,
+      "cli_version": "0.160.1",
+      "execution_lane": "brief",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "xhigh"
+      },
+      "fault": {
+        "code": null,
+        "message": null,
+        "retry_after_seconds": null
+      },
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 42448,
+        "output_tokens": 8659,
+        "reasoning_output_tokens": 6435
+      },
+      "file_modified_at": "2026-10-06T22:04:09.102608+00:00",
+      "elapsed_until_receipt_modified_seconds": 241.97
+    },
+    {
+      "request_id": "news-brief-b72483f9-d52b-51d6-92ba-25625a9cb50e-write",
+      "state": "failed",
+      "input_digest": "894c7efc0c4e15016925cdabafa27a17253cecdd99de36fc64f799650fb0dc6b",
+      "started_at": 1791324251.1529858,
+      "completed_at": null,
+      "failed_at": null,
+      "cli_version": "0.160.1",
+      "execution_lane": "brief",
+      "requested_execution": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "xhigh"
+      },
+      "fault": {
+        "code": "timeout",
+        "message": "Codex timed out; reconcile this request before replacing it.",
+        "retry_after_seconds": 0
+      },
+      "usage": null,
+      "file_modified_at": "2026-10-06T22:19:11.187586+00:00",
+      "elapsed_until_receipt_modified_seconds": 900.03
+    }
+  ],
+  "runtime_timeout_seconds": 900,
+  "actual_model_selection": {
+    "policy": {
+      "revision": 2,
+      "analyst_binding": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "xhigh"
+      }
+    },
+    "bound_requests": [
+      {
+        "request_id": "news-brief-b72483f9-d52b-51d6-92ba-25625a9cb50e-plan",
+        "target": "market_brief",
+        "selection": {
+          "model": "gpt-6-astra",
+          "source": "pinned",
+          "revision": 2,
+          "reasoning_effort": "xhigh"
+        },
+        "created_at": "2026-10-06T22:00:06.493445+00:00"
+      },
+      {
+        "request_id": "news-brief-b72483f9-d52b-51d6-92ba-25625a9cb50e-write",
+        "target": "market_brief",
+        "selection": {
+          "model": "gpt-6-astra",
+          "source": "pinned",
+          "revision": 2,
+          "reasoning_effort": "xhigh"
+        },
+        "created_at": "2026-10-06T22:04:10.731549+00:00"
+      }
+    ],
+    "requested_models": [
+      {
+        "phase": "plan",
+        "model": "gpt-6-astra",
+        "reasoning_effort": "xhigh",
+        "output_contract": "agent_decision"
+      },
+      {
+        "phase": "write",
+        "model": "gpt-6-astra",
+        "reasoning_effort": "xhigh",
+        "output_contract": "agent_decision"
+      }
+    ],
+    "configured_analyst_role": {
+      "id": "market_brief",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "active": true
+    }
+  },
+  "registered_policy_model": {
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high"
+  },
+  "execution_matches_registered_effort": false,
+  "writer_duration_seconds": 900.03,
+  "independent_content_review_reached": false,
+  "content_verdict": "not_evaluated; no completed writer proposal",
+  "rendered_quality": {
+    "reduced": true,
+    "rejected": {},
+    "issue_count": 0,
+    "substantive": false,
+    "missing_core": [
+      "nasdaq",
+      "sp500"
+    ],
+    "format_version": 17
+  },
+  "slack_receipts": [],
+  "models_called_by_status_inspection": 0,
+  "slack_writes_by_status_inspection": 0,
+  "writer_token_usage": "Unavailable: no completed model usage receipt; do not count this as zero.",
+  "failure_interpretation": "Writing hit the runner's900-second deadline. Effective pinned xhigh differs from the frozen high policy. The available receipts do not prove that effort alone caused the timeout.",
+  "case_handling": "Preserve the closed failed case and its original request IDs; never reopen or relabel it as accepted.",
+  "next": "Align the actual owner-selected model settings and per-phase execution budget in a newly frozen future policy; retain all content gates and originals.",
+  "containers": [
+    {
+      "name": "/quant-company-news-worker-1",
+      "image": "quant-company-trend:10daf0e80013b18a33cb4db14db67b50b100c6ba-ten",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "started_at": "2026-10-06T18:16:24.8175697Z"
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "image": "quant-company-trend:10daf0e80013b18a33cb4db14db67b50b100c6ba-ten",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "started_at": "2026-10-06T18:16:09.455056379Z"
+    },
+    {
+      "name": "/quant-company-briefing-data-worker-1",
+      "image": "quant-company:0ea670b7b0637d91a46714b73ef8df96d979cc6f-profile1",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "started_at": "2026-10-06T13:17:09.568049904Z"
+    },
+    {
+      "name": "/quant-company-api-1",
+      "image": "quant-company-command-help:04a465865cf18dbc3cf2fb1aaa4191f6ca7e55ac",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "started_at": "2026-10-06T18:16:08.256922265Z"
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "image": "quant-company-codex-upgrade:b77dc9511fb6aae2beff68df1c0ba7852bac6bd4-13caa3f9f793",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "started_at": "2026-10-06T18:16:07.229671846Z"
+    }
+  ]
+}

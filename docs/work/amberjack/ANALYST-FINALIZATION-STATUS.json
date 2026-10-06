@@ -1,8 +1,8 @@
 {
-  "recorded_at": "2026-10-06T13:18:00.248407+00:00",
+  "recorded_at": "2026-10-06T23:25:54.189924+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
-  "latest_request": "\uadf8\ub7fc \uc774\uc5b4\uc11c \uc9c4\ud589\ud574\uc11c \ucd5c\uc885\uc801\uc73c\ub85c \uc644\ub8cc\ud574\uc8fc\uba74 \uc88b\uaca0\uc5b4 / \uc774\uc5b4\uc11c \uc9c4\ud589\ud574",
+  "latest_request": "아직 발송안된거 같은데 생성중인건가?",
   "source_commit": "0ea670b7b0637d91a46714b73ef8df96d979cc6f",
   "format_version": 17,
   "validation_version": 58,
@@ -25,10 +25,11 @@
     "Codex runtime"
   ],
   "last_fresh_edition": {
-    "id": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
-    "day": "2026-10-06",
-    "source_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
-    "result": "failed and closed; never reopened or regraded"
+    "id": "b72483f9-d52b-51d6-92ba-25625a9cb50e",
+    "day": "2026-10-07",
+    "kind": "am",
+    "source_commit": "0ea670b7b0637d91a46714b73ef8df96d979cc6f",
+    "result": "Writer timed out; failed preview closed at07:55 KST. No independent content review or Slack delivery."
   },
   "development_diagnostic": {
     "checks_passed": 9,
@@ -70,19 +71,35 @@
     ],
     "max_distinct_model_requests": 60,
     "max_repairs_per_edition": 1,
-    "automatically_enables_publication": false
+    "automatically_enables_publication": false,
+    "first_case_failed": true,
+    "content_or_timing_qualification_established": false,
+    "first_failure_record": "docs/project/evidence/briefing-analyst-quality-20261001/fresh-am-20261007-validation58-timeout.json"
   },
-  "next": "Observe the new October7 AM/PM editions without changing originals or policy; retain real planning/writing/review outcomes. After a fresh pass, audit original-to-visible-main and perform authorized actual Slack preview/readback.",
+  "next": "Resolve the mismatch between effective owner-selected model settings and the frozen policy, and qualify per-phase execution deadlines for a newly frozen future edition. Preserve this closed failure and all original request IDs. Existing future registrations remain active; automatic publication stays disabled.",
   "remaining": [
+    "Execution-model/frozen-policy agreement and writing completion within the scheduling budget",
     "Fresh twelve-check content qualification and independent original-to-main audit",
     "Actual Slack delivery/readback and human content acceptance",
     "Five completed KRX trading days of timing/source/model/saved-input evidence before automatic publication"
   ],
   "evidence": [
+    "docs/project/evidence/briefing-analyst-quality-20261001/fresh-am-20261007-validation58-timeout.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-observation-validation58-dbcheck.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/regression-validation58-dbcheck.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/twenty-source-transport-validation58.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/development-diagnostic-20261006-validation57-outcome.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/fresh-pm-20261006-format17-failure.json"
-  ]
+  ],
+  "latest_execution": {
+    "plan": "completed at07:04:09 KST",
+    "write": "started07:04:11; timed out07:19:11 KST after900 seconds",
+    "review": "not reached",
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "xhigh",
+    "registered_effort": "high",
+    "selection_source": "Analyst pin, model assignment revision2",
+    "effort_mismatch_detected": true,
+    "writer_usage_known": false
+  }
 }
