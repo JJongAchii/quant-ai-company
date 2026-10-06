@@ -261,9 +261,10 @@
       "remote_visibility": "PUBLIC",
       "local_committed": true,
       "remote_push": false,
-      "user_choice_pending": true,
-      "reason": "AGENTS.md expects private repository; actual GitHub visibility is public",
-      "production_gate_unaffected": true
+      "user_choice_pending": false,
+      "reason": "User explicitly approved upload with current public visibility; repository visibility unchanged",
+      "production_gate_unaffected": true,
+      "user_authorized_public_upload": true
     }
   },
   "integrated_with": "457a9c20f4e1b95a407dca3f1c0b20070142c0ae",

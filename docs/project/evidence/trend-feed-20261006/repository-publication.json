@@ -8,6 +8,10 @@
   "expected_visibility_from_instructions": "private",
   "pushed_this_work": false,
   "visibility_changed_this_work": false,
-  "publication_state": "local_commits_preserved_pending_user_choice",
-  "production_preview_continues": true
+  "publication_state": "authorized_remote_upload_pending",
+  "production_preview_continues": true,
+  "user_upload_authorized": true,
+  "authorization": "chat user: 나중에 비공개 전환할거라 신경쓰지말고 원격에 올려줘",
+  "authorization_recorded_at": "2026-10-06T12:07:50.971426+00:00",
+  "visibility_change_requested": false
 }

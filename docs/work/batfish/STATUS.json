@@ -9,7 +9,7 @@
       "evidence": [
         {
           "path": "docs/project/TREND-FEED-ACTIVATION.md",
-          "sha256": "51ca958720a7"
+          "sha256": "b952c6a4c91c"
         },
         {
           "path": "docs/project/evidence/trend-feed-20261006/production-final.json",
@@ -28,20 +28,20 @@
           "sha256": "749d9737513d"
         }
       ],
-      "note": "Authorized production preview active; actual single connection message delivered, rotated token verified. Persistent real-day gate enabled from 2026-10-07; publication remains false with 0 completed morning previews. Earliest regular date 2026-10-10 conditional on three qualified stable days and first-delivery receipt observation. Remote publication pending actual PUBLIC repository choice.",
+      "note": "Authorized preview, real test message and persistent real-day gate running. 0 completed morning dates; earliest regular publication 2026-10-10 after three qualified stable dates; first delivery observation installed. User approved current-public remote upload; source publication proceeding without visibility change.",
       "status": "in_progress",
-      "updatedAt": "2026-10-06T12:05:07.471573+00:00"
+      "updatedAt": "2026-10-06T12:07:51.730242+00:00"
     },
     "IMPLEMENTATION": {
       "evidence": [
         {
           "path": "docs/project/evidence/trend-feed-20261006/RESULT.json",
-          "sha256": "9588c42b7a49"
+          "sha256": "9b68c564c9c2"
         }
       ],
-      "note": "Preview implementation and scoped production repair complete; official subscription workflow retained. Local source/operational evidence preserved; actual GitHub repository PUBLIC despite private-source instruction, so no remote push pending user choice.",
+      "note": "Implementation and preview deployment complete. User explicitly authorized remote upload despite current PUBLIC repository visibility; visibility unchanged. Application bfb64af, observer 41f733f, source/evidence to be published to feature branch.",
       "status": "verified",
-      "updatedAt": "2026-10-06T12:05:07.011805+00:00"
+      "updatedAt": "2026-10-06T12:07:51.258252+00:00"
     },
     "VALIDATION": {
       "evidence": [
@@ -51,17 +51,17 @@
         },
         {
           "path": "docs/project/evidence/trend-feed-20261006/RESULT.json",
-          "sha256": "9588c42b7a49"
+          "sha256": "9b68c564c9c2"
         }
       ],
-      "note": "Prior integration suite 1514; image-source suite 176; new source/image-source regressions 43 each. Actual production RSS, NAVER, cloud workflows and single Slack delivery/UI verified; scheduled units and future flag config match. Three real morning quality checks pending.",
+      "note": "Prior full 1514 and image-source 176; added 43 source and 43 image-source tests passed. Actual production Google/NAVER/Temporal and one real Slack receipt/UI verified; three-day editor quality remains gated separately.",
       "status": "verified",
-      "updatedAt": "2026-10-06T12:05:07.244787+00:00"
+      "updatedAt": "2026-10-06T12:07:51.491113+00:00"
     }
   },
   "intentDigest": "98fa902262d1",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-06T12:05:07.471573+00:00"
+  "updatedAt": "2026-10-06T12:07:51.730242+00:00"
 }
