@@ -20,10 +20,10 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Exact integrated ec source passed1826 full tests/14 skips, real PostgreSQL/Temporal/pinned qlab, lint, exact3server images and actual3070 synthetic sandbox/producer-consumer. Root reviewed packet5da6256a and existing deployment authority in PR105. Fresh backup and server/worker activation next; release.timer must restore. Accepted mission2ce has0 scientific jobs/trials/reservations; original old audit hold and signed c3 policy remain.",
+  "operationalStatus": "Exact ec activated on server and3070 after new consistent S3 backup SHAe494ef1d, secret files excluded. All6research services205source files verified, core healthy,15running,7SocketTLS connections. Release/backup timers active. New mission2ce is now selected; proposal c305 attempt1 created. Actual proposal native calls complete and continue with original lineage reads after root-reviewed current preparation task priority100 to0 (event686). Scientific budget/authorizations, hardware priority and old owner audit hold remain unchanged. No scientific job/trial/reservation yet; continue to first actual3070 execution, do not stop at proposal.",
   "evidence": "../../project/evidence/etf-exploration-20260930/first-research-mission-accepted-20261006.json",
   "nextStage": {
-    "stage": "qualify_activate_scheduler_then_first_actual_execution",
+    "stage": "staff_proposal_challenge_selection_implementation_then_actual_execution",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false,
@@ -113,15 +113,19 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "root_reviewed_exact_ec_activation_prepared",
+    "phase": "ec_active_current_mission_proposal_running",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
-    "activationReceipt": "../../project/evidence/etf-exploration-20260930/scoped-data-cutover-active-20261006.json",
+    "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
     "globalCurrentAfterIndependentBriefingRelease": "0ff6657f98b175162609259394b1cec20382904a",
-    "priorityReceipt": "../../project/evidence/etf-exploration-20260930/research-preparation-priority-applied-20261006.json",
+    "priorityReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-preparation-priority-applied-20261006.json",
+    "preparationProgressReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-preparation-read-progress-20261006.json",
     "workerPreviousCommit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
     "scientificTrials": 0,
-    "releaseTimerTemporarilyPaused": true,
-    "releaseTimerMustRestoreAfterOperation": true
+    "releaseTimerTemporarilyPaused": false,
+    "releaseTimerMustRestoreAfterOperation": false,
+    "releaseTimerRestored": true,
+    "workerAlignmentReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-worker-active-20261006.json",
+    "sixServicesReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-six-services-active-20261006.json"
   }
 }

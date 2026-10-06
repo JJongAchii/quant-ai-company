@@ -240,3 +240,32 @@ cutover journal은 없으며 앱·워커는 바뀌지 않았다. 새 변경은 b
 다시 수행한다. def의 성공 영수증도 보존한다. source 정합성 검증 중 변동을 막기 위해
 기존 release.timer만 잠시 정지했다(release.service inactive/MainPID0).
 **활성화 또는 작업 중단 뒤 이 타이머를 원래대로 복구해야 한다.**
+
+## 14:52 KST — scheduler 실제 활성화와 새 미션 진행
+
+새 consistent backup `company-20261006T054647Z-06130862.tar.gz`,
+SHA `e494ef1d1d99d467c17e2c50f984f3629c095e8eaf090279eb95cf5be721db11`와
+S3 대조/secret 제외를 확인한 뒤 ec 서버·3070을 정렬하고 회사 worker를 재개했다.
+14:53에6서비스205source파일 바이트, core healthy,15running, Socket443연결7개를
+대조했다. release.timer와 backup.timer는 active로 복구했다. 기존 모델/역할/프로필과
+3070 prior registry를 보존했고 분리 실행을 종료하지 않았다.
+
+새 mission2ce는 실제 스케줄러의 candidate가 됐고 proposal c305/attempt1이 생성됐다.
+현재 모델 요청이 priority100으로 higher_priority_request/2초를 반복하는 것을 실제
+Temporal history로 확인했다. root가 준비한 PR의 특정 현재 task d7df만100→0으로
+대사했다(event686). signed resources.priority, 과학 예산·의미/자료 gate는 그대로다.
+15:00 이후 실제 native calls가 완료되며 원래 lineage를 순차 읽는다.
+아직 actual scientific job/시행/예약은0이다. 첫 실제 실험까지 계속 추적한다.
+
+### 15:22 KST — 준비 절차의 실제 소요 확인
+
+[준비 메타데이터](evidence/etf-exploration-20260930/first-mission-preparation-read-progress-20261006.json)에서
+proposal은 attempt1/running이고 오류나 재시도는 없다. 35개 모델 turn이 완료됐고 1개가 실행 중이다.
+필수 scientific-lineage 파일 12개 조각, 명세, 평가 엔진, 후보/통계 코드와 설정은 읽기를 완료했다.
+전체 history와 큰 근거 source는 아직 부분 읽기 상태다. 파일마다 다음 offset이 증가하며 같은 완료
+파일을 반복 읽는 정황은 없다. 한 조각마다 새 모델 turn을 거치는 준비 절차가 실제 소요를 늘린다.
+
+[event686 읽기 영수증](evidence/etf-exploration-20260930/first-mission-preparation-priority-applied-20261006.json)을
+별도로 보존했다. 이번 확인에는 운영 변경이 없다. programme의 실제 science job·trial·예약은 모두0이고,
+실제 계산 시간도0초다. 이후 challenge·selection·implementation을 정상 경로로 따라 실제3070 실행을
+확인하기 전까지 현재 INTENT는 완료가 아니다.
