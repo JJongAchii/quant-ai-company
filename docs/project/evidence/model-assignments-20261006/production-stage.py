@@ -71,7 +71,14 @@ def stage(archive, digest, commit):
             for p in overlay.rglob("*") if p.is_file()} != {r["file"]: r["after"] for r in plan["changed"]}:
             raise RuntimeError("overlay_manifest_mismatch")
         tag = "quant-company-model-assignments:" + commit + "-" + base[7:19]
-        run(["docker", "build", "--network=none", "--pull=false", "--build-arg", "BASE_IMAGE=" + base,
+        # BuildKit resolves FROM by repository tag; a bare sha256 image ID would
+        # be interpreted as a registry repository. Tag only this exact local ID.
+        base_tag = "quant-company-model-base:" + base[7:]
+        run(["docker", "tag", base, base_tag])
+        if json.loads(run(["docker", "image", "inspect", base_tag]))[0]["Id"] != base:
+            raise RuntimeError("operator_base_tag_changed")
+        run(["docker", "build", "--network=none", "--pull=false", "--build-arg", "BASE_IMAGE=" + base_tag,
+             "--build-arg", "BASE_IMAGE_ID=" + base,
              "--build-arg", "ASSIGNMENTS_COMMIT=" + commit, "-t", tag,
              "-f", str(ROOT / "Dockerfile.model-assignments"), str(overlay.parent.parent)], timeout=900)
         built = json.loads(run(["docker", "image", "inspect", tag]))[0]
@@ -87,6 +94,8 @@ def stage(archive, digest, commit):
         record["images"][base] = {"id": built["Id"], "tag": tag, "services": plan["services"],
                                   "changed": plan["changed"]}
         save(record)
+        print(json.dumps({"state": "staging", "built_images": len(record["images"]),
+                          "services": plan["services"]}), flush=True)
     record["state"] = "staged"
     save(record)
     print(json.dumps({"state": "staged", "commit": commit, "images": record["images"]}))

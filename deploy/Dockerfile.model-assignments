@@ -4,9 +4,10 @@ ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 ARG BASE_IMAGE
 ARG ASSIGNMENTS_COMMIT
+ARG BASE_IMAGE_ID
 USER root
 COPY overlay/quant_company /tmp/model-assignments-overlay
 RUN python -c 'import importlib.util,pathlib,shutil; root=pathlib.Path(importlib.util.find_spec("quant_company").origin).parent; incoming=pathlib.Path("/tmp/model-assignments-overlay"); files=[p for p in incoming.rglob("*") if p.is_file()]; [(root/p.relative_to(incoming)).parent.mkdir(parents=True,exist_ok=True) for p in files]; [shutil.copyfile(p,root/p.relative_to(incoming)) for p in files]; [(root/p.relative_to(incoming)).chmod(0o644) for p in files]; [c.unlink() for p in files if p.suffix==".py" for c in (root/p.relative_to(incoming)).parent.glob("__pycache__/"+p.stem+".*.pyc")]; shutil.rmtree(incoming)'
 USER 10001:10001
 LABEL io.quant-company.model-assignments=$ASSIGNMENTS_COMMIT
-LABEL io.quant-company.model-assignments.base-id=$BASE_IMAGE
+LABEL io.quant-company.model-assignments.base-id=$BASE_IMAGE_ID
