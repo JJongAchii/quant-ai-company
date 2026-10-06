@@ -41,6 +41,7 @@ WITH latest_stage AS (
  ORDER BY created_at DESC,id DESC LIMIT 1
 )
 SELECT json_build_object(
+ 'available_files',(SELECT context->'available_files' FROM latest_stage),
  'stage',(SELECT row_to_json(s) FROM (SELECT id,state,attempt,error,retry_at,task_id,
    context->'required_data_reads' AS required_data_reads
    FROM latest_stage)s),
