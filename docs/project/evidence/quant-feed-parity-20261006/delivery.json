@@ -1,0 +1,332 @@
+{
+  "checked_at": "2026-10-06 00:30:04.161184+00:00",
+  "policy": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+  "checks": {
+    "authorized": true,
+    "publication_enabled": true,
+    "seven_rows": true,
+    "all_delivered": true,
+    "all_current_policy": true,
+    "all_independent_critics_passed": true,
+    "one_send_each": true,
+    "card_budgets": true,
+    "historic_bad_post_unchanged": true,
+    "all_slack_links_confirmed": true,
+    "correct_quant_bot": true
+  },
+  "delivered_count": 7,
+  "publications": [
+    {
+      "id": "5d5e81ce-b0c0-5013-b42e-902a73f47858",
+      "document_id": "93f7241882387d86a7d2ad599fe5f23c4284f4b42e1930297b873f3b9def93e0",
+      "channel": "C0C3K8ZB9PB",
+      "policy_digest": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+      "status": "delivered",
+      "sent_ts": "1791244947.921039",
+      "error": null,
+      "attempts": 1,
+      "agent": "quant_scout",
+      "title": "From Intraday Orderbook to Imbalance Price: Understanding Cross-Market Interaction",
+      "published_on": "2026-09-29",
+      "original_sha256": "99c9497fc3b27d88a7b4bf77c360015186daf0b605a9868b2d322696073ca687",
+      "card_sha256": "d9996c477615e9efecbc8fef0e1c80efdf510bb6803715abffce0d403d5f88cd",
+      "card_characters": 2376,
+      "critic_passed": true,
+      "current_policy": true,
+      "sent_kst": "2026-10-06T09:02:27.921039+09:00",
+      "slack_permalink_confirmed": true,
+      "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791244947921039",
+      "bot_identity_confirmed": true
+    },
+    {
+      "id": "9e85fbec-71ae-5db4-b18b-d4d0f2d7941d",
+      "document_id": "6d5b749f33104fcd5908cf4384feb15e55b03f2578f608fa9d421e3df22f245a",
+      "channel": "C0C3K8ZB9PB",
+      "policy_digest": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+      "status": "delivered",
+      "sent_ts": "1791245008.967099",
+      "error": null,
+      "attempts": 1,
+      "agent": "quant_scout",
+      "title": "A Generalized Langevin Model of Latent Liquidity and Concave Price Impact",
+      "published_on": "2026-09-29",
+      "original_sha256": "dc0ec51b5360eb3c488aa12b77432f904df9b371e84f123b24a86358c83a112e",
+      "card_sha256": "3a8fb7ac08faec34639325b86ad5fe9ae9c300da816d6b42f5c4e5d41ed98cbb",
+      "card_characters": 2086,
+      "critic_passed": true,
+      "current_policy": true,
+      "sent_kst": "2026-10-06T09:03:28.967099+09:00",
+      "slack_permalink_confirmed": true,
+      "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791245008967099",
+      "bot_identity_confirmed": true
+    },
+    {
+      "id": "d4a8fb1e-b071-537f-9dc5-2e0c6a82b6df",
+      "document_id": "13d3ba2e288703e9b833d34a626e6eb42b8f08ac4e0dcbe791e4f307e519af64",
+      "channel": "C0C3K8ZB9PB",
+      "policy_digest": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+      "status": "delivered",
+      "sent_ts": "1791245070.069959",
+      "error": null,
+      "attempts": 1,
+      "agent": "quant_scout",
+      "title": "Understanding Order Flow",
+      "published_on": "2005-11-07",
+      "original_sha256": "67b6d4c94f0941ca8faa9768166cb9ea55359f04de8c24bebc5fdec6ca89ace1",
+      "card_sha256": "42b09762feed0c61699e825b5a2437561efd83fa3996d0b602449ba1d4ae7b99",
+      "card_characters": 2245,
+      "critic_passed": true,
+      "current_policy": true,
+      "sent_kst": "2026-10-06T09:04:30.069959+09:00",
+      "slack_permalink_confirmed": true,
+      "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791245070069959",
+      "bot_identity_confirmed": true
+    },
+    {
+      "id": "5770b8a4-050e-5753-9d23-d62cecefef25",
+      "document_id": "f36b922d182219e07951f71168194525496bcae22ec5b81d785cd28b6b53bf86",
+      "channel": "C0C3K8ZB9PB",
+      "policy_digest": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+      "status": "delivered",
+      "sent_ts": "1791245131.192679",
+      "error": null,
+      "attempts": 1,
+      "agent": "quant_scout",
+      "title": "When Hedging Changes the Payoff: Option Replication with Price Impact and Execution Costs",
+      "published_on": "2026-09-28",
+      "original_sha256": "ba3618e947cc1f56d8088d2217ad9dbb5c018216cd772a92ed4a936eb8e5534c",
+      "card_sha256": "d48fab598487749f35f85311e35d5e4d91484e236a26f39ee9cd831ee957325a",
+      "card_characters": 1973,
+      "critic_passed": true,
+      "current_policy": true,
+      "sent_kst": "2026-10-06T09:05:31.192679+09:00",
+      "slack_permalink_confirmed": true,
+      "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791245131192679",
+      "bot_identity_confirmed": true
+    },
+    {
+      "id": "bcb61b6f-1bf5-5308-8859-1aa70dc21f4e",
+      "document_id": "4674db8816f6c8b6a90d9b9e359e1dc79f928642f05aa62d42a732370b1f1594",
+      "channel": "C0C3K8ZB9PB",
+      "policy_digest": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+      "status": "delivered",
+      "sent_ts": "1791245192.520369",
+      "error": null,
+      "attempts": 1,
+      "agent": "quant_scout",
+      "title": "Stochastic Knothe-Rosenblatt: Light-speed Calibration of Stochastic Local Volatility Models",
+      "published_on": "2026-09-30",
+      "original_sha256": "c36ed23a857d3d0b9a3fef7a840c276cf11b0a4ea3a8efd3c73cde869353dee1",
+      "card_sha256": "0bf782fec243e72d3398cb9051d2fe2601ded5578a5a6fc96ae12f4e8c350a6b",
+      "card_characters": 2092,
+      "critic_passed": true,
+      "current_policy": true,
+      "sent_kst": "2026-10-06T09:06:32.520369+09:00",
+      "slack_permalink_confirmed": true,
+      "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791245192520369",
+      "bot_identity_confirmed": true
+    },
+    {
+      "id": "94e0dac9-d677-5a11-aafb-f971c7990711",
+      "document_id": "7ca6443058e1c87e4cd3acef87590281a96ff6495896d8ddf22f8b90f74970d9",
+      "channel": "C0C3K8ZB9PB",
+      "policy_digest": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+      "status": "delivered",
+      "sent_ts": "1791245253.615139",
+      "error": null,
+      "attempts": 1,
+      "agent": "quant_scout",
+      "title": "Price Discovery at the Boundary of Contractual Decidability: Terminal-Value Gaps, Trading Availability, and Venue Finality on Kalshi",
+      "published_on": "2026-09-16",
+      "original_sha256": "563bbe2ef873ac46ac2ad11a087ffd8aa53f66299d1d57c9b8569eed140205e9",
+      "card_sha256": "30794fe10d07af9a85907a9ff11f6e1404e135a00781a23bc847cdd137bc71ce",
+      "card_characters": 2390,
+      "critic_passed": true,
+      "current_policy": true,
+      "sent_kst": "2026-10-06T09:07:33.615139+09:00",
+      "slack_permalink_confirmed": true,
+      "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791245253615139",
+      "bot_identity_confirmed": true
+    },
+    {
+      "id": "f81016bb-f7ec-5d4f-b53c-f3c9a1219882",
+      "document_id": "ef46b05e5d37904f07e8d4c2b55b3448a01c8edd553855f1ad36971710726991",
+      "channel": "C0C3K8ZB9PB",
+      "policy_digest": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+      "status": "delivered",
+      "sent_ts": "1791245314.272139",
+      "error": null,
+      "attempts": 1,
+      "agent": "quant_scout",
+      "title": "Oracle-Parametrized Constant Function Market Makers: From Price Feeds to Pricing Rules",
+      "published_on": "2026-09-27",
+      "original_sha256": "f921bd983866ae43c2c409058c4220605f42437ad752bcdaf22418a8d646d3e4",
+      "card_sha256": "123f85feff11f4d907aedaf37c6b448282ce022e2a463a7d7d19e391de11e176",
+      "card_characters": 2012,
+      "critic_passed": true,
+      "current_policy": true,
+      "sent_kst": "2026-10-06T09:08:34.272139+09:00",
+      "slack_permalink_confirmed": true,
+      "permalink": "https://achiisquantresearch.slack.com/archives/C0C3K8ZB9PB/p1791245314272139",
+      "bot_identity_confirmed": true
+    }
+  ],
+  "recent_calls": [
+    {
+      "id": "quant-feed-28cca791-7275-495f-9d06-a0c2410be01d",
+      "stage": "repair",
+      "state": "blocked",
+      "error": "invalid_quant_proposal",
+      "policy_digest": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+      "created_at": "2026-10-06 00:27:05.776266+00:00",
+      "completed_at": "2026-10-06 00:27:57.880543+00:00"
+    },
+    {
+      "id": "quant-feed-1f6ed4c6-e34a-46e0-af83-23a33a2c9d75",
+      "stage": "review",
+      "state": "completed",
+      "error": null,
+      "policy_digest": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+      "created_at": "2026-10-06 00:26:18.471288+00:00",
+      "completed_at": "2026-10-06 00:26:45.606233+00:00"
+    },
+    {
+      "id": "quant-feed-43a03e9e-738f-4be2-95d4-8ba5d3272505",
+      "stage": "review",
+      "state": "completed",
+      "error": null,
+      "policy_digest": "0c3a76a09091720ad899d2b9c4d1aefe4aa6f36d58d0d47528076f034c38f5f6",
+      "created_at": "2026-10-05 23:55:31.580080+00:00",
+      "completed_at": "2026-10-05 23:56:17.631849+00:00"
+    },
+    {
+      "id": "quant-feed-81e0f7cd-c42f-483a-b740-3d446bca885a",
+      "stage": "discover",
+      "state": "completed",
+      "error": null,
+      "policy_digest": "0c3a76a09091720ad899d2b9c4d1aefe4aa6f36d58d0d47528076f034c38f5f6",
+      "created_at": "2026-10-05 23:04:57.845762+00:00",
+      "completed_at": "2026-10-05 23:05:30.316753+00:00"
+    },
+    {
+      "id": "quant-feed-43fe8f83-1c30-43ae-99ed-f827d71d637a",
+      "stage": "repair",
+      "state": "blocked",
+      "error": "invalid_quant_proposal",
+      "policy_digest": "0c3a76a09091720ad899d2b9c4d1aefe4aa6f36d58d0d47528076f034c38f5f6",
+      "created_at": "2026-10-03 14:19:49.825317+00:00",
+      "completed_at": "2026-10-03 14:20:36.025900+00:00"
+    },
+    {
+      "id": "quant-feed-6b816f42-0bf7-49d6-8e12-b0a852d1181b",
+      "stage": "review",
+      "state": "completed",
+      "error": null,
+      "policy_digest": "0c3a76a09091720ad899d2b9c4d1aefe4aa6f36d58d0d47528076f034c38f5f6",
+      "created_at": "2026-10-03 14:18:18.856886+00:00",
+      "completed_at": "2026-10-03 14:19:29.650098+00:00"
+    }
+  ],
+  "sources": [
+    {
+      "id": "aqr",
+      "last_success": "2026-10-05 23:20:26.755617+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "arxiv-qfin",
+      "last_success": "2026-10-05 23:25:27.611069+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "author-versions",
+      "last_success": "2026-09-29 05:28:08.665973+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "bok",
+      "last_success": "2026-10-06 00:11:17.792853+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "journal-faj",
+      "last_success": "2026-10-05 23:35:34.888457+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "journal-jf",
+      "last_success": "2026-10-05 23:40:39.627431+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "journal-jfe",
+      "last_success": "2026-10-05 23:45:43.571357+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "journal-rfs",
+      "last_success": "2026-10-05 23:50:49.312449+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "kcmi",
+      "last_success": "2026-10-06 00:16:35.887524+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "kjfs",
+      "last_success": "2026-10-05 23:55:51.707161+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "man",
+      "last_success": "2026-10-06 00:21:47.301756+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "nber-asset-pricing",
+      "last_success": "2026-10-05 23:30:30.688968+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "nber-classic-ml",
+      "last_success": "2026-09-29 05:38:14.149040+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "open-asset-pricing",
+      "last_success": "2026-10-06 00:01:05.511803+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "robeco",
+      "last_success": "2026-10-06 00:26:50.328863+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "two-sigma",
+      "last_success": "2026-10-06 00:06:08.596542+00:00",
+      "failures": 0,
+      "error": null
+    }
+  ],
+  "database_writes": 0,
+  "model_calls": 0,
+  "slack_writes": 0,
+  "slack_history_readback": "not_permitted_by_chat_write_only_bot"
+}

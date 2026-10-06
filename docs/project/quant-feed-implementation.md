@@ -1,5 +1,14 @@
 # Quant-feed implementation / qualification
 
+Current recovery, 2026-10-06: Quant Scout and dispatch now share the same policy
+after an allowlist-only worker refresh. Seven certainly-unsent, previously approved
+cards were deterministically revalidated against their unchanged originals and
+independent critiques, then delivered at 09:02–09:08 KST. All seven real Slack
+permalinks and the Quant Scout identity were verified. No old model request was
+reissued; all independent services and application/runtime images were preserved.
+Collection and editorial workflows are running. See
+[the scoped recovery record](evidence/quant-feed-parity-20261006/README.md).
+
 Current status, 2026-10-02: policy v21 is deployed on exact `ea092f4` and Quant Scout
 publication remains active. Context-limit failures are now document-local holds,
 not queue-wide stalls; normal Temporal processing has moved to another paper.

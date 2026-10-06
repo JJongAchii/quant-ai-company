@@ -1,0 +1,301 @@
+{
+  "checked_at": "2026-10-06 00:30:57.989710+00:00",
+  "publication_enabled": true,
+  "authorized": true,
+  "policy": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+  "stalled_document": {
+    "id": "c3f27c35c3ff8f16ef7bbfbc60593649bd2b3ca4cd4d5367d83487123f7b9b60",
+    "state": "held",
+    "stage": "revision",
+    "error": "quant_context_limit",
+    "reviewed_at": "2026-10-01 22:53:18.004633+00:00",
+    "original_sha256": "660444d311e850f8f96bb2bbc653d609c0d9cb26df7b9da4740c161f8243591f"
+  },
+  "fresh_policy_calls": [
+    {
+      "id": "quant-feed-28cca791-7275-495f-9d06-a0c2410be01d",
+      "document_id": "480452ab40afa6b48db8260658c6e9f3f162f0c0c880af1eda20fb37c3223b1a",
+      "stage": "repair",
+      "state": "blocked",
+      "error": "invalid_quant_proposal",
+      "created_at": "2026-10-06 00:27:05.776266+00:00",
+      "completed_at": "2026-10-06 00:27:57.880543+00:00",
+      "prompt_characters": 74709,
+      "contract": "quant_brief_v4",
+      "receipt": null
+    },
+    {
+      "id": "quant-feed-1f6ed4c6-e34a-46e0-af83-23a33a2c9d75",
+      "document_id": "480452ab40afa6b48db8260658c6e9f3f162f0c0c880af1eda20fb37c3223b1a",
+      "stage": "review",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-10-06 00:26:18.471288+00:00",
+      "completed_at": "2026-10-06 00:26:45.606233+00:00",
+      "prompt_characters": 71120,
+      "contract": "quant_brief_v4",
+      "receipt": {
+        "document_id": "480452ab40afa6b48db8260658c6e9f3f162f0c0c880af1eda20fb37c3223b1a",
+        "document_state": "ready",
+        "validation_issue": "quant_unretrieved_related_link",
+        "validation_issues": [
+          {
+            "code": "quant_unretrieved_related_link",
+            "field": "related_urls"
+          }
+        ]
+      }
+    }
+  ],
+  "document_states": [
+    {
+      "state": "held",
+      "n": 480
+    },
+    {
+      "state": "preview",
+      "n": 11
+    },
+    {
+      "state": "queued",
+      "n": 12
+    },
+    {
+      "state": "ready",
+      "n": 33
+    },
+    {
+      "state": "rejected",
+      "n": 82
+    }
+  ],
+  "sources": [
+    {
+      "id": "aqr",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-05 23:20:26.755617+00:00"
+    },
+    {
+      "id": "arxiv-qfin",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-05 23:25:27.611069+00:00"
+    },
+    {
+      "id": "author-versions",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-09-29 05:28:08.665973+00:00"
+    },
+    {
+      "id": "bok",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-06 00:11:17.792853+00:00"
+    },
+    {
+      "id": "journal-faj",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-05 23:35:34.888457+00:00"
+    },
+    {
+      "id": "journal-jf",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-05 23:40:39.627431+00:00"
+    },
+    {
+      "id": "journal-jfe",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-05 23:45:43.571357+00:00"
+    },
+    {
+      "id": "journal-rfs",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-05 23:50:49.312449+00:00"
+    },
+    {
+      "id": "kcmi",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-06 00:16:35.887524+00:00"
+    },
+    {
+      "id": "kjfs",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-05 23:55:51.707161+00:00"
+    },
+    {
+      "id": "man",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-06 00:21:47.301756+00:00"
+    },
+    {
+      "id": "nber-asset-pricing",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-05 23:30:30.688968+00:00"
+    },
+    {
+      "id": "nber-classic-ml",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-09-29 05:38:14.149040+00:00"
+    },
+    {
+      "id": "open-asset-pricing",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-06 00:01:05.511803+00:00"
+    },
+    {
+      "id": "robeco",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-06 00:26:50.328863+00:00"
+    },
+    {
+      "id": "two-sigma",
+      "failures": 0,
+      "error": null,
+      "last_success": "2026-10-06 00:06:08.596542+00:00"
+    }
+  ],
+  "latest_publications": [
+    {
+      "id": "f81016bb-f7ec-5d4f-b53c-f3c9a1219882",
+      "document_id": "ef46b05e5d37904f07e8d4c2b55b3448a01c8edd553855f1ad36971710726991",
+      "policy_digest": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+      "status": "delivered",
+      "sent_ts": "1791245314.272139",
+      "created_at": "2026-10-03 10:54:51.257214+00:00"
+    },
+    {
+      "id": "94e0dac9-d677-5a11-aafb-f971c7990711",
+      "document_id": "7ca6443058e1c87e4cd3acef87590281a96ff6495896d8ddf22f8b90f74970d9",
+      "policy_digest": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+      "status": "delivered",
+      "sent_ts": "1791245253.615139",
+      "created_at": "2026-10-03 09:20:33.325987+00:00"
+    },
+    {
+      "id": "bcb61b6f-1bf5-5308-8859-1aa70dc21f4e",
+      "document_id": "4674db8816f6c8b6a90d9b9e359e1dc79f928642f05aa62d42a732370b1f1594",
+      "policy_digest": "a7ce1ed52e68f8e1b314de51cff0389a77a430cfb4ab96a1a4d6a6b98068a3ef",
+      "status": "delivered",
+      "sent_ts": "1791245192.520369",
+      "created_at": "2026-10-03 01:37:51.851682+00:00"
+    }
+  ],
+  "historic_post": {
+    "status": "delivered",
+    "sent_ts": "1790146734.295959"
+  },
+  "workflows": [
+    {
+      "id": "company-quant-feed-collection-v1",
+      "status": "RUNNING",
+      "task_queue": "quant-company-quant-collection",
+      "events": [
+        {
+          "id": 411,
+          "type": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+          "time": "2026-10-06 00:26:49.032079"
+        },
+        {
+          "id": 412,
+          "type": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+          "time": "2026-10-06 00:26:52.967076"
+        },
+        {
+          "id": 413,
+          "type": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+          "time": "2026-10-06 00:26:52.967098"
+        },
+        {
+          "id": 414,
+          "type": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+          "time": "2026-10-06 00:26:52.980046"
+        },
+        {
+          "id": 415,
+          "type": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+          "time": "2026-10-06 00:26:53.002292"
+        },
+        {
+          "id": 416,
+          "type": "EVENT_TYPE_MARKER_RECORDED",
+          "time": "2026-10-06 00:26:53.002375"
+        },
+        {
+          "id": 417,
+          "type": "EVENT_TYPE_UPSERT_WORKFLOW_SEARCH_ATTRIBUTES",
+          "time": "2026-10-06 00:26:53.002498"
+        },
+        {
+          "id": 418,
+          "type": "EVENT_TYPE_TIMER_STARTED",
+          "time": "2026-10-06 00:26:53.002540",
+          "timer_seconds": 300
+        }
+      ]
+    },
+    {
+      "id": "company-quant-feed-editorial-v1",
+      "status": "RUNNING",
+      "task_queue": "quant-company-quant-model",
+      "events": [
+        {
+          "id": 1181,
+          "type": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+          "time": "2026-10-06 00:27:05.732006"
+        },
+        {
+          "id": 1182,
+          "type": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+          "time": "2026-10-06 00:27:05.746242"
+        },
+        {
+          "id": 1183,
+          "type": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+          "time": "2026-10-06 00:27:57.894926"
+        },
+        {
+          "id": 1184,
+          "type": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+          "time": "2026-10-06 00:27:57.894952"
+        },
+        {
+          "id": 1185,
+          "type": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+          "time": "2026-10-06 00:27:57.916045"
+        },
+        {
+          "id": 1186,
+          "type": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+          "time": "2026-10-06 00:27:57.949058"
+        },
+        {
+          "id": 1187,
+          "type": "EVENT_TYPE_MARKER_RECORDED",
+          "time": "2026-10-06 00:27:57.949162"
+        },
+        {
+          "id": 1188,
+          "type": "EVENT_TYPE_TIMER_STARTED",
+          "time": "2026-10-06 00:27:57.949176",
+          "timer_seconds": 1800
+        }
+      ]
+    }
+  ],
+  "model_calls_by_verifier": 0,
+  "database_writes_by_verifier": 0,
+  "slack_writes_by_verifier": 0
+}
