@@ -1,5 +1,5 @@
 {
-  "recorded_at": "2026-10-06T05:11:05.126670+00:00",
+  "recorded_at": "2026-10-06T05:33:52.267893+00:00",
   "repository_visibility": "PUBLIC confirmed20261001",
   "scope": "Metadata only. Complete originals/prompts/responses/assessments/data rows remain local Gitignored. Not a content certificate.",
   "private_local_gitignored": [
@@ -821,6 +821,21 @@
       "sha256": "d35c2341d93756b88d5f73a95f8dce753d51cf9ddc5b036925d045b284accdb3"
     },
     {
+      "path": "preview-installation-v56-reader-live-probe.json",
+      "bytes": 7162,
+      "sha256": "3e9bbbf4f6c17278d7a9284ff8a902d175de1d57469541aac0b0dfaddd6afecc"
+    },
+    {
+      "path": "preview-installation-v56-reader-stage.json",
+      "bytes": 807,
+      "sha256": "1bcf5985003e0f8677383695f87f7b3e3bb1fb7ae02c98028ac014dbf131b9a0"
+    },
+    {
+      "path": "preview-installation-v56-reader.json",
+      "bytes": 1389,
+      "sha256": "d6f998d304d0d902c6971af63a548cbd8d53d344fb46ae8eb0f523129e611c7c"
+    },
+    {
       "path": "preview-installation-v56-stage.json",
       "bytes": 1000,
       "sha256": "7b62e50449aaa16bca2ca07a0c7d50b6ba5cee6614026b109fd62c7687508e73"
@@ -846,9 +861,14 @@
       "sha256": "fc34451b29fa2c92ee499850ea5e0704eae7256d4ffcc5d00d73eb37e17d5b74"
     },
     {
+      "path": "prospective-pm-20261006-v56-reader-policy.json",
+      "bytes": 3656,
+      "sha256": "0bff46488bd59684f2b89bebac0d71c59e7bf0a9682b4157f38b045b32a77030"
+    },
+    {
       "path": "quality-summary.json",
-      "bytes": 7567,
-      "sha256": "193daa30c814a41f12f0e5a59477bf6e7087835db4be425c1e769b4b939c8108"
+      "bytes": 7937,
+      "sha256": "bcdf5003de922055d4cf439f360413bcf662fc70f84b3371450ecd18792aeb0e"
     },
     {
       "path": "regression-preview-resource-v50.json",
@@ -956,9 +976,14 @@
       "sha256": "aa56068a6e9e221621e2421422a794223585ea4f2311515a31c6d7f8f43a60df"
     },
     {
+      "path": "regression-v56-final-ci-equivalent.json",
+      "bytes": 1688,
+      "sha256": "d97c815c6837aa08eae16c93250b40ba07cb13c236e0d8b8921faaa898231e9c"
+    },
+    {
       "path": "regression-v56.json",
-      "bytes": 1580,
-      "sha256": "19f08f1726a525f2a29d3bd61e99aa2f189d050c57629fbe544fd4fc3aafd227"
+      "bytes": 1911,
+      "sha256": "e2eaadad41db179daa6329c7b37b1fe448661bbc700cf9548823f7069c1cc5b1"
     },
     {
       "path": "release-artifact-v55-prefix-correction.json",
@@ -1026,6 +1051,11 @@
       "sha256": "891e7b13d683d34e026d9904397925686575b347ea9ed2a3617a352f3381a50d"
     },
     {
+      "path": "release-gate-and-artifact-v56-reader.json",
+      "bytes": 1090,
+      "sha256": "bfcf8af4546fa8a9736bc03b1d7ce7e0f82bc6f9dd9a25092bbe2ba8a98a6117"
+    },
+    {
       "path": "repair-and-preview-v48.xml",
       "bytes": 1765,
       "sha256": "40074f7d6e2e32939df5cbab65b308d21739189da7c022882159ea9e7a2cf5b2"
@@ -1086,6 +1116,11 @@
       "sha256": "7ff8cb8e3b45a6681bcef8fa0642af3844d1519d2a795756dc69ce8631894b35"
     },
     {
+      "path": "source-preservation-and-preview-manifest-v56-reader.json",
+      "bytes": 3577,
+      "sha256": "dc7f49f1a2b1f4e17da414ba7d29c6a5b3d4035db33a6621eaa583575307183f"
+    },
+    {
       "path": "story-context-and-preview-v50.xml",
       "bytes": 18696,
       "sha256": "a83488f035713f764854ccefbb2e363482a2686c7fa24618a6904451d792b4e8"
@@ -1097,5 +1132,5 @@
     }
   ],
   "private_artifact_count": 130,
-  "public_artifact_count": 88
+  "public_artifact_count": 95
 }

@@ -1,11 +1,12 @@
 {
-  "at": "2026-10-06T05:11:05.126670+00:00",
-  "installed_commit": "0ff6657f98b175162609259394b1cec20382904a",
+  "at": "2026-10-06T05:33:52.099678+00:00",
+  "installed_commit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
   "validation_version": 56,
   "format_version": 15,
   "automatic_publication": false,
   "deployment": "preview_active_actual_cloud",
-  "source_ci_run": 37411764420,
+  "source_ci_run": null,
+  "verification": "Local same-command CI equivalent:1819passed,48explicit skips; GitHub checks absent for latest PR updates; previous integrated source CI37411764420success",
   "latest_completed_content_case": {
     "case": "on-demand-am-20261006-v51",
     "outcome": "closed_writer_preflight_failed",
@@ -42,7 +43,7 @@
     "token_scope": "Only completed real plan/write calls; excludes editing-thread Codex usage.",
     "readable_preview": "Private .local/analyst-on-demand-am-20261006-v51/draft-v55/brief.md; failed and never Slack-published."
   },
-  "next_frozen_policy": "prospective-pm-20261006-v56-integrated-policy.json",
+  "next_frozen_policy": "prospective-pm-20261006-v56-reader-policy.json",
   "next_content_status": "pending_not_yet_collected_or_evaluated",
   "next_schedule_kst": {
     "collection": "2026-10-06 19:10",
@@ -160,14 +161,19 @@
         "status": "RUNNING"
       }
     ],
-    "verification_receipt": "preview-installation-v56-live-probe.json"
+    "verification_receipt": "preview-installation-v56-reader-live-probe.json",
+    "reader_execution": {
+      "import_root": "/opt/company/src",
+      "company_credentials_excluded": true
+    }
   },
   "technical": {
     "regression_receipt": "regression-v56.json",
     "PostgreSQL": "real",
     "Temporal_local_tests": "real",
     "tests_model_and_slack": "simulated",
-    "cloud": "Actual installed workers, source verification, lake API read and Temporal workflow inspection"
+    "cloud": "Actual installed workers, source verification, lake API read and Temporal workflow inspection",
+    "final_same_command_verification": "regression-v56-final-ci-equivalent.json"
   },
   "remaining": [
     "Fresh PM original-to-visible-main review and all12 criteria with zero mechanical rejection.",

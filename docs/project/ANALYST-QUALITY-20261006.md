@@ -23,6 +23,8 @@ PM은 자료 선정, 작성, 독립 검토의 고유 요청을 최대 3개만 �
 
 최종 내용 통과에는 실제 새 원문과 본문의 대조 및 모든 내용 기준 통과가 필요하다. 매일의 자동 Slack 발송에는 별도로 정시 운영, 최근 5거래일 점검, 실제 전달·후속 질문 경로와 사용자 내용 확인이 남아 있다. 현재 공개 발송은 꺼져 있다.
 
-운영 상태와 설치된 소스는 [최신 상태](evidence/briefing-analyst-quality-20261001/quality-summary.json), [실행 정책](evidence/briefing-analyst-quality-20261001/prospective-pm-20261006-v56-integrated-policy.json), [설치 변경 목록](evidence/briefing-analyst-quality-20261001/source-preservation-and-preview-manifest-v56-integrated.json), [회귀 검사](evidence/briefing-analyst-quality-20261001/regression-v56.json)에 기록한다.
+운영 상태와 설치된 소스는 [최신 상태](evidence/briefing-analyst-quality-20261001/quality-summary.json), [실행 정책](evidence/briefing-analyst-quality-20261001/prospective-pm-20261006-v56-reader-policy.json), [설치 변경 목록](evidence/briefing-analyst-quality-20261001/source-preservation-and-preview-manifest-v56-reader.json), [회귀 검사](evidence/briefing-analyst-quality-20261001/regression-v56.json)에 기록한다.
 
-설치 후 실제 레이크 읽기에서 한국 지수 두 개의 10월 2일 마감과 10월 1일 비교 기준을 확인했고 기계 검사 오류는 0건이었다. 다만 ETF 수익률 자료는 10월 1일까지여서 최신 미국 거래일 자료로 표시하지 않는다. 이 운영 검사는 모델의 내용 평가와 구분한다. 초기 검사 프로세스를 기존 워커 안에서 실행했을 때 자식 프로세스가 메모리 부족으로 종료됐으므로, 별도 읽기 전용 컨테이너에서 수집·검증을 다시 확인했다.
+설치 후 실제 레이크 읽기에서 한국 지수 두 개의 10월 2일 마감과 10월 1일 비교 기준을 확인했고 기계 검사 오류는 0건이었다. 다만 ETF 수익률 자료는 10월 1일까지여서 최신 미국 거래일 자료로 표시하지 않는다. 이 운영 검사는 모델의 내용 평가와 구분한다. 초기 검사 프로세스를 기존 워커 안에서 실행했을 때 자식 프로세스가 SIGKILL로 종료됐으므로, 별도 읽기 전용 컨테이너에서 수집·검증을 다시 확인했다.
+
+최종 설치 소스는 `e1e74d3cb1a25833c58a13baff3441f1381270ee`다. 회사 소스가 동일한 상태에서 CI와 같은 전체 명령으로 1,819개 검사 통과, 환경 조건이 명시된 48개 건너뜀, 실패 0건을 확인했다. 최신 PR 업데이트에는 GitHub 체크가 생성되지 않았으며 이를 GitHub CI 통과로 기록하지 않는다. 설치 후 자료 읽기 프로세스가 `/opt/company/src`의 검증된 코드만 사용하고 회사·모델 자격정보를 전달받지 않음을 실제로 확인했다. 수집·검토·자료 워크플로 3개가 실행 중이며 PM 자료를 확인하는 시작 시각 전이어서 해당 PM 행과 모델 호출은 아직 없다.

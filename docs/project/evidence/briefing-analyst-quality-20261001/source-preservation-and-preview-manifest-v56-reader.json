@@ -1,0 +1,75 @@
+{
+  "at": "2026-10-06T04:47:51.863777+00:00",
+  "scope": "Technical reader source-path pin within the same owner-approved private preview and same PM edition/budget; no new or reset content case.",
+  "previous_commit": "0ff6657f98b175162609259394b1cec20382904a",
+  "candidate_commit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
+  "runtime_changes": [
+    {
+      "path": "src/quant_company/briefing/data.py",
+      "kind": "modify",
+      "before_sha256": "9b9e2e272fb5136bfd7931783ca071876e41f5488f7fbc5d64dfa82661eb6241",
+      "after_sha256": "f6ee6ada51b86da89d27802d01908a56d5ffecbef1dce27c50b31df755276c22"
+    }
+  ],
+  "runtime_changes_count": 1,
+  "deleted_paths": [],
+  "preserve_codex_runtime": true,
+  "preserve_api": true,
+  "implementation_version": {
+    "format": 15,
+    "validation": 56,
+    "quote_reference": 1
+  },
+  "protected_preview_approval": {
+    "owner_approval_id": "chat-analyst-preview-approved-20261002",
+    "answer": "발송 없는 미리보기 설치 승인",
+    "scope": "Analyst/data-worker/brief-lane private preview; publication stays disabled; company/research/providers, credentials and existing receipts preserved.",
+    "autonomous_policy": "Unchanged; use the explicitly owner-authorized operator path."
+  },
+  "proposed_preview": {
+    "publication": false,
+    "channel": "C0C2E59B1AA",
+    "owner": "U0C250E23NW",
+    "source_notes": true,
+    "max_revisions": 0,
+    "evaluation_edition_id": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+    "data_worker_memory_bytes": 402653184,
+    "selected_updates": [
+      "news-worker",
+      "dispatch",
+      "briefing-data-worker"
+    ],
+    "all_other_services": "Preserve exact containers and images, including the actual API hotfix and busy Codex runtime; preserve credentials, mounts and receipts."
+  },
+  "build": {
+    "mode": "code_only_identical_lock",
+    "base_inputs_byte_identical": true,
+    "source_and_qdata_verification": "Required; build app image only, preserve existing pinned Codex image."
+  },
+  "source_archive_scope": [
+    "src",
+    "deploy",
+    "pyproject.toml",
+    "uv.lock",
+    "README.md"
+  ],
+  "source_archive_prefix": "quant-company/",
+  "installed_company_and_research_source_preserved_exactly": true,
+  "existing_non_analyst_roles_preserved_exactly": true,
+  "qdata_code_archive_identity_preserved": true,
+  "analysis_source_preserved_exactly": false,
+  "frozen_content_policy": "prospective-pm-20261006-v56-reader-policy.json",
+  "frozen_content_policy_sha256": "0bff46488bd59684f2b89bebac0d71c59e7bf0a9682b4157f38b045b32a77030",
+  "runtime_archive_receipt": "release-gate-and-artifact-v56-reader.json",
+  "automatic_model_calls_for_other_editions": 0,
+  "operating_corrections": [
+    "Independent-original coverage gate before planner and zero native model searches for pinned evaluation.",
+    "Deterministic compact quote/candidate references and original-text ranges; retain complete originals and main text under the 88000-character limit.",
+    "Calendar dates and signed decreases validate without false positives; operative forecast dates must remain in their own visible paragraph.",
+    "Canonical KRX observations carry exact previous-session rows for AM; no model reconstruction of locked prices.",
+    "Guard failures retain an explicitly failed readable private preview and stop before critic; no failed proposal becomes next-edition evidence.",
+    "Worker-only deployment drains brief lane; actual API hotfix, shared Codex runtime and other account work remain running."
+  ],
+  "deployment": "not_performed",
+  "slack": "not_called"
+}

@@ -45,5 +45,12 @@
     "all_unselected_title_index": 80,
     "full_originals_and_visible_main_unchanged": true,
     "model_calls": 0
+  },
+  "reader_subprocess_test": {
+    "source_commit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
+    "tests": 19,
+    "failures": 0,
+    "errors": 0,
+    "scope": "Actual spawned Python producer/consumer source selection and credential isolation; other suite checks real PostgreSQL as available. Not a live Codex or Slack run."
   }
 }

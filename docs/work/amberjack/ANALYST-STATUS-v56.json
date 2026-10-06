@@ -1,21 +1,23 @@
 {
-  "recorded_at": "2026-10-06T05:11:05.126670+00:00",
+  "recorded_at": "2026-10-06T05:33:52.099678+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
   "owner_preview_approval": "chat-analyst-preview-approved-20261002",
   "latest_request": "이어서 진행해",
-  "source_commit": "0ff6657f98b175162609259394b1cec20382904a",
+  "source_commit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
   "goal_complete": false,
   "deliverables": {
     "CONTENT_REPAIR": {
       "status": "verified",
       "evidence": [
         "docs/project/evidence/briefing-analyst-quality-20261001/regression-v56.json",
-        "docs/project/evidence/briefing-analyst-quality-20261001/github-ci-v56-integrated.json"
+        "docs/project/evidence/briefing-analyst-quality-20261001/github-ci-v56-integrated.json",
+        "docs/project/evidence/briefing-analyst-quality-20261001/regression-v56-final-ci-equivalent.json"
       ],
       "evidenceSha256": {
-        "docs/project/evidence/briefing-analyst-quality-20261001/regression-v56.json": "19f08f1726a525f2a29d3bd61e99aa2f189d050c57629fbe544fd4fc3aafd227",
-        "docs/project/evidence/briefing-analyst-quality-20261001/github-ci-v56-integrated.json": "790b5071542ae9907cd4375ea8ff767403586bae0d9342ea07caaa2a27923b74"
+        "docs/project/evidence/briefing-analyst-quality-20261001/regression-v56.json": "e2eaadad41db179daa6329c7b37b1fe448661bbc700cf9548823f7069c1cc5b1",
+        "docs/project/evidence/briefing-analyst-quality-20261001/github-ci-v56-integrated.json": "790b5071542ae9907cd4375ea8ff767403586bae0d9342ea07caaa2a27923b74",
+        "docs/project/evidence/briefing-analyst-quality-20261001/regression-v56-final-ci-equivalent.json": "d97c815c6837aa08eae16c93250b40ba07cb13c236e0d8b8921faaa898231e9c"
       }
     },
     "FRESH_EVALUATION": {
@@ -23,23 +25,23 @@
       "note": "Fresh AM closed after writer guard failure, two completed calls. Prospectively frozen PM configured for19:30 cutoff/20:15 goal, max3phase calls and zero repairs. No expert quality pass yet.",
       "evidence": [
         "docs/project/evidence/briefing-analyst-quality-20261001/fresh-am-20261006-v51-closed-outcome.json",
-        "docs/project/evidence/briefing-analyst-quality-20261001/prospective-pm-20261006-v56-integrated-policy.json"
+        "docs/project/evidence/briefing-analyst-quality-20261001/prospective-pm-20261006-v56-reader-policy.json"
       ],
       "evidenceSha256": {
         "docs/project/evidence/briefing-analyst-quality-20261001/fresh-am-20261006-v51-closed-outcome.json": "7dd7f7c5eea0851ae1112b76d119208a02b8334a3778f8f55713158efa2c7bda",
-        "docs/project/evidence/briefing-analyst-quality-20261001/prospective-pm-20261006-v56-integrated-policy.json": "fc34451b29fa2c92ee499850ea5e0704eae7256d4ffcc5d00d73eb37e17d5b74"
+        "docs/project/evidence/briefing-analyst-quality-20261001/prospective-pm-20261006-v56-reader-policy.json": "0bff46488bd59684f2b89bebac0d71c59e7bf0a9682b4157f38b045b32a77030"
       }
     },
     "PREVIEW_READINESS": {
       "status": "verified",
       "scope": "Private preview installation and actual read-only operating checks; automatic publication remains unqualified.",
       "evidence": [
-        "docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-v56-integrated.json",
-        "docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-v56-live-probe.json"
+        "docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-v56-reader.json",
+        "docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-v56-reader-live-probe.json"
       ],
       "evidenceSha256": {
-        "docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-v56-integrated.json": "fac611ed868571d2ef83021029f7710f8dbd49127b20216cfdfdd9c702b7918d",
-        "docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-v56-live-probe.json": "d35c2341d93756b88d5f73a95f8dce753d51cf9ddc5b036925d045b284accdb3"
+        "docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-v56-reader.json": "d6f998d304d0d902c6971af63a548cbd8d53d344fb46ae8eb0f523129e611c7c",
+        "docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-v56-reader-live-probe.json": "3e9bbbf4f6c17278d7a9284ff8a902d175de1d57469541aac0b0dfaddd6afecc"
       }
     }
   }
