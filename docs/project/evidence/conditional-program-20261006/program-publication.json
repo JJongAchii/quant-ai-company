@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-05T23:04:59.968962+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "program_state": "draft",
+  "binding_id": "dd69d4b8-78c0-4c78-b7ee-41c7cf7d5972",
+  "message_id": "38da0257-84e3-4fc2-9c05-63b56424ee75",
+  "outbox_status": "pending",
+  "sent_ts": null,
+  "actual_packet_bytes_and_scope_verified": true,
+  "owner_program_approved": false,
+  "actual_staff_decisions_observed": false,
+  "scientific_trials_started": 0
+}

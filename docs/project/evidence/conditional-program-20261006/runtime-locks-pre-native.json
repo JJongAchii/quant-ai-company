@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06T00:37:13.196470+00:00",
+  "locks": {
+    ".runtime.lock": {
+      "exists": true,
+      "owned": false
+    },
+    ".runtime-news.lock": {
+      "exists": true,
+      "owned": false
+    },
+    ".runtime-quant.lock": {
+      "exists": true,
+      "owned": false
+    },
+    ".runtime-brief.lock": {
+      "exists": true,
+      "owned": false
+    }
+  },
+  "running_receipts": [
+    {
+      "request_id": "news-brief-eval-ce9c6064e7609b7b643c6cfe8ec2f4a7",
+      "input_digest": "c003fa482c391de636a294f8a8e5f09e06732e8008a2b5fa14222114fe199140",
+      "state": "running",
+      "started_at": 1790841401.4286177,
+      "cli_version": "0.154.0",
+      "account": {
+        "profile": "primary",
+        "revision": 0
+      },
+      "execution_lane": "news",
+      "sha256": "1aea307a2edb2664002b2d0aa32cd746354d30ed558f0249c11151552aab6cf6"
+    },
+    {
+      "request_id": "news-brief-eval-1f0c48f09fb528b207037c819a916032",
+      "input_digest": "9ff5154c8845bb1867cad6139d19f6fa9978ea14d98ef5c3c7e91fb592928fd8",
+      "state": "running",
+      "started_at": 1790660887.49714,
+      "cli_version": "0.154.0",
+      "account": {
+        "profile": "primary",
+        "revision": 0
+      },
+      "execution_lane": "news",
+      "sha256": "5da6d597444fb14d91b736aa0ebc3fd999e5583c7b1b8d5469bf24a3b9acb313"
+    }
+  ],
+  "model_requests_invoked_or_cancelled": 0,
+  "receipt_files_modified": false
+}

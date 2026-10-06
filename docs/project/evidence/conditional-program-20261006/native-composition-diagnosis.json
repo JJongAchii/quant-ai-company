@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06T00:54:41.614504+00:00",
+  "phase": "read_only_composition_diagnosis",
+  "services": {
+    "api": {
+      "compose_files": [
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml",
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml",
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml",
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml",
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml",
+        "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json",
+        "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json"
+      ],
+      "expected_count": 8,
+      "desired_count": 8,
+      "match": true,
+      "missing_live_mounts": [],
+      "additional_desired_mounts": []
+    },
+    "dispatch": {
+      "compose_files": [
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml",
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml",
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml",
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml",
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml",
+        "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json",
+        "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json"
+      ],
+      "expected_count": 5,
+      "desired_count": 5,
+      "match": true,
+      "missing_live_mounts": [],
+      "additional_desired_mounts": []
+    },
+    "slack-socket": {
+      "compose_files": [
+        "/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/compose.yaml",
+        "/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/research.compose.yaml",
+        "/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/autonomous-research.compose.yaml",
+        "/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/model-accounts.compose.yaml",
+        "/var/lib/quant-company/config/exploration-3c848af95dc33b7da444a55018fd41d374c10025.compose.json",
+        "/var/lib/quant-company/config/exploration-3c848af95dc33b7da444a55018fd41d374c10025-attempt2.compose.json",
+        "/var/lib/quant-company/config/exploration-79586479aeef07554be311951e40bbe00c33cafe-cancel.compose.json",
+        "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json",
+        "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json"
+      ],
+      "expected_count": 5,
+      "desired_count": 5,
+      "match": true,
+      "missing_live_mounts": [],
+      "additional_desired_mounts": []
+    },
+    "worker": {
+      "compose_files": [
+        "/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/compose.yaml",
+        "/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/research.compose.yaml",
+        "/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/autonomous-research.compose.yaml",
+        "/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/model-accounts.compose.yaml",
+        "/var/lib/quant-company/config/private-output-0286ba3e7426ff6546b90e6926124ae65e71ba79.compose.json",
+        "/var/lib/quant-company/config/exploration-3c848af95dc33b7da444a55018fd41d374c10025.compose.json",
+        "/var/lib/quant-company/config/exploration-3c848af95dc33b7da444a55018fd41d374c10025-attempt2.compose.json",
+        "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json",
+        "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json"
+      ],
+      "expected_count": 10,
+      "desired_count": 10,
+      "match": true,
+      "missing_live_mounts": [],
+      "additional_desired_mounts": []
+    },
+    "account-gateway": {
+      "compose_files": [
+        "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml",
+        "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml",
+        "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml",
+        "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml"
+      ],
+      "expected_count": 4,
+      "desired_count": 4,
+      "match": true,
+      "missing_live_mounts": [],
+      "additional_desired_mounts": []
+    },
+    "codex-runtime": {
+      "compose_files": [
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml",
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml",
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml",
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml",
+        "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml"
+      ],
+      "expected_count": 4,
+      "desired_count": 4,
+      "match": true,
+      "missing_live_mounts": [],
+      "additional_desired_mounts": []
+    }
+  },
+  "credentials_read": false,
+  "production_mutated": false
+}

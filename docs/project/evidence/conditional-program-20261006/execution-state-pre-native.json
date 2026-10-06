@@ -1,0 +1,39 @@
+{
+  "observed_at": "2026-10-06T00:33:40.081909+00:00",
+  "running_turns": 0,
+  "active_jobs": 0,
+  "sending_outbox": 0,
+  "model_calls": [
+    {
+      "request_id": "news-screen-183fb269-2703-4707-a5f3-1e201f5ed5bd",
+      "input_digest": "9d8ee86aaba1d22765d8134ae5ed37133f784382a7e6f8ef8ccf9f7d99ba2760",
+      "profile": "primary",
+      "revision": 2,
+      "state": "uncertain",
+      "updated_at": "2026-10-06T00:02:57.043976+00:00",
+      "quant_call_state": null,
+      "quant_call_error": null,
+      "quant_completed_at": null,
+      "runtime_receipt": {
+        "version": 1,
+        "request_id": "news-screen-183fb269-2703-4707-a5f3-1e201f5ed5bd",
+        "input_digest": "9d8ee86aaba1d22765d8134ae5ed37133f784382a7e6f8ef8ccf9f7d99ba2760",
+        "state": "failed",
+        "account": {
+          "profile": "primary",
+          "revision": 2
+        },
+        "started_at": 1791244974.0290422,
+        "completed_at": null
+      },
+      "runtime_fault_code": "uncertain"
+    }
+  ],
+  "runtime_pause": {
+    "id": 1,
+    "paused_until": null,
+    "reason": null
+  },
+  "production_mutated": false,
+  "model_requests_replayed": 0
+}

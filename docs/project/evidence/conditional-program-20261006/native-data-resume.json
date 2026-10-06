@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06 01:09:05.427735+00:00",
+  "phase": "technical_hold_released_for_normal_controller",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "stage_id": "ce867fc3-a194-5327-b312-864b93538d34",
+  "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "output_contract": "research_stage_v1",
+  "prior_hold": {
+    "reason": "repeated_data_output_contract_failure",
+    "receipts": [
+      {
+        "request_id": "dff80fd7-40c6-5ee2-96a8-1ac8e3913c38",
+        "receipt_sha256": "eae84f781128dd1b9651a30c3c99885dd80b48a7375b4fbde8c171f5602e463e"
+      },
+      {
+        "request_id": "da444092-a806-5047-bc21-65411f92fe1c",
+        "receipt_sha256": "b817af88111ab0d980690c75db7e75835fcadb4e12db1a687cacec408d8b2010"
+      },
+      {
+        "request_id": "40ba5eb0-f9aa-5b0d-9c21-6de04989d4b1",
+        "receipt_sha256": "2f32ce11288eb8820aa9c66725f692e26aed1931d01807385272843a903a4df4"
+      },
+      {
+        "request_id": "578a8874-b2f8-5762-b872-37aec557dc76",
+        "receipt_sha256": "9dd3b5ee0161c45993891a52fa79d5775c13382277825c59029881e664841e61"
+      }
+    ],
+    "failure_count": 4,
+    "operator_scope": "Technical output repair; no data admission, selection or scientific judgment."
+  },
+  "ci_run_id": 37393064952,
+  "backup_sha256": "8331d198bba7996201ce79614138eea862bb86e167d9454ec4994d6dd4c12212",
+  "prior_attempts_preserved": 4,
+  "native_failure_limit": 3,
+  "scope": "Technical response contract repair only.",
+  "original_signed_approval_preserved": true,
+  "employee_decision_applied": false,
+  "scientific_budget_reset": false,
+  "model_requests_replayed": 0,
+  "frozen_failed_requests_modified": false
+}
