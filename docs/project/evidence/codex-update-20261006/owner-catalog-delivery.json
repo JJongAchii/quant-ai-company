@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-06T10:47:56.326210+00:00",
+  "owner_catalog_delivery": [
+    {
+      "command_id": "6b4f1209-6801-5130-a59f-511fc0a23596",
+      "action": "catalog",
+      "command_state": "completed",
+      "outcome": "catalog",
+      "completed_at": "2026-10-06T10:40:34.40165+00:00",
+      "outbox_status": "delivered",
+      "attempts": 1,
+      "sent_ts": "1791283236.648209",
+      "agent": "director",
+      "channel": "C0C3C6ELJ0P"
+    }
+  ],
+  "scope": "read-only actual command and committed delivery receipt; no message replay"
+}

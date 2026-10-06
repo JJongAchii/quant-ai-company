@@ -17,12 +17,12 @@
         },
         {
           "path": "docs/runbooks/model-assignments.md",
-          "sha256": "f9f6b209e023"
+          "sha256": "f6d2b0afeb9e"
         }
       ],
-      "note": "Owner-controlled employee pins and task overrides implemented and active. Selected-account catalog validates each change; frozen requests and sessions preserve their original model. Defaults remain unchanged until an owner command.",
+      "note": "Owner-controlled assignments remain active with existing defaults. Actual owner catalog command and delivered response now verified; pin/task model inference awaits an actual designation. CLI update diagnosis is separate from employee assignments.",
       "status": "verified",
-      "updatedAt": "2026-10-06T10:31:51.052025+00:00"
+      "updatedAt": "2026-10-06T10:55:49.601409+00:00"
     },
     "PRODUCTION": {
       "evidence": [
@@ -45,11 +45,15 @@
         {
           "path": "docs/project/evidence/model-assignments-20261006/owner-control-readback.json",
           "sha256": "3ec6eaa0f928"
+        },
+        {
+          "path": "docs/project/evidence/codex-update-20261006/owner-catalog-delivery.json",
+          "sha256": "7dc00267515e"
         }
       ],
-      "note": "Authorized production activation completed: 9 image cohorts, 13 services replaced, 15 stable. Actual operator/private model catalog, Temporal account-control pollers and seven Slack auth/TLS connections verified. 10058 frozen requests and DB/Claude preserved; encrypted S3 backup confirmed. Owner Slack model command and chosen-model smoke pending first input. Old automatic code cutover guarded; maintenance and PR preparation continue.",
+      "note": "Production activation remains verified; actual owner catalog command completed and delivered once. Both runtimes still use qualified CLI 0.154.0. New 0.160.1 local syntax/catalog probe passes with empty auth and simulated login gate; account availability, actual execution and production upgrade not claimed. Existing assignments and release guard unchanged.",
       "status": "verified",
-      "updatedAt": "2026-10-06T10:31:51.483913+00:00"
+      "updatedAt": "2026-10-06T10:55:49.863373+00:00"
     },
     "VALIDATION": {
       "evidence": [
@@ -75,5 +79,5 @@
   "schemaVersion": 1,
   "slug": "manatee",
   "state": "approved",
-  "updatedAt": "2026-10-06T10:31:51.483913+00:00"
+  "updatedAt": "2026-10-06T10:55:49.863373+00:00"
 }
