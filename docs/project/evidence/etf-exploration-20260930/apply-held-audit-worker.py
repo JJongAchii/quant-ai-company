@@ -7,7 +7,7 @@ import subprocess
 import sys
 from datetime import UTC, datetime
 
-SOURCE = "defd4833adea6a0191412121a5a5c6e8265c58ba"
+SOURCE = "ec1fbeb29a49420a367f06af596283e6ead4ab72"
 PREVIOUS = "86aea8cdf03b5543666813c97689acb1e8158a6d"
 BASE = pathlib.Path("/home/achii/quant-company-qualification/held-audit-20261006")
 ACTIVE = pathlib.Path("/home/achii/.config/quant-company/research-worker.json")

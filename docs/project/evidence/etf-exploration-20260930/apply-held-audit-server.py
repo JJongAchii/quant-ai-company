@@ -19,8 +19,8 @@ import time
 from datetime import UTC, datetime
 from types import SimpleNamespace
 
-SOURCE = "defd4833adea6a0191412121a5a5c6e8265c58ba"
-PREVIOUS = "0ff6657f98b175162609259394b1cec20382904a"
+SOURCE = "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+PREVIOUS = "e1e74d3cb1a25833c58a13baff3441f1381270ee"
 STATE = pathlib.Path("/var/lib/quant-company")
 CURRENT = pathlib.Path("/opt/quant-company/current")
 TARGET = CURRENT.parent / "releases" / SOURCE
@@ -126,7 +126,7 @@ def prepared_packet():
             "config_sha256": stage["config_sha256"], "selected_services": SELECTED,
             "previous_services": public(selected), "compose_files": files, "scientific_authority": value["program"],
             "program_id": PROGRAM, "program_digest": DIGEST, "scientific_budget_changed": False,
-            "worker_config_sha256": "d07cc88808bf113953287b0526beafeda918701a25ebd319687aa4281c853942",
+            "worker_config_sha256": "37a90b3f38bcc19c8ebd68be35c625fac2bf6028942a45ef9454433166a3ce14",
             "worker_release": "/home/achii/quant-company-qualification/held-audit-20261006/release-candidates/" + SOURCE,
             "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
             "authorization": "Existing owner requests to deploy and continue the normalization; root reviews this narrow scheduler repair. No new exact-SHA human approval is claimed.",

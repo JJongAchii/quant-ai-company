@@ -8,8 +8,8 @@ import subprocess
 import sys
 from datetime import UTC, datetime
 
-SOURCE = "defd4833adea6a0191412121a5a5c6e8265c58ba"
-BUNDLE_SHA = "686069a14a9479488aeb7aee67431a91232b78bfa26be1ee5aa25247a6072943"
+SOURCE = "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+BUNDLE_SHA = "efd35fe7f2ff3d56bdf71ace5e65a52eefcf00a95f90b325e243ffab4dd7fc19"
 ACTIVE = pathlib.Path("/home/achii/.config/quant-company/research-worker.json")
 BASE = pathlib.Path("/home/achii/quant-company-qualification/held-audit-20261006")
 

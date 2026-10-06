@@ -9,9 +9,9 @@ import subprocess
 import tarfile
 from datetime import UTC, datetime
 
-SOURCE = "defd4833adea6a0191412121a5a5c6e8265c58ba"
-OLD = "0ff6657f98b175162609259394b1cec20382904a"
-ARCHIVE_SHA = "2aeddf606874dd49b38cd6348779bc86f5fcd37205d82976273d789f39c44955"
+SOURCE = "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+OLD = "e1e74d3cb1a25833c58a13baff3441f1381270ee"
+ARCHIVE_SHA = "b8f1ee45d920db43afbca090a0a91050eff3800deee822ec5b3d61c10cb83480"
 STATE = pathlib.Path("/var/lib/quant-company")
 ROOT = pathlib.Path("/opt/quant-company/releases") / SOURCE
 RECORD = STATE / "releases" / ("held-audit-stage-" + SOURCE + ".json")

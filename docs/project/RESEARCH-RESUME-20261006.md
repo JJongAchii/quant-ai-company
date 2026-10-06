@@ -229,3 +229,14 @@ owner 우선권 복귀를 검증했다. 전체 lint와 이 검사는 통과했�
 실제 PostgreSQL·백엔드 검사 29건이 통과했다. 이 최종 소스의 전체 검사는 별도로 실행한다.
 첫 실패 검사 도중 후속 수정 파일이 편집된 사실도 기록하며, 초기 검사를 최종 소스의
 정확한 자격검증으로 주장하지 않는다.
+
+### 14:31 KST 동시 운영 배포 확인과 통합
+
+최종 def 소스는 전체 1,825 pass/14 skip, lint, actual3070/server 준비를 통과했다.
+기본 review 준비가 현재 포인터를 대조해 신규 운영 `e1e74d3…`를 확인하고 전환 전에 멈췄다.
+cutover journal은 없으며 앱·워커는 바뀌지 않았다. 새 변경은 briefing/data.py의
+격리 reader source pin 4줄과 검사 1건이며 연구·실행·의존성 계약은 동일하다.
+실제 최신 source를 `ec1fbeb29a49420a367f06af596283e6ead4ab72`로 통합하고 전체 검사를
+다시 수행한다. def의 성공 영수증도 보존한다. source 정합성 검증 중 변동을 막기 위해
+기존 release.timer만 잠시 정지했다(release.service inactive/MainPID0).
+**활성화 또는 작업 중단 뒤 이 타이머를 원래대로 복구해야 한다.**

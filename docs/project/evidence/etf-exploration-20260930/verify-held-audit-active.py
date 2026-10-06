@@ -6,7 +6,7 @@ import pathlib
 import subprocess
 from datetime import UTC, datetime
 
-SOURCE = "defd4833adea6a0191412121a5a5c6e8265c58ba"
+SOURCE = "ec1fbeb29a49420a367f06af596283e6ead4ab72"
 ROOT = pathlib.Path("/opt/quant-company/releases") / SOURCE
 assert pathlib.Path("/opt/quant-company/current").resolve() == ROOT
 expected = {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()

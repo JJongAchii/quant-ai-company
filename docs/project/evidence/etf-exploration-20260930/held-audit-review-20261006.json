@@ -1,0 +1,118 @@
+{
+  "authorization": "Existing owner requests to deploy and continue the normalization; root reviews this narrow scheduler repair. No new exact-SHA human approval is claimed.",
+  "compose_files": [
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml",
+    "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json",
+    "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json",
+    "/var/lib/quant-company/config/native-output-5c44ad07273adc780a56a47d7d35114fd0dc32c8-02.compose.json",
+    "/var/lib/quant-company/config/data-watch-readable-v6-8508954320877144e8f24cb52c8353c0e18f514a-api.compose.json",
+    "/var/lib/quant-company/config/scoped-data-86aea8cdf03b5543666813c97689acb1e8158a6d.compose.json"
+  ],
+  "config_sha256": {
+    "research-profiles.json": "22fc61df00eafc9e0cb6885b86814821b26aa0e296e5c166fbdc6b34c974c78c",
+    "research-qlab.json": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
+    "roles.json": "1430005122f7129cf51a745f5850ab9344c87285bf59bf9a38aa02d171bdc3e8",
+    "runtime.env": "90050d45db04ea35d9f68e8ac6e687f3370ce0dbe6d92505bfdd681e94514758"
+  },
+  "images": {
+    "app": {
+      "build_log_sha256": "70438c6206038788f02438075800b831b4a9ea8887b71afbf0c24de6c576a285",
+      "image": "quant-company:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "source_bytes_verified": true,
+      "target": "app",
+      "uid": "10001:10001"
+    },
+    "autonomous-research": {
+      "build_log_sha256": "0641a00f67e16879d08d5660dd5260d5ab1fffeb7792e268d587a6aa540adcf8",
+      "image": "quant-company-autonomous:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:6edd5c056625e66cd6a26da6b33a5451372b301f2c9a71894e5d20506de8aba5",
+      "source_bytes_verified": true,
+      "target": "autonomous-research",
+      "uid": "10001:10001"
+    },
+    "codex": {
+      "build_log_sha256": "09cf7f21e43b93bc4d179dc5de6ce1ccde09ca2bafb52528372671c6705c3476",
+      "image": "quant-company-codex:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:a4bc2f4e24fb143db994b8b201a538dc3acce4e651e9bfbdc46550ea6be5f239",
+      "source_bytes_verified": true,
+      "target": "codex",
+      "uid": "10001:10001"
+    }
+  },
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+  "prepared_at": "2026-10-06T05:44:15.647562+00:00",
+  "previous_commit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
+  "previous_services": {
+    "quant-company-account-gateway-1": {
+      "health": "healthy",
+      "id": "5794f9e44068e48be7db3e9b93f78843ae5a41990c2ebb8c72e20a5305db33a1",
+      "image": "quant-company:86aea8cdf03b5543666813c97689acb1e8158a6d-scoped-data",
+      "image_id": "sha256:3dba6e04b36a4642e31895c5865953776d5f1418d68511e547b585bd007d74cd",
+      "state": "running"
+    },
+    "quant-company-api-1": {
+      "health": "healthy",
+      "id": "3758a9a587065642da17dfc861e804b31cfc71cf02b1b17fdae286c0e2551fca",
+      "image": "quant-company:86aea8cdf03b5543666813c97689acb1e8158a6d-scoped-data",
+      "image_id": "sha256:3dba6e04b36a4642e31895c5865953776d5f1418d68511e547b585bd007d74cd",
+      "state": "running"
+    },
+    "quant-company-codex-runtime-1": {
+      "health": "healthy",
+      "id": "d85cf872bbbd4be8646995566984d18502c4ae60f4ba4836a4ac236e7e6800c1",
+      "image": "quant-company-codex:86aea8cdf03b5543666813c97689acb1e8158a6d-scoped-data",
+      "image_id": "sha256:ccd86b83934dca4de12c2c2c8c5a631b2e62f39524b910f5b9dc5b6a1598e786",
+      "state": "running"
+    },
+    "quant-company-dispatch-1": {
+      "health": null,
+      "id": "1246aed01fd74bec690740ffd60e9292d6e6511953968469993833c716c878b7",
+      "image": "quant-company:e1e74d3cb1a25833c58a13baff3441f1381270ee",
+      "image_id": "sha256:bb44bd14ae75adf6152eab18a1672d1804d81fb895fe54def9610c27749c489a",
+      "state": "running"
+    },
+    "quant-company-slack-socket-1": {
+      "health": null,
+      "id": "045fc0482c026ffd3e84326f9e30ce52c8fb3c8f110f63d769a66d052f2e1e4e",
+      "image": "quant-company:86aea8cdf03b5543666813c97689acb1e8158a6d-scoped-data",
+      "image_id": "sha256:3dba6e04b36a4642e31895c5865953776d5f1418d68511e547b585bd007d74cd",
+      "state": "running"
+    },
+    "quant-company-worker-1": {
+      "health": null,
+      "id": "c4406c83278c3190a270344baf7cfbfcc799afcd3746c4f87d718134b1cb0951",
+      "image": "quant-company-autonomous:86aea8cdf03b5543666813c97689acb1e8158a6d-scoped-data",
+      "image_id": "sha256:976510f91c375293b5ff10bfbdb979f545fe40571efb9e5899cbfb95d3f75fc6",
+      "state": "running"
+    }
+  },
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "schema_version": 1,
+  "scientific_authority": {
+    "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1791242030.830452:director:action:dd69d4b8-78c0-4c78-b7ee-41c7cf7d5972:approve",
+    "digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "revision": 5,
+    "state": "active"
+  },
+  "scientific_budget_changed": false,
+  "selected_services": [
+    "api",
+    "dispatch",
+    "slack-socket",
+    "worker",
+    "account-gateway",
+    "codex-runtime"
+  ],
+  "source_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "stage_receipt_sha256": "718e382b40dfbf469dd7351fd6661a23bb6cdaf0b3854c11cbedd4b34ab93871",
+  "state": "prepared_for_review",
+  "validation_receipt_sha256": "05062ce1536556bb6dab48b639793d7f6e94362441a10aa72641742d8baa6686",
+  "worker_config_sha256": "37a90b3f38bcc19c8ebd68be35c625fac2bf6028942a45ef9454433166a3ce14",
+  "worker_release": "/home/achii/quant-company-qualification/held-audit-20261006/release-candidates/ec1fbeb29a49420a367f06af596283e6ead4ab72"
+}
