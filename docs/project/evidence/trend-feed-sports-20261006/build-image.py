@@ -12,6 +12,10 @@ ROOT = Path('/opt/quant-company/operator-releases/trend-feed-sports-20261006')
 BASE_ROOT = ROOT.parent / 'trend-feed-20261006'
 PACKAGE = '/opt/company/src/quant_company'
 FILES = ('editor.py', 'store.py')
+REVIEWED_BEFORE = {
+    'trend_feed/editor.py': '6906ad67b0558a525e3c54a8ac4300fc781f55d80899cf818ab3f49bc086aed6',
+    'trend_feed/store.py': '599f3ceb0abbe64ef48b80d66228fd031b384f1c0870771154cfd46107037ddc',
+}
 
 
 if __name__ == '__main__':
@@ -58,6 +62,8 @@ if __name__ == '__main__':
                                             identifier, '-c', inventory_code]))
 
         old, new = inventory(base), inventory(image['Id'])
+        if any(old.get(k) != v for k, v in REVIEWED_BEFORE.items()):
+            raise RuntimeError('policy_sources_changed_requires_review')
         changed = sorted(k for k in old.keys() | new.keys() if old.get(k) != new.get(k))
         expected = {f'trend_feed/{name}': hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in FILES}
         if not config_preserved or changed != sorted(expected) or any(new[k] != v for k, v in expected.items()):
