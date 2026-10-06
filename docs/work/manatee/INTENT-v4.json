@@ -1,0 +1,60 @@
+{
+  "constraints": [
+    "Official ChatGPT authentication in isolated runtime only",
+    "PostgreSQL owns policy and receipts; Temporal owns command processing",
+    "No silent model/account/API fallback; existing frozen requests are immutable",
+    "Company repository only; no research repository writes"
+  ],
+  "createdAt": "2026-10-06T12:09:45.862458+00:00",
+  "decisionGates": [
+    "사용자의 도움말 명령 추가 요청은 구현 및 기존 회사 제어 채널에 반영할 권한을 제공한다.",
+    "네이티브 Slack 슬래시 명령은 별도 앱 등록이 필요하므로 현재 등록과 권한으로 동작하는 일반 메시지 도움말을 제공한다."
+  ],
+  "deliverables": [
+    {
+      "id": "GUIDE",
+      "description": "모델·계정 통합 명령어 도움말",
+      "acceptance": [
+        "제어 채널의 도움말·명령어·help 및 직원 멘션·스레드에서 명령어와 예시를 안내한다.",
+        "알 수 없는 계정 명령과 잘못된 모델 배정 문법도 같은 명령어 안내를 사용한다."
+      ]
+    },
+    {
+      "id": "VALIDATION",
+      "description": "실제 PostgreSQL/Temporal 회귀와 도움말 경계 검증",
+      "acceptance": [
+        "소유자·채널·앱·서명 제한과 중복 요청 시 outbox 1건을 검증한다.",
+        "도움말은 model turns와 변경 command/revision을 생성하지 않고 계정·배정 정책을 유지한다.",
+        "lint와 관련 회귀 검사에 실제/모의 범위를 명시한다."
+      ]
+    },
+    {
+      "id": "INTEGRATION",
+      "description": "기존 운영 소스 보존 배포와 인수 기록",
+      "acceptance": [
+        "기존 혼합 소스에 최소 변경만 반영하고 비교·백업·배포 영수증을 기록한다.",
+        "운영 모듈과 서비스 상태를 실제 확인하고 Slack 사용 예시 및 검증 한계를 보고한다.",
+        "회사 저장소 PR과 qws 증거를 완료한다."
+      ]
+    }
+  ],
+  "nonGoals": [
+    "네이티브 /help 슬래시 명령 등록이나 Slack OAuth 권한 변경",
+    "직원 모델·계정 배정 변경, 모델 추론 또는 unsolicited Slack test messages",
+    "연구 실행, 연구 저장소 변경, Codex runtime 변경, 기존 자동 배포 보호 해제"
+  ],
+  "outcome": "Slack 제어 채널에서 도움말·명령어·help를 입력하면 모델·계정 관리 명령어와 작업별 지정 예시를 모델 호출 없이 보여준다. 기존 권한, 중복 수신 처리, outbox 영수증, 모델·계정 정책과 혼합 운영 이미지를 보존하고 검증 후 반영한다.",
+  "revision": 4,
+  "revisionReason": "사용자가 제어 채널에서 사용 가능한 명령어와 예시를 보여주는 도움말 명령 추가를 요청했다. 기존 모델·계정 권한과 실행 영수증을 보존하며 모델 호출 없는 안내를 구현하고 운영에 반영한다.",
+  "schemaVersion": 1,
+  "slug": "manatee",
+  "sourceRequest": "일단 채널에서 입력가능한 명령어 목록을 보여주는 명령어를 하나 만드는것도 좋을듯 /help와 같은 것처럼 가이드용으로",
+  "stopConditions": [
+    "Never replay an ambiguous model call or overwrite frozen requests",
+    "Do not claim deployment or account compatibility without actual evidence"
+  ],
+  "supersedes": {
+    "intentDigest": "43a59b65a1d3",
+    "intentFile": "INTENT-v3.json"
+  }
+}
