@@ -30,7 +30,8 @@ from quant_company.contracts import (
     ProviderResponse,
 )
 
-SUPPORTED_CLI_VERSION = "0.154.0"
+from .codex_release import SUPPORTED_CLI_VERSION
+
 MAX_STDOUT_BYTES = 1024 * 1024
 MAX_STDERR_BYTES = 64 * 1024
 MAX_RECEIPT_BYTES = 2 * 1024 * 1024
