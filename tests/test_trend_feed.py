@@ -7,6 +7,7 @@ from pathlib import Path
 
 import httpx
 import pytest
+from psycopg.types.json import Jsonb
 
 from quant_company.cli import manifests
 from quant_company.company import Company, load_roles
@@ -334,6 +335,35 @@ async def test_model_quota_wait_reuses_frozen_request(trend):
     trend.clock[0] += timedelta(minutes=1)
     await editor.tick()
     assert seen[0] == seen[1] and len(trend.status()["model_calls"]) == 1
+
+
+def test_reporter_assignment_is_frozen_during_quota_wait(trend):
+    from quant_company.model_policy import targets
+
+    trend.company.settings.model_assignments_enabled = True
+    with trend.db.transaction() as conn:
+        conn.execute("UPDATE model_assignment_policy SET revision=1,bindings=%s WHERE id=1",
+                     (Jsonb({"reporter": {"model": "pinned-reporter", "reasoning_effort": "max"}}),))
+    ingest(trend)
+    morning(trend)
+    claim = trend.claim_enrichment()
+    trend.save_enrichment(claim, claim["bundle"])
+    first = trend.prepare_call()
+    assert first["request"]["model"] == "pinned-reporter"
+    assert first["request"]["reasoning_effort"] == "max"
+    assert "trend_scout" not in targets(trend.company)
+    assert all(role["id"] != "trend_scout" for role in trend.company.runtime_context()["employees"])
+    trend.fault_call(first, "quota", 60)
+    with trend.db.transaction() as conn:
+        conn.execute("UPDATE model_assignment_policy SET revision=2,bindings=%s WHERE id=1",
+                     (Jsonb({"reporter": {"model": "later-reporter", "reasoning_effort": "low"}}),))
+    trend.clock[0] += timedelta(minutes=1)
+    resumed = trend.prepare_call()
+    assert resumed["id"] == first["id"] and resumed["request"] == first["request"]
+    with trend.db.transaction() as conn:
+        binding = conn.execute("SELECT * FROM model_execution_bindings WHERE request_id=%s",
+                               (first["id"],)).fetchone()
+    assert binding["target"] == "reporter" and binding["selection"]["revision"] == 1
 
 
 def test_naver_cache_and_atomic_daily_cap(trend):

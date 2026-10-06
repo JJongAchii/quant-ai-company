@@ -255,10 +255,19 @@ def reconcile_audit_retry(company, conn, project, task, reconciliation_note):
 
 
 def stage_prompt(company, conn, task, turn=None):
+    from ..model_policy import effective_role
     from ..staff.packs import coaching, employee_pack
 
     row = _stage(conn, task["id"])
     role = stage_role(company, row["actor"])
+    if company.settings.model_assignments_enabled:
+        role = effective_role(company, conn, role.id, task=task)
+        if turn and row["stage"] == "audit" and turn["sequence"] > 1:
+            previous = conn.execute("SELECT request FROM turns WHERE task_id=%s AND sequence=%s",
+                                    (task["id"], turn["sequence"] - 1)).fetchone()
+            if previous and previous["request"]:
+                role = role.model_copy(update={key: previous["request"].get(key)
+                                               for key in ("model", "reasoning_effort")})
     instructions = {
         "proposal": "Return HypothesisProposal. Include real source_ids, latest interpreted predecessor_trial_ids, "
                     "expected economic effect and falsification. Respond to any rejected proposal's criticism. "

@@ -1,0 +1,768 @@
+{
+  "at": "2026-10-06T10:25:28.478684+00:00",
+  "stage": {
+    "state": "staged",
+    "commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+    "archive_sha256": "2dfe9f5f5482df00e75598d27e5a1affe125a8a12449b987925af1aba3868377",
+    "current": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264",
+    "runtime_env_sha256": "dea098958d9c1d824e1bbd885184755727af15141625049a459402648d48c91c",
+    "images": {
+      "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7": {
+        "id": "sha256:758d04ea1f66cde8d45eaf43ee3b905c7b479a27352cd2ebb25ec1c11e6b7755",
+        "tag": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-0f7c767604bf",
+        "services": [
+          "account-gateway",
+          "api",
+          "slack-socket"
+        ],
+        "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+        "changed": [
+          {
+            "file": "accounts.py",
+            "before": "3ef1639483ee0db1fdf46c3d4dd7fa7d37d768796280167d38fb433ed6ea3af3",
+            "after": "d2e83581778717544052aa7e420ccba1d516703b76762c7138d3aead7fdd18b2"
+          },
+          {
+            "file": "api.py",
+            "before": "493f0699ee3fc4c0dc349064d59b8e5673ca41bb2cf8dacdf3c9830c535ca40a",
+            "after": "6c4ad9b52fa87979c9c208a4cc613cf444ba87f4d88792855d1e0d15a5862f9f"
+          },
+          {
+            "file": "briefing/store.py",
+            "before": "0ca1a138664ae68d3e41399762ae9266cf74e864f55d658ed15f2f08ec809dd2",
+            "after": "3e1c438400ffacfe7417be559dae7f2c56f8463fe66a9dad7b143584c0c9096f"
+          },
+          {
+            "file": "company.py",
+            "before": "32acf7c4f8a49e373d8c692b674e73d502d303c56c635fde806578732008fade",
+            "after": "bb7f9592ab8d5845c0d3f74f4ffd24c31e078b3410beb742a00d37c6f1d359d9"
+          },
+          {
+            "file": "config.py",
+            "before": "8c9d779390d392d66db0f90cc676158370315a4b4f9b56da3ffb46157e70e062",
+            "after": "efafcd755ea18180cdc24f984bf9382ac7b65b91bb0a9867a4ce84c232d6e592"
+          },
+          {
+            "file": "db.py",
+            "before": "d8b63c5dac960c5e0330eb68a0961fdec1555a0309aca067296e39314ce47faa",
+            "after": "c5df2272ce91acff5bc073e06c733e417268de60c013a88f190e46928425d509"
+          },
+          {
+            "file": "maintenance/store.py",
+            "before": "41c4e1fa1b5c9419a6b59347c2f12ef7bb0b40d6f630992cade9d2ba0de45e6f",
+            "after": "96399ea474174d94d6356ceebbdffd960ac4cc969a16b55d96002b4fb3638e10"
+          },
+          {
+            "file": "model_control.py",
+            "before": null,
+            "after": "9a638de467ef35b87d11c5d02c1eb3e6104db43734bc0a028b4414927c76d17c"
+          },
+          {
+            "file": "model_policy.py",
+            "before": null,
+            "after": "173de699cc1cc1b167041d45cd9c8d6ed8d1caeb6917c19d51409400c447bd1d"
+          },
+          {
+            "file": "model_policy_schema.sql",
+            "before": null,
+            "after": "9480a3959d1278517de68d26ef65a6b5accc8981809603287da1f5fc5a4c22f6"
+          },
+          {
+            "file": "news/discovery.py",
+            "before": "f56cfe94a9503c15dfc9ed8c3dcd7ef24afea499580232bb8aaf7f7b9de8fd67",
+            "after": "5d04327c30ba0f5352f8505abe52820aadd5d15c31613dd8104bf11dddeb8f47"
+          },
+          {
+            "file": "news/screening.py",
+            "before": "2352bd1b10cd10433a7ec98a6963e4d6e33b92959643119926452153fb46f6f0",
+            "after": "6233b0c45a834745386be6cc25f27cbef75220f98e988d8b846519bea5c821c7"
+          },
+          {
+            "file": "news/store.py",
+            "before": "cc7984dac995abe2ec85a5fb2bfe3b743d63a9f4631200bc3ca7cf24a7c7d387",
+            "after": "76a239071f24f1d6f52a52e458bd8d9d22fd5ab4897b716bb510e96c380be990"
+          },
+          {
+            "file": "providers/client.py",
+            "before": "f99b5ebc0112eb93281ecafc51003386f104212741dbb50d7bf8a3d10edcf078",
+            "after": "b7cd9de0dace134453751844dbed7e4dda35b647355221a1d4d17ea231877196"
+          },
+          {
+            "file": "providers/codex_runtime.py",
+            "before": "34be0f8f9b38fcad00c8cb7ddb3b40861f9e9ad9868f44f434ff08cdedc004ee",
+            "after": "50a59ca449ee207bc451f0604c3c54b576928289e8773454516b47110e517ccf"
+          },
+          {
+            "file": "providers/model_catalog.py",
+            "before": null,
+            "after": "a3e3580c86ead4f22442ed0821ba572cf3f8ccff5afa96b858ea2983e7569dab"
+          },
+          {
+            "file": "quant_feed/store.py",
+            "before": "c55ae8cbddbeb587d5b74b5d992744082a20c24ac431f7598fcb2321fcb157b4",
+            "after": "d5093d443dc008ca8c428b9cc69abb2a6d302385af230aca29ddf00400a00233"
+          },
+          {
+            "file": "research/controller.py",
+            "before": "a4bcb7eabce8c97eef47d043c041140e9ead9283d433c8367d9018a926155e33",
+            "after": "6f7aa8ea82168147e26495a68d3f4ed691ce8841519df5092e8816fb22f0c0cc"
+          },
+          {
+            "file": "slack.py",
+            "before": "b937912b06150ed717242ee679b24f15a0945b2632d9316e61db720cb62eebf7",
+            "after": "476881af3334848c10c7e933a8f68c6173bdacfee5dca2577bdfce289dc3e926"
+          },
+          {
+            "file": "staff/comparisons.py",
+            "before": "2f43eef1b6c804eac611609fc4933cce604a63e169eda6ad287d233e0aec926b",
+            "after": "115ea45b5c1fe326f11f576091c452e8a56fa44f2c35d696d7449dd57ac8cb7e"
+          },
+          {
+            "file": "staff/store.py",
+            "before": "7db6bc2177ff4ad97bace9ae35e00d2756b1759500d179b0289669f2aca415e3",
+            "after": "703e6c5c3c01e281c674ce2a0cdc8e9319dae4b76fb05cfa0404ff88fc10b21a"
+          },
+          {
+            "file": "web_tools.py",
+            "before": "176b4163441548412fc8ca1f280978e9b3c24d080ede069c3d28a37f1fb44077",
+            "after": "1ff86ead3244f6e552d10d92cd46d64e89ce2473727fc89a5002ec556bfe7747"
+          }
+        ]
+      },
+      "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79": {
+        "id": "sha256:05a3dab71ce4a0177342c0ec82a10f6b20c25aa9429217085e040207ecc516a9",
+        "tag": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-2110d56b77c3",
+        "services": [
+          "quant-feed-worker"
+        ],
+        "package_root": "/opt/quant-code/src/quant_company",
+        "changed": [
+          {
+            "file": "accounts.py",
+            "before": "3ef1639483ee0db1fdf46c3d4dd7fa7d37d768796280167d38fb433ed6ea3af3",
+            "after": "d2e83581778717544052aa7e420ccba1d516703b76762c7138d3aead7fdd18b2"
+          },
+          {
+            "file": "api.py",
+            "before": "493f0699ee3fc4c0dc349064d59b8e5673ca41bb2cf8dacdf3c9830c535ca40a",
+            "after": "6c4ad9b52fa87979c9c208a4cc613cf444ba87f4d88792855d1e0d15a5862f9f"
+          },
+          {
+            "file": "company.py",
+            "before": "b2e878abec48d84635be26273982dbbc4fc71287d1b27b85673ee0475da19561",
+            "after": "2d8ad56a93b7fe180ea9a192fa4f95c571a5d92d53fa9bbf7aae2e28f153a587"
+          },
+          {
+            "file": "config.py",
+            "before": "d5c387833c234be9198efb9b0caad2feaae0d61c5da3469b7dde58327253d210",
+            "after": "e41d778b0a81012393779151d268aa00da6aa13f5f5738b6550e3706a6882a37"
+          },
+          {
+            "file": "db.py",
+            "before": "537a7d12eb5ded9d985608ce6c5b8bd260c89352dad74b951aec0b76601d53f5",
+            "after": "6666b101f63ae5a2f26e308c1e8971cb260169ee966f01d4396fb2840b715875"
+          },
+          {
+            "file": "maintenance/store.py",
+            "before": "41c4e1fa1b5c9419a6b59347c2f12ef7bb0b40d6f630992cade9d2ba0de45e6f",
+            "after": "96399ea474174d94d6356ceebbdffd960ac4cc969a16b55d96002b4fb3638e10"
+          },
+          {
+            "file": "model_control.py",
+            "before": null,
+            "after": "9a638de467ef35b87d11c5d02c1eb3e6104db43734bc0a028b4414927c76d17c"
+          },
+          {
+            "file": "model_policy.py",
+            "before": null,
+            "after": "173de699cc1cc1b167041d45cd9c8d6ed8d1caeb6917c19d51409400c447bd1d"
+          },
+          {
+            "file": "model_policy_schema.sql",
+            "before": null,
+            "after": "9480a3959d1278517de68d26ef65a6b5accc8981809603287da1f5fc5a4c22f6"
+          },
+          {
+            "file": "news/discovery.py",
+            "before": "3a58311ca3d2c22c4b5a2e66148fe878c7caed13d5bdb98f972061ef50b84111",
+            "after": "84a9bebb0e4de08e238e279b5af8eed9eaeee39e38e92f5cacee9521d442d418"
+          },
+          {
+            "file": "news/screening.py",
+            "before": "1184f0424a13faf187a4d2fd20e840a2744e7aaff884e74e68f81b7b9dffffa5",
+            "after": "e7e281c3ccd1d09f293f23098d8fe2ee87e917dfbed27355dc69039bc8a35aed"
+          },
+          {
+            "file": "news/store.py",
+            "before": "06591c74b5ae9ebb62366f81bc3217ce105623a621f64ae04c42a67cfaf62e6c",
+            "after": "a162e063c99c7af8c3510f5fbcc44f83af46c6319922901d68ab84f172a9b3a4"
+          },
+          {
+            "file": "providers/client.py",
+            "before": "f99b5ebc0112eb93281ecafc51003386f104212741dbb50d7bf8a3d10edcf078",
+            "after": "b7cd9de0dace134453751844dbed7e4dda35b647355221a1d4d17ea231877196"
+          },
+          {
+            "file": "providers/codex_runtime.py",
+            "before": "34be0f8f9b38fcad00c8cb7ddb3b40861f9e9ad9868f44f434ff08cdedc004ee",
+            "after": "50a59ca449ee207bc451f0604c3c54b576928289e8773454516b47110e517ccf"
+          },
+          {
+            "file": "providers/model_catalog.py",
+            "before": null,
+            "after": "a3e3580c86ead4f22442ed0821ba572cf3f8ccff5afa96b858ea2983e7569dab"
+          },
+          {
+            "file": "quant_feed/store.py",
+            "before": "c55ae8cbddbeb587d5b74b5d992744082a20c24ac431f7598fcb2321fcb157b4",
+            "after": "d5093d443dc008ca8c428b9cc69abb2a6d302385af230aca29ddf00400a00233"
+          },
+          {
+            "file": "research/controller.py",
+            "before": "30b59ef196de7f72d814898c902f2e788e6e14af38cbfadcc2633cfe0640604d",
+            "after": "a8211d9b90fc81b406017fc2d9417a5011540334cce4617310603a3f9402c6ec"
+          },
+          {
+            "file": "slack.py",
+            "before": "9f89cd7817da6681b61c41b410f78ac736c40a291684b00a27b7506f5fb10375",
+            "after": "96e04aa3f0cd98ec0211ad9ac7f9c626a108390f58c5ee22e6dbee526522fa1d"
+          },
+          {
+            "file": "staff/comparisons.py",
+            "before": "2f43eef1b6c804eac611609fc4933cce604a63e169eda6ad287d233e0aec926b",
+            "after": "115ea45b5c1fe326f11f576091c452e8a56fa44f2c35d696d7449dd57ac8cb7e"
+          },
+          {
+            "file": "staff/store.py",
+            "before": "7db6bc2177ff4ad97bace9ae35e00d2756b1759500d179b0289669f2aca415e3",
+            "after": "703e6c5c3c01e281c674ce2a0cdc8e9319dae4b76fb05cfa0404ff88fc10b21a"
+          },
+          {
+            "file": "web_tools.py",
+            "before": "176b4163441548412fc8ca1f280978e9b3c24d080ede069c3d28a37f1fb44077",
+            "after": "1ff86ead3244f6e552d10d92cd46d64e89ce2473727fc89a5002ec556bfe7747"
+          }
+        ]
+      },
+      "sha256:2a2aff76ac41d84fa53f0b323565303f967806e6cb797387f7384f4666ae3e9e": {
+        "id": "sha256:9b2f758c58445594badac690c24de418282bfdbc8523c3c1e06b1613ba5440fc",
+        "tag": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-2a2aff76ac41",
+        "services": [
+          "data-watch-worker"
+        ],
+        "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+        "changed": [
+          {
+            "file": "config.py",
+            "before": "3d6b90a630f523f0c062cfbb7ca3bd1073462a07d881f199e87e33039758ea0b",
+            "after": "9b3735b76217252cfabb380b064f5d09218b1a58e63c89d96f91ebf9dc44c4dd"
+          },
+          {
+            "file": "db.py",
+            "before": "cf238e64a2d2af3fc41825424c70673e10349f380aac5fafb1a1074d2b55989c",
+            "after": "cc0a47e7d39962b99c4d39bd522b8b0f0d6f2d562a71047a77cf2b4d9fd05b1a"
+          },
+          {
+            "file": "model_policy.py",
+            "before": null,
+            "after": "173de699cc1cc1b167041d45cd9c8d6ed8d1caeb6917c19d51409400c447bd1d"
+          },
+          {
+            "file": "model_policy_schema.sql",
+            "before": null,
+            "after": "9480a3959d1278517de68d26ef65a6b5accc8981809603287da1f5fc5a4c22f6"
+          }
+        ]
+      },
+      "sha256:955bcafa236a5baf9631447651c9ceb57f2cbdb2f0b51c43230627dcdf166f82": {
+        "id": "sha256:0b80b476471ba92bb1eb21f82704e26ba28fd88826add4110facc61158c25b9e",
+        "tag": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-955bcafa236a",
+        "services": [
+          "maintenance"
+        ],
+        "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+        "changed": [
+          {
+            "file": "accounts.py",
+            "before": "3ef1639483ee0db1fdf46c3d4dd7fa7d37d768796280167d38fb433ed6ea3af3",
+            "after": "d2e83581778717544052aa7e420ccba1d516703b76762c7138d3aead7fdd18b2"
+          },
+          {
+            "file": "api.py",
+            "before": "493f0699ee3fc4c0dc349064d59b8e5673ca41bb2cf8dacdf3c9830c535ca40a",
+            "after": "6c4ad9b52fa87979c9c208a4cc613cf444ba87f4d88792855d1e0d15a5862f9f"
+          },
+          {
+            "file": "company.py",
+            "before": "96b82a9a3e5b2d08034ad8b5d71219e7e75afa718bf5299950118022802bc48b",
+            "after": "b733ddb6072aa8a23ab7b9b19aa0767ef033c3e64de2de4f1ec0976d1cf527d3"
+          },
+          {
+            "file": "config.py",
+            "before": "d5c387833c234be9198efb9b0caad2feaae0d61c5da3469b7dde58327253d210",
+            "after": "e41d778b0a81012393779151d268aa00da6aa13f5f5738b6550e3706a6882a37"
+          },
+          {
+            "file": "db.py",
+            "before": "537a7d12eb5ded9d985608ce6c5b8bd260c89352dad74b951aec0b76601d53f5",
+            "after": "6666b101f63ae5a2f26e308c1e8971cb260169ee966f01d4396fb2840b715875"
+          },
+          {
+            "file": "maintenance/store.py",
+            "before": "c0259be9d3ab8abb4eaaadf6c362326fd2fff878abeb4412e11b5e4924bd8baf",
+            "after": "f7ee77be4ce66135ac98a056769e33df3f5bcbd3e7d8eac30c575321560a15b6"
+          },
+          {
+            "file": "model_control.py",
+            "before": null,
+            "after": "9a638de467ef35b87d11c5d02c1eb3e6104db43734bc0a028b4414927c76d17c"
+          },
+          {
+            "file": "model_policy.py",
+            "before": null,
+            "after": "173de699cc1cc1b167041d45cd9c8d6ed8d1caeb6917c19d51409400c447bd1d"
+          },
+          {
+            "file": "model_policy_schema.sql",
+            "before": null,
+            "after": "9480a3959d1278517de68d26ef65a6b5accc8981809603287da1f5fc5a4c22f6"
+          },
+          {
+            "file": "news/discovery.py",
+            "before": "3a58311ca3d2c22c4b5a2e66148fe878c7caed13d5bdb98f972061ef50b84111",
+            "after": "84a9bebb0e4de08e238e279b5af8eed9eaeee39e38e92f5cacee9521d442d418"
+          },
+          {
+            "file": "news/screening.py",
+            "before": "1184f0424a13faf187a4d2fd20e840a2744e7aaff884e74e68f81b7b9dffffa5",
+            "after": "e7e281c3ccd1d09f293f23098d8fe2ee87e917dfbed27355dc69039bc8a35aed"
+          },
+          {
+            "file": "news/store.py",
+            "before": "06591c74b5ae9ebb62366f81bc3217ce105623a621f64ae04c42a67cfaf62e6c",
+            "after": "a162e063c99c7af8c3510f5fbcc44f83af46c6319922901d68ab84f172a9b3a4"
+          },
+          {
+            "file": "providers/client.py",
+            "before": "f99b5ebc0112eb93281ecafc51003386f104212741dbb50d7bf8a3d10edcf078",
+            "after": "b7cd9de0dace134453751844dbed7e4dda35b647355221a1d4d17ea231877196"
+          },
+          {
+            "file": "providers/codex_runtime.py",
+            "before": "34be0f8f9b38fcad00c8cb7ddb3b40861f9e9ad9868f44f434ff08cdedc004ee",
+            "after": "50a59ca449ee207bc451f0604c3c54b576928289e8773454516b47110e517ccf"
+          },
+          {
+            "file": "providers/model_catalog.py",
+            "before": null,
+            "after": "a3e3580c86ead4f22442ed0821ba572cf3f8ccff5afa96b858ea2983e7569dab"
+          },
+          {
+            "file": "quant_feed/store.py",
+            "before": "b792cd6147e9670934e51e1f30e385b065027c9764980fce84bdeeb86dcf4b8a",
+            "after": "8a3c94fea0308819db1d8e85871d9a922721f667ceccec80ee8e6bff4eba3c48"
+          },
+          {
+            "file": "research/controller.py",
+            "before": "cbf0c98216715709c709bd497e9766472585b854ff1699956d1b44fc464d71fc",
+            "after": "b283a21b1cca6d08fe2a962e2942237de7c4f131ea225cc55d7573dbca4f9a6e"
+          },
+          {
+            "file": "slack.py",
+            "before": "9f89cd7817da6681b61c41b410f78ac736c40a291684b00a27b7506f5fb10375",
+            "after": "96e04aa3f0cd98ec0211ad9ac7f9c626a108390f58c5ee22e6dbee526522fa1d"
+          },
+          {
+            "file": "staff/comparisons.py",
+            "before": "2f43eef1b6c804eac611609fc4933cce604a63e169eda6ad287d233e0aec926b",
+            "after": "115ea45b5c1fe326f11f576091c452e8a56fa44f2c35d696d7449dd57ac8cb7e"
+          },
+          {
+            "file": "staff/store.py",
+            "before": "7db6bc2177ff4ad97bace9ae35e00d2756b1759500d179b0289669f2aca415e3",
+            "after": "703e6c5c3c01e281c674ce2a0cdc8e9319dae4b76fb05cfa0404ff88fc10b21a"
+          },
+          {
+            "file": "web_tools.py",
+            "before": "176b4163441548412fc8ca1f280978e9b3c24d080ede069c3d28a37f1fb44077",
+            "after": "1ff86ead3244f6e552d10d92cd46d64e89ce2473727fc89a5002ec556bfe7747"
+          }
+        ]
+      },
+      "sha256:a4bc2f4e24fb143db994b8b201a538dc3acce4e651e9bfbdc46550ea6be5f239": {
+        "id": "sha256:13caa3f9f7936529335af8b92d9ddbb78f28ef6a45eed0b2e2054b43acb33938",
+        "tag": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-a4bc2f4e24fb",
+        "services": [
+          "codex-runtime"
+        ],
+        "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+        "changed": [
+          {
+            "file": "providers/codex_runtime.py",
+            "before": "34be0f8f9b38fcad00c8cb7ddb3b40861f9e9ad9868f44f434ff08cdedc004ee",
+            "after": "50a59ca449ee207bc451f0604c3c54b576928289e8773454516b47110e517ccf"
+          },
+          {
+            "file": "providers/model_catalog.py",
+            "before": null,
+            "after": "a3e3580c86ead4f22442ed0821ba572cf3f8ccff5afa96b858ea2983e7569dab"
+          }
+        ]
+      },
+      "sha256:c983c63235365a43ae1afa8eaba37bd7708e49b43afc2089aa824bad242f02e7": {
+        "id": "sha256:9d215e4309aca0f0e448f6595a9d53af268f80f7e8bc3a7880337f631a777233",
+        "tag": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-c983c6323536",
+        "services": [
+          "quant-codex-runtime"
+        ],
+        "package_root": "/opt/quant-code/src/quant_company",
+        "changed": [
+          {
+            "file": "providers/codex_runtime.py",
+            "before": "34be0f8f9b38fcad00c8cb7ddb3b40861f9e9ad9868f44f434ff08cdedc004ee",
+            "after": "50a59ca449ee207bc451f0604c3c54b576928289e8773454516b47110e517ccf"
+          },
+          {
+            "file": "providers/model_catalog.py",
+            "before": null,
+            "after": "a3e3580c86ead4f22442ed0821ba572cf3f8ccff5afa96b858ea2983e7569dab"
+          }
+        ]
+      },
+      "sha256:cd08cf471a5854c927bdb3d9e383ad61d07d9edb8b81adf282f6c371d2ab64ea": {
+        "id": "sha256:5659edbbd0b86c7be97ec1753631653a2559e28e1723fb81a21af7656bf271e2",
+        "tag": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-cd08cf471a58",
+        "services": [
+          "briefing-data-worker",
+          "dispatch",
+          "news-worker"
+        ],
+        "package_root": "/opt/company/src/quant_company",
+        "changed": [
+          {
+            "file": "accounts.py",
+            "before": "3ef1639483ee0db1fdf46c3d4dd7fa7d37d768796280167d38fb433ed6ea3af3",
+            "after": "d2e83581778717544052aa7e420ccba1d516703b76762c7138d3aead7fdd18b2"
+          },
+          {
+            "file": "api.py",
+            "before": "493f0699ee3fc4c0dc349064d59b8e5673ca41bb2cf8dacdf3c9830c535ca40a",
+            "after": "6c4ad9b52fa87979c9c208a4cc613cf444ba87f4d88792855d1e0d15a5862f9f"
+          },
+          {
+            "file": "briefing/store.py",
+            "before": "0ca1a138664ae68d3e41399762ae9266cf74e864f55d658ed15f2f08ec809dd2",
+            "after": "3e1c438400ffacfe7417be559dae7f2c56f8463fe66a9dad7b143584c0c9096f"
+          },
+          {
+            "file": "company.py",
+            "before": "32acf7c4f8a49e373d8c692b674e73d502d303c56c635fde806578732008fade",
+            "after": "bb7f9592ab8d5845c0d3f74f4ffd24c31e078b3410beb742a00d37c6f1d359d9"
+          },
+          {
+            "file": "config.py",
+            "before": "8c9d779390d392d66db0f90cc676158370315a4b4f9b56da3ffb46157e70e062",
+            "after": "efafcd755ea18180cdc24f984bf9382ac7b65b91bb0a9867a4ce84c232d6e592"
+          },
+          {
+            "file": "db.py",
+            "before": "d8b63c5dac960c5e0330eb68a0961fdec1555a0309aca067296e39314ce47faa",
+            "after": "c5df2272ce91acff5bc073e06c733e417268de60c013a88f190e46928425d509"
+          },
+          {
+            "file": "maintenance/store.py",
+            "before": "41c4e1fa1b5c9419a6b59347c2f12ef7bb0b40d6f630992cade9d2ba0de45e6f",
+            "after": "96399ea474174d94d6356ceebbdffd960ac4cc969a16b55d96002b4fb3638e10"
+          },
+          {
+            "file": "model_control.py",
+            "before": null,
+            "after": "9a638de467ef35b87d11c5d02c1eb3e6104db43734bc0a028b4414927c76d17c"
+          },
+          {
+            "file": "model_policy.py",
+            "before": null,
+            "after": "173de699cc1cc1b167041d45cd9c8d6ed8d1caeb6917c19d51409400c447bd1d"
+          },
+          {
+            "file": "model_policy_schema.sql",
+            "before": null,
+            "after": "9480a3959d1278517de68d26ef65a6b5accc8981809603287da1f5fc5a4c22f6"
+          },
+          {
+            "file": "news/discovery.py",
+            "before": "f56cfe94a9503c15dfc9ed8c3dcd7ef24afea499580232bb8aaf7f7b9de8fd67",
+            "after": "5d04327c30ba0f5352f8505abe52820aadd5d15c31613dd8104bf11dddeb8f47"
+          },
+          {
+            "file": "news/screening.py",
+            "before": "2352bd1b10cd10433a7ec98a6963e4d6e33b92959643119926452153fb46f6f0",
+            "after": "6233b0c45a834745386be6cc25f27cbef75220f98e988d8b846519bea5c821c7"
+          },
+          {
+            "file": "news/store.py",
+            "before": "cc7984dac995abe2ec85a5fb2bfe3b743d63a9f4631200bc3ca7cf24a7c7d387",
+            "after": "76a239071f24f1d6f52a52e458bd8d9d22fd5ab4897b716bb510e96c380be990"
+          },
+          {
+            "file": "providers/client.py",
+            "before": "f99b5ebc0112eb93281ecafc51003386f104212741dbb50d7bf8a3d10edcf078",
+            "after": "b7cd9de0dace134453751844dbed7e4dda35b647355221a1d4d17ea231877196"
+          },
+          {
+            "file": "providers/codex_runtime.py",
+            "before": "34be0f8f9b38fcad00c8cb7ddb3b40861f9e9ad9868f44f434ff08cdedc004ee",
+            "after": "50a59ca449ee207bc451f0604c3c54b576928289e8773454516b47110e517ccf"
+          },
+          {
+            "file": "providers/model_catalog.py",
+            "before": null,
+            "after": "a3e3580c86ead4f22442ed0821ba572cf3f8ccff5afa96b858ea2983e7569dab"
+          },
+          {
+            "file": "quant_feed/store.py",
+            "before": "c55ae8cbddbeb587d5b74b5d992744082a20c24ac431f7598fcb2321fcb157b4",
+            "after": "d5093d443dc008ca8c428b9cc69abb2a6d302385af230aca29ddf00400a00233"
+          },
+          {
+            "file": "research/controller.py",
+            "before": "a4bcb7eabce8c97eef47d043c041140e9ead9283d433c8367d9018a926155e33",
+            "after": "6f7aa8ea82168147e26495a68d3f4ed691ce8841519df5092e8816fb22f0c0cc"
+          },
+          {
+            "file": "slack.py",
+            "before": "b11984487f3f1a95ee55a9748fedb2a9cab4ba44142b85c4bdb67267cd178f37",
+            "after": "a938d4b824868491d402c312e4f2f44504756393a32ca030083e8f29d8b77ef0"
+          },
+          {
+            "file": "staff/comparisons.py",
+            "before": "2f43eef1b6c804eac611609fc4933cce604a63e169eda6ad287d233e0aec926b",
+            "after": "115ea45b5c1fe326f11f576091c452e8a56fa44f2c35d696d7449dd57ac8cb7e"
+          },
+          {
+            "file": "staff/store.py",
+            "before": "7db6bc2177ff4ad97bace9ae35e00d2756b1759500d179b0289669f2aca415e3",
+            "after": "703e6c5c3c01e281c674ce2a0cdc8e9319dae4b76fb05cfa0404ff88fc10b21a"
+          },
+          {
+            "file": "web_tools.py",
+            "before": "176b4163441548412fc8ca1f280978e9b3c24d080ede069c3d28a37f1fb44077",
+            "after": "1ff86ead3244f6e552d10d92cd46d64e89ce2473727fc89a5002ec556bfe7747"
+          }
+        ]
+      },
+      "sha256:db3c79878edf68a0115c8f0b893d41a92fa78e91f1a59bf76f92b60c8a69a589": {
+        "id": "sha256:0aa5d5887d8f1f24b29c6ab8d5bf52c8798987532528f60020f9c41e25c47f9c",
+        "tag": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-db3c79878edf",
+        "services": [
+          "housing-feed-worker"
+        ],
+        "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+        "changed": [
+          {
+            "file": "config.py",
+            "before": "3d6b90a630f523f0c062cfbb7ca3bd1073462a07d881f199e87e33039758ea0b",
+            "after": "9b3735b76217252cfabb380b064f5d09218b1a58e63c89d96f91ebf9dc44c4dd"
+          },
+          {
+            "file": "db.py",
+            "before": "cf238e64a2d2af3fc41825424c70673e10349f380aac5fafb1a1074d2b55989c",
+            "after": "cc0a47e7d39962b99c4d39bd522b8b0f0d6f2d562a71047a77cf2b4d9fd05b1a"
+          },
+          {
+            "file": "model_policy.py",
+            "before": null,
+            "after": "173de699cc1cc1b167041d45cd9c8d6ed8d1caeb6917c19d51409400c447bd1d"
+          },
+          {
+            "file": "model_policy_schema.sql",
+            "before": null,
+            "after": "9480a3959d1278517de68d26ef65a6b5accc8981809603287da1f5fc5a4c22f6"
+          }
+        ]
+      },
+      "sha256:edb93937acda68bfe7ef17307eef3832b7f775665fddd69e98658048741848fb": {
+        "id": "sha256:b2ff111d761da5d0fd4bd3903522d3b23a6ab75396787e8ab2dcb5603c924a4f",
+        "tag": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-edb93937acda",
+        "services": [
+          "worker"
+        ],
+        "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+        "changed": [
+          {
+            "file": "accounts.py",
+            "before": "3ef1639483ee0db1fdf46c3d4dd7fa7d37d768796280167d38fb433ed6ea3af3",
+            "after": "d2e83581778717544052aa7e420ccba1d516703b76762c7138d3aead7fdd18b2"
+          },
+          {
+            "file": "api.py",
+            "before": "493f0699ee3fc4c0dc349064d59b8e5673ca41bb2cf8dacdf3c9830c535ca40a",
+            "after": "6c4ad9b52fa87979c9c208a4cc613cf444ba87f4d88792855d1e0d15a5862f9f"
+          },
+          {
+            "file": "briefing/store.py",
+            "before": "0ca1a138664ae68d3e41399762ae9266cf74e864f55d658ed15f2f08ec809dd2",
+            "after": "3e1c438400ffacfe7417be559dae7f2c56f8463fe66a9dad7b143584c0c9096f"
+          },
+          {
+            "file": "company.py",
+            "before": "7b4a682e02c58af122c79a00628d0cf37c5c30ebb12f3f0542637a91d018ea81",
+            "after": "57b2ce59bd146c60ad4bc6ff33d0e91672bc7593a71d24c232f7ddec3ede9899"
+          },
+          {
+            "file": "config.py",
+            "before": "8c9d779390d392d66db0f90cc676158370315a4b4f9b56da3ffb46157e70e062",
+            "after": "efafcd755ea18180cdc24f984bf9382ac7b65b91bb0a9867a4ce84c232d6e592"
+          },
+          {
+            "file": "db.py",
+            "before": "d8b63c5dac960c5e0330eb68a0961fdec1555a0309aca067296e39314ce47faa",
+            "after": "c5df2272ce91acff5bc073e06c733e417268de60c013a88f190e46928425d509"
+          },
+          {
+            "file": "maintenance/store.py",
+            "before": "41c4e1fa1b5c9419a6b59347c2f12ef7bb0b40d6f630992cade9d2ba0de45e6f",
+            "after": "96399ea474174d94d6356ceebbdffd960ac4cc969a16b55d96002b4fb3638e10"
+          },
+          {
+            "file": "model_control.py",
+            "before": null,
+            "after": "9a638de467ef35b87d11c5d02c1eb3e6104db43734bc0a028b4414927c76d17c"
+          },
+          {
+            "file": "model_policy.py",
+            "before": null,
+            "after": "173de699cc1cc1b167041d45cd9c8d6ed8d1caeb6917c19d51409400c447bd1d"
+          },
+          {
+            "file": "model_policy_schema.sql",
+            "before": null,
+            "after": "9480a3959d1278517de68d26ef65a6b5accc8981809603287da1f5fc5a4c22f6"
+          },
+          {
+            "file": "news/discovery.py",
+            "before": "f56cfe94a9503c15dfc9ed8c3dcd7ef24afea499580232bb8aaf7f7b9de8fd67",
+            "after": "5d04327c30ba0f5352f8505abe52820aadd5d15c31613dd8104bf11dddeb8f47"
+          },
+          {
+            "file": "news/screening.py",
+            "before": "2352bd1b10cd10433a7ec98a6963e4d6e33b92959643119926452153fb46f6f0",
+            "after": "6233b0c45a834745386be6cc25f27cbef75220f98e988d8b846519bea5c821c7"
+          },
+          {
+            "file": "news/store.py",
+            "before": "cc7984dac995abe2ec85a5fb2bfe3b743d63a9f4631200bc3ca7cf24a7c7d387",
+            "after": "76a239071f24f1d6f52a52e458bd8d9d22fd5ab4897b716bb510e96c380be990"
+          },
+          {
+            "file": "providers/client.py",
+            "before": "f99b5ebc0112eb93281ecafc51003386f104212741dbb50d7bf8a3d10edcf078",
+            "after": "b7cd9de0dace134453751844dbed7e4dda35b647355221a1d4d17ea231877196"
+          },
+          {
+            "file": "providers/codex_runtime.py",
+            "before": "34be0f8f9b38fcad00c8cb7ddb3b40861f9e9ad9868f44f434ff08cdedc004ee",
+            "after": "50a59ca449ee207bc451f0604c3c54b576928289e8773454516b47110e517ccf"
+          },
+          {
+            "file": "providers/model_catalog.py",
+            "before": null,
+            "after": "a3e3580c86ead4f22442ed0821ba572cf3f8ccff5afa96b858ea2983e7569dab"
+          },
+          {
+            "file": "quant_feed/store.py",
+            "before": "c55ae8cbddbeb587d5b74b5d992744082a20c24ac431f7598fcb2321fcb157b4",
+            "after": "d5093d443dc008ca8c428b9cc69abb2a6d302385af230aca29ddf00400a00233"
+          },
+          {
+            "file": "research/controller.py",
+            "before": "a4bcb7eabce8c97eef47d043c041140e9ead9283d433c8367d9018a926155e33",
+            "after": "6f7aa8ea82168147e26495a68d3f4ed691ce8841519df5092e8816fb22f0c0cc"
+          },
+          {
+            "file": "slack.py",
+            "before": "b937912b06150ed717242ee679b24f15a0945b2632d9316e61db720cb62eebf7",
+            "after": "476881af3334848c10c7e933a8f68c6173bdacfee5dca2577bdfce289dc3e926"
+          },
+          {
+            "file": "staff/comparisons.py",
+            "before": "2f43eef1b6c804eac611609fc4933cce604a63e169eda6ad287d233e0aec926b",
+            "after": "115ea45b5c1fe326f11f576091c452e8a56fa44f2c35d696d7449dd57ac8cb7e"
+          },
+          {
+            "file": "staff/store.py",
+            "before": "7db6bc2177ff4ad97bace9ae35e00d2756b1759500d179b0289669f2aca415e3",
+            "after": "703e6c5c3c01e281c674ce2a0cdc8e9319dae4b76fb05cfa0404ff88fc10b21a"
+          },
+          {
+            "file": "web_tools.py",
+            "before": "176b4163441548412fc8ca1f280978e9b3c24d080ede069c3d28a37f1fb44077",
+            "after": "1ff86ead3244f6e552d10d92cd46d64e89ce2473727fc89a5002ec556bfe7747"
+          }
+        ]
+      }
+    }
+  },
+  "cutover": {
+    "state": "active",
+    "commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+    "current": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264",
+    "started_at": "2026-10-06T10:11:46.262814+00:00",
+    "completed_at": "2026-10-06T10:19:46.974415+00:00",
+    "replaced": [
+      "codex-runtime",
+      "quant-codex-runtime",
+      "api",
+      "account-gateway",
+      "briefing-data-worker",
+      "data-watch-worker",
+      "dispatch",
+      "housing-feed-worker",
+      "maintenance",
+      "news-worker",
+      "quant-feed-worker",
+      "worker",
+      "slack-socket"
+    ],
+    "account_policy": {
+      "profile": "primary",
+      "revision": 2
+    },
+    "backup": {
+      "backup": "/var/lib/quant-company/backups/company-20261006T101422Z-180ab357.tar.gz",
+      "sha256": "79d0a96fcd864d9b43d4f79f3d14a56e102f54e51c050e37e48cf06077a95f2c",
+      "s3_uri": "s3://quant-company-061039802347-backups/company/company-20261006T101422Z-180ab357.tar.gz",
+      "release_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+      "secrets_included": false
+    },
+    "quant_receipt_backup": {
+      "included_in_standard_backup": true,
+      "shared_jobs_path": "/var/lib/quant-company/codex/jobs"
+    },
+    "release_guard": "/etc/systemd/system/quant-company-release.service.d/model-assignments.conf",
+    "frozen_requests_preserved": true,
+    "database_and_claude_preserved": true,
+    "existing_roles_and_research_artifacts_preserved": true
+  },
+  "bound_turn_outcomes": [
+    {
+      "target": "engineer",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "count": 18
+    },
+    {
+      "target": "engineer",
+      "status": "running",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "count": 1
+    }
+  ],
+  "pause": {
+    "paused_until": null,
+    "reason": null
+  },
+  "release_service": "Result=exec-condition\nActiveState=inactive\nConditionResult=no\n"
+}

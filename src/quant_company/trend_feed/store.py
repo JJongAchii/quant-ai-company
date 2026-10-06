@@ -232,6 +232,9 @@ class TrendFeedStore:
             request = ProviderRequest(request_id="news-trends-" + str(uuid4()), model=role.model,
                                       reasoning_effort=role.reasoning_effort,
                                       prompt=prompt(row["bundle"], calls[-1]["error"] if calls else None))
+            from ..model_policy import bind
+
+            request = bind(self.company, conn, request, "reporter")
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=%s", (day,))
             return conn.execute("""INSERT INTO trend_feed_calls(id,digest_id,stage,request,lease_until,created_at)
                 VALUES(%s,%s,%s,%s,%s,%s) RETURNING *""", (request.request_id, row["id"], len(calls),

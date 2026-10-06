@@ -1,0 +1,79 @@
+{
+  "approval": {
+    "approvedAt": "2026-10-06T07:53:56.619444+00:00",
+    "id": "chat-model-assignments-deploy-20261006"
+  },
+  "currentIntent": "INTENT-v2.json",
+  "deliverables": {
+    "IMPLEMENTATION": {
+      "evidence": [
+        {
+          "path": "src/quant_company/model_policy.py",
+          "sha256": "173de699cc1c"
+        },
+        {
+          "path": "src/quant_company/model_control.py",
+          "sha256": "9a638de467ef"
+        },
+        {
+          "path": "docs/runbooks/model-assignments.md",
+          "sha256": "f9f6b209e023"
+        }
+      ],
+      "note": "Owner-controlled employee pins and task overrides implemented and active. Selected-account catalog validates each change; frozen requests and sessions preserve their original model. Defaults remain unchanged until an owner command.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T10:31:51.052025+00:00"
+    },
+    "PRODUCTION": {
+      "evidence": [
+        {
+          "path": "docs/project/MODEL-ASSIGNMENTS-PRODUCTION-20261006.md",
+          "sha256": "b74b07c7dedd"
+        },
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/production-verification.json",
+          "sha256": "3820071f3305"
+        },
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/production-receipts.json",
+          "sha256": "aaa9610d12a2"
+        },
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/backup-confirmation.json",
+          "sha256": "43ab2212dd0d"
+        },
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/owner-control-readback.json",
+          "sha256": "3ec6eaa0f928"
+        }
+      ],
+      "note": "Authorized production activation completed: 9 image cohorts, 13 services replaced, 15 stable. Actual operator/private model catalog, Temporal account-control pollers and seven Slack auth/TLS connections verified. 10058 frozen requests and DB/Claude preserved; encrypted S3 backup confirmed. Owner Slack model command and chosen-model smoke pending first input. Old automatic code cutover guarded; maintenance and PR preparation continue.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T10:31:51.483913+00:00"
+    },
+    "VALIDATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/feature-ci.json",
+          "sha256": "0d299cf0940c"
+        },
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/production-qualification.json",
+          "sha256": "5827f806f63a"
+        },
+        {
+          "path": "docs/project/evidence/model-assignments-20261006/integrated-pytest.txt",
+          "sha256": "72646579c2e9"
+        }
+      ],
+      "note": "Final feature CI 1521 passed, 46 skipped, 1 deselected. Real disposable PostgreSQL/Temporal and qualified actual production source cohorts; synthetic Slack and model fixtures labeled. Real official CLI and selected account catalog separately verified during deployment.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T10:31:51.282589+00:00"
+    }
+  },
+  "intentDigest": "120eac18b054",
+  "schemaVersion": 1,
+  "slug": "manatee",
+  "state": "approved",
+  "updatedAt": "2026-10-06T10:31:51.483913+00:00"
+}

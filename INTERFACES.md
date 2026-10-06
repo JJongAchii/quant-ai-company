@@ -21,6 +21,9 @@ array of `Role` objects, packaged in `src/quant_company/`.
   shell, app, MCP/plugin, computer and subagent tools disabled. Model proposes typed service tools.
 - Request result is durably cached by ID + input digest. A crash after starting a call is an
   uncertain call until an operator reconciles it; no silent paid or duplicate fallback.
+- `GET /v1/models/{primary|backup}` uses the same private bearer token and returns
+  `{profile, models: [{model, reasoning_efforts: [string]}]}`. It uses Codex app-server model/list,
+  requires a credential-only profile home, and never starts inference.
 
 ## Company service
 
@@ -42,6 +45,13 @@ array of `Role` objects, packaged in `src/quant_company/`.
   `--transport http --base-url https://...`. Never create/install apps automatically.
 - `/healthz`; authenticated `/v1/agents`, `/v1/projects`, `/v1/projects/{id}`,
   `/v1/requests`, `/v1/projects/{id}/revise`, `/v1/tasks/{id}/retry`.
+- `MODEL_ASSIGNMENTS_ENABLED=false` enables durable owner-controlled assignments when true;
+  requires existing `MODEL_ACCOUNTS_ENABLED` and its allowed owner/channel.
+  Authenticated `GET /v1/model-assignments` returns `{enabled, revision, assignments, precedence,
+  independent_reviewer}`; `/v1/agents` reflects effective role settings when enabled.
+  Assignment changes enter only through authenticated owner Slack commands, processed by the
+  existing account-control Temporal queue. Policy provenance stays in PostgreSQL; the
+  `ProviderRequest` wire schema and legacy receipt digests remain unchanged.
 - Temporal workflow IDs are stable turn IDs. PostgreSQL owns company task state and inbox/outbox;
   Temporal owns the execution of each bounded turn and its delayed retries.
 - The dispatch process drains durable turn starts and Slack outbox. Bot messages are mirrored

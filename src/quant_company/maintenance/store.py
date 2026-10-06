@@ -106,6 +106,8 @@ class Store:
 
             owners = self.config.allowed_owners
             if self.company.settings.company_improvements_enabled:
+                from .problems import failure_observations
+
                 # Ordinary conversations/ideas do not trigger automatic model work. One owner per case.
                 rows = []
                 owners = [events[0]["owner_user"]] if events else []
@@ -116,8 +118,10 @@ class Store:
                                 if row.get("grade", {}).get("objective_passed") is False
                                 and datetime.fromisoformat(row["created_at"]) >= datetime.fromisoformat(
                                     control["runtime"]["improvements_started_at"])]
-                    if failures:
-                        owners, staff = [owner], failures
+                    problems = failure_observations(conn, self.company, owner,
+                                                    control["runtime"]["improvements_started_at"])
+                    if failures or problems:
+                        owners, staff = [owner], failures + problems
                         break
                 rows = safe_rows(events + staff)
             else:
@@ -342,12 +346,19 @@ class Store:
             if ((limits["company"] is not None and usage["reserved"] >= limits["company"])
                     or (limits["maintenance"] is not None and count["n"] >= limits["maintenance"])):
                 raise Deferred("daily_model_budget")
-            if model is None:
-                role = self.company.roles["engineer"]
+            replay = model is not None
+            if not replay:
+                from ..model_policy import effective_role
+
+                role = effective_role(self.company, conn, "maintainer")
                 model, reasoning_effort = role.model, role.reasoning_effort
             # An explicit replay model retains the frozen effort, including legacy None.
             request = ProviderRequest(request_id=call_id, model=model, reasoning_effort=reasoning_effort,
                                       prompt=prompt, web_search=web_search)
+            from ..model_policy import bind
+
+            request = bind(self.company, conn, request, "maintainer", inherited=(
+                {"model": model, "reasoning_effort": reasoning_effort, "source": "frozen_replay"} if replay else None))
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             return conn.execute("""INSERT INTO maintenance_calls(id,job_id,request) VALUES (%s,%s,%s)
                 RETURNING *""", (call_id, job["id"], Jsonb(request.model_dump()))).fetchone()

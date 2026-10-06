@@ -33,6 +33,30 @@ if '--version' in sys.argv:
 if 'login' in sys.argv:
     print(control.get('login', 'Logged in using ChatGPT'), file=sys.stderr)
     sys.exit(control.get('login_exit', 0))
+if 'app-server' in sys.argv:
+    for line in sys.stdin:
+        message = json.loads(line)
+        with (base / 'catalog-calls.jsonl').open('a') as stream:
+            stream.write(json.dumps({'rpc': message, 'args': sys.argv[1:], 'environment': dict(os.environ)}) + '\n')
+        if message['method'] == 'initialized':
+            continue
+        assert message['method'] in ('initialize', 'model/list'), 'Catalog must never start a thread or turn'
+        if message['method'] == 'initialize':
+            result = {}
+        else:
+            if control.get('catalog_error'):
+                print(json.dumps({'id': message['id'], 'error': {'message': 'SECRET-CATALOG-ERROR'}}), flush=True)
+                continue
+            models = control.get('catalog', [
+                {'model': 'gpt-5.6-luna', 'supportedReasoningEfforts': [{'reasoningEffort': 'high'}]},
+                {'model': 'candidate-a', 'supportedReasoningEfforts': [{'reasoningEffort': 'high'}, {'reasoningEffort': 'max'}]},
+                {'model': 'candidate-b', 'supportedReasoningEfforts': [{'reasoningEffort': 'high'}, {'reasoningEffort': 'max'}]}])
+            pages = control.get('catalog_pages')
+            page = int(message['params'].get('cursor', '0'))
+            result = {'data': pages[page] if pages else models,
+                      'nextCursor': str(page + 1) if pages and page < len(pages)-1 else None}
+        print(json.dumps({'id': message['id'], 'result': result}), flush=True)
+    sys.exit(0)
 schema = Path(sys.argv[sys.argv.index('--output-schema') + 1])
 if not schema.exists():
     assert sys.stdin.read() == ''

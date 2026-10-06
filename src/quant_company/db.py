@@ -26,6 +26,7 @@ class Database:
                 conn.execute(files("quant_company").joinpath("schema.sql").read_text())
             conn.execute(files("quant_company").joinpath("state_schema.sql").read_text())
             conn.execute(files("quant_company").joinpath("account_schema.sql").read_text())
+            conn.execute(files("quant_company").joinpath("model_policy_schema.sql").read_text())
             conn.execute(files("quant_company.staff").joinpath("schema.sql").read_text())
             conn.execute(files("quant_company.news").joinpath("schema.sql").read_text())
             conn.execute(files("quant_company.tech_feed").joinpath("schema.sql").read_text())

@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     model_runtime_url: str = "http://codex:8081"
     model_runtime_token: SecretStr = SecretStr("")
     model_accounts_enabled: bool = False
+    model_assignments_enabled: bool = False
     model_accounts_owner_user: str = ""
     model_accounts_channel_id: str = ""
     company_lake_uri: str = Field(default="", pattern=r"^(|s3://[a-z0-9][a-z0-9.-]+/[A-Za-z0-9_/-]+)$")
@@ -101,6 +102,8 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def explicit_simulation(self) -> "Settings":
+        if self.model_assignments_enabled and not self.model_accounts_enabled:
+            raise ValueError("Model assignments require owner-selected account control")
         if self.model_accounts_enabled and self.model_accounts_owner_user not in self.slack_allowed_users:
             raise ValueError("Model account control requires an explicitly allowed owner")
         if self.model_accounts_enabled and (

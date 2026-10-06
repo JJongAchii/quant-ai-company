@@ -1,0 +1,960 @@
+--- a/src/quant_company/accounts.py
++++ b/src/quant_company/accounts.py
+@@ -231,7 +231,11 @@
+                          (row["command_id"], row["turn_id"]))
+ 
+     async def tick(self):
+-        pending = await asyncio.to_thread(self.pending)
++        from .model_control import ModelControl
++
++        # Existing activity/queue keeps Temporal histories unchanged and works during inference quota waits.
++        processed = await ModelControl(self.company, self.client).tick()
++        pending = None if processed else await asyncio.to_thread(self.pending)
+         if pending:
+             if self.client is None:
+                 self.client = RuntimeClient(self.company.settings.model_runtime_url,
+--- a/src/quant_company/api.py
++++ b/src/quant_company/api.py
+@@ -90,7 +90,19 @@
+ 
+     @app.get("/v1/agents", dependencies=[Depends(operator)])
+     def agents():
++        if company.settings.model_assignments_enabled:
++            from .model_policy import effective_role
++
++            with company.db.transaction() as conn:
++                return [effective_role(company, conn, name).model_dump() for name in company.roles]
+         return [role.model_dump() for role in company.roles.values()]
++
++    @app.get("/v1/model-assignments", dependencies=[Depends(operator)])
++    def model_assignments():
++        from .model_policy import status
++
++        with company.db.transaction() as conn:
++            return status(company, conn)
+ 
+     @app.post("/v1/research/jobs/{job_id}/revalidate", dependencies=[Depends(operator)])
+     def research_revalidate(job_id: str, value: ResearchRevalidation):
+--- a/src/quant_company/company.py
++++ b/src/quant_company/company.py
+@@ -92,10 +92,20 @@
+ 
+     def runtime_context(self, conn=None) -> dict:
+         """Allowlisted configuration facts, never a dump of settings or credentials."""
++        from .model_policy import effective_role
+         from .owner_controls import effective_limits
+         from .staff.packs import STAFF, pack
+         from .staff.review_contract import REVIEW_EFFORT, REVIEW_MODEL
+         from .staff.tools import TOOL_GUIDE
++
++        if self.settings.model_assignments_enabled and conn is None:
++            with self.db.transaction() as current_conn:
++                return self.runtime_context(current_conn)
++        roles = self.roles
++        if self.settings.model_assignments_enabled:
++            roles = {name: effective_role(self, conn, name) if name != TECH_FEED_AGENT else role
++                     for name, role in self.roles.items()}
++        maintainer = effective_role(self, conn, "maintainer") if "engineer" in roles else None
+ 
+         return {
+             "snapshot_at": now().isoformat(),
+@@ -107,13 +117,13 @@
+                     ["id", "name", "active", "model", "reasoning_effort", "version", "tools", "can_delegate_to"]},
+                  "specialist_pack_version": pack(role.id)["version"] if role.id in (*STAFF, "reporter") else None,
+                  "specialist_pack_digest": pack(role.id)["digest"] if role.id in (*STAFF, "reporter") else None}
+-                for role in self.roles.values() if role.id not in {TECH_FEED_AGENT, "quant_scout"}
++                for role in roles.values() if role.id not in {TECH_FEED_AGENT, "quant_scout"}
+             ],
+             "background_model_requests": {
+-                "maintainer": ({"model": self.roles["engineer"].model,
+-                                "reasoning_effort": self.roles["engineer"].reasoning_effort,
+-                                "configuration_source": "engineer role; new maintenance calls use these values"}
+-                               if "engineer" in self.roles else None),
++                "maintainer": ({"model": maintainer.model,
++                                "reasoning_effort": maintainer.reasoning_effort,
++                                "configuration_source": "maintainer assignment, otherwise engineer role; new calls use these values"}
++                               if "engineer" in roles else None),
+                 "independent_explanation_reviewer": {
+                     "model": REVIEW_MODEL, "reasoning_effort": REVIEW_EFFORT,
+                     "enabled": self.settings.company_staff_review_enabled,
+@@ -150,10 +160,10 @@
+                              'follow-up is limited to the approved search scope. Version 2 supports provisioned domestic '
+                              'strategy and scientific evaluation profiles; unavailable profiles cannot execute.',
+                     "internal_staff": [
+-                        {"role": name, "model": self.roles[name].model,
+-                         "reasoning_effort": self.roles[name].reasoning_effort,
+-                         "slack_identity_active": self.roles[name].active}
+-                        for name in ("engineer", "validator") if name in self.roles
++                        {"role": name, "model": roles[name].model,
++                         "reasoning_effort": roles[name].reasoning_effort,
++                         "slack_identity_active": roles[name].active}
++                        for name in ("engineer", "validator") if name in roles
+                     ],
+                 },
+                 "news_reporting": {"enabled": self.settings.company_news_enabled,
+@@ -227,7 +237,7 @@
+                                "tool": "data_watch_status {} reads recorded checks without scanning the lake; "
+                                        "available to data in its configured channel. Unknown freshness is not healthy."},
+                 "external_web_search": self.settings.company_web_enabled and any(
+-                    role.active and "web_search" in role.tools for role in self.roles.values()),
++                    role.active and "web_search" in role.tools for role in roles.values()),
+                 "research_worker_submission": self.settings.company_research_enabled,
+                 "strategy_code_execution": self.settings.company_autonomous_research_enabled,
+                 "live_trading": False,
+@@ -334,6 +344,7 @@
+                project_id: str | None = None, channel: str | None = None, thread_ts: str | None = None,
+                revise: bool = False, status_only: bool = False, daily_limit_command: dict | None = None,
+                account_command: dict | None = None, account_help: bool = False,
++               model_command: dict | None = None,
+                interpret: bool = False, control_action: str | None = None,
+                approval_context: dict | None = None) -> dict:
+         self.role(agent)
+@@ -361,6 +372,15 @@
+             status_only = True
+         digest = fingerprint([text, owner, agent, project_id, channel, thread_ts, revise, status_only])
+         prior_ingress_digest = digest
++        if model_command is not None:
++            from .model_policy import authorized, parse_command
++
++            if (model_command != parse_command(text) or not event_key.startswith("slack:")
++                    or not authorized(self, owner, channel, agent, model_command)
++                    or revise or interpret or control_action or daily_limit_command or account_command or account_help):
++                raise PolicyError("Model control requires an authenticated owner command in the permitted channel")
++            digest = fingerprint([digest, model_command])
++            status_only = True
+         if account_command is not None or account_help:
+             from .accounts import parse_command
+ 
+@@ -446,6 +466,10 @@
+                           "새 질문은 새 스레드에서 요청해 주세요. 이 스레드의 현황은 '상태'로 확인할 수 있습니다.")
+                 conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (notice, task["id"]))
+                 self._message(conn, project, task["id"], agent, "status", notice)
++            elif model_command is not None:
++                from .model_policy import enqueue
++
++                enqueue(conn, self, project, task, event_key, model_command)
+             elif account_command is not None:
+                 from .accounts import enqueue
+ 
+@@ -557,9 +581,11 @@
+             conn.execute("SELECT agent FROM tasks WHERE id=%s", (task["parent_id"],)).fetchone()["agent"]
+             if task["parent_id"] else None
+         )
++        from .model_policy import effective_role
++
++        feedback_role = effective_role(self, conn, task["agent"], task=task)
+         context["professional_feedback"] = as_json(coaching(
+-            conn, project["owner_user"], task["agent"], self.roles[task["agent"]].model,
+-            self.roles[task["agent"]].reasoning_effort))
++            conn, project["owner_user"], task["agent"], feedback_role.model, feedback_role.reasoning_effort))
+         if task["agent"] == "director" and task["kind"] == "answer":
+             from .research.programs import public_progress
+ 
+@@ -692,6 +718,11 @@
+                 else:
+                     role = self.role(task["agent"])
+                     context = self._context(conn, task, project)
++                    runtime = self.runtime_context(conn)
++                    if self.settings.model_assignments_enabled:
++                        from .model_policy import selection
++
++                        runtime["current_task_model"] = selection(self, conn, task["agent"], task=task)
+                     from .staff.packs import employee_pack
+ 
+                     prompt = (
+@@ -724,11 +755,14 @@
+                         f"Allowed tools: {role.tools}\n"
+                         + employee_pack(role.id) +
+                         f"Remaining task turns: {self.settings.company_max_task_turns - task['turn_count']}\n"
+-                        "RUNTIME CONFIG JSON:\n" + json.dumps(self.runtime_context(conn), ensure_ascii=False) + "\n"
++                        "RUNTIME CONFIG JSON:\n" + json.dumps(runtime, ensure_ascii=False) + "\n"
+                         "TASK DATA JSON:\n" + json.dumps(context, ensure_ascii=False)
+                     )
+                 request = ProviderRequest(request_id=turn_id, model=role.model,
+                                           reasoning_effort=role.reasoning_effort, prompt=prompt, session=session)
++                from .model_policy import bind
++
++                request = bind(self, conn, request, task["agent"], task=task)
+                 conn.execute("UPDATE turns SET request=%s WHERE id=%s", (Jsonb(request.model_dump()), turn_id))
+             else:
+                 request = ProviderRequest.model_validate(turn["request"])
+--- a/src/quant_company/config.py
++++ b/src/quant_company/config.py
+@@ -14,6 +14,7 @@
+     model_runtime_url: str = "http://codex:8081"
+     model_runtime_token: SecretStr = SecretStr("")
+     model_accounts_enabled: bool = False
++    model_assignments_enabled: bool = False
+     model_accounts_owner_user: str = ""
+     model_accounts_channel_id: str = ""
+     company_lake_uri: str = Field(default="", pattern=r"^(|s3://[a-z0-9][a-z0-9.-]+/[A-Za-z0-9_/-]+)$")
+@@ -95,6 +96,8 @@
+ 
+     @model_validator(mode="after")
+     def explicit_simulation(self) -> "Settings":
++        if self.model_assignments_enabled and not self.model_accounts_enabled:
++            raise ValueError("Model assignments require owner-selected account control")
+         if self.model_accounts_enabled and self.model_accounts_owner_user not in self.slack_allowed_users:
+             raise ValueError("Model account control requires an explicitly allowed owner")
+         if self.model_accounts_enabled and (
+--- a/src/quant_company/db.py
++++ b/src/quant_company/db.py
+@@ -26,6 +26,7 @@
+                 conn.execute(files("quant_company").joinpath("schema.sql").read_text())
+             conn.execute(files("quant_company").joinpath("state_schema.sql").read_text())
+             conn.execute(files("quant_company").joinpath("account_schema.sql").read_text())
++            conn.execute(files("quant_company").joinpath("model_policy_schema.sql").read_text())
+             conn.execute(files("quant_company.staff").joinpath("schema.sql").read_text())
+             conn.execute(files("quant_company.news").joinpath("schema.sql").read_text())
+             conn.execute(files("quant_company.tech_feed").joinpath("schema.sql").read_text())
+--- a/src/quant_company/maintenance/store.py
++++ b/src/quant_company/maintenance/store.py
+@@ -346,12 +346,19 @@
+             if ((limits["company"] is not None and usage["reserved"] >= limits["company"])
+                     or (limits["maintenance"] is not None and count["n"] >= limits["maintenance"])):
+                 raise Deferred("daily_model_budget")
+-            if model is None:
+-                role = self.company.roles["engineer"]
++            replay = model is not None
++            if not replay:
++                from ..model_policy import effective_role
++
++                role = effective_role(self.company, conn, "maintainer")
+                 model, reasoning_effort = role.model, role.reasoning_effort
+             # An explicit replay model retains the frozen effort, including legacy None.
+             request = ProviderRequest(request_id=call_id, model=model, reasoning_effort=reasoning_effort,
+                                       prompt=prompt, web_search=web_search)
++            from ..model_policy import bind
++
++            request = bind(self.company, conn, request, "maintainer", inherited=(
++                {"model": model, "reasoning_effort": reasoning_effort, "source": "frozen_replay"} if replay else None))
+             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
+             return conn.execute("""INSERT INTO maintenance_calls(id,job_id,request) VALUES (%s,%s,%s)
+                 RETURNING *""", (call_id, job["id"], Jsonb(request.model_dump()))).fetchone()
+--- a/src/quant_company/model_control.py
++++ b/src/quant_company/model_control.py
+@@ -0,0 +1,179 @@
++"""Durable owner commands, run on the existing inference-independent Temporal queue."""
++
++import asyncio
++
++from psycopg.types.json import Jsonb
++
++from .contracts import ProviderFault
++from .model_policy import HELP_TEXT, authorized, baseline, selection, status, targets
++
++
++def validate_selection(target, chosen, models):
++    found = next((model for model in models if model["model"] == chosen["model"]), None)
++    if found is None:
++        raise ValueError(f"현재 계정의 모델 목록에 {chosen['model']}이 없습니다.")
++    if chosen["reasoning_effort"] not in found["reasoning_efforts"]:
++        raise ValueError(f"{chosen['model']}은 추론 강도 {chosen['reasoning_effort']}을 지원하지 않습니다.")
++    if target == "director" and chosen["reasoning_effort"] != "max":
++        raise ValueError("총괄은 기존 정책에 따라 max를 지정해 주세요.")
++
++
++class ModelControl:
++    def __init__(self, company, client):
++        self.company, self.client = company, client
++
++    def pending(self):
++        with self.company.db.transaction() as conn:
++            command = conn.execute("""SELECT * FROM model_assignment_commands WHERE state='requested'
++                ORDER BY sequence LIMIT 1""").fetchone()
++            account = conn.execute("SELECT profile,revision FROM model_account_policy WHERE id=1").fetchone()
++            return command, account
++
++    def apply(self, command_id, account, models, error=None):
++        company = self.company
++        with company.db.transaction() as conn:
++            # Same order as account routing: an account cannot switch during validation/activation.
++            current_account = conn.execute("SELECT profile,revision FROM model_account_policy WHERE id=1 FOR SHARE").fetchone()
++            row = conn.execute("""SELECT * FROM model_assignment_commands WHERE state='requested'
++                ORDER BY sequence LIMIT 1""").fetchone()
++            if not row or row["id"] != command_id:
++                return False
++            task = conn.execute("SELECT * FROM tasks WHERE id=%s", (command_id,)).fetchone()
++            project = company._project(conn, task["project_id"])
++            task = conn.execute("SELECT * FROM tasks WHERE id=%s FOR UPDATE", (command_id,)).fetchone()
++            current = conn.execute("SELECT * FROM model_assignment_policy WHERE id=1 FOR UPDATE").fetchone()
++            row = conn.execute("""SELECT * FROM model_assignment_commands WHERE state='requested'
++                ORDER BY sequence LIMIT 1 FOR UPDATE""").fetchone()
++            if not row or row["id"] != command_id:
++                return False
++            command, outcome = row["command"], "rejected"
++            action = command["action"]
++            receipt = {"action": action, "revision": current["revision"]}
++            try:
++                if (project["owner_user"] != row["owner_user"] or
++                        not authorized(company, row["owner_user"], project["channel"], task["agent"], command)):
++                    raise ValueError("모델 배정 제어 권한 또는 설정이 변경되었습니다.")
++                if not company.settings.model_assignments_enabled:
++                    raise ValueError("모델 배정 기능이 아직 활성화되지 않았습니다.")
++                if task["revision"] != project["revision"] or task["status"] != "waiting":
++                    raise ValueError("이미 변경되거나 중단된 업무의 모델 요청입니다.")
++                if action not in {"status", "history", "help"}:
++                    if error or models is None:
++                        raise ValueError("현재 계정의 모델 목록을 확인하지 못했습니다. 배정은 변경하지 않았습니다.")
++                    if account != current_account:
++                        raise ValueError("확인 중 선택 계정이 변경되었습니다. 현재 계정으로 다시 요청해 주세요.")
++                    conn.execute("""INSERT INTO model_catalog_checks(id,profile,account_revision,models)
++                        VALUES(%s,%s,%s,%s)""", (command_id, account["profile"], account["revision"], Jsonb(models)))
++                    receipt.update(profile=account["profile"], account_revision=account["revision"], catalog_id=str(command_id))
++                if action == "help":
++                    text, outcome = HELP_TEXT, "help"
++                elif action == "status":
++                    snapshot = status(company, conn)
++                    text = f"모델 배정 #{current['revision']}\n" + "\n".join(
++                        f"• {key}: {value['model']} · {value['reasoning_effort']} ({value['source']})"
++                        for key, value in snapshot["assignments"].items())
++                    text += "\n우선순위: 이번 작업 지정 → 직원별 고정 → 기본 배정. 별도 Claude 검토 모델은 제외합니다."
++                    receipt["assignments"], outcome = snapshot["assignments"], "status"
++                elif action == "history":
++                    rows = conn.execute("""SELECT revision,owner_user,created_at,bindings FROM model_assignment_revisions
++                        ORDER BY revision DESC LIMIT 10""").fetchall()
++                    text = "최근 모델 배정 이력\n" + "\n".join(
++                        f"• #{item['revision']} · {item['created_at'].isoformat()} · " +
++                        (", ".join(f"{key}={value['model']}/{value['reasoning_effort']}"
++                                   for key, value in item["bindings"].items()) or "기본 배정") for item in rows)
++                    text += "\n`모델 배정 복원 번호`로 해당 고정 배정을 복원합니다."
++                    outcome = "history"
++                elif action == "catalog":
++                    text = f"{account['profile']} 계정에서 확인한 모델\n" + "\n".join(
++                        f"• {item['model']}: {', '.join(item['reasoning_efforts'])}" for item in models[:30])
++                    if len(models) > 30:
++                        text += f"\n전체 {len(models)}개 중 처음 30개를 표시합니다. 전체 목록은 운영 조회 기록에 보존했습니다."
++                    text += "\n목록 확인은 실제 추론 성공이나 잔여 사용량 보장이 아닙니다."
++                    outcome = "catalog"
++                elif action == "task":
++                    chosen = {key: command[key] for key in ("model", "reasoning_effort")}
++                    validate_selection(task["agent"], chosen, models)
++                    count = conn.execute("""SELECT count(*) AS n FROM tasks WHERE project_id=%s AND turn_count>0
++                        AND kind<>'research_stage'""", (project["id"],)).fetchone()["n"]
++                    cap = company.settings.company_max_project_tasks
++                    if cap and count >= cap:
++                        raise ValueError("이 스레드의 업무 한도에 도달했습니다. 새 스레드에서 요청해 주세요.")
++                    chosen.update(source="task", revision=current["revision"], command_id=str(command_id))
++                    task = conn.execute("""UPDATE tasks SET kind='work',status='queued',instruction=%s,model_selection=%s
++                        WHERE id=%s RETURNING *""", (command["instruction"], Jsonb(chosen), command_id)).fetchone()
++                    company._new_turn(conn, task)
++                    receipt["selection"] = chosen
++                    text = (f"이번 업무에 {chosen['model']} · {chosen['reasoning_effort']}을 지정했습니다. "
++                            "해당 직원의 후속 응답과 웹검색에 적용합니다. 동료 위임은 각 직원의 배정을 사용합니다.")
++                    outcome = "task_queued"
++                else:
++                    updated = dict(current["bindings"])
++                    if action in {"pin", "reset"}:
++                        target = command["target"]
++                        if target not in targets(company):
++                            raise ValueError("등록되지 않았거나 모델을 사용하지 않는 직원입니다.")
++                        if action == "pin":
++                            chosen = {key: command[key] for key in ("model", "reasoning_effort")}
++                            validate_selection(target, chosen, models)
++                            updated[target] = {**chosen, "command_id": str(command_id)}
++                        else:
++                            updated.pop(target, None)
++                            validate_selection(target, selection(company, conn, target,
++                                current={**current, "bindings": updated}, default=baseline(company, target)), models)
++                    elif action == "restore":
++                        previous = conn.execute("SELECT bindings FROM model_assignment_revisions WHERE revision=%s",
++                                                (command["revision"],)).fetchone()
++                        if not previous:
++                            raise ValueError("해당 모델 배정 이력이 없습니다.")
++                        updated = previous["bindings"]
++                        # Validate every changed effective assignment, including removed pins/inherited models.
++                        for target in current["bindings"].keys() | updated.keys():
++                            if target not in targets(company):
++                                raise ValueError("이력의 직원 구성이 현재와 달라 복원할 수 없습니다.")
++                            validate_selection(target, selection(company, conn, target,
++                                current={**current, "bindings": updated}), models)
++                    else:
++                        raise ValueError("지원하지 않는 모델 배정 명령입니다.")
++                    revision = current["revision"] + 1
++                    conn.execute("UPDATE model_assignment_policy SET revision=%s,bindings=%s WHERE id=1",
++                                 (revision, Jsonb(updated)))
++                    conn.execute("""INSERT INTO model_assignment_revisions(revision,bindings,command_id,owner_user)
++                        VALUES(%s,%s,%s,%s)""", (revision, Jsonb(updated), command_id, row["owner_user"]))
++                    receipt.update(revision=revision, before=current["bindings"], after=updated)
++                    text = f"모델 배정 #{revision}을 저장했습니다. 새로 준비하는 요청부터 적용합니다."
++                    if action == "pin":
++                        text += f"\n{target}: {command['model']} · {command['reasoning_effort']} (고정)"
++                    elif action == "reset":
++                        text += f"\n{target}: 고정을 해제하고 기본 배정을 사용합니다."
++                    else:
++                        text += f"\n#{command['revision']}의 고정 배정을 복원했습니다."
++                    outcome = "applied"
++            except ValueError as exc:
++                text = str(exc)
++            receipt["outcome"] = outcome
++            conn.execute("""UPDATE model_assignment_commands SET state='completed',receipt=%s,completed_at=now()
++                WHERE id=%s""", (Jsonb(receipt), command_id))
++            if outcome != "task_queued" and task["status"] == "waiting":
++                conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (text, command_id))
++            company._message(conn, project, command_id, task["agent"], "status", text)
++            company._event(conn, "model_assignment_control", {"command_id": str(command_id),
++                           "owner": row["owner_user"], **receipt}, project["id"])
++            return True
++
++    async def tick(self):
++        row, account = await asyncio.to_thread(self.pending)
++        if row is None:
++            return False
++        models, error = None, None
++        if self.company.settings.model_assignments_enabled and row["command"]["action"] not in {"status", "history", "help"}:
++            try:
++                if self.client is None:
++                    from .providers.client import RuntimeClient
++
++                    self.client = RuntimeClient(self.company.settings.model_runtime_url,
++                                                self.company.settings.model_runtime_token.get_secret_value())
++                models = await self.client.models(account["profile"])
++            except ProviderFault:
++                error = "unavailable"
++        await asyncio.to_thread(self.apply, row["id"], account, models, error)
++        return True
+--- a/src/quant_company/model_policy.py
++++ b/src/quant_company/model_policy.py
+@@ -0,0 +1,135 @@
++"""Service-owned model selection. Only authenticated owner commands may change it."""
++
++import re
++from typing import get_args
++
++from psycopg.types.json import Jsonb
++
++from .contracts import ReasoningEffort
++
++MODEL_ID = r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}"
++EFFORT = "(?:" + "|".join(get_args(ReasoningEffort)) + ")"
++ALIASES = {"총괄": "director", "개발": "engineer", "데이터": "data", "금융전략": "financial_strategist",
++           "국내연구": "researcher_kr", "글로벌연구": "researcher_global", "가상자산연구": "researcher_crypto",
++           "검증": "validator", "리스크": "risk", "운영": "operations", "뉴스": "reporter", "개선": "maintainer",
++           "브리핑": "market_brief"}
++HELP_TEXT = ("모델 배정 명령:\n• `모델 목록` · `모델 배정 상태` · `모델 배정 이력`\n"
++             "• `모델 지정 개발 gpt-6.1-sol max`\n• `모델 자동 개발` (고정 해제, 기본 배정 사용)\n"
++             "• `모델 배정 복원 2` (이력 번호)\n"
++             "업무 채널에서 첫 줄에 `이번 작업 모델 gpt-6.1-sol max`, 다음 줄에 업무 내용을 적어 주세요. "
++             "지정은 해당 직원의 이번 업무와 웹검색에만 적용하며 동료 위임에는 각 직원의 배정을 사용합니다.")
++
++
++def parse_command(text):
++    value = text.strip()
++    simple = {"모델 목록": "catalog", "모델 배정 상태": "status", "모델 배정 이력": "history"}
++    if value in simple:
++        return {"action": simple[value]}
++    if match := re.fullmatch(rf"모델 지정 ([\w-]+) ({MODEL_ID}) ({EFFORT})", value):
++        target, model, effort = match.groups()
++        return {"action": "pin", "target": ALIASES.get(target, target), "model": model, "reasoning_effort": effort}
++    if match := re.fullmatch(r"모델 자동 ([\w-]+)", value):
++        target = match[1]
++        return {"action": "reset", "target": ALIASES.get(target, target)}
++    if match := re.fullmatch(r"모델 배정 복원 ([0-9]{1,12})", value):
++        return {"action": "restore", "revision": int(match[1])}
++    if match := re.fullmatch(rf"이번 작업 모델 ({MODEL_ID}) ({EFFORT})\n([\s\S]+)", value):
++        if match[3].strip():
++            return {"action": "task", "model": match[1], "reasoning_effort": match[2], "instruction": match[3].strip()}
++    # A malformed selection must not become an ordinary task using the default model.
++    if value.startswith(("모델 지정", "모델 자동", "모델 배정", "모델 목록", "이번 작업 모델")):
++        return {"action": "help"}
++    return None
++
++
++def policy(conn):
++    # Shared readers serialize against activation while allowing concurrent request preparation.
++    return conn.execute("SELECT * FROM model_assignment_policy WHERE id=1 FOR SHARE").fetchone()
++
++
++def targets(company):
++    return ({key for key in company.roles if key != "tech_scout"}
++            | ({"news_screening", "news_search"} if "reporter" in company.roles else set())
++            | ({"maintainer"} if "engineer" in company.roles else set()))
++
++
++def baseline(company, target):
++    if target == "news_screening" or target == "news_search" and company.settings.news_optimization_enabled:
++        return {"model": "gpt-5.6-luna", "reasoning_effort": "low"}
++    name = "reporter" if target == "news_search" else "engineer" if target == "maintainer" else target
++    role = company.roles[name]
++    return {"model": role.model, "reasoning_effort": role.reasoning_effort}
++
++
++def selection(company, conn, target, *, task=None, current=None, default=None):
++    base = default or baseline(company, target)
++    if not company.settings.model_assignments_enabled:
++        return {**base, "source": "default", "revision": 0}
++    if task and task.get("model_selection"):
++        return task["model_selection"]
++    current = current or policy(conn)
++    chosen = current["bindings"].get(target)
++    source = "pinned"
++    if chosen is None and target == "maintainer":
++        chosen = current["bindings"].get("engineer")
++        source = "engineer"
++    if chosen is None and target == "news_search" and not company.settings.news_optimization_enabled:
++        chosen = current["bindings"].get("reporter")
++        source = "reporter"
++    return {**(chosen or base), "source": source if chosen else "default", "revision": current["revision"]}
++
++
++def effective_role(company, conn, target, *, task=None, current=None):
++    role = company.roles["engineer" if target == "maintainer" and target not in company.roles else target]
++    chosen = selection(company, conn, target, task=task, current=current)
++    return role.model_copy(update={key: chosen[key] for key in ("model", "reasoning_effort")})
++
++
++def bind(company, conn, request, target, *, task=None, inherited=None):
++    if not company.settings.model_assignments_enabled:
++        return request
++    chosen = inherited
++    if request.session and request.session.previous_request_id:
++        previous = conn.execute("SELECT request FROM turns WHERE id=%s", (request.session.previous_request_id,)).fetchone()
++        if not previous or not previous["request"]:
++            raise ValueError("Model session predecessor is missing")
++        chosen = {"model": previous["request"]["model"], "reasoning_effort": previous["request"].get("reasoning_effort")}
++        chosen.update(source="session", previous_request_id=request.session.previous_request_id)
++    chosen = chosen or selection(company, conn, target, task=task,
++                                default={"model": request.model, "reasoning_effort": request.reasoning_effort})
++    conn.execute("INSERT INTO model_execution_bindings(request_id,target,selection) VALUES(%s,%s,%s)",
++                 (request.request_id, target, Jsonb(chosen)))
++    return request.model_copy(update={key: chosen[key] for key in ("model", "reasoning_effort")})
++
++
++def status(company, conn):
++    current = policy(conn)
++    return {"enabled": company.settings.model_assignments_enabled, "revision": current["revision"],
++            "assignments": {target: selection(company, conn, target, current=current)
++                            for target in sorted(targets(company))},
++            "precedence": ["task", "pinned", "default"],
++            "independent_reviewer": "Separate Claude runtime; not managed by Codex assignments"}
++
++
++def authorized(company, owner, channel, agent, command):
++    settings = company.settings
++    if owner != settings.model_accounts_owner_user or owner not in settings.slack_allowed_users or not channel:
++        return False
++    if command["action"] == "task":
++        return channel != settings.model_accounts_channel_id and (
++            channel in settings.slack_allowed_channels or channel.startswith("D"))
++    if command["action"] == "help" and channel != settings.model_accounts_channel_id:
++        return channel in settings.slack_allowed_channels or channel.startswith("D")
++    return agent == "director" and channel == settings.model_accounts_channel_id and channel in settings.slack_allowed_channels
++
++
++def enqueue(conn, company, project, task, event_key, command):
++    conn.execute("""INSERT INTO model_assignment_commands(id,event_key,owner_user,command)
++        VALUES(%s,%s,%s,%s)""", (task["id"], event_key, project["owner_user"], Jsonb(command)))
++    conn.execute("UPDATE tasks SET status='waiting' WHERE id=%s", (task["id"],))
++    if not company.settings.model_assignments_enabled:
++        text = "모델 배정 기능이 아직 활성화되지 않았습니다. 운영 설정을 확인해 주세요."
++        conn.execute("""UPDATE model_assignment_commands SET state='completed',completed_at=now(),receipt=%s
++            WHERE id=%s""", (Jsonb({"outcome": "disabled"}), task["id"]))
++        conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (text, task["id"]))
++        company._message(conn, project, task["id"], task["agent"], "status", text)
+--- a/src/quant_company/model_policy_schema.sql
++++ b/src/quant_company/model_policy_schema.sql
+@@ -0,0 +1,25 @@
++CREATE TABLE IF NOT EXISTS model_assignment_policy (
++ id integer PRIMARY KEY CHECK(id=1), revision bigint NOT NULL DEFAULT 0,
++ bindings jsonb NOT NULL DEFAULT '{}'::jsonb
++);
++INSERT INTO model_assignment_policy(id) VALUES(1) ON CONFLICT DO NOTHING;
++CREATE TABLE IF NOT EXISTS model_assignment_revisions (
++ revision bigint PRIMARY KEY, bindings jsonb NOT NULL, command_id uuid REFERENCES tasks(id),
++ owner_user text, created_at timestamptz NOT NULL DEFAULT now()
++);
++INSERT INTO model_assignment_revisions(revision,bindings) VALUES(0,'{}') ON CONFLICT DO NOTHING;
++CREATE TABLE IF NOT EXISTS model_assignment_commands (
++ id uuid PRIMARY KEY REFERENCES tasks(id), sequence bigserial UNIQUE,
++ event_key text NOT NULL UNIQUE, owner_user text NOT NULL, command jsonb NOT NULL,
++ state text NOT NULL DEFAULT 'requested', receipt jsonb,
++ created_at timestamptz NOT NULL DEFAULT now(), completed_at timestamptz
++);
++CREATE TABLE IF NOT EXISTS model_catalog_checks (
++ id uuid PRIMARY KEY REFERENCES model_assignment_commands(id), profile text NOT NULL,
++ account_revision bigint NOT NULL, models jsonb NOT NULL, checked_at timestamptz NOT NULL DEFAULT now()
++);
++ALTER TABLE tasks ADD COLUMN IF NOT EXISTS model_selection jsonb;
++CREATE TABLE IF NOT EXISTS model_execution_bindings (
++ request_id text PRIMARY KEY, target text NOT NULL, selection jsonb NOT NULL,
++ created_at timestamptz NOT NULL DEFAULT now()
++);
+--- a/src/quant_company/news/discovery.py
++++ b/src/quant_company/news/discovery.py
+@@ -87,6 +87,9 @@
+             cap = effective_limits(conn, self.company)["company"]
+             if cap is not None and used >= cap:
+                 return {"state": "defer"}
++            from ..model_policy import bind
++
++            request = bind(self.company, conn, request, "news_search")
+             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
+             args["held_ids"] = [r["id"] for r in held]
+             conn.execute("""INSERT INTO news_searches(id,topic,arguments,request,policy_digest)
+--- a/src/quant_company/news/screening.py
++++ b/src/quant_company/news/screening.py
+@@ -84,6 +84,9 @@
+             cap = effective_limits(conn, self.company)["company"]
+             if cap is not None and used >= cap:
+                 return {"state": "defer"}
++            from ..model_policy import bind
++
++            request = bind(self.company, conn, request, "news_screening")
+             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
+             conn.execute("INSERT INTO news_triages(id,request,bundle,policy_digest) VALUES(%s,%s,%s,%s)",
+                          (request.request_id, Jsonb(request.model_dump()), Jsonb(bundle), policy))
+--- a/src/quant_company/news/store.py
++++ b/src/quant_company/news/store.py
+@@ -246,6 +246,9 @@
+             cap = effective_limits(conn, self.company)["company"]
+             if cap is not None and used >= cap:
+                 return {"state": "defer"}
++            from ..model_policy import bind
++
++            request = bind(self.company, conn, request, "reporter")
+             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
+             conn.execute("INSERT INTO news_reviews(id,request,bundle,policy_digest) VALUES(%s,%s,%s,%s)",
+                          (identity, Jsonb(request.model_dump()), Jsonb(bundle), policy))
+--- a/src/quant_company/providers/client.py
++++ b/src/quant_company/providers/client.py
+@@ -72,6 +72,28 @@
+         except (httpx.HTTPError, ValueError, KeyError, TypeError):
+             raise ProviderFault("unavailable", "Account authentication could not be checked.") from None
+ 
++    async def models(self, profile: str) -> list[dict]:
++        from .model_catalog import validate_models
++
++        if profile not in {"primary", "backup"}:
++            raise ValueError("Unknown account profile")
++        try:
++            async with httpx.AsyncClient(timeout=45, transport=self.transport,
++                                         follow_redirects=False, trust_env=False) as client:
++                async with client.stream("GET", f"{self.base_url}/v1/models/{profile}",
++                                         headers={"Authorization": f"Bearer {self.token}"}) as response:
++                    body = bytearray()
++                    async for part in response.aiter_bytes():
++                        body.extend(part)
++                        if len(body) > 512 * 1024:
++                            raise ValueError("Catalog response too large")
++                    data = strict_json(body)
++                    if response.status_code != 200 or data["profile"] != profile:
++                        raise ValueError("Invalid catalog response")
++                    return validate_models(data["models"])
++        except (httpx.HTTPError, ValueError, KeyError, TypeError):
++            raise ProviderFault("unavailable", "Model availability could not be checked.") from None
++
+     async def run(self, request: ProviderRequest, *, account: dict | None = None) -> ProviderResponse:
+         headers = {"Authorization": f"Bearer {self.token}"}
+         payload = request.model_dump(mode="json")
+--- a/src/quant_company/providers/codex_runtime.py
++++ b/src/quant_company/providers/codex_runtime.py
+@@ -141,6 +141,21 @@
+         except ProviderFault as fault:
+             return fault_response(fault)
+ 
++    @app.get("/v1/models/{profile}")
++    async def models(profile: str, request: Request) -> JSONResponse:
++        from .model_catalog import read_catalog
++
++        try:
++            authorize(request)
++            runtime = get_runner()
++            if not isinstance(runtime, CodexRunner) or profile not in {"primary", "backup"}:
++                raise ProviderFault("unavailable", "Unknown model catalog profile.")
++            return JSONResponse({"profile": profile, "models": await read_catalog(runtime, profile)})
++        except ProviderFault as fault:
++            return fault_response(fault)
++        except OSError:
++            return fault_response(ProviderFault("unavailable", "The model catalog is unavailable."))
++
+     return app
+ 
+ 
+--- a/src/quant_company/providers/model_catalog.py
++++ b/src/quant_company/providers/model_catalog.py
+@@ -0,0 +1,141 @@
++"""Read Codex model/list without starting a thread or inference, inside the private runtime."""
++
++import asyncio
++import json
++import re
++import tempfile
++from pathlib import Path
++
++from ..contracts import ProviderFault
++from .codex_runner import (
++    DISABLED_FEATURES,
++    SUPPORTED_CLI_VERSION,
++    ProcessRunner,
++    safe_environment,
++    strict_json,
++)
++
++MAX_BYTES = 512 * 1024
++MODEL_ID = r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}"
++EFFORTS = {"none", "minimal", "low", "medium", "high", "xhigh", "max", "ultra"}
++
++
++def validate_models(rows):
++    if not isinstance(rows, list) or not 0 < len(rows) <= 500:
++        raise ValueError("Invalid model catalog")
++    seen = set()
++    for row in rows:
++        if not isinstance(row, dict) or set(row) != {"model", "reasoning_efforts"}:
++            raise ValueError("Invalid model entry")
++        name, efforts = row["model"], row["reasoning_efforts"]
++        if (not isinstance(name, str) or not re.fullmatch(MODEL_ID, name) or name in seen
++                or not isinstance(efforts, list) or not efforts
++                or any(not isinstance(e, str) or e not in EFFORTS for e in efforts)):
++            raise ValueError("Invalid model capabilities")
++        seen.add(name)
++    return rows
++
++
++async def read_catalog(runner, profile):
++    config = runner.account_config(profile)
++    env = safe_environment(config, runner.environment)
++    # CLI 0.154 has ignore-user-config only on exec, not app-server. Discovery
++    # therefore requires the credential-only runtime home instead of loading user configuration.
++    if (config.codex_home / "config.toml").exists():
++        raise ProviderFault("unavailable", "Model discovery requires a credential-only Codex home without config.toml.")
++    if (await runner.account_status(profile))["authentication"] != "chatgpt":
++        raise ProviderFault("auth", "Authenticate the selected profile with ChatGPT.")
++    with tempfile.TemporaryDirectory(prefix="company-model-catalog-") as work:
++        version = await runner.process.run([config.codex_bin, "--version"], cwd=Path(work), env=env,
++            timeout_seconds=5, max_stdout_bytes=1024, max_stderr_bytes=1024)
++        if version.returncode or version.stdout.strip() != f"codex-cli {SUPPORTED_CLI_VERSION}".encode():
++            raise ProviderFault("unavailable", "Model discovery requires the validated Codex CLI.")
++        argv = [config.codex_bin, "app-server", "--strict-config", "--listen", "stdio://"]
++        overrides = ['forced_login_method="chatgpt"', 'cli_auth_credentials_store="file"',
++                     'model_provider="openai"', 'approval_policy="never"', 'sandbox_mode="read-only"',
++                     'web_search="disabled"', "mcp_servers={}", "apps._default.enabled=false", "notify=[]",
++                     "agents.enabled=false", "features.skip_host_skill_discovery=true",
++                     "memories.generate_memories=false", "memories.use_memories=false"]
++        for override in overrides + [f"features.{name}=false" for name in DISABLED_FEATURES]:
++            argv.extend(("-c", override))
++        spawn = asyncio.create_task(asyncio.create_subprocess_exec(
++            *argv, cwd=work, env=env, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
++            stderr=asyncio.subprocess.PIPE, start_new_session=True, limit=MAX_BYTES))
++        try:
++            process = await asyncio.shield(spawn)
++        except asyncio.CancelledError:
++            process = await spawn
++            await asyncio.shield(ProcessRunner()._stop(process))
++            raise
++        stderr = None
++        try:
++            async def drain_errors():
++                total = 0
++                while part := await process.stderr.read(4096):
++                    total += len(part)
++                    if total > MAX_BYTES:
++                        raise ValueError("Catalog stderr limit")
++
++            consumed = 0
++
++            async def send(value):
++                process.stdin.write(json.dumps(value).encode() + b"\n")
++                await process.stdin.drain()
++
++            async def rpc(identity, method, params):
++                nonlocal consumed
++                await send({"id": identity, "method": method, "params": params})
++                while True:
++                    line = await process.stdout.readline()
++                    consumed += len(line)
++                    if not line or consumed > MAX_BYTES:
++                        raise ValueError("Missing or oversized catalog reply")
++                    message = strict_json(line)
++                    if not isinstance(message, dict):
++                        raise ValueError("Invalid catalog reply")
++                    if message.get("id") == identity:
++                        if "error" in message or "result" not in message:
++                            raise ValueError("Catalog RPC rejected")
++                        return message["result"]
++                    if "id" in message:
++                        raise ValueError("Unexpected catalog RPC")
++
++            async def discover():
++                await rpc(1, "initialize", {"clientInfo": {"name": "quant-company", "version": "0.1.0"}})
++                await send({"method": "initialized"})
++                rows, cursor, cursors = [], None, set()
++                for index in range(25):
++                    params = {"limit": 100, "includeHidden": False}
++                    if cursor:
++                        params["cursor"] = cursor
++                    page = await rpc(index + 2, "model/list", params)
++                    for item in page["data"]:
++                        if not item.get("hidden", False):
++                            rows.append({"model": item["model"], "reasoning_efforts": [
++                                effort["reasoningEffort"] for effort in item["supportedReasoningEfforts"]]})
++                    cursor = page.get("nextCursor")
++                    if cursor is None:
++                        return validate_models(rows)
++                    if not isinstance(cursor, str) or not cursor or cursor in cursors:
++                        raise ValueError("Invalid catalog cursor")
++                    cursors.add(cursor)
++                raise ValueError("Catalog page limit")
++
++            stderr = asyncio.create_task(drain_errors())
++            discovery = asyncio.create_task(discover())
++            try:
++                async with asyncio.timeout(20):
++                    done, _ = await asyncio.wait([stderr, discovery], return_when=asyncio.FIRST_COMPLETED)
++                    if stderr in done:
++                        stderr.result()
++                    return await discovery
++            finally:
++                discovery.cancel()
++                await asyncio.gather(discovery, return_exceptions=True)
++        except (ValueError, KeyError, TypeError, AttributeError, OSError, TimeoutError):
++            raise ProviderFault("unavailable", "The selected account model catalog could not be verified.") from None
++        finally:
++            if stderr:
++                stderr.cancel()
++                await asyncio.gather(stderr, return_exceptions=True)
++            await asyncio.shield(ProcessRunner()._stop(process))
+--- a/src/quant_company/quant_feed/store.py
++++ b/src/quant_company/quant_feed/store.py
+@@ -327,6 +327,9 @@
+                                       output_contract="agent_decision" if searching else output_contract(stage),
+                                       prompt=search_prompt({"query": bundle["query"], "limit": bundle["limit"]}) if searching
+                                       else prompt(bundle, stage))
++            from ..model_policy import bind
++
++            request = bind(self.company, conn, request, "quant_scout")
+             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
+             conn.execute("""INSERT INTO quant_feed_calls(id,document_id,stage,slot,request,bundle,policy_digest)
+                 VALUES(%s,%s,%s,%s,%s,%s,%s)""", (request.request_id, document["id"] if document else None,
+--- a/src/quant_company/research/controller.py
++++ b/src/quant_company/research/controller.py
+@@ -255,10 +255,19 @@
+ 
+ 
+ def stage_prompt(company, conn, task, turn=None):
++    from ..model_policy import effective_role
+     from ..staff.packs import coaching, employee_pack
+ 
+     row = _stage(conn, task["id"])
+     role = stage_role(company, row["actor"])
++    if company.settings.model_assignments_enabled:
++        role = effective_role(company, conn, role.id, task=task)
++        if turn and row["stage"] == "audit" and turn["sequence"] > 1:
++            previous = conn.execute("SELECT request FROM turns WHERE task_id=%s AND sequence=%s",
++                                    (task["id"], turn["sequence"] - 1)).fetchone()
++            if previous and previous["request"]:
++                role = role.model_copy(update={key: previous["request"].get(key)
++                                               for key in ("model", "reasoning_effort")})
+     instructions = {
+         "proposal": "Return HypothesisProposal. Include real source_ids, latest interpreted predecessor_trial_ids, "
+                     "expected economic effect and falsification. Respond to any rejected proposal's criticism. "
+--- a/src/quant_company/slack.py
++++ b/src/quant_company/slack.py
+@@ -87,9 +87,14 @@
+         if not text.strip() or not timestamp:
+             return {"ok": True, "ignored": True}
+         from .accounts import parse_command as parse_account_command
++        from .model_policy import authorized as model_authorized
++        from .model_policy import parse_command as parse_model_command
+ 
+         account_text = re.sub(r"<@[A-Z0-9]+>", "", text).strip()
+         account_command = parse_account_command(account_text)
++        model_command = parse_model_command(account_text)
++        if model_command and not model_authorized(self.company, user, channel, role, model_command):
++            return {"ok": True, "ignored": True, "reason": "model_assignment_scope"}
+         account_channel = channel == self.settings.model_accounts_channel_id
+         if account_channel:
+             if role != "director" or user != self.settings.model_accounts_owner_user:
+@@ -143,6 +148,11 @@
+                             "app_id": payload["api_app_id"], "owner": user, "channel": channel,
+                             "thread_ts": thread_ts, "event_ts": timestamp,
+                             "provider_event_id": payload.get("event_id"), "original_text": original_text}
++        if model_command:
++            result = self.company.ingest(
++                event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,
++                owner=user, agent=target, channel=channel, thread_ts=thread_ts, model_command=model_command)
++            return {"ok": True, "owner_control": True, **result}
+         if target == "maintainer":
+             from .maintenance.applications import accept_approval
+ 
+--- a/src/quant_company/staff/comparisons.py
++++ b/src/quant_company/staff/comparisons.py
+@@ -53,7 +53,9 @@
+             validate_record(existing, payload)
+             return
+         original = payload["originals"][PREFIX + employee + ".md"]
+-        role = company.roles["engineer" if employee == "maintainer" else employee]
++        from ..model_policy import effective_role
++
++        role = effective_role(company, conn, employee)
+         if (pack_content(employee, original)["digest"] != run["pack_snapshot"]["digest"]
+                 or role.model != run["model"]
+                 or role.reasoning_effort != run["role_snapshot"].get("reasoning_effort")):
+--- a/src/quant_company/staff/store.py
++++ b/src/quant_company/staff/store.py
+@@ -42,11 +42,15 @@
+             if existing["owner_user"] != owner or existing["employee"] != employee:
+                 raise ValueError("Exercise identity conflict")
+             return str(existing["id"])
+-        role = self.company.roles["engineer" if employee == "maintainer" else employee]
++        from ..model_policy import effective_role, selection
++
++        role = effective_role(self.company, conn, employee)
+         curriculum = development(conn, owner, employee, role.model, role.reasoning_effort)["next_practice"]
+         variant = curriculum["family_index"]
+         public, key = make_case(employee, identity, variant)
+         frozen = role.model_dump(mode="json")
++        if self.company.settings.model_assignments_enabled:
++            frozen["model_selection"] = selection(self.company, conn, employee)
+         frozen["exercise_tools"] = sorted(set(role.tools) & {"calculate", *TOOL_GUIDE})
+         if employee == "maintainer":
+             # The background maintainer has its own instructions, not the inactive quant engineer's.
+@@ -139,6 +143,11 @@
+             request = ProviderRequest(request_id=f"staff-{run['id']}-{len(calls)+1}", model=run["model"],
+                                       reasoning_effort=role.get("reasoning_effort"),
+                                       prompt=ASSESSMENT + "EXERCISE JSON:\n" + json.dumps(as_json(material), ensure_ascii=False))
++            from ..model_policy import bind
++
++            frozen_selection = role.get("model_selection") or {
++                "model": request.model, "reasoning_effort": request.reasoning_effort, "source": "staff_snapshot"}
++            request = bind(self.company, conn, request, run["employee"], inherited=frozen_selection)
+             conn.execute("""INSERT INTO staff_calls(id,run_id,sequence,request) VALUES(%s,%s,%s,%s)""",
+                          (request.request_id, run["id"], len(calls)+1, Jsonb(request.model_dump())))
+             conn.execute("UPDATE staff_runs SET state='running' WHERE id=%s", (run["id"],))
+@@ -247,6 +256,8 @@
+                 SELECT 1 FROM jsonb_array_elements(payload->'observations') o
+                 WHERE o->>'kind'='staff_assessment' AND (%s::text IS NULL OR o->>'author'=%s))
+             ORDER BY updated_at DESC LIMIT 10""", (Jsonb([owner]), employee, employee)).fetchall()
++    from ..model_policy import effective_role
++
+     return {"enabled": company.settings.company_staff_development_enabled,
+             "schedule": {"timezone": "Asia/Seoul", "after_hour": company.settings.staff_schedule_hour_kst,
+                          "daily_exercises": company.settings.staff_daily_exercises,
+@@ -256,8 +267,8 @@
+                         "families": FAMILIES[r], "operational_active":
+                         None if r == "maintainer" else company.roles[r].active} for r in STAFF
+                        if (r == employee or employee is None) and (r == "maintainer" or r in company.roles)],
+-            "development": [development(conn, owner, r, company.roles["engineer" if r == "maintainer" else r].model,
+-                                        company.roles["engineer" if r == "maintainer" else r].reasoning_effort)
++            "development": [development(conn, owner, r, effective_role(company, conn, r).model,
++                                        effective_role(company, conn, r).reasoning_effort)
+                             for r in STAFF if (r == employee or employee is None)
+                             and ("engineer" if r == "maintainer" else r) in company.roles],
+             "recent_exercises": rows,
+--- a/src/quant_company/web_tools.py
++++ b/src/quant_company/web_tools.py
+@@ -93,7 +93,13 @@
+                         raise ProviderFault("busy", "Company model budget is waiting for renewal.", 3600)
+                     provider_request = ProviderRequest(request_id=identity, model=role.model,
+                                                        reasoning_effort=role.reasoning_effort,
+-                                                       prompt=search_prompt(args), web_search=True).model_dump()
++                                                       prompt=search_prompt(args), web_search=True)
++                    from .model_policy import bind
++
++                    inherited = ({**{key: turn["request"].get(key) for key in ("model", "reasoning_effort")},
++                                  "source": "parent_turn", "request_id": str(turn_id)} if turn["request"] else None)
++                    provider_request = bind(company, conn, provider_request, task["agent"],
++                                            task=task, inherited=inherited).model_dump()
+                     conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
+                 saved = conn.execute("""INSERT INTO web_requests(id,turn_id,operation,arguments,provider_request)
+                     VALUES (%s,%s,%s,%s,%s) RETURNING *""",
