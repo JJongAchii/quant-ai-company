@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06T00:42:56.583444+00:00",
+  "phase": "qualified_registered_for_exact_jobs",
+  "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "prepared_config_sha256": "3b7b27cd7715826a5cfeada8ff95594e8db9b55da3b1ed24c0a38914dedaa344",
+  "active_config_sha256": "4d0b0c82e567c6a269b17610abaa282a01b1f18b261272600c076e28ee496c57",
+  "registry_before_sha256": "24651c00b844d4f18585282aabbde8df6fce3502edee31878f87766127da4444",
+  "registry_after_sha256": "5bfa37d55a44650ea160c21ec44cb65d5ec522fd12eeb766177c78ad1b263715",
+  "previous_releases_preserved": true,
+  "exact_release_resolvable_by_active_supervisor": true,
+  "active_company_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+  "active_supervisor_restarted": false,
+  "token_and_transport_authority_preserved": true,
+  "scientific_trials_added": 0,
+  "staff_decision_applied": false
+}

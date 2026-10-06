@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "verified_at": "2026-10-06T01:50:40.826752+00:00",
+  "verification_kind": "public_receipt_consistency",
+  "company_code_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "qualified_native_source": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "native_runtime_activated": true,
+  "actual_native_output_observed": true,
+  "scoped_artifact_schema_feedback_delivered": true,
+  "same_attempt_event_failure_continuation_recorded": true,
+  "qualified_schema_followup_source": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+  "schema_followup_deployed": false,
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "actual_owner_approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1791242030.830452:director:action:dd69d4b8-78c0-4c78-b7ee-41c7cf7d5972:approve",
+  "actual_prior_cancellation_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1791240902.789269:director",
+  "actual_owner_gate_recorded": true,
+  "native_owner_ui_action_delegated_by_user": true,
+  "manual_human_click_claimed": false,
+  "inherited_origins": 12,
+  "cumulative_scientific_trial_limit": 4,
+  "actual_employee_stage_states": [
+    {
+      "stage": "program_proposal",
+      "actor": "researcher_kr",
+      "state": "completed"
+    },
+    {
+      "stage": "program_data",
+      "actor": "data",
+      "state": "completed"
+    },
+    {
+      "stage": "program_selection",
+      "actor": "director",
+      "state": "completed"
+    },
+    {
+      "stage": "program_proposal",
+      "actor": "researcher_kr",
+      "state": "running"
+    }
+  ],
+  "actual_employee_review_finished": true,
+  "staff_review_scope": "Initial proposed task data assessment and independent task selection.",
+  "actual_task_decisions": [
+    {
+      "id": "bc915792-d608-5710-a271-f4aa592e9ee1",
+      "data_decision": "conditional_ready",
+      "selection_decision": "revise",
+      "mission_id": null
+    }
+  ],
+  "actual_revision_feedback_delivered": [
+    {
+      "stage_id": "1db7ae7f-5c75-52ea-9cd7-170d6703e66e",
+      "task_id": "9c93b08e-ce76-5c8b-8156-9476e32da430",
+      "state": "running",
+      "prior_task_id": "bc915792-d608-5710-a271-f4aa592e9ee1",
+      "prior_decision": "revise",
+      "first_turn_id": "24aeea45-57db-538e-9f18-b3491999a67c",
+      "first_turn_state": "completed",
+      "first_response_provider": "codex",
+      "evidence_navigation_delivered": true,
+      "feedback_file_sha256": "f2ced6d9009eeb8931f4de9aa743a47941c0fac6bc3fde1cff3dd6d104102f55"
+    }
+  ],
+  "followup_research_in_progress": true,
+  "fresh_worker_authenticated_polling": {
+    "id": "worker",
+    "last_seen": "2026-10-06 01:48:05.524496+00:00",
+    "fresh": true
+  },
+  "operator_granted_staff_data_admission": false,
+  "scientific_trials_started": 0,
+  "fresh_full_backup_success_claimed": true,
+  "secrets_read_or_printed": false,
+  "evidence_sha256": {
+    "server-baseline-before.json": "930fd6aee14bf67a7d8ebb72e95dddfbcaf24acf7b00b5417cec04eff4b69de5",
+    "program-preparation.json": "6d3c09b55d8382cc61e178f04e2bc2e4df46e8bfdd8fc047e3e89642ec6e8a37",
+    "candidate-program.json": "401a20cf4df8b26b6884facb0a4a431f2311c0832a863b907fb70510e3a44072",
+    "packet-binding.json": "6584fee5e07f07e4f4dc7335c7095e34036efb72433a9c2542d2a42bc2d6fde2",
+    "program-publication.json": "086f66399dc3888da3c64993f2ee4156342ce76a69afe32e978da15adc1688c8",
+    "owner-approval-state.json": "3f50726c264ee0947cf56d3201e954abf2d06bcaf59752a3ef2fc899a23871f0",
+    "owner-ui-review.json": "a1c4ebdd77c1595bc8e4837a81ad75222ecc480ac903136898bb3e1f155ae9fe",
+    "completed-turn-reconciliation.json": "167c245170ddf45a51b4646d63732da476e58cd62b569a2c7566c789181b26de",
+    "runtime-recovery.json": "22844e8ca9208497b6276863100d4b0941b3d4248c969d2cf64b3f103ea652d4",
+    "worker-baseline-current.json": "8de7ab8c215ad235e1757472af42b463ebdb31c6a867b07966f76a2518ff325d",
+    "operational-repairs.json": "76a2215ddc8a34c40e68f98b00d5d695baf42b4b50efdd3bad51cf77c9f3f0ee",
+    "staff-review-state.json": "75dda5e529144b2ac3e2af7807fa9d1c40ed95def79211813a4e3c1340e8e9db",
+    "source-ci.json": "6607566e6309a4ccaebc42767635999f57f8d5ddae880753412296e09814c18a",
+    "native-source-manifest.json": "5e7284eac09bfc25b526ff94112a8a7f9678e628121fb36df2c8eec0e641071a",
+    "image-preparation.json": "994a04d72920880393498ec368af94b82b766ffa30480b3d67a0f4f01dd99744",
+    "native-worker-qualification.json": "f330be5dbc2c7f1db8fe5ab2585096cc3a8a24d12011026e3c4a564a712c7cfd",
+    "worker-registration.json": "69e556f5b716d256da517d30f7f00c13ea9866e3d2e9dc875208361293b6411c",
+    "data-stage-hold.json": "f2a143567f492e996c859e8a1ded4b19ffdd544eccfb4d0bf0bfa7e8aee98954",
+    "failed-model-receipts.json": "936a7d9181f5960e86d789435065a7888ea4b33aae663e7689e1feae13d1c028",
+    "format-guidance.json": "e6d91369d6d716f8f3ed55d7bc30c37393e6a7156977fb8b147250e753ddbe28",
+    "server-baseline-pre-native.json": "1f96e4cf5f5add36bfa5f08da0bd2b89784ff1fcf6f95ad1e6e143133438da62",
+    "runtime-locks-pre-native.json": "4ef1a09872bed31628e9736a706774aa263e1bdfeaf298762b6f198a59c4778e",
+    "server-native-activation.json": "dd4b6305dc17b2c5822a3fffad7d6732abadb38be0942e24da29ca0c47954c13",
+    "native-installed-verification.json": "433d813361aef5dbf57a98bd3a187bb496b606184e7af98a355145c54771a323",
+    "native-data-resume.json": "56a4ead2a2fc92a9f6981806a5c109c17448a9e9aa53a1421d6403903428d1e6",
+    "artifact-schema-guidance.json": "1bbb3593329d8543e8e9093f2383abbf5c015a9bba0dfa5af869661a225b14ca",
+    "native-failed-model-receipt.json": "dc52f71bbb16819da01f7704cf68c6fc1d5bfd3fdb8ef651c2b960e959d638d5",
+    "native-data-continuation.json": "a24b3c3d6fea4bedb1b18390e0d4e3c106d3a78af70ecf2f6034f5a0f2f22460",
+    "schema-followup-tests.json": "5e9453bed148f64b3b109aa2e16440f8d60b5e773249fc7183d14df2025dfb0f",
+    "schema-followup-ci.json": "3bb3d29955ee0e2a3607baa00e50bfc4ab1a8242f2e7bda589668a2e9d5211b0",
+    "worker-presence-current.json": "d22cda4dfb3ccf05a23528284b2aab0db1aeda3842f9db65a5ec6a84da085e71"
+  },
+  "operator_helper_sha256": {
+    "apply-native-runtime-attempt-01.py": "13557bcad1127b87f69b84deda1c4af3e2086f8582ec20d8c703499bb9b5a862",
+    "apply-native-runtime.py": "99a147da6012a40006dfd3057163b7f49f8c924508321928c547edd037b3d0a1",
+    "bind-packet.py": "0872407c8b9dbf9cd9a180217a95c92290b3e8d20f8ececcbbcb2b99d5d23fb4",
+    "continue-native-data-attempt.py": "4b9ee5008dbf3bee98b0079284006c63fbf8991548f263a0f0e6d809f7d0ed34",
+    "finalize-native-runtime.py": "e97d12bbffbfe4705951950f05658c0ef6bca2929ade731c48ba389b2aef599d",
+    "hold-data-stage.py": "fb50f2df0c8f8520aec4e2414ef6f0ea592f993cc021fd9c14447a4e974303a3",
+    "prepare-native-images.py": "1904f387e3e6eccf594125f990bf475d3f5e2f59abbe2db4bd79ecfdbbc0a8f0",
+    "prepare-native-output.py": "001a006c115e7196e4880eb35a1a6bf36fc5fb4e02b5a42716807bb2fa2fbb3d",
+    "prepare-program.py": "9dbdc2a003d0915b0134ad65ee453ae296615365288d1a26f3ddbfe770bb29bf",
+    "publish-program.py": "3b7952c6539556860c83303113d3e81ff61b58e154725289f26c0dd6f2698c3e",
+    "qualify-native-worker.py": "befed714e144d8615017434e0f6592da2efb6349c8bb1a09a449152f45f882b5",
+    "read-failed-model-receipts.py": "b94dd7bc804acc68541d3287aba8c361956c6645681358ecfa31a5f94399219f",
+    "read-native-baseline.py": "5329df8f3efd2e3ac52ad65f5ef52923cd61fd1d7ab5dde8968579718a808a59",
+    "read-native-composition.py": "494f96f2e777f5fd284f60434385fa44da28f2a85f18bc944abf4118896858d7",
+    "read-native-failed-receipt.py": "340006579fdbaef87bfbe94c7a24b1894995d5198e65e307ef78ed721bed2894",
+    "read-native-program-status.py": "97b64e2c539e25d3c9dcae7c9b9509490cea4ca3c22c5d68a9b17f24204c5a9d",
+    "read-program-status.py": "5c37698eab011ebe81d5c3d91295df6d75e9256bffb72d68a9be25bdbb7bc739",
+    "read-runtime-locks.py": "7c893d7a37f514252c60c098fb33e873f08cad99de1818ec26f5a57358ee18e1",
+    "read-runtime-recovery.py": "1e4a6ba6e9fdeda75730d68d96cf6c8c5d786abed2c1dc43c47c1d4d3b003916",
+    "read-stage-diagnostics.py": "a962bc5c81cdb65a0cd7a2550f5f8ada62f353b3f36e6702a197dce202c07b47",
+    "reconcile-completed-turn.py": "c835bdb17579d188edb7a57153e1171b00f098548d18743fb1babf279cb102b5",
+    "register-native-worker.py": "a04c42604404f6a42fa201d2c43aa27b7017f00726bd7d602bf2185ec8bb283a",
+    "repair-data-format-guidance.py": "c0a53c4874e5d29ffb6100c24d0a7f58a6621ef11d927f0cc944bd8c46d313c5",
+    "repair-scoped-data-guidance.py": "e82bcd16e29bbb9367ccc4cdecabc78bb7377a98f5961b17f7b7c8c85a78dbdc",
+    "resume-native-data-stage.py": "9c509d1f6a2b8f43c8e0b6eb1551fea23c2c18948b407e24e3ef17f0d9aba1aa",
+    "run-backend.py": "520a5c6ddd5a6f0604e2bdd3d216af7eeb03a5a955df741a1f53dd6889c49cf5",
+    "run-native-backend.py": "2336ab5b1c329b48f2b9a82d2795e2dd871fb8e7e4700db94d1fadbcb7daca9a",
+    "verify-evidence.py": "d59a96f0b5016f6fa1d7fed4d0f8964f54800671933ce9dcafe4d321892198a7",
+    "verify-native-installed.py": "a5338b7a6624e18d24da282d068c72a20c728c63de8319ae34e233a2ca4b5470"
+  }
+}

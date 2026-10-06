@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06 01:08:31.318879+00:00",
+  "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "program": {
+    "id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+    "state": "active",
+    "manifest_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1791242030.830452:director:action:dd69d4b8-78c0-4c78-b7ee-41c7cf7d5972:approve"
+  },
+  "original_signed_approval_and_inbound_verified": true,
+  "actual_postgresql": true,
+  "actual_temporal_rpc": true,
+  "signed_history_digest": "0d5b9d64115576998997ade21baf2fe13a73d2d9467f6762d81bc314ca502c58",
+  "authorized_history_digest": "0d805bed6bd9b8c3a7c15f02b76d5f089323ef70535f4d0d3f1acf23ba5e1dfc",
+  "authorized_limit_change_only": true,
+  "inherited_origins": 12,
+  "sources_profiles_inputs_engine_policy_bindings_verified": true,
+  "worker_authenticated_polling": {
+    "id": "worker",
+    "last_seen": "2026-10-06 01:08:29.451481+00:00",
+    "fresh": true
+  },
+  "data_stage_held": {
+    "state": "waiting",
+    "attempt": 4,
+    "hold": {
+      "reason": "repeated_data_output_contract_failure",
+      "receipts": [
+        {
+          "request_id": "dff80fd7-40c6-5ee2-96a8-1ac8e3913c38",
+          "receipt_sha256": "eae84f781128dd1b9651a30c3c99885dd80b48a7375b4fbde8c171f5602e463e"
+        },
+        {
+          "request_id": "da444092-a806-5047-bc21-65411f92fe1c",
+          "receipt_sha256": "b817af88111ab0d980690c75db7e75835fcadb4e12db1a687cacec408d8b2010"
+        },
+        {
+          "request_id": "40ba5eb0-f9aa-5b0d-9c21-6de04989d4b1",
+          "receipt_sha256": "2f32ce11288eb8820aa9c66725f692e26aed1931d01807385272843a903a4df4"
+        },
+        {
+          "request_id": "578a8874-b2f8-5762-b872-37aec557dc76",
+          "receipt_sha256": "9dd3b5ee0161c45993891a52fa79d5775c13382277825c59029881e664841e61"
+        }
+      ],
+      "failure_count": 4,
+      "operator_scope": "Technical output repair; no data admission, selection or scientific judgment."
+    }
+  },
+  "employee_judgment_applied": false,
+  "scientific_trials_added": 0,
+  "secrets_printed": false
+}

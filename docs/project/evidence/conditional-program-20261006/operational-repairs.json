@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "root_operator_actions": [
+    {
+      "action": "bounded_unused_docker_build_cache_prune",
+      "filter": "until=72h",
+      "keep_storage": "4GB",
+      "reported_reclaimed": "3.896GB",
+      "images_containers_volumes_and_backups_pruned": false
+    },
+    {
+      "action": "bounded_unused_docker_build_cache_prune",
+      "filter": "until=72h",
+      "keep_storage": "2GB",
+      "reported_reclaimed": "2.043GB",
+      "images_containers_volumes_and_backups_pruned": false
+    },
+    {
+      "action": "start_existing_selected_containers",
+      "names": [
+        "quant-company-api-1",
+        "quant-company-slack-socket-1",
+        "quant-company-dispatch-1"
+      ],
+      "container_and_image_identity_preserved": true
+    },
+    {
+      "action": "hold_program_data_after_four_definite_format_failures",
+      "evidence": "data-stage-hold.json",
+      "employee_admission_or_selection_applied": false,
+      "model_requests_replayed": 0
+    },
+    {
+      "action": "commit_compatible_native_data_output_protocol",
+      "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+      "files": 8,
+      "evidence": "source-ci.json",
+      "scientific_input_policy_and_caps_preserved": true
+    },
+    {
+      "action": "qualify_and_register_native_worker_release",
+      "evidence": [
+        "native-worker-qualification.json",
+        "worker-registration.json"
+      ],
+      "active_supervisor_config_preserved": true,
+      "performance_computed": false,
+      "scientific_trials_added": 0
+    },
+    {
+      "action": "consistent_full_backup_before_native_cutover",
+      "evidence": "server-native-attempt-01.json",
+      "source_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+      "sha256": "276a1ade77dff2db9211d3ede5a31035587ac003db557dd29dc7375e68073ec5",
+      "s3_copy_completed": true,
+      "credential_files_included": false
+    },
+    {
+      "action": "activate_compatible_native_data_output_runtime",
+      "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+      "selected_services": [
+        "api",
+        "dispatch",
+        "slack-socket",
+        "worker",
+        "account-gateway",
+        "codex-runtime"
+      ],
+      "evidence": [
+        "server-native-activation.json",
+        "native-installed-verification.json"
+      ],
+      "unrelated_service_container_and_image_ids_preserved": true,
+      "new_backup_sha256": "8331d198bba7996201ce79614138eea862bb86e167d9454ec4994d6dd4c12212"
+    },
+    {
+      "action": "release_one_technical_data_stage_hold_for_normal_controller",
+      "evidence": "native-data-resume.json",
+      "old_definite_failure_attempts_preserved": 4,
+      "scientific_budget_reset": false,
+      "employee_decision_applied": false,
+      "model_calls_replayed": 0
+    },
+    {
+      "action": "return_scoped_assessment_validation_feedback_to_future_employee_turns",
+      "evidence": "artifact-schema-guidance.json",
+      "employee_decision_applied": false,
+      "frozen_requests_and_responses_preserved": true,
+      "scientific_budget_reset": false
+    },
+    {
+      "action": "continue_one_definite_native_event_failure_with_a_fresh_turn",
+      "evidence": [
+        "native-failed-model-receipt.json",
+        "native-data-continuation.json"
+      ],
+      "genuine_read_chunks_preserved": 43,
+      "failure_count_preserved": 2,
+      "failed_request_replayed": false,
+      "employee_decision_applied": false
+    },
+    {
+      "action": "commit_assessment_version_prompt_schema_followup",
+      "source_commit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+      "evidence": "schema-followup-tests.json",
+      "local_postgresql_tests_passed": 78,
+      "deployed": false,
+      "scientific_admission_contract_changed": false
+    }
+  ],
+  "observations": [
+    {
+      "finding": "Root filesystem was full; selected service start errors contained no space left on device.",
+      "evidence": "server-baseline-before.json"
+    },
+    {
+      "finding": "All 15 company containers were later observed running with preserved identities. Additional service starts and storage cleanup occurred concurrently; root ownership of those actions is not claimed.",
+      "evidence": "runtime-recovery.json"
+    },
+    {
+      "finding": "The scheduled backup on 2026-10-05 18:12 UTC exited with status 1. This receipt does not claim a successful new full backup.",
+      "evidence": "runtime-recovery.json"
+    },
+    {
+      "finding": "A completed official Codex receipt was bound to its actual account/turn request. The account row was already completed when checked; no model call was replayed and no employee decision applied.",
+      "evidence": "completed-turn-reconciliation.json"
+    },
+    {
+      "finding": "Four definite official Codex receipts failed the outer decision contract. The specific invalid field is unavailable because raw failed model output was not retained.",
+      "evidence": "failed-model-receipts.json"
+    },
+    {
+      "finding": "An explicit outer-format example reached two later data requests; the fourth request still failed. This mitigation did not resolve the problem.",
+      "evidence": "format-guidance.json"
+    },
+    {
+      "finding": "Native code images were built on exact running bases and verified in networkless containers without model calls or credential mounts; preparation alone is not activation.",
+      "evidence": "image-preparation.json"
+    },
+    {
+      "finding": "One unrelated news-screen call remains uncertain with an exact failed uncertain receipt. Two old running receipts have no live lane owner. All remain preserved without replay or a fabricated terminal success.",
+      "evidence": [
+        "execution-state-pre-native.json",
+        "runtime-locks-pre-native.json"
+      ]
+    },
+    {
+      "finding": "A separate actual briefing evaluation began while intake was being prepared. The initial cutover attempt stopped at the lane lock before pausing or replacing any service.",
+      "evidence": "server-baseline-pre-native-02.json"
+    },
+    {
+      "finding": "The second guarded attempt initially found the shared backup lock owned and exited before mutation. A later read found it free; no lock-owner process was killed.",
+      "evidence": "native-composition-diagnosis.json"
+    },
+    {
+      "finding": "The read-only full-import operator probe exited137 in the live account gateway. One gateway restart was observed; the later cgroup and current State did not establish the exact cause. Prepared networkless image schema checks had passed. The source-origin/tree check was completed with a stdlib-only probe, preserving memory limits and service images.",
+      "evidence": [
+        "server-native-attempt-02.json",
+        "runtime-native-post-replace.json",
+        "server-native-activation.json"
+      ]
+    },
+    {
+      "finding": "Native program_data requests from the actual unchanged gpt-5.6-terra employee completed through official Codex and recorded private read receipts after normal controller scheduling. An admission/selection judgment is still pending at this snapshot.",
+      "evidence": "staff-state-native-01.json"
+    },
+    {
+      "finding": "Attempt5 completed 63 native model turns, but its final scoped assessment also contained legacy top-level policy and price fields. Business validation rejected it. The operator returned the exact schema error without editing or applying the assessment.",
+      "evidence": [
+        "staff-state-native-02.json",
+        "artifact-schema-guidance.json"
+      ]
+    },
+    {
+      "finding": "Attempt6 turn44 failed in the Codex events parser. The exact malformed event was not retained and is not inferred. A fresh turn45 continued the same attempt's genuine43-read history; the failed request and accumulated failure count were preserved.",
+      "evidence": [
+        "native-failed-model-receipt.json",
+        "native-data-continuation.json",
+        "staff-state-native-07.json"
+      ]
+    },
+    {
+      "finding": "The actual data employee independently resubmitted a version2 conditional_ready assessment. It passed the service's original source, packet, scope and read-coverage checks and was committed at2026-10-06T01:38:31.047177Z. The director's independent selection then started through the normal controller.",
+      "evidence": "staff-state-native-10.json"
+    },
+    {
+      "finding": "The director independently requested revision at2026-10-06T01:45:42.428342Z for prior-task distinctness and the frozen execution contract. The normal controller created a followup research proposal, and the first genuine Codex request received an immutable feedback-file navigation. No research mission or scientific trial was admitted in this snapshot.",
+      "evidence": "staff-state-native-18.json"
+    }
+  ],
+  "preparation_repairs": [
+    {
+      "issue": "Frozen source manifest was absent at the new operator-helper host path.",
+      "repair": "Copied the original frozen source manifest into the operator package."
+    },
+    {
+      "issue": "UUID and data-registry settings for the preparation-only backend helper were incorrect.",
+      "repair": "Used the actual project UUID and explicit Settings(research_data_evidence_file=...). No deployed environment or employee permissions changed."
+    },
+    {
+      "issue": "Actual prior task history grew from ten to twelve while awaiting the prior program cancellation.",
+      "repair": "Built a fresh canonical program from the actual PostgreSQL history, retaining the original cumulative cap, policy, engine, inputs and profiles."
+    },
+    {
+      "issue": "Slack accessibility text inserted spaces at two 2900-character rendering boundaries.",
+      "repair": "Compared the actual server canonical JSON and binding against the UI with those two documented display separators normalized before clicking the current proposal's approval button.",
+      "evidence": "owner-ui-review.json"
+    },
+    {
+      "issue": "A raw commit argument to git bundle create produced an empty bundle before worker execution.",
+      "repair": "Created a new preparation attempt using HEAD after asserting exact frozen source5c44ad0; retained the failed preparation directory."
+    },
+    {
+      "issue": "The first native preview observed a transient model-account call absent from the earlier baseline.",
+      "repair": "Kept exact uncertain identities and receipts as guards and reserved all runtime lanes before activation; active model calls are allowed to finish."
+    },
+    {
+      "issue": "The qws CLI default registry did not recognize this company attachment.",
+      "repair": "Use the read-only qwslib.intent.check_errors on this company workspace; do not bootstrap or mutate historical quant-workspace records."
+    },
+    {
+      "issue": "One Compose rendering from the API's chain differed from the Slack-socket container's actual mount set. The first activation stopped after a successful backup and before replacing any selected service.",
+      "repair": "Read each selected service's original Compose chain. All six actual per-service mount sets matched. Preserve attempt01 and use a new guarded attempt02.",
+      "evidence": [
+        "server-native-attempt-01.json",
+        "native-composition-diagnosis.json"
+      ]
+    },
+    {
+      "issue": "The read-only installed verifier initially called project/snapshot methods that acquire row locks.",
+      "repair": "Use lock=False for project reads and the non-locking usage query in a read-only transaction. The rejected query was rolled back; no employee judgment was written."
+    },
+    {
+      "issue": "A second heavy operator process should not be loaded into the live small account-gateway/API service.",
+      "repair": "Use stdlib-only origin/hash checks in live services and the existing company-worker trusted loader for backend verification. Codex sandbox and service memory limits remain unchanged."
+    }
+  ],
+  "authority": {
+    "user_request": "너가 보내고 진행해줘",
+    "owner_actions": "Actual native Slack UI under the user's logged-in owner account.",
+    "manual_human_click_claimed": false,
+    "synthetic_slack_events_created": false,
+    "database_approval_shortcuts_used": false
+  },
+  "scientific_trials_invoked_by_operator": 0,
+  "secrets_printed_or_committed": false
+}
