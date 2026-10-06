@@ -15,6 +15,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import time
 from pathlib import Path
@@ -143,6 +144,26 @@ def compose(module, root, *args, env=None, overlay=None):
 def available_memory():
     values = dict(line.split(':', 1) for line in Path('/proc/meminfo').read_text().splitlines())
     return int(values['MemAvailable'].split()[0]) // 1024
+
+
+def runtime_lock(path):
+    """A root cutover must not create a lock the non-root model cannot open."""
+    flags = os.O_RDWR | os.O_NOFOLLOW
+    try:
+        fd = os.open(path, flags | os.O_CREAT | os.O_EXCL, 0o600)
+        created = True
+    except FileExistsError:
+        fd, created = os.open(path, flags), False
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise ValueError('preview_runtime_lock_not_regular')
+        if created:
+            owner = path.parent.stat()
+            os.fchown(fd, owner.st_uid, owner.st_gid)
+        return os.fdopen(fd, 'a')
+    except Exception:
+        os.close(fd)
+        raise
 
 
 def stage(args, previous, target, module, journal):
@@ -290,7 +311,7 @@ def cutover(args, previous, target, module, journal):
     try:
         compose(module, previous, 'stop', '-t', '1100', *drains)
         for name in ('.runtime.lock', '.runtime-news.lock', '.runtime-brief.lock'):
-            lock = (STATE / 'codex/jobs' / name).open('a')
+            lock = runtime_lock(STATE / 'codex/jobs' / name)
             locks.append(lock)
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         code = """import json

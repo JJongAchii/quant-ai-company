@@ -1,5 +1,7 @@
 import importlib.util
 import json
+import os
+import stat
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -127,3 +129,56 @@ def test_cutover_rejects_different_evaluation_before_stopping_services(tmp_path,
     monkeypatch.setattr(release, 'STATE', state)
     with pytest.raises(ValueError, match='staged_configuration_changed'):
         release.cutover(args, previous, target, SimpleNamespace(), journal)
+
+
+def test_new_drain_lock_uses_runtime_owner_and_keeps_exclusive_capacity(tmp_path, monkeypatch):
+    path = tmp_path / '.runtime-brief.lock'
+    changes = []
+    real_chown = release.os.fchown
+
+    def chown(fd, uid, gid):
+        changes.append((uid, gid))
+        real_chown(fd, uid, gid)
+
+    monkeypatch.setattr(release.os, 'fchown', chown)
+    with release.runtime_lock(path) as drained:
+        owner = tmp_path.stat()
+        assert changes == [(owner.st_uid, owner.st_gid)]
+        assert stat.S_IMODE(path.stat().st_mode) == 0o600
+        release.fcntl.flock(drained, release.fcntl.LOCK_EX | release.fcntl.LOCK_NB)
+        fd = os.open(path, os.O_RDWR)
+        try:
+            with pytest.raises(BlockingIOError):
+                release.fcntl.flock(fd, release.fcntl.LOCK_EX | release.fcntl.LOCK_NB)
+        finally:
+            os.close(fd)
+    # Match the runtime's real open/flock sequence after the cutover releases it.
+    fd = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        release.fcntl.flock(fd, release.fcntl.LOCK_EX | release.fcntl.LOCK_NB)
+    finally:
+        os.close(fd)
+
+
+def test_existing_drain_lock_preserves_owner_mode_inode_and_contents(tmp_path, monkeypatch):
+    path = tmp_path / '.runtime-brief.lock'
+    path.write_bytes(b'existing lock')
+    path.chmod(0o640)
+    before = path.stat()
+    monkeypatch.setattr(release.os, 'fchown', lambda *a: pytest.fail('Existing lock ownership changed'))
+    with release.runtime_lock(path):
+        pass
+    after = path.stat()
+    assert (before.st_ino, before.st_uid, before.st_gid, before.st_mode) == (
+        after.st_ino, after.st_uid, after.st_gid, after.st_mode)
+    assert path.read_bytes() == b'existing lock'
+
+
+def test_drain_lock_rejects_symlink_without_touching_target(tmp_path):
+    target = tmp_path / 'protected'
+    target.write_bytes(b'unchanged')
+    link = tmp_path / '.runtime-brief.lock'
+    link.symlink_to(target)
+    with pytest.raises(OSError):
+        release.runtime_lock(link)
+    assert target.read_bytes() == b'unchanged'
