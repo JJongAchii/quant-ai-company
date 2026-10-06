@@ -21,17 +21,23 @@
       "note": "The actual 38-dataset observation renders below 1300 characters; divergent members, age-only hints and reading failures remain distinct. Live application is pending."
     },
     "VALIDATION": {
-      "status": "in_progress",
-      "updatedAt": "2026-10-06T01:13:25.941308+00:00",
-      "evidence": [],
-      "note": "Readable presentation is implemented; verification and live application are pending."
+      "status": "verified",
+      "updatedAt": "2026-10-06T01:40:08.944928+00:00",
+      "evidence": [
+        "docs/project/evidence/data-watch-readability-20261006/live.json",
+        "docs/project/DATA-WATCH-READABILITY-20261006.md"
+      ],
+      "note": "104 focused PostgreSQL, Temporal, rendering, Slack and deployment tests passed; source CI 37398717538 SUCCESS. Slack unit transport is simulated; actual summary readback is recorded separately."
     },
     "LIVE": {
-      "status": "in_progress",
-      "updatedAt": "2026-10-06T01:13:25.941308+00:00",
-      "evidence": [],
-      "note": "Readable presentation is implemented; verification and live application are pending."
+      "status": "verified",
+      "updatedAt": "2026-10-06T01:40:08.944928+00:00",
+      "evidence": [
+        "docs/project/evidence/data-watch-readability-20261006/live.json",
+        "docs/project/DATA-WATCH-READABILITY-20261006.md"
+      ],
+      "note": "API, Slack socket and data-watch worker run the two-file presentation overlay; other runtime source, settings and service IDs preserved at each cutover. Actual Slack client_msg_id, timestamp, bot and normalized text match delivered outbox. Real owner-typed commands remain unverified."
     }
   },
-  "updatedAt": "2026-10-06T01:20:20.735471+00:00"
+  "updatedAt": "2026-10-06T01:40:08.944928+00:00"
 }
