@@ -23,6 +23,7 @@ from quant_company.briefing.contracts import (
 )
 from quant_company.briefing.editor import (
     FORMAT_VERSION,
+    SourceNotesValidationError,
     apply_condition_patch,
     apply_editorial_patch,
     apply_material_fact_patch,
@@ -60,6 +61,8 @@ def provider_response(path):
 
 
 def request(bundle, phase, proposal=None):
+    if phase in {'review', 'final_review'}:
+        validate_source_notes(BriefProposal.model_validate(proposal), bundle)
     text = plan_prompt(bundle) if phase == "plan" else prompt(bundle, phase, proposal)
     return ProviderRequest(request_id="news-brief-eval-"+fingerprint([FORMAT_VERSION, phase, text])[:32],
                            model="gpt-6-astra", reasoning_effort="high", prompt=text)
@@ -103,7 +106,13 @@ def assess(bundle, written, reviewed=None, *, previous=None, correction_review=N
     rejected = validate(proposed, bundle)
     accepted = prune(proposed, rejected)
     accepted, conflicts = reconcile(accepted, bundle)
-    validate_source_notes(accepted, bundle)
+    source_notes_violations = []
+    try:
+        validate_source_notes(accepted, bundle)
+    except SourceNotesValidationError as fault:
+        if reviewed:
+            raise
+        source_notes_violations = fault.violations
     bundle = {**{key: value for key, value in bundle.items() if key != "revision_feedback"},
               "quote_conflicts": conflicts}
     review = artifact(reviewed, BriefReview, bundle) if reviewed else None
@@ -120,8 +129,9 @@ def assess(bundle, written, reviewed=None, *, previous=None, correction_review=N
     return {"proposal": accepted.model_dump(mode="json") if accepted else None, "bundle": bundle,
             "raw_proposal": proposed.model_dump(mode="json"), "rejected": rejected,
             "review": review.model_dump(mode="json") if review else None, "parts": parts, "quality": quality,
+            "source_notes_violations": source_notes_violations,
             "passed": bool(review and review.verdict == "publish" and all(review.checks.values())
-                           and not rejected and not quality["reduced"] and not conflicts),
+                           and not rejected and not source_notes_violations and not quality["reduced"] and not conflicts),
             "correction": correction,
             "scope": "One saved original-source snapshot and actual provider responses; not human expert certification, five-day qualification or Slack delivery."}
 
@@ -177,7 +187,7 @@ async def main():
                     previous=provider_response(args.previous_writer) if args.previous_writer else None,
                     correction_review=provider_response(args.correction_review) if args.correction_review else None)
     save(args.output/"assessment.json", result)
-    if not args.reviewer:
+    if not args.reviewer and not result['source_notes_violations']:
         save(args.output/"review-request.json", request(result["bundle"], "review", result["proposal"]).model_dump(mode="json"))
     if args.prepare_revision and not result["passed"]:
         revised = prepare_revision(bundle, provider_response(args.writer), provider_response(args.reviewer))
@@ -187,9 +197,11 @@ async def main():
     text = re.sub(r"<([^|>]+)\|([^>]+)>", r"[\2](\1)", text)
     text = re.sub(r"(?m)^\*([^*]+)\*", r"**\1**", text)
     text = unescape(text)
-    label = "실제 모델 출력 · 평가 기록 · Slack 미발송"
+    label = ("실제 모델 출력 · 근거/본문 검사 실패 · 품질 통과 아님 · Slack 미발송"
+             if result['source_notes_violations'] else "실제 모델 출력 · 평가 기록 · Slack 미발송")
     (args.output/"brief.md").write_text(label+"\n\n"+text+"\n")
     print(json.dumps({"passed": result["passed"], "rejected": result["rejected"],
+                      "source_notes_violations": result['source_notes_violations'],
                       "quality": result["quality"], "review": result["review"],
                       "parts": [len(x) for x in result["parts"]]}, ensure_ascii=False))
 

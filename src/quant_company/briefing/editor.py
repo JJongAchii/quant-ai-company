@@ -35,7 +35,7 @@ from .quotations import (
 from .schedule import KST, close
 
 FORMAT_VERSION = 15
-VALIDATION_VERSION = 52
+VALIDATION_VERSION = 55
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
 If source_notes_required, populate source_notes BEFORE composing prose, in this same response.
@@ -47,6 +47,10 @@ Then write the briefing and map each material fact to main_item_ids that visibly
 its original. An evidence quote or thread alone does not count. Audit the FULL supplementary originals,
 not only examples named by a prior critic. The service blocks missing/invalid mappings BEFORE spending
 an independent review call. The independent critic still reads full originals and all twelve criteria.
+Before returning, compare EVERY number, signed change and operative date in each source_notes fact
+with the text of its own main_item_ids. A forecast range needs its applicable day in that paragraph;
+the briefing header alone does not establish the forecast horizon. Do not reconstruct dataset rows:
+copy the complete locked_observations including previous values, or omit them for server insertion.
 Before composing, check each original for facts that change the market read, exposure or next decision.
 Named winners do not establish participation: retain sourced sector/market breadth and opposing sectors.
 For oil, distinguish crude supply/prices from already-observed retail/refined-fuel costs; a prospective
@@ -720,16 +724,19 @@ def non_session_korean_listed_price(quote, published_at):
 def calendar_equivalent_numbers(quote, published_at):
     """Allow exact relative-date and 12-to-24-hour wording in event notes."""
     derived = []
-    published = published_at.astimezone(KST).date()
-    month = published.month % 12 + 1
-    year = published.year + (published.month == 12)
-    for match in re.finditer(r"내달\s*(\d{1,2})일", quote):
-        day = int(match[1])
-        try:
-            date(year, month, day)
-        except ValueError:
-            continue
-        derived.append(f"{month}월 {day}일")
+    # Official annual calendars may have no publication timestamp. Their
+    # explicit dates/times remain evidence; relative dates need a real anchor.
+    if published_at is not None:
+        published = published_at.astimezone(KST).date()
+        month = published.month % 12 + 1
+        year = published.year + (published.month == 12)
+        for match in re.finditer(r"내달\s*(\d{1,2})일", quote):
+            day = int(match[1])
+            try:
+                date(year, month, day)
+            except ValueError:
+                continue
+            derived.append(f"{month}월 {day}일")
     for match in re.finditer(r"한국\s*시간\s*오후\s*(\d{1,2})시\s*(\d{1,2})분", quote):
         hour, minute = int(match[1]), int(match[2])
         if 1 <= hour <= 12 and 0 <= minute < 60:
@@ -802,13 +809,14 @@ def validate(proposal, bundle):
                 if item.reported_change is not None and not reported_change_supported(
                         item.reported_change, item.change_unit, quotes):
                     raise ValueError("reported_change_direction_or_unit_not_in_evidence")
-                if item.as_of > edition.cutoff or item.as_of < edition.cutoff-timedelta(hours=30):
-                    raise ValueError("observation_time_stale_or_future")
-                market = INSTRUMENTS[item.instrument][2]
-                expected = edition.us_session if market == "US" else edition.kr_session
                 previous_korean_close = (edition.kind == "am" and item.basis == "close"
                     and item.instrument in {"kospi", "kosdaq"}
                     and item.session_date == edition.previous_kr_session)
+                if (item.as_of > edition.cutoff or
+                        (item.as_of < edition.cutoff-timedelta(hours=30) and not previous_korean_close)):
+                    raise ValueError("observation_time_stale_or_future")
+                market = INSTRUMENTS[item.instrument][2]
+                expected = edition.us_session if market == "US" else edition.kr_session
                 previous_korean_fx = (edition.kind == "am" and item.instrument == "usdkrw"
                     and item.basis == "intraday" and item.session_date == edition.previous_kr_session)
                 if previous_korean_close:
@@ -841,7 +849,11 @@ def validate(proposal, bundle):
                     raise ValueError("unsupported_rolling_window")
                 if item.previous_value is not None:
                     previous = edition.previous_us_session if market == "US" else edition.previous_kr_session
-                    if (previous_korean_close or item.basis != "close"
+                    collected_prior = (locked.get(item.instrument) if previous_korean_close and
+                        any(docs[e.source_id].kind == 'dataset' for e in item.evidence) else None)
+                    if collected_prior:
+                        previous = collected_prior.previous_session_date
+                    if ((previous_korean_close and not collected_prior) or item.basis != "close"
                             or item.previous_session_date != previous or item.previous_value <= 0):
                         raise ValueError("incompatible_comparison")
             elif isinstance(item, WatchResult):
@@ -895,7 +907,13 @@ def prune(proposal, rejected):
         issue['context'] = [c for c in issue['context'] if c['id'] not in rejected]
         if issue.get("counterpoint") and issue["counterpoint"]["id"] in rejected:
             issue["counterpoint"] = None
-    return BriefProposal.model_validate(value)
+    accepted = BriefProposal.model_validate(value)
+    removed = set(item_map(proposal)) - set(item_map(accepted))
+    for note in accepted.source_notes:
+        note.item_ids = [identity for identity in note.item_ids if identity not in removed]
+        for fact in note.material_facts:
+            fact.main_item_ids = [identity for identity in fact.main_item_ids if identity not in removed]
+    return accepted
 
 
 def main_post_item_ids(proposal, bundle):
@@ -914,6 +932,12 @@ def main_post_item_ids(proposal, bundle):
     return {item.id for item in visible}
 
 
+class SourceNotesValidationError(ValueError):
+    def __init__(self, violations):
+        self.violations = violations
+        super().__init__(violations[0]['reason'])
+
+
 def validate_source_notes(proposal, bundle):
     """Cheap proof/mapping preflight, not a judgement of economic completeness."""
     if not bundle.get('source_notes_required'):
@@ -921,24 +945,36 @@ def validate_source_notes(proposal, bundle):
     docs = {d['id']: d for d in bundle['documents'] if d['kind'] not in {'calendar', 'dataset'}}
     notes = proposal.source_notes
     if len(notes) != len(docs) or {n.source_id for n in notes} != set(docs):
-        raise ValueError('source_notes_incomplete_or_duplicate')
+        raise SourceNotesValidationError([{'reason': 'source_notes_incomplete_or_duplicate'}])
     rejected = validate(proposal, bundle)
     accepted = prune(proposal, rejected)
+    notes = accepted.source_notes
     items = item_map(accepted)
     visible = main_post_item_ids(accepted, bundle)
+    violations = []
     for note in notes:
         if note.treatment == 'covered' and not note.material_facts:
-            raise ValueError('source_notes_covered_without_material_facts')
-        for fact in note.material_facts:
+            violations.append({'reason': 'source_notes_covered_without_material_facts',
+                               'source_id': note.source_id})
+        for index, fact in enumerate(note.material_facts):
+            detail = {'source_id': note.source_id, 'fact_index': index,
+                      'main_item_ids': fact.main_item_ids}
+
+            def reject(reason, detail=detail):
+                violations.append({'reason': reason, **detail})
+
             original = docs[note.source_id]['content']
             quote = canonical_source_quote(fact.quote, (" ".join(original.split()),))
             if not quote or not prose_numbers_supported(fact.fact, [quote]):
-                raise ValueError('source_notes_fact_not_supported')
+                reject('source_notes_fact_not_supported')
+                continue
             if not fact.main_item_ids or not set(fact.main_item_ids) <= visible:
-                raise ValueError('source_notes_fact_not_in_main')
+                reject('source_notes_fact_not_in_main')
+                continue
             mapped = [items[identity] for identity in fact.main_item_ids]
             if any(not any(e.source_id == note.source_id for e in item.evidence) for item in mapped):
-                raise ValueError('source_notes_mapping_not_cited')
+                reject('source_notes_mapping_not_cited')
+                continue
             texts = [item.text for item in mapped if isinstance(item, Claim)]
             texts += [f'{INSTRUMENTS[item.instrument][0]} {item.value} {item.unit} '
                       + (f'비교 {item.previous_value} {item.unit} ' if item.previous_value is not None else '')
@@ -947,7 +983,9 @@ def validate_source_notes(proposal, bundle):
             texts += [item.explanation for item in mapped if isinstance(item, WatchResult)]
             texts += [item.title+' '+item.note for item in mapped if isinstance(item, CalendarEvent)]
             if not prose_numbers_supported(fact.fact, texts):
-                raise ValueError('source_notes_material_numbers_missing_from_main')
+                reject('source_notes_material_numbers_missing_from_main')
+    if violations:
+        raise SourceNotesValidationError(violations)
 
 
 def validate_review(review, proposal, bundle):

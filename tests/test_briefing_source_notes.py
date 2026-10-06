@@ -4,7 +4,7 @@ from copy import deepcopy
 import pytest
 
 from quant_company.briefing.contracts import SourceAssessment
-from quant_company.briefing.editor import prompt, validate_source_notes
+from quant_company.briefing.editor import SourceNotesValidationError, prompt, prune, validate_source_notes
 
 from .test_briefing import brief, bundle, definition, proposal, response, review, seed  # noqa: F401
 
@@ -26,6 +26,55 @@ def notes_case():
 def test_source_notes_supported_material_fact_maps_to_visible_main():
     b, p = notes_case()
     validate_source_notes(p, b)
+
+
+def test_signed_decline_inventory_matches_explicit_korean_decrease_in_main():
+    b, p = notes_case()
+    quote = '영업이익은 4.4% 감소할 것으로 전망했다.'
+    b['documents'][0]['content'] += '\n'+quote
+    p.issues[0].fact.text = quote
+    p.issues[0].fact.evidence[0].quote = quote
+    fact = p.source_notes[0].material_facts[0]
+    fact.fact = '영업이익 전망은 -4.4%다.'
+    fact.quote = quote
+    validate_source_notes(p, b)
+    p.issues[0].fact.text = '영업이익은 4.4% 증가할 것으로 전망했다.'
+    with pytest.raises(SourceNotesValidationError):
+        validate_source_notes(p, b)
+
+
+def test_offline_missing_forecast_day_saves_failed_preview_without_review_call(tmp_path, monkeypatch):
+    import asyncio
+    import sys
+
+    from scripts import evaluate_briefing
+
+    b, p = notes_case()
+    quote = '6일 원달러 예상 범위는 1337~1352원이다.'
+    b['documents'][0]['content'] += '\n'+quote
+    p.issues[0].fact.text = '원달러 예상 범위는 1337~1352원이다.'
+    p.issues[0].fact.evidence[0].quote = quote
+    fact = p.source_notes[0].material_facts[0]
+    fact.fact, fact.quote = quote, quote
+    written = response({'request_id': 'fixture-write'}, p)
+    result = evaluate_briefing.assess(b, written)
+    assert not result['passed'] and result['source_notes_violations'] == [{
+        'reason': 'source_notes_material_numbers_missing_from_main', 'source_id': 'source-1',
+        'fact_index': 0, 'main_item_ids': ['fact']}]
+    with pytest.raises(SourceNotesValidationError):
+        evaluate_briefing.request(b, 'review', result['proposal'])
+    source, writer, output = tmp_path/'bundle.json', tmp_path/'write.json', tmp_path/'preview'
+    source.write_text(json.dumps(b))
+    writer.write_text(written.model_dump_json())
+    monkeypatch.setattr(sys, 'argv', ['evaluate_briefing', '--bundle', str(source), '--writer',
+                                    str(writer), '--output', str(output)])
+    asyncio.run(evaluate_briefing.main())
+    assert (output/'assessment.json').exists()
+    assert '품질 통과 아님' in (output/'brief.md').read_text()
+    assert '1337~1352' in (output/'brief.md').read_text()
+    assert not (output/'review-request.json').exists()
+    with pytest.raises(SourceNotesValidationError):
+        evaluate_briefing.assess(b, written, response({'request_id': 'fixture-review'}, review()))
 
 
 def test_old_frozen_proposal_remains_compatible_when_not_enabled():
@@ -127,6 +176,28 @@ def test_removed_issue_cannot_cover_a_fact_through_a_surviving_id():
     b, p = notes_case()
     p.issues[0].next_check.text = '금리가 999%까지 상승하는지 확인한다.'
     with pytest.raises(ValueError, match='source_notes_fact_not_in_main'):
+        validate_source_notes(p, b)
+
+
+def test_pruned_redundant_reference_keeps_all_fact_numbers_in_surviving_main():
+    b, p = notes_case()
+    observation = p.observations[0].id
+    p.source_notes[0].material_facts[0].main_item_ids.append(observation)
+    accepted = prune(p, {observation: 'rejected_observation'})
+    assert accepted.source_notes[0].material_facts[0].main_item_ids == ['fact']
+    assert p.source_notes[0].material_facts[0].main_item_ids == ['fact', observation]
+    validate_source_notes(accepted, b)
+
+
+def test_pruning_never_hides_invented_references_or_missing_material_numbers():
+    b, p = notes_case()
+    p.source_notes[0].material_facts[0].main_item_ids.append('invented-id')
+    accepted = prune(p, {'unrelated': 'rejected'})
+    with pytest.raises(ValueError, match='source_notes_fact_not_in_main'):
+        validate_source_notes(accepted, b)
+    p.source_notes[0].material_facts[0].main_item_ids = ['fact', p.summary[0].id]
+    p.issues[0].next_check.text = '금리가 999%인지 확인한다.'
+    with pytest.raises(ValueError, match='source_notes_material_numbers_missing_from_main'):
         validate_source_notes(p, b)
 
 
