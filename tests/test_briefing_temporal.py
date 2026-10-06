@@ -94,8 +94,9 @@ async def test_brief_collection_timer_survives_worker_restart(temporal_environme
 
 @pytest.mark.integration
 @pytest.mark.parametrize("standalone", [False, True])
+@pytest.mark.parametrize('kind', ['am', 'pm'])
 async def test_real_temporal_data_worker_freezes_numbers_for_model_consumer(
-        brief, temporal_environment, monkeypatch, standalone):  # noqa: F811
+        brief, temporal_environment, monkeypatch, standalone, kind):  # noqa: F811
     from datetime import timedelta
 
     from quant_company.briefing.data import BriefDataCollector
@@ -106,7 +107,7 @@ async def test_real_temporal_data_worker_freezes_numbers_for_model_consumer(
     from .test_briefing_quality import snapshot
 
     store, clock = brief
-    edition = definition("pm")
+    edition = definition(kind)
     clock["at"] = edition.cutoff-timedelta(minutes=10)
     store.company.settings.temporal_task_queue = "brief-data-test-"+uuid4().hex
     reader = BriefDataCollector(store.company, lambda root, e: snapshot(e))
@@ -151,7 +152,8 @@ async def test_real_temporal_data_worker_freezes_numbers_for_model_consumer(
                     await asyncio.sleep(0.1)
             seed(brief, edition)
             request = store.prepare()["request"]
-            assert '"data-kospi"' in request["prompt"] and '"data-kosdaq"' in request["prompt"]
+            assert ('"data-kospi"' in request["prompt"]) == (kind == 'am')
+            assert ('"data-kosdaq"' in request["prompt"]) == (kind == 'am')
             await Replayer(workflows=[BriefDataWorkflow]).replay_workflow(await handle.fetch_history())
         finally:
             await handle.cancel()

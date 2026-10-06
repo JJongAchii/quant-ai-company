@@ -1,0 +1,34 @@
+{
+  "recorded_at": "2026-10-06T07:26:51.422291+00:00",
+  "scope": "Prospective bounded multi-edition private observation; not yet installed. Current PM remains frozen on971f872.",
+  "quality_policy": "All original/main checks unchanged; zero native searches, zero repairs, max3phases per allowed edition; no models outside static whitelist",
+  "checks": [
+    "Actual PostgreSQL: scope advances to next allowed edition; excluded editions reserve no calls",
+    "Finished observation stores exactly one five-day qualification event and never enables publication",
+    "Source original/date guard, planner coverage gates and zero repairs work for single and multi-edition modes",
+    "Actual Temporal workers: AM prior closes present and early PM same-day lake closes withheld, with replayed history",
+    "Worker-only preview still preserves roles/configuration/API/shared runtime and forbids paid/provider changes"
+  ],
+  "test_runs": [
+    {
+      "tests": 90,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "receipt_sha256": "470e65927f8611f38e532c044b8240bc16a30dad1673aba688cf92f1d2206490",
+      "run": "analyst-observation-window-tests",
+      "overlap": "These runs overlap; counts must not be added as unique tests."
+    },
+    {
+      "tests": 214,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "receipt_sha256": "bff40d354f9bd500c6b4ae34a1716f06b9d1b0d806b25a7d7fc75e3e9cf4523c",
+      "run": "analyst-observation-final-tests",
+      "overlap": "These runs overlap; counts must not be added as unique tests."
+    }
+  ],
+  "slack": "simulated transports; real format17 delivery remains pending",
+  "models": "fixtures; no expert-grade claim"
+}

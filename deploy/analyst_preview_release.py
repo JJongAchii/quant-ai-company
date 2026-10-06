@@ -28,7 +28,7 @@ ROLE = 'market_brief'
 SETTINGS = {'RELEASE_COMMIT', 'QDATA_BUILD_CONTEXT', 'PINNED_CODEX_RUNTIME_IMAGE',
             'BRIEFING_ENABLED', 'BRIEFING_PUBLISH_ENABLED', 'BRIEFING_CHANNEL_ID',
             'BRIEFING_OWNER_USER', 'SLACK_ALLOWED_CHANNELS', 'BRIEFING_SOURCE_NOTES_ENABLED',
-            'BRIEFING_MAX_REVISIONS', 'BRIEFING_EVALUATION_EDITION_ID'}
+            'BRIEFING_MAX_REVISIONS', 'BRIEFING_EVALUATION_EDITION_ID', 'BRIEFING_EVALUATION_EDITION_IDS'}
 BASE_INPUTS = ('pyproject.toml', 'uv.lock', 'deploy/qdata-source.json', 'deploy/Dockerfile', 'deploy/entrypoint.py')
 
 
@@ -78,6 +78,18 @@ def helper(root):
 def configuration(data):
     return dict(line.split('=', 1) for line in data.decode().splitlines()
                 if '=' in line and not line.lstrip().startswith('#'))
+
+
+def evaluation_editions(args):
+    path = getattr(args, 'evaluation_editions_file', None)
+    values = json.loads(path.read_text()) if path else []
+    if (not isinstance(values, list) or len(values) > 12
+            or any(not isinstance(value, str) or not re.fullmatch(
+                r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', value) for value in values)
+            or len(set(values)) != len(values)
+            or (path and (not values or args.evaluation_edition not in values))):
+        raise ValueError('preview_invalid_evaluation_editions')
+    return sorted(values)
 
 
 def updated(data, values):
@@ -227,6 +239,7 @@ def stage(args, previous, target, module, journal):
                'archive_sha256': args.sha256, 'manifest_sha256': args.manifest_sha256,
                'env_sha256': digest(raw), 'roles_sha256': digest((STATE / 'config/roles.json').read_bytes()),
                'started_at': time.time(), 'images': [], 'evaluation_edition': args.evaluation_edition,
+               'evaluation_editions': evaluation_editions(args),
                'build_mode': 'code_only_identical_lock' if code_only else 'locked_dependency_sync',
                'minimum_disk_bytes': minimum_disk, 'service_inventory_before': before}
     receipt['preserve_codex_runtime'] = bool(manifest.get('preserve_codex_runtime'))
@@ -311,6 +324,7 @@ def cutover(args, previous, target, module, journal):
     if (receipt['phase'] != 'staged' or receipt['base'] != args.base or receipt['commit'] != args.commit
             or receipt['owner_approval'] != args.approval
             or receipt.get('evaluation_edition') != args.evaluation_edition
+            or receipt.get('evaluation_editions', []) != evaluation_editions(args)
             or digest(raw) != receipt['env_sha256']
             or digest(roles) != receipt['roles_sha256']):
         raise ValueError('preview_staged_configuration_changed')
@@ -321,7 +335,8 @@ def cutover(args, previous, target, module, journal):
                     if receipt.get('preserve_codex_runtime') else 'quant-company-codex:' + args.commit),
                 'BRIEFING_ENABLED': 'true', 'BRIEFING_PUBLISH_ENABLED': 'false',
                 'BRIEFING_SOURCE_NOTES_ENABLED': 'true', 'BRIEFING_MAX_REVISIONS': '0',
-                'BRIEFING_EVALUATION_EDITION_ID': args.evaluation_edition,
+                'BRIEFING_EVALUATION_EDITION_ID': '' if evaluation_editions(args) else args.evaluation_edition,
+                'BRIEFING_EVALUATION_EDITION_IDS': json.dumps(evaluation_editions(args)),
                 'BRIEFING_CHANNEL_ID': args.channel, 'BRIEFING_OWNER_USER': args.owner,
                 'SLACK_ALLOWED_CHANNELS': json.dumps([*channels, *([] if args.channel in channels else [args.channel])])}
     new_roles = merged_roles(json.loads(roles), json.loads((target / 'src/quant_company/roles.json').read_text()),
@@ -435,6 +450,7 @@ def main():
     parser.add_argument('--manifest', type=Path)
     parser.add_argument('--manifest-sha256')
     parser.add_argument('--evaluation-edition', required=True)
+    parser.add_argument('--evaluation-editions-file', type=Path)
     args = parser.parse_args()
     if not all(re.fullmatch('[0-9a-f]{40}', value) for value in (args.base, args.commit)):
         raise ValueError('preview_invalid_revision')
@@ -444,6 +460,7 @@ def main():
         raise ValueError('preview_explicit_owner_approval_required')
     if not re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', args.evaluation_edition):
         raise ValueError('preview_evaluation_edition_required')
+    evaluation_editions(args)
     previous, target = CURRENT.resolve(), CURRENT.parent / 'releases' / args.commit
     with (STATE / '.backup.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)

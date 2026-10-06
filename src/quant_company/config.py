@@ -68,6 +68,7 @@ class Settings(BaseSettings):
     briefing_source_notes_enabled: bool = False
     briefing_max_revisions: int = Field(default=1, ge=0, le=1)
     briefing_evaluation_edition_id: str = Field(default='', pattern=r'^(?:|[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})$')
+    briefing_evaluation_edition_ids: list[str] = Field(default_factory=list, max_length=12)
     briefing_search_enabled: bool = True
     briefing_channel_id: str = ""
     briefing_owner_user: str = ""
@@ -107,6 +108,20 @@ class Settings(BaseSettings):
     def empty_briefing_overrides(cls, value):
         return None if value == "" else value
 
+    @field_validator('briefing_evaluation_edition_ids')
+    @classmethod
+    def bounded_briefing_editions(cls, values):
+        from uuid import UUID
+
+        if len(set(values)) != len(values) or any(str(UUID(value)) != value for value in values):
+            raise ValueError('Briefing evaluation IDs must be unique canonical UUIDs')
+        return sorted(values)
+
+    @property
+    def briefing_evaluation_ids(self):
+        return ([self.briefing_evaluation_edition_id] if self.briefing_evaluation_edition_id
+                else self.briefing_evaluation_edition_ids)
+
     @model_validator(mode="after")
     def explicit_simulation(self) -> "Settings":
         if self.model_accounts_enabled and self.model_accounts_owner_user not in self.slack_allowed_users:
@@ -138,6 +153,8 @@ class Settings(BaseSettings):
             raise ValueError("Data watch requires a dedicated allowed Slack channel and owner")
         if self.data_watch_core_enabled and not self.data_watch_enabled:
             raise ValueError("Data watch core checks require data watch")
+        if self.briefing_evaluation_edition_ids and (self.briefing_evaluation_edition_id or self.briefing_max_revisions):
+            raise ValueError('Bounded briefing observation requires a single ID list and zero repairs')
         return self
 
     def require_operator_token(self) -> str:

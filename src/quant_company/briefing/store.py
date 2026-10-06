@@ -73,6 +73,7 @@ class BriefStore:
                             "source_notes": s.briefing_source_notes_enabled,
                             "max_revisions": s.briefing_max_revisions,
                             "evaluation_edition": s.briefing_evaluation_edition_id,
+                            "evaluation_editions": s.briefing_evaluation_edition_ids,
                             "channel": s.briefing_channel_id, "owner": s.briefing_owner_user,
                             "allowed_users": s.slack_allowed_users, "allowed_channels": s.slack_allowed_channels,
                             "role": self.company.roles.get(BRIEFER).model_dump() if BRIEFER in self.company.roles else None,
@@ -196,8 +197,8 @@ class BriefStore:
                 AND committed_at IS NULL AND policy_digest=%s AND due_at+interval '10 minutes'>%s
                 """
             parameters = (policy, at)
-            if selected := self.company.settings.briefing_evaluation_edition_id:
-                query += ' AND id=%s'
+            if selected := self.company.settings.briefing_evaluation_ids:
+                query += ' AND id=ANY(%s::uuid[])'
                 parameters += (selected,)
             row = conn.execute(query+' ORDER BY due_at LIMIT 1 FOR UPDATE', parameters).fetchone()
             if not row:
@@ -209,7 +210,7 @@ class BriefStore:
                         else {"state": "ready", "request": active["request"]})
             if row["state"] == "collecting" and at < row["cutoff"]:
                 s = self.company.settings
-                if s.briefing_evaluation_edition_id:
+                if s.briefing_evaluation_ids:
                     return {'state': 'idle'}  # Bounded evaluations use plan/write/review on sealed inputs.
                 if not (s.briefing_search_enabled and s.company_web_enabled and row["collected_at"]):
                     return {"state": "idle"}
@@ -249,7 +250,7 @@ class BriefStore:
                     conn.execute("UPDATE brief_editions SET state='blocked',error='no_current_originals',bundle=%s WHERE id=%s",
                                  (Jsonb(bundle), row["id"]))
                     return {"state": "blocked", "reason": "no_current_originals"}
-                if phase == 'plan' and self.company.settings.briefing_evaluation_edition_id:
+                if phase == 'plan' and self.company.settings.briefing_evaluation_ids:
                     originals = [SourceDocument.model_validate(d) for d in bundle['candidate_documents']
                                  if d['kind'] not in {'calendar', 'dataset'}]
                     origins = {d.origin_group or d.publisher for d in originals}
@@ -451,7 +452,35 @@ class BriefStore:
                 for part in range(1, len(row["rendered"])):
                     if not conn.execute("SELECT 1 FROM brief_messages WHERE edition_id=%s AND part=%s", (row["id"], part)).fetchone():
                         self._message(conn, row, project, part)
-            return {"state": "flushed", "committed": len(rows)}
+            result = {"state": "flushed", "committed": len(rows)}
+        self.record_observation(at)
+        return result
+
+    def record_observation(self, at):
+        ids = self.company.settings.briefing_evaluation_edition_ids
+        if not ids:
+            return
+        policy = self.policy()
+        with self.db.transaction() as conn:
+            if conn.execute("SELECT 1 FROM events WHERE kind='briefing_observation_finished' "
+                            "AND detail->>'policy_digest'=%s", (policy,)).fetchone():
+                return
+            rows = conn.execute("SELECT committed_at,state,due_at,policy_digest FROM brief_editions "
+                                "WHERE id=ANY(%s::uuid[])", (ids,)).fetchall()
+        if (len(rows) != len(ids) or any(row['policy_digest'] != policy for row in rows)
+                or any(not row['committed_at'] and row['state'] not in {'missed', 'stale'} for row in rows)
+                or max(row['due_at'] for row in rows)+timedelta(minutes=10) > at):
+            return
+        from .qualification import qualify
+
+        report = qualify(self.company, at=at)
+        with self.db.transaction() as conn:
+            conn.execute('SELECT pg_advisory_xact_lock(%s)', (LOCK,))
+            if not conn.execute("SELECT 1 FROM events WHERE kind='briefing_observation_finished' "
+                                "AND detail->>'policy_digest'=%s", (policy,)).fetchone():
+                self.company._event(conn, 'briefing_observation_finished', {
+                    'policy_digest': policy, 'edition_ids': ids, 'qualification': report,
+                    'automatic_publication_changed': False})
 
     def _message(self, conn, row, project, part):
         identity = stable(f"brief-message:{row['id']}:{part}")

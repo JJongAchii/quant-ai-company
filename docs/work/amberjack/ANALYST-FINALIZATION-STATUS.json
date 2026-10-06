@@ -1,0 +1,27 @@
+{
+  "recorded_at": "2026-10-06T07:21:05.825763+00:00",
+  "accepted_intent": "INTENT-v16.json",
+  "accepted_intent_digest": "74760db38665",
+  "latest_request": "그럼 이어서 진행해서 최종적으로 완료해주면 좋겠어",
+  "source_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+  "goal_complete": false,
+  "implemented": [
+    "Readability and lead-issue priorities",
+    "Forecast applicability date in its own claim",
+    "Full main preserved in Slack section blocks",
+    "07:45 AM and17:45 PM calendar-aware schedule"
+  ],
+  "deployment": "preview_active_actual_cloud",
+  "publication_enabled": false,
+  "fresh_edition": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+  "fresh_policy": "docs/project/evidence/briefing-analyst-quality-20261001/prospective-pm-20261006-format17-policy.json",
+  "next": "Observe16:40collection/17:00seal/17:45commit, original-to-main audit, actual delivery if qualified; prepare bounded observation without reopening closed cases.",
+  "remaining": [
+    "Fresh independent original/main and twelve-check content qualification",
+    "Five-trading-day timing/source/model replay and user content acceptance before automatic publication"
+  ],
+  "evidence": [
+    "docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-format17.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/regression-format17.json"
+  ]
+}

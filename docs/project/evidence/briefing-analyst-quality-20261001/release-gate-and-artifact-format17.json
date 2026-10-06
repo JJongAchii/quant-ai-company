@@ -1,0 +1,27 @@
+{
+  "recorded_at": "2026-10-06T07:01:40.104349+00:00",
+  "previous_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "candidate_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+  "owner_approval": "chat-analyst-preview-approved-20261002",
+  "runtime_artifact": {
+    "scope": [
+      "src",
+      "deploy",
+      "pyproject.toml",
+      "uv.lock",
+      "README.md"
+    ],
+    "prefix": "quant-company/",
+    "archive_sha256": "00daa61df1d7cc15959c5343aa37f67d5e026edf299dea0bd00ea2e5504e7e52",
+    "compressed_bytes": 846368,
+    "commit": "971f872a23f4989ddd1628bc28c59868a1c29264"
+  },
+  "manifest_sha256": "f98dee1d3415eb3cfa4a6776d64bf4cdf1540794f39f5ca3b81228f08d40e982",
+  "base_build_inputs_byte_identical": true,
+  "installed_company_research_provider_source_preserved": true,
+  "preserve_codex_runtime": true,
+  "preserve_api": true,
+  "deployment_model_calls": 0,
+  "deployment_slack_calls": 0,
+  "deployment": "not_performed"
+}

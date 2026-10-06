@@ -1,0 +1,72 @@
+{
+  "recorded_at": "2026-10-06T07:21:05.825763+00:00",
+  "scope": "Actual worker-only preview install; no content grade or automated Slack publication",
+  "commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+  "base": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "phase": "preview_active",
+  "source_changes": 6,
+  "archive_sha256": "00daa61df1d7cc15959c5343aa37f67d5e026edf299dea0bd00ea2e5504e7e52",
+  "manifest_sha256": "f98dee1d3415eb3cfa4a6776d64bf4cdf1540794f39f5ca3b81228f08d40e982",
+  "env_before_sha256": "ac52941197e324032bfca6d63217e73a0aed416d26e231405ab6b7cf3348002b",
+  "roles_before_sha256": "1430005122f7129cf51a745f5850ab9344c87285bf59bf9a38aa02d171bdc3e8",
+  "api_and_codex_preserved": true,
+  "unrelated_services_preserved": true,
+  "publication_enabled": false,
+  "activated_at": "2026-10-06T07:09:07.677933+00:00",
+  "database_backup": {
+    "bytes": 343902426,
+    "sha256": "1d5c3787a6ecd9f7568900834ced5a6401ceee125dc05982c43f42b27094660a"
+  },
+  "updated_services": {
+    "news-worker": {
+      "image": "quant-company:971f872a23f4989ddd1628bc28c59868a1c29264",
+      "running": true,
+      "oom": false,
+      "restarts": 0
+    },
+    "dispatch": {
+      "image": "quant-company:971f872a23f4989ddd1628bc28c59868a1c29264",
+      "running": true,
+      "oom": false,
+      "restarts": 0
+    },
+    "briefing-data-worker": {
+      "image": "quant-company:971f872a23f4989ddd1628bc28c59868a1c29264",
+      "running": true,
+      "oom": false,
+      "restarts": 0
+    }
+  },
+  "image_source_verified": [
+    {
+      "target": "app",
+      "id": "sha256:cd08cf471a5854c927bdb3d9e383ad61d07d9edb8b81adf282f6c371d2ab64ea",
+      "source_verified": true,
+      "base_image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "base_image_preserved": true,
+      "locked_dependencies": {
+        "calendar": "4.13.2",
+        "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    }
+  ],
+  "live_probe": {
+    "commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+    "format": 17,
+    "validation": 56,
+    "editor_sha256": "cba8e0cc8891d9535c3e9d5cf6ca37618340e108833a6d974438589e1b55192d",
+    "enabled": true,
+    "publish": false,
+    "authorized": true,
+    "evaluation_edition": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+    "max_revisions": 0,
+    "source_notes": true,
+    "policy": "4519dc189ec4296f8ba5c6aa81dcdbc305ab29f4a078bfac4fbff2beb61da75f",
+    "running_brief_calls": 0,
+    "model": "gpt-6-astra"
+  },
+  "current_pm_row_before_collection": false,
+  "models_in_probe": 0,
+  "slack_in_probe": 0,
+  "content_qualification": "Pending fresh PM source selection, writing and independent original-to-main review"
+}

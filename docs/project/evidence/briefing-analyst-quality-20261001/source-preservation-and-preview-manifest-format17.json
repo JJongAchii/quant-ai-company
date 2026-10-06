@@ -1,0 +1,105 @@
+{
+  "at": "2026-10-06T07:01:40.104349+00:00",
+  "scope": "Prospective readability and after-close timing amendment within the owner-approved preview; same unstarted PM edition and unchanged three-call/no-repair content standard. Preserve actual installed ec1 company, provider, research and unrelated roles.",
+  "previous_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "candidate_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+  "runtime_changes": [
+    {
+      "path": "deploy/analyst_preview_release.py",
+      "kind": "modify",
+      "before_sha256": "5205a045c7f788f2d3c4a1bff10f9eed8113e70871f55d6135374334268dbca8",
+      "after_sha256": "088dd2424f4c04a052416139bd1702fc04ebd601d829905bdf07b146dd92def1"
+    },
+    {
+      "path": "src/quant_company/briefing/editor.py",
+      "kind": "modify",
+      "before_sha256": "7d4cb4ec2d2d3454907779e66b6ae49fdc9430eb0065c242f5a4e17ae439a720",
+      "after_sha256": "cba8e0cc8891d9535c3e9d5cf6ca37618340e108833a6d974438589e1b55192d"
+    },
+    {
+      "path": "src/quant_company/briefing/planning.py",
+      "kind": "modify",
+      "before_sha256": "d5707b2e2949d0128dab9c62eb60ab099866b633fe79dc4a7e28f417cbfb97af",
+      "after_sha256": "02fc6fadfe0ada74463cb165fe0e02563067fc6c09c40b2b09f78b5f23579b30"
+    },
+    {
+      "path": "src/quant_company/briefing/schedule.py",
+      "kind": "modify",
+      "before_sha256": "256dacdc3b0d467086afce99f32b3eb677d6a60067802c51e2648d4c0f310950",
+      "after_sha256": "8fadb041f8b005bd8536f7d2fa8a9ddbecf6da9bd15ebec6e12513a2c1e0d830"
+    },
+    {
+      "path": "src/quant_company/briefing/slack_blocks.py",
+      "kind": "add",
+      "before_sha256": null,
+      "after_sha256": "25d6fb804c37ef5d59cd0fedd74c67ed92f861312723dee7ba9fd85a5f5ada38"
+    },
+    {
+      "path": "src/quant_company/slack.py",
+      "kind": "modify",
+      "before_sha256": "b937912b06150ed717242ee679b24f15a0945b2632d9316e61db720cb62eebf7",
+      "after_sha256": "b11984487f3f1a95ee55a9748fedb2a9cab4ba44142b85c4bdb67267cd178f37"
+    }
+  ],
+  "runtime_changes_count": 6,
+  "deleted_paths": [],
+  "preserve_codex_runtime": true,
+  "preserve_api": true,
+  "implementation_version": {
+    "format": 17,
+    "validation": 56,
+    "quote_reference": 1
+  },
+  "protected_preview_approval": {
+    "owner_approval_id": "chat-analyst-preview-approved-20261002",
+    "answer": "발송 없는 미리보기 설치 승인",
+    "scope": "Analyst/data-worker/brief-lane private preview; publication stays disabled; company/research/providers, credentials and existing receipts preserved.",
+    "autonomous_policy": "Unchanged; use the explicitly owner-authorized operator path."
+  },
+  "proposed_preview": {
+    "publication": false,
+    "channel": "C0C2E59B1AA",
+    "owner": "U0C250E23NW",
+    "source_notes": true,
+    "max_revisions": 0,
+    "evaluation_edition_id": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+    "data_worker_memory_bytes": 402653184,
+    "selected_updates": [
+      "news-worker",
+      "dispatch",
+      "briefing-data-worker"
+    ],
+    "all_other_services": "Preserve exact containers and images, including the actual API hotfix and busy Codex runtime; preserve credentials, mounts and receipts."
+  },
+  "build": {
+    "mode": "code_only_identical_lock",
+    "base_inputs_byte_identical": true,
+    "source_and_qdata_verification": "Required; build app image only, preserve existing pinned Codex image."
+  },
+  "source_archive_scope": [
+    "src",
+    "deploy",
+    "pyproject.toml",
+    "uv.lock",
+    "README.md"
+  ],
+  "source_archive_prefix": "quant-company/",
+  "installed_company_and_research_source_preserved_exactly": true,
+  "existing_non_analyst_roles_preserved_exactly": true,
+  "qdata_code_archive_identity_preserved": true,
+  "analysis_source_preserved_exactly": false,
+  "frozen_content_policy": "prospective-pm-20261006-format17-policy.json",
+  "frozen_content_policy_sha256": "05b7aac6ef46ac523dc5fffadecc32cf6fa24f81a5e39493c27d93a58b3fe5a7",
+  "runtime_archive_receipt": "release-gate-and-artifact-format17.json",
+  "automatic_model_calls_for_other_editions": 0,
+  "operating_corrections": [
+    "Independent-original coverage gate before planner and zero native model searches for pinned evaluation.",
+    "Deterministic compact quote/candidate references and original-text ranges; retain complete originals and main text under the 88000-character limit.",
+    "Calendar dates and signed decreases validate without false positives; operative forecast dates must remain in their own visible paragraph.",
+    "Canonical KRX observations carry exact previous-session rows for AM; no model reconstruction of locked prices.",
+    "Guard failures retain an explicitly failed readable private preview and stop before critic; no failed proposal becomes next-edition evidence.",
+    "Worker-only deployment drains brief lane; actual API hotfix, shared Codex runtime and other account work remain running."
+  ],
+  "deployment": "not_performed",
+  "slack": "not_called"
+}

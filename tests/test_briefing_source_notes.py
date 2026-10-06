@@ -261,9 +261,14 @@ def test_real_postgres_single_edition_scope_never_reserves_other_cases(brief):  
         assert conn.execute('SELECT count(*) AS n FROM brief_calls').fetchone()['n'] == 0
 
 
-def test_bounded_evaluation_does_not_spend_a_search_before_inputs_are_sealed(brief):  # noqa: F811
+@pytest.mark.parametrize('scope', ['single', 'window'])
+def test_bounded_evaluation_does_not_spend_a_search_before_inputs_are_sealed(brief, scope):  # noqa: F811
     store, clock = brief
-    store.company.settings.briefing_evaluation_edition_id = definition().id
+    if scope == 'single':
+        store.company.settings.briefing_evaluation_edition_id = definition().id
+    else:
+        store.company.settings.briefing_evaluation_edition_ids = [definition().id]
+        store.company.settings.briefing_max_revisions = 0
     store.company.settings.briefing_search_enabled = True
     store.company.settings.company_web_enabled = True
     edition = seed(brief)
@@ -273,11 +278,16 @@ def test_bounded_evaluation_does_not_spend_a_search_before_inputs_are_sealed(bri
         assert conn.execute('SELECT count(*) AS n FROM brief_calls').fetchone()['n'] == 0
 
 
-def test_bounded_evaluation_blocks_thin_originals_before_the_planner(brief):  # noqa: F811
+@pytest.mark.parametrize('scope', ['single', 'window'])
+def test_bounded_evaluation_blocks_thin_originals_before_the_planner(brief, scope):  # noqa: F811
     from psycopg.types.json import Jsonb
 
     store, _ = brief
-    store.company.settings.briefing_evaluation_edition_id = definition().id
+    if scope == 'single':
+        store.company.settings.briefing_evaluation_edition_id = definition().id
+    else:
+        store.company.settings.briefing_evaluation_edition_ids = [definition().id]
+        store.company.settings.briefing_max_revisions = 0
     edition = seed(brief)
     frozen = bundle(edition)
     frozen['candidate_documents'] = deepcopy(frozen['documents'])
