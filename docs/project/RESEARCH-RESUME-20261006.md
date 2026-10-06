@@ -134,3 +134,12 @@ DataAssessment 버전만 노출한다. version2의 최상위 legacy 필드는 �
 [현재 운영·후속 검토 명세](evidence/etf-exploration-20260930/restoration-and-followup-manifest-20261006.json)에
 현재 소스5c, 후속 소스86, 승인된 입력·예산 및 적용한 운영 효과를 구별해 고정했다.
 이 root의 PR은 후속 소스86과 비교해 추가 테스트·문서·증거만 포함하며 새로운 서버 cutover를 요구하지 않는다.
+
+## 최종 정리
+
+[PR #105](https://github.com/JJongAchii/quant-ai-company/pull/105)에 이 root의 추가 회귀 검사와 복구 증거를
+게시했다. upstream `ccf7e11`의 운영 기록도 통합했으며 회사 코드·배포 파일·의존성은 현재 base와 동일하다.
+10:58 KST [마지막 프로그램 관측](evidence/etf-exploration-20260930/canonical-final-program-progress-20261006.json)은
+원래 승인이 active이고 새 연구자 제안 단계가 running이며 오류가 없음을 확인한다.
+과학 시행·예약·mission·계산시간은 여전히 0이다. 서버 current는 소스5c를 유지한다.
+복구·검사·증거 통합은 완료됐으며 연구 후보 수정과 이후 독립 검토는 서비스가 기존 승인 안에서 계속 수행한다.
