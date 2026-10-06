@@ -269,3 +269,22 @@ proposal은 attempt1/running이고 오류나 재시도는 없다. 35개 모델 t
 별도로 보존했다. 이번 확인에는 운영 변경이 없다. programme의 실제 science job·trial·예약은 모두0이고,
 실제 계산 시간도0초다. 이후 challenge·selection·implementation을 정상 경로로 따라 실제3070 실행을
 확인하기 전까지 현재 INTENT는 완료가 아니다.
+
+### 15:40 KST — 작성과 보완 읽기 반복의 한정된 수리
+
+출력 내용 없이 turn의 형식·시간만 대조한 결과, 원문 source가 부분 읽기 상태인데 complete
+artifact를 작성하고, 완료 gate 뒤 한 조각 읽기를 거쳐 다시 작성하는 패턴을 확인했다.
+최근 네 작성은 각각 약305/270/283/244초이며 결과 채택이나 과학 시행은 없었다.
+전체 파일의 문자 수와 SHA를 내용 노출 없이 확인했다. 해당 original은137168문자이고,
+15:39까지72000문자를 읽었으므로 여전히 미완료다. 작성 전에 필요한 완료 조건이
+모델의 다음 요청에 명확하게 보여야 한다.
+
+[구체적 검토](evidence/etf-exploration-20260930/first-mission-source-navigation-review-20261006.json)와
+[한정된 operator](evidence/etf-exploration-20260930/repair-first-mission-source-navigation.py)를 PR105에
+게시한 뒤 기존 계속 진행 권한 안에서 현재 proposal c305/attempt1의 안내 메타데이터 한 필드를
+추가했다([event694](evidence/etf-exploration-20260930/first-mission-source-navigation-applied-20261006.json)).
+원문·완료 read receipt·동결된 모델 요청·가설/선정·예산·승인을 바꾸거나 job을 만들지 않았다.
+서버·3070 소스는 자격검증된ec 그대로다. 첫 operator는 artifact의 literal newline 파싱에서
+UPDATE 전에 rollback됐고, 활성 controller와 같은 LF 한정 처리로 맞춰 정상 적용했다.
+이미 실행 중인 요청은 유지하며 다음 정상 요청부터 안내를 받는다. 이 안내가 반복을 줄이는지와
+첫 actual scientific execution을 계속 확인한다. 과학 결과나 실사용 준비성은 아직 주장할 수 없다.
