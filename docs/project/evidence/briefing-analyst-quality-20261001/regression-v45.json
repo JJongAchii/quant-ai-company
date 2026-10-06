@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-01T08:04:45.448642+00:00",
+  "source_commit": "6050c901912b9db8cd1fef73a15fcd5f3eaed0c2",
+  "validation_version": 45,
+  "format_version": 15,
+  "quote_reference_version": 1,
+  "checks": {
+    "regression-v45.xml": {
+      "tests": 182,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 14.15,
+      "sha256": "d57ba70fa5d8a77bf1117f435d849657f2085ea37b0339072d817d1253ceb638"
+    },
+    "runtime-regression-v43.xml": {
+      "tests": 78,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2,
+      "seconds": 26.239,
+      "sha256": "4c18b34e83e4a391062117d04109e040d67a6356afab05bfa1a3f2a9a91214b3"
+    },
+    "temporal-regression-v45.xml": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 39.682,
+      "sha256": "d7ca75edaa1219d24331c83a42eef428c05e698997b9fd514e283112f63203fd"
+    }
+  },
+  "lint": {
+    "command": ".venv/bin/ruff check .",
+    "outcome": "passed"
+  },
+  "PostgreSQL": "real PostgreSQL for producer-consumer and briefing cases",
+  "Temporal": "real local Temporal process; workflow replay tested",
+  "Codex_runtime": "filesystem locks/subprocess fake CLI; new briefing lane not verified on deployed official CLI",
+  "Slack": "simulated/not_connected; no real posting",
+  "qualification": "technical regression only, not semantic content or deployment acceptance",
+  "preserved_failure": "regression-v44.xml retains2oldrepresentation assertions; corrected to reconstruct identical complete body from source-bound refs without lowering content/semantic criteria; final45 passes",
+  "skips": "runtime-regression-v43 has2 opt-in real Codex/cloud checks skipped"
+}

@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-01T23:03:53.548606+00:00",
+  "source_commit": "f4e2d9b1fb8ee0fc59ee84eab4b87fa346d64d49",
+  "validation_version": 47,
+  "format_version": 15,
+  "quote_reference_version": 1,
+  "focused": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "185",
+    "time": "14.477",
+    "timestamp": "2026-10-01T22:43:37.971759+09:00",
+    "hostname": "MacBook-Pro.local",
+    "sha256": "61f83dd0bdb2a8f92e1dd0ff6f547e8cd1b5a75c581cada8680221e1c0257afe"
+  },
+  "lint": "passed .venv/bin/ruff check .",
+  "full_local_previous_commit": {
+    "commit": "209eaf54373e9ad8a94f26412a395cf08273b3ae",
+    "passed": 1595,
+    "skipped": 47,
+    "evidence": "regression-v46.json"
+  },
+  "full_current_ci": "github-ci-v47.json",
+  "PostgreSQL": "real",
+  "Temporal": "real local process/workflow/replay in full regression; fixtures separated",
+  "model": "fixtures in regression; real official-subscription receipts in separate content cases",
+  "Slack": "simulated; no real posting",
+  "qualification": "technical only, not content/operational acceptance"
+}

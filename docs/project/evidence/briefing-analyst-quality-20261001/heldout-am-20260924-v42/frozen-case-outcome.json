@@ -1,0 +1,31 @@
+{
+  "case": "heldout-am-20260924-v42",
+  "closed_at": "2026-10-01T08:00:36.159460+00:00",
+  "frozen_validation_version": 42,
+  "frozen_result": "failed",
+  "frozen_first_review_checks": 7,
+  "frozen_repaired_rejections": {
+    "diesel_fact": "unsupported_prose_number"
+  },
+  "original_completed_calls": 4,
+  "confirmed_repair_count": 1,
+  "development_validation_version": 45,
+  "development_writer": "unchanged confirmed42 repair, notnew45writer",
+  "development_review_checks": 9,
+  "development_failed_checks": [
+    "materiality",
+    "counterevidence",
+    "coverage"
+  ],
+  "development_verdict": "reduce",
+  "development_rejected": {},
+  "development_completed_calls": 1,
+  "combined_completed_calls": 5,
+  "combined_completed_cap": 5,
+  "further_calls_or_repairs": "none; closed",
+  "final_review_receipt": "docs/project/evidence/briefing-analyst-quality-20261001/heldout-am-20260924-v42/development-v45/review-attempt3-receipt.json",
+  "elapsed_seconds": 434.447,
+  "fresh_or_expert_qualification": false,
+  "slack": "not_called",
+  "deployment": "not_performed"
+}

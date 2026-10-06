@@ -1,0 +1,53 @@
+{
+  "at": "2026-10-02T03:23:16.283084+00:00",
+  "scope": "Owner-approved corrective preview installation manifest; publication remains disabled",
+  "previous_commit": "92d2fce30161263d39e7a5ddbfcb0968691a2ae8",
+  "candidate_commit": "289dc70c6858ea229476216d7ea4c1c10ece68ff",
+  "deleted_paths": [],
+  "runtime_changes": [
+    {
+      "path": "deploy/analyst_preview_release.py",
+      "kind": "modify",
+      "before_sha256": "50cf9e0f302cfd482d22f9d85eda18d5cea473cf1dcc8e6992d0366d382466dd",
+      "after_sha256": "0d6862fdcca0f3469536a806450137bb6665a0c2d4cb455ffcac51fe6c9830c2"
+    },
+    {
+      "path": "deploy/compose.yaml",
+      "kind": "modify",
+      "before_sha256": "16d4472dabae78ba7df5f5d0557c304c7421ff1eccb68055f9acfc067175a93d",
+      "after_sha256": "0d48d43e62d308e3b98bc923c19fa7afb759d96e0c0da94824f8069d10912ac6"
+    }
+  ],
+  "runtime_changes_count": 2,
+  "existing_roles_preserved_exactly": true,
+  "qdata_code_archive_identity_preserved": true,
+  "all_analysis_source_preserved_exactly": true,
+  "implementation_version": {
+    "format": 15,
+    "validation": 50,
+    "quote_reference": 1
+  },
+  "runtime_archive_receipt": "release-gate-and-artifact-v50-resource.json",
+  "protected_preview_approval": {
+    "owner_approval_id": "chat-analyst-preview-approved-20261002",
+    "answer": "발송 없는 미리보기 설치 승인",
+    "scope": "Same authorized Analyst/data-worker/brief lane preview. Persist only data-worker memory correction from 192MiB to 384MiB and permit/drain this same owner-installed preview. No new credentials, services, analysis changes or Slack publication.",
+    "autonomous_policy": "Unchanged; protected-file rejection retained. Owner-authorized operator installation only."
+  },
+  "proposed_preview": {
+    "publication": false,
+    "channel": "C0C2E59B1AA",
+    "owner": "U0C250E23NW",
+    "data_worker_memory_bytes": 402653184,
+    "selected_updates": [
+      "api",
+      "news-worker",
+      "dispatch",
+      "codex-runtime",
+      "briefing-data-worker"
+    ],
+    "all_other_services": "Preserve exact container inventory, credentials, channel/user lists and receipts"
+  },
+  "deployment": "not_performed",
+  "slack": "not_called"
+}

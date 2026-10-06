@@ -104,6 +104,7 @@ class StoryContextAddition(StrictModel):
 
 
 class EditorialPatch(StrictModel):
+    source_notes: list["SourceAssessment"] | None = Field(default=None, max_length=24)
     edits: list[ClaimEdit] = Field(default_factory=list, max_length=12)
     context_additions: list[StoryContextAddition] = Field(default_factory=list, max_length=4)
 
@@ -185,6 +186,9 @@ class WatchResult(Supported):
 
 
 class BriefProposal(StrictModel):
+    # A private, source-bound fact inventory precedes prose. It is not a review
+    # verdict and never appears in the reader's briefing or independent critic.
+    source_notes: list["SourceAssessment"] = Field(default_factory=list, max_length=24)
     summary: list[Claim] = Field(max_length=3)
     overview: list[Claim] = Field(default_factory=list, max_length=3)
     observations: list[MarketObservation] = Field(max_length=18)

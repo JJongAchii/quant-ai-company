@@ -132,7 +132,7 @@ def summarize(snapshot, edition, changes=None):
                     line += f" | previous_session={prior_day} | previous_close={prior_row['close']} pt"
                 lines.append(line)
                 current = day == expected
-                if edition.kind == "pm" and current:
+                if current:
                     value = {"id": "data-"+instrument, "instrument": instrument, "value": str(price), "unit": "pt",
                              "session_date": str(day), "as_of": close("KR", day, changes).isoformat(), "basis": "close",
                              "venue": "KRX", "previous_value": prior_row["close"] if prior_row else None,

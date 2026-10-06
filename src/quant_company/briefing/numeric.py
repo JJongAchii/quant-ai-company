@@ -163,7 +163,7 @@ def numbers(text):
 
 def reported_change_supported(value, unit, quotes):
     units = {"%": r"%(?!p|포인트)|percent(?!age|\s+points?)", "bp": r"bps?(?![A-Za-z])|basis points?", "pt": r"pt\b|points?|포인트"}
-    down = (r"하락|급락|내린|내렸|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|"
+    down = (r"하락|급락|감소|내린|내렸|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|"
             r"fell|fall|down|lower\b|declin\w*|lost|slipped|shed|slump\w*|(?:was|were|is|are)\s+off")
     up = r"상승|오른|올랐|높아|늘었|뛴|뛰었|뛰며|rose|ris\w*|up|higher\b|gain\w*|advanced|jumped|surged"
     for quote in quotes:
@@ -207,6 +207,18 @@ def prose_numbers_supported(text, quotes):
     Only those occurrences get signed-change checking; other amounts keep their
     original sign. Instrument attribution and claim meaning still require review.
     """
+    quotes = tuple(quotes)
+    # Translate only a Korean calendar-month literal backed by an explicit
+    # English date phrase. Never add its number to the supporting quote: doing
+    # so could accidentally support a business amount or percentage.
+    month_names = ('January', 'February', 'March', 'April', 'May', 'June', 'July',
+              'August', 'September', 'October', 'November', 'December')
+    for month, name in enumerate(month_names, 1):
+        temporal = (rf'\b(?:(?:in|by|during|until|through|before|after)\s+'
+                    rf'(?:(?:early|mid|late)[\s-]+)?|(?:early|mid|late)[\s-]+){name}\b'
+                    rf'|\b{name}\s+\d{{1,2}}\b')
+        if any(re.search(temporal, quote, re.I) for quote in quotes):
+            text = re.sub(rf'(?<!\d){month}\s*월', name, text)
     rate = r"(?<![\d.,+\-−])\d[\d,]*(?:\.\d+)?\s*%(?!\s*(?:[pP]\b|포인트))"
     label = r"[가-힣A-Za-z·\s]{0,60}"
     decline = r"\s*(?:하락(?:했습니다|했다|했고|한)|내렸(?:습니다|다)|내린)"

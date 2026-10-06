@@ -24,4 +24,8 @@ receipts/
 !/docs/project/evidence/briefing-analyst-quality-20261001/source-preservation-and-preview-manifest-*.json
 !/docs/project/evidence/briefing-analyst-quality-20261001/public-artifact-manifest.json
 !/docs/project/evidence/briefing-analyst-quality-20261001/quality-summary.json
+!/docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-*.json
 !/docs/project/evidence/briefing-analyst-quality-20261001/**/frozen-case-outcome.json
+/docs/project/evidence/briefing-analyst-quality-20261001/full-regression-v47-integrated.xml
+/docs/project/evidence/briefing-analyst-quality-20261001/context-and-preview-v49.xml
+/docs/project/evidence/briefing-analyst-quality-20261001/context-and-preview-v49-corrected.xml

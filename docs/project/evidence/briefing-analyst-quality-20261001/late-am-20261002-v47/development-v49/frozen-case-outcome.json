@@ -1,0 +1,119 @@
+{
+  "closed_at": "2026-10-02T01:50:39.280914+00:00",
+  "case": "late-am-20261002-v47",
+  "scope": "Development48 repair with lossless49 final-review transport; not a fresh50writer, on-time run, five-day acceptance, expert certification or Slack delivery.",
+  "initial_validation": 47,
+  "initial_passed_checks": 8,
+  "original_frozen_result_preserved": true,
+  "repair_validation": 48,
+  "final_review_validation": 49,
+  "outcome": "closed_failed_semantic_omissions",
+  "passed": false,
+  "passed_checks": 8,
+  "checks": {
+    "numbers": true,
+    "sources": true,
+    "timing": true,
+    "causality": true,
+    "materiality": false,
+    "counterevidence": false,
+    "transmission": true,
+    "alternatives": true,
+    "falsifiability": true,
+    "coverage": false,
+    "depth": false,
+    "readability": true
+  },
+  "verdict": "reduce",
+  "mechanical_rejected_ids": {},
+  "quote_conflicts": 0,
+  "source_documents": 20,
+  "full_original_chars": 36435,
+  "requested_additional_originals": 2,
+  "completed_calls": [
+    {
+      "receipt": "plan-receipt.json",
+      "request_id": "news-brief-eval-97f54aa30ffedfd081e12afc397c1bbe",
+      "receipt_sha256": "810d858b9a60eb7d499f6f10c1bff37cd2c3ece76201b8f13a1d96c1e98f675d",
+      "seconds": 69.257,
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 42797,
+        "cached_input_tokens": 0,
+        "output_tokens": 2060,
+        "reasoning_output_tokens": 374
+      }
+    },
+    {
+      "receipt": "write-receipt.json",
+      "request_id": "news-brief-eval-1c272b98526955f13b724ff635105ac5",
+      "receipt_sha256": "e3018ad9777a5fee517f8aacaa60048465f9525a59dae95157a73729d3c63849",
+      "seconds": 415.167,
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 37136,
+        "cached_input_tokens": 0,
+        "output_tokens": 13634,
+        "reasoning_output_tokens": 2070
+      }
+    },
+    {
+      "receipt": "review-attempt2-receipt.json",
+      "request_id": "news-brief-eval-f20afa3b6f73cd6bcf727951d1f25bd9",
+      "receipt_sha256": "2e156569d55a2f3e72a7fdc972e943cc8141c357b8e21efe6f595fd67630ca4c",
+      "seconds": 439.768,
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 43033,
+        "cached_input_tokens": 0,
+        "output_tokens": 14300,
+        "reasoning_output_tokens": 5960
+      }
+    },
+    {
+      "receipt": "development-v48/repair-receipt.json",
+      "request_id": "news-brief-eval-7499614780264a6abd1a0e470bc176a5",
+      "receipt_sha256": "169b201252a7049c0c93630b4dca8df11b79b219b9b19c59eb6ae3d876926bff",
+      "seconds": 161.181,
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 45282,
+        "cached_input_tokens": 0,
+        "output_tokens": 5068,
+        "reasoning_output_tokens": 2070
+      }
+    },
+    {
+      "receipt": "development-v49/final-review-receipt.json",
+      "request_id": "news-brief-eval-a4e15f6cc860480a2afad565c6e2bf66",
+      "receipt_sha256": "8c81a33d5823e24baed81cae5b7442a1672b37c9592b078cd6d810c26879ba72",
+      "seconds": 347.331,
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 46440,
+        "cached_input_tokens": 5888,
+        "output_tokens": 11296,
+        "reasoning_output_tokens": 2070
+      }
+    }
+  ],
+  "completed_call_count": 5,
+  "combined_completed_call_cap": 5,
+  "remaining_same_cohort_calls": 0,
+  "no_further_same_cohort_writer_repair_or_review": true,
+  "failure_categories": [
+    "operating mix and scale",
+    "production expansion and timing offsets",
+    "aggregate trade concentration",
+    "investment target capability",
+    "regional market coverage"
+  ],
+  "preserved_before_critic_candidate_chars": 7532,
+  "final_withheld_parts_chars": [
+    171,
+    72
+  ],
+  "assessment_sha256": "29b2c7d8b1fe7e90abef4751e3d90ef8f82b096719055661527f2d2cf1de14a7",
+  "slack": "not_called",
+  "expert_certification": false
+}
