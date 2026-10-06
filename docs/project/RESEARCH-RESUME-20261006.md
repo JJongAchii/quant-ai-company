@@ -354,3 +354,23 @@ immutable read만 가능하고 engineer 구현 뒤 worker qualification을 거�
 기존 test disposition의 test_plan은 미래의 검사 의무이며 통과 증거가 아니고 자동 해소되지
 않는다. revise는 구현을 막는다는 기존 gate도 그대로다. 이 안내는 어느 disposition이나
 채택 판단을 공급하지 않는다. 실제 검사나 과학 시행을 root가 만들었다고 주장하지 않는다.
+
+### 19:19~19:33 KST — 첫 실제 과학 실행 확인
+
+selection268a attempt4는 현재 반론 a9d38fd5 한 건에 정확히 응답하며 execute를 제안했고,
+동시 model-assignment 배포 후19:19 정상 적용됐다. engineer 구현98ca/task6966이 실제
+gpt-5.6-sol/max 호출로 완료됐다. 이 스레드는 다른 운영 작업의 모델 설정 변경을 하지
+않았다. 배포 후에도 registered scientific source ec와 물리3070 worker 경로는 유지됐다.
+
+정상 backend가 job `1ac851a9-f5d0-55a3-9bf8-7d98193e42c8`를 생성·예약했고, 실제
+`DESKTOP-5T00NAF`/RTX3070에서19:32:00~19:32:10 실행됐다. qualification과 evaluation
+모두 exit0/fixture_only=false이고 execution_count=1, qualification_passed=true,
+sealed_read=false다. 물리 result 영수증과 회사 수신 archive SHA가 일치한다.
+[실제 실행 대조](evidence/etf-exploration-20260930/first-scientific-execution-verified-20261006.json)에
+source·launch·sandbox·execution·upload 영수증과 회사 장부 메타데이터만 보존했다.
+성과 수치는 읽거나 보고하지 않았다. 현재 프로그램의 과학 시행은1건, 계산 사용은10초다.
+
+19:32:57에 정상 interpretation 단계가 시작됐다. 다음은 독립 인과성·의미 검토와 보고서다.
+현재 결과는 승인된 conditional_retrospective_development이며 과거 공개·수정 이력의
+한계는 남는다. 실제 실험 확인이라는 INTENT-v15는 달성했지만 프로그램 전체 완료,
+수익 개선·역사적 알파·확증·실제 체결 또는 실운용 가능성을 주장하지 않는다.
