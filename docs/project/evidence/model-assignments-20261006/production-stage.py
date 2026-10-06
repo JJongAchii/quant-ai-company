@@ -12,8 +12,8 @@ STATE = pathlib.Path("/var/lib/quant-company")
 CURRENT = pathlib.Path("/opt/quant-company/current")
 ROOT = pathlib.Path("/opt/quant-company/operator-releases/model-assignments-20261006")
 JOURNAL = STATE / "releases/model-assignments-20261006-stage.json"
-INVENTORY = """import hashlib,importlib.util,json,pathlib
-root=pathlib.Path(importlib.util.find_spec('quant_company').origin).parent
+INVENTORY = """import hashlib,json,pathlib,sys
+root=pathlib.Path(sys.argv[1])
 print(json.dumps({str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest()
 for p in sorted(root.rglob('*')) if p.is_file() and '__pycache__' not in p.parts}))"""
 
@@ -32,9 +32,9 @@ def save(record):
     temporary.replace(JOURNAL)
 
 
-def inventory(image):
+def inventory(image, package_root):
     return json.loads(run(["docker", "run", "--rm", "--network=none", "--read-only", "--memory=256m",
-                           "--entrypoint", "/app/.venv/bin/python", image, "-c", INVENTORY]))
+                           "--entrypoint", "/app/.venv/bin/python", image, "-c", INVENTORY, package_root]))
 
 
 def stage(archive, digest, commit):
@@ -64,7 +64,7 @@ def stage(archive, digest, commit):
     for plan in plans:
         base = plan["base_image"]
         before = json.loads(run(["docker", "image", "inspect", base]))[0]
-        if inventory(base) != plan["before"]:
+        if inventory(base, plan["package_root"]) != plan["before"]:
             raise RuntimeError("base_source_inventory_changed")
         overlay = ROOT / base.split(":")[1] / "overlay/quant_company"
         if {str(p.relative_to(overlay)): hashlib.sha256(p.read_bytes()).hexdigest()
@@ -79,10 +79,11 @@ def stage(archive, digest, commit):
             raise RuntimeError("operator_base_tag_changed")
         run(["docker", "build", "--network=none", "--pull=false", "--build-arg", "BASE_IMAGE=" + base_tag,
              "--build-arg", "BASE_IMAGE_ID=" + base,
+             "--build-arg", "PACKAGE_ROOT=" + plan["package_root"],
              "--build-arg", "ASSIGNMENTS_COMMIT=" + commit, "-t", tag,
              "-f", str(ROOT / "Dockerfile.model-assignments"), str(overlay.parent.parent)], timeout=900)
         built = json.loads(run(["docker", "image", "inspect", tag]))[0]
-        if inventory(built["Id"]) != plan["after"]:
+        if inventory(built["Id"], plan["package_root"]) != plan["after"]:
             raise RuntimeError("built_source_delta_mismatch")
         for field in ("Env", "Cmd", "Entrypoint", "User", "WorkingDir"):
             if built["Config"][field] != before["Config"][field]:
@@ -91,7 +92,7 @@ def stage(archive, digest, commit):
                 != before["Config"]["Labels"].get("org.opencontainers.image.revision")
                 or built["Config"]["Labels"].get("io.quant-company.model-assignments") != commit):
             raise RuntimeError("source_provenance_labels_invalid")
-        record["images"][base] = {"id": built["Id"], "tag": tag, "services": plan["services"],
+        record["images"][base] = {"id": built["Id"], "tag": tag, "services": plan["services"], "package_root": plan["package_root"],
                                   "changed": plan["changed"]}
         save(record)
         print(json.dumps({"state": "staging", "built_images": len(record["images"]),

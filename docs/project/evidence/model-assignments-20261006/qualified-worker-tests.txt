@@ -1,2 +1,2 @@
 ..............................................s                          [100%]
-46 passed, 1 skipped, 2 warnings in 21.58s
+46 passed, 1 skipped, 2 warnings in 17.04s

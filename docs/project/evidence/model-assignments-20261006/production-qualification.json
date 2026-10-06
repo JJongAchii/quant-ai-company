@@ -8,16 +8,16 @@
       "core_results": "46 passed, 1 skipped, 2 warnings in 21.77s"
     },
     "worker": {
-      "core_results": "46 passed, 1 skipped, 2 warnings in 21.58s"
+      "core_results": "46 passed, 1 skipped, 2 warnings in 17.04s"
     },
     "news": {
-      "core_results": "46 passed, 1 skipped, 2 warnings in 21.39s"
+      "core_results": "46 passed, 1 skipped, 2 warnings in 19.40s"
     },
     "maintenance": {
       "core_results": "45 passed, 2 skipped, 5 warnings in 28.15s"
     },
     "quant": {
-      "core_results": "45 passed, 2 skipped, 5 warnings in 28.19s"
+      "core_results": "45 passed, 1 skipped, 5 warnings in 19.40s"
     }
   },
   "source_sha256": {
@@ -203,5 +203,66 @@
   "briefing_calendar": "deterministic synthetic schedule; original production calendar code preserved",
   "runtime_dependencies": "preserved per-image; no lockfile or Codex CLI upgrade",
   "live_owner_Slack_command": "pending actual owner input",
-  "runtime_only_tests": "One subprocess+HTTP model catalog compatibility check passed on each runtime cohort; synthetic RPC, no inference"
+  "runtime_only_tests": "One subprocess+HTTP model catalog compatibility check passed on each runtime cohort; synthetic RPC, no inference",
+  "active_package_roots": {
+    "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7": {
+      "services": [
+        "account-gateway",
+        "api",
+        "slack-socket"
+      ],
+      "root": "/app/.venv/lib/python3.12/site-packages/quant_company"
+    },
+    "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79": {
+      "services": [
+        "quant-feed-worker"
+      ],
+      "root": "/opt/quant-code/src/quant_company"
+    },
+    "sha256:2a2aff76ac41d84fa53f0b323565303f967806e6cb797387f7384f4666ae3e9e": {
+      "services": [
+        "data-watch-worker"
+      ],
+      "root": "/app/.venv/lib/python3.12/site-packages/quant_company"
+    },
+    "sha256:955bcafa236a5baf9631447651c9ceb57f2cbdb2f0b51c43230627dcdf166f82": {
+      "services": [
+        "maintenance"
+      ],
+      "root": "/app/.venv/lib/python3.12/site-packages/quant_company"
+    },
+    "sha256:a4bc2f4e24fb143db994b8b201a538dc3acce4e651e9bfbdc46550ea6be5f239": {
+      "services": [
+        "codex-runtime"
+      ],
+      "root": "/app/.venv/lib/python3.12/site-packages/quant_company"
+    },
+    "sha256:c983c63235365a43ae1afa8eaba37bd7708e49b43afc2089aa824bad242f02e7": {
+      "services": [
+        "quant-codex-runtime"
+      ],
+      "root": "/opt/quant-code/src/quant_company"
+    },
+    "sha256:cd08cf471a5854c927bdb3d9e383ad61d07d9edb8b81adf282f6c371d2ab64ea": {
+      "services": [
+        "briefing-data-worker",
+        "dispatch",
+        "news-worker"
+      ],
+      "root": "/opt/company/src/quant_company"
+    },
+    "sha256:db3c79878edf68a0115c8f0b893d41a92fa78e91f1a59bf76f92b60c8a69a589": {
+      "services": [
+        "housing-feed-worker"
+      ],
+      "root": "/app/.venv/lib/python3.12/site-packages/quant_company"
+    },
+    "sha256:edb93937acda68bfe7ef17307eef3832b7f775665fddd69e98658048741848fb": {
+      "services": [
+        "worker"
+      ],
+      "root": "/app/.venv/lib/python3.12/site-packages/quant_company"
+    }
+  },
+  "current_worker_preserved": "director-context-87e774fbb5caafb6cf56bc14af678699ccacea10, including complete prompt context budget"
 }

@@ -35,9 +35,38 @@
  
      @app.post("/v1/research/jobs/{job_id}/revalidate", dependencies=[Depends(operator)])
      def research_revalidate(job_id: str, value: ResearchRevalidation):
+--- a/src/quant_company/briefing/store.py
++++ b/src/quant_company/briefing/store.py
+@@ -127,7 +127,9 @@
+         bundle["analyst_procedure"] = pack(BRIEFER)
+         bundle["quote_reference_version"] = QUOTE_REFERENCE_VERSION
+         bundle["source_notes_required"] = self.company.settings.briefing_source_notes_enabled
+-        role = self.company.role(BRIEFER)
++        from ..model_policy import effective_role
++
++        role = effective_role(self.company, conn, BRIEFER)
+         bundle["professional_feedback"] = as_json(coaching(conn, row["owner_user"], BRIEFER,
+                                                           role.model, role.reasoning_effort))
+         data = row["market_data"] or {"documents": [], "observations": [], "contexts": [],
+@@ -270,9 +272,14 @@
+             cap = effective_limits(conn, self.company)["company"]
+             if cap is not None and used >= cap:
+                 return {"state": "defer", "reason": "daily_limit"}
+-            role = self.company.role(BRIEFER)
++            from ..model_policy import effective_role
++
++            role = effective_role(self.company, conn, BRIEFER)
+             request = ProviderRequest(request_id=identity, model=role.model, reasoning_effort=role.reasoning_effort,
+                                       prompt=model_prompt, web_search=phase == "search")
++            from ..model_policy import bind
++
++            request = bind(self.company, conn, request, BRIEFER)
+             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
+             conn.execute("INSERT INTO brief_calls(id,edition_id,phase,request,next_at) VALUES(%s,%s,%s,%s,%s)",
+                          (identity, row["id"], phase, Jsonb(request.model_dump()), at))
 --- a/src/quant_company/company.py
 +++ b/src/quant_company/company.py
-@@ -92,10 +92,20 @@
+@@ -94,10 +94,20 @@
  
      def runtime_context(self, conn=None) -> dict:
          """Allowlisted configuration facts, never a dump of settings or credentials."""
@@ -58,7 +87,7 @@
  
          return {
              "snapshot_at": now().isoformat(),
-@@ -107,13 +117,13 @@
+@@ -109,13 +119,13 @@
                      ["id", "name", "active", "model", "reasoning_effort", "version", "tools", "can_delegate_to"]},
                   "specialist_pack_version": pack(role.id)["version"],
                   "specialist_pack_digest": pack(role.id)["digest"]}
@@ -77,7 +106,7 @@
                  "independent_explanation_reviewer": {
                      "model": REVIEW_MODEL, "reasoning_effort": REVIEW_EFFORT,
                      "enabled": self.settings.company_staff_review_enabled,
-@@ -150,10 +160,10 @@
+@@ -155,10 +165,10 @@
                               'follow-up is limited to the approved search scope. Version 2 supports provisioned domestic '
                               'strategy and scientific evaluation profiles; unavailable profiles cannot execute.',
                      "internal_staff": [
@@ -92,7 +121,7 @@
                      ],
                  },
                  "news_reporting": {"enabled": self.settings.company_news_enabled,
-@@ -227,7 +237,7 @@
+@@ -237,7 +247,7 @@
                                 "tool": "data_watch_status {} reads recorded checks without scanning the lake; "
                                         "available to data in its configured channel. Unknown freshness is not healthy."},
                  "external_web_search": self.settings.company_web_enabled and any(
@@ -101,7 +130,7 @@
                  "research_worker_submission": self.settings.company_research_enabled,
                  "strategy_code_execution": self.settings.company_autonomous_research_enabled,
                  "live_trading": False,
-@@ -334,6 +344,7 @@
+@@ -344,6 +354,7 @@
                 project_id: str | None = None, channel: str | None = None, thread_ts: str | None = None,
                 revise: bool = False, status_only: bool = False, daily_limit_command: dict | None = None,
                 account_command: dict | None = None, account_help: bool = False,
@@ -109,7 +138,7 @@
                 interpret: bool = False, control_action: str | None = None,
                 approval_context: dict | None = None) -> dict:
          self.role(agent)
-@@ -361,6 +372,15 @@
+@@ -371,6 +382,15 @@
              status_only = True
          digest = fingerprint([text, owner, agent, project_id, channel, thread_ts, revise, status_only])
          prior_ingress_digest = digest
@@ -125,7 +154,7 @@
          if account_command is not None or account_help:
              from .accounts import parse_command
  
-@@ -446,6 +466,10 @@
+@@ -456,6 +476,10 @@
                            "새 질문은 새 스레드에서 요청해 주세요. 이 스레드의 현황은 '상태'로 확인할 수 있습니다.")
                  conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (notice, task["id"]))
                  self._message(conn, project, task["id"], agent, "status", notice)
@@ -136,7 +165,7 @@
              elif account_command is not None:
                  from .accounts import enqueue
  
-@@ -557,9 +581,11 @@
+@@ -567,9 +591,11 @@
              conn.execute("SELECT agent FROM tasks WHERE id=%s", (task["parent_id"],)).fetchone()["agent"]
              if task["parent_id"] else None
          )
@@ -150,10 +179,10 @@
          if task["agent"] == "director" and task["kind"] == "answer":
              from .research.programs import public_progress
  
-@@ -692,6 +718,11 @@
+@@ -704,6 +730,11 @@
+                     prompt = routing_prompt(conn, task, project)
                  else:
                      role = self.role(task["agent"])
-                     context = self._context(conn, task, project)
 +                    runtime = self.runtime_context(conn)
 +                    if self.settings.model_assignments_enabled:
 +                        from .model_policy import selection
@@ -162,16 +191,19 @@
                      from .staff.packs import employee_pack
  
                      prompt = (
-@@ -724,11 +755,14 @@
+@@ -736,7 +767,7 @@
                          f"Allowed tools: {role.tools}\n"
                          + employee_pack(role.id) +
                          f"Remaining task turns: {self.settings.company_max_task_turns - task['turn_count']}\n"
 -                        "RUNTIME CONFIG JSON:\n" + json.dumps(self.runtime_context(conn), ensure_ascii=False) + "\n"
 +                        "RUNTIME CONFIG JSON:\n" + json.dumps(runtime, ensure_ascii=False) + "\n"
-                         "TASK DATA JSON:\n" + json.dumps(context, ensure_ascii=False)
+                         "TASK DATA JSON:\n"
                      )
+                     # Role instructions and runtime facts consume the same provider budget
+@@ -749,6 +780,9 @@
                  request = ProviderRequest(request_id=turn_id, model=role.model,
-                                           reasoning_effort=role.reasoning_effort, prompt=prompt, session=session)
+                                           reasoning_effort=role.reasoning_effort, prompt=prompt, session=session,
+                                           output_contract=output_contract)
 +                from .model_policy import bind
 +
 +                request = bind(self, conn, request, task["agent"], task=task)
@@ -188,7 +220,7 @@
      model_accounts_owner_user: str = ""
      model_accounts_channel_id: str = ""
      company_lake_uri: str = Field(default="", pattern=r"^(|s3://[a-z0-9][a-z0-9.-]+/[A-Za-z0-9_/-]+)$")
-@@ -95,6 +96,8 @@
+@@ -109,6 +110,8 @@
  
      @model_validator(mode="after")
      def explicit_simulation(self) -> "Settings":
@@ -206,7 +238,7 @@
 +            conn.execute(files("quant_company").joinpath("model_policy_schema.sql").read_text())
              conn.execute(files("quant_company.staff").joinpath("schema.sql").read_text())
              conn.execute(files("quant_company.news").joinpath("schema.sql").read_text())
-             conn.execute(files("quant_company.tech_feed").joinpath("schema.sql").read_text())
+             conn.execute(files("quant_company.briefing").joinpath("schema.sql").read_text())
 --- a/src/quant_company/maintenance/store.py
 +++ b/src/quant_company/maintenance/store.py
 @@ -342,12 +342,19 @@
@@ -581,7 +613,7 @@
 +);
 --- a/src/quant_company/news/discovery.py
 +++ b/src/quant_company/news/discovery.py
-@@ -87,6 +87,9 @@
+@@ -91,6 +91,9 @@
              cap = effective_limits(conn, self.company)["company"]
              if cap is not None and used >= cap:
                  return {"state": "defer"}
@@ -593,7 +625,7 @@
              conn.execute("""INSERT INTO news_searches(id,topic,arguments,request,policy_digest)
 --- a/src/quant_company/news/screening.py
 +++ b/src/quant_company/news/screening.py
-@@ -84,6 +84,9 @@
+@@ -88,6 +88,9 @@
              cap = effective_limits(conn, self.company)["company"]
              if cap is not None and used >= cap:
                  return {"state": "defer"}
@@ -605,7 +637,7 @@
                           (request.request_id, Jsonb(request.model_dump()), Jsonb(bundle), policy))
 --- a/src/quant_company/news/store.py
 +++ b/src/quant_company/news/store.py
-@@ -246,6 +246,9 @@
+@@ -252,6 +252,9 @@
              cap = effective_limits(conn, self.company)["company"]
              if cap is not None and used >= cap:
                  return {"state": "defer"}
@@ -850,7 +882,7 @@
                      "expected economic effect and falsification. Respond to any rejected proposal's criticism. "
 --- a/src/quant_company/slack.py
 +++ b/src/quant_company/slack.py
-@@ -87,9 +87,14 @@
+@@ -88,9 +88,14 @@
          if not text.strip() or not timestamp:
              return {"ok": True, "ignored": True}
          from .accounts import parse_command as parse_account_command
@@ -865,7 +897,7 @@
          account_channel = channel == self.settings.model_accounts_channel_id
          if account_channel:
              if role != "director" or user != self.settings.model_accounts_owner_user:
-@@ -143,6 +148,11 @@
+@@ -154,6 +159,11 @@
                              "app_id": payload["api_app_id"], "owner": user, "channel": channel,
                              "thread_ts": thread_ts, "event_ts": timestamp,
                              "provider_event_id": payload.get("event_id"), "original_text": original_text}

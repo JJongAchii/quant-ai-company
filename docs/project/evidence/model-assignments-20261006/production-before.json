@@ -1,8 +1,30 @@
 {
-  "at": "2026-10-06T07:56:23.774089+00:00",
+  "at": "2026-10-06T08:33:14.180818+00:00",
   "current": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264",
   "runtime_env_sha256": "dea098958d9c1d824e1bbd885184755727af15141625049a459402648d48c91c",
   "services": {
+    "worker": {
+      "id": "e1f2312f0eba510998ecd8bc66f286326427352bf29578a0df799d86f3d9d144",
+      "image": "sha256:edb93937acda68bfe7ef17307eef3832b7f775665fddd69e98658048741848fb",
+      "tag": "quant-company-autonomous:director-context-87e774fbb5caafb6cf56bc14af678699ccacea10",
+      "revision": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+      "compose_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json,/var/lib/quant-company/config/native-output-5c44ad07273adc780a56a47d7d35114fd0dc32c8-02.compose.json,/var/lib/quant-company/config/data-watch-readable-v6-8508954320877144e8f24cb52c8353c0e18f514a-api.compose.json,/var/lib/quant-company/config/scoped-data-86aea8cdf03b5543666813c97689acb1e8158a6d.compose.json,/var/lib/quant-company/config/held-audit-ec1fbeb29a49420a367f06af596283e6ead4ab72.compose.json,/var/lib/quant-company/config/director-context-87e774fbb5caafb6cf56bc14af678699ccacea10.compose.json",
+      "running": true,
+      "oom": false,
+      "health": null,
+      "restarts": 0,
+      "memory_limit": 402653184,
+      "model_assignments_overlay": null,
+      "config": {
+        "COMPANY_CODE_COMMIT": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
+        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
+        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\",\"C0C2B9EUEGM\",\"C0C2J1SSX09\",\"C0C2KPB76KE\",\"C0C3K8ZB9PB\",\"C0C3Q7BFQCE\",\"C0C3Q7H30HL\",\"C0C3C6ELJ0P\"]",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080"
+      }
+    },
     "maintenance": {
       "id": "ff999c06352a6f374822d15db9d49884af0cb49d5b4f02e24fa6b53d978c7848",
       "image": "sha256:955bcafa236a5baf9631447651c9ceb57f2cbdb2f0b51c43230627dcdf166f82",
@@ -87,28 +109,6 @@
         "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
         "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
         "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\", \"C0C2B9EUEGM\", \"C0C2J1SSX09\", \"C0C2KPB76KE\", \"C0C3K8ZB9PB\", \"C0C3Q7BFQCE\", \"C0C3Q7H30HL\", \"C0C3C6ELJ0P\", \"C0C2E59B1AA\"]"
-      }
-    },
-    "worker": {
-      "id": "9318351fe35099796fd0324295b4038f327844cf9b516204d4bee7a79727f75f",
-      "image": "sha256:6edd5c056625e66cd6a26da6b33a5451372b301f2c9a71894e5d20506de8aba5",
-      "tag": "quant-company-autonomous:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
-      "revision": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
-      "compose_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json,/var/lib/quant-company/config/native-output-5c44ad07273adc780a56a47d7d35114fd0dc32c8-02.compose.json,/var/lib/quant-company/config/data-watch-readable-v6-8508954320877144e8f24cb52c8353c0e18f514a-api.compose.json,/var/lib/quant-company/config/scoped-data-86aea8cdf03b5543666813c97689acb1e8158a6d.compose.json,/var/lib/quant-company/config/held-audit-ec1fbeb29a49420a367f06af596283e6ead4ab72.compose.json",
-      "running": true,
-      "oom": false,
-      "health": null,
-      "restarts": 0,
-      "memory_limit": 402653184,
-      "model_assignments_overlay": null,
-      "config": {
-        "COMPANY_CODE_COMMIT": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
-        "MODEL_ACCOUNTS_ENABLED": "true",
-        "MODEL_ACCOUNTS_OWNER_USER": "U0C250E23NW",
-        "MODEL_ACCOUNTS_CHANNEL_ID": "C0C3C6ELJ0P",
-        "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
-        "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\",\"C0C2B9EUEGM\",\"C0C2J1SSX09\",\"C0C2KPB76KE\",\"C0C3K8ZB9PB\",\"C0C3Q7BFQCE\",\"C0C3Q7H30HL\",\"C0C3C6ELJ0P\"]",
-        "MODEL_RUNTIME_URL": "http://codex-runtime:8080"
       }
     },
     "account-gateway": {
@@ -305,16 +305,8 @@
   "database": {
     "turns": [
       {
-        "status": "completed",
-        "count": 7043
-      },
-      {
         "status": "stale",
         "count": 4
-      },
-      {
-        "status": "queued",
-        "count": 2
       },
       {
         "status": "blocked",
@@ -323,6 +315,14 @@
       {
         "status": "running",
         "count": 1
+      },
+      {
+        "status": "waiting",
+        "count": 1
+      },
+      {
+        "status": "completed",
+        "count": 7087
       }
     ],
     "tasks": [
@@ -332,11 +332,7 @@
       },
       {
         "status": "completed",
-        "count": 332
-      },
-      {
-        "status": "pending",
-        "count": 2
+        "count": 335
       },
       {
         "status": "blocked",
@@ -344,7 +340,7 @@
       },
       {
         "status": "running",
-        "count": 1
+        "count": 2
       }
     ],
     "outbox": [
@@ -354,11 +350,11 @@
       },
       {
         "status": "delivered",
-        "count": 3211
+        "count": 3231
       },
       {
         "status": "stale",
-        "count": 201
+        "count": 202
       }
     ],
     "model_account_calls": [
@@ -376,7 +372,7 @@
       },
       {
         "state": "busy",
-        "count": 2
+        "count": 3
       },
       {
         "state": "unavailable",
@@ -392,7 +388,7 @@
       },
       {
         "state": "completed",
-        "count": 8200
+        "count": 8254
       }
     ],
     "maintenance_jobs": [
@@ -424,31 +420,31 @@
     "quant_feed_calls": [
       {
         "state": "blocked",
-        "count": 138
+        "count": 139
       },
       {
         "state": "completed",
-        "count": 536
+        "count": 537
       }
     ],
     "news_reviews": [
       {
         "state": "blocked",
-        "count": 100
+        "count": 101
       },
       {
         "state": "completed",
-        "count": 785
+        "count": 788
       }
     ],
     "account_policy": {
       "profile": "primary",
       "revision": 2
     },
-    "frozen_request_count": 7242
+    "frozen_request_count": 7287
   },
   "timer": "active",
   "release_service": "inactive",
   "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/root        77G   63G   14G  82% /\n",
-  "memory": "               total        used        free      shared  buff/cache   available\nMem:            3832        2133         270          75        1807        1698\nSwap:              0           0           0\n"
+  "memory": "               total        used        free      shared  buff/cache   available\nMem:            3832        2113         349          75        1749        1718\nSwap:              0           0           0\n"
 }

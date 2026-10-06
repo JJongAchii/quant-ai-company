@@ -9,9 +9,11 @@ import io
 import json
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import tarfile
+import threading
 import time
 from types import SimpleNamespace
 
@@ -95,12 +97,15 @@ def lanes_busy(rows):
 
 
 def requests():
-    tables = sql("SELECT json_agg(table_name) FROM information_schema.columns "
-                 "WHERE table_schema='public' AND column_name='request' AND data_type='jsonb'")
+    tables = sql("SELECT json_agg(json_build_object('table',table_name,'column',column_name)) FROM information_schema.columns "
+                 "WHERE table_schema='public' AND column_name IN ('request','provider_request') AND data_type='jsonb'")
     result = {}
-    for table in tables:
-        rows = sql(f"SELECT coalesce(json_agg(s),'[]') FROM (SELECT id::text,md5(request::text) AS digest "
-                   f"FROM {table} WHERE request IS NOT NULL ORDER BY id)s")
+    for item in tables:
+        table, column = item["table"], item["column"]
+        if not all(re.fullmatch(r"[a-z][a-z0-9_]*", name) for name in (table, column)):
+            raise RuntimeError("unrecognized_request_table")
+        rows = sql(f"SELECT coalesce(json_agg(s),'[]') FROM (SELECT id::text,md5({column}::text) AS digest "
+                   f"FROM {table} WHERE {column} IS NOT NULL ORDER BY id)s")
         result[table] = {r["id"]: r["digest"] for r in rows}
     return result
 
@@ -129,11 +134,26 @@ def cutover():
     atomic(STATE / "releases/model-assignments-20261006.env", oldenv)
     save(record)
     paused_timer = False
+    pause_stop = threading.Event()
+    pause_errors = []
+    pause_thread = None
+
+    def hold_pause():
+        while not pause_stop.wait(15):
+            try:
+                sql("WITH changed AS (UPDATE runtime_control SET paused_until=now()+interval '60 seconds',"
+                    "reason='deployment_model_assignments' WHERE id=1 RETURNING id) SELECT json_agg(id) FROM changed")
+            except Exception as exc:
+                pause_errors.append(type(exc).__name__)
+                return
+
     try:
         run(["systemctl", "stop", TIMER])
         paused_timer = True
-        sql("WITH changed AS (UPDATE runtime_control SET paused_until=now()+interval '45 minutes',"
+        sql("WITH changed AS (UPDATE runtime_control SET paused_until=now()+interval '60 seconds',"
             "reason='deployment_model_assignments' WHERE id=1 RETURNING id) SELECT json_agg(id) FROM changed")
+        pause_thread = threading.Thread(target=hold_pause, daemon=True)
+        pause_thread.start()
         run(["docker", "stop", "--time", "360", "quant-company-slack-socket-1"], timeout=400)
         deadline = time.monotonic() + 1200
         while busy := lanes_busy(before):
@@ -200,6 +220,8 @@ def cutover():
             n for n in targets if n not in {"codex-runtime", "quant-codex-runtime", "api", "account-gateway", "slack-socket"}]
         order.append("slack-socket")
         for name in order:
+            if pause_errors:
+                raise RuntimeError("deployment_pause_heartbeat_failed")
             old = before[name]
             image = stage["images"][old["Image"]]
             env = dict(item.split("=", 1) for item in old["Config"]["Env"])
@@ -232,6 +254,10 @@ def cutover():
         final = inspect(before)
         if any(final[n]["Id"] != before[n]["Id"] for n in ("postgres", "claude-runtime")):
             raise RuntimeError("unrelated_database_or_reviewer_replaced")
+        pause_stop.set()
+        pause_thread.join(timeout=60)
+        if pause_thread.is_alive() or pause_errors:
+            raise RuntimeError("deployment_pause_heartbeat_unconfirmed")
         sql("WITH changed AS (UPDATE runtime_control SET paused_until="
             + ("'" + oldpause["paused_until"] + "'::timestamptz" if oldpause["paused_until"] else "NULL")
             + ",reason=" + ("'" + oldpause["reason"].replace("'", "''") + "'" if oldpause["reason"] else "NULL")
@@ -248,6 +274,9 @@ def cutover():
         print(json.dumps({"state": record["state"], "error": record["error"], "replaced": record["replaced"]}), flush=True)
         raise
     finally:
+        pause_stop.set()
+        if pause_thread:
+            pause_thread.join(timeout=60)
         if paused_timer:
             run(["systemctl", "start", TIMER])
 

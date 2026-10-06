@@ -1,0 +1,15 @@
+{
+  "activation_performed": false,
+  "events": [
+    {
+      "attempt": 1,
+      "cause": "BuildKit interpreted a bare sha256 image ID as a registry repository",
+      "repair": "Task-owned local base tag checked against exact image ID; no service changes"
+    },
+    {
+      "attempt": 2,
+      "cause": "Inventory gate found the installed package differed from the active Quant source selected by PYTHONPATH",
+      "repair": "Read actual import roots on every running service; merge and inspect only those source roots; no service changes"
+    }
+  ]
+}

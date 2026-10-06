@@ -16,6 +16,7 @@ RUNTIME = {"providers/codex_runtime.py", "providers/model_catalog.py"}
 MODEL_SERVICES = {"worker", "news-worker", "quant-feed-worker", "maintenance",
                   "api", "slack-socket", "account-gateway"}
 baseline = json.loads((ROOT / "baseline.json").read_text())
+active_roots = json.loads((ROOT / "active-roots.json").read_text())
 feature = subprocess.check_output(["git", "diff", "--name-only", BASE, "HEAD", "--", "src/"], text=True).splitlines()
 
 
@@ -28,6 +29,13 @@ def resolve(relative, block):
     if relative == "company.py" and "reasoning_effort=role.reasoning_effort, prompt=prompt" in installed:
         return installed + ("                from .model_policy import bind\n\n"
                             "                request = bind(self, conn, request, task[\"agent\"], task=task)\n")
+    if relative == "company.py" and not installed.strip() and "runtime[\"current_task_model\"]" in incoming:
+        # The latest Director context repair computes task evidence after the role
+        # prompt to respect the complete provider budget. Keep that late computation.
+        return incoming.replace("                    context = self._context(conn, task, project)\n", "")
+    if relative == "company.py" and '"RUNTIME CONFIG JSON:' in installed:
+        return installed.replace("json.dumps(self.runtime_context(conn), ensure_ascii=False)",
+                                 "json.dumps(runtime, ensure_ascii=False)")
     if relative == "quant_feed/store.py" and "prompt=" in installed:
         return installed + ("            from ..model_policy import bind\n\n"
                             "            request = bind(self.company, conn, request, \"quant_scout\")\n")
@@ -111,7 +119,10 @@ for base in sorted(ROOT.iterdir()):
         target = overlay / row["file"]
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(destination / row["file"], target)
-    plans.append({"base_image": "sha256:" + base.name, "services": services, "changed": changed,
+    roots = sorted(set(active_roots["sha256:" + base.name]["roots"]))
+    if len(roots) != 1:
+        raise RuntimeError("distinct_active_package_roots_need_separate_images")
+    plans.append({"base_image": "sha256:" + base.name, "package_root": roots[0], "services": services, "changed": changed,
                   "reviewed_conflicts": reviewed_conflicts, "before": original, "after": candidate})
 OUT.mkdir(exist_ok=True)
 (OUT / "plan.json").write_text(json.dumps(plans, indent=2) + "\n")

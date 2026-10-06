@@ -72,12 +72,22 @@ print(json.dumps(result, indent=2))
 if len(sys.argv) > 1 and sys.argv[1] == "snapshot-source":
     root = pathlib.Path("/tmp/model-assignments-source-20261006")
     root.mkdir(mode=0o700, exist_ok=False)
+    active_roots = {}
     for image in {row["Image"] for row in rows if row["Name"] not in
                   ("/quant-company-postgres-1", "/quant-company-claude-runtime-1")}:
         row = next(r for r in rows if r["Image"] == image)
         destination = root / image.split(":")[1]
         destination.mkdir()
-        run(["docker", "cp", row["Id"] + ":/app/.venv/lib/python3.12/site-packages/quant_company",
+        package_root = run(["docker", "exec", row["Id"], "/app/.venv/bin/python", "-c",
+                            "import importlib.util,pathlib;print(pathlib.Path(importlib.util.find_spec('quant_company').origin).parent)"]).strip()
+        run(["docker", "cp", row["Id"] + ":" + package_root,
              str(destination / "quant_company")])
+        active_roots[image] = {"roots": [package_root],
+                               "services": [r["Name"].removeprefix("/quant-company-").removesuffix("-1")
+                                            for r in rows if r["Image"] == image],
+                               "files": {str(p.relative_to(destination / "quant_company")): hashlib.sha256(p.read_bytes()).hexdigest()
+                                         for p in (destination / "quant_company").rglob("*")
+                                         if p.is_file() and "__pycache__" not in p.parts}}
     (root / "baseline.json").write_text(json.dumps(result, indent=2))
+    (root / "active-roots.json").write_text(json.dumps(active_roots, indent=2))
     run(["tar", "czf", str(root) + ".tar.gz", "-C", str(root), "."])
