@@ -134,6 +134,10 @@
     "revisedChallengePreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-revised-challenge-preparation-applied-20261006.json",
     "revisedSelectionPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-revised-selection-preparation-applied-20261006.json",
     "selectionRetryPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-selection-retry-applied-20261006.json",
-    "secondRevisedProposalPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-second-revised-proposal-applied-20261006.json"
+    "secondRevisedProposalPreparationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-second-revised-proposal-applied-20261006.json",
+    "concurrentDirectorContextReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-concurrent-director-context-readback-20261006.json",
+    "concurrentCompanyWorkerImage": "quant-company-autonomous:director-context-87e774fbb5caafb6cf56bc14af678699ccacea10",
+    "workerRegisteredScientificCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+    "criticalResearchSourceHashesRemainEc": true
   }
 }
