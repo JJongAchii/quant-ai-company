@@ -51,7 +51,7 @@ async def main():
     config = RunnerConfig(codex_home=Path('/state/auth'), backup_codex_home=Path('/state/backup-auth'),
                           jobs_dir=jobs, timeout_seconds=180)
     capture = Capture()
-    runner = CodexRunner(config, process=capture)
+    runner = CodexRunner(config, process_runner=capture)
     if case == 'legacy_seed':
         request, expected = seed(), MARKER
     elif case == 'legacy_resume':
