@@ -6,5 +6,13 @@
   "source_log_sha256": "3c574f7996e5f0c98ee1ea4dfe2722a4cb0c61df7c393769bb0ba77b462e3189",
   "lint": "uv run ruff check . passed",
   "external_slack_messages_sent": 0,
-  "actual_model_inference_calls": 0
+  "actual_model_inference_calls": 0,
+  "implementation_commit": "04a465865cf18dbc3cf2fb1aaa4191f6ca7e55ac",
+  "cohort_result": "127 passed, 2 dependency deprecation warnings in 39.09s",
+  "cohort_log_sha256": "d77acbe5ddd47566cdc1546df5f71494815f82db58fc494c3c511656218dddf4",
+  "cohort_fixture_adjustment": "The fake Codex version imports the unchanged deployed API runner constant instead of the new main manifest. Production provider/runtime files remain unchanged.",
+  "ci_run": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37462435178",
+  "ci_source_commit": "04a465865cf18dbc3cf2fb1aaa4191f6ca7e55ac",
+  "ci_service_result": "1551 passed, 47 skipped, 1 deselected, 2 dependency deprecation warnings in 422.32s",
+  "ci_linux_empty_auth_protocol": "9 passed, 2 warnings; no actual model inference"
 }
