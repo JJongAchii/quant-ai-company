@@ -1,0 +1,133 @@
+{
+  "at": "2026-10-06T11:48:46.139739+00:00",
+  "scope": "Prospective bounded observation with one scoped correction; same twelve-check content and publication gates.",
+  "previous_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+  "candidate_commit": "cf679577ea342dbd25b3fb3d342b897de579dc9b",
+  "runtime_changes": [
+    {
+      "path": "deploy/.env.example",
+      "kind": "modify",
+      "before_sha256": "a01218106d586f6a90541f53de1e8bd76182760ba7f61e973ae50280c03fbdf6",
+      "after_sha256": "0bbfe84fbb554bb5b50a0c13c368ac659fdb09137bb6cfc0c04b57ea2771bd6a"
+    },
+    {
+      "path": "deploy/analyst_preview_release.py",
+      "kind": "modify",
+      "before_sha256": "088dd2424f4c04a052416139bd1702fc04ebd601d829905bdf07b146dd92def1",
+      "after_sha256": "89c63d1d35c27863275db3747b434a786c6f54f14f9ff11270287534a8ef2b8f"
+    },
+    {
+      "path": "deploy/compose.yaml",
+      "kind": "modify",
+      "before_sha256": "b511a2e8da4dd0213c13a91fad4f435a3a732b17fbc895de5e392bcb6a7c9951",
+      "after_sha256": "ffedc4afb0fd11aaf97b108942894fd8560830bfc88070054cdf7c63b64a3c17"
+    },
+    {
+      "path": "src/quant_company/briefing/contracts.py",
+      "kind": "modify",
+      "before_sha256": "b679d9b3c64a0ac6ccc66b9f21445485d9c7a935bb4bb990e9cd5c9ac09d749f",
+      "after_sha256": "1db07f35d54de8506597edee7adaa0c101fe86978106e29905139a30ec89e5d4"
+    },
+    {
+      "path": "src/quant_company/briefing/editor.py",
+      "kind": "modify",
+      "before_sha256": "cba8e0cc8891d9535c3e9d5cf6ca37618340e108833a6d974438589e1b55192d",
+      "after_sha256": "eaf91a69c9af9d9d63c4afea5ee0d97cbe8609f094fb7dd656637c06d105725d"
+    },
+    {
+      "path": "src/quant_company/briefing/numeric.py",
+      "kind": "modify",
+      "before_sha256": "2cc1212a14fd759f3fd632da0aa4ccf03897c0d65da339513a578e5c793c5149",
+      "after_sha256": "4ca6705a54a2145f95cb778642cfc722038a73ebc88c959108b47d4b1dcfb6f8"
+    },
+    {
+      "path": "src/quant_company/briefing/planning.py",
+      "kind": "modify",
+      "before_sha256": "02fc6fadfe0ada74463cb165fe0e02563067fc6c09c40b2b09f78b5f23579b30",
+      "after_sha256": "f55a01b2c612d6f95b2379d6fbad121f0b0d4e034530dfea0aecc0d00c1a0b64"
+    },
+    {
+      "path": "src/quant_company/briefing/qualification.py",
+      "kind": "modify",
+      "before_sha256": "0bdc5f43f5fdd233ea8dd5ab9dca44dc679d3e904cf406bfbb84e216409b65a3",
+      "after_sha256": "95c5c89717d31b582c0166f15b3f1290edcbfa00145220d099ebb21b44d03ba3"
+    },
+    {
+      "path": "src/quant_company/briefing/schedule.py",
+      "kind": "modify",
+      "before_sha256": "8fadb041f8b005bd8536f7d2fa8a9ddbecf6da9bd15ebec6e12513a2c1e0d830",
+      "after_sha256": "e967aee8dc9e3c046cd0cb14c1ac2efdaa62609f724546586c5a579f43761675"
+    },
+    {
+      "path": "src/quant_company/briefing/store.py",
+      "kind": "modify",
+      "before_sha256": "0ca1a138664ae68d3e41399762ae9266cf74e864f55d658ed15f2f08ec809dd2",
+      "after_sha256": "abb2effe3bff81c6c9fdd39712f14eaa8e51ce905ec9904014af9d0904807a93"
+    },
+    {
+      "path": "src/quant_company/config.py",
+      "kind": "modify",
+      "before_sha256": "8c9d779390d392d66db0f90cc676158370315a4b4f9b56da3ffb46157e70e062",
+      "after_sha256": "4bb37e070ab37edae69c1ad3bdfcacf20b2cc3e8df35716dd0891d78c67d299d"
+    }
+  ],
+  "runtime_changes_count": 11,
+  "deleted_paths": [],
+  "preserve_api": true,
+  "preserve_codex_runtime": true,
+  "implementation_version": {
+    "format": 17,
+    "validation": 58,
+    "schedule": 4,
+    "quote_reference": 1
+  },
+  "protected_preview_approval": {
+    "owner_approval_id": "chat-analyst-preview-approved-20261002",
+    "answer": "\ubc1c\uc1a1 \uc5c6\ub294 \ubbf8\ub9ac\ubcf4\uae30 \uc124\uce58 \uc2b9\uc778",
+    "scope": "Analyst/briefing lane private preview; preserve credentials, other roles, company/research/provider and all receipts."
+  },
+  "proposed_preview": {
+    "publication": false,
+    "channel": "C0C2E59B1AA",
+    "owner": "U0C250E23NW",
+    "source_notes": true,
+    "max_revisions": 1,
+    "evaluation_edition_id": "b72483f9-d52b-51d6-92ba-25625a9cb50e",
+    "evaluation_edition_ids": [
+      "02cfddb9-e401-5634-af9c-b124a6f54cf8",
+      "05a23b7f-dfb9-51d9-bda0-9747f482e75c",
+      "3042a447-de8b-55fe-9a56-72014df5c2b9",
+      "4d933b4e-3814-54bf-943a-48029aa76124",
+      "56e7ca37-1579-559a-955a-0d76e38de330",
+      "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb",
+      "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "9473536f-12b8-552b-ba48-6beb1d198577",
+      "b463d3df-94d9-5a93-be1d-4454dadbf098",
+      "b72483f9-d52b-51d6-92ba-25625a9cb50e",
+      "cfc0bd9a-c815-5ce0-a29f-4f411c5f9383",
+      "f8004fe8-789b-5df2-8dfa-a06f11903d91"
+    ],
+    "data_worker_memory_bytes": 402653184,
+    "selected_updates": [
+      "news-worker",
+      "dispatch",
+      "briefing-data-worker"
+    ]
+  },
+  "source_archive_scope": [
+    "src",
+    "deploy",
+    "pyproject.toml",
+    "uv.lock",
+    "README.md"
+  ],
+  "source_archive_prefix": "quant-company/",
+  "frozen_content_policy": "prospective-operating-20261007-20261014-validation58-policy.json",
+  "frozen_content_policy_sha256": "cff518c880a25b97467a3e456426407750a32b6facfcc88a586cdb5e2d3a6bd8",
+  "installed_company_and_research_source_preserved_exactly": true,
+  "existing_non_analyst_roles_preserved_exactly": true,
+  "qdata_code_archive_identity_preserved": true,
+  "editorial_data_reader_change": false,
+  "deployment": "not_performed",
+  "slack": "not_called"
+}
