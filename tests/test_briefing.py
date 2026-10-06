@@ -187,7 +187,7 @@ def test_calendar_window_and_missing_watch_result_are_visible():
     b["morning_watchpoints"] = [{"id": "morning", "text": "아침 원문을 바꾸지 않습니다."}]
     p = proposal().model_copy(update={"observations": [], "watchpoints": []})
     parts, quality = render(p, b)
-    assert "축약판" in parts[0] and "판단 불가" in "\n".join(parts)
+    assert "일부 확인 중" in parts[0] and "판단 불가" in "\n".join(parts)
     assert quality["missing_core"] == ["kosdaq", "kospi"]
     assert all(len(part) <= 3500 for part in parts) and len(parts) <= 3
 

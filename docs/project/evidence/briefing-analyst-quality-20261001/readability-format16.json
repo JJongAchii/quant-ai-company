@@ -1,0 +1,84 @@
+{
+  "recorded_at": "2026-10-06T05:55:22.156412+00:00",
+  "scope": "Reader layout and future writing guidance; no new content qualification or deployment.",
+  "base_commit": "56a9e2f5296beae627c170c2e014d074a0e3068f",
+  "format_version": 16,
+  "validation_version": 56,
+  "changes": [
+    "Thirty-second summary, market numbers, overview, numbered issues, next checkpoints.",
+    "Separate assessment, mechanism, observed counterevidence and conditional alternatives into readable paragraphs.",
+    "Keep each issue horizon beside its headline; remove duplicate issue headings from the source thread.",
+    "Link the first visible citation and sort the source directory by citation number.",
+    "Guide future writers toward conclusion-first summaries, specific short headlines and one idea per paragraph."
+  ],
+  "saved_case_replay": {
+    "format_version": 16,
+    "saved_assessment_sha256": "1a9cda6a14f0477f11683af8fac67928f4d8cf1f83dba12b7a5b13acb271f2ef",
+    "content_passed": false,
+    "new_model_calls": 0,
+    "slack_messages_sent": 0,
+    "missing_visible_claims": [],
+    "visible_prose_items": 48,
+    "issues": 6,
+    "old_part_lengths": [
+      7632,
+      3463,
+      682
+    ],
+    "new_part_lengths": [
+      7879,
+      3456,
+      144
+    ],
+    "longest_prose_line_before": 390,
+    "longest_prose_line_after": 236,
+    "files": {
+      "brief.html": "6a37b18b4ac759270fe18f6f2e836b6a3802575fdbc9516560d49b9c5ed98577",
+      "brief.md": "b397a9904b9cefda0a8f4de03e940d1fad7e67de79c01947c5fd8289d92bdbca",
+      "parts.json": "35d25c293e8a5bf43ac9f5405de04d462a12d4cba89169649023634b30e5e197"
+    }
+  },
+  "browser": {
+    "views": [
+      {
+        "name": "desktop",
+        "width": 1100,
+        "overflow": false,
+        "issues": 6,
+        "paragraphLineHeight": "30.4px",
+        "unqualified": true,
+        "sourceLinks": true
+      },
+      {
+        "name": "mobile",
+        "width": 390,
+        "overflow": false,
+        "issues": 6,
+        "paragraphLineHeight": "28.5px",
+        "unqualified": true,
+        "sourceLinks": true
+      }
+    ],
+    "errors": [],
+    "sourcesExpand": true
+  },
+  "tests": {
+    "tests": 228,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 228,
+    "receipt_sha256": "2c7980c2474de8e7268dda9e8c2638cbe3a3f628481ab201e3111ebb6589cfa6"
+  },
+  "ruff": "passed",
+  "private_preview": ".local/analyst-readability-20261006/brief.html",
+  "publication": {
+    "new_model_calls": 0,
+    "slack_sends": 0,
+    "server_mutations": 0,
+    "installed_format_last_verified": 15,
+    "frozen_pm_case": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+    "frozen_pm_policy_amended": false,
+    "content_qualification": "Existing AM case remains failed. Local layout replay does not qualify new content."
+  }
+}

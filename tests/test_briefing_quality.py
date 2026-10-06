@@ -151,7 +151,42 @@ def test_mobile_render_keeps_summary_numbers_and_next_steps_in_main_post():
     assert all(label in parts[0] for label in ("오늘의 핵심", "주요 숫자", "다음 확인할 것"))
     assert "[1]" in parts[0] and "Synthetic fixture" not in parts[0]
     assert len(parts[0]) < 1800 and len(parts) <= 3
-    assert quality["format_version"] == 15
+    assert quality["format_version"] == 16
+
+
+def test_first_visible_citation_links_from_main_even_when_watchpoints_are_built_first():
+    p, data = proposal(), bundle()
+    parts, _ = render(p, data)
+    summary = parts[0].split("*주요 숫자*", 1)[0]
+    assert f"<{data['documents'][0]['url']}|[1]>" in summary
+    assert parts[0].count(f"<{data['documents'][0]['url']}|[1]>") == 1
+    assert parts[0].index("*주요 숫자*") < parts[0].index("*시장 전체 흐름*")
+
+
+def test_source_directory_follows_citation_numbers_instead_of_opaque_ids():
+    p, data = proposal(), bundle()
+    other = {**data['documents'][0], 'id': 'alphabetically-first',
+             'url': 'https://example.org/synthetic-second-source'}
+    data['documents'].append(other)
+    p.observations[1].evidence = [p.observations[1].evidence[0].model_copy(
+        update={'source_id': other['id']})]
+    parts, _ = render(p, data)
+    directory = '\n'.join(parts[1:]).split('*출처*', 1)[1]
+    assert directory.index('[1] <') < directory.index('[2] <')
+
+
+def test_issue_layout_separates_analysis_counterevidence_and_confirmation_without_losing_text():
+    p = proposal()
+    issue = p.issues[0]
+    issue.counterpoint = p.summary[0].model_copy(update={
+        'id': 'counter', 'text': '이미 확인된 반대 방향의 흐름입니다.'})
+    main = render(p, bundle())[0][0]
+    assert f'*1. {issue.headline}* · 당일' in main
+    assert f'\n\n{issue.analysis.mechanism.text}' in main
+    assert f'\n\n*다르게 볼 점* · {issue.counterpoint.text}' in main
+    assert f'\n\n{issue.analysis.alternative.text}' in main
+    assert f'*확인할 신호* · {issue.next_check.text}' in main
+    assert main.count(issue.analysis.alternative.text) == 1
 
 
 def test_data_reader_receives_no_company_or_model_credentials(monkeypatch):

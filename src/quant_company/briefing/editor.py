@@ -36,7 +36,7 @@ from .quotations import (
 )
 from .schedule import KST, close
 
-FORMAT_VERSION = 15
+FORMAT_VERSION = 16
 VALIDATION_VERSION = 56
 
 WRITE = """You are Analyst, the dedicated Korean market analyst for daily_brief.
@@ -174,10 +174,10 @@ Each issue contains fact(kind=fact), interpretation(kind=interpretation), next_c
 analysis with horizon, causal_basis, mechanism and alternative. mechanism and alternative are also
 kind=interpretation. mechanism states why the development matters now and to which market, through a
 concrete cash-flow, discount-rate, liquidity, supply/demand or exposure link. alternative adds ONE short,
-conditional competing/offsetting explanation. These appear together in the main post; write them as a
-natural paragraph without repetition. interpretation is the visible assessment: give conclusion-changing
+conditional competing/offsetting explanation. These appear as separate short paragraphs in the main post;
+each must read independently without repetition. interpretation is the visible assessment: give conclusion-changing
 context, limits or offsets there. ALL these analytical fields appear in main; do not repeat their content.
-The detail thread contains timestamps, sources and analytical horizon, not essential analytical prose.
+The detail thread contains timestamps and sources, not essential analytical prose.
 Use reported_explanation for source attribution,
 conditional_hypothesis for your inference, unresolved when causes cannot be separated. None proves causality.
 If mitigating evidence has ALREADY occurred, state it in fact or counterpoint and qualify the conclusion;
@@ -191,13 +191,19 @@ Analysis is an auditable conclusion summary, not private chain-of-thought. Pract
 
 READABLE MAIN POST
 The reader must understand the day and next checkpoints without opening a thread. Summary gives up to three
-useful conclusions as a 30-second orientation. Overview (1-3 paragraphs) connects direction/participation,
+useful conclusions as a 30-second orientation: what led the day, the main offset/risk, and the Korea/next-session
+implication when supported. Lead each bullet with its takeaway, then at most one short supporting sentence.
+Overview (1-3 paragraphs) connects direction/participation,
 cross-asset agreement or divergence, change since the previous session and the Korea/global link. Observations
 hold exact market levels. Use up to six material issues, normally 4-6 on a busy day and fewer on a quiet day.
+Write a short issue headline with a concrete subject and its consequence; avoid vague topic inventories.
 Each issue's fact uses 2-3 concrete sentences for the actual development, scale and necessary background.
+Use one idea per paragraph, normally 1-2 short sentences for each analytical field. Keep only numbers that
+explain magnitude, surprise, exposure or timing; do not sacrifice a material comparison or operative date.
 Group developments by their economic link, not a shared keyword. An earnings release and an unrelated
 product-safety investigation need distinct treatment unless the originals connect their consequences.
-Do not retell that fact pattern in every section. Internals adds sourced sector/breadth/flow information
+Summary or overview must not retell entire issues; each section should add something to the reader's understanding.
+Internals adds sourced sector/breadth/flow information
 not already explained; otherwise leave it empty. Main-post guidance is 1800-3500 Korean prose characters,
 excluding links/evidence, not a quota. Use short sentences, concrete nouns and brief explanations of unfamiliar
 terms, not forced five-part headings, repetitive caveats or generic 'monitor developments'.
@@ -1065,7 +1071,7 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
     substantive = bool(proposal and proposal.summary and proposal.overview and proposal.issues)
     reduced = bool(fallback or missing or rejected or review_reduced or not substantive)
     label = "아침 브리핑 · 미국장과 오늘" if edition.kind == "am" else "저녁 브리핑 · 한국장과 오늘 밤"
-    lines = [f"*{edition.day:%m/%d} {label}{' · 축약판' if reduced else ''}*",
+    lines = [f"*{edition.day:%m/%d} {label}{' · 일부 확인 중' if reduced else ''}*",
              f"자료 기준 {edition.cutoff.astimezone(KST):%m/%d %H:%M} KST", ""]
     if edition.kind == "am" and not edition.us_session:
         lines.append("미국 정규장: 새 거래 결과 없음")
@@ -1076,14 +1082,10 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
     details = []
     used = set()
     reference = {identity: i+1 for i, identity in enumerate(docs)}
-    linked = set()
-
     def supported(item, text):
         used.update(e.source_id for e in item.evidence)
         urls = list(dict.fromkeys(e.source_id for e in item.evidence))
-        links = " ".join(f"[{reference[i]}]" if i in linked else
-                         f"<{escape(docs[i].url, quote=False)}|[{reference[i]}]>" for i in urls)
-        linked.update(urls)
+        links = " ".join(f"<{escape(docs[i].url, quote=False)}|[{reference[i]}]>" for i in urls)
         return escape(text, quote=False) + " " + links
 
     calendar_checks, market_checks = [], []
@@ -1107,20 +1109,16 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
     visible_global_check_ids = {claim.id for claim in watches[:market_main_count]} if proposal else set()
     next_main = calendar_checks + market_checks[:market_main_count]
     next_details = market_checks[market_main_count:]
-    next_section = "\n*다음 확인할 것*\n"+"\n".join(next_main) if next_main else ""
+    next_section = "\n*다음 확인할 것*\n\n"+"\n\n".join(next_main) if next_main else ""
 
     def add(block):
         # Never silently move a material issue out of the main post to satisfy a cosmetic budget.
         lines.append(block)
 
     if proposal:
-        add("*오늘의 핵심*")
+        add("*오늘의 핵심* · 30초 요약\n")
         for claim in proposal.summary:
-            add("• " + supported(claim, ("해석: " if claim.kind != "fact" else "")+claim.text))
-        if proposal.overview:
-            add("\n*시장 전체 흐름*")
-            for claim in proposal.overview:
-                add(supported(claim, ("해석 · " if claim.kind != "fact" else "")+claim.text)+"\n")
+            add("• " + supported(claim, claim.text)+"\n")
         if observations:
             session = edition.us_session if edition.kind == "am" else edition.kr_session
             market_name = "미국" if edition.kind == "am" else "한국"
@@ -1141,32 +1139,42 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                 elif (edition.kind == "am" and obs.instrument == "usdkrw" and obs.basis == "intraday"
                         and obs.session_date == edition.previous_kr_session):
                     compact = "한국 전일 참고 · "+compact
-                add("• " + supported(obs, compact))
+                name = INSTRUMENTS[obs.instrument][0]
+                market_label = compact.split(name, 1)[0]+name
+                add("• " + supported(obs, compact.replace(market_label, f"*{market_label}*", 1)))
+        if proposal.overview:
+            add("\n*시장 전체 흐름*\n")
+            for claim in proposal.overview:
+                add(supported(claim, claim.text)+"\n")
         if proposal.issues:
-            add("\n*흐름을 만든 이야기*")
-        for issue in proposal.issues:
-            basis = {"reported_explanation": "보도 해석", "conditional_hypothesis": "해석·가설",
+            add("\n*오늘 짚어볼 이슈*")
+        for index, issue in enumerate(proposal.issues, 1):
+            basis = {"reported_explanation": "보도 해석", "conditional_hypothesis": "Analyst 해석",
                      "unresolved": "원인 판단 유보"}[issue.analysis.causal_basis]
-            add("*"+escape(issue.headline, quote=False)+"*\n"+supported(issue.fact, issue.fact.text)
-                +"".join("\n"+('해석 · ' if claim.kind == 'interpretation' else '')
-                         +supported(claim, claim.text) for claim in issue.context)
-                +"\n"+basis+" · "+supported(issue.interpretation, issue.interpretation.text)
-                +" "+supported(issue.analysis.mechanism, issue.analysis.mechanism.text)
-                +" "+supported(issue.analysis.alternative, issue.analysis.alternative.text)+"\n")
             horizon = {"session": "당일", "days_weeks": "수일~수주", "months": "수개월"}[issue.analysis.horizon]
-            details.append("*"+escape(issue.headline, quote=False)+f"* · 분석 시계: {horizon}")
-            if issue.counterpoint:
-                add("함께 볼 점 · "+supported(issue.counterpoint, issue.counterpoint.text)+"\n")
+            add(f"\n*{index}. "+escape(issue.headline, quote=False)+f"* · {horizon}\n\n"
+                +supported(issue.fact, issue.fact.text)
+                +"".join("\n\n"+('해석 · ' if claim.kind == 'interpretation' else '')
+                         +supported(claim, claim.text) for claim in issue.context)
+                +"\n\n*"+basis+"* · "+supported(issue.interpretation, issue.interpretation.text)
+                +"\n\n"+supported(issue.analysis.mechanism, issue.analysis.mechanism.text)
+                +"\n\n*다르게 볼 점* · "
+                +(supported(issue.counterpoint, issue.counterpoint.text)+"\n\n" if issue.counterpoint else "")
+                +supported(issue.analysis.alternative, issue.analysis.alternative.text)+"\n")
             if issue.next_check.id not in visible_global_check_ids:
-                add("다음 확인 · "+supported(issue.next_check, issue.next_check.text)+"\n")
+                add("*확인할 신호* · "+supported(issue.next_check, issue.next_check.text)+"\n")
+        if proposal.internals:
+            add("\n*업종·수급에서 볼 점*\n")
         for claim in proposal.internals:
-            add("시장 내부: " + supported(claim, claim.text))
+            add("• " + supported(claim, claim.text)+"\n")
         results = {x.watch_id: x for x in proposal.watch_results}
+        if bundle.get("morning_watchpoints"):
+            add("\n*아침에 짚었던 내용은*\n")
         for watch in bundle.get("morning_watchpoints", []):
             item = results.get(watch["id"])
             prefix = "아침 관찰 ‘"+escape(watch["text"], quote=False)+"’ → "
             add(prefix + (supported(item, {"confirmed": "확인됨", "mixed": "엇갈림", "pending": "판단 불가"}[item.outcome]
-                                    +": "+item.explanation) if item else "판단 불가 — 확인 자료 부족"))
+                                    +": "+item.explanation) if item else "판단 불가 — 확인 자료 부족")+"\n")
         if next_section:
             lines.append(next_section)
         if next_details:
@@ -1178,7 +1186,7 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
     elif proposal and proposal.limitations:
         details.append("*확인 한계*\n작성 과정에서 확인이 부족한 자료는 제외했습니다. 확인되지 않은 예상값·수급은 제공하지 않습니다.")
     if proposal and not substantive:
-        lines.append("내용 확인 중 · 시장 전체 흐름이나 핵심 이슈 분석이 충분하지 않아 축약판으로 제공합니다.")
+        lines.append("내용 확인 중 · 시장 전체 흐름이나 핵심 이슈 분석이 아직 충분하지 않습니다.")
     if rejected:
         details.append(f"검증에서 근거·시점 확인이 부족한 항목 {len(rejected)}개를 제외했습니다.")
     if bundle.get("collection_errors"):
@@ -1195,12 +1203,16 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                            +" / ".join(v["value"] for v in conflict["values"])+" · "+resolution)
     if bundle.get("data_diagnostics"):
         details.append("수집 데이터에 지연·결측이 있습니다. 과거 비교 자료는 각 기준일을 표시하며 오늘 값으로 쓰지 않습니다.")
+    if bundle.get("market_context"):
+        details.append("\n*과거 데이터 비교*")
     for context in bundle.get("market_context", [])[:10]:
         doc = docs[context["source_id"]]
         used.add(doc.id)
         details.append(escape(context["text"], quote=False)+f" <{escape(doc.url, quote=False)}|[{reference[doc.id]}]>")
     # Detailed originals and their timestamps are retained without reposting article text.
-    for identity in sorted(used):
+    if used:
+        details.append("\n*출처*")
+    for identity in sorted(used, key=reference.get):
         doc = docs[identity]
         published = doc.published_at.astimezone(KST).strftime("%m/%d %H:%M KST") if doc.published_at else "미확인"
         details.append(f"[{reference[identity]}] <{escape(doc.url, quote=False)}|{escape(doc.publisher, quote=False)}> · 발행 {published}"
@@ -1210,8 +1222,21 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
     if any(docs[identity].kind == "dataset" for identity in used):
         details.append("수집 데이터는 원천기관 안내 링크입니다. 실제 객체 식별자와 계산에 쓴 행은 발간 기록에 보존합니다.")
     lines.append("\nAnalyst · AI 시장분석 · 근거와 추가 설명은 스레드")
-    parts = ["\n".join(lines)]
+    linked = set()
+
+    def first_links(text):
+        # Link the first visible citation, not whichever section was constructed first.
+        def replace(match):
+            identity = match[2]
+            if identity in linked:
+                return f"[{identity}]"
+            linked.add(identity)
+            return match[0]
+        return re.sub(r"<([^<>|\n]+)\|\[(\d+)\]>", replace, text)
+
+    parts = [first_links("\n".join(lines))]
     for block in details:
+        block = first_links(block)
         if len(parts) == 1 or len(parts[-1])+len(block)+2 > 3500:
             if len(parts) == 5:
                 raise ValueError("brief_detail_size_limit")

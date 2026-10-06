@@ -195,7 +195,7 @@ async def main():
         save(args.output/"revise-request.json", request(revised, "revise").model_dump(mode="json"))
     text = "\n\n---\n\n".join(result["parts"])
     text = re.sub(r"<([^|>]+)\|([^>]+)>", r"[\2](\1)", text)
-    text = re.sub(r"(?m)^\*([^*]+)\*", r"**\1**", text)
+    text = re.sub(r"(?<!\*)\*([^*\n]+)\*(?!\*)", r"**\1**", text)
     text = unescape(text)
     label = ("실제 모델 출력 · 근거/본문 검사 실패 · 품질 통과 아님 · Slack 미발송"
              if result['source_notes_violations'] else "실제 모델 출력 · 평가 기록 · Slack 미발송")
