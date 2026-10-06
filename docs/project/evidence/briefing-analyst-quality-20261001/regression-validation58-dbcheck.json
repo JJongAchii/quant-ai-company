@@ -1,0 +1,37 @@
+{
+  "recorded_at": "2026-10-06T13:18:52.790136+00:00",
+  "release_commit": "0ea670b7b0637d91a46714b73ef8df96d979cc6f",
+  "test_evidence": "regression-validation58-integrated.json",
+  "test_evidence_sha256": "9e50a0dcc85ded812705b20e3e80ff5149800bafe1a22cb01f9d2f72929466fc",
+  "tests": 288,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "test_execution_source_commit": "04e60ba66509ebc552a5ea26520e2b919e034589",
+  "tests_reused_for_byte_identical_analyst_source": true,
+  "deployment_helper_tests": {
+    "tests": 23,
+    "failures": 0,
+    "errors": 0,
+    "receipt_sha256": "7cb916e5f8e25ab2ee97a5b61f57c3ad2760e3233510e48e9faa421701a42e8d"
+  },
+  "analyst_file_hashes_identical_to_tested_profile": {
+    "config.py": "49468a322cc1fed6ca041c2cb142e55602fb51005b807983fe162a3d30c6e05a",
+    "briefing/store.py": "1727de1625c685a3fd61003c6a4ea17cdc47a21b3843d970c8757062a0a43671",
+    "briefing/qualification.py": "95c5c89717d31b582c0166f15b3f1290edcbfa00145220d099ebb21b44d03ba3",
+    "briefing/numeric.py": "4ca6705a54a2145f95cb778642cfc722038a73ebc88c959108b47d4b1dcfb6f8",
+    "briefing/contracts.py": "1db07f35d54de8506597edee7adaa0c101fe86978106e29905139a30ec89e5d4",
+    "briefing/planning.py": "f55a01b2c612d6f95b2379d6fbad121f0b0d4e034530dfea0aecc0d00c1a0b64",
+    "briefing/schedule.py": "e967aee8dc9e3c046cd0cb14c1ac2efdaa62609f724546586c5a579f43761675",
+    "briefing/editor.py": "eaf91a69c9af9d9d63c4afea5ee0d97cbe8609f094fb7dd656637c06d105725d"
+  },
+  "only_change_between_actual_integrated_profiles": [
+    "trend_feed/editor.py"
+  ],
+  "other_feature_change_preserved_from_actual_host": "34de597143fcd3f80939ae36b529db4db5cd79cf",
+  "postgresql": "real database",
+  "temporal": "actual test environment",
+  "models_and_slack": "fixtures / simulated transports",
+  "real_fresh_content_pass": false,
+  "actual_new_slack_delivery_verified": false
+}

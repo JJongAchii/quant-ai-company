@@ -33,10 +33,12 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 [설정·데모와 소스별 확인 상태](docs/news.md), [범위 복원과 실제 검증](docs/project/HOT-NEWS-SCOPE-RESTORATION.md),
 [최초 운영 인수·보안 정리](docs/project/HOT-NEWS-ACTIVATION.md)를 참고하세요.
 토큰 절약과 KST 06:00~24:00 발송·야간 모음의 설정 및 검증 상태는 [최적화 인수 기록](docs/project/HOT-NEWS-EFFICIENCY.md)에 남깁니다.
-**Analyst**의 `daily_brief` 정기 브리핑 구현을 추가했습니다. 한국 시간 07:45와 한국
-거래일 20:15에 자료를 종합합니다. 수집 데이터로 계산한 숫자와 뉴스 원문을 연결하며,
+**Analyst**의 `daily-brief` 정기 브리핑 구현을 추가했습니다. 한국 시간 07:45와 한국
+거래일 17:45에 자료를 종합합니다. 수집 데이터로 계산한 숫자와 뉴스 원문을 연결하며,
 핵심 요약·시장 전체 흐름·주요 숫자·최대 여섯 핵심 이슈·다음 확인 사항을 본문에, 상세 근거를 스레드에 제공합니다.
 원문별 누락 점검과 내용 깊이 검토를 추가했으며 [실제 출력 평가 기준](docs/project/BRIEFING-CONTENT-EVALUATION.md)을 따릅니다.
+새 서버에는 발송 없는 미리보기를 적용했고, 10월 7일부터 새 원문으로 작성·검토와 5거래일 운영 검증을 진행합니다.
+자동 발송과 전문가 품질 통과는 [현재 상태](docs/work/amberjack/ANALYST-FINALIZATION-STATUS.json)에서 별도로 확인합니다.
 기존 원문을 실제 구독 모델로 작성·검토한 [내용 평가와 읽을 수 있는 결과](docs/project/BRIEFING-CONTENT-RESULTS.md)를 보존합니다.
 기본값은 비활성이고 실제 운영 발송과 5거래일 관찰은 아직 검증하지 않았습니다.
 [브리핑 설정·복구·데모](docs/briefing.md)를 참고하세요.

@@ -1,27 +1,88 @@
 {
-  "recorded_at": "2026-10-06T07:21:05.825763+00:00",
+  "recorded_at": "2026-10-06T13:18:00.248407+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
-  "latest_request": "그럼 이어서 진행해서 최종적으로 완료해주면 좋겠어",
-  "source_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+  "latest_request": "\uadf8\ub7fc \uc774\uc5b4\uc11c \uc9c4\ud589\ud574\uc11c \ucd5c\uc885\uc801\uc73c\ub85c \uc644\ub8cc\ud574\uc8fc\uba74 \uc88b\uaca0\uc5b4 / \uc774\uc5b4\uc11c \uc9c4\ud589\ud574",
+  "source_commit": "0ea670b7b0637d91a46714b73ef8df96d979cc6f",
+  "format_version": 17,
+  "validation_version": 58,
+  "schedule_version": 4,
   "goal_complete": false,
   "implemented": [
-    "Readability and lead-issue priorities",
-    "Forecast applicability date in its own claim",
-    "Full main preserved in Slack section blocks",
-    "07:45 AM and17:45 PM calendar-aware schedule"
+    "Readable summary, price table, leading issues, other issues and next conditions",
+    "Twenty full originals with material prerequisites and alternative explanations",
+    "Source-note sign and meeting-month validation, one scoped correction maximum",
+    "Lossless independent full-original review within the existing context limit",
+    "Frozen inputs reused without duplicate lake documents",
+    "Bounded calendar-aware observation and immutable outcome receipts"
   ],
   "deployment": "preview_active_actual_cloud",
   "publication_enabled": false,
-  "fresh_edition": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
-  "fresh_policy": "docs/project/evidence/briefing-analyst-quality-20261001/prospective-pm-20261006-format17-policy.json",
-  "next": "Observe16:40collection/17:00seal/17:45commit, original-to-main audit, actual delivery if qualified; prepare bounded observation without reopening closed cases.",
+  "preserved_other_runtime_features": [
+    "model assignments",
+    "trend feed",
+    "command help",
+    "Codex runtime"
+  ],
+  "last_fresh_edition": {
+    "id": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+    "day": "2026-10-06",
+    "source_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+    "result": "failed and closed; never reopened or regraded"
+  },
+  "development_diagnostic": {
+    "checks_passed": 9,
+    "checks_required": 12,
+    "failed": [
+      "materiality",
+      "coverage",
+      "readability"
+    ],
+    "fresh_acceptance": false
+  },
+  "schedule_kst": {
+    "am": "07:45",
+    "pm": "17:45",
+    "special_pm": "No earlier than special closing time plus 65 minutes"
+  },
+  "frozen_observation": {
+    "policy": "docs/project/evidence/briefing-analyst-quality-20261001/prospective-operating-20261007-20261014-validation58-dbcheck-policy.json",
+    "kr_trading_days": [
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-12",
+      "2026-10-13",
+      "2026-10-14"
+    ],
+    "edition_ids": [
+      "02cfddb9-e401-5634-af9c-b124a6f54cf8",
+      "05a23b7f-dfb9-51d9-bda0-9747f482e75c",
+      "3042a447-de8b-55fe-9a56-72014df5c2b9",
+      "4d933b4e-3814-54bf-943a-48029aa76124",
+      "56e7ca37-1579-559a-955a-0d76e38de330",
+      "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb",
+      "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "9473536f-12b8-552b-ba48-6beb1d198577",
+      "b463d3df-94d9-5a93-be1d-4454dadbf098",
+      "b72483f9-d52b-51d6-92ba-25625a9cb50e",
+      "cfc0bd9a-c815-5ce0-a29f-4f411c5f9383",
+      "f8004fe8-789b-5df2-8dfa-a06f11903d91"
+    ],
+    "max_distinct_model_requests": 60,
+    "max_repairs_per_edition": 1,
+    "automatically_enables_publication": false
+  },
+  "next": "Observe the new October7 AM/PM editions without changing originals or policy; retain real planning/writing/review outcomes. After a fresh pass, audit original-to-visible-main and perform authorized actual Slack preview/readback.",
   "remaining": [
-    "Fresh independent original/main and twelve-check content qualification",
-    "Five-trading-day timing/source/model replay and user content acceptance before automatic publication"
+    "Fresh twelve-check content qualification and independent original-to-main audit",
+    "Actual Slack delivery/readback and human content acceptance",
+    "Five completed KRX trading days of timing/source/model/saved-input evidence before automatic publication"
   ],
   "evidence": [
-    "docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-format17.json",
-    "docs/project/evidence/briefing-analyst-quality-20261001/regression-format17.json"
+    "docs/project/evidence/briefing-analyst-quality-20261001/preview-installation-observation-validation58-dbcheck.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/regression-validation58-dbcheck.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/twenty-source-transport-validation58.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/development-diagnostic-20261006-validation57-outcome.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/fresh-pm-20261006-format17-failure.json"
   ]
 }
