@@ -293,7 +293,7 @@ def stage_prompt(company, conn, task, turn=None):
                         "within the frozen scope. Exhausted scope requires wait; do not rename the same experiment.",
     }
     from .audit_delivery import enabled, prepare_packet
-    from .program_controller import PROGRAM_STAGES, prior_task_navigation
+    from .program_controller import PROGRAM_STAGES, data_assessment_output_schema, prior_task_navigation
 
     instructions.update({key: value[2] for key, value in PROGRAM_STAGES.items()})
     if row["stage"] in PROGRAM_STAGES:
@@ -383,6 +383,8 @@ def stage_prompt(company, conn, task, turn=None):
                 "New feature/model/portfolio code is allowed only inside approved paths. Evaluator and data stay frozen.")
     if output_type:
         context["output_schema"] = output_type.model_json_schema()
+        if row["stage"] == "program_data":
+            context["output_schema"] = data_assessment_output_schema(context)
     # A new attempt owns a new provider thread. Prior read receipts remain useful
     # operator evidence, but their bytes are not present in that new thread and
     # therefore cannot be advertised as inspected or completed model evidence.

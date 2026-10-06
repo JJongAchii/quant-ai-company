@@ -32,3 +32,15 @@ All request validators must support the candidate before a new data turn is disp
 the exact source, actual imported code, compatible 3070 release and current authority first.
 Then explicitly reconcile the held stage and let the employee make its own decision.
 Passing simulated provider tests does not establish a successful deployed employee review.
+
+## Scoped assessment schema follow-up
+
+The deployed native envelope passed 63 actual data turns. The final assessment was correctly rejected
+because its version 2 artifact also contained the legacy top-level `data_policy_digest` and
+`evaluation_prices` fields. The operator preserved that response and returned the exact validation
+error to future unfrozen employee turns; it did not edit or apply the employee's assessment.
+
+New data prompts expose only the assessment schema authorized for their task: version 2 includes
+the canonical research scope and scoped packet/price fields; version 1 retains its legacy policy
+fields. The accepted business contracts, admission checks and employee decision authority are unchanged.
+This follow-up requires its own source qualification before it is described as deployed.
