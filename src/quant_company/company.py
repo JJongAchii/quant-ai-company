@@ -93,7 +93,7 @@ class Company:
     def runtime_context(self, conn=None) -> dict:
         """Allowlisted configuration facts, never a dump of settings or credentials."""
         from .owner_controls import effective_limits
-        from .staff.packs import pack
+        from .staff.packs import STAFF, pack
         from .staff.review_contract import REVIEW_EFFORT, REVIEW_MODEL
         from .staff.tools import TOOL_GUIDE
 
@@ -105,8 +105,8 @@ class Company:
             "employees": [
                 {**{key: getattr(role, key) for key in
                     ["id", "name", "active", "model", "reasoning_effort", "version", "tools", "can_delegate_to"]},
-                 "specialist_pack_version": pack(role.id)["version"],
-                 "specialist_pack_digest": pack(role.id)["digest"]}
+                 "specialist_pack_version": pack(role.id)["version"] if role.id in (*STAFF, "reporter") else None,
+                 "specialist_pack_digest": pack(role.id)["digest"] if role.id in (*STAFF, "reporter") else None}
                 for role in self.roles.values() if role.id not in {TECH_FEED_AGENT, "quant_scout"}
             ],
             "background_model_requests": {

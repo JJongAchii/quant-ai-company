@@ -106,6 +106,8 @@ class Store:
 
             owners = self.config.allowed_owners
             if self.company.settings.company_improvements_enabled:
+                from .problems import failure_observations
+
                 # Ordinary conversations/ideas do not trigger automatic model work. One owner per case.
                 rows = []
                 owners = [events[0]["owner_user"]] if events else []
@@ -116,8 +118,10 @@ class Store:
                                 if row.get("grade", {}).get("objective_passed") is False
                                 and datetime.fromisoformat(row["created_at"]) >= datetime.fromisoformat(
                                     control["runtime"]["improvements_started_at"])]
-                    if failures:
-                        owners, staff = [owner], failures
+                    problems = failure_observations(conn, self.company, owner,
+                                                    control["runtime"]["improvements_started_at"])
+                    if failures or problems:
+                        owners, staff = [owner], failures + problems
                         break
                 rows = safe_rows(events + staff)
             else:

@@ -1,0 +1,216 @@
+{
+  "captured_at": "2026-10-06T07:31:45.099218+00:00",
+  "scope": "Real production PostgreSQL/container readback; no manual model calls or external writes",
+  "container": {
+    "id": "ff999c06352a6f374822d15db9d49884af0cb49d5b4f02e24fa6b53d978c7848",
+    "image_id": "sha256:955bcafa236a5baf9631447651c9ceb57f2cbdb2f0b51c43230627dcdf166f82",
+    "image": "quant-company-maintenance:46d853cbefd4ce808fc247a0ebba1f5df33f0cd8",
+    "running": true,
+    "oom_killed": false,
+    "restart_count": 0
+  },
+  "installed_code": {
+    "commit": "46d853cbefd4ce808fc247a0ebba1f5df33f0cd8",
+    "verification": "Immutable image ID compared with separate image qualification; no Python imports in the production service"
+  },
+  "control": {
+    "id": 1,
+    "runtime": {
+      "enabled": true,
+      "heartbeat_at": "2026-10-06 07:27:22.085194+00:00",
+      "poll_seconds": 300,
+      "allowed_owners": [
+        "U0C250E23NW"
+      ],
+      "report_seconds": 60,
+      "max_daily_calls": 0,
+      "reporter_heartbeat_at": "2026-10-06T07:31:21.116477+00:00",
+      "improvements_started_at": "2026-09-23T01:13:29.900538+00:00"
+    },
+    "next_observe_at": "2026-10-06T07:37:22.200626+00:00"
+  },
+  "new_jobs": [
+    {
+      "id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "pr": null,
+      "kind": "triage",
+      "error": null,
+      "state": "triage",
+      "created_at": "2026-10-06T06:46:09.841092+00:00",
+      "updated_at": "2026-10-06T07:21:07.653261+00:00"
+    },
+    {
+      "id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "pr": null,
+      "kind": "review",
+      "error": "company_work_has_priority",
+      "state": "triage",
+      "created_at": "2026-10-06T06:54:35.380943+00:00",
+      "updated_at": "2026-10-06T07:27:27.802037+00:00"
+    },
+    {
+      "id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "pr": null,
+      "kind": "triage",
+      "error": null,
+      "state": "triage",
+      "created_at": "2026-10-06T07:06:39.227678+00:00",
+      "updated_at": "2026-10-06T07:28:02.808051+00:00"
+    }
+  ],
+  "technical_observations": [
+    {
+      "key": "research-contract:1f47440b9db542cc8feb467b3e8e0548",
+      "kind": "research_contract_failure",
+      "detail": {
+        "error": "1 validation error for DataAssessment\n  Value error, Scoped assessments cannot carry a legacy exploratory decision or policy fields",
+        "stage": "program_data",
+        "attempt": 3,
+        "stage_id": "0b9b6ce9-6c3d-5dee-a9c5-0bbc18089ac5",
+        "mission_id": null,
+        "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb"
+      },
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T06:46:09.841092+00:00"
+    },
+    {
+      "key": "staff-review:review-61b91f4c-e518-4c6e-b968-98f7acd080c3",
+      "kind": "staff_independent_review_failure",
+      "detail": {
+        "error": "uncertain",
+        "model": "claude-opus-5",
+        "run_id": "61b91f4c-e518-4c6e-b968-98f7acd080c3",
+        "review_id": "review-61b91f4c-e518-4c6e-b968-98f7acd080c3",
+        "operator_reconciliation_required": true
+      },
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T06:46:09.841092+00:00"
+    },
+    {
+      "key": "staff-review:review-cbcd0453-4c6e-45d4-89e9-9cdb23a8ac84",
+      "kind": "staff_independent_review_failure",
+      "detail": {
+        "error": "uncertain",
+        "model": "claude-opus-5",
+        "run_id": "cbcd0453-4c6e-45d4-89e9-9cdb23a8ac84",
+        "review_id": "review-cbcd0453-4c6e-45d4-89e9-9cdb23a8ac84",
+        "operator_reconciliation_required": true
+      },
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T06:46:09.841092+00:00"
+    },
+    {
+      "key": "staff-review:review-2ba7a04c-9e2a-4273-b757-99892b040b88",
+      "kind": "staff_independent_review_failure",
+      "detail": {
+        "error": "uncertain",
+        "model": "claude-opus-5",
+        "run_id": "2ba7a04c-9e2a-4273-b757-99892b040b88",
+        "review_id": "review-2ba7a04c-9e2a-4273-b757-99892b040b88",
+        "operator_reconciliation_required": true
+      },
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T06:46:09.841092+00:00"
+    },
+    {
+      "key": "staff-review:review-08a21b09-58c2-4dc9-816b-aceeb301b6c9",
+      "kind": "staff_independent_review_failure",
+      "detail": {
+        "error": "uncertain",
+        "model": "claude-opus-5",
+        "run_id": "08a21b09-58c2-4dc9-816b-aceeb301b6c9",
+        "review_id": "review-08a21b09-58c2-4dc9-816b-aceeb301b6c9",
+        "operator_reconciliation_required": true
+      },
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T06:46:09.841092+00:00"
+    },
+    {
+      "key": "staff-review:review-cdbbed6d-acc5-40ee-9793-4d86905a4db5",
+      "kind": "staff_independent_review_failure",
+      "detail": {
+        "error": "uncertain",
+        "model": "claude-opus-5",
+        "run_id": "cdbbed6d-acc5-40ee-9793-4d86905a4db5",
+        "review_id": "review-cdbbed6d-acc5-40ee-9793-4d86905a4db5",
+        "operator_reconciliation_required": true
+      },
+      "job_id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "created_at": "2026-10-06T07:06:39.227678+00:00"
+    },
+    {
+      "key": "staff-review:review-63abd47f-89e7-44c5-b17a-f3e024a8de6e",
+      "kind": "staff_independent_review_failure",
+      "detail": {
+        "error": "uncertain",
+        "model": "claude-opus-5",
+        "run_id": "63abd47f-89e7-44c5-b17a-f3e024a8de6e",
+        "review_id": "review-63abd47f-89e7-44c5-b17a-f3e024a8de6e",
+        "operator_reconciliation_required": true
+      },
+      "job_id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "created_at": "2026-10-06T07:06:39.227678+00:00"
+    }
+  ],
+  "new_cases": [
+    {
+      "id": "1b456281-01c3-5cda-8d0e-a1343f3f582b",
+      "checked_at": "2026-10-06T07:31:20.97625+00:00",
+      "created_at": "2026-10-06T07:06:39.227678+00:00",
+      "project_id": "a80a8e7c-d4d8-5694-82d6-8e9947f09391",
+      "request_id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "source_revision": 1,
+      "source_project_id": "a80a8e7c-d4d8-5694-82d6-8e9947f09391"
+    },
+    {
+      "id": "a2346a43-8e5b-5ae9-8f1d-8d3acd4a6b36",
+      "checked_at": "2026-10-06T07:31:20.97625+00:00",
+      "created_at": "2026-10-06T06:46:09.841092+00:00",
+      "project_id": "ee2add4d-208d-5340-8655-910bc65b0f9e",
+      "request_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "source_revision": 5,
+      "source_project_id": "9aac0de4-2b97-5195-a720-287d324234f3"
+    },
+    {
+      "id": "ef8c03a5-cd97-57eb-b691-4ffd143cc3ef",
+      "checked_at": "2026-10-06T07:31:20.97625+00:00",
+      "created_at": "2026-10-06T06:54:35.380943+00:00",
+      "project_id": "eca1443a-98dd-5cb9-a24e-74cdaf1b07ab",
+      "request_id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "source_revision": 1,
+      "source_project_id": "ee2add4d-208d-5340-8655-910bc65b0f9e"
+    }
+  ],
+  "new_calls": [],
+  "company_priority_turns": [
+    {
+      "id": "ffc34b0d-5504-5463-b6dc-2e954cbb408b",
+      "kind": "work",
+      "agent": "director",
+      "due_at": "2026-10-06T04:28:18.394677+00:00",
+      "status": "queued",
+      "task_status": "pending",
+      "project_status": "active"
+    },
+    {
+      "id": "2e4de4d4-00b8-50d6-8dc4-1765a28e1807",
+      "kind": "answer",
+      "agent": "director",
+      "due_at": "2026-10-06T04:47:48.101897+00:00",
+      "status": "queued",
+      "task_status": "pending",
+      "project_status": "active"
+    },
+    {
+      "id": "76fdff56-dd46-533f-be23-1cd9f597f364",
+      "kind": "research_stage",
+      "agent": "researcher_kr",
+      "due_at": "2026-10-06T07:27:19.680412+00:00",
+      "status": "running",
+      "task_status": "running",
+      "project_status": "active"
+    }
+  ],
+  "original_uncertain_reviews_unchanged": true,
+  "original_maintenance_calls_unchanged": true
+}

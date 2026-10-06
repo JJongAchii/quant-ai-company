@@ -23,6 +23,22 @@ from .test_maintenance import SOURCE, ModelFixture, config, make_maintainer
 from .test_slack import event, signed
 
 
+def test_runtime_evidence_accepts_delivery_roles_without_fabricating_specialist_packs(company):
+    from quant_company.staff.packs import pack
+
+    delivery = company.roles['director'].model_copy(update={
+        'id': 'market_brief', 'active': False, 'tools': [], 'can_delegate_to': [],
+    })
+    company.roles[delivery.id] = delivery
+    with company.db.transaction() as conn:
+        system = current_system(conn, company, ['UHUMAN'])
+    employees = {row['id']: row for row in system['runtime']['configuration']['employees']}
+    assert employees[delivery.id]['specialist_pack_version'] is None
+    assert employees[delivery.id]['specialist_pack_digest'] is None
+    assert employees[delivery.id]['active'] is False and employees[delivery.id]['tools'] == []
+    assert employees['director']['specialist_pack_digest'] == pack('director')['digest']
+
+
 def test_history_and_current_code_share_the_real_provider_input_budget_without_mutating_evidence():
     # Production shape: ~36k history + ~25k system facts + ~58k source excerpts exceeded 90k.
     payload = {'observations': [{'key': 'message:original', 'text': 'Keep the explicit owner request'}],
@@ -76,6 +92,42 @@ def test_repository_prompt_lists_only_paths_available_to_bounded_inspection():
     assert repository_prompt_paths(entries) == [
         'docs/maintenance.md', 'src/quant_company/config.py',
     ]
+
+
+def test_repository_catalog_cannot_exhaust_the_diagnostic_budget_and_preserves_current_paths():
+    relevant = 'src/quant_company/maintenance/runner.py'
+    paths = [f'docs/project/evidence/operational-record-{i:04d}-' + 'x'*70 + '.json' for i in range(3000)]
+    paths.append(relevant)
+    payload = {
+        'observations': [{'key': 'research-contract:current', 'text': 'Current response contract fails'}],
+        'editable_paths': paths, 'repository_paths': paths,
+        'history': {'evidence': [{'key': f'message:{i}', 'text': 'h'*1800} for i in range(12)]},
+        'current_implementation': {'key': 'system:current', 'system': {'runtime': {'code_commit': 'a'*40}},
+            'source_files': [{'path': relevant, 'key': 'code:current:runner', 'content': 's'*58815}]},
+    }
+    before = digest(payload)
+    material, prompt = proposal_material(payload, Triage)
+    ProviderRequest(request_id='catalog-production-shape', model='fixture', prompt=prompt)
+    assert len(prompt) <= 88000 and digest(payload) == before
+    assert material['observations'] == payload['observations']
+    for name in ('editable_paths', 'repository_paths'):
+        assert relevant in material[name]
+        assert material['prompt_path_catalog'][name]['total'] == len(paths)
+        assert material['prompt_path_catalog'][name]['omitted'] == len(paths)-len(material[name])
+
+
+def test_large_observation_detail_is_excerpted_without_losing_evidence_identity():
+    key = 'research-contract:' + 'a'*200
+    payload = {'observations': [{'key': key, 'kind': 'research_contract_failure',
+                                'detail': {'diagnostic': 'd'*120000}}],
+               'current_implementation': {'system': {}, 'source_files': []}}
+    before = digest(payload)
+    material, prompt = proposal_material(payload, Triage)
+    assert len(prompt) <= 88000 and digest(payload) == before
+    assert material['observations'][0]['key'] == key
+    assert material['observations'][0]['kind'] == 'research_contract_failure'
+    assert material['observations'][0]['prompt_excerpted']
+    assert '[PROMPT EXCERPT]' in material['observations'][0]['detail']['diagnostic']
 
 
 @pytest.mark.integration
