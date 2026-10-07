@@ -12,6 +12,25 @@ import httpx
 
 from .policy import SECRET, WORKFLOW, MaintenanceConfig, writable
 
+READ_ORDER_VERSION = 2
+
+
+def repository_evidence_order(path):
+    if path in {"AGENTS.md", "README.md", "pyproject.toml"} or path.startswith((
+            "src/quant_company/maintenance/", "src/quant_company/providers/", "src/quant_company/staff/")):
+        priority = 0
+    elif path.startswith("src/"):
+        priority = 1
+    elif path.startswith(("tests/test_maintenance", "tests/test_staff", "tests/test_codex", "tests/test_claude")):
+        priority = 2
+    elif path.startswith("tests/"):
+        priority = 3
+    elif path.startswith("docs/adr/"):
+        priority = 4
+    else:
+        priority = 5
+    return priority, path
+
 
 def blob_sha(content):
     data = content.encode()
@@ -112,7 +131,8 @@ class GitHub:
 
         previous = previous or {}
         output, omitted, total, reused, fetched = {}, [], 0, 0, 0
-        for path, entry in sorted(snapshot["entries"].items()):
+        for path in sorted(snapshot["entries"], key=repository_evidence_order):
+            entry = snapshot["entries"][path]
             if not readable(path):
                 continue
             size = entry.get("size", 0)
@@ -137,7 +157,8 @@ class GitHub:
                 continue
             output[path] = content
             total += actual
-        return output, {"read_files": len(output), "read_bytes": total, "reused_files": reused,
+        return output, {"read_order_version": READ_ORDER_VERSION,
+                        "read_files": len(output), "read_bytes": total, "reused_files": reused,
                         "fetched_files": fetched, "omitted_paths": omitted,
                         "boundary": "allowlisted text blobs only; no credentials, binaries, links or arbitrary repository"}
 

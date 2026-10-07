@@ -23,7 +23,8 @@ def readable(path):
 
 def record_repository(conn, snapshot, files, metadata):
     conn.execute("""INSERT INTO repository_evidence(commit,snapshot,files,metadata) VALUES (%s,%s,%s,%s)
-        ON CONFLICT(commit) DO UPDATE SET metadata=excluded.metadata,checked_at=now()""",
+        ON CONFLICT(commit) DO UPDATE SET files=repository_evidence.files || excluded.files,
+        metadata=excluded.metadata,checked_at=now()""",
                  (snapshot["commit"], Jsonb(snapshot), Jsonb(files), Jsonb(metadata)))
 
 
@@ -147,25 +148,29 @@ def repository_read(conn, arguments):
     return output
 
 
-def diagnosis_context(conn, company, owners, snapshot, instruction):
+def diagnosis_context(conn, company, owners, snapshot, instruction, *, observations=()):
     """Bounded source excerpts before diagnosis, from the exact GitHub commit (never local HEAD)."""
     system = current_system(conn, company, owners)
     row = conn.execute("SELECT files FROM repository_evidence WHERE commit=%s", (snapshot["commit"],)).fetchone()
     if not row:
         raise ValueError("current_repository_evidence_required")
     files = row["files"]
-    priority = ["src/quant_company/maintenance/store.py", "src/quant_company/company.py", "src/quant_company/maintenance/requests.py",
-                "src/quant_company/maintenance/runner.py", "src/quant_company/owner_controls.py",
-                "src/quant_company/system_state.py", "tests/test_system_state.py",
-                "docs/adr/0018-current-system-evidence-and-owner-controls.md", "docs/project/NEXT-STEPS.md"]
+    priority = ["src/quant_company/maintenance/store.py", "src/quant_company/company.py",
+                "src/quant_company/maintenance/runner.py", "src/quant_company/maintenance/requests.py",
+                "src/quant_company/system_state.py", "src/quant_company/owner_controls.py"]
+    if any(row.get("kind") == "staff_independent_review_failure" for row in observations):
+        priority = ["src/quant_company/staff/independent_review.py", "src/quant_company/staff/review_contract.py",
+                    "src/quant_company/providers/claude_runner.py", "src/quant_company/providers/client.py",
+                    "tests/test_staff_independent_review.py", "tests/test_claude_runner.py"] + priority
     terms = re.findall(r"[A-Za-z_]{4,}", instruction.lower())[:12]
-    ranked = sorted(files, key=lambda p: (-sum(t in (p + files[p]).lower() for t in terms), p))
+    ranked = sorted(files, key=lambda p: (not p.startswith(("src/", "tests/")),
+                                         -sum(t in (p + files[p]).lower() for t in terms), p))
     records, total = [], 0
     for path in dict.fromkeys(priority + ranked):
-        if path not in files or total >= 54000:
+        if path not in files or total >= 24000:
             continue
         start = max(0, files[path].find("    def bind_diagnosis(")) if path.endswith("maintenance/store.py") else 0
-        content = files[path][start:start + min(6000, 54000-total)]
+        content = files[path][start:start + min(4000, 24000-total)]
         records.append({"key": f"code:{snapshot['commit']}:{path}", "path": path,
                         "blob": snapshot["entries"][path]["sha"], "content": content,
                         "start_line": files[path].count("\n", 0, start) + 1,
@@ -173,5 +178,20 @@ def diagnosis_context(conn, company, owners, snapshot, instruction):
         total += len(content)
     scope = digest([snapshot["commit"], system["runtime"]["config_digest"], system["runtime"]["roles_digest"],
                     system["runtime"]["code_commit"], system["assessments"]])
+    implementation = {path: {field: entry.get(field) for field in ("sha", "type", "mode")}
+                      for path, entry in sorted(snapshot["entries"].items())
+                      if path.startswith(("src/", "tests/", "deploy/", "docs/adr/"))
+                      or path in {"AGENTS.md", "README.md", "pyproject.toml", "uv.lock"}}
+    runtime_scope = digest([system["runtime"][key] for key in ("config_digest", "roles_digest", "code_commit")]
+                           + [system["assessments"]])
+    # Full configuration/receipts stay in repository evidence and the bound diagnosis.
+    # The model gets bounded current facts; omitted material cannot prove absence.
+    from .maintenance.runner import compact_prompt_value
+
+    bounded_system = compact_prompt_value(system, string_chars=1000, list_items=4)
+    bounded_system["assessments"] = system["assessments"]
     return {"scope_digest": scope, "system": system, "source_files": records,
-            "key": "system:" + scope, "coverage": "Bounded excerpts; omitted code is unknown, not absent."}
+            "prompt_system": bounded_system, "implementation_digest": digest(implementation),
+            "runtime_scope_digest": runtime_scope, "scope_version": 1,
+            "key": "system:" + scope, "coverage": "At most 24,000 source characters and bounded system facts; "
+            "full evidence remains stored. Omitted code is unknown, not absent."}
