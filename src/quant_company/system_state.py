@@ -188,7 +188,7 @@ def diagnosis_context(conn, company, owners, snapshot, instruction, *, observati
     # The model gets bounded current facts; omitted material cannot prove absence.
     from .maintenance.runner import compact_prompt_value
 
-    bounded_system = compact_prompt_value(system, string_chars=1000, list_items=4)
+    bounded_system = compact_prompt_value(system, string_chars=160, list_items=2)
     bounded_system["assessments"] = system["assessments"]
     return {"scope_digest": scope, "system": system, "source_files": records,
             "prompt_system": bounded_system, "implementation_digest": digest(implementation),
