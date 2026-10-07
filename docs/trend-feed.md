@@ -1,7 +1,9 @@
-# 한국 검색 트렌드 아침 브리핑
+# 한국 검색 트렌드 정기·요청 브리핑
 
 한국의 사회·경제·기술·문화·연예·소비 주제를 전용 `#search-trends` 채널에
-매일 **08:00 KST, 10개 목표**로 전달한다. 발송 전용 **Trend Scout** 앱과 기존 회사의
+매일 **08:00·14:00·20:00 KST, 회당 10개 목표**로 전달하도록 운영 설정을 확장한다.
+`#search-trends`에서 소유자가 `실시간 검색어` 또는 `@Trend Scout 실시간 검색어`를 보내면
+요청한 메시지의 스레드로도 응답한다. **Trend Scout** 앱과 기존 회사의
 PostgreSQL·Temporal·Codex 구독을 사용한다. 설치 기본값은 수집·발송 모두 꺼짐이다.
 구현과 실제 운영 검증 범위는 [검증 기록](project/TREND-FEED-VALIDATION.md)에 구분한다.
 
@@ -15,8 +17,10 @@ PostgreSQL·Temporal·Codex 구독을 사용한다. 설치 기본값은 수집·
 | 기존 허용 언론사 원문 | 짧은 배경과 출처 | 원문 수집 성공·날짜·권한을 확인한 기사만 사용 |
 
 Google 피드를 10분 대기 간격으로 수집한다. 장애에는 최대 1시간까지 간격을 늘린다.
-07:30에 직전 24시간의 **관측 시각**을 기준으로 입력을 동결하고, 정규화한 키워드별
-Google 규모 표시의 최대값·최근 관측 시각·제목 순으로 상위 30개 후보를 정한다.
+정기 발송 30분 전인 07:30·13:30·19:30에 입력을 동결한다. 여러 시간대를 설정하면
+마감 직전의 **최신 성공 RSS 한 건**에 있는 주제와 표시 규모만 사용한다. 과거 RSS에만
+있던 주제를 현재 검색어로 섞지 않는다. 설치 기본값인 하루 08시 모드는 기존 24시간
+관측 구간의 최대 표시 규모를 유지한다. 상위 30개 후보를 규모·최근 관측·제목 순으로 정한다.
 반복 관측한 숫자를 합산하지 않는다. `처음 포착`은 이 서비스에서 처음 관측했다는 뜻이다.
 첫날에는 이력 부족, 집계 구간에 30분을 넘는 수집 공백이 있으면 공백을 표시한다.
 
@@ -53,8 +57,9 @@ AI 분류가 마감까지 검증되지 않으면 미분류 주제를 생략하�
 기존 Reporter에 설정된 모델·reasoning effort로 한 번 편집한다. 소유자의 모델 배정 기능이
 활성화돼 있으면 Reporter 배정을 요청 준비 때 동결하고 같은 요청의 대기·재시도에 유지한다.
 Trend Scout 자체는 모델 배정 대상이 아니다. 완료된 제안이 계약 검증에
-실패한 경우에만 한 번 더 요청한다. 기능 전체에서 KST 하루 최대 2개 모델 요청이며 회사
-공통 호출 예산과 뉴스 모델 실행 경로를 공유한다. 추가 유료 AI API로 전환하지 않는다.
+실패한 경우에만 한 번 더 요청한다. 운영 설정은 KST 하루 최대 12개 모델 요청이며,
+정기 세 슬롯의 최대 두 번 편집을 위해 6개를 확보한다. 수시 요청에는 나머지 최대 6개를
+사용한다. 설치 기본값은 하루 2개다. 회사 공통 호출 예산과 뉴스 모델 실행 경로를 공유한다. 추가 유료 AI API로 전환하지 않는다.
 모델은 `AgentDecision.artifacts` 안의 `TrendBriefDraft`만 반환한다. 모든 후보를 한 번씩
 포함하고, 합치기는 공통 원문 근거가 있을 때만 허용한다. 원문에 없는 인용, 외부 링크,
 메시지·도구·위임·기억 제안은 거부한다. 표시 숫자와 링크는 서버가 만든다.
@@ -65,20 +70,26 @@ Trend Scout 자체는 모델 배정 대상이 아니다. 완료된 제안이 계
 ```mermaid
 flowchart LR
     G[Google KR RSS · 10분] --> P[(PostgreSQL 관측)]
-    P --> F[07:30 · 24시간 입력 동결]
+    P --> F[07:30·13:30·19:30 · 최신 RSS 동결]
     F --> N[네이버 추이 · 허용 원문]
     N --> E[기존 구독 편집 · 최대 2회]
-    F --> D[08:00 · 당일 본문 확정]
+    F --> D[08·14·20시 · 슬롯별 본문 확정]
     E --> D
     D --> O[(영속 outbox)] --> S[Trend Scout · Slack]
 ```
 
-08시 확정 작업은 수집·AI 편집과 독립된 Temporal 작업이다. 자료 보강이 늦어도 분류가 검증된
+정기·요청 확정 작업은 수집·AI 편집과 독립된 Temporal 작업이다. 자료 보강이 늦어도 분류가 검증된
 주제는 배경 없이 숫자·검색 링크로 제공한다. AI 분류가 늦으면 주제 생략 안내로 확정한다.
 실제 Slack 도착은 인프라·Slack 상태에 따라 지연될 수 있다.
-날짜·한국·채널로 고정한 ID에 최종 본문과 outbox를 한 DB 트랜잭션으로 커밋한다.
+정기 발송은 날짜·시간·한국·채널의 ID, 수시 요청은 Slack workspace·채널·메시지 시각의
+ID에 최종 본문과 outbox를 한 DB 트랜잭션으로 커밋한다. 기존 08시 ID는 유지한다.
+같은 메시지에 대한 일반 이벤트·멘션 이벤트·재전달은 같은 요청을 가리킨다.
 늦은 모델 응답이 최종 본문을 바꾸거나 두 번째 브리핑을 만들지 않는다.
-08~09시 재시작은 당일분만 따라잡고, 09시 이후는 만료된다. 전날 미발송분을 몰아서 보내지 않는다.
+각 정기 슬롯은 예정 시각부터 한 시간 안에만 따라잡으며, 이전 미발송분을 몰아서 보내지 않는다.
+수시 요청은 다음 수집 작업에서 RSS를 갱신한 뒤 편집한다. 8분 안에 분류를 확인하지 못하면
+미분류 주제를 생략한 안내를 확정하며 요청 15분 후에는 만료한다.
+최근 10분 안에 같은 정책으로 검증된 편집이 있으면 재사용한다. 본문에 원래 자료 수집
+시각과 요청 시각을 함께 표시하며, 전체 플랫폼의 초 단위 실시간 검색량으로 표현하지 않는다.
 
 발송 직전에도 채널·사용자 허용 목록·정책·만료를 다시 검사한다. 회사 전체 일시 중지는
 편집·발송에 적용된다. HTTP 429는 같은 발송 ID로 기다리지만 타임아웃·서버 5xx·성공 응답의
@@ -89,14 +100,20 @@ flowchart LR
 사용한 스냅샷·원문 발췌·모델 응답·최종 본문·발송 영수증은 DB에 남는다. 일반 RSS 스냅샷은
 90일 후 정리하되 동결한 브리핑이 참조하는 스냅샷은 유지한다. 키워드 최초 관측 이력도 보존한다.
 네이버 요청은 재시도를 포함해 KST 하루 100회 이하로 제한하고 동결 입력별 응답을 캐시한다.
+같은 날짜 범위·키워드·시간 단위로 성공한 추이 응답은 원 응답 전체를 보존해 재사용한다.
+캐시 영수증은 원 응답 ID를 참조한다. 서로 다른 정규화 지수를 이어 붙이지 않는다.
 
 ## 설치
 
 1. [Trend Scout manifest](../slack-apps/trend_scout.json)로 앱을 설치하고 `#search-trends`에 초대한다.
-   `chat:write`만 필요하다. 이벤트·Socket Mode·App-Level Token·signing secret은 사용하지 않는다.
+   수시 요청용 manifest는 `chat:write`, `app_mentions:read`, `channels:history`와
+   `app_mention`·`message.channels` 이벤트를 사용한다. 기존 서버와 같은 Socket Mode를 켜고
+   `connections:write` app-level token을 만든다. scope를 추가한 뒤 앱을 재설치한다.
+   설치 기본값인 발송 전용 모드는 `chat:write`만 사용하는 manifest를 CLI에서 생성할 수 있다.
    현재 생성된 앱은 `A0C7VRH8JV6`, 채널은 `C0C6WTA9ECV`이며
    [현재 연결 상태](project/TREND-FEED-VALIDATION.md)를 확인해 기존 것을 사용한다.
 2. 기존 서버 Slack 비밀 저장소에 `trend_scout`의 `app_id`, `bot_user_id`, `bot_token`을 추가한다.
+   수시 요청용 `app_token`도 같은 서버 비밀 저장소에 저장한다.
    토큰을 코드·채팅·모델 실행기로 복사하지 않는다. 기존 직원 항목을 덮어쓰지 않는다.
 3. 실제 채널·소유자를 회사 허용 목록에 추가한다. 다음 환경을 모든 회사 프로세스에 동일하게 적용한다.
    기존 뉴스·기술·퀀트 등 피드 채널과 같은 채널을 지정하면 동작하지 않는다.
@@ -107,6 +124,9 @@ TREND_FEED_PUBLISH_ENABLED=false
 TREND_FEED_CHANNEL_ID=C_ACTUAL_SEARCH_TRENDS_ID
 TREND_FEED_OWNER_USER=U_ACTUAL_OWNER_ID
 TREND_FEED_NAVER_ENABLED=true
+TREND_FEED_PUBLICATION_HOURS=[8,14,20]
+TREND_FEED_ON_DEMAND_ENABLED=true
+TREND_FEED_MODEL_DAILY_LIMIT=12
 ```
 
 별도 `ROLES_FILE`을 사용한다면 패키지의 `trend_scout` 항목도 반영한다. `active=false`,
@@ -138,9 +158,17 @@ uv run --frozen quant-company trend-feed status
 `status`는 수집 성공/실패, 네이버 요청 수, 모델 상태, 당일 브리핑과 발송 영수증 상태를 보여준다.
 
 상시 실행은 기존 `news-worker`·`dispatch`·Slack 발송 프로세스를 사용한다. 별도 cron은 없다.
-수집/확정 workflow ID는 `company-trend-feed-collection-v1` / `company-trend-feed-digest-v1`이며
+수집 ID는 `company-trend-feed-collection-v1`, 여러 슬롯·수시 요청의 확정 ID는
+`company-trend-feed-publication-v2`이며
 회사 큐의 `-trend-collection`에서 실행한다. 편집 ID는 `company-trend-feed-editorial-v1`이며
-기존 `-news-model` 큐에서 실행한다. 새 런타임은 이 세 workflow를 함께 등록한다.
+기존 `-news-model` 큐에서 실행한다. 새 publisher는 30초마다 준비·마감 요청을 검사한다.
+기존 하루 08시 모드는 `company-trend-feed-digest-v1`을 유지한다. 전환할 때 v2가
+등록됐는지 확인한 뒤 v1 publisher를 종료하며, 기존 collection/editorial 기록은 유지한다.
+
+Socket Mode는 Slack SDK가 app-level token으로 연 인증 연결에서만 이벤트를 받는다.
+HTTP 수신은 기존 timestamp·HMAC 서명 검증을 유지한다. 두 경로 모두 workspace·app ID,
+소유자·전용 채널·봇 제외 정책을 적용한다. 모델에 명령을 해석시키지 않으며 Trend Scout의
+`active=false`·빈 도구·위임 권한을 유지한다.
 
 기본 전환은 3일간 미리보기에서 관측 누락·후보 품질·08시 확정·원문 제한을 확인하고, 실제 Codex 실행과
 전용 Slack 앱의 실제 채널 발송 영수증을 확인한 후 `TREND_FEED_PUBLISH_ENABLED=true`로 전환한다.
@@ -153,7 +181,7 @@ uv run --frozen quant-company trend-feed status
 ## 검증 명령과 외부 계약
 
 ```bash
-uv run --frozen pytest -q tests/test_trend_feed.py tests/test_trend_feed_temporal.py
+uv run --frozen pytest -q tests/test_trend_feed.py tests/test_trend_feed_recurring.py tests/test_trend_feed_temporal.py
 uv run --frozen ruff check .
 uv run --frozen python scripts/qualify_trend_feed.py --live --output .local/trend-feed-live.json
 ```
@@ -173,3 +201,7 @@ API HUB의 `POST /search-trend/v1/search`, `GET /search/v1/news`와
 `X-NCP-APIGW-API-KEY-ID` / `X-NCP-APIGW-API-KEY` 헤더를 사용한다.
 추가 유료 API로 자동 전환하지 않는다. 현재 API HUB는
 [한시적 무료 안내](https://guide.ncloud-docs.com/docs/apihub-spec)가 있으므로 상시 무료로 가정하지 않는다.
+
+수신 계약 확인: [Slack Socket Mode](https://docs.slack.dev/apis/events-api/using-socket-mode/),
+[채널 메시지 이벤트](https://docs.slack.dev/reference/events/message.channels/),
+[멘션 이벤트](https://docs.slack.dev/reference/events/app_mention/).

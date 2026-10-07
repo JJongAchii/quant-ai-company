@@ -14,6 +14,7 @@ from ..owner_controls import effective_limits
 from . import schedule
 from .contracts import GOOGLE_CANDIDATE_LIMIT, TREND_FEED_AGENT
 from .editor import EDITORIAL_POLICY_VERSION, prompt, publication_items, render, response_json, validate_draft
+from .sources import trend_summary
 from .supplement import major_issues
 
 LOCK = 71351006
@@ -45,7 +46,9 @@ class TrendFeedStore:
             "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
             "naver": s.trend_feed_naver_enabled, "model": reporter.model if reporter else None,
             "effort": reporter.reasoning_effort if reporter else None,
-            "sources": [source.model_dump() for source in load_sources(s.news_sources_file)]})
+            "sources": [source.model_dump() for source in load_sources(s.news_sources_file)],
+            "publication_hours": s.trend_feed_publication_hours,
+            "on_demand": s.trend_feed_on_demand_enabled, "model_daily_limit": s.trend_feed_model_daily_limit})
 
     def claim_source(self):
         if not self.authorized():
@@ -102,11 +105,15 @@ class TrendFeedStore:
                           ok, receipt.get("etag"), ok, receipt.get("modified")))
             return {"state": "collected" if ok else "source_error", "observations": count}
 
-    def bundle(self, conn, cutoff):
+    def bundle(self, conn, cutoff, *, latest_only=False):
         start = cutoff - timedelta(days=1)
         rows = conn.execute("""SELECT o.*,k.first_seen FROM trend_feed_observations o
             JOIN trend_feed_keywords k ON k.keyword=o.keyword WHERE observed_at>=%s AND observed_at<%s
             ORDER BY observed_at, snapshot_id,keyword""", (start, cutoff)).fetchall()
+        if latest_only:
+            latest = conn.execute("""SELECT id FROM trend_feed_snapshots WHERE ok AND observed_at<%s
+                ORDER BY observed_at DESC LIMIT 1""", (cutoff,)).fetchone()
+            rows = [row for row in rows if latest and row["snapshot_id"] == latest["id"]]
         candidates = {}
         for row in rows:
             item = row["item"]
@@ -131,7 +138,8 @@ class TrendFeedStore:
         coverage = max(start, source["started_at"]) if source["started_at"] else start
         boundaries = [min(coverage, cutoff), *successes, cutoff]
         gap = not successes or any(b - a > timedelta(minutes=30) for a, b in pairwise(boundaries))
-        return as_json({"cutoff": cutoff, "candidates": ordered + supplements, "coverage_start": source["started_at"],
+        return as_json({"cutoff": cutoff, "candidate_scope": "latest_rss" if latest_only else "rolling_24h",
+                        "candidates": ordered + supplements, "coverage_start": source["started_at"],
                         "partial_history": not source["started_at"] or source["started_at"] > start,
                         "last_success": successes[-1] if successes else None, "collection_gap": gap,
                         "snapshot_ids": sorted({c[k] for c in ordered for k in ("peak_snapshot", "latest_snapshot")})})
@@ -140,11 +148,12 @@ class TrendFeedStore:
         if not self.authorized():
             return None
         at = schedule.utcnow()
-        cutoff, send, expiry = schedule.times(at)
+        cutoff, send, expiry = schedule.slot_times(at, self.company.settings.trend_feed_publication_hours)
         if at < cutoff:
             return None
         s = self.company.settings
-        identity = stable(f"trend-feed:{cutoff.date()}:KR:{s.trend_feed_channel_id}")
+        slot = str(send.date()) if send.hour == 8 else f"{send.date()}T{send.hour:02}:00"
+        identity = stable(f"trend-feed:{slot}:KR:{s.trend_feed_channel_id}")
         with self.db.transaction() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK,))
             row = conn.execute("SELECT * FROM trend_feed_digests WHERE id=%s", (identity,)).fetchone()
@@ -153,24 +162,67 @@ class TrendFeedStore:
                     row = conn.execute("UPDATE trend_feed_digests SET state='expired' WHERE id=%s RETURNING *",
                                        (identity,)).fetchone()
                 return row
-            bundle = self.bundle(conn, cutoff)
+            bundle = self.bundle(conn, cutoff, latest_only=len(s.trend_feed_publication_hours) > 1)
+            bundle["publication_at"] = send.isoformat()
             return conn.execute("""INSERT INTO trend_feed_digests
                 (id,day,channel,owner_user,cutoff,send_at,expires_at,policy_digest,state,bundle)
                 VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING *""",
-                (identity, cutoff.date(), s.trend_feed_channel_id, s.trend_feed_owner_user, cutoff, send, expiry,
+                (identity, send.date(), s.trend_feed_channel_id, s.trend_feed_owner_user, cutoff, send, expiry,
                  self.policy(), "expired" if at >= expiry else "preparing", Jsonb(bundle))).fetchone()
 
+    def request(self, event_key, *, owner, channel, thread_ts):
+        s, at = self.company.settings, schedule.utcnow()
+        if not (self.authorized() and s.trend_feed_publish_enabled and s.trend_feed_on_demand_enabled
+                and owner == s.trend_feed_owner_user and channel == s.trend_feed_channel_id):
+            return {"ok": True, "ignored": True, "reason": "trend_request_scope"}
+        identity = stable("trend-request:" + event_key)
+        with self.db.transaction() as conn:
+            conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK,))
+            existing = conn.execute("SELECT id,state FROM trend_feed_digests WHERE event_key=%s", (event_key,)).fetchone()
+            if existing:
+                return {"ok": True, "duplicate": True, "id": str(existing["id"]), "state": existing["state"]}
+            if conn.execute("SELECT 1 FROM runtime_control WHERE paused_until>%s", (at,)).fetchone():
+                return {"ok": True, "ignored": True, "reason": "company_paused"}
+            cached = conn.execute("""SELECT * FROM trend_feed_digests WHERE draft IS NOT NULL AND enriched
+                AND state IN ('queued','preview') AND policy_digest=%s AND cutoff>=%s AND cutoff<=%s
+                ORDER BY cutoff DESC LIMIT 1""", (self.policy(), at - timedelta(minutes=10), at)).fetchone()
+            bundle = dict(cached["bundle"]) if cached else self.bundle(conn, at, latest_only=True)
+            bundle.update(on_demand=True, requested_at=at.isoformat(), refresh_pending=not bool(cached))
+            conn.execute("""INSERT INTO trend_feed_digests(id,day,channel,owner_user,cutoff,send_at,expires_at,
+                policy_digest,bundle,draft,enriched,kind,event_key,thread_ts,requested_at,reused_digest_id)
+                VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'on_demand',%s,%s,%s,%s)""",
+                (identity, at.astimezone(schedule.KST).date(), channel, owner,
+                 cached["cutoff"] if cached else at, at + timedelta(minutes=8), at + timedelta(minutes=15),
+                 self.policy(), Jsonb(bundle), Jsonb(cached["draft"]) if cached else None, bool(cached),
+                 event_key, thread_ts, at, cached["id"] if cached else None))
+            if not cached:
+                conn.execute("UPDATE trend_feed_source SET next_at=LEAST(next_at,%s) WHERE id=1", (at,))
+            return {"ok": True, "trend_request": True, "id": str(identity), "cached": bool(cached)}
+
     def claim_enrichment(self):
-        row = self.freeze()
-        if not row:
+        self.freeze()
+        if not self.authorized():
             return None
         at = schedule.utcnow()
         with self.db.transaction() as conn:
             token = uuid4()
+            row = conn.execute("""SELECT * FROM trend_feed_digests WHERE state='preparing' AND NOT enriched
+                AND send_at>%s AND policy_digest=%s AND (lease_until IS NULL OR lease_until<=%s)
+                ORDER BY (kind='scheduled') DESC,send_at FOR UPDATE SKIP LOCKED LIMIT 1""",
+                (at, self.policy(), at)).fetchone()
+            if not row:
+                return None
+            if row["bundle"].get("refresh_pending"):
+                source = conn.execute("SELECT * FROM trend_feed_source WHERE id=1").fetchone()
+                if (not source["last_attempt"] or source["last_attempt"] < row["requested_at"]
+                        or source["lease_until"] and source["lease_until"] > at):
+                    return None
+                bundle = self.bundle(conn, at, latest_only=True)
+                bundle.update(on_demand=True, requested_at=row["requested_at"].isoformat())
+                conn.execute("UPDATE trend_feed_digests SET cutoff=%s,bundle=%s WHERE id=%s",
+                             (at, Jsonb(bundle), row["id"]))
             return conn.execute("""UPDATE trend_feed_digests SET lease_token=%s,lease_until=%s
-                WHERE id=%s AND state='preparing' AND NOT enriched AND send_at>%s AND policy_digest=%s
-                AND (lease_until IS NULL OR lease_until<=%s) RETURNING *""",
-                (token, at + timedelta(minutes=10), row["id"], at, self.policy(), at)).fetchone()
+                WHERE id=%s RETURNING *""", (token, at + timedelta(minutes=10), row["id"])).fetchone()
 
     def save_enrichment(self, claimed, bundle):
         with self.db.transaction() as conn:
@@ -199,6 +251,37 @@ class TrendFeedStore:
                          (identity, digest_id, kind, Jsonb(payload), Jsonb(as_json(receipt))))
         return receipt
 
+    def cached_trends(self, digest_id, candidates, payload):
+        """Reuse a complete original response, never splice its normalized series."""
+        found = {}
+        with self.db.transaction() as conn:
+            receipts = conn.execute("""SELECT * FROM trend_feed_api_receipts WHERE kind='trend'
+                AND receipt->>'ok'='true' AND NOT (receipt ? 'cache_source_id') AND request->>'endDate'=%s
+                ORDER BY checked_at DESC LIMIT 100""", (payload["endDate"],)).fetchall()
+            for receipt in receipts:
+                if any(receipt["request"].get(key) != payload.get(key) for key in ("startDate", "endDate", "timeUnit")):
+                    continue
+                results = receipt["receipt"].get("data", {}).get("results", [])
+                if not isinstance(results, list):
+                    continue
+                reused = False
+                for candidate in candidates:
+                    matches = [result for result in results if isinstance(result, dict)
+                               and result.get("title") == candidate["id"] and result.get("keywords") == [candidate["title"]]]
+                    if candidate["id"] in found or len(matches) != 1:
+                        continue
+                    summary = trend_summary(matches[0], receipt["request"])
+                    if summary.get("state") == "available":
+                        found[candidate["id"]] = summary
+                        reused = True
+                if reused:
+                    identity = fingerprint([str(digest_id), "cached-trend", receipt["id"]])
+                    conn.execute("""INSERT INTO trend_feed_api_receipts(id,digest_id,kind,request,receipt)
+                        VALUES(%s,%s,'trend',%s,%s) ON CONFLICT DO NOTHING""",
+                        (identity, digest_id, Jsonb(receipt["request"]),
+                         Jsonb({**receipt["receipt"], "cache_source_id": receipt["id"]})))
+        return found
+
     def prepare_call(self):
         if not self.authorized() or "reporter" not in self.company.roles:
             return None
@@ -210,7 +293,8 @@ class TrendFeedStore:
             conn.execute("""UPDATE trend_feed_calls SET state='blocked',error='uncertain',completed_at=%s
                 WHERE state='running' AND lease_until<=%s""", (at, at))
             row = conn.execute("""SELECT * FROM trend_feed_digests WHERE state='preparing' AND enriched
-                AND draft IS NULL AND send_at>%s AND policy_digest=%s ORDER BY cutoff LIMIT 1 FOR UPDATE""",
+                AND draft IS NULL AND send_at>%s AND policy_digest=%s
+                ORDER BY (kind='scheduled') DESC,send_at LIMIT 1 FOR UPDATE""",
                                (at, self.policy())).fetchone()
             if not row or not row["bundle"]["candidates"]:
                 return None
@@ -223,9 +307,17 @@ class TrendFeedStore:
                 return None
             # Share the company's existing DB-day reservation convention.
             day = conn.execute("SELECT CURRENT_DATE AS day").fetchone()["day"]
-            if conn.execute("""SELECT count(*) AS n FROM trend_feed_calls WHERE created_at>=%s AND created_at<%s""",
+            usage = conn.execute("""SELECT count(*) AS n,count(*) FILTER(WHERE d.kind='on_demand') AS requests
+                            FROM trend_feed_calls c JOIN trend_feed_digests d ON d.id=c.digest_id
+                            WHERE c.created_at>=%s AND c.created_at<%s""",
                             (at.astimezone(schedule.KST).replace(hour=0, minute=0, second=0, microsecond=0),
-                             at.astimezone(schedule.KST).replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1))).fetchone()["n"] >= 2:
+                             at.astimezone(schedule.KST).replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1))).fetchone()
+            settings = self.company.settings
+            request_limit = max(0, settings.trend_feed_model_daily_limit - 2*len(settings.trend_feed_publication_hours))
+            if (usage["n"] >= settings.trend_feed_model_daily_limit
+                    or row["kind"] == "on_demand" and usage["requests"] >= request_limit):
+                conn.execute("UPDATE trend_feed_digests SET bundle=bundle||%s WHERE id=%s",
+                             (Jsonb({"editorial_notice": "오늘의 요청 편집 한도에 도달해 미분류 주제를 생략합니다."}), row["id"]))
                 return None
             conn.execute("INSERT INTO daily_usage(day,reserved) VALUES(%s,0) ON CONFLICT DO NOTHING", (day,))
             used = conn.execute("SELECT reserved FROM daily_usage WHERE day=%s FOR UPDATE", (day,)).fetchone()["reserved"]
@@ -274,14 +366,16 @@ class TrendFeedStore:
                 at + timedelta(seconds=max(60, min(seconds or 60, 86400))), call["id"]))
 
     def finalize(self):
-        row = self.freeze()
-        if not row:
+        current_slot = self.freeze()
+        if not self.authorized():
             return {"state": "paused"}
         at = schedule.utcnow()
         with self.db.transaction() as conn:
-            row = conn.execute("SELECT * FROM trend_feed_digests WHERE id=%s FOR UPDATE", (row["id"],)).fetchone()
-            if row["state"] in FINAL or at < row["send_at"]:
-                return {"state": row["state"]}
+            row = conn.execute("""SELECT * FROM trend_feed_digests WHERE state='preparing'
+                AND (send_at<=%s OR kind='on_demand' AND draft IS NOT NULL AND enriched)
+                ORDER BY (kind='scheduled') DESC,send_at FOR UPDATE SKIP LOCKED LIMIT 1""", (at,)).fetchone()
+            if not row:
+                return {"state": current_slot["state"] if current_slot else "idle"}
             state = ("expired" if at >= row["expires_at"] else
                      "stale" if row["policy_digest"] != self.policy() or not self.authorized() else None)
             if state:
@@ -296,7 +390,8 @@ class TrendFeedStore:
                              (project_id, row["owner_user"], row["channel"]))
                 project = conn.execute("SELECT * FROM projects WHERE id=%s", (project_id,)).fetchone()
                 self.company._message(conn, project, None, TREND_FEED_AGENT, "trend_feed", text, message_id=str(row["id"]))
-                conn.execute("UPDATE outbox SET next_at=%s WHERE id=%s", (row["send_at"], row["id"]))
+                conn.execute("UPDATE outbox SET next_at=%s,thread_ts=%s WHERE id=%s",
+                             (at if row["kind"] == "on_demand" else row["send_at"], row["thread_ts"], row["id"]))
             state = "queued" if publish else "preview"
             conn.execute("UPDATE trend_feed_digests SET state=%s,content=%s WHERE id=%s", (state, text, row["id"]))
             return {"state": state, "id": str(row["id"]), "items": len(publication_items(row["draft"], row["bundle"]))}
@@ -311,7 +406,7 @@ class TrendFeedStore:
             conn.execute("UPDATE outbox SET status='stale',error='trend_policy_or_freshness_changed' WHERE id=%s", (row["id"],))
             return False
         paused = conn.execute("SELECT 1 FROM runtime_control WHERE paused_until>%s", (at,)).fetchone()
-        if at < digest["send_at"] or paused:
+        if digest["kind"] == "scheduled" and at < digest["send_at"] or paused:
             conn.execute("""UPDATE outbox SET status='pending',next_at=%s,started_at=NULL,
                 attempts=GREATEST(0,attempts-%s) WHERE id=%s""",
                          (max(digest["send_at"], at + timedelta(minutes=1)), int(claimed), row["id"]))
@@ -320,11 +415,12 @@ class TrendFeedStore:
 
     def preview(self):
         at = schedule.utcnow()
-        cutoff, _, _ = schedule.times(at)
+        cutoff, _, _ = schedule.slot_times(at, self.company.settings.trend_feed_publication_hours)
         with self.db.transaction() as conn:
-            row = conn.execute("SELECT * FROM trend_feed_digests WHERE day=%s AND channel=%s",
-                               (cutoff.date(), self.company.settings.trend_feed_channel_id)).fetchone()
-            bundle = row["bundle"] if row else self.bundle(conn, min(cutoff, at))
+            row = conn.execute("SELECT * FROM trend_feed_digests WHERE channel=%s ORDER BY created_at DESC,id DESC LIMIT 1",
+                               (self.company.settings.trend_feed_channel_id,)).fetchone()
+            bundle = row["bundle"] if row else self.bundle(conn, min(cutoff, at),
+                latest_only=len(self.company.settings.trend_feed_publication_hours) > 1)
             return {"mode": "preview", "slack": "not-called", "model": "not-called",
                     "text": row["content"] if row and row["content"] else render(bundle, row["draft"] if row else None)}
 
@@ -341,13 +437,18 @@ class TrendFeedStore:
                 FROM trend_feed_snapshots WHERE observed_at>=%s""", (at - timedelta(days=1),)).fetchone()
             return as_json({"enabled": self.company.settings.trend_feed_enabled, "authorized": self.authorized(),
                 "publish_enabled": self.company.settings.trend_feed_publish_enabled,
-                "schedule": "daily 08:00 Asia/Seoul; cutoff 07:30; expiry 09:00", "last_24h": samples,
+                "schedule": "daily " + ", ".join(f"{h:02}:00" for h in self.company.settings.trend_feed_publication_hours)
+                            + " Asia/Seoul; cutoff30 minutes before; expiry60 minutes after",
+                "next_publication": schedule.next_slot(at, self.company.settings.trend_feed_publication_hours),
+                "on_demand_enabled": self.company.settings.trend_feed_on_demand_enabled,
+                "model_daily_limit": self.company.settings.trend_feed_model_daily_limit, "last_24h": samples,
                 "source": conn.execute("SELECT * FROM trend_feed_source WHERE id=1").fetchone(),
                 "naver_usage": conn.execute("SELECT * FROM trend_feed_api_usage ORDER BY day DESC LIMIT 7").fetchall(),
                 "model_calls": conn.execute("""SELECT id,stage,state,error,created_at,completed_at FROM trend_feed_calls
                     ORDER BY created_at DESC LIMIT 14""").fetchall(),
-                "digests": conn.execute("""SELECT d.id,d.day,d.state,d.enriched,d.send_at,d.expires_at,
+                "digests": conn.execute("""SELECT d.id,d.day,d.kind,d.state,d.enriched,d.cutoff,d.send_at,d.expires_at,
+                    d.requested_at,d.reused_digest_id,
                     o.status AS delivery_status,o.error,o.sent_ts,
                     extract(epoch FROM (o.started_at-d.send_at)) AS delivery_delay_seconds
                     FROM trend_feed_digests d LEFT JOIN outbox o ON o.id=d.id
-                    ORDER BY d.day DESC LIMIT 7""").fetchall()})
+                    ORDER BY d.created_at DESC,d.send_at DESC LIMIT 10""").fetchall()})

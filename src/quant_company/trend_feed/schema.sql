@@ -33,6 +33,17 @@ CREATE TABLE IF NOT EXISTS trend_feed_calls (
  lease_until timestamptz, created_at timestamptz NOT NULL DEFAULT now(), completed_at timestamptz,
  UNIQUE(digest_id,stage)
 );
+-- Preserve existing08:00 IDs and rows; later slots and explicit requests have their own keys.
+ALTER TABLE trend_feed_digests ADD COLUMN IF NOT EXISTS kind text NOT NULL DEFAULT 'scheduled';
+ALTER TABLE trend_feed_digests ADD COLUMN IF NOT EXISTS event_key text;
+ALTER TABLE trend_feed_digests ADD COLUMN IF NOT EXISTS thread_ts text;
+ALTER TABLE trend_feed_digests ADD COLUMN IF NOT EXISTS requested_at timestamptz;
+ALTER TABLE trend_feed_digests ADD COLUMN IF NOT EXISTS reused_digest_id uuid REFERENCES trend_feed_digests(id);
+ALTER TABLE trend_feed_digests DROP CONSTRAINT IF EXISTS trend_feed_digests_day_geo_channel_key;
+CREATE UNIQUE INDEX IF NOT EXISTS trend_digest_scheduled_slot ON trend_feed_digests(send_at,geo,channel)
+ WHERE kind='scheduled';
+CREATE UNIQUE INDEX IF NOT EXISTS trend_digest_request_event ON trend_feed_digests(event_key)
+ WHERE event_key IS NOT NULL;
 CREATE TABLE IF NOT EXISTS trend_feed_api_usage (
  day date PRIMARY KEY, calls integer NOT NULL DEFAULT 0 CHECK(calls>=0)
 );

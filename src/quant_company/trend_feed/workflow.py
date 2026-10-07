@@ -56,3 +56,20 @@ class TrendFeedDigestWorkflow:
             # Poll during the catch-up hour, then sleep to the following morning.
             await workflow.sleep(60)
         workflow.continue_as_new()
+
+
+@workflow.defn
+class TrendFeedPublicationWorkflow:
+    """Separate history from the legacy morning timer; handles due slots and owner requests."""
+
+    @workflow.run
+    async def run(self):
+        for _ in range(100):
+            try:
+                await workflow.execute_activity("company_trend_feed_finalize",
+                    start_to_close_timeout=timedelta(minutes=1),
+                    retry_policy=RetryPolicy(maximum_attempts=3, initial_interval=timedelta(seconds=5)))
+            except ActivityError:
+                workflow.logger.exception("Trend publication interrupted; committed slot retained")
+            await workflow.sleep(30)
+        workflow.continue_as_new()

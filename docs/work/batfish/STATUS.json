@@ -1,105 +1,45 @@
 {
   "approval": {
-    "approvedAt": "2026-10-07T00:36:29.511028+00:00",
-    "id": "chat-user-merge-pr113-20261007"
+    "approvedAt": "2026-10-07T01:37:56.755956+00:00",
+    "id": "chat-user-three-daily-and-slack-trends-20261007"
   },
-  "currentIntent": "INTENT-v6.json",
+  "currentIntent": "INTENT-v8.json",
   "deliverables": {
     "ACTIVATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/trend-feed-ten-20261006/activation.json",
-          "sha256": "922eb4e30df9"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-ten-20261006/active-probe.json",
-          "sha256": "d0bab4ddacde"
-        },
-        {
-          "path": "docs/project/TREND-FEED-TEN.md",
-          "sha256": "b8b108034eb3"
-        }
-      ],
-      "note": "Previously activated daily operation is preserved; this revision performs source integration without a production redeployment.",
-      "status": "verified",
-      "updatedAt": "2026-10-07T00:44:33.357853+00:00"
-    },
-    "IMMEDIATE_DELIVERY": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/trend-feed-sports-20261006/send-now-delivery.json",
-          "sha256": "ad34bccb9c29"
-        }
-      ],
-      "note": "Previously requested sports-excluded message is delivered and immutable. Merge does not resend Slack messages or replay model requests.",
-      "status": "verified",
-      "updatedAt": "2026-10-07T00:44:33.590968+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
     "IMPLEMENTATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-feed-ten-20261006/RESULT.json",
-          "sha256": "e6ed17cdf248"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-ten-20261006/image.json",
-          "sha256": "8b36bc024cf6"
+          "path": "docs/project/TREND-FEED-RECURRING.md",
+          "sha256": "8a92b2244c68"
         }
       ],
-      "note": "Previously qualified and deployed ten-topic implementation is unchanged; merge revision preserves these verified receipts.",
-      "status": "verified",
-      "updatedAt": "2026-10-07T00:44:32.898116+00:00"
+      "note": "구현·119 회귀·실제 부모 후보88/38 회귀 통과. 원격 CI와 실제 앱 연결/운영 발송 검증 진행.",
+      "status": "in_progress",
+      "updatedAt": "2026-10-07T01:40:16.831484+00:00"
     },
-    "MERGE": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/trend-feed-merge-20261007/RESULT.json",
-          "sha256": "69e62a2632ba"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-merge-20261007/github-ci.json",
-          "sha256": "3558608b0712"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-merge-20261007/github-merge.json",
-          "sha256": "624af310634f"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-merge-20261007/full-pytest-utc.txt",
-          "sha256": "584e3d899e20"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-merge-20261007/OUTCOME.md",
-          "sha256": "854e68690f5a"
-        }
-      ],
-      "note": "PR113 actually MERGED at20261007T00:59:44Z; confirmed main b981ad7 includes qualified04a3903 and latest64d449e. Required CI service1604 passed and real empty-auth/no-inference CLI9 passed; local UTC real PostgreSQL/Temporal1603 passed and lint passed. No deployment, Slack send or model inference during merge.",
-      "status": "verified",
-      "updatedAt": "2026-10-07T01:01:06.458015+00:00"
+    "PUBLICATION": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "SECURITY": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
     "VALIDATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/trend-feed-ten-20261006/pytest.txt",
-          "sha256": "958089a4677b"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-ten-20261006/preview.json",
-          "sha256": "5ce839f25674"
-        },
-        {
-          "path": "docs/project/evidence/trend-feed-ten-20261006/ruff.txt",
-          "sha256": "82b3e6a6c090"
-        }
-      ],
-      "note": "Existing real PostgreSQL/local Temporal regressions and real subscription preview remain verified. Merge-specific full-suite and remote CI are tracked under MERGE.",
-      "status": "verified",
-      "updatedAt": "2026-10-07T00:44:33.127258+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     }
   },
-  "intentDigest": "4b60aaea8bc6",
+  "intentDigest": "e858dfa5954e",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-07T01:01:06.458015+00:00"
+  "updatedAt": "2026-10-07T01:40:16.831484+00:00"
 }

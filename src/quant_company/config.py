@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import Field, SecretStr, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -75,6 +75,9 @@ class Settings(BaseSettings):
     trend_feed_owner_user: str = ""
     trend_feed_naver_enabled: bool = False
     trend_feed_naver_credentials_file: Path | None = None
+    trend_feed_publication_hours: list[int] = Field(default_factory=lambda: [8], min_length=1, max_length=24)
+    trend_feed_on_demand_enabled: bool = False
+    trend_feed_model_daily_limit: int = Field(default=2, ge=1, le=48)
     housing_feed_enabled: bool = False
     housing_feed_publish_enabled: bool = False
     housing_feed_channel_id: str = ""
@@ -99,6 +102,13 @@ class Settings(BaseSettings):
     company_max_project_tasks: int = Field(default=0, ge=0, le=500)
     company_model_timeout_seconds: int = Field(default=960, ge=10, le=1800)
     fixture_mode: bool = False
+
+    @field_validator("trend_feed_publication_hours")
+    @classmethod
+    def trend_publication_hours(cls, hours):
+        if any(hour < 0 or hour > 23 for hour in hours) or len(set(hours)) != len(hours):
+            raise ValueError("Trend publication hours must be distinct hours from0 to23")
+        return sorted(hours)
 
     @model_validator(mode="after")
     def explicit_simulation(self) -> "Settings":

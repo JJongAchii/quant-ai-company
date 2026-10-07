@@ -72,7 +72,9 @@ class SlackIngress:
         if role == QUANT_FEED_AGENT:
             return {"ok": True, "ignored": True, "reason": "quant_feed_delivery_identity_is_not_interactive"}
         if role == "trend_scout":
-            return {"ok": True, "ignored": True, "reason": "trend_feed_delivery_identity_is_not_interactive"}
+            from .trend_feed.inbox import accept
+
+            return accept(self.company, payload, event, credential)
         event = event if isinstance(event, dict) else {}
         if (event.get("type") not in {"app_mention", "message"}
                 or event.get("bot_id") or event.get("subtype") or not event.get("user")):

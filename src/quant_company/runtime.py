@@ -31,6 +31,7 @@ from .trend_feed.workflow import (
     TrendFeedCollectionWorkflow,
     TrendFeedDigestWorkflow,
     TrendFeedEditorialWorkflow,
+    TrendFeedPublicationWorkflow,
 )
 from .workflow import CompanyTurnWorkflow
 
@@ -86,7 +87,7 @@ def make_news_model_worker(client, company, provider=None):
 def make_trend_collector(client, company, collector=None):
     collector = collector or TrendFeedCollector(company)
     return Worker(client, task_queue=company.settings.temporal_task_queue + "-trend-collection",
-                  workflows=[TrendFeedCollectionWorkflow, TrendFeedDigestWorkflow],
+                  workflows=[TrendFeedCollectionWorkflow, TrendFeedDigestWorkflow, TrendFeedPublicationWorkflow],
                   activities=[collector.activity_tick, collector.activity_finalize],
                   max_concurrent_activities=2, max_cached_workflows=10,
                   graceful_shutdown_timeout=timedelta(seconds=10))
@@ -126,9 +127,12 @@ def make_housing_feed_worker(client, company, collector=None):
 
 async def dispatch_once(client, company):
     if getattr(company.settings, "trend_feed_enabled", False) and not getattr(company, "_trend_feed_started", False):
+        recurring = (company.settings.trend_feed_publication_hours != [8]
+                     or company.settings.trend_feed_on_demand_enabled)
         for definition, identity, suffix in (
             (TrendFeedCollectionWorkflow, "company-trend-feed-collection-v1", "-trend-collection"),
-            (TrendFeedDigestWorkflow, "company-trend-feed-digest-v1", "-trend-collection"),
+            (TrendFeedPublicationWorkflow if recurring else TrendFeedDigestWorkflow,
+             "company-trend-feed-publication-v2" if recurring else "company-trend-feed-digest-v1", "-trend-collection"),
             (TrendFeedEditorialWorkflow, "company-trend-feed-editorial-v1", "-news-model"),
         ):
             try:
