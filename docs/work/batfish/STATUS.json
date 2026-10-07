@@ -53,21 +53,29 @@
     "MERGE": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-feed-merge-20261007/PREMERGE.md",
-          "sha256": "8db25310f4b5"
+          "path": "docs/project/evidence/trend-feed-merge-20261007/RESULT.json",
+          "sha256": "69e62a2632ba"
         },
         {
-          "path": "docs/project/evidence/trend-feed-merge-20261007/focused-pytest.txt",
-          "sha256": "98b2faa2aaf1"
+          "path": "docs/project/evidence/trend-feed-merge-20261007/github-ci.json",
+          "sha256": "3558608b0712"
         },
         {
-          "path": "docs/project/evidence/trend-feed-merge-20261007/ruff.txt",
-          "sha256": "82b3e6a6c090"
+          "path": "docs/project/evidence/trend-feed-merge-20261007/github-merge.json",
+          "sha256": "624af310634f"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-merge-20261007/full-pytest-utc.txt",
+          "sha256": "584e3d899e20"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-merge-20261007/OUTCOME.md",
+          "sha256": "854e68690f5a"
         }
       ],
-      "note": "Reproduced required service failure with UTC PostgreSQL: frozen cutoff differs only by timezone representation. Validator canonicalizes cutoff to scheduled KST; UTC/Asia-Seoul plus supplement regressions13 pass. Full UTC service regression and remote CI pending before merge.",
-      "status": "in_progress",
-      "updatedAt": "2026-10-07T00:49:58.327887+00:00"
+      "note": "PR113 actually MERGED at20261007T00:59:44Z; confirmed main b981ad7 includes qualified04a3903 and latest64d449e. Required CI service1604 passed and real empty-auth/no-inference CLI9 passed; local UTC real PostgreSQL/Temporal1603 passed and lint passed. No deployment, Slack send or model inference during merge.",
+      "status": "verified",
+      "updatedAt": "2026-10-07T01:01:06.458015+00:00"
     },
     "VALIDATION": {
       "evidence": [
@@ -93,5 +101,5 @@
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-07T00:49:58.327887+00:00"
+  "updatedAt": "2026-10-07T01:01:06.458015+00:00"
 }
