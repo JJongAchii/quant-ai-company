@@ -1,0 +1,76 @@
+{
+  "observed_at": "2026-10-07T02:36:41.889542+00:00",
+  "next_turn": {
+    "id": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
+    "status": "queued",
+    "workflow_started": true,
+    "due_at": "2026-10-07T02:34:53.258088+00:00",
+    "error": null,
+    "created_at": "2026-10-07T02:34:53.118822+00:00",
+    "updated_at": "2026-10-07T02:34:53.118822+00:00",
+    "priority": 100,
+    "task_state": "pending",
+    "agent": "validator"
+  },
+  "runtime_control": {
+    "paused_until": null,
+    "reason": null
+  },
+  "pending_starts": 0,
+  "queue": [
+    {
+      "id": "e2988906-53c9-532b-acad-4afa31c0ca98",
+      "status": "queued",
+      "workflow_started": true,
+      "error": null,
+      "agent": "maintainer",
+      "priority": 0,
+      "kind": "work",
+      "created_at": "2026-10-07T02:28:52.520043+00:00",
+      "updated_at": "2026-10-07T02:28:52.520043+00:00"
+    },
+    {
+      "id": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
+      "status": "queued",
+      "workflow_started": true,
+      "error": null,
+      "agent": "validator",
+      "priority": 100,
+      "kind": "research_stage",
+      "created_at": "2026-10-07T02:34:53.118822+00:00",
+      "updated_at": "2026-10-07T02:34:53.118822+00:00"
+    }
+  ],
+  "containers": [
+    {
+      "name": "/quant-company-api-1",
+      "image": "quant-company:trend-recurring-20261007-d6b04a5bfc00",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "image": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-edb93937acda",
+      "state": "running",
+      "health": null
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "image": "quant-company:trend-recurring-20261007-b8f2a5294072",
+      "state": "running",
+      "health": null
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "image": "quant-company-codex:15215a4e7c7d3188551278c1ec36fed85d428436-profile2",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "name": "/quant-company-account-gateway-1",
+      "image": "quant-company-command-help:04a465865cf18dbc3cf2fb1aaa4191f6ca7e55ac",
+      "state": "running",
+      "health": "healthy"
+    }
+  ]
+}

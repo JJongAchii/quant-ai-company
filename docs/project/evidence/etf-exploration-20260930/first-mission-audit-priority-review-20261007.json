@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_with_existing_continuation_authority",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+  "stage_id": "5e5e2013-373c-5868-9fc9-242985e085b3",
+  "task_id": "a88948c2-58fc-5aa6-897a-76a691dd51dc",
+  "turn_id": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
+  "evidence": "first-mission-audit-normal-temporal-defer-20261007.json",
+  "observed_reason": "higher_priority_request",
+  "effect": "Change only this current audit task's operational priority from100 to0; its already-started normal Temporal workflow continues",
+  "signed_programme_resources_priority_changed": false,
+  "provider_request_or_session_replaced": false,
+  "other_owner_tasks_changed": false,
+  "direct_model_call_or_scientific_enqueue": false,
+  "authority": "Existing owner urgent first-experiment and research continuation requests; no new scientific authority"
+}

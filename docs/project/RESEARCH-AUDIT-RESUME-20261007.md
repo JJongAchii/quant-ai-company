@@ -20,4 +20,6 @@ Evidence: [blocked stage](evidence/etf-exploration-20260930/first-mission-audit-
 
 ## Current status
 
-The reviewed reconciliation is prepared. Final audit, meaning review and report publication remain pending. No strategy performance or live eligibility is reported here.
+The reviewed reconciliation committed at11:34:53KST as event759. The original first packet is completed in the same task and attempt, and the next normal turn was queued. The technical hold and error are cleared. Final audit, meaning review and report publication remain pending. No strategy performance or live eligibility is reported here.
+
+[Applied receipt](evidence/etf-exploration-20260930/first-mission-audit-reconciliation-applied-20261007.json).
