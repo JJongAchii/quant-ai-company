@@ -18,6 +18,13 @@ def stamp(value):
 
 
 def assess(definition, row, now, *, maximum_requests=6):
+    # New schedules predict missing editions; recorded editions keep their own
+    # frozen times instead of being reinterpreted after a schedule change.
+    if row and row.get('definition'):
+        frozen = row['definition']
+        if any(frozen[key] != definition[key] for key in ('id', 'day', 'kind')):
+            raise ValueError('recorded_edition_identity_mismatch')
+        definition = frozen
     due = stamp(definition['due_at'])
     deadline = due+timedelta(minutes=10)
     base = {k: definition[k] for k in ('id', 'day', 'kind', 'due_at', 'starts_at', 'cutoff')}
@@ -56,6 +63,9 @@ def assess(definition, row, now, *, maximum_requests=6):
     delivered = row.get('delivered_messages') or 0
     expected = row.get('expected_messages') or 0
     delivery = 'preview_only' if not row['publish'] else 'confirmed' if expected and delivered == expected else 'pending'
+    delivered_at = stamp(row.get('delivered_at'))
+    if row['publish'] and delivered_at and delivered_at > deadline:
+        problems.append('late_slack_delivery')
     if row['publish'] and now >= deadline and delivery != 'confirmed':
         problems.append('slack_delivery_incomplete')
     phases = []
@@ -70,6 +80,8 @@ def assess(definition, row, now, *, maximum_requests=6):
             'policy_digest': row['policy_digest'], 'committed_at': row.get('committed_at'),
             'delay_seconds': round((stamp(row['committed_at'])-due).total_seconds(), 3) if row.get('committed_at') else None,
             'delivery': delivery, 'delivered_messages': delivered, 'expected_messages': expected,
+            'delivered_at': row.get('delivered_at'),
+            'delivery_delay_seconds': round((delivered_at-due).total_seconds(), 3) if delivered_at else None,
             'source_count': row.get('source_count'), 'collection_error_count': row.get('collection_error_count')}
 
 
@@ -77,7 +89,7 @@ def query(ids):
     # Canonical UUID validation is the SQL boundary. Never interpolate env values.
     literal = ','.join("'"+str(UUID(value))+"'" for value in ids)
     return """SELECT COALESCE(json_agg(json_build_object(
-      'id',e.id,'state',e.state,'publish',e.publish,'policy_digest',e.policy_digest,
+      'id',e.id,'state',e.state,'publish',e.publish,'policy_digest',e.policy_digest,'definition',e.definition,
       'committed_at',e.committed_at,'error',e.error,
       'checks',e.review->'checks','verdict',e.review->'verdict',
       'substantive',e.quality->'substantive','reduced',e.quality->'reduced',
@@ -89,6 +101,9 @@ def query(ids):
       'expected_messages',jsonb_array_length(COALESCE(e.rendered,'[]'::jsonb)),
       'delivered_messages',(SELECT count(*) FROM brief_messages m JOIN outbox o ON o.id=m.id
           WHERE m.edition_id=e.id AND o.status='delivered' AND o.sent_ts IS NOT NULL),
+      'delivered_at',(SELECT to_timestamp(max(CASE WHEN o.sent_ts ~ '^[0-9]+[.][0-9]+$'
+          THEN o.sent_ts::numeric END)::double precision) FROM brief_messages m JOIN outbox o ON o.id=m.id
+          WHERE m.edition_id=e.id AND o.status='delivered'),
       'calls',COALESCE((SELECT json_agg(json_build_object('phase',c.phase,'state',c.state,
           'provider',c.response->>'provider','requested_at',c.requested_at,'completed_at',c.completed_at,
           'error',c.error) ORDER BY c.requested_at) FROM brief_calls c WHERE c.edition_id=e.id),'[]'::json)

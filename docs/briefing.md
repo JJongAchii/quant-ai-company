@@ -52,9 +52,11 @@ manifest 파일이나 코드를 바꾼 것만으로 실제 Slack 앱의 이름�
 과거 미리보기는 소급 발송하지 않는다. [실제 적용 기록](project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-installation.json)을
 남기며, 이 전환을 새 실제 내용의 품질 통과로 기록하지 않는다.
 
-관찰 도구는 매일 07:58·17:58 KST에 PostgreSQL에서 내용 검사·검증 오류·단계별 시간·지연·발송
+관찰 도구는 매일 07:58·17:58·18:58 KST에 PostgreSQL에서 내용 검사·검증 오류·단계별 시간·지연·발송
 영수증을 읽어 기록한다. 설치된 거래일 캘린더로 최근 7일과 다음 날의 예상 판을 계산하므로
 등록 자체가 빠진 판도 확인한다. 모델 호출·Slack 알림·실패 재실행·발송 설정 변경은 하지 않는다.
+저녁의 추가 확인은 특별 마감일을 위한 것이며, 이미 등록된 판은 당시 고정된 일정을 보존한다.
+작성 완료와 실제 Slack 도착의 지연을 각각 기록해 늦은 전송을 정시 도착으로 표시하지 않는다.
 상시 타이머는 `quant-company-analyst-monitor.timer`이며 기존 기간 제한 타이머는 해제한다.
 결과는 서버의 `/var/lib/quant-company/monitoring/analyst-continuous/results/latest.json`과
 회차별 파일에 저장한다. [상시 관찰 설치 기록](project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-monitor.json)을
