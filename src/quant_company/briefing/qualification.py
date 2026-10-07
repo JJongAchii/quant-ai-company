@@ -105,6 +105,10 @@ def qualify(company, *, at=None):
                 required_phases.add("plan")
                 if not (row["bundle"] or {}).get("source_plan"):
                     reasons.append("source_selection_not_reviewed")
+            if (row['bundle'] or {}).get('fact_inventory_required'):
+                required_phases.add('inventory')
+                if not (row['bundle'] or {}).get('fact_inventory_digest'):
+                    reasons.append('prewriting_inventory_not_committed')
             if quality.get("revision_used") or any(c["phase"] in {"revise", "final_review"} for c in edition_calls):
                 required_phases |= {"revise", "final_review"}
                 if (row['bundle'] or {}).get('source_notes_repair', {}).get('before_independent_review'):

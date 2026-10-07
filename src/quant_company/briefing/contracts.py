@@ -248,6 +248,41 @@ class SourceAssessment(StrictModel):
     material_facts: list[FactAssessment] = Field(max_length=6)
 
 
+class FactQualifier(StrictModel):
+    kind: Literal["comparison", "basis", "status", "scope", "driver", "counterevidence"]
+    text: str = Field(min_length=2, max_length=80)
+
+
+class InventoryFact(StrictModel):
+    fact: str = Field(min_length=5, max_length=240)
+    quote: str = Field(min_length=10, max_length=400)
+    qualifiers: list[FactQualifier] = Field(default_factory=list, max_length=6)
+
+
+class InventorySource(StrictModel):
+    source_id: str
+    treatment: Literal["covered", "background", "not_material"]
+    reason: str = Field(min_length=10, max_length=300)
+    material_facts: list[InventoryFact] = Field(max_length=6)
+
+
+class FactInventory(StrictModel):
+    sources: list[InventorySource] = Field(min_length=1, max_length=24)
+
+
+class FactPlacement(StrictModel):
+    fact_id: str = Field(pattern=r"^f[1-9][0-9]*$")
+    main_item_ids: list[str] = Field(min_length=1, max_length=6)
+
+
+class BriefComposition(BriefProposal):
+    # The service restores the previously committed inventory; the writer only
+    # supplies placements, never another copy that can quietly omit a fact.
+    source_notes: list[SourceAssessment] = Field(default_factory=list, max_length=0)
+    fact_placements: list[FactPlacement] = Field(max_length=144)
+    supplemental_source_notes: list[SourceAssessment] = Field(default_factory=list, max_length=4)
+
+
 class BriefReview(StrictModel):
     verdict: Literal["publish", "reduce", "withhold"]
     # Each criterion must be considered explicitly, never inferred from an empty rejection list.

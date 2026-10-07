@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS brief_editions (
 );
 CREATE TABLE IF NOT EXISTS brief_calls (
  id text PRIMARY KEY, edition_id uuid NOT NULL REFERENCES brief_editions(id),
- phase text NOT NULL CHECK(phase IN ('search','plan','write','review','revise','final_review')),
+ phase text NOT NULL CHECK(phase IN ('search','plan','inventory','write','review','revise','final_review')),
  request jsonb NOT NULL, response jsonb, result jsonb, state text NOT NULL DEFAULT 'running',
  next_at timestamptz NOT NULL DEFAULT now(), error text, completed_at timestamptz,
  UNIQUE(edition_id,phase)
@@ -22,14 +22,15 @@ CREATE TABLE IF NOT EXISTS brief_messages (
  expires_at timestamptz NOT NULL, UNIQUE(edition_id,part)
 );
 CREATE INDEX IF NOT EXISTS brief_due ON brief_editions(state,due_at);
+ALTER TABLE brief_calls ADD COLUMN IF NOT EXISTS requested_at timestamptz;
 ALTER TABLE brief_editions ADD COLUMN IF NOT EXISTS market_data jsonb;
 ALTER TABLE brief_editions ADD COLUMN IF NOT EXISTS data_lease timestamptz;
 ALTER TABLE brief_editions ADD COLUMN IF NOT EXISTS next_data timestamptz NOT NULL DEFAULT now();
 DO $$ BEGIN
  IF EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='brief_calls'::regclass
-            AND conname='brief_calls_phase_check' AND pg_get_constraintdef(oid) NOT LIKE '%plan%') THEN
+            AND conname='brief_calls_phase_check' AND pg_get_constraintdef(oid) NOT LIKE '%inventory%') THEN
   ALTER TABLE brief_calls DROP CONSTRAINT brief_calls_phase_check;
   ALTER TABLE brief_calls ADD CONSTRAINT brief_calls_phase_check
-   CHECK(phase IN ('search','plan','write','review','revise','final_review'));
+   CHECK(phase IN ('search','plan','inventory','write','review','revise','final_review'));
  END IF;
 END $$;

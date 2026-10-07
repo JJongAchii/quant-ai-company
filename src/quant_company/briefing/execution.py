@@ -3,18 +3,22 @@
 import re
 
 from .contracts import (
+    BriefComposition,
     BriefProposal,
     BriefReview,
     ConditionPatch,
     EditorialPatch,
+    FactInventory,
     MaterialFactPatch,
     SourceNotesPatch,
     SourcePlan,
 )
 
-EXECUTION_VERSION = 1
+EXECUTION_VERSION = 2
 OUTPUT_MODELS = {
     "brief_plan_v1": SourcePlan,
+    "brief_inventory_v1": FactInventory,
+    "brief_compose_v1": BriefComposition,
     "brief_write_v1": BriefProposal,
     "brief_review_v1": BriefReview,
     "brief_conditions_v1": ConditionPatch,
@@ -25,11 +29,14 @@ OUTPUT_MODELS = {
 # First-pass worst case: 6 + 24 + 12 = 42 minutes, within the 45-minute slot.
 # The one confirmed correction and its final review use at most another 12.
 PHASE_SECONDS = {"plan": 360, "write": 1440, "review": 720,
-                 "revise": 360, "final_review": 360}
+                 "inventory": 480, "revise": 360, "final_review": 360}
+# New editions split the old 24-minute writing slot into8 minutes of inventory
+# and16 minutes of composition. Legacy frozen write requests keep their budget.
+COMPOSE_SECONDS = 960
 REMAINING_SECONDS = {"plan": 2520, "write": 2160, "review": 720,
-                     "revise": 720, "final_review": 360}
+                     "inventory": 2160, "revise": 720, "final_review": 360}
 IDENTITY = re.compile(r"^news-brief-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})-"
-                      r"(plan|write|review|revise|final_review)$")
+                      r"(plan|inventory|write|review|revise|final_review)$")
 
 
 def output_contract(phase, bundle):
@@ -39,10 +46,12 @@ def output_contract(phase, bundle):
         return "brief_review_v1"
     if phase == "plan":
         return "brief_plan_v1"
+    if phase == "inventory":
+        return "brief_inventory_v1"
     mode = bundle.get("revision_feedback", {}).get("repair_mode")
     return {"conditions_only": "brief_conditions_v1", "material_append": "brief_facts_v1",
             "editorial_patch": "brief_editorial_v1", "source_notes_patch": "brief_source_notes_v1"}.get(
-                mode, "brief_write_v1")
+        mode, "brief_compose_v1" if bundle.get("fact_inventory_required") else "brief_write_v1")
 
 
 def valid_request(identity, contract):
@@ -51,16 +60,25 @@ def valid_request(identity, contract):
         return False
     phase = match[2]
     return (contract == "brief_plan_v1" if phase == "plan" else
+            contract == "brief_inventory_v1" if phase == "inventory" else
             contract == "brief_review_v1" if phase in {"review", "final_review"} else
-            contract == "brief_write_v1" if phase == "write" else
-            contract not in {"brief_plan_v1", "brief_review_v1"})
+            contract in {"brief_write_v1", "brief_compose_v1"} if phase == "write" else
+            contract not in {"brief_plan_v1", "brief_inventory_v1", "brief_review_v1"})
 
 
 def timeout_seconds(request):
     # Legacy requests keep their original generic timeout and digest.
     if valid_request(request.request_id, request.output_contract):
+        if request.output_contract == "brief_compose_v1" and IDENTITY.fullmatch(request.request_id)[2] == "write":
+            return COMPOSE_SECONDS
         return PHASE_SECONDS[IDENTITY.fullmatch(request.request_id)[2]]
     return None
+
+
+def remaining_seconds(phase, bundle):
+    if phase == "write" and bundle.get("fact_inventory_required"):
+        return COMPOSE_SECONDS + PHASE_SECONDS["review"]
+    return REMAINING_SECONDS[phase]
 
 
 def direct_instruction(text):
