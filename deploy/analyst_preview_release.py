@@ -333,7 +333,7 @@ def runtime_overlay(rows, images, settings):
                 raise ValueError('preview_existing_secret_mount_unsupported')
             identity = 'preserved_' + digest((mount['Source']+'\0'+mount['Destination']).encode())[:20]
             secrets[identity] = {'file':mount['Source']}
-            preserved_secrets.append({'source':identity, 'target':mount['Destination'].removeprefix('/run/secrets/')})
+            preserved_secrets.append({'source':identity, 'target':mount['Destination']})
         if preserved_secrets:
             result[name]['secrets'] = preserved_secrets
         host = row.get('HostConfig', {})

@@ -327,7 +327,8 @@ def test_runtime_overlay_preserves_added_read_only_secrets_in_install_and_rollba
         overlay = release.runtime_overlay(rows, {'news-worker': 'image'}, settings)
         secrets = overlay['services']['news-worker']['secrets']
         assert {s['target']: overlay['secrets'][s['source']]['file'] for s in secrets} == {
-            'database_password': '/state/secrets/database', 'trend_provider': '/state/secrets/trend-provider.json'}
+            '/run/secrets/database_password': '/state/secrets/database',
+            '/run/secrets/trend_provider': '/state/secrets/trend-provider.json'}
         assert overlay['services']['news-worker']['volumes'] == []
     row['Mounts'][1]['RW'] = True
     with pytest.raises(ValueError, match='existing_secret_mount_unsupported'):
