@@ -46,7 +46,8 @@ def execution_runtime_update(manifest):
     scope = manifest.get('execution_runtime_update')
     if scope is None:
         return False
-    if (not isinstance(scope, dict) or set(scope) != {'owner_approval_id', 'cli_version', 'scope'}
+    if (not isinstance(scope, dict) or set(scope) != {'owner_approval_id', 'approved', 'cli_version', 'scope'}
+            or scope.get('approved') is not True or not isinstance(scope.get('owner_approval_id'), str)
             or not re.fullmatch(r'chat-analyst-execution-approved-[0-9]{8}', scope['owner_approval_id'])
             or scope['scope'] != 'Analyst typed output and phase deadlines; preserve all other runtime behavior'
             or scope['cli_version'] != '0.160.1'

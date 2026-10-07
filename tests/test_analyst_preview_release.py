@@ -63,7 +63,7 @@ def execution_manifest():
     return {'preserve_api': True, 'preserve_codex_runtime': False,
             'runtime_changes': [{'path': 'src/quant_company/providers/codex_runner.py'}],
             'execution_runtime_update': {
-                'owner_approval_id': 'chat-analyst-execution-approved-20261007', 'cli_version': '0.160.1',
+                'owner_approval_id': 'chat-analyst-execution-approved-20261007', 'approved': True, 'cli_version': '0.160.1',
                 'scope': 'Analyst typed output and phase deadlines; preserve all other runtime behavior'}}
 
 
@@ -71,6 +71,10 @@ def test_execution_preview_needs_additional_specific_owner_authorization():
     manifest = execution_manifest()
     release.validate_preserved_runtime(manifest)
     assert release.selected_services(manifest) == ('news-worker', 'dispatch', 'codex-runtime')
+    pending = deepcopy(manifest)
+    pending['execution_runtime_update']['approved'] = False
+    with pytest.raises(ValueError, match='separate_owner_approval'):
+        release.validate_preserved_runtime(pending)
     for approval in ['chat-analyst-preview-approved-20261002', 'pending', '']:
         changed = deepcopy(manifest)
         changed['execution_runtime_update']['owner_approval_id'] = approval
