@@ -204,3 +204,19 @@ def test_six_issue_mapping_repair_reserves_real_context_capacity():
     result.issues[0].context.append(original.fact.model_copy(update={'id': 'seventh-context'}))
     with pytest.raises(ValueError, match='brief_story_context_limit'):
         type(result).model_validate(result.model_dump())
+
+
+def test_offline_recomposed_draft_keeps_raw_receipt_and_runs_content_validation():
+    from scripts import evaluate_briefing
+
+    b, p = notes_case()
+    written = response({'request_id': 'original-writer'}, p)
+    original = written.model_dump_json()
+    result = evaluate_briefing.assess(b, written, derived_proposal=p.model_dump())
+    assert result['raw_proposal'] == p.model_dump(mode='json')
+    assert not result['rejected'] and not result['source_notes_violations']
+    changed = p.model_copy(deep=True)
+    changed.issues[0].fact.text = '매출은 999억원으로 증가했다.'
+    rejected = evaluate_briefing.assess(b, written, derived_proposal=changed.model_dump())
+    assert rejected['rejected']['fact'] == 'unsupported_prose_number'
+    assert written.model_dump_json() == original
