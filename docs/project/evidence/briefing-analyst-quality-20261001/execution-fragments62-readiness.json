@@ -1,0 +1,61 @@
+{
+  "recorded_at": "2026-10-07T11:13:27.337350+00:00",
+  "scope": "Analyst execution and original-bound fragment repair",
+  "validation_version": 62,
+  "format_version": 18,
+  "execution_version": 3,
+  "inventory_contract": "brief_inventory_v2",
+  "legacy_inventory_contract_preserved": true,
+  "model_or_auth_changed": false,
+  "automatic_publication_remains_enabled": true,
+  "tests": {
+    "passed": 352,
+    "real_postgresql": true,
+    "model_and_slack": "simulated",
+    "junit_sha256": "be551addf6697ff347c708202ff9cd2563093215af5a075aaff6124e956629a5",
+    "ruff": "passed"
+  },
+  "prior_failure_diagnostic": {
+    "scope": "Derived diagnostic, not a new model response or quality verdict",
+    "raw_sha256": "f215b0f7cd810198bcc28d5bb1bceaddf1bce2cb3d840c552e3771824aede47d",
+    "sources": 20,
+    "facts": 65,
+    "compound_fields_resolved": 37,
+    "canonical_source_fragments": 115,
+    "original_and_numeric_validation": "inventory_fact_not_supported"
+  },
+  "transport": {
+    "scope": "Transport stress only: previous failed saved draft plus synthetic phrase qualifiers; no model inference or content regrading.",
+    "originals": 20,
+    "full_original_chars": 50029,
+    "synthetic_qualifier_count": 178,
+    "repair_mode": "editorial_patch",
+    "model_calls": 0,
+    "slack_calls": 0,
+    "checks": {
+      "inventory": {
+        "chars": 70165,
+        "fits": true
+      },
+      "composition": {
+        "chars": 87027,
+        "fits": true
+      },
+      "review": {
+        "chars": 87183,
+        "fits": true
+      },
+      "repair": {
+        "chars": 87639,
+        "fits": true
+      }
+    }
+  },
+  "remaining_acceptance": [
+    "Install into preserved app and official subscription runtime profiles",
+    "Run new full-original automatic composition and independent review",
+    "Continue scheduled content and actual delivery monitoring"
+  ],
+  "actual_model_content_pass": false,
+  "human_expert_certification": false
+}
