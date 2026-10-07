@@ -20,23 +20,23 @@
       "evidence": [
         {
           "path": "docs/project/TREND-FEED-RECURRING.md",
-          "sha256": "b431ac7ccd53"
+          "sha256": "cd37f97928c3"
         }
       ],
-      "note": "08·14·20 안정 슬롯·결정론적 요청·최신 RSS·10개 목표·캐시·예산 구현. 최종 코드 원격 CI 서비스1623/프로토콜9 통과.",
+      "note": "구현·운영 검증과 추가 사용자 지시에 따른 PR119 main 병합을 보고서에 기록. 검사한 c3d499d 소스가 388f44d 병합에 포함됨을 확인. 구현 변경 없이 문서 증거만 갱신.",
       "status": "verified",
-      "updatedAt": "2026-10-07T02:17:18.737343+00:00"
+      "updatedAt": "2026-10-07T02:30:56.268762+00:00"
     },
     "PUBLICATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-recurring-20261007/publication.json",
-          "sha256": "b59bcbb9a7b5"
+          "path": "docs/project/evidence/trend-recurring-20261007/merge.json",
+          "sha256": "a5c6e1ec5810"
         }
       ],
-      "note": "코드·설정·사용법·공개 운영 증거 원격 브랜치 반영, PR119 ready. CI 자격 코드 dcdc29c 이후 변경은 문서/증거뿐이며 이 완료 영수증도 문서 커밋으로 추가한다. 새 PR main 병합은 이번 계약 범위에 포함하지 않는다.",
+      "note": "사용자의 새 병합해 지시를 이행. 최신 c3d499d CI 서비스1623/프로토콜9/lint 통과 뒤 PR119를 main 388f44d에 병합. GitHub MERGED·동일 head·main ancestry·원격 구현 대조 확인. 완료 증거는 작업 브랜치에 문서 커밋으로 추가.",
       "status": "verified",
-      "updatedAt": "2026-10-07T02:19:54.456902+00:00"
+      "updatedAt": "2026-10-07T02:30:56.487425+00:00"
     },
     "SECURITY": {
       "evidence": [
@@ -65,5 +65,5 @@
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-07T02:19:54.456902+00:00"
+  "updatedAt": "2026-10-07T02:30:56.487425+00:00"
 }

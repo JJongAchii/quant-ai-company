@@ -80,3 +80,12 @@ fixture이며 이 자동 검사만으로 실제 연결/배포를 주장하지 �
 [추가 67개](evidence/trend-recurring-20261007/final-pytest.txt),
 [초기 전체 1,620개](evidence/trend-recurring-20261007/full-pytest.txt),
 [lint](evidence/trend-recurring-20261007/ruff.txt)에 보존한다.
+
+## main 병합
+
+사용자의 추가 `병합해` 지시에 따라 2026-10-07 11:30 KST PR119를 `main`에 병합했다.
+최신 head `c3d499d`의 서비스 1,623개·Codex 프로토콜 9개·lint 통과를 확인했다.
+병합 커밋은 `388f44d5897129314232d86ba9230a863bf658a4`다. 원격 `main`의 ancestry와
+병합된 구현·테스트·배포 템플릿을 대조해 검사한 head가 그대로 포함됐음을 확인했다.
+[병합·원격 대조 영수증](evidence/trend-recurring-20261007/merge.json),
+[최신 head 검사 로그](evidence/trend-recurring-20261007/premerge-ci.txt).

@@ -1,0 +1,53 @@
+{
+  "checked_at": "2026-10-07T02:30:20.397025+00:00",
+  "user_authorization": "User requested 병합해 for PR119.",
+  "pull_request": {
+    "baseRefName": "main",
+    "headRefOid": "c3d499da10d04590f8385413849b38b52aba66e0",
+    "mergeCommit": {
+      "oid": "388f44d5897129314232d86ba9230a863bf658a4"
+    },
+    "mergedAt": "2026-10-07T02:30:13Z",
+    "mergedBy": {
+      "id": "MDQ6VXNlcjI0ODA4OTg3",
+      "is_bot": false,
+      "login": "JJongAchii",
+      "name": "JongHyun ,Park"
+    },
+    "number": 119,
+    "state": "MERGED",
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/119"
+  },
+  "premerge_ci": {
+    "headSha": "c3d499da10d04590f8385413849b38b52aba66e0",
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37561511498",
+    "jobs": [
+      {
+        "name": "service",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-10-07T02:20:46Z",
+        "completedAt": "2026-10-07T02:29:32Z",
+        "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37561511498/job/112599667530"
+      },
+      {
+        "name": "codex-protocol",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-10-07T02:20:46Z",
+        "completedAt": "2026-10-07T02:21:08Z",
+        "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37561511498/job/112599667689"
+      }
+    ]
+  },
+  "main_commit_at_verification": "388f44d5897129314232d86ba9230a863bf658a4",
+  "merge_parents": [
+    "b981ad7e282fb1ead9d6663172f83883478aa225",
+    "c3d499da10d04590f8385413849b38b52aba66e0"
+  ],
+  "source_head_is_main_ancestor": true,
+  "merge_commit_is_main_ancestor": true,
+  "qualified_source_files_match_merge": true
+}
