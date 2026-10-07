@@ -398,7 +398,7 @@ class BriefStore:
                 feedback = row["bundle"].get("revision_feedback", {})
                 if call['phase'] == 'revise' and feedback.get('repair_mode') == 'source_notes_patch':
                     proposed = apply_source_notes_patch(BriefProposal.model_validate(row['proposal']),
-                        artifact(response, SourceNotesPatch, row['bundle']), feedback)
+                        artifact(response, SourceNotesPatch, row['bundle']), feedback, bundle=row['bundle'])
                 elif call["phase"] == "revise" and feedback.get("repair_mode") == "conditions_only":
                     proposed = apply_condition_patch(BriefProposal.model_validate(row["proposal"]),
                         artifact(response, ConditionPatch, row["bundle"]), feedback["allowed_ids"])
@@ -408,7 +408,7 @@ class BriefStore:
                 elif call["phase"] == "revise" and feedback.get("repair_mode") == "editorial_patch":
                     proposed = apply_editorial_patch(BriefProposal.model_validate(row["proposal"]),
                         artifact(response, EditorialPatch, row["bundle"]), feedback["allowed_sources"],
-                        preserve_notes=bool(row['bundle'].get('fact_inventory_required')))
+                        preserve_notes=bool(row['bundle'].get('fact_inventory_required')), bundle=row['bundle'])
                 else:
                     proposed = (compose(artifact(response, BriefComposition, row["bundle"]), row["bundle"])
                                 if row["bundle"].get("fact_inventory_required") else

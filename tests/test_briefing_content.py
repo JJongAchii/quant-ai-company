@@ -921,6 +921,36 @@ def test_editorial_patch_preserves_prices_quotes_kind_and_all_unedited_fields():
         apply_editorial_patch(p, EditorialPatch.model_validate({"edits": [{"id": "condition", "text": "새 조건"}]}), {"condition": ["source-1"]})
 
 
+def test_editorial_evidence_merge_keeps_every_old_and_new_quote_in_exact_original_spans():
+    from quant_company.briefing.contracts import Evidence
+    from quant_company.briefing.editor import _merge_evidence
+
+    parts = [str(i)+' reported '+('market evidence '+str(i)+' ') * 10 for i in range(5)]
+    original = '\n'.join(parts)
+    proof = [Evidence(source_id='same-original', quote=p) for p in parts]
+    merged = _merge_evidence(proof[:4], proof[4:], {'documents': [{'id': 'same-original', 'content': original}]})
+    assert len(merged) == 4
+    assert all(e.quote in original and len(e.quote) <= 650 for e in merged)
+    assert all(any(e.source_id == old.source_id and old.quote in e.quote for e in merged) for old in proof)
+    separate = [e.model_copy(update={'source_id': str(i)}) for i, e in enumerate(proof)]
+    assert len(_merge_evidence(separate[:4], separate[4:], {'documents': []})) == 5
+
+
+def test_story_context_accepts_the_same_bounded_paragraph_as_editorial_patch():
+    from quant_company.briefing.contracts import StoryContext
+
+    p = proposal()
+    source = p.issues[0].fact.model_dump()
+    p.issues[0].context = [StoryContext.model_validate({**source, 'id': 'supporting'})]
+    text = source['text'] + ' 추가로 확인된 절차와 영향 범위를 함께 설명합니다.' * 10
+    assert 300 < len(text) <= 500
+    patch = EditorialPatch.model_validate({'edits': [{'id': 'supporting', 'text': text}]})
+    updated = apply_editorial_patch(p, patch, {'supporting': ['source-1']})
+    assert updated.issues[0].context[0].text == text
+    with pytest.raises(ValueError):
+        StoryContext.model_validate({**source, 'id': 'supporting', 'text': '가'*501})
+
+
 def test_readability_editorial_patch_round_trip_is_reviewed_in_postgres(brief):  # noqa: F811
     store, _ = brief
     edition = seed(brief)

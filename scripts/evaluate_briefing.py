@@ -106,7 +106,8 @@ def assess(bundle, written, reviewed=None, *, previous=None, correction_review=N
         elif feedback["repair_mode"] == "material_append":
             proposed = apply_material_fact_patch(prior, artifact(written, MaterialFactPatch, bundle), feedback["allowed_sources"])
         elif feedback["repair_mode"] == "editorial_patch":
-            proposed = apply_editorial_patch(prior, artifact(written, EditorialPatch, bundle), feedback["allowed_sources"])
+            proposed = apply_editorial_patch(prior, artifact(written, EditorialPatch, bundle), feedback["allowed_sources"],
+                                            preserve_notes=bool(bundle.get('fact_inventory_required')), bundle=bundle)
         else:
             raise ValueError("Review does not authorize an isolated repair")
         correction = {"mode": feedback["repair_mode"], "previous_request_id": previous.request_id,

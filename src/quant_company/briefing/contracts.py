@@ -94,7 +94,9 @@ class ClaimEdit(StrictModel):
 
 
 class StoryContext(Claim):
-    text: str = Field(min_length=1, max_length=300)
+    # The same paragraph may be replaced by ClaimEdit. Keep producer/consumer
+    # limits aligned; the independent readability check judges actual verbosity.
+    text: str = Field(min_length=1, max_length=500)
     kind: Literal["fact", "interpretation"] = "fact"
 
 

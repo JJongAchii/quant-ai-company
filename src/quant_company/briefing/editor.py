@@ -40,7 +40,7 @@ from .quotations import (
 from .schedule import KST, close
 
 FORMAT_VERSION = 20
-VALIDATION_VERSION = 67
+VALIDATION_VERSION = 68
 
 WRITE = """You are Analyst writing a substantive, readable Korean daily market briefing.
 Return AgentDecision(status=complete,say='') with exactly one complete BriefProposal JSON artifact,
@@ -711,6 +711,44 @@ Explain unfamiliar acronyms; compress duplicated interpretation and repeated cav
                   'unannotated rows. Exact quote containment is separately validated by the service. '
                   'Only main_post_item_ids count as visible coverage.\nBRIEF DATA JSON:\n')
         result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    if references and phase == 'review' and len(result) > 88000 and 'review_items' in payload:
+        # A supplemented final review keeps every original and visible sentence.
+        # Intern repeated item IDs and encode contiguous quote IDs implicitly.
+        identities = [row[0] for row in payload['review_items']]
+        for key in ('source_notes_required', 'fact_inventory_required', 'fact_inventory_version',
+                    'quote_reference_version', 'execution_model', 'combined_editorial_repair', 'editorial_patch_version'):
+            payload.pop(key, None)  # Execution bookkeeping, not original evidence.
+        positions = {identity: i for i, identity in enumerate(identities)}
+        payload['review_item_ids'] = identities
+        for key in ('review_items', 'review_item_locators'):
+            payload[key] = [[positions[row[0]], *row[1:]] for row in payload[key]]
+        payload['main_post_item_ids'] = [positions[identity] for identity in payload['main_post_item_ids']]
+        payload['main_post_preview'] = [[positions[row[0]], row[1]] if isinstance(row, list) else row
+                                        for row in payload['main_post_preview']]
+        payload['issue_structure'] = [[positions[v] for v in row[:5]]+row[5:]
+                                      for row in payload['issue_structure']]
+        groups = payload['original_quotes']
+        if all(not group or [row[0] for row in group] == list(range(group[0][0], group[0][0]+len(group)))
+               for group in groups):
+            payload['original_quote_starts'] = [group[0][0] if group else None for group in groups]
+            payload['original_quotes'] = [[text for _, text in group] for group in groups]
+            payload['original_quote_layout'] = 'implicit_grouped_documents'
+        contexts = payload.get('market_context', [])
+        sources = {d['id']: i for i, d in enumerate(bundle['documents'])}
+        if contexts and all(set(c) == {'source_id', 'original_text_range'} for c in contexts):
+            payload['market_context'] = [[sources[c['source_id']], *c['original_text_range']] for c in contexts]
+            payload['market_context_columns'] = ['source_document_index', 'start', 'end']
+        observations = payload.get('locked_observations', [])
+        if observations and all(set(o) == set(observations[0]) for o in observations):
+            columns = list(observations[0])
+            payload['locked_observation_columns'] = columns
+            payload['locked_observations'] = [[o[k] for k in columns] for o in observations]
+        header = header.removesuffix('BRIEF DATA JSON:\n')+(
+            'Numeric item IDs index review_item_ids; OUTPUT uses full IDs. implicit_grouped_documents '
+            'holds text spans; span j cites @q:(original_quote_starts[document_index]+j). '
+            'Column lists decode observation/context rows.\n'
+            'BRIEF DATA JSON:\n')
+        result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     if composition and len(result) > 88000:
         positions = {d['id']: i for i, d in enumerate(bundle['documents'])}
         inventory = payload['committed_inventory']
@@ -862,7 +900,7 @@ def source_notes_revision_bundle(bundle, proposal, violations):
                                     'affected_source_ids': sorted(affected)}}
 
 
-def apply_source_notes_patch(proposal, patch, feedback):
+def apply_source_notes_patch(proposal, patch, feedback, *, bundle=None):
     notes = {n.source_id: n for n in patch.source_notes}
     if len(notes) != len(patch.source_notes) or set(notes) != set(feedback['source_ids']):
         raise ValueError('source_notes_patch_scope_rejected')
@@ -873,7 +911,7 @@ def apply_source_notes_patch(proposal, patch, feedback):
     revised = proposal
     if patch.edits or patch.context_additions:
         revised = apply_editorial_patch(proposal, EditorialPatch(edits=patch.edits,
-            context_additions=patch.context_additions), feedback['allowed_sources'])
+            context_additions=patch.context_additions), feedback['allowed_sources'], bundle=bundle)
     value = revised.model_dump(mode='json')
     value['source_notes'] = ([n.model_dump(mode='json') for n in proposal.source_notes
                               if n.source_id not in notes] if not feedback['replace_all_notes'] else [])
@@ -923,7 +961,33 @@ def apply_material_fact_patch(proposal, patch, allowed_sources):
     return BriefProposal.model_validate(replace(proposal.model_dump(mode="json")))
 
 
-def apply_editorial_patch(proposal, patch, allowed_sources, *, preserve_notes=False):
+def _merge_evidence(existing, added, bundle):
+    proof = list({(e.source_id, e.quote): e for e in [*existing, *added]}.values())
+    originals = {d['id']: d['content'] for d in (bundle or {}).get('documents', [])}
+    while len(proof) > 4:
+        choices = []
+        for i, first in enumerate(proof):
+            original = originals.get(first.source_id, '')
+            start = original.find(first.quote)
+            if start < 0:
+                continue
+            for j in range(i+1, len(proof)):
+                second = proof[j]
+                other = original.find(second.quote) if second.source_id == first.source_id else -1
+                if other < 0:
+                    continue
+                low, high = min(start, other), max(start+len(first.quote), other+len(second.quote))
+                if high-low <= 650:
+                    choices.append((high-low, i, j, original[low:high]))
+        if not choices:
+            break  # The unchanged evidence cap rejects a genuinely oversized patch.
+        _, i, j, quote = min(choices)
+        proof[i] = proof[i].model_copy(update={'quote': quote})
+        proof.pop(j)
+    return proof
+
+
+def apply_editorial_patch(proposal, patch, allowed_sources, *, preserve_notes=False, bundle=None):
     items = item_map(proposal)
     replacements = {}
     for edit in patch.edits:
@@ -934,9 +998,9 @@ def apply_editorial_patch(proposal, patch, allowed_sources, *, preserve_notes=Fa
             raise ValueError("editorial_patch_scope_rejected")
         if not numbers(target.text) <= numbers(edit.text):
             raise ValueError("editorial_patch_loses_verified_numbers")
-        proof = {(e.source_id, e.quote): e for e in [*target.evidence, *edit.evidence]}
+        proof = _merge_evidence(target.evidence, edit.evidence, bundle)
         replacements[edit.id] = Claim.model_validate({**target.model_dump(mode="json"), "text": edit.text,
-            "evidence": [e.model_dump(mode="json") for e in proof.values()]})
+            "evidence": [e.model_dump(mode="json") for e in proof]})
 
     def replace(value):
         if isinstance(value, dict):

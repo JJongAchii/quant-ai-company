@@ -152,6 +152,8 @@ def large_review_case():
 
 def original_body(data, index):
     quotes = data['original_quotes']
+    if data.get('original_quote_layout') == 'implicit_grouped_documents':
+        return ''.join(quotes[index])
     if isinstance(quotes, dict):
         return ''.join(text for position, text in quotes.values() if position == index)
     if data.get('original_quote_layout') == 'grouped_documents':
@@ -166,6 +168,38 @@ def input_proposal(data):
             return {names.get(key, key): expand(item) for key, item in value.items()}
         return [expand(item) for item in value] if isinstance(value, list) else value
     return expand(data['proposal'])
+
+
+def test_indexed_review_preserves_full_originals_visible_text_and_output_item_identities():
+    import re
+
+    from quant_company.briefing.editor import main_post_item_ids, render
+
+    b, p = large_review_case()
+    for document in b['documents']:
+        document['content'] = CONTENT * 8
+    for document in b['candidate_documents'][20:]:
+        document['title'] = document['title'][:140]
+    b['documents'] += [{**b['documents'][0], 'id': f'data-{i}', 'kind': 'dataset', 'content': CONTENT * 3}
+                       for i in range(3)]
+    for i, issue in enumerate(p['issues']):
+        for key in ('fact', 'interpretation'):
+            issue[key]['text'] = (f'관찰 {i} '+issue[key]['text']*4)[:350]
+    frozen = deepcopy(b)
+    text = prompt(b, 'final_review', p, direct_output=True)
+    data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
+    assert len(text) <= 88000 and data['original_quote_layout'] == 'implicit_grouped_documents'
+    for index, original in enumerate(b['documents']):
+        assert original_body(data, index) == original['content']
+        for offset, exact in enumerate(data['original_quotes'][index]):
+            alias = '@q:'+str(data['original_quote_starts'][index]+offset)
+            assert resolve_quotations({'source_id': original['id'], 'quote': alias}, b)['quote'] == exact
+    rendered = render(BriefProposal.model_validate(p), b)[0][0]
+    expected = re.sub(r'<[^<>|\n]+\|\[(\d+)\]>', r'[\1]', rendered)
+    assert ''.join(row[1] if isinstance(row, list) else row for row in data['main_post_preview']) == expected
+    assert {data['review_item_ids'][i] for i in data['main_post_item_ids']} == main_post_item_ids(BriefProposal.model_validate(p), b)
+    assert len(data['unselected_source_index']) == 76
+    assert b == frozen
 
 
 def test_large_final_review_retains_complete_originals_and_entire_unselected_catalog():
