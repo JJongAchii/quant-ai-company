@@ -30,6 +30,10 @@ assert re.fullmatch(r"[0-9a-f]{40}", manifest["commit"])
 STATE = Path("/var/lib/quant-company")
 ENV = STATE / "config/runtime.env"
 PREFIX = "audit-note-" + manifest["commit"]
+revision = manifest.get("patch_revision", "source")
+assert revision in {"source", "runtime"}
+if revision == "runtime":
+    PREFIX += "-runtime"
 PREPARED = STATE / "releases" / (PREFIX + "-prepared.json")
 APPLIED = STATE / "releases" / (PREFIX + "-applied.json")
 REASON = PREFIX
@@ -62,15 +66,7 @@ def public(rows):
                   "running": row["State"]["Running"]} for name, row in rows.items()}
 
 
-SOURCE_CODE = '''
-import hashlib,json,pathlib
-root=pathlib.Path('/app/src')
-files={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.rglob('*.py'))}
-targets=['quant_company/research/audit_delivery.py','quant_company/research/mission_backend.py']
-others={k:v for k,v in files.items() if k not in targets}
-print(json.dumps({'patch_files':{k:files[k] for k in targets},'source_count':len(files),
- 'other_sources_digest':hashlib.sha256(json.dumps(others,sort_keys=True,separators=(',',':')).encode()).hexdigest()}))
-'''
+SOURCE_CODE = "\nimport hashlib,json,pathlib\nroot = pathlib.Path('/app/src')\nfiles = {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.rglob('*.py'))}\ntargets = ['quant_company/research/audit_delivery.py','quant_company/research/mission_backend.py']\nothers = {name: digest for name, digest in files.items() if name not in targets}\ndigest = hashlib.sha256(json.dumps(others,sort_keys=True,separators=(',',':')).encode()).hexdigest()\nimport quant_company,quant_company.research.audit_delivery as audit,quant_company.research.mission_backend as backend\ninstalled=pathlib.Path(quant_company.__file__).parent.parent\nruntime_files={str(p.relative_to(installed)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((installed/'quant_company').rglob('*.py'))}\nruntime_others={k:v for k,v in runtime_files.items() if k not in targets}\nruntime={'root':str(installed),'source_count':len(runtime_files),'notes_bound':audit.MAX_NOTES,\n 'patch_files':{name:runtime_files[name] for name in targets},\n 'other_sources_digest':hashlib.sha256(json.dumps(runtime_others,sort_keys=True,separators=(',',':')).encode()).hexdigest()}\nprint(json.dumps({'source_count':len(files),'patch_files':{name:files[name] for name in targets},'other_sources_digest':digest,'runtime':runtime}))\n"
 
 
 def sources(identity, image=False):
@@ -85,8 +81,11 @@ def verify_baseline(rows):
         assert row["Id"] == expected["container_id"] and row["Image"] == expected["image_id"]
         assert row["State"]["Running"]
         assert row["Config"]["Labels"]["com.docker.compose.project.config_files"].split(",") == expected["compose_files"]
-        assert sources(row["Id"]) == {key: expected[key] for key in
-            ("patch_files", "source_count", "other_sources_digest")}
+        proof = sources(row["Id"])
+        assert {key: proof[key] for key in ("patch_files", "source_count", "other_sources_digest")} == {
+            key: expected[key] for key in ("patch_files", "source_count", "other_sources_digest")}
+        if revision == "runtime":
+            assert proof["runtime"] == expected["runtime"]
 
 
 def compose(row, override=None):
@@ -122,12 +121,19 @@ if not args.apply:
     images = {}
     for service in ("api", "worker"):
         row = before["quant-company-" + service + "-1"]
-        base = "quant-company-audit-baseline-" + service + ":" + manifest["commit"]
-        tag = "quant-company-audit-" + service + ":" + manifest["commit"]
+        base = "quant-company-audit-baseline-" + service + ":" + manifest["commit"] + ("-runtime" if revision == "runtime" else "")
+        tag = "quant-company-audit-" + service + ":" + manifest["commit"] + ("-runtime" if revision == "runtime" else "")
         run(["docker", "tag", row["Image"], base])
         dockerfile = ROOT / (service + ".Dockerfile")
+        expected = next(r for r in manifest["baseline"]["services"] if r["name"] == row["Name"].removeprefix("/"))
+        destinations = ["/app/src"]
+        if revision == "runtime":
+            runtime_root = expected["runtime"]["root"]
+            assert runtime_root == "/app/.venv/lib/python3.12/site-packages"
+            destinations.append(runtime_root)
         dockerfile.write_text("FROM " + base + "\n" + "".join(
-            "COPY " + Path(name).name + " /app/src/" + name + "\n" for name in manifest["patch_files"]))
+            "COPY " + Path(name).name + " " + destination + "/" + name + "\n"
+            for destination in destinations for name in manifest["patch_files"]))
         with (ROOT / (service + "-build.private.log")).open("wb") as log:
             subprocess.run(["docker", "build", "--network", "none", "-f", str(dockerfile), "-t", tag, str(ROOT)],
                            check=True, timeout=180, stderr=subprocess.STDOUT, stdout=log)
@@ -136,6 +142,11 @@ if not args.apply:
         assert proof["patch_files"] == manifest["patch_files"]
         assert proof["other_sources_digest"] == manifest["baseline"]["services"][0]["other_sources_digest"]
         assert proof["source_count"] == manifest["baseline"]["services"][0]["source_count"]
+        if revision == "runtime":
+            assert proof["runtime"]["notes_bound"] == 8000
+            assert proof["runtime"]["patch_files"] == manifest["patch_files"]
+            assert proof["runtime"]["other_sources_digest"] == expected["runtime"]["other_sources_digest"]
+            assert proof["runtime"]["source_count"] == expected["runtime"]["source_count"]
         images[service] = {"tag": tag, "image_id": image["Id"], "baseline_image_id": row["Image"], **proof}
     verify_baseline(inspect())
     result = {"state": "inactive_patch_images_prepared", "observed_at": datetime.now(UTC).isoformat(),
@@ -224,7 +235,10 @@ with (STATE / ".backup.lock").open("a") as lock:
             row = after["quant-company-" + service + "-1"]
             assert row["Image"] == prepared["images"][service]["image_id"] and row["State"]["Running"]
             assert sources(row["Id"])["patch_files"] == manifest["patch_files"]
-            assert sources(row["Id"])["other_sources_digest"] == prepared["images"][service]["other_sources_digest"]
+            proof = sources(row["Id"])
+            assert proof["other_sources_digest"] == prepared["images"][service]["other_sources_digest"]
+            if revision == "runtime":
+                assert proof["runtime"] == prepared["images"][service]["runtime"]
         for name, row in before.items():
             if name not in {"quant-company-api-1", "quant-company-worker-1"}:
                 assert after[name]["Id"] == row["Id"] and after[name]["Image"] == row["Image"]

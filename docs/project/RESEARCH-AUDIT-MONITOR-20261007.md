@@ -37,3 +37,20 @@
 [정확한 root 적용 검토](evidence/etf-exploration-20260930/audit-note-patch-apply-review-20261007.json)를 보존했다.
 Apply operator는 모든 기존 native lane lock까지 획득해 백업 중 호출을 중단하지 않는다.
 준비된 이미지와 source commit53ed9e3은 그대로다. 운영 반영과 응답 대사 영수증은 완료 후 추가한다.
+
+
+## 최초 반영의 실제 import 검사 실패
+
+14:12:46 KST에 source 복사 이미지의 API/worker 전환과 다른 서비스 복구를 완료했다.
+실제 접수 트랜잭션 probe는 MAX_NOTES 검사에서 실패하여 DB 변경 없이 종료됐다.
+Python은 /app/src가 아닌 /app/.venv/lib/python3.12/site-packages의 별도 설치본을 불러왔다.
+설치본의 audit_delivery/mission_backend는 원래 SHA이고 한도는 여전히6,000자였다.
+따라서 이 첫 source-copy 반영은 실제 응답 거절을 해결한 배포로 인정하지 않는다.
+
+수정된 준비는 두 논리 모듈의 source와 실제 설치본을 함께 교체하고, **import한** MAX_NOTES8,000,
+모듈 SHA, 나머지 설치 파일의 digest를 검사한다. 실제 설치본은 API183개/worker171개이며
+각각의 나머지181개/169개 파일을 이전 그대로 유지한다. 이후 root 적용 검토와 같은 원문 접수
+probe를 다시 수행한다. 과학 실행·원문·서명 예산과 worker release는 그대로다.
+
+같은 호스트의 읽기 전용 관측기는45초마다 실행/접수/대기 원인/보고서 등록 상태만 보존하며,
+최대4시간 동작한다. 모델 호출·회사 DB 변경·Slack 발송을 하지 않는다.
