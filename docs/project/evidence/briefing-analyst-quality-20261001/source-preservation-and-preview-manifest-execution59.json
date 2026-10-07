@@ -1,6 +1,6 @@
 {
-  "recorded_at": "2026-10-07T00:32:45.638552+00:00",
-  "candidate_commit": "6408543abc36a2fa3a6922e398c6cc6b90f52f68",
+  "recorded_at": "2026-10-07T01:00:32.430519+00:00",
+  "candidate_commit": "15215a4e7c7d3188551278c1ec36fed85d428436",
   "previous_commit": "0ea670b7b0637d91a46714b73ef8df96d979cc6f",
   "runtime_changes": [
     {
@@ -55,7 +55,7 @@
       "path": "deploy/analyst_preview_release.py",
       "kind": "modify",
       "before_sha256": "bc811d28a7fcdf89e4576be8ca548618de91eef6a8f2d8e8c934655f4cc5c4b1",
-      "after_sha256": "cc719004c05b9219b4d241bc86bc927cb84ce55b87d5e95c5343df41020e6f2e"
+      "after_sha256": "0ad6748d7cd1bdda953e68914be14e07b9f19de42d1eac7240975c0e53ec4538"
     },
     {
       "path": "deploy/Dockerfile.analyst-code-preview",
@@ -1580,9 +1580,9 @@
       ]
     }
   ],
-  "runtime_archive_sha256": "2f913710e81ada84d2031696ccf8954205923b0d38dff9fabac11de0354f1b64",
+  "runtime_archive_sha256": "cc12bcdb0e9a20dd0831448bd6bdd322157204aba8daa52c389452425446a24a",
   "frozen_content_policy": "prospective-pm-20261007-execution59-policy.json",
-  "frozen_content_policy_sha256": "d222e59eaba58c2b9068b5bbabd2e1a09f8328a403e029dd96413e65cdf88d5b",
+  "frozen_content_policy_sha256": "b4946d9e1306ceab95202478b7bf3cb4b328058c1cc657c4db442a1369ec2898",
   "proposed_preview": {
     "publication": false,
     "channel": "C0C2E59B1AA",
