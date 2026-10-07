@@ -1,0 +1,23 @@
+{
+  "recorded_at": "2026-10-07T12:57:05.230185+00:00",
+  "source_commit": "b66f59a1d93dacf770da41f411d21305d4f2701e",
+  "validation_version": 65,
+  "full_original_count": 27,
+  "full_original_chars": 46917,
+  "every_original_character_preserved": true,
+  "exact_visible_main_preserved": true,
+  "main_wire_chars": 11470,
+  "independent_review_chars": 86308,
+  "context_limit": 88000,
+  "writer_inventory_and_prior_mapping_diagnostics_excluded": true,
+  "mechanical_rejection_count": 0,
+  "source_mapping_violations": 0,
+  "issues": 6,
+  "context_paragraphs": 6,
+  "one_completed_patch_reused_unchanged": true,
+  "no_new_model_calls": true,
+  "draft_sha256": "8e9d2383ff22b0ad0f449af6effb8d928a862bf802bd55524ef4d6b72817f570",
+  "prompt_sha256": "662057d5a4d08ffa53686fcafeea8962903582496a6155fbdd362eceb9505a47",
+  "quality_verdict": "pending_actual_independent_review",
+  "scheduled_timing_certified": false
+}

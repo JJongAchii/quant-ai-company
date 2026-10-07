@@ -1,11 +1,11 @@
 {
-  "recorded_at": "2026-10-07T12:39:46.270065+00:00",
+  "recorded_at": "2026-10-07T12:58:46.268974+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
   "latest_request": "음 잔여해있는 오류도 해결하고 확실하게 해줬으면 좋을거 같은데",
-  "source_commit": "996bc8604664bee3cd9840318f9605057978386d",
+  "source_commit": "b66f59a1d93dacf770da41f411d21305d4f2701e",
   "format_version": 19,
-  "validation_version": 64,
+  "validation_version": 65,
   "schedule_version": 4,
   "goal_complete": false,
   "implemented": [
@@ -63,10 +63,10 @@
     "pm": "17:45",
     "special_pm": "No earlier than special closing time plus 65 minutes"
   },
-  "next": "Finish one correction and first independent full-original review using preserved completed plan, inventory and writer. Normal automatic publication stays enabled.",
+  "next": "Await actual independent twelve-check review; all full originals and corrected visible main have been verified lossless. Automatic publication and continuous monitoring remain enabled.",
   "remaining": [
-    "Actual correction and independent review outcome under validation64",
-    "A full scheduled automatic briefing with continuing content, latency and Slack receipt monitoring"
+    "Actual independent review outcome",
+    "Next scheduled full automatic publication and delivery confirmation via continuous monitoring"
   ],
   "evidence": [
     "docs/project/evidence/briefing-analyst-quality-20261001/execution59-installation.json",
@@ -94,7 +94,11 @@
     "docs/project/evidence/briefing-analyst-quality-20261001/market-breadth61-readiness.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/market-breadth61-installation.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/execution-numeric63-actual-outcome.json",
-    "docs/project/evidence/briefing-analyst-quality-20261001/execution-layout64-installation.json"
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-layout64-installation.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-layout64-actual-outcome.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-installation.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-lossless-transport.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-regression.json"
   ],
   "latest_execution": {
     "plan": "completed at07:04:09 KST",
@@ -192,7 +196,7 @@
     "source_profile_preservation_verified": true,
     "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-final-installation-20261007.json"
   },
-  "updated_at": "2026-10-07T12:39:46.270065+00:00",
+  "updated_at": "2026-10-07T12:58:46.268974+00:00",
   "manual_preview": {
     "operation": "analyst-saved-input-quality-preview-20261007-schema59-once",
     "channel": "C0C2E59B1AA",
@@ -390,7 +394,7 @@
     "actual_outcome": "docs/project/evidence/briefing-analyst-quality-20261001/execution-numeric63-actual-outcome.json"
   },
   "error64": {
-    "state": "installed_mapping_correction_running",
+    "state": "actual_correction_completed_legacy_context_limit_rejected",
     "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution-layout64-installation.json",
     "case": "analyst-fragments62-layout64-continuation-20261007",
     "source_commit": "996bc8604664bee3cd9840318f9605057978386d",
@@ -398,6 +402,20 @@
     "previous_failed_records_preserved": true,
     "maximum_new_model_calls": 2,
     "completed_model_calls_replayed": false,
-    "quality_certified": false
+    "quality_certified": false,
+    "actual_outcome": "docs/project/evidence/briefing-analyst-quality-20261001/execution-layout64-actual-outcome.json"
+  },
+  "error65": {
+    "state": "installed_actual_independent_review_running",
+    "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-installation.json",
+    "transport_proof": "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-lossless-transport.json",
+    "regression": "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-regression.json",
+    "case": "analyst-fragments62-context65-independent-review-b-20261007",
+    "completed_phases_replayed": false,
+    "one_completed_correction_reused": true,
+    "maximum_new_model_calls": 1,
+    "maximum_total_calls": 5,
+    "quality_certified": false,
+    "automatic_publication": true
   }
 }

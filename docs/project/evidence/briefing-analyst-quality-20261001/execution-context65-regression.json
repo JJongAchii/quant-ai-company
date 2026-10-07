@@ -1,0 +1,35 @@
+{
+  "recorded_at": "2026-10-07T12:58:46.268974+00:00",
+  "tests": {
+    "capacity_regression": {
+      "tests": 174,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "de166a1ab134fef806bbff43f06a0a41682ee5d48d90f815d2d4fdabfe42573e"
+    },
+    "final_capacity_and_independence": {
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "9c3a87db88f410ded1f6476b342dc4fdb6628bcb0c3787db1a337fbf2f78c127"
+    },
+    "evaluator_regression": {
+      "tests": 190,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "4d49b5ae8c81077ba80f40e7f7af9d1e36868b06b3744e72e40f180d0cd2a242"
+    },
+    "corrected_envelope_assertion": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "a4b8ef07eb227926ea48a5108dc7a422f3203a1012da0b328f97152bb8dc17fd"
+    },
+    "interpretation": "Capacity suite:173 passed; new test fixture initially used Claim where StoryContext was required, then fixed duplicate fixture IDs. Final19 affected tests pass. Evaluator suite:189 passed; new test incorrectly expected reconciliation to preserve observation order; corrected to compare raw_proposal and the test passes. Model and Slack mocked in regression tests; PostgreSQL real where used. Actual correction/evidence replay and independent subscription review are separately recorded."
+  },
+  "ruff": "passed"
+}
