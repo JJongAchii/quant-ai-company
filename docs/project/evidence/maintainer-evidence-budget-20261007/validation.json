@@ -14,6 +14,11 @@
       "scope": "Final prompt/catalog/state/cache changes (e0506ef7a754f58639213477260d11bb75e877f7)",
       "result": "73 focused tests passed, 2 existing deprecation warnings",
       "duration_seconds": 15.32
+    },
+    {
+      "scope": "Final actor-scoped technical context; source db94a2d",
+      "result": "73 focused tests passed, 2 existing deprecation warnings",
+      "duration_seconds": 15.34
     }
   ],
   "commands": {
@@ -22,5 +27,6 @@
     "lint": "uv run --frozen ruff check ."
   },
   "services": "Real local PostgreSQL and Temporal where available; model, Slack and GitHub responses in automated tests are fixtures. Production preparation is separately measured with zero model calls.",
-  "final_source_commit": "e0506ef7a754f58639213477260d11bb75e877f7"
+  "final_source_commit": "db94a2d026aeb10d26e68570089d495de50c3dcc",
+  "source_ci_receipt": "source-ci.json"
 }

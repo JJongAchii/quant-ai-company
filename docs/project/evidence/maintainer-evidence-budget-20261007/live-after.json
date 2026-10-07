@@ -1,0 +1,66 @@
+{
+  "captured_at": "2026-10-07T02:17:06.150256+00:00",
+  "scope": "Actual deployed container and read-only PostgreSQL",
+  "container": {
+    "id": "b022ada4c7f1cf5eee422e05205dbe18b9d25ab6a55f4932a409d04092e17c45",
+    "image_id": "sha256:888c5bddf3b7ab537d176f259cb6607368d6cfd367514c36344c38dd42f57ed3",
+    "running": true,
+    "oom_killed": false,
+    "restart_count": 0,
+    "memory_limit_bytes": 268435456
+  },
+  "installed_module_sha256": {
+    "system_state.py": "7b50be5c845bd4dbaccc7a2bcd9ff3caeff180ef6367697afd435247b8fcb1bc",
+    "maintenance/runner.py": "61e96f7c406e1176713e581bd85fa676cb084a26c080f948dc6c7b291eae75f5",
+    "maintenance/store.py": "3a74e7a32c848e55fdddd7ad9fc463d35f8eb2185aad42e24113df86639133ce",
+    "maintenance/github.py": "4f38d954139cd767f31b506dc7722c9d38cfb32a93a0eb9f51064c0ee2fed6e0"
+  },
+  "heartbeat": {
+    "enabled": true,
+    "heartbeat_at": "2026-10-07 02:15:56.885141+00:00",
+    "poll_seconds": 300
+  },
+  "repository": {
+    "commit": "b981ad7e282fb1ead9d6663172f83883478aa225",
+    "checked_at": "2026-10-07T02:16:00.81655+00:00",
+    "read_bytes": 1999895,
+    "read_order_version": 2,
+    "claude_code_available": true,
+    "review_code_available": true
+  },
+  "eligible_jobs": 0,
+  "original_cases": [
+    {
+      "id": "19aa1178-bca7-469f-b209-eca081a1be36",
+      "kind": "triage",
+      "error": null,
+      "state": "done",
+      "revision": 0
+    },
+    {
+      "id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "kind": "review",
+      "error": "evidence_churn_requires_review",
+      "state": "blocked",
+      "revision": 3
+    },
+    {
+      "id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "kind": "triage",
+      "error": "evidence_churn_requires_review",
+      "state": "blocked",
+      "revision": 3
+    },
+    {
+      "id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "kind": "triage",
+      "error": "investigation_budget_exhausted",
+      "state": "blocked",
+      "revision": 3
+    }
+  ],
+  "new_calls_since_cutover": [],
+  "model_calls_by_this_probe": 0,
+  "database_writes": 0,
+  "usage_interpretation": "Character preparation comparison is not token savings. Zero new calls provide no post-optimization token estimate."
+}
