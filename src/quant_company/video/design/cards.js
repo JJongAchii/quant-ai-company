@@ -65,8 +65,8 @@ const CARDS = {
     const labels = (d.labels || []).map((l, i) => `<div class="ilabel" style="left:${l.x}px;top:${l.y}px" data-pop="${1.6 + i * 0.3},0.5"><span class="tile" style="width:40px;height:40px;background:rgba(253,199,73,.18)"><span data-icon="${l.icon},28,${l.dir === 'dn' ? '#5EA0FF' : l.dir === 'up' ? '#FF5C6C' : '#FDC749'},${1.7 + i * 0.3},0.5"></span></span>${l.text}${l.dir ? `<span class="${C(l.dir, 1)}" style="margin-left:4px">${arrow(l.dir)}</span>` : ''}</div>`).join('');
     return header(d) + `<div class="paper imgbox" style="left:0;top:110px;width:1060px;height:590px" data-in="0.5,0.55">
         <img src="${d.image.file}" data-kb="14,0.06"><span class="chip credit">${d.image.credit}</span>${labels}</div>
-      <div class="glass" style="left:1100px;top:110px;width:660px;height:590px;padding:30px 34px" data-in="0.9,0.55">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px"><span class="lab">${d.panel_title}</span>${src(d.source)}</div>${stats}</div>`;
+      <div class="glass" style="left:1100px;top:110px;width:660px;height:590px;padding:30px 34px;display:flex;flex-direction:column" data-in="0.9,0.55">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px"><span class="lab">${d.panel_title}</span>${src(d.source)}</div><div style="flex:1;display:flex;flex-direction:column;justify-content:${d.stats.length > 2 ? 'flex-start' : 'space-around'}">${stats}</div></div>`;
   },
 
   flow(d) {
@@ -188,8 +188,8 @@ const CARDS = {
     d.rows.forEach((r, i) => {
       const y = 92 + i * gap, w = Math.max(4, Math.abs(r.n) / max * half), neg = r.n < 0;
       h += `<div style="position:absolute;left:36px;top:${r.tag ? y - 4 : y + 6}px;width:${nameW}px;font-size:28px;font-weight:800;line-height:1.1">${r.name}${r.tag ? `<div style="font-size:18px;font-weight:700;color:var(--ink-6);margin-top:3px">${r.tag}</div>` : ''}</div>`;
-      h += `<div class="bar" style="top:${y}px;height:${bh}px;${neg ? `left:${x0 - w}px;transform-origin:right` : `left:${x0 + 2}px;transform-origin:left`};width:${w}px;background:${neg ? 'var(--down-c)' : 'var(--up-c)'}" data-bar="${1.2 + i * 0.1},0.7"></div>`;
-      h += `<div class="tnum ${neg ? 'dnc' : 'upc'}" style="position:absolute;top:${y + (bh - 34) / 2}px;left:${neg ? x0 + 16 : x0 + w + 14}px;font-size:28px;font-weight:800;white-space:nowrap" data-in="${1.6 + i * 0.1},0.35,10">${r.label}</div>`;
+      if (r.n !== 0) h += `<div class="bar" style="top:${y}px;height:${bh}px;${neg ? `left:${x0 - w}px;transform-origin:right` : `left:${x0 + 2}px;transform-origin:left`};width:${w}px;background:${neg ? 'var(--down-c)' : 'var(--up-c)'}" data-bar="${1.2 + i * 0.1},0.7"></div>`;
+      h += `<div class="tnum ${r.n === 0 ? 'ink6' : neg ? 'dnc' : 'upc'}" style="position:absolute;top:${y + (bh - 34) / 2}px;left:${neg || r.n === 0 ? x0 + 16 : x0 + w + 14}px;font-size:28px;font-weight:800;white-space:nowrap" data-in="${1.6 + i * 0.1},0.35,10">${r.label}</div>`;
     });
     let left = '';
     if (d.image) {
@@ -219,7 +219,7 @@ const CARDS = {
 
   photo(d) {
     const rows = d.rows.map((r, i) => `<div data-in="${1.2 + i * 0.5},0.45" style="padding:18px 0;${i < d.rows.length - 1 ? 'border-bottom:1px solid rgba(252,241,219,.12)' : ''}">
-       <div style="display:flex;align-items:center;gap:12px"><span class="chip ${r.kind === 'counter' ? '' : r.kind === 'interp' ? 'interp' : 'tag-line'}" style="${r.kind === 'counter' ? 'color:var(--counter)' : r.kind === 'signal' ? 'color:var(--signal);border-color:var(--signal)' : ''};font-size:19px;padding:4px 12px">${r.chip}</span>${src(r.source)}</div>
+       <div style="display:flex;align-items:center;gap:12px"><span class="chip ${r.kind === 'counter' || r.kind === 'interp' ? '' : 'tag-line'}" style="${r.kind === 'counter' ? 'color:var(--counter)' : r.kind === 'signal' ? 'color:var(--signal);border-color:var(--signal)' : r.kind === 'interp' ? 'color:var(--gold);border-color:#E2A92C;background:rgba(253,199,73,.14)' : ''};font-size:19px;padding:4px 12px">${r.chip}</span>${src(r.source)}</div>
        <div style="font-size:${r.big ? 44 : 30}px;font-weight:800;margin-top:10px;line-height:1.25" class="tnum">${r.big ? cnt(r.big, 1.4 + i * 0.5) : ''}${r.big && r.text ? ' ' : ''}${r.text ? `<span style="font-size:30px">${r.text}</span>` : ''}</div>
        ${r.sub ? `<div class="muted" style="font-size:22px;font-weight:600;margin-top:4px">${r.sub}</div>` : ''}</div>`).join('');
     return header(d) + `<div class="paper imgbox" style="left:0;top:110px;width:860px;height:590px" data-in="0.5,0.55"><img src="${d.image.file}" data-kb="14,0.06"><span class="chip credit">${d.image.credit}</span></div>

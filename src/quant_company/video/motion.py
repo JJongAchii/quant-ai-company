@@ -23,6 +23,8 @@ MIN_SCENE = {'map': 11.0, 'flow': 5.5, 'cold_open': 6.0, 'summary3': 6.0, 'count
 CHAPTER_TITLES = {'': '오프닝', '요약': '오늘 꼭 알아야 할 세 가지', '시장': '시장 한눈에', '핵심 이슈': '핵심 이슈',
                   '함께 볼 이슈': '함께 볼 이슈', '일정': '일정과 확인할 신호'}
 WEEKDAYS = '월화수목금토일'
+# Edition label in the fixed top bar (spec §14): the source edition decides it, never the model.
+EDITIONS = {'am': '아침 시장 브리핑', 'close': '마감 브리핑'}
 
 QA_JS = r"""() => {
  const out=[]; const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
@@ -200,7 +202,7 @@ class MotionRenderer:
             raise ValueError('Video duration outside production limit')
         sample = '' if self.settings.video_publish_enabled else '검토용 샘플'
         ep = {'date_label': f"{day:%m.%d} {WEEKDAYS[day.weekday()]}", 'asof': str(job['source']['cutoff']),
-              'sample_mark': sample, 'chapter_names': [c for c in CHAPTER_TITLES if c],
+              'sample_mark': sample, 'brand_label': EDITIONS.get(job['source'].get('edition_kind', 'am'), EDITIONS['am']), 'chapter_names': [c for c in CHAPTER_TITLES if c],
               'ticker': plan.ticker.model_dump(mode='json'), 'scenes': scenes, 'total': total, 'changes': changes,
               'captions': all_captions}
         (page / 'episode.js').write_text('window.EP=' + json.dumps(ep, ensure_ascii=False) + ';')

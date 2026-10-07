@@ -45,7 +45,7 @@ const PARTS=[];
 function boot(){
  for(let i=0;i<28;i++){const d=document.createElement('i');const s=2+(i%3);d.style.width=d.style.height=s+'px';$('#parts').appendChild(d);
   PARTS.push({e:d,x0:(i*733)%1960,y0:110+((i*397)%780),v:6+((i*37)%12),a:8+((i*53)%26),ph:i*0.7,o:0.10+((i*13)%10)/50});}
- $('#dd').textContent=EP.date_label; $('#da').textContent='자료 기준 '+EP.asof; $('#ds').textContent=EP.sample_mark||'';
+ $('#dd').textContent=EP.date_label; $('#da').textContent='자료 기준 '+EP.asof; $('#ds').textContent=EP.sample_mark||''; if(EP.brand_label) $('#bl').textContent=EP.brand_label;
  CH=EP.chapter_names; $('#chapters').innerHTML=CH.map(c=>`<div class="pill"><i></i><b>${c}</b></div>`).join('');
  $('#tlab').textContent=EP.ticker.label;
  const tk=EP.ticker.items.map(it=>{const up=it.dir==='up';return `<span class="it"><span class="n">${it.name}</span>${it.value?`<span class="v tnum">${it.value}</span>`:''}<span class="${up?'upn':'dnn'} tnum">${up?'▲':'▼'} ${it.change}</span>${it.note?`<span class="n" style="margin-left:10px;font-weight:600">${it.note}</span>`:''}</span>`}).join('');
