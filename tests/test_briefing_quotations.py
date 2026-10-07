@@ -170,9 +170,13 @@ def input_proposal(data):
 
 def test_large_final_review_retains_complete_originals_and_entire_unselected_catalog():
     b, p = large_review_case()
+    b['source_notes_repair'] = {'before_independent_review': True,
+                              'violations': ['WRITER_MAPPING_DIAGNOSIS_MUST_NOT_BIAS_REVIEW']}
     text = prompt(b, 'final_review', p)
     data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
     assert len(text) <= 88000
+    assert 'source_notes_repair' not in data
+    assert 'WRITER_MAPPING_DIAGNOSIS_MUST_NOT_BIAS_REVIEW' not in text
     for index, source in enumerate(b['documents']):
         assert original_body(data, index) == source['content']
     assert len(data['unselected_source_index']) == 76

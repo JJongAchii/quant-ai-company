@@ -170,3 +170,37 @@ def test_real_postgres_deadline_preserves_frozen_data_once_and_does_not_refresh_
     with store.db.transaction() as conn:
         final = conn.execute('SELECT bundle FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()['bundle']
     assert final == frozen
+
+
+def test_six_issue_mapping_repair_reserves_real_context_capacity():
+    b, p, failures = failed_case()
+    original = deepcopy(p.issues[0])
+    p.issues = []
+    for index in range(6):
+        issue = deepcopy(original)
+        for claim in (issue.fact, issue.interpretation, issue.next_check,
+                      issue.analysis.mechanism, issue.analysis.alternative, issue.counterpoint):
+            if claim:
+                claim.id += f'-{index}'
+        issue.fact.id = f'issue-{index}'
+        issue.context = [original.fact.model_copy(update={'id': f'context-{index}'})] if index < 4 else []
+        p.issues.append(issue)
+    p = type(p).model_validate(p.model_dump())
+    feedback = source_notes_revision_bundle(b, p.model_dump(mode='json'), failures)['revision_feedback']
+    assert feedback['context_addition_limit'] == 2
+    changes = [{'issue_fact_id': f'issue-{index}', 'claim': original.fact.model_copy(
+        update={'id': f'repair-context-{index}'}).model_dump()} for index in (4, 5)]
+    result = apply_source_notes_patch(p, SourceNotesPatch(source_notes=p.source_notes,
+        context_additions=changes), feedback)
+    assert sum(len(issue.context) for issue in result.issues) == 6
+    assert result.context_slots() == 0
+    assert p.context_slots() == 2
+    next_feedback = source_notes_revision_bundle(b, result.model_dump(mode='json'), failures)['revision_feedback']
+    assert next_feedback['context_addition_limit'] == 0
+    assert next_feedback['allowed_context_issue_ids'] == []
+    with pytest.raises(ValueError, match='context_budget_rejected'):
+        apply_source_notes_patch(result, SourceNotesPatch(source_notes=p.source_notes,
+            context_additions=[changes[0]]), next_feedback)
+    result.issues[0].context.append(original.fact.model_copy(update={'id': 'seventh-context'}))
+    with pytest.raises(ValueError, match='brief_story_context_limit'):
+        type(result).model_validate(result.model_dump())

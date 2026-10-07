@@ -209,9 +209,14 @@ class BriefProposal(StrictModel):
 
     @model_validator(mode="after")
     def bounded_story_context(self):
-        if sum(len(issue.context) for issue in self.issues) > 4:
+        if self.context_slots() < 0:
             raise ValueError("brief_story_context_limit")
         return self
+
+    def context_slots(self):
+        # A broad six-issue brief needs room to repair two omitted contexts after
+        # the writer's four-paragraph allocation; each issue still allows two.
+        return max(4, len(self.issues)) - sum(len(issue.context) for issue in self.issues)
 
 
 REVIEW_CHECKS = {"numbers", "sources", "timing", "causality", "materiality", "counterevidence",

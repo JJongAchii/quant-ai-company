@@ -40,7 +40,7 @@ from .quotations import (
 from .schedule import KST, close
 
 FORMAT_VERSION = 19
-VALIDATION_VERSION = 64
+VALIDATION_VERSION = 65
 
 WRITE = """You are Analyst writing a substantive, readable Korean daily market briefing.
 Return AgentDecision(status=complete,say='') with exactly one complete BriefProposal JSON artifact,
@@ -294,8 +294,9 @@ The reason a supplement was requested is only a discovery question: read its COM
 other conclusion-changing fact too. Include material product mix, capex/production timelines, competing
 supply and target capabilities; do not repair only the examples named by the first critic.
 When the old claim's character/quote limit prevents coherent coverage, use context_additions with a supplied
-allowed_context_issue_id as issue_fact_id and a new unique claim ID. Add at most four300-character paragraphs
-across the brief, two per issue, with exact own evidence from allowed_source_ids. Preserve existing context.
+allowed_context_issue_id as issue_fact_id and a new unique claim ID. Add no more than
+revision_feedback.context_addition_limit paragraphs of300 characters, two per issue including existing
+context, with exact own evidence from allowed_source_ids. Preserve existing context.
 Keep each addition beside the relevant issue, not in unrelated overview/internals. Do not duplicate existing
 prose or imply planned new supply is already operational or certainly surplus. The independent review still
 checks the complete resulting main post and every original, including facts not flagged by the first critic.
@@ -318,7 +319,8 @@ covered facts; do not drop a distinct material development, baseline, effective 
 Edit only revision_feedback.allowed_ids. Supply the complete new text and only additional exact
 quotes from allowed_sources. Keep every old numeric/date value, its meaning, and existing quotes.
 When a quote limit prevents editing, use a short context_addition beside an allowed_context_issue_id,
-with its own exact evidence. No more than two additions; no rewriting prices, summary or calendar.
+with its own exact evidence. Respect revision_feedback.context_addition_limit (at most two additions);
+no rewriting prices, summary or calendar.
 Preserve all unaffected sections and notes. This is one bounded correction, not a review verdict.
 The final full original-to-main comparison and twelve-criterion independent review still decide quality.
 For a missing or invisible item ID, map only to an ID actually present in the returned draft. Put
@@ -404,6 +406,9 @@ def prompt(bundle, phase, proposal=None, *, direct_output=False):
                 'headline': i['headline'], 'fact_id': i['fact']['id'],
                 'next_check': i['next_check']['text']} for i in previous['issues']]
     if phase == "review" and proposal:
+        # Pre-review mapping diagnostics belong to execution receipts, not the
+        # independent critic's evidence or judgement of the corrected draft.
+        payload.pop('source_notes_repair', None)
         draft = BriefProposal.model_validate(proposal)
         parts = [render(draft, bundle)[0][0]]
         texts = [(identity, item.text) for identity, item in item_map(draft).items() if hasattr(item, "text")]
@@ -758,8 +763,10 @@ def revision_bundle(bundle, proposal, review, rejected):
         "repair_mode": "conditions_only" if conditions_only else "editorial_patch" if editorial_patch else "material_append" if allowed_sources else "full_proposal",
         "allowed_ids": sorted(rejected) if conditions_only else sorted(allowed_sources),
         "allowed_sources": allowed_sources,
+        "context_addition_limit": min(4, max(0, draft.context_slots())),
         "allowed_context_issue_ids": [issue.fact.id for issue in draft.issues
-                                      if editorial_patch and issue.fact.id in allowed_sources],
+                                      if editorial_patch and draft.context_slots() > 0
+                                      and len(issue.context) < 2 and issue.fact.id in allowed_sources],
         "protected_claims": [items[identity].model_dump(mode="json") for identity in sorted(allowed_sources)],
         "protected_material_facts": [[a.source_id, [[f.fact, f.main_item_ids] for f in a.material_facts
             if set(f.main_item_ids) & set(allowed_sources) & retained]] for a in review.source_assessments
@@ -796,7 +803,7 @@ def source_notes_revision_bundle(bundle, proposal, violations):
         related = any(e.source_id in affected for c in claims for e in c.evidence)
         related |= bool({c.id for c in [*claims, issue.next_check,
                                         issue.analysis.mechanism, issue.analysis.alternative]} & mapped_ids)
-        if len(issue.context) < 2 and related:
+        if draft.context_slots() > 0 and len(issue.context) < 2 and related:
             anchors.append(issue.fact.id)
     allowed = {c.id: sorted(affected) for c in fields
                if c.kind in {'fact', 'interpretation'}
@@ -806,6 +813,7 @@ def source_notes_revision_bundle(bundle, proposal, violations):
     feedback = {'repair_mode': 'source_notes_patch', 'source_ids': sorted(affected),
                 'replace_all_notes': replace_all,
                 'violations': violations, 'allowed_ids': sorted(allowed), 'allowed_sources': allowed,
+                'context_addition_limit': min(2, max(0, draft.context_slots())),
                 'allowed_context_issue_ids': anchors,
                 'protected_claims': [c.model_dump(mode='json') for c in fields if c.id in allowed],
                 'source_notes': notes}
@@ -822,6 +830,8 @@ def apply_source_notes_patch(proposal, patch, feedback):
     notes = {n.source_id: n for n in patch.source_notes}
     if len(notes) != len(patch.source_notes) or set(notes) != set(feedback['source_ids']):
         raise ValueError('source_notes_patch_scope_rejected')
+    if len(patch.context_additions) > feedback.get('context_addition_limit', 2):
+        raise ValueError('source_notes_patch_context_budget_rejected')
     if any(a.issue_fact_id not in feedback['allowed_context_issue_ids'] for a in patch.context_additions):
         raise ValueError('source_notes_patch_context_scope_rejected')
     revised = proposal
