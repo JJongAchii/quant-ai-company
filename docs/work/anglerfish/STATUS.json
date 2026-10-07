@@ -172,15 +172,15 @@
       "actualProviderState": "running"
     }
   },
-  "phase": "third_packet_actual_runtime_running_after_second_response_admission",
+  "phase": "all_audit_bytes_delivered_actual_final_request_running",
   "currentMonitoring": {
     "intent": 17,
     "response_reconciliation_event": 781,
     "service_source_commit": "53ed9e33175d6056d72417c081d574a740587695",
     "effective_runtime_images": "audit-runtime-patch-applied-20261007.json",
-    "verified_at": "2026-10-07T05:24:35.029121+00:00",
-    "audit_reviewed_packets": 2,
-    "actual_next_request_id": "c7155b5d-161b-5aa2-a4ef-9e000bb27c15",
+    "verified_at": "2026-10-07T05:56:07.271133+00:00",
+    "audit_reviewed_packets": 7,
+    "actual_next_request_id": "8dbf96d1-00e9-5072-87b9-4f7483adf48d",
     "actual_runtime_state": "running",
     "independent_audit_complete": false,
     "meaning_complete": false,
@@ -191,6 +191,8 @@
       "maximum_hours": 4,
       "read_only": true,
       "automatic_alerts": false
-    }
+    },
+    "audit_delivered_characters": 250658,
+    "audit_required_characters": 250658
   }
 }
