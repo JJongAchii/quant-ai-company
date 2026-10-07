@@ -20,6 +20,14 @@ Evidence: [blocked stage](evidence/etf-exploration-20260930/first-mission-audit-
 
 ## Current status
 
-The reviewed reconciliation committed at11:34:53KST as event759. The original first packet is completed in the same task and attempt, and the next normal turn was queued. The technical hold and error are cleared. Final audit, meaning review and report publication remain pending. No strategy performance or live eligibility is reported here.
+The reviewed reconciliation committed at11:34:53KST as event759. The original first packet is completed in the same task and attempt. The technical hold and error are cleared.
+
+The next normal Temporal turn repeatedly deferred with `higher_priority_request` while an unrelated priority0 owner task remained queued. Root reviewed and changed only this audit task's operational priority from100 to0, recorded as event760. The signed programme resource priority remains unchanged. Other tasks, requests, sessions and scientific authority are preserved.
+
+The actual next Astra max provider call started at11:41:31KST, with the same audit task and attempt. The latest runtime is running with no fault. The concurrently deployed Codex runtime uses CLI0.160.1; the preserved first response used CLI0.154.0. Root did not change source images, CLI or accounts for this repair. Final audit, meaning review and report publication remain pending. No strategy performance or live eligibility is reported here.
 
 [Applied receipt](evidence/etf-exploration-20260930/first-mission-audit-reconciliation-applied-20261007.json).
+
+[Actual resumed call](evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json), [priority receipt](evidence/etf-exploration-20260930/first-mission-audit-priority-applied-20261007.json).
+
+This repair covers the fixed first audit stage. It does not claim a global source fix or completion of the scientific programme.

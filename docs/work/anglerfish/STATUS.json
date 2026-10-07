@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v16.json",
-  "state": "first_scientific_audit_reconciliation_preparing",
+  "state": "first_scientific_audit_resumed_actual_provider_running",
   "previousIntent": "INTENT-v15.json",
   "deliverables": {
     "POLICY": {
@@ -20,10 +20,10 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Scientific calculation and interpretation completed. Audit first packet response completed on the provider but was rejected by a redundant legacy lineage-read guard at2026-10-06T10:48:55Z. Preparing a fixed-task exact-receipt reconciliation; no audit pass or report publication claimed.",
-  "evidence": "../../project/evidence/etf-exploration-20260930/first-scientific-execution-verified-20261006.json",
+  "operationalStatus": "Actual scientific evaluation and interpretation completed. The audit hold was reconciled at11:34:53KST with the exact cached first packet, event759. Only this audit task priority changed100to0, event760, after normal Temporal higher-priority deferrals. Actual next Astra max call8520ba60 started11:41:31KST and is running with no fault. Final audit, meaning review and publication remain pending; no performance or live eligibility claimed.",
+  "evidence": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json",
   "nextStage": {
-    "stage": "audit_reconciliation_then_independent_audit_meaning_report",
+    "stage": "independent_audit_meaning_report",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false,
@@ -42,7 +42,7 @@
     },
     "scientificResultClaimed": false,
     "intent": "INTENT-v14.json",
-    "currentIntentComplete": false
+    "currentIntentComplete": true
   },
   "exploratoryPreparation": {
     "policy": "completed",
@@ -113,7 +113,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "first_actual_scientific_audit_held_legacy_lineage_guard",
+    "phase": "independent_validity_audit_actual_provider_running",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
@@ -144,13 +144,32 @@
     "concurrentModelAssignmentsImagePrefix": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
     "actualScientificJobId": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
     "actualExecutionReceipt": "../../project/evidence/etf-exploration-20260930/first-scientific-execution-verified-20261006.json",
-    "auditStallReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-audit-stall-20261007.json"
+    "auditStallReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-audit-stall-20261007.json",
+    "auditReconciliationReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-audit-reconciliation-applied-20261007.json",
+    "auditPriorityReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-audit-priority-applied-20261007.json",
+    "auditActualCallReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json"
   },
   "currentIntentCompletion": {
-    "intent": "INTENT-v15.json",
+    "intent": "INTENT-v16.json",
     "status": "completed",
-    "evidence": "../../project/evidence/etf-exploration-20260930/first-scientific-execution-verified-20261006.json",
+    "evidence": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json",
     "programmeStillActive": true,
+    "researchReportCompleted": false,
     "strategyOrLiveApprovalClaimed": false
+  },
+  "currentDeliverables": {
+    "AUDIT_DIAGNOSIS": {
+      "status": "completed"
+    },
+    "SCOPED_RECONCILIATION": {
+      "status": "completed",
+      "eventId": 759,
+      "probe": "production_PostgreSQL_transaction_rolled_back"
+    },
+    "LIVE_PROGRESS": {
+      "status": "completed",
+      "turnId": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
+      "actualProviderState": "running"
+    }
   }
 }
