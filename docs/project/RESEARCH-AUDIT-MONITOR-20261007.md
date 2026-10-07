@@ -29,5 +29,11 @@
 ## 검증 상태
 
 첫 실제 PostgreSQL 패킷 회귀 검사는 9 pass/1 skip이다. skip은 고정 qlab 경로를 지정하지 않은 검사다.
-실제 고정 qlab 경로를 지정한 전체 회사 검사를 실행 중이다. 전체 lint는 통과했다.
-준비와 운영 적용 및 응답 대사 영수증은 완료 후 이 문서와 같은 저장소에 추가한다.
+실제 고정 qlab 경로를 지정한 전체 회사 검사: **1,831 pass / 14 skip**, 568.03초. 전체 lint 통과.
+모델/Slack은 회귀 검사에서 모의했다. 실제 운영 결과는 별도 관측으로 확인한다.
+
+첫 준비는 동시 worker 역할 호환 배포를 감지해 변경 전에 중단됐다. 최신 worker image/compose를
+보존한 [비활성 이미지 준비](evidence/etf-exploration-20260930/audit-note-patch-prepared-20261007.json)와
+[정확한 root 적용 검토](evidence/etf-exploration-20260930/audit-note-patch-apply-review-20261007.json)를 보존했다.
+Apply operator는 모든 기존 native lane lock까지 획득해 백업 중 호출을 중단하지 않는다.
+준비된 이미지와 source commit53ed9e3은 그대로다. 운영 반영과 응답 대사 영수증은 완료 후 추가한다.

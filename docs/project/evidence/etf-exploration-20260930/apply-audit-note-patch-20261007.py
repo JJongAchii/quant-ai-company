@@ -22,8 +22,9 @@ from types import SimpleNamespace
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--apply", action="store_true")
+parser.add_argument("--context", type=Path)
 args = parser.parse_args()
-ROOT = Path(__file__).resolve().parent
+ROOT = args.context.resolve() if args.context else Path(__file__).resolve().parent
 manifest = json.loads((ROOT / "manifest.json").read_text())
 assert re.fullmatch(r"[0-9a-f]{40}", manifest["commit"])
 STATE = Path("/var/lib/quant-company")
@@ -162,11 +163,13 @@ with (STATE / ".backup.lock").open("a") as lock:
     assert until
     result = {"state": "draining", "commit": manifest["commit"], "started_at": datetime.now(UTC).isoformat(),
         "before": public(before), "prepared_sha256": digest(PREPARED.read_bytes()), "protected_config": protected,
+        "apply_operator_sha256": digest(Path(__file__).read_bytes()),
         "selected_services": ["api", "worker"], "authority": "Existing owner deploy/continue and monitoring authorization; reviewed PR105 patch",
         "scientific_worker_release_changed": False}
     save(APPLIED, result)
     stopped = []
     changed = []
+    runtime_fds = []
     try:
         deadline = time.monotonic() + 60
         while True:
@@ -176,6 +179,17 @@ with (STATE / ".backup.lock").open("a") as lock:
                 break
             assert time.monotonic() < deadline, "external_effect_not_drained"
             time.sleep(1)
+        # A feed may own a native model call without a company turn row.
+        # Hold every existing runtime lock through the consistent backup/cutover.
+        for relative in ("codex/jobs/.runtime.lock", "codex/jobs/.runtime-news.lock",
+                         "codex/jobs/.runtime-brief.lock", "codex/jobs/.runtime-quant.lock",
+                         "claude/jobs/.runtime.lock"):
+            path = STATE / relative
+            if not path.exists():
+                continue
+            fd = os.open(path, os.O_RDWR | os.O_NOFOLLOW)
+            runtime_fds.append(fd)
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         stopped = [r["Id"] for name, r in before.items()
                    if name != "quant-company-postgres-1" and r["State"]["Running"]]
         run(["docker", "stop", "--time", "60", *stopped])
@@ -229,6 +243,8 @@ with (STATE / ".backup.lock").open("a") as lock:
         result.update(state="audit_patch_failed_original_images_restored", failed_at=datetime.now(UTC).isoformat())
         raise
     finally:
+        for fd in reversed(runtime_fds):
+            os.close(fd)
         sql("WITH c AS (UPDATE runtime_control SET paused_until=NULL,reason=NULL WHERE id=1 AND reason="
             + literal(REASON) + " AND paused_until=" + literal(until) + "::timestamptz RETURNING id)"
             " SELECT json_build_object('restored',(SELECT count(*) FROM c))")
