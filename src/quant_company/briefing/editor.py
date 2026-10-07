@@ -116,6 +116,20 @@ Keep actual mediation/contact, denials and implemented mitigation alongside sanc
 A warning's conditional easing baseline must remain conditional. Name material second actors and opposing
 facts even when in an otherwise duplicate article. Never hide a conclusion-changing offset in a quote/thread.
 
+Before composing the main, compare EVERY selected original's distinct information with source_notes.
+For each omitted fact ask whether it changes market participation, growth expectations, buyer/seller
+exposure or the competing explanation. Background treatment requires that economic reason, not space.
+An Asian market report's participation, closed markets and bond-auction demand can qualify Korea's
+relative move and a rates narrative; a future fiscal promise cannot replace observed auction demand.
+When a chip/AI story is central, retain consequential old/new market-growth estimates and compatibility
+or customer-base advantages, not only one company's latest revenue. Explain a supplier acquisition's
+exact business scope, existing in-house alternatives and how pricing/capacity risk moves between actors.
+Currency translation and bonus provisions are earnings mechanisms, not proof of weaker product demand.
+Every price-growth forecast states its comparison period; market share states its measured basis
+(shipments, revenue or supply capacity). Keep co-reported policy/trade effects alongside demand effects.
+Place an unrelated transaction in a separate short corporate context; it is not counterevidence to
+another merger. Compress repeated interpretation before dropping these decision-changing distinctions.
+
 ANALYSIS
 Each issue has fact(kind=fact), interpretation(kind=interpretation), next_check(kind=condition), and
 analysis.horizon/causal_basis/mechanism/alternative. mechanism and alternative are kind=interpretation.
@@ -525,6 +539,48 @@ def prompt(bundle, phase, proposal=None, *, direct_output=False):
             [int(row[0].removeprefix('@candidate:')), *row[1:]]
             for row in payload.get('unselected_source_index', [])]
         payload['unselected_source_prefix'] = '@candidate:'
+        result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    if references and phase == 'review' and len(result) > 88000:
+        # Independently audit the actual main text once, rather than send the
+        # same claim in both the typed proposal and the reader preview. Keep
+        # exact originals, visible text, stable IDs and own-source attribution.
+        originals = item_map(draft)
+        preview = payload['main_post_preview']
+        annotated = []
+        in_preview = set()
+        for part in preview:
+            if isinstance(part, dict) and set(part) == {'item_text'}:
+                identity = part['item_text']
+                annotated.append([identity, escape(originals[identity].text, quote=False)])
+                in_preview.add(identity)
+            else:
+                annotated.append(part)
+        metadata, locators = [], []
+        positions = {d['id']: i for i, d in enumerate(bundle['documents'])}
+        for identity, item in originals.items():
+            metadata.append([identity, sorted({positions[e.source_id] for e in item.evidence})])
+            if identity not in in_preview:
+                if isinstance(item, MarketObservation):
+                    locators.append([identity, item.instrument, str(item.value), str(item.session_date)])
+                elif isinstance(item, CalendarEvent):
+                    locators.append([identity, item.title])
+                else:
+                    locators.append([identity, getattr(item, 'text', getattr(item, 'explanation', ''))])
+        payload.pop('proposal', None)
+        payload.pop('proposal_key_map', None)
+        payload.pop('evidence_quotes', None)
+        payload['review_items'] = metadata
+        payload['review_item_locators'] = locators
+        payload['main_post_preview'] = annotated
+        payload['main_post_layout'] = 'Join strings and [item_id, exact_HTML_text] rows in order. '
+        payload['issue_structure'] = [
+            [i.fact.id, i.interpretation.id, i.analysis.mechanism.id, i.analysis.alternative.id,
+             i.next_check.id, i.analysis.causal_basis, i.analysis.horizon] for i in draft.issues]
+        header = (header.removesuffix('BRIEF DATA JSON:\n')+
+                  'Audit annotated main_post_preview directly against ALL originals. review_items rows '
+                  'are [stable_item_id,own_source_document_indices]; review_item_locators identify '
+                  'unannotated rows. Exact quote containment is separately validated by the service. '
+                  'Only main_post_item_ids count as visible coverage.\nBRIEF DATA JSON:\n')
         result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     if len(result) > 88000:
         raise ValueError("brief_context_limit")

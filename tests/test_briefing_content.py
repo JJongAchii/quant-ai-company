@@ -45,6 +45,31 @@ from .test_briefing import brief, bundle, definition, proposal, response, review
 from .test_briefing_analyst import analytical_proposal
 
 
+def test_explicit_shared_scale_range_keeps_both_endpoints():
+    quote = "Oil flows are 9-10 million bpd, versus 14.5 million bpd before the war."
+    assert prose_numbers_supported("하루 900만~1,000만 배럴", [quote])
+    assert not prose_numbers_supported("하루 800만~1,000만 배럴", [quote])
+    assert Decimal(9000000) not in numbers("9 barrels. 10 million bpd.")
+    assert Decimal(9000000) not in numbers("9 -10 million bpd")
+    assert Decimal(-10000000) in numbers("9 -10 million bpd")
+
+
+def test_compound_approximate_korean_quantity_preserves_magnitude():
+    assert prose_numbers_supported("일평균 약 1조6,000억원", ["일평균 1조6천여억원씩 순매수"])
+    assert prose_numbers_supported("일평균 약 1조6,000억원", ["일평균 1조 6천여 억 원씩 순매수"])
+    assert not prose_numbers_supported("일평균 약 1조7,000억원", ["일평균 1조6천여억원씩 순매수"])
+    assert Decimal(1600000000000) not in numbers("1조원과 6천여개")
+
+
+def test_explicit_decline_magnitude_supports_negative_change_only():
+    quote = "운송지수는 0.45%의 낙폭을 기록했다."
+    assert prose_numbers_supported("운송지수는 0.45% 하락했다.", [quote])
+    assert reported_change_supported(Decimal("-.45"), "%", [quote])
+    assert not reported_change_supported(Decimal(".45"), "%", [quote])
+    assert not reported_change_supported(Decimal("-.45"), "%", ["운송지수는 0.45%의 상승폭을 기록했다."])
+    assert reported_change_supported(Decimal("-1.07"), "%", ["선물도 1.07% 내려 마감했다."])
+
+
 def doc(identity, title, **updates):
     value = deepcopy(bundle()["documents"][0])
     value.update(id=identity, title=title, sha256=identity, publisher=identity, origin_group=identity,

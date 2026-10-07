@@ -130,6 +130,14 @@ def numbers(text):
     text = re.sub(r"\b(first|second|third|fourth)[-\s]+quarter\b",
                   lambda m: quarters[m[1].lower()]+" quarter", text, flags=re.I)
     text = written_fractions(written_counts(text))
+    # An explicit compact range shares its written scale with both endpoints.
+    # A spaced minus ("9 -10 million") remains a signed value, not a range.
+    unsigned = r"\d[\d,]*(?:\.\d+)?"
+    text = re.sub(
+        r"(?<![\w.+\-−])("+unsigned+r")(?:[-–~]|\s+to\s+)("+unsigned+
+        r")\s+(million|billion|trillion|bn|tn|kilobarrels)\b",
+        lambda m: m[1]+" "+m[3]+" to "+m[2]+" "+m[3], text, flags=re.I,
+    )
     # A same-sentence pre-war comparison inherits this explicit flow unit.
     # Do not propagate it to another sentence, a percent or a labelled unit.
     text = re.sub(
@@ -150,6 +158,9 @@ def numbers(text):
     # its upper bound. Keep a spaced "5% -3%" as a genuinely negative value.
     text = re.sub(r"(?<=%)-(?=\d[\d,]*(?:\.\d+)?%)", " to ", text)
     text = re.sub(r"\bS&P\)?\s*500(?!\d)", "S_AND_P_INDEX", text, flags=re.I)
+    # In a compound quantity, "6천여억원" carries the same stated magnitude
+    # as "약 6,000억원". Approximation remains a semantic review requirement.
+    text = re.sub(r"(?<=[십백천])여(?=\s*[만억조])", "", text)
     normalized = re.sub(NUMBER+r"(?:\s*[십백천만억조](?:\s*\d[\d,]*(?:\.\d+)?)?)+",
                         lambda m: " "+str(quantity(m[0]))+" ", text)
     # Finance articles use an attached m for millions of dollars. Require the
@@ -172,7 +183,7 @@ def numbers(text):
 
 def reported_change_supported(value, unit, quotes):
     units = {"%": r"%(?!p|포인트)|percent(?!age|\s+points?)", "bp": r"bps?(?![A-Za-z])|basis points?", "pt": r"pt\b|points?|포인트"}
-    down = (r"하락|급락|감소|내린|내렸|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|"
+    down = (r"하락|급락|감소|내린|내렸|내려|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|"
             r"fell|fall|down|lower\b|declin\w*|lost|slid|slipped|shed|slump\w*|(?:was|were|is|are)\s+off")
     up = r"상승|오른|올랐|높아|늘었|뛴|뛰었|뛰며|rose|ris\w*|up|higher\b|gain\w*|advanced|jumped|surged"
     for quote in quotes:
@@ -191,6 +202,8 @@ def reported_change_supported(value, unit, quotes):
             direction = down if value < 0 else up
             before, after = quote[:match.start()], quote[match.end():]
             after = re.sub(r"^\s*\([^()]{0,40}\)", "", after)
+            if value < 0 and re.match(r"^\s*의?\s*낙폭(?:을|이|으로|\s|[.,]|$)", after):
+                return True
             if (re.search("(?:"+direction+r")(?:\s+(?:by|about|roughly|nearly))?\s*$", before, re.I)
                     or re.match(r"^[\s)\]]*(?:(?:가|나|만큼)\s*)?(?:"+direction+")", after, re.I)):
                 return True

@@ -36,6 +36,11 @@ def reconcile(proposal, bundle):
         selected.append(target.model_dump(mode="json"))
     raw = proposal.model_dump(mode="json")
     raw["observations"] = selected
+    removed = {item.id for item in proposal.observations} - {item["id"] for item in selected}
+    for note in raw["source_notes"]:
+        note["item_ids"] = [identity for identity in note["item_ids"] if identity not in removed]
+        for fact in note["material_facts"]:
+            fact["main_item_ids"] = [identity for identity in fact["main_item_ids"] if identity not in removed]
     return BriefProposal.model_validate(raw), conflicts
 
 

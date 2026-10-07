@@ -7,6 +7,7 @@ import pytest
 
 from quant_company.briefing.contracts import SourceAssessment
 from quant_company.briefing.editor import SourceNotesValidationError, prompt, prune, validate_source_notes
+from quant_company.briefing.quality import reconcile
 
 from .test_briefing import brief, bundle, definition, proposal, response, review, seed  # noqa: F401
 
@@ -28,6 +29,67 @@ def notes_case():
 def test_source_notes_supported_material_fact_maps_to_visible_main():
     b, p = notes_case()
     validate_source_notes(p, b)
+
+
+def test_reconciled_observation_updates_only_removed_note_references():
+    b, p = notes_case()
+    redundant = p.observations[0].model_copy(update={'id': 'duplicate-sp500'})
+    p.observations.append(redundant)
+    b['locked_observations'] = [p.observations[0].model_dump(mode='json')]
+    note = p.source_notes[0]
+    note.item_ids.append(redundant.id)
+    note.material_facts[0].main_item_ids.append(redundant.id)
+    accepted, conflicts = reconcile(p, b)
+    assert not conflicts
+    assert accepted.source_notes[0].material_facts[0].main_item_ids == ['fact']
+    assert accepted.source_notes[0].item_ids == ['fact']
+    validate_source_notes(accepted, b)
+    assert note.material_facts[0].main_item_ids == ['fact', 'duplicate-sp500']
+    note.material_facts[0].main_item_ids = ['duplicate-sp500']
+    accepted, _ = reconcile(p, b)
+    with pytest.raises(SourceNotesValidationError, match='source_notes_fact_not_in_main'):
+        validate_source_notes(accepted, b)
+
+
+def test_large_review_keeps_originals_and_visible_main_without_duplicate_writer_inventory():
+    from html import escape
+
+    from quant_company.briefing.editor import item_map, render
+
+    b, p = notes_case()
+    b['quote_reference_version'] = 1
+    base = deepcopy(b['documents'][0])
+    b['documents'] = [{**base, 'id': 'source-'+str(i+1),
+        'title': 'Complete synthetic market source '+str(i)+' '+('reported context ' * 8),
+        'content': base['content']+'\n'+('original text '+str(i)+' ')*145} for i in range(20)]
+    first = deepcopy(p.issues[0])
+    for i in range(1, 6):
+        issue = first.model_copy(deep=True)
+        for claim in (issue.fact, issue.interpretation, issue.next_check,
+                      issue.analysis.mechanism, issue.analysis.alternative):
+            claim.id += '-'+str(i)
+        p.issues.append(issue)
+    b['candidate_documents'] = [*b['documents'], *[
+        {**base, 'id': 'candidate-'+str(i), 'title': ('Distinct discovery title '+str(i)+' ')*6}
+        for i in range(76)]]
+    original = deepcopy(b)
+    text = prompt(b, 'review', p.model_dump(mode='json'), direct_output=True)
+    data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
+    assert len(text) <= 88000
+    assert data['original_quote_layout'] == 'grouped_documents'
+    assert 'proposal' not in data and 'source_notes' not in data
+    for index, doc in enumerate(original['documents']):
+        assert ''.join(s for _, s in data['original_quotes'][index]) == doc['content']
+    actual = ''.join(part[1] if isinstance(part, list) else part for part in data['main_post_preview'])
+    rendered = render(p, b)[0][0]
+    import re
+    rendered = re.sub(r'<[^<>|\n]+\|\[(\d+)\]>', r'[\1]', rendered)
+    assert actual == rendered
+    annotated = {part[0]: part[1] for part in data['main_post_preview'] if isinstance(part, list)}
+    for identity, exact in annotated.items():
+        assert exact == escape(item_map(p)[identity].text, quote=False)
+    assert len(data['unselected_source_index']) == 76
+    assert b == original
 
 
 def test_observation_inventory_checks_the_visible_signed_row_not_hidden_previous_value():
