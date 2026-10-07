@@ -126,6 +126,10 @@ def proposal_material(payload, schema):
     diagnostic = material.get("current_implementation", {})
     if "prompt_system" in diagnostic:
         diagnostic["system"] = diagnostic.pop("prompt_system")
+    if schema is Triage:
+        # Catalogs repeat on every diagnostic round; exact inspection remains available.
+        while compact_path_catalog(material):
+            pass
     header = INSTRUCTIONS + "SCHEMA:\n" + json.dumps(schema.model_json_schema()) + "\nEVIDENCE JSON:\n"
     while True:
         prompt = header + json.dumps(material, ensure_ascii=False)

@@ -127,6 +127,20 @@ def test_technical_case_only_uses_linked_history_without_modifying_stored_inputs
     assert diagnostic_history(payload) == review
 
 
+def test_triage_catalog_is_bounded_before_needed_code_is_compacted():
+    paths = [f"src/example_{i:03d}.py" for i in range(250)]
+    relevant = paths[-1]
+    payload = {"editable_paths": paths, "repository_paths": paths,
+               "current_implementation": {"source_files": [{"path": relevant, "content": ORIGINAL}]}}
+    before = digest(payload)
+    shown, _ = proposal_material(payload, Triage)
+    for name in ("editable_paths", "repository_paths"):
+        assert relevant in shown[name] and len(shown[name]) == 32
+        assert shown["prompt_path_catalog"][name]["omitted"] == 218
+    assert shown["current_implementation"]["source_files"][0]["content"] == ORIGINAL
+    assert digest(payload) == before
+
+
 @pytest.mark.integration
 def test_bounded_model_facts_preserve_full_bound_system_evidence(company):
     runner = make_maintainer(company)

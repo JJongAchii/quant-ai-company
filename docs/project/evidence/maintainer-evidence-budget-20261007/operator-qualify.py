@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import UTC, datetime
@@ -16,7 +17,10 @@ SERVICE = "quant-company-maintenance-1"
 def run(args, timeout=60):
     result = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
     if result.returncode:
-        raise RuntimeError("operator_command_failed_" + args[0])
+        frames = re.findall(r'File "([^"]+)", line ([0-9]+)', result.stderr)
+        errors = re.findall(r"^([A-Za-z.]+Error|AssertionError):", result.stderr, re.M)
+        raise RuntimeError("operator_command_failed_" + args[0] + " " + json.dumps({
+            "error_classes": errors[-2:], "frames": [(Path(path).name, line) for path, line in frames[-4:]]}))
     return result.stdout.strip()
 
 
@@ -65,9 +69,13 @@ with company.db.transaction() as conn:
     record_repository(conn,snapshot,files,repo["metadata"])
     for job in jobs:
         payload=job["payload"]
-        original=conn.execute("SELECT request FROM maintenance_calls WHERE job_id=%s AND phase LIKE '%%triage%%' ORDER BY created_at DESC LIMIT 1",(job["id"],)).fetchone()
+        original=conn.execute("SELECT request FROM maintenance_calls WHERE job_id=%s AND id LIKE '%%triage%%' ORDER BY created_at DESC LIMIT 1",(job["id"],)).fetchone()
         assert original,"original_triage_request_required"
         material=json.loads(original["request"]["prompt"].split("EVIDENCE JSON:\n",1)[1])
+        # A fresh construction must not inherit the prior call's completed budget passes.
+        for name in tuple(material):
+            if name.startswith("prompt_"):
+                material.pop(name)
         old_digest=digest(payload)
         candidate_mode=hasattr(runner,"diagnostic_history")
         kwargs={"observations":payload["observations"]} if candidate_mode else {}
@@ -105,7 +113,7 @@ print(json.dumps({"repository_commit":snapshot["commit"],"coverage":{k:v for k,v
 
 def probe(image, service):
     env = dict(pair.split("=", 1) for pair in service["Config"]["Env"])
-    command = ["docker", "run", "--rm", "--pull", "never", "--read-only", "--memory", "512m",
+    command = ["docker", "create", "--pull", "never", "--read-only", "--memory", "512m",
                "--cpus", "0.5", "--pids-limit", "128", "--cap-drop", "ALL",
                "--security-opt", "no-new-privileges:true", "--user", service["Config"]["User"],
                "--tmpfs", "/tmp:size=64m,mode=1777", "--entrypoint", "python"]
@@ -120,7 +128,14 @@ def probe(image, service):
                 or mount["Destination"] == "/run/secrets/maintenance_github_key"):
             assert mount["Type"] == "bind"
             command += ["--mount", "type=bind,src=" + mount["Source"] + ",dst=" + mount["Destination"] + ",readonly"]
-    return json.loads(run(command + [image, "-c", PROBE], timeout=300))
+    container_id = run(command + [image, "-c", PROBE])
+    try:
+        for name in service["NetworkSettings"]["Networks"]:
+            if name != network:
+                run(["docker", "network", "connect", name, container_id])
+        return json.loads(run(["docker", "start", "-a", container_id], timeout=300))
+    finally:
+        run(["docker", "rm", "-f", container_id])
 
 
 os.umask(0o077)
@@ -139,6 +154,9 @@ run(["docker", "build", "--network", "none", "--build-arg", "BASE_IMAGE=" + serv
      "-t", MANIFEST["target_image"], str(ROOT)], timeout=120)
 image = json.loads(run(["docker", "image", "inspect", MANIFEST["target_image"]]))[0]
 baseline, candidate = probe(service["Image"], service), probe(image["Id"], service)
+attempt = {"baseline": baseline, "candidate": candidate}
+(ROOT / "comparison-attempt.json").write_text(json.dumps(attempt, indent=2) + "\n")
+print(json.dumps(attempt), flush=True)
 assert baseline["repository_commit"] == candidate["repository_commit"], "repository_scope_changed"
 assert candidate["required_review_code_available"], "required_review_code_not_loaded"
 for before, after in zip(baseline["cases"], candidate["cases"], strict=True):

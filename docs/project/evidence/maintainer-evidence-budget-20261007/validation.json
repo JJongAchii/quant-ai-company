@@ -1,0 +1,12 @@
+{
+  "test_result": {
+    "passed": 1528,
+    "skipped": 49,
+    "warnings": 2,
+    "duration_seconds": 411.73
+  },
+  "tested_code_commit": "c0c255449a46fd16d5849398724f94d2f37727bd",
+  "tests": "uv run --frozen pytest -q --tb=short",
+  "lint": "uv run --frozen ruff check .",
+  "scope": "Real local PostgreSQL and Temporal where available; model, Slack and GitHub responses in automated tests are fixtures. Production input preparation is separately qualified with zero model calls."
+}
