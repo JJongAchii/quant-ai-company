@@ -1,6 +1,7 @@
 """Real PostgreSQL and process tests; model inference in these tests is simulated."""
 
 import json
+import re
 from datetime import timedelta
 
 import httpx
@@ -98,6 +99,25 @@ def test_direct_transport_keeps_compact_quote_validation_at_original_owner():
         artifact(ProviderResponse.model_validate(response({"request_id": "fixture-write"}, proposal()).model_dump() | {
             "decision": {"status": "complete", "say": "", "artifacts": [{
                 "title": "brief", "content": json.dumps(p)}]}}), type(proposal()), b)
+
+
+@pytest.mark.parametrize("value", ["0", "-0", "+0", "007.50", "-0.125", ".25", "-.25", "4.", "987654321.0123456789"])
+def test_brief_decimal_wire_preserves_valid_price_strings(value):
+    schema = output_schema(request())
+    fields = schema["$defs"]["MarketObservation"]["properties"]
+    for name in ("value", "previous_value", "reported_change"):
+        choices = fields[name]["anyOf"]
+        string = next(choice for choice in choices if choice.get("type") == "string")
+        assert "(?" not in string["pattern"].replace("(?:", "")
+        assert re.fullmatch(string["pattern"], value)
+        assert any(choice.get("type") == "number" for choice in choices)
+
+
+@pytest.mark.parametrize("value", ["", "+", "-", ".", "+.", "NaN", "Infinity", "1,234", "12 USD", "1.2.3"])
+def test_brief_decimal_wire_rejects_non_prices_before_inference(value):
+    fields = output_schema(request())["$defs"]["MarketObservation"]["properties"]
+    pattern = next(choice["pattern"] for choice in fields["value"]["anyOf"] if choice.get("type") == "string")
+    assert not re.fullmatch(pattern, value)
 
 
 def test_write_refused_if_independent_review_cannot_finish(brief):  # noqa: F811

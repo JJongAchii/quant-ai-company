@@ -88,6 +88,12 @@ def output_schema(request):
     def strict(node):
         if isinstance(node, dict):
             node.pop("default", None)
+            # Pydantic's Decimal string pattern uses a negative lookahead.
+            # Codex rejects lookaround before inference. Keep the same finite
+            # decimal syntax on the Analyst wire; domain validation is unchanged.
+            if (request.output_contract.startswith("brief_")
+                    and node.get("pattern") == r"^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$"):
+                node["pattern"] = r"^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$"
             if node.get("type") == "object":
                 node["required"] = list(node["properties"])
                 node["additionalProperties"] = False
