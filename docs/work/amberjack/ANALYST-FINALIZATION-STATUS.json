@@ -1,11 +1,11 @@
 {
-  "recorded_at": "2026-10-07T14:00:17.085547+00:00",
+  "recorded_at": "2026-10-07T23:17:39.264147+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
   "latest_request": "음 잔여해있는 오류도 해결하고 확실하게 해줬으면 좋을거 같은데",
-  "source_commit": "25b91bbdbe341bc1699c355b6255b09596bbdbf8",
-  "format_version": 20,
-  "validation_version": 67,
+  "source_commit": "8fde2509d4dd2191147fbcee5eaa952191d7c048",
+  "format_version": 21,
+  "validation_version": 69,
   "schedule_version": 6,
   "goal_complete": false,
   "implemented": [
@@ -67,7 +67,7 @@
     "pm_collection": "16:10",
     "pm_cutoff": "16:30"
   },
-  "next": "Await bounded actual editorial correction and full-original final review; inspect unchanged source-note/number gates. Next scheduled delivery remains under continuous monitoring.",
+  "next": "Next scheduled PM collection16:10KST, cutoff16:30, publication17:45; continuous monitor17:58 checks actual content verdict and Slack delivery. Confirm the remaining materiality, coverage and readability criteria on the new output; prior failures are preserved.",
   "remaining": [
     "Actual content correction and independent final review",
     "Next scheduled full automatic publication and delivery confirmation via continuous monitoring"
@@ -113,15 +113,21 @@
     "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-monitor-installation.json"
   ],
   "latest_execution": {
-    "plan": "completed at07:04:09 KST",
-    "write": "started07:04:11; timed out07:19:11 KST after900 seconds",
+    "kind": "scheduled_am",
+    "day": "2026-10-08",
+    "edition_id": "f8004fe8-789b-5df2-8dfa-a06f11903d91",
+    "production_version": 67,
+    "plan": "completed",
+    "inventory": "runtime completed; service validation rejected",
+    "write": "not reached",
     "review": "not reached",
-    "requested_model": "gpt-6-astra",
-    "requested_effort": "xhigh",
-    "registered_effort": "high",
-    "selection_source": "Analyst pin, model assignment revision2",
-    "effort_mismatch_detected": true,
-    "writer_usage_known": false
+    "committed_at": "2026-10-07T22:55:00.406885+00:00",
+    "content_qualified": false,
+    "failure_preserved": true,
+    "original_response_reused_for_validator_and_transport_test": true,
+    "slack_delivery": "confirmed_fallback_not_full_market_brief",
+    "delivered_at": "2026-10-07T22:55:02.743289+00:00",
+    "delivery_delay_seconds": 602.743
   },
   "candidate_execution_fix": {
     "source_commit": "15215a4e7c7d3188551278c1ec36fed85d428436",
@@ -208,7 +214,7 @@
     "source_profile_preservation_verified": true,
     "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-final-installation-20261007.json"
   },
-  "updated_at": "2026-10-07T14:00:17.084684+00:00",
+  "updated_at": "2026-10-07T23:19:07.757369+00:00",
   "manual_preview": {
     "operation": "analyst-saved-input-quality-preview-20261007-schema59-once",
     "channel": "C0C2E59B1AA",
@@ -286,7 +292,7 @@
     "record": "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-monitor-installation.json",
     "installed": true,
     "initial_execution": "success",
-    "next_kst": "2026-10-08 07:58",
+    "next_kst": "2026-10-08 17:58",
     "unit": "quant-company-analyst-monitor.timer",
     "result_path": "/var/lib/quant-company/monitoring/analyst-continuous/results/latest.json",
     "timing": "Daily07:58,17:58,18:58KST; recorded editions keep frozen dates, missing editions use the installed calendar. Actual Slack delivery delay is distinct from commit delay.",
@@ -304,7 +310,10 @@
     "previous_bounded_timer": "disabled",
     "publication_enabled": true,
     "quality_certified": false,
-    "alert_delivery": "Metadata only; no automatic Slack alert or model repair"
+    "alert_delivery": "Metadata only; no automatic Slack alert or model repair",
+    "last_checked_at": "2026-10-07T23:14:21.292841+00:00",
+    "runtime_readback": "docs/project/evidence/briefing-analyst-quality-20261001/execution-validation69-monitor.json",
+    "latest_scheduled_content_passed": false
   },
   "publication_authorization": {
     "id": "chat-analyst-autopublish-approved-20261007",
@@ -451,7 +460,7 @@
     "actual_outcome": "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial66-outcome.json"
   },
   "error67": {
-    "state": "installed_actual_editorial_correction_running",
+    "state": "closed_completed_correction_merge_rejected_resolved_in69",
     "source_commit": "25b91bbdbe341bc1699c355b6255b09596bbdbf8",
     "tests_passed": 363,
     "readiness": "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-readiness.json",
@@ -464,6 +473,56 @@
     "scope": "Historical frozen-input development correction with changed versioned execution budget; not a fresh or scheduled qualification.",
     "installed_at": "2026-10-07T13:56:19.727496+00:00",
     "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-installation.json",
-    "readback": "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-readback.json"
+    "readback": "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-readback.json",
+    "actual_outcome": "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-actual-outcome.json",
+    "completed_model_calls": 1
+  },
+  "error68": {
+    "state": "closed_independent_review_nine_of_twelve",
+    "source_commit": "ca5ebb3eafd217e801f1e39bcf990bd5dc2abc4c",
+    "production_installed": false,
+    "completed_model_calls": 1,
+    "checks_passed": 9,
+    "checks_required": 12,
+    "failed_checks": [
+      "materiality",
+      "coverage",
+      "readability"
+    ],
+    "scope": "Historical Oct7 snapshot; staged isolated image only",
+    "actual_outcome": "docs/project/evidence/briefing-analyst-quality-20261001/execution-review68-actual-outcome.json",
+    "readiness": "docs/project/evidence/briefing-analyst-quality-20261001/execution-transport68-readiness.json",
+    "quality_certified": false
+  },
+  "error69": {
+    "state": "installed_runtime_verified_pending_new_content_result",
+    "source_commit": "8fde2509d4dd2191147fbcee5eaa952191d7c048",
+    "format_version": 21,
+    "validation_version": 69,
+    "tests_passed": 374,
+    "readiness": "docs/project/evidence/briefing-analyst-quality-20261001/execution-validation69-readiness.json",
+    "actual_inventory_replay": "docs/project/evidence/briefing-analyst-quality-20261001/fresh-am-20261008-validation67-failure-and69-replay.json",
+    "actual_inventory_facts_preserved": 61,
+    "actual_full_originals_preserved": 27,
+    "automatic_publication": true,
+    "quality_certified": false,
+    "new_model_calls": 0,
+    "installed_at": "2026-10-07T23:10:03.628091+00:00",
+    "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution-validation69-installation.json",
+    "readback": "docs/project/evidence/briefing-analyst-quality-20261001/execution-validation69-readback.json",
+    "runtime_replay": "docs/project/evidence/briefing-analyst-quality-20261001/execution-validation69-runtime-replay.json",
+    "actual_runtime_replay_passed": true,
+    "sdk_schema_verified": true
+  },
+  "historical_writer59_failure": {
+    "plan": "completed at07:04:09 KST",
+    "write": "started07:04:11; timed out07:19:11 KST after900 seconds",
+    "review": "not reached",
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "xhigh",
+    "registered_effort": "high",
+    "selection_source": "Analyst pin, model assignment revision2",
+    "effort_mismatch_detected": true,
+    "writer_usage_known": false
   }
 }
