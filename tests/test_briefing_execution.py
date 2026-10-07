@@ -31,6 +31,7 @@ def request(phase="write", contract="brief_write_v1"):
     ("review", "brief_review_v1", 720), ("revise", "brief_source_notes_v1", 360),
     ("final_review", "brief_review_v1", 360),
     ("review", "brief_review_v2", 720), ("final_review", "brief_review_v2", 720),
+    ("revise", "brief_editorial_v1", 360), ("revise", "brief_editorial_v2", 960),
 ])
 def test_scoped_budget_preserves_other_and_legacy_turns(fake_codex, phase, contract, seconds):  # noqa: F811
     config, _, _ = fake_codex
@@ -200,3 +201,14 @@ def test_new_editions_reserve_one_correction_and_two_full_reviews_before_deadlin
     assert remaining_seconds('plan', b)+60 < (PREPARATION_MINUTES+10)*60
     assert output_contract('final_review', b) == 'brief_review_v2'
     assert output_contract('final_review', {}) == 'brief_review_v1'
+
+    # Full editorial correction reads the same originals as composition; the
+    # old six-minute budget remains frozen only for prior v1 requests.
+    b['editorial_patch_version'] = 2
+    assert remaining_seconds('plan', b) == 80*60
+    assert remaining_seconds('revise', b) == 28*60
+    assert remaining_seconds('plan', b)+60 < (PREPARATION_MINUTES+10)*60
+    b['revision_feedback'] = {'repair_mode': 'editorial_patch'}
+    assert output_contract('revise', b) == 'brief_editorial_v2'
+    del b['editorial_patch_version']
+    assert output_contract('revise', b) == 'brief_editorial_v1'

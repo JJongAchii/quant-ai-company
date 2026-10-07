@@ -163,6 +163,7 @@ class BriefStore:
         if bundle["fact_inventory_required"]:
             bundle["fact_inventory_version"] = 2
             bundle["combined_editorial_repair"] = True
+            bundle["editorial_patch_version"] = 2
         role = self._execution_role(conn)
         bundle["execution_model"] = {"model": role.model, "reasoning_effort": role.reasoning_effort}
         bundle["professional_feedback"] = as_json(coaching(conn, row["owner_user"], BRIEFER,

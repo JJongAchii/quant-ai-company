@@ -15,7 +15,7 @@ from .contracts import (
     SourcePlan,
 )
 
-EXECUTION_VERSION = 5
+EXECUTION_VERSION = 6
 OUTPUT_MODELS = {
     "brief_plan_v1": SourcePlan,
     "brief_inventory_v1": FactInventory,
@@ -27,10 +27,11 @@ OUTPUT_MODELS = {
     "brief_conditions_v1": ConditionPatch,
     "brief_facts_v1": MaterialFactPatch,
     "brief_editorial_v1": EditorialPatch,
+    "brief_editorial_v2": EditorialPatch,
     "brief_source_notes_v1": SourceNotesPatch,
 }
-# First-pass worst case: 6 + 24 + 12 = 42 minutes, within the 45-minute slot.
-# The one confirmed correction and its final review use at most another 12.
+# Legacy requests retain the original phase budgets. Versioned contracts below
+# reserve longer slots for full-original inventory, composition and correction.
 PHASE_SECONDS = {"plan": 360, "write": 1440, "review": 720,
                  "inventory": 480, "revise": 360, "final_review": 360}
 # Version1 splits the24-minute writing slot into8 minutes of inventory and
@@ -55,6 +56,8 @@ def output_contract(phase, bundle):
     if phase == "inventory":
         return "brief_inventory_v2" if bundle.get("fact_inventory_version") == 2 else "brief_inventory_v1"
     mode = bundle.get("revision_feedback", {}).get("repair_mode")
+    if mode == "editorial_patch" and bundle.get("editorial_patch_version") == 2:
+        return "brief_editorial_v2"
     return {"conditions_only": "brief_conditions_v1", "material_append": "brief_facts_v1",
             "editorial_patch": "brief_editorial_v1", "source_notes_patch": "brief_source_notes_v1"}.get(
         mode, "brief_compose_v1" if bundle.get("fact_inventory_required") else "brief_write_v1")
@@ -77,6 +80,8 @@ def timeout_seconds(request):
     if valid_request(request.request_id, request.output_contract):
         if request.output_contract == "brief_review_v2":
             return PHASE_SECONDS['review']
+        if request.output_contract == "brief_editorial_v2":
+            return COMPOSE_SECONDS
         if request.output_contract == "brief_inventory_v2":
             return FRAGMENT_INVENTORY_SECONDS
         if request.output_contract == "brief_compose_v1" and IDENTITY.fullmatch(request.request_id)[2] == "write":
@@ -89,7 +94,8 @@ def remaining_seconds(phase, bundle):
     if bundle.get('combined_editorial_repair'):
         # A second independent full-original review is the same workload as the
         # first. Reserve the one correction and both full reviews for new editions.
-        repair = PHASE_SECONDS['revise'] + PHASE_SECONDS['review']
+        correction = COMPOSE_SECONDS if bundle.get('editorial_patch_version') == 2 else PHASE_SECONDS['revise']
+        repair = correction + PHASE_SECONDS['review']
         if phase == 'revise':
             return repair
         if phase == 'final_review':

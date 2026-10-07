@@ -149,13 +149,13 @@ def test_calendar_official_override_delayed_close_and_closure():
     change = CalendarOverride(market="KR", day=day, close_at="2026-11-19T16:30:00+09:00",
                               source_url="https://global.krx.co.kr/fixture-official-notice")
     rows = schedule.editions(day, "C", "U", {("KR", day): change})
-    assert rows[-1].due_at.astimezone(schedule.KST).strftime("%H:%M") == "17:55"
+    assert rows[-1].due_at.astimezone(schedule.KST).strftime("%H:%M") == "18:05"
     assert rows[0].due_at.astimezone(schedule.KST).strftime("%H:%M") == "07:45"
-    assert [e.cutoff.astimezone(schedule.KST).strftime("%H:%M") for e in rows] == ["06:40", "16:50"]
-    assert [e.starts_at.astimezone(schedule.KST).strftime("%H:%M") for e in rows] == ["06:20", "16:30"]
+    assert [e.cutoff.astimezone(schedule.KST).strftime("%H:%M") for e in rows] == ["06:30", "16:50"]
+    assert [e.starts_at.astimezone(schedule.KST).strftime("%H:%M") for e in rows] == ["06:10", "16:30"]
     later = change.model_copy(update={"close_at": datetime.fromisoformat("2026-11-19T17:00:00+09:00")})
     delayed = schedule.editions(day, "C", "U", {("KR", day): later})[-1]
-    assert delayed.due_at.astimezone(schedule.KST).strftime("%H:%M") == "18:25"
+    assert delayed.due_at.astimezone(schedule.KST).strftime("%H:%M") == "18:35"
     assert delayed.starts_at == later.close_at
     closed = change.model_copy(update={"closed": True, "close_at": None})
     assert [e.kind for e in schedule.editions(day, "C", "U", {("KR", day): closed})] == ["am"]

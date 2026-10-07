@@ -219,7 +219,7 @@ def test_real_postgres_new_inventory_path_allows_one_semantic_patch_and_final_re
     critic.concerns = ['대안 설명을 더 명확하게 써야 한다.']
     store.commit(response(store.prepare()['request'], critic))
     request = store.prepare()['request']
-    assert request['output_contract'] == 'brief_editorial_v1'
+    assert request['output_contract'] == 'brief_editorial_v2'
     edit = EditorialPatch(edits=[{'id': 'alternative',
         'text': '반도체 자체의 재료가 더 크게 작용했을 가능성도 있어 금리만으로 상승을 설명할 수 없습니다.'}])
     store.commit(response(request, edit))

@@ -10,8 +10,8 @@ from .contracts import BriefEdition, CalendarOverride
 
 KST = ZoneInfo("Asia/Seoul")
 NY = ZoneInfo("America/New_York")
-SCHEDULE_VERSION = 5
-PREPARATION_MINUTES = 65
+SCHEDULE_VERSION = 6
+PREPARATION_MINUTES = 75
 COLLECTION_MINUTES = 20
 
 
