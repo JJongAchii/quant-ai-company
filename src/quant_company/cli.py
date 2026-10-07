@@ -91,7 +91,9 @@ def main():
     sub.add_parser("briefing-data-worker")
     sub.add_parser("video-worker")
     video = sub.add_parser("video")
-    video.add_argument("action", choices=["status", "tick", 'reconcile', 'retry'])
+    video.add_argument("action", choices=["status", "tick", 'reconcile', 'retry', 'bench'])
+    video.add_argument('--page', type=Path, help='bench: rendered episode page (index.html with episode.js)')
+    video.add_argument('--seconds', type=int, default=60, help='bench: seconds of video to render')
     video.add_argument('--job-id')
     video.add_argument('--effect-key')
     video.add_argument('--receipt-file', type=Path)
@@ -177,6 +179,22 @@ def main():
         from .video.runner import VideoRunner
         from .video.store import VideoStore
 
+        if args.action == 'bench':
+            # Frame capture + encode only: no model, speech, upload or database access.
+            import time
+
+            from .video.motion import FPS, render_range
+
+            if not args.page or not args.page.is_file():
+                parser.error('bench requires --page pointing at an episode index.html')
+            frames, start = args.seconds * FPS, time.monotonic()
+            out = settings.video_artifact_dir / 'bench.mp4'
+            render_range(str(args.page.resolve()), 0, frames, str(out), settings.video_ffmpeg)
+            seconds = time.monotonic() - start
+            out.unlink(missing_ok=True)
+            print(json.dumps({'frames': frames, 'seconds': round(seconds, 1), 'fps': round(frames / seconds, 2),
+                              'estimate_5min_episode_minutes': round(9000 / (frames / seconds) / 60, 1)}))
+            return
         company = Company(settings)
         store = VideoStore(company)
         if args.action in {'reconcile', 'retry'}:

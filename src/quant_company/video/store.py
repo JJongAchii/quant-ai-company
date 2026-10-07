@@ -1,4 +1,6 @@
+import shutil
 from datetime import UTC, datetime, time, timedelta
+from pathlib import Path
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
@@ -13,7 +15,7 @@ KST = ZoneInfo("Asia/Seoul")
 EDITIONS = {"am": "am", "pm": "close"}
 
 
-def edition_times(edition):
+def edition_times(edition, settings=None):
     """Review-ready target and public-approval deadline. AM: before the KR open. PM: the evening after the close brief
     (due 17:45 KST or later); production gets about 1h45m, approval closes before the US session."""
     day = edition["day"]
@@ -21,7 +23,8 @@ def edition_times(edition):
         due = edition["due_at"].astimezone(KST)
         target = max(datetime.combine(day, time(19, 30), KST), due + timedelta(minutes=105))
         return target, max(datetime.combine(day, time(22), KST), target + timedelta(minutes=150))
-    return datetime.combine(day, time(8, 30), KST), datetime.combine(day, time(9), KST)
+    hour, minute = map(int, (getattr(settings, "video_am_review_target", None) or "08:30").split(":"))
+    return datetime.combine(day, time(hour, minute), KST), datetime.combine(day, time(9), KST)
 LOCK = 71350301
 ACTIVE = ("queued", "reviewing", "synthesizing", "rendering", "uploading", "approved")
 
@@ -63,7 +66,7 @@ class VideoStore:
         source["edition_kind"] = EDITIONS[edition["kind"]]
         # Edition IDs differ per kind, so the morning and closing videos of one day never share a job.
         identity = stable("video:" + str(edition["id"]) + ":1")
-        target, deadline = edition_times(edition)
+        target, deadline = edition_times(edition, self.settings)
         if at >= deadline:
             return None
         policy = {"version": POLICY_VERSION, "voice": self.settings.video_voice,
@@ -244,6 +247,35 @@ class VideoStore:
         with self.db.transaction() as conn:
             return conn.execute("""SELECT * FROM video_jobs WHERE state='awaiting_approval'
                 AND review_message_id IS NULL AND publish_deadline>%s""", (utcnow(),)).fetchall()
+
+    def prune(self):
+        """Delete artifacts of jobs that ended more than the retention period ago. YouTube keeps the published copy;
+        the DB keeps receipts, manifest digests and the plan."""
+        root = Path(self.settings.video_artifact_dir)
+        with self.db.transaction() as conn:
+            rows = conn.execute("""SELECT id FROM video_jobs WHERE state IN ('published','expired','held','superseded','blocked')
+                AND updated_at < now() - make_interval(days => %s)""", (self.settings.video_retention_days,)).fetchall()
+        removed = 0
+        for row in rows:
+            target = root / str(row['id'])
+            if target.is_dir() and not target.is_symlink() and target.resolve().is_relative_to(root.resolve()):
+                shutil.rmtree(target)
+                removed += 1
+        return removed
+
+    def hold_for_disk(self, free_gb):
+        """Low disk: queued episodes do not start; one status message per job, nothing is charged."""
+        with self.db.transaction() as conn:
+            conn.execute('SELECT pg_advisory_xact_lock(%s)', (LOCK,))
+            for job in conn.execute("SELECT * FROM video_jobs WHERE state='queued' FOR UPDATE").fetchall():
+                conn.execute("UPDATE video_jobs SET state='blocked',error='insufficient_disk',updated_at=now() WHERE id=%s", (job['id'],))
+                mid = stable('video-disk:' + str(job['id']))
+                project = self.company._project(conn, job['source']['project_id'])
+                if project['thread_ts'] and project['status'] == 'active' and not conn.execute(
+                        'SELECT 1 FROM messages WHERE id=%s', (mid,)).fetchone():
+                    self.company._message(conn, project, None, 'market_brief', 'video_status',
+                        f"영상 제작 보류 · 디스크 여유 {free_gb:.1f}GB\n최소 {self.settings.video_min_free_gb:g}GB가 필요해 이 회차는 시작하지 않았습니다. "
+                        '원문 브리핑은 그대로 확인할 수 있습니다. 공간을 확보한 뒤 운영자가 다시 시도합니다.', message_id=mid)
 
     def late_notices(self):
         """One durable status notice at the edition's review target (AM 08:30, PM 19:30); no new model call."""

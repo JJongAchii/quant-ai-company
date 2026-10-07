@@ -60,8 +60,9 @@ Runway 음성은 OAuth로 `https://mcp.runwayml.com/mcp`에 연결한다.
 기존 다른 영상이 같은 계정 잔액을 쓰므로 생성 직전 잔액과 workspace를 확인한다.
 월 한도는 아침·마감 두 회차를 합친 값이다. 회차 한도는 회차(edition)마다 따로 센다. 장면을 내기 전에 남은 장면 전체의
 예상 크레딧을 먼저 검사해, 한도를 넘으면 첫 요청도 보내지 않고 작업을 `blocked`(Insufficient narration budget)로 멈춘다.
-하루 두 편이면 한 달 약 60편이므로, 회차당 예상치(문자 50자당 1 credit, 장면별 올림)가 25 credits를 넘으면 기본 월 한도 1,500에서
-월말 전에 멈출 수 있다. 실제 Runway 웹 화면에서는 2026-10-07 기준 장면 1개당 1 credit이 차감됐으므로 예상치는 보수적이다.
+예상치는 장면(음성 1회 생성)마다 시작한 500자당 1 credit이고, 다시 만들 몫으로 남은 장면 수의 20%를 더해 검사한다.
+2026-10-07 Runway 웹(ElevenLabs Eleven v4)에서는 55~210자 장면 20회 생성에 1회당 1 credit이 차감됐다. 19장면 회차면
+예상 19+4=23 credits, 하루 두 편·한 달 약 60편이면 약 1,400 credits라 기본 월 한도 1,500 안에 든다. 한도 검사 자체(월 1,500·회차 100)는 그대로다.
 잔액·월/회차 한도가 부족하면 중단한다. 구매·충전 도구와 자동 유료 API fallback은 없다.
 원화 5만원은 추가 지출 목표이며, 서버 증설과 별도 구독 구매는 이 코드가 실행하지 않는다.
 
@@ -81,7 +82,10 @@ FFmpeg로 합성한다. 검사 실패, true peak -1.5 dBTP 초과, 검은 화면
 있고 서버 반영은 사람이 복사한다. 음악은 출처가 정해질 때까지 넣지 않는다.
 렌더링 시도마다 별도 디렉터리를 쓰므로 중단된 렌더가 승인한 파일을 덮어쓰지 않는다.
 DB와 media-auth는 기존 복구 정책에 포함하고, 업로드 영상·manifest·영수증을 함께 백업한다.
-이 버전은 영상 파일을 자동 삭제하지 않는다. 운영 시 디스크 사용량과 보관 기간을 먼저 정한다.
+렌더와 검사가 끝나면 중간 파일(프레임 조각, 무음 영상, 음성 WAV, 화면 폴더, 회차당 약 0.2GB)을 바로 지운다.
+최종 MP4·자막·문안·manifest는 작업이 끝난(공개·만료·보류·대체·차단) 뒤 `VIDEO_RETENTION_DAYS`(기본 14일)가 지나면 지운다.
+DB의 계획·영수증·파일 해시는 남는다. 영상 볼륨 여유가 `VIDEO_MIN_FREE_GB`(기본 10GB)보다 적으면 대기 중인 회차를
+시작하지 않고 `blocked`(insufficient_disk)로 두며 brief 스레드에 한 번 알린다. 크레딧은 쓰지 않는다.
 고정 댓글 문안은 업로드 패키지에 제공하며 댓글 자동 게시·고정은 이 버전에 포함하지 않았다.
 
 ## 서버 준비
@@ -109,8 +113,9 @@ Claude 실행기 로그인과 usage credits 확인은 [Claude runtime 최초 연
 `media-auth`는 0700, 토큰/YouTube client 파일은 0600이다. 파일을 Git에 넣지 않는다.
 video 이미지에 Chromium, FFmpeg, 한국어 Noto 폰트와 영상 optional dependencies가 들어 있다.
 Whisper small은 `/state/models`에 캐시한다. 첫 다운로드와 최초 렌더링을 미리 끝낸다.
-기본 worker 한도는 1.5 CPU/1536MiB다. 기존 2GB 서버의 여유가 확인되기 전에는 프로필을
-켜지 않는다. 추가 서버 구매·사양 변경을 자동으로 수행하지 않는다.
+기본 worker 한도는 1.5 CPU/1536MiB다. 2GB 서버에는 켜지 않는다. 8GB(권장)·4GB 메모리 설정은
+[8GB 예시](../deploy/lightsail-8gb.env.example)·[4GB 예시](../deploy/lightsail-4gb.env.example), 서버 이전은
+[서버 요금제 변경 안내](server-migration.md)를 따른다. 렌더 속도는 `quant-company video bench`로 잰다. 추가 서버 구매·사양 변경을 자동으로 수행하지 않는다.
 
 Google Cloud에서 해당 채널용 YouTube Data API v3와 Desktop OAuth client를 준비하고,
 `media-auth/youtube-client.json`에 둔다. OAuth scope는 업로드와 `youtube.force-ssl`이다.
@@ -149,6 +154,9 @@ docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml exec video-wo
 | `VIDEO_ALIGNMENT_MODEL` | small | 실제 음성 검증·자막 시점용 로컬 모델/경로 |
 | `VIDEO_TEMPLATE` | motion-v2 | 카드·모션 고정 틀. text-v1은 이전 글 화면 |
 | `VIDEO_RENDER_WORKERS` | 1 | 프레임 캡처 프로세스 수. 2GB 서버 실측 전에는 1 |
+| `VIDEO_AM_REVIEW_TARGET` | 08:30 | 아침 검토본 목표(06:00~08:59). 공개 승인은 09:00에 만료 |
+| `VIDEO_RETENTION_DAYS` | 14 | 작업 종료 뒤 최종 파일 보관 일수 |
+| `VIDEO_MIN_FREE_GB` | 10 | 이보다 여유가 적으면 새 회차를 시작하지 않음 |
 
 활성화 순서는 upstream full brief 품질 통과 → 계정/잔액/채널과 서버 자원 확인 →
 첫 비공개 샘플 전체 시청 → 비공개 자동 제작 → 공개 승인 허용이다. 기존 Analyst Slack 앱의

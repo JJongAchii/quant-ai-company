@@ -9,6 +9,15 @@ from ..web_fetch import PublicConnection, public_url
 from .auth import RUNWAY_URL, runway_auth
 
 
+def speech_credits(text):
+    """Credit estimate for one narration take. Observed 2026-10-07 (Runway web, ElevenLabs Eleven v4): 1 credit per
+    take for 55-210 characters across 20 takes. One credit per started 500 characters keeps a margin."""
+    return max(1, -(-len(text) // 500))
+
+
+RETAKE_RESERVE = 0.2  # budget head-room for pronunciation retakes, checked before the first charge
+
+
 class RunwaySpeech:
     def __init__(self, credentials_dir):
         self.credentials_dir = credentials_dir

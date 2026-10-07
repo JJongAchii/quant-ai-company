@@ -95,6 +95,12 @@ class Settings(BaseSettings):
     video_render_workers: int = Field(default=1, ge=1, le=8)
     # 증시story playlist; when empty the description omits the "▶ 증시story 모아보기" lines.
     video_playlist_url: str = ""
+    # Morning review-ready target (HH:MM KST); public approval still expires at 09:00 KST.
+    video_am_review_target: str = Field(default="08:30", pattern=r"^(0[6-8]):[0-5]\d$")
+    # Final files are kept this many days after a job ends; intermediates are removed right after packaging.
+    video_retention_days: int = Field(default=14, ge=1, le=90)
+    # New episodes do not start below this free space on the artifact volume.
+    video_min_free_gb: float = Field(default=10, ge=1, le=500)
     briefing_calendar_overrides_file: Path | None = None
     tech_feed_enabled: bool = False
     tech_feed_publish_enabled: bool = False

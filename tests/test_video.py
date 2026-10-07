@@ -607,3 +607,43 @@ def test_close_edition_gets_its_own_job_label_times_and_shared_monthly_budget(br
     assert store.budget_available(job, 40) and not store.budget_available(job, 41)
     with pytest.raises(PolicyError, match='budget'):
         store.begin_effect(job, 'speech-0', {'scene': 0}, 'speech', 41)
+
+
+def test_speech_credit_estimate_matches_observed_takes():
+    from quant_company.video.runway import speech_credits
+
+    assert [speech_credits('가' * n) for n in (55, 210, 500, 501, 600)] == [1, 1, 1, 2, 2]
+
+
+def test_morning_target_is_configurable_but_approval_still_ends_at_nine():
+    from datetime import date
+
+    from quant_company.video.store import edition_times
+
+    target, deadline = edition_times({'kind': 'am', 'day': date(2026, 10, 7)}, Settings(video_am_review_target='08:45'))
+    assert (target.strftime('%H:%M'), deadline.strftime('%H:%M')) == ('08:45', '09:00')
+    with pytest.raises(ValueError):
+        Settings(video_am_review_target='10:15')
+
+
+def test_retention_prunes_only_ended_jobs_after_the_period(brief, video):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    folder = store.settings.video_artifact_dir / str(job['id']) / 'attempt'
+    folder.mkdir(parents=True)
+    (folder / 'video.mp4').write_bytes(b'x')
+    assert store.prune() == 0
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE video_jobs SET state='published', updated_at=now()-interval '15 days' WHERE id=%s", (job['id'],))
+    assert store.prune() == 1 and not folder.exists()
+
+
+async def test_low_disk_blocks_new_episodes_without_charges(brief, video, monkeypatch):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    monkeypatch.setattr('quant_company.video.runner.free_gb', lambda path: 2.0)
+    result = await VideoRunner(store.company, provider=SimulatedProvider()).tick()
+    assert result['state'] == 'disk_low'
+    assert store.get(job['id'])['state'] == 'blocked' and store.get(job['id'])['error'] == 'insufficient_disk'
+    with store.db.transaction() as conn:
+        assert conn.execute('SELECT count(*) AS n FROM video_effects').fetchone()['n'] == 0

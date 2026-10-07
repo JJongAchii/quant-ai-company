@@ -284,7 +284,13 @@ class MotionRenderer:
         measured = quality_probe(output, self.settings)
         if measured['true_peak_dbfs'] > -1.5:
             raise ValueError('True peak above -1.5 dBTP')
-        return self._package(job, plan, directory, scenes, all_captions, alignment, used, duration, measured, frames)
+        manifest = self._package(job, plan, directory, scenes, all_captions, alignment, used, duration, measured, frames)
+        # Intermediates are not part of the reviewed artifact set (about 0.2 GB per episode).
+        for path in [*directory.glob('part-*.mp4'), *directory.glob('aud-*.wav'), directory / 'silent.mp4',
+                     directory / 'narration.wav', directory / 'parts.txt', directory / 'aud.txt']:
+            path.unlink(missing_ok=True)
+        shutil.rmtree(directory / 'page', ignore_errors=True)
+        return manifest
 
     def _thumbnail(self, browser, plan, page, ep, directory):
         image = ''

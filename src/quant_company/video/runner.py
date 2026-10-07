@@ -1,5 +1,8 @@
 import asyncio
+import math
+import shutil
 from datetime import UTC, datetime
+from pathlib import Path
 from uuid import uuid4
 
 import httpx
@@ -12,9 +15,16 @@ from .contracts import VideoReview, digest, production_prompt, review_prompt
 from .episode import check_plan, episode_prompt, plan_class, template
 from .motion import MotionRenderer
 from .render import Renderer, spoken, verify_artifacts
-from .runway import RunwaySpeech, download_audio
+from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
 from .store import UncertainEffect, VideoStore
 from .youtube import YouTube
+
+
+def free_gb(path):
+    path = Path(path)
+    while not path.exists() and path != path.parent:
+        path = path.parent
+    return shutil.disk_usage(path).free / 1e9
 
 
 class VideoRunner:
@@ -73,8 +83,13 @@ class VideoRunner:
         return cls.model_validate(result["output"])
 
     async def tick(self):
+        await asyncio.to_thread(self.store.prune)
         if self.store.enabled():
             await asyncio.to_thread(self.store.late_notices)
+            free = free_gb(self.settings.video_artifact_dir)
+            if free < self.settings.video_min_free_gb:
+                await asyncio.to_thread(self.store.hold_for_disk, free)
+                return {"state": "disk_low", "free_gb": round(free, 1)}
         for row in await asyncio.to_thread(self.store.pending_notices):
             if self.store.enabled():
                 await asyncio.to_thread(self.store.notice, row)
@@ -125,7 +140,8 @@ class VideoRunner:
             with self.store.db.transaction() as conn:
                 finished = {int(str(r['id']).rsplit('-', 1)[-1]) for r in conn.execute(
                     "SELECT id FROM video_effects WHERE job_id=%s AND kind='speech' AND state='completed'", (job['id'],)).fetchall()}
-            expected = sum((len(spoken(s.narration))+49)//50 for i,s in enumerate(plan.scenes) if i not in finished)
+            pending = [speech_credits(spoken(s.narration)) for i, s in enumerate(plan.scenes) if i not in finished]
+            expected = sum(pending) + math.ceil(len(pending) * RETAKE_RESERVE)
             if expected > account["credits"]["total"] or not await asyncio.to_thread(self.store.budget_available, job, expected):
                 raise ValueError("Insufficient narration budget")
             # One scene per tick, retaining its task ID before polling or downloading.
@@ -139,7 +155,7 @@ class VideoRunner:
                 if old:
                     continue
                 await self.effect(job, key, request, "speech", lambda request=request: self.speech.submit(**request),
-                                  cost=(len(request["text"])+49)//50)
+                                  cost=speech_credits(request["text"]))
                 await asyncio.to_thread(self.store.save, job, "synthesizing")
                 return
             await asyncio.to_thread(self.store.save, job, "rendering")

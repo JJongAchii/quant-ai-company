@@ -163,9 +163,8 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
     assert '📅 2026.09.22 | 미국 증시' in upload and '자료 기준: 2026.09.22 07:30 (한국시간) · 장전' in upload
     assert '00:00 반도체가 이끌었다' in upload and '#증시story #뭐든story #반도체' in upload and '모아보기' not in upload
     assert 'https://www.cnbc.com/fixture-market-report.html' in upload
-    page = (tmp_path / 'out' / 'page' / 'episode.js').read_text()
-    assert '자료사진 · Fixture Author · CC BY 4.0' in page and '일러스트' not in page
-    assert '자료 기준' not in page and '07:30' not in page
+    assert not (tmp_path / 'out' / 'page').exists() and not list((tmp_path / 'out').glob('part-*.mp4'))
+    assert not (tmp_path / 'out' / 'narration.wav').exists() and (tmp_path / 'out' / 'video.mp4').exists()
     assert [c['title'] for c in manifest['chapters']][:2] == ['오프닝', '시장 한눈에']
     verify_artifacts(manifest, tmp_path)
     (tmp_path / 'out' / 'subtitles.srt').write_text('changed')
