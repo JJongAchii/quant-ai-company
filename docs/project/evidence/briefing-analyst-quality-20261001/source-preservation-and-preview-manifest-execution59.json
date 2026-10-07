@@ -1,6 +1,6 @@
 {
-  "recorded_at": "2026-10-07T00:06:53.508206+00:00",
-  "candidate_commit": "d9ba0b63d5cb6d497dc9677b55f863d85efbb851",
+  "recorded_at": "2026-10-07T00:32:45.638552+00:00",
+  "candidate_commit": "6408543abc36a2fa3a6922e398c6cc6b90f52f68",
   "previous_commit": "0ea670b7b0637d91a46714b73ef8df96d979cc6f",
   "runtime_changes": [
     {
@@ -55,7 +55,7 @@
       "path": "deploy/analyst_preview_release.py",
       "kind": "modify",
       "before_sha256": "bc811d28a7fcdf89e4576be8ca548618de91eef6a8f2d8e8c934655f4cc5c4b1",
-      "after_sha256": "3186a4ebb32fbc8de8240b38bf31be3e15674ad033c81cb50baca8490cf5509d"
+      "after_sha256": "cc719004c05b9219b4d241bc86bc927cb84ce55b87d5e95c5343df41020e6f2e"
     },
     {
       "path": "deploy/Dockerfile.analyst-code-preview",
@@ -64,11 +64,12 @@
       "after_sha256": "dbfdb8cd5e4a289e8039f84f89b15c1599bbf095240a5e4cd71cd0629376207e"
     }
   ],
+  "previous_owner_approval_id": "chat-analyst-preview-approved-20261002",
   "preserve_api": true,
   "preserve_codex_runtime": false,
   "execution_runtime_update": {
     "owner_approval_id": "chat-analyst-execution-approved-20261007",
-    "approved": false,
+    "approved": true,
     "cli_version": "0.160.1",
     "scope": "Analyst typed output and phase deadlines; preserve all other runtime behavior"
   },
@@ -1579,9 +1580,9 @@
       ]
     }
   ],
-  "runtime_archive_sha256": "a91156b6eed6240d3b1eda74587c72b0bcfdaf58f67b5ab572c04c70e8dc6734",
+  "runtime_archive_sha256": "2f913710e81ada84d2031696ccf8954205923b0d38dff9fabac11de0354f1b64",
   "frozen_content_policy": "prospective-pm-20261007-execution59-policy.json",
-  "frozen_content_policy_sha256": "81dd2ec4f70e0b49d79210587e755bf58aec3f02a9f2a9a8567eb1907c1bba27",
+  "frozen_content_policy_sha256": "d222e59eaba58c2b9068b5bbabd2e1a09f8328a403e029dd96413e65cdf88d5b",
   "proposed_preview": {
     "publication": false,
     "channel": "C0C2E59B1AA",
@@ -1599,7 +1600,7 @@
       "codex-runtime"
     ]
   },
-  "authorization": "Pending additional owner approval for the protected runtime change; earlier preview approval preserves Codex.",
+  "authorization": "Approved in the current user reply; execution59-owner-approval.json records the additional protected runtime scope.",
   "preserved": [
     "API image",
     "model assignments",
