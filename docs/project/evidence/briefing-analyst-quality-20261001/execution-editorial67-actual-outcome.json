@@ -1,0 +1,25 @@
+{
+  "recorded_at": "2026-10-07T23:02:53.360688+00:00",
+  "scope": "Explicit bounded development correction of the completed nine-of-twelve review on historical frozen originals. Preserve source cutoff, actual prior drafts and receipts. Add only the three originals requested by that review from the same frozen candidate set. After reconciling the failed six-minute attempt and preserving its receipt, evaluate the changed versioned editorial budget under a distinct development identity with at most two new calls: editorial correction and independent full final review. No source refresh, deadline reset, Slack publication or scheduled-timing certification. Normal automatic publication remains enabled.",
+  "state": "closed_failed",
+  "completed_model_calls": 1,
+  "attempts": [
+    {
+      "phase": "revise",
+      "state": "completed",
+      "seconds": 568.969,
+      "timeout_seconds": 960,
+      "request_sha256": "f8bb37b05b34292feba2c9becd53f3a2dacf6a55866726c2e309c97a9237340a",
+      "usage": {
+        "input_tokens": 45030,
+        "cached_input_tokens": 0,
+        "output_tokens": 15713,
+        "reasoning_output_tokens": 11394
+      }
+    }
+  ],
+  "failure": "Completed editorial response could not be merged: overlapping same-source evidence exceeded four slots; a389-character valid edit also exceeded the300-character context consumer. Raw response retained unchanged.",
+  "resolved_by": "Lossless evidence-span merge and matched500-character consumer schema in ca5ebb3",
+  "previous_failure_preserved": true,
+  "content_quality_pass": false
+}

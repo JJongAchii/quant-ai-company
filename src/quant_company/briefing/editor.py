@@ -39,8 +39,8 @@ from .quotations import (
 )
 from .schedule import KST, close
 
-FORMAT_VERSION = 20
-VALIDATION_VERSION = 68
+FORMAT_VERSION = 21
+VALIDATION_VERSION = 69
 
 WRITE = """You are Analyst writing a substantive, readable Korean daily market briefing.
 Return AgentDecision(status=complete,say='') with exactly one complete BriefProposal JSON artifact,
@@ -117,6 +117,10 @@ For changed rates, restrictions or deadlines retain supported old AND new terms.
 demands and proposals are not agreements or implementation. Include material counterproposal conditions
 and time limits. A dot plot or nonvoting speaker is not a decision; retain competing speakers/data/path.
 For macro surprises preserve prior/revised growth alongside inflation and explain their different risks.
+For trade-driven growth claims distinguish nominal balances from inflation-adjusted goods balances and
+retain the actual growth contribution and its persistence when reported. A growth forecast alone cannot
+replace observed evidence. Preserve named companies' existing investment exposure beside new policy
+allocations, with the original speaker attribution; a separate proposed project is not a substitute.
 For oil/FX/yields retain sourced levels/moves with their distinct timestamps, probabilities or competing
 bond-supply/fiscal driver when material. Give the Korean transmission or its supported limitation.
 For disruptions retain already-observed retail/refined costs, processing constraints, restriction expiry,
@@ -168,8 +172,12 @@ Put an event's timing conflict in its calendar entry once; use watchpoints for t
 implication. Put a volume-estimate discrepancy beside the figures once, not again in the FX overview.
 Explain unfamiliar technical names/acronyms at first use with a short SOURCE-SUPPORTED category/function.
 If the original does not establish the function, use its plain category rather than inventing an explanation.
+For example, introduce HBM or foundry by its supported memory/product or manufacturing role; do not
+assume every reader knows semiconductor terminology. State a payment/implementation condition beside
+its amount once; the later checkpoint should specify what would change, not copy the same condition.
 Keep numbers that change magnitude, surprise, exposure or timing; never sacrifice a material comparison/date.
-Use up to four short supporting context paragraphs, at most two per issue and 300 characters each, beside
+Use short supporting context paragraphs, normally at most one per issue, at most two per issue and
+500 characters each (prefer 300 or fewer), beside
 the relevant issue. Do not hide policy/investment facts in unrelated internals. Internals adds distinct
 sourced breadth/flow facts or stays empty. Guidance: 1800-3500 Korean prose characters excluding links,
 not a quota; preserve material completeness. Group by an economic link, not a shared keyword.
@@ -304,7 +312,7 @@ other conclusion-changing fact too. Include material product mix, capex/producti
 supply and target capabilities; do not repair only the examples named by the first critic.
 When the old claim's character/quote limit prevents coherent coverage, use context_additions with a supplied
 allowed_context_issue_id as issue_fact_id and a new unique claim ID. Add no more than
-revision_feedback.context_addition_limit paragraphs of300 characters, two per issue including existing
+revision_feedback.context_addition_limit paragraphs of up to 500 characters (prefer 300 or fewer), two per issue including existing
 context, with exact own evidence from allowed_source_ids. Preserve existing context.
 Keep each addition beside the relevant issue, not in unrelated overview/internals. Do not duplicate existing
 prose or imply planned new supply is already operational or certainly surplus. The independent review still
@@ -653,7 +661,7 @@ Explain unfamiliar acronyms; compress duplicated interpretation and repeated cav
             "market_context.original_text_range=[start,end] selects the unchanged source substring.\n")
         header = header.removesuffix('BRIEF DATA JSON:\n')+instructions+'BRIEF DATA JSON:\n'
         result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    if references and (phase == 'review' or editorial_patch) and len(result) > 88000:
+    if references and (phase == 'review' or editorial_patch or composition) and len(result) > 88000:
         groups = [[] for _ in payload['documents']]
         for reference, position, exact_text in payload['original_quotes']:
             groups[position].append([int(reference.removeprefix('@q:')), exact_text])
@@ -664,7 +672,7 @@ Explain unfamiliar acronyms; compress duplicated interpretation and repeated cav
             [int(row[0].removeprefix('@candidate:')), *row[1:]]
             for row in payload.get('unselected_source_index', [])]
         payload['unselected_source_prefix'] = '@candidate:'
-        if editorial_patch:
+        if editorial_patch or composition:
             header = header.removesuffix('BRIEF DATA JSON:\n') + (
                 'Grouped originals: original_quotes[document_index] holds ordered [quote_number,exact_text] '
                 'rows; cite @q:quote_number. Read every row without omission.\nBRIEF DATA JSON:\n')
@@ -757,7 +765,7 @@ Explain unfamiliar acronyms; compress duplicated interpretation and repeated cav
             'facts': [[f['id'], positions[f['source_id']], f['fact'], f['qualifiers'], f['quote']]
                       for f in inventory['facts']]}
         result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    if editorial_patch and bundle.get('fact_inventory_required') and len(result) > 88000:
+    if (editorial_patch or composition) and bundle.get('fact_inventory_required') and len(result) > 88000:
         columns = list(payload['documents'][0])
         if all(set(d) == set(columns) for d in payload['documents']):
             payload['document_columns'] = columns
@@ -1584,7 +1592,10 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
         return re.sub(r"<([^<>|\n]+)\|\[(\d+)\]>", replace, text)
 
     main = first_links("\n".join(lines))
-    main = re.sub(r'(?<![A-Za-z])bp(?![A-Za-z])', 'bp(1bp=0.01%포인트)', main, count=1)
+    first_bp = re.search(r'(?<![A-Za-z])bp(?![A-Za-z])', main)
+    if first_bp and not re.match(r'\s*[（(]\s*1\s*bp\s*=\s*0\.01\s*%\s*포인트\s*[)）]',
+                                 main[first_bp.end():]):
+        main = main[:first_bp.end()]+'(1bp=0.01%포인트)'+main[first_bp.end():]
     parts = [main]
     for block in details:
         block = first_links(block)

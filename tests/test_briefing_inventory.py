@@ -1,5 +1,6 @@
 """Frozen fact conservation; real PostgreSQL lifecycle with simulated model output."""
 
+import json
 from copy import deepcopy
 
 import pytest
@@ -117,6 +118,42 @@ def test_independent_critic_gets_originals_and_main_without_inventory_or_selecto
     assert 'committed_inventory' in writer and 'fact_placements' in writer
     assert 'committed_inventory' not in critic and 'INVENTORY_PRIVATE_SENTINEL' not in critic
     assert 'Semiconductor shares led' in critic and p.issues[0].fact.text in critic
+
+
+def test_large_writer_input_preserves_all_originals_facts_qualifiers_and_attribution():
+    from quant_company.briefing.inventory import composition_inventory
+    from quant_company.briefing.quotations import resolve_quotations
+
+    from .test_briefing import CONTENT
+    from .test_briefing_quotations import original_body
+
+    b = frozen()
+    b['documents'] = [{**b['documents'][0], 'id': f'source-{i:040x}',
+        'title': 'Synthetic market baseline and follow-through report. ' * 7,
+        'content': CONTENT * 8} for i in range(20)]
+    sources = []
+    for document in b['documents']:
+        source = deepcopy(inventory().sources[0])
+        source.source_id = document['id']
+        source.material_facts = [deepcopy(source.material_facts[0]) for _ in range(3)]
+        for fact in source.material_facts:
+            fact.fact *= 4
+        sources.append(source)
+    b = freeze_inventory(FactInventory(sources=sources), b)
+    original = deepcopy(b)
+    text = prompt(b, 'write', direct_output=True)
+    data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
+    assert len(text) <= 88000 and data['original_quote_layout'] == 'grouped_documents'
+    documents = [dict(zip(data['document_columns'], row, strict=True)) for row in data['documents']]
+    for index, document in enumerate(b['documents']):
+        assert original_body(data, index) == document['content']
+        assert documents[index]['id'] == document['id'] and documents[index]['title'] == document['title']
+    committed = data['committed_inventory']
+    for expected, row in zip(composition_inventory(b)['facts'], committed['facts'], strict=True):
+        actual = dict(zip(committed['fact_columns'], row, strict=True))
+        actual['source_id'] = documents[actual.pop('source_document_index')]['id']
+        assert resolve_quotations(actual, b) == expected
+    assert b == original
 
 
 def test_new_original_notes_cannot_replace_previously_committed_source():

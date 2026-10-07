@@ -55,3 +55,13 @@ def test_first_basis_point_unit_is_explained_without_rewriting_stored_facts():
     assert '6bp(1bp=0.01%포인트)' in main and '2bp 상승' in main
     assert main.count('1bp=0.01%포인트') == 1
     assert p.model_dump_json() == original
+
+
+def test_existing_basis_point_explanation_is_not_inserted_twice_or_moved_to_next_rate():
+    b, p = bundle(), proposal()
+    p.issues[0].fact.text = '국채금리는 6bp(1bp=0.01%포인트) 상승했고 단기물은 2bp 상승했다.'
+    original = p.model_dump_json()
+    main = render(p, b)[0][0]
+    assert '6bp(1bp=0.01%포인트) 상승' in main and '2bp 상승' in main
+    assert main.count('1bp=0.01%포인트') == 1
+    assert p.model_dump_json() == original
