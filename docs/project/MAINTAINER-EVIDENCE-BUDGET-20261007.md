@@ -51,13 +51,33 @@
 
 최적화 전 관찰창의 실제 24개 호출은 input **882,903**, cached input **60,800**(input에 포함), output **76,847**이다. [원본 사용량 기록](evidence/maintainer-live-cycle-20261006/usage-final.json)과 공식 [Codex JSON usage 문서](https://learn.chatgpt.com/docs/non-interactive-mode)를 따른다. 적용 후 새 호출이 없으므로 토큰 절감률·cache 개선·구독 사용 비율을 계산하지 않는다.
 
-새 사례는 설정된 Slack의 사람 요청에서 시작해야 한다. `maintenance/requests.py`와 `maintenance/identity.py`가 실제 inbound task를 요구하고, AGENTS.md가 서명·워크스페이스·사용자·채널 경계를 요구한다. 이 대화 승인을 서명된 Slack event로 만들거나 기존 blocked 건을 초기화할 수 없다.
+## 실제 새 Slack 사례 — 2026-10-07 완료
 
-소유자는 [기존 개선봇 스레드](https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859)에 다음 새 요청을 보낼 수 있다:
+소유자의 [새 메시지](https://achiisquantresearch.slack.com/archives/C0C3Q7BFQCE/p1791340131991029?thread_ts=1791269678.293859&cid=C0C3Q7BFQCE)가 11:28:52 KST에 허용된 Maintainer ingress로 접수됐다. 원 event key·payload digest·task ID는 [접수 영수증](evidence/maintainer-evidence-budget-20261007/fresh-case-intake.json)에 보존했다.
 
-> 최적화된 현재 운영 코드와 등록된 원 영수증 대사 결과를 기준으로 새 진단을 진행해. 과거 불확실 호출은 재실행하지 말고, 추가로 재현 가능한 문제만 수정·검증·PR로 제안해. 근거가 부족하면 그 한계를 기록하고 종료해.
+실행 전 설치된 공용 워커가 새 `trend_scout` 역할을 전문 절차로 읽으면서 `Unknown specialist`를 반복했다. 원 turn `e2988906-53c9-532b-acad-4afa31c0ca98`에는 request·response가 없었고 attempts=0이었다. main에 존재하는 역할 제외·pack guard를 정확한 설치 `company.py`에만 적용했다. 실제 PostgreSQL의 동일 요청 준비는 base에서 실패, 후보에서 ready(35,779자, gpt-6.1-sol/xhigh)였고 모든 준비용 SQL은 롤백됐다. 검증 모델 호출은 0회다.
 
-그 새 case의 공식 usage와 처리 결과로 실제 절감을 측정한다. 이번 attachment의 **새 모델 사례 인수는 이 외부 경계 때문에 partial**이다. 자동 repair/test/PR가 완료됐다고 보고하지 않는다. [PR #118](https://github.com/JJongAchii/quant-ai-company/pull/118)은 이 대화가 승인한 운영자가 작성한 최적화 PR이다.
+13:09:19 KST에 워커 하나를 후보 이미지 `sha256:cab5db642ea0be53e9a3dc71e42f7498459eae65d7329a753162cdcf3b16e92c`로 교체했다. 코드 SHA는 `7f03288f548f68d8cf8162bcf9fed5ccb5ef181dbc50a61b478bd93704a3d8ca`다. 설정·권한·mount·network·자원 한도와 다른 14개 서비스, 원 불확실 검토 11건과 역사 maintenance 호출을 보존했다. [실제 준비 검증](evidence/maintainer-evidence-budget-20261007/worker-compat-qualification.json)과 [교체 영수증·rollback](evidence/maintainer-evidence-budget-20261007/worker-compat-cutover.json)을 따른다. 새 요청이나 모델 결과를 만들어 넣지 않고 원 Temporal 실행이 이어졌다.
+
+### 결과와 실제 사용량
+
+- 진단 요청 `49144860-7e42-5a72-8311-d47871ccf315`, Slack 케이스 `80b8f971-78db-5d6e-b938-7ded89dc5aca`.
+- 13:45:16 KST에 `done`, finding 없음, error 없음으로 종료됐다. 원 영수증 대사와 누락된 원 CLI 출력의 한계를 읽었지만, 추가로 재현할 수 있는 결함·수정 후보를 확정하지 못했다. 전 시스템의 무결함 판정이나 자동 repair/test/PR 성공으로 사용하지 않는다.
+- 동일 snapshot `388f44d5897129314232d86ba9230a863bf658a4`에서 추가 코드 조사 4회, 발췌 기록 38개를 받았다. diagnostic_revision=0으로 끝났다. [추가 조사 기록](evidence/maintainer-evidence-budget-20261007/fresh-case-investigation.json)의 반복 경로는 후속 입력 개선의 관찰 근거다.
+- 최종 상태 메시지는 13:45:22 KST에 [실제 Maintainer 케이스 스레드](https://achiisquantresearch.slack.com/archives/C0C3Q7BFQCE/p1791346259340899)에 delivered됐다. 원 스레드의 Maintainer 접수 답변도 delivered다. 별도의 Director 링크 안내 한 건은 `not_in_channel`로 blocked이며 delivered로 계산하지 않는다.
+- 아래 수치는 모두 실제 공식 Codex usage다. 접수와 진단 모두 `gpt-6.1-sol`이며 과거 Astra 두 턴은 포함하지 않는다.
+
+| 범위 | 호출 | input | cached input | output |
+|---|---:|---:|---:|---:|
+| Maintainer 대화 접수 | 2 | 41,124 | 0 | 2,754 |
+| 실제 진단 | 5 | 183,508 | 0 | 16,739 |
+| 합계 | 7 | **224,632** | **0** | **19,493** |
+
+cached input은 input에 포함되고 reasoning output은 output에 포함된다. 새 진단의 평균 input은 36,701.6 tokens/call이다. 전 관찰창 24회(input 882,903, cached input 60,800, output 76,847)는 사례·모델 구성이 달라 대조군이 아니다. 이번에는 cache 재사용이 확인되지 않았다. **실제 토큰 절감률과 구독 한도 소모 비율은 이 자료로 확정할 수 없다.** [완료·전달 원 영수증](evidence/maintainer-evidence-budget-20261007/fresh-case-final.json)과 [사용량 집계](evidence/maintainer-evidence-budget-20261007/fresh-case-usage.json)를 따른다.
+
+진단에 제공된 운영 메타데이터의 commit `46d853cb`, GitHub snapshot, 실제 설치 overlay 모듈 SHA는 서로 다른 provenance다. 모델 응답의 commit 언급을 전체 서비스의 설치 버전 인증으로 사용하지 않는다.
+
+새 실제 사례 인수는 근거 있는 무후보 종료와 usage·Slack delivered 영수증으로 완료했다. [PR #118](https://github.com/JJongAchii/quant-ai-company/pull/118)은 운영자가 작성한 최적화·운영 기록 PR이며 개선봇이 생성한 수정 후보 PR이 아니다. 기존 `29f7e8b` head의 service/codex-protocol은 모두 SUCCESS였다. 이 후속 기록의 CI와 병합은 별도 상태다.
 
 ## 증거
 
