@@ -93,6 +93,8 @@ class Settings(BaseSettings):
     video_template: Literal["motion-v2", "text-v1"] = "motion-v2"
     video_asset_dir: Path = Path("/var/lib/quant-company/video-assets")
     video_render_workers: int = Field(default=1, ge=1, le=8)
+    # 증시story playlist; when empty the description omits the "▶ 증시story 모아보기" lines.
+    video_playlist_url: str = ""
     briefing_calendar_overrides_file: Path | None = None
     tech_feed_enabled: bool = False
     tech_feed_publish_enabled: bool = False

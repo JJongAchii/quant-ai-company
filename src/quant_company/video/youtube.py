@@ -66,8 +66,8 @@ class YouTube:
             raise ValueError("YouTube description exceeds limit")
         response = await self.request("POST", UPLOAD + "/videos", params={"uploadType": "resumable", "part": "snippet,status"},
             headers={"X-Upload-Content-Length": str(path.stat().st_size), "X-Upload-Content-Type": "video/mp4"},
-            json={"snippet": {"title": job["plan"]["title"], "description": description, "categoryId": "25",
-                              "defaultLanguage": "ko"},
+            json={"snippet": {"title": job["artifacts"].get("title", job["plan"]["title"]), "description": description,
+                              "categoryId": "25", "defaultLanguage": "ko", **({"tags": job["artifacts"]["tags"]} if job["artifacts"].get("tags") else {})},
                   "status": {"privacyStatus": "private", "selfDeclaredMadeForKids": False}})
         response.raise_for_status()
         return session_url(response.headers["location"])

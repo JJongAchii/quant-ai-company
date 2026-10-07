@@ -8,7 +8,7 @@ import re
 import shutil
 import subprocess
 from concurrent.futures import ProcessPoolExecutor
-from datetime import date
+from datetime import date, datetime
 from difflib import SequenceMatcher
 from html import escape
 from importlib.resources import files
@@ -16,6 +16,8 @@ from pathlib import Path
 
 from .contracts import claim_catalog, digest
 from .render import Aligner, checksum, probe, quality_probe, run, spoken
+from .upload import compose as compose_upload
+from .upload import references
 
 FPS = 30
 LEAD, TAIL = 0.5, 0.8
@@ -43,6 +45,17 @@ QA_JS = r"""() => {
   const ix=Math.min(a.r.right,b.r.right)-Math.max(a.r.left,b.r.left), iy=Math.min(a.r.bottom,b.r.bottom)-Math.max(a.r.top,b.r.top);
   if(ix>3&&iy>3) out.push(['overlap',a.t,b.t]);}
  return out;}"""
+
+
+def day_of(value):
+    return date.fromisoformat(value[:10]) if isinstance(value, str) else value
+
+
+def cutoff_of(value):
+    from zoneinfo import ZoneInfo
+
+    moment = datetime.fromisoformat(value) if isinstance(value, str) else value
+    return moment.astimezone(ZoneInfo('Asia/Seoul')) if moment.tzinfo else moment
 
 
 def norm(text):
@@ -181,7 +194,7 @@ class MotionRenderer:
         directory.mkdir(parents=True, exist_ok=True)
         page, scenes, used = self._page(job, plan, directory)
         day = job['source']['day']
-        day = date.fromisoformat(day[:10]) if isinstance(day, str) else day
+        day = day_of(day)
         t, changes, prev, alignment, all_captions = 0.0, [], None, [], []
         for scene, audio in zip(scenes, audio_paths, strict=True):
             duration = float(probe(audio, self.settings)['format']['duration'])
@@ -313,22 +326,23 @@ class MotionRenderer:
             if s['chapter'] not in seen:
                 seen.add(s['chapter'])
                 chapters.append({'start': s['t0'], 'title': CHAPTER_TITLES[s['chapter']]})
+        copy = compose_upload(plan.upload, day_of(job['source']['day']), cutoff_of(job['source']['cutoff']),
+                              job['source'].get('edition_kind', 'am'),
+                              [(c['start'], plan.thumbnail if i == 0 else c['title']) for i, c in enumerate(chapters)],
+                              references(job['source'], ids), self.settings.video_playlist_url)
+        description = copy['description']
         photos = [a for a in used.values() if a['kind'] == '자료사진']
         credits = ''.join(f"\n- {a['subject']} · {a['author']} · {a['license']}"
                           + (f" ({a['license_url']})" if a.get('license_url') else '')
                           + f"\n  원본: {a['source']}" + (f"\n  변경: {a['changes']}" if a.get('changes') else '')
                           for a in photos)
-        description = (plan.introduction + f"\n\n자료 기준: {job['source']['cutoff']} (현재 가격이 아닙니다) · 투자 권유가 아닙니다.\n\n"
-                       + '\n'.join(f"{int(c['start']) // 60:02}:{int(c['start']) % 60:02} {c['title']}" for c in chapters)
-                       + '\n\n주요 출처\n' + '\n'.join(d['publisher'] + ': ' + d['url'] for d in sources)
-                       + ('\n지도 데이터: Natural Earth (퍼블릭 도메인) · 지도 위 경로는 개념도' if any(s['type'] == 'map' for s in scenes) else '')
-                       + (f'\n\n자료사진{credits}' if photos else ''))
-        (directory / 'upload.txt').write_text(f'제목: {plan.title}\n\n{description}\n\n고정 댓글: {plan.pinned_comment}\n')
+        (directory / 'upload.txt').write_text(f"[제목]\n{copy['title']}\n\n[설명]\n{description}\n\n[태그]\n{', '.join(copy['tags'])}\n\n"
+                                              f"[고정 댓글]\n{plan.pinned_comment}\n" + (f"\n[자료사진 출처]{credits}\n" if photos else ''))
         (directory / 'sources.json').write_text(json.dumps(sources, ensure_ascii=False, indent=2))
         (directory / 'assets.json').write_text(json.dumps(used, ensure_ascii=False, indent=2))
         names = ['video.mp4', 'thumbnail.png', 'subtitles.srt', 'script.txt', 'plan.json', 'alignment.json', 'upload.txt',
                  'sources.json', 'assets.json']
-        manifest = {'duration': duration, 'qa_passed': True, 'human_watched': False, 'template': 'motion-v2', 'fps': FPS, 'frames': frames,
+        manifest = {'title': copy['title'], 'tags': copy['tags'], 'duration': duration, 'qa_passed': True, 'human_watched': False, 'template': 'motion-v2', 'fps': FPS, 'frames': frames,
                     'checks': ['source_numbers', 'layout_dom', 'caption_lines', 'real_speech_timestamps', 'transcription', 'dimensions',
                                'av_duration', 'full_decode', 'black_frames', 'silence', 'loudness', 'true_peak'],
                     'audio_quality': measured, 'files': {n: checksum(directory / n) for n in names},

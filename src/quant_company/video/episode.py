@@ -11,6 +11,7 @@ from pydantic import Field, model_validator
 
 from ..contracts import StrictModel
 from .contracts import claim_catalog, prompt_claims
+from .upload import UploadCopy
 
 CARD_TYPES = ('cold_open', 'summary3', 'market_board', 'headline', 'flow', 'compare', 'bars', 'map', 'calendar',
               'photo', 'counter', 'signals')
@@ -73,6 +74,7 @@ class EpisodePlan(StrictModel):
     introduction: str = Field(min_length=10, max_length=500)
     pinned_comment: str = Field(min_length=5, max_length=300)
     ticker: Ticker
+    upload: UploadCopy
     scenes: list[EpisodeScene] = Field(min_length=5, max_length=30)
 
     @model_validator(mode='after')
@@ -89,6 +91,8 @@ class EpisodePlan(StrictModel):
         return self
 
 
+GENERAL_TAGS = frozenset({'오늘의 증시', '증시 브리핑', '마감 시황', '장전 시황', '주식 시황', '국내 증시', '미국 증시', '해외 증시',
+                          '주식', '주식 뉴스', '경제 뉴스', '시황', '증시', '주식 투자'})
 CLOCK = re.compile(r'(?<!\d)\d{1,2}:\d{2}(?!\d)')
 
 
@@ -169,8 +173,13 @@ def validate_episode(plan, source, library=None):
     if not set(plan.ticker.claim_ids) <= claims.keys() or any(not nums(i.value + ' ' + i.change) <= ticker for i in plan.ticker.items):
         raise ValueError('Ticker number is not in the frozen source')
     allowed = nums(' '.join(c['text'] for c in claims.values())) | allowed_frame
-    if any(not nums(t) <= allowed for t in (plan.title, plan.thumbnail, plan.thumbnail_stat, plan.introduction, plan.pinned_comment)):
+    copy = plan.upload
+    if any(not nums(t) <= allowed for t in (plan.title, plan.thumbnail, plan.thumbnail_stat, plan.introduction, plan.pinned_comment,
+                                            copy.title, copy.lead, copy.intro, *copy.stories)):
         raise ValueError('Unbound number in video metadata')
+    shown = ' '.join([s.narration for s in plan.scenes] + [t for s in plan.scenes for _, t in strings(s.data)]).replace(' ', '')
+    if any(t.replace(' ', '') not in shown and t not in GENERAL_TAGS for t in copy.tags + [h[1:] for h in copy.hashtags]):
+        raise ValueError('Tag is neither in the episode nor a general market keyword')
 
 
 CARD_GUIDE = """Card catalog (use only these types; fields in parentheses):
@@ -218,7 +227,10 @@ def episode_prompt(source, feedback='', library=None):
             "Each issue: what happened → why it matters → counterevidence → what to confirm. "
             "Speak at most two or three numbers per issue; exact figures live on the cards. "
             "Cite claim IDs for every scene. Images may only use the asset IDs listed. "
-            "Title, thumbnail and opening promise the same question. Return only the required JSON.\n"
+            "Title, thumbnail and opening promise the same question. "
+            "upload: title (without the channel prefix, hook first), lead (one sentence on today's core), intro (1-2 sentences), "
+            "market (국내/미국/글로벌), stories (the three summary points), hashtags (1-2 topic tags), tags (episode keywords first, "
+            "then general market keywords; nothing unrelated). Return only the required JSON.\n"
             + CARD_GUIDE + '\n'
             + json.dumps({'day': str(source['day']), 'cutoff': str(source['cutoff']), 'claims': prompt_claims(source),
                           'assets': shelf, 'revision_feedback': feedback}, ensure_ascii=False))

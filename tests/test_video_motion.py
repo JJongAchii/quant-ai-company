@@ -20,7 +20,7 @@ from .test_video_render import ffmpeg_binary
 
 def source():
     return {'proposal': proposal().model_dump(mode='json'), 'bundle': bundle(), 'day': '2026-09-22',
-            'cutoff': '2026-09-22 07:30 KST', 'rendered': {}}
+            'cutoff': '2026-09-22T07:30:00+09:00', 'rendered': {}}
 
 
 def episode(**changes):
@@ -56,6 +56,12 @@ def episode(**changes):
     value = dict(title='반도체가 이끈 미국 증시, 확산은 아직', thumbnail='반도체가 이끌었다', thumbnail_stat='S&P 500 ▲ 1.92%',
                  thumbnail_image='fixture-illustration', introduction='반도체가 주도한 상승과 확산 여부를 확인 조건과 함께 봅니다.',
                  pinned_comment='어떤 업종의 확산을 확인하고 계신가요?',
+                 upload=dict(title='반도체가 이끈 미국 증시, 확산은 아직 | 9월 22일 아침 브리핑',
+                             lead='미국 증시는 반도체가 주도했지만 업종별 흐름은 엇갈렸습니다.',
+                             intro='반도체가 주도한 상승과 비기술 업종으로의 확산 여부를 확인 조건과 함께 짚어봅니다.', market='미국',
+                             stories=['반도체가 이끈 상승', '수익률 하락과 성장주 부담', '비기술 업종 확산 여부'], hashtags=['#반도체'],
+                             tags=['반도체', 'S&P 500', '나스닥 종합', '국채 수익률', '성장주', '업종 흐름', '오늘의 증시', '증시 브리핑',
+                                   '주식 시황', '미국 증시', '주식 뉴스', '경제 뉴스', '시황']),
                  ticker=dict(label='정규장 종가', claim_ids=['sp500', 'nasdaq'], items=[
                      dict(name='S&P 500', value='5,300', change='1.92%', dir='up'),
                      dict(name='나스닥', value='17,100', change='0.59%', dir='up'),
@@ -145,14 +151,18 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
     paths = []
     for i in range(len(plan.scenes)):
         path = tmp_path / f'audio-{i}.wav'
-        run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', f'sine=frequency={330 + i * 60}:sample_rate=48000:duration=5', str(path)])
+        run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', f'sine=frequency={330 + i * 60}:sample_rate=48000:duration=9.5', str(path)])
         paths.append(path)
     job = {'id': 'fixture', 'source': source(), 'policy': {'template': 'motion-v2'}}
     manifest = MotionRenderer(settings, WordAligner()).render(job, plan, tmp_path / 'out', paths)
     assert manifest['template'] == 'motion-v2' and manifest['qa_passed'] and manifest['fps'] == 30
-    assert 30 < manifest['duration'] < 40 and manifest['audio_quality']['true_peak_dbfs'] <= -1.5
+    assert 50 < manifest['duration'] < 60 and manifest['audio_quality']['true_peak_dbfs'] <= -1.5
     upload = (tmp_path / 'out' / 'upload.txt').read_text()
     assert 'Fixture Author · CC BY 4.0' in upload and '변경: 잘라 냄' in upload and 'AI' not in upload
+    assert manifest['title'].startswith('[증시story] ') and manifest['tags'][-2:] == ['증시story', '뭐든story']
+    assert '📅 2026.09.22 | 미국 증시' in upload and '자료 기준: 2026.09.22 07:30 (한국시간) · 장전' in upload
+    assert '00:00 반도체가 이끌었다' in upload and '#증시story #뭐든story #반도체' in upload and '모아보기' not in upload
+    assert 'https://www.cnbc.com/fixture-market-report.html' in upload
     page = (tmp_path / 'out' / 'page' / 'episode.js').read_text()
     assert '자료사진 · Fixture Author · CC BY 4.0' in page and '일러스트' not in page
     assert '자료 기준' not in page and '07:30' not in page
@@ -214,3 +224,26 @@ async def test_motion_jobs_request_the_episode_contract_with_the_reviewed_librar
     assert 'cold_open' in request.prompt and job_source['day']
     assert state == 'reviewing'
     assert EpisodePlan.model_validate(store.get(job['id'])['plan']).ticker.label == '정규장 종가'
+
+
+def test_upload_copy_template_and_checks():
+    from datetime import date, datetime
+
+    from quant_company.video.upload import check, compose
+
+    copy = episode().upload
+    chapters = [(0, '반도체가 이끌었다'), (10, '오늘의 세 가지'), (35, '시장 한눈에')]
+    refs = ['• Synthetic fixture — Synthetic closing report / 2026.09.22', 'https://www.cnbc.com/fixture-market-report.html']
+    result = compose(copy, date(2026, 9, 22), datetime(2026, 9, 22, 7, 30), 'am', chapters, refs, 'https://www.youtube.com/playlist?list=fixture')
+    text = result['description']
+    assert text.startswith(copy.lead + '\n' + copy.intro + '\n\n📅 2026.09.22 | 미국 증시')
+    assert '▶ 증시story 모아보기\nhttps://www.youtube.com/playlist?list=fixture' in text
+    assert text.endswith('세상의 뭐든, 이야기로 만나다. 뭐든story.\n\n#증시story #뭐든story #반도체')
+    for broken in (dict(result, title=copy.title), dict(result, description=text.replace('00:10', '00:03')),
+                   dict(result, description=text + '\nhttps://example.invalid/guess'), dict(result, tags=result['tags'][:5])):
+        with pytest.raises(ValueError):
+            check(broken, refs_allowed={refs[1]}, playlist_url='https://www.youtube.com/playlist?list=fixture')
+    raw = episode().model_dump(mode='json')
+    raw['upload']['tags'][0] = '비트코인'
+    with pytest.raises(ValueError, match='Tag'):
+        validate_episode(EpisodePlan.model_validate(raw), source(), {'fixture-photo': {}, 'fixture-illustration': {}})
