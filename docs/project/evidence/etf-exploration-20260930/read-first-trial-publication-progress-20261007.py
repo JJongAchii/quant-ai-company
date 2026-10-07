@@ -16,6 +16,13 @@ SELECT json_build_object(
    FROM research_mission_stages WHERE id='5e5e2013-373c-5868-9fc9-242985e085b3'),
  'meaning',(SELECT row_to_json(x) FROM (
    SELECT s.id,s.state,s.error,s.attempt,s.updated_at,
+     (SELECT coalesce(json_agg(row_to_json(t)),'[]'::json) FROM (
+       SELECT id,sequence,status,error,response#>>'{decision,status}' AS decision_status,
+         response#>>'{decision,tools,0,arguments,action}' AS tool_action,
+         response#>>'{decision,tools,0,arguments,path}' AS tool_path,
+         response#>>'{decision,tools,0,arguments,offset}' AS tool_offset,
+         jsonb_array_length(response#>'{decision,artifacts}') AS artifact_count
+       FROM turns WHERE task_id=s.task_id ORDER BY sequence DESC LIMIT 3)t) AS recent_turns,
      (SELECT count(*) FROM research_stage_reads r WHERE r.stage_id=s.id AND r.attempt=s.attempt) AS read_chunks,
      (SELECT coalesce(sum(length(content)),0) FROM research_stage_reads r WHERE r.stage_id=s.id AND r.attempt=s.attempt) AS read_characters,
      (SELECT coalesce(json_agg(row_to_json(b)),'[]'::json) FROM (
@@ -48,7 +55,11 @@ SELECT json_build_object(
    WHERE j.id='1ac851a9-f5d0-55a3-9bf8-7d98193e42c8'),
  'slack',(SELECT coalesce(json_agg(row_to_json(o)),'[]'::json) FROM (
    SELECT o.id,o.status,o.attempts,o.sent_ts,o.error,o.channel,o.thread_ts,o.created_at,
-     length(o.text) AS characters,md5(o.text) AS text_md5
+     length(o.text) AS characters,md5(o.text) AS text_md5,
+     strpos(o.text,(SELECT content::jsonb#>>'{report,view_url}' FROM sources
+       WHERE id='mission-report:de3597b0-e358-5a58-af5e-9f3c79df53e9'))>0 AS exact_report_link_present,
+     strpos(o.text,(SELECT '<@' || owner_user || '>' FROM projects
+       WHERE id='9aac0de4-2b97-5195-a720-287d324234f3'))>0 AS owner_tag_present
    FROM outbox o JOIN messages m ON m.id=o.id JOIN research_jobs j ON m.task_id::text=j.report->>'director_task_id'
    WHERE j.id='1ac851a9-f5d0-55a3-9bf8-7d98193e42c8' ORDER BY o.created_at)o));
 ROLLBACK;"""

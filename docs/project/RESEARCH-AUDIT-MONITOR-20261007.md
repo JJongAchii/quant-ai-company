@@ -94,3 +94,12 @@ root가 기존 권한으로 정확한 수리를 검토했다. 14:24:07 KST에 ev
 `read-first-trial-publication-progress-20261007.py`는 고정 trial의 검증 SHA, 자료 읽기 진행,
 보고서 등록과 실제 director/outbox 전달 영수증만 읽는다. 모든 SQL은 read-only transaction이다.
 이 통과 판정은 승인된 탐색 연구 범위이며, 역사적 알파·확증·운영 배치 승인이 아니다.
+
+15:20:22에 meaning의 필수21개 파일을 모두 읽은 것을
+[관측](evidence/etf-exploration-20260930/first-trial-meaning-all-evidence-read-next-call-running-20261007.json)했다.
+이 관측만으로 다음 호출을 최종 판정 작성이라고 단정할 수 없다. 이후 실제 응답들은 승인 과제,
+미션 이력과 이전 거절 사유의 추가 허용 원문을 읽었다.15:30:11 관측에서79개 읽기 조각과
+mission/history.json의 전체215,342자 읽기가 완료돼 있다.15:31:22의 실제80번째 호출9e2bf588은
+running이며 의미 판정·보고서 등록·Slack 전달은 아직이다.
+[응답 대기 관측](evidence/etf-exploration-20260930/first-trial-meaning-response-pending-20261007.json)을 보존했다.
+후속 proposal의 내용과 완료 여부는 실제 접수로만 확인한다.
