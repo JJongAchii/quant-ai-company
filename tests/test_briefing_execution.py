@@ -120,6 +120,27 @@ def test_brief_decimal_wire_rejects_non_prices_before_inference(value):
     assert not re.fullmatch(pattern, value)
 
 
+@pytest.mark.parametrize("status,at,accepted", [
+    ("time_unconfirmed", None, True), ("scheduled", "2026-10-08T00:00:00+09:00", True),
+    ("time_unconfirmed", "2026-10-08T00:00:00+09:00", False), ("scheduled", None, False),
+])
+def test_calendar_wire_and_domain_agree_on_unknown_time(status, at, accepted):
+    from quant_company.briefing.contracts import CalendarEvent
+
+    event = {"id": "calendar-fixture", "title": "Synthetic calendar fixture", "at": at,
+             "source_timezone": "Asia/Seoul", "status": status, "note": "Fixture only",
+             "evidence": [{"source_id": "fixture", "quote": "Synthetic source quote"}]}
+    branches = output_schema(request())["$defs"]["CalendarEvent"]["anyOf"]
+    admitted = any(status in branch["properties"]["status"]["enum"]
+                   and ((at is None) == (branch["properties"]["at"]["type"] == "null")) for branch in branches)
+    assert admitted == accepted
+    if accepted:
+        CalendarEvent.model_validate(event)
+    else:
+        with pytest.raises(ValueError, match="unknown_event_time_must_be_explicit"):
+            CalendarEvent.model_validate(event)
+
+
 def test_write_refused_if_independent_review_cannot_finish(brief):  # noqa: F811
     store, clock = brief
     edition = seed(brief)

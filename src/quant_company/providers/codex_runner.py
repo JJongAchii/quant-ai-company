@@ -108,6 +108,18 @@ def output_schema(request):
                 strict(child)
 
     strict(schema)
+    if request.output_contract.startswith("brief_") and "CalendarEvent" in schema.get("$defs", {}):
+        event = schema["$defs"]["CalendarEvent"]
+        branches = []
+        for timed in (True, False):
+            branch = json.loads(json.dumps(event))
+            branch["properties"]["at"] = ({"type": "string", "format": "date-time"} if timed else {"type": "null"})
+            branch["properties"]["status"] = {"type": "string", "enum":
+                ["scheduled", "changed", "cancelled"] if timed else ["time_unconfirmed"]}
+            branches.append(branch)
+        # Express the existing domain constraint before generation as well:
+        # an event with an unknown time cannot expose midnight as its time.
+        schema["$defs"]["CalendarEvent"] = {"title": event["title"], "anyOf": branches}
     return schema
 
 
