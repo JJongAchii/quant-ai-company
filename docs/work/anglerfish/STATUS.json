@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v16.json",
-  "state": "first_scientific_audit_resumed_actual_provider_running",
-  "previousIntent": "INTENT-v15.json",
+  "currentIntent": "INTENT-v17.json",
+  "state": "monitoring_audit_note_bound_repair",
+  "previousIntent": "INTENT-v16.json",
   "deliverables": {
     "POLICY": {
       "status": "completed",
@@ -20,7 +20,7 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Actual scientific evaluation and interpretation completed. The audit hold was reconciled at11:34:53KST with the exact cached first packet, event759. Only this audit task priority changed100to0, event760, after normal Temporal higher-priority deferrals. Actual next Astra max call8520ba60 started11:41:31KST and is running with no fault. Final audit, meaning review and publication remain pending; no performance or live eligibility claimed.",
+  "operationalStatus": "Continuous monitoring requested. The second audit native response completed11:45KST but was rejected only because6171 notes characters exceed6000. Exact request, packet digest and provider thread still match. Preparing a bounded notes repair and source-preserving runtime overlay; final audits/publication pending.",
   "evidence": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json",
   "nextStage": {
     "stage": "independent_audit_meaning_report",
@@ -42,7 +42,7 @@
     },
     "scientificResultClaimed": false,
     "intent": "INTENT-v14.json",
-    "currentIntentComplete": true
+    "currentIntentComplete": false
   },
   "exploratoryPreparation": {
     "policy": "completed",
@@ -113,7 +113,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "independent_validity_audit_actual_provider_running",
+    "phase": "audit_second_packet_held_notes6171_over6000",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",

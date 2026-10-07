@@ -3,6 +3,7 @@
 import hashlib
 import json
 import pathlib
+import re
 import subprocess
 from datetime import UTC, datetime
 
@@ -34,7 +35,7 @@ raw = subprocess.check_output([
 value = json.loads(raw)
 for turn in value["turns"]:
     identity = turn["request_id"]
-    if identity != "f405eb0f-5168-5309-b875-8e15eed1bb53":
+    if not identity or not re.fullmatch(r"[0-9a-f-]{36}", identity):
         continue
     path = pathlib.Path("/var/lib/quant-company/codex/jobs") / (identity + ".json")
     if not path.is_file():
@@ -65,6 +66,8 @@ for turn in value["turns"]:
                 "keys": sorted(body) if isinstance(body, dict) else None,
                 "packet_digest": body.get("packet_digest") if isinstance(body, dict) else None,
                 "notes_characters": len(body.get("notes", "")) if isinstance(body, dict)
+                    and isinstance(body.get("notes", ""), str) else None,
+                "notes_stripped_characters": len(body.get("notes", "").strip()) if isinstance(body, dict)
                     and isinstance(body.get("notes", ""), str) else None})
         turn["runtime_response"]["artifact_shapes"] = parsed
 print(json.dumps({"observed_at": datetime.now(UTC).isoformat(), **value}, indent=2))

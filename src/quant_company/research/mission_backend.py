@@ -570,6 +570,8 @@ class MissionBackend:
         mappings["audit/package.json"] = metadata
         issued = now().astimezone(UTC).date().isoformat()
         return {
+            # Canonical lineage is fully delivered in the frozen history packet.
+            "required_lineage_reads": [],
             "audit": {"judge": "leak-auditor", "target": ".", "issued": issued,
                       "objective_digest": package.objective_digest, "scope_digest": package.scope_digest,
                       "scope": sorted(package.scope_files), "validator_request_id": request_id,

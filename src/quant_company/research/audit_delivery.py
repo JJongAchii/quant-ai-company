@@ -10,7 +10,7 @@ from ..contracts import ProviderSession
 from .builds import read_stage_file
 
 PACKET_CHARS = 48000
-MAX_NOTES = 6000
+MAX_NOTES = 8000
 MARKER = "\nAUDIT PACKET JSON:\n"
 
 
@@ -150,7 +150,8 @@ def prepare_packet(company, conn, row, turn, instructions):
         "delegations, memories or follow_up. Return one artifact containing a JSON object, status=complete. "
         "The service paginates every required text byte; do not request individual files. "
         "For phase=review, examine every read_chunks byte and return exactly "
-        '{"packet_digest":<copy exact digest>,"notes":<cumulative audit observations, max 6000 characters>}. '
+        '{"packet_digest":<copy exact digest>,"notes":<cumulative audit observations>}. '
+        f"Aim for at most 6000 characters of notes; the service maximum is {MAX_NOTES} characters. "
         "Carry forward unresolved findings, causal links and source path/offset references from previous_notes. "
         "Record conflicts and missing evidence; do not turn partial coverage into a pass. Your review completes "
         "only this packet. For phase=final, use this session's reviewed packets, cumulative notes and re-supplied "
@@ -168,7 +169,8 @@ def commit_review(company, conn, row, turn, response, value):
     if not packet:
         return False
     if (set(value) != {"packet_digest", "notes"} or value["packet_digest"] != packet["digest"]
-            or not isinstance(value["notes"], str) or not 1 <= len(value["notes"].strip()) <= MAX_NOTES):
+            or not isinstance(value["notes"], str) or not value["notes"].strip()
+            or len(value["notes"]) > MAX_NOTES):
         raise PolicyError("audit_packet_review_invalid")
     data = packet_data(turn["request"]["prompt"])
     if data.get("read_chunks") != packet["chunks"] or data.get("packet_digest") != packet["digest"]:
