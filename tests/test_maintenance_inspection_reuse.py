@@ -95,9 +95,28 @@ def test_search_cache_keeps_every_match_not_only_last_four_excerpts(company):
     with company.db.transaction() as conn:
         record_repository(conn, snap, files, {})
         first = inspect_code(conn, snap, [query])
-    repeated = inspect_code(NoRead(), snap, [query], previous=[{"evidence": first}])
+        class NoContentRead:
+            def execute(self, statement, *args):
+                assert not statement.startswith("SELECT files"), "Only coverage metadata should be loaded"
+                return conn.execute(statement, *args)
+        repeated = inspect_code(NoContentRead(), snap, [query], previous=[{"evidence": first}])
     assert len(repeated) == 4
     assert [row["path"] for row in repeated] == sorted(files)[:4]
+
+
+@pytest.mark.integration
+def test_positive_search_rechecks_after_same_commit_coverage_expands(company):
+    files = {"src/old.py": "needle_old = 1\n", "src/new.py": "needle_new = 2\n"}
+    snap = snapshot(files)
+    query = {"query": "needle"}
+    with company.db.transaction() as conn:
+        record_repository(conn, snap, {"src/old.py": files["src/old.py"]}, {})
+        old = inspect_code(conn, snap, [query])
+        record_repository(conn, snap, files, {})
+        current = inspect_code(conn, snap, [query], previous=[{"evidence": old}])
+    assert [row["path"] for row in old] == ["src/old.py"]
+    assert [row["path"] for row in current] == sorted(files)
+    assert not any(row.get("cache_hit") for row in current)
 
 
 def test_catalog_retains_old_ranges_and_explicit_lookup_over_broad_search_tail():

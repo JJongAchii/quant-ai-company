@@ -21,10 +21,20 @@ def inspect_code(conn, snapshot, queries, *, previous=()):
                     and row.get("inspection_complete")):
                 grouped.setdefault(signature, []).append(row)
         reusable.update(grouped)
-    files, evidence = None, []
+    files, evidence, readable_digest = None, [], None
     for value in queries:
         query = CodeQuery.model_validate(value)
         signature = digest([snapshot["commit"], query.model_dump()])
+        if signature in reusable and not query.path:
+            # Same-commit coverage may expand. A broad search must see newly readable paths.
+            if readable_digest is None:
+                row = conn.execute("SELECT ARRAY(SELECT jsonb_object_keys(files) ORDER BY 1) AS paths "
+                                   "FROM repository_evidence WHERE commit=%s", (snapshot["commit"],)).fetchone()
+                if not row:
+                    raise ValueError("exact_repository_evidence_unavailable")
+                readable_digest = digest(row["paths"])
+            if any(row.get("readable_paths_digest") != readable_digest for row in reusable[signature]):
+                reusable.pop(signature)
         if signature in reusable:
             evidence.extend({**row, "cache_hit": True} for row in reusable[signature])
             continue
@@ -33,6 +43,7 @@ def inspect_code(conn, snapshot, queries, *, previous=()):
             if not cached:
                 raise ValueError("exact_repository_evidence_unavailable")
             files = cached["files"]
+            readable_digest = digest(sorted(files))
         result = []
         if query.path:
             paths = [query.path]
@@ -59,6 +70,8 @@ def inspect_code(conn, snapshot, queries, *, previous=()):
                              "start_line": start + 1, "total_lines": len(lines), "content": content[:14000],
                              "excerpted": start > 0 or start + query.line_count < len(lines) or len(content) > 14000,
                              "inspection_query": signature, "inspection_complete": True})
+            if not query.path:
+                result[-1]["readable_paths_digest"] = readable_digest
             matches += 1
             if matches == 4:
                 break
