@@ -26,6 +26,12 @@ from .staff.runner import StaffRunner
 from .staff.workflow import StaffDevelopmentWorkflow
 from .tech_feed.runner import TechFeedCollector
 from .tech_feed.workflow import TechFeedCollectionWorkflow
+from .trend_feed.runner import TrendFeedCollector, TrendFeedEditor
+from .trend_feed.workflow import (
+    TrendFeedCollectionWorkflow,
+    TrendFeedDigestWorkflow,
+    TrendFeedEditorialWorkflow,
+)
 from .workflow import CompanyTurnWorkflow
 
 
@@ -69,10 +75,20 @@ def make_news_collector(client, company, collector=None):
 def make_news_model_worker(client, company, provider=None):
     editor = NewsEditor(company, provider)
     discovery = NewsDiscovery(company, editor.provider)
+    trends = TrendFeedEditor(company, editor.provider)
     return Worker(client, task_queue=company.settings.temporal_task_queue + "-news-model",
-                  workflows=[NewsEditorialWorkflow, NewsDiscoveryWorkflow],
-                  activities=[editor.activity_tick, discovery.activity_tick],
+                  workflows=[NewsEditorialWorkflow, NewsDiscoveryWorkflow, TrendFeedEditorialWorkflow],
+                  activities=[editor.activity_tick, discovery.activity_tick, trends.activity_tick],
                   max_concurrent_activities=1, max_cached_workflows=10,
+                  graceful_shutdown_timeout=timedelta(seconds=10))
+
+
+def make_trend_collector(client, company, collector=None):
+    collector = collector or TrendFeedCollector(company)
+    return Worker(client, task_queue=company.settings.temporal_task_queue + "-trend-collection",
+                  workflows=[TrendFeedCollectionWorkflow, TrendFeedDigestWorkflow],
+                  activities=[collector.activity_tick, collector.activity_finalize],
+                  max_concurrent_activities=2, max_cached_workflows=10,
                   graceful_shutdown_timeout=timedelta(seconds=10))
 
 
@@ -109,6 +125,19 @@ def make_housing_feed_worker(client, company, collector=None):
 
 
 async def dispatch_once(client, company):
+    if getattr(company.settings, "trend_feed_enabled", False) and not getattr(company, "_trend_feed_started", False):
+        for definition, identity, suffix in (
+            (TrendFeedCollectionWorkflow, "company-trend-feed-collection-v1", "-trend-collection"),
+            (TrendFeedDigestWorkflow, "company-trend-feed-digest-v1", "-trend-collection"),
+            (TrendFeedEditorialWorkflow, "company-trend-feed-editorial-v1", "-news-model"),
+        ):
+            try:
+                await client.start_workflow(definition.run, id=identity,
+                    task_queue=company.settings.temporal_task_queue + suffix,
+                    id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+            except WorkflowAlreadyStartedError:
+                pass
+        company._trend_feed_started = True
     if getattr(company.settings, "housing_feed_enabled", False) and not getattr(company, "_housing_feed_started", False):
         try:
             await client.start_workflow(HousingFeedWorkflow.run, id="company-housing-feed-v1",
@@ -230,7 +259,8 @@ async def news_worker_main(settings=None):
     settings = settings or Settings()
     company = Company(settings)
     client = await connect(settings)
-    async with (make_news_model_worker(client, company), make_news_collector(client, company)):
+    async with (make_news_model_worker(client, company), make_news_collector(client, company),
+                make_trend_collector(client, company)):
         await asyncio.Event().wait()
 
 

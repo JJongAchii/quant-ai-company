@@ -1,0 +1,31 @@
+{
+  "checked_at": "2026-10-06T13:27:45.162759+00:00",
+  "commit": "cfdeae008f82e7787e1b7c6ae9ed03ceaa2b35fd",
+  "base_image": "sha256:8fc94968656bceebe2242dc8ad8d646922be19aa4d5feb4db323201c4474e655",
+  "image": "sha256:e036d78baa61b0072e8ed0c541ce5900452346e8c72a2d1723419d956d52832f",
+  "image_tag": "quant-company-trend:cfdeae008f82e7787e1b7c6ae9ed03ceaa2b35fd-sports",
+  "base_config_preserved": true,
+  "changed_files": [
+    "trend_feed/editor.py",
+    "trend_feed/store.py"
+  ],
+  "source_file_count": 220,
+  "source_sha256": {
+    "trend_feed/editor.py": "62738b83711e9485852644984b0376dcfdb821b51dfbeb40f89b9277b73ad137",
+    "trend_feed/store.py": "300f7f4b3a44a57816007ada5ef51bf91417304a27f9ddde35df64065a256bc2"
+  },
+  "before_sha256": {
+    "trend_feed/editor.py": "6906ad67b0558a525e3c54a8ac4300fc781f55d80899cf818ab3f49bc086aed6",
+    "trend_feed/store.py": "599f3ceb0abbe64ef48b80d66228fd031b384f1c0870771154cfd46107037ddc"
+  },
+  "running_services_changed": false,
+  "target_ids": {
+    "news-worker": "c9e3f29f75e89b4e460d14c3ff8f7e2d359dccf5af42574bf8c5b1ecc7b8e899",
+    "dispatch": "3ef4e4838b1d4897b8415ba3645b2469072535a27f2d04e82cc1197b35f5806e"
+  },
+  "target_signature_sha256": {
+    "news-worker": "96d1289de8082fbb045ec9d9940ca3dd2244805575fb74a298f758893814d80f",
+    "dispatch": "1d4e7556232c0f383a519bd9daf1c3f3d81426bb65d03fff01daabf8f6981783"
+  },
+  "preview_sha256": "ca60d7a60da253b39d07b4b1494080459e9c13bf0f28a63a817972924ac48d8f"
+}

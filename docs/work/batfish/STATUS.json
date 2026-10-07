@@ -1,0 +1,97 @@
+{
+  "approval": {
+    "approvedAt": "2026-10-07T00:36:29.511028+00:00",
+    "id": "chat-user-merge-pr113-20261007"
+  },
+  "currentIntent": "INTENT-v6.json",
+  "deliverables": {
+    "ACTIVATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-feed-ten-20261006/activation.json",
+          "sha256": "922eb4e30df9"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-ten-20261006/active-probe.json",
+          "sha256": "d0bab4ddacde"
+        },
+        {
+          "path": "docs/project/TREND-FEED-TEN.md",
+          "sha256": "b8b108034eb3"
+        }
+      ],
+      "note": "Previously activated daily operation is preserved; this revision performs source integration without a production redeployment.",
+      "status": "verified",
+      "updatedAt": "2026-10-07T00:44:33.357853+00:00"
+    },
+    "IMMEDIATE_DELIVERY": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-feed-sports-20261006/send-now-delivery.json",
+          "sha256": "ad34bccb9c29"
+        }
+      ],
+      "note": "Previously requested sports-excluded message is delivered and immutable. Merge does not resend Slack messages or replay model requests.",
+      "status": "verified",
+      "updatedAt": "2026-10-07T00:44:33.590968+00:00"
+    },
+    "IMPLEMENTATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-feed-ten-20261006/RESULT.json",
+          "sha256": "e6ed17cdf248"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-ten-20261006/image.json",
+          "sha256": "8b36bc024cf6"
+        }
+      ],
+      "note": "Previously qualified and deployed ten-topic implementation is unchanged; merge revision preserves these verified receipts.",
+      "status": "verified",
+      "updatedAt": "2026-10-07T00:44:32.898116+00:00"
+    },
+    "MERGE": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-feed-merge-20261007/PREMERGE.md",
+          "sha256": "8db25310f4b5"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-merge-20261007/focused-pytest.txt",
+          "sha256": "98b2faa2aaf1"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-merge-20261007/ruff.txt",
+          "sha256": "82b3e6a6c090"
+        }
+      ],
+      "note": "Reproduced required service failure with UTC PostgreSQL: frozen cutoff differs only by timezone representation. Validator canonicalizes cutoff to scheduled KST; UTC/Asia-Seoul plus supplement regressions13 pass. Full UTC service regression and remote CI pending before merge.",
+      "status": "in_progress",
+      "updatedAt": "2026-10-07T00:49:58.327887+00:00"
+    },
+    "VALIDATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-feed-ten-20261006/pytest.txt",
+          "sha256": "958089a4677b"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-ten-20261006/preview.json",
+          "sha256": "5ce839f25674"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-ten-20261006/ruff.txt",
+          "sha256": "82b3e6a6c090"
+        }
+      ],
+      "note": "Existing real PostgreSQL/local Temporal regressions and real subscription preview remain verified. Merge-specific full-suite and remote CI are tracked under MERGE.",
+      "status": "verified",
+      "updatedAt": "2026-10-07T00:44:33.127258+00:00"
+    }
+  },
+  "intentDigest": "4b60aaea8bc6",
+  "schemaVersion": 1,
+  "slug": "batfish",
+  "state": "approved",
+  "updatedAt": "2026-10-07T00:49:58.327887+00:00"
+}

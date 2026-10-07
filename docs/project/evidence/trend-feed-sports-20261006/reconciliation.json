@@ -1,0 +1,11 @@
+{
+  "state": "completed",
+  "started_at": "2026-10-06T13:36:13.855875+00:00",
+  "first_stage_inspected": true,
+  "first_stage_repeated": false,
+  "only_first_stage_configuration_difference": "previously authorized read-only NAVER secret mount restored",
+  "completed_at": "2026-10-06T13:36:56.078552+00:00",
+  "dispatch_only_replaced": true,
+  "unrelated_container_ids_preserved": true,
+  "existing_requests_preserved": true
+}

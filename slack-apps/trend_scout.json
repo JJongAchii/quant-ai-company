@@ -1,0 +1,18 @@
+{
+  "display_information": {
+    "name": "Trend Scout",
+    "description": "한국의 검색 관심 주제를 지표·짧은 배경·원문 링크와 함께 매일 아침 전하는 트렌드 브리핑"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "trend-scout",
+      "always_online": false
+    }
+  },
+  "oauth_config": {"scopes": {"bot": ["chat:write"]}},
+  "settings": {
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": false,
+    "token_rotation_enabled": false
+  }
+}

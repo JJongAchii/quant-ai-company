@@ -44,7 +44,7 @@ def policy(conn):
 
 
 def targets(company):
-    return ({key for key in company.roles if key != "tech_scout"}
+    return ({key for key in company.roles if key not in {"tech_scout", "trend_scout"}}
             | ({"news_screening", "news_search"} if "reporter" in company.roles else set())
             | ({"maintainer"} if "engineer" in company.roles else set()))
 

@@ -1,0 +1,6 @@
+{
+  "systemd_units_match_repository": {
+    "quant-company-trend-preview.service": true,
+    "quant-company-trend-preview.timer": true
+  }
+}
