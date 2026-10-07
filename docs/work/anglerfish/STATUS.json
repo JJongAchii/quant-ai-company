@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v17.json",
-  "state": "monitoring_audit_note_bound_repair",
+  "state": "monitoring_resumed_independent_audit",
   "previousIntent": "INTENT-v16.json",
   "deliverables": {
     "POLICY": {
@@ -80,7 +80,7 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/97",
       "mergedCommit": "d2010230eda9b6cf1128b0fc650bdcbc8c8309b3",
       "candidateCommit": "0286ba3e7426ff6546b90e6926124ae65e71ba79",
-      "ownerApproval": "\uc2b9\uc778\ud560\uac8c"
+      "ownerApproval": "승인할게"
     },
     "LIVE_CHECK": {
       "status": "completed",
@@ -93,7 +93,7 @@
     }
   },
   "activation": {
-    "ownerAuthorization": "\uc751 \uc9c4\ud589\ud574",
+    "ownerAuthorization": "응 진행해",
     "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99",
     "qualification": "completed",
     "productionActivated": true,
@@ -170,6 +170,27 @@
       "status": "completed",
       "turnId": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
       "actualProviderState": "running"
+    }
+  },
+  "phase": "third_packet_actual_runtime_running_after_second_response_admission",
+  "currentMonitoring": {
+    "intent": 17,
+    "response_reconciliation_event": 781,
+    "service_source_commit": "53ed9e33175d6056d72417c081d574a740587695",
+    "effective_runtime_images": "audit-runtime-patch-applied-20261007.json",
+    "verified_at": "2026-10-07T05:24:35.029121+00:00",
+    "audit_reviewed_packets": 2,
+    "actual_next_request_id": "c7155b5d-161b-5aa2-a4ef-9e000bb27c15",
+    "actual_runtime_state": "running",
+    "independent_audit_complete": false,
+    "meaning_complete": false,
+    "report_registered": false,
+    "observer": {
+      "unit": "quant-company-first-trial-monitor-20261007.service",
+      "interval_seconds": 45,
+      "maximum_hours": 4,
+      "read_only": true,
+      "automatic_alerts": false
     }
   }
 }

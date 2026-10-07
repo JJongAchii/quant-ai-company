@@ -54,3 +54,21 @@ probe를 다시 수행한다. 과학 실행·원문·서명 예산과 worker rel
 
 같은 호스트의 읽기 전용 관측기는45초마다 실행/접수/대기 원인/보고서 등록 상태만 보존하며,
 최대4시간 동작한다. 모델 호출·회사 DB 변경·Slack 발송을 하지 않는다.
+
+
+## 실제 반영과 응답 접수 확인
+
+14:23:28 KST에 실제 설치 패키지의 두 모듈까지 반영했다. API/worker는 준비한 exact 이미지로
+정상 기동했고 다른 모든 서비스 ID·image·환경/역할/프로필과 3070 release를 보존했다.
+[반영 영수증](evidence/etf-exploration-20260930/audit-runtime-patch-applied-20261007.json)을 남겼다.
+
+원문 접수 [롤백 트랜잭션](evidence/etf-exploration-20260930/second-audit-note-dry-run-20261007.json) 통과 후,
+root가 기존 권한으로 정확한 수리를 검토했다. 14:24:07 KST에 event781로
+[두 번째 원문 응답을 접수](evidence/etf-exploration-20260930/second-audit-note-reconciliation-applied-20261007.json)했다.
+동일 provider thread·request/response/packet·canonical history·job/reservation을 보존했다.
+
+14:24:08 KST에 정상 Temporal 흐름의 세 번째 검증 호출c7155b5d가 실제 시작됐다.
+[14:24:35 관측](evidence/etf-exploration-20260930/first-trial-audit-third-call-started-20261007.json)에서
+앞선 두 패킷 접수·73,633/250,658자 전달·대기 원인 없음·세 번째 실제 모델 실행을 확인했다.
+전체 감사·의미 검토·보고서 등록은 아직 완료되지 않았다. 원래 거절 응답을 재호출하거나
+과학 시행을 다시 실행하지 않았다. 후속 응답의 접수와 보고 단계도 계속 관측한다.
