@@ -145,6 +145,24 @@ async def test_on_demand_refresh_filters_out_disappeared_keywords_and_reuses_ver
     assert trend.status()["model_calls"][0]["id"] == call["id"]
 
 
+def test_owner_request_during_an_active_fetch_keeps_the_refresh_due(trend):
+    recurring(trend)
+    clock(trend, 10)
+    with trend.db.transaction() as conn:
+        conn.execute("UPDATE trend_feed_source SET next_at=%s", (trend.clock[0],))
+    claimed = trend.claim_source()
+    trend.clock[0] += timedelta(seconds=1)
+    trend.request("during-fetch", owner="UHUMAN", channel="CTRENDS", thread_ts="during-fetch")
+    trend.save_snapshot(claimed, {"ok": True, "entries": []})
+    # The fetch started before the owner's request, so enrichment waits for the next fetch.
+    assert trend.claim_enrichment() is None
+    next_fetch = trend.claim_source()
+    assert next_fetch is not None
+    trend.save_snapshot(next_fetch, {"ok": True, "entries": []})
+    trend.clock[0] += timedelta(seconds=1)
+    assert trend.claim_enrichment()["event_key"] == "during-fetch"
+
+
 async def test_on_demand_cannot_consume_regular_publication_reserve(trend):
     recurring(trend)
     clock(trend, 10)

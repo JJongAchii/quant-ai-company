@@ -96,12 +96,16 @@ class TrendFeedStore:
                                        (identity, item["keyword"], at, Jsonb(as_json(item)))).fetchone()
                     count += bool(row)
             delay = 600 if ok else min(3600, 600 * 2 ** min(current["failures"], 3))
+            requested_during_fetch = conn.execute("""SELECT 1 FROM trend_feed_digests WHERE kind='on_demand'
+                AND state='preparing' AND bundle->>'refresh_pending'='true' AND requested_at>%s
+                AND send_at>%s AND policy_digest=%s LIMIT 1""", (current["last_attempt"], at, self.policy())).fetchone()
             conn.execute("""UPDATE trend_feed_source SET lease_token=NULL,lease_until=NULL,next_at=%s,
                 failures=%s,error=%s,started_at=CASE WHEN %s THEN COALESCE(started_at,%s) ELSE started_at END,
                 last_success=CASE WHEN %s THEN %s ELSE last_success END,
                 etag=CASE WHEN %s THEN COALESCE(%s,etag) ELSE etag END,
                 modified=CASE WHEN %s THEN COALESCE(%s,modified) ELSE modified END WHERE id=1""",
-                         (at + timedelta(seconds=delay), 0 if ok else current["failures"] + 1,
+                         (at if requested_during_fetch else at + timedelta(seconds=delay),
+                          0 if ok else current["failures"] + 1,
                           None if ok else receipt.get("error", "rss_failed"), ok, at, ok, at,
                           ok, receipt.get("etag"), ok, receipt.get("modified")))
             return {"state": "collected" if ok else "source_error", "observations": count}
