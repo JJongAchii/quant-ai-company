@@ -52,7 +52,6 @@ from .execution import (
     EXECUTION_VERSION,
     FRAGMENT_INVENTORY_SECONDS,
     PHASE_SECONDS,
-    REMAINING_SECONDS,
     output_contract,
     remaining_seconds,
 )
@@ -163,6 +162,7 @@ class BriefStore:
         bundle["fact_inventory_required"] = bool(bundle["source_notes_required"] and bundle.get("candidate_documents"))
         if bundle["fact_inventory_required"]:
             bundle["fact_inventory_version"] = 2
+            bundle["combined_editorial_repair"] = True
         role = self._execution_role(conn)
         bundle["execution_model"] = {"model": role.model, "reasoning_effort": role.reasoning_effort}
         bundle["professional_feedback"] = as_json(coaching(conn, row["owner_user"], BRIEFER,
@@ -281,21 +281,26 @@ class BriefStore:
                     try:
                         validate_source_notes(BriefProposal.model_validate(row['proposal']), bundle)
                     except SourceNotesValidationError as exc:
-                        repair = (self.company.settings.briefing_max_revisions > 0 and phase == 'review'
-                                  and at+timedelta(seconds=PHASE_SECONDS['revise']+PHASE_SECONDS['review']+60) < row['due_at']+timedelta(minutes=10)
-                                  and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
-                                                       (row['id'],)).fetchone())
-                        if repair:
-                            revised_bundle = source_notes_revision_bundle(bundle, row['proposal'], exc.violations)
-                            try:
-                                prompt(revised_bundle, 'revise')
-                            except ValueError:
-                                repair = False
-                        if not repair:
-                            conn.execute("UPDATE brief_editions SET state='blocked',error=%s WHERE id=%s",
-                                         (str(exc), row['id']))
-                            return {'state': 'blocked', 'reason': str(exc)}
-                        bundle, phase = revised_bundle, 'revise'
+                        if phase == 'review' and bundle.get('combined_editorial_repair'):
+                            # Let the independent critic find semantic gaps before
+                            # spending the single correction on all known gaps.
+                            bundle['pre_review_source_notes_violations'] = exc.violations
+                        else:
+                            repair = (self.company.settings.briefing_max_revisions > 0 and phase == 'review'
+                                      and at+timedelta(seconds=PHASE_SECONDS['revise']+PHASE_SECONDS['review']+60) < row['due_at']+timedelta(minutes=10)
+                                      and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
+                                                           (row['id'],)).fetchone())
+                            if repair:
+                                revised_bundle = source_notes_revision_bundle(bundle, row['proposal'], exc.violations)
+                                try:
+                                    prompt(revised_bundle, 'revise')
+                                except ValueError:
+                                    repair = False
+                            if not repair:
+                                conn.execute("UPDATE brief_editions SET state='blocked',error=%s WHERE id=%s",
+                                             (str(exc), row['id']))
+                                return {'state': 'blocked', 'reason': str(exc)}
+                            bundle, phase = revised_bundle, 'revise'
                 if row["state"] in {"collecting", "planning"} and bundle.get("candidate_documents"):
                     phase = "plan"
                 if not bundle.get("documents"):
@@ -425,6 +430,12 @@ class BriefStore:
                 review = artifact(response, BriefReview, row["bundle"])
                 proposal = BriefProposal.model_validate(row["proposal"])
                 validate_review(review, proposal, row["bundle"])
+                notes_violations = []
+                try:
+                    validate_source_notes(proposal, row['bundle'])
+                except SourceNotesValidationError as exc:
+                    notes_violations = exc.violations
+                    row['bundle']['pre_review_source_notes_violations'] = notes_violations
                 rejected = {**(row["quality"] or {}).get("rejected", {}),
                             **dict.fromkeys(review.rejected_ids, "semantic_review")}
                 proposal = prune(proposal, set(rejected) | validate(proposal, row["bundle"]).keys())
@@ -433,13 +444,14 @@ class BriefStore:
                     proposal = None
                 parts, quality = render(proposal, row["bundle"], rejected=rejected,
                     fallback="editorial_review_withheld" if proposal is None else None,
-                    review_reduced=review.verdict == "reduce")
+                    review_reduced=review.verdict == "reduce" or bool(notes_violations))
                 quality["editorial_review"] = review.model_dump(mode="json")
+                quality["source_notes_violations"] = notes_violations
                 result = review.model_dump(mode="json")
                 # One confirmed repair, with both correction and final-review time reserved.
                 repair = (self.company.settings.briefing_max_revisions > 0 and call["phase"] == "review"
                           and (quality["reduced"] or rejected or review.verdict != "publish")
-                          and at+timedelta(seconds=REMAINING_SECONDS['revise']+60) < row["due_at"]+timedelta(minutes=10)
+                          and at+timedelta(seconds=remaining_seconds('revise', row['bundle'])+60) < row["due_at"]+timedelta(minutes=10)
                           and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
                                                (row["id"],)).fetchone())
                 if repair:
@@ -453,6 +465,9 @@ class BriefStore:
                     conn.execute("UPDATE brief_editions SET state='revising',bundle=%s,review=%s,quality=%s WHERE id=%s",
                                  (Jsonb(revised_bundle), Jsonb(result), Jsonb(quality), row["id"]))
                 else:
+                    if notes_violations:
+                        parts, reduced_quality = render(None, row['bundle'], fallback='source_notes_unresolved')
+                        quality.update(reduced_quality)
                     quality["revision_used"] = call["phase"] == "final_review" or bool(row['bundle'].get('source_notes_repair'))
                     quality['source_notes_repair_used'] = bool(row['bundle'].get('source_notes_repair'))
                     conn.execute("""UPDATE brief_editions SET state='ready',proposal=%s,review=%s,rendered=%s,quality=%s

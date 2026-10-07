@@ -45,3 +45,13 @@ def test_full_multi_topic_body_is_checked_against_actual_blocks_before_delivery(
     assert all(len(s['text']['text']) <= 3000 for s in sections)
     # A wire-valid body is not itself a readability or content-quality pass.
     assert len(p.issues) == 6
+
+
+def test_first_basis_point_unit_is_explained_without_rewriting_stored_facts():
+    b, p = bundle(), proposal()
+    p.issues[0].fact.text = '국채금리는 6bp 상승했고 단기물은 2bp 상승했다.'
+    original = p.model_dump_json()
+    main = render(p, b)[0][0]
+    assert '6bp(1bp=0.01%포인트)' in main and '2bp 상승' in main
+    assert main.count('1bp=0.01%포인트') == 1
+    assert p.model_dump_json() == original

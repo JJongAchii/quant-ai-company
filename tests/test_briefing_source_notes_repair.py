@@ -220,3 +220,66 @@ def test_offline_recomposed_draft_keeps_raw_receipt_and_runs_content_validation(
     rejected = evaluate_briefing.assess(b, written, derived_proposal=changed.model_dump())
     assert rejected['rejected']['fact'] == 'unsupported_prose_number'
     assert written.model_dump_json() == original
+
+
+@pytest.mark.parametrize('fixed', [True, False])
+def test_combined_mapping_and_content_repair_uses_one_correction_after_review(brief, fixed):  # noqa: F811
+    from quant_company.briefing.contracts import EditorialPatch
+
+    store, clock = brief
+    store.company.settings.briefing_publish_enabled = False
+    store.company.settings.briefing_source_notes_enabled = True
+    store.company.settings.briefing_max_revisions = 1
+    edition = seed(brief)
+    b, p, _ = failed_case()
+    b.update(combined_editorial_repair=True)
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE brief_editions SET bundle=%s WHERE id=%s', (Jsonb(b), edition.id))
+    first = store.prepare()
+    store.commit(response(first['request'], p))
+    critic = store.prepare()
+    assert critic['request']['request_id'].endswith('-review')
+    assert 'pre_review_source_notes_violations' not in critic['request']['prompt']
+    store.commit(response(critic['request'], review()))
+    correction = store.prepare()
+    assert correction['request']['request_id'].endswith('-revise')
+    patch = EditorialPatch(edits=[{'id': 'fact', 'text':
+        '매출은 100억원에서 120억원으로 증가했다.' if fixed else p.issues[0].fact.text}])
+    store.commit(response(correction['request'], patch))
+    final = store.prepare()
+    if not fixed:
+        assert final['state'] == 'blocked'
+    else:
+        assert final['request']['request_id'].endswith('-final_review')
+        store.commit(response(final['request'], review()))
+        clock['at'] = edition.due_at
+        store.flush()
+        with store.db.transaction() as conn:
+            row = conn.execute('SELECT * FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()
+            assert row['state'] == 'previewed' and not row['quality']['reduced']
+            assert row['quality']['revision_used']
+            assert not row['quality']['source_notes_violations']
+    with store.db.transaction() as conn:
+        phases = [r['phase'] for r in conn.execute(
+            'SELECT phase FROM brief_calls WHERE edition_id=%s ORDER BY requested_at', (edition.id,))]
+        assert phases.count('revise') == 1
+        assert set(phases) == {'write','review','revise'} | ({'final_review'} if fixed else set())
+
+
+def test_unresolved_mapping_cannot_publish_full_when_no_repair_time_remains(brief):  # noqa: F811
+    store, clock = brief
+    store.company.settings.briefing_source_notes_enabled = True
+    edition = seed(brief)
+    b, p, _ = failed_case()
+    b.update(combined_editorial_repair=True)
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE brief_editions SET bundle=%s WHERE id=%s', (Jsonb(b), edition.id))
+    store.commit(response(store.prepare()['request'], p))
+    critic = store.prepare()
+    clock['at'] = edition.due_at
+    store.commit(response(critic['request'], review()))
+    with store.db.transaction() as conn:
+        row = conn.execute('SELECT * FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()
+        assert row['quality']['reduced'] and not row['quality']['substantive']
+        assert row['quality']['source_notes_violations']
+        assert p.issues[0].fact.text not in row['rendered'][0]

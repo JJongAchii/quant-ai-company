@@ -15,7 +15,7 @@ from .contracts import (
     SourcePlan,
 )
 
-EXECUTION_VERSION = 4
+EXECUTION_VERSION = 5
 OUTPUT_MODELS = {
     "brief_plan_v1": SourcePlan,
     "brief_inventory_v1": FactInventory,
@@ -23,6 +23,7 @@ OUTPUT_MODELS = {
     "brief_compose_v1": BriefComposition,
     "brief_write_v1": BriefProposal,
     "brief_review_v1": BriefReview,
+    "brief_review_v2": BriefReview,
     "brief_conditions_v1": ConditionPatch,
     "brief_facts_v1": MaterialFactPatch,
     "brief_editorial_v1": EditorialPatch,
@@ -48,7 +49,7 @@ def output_contract(phase, bundle):
     if phase == "search":
         return "agent_decision"
     if phase in {"review", "final_review"}:
-        return "brief_review_v1"
+        return "brief_review_v2" if bundle.get('combined_editorial_repair') else "brief_review_v1"
     if phase == "plan":
         return "brief_plan_v1"
     if phase == "inventory":
@@ -66,14 +67,16 @@ def valid_request(identity, contract):
     phase = match[2]
     return (contract == "brief_plan_v1" if phase == "plan" else
             contract in {"brief_inventory_v1", "brief_inventory_v2"} if phase == "inventory" else
-            contract == "brief_review_v1" if phase in {"review", "final_review"} else
+            contract in {"brief_review_v1", "brief_review_v2"} if phase in {"review", "final_review"} else
             contract in {"brief_write_v1", "brief_compose_v1"} if phase == "write" else
-            contract not in {"brief_plan_v1", "brief_inventory_v1", "brief_inventory_v2", "brief_review_v1"})
+            contract not in {"brief_plan_v1", "brief_inventory_v1", "brief_inventory_v2", "brief_review_v1", "brief_review_v2"})
 
 
 def timeout_seconds(request):
     # Legacy requests keep their original generic timeout and digest.
     if valid_request(request.request_id, request.output_contract):
+        if request.output_contract == "brief_review_v2":
+            return PHASE_SECONDS['review']
         if request.output_contract == "brief_inventory_v2":
             return FRAGMENT_INVENTORY_SECONDS
         if request.output_contract == "brief_compose_v1" and IDENTITY.fullmatch(request.request_id)[2] == "write":
@@ -83,6 +86,15 @@ def timeout_seconds(request):
 
 
 def remaining_seconds(phase, bundle):
+    if bundle.get('combined_editorial_repair'):
+        # A second independent full-original review is the same workload as the
+        # first. Reserve the one correction and both full reviews for new editions.
+        repair = PHASE_SECONDS['revise'] + PHASE_SECONDS['review']
+        if phase == 'revise':
+            return repair
+        if phase == 'final_review':
+            return PHASE_SECONDS['review']
+        return remaining_seconds(phase, {**bundle, 'combined_editorial_repair': False}) + repair
     if phase == "revise" and bundle.get("source_notes_repair", {}).get("review_phase") == "review":
         return PHASE_SECONDS["revise"] + PHASE_SECONDS["review"]
     if bundle.get("fact_inventory_version") == 2 and phase in {"plan", "inventory"}:

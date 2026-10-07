@@ -114,7 +114,7 @@ class ProviderRequest(StrictModel):
                              "quant_critique_v1", "quant_critique_v2", "quant_search_v1",
                              "research_stage_v1",
                              "brief_plan_v1", "brief_inventory_v1", "brief_inventory_v2", "brief_compose_v1",
-                             "brief_write_v1", "brief_review_v1", "brief_conditions_v1",
+                             "brief_write_v1", "brief_review_v1", "brief_review_v2", "brief_conditions_v1",
                              "brief_facts_v1", "brief_editorial_v1", "brief_source_notes_v1"] = "agent_decision"
 
     @model_validator(mode="after")

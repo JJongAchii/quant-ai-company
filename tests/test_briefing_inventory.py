@@ -186,7 +186,7 @@ def test_real_postgres_inventory_is_committed_before_write_and_reused_after_rest
     assert saved['fact_inventory_digest'] == freeze_inventory(fragment_inventory(), bundle())['fact_inventory_digest']
     store.commit(response(writer, composition()))
     critic = store.prepare()['request']
-    assert critic['output_contract'] == 'brief_review_v1'
+    assert critic['output_contract'] == 'brief_review_v2'
     assert 'INVENTORY_PRIVATE_SENTINEL' not in critic['prompt']
     store.commit(response(critic, review()))
     clock['at'] = edition.due_at

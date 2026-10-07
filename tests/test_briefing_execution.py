@@ -30,6 +30,7 @@ def request(phase="write", contract="brief_write_v1"):
     ("plan", "brief_plan_v1", 360), ("write", "brief_write_v1", 1440),
     ("review", "brief_review_v1", 720), ("revise", "brief_source_notes_v1", 360),
     ("final_review", "brief_review_v1", 360),
+    ("review", "brief_review_v2", 720), ("final_review", "brief_review_v2", 720),
 ])
 def test_scoped_budget_preserves_other_and_legacy_turns(fake_codex, phase, contract, seconds):  # noqa: F811
     config, _, _ = fake_codex
@@ -185,3 +186,17 @@ def test_direct_prompt_keeps_full_originals_and_removes_obsolete_envelope():
     assert "BriefProposal JSON object directly" in direct
     plan = plan_prompt(b | {"candidate_documents": b["documents"]}, direct_output=True)
     assert "SourcePlan JSON object directly" in plan and "AgentDecision(" not in plan
+
+
+def test_new_editions_reserve_one_correction_and_two_full_reviews_before_deadline():
+    from quant_company.briefing.execution import output_contract, remaining_seconds
+    from quant_company.briefing.schedule import PREPARATION_MINUTES
+
+    b = {'combined_editorial_repair': True, 'fact_inventory_required': True, 'fact_inventory_version': 2}
+    assert remaining_seconds('plan', b) == 70*60
+    assert remaining_seconds('review', b) == 30*60
+    assert remaining_seconds('revise', b) == 18*60
+    assert remaining_seconds('final_review', b) == 12*60
+    assert remaining_seconds('plan', b)+60 < (PREPARATION_MINUTES+10)*60
+    assert output_contract('final_review', b) == 'brief_review_v2'
+    assert output_contract('final_review', {}) == 'brief_review_v1'

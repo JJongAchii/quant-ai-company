@@ -341,7 +341,7 @@ def test_issue_specific_next_check_is_in_main_when_separate_watchpoint_exists():
     assert p.issues[0].next_check.text in parts[0]
     assert p.issues[0].next_check.id in main_post_item_ids(p, data)
     assert p.issues[0].next_check.text not in "\n".join(parts[1:])
-    assert quality["format_version"] == 19
+    assert quality["format_version"] == 20
 
 
 def test_supported_rate_baseline_in_issue_assessment_survives_to_reviewed_main():
