@@ -9,6 +9,19 @@ from ..company import PolicyError, as_json, stable
 from .contracts import POLICY_VERSION, VideoAction, VideoReview, digest
 
 KST = ZoneInfo("Asia/Seoul")
+# Brief kind -> video edition. Both follow the briefing schedule, so market holidays skip both the same way.
+EDITIONS = {"am": "am", "pm": "close"}
+
+
+def edition_times(edition):
+    """Review-ready target and public-approval deadline. AM: before the KR open. PM: the evening after the close brief
+    (due 17:45 KST or later); production gets about 1h45m, approval closes before the US session."""
+    day = edition["day"]
+    if edition["kind"] == "pm":
+        due = edition["due_at"].astimezone(KST)
+        target = max(datetime.combine(day, time(19, 30), KST), due + timedelta(minutes=105))
+        return target, max(datetime.combine(day, time(22), KST), target + timedelta(minutes=150))
+    return datetime.combine(day, time(8, 30), KST), datetime.combine(day, time(9), KST)
 LOCK = 71350301
 ACTIVE = ("queued", "reviewing", "synthesizing", "rendering", "uploading", "approved")
 
@@ -31,7 +44,7 @@ class VideoStore:
         return self.settings.video_enabled and self.settings.briefing_publish_enabled and BriefStore(self.company).authorized()
 
     def enqueue(self, conn, edition, at):
-        if not self.enabled() or not edition["publish"] or edition["kind"] != "am" or edition["state"] != "ready":
+        if not self.enabled() or not edition["publish"] or edition["kind"] not in EDITIONS or edition["state"] != "ready":
             return None
         quality = edition["quality"] or {}
         review = edition.get("review") or quality.get("editorial_review")
@@ -47,14 +60,17 @@ class VideoStore:
             return None
         source = as_json({k: edition[k] for k in ("id", "day", "cutoff", "proposal", "bundle", "rendered",
                                                  "project_id", "owner_user", "channel", "policy_digest")})
+        source["edition_kind"] = EDITIONS[edition["kind"]]
+        # Edition IDs differ per kind, so the morning and closing videos of one day never share a job.
         identity = stable("video:" + str(edition["id"]) + ":1")
-        deadline = datetime.combine(edition["day"], time(9), KST)
+        target, deadline = edition_times(edition)
         if at >= deadline:
             return None
         policy = {"version": POLICY_VERSION, "voice": self.settings.video_voice,
                   "speech_model": "eleven_multilingual_v2", "model": self.settings.video_model,
                   "workspace_id": self.settings.video_runway_workspace_id,
-                  "youtube_channel": self.settings.video_youtube_channel_id, "template": self.settings.video_template}
+                  "youtube_channel": self.settings.video_youtube_channel_id, "template": self.settings.video_template,
+                  "edition": source["edition_kind"], "review_target": target.isoformat()}
         conn.execute("""INSERT INTO video_jobs(id,edition_id,version,source_digest,source,policy,publish_deadline)
             VALUES(%s,%s,1,%s,%s,%s,%s) ON CONFLICT(edition_id,version) DO NOTHING""",
                      (identity, edition["id"], digest(source), Jsonb(source), Jsonb(policy), deadline))
@@ -215,11 +231,12 @@ class VideoStore:
             if not project["thread_ts"]:
                 return
             mid = stable("video-review:" + str(current["id"]))
+            deadline = current['publish_deadline'].astimezone(KST)
             text = (f"영상 검토 · v{current['version']}\n{current['plan']['title']}\n"
                     f"https://www.youtube.com/watch?v={current['youtube_id']}\n"
                     f"자료 기준: {current['source']['cutoff']}\n"
                     f"길이: {round(current['artifacts']['duration'])}초 · 자동 기술 검사 통과\n"
-                    "비공개 업로드 완료. 전체 시청 후 공개·수정·보류를 선택하세요. 공개 승인은 09:00 KST에 만료됩니다.")
+                    f"비공개 업로드 완료. 전체 시청 후 공개·수정·보류를 선택하세요. 공개 승인은 {deadline:%H:%M} KST에 만료됩니다.")
             self.company._message(conn, project, None, "market_brief", "video_review", text, message_id=mid)
             conn.execute("UPDATE video_jobs SET review_message_id=%s WHERE id=%s", (mid, current["id"]))
 
@@ -229,10 +246,11 @@ class VideoStore:
                 AND review_message_id IS NULL AND publish_deadline>%s""", (utcnow(),)).fetchall()
 
     def late_notices(self):
-        """One durable 08:30 status notice per edition; no new model call."""
+        """One durable status notice at the edition's review target (AM 08:30, PM 19:30); no new model call."""
         with self.db.transaction() as conn:
             conn.execute('SELECT pg_advisory_xact_lock(%s)', (LOCK,))
-            jobs = conn.execute("""SELECT * FROM video_jobs WHERE publish_deadline-interval '30 minutes'<=%s
+            jobs = conn.execute("""SELECT * FROM video_jobs
+                WHERE COALESCE((policy->>'review_target')::timestamptz, publish_deadline-interval '30 minutes')<=%s
                 AND publish_deadline>%s AND state NOT IN ('published','awaiting_approval','held','superseded','expired')""",
                                 (utcnow(), utcnow())).fetchall()
             for job in jobs:
@@ -241,10 +259,12 @@ class VideoStore:
                     continue
                 project = self.company._project(conn, job['source']['project_id'])
                 if project['thread_ts'] and project['status'] == 'active':
+                    target = datetime.fromisoformat(job['policy'].get('review_target') or
+                                                    (job['publish_deadline'] - timedelta(minutes=30)).isoformat()).astimezone(KST)
                     self.company._message(conn, project, None, 'market_brief', 'video_status',
-                        f"영상 제작 현황 · 08:30 KST\n검토본이 아직 준비되지 않았습니다. 상태: {job['state']}\n"
+                        f"영상 제작 현황 · {target:%H:%M} KST\n검토본이 아직 준비되지 않았습니다. 상태: {job['state']}\n"
                         '원문 브리핑은 그대로 확인할 수 있습니다. 준비되면 비공개 영상 링크를 전달합니다. '
-                        '09:00 KST 이후에는 일반 공개 승인이 만료됩니다.', message_id=mid)
+                        f"{job['publish_deadline'].astimezone(KST):%H:%M} KST 이후에는 일반 공개 승인이 만료됩니다.", message_id=mid)
 
     def action(self, identity, action: VideoAction, owner, channel, event_key, *, message_ts=None, at=None):
         at = at or utcnow()

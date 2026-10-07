@@ -147,7 +147,7 @@ def test_flush_transaction_freezes_source_and_enqueues_once(brief, video):  # no
     assert clock['at'] < job['publish_deadline']
 
 
-@pytest.mark.parametrize('change', ['preview', 'pm', 'unreviewed', 'unknown_quality', 'reduced', 'rejected', 'failed_review', 'late', 'disabled'])
+@pytest.mark.parametrize('change', ['preview', 'unknown_kind', 'unreviewed', 'unknown_quality', 'reduced', 'rejected', 'failed_review', 'late', 'disabled'])
 def test_ineligible_briefs_never_enqueue(brief, video, change):  # noqa: F811
     store, clock = video
     job = new_job(brief, video)
@@ -157,8 +157,8 @@ def test_ineligible_briefs_never_enqueue(brief, video, change):  # noqa: F811
         edition['state'] = 'ready'
         if change == 'preview':
             edition['publish'] = False
-        elif change == 'pm':
-            edition['kind'] = 'pm'
+        elif change == 'unknown_kind':
+            edition['kind'] = 'weekly'  # am and pm both produce videos; nothing else does
         elif change == 'unreviewed':
             edition['review'] = None
             edition['quality'] = {}
@@ -563,3 +563,47 @@ def test_0830_delay_status_is_once_per_edition(brief, video):  # noqa: F811
     store.late_notices()
     with store.db.transaction() as conn:
         assert conn.execute("SELECT count(*) AS n FROM messages WHERE kind='video_status'").fetchone()['n'] == 1
+
+
+def test_edition_times_follow_the_brief_schedule():
+    from datetime import date, datetime, timedelta
+
+    from quant_company.video.store import KST, edition_times
+
+    day = date(2026, 10, 7)
+    am = edition_times({'kind': 'am', 'day': day})
+    assert [t.strftime('%H:%M') for t in am] == ['08:30', '09:00']
+    pm = edition_times({'kind': 'pm', 'day': day, 'due_at': datetime(2026, 10, 7, 17, 45, tzinfo=KST)})
+    assert [t.strftime('%H:%M') for t in pm] == ['19:30', '22:00']
+    late = edition_times({'kind': 'pm', 'day': day, 'due_at': datetime(2026, 10, 7, 18, 30, tzinfo=KST)})
+    assert late[0] - late[1] == timedelta(minutes=-150) and late[0].strftime('%H:%M') == '20:15'
+
+
+def test_close_edition_gets_its_own_job_label_times_and_shared_monthly_budget(brief, video):  # noqa: F811
+    from datetime import datetime
+    from uuid import uuid4
+
+    from quant_company.video.store import KST
+
+    store, _ = video
+    morning = new_job(brief, video)
+    pm_id = uuid4()
+    with store.db.transaction() as conn:
+        edition = conn.execute('SELECT * FROM brief_editions WHERE id=%s', (morning['edition_id'],)).fetchone()
+        due = datetime.combine(edition['day'], datetime.min.time().replace(hour=17, minute=45), KST)
+        conn.execute("""INSERT INTO brief_editions SELECT (jsonb_populate_record(NULL::brief_editions,
+            to_jsonb(e) || jsonb_build_object('id', %s::text, 'kind', 'pm', 'due_at', %s::text, 'state', 'ready'))).* FROM brief_editions e WHERE id=%s""",
+                     (str(pm_id), due.isoformat(), edition['id']))
+        closing = conn.execute('SELECT * FROM brief_editions WHERE id=%s', (pm_id,)).fetchone()
+        identity = store.enqueue(conn, closing, edition['cutoff'])
+    assert identity and identity != str(morning['id'])
+    job = store.get(identity)
+    assert job['source']['edition_kind'] == 'close' and morning['source'].get('edition_kind', 'am') == 'am'
+    assert job['policy']['edition'] == 'close'
+    assert job['publish_deadline'].astimezone(KST).strftime('%H:%M') == '22:00'
+    assert datetime.fromisoformat(job['policy']['review_target']).astimezone(KST).strftime('%H:%M') == '19:30'
+    store.settings.video_monthly_credit_limit, store.settings.video_episode_credit_limit = 100, 100
+    store.begin_effect(morning, 'speech-0', {'scene': 0}, 'speech', 60)
+    assert store.budget_available(job, 40) and not store.budget_available(job, 41)
+    with pytest.raises(PolicyError, match='budget'):
+        store.begin_effect(job, 'speech-0', {'scene': 0}, 'speech', 41)

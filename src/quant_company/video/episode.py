@@ -232,5 +232,8 @@ def episode_prompt(source, feedback='', library=None):
             "market (국내/미국/글로벌), stories (the three summary points), hashtags (1-2 topic tags), tags (episode keywords first, "
             "then general market keywords; nothing unrelated). Return only the required JSON.\n"
             + CARD_GUIDE + '\n'
-            + json.dumps({'day': str(source['day']), 'cutoff': str(source['cutoff']), 'claims': prompt_claims(source),
+            + "End upload.title with '| {M}월 {D}일 ' plus the edition name given below.\n"
+            + json.dumps({'day': str(source['day']), 'cutoff': str(source['cutoff']),
+                          'edition': {'am': '아침 브리핑', 'close': '마감 브리핑'}[source.get('edition_kind', 'am')],
+                          'claims': prompt_claims(source),
                           'assets': shelf, 'revision_feedback': feedback}, ensure_ascii=False))
