@@ -1,3 +1,4 @@
+import json
 from datetime import timedelta
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
@@ -59,3 +60,38 @@ def test_real_postgres_monitor_reads_only_metadata_and_does_not_create_a_call(br
         assert not {'bundle', 'proposal', 'request', 'prompt', 'rendered'} & rows[0].keys()
         assert conn.execute('SELECT count(*) AS n FROM brief_calls').fetchone()['n'] == 0
     assert monitor.assess(d.model_dump(mode='json'), rows[0], clock['at'])['model_requests'] == 0
+
+
+def test_continuous_monitor_uses_installed_calendar_and_keeps_missing_expected_editions(monkeypatch):
+    d, _, now = completed()
+    earlier = {**d, 'id': '00000000-0000-0000-0000-000000000000',
+               'due_at': (definition().due_at-timedelta(days=1)).isoformat()}
+    policy = {'mode': 'continuous', 'channel': 'C1', 'owner': 'U1',
+              'starts_at': (definition().due_at-timedelta(hours=1)).isoformat()}
+    calls = []
+    def docker(command, **kwargs):
+        calls.append((command, kwargs))
+        if command[1] == 'inspect':
+            return json.dumps([{'Config': {'Image': 'installed-calendar-image',
+                'Env': ['BRIEFING_CHANNEL_ID=C1', 'BRIEFING_OWNER_USER=U1',
+                        'BRIEFING_CALENDAR_OVERRIDES_FILE=']}}]).encode()
+        assert '--network=none' in command and '--read-only' in command
+        assert command[command.index('--entrypoint=python')+1] == 'installed-calendar-image'
+        assert set(json.loads(kwargs['input'])) == {'now', 'channel', 'owner', 'overrides'}
+        return json.dumps([earlier, d]).encode()
+    monkeypatch.setattr(monitor.subprocess, 'check_output', docker)
+    expected = monitor.definitions(policy, now)
+    assert expected == [d] and len(calls) == 2
+    assert monitor.assess(expected[0], None, now)['problems'] == ['edition_not_registered']
+
+
+def test_continuous_monitor_accounts_for_optional_discovery_without_certifying_bad_content():
+    d, row, now = completed()
+    row['calls'].extend({'phase': p, 'state': 'completed', 'provider': 'codex'}
+                        for p in ('search', 'revise', 'final_review'))
+    row['checks']['coverage'] = False
+    result = monitor.assess(d, row, now, maximum_requests=7)
+    assert 'model_request_budget_exceeded' not in result['problems']
+    assert not result['content_passed'] and result['failed_checks'] == ['coverage']
+    row['calls'].append({'phase': 'search', 'state': 'completed', 'provider': 'codex'})
+    assert 'model_request_budget_exceeded' in monitor.assess(d, row, now, maximum_requests=7)['problems']
