@@ -7,8 +7,8 @@
     "maintenance/github.py": "24c6ddfe7e1de6ff55f110e496c3b9d34fec4a5f0e45530bd1ff6b235bae4ec8"
   },
   "module_root": "/opt/company/.venv/lib/python3.12/site-packages/quant_company",
-  "patch_commit": "123e4e0e8d85b0a476bf2e6a4fb08cb95f3d032e",
-  "target_image": "quant-company-maintainer-evidence:123e4e0e8d85b0a476bf2e6a4fb08cb95f3d032e",
+  "patch_commit": "e0506ef7a754f58639213477260d11bb75e877f7",
+  "target_image": "quant-company-maintainer-evidence:e0506ef7a754f58639213477260d11bb75e877f7",
   "case_ids": [
     "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
     "a4aabd4e-1263-4435-ae26-78820f18f5b0",
@@ -16,7 +16,7 @@
     "19aa1178-bca7-469f-b209-eca081a1be36"
   ],
   "candidate_module_sha256": {
-    "system_state.py": "7746945f5c5392731b126ac52321dce0b38266f8998567e5d62bb75608960043",
+    "system_state.py": "7b50be5c845bd4dbaccc7a2bcd9ff3caeff180ef6367697afd435247b8fcb1bc",
     "runner.py": "c91ebde97c0a88086302bab84f5b1d75443e2dc9deb0ae6a2e2f829ebe1d9d7a",
     "store.py": "3a74e7a32c848e55fdddd7ad9fc463d35f8eb2185aad42e24113df86639133ce",
     "github.py": "4f38d954139cd767f31b506dc7722c9d38cfb32a93a0eb9f51064c0ee2fed6e0"

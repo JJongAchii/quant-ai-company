@@ -116,12 +116,16 @@ def test_expanding_same_commit_coverage_preserves_prior_exact_records(company):
 
 def test_technical_case_only_uses_linked_history_without_modifying_stored_inputs():
     review = {"evidence": [{"key": "message:related", "project_id": "one", "text": "Original request"},
-                            {"key": "message:unrelated", "project_id": "two", "text": "Private unrelated thread"}]}
-    payload = {"observations": [{"key": "failure:one", "kind": "research_contract_failure", "project_id": "one"}],
+                            {"key": "message:unrelated", "project_id": "two", "text": "Private unrelated thread"}],
+              "roster": [{"id": "engineer", "mission": "Case actor"},
+                         {"id": "unrelated", "mission": "x"*20000}]}
+    payload = {"observations": [{"key": "failure:one", "kind": "research_contract_failure", "project_id": "one",
+                                "author": "engineer"}],
                "review": review}
     before = digest(payload)
     focused = diagnostic_history(payload)
     assert focused["evidence"] == review["evidence"][:1] and focused["case_context"]["omitted"] == 1
+    assert focused["roster"] == review["roster"][:1] and focused["case_context"]["omitted_roles"] == 1
     assert digest(payload) == before
     payload["observations"][0]["kind"] = "human"
     assert diagnostic_history(payload) == review

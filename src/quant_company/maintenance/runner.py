@@ -114,8 +114,13 @@ def diagnostic_history(payload):
     keys = {row["key"] for row in observations}
     evidence = [row for row in history.get("evidence", []) if row["key"] in keys
                 or row.get("project_id") in projects or row.get("task_id") in tasks]
+    actors = {row.get("author") or row.get("agent") for row in observations + evidence}
+    roster = history.get("roster", [])
+    related_roster = [row for row in roster if row["id"] in actors]
     return {**history, "evidence": evidence,
+            "roster": related_roster if any(actors) else roster,
             "case_context": {"included": len(evidence), "omitted": len(history.get("evidence", []))-len(evidence),
+                             "omitted_roles": len(roster)-len(related_roster) if any(actors) else 0,
                              "scope": "Only recorded evidence linked to this technical case. "
                                       "Full owner history and replay inputs remain stored; omitted evidence is unknown."}}
 
