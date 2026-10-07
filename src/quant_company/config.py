@@ -81,8 +81,10 @@ class Settings(BaseSettings):
     video_runway_workspace_id: int = Field(default=0, ge=0)
     video_monthly_credit_limit: int = Field(default=1500, ge=0, le=100000)
     video_episode_credit_limit: int = Field(default=100, ge=0, le=500)
-    video_voice: str = "Leslie"
-    video_model: str = "gpt-6-astra"
+    video_voice: str = "Vincent"
+    # Script and review run on the isolated Claude subscription runtime, never the Codex lane.
+    video_model: str = "claude-opus-5"
+    video_model_runtime_url: str = "http://claude-runtime:8080"
     video_ffmpeg: str = "ffmpeg"
     video_ffprobe: str = "ffprobe"
     video_alignment_model: str = "small"
@@ -140,6 +142,8 @@ class Settings(BaseSettings):
     def explicit_simulation(self) -> "Settings":
         if self.video_enabled and not (self.briefing_enabled and self.briefing_publish_enabled):
             raise ValueError("Video requires an enabled publishing briefing source")
+        if self.video_enabled and self.video_model != "claude-opus-5":
+            raise ValueError("Video scripts require the qualified Claude subscription model")
         if self.video_enabled and not self.video_runway_workspace_id:
             raise ValueError('Video production requires an explicit Runway workspace')
         if self.video_upload_enabled and not (self.video_enabled and self.video_youtube_channel_id):

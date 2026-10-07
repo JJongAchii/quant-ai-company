@@ -326,7 +326,8 @@ class SimulatedProvider:
     async def run(self, request):
         self.calls.append(request)
         value = video_plan() if request.output_contract == 'video_plan_v1' else good_review()
-        return ProviderResponse(request_id=request.request_id, provider='fixture', decision=AgentDecision(
+        return ProviderResponse(request_id=request.request_id, provider='claude',
+            usage={'actual_model': request.model}, decision=AgentDecision(
             status='complete', say='', artifacts=[{'title': 'Simulated video', 'content': value.model_dump_json()}]))
 
 
@@ -460,6 +461,34 @@ async def test_busy_before_execution_refunds_allowance_and_defers_same_request(b
     provider = SimulatedProvider()
     assert (await VideoRunner(store.company, provider=provider).tick())['state'] == 'reviewing'
     assert provider.calls[0].request_id == f"video-{job['id']}-plan"
+    assert provider.calls[0].model == 'claude-opus-5' and provider.calls[0].output_contract == 'video_plan_v1'
+
+
+async def test_claude_quota_before_execution_defers_without_spending_allowance(brief, video):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    provider = SimulatedProvider()
+    async def quota(request):
+        raise ProviderFault('quota', 'Subscription window is exhausted', 900)
+    provider.run = quota
+    assert (await VideoRunner(store.company, provider=provider).tick())['state'] == 'queued'
+    with store.db.transaction() as conn:
+        effect = conn.execute('SELECT * FROM video_effects WHERE job_id=%s', (job['id'],)).fetchone()
+        assert effect['state'] == 'rejected' and effect['receipt']['code'] == 'quota'
+        row = conn.execute('SELECT error,lease_until FROM video_jobs WHERE id=%s', (job['id'],)).fetchone()
+        assert row['error'] == 'model_quota' and row['lease_until'] is not None
+
+
+async def test_non_claude_or_other_model_response_is_rejected(brief, video):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    provider = SimulatedProvider()
+    original = provider.run
+    async def codex(request):
+        return (await original(request)).model_copy(update={'provider': 'codex'})
+    provider.run = codex
+    assert (await VideoRunner(store.company, provider=provider).tick())['state'] in {'blocked', 'uncertain'}
+    assert store.get(job['id'])['plan'] is None
 
 
 async def test_entire_speech_budget_is_checked_before_first_charge(brief, video):  # noqa: F811

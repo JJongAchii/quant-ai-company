@@ -7,7 +7,7 @@ from temporalio import activity
 
 from ..company import PolicyError
 from ..contracts import ProviderFault, ProviderRequest
-from ..execution import provider_for
+from ..providers.client import RuntimeClient
 from .contracts import VideoPlan, VideoReview, digest, production_prompt, review_prompt, validate_plan
 from .render import Renderer, spoken, verify_artifacts
 from .runway import RunwaySpeech, download_audio
@@ -19,10 +19,18 @@ class VideoRunner:
     def __init__(self, company, provider=None, speech=None, renderer=None, youtube=None):
         self.store = VideoStore(company)
         self.settings = company.settings
-        self.provider = provider or provider_for(company)
+        self._provider = provider
         self.speech = speech or RunwaySpeech(self.settings.video_credentials_dir)
         self.renderer = renderer or Renderer(self.settings)
         self.youtube = youtube or YouTube(self.settings)
+
+    @property
+    def provider(self):
+        # Created on first model call: speech, render and upload stages never need the runtime token.
+        if self._provider is None:
+            self._provider = RuntimeClient(self.settings.video_model_runtime_url,
+                self.settings.model_runtime_token.get_secret_value(), expected_provider="claude")
+        return self._provider
 
     async def effect(self, job, key, request, kind, operation, cost=0):
         old = await asyncio.to_thread(self.store.begin_effect, job, key, request, kind, cost)
@@ -40,11 +48,13 @@ class VideoRunner:
             try:
                 response = await self.provider.run(request)
             except ProviderFault as error:
-                if error.code == 'busy':
-                    await asyncio.to_thread(self.store.reject_busy_model, job, phase)
+                # Both are reported before any inference: a shared lane or an exhausted subscription window.
+                if error.code in {'busy', 'quota'}:
+                    await asyncio.to_thread(self.store.reject_busy_model, job, phase, error.code)
                 raise
             decision = response.decision
-            if (response.request_id != request.request_id or len(decision.artifacts) != 1
+            if (response.provider != "claude" or response.usage.get("actual_model") != request.model
+                    or response.request_id != request.request_id or len(decision.artifacts) != 1
                     or decision.status != 'complete' or decision.tools or decision.delegations or decision.messages
                     or decision.memories or decision.follow_up or response.web_searches):
                 raise ValueError("Video model response identity mismatch")
@@ -73,8 +83,8 @@ class VideoRunner:
         except UncertainEffect:
             await asyncio.to_thread(self.store.save, job, "uncertain", error="external_effect_requires_reconciliation")
         except ProviderFault as error:
-            if error.code == 'busy':
-                await asyncio.to_thread(self.store.defer, job, error.retry_after_seconds)
+            if error.code in {'busy', 'quota'}:
+                await asyncio.to_thread(self.store.defer, job, error.retry_after_seconds, error.code)
             else:
                 uncertain = await asyncio.to_thread(self.store.has_uncertain_effect, job)
                 await asyncio.to_thread(self.store.save, job, 'uncertain' if uncertain else "blocked", error="model_" + error.code)

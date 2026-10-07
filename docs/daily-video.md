@@ -8,7 +8,7 @@
 ```mermaid
 flowchart LR
     B[검토 통과 AM 발송본] --> S[기존 Slack 발송]
-    B --> P[동결된 주장으로 대본 작성·검토]
+    B --> P[동결된 주장으로 Claude 대본 작성·검토]
     P --> V[Runway 기존 계정 음성]
     V --> R[글 중심 1080p 렌더링·자막·기술 검사]
     R --> Y[YouTube 비공개 업로드]
@@ -35,14 +35,20 @@ AM을 만들지 않는 날에는 영상도 만들지 않는다. 별도의 매일
 
 ## 비용과 계정
 
-대본 작성과 별도 검토는 기존 공식 ChatGPT 인증의 Codex runtime에서 실행한다.
-일일 회사 호출 제한을 공유하며 검색·앱·MCP·셸 도구와 media credentials는 모델에 전달하지 않는다.
+대본 작성(`video_plan_v1`)과 별도 검토(`video_review_v1`)는 서버의 기존 Claude 구독 실행기
+([Claude runtime](claude-runtime.md), Pro/Max 공식 로그인, `claude-opus-5`)에서 실행한다. Codex runtime으로
+자동 전환하지 않으며 Codex는 영상 계약을 받지 않는다. 실행기는 요청 계약에 맞는 JSON schema만
+`--json-schema`로 전달하고 도구·MCP·세션 저장 없이 한 번 실행한다. 직원 독립 검토와 같은 단일 실행 lane과
+구독 한도를 공유한다. lane 사용 중(`busy`)이나 구독 한도 소진(`quota`)은 실행 전 거절이므로 호출 예약을
+반환하고 같은 요청 ID로 나중에 재시도한다. 회사 일일 호출 제한 집계는 그대로 적용한다.
+검색·앱·MCP·셸 도구와 media credentials는 모델에 전달하지 않는다. Claude 계정의 usage credits/extra
+usage가 꺼져 있어야 하며(`CLAUDE_USAGE_CREDITS_DISABLED_CONFIRMED=true`) 결제 API 키로 전환하지 않는다.
 Runway 음성은 OAuth로 `https://mcp.runwayml.com/mcp`에 연결한다.
 [공식 Runway 안내](https://help.runwayml.com/hc/en-us/articles/51931843164691-Connecting-to-Runway-MCP)에
 따르면 이 MCP는 웹 계정 크레딧을 사용한다. `dev.runwayml.com/mcp`와 직접 유료 API로 전환하지 않는다.
 기존 ChatGPT 앱 연결 토큰이 서버로 자동 이관되지는 않으므로 서버에서 처음 한 번 로그인한다.
 
-음성 모델은 `eleven_multilingual_v2`, 기본 voice는 `Leslie`다. 현재 확인한 MCP 조건인
+음성 모델은 `eleven_multilingual_v2`, 기본 voice는 Runway preset `Vincent`다. 현재 확인한 MCP 조건인
 문자 50개당 1 credit을 **장면별 올림**으로 예약한다. 실제 한국어 발음·서비스 조건은 첫 비공개
 샘플에서 다시 확인한다. 예를 들어 한 회 3,000자는 최소 약 60 credits이고,
 26회면 약 1,560 credits라서 기본 월 제한 1,500을 넘길 수 있다. 수정본도 같은 회차 한도에 합산한다.
@@ -73,8 +79,12 @@ media worker의 작업 큐는 `${TEMPORAL_TASK_QUEUE}-video`다. 모든 프로�
 
 ```sh
 docker compose -f deploy/compose.yaml build api
-docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml --profile video build video-worker
+docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml --profile video --profile claude build video-worker
 ```
+
+video worker는 `claude-runtime`이 healthy일 때 시작한다. 항상 `--profile video --profile claude`를 함께 쓴다.
+Claude 실행기 로그인과 usage credits 확인은 [Claude runtime 최초 연결](claude-runtime.md)을 따른다.
+영상만 켤 때 `COMPANY_STAFF_REVIEW_ENABLED`를 켤 필요는 없다.
 
 호스트의 `${STATE_DIR}/video`, `media-auth`, `video-models`를 uid/gid 10001 소유로 먼저 만든다.
 `media-auth`는 0700, 토큰/YouTube client 파일은 0600이다. 파일을 Git에 넣지 않는다.
@@ -114,8 +124,9 @@ docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml exec video-wo
 | `VIDEO_YOUTUBE_CHANNEL_ID` | 빈 값 | 명시적 해당 채널 ID |
 | `VIDEO_MONTHLY_CREDIT_LIMIT` | 1500 | 예약/불확실 요청을 포함한 KST 월 한도 |
 | `VIDEO_EPISODE_CREDIT_LIMIT` | 100 | 수정본을 포함한 회차 한도 |
-| `VIDEO_MODEL` | gpt-6-astra | 구독 대본·검토 모델 |
-| `VIDEO_VOICE` | Leslie | 첫 실제 샘플에서 확정할 preset voice |
+| `VIDEO_MODEL` | claude-opus-5 | Claude 구독 대본·검토 모델; 다른 값이면 영상 활성화를 거부 |
+| `VIDEO_MODEL_RUNTIME_URL` | http://claude-runtime:8080 | 기존 Claude 실행기 내부 주소 |
+| `VIDEO_VOICE` | Vincent | Runway preset voice; 첫 실제 샘플에서 한국어 발음 확인 |
 | `VIDEO_ALIGNMENT_MODEL` | small | 실제 음성 검증·자막 시점용 로컬 모델/경로 |
 
 활성화 순서는 upstream full brief 품질 통과 → 계정/잔액/채널과 서버 자원 확인 →
@@ -159,9 +170,10 @@ quant-company video retry --job-id JOB_UUID --note '기존 음성 task와 로컬
 ```
 
 `retry`는 미확인 요청이 없는 로컬 렌더링 또는 기존 upload session만 재개한다.
-크레딧 요청이나 새 업로드를 자동 재전송하는 복구 명령은 없다. 서버 Codex의 `busy`는 실행 전에
-반환되는 명시적 거절이므로 모델 호출 예약을 반환하고 잠시 뒤 같은 요청 ID로 재시도한다.
-모델 timeout이나 응답 유실은 `busy`로 취급하지 않는다.
+크레딧 요청이나 새 업로드를 자동 재전송하는 복구 명령은 없다. Claude 실행기의 `busy`와 `quota`는 실행 전에
+반환되는 명시적 거절이므로 모델 호출 예약을 반환하고 같은 요청 ID로 재시도한다(`busy` 최대 60초,
+`quota` 최대 15분 뒤). 09:00 마감은 그대로 적용된다. 모델 timeout이나 응답 유실은 재시도하지 않는다.
+실행기의 `claude/jobs/video-<job>-<phase>.json` receipt와 DB 효과 행을 먼저 대사한다.
 
 검토 불합격이나 기술 검사 실패는 `blocked`, 보류는 `held`, 새 수정본은 이전 버전을
 `superseded`로 만든다. 이전 버전의 버튼은 새 버전을 승인하지 못한다. 09:00 이후에는

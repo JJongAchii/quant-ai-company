@@ -62,10 +62,6 @@ def quant_output_model(contract):
         from quant_company.briefing.execution import OUTPUT_MODELS
 
         return OUTPUT_MODELS[contract]
-    if contract in {"video_plan_v1", "video_review_v1"}:
-        from quant_company.video.contracts import VideoPlan, VideoReview
-
-        return {"video_plan_v1": VideoPlan, "video_review_v1": VideoReview}[contract]
     from quant_company.quant_feed.contracts import (
         EditorialCritique,
         EvidenceCritique,

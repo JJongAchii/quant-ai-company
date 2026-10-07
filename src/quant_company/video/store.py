@@ -181,21 +181,23 @@ class VideoStore:
                          (identity, job["id"], digest(request), kind, cost))
         return None
 
-    def reject_busy_model(self, job, key):
-        # Official runtime's busy receipt is emitted before model execution, unlike a timeout.
+    def reject_busy_model(self, job, key, code='busy'):
+        # Official runtime's busy/quota receipt is emitted before model execution, unlike a timeout.
         with self.db.transaction() as conn:
             row = conn.execute("""UPDATE video_effects SET state='rejected',receipt=%s WHERE id=%s
                 AND kind='model' AND state='running' RETURNING created_at""",
-                (Jsonb({'code': 'busy', 'executed': False}), str(job['id'])+':'+key)).fetchone()
+                (Jsonb({'code': code, 'executed': False}), str(job['id'])+':'+key)).fetchone()
             if row:
                 conn.execute('UPDATE daily_usage SET reserved=GREATEST(0,reserved-1) WHERE day=%s::date',
                              (row['created_at'],))
 
-    def defer(self, job, seconds):
-        self.save(job, job['state'], error='model_busy')
+    def defer(self, job, seconds, code='busy'):
+        # A subscription window may reopen later; the publish deadline still expires the job.
+        ceiling = 900 if code == 'quota' else 60
+        self.save(job, job['state'], error='model_'+code)
         with self.db.transaction() as conn:
             conn.execute('UPDATE video_jobs SET lease_until=%s WHERE id=%s AND state=%s',
-                         (datetime.now(UTC)+timedelta(seconds=max(5,min(seconds or 30,60))), job['id'], job['state']))
+                         (datetime.now(UTC)+timedelta(seconds=max(5,min(seconds or 30,ceiling))), job['id'], job['state']))
 
     def finish_effect(self, job, key, receipt):
         with self.db.transaction() as conn:

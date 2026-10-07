@@ -1,4 +1,5 @@
-# Explicit optional profile. No flags or paid account purchases are enabled by this overlay.
+# Explicit optional profile; run with --profile video --profile claude.
+# No flags or paid account purchases are enabled by this overlay.
 x-video-env: &video-env
   VIDEO_ENABLED: ${VIDEO_ENABLED:-false}
   VIDEO_UPLOAD_ENABLED: ${VIDEO_UPLOAD_ENABLED:-false}
@@ -7,8 +8,8 @@ x-video-env: &video-env
   VIDEO_RUNWAY_WORKSPACE_ID: ${VIDEO_RUNWAY_WORKSPACE_ID:-0}
   VIDEO_MONTHLY_CREDIT_LIMIT: ${VIDEO_MONTHLY_CREDIT_LIMIT:-1500}
   VIDEO_EPISODE_CREDIT_LIMIT: ${VIDEO_EPISODE_CREDIT_LIMIT:-100}
-  VIDEO_VOICE: ${VIDEO_VOICE:-Leslie}
-  VIDEO_MODEL: ${VIDEO_MODEL:-gpt-6-astra}
+  VIDEO_VOICE: ${VIDEO_VOICE:-Vincent}
+  VIDEO_MODEL: ${VIDEO_MODEL:-claude-opus-5}
   VIDEO_ARTIFACT_DIR: /state/video
   VIDEO_CREDENTIALS_DIR: /state/media-auth
   VIDEO_ALIGNMENT_MODEL: ${VIDEO_ALIGNMENT_MODEL:-small}
@@ -58,8 +59,8 @@ services:
       TEMPORAL_TLS: 'true'
       TEMPORAL_API_KEY_FILE: /run/secrets/temporal_api_key
       TEMPORAL_TASK_QUEUE: ${TEMPORAL_TASK_QUEUE:-quant-company}
-      MODEL_PROVIDER: codex
-      MODEL_RUNTIME_URL: http://codex-runtime:8080
+      # Script/review calls go only to the isolated Claude subscription runtime (--profile claude).
+      VIDEO_MODEL_RUNTIME_URL: http://claude-runtime:8080
       MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
       COMPANY_MAX_DAILY_TURNS: ${COMPANY_MAX_DAILY_TURNS:-0}
       COMPANY_MODEL_TIMEOUT_SECONDS: ${COMPANY_MODEL_TIMEOUT_SECONDS:-960}
@@ -90,4 +91,4 @@ services:
     networks: [core, model, service_egress]
     depends_on:
       postgres: {condition: service_healthy}
-      codex-runtime: {condition: service_healthy}
+      claude-runtime: {condition: service_healthy}

@@ -7,12 +7,15 @@ import httpx
 import pytest
 
 from quant_company.config import Settings
+from quant_company.contracts import ProviderFault, ProviderRequest
 from quant_company.video.auth import RunwayTokenStorage, write_secret
+from quant_company.video.contracts import VideoPlan, VideoReview
 from quant_company.video.render import verify_artifacts
 from quant_company.video.runway import RunwaySpeech
 from quant_company.video.youtube import UPLOAD, YouTube, session_url
 
-from .test_video import artifact_fixture, video_plan
+from .test_claude_runtime import fake_claude, runner  # noqa: F401
+from .test_video import artifact_fixture, good_review, video_plan
 
 
 @pytest.fixture
@@ -61,12 +64,12 @@ async def test_runway_web_workspace_credit_and_task_contract():
     assert (await runway.account(123))['credits']['total'] == 1500
     with pytest.raises(ValueError):
         await runway.account(456)
-    assert (await runway.submit('합성 음성 테스트', 'Leslie', 'eleven_multilingual_v2'))['taskId'] == 'known-task'
+    assert (await runway.submit('합성 음성 테스트', 'Vincent', 'eleven_multilingual_v2'))['taskId'] == 'known-task'
     assert await runway.completed('known-task') == 'https://example.com/audio.mp3'
     assert calls[-1] == ('get_task', {'id': 'known-task'})
     assert calls[-2][1]['languageCode'] == 'ko'
     with pytest.raises(ValueError):
-        await runway.submit('fixture', 'Leslie', 'paid-dev-model')
+        await runway.submit('fixture', 'Vincent', 'paid-dev-model')
 
 
 @pytest.mark.parametrize('url', ['http://www.googleapis.com/upload/youtube/v3/videos',
@@ -151,3 +154,29 @@ def test_artifact_hash_change_detects_modified_file_and_manifest(upload_job, tmp
     (root/'video.mp4').write_bytes(b'changed')
     with pytest.raises(ValueError, match='artifact changed'):
         verify_artifacts(manifest, tmp_path)
+
+
+@pytest.mark.parametrize('contract,value,model', [('video_plan_v1', video_plan, VideoPlan),
+                                                  ('video_review_v1', good_review, VideoReview)])
+async def test_claude_subscription_runtime_returns_only_the_frozen_video_schema(fake_claude, contract, value, model):  # noqa: F811
+    config, configure, calls = fake_claude
+    configure(review=value().model_dump(mode='json'))
+    request = ProviderRequest(request_id='video-00000000-0000-0000-0000-000000000001-plan', model='claude-opus-5',
+                              reasoning_effort='high', prompt='frozen claims', output_contract=contract)
+    result = await runner(config).run(request)
+    args = calls()[0]['args']
+    assert json.loads(args[args.index('--json-schema') + 1]) == model.model_json_schema()
+    assert args[args.index('--tools') + 1] == '' and result.provider == 'claude'
+    assert model.model_validate_json(result.decision.artifacts[0].content) == value()
+    configure(review={'title': 'wrong'})
+    with pytest.raises(ProviderFault) as invalid:
+        await runner(config).run(request.model_copy(update={'request_id': request.request_id[:-4] + 'next'}))
+    assert invalid.value.code == 'invalid_output'
+
+
+def test_video_requires_claude_script_model():
+    with pytest.raises(ValueError, match='Claude subscription model'):
+        Settings(_env_file=None, database_url='postgresql://unused', briefing_enabled=True, briefing_publish_enabled=True,
+                 briefing_channel_id='C1', briefing_owner_user='U1', slack_allowed_users=['U1'],
+                 video_enabled=True, video_runway_workspace_id=1, video_model='gpt-6-astra')
+    assert Settings(_env_file=None).video_voice == 'Vincent'
