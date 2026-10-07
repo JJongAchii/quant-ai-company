@@ -125,3 +125,10 @@ API의 같은 immutable image·보호된 환경·volume과 DB 공통 network를 
 다음 prompt에 넣어 일반 보완 turn81 한 건만 만든다. 기존 요청·응답·읽기·audit 판정/범위·job/예약과
 서명 예산은 보존된다. 최종 인용·반론·판정은 독립 직원이 보완하며 root가 원문을 수정하거나
 판정을 쓰지 않는다. 게시 조건은 유지한다. 운영 적용과 보완 응답의 실제 수신은 아직 확인 전이다.
+
+15:52:00 KST에 event783으로 [정확한 복구를 적용](evidence/etf-exploration-20260930/first-trial-meaning-citation-correction-applied-20261007.json)했다.
+동일 모델·추론 수준 Astra/xhigh의 정상81번째 호출2b80246c가15:52:02에 실제 시작됐다.
+[실제 시작 관측](evidence/etf-exploration-20260930/first-trial-meaning-correction-actual-call-started-20261007.json)에서
+원래 audit hold 해제·meaning 실행과 과학 시행1건 유지가 확인됐다. 보완 응답·정상 최종 인용 대조·
+보고서 등록·실제 Slack 전달은 계속 관측한다. `meaning_citation_contract_correction_requested`는
+이번 복구에서 제공한 안내 표식이며 새 실패 판정이 아니다.

@@ -20,7 +20,7 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Independent audit pass and all required meaning reads are verified. Meaning response80 completed15:32:52KST, but publication held because its test cites six general context paths outside the validated package. A guarded one-turn employee correction preserves the old proposal, all requests/responses/reads and audit/science scope. Isolated production PostgreSQL rollback probe passed15:49:17KST; exact review prepared in PR105. Apply and actual corrected response/publication/Slack delivery remain pending.",
+  "operationalStatus": "Independent audit pass and21 required meaning reads are verified. A citation-scope mismatch held publication after meaning response80. Exact scoped correction applied15:52:00KST/event783 after a real PostgreSQL rollback probe and PR105 review; all old responses/reads/audit/science scope were retained. Normal official employee correction request81 actually started15:52:02KST. Its accepted response, report registration and actual Slack delivery remain pending.",
   "evidence": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json",
   "nextStage": {
     "stage": "independent_audit_meaning_report",
@@ -113,7 +113,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "independent_audit_verified_meaning_review_running",
+    "phase": "meaning_citation_correction_actual_call_running",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
@@ -157,7 +157,7 @@
     "researchReportCompleted": false,
     "strategyOrLiveApprovalClaimed": false
   },
-  "currentDeliverables": {
+  "previousAuditResumeDeliverables": {
     "AUDIT_DIAGNOSIS": {
       "status": "completed"
     },
@@ -172,31 +172,41 @@
       "actualProviderState": "running"
     }
   },
-  "phase": "meaning_citation_contract_correction_prepared",
+  "phase": "meaning_citation_correction_actual_call_running",
+  "currentDeliverables": {
+    "AUDIT_NOTE_BOUND": {"status": "completed", "responseReconciliationEvent": 781},
+    "CONTINUOUS_PROGRESS": {"status": "in_progress", "citationCorrectionEvent": 783},
+    "VERIFIED_REPORT": {"status": "in_progress", "independentAuditVerified": true, "actualSlackDelivery": false}
+  },
   "currentMonitoring": {
     "intent": 17,
     "response_reconciliation_event": 781,
     "service_source_commit": "53ed9e33175d6056d72417c081d574a740587695",
     "effective_runtime_images": "audit-runtime-patch-applied-20261007.json",
-    "verified_at": "2026-10-07T06:31:22.455161+00:00",
+    "verified_at": "2026-10-07T06:52:54.320659+00:00",
     "audit_reviewed_packets": 7,
     "audit_final_request_id": "8dbf96d1-00e9-5072-87b9-4f7483adf48d",
     "audit_final_request_completed_at": "2026-10-07T06:05:46.852770+00:00",
     "meaning_stage_id": "8987ff99-b738-5927-8ba2-0545cdab6884",
-    "actual_next_request_id": "9e2bf588-30c0-531d-ab51-0f2426f4a9d4",
+    "actual_next_request_id": "2b80246c-55f3-59b7-a342-cbf54ff43c02",
     "meaning_required_files_complete": 21,
     "meaning_required_files_total": 21,
     "meaning_read_chunks": 79,
-    "meaning_actual_turn_sequence": 80,
+    "meaning_actual_turn_sequence": 81,
     "meaning_progress_evidence": "../../project/evidence/etf-exploration-20260930/first-trial-meaning-response-pending-20261007.json",
-    "actual_runtime_state": "complete",
+    "actual_runtime_state": "running",
     "independent_audit_complete": true,
     "independent_audit_verdict": "pass",
     "independent_verification_sha256": "4e8c5645a8a69e2ad44471ac96d43cff62f3ff1c63dda4ab590a8d2c2f66b185",
     "independent_verification_evidence": "../../project/evidence/etf-exploration-20260930/first-trial-independent-audit-verified-meaning-running-20261007.json",
     "meaning_complete": false,
-    "meaning_response_received": true,
-    "publication_hold": "audit_contract_requires_remediation: Test conclusion cites an artifact outside the validated package",
+    "meaning_previous_response_received": true,
+    "meaning_correction_response_received": false,
+    "publication_hold": null,
+    "meaning_navigation_notice": "meaning_citation_contract_correction_requested",
+    "meaning_correction_event": 783,
+    "meaning_correction_applied": "../../project/evidence/etf-exploration-20260930/first-trial-meaning-citation-correction-applied-20261007.json",
+    "meaning_correction_actual_call": "../../project/evidence/etf-exploration-20260930/first-trial-meaning-correction-actual-call-started-20261007.json",
     "meaning_correction_review": "../../project/evidence/etf-exploration-20260930/first-trial-meaning-citation-correction-review-20261007.json",
     "report_registered": false,
     "actual_slack_delivery_verified": false,
