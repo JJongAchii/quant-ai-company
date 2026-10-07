@@ -101,6 +101,47 @@ def test_account_channel_is_required_in_configuration():
                  slack_allowed_users=["UHUMAN"], slack_allowed_channels=["CQUANT"])
 
 
+@pytest.mark.parametrize("text,mention,thread", [
+    ("도움말", False, None),
+    ("명령어", False, "100.0"),
+    ("help", True, None),
+    (" HELP ", True, "100.0"),
+    ("모델 도움말", False, None),
+    ("모델 명령어", False, None),
+])
+def test_control_help_lists_models_and_accounts_without_model_work(accounts, credentials, text, mention, thread):
+    company, _, _, _, _, calls = accounts
+    company.settings.model_assignments_enabled = True
+    payload = event(credentials, text=("<@UBOT0> " if mention else "") + text,
+                    type="app_mention" if mention else "message", channel="CACC", thread_ts=thread)
+    raw, headers = signed(payload, credentials["director"])
+    client = TestClient(create_app(company.settings, company, credentials))
+    before = policy(company)
+    with company.db.transaction() as conn:
+        revisions_before = conn.execute("SELECT count(*) AS n FROM model_assignment_revisions").fetchone()["n"]
+    first = client.post("/slack/events/director", content=raw, headers=headers)
+    assert first.status_code == 200 and first.json()["account_help"]
+    assert client.post("/slack/events/director", content=raw, headers=headers).json()["duplicate"]
+    with company.db.transaction() as conn:
+        row = conn.execute("SELECT channel,thread_ts,text FROM outbox").fetchone()
+        assert row["channel"] == "CACC" and row["thread_ts"] == (thread or payload["event"]["ts"])
+        assert "명령을 인식하지 못했습니다" not in row["text"]
+        for command in ("모델 목록", "모델 배정 상태", "모델 배정 이력", "모델 지정 개발 gpt-6.1-sol high",
+                        "모델 지정 총괄 gpt-6.1-sol max", "모델 자동 개발", "모델 배정 복원 2",
+                        "모델 계정 상태", "모델 계정 예비로 전환", "모델 계정 기본으로 전환"):
+            assert f"`{command}`" in row["text"]
+        assert "이번 작업 모델 gpt-6.1-sol high\n" in row["text"]
+        assert "최신 모델을 자동으로 선정하지 않습니다" in row["text"]
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 1
+        for table in ("turns", "model_account_commands", "model_assignment_commands"):
+            assert conn.execute(f"SELECT count(*) AS n FROM {table}").fetchone()["n"] == 0, table
+        assert conn.execute("SELECT count(*) AS n FROM model_assignment_revisions").fetchone()["n"] == revisions_before
+        assert conn.execute("SELECT revision,bindings FROM model_assignment_policy WHERE id=1").fetchone() == {
+            "revision": 0, "bindings": {}}
+    assert policy(company) == before
+    assert calls() == []
+
+
 @pytest.mark.parametrize("channel", ["CQUANT", "DOWNER"])
 def test_direct_account_ingest_refuses_other_channels(accounts, channel):
     company = accounts[0]
@@ -131,31 +172,32 @@ async def test_signed_owner_channel_is_model_free_deduplicated_and_persistent(ac
     assert calls() == []
 
 
+@pytest.mark.parametrize("text", ["모델 계정 예비로 전환", "도움말"])
 @pytest.mark.parametrize("change", ["other_user", "other_channel_user", "channel", "other_allowed_channel",
                                   "dm", "other_role", "other_bot_mention", "unrelated_text", "bot", "signature",
                                   "workspace", "edited"])
-def test_account_control_rejects_untrusted_events(accounts, credentials, change):
+def test_account_control_rejects_untrusted_events(accounts, credentials, change, text):
     company, _, _, _, _, _ = accounts
     company.settings.slack_allowed_users.append("UOTHER")
-    payload = event(credentials, text="모델 계정 예비로 전환", type="message", channel="CACC")
+    payload = event(credentials, text=text, type="message", channel="CACC")
     if change == "other_user":
         payload["event"]["user"] = "UOTHER"
     elif change == "other_channel_user":
         payload["event"].update(user="UOTHER", channel="CACC", type="app_mention",
-                                text="<@UBOT0> 모델 계정 예비로 전환")
+                                text="<@UBOT0> " + text)
     elif change == "channel":
         payload["event"]["channel"] = "CUNCONFIGURED"
         payload["event"]["type"] = "app_mention"
-        payload["event"]["text"] = "<@UBOT0> 모델 계정 예비로 전환"
+        payload["event"]["text"] = "<@UBOT0> " + text
     elif change == "other_allowed_channel":
         payload["event"].update(channel="CQUANT", type="app_mention",
-                                text="<@UBOT0> 모델 계정 예비로 전환")
+                                text="<@UBOT0> " + text)
     elif change == "dm":
         payload["event"]["channel"] = "DOWNER"
     elif change == "other_role":
         payload["api_app_id"] = credentials["data"]["app_id"]
     elif change == "other_bot_mention":
-        payload["event"].update(type="app_mention", text="<@UBOT3> 모델 계정 예비로 전환")
+        payload["event"].update(type="app_mention", text="<@UBOT3> " + text)
     elif change == "unrelated_text":
         payload["event"]["text"] = "일반 업무를 해줘"
     elif change == "bot":

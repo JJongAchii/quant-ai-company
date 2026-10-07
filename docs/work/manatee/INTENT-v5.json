@@ -1,0 +1,59 @@
+{
+  "constraints": [
+    "Official ChatGPT authentication in isolated runtime only",
+    "PostgreSQL owns policy and receipts; Temporal owns command processing",
+    "No silent model/account/API fallback; existing frozen requests are immutable",
+    "Company repository only; no research repository writes"
+  ],
+  "createdAt": "2026-10-06T12:59:11.001439+00:00",
+  "decisionGates": [
+    "사용자가 이 대화에서 직원 모델 재배정과 업무별 추론 강도 조정을 명시적으로 승인했다.",
+    "일괄 배정은 운영자 작업으로 출처와 영수증을 기록한다. Slack 서명 이벤트를 위조하거나 테스트 메시지를 발송하지 않는다."
+  ],
+  "deliverables": [
+    {
+      "id": "PLAN",
+      "description": "선택 계정에 맞는 Sol 배정 계획",
+      "acceptance": [
+        "실제 계정 catalog에서 gpt-6.1-sol의 입력 강도를 확인한다.",
+        "총괄 max 제약과 업무별 사고 강도를 검증한 typed proposal을 기록한다."
+      ]
+    },
+    {
+      "id": "APPLY",
+      "description": "운영자 출처의 원자적 배정과 복원 이력",
+      "acceptance": [
+        "운영자 인증·기존 소유자 권한·expected policy/account revision 검증 후 한 transaction으로 활성화한다.",
+        "stable operation ID와 PostgreSQL event/revision 영수증을 기록하고 같은 ID 재조회는 중복 변경하지 않는다.",
+        "Astra를 쓰는 effective assignment가 없고 기존 직원 활성화·계정·요청 기록이 유지된다."
+      ]
+    },
+    {
+      "id": "VERIFY",
+      "description": "운영 배정 readback과 회사 저장소 인수",
+      "acceptance": [
+        "실제 operator API와 여러 producer의 effective model selection을 재조회한다.",
+        "운영자 스크립트·계획·영수증과 사용자의 배정 표를 회사 저장소에 기록하고 qws와 PR을 완료한다."
+      ]
+    }
+  ],
+  "nonGoals": [
+    "회사 서비스 코드·이미지·역할 활성화 변경 또는 재배포",
+    "기존 frozen request/session 재작성이나 자동 paid API fallback",
+    "연구 실행, 성과·최적 배정 입증, 소유자 Slack 입력 위조 또는 점검 메시지"
+  ],
+  "outcome": "모델을 사용하는 직원과 뉴스 배경 작업을 gpt-6.1-sol로 재배정하고 업무별 low/medium/high/xhigh/max를 적용한다. 실제 ChatGPT 계정 catalog와 소유자·운영자 권한 및 policy/account revision을 검증하고 하나의 PostgreSQL 정책 revision으로 기록한다. 기존 요청·세션·구독 계정·직원 활성화·연구 실행을 보존한다.",
+  "revision": 5,
+  "revisionReason": "사용자가 Astra를 제외하고 gpt-6.1-sol 중심으로 직원 모델을 재배정하고 추론 강도를 업무별로 조절해 달라고 명시적으로 요청했다. 실제 계정 지원값과 기존 정책 제약을 검증한 운영자 일괄 배정으로 적용한다.",
+  "schemaVersion": 1,
+  "slug": "manatee",
+  "sourceRequest": "아스트라 제외하고 6.1 sol 로 잘 배분해줘. 추론강도로 조절할수도 있을거 같고",
+  "stopConditions": [
+    "Never replay an ambiguous model call or overwrite frozen requests",
+    "Do not claim deployment or account compatibility without actual evidence"
+  ],
+  "supersedes": {
+    "intentDigest": "a087b4d3be2e",
+    "intentFile": "INTENT-v4.json"
+  }
+}

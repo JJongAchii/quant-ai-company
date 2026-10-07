@@ -1,9 +1,9 @@
 {
   "approval": {
-    "approvedAt": "2026-10-06T14:08:58.376632+00:00",
-    "id": "chat-user-ten-topics-20261006"
+    "approvedAt": "2026-10-07T00:36:29.511028+00:00",
+    "id": "chat-user-merge-pr113-20261007"
   },
-  "currentIntent": "INTENT-v5.json",
+  "currentIntent": "INTENT-v6.json",
   "deliverables": {
     "ACTIVATION": {
       "evidence": [
@@ -20,9 +20,9 @@
           "sha256": "b8b108034eb3"
         }
       ],
-      "note": "Actual news-worker+dispatch on qualified1e06 image; publish true, NAVER readonly mount and PID/config retained; other container IDs and frozen requests/delivered bodies unchanged, pause restored. Actual Temporal three RUNNING workflows, next digest timer20261006T23:00:00.351035Z=Oct7 08:00 KST. Future regular delivery not yet due; no extra Slack send.",
+      "note": "Previously activated daily operation is preserved; this revision performs source integration without a production redeployment.",
       "status": "verified",
-      "updatedAt": "2026-10-06T14:36:45.070397+00:00"
+      "updatedAt": "2026-10-07T00:44:33.357853+00:00"
     },
     "IMMEDIATE_DELIVERY": {
       "evidence": [
@@ -31,9 +31,9 @@
           "sha256": "ad34bccb9c29"
         }
       ],
-      "note": "Previously requested immediate four-topic sports-excluded message remains delivered and immutable; current ten-topic request changes recurring policy and creates only a subscription preview, with no new Slack message.",
+      "note": "Previously requested sports-excluded message is delivered and immutable. Merge does not resend Slack messages or replay model requests.",
       "status": "verified",
-      "updatedAt": "2026-10-06T14:33:01.546620+00:00"
+      "updatedAt": "2026-10-07T00:44:33.590968+00:00"
     },
     "IMPLEMENTATION": {
       "evidence": [
@@ -46,9 +46,20 @@
           "sha256": "8b36bc024cf6"
         }
       ],
-      "note": "Policy v3 Google30 plus accepted major issues20; classify all<=50, exclude sports/duplicate originals then choose10. Qualified/deployed native parent: four modified files plus one new file, remaining216 sources preserved; no other image config or dependencies changed.",
+      "note": "Previously qualified and deployed ten-topic implementation is unchanged; merge revision preserves these verified receipts.",
       "status": "verified",
-      "updatedAt": "2026-10-06T14:36:44.844840+00:00"
+      "updatedAt": "2026-10-07T00:44:32.898116+00:00"
+    },
+    "MERGE": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-feed-merge-20261007/ruff.txt",
+          "sha256": "82b3e6a6c090"
+        }
+      ],
+      "note": "Latest main integrated without conflicts; deterministic news fixture timestamps repaired. Full local service checks and required remote CI must pass before authorized PR113 merge.",
+      "status": "in_progress",
+      "updatedAt": "2026-10-07T00:44:33.834366+00:00"
     },
     "VALIDATION": {
       "evidence": [
@@ -65,14 +76,14 @@
           "sha256": "82b3e6a6c090"
         }
       ],
-      "note": "96 regressions with real PostgreSQL/local Temporal, mocked external HTTP/model/Slack. Separately actual stored21:24 Google plus accepted news34 candidates through real subscription gpt-6-astra/medium/codex yields10 topics, sports0 (4rising+6major); exact evidence/IDs/budgets checked; preview has no outbox.",
+      "note": "Existing real PostgreSQL/local Temporal regressions and real subscription preview remain verified. Merge-specific full-suite and remote CI are tracked under MERGE.",
       "status": "verified",
-      "updatedAt": "2026-10-06T14:31:05.486301+00:00"
+      "updatedAt": "2026-10-07T00:44:33.127258+00:00"
     }
   },
-  "intentDigest": "b958dbc59fad",
+  "intentDigest": "4b60aaea8bc6",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-06T14:36:45.070397+00:00"
+  "updatedAt": "2026-10-07T00:44:33.834366+00:00"
 }

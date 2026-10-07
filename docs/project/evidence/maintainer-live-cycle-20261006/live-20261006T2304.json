@@ -1,0 +1,465 @@
+{
+  "captured_at": "2026-10-06T23:04:52.508071+00:00",
+  "original_turns": [
+    {
+      "id": "ffc34b0d-5504-5463-b6dc-2e954cbb408b",
+      "error": "busy",
+      "model": "gpt-6-astra",
+      "usage": {
+        "input_tokens": 40631,
+        "output_tokens": 2238,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2070
+      },
+      "status": "completed",
+      "attempts": 8,
+      "turn_count": 7,
+      "updated_at": "2026-10-06T08:29:24.664045+00:00",
+      "task_status": "completed",
+      "prompt_characters": 79028
+    },
+    {
+      "id": "2e4de4d4-00b8-50d6-8dc4-1765a28e1807",
+      "error": "busy",
+      "model": "gpt-6-astra",
+      "usage": {
+        "input_tokens": 40025,
+        "output_tokens": 1600,
+        "cached_input_tokens": 5888,
+        "reasoning_output_tokens": 1464
+      },
+      "status": "completed",
+      "attempts": 8,
+      "turn_count": 3,
+      "updated_at": "2026-10-06T08:30:20.643829+00:00",
+      "task_status": "completed",
+      "prompt_characters": 78156
+    }
+  ],
+  "priority_turns": [],
+  "maintenance_jobs": [
+    {
+      "id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "pr": null,
+      "kind": "triage",
+      "error": "investigation_budget_exhausted",
+      "state": "blocked",
+      "updated_at": "2026-10-06T12:26:39.579342+00:00"
+    },
+    {
+      "id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "pr": null,
+      "kind": "review",
+      "error": "evidence_churn_requires_review",
+      "state": "blocked",
+      "updated_at": "2026-10-06T11:02:42.431312+00:00"
+    },
+    {
+      "id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "pr": null,
+      "kind": "triage",
+      "error": "evidence_churn_requires_review",
+      "state": "blocked",
+      "updated_at": "2026-10-06T12:44:08.085281+00:00"
+    },
+    {
+      "id": "19aa1178-bca7-469f-b209-eca081a1be36",
+      "pr": null,
+      "kind": "triage",
+      "error": null,
+      "state": "done",
+      "updated_at": "2026-10-06T15:29:30.591289+00:00"
+    }
+  ],
+  "maintenance_calls": [
+    {
+      "id": "maint-6f3c54a0-e0ae-5911-91d6-5e83ce68b35e-r1-triage",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 36327,
+        "output_tokens": 4776,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 4142
+      },
+      "due_at": "2026-10-06T09:14:49.489412+00:00",
+      "job_id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "created_at": "2026-10-06T09:14:49.489412+00:00",
+      "has_response": true,
+      "prompt_characters": 83637
+    },
+    {
+      "id": "maint-6f3c54a0-e0ae-5911-91d6-5e83ce68b35e-r1-triage-i1",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 37181,
+        "output_tokens": 8289,
+        "cached_input_tokens": 4992,
+        "reasoning_output_tokens": 7593
+      },
+      "due_at": "2026-10-06T09:36:46.689448+00:00",
+      "job_id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "created_at": "2026-10-06T09:36:46.689448+00:00",
+      "has_response": true,
+      "prompt_characters": 87962
+    },
+    {
+      "id": "maint-6f3c54a0-e0ae-5911-91d6-5e83ce68b35e-r1-triage-i2",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 36277,
+        "output_tokens": 2592,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1808
+      },
+      "due_at": "2026-10-06T09:59:13.199762+00:00",
+      "job_id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "created_at": "2026-10-06T09:59:13.199762+00:00",
+      "has_response": true,
+      "prompt_characters": 86100
+    },
+    {
+      "id": "maint-6f3c54a0-e0ae-5911-91d6-5e83ce68b35e-r3-triage",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 36588,
+        "output_tokens": 3308,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2588
+      },
+      "due_at": "2026-10-06T10:50:22.344587+00:00",
+      "job_id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "created_at": "2026-10-06T10:50:22.344587+00:00",
+      "has_response": true,
+      "prompt_characters": 82654
+    },
+    {
+      "id": "maint-6f3c54a0-e0ae-5911-91d6-5e83ce68b35e-r3-triage-i1",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 36763,
+        "output_tokens": 3141,
+        "cached_input_tokens": 4992,
+        "reasoning_output_tokens": 2588
+      },
+      "due_at": "2026-10-06T10:56:31.73486+00:00",
+      "job_id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "created_at": "2026-10-06T10:56:31.73486+00:00",
+      "has_response": true,
+      "prompt_characters": 87792
+    },
+    {
+      "id": "maint-a4aabd4e-1263-4435-ae26-78820f18f5b0-triage",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 36887,
+        "output_tokens": 2368,
+        "cached_input_tokens": 4992,
+        "reasoning_output_tokens": 1757
+      },
+      "due_at": "2026-10-06T11:07:48.539163+00:00",
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T11:07:48.539163+00:00",
+      "has_response": true,
+      "prompt_characters": 84240
+    },
+    {
+      "id": "maint-454ef5b7-da87-4ad4-8d92-f57036304e03-triage",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 36133,
+        "output_tokens": 2495,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1842
+      },
+      "due_at": "2026-10-06T11:13:45.543747+00:00",
+      "job_id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "created_at": "2026-10-06T11:13:45.543747+00:00",
+      "has_response": true,
+      "prompt_characters": 81807
+    },
+    {
+      "id": "maint-a4aabd4e-1263-4435-ae26-78820f18f5b0-triage-i1",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 37610,
+        "output_tokens": 2472,
+        "cached_input_tokens": 4992,
+        "reasoning_output_tokens": 1887
+      },
+      "due_at": "2026-10-06T11:19:41.845457+00:00",
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T11:19:41.845457+00:00",
+      "has_response": true,
+      "prompt_characters": 87167
+    },
+    {
+      "id": "maint-454ef5b7-da87-4ad4-8d92-f57036304e03-triage-i1",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 37763,
+        "output_tokens": 4215,
+        "cached_input_tokens": 4992,
+        "reasoning_output_tokens": 3413
+      },
+      "due_at": "2026-10-06T11:25:37.041013+00:00",
+      "job_id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "created_at": "2026-10-06T11:25:37.041013+00:00",
+      "has_response": true,
+      "prompt_characters": 87953
+    },
+    {
+      "id": "maint-454ef5b7-da87-4ad4-8d92-f57036304e03-r1-triage",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 36242,
+        "output_tokens": 4289,
+        "cached_input_tokens": 4992,
+        "reasoning_output_tokens": 3539
+      },
+      "due_at": "2026-10-06T11:37:29.364112+00:00",
+      "job_id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "created_at": "2026-10-06T11:37:29.364112+00:00",
+      "has_response": true,
+      "prompt_characters": 81996
+    },
+    {
+      "id": "maint-a4aabd4e-1263-4435-ae26-78820f18f5b0-r2-triage",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 36764,
+        "output_tokens": 2163,
+        "cached_input_tokens": 4992,
+        "reasoning_output_tokens": 1552
+      },
+      "due_at": "2026-10-06T11:49:14.7683+00:00",
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T11:49:14.7683+00:00",
+      "has_response": true,
+      "prompt_characters": 84516
+    },
+    {
+      "id": "maint-a4aabd4e-1263-4435-ae26-78820f18f5b0-r2-triage-i1",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 36766,
+        "output_tokens": 1617,
+        "cached_input_tokens": 4992,
+        "reasoning_output_tokens": 1034
+      },
+      "due_at": "2026-10-06T11:55:06.052527+00:00",
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T11:55:06.052527+00:00",
+      "has_response": true,
+      "prompt_characters": 84516
+    },
+    {
+      "id": "maint-a4aabd4e-1263-4435-ae26-78820f18f5b0-r3-triage",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 36718,
+        "output_tokens": 2630,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2017
+      },
+      "due_at": "2026-10-06T12:00:50.156749+00:00",
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T12:00:50.156749+00:00",
+      "has_response": true,
+      "prompt_characters": 84496
+    },
+    {
+      "id": "maint-a4aabd4e-1263-4435-ae26-78820f18f5b0-r3-triage-i1",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 37357,
+        "output_tokens": 4408,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 3688
+      },
+      "due_at": "2026-10-06T12:06:43.765894+00:00",
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T12:06:43.765894+00:00",
+      "has_response": true,
+      "prompt_characters": 87176
+    },
+    {
+      "id": "maint-a4aabd4e-1263-4435-ae26-78820f18f5b0-r3-triage-i2",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 37355,
+        "output_tokens": 2598,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2070
+      },
+      "due_at": "2026-10-06T12:13:23.867801+00:00",
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T12:13:23.867801+00:00",
+      "has_response": true,
+      "prompt_characters": 87176
+    },
+    {
+      "id": "maint-a4aabd4e-1263-4435-ae26-78820f18f5b0-r3-triage-i3",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 37357,
+        "output_tokens": 1606,
+        "cached_input_tokens": 4992,
+        "reasoning_output_tokens": 1034
+      },
+      "due_at": "2026-10-06T12:19:24.08677+00:00",
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T12:19:24.08677+00:00",
+      "has_response": true,
+      "prompt_characters": 87176
+    },
+    {
+      "id": "maint-a4aabd4e-1263-4435-ae26-78820f18f5b0-r3-triage-i4",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 37134,
+        "output_tokens": 4659,
+        "cached_input_tokens": 4992,
+        "reasoning_output_tokens": 4091
+      },
+      "due_at": "2026-10-06T12:25:05.969607+00:00",
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "created_at": "2026-10-06T12:25:05.969607+00:00",
+      "has_response": true,
+      "prompt_characters": 87176
+    },
+    {
+      "id": "maint-454ef5b7-da87-4ad4-8d92-f57036304e03-r2-triage",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 35271,
+        "output_tokens": 2286,
+        "cached_input_tokens": 4992,
+        "reasoning_output_tokens": 1552
+      },
+      "due_at": "2026-10-06T12:31:50.727767+00:00",
+      "job_id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "created_at": "2026-10-06T12:31:50.727767+00:00",
+      "has_response": true,
+      "prompt_characters": 84261
+    },
+    {
+      "id": "maint-454ef5b7-da87-4ad4-8d92-f57036304e03-r3-triage",
+      "error": null,
+      "model": "gpt-5.6-sol",
+      "usage": {
+        "input_tokens": 35576,
+        "output_tokens": 3201,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2505
+      },
+      "due_at": "2026-10-06T12:37:51.286712+00:00",
+      "job_id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "created_at": "2026-10-06T12:37:51.286712+00:00",
+      "has_response": true,
+      "prompt_characters": 85234
+    },
+    {
+      "id": "maint-19aa1178-bca7-469f-b209-eca081a1be36-triage",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 36446,
+        "output_tokens": 2696,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2070
+      },
+      "due_at": "2026-10-06T15:01:32.370254+00:00",
+      "job_id": "19aa1178-bca7-469f-b209-eca081a1be36",
+      "created_at": "2026-10-06T15:01:32.370254+00:00",
+      "has_response": true,
+      "prompt_characters": 84707
+    },
+    {
+      "id": "maint-19aa1178-bca7-469f-b209-eca081a1be36-triage-i1",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 37192,
+        "output_tokens": 2719,
+        "cached_input_tokens": 5888,
+        "reasoning_output_tokens": 2070
+      },
+      "due_at": "2026-10-06T15:08:05.78179+00:00",
+      "job_id": "19aa1178-bca7-469f-b209-eca081a1be36",
+      "created_at": "2026-10-06T15:08:05.78179+00:00",
+      "has_response": true,
+      "prompt_characters": 87194
+    },
+    {
+      "id": "maint-19aa1178-bca7-469f-b209-eca081a1be36-triage-i2",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 36780,
+        "output_tokens": 2189,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "due_at": "2026-10-06T15:14:42.567623+00:00",
+      "job_id": "19aa1178-bca7-469f-b209-eca081a1be36",
+      "created_at": "2026-10-06T15:14:42.567623+00:00",
+      "has_response": true,
+      "prompt_characters": 86344
+    },
+    {
+      "id": "maint-19aa1178-bca7-469f-b209-eca081a1be36-triage-i3",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 37209,
+        "output_tokens": 2561,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1982
+      },
+      "due_at": "2026-10-06T15:21:03.771495+00:00",
+      "job_id": "19aa1178-bca7-469f-b209-eca081a1be36",
+      "created_at": "2026-10-06T15:21:03.771495+00:00",
+      "has_response": true,
+      "prompt_characters": 87362
+    },
+    {
+      "id": "maint-19aa1178-bca7-469f-b209-eca081a1be36-triage-i4",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 37207,
+        "output_tokens": 3569,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2999
+      },
+      "due_at": "2026-10-06T15:27:31.56542+00:00",
+      "job_id": "19aa1178-bca7-469f-b209-eca081a1be36",
+      "created_at": "2026-10-06T15:27:31.56542+00:00",
+      "has_response": true,
+      "prompt_characters": 87362
+    }
+  ],
+  "maintenance_control": {
+    "enabled": true,
+    "heartbeat_at": "2026-10-06 23:01:17.061587+00:00",
+    "next_observe_at": "2026-10-06T23:06:13.089787+00:00"
+  }
+}

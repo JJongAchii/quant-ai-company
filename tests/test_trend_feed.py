@@ -419,7 +419,8 @@ async def test_real_preview_validation_requires_receipts_and_immutable_body(tren
     spec.loader.exec_module(validator)
     with trend.db.transaction() as conn:
         row = conn.execute("SELECT * FROM trend_feed_digests").fetchone()
-        assert validator.validate_day(trend, conn, row)["valid"]
+        checked = validator.validate_day(trend, conn, row)
+        assert checked["valid"], checked["reasons"]
         row["content"] += "무단으로 추가한 배경 설명"
         assert "final_body_changed" in validator.validate_day(trend, conn, row)["reasons"]
 

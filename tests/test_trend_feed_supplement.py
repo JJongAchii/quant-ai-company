@@ -4,8 +4,9 @@ from datetime import UTC, datetime, timedelta
 import pytest
 from psycopg.types.json import Jsonb
 
-from quant_company.company import fingerprint
-from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderResponse
+from quant_company.company import as_json, fingerprint
+from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderRequest, ProviderResponse
+from quant_company.news import store as news_store_module
 from quant_company.news.store import NewsStore
 from quant_company.trend_feed import schedule
 from quant_company.trend_feed.editor import prompt, publication_items, render, validate_draft
@@ -22,24 +23,42 @@ def accepted_news(trend, number=1):  # noqa: F811
     store = NewsStore(company)
     store.sync_sources()
     content = f"Example 보도에 따르면 신기술 {number}이 공개됐습니다. " * 10
-    at = datetime.now(UTC)-timedelta(minutes=10)
+    at = trend.clock[0]-timedelta(minutes=10)
     identity = f"original-{number}"
     with store.db.transaction() as conn:
         source = conn.execute("SELECT * FROM news_sources WHERE id='example'").fetchone()
         conn.execute("""INSERT INTO news_articles(id,source_id,url,title,summary,feed_digest,published_at,
-            source_digest,state,content,retrieval) VALUES(%s,'example',%s,%s,'','fixture',%s,%s,'ready',%s,%s)""",
+            source_digest,state,content,retrieval,collected_at) VALUES(%s,'example',%s,%s,'','fixture',%s,%s,'ready',%s,%s,%s)""",
             (identity, f"https://example.org/news-{number}", f"신기술 {number} 발표", at,
-             source["config_digest"], content, Jsonb({"ok": True, "retrieved_at": at.isoformat()})))
-    prepared = store.prepare_review()
-    assert prepared["state"] == "ready"
+             source["config_digest"], content, Jsonb({"ok": True, "retrieved_at": at.isoformat()}), at))
+        # Seed a prepared fixture at the feed's clock; commit through the real publisher below.
+        request = ProviderRequest(request_id=f"fixture-review-{number}", model="fixture-model", prompt="Synthetic news review")
+        bundle = {"primary_ids": [identity], "events": [], "articles": [{"id": identity,
+            "url": f"https://example.org/news-{number}", "title": f"신기술 {number} 발표", "content": content,
+            "published_at": at, "publisher": "Example", "kind": "media", "origin_group": "example",
+            "allow_attributed_reporting": True}]}
+        conn.execute("INSERT INTO news_reviews(id,request,bundle,policy_digest) VALUES(%s,%s,%s,%s)",
+                     (request.request_id, Jsonb(request.model_dump()), Jsonb(as_json(bundle)), store.policy()))
     item = {"disposition": "publish", "article_ids": [identity], "reason": "Original verified",
             "headline": f"Example: 신기술 {number} 공개", "facts": f"Example에 따르면 신기술 {number}이 공개됐습니다.",
             "significance": "기술 발전과 관련한 주요 소식입니다.", "category": "기술",
             "verification": "attributed_report", "evidence": [{"article_id": identity, "quote": content[:40]}]}
-    reply = ProviderResponse(request_id=prepared["request"]["request_id"], provider="fixture",
+    reply = ProviderResponse(request_id=request.request_id, provider="fixture",
         decision=AgentDecision(status="complete", say="", artifacts=[ArtifactDraft(title="NewsReview",
                               content=json.dumps({"items": [item]}))]))
-    assert store.commit_review(reply)["items"][0]["state"] == "queued"
+    class PublisherClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return trend.clock[0].astimezone(tz) if tz else trend.clock[0].replace(tzinfo=None)
+
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(news_store_module, "datetime", PublisherClock)
+        assert store.commit_review(reply)["items"][0]["state"] == "queued"
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE news_reviews SET created_at=%s,completed_at=%s WHERE id=%s",
+                     (trend.clock[0], trend.clock[0], request.request_id))
+        conn.execute("""UPDATE messages SET created_at=%s WHERE id IN
+            (SELECT id FROM news_publications WHERE review_id=%s)""", (trend.clock[0], request.request_id))
     return identity
 
 

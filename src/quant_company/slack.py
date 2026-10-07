@@ -89,6 +89,7 @@ class SlackIngress:
         if not text.strip() or not timestamp:
             return {"ok": True, "ignored": True}
         from .accounts import parse_command as parse_account_command
+        from .command_help import HELP_COMMANDS
         from .model_policy import authorized as model_authorized
         from .model_policy import parse_command as parse_model_command
 
@@ -101,7 +102,7 @@ class SlackIngress:
         if account_channel:
             if role != "director" or user != self.settings.model_accounts_owner_user:
                 return {"ok": True, "ignored": True, "reason": "account_channel_scope"}
-        elif account_command is not None:
+        elif account_command is not None or account_text.casefold() in HELP_COMMANDS:
             return {"ok": True, "ignored": True, "reason": "account_channel_required"}
         mentions = set(re.findall(r"<@([A-Z0-9]+)>", text))
         known = {item["bot_user_id"]: name for name, item in self.credentials.items()}

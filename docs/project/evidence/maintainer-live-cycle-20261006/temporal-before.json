@@ -1,0 +1,88 @@
+{
+  "captured_at": "2026-10-06T08:03:50.629170+00:00",
+  "read_only": true,
+  "workflows": [
+    {
+      "turn_id": "ffc34b0d-5504-5463-b6dc-2e954cbb408b",
+      "status": "1",
+      "task_queue": "quant-company",
+      "run_id": "61410464-51a5-421d-b38e-d14ba35b8ee6",
+      "started_at": "2026-10-06 07:13:26.998940+00:00",
+      "history_events": 275,
+      "last_failures": [
+        {
+          "event_id": 249,
+          "at": "2026-10-06T08:01:26.381104618Z",
+          "failure": [
+            {
+              "message": "1 validation error for ProviderRequest\nprompt\n  String should have at most 90000 characters",
+              "type": "ValidationError"
+            }
+          ]
+        },
+        {
+          "event_id": 260,
+          "at": "2026-10-06T08:02:33.988837328Z",
+          "failure": [
+            {
+              "message": "1 validation error for ProviderRequest\nprompt\n  String should have at most 90000 characters",
+              "type": "ValidationError"
+            }
+          ]
+        },
+        {
+          "event_id": 271,
+          "at": "2026-10-06T08:03:41.270725765Z",
+          "failure": [
+            {
+              "message": "1 validation error for ProviderRequest\nprompt\n  String should have at most 90000 characters",
+              "type": "ValidationError"
+            }
+          ]
+        }
+      ],
+      "pending_activities": []
+    },
+    {
+      "turn_id": "2e4de4d4-00b8-50d6-8dc4-1765a28e1807",
+      "status": "1",
+      "task_queue": "quant-company",
+      "run_id": "f77243cd-3c58-4191-a8c9-ef5690bda74e",
+      "started_at": "2026-10-06 07:41:37.531080+00:00",
+      "history_events": 99,
+      "last_failures": [
+        {
+          "event_id": 73,
+          "at": "2026-10-06T08:01:22.441512938Z",
+          "failure": [
+            {
+              "message": "1 validation error for ProviderRequest\nprompt\n  String should have at most 90000 characters",
+              "type": "ValidationError"
+            }
+          ]
+        },
+        {
+          "event_id": 84,
+          "at": "2026-10-06T08:02:29.962807576Z",
+          "failure": [
+            {
+              "message": "1 validation error for ProviderRequest\nprompt\n  String should have at most 90000 characters",
+              "type": "ValidationError"
+            }
+          ]
+        },
+        {
+          "event_id": 95,
+          "at": "2026-10-06T08:03:37.317027935Z",
+          "failure": [
+            {
+              "message": "1 validation error for ProviderRequest\nprompt\n  String should have at most 90000 characters",
+              "type": "ValidationError"
+            }
+          ]
+        }
+      ],
+      "pending_activities": []
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "constraints": [
+    "Official ChatGPT authentication in isolated runtime only",
+    "PostgreSQL owns policy and receipts; Temporal owns command processing",
+    "No silent model/account/API fallback; existing frozen requests are immutable",
+    "Company repository only; no research repository writes"
+  ],
+  "createdAt": "2026-10-06T13:40:44.662598+00:00",
+  "decisionGates": [
+    "사용자가 이 대화에서 직원 모델 재배정과 업무별 추론 강도 조정을 명시적으로 승인했다.",
+    "일괄 배정은 운영자 작업으로 출처와 영수증을 기록한다. Slack 서명 이벤트를 위조하거나 테스트 메시지를 발송하지 않는다."
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "정책 #0의 운영 배정 기록을 근거로 원래 Astra 대상 9개와 비 Astra 대상 7개를 구분한다.",
+        "현재 선택 계정에서 Astra·6.1 Sol과 선택 추론 강도를 확인하고 typed proposal을 검증한다."
+      ],
+      "description": "원래 Astra 배정 보존과 역할별 강도 계획",
+      "id": "PLAN"
+    },
+    {
+      "acceptance": [
+        "운영자 인증·소유자 권한·예상 정책/계정 revision과 기준 모델을 검증한 뒤 한 transaction으로 새 배정을 기록한다.",
+        "기존 Astra 대상은 Astra, 나머지는 6.1 Sol이며 독립 operation ID의 receipt 재조회는 중복 변경하지 않는다.",
+        "기존 요청·세션·계정·직원 활성 상태를 보존한다."
+      ],
+      "description": "서명 위조 없는 원자적 교정 배정",
+      "id": "APPLY"
+    },
+    {
+      "acceptance": [
+        "실제 운영 API와 네 배포 producer 이미지의 선택 결과를 검증한다.",
+        "현재 배정 표·권한·영수증·복원 방법을 회사 저장소에 기록하고 qws/PR 통합을 완료한다."
+      ],
+      "description": "운영 readback과 교정 기록 통합",
+      "id": "VERIFY"
+    }
+  ],
+  "nonGoals": [
+    "회사 서비스 코드·이미지·역할 활성화 변경 또는 재배포",
+    "기존 frozen request/session 재작성이나 자동 paid API fallback",
+    "연구 실행, 성과·최적 배정 입증, 소유자 Slack 입력 위조 또는 점검 메시지"
+  ],
+  "outcome": "기존 Astra 담당 9개는 GPT-6 Astra로 복원·유지하고 비 Astra 담당 7개만 GPT-6.1 Sol로 배정한다. 전체 역할에 맞는 추론 강도를 재배분하고 실제 계정 catalog, 운영자·소유자 권한, 정책/계정 revision을 검증해 하나의 PostgreSQL revision으로 적용한다. 기존 요청·세션·계정·직원 활성 상태와 배포 서비스는 보존한다.",
+  "revision": 6,
+  "revisionReason": "사용자가 기존 Astra 직원의 유지와 비 Astra 직원만 Sol로 이동하는 의미를 정정하고 전체 추론 강도 재배분을 명시적으로 승인했다. 이전 #1을 덮어쓰지 않고 새 #2 이력과 운영자 영수증으로 교정한다.",
+  "schemaVersion": 1,
+  "slug": "manatee",
+  "sourceRequest": "아니 기존에 astra 였던 거는 astra 를 유지하고 , astra 가 아니었던 직원들 한해서 6.1 sol 로 잘 배분해달라는 말이었어. 그러면 전체적으로 너가 잘 배분해서 astra 든 6.1 sol 이든 추론 강도든 너가 전반적으로 다시 잘 배분해줘.",
+  "stopConditions": [
+    "Never replay an ambiguous model call or overwrite frozen requests",
+    "Do not claim deployment or account compatibility without actual evidence"
+  ],
+  "supersedes": {
+    "intentDigest": "05278d070f35",
+    "intentFile": "INTENT-v5.json"
+  }
+}

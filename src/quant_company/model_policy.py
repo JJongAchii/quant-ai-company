@@ -5,6 +5,7 @@ from typing import get_args
 
 from psycopg.types.json import Jsonb
 
+from .command_help import HELP_TEXT as HELP_TEXT
 from .contracts import ReasoningEffort
 
 MODEL_ID = r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}"
@@ -13,11 +14,6 @@ ALIASES = {"총괄": "director", "개발": "engineer", "데이터": "data", "금
            "국내연구": "researcher_kr", "글로벌연구": "researcher_global", "가상자산연구": "researcher_crypto",
            "검증": "validator", "리스크": "risk", "운영": "operations", "뉴스": "reporter", "개선": "maintainer",
            "브리핑": "market_brief"}
-HELP_TEXT = ("모델 배정 명령:\n• `모델 목록` · `모델 배정 상태` · `모델 배정 이력`\n"
-             "• `모델 지정 개발 gpt-6.1-sol max`\n• `모델 자동 개발` (고정 해제, 기본 배정 사용)\n"
-             "• `모델 배정 복원 2` (이력 번호)\n"
-             "업무 채널에서 첫 줄에 `이번 작업 모델 gpt-6.1-sol max`, 다음 줄에 업무 내용을 적어 주세요. "
-             "지정은 해당 직원의 이번 업무와 웹검색에만 적용하며 동료 위임에는 각 직원의 배정을 사용합니다.")
 
 
 def parse_command(text):
