@@ -2,7 +2,7 @@
   "recorded_at": "2026-10-07T04:34:36.482091+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
-  "latest_request": "그럼 자동 발송 하도록 해주고, 검증은 그 이후에 계속 모니터링하면서 하는 걸로 하자",
+  "latest_request": "그럼 지금 기준으로 다시 발송해볼래",
   "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
   "format_version": 17,
   "validation_version": 60,
@@ -28,11 +28,14 @@
     "Codex CLI, authentication and unrelated runtime behavior"
   ],
   "last_fresh_edition": {
-    "id": "b72483f9-d52b-51d6-92ba-25625a9cb50e",
+    "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
     "day": "2026-10-07",
-    "kind": "am",
-    "source_commit": "0ea670b7b0637d91a46714b73ef8df96d979cc6f",
-    "result": "Writer timed out; failed preview closed at07:55 KST. No independent content review or Slack delivery."
+    "kind": "pm",
+    "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
+    "state": "committed",
+    "result": "Inventory hit480second timeout. Limited status briefing and thread delivered at17:55 KST; no writer or independent review was reached. Full content did not qualify.",
+    "monitor_recorded_at": "2026-10-07T08:58:06.886494+00:00",
+    "record": "docs/project/evidence/briefing-analyst-quality-20261001/requested-pm-20261007-inventory60-outcome.json"
   },
   "development_diagnostic": {
     "checks_passed": 6,
@@ -59,11 +62,12 @@
     "pm": "17:45",
     "special_pm": "No earlier than special closing time plus 65 minutes"
   },
-  "next": "Oct7 PM: collect16:40 KST, freeze17:00, target Slack publication17:45, stop new generation17:55, monitor17:58. Continue normal trading-calendar publications and quality monitoring without an end date.",
+  "next": "Automatic publication remains enabled. Fix measured inventory latency and single-reference output contract before claiming reliable full automatic content; continue scheduled monitoring. The requested manual source-checked briefing was actually delivered.",
   "remaining": [
-    "Observe actual first scheduled Slack receipt after activation",
-    "Evaluate fresh twelve-check content results and main-text coverage without certifying prior failed content",
-    "Continue timing, source, model-call budget, limited-edition reasons and reader-quality monitoring during publication"
+    "Repair the inventory execution budget using measured884.394seconds, while preserving real timestamps and deadlines",
+    "Prevent combined quote-reference strings or support verified evidence fragments without weakening source boundaries",
+    "Obtain an automatically composed and independently reviewed full scheduled briefing; keep limited status deliveries separate",
+    "Continue actual delivery, source freshness and reader-quality monitoring during automatic publication"
   ],
   "evidence": [
     "docs/project/evidence/briefing-analyst-quality-20261001/execution59-installation.json",
@@ -86,7 +90,8 @@
     "docs/project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-policy.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/regression-automatic-publication-20261007.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-installation.json",
-    "docs/project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-monitor.json"
+    "docs/project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-monitor.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/requested-pm-20261007-inventory60-outcome.json"
   ],
   "latest_execution": {
     "plan": "completed at07:04:09 KST",
@@ -134,7 +139,7 @@
     "semantic_checks_required": 12,
     "mechanical_rejections_allowed": 0,
     "independent_original_to_visible_main_audit_required": true,
-    "registration_state": "waiting_for_collection_start",
+    "registration_state": "closed_failed_content_status_delivered",
     "postgres_record_present_before_starts_at": false,
     "schedule_verified_in_actual_installed_source": true,
     "whitelist_verified": false,
@@ -150,7 +155,8 @@
       "revise": 360,
       "final_review": 360
     },
-    "evaluation_restriction_removed": true
+    "evaluation_restriction_removed": true,
+    "independent_original_to_visible_main_audit_completed": false
   },
   "temporal_rollover_readback": {
     "record": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-temporal-budget-20261007.json",
@@ -183,7 +189,7 @@
     "source_profile_preservation_verified": true,
     "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-final-installation-20261007.json"
   },
-  "updated_at": "2026-10-07T07:21:40.602716+00:00",
+  "updated_at": "2026-10-07T10:04:01.891830+00:00",
   "manual_preview": {
     "operation": "analyst-saved-input-quality-preview-20261007-schema59-once",
     "channel": "C0C2E59B1AA",
@@ -220,7 +226,10 @@
     "monitor_installed": true,
     "implementation_commit": "2b60bb81424eb08b6e5e0f99346d3ffd76b0bafa",
     "installed_at": "2026-10-07T06:08:02.892988+00:00",
-    "source_verification_passed": true
+    "source_verification_passed": true,
+    "execution_evaluated": true,
+    "operating_issue": "Regular inventory timeout at480seconds; isolated900second execution completed in884.394seconds but combined citation references failed decoding.",
+    "fresh_twelve_check_pass": false
   },
   "execution_version": 2,
   "retired_observation_validation58": {
@@ -258,7 +267,7 @@
     "record": "docs/project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-monitor.json",
     "installed": true,
     "initial_execution": "success",
-    "next_kst": "2026-10-07 17:58",
+    "next_kst": "2026-10-08 07:58",
     "unit": "quant-company-analyst-monitor.timer",
     "result_path": "/var/lib/quant-company/monitoring/analyst-continuous/results/latest.json",
     "timing": "Daily07:58 and17:58 KST; installed calendar supplies expected editions; timestamps and exact delays recorded",
@@ -318,5 +327,21 @@
     "prior_failed_cases_preserved": true,
     "retired_at": "2026-10-07T07:12:11.584454+00:00",
     "retirement_reason": "Owner explicitly enabled automatic publication with ongoing monitoring; prior fixed-period evidence remains frozen."
+  },
+  "latest_requested_brief": {
+    "case": "analyst-current-pm-20261007-inventory60",
+    "record": "docs/project/evidence/briefing-analyst-quality-20261001/requested-pm-20261007-inventory60-outcome.json",
+    "slack_delivered": true,
+    "permalink": "https://achiisquantresearch.slack.com/archives/C0C2E59B1AA/p1791367207207759?thread_ts=1791367207.207759&cid=C0C2E59B1AA",
+    "messages": 2,
+    "parts_chars": [
+      4697,
+      2024
+    ],
+    "source_collected_at": "2026-10-07T08:24:35.802851+00:00",
+    "editorial_mode": "Assistant edited from the frozen originals after automatic quote-reference transport failed; not an automatically completed Analyst draft.",
+    "content_qualified": false,
+    "readback_confirmed": true,
+    "automatic_publication_preserved": true
   }
 }
