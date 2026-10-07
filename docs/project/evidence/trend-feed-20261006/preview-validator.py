@@ -18,7 +18,8 @@ def validate_day(store, conn, row):
     reasons = []
     bundle = row["bundle"]
     candidates = bundle["candidates"]
-    current = store.bundle(conn, row["cutoff"])
+    # Freeze serializes its scheduled cutoff in KST; PostgreSQL may return UTC.
+    current = store.bundle(conn, row["cutoff"].astimezone(KST))
     calls = conn.execute("SELECT * FROM trend_feed_calls WHERE digest_id=%s ORDER BY stage", (row["id"],)).fetchall()
     api = conn.execute("SELECT * FROM trend_feed_api_receipts WHERE digest_id=%s", (row["id"],)).fetchall()
     usage = conn.execute("SELECT calls FROM trend_feed_api_usage WHERE day=%s", (row["day"],)).fetchone()

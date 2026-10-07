@@ -53,13 +53,21 @@
     "MERGE": {
       "evidence": [
         {
+          "path": "docs/project/evidence/trend-feed-merge-20261007/PREMERGE.md",
+          "sha256": "8db25310f4b5"
+        },
+        {
+          "path": "docs/project/evidence/trend-feed-merge-20261007/focused-pytest.txt",
+          "sha256": "98b2faa2aaf1"
+        },
+        {
           "path": "docs/project/evidence/trend-feed-merge-20261007/ruff.txt",
           "sha256": "82b3e6a6c090"
         }
       ],
-      "note": "Latest main integrated without conflicts; deterministic news fixture timestamps repaired. Full local service checks and required remote CI must pass before authorized PR113 merge.",
+      "note": "Reproduced required service failure with UTC PostgreSQL: frozen cutoff differs only by timezone representation. Validator canonicalizes cutoff to scheduled KST; UTC/Asia-Seoul plus supplement regressions13 pass. Full UTC service regression and remote CI pending before merge.",
       "status": "in_progress",
-      "updatedAt": "2026-10-07T00:44:33.834366+00:00"
+      "updatedAt": "2026-10-07T00:49:58.327887+00:00"
     },
     "VALIDATION": {
       "evidence": [
@@ -85,5 +93,5 @@
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-07T00:44:33.834366+00:00"
+  "updatedAt": "2026-10-07T00:49:58.327887+00:00"
 }

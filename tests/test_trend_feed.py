@@ -8,6 +8,7 @@ from pathlib import Path
 
 import httpx
 import pytest
+from psycopg.conninfo import make_conninfo
 from psycopg.types.json import Jsonb
 
 from quant_company.cli import manifests
@@ -403,7 +404,9 @@ async def test_full_producer_consumer_and_single_outbox(trend):
     assert outgoing(trend)[0]["sent_ts"] == "100.123"
 
 
-async def test_real_preview_validation_requires_receipts_and_immutable_body(trend):
+@pytest.mark.parametrize("database_timezone", ["UTC", "Asia/Seoul"])
+async def test_real_preview_validation_requires_receipts_and_immutable_body(trend, database_timezone):
+    trend.db.url = make_conninfo(trend.db.url, options=f"-c timezone={database_timezone}")
     trend.company.settings.trend_feed_publish_enabled = False
     ingest(trend)
     morning(trend)
