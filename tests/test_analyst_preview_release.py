@@ -316,6 +316,24 @@ def test_runtime_overlay_keeps_existing_feature_environment_and_reversible_runti
         release.verify_profile_runtime(rows,after,{'dispatch':'new-image'},settings)
 
 
+def test_runtime_overlay_preserves_added_read_only_secrets_in_install_and_rollback():
+    row = {'Config': {'Env': [], 'Cmd': ['worker'], 'Entrypoint': [], 'User': '10001', 'WorkingDir': '/app'},
+           'Mounts': [{'Type': 'bind', 'Source': '/state/secrets/database',
+                       'Destination': '/run/secrets/database_password', 'RW': False},
+                      {'Type': 'bind', 'Source': '/state/secrets/trend-provider.json',
+                       'Destination': '/run/secrets/trend_provider', 'RW': False}]}
+    rows = {'/quant-company-news-worker-1': row}
+    for settings in ({}, {'RELEASE_COMMIT': 'candidate'}):
+        overlay = release.runtime_overlay(rows, {'news-worker': 'image'}, settings)
+        secrets = overlay['services']['news-worker']['secrets']
+        assert {s['target']: overlay['secrets'][s['source']]['file'] for s in secrets} == {
+            'database_password': '/state/secrets/database', 'trend_provider': '/state/secrets/trend-provider.json'}
+        assert overlay['services']['news-worker']['volumes'] == []
+    row['Mounts'][1]['RW'] = True
+    with pytest.raises(ValueError, match='existing_secret_mount_unsupported'):
+        release.runtime_overlay(rows, {'news-worker': 'image'}, {})
+
+
 @pytest.mark.parametrize('preserve_api', [False, True])
 def test_worker_only_cutover_keeps_a_busy_primary_runtime_and_its_image(tmp_path, monkeypatch, preserve_api):
     state = tmp_path/'state'

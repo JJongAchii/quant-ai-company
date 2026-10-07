@@ -311,6 +311,7 @@ def sending_effects(values):
 
 def runtime_overlay(rows, images, settings):
     result = {}
+    secrets = {}
     for name, image in images.items():
         row = rows['/quant-company-'+name+'-1']
         env = configuration(('\n'.join(row['Config']['Env'])+'\n').encode())
@@ -324,13 +325,24 @@ def runtime_overlay(rows, images, settings):
                                     'target':m['Destination'], 'read_only':not m['RW']}
                                    for m in row['Mounts'] if m['Type'] in {'bind','volume'}
                                    and not m['Destination'].startswith('/run/secrets/')]}
+        preserved_secrets = []
+        for mount in row['Mounts']:
+            if not mount['Destination'].startswith('/run/secrets/'):
+                continue
+            if mount['Type'] != 'bind' or mount['RW'] or not re.fullmatch(r'/run/secrets/[^/]+', mount['Destination']):
+                raise ValueError('preview_existing_secret_mount_unsupported')
+            identity = 'preserved_' + digest((mount['Source']+'\0'+mount['Destination']).encode())[:20]
+            secrets[identity] = {'file':mount['Source']}
+            preserved_secrets.append({'source':identity, 'target':mount['Destination'].removeprefix('/run/secrets/')})
+        if preserved_secrets:
+            result[name]['secrets'] = preserved_secrets
         host = row.get('HostConfig', {})
         for field,key in (('Memory','mem_limit'),('MemorySwap','memswap_limit'),('PidsLimit','pids_limit')):
             if host.get(field) is not None:
                 result[name][key] = host[field]
         if 'NanoCpus' in host:
             result[name]['cpus'] = host['NanoCpus']/1000000000
-    return {'services':result}
+    return {'services':result, **({'secrets':secrets} if secrets else {})}
 
 
 def verify_profile_runtime(before, after, images, settings):
@@ -346,7 +358,7 @@ def verify_profile_runtime(before, after, images, settings):
                 or any(new.get('HostConfig',{}).get(key) != old.get('HostConfig',{}).get(key)
                        for key in ('Memory','MemorySwap','NanoCpus','PidsLimit','ReadonlyRootfs','CapDrop',
                                    'SecurityOpt','RestartPolicy','PortBindings','Init','Privileged','NetworkMode'))):
-            raise ValueError('preview_existing_runtime_binding_changed')
+            raise ValueError('preview_existing_runtime_binding_changed:' + name)
 
 
 def compose(module, root, *args, env=None, overlay=None):
@@ -475,7 +487,7 @@ def stage(args, previous, target, module, journal):
             log = journal.with_name(journal.stem + '-' + build_target + '-'+str(position)+'.log')
             with log.open('wb') as output:
                 subprocess.run(command, check=True, stdout=output, stderr=subprocess.STDOUT, timeout=1800,
-                               env={**os.environ, 'DOCKER_BUILDKIT': '0'})
+                               env={**os.environ, 'DOCKER_BUILDKIT': '1'})
             expected = profile['after'] if profile else {str(p.relative_to(target / 'src')): digest(p.read_bytes())
                         for p in (target / 'src/quant_company').rglob('*') if p.is_file() and '__pycache__' not in p.parts}
             code = """import hashlib,importlib.util,json,pathlib
@@ -548,6 +560,7 @@ def cutover(args, previous, target, module, journal):
             raise ValueError('preview_staged_services_changed')
         runtime_rows = {r['Name']:r for r in json.loads(run(['docker','inspect',
                         *['quant-company-'+name+'-1' for name in names]]))}
+        module.atomic(journal.with_suffix('.runtime-before.json'), json.dumps(runtime_rows).encode())
     drains = ('news-worker', 'dispatch', *((NEW_SERVICE,) if '/quant-company-' + NEW_SERVICE + '-1' in before else ()))
     if any(not before['/quant-company-' + name + '-1']['running'] for name in SERVICES):
         raise ValueError('preview_required_service_not_running')
@@ -615,6 +628,7 @@ print('briefing_schema_ready')"""
         if runtime_rows:
             raw_after = {r['Name']:r for r in json.loads(run(['docker','inspect',
                          *['quant-company-'+name+'-1' for name in service_images(receipt)]]))}
+            module.atomic(journal.with_suffix('.runtime-after.json'), json.dumps(raw_after).encode())
             verify_profile_runtime(runtime_rows, raw_after, service_images(receipt), settings)
             receipt['existing_feature_environment_and_runtime_preserved'] = True
         for name in (*services, NEW_SERVICE):
