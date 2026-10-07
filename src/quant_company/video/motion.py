@@ -157,7 +157,8 @@ class MotionRenderer:
                 name = Path(asset['file']).name
                 shutil.copy2(Path(self.settings.video_asset_dir) / asset['file'], page / 'img' / name)
                 holder['file'] = 'img/' + name
-                holder['credit'] = (f"자료사진 · {asset['author']} · {asset['license']}" if asset['kind'] == '자료사진' else '일러스트')
+                # Real photos keep their credit chip; illustrations carry no caption chip (spec §14).
+                holder['credit'] = f"자료사진 · {asset['author']} · {asset['license']}" if asset['kind'] == '자료사진' else ''
                 used[name] = asset
             data['id'] = scene.id
             scenes.append({'id': scene.id, 'chapter': scene.chapter, 'type': scene.type, 'narration': scene.narration, 'data': data})
@@ -201,7 +202,8 @@ class MotionRenderer:
         if not 3 <= total <= 600:
             raise ValueError('Video duration outside production limit')
         sample = '' if self.settings.video_publish_enabled else '검토용 샘플'
-        ep = {'date_label': f"{day:%m.%d} {WEEKDAYS[day.weekday()]}", 'asof': str(job['source']['cutoff']),
+        # No collection or article clock time on screen (spec §14); the description keeps the data basis.
+        ep = {'date_label': f"{day:%m.%d} {WEEKDAYS[day.weekday()]}", 'asof': '',
               'sample_mark': sample, 'brand_label': EDITIONS.get(job['source'].get('edition_kind', 'am'), EDITIONS['am']), 'chapter_names': [c for c in CHAPTER_TITLES if c],
               'ticker': plan.ticker.model_dump(mode='json'), 'scenes': scenes, 'total': total, 'changes': changes,
               'captions': all_captions}

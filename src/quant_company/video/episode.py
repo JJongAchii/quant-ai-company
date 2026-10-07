@@ -89,6 +89,9 @@ class EpisodePlan(StrictModel):
         return self
 
 
+CLOCK = re.compile(r'(?<!\d)\d{1,2}:\d{2}(?!\d)')
+
+
 def nums(text):
     # ▲▼ carry the sign on screen, so source numbers are compared unsigned; leading zeros are formatting.
     found = {x.lstrip('+-') for x in re.findall(r'[+-]?\d+(?:\.\d+)?', text.replace(',', ''))}
@@ -150,6 +153,8 @@ def validate_episode(plan, source, library=None):
                 continue
             if not nums(text) <= evidence:
                 raise ValueError(f'Unbound number in video scene {scene.id}')
+        if any(CLOCK.search(text) for _, text in strings(scene.data)):
+            raise ValueError(f'Clock time on screen in scene {scene.id}; mark non-closing values as 장중')
         if not set(icons(scene.data)) <= ICONS:
             raise ValueError('Unknown pictogram')
         if scene.type == 'map' and scene.data['region'] not in MAPS:
@@ -159,6 +164,8 @@ def validate_episode(plan, source, library=None):
     if library is not None and plan.thumbnail_image and plan.thumbnail_image not in library:
         raise ValueError('Image is not in the reviewed asset library')
     ticker = nums(' '.join(claims[c]['text'] for c in plan.ticker.claim_ids if c in claims))
+    if any(CLOCK.search(i.name + i.value + i.change) for i in plan.ticker.items):
+        raise ValueError('Clock time on screen in ticker')
     if not set(plan.ticker.claim_ids) <= claims.keys() or any(not nums(i.value + ' ' + i.change) <= ticker for i in plan.ticker.items):
         raise ValueError('Ticker number is not in the frozen source')
     allowed = nums(' '.join(c['text'] for c in claims.values())) | allowed_frame
@@ -182,7 +189,8 @@ signals(chips?, title, tag?, rows=[{icon,topic,conds=[2],then}], note?, disclaim
 Icons: """ + ', '.join(sorted(ICONS)) + """.
 Order: cold_open → summary3 → market_board (+bars) → core issues (headline → flow/compare/bars/map/photo → counter → signals)
 → other issues (headline or photo/bars/map with a counter line) → calendar → closing signals. About 5-6 minutes.
-Signs on screen use ▲/▼ with unsigned numbers; narration reads signs as words. Never compute differences, ratios or conversions."""
+Signs on screen use ▲/▼ with unsigned numbers; narration reads signs as words. Never compute differences, ratios or conversions.
+No clock times on screen (no collection or article times); label non-closing values with the single word 장중. Dates and 종가 stay."""
 
 
 def template(job):

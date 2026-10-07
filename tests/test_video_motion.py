@@ -103,6 +103,10 @@ def test_episode_binds_every_number_type_icon_and_asset(tmp_path):
     with pytest.raises(ValueError, match='pictogram'):
         validate_episode(EpisodePlan.model_validate(raw), source(), shelf)
     raw = episode().model_dump(mode='json')
+    raw['scenes'][1]['data']['tiles'][0]['sub'] = '정규장 종가 · 05:00 KST'
+    with pytest.raises(ValueError, match='Clock time'):
+        validate_episode(EpisodePlan.model_validate(raw), source(), shelf)
+    raw = episode().model_dump(mode='json')
     raw['scenes'][1], raw['scenes'][2] = raw['scenes'][2], raw['scenes'][1]
     with pytest.raises(ValueError, match='fixed episode order'):
         EpisodePlan.model_validate(raw)
@@ -150,7 +154,8 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
     upload = (tmp_path / 'out' / 'upload.txt').read_text()
     assert 'Fixture Author · CC BY 4.0' in upload and '변경: 잘라 냄' in upload and 'AI' not in upload
     page = (tmp_path / 'out' / 'page' / 'episode.js').read_text()
-    assert '자료사진 · Fixture Author · CC BY 4.0' in page and '"일러스트"' not in page
+    assert '자료사진 · Fixture Author · CC BY 4.0' in page and '일러스트' not in page
+    assert '자료 기준' not in page and '07:30' not in page
     assert [c['title'] for c in manifest['chapters']][:2] == ['오프닝', '시장 한눈에']
     verify_artifacts(manifest, tmp_path)
     (tmp_path / 'out' / 'subtitles.srt').write_text('changed')

@@ -64,7 +64,7 @@ const CARDS = {
         ${s.sub ? `<div class="muted" style="font-size:20px;font-weight:600;margin-top:4px">${s.sub}</div>` : ''}</div>`).join('');
     const labels = (d.labels || []).map((l, i) => `<div class="ilabel" style="left:${l.x}px;top:${l.y}px" data-pop="${1.6 + i * 0.3},0.5"><span class="tile" style="width:40px;height:40px;background:rgba(253,199,73,.18)"><span data-icon="${l.icon},28,${l.dir === 'dn' ? '#5EA0FF' : l.dir === 'up' ? '#FF5C6C' : '#FDC749'},${1.7 + i * 0.3},0.5"></span></span>${l.text}${l.dir ? `<span class="${C(l.dir, 1)}" style="margin-left:4px">${arrow(l.dir)}</span>` : ''}</div>`).join('');
     return header(d) + `<div class="paper imgbox" style="left:0;top:110px;width:1060px;height:590px" data-in="0.5,0.55">
-        <img src="${d.image.file}" data-kb="14,0.06"><span class="chip credit">${d.image.credit}</span>${labels}</div>
+        <img src="${d.image.file}" data-kb="14,0.06">${d.image.credit ? `<span class="chip credit">${d.image.credit}</span>` : ''}${labels}</div>
       <div class="glass" style="left:1100px;top:110px;width:660px;height:590px;padding:30px 34px;display:flex;flex-direction:column" data-in="0.9,0.55">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px"><span class="lab">${d.panel_title}</span>${src(d.source)}</div><div style="flex:1;display:flex;flex-direction:column;justify-content:${d.stats.length > 2 ? 'flex-start' : 'space-around'}">${stats}</div></div>`;
   },
@@ -195,7 +195,7 @@ const CARDS = {
     if (d.image) {
       const labels = (d.image.labels || []).map((l, i) => `<div class="ilabel" style="left:${l.x}px;top:${l.y}px" data-pop="${1.6 + i * 0.3},0.5"><span class="tile" style="width:40px;height:40px;background:rgba(253,199,73,.18)"><span data-icon="${l.icon},28,${l.dir === 'dn' ? '#5EA0FF' : '#FF5C6C'},${1.7 + i * 0.3},0.5"></span></span>${l.text}<span class="${C(l.dir, 1)}" style="margin-left:4px">${arrow(l.dir)}</span></div>`).join('');
       left = `<div class="paper" style="left:0;top:110px;width:700px;height:590px;overflow:hidden" data-in="0.5,0.55">
-        <div class="imgbox" style="width:700px;height:430px"><img src="${d.image.file}" data-kb="14,0.06"><span class="chip credit">${d.image.credit}</span>${labels}</div>
+        <div class="imgbox" style="width:700px;height:430px"><img src="${d.image.file}" data-kb="14,0.06">${d.image.credit ? `<span class="chip credit">${d.image.credit}</span>` : ''}${labels}</div>
         <div style="padding:22px 32px"><div class="body" style="font-size:27px;font-weight:600">${d.image.caption}</div></div></div>`;
     }
     let side = '';
@@ -222,7 +222,7 @@ const CARDS = {
        <div style="display:flex;align-items:center;gap:12px"><span class="chip ${r.kind === 'counter' || r.kind === 'interp' ? '' : 'tag-line'}" style="${r.kind === 'counter' ? 'color:var(--counter)' : r.kind === 'signal' ? 'color:var(--signal);border-color:var(--signal)' : r.kind === 'interp' ? 'color:var(--gold);border-color:#E2A92C;background:rgba(253,199,73,.14)' : ''};font-size:19px;padding:4px 12px">${r.chip}</span>${src(r.source)}</div>
        <div style="font-size:${r.big ? 44 : 30}px;font-weight:800;margin-top:10px;line-height:1.25" class="tnum">${r.big ? cnt(r.big, 1.4 + i * 0.5) : ''}${r.big && r.text ? ' ' : ''}${r.text ? `<span style="font-size:30px">${r.text}</span>` : ''}</div>
        ${r.sub ? `<div class="muted" style="font-size:22px;font-weight:600;margin-top:4px">${r.sub}</div>` : ''}</div>`).join('');
-    return header(d) + `<div class="paper imgbox" style="left:0;top:110px;width:860px;height:590px" data-in="0.5,0.55"><img src="${d.image.file}" data-kb="14,0.06"><span class="chip credit">${d.image.credit}</span></div>
+    return header(d) + `<div class="paper imgbox" style="left:0;top:110px;width:860px;height:590px" data-in="0.5,0.55"><img src="${d.image.file}" data-kb="14,0.06">${d.image.credit ? `<span class="chip credit">${d.image.credit}</span>` : ''}</div>
       <div class="glass" style="left:900px;top:110px;width:860px;height:590px;padding:22px 40px;display:flex;flex-direction:column;justify-content:space-between" data-in="0.9,0.55">${rows}</div>`;
   },
 
