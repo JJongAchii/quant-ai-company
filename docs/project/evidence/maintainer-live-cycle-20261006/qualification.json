@@ -1,0 +1,100 @@
+{
+  "captured_at": "2026-10-06T08:21:31.233339+00:00",
+  "scope": "Actual production configuration and PostgreSQL; rolled-back preparation; no model calls",
+  "patch_commit": "87e774fbb5caafb6cf56bc14af678699ccacea10",
+  "base_image_id": "sha256:6edd5c056625e66cd6a26da6b33a5451372b301f2c9a71894e5d20506de8aba5",
+  "previous_container_id": "9318351fe35099796fd0324295b4038f327844cf9b516204d4bee7a79727f75f",
+  "target_image": "quant-company-autonomous:director-context-87e774fbb5caafb6cf56bc14af678699ccacea10",
+  "target_image_id": "sha256:edb93937acda68bfe7ef17307eef3832b7f775665fddd69e98658048741848fb",
+  "baseline": {
+    "sql_writes": "rolled_back",
+    "model_calls": 0,
+    "turns": [
+      {
+        "turn_id": "ffc34b0d-5504-5463-b6dc-2e954cbb408b",
+        "state": "validation_error",
+        "error": [
+          "String should have at most 90000 characters"
+        ],
+        "prompt_characters": 91441,
+        "context_characters": 67643,
+        "header_characters": 23798,
+        "context_truncated": true,
+        "instruction_sha256": "92be57aefb3e285c5d7d39a6bad0bb1c3ee22f60e6eab5c6f2d8b81c66742158",
+        "protected_requested_sources": [],
+        "original_output_contract": "agent_decision",
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      },
+      {
+        "turn_id": "2e4de4d4-00b8-50d6-8dc4-1765a28e1807",
+        "state": "validation_error",
+        "error": [
+          "String should have at most 90000 characters"
+        ],
+        "prompt_characters": 90350,
+        "context_characters": 66137,
+        "header_characters": 24213,
+        "context_truncated": true,
+        "instruction_sha256": "d89f75b4b7ebaed2d4bf8905d95b415eaa8f43b1a42948bb67c0714cfe0744d4",
+        "protected_requested_sources": [],
+        "original_output_contract": "agent_decision",
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    ]
+  },
+  "candidate": {
+    "sql_writes": "rolled_back",
+    "model_calls": 0,
+    "turns": [
+      {
+        "turn_id": "ffc34b0d-5504-5463-b6dc-2e954cbb408b",
+        "state": "ready",
+        "error": null,
+        "prompt_characters": 79028,
+        "context_characters": 55230,
+        "header_characters": 23798,
+        "context_truncated": true,
+        "instruction_sha256": "92be57aefb3e285c5d7d39a6bad0bb1c3ee22f60e6eab5c6f2d8b81c66742158",
+        "protected_requested_sources": [],
+        "original_output_contract": "agent_decision",
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      },
+      {
+        "turn_id": "2e4de4d4-00b8-50d6-8dc4-1765a28e1807",
+        "state": "ready",
+        "error": null,
+        "prompt_characters": 77937,
+        "context_characters": 53724,
+        "header_characters": 24213,
+        "context_truncated": true,
+        "instruction_sha256": "d89f75b4b7ebaed2d4bf8905d95b415eaa8f43b1a42948bb67c0714cfe0744d4",
+        "protected_requested_sources": [],
+        "original_output_contract": "agent_decision",
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      }
+    ]
+  },
+  "candidate_module_sha256": {
+    "company.py": "7b4a682e02c58af122c79a00628d0cf37c5c30ebb12f3f0542637a91d018ea81",
+    "execution.py": "601380a962b1e6e0439cae86161521797c0f34e74198169bcbe3f069b3680ed8"
+  },
+  "compose_files": [
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml",
+    "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json",
+    "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json",
+    "/var/lib/quant-company/config/native-output-5c44ad07273adc780a56a47d7d35114fd0dc32c8-02.compose.json",
+    "/var/lib/quant-company/config/data-watch-readable-v6-8508954320877144e8f24cb52c8353c0e18f514a-api.compose.json",
+    "/var/lib/quant-company/config/scoped-data-86aea8cdf03b5543666813c97689acb1e8158a6d.compose.json",
+    "/var/lib/quant-company/config/held-audit-ec1fbeb29a49420a367f06af596283e6ead4ab72.compose.json"
+  ],
+  "working_dir": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy",
+  "project": "quant-company"
+}

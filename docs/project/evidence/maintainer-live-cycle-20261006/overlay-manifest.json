@@ -1,0 +1,15 @@
+{
+  "patch_commit": "87e774fbb5caafb6cf56bc14af678699ccacea10",
+  "base_code_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "base_image_id": "sha256:6edd5c056625e66cd6a26da6b33a5451372b301f2c9a71894e5d20506de8aba5",
+  "module_root": "/opt/company/.venv/lib/python3.12/site-packages/quant_company",
+  "target_image": "quant-company-autonomous:director-context-87e774fbb5caafb6cf56bc14af678699ccacea10",
+  "candidate_module_sha256": {
+    "company.py": "7b4a682e02c58af122c79a00628d0cf37c5c30ebb12f3f0542637a91d018ea81",
+    "execution.py": "601380a962b1e6e0439cae86161521797c0f34e74198169bcbe3f069b3680ed8"
+  },
+  "turn_ids": [
+    "ffc34b0d-5504-5463-b6dc-2e954cbb408b",
+    "2e4de4d4-00b8-50d6-8dc4-1765a28e1807"
+  ]
+}
