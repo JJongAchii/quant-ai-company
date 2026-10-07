@@ -1,8 +1,8 @@
 {
-  "recorded_at": "2026-10-07T01:08:40.322510+00:00",
+  "recorded_at": "2026-10-07T01:51:03.677219+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
-  "latest_request": "15분 설정한 이유가 있어? 꼭 필요한거야? 암튼 승인할게",
+  "latest_request": "\uc9c0\uae08 \ud574\ubd10",
   "source_commit": "15215a4e7c7d3188551278c1ec36fed85d428436",
   "format_version": 17,
   "validation_version": 59,
@@ -32,14 +32,24 @@
     "result": "Writer timed out; failed preview closed at07:55 KST. No independent content review or Slack delivery."
   },
   "development_diagnostic": {
-    "checks_passed": 9,
+    "checks_passed": 6,
     "checks_required": 12,
     "failed": [
+      "numbers",
       "materiality",
+      "counterevidence",
+      "alternatives",
       "coverage",
       "readability"
     ],
-    "fresh_acceptance": false
+    "fresh_acceptance": false,
+    "writer_completed": true,
+    "independent_full_original_review_completed": true,
+    "source_notes_valid": true,
+    "main_mechanical_rejections": 0,
+    "confirmed_corrections": 1,
+    "case": "analyst-saved-input-schema-repair-20261007",
+    "evidence": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-live-run-20261007-outcome.json"
   },
   "schedule_kst": {
     "am": "07:45",
@@ -77,7 +87,7 @@
     "first_failure_record": "docs/project/evidence/briefing-analyst-quality-20261001/fresh-am-20261007-validation58-timeout.json",
     "retired_for_new_execution_policy_at": "2026-10-07T01:08:40.322510+00:00"
   },
-  "next": "Installed execution59 is waiting for the prospectively fixed October 7 PM case: collect16:40, freeze17:00, due17:45 KST. Verify actual xhigh plan/write/review completion, all12 content checks, and an independent original-to-visible-main audit. No additional installation approval is pending.",
+  "next": "Install the approved source-preserving repair on current actual images, then run the prospectively frozen PM case. Do not replay or relabel the closed saved-input case.",
   "remaining": [
     "Execution-model/frozen-policy agreement and writing completion within the scheduling budget",
     "Fresh twelve-check content qualification and independent original-to-main audit",
@@ -91,7 +101,8 @@
     "docs/project/evidence/briefing-analyst-quality-20261001/regression-validation58-dbcheck.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/twenty-source-transport-validation58.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/development-diagnostic-20261006-validation57-outcome.json",
-    "docs/project/evidence/briefing-analyst-quality-20261001/fresh-pm-20261006-format17-failure.json"
+    "docs/project/evidence/briefing-analyst-quality-20261001/fresh-pm-20261006-format17-failure.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution59-live-run-20261007-outcome.json"
   ],
   "latest_execution": {
     "plan": "completed at07:04:09 KST",
@@ -108,10 +119,10 @@
     "source_commit": "15215a4e7c7d3188551278c1ec36fed85d428436",
     "validation_version": 59,
     "implemented": [
-      "작성 결과를 JSON 객체로 직접 받아 두 겹의 문자열 포장을 제거",
-      "자료 선택 6분·작성 24분·검토 12분, 보완과 최종 검토는 각각 6분",
-      "호출 대기와 Temporal 제한을 함께 조정하고 검토 시간이 부족하면 새 작성을 차단",
-      "실제 사용자가 지정한 xhigh를 정책·자료 고정·요청·배정 원장에 일치시킴"
+      "\uc791\uc131 \uacb0\uacfc\ub97c JSON \uac1d\uccb4\ub85c \uc9c1\uc811 \ubc1b\uc544 \ub450 \uacb9\uc758 \ubb38\uc790\uc5f4 \ud3ec\uc7a5\uc744 \uc81c\uac70",
+      "\uc790\ub8cc \uc120\ud0dd 6\ubd84\u00b7\uc791\uc131 24\ubd84\u00b7\uac80\ud1a0 12\ubd84, \ubcf4\uc644\uacfc \ucd5c\uc885 \uac80\ud1a0\ub294 \uac01\uac01 6\ubd84",
+      "\ud638\ucd9c \ub300\uae30\uc640 Temporal \uc81c\ud55c\uc744 \ud568\uaed8 \uc870\uc815\ud558\uace0 \uac80\ud1a0 \uc2dc\uac04\uc774 \ubd80\uc871\ud558\uba74 \uc0c8 \uc791\uc131\uc744 \ucc28\ub2e8",
+      "\uc2e4\uc81c \uc0ac\uc6a9\uc790\uac00 \uc9c0\uc815\ud55c xhigh\ub97c \uc815\ucc45\u00b7\uc790\ub8cc \uace0\uc815\u00b7\uc694\uccad\u00b7\ubc30\uc815 \uc6d0\uc7a5\uc5d0 \uc77c\uce58\uc2dc\ud0b4"
     ],
     "test_count": 404,
     "cloud_images_verified": 3,
@@ -143,5 +154,48 @@
     "record": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-temporal-readback-scheduled.json",
     "scheduled_kst": "2026-10-07 10:45",
     "passed": false
+  },
+  "on_demand_execution": {
+    "case": "analyst-on-demand-am-20261007-execution59",
+    "edition_id": "cab5830d-f781-5f66-b035-6ab27650879c",
+    "state": "closed_failed",
+    "plan_seconds": 190.656,
+    "write": "Immediate runtime uncertainty; identical schema diagnosis reproduced invalid_json_schema/unsupported regex lookaround before inference.",
+    "slack_calls": 0,
+    "review_reached": false,
+    "fresh_content_qualified": false,
+    "evidence": "docs/project/evidence/briefing-analyst-quality-20261001/on-demand-am-20261007-execution59-schema-failure.json"
+  },
+  "schema_transport_fix": {
+    "source_commit": "9eacd7076d773e60c2b80b35fd9bfa0788a3dd4b",
+    "tests_passed": 214,
+    "production_installed": false,
+    "real_writer_completed_seconds": 873.215,
+    "real_review_completed_seconds": 700.235,
+    "actual_temporal_start_to_close_seconds": 1560,
+    "staging_block": "Current news/dispatch trend-recurring image must be retained in a fresh source profile"
+  },
+  "updated_at": "2026-10-07T04:11:29.652427+00:00",
+  "manual_preview": {
+    "operation": "analyst-saved-input-quality-preview-20261007-schema59-once",
+    "channel": "C0C2E59B1AA",
+    "bot": "U0C4PJDR8G3",
+    "team": "T0C1YRDRPNF",
+    "content_qualified": false,
+    "permalink": "https://achiisquantresearch.slack.com/archives/C0C2E59B1AA/p1791345972111889",
+    "messages": 4,
+    "readback_scope": "Exact primary block text and all3 thread messages; original automatic3-way split discovered and repaired",
+    "automatic_publication": false,
+    "postmessage_requests": 4,
+    "initial_actual_messages": 6,
+    "canonical_root_uses_existing_production_section_blocks": true,
+    "transport_repair": "confirmed; unchanged full9634-character main in4 bounded section blocks",
+    "complete_main_block_text_matches": true,
+    "readback_confirmed": true,
+    "final_visible_messages": 4,
+    "deleted_only_own_automatic_duplicate_chunks": [
+      "1791345972.068929",
+      "1791345972.092589"
+    ]
   }
 }
