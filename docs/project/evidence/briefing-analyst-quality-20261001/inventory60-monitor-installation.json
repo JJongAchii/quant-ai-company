@@ -1,0 +1,48 @@
+{
+  "recorded_at": "2026-10-07T06:09:36.698645+00:00",
+  "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
+  "script_sha256": "ba352cc711addfde4c3a49fb0a931b8f1184f3e50c66a17dd784bb79811c431f",
+  "policy_sha256": "deda8464f63d0919986e8916cf1ef3edd33880249f5738c44156d71fae8a3e80",
+  "unit_hashes": {
+    "service": "5d3ff32830729c9d803e27e9a5e662cb8b0e07aa17afb049206fe122a318ba77",
+    "timer": "0d01cb43323ae108bb2f013d96ce340cac4eacb215e44731efee882069a87957"
+  },
+  "calendar_utc": [
+    "2026-10-07T08:58:00+00:00",
+    "2026-10-07T22:58:00+00:00",
+    "2026-10-08T08:58:00+00:00",
+    "2026-10-09T22:58:00+00:00",
+    "2026-10-11T22:58:00+00:00",
+    "2026-10-12T08:58:00+00:00",
+    "2026-10-12T22:58:00+00:00",
+    "2026-10-13T08:58:00+00:00",
+    "2026-10-13T22:58:00+00:00",
+    "2026-10-14T08:58:00+00:00",
+    "2026-10-14T22:58:00+00:00",
+    "2026-10-15T08:58:00+00:00"
+  ],
+  "timer": "NextElapseUSecRealtime=Wed 2026-10-07 08:58:00 UTC\nActiveState=active",
+  "initial_service": "Result=success\nExecMainStatus=0",
+  "initial_edition_states": {
+    "3042a447-de8b-55fe-9a56-72014df5c2b9": "waiting",
+    "f8004fe8-789b-5df2-8dfa-a06f11903d91": "waiting",
+    "91dd3647-e807-5370-8a2c-14226429dd3f": "waiting",
+    "4d933b4e-3814-54bf-943a-48029aa76124": "waiting",
+    "02cfddb9-e401-5634-af9c-b124a6f54cf8": "waiting",
+    "9473536f-12b8-552b-ba48-6beb1d198577": "waiting",
+    "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb": "waiting",
+    "cfc0bd9a-c815-5ce0-a29f-4f411c5f9383": "waiting",
+    "56e7ca37-1579-559a-955a-0d76e38de330": "waiting",
+    "05a23b7f-dfb9-51d9-bda0-9747f482e75c": "waiting",
+    "dff83379-260b-5d04-a36d-3722a2ba5fac": "waiting",
+    "16b6315b-c44e-57ab-988a-2089c88e0f3b": "waiting"
+  },
+  "result_path": "/var/lib/quant-company/monitoring/analyst-inventory60/results/latest.json",
+  "publication_enabled": false,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "database_mutations": 0,
+  "alert_delivery": "None; this timer persists metadata and does not send Slack notifications.",
+  "automatic_replay": false,
+  "automatic_publication_changed": false
+}

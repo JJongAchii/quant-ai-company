@@ -1,0 +1,218 @@
+{
+  "cutover": {
+    "action": "cutover",
+    "recorded_at": "2026-10-07T06:08:02.892988+00:00",
+    "exit_code": 0,
+    "phase": "preview_active",
+    "base": "2a8df31ec8d77ae111437bad9d42221e6cf29374",
+    "commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
+    "owner_approval": "chat-analyst-execution-approved-20261007",
+    "previous_owner_approval_id": "chat-analyst-execution-approved-20261007",
+    "publication_enabled": false,
+    "database_backup": {
+      "file": "analyst-preview-bfa923b392cc880e54978cc28041970d6cc06dd6.postgres.dump",
+      "bytes": 379900644,
+      "sha256": "c70c2f8459862d4d7b524eb6c25d0691e8d6212f3f6d2fd3be52fc7b340b639e"
+    },
+    "running_services_unchanged": true,
+    "existing_feature_environment_and_runtime_preserved": true,
+    "unrelated_services_preserved": true,
+    "evaluation_editions": [
+      "02cfddb9-e401-5634-af9c-b124a6f54cf8",
+      "05a23b7f-dfb9-51d9-bda0-9747f482e75c",
+      "16b6315b-c44e-57ab-988a-2089c88e0f3b",
+      "3042a447-de8b-55fe-9a56-72014df5c2b9",
+      "4d933b4e-3814-54bf-943a-48029aa76124",
+      "56e7ca37-1579-559a-955a-0d76e38de330",
+      "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb",
+      "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "9473536f-12b8-552b-ba48-6beb1d198577",
+      "cfc0bd9a-c815-5ce0-a29f-4f411c5f9383",
+      "dff83379-260b-5d04-a36d-3722a2ba5fac",
+      "f8004fe8-789b-5df2-8dfa-a06f11903d91"
+    ],
+    "quality_and_slack_acceptance": "separate; not certified by installation",
+    "images": [
+      {
+        "target": "app",
+        "id": "sha256:4585b41b81a2f39b0e53a1263a743dfeadbb2180012ed4c2fc292c3637641216",
+        "tag": "quant-company:bfa923b392cc880e54978cc28041970d6cc06dd6-profile0",
+        "source_verified": true,
+        "services": [
+          "news-worker",
+          "dispatch"
+        ]
+      },
+      {
+        "target": "app",
+        "id": "sha256:9284fcc3eaf66bb21b0e635fe5cefaea4cebc1b0c78b2e3e88d5c4d70f59a0e3",
+        "tag": "quant-company:bfa923b392cc880e54978cc28041970d6cc06dd6-profile1",
+        "source_verified": true,
+        "services": [
+          "briefing-data-worker"
+        ]
+      },
+      {
+        "target": "codex",
+        "id": "sha256:52cfb79d13c84e1029aee85ba913f7fd59b1a9c72b30334fe87206302c6e7619",
+        "tag": "quant-company-codex:bfa923b392cc880e54978cc28041970d6cc06dd6-profile2",
+        "source_verified": true,
+        "services": [
+          "codex-runtime"
+        ]
+      }
+    ]
+  },
+  "postinstall": {
+    "recorded_at": "2026-10-07T06:08:51.395075+00:00",
+    "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
+    "source_root": "bfa923b392cc880e54978cc28041970d6cc06dd6",
+    "production_source_verification": [
+      {
+        "service": "news-worker",
+        "changed_source_hashes_verified": true,
+        "actual": {
+          "quant_company/briefing/contracts.py": "34839f270a66f6523d1e73bc4fc59034ffba9b3e3fa85206ad3a4668fbfe29ad",
+          "quant_company/briefing/editor.py": "78a5360bdbf132b8a2707d38df194948bee39d82ae56d8c1329a864fd040bbd7",
+          "quant_company/briefing/execution.py": "2cd9a938daeaa9d7edd2a6c6736f32849a61cf7db5f3b07ee065472cd985395d",
+          "quant_company/briefing/inventory.py": "169c4aea993a613eb9a2794788d4d542d76ed42ba83f36a8d628d86de6aa364b",
+          "quant_company/briefing/qualification.py": "252612cc0d69c57b66d370d99aef3b04140e7784649a37c7f404469e3cf988e4",
+          "quant_company/briefing/schema.sql": "f0aceb67bb0b79220a904fd7e7e2ae985a6d254d973f17dfd47c910e551f1b7a",
+          "quant_company/briefing/store.py": "36513a0beca85b56e5c29fbccfdeed45d9750cde6125ff2b4f2b9b9955398ad5",
+          "quant_company/contracts.py": "7e7722c2acb890cf7571f53dde2cf9c27044719e1044128e48a26a0fedde8086"
+        }
+      },
+      {
+        "service": "dispatch",
+        "changed_source_hashes_verified": true,
+        "actual": {
+          "quant_company/briefing/contracts.py": "34839f270a66f6523d1e73bc4fc59034ffba9b3e3fa85206ad3a4668fbfe29ad",
+          "quant_company/briefing/editor.py": "78a5360bdbf132b8a2707d38df194948bee39d82ae56d8c1329a864fd040bbd7",
+          "quant_company/briefing/execution.py": "2cd9a938daeaa9d7edd2a6c6736f32849a61cf7db5f3b07ee065472cd985395d",
+          "quant_company/briefing/inventory.py": "169c4aea993a613eb9a2794788d4d542d76ed42ba83f36a8d628d86de6aa364b",
+          "quant_company/briefing/qualification.py": "252612cc0d69c57b66d370d99aef3b04140e7784649a37c7f404469e3cf988e4",
+          "quant_company/briefing/schema.sql": "f0aceb67bb0b79220a904fd7e7e2ae985a6d254d973f17dfd47c910e551f1b7a",
+          "quant_company/briefing/store.py": "36513a0beca85b56e5c29fbccfdeed45d9750cde6125ff2b4f2b9b9955398ad5",
+          "quant_company/contracts.py": "7e7722c2acb890cf7571f53dde2cf9c27044719e1044128e48a26a0fedde8086"
+        }
+      },
+      {
+        "service": "briefing-data-worker",
+        "changed_source_hashes_verified": true,
+        "actual": {
+          "quant_company/briefing/contracts.py": "34839f270a66f6523d1e73bc4fc59034ffba9b3e3fa85206ad3a4668fbfe29ad",
+          "quant_company/briefing/editor.py": "78a5360bdbf132b8a2707d38df194948bee39d82ae56d8c1329a864fd040bbd7",
+          "quant_company/briefing/execution.py": "2cd9a938daeaa9d7edd2a6c6736f32849a61cf7db5f3b07ee065472cd985395d",
+          "quant_company/briefing/inventory.py": "169c4aea993a613eb9a2794788d4d542d76ed42ba83f36a8d628d86de6aa364b",
+          "quant_company/briefing/qualification.py": "252612cc0d69c57b66d370d99aef3b04140e7784649a37c7f404469e3cf988e4",
+          "quant_company/briefing/schema.sql": "f0aceb67bb0b79220a904fd7e7e2ae985a6d254d973f17dfd47c910e551f1b7a",
+          "quant_company/briefing/store.py": "36513a0beca85b56e5c29fbccfdeed45d9750cde6125ff2b4f2b9b9955398ad5",
+          "quant_company/contracts.py": "7e7722c2acb890cf7571f53dde2cf9c27044719e1044128e48a26a0fedde8086"
+        }
+      },
+      {
+        "service": "codex-runtime",
+        "changed_source_hashes_verified": true,
+        "actual": {
+          "quant_company/briefing/contracts.py": "34839f270a66f6523d1e73bc4fc59034ffba9b3e3fa85206ad3a4668fbfe29ad",
+          "quant_company/briefing/execution.py": "2cd9a938daeaa9d7edd2a6c6736f32849a61cf7db5f3b07ee065472cd985395d",
+          "quant_company/contracts.py": "7e7722c2acb890cf7571f53dde2cf9c27044719e1044128e48a26a0fedde8086"
+        }
+      }
+    ],
+    "sdk_schema": {
+      "execution_version": 2,
+      "contracts": [
+        {
+          "phase": "inventory",
+          "contract": "brief_inventory_v1",
+          "timeout_seconds": 480,
+          "schema_constructed": true
+        },
+        {
+          "phase": "write",
+          "contract": "brief_compose_v1",
+          "timeout_seconds": 960,
+          "schema_constructed": true
+        },
+        {
+          "phase": "write",
+          "contract": "brief_write_v1",
+          "timeout_seconds": 1440,
+          "schema_constructed": true
+        },
+        {
+          "phase": "revise",
+          "contract": "brief_compose_v1",
+          "timeout_seconds": 360,
+          "schema_constructed": true
+        }
+      ],
+      "real_codex_model_schema_acceptance": "Not yet evaluated",
+      "model_calls": 0
+    },
+    "cli_version": "codex-cli 0.160.1",
+    "database_schema": {
+      "inventory_phase": true,
+      "requested_at_column": true,
+      "first_edition_registered": false
+    },
+    "services": [
+      {
+        "name": "/quant-company-api-1",
+        "image": "quant-company-audit-api:53ed9e33175d6056d72417c081d574a740587695-runtime",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      {
+        "name": "/quant-company-news-worker-1",
+        "image": "quant-company:bfa923b392cc880e54978cc28041970d6cc06dd6-profile0",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      {
+        "name": "/quant-company-dispatch-1",
+        "image": "quant-company:bfa923b392cc880e54978cc28041970d6cc06dd6-profile0",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      {
+        "name": "/quant-company-briefing-data-worker-1",
+        "image": "quant-company:bfa923b392cc880e54978cc28041970d6cc06dd6-profile1",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      },
+      {
+        "name": "/quant-company-codex-runtime-1",
+        "image": "quant-company-codex:bfa923b392cc880e54978cc28041970d6cc06dd6-profile2",
+        "running": true,
+        "oom": false,
+        "restarts": 0
+      }
+    ],
+    "publication_enabled": false,
+    "evaluation_editions": [
+      "02cfddb9-e401-5634-af9c-b124a6f54cf8",
+      "05a23b7f-dfb9-51d9-bda0-9747f482e75c",
+      "16b6315b-c44e-57ab-988a-2089c88e0f3b",
+      "3042a447-de8b-55fe-9a56-72014df5c2b9",
+      "4d933b4e-3814-54bf-943a-48029aa76124",
+      "56e7ca37-1579-559a-955a-0d76e38de330",
+      "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb",
+      "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "9473536f-12b8-552b-ba48-6beb1d198577",
+      "cfc0bd9a-c815-5ce0-a29f-4f411c5f9383",
+      "dff83379-260b-5d04-a36d-3722a2ba5fac",
+      "f8004fe8-789b-5df2-8dfa-a06f11903d91"
+    ],
+    "model_calls": 0,
+    "slack_calls": 0,
+    "quality_qualification": false
+  },
+  "prior_immutable_failure": "inventory60-initial-cutover-lock.json",
+  "actual_model_quality_evaluated": false
+}

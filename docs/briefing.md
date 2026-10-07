@@ -35,15 +35,24 @@ manifest 파일이나 코드를 바꾼 것만으로 실제 Slack 앱의 이름�
 새 관찰 대상은 10월 7일 오후판, 8·12·13·14·15일의 다섯 한국 거래일 오전·오후판,
 10일 토요일 미국장 정리까지 12회다. 9일 아침판은 이번 제한된 관찰에 포함하지 않는다.
 기존 실제 발간용 거래일 규칙은 바꾸지 않는다. 원문을 보기 전에
-[회차와 내용 기준을 고정](project/evidence/briefing-analyst-quality-20261001/prospective-operating-20261007-20261015-inventory60-policy.json)했다.
+[회차와 내용 기준을 고정](project/evidence/briefing-analyst-quality-20261001/prospective-operating-20261007-20261015-inventory60-idle-policy.json)했다.
 첫 진행은 자료 선정·핵심 사실 확정·작성·독립 검토의 네 요청이며, 확인된 문제 보완과 최종 검토를
 포함해 최대 여섯 요청이다. 회차별 보완은 한 번이며 결과가 불명확한 요청을 새 ID로 재실행하지 않는다.
 [검사 기록](project/evidence/briefing-analyst-quality-20261001/inventory60-readiness.json)은 실제 PostgreSQL
 회귀 350개와 전송 크기 검사 결과다. 새 실제 모델의 내용 품질 합격을 뜻하지 않는다.
 [현재 설치·진행 상태](work/amberjack/ANALYST-FINALIZATION-STATUS.json)를 별도로 확인한다.
 
+10월 7일 15:08 KST에 `bfa923b`를 새 Lightsail의 발송 없는 미리보기로 설치했다.
+네 서비스의 변경 소스, 새 단계별 상한, 데이터베이스 변경과 12회 허용 목록을 실제로 확인했다.
+기존 API·모델 배정·인증 연결·다른 운영 기능은 보존했다.
+[설치 기록](project/evidence/briefing-analyst-quality-20261001/inventory60-installation.json)을 남겼다.
+
 관찰 도구는 발간 목표 13분 뒤 PostgreSQL에서 내용 검사·검증 오류·단계별 시간·지연·발송 영수증을
 읽고 서버에 기록한다. 모델 호출·Slack 알림·실패 재실행·자동 발송 전환은 하지 않는다.
+서버의 `quant-company-analyst-inventory60.timer`를 설치·활성화했고 첫 조회가 정상 완료됐다.
+다음 실행은 10월 7일 17:58 KST다. 결과는 서버의
+`/var/lib/quant-company/monitoring/analyst-inventory60/results/latest.json`과 회차별 파일에 저장한다.
+[관찰 설치 기록](project/evidence/briefing-analyst-quality-20261001/inventory60-monitor-installation.json)을 확인할 수 있다.
 원문 대조와 12개 내용 검사, 실제 Slack 수신 확인·사용자 내용 검토, 최근 5거래일 운영 검증이
 모두 끝나야 자동 발송을 활성화할 수 있다. 자동 발송은 현재 꺼져 있다.
 
@@ -71,6 +80,8 @@ manifest 파일이나 코드를 바꾼 것만으로 실제 Slack 앱의 이름�
 일치해야 하며, 수집 자료가 늦게 게시되면 기준일이 표시된 과거 맥락으로만 사용한다.
 과거 S3 조사에서 확인한 KRX 19:24 게시 시각은 하루의 관측이며 매일의 게시 보장은 아니다.
 당일 종가를 확인할 수 없으면 결측을 표시한다. 미국 ETF 수집 데이터는 지수 자체가 아니며 지수 종가로 대체하지 않는다.
+실제 지연은 초 단위로 기록한다. 기존 운영 인수의 최종 한계는 목표 시각에서 10분 이내이며,
+이를 정시 도착으로 숨기지 않는다. 한계 이후 새 생성을 시작하지 않는다.
 
 본문 순서는 **핵심 최대 세 줄 → 주요 숫자 → 시장 전체 흐름 → 핵심 두 이슈 → 함께 볼 이슈 → 다음 확인할 것**이다.
 짧은 문장과 문단을 사용하고 출처는 작은 번호 링크로 표시한다. 다섯 가지 분석 소제목을 매 이슈에

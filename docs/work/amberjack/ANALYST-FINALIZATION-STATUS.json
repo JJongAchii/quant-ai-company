@@ -3,9 +3,9 @@
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
   "latest_request": "개선할 부분 개선하고 그럼 앞으로 모니터링 해보면 될까?",
-  "source_commit": "2a8df31ec8d77ae111437bad9d42221e6cf29374",
+  "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
   "format_version": 17,
-  "validation_version": 59,
+  "validation_version": 60,
   "schedule_version": 4,
   "goal_complete": false,
   "implemented": [
@@ -14,7 +14,10 @@
     "Source-note sign and meeting-month validation, one scoped correction maximum",
     "Lossless independent full-original review within the existing context limit",
     "Frozen inputs reused without duplicate lake documents",
-    "Bounded calendar-aware observation and immutable outcome receipts"
+    "Bounded calendar-aware observation and immutable outcome receipts",
+    "Commit original-bound material facts before reader-facing composition; verify qualifiers survive in main text",
+    "Target confirmed comparison-basis and alternative-explanation gaps in one scoped repair",
+    "Read-only scheduled PostgreSQL monitoring for twelve prospectively registered editions"
   ],
   "deployment": "preview_active_actual_cloud",
   "publication_enabled": false,
@@ -56,38 +59,7 @@
     "pm": "17:45",
     "special_pm": "No earlier than special closing time plus 65 minutes"
   },
-  "frozen_observation": {
-    "policy": "docs/project/evidence/briefing-analyst-quality-20261001/prospective-operating-20261007-20261014-validation58-dbcheck-policy.json",
-    "kr_trading_days": [
-      "2026-10-07",
-      "2026-10-08",
-      "2026-10-12",
-      "2026-10-13",
-      "2026-10-14"
-    ],
-    "edition_ids": [
-      "02cfddb9-e401-5634-af9c-b124a6f54cf8",
-      "05a23b7f-dfb9-51d9-bda0-9747f482e75c",
-      "3042a447-de8b-55fe-9a56-72014df5c2b9",
-      "4d933b4e-3814-54bf-943a-48029aa76124",
-      "56e7ca37-1579-559a-955a-0d76e38de330",
-      "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb",
-      "91dd3647-e807-5370-8a2c-14226429dd3f",
-      "9473536f-12b8-552b-ba48-6beb1d198577",
-      "b463d3df-94d9-5a93-be1d-4454dadbf098",
-      "b72483f9-d52b-51d6-92ba-25625a9cb50e",
-      "cfc0bd9a-c815-5ce0-a29f-4f411c5f9383",
-      "f8004fe8-789b-5df2-8dfa-a06f11903d91"
-    ],
-    "max_distinct_model_requests": 60,
-    "max_repairs_per_edition": 1,
-    "automatically_enables_publication": false,
-    "first_case_failed": true,
-    "content_or_timing_qualification_established": false,
-    "first_failure_record": "docs/project/evidence/briefing-analyst-quality-20261001/fresh-am-20261007-validation58-timeout.json",
-    "retired_for_new_execution_policy_at": "2026-10-07T01:08:40.322510+00:00"
-  },
-  "next": "Wait for occupied runtime slots, install the source-preserving inventory/composition pipeline and read-only observation timer before Oct7 16:40 KST. Inspect only newly frozen scheduled results.",
+  "next": "Oct7 PM: automatic registration/collection at16:40 KST, freeze at17:00, target17:45, stop new generation at17:55, metadata observation at17:58. Continue the twelve frozen editions through Oct15; actual new content and five-trading-day qualification remain unestablished.",
   "remaining": [
     "Fresh twelve-check content qualification with zero mechanical rejection and independent original-to-main audit",
     "Fresh scheduled execution within budget, with correctly dated market data and no lost source prerequisites",
@@ -108,7 +80,10 @@
     "docs/project/evidence/briefing-analyst-quality-20261001/execution59-temporal-budget-20261007.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/execution59-next-pm-20261007-readback.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-readiness.json",
-    "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-initial-cutover-lock.json"
+    "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-initial-cutover-lock.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-installation.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-monitor-installation.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-idle-readiness.json"
   ],
   "latest_execution": {
     "plan": "completed at07:04:09 KST",
@@ -143,7 +118,7 @@
     "quality_evaluation_scope": "Saved-input development audit completed and failed6 of12; fresh quality not established."
   },
   "active_evaluation": {
-    "policy": "prospective-pm-20261007-final59-preserved-runtime-policy.json",
+    "policy": "prospective-operating-20261007-20261015-inventory60-idle-policy.json",
     "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
     "collection_kst": "2026-10-07 16:40",
     "cutoff_kst": "2026-10-07 17:00",
@@ -151,7 +126,7 @@
     "deadline_kst": "2026-10-07 17:55",
     "model": "gpt-6-astra",
     "reasoning_effort": "xhigh",
-    "maximum_distinct_calls": 5,
+    "maximum_distinct_calls": 6,
     "maximum_confirmed_repairs": 1,
     "semantic_checks_required": 12,
     "mechanical_rejections_allowed": 0,
@@ -161,7 +136,17 @@
     "schedule_verified_in_actual_installed_source": true,
     "whitelist_verified": true,
     "automatic_slack_publication": false,
-    "record": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-next-pm-20261007-readback.json"
+    "record": "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-installation.json",
+    "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
+    "observation_editions": 12,
+    "phase_seconds": {
+      "plan": 360,
+      "write": 960,
+      "review": 720,
+      "inventory": 480,
+      "revise": 360,
+      "final_review": 360
+    }
   },
   "temporal_rollover_readback": {
     "record": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-temporal-budget-20261007.json",
@@ -194,7 +179,7 @@
     "source_profile_preservation_verified": true,
     "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-final-installation-20261007.json"
   },
-  "updated_at": "2026-10-07T05:50:20.654753+00:00",
+  "updated_at": "2026-10-07T06:12:46.505803+00:00",
   "manual_preview": {
     "operation": "analyst-saved-input-quality-preview-20261007-schema59-once",
     "channel": "C0C2E59B1AA",
@@ -219,15 +204,94 @@
     "evidence": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-slack-preview-20261007.json"
   },
   "candidate_inventory60": {
-    "source_commit": "2b60bb81424eb08b6e5e0f99346d3ffd76b0bafa",
+    "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
     "tests_passed": 350,
     "actual_content_evaluated": false,
     "source_profiles_staged": 3,
-    "installed": false,
-    "blocked_by": "Current shared runtime slots; safely rolled back",
-    "policy": "prospective-operating-20261007-20261015-inventory60-policy.json",
+    "installed": true,
+    "blocked_by": null,
+    "policy": "prospective-operating-20261007-20261015-inventory60-idle-policy.json",
     "edition_count": 12,
     "maximum_distinct_calls_per_edition": 6,
-    "monitor_installed": false
+    "monitor_installed": true,
+    "implementation_commit": "2b60bb81424eb08b6e5e0f99346d3ffd76b0bafa",
+    "installed_at": "2026-10-07T06:08:02.892988+00:00",
+    "source_verification_passed": true
+  },
+  "execution_version": 2,
+  "retired_observation_validation58": {
+    "policy": "docs/project/evidence/briefing-analyst-quality-20261001/prospective-operating-20261007-20261014-validation58-dbcheck-policy.json",
+    "kr_trading_days": [
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-12",
+      "2026-10-13",
+      "2026-10-14"
+    ],
+    "edition_ids": [
+      "02cfddb9-e401-5634-af9c-b124a6f54cf8",
+      "05a23b7f-dfb9-51d9-bda0-9747f482e75c",
+      "3042a447-de8b-55fe-9a56-72014df5c2b9",
+      "4d933b4e-3814-54bf-943a-48029aa76124",
+      "56e7ca37-1579-559a-955a-0d76e38de330",
+      "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb",
+      "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "9473536f-12b8-552b-ba48-6beb1d198577",
+      "b463d3df-94d9-5a93-be1d-4454dadbf098",
+      "b72483f9-d52b-51d6-92ba-25625a9cb50e",
+      "cfc0bd9a-c815-5ce0-a29f-4f411c5f9383",
+      "f8004fe8-789b-5df2-8dfa-a06f11903d91"
+    ],
+    "max_distinct_model_requests": 60,
+    "max_repairs_per_edition": 1,
+    "automatically_enables_publication": false,
+    "first_case_failed": true,
+    "content_or_timing_qualification_established": false,
+    "first_failure_record": "docs/project/evidence/briefing-analyst-quality-20261001/fresh-am-20261007-validation58-timeout.json",
+    "retired_for_new_execution_policy_at": "2026-10-07T01:08:40.322510+00:00"
+  },
+  "frozen_observation": {
+    "policy": "docs/project/evidence/briefing-analyst-quality-20261001/prospective-operating-20261007-20261015-inventory60-idle-policy.json",
+    "kr_trading_days": [
+      "2026-10-08",
+      "2026-10-12",
+      "2026-10-13",
+      "2026-10-14",
+      "2026-10-15"
+    ],
+    "edition_ids": [
+      "3042a447-de8b-55fe-9a56-72014df5c2b9",
+      "f8004fe8-789b-5df2-8dfa-a06f11903d91",
+      "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "4d933b4e-3814-54bf-943a-48029aa76124",
+      "02cfddb9-e401-5634-af9c-b124a6f54cf8",
+      "9473536f-12b8-552b-ba48-6beb1d198577",
+      "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb",
+      "cfc0bd9a-c815-5ce0-a29f-4f411c5f9383",
+      "56e7ca37-1579-559a-955a-0d76e38de330",
+      "05a23b7f-dfb9-51d9-bda0-9747f482e75c",
+      "dff83379-260b-5d04-a36d-3722a2ba5fac",
+      "16b6315b-c44e-57ab-988a-2089c88e0f3b"
+    ],
+    "max_distinct_model_requests": 72,
+    "max_distinct_model_requests_per_edition": 6,
+    "max_repairs_per_edition": 1,
+    "automatically_enables_publication": false,
+    "fresh_results_available": false,
+    "content_or_timing_qualification_established": false,
+    "prior_failed_cases_preserved": true
+  },
+  "monitoring": {
+    "record": "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-monitor-installation.json",
+    "installed": true,
+    "initial_execution": "success",
+    "next_kst": "2026-10-07 17:58",
+    "unit": "quant-company-analyst-inventory60.timer",
+    "result_path": "/var/lib/quant-company/monitoring/analyst-inventory60/results/latest.json",
+    "timing": "Each due_at plus13 minutes; exact lateness recorded separately",
+    "model_calls": 0,
+    "slack_calls": 0,
+    "automatic_replay": false,
+    "automatic_publication_changed": false
   }
 }
