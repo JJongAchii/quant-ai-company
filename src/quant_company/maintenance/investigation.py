@@ -97,7 +97,8 @@ def inspection_context(payload):
     if not candidates:
         candidates = unique
     ordered = sorted(candidates.items(), key=lambda pair: (pair[1].get("path") not in explicit,
-                     pair[0] in older, pair[1].get("path", ""), pair[1].get("start_line", 0)))
+                     pair[0] in older, not pair[1].get("path", "").startswith(("src/", "tests/")),
+                     pair[1].get("path", ""), pair[1].get("start_line", 0)))
     shown = [row for _, row in ordered[:4]]
     selected = {excerpt_identity(row) for row in shown}
     catalog = [{**{key: row[key] for key in ("key", "path", "start_line", "total_lines", "status") if key in row},

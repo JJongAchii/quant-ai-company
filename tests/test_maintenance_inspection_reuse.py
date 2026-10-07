@@ -126,10 +126,21 @@ def test_prompt_canonicalizes_nested_order_and_keeps_full_original_evidence():
     shown, prompt = proposal_material(payload, Triage)
     reversed_order = json.loads(json.dumps(payload), object_pairs_hook=lambda pairs: dict(reversed(pairs)))
     assert proposal_material(reversed_order, Triage)[1] == prompt
-    assert len(shown["current_implementation"]["source_files"][0]["content"]) == 2000
+    assert len(shown["current_implementation"]["source_files"][0]["content"]) == 1000
     assert shown["current_implementation"]["source_files"][0]["excerpted"]
     assert shown["history"] == payload["history"] and shown["observations"] == payload["observations"]
     assert shown["inspection_catalog"] == payload["inspection_catalog"] and digest(payload) == before
+
+
+def test_numbered_preview_keeps_missing_tail_discoverable_without_mutating_exact_receipt():
+    row = {"key": "code:exact", "path": SOURCE, "start_line": 50,
+           "content": "\n".join(f"{i}: caller_consumer_{i}" for i in range(50, 250)), "excerpted": True}
+    before = digest(row)
+    shown, _ = proposal_material({"investigated_code": [row]}, Triage)
+    body = shown["investigated_code"][0]
+    assert len(body["content"]) == 2500 and body["excerpted"]
+    assert body["shown_line_count"] < 200 and body["start_line"] == 50
+    assert digest(row) == before
 
 
 @pytest.mark.integration
