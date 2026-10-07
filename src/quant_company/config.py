@@ -72,6 +72,20 @@ class Settings(BaseSettings):
     briefing_search_enabled: bool = True
     briefing_channel_id: str = ""
     briefing_owner_user: str = ""
+    video_enabled: bool = False
+    video_upload_enabled: bool = False
+    video_publish_enabled: bool = False
+    video_artifact_dir: Path = Path("/var/lib/quant-company/video")
+    video_credentials_dir: Path = Path("/run/secrets/video")
+    video_youtube_channel_id: str = ""
+    video_runway_workspace_id: int = Field(default=0, ge=0)
+    video_monthly_credit_limit: int = Field(default=1500, ge=0, le=100000)
+    video_episode_credit_limit: int = Field(default=100, ge=0, le=500)
+    video_voice: str = "Leslie"
+    video_model: str = "gpt-6-astra"
+    video_ffmpeg: str = "ffmpeg"
+    video_ffprobe: str = "ffprobe"
+    video_alignment_model: str = "small"
     briefing_calendar_overrides_file: Path | None = None
     tech_feed_enabled: bool = False
     tech_feed_publish_enabled: bool = False
@@ -124,6 +138,14 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def explicit_simulation(self) -> "Settings":
+        if self.video_enabled and not (self.briefing_enabled and self.briefing_publish_enabled):
+            raise ValueError("Video requires an enabled publishing briefing source")
+        if self.video_enabled and not self.video_runway_workspace_id:
+            raise ValueError('Video production requires an explicit Runway workspace')
+        if self.video_upload_enabled and not (self.video_enabled and self.video_youtube_channel_id):
+            raise ValueError("Video uploads require production and an explicit YouTube channel")
+        if self.video_publish_enabled and not self.video_upload_enabled:
+            raise ValueError("Video public release requires private upload support")
         if self.model_accounts_enabled and self.model_accounts_owner_user not in self.slack_allowed_users:
             raise ValueError("Model account control requires an explicitly allowed owner")
         if self.model_accounts_enabled and (

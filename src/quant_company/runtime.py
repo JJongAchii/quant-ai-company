@@ -131,6 +131,16 @@ def make_housing_feed_worker(client, company, collector=None):
 
 
 async def dispatch_once(client, company):
+    if getattr(company.settings, 'video_enabled', False) and not getattr(company, "_video_started", False):
+        from .video.workflow import VideoWorkflow
+
+        try:
+            await client.start_workflow(VideoWorkflow.run, id="company-video-v1",
+                task_queue=company.settings.temporal_task_queue+"-video",
+                id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+        except WorkflowAlreadyStartedError:
+            pass
+        company._video_started = True
     if getattr(company.settings, "briefing_enabled", False):
         from .briefing.store import BriefStore
 
@@ -322,3 +332,22 @@ async def dispatch_main(settings=None):
         await panel.send_one()
         await outbox.send_one()
         await asyncio.sleep(1.1)
+
+
+def make_video_worker(client, company, runner=None):
+    from .video.runner import VideoRunner
+    from .video.workflow import VideoWorkflow
+
+    runner = runner or VideoRunner(company)
+    return Worker(client, task_queue=company.settings.temporal_task_queue+"-video",
+                  workflows=[VideoWorkflow], activities=[runner.activity_tick],
+                  max_concurrent_activities=1, max_cached_workflows=2,
+                  graceful_shutdown_timeout=timedelta(seconds=30))
+
+
+async def video_worker_main(settings=None):
+    settings = settings or Settings()
+    company = Company(settings)
+    client = await connect(settings)
+    async with make_video_worker(client, company):
+        await asyncio.Event().wait()
