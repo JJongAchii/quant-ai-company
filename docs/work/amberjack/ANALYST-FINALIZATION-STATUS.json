@@ -1,12 +1,12 @@
 {
-  "recorded_at": "2026-10-07T12:58:46.268974+00:00",
+  "recorded_at": "2026-10-07T14:00:17.085547+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
   "latest_request": "음 잔여해있는 오류도 해결하고 확실하게 해줬으면 좋을거 같은데",
-  "source_commit": "b66f59a1d93dacf770da41f411d21305d4f2701e",
-  "format_version": 19,
-  "validation_version": 65,
-  "schedule_version": 4,
+  "source_commit": "25b91bbdbe341bc1699c355b6255b09596bbdbf8",
+  "format_version": 20,
+  "validation_version": 67,
+  "schedule_version": 6,
   "goal_complete": false,
   "implemented": [
     "Readable summary, price table, leading issues, other issues and next conditions",
@@ -61,11 +61,15 @@
   "schedule_kst": {
     "am": "07:45",
     "pm": "17:45",
-    "special_pm": "No earlier than special closing time plus 65 minutes"
+    "special_pm": "No earlier than special closing time plus95minutes",
+    "am_collection": "06:10",
+    "am_cutoff": "06:30",
+    "pm_collection": "16:10",
+    "pm_cutoff": "16:30"
   },
-  "next": "Await actual independent twelve-check review; all full originals and corrected visible main have been verified lossless. Automatic publication and continuous monitoring remain enabled.",
+  "next": "Await bounded actual editorial correction and full-original final review; inspect unchanged source-note/number gates. Next scheduled delivery remains under continuous monitoring.",
   "remaining": [
-    "Actual independent review outcome",
+    "Actual content correction and independent final review",
     "Next scheduled full automatic publication and delivery confirmation via continuous monitoring"
   ],
   "evidence": [
@@ -98,7 +102,15 @@
     "docs/project/evidence/briefing-analyst-quality-20261001/execution-layout64-actual-outcome.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-installation.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-lossless-transport.json",
-    "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-regression.json"
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-regression.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-actual-outcome.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial66-installation.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial66-outcome.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial66-readback.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-readiness.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-installation.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-readback.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-monitor-installation.json"
   ],
   "latest_execution": {
     "plan": "completed at07:04:09 KST",
@@ -196,7 +208,7 @@
     "source_profile_preservation_verified": true,
     "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-final-installation-20261007.json"
   },
-  "updated_at": "2026-10-07T12:58:46.268974+00:00",
+  "updated_at": "2026-10-07T14:00:17.084684+00:00",
   "manual_preview": {
     "operation": "analyst-saved-input-quality-preview-20261007-schema59-once",
     "channel": "C0C2E59B1AA",
@@ -238,7 +250,7 @@
     "operating_issue": "Regular inventory timeout at480seconds; isolated900second execution completed in884.394seconds but combined citation references failed decoding.",
     "fresh_twelve_check_pass": false
   },
-  "execution_version": 4,
+  "execution_version": 6,
   "retired_observation_validation58": {
     "policy": "docs/project/evidence/briefing-analyst-quality-20261001/prospective-operating-20261007-20261014-validation58-dbcheck-policy.json",
     "kr_trading_days": [
@@ -271,13 +283,13 @@
     "retired_for_new_execution_policy_at": "2026-10-07T01:08:40.322510+00:00"
   },
   "monitoring": {
-    "record": "docs/project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-monitor.json",
+    "record": "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-monitor-installation.json",
     "installed": true,
     "initial_execution": "success",
     "next_kst": "2026-10-08 07:58",
     "unit": "quant-company-analyst-monitor.timer",
     "result_path": "/var/lib/quant-company/monitoring/analyst-continuous/results/latest.json",
-    "timing": "Daily07:58 and17:58 KST; installed calendar supplies expected editions; timestamps and exact delays recorded",
+    "timing": "Daily07:58,17:58,18:58KST; recorded editions keep frozen dates, missing editions use the installed calendar. Actual Slack delivery delay is distinct from commit delay.",
     "model_calls": 0,
     "slack_calls": 0,
     "automatic_replay": false,
@@ -285,7 +297,8 @@
     "mode": "continuous",
     "schedule_kst": [
       "07:58",
-      "17:58"
+      "17:58",
+      "18:58"
     ],
     "end_date": null,
     "previous_bounded_timer": "disabled",
@@ -406,7 +419,7 @@
     "actual_outcome": "docs/project/evidence/briefing-analyst-quality-20261001/execution-layout64-actual-outcome.json"
   },
   "error65": {
-    "state": "installed_actual_independent_review_running",
+    "state": "closed_independent_review_nine_of_twelve",
     "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-installation.json",
     "transport_proof": "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-lossless-transport.json",
     "regression": "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-regression.json",
@@ -416,6 +429,41 @@
     "maximum_new_model_calls": 1,
     "maximum_total_calls": 5,
     "quality_certified": false,
-    "automatic_publication": true
+    "automatic_publication": true,
+    "checks_passed": 9,
+    "checks_required": 12,
+    "failed_checks": [
+      "materiality",
+      "coverage",
+      "readability"
+    ],
+    "actual_outcome": "docs/project/evidence/briefing-analyst-quality-20261001/execution-context65-actual-outcome.json"
+  },
+  "error66": {
+    "state": "closed_editorial_correction_timeout",
+    "source_commit": "b1f5b8393b67678da912a257a0e9cadc3aacc617",
+    "completed_model_calls": 0,
+    "attempted_model_calls": 1,
+    "timeout_seconds": 360,
+    "reconciled": true,
+    "receipt_preserved": true,
+    "replayed": false,
+    "actual_outcome": "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial66-outcome.json"
+  },
+  "error67": {
+    "state": "installed_actual_editorial_correction_running",
+    "source_commit": "25b91bbdbe341bc1699c355b6255b09596bbdbf8",
+    "tests_passed": 363,
+    "readiness": "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-readiness.json",
+    "automatic_publication": true,
+    "quality_certified": false,
+    "case": "analyst-historical-editorial67-20261007",
+    "maximum_new_model_calls": 2,
+    "prior_completed_calls": 5,
+    "prior_timeout_attempts": 1,
+    "scope": "Historical frozen-input development correction with changed versioned execution budget; not a fresh or scheduled qualification.",
+    "installed_at": "2026-10-07T13:56:19.727496+00:00",
+    "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-installation.json",
+    "readback": "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-readback.json"
   }
 }

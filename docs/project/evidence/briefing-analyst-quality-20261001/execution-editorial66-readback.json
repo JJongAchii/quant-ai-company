@@ -1,0 +1,81 @@
+{
+  "recorded_at": "2026-10-07T13:44:26.051155+00:00",
+  "publication_enabled": true,
+  "evaluation_whitelist": false,
+  "format_version": 20,
+  "validation_version": 66,
+  "schedule_version": 5,
+  "execution_version": 5,
+  "preparation_minutes": 65,
+  "collection_minutes": 20,
+  "next_editions": [
+    {
+      "id": "f8004fe8-789b-5df2-8dfa-a06f11903d91",
+      "kind": "am",
+      "day": "2026-10-08",
+      "starts_at": "2026-10-08T06:20:00+09:00",
+      "cutoff": "2026-10-08T06:40:00+09:00",
+      "due_at": "2026-10-08T07:45:00+09:00"
+    },
+    {
+      "id": "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "kind": "pm",
+      "day": "2026-10-08",
+      "starts_at": "2026-10-08T16:20:00+09:00",
+      "cutoff": "2026-10-08T16:40:00+09:00",
+      "due_at": "2026-10-08T17:45:00+09:00"
+    }
+  ],
+  "remaining_phase_seconds": {
+    "plan": 4200,
+    "inventory": 3840,
+    "write": 2760,
+    "review": 1800,
+    "revise": 1080,
+    "final_review": 720
+  },
+  "final_review_timeout_seconds": 720,
+  "services": [
+    {
+      "name": "news-worker",
+      "image": "quant-company:b1f5b8393b67678da912a257a0e9cadc3aacc617-error0",
+      "running": true,
+      "restart_count": 0,
+      "oom": false
+    },
+    {
+      "name": "dispatch",
+      "image": "quant-company:b1f5b8393b67678da912a257a0e9cadc3aacc617-error0",
+      "running": true,
+      "restart_count": 0,
+      "oom": false
+    },
+    {
+      "name": "briefing-data-worker",
+      "image": "quant-company:b1f5b8393b67678da912a257a0e9cadc3aacc617-error1",
+      "running": true,
+      "restart_count": 0,
+      "oom": false
+    },
+    {
+      "name": "codex-runtime",
+      "image": "quant-company-codex:b1f5b8393b67678da912a257a0e9cadc3aacc617-error2",
+      "running": true,
+      "restart_count": 0,
+      "oom": false
+    },
+    {
+      "name": "api",
+      "image": "quant-company-audit-api:53ed9e33175d6056d72417c081d574a740587695-runtime",
+      "running": true,
+      "restart_count": 0,
+      "oom": false
+    }
+  ],
+  "monitor_timer": "NextElapseUSecRealtime=Wed 2026-10-07 22:58:00 UTC\nActiveState=active",
+  "model_calls": 0,
+  "slack_calls": 0,
+  "database_mutations": 0,
+  "company_instantiated": false,
+  "source_commit": "b1f5b8393b67678da912a257a0e9cadc3aacc617"
+}
