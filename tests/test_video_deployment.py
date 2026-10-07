@@ -21,7 +21,9 @@ def test_video_profile_defaults_off_and_isolates_media_credentials():
             assert services[name]['environment'][flag] == 'false'
     media = services['video-worker']
     mounts = {m['target'] for m in media['volumes']}
-    assert '/state/media-auth' in mounts and '/state/video' in mounts
+    assert '/state/media-auth' in mounts and '/state/video' in mounts and '/state/video-assets' in mounts
+    assert next(m for m in media['volumes'] if m['target'] == '/state/video-assets')['read_only']
+    assert media['environment']['VIDEO_TEMPLATE'] == 'motion-v2'
     assert not any('slack' in str(s) or 'lake' in str(s) for s in media['secrets'])
     assert media['read_only'] and media['pids_limit'] == 256
     for name, service in services.items():

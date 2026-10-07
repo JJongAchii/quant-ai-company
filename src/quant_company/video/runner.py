@@ -8,7 +8,9 @@ from temporalio import activity
 from ..company import PolicyError
 from ..contracts import ProviderFault, ProviderRequest
 from ..providers.client import RuntimeClient
-from .contracts import VideoPlan, VideoReview, digest, production_prompt, review_prompt, validate_plan
+from .contracts import VideoReview, digest, production_prompt, review_prompt
+from .episode import check_plan, episode_prompt, plan_class, template
+from .motion import MotionRenderer
 from .render import Renderer, spoken, verify_artifacts
 from .runway import RunwaySpeech, download_audio
 from .store import UncertainEffect, VideoStore
@@ -21,8 +23,13 @@ class VideoRunner:
         self.settings = company.settings
         self._provider = provider
         self.speech = speech or RunwaySpeech(self.settings.video_credentials_dir)
-        self.renderer = renderer or Renderer(self.settings)
+        self._renderer = renderer
         self.youtube = youtube or YouTube(self.settings)
+
+    def renderer_for(self, job):
+        if self._renderer is not None:
+            return self._renderer
+        return MotionRenderer(self.settings) if template(job) == 'motion-v2' else Renderer(self.settings)
 
     @property
     def provider(self):
@@ -40,9 +47,9 @@ class VideoRunner:
         await asyncio.to_thread(self.store.finish_effect, job, key, result)
         return result
 
-    async def model(self, job, phase, prompt, cls):
+    async def model(self, job, phase, prompt, cls, contract=None):
         request = ProviderRequest(request_id=f"video-{job['id']}-{phase}", model=job["policy"]["model"],
-                                  reasoning_effort="high", prompt=prompt, output_contract=f"video_{phase}_v1")
+                                  reasoning_effort="high", prompt=prompt, output_contract=contract or f"video_{phase}_v1")
 
         async def invoke():
             try:
@@ -97,16 +104,22 @@ class VideoRunner:
     async def step(self, job):
         state = job["state"]
         if state == "queued":
-            plan = await self.model(job, "plan", production_prompt(job["source"], job["feedback"]), VideoPlan)
-            validate_plan(plan, job["source"])
+            if template(job) == 'motion-v2':
+                library = MotionRenderer(self.settings).library
+                plan = await self.model(job, "plan", episode_prompt(job["source"], job["feedback"], library),
+                                        plan_class(job), "video_episode_v1")
+                check_plan(job, plan, library)
+            else:
+                plan = await self.model(job, "plan", production_prompt(job["source"], job["feedback"]), plan_class(job))
+                check_plan(job, plan)
             await asyncio.to_thread(self.store.save, job, "reviewing", plan=plan.model_dump(mode="json"))
         elif state == "reviewing":
-            plan = VideoPlan.model_validate(job["plan"])
+            plan = plan_class(job).model_validate(job["plan"])
             review = await self.model(job, "review", review_prompt(job["source"], plan), VideoReview)
             await asyncio.to_thread(self.store.save, job, "synthesizing" if review.passed() else "blocked",
                                     review=review.model_dump(mode="json"), error=None if review.passed() else "adaptation_review_failed")
         elif state == "synthesizing":
-            plan = VideoPlan.model_validate(job["plan"])
+            plan = plan_class(job).model_validate(job["plan"])
             # Account lookup does not spend credits. Check the entire expected episode before submission.
             account = await self.speech.account(job["policy"]["workspace_id"])
             with self.store.db.transaction() as conn:
@@ -131,7 +144,7 @@ class VideoRunner:
                 return
             await asyncio.to_thread(self.store.save, job, "rendering")
         elif state == "rendering":
-            plan = VideoPlan.model_validate(job["plan"])
+            plan = plan_class(job).model_validate(job["plan"])
             # A cancelled render thread may still finish. It must never overwrite a committed attempt.
             directory = self.settings.video_artifact_dir / str(job["id"]) / str(uuid4())
             directory.mkdir(parents=True, exist_ok=True)
@@ -146,7 +159,7 @@ class VideoRunner:
                 path = directory / f"speech-{index:02}.mp3"
                 await asyncio.to_thread(download_audio, url, path)
                 paths.append(path)
-            artifacts = await asyncio.to_thread(self.renderer.render, job, plan, directory, paths)
+            artifacts = await asyncio.to_thread(self.renderer_for(job).render, job, plan, directory, paths)
             await asyncio.to_thread(self.store.save, job, "uploading", artifacts=artifacts, artifact_digest=artifacts["digest"])
         elif state == "uploading":
             verify_artifacts(job["artifacts"], self.settings.video_artifact_dir)

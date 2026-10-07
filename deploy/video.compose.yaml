@@ -13,6 +13,9 @@ x-video-env: &video-env
   VIDEO_ARTIFACT_DIR: /state/video
   VIDEO_CREDENTIALS_DIR: /state/media-auth
   VIDEO_ALIGNMENT_MODEL: ${VIDEO_ALIGNMENT_MODEL:-small}
+  VIDEO_TEMPLATE: ${VIDEO_TEMPLATE:-motion-v2}
+  VIDEO_ASSET_DIR: /state/video-assets
+  VIDEO_RENDER_WORKERS: ${VIDEO_RENDER_WORKERS:-1}
 
 services:
   api:
@@ -82,6 +85,11 @@ services:
       - type: bind
         source: ${STATE_DIR:-/var/lib/quant-company}/media-auth
         target: /state/media-auth
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${STATE_DIR:-/var/lib/quant-company}/video-assets
+        target: /state/video-assets
+        read_only: true
         bind: {create_host_path: false}
       - type: bind
         source: ${STATE_DIR:-/var/lib/quant-company}/video-models

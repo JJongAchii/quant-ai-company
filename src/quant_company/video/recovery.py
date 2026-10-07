@@ -6,19 +6,20 @@ from psycopg.types.json import Jsonb
 
 from ..company import PolicyError
 from . import store as video_store
-from .contracts import VideoPlan, VideoReview, validate_plan
+from .contracts import VideoReview
+from .episode import check_plan, plan_class
 from .store import LOCK
 from .youtube import session_url
 
 
 def receipt_stage(job, key, receipt):
     if key in {'plan', 'review'}:
-        cls = VideoPlan if key == 'plan' else VideoReview
+        cls = plan_class(job) if key == 'plan' else VideoReview
         result = cls.model_validate(receipt['output'])
         if receipt['request_id'] != f"video-{job['id']}-{key}":
             raise ValueError('Model receipt belongs to another request')
         if key == 'plan':
-            validate_plan(result, job['source'])
+            check_plan(job, result)
         return 'queued' if key == 'plan' else 'reviewing'
     if re.fullmatch(r'speech-\d+', key):
         if not isinstance(receipt.get('taskId'), str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,128}', receipt['taskId']):

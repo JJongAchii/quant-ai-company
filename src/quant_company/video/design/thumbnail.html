@@ -1,0 +1,14 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><style>
+@font-face{font-family:P;font-weight:800;src:url(fonts/Pretendard-ExtraBold.woff2)}@font-face{font-family:P;font-weight:700;src:url(fonts/Pretendard-Bold.woff2)}
+*{margin:0;box-sizing:border-box}body{width:1280px;height:720px;overflow:hidden;font-family:P;word-break:keep-all;color:#FCF1DB;
+background:radial-gradient(ellipse 80% 70% at 35% 45%,#0A2A63 0%,#011A43 55%,#00112E 100%)}
+.img{position:absolute;right:0;top:0;width:560px;height:620px;background:url({{image}}) center/cover;
+-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 35%)}
+.badge{position:absolute;left:56px;top:52px;background:#FDC749;color:#011A43;font-weight:800;font-size:34px;padding:10px 22px;border-radius:14px}
+.q{position:absolute;left:56px;top:170px;width:760px;font-size:104px;font-weight:800;line-height:1.12;letter-spacing:-.03em}
+.q b{color:#FDC749}.n{position:absolute;left:60px;top:440px;font-size:40px;font-weight:700;color:#FCF1DB}.n.up{color:#FF5C6C}.n.dn{color:#5EA0FF}
+.bar{position:absolute;left:0;right:0;bottom:0;height:100px;background:#00112E;border-top:3px solid #FDC749;display:flex;align-items:center;padding:0 56px;gap:16px;font-size:34px;font-weight:800}
+.bar img{height:58px}.bar span{color:#FDC749;font-weight:700;font-size:30px}.s{margin-left:auto;font-size:22px;color:#FF9FB0;font-weight:700}
+</style><div class="img"></div><div class="badge">{{date}}</div>
+<div class="q">{{question}}</div><div class="n {{stat_dir}}">{{stat}}</div>
+<div class="bar"><img src="logo_mark.png">뭐든story<span>아침 시장 브리핑</span><div class="s">{{mark}}</div></div></html>

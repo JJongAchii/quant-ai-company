@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -88,6 +89,10 @@ class Settings(BaseSettings):
     video_ffmpeg: str = "ffmpeg"
     video_ffprobe: str = "ffprobe"
     video_alignment_model: str = "small"
+    # motion-v2: fixed card/motion template (docs/DAILY_BRIEF_DESIGN_SPEC.md); text-v1: the earlier text slides.
+    video_template: Literal["motion-v2", "text-v1"] = "motion-v2"
+    video_asset_dir: Path = Path("/var/lib/quant-company/video-assets")
+    video_render_workers: int = Field(default=1, ge=1, le=8)
     briefing_calendar_overrides_file: Path | None = None
     tech_feed_enabled: bool = False
     tech_feed_publish_enabled: bool = False

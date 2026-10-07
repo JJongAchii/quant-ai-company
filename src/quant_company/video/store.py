@@ -54,7 +54,7 @@ class VideoStore:
         policy = {"version": POLICY_VERSION, "voice": self.settings.video_voice,
                   "speech_model": "eleven_multilingual_v2", "model": self.settings.video_model,
                   "workspace_id": self.settings.video_runway_workspace_id,
-                  "youtube_channel": self.settings.video_youtube_channel_id}
+                  "youtube_channel": self.settings.video_youtube_channel_id, "template": self.settings.video_template}
         conn.execute("""INSERT INTO video_jobs(id,edition_id,version,source_digest,source,policy,publish_deadline)
             VALUES(%s,%s,1,%s,%s,%s,%s) ON CONFLICT(edition_id,version) DO NOTHING""",
                      (identity, edition["id"], digest(source), Jsonb(source), Jsonb(policy), deadline))

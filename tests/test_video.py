@@ -47,6 +47,7 @@ def video(brief, tmp_path, monkeypatch):  # noqa: F811
     settings.video_publish_enabled = True
     settings.video_runway_workspace_id = 123
     settings.video_youtube_channel_id = 'UCfixture'
+    settings.video_template = 'text-v1'  # text renderer contract; motion-v2 is covered in test_video_motion
     settings.video_artifact_dir = tmp_path / 'video'
     monkeypatch.setattr('quant_company.video.store.utcnow', lambda: clock['at'])
     return VideoStore(upstream.company), clock

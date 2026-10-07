@@ -10,12 +10,14 @@ from quant_company.config import Settings
 from quant_company.contracts import ProviderFault, ProviderRequest
 from quant_company.video.auth import RunwayTokenStorage, write_secret
 from quant_company.video.contracts import VideoPlan, VideoReview
+from quant_company.video.episode import EpisodePlan
 from quant_company.video.render import verify_artifacts
 from quant_company.video.runway import RunwaySpeech
 from quant_company.video.youtube import UPLOAD, YouTube, session_url
 
 from .test_claude_runtime import fake_claude, runner  # noqa: F401
 from .test_video import artifact_fixture, good_review, video_plan
+from .test_video_motion import episode
 
 
 @pytest.fixture
@@ -157,7 +159,8 @@ def test_artifact_hash_change_detects_modified_file_and_manifest(upload_job, tmp
 
 
 @pytest.mark.parametrize('contract,value,model', [('video_plan_v1', video_plan, VideoPlan),
-                                                  ('video_review_v1', good_review, VideoReview)])
+                                                  ('video_review_v1', good_review, VideoReview),
+                                                  ('video_episode_v1', episode, EpisodePlan)])
 async def test_claude_subscription_runtime_returns_only_the_frozen_video_schema(fake_claude, contract, value, model):  # noqa: F811
     config, configure, calls = fake_claude
     configure(review=value().model_dump(mode='json'))
@@ -180,3 +183,4 @@ def test_video_requires_claude_script_model():
                  briefing_channel_id='C1', briefing_owner_user='U1', slack_allowed_users=['U1'],
                  video_enabled=True, video_runway_workspace_id=1, video_model='gpt-6-astra')
     assert Settings(_env_file=None).video_voice == 'Vincent'
+    assert Settings(_env_file=None).video_template == 'motion-v2'

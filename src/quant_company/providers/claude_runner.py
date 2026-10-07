@@ -52,10 +52,12 @@ def environment(config, source):
 
 def output_schema(request):
     """The only structured outputs this tool-free runtime may produce, keyed by the frozen request contract."""
-    if request.output_contract in {"video_plan_v1", "video_review_v1"}:
+    if request.output_contract in {"video_plan_v1", "video_review_v1", "video_episode_v1"}:
         from ..video.contracts import VideoPlan, VideoReview
+        from ..video.episode import EpisodePlan
 
         return {"video_plan_v1": (VideoPlan, "Video plan", "영상 대본 작성 완료"),
+                "video_episode_v1": (EpisodePlan, "Video episode", "영상 장면 구성 완료"),
                 "video_review_v1": (VideoReview, "Video adaptation review", "영상 각색 검토 완료")}[request.output_contract]
     if request.output_contract == "agent_decision":
         return IndependentReview, "Independent explanation review", "독립 설명 검토 완료"

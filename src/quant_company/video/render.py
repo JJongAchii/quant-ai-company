@@ -101,6 +101,32 @@ def document(heading, lines, cutoff, *, thumbnail=False):
             f"<footer>자료 기준 {escape(str(cutoff))}</footer></div></html>")
 
 
+SINO = {'일': 1, '이': 2, '삼': 3, '사': 4, '오': 5, '육': 6, '칠': 7, '팔': 8, '구': 9}
+SINO_UNITS = {'십': 10, '백': 100, '천': 1000}
+
+
+def sino_digits(text):
+    """ASR may write amounts as words (천백억 달러). Convert only sino-Korean numerals right before a unit."""
+    def value(word):
+        total, digit = 0, None
+        for ch in word:
+            if ch in SINO:
+                digit = SINO[ch]
+            else:
+                total += (digit or 1) * SINO_UNITS[ch]
+                digit = None
+        return str(total + (digit or 0))
+    return re.sub(r'(?<![가-힣])([일이삼사오육칠팔구]?[십백천](?:[일이삼사오육칠팔구]?[십백천])*[일이삼사오육칠팔구]?)(?=\s?(?:억|만|조|원|달러|퍼센트|배럴))',
+                  lambda m: value(m.group(1)), text)
+
+
+def spoken_numbers_heard(expected, transcript):
+    """Every scripted number must be heard, in order. Extra digits from words such as 세 가지 are tolerated."""
+    want = re.findall(r"\d+(?:\.\d+)?", expected.replace(",", ""))
+    got = iter(re.findall(r"\d+(?:\.\d+)?", sino_digits(transcript).replace(",", "")))
+    return all(any(g == w for g in got) for w in want)
+
+
 class Aligner:
     def __init__(self, model):
         self.model_name, self.model = model, None
@@ -117,9 +143,7 @@ class Aligner:
         transcript = " ".join(s.text for s in segments)
         if SequenceMatcher(None, normalized(expected), normalized(transcript)).ratio() < .82:
             raise ValueError("Narration transcription differs from script; hold for listening review")
-        expected_numbers = re.findall(r"[+-]?\d+(?:\.\d+)?", expected.replace(",", ""))
-        actual_numbers = re.findall(r"[+-]?\d+(?:\.\d+)?", transcript.replace(",", ""))
-        if expected_numbers != actual_numbers:
+        if not spoken_numbers_heard(expected, transcript):
             raise ValueError("Spoken numbers could not be verified; hold for listening review")
         cues = []
         for segment in segments:
@@ -133,7 +157,8 @@ class Aligner:
                     group = []
         if not cues:
             raise ValueError("No real speech timestamps")
-        return {"transcript": transcript, "cues": cues, "method": "faster-whisper-word-timestamps"}
+        words = [{"word": w.word, "start": w.start, "end": w.end} for s in segments for w in (s.words or [])]
+        return {"transcript": transcript, "cues": cues, "words": words, "method": "faster-whisper-word-timestamps"}
 
 
 class Renderer:
