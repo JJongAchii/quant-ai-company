@@ -323,7 +323,9 @@ Preserve all unaffected sections and notes. This is one bounded correction, not 
 The final full original-to-main comparison and twelve-criterion independent review still decide quality.
 For a missing or invisible item ID, map only to an ID actually present in the returned draft. Put
 material facts in a visible overview/issue/context/internals paragraph; a thread-only watchpoint cannot
-cover them. Preserve every committed fact and qualifier. Compress repeated interpretation and caveats
+cover them. When committed_facts is supplied, copy its fact and quote fields EXACTLY unchanged; repair
+main_item_ids and visible prose instead of rewriting that inventory. Preserve every committed qualifier.
+Compress repeated interpretation and caveats
 within editable claims before adding prose; source coverage is not permission for repetitive writing.
 """
 
