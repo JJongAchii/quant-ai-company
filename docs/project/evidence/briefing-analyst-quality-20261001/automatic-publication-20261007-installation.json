@@ -1,0 +1,147 @@
+{
+  "recorded_at": "2026-10-07T07:21:40.602716+00:00",
+  "activation": {
+    "approval_id": "chat-analyst-autopublish-approved-20261007",
+    "authorization": "그럼 자동 발송 하도록 해주고, 검증은 그 이후에 계속 모니터링하면서 하는 걸로 하자",
+    "started_at": "2026-10-07T07:11:30.321564+00:00",
+    "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
+    "state": "automatic_publication_enabled",
+    "quality_certified": false,
+    "merged_environment_preflight_passed": true,
+    "previous_attempts": [
+      "analyst-autopublish-20261007",
+      "analyst-autopublish-20261007-preserved"
+    ],
+    "services": [
+      "news-worker",
+      "dispatch",
+      "briefing-data-worker",
+      "api",
+      "worker",
+      "slack-socket"
+    ],
+    "changed_settings": {
+      "BRIEFING_PUBLISH_ENABLED": "true",
+      "BRIEFING_EVALUATION_EDITION_ID": "",
+      "BRIEFING_EVALUATION_EDITION_IDS": "[]"
+    },
+    "slack_identity": {
+      "team": "T0C1YRDRPNF",
+      "bot": "U0C4PJDR8G3"
+    },
+    "previous_evaluation_editions": [
+      "02cfddb9-e401-5634-af9c-b124a6f54cf8",
+      "05a23b7f-dfb9-51d9-bda0-9747f482e75c",
+      "16b6315b-c44e-57ab-988a-2089c88e0f3b",
+      "3042a447-de8b-55fe-9a56-72014df5c2b9",
+      "4d933b4e-3814-54bf-943a-48029aa76124",
+      "56e7ca37-1579-559a-955a-0d76e38de330",
+      "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb",
+      "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "9473536f-12b8-552b-ba48-6beb1d198577",
+      "cfc0bd9a-c815-5ce0-a29f-4f411c5f9383",
+      "dff83379-260b-5d04-a36d-3722a2ba5fac",
+      "f8004fe8-789b-5df2-8dfa-a06f11903d91"
+    ],
+    "completed_at": "2026-10-07T07:12:11.584454+00:00",
+    "publication_enabled": true,
+    "evaluation_restriction_removed": true,
+    "independent_checks_retained": true,
+    "images": {
+      "news-worker": "quant-company:bfa923b392cc880e54978cc28041970d6cc06dd6-profile0",
+      "dispatch": "quant-company:bfa923b392cc880e54978cc28041970d6cc06dd6-profile0",
+      "briefing-data-worker": "quant-company:bfa923b392cc880e54978cc28041970d6cc06dd6-profile1",
+      "api": "quant-company-audit-api:53ed9e33175d6056d72417c081d574a740587695-runtime",
+      "worker": "quant-company-audit-worker:53ed9e33175d6056d72417c081d574a740587695-runtime",
+      "slack-socket": "quant-company:trend-recurring-20261007-d6b04a5bfc00"
+    },
+    "runtime_bindings_preserved": true,
+    "unrelated_services_preserved": true,
+    "old_editions_changed": false,
+    "model_calls": 0,
+    "slack_write_calls": 0,
+    "environment_before_sha256": "aa41be53a51cbb9667b99388805d65fd3f1783d67c91921be1170317e2659c19",
+    "environment_after_sha256": "4631788fd071a547961e1328ad3e8ce8b33b01f998e8962150508149afa6d792"
+  },
+  "host_settings": {
+    "BRIEFING_ENABLED": "true",
+    "BRIEFING_PUBLISH_ENABLED": "true",
+    "BRIEFING_EVALUATION_EDITION_ID": "",
+    "BRIEFING_EVALUATION_EDITION_IDS": "[]",
+    "BRIEFING_CHANNEL_ID": "C0C2E59B1AA",
+    "BRIEFING_OWNER_USER": "U0C250E23NW"
+  },
+  "services": [
+    {
+      "name": "/quant-company-news-worker-1",
+      "image": "quant-company:bfa923b392cc880e54978cc28041970d6cc06dd6-profile0",
+      "publication_enabled": true,
+      "evaluation_restriction_removed": true,
+      "healthy": "running",
+      "restart_count": 0
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "image": "quant-company:bfa923b392cc880e54978cc28041970d6cc06dd6-profile0",
+      "publication_enabled": true,
+      "evaluation_restriction_removed": true,
+      "healthy": "running",
+      "restart_count": 0
+    },
+    {
+      "name": "/quant-company-briefing-data-worker-1",
+      "image": "quant-company:bfa923b392cc880e54978cc28041970d6cc06dd6-profile1",
+      "publication_enabled": true,
+      "evaluation_restriction_removed": true,
+      "healthy": "running",
+      "restart_count": 0
+    },
+    {
+      "name": "/quant-company-api-1",
+      "image": "quant-company-audit-api:53ed9e33175d6056d72417c081d574a740587695-runtime",
+      "publication_enabled": true,
+      "evaluation_restriction_removed": true,
+      "healthy": "healthy",
+      "restart_count": 0
+    },
+    {
+      "name": "/quant-company-worker-1",
+      "image": "quant-company-audit-worker:53ed9e33175d6056d72417c081d574a740587695-runtime",
+      "publication_enabled": true,
+      "evaluation_restriction_removed": true,
+      "healthy": "running",
+      "restart_count": 0
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "image": "quant-company:trend-recurring-20261007-d6b04a5bfc00",
+      "publication_enabled": true,
+      "evaluation_restriction_removed": true,
+      "healthy": "running",
+      "restart_count": 0
+    }
+  ],
+  "database_metadata": {
+    "sending": 0,
+    "uncommitted_briefs": [],
+    "analyst_pending_messages": 0
+  },
+  "previous_attempts": [
+    {
+      "case": "analyst-autopublish-20261007",
+      "recorded_state": "failed_or_rolled_back",
+      "started_at": "2026-10-07T07:01:19.728056+00:00",
+      "outcome": "Publication reset to false; the shared Compose file added four environment keys to API, worker and socket.",
+      "recovery": "Exact original bindings plus authorized publication settings independently verified by the final activation.",
+      "failure": "Existing runtime environment mismatch; no scheduled edition or Slack write created"
+    },
+    {
+      "case": "analyst-autopublish-20261007-preserved",
+      "recorded_state": "applying",
+      "started_at": "2026-10-07T07:05:41.877516+00:00",
+      "outcome": "Publication reset to false; the shared Compose file added four environment keys to API, worker and socket.",
+      "recovery": "Exact original bindings plus authorized publication settings independently verified by the final activation.",
+      "failure": "Existing runtime environment mismatch; no scheduled edition or Slack write created"
+    }
+  ]
+}

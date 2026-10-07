@@ -1,0 +1,31 @@
+{
+  "source_commit": "202c01fbc044d84a07e5350e94b2e624ea4b764e",
+  "junit_sha256": "8c7fd3a767e0e396f5972cbfb8fb634d9e258ac8d5f949ebb19c94b090506348",
+  "local_real_postgres": true,
+  "model_and_slack": "simulated in regression tests",
+  "counts": {
+    "tests": 52,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsed_seconds": 9.91,
+  "test_files": [
+    "tests/test_analyst_brief_monitor.py",
+    "tests/test_briefing.py",
+    "tests/test_briefing_inventory.py",
+    "tests/test_briefing_slack_blocks.py",
+    "tests/test_briefing_observation_window.py"
+  ],
+  "coverage": [
+    "continuous installed-calendar expected editions including absent registration",
+    "optional discovery within seven calls; failed content not certified",
+    "read-only metadata query creates no model request",
+    "old preview never retroactively published",
+    "scheduled finalization and ambiguous Slack delivery guards"
+  ],
+  "ruff": "passed for monitor and its tests",
+  "git_diff_check": "passed",
+  "real_slack_sent": false,
+  "fresh_model_quality_evaluated": false
+}

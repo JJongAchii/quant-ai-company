@@ -2,7 +2,7 @@
   "recorded_at": "2026-10-07T04:34:36.482091+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
-  "latest_request": "개선할 부분 개선하고 그럼 앞으로 모니터링 해보면 될까?",
+  "latest_request": "그럼 자동 발송 하도록 해주고, 검증은 그 이후에 계속 모니터링하면서 하는 걸로 하자",
   "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
   "format_version": 17,
   "validation_version": 60,
@@ -17,10 +17,10 @@
     "Bounded calendar-aware observation and immutable outcome receipts",
     "Commit original-bound material facts before reader-facing composition; verify qualifiers survive in main text",
     "Target confirmed comparison-basis and alternative-explanation gaps in one scoped repair",
-    "Read-only scheduled PostgreSQL monitoring for twelve prospectively registered editions"
+    "Continuous calendar-aware monitoring of expected editions, quality and actual Slack receipts; automatic publication enabled by explicit owner direction"
   ],
-  "deployment": "preview_active_actual_cloud",
-  "publication_enabled": false,
+  "deployment": "automatic_publication_active_actual_cloud",
+  "publication_enabled": true,
   "preserved_other_runtime_features": [
     "model assignments",
     "trend feed",
@@ -59,12 +59,11 @@
     "pm": "17:45",
     "special_pm": "No earlier than special closing time plus 65 minutes"
   },
-  "next": "Oct7 PM: automatic registration/collection at16:40 KST, freeze at17:00, target17:45, stop new generation at17:55, metadata observation at17:58. Continue the twelve frozen editions through Oct15; actual new content and five-trading-day qualification remain unestablished.",
+  "next": "Oct7 PM: collect16:40 KST, freeze17:00, target Slack publication17:45, stop new generation17:55, monitor17:58. Continue normal trading-calendar publications and quality monitoring without an end date.",
   "remaining": [
-    "Fresh twelve-check content qualification with zero mechanical rejection and independent original-to-main audit",
-    "Fresh scheduled execution within budget, with correctly dated market data and no lost source prerequisites",
-    "Human content acceptance of a qualified real Slack preview",
-    "Five completed KRX trading days of timing/source/model/saved-input evidence before automatic publication"
+    "Observe actual first scheduled Slack receipt after activation",
+    "Evaluate fresh twelve-check content results and main-text coverage without certifying prior failed content",
+    "Continue timing, source, model-call budget, limited-edition reasons and reader-quality monitoring during publication"
   ],
   "evidence": [
     "docs/project/evidence/briefing-analyst-quality-20261001/execution59-installation.json",
@@ -83,7 +82,11 @@
     "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-initial-cutover-lock.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-installation.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-monitor-installation.json",
-    "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-idle-readiness.json"
+    "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-idle-readiness.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-policy.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/regression-automatic-publication-20261007.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-installation.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-monitor.json"
   ],
   "latest_execution": {
     "plan": "completed at07:04:09 KST",
@@ -118,7 +121,7 @@
     "quality_evaluation_scope": "Saved-input development audit completed and failed6 of12; fresh quality not established."
   },
   "active_evaluation": {
-    "policy": "prospective-operating-20261007-20261015-inventory60-idle-policy.json",
+    "policy": "automatic-publication-20261007-policy.json",
     "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
     "collection_kst": "2026-10-07 16:40",
     "cutoff_kst": "2026-10-07 17:00",
@@ -126,7 +129,7 @@
     "deadline_kst": "2026-10-07 17:55",
     "model": "gpt-6-astra",
     "reasoning_effort": "xhigh",
-    "maximum_distinct_calls": 6,
+    "maximum_distinct_calls": 7,
     "maximum_confirmed_repairs": 1,
     "semantic_checks_required": 12,
     "mechanical_rejections_allowed": 0,
@@ -134,11 +137,11 @@
     "registration_state": "waiting_for_collection_start",
     "postgres_record_present_before_starts_at": false,
     "schedule_verified_in_actual_installed_source": true,
-    "whitelist_verified": true,
-    "automatic_slack_publication": false,
-    "record": "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-installation.json",
+    "whitelist_verified": false,
+    "automatic_slack_publication": true,
+    "record": "docs/project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-installation.json",
     "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
-    "observation_editions": 12,
+    "observation_editions": null,
     "phase_seconds": {
       "plan": 360,
       "write": 960,
@@ -146,7 +149,8 @@
       "inventory": 480,
       "revise": 360,
       "final_review": 360
-    }
+    },
+    "evaluation_restriction_removed": true
   },
   "temporal_rollover_readback": {
     "record": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-temporal-budget-20261007.json",
@@ -179,7 +183,7 @@
     "source_profile_preservation_verified": true,
     "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-final-installation-20261007.json"
   },
-  "updated_at": "2026-10-07T06:12:46.505803+00:00",
+  "updated_at": "2026-10-07T07:21:40.602716+00:00",
   "manual_preview": {
     "operation": "analyst-saved-input-quality-preview-20261007-schema59-once",
     "channel": "C0C2E59B1AA",
@@ -210,9 +214,9 @@
     "source_profiles_staged": 3,
     "installed": true,
     "blocked_by": null,
-    "policy": "prospective-operating-20261007-20261015-inventory60-idle-policy.json",
-    "edition_count": 12,
-    "maximum_distinct_calls_per_edition": 6,
+    "policy": "automatic-publication-20261007-policy.json",
+    "edition_count": null,
+    "maximum_distinct_calls_per_edition": 7,
     "monitor_installed": true,
     "implementation_commit": "2b60bb81424eb08b6e5e0f99346d3ffd76b0bafa",
     "installed_at": "2026-10-07T06:08:02.892988+00:00",
@@ -250,7 +254,39 @@
     "first_failure_record": "docs/project/evidence/briefing-analyst-quality-20261001/fresh-am-20261007-validation58-timeout.json",
     "retired_for_new_execution_policy_at": "2026-10-07T01:08:40.322510+00:00"
   },
-  "frozen_observation": {
+  "monitoring": {
+    "record": "docs/project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-monitor.json",
+    "installed": true,
+    "initial_execution": "success",
+    "next_kst": "2026-10-07 17:58",
+    "unit": "quant-company-analyst-monitor.timer",
+    "result_path": "/var/lib/quant-company/monitoring/analyst-continuous/results/latest.json",
+    "timing": "Daily07:58 and17:58 KST; installed calendar supplies expected editions; timestamps and exact delays recorded",
+    "model_calls": 0,
+    "slack_calls": 0,
+    "automatic_replay": false,
+    "automatic_publication_changed": false,
+    "mode": "continuous",
+    "schedule_kst": [
+      "07:58",
+      "17:58"
+    ],
+    "end_date": null,
+    "previous_bounded_timer": "disabled",
+    "publication_enabled": true,
+    "quality_certified": false,
+    "alert_delivery": "Metadata only; no automatic Slack alert or model repair"
+  },
+  "publication_authorization": {
+    "id": "chat-analyst-autopublish-approved-20261007",
+    "received_in_session": true,
+    "policy": "docs/project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-policy.json",
+    "supersedes_preview_only_and_five_day_prepublication_wait": true,
+    "original_intent_and_other_work_intents_preserved": true
+  },
+  "automatic_publication_request_complete": true,
+  "quality_certified": false,
+  "retired_inventory60_observation": {
     "policy": "docs/project/evidence/briefing-analyst-quality-20261001/prospective-operating-20261007-20261015-inventory60-idle-policy.json",
     "kr_trading_days": [
       "2026-10-08",
@@ -279,19 +315,8 @@
     "automatically_enables_publication": false,
     "fresh_results_available": false,
     "content_or_timing_qualification_established": false,
-    "prior_failed_cases_preserved": true
-  },
-  "monitoring": {
-    "record": "docs/project/evidence/briefing-analyst-quality-20261001/inventory60-monitor-installation.json",
-    "installed": true,
-    "initial_execution": "success",
-    "next_kst": "2026-10-07 17:58",
-    "unit": "quant-company-analyst-inventory60.timer",
-    "result_path": "/var/lib/quant-company/monitoring/analyst-inventory60/results/latest.json",
-    "timing": "Each due_at plus13 minutes; exact lateness recorded separately",
-    "model_calls": 0,
-    "slack_calls": 0,
-    "automatic_replay": false,
-    "automatic_publication_changed": false
+    "prior_failed_cases_preserved": true,
+    "retired_at": "2026-10-07T07:12:11.584454+00:00",
+    "retirement_reason": "Owner explicitly enabled automatic publication with ongoing monitoring; prior fixed-period evidence remains frozen."
   }
 }

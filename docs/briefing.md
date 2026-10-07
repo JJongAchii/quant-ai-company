@@ -14,10 +14,11 @@ Reporter는 속보를, Analyst는 정기 종합과 후속 질문을 맡는다. �
 이전에 앱을 설치했다면 기존 앱의 표시 이름을 Analyst, bot display name을 analyst로 갱신한다.
 manifest 파일이나 코드를 바꾼 것만으로 실제 Slack 앱의 이름이 변경되지는 않는다.
 
-이 브랜치는 구현과 검증 단계다. 기존 원문과 실제 구독 모델을 사용한 내용 평가를 수행했으며
+기존 원문과 실제 구독 모델을 사용한 내용 평가를 수행했으며
 [결과와 미통과 사례](project/BRIEFING-CONTENT-RESULTS.md)를 보존한다. 기본 활성화·발송 설정은
-모두 꺼짐이다. 운영 서버 배치, 실제 Slack 전달, 5거래일 실시간 관찰은 각각 별도 증거가 필요하다.
-실제 모델 내용 평가나 모의 Slack 검사를 운영 활성화로 해석하지 않는다.
+새 설치에서는 모두 꺼짐이다. 현재 운영은 10월 7일 사용자의 자동 발송 지시에 따라 켜고,
+발송 이후에도 내용과 운영 상태를 계속 점검한다. 실제 모델 품질, 서버 활성화, Slack 전달은
+각각 별도 증거로 기록하며, 활성화만으로 내용 품질이 통과했다고 해석하지 않는다.
 [9월 28일 후속 평가](project/BRIEFING-QUALITY-20260928.md)는 본문 구성 개선, 숫자 검증기의
 오거절 수리, 새 발간 시점의 실제 모델 출력과 새 Lightsail 인스턴스에서 이어진 검토를 기록한다.
 [Analyst 설치와 추가 아침판 평가](project/ANALYST-PREVIEW-20260928.md)는 실제 채널·서버 설정,
@@ -32,12 +33,12 @@ manifest 파일이나 코드를 바꾼 것만으로 실제 Slack 앱의 이름�
 작성 과정에서 빠지면 별도로 검출한다. 사실 목록은 독립 검토자에게 보여주지 않으며, 검토자는
 전체 원문과 실제 첫 메시지를 직접 대조한다. 사실 추출 결과 자체를 품질 합격으로 인정하지 않는다.
 
-새 관찰 대상은 10월 7일 오후판, 8·12·13·14·15일의 다섯 한국 거래일 오전·오후판,
-10일 토요일 미국장 정리까지 12회다. 9일 아침판은 이번 제한된 관찰에 포함하지 않는다.
-기존 실제 발간용 거래일 규칙은 바꾸지 않는다. 원문을 보기 전에
-[회차와 내용 기준을 고정](project/evidence/briefing-analyst-quality-20261001/prospective-operating-20261007-20261015-inventory60-idle-policy.json)했다.
-첫 진행은 자료 선정·핵심 사실 확정·작성·독립 검토의 네 요청이며, 확인된 문제 보완과 최종 검토를
-포함해 최대 여섯 요청이다. 회차별 보완은 한 번이며 결과가 불명확한 요청을 새 ID로 재실행하지 않는다.
+이전에는 [12회 미리보기 관찰](project/evidence/briefing-analyst-quality-20261001/prospective-operating-20261007-20261015-inventory60-idle-policy.json)을
+예약했다. 이후 사용자가 자동 발송을 먼저 켜고 검증을 계속하도록 지시해
+[상시 발송·관찰 정책](project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-policy.json)으로
+전환했다. 특정 회차 허용 목록과 종료 날짜 없이 기존 거래일 규칙을 따른다.
+기본 편집은 자료 선정·핵심 사실 확정·작성·독립 검토의 네 요청이며, 필요할 때 자료 탐색 한 요청과
+보완·최종 검토를 포함해 최대 일곱 요청이다. 회차별 보완은 한 번이며 결과가 불명확한 요청을 새 ID로 재실행하지 않는다.
 [검사 기록](project/evidence/briefing-analyst-quality-20261001/inventory60-readiness.json)은 실제 PostgreSQL
 회귀 350개와 전송 크기 검사 결과다. 새 실제 모델의 내용 품질 합격을 뜻하지 않는다.
 [현재 설치·진행 상태](work/amberjack/ANALYST-FINALIZATION-STATUS.json)를 별도로 확인한다.
@@ -47,14 +48,19 @@ manifest 파일이나 코드를 바꾼 것만으로 실제 Slack 앱의 이름�
 기존 API·모델 배정·인증 연결·다른 운영 기능은 보존했다.
 [설치 기록](project/evidence/briefing-analyst-quality-20261001/inventory60-installation.json)을 남겼다.
 
-관찰 도구는 발간 목표 13분 뒤 PostgreSQL에서 내용 검사·검증 오류·단계별 시간·지연·발송 영수증을
-읽고 서버에 기록한다. 모델 호출·Slack 알림·실패 재실행·자동 발송 전환은 하지 않는다.
-서버의 `quant-company-analyst-inventory60.timer`를 설치·활성화했고 첫 조회가 정상 완료됐다.
-다음 실행은 10월 7일 17:58 KST다. 결과는 서버의
-`/var/lib/quant-company/monitoring/analyst-inventory60/results/latest.json`과 회차별 파일에 저장한다.
-[관찰 설치 기록](project/evidence/briefing-analyst-quality-20261001/inventory60-monitor-installation.json)을 확인할 수 있다.
-원문 대조와 12개 내용 검사, 실제 Slack 수신 확인·사용자 내용 검토, 최근 5거래일 운영 검증이
-모두 끝나야 자동 발송을 활성화할 수 있다. 자동 발송은 현재 꺼져 있다.
+자동 발송 전환은 기존 서비스의 이미지·인증·기능을 보존하며 게시 설정과 회차 제한만 변경한다.
+과거 미리보기는 소급 발송하지 않는다. [실제 적용 기록](project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-installation.json)을
+남기며, 이 전환을 새 실제 내용의 품질 통과로 기록하지 않는다.
+
+관찰 도구는 매일 07:58·17:58 KST에 PostgreSQL에서 내용 검사·검증 오류·단계별 시간·지연·발송
+영수증을 읽어 기록한다. 설치된 거래일 캘린더로 최근 7일과 다음 날의 예상 판을 계산하므로
+등록 자체가 빠진 판도 확인한다. 모델 호출·Slack 알림·실패 재실행·발송 설정 변경은 하지 않는다.
+상시 타이머는 `quant-company-analyst-monitor.timer`이며 기존 기간 제한 타이머는 해제한다.
+결과는 서버의 `/var/lib/quant-company/monitoring/analyst-continuous/results/latest.json`과
+회차별 파일에 저장한다. [상시 관찰 설치 기록](project/evidence/briefing-analyst-quality-20261001/automatic-publication-20261007-monitor.json)을
+확인할 수 있다. 원문 대조·12개 내용 검사·수신 영수증·5거래일 운영 검증은 발송과 병행한다.
+이전의 미리보기 선행·5거래일 대기 조건은 최신 사용자 지시로 해제했다. 개별 판의 수치·출처 검증은
+유지하며, 충분히 확인되지 않은 판은 기존 축약·상태 안내 경로로 처리하고 완성본 통과로 세지 않는다.
 
 배포 중 API 안에서 추가 상태 조회를 실행해 메모리 한도로 API가 한 번 재시작됐으며 복구했다.
 최종 배포는 데이터베이스에서 직접 조회해 API에 추가 Python 프로세스를 띄우지 않는다.
@@ -290,8 +296,8 @@ ISO 시각 또는 null), `source_url`(공식 공지 URL)이다. `closed=true`이
 파일을 지정하면 모든 관련 서비스에 같은 읽기 전용 파일을 마운트한다. 승인된 배포 설정을 통해
 변경하고 정규 브리핑 모델에게 캘린더 수정 권한을 주지 않는다.
 
-기존 배포 절차로 마이그레이션과 프로세스를 갱신하되 미리보기부터 시작한다. 수집·역할 활성화와
-게시 활성화를 분리하며, 과거 미리보기는 발송 설정을 켜도 소급 게시하지 않는다.
+기존 배포 절차로 마이그레이션과 프로세스를 갱신한다. 수집·역할 활성화와 게시 활성화를 분리하며,
+운영자의 최신 발송 지시를 적용한다. 과거 미리보기는 발송 설정을 켜도 소급 게시하지 않는다.
 
 ## 명령과 데모
 
@@ -326,10 +332,10 @@ TEST_DATABASE_URL=postgresql://DISPOSABLE_TEST_USER@localhost:5432/postgres \
 uv run ruff check .
 ```
 
-운영 인수는 최근 5거래일의 고정 입력 재현, 5거래일 실시간 미리보기, 핵심 종가·출처·검토·지연·
-축약 사유 점검, 새 앱의 실제 테스트 전달을 기록한 뒤 자동 게시를 켠다. 미리보기/재현에는 자료
-조회 시각을 보존해야 하며 오늘 조회한 문서를 과거에 수집한 것으로 바꾸지 않는다. 이 기간 관찰을
-코드 테스트나 과거 날짜 fixture로 대신하지 않는다. 롤백은 `BRIEFING_PUBLISH_ENABLED=false`,
+운영 품질은 최근 5거래일의 고정 입력 재현, 실제 발간, 핵심 종가·출처·검토·지연·축약 사유와
+실제 전달 기록으로 점검한다. 10월 7일 사용자 지시에 따라 이 검증을 자동 게시와 병행한다.
+미리보기/재현에는 자료 조회 시각을 보존해야 하며 오늘 조회한 문서를 과거에 수집한 것으로 바꾸지
+않는다. 기간 관찰을 코드 테스트나 과거 날짜 fixture로 대신하지 않는다. 롤백은 `BRIEFING_PUBLISH_ENABLED=false`,
 완전 중지는 추가로 `BRIEFING_ENABLED=false`를 모든 관련 프로세스에 적용한다. 이미 전송 중인
 메시지는 취소를 보장하지 않는다. DB 백업에는 새 테이블도 포함된다.
 
