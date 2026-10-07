@@ -101,6 +101,26 @@ def test_execution_stage_rejects_earlier_approval_before_host_effects(tmp_path, 
     assert not (tmp_path/'not-created').exists() and not (tmp_path/'receipt.json').exists()
 
 
+def test_execution_approval_can_replace_only_the_explicit_owned_preview(tmp_path, monkeypatch):
+    monkeypatch.setattr(release, 'STATE', tmp_path)
+    old_approval = 'chat-analyst-preview-approved-20261002'
+    new_approval = 'chat-analyst-execution-approved-20261007'
+    base = 'a' * 40
+    image = {'Id': 'installed', 'Config': {'Labels': {}}}
+    owned = {'phase': 'preview_active', 'owner_approval': old_approval, 'commit': base,
+             'images': [{'target': 'app', 'id': 'installed'}]}
+    manifest = {**execution_manifest(), 'previous_commit': base, 'previous_owner_approval_id': old_approval}
+    assert release.owned_data_worker(image, owned, manifest, new_approval, base) == (True, False)
+    for change in [{'owner_approval': 'unrelated'}, {'commit': 'b' * 40}, {'phase': 'rolled_back'},
+                   {'images': [{'target': 'app', 'id': 'different'}]}]:
+        assert release.owned_data_worker(image, {**owned, **change}, manifest, new_approval, base) == (False, False)
+    for change in [{'previous_commit': 'b' * 40}, {'previous_owner_approval_id': 'unrelated'}]:
+        assert release.owned_data_worker(image, owned, {**manifest, **change}, new_approval, base) == (False, False)
+    assert release.owned_data_worker(image, owned, execution_manifest(), new_approval, base) == (False, False)
+    assert release.owned_data_worker(image, owned, manifest, 'unrelated', base) == (False, False)
+    assert release.owned_data_worker(image, owned, {}, old_approval, base) == (True, False)
+
+
 def test_live_inventory_survives_staged_json_receipt_and_still_detects_drift(monkeypatch):
     row = {'Name': '/quant-company-news-worker-1', 'Id': 'container', 'RestartCount': 0,
            'State': {'Running': True, 'OOMKilled': False}, 'Config': {'Image': 'verified-image'},

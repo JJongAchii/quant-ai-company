@@ -273,6 +273,21 @@ def owned_model_overlay(image, owned, approval):
                 and row.get('id') == image['Id'] and NEW_SERVICE in row.get('services', []))
 
 
+def owned_data_worker(image, owned, manifest, approval, base):
+    """A new runtime approval must explicitly name the preview it replaces."""
+    prior_approval = manifest.get('previous_owner_approval_id', approval)
+    if prior_approval != approval:
+        if (not execution_runtime_update(manifest)
+                or approval != manifest['execution_runtime_update']['owner_approval_id']
+                or not isinstance(prior_approval, str)
+                or not re.fullmatch(r'chat-analyst-preview-approved-[0-9]{8}', prior_approval)
+                or owned.get('commit') != base or manifest.get('previous_commit') != base):
+            return False, False
+    original = (owned.get('phase') == 'preview_active' and owned.get('owner_approval') == prior_approval
+                and any(row['target'] == 'app' and row['id'] == image['Id'] for row in owned.get('images', [])))
+    return original, owned_model_overlay(image, owned, prior_approval)
+
+
 def service_images(receipt):
     return {name: row['tag'] for row in receipt.get('images', []) for name in row.get('services', [])}
 
@@ -399,9 +414,7 @@ def stage(args, previous, target, module, journal):
             raise ValueError('preview_data_worker_revision_missing')
         prior = STATE / 'releases' / ('analyst-preview-' + revision + '.json')
         owned = json.loads(prior.read_text()) if prior.is_file() else {}
-        original = (owned.get('phase') == 'preview_active' and owned.get('owner_approval') == args.approval
-                    and any(row['target'] == 'app' and row['id'] == image['Id'] for row in owned.get('images', [])))
-        inherited = owned_model_overlay(image, owned, args.approval)
+        original, inherited = owned_data_worker(image, owned, manifest, args.approval, args.base)
         if (not (original or inherited)
                 or values.get('BRIEFING_ENABLED') != 'true' or values.get('BRIEFING_PUBLISH_ENABLED') != 'false'):
             raise ValueError('preview_data_worker_not_owned')
@@ -419,6 +432,7 @@ def stage(args, previous, target, module, journal):
     receipt['preserve_codex_runtime'] = bool(manifest.get('preserve_codex_runtime'))
     receipt['preserve_api'] = bool(manifest.get('preserve_api'))
     receipt['execution_runtime_update'] = manifest.get('execution_runtime_update')
+    receipt['previous_owner_approval_id'] = manifest.get('previous_owner_approval_id')
     module.atomic(journal, json.dumps(receipt).encode())
     target.mkdir()
     module.unpack(data, target)
