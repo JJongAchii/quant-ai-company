@@ -132,3 +132,29 @@ API의 같은 immutable image·보호된 환경·volume과 DB 공통 network를 
 원래 audit hold 해제·meaning 실행과 과학 시행1건 유지가 확인됐다. 보완 응답·정상 최종 인용 대조·
 보고서 등록·실제 Slack 전달은 계속 관측한다. `meaning_citation_contract_correction_requested`는
 이번 복구에서 제공한 안내 표식이며 새 실패 판정이 아니다.
+
+## 첫 실제 보고서와 Slack 전달 확인 — 완료
+
+보완 turn81은 정상 완료·접수됐다. 직원은 미해결 test의 evidence_paths를 빈 목록으로 보완했으며
+서버가 원래 trial/outcome·정확한 test 의무·canonical scope를 대조해 의미 판정을 등록했다.
+원래80번 응답과 native receipt,79개 읽기 기록, 원래 감사 판정/패키지·job/예산을 유지했다.
+Root가 원문을 수정하거나 새 실험을 실행한 적은 없다.
+
+15:54:41 KST에 의미 검토를 등록했고15:54:42에 실제 non-fixture 보고서와 archive를 S3에 저장했다.
+audit/meaning/job은 completed, trial은 reported다. 보고서 HTML SHA는
+`dba5657bf9e616e09ee8ed97dbfa1a7abeb3e47edc6b52a63f3f7b1329ca9ba2`, archive SHA는
+`a1433e4763d76c6ee2b7d17eac5c142f43dbef039d3a670d5d9f201a804505c4`다.
+15:59:02의 [실제 링크 GET](evidence/etf-exploration-20260930/first-trial-report-link-verified-20261007.json)은
+HTTP200·text/html·56,415byte이며 본문 SHA가 등록 SHA와 일치한다. 서명 URL은10월14일15:54KST까지 유효하다.
+URL 자체·credential·수익 수치는 operator의 증거나 응답에 출력하지 않았다.
+
+Director task84e55870은 정상 read_source/최종 응답의 두 turn을 마쳤다.
+15:58:46 KST에 원래 research-center thread로 최종 Slack 보고가 전송됐다. outbox2b3b1d8d는
+delivered/attempts1/sent_ts1791356326.914459이며 정확한 보고서 URL과 소유자 tag가 포함됐다.
+[실제 전송 및 현재 완료 상태](evidence/etf-exploration-20260930/first-trial-report-actual-slack-delivery-20261007.json)와
+[Slack 최종 보고](https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1791356326914459?thread_ts=1789633942.673909&cid=C0C2B9EUEGM)를 연결한다.
+
+INTENT-v17의 첫 실제 시행에 대한 모니터링·관측된 기술 수리·감사/해석/보고/전송 검증을 완료했다.
+Programme은 active/실제 과학 시행1건이며 전체 연구 완료·역사적 알파·확증·실운용 승인은 주장하지 않는다.
+완료한 meaning.error에 남은 문구는 이번 보완의 안내 표식으로, 실제 보류는 없고 게시/전송이 완료됐다.
+읽기 전용 관측기는18:13:44KST까지 최대4시간 기록한다. 자동 경보·무인 수리를 제공하지 않는다.

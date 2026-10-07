@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v17.json",
-  "state": "monitoring_resumed_independent_audit",
+  "state": "first_trial_report_and_slack_delivery_verified",
   "previousIntent": "INTENT-v16.json",
   "deliverables": {
     "POLICY": {
@@ -20,7 +20,7 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Independent audit pass and21 required meaning reads are verified. A citation-scope mismatch held publication after meaning response80. Exact scoped correction applied15:52:00KST/event783 after a real PostgreSQL rollback probe and PR105 review; all old responses/reads/audit/science scope were retained. Normal official employee correction request81 actually started15:52:02KST. Its accepted response, report registration and actual Slack delivery remain pending.",
+  "operationalStatus": "First actual trial is reported. Independent audit and corrected meaning review completed; real non-fixture report registered15:54KST. Stored report link returned HTTP200 with matching HTML SHA. Director's final Slack report was delivered15:58:46KST, one sender attempt, with exact report link and owner tag. INTENT-v17 monitoring/repair/report verification is complete. Programme remains active at one scientific trial; no live eligibility or numeric performance claim by the operator.",
   "evidence": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json",
   "nextStage": {
     "stage": "independent_audit_meaning_report",
@@ -31,18 +31,21 @@
   },
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
   "finalIntegration": {
-    "status": "completed",
+    "status": "scoped_runtime_applied_and_first_trial_delivery_verified",
+    "canonicalMergeClaimed": false,
     "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
     "canonicalBase": "ccf7e11",
-    "productionCodeChangesFromBase": false,
+    "productionCodeChangesFromBase": true,
+    "serviceSourceCommit": "53ed9e33175d6056d72417c081d574a740587695",
     "regression": {
-      "passed": 1775,
+      "passed": 1831,
       "skipped": 14,
       "lint": "passed"
     },
     "scientificResultClaimed": false,
-    "intent": "INTENT-v14.json",
-    "currentIntentComplete": false
+    "intent": "INTENT-v17.json",
+    "currentIntentComplete": true,
+    "actualIntegrationEvidence": "../../project/evidence/etf-exploration-20260930/first-trial-report-actual-slack-delivery-20261007.json"
   },
   "exploratoryPreparation": {
     "policy": "completed",
@@ -113,7 +116,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "meaning_citation_correction_actual_call_running",
+    "phase": "first_trial_report_and_slack_delivery_verified",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
@@ -150,11 +153,12 @@
     "auditActualCallReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json"
   },
   "currentIntentCompletion": {
-    "intent": "INTENT-v16.json",
+    "intent": "INTENT-v17.json",
     "status": "completed",
-    "evidence": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json",
+    "evidence": "../../project/evidence/etf-exploration-20260930/first-trial-report-actual-slack-delivery-20261007.json",
     "programmeStillActive": true,
-    "researchReportCompleted": false,
+    "researchReportCompleted": true,
+    "actualSlackDeliveryVerified": true,
     "strategyOrLiveApprovalClaimed": false
   },
   "previousAuditResumeDeliverables": {
@@ -172,18 +176,18 @@
       "actualProviderState": "running"
     }
   },
-  "phase": "meaning_citation_correction_actual_call_running",
+  "phase": "first_trial_report_and_slack_delivery_verified",
   "currentDeliverables": {
     "AUDIT_NOTE_BOUND": {"status": "completed", "responseReconciliationEvent": 781},
-    "CONTINUOUS_PROGRESS": {"status": "in_progress", "citationCorrectionEvent": 783},
-    "VERIFIED_REPORT": {"status": "in_progress", "independentAuditVerified": true, "actualSlackDelivery": false}
+    "CONTINUOUS_PROGRESS": {"status": "completed", "citationCorrectionEvent": 783},
+    "VERIFIED_REPORT": {"status": "completed", "independentAuditVerified": true, "actualSlackDelivery": true}
   },
   "currentMonitoring": {
     "intent": 17,
     "response_reconciliation_event": 781,
     "service_source_commit": "53ed9e33175d6056d72417c081d574a740587695",
     "effective_runtime_images": "audit-runtime-patch-applied-20261007.json",
-    "verified_at": "2026-10-07T06:52:54.320659+00:00",
+    "verified_at": "2026-10-07T07:00:56.432380+00:00",
     "audit_reviewed_packets": 7,
     "audit_final_request_id": "8dbf96d1-00e9-5072-87b9-4f7483adf48d",
     "audit_final_request_completed_at": "2026-10-07T06:05:46.852770+00:00",
@@ -194,22 +198,28 @@
     "meaning_read_chunks": 79,
     "meaning_actual_turn_sequence": 81,
     "meaning_progress_evidence": "../../project/evidence/etf-exploration-20260930/first-trial-meaning-response-pending-20261007.json",
-    "actual_runtime_state": "running",
+    "actual_runtime_state": "complete",
     "independent_audit_complete": true,
     "independent_audit_verdict": "pass",
     "independent_verification_sha256": "4e8c5645a8a69e2ad44471ac96d43cff62f3ff1c63dda4ab590a8d2c2f66b185",
     "independent_verification_evidence": "../../project/evidence/etf-exploration-20260930/first-trial-independent-audit-verified-meaning-running-20261007.json",
-    "meaning_complete": false,
+    "meaning_complete": true,
     "meaning_previous_response_received": true,
-    "meaning_correction_response_received": false,
+    "meaning_correction_response_received": true,
     "publication_hold": null,
     "meaning_navigation_notice": "meaning_citation_contract_correction_requested",
     "meaning_correction_event": 783,
     "meaning_correction_applied": "../../project/evidence/etf-exploration-20260930/first-trial-meaning-citation-correction-applied-20261007.json",
     "meaning_correction_actual_call": "../../project/evidence/etf-exploration-20260930/first-trial-meaning-correction-actual-call-started-20261007.json",
     "meaning_correction_review": "../../project/evidence/etf-exploration-20260930/first-trial-meaning-citation-correction-review-20261007.json",
-    "report_registered": false,
-    "actual_slack_delivery_verified": false,
+    "report_registered": true,
+    "report_source_id": "mission-report:de3597b0-e358-5a58-af5e-9f3c79df53e9",
+    "report_html_sha256": "dba5657bf9e616e09ee8ed97dbfa1a7abeb3e47edc6b52a63f3f7b1329ca9ba2",
+    "report_http_status": 200,
+    "report_actual_body_sha256_matches": true,
+    "actual_slack_delivery_verified": true,
+    "slack_sent_ts": "1791356326.914459",
+    "slack_permalink": "https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1791356326914459?thread_ts=1789633942.673909&cid=C0C2B9EUEGM",
     "observer": {
       "unit": "quant-company-first-trial-monitor-20261007.service",
       "interval_seconds": 45,

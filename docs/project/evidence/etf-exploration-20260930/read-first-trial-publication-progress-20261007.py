@@ -53,7 +53,10 @@ SELECT json_build_object(
  'director_task',(SELECT json_build_object('id',k.id,'status',k.status,'error',k.error,
    'priority',k.priority,'turn_count',k.turn_count,
    'turns',(SELECT coalesce(json_agg(row_to_json(t)),'[]'::json) FROM (
-     SELECT id,sequence,status,error,updated_at FROM turns WHERE task_id=k.id ORDER BY sequence DESC LIMIT 3)t))
+     SELECT id,sequence,status,error,updated_at,
+       response#>>'{decision,tools,0,name}' AS tool_name,
+       response#>>'{decision,tools,0,arguments,source_id}' AS tool_source_id
+     FROM turns WHERE task_id=k.id ORDER BY sequence DESC LIMIT 3)t))
    FROM tasks k JOIN research_jobs j ON k.id::text=j.report->>'director_task_id'
    WHERE j.id='1ac851a9-f5d0-55a3-9bf8-7d98193e42c8'),
  'slack',(SELECT coalesce(json_agg(row_to_json(o)),'[]'::json) FROM (
