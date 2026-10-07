@@ -113,6 +113,16 @@ def test_request_rejects_bad_signature_and_workspace(trend):
     assert post(client, credential, wrong).status_code == 409
 
 
+def test_dedicated_request_policy_survives_other_process_channel_differences(trend):
+    recurring(trend)
+    policy = trend.policy()
+    # Existing API/socket processes need not have another feed's channel permission.
+    trend.company.settings.slack_allowed_channels.append("COTHERFEED")
+    assert trend.policy() == policy and trend.authorized()
+    trend.company.settings.slack_allowed_channels.remove("CTRENDS")
+    assert trend.policy() != policy and not trend.authorized()
+
+
 async def test_on_demand_refresh_filters_out_disappeared_keywords_and_reuses_verified_draft(trend):
     recurring(trend)
     clock(trend, 9, 50)
