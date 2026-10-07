@@ -70,6 +70,14 @@ manifest 파일이나 코드를 바꾼 것만으로 실제 Slack 앱의 이름�
 품질 통과로 세지 않는다. [실행·발송 기록](project/evidence/briefing-analyst-quality-20261001/requested-pm-20261007-inventory60-outcome.json)에
 측정된 시간 초과와 인용 계약 문제를 남겼으며 자동 발송 설정은 유지한다.
 
+10월 7일 19:45 KST에는 시장 범위 보완(format18/validation61)을 정기 브리핑의 세 서비스에
+적용했다. 거시지표·비반도체 업종의 후보 검색을 넓히고, 선정·사실 정리·본문 작성·검토에서
+같은 주제의 반복이 다른 중요한 사건을 밀어내지 않도록 했다. 세 번째 이후 이슈도 본문에서
+동일한 제목 수준으로 표시한다. [검사 기록](project/evidence/briefing-analyst-quality-20261001/market-breadth61-readiness.json)은
+336개 회귀와 원문 보존·입력 크기 확인이며, [설치 기록](project/evidence/briefing-analyst-quality-20261001/market-breadth61-installation.json)은
+실제 소스와 자동 발송 유지 확인이다. 새 실제 모델 내용의 품질 통과나 기존 시간초과·인용 계약
+오류의 해결을 의미하지 않는다.
+
 배포 중 API 안에서 추가 상태 조회를 실행해 메모리 한도로 API가 한 번 재시작됐으며 복구했다.
 최종 배포는 데이터베이스에서 직접 조회해 API에 추가 Python 프로세스를 띄우지 않는다.
 [복구와 수정 기록](project/evidence/briefing-analyst-quality-20261001/preview-cutover-rollback-validation58.json)을 보존한다.
