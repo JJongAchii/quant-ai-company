@@ -1,0 +1,60 @@
+{
+  "recorded_at": "2026-10-07T04:34:36.482091+00:00",
+  "installed_pure_schedule_readback": {
+    "recorded_at": "2026-10-07T04:32:48.364050+00:00",
+    "edition": {
+      "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
+      "day": "2026-10-07",
+      "kind": "pm",
+      "due_at": "2026-10-07T17:45:00+09:00",
+      "starts_at": "2026-10-07T16:40:00+09:00",
+      "cutoff": "2026-10-07T17:00:00+09:00",
+      "expires_at": "2026-10-07T18:45:00+09:00",
+      "us_session": null,
+      "kr_session": "2026-10-07",
+      "previous_us_session": null,
+      "previous_kr_session": "2026-10-06",
+      "weekly": null
+    },
+    "registration": "Worker registers when starts_at <= current time; not registered early.",
+    "registration_filter_verified_in_installed_source": true,
+    "whitelist_match": true,
+    "publication_enabled": false,
+    "model_calls": 0,
+    "database_mutations": 0,
+    "company_instantiated": false,
+    "source_image": "quant-company:2a8df31ec8d77ae111437bad9d42221e6cf29374-profile0",
+    "host_recorded_at": "2026-10-07T04:32:53.759099+00:00"
+  },
+  "native_postgresql_and_host_readback": {
+    "recorded_at": "2026-10-07T04:33:28.306843+00:00",
+    "edition": {
+      "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
+      "day": "2026-10-07",
+      "kind": "pm",
+      "due_at": "2026-10-07T17:45:00+09:00",
+      "starts_at": "2026-10-07T16:40:00+09:00",
+      "cutoff": "2026-10-07T17:00:00+09:00",
+      "expires_at": "2026-10-07T18:45:00+09:00",
+      "us_session": null,
+      "kr_session": "2026-10-07",
+      "previous_us_session": null,
+      "previous_kr_session": "2026-10-06",
+      "weekly": null
+    },
+    "postgres_record_present": false,
+    "state": "waiting_for_collection_start",
+    "registration_at": "2026-10-07T16:40:00+09:00",
+    "registration_rule": "Worker registers when starts_at <= current time; not registered early.",
+    "whitelist_match": true,
+    "generation_stops_at": "2026-10-07T17:55:00+09:00",
+    "expiry_is_retention_not_generation_deadline": true,
+    "publication_enabled": false,
+    "already_collected": false,
+    "model_calls": 0
+  },
+  "policy": "prospective-pm-20261007-final59-preserved-runtime-policy.json",
+  "quality_criteria_unchanged": true,
+  "same_sources_or_closed_writer_not_replayed": true,
+  "upcoming_case_has_not_started": true
+}

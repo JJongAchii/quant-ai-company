@@ -1,0 +1,48 @@
+{
+  "recorded_at": "2026-10-07T01:45:04.401012+00:00",
+  "workflows": [
+    {
+      "workflow": "company-brief-collection-v1",
+      "status": "RUNNING",
+      "task_queue": "quant-company-brief-collection",
+      "run_id": "483aac43-207a-4c3a-b4be-cfaaff3534d4",
+      "run_started_at": "2026-10-07T01:01:56.461412+00:00",
+      "scheduled_activities_in_run": 81,
+      "latest_start_to_close_seconds": 300,
+      "latest_heartbeat_seconds": 0,
+      "workflow_task_failures": 0
+    },
+    {
+      "workflow": "company-brief-editorial-v1",
+      "status": "RUNNING",
+      "task_queue": "quant-company-news-model",
+      "run_id": "2dfaafe6-e7b2-45e7-8717-1ba3fa97caf8",
+      "run_started_at": "2026-10-07T01:38:16.885491+00:00",
+      "scheduled_activities_in_run": 11,
+      "latest_start_to_close_seconds": 1560,
+      "latest_heartbeat_seconds": 30,
+      "workflow_task_failures": 0
+    },
+    {
+      "workflow": "company-brief-data-v1",
+      "status": "RUNNING",
+      "task_queue": "quant-company-brief-data",
+      "run_id": "198f76a5-d896-47d8-99e0-57a8d9308a93",
+      "run_started_at": "2026-10-07T01:03:12.824441+00:00",
+      "scheduled_activities_in_run": 83,
+      "latest_start_to_close_seconds": 90,
+      "latest_heartbeat_seconds": 0,
+      "workflow_task_failures": 0
+    }
+  ],
+  "real_temporal_execution_budget_verified": true,
+  "old_run_may_retain_original_deadline_until_continue_as_new": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "model_authentication_mounted": false,
+  "temporal_operations": [
+    "DescribeWorkflowExecution",
+    "GetWorkflowExecutionHistory"
+  ],
+  "credentials": "Only the existing Temporal secret is mounted read-only; never printed or copied."
+}

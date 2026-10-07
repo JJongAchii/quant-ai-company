@@ -1,9 +1,9 @@
 {
-  "recorded_at": "2026-10-07T01:51:03.677219+00:00",
+  "recorded_at": "2026-10-07T04:34:36.482091+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
-  "latest_request": "\uc9c0\uae08 \ud574\ubd10",
-  "source_commit": "15215a4e7c7d3188551278c1ec36fed85d428436",
+  "latest_request": "지금 해봐",
+  "source_commit": "2a8df31ec8d77ae111437bad9d42221e6cf29374",
   "format_version": 17,
   "validation_version": 59,
   "schedule_version": 4,
@@ -87,11 +87,11 @@
     "first_failure_record": "docs/project/evidence/briefing-analyst-quality-20261001/fresh-am-20261007-validation58-timeout.json",
     "retired_for_new_execution_policy_at": "2026-10-07T01:08:40.322510+00:00"
   },
-  "next": "Install the approved source-preserving repair on current actual images, then run the prospectively frozen PM case. Do not replay or relabel the closed saved-input case.",
+  "next": "At16:40 KST the installed worker registers the whitelisted prospectively frozen PM case. Collect until17:00, write and independently review toward17:45, and stop new generation at17:55. Inspect actual fresh content; do not regrade or replay the closed saved-input case.",
   "remaining": [
-    "Execution-model/frozen-policy agreement and writing completion within the scheduling budget",
-    "Fresh twelve-check content qualification and independent original-to-main audit",
-    "Actual Slack delivery/readback and human content acceptance",
+    "Fresh twelve-check content qualification with zero mechanical rejection and independent original-to-main audit",
+    "Fresh scheduled execution within budget, with correctly dated market data and no lost source prerequisites",
+    "Human content acceptance of a qualified real Slack preview",
     "Five completed KRX trading days of timing/source/model/saved-input evidence before automatic publication"
   ],
   "evidence": [
@@ -102,7 +102,11 @@
     "docs/project/evidence/briefing-analyst-quality-20261001/twenty-source-transport-validation58.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/development-diagnostic-20261006-validation57-outcome.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/fresh-pm-20261006-format17-failure.json",
-    "docs/project/evidence/briefing-analyst-quality-20261001/execution59-live-run-20261007-outcome.json"
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution59-live-run-20261007-outcome.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution59-final-installation-20261007.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution59-slack-preview-20261007.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution59-temporal-budget-20261007.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/execution59-next-pm-20261007-readback.json"
   ],
   "latest_execution": {
     "plan": "completed at07:04:09 KST",
@@ -119,24 +123,25 @@
     "source_commit": "15215a4e7c7d3188551278c1ec36fed85d428436",
     "validation_version": 59,
     "implemented": [
-      "\uc791\uc131 \uacb0\uacfc\ub97c JSON \uac1d\uccb4\ub85c \uc9c1\uc811 \ubc1b\uc544 \ub450 \uacb9\uc758 \ubb38\uc790\uc5f4 \ud3ec\uc7a5\uc744 \uc81c\uac70",
-      "\uc790\ub8cc \uc120\ud0dd 6\ubd84\u00b7\uc791\uc131 24\ubd84\u00b7\uac80\ud1a0 12\ubd84, \ubcf4\uc644\uacfc \ucd5c\uc885 \uac80\ud1a0\ub294 \uac01\uac01 6\ubd84",
-      "\ud638\ucd9c \ub300\uae30\uc640 Temporal \uc81c\ud55c\uc744 \ud568\uaed8 \uc870\uc815\ud558\uace0 \uac80\ud1a0 \uc2dc\uac04\uc774 \ubd80\uc871\ud558\uba74 \uc0c8 \uc791\uc131\uc744 \ucc28\ub2e8",
-      "\uc2e4\uc81c \uc0ac\uc6a9\uc790\uac00 \uc9c0\uc815\ud55c xhigh\ub97c \uc815\ucc45\u00b7\uc790\ub8cc \uace0\uc815\u00b7\uc694\uccad\u00b7\ubc30\uc815 \uc6d0\uc7a5\uc5d0 \uc77c\uce58\uc2dc\ud0b4"
+      "작성 결과를 JSON 객체로 직접 받아 두 겹의 문자열 포장을 제거",
+      "자료 선택 6분·작성 24분·검토 12분, 보완과 최종 검토는 각각 6분",
+      "호출 대기와 Temporal 제한을 함께 조정하고 검토 시간이 부족하면 새 작성을 차단",
+      "실제 사용자가 지정한 xhigh를 정책·자료 고정·요청·배정 원장에 일치시킴"
     ],
     "test_count": 404,
     "cloud_images_verified": 3,
     "protected_runtime_approval_received": true,
     "installed": true,
-    "actual_model_quality_evaluated": false,
+    "actual_model_quality_evaluated": true,
     "readiness": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-readiness.json",
     "reviewed_model_source_commit": "d9ba0b63d5cb6d497dc9677b55f863d85efbb851",
     "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-installation.json",
     "temporal_activity_deadline_seconds": 1560,
-    "actual_temporal_budget_seen": false
+    "actual_temporal_budget_seen": true,
+    "quality_evaluation_scope": "Saved-input development audit completed and failed6 of12; fresh quality not established."
   },
   "active_evaluation": {
-    "policy": "prospective-pm-20261007-execution59-policy.json",
+    "policy": "prospective-pm-20261007-final59-preserved-runtime-policy.json",
     "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
     "collection_kst": "2026-10-07 16:40",
     "cutoff_kst": "2026-10-07 17:00",
@@ -148,12 +153,20 @@
     "maximum_confirmed_repairs": 1,
     "semantic_checks_required": 12,
     "mechanical_rejections_allowed": 0,
-    "independent_original_to_visible_main_audit_required": true
+    "independent_original_to_visible_main_audit_required": true,
+    "registration_state": "waiting_for_collection_start",
+    "postgres_record_present_before_starts_at": false,
+    "schedule_verified_in_actual_installed_source": true,
+    "whitelist_verified": true,
+    "automatic_slack_publication": false,
+    "record": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-next-pm-20261007-readback.json"
   },
   "temporal_rollover_readback": {
-    "record": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-temporal-readback-scheduled.json",
+    "record": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-temporal-budget-20261007.json",
     "scheduled_kst": "2026-10-07 10:45",
-    "passed": false
+    "passed": true,
+    "observed_at": "2026-10-07T01:45:04.401012+00:00",
+    "editorial_start_to_close_seconds": 1560
   },
   "on_demand_execution": {
     "case": "analyst-on-demand-am-20261007-execution59",
@@ -169,13 +182,17 @@
   "schema_transport_fix": {
     "source_commit": "9eacd7076d773e60c2b80b35fd9bfa0788a3dd4b",
     "tests_passed": 214,
-    "production_installed": false,
+    "production_installed": true,
     "real_writer_completed_seconds": 873.215,
     "real_review_completed_seconds": 700.235,
     "actual_temporal_start_to_close_seconds": 1560,
-    "staging_block": "Current news/dispatch trend-recurring image must be retained in a fresh source profile"
+    "staging_block": null,
+    "installed_source_commit": "2a8df31ec8d77ae111437bad9d42221e6cf29374",
+    "installed_at": "2026-10-07T04:21:59.642650+00:00",
+    "source_profile_preservation_verified": true,
+    "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-final-installation-20261007.json"
   },
-  "updated_at": "2026-10-07T04:11:29.652427+00:00",
+  "updated_at": "2026-10-07T04:34:36.482091+00:00",
   "manual_preview": {
     "operation": "analyst-saved-input-quality-preview-20261007-schema59-once",
     "channel": "C0C2E59B1AA",
@@ -196,6 +213,7 @@
     "deleted_only_own_automatic_duplicate_chunks": [
       "1791345972.068929",
       "1791345972.092589"
-    ]
+    ],
+    "evidence": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-slack-preview-20261007.json"
   }
 }
