@@ -702,11 +702,12 @@ def test_missing_major_issue_preserves_useful_partial_but_cannot_pass(brief):  #
     store, clock = brief
     edition = seed(brief)
     store.commit(response(store.prepare()["request"], analytical_proposal()))
+    critic = store.prepare()["request"]
     clock["at"] = edition.due_at
     verdict = review().model_dump()
     verdict.update(verdict="reduce", concerns=["원문에 있는 중요한 정책 변화의 설명이 빠졌습니다."])
     verdict["checks"]["coverage"] = False
-    store.commit(response(store.prepare()["request"], BriefReview.model_validate(verdict)))
+    store.commit(response(critic, BriefReview.model_validate(verdict)))
     with store.db.transaction() as conn:
         row = conn.execute("SELECT * FROM brief_editions WHERE state='ready'").fetchone()
     assert row["proposal"] and row["quality"]["reduced"]

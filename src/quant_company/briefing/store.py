@@ -46,6 +46,7 @@ from .editor import (
     validate_review,
     validate_source_notes,
 )
+from .execution import EXECUTION_VERSION, PHASE_SECONDS, REMAINING_SECONDS, output_contract
 from .inputs import market_report, registrations, source_policy
 from .planning import PLAN, apply_plan, plan_prompt
 from .quality import reconcile
@@ -65,9 +66,21 @@ class BriefStore:
         return bool(s.briefing_enabled and role and role.active and s.briefing_owner_user in s.slack_allowed_users
                     and s.briefing_channel_id in s.slack_allowed_channels and s.briefing_channel_id.startswith(("C", "G")))
 
-    def policy(self):
+    def _execution_role(self, conn):
+        if getattr(self.company.settings, "model_assignments_enabled", False):
+            from ..model_policy import effective_role
+
+            return effective_role(self.company, conn, BRIEFER)
+        return self.company.roles.get(BRIEFER)
+
+    def policy(self, conn=None):
         s = self.company.settings
+        if getattr(s, "model_assignments_enabled", False) and conn is None:
+            with self.db.transaction() as current:
+                return self.policy(current)
+        role = self._execution_role(conn)
         return fingerprint({"version": FORMAT_VERSION, "validation_version": VALIDATION_VERSION,
+                            "execution_version": EXECUTION_VERSION, "phase_seconds": PHASE_SECONDS,
                             "selection_version": COVERAGE_VERSION,
                             "schedule_version": schedule.SCHEDULE_VERSION,
                             "editorial_contract": fingerprint([PLAN, WRITE, REVIEW, PATCH, FACT_PATCH, EDITORIAL_PATCH, SOURCE_NOTES_PATCH]),
@@ -81,7 +94,7 @@ class BriefStore:
                             "evaluation_editions": s.briefing_evaluation_edition_ids,
                             "channel": s.briefing_channel_id, "owner": s.briefing_owner_user,
                             "allowed_users": s.slack_allowed_users, "allowed_channels": s.slack_allowed_channels,
-                            "role": self.company.roles.get(BRIEFER).model_dump() if BRIEFER in self.company.roles else None,
+                            "role": role.model_dump() if role else None,
                             "provider": s.model_provider, "sources": source_policy(s),
                             "overrides": [x.model_dump(mode="json") for x in schedule.overrides(s).values()]})
 
@@ -135,7 +148,8 @@ class BriefStore:
         bundle["analyst_procedure"] = pack(BRIEFER)
         bundle["quote_reference_version"] = QUOTE_REFERENCE_VERSION
         bundle["source_notes_required"] = self.company.settings.briefing_source_notes_enabled
-        role = self.company.role(BRIEFER)
+        role = self._execution_role(conn)
+        bundle["execution_model"] = {"model": role.model, "reasoning_effort": role.reasoning_effort}
         bundle["professional_feedback"] = as_json(coaching(conn, row["owner_user"], BRIEFER,
                                                           role.model, role.reasoning_effort))
         data = row["market_data"] or {"documents": [], "observations": [], "contexts": [],
@@ -211,6 +225,8 @@ class BriefStore:
             row = conn.execute(query+' ORDER BY due_at LIMIT 1 FOR UPDATE', parameters).fetchone()
             if not row:
                 return {"state": "idle"}
+            if row["policy_digest"] != self.policy(conn):
+                return {"state": "blocked", "reason": "execution_policy_changed"}
             active = conn.execute("SELECT * FROM brief_calls WHERE edition_id=%s AND state='running' ORDER BY phase LIMIT 1",
                                   (row["id"],)).fetchone()
             if active:
@@ -250,7 +266,7 @@ class BriefStore:
                         validate_source_notes(BriefProposal.model_validate(row['proposal']), bundle)
                     except SourceNotesValidationError as exc:
                         repair = (self.company.settings.briefing_max_revisions > 0 and phase == 'review'
-                                  and at+timedelta(minutes=15) < row['due_at']+timedelta(minutes=10)
+                                  and at+timedelta(seconds=REMAINING_SECONDS['revise']+60) < row['due_at']+timedelta(minutes=10)
                                   and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
                                                        (row['id'],)).fetchone())
                         if repair:
@@ -281,8 +297,14 @@ class BriefStore:
                         conn.execute("UPDATE brief_editions SET state='blocked',error=%s,bundle=%s WHERE id=%s",
                                      (reason, Jsonb(bundle), row['id']))
                         return {'state': 'blocked', 'reason': reason}
-                model_prompt = (plan_prompt(bundle) if phase == "plan" else
-                                prompt(bundle, phase, row["proposal"] if phase in {"review", "final_review"} else None))
+                if at+timedelta(seconds=REMAINING_SECONDS[phase]+60) >= row['due_at']+timedelta(minutes=10):
+                    reason = "insufficient_review_time"
+                    conn.execute("UPDATE brief_editions SET state='blocked',error=%s,bundle=%s WHERE id=%s",
+                                 (reason, Jsonb(bundle), row['id']))
+                    return {"state": "blocked", "reason": reason}
+                model_prompt = (plan_prompt(bundle, direct_output=True) if phase == "plan" else
+                                prompt(bundle, phase, row["proposal"] if phase in {"review", "final_review"} else None,
+                                       direct_output=True))
             identity = f"news-brief-{row['id']}-{phase}"
             if conn.execute("SELECT 1 FROM brief_calls WHERE id=%s", (identity,)).fetchone():
                 return {"state": "blocked", "reason": "phase_already_attempted"}
@@ -291,9 +313,15 @@ class BriefStore:
             cap = effective_limits(conn, self.company)["company"]
             if cap is not None and used >= cap:
                 return {"state": "defer", "reason": "daily_limit"}
-            role = self.company.role(BRIEFER)
+            role = self._execution_role(conn)
+            model_selection = {"model": role.model, "reasoning_effort": role.reasoning_effort}
+            if phase != 'search' and bundle.get('execution_model') != model_selection:
+                reason = 'frozen_execution_changed'
+                conn.execute("UPDATE brief_editions SET state='blocked',error=%s WHERE id=%s", (reason, row['id']))
+                return {"state": "blocked", "reason": reason}
             request = ProviderRequest(request_id=identity, model=role.model, reasoning_effort=role.reasoning_effort,
-                                      prompt=model_prompt, web_search=phase == "search")
+                                      prompt=model_prompt, web_search=phase == "search",
+                                      output_contract=output_contract(phase, bundle))
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             conn.execute("INSERT INTO brief_calls(id,edition_id,phase,request,next_at) VALUES(%s,%s,%s,%s,%s)",
                          (identity, row["id"], phase, Jsonb(request.model_dump()), at))
@@ -376,10 +404,10 @@ class BriefStore:
                     review_reduced=review.verdict == "reduce")
                 quality["editorial_review"] = review.model_dump(mode="json")
                 result = review.model_dump(mode="json")
-                # One repair only, only after a confirmed response, with 15 minutes left for repair+review.
+                # One confirmed repair, with both correction and final-review time reserved.
                 repair = (self.company.settings.briefing_max_revisions > 0 and call["phase"] == "review"
                           and (quality["reduced"] or rejected or review.verdict != "publish")
-                          and at+timedelta(minutes=15) < row["due_at"]+timedelta(minutes=10)
+                          and at+timedelta(seconds=REMAINING_SECONDS['revise']+60) < row["due_at"]+timedelta(minutes=10)
                           and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
                                                (row["id"],)).fetchone())
                 if repair:

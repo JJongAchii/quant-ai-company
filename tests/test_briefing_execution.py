@@ -1,0 +1,146 @@
+"""Real PostgreSQL and process tests; model inference in these tests is simulated."""
+
+import json
+from datetime import timedelta
+
+import httpx
+import pytest
+
+from quant_company.briefing.editor import artifact, prompt
+from quant_company.briefing.execution import PHASE_SECONDS, timeout_seconds
+from quant_company.briefing.planning import plan_prompt
+from quant_company.briefing.quotations import source_spans
+from quant_company.contracts import ProviderFault, ProviderRequest, ProviderResponse
+from quant_company.providers.client import RuntimeClient
+from quant_company.providers.codex_runner import output_schema
+
+from .test_briefing import brief, bundle, proposal, response, seed  # noqa: F401
+from .test_codex_runtime import fake_codex, runner_for  # noqa: F401
+
+IDENTITY = "news-brief-00000000-0000-0000-0000-000000000001-"
+
+
+def request(phase="write", contract="brief_write_v1"):
+    return ProviderRequest(request_id=IDENTITY+phase, model="gpt-6-astra", reasoning_effort="xhigh",
+                           prompt="Synthetic original-bound briefing fixture", output_contract=contract)
+
+
+@pytest.mark.parametrize("phase,contract,seconds", [
+    ("plan", "brief_plan_v1", 360), ("write", "brief_write_v1", 1440),
+    ("review", "brief_review_v1", 720), ("revise", "brief_source_notes_v1", 360),
+    ("final_review", "brief_review_v1", 360),
+])
+def test_scoped_budget_preserves_other_and_legacy_turns(fake_codex, phase, contract, seconds):  # noqa: F811
+    config, _, _ = fake_codex
+    runner = runner_for(config)
+    current = request(phase, contract)
+    assert timeout_seconds(current) == seconds
+    assert runner._timeout_seconds(current) == seconds
+    legacy = current.model_copy(update={"output_contract": "agent_decision"})
+    assert timeout_seconds(legacy) is None and runner._timeout_seconds(legacy) == config.timeout_seconds
+
+
+@pytest.mark.parametrize("updates", [
+    {"request_id": "company-turn"}, {"request_id": IDENTITY+"plan"}, {"web_search": True},
+    {"request_id": "news-brief-not-a-canonical-uuid-write"},
+    {"session": {"task_id": "00000000-0000-0000-0000-000000000001", "turn_index": 0}},
+])
+def test_direct_brief_shape_cannot_enable_tools_or_cross_phase(updates):
+    with pytest.raises(ValueError):
+        ProviderRequest.model_validate(request().model_dump() | updates)
+
+
+async def test_direct_json_reaches_real_postgres_without_nested_strings(fake_codex, brief):  # noqa: F811
+    store, _ = brief
+    store.company.settings.model_provider = "codex"
+    edition = seed(brief)
+    prepared = ProviderRequest.model_validate(store.prepare()["request"])
+    assert prepared.output_contract == "brief_write_v1"
+    with store.db.transaction() as conn:
+        frozen = conn.execute("SELECT bundle FROM brief_editions WHERE id=%s", (edition.id,)).fetchone()["bundle"]
+    reference, exact = source_spans(frozen["documents"][0])[0]
+    value = proposal().model_dump(mode="json")
+    value["summary"][0]["evidence"][0]["quote"] = reference
+    config, configure, calls = fake_codex
+    configure(direct=value)
+    runner = runner_for(config)
+    actual = await runner.run(prepared)
+    assert json.loads(actual.decision.artifacts[0].content) == value
+    assert not actual.decision.tools and not actual.decision.messages and not actual.decision.delegations
+    assert store.commit(actual)["state"] == "completed"
+    with store.db.transaction() as conn:
+        row = conn.execute("SELECT proposal,bundle FROM brief_editions WHERE id=%s", (edition.id,)).fetchone()
+    assert row["proposal"]["summary"][0]["evidence"][0]["quote"] == exact
+    assert row["bundle"]["documents"] == frozen["documents"]
+    assert await runner.run(prepared) == actual and len(calls()) == 1
+    assert "decision_json" not in calls()[0]["schema"]["properties"]
+    assert "field decision_json" not in calls()[0]["stdin"]
+    assert 'web_search="disabled"' in calls()[0]["args"]
+    with pytest.raises(ProviderFault, match="different input"):
+        await runner.run(prepared.model_copy(update={"reasoning_effort": "xhigh"}))
+
+
+@pytest.mark.parametrize("value", [{"say": "write", "tools": []}, [], {"summary": [], "arbitrary": "field"}])
+async def test_direct_transport_rejects_actions_and_unknown_fields(fake_codex, value):  # noqa: F811
+    config, configure, _ = fake_codex
+    configure(direct=value)
+    with pytest.raises(ProviderFault, match="brief_contract:invalid_shape"):
+        await runner_for(config).run(request())
+
+
+def test_direct_transport_keeps_compact_quote_validation_at_original_owner():
+    schema = output_schema(request())
+    assert schema["$defs"]["Evidence"]["properties"]["quote"]["minLength"] == 1
+    p = proposal().model_dump(mode="json")
+    p["summary"][0]["evidence"][0]["quote"] = "@q:999"
+    b = bundle() | {"quote_reference_version": 1}
+    with pytest.raises(ValueError, match="unknown_or_wrong_source_quote_reference"):
+        artifact(ProviderResponse.model_validate(response({"request_id": "fixture-write"}, proposal()).model_dump() | {
+            "decision": {"status": "complete", "say": "", "artifacts": [{
+                "title": "brief", "content": json.dumps(p)}]}}), type(proposal()), b)
+
+
+def test_write_refused_if_independent_review_cannot_finish(brief):  # noqa: F811
+    store, clock = brief
+    edition = seed(brief)
+    clock["at"] = edition.due_at-timedelta(minutes=10)
+    result = store.prepare()
+    assert result == {"state": "blocked", "reason": "insufficient_review_time"}
+    with store.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM brief_calls WHERE edition_id=%s", (edition.id,)).fetchone()["n"] == 0
+
+
+def test_frozen_effective_model_cannot_change_between_write_and_review(brief):  # noqa: F811
+    store, _ = brief
+    edition = seed(brief)
+    store.company.roles["market_brief"].reasoning_effort = "xhigh"
+    # The previously registered policy must be discarded rather than mixed with xhigh.
+    assert store.prepare()["state"] == "idle"
+    with store.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM brief_calls WHERE edition_id=%s", (edition.id,)).fetchone()["n"] == 0
+
+
+async def test_http_wait_budget_outlasts_the_brief_process_only():
+    observed = []
+    async def handle(req):
+        observed.append(req.extensions["timeout"]["read"])
+        value = response(json.loads(req.content)).model_dump(mode="json")
+        value["provider"] = "codex"
+        return httpx.Response(200, json=value)
+
+    client = RuntimeClient("http://runtime.private", "synthetic-token", 960,
+                           transport=httpx.MockTransport(handle))
+    await client.run(request())
+    await client.run(request().model_copy(update={"output_contract": "agent_decision"}))
+    assert observed == [PHASE_SECONDS["write"]+60, 960]
+
+
+def test_direct_prompt_keeps_full_originals_and_removes_obsolete_envelope():
+    b = bundle()
+    direct = prompt(b, "write", direct_output=True)
+    data = json.loads(direct.split("BRIEF DATA JSON:\n")[1])
+    assert data["documents"][0]["content"] == b["documents"][0]["content"]
+    assert "AgentDecision(" not in direct and "\nSCHEMA:\n" not in direct
+    assert "BriefProposal JSON object directly" in direct
+    plan = plan_prompt(b | {"candidate_documents": b["documents"]}, direct_output=True)
+    assert "SourcePlan JSON object directly" in plan and "AgentDecision(" not in plan

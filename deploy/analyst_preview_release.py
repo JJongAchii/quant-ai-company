@@ -42,7 +42,30 @@ def selected_services(receipt):
                  and not (name == 'api' and receipt.get('preserve_api')))
 
 
+def execution_runtime_update(manifest):
+    scope = manifest.get('execution_runtime_update')
+    if scope is None:
+        return False
+    if (not isinstance(scope, dict) or set(scope) != {'owner_approval_id', 'cli_version', 'scope'}
+            or not re.fullmatch(r'chat-analyst-execution-approved-[0-9]{8}', scope['owner_approval_id'])
+            or scope['scope'] != 'Analyst typed output and phase deadlines; preserve all other runtime behavior'
+            or scope['cli_version'] != '0.160.1'
+            or manifest.get('preserve_api') is not True or manifest.get('preserve_codex_runtime') is not False
+            or not code_only_build(manifest)):
+        raise ValueError('preview_execution_update_requires_separate_owner_approval')
+    permitted = {'deploy/analyst_preview_release.py', 'deploy/Dockerfile.analyst-code-preview', 'src/quant_company/contracts.py',
+                 'src/quant_company/providers/client.py', 'src/quant_company/providers/codex_runner.py'}
+    if any(row['path'] not in permitted and not row['path'].startswith('src/quant_company/briefing/')
+           for row in manifest['runtime_changes']):
+        raise ValueError('preview_execution_update_outside_scope')
+    if manifest.get('profile_dependency_paths', []) not in ([], ['src/quant_company/briefing/contracts.py']):
+        raise ValueError('preview_execution_dependency_outside_scope')
+    return True
+
+
 def validate_preserved_runtime(manifest):
+    if execution_runtime_update(manifest):
+        return
     if not isinstance(manifest.get('preserve_codex_runtime', False), bool):
         raise ValueError('preview_preserved_runtime_mode')
     if (not isinstance(manifest.get('preserve_api', False), bool)
@@ -187,18 +210,25 @@ def validate_source_profiles(target, manifest, before):
     profiles = manifest.get('source_profiles', [])
     if not profiles:
         return []
-    if not manifest.get('preserve_api') or not manifest.get('preserve_codex_runtime'):
+    execution_update = execution_runtime_update(manifest)
+    if not manifest.get('preserve_api') or not (manifest.get('preserve_codex_runtime') or execution_update):
         raise ValueError('preview_source_profiles_require_preserved_primary')
     permitted = {r['path'].removeprefix('src/') for r in manifest['runtime_changes']
                  if r['path'].startswith('src/quant_company/')}
+    if execution_update:
+        permitted.update(p.removeprefix('src/') for p in manifest.get('profile_dependency_paths', []))
     services = []
     for profile in profiles:
         if (not re.fullmatch(r'sha256:[0-9a-f]{64}', profile['base_image_id'])
                 or profile['source_root'] != 'runtime-source/'+profile['base_image_id'][7:19]+'/src'
                 or not profile['services']):
             raise ValueError('preview_source_profile_identity')
+        if execution_update and (profile.get('package_parent') not in {
+                '/opt/company/src', '/app/.venv/lib/python3.12/site-packages'}
+                or ('codex-runtime' in profile['services'] and profile['services'] != ['codex-runtime'])):
+            raise ValueError('preview_execution_package_identity')
         for name in profile['services']:
-            if name not in ('news-worker','dispatch',NEW_SERVICE):
+            if name not in ('news-worker','dispatch',NEW_SERVICE, *(('codex-runtime',) if execution_update else ())):
                 raise ValueError('preview_source_profile_service')
             current = before['/quant-company-'+name+'-1']
             if current['image'] != profile['base_image_tag']:
@@ -213,8 +243,12 @@ def validate_source_profiles(target, manifest, before):
         changed = {name for name,value in actual.items() if profile['before'].get(name) != value}
         if changed != set(profile['changed']) or not changed <= permitted:
             raise ValueError('preview_source_profile_outside_analyst_scope')
+        for path in manifest.get('profile_dependency_paths', []):
+            if (target/path).read_bytes() != (target/profile['source_root']/path.removeprefix('src/')).read_bytes():
+                raise ValueError('preview_execution_dependency_changed')
         services.extend(profile['services'])
-    if sorted(services) != sorted(('news-worker','dispatch',NEW_SERVICE)):
+    expected = ('news-worker','dispatch',NEW_SERVICE, *(('codex-runtime',) if execution_update else ()))
+    if sorted(services) != sorted(expected):
         raise ValueError('preview_source_profiles_incomplete_or_duplicate')
     return profiles
 
@@ -343,6 +377,8 @@ def stage(args, previous, target, module, journal):
         raise ValueError('preview_artifact_digest')
     code_only = code_only_build(manifest)
     validate_preserved_runtime(manifest)
+    if execution_runtime_update(manifest) and args.approval != manifest['execution_runtime_update']['owner_approval_id']:
+        raise ValueError('preview_execution_owner_approval_mismatch')
     minimum_disk = (768 * 1024**2) if code_only else (2 * 1024**3)
     if shutil.disk_usage(target.parent).free < minimum_disk:
         raise ValueError('preview_disk_admission')
@@ -381,6 +417,7 @@ def stage(args, previous, target, module, journal):
                'minimum_disk_bytes': minimum_disk, 'service_inventory_before': before}
     receipt['preserve_codex_runtime'] = bool(manifest.get('preserve_codex_runtime'))
     receipt['preserve_api'] = bool(manifest.get('preserve_api'))
+    receipt['execution_runtime_update'] = manifest.get('execution_runtime_update')
     module.atomic(journal, json.dumps(receipt).encode())
     target.mkdir()
     module.unpack(data, target)
@@ -400,8 +437,10 @@ def stage(args, previous, target, module, journal):
         for name in ('deploy/Dockerfile', 'deploy/entrypoint.py'):
             if (previous / name).read_bytes() != (target / name).read_bytes():
                 raise ValueError('preview_base_runtime_changed')
-        builds = [('app', 'quant-company', profile) for profile in profiles] if profiles else [('app','quant-company',None)]
-        if not receipt['preserve_codex_runtime']:
+        builds = [('codex' if profile['services'] == ['codex-runtime'] else 'app',
+                   'quant-company-codex' if profile['services'] == ['codex-runtime'] else 'quant-company', profile)
+                  for profile in profiles] if profiles else [('app','quant-company',None)]
+        if not receipt['preserve_codex_runtime'] and not any(p['services'] == ['codex-runtime'] for p in profiles):
             builds.append(('codex', 'quant-company-codex', None))
         for position, (build_target, repository, profile) in enumerate(builds):
             tag = repository + ':' + args.commit + ('-profile'+str(position) if profile else '')
@@ -415,6 +454,7 @@ def stage(args, previous, target, module, journal):
             command = ['docker', 'build', '--memory=512m', '--memory-swap=512m', '--cpu-quota=100000',
                        '--build-arg', 'BASE_IMAGE=' + base_tag, '--build-arg', 'RELEASE_COMMIT=' + args.commit,
                        '--build-arg', 'SOURCE_DIR='+profile['source_root'] if profile else 'SOURCE_DIR=src',
+                       '--build-arg', 'SOURCE_DEST='+profile.get('package_parent', '/opt/company/src') if profile else 'SOURCE_DEST=/opt/company/src',
                        '-f', str(target / ('deploy/Dockerfile.analyst-code-preview' if code_only
                                            else 'deploy/Dockerfile.analyst-preview')), '-t', tag, str(target)]
             log = journal.with_name(journal.stem + '-' + build_target + '-'+str(position)+'.log')
@@ -474,7 +514,8 @@ def cutover(args, previous, target, module, journal):
     channels = json.loads(values['SLACK_ALLOWED_CHANNELS'])
     settings = {'RELEASE_COMMIT': args.commit, 'QDATA_BUILD_CONTEXT': str(target / 'qdata'),
                 'PINNED_CODEX_RUNTIME_IMAGE': (values['PINNED_CODEX_RUNTIME_IMAGE']
-                    if receipt.get('preserve_codex_runtime') else 'quant-company-codex:' + args.commit),
+                    if receipt.get('preserve_codex_runtime') else service_images(receipt).get('codex-runtime')
+                    or 'quant-company-codex:' + args.commit),
                 'BRIEFING_ENABLED': 'true', 'BRIEFING_PUBLISH_ENABLED': 'false',
                 'BRIEFING_SOURCE_NOTES_ENABLED': 'true', 'BRIEFING_MAX_REVISIONS': str(getattr(args, 'max_revisions', 0)),
                 'BRIEFING_EVALUATION_EDITION_ID': '' if evaluation_editions(args) else args.evaluation_edition,
@@ -486,7 +527,7 @@ def cutover(args, previous, target, module, journal):
     before = inventory()
     runtime_rows = None
     if receipt.get('source_profiles'):
-        names = ('news-worker','dispatch',NEW_SERVICE)
+        names = (*services,NEW_SERVICE)
         if any(before['/quant-company-'+name+'-1'] != receipt['service_inventory_after']['/quant-company-'+name+'-1']
                for name in names):
             raise ValueError('preview_staged_services_changed')
@@ -508,7 +549,7 @@ def cutover(args, previous, target, module, journal):
     try:
         compose(module, previous, 'stop', '-t', '1100', *drains)
         drain_locks = (('.runtime-brief.lock',) if receipt.get('preserve_codex_runtime') else
-                       ('.runtime.lock', '.runtime-news.lock', '.runtime-brief.lock'))
+                       ('.runtime.lock', '.runtime-news.lock', '.runtime-brief.lock', '.runtime-quant.lock'))
         for name in drain_locks:
             lock = runtime_lock(STATE / 'codex/jobs' / name)
             locks.append(lock)

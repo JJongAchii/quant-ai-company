@@ -282,8 +282,9 @@ def test_reviewer_rejection_reduces_coverage(brief):
     store, clock = brief
     e = seed(brief)
     store.commit(response(store.prepare()["request"]))
+    critic = store.prepare()["request"]
     clock["at"] = e.due_at  # Too little time remains for repair plus a second review.
-    store.commit(response(store.prepare()["request"], review(rejected_ids=["sp500"])))
+    store.commit(response(critic, review(rejected_ids=["sp500"])))
     clock["at"] = e.due_at
     store.flush()
     current = next(row for row in store.status()["editions"] if row["id"] == e.id)

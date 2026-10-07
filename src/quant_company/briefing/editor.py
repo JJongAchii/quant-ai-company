@@ -38,7 +38,7 @@ from .quotations import (
 from .schedule import KST, close
 
 FORMAT_VERSION = 17
-VALIDATION_VERSION = 58
+VALIDATION_VERSION = 59
 
 WRITE = """You are Analyst writing a substantive, readable Korean daily market briefing.
 Return AgentDecision(status=complete,say='') with exactly one complete BriefProposal JSON artifact,
@@ -299,7 +299,7 @@ The final full original-to-main comparison and twelve-criterion independent revi
 """
 
 
-def prompt(bundle, phase, proposal=None):
+def prompt(bundle, phase, proposal=None, *, direct_output=False):
     phase = "write" if phase == "revise" else "review" if phase == "final_review" else phase
     patch = phase == "write" and bundle.get("revision_feedback", {}).get("repair_mode") == "conditions_only"
     fact_patch = phase == "write" and bundle.get("revision_feedback", {}).get("repair_mode") == "material_append"
@@ -448,9 +448,17 @@ def prompt(bundle, phase, proposal=None):
         "The server restores exact spans and checks source_id; do not invent/cross-assign references. "
         "evidence_quotes may likewise refer to those IDs. All other checks apply.\n"
         if references else "")
-    header = ((SOURCE_NOTES_PATCH if notes_patch else PATCH if patch else FACT_PATCH if fact_patch else EDITORIAL_PATCH if editorial_patch else WRITE if phase == "write" else REVIEW) + reference_instruction + "\n" + render_pack(procedure)
+    from .execution import direct_instruction
+
+    instruction = (SOURCE_NOTES_PATCH if notes_patch else PATCH if patch else FACT_PATCH if fact_patch else
+                   EDITORIAL_PATCH if editorial_patch else WRITE if phase == "write" else REVIEW)
+    if direct_output:
+        instruction = direct_instruction(instruction).replace("requested JSON object", schema.__name__+" JSON object")
+    schema_text = ("" if direct_output else
+                   "\nSCHEMA:\n" + json.dumps(schema_value, ensure_ascii=False, separators=(",", ":")))
+    header = (instruction + reference_instruction + "\n" + render_pack(procedure)
               + "\nINSTRUMENTS:\n" + json.dumps(instruments, ensure_ascii=False, separators=(",", ":"))
-              + "\nSCHEMA:\n" + json.dumps(schema_value, ensure_ascii=False, separators=(",", ":"))
+              + schema_text
               + "\nBRIEF DATA JSON:\n")
     result = header + json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     if references and (bundle.get('source_notes_required') or len(result) > 88000):

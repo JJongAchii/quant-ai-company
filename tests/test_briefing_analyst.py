@@ -134,11 +134,12 @@ def test_reviewer_can_remove_unsupported_analysis_without_leaking_it_to_slack(br
     store, clock = brief
     edition = seed(brief)
     store.commit(response(store.prepare()["request"], analytical_proposal()))
+    critic = store.prepare()["request"]
     clock["at"] = edition.due_at
     verdict = review().model_dump()
     verdict.update(verdict="reduce", rejected_ids=["driver-alternative"], concerns=["대안 설명의 근거가 부족함"])
     verdict["checks"]["alternatives"] = False
-    store.commit(response(store.prepare()["request"], BriefReview.model_validate(verdict)))
+    store.commit(response(critic, BriefReview.model_validate(verdict)))
     with store.db.transaction() as conn:
         row = conn.execute("SELECT * FROM brief_editions WHERE state='ready'").fetchone()
     assert row["proposal"]["issues"] == [] and row["quality"]["reduced"]

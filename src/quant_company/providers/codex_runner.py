@@ -58,6 +58,10 @@ CLI_OUTPUT_SCHEMA = {
 
 def quant_output_model(contract):
     # Fixed, service-owned contracts only; callers cannot supply arbitrary schemas.
+    if contract.startswith("brief_"):
+        from quant_company.briefing.execution import OUTPUT_MODELS
+
+        return OUTPUT_MODELS[contract]
     from quant_company.quant_feed.contracts import (
         EditorialCritique,
         EvidenceCritique,
@@ -87,6 +91,10 @@ def output_schema(request):
             if node.get("type") == "object":
                 node["required"] = list(node["properties"])
                 node["additionalProperties"] = False
+                # Exact, source-bound references are resolved by BriefStore before
+                # domain validation. Short @q references are valid on the wire.
+                if request.output_contract.startswith("brief_") and "quote" in node["properties"]:
+                    node["properties"]["quote"]["minLength"] = 1
             for child in node.values():
                 strict(child)
         elif isinstance(node, list):
@@ -421,10 +429,24 @@ def parse_result(request: ProviderRequest, process: ProcessResult, quota_retry_s
                     title="research_stage_v1", content=value.artifact_json)])
         else:
             phase = "quant_contract"
-            value = quant_output_model(request.output_contract).model_validate(strict_json(messages[-1]))
+            model = quant_output_model(request.output_contract)
+            raw_value = strict_json(messages[-1])
+            if request.output_contract.startswith("brief_"):
+                phase = "brief_contract"
+                # As with the legacy artifact transport, source references and
+                # all domain constraints are validated by the service that owns
+                # the frozen originals. No model action can escape this artifact.
+                required = {key for key, field in model.model_fields.items() if field.is_required()}
+                if (not isinstance(raw_value, dict) or not required <= raw_value.keys()
+                        or not raw_value.keys() <= model.model_fields.keys()):
+                    raise ValueError("Invalid brief transport")
+                content = json.dumps(raw_value, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+            else:
+                value = model.model_validate(raw_value)
+                content = value.model_dump_json()
             # Privileged company actions are constructed by the service, never by the curator.
             decision = AgentDecision(say="", status="complete", artifacts=[ArtifactDraft(
-                title=request.output_contract, content=value.model_dump_json())])
+                title=request.output_contract, content=content)])
         phase = "usage"
         usage = completed[0].get("usage", {})
         if not isinstance(usage, dict):
@@ -476,6 +498,11 @@ class CodexRunner:
         self.process = process_runner or ProcessRunner()
         self.environment = dict(os.environ if environment is None else environment)
         self._active: dict[str, asyncio.Task] = {}
+
+    def _timeout_seconds(self, request):
+        from quant_company.briefing.execution import timeout_seconds
+
+        return timeout_seconds(request) or self.config.timeout_seconds
 
     def _read_receipt(self, path: Path, digest: str, request_id: str, *, locked: bool = False,
                       profile: str = "primary", revision: int = 0) -> ProviderResponse | None:
@@ -649,6 +676,9 @@ class CodexRunner:
                            "execution_lane": lane,
                            "requested_execution": {"model": request.model,
                                                    "reasoning_effort": request.reasoning_effort}}
+                if request.output_contract.startswith("brief_"):
+                    receipt["brief_execution"] = {"version": 1, "output_contract": request.output_contract,
+                                                  "timeout_seconds": self._timeout_seconds(request)}
                 if session is not None:
                     receipt["session"] = request.session.model_dump()
                     atomic_json(session_path, {**session, "inflight": request.request_id})
@@ -665,7 +695,7 @@ class CodexRunner:
                 try:
                     output = await self.process.run(
                         cli_command(self.config, request, work_dir, schema, resume_thread), cwd=work_dir, env=env,
-                        stdin=cli_prompt(request), timeout_seconds=self.config.timeout_seconds,
+                        stdin=cli_prompt(request), timeout_seconds=self._timeout_seconds(request),
                         max_stdout_bytes=self.config.max_stdout_bytes,
                         max_stderr_bytes=self.config.max_stderr_bytes,
                     )

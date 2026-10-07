@@ -82,11 +82,11 @@ def required_sources(bundle):
     return required
 
 
-def plan_prompt(bundle):
+def plan_prompt(bundle, *, direct_output=False):
     # Keep candidate identities and mandatory reports when metadata is long.
     # Only discovery samples shrink; full writer bodies stay intact.
     for budget in (520, 440, 360, 280, 240):
-        text = _plan_prompt(bundle, budget)
+        text = _plan_prompt(bundle, budget, direct_output=direct_output)
         if len(text) <= 88000:
             return text
     raise ValueError("brief_plan_context_limit")
@@ -116,7 +116,7 @@ def discovery_spans(content, budget=520):
     return [[start, end, content[start:end]] for start, end in spans if start < end]
 
 
-def _plan_prompt(bundle, budget):
+def _plan_prompt(bundle, budget, *, direct_output=False):
     rows = [{"id": doc["id"], "title": doc["title"][:180],
              "publisher": doc["publisher"][:60], "origin_group": doc.get("origin_group", "")[:60],
              "published_at": doc["published_at"], "source_chars": len(doc["content"]),
@@ -125,7 +125,11 @@ def _plan_prompt(bundle, budget):
             for doc in bundle["candidate_documents"]]
     payload = {"edition": bundle["edition"], "candidates": rows,
                "required_source_ids": required_sources(bundle), "source_char_budget": SOURCE_CHAR_BUDGET}
-    text = (PLAN + "\nSCHEMA:\n" + json.dumps(SourcePlan.model_json_schema(), ensure_ascii=False)
+    from .execution import direct_instruction
+
+    header = direct_instruction(PLAN).replace("requested JSON object", "SourcePlan JSON object") if direct_output else PLAN
+    schema = "" if direct_output else "\nSCHEMA:\n" + json.dumps(SourcePlan.model_json_schema(), ensure_ascii=False)
+    text = (header + schema
             + "\nCANDIDATES:\n" + json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
     return text
 

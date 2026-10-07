@@ -84,8 +84,12 @@ class RuntimeClient:
             payload.pop("session", None)
         if account is not None:
             headers.update({"X-Company-Account": account["profile"], "X-Company-Account-Revision": str(account["revision"])})
+        from quant_company.briefing.execution import timeout_seconds
+
+        budget = timeout_seconds(request) if self.expected_provider == "codex" else None
+        wait_seconds = max(self.timeout_seconds, budget+60) if budget else self.timeout_seconds
         try:
-            async with httpx.AsyncClient(timeout=self.timeout_seconds, transport=self.transport,
+            async with httpx.AsyncClient(timeout=wait_seconds, transport=self.transport,
                                          follow_redirects=False, trust_env=False) as client:
                 async with client.stream("POST", f"{self.base_url}/v1/turns",
                                          headers=headers,

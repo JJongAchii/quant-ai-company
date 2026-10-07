@@ -59,6 +59,44 @@ def test_owner_preview_preserves_live_roles_and_unrelated_configuration():
         release.updated(raw, values)
 
 
+def execution_manifest():
+    return {'preserve_api': True, 'preserve_codex_runtime': False,
+            'runtime_changes': [{'path': 'src/quant_company/providers/codex_runner.py'}],
+            'execution_runtime_update': {
+                'owner_approval_id': 'chat-analyst-execution-approved-20261007', 'cli_version': '0.160.1',
+                'scope': 'Analyst typed output and phase deadlines; preserve all other runtime behavior'}}
+
+
+def test_execution_preview_needs_additional_specific_owner_authorization():
+    manifest = execution_manifest()
+    release.validate_preserved_runtime(manifest)
+    assert release.selected_services(manifest) == ('news-worker', 'dispatch', 'codex-runtime')
+    for approval in ['chat-analyst-preview-approved-20261002', 'pending', '']:
+        changed = deepcopy(manifest)
+        changed['execution_runtime_update']['owner_approval_id'] = approval
+        with pytest.raises(ValueError, match='separate_owner_approval'):
+            release.validate_preserved_runtime(changed)
+    for name in ['src/quant_company/company.py', 'src/quant_company/providers/codex_runtime.py',
+                 'pyproject.toml', 'deploy/Dockerfile']:
+        changed = deepcopy(manifest)
+        changed['runtime_changes'].append({'path': name})
+        with pytest.raises(ValueError, match='outside_scope|separate_owner_approval'):
+            release.validate_preserved_runtime(changed)
+
+
+def test_execution_stage_rejects_earlier_approval_before_host_effects(tmp_path, monkeypatch):
+    archive, manifest = tmp_path/'runtime.tar.gz', tmp_path/'manifest.json'
+    archive.write_bytes(b'candidate')
+    manifest.write_text(json.dumps(execution_manifest()))
+    args = SimpleNamespace(archive=archive, manifest=manifest,
+        sha256=release.digest(archive.read_bytes()), manifest_sha256=release.digest(manifest.read_bytes()),
+        approval='chat-analyst-preview-approved-20261002')
+    monkeypatch.setattr(release, 'available_memory', lambda: 2048)
+    with pytest.raises(ValueError, match='owner_approval_mismatch'):
+        release.stage(args, tmp_path/'previous', tmp_path/'not-created', None, tmp_path/'receipt.json')
+    assert not (tmp_path/'not-created').exists() and not (tmp_path/'receipt.json').exists()
+
+
 def test_live_inventory_survives_staged_json_receipt_and_still_detects_drift(monkeypatch):
     row = {'Name': '/quant-company-news-worker-1', 'Id': 'container', 'RestartCount': 0,
            'State': {'Running': True, 'OOMKilled': False}, 'Config': {'Image': 'verified-image'},
