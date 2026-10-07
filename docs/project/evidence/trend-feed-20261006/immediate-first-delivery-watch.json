@@ -1,0 +1,40 @@
+{
+  "state": "publication_enabled",
+  "approval": "chat-user-immediate-brief-inspect-activate-20261006",
+  "acceptance_mode": "immediate_inspected_real_delivery",
+  "started_at": "2026-10-06T12:44:08.472271+00:00",
+  "manual_delivery": {
+    "id": "012716d1-68d5-52fe-839e-047a2c9b99ef",
+    "status": "delivered",
+    "sent_ts": "1791289915.099149",
+    "channel": "C0C6WTA9ECV",
+    "attempts": 1,
+    "error": null,
+    "body_md5": "d26e2b6e98d4b9a00bb6687c7ae5e517"
+  },
+  "three_day_observation_completed": false,
+  "three_day_wait_replaced_by_user": true,
+  "first_scheduled_day": "2026-10-07",
+  "preview_backfill": false,
+  "automatic_message_replay": false,
+  "publish_enabled": true,
+  "completed_at": "2026-10-06T12:44:16.866865+00:00",
+  "target_ids": {
+    "news-worker": "46538a3189b613a5d3209d4fa39d26332dfb6b47af654cc51a9472e6da5900a8",
+    "dispatch": "2ac277156cad3e66bbadf7ae2b1e674ac9b41305ce7d3f73e8cb9d4cbebb9925"
+  },
+  "target_images": {
+    "news-worker": "sha256:87d3b67552393e3e727f1344edb2b8805fde3c60da5abc3bbbc6d8eaa95f2b98",
+    "dispatch": "sha256:87d3b67552393e3e727f1344edb2b8805fde3c60da5abc3bbbc6d8eaa95f2b98"
+  },
+  "target_pids": {
+    "news-worker": 256,
+    "dispatch": 128
+  },
+  "unrelated_container_ids_preserved": true,
+  "first_delivery_verified": false,
+  "days": [],
+  "qualification_days": [],
+  "first_delivery": null,
+  "systemd_service_result": "success"
+}

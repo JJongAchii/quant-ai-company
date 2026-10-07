@@ -1,0 +1,33 @@
+{
+  "checked_at": "2026-10-06T10:09:09.645566+00:00",
+  "app_id": "A0C7VRH8JV6",
+  "workspace_id": "T0C1YRDRPNF",
+  "bot_user_id": "U0C7VT8TN1W",
+  "bot_id": "B0C7572KPEY",
+  "bot_name": "trendscout",
+  "scopes": [
+    "chat:write"
+  ],
+  "auth_test": "passed",
+  "credential_storage": "Git-external local 0600; server root-only directory and UID10001 0400 file; values never recorded",
+  "channel_id": "C0C6WTA9ECV",
+  "channel_name": "search-trends",
+  "channel_membership": "verified in channel Agents and Apps list",
+  "messages_sent": 2,
+  "deployed": true,
+  "channel_url": "https://app.slack.com/client/T0C1YRDRPNF/C0C6WTA9ECV",
+  "app_installation": "installed; bot auth.test passed",
+  "legacy_verification_token_rotation": "activated and verified after reload",
+  "delivery_receipt": "slack-test-receipt.json",
+  "publish_enabled": true,
+  "immediate_brief_sent": true,
+  "immediate_brief_receipt": {
+    "id": "012716d1-68d5-52fe-839e-047a2c9b99ef",
+    "status": "delivered",
+    "channel": "C0C6WTA9ECV",
+    "sent_ts": "1791289915.099149",
+    "error": null,
+    "attempts": 1
+  },
+  "current_evidence": "immediate-review.json"
+}

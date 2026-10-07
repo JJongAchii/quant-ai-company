@@ -1,0 +1,29 @@
+{
+  "checked_at": "2026-10-06T12:05:06.543823+00:00",
+  "isPrivate": false,
+  "nameWithOwner": "JJongAchii/quant-ai-company",
+  "url": "https://github.com/JJongAchii/quant-ai-company",
+  "viewerPermission": "ADMIN",
+  "visibility": "PUBLIC",
+  "expected_visibility_from_instructions": "private",
+  "pushed_this_work": true,
+  "visibility_changed_this_work": false,
+  "publication_state": "feature_branch_published_pr_ready_for_review",
+  "production_preview_continues": true,
+  "user_upload_authorized": true,
+  "authorization": "chat user: 나중에 비공개 전환할거라 신경쓰지말고 원격에 올려줘",
+  "authorization_recorded_at": "2026-10-06T12:07:50.971426+00:00",
+  "visibility_change_requested": false,
+  "remote_branch": "search-trends-source-research",
+  "initially_published_commit": "aeb1ff79697532d0b05216f608213060536cf879",
+  "remote_publication_verified_at": "2026-10-06T12:11:53.119104+00:00",
+  "pull_request": {
+    "number": 113,
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/113",
+    "isDraft": false,
+    "original_remaining_acceptance": "Three actual consecutive qualified morning previews and first regular-delivery receipt have not elapsed.",
+    "remaining_acceptance": null,
+    "acceptance_replaced_by_user": "INTENT-v2: immediate real briefing delivery/direct inspection and active regular operation verified; first future daily receipt observed separately",
+    "ready_for_review_verified_at": "2026-10-06T13:01:54.677204+00:00"
+  }
+}

@@ -1,0 +1,12 @@
+# Apply only the reviewed trend delta to the actual consumer image.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+ARG TREND_COMMIT
+ARG BASE_IMAGE_ID
+ARG PACKAGE_ROOT
+USER root
+COPY overlay/quant_company /tmp/trend-feed-overlay
+RUN python -c 'import pathlib,shutil,sys; root=pathlib.Path(sys.argv[1]); assert root.is_dir() and (root/"__init__.py").is_file(); incoming=pathlib.Path("/tmp/trend-feed-overlay"); files=[p for p in incoming.rglob("*") if p.is_file()]; [(root/p.relative_to(incoming)).parent.mkdir(parents=True,exist_ok=True) for p in files]; [shutil.copyfile(p,root/p.relative_to(incoming)) for p in files]; [(root/p.relative_to(incoming)).chmod(0o644) for p in files]; [c.unlink() for p in files if p.suffix==".py" for c in (root/p.relative_to(incoming)).parent.glob("__pycache__/"+p.stem+".*.pyc")]; shutil.rmtree(incoming)' "$PACKAGE_ROOT"
+USER 10001:10001
+LABEL io.quant-company.trend-feed=$TREND_COMMIT
+LABEL io.quant-company.trend-feed.base-id=$BASE_IMAGE_ID

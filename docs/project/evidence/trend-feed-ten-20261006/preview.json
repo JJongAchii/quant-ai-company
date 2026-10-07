@@ -1,0 +1,107 @@
+{
+  "valid": true,
+  "checked_at": "2026-10-06 14:28:35.971003+00:00",
+  "digest_id": "327f1495-bc76-53f1-98b2-4d58fe33d8e3",
+  "source_digest_id": "012716d1-68d5-52fe-839e-047a2c9b99ef",
+  "source_cutoff": "2026-10-06 12:24:10.854371+00:00",
+  "editorial_policy_version": 3,
+  "classified_candidates": 34,
+  "cards": 10,
+  "sports_selected": 0,
+  "selected": [
+    {
+      "titles": [
+        "유해진"
+      ],
+      "category": "연예",
+      "kind": "rising_search"
+    },
+    {
+      "titles": [
+        "흑 상어"
+      ],
+      "category": "사회",
+      "kind": "rising_search"
+    },
+    {
+      "titles": [
+        "자녀"
+      ],
+      "category": "기타",
+      "kind": "rising_search"
+    },
+    {
+      "titles": [
+        "구축함"
+      ],
+      "category": "사회",
+      "kind": "rising_search"
+    },
+    {
+      "titles": [
+        "CNBC: 리투아니아 의회, 핵무기 배치 금지 해제 개헌안 첫 표결 통과"
+      ],
+      "category": "사회",
+      "kind": "major_issue"
+    },
+    {
+      "titles": [
+        "연합뉴스: 신압록강대교 차량 이동 관측…6일 저녁까지 개통식 없어"
+      ],
+      "category": "사회",
+      "kind": "major_issue"
+    },
+    {
+      "titles": [
+        "연합뉴스·외신 인용: 프랑스 교육 여건 개선 요구 시위 전국 도시서 진행"
+      ],
+      "category": "사회",
+      "kind": "major_issue"
+    },
+    {
+      "titles": [
+        "연합뉴스: 누리호 5차 발사 앞두고 발사대 설치·연결 점검 완료"
+      ],
+      "category": "기술",
+      "kind": "major_issue"
+    },
+    {
+      "titles": [
+        "BBC: 멜로니 이탈리아 총리, AI 딥페이크 대응 위해 음성 상표 출원"
+      ],
+      "category": "기술",
+      "kind": "major_issue"
+    },
+    {
+      "titles": [
+        "SBS: 배경훈, 국감서 산업 현장용 피지컬 AI 로봇 생태계 구축 약속"
+      ],
+      "category": "기술",
+      "kind": "major_issue"
+    }
+  ],
+  "text": "*한국 검색 트렌드 · 10개 구성 검증 미리보기*\n검색 급상승 우선 · 부족한 수는 검증된 주요 이슈로 보충\n\n*1. 유해진 · 연예*\n검색 급상승 · 관측 이력 부족 · Google 규모 표시 5000+ (구간 내 최대 표시)\n네이버 최근 7일 평균 / 이전 7일 평균: +270% · 2026-10-05 기준\n관련 배경: SBS 뉴스는 유해진 등 영화 ‘암살자(들)’ 제작진의 부산국제영화제 개막식 참석과 무대 인사가 취소됐다고 보도했다.\n<https://news.sbs.co.kr/news/endPage.do?news_id=N1008785532|SBS 뉴스 원문>\n\n*2. 흑 상어 · 사회*\n검색 급상승 · 관측 이력 부족 · Google 규모 표시 5000+ (구간 내 최대 표시)\n네이버 최근 7일 평균 / 이전 7일 평균: -70% · 2026-10-05 기준\n관련 배경: 연합뉴스는 국립수산과학원이 부산 북항 친수공원에 머무는 상어 ‘부캉이’를 흑상어로 확인했다고 보도했다.\n<https://www.yna.co.kr/view/AKR20261006141700051|연합뉴스 원문>\n\n*3. 자녀 · 기타*\n검색 급상승 · 관측 이력 부족 · Google 규모 표시 2000+ (구간 내 최대 표시)\n네이버 최근 7일 평균 / 이전 7일 평균: +17% · 2026-10-05 기준\n배경 확인 제한 · 검증된 관련 원문 없음\n<https://search.naver.com/search.naver?where=news&query=%EC%9E%90%EB%85%80|자녀 뉴스 검색>\n\n*4. 구축함 · 사회*\n검색 급상승 · 관측 이력 부족 · Google 규모 표시 1000+ (구간 내 최대 표시)\n네이버 최근 7일 평균 / 이전 7일 평균: +4% · 2026-10-05 기준\n배경 확인 제한 · 검증된 관련 원문 없음\n<https://search.naver.com/search.naver?where=news&query=%EA%B5%AC%EC%B6%95%ED%95%A8|구축함 뉴스 검색>\n\n*5. CNBC: 리투아니아 의회, 핵무기 배치 금지 해제 개헌안 첫 표결 통과 · 사회*\n주요 이슈 · 검증된 보도에서 보충 · 검색 급상승 확인 항목 아님\n관련 배경: CNBC는 리투아니아 의회가 자국 내 핵무기 배치 금지 조항을 바꾸는 개헌안의 첫 표결에서 찬성했다고 보도했다. 개헌에 필요한 후속 표결은 남아 있다.\n<https://www.cnbc.com/2026/10/06/russia-ukraine-lithuania-trump-nato.html|CNBC 원문>\n\n*6. 연합뉴스: 신압록강대교 차량 이동 관측…6일 저녁까지 개통식 없어 · 사회*\n주요 이슈 · 검증된 보도에서 보충 · 검색 급상승 확인 항목 아님\n관련 배경: 연합뉴스는 신압록강대교에서 차량 이동과 시설 점검 모습이 관찰됐다고 보도했다. 현지 저녁까지 정식 개통식은 열리지 않았다고 전했다.\n<https://www.yna.co.kr/view/AKR20261006142051083|연합뉴스 원문>\n\n*7. 연합뉴스·외신 인용: 프랑스 교육 여건 개선 요구 시위 전국 도시서 진행 · 사회*\n주요 이슈 · 검증된 보도에서 보충 · 검색 급상승 확인 항목 아님\n관련 배경: 연합뉴스는 프랑스 파리와 마르세유 등 여러 도시에서 학생 시위가 이어졌다고 보도했다. 교사와 학부모들도 동참했다고 전했다.\n<https://www.yna.co.kr/view/AKR20261006191800085|연합뉴스 원문>\n\n*8. 연합뉴스: 누리호 5차 발사 앞두고 발사대 설치·연결 점검 완료 · 기술*\n주요 이슈 · 검증된 보도에서 보충 · 검색 급상승 확인 항목 아님\n관련 배경: 연합뉴스는 우주항공청과 한국항공우주연구원이 누리호 발사대 설치를 완료했다고 밝혔다고 보도했다. 추진제·가스 충전을 위한 연결과 기밀점검도 마쳤다고 전했다.\n<https://www.yna.co.kr/view/AKR20261006191900017|연합뉴스 원문>\n\n*9. BBC: 멜로니 이탈리아 총리, AI 딥페이크 대응 위해 음성 상표 출원 · 기술*\n주요 이슈 · 검증된 보도에서 보충 · 검색 급상승 확인 항목 아님\n관련 배경: BBC News는 조르자 멜로니 이탈리아 총리가 AI 딥페이크에 대응하기 위해 자신의 음성 상표를 출원했다고 보도했다.\n<https://www.bbc.co.uk/news/articles/ckly0g1ljq2yo|BBC News 원문>\n\n*10. SBS: 배경훈, 국감서 산업 현장용 피지컬 AI 로봇 생태계 구축 약속 · 기술*\n주요 이슈 · 검증된 보도에서 보충 · 검색 급상승 확인 항목 아님\n관련 배경: SBS 뉴스는 배경훈 과기부 장관이 피지컬 AI 분야의 투자 부족을 인정하고 산업 현장용 로봇 생태계 구축을 약속했다고 보도했다.\n<https://news.sbs.co.kr/news/endPage.do?news_id=N1008785339|SBS 뉴스 원문>\n\n자료 마감 10/06 21:24 KST · 수집 시작 10/06 20:31 KST\n검색 급상승 4개 · 주요 이슈 6개\n스포츠 주제 제외 · 하루 10개 목표\n검색 규모는 Google 제공 표시이며 전체 검색량 순위가 아닙니다. 네이버 지수와 합산하지 않습니다.",
+  "text_sha256": "bfef8df2e9c2e4ea20e594a9ae97bfa0bd132037e2007f7560207623dbf01d80",
+  "source_sha256": {
+    "trend_feed/contracts.py": "f9ef77ec27715da941d0fb8319032c7353fbd99c26b8bdac3e3e044b343b2bec",
+    "trend_feed/editor.py": "58815d07fa1b22f99fc2637f53bedb2ca176b08dcf62183a20b8245162b456f9",
+    "trend_feed/runner.py": "5532aa1d739d294a254616e56c6cf831a2444d6c9f0908c17f1a7e395b323d16",
+    "trend_feed/store.py": "8b12bb1c32834ec416fcfe472239197c473cc7d0a6bcc24edbdadda89a456ed4",
+    "trend_feed/supplement.py": "8dd46501b4e5380f61f4b796f69ffe071405ad0da6c44f2cf561250bd6befabb"
+  },
+  "model_requests_today": 2,
+  "naver_requests_today": 19,
+  "calls": [
+    {
+      "id": "news-trends-c59a4937-69fd-4336-8173-1479bd3032e5",
+      "state": "completed",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "medium",
+      "provider": "codex"
+    }
+  ],
+  "original_body_unchanged": true,
+  "additional_slack_calls": 0,
+  "additional_naver_calls": 0,
+  "automatic_uncertain_replay": false
+}

@@ -1,0 +1,48 @@
+{
+  "state": "publication_enabled",
+  "approval": "chat-user-ten-topics-20261006",
+  "started_at": "2026-10-06T14:31:23.019603+00:00",
+  "commit": "10daf0e80013b18a33cb4db14db67b50b100c6ba",
+  "image": "sha256:1e06a642b8b23fbbb0cc05e916f43c9df52b6285af82f744e4fc5c339ef7d219",
+  "base_image": "sha256:e036d78baa61b0072e8ed0c541ce5900452346e8c72a2d1723419d956d52832f",
+  "editorial_policy_version": 3,
+  "preview_sha256": "bfef8df2e9c2e4ea20e594a9ae97bfa0bd132037e2007f7560207623dbf01d80",
+  "changed_files": [
+    "trend_feed/contracts.py",
+    "trend_feed/editor.py",
+    "trend_feed/runner.py",
+    "trend_feed/store.py",
+    "trend_feed/supplement.py"
+  ],
+  "model_calls_made": 0,
+  "naver_calls_made": 0,
+  "slack_calls_made": 0,
+  "automatic_message_replay": false,
+  "completed_at": "2026-10-06T14:31:55.830997+00:00",
+  "publish_enabled": true,
+  "target_ids": {
+    "news-worker": "02e340bde405df77b838c022f8af78c1ff8849d195064f593e9f101ec61c8ad5",
+    "dispatch": "fb7b634020327d05f1492ce08372dc5242f2beb007694f32f274418b0366a44f"
+  },
+  "target_images": {
+    "news-worker": "sha256:1e06a642b8b23fbbb0cc05e916f43c9df52b6285af82f744e4fc5c339ef7d219",
+    "dispatch": "sha256:1e06a642b8b23fbbb0cc05e916f43c9df52b6285af82f744e4fc5c339ef7d219"
+  },
+  "target_pids": {
+    "news-worker": 256,
+    "dispatch": 128
+  },
+  "runtime_config_preserved": true,
+  "unrelated_container_ids_preserved": true,
+  "existing_frozen_requests_preserved": true,
+  "existing_delivered_body_preserved": true,
+  "active_preview_sha256": "bfef8df2e9c2e4ea20e594a9ae97bfa0bd132037e2007f7560207623dbf01d80",
+  "active_source_sha256": {
+    "trend_feed/contracts.py": "f9ef77ec27715da941d0fb8319032c7353fbd99c26b8bdac3e3e044b343b2bec",
+    "trend_feed/editor.py": "58815d07fa1b22f99fc2637f53bedb2ca176b08dcf62183a20b8245162b456f9",
+    "trend_feed/runner.py": "5532aa1d739d294a254616e56c6cf831a2444d6c9f0908c17f1a7e395b323d16",
+    "trend_feed/store.py": "8b12bb1c32834ec416fcfe472239197c473cc7d0a6bcc24edbdadda89a456ed4",
+    "trend_feed/supplement.py": "8dd46501b4e5380f61f4b796f69ffe071405ad0da6c44f2cf561250bd6befabb"
+  },
+  "runtime_pause_restored": true
+}

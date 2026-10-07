@@ -69,6 +69,12 @@ class Settings(BaseSettings):
     tech_feed_channel_id: str = ""
     tech_feed_owner_user: str = ""
     tech_feed_sources_file: Path | None = None
+    trend_feed_enabled: bool = False
+    trend_feed_publish_enabled: bool = False
+    trend_feed_channel_id: str = ""
+    trend_feed_owner_user: str = ""
+    trend_feed_naver_enabled: bool = False
+    trend_feed_naver_credentials_file: Path | None = None
     housing_feed_enabled: bool = False
     housing_feed_publish_enabled: bool = False
     housing_feed_channel_id: str = ""

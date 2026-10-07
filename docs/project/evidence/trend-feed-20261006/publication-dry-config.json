@@ -1,0 +1,21 @@
+{
+  "future_promotion_dry_config": [
+    {
+      "service": "news-worker",
+      "compiled_environment_matches": true,
+      "same_image": true,
+      "pids_limit": 256,
+      "publication_flag": "true",
+      "applied": false
+    },
+    {
+      "service": "dispatch",
+      "compiled_environment_matches": true,
+      "same_image": true,
+      "pids_limit": 128,
+      "publication_flag": "true",
+      "applied": false
+    }
+  ],
+  "live_publish_enabled": "false"
+}

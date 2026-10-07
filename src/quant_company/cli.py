@@ -9,11 +9,13 @@ from .config import Settings
 from .tech_feed.contracts import TECH_FEED_AGENT
 
 
-def manifests(company, base_url, output, transport="socket", include_reporter=False, include_tech_scout=False):
+def manifests(company, base_url, output, transport="socket", include_reporter=False, include_tech_scout=False,
+              include_trend_scout=False):
     output.mkdir(parents=True, exist_ok=True)
     for role in company.roles.values():
         optional = ((include_reporter and role.id == "reporter")
-                    or (include_tech_scout and role.id == TECH_FEED_AGENT))
+                    or (include_tech_scout and role.id == TECH_FEED_AGENT)
+                    or (include_trend_scout and role.id == "trend_scout"))
         if not role.active and not optional:
             continue
         value = {
@@ -35,10 +37,10 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
             value["display_information"]["name"] = "Reporter"
             value["features"]["bot_user"]["display_name"] = "reporter"
             value["settings"]["event_subscriptions"]["bot_events"].append("entity_details_requested")
-        if role.id == TECH_FEED_AGENT:
+        if role.id in {TECH_FEED_AGENT, "trend_scout"}:
             value = {
-                "display_information": {"name": "Tech Scout", "description": role.mission[:140]},
-                "features": {"bot_user": {"display_name": "tech-scout", "always_online": False}},
+                "display_information": {"name": role.name, "description": role.mission[:140]},
+                "features": {"bot_user": {"display_name": role.id.replace("_", "-"), "always_online": False}},
                 "oauth_config": {"scopes": {"bot": ["chat:write"]}},
                 "settings": {"org_deploy_enabled": False, "socket_mode_enabled": False,
                              "token_rotation_enabled": False},
@@ -94,6 +96,9 @@ def main():
     tech_feed = sub.add_parser("tech-feed")
     tech_feed.add_argument("action", choices=["status", "collect", "probe"])
     tech_feed.add_argument("--output", type=Path)
+    trend_feed = sub.add_parser("trend-feed")
+    trend_feed.add_argument("action", choices=["status", "collect", "probe", "preview"])
+    trend_feed.add_argument("--output", type=Path)
     housing_feed = sub.add_parser("housing-feed")
     housing_feed.add_argument("action", choices=["status", "collect", "probe"])
     housing_feed.add_argument("--output", type=Path)
@@ -122,6 +127,7 @@ def main():
     slack.add_argument("--output", type=Path, default=Path(".local/slack-manifests"))
     slack.add_argument("--include-reporter", action="store_true")
     slack.add_argument("--include-tech-scout", action="store_true")
+    slack.add_argument("--include-trend-scout", action="store_true")
     args = parser.parse_args()
     settings = Settings()
     if args.command == "migrate":
@@ -158,14 +164,16 @@ def main():
         if args.transport == "http" and not (args.base_url or "").startswith("https://"):
             parser.error("Slack public callback URL must use HTTPS")
         manifests(Company(settings), args.base_url, args.output, args.transport,
-                  args.include_reporter, args.include_tech_scout)
-    elif args.command in {"news", "tech-feed", "quant-feed", "housing-feed"}:
+                  args.include_reporter, args.include_tech_scout, args.include_trend_scout)
+    elif args.command in {"news", "tech-feed", "quant-feed", "housing-feed", "trend-feed"}:
         if args.command == "news":
             from .news.commands import command
         elif args.command == "tech-feed":
             from .tech_feed.commands import command
         elif args.command == "housing-feed":
             from .housing_feed.commands import command
+        elif args.command == "trend-feed":
+            from .trend_feed.commands import command
         else:
             from .quant_feed.commands import command
 

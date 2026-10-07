@@ -1,0 +1,32 @@
+{
+  "current_release": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264",
+  "runtime_env_sha256": "2520e730159b3857972287ae370ba18fca54cb695305ccc1935760c237d45bd0",
+  "settings": {
+    "STATE_DIR": "/var/lib/quant-company",
+    "SLACK_TEAM_ID": "T0C1YRDRPNF",
+    "SLACK_ALLOWED_USERS": "[\"U0C250E23NW\"]",
+    "NEWS_OWNER_USER": "U0C250E23NW",
+    "TECH_FEED_OWNER_USER": "U0C250E23NW",
+    "RELEASE_COMMIT": "971f872a23f4989ddd1628bc28c59868a1c29264",
+    "SLACK_ALLOWED_CHANNELS": "[\"C0C1Q8D0B6K\", \"C0C2B9EUEGM\", \"C0C2J1SSX09\", \"C0C2KPB76KE\", \"C0C3K8ZB9PB\", \"C0C3Q7BFQCE\", \"C0C3Q7H30HL\", \"C0C3C6ELJ0P\", \"C0C2E59B1AA\"]"
+  },
+  "disk_free_bytes": 14748557312,
+  "release_timer_active": true,
+  "release_service_active": false,
+  "checked_at": "2026-10-06T11:08:32.841591+00:00",
+  "scope": "Read-only preflight; no live service/configuration or credential changes.",
+  "targets": [
+    {
+      "name": "/quant-company-news-worker-1",
+      "id": "12340820e939e74477e26273af50314e2f0417a9603517333190744d899bac1b",
+      "image_id": "sha256:5659edbbd0b86c7be97ec1753631653a2559e28e1723fb81a21af7656bf271e2",
+      "revision": "971f872a23f4989ddd1628bc28c59868a1c29264"
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "id": "5e45af42e03aeffcaa47811de8b87553e5f5a79f07d0f56523318fb3ce4e670c",
+      "image_id": "sha256:5659edbbd0b86c7be97ec1753631653a2559e28e1723fb81a21af7656bf271e2",
+      "revision": "971f872a23f4989ddd1628bc28c59868a1c29264"
+    }
+  ]
+}

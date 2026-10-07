@@ -245,7 +245,8 @@ def main() -> None:
                "-f", str(DEPLOY / "compose.yaml")]
     for flag, overlay in (("COMPANY_RESEARCH_ENABLED", "research.compose.yaml"),
                           ("COMPANY_AUTONOMOUS_RESEARCH_ENABLED", "autonomous-research.compose.yaml"),
-                          ("MODEL_ACCOUNTS_ENABLED", "model-accounts.compose.yaml")):
+                          ("MODEL_ACCOUNTS_ENABLED", "model-accounts.compose.yaml"),
+                          ("TREND_FEED_NAVER_ENABLED", "trend-feed.compose.yaml")):
         if cfg.get(flag) == "true":
             compose += ["-f", str(DEPLOY / overlay)]
     # One local backup/restore process at a time. Locking never occurs in preview mode.
