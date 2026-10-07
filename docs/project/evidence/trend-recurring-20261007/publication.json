@@ -1,0 +1,36 @@
+{
+  "checked_at": "2026-10-07T02:19:54.209747+00:00",
+  "repository": "JJongAchii/quant-ai-company",
+  "pull_request": {
+    "baseRefName": "main",
+    "headRefName": "search-trends-recurring-on-demand",
+    "headRefOid": "e9495c3724946e4d24af55da8790f29cee9f2f74",
+    "isDraft": false,
+    "mergeStateStatus": "UNSTABLE",
+    "state": "OPEN",
+    "title": "feat(trends): 정기 3회 발송과 Slack 실시간 검색어 요청",
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/119"
+  },
+  "remote_head_matches": true,
+  "remote_evidence_commit": "e9495c3724946e4d24af55da8790f29cee9f2f74",
+  "qualified_source_commit": "dcdc29c6fba7d05a89f027e8f2e760b4311014d5",
+  "qualified_source_ci": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37559786887",
+  "later_changes": [
+    "docs/project/TREND-FEED-RECURRING.md",
+    "docs/project/evidence/trend-recurring-20261007/activation.json",
+    "docs/project/evidence/trend-recurring-20261007/active-probe.json",
+    "docs/project/evidence/trend-recurring-20261007/ci.json",
+    "docs/project/evidence/trend-recurring-20261007/ci.txt",
+    "docs/project/evidence/trend-recurring-20261007/live-preview.json",
+    "docs/project/evidence/trend-recurring-20261007/live-slack.json",
+    "docs/project/evidence/trend-recurring-20261007/preview-current-image.json",
+    "docs/project/evidence/trend-recurring-20261007/ui-thread.json",
+    "docs/trend-feed.md",
+    "docs/work/batfish/EVENTS.jsonl",
+    "docs/work/batfish/STATUS.json"
+  ],
+  "later_changes_docs_only": true,
+  "deployment": "activated; actual owner Slack requests and thread deliveries verified",
+  "main_merge": "not performed for this PR; publication deliverable is new branch and reviewable PR",
+  "receipt_note": "This receipt and final qws completion are appended by a subsequent documentation-only commit."
+}

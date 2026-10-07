@@ -28,9 +28,15 @@
       "updatedAt": "2026-10-07T02:17:18.737343+00:00"
     },
     "PUBLICATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-recurring-20261007/publication.json",
+          "sha256": "b59bcbb9a7b5"
+        }
+      ],
+      "note": "코드·설정·사용법·공개 운영 증거 원격 브랜치 반영, PR119 ready. CI 자격 코드 dcdc29c 이후 변경은 문서/증거뿐이며 이 완료 영수증도 문서 커밋으로 추가한다. 새 PR main 병합은 이번 계약 범위에 포함하지 않는다.",
+      "status": "verified",
+      "updatedAt": "2026-10-07T02:19:54.456902+00:00"
     },
     "SECURITY": {
       "evidence": [
@@ -59,5 +65,5 @@
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-07T02:17:19.412590+00:00"
+  "updatedAt": "2026-10-07T02:19:54.456902+00:00"
 }
