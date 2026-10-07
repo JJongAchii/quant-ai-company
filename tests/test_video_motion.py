@@ -161,7 +161,7 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
     assert 'Fixture Author · CC BY 4.0' in upload and '변경: 잘라 냄' in upload and 'AI' not in upload
     assert manifest['title'].startswith('[증시story] ') and manifest['tags'][-2:] == ['증시story', '뭐든story']
     assert '📅 2026.09.22 | 미국 증시' in upload and '자료 기준: 2026.09.22 07:30 (한국시간) · 장전' in upload
-    assert '00:00 반도체가 이끌었다' in upload and '#증시story #뭐든story #반도체' in upload and '모아보기' not in upload
+    assert '00:00 반도체가 이끌었다' in upload and '#증시story #뭐든story #반도체' in upload and '▶ 증시story 모아보기\nhttps://www.youtube.com/playlist?list=PLbCkACCer37U' in upload
     assert 'https://www.cnbc.com/fixture-market-report.html' in upload
     assert not (tmp_path / 'out' / 'page').exists() and not list((tmp_path / 'out').glob('part-*.mp4'))
     assert not (tmp_path / 'out' / 'narration.wav').exists() and (tmp_path / 'out' / 'video.mp4').exists()

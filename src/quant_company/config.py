@@ -94,7 +94,7 @@ class Settings(BaseSettings):
     video_asset_dir: Path = Path("/var/lib/quant-company/video-assets")
     video_render_workers: int = Field(default=1, ge=1, le=8)
     # 증시story playlist; when empty the description omits the "▶ 증시story 모아보기" lines.
-    video_playlist_url: str = ""
+    video_playlist_url: str = "https://www.youtube.com/playlist?list=PLbCkACCer37U"
     # Morning review-ready target (HH:MM KST); public approval still expires at 09:00 KST.
     video_am_review_target: str = Field(default="08:30", pattern=r"^(0[6-8]):[0-5]\d$")
     # Final files are kept this many days after a job ends; intermediates are removed right after packaging.
