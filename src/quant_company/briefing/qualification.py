@@ -112,7 +112,8 @@ def qualify(company, *, at=None):
             if quality.get("revision_used") or any(c["phase"] in {"revise", "final_review"} for c in edition_calls):
                 required_phases |= {"revise", "final_review"}
                 if (row['bundle'] or {}).get('source_notes_repair', {}).get('before_independent_review'):
-                    required_phases.discard('review')
+                    review_phase = row['bundle']['source_notes_repair'].get('review_phase', 'final_review')
+                    required_phases.discard('final_review' if review_phase == 'review' else 'review')
             if not required_phases <= real_phases:
                 reasons.append("real_codex_not_verified")
             if s.fixture_mode or any(d.get("receipt", {}).get("synthetic") for d in row["bundle"].get("documents", [])):

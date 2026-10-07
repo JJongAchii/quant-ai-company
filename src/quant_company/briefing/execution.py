@@ -15,7 +15,7 @@ from .contracts import (
     SourcePlan,
 )
 
-EXECUTION_VERSION = 3
+EXECUTION_VERSION = 4
 OUTPUT_MODELS = {
     "brief_plan_v1": SourcePlan,
     "brief_inventory_v1": FactInventory,
@@ -83,6 +83,8 @@ def timeout_seconds(request):
 
 
 def remaining_seconds(phase, bundle):
+    if phase == "revise" and bundle.get("source_notes_repair", {}).get("review_phase") == "review":
+        return PHASE_SECONDS["revise"] + PHASE_SECONDS["review"]
     if bundle.get("fact_inventory_version") == 2 and phase in {"plan", "inventory"}:
         return (PHASE_SECONDS["plan"] if phase == "plan" else 0) + FRAGMENT_INVENTORY_SECONDS + COMPOSE_SECONDS + PHASE_SECONDS["review"]
     if phase == "write" and bundle.get("fact_inventory_required"):

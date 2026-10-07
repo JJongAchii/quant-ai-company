@@ -32,7 +32,7 @@ def assess(definition, row, now, *, maximum_requests=6):
     if any(c['phase'] in {'revise', 'final_review'} for c in calls):
         required |= {'revise', 'final_review'}
         if row.get('source_notes_repair'):
-            required.discard('review')
+            required.discard('final_review' if row.get('source_notes_review_phase') == 'review' else 'review')
     content_passed = bool(row.get('verdict') == 'publish' and set(checks) == CHECKS
                           and all(v is True for v in checks.values()) and row.get('substantive')
                           and not row.get('reduced') and not row.get('rejections')
@@ -83,6 +83,7 @@ def query(ids):
       'substantive',e.quality->'substantive','reduced',e.quality->'reduced',
       'rejections',e.quality->'rejected','inventory_digest',e.bundle->>'fact_inventory_digest',
       'source_notes_repair',e.bundle->'source_notes_repair'->'before_independent_review',
+      'source_notes_review_phase',e.bundle->'source_notes_repair'->>'review_phase',
       'source_count',jsonb_array_length(COALESCE(e.bundle->'documents','[]'::jsonb)),
       'collection_error_count',jsonb_array_length(COALESCE(e.bundle->'collection_errors','[]'::jsonb)),
       'expected_messages',jsonb_array_length(COALESCE(e.rendered,'[]'::jsonb)),

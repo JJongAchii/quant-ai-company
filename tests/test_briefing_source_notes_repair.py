@@ -109,8 +109,8 @@ def test_real_postgres_preflight_repair_runs_once_and_review_requires_valid_proo
         assert final['state'] == 'blocked' and store.prepare() == {'state': 'idle'}
         assert phases == ['revise', 'write']
         return
-    assert final['request']['request_id'].endswith('-final_review')
-    assert phases == ['final_review', 'revise', 'write']
+    assert final['request']['request_id'].endswith('-review')
+    assert phases == ['review', 'revise', 'write']
     store.commit(response(final['request'], review()))
     clock['at'] = edition.due_at
     store.flush()

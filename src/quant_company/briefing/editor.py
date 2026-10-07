@@ -39,8 +39,8 @@ from .quotations import (
 )
 from .schedule import KST, close
 
-FORMAT_VERSION = 18
-VALIDATION_VERSION = 63
+FORMAT_VERSION = 19
+VALIDATION_VERSION = 64
 
 WRITE = """You are Analyst writing a substantive, readable Korean daily market briefing.
 Return AgentDecision(status=complete,say='') with exactly one complete BriefProposal JSON artifact,
@@ -321,6 +321,10 @@ When a quote limit prevents editing, use a short context_addition beside an allo
 with its own exact evidence. No more than two additions; no rewriting prices, summary or calendar.
 Preserve all unaffected sections and notes. This is one bounded correction, not a review verdict.
 The final full original-to-main comparison and twelve-criterion independent review still decide quality.
+For a missing or invisible item ID, map only to an ID actually present in the returned draft. Put
+material facts in a visible overview/issue/context/internals paragraph; a thread-only watchpoint cannot
+cover them. Preserve every committed fact and qualifier. Compress repeated interpretation and caveats
+within editable claims before adding prose; source coverage is not permission for repetitive writing.
 """
 
 
@@ -808,7 +812,7 @@ def source_notes_revision_bundle(bundle, proposal, violations):
 
         feedback['committed_facts'] = [f for f in composition_inventory(bundle)['facts'] if f['source_id'] in affected]
     return {**bundle, 'revision_feedback': feedback,
-            'source_notes_repair': {'before_independent_review': True, 'violations': violations,
+            'source_notes_repair': {'before_independent_review': True, 'review_phase': 'review', 'violations': violations,
                                     'affected_source_ids': sorted(affected)}}
 
 
@@ -1475,8 +1479,16 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                 raise ValueError("brief_detail_size_limit")
             parts.append("*상세 근거·추가 지표*" if len(parts) == 1 else "*상세 계속*")
         parts[-1] += "\n"+block
-    if len(parts[0]) > 9500 or any(len(part) > 3500 for part in parts[1:]):
+    # URL characters are transport overhead, not reading length. The old9500
+    # wire cap stopped otherwise renderable multi-topic drafts before review.
+    # Keep a conservative transport bound and validate the actual Slack blocks;
+    # the independent readability check still judges the complete visible text.
+    if len(parts[0]) > 30000 or any(len(part) > 3500 for part in parts[1:]):
         raise ValueError("brief_message_size_limit")
+    from .slack_blocks import blocks
+
+    for part in parts:
+        blocks(part)
     return parts, {"format_version": FORMAT_VERSION, "reduced": reduced, "substantive": substantive,
                    "issue_count": len(proposal.issues) if proposal else 0,
                    "missing_core": missing, "rejected": rejected or {},

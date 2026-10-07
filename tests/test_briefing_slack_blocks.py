@@ -1,6 +1,11 @@
+from copy import deepcopy
+
 import pytest
 
+from quant_company.briefing.editor import render
 from quant_company.briefing.slack_blocks import blocks
+
+from .test_briefing import bundle, proposal
 
 
 def test_long_main_keeps_every_paragraph_and_citation_in_one_slack_message():
@@ -19,3 +24,24 @@ def test_long_main_keeps_every_paragraph_and_citation_in_one_slack_message():
 def test_unrenderable_brief_fails_before_external_delivery(text):
     with pytest.raises(ValueError):
         blocks(text)
+
+
+def test_full_multi_topic_body_is_checked_against_actual_blocks_before_delivery():
+    b, p = bundle(), proposal()
+    first = p.issues[0]
+    p.issues = []
+    for i in range(6):
+        issue = deepcopy(first)
+        for c in [issue.fact, issue.interpretation, issue.analysis.mechanism,
+                  issue.analysis.alternative, issue.next_check]:
+            c.id += str(i)
+            c.text = ('시장 변화와 경제적 의미를 설명하는 합성 검증 문장입니다. ' * 10)[:380]
+        p.issues.append(issue)
+    parts, _ = render(p, b)
+    assert 9500 < len(parts[0]) < 30000
+    sections = blocks(parts[0])
+    assert ''.join(s['text']['text'] for s in sections) == parts[0]
+    assert len(sections) <= 50
+    assert all(len(s['text']['text']) <= 3000 for s in sections)
+    # A wire-valid body is not itself a readability or content-quality pass.
+    assert len(p.issues) == 6

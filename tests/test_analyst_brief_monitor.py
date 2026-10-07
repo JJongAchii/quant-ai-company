@@ -95,3 +95,15 @@ def test_continuous_monitor_accounts_for_optional_discovery_without_certifying_b
     assert not result['content_passed'] and result['failed_checks'] == ['coverage']
     row['calls'].append({'phase': 'search', 'state': 'completed', 'provider': 'codex'})
     assert 'model_request_budget_exceeded' in monitor.assess(d, row, now, maximum_requests=7)['problems']
+
+
+def test_first_full_review_after_mapping_repair_is_required_and_legacy_receipts_still_work():
+    d, row, now = completed()
+    row.update(source_notes_repair=True, source_notes_review_phase='review')
+    row['calls'].append({'phase': 'revise', 'state': 'completed', 'provider': 'codex'})
+    assert monitor.assess(d, row, now)['content_passed']
+    row['calls'] = [c for c in row['calls'] if c['phase'] != 'review']
+    assert not monitor.assess(d, row, now)['content_passed']
+    row.pop('source_notes_review_phase')
+    row['calls'].append({'phase': 'final_review', 'state': 'completed', 'provider': 'codex'})
+    assert monitor.assess(d, row, now)['content_passed']

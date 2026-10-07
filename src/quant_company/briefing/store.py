@@ -282,7 +282,7 @@ class BriefStore:
                         validate_source_notes(BriefProposal.model_validate(row['proposal']), bundle)
                     except SourceNotesValidationError as exc:
                         repair = (self.company.settings.briefing_max_revisions > 0 and phase == 'review'
-                                  and at+timedelta(seconds=REMAINING_SECONDS['revise']+60) < row['due_at']+timedelta(minutes=10)
+                                  and at+timedelta(seconds=PHASE_SECONDS['revise']+PHASE_SECONDS['review']+60) < row['due_at']+timedelta(minutes=10)
                                   and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
                                                        (row['id'],)).fetchone())
                         if repair:
@@ -416,6 +416,9 @@ class BriefStore:
                 result = {"rejected": rejected}
                 row["bundle"].pop("revision_feedback", None)
                 next_state = "final_reviewing" if call["phase"] == "revise" else "reviewing"
+                if (call['phase'] == 'revise' and feedback.get('repair_mode') == 'source_notes_patch'
+                        and row['bundle'].get('source_notes_repair', {}).get('review_phase') == 'review'):
+                    next_state = 'reviewing'
                 conn.execute("UPDATE brief_editions SET state=%s,proposal=%s,quality=%s,bundle=%s WHERE id=%s",
                              (next_state, Jsonb(proposal.model_dump(mode="json")), Jsonb(result), Jsonb(row["bundle"]), row["id"]))
             else:
@@ -450,7 +453,7 @@ class BriefStore:
                     conn.execute("UPDATE brief_editions SET state='revising',bundle=%s,review=%s,quality=%s WHERE id=%s",
                                  (Jsonb(revised_bundle), Jsonb(result), Jsonb(quality), row["id"]))
                 else:
-                    quality["revision_used"] = call["phase"] == "final_review"
+                    quality["revision_used"] = call["phase"] == "final_review" or bool(row['bundle'].get('source_notes_repair'))
                     quality['source_notes_repair_used'] = bool(row['bundle'].get('source_notes_repair'))
                     conn.execute("""UPDATE brief_editions SET state='ready',proposal=%s,review=%s,rendered=%s,quality=%s
                     WHERE id=%s""", (Jsonb(proposal.model_dump(mode="json")) if proposal else None,

@@ -113,6 +113,8 @@ def test_new_inventory_headroom_is_reserved_before_starting_and_legacy_is_unchan
     assert remaining_seconds('write', b) == 1680
     assert remaining_seconds('plan', {}) == 2520
     assert remaining_seconds('inventory', {}) == 2160
+    assert remaining_seconds('revise', {'source_notes_repair': {'review_phase': 'review'}}) == 1080
+    assert remaining_seconds('revise', {'source_notes_repair': {'before_independent_review': True}}) == 720
 
 
 def test_fragment_inventory_cannot_add_an_unquoted_date_or_number():
