@@ -204,6 +204,8 @@ def reported_change_supported(value, unit, quotes):
             after = re.sub(r"^\s*\([^()]{0,40}\)", "", after)
             if value < 0 and re.match(r"^\s*의?\s*낙폭(?:을|이|으로|\s|[.,]|$)", after):
                 return True
+            if value < 0 and re.search(r"(?:내림폭|하락폭|낙폭)(?:은|이)?\s*$", before):
+                return True
             if (re.search("(?:"+direction+r")(?:\s+(?:by|about|roughly|nearly))?\s*$", before, re.I)
                     or re.match(r"^[\s)\]]*(?:(?:가|나|만큼)\s*)?(?:"+direction+")", after, re.I)):
                 return True
@@ -238,7 +240,7 @@ def prose_numbers_supported(text, quotes):
     for month, name in enumerate(month_names, 1):
         temporal = (rf'\b(?:(?:in|by|during|until|through|before|after)\s+'
                     rf'(?:(?:early|mid|late)[\s-]+)?|(?:early|mid|late)[\s-]+){name}\b'
-                    rf'|\b{name}\s+\d{{1,2}}\b')
+                    rf'|\b{name}\s+\d{{1,2}}\b|\b{name}\s+quarter\b')
         if any(re.search(temporal, quote, re.I)
                or re.search(meeting_month_pattern(name), quote, re.I) for quote in quotes):
             text = re.sub(rf'(?<!\d){month}\s*월', name, text)
@@ -258,6 +260,14 @@ def prose_numbers_supported(text, quotes):
         return re.sub(rate, " ", match[0])
 
     remaining = re.sub(series, check, text)
+    # "First three quarters" establishes the cumulative Q1-Q3 period, not a
+    # standalone quantity of1. Normalize only that explicit Korean period.
+    def cumulative_quarters(match):
+        count = int(match[1])
+        pattern = rf"\bfirst\s+(?:{count}|{CARDINALS[count]})\s+quarters\b"
+        return "누적분기" if any(re.search(pattern, q, re.I) for q in quotes) else match[0]
+
+    remaining = re.sub(r"(?<![\d.,])1\s*[~∼–-]\s*([2-4])\s*분기", cumulative_quarters, remaining)
     # A ranking is not a price or quantity: English "second-largest" supports
     # Korean "2위", but never a bare 2, a 2% change or a second-tier label.
     ranks = {1: r"(?<![\w-])(?:the\s+)?(?:largest|biggest)\b",
@@ -277,7 +287,7 @@ def prose_numbers_supported(text, quotes):
     def check_rank(match):
         nonlocal valid
         value = int(match[1])
-        korean = re.escape(match[1])+r"\s*위(?=$|[\s,.]|[의인로를은가였다])"
+        korean = r"(?<![\d.,])"+re.escape(match[1])+r"\s*위(?=$|[\s,.（(]|[의인로를은가였다])"
         if any(re.search(korean, quote) or english_rank_supported(value, quote)
                for quote in quotes):
             return "위"

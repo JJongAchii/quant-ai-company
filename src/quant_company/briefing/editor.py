@@ -40,7 +40,7 @@ from .quotations import (
 from .schedule import KST, close
 
 FORMAT_VERSION = 18
-VALIDATION_VERSION = 62
+VALIDATION_VERSION = 63
 
 WRITE = """You are Analyst writing a substantive, readable Korean daily market briefing.
 Return AgentDecision(status=complete,say='') with exactly one complete BriefProposal JSON artifact,
