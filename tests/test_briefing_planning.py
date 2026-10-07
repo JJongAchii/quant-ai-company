@@ -226,8 +226,8 @@ def test_review_compression_preserves_exact_quotes_and_raw_proposal():
     assert p == before
     schema = json.loads(request.split("SCHEMA:\n")[1].split("\nBRIEF DATA JSON:\n")[0])
     assert len(schema["$defs"]["ReviewChecks"]["required"]) == 12
-    assert schema["$defs"]["FactAssessment"]["properties"]["quote"]["type"] == "string"
-    assert BriefReview.model_json_schema()["$defs"]["FactAssessment"]["properties"]["quote"]["minLength"] == 10
+    assert {q['type'] for q in schema["$defs"]["FactAssessment"]["properties"]["quote"]["anyOf"]} == {'string', 'array'}
+    assert BriefReview.model_json_schema()["$defs"]["FactAssessment"]["properties"]["quote"]["anyOf"][0]["minLength"] == 10
     procedure = json.loads(request.split("SPECIALIST PROCEDURE JSON:\n")[1].split("\nINSTRUMENTS:\n")[0])
     assert procedure["employee"] == "market_brief" and procedure["digest"]
     assert "procedure" not in procedure

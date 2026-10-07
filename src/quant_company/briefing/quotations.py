@@ -9,6 +9,10 @@ COMPACT_PREFIX = "@q:"
 CANDIDATE_PREFIX = "@candidate:"
 
 
+def quote_parts(value):
+    return [value] if isinstance(value, str) else value
+
+
 def source_spans(document):
     content = document["content"]
     digest = hashlib.sha256(content.encode()).hexdigest()
@@ -63,8 +67,9 @@ def reference_payload(payload, bundle):
         source_id = item.get('source_id', source_id)
         result = {key: compact(part, source_id) for key, part in item.items()}
         quote = result.get('quote')
-        if isinstance(quote, str) and (reference := by_source.get((source_id, quote))):
-            result['quote'] = reference
+        if isinstance(quote, (str, list)):
+            parts = [by_source.get((source_id, part), part) for part in quote_parts(quote)]
+            result['quote'] = parts[0] if isinstance(quote, str) else parts
         return result
 
     # Repair protection retains every prior claim and quote on the server. Its
@@ -77,19 +82,43 @@ def resolve_quotations(value, bundle):
     index = quotation_index(bundle)
     index.update({COMPACT_PREFIX+str(i+1): original for i, original in enumerate(list(index.values()))})
 
+    reference = r"(?:@q:[1-9][0-9]*|@original:[0-9a-f]{20})"
+    references = re.compile(reference + r"(?:\s*[;,]\s*" + reference + r")*")
+
+    def resolve_quote(quote, source_id):
+        if not isinstance(quote, (str, list)):
+            return quote  # Domain schema reports the invalid type.
+        parts = []
+        for part in quote_parts(quote):
+            if isinstance(part, str) and part.startswith((PREFIX, COMPACT_PREFIX)):
+                if not references.fullmatch(part):
+                    raise ValueError("unknown_or_wrong_source_quote_reference")
+                aliases = re.split(r"\s*[;,]\s*", part)
+                for alias in aliases:
+                    original = index.get(alias)
+                    if original is None or original[0] != source_id:
+                        raise ValueError("unknown_or_wrong_source_quote_reference")
+                    parts.append(original[1])
+            else:
+                parts.append(part)
+        if not 1 <= len(parts) <= 4 or any(parts.count(p) > 1 for p in parts):
+            raise ValueError("invalid_quote_fragments")
+        return parts[0] if isinstance(quote, str) and len(parts) == 1 else parts
+
     def resolve(item, source_id=None):
         if isinstance(item, list):
             return [resolve(part, source_id) for part in item]
         if not isinstance(item, dict):
             return item
         source_id = item.get("source_id", source_id)
-        result = {key: resolve(part, source_id) for key, part in item.items()}
-        quote = result.get("quote")
-        if isinstance(quote, str) and quote.startswith((PREFIX, COMPACT_PREFIX)):
-            original = index.get(quote)
-            if original is None or original[0] != source_id:
-                raise ValueError("unknown_or_wrong_source_quote_reference")
-            result["quote"] = original[1]
+        result = {key: resolve_quote(part, source_id) if key == "quote" else resolve(part, source_id)
+                  for key, part in item.items()}
+        # Claim evidence keeps its established scalar schema and overall four
+        # entry limit. Fact inventories retain arrays, including disjoint spans.
+        if isinstance(result.get("evidence"), list):
+            result["evidence"] = [
+                {**entry, "quote": part} for entry in result["evidence"]
+                for part in quote_parts(entry["quote"])]
         return result
 
     return resolve(value)
@@ -123,10 +152,17 @@ def compact_reference_payload(payload, bundle):
 
     def compact(value):
         if isinstance(value, dict):
-            return {key: aliases.get(item, item) if key == 'quote' and isinstance(item, str) else compact(item)
+            return {key: compact_quote(item) if key == 'quote' else compact(item)
                     for key, item in value.items()}
         if isinstance(value, list):
             return [compact(item) for item in value]
+        return value
+
+    def compact_quote(value):
+        if isinstance(value, str):
+            return aliases.get(value, value)
+        if isinstance(value, list):
+            return [compact_quote(part) for part in value]
         return value
 
     result = compact(payload)

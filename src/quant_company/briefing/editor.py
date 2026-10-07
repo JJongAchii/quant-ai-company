@@ -32,6 +32,7 @@ from .quotations import (
     QUOTE_REFERENCE_VERSION,
     compact_reference_payload,
     ordered_reference_payload,
+    quote_parts,
     reference_payload,
     resolve_candidate_requests,
     resolve_quotations,
@@ -39,7 +40,7 @@ from .quotations import (
 from .schedule import KST, close
 
 FORMAT_VERSION = 18
-VALIDATION_VERSION = 61
+VALIDATION_VERSION = 62
 
 WRITE = """You are Analyst writing a substantive, readable Korean daily market briefing.
 Return AgentDecision(status=complete,say='') with exactly one complete BriefProposal JSON artifact,
@@ -342,10 +343,10 @@ def prompt(bundle, phase, proposal=None, *, direct_output=False):
 
         payload["committed_inventory"] = composition_inventory(bundle)
     elif phase == "write" and bundle.get("fact_inventory_required"):
-        from .inventory import facts
+        from .inventory import facts, qualifier_text
 
         _, indexed = facts(bundle)
-        payload['required_qualifiers'] = [[s.source_id, i, [q.text for q in f.qualifiers]]
+        payload['required_qualifiers'] = [[s.source_id, i, [qualifier_text(q) for q in f.qualifiers]]
                                           for s, i, f in indexed.values() if f.qualifiers]
     if notes_patch:
         feedback = bundle['revision_feedback']
@@ -511,11 +512,10 @@ def prompt(bundle, phase, proposal=None, *, direct_output=False):
         instruments = {key: INSTRUMENTS[key] for key in INSTRUMENTS
                        if key in {o.instrument for o in draft.observations}}
     reference_instruction = (
-        "\nOriginal quotes are an ID map to[document_index,text] or ordered [ID,document_index,text] rows. "
-        "Join a document's rows in order to read its COMPLETE unchanged body; map form uses original_quote_refs. "
-        "Use supplied @original or @q IDs in evidence/material_facts quote fields, never reader prose. "
-        "The server restores exact spans and checks source_id; do not invent/cross-assign references. "
-        "evidence_quotes may likewise refer to those IDs. All other checks apply.\n"
+        "\noriginal_quotes holds COMPLETE unchanged originals: ID->[document_index,text] or ordered "
+        "[ID,document_index,text] rows. Read every document's rows in order (map: original_quote_refs). "
+        "Use own-source @original/@q IDs in quote/evidence_quotes, never reader text. Fact quotes may be "
+        "arrays of separate spans. The server restores text and checks source_id; never invent/cross-assign IDs.\n"
         if references else "")
     from .execution import direct_instruction
 
@@ -1207,8 +1207,8 @@ def validate_source_notes(proposal, bundle):
                 violations.append({'reason': reason, **detail})
 
             original = docs[note.source_id]['content']
-            quote = canonical_source_quote(fact.quote, (" ".join(original.split()),))
-            if not quote or not prose_numbers_supported(fact.fact, [quote]):
+            quotes = [canonical_source_quote(q, (" ".join(original.split()),)) for q in quote_parts(fact.quote)]
+            if not all(quotes) or not prose_numbers_supported(fact.fact, quotes):
                 reject('source_notes_fact_not_supported')
                 continue
             if not fact.main_item_ids or not set(fact.main_item_ids) <= visible:
@@ -1266,8 +1266,8 @@ def validate_review(review, proposal, bundle):
             raise ValueError("review_material_facts_required")
         for fact in assessment.material_facts:
             original = docs[assessment.source_id]
-            if not any(" ".join(fact.quote.split()) in " ".join(original[key].split())
-                       for key in ("title", "content")):
+            if not all(any(" ".join(q.split()) in " ".join(original[key].split())
+                           for key in ("title", "content")) for q in quote_parts(fact.quote)):
                 raise ValueError("review_fact_not_in_original")
             if (not set(fact.main_item_ids) <= visible or not all(
                     any(e.source_id == assessment.source_id for e in items[i].evidence)

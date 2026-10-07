@@ -1,6 +1,6 @@
 from datetime import date
 from decimal import Decimal
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import AwareDatetime, Field, field_validator, model_validator
 from typing_extensions import TypedDict
@@ -233,9 +233,13 @@ class ReviewChecks(TypedDict):
     readability: bool
 
 
+FactQuote = Annotated[str, Field(min_length=10, max_length=400)]
+FactQuotes = Annotated[list[FactQuote], Field(min_length=1, max_length=4)]
+
+
 class FactAssessment(StrictModel):
     fact: str = Field(min_length=5, max_length=240)
-    quote: str = Field(min_length=10, max_length=400)
+    quote: FactQuote | FactQuotes
     main_item_ids: list[str] = Field(max_length=6)
 
 
@@ -268,6 +272,21 @@ class InventorySource(StrictModel):
 
 class FactInventory(StrictModel):
     sources: list[InventorySource] = Field(min_length=1, max_length=24)
+
+
+class FragmentInventoryFact(StrictModel):
+    fact: str = Field(min_length=5, max_length=240)
+    # Keep disjoint evidence as separate spans, never manufacture a merged quote.
+    quote: FactQuotes
+    qualifiers: list[Annotated[str, Field(min_length=2, max_length=80)]] = Field(default_factory=list, max_length=6)
+
+
+class FragmentInventorySource(InventorySource):
+    material_facts: list[FragmentInventoryFact] = Field(max_length=6)
+
+
+class FragmentFactInventory(StrictModel):
+    sources: list[FragmentInventorySource] = Field(min_length=1, max_length=24)
 
 
 class FactPlacement(StrictModel):

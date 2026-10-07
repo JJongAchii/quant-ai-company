@@ -5,7 +5,13 @@ from copy import deepcopy
 import pytest
 from psycopg.types.json import Jsonb
 
-from quant_company.briefing.contracts import BriefComposition, EditorialPatch, FactInventory, SourcePlan
+from quant_company.briefing.contracts import (
+    BriefComposition,
+    EditorialPatch,
+    FactInventory,
+    FragmentFactInventory,
+    SourcePlan,
+)
 from quant_company.briefing.editor import (
     SourceNotesValidationError,
     prompt,
@@ -34,6 +40,15 @@ def composition():
     p = proposal().model_dump(mode='json')
     p['issues'][0]['fact']['text'] = inventory().sources[0].material_facts[0].fact
     return BriefComposition(**p, fact_placements=[{'fact_id': 'f1', 'main_item_ids': ['fact']}])
+
+
+def fragment_inventory():
+    value = inventory().model_dump(mode='json')
+    for source in value['sources']:
+        for fact in source['material_facts']:
+            fact['quote'] = [fact['quote']]
+            fact['qualifiers'] = [q['text'] for q in fact['qualifiers']]
+    return FragmentFactInventory.model_validate(value)
 
 
 def frozen():
@@ -136,6 +151,7 @@ def test_supported_but_incomplete_mechanism_can_receive_targeted_semantic_repair
 
 @pytest.mark.parametrize('phase,contract,seconds', [
     ('inventory', 'brief_inventory_v1', 480), ('write', 'brief_compose_v1', 960),
+    ('inventory', 'brief_inventory_v2', 1080),
     ('write', 'brief_write_v1', 1440), ('revise', 'brief_compose_v1', 360),
 ])
 def test_phase_contracts_have_bounded_budgets_and_official_structured_shapes(phase, contract, seconds):
@@ -159,14 +175,15 @@ def test_real_postgres_inventory_is_committed_before_write_and_reused_after_rest
     store.commit(response(planned, SourcePlan(selections=[{'source_id': 'source-1',
         'reason': '시장의 종가와 업종 참여를 함께 설명하는 원문이다.'}], priorities=['시장 참여의 폭을 확인한다.'])))
     reading = store.prepare()['request']
-    assert reading['output_contract'] == 'brief_inventory_v1'
+    assert reading['output_contract'] == 'brief_inventory_v2'
     assert store.prepare()['request'] == reading
-    store.commit(response(reading, inventory()))
+    store.commit(response(reading, fragment_inventory()))
     writer = store.prepare()['request']
     assert writer['output_contract'] == 'brief_compose_v1'
     with store.db.transaction() as conn:
         saved = conn.execute('SELECT bundle FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()['bundle']
-    assert saved['fact_inventory_digest'] == frozen()['fact_inventory_digest']
+    assert saved['fact_inventory_version'] == 2
+    assert saved['fact_inventory_digest'] == freeze_inventory(fragment_inventory(), bundle())['fact_inventory_digest']
     store.commit(response(writer, composition()))
     critic = store.prepare()['request']
     assert critic['output_contract'] == 'brief_review_v1'
@@ -193,7 +210,7 @@ def test_real_postgres_new_inventory_path_allows_one_semantic_patch_and_final_re
         conn.execute('UPDATE brief_editions SET bundle=%s WHERE id=%s', (Jsonb(b), edition.id))
     plan = SourcePlan(selections=[{'source_id': 'source-1', 'reason': '종가와 업종 참여를 확인할 핵심 자료'}],
                       priorities=['업종 참여를 확인한다.'])
-    for value in (plan, inventory(), composition()):
+    for value in (plan, fragment_inventory(), composition()):
         store.commit(response(store.prepare()['request'], value))
     critic = review()
     critic.verdict = 'reduce'

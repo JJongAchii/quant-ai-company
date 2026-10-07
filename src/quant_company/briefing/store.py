@@ -17,7 +17,6 @@ from .contracts import (
     BriefReview,
     ConditionPatch,
     EditorialPatch,
-    FactInventory,
     MaterialFactPatch,
     SourceDocument,
     SourceNotesPatch,
@@ -51,13 +50,14 @@ from .editor import (
 from .execution import (
     COMPOSE_SECONDS,
     EXECUTION_VERSION,
+    FRAGMENT_INVENTORY_SECONDS,
     PHASE_SECONDS,
     REMAINING_SECONDS,
     output_contract,
     remaining_seconds,
 )
 from .inputs import market_report, registrations, source_policy
-from .inventory import INVENTORY, compose, freeze_inventory, inventory_prompt
+from .inventory import INVENTORY, compose, freeze_inventory, inventory_model, inventory_prompt
 from .planning import PLAN, apply_plan, plan_prompt
 from .quality import reconcile
 from .quotations import QUOTE_REFERENCE_VERSION
@@ -92,6 +92,7 @@ class BriefStore:
         return fingerprint({"version": FORMAT_VERSION, "validation_version": VALIDATION_VERSION,
                             "execution_version": EXECUTION_VERSION, "phase_seconds": PHASE_SECONDS,
                             "compose_seconds": COMPOSE_SECONDS,
+                            "fragment_inventory_seconds": FRAGMENT_INVENTORY_SECONDS,
                             "selection_version": COVERAGE_VERSION,
                             "schedule_version": schedule.SCHEDULE_VERSION,
                             "editorial_contract": fingerprint([PLAN, INVENTORY, WRITE, REVIEW, PATCH, FACT_PATCH, EDITORIAL_PATCH, SOURCE_NOTES_PATCH]),
@@ -160,6 +161,8 @@ class BriefStore:
         bundle["quote_reference_version"] = QUOTE_REFERENCE_VERSION
         bundle["source_notes_required"] = self.company.settings.briefing_source_notes_enabled
         bundle["fact_inventory_required"] = bool(bundle["source_notes_required"] and bundle.get("candidate_documents"))
+        if bundle["fact_inventory_required"]:
+            bundle["fact_inventory_version"] = 2
         role = self._execution_role(conn)
         bundle["execution_model"] = {"model": role.model, "reasoning_effort": role.reasoning_effort}
         bundle["professional_feedback"] = as_json(coaching(conn, row["owner_user"], BRIEFER,
@@ -380,7 +383,7 @@ class BriefStore:
                 conn.execute("UPDATE brief_editions SET state=%s,bundle=%s WHERE id=%s",
                              ("inventorying" if selected.get("fact_inventory_required") else "writing", Jsonb(selected), row["id"]))
             elif call["phase"] == "inventory":
-                inventory = artifact(response, FactInventory, row["bundle"])
+                inventory = artifact(response, inventory_model(row["bundle"]), row["bundle"])
                 selected = freeze_inventory(inventory, row["bundle"])
                 prompt(selected, "write", direct_output=True)
                 result = {"inventory_digest": selected["fact_inventory_digest"], "sources": len(inventory.sources)}
