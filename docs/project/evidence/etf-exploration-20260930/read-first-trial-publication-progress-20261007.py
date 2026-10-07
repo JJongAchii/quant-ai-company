@@ -16,6 +16,9 @@ SELECT json_build_object(
    FROM research_mission_stages WHERE id='5e5e2013-373c-5868-9fc9-242985e085b3'),
  'meaning',(SELECT row_to_json(x) FROM (
    SELECT s.id,s.state,s.error,s.attempt,s.updated_at,
+     (SELECT coalesce(json_agg(json_build_object('challenge_id',value->>'challenge_id',
+       'evidence_paths',value->'evidence_paths')),'[]'::json)
+       FROM jsonb_array_elements(s.result->'tests')) AS proposed_test_citations,
      (SELECT coalesce(json_agg(row_to_json(t)),'[]'::json) FROM (
        SELECT id,sequence,status,error,response#>>'{decision,status}' AS decision_status,
          response#>>'{decision,tools,0,arguments,action}' AS tool_action,
@@ -87,6 +90,7 @@ else:
     print(json.dumps({'present':True,'path':str(path),'sha256':hashlib.sha256(content).hexdigest(),
         'verdict':record.get('verdict'),'scope_digest':record.get('scope_digest'),
         'objective_digest':record.get('objective_digest'),'qlab_commit':record.get('qlab_commit'),
+        'scope_files':record.get('scope_files',{}),
         'violation_count':len(record.get('violations',[])),
         'receipt_violation_count':len(record.get('receipt_violations',[])),
         'audit_file_sha_matches':hashes}))

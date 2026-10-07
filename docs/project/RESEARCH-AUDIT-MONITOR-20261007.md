@@ -103,3 +103,25 @@ mission/history.json의 전체215,342자 읽기가 완료돼 있다.15:31:22의 
 running이며 의미 판정·보고서 등록·Slack 전달은 아직이다.
 [응답 대기 관측](evidence/etf-exploration-20260930/first-trial-meaning-response-pending-20261007.json)을 보존했다.
 후속 proposal의 내용과 완료 여부는 실제 접수로만 확인한다.
+
+## 해석 인용 계약의 실제 보류와 구체적 복구 검토
+
+15:32:52에 meaning의80번째 공식 응답이 완료·접수됐다. 최종 게시 대조에서 test 근거가
+일반 mission/history·challenge·rejection 파일6개를 인용해 `Test conclusion cites an artifact outside
+the validated package`로 audit가 보류됐다. 의미 단계가 읽을 수 있는 경로와 판정에 인용할 수 있는
+검증 묶음 경로가 다르다. 감사의 pass와 실제 파일 SHA는 유지되지만 보고서는 아직 등록되지 않았다.
+[원인 관측](evidence/etf-exploration-20260930/first-trial-meaning-citation-contract-stop-20261007.json)을 보존했다.
+
+API128MiB 안의 별도 검사 프로세스는 메모리 초과로 두 번 종료됐으며 DB 효과는 롤백됐다.
+kernel06:40:42/06:41:29UTC 기록과 기존 stage/80turn/79read 보존을 확인했다. 앱은 계속 실행됐다.
+API의 같은 immutable image·보호된 환경·volume과 DB 공통 network를 가진 한시적256MiB 컨테이너로
+검사를 옮겼다. 환경값은 호스트의0600 임시 파일에서만 Docker에 전달하고 종료 후 삭제한다.
+현재 운영 서비스의 메모리·권한·모델을 바꾸지 않는다. raw max→실제 요청 xhigh 변환도 기존대로 유지한다.
+
+15:49:17의 [실제 PostgreSQL 롤백 검사](evidence/etf-exploration-20260930/first-trial-meaning-citation-correction-probe-20261007.json)가 통과했다.
+[한정 operator](evidence/etf-exploration-20260930/repair-first-trial-meaning-citations-20261007.py)와
+[root 검토](evidence/etf-exploration-20260930/first-trial-meaning-citation-correction-review-20261007.json)에 따라
+같은 meaning attempt1의 기존 proposal을 그대로 남기고 정확한 인용 규칙/읽기 alias/기존 proposal을
+다음 prompt에 넣어 일반 보완 turn81 한 건만 만든다. 기존 요청·응답·읽기·audit 판정/범위·job/예약과
+서명 예산은 보존된다. 최종 인용·반론·판정은 독립 직원이 보완하며 root가 원문을 수정하거나
+판정을 쓰지 않는다. 게시 조건은 유지한다. 운영 적용과 보완 응답의 실제 수신은 아직 확인 전이다.
