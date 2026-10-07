@@ -1,11 +1,12 @@
 # 한국 검색 트렌드 정기·요청 브리핑
 
 한국의 사회·경제·기술·문화·연예·소비 주제를 전용 `#search-trends` 채널에
-매일 **08:00·14:00·20:00 KST, 회당 10개 목표**로 전달하도록 운영 설정을 확장한다.
+매일 **08:00·14:00·20:00 KST, 회당 10개 목표**로 전달하도록 운영 설정을 활성화했다.
 `#search-trends`에서 소유자가 `실시간 검색어` 또는 `@Trend Scout 실시간 검색어`를 보내면
 요청한 메시지의 스레드로도 응답한다. **Trend Scout** 앱과 기존 회사의
 PostgreSQL·Temporal·Codex 구독을 사용한다. 설치 기본값은 수집·발송 모두 꺼짐이다.
-구현과 실제 운영 검증 범위는 [검증 기록](project/TREND-FEED-VALIDATION.md)에 구분한다.
+세 슬롯·요청 응답의 실제 운영 검증은 [현재 검증 기록](project/TREND-FEED-RECURRING.md),
+최초 수집·편집 검증은 [초기 검증 기록](project/TREND-FEED-VALIDATION.md)에 구분한다.
 
 ## 자료와 편집
 
@@ -111,7 +112,7 @@ ID에 최종 본문과 outbox를 한 DB 트랜잭션으로 커밋한다. 기존 
    `connections:write` app-level token을 만든다. scope를 추가한 뒤 앱을 재설치한다.
    설치 기본값인 발송 전용 모드는 `chat:write`만 사용하는 manifest를 CLI에서 생성할 수 있다.
    현재 생성된 앱은 `A0C7VRH8JV6`, 채널은 `C0C6WTA9ECV`이며
-   [현재 연결 상태](project/TREND-FEED-VALIDATION.md)를 확인해 기존 것을 사용한다.
+   [현재 연결 상태](project/TREND-FEED-RECURRING.md)를 확인해 기존 것을 사용한다.
 2. 기존 서버 Slack 비밀 저장소에 `trend_scout`의 `app_id`, `bot_user_id`, `bot_token`을 추가한다.
    수시 요청용 `app_token`도 같은 서버 비밀 저장소에 저장한다.
    토큰을 코드·채팅·모델 실행기로 복사하지 않는다. 기존 직원 항목을 덮어쓰지 않는다.
@@ -174,8 +175,10 @@ HTTP 수신은 기존 timestamp·HMAC 서명 검증을 유지한다. 두 경로 
 전용 Slack 앱의 실제 채널 발송 영수증을 확인한 후 `TREND_FEED_PUBLISH_ENABLED=true`로 전환한다.
 운영자가 즉시 실제 발송·직접 확인 후 활성화를 명시적으로 승인하면 해당 수락 기준으로 변경할 수 있다.
 실제 자료·원문·구독 모델·예산·본문·Slack 영수증과 화면을 확인하고 승인·검사·전환 근거를 보존한다.
-2026-10-06 운영 전환은 이 즉시 검증으로 완료했다. [현재 운영 기록](project/TREND-FEED-ACTIVATION.md).
-이미 확정한 미리보기는 활성화해도 재발송하지 않으므로 전환 후 다음 날부터 수신한다.
+2026-10-06 최초 운영 전환은 이 즉시 검증으로 완료했다. [초기 운영 기록](project/TREND-FEED-ACTIVATION.md).
+2026-10-07 세 슬롯·요청 응답 전환은 실제 구독 편집과 소유자 Slack 요청/응답으로 검증했다.
+[현재 운영 기록](project/TREND-FEED-RECURRING.md). 이미 확정한 미리보기는 재발송하지 않으며,
+활성화 후 다음 미확정 정기 슬롯 또는 새 수시 요청부터 처리한다.
 비활성화는 `TREND_FEED_ENABLED=false`와 `TREND_FEED_PUBLISH_ENABLED=false`를 적용한다.
 
 ## 검증 명령과 외부 계약
