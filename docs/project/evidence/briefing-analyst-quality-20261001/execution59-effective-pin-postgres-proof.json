@@ -1,0 +1,11 @@
+{
+  "postgres": "real temporary database",
+  "installed_model_assignment_code": "actual source snapshot",
+  "configured_role_effort": "high",
+  "frozen_and_requested_and_bound_effort": "xhigh",
+  "selection_source": "pinned",
+  "policy_changes_on_effective_pin": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "production_database_changed": false
+}

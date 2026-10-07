@@ -1,0 +1,130 @@
+{
+  "source_commit": "d9ba0b63d5cb6d497dc9677b55f863d85efbb851",
+  "compiled_images": [
+    {
+      "services": [
+        "news-worker",
+        "dispatch"
+      ],
+      "tag": "quant-company-analyst-execution-candidate:d9ba0b63d5cb-0",
+      "source_inventory_verified": true,
+      "module_parent": "/opt/company/src",
+      "cli_contract": "0.154.0",
+      "phase_checks": [
+        {
+          "phase": "plan",
+          "timeout_seconds": 360,
+          "schema_direct": true
+        },
+        {
+          "phase": "write",
+          "timeout_seconds": 1440,
+          "schema_direct": true
+        },
+        {
+          "phase": "review",
+          "timeout_seconds": 720,
+          "schema_direct": true
+        },
+        {
+          "phase": "revise",
+          "timeout_seconds": 360,
+          "schema_direct": true
+        },
+        {
+          "phase": "final_review",
+          "timeout_seconds": 360,
+          "schema_direct": true
+        }
+      ],
+      "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+      "calendar_version": "4.13.2",
+      "actual_model_calls": 0
+    },
+    {
+      "services": [
+        "briefing-data-worker"
+      ],
+      "tag": "quant-company-analyst-execution-candidate:d9ba0b63d5cb-1",
+      "source_inventory_verified": true,
+      "module_parent": "/opt/company/src",
+      "cli_contract": "0.154.0",
+      "phase_checks": [
+        {
+          "phase": "plan",
+          "timeout_seconds": 360,
+          "schema_direct": true
+        },
+        {
+          "phase": "write",
+          "timeout_seconds": 1440,
+          "schema_direct": true
+        },
+        {
+          "phase": "review",
+          "timeout_seconds": 720,
+          "schema_direct": true
+        },
+        {
+          "phase": "revise",
+          "timeout_seconds": 360,
+          "schema_direct": true
+        },
+        {
+          "phase": "final_review",
+          "timeout_seconds": 360,
+          "schema_direct": true
+        }
+      ],
+      "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+      "calendar_version": "4.13.2",
+      "actual_model_calls": 0
+    },
+    {
+      "services": [
+        "codex-runtime"
+      ],
+      "tag": "quant-company-analyst-execution-candidate:d9ba0b63d5cb-2",
+      "source_inventory_verified": true,
+      "module_parent": "/app/.venv/lib/python3.12/site-packages",
+      "cli_contract": "0.160.1",
+      "phase_checks": [
+        {
+          "phase": "plan",
+          "timeout_seconds": 360,
+          "schema_direct": true
+        },
+        {
+          "phase": "write",
+          "timeout_seconds": 1440,
+          "schema_direct": true
+        },
+        {
+          "phase": "review",
+          "timeout_seconds": 720,
+          "schema_direct": true
+        },
+        {
+          "phase": "revise",
+          "timeout_seconds": 360,
+          "schema_direct": true
+        },
+        {
+          "phase": "final_review",
+          "timeout_seconds": 360,
+          "schema_direct": true
+        }
+      ],
+      "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+      "calendar_version": "4.13.2",
+      "actual_model_calls": 0,
+      "cli_binary": "codex-cli 0.160.1"
+    }
+  ],
+  "running_containers_unchanged": true,
+  "authentication_mounted": false,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "deployed": false,
+  "owner_approval_received": false
+}

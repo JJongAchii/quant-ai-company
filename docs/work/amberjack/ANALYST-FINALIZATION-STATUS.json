@@ -1,8 +1,8 @@
 {
-  "recorded_at": "2026-10-06T23:25:54.189924+00:00",
+  "recorded_at": "2026-10-07T00:11:17.397252+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
-  "latest_request": "아직 발송안된거 같은데 생성중인건가?",
+  "latest_request": "15분 제한은 뭔데 ;; 뭐 어떻게 개선할건데?",
   "source_commit": "0ea670b7b0637d91a46714b73ef8df96d979cc6f",
   "format_version": 17,
   "validation_version": 58,
@@ -76,7 +76,7 @@
     "content_or_timing_qualification_established": false,
     "first_failure_record": "docs/project/evidence/briefing-analyst-quality-20261001/fresh-am-20261007-validation58-timeout.json"
   },
-  "next": "Resolve the mismatch between effective owner-selected model settings and the frozen policy, and qualify per-phase execution deadlines for a newly frozen future edition. Preserve this closed failure and all original request IDs. Existing future registrations remain active; automatic publication stays disabled.",
+  "next": "Obtain the additional protected-runtime preview approval required by INTENT-v16, install the tested execution59 candidate, and run the prospectively frozen PM case with the actual xhigh setting. Measure writing/review completion and perform the independent original-to-main audit; preserve the original AM failure and all twelve quality checks.",
   "remaining": [
     "Execution-model/frozen-policy agreement and writing completion within the scheduling budget",
     "Fresh twelve-check content qualification and independent original-to-main audit",
@@ -101,5 +101,21 @@
     "selection_source": "Analyst pin, model assignment revision2",
     "effort_mismatch_detected": true,
     "writer_usage_known": false
+  },
+  "candidate_execution_fix": {
+    "source_commit": "d9ba0b63d5cb6d497dc9677b55f863d85efbb851",
+    "validation_version": 59,
+    "implemented": [
+      "작성 결과를 JSON 객체로 직접 받아 두 겹의 문자열 포장을 제거",
+      "자료 선택 6분·작성 24분·검토 12분, 보완과 최종 검토는 각각 6분",
+      "호출 대기와 Temporal 제한을 함께 조정하고 검토 시간이 부족하면 새 작성을 차단",
+      "실제 사용자가 지정한 xhigh를 정책·자료 고정·요청·배정 원장에 일치시킴"
+    ],
+    "test_count": 404,
+    "cloud_images_verified": 3,
+    "protected_runtime_approval_received": false,
+    "installed": false,
+    "actual_model_quality_evaluated": false,
+    "readiness": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-readiness.json"
   }
 }
