@@ -40,6 +40,15 @@ class TrendFeedCollector:
                 break
             group = candidates[start:start + 5]
             payload = trend_payload(group, digest["cutoff"].astimezone(schedule.KST))
+            cached = (await asyncio.to_thread(self.store.cached_trends, digest["id"], group, payload)
+                      if self.naver.credentials() else {})
+            for candidate in group:
+                if candidate["id"] in cached:
+                    candidate["naver"] = cached[candidate["id"]]
+            group = [candidate for candidate in group if candidate["id"] not in cached]
+            if not group:
+                continue
+            payload = trend_payload(group, digest["cutoff"].astimezone(schedule.KST))
             receipt = await asyncio.to_thread(self.store.naver, digest["id"], "trend", payload, self.naver)
             results = receipt.get("data", {}).get("results", []) if receipt.get("ok") else []
             results = results if isinstance(results, list) else []

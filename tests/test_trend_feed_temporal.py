@@ -9,10 +9,76 @@ from temporalio.worker import Replayer, Worker
 from quant_company.runtime import dispatch_once, make_trend_collector
 from quant_company.trend_feed import schedule
 from quant_company.trend_feed.runner import TrendFeedCollector
-from quant_company.trend_feed.workflow import TrendFeedCollectionWorkflow, TrendFeedDigestWorkflow
+from quant_company.trend_feed.workflow import (
+    TrendFeedCollectionWorkflow,
+    TrendFeedDigestWorkflow,
+    TrendFeedPublicationWorkflow,
+)
 
 from .test_temporal import temporal_environment  # noqa: F401
 from .test_trend_feed import ingest, morning, outgoing, trend  # noqa: F401
+from .test_trend_feed_recurring import clock, complete_request, recurring
+
+
+@pytest.mark.integration
+async def test_request_publisher_commit_survives_restart_and_replays(trend, temporal_environment):  # noqa: F811
+    recurring(trend)
+    clock(trend, 10)
+    await complete_request(trend, "temporal-owner-request", finalize=False)
+    committed, retried = asyncio.Event(), asyncio.Event()
+    attempts = []
+
+    @activity.defn(name="company_trend_feed_finalize")
+    async def finalize():
+        attempts.append(1)
+        result = trend.finalize()
+        if len(attempts) == 1:
+            committed.set()
+            raise RuntimeError("Simulated crash after PostgreSQL/outbox commit")
+        retried.set()
+        return result
+
+    queue = "trend-publication-restart-" + uuid4().hex
+    client = temporal_environment.client
+    args = {"task_queue": queue, "workflows": [TrendFeedPublicationWorkflow], "activities": [finalize],
+            "graceful_shutdown_timeout": timedelta(seconds=1)}
+    async with Worker(client, **args):
+        handle = await client.start_workflow(TrendFeedPublicationWorkflow.run, id=queue, task_queue=queue)
+        await asyncio.wait_for(committed.wait(), 15)
+    async with Worker(client, **args):
+        await asyncio.wait_for(retried.wait(), 20)
+        async with asyncio.timeout(10):
+            while True:
+                history = await handle.fetch_history()
+                if any(e.HasField("timer_started_event_attributes") for e in history.events):
+                    break
+                await asyncio.sleep(0.1)
+        await Replayer(workflows=[TrendFeedPublicationWorkflow]).replay_workflow(history)
+        await handle.cancel()
+    assert len(outgoing(trend)) == 1 and len(attempts) == 2
+
+
+@pytest.mark.integration
+async def test_runtime_starts_new_publisher_without_replacing_legacy_history(trend, temporal_environment):  # noqa: F811
+    recurring(trend)
+    trend.company.settings.temporal_task_queue = "trend-publication-runtime-" + uuid4().hex
+    client = temporal_environment.client
+    collector = TrendFeedCollector(trend.company, fetcher=lambda *_: {"ok": True, "entries": []})
+    async with make_trend_collector(client, trend.company, collector):
+        assert await dispatch_once(client, trend.company) == 0
+        assert await dispatch_once(client, trend.company) == 0
+        handle = client.get_workflow_handle("company-trend-feed-publication-v2")
+        async with asyncio.timeout(15):
+            while True:
+                history = await handle.fetch_history()
+                if any(e.HasField("timer_started_event_attributes") for e in history.events):
+                    break
+                await asyncio.sleep(0.1)
+        await Replayer(workflows=[TrendFeedPublicationWorkflow]).replay_workflow(history)
+        for identity in ("company-trend-feed-collection-v1", "company-trend-feed-editorial-v1",
+                         "company-trend-feed-publication-v2"):
+            await client.get_workflow_handle(identity).cancel()
+    assert not outgoing(trend)
 
 
 @pytest.mark.integration

@@ -114,7 +114,13 @@ def render(bundle, draft=None):
     candidates = {c["id"]: c for c in bundle["candidates"]}
     items = publication_items(draft, bundle)
     cutoff = timestamp(bundle["cutoff"]).astimezone(KST)
-    lines = [f"*한국 검색 트렌드 · {cutoff:%m/%d} 아침*", "검색 급상승 우선 · 부족한 수는 검증된 주요 이슈로 보충"]
+    mode = "요청 브리핑" if bundle.get("on_demand") else "정기 브리핑"
+    at = timestamp(bundle.get("requested_at") or bundle.get("publication_at") or bundle["cutoff"]).astimezone(KST)
+    lines = [f"*한국 검색 트렌드 · {at:%m/%d %H:%M} · {mode}*", "검색 급상승 우선 · 부족한 수는 검증된 주요 이슈로 보충"]
+    if bundle.get("on_demand"):
+        lines.append("요청 시점의 최신 수집 자료 기준 · 전체 플랫폼의 실시간 검색량 순위가 아닙니다.")
+    if bundle.get("editorial_notice"):
+        lines.append(bundle["editorial_notice"])
     if not candidates:
         lines.append("집계 구간에 유효한 관측이 없어 오늘은 검색 트렌드를 제공하지 못했습니다. 수집 상태를 확인 중입니다.")
     elif not draft:
@@ -133,7 +139,8 @@ def render(bundle, draft=None):
         if rising:
             novelty = ("관측 이력 부족" if bundle["partial_history"] else
                        "처음 포착" if candidate["new"] else "계속 관측")
-            card.append(f"검색 급상승 · {novelty} · Google 규모 표시 {safe(candidate['traffic'] or '미제공')} (구간 내 최대 표시)")
+            period = "최근 RSS 표시" if bundle.get("candidate_scope") == "latest_rss" else "구간 내 최대 표시"
+            card.append(f"검색 급상승 · {novelty} · Google 규모 표시 {safe(candidate['traffic'] or '미제공')} ({period})")
             trend = candidate.get("naver", {})
             if trend.get("state") == "available":
                 card.append(f"네이버 최근 7일 평균 / 이전 7일 평균: {trend['change_percent']:+.0f}% · {trend['as_of']} 기준")
@@ -170,7 +177,7 @@ def render(bundle, draft=None):
     lines.append(f"검색 급상승 {rising_count}개 · 주요 이슈 {issue_count}개")
     if rising_count + issue_count < TOPIC_TARGET:
         lines.append(f"오늘 제공한 비스포츠 주제 {rising_count + issue_count}개 · {TOPIC_TARGET}개 목표에 필요한 자료 또는 메시지 공간 부족")
-    lines.append(f"스포츠 주제 제외 · 하루 {TOPIC_TARGET}개 목표")
+    lines.append(f"스포츠 주제 제외 · 브리핑마다 {TOPIC_TARGET}개 목표")
     lines.append("검색 규모는 Google 제공 표시이며 전체 검색량 순위가 아닙니다. 네이버 지수와 합산하지 않습니다.")
     text = "\n".join(lines)
     if len(text) > 12000:

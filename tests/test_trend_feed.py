@@ -634,6 +634,9 @@ def test_outbound_identity_and_manifest_cannot_trigger_models(trend, credentials
     manifest = json.loads((tmp_path / "trend_scout.json").read_text())
     assert manifest["oauth_config"]["scopes"]["bot"] == ["chat:write"]
     assert "event_subscriptions" not in manifest["settings"]
+    trend.company.settings.trend_feed_on_demand_enabled = True
+    manifests(trend.company, None, tmp_path, include_trend_scout=True)
+    manifest = json.loads((tmp_path / "trend_scout.json").read_text())
     assert json.loads(Path("slack-apps/trend_scout.json").read_text())["settings"] == manifest["settings"]
 
 

@@ -1,0 +1,37 @@
+{
+  "source_commit": "dcdc29c6fba7d05a89f027e8f2e760b4311014d5",
+  "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37559786887",
+  "status": "completed",
+  "conclusion": "success",
+  "service": {
+    "passed": 1623,
+    "skipped": 47,
+    "deselected": 1,
+    "seconds": 517.53,
+    "real_postgresql": true,
+    "local_temporal": true,
+    "external_data_model_slack": "fixtures"
+  },
+  "codex_protocol": {
+    "passed": 9,
+    "auth": "empty; no inference"
+  },
+  "jobs": [
+    {
+      "name": "service",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-07T01:59:44Z",
+      "completedAt": "2026-10-07T02:08:51Z",
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37559786887/job/112594291803"
+    },
+    {
+      "name": "codex-protocol",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-07T01:59:44Z",
+      "completedAt": "2026-10-07T02:00:06Z",
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37559786887/job/112594292075"
+    }
+  ]
+}

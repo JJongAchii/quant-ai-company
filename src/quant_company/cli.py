@@ -45,6 +45,10 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
                 "settings": {"org_deploy_enabled": False, "socket_mode_enabled": False,
                              "token_rotation_enabled": False},
             }
+            if role.id == "trend_scout" and company.settings.trend_feed_on_demand_enabled:
+                value["oauth_config"]["scopes"]["bot"] += ["app_mentions:read", "channels:history"]
+                value["settings"]["socket_mode_enabled"] = transport == "socket"
+                value["settings"]["event_subscriptions"] = {"bot_events": ["app_mention", "message.channels"]}
         if transport == "http":
             subscriptions = value["settings"].get("event_subscriptions")
             if subscriptions is not None:

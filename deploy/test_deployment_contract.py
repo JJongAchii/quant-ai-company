@@ -475,7 +475,7 @@ def test_improvements_activation_reaches_all_company_processes_without_model_cre
     for name in ("api", "worker", "news-worker", "dispatch", "slack-socket", "maintenance"):
         values = services[name]["environment"]
         settings = Settings(**{key.lower(): json.loads(value) if key in
-                              {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS", "HOUSING_FEED_ALLOWED_CHANNELS"} else value
+                                  {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS", "HOUSING_FEED_ALLOWED_CHANNELS", "TREND_FEED_PUBLICATION_HOURS"} else value
                               for key, value in values.items()})
         assert settings.company_improvements_enabled and settings.improvements_channel_id == "CIMPROVE"
         # Resolve the packaged roster here, not a production bind mount on the test host.
@@ -495,7 +495,7 @@ def test_data_watch_configuration_reaches_existing_processes_without_new_credent
                               overlays=("data-watch.compose.yaml",))["services"]
     for name in ("api", "worker", "news-worker", "dispatch", "slack-socket", "maintenance"):
         values = services[name]["environment"]
-        settings = Settings(**{key.lower(): json.loads(value) if key in {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS", "HOUSING_FEED_ALLOWED_CHANNELS"}
+        settings = Settings(**{key.lower(): json.loads(value) if key in {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS", "HOUSING_FEED_ALLOWED_CHANNELS", "TREND_FEED_PUBLICATION_HOURS"}
                                else value for key, value in values.items()})
         assert settings.data_watch_enabled and settings.data_watch_publish_enabled
         assert settings.data_watch_contracts_file.name == "data-watch-contracts.json"
@@ -521,7 +521,7 @@ def test_data_watch_configuration_reaches_existing_processes_without_new_credent
                               overlays=("research.compose.yaml", "data-watch.compose.yaml"))["services"]
     for name in ("api", "worker", "news-worker", "dispatch", "slack-socket", "maintenance"):
         values = services[name]["environment"]
-        settings = Settings(**{key.lower(): json.loads(value) if key in {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS", "HOUSING_FEED_ALLOWED_CHANNELS"}
+        settings = Settings(**{key.lower(): json.loads(value) if key in {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS", "HOUSING_FEED_ALLOWED_CHANNELS", "TREND_FEED_PUBLICATION_HOURS"}
                                else value for key, value in values.items()})
         assert settings.data_watch_core_enabled
         if name in {"api", "worker", "slack-socket", "dispatch"}:

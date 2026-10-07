@@ -1,7 +1,7 @@
 {
   "display_information": {
     "name": "Trend Scout",
-    "description": "한국의 검색 관심 주제를 지표·짧은 배경·원문 링크와 함께 매일 아침 전하는 트렌드 브리핑"
+    "description": "정기 검색 트렌드 브리핑과 전용 채널의 실시간 검색어 요청 응답"
   },
   "features": {
     "bot_user": {
@@ -9,10 +9,13 @@
       "always_online": false
     }
   },
-  "oauth_config": {"scopes": {"bot": ["chat:write"]}},
+  "oauth_config": {"scopes": {"bot": ["chat:write", "app_mentions:read", "channels:history"]}},
   "settings": {
     "org_deploy_enabled": false,
-    "socket_mode_enabled": false,
-    "token_rotation_enabled": false
+    "socket_mode_enabled": true,
+    "token_rotation_enabled": false,
+    "event_subscriptions": {
+      "bot_events": ["app_mention", "message.channels"]
+    }
   }
 }

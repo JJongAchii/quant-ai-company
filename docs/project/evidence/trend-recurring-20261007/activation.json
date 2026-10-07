@@ -1,0 +1,85 @@
+{
+  "state": "activated",
+  "started_at": "2026-10-07T02:01:08.580734+00:00",
+  "feature_source_commit": "dcdc29c",
+  "selected_schedule_kst": [
+    "08:00",
+    "14:00",
+    "20:00"
+  ],
+  "on_demand_enabled": true,
+  "replaced": [
+    "news-worker",
+    "api",
+    "slack-socket",
+    "dispatch"
+  ],
+  "old_pause": {
+    "paused_until": null,
+    "reason": null
+  },
+  "model_requests_before": [
+    {
+      "id": "news-trends-b74bfa6e-ed85-4e4c-914a-377f7837ba44",
+      "hash": "966362cf1343258e965d37dcdf0ad36c"
+    },
+    {
+      "id": "news-trends-c59a4937-69fd-4336-8173-1479bd3032e5",
+      "hash": "095b9bca62dd1b667be81029b8e3e46e"
+    },
+    {
+      "id": "news-trends-d4689e1b-b57a-4186-9ffe-e7dc31278f95",
+      "hash": "05a6ec99ed72f07bb287290d236b1c5c"
+    },
+    {
+      "id": "news-trends-de9a61d9-662a-4931-aaff-ee5f0053fea5",
+      "hash": "79cc47cff6523e9b3561230511f2ffb6"
+    }
+  ],
+  "delivered_before": [
+    {
+      "id": "012716d1-68d5-52fe-839e-047a2c9b99ef",
+      "hash": "d26e2b6e98d4b9a00bb6687c7ae5e517",
+      "sent_ts": "1791289915.099149"
+    },
+    {
+      "id": "1c6feec1-bcaa-5287-a6d8-30fddf0d7f8c",
+      "hash": "49cb68120bed26fe6c29402943be9e81",
+      "sent_ts": "1791294778.643269"
+    },
+    {
+      "id": "339a545d-874a-5a71-b099-7677846e4576",
+      "hash": "29b062ef8dff3b010120f695ba064846",
+      "sent_ts": "1791327602.785139"
+    },
+    {
+      "id": "c68f0f89-ba27-52e6-a541-d30b9e4e636a",
+      "hash": "6e4b5c60d7e3457132600972f2d3ccd1",
+      "sent_ts": "1791287349.325639"
+    }
+  ],
+  "completed_at": "2026-10-07T02:01:31.186817+00:00",
+  "other_containers_preserved": true,
+  "runtime_configuration_preserved": true,
+  "delivered_bodies_preserved": true,
+  "model_requests_preserved": true,
+  "containers": {
+    "news-worker": {
+      "id": "e8003b8b17ab6824d0f1cec61c0305a727142fe1f5c6603cacf6c8e89390b998",
+      "image": "sha256:6fd26d620b4bef4b60e1897c041942c6ad95843905a05975ea038e4d7ed836a7"
+    },
+    "api": {
+      "id": "2a8a9552783d4469baab96a0487471a68ccbc111d54992d0fbae63adb895f837",
+      "image": "sha256:7c7ebcda7e07fdb82ecced3a7a9eb24e6175ac25e18716a9aec5902a202b7247"
+    },
+    "slack-socket": {
+      "id": "3f9211545034ac1e110d684fa8a431384aec3d79633609ada8881c599e77ff22",
+      "image": "sha256:7c7ebcda7e07fdb82ecced3a7a9eb24e6175ac25e18716a9aec5902a202b7247"
+    },
+    "dispatch": {
+      "id": "be39bce12161df6d8cab82dd5f08249b205d2a09f3e369e4a34fef13480a1d7f",
+      "image": "sha256:6fd26d620b4bef4b60e1897c041942c6ad95843905a05975ea038e4d7ed836a7"
+    }
+  },
+  "operator_pause_removed": true
+}
