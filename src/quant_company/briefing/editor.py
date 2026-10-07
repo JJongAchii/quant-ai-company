@@ -38,8 +38,8 @@ from .quotations import (
 )
 from .schedule import KST, close
 
-FORMAT_VERSION = 17
-VALIDATION_VERSION = 60
+FORMAT_VERSION = 18
+VALIDATION_VERSION = 61
 
 WRITE = """You are Analyst writing a substantive, readable Korean daily market briefing.
 Return AgentDecision(status=complete,say='') with exactly one complete BriefProposal JSON artifact,
@@ -93,8 +93,15 @@ session close. Preserve the source's timestamp precision.
 
 EDITORIAL SELECTION AND DEPTH
 source_plan gives questions, not facts. Rank by newness, economic magnitude/persistence, affected markets
-and proximity of the next event. Put the ONE OR TWO most consequential session/next-decision issues first,
-then distinct corporate/world context. On quiet days use fewer issues. Do not fill geographic/topic quotas.
+and proximity of the next event. This is a whole-market briefing: survey equity participation/sectors/flows,
+rates/FX/commodities, economic releases/central banks, policy/trade/geopolitics, and corporate/industry changes.
+Explain every material development found across those areas; a three-line summary is not a two-story limit.
+Use normally 4-6 distinct issues when supported developments warrant it, fewer on quiet days. Do not fill
+geographic/topic quotas or claim an unchecked area had no news. Several companies, prices or financing
+angles driven by the same event are not several independent stories. Group them by their economic link;
+give a separate heading only when the new development changes a different market question or decision.
+Do not demote a material rate/FX move, economic release, policy decision or non-tech sector development
+to a passing mention because a chip/AI/oil story came first. Cut repeated detail before cutting breadth.
 Use the preceding US catalyst when it explains Korea's opening; generic 'AI optimism' is not a mechanism.
 An index and a winning chip stock do not establish participation: retain sourced breadth, concentration,
 opposing sectors and investor-group flows with venue/provisional status. Simultaneous flows do not prove cause.
@@ -205,8 +212,9 @@ distinguish earnings/valuation, nominal/real rates and currency translation/oper
 alternatives: supported or conditional competing drivers, including policy/fiscal/bond supply when material;
 already-observed offsets cannot become only future possibilities.
 falsifiability: observable event/metric AND direction/change that weakens the view, with supported time/gates.
-coverage: distinct material facts visible in standalone main, including direction/participation/checkpoints;
-related claims, evidence quotes, internal limitations or a thread do not cover a missing fact.
+coverage: main covers material equity/sectors/flows, rates/FX/commodities, macro/policy/world and corporate
+developments in originals. Fail if one theme crowds out another. Related words, quotes or threads do not
+cover missing facts. Count distinct events, not headings/tickers; no topic or issue-count quota.
 depth: actual drivers, magnitude, mechanisms and Korea/global effects, not headlines or generic demand.
 readability: short natural Korean, clear hierarchy, explained jargon/acronyms, distinct sections;
 reject repetition, generic monitoring, irrelevant internals and obscuring repeated caveats. No length quota.
@@ -537,14 +545,15 @@ essay. supplemental_source_notes=[] unless the critic added previously unread or
 for those new sources there. Never use supplemental notes to replace a committed source's facts.
 Use full originals for context and additional material facts. An extracted fact remains subject
 to independent original review; do not hide a contradiction or treat the inventory as proof of truth.
-Write the leading two issues first, with short separate context for lesser developments. Explain each
-unfamiliar acronym at first use. Compress duplicated interpretation and repeated caveats before facts.
+Cover the market as a whole, normally with 4-6 distinct issues on busy days, fewer when warranted.
+Do not demote later material developments to name-checks or count several angles of one event as breadth.
+Explain unfamiliar acronyms; compress duplicated interpretation and repeated caveats before facts.
 """ + instruction[end:]
         instruction = instruction.replace(MATERIALITY_GUIDANCE,
-            "Use the committed priorities and required facts to explain the leading one or two changes. "
-            "Keep dated context, competing explanations and economic qualifiers visible. "
-            "The inventory stage has already inspected the originals for materiality; "
-            "compress repeated analysis rather than these facts.\n")
+            "Survey equities/sectors/flows, rates/FX/commodities, macro/central banks, policy/trade/world "
+            "and corporate developments in the originals. Preserve material independent events and the "
+            "committed facts, dated context, competing explanations and qualifiers. Group a shared "
+            "catalyst; no topic quota. Compress repetition before narrowing the market picture.\n")
         if payload.get('source_plan'):
             payload['source_plan'] = {'priorities': payload['source_plan']['priorities']}
     if direct_output:
@@ -1371,10 +1380,8 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
             for claim in proposal.overview:
                 add(supported(claim, claim.text)+"\n")
         if proposal.issues:
-            add("\n*핵심 이슈*")
+            add("\n*주요 이슈*")
         for index, issue in enumerate(proposal.issues, 1):
-            if index == 3:
-                add("\n*함께 볼 이슈*")
             basis = {"reported_explanation": "보도 해석", "conditional_hypothesis": "Analyst 해석",
                      "unresolved": "원인 판단 유보"}[issue.analysis.causal_basis]
             horizon = {"session": "당일", "days_weeks": "수일~수주", "months": "수개월"}[issue.analysis.horizon]

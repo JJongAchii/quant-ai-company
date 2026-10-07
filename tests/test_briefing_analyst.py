@@ -90,7 +90,7 @@ def test_main_post_keeps_assessment_effect_and_alternative_visible_without_threa
     assert p.issues[0].analysis.alternative.text not in "\n".join(parts[1:])
     assert "수일~수주" in parts[0]
     assert p.issues[0].headline not in "\n".join(parts[1:])
-    assert len(parts[0]) < 2000 and quality["format_version"] == 17
+    assert len(parts[0]) < 2000 and quality["format_version"] == 18
     payload = json.loads(prompt(bundle(), "review", p.model_dump(mode="json")).split("BRIEF DATA JSON:\n")[1])
     items = item_map(p)
     preview = "".join(part if isinstance(part, str) else escape(items[part["item_text"]].text, quote=False)
@@ -98,23 +98,33 @@ def test_main_post_keeps_assessment_effect_and_alternative_visible_without_threa
     assert preview == parts[0]
 
 
-def test_primary_issue_order_and_secondary_context_keep_all_analysis_in_main():
+def test_market_brief_keeps_later_material_issues_at_the_same_heading_level():
     value = analytical_proposal().model_dump(mode="json")
     first = value["issues"][0]
     value["issues"] = []
-    for index in range(4):
+    headlines = ("반도체 실적", "유가와 공급", "금리와 환율의 차이", "무역지표와 통상",
+                 "금융·자동차 업종", "해외 중앙은행 결정")
+    for index, headline in enumerate(headlines):
         issue = json.loads(json.dumps(first))
-        issue["headline"] = f"서로 다른 시장 이슈 {index}"
+        issue["headline"] = headline
         for claim in (issue["fact"], issue["interpretation"], issue["next_check"],
                       issue["analysis"]["mechanism"], issue["analysis"]["alternative"]):
             claim["id"] += f"-{index}"
         value["issues"].append(issue)
     p = BriefProposal.model_validate(value)
     main = render(p, bundle())[0][0]
-    assert main.index("핵심 이슈") < main.index(p.issues[0].headline)
-    assert main.index(p.issues[1].headline) < main.index("함께 볼 이슈") < main.index(p.issues[2].headline)
-    for issue in p.issues:
+    assert main.count("*주요 이슈*") == 1 and "함께 볼 이슈" not in main
+    assert main.index("주요 이슈") < main.index(p.issues[0].headline)
+    assert [main.index(headline) for headline in headlines] == sorted(main.index(headline) for headline in headlines)
+    for index, issue in enumerate(p.issues, 1):
+        assert f"*{index}. {issue.headline}*" in main
         assert issue.interpretation.text in main and issue.analysis.alternative.text in main
+        assert issue.next_check.text in main
+    payload = json.loads(prompt(bundle(), "review", p.model_dump(mode="json")).split("BRIEF DATA JSON:\n")[1])
+    items = item_map(p)
+    preview = "".join(part if isinstance(part, str) else escape(items[part["item_text"]].text, quote=False)
+                      for part in payload["main_post_preview"])
+    assert preview == main
 
 
 def test_frozen_procedure_is_used_by_writer_and_reviewer(brief, monkeypatch):  # noqa: F811

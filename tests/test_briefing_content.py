@@ -209,6 +209,28 @@ def test_bank_name_does_not_masquerade_as_central_bank_and_small_ipo_is_demoted(
     assert selected == [central_bank]
 
 
+@pytest.mark.parametrize("title,topic", [
+    ("미국 무역적자 확대…수입 증가", "macro_policy"),
+    ("미국 소매판매 예상 하회", "macro_policy"),
+    ("중국 산업생산 둔화", "macro_policy"),
+    ("GDP revised lower", "macro_policy"),
+    ("Trade deficit widens", "macro_policy"),
+    ("Retail sales contract", "macro_policy"),
+    ("자동차 판매 감소…해외 수요 약화", "corporate"),
+    ("금융주, 대출 손실 부담 확대", "corporate"),
+    ("제약 신약 승인…출시 준비", "corporate"),
+    ("Utilities lead the session", "corporate"),
+    ("Airlines cut capacity", "corporate"),
+])
+def test_material_macro_and_non_chip_sector_candidates_are_not_dropped_by_topic_filter(title, topic):
+    # These are synthetic collection candidates, not claims about an actual session.
+    candidate = doc("distinct-development", title)
+    docs = [doc("close-a", "Nasdaq market close"), doc("close-b", "S&P market close"),
+            doc("chips", "Nvidia earnings guidance changes"), doc("oil", "Oil supply falls"), candidate]
+    assert topic in topics(candidate)
+    assert candidate.id in {d.id for d in select_documents(docs, "am", limit=6)}
+
+
 def test_english_kospi_close_can_be_second_report_before_older_korean_recap():
     end = definition().cutoff
     full = doc("full", "코스피 마감·코스닥 종가와 투자자별 수급", content="코스피와 코스닥이 마감했다.",
@@ -319,7 +341,7 @@ def test_issue_specific_next_check_is_in_main_when_separate_watchpoint_exists():
     assert p.issues[0].next_check.text in parts[0]
     assert p.issues[0].next_check.id in main_post_item_ids(p, data)
     assert p.issues[0].next_check.text not in "\n".join(parts[1:])
-    assert quality["format_version"] == 17
+    assert quality["format_version"] == 18
 
 
 def test_supported_rate_baseline_in_issue_assessment_survives_to_reviewed_main():

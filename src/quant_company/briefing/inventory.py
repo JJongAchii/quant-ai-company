@@ -28,7 +28,10 @@ must keep in its mapped reader-visible text, not invented source facts. Supply o
 For translated qualifiers the original quote must establish the same meaning. Missing source information
 stays explicitly unknown; never invent comparison values, timing or causes to populate a field.
 
-Prioritize the leading one or two market questions, then distinct corporate/world developments. Preserve
+Cover distinct material market questions across equities/sectors/flows, rates/FX/commodities,
+economic releases/central banks, policy/trade/geopolitics and corporate/industry developments.
+Do not spend the inventory on several chip/AI/oil angles while omitting a material independent event.
+Do not invent a fact or force a category to make the list look diverse. Preserve
 the original's comparison basis and competing explanation wherever a selected number could otherwise
 mislead. Distinguish demand from currency translation/accounting costs, forecasts from realized results,
 acquisition scope from the whole company, and shareholder/sector/region participation from index moves.

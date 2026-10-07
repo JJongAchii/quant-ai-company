@@ -166,7 +166,7 @@ def test_mobile_render_keeps_summary_numbers_and_next_steps_in_main_post():
     assert all(label in parts[0] for label in ("오늘의 핵심", "주요 숫자", "다음 확인할 것"))
     assert "[1]" in parts[0] and "Synthetic fixture" not in parts[0]
     assert len(parts[0]) < 1800 and len(parts) <= 3
-    assert quality["format_version"] == 17
+    assert quality["format_version"] == 18
 
 
 def test_first_visible_citation_links_from_main_even_when_watchpoints_are_built_first():

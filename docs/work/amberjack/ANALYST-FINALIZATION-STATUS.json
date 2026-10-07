@@ -2,7 +2,7 @@
   "recorded_at": "2026-10-07T04:34:36.482091+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
-  "latest_request": "그럼 지금 기준으로 다시 발송해볼래",
+  "latest_request": "응 보완해줘 ㅎㅎ — improve breadth of the daily market/economic briefing",
   "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
   "format_version": 17,
   "validation_version": 60,
@@ -189,7 +189,7 @@
     "source_profile_preservation_verified": true,
     "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-final-installation-20261007.json"
   },
-  "updated_at": "2026-10-07T10:04:01.891830+00:00",
+  "updated_at": "2026-10-07T10:41:28.457972+00:00",
   "manual_preview": {
     "operation": "analyst-saved-input-quality-preview-20261007-schema59-once",
     "channel": "C0C2E59B1AA",
@@ -343,5 +343,14 @@
     "content_qualified": false,
     "readback_confirmed": true,
     "automatic_publication_preserved": true
+  },
+  "breadth61": {
+    "state": "local_verified_awaiting_installation",
+    "format_version": 18,
+    "validation_version": 61,
+    "coverage_version": 6,
+    "tests_passed": 336,
+    "actual_model_content_evaluated": false,
+    "record": "docs/project/evidence/briefing-analyst-quality-20261001/market-breadth61-readiness.json"
   }
 }
