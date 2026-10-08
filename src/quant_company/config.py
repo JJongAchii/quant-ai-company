@@ -73,6 +73,10 @@ class Settings(BaseSettings):
     briefing_channel_id: str = ""
     briefing_owner_user: str = ""
     briefing_calendar_overrides_file: Path | None = None
+    # Public chart reads after the US close; off until the briefing data worker is qualified for it.
+    briefing_us_close_enabled: bool = False
+    briefing_us_close_stocks: list[str] = Field(default_factory=lambda: ["NVDA", "MU", "AAPL", "MSFT"],
+                                                max_length=8)
     tech_feed_enabled: bool = False
     tech_feed_publish_enabled: bool = False
     tech_feed_channel_id: str = ""
@@ -116,6 +120,15 @@ class Settings(BaseSettings):
         if len(set(values)) != len(values) or any(str(UUID(value)) != value for value in values):
             raise ValueError('Briefing evaluation IDs must be unique canonical UUIDs')
         return sorted(values)
+
+    @field_validator('briefing_us_close_stocks')
+    @classmethod
+    def bounded_us_close_stocks(cls, values):
+        import re
+
+        if len(set(values)) != len(values) or any(not re.fullmatch(r'[A-Z][A-Z0-9.-]{0,9}', v) for v in values):
+            raise ValueError('US close stocks must be unique plain ticker symbols')
+        return values
 
     @property
     def briefing_evaluation_ids(self):

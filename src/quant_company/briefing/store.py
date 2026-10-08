@@ -1,6 +1,6 @@
 """Frozen requests and one committed edition; external delivery remains receipt-based."""
 
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 
 from psycopg.types.json import Jsonb
 
@@ -13,6 +13,7 @@ from . import schedule
 from .contracts import (
     BRIEFER,
     BriefComposition,
+    BriefEdition,
     BriefProposal,
     BriefReview,
     ConditionPatch,
@@ -23,6 +24,15 @@ from .contracts import (
     SourcePlan,
 )
 from .coverage import COVERAGE_VERSION, inventory
+from .data_reader import (
+    CHART_PROVIDER,
+    FIRST_POLL_MINUTES,
+    US_CLOSE,
+    chart_catalogue,
+    close_slot,
+    summarize,
+    us_close_snapshot,
+)
 from .editor import (
     EDITORIAL_PATCH,
     FACT_PATCH,
@@ -99,6 +109,8 @@ class BriefStore:
                             "enabled": s.briefing_enabled, "publish": s.briefing_publish_enabled,
                             "analyst_procedure": pack(BRIEFER)["digest"],
                             "lake": s.company_lake_uri,
+                            # Absent while disabled, so the default keeps the existing digest.
+                            **({"us_close": s.briefing_us_close_stocks} if s.briefing_us_close_enabled else {}),
                             "search": s.briefing_search_enabled, "web": s.company_web_enabled,
                             "source_notes": s.briefing_source_notes_enabled,
                             "max_revisions": s.briefing_max_revisions,
@@ -114,7 +126,12 @@ class BriefStore:
         at = at or schedule.utcnow()
         if not self.authorized():
             return []
-        definitions = [e for e in schedule.scheduled(self.company.settings, at) if e.starts_at <= at]
+        s = self.company.settings
+        changes = schedule.overrides(s) if s.briefing_us_close_enabled else {}
+        # Close polls begin at C+5, possibly before collection opens; claims still wait for starts_at.
+        definitions = [e for e in schedule.scheduled(s, at) if e.starts_at <= at or (
+            s.briefing_us_close_enabled and e.kind == "am" and e.us_session
+            and schedule.close("US", e.us_session, changes)+timedelta(minutes=FIRST_POLL_MINUTES) <= at)]
         policy = self.policy()
         with self.db.transaction() as conn:
             for definition in definitions:
@@ -136,7 +153,8 @@ class BriefStore:
         with self.db.transaction() as conn:
             row = conn.execute("""SELECT * FROM brief_editions WHERE state='collecting' AND cutoff>%s
                 AND policy_digest=%s AND next_collection<=%s AND (collection_lease IS NULL OR collection_lease<%s)
-                ORDER BY due_at FOR UPDATE SKIP LOCKED LIMIT 1""", (at, policy, at, at)).fetchone()
+                AND (definition->>'starts_at')::timestamptz<=%s
+                ORDER BY due_at FOR UPDATE SKIP LOCKED LIMIT 1""", (at, policy, at, at, at)).fetchone()
             if not row:
                 return None
             row["lease"] = at+timedelta(minutes=6)
@@ -170,15 +188,20 @@ class BriefStore:
         bundle["execution_model"] = {"model": role.model, "reasoning_effort": role.reasoning_effort}
         bundle["professional_feedback"] = as_json(coaching(conn, row["owner_user"], BRIEFER,
                                                           role.model, role.reasoning_effort))
-        data = row["market_data"] or {"documents": [], "observations": [], "contexts": [],
-                                      "diagnostics": [{"dataset": "lake", "error": "data_not_collected"}]}
+        data = row["market_data"] or {}
+        polls = data.get(US_CLOSE)
+        if "documents" not in data:
+            data = {"documents": [], "observations": [], "contexts": [],
+                    "diagnostics": [{"dataset": "lake", "error": "data_not_collected"}]}
+        if polls:
+            # Recorded close polls are derived like a lake dataset; reconcile decides whether they lock.
+            derived = summarize(us_close_snapshot(polls), BriefEdition.model_validate(row["definition"]))
+            data = {key: data[key]+derived[key] for key in ("documents", "observations", "contexts", "diagnostics")}
         bundle["documents"] = bundle.get("documents", []) + data["documents"]
         bundle["locked_observations"] = data["observations"]
         bundle["market_context"] = data["contexts"]
         bundle["data_diagnostics"] = data["diagnostics"]
         definition = row["definition"]
-        from datetime import date
-
         changes = schedule.overrides(self.company.settings)
         bundle["exchange_closes"] = {
             market: schedule.close(market, date.fromisoformat(definition[key]), changes).isoformat()
@@ -209,7 +232,8 @@ class BriefStore:
         with self.db.transaction() as conn:
             row = conn.execute("""SELECT * FROM brief_editions WHERE state='collecting' AND cutoff>%s
                 AND next_data<=%s AND policy_digest=%s AND (data_lease IS NULL OR data_lease<%s)
-                ORDER BY due_at FOR UPDATE SKIP LOCKED LIMIT 1""", (at, at, self.policy(), at)).fetchone()
+                AND (definition->>'starts_at')::timestamptz<=%s
+                ORDER BY due_at FOR UPDATE SKIP LOCKED LIMIT 1""", (at, at, self.policy(), at, at)).fetchone()
             if row:
                 row["lease"] = at+timedelta(minutes=2)
                 conn.execute("UPDATE brief_editions SET data_lease=%s WHERE id=%s", (row["lease"], row["id"]))
@@ -218,9 +242,56 @@ class BriefStore:
     def save_data(self, claimed, result):
         at = schedule.utcnow()
         with self.db.transaction() as conn:
-            conn.execute("""UPDATE brief_editions SET market_data=%s,data_lease=NULL,next_data=%s
+            # The lake result replaces its own fields; recorded close polls are kept.
+            conn.execute("""UPDATE brief_editions SET market_data=%s::jsonb||CASE WHEN market_data ? 'us_close'
+                THEN jsonb_build_object('us_close',market_data->'us_close') ELSE '{}'::jsonb END,data_lease=NULL,next_data=%s
                 WHERE id=%s AND data_lease=%s AND state='collecting' AND cutoff>%s AND policy_digest=%s""",
                          (Jsonb(result), at+timedelta(minutes=5), claimed["id"], claimed["lease"], at, self.policy()))
+
+    def us_close_target(self, at=None):
+        """The AM edition whose current close-poll slot is open and not yet recorded."""
+        at = at or schedule.utcnow()
+        if not self.company.settings.briefing_us_close_enabled or not self.authorized():
+            return None
+        self.register(at)
+        changes = schedule.overrides(self.company.settings)
+        with self.db.transaction() as conn:
+            rows = conn.execute("""SELECT id,definition,market_data->'us_close' AS polls FROM brief_editions
+                WHERE state='collecting' AND kind='am' AND cutoff>%s AND policy_digest=%s
+                AND definition->>'us_session' IS NOT NULL ORDER BY due_at""", (at, self.policy())).fetchall()
+        for row in rows:
+            close_at = schedule.close("US", date.fromisoformat(row["definition"]["us_session"]), changes)
+            index = close_slot(close_at, at) if close_at else None
+            recorded = (row["polls"] or {}).get("polls", [])
+            if index is not None and all(p["slot"] != index for p in recorded):
+                # The first recorded poll fixes the symbol list for this edition.
+                items = (row["polls"] or {}).get("catalogue") or chart_catalogue(
+                    self.company.settings.briefing_us_close_stocks)
+                return {"id": row["id"], "definition": row["definition"], "close_at": close_at, "slot": index,
+                        "catalogue": items}
+        return None
+
+    def save_us_close(self, target, poll):
+        """Append one slot; a recorded slot is never replaced and nothing observed at or after the cutoff is kept."""
+        if not poll.get("ok"):
+            return {"state": "discarded", "reason": poll.get("error", "poll_failed")}
+        observed = datetime.fromisoformat(poll["observed_at"])
+        with self.db.transaction() as conn:
+            row = conn.execute("""SELECT market_data,cutoff,state,policy_digest FROM brief_editions
+                WHERE id=%s FOR UPDATE""", (target["id"],)).fetchone()
+            if (not row or row["state"] != "collecting" or row["cutoff"] <= observed
+                    or row["policy_digest"] != self.policy()):
+                return {"state": "discarded", "reason": "edition_closed_or_cutoff_passed"}
+            state = (row["market_data"] or {}).get(US_CLOSE) or {
+                "provider": CHART_PROVIDER, "session": target["definition"]["us_session"],
+                "close_at": target["close_at"].isoformat(), "catalogue": target["catalogue"], "polls": []}
+            if any(p["slot"] == poll["slot"] for p in state["polls"]):
+                return {"state": "duplicate", "slot": poll["slot"]}
+            entry = {k: poll[k] for k in ("slot", "started_at", "observed_at", "quotes", "errors")}
+            state = {**state, "polls": [*state["polls"], entry]}
+            conn.execute("""UPDATE brief_editions SET market_data=COALESCE(market_data,'{}'::jsonb)
+                ||jsonb_build_object('us_close',%s::jsonb) WHERE id=%s""", (Jsonb(state), target["id"]))
+            return {"state": "polled", "slot": poll["slot"], "quotes": len(poll["quotes"])}
 
     def prepare(self, at=None):
         at = at or schedule.utcnow()
