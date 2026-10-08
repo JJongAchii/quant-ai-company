@@ -5,6 +5,7 @@ from datetime import timedelta
 from ..company import as_json
 from . import schedule
 from .contracts import BriefProposal, BriefReview, SourcePlan
+from .data_reader import CHART_PROVIDER, US_CLOSE_REGISTRATION
 from .editor import FORMAT_VERSION, render, validate, validate_review, validate_source_notes
 from .planning import apply_plan
 
@@ -118,7 +119,11 @@ def qualify(company, *, at=None):
                 reasons.append("real_codex_not_verified")
             if s.fixture_mode or any(d.get("receipt", {}).get("synthetic") for d in row["bundle"].get("documents", [])):
                 reasons.append("synthetic_input")
-            if any(d.get("kind") == "dataset" and len(d.get("receipt", {}).get("qdata_code_commit") or "") != 40
+            # A close snapshot is not a lake read; it needs its own recorded poll provenance instead.
+            if any(d.get("kind") == "dataset" and (
+                    not (d["receipt"].get("provider") == CHART_PROVIDER and len(d["receipt"].get("rows") or []) >= 2)
+                    if d.get("registration") == US_CLOSE_REGISTRATION
+                    else len(d.get("receipt", {}).get("qdata_code_commit") or "") != 40)
                    for d in row["bundle"].get("documents", [])):
                 reasons.append("unqualified_data_reader")
         checks.append({"day": definition.day, "kind": definition.kind, "id": definition.id,
