@@ -4,16 +4,13 @@ This helper uses only a PostgreSQL read-only transaction and existing native
 runtime receipts. Full prompts and provider responses are never printed.
 """
 
+import argparse
 import json
 import re
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 
-APPLIED = Path(
-    "/var/lib/quant-company/releases/"
-    "revision-loop-cf497665ee478e75d306519cf772318094f868cb-applied.json"
-)
 QUERY = """
 BEGIN READ ONLY;
 SET LOCAL statement_timeout='10s';
@@ -66,11 +63,16 @@ COMMIT;
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--commit", default="cf497665ee478e75d306519cf772318094f868cb")
+    args = parser.parse_args()
+    assert re.fullmatch(r"[0-9a-f]{40}", args.commit)
+    applied_path = Path("/var/lib/quant-company/releases") / ("revision-loop-" + args.commit + "-applied.json")
     raw = json.loads(subprocess.check_output([
         "docker", "exec", "quant-company-postgres-1", "psql", "-U", "postgres",
         "-d", "quant_company", "-qAt", "-v", "ON_ERROR_STOP=1", "-c", QUERY,
     ], text=True, timeout=30))
-    applied = json.loads(APPLIED.read_bytes()) if APPLIED.is_file() else {}
+    applied = json.loads(applied_path.read_bytes()) if applied_path.is_file() else {}
     cutover = applied.get("completed_at")
     stages = {row["id"]: row for row in raw["stages"]}
     for row in raw["requests"]:

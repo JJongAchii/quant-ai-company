@@ -1,32 +1,32 @@
 {
   "schema_version": 1,
   "state": "root_reviewed_scoped_revision_loop_repair",
-  "reviewed_at": "2026-10-08 01:29:24 UTC",
-  "source_commit": "cf497665ee478e75d306519cf772318094f868cb",
+  "reviewed_at": "2026-10-08 01:45:49 UTC",
+  "source_commit": "3c7cc9130fe5196027b2314aeb788a81a2d66179",
   "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
-  "manifest_sha256": "3b56a8985cf8d840498599eaefc90f61cf1af19424ce5f3232d7e9139a5f9373",
-  "operator_sha256": "94561f2d975c5a14501bf88fd09741b8e746a5bfbc998e456994c0d9fb83a844",
+  "manifest_sha256": "c5d66f88949fb3de0fe42f60da57c1b118848f593a6a2e1cd4d865f3f9e7c8da",
+  "operator_sha256": "3004dbabd7a07b971e57263d717af057f2030c65bfdcaef33ae1e6eaab4055a1",
   "prepared_images": {
     "api": {
-      "tag": "quant-company-revision-loop-api:cf497665ee478e75d306519cf772318094f868cb",
-      "image_id": "sha256:c3799547f68c15bd1783db29a1d2c43ed2461d6c86dd52ee9c5193cfcb1a26e0",
+      "tag": "quant-company-revision-loop-api:3c7cc9130fe5196027b2314aeb788a81a2d66179",
+      "image_id": "sha256:5fcf9336492184bb8d085a18a462c3a83f3aa05ef5bd3d9ea5022e4319ad008c",
       "baseline_image_id": "sha256:84527ad82f04910d1e4cb018792ba8bb76f049385def73f961ba096a4566c93e"
     },
     "worker": {
-      "tag": "quant-company-revision-loop-worker:cf497665ee478e75d306519cf772318094f868cb",
-      "image_id": "sha256:4fe55b2c613503a4007c95d5154d92716e31bc09403e7ea40019b167faada7e7",
+      "tag": "quant-company-revision-loop-worker:3c7cc9130fe5196027b2314aeb788a81a2d66179",
+      "image_id": "sha256:7df49e3dd096eda6379beb99cc64f1f40c3a381d2a90a0f4530d0aa450bb1b2b",
       "baseline_image_id": "sha256:f864046f43d41a5ced5303f50823c3ae0833192e49be4cff10d685c32f7a1bba"
     }
   },
   "authority": {
-    "program_state": "active",
-    "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
-    "mission_state": "active",
-    "mission_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
-    "revision": 5,
-    "project_status": "active",
+    "max_compute_seconds": 7200,
     "max_trials": 4,
-    "max_compute_seconds": 7200
+    "mission_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
+    "mission_state": "active",
+    "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "program_state": "active",
+    "project_status": "active",
+    "revision": 5
   },
   "regression": {
     "real_postgresql": true,
@@ -45,14 +45,41 @@
     "reasoning_effort": "xhigh",
     "role_preserved": true,
     "transactions_rolled_back": true,
-    "live_selection_schema_claimed": false
+    "live_selection_schema_claimed": false,
+    "source_and_runtime_bytes_identical_to_v3": true,
+    "probe_repeated_for_v4_images": false,
+    "exact_module_proof": {
+      "quant_company/research/controller.py": "1df09f9f3566de2efee62e3c9f23ad4474f310b116138962fbefcbd4db6ef11f"
+    }
   },
   "planned_change": "Only the controller prompt/navigation module in api and worker. Preserve actual installed effective_role integration and every other source hash, configuration, signed scope, completed response and research worker release.",
-  "cutover": "Drain running turns and sending outbox; require no active scientific job, hold existing native runtime locks and backup lock, create consistent existing backup, replace only api and worker images, validate actual hashes and restore pause. Any failure restores exact original image IDs and retained records.",
+  "cutover": "Drain turns/outbox; require no active science job; retain existing locks and consistent backup. Pin actual API/worker environments in host-only 0600 Compose overlays, verify full compiled key/value maps, replace only controller source/installed modules, verify exact active maps/config/source identities. Rollback also pins and verifies original active environments.",
   "owner_authority": "Existing deploy/continue approvals, monitoring request and current request to resolve the repeated revision loop. This is an operational repair within the signed programme.",
   "exact_sha_human_approval_claimed": false,
   "scientific_choice_supplied": false,
   "scientific_scope_or_budget_changed": false,
   "completed_response_replay": false,
-  "production_applied": false
+  "production_applied": false,
+  "first_attempt": "Original image rollback/source hashes verified, pause restored; initial ordered environment hash did not establish value preservation.",
+  "environment_plan": {
+    "observed_at": "2026-10-08T01:44:26.261783+00:00",
+    "state": "exact_active_environment_plan_verified",
+    "source_commit": "3c7cc9130fe5196027b2314aeb788a81a2d66179",
+    "services": [
+      {
+        "service": "api",
+        "environment_values_match": true,
+        "environment_keys": 92,
+        "environment_sha256": "5d792368dcd8773eae1a8ce3947e867811b89deae2581ec7d6c6eb61128214d0"
+      },
+      {
+        "service": "worker",
+        "environment_values_match": true,
+        "environment_keys": 93,
+        "environment_sha256": "27c6d2d880f3deb664603bc9a2065d6e622202bef550b896ce3fde55a5f38369"
+      }
+    ],
+    "production_changed": false,
+    "private_previews_removed": true
+  }
 }
