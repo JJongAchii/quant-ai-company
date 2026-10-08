@@ -179,8 +179,9 @@ async def dispatch_once(client, company):
         company._data_watch_started = True
     if company.settings.tech_feed_enabled and not getattr(company, "_tech_feed_started", False):
         try:
+            tech_queue = ("-tech-feed-dedicated" if company.settings.tech_feed_dedicated_worker else "-tech-feed")
             await client.start_workflow(TechFeedCollectionWorkflow.run, id="company-tech-feed-collection-v1",
-                                        task_queue=company.settings.temporal_task_queue + "-tech-feed",
+                                        task_queue=company.settings.temporal_task_queue + tech_queue,
                                         id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
         except WorkflowAlreadyStartedError:
             pass

@@ -1,0 +1,179 @@
+{
+  "checked_at": "2026-10-07T23:48:33.684242+00:00",
+  "last_delivered": {
+    "id": "07bf5bbd-c640-59f5-a6f9-4a3358fb022e",
+    "status": "delivered",
+    "sent_ts": "1790908946.737849",
+    "attempts": 1,
+    "error": null,
+    "created_at": "2026-10-02 02:42:26.162880+00:00",
+    "title": "Show GN: Brief - AI Slop이 만든 기——인 글을 GeekNews 요약처럼 만들어 주는 Mac 앱",
+    "source_id": "geeknews",
+    "policy_digest": "e5e84261d6480cf8aaa3c5e3b92ab14bcacde167c31d9e37fccd346587d422cc"
+  },
+  "source_health": [
+    {
+      "id": "cloudflare",
+      "enabled": true,
+      "last_success": "2026-10-07 23:41:39.977380+00:00",
+      "last_attempt": "2026-10-07 23:41:39.738231+00:00",
+      "failures": 0,
+      "error": null,
+      "config_digest": "09ec0893116db9b279eda6962b324553025356fb47fdd824cb25c8e66f2fb4c9"
+    },
+    {
+      "id": "deepmind",
+      "enabled": true,
+      "last_success": "2026-10-07 23:41:40.842394+00:00",
+      "last_attempt": "2026-10-07 23:41:39.738231+00:00",
+      "failures": 0,
+      "error": null,
+      "config_digest": "ff7c9339fb72362a19344285a3bcaea6116619e0341ce7d6a083eb290ceff2ba"
+    },
+    {
+      "id": "duckdb",
+      "enabled": true,
+      "last_success": "2026-10-07 23:41:40.357650+00:00",
+      "last_attempt": "2026-10-07 23:41:39.738231+00:00",
+      "failures": 0,
+      "error": null,
+      "config_digest": "3c54508be63334330a62e4d2d67d3834fe882067df02225f303d4659bc731685"
+    },
+    {
+      "id": "geeknews",
+      "enabled": true,
+      "last_success": "2026-10-07 23:41:40.212793+00:00",
+      "last_attempt": "2026-10-07 23:41:39.738231+00:00",
+      "failures": 0,
+      "error": null,
+      "config_digest": "b8b868f52d60f834cedb59899c9070d1d7fa959c99c968bd1c12481067726afa"
+    },
+    {
+      "id": "github-engineering",
+      "enabled": true,
+      "last_success": "2026-10-07 23:41:40.641545+00:00",
+      "last_attempt": "2026-10-07 23:41:39.738231+00:00",
+      "failures": 0,
+      "error": null,
+      "config_digest": "3b6b2a49fb2b94cc39ad19630ecb11fb57a8ed0fd9cacb1604bc5cfee65109ec"
+    },
+    {
+      "id": "hugging-face",
+      "enabled": true,
+      "last_success": "2026-10-07 23:41:40.939614+00:00",
+      "last_attempt": "2026-10-07 23:41:39.738231+00:00",
+      "failures": 0,
+      "error": null,
+      "config_digest": "014ba200d9dd46f3c0f5a1af45fb36370298e82d00f39069c5babfd9216b4cba"
+    },
+    {
+      "id": "kubernetes",
+      "enabled": true,
+      "last_success": "2026-10-07 23:41:39.968121+00:00",
+      "last_attempt": "2026-10-07 23:41:39.738231+00:00",
+      "failures": 0,
+      "error": null,
+      "config_digest": "409ca1c28f6b5e5e080056dddd4772ac5248f245bb332f80c4c66830cdad8f50"
+    },
+    {
+      "id": "naver-d2",
+      "enabled": true,
+      "last_success": "2026-10-07 23:41:41.191957+00:00",
+      "last_attempt": "2026-10-07 23:41:39.738231+00:00",
+      "failures": 0,
+      "error": null,
+      "config_digest": "550a5d5ab8d46cd062a1f395eab44e9425781f5b1d3a444b9f42d8dbf59237e0"
+    },
+    {
+      "id": "openai",
+      "enabled": true,
+      "last_success": "2026-10-07 23:41:41.601740+00:00",
+      "last_attempt": "2026-10-07 23:41:39.738231+00:00",
+      "failures": 0,
+      "error": null,
+      "config_digest": "ff379848d4e9d596d2d2257a48a0bbbef1e633637216897705de4eb8328a835d"
+    },
+    {
+      "id": "postgresql",
+      "enabled": true,
+      "last_success": "2026-10-07 23:41:43.772154+00:00",
+      "last_attempt": "2026-10-07 23:41:39.738231+00:00",
+      "failures": 0,
+      "error": null,
+      "config_digest": "db17e3b1c167dd6ea06a5efa83fbb547b6fb3348e2f70126e33add5b6467cf2b"
+    },
+    {
+      "id": "simon-willison",
+      "enabled": true,
+      "last_success": "2026-10-07 23:41:40.482245+00:00",
+      "last_attempt": "2026-10-07 23:41:39.738231+00:00",
+      "failures": 0,
+      "error": null,
+      "config_digest": "51bef92bafe5ca996b005635dfe47bd6eee6005872b0f6bf721147e1e223b28b"
+    },
+    {
+      "id": "toss-tech",
+      "enabled": true,
+      "last_success": "2026-10-07 23:41:42.737747+00:00",
+      "last_attempt": "2026-10-07 23:41:39.738231+00:00",
+      "failures": 0,
+      "error": null,
+      "config_digest": "ac7f8ef83cc53a35b8b3720c8994103b401d0e7f8de0857d4c57f058aa4b72e2"
+    }
+  ],
+  "worker": {
+    "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+    "allowed_channels": [
+      "C0C1Q8D0B6K",
+      "C0C2B9EUEGM",
+      "C0C2J1SSX09",
+      "C0C2KPB76KE",
+      "C0C3K8ZB9PB",
+      "C0C3Q7BFQCE",
+      "C0C3Q7H30HL",
+      "C0C3C6ELJ0P"
+    ],
+    "policy": "e5e84261d6480cf8aaa3c5e3b92ab14bcacde167c31d9e37fccd346587d422cc"
+  },
+  "dispatch": {
+    "company_commit": "8fde2509d4dd2191147fbcee5eaa952191d7c048",
+    "allowed_channels": [
+      "C0C1Q8D0B6K",
+      "C0C2B9EUEGM",
+      "C0C2J1SSX09",
+      "C0C2KPB76KE",
+      "C0C3K8ZB9PB",
+      "C0C3Q7BFQCE",
+      "C0C3Q7H30HL",
+      "C0C3C6ELJ0P",
+      "C0C2E59B1AA",
+      "C0C6WTA9ECV"
+    ],
+    "policy": "2098d6f72c0850bd7551485467e618e48361ee6259d3cfe26a1ea4e15baf0641"
+  },
+  "differing_channels": [
+    "C0C2E59B1AA",
+    "C0C6WTA9ECV"
+  ],
+  "delivery_counts": [
+    {
+      "status": "delivered",
+      "error": null,
+      "count": 610,
+      "first_created": "2026-09-21 13:34:55.341792+00:00",
+      "last_created": "2026-10-02 02:42:26.162880+00:00",
+      "min_attempts": 1,
+      "max_attempts": 1
+    },
+    {
+      "status": "stale",
+      "error": "tech_feed_policy_or_freshness_changed",
+      "count": 290,
+      "first_created": "2026-09-22 06:50:12.552104+00:00",
+      "last_created": "2026-10-07 23:41:40.283997+00:00",
+      "min_attempts": 0,
+      "max_attempts": 0
+    }
+  ],
+  "other_relevant_settings_match": true
+}
