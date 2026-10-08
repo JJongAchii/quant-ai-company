@@ -341,7 +341,7 @@ def test_issue_specific_next_check_is_in_main_when_separate_watchpoint_exists():
     assert p.issues[0].next_check.text in parts[0]
     assert p.issues[0].next_check.id in main_post_item_ids(p, data)
     assert p.issues[0].next_check.text not in "\n".join(parts[1:])
-    assert quality["format_version"] == 21
+    assert quality["format_version"] == 22
 
 
 def test_supported_rate_baseline_in_issue_assessment_survives_to_reviewed_main():
@@ -724,9 +724,9 @@ def test_selected_calendar_events_remain_visible_and_unknown_time_is_labelled_on
     assert "행사 1" in main and "행사 2" in main
     assert "시장 조건 1" in main and "시장 조건 2" in main
     assert all(f"행사 {n}" in main for n in range(1, 5))
-    assert "시장 조건 3" not in main and "시장 조건 3" in detail
+    assert "시장 조건 3" in main and "시장 조건 3" not in detail
     assert "시각 미확인 · 행사" not in main and "[미확인]" not in main
-    assert "추가 확인 사항" in detail and "추가 확인 일정" not in detail
+    assert "추가 확인 사항" not in detail and "추가 확인 일정" not in detail
 
 
 def test_source_coverage_cannot_be_empty_duplicated_or_claim_uncited_items():

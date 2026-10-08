@@ -209,16 +209,11 @@ class BriefProposal(StrictModel):
     calendar: list[CalendarEvent] = Field(max_length=6)
     limitations: list[str] = Field(default_factory=list, max_length=8)
 
-    @model_validator(mode="after")
-    def bounded_story_context(self):
-        if self.context_slots() < 0:
-            raise ValueError("brief_story_context_limit")
-        return self
-
     def context_slots(self):
-        # A broad six-issue brief needs room to repair two omitted contexts after
-        # the writer's four-paragraph allocation; each issue still allows two.
-        return max(4, len(self.issues)) - sum(len(issue.context) for issue in self.issues)
+        # Match the producer's JSON schema: two bounded paragraphs per issue.
+        # A hidden cross-issue cap rejected schema-valid completed responses.
+        # Readability remains an independent content check, not a paragraph count.
+        return sum(2-len(issue.context) for issue in self.issues)
 
 
 REVIEW_CHECKS = {"numbers", "sources", "timing", "causality", "materiality", "counterevidence",
