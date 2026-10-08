@@ -192,6 +192,17 @@ class Store:
         previous = payload.get("diagnosis")
         if previous and previous["scope_digest"] == diagnosis["scope_digest"]:
             return True
+        if (job["state"] == "triage" and previous and previous.get("scope_version") == 1
+                and diagnosis.get("scope_version") == 1
+                and previous["implementation_digest"] == diagnosis["implementation_digest"]
+                and previous["runtime_scope_digest"] == diagnosis["runtime_scope_digest"]):
+            old_entries = payload["snapshot"]["entries"]
+            current_entries = snapshot["entries"]
+            dependencies = previous["source_files"] + payload.get("investigation_evidence", [])
+            if all(old_entries.get(row["path"]) == current_entries.get(row["path"]) for row in dependencies):
+                # Continue the original exact-commit investigation. Patch/publication still
+                # requires the exact current base; permissions are checked before binding.
+                return True
         with self.db.transaction() as conn:
             revision = payload.get("diagnostic_revision", 0)
             reserved = conn.execute("SELECT 1 FROM maintenance_calls WHERE job_id=%s LIMIT 1", (job["id"],)).fetchone()

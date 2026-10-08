@@ -9,17 +9,46 @@ from psycopg.types.json import Jsonb
 from .policy import SECRET, CodeQuery, digest
 
 
-def inspect_code(conn, snapshot, queries):
-    cached = conn.execute("SELECT files FROM repository_evidence WHERE commit=%s", (snapshot["commit"],)).fetchone()
-    if not cached:
-        raise ValueError("exact_repository_evidence_unavailable")
-    files, evidence = cached["files"], []
+def inspect_code(conn, snapshot, queries, *, previous=()):
+    # Only complete positive query receipts from this exact commit can bypass a scan.
+    # Missing/protected/no-match results are retried when coverage becomes available.
+    reusable = {}
+    for receipt in previous:
+        grouped = {}
+        for row in receipt.get("evidence", []):
+            signature = row.get("inspection_query")
+            if (signature and row.get("content") and row.get("key", "").startswith(f"code:{snapshot['commit']}:")
+                    and row.get("inspection_complete")):
+                grouped.setdefault(signature, []).append(row)
+        reusable.update(grouped)
+    files, evidence, readable_digest = None, [], None
     for value in queries:
         query = CodeQuery.model_validate(value)
+        signature = digest([snapshot["commit"], query.model_dump()])
+        if signature in reusable and not query.path:
+            # Same-commit coverage may expand. A broad search must see newly readable paths.
+            if readable_digest is None:
+                row = conn.execute("SELECT ARRAY(SELECT jsonb_object_keys(files) ORDER BY 1) AS paths "
+                                   "FROM repository_evidence WHERE commit=%s", (snapshot["commit"],)).fetchone()
+                if not row:
+                    raise ValueError("exact_repository_evidence_unavailable")
+                readable_digest = digest(row["paths"])
+            if any(row.get("readable_paths_digest") != readable_digest for row in reusable[signature]):
+                reusable.pop(signature)
+        if signature in reusable:
+            evidence.extend({**row, "cache_hit": True} for row in reusable[signature])
+            continue
+        if files is None:
+            cached = conn.execute("SELECT files FROM repository_evidence WHERE commit=%s", (snapshot["commit"],)).fetchone()
+            if not cached:
+                raise ValueError("exact_repository_evidence_unavailable")
+            files = cached["files"]
+            readable_digest = digest(sorted(files))
+        result = []
         if query.path:
             paths = [query.path]
             if query.path not in files:
-                evidence.append({"key": "inspection:" + digest([snapshot["commit"], query.model_dump()])[:24],
+                evidence.append({"key": "inspection:" + signature[:24],
                                  "path": query.path, "status": "not_in_readable_snapshot",
                                  "exists_in_tree": query.path in snapshot["entries"],
                                  "instruction": "Omitted or protected content is unknown, not proof of absence."})
@@ -37,14 +66,65 @@ def inspect_code(conn, snapshot, queries):
                                 enumerate(lines[start:start + query.line_count], start))
             if SECRET.search(content):
                 continue
-            evidence.append({"key": f"code:{snapshot['commit']}:{path}", "path": path,
+            result.append({"key": f"code:{snapshot['commit']}:{path}", "path": path,
                              "start_line": start + 1, "total_lines": len(lines), "content": content[:14000],
-                             "excerpted": start > 0 or start + query.line_count < len(lines) or len(content) > 14000})
+                             "excerpted": start > 0 or start + query.line_count < len(lines) or len(content) > 14000,
+                             "inspection_query": signature, "inspection_complete": True})
+            if not query.path:
+                result[-1]["readable_paths_digest"] = readable_digest
             matches += 1
             if matches == 4:
                 break
+        if result:
+            reusable[signature] = result
+        evidence.extend(result)
     # Keep recent exact evidence in the next prompt; full requests and results remain in the job payload.
     return evidence
+
+
+def excerpt_identity(row):
+    """A citation key identifies a file; different ranges of that file remain distinct."""
+    return digest({key: row.get(key) for key in
+                   ("key", "path", "start_line", "total_lines", "content", "status", "exists_in_tree")})
+
+
+def append_inspections(payload, evidence):
+    """Preserve existing evidence and original query receipts; append only new exact excerpts."""
+    saved = payload.setdefault("investigation_evidence", [])
+    known = {excerpt_identity(row) for row in saved}
+    for row in evidence:
+        identity = excerpt_identity(row)
+        if identity not in known:
+            saved.append(row)
+            known.add(identity)
+
+
+def inspection_context(payload):
+    """Show every saved range in an index; prioritize explicit requests and new ranges in the body."""
+    unique = {excerpt_identity(row): row for row in payload.get("investigation_evidence", [])}
+    rounds = payload.get("investigation_requests", [])
+    recent = rounds[-1] if rounds else {}
+    older = {excerpt_identity(row) for round_ in rounds[:-1] for row in round_.get("evidence", [])}
+    explicit = {row.get("path") for row in recent.get("requests", []) if row.get("path")}
+    candidates = {excerpt_identity(row): row for row in recent.get("evidence", [])}
+    if not candidates:
+        candidates = unique
+    ordered = sorted(candidates.items(), key=lambda pair: (pair[1].get("path") not in explicit,
+                     pair[0] in older, not pair[1].get("path", "").startswith(("src/", "tests/")),
+                     pair[1].get("path", ""), pair[1].get("start_line", 0)))
+    shown = [row for _, row in ordered[:4]]
+    selected = {excerpt_identity(row) for row in shown}
+    catalog = [{**{key: row[key] for key in ("key", "path", "start_line", "total_lines", "status") if key in row},
+                "line_count": len(row.get("content", "").splitlines()),
+                "content_digest": digest(row.get("content", "")), "shown": identity in selected}
+               for identity, row in unique.items()]
+    return {"investigated_code": shown, "inspection_catalog": catalog,
+            "inspection_lookup": "This is an index of stored exact-commit ranges, not model memory. "
+                                 "Only shown excerpts include code in this request. Request an indexed path/range "
+                                 "to read omitted content; repeated exact queries reuse saved positive receipts.",
+            "recent_inspection": {"requests": recent.get("requests", []),
+                                  "returned_excerpts": len(recent.get("evidence", [])),
+                                  "reused_excerpts": sum(bool(row.get("cache_hit")) for row in recent.get("evidence", []))}}
 
 
 def feedback_text(text):
