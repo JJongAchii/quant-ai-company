@@ -1,6 +1,7 @@
 """Input-bound references to complete, unchanged original text."""
 
 import hashlib
+import json
 import re
 
 QUOTE_REFERENCE_VERSION = 1
@@ -144,6 +145,67 @@ def ordered_reference_payload(payload):
                                     for d in payload['documents']],
             'original_quote_layout': 'ordered_rows',
             'original_quotes': [[reference, *value] for reference, value in payload['original_quotes'].items()]}
+
+
+PROMPT_LIMIT = 88000  # Margin under ProviderRequest.prompt max_length=90000.
+REFERENCE = re.compile(r"@q:[1-9][0-9]*|@original:[0-9a-f]{20}")
+
+
+def fit_original_rows(header, payload, quotes=(), limit=PROMPT_LIMIT):
+    """Only when the complete originals exceed the input limit: keep every row that holds a cited or
+    committed quote, then the remaining rows in source order while they fit. Row IDs never change, so
+    server-side resolution is unaffected. Returns (prompt, trimmed) or raises brief_context_limit."""
+    encode = lambda value: header + json.dumps(value, ensure_ascii=False, separators=(",", ":"))  # noqa: E731
+    result = encode(payload)
+    if len(result) <= limit:
+        return result, []
+    rows = payload.get("original_quotes")
+    grouped = payload.get("original_quote_layout") == "grouped_documents"
+    if grouped:
+        flat = [(position, f"@q:{row[0]}", row[1]) for position, group in enumerate(rows) for row in group]
+    elif isinstance(rows, list):
+        flat = [(row[1], row[0], row[2]) for row in rows]
+    else:
+        raise ValueError("brief_context_limit")
+    outside = json.dumps({k: v for k, v in payload.items() if k != "original_quotes"}, ensure_ascii=False)
+    cited = set(REFERENCE.findall(outside))
+    texts = [" ".join(q.split()) for q in quotes if isinstance(q, str) and not REFERENCE.fullmatch(q)]
+
+    def needed(text):
+        plain = " ".join(text.split())
+        # A quote may span adjacent rows: keep the rows holding its start, its end and its middle.
+        return any(q in plain or plain in q or q[:40] in plain or q[-40:] in plain for q in texts if q)
+
+    keep = {i for i, (_, key, text) in enumerate(flat) if key in cited or needed(text)}
+
+    def build(selected):
+        if grouped:
+            groups = [[] for _ in rows]
+            for i in sorted(selected):
+                position, key, text = flat[i]
+                groups[position].append([int(key.removeprefix("@q:")), text])
+            kept_rows = groups
+        else:
+            kept_rows = [rows[i] for i in sorted(selected)]
+        trimmed = {}
+        for i, (position, _, text) in enumerate(flat):
+            if i not in selected:
+                count, chars = trimmed.get(position, (0, 0))
+                trimmed[position] = (count + 1, chars + len(text))
+        report = [[position, count, chars] for position, (count, chars) in sorted(trimmed.items())]
+        return {**payload, "original_quotes": kept_rows, "trimmed_originals": report}, report
+
+    candidate, report = build(keep)
+    if len(encode(candidate)) > limit:
+        raise ValueError("brief_context_limit")
+    for i in range(len(flat)):  # Fill the remaining budget in source order.
+        if i in keep:
+            continue
+        trial, trial_report = build(keep | {i})
+        if len(encode(trial)) <= limit:
+            keep.add(i)
+            candidate, report = trial, trial_report
+    return encode(candidate), report
 
 
 def compact_reference_payload(payload, bundle):

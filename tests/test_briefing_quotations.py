@@ -303,3 +303,39 @@ def test_real_postgresql_producer_consumer_preserves_exact_quotes_and_raw_receip
     r.source_assessments[0].material_facts[0].quote = reference
     assert store.commit(response(critic_request, r))["state"] == "completed"
     assert store.commit(written)["duplicate"]
+
+
+def test_fit_original_rows_keeps_quoted_and_cited_rows_then_fills_in_source_order():
+    import json
+
+    import pytest
+
+    from quant_company.briefing.quotations import fit_original_rows
+
+    rows = [[f'@q:{i+1}', i // 3, ' '.join(f'w{i}-{j}' for j in range(40))] for i in range(9)]
+    payload = {'evidence': {'quote': '@q:8'}, 'original_quotes': rows, 'original_quote_layout': 'compact_ordered_rows'}
+    header = 'H\n'
+    full = header + json.dumps(payload, ensure_ascii=False, separators=(',', ':'))
+    same, trimmed = fit_original_rows(header, payload, limit=len(full))
+    assert same == full and trimmed == []
+    limit = len(full) - 3*len(json.dumps(rows[0], separators=(',', ':')))
+    result, trimmed = fit_original_rows(header, payload, quotes=[rows[5][2][10:120]], limit=limit)
+    kept = [row[0] for row in json.loads(result[len(header):])['original_quotes']]
+    assert len(result) <= limit and '@q:8' in kept and '@q:6' in kept       # cited reference and committed quote
+    assert kept == sorted(kept, key=lambda r: int(r[3:])) and kept[:3] == ['@q:1', '@q:2', '@q:3']
+    assert sum(r[1] for r in trimmed) == 9 - len(kept) and all(r[2] > 0 for r in trimmed)
+    with pytest.raises(ValueError, match='brief_context_limit'):
+        fit_original_rows(header, payload, quotes=[r[2] for r in rows], limit=limit)
+
+
+def test_fit_original_rows_grouped_layout_keeps_reference_numbers():
+    import json
+
+    from quant_company.briefing.quotations import fit_original_rows
+
+    groups = [[[1, 'a'*300], [2, 'b'*300]], [[3, 'c'*300], [4, 'd'*300]]]
+    payload = {'claim': {'quote': '@q:4'}, 'original_quotes': groups, 'original_quote_layout': 'grouped_documents'}
+    full = json.dumps(payload, separators=(',', ':'))
+    result, trimmed = fit_original_rows('', payload, limit=len(full) - 250)
+    kept = json.loads(result)['original_quotes']
+    assert [row[0] for group in kept for row in group] == [1, 2, 4] and trimmed == [[1, 1, 300]]
