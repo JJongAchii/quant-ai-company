@@ -1,7 +1,9 @@
 """Read actual stage prompts in bounded disposable parent/patch image containers.
 
 Credentials stay in a protected temporary host env file and mounted API secrets.
-All database transactions are read-only; no model call or stage mutation occurs.
+The read projection always rolls back its transaction: model-policy reads use
+FOR SHARE, which PostgreSQL disallows in a transaction marked READ ONLY.
+No model call or stage mutation occurs.
 """
 
 import json
@@ -18,7 +20,6 @@ from quant_company.config import Settings
 import quant_company.research.controller as controller
 company=Company(Settings())
 with company.db.transaction() as conn:
-    conn.execute('SET TRANSACTION READ ONLY')
     identity=os.environ.get('REPAIR_PROBE_STAGE_ID')
     if identity:
         row=conn.execute('SELECT * FROM research_mission_stages WHERE id=%s',(identity,)).fetchone()
@@ -45,6 +46,7 @@ with company.db.transaction() as conn:
         assert capability['available_actions']==['read_stage_file','complete_stage_artifact']
     assert len(prompt)<=90000
     code=pathlib.Path(controller.__file__).read_bytes()
+    conn.rollback()
     print(json.dumps({'state':'readonly_actual_stage_prompt_verified','stage_id':str(row['id']),
                       'task_id':str(task['id']),'stage':row['stage'],'actor':row['actor'],
                       'attempt':row['attempt'],'current_proposal_id':proposal_id,
@@ -53,7 +55,7 @@ with company.db.transaction() as conn:
                       'controller_sha256':hashlib.sha256(code).hexdigest(),'scoped_navigation_present':bool(scoped),
                       'stage_capabilities_present':bool(capability),'selection_schema_verified':bool(scoped),
                       'effective_model_policy_preserved':b'model_assignments_enabled' in code,
-                      'database_mutated':False,'model_call_created':False}))
+                      'database_mutated':False,'transaction_rolled_back':True,'model_call_created':False}))
 '''
 
 
