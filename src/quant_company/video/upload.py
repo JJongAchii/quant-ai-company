@@ -9,7 +9,7 @@ from pydantic import Field, field_validator
 
 from ..contracts import StrictModel
 
-PREFIX = '[증시story] '
+PREFIX = '[오늘의 증시story] '
 CLOSING = ('──────────\n\n'
            '오늘 시장에 무슨 일이 있었는지,\n'
            '어떤 소식이 주가를 움직였는지.\n'
@@ -23,7 +23,7 @@ TIMING = {'am': '장전', 'intraday': '장중', 'close': '마감'}
 
 class UploadCopy(StrictModel):
     """Model-written parts only; layout, fixed lines, chapters and references are filled by the service."""
-    title: str = Field(min_length=5, max_length=88)
+    title: str = Field(min_length=5, max_length=100-len(PREFIX))
     lead: str = Field(min_length=10, max_length=160)
     intro: str = Field(min_length=10, max_length=320)
     market: Literal['국내', '미국', '글로벌']
@@ -86,7 +86,7 @@ def compose(copy, day, asof, edition, chapters, refs, playlist_url=''):
 def check(result, refs_allowed=frozenset(), playlist_url=''):
     title, text, tags = result['title'], result['description'], result['tags']
     if not title.startswith(PREFIX) or len(title) > 100:
-        raise ValueError('Title needs the [증시story] prefix and at most 100 characters')
+        raise ValueError(f'Title needs the {PREFIX.strip()} prefix and at most 100 characters')
     if len(text) > 5000 or len(text.encode()) > 5000:
         raise ValueError('Description exceeds the YouTube limit')
     order = ['📅 ', '자료 기준: ', '📌 오늘 짚어볼 이야기', '⏱ 영상 순서', CLOSING, SIGNATURE, ' '.join(BASE_TAGS)]

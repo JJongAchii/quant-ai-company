@@ -159,7 +159,7 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
     assert 50 < manifest['duration'] < 60 and manifest['audio_quality']['true_peak_dbfs'] <= -1.5
     upload = (tmp_path / 'out' / 'upload.txt').read_text()
     assert 'Fixture Author · CC BY 4.0' in upload and '변경: 잘라 냄' in upload and 'AI' not in upload
-    assert manifest['title'].startswith('[증시story] ') and manifest['tags'][-2:] == ['증시story', '뭐든story']
+    assert manifest['title'].startswith('[오늘의 증시story] ') and manifest['tags'][-2:] == ['증시story', '뭐든story']
     assert '📅 2026.09.22 | 미국 증시' in upload and '자료 기준: 2026.09.22 07:30 (한국시간) · 장전' in upload
     assert '00:00 반도체가 이끌었다' in upload and '#증시story #뭐든story #반도체' in upload and '▶ 증시story 모아보기\nhttps://www.youtube.com/playlist?list=PLbCkACCer37U' in upload
     assert 'https://www.cnbc.com/fixture-market-report.html' in upload
@@ -246,3 +246,12 @@ def test_upload_copy_template_and_checks():
     raw['upload']['tags'][0] = '비트코인'
     with pytest.raises(ValueError, match='Tag'):
         validate_episode(EpisodePlan.model_validate(raw), source(), {'fixture-photo': {}, 'fixture-illustration': {}})
+
+
+def test_title_prefix_is_todays_market_story_and_fits_100_characters():
+    from quant_company.video import upload
+
+    assert upload.PREFIX == '[오늘의 증시story] '
+    assert upload.UploadCopy.model_fields['title'].metadata[-1].max_length == 100 - len(upload.PREFIX)
+    with pytest.raises(ValueError, match=r'\[오늘의 증시story\] prefix'):
+        upload.check({'title': '[증시story] 반도체가 이끌었다', 'description': '', 'tags': []})
