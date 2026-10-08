@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "state": "engineering_qualification_passed",
+  "source_commit": "defd4833adea6a0191412121a5a5c6e8265c58ba",
+  "integrated_actual_production_commit": "0ff6657f98b175162609259394b1cec20382904a",
+  "full_tests": {
+    "passed": 1825,
+    "skipped": 14,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 551.648,
+    "real_postgresql": true,
+    "real_temporal": true,
+    "pinned_qlab_root": ".local/qlab-audit-37abfceb",
+    "pinned_qlab_commit": "37abfceb07f5b684d7c3210548fecef156e3f9fc",
+    "model_and_slack": "simulated",
+    "live_model_and_linux_in_full_suite": "opt-in skipped; separate actual3070 qualification passed"
+  },
+  "lint": "passed",
+  "junit_sha256": "c9f44d26b996bb8dbac8b3a76c45ef4882c99d6a259df91f483993ce1ee819a3",
+  "controller_sha256": "a4bcb7eabce8c97eef47d043c041140e9ead9283d433c8367d9018a926155e33",
+  "worker_qualification_sha256": "b1e26ff5778f5e5cbf5b702864525cddcf03091d815db8454fd1b583a0b50b68",
+  "server_qualification_sha256": "ab694961692e089939c66347f300e68dd5ddd5ef94f4246600a7ba4ca0bf285c",
+  "qualified_worker_config_sha256": "d07cc88808bf113953287b0526beafeda918701a25ebd319687aa4281c853942",
+  "synthetic_actual3070": {
+    "sandbox_mocked": false,
+    "host_mocked": false,
+    "producer_consumer": "passed",
+    "real_snapshot_reads": 0,
+    "scientific_trials_added": 0
+  },
+  "protected_programme": {
+    "id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+    "digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+    "max_scientific_trials": 4,
+    "max_compute_seconds": 7200,
+    "sealed2026_accessed": false
+  },
+  "old_owner_audit_hold_removed": false,
+  "production_activated": false,
+  "scientific_performance_claimed": false,
+  "observed_at": "2026-10-06T05:30:48.599489+00:00"
+}

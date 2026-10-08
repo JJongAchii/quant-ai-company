@@ -1,0 +1,44 @@
+{
+  "account": {
+    "profile": "primary",
+    "revision": 2
+  },
+  "acknowledged_busy_before_inference": true,
+  "artifact_contract_valid": true,
+  "canonical_scope_matched": true,
+  "cli_version": "0.154.0",
+  "completed_at": 1791255386.0864804,
+  "effects_applied": 0,
+  "employee_data_decision": "conditional_ready",
+  "input_digest": "7bb092b67d8fd134bb9a985b9aaeabb9fb37ddba5e655b3552937f6c7abb71ef",
+  "kind": "inactive-scoped-data-native-qualification",
+  "legacy_fields_excluded": true,
+  "model": "gpt-5.6-terra",
+  "observed_at": "2026-10-06T02:55:59.014550+00:00",
+  "original_request_id": "5569e345-6127-5972-852d-28d98e97d24e",
+  "production_changed": false,
+  "prompt_characters": 77501,
+  "reasoning_effort": "high",
+  "request_id": "ba475f3d-6feb-572e-a419-746c6e8d2cc6",
+  "schema_version": 2,
+  "scientific_trials_added": 0,
+  "source_commit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+  "source_files_verified": 205,
+  "started_at": 1791255359.3411624,
+  "state": "complete",
+  "transport_validation": {
+    "completed_count": 1,
+    "error_count": 0,
+    "event_types": [
+      "thread.started",
+      "item.completed",
+      "item.completed",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ],
+    "returncode": 0,
+    "stderr_bytes": 0,
+    "stdout_bytes": 3139
+  }
+}

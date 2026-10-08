@@ -1,0 +1,185 @@
+{
+  "audit": {
+    "error": null,
+    "id": "5e5e2013-373c-5868-9fc9-242985e085b3",
+    "qlab_commit": "37abfceb07f5b684d7c3210548fecef156e3f9fc",
+    "root": "/state/research/missions/2ce40574-6368-5cef-b706-b4e67441b3de/audit/5e5e2013-373c-5868-9fc9-242985e085b3/1",
+    "state": "received",
+    "validator_request_id": "f405eb0f-5168-5309-b875-8e15eed1bb53"
+  },
+  "audit_verification": {
+    "audit_file_sha_matches": {
+      "audits/AUDIT-leak-auditor-20261006-f405eb0f-5168-5309-b875-8e15eed1bb53.html": true,
+      "audits/AUDIT-leak-auditor-20261006-f405eb0f-5168-5309-b875-8e15eed1bb53.md": true,
+      "audits/AUDIT-leak-auditor-20261006-f405eb0f-5168-5309-b875-8e15eed1bb53.receipt.json": true,
+      "package.json": true
+    },
+    "objective_digest": "87815ff1c5da",
+    "path": "/state/research/missions/2ce40574-6368-5cef-b706-b4e67441b3de/audit/5e5e2013-373c-5868-9fc9-242985e085b3/1/audits/f405eb0f-5168-5309-b875-8e15eed1bb53.verification.json",
+    "present": true,
+    "qlab_commit": "37abfceb07f5b684d7c3210548fecef156e3f9fc",
+    "receipt_violation_count": 0,
+    "scope_digest": "f9d5e5834de6",
+    "sha256": "4e8c5645a8a69e2ad44471ac96d43cff62f3ff1c63dda4ab590a8d2c2f66b185",
+    "verdict": "pass",
+    "violation_count": 0
+  },
+  "director_task": null,
+  "job": {
+    "director_task_id": null,
+    "error": null,
+    "id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+    "source_id": null,
+    "state": "received"
+  },
+  "meaning": {
+    "attempt": 1,
+    "error": null,
+    "files": [
+      {
+        "complete": true,
+        "latest_character_offset": 0,
+        "path": "audit/scope/binding.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": 96000,
+        "path": "audit/scope/history.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/mission.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/objective.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/result.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/profile.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/receipt.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/runtime.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/manifest.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/outputs/base.csv"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/outputs/stress.csv"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/qualification.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/producer-result.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/sandbox-evaluation.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/sandbox-qualification.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/producer-qualification.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/code/labs/company-domestic-research/engine.py"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/code/labs/company-domestic-research/config.json"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/code/labs/company-domestic-research/candidate.py"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/code/labs/company-domestic-research/domestic_statistics.py"
+      },
+      {
+        "complete": false,
+        "latest_character_offset": null,
+        "path": "review/feedback.json"
+      }
+    ],
+    "id": "8987ff99-b738-5927-8ba2-0545cdab6884",
+    "read_characters": 260650,
+    "read_chunks": 24,
+    "reads_by_path": [
+      {
+        "characters": 1079,
+        "chunks": 1,
+        "complete": true,
+        "latest_character_offset": 0,
+        "path": "audit/scope/binding.json"
+      },
+      {
+        "characters": 108000,
+        "chunks": 9,
+        "complete": false,
+        "latest_character_offset": 96000,
+        "path": "audit/scope/history.json"
+      },
+      {
+        "characters": 145994,
+        "chunks": 13,
+        "complete": true,
+        "latest_character_offset": 144000,
+        "path": "mission/scientific-lineage.json"
+      },
+      {
+        "characters": 5577,
+        "chunks": 1,
+        "complete": true,
+        "latest_character_offset": 0,
+        "path": "mission/spec.json"
+      }
+    ],
+    "state": "running",
+    "updated_at": "2026-10-07T06:12:54.311309+00:00"
+  },
+  "meaning_record": null,
+  "observed_at": "2026-10-07T06:13:06.164915+00:00",
+  "slack": [],
+  "source": null
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_current_task_urgency",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "stage_id": "c3050fd0-0139-53ec-8669-56dff53ab630",
+  "task_id": "d7df0261-af8f-5c89-b8ef-a59e3bb9b6f1",
+  "turn_id": "ae3f696c-6143-53d3-a46f-510cf7f2742c",
+  "observed_block": "Temporal repeats higher_priority_request/2sec; no model request frozen; priority100 versus other pending0 tasks",
+  "change": {
+    "previous_priority": 100,
+    "priority": 0,
+    "only_existing_current_task": true
+  },
+  "authority": "Existing owner urgent first-experiment and continuation instructions; root review of concrete current planning task in PR105",
+  "signed_resources_priority_changed": false,
+  "budget_or_source_or_permission_changed": false,
+  "source_selection_or_science_gate_bypassed": false,
+  "new_model_call_or_scientific_job_enqueued": false,
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+  "reviewed_at": "2026-10-06T05:59:03.899816+00:00"
+}

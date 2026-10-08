@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_with_existing_deployment_authority",
+  "source_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "review_packet_sha256": "5da6256a7613ebc0091775cd7a1e4e4b30859fc3959df5292746b6543a6cb674",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+  "authority": "Existing owner requests to deploy and continue; no new exact-SHA human approval claimed",
+  "exact_sha_human_approval_claimed": false,
+  "checks": [
+    "actual e1e integrated",
+    "1840 total:1826 passed/14 explicit skips; real PostgreSQL/Temporal/pinned qlab; lint passed",
+    "exact app/autonomous/codex images:205 source files each, UID10001",
+    "actual3070 synthetic producer/consumer and Linux sandbox passed",
+    "profile/input/role/account/economic policy preserved",
+    "old held audit remains held",
+    "no direct scientific job enqueue or budget change"
+  ],
+  "activation_order": [
+    "drain existing company/runtime writes",
+    "fresh consistent backup and S3 byte verification",
+    "five server services active with company worker stopped",
+    "activate prepared3070 ec code/config/unit, retaining prior registry",
+    "resume company worker after matching worker receipt",
+    "verify six services and worker pins plus actual mission",
+    "restore previous release.timer active state"
+  ],
+  "scientific_trials_added_by_operator": 0,
+  "reviewed_at": "2026-10-06T05:45:48.398448+00:00"
+}

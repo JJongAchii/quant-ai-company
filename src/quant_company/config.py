@@ -65,6 +65,9 @@ class Settings(BaseSettings):
     news_initial_lookback_minutes: int = Field(default=120, ge=0, le=1440)
     briefing_enabled: bool = False
     briefing_publish_enabled: bool = False
+    briefing_source_notes_enabled: bool = False
+    briefing_max_revisions: int = Field(default=1, ge=0, le=1)
+    briefing_evaluation_edition_id: str = Field(default='', pattern=r'^(?:|[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})$')
     briefing_search_enabled: bool = True
     briefing_channel_id: str = ""
     briefing_owner_user: str = ""

@@ -1,0 +1,232 @@
+{
+  "observed_at": "2026-10-06T01:02:28.849751+00:00",
+  "requests": [
+    {
+      "id": "578a8874-b2f8-5762-b872-37aec557dc76",
+      "task_id": "4ee762fd-6a92-5a08-b6bc-ecb882a8dfd0",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "created_at": "2026-10-05T23:55:32.422892+00:00",
+      "updated_at": "2026-10-05T23:55:41.168514+00:00",
+      "request_id": "578a8874-b2f8-5762-b872-37aec557dc76",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "prompt_characters": 80069,
+      "runtime_receipt_present": true,
+      "runtime": {
+        "state": "failed",
+        "started_at": 1791244534.0752232,
+        "completed_at": null,
+        "cli_version": "0.154.0",
+        "requested_execution": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high"
+        },
+        "fault_code": "invalid_output",
+        "parse_phase": [
+          [
+            "decision_contract",
+            "invalid_shape"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "b030697a-58ec-5b98-926f-44537375575b",
+      "task_id": "4ee762fd-6a92-5a08-b6bc-ecb882a8dfd0",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-05T23:55:23.744676+00:00",
+      "updated_at": "2026-10-05T23:55:32.422892+00:00",
+      "request_id": "b030697a-58ec-5b98-926f-44537375575b",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "prompt_characters": 80070,
+      "runtime_receipt_present": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791244525.5840213,
+        "completed_at": 1791244532.319941,
+        "cli_version": "0.154.0",
+        "requested_execution": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high"
+        },
+        "fault_code": null,
+        "parse_phase": []
+      }
+    },
+    {
+      "id": "7d4b4135-269b-53ae-89da-b10149260291",
+      "task_id": "4ee762fd-6a92-5a08-b6bc-ecb882a8dfd0",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-05T23:55:15.007907+00:00",
+      "updated_at": "2026-10-05T23:55:23.744676+00:00",
+      "request_id": "7d4b4135-269b-53ae-89da-b10149260291",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "prompt_characters": 79380,
+      "runtime_receipt_present": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791244515.6995506,
+        "completed_at": 1791244523.6256092,
+        "cli_version": "0.154.0",
+        "requested_execution": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high"
+        },
+        "fault_code": null,
+        "parse_phase": []
+      }
+    },
+    {
+      "id": "7ff953b1-2f21-5038-a9db-3e8364dcd8ba",
+      "task_id": "4ee762fd-6a92-5a08-b6bc-ecb882a8dfd0",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-05T23:55:07.824424+00:00",
+      "updated_at": "2026-10-05T23:55:15.007907+00:00",
+      "request_id": "7ff953b1-2f21-5038-a9db-3e8364dcd8ba",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "prompt_characters": 79378,
+      "runtime_receipt_present": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791244509.653766,
+        "completed_at": 1791244514.956167,
+        "cli_version": "0.154.0",
+        "requested_execution": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high"
+        },
+        "fault_code": null,
+        "parse_phase": []
+      }
+    },
+    {
+      "id": "4344b9d0-d185-5ce5-a7e7-ca7218684600",
+      "task_id": "4ee762fd-6a92-5a08-b6bc-ecb882a8dfd0",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-05T23:54:59.314955+00:00",
+      "updated_at": "2026-10-05T23:55:07.824424+00:00",
+      "request_id": "4344b9d0-d185-5ce5-a7e7-ca7218684600",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "prompt_characters": 79373,
+      "runtime_receipt_present": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791244500.890898,
+        "completed_at": 1791244507.7180548,
+        "cli_version": "0.154.0",
+        "requested_execution": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high"
+        },
+        "fault_code": null,
+        "parse_phase": []
+      }
+    }
+  ],
+  "stage_progress": {
+    "stage": {
+      "id": "ce867fc3-a194-5327-b312-864b93538d34",
+      "state": "waiting",
+      "attempt": 4,
+      "error": "invalid_output",
+      "retry_at": null,
+      "task_id": "4ee762fd-6a92-5a08-b6bc-ecb882a8dfd0",
+      "required_data_reads": [
+        "data/etf_strategy/identity.json",
+        "data/etf_strategy/engine",
+        "data/etf_strategy/reports/availability-survey-a10ed59d63a9.json",
+        "data/etf_strategy/reports/data-policy-draft-66a888ac98ba.json",
+        "data/etf_strategy/reports/official-source-review-c14d6e0eb60a.json",
+        "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json",
+        "data/etf_strategy/reports/raw-lineage-receipt-f8a0595989be.json",
+        "data/etf_strategy/reports/receipt-99404f6ce4f7.json",
+        "scientific-lineages/b6a31ea2-8da9-5f67-97dd-2e304cde30c3.json"
+      ]
+    },
+    "recent_reads": [
+      {
+        "path": "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json",
+        "character_offset": 156000,
+        "next_offset": 168000,
+        "created_at": "2026-10-05T23:55:32.422892+00:00"
+      },
+      {
+        "path": "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json",
+        "character_offset": 144000,
+        "next_offset": 156000,
+        "created_at": "2026-10-05T23:55:23.744676+00:00"
+      },
+      {
+        "path": "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json",
+        "character_offset": 132000,
+        "next_offset": 144000,
+        "created_at": "2026-10-05T23:55:15.007907+00:00"
+      },
+      {
+        "path": "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json",
+        "character_offset": 120000,
+        "next_offset": 132000,
+        "created_at": "2026-10-05T23:55:07.824424+00:00"
+      },
+      {
+        "path": "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json",
+        "character_offset": 108000,
+        "next_offset": 120000,
+        "created_at": "2026-10-05T23:54:59.314955+00:00"
+      },
+      {
+        "path": "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json",
+        "character_offset": 96000,
+        "next_offset": 108000,
+        "created_at": "2026-10-05T23:54:46.165225+00:00"
+      },
+      {
+        "path": "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json",
+        "character_offset": 84000,
+        "next_offset": 96000,
+        "created_at": "2026-10-05T23:54:37.554802+00:00"
+      },
+      {
+        "path": "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json",
+        "character_offset": 72000,
+        "next_offset": 84000,
+        "created_at": "2026-10-05T23:54:28.269902+00:00"
+      }
+    ],
+    "progress": [
+      {
+        "path": "data/etf_strategy/engine",
+        "next_offset": null
+      },
+      {
+        "path": "data/etf_strategy/identity.json",
+        "next_offset": null
+      },
+      {
+        "path": "data/etf_strategy/reports/availability-survey-a10ed59d63a9.json",
+        "next_offset": null
+      },
+      {
+        "path": "data/etf_strategy/reports/data-policy-draft-66a888ac98ba.json",
+        "next_offset": null
+      },
+      {
+        "path": "data/etf_strategy/reports/official-source-review-c14d6e0eb60a.json",
+        "next_offset": null
+      },
+      {
+        "path": "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json",
+        "next_offset": 168000
+      }
+    ]
+  }
+}

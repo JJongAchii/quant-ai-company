@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "scope": "Preparation metadata only; no result metrics or scientific judgment",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "observed_at": "2026-10-06T06:22:14.351135+00:00",
+  "stage": {
+    "id": "c3050fd0-0139-53ec-8669-56dff53ab630",
+    "stage": "proposal",
+    "actor": "researcher_kr",
+    "state": "running",
+    "attempt": 1,
+    "error": null,
+    "retry_at": null,
+    "task_id": "d7df0261-af8f-5c89-b8ef-a59e3bb9b6f1",
+    "created_at": "2026-10-06T05:54:25.694892+00:00",
+    "updated_at": "2026-10-06T06:20:53.782796+00:00"
+  },
+  "task": {
+    "id": "d7df0261-af8f-5c89-b8ef-a59e3bb9b6f1",
+    "agent": "researcher_kr",
+    "status": "running",
+    "priority": 0,
+    "revision": 5
+  },
+  "files": [
+    {
+      "name": "code/labs/company-domestic-research/candidate.py",
+      "size": 738,
+      "sha256": "78ed35e6a6d59df39e2c51d5fcfb24baeaa266667ccc651b3e305d4065a25aa5"
+    },
+    {
+      "name": "code/labs/company-domestic-research/config.json",
+      "size": 79,
+      "sha256": "85870a2d2e4a444369cee6ce1e8f0c027208746df337abdfcda9b2d0fd6aecad"
+    },
+    {
+      "name": "code/labs/company-domestic-research/domestic_statistics.py",
+      "size": 2574,
+      "sha256": "8ea1021082bc8b4656e3df9dafe24dec655f861692240a5542e587fe0b7628ff"
+    },
+    {
+      "name": "code/labs/company-domestic-research/engine.py",
+      "size": 12554,
+      "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+    },
+    {
+      "name": "mission/history.json",
+      "size": 262801,
+      "sha256": "bbbf8b7071f1fc46f58dfc69b4e69e030d9cbe0186d11f8057990e4bb1f78720"
+    },
+    {
+      "name": "mission/scientific-lineage.json",
+      "size": 256162,
+      "sha256": "8ecec080c8729df8a109a89203d527da3a185ed5661d5c9cb4e6e47de07b5985"
+    },
+    {
+      "name": "mission/spec.json",
+      "size": 5631,
+      "sha256": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737"
+    },
+    {
+      "name": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json",
+      "size": 141763,
+      "sha256": "b870ef35fa7c0591e1dbfcc4466f679168ad2428573b210e320b77b506838ede"
+    },
+    {
+      "name": "sources/a92aa4eac500d55b1e4b8879d57d7bd33fb476b0488b493e8de52ffd6c8c0b89.json",
+      "size": 10372,
+      "sha256": "0e650cb37fdd1b95600b513a21cf9c5e474a11755614abbe9d7df6a500ee3f60"
+    }
+  ],
+  "required_lineage_reads": [
+    "mission/scientific-lineage.json"
+  ],
+  "read_progress": [
+    {
+      "path": "mission/spec.json",
+      "chunks": 1,
+      "latest_offset": 0,
+      "complete": true,
+      "first_read": "2026-10-06T05:59:26.448875+00:00",
+      "last_read": "2026-10-06T05:59:26.448875+00:00"
+    },
+    {
+      "path": "mission/scientific-lineage.json",
+      "chunks": 12,
+      "latest_offset": 132000,
+      "complete": true,
+      "first_read": "2026-10-06T05:59:41.204642+00:00",
+      "last_read": "2026-10-06T06:02:26.750765+00:00"
+    },
+    {
+      "path": "code/labs/company-domestic-research/candidate.py",
+      "chunks": 1,
+      "latest_offset": 0,
+      "complete": true,
+      "first_read": "2026-10-06T06:02:45.352378+00:00",
+      "last_read": "2026-10-06T06:02:45.352378+00:00"
+    },
+    {
+      "path": "code/labs/company-domestic-research/engine.py",
+      "chunks": 2,
+      "latest_offset": 12000,
+      "complete": true,
+      "first_read": "2026-10-06T06:03:11.421813+00:00",
+      "last_read": "2026-10-06T06:03:30.942446+00:00"
+    },
+    {
+      "path": "code/labs/company-domestic-research/config.json",
+      "chunks": 1,
+      "latest_offset": 0,
+      "complete": true,
+      "first_read": "2026-10-06T06:03:54.507895+00:00",
+      "last_read": "2026-10-06T06:03:54.507895+00:00"
+    },
+    {
+      "path": "sources/a92aa4eac500d55b1e4b8879d57d7bd33fb476b0488b493e8de52ffd6c8c0b89.json",
+      "chunks": 1,
+      "latest_offset": 0,
+      "complete": true,
+      "first_read": "2026-10-06T06:09:03.79853+00:00",
+      "last_read": "2026-10-06T06:09:03.79853+00:00"
+    },
+    {
+      "path": "code/labs/company-domestic-research/domestic_statistics.py",
+      "chunks": 1,
+      "latest_offset": 0,
+      "complete": true,
+      "first_read": "2026-10-06T06:10:47.195646+00:00",
+      "last_read": "2026-10-06T06:10:47.195646+00:00"
+    },
+    {
+      "path": "mission/history.json",
+      "chunks": 12,
+      "latest_offset": 132000,
+      "complete": false,
+      "first_read": "2026-10-06T06:08:05.893774+00:00",
+      "last_read": "2026-10-06T06:15:28.419673+00:00"
+    },
+    {
+      "path": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json",
+      "chunks": 2,
+      "latest_offset": 12000,
+      "complete": false,
+      "first_read": "2026-10-06T06:07:40.084098+00:00",
+      "last_read": "2026-10-06T06:20:53.782796+00:00"
+    }
+  ],
+  "turn_counts": [
+    {
+      "status": "completed",
+      "count": 35
+    },
+    {
+      "status": "running",
+      "count": 1
+    }
+  ],
+  "last_turn": {
+    "id": "2b0a09d5-33f5-5758-ac9b-2bbe97b6b051",
+    "status": "running",
+    "created_at": "2026-10-06T06:20:53.782796+00:00",
+    "updated_at": "2026-10-06T06:20:54.990016+00:00",
+    "request_id": "2b0a09d5-33f5-5758-ac9b-2bbe97b6b051"
+  },
+  "urgency_receipt": {
+    "event_id": 686,
+    "detail": {
+      "state": "current_preparation_priority_reconciled",
+      "task_id": "d7df0261-af8f-5c89-b8ef-a59e3bb9b6f1",
+      "priority": 0,
+      "stage_id": "c3050fd0-0139-53ec-8669-56dff53ab630",
+      "authority": "Existing owner continuation requests and urgent first-experiment instruction; root-reviewed PR105 operation",
+      "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+      "operation_id": "research-current-mission-preparation-urgency:c3050fd0:20261006",
+      "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+      "schema_version": 1,
+      "previous_priority": 100,
+      "scientific_authority_changed": false,
+      "source_completion_or_selection_bypassed": false,
+      "new_model_call_or_scientific_job_enqueued": false,
+      "signed_programme_resource_priority_changed": false
+    }
+  },
+  "program_usage": {
+    "reservations": 0,
+    "scientific_trials": 0,
+    "compute_seconds": 0
+  },
+  "scientific_trials": [],
+  "scientific_jobs": []
+}

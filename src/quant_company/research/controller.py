@@ -370,6 +370,30 @@ def stage_prompt(company, conn, task, turn=None):
 
         output_type = MeaningReview
     if row["context"].get("mission", {}).get("program_id"):
+        if row["stage"] in {"proposal", "challenge", "selection"}:
+            context["stage_capabilities"] = {
+                "current_stage": row["stage"],
+                "available_actions": ["read_stage_file", "complete_stage_artifact"],
+                "frozen_code_role": (
+                    "frozen_experiment_code contains the approved immutable base, not an implementation "
+                    "of an unselected proposal. No candidate build is created before selection."),
+                "execution_sequence": (
+                    "An execute selection schedules engineer implementation inside approved write paths. "
+                    "The service validates the patch and build before enqueueing a worker. The worker runs "
+                    "the frozen profile qualification before development evaluation. Execution is followed "
+                    "by interpretation, independent causal audit and independent meaning review."),
+                "test_disposition": (
+                    "A test disposition registers a prospective test_plan obligation for implementation "
+                    "and independent meaning review; it does not certify a passed test or execute the plan "
+                    "as a command. Only actual artifact evidence can address the obligation later."),
+                "revise_disposition": (
+                    "A required revise disposition blocks selection and engineer implementation. "
+                    "Choose dispositions independently; these capabilities supply no execute/revise decision."),
+                "preserved_scope": (
+                    "The signed data, evaluator, costs, risk criteria, budget and prior negative evidence "
+                    "remain binding. Missing scientific premises still require revision; future build or "
+                    "test receipts cannot be claimed as already available."),
+            }
         if row["stage"] in {"proposal", "challenge"}:
             instructions[row["stage"]] = instructions[row["stage"]].replace(
                 "only a registered change", "a new testable change").replace(
@@ -378,11 +402,36 @@ def stage_prompt(company, conn, task, turn=None):
             from .program_contracts import ReviewDecision
 
             output_type = ReviewDecision
-            instructions["selection"] = ("Return ReviewDecision. Resolve EVERY challenge as revise, test, or reject. "
-                "Provide evidence and a concrete test plan where needed. Required revisions prevent execution. "
-                "New feature/model/portfolio code is allowed only inside approved paths. Evaluator and data stay frozen.")
+            proposal_id = context["mission"]["stage"]["proposal_id"]
+            challenges = conn.execute("""SELECT id FROM research_mission_challenges
+                WHERE mission_id=%s AND proposal_id=%s ORDER BY created_at,id""",
+                                      (row["mission_id"], proposal_id)).fetchall()
+            current_ids = [str(challenge["id"]) for challenge in challenges]
+            if not current_ids:
+                raise PolicyError("Selection requires a current independent challenge")
+            context["selection_contract"] = {
+                "proposal_id": proposal_id,
+                "current_challenge_ids": current_ids,
+                "response_rule": (
+                    "Return exactly one response for each current_challenge_ids UUID, with no duplicates "
+                    "or historical challenge IDs. Earlier objections and dispositions remain immutable "
+                    "evidence; discuss inherited obligations in rationale/test_plan without resubmitting "
+                    "their historical IDs as current responses."),
+            }
+            instructions["selection"] = (
+                "Return ReviewDecision. Resolve each selection_contract.current_challenge_ids UUID exactly "
+                "once as revise, test, or reject. Historical challenges are evidence, not additional response "
+                "targets. Provide evidence and a concrete test plan where needed. Required revisions prevent "
+                "execution and implementation. Read stage_capabilities for the existing service sequence. "
+                "New feature/model/portfolio code is allowed only inside approved paths. Evaluator and data stay frozen."
+                + scope_instruction)
     if output_type:
         context["output_schema"] = output_type.model_json_schema()
+        if row["stage"] == "selection" and context.get("selection_contract"):
+            current_ids = context["selection_contract"]["current_challenge_ids"]
+            schema = context["output_schema"]
+            schema["properties"]["responses"].update(minItems=len(current_ids), maxItems=len(current_ids))
+            schema["$defs"]["ChallengeResponse"]["properties"]["challenge_id"]["enum"] = current_ids
         if row["stage"] == "program_data":
             context["output_schema"] = data_assessment_output_schema(context)
     # A new attempt owns a new provider thread. Prior read receipts remain useful
@@ -858,7 +907,9 @@ class MissionController:
                 WHERE m.state='active' AND p.status='active' AND m.revision=p.revision
                 AND NOT EXISTS(SELECT 1 FROM tasks t WHERE t.project_id=p.id AND t.kind='routing'
                     AND t.status NOT IN ('completed','superseded'))
-                ORDER BY CASE m.spec->'resources'->>'priority' WHEN 'owner' THEN 0 ELSE 1 END,m.updated_at,m.id
+                ORDER BY EXISTS(SELECT 1 FROM research_mission_stages held WHERE held.mission_id=m.id
+                    AND held.stage='audit' AND held.state='waiting' AND held.context ? '_audit_hold'),
+                    CASE m.spec->'resources'->>'priority' WHEN 'owner' THEN 0 ELSE 1 END,m.updated_at,m.id
                 LIMIT 1""").fetchone()
             if not candidate:
                 return {"state": "idle"}

@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 from temporalio import activity
 
@@ -21,7 +22,8 @@ def query(root, edition):
     env = {key: os.environ[key] for key in ("PATH", "LANG", "LC_ALL", "SSL_CERT_FILE",
            "AWS_SHARED_CREDENTIALS_FILE", "AWS_PROFILE", "AWS_DEFAULT_REGION", "QDATA_CODE_COMMIT") if key in os.environ}
     env.update(QDATA_LAKE=root, AWS_EC2_METADATA_DISABLED="true", PYTHONDONTWRITEBYTECODE="1",
-               OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1", PYTHON_DOTENV_DISABLED="1")
+               OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1", PYTHON_DOTENV_DISABLED="1",
+               PYTHONPATH=str(Path(__file__).resolve().parents[2]))
     if not _query_lock.acquire(timeout=1):
         return {"ok": False, "error": "lake_reader_busy"}
     try:

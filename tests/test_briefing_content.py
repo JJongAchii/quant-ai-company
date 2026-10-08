@@ -328,6 +328,35 @@ def test_korean_relative_calendar_date_and_afternoon_time_are_exactly_equivalent
     assert not prose_numbers_supported("10월 2일 한국 20:30 발표", [equivalent])
 
 
+def test_undated_calendar_never_invents_a_relative_date_but_preserves_explicit_time():
+    source = '내달 2일 발표. 한국시간 오후 9시 30분.'
+    equivalent = calendar_equivalent_numbers(source, None)
+    assert '10월 2일' not in equivalent
+    assert '한국 21:30' in equivalent
+    assert not prose_numbers_supported('10월 2일 발표', [equivalent])
+
+
+def test_explicit_english_month_supports_only_its_korean_calendar_literal():
+    quote = 'The earnings report is expected in late October.'
+    assert prose_numbers_supported('10월 하순 예상 실적 발표를 확인한다.', [quote])
+    assert not prose_numbers_supported('11월 실적 발표를 확인한다.', [quote])
+    assert not prose_numbers_supported('10% 실적 증가를 확인한다.', [quote])
+    assert not prose_numbers_supported('10억원 매출을 확인한다.', [quote])
+    assert not prose_numbers_supported('10월 발표를 확인한다.', ['October Corporation announced earnings.'])
+
+
+def test_official_calendar_without_publication_date_is_validated_without_crashing():
+    p, data = proposal(), bundle()
+    doc = deepcopy(data['documents'][0])
+    quote = '2026년 9월 22일 회의이며 발표 시각은 미정이다.'
+    doc.update(id='official-calendar', kind='calendar', content=quote, published_at=None)
+    data['documents'].append(doc)
+    p.calendar = [CalendarEvent(id='official-event', title='공식 회의', at=None,
+        source_timezone='시각 미확인', status='time_unconfirmed', note=quote,
+        evidence=[{'source_id': doc['id'], 'quote': quote}])]
+    assert 'official-event' not in validate(p, data)
+
+
 def test_major_release_three_days_ahead_remains_eligible_for_daily_brief():
     p, data = proposal(), bundle()
     quote = "고용보고서는 사흘 뒤 발표될 예정이다."

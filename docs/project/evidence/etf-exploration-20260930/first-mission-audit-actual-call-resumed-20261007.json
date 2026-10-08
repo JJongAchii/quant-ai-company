@@ -1,0 +1,56 @@
+{
+  "observed_at": "2026-10-07T02:41:32.339199+00:00",
+  "stage": {
+    "id": "5e5e2013-373c-5868-9fc9-242985e085b3",
+    "stage": "audit",
+    "actor": "validator",
+    "state": "running",
+    "attempt": 1,
+    "error": null,
+    "retry_at": null,
+    "task_id": "a88948c2-58fc-5aa6-897a-76a691dd51dc",
+    "created_at": "2026-10-06T10:43:42.790571+00:00",
+    "updated_at": "2026-10-07T02:34:53.118822+00:00"
+  },
+  "requests": [
+    {
+      "id": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
+      "status": "running",
+      "error": null,
+      "created_at": "2026-10-07T02:34:53.118822+00:00",
+      "updated_at": "2026-10-07T02:41:31.343759+00:00",
+      "request_id": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "source_completion_navigation_visible": null,
+      "runtime": {
+        "state": "running",
+        "started_at": 1791340891.9623451,
+        "completed_at": null,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "parse_phase": []
+      }
+    },
+    {
+      "id": "f405eb0f-5168-5309-b875-8e15eed1bb53",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T10:43:42.790571+00:00",
+      "updated_at": "2026-10-07T02:34:53.118822+00:00",
+      "request_id": "f405eb0f-5168-5309-b875-8e15eed1bb53",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "source_completion_navigation_visible": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791283424.369897,
+        "completed_at": 1791283735.1509714,
+        "cli_version": "0.154.0",
+        "fault_code": null,
+        "parse_phase": []
+      }
+    }
+  ],
+  "reads": []
+}

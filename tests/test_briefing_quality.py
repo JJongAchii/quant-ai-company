@@ -1,6 +1,6 @@
 import json
 from copy import deepcopy
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 import pytest
@@ -57,12 +57,39 @@ def test_index_levels_and_comparisons_are_computed_from_same_frozen_data():
     assert validate(p, data)[kospi.id] == "collected_observation_modified"
 
 
-def test_morning_uses_prior_kr_data_only_as_dated_context():
+def test_morning_locks_prior_kr_close_and_renders_its_actual_session():
     edition = definition()
     data = data_bundle(edition)
-    assert data["locked_observations"] == []
+    assert len(data["locked_observations"]) == 2
+    assert {v['session_date'] for v in data['locked_observations']} == {str(edition.previous_kr_session)}
+    data['exchange_closes'] = {'KR_previous': schedule.close('KR', edition.previous_kr_session).isoformat()}
+    accepted, conflicts = reconcile(empty_proposal(), data)
+    assert not conflicts and validate(accepted, data) == {}
+    main = render(accepted, data)[0][0]
+    assert f'한국 전일장 {edition.previous_kr_session:%m/%d} · 코스피' in main
     assert all(str(edition.day) not in c["text"] for c in data["market_context"])
     assert any(str(edition.previous_kr_session) in c["text"] for c in data["market_context"])
+
+
+def test_holiday_gap_keeps_only_the_exact_known_previous_kr_session():
+    edition = definition().model_copy(update={'day': date(2026, 10, 6),
+        'cutoff': datetime(2026, 10, 6, 9, 6, tzinfo=schedule.KST),
+        'previous_kr_session': date(2026, 10, 2)})
+    frozen = snapshot(edition)
+    derived = summarize(frozen, edition)
+    data = bundle(edition)
+    data.update(documents=derived['documents'], locked_observations=derived['observations'],
+                exchange_closes={'KR_previous': schedule.close('KR', edition.previous_kr_session).isoformat()})
+    accepted, _ = reconcile(empty_proposal(), data)
+    assert len(accepted.observations) == 2 and validate(accepted, data) == {}
+    assert '한국 전일장 10/02 · 코스피' in render(accepted, data)[0][0]
+    data['exchange_closes'] = {}
+    assert set(validate(accepted, data).values()) == {'previous_close_time_unavailable'}
+    frozen['datasets']['krx_index']['rows'] = [r for r in frozen['datasets']['krx_index']['rows']
+        if r['date'] != '2026-10-02']
+    older = summarize(frozen, edition)
+    assert older['observations'] == []
+    assert any(d['error'] == 'stale_session' for d in older['diagnostics'])
 
 
 def test_stale_duplicate_and_after_cutoff_data_never_become_current_quotes():
@@ -141,6 +168,26 @@ def test_data_reader_receives_no_company_or_model_credentials(monkeypatch):
 
     monkeypatch.setattr(subprocess, "run", run)
     assert query("s3://example/qdata", definition())["error"] == "lake_reader_timeout_or_invalid_result"
+
+
+def test_reader_subprocess_uses_verified_worker_source_instead_of_inherited_path(tmp_path, monkeypatch):
+    from quant_company.briefing import data
+
+    for directory, marker in ((tmp_path/'active', 'verified-worker'), (tmp_path/'other', 'wrong-source')):
+        package = directory/'quant_company'/'briefing'
+        package.mkdir(parents=True)
+        (package.parent/'__init__.py').write_text('')
+        (package/'__init__.py').write_text('')
+        (package/'data_reader.py').write_text(
+            'import json, os, sys\n'
+            'request = json.load(sys.stdin)\n'
+            f'print(json.dumps({{"source": {marker!r}, "edition": request["definition"]["id"], '
+            '"leaked": any(k in os.environ for k in ("DATABASE_URL", "MODEL_RUNTIME_TOKEN", "SLACK_BOT_TOKEN"))}))\n')
+    monkeypatch.setattr(data, '__file__', str(tmp_path/'active'/'quant_company'/'briefing'/'data.py'))
+    monkeypatch.setenv('PYTHONPATH', str(tmp_path/'other'))
+    monkeypatch.setenv('MODEL_RUNTIME_TOKEN', 'private-canary')
+    result = query('s3://example/qdata', definition())
+    assert result == {'source': 'verified-worker', 'edition': definition().id, 'leaked': False}
 
 
 def test_large_dataset_is_rejected_before_any_row_loader():

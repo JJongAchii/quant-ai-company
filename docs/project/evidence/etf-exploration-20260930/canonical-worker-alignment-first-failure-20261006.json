@@ -1,0 +1,15 @@
+{
+  "authority": "Owner requested continuation; complete the existing source5c cutover with matching3070 only",
+  "detached_execution_killed": false,
+  "error_type": "ReleaseError",
+  "phase": "forward_reconciliation_required",
+  "previous_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+  "previous_config_sha256": "4d0b0c82e567c6a269b17610abaa282a01b1f18b261272600c076e28ee496c57",
+  "previous_dropin_sha256": "30da5ea715f02678b80a379334b912f2917e049d1bd808befe30e2003a0db286",
+  "prior_registry_sha256": "5bfa37d55a44650ea160c21ec44cb65d5ec522fd12eeb766177c78ad1b263715",
+  "qualification_sha256": "55a746cd5163b584e7b612ffb8d1f97231db84f1b29b3017d44130be2a0477e1",
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "started_at": "2026-10-06T01:19:45.491807+00:00"
+}

@@ -6,8 +6,11 @@ import pytest
 from quant_company.briefing.contracts import BriefProposal, BriefReview
 from quant_company.briefing.editor import artifact, prompt, validate, validate_review
 from quant_company.briefing.quotations import (
+    compact_reference_payload,
+    ordered_reference_payload,
     quotation_index,
     reference_payload,
+    resolve_candidate_requests,
     resolve_quotations,
     source_spans,
 )
@@ -123,7 +126,7 @@ def test_repair_context_keeps_twenty_complete_originals_and_reconstructible_prot
     assert b == original
 
 
-def test_large_final_review_retains_complete_originals_and_entire_unselected_catalog():
+def large_review_case():
     b = referenced_bundle()
     b['documents'] = [{**b['documents'][0], 'id': f'source-{i}', 'content': CONTENT * 6}
                       for i in range(20)]
@@ -144,6 +147,11 @@ def test_large_final_review_retains_complete_originals_and_entire_unselected_cat
                      for i in range(2)]
     p['internals'] = [{**deepcopy(p['overview'][0]), 'id': f'internal_{i}', 'text': (sentence * 12)[:500]}
                       for i in range(2)]
+    return b, p
+
+
+def test_large_final_review_retains_complete_originals_and_entire_unselected_catalog():
+    b, p = large_review_case()
     text = prompt(b, 'final_review', p)
     data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
     assert len(text) <= 88000
@@ -152,6 +160,63 @@ def test_large_final_review_retains_complete_originals_and_entire_unselected_cat
         assert ''.join(row[2] for row in data['original_quotes'] if row[1] == index) == source['content']
     assert len(data['unselected_source_index']) == 76
     assert {row[0] for row in data['unselected_source_index']} == {f'unselected-{i}' for i in range(76)}
+
+
+def test_compact_final_review_preserves_long_catalog_identities_and_all_originals():
+    b, p = large_review_case()
+    for i, document in enumerate(b['candidate_documents'][20:]):
+        document['id'] = f'{i:040x}'
+    b['market_context'] = [{'source_id': f'source-{i}', 'text': CONTENT} for i in range(12)]
+    frozen = deepcopy(b)
+    text = prompt(b, 'final_review', p)
+    data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
+    assert len(text) <= 88000 and data['original_quote_layout'] == 'compact_ordered_rows'
+    assert 'source_notes' not in data['proposal']
+    assert [i['fact']['text'] for i in data['proposal']['issues']] == [i['fact']['text'] for i in p['issues']]
+    assert [i['interpretation']['text'] for i in data['proposal']['issues']] == [i['interpretation']['text'] for i in p['issues']]
+    for i, original in enumerate(b['documents']):
+        assert ''.join(row[2] for row in data['original_quotes'] if row[1] == i) == original['content']
+    for context, encoded in zip(b['market_context'], data['market_context'], strict=True):
+        start, end = encoded['original_text_range']
+        assert frozen['documents'][int(context['source_id'].split('-')[1])]['content'][start:end] == context['text']
+    for identity, *_ in data['unselected_source_index']:
+        decoded = resolve_candidate_requests({'source_requests': [{'source_id': identity}]}, b)
+        assert decoded['source_requests'][0]['source_id'] in {d['id'] for d in b['candidate_documents'][20:]}
+    assert b == frozen
+
+
+def test_compact_quote_and_candidate_references_cannot_cross_sources_or_invent_rows():
+    b = referenced_bundle()
+    b['documents'].append({**b['documents'][0], 'id': 'source-2'})
+    b['candidate_documents'] = [*b['documents'], {**b['documents'][0], 'id': 'unselected'}]
+    payload = reference_payload({'documents': deepcopy(b['documents']), 'unselected_source_index': [
+        ['unselected', 'A distinct counterfact', 100, None]]}, b)
+    compact = compact_reference_payload(ordered_reference_payload(payload), b)
+    identity, position, exact = compact['original_quotes'][0]
+    assert position == 0 and resolve_quotations({'source_id': 'source-1', 'quote': identity}, b)['quote'] == exact
+    for source, quote in [('source-2', identity), ('source-1', '@q:9999'), ('source-1', '@q:-1')]:
+        with pytest.raises(ValueError, match='quote_reference'):
+            resolve_quotations({'source_id': source, 'quote': quote}, b)
+    with pytest.raises(ValueError, match='candidate_source_reference'):
+        resolve_candidate_requests({'source_requests': [{'source_id': '@candidate:0'}]}, b)
+    with pytest.raises(ValueError, match='candidate_source_reference'):
+        resolve_candidate_requests({'source_requests': [{'source_id': '@candidate:9999'}]}, b)
+    raw = review().model_dump(mode='json')
+    raw['source_requests'] = [{'source_id': '@candidate:2', 'reason': 'distinct counterfact'}]
+    restored = artifact(response({'request_id': 'fixture-compact-review'}, BriefReview.model_validate(raw)), BriefReview, b)
+    assert restored.source_requests[0].source_id == 'unselected'
+
+
+def test_compact_transport_never_rewrites_prose_that_looks_like_a_reference():
+    b = referenced_bundle()
+    identity = source_spans(b['documents'][0])[0][0]
+    b['documents'].append({**b['documents'][0], 'id': 'source-2', 'content': identity})
+    payload = reference_payload({'documents': deepcopy(b['documents']), 'proposal': {
+        'text': identity, 'quote': identity}}, b)
+    compact = compact_reference_payload(ordered_reference_payload(payload), b)
+    assert compact['proposal']['text'] == identity
+    assert compact['proposal']['quote'] != identity
+    assert ''.join(row[2] for row in compact['original_quotes'] if row[1] == 1) == identity
 
 
 def test_real_postgresql_producer_consumer_preserves_exact_quotes_and_raw_receipts(brief):  # noqa: F811

@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06T06:46:14.446918+00:00",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "stage_id": "c3050fd0-0139-53ec-8669-56dff53ab630",
+  "navigation_effect_event_id": 694,
+  "metadata": {
+    "observed_at": "2026-10-06T06:46:14.446918+00:00",
+    "stage": {
+      "id": "c3050fd0-0139-53ec-8669-56dff53ab630",
+      "stage": "proposal",
+      "actor": "researcher_kr",
+      "state": "running",
+      "attempt": 1,
+      "error": null,
+      "retry_at": null,
+      "task_id": "d7df0261-af8f-5c89-b8ef-a59e3bb9b6f1",
+      "created_at": "2026-10-06T05:54:25.694892+00:00",
+      "updated_at": "2026-10-06T06:45:52.643042+00:00"
+    },
+    "requests": [
+      {
+        "id": "92a8c908-73c8-52ec-b895-0ef1cb33457b",
+        "status": "running",
+        "error": null,
+        "created_at": "2026-10-06T06:45:52.643042+00:00",
+        "updated_at": "2026-10-06T06:45:53.947794+00:00",
+        "request_id": "92a8c908-73c8-52ec-b895-0ef1cb33457b",
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max",
+        "source_completion_navigation_visible": true,
+        "runtime": {
+          "state": "running",
+          "started_at": 1791269154.3572862,
+          "completed_at": null,
+          "cli_version": "0.154.0",
+          "fault_code": null,
+          "parse_phase": []
+        }
+      },
+      {
+        "id": "ab63eeed-2b07-5aae-8d29-090ecdb4e39c",
+        "status": "completed",
+        "error": null,
+        "created_at": "2026-10-06T06:45:38.33054+00:00",
+        "updated_at": "2026-10-06T06:45:52.643042+00:00",
+        "request_id": "ab63eeed-2b07-5aae-8d29-090ecdb4e39c",
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max",
+        "source_completion_navigation_visible": true,
+        "runtime": {
+          "state": "complete",
+          "started_at": 1791269140.0180044,
+          "completed_at": 1791269152.557387,
+          "cli_version": "0.154.0",
+          "fault_code": null,
+          "parse_phase": []
+        }
+      },
+      {
+        "id": "43848949-9d05-5767-bc85-3c17ee6dfbce",
+        "status": "completed",
+        "error": null,
+        "created_at": "2026-10-06T06:45:23.811322+00:00",
+        "updated_at": "2026-10-06T06:45:38.33054+00:00",
+        "request_id": "43848949-9d05-5767-bc85-3c17ee6dfbce",
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max",
+        "source_completion_navigation_visible": true,
+        "runtime": {
+          "state": "complete",
+          "started_at": 1791269124.4959733,
+          "completed_at": 1791269138.246187,
+          "cli_version": "0.154.0",
+          "fault_code": null,
+          "parse_phase": []
+        }
+      }
+    ],
+    "reads": [
+      {
+        "path": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json",
+        "character_offset": 132000,
+        "next_offset": null,
+        "created_at": "2026-10-06T06:45:52.643042+00:00"
+      },
+      {
+        "path": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json",
+        "character_offset": 120000,
+        "next_offset": 132000,
+        "created_at": "2026-10-06T06:45:38.33054+00:00"
+      },
+      {
+        "path": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json",
+        "character_offset": 108000,
+        "next_offset": 120000,
+        "created_at": "2026-10-06T06:45:23.811322+00:00"
+      }
+    ]
+  },
+  "post_repair_turn_shapes": [
+    {
+      "id": "92a8c908-73c8-52ec-b895-0ef1cb33457b",
+      "status": "running",
+      "error": null,
+      "created_at": "2026-10-06T06:45:52.643042+00:00",
+      "updated_at": "2026-10-06T06:45:53.947794+00:00",
+      "artifact_count": 0,
+      "tool_count": 0,
+      "response_status": null,
+      "read": null
+    },
+    {
+      "id": "ab63eeed-2b07-5aae-8d29-090ecdb4e39c",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T06:45:38.33054+00:00",
+      "updated_at": "2026-10-06T06:45:52.643042+00:00",
+      "artifact_count": 0,
+      "tool_count": 1,
+      "response_status": "continue",
+      "read": {
+        "path": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json",
+        "offset": 132000,
+        "next_offset": null
+      }
+    },
+    {
+      "id": "43848949-9d05-5767-bc85-3c17ee6dfbce",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T06:45:23.811322+00:00",
+      "updated_at": "2026-10-06T06:45:38.33054+00:00",
+      "artifact_count": 0,
+      "tool_count": 1,
+      "response_status": "continue",
+      "read": {
+        "path": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json",
+        "offset": 120000,
+        "next_offset": 132000
+      }
+    },
+    {
+      "id": "b879066f-a5c0-5387-ba4e-cc3dccfeb42f",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T06:45:08.764579+00:00",
+      "updated_at": "2026-10-06T06:45:23.811322+00:00",
+      "artifact_count": 0,
+      "tool_count": 1,
+      "response_status": "continue",
+      "read": {
+        "path": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json",
+        "offset": 108000,
+        "next_offset": 120000
+      }
+    },
+    {
+      "id": "0e72ba1b-c8e1-5e90-bd0d-6a0700a7fe43",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T06:44:55.996112+00:00",
+      "updated_at": "2026-10-06T06:45:08.764579+00:00",
+      "artifact_count": 0,
+      "tool_count": 1,
+      "response_status": "continue",
+      "read": {
+        "path": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json",
+        "offset": 96000,
+        "next_offset": 108000
+      }
+    },
+    {
+      "id": "d21c11ba-f9d3-5e48-86fb-5bf77b4cf2e9",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T06:44:40.371391+00:00",
+      "updated_at": "2026-10-06T06:44:55.996112+00:00",
+      "artifact_count": 0,
+      "tool_count": 1,
+      "response_status": "continue",
+      "read": {
+        "path": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json",
+        "offset": 84000,
+        "next_offset": 96000
+      }
+    },
+    {
+      "id": "f334932d-4d0e-5151-b150-76dd73b43f5f",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-06T06:44:20.694642+00:00",
+      "updated_at": "2026-10-06T06:44:40.371391+00:00",
+      "artifact_count": 0,
+      "tool_count": 1,
+      "response_status": "continue",
+      "read": {
+        "path": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json",
+        "offset": 72000,
+        "next_offset": 84000
+      }
+    }
+  ],
+  "evidence": "After navigation reached normal requests, six source chunks were read continuously in 91.948400 seconds; final source next_offset=null. No source waiver, scientific judgment or job creation by operator.",
+  "scientific_result_claimed": false
+}

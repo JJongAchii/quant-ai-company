@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_with_existing_continuation_authority",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+  "operation_id": "first-mission-packet-lineage-reconciliation:5e5e2013:20261007",
+  "operator_sha256": "f02836383239a0361738566ca1ae2527b68946c26f588acbd0a071d7f1348b46",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "stage_id": "5e5e2013-373c-5868-9fc9-242985e085b3",
+  "task_id": "a88948c2-58fc-5aa6-897a-76a691dd51dc",
+  "request_id": "f405eb0f-5168-5309-b875-8e15eed1bb53",
+  "authority": "Existing owner deploy/continue requests; technical repair of the current approved programme",
+  "exact_sha_human_approval_claimed": false,
+  "checks": [
+    "Official runtime receipt complete and SHA pinned",
+    "Provider request input digest, first packet chunks/digest and thread binding exact",
+    "Standalone lineage object exactly equal to unchanged required frozen history",
+    "Production PostgreSQL commit_stage probe accepted cached response, generated only next normal turn and rolled back",
+    "Frozen requests, native responses, packets, scope, jobs and reservations preserved",
+    "Lint and syntax valid; no scientific verdict or performance result claimed"
+  ],
+  "effects": [
+    "Retire only duplicate legacy required_lineage_reads for fixed audit stage",
+    "Remove fixed technical hold and receive original cached first packet in the same PostgreSQL transaction",
+    "Record original hold, request/receipt digests and normal next turn in a durable event"
+  ],
+  "source_rollout": false,
+  "provider_call_replay": false,
+  "scientific_rerun": false,
+  "final_audit_and_publication_gates_preserved": true,
+  "reviewed_at": "2026-10-07T02:33:17.102507+00:00"
+}

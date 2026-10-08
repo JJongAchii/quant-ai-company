@@ -1,0 +1,485 @@
+{
+  "observed_at": "2026-10-02T05:33:46.315751+00:00",
+  "global_current": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff",
+  "containers": {
+    "quant-company-slack-socket-1": {
+      "id": "77fa6b89d3f6b42dfa8213131e6a6a1b667563ca21bfd5a59892bf1991b353ea",
+      "image": "quant-company:79586479aeef07554be311951e40bbe00c33cafe",
+      "image_id": "sha256:9c6be6fdc4d385c44b1ebbfafdb5c2d11f16a28d84f31014acfd462abeed1005",
+      "state": "running",
+      "health": null,
+      "started_at": "2026-10-02T05:33:26.798969586Z",
+      "restart_count": 319,
+      "oom_killed": false,
+      "roles_file": "/etc/quant-company/roles.json",
+      "briefing_enabled": "false"
+    },
+    "quant-company-news-worker-1": {
+      "id": "b6c2cd6c24747d4b86127fb6c8cbfa5dcdca21e71fb89b07cac4c87b225115bc",
+      "image": "quant-company:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "image_id": "sha256:5d0d7c42de26e9b89e8909001a4376577b91acb4d996342018486713cc837e53",
+      "state": "running",
+      "health": null,
+      "started_at": "2026-10-02T04:19:18.971094223Z",
+      "restart_count": 0,
+      "oom_killed": false,
+      "roles_file": "/etc/quant-company/roles.json",
+      "briefing_enabled": "true"
+    },
+    "quant-company-api-1": {
+      "id": "103eaee763a60ab7f2ab9cd773d5b8c0fd92917513211225a3c43f0e68f266ee",
+      "image": "quant-company:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "image_id": "sha256:5d0d7c42de26e9b89e8909001a4376577b91acb4d996342018486713cc837e53",
+      "state": "running",
+      "health": "healthy",
+      "started_at": "2026-10-02T04:19:15.891096681Z",
+      "restart_count": 0,
+      "oom_killed": false,
+      "roles_file": "/etc/quant-company/roles.json",
+      "briefing_enabled": "true"
+    },
+    "quant-company-dispatch-1": {
+      "id": "58449f61c08aa8f7d0f74b7ecb644d939016c783fec25803a3d10a51197477eb",
+      "image": "quant-company:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "image_id": "sha256:5d0d7c42de26e9b89e8909001a4376577b91acb4d996342018486713cc837e53",
+      "state": "running",
+      "health": null,
+      "started_at": "2026-10-02T04:19:15.203292579Z",
+      "restart_count": 0,
+      "oom_killed": false,
+      "roles_file": "/etc/quant-company/roles.json",
+      "briefing_enabled": "true"
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "b21bd3d172db586c9b3666f920622c27a99ce439dc3d531bfec84176f89a9797",
+      "image": "quant-company-codex:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "image_id": "sha256:c1d123ee1c525a7d02375fb1172e1d955fec8c555e0285255c5da4b80b834ea4",
+      "state": "running",
+      "health": "healthy",
+      "started_at": "2026-10-02T04:19:14.423002325Z",
+      "restart_count": 0,
+      "oom_killed": false,
+      "roles_file": null,
+      "briefing_enabled": "false"
+    },
+    "quant-company-briefing-data-worker-1": {
+      "id": "786a9542133e480cf4b30e4939c3ad7310bab014c4ad6794f098ef45c968d529",
+      "image": "quant-company:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "image_id": "sha256:5d0d7c42de26e9b89e8909001a4376577b91acb4d996342018486713cc837e53",
+      "state": "running",
+      "health": null,
+      "started_at": "2026-10-02T04:19:13.749878096Z",
+      "restart_count": 0,
+      "oom_killed": false,
+      "roles_file": "/etc/quant-company/roles.json",
+      "briefing_enabled": "true"
+    },
+    "quant-company-quant-feed-worker-1": {
+      "id": "cf361400513b2df61ea985bdf081cf57079a9fee09e76f7db8adfe8cf7407bed",
+      "image": "quant-company:ea092f419b4b679df4c25e479a8cb361b4d046ff",
+      "image_id": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+      "state": "running",
+      "health": null,
+      "started_at": "2026-10-02T05:33:31.80484319Z",
+      "restart_count": 253,
+      "oom_killed": false,
+      "roles_file": "/etc/quant-company/roles.json",
+      "briefing_enabled": "false"
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "ce8b1dfdab1bd595aeb7e7446e0d1e1a38f5f8457b14969620d93edb11841190",
+      "image": "quant-company-codex:ea092f419b4b679df4c25e479a8cb361b4d046ff",
+      "image_id": "sha256:c983c63235365a43ae1afa8eaba37bd7708e49b43afc2089aa824bad242f02e7",
+      "state": "running",
+      "health": "healthy",
+      "started_at": "2026-10-02T04:19:12.446453491Z",
+      "restart_count": 0,
+      "oom_killed": false,
+      "roles_file": null,
+      "briefing_enabled": "false"
+    },
+    "quant-company-worker-1": {
+      "id": "6dbc60e4d9147dd134ce28e59e1bfd26fe2c54c676617963c94fa7ee9c880255",
+      "image": "quant-company-autonomous:3c848af95dc33b7da444a55018fd41d374c10025",
+      "image_id": "sha256:6dce9a55e60b2a2b9f1a27aa99cd9a97c35bebe1b0c4c1bc9a1cccad2757f378",
+      "state": "running",
+      "health": null,
+      "started_at": "2026-10-02T05:33:30.315879344Z",
+      "restart_count": 273,
+      "oom_killed": false,
+      "roles_file": "/etc/quant-company/roles.json",
+      "briefing_enabled": "false"
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "b900ca1d55f31c7c29f5eef62e5f5587ccb6c137019104e362cd14da92af274b",
+      "image": "quant-company:0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+      "image_id": "sha256:7c834100fdefc0ecd09c2c8810c2b9630c93976ffa3fa739c78a87e71d752309",
+      "state": "running",
+      "health": null,
+      "started_at": "2026-10-02T05:33:34.903392583Z",
+      "restart_count": 260,
+      "oom_killed": false,
+      "roles_file": "/etc/quant-company/roles.json",
+      "briefing_enabled": "false"
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "7df307ee748d54371c6c9bb2fee6a5ac17e7f5b341d1f137db7af89eb69e74ab",
+      "image": "quant-company:c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+      "image_id": "sha256:db3c79878edf68a0115c8f0b893d41a92fa78e91f1a59bf76f92b60c8a69a589",
+      "state": "running",
+      "health": null,
+      "started_at": "2026-10-02T05:33:38.842266454Z",
+      "restart_count": 242,
+      "oom_killed": false,
+      "roles_file": "/etc/quant-company/roles.json",
+      "briefing_enabled": "false"
+    },
+    "quant-company-maintenance-1": {
+      "id": "7266163c1e8120facda28c18764423801d68c11e60d43eb388356a700ea25f5d",
+      "image": "quant-company-maintenance:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "image_id": "sha256:50124cabdc3db809bfc799e14aa9af1c155d86b6a577f910d18b49d6e5f226f5",
+      "state": "restarting",
+      "health": null,
+      "started_at": "2026-10-02T05:33:25.76936473Z",
+      "restart_count": 315,
+      "oom_killed": false,
+      "roles_file": "/etc/quant-company/roles.json",
+      "briefing_enabled": "false"
+    },
+    "quant-company-account-gateway-1": {
+      "id": "54b595660ad3366baf3bec5133bd6383c9fa757c20bd77ec9eda93c133fb9e4b",
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "image_id": "sha256:942a896a92f6a2c6e3d5b4743ad670808da62be448136d77f2e75455f7668b24",
+      "state": "restarting",
+      "health": "unhealthy",
+      "started_at": "2026-10-02T05:33:13.138940995Z",
+      "restart_count": 171,
+      "oom_killed": false,
+      "roles_file": "/etc/quant-company/roles.json",
+      "briefing_enabled": "false"
+    },
+    "quant-company-claude-runtime-1": {
+      "id": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+      "image": "quant-company-claude:fde7681e0286501d8713e08e30a96991a88b9151",
+      "image_id": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+      "state": "running",
+      "health": "healthy",
+      "started_at": "2026-10-02T04:19:09.653046876Z",
+      "restart_count": 0,
+      "oom_killed": false,
+      "roles_file": null,
+      "briefing_enabled": "false"
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "image_id": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "state": "running",
+      "health": "healthy",
+      "started_at": "2026-09-28T00:56:48.192638873Z",
+      "restart_count": 0,
+      "oom_killed": false,
+      "roles_file": null,
+      "briefing_enabled": "false"
+    }
+  },
+  "profiles": {
+    "roles.json": "fde13752c7a14461bc28135cb1df3c65e884d69d741d73d908a3a4d6a301706d",
+    "research-profiles.json": "22a5fd7aa0fcd440730258f3a828720c04bf496ac28846354c84ee81e92d0779",
+    "research-qlab.json": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
+    "runtime.env": "c80f37dadf870fc516fce4f35a0d01787ae89dc0176855b594c0ac783d137481"
+  },
+  "database": {
+    "project": {
+      "id": "9aac0de4-2b97-5195-a720-287d324234f3",
+      "revision": 5,
+      "status": "active",
+      "owner_user": "U0C250E23NW",
+      "channel": "C0C2B9EUEGM",
+      "thread_ts": "1789633942.673909"
+    },
+    "programs": [
+      {
+        "id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "state": "active",
+        "revision": 5,
+        "manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+        "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1790641272.310813:director:action:21f480c4-d59f-45e7-ac2e-2cf91aa109e8:approve",
+        "approved_at": "2026-09-29T00:21:12.470514+00:00"
+      }
+    ],
+    "pause": {
+      "id": 1,
+      "paused_until": null,
+      "reason": null
+    },
+    "owner_review": [],
+    "usage": {
+      "reservations": 0,
+      "compute_seconds": 0,
+      "trials": 0
+    },
+    "program_mission_count": 0,
+    "program_active_jobs": 0,
+    "worker": {
+      "id": "worker",
+      "last_seen": "2026-10-02T05:33:43.39726+00:00"
+    }
+  },
+  "socket_connection_employee_counts": [],
+  "role_errors": {
+    "quant-company-slack-socket-1": [
+      "market_brief"
+    ],
+    "quant-company-quant-feed-worker-1": [
+      "market_brief"
+    ],
+    "quant-company-worker-1": [
+      "market_brief"
+    ],
+    "quant-company-data-watch-worker-1": [
+      "market_brief"
+    ],
+    "quant-company-housing-feed-worker-1": [
+      "market_brief"
+    ],
+    "quant-company-maintenance-1": [
+      "market_brief"
+    ],
+    "quant-company-account-gateway-1": [
+      "market_brief"
+    ]
+  },
+  "role_facts": [
+    {
+      "id": "director",
+      "active": true,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "company_history",
+        "maintenance_review",
+        "maintenance_status",
+        "system_status",
+        "repository_read",
+        "finance_search",
+        "finance_read",
+        "web_search",
+        "web_read",
+        "staff_status"
+      ],
+      "can_delegate_to": [
+        "financial_strategist",
+        "researcher_kr",
+        "data"
+      ]
+    },
+    {
+      "id": "financial_strategist",
+      "active": true,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_search",
+        "finance_read",
+        "web_search",
+        "web_read",
+        "finance_compute"
+      ],
+      "can_delegate_to": [
+        "researcher_kr",
+        "data"
+      ]
+    },
+    {
+      "id": "researcher_kr",
+      "active": true,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_search",
+        "finance_read",
+        "web_search",
+        "web_read",
+        "finance_compute"
+      ],
+      "can_delegate_to": [
+        "financial_strategist",
+        "data"
+      ]
+    },
+    {
+      "id": "researcher_global",
+      "active": false,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_compute"
+      ],
+      "can_delegate_to": [
+        "financial_strategist",
+        "data",
+        "engineer"
+      ]
+    },
+    {
+      "id": "researcher_crypto",
+      "active": false,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_compute"
+      ],
+      "can_delegate_to": [
+        "financial_strategist",
+        "data",
+        "engineer"
+      ]
+    },
+    {
+      "id": "data",
+      "active": true,
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "lake_catalog",
+        "lake_describe",
+        "lake_sample",
+        "finance_search",
+        "finance_read",
+        "web_search",
+        "web_read",
+        "data_quality"
+      ],
+      "can_delegate_to": []
+    },
+    {
+      "id": "engineer",
+      "active": false,
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_compute",
+        "data_quality"
+      ],
+      "can_delegate_to": [
+        "data",
+        "operations"
+      ]
+    },
+    {
+      "id": "validator",
+      "active": false,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_compute",
+        "data_quality"
+      ],
+      "can_delegate_to": [
+        "data"
+      ]
+    },
+    {
+      "id": "risk",
+      "active": false,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "finance_compute"
+      ],
+      "can_delegate_to": [
+        "financial_strategist",
+        "data",
+        "validator"
+      ]
+    },
+    {
+      "id": "operations",
+      "active": false,
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source"
+      ],
+      "can_delegate_to": []
+    },
+    {
+      "id": "reporter",
+      "active": false,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "tools": [
+        "knowledge_search",
+        "read_source",
+        "web_search",
+        "web_read",
+        "news_status"
+      ],
+      "can_delegate_to": []
+    },
+    {
+      "id": "tech_scout",
+      "active": false,
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "low",
+      "tools": [],
+      "can_delegate_to": []
+    },
+    {
+      "id": "quant_scout",
+      "active": false,
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "high",
+      "tools": [],
+      "can_delegate_to": []
+    },
+    {
+      "id": "market_brief",
+      "active": true,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "tools": [
+        "calculate",
+        "knowledge_search",
+        "read_source",
+        "web_search",
+        "web_read",
+        "briefing_status",
+        "finance_search",
+        "finance_read",
+        "finance_compute"
+      ],
+      "can_delegate_to": []
+    }
+  ]
+}

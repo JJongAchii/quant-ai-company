@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_current_revised_selection_preparation",
+  "reviewed_at": "2026-10-06 07:51:56 UTC",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "before": {
+    "observed_at": "2026-10-06T07:51:56.364162+00:00",
+    "stage": {
+      "id": "6e125dec-1624-5602-a3e1-28f47366d3d6",
+      "stage": "selection",
+      "actor": "director",
+      "state": "running",
+      "attempt": 1,
+      "error": null,
+      "retry_at": null,
+      "task_id": "e2b0cf7f-9ae9-5756-84ba-5ee3b22dce11",
+      "created_at": "2026-10-06T07:50:55.003618+00:00",
+      "updated_at": "2026-10-06T07:50:55.003618+00:00"
+    },
+    "task": {
+      "id": "e2b0cf7f-9ae9-5756-84ba-5ee3b22dce11",
+      "agent": "director",
+      "status": "pending",
+      "priority": 100,
+      "revision": 5
+    },
+    "last_turn": {
+      "id": "a4e82fcb-68ed-5a29-a55a-66cb2665c726",
+      "status": "queued",
+      "created_at": "2026-10-06T07:50:55.003618+00:00",
+      "updated_at": "2026-10-06T07:50:55.003618+00:00",
+      "request_id": null
+    }
+  },
+  "operator": "prepare-current-first-mission-stage.py",
+  "arguments": [
+    "6e125dec-1624-5602-a3e1-28f47366d3d6",
+    "e2b0cf7f-9ae9-5756-84ba-5ee3b22dce11",
+    "selection"
+  ],
+  "planned_change": "Only current preparation priority and factual source/lineage completion navigation. Director independently decides execute or revise.",
+  "authority": "Existing urgent first-experiment and continue instructions; root review of actual current-stage operation in PR105",
+  "scientific_judgment_or_budget_or_approval_changed": false,
+  "new_call_or_job_enqueued_by_operator": false,
+  "exact_sha_human_approval_claimed": false
+}

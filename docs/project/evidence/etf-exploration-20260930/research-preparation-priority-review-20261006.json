@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_narrow_current_preparation_queue_operation",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "stage_id": "e56626e8-f0c3-5a00-b5ee-659daf43e53e",
+  "task_id": "af28f020-3c61-57dd-9c9b-3148c02d4653",
+  "operation": {
+    "field": "tasks.priority",
+    "from": 100,
+    "to": 0,
+    "scope": "Existing current preparation task only; naturally completed task has no further queue priority."
+  },
+  "authority": "Owner repeatedly requested continued execution and now explicitly challenges the lack of actual experiments. Root prioritizes the current preparation operation within that existing instruction.",
+  "evidence": "research-preparation-starvation-20261006.json",
+  "unchanged": [
+    "signed programme digest and resource priority",
+    "scientific budget, dataset and assessment",
+    "original pending turn ID and previous responses/reads",
+    "source completion gate and independent staff selection"
+  ],
+  "model_calls_started_by_operator": 0,
+  "scientific_jobs_started_by_operator": 0,
+  "review_pr": "https://github.com/JJongAchii/quant-ai-company/pull/105"
+}

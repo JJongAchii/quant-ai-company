@@ -1,0 +1,47 @@
+{
+  "archive_sha256": "2aeddf606874dd49b38cd6348779bc86f5fcd37205d82976273d789f39c44955",
+  "completed_at": "2026-10-06T05:26:09.280679+00:00",
+  "config_sha256": {
+    "research-profiles.json": "22fc61df00eafc9e0cb6885b86814821b26aa0e296e5c166fbdc6b34c974c78c",
+    "research-qlab.json": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
+    "roles.json": "1430005122f7129cf51a745f5850ab9344c87285bf59bf9a38aa02d171bdc3e8",
+    "runtime.env": "83ce3fe6f733d08c3a6145a71e8d2d247e5502784f077b89320cb83cf93c9d19"
+  },
+  "first_preparation_failure": null,
+  "images": [
+    {
+      "build_log_sha256": "7f8ec7255581d98c913bec901462d769a9be40ada7a21d93d7cb0bf14814941c",
+      "image": "quant-company:defd4833adea6a0191412121a5a5c6e8265c58ba-held-audit",
+      "image_id": "sha256:f659876a80d065c61aaa8a598116e37fef432bf32541754e6882d69759a79d82",
+      "source_bytes_verified": true,
+      "target": "app",
+      "uid": "10001:10001"
+    },
+    {
+      "build_log_sha256": "2a1efc2950e757ce43788c13f29df3d6e7464c0013b680464765c3353ac0e1c8",
+      "image": "quant-company-autonomous:defd4833adea6a0191412121a5a5c6e8265c58ba-held-audit",
+      "image_id": "sha256:594e5b6fae6fb7dee048047afe8ea7dee1cadcc7be876a7c58ee6f2339b75dfa",
+      "source_bytes_verified": true,
+      "target": "autonomous-research",
+      "uid": "10001:10001"
+    },
+    {
+      "build_log_sha256": "7e7c7a0b47153f7a4080e8c9dff83e5176e76c9121f9fd5d642c350f201cb9e1",
+      "image": "quant-company-codex:defd4833adea6a0191412121a5a5c6e8265c58ba-held-audit",
+      "image_id": "sha256:b7bd9c3d28c2152e95e31c97b08d2bc6baa16854d8e698224a24be01e28da6ca",
+      "source_bytes_verified": true,
+      "target": "codex",
+      "uid": "10001:10001"
+    }
+  ],
+  "previous": "/opt/quant-company/releases/0ff6657f98b175162609259394b1cec20382904a",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "qdata_tree_sha256": "528251801f09b120d9c33baeb6956a6a84e49b2c09aeb15420e5994fa170e396",
+  "resumed_verified_archive": false,
+  "scientific_trials_added": 0,
+  "services_replaced": 0,
+  "source_commit": "defd4833adea6a0191412121a5a5c6e8265c58ba",
+  "source_files": 205,
+  "started_at": "2026-10-06T05:22:09.558699+00:00",
+  "state": "exact_images_qualified_inactive"
+}

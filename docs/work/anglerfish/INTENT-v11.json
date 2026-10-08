@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 11,
+  "sourceRequest": "응 진행해; preserve actual signed canonical program while repairing its independent data response contract",
+  "outcome": "Qualify a narrow structured data-review response contract and prepare its exact PR and coordinated apply specification for review.",
+  "deliverables": [
+    {
+      "id": "DATA_CONTRACT",
+      "description": "Only new program_data/data turns use research_data_v1; existing frozen requests preserve their digest and original parser"
+    },
+    {
+      "id": "QUALIFICATION",
+      "description": "Run real disposable PostgreSQL regression and bounded real subscription Codex qualification; no proposed effects applied"
+    },
+    {
+      "id": "REVIEW_PACKET",
+      "description": "Prepare exact source and coordinated server/runtime/3070 pins, preserved configuration, hold/resume and recovery requirements"
+    },
+    {
+      "id": "FINAL_INTEGRATION",
+      "description": "Commit company evidence and qws status; preserve valid signed program authority"
+    }
+  ],
+  "constraints": [
+    "Current canonical c3ba5268 approval, data scope and 4-trial/7200-second budget remain unchanged",
+    "No model/account/API migration or unsandboxed Codex",
+    "No scientific execution or research repository changes by this operator",
+    "Repeated data retries remain held until qualified reviewed code is active",
+    "Preserve other services and forward compatibility for durable requests; no blind rollback of new contracts",
+    "Separate synthetic CLI events from real PostgreSQL, real subscription and real Slack checks"
+  ],
+  "signedProgramId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "previousIntent": "INTENT-v10.json"
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "operation_id": "first-mission-selection-contract-navigation:6e125dec:attempt2:20261006",
+  "state": "selection_retry_navigation_reconciled",
+  "observed_at": "2026-10-06T08:07:40.669826+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "stage_id": "6e125dec-1624-5602-a3e1-28f47366d3d6",
+  "task_id": "07d30ebc-b00f-5aaf-8c20-cff002fd72d3",
+  "attempt": 2,
+  "previous_priority": 100,
+  "priority": 0,
+  "navigation": {
+    "operation_id": "first-mission-selection-contract-navigation:6e125dec:attempt2:20261006",
+    "current_proposal_id": "a3e207ea-d615-4b40-96c0-1b92d1ae5124",
+    "current_challenge_ids": [
+      "581631b4-9d2d-4fe9-864a-75a9a27eec10"
+    ],
+    "prior_operational_failure": "stage_contract_rejected: Every independent challenge needs exactly one disposition",
+    "selection_contract": "Return the supplied ReviewDecision schema. Its responses list must contain exactly one entry for each current_challenge_ids UUID above, with no duplicate or historical challenge IDs. Read the actual current challenge evidence file. Determine disposition, rationale, sources and test plan independently. This is identification and existing format guidance; it supplies no execute/revise decision.",
+    "existing_service_requirement": "Completely read every cited original evidence_sources file and every required_lineage_reads file in this attempt before the final artifact. Absent file_progress means unread; non-null next_offset means incomplete; null means complete. Follow exact next_offset without drafting an artifact between chunks. Earlier attempt read receipts do not count in this provider thread. Choose needed sources independently."
+  },
+  "source_bytes_or_read_receipts_changed": false,
+  "frozen_model_requests_changed": false,
+  "scientific_judgment_or_authority_or_budget_changed": false,
+  "signed_resource_priority_changed": false,
+  "new_call_or_scientific_job_enqueued": false,
+  "exact_sha_human_approval_claimed": false,
+  "event_id": 717,
+  "already_committed": false
+}

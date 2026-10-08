@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-10-07T06:59:02.902894+00:00",
+  "read_only": true,
+  "actual_html_sha256": "dba5657bf9e616e09ee8ed97dbfa1a7abeb3e47edc6b52a63f3f7b1329ca9ba2",
+  "bytes": 56415,
+  "content_type": "text/html; charset=utf-8",
+  "expected_html_sha256": "dba5657bf9e616e09ee8ed97dbfa1a7abeb3e47edc6b52a63f3f7b1329ca9ba2",
+  "expires_at": "2026-10-14T06:54:42.615264+00:00",
+  "http_status": 200,
+  "sha256_matches": true,
+  "source_id": "mission-report:de3597b0-e358-5a58-af5e-9f3c79df53e9"
+}

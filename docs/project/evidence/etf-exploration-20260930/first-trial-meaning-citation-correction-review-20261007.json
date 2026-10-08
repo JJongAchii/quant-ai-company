@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_fixed_meaning_citation_correction",
+  "reviewed_at": "2026-10-07T06:49:17.674998+00:00",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+  "authority": "Existing owner deploy/continue/monitor authorizations; no repeated owner approval required for this fixed technical correction.",
+  "operator": "repair-first-trial-meaning-citations-20261007.py",
+  "operator_sha256": "4536b1b153ab47df7b892cf6b78f6a6e2f848dc8f7374ab6010b7816198781bc",
+  "probe": "first-trial-meaning-citation-correction-probe-20261007.json",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "trial_id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+  "audit_stage_id": "5e5e2013-373c-5868-9fc9-242985e085b3",
+  "meaning_stage_id": "8987ff99-b738-5927-8ba2-0545cdab6884",
+  "attempt": 1,
+  "previous_request_id": "9e2bf588-30c0-531d-ab51-0f2426f4a9d4",
+  "original_native_receipt_sha256": "93305c1f747533a4456ed5d132a9caca827a8f87370fd63813eab23e37e8e199",
+  "original_proposal_digest": "b173de16f27d3799eb55f579119f88e9caa6160a50664017523b046d5feea98c",
+  "verification_sha256": "4e8c5645a8a69e2ad44471ac96d43cff62f3ff1c63dda4ab590a8d2c2f66b185",
+  "planned_fields": [
+    "same meaning stage: running with factual citation navigation and original proposal retained",
+    "same task: one ordinary corrective turn81, unchanged priority/model/effort",
+    "audit stage: received and hold removed solely to await corrected meaning under unchanged final gates"
+  ],
+  "following_turn_id": "2b80246c-55f3-59b7-a342-cbf54ff43c02",
+  "scope_verdict_and_previous_turns_reads_jobs_reservations_preserved": true,
+  "operator_runtime": {
+    "disposable_container": "quant-company-meaning-citation-operator-20261007",
+    "environment_and_mounts": "same trusted API environment and volumes",
+    "image_id": "sha256:84527ad82f04910d1e4cb018792ba8bb76f049385def73f961ba096a4566c93e",
+    "memory_limit_bytes": 268435456,
+    "parent_container_id": "4b5a355ff1c5cfc5a578fc07e53cb99ea350c50c15cb183a2fcd8b2bedd28ebf",
+    "production_resource_limits_changed": false,
+    "secret_values_printed_or_persisted_in_repository": false
+  },
+  "queued_employee_correction_turns": 1,
+  "operator_provider_calls": 0,
+  "new_scientific_jobs": 0,
+  "manual_publication": false,
+  "source_rollout": false,
+  "exact_sha_human_approval_claimed": false,
+  "probe_failures_preserved": {
+    "api_memory": "Two exit137 checks on128MiB API were killed before commit; kernel OOM records06:40:42/06:41:29UTC. App stayed running and all old states remained.",
+    "network": "API has multiple networks; before any DB effect, isolated operator now selects exact shared PostgreSQL network.",
+    "role": "Raw config max is resolved to xhigh by the existing stage prompt compatibility layer. Probe now verifies the actual original request model/effort and unchanged raw role; no assignment changed."
+  }
+}

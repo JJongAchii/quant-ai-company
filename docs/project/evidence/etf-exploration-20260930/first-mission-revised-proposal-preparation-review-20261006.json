@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_current_revised_proposal_preparation",
+  "reviewed_at": "2026-10-06 07:20:48 UTC",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "before": {
+    "observed_at": "2026-10-06T07:20:48.625610+00:00",
+    "stage": {
+      "id": "2e334964-f7db-5f00-9044-d3d86c44a24e",
+      "stage": "proposal",
+      "actor": "researcher_kr",
+      "state": "running",
+      "attempt": 1,
+      "error": null,
+      "retry_at": null,
+      "task_id": "3173feae-397b-563d-8a30-57f5746ff79c",
+      "created_at": "2026-10-06T07:16:40.219367+00:00",
+      "updated_at": "2026-10-06T07:16:40.219367+00:00"
+    },
+    "task": {
+      "id": "3173feae-397b-563d-8a30-57f5746ff79c",
+      "agent": "researcher_kr",
+      "status": "pending",
+      "priority": 100,
+      "revision": 5
+    },
+    "last_turn": {
+      "id": "0fdf07f5-6680-57f8-aacd-79ca0ccaddee",
+      "status": "queued",
+      "created_at": "2026-10-06T07:16:40.219367+00:00",
+      "updated_at": "2026-10-06T07:16:40.219367+00:00",
+      "request_id": null
+    }
+  },
+  "independent_revision": {
+    "observed_at": "2026-10-06T07:19:01.668989+00:00",
+    "revisions": [
+      {
+        "proposal_id": "6d9a3c7b-52e4-4f81-b267-85d094eb6a30",
+        "actor": "director",
+        "created_at": "2026-10-06T07:16:37.068907+00:00",
+        "rationale_sha256": "d298ca55dbe0f5a7b6efc1cc0adf1db6213bcf8c9eaf856d96f69feb6925ef9c",
+        "numeric_prose_redacted": "현재 제안은 필수 수정과 재검토 전까지 실행으로 넘길 수 없다. 새 특징·포트폴리오 구현은 허용 경로에서 가능하지만, 종목 간 역변동성 정규화는 계보에서 선정된 단일 ETF·현금 노출조절과 다른 실험이며 종목집합과 초기화 계약도 확정되지 않았다. 이번 수정에서는 선정된 [number]·현금 신호와 첫 개발일 초기화를 복원하고, A/B의 차이를 [number]p 목표 갱신 유예에 한정하도록 요구한다. 구현 경로는 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json뿐이다. 평가기·데이터·목적·비용·위험기준은 동결한다. 제공된 현 미션의 trials와 outcomes는 비어 있으며, 이번 완료 범위는 선정 검토다. 아래 시험은 수행 결과가 아닌 요구사항이다."
+      }
+    ]
+  },
+  "operator": "prepare-current-first-mission-stage.py",
+  "arguments": [
+    "2e334964-f7db-5f00-9044-d3d86c44a24e",
+    "3173feae-397b-563d-8a30-57f5746ff79c",
+    "proposal"
+  ],
+  "planned_change": "Only current preparation priority and source/lineage/rejection navigation. Preserve the director's existing scientific revision; researcher chooses the revised hypothesis.",
+  "authority": "Existing urgent first-experiment and continue instructions; root review of actual current-stage operation in PR105",
+  "signed_resource_priority_or_scientific_scope_changed": false,
+  "scientific_judgment_applied": false,
+  "new_call_or_job_enqueued_by_operator": false,
+  "exact_sha_human_approval_claimed": false
+}

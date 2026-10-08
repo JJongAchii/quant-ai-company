@@ -39,6 +39,7 @@ from .editor import (
     revision_bundle,
     validate,
     validate_review,
+    validate_source_notes,
 )
 from .inputs import market_report, registrations, source_policy
 from .planning import PLAN, apply_plan, plan_prompt
@@ -69,6 +70,9 @@ class BriefStore:
                             "analyst_procedure": pack(BRIEFER)["digest"],
                             "lake": s.company_lake_uri,
                             "search": s.briefing_search_enabled, "web": s.company_web_enabled,
+                            "source_notes": s.briefing_source_notes_enabled,
+                            "max_revisions": s.briefing_max_revisions,
+                            "evaluation_edition": s.briefing_evaluation_edition_id,
                             "channel": s.briefing_channel_id, "owner": s.briefing_owner_user,
                             "allowed_users": s.slack_allowed_users, "allowed_channels": s.slack_allowed_channels,
                             "role": self.company.roles.get(BRIEFER).model_dump() if BRIEFER in self.company.roles else None,
@@ -122,6 +126,7 @@ class BriefStore:
         bundle = {**(row["bundle"] or {"documents": [], "collection_errors": []}), "edition": row["definition"]}
         bundle["analyst_procedure"] = pack(BRIEFER)
         bundle["quote_reference_version"] = QUOTE_REFERENCE_VERSION
+        bundle["source_notes_required"] = self.company.settings.briefing_source_notes_enabled
         role = self.company.role(BRIEFER)
         bundle["professional_feedback"] = as_json(coaching(conn, row["owner_user"], BRIEFER,
                                                           role.model, role.reasoning_effort))
@@ -187,9 +192,14 @@ class BriefStore:
             conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK,))
             if conn.execute("SELECT 1 FROM runtime_control WHERE paused_until>%s", (at,)).fetchone():
                 return {"state": "defer"}
-            row = conn.execute("""SELECT * FROM brief_editions WHERE state IN ('collecting','planning','writing','reviewing','revising','final_reviewing')
+            query = """SELECT * FROM brief_editions WHERE state IN ('collecting','planning','writing','reviewing','revising','final_reviewing')
                 AND committed_at IS NULL AND policy_digest=%s AND due_at+interval '10 minutes'>%s
-                ORDER BY due_at LIMIT 1 FOR UPDATE""", (policy, at)).fetchone()
+                """
+            parameters = (policy, at)
+            if selected := self.company.settings.briefing_evaluation_edition_id:
+                query += ' AND id=%s'
+                parameters += (selected,)
+            row = conn.execute(query+' ORDER BY due_at LIMIT 1 FOR UPDATE', parameters).fetchone()
             if not row:
                 return {"state": "idle"}
             active = conn.execute("SELECT * FROM brief_calls WHERE edition_id=%s AND state='running' ORDER BY phase LIMIT 1",
@@ -199,6 +209,8 @@ class BriefStore:
                         else {"state": "ready", "request": active["request"]})
             if row["state"] == "collecting" and at < row["cutoff"]:
                 s = self.company.settings
+                if s.briefing_evaluation_edition_id:
+                    return {'state': 'idle'}  # Bounded evaluations use plan/write/review on sealed inputs.
                 if not (s.briefing_search_enabled and s.company_web_enabled and row["collected_at"]):
                     return {"state": "idle"}
                 if conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='search'", (row["id"],)).fetchone():
@@ -224,12 +236,30 @@ class BriefStore:
             else:
                 phase = {"reviewing": "review", "revising": "revise", "final_reviewing": "final_review"}.get(row["state"], "write")
                 bundle = self._freeze(conn, row) if row["state"] == "collecting" else row["bundle"]
+                if phase in {'review', 'final_review'}:
+                    try:
+                        validate_source_notes(BriefProposal.model_validate(row['proposal']), bundle)
+                    except ValueError as exc:
+                        conn.execute("UPDATE brief_editions SET state='blocked',error=%s WHERE id=%s",
+                                     (str(exc), row['id']))
+                        return {'state': 'blocked', 'reason': str(exc)}
                 if row["state"] in {"collecting", "planning"} and bundle.get("candidate_documents"):
                     phase = "plan"
                 if not bundle.get("documents"):
                     conn.execute("UPDATE brief_editions SET state='blocked',error='no_current_originals',bundle=%s WHERE id=%s",
                                  (Jsonb(bundle), row["id"]))
                     return {"state": "blocked", "reason": "no_current_originals"}
+                if phase == 'plan' and self.company.settings.briefing_evaluation_edition_id:
+                    originals = [SourceDocument.model_validate(d) for d in bundle['candidate_documents']
+                                 if d['kind'] not in {'calendar', 'dataset'}]
+                    origins = {d.origin_group or d.publisher for d in originals}
+                    closes = {d.origin_group or d.publisher for d in originals if market_report(d, row['kind'])}
+                    needs_close = row['kind'] == 'pm' or bool(row['definition']['us_session'])
+                    if len({d.id for d in originals}) < 8 or len(origins) < 2 or (needs_close and len(closes) < 2):
+                        reason = 'evaluation_source_coverage_incomplete'
+                        conn.execute("UPDATE brief_editions SET state='blocked',error=%s,bundle=%s WHERE id=%s",
+                                     (reason, Jsonb(bundle), row['id']))
+                        return {'state': 'blocked', 'reason': reason}
                 model_prompt = (plan_prompt(bundle) if phase == "plan" else
                                 prompt(bundle, phase, row["proposal"] if phase in {"review", "final_review"} else None))
             identity = f"news-brief-{row['id']}-{phase}"
@@ -321,7 +351,8 @@ class BriefStore:
                 quality["editorial_review"] = review.model_dump(mode="json")
                 result = review.model_dump(mode="json")
                 # One repair only, only after a confirmed response, with 15 minutes left for repair+review.
-                repair = (call["phase"] == "review" and (quality["reduced"] or rejected or review.verdict != "publish")
+                repair = (self.company.settings.briefing_max_revisions > 0 and call["phase"] == "review"
+                          and (quality["reduced"] or rejected or review.verdict != "publish")
                           and at+timedelta(minutes=15) < row["due_at"]+timedelta(minutes=10)
                           and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
                                                (row["id"],)).fetchone())
@@ -380,7 +411,13 @@ class BriefStore:
             for row in rows:
                 if row["state"] != "ready":
                     bundle = self._freeze(conn, row)
-                    parts, quality = render(None, bundle, fallback=row["error"] or "deadline")
+                    preview = (BriefProposal.model_validate(row['proposal'])
+                               if not row['publish'] and row['proposal'] else None)
+                    parts, quality = render(preview, bundle, fallback=row["error"] or "deadline",
+                                            review_reduced=bool(preview))
+                    if preview:
+                        parts[0] = '*품질 검사 미통과 초안 · Slack 미발송*\n\n'+parts[0]
+                        quality['unreviewed_draft_preserved'] = True
                     # A partial, unreviewed proposal must never become the next edition's morning evidence.
                     row.update(bundle=bundle, rendered=parts, quality=quality, proposal=None)
                 if row["publish"]:

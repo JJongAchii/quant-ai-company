@@ -1,0 +1,45 @@
+{
+  "apply_operator_change": "Adds held native runtime lane locks before consistent backup; inactive prepared images and manifest unchanged",
+  "apply_operator_sha256": "6c2dcd0a537be46abb3ea0bd3b54cf0ad59a2c043f618b1dcd101c69418f63ca",
+  "apply_order": [
+    "existing backup lock",
+    "owned runtime pause",
+    "drain company external effects and acquire all existing native lane locks",
+    "consistent existing backup",
+    "replace only api and company worker with prepared exact images",
+    "restore other original container IDs and runtime pause",
+    "rolled-back exact second packet transaction probe",
+    "review probe and atomic cached-response admission",
+    "observe normal Temporal next request and its admission"
+  ],
+  "authority": "Existing owner deploy/continue requests and explicit monitoring request; root review in PR105; no new exact SHA human approval claimed",
+  "baseline_refresh": "First preparation aborted before mutations on concurrent worker role compatibility change; refreshed snapshot retains its entire image and compose overlay",
+  "decision": "root_reviewed_ready_for_existing_authorized_apply",
+  "new_provider_call_replayed": false,
+  "new_scientific_job_enqueued": false,
+  "patch_commit": "53ed9e33175d6056d72417c081d574a740587695",
+  "prepared_receipt_sha256": "5431cf8a7c178f6c12d1eb7dd015c2709fc551deee94efb5fdb6bfaf3a35e2b2",
+  "preserved": [
+    "all other 166 Python sources",
+    "provider response bytes and thread",
+    "signed scope and scientific budget",
+    "original trial and frozen history",
+    "3070 scientific release",
+    "other current service identities",
+    "roles/accounts/profiles/environment"
+  ],
+  "reconcile_operator_sha256": "52e19c484fbff79f8b9b37539f02d3581e7e852cddf6f2331836eb94bc064255",
+  "rollback": "Use each selected service original compose files and exact immutable image; preserve DB rows and receipt archives",
+  "schema_version": 1,
+  "scientific_verdict_applied": false,
+  "source_change": "only audit_delivery.py and mission_backend.py over each actual current immutable image",
+  "tests": {
+    "lint": "passed",
+    "model_and_slack": "synthetic regression fixtures; not production delivery",
+    "passed": 1831,
+    "real_pinned_qlab": "37abfceb07f5b684d7c3210548fecef156e3f9fc",
+    "real_postgresql": true,
+    "seconds": 568.03,
+    "skipped": 14
+  }
+}

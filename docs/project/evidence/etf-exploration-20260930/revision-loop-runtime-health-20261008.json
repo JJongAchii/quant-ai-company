@@ -1,0 +1,52 @@
+{
+  "observed_at": "2026-10-08T02:00:36.289679+00:00",
+  "services": [
+    {
+      "name": "quant-company-api-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    {
+      "name": "quant-company-worker-1",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    {
+      "name": "quant-company-slack-socket-1",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    {
+      "name": "quant-company-postgres-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    {
+      "name": "quant-company-codex-runtime-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    {
+      "name": "quant-company-quant-codex-runtime-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0
+    }
+  ],
+  "socket_namespace_established_tcp443_connections": 8,
+  "signed_slack_round_trip_claimed": false,
+  "database_mutated": false,
+  "credentials_or_logs_exported": false,
+  "connection_log_not_attested": true
+}

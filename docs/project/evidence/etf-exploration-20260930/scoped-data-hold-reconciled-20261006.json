@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "remediation_id": "scoped-data-schema-86:candidate2:attempt3",
+  "source_commit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "stage_id": "0b9b6ce9-6c3d-5dee-a9c5-0bbc18089ac5",
+  "candidate_id": "6c54b553-c382-5a90-96d9-20d765552343",
+  "previous_attempt": 3,
+  "previous_format_failures": 3,
+  "previous_hold": {
+    "reason": "repeated_data_output_contract_failure",
+    "failure_count": 3
+  },
+  "previous_context_digest": "22e86c95cb55fcf60670a3d80b80000a9a77f8cd68ac385c0675d32ec4c1928b",
+  "previous_attempts_digest": "7543d8ebfbbf5bd426b203ca0f815d738ff38e855512af5ccdfde448d80a516d",
+  "previous_error": "1 validation error for DataAssessment\n  Value error, Scoped assessments cannot carry a legacy exploratory decision or policy fields [type=value_error, input_value={'coverage': True, 'decis...ontract_verified': True}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
+  "state": "technical_hold_reconciled_new_normal_attempt_allowed",
+  "scientific_authority_changed": false,
+  "readiness_applied_by_operator": false,
+  "prior_attempts_and_reads_reused_as_new_evidence": false,
+  "scientific_trials_added_by_operator": 0,
+  "authority": "Existing owner deployment/continuation request; scoped schema repair root-reviewed in PR105",
+  "event_id": 667,
+  "already_committed": false,
+  "native_qualification_sha256": "6189e520b6b60bd8563fffe87de71a2a85592c4bd440d321d862d83cf5d66f1d"
+}
