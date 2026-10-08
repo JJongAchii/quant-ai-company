@@ -159,7 +159,7 @@ manifest 파일이나 코드를 바꾼 것만으로 실제 Slack 앱의 이름�
   당일 자료가 없으면 과거 값을 오늘 값으로 쓰지 않는다.
 - `BRIEFING_US_CLOSE_ENABLED=true`(기본 꺼짐)이면 데이터 worker가 미국 새 거래가 있는 아침판에 대해 XNYS
   실제 마감 C 기준 C+5~C+35분 동안 2분 간격으로 Yahoo 공개 chart 값을 읽는다(지수 `^GSPC ^IXIC ^DJI ^SOX ^VIX`,
-  ETF 9종, `BRIEFING_US_CLOSE_STOCKS` 기본 NVDA·MU·AAPL·MSFT, 연속 거래 `^TNX`·WTI·금·비트코인·이더리움).
+  ETF 9종, 설정 `briefing_us_close_stocks` 기본 NVDA·MU·AAPL·MSFT(compose 전달은 아직 없음), 연속 거래 `^TNX`·WTI·금·비트코인·이더리움).
   원천 시각이 마감 이후(VIX는 C+15분)이고 연속 두 조회 값이 같을 때만 확정한다. `^TNX`·선물·암호화폐는 마감
   뒤에도 거래되므로 시각이 붙은 미확정 시세로만 기록하고 종가로 고정하지 않는다. 모든 조회는
   `market_data.us_close`와 데이터 원문(`yahoo.chart:us_close`) 영수증에 보존하며 입력 고정 이후에는 조회하지 않는다.
