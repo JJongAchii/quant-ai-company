@@ -1,0 +1,284 @@
+{
+  "as_of": "2026-10-08T01:00:05.913299+00:00",
+  "repair_jobs": [
+    {
+      "id": "56ce154d-d7da-542d-bbe3-fc5f711f6be0",
+      "pr": null,
+      "error": "current_evidence_changed",
+      "state": "superseded",
+      "title": "감사 단계 계약 거부가 반복 대기로 복귀함",
+      "reason": null,
+      "created_at": "2026-09-23T00:10:53.500613+00:00",
+      "updated_at": "2026-09-23T00:16:24.002597+00:00",
+      "evaluation_mode": "regression"
+    },
+    {
+      "id": "8c0d8ffb-5b1f-52ad-ab51-ffa7d6fec2d8",
+      "pr": {
+        "url": "https://github.com/JJongAchii/quant-ai-company/pull/16",
+        "state": "closed",
+        "merged": false,
+        "number": 16,
+        "closed_at": "2026-09-17T06:58:48Z"
+      },
+      "error": null,
+      "state": "closed",
+      "title": "직원이 최신 인터넷 자료를 검색·검증·인용할 수 없음",
+      "reason": "PR #16은 설계 초안으로 보존하고 병합 없이 닫았습니다. 실제 외부 검색·원문 등록·인용 분석은 PR #22 및 #24로 구현·배포했고, 운영 서버의 공식 원문 3건 분석으로 확인했습니다. 기존 기능 공백은 해결됐으며 새 실패 근거가 생기면 별도 진단합니다.",
+      "created_at": "2026-09-17T04:55:04.328879+00:00",
+      "updated_at": "2026-09-17T07:00:06.557691+00:00",
+      "evaluation_mode": "design_only"
+    },
+    {
+      "id": "6f807a00-d68e-5f94-98b9-40d18aa2ec77",
+      "pr": null,
+      "error": "prompt_replay_cannot_validate_runtime_code_changes",
+      "state": "blocked",
+      "title": "과거 요청 개선 진단에서 제공된 이력 증거를 활용하지 않음",
+      "reason": null,
+      "created_at": "2026-09-17T01:12:19.158354+00:00",
+      "updated_at": "2026-09-17T01:17:48.75342+00:00",
+      "evaluation_mode": "prompt_replay"
+    },
+    {
+      "id": "168c2f7f-e272-5c3b-9453-4dab63680b81",
+      "pr": {
+        "url": "https://github.com/JJongAchii/quant-ai-company/pull/3",
+        "state": "open",
+        "number": 3
+      },
+      "error": null,
+      "state": "applied",
+      "title": "유지보수 문서의 현재 상태가 실제 운영 활성화 상태와 불일치",
+      "reason": null,
+      "created_at": "2026-09-16T23:59:11.524416+00:00",
+      "updated_at": "2026-09-17T01:08:28.974327+00:00",
+      "evaluation_mode": "documentation"
+    },
+    {
+      "id": "f848096f-4003-58a1-8b59-3e47a62e78e0",
+      "pr": null,
+      "error": "pr_ref_moved",
+      "state": "blocked",
+      "title": "운영 활성화 후 유지보수 현재 상태 문서가 갱신되지 않음",
+      "reason": null,
+      "created_at": "2026-09-17T00:31:19.419827+00:00",
+      "updated_at": "2026-09-17T00:51:41.687377+00:00",
+      "evaluation_mode": "documentation"
+    }
+  ],
+  "recent_cases": [
+    {
+      "pr": null,
+      "head": null,
+      "kind": "triage",
+      "depth": 0,
+      "error": "investigation_budget_exhausted",
+      "state": "blocked",
+      "job_id": "c44f74be-7d4d-4aa1-a789-a4edd1ee5374",
+      "reason": null,
+      "case_id": "70b6e4b9-f7fd-53fe-a002-04e827d9b5dd",
+      "channel": "C0C3Q7BFQCE",
+      "ci_state": null,
+      "thread_ts": "1791389076.606119",
+      "created_at": "2026-10-07T16:04:30.607203+00:00",
+      "request_id": "c44f74be-7d4d-4aa1-a789-a4edd1ee5374",
+      "updated_at": "2026-10-07T17:22:11.498223+00:00",
+      "application": null,
+      "last_notice": {
+        "text": "개선봇이 기존 평가 실패 진단을 진행하다 조사 예산을 소진해 중단됐다는 알림입니다.\n\n사건 `c44f74be-7d4d-4aa1-a789-a4edd1ee5374`은 조사 회차 4, 현재 `blocked` 상태입니다. 다만 어떤 직원의 어떤 평가가 실패했는지는 제공된 상태·대화 기록에서 확인되지 않았습니다. 원인은 미검증이고, 검증 결과와 PR도 제공 기록에 없습니다.\n\n현재 서비스의 일일 호출 한도는 설정상 없으며, 이 사건의 중단 사유는 별도로 기록된 조사 예산 소진입니다.\n근거: company:e5eb7433bd92fd403c3252c1, company:54c5f3d5268269770a7be4e4",
+        "error": null,
+        "status": "delivered",
+        "sent_ts": "1791411124.595059"
+      },
+      "changed_paths": null,
+      "finding_title": null,
+      "evaluation_mode": null
+    },
+    {
+      "pr": null,
+      "head": null,
+      "kind": "review",
+      "depth": 0,
+      "error": null,
+      "state": "done",
+      "job_id": "49144860-7e42-5a72-8311-d47871ccf315",
+      "reason": "운영 커밋은 46d853cbefd4ce808fc247a0ebba1f5df33f0cd8이며 저장소 최신 커밋 388f44d5897129314232d86ba9230a863bf658a4와 구분해야 한다. 운영 버전과 일치하는 원 영수증 대사에서는 과거 불확실 검토 11건 모두 동결 요청과 일치했지만 결과·원 CLI 출력이 없어 모델 완료 여부는 indeterminate_model_completion이다. 이는 메타데이터 검증이며 직원 실패나 현재 코드 결함의 재현 증거가 아니다. 접수 당시 queued 영수증과 달리 최신 요청 상태는 triage이고 이번 호출이 재개된 진단이므로 자동 재개 부재도 주장할 수 없다. 관련 직원 입력은 발췌에서 생략되어 자료 무시를 판단할 수 없다. 제공된 부분 코드만으로 원인을 특정할 수 없어 수정안을 확정하지 않는다. 추가 판단에는 불확실 호출 재실행 없이 확보한 동일 운영 버전의 실패 입력·원 출력과 관련 호출자·소비자·회귀검사 코드가 필요하다.",
+      "case_id": "80b8f971-78db-5d6e-b938-7ded89dc5aca",
+      "channel": "C0C3Q7BFQCE",
+      "ci_state": null,
+      "thread_ts": "1791346259.340899",
+      "created_at": "2026-10-07T04:10:56.607026+00:00",
+      "request_id": "49144860-7e42-5a72-8311-d47871ccf315",
+      "updated_at": "2026-10-07T04:45:16.43888+00:00",
+      "application": null,
+      "last_notice": {
+        "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 점검을 마쳤습니다. 운영 커밋은 46d853cbefd4ce808fc247a0ebba1f5df33f0cd8이며 저장소 최신 커밋 388f44d5897129314232d86ba9230a863bf658a4와 구분해야 한다. 운영 버전과 일치하는 원 영수증 대사에서는 과거 불확실 검토 11건 모두 동결 요청과 일치했지만 결과·원 CLI 출력이 없어 모델 완료 여부는 indeterminate_model_completion이다. 이는 메타데이터 검증이며 직원 실패나 현재 코드 결함의 재현 증거가 아니다. 접수 당시 queued 영수증과 달리 최신 요청 상태는 triage이고 이번 호출이 재개된 진단이므로 자동 재개 부재도 주장할 수 없다. 관련 직원 입력은 발췌에서 생략되어 자료 무시를 판단할 수 없다. 제공된 부분 코드만으로 원인을 특정할 수 없어 수정안을 확정하지 않는다. 추가 판단에는 불확실 호출 재실행 없이 확보한 동일 운영 버전의 실패 입력·원 출력과 관련 호출자·소비자·회귀검사 코드가 필요하다.\n단계: done · 최근 진행: 2026-10-07 04:45:16.438880+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+        "error": null,
+        "status": "delivered",
+        "sent_ts": "1791346259.340899"
+      },
+      "changed_paths": null,
+      "finding_title": null,
+      "evaluation_mode": null
+    },
+    {
+      "pr": null,
+      "head": null,
+      "kind": "triage",
+      "depth": 0,
+      "error": null,
+      "state": "done",
+      "job_id": "19aa1178-bca7-469f-b209-eca081a1be36",
+      "reason": "현재 GitHub main은 a9ef0b5fec77e9135c82bc75213226183d57b660이고 운영 code_commit은 46d853cbefd4ce808fc247a0ebba1f5df33f0cd8로 다르다. 독립 설명 검토는 설정상 활성화되어 있으나, 제공된 실패 기록에는 error=uncertain과 operator_reconciliation_required=true가 있다. 원 검토 입력, 전송·응답 영수증, 검증 로그는 제공되지 않았으며 runner.py와 store.py 발췌에는 관련 경계 전체가 없다. 따라서 전송 실패와 응답 검증 실패를 구별하거나 현재 구현의 재현 가능한 결함을 확정할 수 없다. 추가 조사 횟수도 0이므로 finding=null로 종료한다. AGENTS.md의 불확실 외부 효과 처리 원칙에 따라 기존 요청·영수증을 보존하고 운영자가 실제 처리 여부를 대조해야 한다. 해당 검토를 재실행하거나 직원 실패로 채점할 근거가 없으며 객관 직원 등급은 변경 대상이 아니다. 코드 수정·검사·PR 실행 결과는 없다.",
+      "case_id": "7cfd1ddf-af1d-5caf-99e2-5abf8333e4e9",
+      "channel": "C0C3Q7BFQCE",
+      "ci_state": null,
+      "thread_ts": "1791298887.238179",
+      "created_at": "2026-10-06T15:01:24.084828+00:00",
+      "request_id": "19aa1178-bca7-469f-b209-eca081a1be36",
+      "updated_at": "2026-10-06T15:29:30.591289+00:00",
+      "application": null,
+      "last_notice": {
+        "text": "*개선 케이스 7cfd1ddf*\n진단 요청 19aa1178: 점검을 마쳤습니다. 현재 GitHub main은 a9ef0b5fec77e9135c82bc75213226183d57b660이고 운영 code_commit은 46d853cbefd4ce808fc247a0ebba1f5df33f0cd8로 다르다. 독립 설명 검토는 설정상 활성화되어 있으나, 제공된 실패 기록에는 error=uncertain과 operator_reconciliation_required=true가 있다. 원 검토 입력, 전송·응답 영수증, 검증 로그는 제공되지 않았으며 runner.py와 store.py 발췌에는 관련 경계 전체가 없다. 따라서 전송 실패와 응답 검증 실패를 구별하거나 현재 구현의 재현 가능한 결함을 확정할 수 없다. 추가 조사 횟수도 0이므로 finding=null로 종료한다. AGENTS.md의 불확실 외부 효과 처리 원칙에 따라 기존 요청·영수증을 보존하고 운영자가 실제 처리 여부를 대조해야 한다. 해당 검토를 재실행하거나 직원 실패로 채점할 근거가 없으며 객관 직원 등급은 변경 대상이 아니다. 코드 수정·검사·PR 실행 결과는 없다.\n단계: done · 최근 진행: 2026-10-06 15:29:30.591289+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.",
+        "error": null,
+        "status": "delivered",
+        "sent_ts": "1791298887.238179"
+      },
+      "changed_paths": null,
+      "finding_title": null,
+      "evaluation_mode": null
+    },
+    {
+      "pr": null,
+      "head": null,
+      "kind": "triage",
+      "depth": 0,
+      "error": "evidence_churn_requires_review",
+      "state": "blocked",
+      "job_id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "reason": null,
+      "case_id": "1b456281-01c3-5cda-8d0e-a1343f3f582b",
+      "channel": "C0C3Q7BFQCE",
+      "ci_state": null,
+      "thread_ts": "1791270401.038799",
+      "created_at": "2026-10-06T07:06:39.227678+00:00",
+      "request_id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "updated_at": "2026-10-06T12:44:08.085281+00:00",
+      "application": null,
+      "last_notice": {
+        "text": "<@U0C250E23NW>\n진단 요청 454ef5b7: 검증에서 멈췄습니다 (evidence_churn_requires_review). 수정 완료가 아닙니다. 근거와 실패 기록을 보존했으며 운영자 확인이 필요합니다.",
+        "error": null,
+        "status": "delivered",
+        "sent_ts": "1791290664.489979"
+      },
+      "changed_paths": null,
+      "finding_title": null,
+      "evaluation_mode": null
+    },
+    {
+      "pr": null,
+      "head": null,
+      "kind": "triage",
+      "depth": 0,
+      "error": "investigation_budget_exhausted",
+      "state": "blocked",
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "reason": null,
+      "case_id": "a2346a43-8e5b-5ae9-8f1d-8d3acd4a6b36",
+      "channel": "C0C3Q7BFQCE",
+      "ci_state": null,
+      "thread_ts": "1791269171.128969",
+      "created_at": "2026-10-06T06:46:09.841092+00:00",
+      "request_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "updated_at": "2026-10-06T12:26:39.579342+00:00",
+      "application": null,
+      "last_notice": {
+        "text": "*개선 케이스 a2346a43*\n진단 요청 a4aabd4e: 검증에서 멈췄습니다 (investigation_budget_exhausted). 수정 완료가 아닙니다. 근거와 실패 기록을 보존했으며 운영자 확인이 필요합니다.\n단계: blocked · 최근 진행: 2026-10-06 12:26:39.579342+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C2B9EUEGM/p1789633942673909",
+        "error": null,
+        "status": "delivered",
+        "sent_ts": "1791269171.128969"
+      },
+      "changed_paths": null,
+      "finding_title": null,
+      "evaluation_mode": null
+    },
+    {
+      "pr": null,
+      "head": null,
+      "kind": "review",
+      "depth": 0,
+      "error": "evidence_churn_requires_review",
+      "state": "blocked",
+      "job_id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "reason": null,
+      "case_id": "ef8c03a5-cd97-57eb-b691-4ffd143cc3ef",
+      "channel": "C0C3Q7BFQCE",
+      "ci_state": null,
+      "thread_ts": "1791269678.293859",
+      "created_at": "2026-10-06T06:54:35.380943+00:00",
+      "request_id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "updated_at": "2026-10-06T11:02:42.431312+00:00",
+      "application": null,
+      "last_notice": {
+        "text": "새 진단 요청이 접수되어 queued(대기열) 상태입니다. 기존 차단 건과 별도입니다.\n• 요청 ID: 49144860-7e42-5a72-8311-d47871ccf315\n• 새 케이스 ID: 80b8f971-78db-5d6e-b938-7ded89dc5aca\n\n요청 범위는 최적화된 현재 운영 코드와 원 영수증 대사 결과에 근거한 진단이며, 과거 불확실 호출은 재실행하지 않는 조건입니다.\n\n보고 예정 채널은 C0C3Q7BFQCE입니다. 전달 상태는 pending이고 스레드 URL은 아직 없어, 실제 보고 스레드는 확인되지 않았습니다. 백그라운드 서비스가 진행과 결과를 별도로 보고합니다. 이번 영수증은 접수 확인이며 진단·수정 완료를 뜻하지 않습니다. [company:bae4a6ee482b776b86968d90]",
+        "error": null,
+        "status": "delivered",
+        "sent_ts": "1791346281.802999"
+      },
+      "changed_paths": null,
+      "finding_title": null,
+      "evaluation_mode": null
+    }
+  ],
+  "job_kind_states": [
+    {
+      "n": 1,
+      "kind": "repair",
+      "state": "applied"
+    },
+    {
+      "n": 2,
+      "kind": "repair",
+      "state": "blocked"
+    },
+    {
+      "n": 1,
+      "kind": "repair",
+      "state": "closed"
+    },
+    {
+      "n": 1,
+      "kind": "repair",
+      "state": "superseded"
+    },
+    {
+      "n": 1,
+      "kind": "review",
+      "state": "blocked"
+    },
+    {
+      "n": 5,
+      "kind": "review",
+      "state": "done"
+    },
+    {
+      "n": 48,
+      "kind": "triage",
+      "state": "blocked"
+    },
+    {
+      "n": 16,
+      "kind": "triage",
+      "state": "done"
+    }
+  ],
+  "application_states": [
+    {
+      "n": 1,
+      "error": null,
+      "state": "complete",
+      "requires_deployment": false
+    }
+  ]
+}

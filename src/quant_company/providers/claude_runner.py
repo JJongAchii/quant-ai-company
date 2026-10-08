@@ -6,6 +6,7 @@ model/configuration fallback; it cannot change the account's billing preference.
 
 import asyncio
 import fcntl
+import hashlib
 import json
 import math
 import os
@@ -198,13 +199,22 @@ class ClaudeRunner:
                     output = await self.process.run(command(self.config, request), cwd=cwd, env=env,
                         stdin=request.prompt.encode(), timeout_seconds=self.config.timeout_seconds,
                         max_stdout_bytes=MAX_OUTPUT, max_stderr_bytes=65536)
+                    # Persist the observed process boundary before parsing can reject its response.
+                    # Raw CLI output stays private to the process and is never copied to public faults.
+                    receipt = {**receipt, "execution_evidence": {
+                        "returncode": output.returncode, "completed_at": time.time(),
+                        "stdout_bytes": len(output.stdout), "stdout_sha256": hashlib.sha256(output.stdout).hexdigest(),
+                        "stderr_bytes": len(output.stderr), "stderr_sha256": hashlib.sha256(output.stderr).hexdigest(),
+                    }}
+                    atomic_json(path, receipt)
                     result = parse_result(request, output)
                     atomic_json(path, {**receipt, "state": "complete", "completed_at": time.time(),
                                        "result": result.model_dump(mode="json")})
                     return result
                 except ProviderFault as fault:
                     atomic_json(path, {**receipt, "state": "deferred" if fault.code == "quota" else "failed",
-                                       "fault": fault.code, "retry_at": time.time() + fault.retry_after_seconds})
+                                       "fault": fault.code, "fault_detail": str(fault),
+                                       "retry_at": time.time() + fault.retry_after_seconds})
                     raise
                 finally:
                     # Cancellation/crash leaves the durable running marker and cannot trigger another inference.

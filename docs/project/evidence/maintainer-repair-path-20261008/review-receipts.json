@@ -1,0 +1,360 @@
+{
+  "captured_at": "2026-10-08T01:09:06.449651+00:00",
+  "reviews": [
+    {
+      "id": "review-36ce55f1-d1c2-4c8a-bae7-adc46e1a12b6",
+      "db_input_digest": "f8c0246faad404cb7b467160d7692fb10ce7b5e8f4f28e8c5b362ef596c726a7",
+      "database_row_digest": "2bfec24dbdb3a21be640ff34f6d2ca1f",
+      "runtime_expected_digest": "00736be234dc46a0a776ff5751b7b8cdae7d34c96a45048332577a88e26b1b75",
+      "legacy_default_fields_omitted": [],
+      "runtime_stored_digest": "00736be234dc46a0a776ff5751b7b8cdae7d34c96a45048332577a88e26b1b75",
+      "runtime_request_matches": true,
+      "runtime_state": "failed",
+      "runtime_fault": "uncertain",
+      "response_available": false,
+      "receipt_sha256": "a761f479ddf6d102ccc7591e341afdec96e949cc9ce7c9ea96e0ef0edf46fe72",
+      "raw_cli_output_retained": false,
+      "started_at": 1789743645.459523,
+      "retry_at": 1789743653.752748,
+      "receipt_keys": [
+        "cli_version",
+        "fault",
+        "input_digest",
+        "provider",
+        "request_id",
+        "requested_execution",
+        "retry_at",
+        "started_at",
+        "state"
+      ]
+    },
+    {
+      "id": "review-240cb2cc-402a-4c79-9de1-e36d327b3084",
+      "db_input_digest": "c74c6a7fe1a570b26c1ac863596edbf8e4e2a2fb8f39c58bbe576a87798ce786",
+      "database_row_digest": "7a97d2f24e4bf8b5bc99e268f5518e4f",
+      "runtime_expected_digest": "d763b272fc9ce5cd85d517ac06eae305b70840c84731085f3428c60931f34cff",
+      "legacy_default_fields_omitted": [],
+      "runtime_stored_digest": "d763b272fc9ce5cd85d517ac06eae305b70840c84731085f3428c60931f34cff",
+      "runtime_request_matches": true,
+      "runtime_state": "failed",
+      "runtime_fault": "uncertain",
+      "response_available": false,
+      "receipt_sha256": "0e13f5953a2ac9f4be8c00d6f922265f27907884ee9c1339222eb5cae1c76928",
+      "raw_cli_output_retained": false,
+      "started_at": 1789830056.6653252,
+      "retry_at": 1789830064.784999,
+      "receipt_keys": [
+        "cli_version",
+        "fault",
+        "input_digest",
+        "provider",
+        "request_id",
+        "requested_execution",
+        "retry_at",
+        "started_at",
+        "state"
+      ]
+    },
+    {
+      "id": "review-eae1a937-fbef-439e-af13-0a7f7409f25d",
+      "db_input_digest": "d98e56259a7b9bf0f6e67dc25a8a3d21ce7519c1615cd2c503617014d5800d60",
+      "database_row_digest": "7d1d47177fdf210fb69632841072abc6",
+      "runtime_expected_digest": "917a1269ea7f96517f687e815aba55049653383df762c19205a6e8f5c22f623d",
+      "legacy_default_fields_omitted": [],
+      "runtime_stored_digest": "917a1269ea7f96517f687e815aba55049653383df762c19205a6e8f5c22f623d",
+      "runtime_request_matches": true,
+      "runtime_state": "failed",
+      "runtime_fault": "uncertain",
+      "response_available": false,
+      "receipt_sha256": "e07f9e0607478fec64f3534276344f3a181a54fd1014a958e72b3ba0c61beee1",
+      "raw_cli_output_retained": false,
+      "started_at": 1789916445.0260708,
+      "retry_at": 1789916453.3469603,
+      "receipt_keys": [
+        "cli_version",
+        "fault",
+        "input_digest",
+        "provider",
+        "request_id",
+        "requested_execution",
+        "retry_at",
+        "started_at",
+        "state"
+      ]
+    },
+    {
+      "id": "review-39395d18-968d-4784-b2b2-a5e15f952510",
+      "db_input_digest": "a61a7e30e37b58b51ad49439d97d1a85ed358f4550553c8b36631df5f27fd710",
+      "database_row_digest": "3717e3856110dd8d39aee902628a7712",
+      "runtime_expected_digest": "8051f9cd4bdd983621eda3c61ab4d20fc6526255f1aa0ccc03c939a63efaada6",
+      "legacy_default_fields_omitted": [],
+      "runtime_stored_digest": "8051f9cd4bdd983621eda3c61ab4d20fc6526255f1aa0ccc03c939a63efaada6",
+      "runtime_request_matches": true,
+      "runtime_state": "failed",
+      "runtime_fault": "uncertain",
+      "response_available": false,
+      "receipt_sha256": "cd1ab617844f4afe7a843066470399f7df6aa622edad2ab099677a88d5da8894",
+      "raw_cli_output_retained": false,
+      "started_at": 1790002843.723923,
+      "retry_at": 1790002851.807761,
+      "receipt_keys": [
+        "cli_version",
+        "fault",
+        "input_digest",
+        "provider",
+        "request_id",
+        "requested_execution",
+        "retry_at",
+        "started_at",
+        "state"
+      ]
+    },
+    {
+      "id": "review-63abd47f-89e7-44c5-b17a-f3e024a8de6e",
+      "db_input_digest": "06dcd65441ee942c24b2f005fb41d74992a50ddf472a6a9294fd2f72a083173f",
+      "database_row_digest": "ba05ef62189f43a8cabae233884e6233",
+      "runtime_expected_digest": "4e2ac47bbe5334ed9891e1712b851d88e216471b31d18f6d85d504424ca7ab19",
+      "legacy_default_fields_omitted": [
+        "session",
+        "output_contract"
+      ],
+      "runtime_stored_digest": "4e2ac47bbe5334ed9891e1712b851d88e216471b31d18f6d85d504424ca7ab19",
+      "runtime_request_matches": true,
+      "runtime_state": "failed",
+      "runtime_fault": "uncertain",
+      "response_available": false,
+      "receipt_sha256": "079c66d3bd31f014a36b90fd3babd1bcbe68d0f49af32b1bf9c82d6f11a569fe",
+      "raw_cli_output_retained": false,
+      "started_at": 1790694964.9572513,
+      "retry_at": 1790694973.1110818,
+      "receipt_keys": [
+        "cli_version",
+        "fault",
+        "input_digest",
+        "provider",
+        "request_id",
+        "requested_execution",
+        "retry_at",
+        "started_at",
+        "state"
+      ]
+    },
+    {
+      "id": "review-cdbbed6d-acc5-40ee-9793-4d86905a4db5",
+      "db_input_digest": "5f36574cc12cba1b07f85b6a954bf1985c7df124ba0717475926015c67dbed15",
+      "database_row_digest": "8cc52e590e5adca073c4a2752cc45868",
+      "runtime_expected_digest": "3d1dae19b3cdbfa5f7aabda13cae2a27c3d60b7176c40cfe6fed4468b6a83689",
+      "legacy_default_fields_omitted": [
+        "session",
+        "output_contract"
+      ],
+      "runtime_stored_digest": "3d1dae19b3cdbfa5f7aabda13cae2a27c3d60b7176c40cfe6fed4468b6a83689",
+      "runtime_request_matches": true,
+      "runtime_state": "failed",
+      "runtime_fault": "uncertain",
+      "response_available": false,
+      "receipt_sha256": "e766225af7a763278c0a5e253ec32cd4950710e2bfff22d33fa16d64f81dbfca",
+      "raw_cli_output_retained": false,
+      "started_at": 1790780440.805987,
+      "retry_at": 1790780449.019497,
+      "receipt_keys": [
+        "cli_version",
+        "fault",
+        "input_digest",
+        "provider",
+        "request_id",
+        "requested_execution",
+        "retry_at",
+        "started_at",
+        "state"
+      ]
+    },
+    {
+      "id": "review-08a21b09-58c2-4dc9-816b-aceeb301b6c9",
+      "db_input_digest": "3cff32478090ade44d6d47770a4a99fa026d459891e4ffd1ac4bcaafb10e8a82",
+      "database_row_digest": "959ea74b70f292a66123ec6afb977ab1",
+      "runtime_expected_digest": "08c879ee2dc7c65a2e2fc13b988d5df787fcd7b6d90916b6868c201f532e57bb",
+      "legacy_default_fields_omitted": [
+        "session",
+        "output_contract"
+      ],
+      "runtime_stored_digest": "08c879ee2dc7c65a2e2fc13b988d5df787fcd7b6d90916b6868c201f532e57bb",
+      "runtime_request_matches": true,
+      "runtime_state": "failed",
+      "runtime_fault": "uncertain",
+      "response_available": false,
+      "receipt_sha256": "a74e2d2fe9d8921a3b8263fc487fdccb72871596db51c4ab73266cf6624f841e",
+      "raw_cli_output_retained": false,
+      "started_at": 1790866852.352804,
+      "retry_at": 1790866860.5904176,
+      "receipt_keys": [
+        "cli_version",
+        "fault",
+        "input_digest",
+        "provider",
+        "request_id",
+        "requested_execution",
+        "retry_at",
+        "started_at",
+        "state"
+      ]
+    },
+    {
+      "id": "review-2ba7a04c-9e2a-4273-b757-99892b040b88",
+      "db_input_digest": "bbd182420bb197e8d40fde807fba0b6c44d9fb4fc6840f805504c9a954a68ebf",
+      "database_row_digest": "aefae30dc572c02414c6e05243b6b264",
+      "runtime_expected_digest": "b578e4b4605d57805ce03ad3d75274a53e34faedf44e0aec2177f4ff03cf5ec0",
+      "legacy_default_fields_omitted": [
+        "session",
+        "output_contract"
+      ],
+      "runtime_stored_digest": "b578e4b4605d57805ce03ad3d75274a53e34faedf44e0aec2177f4ff03cf5ec0",
+      "runtime_request_matches": true,
+      "runtime_state": "failed",
+      "runtime_fault": "uncertain",
+      "response_available": false,
+      "receipt_sha256": "cdfe6ff47ef307698bcff4e46915f2ed99651b39670cb8e00409e6aa830a67ba",
+      "raw_cli_output_retained": false,
+      "started_at": 1790953383.7921524,
+      "retry_at": 1790953392.3665354,
+      "receipt_keys": [
+        "cli_version",
+        "fault",
+        "input_digest",
+        "provider",
+        "request_id",
+        "requested_execution",
+        "retry_at",
+        "started_at",
+        "state"
+      ]
+    },
+    {
+      "id": "review-cbcd0453-4c6e-45d4-89e9-9cdb23a8ac84",
+      "db_input_digest": "e2fabea9843027056722e0bc001765be3323e82169d2729e7f3b2b8a4d0a8752",
+      "database_row_digest": "5c79395ac8d5c5748e132c46572216b1",
+      "runtime_expected_digest": "950ec5ee1dacb247110a2fd01dddc82e36849f6f2f5cab603aa922e35bdc436e",
+      "legacy_default_fields_omitted": [
+        "session",
+        "output_contract"
+      ],
+      "runtime_stored_digest": "950ec5ee1dacb247110a2fd01dddc82e36849f6f2f5cab603aa922e35bdc436e",
+      "runtime_request_matches": true,
+      "runtime_state": "failed",
+      "runtime_fault": "uncertain",
+      "response_available": false,
+      "receipt_sha256": "ed0d9ada0d8085908afc96b0cdd6e4e0fb424f9a912b5daa18f75f64aed1c156",
+      "raw_cli_output_retained": false,
+      "started_at": 1791039604.3502245,
+      "retry_at": 1791039612.776137,
+      "receipt_keys": [
+        "cli_version",
+        "fault",
+        "input_digest",
+        "provider",
+        "request_id",
+        "requested_execution",
+        "retry_at",
+        "started_at",
+        "state"
+      ]
+    },
+    {
+      "id": "review-61b91f4c-e518-4c6e-b968-98f7acd080c3",
+      "db_input_digest": "902d5189ca2d71de20f376a5ba0798daeb59df08c47e2b05aaaef819ef565e68",
+      "database_row_digest": "d91b34bb0af32b75908207a94c1e5bd7",
+      "runtime_expected_digest": "f356a0bde3d1b8cc174c7756d1c1c79ac61c78a042115be693800f3ea6eaeff7",
+      "legacy_default_fields_omitted": [
+        "session",
+        "output_contract"
+      ],
+      "runtime_stored_digest": "f356a0bde3d1b8cc174c7756d1c1c79ac61c78a042115be693800f3ea6eaeff7",
+      "runtime_request_matches": true,
+      "runtime_state": "failed",
+      "runtime_fault": "uncertain",
+      "response_available": false,
+      "receipt_sha256": "57d07af4cc7e47770184984cbd2419f8a34972e28b7f7a7df9ee1367024a8e8c",
+      "raw_cli_output_retained": false,
+      "started_at": 1791241024.4312546,
+      "retry_at": 1791241035.6553667,
+      "receipt_keys": [
+        "cli_version",
+        "fault",
+        "input_digest",
+        "provider",
+        "request_id",
+        "requested_execution",
+        "retry_at",
+        "started_at",
+        "state"
+      ]
+    },
+    {
+      "id": "review-298e6ad6-8128-488e-977b-fb50182d3608",
+      "db_input_digest": "89b328161627ced83af912fad239f4f3a6537c2813080e139c854c855cc31952",
+      "database_row_digest": "fafd31ca2bf0eebc569af1dbaed4ffbd",
+      "runtime_expected_digest": "ffae3f0fccf398622ab85de427434802ae2298307f33a66d1b4b6b786ba19832",
+      "legacy_default_fields_omitted": [
+        "session",
+        "output_contract"
+      ],
+      "runtime_stored_digest": "ffae3f0fccf398622ab85de427434802ae2298307f33a66d1b4b6b786ba19832",
+      "runtime_request_matches": true,
+      "runtime_state": "failed",
+      "runtime_fault": "uncertain",
+      "response_available": false,
+      "receipt_sha256": "e2af6cd16f551db471f37751bc43b9f19022af04619a9241b22b7990087ec88b",
+      "raw_cli_output_retained": false,
+      "started_at": 1791298825.9625278,
+      "retry_at": 1791298834.321963,
+      "receipt_keys": [
+        "cli_version",
+        "fault",
+        "input_digest",
+        "provider",
+        "request_id",
+        "requested_execution",
+        "retry_at",
+        "started_at",
+        "state"
+      ]
+    },
+    {
+      "id": "review-167b3a0c-a6bb-47ce-80b4-909b2a97f3ae",
+      "db_input_digest": "66f28f02648d712b7d0f6b8d94e25b88264e428aaedc429f0d10da7da4bd46cc",
+      "database_row_digest": "f5036acd4eb02b11fbbff9cd99317d7e",
+      "runtime_expected_digest": "fc1ce5b718bd165e99376c8eed4d090e787a7425bc54732c3c7de3c020e17083",
+      "legacy_default_fields_omitted": [
+        "session",
+        "output_contract"
+      ],
+      "runtime_stored_digest": "fc1ce5b718bd165e99376c8eed4d090e787a7425bc54732c3c7de3c020e17083",
+      "runtime_request_matches": true,
+      "runtime_state": "failed",
+      "runtime_fault": "uncertain",
+      "response_available": false,
+      "receipt_sha256": "59a63d37f00382fda39f65b67b87ae33416f585d1e1eeea07628fbeb49c21019",
+      "raw_cli_output_retained": false,
+      "started_at": 1791387600.1516428,
+      "retry_at": 1791387666.0633438,
+      "receipt_keys": [
+        "cli_version",
+        "fault",
+        "input_digest",
+        "provider",
+        "request_id",
+        "requested_execution",
+        "retry_at",
+        "started_at",
+        "state"
+      ]
+    }
+  ],
+  "model_calls": 0,
+  "database_writes": 0,
+  "limits": [
+    "DB input fingerprints and runtime normalized request digests are separate formats.",
+    "Failed uncertain receipts without raw CLI output cannot establish model completion or token usage.",
+    "Original review rows and runtime receipts are not changed or replayed."
+  ]
+}

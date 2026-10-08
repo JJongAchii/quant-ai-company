@@ -1,0 +1,98 @@
+{
+  "captured_at": "2026-10-07T22:42:43.345008+00:00",
+  "scope": "Actual installed maintenance container, old receipts and PostgreSQL; read only",
+  "patch_commit": "055a63ca2bb35d4f3e4540456dd85fef30a066a6",
+  "installed_module_sha256": {
+    "maintenance/investigation.py": "524f1b8a38901f7b2162c0622a41ca635b59bbf23a0a93cd67a177ae7bc834fa",
+    "maintenance/runner.py": "c410b52e7324f880436d23ab673ba2c8e3e3c9d35e4f5616b0caf3360ed2fa5d"
+  },
+  "container": {
+    "id": "613c988d5e8887ba370671eb375e4b5cd6b757eb0aa1eaa494ca46d8fb692b99",
+    "image_id": "sha256:cf217bf53ee0f70ec031ddeab3e856e7aa7df2dced51b92af3466fe061726bae",
+    "running": true,
+    "oom_killed": false,
+    "restart_count": 0,
+    "memory_limit_bytes": 268435456
+  },
+  "historical_calls_unchanged": true,
+  "historical_call_count": 85,
+  "uncertain_reviews_unchanged": true,
+  "uncertain_review_count": 11,
+  "heartbeat": {
+    "at": "2026-10-07 22:41:45.554366+00:00",
+    "enabled": true,
+    "poll_seconds": 300
+  },
+  "eligible_jobs": 0,
+  "original_case": {
+    "id": "49144860-7e42-5a72-8311-d47871ccf315",
+    "error": null,
+    "state": "done",
+    "updated_at": "2026-10-07T04:45:16.43888+00:00"
+  },
+  "new_calls_since_cutover": [
+    {
+      "id": "maint-c44f74be-7d4d-4aa1-a789-a4edd1ee5374-triage",
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 22230,
+        "output_tokens": 2275,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "job_id": "c44f74be-7d4d-4aa1-a789-a4edd1ee5374",
+      "has_response": true
+    },
+    {
+      "id": "maint-c44f74be-7d4d-4aa1-a789-a4edd1ee5374-triage-i1",
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 25941,
+        "output_tokens": 2343,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "job_id": "c44f74be-7d4d-4aa1-a789-a4edd1ee5374",
+      "has_response": true
+    },
+    {
+      "id": "maint-c44f74be-7d4d-4aa1-a789-a4edd1ee5374-triage-i2",
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 26222,
+        "output_tokens": 2162,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1380
+      },
+      "job_id": "c44f74be-7d4d-4aa1-a789-a4edd1ee5374",
+      "has_response": true
+    },
+    {
+      "id": "maint-c44f74be-7d4d-4aa1-a789-a4edd1ee5374-triage-i3",
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 26684,
+        "output_tokens": 2354,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "job_id": "c44f74be-7d4d-4aa1-a789-a4edd1ee5374",
+      "has_response": true
+    },
+    {
+      "id": "maint-c44f74be-7d4d-4aa1-a789-a4edd1ee5374-triage-i4",
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 26385,
+        "output_tokens": 2819,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2070
+      },
+      "job_id": "c44f74be-7d4d-4aa1-a789-a4edd1ee5374",
+      "has_response": true
+    }
+  ],
+  "model_calls_by_operator": 0,
+  "database_writes": 0,
+  "usage_boundary": "Prepared character reduction and code-query reuse are not observed model-token/cache savings"
+}
