@@ -10,6 +10,8 @@ OnCalendar=Mon..Fri 18:08:00 America/New_York
 OnCalendar=Mon..Fri 18:38:00 America/New_York
 # AM editions without a new US session (Monday outlook, US holidays) keep 07:45 KST.
 OnCalendar=*-*-* 22:58:00 UTC
+# Schedule v8 PM is due 17:25 KST; observe after its 10-minute finalization window.
+OnCalendar=*-*-* 08:38:00 UTC
 OnCalendar=*-*-* 08:58:00 UTC
 # Follow delayed Korean closes through the documented 17:00 close case.
 OnCalendar=*-*-* 09:58:00 UTC
