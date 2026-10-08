@@ -40,4 +40,43 @@ Google 규모 표시도 이 서비스의 1시간·6시간 동안 발생한 검�
 기존 검증 분류만 재사용했다. 처음 보는 후보는 생략했으며 생략 목록을 영수증에 기록했다.
 이 단계에서 DB 쓰기·모델·Slack 호출은 0회다. 새 후보의 실제 편집·발송 검증은 별도로 기록한다.
 
-운영 전환과 실제 발송 확인은 진행 중이다. 완료 전에는 이 문서를 배포 완료 증거로 사용하지 않는다.
+2026-10-08 14:45 KST에 [운영 전환](evidence/trend-window-20261008/activation.json)을 완료했다.
+진행 중인 모델·Slack 쓰기가 없는 상태에서 네 프로세스를 교체했고, 환경·마운트·다른 컨테이너·
+기존 발송 본문과 동결 요청을 보존했다. [실행 검사](evidence/trend-window-20261008/active-probe.json)에서
+네 프로세스의 v4 정책 digest와 파일 해시가 일치했다. INFO 연결 로그가 없는 설정이므로
+[실제 인증 SDK 연결](evidence/trend-window-20261008/slack-connection.json)을 별도로 확인했다.
+이 검사는 같은 Socket 컨테이너 설정으로 잠시 추가 연결한 것이며 새 사용자 메시지를 가장하지 않았다.
+
+[소스 커밋 CI](evidence/trend-window-20261008/ci-source.json)가 전체 서비스·PostgreSQL·Temporal과
+공식 CLI 프로토콜 검사를 통과했다. 서비스는 1,686개 통과·47개 건너뜀·live 1개 제외,
+별도 실제 CLI 구성/목록 프로토콜은 9개 통과다. 로컬 전체 검사 중 발견한 기존 미리보기 영수증 호환 문제
+2건은 `peak_snapshot` 호환 필드로 수정했고, 별도 14개 회귀와 실제 부모 후보 검사에서 다시 통과했다.
+
+14:47 KST에 채팅에서 승인한 운영 검사 요청을 기존 요청 처리 함수로 한 번 등록했다.
+새 Slack 사용자 이벤트를 가장하지 않았으며, 수집·편집·확정·발송은 평소 Temporal/dispatcher
+경로로 진행했다. 새 50개 후보를 실제 Codex 구독 `gpt-6-astra`로 한 번 편집했고
+14:50:53에 검증을 마친 뒤 **14:51:06에 10개를 1회 시도로 발송**했다.
+[실제 영수증](evidence/trend-window-20261008/live-delivery.json),
+[전달 본문](evidence/trend-window-20261008/delivered-message.txt),
+[Slack 메시지](https://achiisquantresearch.slack.com/archives/C0C6WTA9ECV/p1791438666509699?thread_ts=1791425245.175969&cid=C0C6WTA9ECV).
+
+본문의 관측 구간은 08:47–14:47 KST이며 1시간 우선이다. 비스포츠 검색 급상승 10개가
+확보되어 이 발송에는 뉴스 보충이 없었다. 보충의 별도 섹션은 영속 DB 자동 검사로 검증했다.
+새 발송 ID는 `57c30432-460f-5c67-b15c-f0ec724a4936`이며 이전 본문을 수정하거나 재발송하지 않았다.
+실제 Slack 영수증 조회는 Slack 비밀이 있는 dispatcher에서 수행했다. 수집 작업자는 Slack 비밀을 갖지 않는다.
+검사 시점 하루 요청 편집 5회/6회, 전체 편집 7회/12회, 네이버 93회/100회이며 예산을 늘리지 않았다.
+수집·편집·publication-v2 workflow가 모두 실행 중이고, 다음 정기는 **2026-10-08 20:00 KST**다.
+
+코드와 비밀 없는 근거는 [PR #127](https://github.com/JJongAchii/quant-ai-company/pull/127)에 반영한다.
+
+## 복구
+
+실제 부모 이미지 ID는 [manifest](evidence/trend-window-20261008/manifest.json), 후보 이미지 ID는
+[이미지 영수증](evidence/trend-window-20261008/images.json)에 기록했다. 서버의
+`/opt/quant-company/operator-releases/trend-window-20261008/containers.before.json`은 기존 환경과
+마운트를 포함하므로 root 전용으로 유지하며 Git에 복사하지 않는다.
+
+복구는 소유자 일시 중지와 진행 작업 종료 확인 후 네 프로세스의 이미지 버전을 함께 맞춘다.
+환경·비밀 마운트는 현재 것을 유지한다. 불명 호출·발송은 먼저 실제 영수증을 대조하며 재실행하지 않는다.
+v4로 동결한 미발송 결과는 다른 정책 버전에서 기존 gate로 차단되고, 이미 보낸 본문은 변경하지 않는다.
+운영 스크립트는 기존 activation 영수증이나 부모 이미지 변경이 있으면 재실행을 거부한다.

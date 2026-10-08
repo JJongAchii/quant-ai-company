@@ -8,5 +8,6 @@
   "editorial_policy_version": 4,
   "credential_value_scan": "no credential-like values in changed tracked/unignored files",
   "actual_native_image_sources_match_qualified_manifests": true,
-  "activation": "pending"
+  "activation": "actual four process settings/mounts/other containers preserved; policy v4 hashes agree",
+  "slack_authentication": "actual short-lived SDK connection in running socket container; no outbound message; normal persistent process running with restart count 0"
 }

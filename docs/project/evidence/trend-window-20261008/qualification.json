@@ -1,5 +1,5 @@
 {
-  "status": "implementation-qualified; live activation pending",
+  "status": "passed; activated and real normal-path Slack delivery verified",
   "postgres": "real disposable PostgreSQL 14",
   "temporal": "real local server and workflow replay on producer/dispatcher parents",
   "model_http_slack_in_automated_tests": "synthetic fixtures",
@@ -16,5 +16,35 @@
     "trend_feed/store.py": "a304bb369d51bb195305e7edbdf641937d2b60f93f1d6858d91e28f7ca991eef"
   },
   "lint": "passed",
-  "real_preview": "read-only production observations and prior verified categories; unknown candidates omitted and listed; no new model or Slack calls"
+  "real_preview": "read-only production observations and prior verified categories; unknown candidates omitted and listed; no new model or Slack calls",
+  "local_full_before_compatibility_fix": {
+    "passed": 1683,
+    "skipped": 48,
+    "deselected": 1,
+    "failed": 2,
+    "cause": "legacy preview validator required peak_snapshot; compatibility alias restored and targeted/native regressions passed"
+  },
+  "compatibility_and_ranking_rerun": {
+    "passed": 14
+  },
+  "source_ci": {
+    "head": "a55478fee49acacf509ddb43bcd0683f369d5f15",
+    "service_passed": 1686,
+    "service_skipped": 47,
+    "service_deselected": 1,
+    "protocol_passed": 9,
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37733771817"
+  },
+  "actual_delivery": {
+    "id": "57c30432-460f-5c67-b15c-f0ec724a4936",
+    "status": "delivered",
+    "attempts": 1,
+    "items": 10,
+    "model_calls": 1,
+    "model": "gpt-6-astra",
+    "provider": "codex",
+    "operator_input_not_new_slack_event": true,
+    "normal_temporal_publisher_and_dispatcher": true,
+    "permalink": "https://achiisquantresearch.slack.com/archives/C0C6WTA9ECV/p1791438666509699?thread_ts=1791425245.175969&cid=C0C6WTA9ECV"
+  }
 }

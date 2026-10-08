@@ -6,46 +6,64 @@
   "currentIntent": "INTENT-v9.json",
   "deliverables": {
     "ACTIVATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-window-20261008/live-delivery.json",
+          "sha256": "f1dc00a3cc79"
+        }
+      ],
+      "note": "Actual 4 parents received only3 trend modules, config/other containers/receipts preserved; v4 digest agreement, authenticated SDK, 3 running Temporal workflows and normal delivered receipt1791438666.509699 verified.",
+      "status": "verified",
+      "updatedAt": "2026-10-08T05:56:21.553743+00:00"
     },
     "IMPLEMENTATION": {
       "evidence": [
         {
           "path": "docs/project/TREND-WINDOW-RANKING-20261008.md",
-          "sha256": "bdb566ae2a18"
+          "sha256": "7cb7b78dbadf"
         }
       ],
-      "note": "6h/1h ranking, typed proposal order, separate supplements, policy v4 and request-only cache implemented; native role qualification recorded.",
+      "note": "Final report includes deterministic6h/1h implementation, actual activation and normal10-item Slack receipt; source feature unchanged after qualified a55478f.",
       "status": "verified",
-      "updatedAt": "2026-10-08T05:40:49.453283+00:00"
+      "updatedAt": "2026-10-08T05:57:08.323725+00:00"
     },
     "PUBLICATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-window-20261008/ci-source.json",
+          "sha256": "27665c99fcf2"
+        }
+      ],
+      "note": "Feature source and qualified evidence pushed to PR127; a55478f source-head CI passed. Final live evidence is integrated in this closure commit; merge follows latest-head CI.",
+      "status": "verified",
+      "updatedAt": "2026-10-08T05:56:21.855444+00:00"
     },
     "SECURITY": {
       "evidence": [
         {
           "path": "docs/project/evidence/trend-window-20261008/security.json",
-          "sha256": "e93a125799df"
+          "sha256": "785eedce9504"
         }
       ],
-      "note": "No credential/scope/provider additions; actual API/socket request boundary regression passed, policy v4 and uncertain receipt behavior preserved.",
+      "note": "Final evidence adds authenticated SDK probe and verified unchanged role settings/mounts; no new secrets, API keys, provider or Slack scopes.",
       "status": "verified",
-      "updatedAt": "2026-10-08T05:41:40.621072+00:00"
+      "updatedAt": "2026-10-08T05:57:08.524526+00:00"
     },
     "VALIDATION": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/project/evidence/trend-window-20261008/qualification.json",
+          "sha256": "ce81e90d1e90"
+        }
+      ],
+      "note": "Actual PG/Temporal native role tests, source-head CI1686+protocol9, real Codex 1 call and normal Slack delivery of10 items passed; simulated ingress vs actual authenticated SDK and operator input distinguished.",
+      "status": "verified",
+      "updatedAt": "2026-10-08T05:56:21.291575+00:00"
     }
   },
   "intentDigest": "b443ce80fbf2",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-08T05:41:40.621072+00:00"
+  "updatedAt": "2026-10-08T05:57:08.524526+00:00"
 }
