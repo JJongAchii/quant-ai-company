@@ -1,0 +1,29 @@
+{
+  "source_commit": "055a63ca2bb35d4f3e4540456dd85fef30a066a6",
+  "scope": "Real local PostgreSQL and meaningful baseline assertion; model, GitHub and Slack fixtures explicitly simulated",
+  "baseline": {
+    "source": "679a370fa29e9cc0d3f1f11506ccd8a2dd93ae10",
+    "test": "test_repeated_fixture_inspection_preserves_calls_and_original_receipts",
+    "exit_code": 1,
+    "failure": "AssertionError: second.get('inspection_catalog') is None; no import/collection failure"
+  },
+  "full_initial": {
+    "source_stage": "Initial reuse implementation before final preview and coverage changes",
+    "passed": 1585,
+    "skipped": 49,
+    "warnings": 2,
+    "seconds": 393.99
+  },
+  "focused_final": {
+    "passed": 30,
+    "seconds": 5.75,
+    "files": [
+      "tests/test_maintenance_inspection_reuse.py",
+      "tests/test_maintenance_evidence_budget.py",
+      "tests/test_maintenance_proposals.py",
+      "tests/test_maintenance_engineering.py"
+    ]
+  },
+  "lint": "All checks passed; diff check passed",
+  "real_model_calls": 0
+}

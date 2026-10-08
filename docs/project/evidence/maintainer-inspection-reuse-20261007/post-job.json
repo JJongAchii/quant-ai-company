@@ -1,0 +1,15 @@
+{
+  "scope": "Read-only status of the naturally created post-cutover job; not an operator-triggered model test",
+  "record": {
+    "kind": "triage",
+    "error": "investigation_budget_exhausted",
+    "state": "blocked",
+    "job_id": "c44f74be-7d4d-4aa1-a789-a4edd1ee5374",
+    "captured_at": "2026-10-08T00:39:37.351653+00:00",
+    "reused_excerpts": 0,
+    "stored_excerpts": 16,
+    "inspection_rounds": 4
+  },
+  "model_calls_by_operator": 0,
+  "database_writes": 0
+}

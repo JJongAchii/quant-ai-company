@@ -1,0 +1,247 @@
+{
+  "captured_at": "2026-10-07T10:26:53.667903+00:00",
+  "scope": "Actual frozen production requests and real PostgreSQL; exact source query comparison; no inference",
+  "patch_commit": "055a63ca2bb35d4f3e4540456dd85fef30a066a6",
+  "base_image_id": "sha256:888c5bddf3b7ab537d176f259cb6607368d6cfd367514c36344c38dd42f57ed3",
+  "previous_container_id": "b022ada4c7f1cf5eee422e05205dbe18b9d25ab6a55f4932a409d04092e17c45",
+  "target_image": "quant-company-maintainer-inspection:055a63ca2bb35d4f3e4540456dd85fef30a066a6",
+  "target_image_id": "sha256:cf217bf53ee0f70ec031ddeab3e856e7aa7df2dced51b92af3466fe061726bae",
+  "baseline": {
+    "variant": "baseline",
+    "model_calls": 0,
+    "database_writes": 0,
+    "original_job_row_md5": "68d8f4fa2baef33a6b783232dc19d81d",
+    "original_calls_unchanged": true,
+    "snapshot_commit": "388f44d5897129314232d86ba9230a863bf658a4",
+    "prompts": [
+      {
+        "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage",
+        "model": "gpt-6.1-sol",
+        "original_prompt_characters": 87156,
+        "prepared_characters": 87156,
+        "prepared_sha256": "97d1df038d4be07b0bc7e31a747fbda7a317cf1b91f8f0897439c7d9674e6376",
+        "indexed_excerpts": 0,
+        "shown_paths": [],
+        "original_call_row_md5": "61f87edca8b16be929acf2c90d217282"
+      },
+      {
+        "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage-i1",
+        "model": "gpt-6.1-sol",
+        "original_prompt_characters": 87402,
+        "prepared_characters": 87402,
+        "prepared_sha256": "e569f8de54f92268ddcef395108d2fcac80fec66bca9350f0ccb7fb4a6758142",
+        "indexed_excerpts": 0,
+        "shown_paths": [
+          "src/quant_company/api.py",
+          "src/quant_company/company.py",
+          "src/quant_company/maintenance/applications.py",
+          "src/quant_company/system_state.py"
+        ],
+        "original_call_row_md5": "2b43414dc9566e7de147994bd997ee42"
+      },
+      {
+        "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage-i2",
+        "model": "gpt-6.1-sol",
+        "original_prompt_characters": 87472,
+        "prepared_characters": 87472,
+        "prepared_sha256": "82e260ce90431ec88915e288c64705e197ef518d7d8da4fc99845a7c19c5736d",
+        "indexed_excerpts": 0,
+        "shown_paths": [
+          "src/quant_company/api.py",
+          "src/quant_company/company.py",
+          "src/quant_company/maintenance/applications.py",
+          "src/quant_company/maintenance/store.py"
+        ],
+        "original_call_row_md5": "4ffde649a91b88a2827955fa756b3632"
+      },
+      {
+        "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage-i3",
+        "model": "gpt-6.1-sol",
+        "original_prompt_characters": 87746,
+        "prepared_characters": 87746,
+        "prepared_sha256": "2d2b60954166cfe9452cf4a77fb2cbcf565c9cffc8f35c186492f3d0aa92fa36",
+        "indexed_excerpts": 0,
+        "shown_paths": [
+          "src/quant_company/housing_feed/panel.py",
+          "src/quant_company/maintenance/cases.py",
+          "src/quant_company/maintenance/runner.py",
+          "src/quant_company/system_state.py"
+        ],
+        "original_call_row_md5": "c15251158c80ec4c4c00e28ab0cdb004"
+      },
+      {
+        "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage-i4",
+        "model": "gpt-6.1-sol",
+        "original_prompt_characters": 87145,
+        "prepared_characters": 87145,
+        "prepared_sha256": "99fac74fe77c745ba1c4b198a48f2ce80077f3a9a577d79718cde2d7eaff18ae",
+        "indexed_excerpts": 0,
+        "shown_paths": [
+          "src/quant_company/company.py",
+          "src/quant_company/contracts.py",
+          "src/quant_company/maintenance/identity.py",
+          "src/quant_company/maintenance/requests.py"
+        ],
+        "original_call_row_md5": "edbd8ca3b6c1be573889c9ae51e7f13e"
+      }
+    ],
+    "inspection_rounds": [
+      {
+        "round": 1,
+        "returned_excerpts": 13,
+        "reused_excerpts": 0,
+        "new_repository_loads": 1
+      },
+      {
+        "round": 2,
+        "returned_excerpts": 13,
+        "reused_excerpts": 0,
+        "new_repository_loads": 1
+      },
+      {
+        "round": 3,
+        "returned_excerpts": 6,
+        "reused_excerpts": 0,
+        "new_repository_loads": 1
+      },
+      {
+        "round": 4,
+        "returned_excerpts": 6,
+        "reused_excerpts": 0,
+        "new_repository_loads": 1
+      }
+    ],
+    "stored_excerpts": 38,
+    "repository_loads": 4
+  },
+  "candidate": {
+    "variant": "candidate",
+    "model_calls": 0,
+    "database_writes": 0,
+    "original_job_row_md5": "68d8f4fa2baef33a6b783232dc19d81d",
+    "original_calls_unchanged": true,
+    "snapshot_commit": "388f44d5897129314232d86ba9230a863bf658a4",
+    "prompts": [
+      {
+        "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage",
+        "model": "gpt-6.1-sol",
+        "original_prompt_characters": 87156,
+        "prepared_characters": 68706,
+        "prepared_sha256": "d85df8bf956c6f1ce11ee72d4a9feef20872355885cf971e0bcf3cdba72d5540",
+        "indexed_excerpts": 0,
+        "shown_paths": [],
+        "original_call_row_md5": "61f87edca8b16be929acf2c90d217282"
+      },
+      {
+        "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage-i1",
+        "model": "gpt-6.1-sol",
+        "original_prompt_characters": 87402,
+        "prepared_characters": 84824,
+        "prepared_sha256": "2fa167be73f375ad3e5179c260b5ae8ee55e130387fba7a55160af7efbe3e624",
+        "indexed_excerpts": 13,
+        "shown_paths": [
+          "src/quant_company/system_state.py",
+          "src/quant_company/accounts.py",
+          "src/quant_company/api.py",
+          "src/quant_company/company.py"
+        ],
+        "original_call_row_md5": "2b43414dc9566e7de147994bd997ee42"
+      },
+      {
+        "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage-i2",
+        "model": "gpt-6.1-sol",
+        "original_prompt_characters": 87472,
+        "prepared_characters": 83983,
+        "prepared_sha256": "9ee8944a7c79faa9ed1210aceb17827e9b28c78e5b8f802dfd9f5b9ebf82fc43",
+        "indexed_excerpts": 17,
+        "shown_paths": [
+          "src/quant_company/maintenance/store.py",
+          "src/quant_company/staff/cases.py",
+          "src/quant_company/staff/independent_review.py",
+          "src/quant_company/staff/progress.py"
+        ],
+        "original_call_row_md5": "4ffde649a91b88a2827955fa756b3632"
+      },
+      {
+        "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage-i3",
+        "model": "gpt-6.1-sol",
+        "original_prompt_characters": 87746,
+        "prepared_characters": 86628,
+        "prepared_sha256": "d938b8ad460f096ef69d3e37e3322942e3974b09665499cb99d31d9ce40c61ec",
+        "indexed_excerpts": 19,
+        "shown_paths": [
+          "src/quant_company/maintenance/runner.py",
+          "src/quant_company/system_state.py",
+          "src/quant_company/accounts.py",
+          "src/quant_company/housing_feed/panel.py"
+        ],
+        "original_call_row_md5": "c15251158c80ec4c4c00e28ab0cdb004"
+      },
+      {
+        "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage-i4",
+        "model": "gpt-6.1-sol",
+        "original_prompt_characters": 87145,
+        "prepared_characters": 85087,
+        "prepared_sha256": "0585bb4d091ac964c32763cc9d2f3e90ebbd206a3775791b5e453ab89eaabab1",
+        "indexed_excerpts": 25,
+        "shown_paths": [
+          "src/quant_company/maintenance/runner.py",
+          "src/quant_company/maintenance/store.py",
+          "src/quant_company/company.py",
+          "src/quant_company/contracts.py"
+        ],
+        "original_call_row_md5": "edbd8ca3b6c1be573889c9ae51e7f13e"
+      }
+    ],
+    "inspection_rounds": [
+      {
+        "round": 1,
+        "returned_excerpts": 13,
+        "reused_excerpts": 0,
+        "new_repository_loads": 1
+      },
+      {
+        "round": 2,
+        "returned_excerpts": 13,
+        "reused_excerpts": 8,
+        "new_repository_loads": 1
+      },
+      {
+        "round": 3,
+        "returned_excerpts": 6,
+        "reused_excerpts": 4,
+        "new_repository_loads": 1
+      },
+      {
+        "round": 4,
+        "returned_excerpts": 6,
+        "reused_excerpts": 0,
+        "new_repository_loads": 1
+      }
+    ],
+    "stored_excerpts": 25,
+    "repository_loads": 4
+  },
+  "aggregate_characters": {
+    "before": 436921,
+    "after": 409228,
+    "reduction_percent": 6.338216748565529
+  },
+  "candidate_module_sha256": {
+    "investigation.py": "524f1b8a38901f7b2162c0622a41ca635b59bbf23a0a93cd67a177ae7bc834fa",
+    "runner.py": "c410b52e7324f880436d23ab673ba2c8e3e3c9d35e4f5616b0caf3360ed2fa5d"
+  },
+  "compose_files": [
+    "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml",
+    "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml",
+    "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml",
+    "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml",
+    "/var/lib/quant-company/config/maintainer-recovery-fadc0e54be0c470068bb18011cc6a1a9ec8ee971.compose.json",
+    "/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8.compose.json",
+    "/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8-memory.compose.json",
+    "/var/lib/quant-company/config/model-assignments-20261006-maintenance.compose.json",
+    "/var/lib/quant-company/config/maintainer-evidence-db94a2d026aeb10d26e68570089d495de50c3dcc.compose.json"
+  ],
+  "project": "quant-company",
+  "usage_boundary": "This is preparation/query reuse, not measured new model token usage or cache savings"
+}

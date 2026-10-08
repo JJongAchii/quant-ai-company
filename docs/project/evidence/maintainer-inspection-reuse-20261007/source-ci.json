@@ -1,0 +1,190 @@
+{
+  "conclusion": "success",
+  "headSha": "055a63ca2bb35d4f3e4540456dd85fef30a066a6",
+  "jobs": [
+    {
+      "completedAt": "2026-10-07T10:36:32Z",
+      "conclusion": "success",
+      "databaseId": 112746624511,
+      "name": "service",
+      "startedAt": "2026-10-07T10:27:45Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-07T10:27:47Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-07T10:27:46Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:28:01Z",
+          "conclusion": "success",
+          "name": "Initialize containers",
+          "number": 2,
+          "startedAt": "2026-10-07T10:27:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:28:03Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "number": 3,
+          "startedAt": "2026-10-07T10:28:01Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:28:04Z",
+          "conclusion": "success",
+          "name": "Run astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff",
+          "number": 4,
+          "startedAt": "2026-10-07T10:28:03Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:28:05Z",
+          "conclusion": "success",
+          "name": "Install core dependencies",
+          "number": 5,
+          "startedAt": "2026-10-07T10:28:04Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:28:05Z",
+          "conclusion": "success",
+          "name": "Lint",
+          "number": 6,
+          "startedAt": "2026-10-07T10:28:05Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:28:05Z",
+          "conclusion": "skipped",
+          "name": "Regression reproduces on base",
+          "number": 7,
+          "startedAt": "2026-10-07T10:28:05Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:36:30Z",
+          "conclusion": "success",
+          "name": "PostgreSQL, Temporal and service regression tests",
+          "number": 8,
+          "startedAt": "2026-10-07T10:28:05Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:36:30Z",
+          "conclusion": "success",
+          "name": "Post Run astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff",
+          "number": 14,
+          "startedAt": "2026-10-07T10:36:30Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:36:30Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "number": 15,
+          "startedAt": "2026-10-07T10:36:30Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:36:31Z",
+          "conclusion": "success",
+          "name": "Stop containers",
+          "number": 16,
+          "startedAt": "2026-10-07T10:36:30Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:36:31Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 17,
+          "startedAt": "2026-10-07T10:36:31Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37607381665/job/112746624511"
+    },
+    {
+      "completedAt": "2026-10-07T10:28:05Z",
+      "conclusion": "success",
+      "databaseId": 112746624912,
+      "name": "codex-protocol",
+      "startedAt": "2026-10-07T10:27:45Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-07T10:27:48Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-07T10:27:46Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:27:51Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "number": 2,
+          "startedAt": "2026-10-07T10:27:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:27:53Z",
+          "conclusion": "success",
+          "name": "Run astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff",
+          "number": 3,
+          "startedAt": "2026-10-07T10:27:51Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:27:59Z",
+          "conclusion": "success",
+          "name": "Install the reviewed Linux distribution",
+          "number": 4,
+          "startedAt": "2026-10-07T10:27:53Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:28:02Z",
+          "conclusion": "success",
+          "name": "Real CLI config and catalog protocol; empty auth, no inference",
+          "number": 5,
+          "startedAt": "2026-10-07T10:27:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:28:02Z",
+          "conclusion": "success",
+          "name": "Post Run astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff",
+          "number": 9,
+          "startedAt": "2026-10-07T10:28:02Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:28:03Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "number": 10,
+          "startedAt": "2026-10-07T10:28:02Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T10:28:03Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 11,
+          "startedAt": "2026-10-07T10:28:03Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37607381665/job/112746624912"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37607381665"
+}
