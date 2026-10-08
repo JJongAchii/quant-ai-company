@@ -20,31 +20,31 @@
       "evidence": [
         {
           "path": "docs/project/TREND-REQUEST-RECOVERY-20261008.md",
-          "sha256": "5dbd8f10364a"
+          "sha256": "76b670255380"
         },
         {
           "path": "docs/project/evidence/trend-outbox-20261008/native-dispatch.patch",
           "sha256": "b396f27a2976"
         }
       ],
-      "note": "7039e77: paced outbox 최대32건 보류건너뛰기·on-demand 우선. 실제parent225파일과briefing gate 보존. 진단/실패재현/전체CI/실제자동발송을 최종보고서에 기록.",
+      "note": "구현·실제운영검증과 PR126 main18c2fad 병합을 최종보고서에 기록. 최신d589556 CI1642/9/lint통과, main ancestry·검사한구현/테스트/배포파일일치 확인. 구현변경없이 병합증거만추가.",
       "status": "verified",
-      "updatedAt": "2026-10-08T03:05:20.206554+00:00"
+      "updatedAt": "2026-10-08T03:58:36.601882+00:00"
     },
     "PUBLICATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-outbox-20261008/publication.json",
-          "sha256": "57c14eb505a9"
+          "path": "docs/project/evidence/trend-outbox-20261008/merge.json",
+          "sha256": "0e1f306bf1fc"
         },
         {
-          "path": "docs/project/evidence/trend-outbox-20261008/ci.json",
-          "sha256": "3d488edd8284"
+          "path": "docs/project/evidence/trend-outbox-20261008/premerge-ci.json",
+          "sha256": "03abe107dce1"
         }
       ],
-      "note": "원격fix/trend-request-delivery 7039e77·PR126 OPEN 게시, source전체CI1642/9/lint통과. 최종운영증거는 회사저장소closure문서커밋으로동일브랜치게시. main병합은하지않음.",
+      "note": "최신d589556 모든CI1642/9/lint통과 확인 후 PR126 main18c2fad 병합. GitHub MERGED/원격main ancestry/구현·테스트·배포동일 대조 완료. 병합완료증거는 작업브랜치 문서커밋으로 추가.",
       "status": "verified",
-      "updatedAt": "2026-10-08T03:05:40.918716+00:00"
+      "updatedAt": "2026-10-08T03:58:36.806166+00:00"
     },
     "SECURITY": {
       "evidence": [
@@ -81,5 +81,5 @@
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-08T03:05:40.918716+00:00"
+  "updatedAt": "2026-10-08T03:58:36.806166+00:00"
 }
