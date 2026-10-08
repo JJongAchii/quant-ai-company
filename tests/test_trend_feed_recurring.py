@@ -71,7 +71,8 @@ def test_three_daily_slots_keep_morning_id_and_commit_independently(trend):
         frozen = trend.freeze()
         identities.append(frozen["id"])
         assert frozen["bundle"]["candidates"][0]["title"] == f"{hour}시의 최신 기술"
-        assert frozen["bundle"]["candidate_scope"] == "latest_rss"
+        assert frozen["bundle"]["candidate_scope"] == "rolling_observations"
+        assert frozen["bundle"]["ranking_window"]["hours"] == 6
         clock(trend, hour)
         assert trend.finalize()["state"] == "queued"
         assert trend.finalize()["state"] == "queued"
@@ -125,7 +126,7 @@ def test_dedicated_request_policy_survives_other_process_channel_differences(tre
     assert trend.policy() != policy and not trend.authorized()
 
 
-async def test_on_demand_refresh_filters_out_disappeared_keywords_and_reuses_verified_draft(trend):
+async def test_on_demand_refresh_retains_recent_history_and_reuses_compatible_draft(trend):
     recurring(trend)
     clock(trend, 9, 50)
     ingest(trend, title="오래된 관심 주제", traffic="500,000+")
@@ -133,7 +134,8 @@ async def test_on_demand_refresh_filters_out_disappeared_keywords_and_reuses_ver
     requested, call = await complete_request(trend, "first-request")
     first = outgoing(trend)[0]
     assert first["thread_ts"] == "first-request" and "요청 브리핑" in first["text"]
-    assert "새로운 기술 공개" in first["text"] and "오래된 관심 주제" not in first["text"]
+    assert first["text"].index("새로운 기술 공개") < first["text"].index("오래된 관심 주제")
+    assert "최근 1시간" in first["text"] and "이전 관측 · 마지막 관측 09:50 KST" in first["text"]
     assert trend.company.settings.trend_feed_on_demand_enabled
     # Request replies are immediately eligible, while their edit deadline is still in the future.
     with trend.db.transaction() as conn:

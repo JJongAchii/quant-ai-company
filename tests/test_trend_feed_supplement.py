@@ -79,9 +79,11 @@ async def test_accepted_news_fills_ten_without_naver_headline_queries(trend):  #
     assert len(selected) == 10
     text = render(bundle, draft)
     assert "검색 급상승 1개 · 주요 이슈 9개" in text and "10개 목표" in text
-    cards = text.split("\n*")[2:]
+    supplement = text.split("*함께 볼 주요 이슈 · 순위 외*", 1)[1]
+    cards = supplement.split("\n자료 마감", 1)[0].split("\n*• ")[1:]
     assert len(cards) == 9
     assert all("Google 규모" not in card and "네이버 최근" not in card for card in cards)
+    assert "*2." not in text and "*1. 신기술 발표" in text
     # The producer's accepted IDs and evidence survive through enrichment and final outbox commitment.
     call = trend.prepare_call()
     trend.finish_call(call, response(call["id"], bundle, background=True))
