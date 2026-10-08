@@ -73,6 +73,9 @@ def report(conn, job, owner):
               "validation": current["receipt"].get("ci"),
               "reason": current["receipt"].get("reason") or job["receipt"].get("reason"), "pr": current["receipt"].get("pr"),
               "head": current["receipt"].get("head"),
+              "outcome": current["receipt"].get("outcome"),
+              "required_evidence": current["receipt"].get("required_evidence", []),
+              "review_ids": current["receipt"].get("review_ids", []),
               "created_at": job["created_at"], "assessment": truth,
               "finding_is_current_fact": truth["disposition"] == "reproduced"}
     if truth["disposition"] in {"invalidated", "resolved"}:
@@ -228,12 +231,17 @@ def progress_text(value, runtime):
         if runtime.get("daily_model_call_cap") is None and runtime.get("company_daily_model_call_cap") is None:
             return prefix + "일일 한도 해제가 적용됐습니다. 저장된 요청을 최신 근거로 재개할 차례를 기다립니다."
         return prefix + f"모델 호출 한도로 대기 중입니다. 예산 초기화: {runtime.get('budget_resets_at')}. 요청은 보존되어 자동 재개됩니다."
+    if error == "review_reconciliation_required":
+        return prefix + ("독립 검토의 원 요청·runtime 영수증·원 CLI 출력 대사가 필요합니다. "
+                         "현재 결과는 불확실하며 코드만 읽어서 원인을 확정할 수 없습니다. "
+                         "원 요청을 재호출하지 않고 직원 평가 점수도 유지합니다. "
+                         "수정안·검증·PR·운영 반영은 아직 완료되지 않았습니다.")
     if state == "blocked":
         return prefix + f"검증에서 멈췄습니다 ({error}). 수정 완료가 아닙니다. 근거와 실패 기록을 보존했으며 운영자 확인이 필요합니다."
     if error:
         return prefix + f"일시 대기 중입니다 ({error}). 같은 작업을 이어가며 결과를 이 스레드에 보고합니다."
     if state == "done":
-        return prefix + "점검을 마쳤습니다. " + (value.get("reason") or "확인된 수정 후보가 없습니다.")[:1800]
+        return prefix + "점검을 마쳤습니다. 결과: 수정 후보 없음. 수리·PR·운영 반영 기록은 없습니다. " + (value.get("reason") or "확인된 수정 후보가 없습니다.")[:1800]
     if state in {"pr_open", "applied", "closed"}:
         return prefix + {"pr_open": "검토할 PR이 준비됐습니다. 운영 반영에는 별도 승인이 필요합니다.",
                          "applied": "연결된 개선안의 반영이 완료됐습니다.", "closed": "연결된 PR이 닫혀 있습니다."}[state]

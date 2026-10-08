@@ -129,8 +129,8 @@ def test_catalog_retains_old_ranges_and_explicit_lookup_over_broad_search_tail()
     before = digest(payload)
     context = inspection_context(payload)
     assert context["investigated_code"][0] == explicit
-    assert len(context["investigated_code"]) == 4 and len(context["inspection_catalog"]) == 13
-    assert sum(row["shown"] for row in context["inspection_catalog"]) == 4
+    assert len(context["investigated_code"]) == 13 and len(context["inspection_catalog"]) == 13
+    assert sum(row["shown"] for row in context["inspection_catalog"]) == 13
     assert all("content" not in row for row in context["inspection_catalog"])
     assert "not model memory" in context["inspection_lookup"] and digest(payload) == before
 
@@ -157,8 +157,8 @@ def test_numbered_preview_keeps_missing_tail_discoverable_without_mutating_exact
     before = digest(row)
     shown, _ = proposal_material({"investigated_code": [row]}, Triage)
     body = shown["investigated_code"][0]
-    assert len(body["content"]) == 2500 and body["excerpted"]
-    assert body["shown_line_count"] < 200 and body["start_line"] == 50
+    assert body["content"] == row["content"] and body["excerpted"]
+    assert body["shown_line_count"] == 200 and body["start_line"] == 50
     assert digest(row) == before
 
 

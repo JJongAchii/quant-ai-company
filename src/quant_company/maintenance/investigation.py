@@ -99,29 +99,67 @@ def append_inspections(payload, evidence):
             known.add(identity)
 
 
+def joined_inspections(rows):
+    """Join numbered exact-commit ranges; unread gaps remain separate and receipts stay immutable."""
+    groups, output = {}, []
+    for row in rows:
+        if not row.get("content"):
+            continue
+        matches = [re.fullmatch(r"(\d+): (.*)", line) for line in row["content"].splitlines()]
+        if not matches or not all(matches):
+            output.append(row)
+            continue
+        group = groups.setdefault((row["key"], row["path"]), {"rows": [], "lines": {}})
+        group["rows"].append(row)
+        for match in matches:
+            number, line = int(match[1]), match[2]
+            previous = group["lines"].get(number)
+            if previous is not None and previous != line:
+                # An original 14k-char receipt may end inside a line; prefer its complete overlap.
+                if line.startswith(previous):
+                    pass
+                elif previous.startswith(line):
+                    continue
+                else:
+                    raise ValueError("conflicting_exact_inspection_lines")
+            group["lines"][number] = line
+    for group in groups.values():
+        if len(group["rows"]) == 1:
+            output.append(group["rows"][0])
+            continue
+        template = group["rows"][0]
+        ranges = []
+        for number, line in sorted(group["lines"].items()):
+            if not ranges or ranges[-1][-1][0] + 1 != number:
+                ranges.append([])
+            ranges[-1].append((number, line))
+        for range_ in ranges:
+            output.append({**{key: template[key] for key in ("key", "path", "total_lines") if key in template},
+                           "start_line": range_[0][0],
+                           "content": "\n".join(f"{number}: {line}" for number, line in range_),
+                           "excerpted": range_[0][0] > 1 or range_[-1][0] < template.get("total_lines", 2**31),
+                           "joined_ranges": len(group["rows"])})
+    return output
+
+
 def inspection_context(payload):
-    """Show every saved range in an index; prioritize explicit requests and new ranges in the body."""
+    """Carry all previously read code into each stateless call, joining overlapping ranges."""
     unique = {excerpt_identity(row): row for row in payload.get("investigation_evidence", [])}
     rounds = payload.get("investigation_requests", [])
     recent = rounds[-1] if rounds else {}
-    older = {excerpt_identity(row) for round_ in rounds[:-1] for row in round_.get("evidence", [])}
     explicit = {row.get("path") for row in recent.get("requests", []) if row.get("path")}
-    candidates = {excerpt_identity(row): row for row in recent.get("evidence", [])}
-    if not candidates:
-        candidates = unique
-    ordered = sorted(candidates.items(), key=lambda pair: (pair[1].get("path") not in explicit,
-                     pair[0] in older, not pair[1].get("path", "").startswith(("src/", "tests/")),
-                     pair[1].get("path", ""), pair[1].get("start_line", 0)))
-    shown = [row for _, row in ordered[:4]]
-    selected = {excerpt_identity(row) for row in shown}
+    shown = sorted(joined_inspections(unique.values()), key=lambda row: (row.get("path") not in explicit,
+                   not row.get("path", "").startswith(("src/", "tests/")),
+                   row.get("path", ""), row.get("start_line", 0)))
     catalog = [{**{key: row[key] for key in ("key", "path", "start_line", "total_lines", "status") if key in row},
                 "line_count": len(row.get("content", "").splitlines()),
-                "content_digest": digest(row.get("content", "")), "shown": identity in selected}
-               for identity, row in unique.items()]
+                "content_digest": digest(row.get("content", "")), "shown": bool(row.get("content"))}
+               for row in unique.values()]
     return {"investigated_code": shown, "inspection_catalog": catalog,
             "inspection_lookup": "This is an index of stored exact-commit ranges, not model memory. "
-                                 "Only shown excerpts include code in this request. Request an indexed path/range "
-                                 "to read omitted content; repeated exact queries reuse saved positive receipts.",
+                                 "Previously read code is carried into this request; overlapping ranges are joined. "
+                                 "Unread gaps remain separate. Only shown code is known; request indexed ranges "
+                                 "omitted by the shared context budget. Exact queries reuse saved positive receipts.",
             "recent_inspection": {"requests": recent.get("requests", []),
                                   "returned_excerpts": len(recent.get("evidence", [])),
                                   "reused_excerpts": sum(bool(row.get("cache_hit")) for row in recent.get("evidence", []))}}
