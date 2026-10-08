@@ -323,6 +323,15 @@ class SlackOutbox:
             return not self.defer_news(conn, row, claimed=True)
 
     def claim(self):
+        # Deferring an older, paced feed must not consume the entire dispatch tick.
+        # Bound the work and commit each deferral before looking for another row.
+        for _ in range(32):
+            row = self._claim_one()
+            if row is not False:
+                return row
+        return None
+
+    def _claim_one(self):
         with self.company.db.transaction() as conn:
             row = conn.execute("""SELECT o.*,m.kind AS message_kind FROM outbox o JOIN messages m ON m.id=o.id
                 LEFT JOIN tasks k ON k.id=m.task_id JOIN projects p ON p.id=o.project_id
@@ -332,37 +341,38 @@ class SlackOutbox:
                   (SELECT 1 FROM tasks r WHERE r.project_id=o.project_id AND r.kind='routing'
                    AND r.status NOT IN ('completed','superseded'))))
                 ORDER BY (EXISTS(SELECT 1 FROM quant_feed_publications q WHERE q.id=o.id AND q.correction)) DESC,
+                (EXISTS(SELECT 1 FROM trend_feed_digests d WHERE d.id=o.id AND d.kind='on_demand')) DESC,
                 o.created_at FOR UPDATE OF o SKIP LOCKED LIMIT 1""").fetchone()
             if not row:
                 return None
             if self.defer_news(conn, row):
-                return None
+                return False
             if row["message_kind"] == "data_watch":
                 from .data_watch.reporting import gate
                 from .data_watch.store import DataWatchStore
 
                 if not gate(conn, DataWatchStore(self.company), row):
-                    return None
+                    return False
             if row["message_kind"] == "tech_feed":
                 from .tech_feed.store import TechFeedStore
 
                 if not TechFeedStore(self.company).gate(conn, row):
-                    return None
+                    return False
             if row["message_kind"] == "trend_feed":
                 from .trend_feed.store import TrendFeedStore
 
                 if not TrendFeedStore(self.company).gate(conn, row):
-                    return None
+                    return False
             if row["message_kind"] == "housing_feed":
                 from .housing_feed.store import HousingFeedStore
 
                 if not HousingFeedStore(self.company).gate(conn, row):
-                    return None
+                    return False
             if row["message_kind"] == "quant_feed":
                 from .quant_feed.store import QuantFeedStore
 
                 if not QuantFeedStore(self.company).gate(conn, row):
-                    return None
+                    return False
             if row["message_kind"] in {"news", "news_digest"}:
                 from .news.digest import NewsDigestStore
                 from .news.store import NewsStore
@@ -373,7 +383,7 @@ class SlackOutbox:
                     conn.execute("UPDATE outbox SET status='stale',error='news_policy_or_freshness_changed' WHERE id=%s",
                                  (row["id"],))
                     NewsDigestStore.settle_members(conn, row, "stale", error="news_policy_or_freshness_changed")
-                    return None
+                    return False
                 if row["message_kind"] == "news":
                     row["news_broadcast"] = conn.execute("SELECT broadcast FROM news_publications WHERE id=%s",
                                                         (row["id"],)).fetchone()["broadcast"]
@@ -382,13 +392,13 @@ class SlackOutbox:
                 conn.execute("UPDATE outbox SET status='stale' WHERE id=%s", (row["id"],))
                 if row["message_kind"] == "news_digest":
                     NewsDigestStore.settle_members(conn, row, "stale", error="project_revision_changed")
-                return None
+                return False
             if row["agent"] not in self.credentials:
                 conn.execute("UPDATE outbox SET status='blocked',error='missing_slack_identity' WHERE id=%s",
                              (row["id"],))
                 if row["message_kind"] == "news_digest":
                     NewsDigestStore.settle_members(conn, row, "blocked", error="missing_slack_identity")
-                return None
+                return False
             conn.execute("UPDATE outbox SET status='sending',attempts=attempts+1,started_at=now() WHERE id=%s",
                          (row["id"],))
             return as_json(row)
