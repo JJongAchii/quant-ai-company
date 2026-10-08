@@ -23,15 +23,15 @@ with company.db.transaction() as conn:
     if identity:
         row=conn.execute('SELECT * FROM research_mission_stages WHERE id=%s',(identity,)).fetchone()
     else:
-        row=conn.execute("SELECT * FROM research_mission_stages WHERE mission_id=%s AND stage='selection' ORDER BY created_at DESC LIMIT 1",
+        row=conn.execute("SELECT * FROM research_mission_stages WHERE mission_id=%s AND stage IN ('proposal','challenge','selection') AND state='running' ORDER BY created_at DESC LIMIT 1",
                          ('2ce40574-6368-5cef-b706-b4e67441b3de',)).fetchone()
-    assert row['stage']=='selection' and row['actor']=='director'
+    assert row and row['stage'] in ('proposal','challenge','selection') and row['state']=='running'
     task=conn.execute('SELECT * FROM tasks WHERE id=%s',(row['task_id'],)).fetchone()
     role,prompt=controller.stage_prompt(company,conn,task)
     context=json.loads(prompt.split('MISSION DATA JSON:\n',1)[1])
-    proposal_id=context['mission']['stage']['proposal_id']
-    ids=[str(c['id']) for c in conn.execute('SELECT id FROM research_mission_challenges WHERE mission_id=%s AND proposal_id=%s ORDER BY created_at,id',
-                                          (row['mission_id'],proposal_id)).fetchall()]
+    proposal_id=context['mission']['stage'].get('proposal_id')
+    ids=([str(c['id']) for c in conn.execute('SELECT id FROM research_mission_challenges WHERE mission_id=%s AND proposal_id=%s ORDER BY created_at,id',
+                                           (row['mission_id'],proposal_id)).fetchall()] if proposal_id else [])
     scoped=context.get('selection_contract')
     if scoped:
         assert scoped['current_challenge_ids']==ids and scoped['proposal_id']==proposal_id
@@ -39,13 +39,19 @@ with company.db.transaction() as conn:
         assert schema['properties']['responses']['minItems']==schema['properties']['responses']['maxItems']==len(ids)
         assert schema['$defs']['ChallengeResponse']['properties']['challenge_id']['enum']==ids
         assert context['stage_capabilities']['available_actions']==['read_stage_file','complete_stage_artifact']
+    capability=context.get('stage_capabilities')
+    if capability:
+        assert capability['current_stage']==row['stage']
+        assert capability['available_actions']==['read_stage_file','complete_stage_artifact']
     assert len(prompt)<=90000
     code=pathlib.Path(controller.__file__).read_bytes()
     print(json.dumps({'state':'readonly_actual_stage_prompt_verified','stage_id':str(row['id']),
-                      'task_id':str(task['id']),'attempt':row['attempt'],'current_proposal_id':proposal_id,
+                      'task_id':str(task['id']),'stage':row['stage'],'actor':row['actor'],
+                      'attempt':row['attempt'],'current_proposal_id':proposal_id,
                       'current_challenge_ids':ids,'model':role.model,'reasoning_effort':role.reasoning_effort,
                       'prompt_characters':len(prompt),'prompt_sha256':hashlib.sha256(prompt.encode()).hexdigest(),
                       'controller_sha256':hashlib.sha256(code).hexdigest(),'scoped_navigation_present':bool(scoped),
+                      'stage_capabilities_present':bool(capability),'selection_schema_verified':bool(scoped),
                       'effective_model_policy_preserved':b'model_assignments_enabled' in code,
                       'database_mutated':False,'model_call_created':False}))
 '''
@@ -87,7 +93,7 @@ def main():
         parent, patched = reports
         for key in ("stage_id", "task_id", "current_proposal_id", "current_challenge_ids", "model", "reasoning_effort"):
             assert parent[key] == patched[key], "existing_role_or_review_scope_changed"
-        assert patched["scoped_navigation_present"] and patched["effective_model_policy_preserved"]
+        assert patched["stage_capabilities_present"] and patched["effective_model_policy_preserved"]
         assert patched["controller_sha256"] == manifest["payload_files"]["runtime_controller.py"]
         print(json.dumps({"observed_at": datetime.now(UTC).isoformat(), "state": "parent_and_patch_readonly_probes_passed",
                           "reports": reports, "role_and_current_review_scope_preserved": True,
