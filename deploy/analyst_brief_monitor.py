@@ -148,15 +148,22 @@ p=json.load(sys.stdin);now=datetime.fromisoformat(p['now']).astimezone(KST)
 changes=[CalendarOverride.model_validate(v) for v in p['overrides']]
 changes={(v.market,v.day):v for v in changes}
 anchor={'us_close_anchor':True} if p.get('us_close') else {}
+if p.get('kr_close'):anchor['kr_close_anchor']=tuple(p['kr_close'])
 out=[d.model_dump(mode='json') for offset in range(-7,2)
  for d in editions(now.date()+timedelta(days=offset),p['channel'],p['owner'],changes,**anchor)]
 print(json.dumps(out))
 '''
+    # The PM KRX close anchor is passed only while the worker has BRIEFING_KR_CLOSE_ENABLED=true.
+    kr_close = ({'kr_close': [int(env.get('BRIEFING_KR_CLOSE_START_MINUTES') or 20),
+                              int(env.get('BRIEFING_KR_CLOSE_CUTOFF_MINUTES') or 40),
+                              int(env.get('BRIEFING_KR_CLOSE_DUE_MINUTES') or 115)]}
+                if env.get('BRIEFING_KR_CLOSE_ENABLED') == 'true' else {})
     values = json.loads(subprocess.check_output([
         'docker', 'run', '--rm', '-i', '--network=none', '--memory=384m', '--pids-limit=64',
         '--read-only', '--entrypoint=python', worker['Config']['Image'], '-c', code],
         input=json.dumps({'now': now.isoformat(), 'channel': policy['channel'], 'owner': policy['owner'],
-                          'overrides': overrides, 'us_close': env.get('BRIEFING_US_CLOSE_ENABLED') == 'true'}).encode(),
+                          'overrides': overrides, 'us_close': env.get('BRIEFING_US_CLOSE_ENABLED') == 'true',
+                          **kr_close}).encode(),
         timeout=35))
     starts = stamp(policy['starts_at'])
     return [d for d in values if stamp(d['due_at']) >= starts]

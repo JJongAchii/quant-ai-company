@@ -21,6 +21,10 @@ COLLECTION_MINUTES = 20
 US_CLOSE_DUE_MINUTES = 115
 # Once per edition, when no US close report exists at the cutoff.
 CUTOFF_EXTENSION_MINUTES = 30
+# v8 (BRIEFING_KR_CLOSE_ENABLED only): the PM edition follows the actual KRX close C of its session
+# (calendar overrides and late closes included): collect from C+start, freeze at C+cutoff, due C+due
+# (default 20/40/115 minutes: 15:50/16:10/17:25 KST on a normal day).
+KR_CLOSE_SCHEDULE_VERSION = 8
 
 
 def utcnow():
@@ -59,11 +63,22 @@ def previous(market, day, changes=None):
     raise ValueError("previous_session_unavailable")
 
 
+def kr_close_minutes(settings):
+    """(start, cutoff, due) minutes after the KRX close for the PM edition, or None while switched off."""
+    if not getattr(settings, "briefing_kr_close_enabled", False):
+        return None
+    return (settings.briefing_kr_close_start_minutes, settings.briefing_kr_close_cutoff_minutes,
+            settings.briefing_kr_close_due_minutes)
+
+
 def version(settings):
-    return US_CLOSE_SCHEDULE_VERSION if settings.briefing_us_close_enabled else SCHEDULE_VERSION
+    base = US_CLOSE_SCHEDULE_VERSION if settings.briefing_us_close_enabled else SCHEDULE_VERSION
+    anchor = kr_close_minutes(settings)
+    # Switched off, the value (and so the policy digest) stays exactly the previous integer.
+    return base if anchor is None else f"{base}+{KR_CLOSE_SCHEDULE_VERSION}:{'/'.join(map(str, anchor))}"
 
 
-def editions(day, channel, owner, changes=None, *, us_close_anchor=False):
+def editions(day, channel, owner, changes=None, *, us_close_anchor=False, kr_close_anchor=None):
     if day.weekday() == 6:
         return []
     morning = datetime.combine(day, time(7, 45), KST)
@@ -82,9 +97,13 @@ def editions(day, channel, owner, changes=None, *, us_close_anchor=False):
     for kind, due in (("am", dawn), ("pm", evening)):
         if due is None or (kind == "am" and not (us_session or kr_close or day.weekday() == 0)):
             continue
+        starts, cutoff = due-timedelta(minutes=lead), due-timedelta(minutes=PREPARATION_MINUTES)
+        if kind == "pm" and kr_close_anchor:
+            # v8: anchored to the actual KRX close, so overrides and late closes move every time together.
+            starts, cutoff, due = ((kr_close+timedelta(minutes=m)).astimezone(KST) for m in kr_close_anchor)
         result.append(BriefEdition(
             id=stable(f"brief:{channel}:{owner}:{day}:{kind}"), day=day, kind=kind,
-            due_at=due, starts_at=due-timedelta(minutes=lead), cutoff=due-timedelta(minutes=PREPARATION_MINUTES),
+            due_at=due, starts_at=starts, cutoff=cutoff,
             expires_at=due+timedelta(hours=1), us_session=us_session if kind == "am" else None,
             kr_session=day if kr_close else None,
             previous_us_session=previous("US", us_session, changes) if us_session and kind == "am" else None,
@@ -100,7 +119,8 @@ def scheduled(settings, at=None):
     return [edition for offset in (-1, 0, 1)
             for edition in editions(local.date()+timedelta(days=offset), settings.briefing_channel_id,
                                     settings.briefing_owner_user, changes,
-                                    us_close_anchor=settings.briefing_us_close_enabled)]
+                                    us_close_anchor=settings.briefing_us_close_enabled,
+                                    kr_close_anchor=kr_close_minutes(settings))]
 
 
 def extend_cutoff(definition, reason):

@@ -1,0 +1,240 @@
+"""Bounded, read-only inspection of the clean lake. No full-table coverage scan."""
+
+import io
+import re
+from datetime import UTC, date, datetime
+
+import fsspec
+import pyarrow as pa
+import pyarrow.parquet as pq
+
+from qdata.settings import lake_root
+
+NAME = re.compile(r"[a-z][a-z0-9_]{0,79}\Z")
+MAX_READ_BYTES = 8 * 1024 * 1024
+MAX_FOOTER_BYTES = 2 * 1024 * 1024
+MAX_SAMPLE_DECODED_BYTES = 8 * 1024 * 1024
+
+
+def _json(value):
+    if isinstance(value, (datetime, date)):
+        return value.isoformat()
+    if isinstance(value, dict):
+        return {str(k): _json(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json(v) for v in value]
+    return value
+
+
+def _filesystem():
+    root = str(lake_root()).rstrip("/")
+    options = {}
+    if root.startswith("s3://"):
+        options = {
+            "skip_instance_cache": True,
+            "use_listings_cache": False,
+            "config_kwargs": {
+                "connect_timeout": 3,
+                "read_timeout": 8,
+                "retries": {"max_attempts": 1},
+            },
+        }
+    fs, path = fsspec.core.url_to_fs(root, **options)
+    return fs, path.rstrip("/") + "/clean", root + "/clean"
+
+
+def _identity(info, uri):
+    return _json(
+        {
+            "uri": uri,
+            "size_bytes": info["size"],
+            "last_modified": info.get("LastModified", info.get("mtime")),
+            "etag": info.get("ETag"),
+            "version_id": info.get("VersionId"),
+        }
+    )
+
+
+def catalog():
+    """List published clean datasets; file modification time is not a data date."""
+    fs, clean, uri = _filesystem()
+    objects = []
+    for info in fs.ls(clean, detail=True):
+        filename = info["name"].rsplit("/", 1)[-1]
+        if info.get("type") != "file" or not filename.endswith(".parquet"):
+            continue
+        name = filename[:-8]
+        if NAME.fullmatch(name):
+            objects.append({"dataset": name, **_identity(info, uri + "/" + filename)})
+        if len(objects) > 256:
+            raise ValueError("Catalog exceeds 256 datasets; narrow the published catalog first")
+    return {
+        "observed_at": datetime.now(UTC).isoformat(),
+        "method": "object_metadata_only",
+        "datasets": sorted(objects, key=lambda x: x["dataset"]),
+        "note": "Object upload time is not the latest trading, observation or publication date.",
+    }
+
+
+class _BoundedReader(io.RawIOBase):
+    def __init__(self, source):
+        self.source = source
+        self.bytes_read = 0
+
+    def readable(self):
+        return True
+
+    def seekable(self):
+        return True
+
+    def tell(self):
+        return self.source.tell()
+
+    def seek(self, offset, whence=0):
+        return self.source.seek(offset, whence)
+
+    def read(self, size=-1):
+        if size < 0 or self.bytes_read + size > MAX_READ_BYTES:
+            raise ValueError("Lake read exceeds the 8 MiB inspection budget")
+        data = self.source.read(size)
+        self.bytes_read += len(data)
+        return data
+
+    def readinto(self, buffer):
+        data = self.read(len(buffer))
+        buffer[: len(data)] = data
+        return len(data)
+
+
+def _bounds(parquet):
+    result = {}
+    metadata = parquet.metadata
+    for index, field in enumerate(parquet.schema_arrow):
+        if not (pa.types.is_date(field.type) or pa.types.is_timestamp(field.type)):
+            continue
+        # Nested fields do not share Arrow-field and Parquet-leaf indices.
+        if index >= metadata.num_columns or parquet.schema.column(index).path != field.name:
+            continue
+        minimum, maximum, complete, nulls = [], [], True, 0
+        for group in range(metadata.num_row_groups):
+            chunk = metadata.row_group(group).column(index)
+            stats = chunk.statistics
+            if stats is None or not stats.has_null_count:
+                complete = False
+                continue
+            nulls += stats.null_count
+            if stats.num_values == 0:
+                continue
+            if not stats.has_min_max:
+                complete = False
+                continue
+            minimum.append(stats.min)
+            maximum.append(stats.max)
+        result[field.name] = {
+            "statistics_complete": complete,
+            "min": _json(min(minimum)) if complete and minimum else None,
+            "max": _json(max(maximum)) if complete and maximum else None,
+            "null_count": nulls if complete else None,
+        }
+    return result
+
+
+def inspect_dataset(dataset, *, sample_rows=0, columns=None):
+    """Read footer statistics and optionally a bounded physical-row sample.
+
+    Bounds describe all non-null values only when every row group's statistics are
+    available. They do not establish per-asset coverage, publication availability,
+    missing sessions, or an immutable historical snapshot.
+    """
+    if not isinstance(dataset, str) or not NAME.fullmatch(dataset):
+        raise ValueError("Invalid dataset name")
+    if type(sample_rows) is not int or not 0 <= sample_rows <= 20:
+        raise ValueError("sample_rows must be between 0 and 20")
+    if columns is not None and (
+        not isinstance(columns, list)
+        or not 1 <= len(columns) <= 8
+        or any(not isinstance(c, str) or len(c) > 80 for c in columns)
+    ):
+        raise ValueError("columns must contain 1 to 8 column names")
+    fs, clean, uri = _filesystem()
+    path, uri = clean + "/" + dataset + ".parquet", uri + "/" + dataset + ".parquet"
+    before = _identity(fs.info(path), uri)
+    # Disable fsspec read-ahead so a footer lookup does not download a large block.
+    with fs.open(path, "rb", cache_type="none", block_size=64 * 1024) as source:
+        reader = _BoundedReader(source)
+        reader.seek(-8, 2)
+        footer = reader.read(8)
+        if len(footer) != 8 or footer[4:] != b"PAR1":
+            raise ValueError("Unsupported Parquet footer")
+        if int.from_bytes(footer[:4], "little") > MAX_FOOTER_BYTES:
+            raise ValueError("Parquet footer exceeds the 2 MiB inspection budget")
+        reader.seek(0)
+        parquet = pq.ParquetFile(
+            reader,
+            pre_buffer=False,
+            thrift_string_size_limit=MAX_FOOTER_BYTES,
+            thrift_container_size_limit=100000,
+        )
+        if len(parquet.schema_arrow) > 256:
+            raise ValueError("Dataset schema exceeds 256 columns")
+        result = {
+            "dataset": dataset,
+            "source": before,
+            "observed_at": datetime.now(UTC).isoformat(),
+            "row_count": parquet.metadata.num_rows,
+            "columns": [{"name": f.name, "type": str(f.type)} for f in parquet.schema_arrow],
+            "date_bounds": _bounds(parquet),
+            "sample": None,
+            "method": "parquet_footer_statistics",
+            "limitations": [
+                "Bounds are dataset-wide, not per instrument or trading-calendar coverage.",
+                "Observation/trade dates are not publication-availability timestamps.",
+                "ETag is object identity metadata, not a computed content hash.",
+            ],
+        }
+        if sample_rows:
+            selected = columns if columns is not None else parquet.schema_arrow.names[:6]
+            if len(selected) != len(set(selected)) or not set(selected) <= set(
+                parquet.schema_arrow.names
+            ):
+                raise ValueError("Unknown or duplicate sample columns")
+            for name in selected:
+                dtype = parquet.schema_arrow.field(name).type
+                if (
+                    pa.types.is_nested(dtype)
+                    or pa.types.is_binary(dtype)
+                    or pa.types.is_large_binary(dtype)
+                ):
+                    raise ValueError("Samples support scalar non-binary columns only")
+            if parquet.metadata.num_row_groups:
+                group = parquet.metadata.row_group(0)
+                decoded = sum(
+                    group.column(i).total_uncompressed_size
+                    for i in range(group.num_columns)
+                    if group.column(i).path_in_schema in selected
+                )
+                if decoded > MAX_SAMPLE_DECODED_BYTES:
+                    raise ValueError(
+                        "First row group exceeds the 8 MiB decoded sample budget; "
+                        "select fewer columns"
+                    )
+                batch = next(
+                    parquet.iter_batches(
+                        batch_size=sample_rows, row_groups=[0], columns=selected, use_threads=False
+                    ),
+                    None,
+                )
+                rows = _json(batch.to_pylist()) if batch is not None else []
+            else:
+                rows = []
+            result["sample"] = {
+                "selection": "first physical rows; not a latest-date or representative sample",
+                "rows": rows,
+                "limit": sample_rows,
+                "columns": selected,
+            }
+        result["reader_bytes"] = reader.bytes_read
+    after = _identity(fs.info(path, refresh=True), uri)
+    if after != before:
+        raise RuntimeError("Source changed during inspection; no stable result can be reported")
+    return result
