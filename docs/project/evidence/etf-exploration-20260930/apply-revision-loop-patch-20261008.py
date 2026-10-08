@@ -48,8 +48,14 @@ def inspect():
 def public(rows):
     return {name: {"id": row["Id"], "image_id": row["Image"], "image": row["Config"]["Image"],
                    "running": row["State"]["Running"], "memory_limit": row["HostConfig"]["Memory"],
-                   "environment_sha256": sha(json.dumps(row["Config"]["Env"], sort_keys=True).encode())}
+                   "environment_sha256": sha(json.dumps(environment(row), sort_keys=True).encode())}
             for name, row in rows.items()}
+
+
+def environment(row):
+    values = dict(item.split("=", 1) for item in row["Config"]["Env"])
+    assert len(values) == len(row["Config"]["Env"]), "duplicate_environment_keys"
+    return values
 
 
 def compose(row, override=None):
@@ -215,9 +221,15 @@ def main():
             for service in ("api", "worker"):
                 override = STATE / "config" / (prefix + "-" + service + ".compose.json")
                 assert not override.exists()
-                save(override, {"services": {service: {"image": prepared["images"][service]["tag"]}}})
                 row = before["quant-company-" + service + "-1"]
+                # Keep every actual active value; Compose can reorder environment
+                # entries and interpolate defaults from a newer host release.
+                # This host-only file is mode 0600, never printed or exported.
+                save(override, {"services": {service: {"image": prepared["images"][service]["tag"],
+                                                        "environment": environment(row)}}})
                 run([*compose(row, override), "config", "--quiet"])
+                configured = json.loads(run([*compose(row, override), "config", "--format", "json"]))
+                assert configured["services"][service]["environment"] == environment(row), "compiled_environment_changed"
                 changed.append(service)
                 run([*compose(row, override), "up", "-d", "--no-deps", "--force-recreate", "--wait", "--wait-timeout", "60", service])
                 stopped.remove(row["Id"])
@@ -229,7 +241,7 @@ def main():
                 name = "quant-company-" + service + "-1"
                 row = after[name]
                 assert row["Image"] == prepared["images"][service]["image_id"] and row["State"]["Running"]
-                assert public(after)[name]["environment_sha256"] == public(before)[name]["environment_sha256"]
+                assert environment(row) == environment(before[name]), "active_environment_values_changed"
                 assert row["HostConfig"]["Memory"] == before[name]["HostConfig"]["Memory"]
                 baseline = next(s for s in manifest["baseline"]["services"] if s["name"] == name)
                 verify_patch(sources(row["Id"]), baseline)
@@ -241,16 +253,23 @@ def main():
             result.update(state="revision_loop_navigation_patch_applied", after=public(after),
                           completed_at=datetime.now(UTC).isoformat(), other_service_identities_preserved=True,
                           protected_config_preserved=True, installed_model_policy_preserved=True)
-        except BaseException:
+        except BaseException as error:
+            result["failure_type"] = type(error).__name__
             for service in reversed(changed):
                 row = before["quant-company-" + service + "-1"]
                 rollback = STATE / "config" / (prefix + "-rollback-" + service + ".compose.json")
-                save(rollback, {"services": {service: {"image": row["Image"]}}})
+                save(rollback, {"services": {service: {"image": row["Image"], "environment": environment(row)}}})
                 run([*compose(row, rollback), "up", "-d", "--no-deps", "--force-recreate", "--wait", "--wait-timeout", "60", service])
                 if row["Id"] in stopped:
                     stopped.remove(row["Id"])
             if stopped:
                 run(["docker", "start", *reversed(stopped)])
+            restored = inspect()
+            for service in changed:
+                name = "quant-company-" + service + "-1"
+                assert restored[name]["Image"] == before[name]["Image"] and restored[name]["State"]["Running"]
+                assert environment(restored[name]) == environment(before[name]), "rollback_environment_values_changed"
+            result["rollback_images_and_environment_verified"] = True
             result.update(state="revision_loop_patch_failed_original_images_restored", failed_at=datetime.now(UTC).isoformat())
             raise
         finally:

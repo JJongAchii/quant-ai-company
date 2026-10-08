@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v18.json",
-  "state": "post_report_revision_loop_repair_reviewed_pending_runtime",
+  "state": "post_report_revision_loop_first_apply_rolled_back_operator_repaired",
   "previousIntent": "INTENT-v17.json",
   "deliverables": {
     "POLICY": {
@@ -20,7 +20,7 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Scoped current-challenge schema and workflow navigation repair passed 1834 real PostgreSQL/pinned qlab tests (14 skips), 41 targeted tests and lint. Actual parent/new-image challenge prompt probe preserved Astra/xhigh and rolled back. Exact cf497665 two-service activation reviewed; prepared images remain inactive.",
+  "operationalStatus": "First two-service activation failed its environment-array hash guard. Exact original controller/source and all other source hashes verified after automatic image rollback; owned pause cleared. Corrected operator pins actual active key/value environments, verifies resolved Compose config and exact post-cutover values, and records verified rollback.",
   "evidence": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json",
   "nextStage": {
     "stage": "scoped_runtime_activation_then_successor_stage_readback",
@@ -173,7 +173,7 @@
       "actualProviderState": "running"
     }
   },
-  "phase": "post_report_revision_loop_repair_reviewed_pending_runtime",
+  "phase": "post_report_revision_loop_first_apply_rolled_back_operator_repaired",
   "currentDeliverables": {
     "LOOP_DIAGNOSIS": {
       "status": "completed"
@@ -255,7 +255,11 @@
     "applyReview": "../../project/evidence/etf-exploration-20260930/revision-loop-apply-review-20261008.json",
     "actualPromptProbe": "../../project/evidence/etf-exploration-20260930/revision-loop-actual-prompt-probe-20261008.json",
     "reviewState": "root_reviewed_exact_inactive_package",
-    "exactShaHumanApprovalClaimed": false
+    "exactShaHumanApprovalClaimed": false,
+    "firstApplyFailure": "../../project/evidence/etf-exploration-20260930/revision-loop-first-apply-failed-20261008.json",
+    "firstRollbackInventory": "../../project/evidence/etf-exploration-20260930/revision-loop-first-apply-rollback-inventory-20261008.json",
+    "operatorEnvironmentOrderCheck": "synthetic_order_change_accepted_value_change_rejected",
+    "firstAttemptEnvironmentPreservationClaimed": false
   },
   "previousIntentCompletion": {
     "intent": "INTENT-v17.json",
