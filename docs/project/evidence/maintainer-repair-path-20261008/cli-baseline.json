@@ -1,0 +1,6 @@
+{
+  "source_commit": "4aadf7efcc0cf85ff2787f68567cbd1b0d8762c6",
+  "exit_code": 1,
+  "assertion": "The original CLI exit must be retained to diagnose repeated uncertain outcomes",
+  "scope": "Real fake-CLI subprocess; no subscription inference; no import or collection failure"
+}

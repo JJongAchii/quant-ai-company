@@ -1,0 +1,101 @@
+{
+  "patch_commit": "68ffc8d1c16aaace04b98c259e49055beeb857b9",
+  "scope": "Minimal overlays on each actual installed image; no model inference or database writes during qualification",
+  "global_release": "/opt/quant-company/releases/8fde2509d4dd2191147fbcee5eaa952191d7c048",
+  "targets": [
+    {
+      "name": "quant-company-maintenance-1",
+      "id": "613c988d5e8887ba370671eb375e4b5cd6b757eb0aa1eaa494ca46d8fb692b99",
+      "image": "sha256:cf217bf53ee0f70ec031ddeab3e856e7aa7df2dced51b92af3466fe061726bae",
+      "image_tag": "quant-company-maintainer-inspection:055a63ca2bb35d4f3e4540456dd85fef30a066a6",
+      "started": "2026-10-08T01:50:11.72375337Z",
+      "state": "running",
+      "module_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+      "hashes": {
+        "maintenance/investigation.py": "524f1b8a38901f7b2162c0622a41ca635b59bbf23a0a93cd67a177ae7bc834fa",
+        "maintenance/runner.py": "c410b52e7324f880436d23ab673ba2c8e3e3c9d35e4f5616b0caf3360ed2fa5d",
+        "maintenance/store.py": "3a74e7a32c848e55fdddd7ad9fc463d35f8eb2185aad42e24113df86639133ce",
+        "maintenance/requests.py": "7f6aa94d96affad1e1b4c16db855c0f8bd42fdf32c89dc8eb4c8efee6d1f84c4"
+      },
+      "project": "quant-company",
+      "compose_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml,/var/lib/quant-company/config/maintainer-recovery-fadc0e54be0c470068bb18011cc6a1a9ec8ee971.compose.json,/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8.compose.json,/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8-memory.compose.json,/var/lib/quant-company/config/model-assignments-20261006-maintenance.compose.json,/var/lib/quant-company/config/maintainer-evidence-db94a2d026aeb10d26e68570089d495de50c3dcc.compose.json,/var/lib/quant-company/config/maintainer-inspection-055a63ca2bb35d4f3e4540456dd85fef30a066a6.compose.json",
+      "envfile": "/var/lib/quant-company/config/runtime.env",
+      "service": "maintenance",
+      "base_image_id": "sha256:cf217bf53ee0f70ec031ddeab3e856e7aa7df2dced51b92af3466fe061726bae",
+      "base_module_sha256": {
+        "maintenance/investigation.py": "524f1b8a38901f7b2162c0622a41ca635b59bbf23a0a93cd67a177ae7bc834fa",
+        "maintenance/runner.py": "c410b52e7324f880436d23ab673ba2c8e3e3c9d35e4f5616b0caf3360ed2fa5d",
+        "maintenance/store.py": "3a74e7a32c848e55fdddd7ad9fc463d35f8eb2185aad42e24113df86639133ce",
+        "maintenance/requests.py": "7f6aa94d96affad1e1b4c16db855c0f8bd42fdf32c89dc8eb4c8efee6d1f84c4"
+      },
+      "target_image": "quant-company-repair-maintenance:68ffc8d1",
+      "python": "python",
+      "candidate_module_sha256": {
+        "maintenance/investigation.py": "3cf6f246c96385e127442f01b0fbf025a997ef9ff8259028ecbf6e5ed91226bb",
+        "maintenance/runner.py": "01ae348bc20cbc52033f82500815f1ec4e80e3fcefd37f7ef2be328c9ec090ea",
+        "maintenance/store.py": "67bef00b094e10c55a5d2f18157f3fb5750959187bc579ebd153d88648714b81",
+        "maintenance/requests.py": "fef54b4c168bbed28479ef4f334804dc2c40996894724d4ff4ba694b30310478"
+      }
+    },
+    {
+      "name": "quant-company-worker-1",
+      "id": "78e39dffd52267c5d291cdc240ff88a21d486d5b34264cb2fadda9810937becd",
+      "image": "sha256:7df49e3dd096eda6379beb99cc64f1f40c3a381d2a90a0f4530d0aa450bb1b2b",
+      "image_tag": "quant-company-revision-loop-worker:3c7cc9130fe5196027b2314aeb788a81a2d66179",
+      "started": "2026-10-08T01:50:07.602528698Z",
+      "state": "running",
+      "module_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+      "hashes": {
+        "maintenance/requests.py": "7f6aa94d96affad1e1b4c16db855c0f8bd42fdf32c89dc8eb4c8efee6d1f84c4"
+      },
+      "project": "quant-company",
+      "compose_files": "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/compose.yaml,/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/research.compose.yaml,/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/data-watch.compose.yaml,/var/lib/quant-company/releases/analyst-autopublish-20261007-exact-env/publication.compose.yaml,/var/lib/quant-company/config/revision-loop-cf497665ee478e75d306519cf772318094f868cb-rollback-worker.compose.json,/var/lib/quant-company/config/revision-loop-3c7cc9130fe5196027b2314aeb788a81a2d66179-worker.compose.json",
+      "envfile": "/var/lib/quant-company/config/runtime.env",
+      "service": "worker",
+      "base_image_id": "sha256:7df49e3dd096eda6379beb99cc64f1f40c3a381d2a90a0f4530d0aa450bb1b2b",
+      "base_module_sha256": {
+        "maintenance/requests.py": "7f6aa94d96affad1e1b4c16db855c0f8bd42fdf32c89dc8eb4c8efee6d1f84c4"
+      },
+      "target_image": "quant-company-repair-worker:68ffc8d1",
+      "python": "python",
+      "candidate_module_sha256": {
+        "maintenance/requests.py": "fef54b4c168bbed28479ef4f334804dc2c40996894724d4ff4ba694b30310478"
+      }
+    },
+    {
+      "name": "quant-company-claude-runtime-1",
+      "id": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+      "image": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+      "image_tag": "quant-company-claude:fde7681e0286501d8713e08e30a96991a88b9151",
+      "started": "2026-10-08T01:50:08.375822653Z",
+      "state": "running",
+      "module_root": "/opt/company/.venv/lib/python3.12/site-packages/quant_company",
+      "hashes": {
+        "providers/claude_runner.py": "38429f8eee314f155dd8287f044d3f3263264233f5f7b5c0465097d7531cce2c"
+      },
+      "project": "quant-company",
+      "compose_files": "/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/research.compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/model-accounts.compose.yaml",
+      "envfile": "/var/lib/quant-company/config/runtime.env",
+      "service": "claude-runtime",
+      "base_image_id": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+      "base_module_sha256": {
+        "providers/claude_runner.py": "38429f8eee314f155dd8287f044d3f3263264233f5f7b5c0465097d7531cce2c"
+      },
+      "target_image": "quant-company-repair-claude-runtime:68ffc8d1",
+      "python": "/opt/company/.venv/bin/python",
+      "candidate_module_sha256": {
+        "providers/claude_runner.py": "809aaaa590c7b7a26c46197febcdd4870ba81f56abfa46fc222237a02ee362db"
+      }
+    }
+  ],
+  "ci": {
+    "conclusion": "success",
+    "created_at": "2026-10-08T01:40:45Z",
+    "event": "pull_request",
+    "head_sha": "68ffc8d1c16aaace04b98c259e49055beeb857b9",
+    "html_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37714120467",
+    "id": 37714120467,
+    "status": "completed",
+    "updated_at": "2026-10-08T01:47:43Z"
+  }
+}

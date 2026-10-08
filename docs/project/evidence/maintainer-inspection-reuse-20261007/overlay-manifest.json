@@ -1,0 +1,14 @@
+{
+  "patch_commit": "055a63ca2bb35d4f3e4540456dd85fef30a066a6",
+  "module_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+  "base_image_id": "sha256:888c5bddf3b7ab537d176f259cb6607368d6cfd367514c36344c38dd42f57ed3",
+  "base_module_sha256": {
+    "maintenance/investigation.py": "02f1e798631f64891e7e6b493e3d0528d30dc2b965b70c5f61316e83fa2739fc",
+    "maintenance/runner.py": "61e96f7c406e1176713e581bd85fa676cb084a26c080f948dc6c7b291eae75f5"
+  },
+  "candidate_module_sha256": {
+    "investigation.py": "524f1b8a38901f7b2162c0622a41ca635b59bbf23a0a93cd67a177ae7bc834fa",
+    "runner.py": "c410b52e7324f880436d23ab673ba2c8e3e3c9d35e4f5616b0caf3360ed2fa5d"
+  },
+  "target_image": "quant-company-maintainer-inspection:055a63ca2bb35d4f3e4540456dd85fef30a066a6"
+}

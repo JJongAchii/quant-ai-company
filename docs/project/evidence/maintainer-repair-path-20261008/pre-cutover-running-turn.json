@@ -1,0 +1,17 @@
+{
+  "captured_read": {
+    "running_staff": [],
+    "running_turns": [
+      {
+        "id": "5baa37a4-7c52-5949-a0a4-41539aa36dff",
+        "error": null,
+        "updated_at": "2026-10-08T02:12:21.725155+00:00",
+        "has_response": false
+      }
+    ],
+    "running_reviews": [],
+    "maintenance_jobs": 0,
+    "maintenance_calls": 0
+  },
+  "result": "Pre-effect gate rejected cutover, no container stop or restart performed by this operator attempt."
+}

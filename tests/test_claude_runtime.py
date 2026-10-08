@@ -201,6 +201,24 @@ async def test_quota_waits_and_retries_only_the_same_bound_input(fake_claude):
     assert len(calls()) == 2
 
 
+async def test_failed_cli_preserves_execution_cause_without_output_leak_or_replay(fake_claude):
+    config, configure, calls = fake_claude
+    configure(crash=True)
+    with pytest.raises(ProviderFault):
+        await runner(config).run(request())
+    path = config.jobs_dir / "review-001.json"
+    receipt = json.loads(path.read_text())
+    evidence = receipt.get("execution_evidence", {})
+    assert evidence.get("returncode") == 7, "The original CLI exit must be retained to diagnose repeated uncertain outcomes"
+    assert evidence["stderr_bytes"] > 0 and len(evidence["stderr_sha256"]) == 64
+    assert receipt["fault_detail"] == "Claude did not confirm a complete review; reconcile its original ID."
+    assert "SECRET" not in path.read_text() and path.stat().st_mode & 0o777 == 0o600
+    before = path.read_bytes()
+    with pytest.raises(ProviderFault):
+        await runner(config).run(request())
+    assert len(calls()) == 1 and path.read_bytes() == before
+
+
 async def test_orphan_receipt_and_early_cancellation_prevent_execution(fake_claude):
     config, _, calls = fake_claude
     config.jobs_dir.mkdir()
