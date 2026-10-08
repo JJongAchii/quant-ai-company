@@ -1,0 +1,59 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__________ test_ready_owner_request_overtakes_older_paced_broadcasts ___________
+
+trend = <quant_company.trend_feed.store.TrendFeedStore object at 0x1142f3c20>
+tech = <quant_company.tech_feed.store.TechFeedStore object at 0x114334380>
+
+    async def test_ready_owner_request_overtakes_older_paced_broadcasts(trend, tech):
+        recurring(trend)
+        with trend.db.transaction() as conn:
+            at = conn.execute("SELECT now() AS at").fetchone()["at"]
+        trend.clock[0] = tech.clock[0] = at
+        paced_backlog(tech, 2)
+        requested, _ = await complete_request(trend, "urgent-owner-request")
+        force_due(trend)
+        row = sender(trend).claim()
+>       assert row["id"] == requested["id"] and row["thread_ts"] == "urgent-owner-request"
+               ^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/test_trend_feed_recurring.py:243: TypeError
+___ test_paced_backlog_is_skipped_with_bounded_work_and_without_a_feed_burst ___
+
+trend = <quant_company.trend_feed.store.TrendFeedStore object at 0x114337e00>
+tech = <quant_company.tech_feed.store.TechFeedStore object at 0x114337d40>
+
+    def test_paced_backlog_is_skipped_with_bounded_work_and_without_a_feed_burst(trend, tech):
+        with trend.db.transaction() as conn:
+            at = conn.execute("SELECT now() AS at").fetchone()["at"]
+        trend.clock[0] = at.astimezone(schedule.KST).replace(hour=7, minute=20, second=0, microsecond=0).astimezone(UTC)
+        tech.clock[0] = trend.clock[0]
+        paced_backlog(tech, 40)
+        ingest(trend)
+        trend.clock[0] += timedelta(minutes=10)
+        frozen = trend.freeze()
+        trend.clock[0] += timedelta(minutes=30)
+        assert trend.finalize()["state"] == "queued"
+        force_due(trend)
+        box = sender(trend)
+        assert box.claim() is None  # Work is bounded even with more than one tick's deferrals.
+        with trend.db.transaction() as conn:
+>           assert conn.execute("SELECT count(*) AS n FROM outbox WHERE agent='tech_scout' AND next_at>now()").fetchone()["n"] == 32
+E           assert 1 == 32
+
+tests/test_trend_feed_recurring.py:263: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /Users/achii/orca/workspaces/quant-ai-company/batfish/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv/lib/python3.12/site-packages/starlette/testclient.py:53
+  /Users/achii/orca/workspaces/quant-ai-company/batfish/.venv/lib/python3.12/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_trend_feed_recurring.py::test_ready_owner_request_overtakes_older_paced_broadcasts
+FAILED tests/test_trend_feed_recurring.py::test_paced_backlog_is_skipped_with_bounded_work_and_without_a_feed_burst
+2 failed, 17 deselected, 2 warnings in 3.29s

@@ -1,0 +1,92 @@
+{
+  "checked_at": "2026-10-08T03:01:54.938321+00:00",
+  "input": "operator qualification of authorized owner request; not a new Slack SDK event",
+  "digests": [
+    {
+      "id": "d52245b4-0c61-5284-9def-0dfc77f67b5b",
+      "kind": "on_demand",
+      "state": "queued",
+      "requested_at": "2026-10-08 02:29:44.249595+00:00",
+      "cutoff": "2026-10-08 02:29:46.208061+00:00",
+      "expires_at": "2026-10-08 02:44:44.249595+00:00",
+      "thread_ts": "1791425245.175969",
+      "enriched": true,
+      "reused_digest_id": null,
+      "status": "delivered",
+      "sent_ts": "1791427179.160769",
+      "attempts": 1,
+      "started_at": "2026-10-08 02:39:38.448670+00:00",
+      "error": null,
+      "body_hash": "b28502ca61bec4ea13e7135e2f07373f",
+      "item_count": 10
+    },
+    {
+      "id": "d231e313-1701-53b0-a78f-2a2cbc4e8a2a",
+      "kind": "on_demand",
+      "state": "queued",
+      "requested_at": "2026-10-08 02:55:14.528888+00:00",
+      "cutoff": "2026-10-08 02:55:34.949925+00:00",
+      "expires_at": "2026-10-08 03:10:14.528888+00:00",
+      "thread_ts": "1791425245.175969",
+      "enriched": true,
+      "reused_digest_id": null,
+      "status": "delivered",
+      "sent_ts": "1791428508.542429",
+      "attempts": 1,
+      "started_at": "2026-10-08 03:01:48.160489+00:00",
+      "error": null,
+      "body_hash": "db99b167135e20de068d6f3ada783283",
+      "item_count": 10
+    }
+  ],
+  "queue": [
+    {
+      "agent": "tech_scout",
+      "status": "pending",
+      "n": 90
+    }
+  ],
+  "pause": {
+    "paused_until": null,
+    "reason": null
+  },
+  "new_calls": [
+    {
+      "stage": 0,
+      "state": "invalid",
+      "error": "trend_unknown_member",
+      "created_at": "2026-10-08 02:56:32.724855+00:00",
+      "completed_at": "2026-10-08 02:58:34.503770+00:00"
+    },
+    {
+      "stage": 1,
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-10-08 02:59:34.653827+00:00",
+      "completed_at": "2026-10-08 03:01:36.711584+00:00"
+    }
+  ],
+  "slack_auth": {
+    "ok": true,
+    "team_id": "T0C1YRDRPNF",
+    "user_id": "U0C7VT8TN1W"
+  },
+  "scopes": "chat:write,app_mentions:read,channels:history",
+  "delivered_messages": [
+    {
+      "id": "d52245b4-0c61-5284-9def-0dfc77f67b5b",
+      "permalink_ok": true,
+      "permalink": "https://achiisquantresearch.slack.com/archives/C0C6WTA9ECV/p1791427179160769?thread_ts=1791425245.175969&cid=C0C6WTA9ECV"
+    },
+    {
+      "id": "d231e313-1701-53b0-a78f-2a2cbc4e8a2a",
+      "permalink_ok": true,
+      "permalink": "https://achiisquantresearch.slack.com/archives/C0C6WTA9ECV/p1791428508542429?thread_ts=1791425245.175969&cid=C0C6WTA9ECV"
+    }
+  ],
+  "dispatch_manual_claim": false,
+  "delivery_mode": "normal running dispatcher; automatic PG outbox claim and real Slack HTTP",
+  "model": "real official subscription",
+  "source_commit": "7039e77",
+  "request_to_delivery_seconds": 394.0135409832001
+}

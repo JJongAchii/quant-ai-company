@@ -8,62 +8,78 @@
     "ACTIVATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-recurring-20261007/activation.json",
-          "sha256": "b5386b0cb902"
+          "path": "docs/project/evidence/trend-outbox-20261008/activation.json",
+          "sha256": "12c6333667ae"
         }
       ],
-      "note": "11:01 KST 4개 프로세스만 전환, 다른 기능/환경/본문/모델 요청 보존. publisher-v2·수집·편집 실행, pause 해제, 다음14/20시와 실제 요청 응답 확인.",
+      "note": "11:54 KST actual parent-qualified dispatcher 한 개만 활성화. 나머지225파일/브리핑/환경/secret접근자/네트워크/다른프로세스/기존영수증/owner pause 보존.",
       "status": "verified",
-      "updatedAt": "2026-10-07T02:17:19.412590+00:00"
+      "updatedAt": "2026-10-08T02:57:08.099398+00:00"
     },
     "IMPLEMENTATION": {
       "evidence": [
         {
-          "path": "docs/project/TREND-FEED-RECURRING.md",
-          "sha256": "b431ac7ccd53"
+          "path": "docs/project/TREND-REQUEST-RECOVERY-20261008.md",
+          "sha256": "5dbd8f10364a"
+        },
+        {
+          "path": "docs/project/evidence/trend-outbox-20261008/native-dispatch.patch",
+          "sha256": "b396f27a2976"
         }
       ],
-      "note": "08·14·20 안정 슬롯·결정론적 요청·최신 RSS·10개 목표·캐시·예산 구현. 최종 코드 원격 CI 서비스1623/프로토콜9 통과.",
+      "note": "7039e77: paced outbox 최대32건 보류건너뛰기·on-demand 우선. 실제parent225파일과briefing gate 보존. 진단/실패재현/전체CI/실제자동발송을 최종보고서에 기록.",
       "status": "verified",
-      "updatedAt": "2026-10-07T02:17:18.737343+00:00"
+      "updatedAt": "2026-10-08T03:05:20.206554+00:00"
     },
     "PUBLICATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-recurring-20261007/publication.json",
-          "sha256": "b59bcbb9a7b5"
+          "path": "docs/project/evidence/trend-outbox-20261008/publication.json",
+          "sha256": "57c14eb505a9"
+        },
+        {
+          "path": "docs/project/evidence/trend-outbox-20261008/ci.json",
+          "sha256": "3d488edd8284"
         }
       ],
-      "note": "코드·설정·사용법·공개 운영 증거 원격 브랜치 반영, PR119 ready. CI 자격 코드 dcdc29c 이후 변경은 문서/증거뿐이며 이 완료 영수증도 문서 커밋으로 추가한다. 새 PR main 병합은 이번 계약 범위에 포함하지 않는다.",
+      "note": "원격fix/trend-request-delivery 7039e77·PR126 OPEN 게시, source전체CI1642/9/lint통과. 최종운영증거는 회사저장소closure문서커밋으로동일브랜치게시. main병합은하지않음.",
       "status": "verified",
-      "updatedAt": "2026-10-07T02:19:54.456902+00:00"
+      "updatedAt": "2026-10-08T03:05:40.918716+00:00"
     },
     "SECURITY": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-recurring-20261007/slack-connection.json",
-          "sha256": "61c0089baee7"
+          "path": "docs/project/evidence/trend-outbox-20261008/active-probe.json",
+          "sha256": "de1e00808199"
+        },
+        {
+          "path": "docs/project/evidence/trend-outbox-20261008/live.json",
+          "sha256": "a34d816cf58c"
         }
       ],
-      "note": "실제 기존 앱 3 scope·2 event 재설치와 인증 Socket Mode 확인. HTTP HMAC 합성 회귀와 구분. 다른 앱 자격증명·소유자/채널 제한 보존.",
+      "note": "기존SDK workspace/bot auth 및3scopes 실제확인. 기존owner/channel/policy/expiry/revision/비밀파일접근자 유지. Env·secret값 출력/커밋없음. HTTP합성검사와실제SDK수신·Slack발송구분.",
       "status": "verified",
-      "updatedAt": "2026-10-07T02:17:18.962924+00:00"
+      "updatedAt": "2026-10-08T03:05:20.425924+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-recurring-20261007/live-slack.json",
-          "sha256": "531dafdf86e9"
+          "path": "docs/project/evidence/trend-outbox-20261008/live.json",
+          "sha256": "a34d816cf58c"
+        },
+        {
+          "path": "docs/project/evidence/trend-outbox-20261008/ci.json",
+          "sha256": "3d488edd8284"
         }
       ],
-      "note": "실제 PostgreSQL·Temporal 회귀, 원격 CI1623/9, 실제 부모 후보90/40. 실제 구독 편집과 Slack 소유자 요청2건 모두10개 스레드 발송; 두 번째 추가 모델0.",
+      "note": "원격 source7039e77 real PG/Temporal1642통과·47skip·1deselect/프로토콜9/lint통과. local391/1skip·native135. 실제복구10개, normal dispatcher 자동10개·attempt1·편집완료12초. operator qualification과 실제 원소유자SDK입력 구분, 완료invalid 거절 후 허용1회 재편집.",
       "status": "verified",
-      "updatedAt": "2026-10-07T02:17:19.196605+00:00"
+      "updatedAt": "2026-10-08T03:05:19.996471+00:00"
     }
   },
   "intentDigest": "e858dfa5954e",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-07T02:19:54.456902+00:00"
+  "updatedAt": "2026-10-08T03:05:40.918716+00:00"
 }

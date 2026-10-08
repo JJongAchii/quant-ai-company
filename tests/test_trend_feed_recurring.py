@@ -6,13 +6,15 @@ import pytest
 from fastapi.testclient import TestClient
 
 from quant_company.api import create_app
-from quant_company.slack import SlackIngress
+from quant_company.slack import SlackIngress, SlackOutbox
 from quant_company.socket_mode import accept_envelope, socket_main
 from quant_company.trend_feed import schedule
 from quant_company.trend_feed.runner import TrendFeedCollector
 
 from .test_slack import signed
-from .test_trend_feed import FixtureNaver, ingest, outgoing, response, trend  # noqa: F401
+from .test_tech_feed import queue as queue_tech
+from .test_tech_feed import tech  # noqa: F401
+from .test_trend_feed import FixtureNaver, force_due, ingest, outgoing, response, trend  # noqa: F401
 
 
 def recurring(store):
@@ -210,6 +212,59 @@ async def test_request_delivery_policy_change_blocks_the_outbox(trend):
     with trend.db.transaction() as conn:
         assert not trend.gate(conn, first)
     assert outgoing(trend)[0]["status"] == "stale"
+
+
+def paced_backlog(tech, count):
+    for number in range(count):
+        queue_tech(tech, f"paced-{number}")
+    with tech.db.transaction() as conn:
+        conn.execute("""UPDATE outbox SET created_at=now()-interval '2 days',next_at=now()-interval '1 second'
+            WHERE agent='tech_scout'""")
+        conn.execute("""INSERT INTO tech_feed_delivery(channel,next_at) VALUES('CTECH',now()+interval '5 minutes')
+            ON CONFLICT(channel) DO UPDATE SET next_at=excluded.next_at""")
+
+
+def sender(store):
+    return SlackOutbox(store.company, {
+        "trend_scout": {"bot_token": "synthetic-trend"},
+        "tech_scout": {"bot_token": "synthetic-tech"},
+    })
+
+
+async def test_ready_owner_request_overtakes_older_paced_broadcasts(trend, tech):
+    recurring(trend)
+    with trend.db.transaction() as conn:
+        at = conn.execute("SELECT now() AS at").fetchone()["at"]
+    trend.clock[0] = tech.clock[0] = at
+    paced_backlog(tech, 2)
+    requested, _ = await complete_request(trend, "urgent-owner-request")
+    force_due(trend)
+    row = sender(trend).claim()
+    assert row["id"] == requested["id"] and row["thread_ts"] == "urgent-owner-request"
+    with trend.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox WHERE agent='tech_scout' AND status='pending' AND attempts=0").fetchone()["n"] == 2
+
+
+def test_paced_backlog_is_skipped_with_bounded_work_and_without_a_feed_burst(trend, tech):
+    with trend.db.transaction() as conn:
+        at = conn.execute("SELECT now() AS at").fetchone()["at"]
+    trend.clock[0] = at.astimezone(schedule.KST).replace(hour=7, minute=20, second=0, microsecond=0).astimezone(UTC)
+    tech.clock[0] = trend.clock[0]
+    paced_backlog(tech, 40)
+    ingest(trend)
+    trend.clock[0] += timedelta(minutes=10)
+    frozen = trend.freeze()
+    trend.clock[0] += timedelta(minutes=30)
+    assert trend.finalize()["state"] == "queued"
+    force_due(trend)
+    box = sender(trend)
+    assert box.claim() is None  # Work is bounded even with more than one tick's deferrals.
+    with trend.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox WHERE agent='tech_scout' AND next_at>now()").fetchone()["n"] == 32
+    row = box.claim()
+    assert row["id"] == str(frozen["id"]) and row["message_kind"] == "trend_feed"
+    with trend.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox WHERE agent='tech_scout' AND status='pending' AND attempts=0").fetchone()["n"] == 40
 
 
 async def test_authenticated_socket_request_ack_and_reconnect_keep_the_same_commit(trend):

@@ -83,3 +83,26 @@ HTTP 429는 같은 메시지 ID로 지연 재시도한다. 타임아웃·서버 
 정확히 한 번 전달을 보장하지 않는다. 소스/권한/정책 변경과 72시간 만료는 전송 직전 다시 검사한다.
 중지하려면 두 활성화 설정을 false로 바꾼다. 이미 네트워크로 전송 중인 요청은 취소할 수 없다.
 DB 테이블과 발송 영수증은 기존 회사 DB 백업에 포함된다.
+
+## 2026-10-08 정책·전용 수집 worker 복구
+
+정책 v2는 Tech 채널·소유자·활성화·원문 소스와 실제 Tech 권한만 지문에 포함한다.
+다른 허용 채널/사용자의 추가·제거·순서 변경은 Tech 게시를 무효화하지 않는다.
+Tech 채널/소유자 권한 철회, interactive identity, 소스 변경 및 72시간 만료 검사는 유지한다.
+
+`TECH_FEED_DEDICATED_WORKER=true`와 Compose `--profile tech-feed`는 모델 호출 없는 전용 수집
+프로세스를 활성화한다. 큐는 회사 queue의 `-tech-feed-dedicated` 접미사다. 기존 shared worker를
+중단하지 않고 전환하려면 collection이 timer 경계에 있을 때만 아래 운영 도구로 Tech workflow를
+새 큐에 재시작한다. workflow ID는 유지하고 이전 run ID·이력·DB 체크포인트는 보존한다.
+다른 뉴스·Quant·연구 workflow를 재시작하지 않는다. 전용 모드의 기본값은 false로 기존 설정을 보존한다.
+
+`deploy/tech_feed_recovery_release.py`는 root 전용, 공유 배포 잠금 및 단계별 영수증을 사용한다.
+현재 발송 이미지 위에 Tech 모듈 3개만 적용한 별도 이미지를 만들고, 원본 shared worker는 보존한다.
+전용 수집기는 DB·Temporal secret만 받으며 Slack·모델 자격증명을 받지 않는다.
+`deploy` → `handoff` → `plan` → `apply --apply-digest <검토한 지문>` 순서로 실행한다.
+기존 영수증이 있으면 무조건 재실행하지 않고 실제 상태와 대조한다.
+
+복구는 당시 정책을 재구성할 수 있고 아직 72시간 안인, 전송 시도 0회·sent_ts/started_at 없음이
+확인된 `stale` 행만 대상으로 한다. 원문 소스·본문·발송 identity·프로젝트 revision을 재검증하고
+기존 메시지 ID와 본문은 유지한다. 불명·이미 발송·만료·변경된 글은 복구하지 않는다.
+운영 도구는 직접 Slack에 쓰지 않으며 실제 전송은 평소 발송기가 60초 간격과 유효기간을 다시 확인한다.

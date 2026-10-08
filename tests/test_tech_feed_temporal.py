@@ -75,3 +75,24 @@ async def test_dispatch_starts_dedicated_collection_without_model_worker(tech, t
                 await asyncio.sleep(0.1)
         await client.get_workflow_handle("company-tech-feed-collection-v1").cancel()
     assert outgoing(tech) == []
+
+
+@pytest.mark.integration
+async def test_dedicated_worker_has_its_own_queue_and_no_model_calls(tech, temporal_environment, monkeypatch):  # noqa: F811
+    from quant_company.tech_feed.worker import make_worker
+
+    monkeypatch.setattr("quant_company.execution.provider_for", lambda *_: pytest.fail("Model construction forbidden"))
+    tech.company.settings.temporal_task_queue = "tech-feed-isolated-" + uuid4().hex
+    tech.company.settings.tech_feed_dedicated_worker = True
+    collector = TechFeedCollector(tech.company, lambda *_: {"ok": True, "entries": []})
+    client = temporal_environment.client
+    async with make_worker(client, tech.company, collector):
+        await dispatch_once(client, tech.company)
+        handle = client.get_workflow_handle("company-tech-feed-collection-v1")
+        async with asyncio.timeout(15):
+            while not tech.status()["sources"]:
+                await asyncio.sleep(0.1)
+        assert (await handle.describe()).task_queue.endswith("-tech-feed-dedicated")
+        await handle.cancel()
+    with tech.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM turns").fetchone()["n"] == 0

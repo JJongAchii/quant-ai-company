@@ -1,0 +1,47 @@
+{
+  "approval": {
+    "approvedAt": "2026-10-08T00:04:36.209222+00:00",
+    "id": "chat-20261008-tech-feed-recovery"
+  },
+  "currentIntent": "INTENT-v1.json",
+  "deliverables": {
+    "POLICY": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/tech-feed-recovery-20261008/RESULT.json",
+          "sha256": "6ad8c13de1fe"
+        }
+      ],
+      "note": "Scoped v2 policy, zero-model dedicated collector, and fail-closed certainly-unsent reconciliation qualified; real source digests match reviewed modules.",
+      "status": "verified",
+      "updatedAt": "2026-10-08T01:07:21.496949+00:00"
+    },
+    "RECOVERY": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/tech-feed-recovery-20261008/RESULT.json",
+          "sha256": "6ad8c13de1fe"
+        }
+      ],
+      "note": "202 certainly-unsent cards revalidated, eight real Tech Scout deliveries confirmed at snapshot; 12-source natural collection succeeded on dedicated Temporal queue. All independent services and original research worker preserved.",
+      "status": "verified",
+      "updatedAt": "2026-10-08T01:07:21.840313+00:00"
+    },
+    "VALIDATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/tech-feed-recovery-20261008/RESULT.json",
+          "sha256": "6ad8c13de1fe"
+        }
+      ],
+      "note": "87 focused checks; 1639 full local regressions; 1640 Linux CI checks passed. Real PostgreSQL/Temporal and simulated Slack/model tests distinguished from live acceptance.",
+      "status": "verified",
+      "updatedAt": "2026-10-08T01:07:21.655378+00:00"
+    }
+  },
+  "intentDigest": "64d52a13dfe2",
+  "schemaVersion": 1,
+  "slug": "tech-feed-recovery-20261008",
+  "state": "approved",
+  "updatedAt": "2026-10-08T01:07:21.840313+00:00"
+}

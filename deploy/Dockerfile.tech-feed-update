@@ -1,0 +1,13 @@
+# Preserve the exact installed worker/dispatch image; patch only Tech code.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+USER root
+ARG BASE_STORE_SHA256
+ARG RELEASE_COMMIT
+COPY src/quant_company/tech_feed/store.py /tmp/tech-store.py
+COPY src/quant_company/tech_feed/recovery.py /tmp/tech-recovery.py
+COPY src/quant_company/tech_feed/worker.py /tmp/tech-worker.py
+RUN /app/.venv/bin/python -c "import hashlib,importlib.util,pathlib,sys; p=pathlib.Path(importlib.util.find_spec('quant_company.tech_feed').origin).parent; assert hashlib.sha256((p/'store.py').read_bytes()).hexdigest()==sys.argv[1], 'base Tech code changed'; [(p/(n+'.py')).write_bytes(pathlib.Path('/tmp/tech-'+n+'.py').read_bytes()) for n in ('store','recovery','worker')]" "$BASE_STORE_SHA256" \
+    && /app/.venv/bin/python -m compileall -q /app/.venv/lib/python3.12/site-packages/quant_company/tech_feed
+USER 10001:10001
+LABEL io.quant-company.tech-feed-recovery=$RELEASE_COMMIT
