@@ -235,7 +235,9 @@ async def test_ready_owner_request_overtakes_older_paced_broadcasts(trend, tech)
     recurring(trend)
     with trend.db.transaction() as conn:
         at = conn.execute("SELECT now() AS at").fetchone()["at"]
-    trend.clock[0] = tech.clock[0] = at
+    # Keep scheduled enrichment outside this on-demand delivery regression.
+    trend.clock[0] = tech.clock[0] = at.astimezone(schedule.KST).replace(
+        hour=10, minute=0, second=0, microsecond=0).astimezone(UTC)
     paced_backlog(tech, 2)
     requested, _ = await complete_request(trend, "urgent-owner-request")
     force_due(trend)
