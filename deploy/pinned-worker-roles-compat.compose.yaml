@@ -1,0 +1,9 @@
+# Temporary compatibility overlay for the research-pinned worker only.
+# Prepare roles-pinned.json from the live roles.json by removing the inactive
+# outbound-only quant_scout entry. Verify every remaining role is identical.
+services:
+  worker:
+    environment:
+      ROLES_FILE: /etc/quant-company/roles-pinned.json
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/config/roles-pinned.json:/etc/quant-company/roles-pinned.json:ro

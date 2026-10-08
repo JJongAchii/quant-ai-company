@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-28T08:06:50Z",
+  "state": "staged_not_activated",
+  "sourceCommit": "2e1b5c783319c69e384a4a37c79af24a5441c422",
+  "reviewPr": "https://github.com/JJongAchii/quant-ai-company/pull/83",
+  "change": "Default project-wide model-task quota is zero (unlimited) in ingress, owner control and delegation; explicit positive quotas remain supported.",
+  "validation": {
+    "database": "disposable real PostgreSQL 14 over a local Unix socket",
+    "newRegressionCases": ["41-plus work tasks and delegation", "new owner instruction after 40 tasks", "signed Slack question after 40 tasks"],
+    "focusedTestsPassed": 5,
+    "fullSuitePassed": 1226,
+    "fullSuiteSkipped": 38,
+    "fullSuiteFailed": 0,
+    "ruff": "passed",
+    "slackInput": "signed synthetic fixtures; no new production question was sent for this candidate"
+  },
+  "stagedLightsailImages": {
+    "sourceArchiveSha256": "6c68ffa1ecbd6e67082f4f06d26f1e50fe4a7c25d1e69c4e173227d3e2f3d785",
+    "app": {
+      "base": "quant-company:d571734e161c39f7c26252005231f93b619b3749",
+      "candidate": "quant-company:2e1b5c783319c69e384a4a37c79af24a5441c422",
+      "imageId": "sha256:9ef6d12b7b39796dc7ee1bbcb41cb9644d251395ec0402ce9f63673690e58714"
+    },
+    "researchCapableWorker": {
+      "base": "quant-company-autonomous:9ef85902c0c5ff7aa323a1853809d3f065398c23",
+      "candidate": "quant-company-autonomous:2e1b5c783319c69e384a4a37c79af24a5441c422",
+      "imageId": "sha256:468512d7bd125b372737039f784951ab579629dedc9032f66120408baa2819c7"
+    },
+    "baseLockAndEntrypointUnchanged": true,
+    "qdataRevisionUnchanged": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "installedSourceFilesMatched": 169,
+    "bothImagesDefaultLimit": null,
+    "bothImagesLoadedLiveRoleFile": true,
+    "composeConfigQuietPassed": true
+  },
+  "prepared3070Release": {
+    "sourceBundleSha256": "102f47db20a5b5bd268d32663c786bf5493013ecc908dd896e0aedef383f1457",
+    "newCompanyCommit": "2e1b5c783319c69e384a4a37c79af24a5441c422",
+    "configSha256": "9741cdeec6b9a26c7e4ed15e7e7d39d25081d44fb34c6eaead84a7894fa058e6",
+    "trackedCodeFiles": 1043,
+    "activeCompanyCommitUnchanged": "31ff903f08a1471d26cb2ce0fef9643a0b34fc75",
+    "historicalReleaseRegistryUnchanged": true,
+    "historicalReceivedJobCommitStillRegistered": "3cd63607d821ecb6489c09135d16fc5d063f9022"
+  },
+  "activationConditions": [
+    "Review the updated PR and the autonomous research deployment runbook before production activation.",
+    "Recheck running turns, active research execution, sending outbox and both host identities immediately before replacement.",
+    "Preserve a fresh scoped PostgreSQL/config backup, previous container image IDs, old 3070 config and drop-in for rollback.",
+    "Activate the prepared 3070 release and matching service code path without editing historic job commits or replaying uncertain effects.",
+    "After app, Slack socket and model worker replacement, verify configured unlimited cap, service health, unrelated containers and actual new Slack ingress/delivery when the owner sends another message."
+  ]
+}

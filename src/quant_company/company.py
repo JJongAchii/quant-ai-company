@@ -239,7 +239,7 @@ class Company:
                 "daily_limit_meaning": "null means no service daily quota; subscription quotas still apply.",
                 "task_turns": self.settings.company_max_task_turns,
                 "delegation_depth": self.settings.company_max_depth,
-                "project_model_tasks": self.settings.company_max_project_tasks,
+                "project_model_tasks": self.settings.company_max_project_tasks or None,
             },
         }
 
@@ -307,10 +307,12 @@ class Company:
         depth = parent["depth"] + 1 if parent else 0
         if depth > self.settings.company_max_depth:
             raise PolicyError("Delegation depth exhausted")
-        count = conn.execute("SELECT count(*) AS n FROM tasks WHERE project_id=%s AND turn_count>0 AND kind<>'research_stage'",
-                             (project["id"],)).fetchone()
-        if not status_only and count["n"] >= self.settings.company_max_project_tasks:
-            raise PolicyError("Project task limit exhausted")
+        if not status_only and self.settings.company_max_project_tasks:
+            count = conn.execute("""SELECT count(*) AS n FROM tasks
+                WHERE project_id=%s AND turn_count>0 AND kind<>'research_stage'""",
+                                 (project["id"],)).fetchone()
+            if count["n"] >= self.settings.company_max_project_tasks:
+                raise PolicyError("Project task limit exhausted")
         task_id = task_id or str(uuid4())
         priority = priority if priority is not None else (parent["priority"] + 10 if parent else 0)
         kind = kind or (parent['kind'] if parent else 'work')
@@ -418,13 +420,27 @@ class Company:
 
                 project = advance(conn, self, project, instruction=text)
                 self._event(conn, "project_revised", {"revision": project["revision"], "by": owner}, project_id)
-            task = self._new_task(conn, project, agent, text, task_id=stable("task:" + event_key),
-                                  status_only=status_only, kind='routing' if routing else 'control' if status_only else 'work',
-                                  priority=-100 if routing else None)
+            limit_exhausted = False
+            try:
+                task = self._new_task(conn, project, agent, text, task_id=stable("task:" + event_key),
+                                      status_only=status_only,
+                                      kind='routing' if routing else 'control' if status_only else 'work',
+                                      priority=-100 if routing else None)
+            except PolicyError as exc:
+                if str(exc) != "Project task limit exhausted" or not event_key.startswith("slack:") or revise:
+                    raise
+                limit_exhausted = True
+                task = self._new_task(conn, project, agent, text, task_id=stable("task:" + event_key),
+                                      status_only=True, kind='control')
             conn.execute("INSERT INTO inbound(event_key,project_id,task_id,payload_digest) VALUES (%s,%s,%s,%s)",
                          (event_key, project_id, task["id"], digest))
             self._message(conn, project, task["id"], owner, "human", text)
-            if account_command is not None:
+            if limit_exhausted:
+                notice = (f"이 스레드의 일반 업무 한도 {self.settings.company_max_project_tasks}건에 도달했습니다. "
+                          "새 질문은 새 스레드에서 요청해 주세요. 이 스레드의 현황은 '상태'로 확인할 수 있습니다.")
+                conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (notice, task["id"]))
+                self._message(conn, project, task["id"], agent, "status", notice)
+            elif account_command is not None:
                 from .accounts import enqueue
 
                 enqueue(conn, self, project, task, event_key, account_command)
