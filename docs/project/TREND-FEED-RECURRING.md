@@ -5,6 +5,10 @@
 Trend Scout 멘션 요청에도 원 메시지 스레드로 답한다. 스포츠 제외·회당 10개 목표·
 급상승과 주요 이슈의 구분을 유지한다. 전환 직후 다음 정기 발송은 오늘 14시다.
 
+2026-10-08 수시 요청의 편집 완료 후 공통 발송 대기열에서 굶기는 문제가 발생했다.
+원래 스레드에 복구 발송하고 dispatcher의 보류 항목 건너뛰기·요청 우선 처리를 적용했다.
+당일 조사·회귀·운영 결과는 [복구 보고서](TREND-REQUEST-RECOVERY-20261008.md)에 기록한다.
+
 설정과 사용법은 [운영 설명](../trend-feed.md), 선택 근거는
 [ADR](../adr/0042-trend-recurring-owner-requests.md)에 있다.
 변경과 운영 증거는 [PR 119](https://github.com/JJongAchii/quant-ai-company/pull/119)에 게시한다.
@@ -80,3 +84,12 @@ fixture이며 이 자동 검사만으로 실제 연결/배포를 주장하지 �
 [추가 67개](evidence/trend-recurring-20261007/final-pytest.txt),
 [초기 전체 1,620개](evidence/trend-recurring-20261007/full-pytest.txt),
 [lint](evidence/trend-recurring-20261007/ruff.txt)에 보존한다.
+
+## main 병합
+
+사용자의 추가 `병합해` 지시에 따라 2026-10-07 11:30 KST PR119를 `main`에 병합했다.
+최신 head `c3d499d`의 서비스 1,623개·Codex 프로토콜 9개·lint 통과를 확인했다.
+병합 커밋은 `388f44d5897129314232d86ba9230a863bf658a4`다. 원격 `main`의 ancestry와
+병합된 구현·테스트·배포 템플릿을 대조해 검사한 head가 그대로 포함됐음을 확인했다.
+[병합·원격 대조 영수증](evidence/trend-recurring-20261007/merge.json),
+[최신 head 검사 로그](evidence/trend-recurring-20261007/premerge-ci.txt).

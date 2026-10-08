@@ -1,0 +1,99 @@
+{
+  "original_request_ts": "1791425245.175969",
+  "original_digest_id": "62569b02-9381-527a-87a7-b2114894200f",
+  "original_model_state": "completed",
+  "original_model_completed_at": "2026-10-08T02:09:44+00:00",
+  "original_outbox_created_at": "2026-10-08T02:09:59+00:00",
+  "original_attempts": 0,
+  "original_final_status": "stale",
+  "cause": "paced FIFO outbox starvation",
+  "backlog_at_diagnosis": [
+    {
+      "kind": "tech_feed",
+      "pending": 115,
+      "oldest": "2026-10-06 14:55:16.260765+00:00",
+      "latest": "2026-10-08 02:11:06.969926+00:00",
+      "currently_due": 112
+    },
+    {
+      "kind": "news",
+      "pending": 47,
+      "oldest": "2026-10-08 01:00:01.669485+00:00",
+      "latest": "2026-10-08 02:28:23.164464+00:00",
+      "currently_due": 47
+    },
+    {
+      "kind": "status",
+      "pending": 5,
+      "oldest": "2026-10-08 01:06:19.787762+00:00",
+      "latest": "2026-10-08 02:11:49.083564+00:00",
+      "currently_due": 5
+    },
+    {
+      "kind": "quant_feed",
+      "pending": 2,
+      "oldest": "2026-10-08 01:22:57.234203+00:00",
+      "latest": "2026-10-08 02:31:56.856228+00:00",
+      "currently_due": 2
+    },
+    {
+      "kind": "maintenance",
+      "pending": 6,
+      "oldest": "2026-10-08 02:23:48.898126+00:00",
+      "latest": "2026-10-08 02:23:49.086456+00:00",
+      "currently_due": 6
+    },
+    {
+      "kind": "trend_feed",
+      "pending": 1,
+      "oldest": "2026-10-08 02:32:37.388918+00:00",
+      "latest": "2026-10-08 02:32:37.388918+00:00",
+      "currently_due": 1
+    }
+  ],
+  "targeted_recovery": {
+    "scope": "only never-attempted pending trend request; normal policy/expiry and before_send checks",
+    "attempted": true,
+    "receipt": {
+      "id": "d52245b4-0c61-5284-9def-0dfc77f67b5b",
+      "status": "delivered",
+      "attempts": 1,
+      "error": null,
+      "sent_ts": "1791427179.160769",
+      "thread_ts": "1791425245.175969",
+      "started_at": "2026-10-08 02:39:38.448670+00:00"
+    }
+  },
+  "signed_http_test": "synthetic only; actual input was authenticated SDK Socket Mode",
+  "uncertain_or_delivered_replayed": false,
+  "original_received_digest": {
+    "id": "62569b02-9381-527a-87a7-b2114894200f",
+    "day": "2026-10-08",
+    "kind": "on_demand",
+    "state": "queued",
+    "enriched": true,
+    "cutoff": "2026-10-08 02:07:29.825617+00:00",
+    "send_at": "2026-10-08 02:15:25.529420+00:00",
+    "expires_at": "2026-10-08 02:22:25.529420+00:00",
+    "event_key": "slack:T0C1YRDRPNF:C0C6WTA9ECV:1791425245.175969:trend_scout",
+    "thread_ts": "1791425245.175969",
+    "requested_at": "2026-10-08 02:07:25.529420+00:00",
+    "reused_digest_id": null,
+    "has_draft": true,
+    "policy_digest": "fe3957c146fd285e0c36d66811398615465d5e3d75c5192c8a558dc7c64565c5",
+    "lease_until": null,
+    "delivery_status": "pending",
+    "error": null,
+    "sent_ts": null,
+    "attempts": 0
+  },
+  "original_model_receipt": {
+    "id": "news-trends-877b0ffc-47f6-42c4-9361-9d484486ea8e",
+    "digest_id": "62569b02-9381-527a-87a7-b2114894200f",
+    "stage": 0,
+    "state": "completed",
+    "error": null,
+    "created_at": "2026-10-08 02:08:00.735610+00:00",
+    "completed_at": "2026-10-08 02:09:44.805681+00:00"
+  }
+}

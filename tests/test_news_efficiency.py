@@ -368,8 +368,12 @@ async def test_quiet_news_does_not_block_user_reply(efficient):
     store.company.ingest(event_key="night-user", text="상태", owner="UHUMAN", agent="director", channel="CQUANT", thread_ts="77.1", status_only=True)
     sender = SlackOutbox(store.company, {"reporter": {"bot_token": "fake"}, "director": {"bot_token": "fake"}},
                          httpx.MockTransport(lambda _: httpx.Response(200, json={"ok": True, "ts": "77.2"})))
-    assert not await sender.send_one()
     assert await sender.send_one()
+    with store.db.transaction() as conn:
+        assert conn.execute("SELECT status FROM outbox WHERE agent='director'").fetchone()["status"] == "delivered"
+        news = conn.execute("SELECT status,attempts FROM outbox WHERE agent='reporter'").fetchone()
+        assert news["status"] == "pending" and news["attempts"] == 0
+    assert not await sender.send_one()
 
 
 def test_related_new_duplicate_remains_available_as_evidence(efficient):
