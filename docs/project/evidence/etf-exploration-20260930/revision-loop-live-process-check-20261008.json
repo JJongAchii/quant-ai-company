@@ -1,0 +1,53 @@
+{
+  "observed_at": "2026-10-08T02:13:53.022727+00:00",
+  "services": [
+    {
+      "name": "quant-company-api-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    {
+      "name": "quant-company-worker-1",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    {
+      "name": "quant-company-slack-socket-1",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    {
+      "name": "quant-company-postgres-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    {
+      "name": "quant-company-codex-runtime-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    {
+      "name": "quant-company-quant-codex-runtime-1",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0
+    }
+  ],
+  "socket_namespace_established_tcp443_connections": 8,
+  "native_astra_exec_process_count": 2,
+  "native_company_lane_flock_held": true,
+  "signed_slack_round_trip_claimed": false,
+  "database_mutated": false,
+  "credentials_or_logs_exported": false
+}

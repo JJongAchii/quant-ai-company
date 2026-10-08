@@ -45,7 +45,14 @@ mode 0600 overlay로 고정하고, compose 해석 전후와 활성화 후 key/va
 정상 서비스가 재개한 실제 director/Astra max 요청에는 새 capabilities와 현재 반론 UUID 한 건이
 들어 있다. 실제 출력 스키마의 UUID enum·최소/최대 응답 한 건이 DB의 현재 반론과 일치했다.
 후속 응답들이 정상 접수되며 읽기 5→21건으로 진행했다. 11:00 KST 관측은 selection/running이며
-추가 stage 오류가 없다. 둘째 과학 시행은 아직 없고 이 기술 복구를 실험 완료로 세지 않는다.
+추가 stage 오류가 없다.
+
+**11:11:45 KST에 독립 선정 `execute`가 실제 접수됐다.** 현재 반론 UUID 한 건만 제출했으며
+누락·중복·과거 UUID가 없다. 정상 서비스가 trial `5868e1af-475c-5b7b-ad4a-da55fc3966e3`을
+선정하고 engineer 구현 stage `6fc83fad-30b2-5ece-8663-d90e31734a1c`를 만들었다.
+11:18 관측에서 engineer/Sol xhigh의 읽기 25건과 실제 후속 호출 진행을 확인했다.
+이로써 INTENT-v18의 진단·영구 코드 수리·실제 후속 진행 확인은 완료했다.
+둘째 trial은 selected/job_id=null이며 물리 실험은 아직 없다. 전체 연구·실운용 완료로 세지 않는다.
 
 45초 간격·최대 4시간의 읽기 전용 관측기가 활성 상태다. 둘째 보고 완료 시 종료하며 자동
 Slack 알림·수리·모델 호출·과학 재실행은 하지 않는다. 승인된 정상 직원 workflow가 연구를 진행한다.
@@ -61,6 +68,7 @@ Slack 알림·수리·모델 호출·과학 재실행은 하지 않는다. 승�
 - [실제 선정 요청](evidence/etf-exploration-20260930/revision-loop-actual-selection-request-20261008.json)
 - [후속 응답 접수 진행](evidence/etf-exploration-20260930/revision-loop-actual-progress-20261008.json)
 - [한정된 관측기](evidence/etf-exploration-20260930/revision-loop-bounded-observer-20261008.json)
+- [실제 선정 접수·독립 구현 진행](evidence/etf-exploration-20260930/revision-loop-selection-accepted-implementation-running-20261008.json)
 
 서명된 프로그램 `f7deaf96-e677-5afe-93d4-18ac387043bb`의 범위·예산·과거 결과는 유지한다.
 운영 복구는 새 과학 승인이나 실운용 승인으로 해석하지 않는다.

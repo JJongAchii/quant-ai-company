@@ -17,11 +17,19 @@ def main():
             fields = line.split()
             if fields[3] == "01" and int(fields[2].rsplit(":", 1)[1], 16) == 443:
                 connections += 1
+    native = subprocess.check_output([
+        "docker", "top", "quant-company-codex-runtime-1", "-eo", "pid,comm,args",
+    ], text=True, timeout=15)
+    astra_exec = sum("gpt-6-astra" in line and "exec" in line for line in native.splitlines()[1:])
+    inode = (Path("/var/lib/quant-company/codex/jobs") / ".runtime.lock").stat().st_ino
+    lane_locked = any("FLOCK" in line and any(field.endswith(":" + str(inode)) for field in line.split())
+                      for line in Path("/proc/locks").read_text().splitlines())
     print(json.dumps({"observed_at": datetime.now(UTC).isoformat(), "services": [
         {"name": row["Name"].removeprefix("/"), "running": row["State"]["Running"],
          "health": row["State"].get("Health", {}).get("Status"), "oom_killed": row["State"]["OOMKilled"],
          "restart_count": row["RestartCount"]} for row in rows
     ], "socket_namespace_established_tcp443_connections": connections,
+        "native_astra_exec_process_count": astra_exec, "native_company_lane_flock_held": lane_locked,
         "signed_slack_round_trip_claimed": False, "database_mutated": False,
         "credentials_or_logs_exported": False}, indent=2))
 
