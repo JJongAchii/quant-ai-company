@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "package": "@openai/codex",
+  "current_validated_version": "0.160.1",
+  "candidate_version": "0.161.0",
+  "npm_integrity": "sha512-+ZnJFGBbQBwYnjUTs+PoacgYVxmNyxMLiadIz6eSJ0AzQW0mRVxuuOQizSbz2qeNAJia9Syxag6j2uGf7guD2Q==",
+  "state": "unqualified",
+  "changelog": "https://learn.chatgpt.com/docs/changelog"
+}
