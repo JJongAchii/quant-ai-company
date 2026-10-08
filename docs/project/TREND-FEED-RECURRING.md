@@ -5,6 +5,10 @@
 Trend Scout 멘션 요청에도 원 메시지 스레드로 답한다. 스포츠 제외·회당 10개 목표·
 급상승과 주요 이슈의 구분을 유지한다. 전환 직후 다음 정기 발송은 오늘 14시다.
 
+2026-10-08 수시 요청의 편집 완료 후 공통 발송 대기열에서 굶기는 문제가 발생했다.
+원래 스레드에 복구 발송하고 dispatcher의 보류 항목 건너뛰기·요청 우선 처리를 적용했다.
+당일 조사·회귀·운영 결과는 [복구 보고서](TREND-REQUEST-RECOVERY-20261008.md)에 기록한다.
+
 설정과 사용법은 [운영 설명](../trend-feed.md), 선택 근거는
 [ADR](../adr/0042-trend-recurring-owner-requests.md)에 있다.
 변경과 운영 증거는 [PR 119](https://github.com/JJongAchii/quant-ai-company/pull/119)에 게시한다.

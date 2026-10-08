@@ -1,0 +1,37 @@
+{
+  "state": "operational_repair_verified",
+  "original_cause": "paced outbox FIFO starvation",
+  "source_commit": "7039e772581c66aa24b38d175536cfc81b737341",
+  "original_input": "actual authorized Slack SDK Socket Mode owner event",
+  "regressions": {
+    "postgresql": 391,
+    "skipped": 1,
+    "native_parent": 135,
+    "original_two_regressions_failed_as_expected": true,
+    "external_boundaries": "fixtures in automated tests; real materials, official subscription and Slack in separate live qualification"
+  },
+  "activation": "sha256:cc26deae71b86db43ee013da5ea3cc5c23da49420a411eea8ceac173935937e8",
+  "targeted_recovery_items": 10,
+  "normal_dispatcher_items": 10,
+  "normal_dispatcher_attempts": 1,
+  "publication_hours_kst": [
+    8,
+    14,
+    20
+  ],
+  "uncertain_or_delivered_auto_replayed": false,
+  "main_merged": false,
+  "remote_ci": {
+    "headSha": "7039e772581c66aa24b38d175536cfc81b737341",
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37720210265",
+    "service_passed": 1642,
+    "service_skipped": 47,
+    "service_deselected": 1,
+    "codex_protocol_passed": 9,
+    "lint": "passed",
+    "postgresql_and_temporal": "real",
+    "external_data_and_slack": "fixtures; separate live.json uses actual services"
+  }
+}
