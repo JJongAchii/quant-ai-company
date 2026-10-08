@@ -3,6 +3,7 @@
 import json
 from datetime import UTC, datetime, time, timedelta
 from functools import lru_cache
+from threading import Lock
 from zoneinfo import ZoneInfo
 
 from ..company import stable
@@ -25,6 +26,9 @@ CUTOFF_EXTENSION_MINUTES = 30
 # (calendar overrides and late closes included): collect from C+start, freeze at C+cutoff, due C+due
 # (default 20/40/115 minutes: 15:50/16:10/17:25 KST on a normal day).
 KR_CLOSE_SCHEDULE_VERSION = 8
+# lru_cache allows concurrent cache misses. The exchange-calendar factory uses
+# shared mutable holiday state, so cold-start construction must be serialized.
+_CALENDAR_LOCK = Lock()
 
 
 def utcnow():
@@ -35,8 +39,9 @@ def utcnow():
 def exchange(market, year):
     import exchange_calendars
 
-    return exchange_calendars.get_calendar("XNYS" if market == "US" else "XKRX",
-                                           start=f"{year-1}-01-01", end=f"{year+1}-12-31")
+    with _CALENDAR_LOCK:
+        return exchange_calendars.get_calendar("XNYS" if market == "US" else "XKRX",
+                                               start=f"{year-1}-01-01", end=f"{year+1}-12-31")
 
 
 def overrides(settings):
