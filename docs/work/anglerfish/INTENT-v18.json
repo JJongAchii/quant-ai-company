@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 18,
+  "previousIntent": "INTENT-v17.json",
+  "sourceRequest": "그럼 어떻게하면 되 이제",
+  "outcome": "Diagnose the repeated post-report revision loop and repair verified service navigation or response-contract faults so independent staff can advance the already-approved programme through its normal gates.",
+  "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "deliverables": [
+    {"id": "LOOP_DIAGNOSIS", "description": "Bind actual current objections, director dispositions and service capabilities to immutable operational evidence"},
+    {"id": "DURABLE_REPAIR", "description": "Correct verified prompt/schema/navigation faults with real PostgreSQL regressions and preserved scientific gates"},
+    {"id": "OPERATIONAL_READBACK", "description": "Prepare and review the exact scoped runtime repair and verify actual independent successor progress or an evidence-based wait"}
+  ],
+  "constraints": [
+    "Preserve signed scientific scope, budgets, reservations, prior trials, outcomes and lineage",
+    "Preserve employee decisions, raw completed provider responses and uncertain external-effect receipts",
+    "Do not supply or force an execute decision, accept a revised scientific claim, or weaken causal/publication gates",
+    "Retain concurrent production changes and prepare exact rollback and review evidence before effects",
+    "No direct strategy implementation, heavy backtest, paid API, live order or 5090 fallback",
+    "Report actual progress rather than inferring progress from active mission state"
+  ]
+}

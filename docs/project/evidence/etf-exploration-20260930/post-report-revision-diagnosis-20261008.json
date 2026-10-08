@@ -1,0 +1,169 @@
+{
+  "observed_at": "2026-10-08T00:52:59.610404+00:00",
+  "reviews": [
+    {
+      "id": "418ea58b-387b-5e74-ba5b-f96762bf9fc6",
+      "stage": "selection",
+      "state": "running",
+      "attempt": 1,
+      "error": null,
+      "binding": {
+        "cycle": 1,
+        "stage": "selection",
+        "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+        "proposal_id": "36902772-eefa-4f18-9168-93cf58b4a746"
+      },
+      "created_at": "2026-10-08T00:47:25.412631+00:00",
+      "updated_at": "2026-10-08T00:52:04.548955+00:00",
+      "challenges": [
+        {
+          "id": "d81d7cf3-0730-40a4-b8dc-398d5696a084",
+          "proposal_id": "36902772-eefa-4f18-9168-93cf58b4a746",
+          "concern_excerpt_numbers_redacted": "이번 제안은 구현·검증 설계이며 경제평가 실행 선정 요청이 아니라는 제한을 유지한다. a,b,t가 비음수이면 |sqrt(a)−sqrt(b)|≥t는 K=a+b−t²≥[number] 및 K²≥[number]ab와 동치다. 따라서 새 비교식 자체의 오류를 주장하지 않는다. 그러나 정확 상태 판정, binary[number] 반환, 고정 평가기의 회계 오차는 서로 다른 검증 대상이다. 제공 candidate.py는 여전히 최신 날짜 종목의 동일비중을 반환하고 config.json은 공학용 기준선 설명이다. 정확 커널의 공개 연결이나 실제 시험 통과는 확인되지 않는다. 동결 코드·승인 spec·필수 계보의 완독 기록은 승계하되, 현재 본문에 없는 시험 결과를 추정하지 않는다. 핵심 추가 우려는 승계한 비영 참조의 절대·상대오차 각각≤[number]e−[number] 기준을 작은 성장배수 차분에도 일률 적용할 때 생기는 거짓 실패다. 기존 R=[number], 초기 [number], 신호 [number]→[number] 반례의 정확 십진 기준에서 c=[number]이면 A의 성장배수는 [number], B는 [number]이고 B−A=−[number]e−[number]다. 이 차분에 상대오차≤[number]e−[number]을 요구하면 절대오차≤[number]e−[number]가 필요하다. 반면 해당 구간의 binary[number] 성장배수 간 직접 차분은 [number]^−[number] 간격의 격자에 놓인다. 이상화 참조 −[number]e−[number]와 가장 가까운 격자점의 거리도 약 [number]e−[number]이므로 직접 차분을 그대로 채점하면 기준을 충족할 수 없다. 실제 반환 목표와 비용의 binary[number] 값을 정확 유리수로 해석한 참조도 별도로 정의해야 한다. 이는 기호식과 수 표현에서 도출한 검증 우려이며 관측된 실행 실패가 아니다. 제안된 D와 Δ의 항등식은 양의 성장배수에서 타당하지만, 거의 같은 성장배수의 비율에 log를 적용하거나 공식 CAGR끼리 직접 빼는 계산은 상쇄 오차를 낼 수 있다. 이를 경제적 무개선, 상태 전이 오류 또는 서비스 준비성 실패와 혼동해서는 안 된다. 경제적으로는 목표 갱신 감소가 turnover나 누적 비용 감소를 보장하지 않는다는 기존 반례가 여전히 유효하다. 선행 보고서의 스트레스 CAGR [number]는 한 시행의 절대수익이며 A/B 개선 증거가 아니다.",
+          "test_excerpt_numbers_redacted": "[number]) 참조 대상을 먼저 고정한다. 정확 피제곱수·문턱·상태 전이에는 허용오차를 적용하지 않는다. 반환값은 최근접 짝수의 비트 일치로 검사한다. 회계 참조는 실제 반환 목표·비용·평가 수익률의 표현과 고정 엔진의 연산 순서를 명시하고, 경제 규칙의 정확 십진 예제와 구별한다. 후보와 코드를 공유하지 않는 참조를 사용하며, 참조의 유한 계산 한도에서 미판별이면 미검증으로 남긴다. [number]) 기존 R=[number]·초기 [number]·신호 [number]→[number] 반례를 기본 [number]bp와 스트레스 [number]bp에서 검사한다. 각 군의 목표 비트, 실제비중, turnover, 일별 비용배수, 누적 성장배수, 직접 차분과 안정적으로 계산한 차분을 기록한다. 정확 십진 기준의 기대 차이는 각각 −[number]e−[number]와 −[number]e−[number]이다. 실제 binary[number] 입력에 대한 독립 참조도 함께 제시한다. 개별 성장배수의 오차와 작은 차분의 상대오차를 따로 보고한다. 승계 허용오차를 조용히 완화하거나 오차를 [number]으로 덮지 않는다. 직접 차분에 적용한 기준이 표현 격자 때문에 충족 불가능하면 시험 명세 충돌로 기록하고, 적용 대상과 반올림 오차 처리의 명시적 수정 검토 전까지 해당 검사를 통과로 처리하지 않는다. 이 합성 산술 검사는 개발 성과평가가 아니다. [number]) 적법한 대응 결과가 확보된 경우에만 D와 공식 CAGR 차이를 대조한다. 보조 계산에서는 수익 기여 log[number]p((w_B−w_A)R/([number]+w_A R)), 비용 기여 log[number]p(c(τ_A−τ_B)/([number]−cτ_A)), Δ=exp(hL_A)×expm[number](hD)를 독립 고정밀 참조와 비교한다. 이는 제안식의 동치 표현이며 평가기 변경이 아니다. 누적 합산 오차와 공식 출력 차분의 오차를 따로 측정하고, 비용배수나 성장배수가 비양수인 경우 로그를 임의 보정하거나 날짜를 삭제하지 않는다. 비용 기여≤[number]이면 양의 Δ라도 직접 비용절감 설명은 지지하지 않는다. Δ≤[number], [number]<Δ<[number], Δ≥[number], B의 양의 스트레스 CAGR, 명목 구간 하한>[number] 및 하한≥[number]을 별도로 판정한다. [number]) 응답 digest c[number]c[number]b[number]ceab[number]dda[number]f[number]d[number]a[number]c[number]c[number]cd[number]df[number]f[number]deaf[number]dd[number]의 여섯 시험군을 유지한다. 극소 신호·반환 경계·동일 반환의 다른 정확 상태·반복 및 분할 호출·초기화·과거 입력 복원·미래와 부적격 정보 변경 불변성을 실제 weights 경로에서 확인한다. 합성 커널의 정확성으로 공개 연결이나 복원 가능성을 인증하지 않는다. 각 시험의 입력·기대값·실제값·오차"
+        }
+      ],
+      "decision": null,
+      "rationale_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rationale_excerpt_numbers_redacted": ""
+    },
+    {
+      "id": "e6101386-fe8c-556e-ac64-494090f73f59",
+      "stage": "selection",
+      "state": "completed",
+      "attempt": 2,
+      "error": null,
+      "binding": {
+        "cycle": 1,
+        "stage": "selection",
+        "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+        "proposal_id": "e286d244-56e1-49e6-a28b-f9f5f082b47d"
+      },
+      "created_at": "2026-10-08T00:02:44.678732+00:00",
+      "updated_at": "2026-10-08T00:32:23.18598+00:00",
+      "challenges": [
+        {
+          "id": "4b772f81-9b66-4e2d-9ca1-7ee239466184",
+          "proposal_id": "e286d244-56e1-49e6-a28b-f9f5f082b47d",
+          "concern_excerpt_numbers_redacted": "제안의 정확 비교식은 비음수 a,b,t에서 타당하다. |sqrt(a)−sqrt(b)|≥t는 K=a+b−t²≥[number] 및 K²≥[number]ab와 동치이며, v>[number]/[number]에서 sqrt([number]/([number]v))라는 신호도 제시된 변동성 목표와 정합적이다. 다만 현재 제공 candidate.py의 공개 weights는 동일비중이고 config.json은 공학용 기준선 설명이다. 제안된 정확 커널과 증명기록의 공개 연결은 구현 증거가 아니다. domestic_statistics.py는 strategy를 명시적으로 거절하므로 이를 공식 전략 평가의 대체물로 사용할 수도 없다. 이번 제안이 경제평가 선정 요청이 아닌 설계 수정임을 인정하며, 아래 항목은 관측된 새 구현 실패가 아니라 남은 검증 의무다.\n독립적으로 추가할 반례는 양의 정확 신호가 binary[number] 반환에서는 [number]이 되는 경우다. 실제 입력 float를 as_integer_ratio로 해석하더라도 가격 나눗셈, v, 피제곱수 또는 상태 비교 전에 float 변환이 끼어들면 오버플로·언더플로가 경제 규칙을 바꿀 수 있다. 기존 [number]^[number] 가격 회귀와 [number] 반환 충돌만으로 이 경우를 포괄하지 못한다. 정확 내부 신호가 극소 양수이고 직전 목표가 [number]/[number]이면 B는 유지해야 하지만, 신호를 먼저 [number]으로 반올림하면 문턱 등호로 잘못 갱신한다. 이는 반환 반올림의 정확성과 상태 판정의 정확성을 별도로 검증해야 하는 이유다. 합성 커널 반례를 실제 적격 시장 경로의 결함으로 확대해서는 안 된다.\n경제적으로 목표 갱신 감소는 turnover 감소를 보장하지 않는다. 보고서의 기본 CAGR [number]과 스트레스 CAGR [number]는 동일 시행의 비용별 결과이며 A/B 개선량이 아니다. 양의 절대수익, 정확 산술, 자기 일관적인 기록만으로 비용절감 기전이나 대응 개선을 지지할 수 없다. 선행 보고서의 inconclusive와 미해결 의무를 유지한다.\nmission/spec.json과 필수 scientific-lineage 파일의 완독 기록을 승계하되 개별 시험 통과를 추정하지 않는다. 승인 data_policy의 frozen_vintage_retrospective, unverified_historical, trade_day_T[number]:[number]:[number][number]:[number] 및 세 공백 historical_publication_unverified, historical_revision_vintage_unverified, original_preparation_bytes_unavailable는 지속된다. 판단 범위는 conditional_retrospective_development다. 내부 incumbent나 향후 조건부 지지도 역사적 알파·정확 재현·분배금 재투자 수익·실제 체결·배치 준비·미접촉 [number] 확증·외부 기준선 우월",
+          "test_excerpt_numbers_redacted": "선행 챌린지 f[number]c[number]ac[number][number]d[number]b[number]-b[number][number]ad[number]d에 대한 응답 digest [number]c[number]ed[number]dd[number]e[number]aed[number]be[number]f[number]adb[number]cf[number]의 여섯 시험군과 모든 승계 의무를 유지하고 다음을 추가·구체화한다. 아래 수치는 실행 결과가 아닌 수학적 기대값이다.\n[number]) 극소 신호 회귀: 커널용 [number]개 합성 가격을 P[number]~P[number]=[number]^−[number], P[number]=[number]^[number]으로 둔다. 모두 유한한 양의 binary[number]다. S=Σ(j=[number]..[number])([number]/[number])^j, r=[number]^[number]−[number]이면 v=r²/S, 신규 피제곱수 a=S/([number]r²)이다. 정확 신호 s=sqrt(a)는 [number]<s<[number]^−[number]이므로 최근접 짝수 반환은 [number]이다. 그러나 직전 정확 목표 [number]/[number], 문턱 [number]/[number]인 B의 기대 전이는 유지이고 반환은 binary[number] [number]이다. 문턱 [number]인 A는 정확 양의 상태를 채택하고 [number]을 반환해야 한다. 나눗셈부터 상태 채택까지 후보와 함수를 공유하지 않는 유리수 참조로 대조한다. 중간 float 변환 때문에 발생한 무한대·[number] 또는 잘못된 B 갱신은 실패다. 이 입력의 공개 인터페이스 적격성과 실제 가격 창 도달 가능성은 별도 항목으로 보고하며, 불허 입력이라면 계약상 거절 근거를 제시한다. 합성 산술 검사를 경제평가로 계산하지 않는다.\n[number]) 반환 경계: 합성 내부 신호 s=[number]^−[number]와 s=[number]^−[number]±[number]^−[number]의 피제곱수를 직접 제공한다. 반환 기대값은 각각 [number], 아래쪽 [number], 위쪽 [number]^−[number]다. 반환 [number]을 내부 정확 상태로 되먹이지 않는지 다음 전이까지 검사한다. 정확 [number]/[number]와 binary[number] [number]의 차이, 동일 [number] 반환의 서로 다른 상태, K 부호·양방향 등호·t=[number]·v=[number]·상한 및 기존 양자화 회귀도 유지한다. 상태 판정에는 회계 허용오차를 적용하지 않는다. 참조의 유한 검사 한도에서 판별하지 못한 사례는 미검증으로 남긴다.\n[number]) 공개 연결과 정보시점: 실제 weights가 사용하는 입력→수익률→v→피제곱수→채택 상태→반환 비트를 독립 참조와 연결한다. 후보 기록의 자기 일관성과 실제 과거 호출 입력의 출처를 별도로 확인한다. 반복·역순·분할·교차 호출, 갱신 후 복원, "
+        }
+      ],
+      "decision": "revise",
+      "rationale_sha256": "86f09661ceae3ec16bc37cf78b04f24f3e30a1df920cf739af75215f49bb9781",
+      "rationale_excerpt_numbers_redacted": "현 제안 e[number]d[number][number][number]-a[number]b-f[number]f[number]f[number]b[number]d는 수정 후 재검토한다. 제안과 현 챌린지는 정확 비교식 K=a+b−t², K≥[number] 및 K²≥[number]ab의 수학적 정합성을 인정하면서도 공개 weights와 정확 커널의 연결은 구현 증거가 없는 설계라고 명시한다. 제안 자체도 경제평가 실행 선정 요청이 아니라고 구분한다. 극소 양의 신호가 반환에서는 [number]이 되는 경우까지 정확 상태와 반환 반올림을 분리하는 검증 의무를 추가해야 한다. 이는 관측된 새 구현 실패나 실제 시장 경로의 결함을 판정한 것이 아니다.\n공식 개발보고서 mission-report:de[number]b[number]-e[number][number]a[number]-af[number]f[number]c[number]df[number]의 기본 CAGR [number]과 스트레스 CAGR [number]는 한 시행의 비용별 결과다. A/B 개선량이 아니며 보고서의 inconclusive와 개별 시험 증거 미확인 상태를 유지한다. 현 제안에 연결된 챌린지를 아래에서 revise로 처리하고, 선행 챌린지와 응답의 모든 미해결 의무도 승계한다. 필수 scientific-lineage 파일의 완료 기록은 승계하되 시험 통과로 해석하지 않는다.\n필수 수정은 정확 커널의 공개 연결, 독립 참조 시험, 실제 과거 입력과 상태 복원의 증거, 서비스의 평가 예약 전 차단 연결, 선행 시행 재사용 적격성의 입증이다. 수정 요구가 남아 있는 동안 경제평가 실행으로 진행할 수 없다. 새 기능·모델·포트폴리오 구현은 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json 안에서만 허용된다. 평가기·데이터·일정·목적·비용·위험 기준은 고정한다.\n판단 범위는 frozen_vintage_retrospective 자료의 conditional_retrospective_development다. unverified_historical 및 trade_day_T[number]:[number]:[number][number]:[number] 가정을 유지하고 historical_publication_unverified, historical_revision_vintage_unverified, original_preparation_bytes_unavailable를 해소된 것으로 취급하지 않는다. 내부 incumbent나 향후 조건부 지지는 역사적 알파·정확 재현·분배금 재투자 수익·실제 체결·배치 준비·미노출 [number] 확증·외부 기준선 우월성을 입증하지 않는다. 이번 완료 대상은 선정 검토 산출물이며 구현·시험·승인·예약·Git 변경·게시의 수행을 보고하지 않는다."
+    },
+    {
+      "id": "44a470d1-39e3-5f04-b8e1-fb2b0ed8ab6d",
+      "stage": "selection",
+      "state": "completed",
+      "attempt": 1,
+      "error": null,
+      "binding": {
+        "cycle": 1,
+        "stage": "selection",
+        "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+        "proposal_id": "861797aa-8f0e-41e0-a995-423712fe37cc"
+      },
+      "created_at": "2026-10-07T23:35:00.907554+00:00",
+      "updated_at": "2026-10-07T23:47:15.245495+00:00",
+      "challenges": [
+        {
+          "id": "f3c17ac4-2d9b-4e26-b179-521ad094278d",
+          "proposal_id": "861797aa-8f0e-41e0-a995-423712fe37cc",
+          "concern_excerpt_numbers_redacted": "새 수식의 대수적 정합성은 인정하지만 공개 구현의 준비성과 비용절감 효과는 미검증이다. a,b≥[number] 및 t≥[number]에서 |√a−√b|≥t는 K=a+b−t²≥[number] 및 K²≥[number]ab와 동치다. 그러나 이 비교기가 옳아도 입력의 수치 의미나 과거 상태 복원이 틀리면 결과가 달라진다. 특히 정확한 십진 신호 [number]과 binary[number] [number]을 정확한 유리수로 해석한 신호는 직전 목표 [number], 정확 문턱 [number]에서 서로 다른 판정을 요구한다. 제안의 등호 시험은 입력 형식까지 고정해야 한다. 실제 가격 입력이 float라는 사실도 계산된 신호를 상태 저장 전에 float로 반올림할 근거가 되지 않는다. 제안이 지적한 history_at의 시점별 float 재기준화에는 또 다른 문제가 있다. 반올림된 곱셈은 일반적으로 역변환이 유일하지 않으므로 현재 이력의 절단이나 재스케일만으로 과거 공개 입력의 정확한 복원을 보장할 수 없다. 다만 국소적인 반올림 충돌은 전체 공개 history의 식별 불가능성이나 실제 데이터 결함의 증명이 아니다. 적법한 사건열과 실제 공개 입력 전체를 연결한 증거가 필요하다. 제공된 candidate.py의 weights는 동일비중이고 config.json에는 새 문턱이 없다. 따라서 정확 커널에서 공개 반환까지의 연결 및 실패 시 서비스 차단을 이 코드로 확인할 수 없다. 선행 보고서는 관련 개별 시험과 대응 A/B 성과를 unresolved로 남긴다. 기본 CAGR [number]과 스트레스 CAGR [number]는 동일 시행의 비용별 결과이며 개선 효과의 대조군이 아니다. 목표 갱신을 줄여도 드리프트 재조정과 큰 거래의 집중으로 비용절감이 성립하지 않을 수 있다. 현재의 설계 보완은 검증할 가치가 있지만 준비성 통과나 경제평가 실행 선정의 증거로 사용할 수 없다. 아래 합성 수치는 산술적 기대값이며 시험 실행 결과가 아니다.",
+          "test_excerpt_numbers_redacted": "[number]) 입력 의미와 정확 상태를 분리한다. 후보 파서·계산 함수를 공유하지 않는 참조에서 문턱 문자열 [number]을 정확한 [number]/[number]으로 해석한다. 직전 목표 y=[number]/[number]에서 x=[number]/[number]이면 갱신, x=[number]/[number]이면 유지가 기대값이다. 후자는 binary[number] [number]의 정확한 값이며 x−y=[number]/[number]−[number]/([number]×[number]^[number])이다. 두 사례는 합성 상태 시험으로 표시하고 적격 가격 창에서의 도달 가능성과 구분한다. 실제 가격은 전달된 이진 유리수로 해석하되 그 가격으로 계산한 v와 신호 피제곱수는 반환 단계까지 정확히 유지한다. [number]가격·[number]수익률, 최신부터 ([number]/[number])^j의 정규화 비중심 제곱평균, v≤[number]/[number]의 상한 처리와 나머지 sqrt([number]/([number]v))를 독립 대조한다. K의 부호, 양방향 경계, t=[number], v=[number], 외부 Decimal 문맥 및 동일 반환 float를 갖는 서로 다른 내부 상태의 후속 전이를 검증한다. 정확한 상태 판정에 수익 회계의 오차 허용을 적용하지 않는다. [number]) 재기준화 복원에 독립적인 합성 반례를 추가한다. u=[number]^−[number], p[number]=[number]/[number][number]u, p[number]=[number]/[number][number]u, 배율 q=[number]/[number]를 모두 정확히 표현 가능한 binary[number] 입력으로 둔다. 최근접 짝수 반올림에서 fl(q×p[number])=fl(q×p[number])=[number]/[number][number]u가 기대값이다. 이 국소 충돌만으로 전체 공개 이력 충돌을 주장하지 않는다. 실제 weights 경로에서는 각 과거 결정의 공개 입력과 현재 이력에서 재생한 입력을 연결하여 가격 비트·수익률·v·피제곱수·채택 상태·반환 비트를 각각 비교한다. 신호 경계 부근에서 차이가 유지/갱신을 바꾸는지도 확인한다. 전체 history와 config가 같은 비교 가능한 사건열 수와 단일 원소 동치류 비율을 제시한다. 불가능 판정에는 고정 계약상 가능한 두 사건열, 동일한 전체 공개 입력, 서로 다른 참조 목표가 모두 필요하다. 사례가 없으면 미검증으로 남긴다. 최신 날짜[number]일 추정, 미래 일정, 사전 계산 목표, 전역 캐시 또는 호출 횟수로 부족한 정보를 보충하지 않는다. [number]) 공개 연결과 승계 회귀를 검증한다. 승인된 candidate.py와 config.json 안에서 가격→정확 신호→사건 재생→반환의 연결을 제시한다. A/B는 동일 코드·신호·첫 개발 사건 초기화에서 문턱 [number]/[number]만 다르게 한다. warmup은 신호 전용, [number] 외 목표는 [nu"
+        }
+      ],
+      "decision": "revise",
+      "rationale_sha256": "b7f0092e06222b881a2c689360d03866ed29a6373056b5351e6311f49db7a336",
+      "rationale_excerpt_numbers_redacted": "현 제안 [number]aa[number]f[number]e[number]-a[number][number]fe[number]cc는 필수 수정 후 재심사한다. 정확 비교식의 정합성만으로 공개 weights 연결, 과거 입력·채택 상태 복원, 선행 결과 재사용 및 예약 전 서비스 차단을 인증할 수 없다. 제안 자체도 준비성 블로커와 새 시험의 미실시를 명시한다. 등록 보고서의 meaning_review는 inconclusive이며 개별 검증과 대응 A/B 근거를 unresolved로 남긴다. 기본 CAGR [number]과 스트레스 CAGR [number]는 동일 시행의 비용별 결과다. 이를 유예 규칙의 개선 효과로 해석하지 않는다. 아래 사전 준비성 의무가 충족되기 전에는 실행 선정으로 전환하지 않는다. 경제적 비교는 준비성 재심사 이후 적법한 대응 결과가 확보될 때 수행한다. 수정 경로는 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json뿐이며 평가기·데이터·평가 일정·목적·[number]/[number]bp 비용·총노출 상한 [number]은 고정한다. 계보의 charged/completed=[number]/[number], technical_failures=[number], 총 한도 [number], 주기 한도 [number]와 현재 주기 시행 [number], patience=[number], continuous=false, min_improvement=[number]을 유지한다. 선행군 재사용과 서비스 허용이 확인된 경우에만 이번 주기 상대군 최대 한 건을 재검토한다. 과거 선택·부정 판단·차감 예약을 초기화하거나 새 A/B 두 건 및 무료 성과평가로 우회하지 않는다. 필수 계보의 file_progress 완료 기록을 승계하되 시험 통과로 확대하지 않는다. 별도 mission/spec.json 완독은 현재 file_progress에서 확인되지 않으므로 새로 인증하지 않는다. 판단에는 제공된 mission.spec와 canonical research_scope를 사용한다."
+    }
+  ],
+  "failed_attempts": [
+    {
+      "stage_id": "e6101386-fe8c-556e-ac64-494090f73f59",
+      "attempt": 1,
+      "error": "stage_contract_rejected: Every independent challenge needs exactly one disposition",
+      "expected_ids": [
+        "4b772f81-9b66-4e2d-9ca1-7ee239466184"
+      ],
+      "submitted_challenge_ids": [
+        "db874b8e-a723-432a-921a-a643dbfbbe03",
+        "1699b2bc-7f83-4588-a2fc-e3cc0057eb7c",
+        "f3c17ac4-2d9b-4e26-b179-521ad094278d",
+        "4b772f81-9b66-4e2d-9ca1-7ee239466184"
+      ],
+      "duplicate_count": 0,
+      "missing_ids": [],
+      "extra_ids": [
+        "1699b2bc-7f83-4588-a2fc-e3cc0057eb7c",
+        "db874b8e-a723-432a-921a-a643dbfbbe03",
+        "f3c17ac4-2d9b-4e26-b179-521ad094278d"
+      ]
+    },
+    {
+      "stage_id": "957be52e-b0e2-5c0e-9046-b8a8048c802b",
+      "attempt": 1,
+      "error": "stage_contract_rejected: Every independent challenge needs exactly one disposition",
+      "expected_ids": [
+        "f0e93a04-7ccb-4271-9d6c-4291197d62b8"
+      ],
+      "submitted_challenge_ids": [
+        "eb8a283b-256c-4f70-a588-75a976caa8c9",
+        "f4c7667a-aeec-455f-9ef8-65187c7c9c2d",
+        "89a2b7db-24bb-40c2-a02b-68b448e79021",
+        "f0e93a04-7ccb-4271-9d6c-4291197d62b8"
+      ],
+      "duplicate_count": 0,
+      "missing_ids": [],
+      "extra_ids": [
+        "89a2b7db-24bb-40c2-a02b-68b448e79021",
+        "eb8a283b-256c-4f70-a588-75a976caa8c9",
+        "f4c7667a-aeec-455f-9ef8-65187c7c9c2d"
+      ]
+    },
+    {
+      "stage_id": "4d70dff6-2cf4-5ec5-844e-4ff83ce3cf94",
+      "attempt": 2,
+      "error": "stage_contract_rejected: Every independent challenge needs exactly one disposition",
+      "expected_ids": [
+        "f4c7667a-aeec-455f-9ef8-65187c7c9c2d"
+      ],
+      "submitted_challenge_ids": [
+        "742bfc16-fb54-4e2c-bdaa-c1ef739b50cb",
+        "ebc5c17a-216b-4fb2-93ed-6bca776538e2",
+        "eb8a283b-256c-4f70-a588-75a976caa8c9",
+        "f4c7667a-aeec-455f-9ef8-65187c7c9c2d"
+      ],
+      "duplicate_count": 0,
+      "missing_ids": [],
+      "extra_ids": [
+        "742bfc16-fb54-4e2c-bdaa-c1ef739b50cb",
+        "eb8a283b-256c-4f70-a588-75a976caa8c9",
+        "ebc5c17a-216b-4fb2-93ed-6bca776538e2"
+      ]
+    },
+    {
+      "stage_id": "4d70dff6-2cf4-5ec5-844e-4ff83ce3cf94",
+      "attempt": 1,
+      "error": "stage_contract_rejected: Every independent challenge needs exactly one disposition",
+      "expected_ids": [
+        "f4c7667a-aeec-455f-9ef8-65187c7c9c2d"
+      ],
+      "submitted_challenge_ids": [
+        "742bfc16-fb54-4e2c-bdaa-c1ef739b50cb",
+        "ebc5c17a-216b-4fb2-93ed-6bca776538e2",
+        "eb8a283b-256c-4f70-a588-75a976caa8c9",
+        "f4c7667a-aeec-455f-9ef8-65187c7c9c2d"
+      ],
+      "duplicate_count": 0,
+      "missing_ids": [],
+      "extra_ids": [
+        "742bfc16-fb54-4e2c-bdaa-c1ef739b50cb",
+        "eb8a283b-256c-4f70-a588-75a976caa8c9",
+        "ebc5c17a-216b-4fb2-93ed-6bca776538e2"
+      ]
+    }
+  ]
+}

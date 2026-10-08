@@ -1,0 +1,91 @@
+{
+  "observed_at": "2026-10-08T00:52:59.507723+00:00",
+  "stage": {
+    "id": "418ea58b-387b-5e74-ba5b-f96762bf9fc6",
+    "stage": "selection",
+    "actor": "director",
+    "state": "running",
+    "attempt": 1,
+    "error": null,
+    "retry_at": null,
+    "task_id": "0ccc769b-d0fa-58ab-a6e5-0b334cf09ae5",
+    "created_at": "2026-10-08T00:47:25.412631+00:00",
+    "updated_at": "2026-10-08T00:52:04.548955+00:00"
+  },
+  "requests": [
+    {
+      "id": "fae0904f-0dde-5658-9088-ed98933b64b8",
+      "status": "running",
+      "error": null,
+      "created_at": "2026-10-08T00:52:04.548955+00:00",
+      "updated_at": "2026-10-08T00:52:05.480357+00:00",
+      "request_id": "fae0904f-0dde-5658-9088-ed98933b64b8",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "runtime": {
+        "state": "running",
+        "started_at": 1791420725.929592,
+        "completed_at": null,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "parse_phase": []
+      }
+    },
+    {
+      "id": "5c2ddeb8-c894-52d3-a0ea-e0c9e9e05db9",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-08T00:51:48.177503+00:00",
+      "updated_at": "2026-10-08T00:52:04.548955+00:00",
+      "request_id": "5c2ddeb8-c894-52d3-a0ea-e0c9e9e05db9",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791420708.7911413,
+        "completed_at": 1791420724.4920516,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "parse_phase": []
+      }
+    },
+    {
+      "id": "5b4d09b1-9ae2-50e6-9329-777ecf5ed20b",
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-08T00:51:35.524526+00:00",
+      "updated_at": "2026-10-08T00:51:48.177503+00:00",
+      "request_id": "5b4d09b1-9ae2-50e6-9329-777ecf5ed20b",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791420696.5253134,
+        "completed_at": 1791420708.1167574,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "parse_phase": []
+      }
+    }
+  ],
+  "reads": [
+    {
+      "path": "evidence/proposals/36902772-eefa-4f18-9168-93cf58b4a746.json",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-08T00:52:04.548955+00:00"
+    },
+    {
+      "path": "mission/scientific-lineage.json",
+      "character_offset": 144000,
+      "next_offset": null,
+      "created_at": "2026-10-08T00:51:48.177503+00:00"
+    },
+    {
+      "path": "mission/scientific-lineage.json",
+      "character_offset": 132000,
+      "next_offset": 144000,
+      "created_at": "2026-10-08T00:51:35.524526+00:00"
+    }
+  ]
+}
