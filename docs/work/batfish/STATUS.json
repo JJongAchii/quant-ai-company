@@ -1,85 +1,51 @@
 {
   "approval": {
-    "approvedAt": "2026-10-07T01:37:56.755956+00:00",
-    "id": "chat-user-three-daily-and-slack-trends-20261007"
+    "approvedAt": "2026-10-08T05:23:49.465384+00:00",
+    "id": "chat-user-optimal-trend-ranking-20261008"
   },
-  "currentIntent": "INTENT-v8.json",
+  "currentIntent": "INTENT-v9.json",
   "deliverables": {
     "ACTIVATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/trend-outbox-20261008/activation.json",
-          "sha256": "12c6333667ae"
-        }
-      ],
-      "note": "11:54 KST actual parent-qualified dispatcher 한 개만 활성화. 나머지225파일/브리핑/환경/secret접근자/네트워크/다른프로세스/기존영수증/owner pause 보존.",
-      "status": "verified",
-      "updatedAt": "2026-10-08T02:57:08.099398+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
     "IMPLEMENTATION": {
       "evidence": [
         {
-          "path": "docs/project/TREND-REQUEST-RECOVERY-20261008.md",
-          "sha256": "76b670255380"
-        },
-        {
-          "path": "docs/project/evidence/trend-outbox-20261008/native-dispatch.patch",
-          "sha256": "b396f27a2976"
+          "path": "docs/project/TREND-WINDOW-RANKING-20261008.md",
+          "sha256": "bdb566ae2a18"
         }
       ],
-      "note": "구현·실제운영검증과 PR126 main18c2fad 병합을 최종보고서에 기록. 최신d589556 CI1642/9/lint통과, main ancestry·검사한구현/테스트/배포파일일치 확인. 구현변경없이 병합증거만추가.",
+      "note": "6h/1h ranking, typed proposal order, separate supplements, policy v4 and request-only cache implemented; native role qualification recorded.",
       "status": "verified",
-      "updatedAt": "2026-10-08T03:58:36.601882+00:00"
+      "updatedAt": "2026-10-08T05:40:49.453283+00:00"
     },
     "PUBLICATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/trend-outbox-20261008/merge.json",
-          "sha256": "0e1f306bf1fc"
-        },
-        {
-          "path": "docs/project/evidence/trend-outbox-20261008/premerge-ci.json",
-          "sha256": "03abe107dce1"
-        }
-      ],
-      "note": "최신d589556 모든CI1642/9/lint통과 확인 후 PR126 main18c2fad 병합. GitHub MERGED/원격main ancestry/구현·테스트·배포동일 대조 완료. 병합완료증거는 작업브랜치 문서커밋으로 추가.",
-      "status": "verified",
-      "updatedAt": "2026-10-08T03:58:36.806166+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     },
     "SECURITY": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-outbox-20261008/active-probe.json",
-          "sha256": "de1e00808199"
-        },
-        {
-          "path": "docs/project/evidence/trend-outbox-20261008/live.json",
-          "sha256": "a34d816cf58c"
+          "path": "docs/project/evidence/trend-window-20261008/security.json",
+          "sha256": "e93a125799df"
         }
       ],
-      "note": "기존SDK workspace/bot auth 및3scopes 실제확인. 기존owner/channel/policy/expiry/revision/비밀파일접근자 유지. Env·secret값 출력/커밋없음. HTTP합성검사와실제SDK수신·Slack발송구분.",
+      "note": "No credential/scope/provider additions; actual API/socket request boundary regression passed, policy v4 and uncertain receipt behavior preserved.",
       "status": "verified",
-      "updatedAt": "2026-10-08T03:05:20.425924+00:00"
+      "updatedAt": "2026-10-08T05:41:40.621072+00:00"
     },
     "VALIDATION": {
-      "evidence": [
-        {
-          "path": "docs/project/evidence/trend-outbox-20261008/live.json",
-          "sha256": "a34d816cf58c"
-        },
-        {
-          "path": "docs/project/evidence/trend-outbox-20261008/ci.json",
-          "sha256": "3d488edd8284"
-        }
-      ],
-      "note": "원격 source7039e77 real PG/Temporal1642통과·47skip·1deselect/프로토콜9/lint통과. local391/1skip·native135. 실제복구10개, normal dispatcher 자동10개·attempt1·편집완료12초. operator qualification과 실제 원소유자SDK입력 구분, 완료invalid 거절 후 허용1회 재편집.",
-      "status": "verified",
-      "updatedAt": "2026-10-08T03:05:19.996471+00:00"
+      "evidence": [],
+      "note": null,
+      "status": "pending"
     }
   },
-  "intentDigest": "e858dfa5954e",
+  "intentDigest": "b443ce80fbf2",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-08T03:58:36.806166+00:00"
+  "updatedAt": "2026-10-08T05:41:40.621072+00:00"
 }

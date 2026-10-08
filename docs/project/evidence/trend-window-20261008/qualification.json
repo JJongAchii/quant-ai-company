@@ -1,0 +1,20 @@
+{
+  "status": "implementation-qualified; live activation pending",
+  "postgres": "real disposable PostgreSQL 14",
+  "temporal": "real local server and workflow replay on producer/dispatcher parents",
+  "model_http_slack_in_automated_tests": "synthetic fixtures",
+  "native_tests": {
+    "news-worker": 96,
+    "dispatch": 98,
+    "api": 29,
+    "slack-socket": 29
+  },
+  "role_scoping": "Producer excludes two dispatcher-only priority tests; API/socket run only ranking and ingress/request tests. Dispatcher runs all 98 including queue priority and uncertain receipt behavior. Unrelated old API/socket CLI/model/outbound code is preserved, not upgraded or claimed qualified.",
+  "changed_files": {
+    "trend_feed/ranking.py": "0a91b9f9dcb789c9ce7f26a8c136a7761c7c04a94be18f86c2d1a33c041fad29",
+    "trend_feed/editor.py": "664a5916aff88198e135b305e41a7c255063ddf92b8c2b53b1f35d78ea2306d2",
+    "trend_feed/store.py": "a304bb369d51bb195305e7edbdf641937d2b60f93f1d6858d91e28f7ca991eef"
+  },
+  "lint": "passed",
+  "real_preview": "read-only production observations and prior verified categories; unknown candidates omitted and listed; no new model or Slack calls"
+}

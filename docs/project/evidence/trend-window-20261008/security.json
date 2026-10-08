@@ -1,0 +1,12 @@
+{
+  "new_credentials": false,
+  "new_external_provider": false,
+  "new_model_permissions": false,
+  "new_slack_permissions": false,
+  "code_changes_limited_to_trend_modules": true,
+  "ingress_and_authority_regressions": "actual API/socket native parents: 29 passed each with synthetic signed HTTP/SDK boundaries",
+  "editorial_policy_version": 4,
+  "credential_value_scan": "no credential-like values in changed tracked/unignored files",
+  "actual_native_image_sources_match_qualified_manifests": true,
+  "activation": "pending"
+}
