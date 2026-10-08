@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from .contracts import BriefProposal, Evidence, MarketObservation, SourceDocument
-from .data_reader import US_CLOSE_REGISTRATION
+from .data_reader import KRX_CLOSE_REGISTRATION, US_CLOSE_REGISTRATION
 from .numeric import numbers
 
 # Names an article sentence must carry for its exact close to match a locked snapshot value.
@@ -44,19 +44,83 @@ def snapshot_match(snapshot, offered, docs, close_at):
     return list(proof.values()), against
 
 
+def compared_value(item):
+    change = f" ({item.reported_change:+}{item.change_unit})" if item.reported_change is not None else ""
+    return str(item.value)+change
+
+
+def krx_close_disagreements(snapshot, offered, docs):
+    """Article close values for the snapshot's own session that differ from it: index level, previous close
+    or reported change (to the published 0.01 precision), or a flow amount beyond 억원 rounding."""
+    def differs(item):
+        if snapshot.unit == "억원":
+            return abs(item.value-snapshot.value) >= 1
+        if abs(item.value-snapshot.value) > tolerance(snapshot):
+            return True
+        if (item.previous_value is not None and snapshot.previous_value is not None
+                and abs(item.previous_value-snapshot.previous_value) > tolerance(snapshot)):
+            return True
+        if item.reported_change is None or snapshot.reported_change is None:
+            return False
+        if item.change_unit == "%":
+            return abs(item.reported_change-snapshot.reported_change) > Decimal("0.01")
+        return (item.change_unit == "pt" and snapshot.previous_value is not None
+                and abs(item.reported_change-(snapshot.value-snapshot.previous_value)) > Decimal("0.01"))
+
+    return [v for v in offered if v.basis == "close" and v.session_date == snapshot.session_date
+            and not any(e.source_id in docs and docs[e.source_id].kind == "dataset" for e in v.evidence)
+            and differs(v)]
+
+
+def krx_close_proof(snapshot, articles, docs, close_at):
+    """Post-close article evidence reporting the snapshot's own index close. The 15:40 index quote can lag
+    the official close by about 20 minutes, so a snapshot index value is usable only beside such a report."""
+    if not close_at:
+        return []
+    return list({e.source_id: e for v in articles if v.basis == "close" and v.session_date == snapshot.session_date
+                 and abs(v.value-snapshot.value) <= tolerance(snapshot) for e in v.evidence
+                 if e.source_id in docs and docs[e.source_id].kind not in {"dataset", "calendar"}
+                 and docs[e.source_id].published_at and docs[e.source_id].published_at >= close_at
+                 and v.value in numbers(e.quote)}.values())
+
+
 def reconcile(proposal, bundle):
     groups = {}
     for item in proposal.observations:
         groups.setdefault(item.instrument, []).append(item)
     locked = {v["instrument"]: MarketObservation.model_validate(v) for v in bundle.get("locked_observations", [])}
     snapshots = {d["id"] for d in bundle.get("documents", []) if d.get("registration") == US_CLOSE_REGISTRATION}
-    docs = {d["id"]: SourceDocument.model_validate(d) for d in bundle["documents"]} if snapshots else {}
+    # Empty unless BRIEFING_KR_CLOSE_ENABLED collected a valid regular-session snapshot for this PM edition.
+    kr_snapshots = {d["id"] for d in bundle.get("documents", []) if d.get("registration") == KRX_CLOSE_REGISTRATION}
+    docs = {d["id"]: SourceDocument.model_validate(d) for d in bundle["documents"]} if snapshots or kr_snapshots else {}
     close_at = bundle.get("exchange_closes", {}).get("US")
     close_at = datetime.fromisoformat(close_at) if close_at else None
+    kr_close_at = bundle.get("exchange_closes", {}).get("KR") if kr_snapshots else None
+    kr_close_at = datetime.fromisoformat(kr_close_at) if kr_close_at else None
     selected, conflicts = [], []
     for instrument in sorted(set(groups) | set(locked)):
         offered = groups.get(instrument, [])
         authoritative = locked.get(instrument)
+        if authoritative and any(e.source_id in kr_snapshots for e in authoritative.evidence):
+            # Flows are used as collected; an index level only beside a post-close report of the same close.
+            articles = [v for v in offered if not any(e.source_id in kr_snapshots for e in v.evidence)]
+            against = krx_close_disagreements(authoritative, offered, docs)
+            proof = krx_close_proof(authoritative, articles, docs, kr_close_at) if authoritative.unit == "pt" else []
+            if not against and (proof or authoritative.unit != "pt"):
+                evidence = [*authoritative.evidence, *proof][:4]
+                selected.append(authoritative.model_copy(update={"evidence": evidence}).model_dump(mode="json"))
+                continue
+            if against:
+                # Never the collected_data_retained path: the snapshot value is set aside with both values
+                # recorded, and the closing reports supply the number through the existing rule below.
+                conflicts.append({"instrument": instrument, "session": str(authoritative.session_date),
+                    "resolution": "article_values_used", "diagnostic": "krx_close_snapshot_article_disagreement",
+                    "values": [{"id": v.id, "value": compared_value(v), "sources": [e.source_id for e in v.evidence]}
+                               for v in [authoritative, *against]]})
+            # Unconfirmed or disagreeing snapshot: the existing two-outlet rule applies to the articles alone.
+            authoritative, offered = None, articles
+            if not offered:
+                continue
         if authoritative and any(e.source_id in snapshots for e in authoritative.evidence):
             proof, against = snapshot_match(authoritative, offered, docs, close_at)
             if against:

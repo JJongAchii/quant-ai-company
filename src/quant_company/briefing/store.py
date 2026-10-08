@@ -110,6 +110,11 @@ class BriefStore:
                             "lake": s.company_lake_uri,
                             # Absent while disabled, so the default keeps the existing digest.
                             **({"us_close": s.briefing_us_close_stocks} if s.briefing_us_close_enabled else {}),
+                            **({"kr_close": {"start": s.briefing_kr_close_start_minutes,
+                                             "cutoff": s.briefing_kr_close_cutoff_minutes,
+                                             "due": s.briefing_kr_close_due_minutes,
+                                             "basis": s.briefing_kr_close_basis}}
+                               if s.briefing_kr_close_enabled else {}),
                             "search": s.briefing_search_enabled, "web": s.company_web_enabled,
                             "source_notes": s.briefing_source_notes_enabled,
                             "max_revisions": s.briefing_max_revisions,
@@ -600,13 +605,15 @@ class BriefStore:
             conn.execute("""UPDATE brief_calls c SET state='unresolved',error=COALESCE(c.error,'edition_window_closed')
                 FROM brief_editions e WHERE e.id=c.edition_id AND c.state='running'
                 AND (e.state IN ('missed','stale') OR e.due_at+interval '10 minutes'<=%s)""", (at,))
-            if self.company.settings.briefing_us_close_enabled:
-                # v7: a ready AM edition is posted once its cutoff has passed, without waiting for due.
+            # v7 (AM) and v8 (PM): a ready edition is posted once its cutoff has passed, without waiting for due.
+            early = [*(["am"] if self.company.settings.briefing_us_close_enabled else []),
+                     *(["pm"] if self.company.settings.briefing_kr_close_enabled else [])]
+            if early:
                 rows = conn.execute("""SELECT * FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
                     AND state NOT IN ('missed','stale') AND expires_at>%s
-                    AND ((state='ready' AND (due_at<=%s OR (kind='am' AND cutoff<=%s)))
+                    AND ((state='ready' AND (due_at<=%s OR (kind=ANY(%s) AND cutoff<=%s)))
                          OR due_at+interval '10 minutes'<=%s) ORDER BY due_at FOR UPDATE""",
-                                    (policy, at, at, at, at)).fetchall()
+                                    (policy, at, at, early, at, at)).fetchall()
             else:
                 rows = conn.execute("""SELECT * FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
                     AND state NOT IN ('missed','stale') AND due_at<=%s AND expires_at>%s
@@ -750,8 +757,12 @@ def priority_pending(company):
     except (ValueError, OSError):
         # A broken optional calendar file must not stop existing news service.
         return False
+    lead = schedule.PREPARATION_MINUTES+schedule.COLLECTION_MINUTES
+    anchor = schedule.kr_close_minutes(company.settings)
+    if anchor:
+        # v8: a PM edition anchored to the KRX close may start earlier than the fixed lead before its due.
+        lead = max(lead, anchor[2]-anchor[0])
     with company.db.transaction() as conn:
         return bool(conn.execute("""SELECT 1 FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
             AND state IN ('collecting','planning','inventorying','writing','reviewing','revising','final_reviewing') AND due_at>=%s AND due_at<=%s LIMIT 1""",
-                                 (policy, at-timedelta(minutes=10),
-                                  at+timedelta(minutes=schedule.PREPARATION_MINUTES+schedule.COLLECTION_MINUTES))).fetchone())
+                                 (policy, at-timedelta(minutes=10), at+timedelta(minutes=lead))).fetchone())

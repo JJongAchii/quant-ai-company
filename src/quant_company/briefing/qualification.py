@@ -43,7 +43,8 @@ def qualify(company, *, at=None):
     for offset in range(40):
         day = at.astimezone(schedule.KST).date()-timedelta(days=offset)
         definitions = schedule.editions(day, s.briefing_channel_id, s.briefing_owner_user, changes,
-                                        us_close_anchor=s.briefing_us_close_enabled)
+                                        us_close_anchor=s.briefing_us_close_enabled,
+                                        kr_close_anchor=schedule.kr_close_minutes(s))
         pm = next((e for e in definitions if e.kind == "pm"), None)
         if pm and pm.due_at+timedelta(minutes=10) <= at:
             days.append(day)
@@ -91,7 +92,9 @@ def qualify(company, *, at=None):
             result = replay(row)
             if not result["ok"]:
                 reasons.append(result["reason"])
-            if quality.get("reduced") or quality.get("quote_conflicts"):
+            # A KRX close snapshot set aside for matching closing reports (v8) is a diagnostic, not a conflict.
+            if quality.get("reduced") or any(c.get("resolution") != "article_values_used"
+                                             for c in quality.get("quote_conflicts", [])):
                 reasons.append("reduced_or_conflicting_coverage")
             if (not quality.get('substantive') or quality.get('rejected')
                     or (row['review'] or {}).get('verdict') != 'publish'

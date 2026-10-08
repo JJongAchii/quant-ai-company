@@ -24,6 +24,7 @@ from .contracts import (
     WatchResult,
     item_map,
 )
+from .data_reader import CLOSE_LABEL, KRX_CLOSE_REGISTRATION, KRX_FLOW_INSTRUMENTS, KRX_MARKETS, SESSION_LABEL
 from .market_rules import expired_wti_contract
 from .numeric import numbers, prose_numbers_supported, reported_change_supported
 from .planning import SOURCE_CHAR_BUDGET, supplement_sources
@@ -361,6 +362,12 @@ def prompt(bundle, phase, proposal=None, *, direct_output=False):
     schema = (SourceNotesPatch if notes_patch else ConditionPatch if patch else MaterialFactPatch if fact_patch else EditorialPatch if editorial_patch
               else BriefComposition if composition else BriefProposal if phase == "write" else BriefReview)
     payload = {**bundle, "proposal": proposal} if proposal else dict(bundle)
+    snapshot_docs = {d["id"] for d in bundle.get("documents", []) if d.get("registration") == KRX_CLOSE_REGISTRATION}
+    if snapshot_docs and phase != "review":
+        # BRIEFING_KR_CLOSE_ENABLED only: the 15:40 KRX index quote can lag the official close, so the writer takes
+        # index closes from closing reports and the service confirms them against the snapshot (reconcile).
+        payload["locked_observations"] = [o for o in bundle.get("locked_observations", []) if not (
+            o["unit"] == "pt" and any(e["source_id"] in snapshot_docs for e in o["evidence"]))]
     # The final critic must discover omissions from originals independently.
     payload.pop("fact_inventory", None)
     payload.pop("fact_inventory_digest", None)
@@ -1449,9 +1456,41 @@ def observation_text(item):
             f" · {labels[item.basis]} {item.as_of.astimezone(KST):%m/%d %H:%M} KST · {item.venue}")
 
 
+def kr_close_text(item):
+    """A regular-session snapshot value as collected; the index change is the snapshot's own chg_pct."""
+    when = f"{item.as_of.astimezone(KST):%m/%d %H:%M} KST"
+    name = INSTRUMENTS[item.instrument][0]
+    if item.unit == "pt":
+        change = f" · {item.reported_change:+.2f}%" if item.reported_change is not None else ""
+        return f"{name} {number(item.value)} pt{change} · {CLOSE_LABEL} {when} · {item.venue}"
+    return f"{name} {number(item.value)} {item.unit} · {SESSION_LABEL} · {when} · {item.venue}"
+
+
+def kr_close_rows(doc, observations, cited):
+    """Service-owned rows of a regular-session KRX close snapshot. Index volume/value come from the same lagging
+    index quote as the level, so they appear only where a closing report confirmed that level; a KOSPI
+    foreign/institution figure appears only while its locked value survived reconciliation."""
+    display = doc.receipt.get("display") or {}
+    present = {o.instrument for o in observations.values() if any(e.source_id == doc.id for e in o.evidence)}
+    rows = [cited(f"{item['label']} 거래", f"{item['text']} · {SESSION_LABEL}") for item in display.get("index", [])
+            if KRX_MARKETS[item["market"]][0] in present]
+    for item in display.get("flows", []):
+        shown = [f"{name} {value}" for investor, name, value in item["figures"]
+                 if not (item["market"] == "KOSPI" and investor in KRX_FLOW_INSTRUMENTS
+                         and KRX_FLOW_INSTRUMENTS[investor] not in present)]
+        if shown:
+            rows.append(cited(f"{item['label']} 수급", " · ".join(shown)+f" · {SESSION_LABEL}"))
+    if display.get("top"):
+        rows.append("*거래대금 상위 종목*")
+        rows.extend(cited(None, item["text"]) for item in display["top"])
+    return rows
+
+
 def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=False):
     edition = BriefEdition.model_validate(bundle["edition"])
     docs = {d["id"]: SourceDocument.model_validate(d) for d in bundle.get("documents", [])}
+    # Empty unless BRIEFING_KR_CLOSE_ENABLED froze a valid regular-session snapshot into this PM edition.
+    snapshot_ids = [identity for identity, d in docs.items() if d.registration == KRX_CLOSE_REGISTRATION]
     observations = {x.instrument: x for x in proposal.observations} if proposal else {}
     core = (set(("sp500", "nasdaq")) if edition.us_session else set()) if edition.kind == "am" else {"kospi", "kosdaq"}
     missing = sorted(core - {k for k, v in observations.items() if v.basis == "close"})
@@ -1506,7 +1545,15 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
         add("*오늘의 핵심* · 30초 요약\n")
         for claim in proposal.summary:
             add("• " + supported(claim, claim.text)+"\n")
-        if observations:
+        close_rows = []
+        for identity in snapshot_ids:
+            def cited(label, text, identity=identity):
+                used.add(identity)
+                return ("• "+(f"*{label}* " if label else "")+escape(text, quote=False)
+                        +f" <{escape(docs[identity].url, quote=False)}|[{reference[identity]}]>")
+
+            close_rows += kr_close_rows(docs[identity], observations, cited)
+        if observations or close_rows:
             session = edition.us_session if edition.kind == "am" else edition.kr_session
             market_name = "미국" if edition.kind == "am" else "한국"
             add("\n*주요 숫자*" + (f" · {market_name} 지수 {session} 종가" if session else ""))
@@ -1516,10 +1563,15 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                 "wti", "gold", "ust10y", "vix", "btc", "eth"]
             ordered = sorted(observations.values(), key=lambda x: preferred.index(x.instrument) if x.instrument in preferred else 99)
             for obs in ordered:
-                full = observation_text(obs)
+                collected_close = any(e.source_id in snapshot_ids for e in obs.evidence)
+                full = kr_close_text(obs) if collected_close else observation_text(obs)
                 details.append("• " + supported(obs, full))
+                if collected_close and obs.instrument in KRX_FLOW_INSTRUMENTS.values():
+                    continue  # Shown on its market's flow row with the other investors.
                 equity_close = obs.basis == "close" and obs.instrument in {"sp500", "nasdaq", "dow", "sox", "kospi", "kosdaq"}
                 compact = full.split(" · 정규장 종가", 1)[0] if equity_close else full
+                if equity_close and collected_close:
+                    compact += f" · {CLOSE_LABEL}"
                 if (edition.kind == "am" and equity_close and obs.instrument in {"kospi", "kosdaq"}
                         and obs.session_date == edition.previous_kr_session):
                     compact = f"한국 전일장 {obs.session_date:%m/%d} · "+compact
@@ -1529,6 +1581,8 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                 name = INSTRUMENTS[obs.instrument][0]
                 market_label = compact.split(name, 1)[0]+name
                 add("• " + supported(obs, compact.replace(market_label, f"*{market_label}*", 1)))
+            for row in close_rows:
+                add(row)
         if proposal.overview:
             add("\n*시장 전체 흐름*\n")
             for claim in proposal.overview:
@@ -1582,9 +1636,12 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
     single = [INSTRUMENTS[k][0] for k in sorted(core) if certainty.get(k) == "single_source"]
     if single:
         lines.append("지수별 숫자 출처 · "+", ".join(single)+": 표시값은 매체 1곳 인용")
-    if bundle.get("quote_conflicts"):
+    # A KRX close snapshot set aside for the closing reports' value is a recorded diagnostic, not a reader notice:
+    # the reports' number is shown through the existing rule.
+    shown_conflicts = [c for c in bundle.get("quote_conflicts", []) if c["resolution"] != "article_values_used"]
+    if shown_conflicts:
         lines.append("출처 간 수치 차이가 있어 일부 값을 제외하거나 수집 데이터로 표시했습니다. 상세는 스레드에 있습니다.")
-        for conflict in bundle["quote_conflicts"]:
+        for conflict in shown_conflicts:
             resolution = "수집 데이터 값 사용" if conflict["resolution"] == "collected_data_retained" else "수치 제외"
             details.append(f"수치 대조 · {INSTRUMENTS[conflict['instrument']][0]} {conflict['session']} · "
                            +" / ".join(v["value"] for v in conflict["values"])+" · "+resolution)
