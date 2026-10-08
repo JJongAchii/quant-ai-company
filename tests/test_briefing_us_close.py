@@ -18,7 +18,7 @@ from quant_company.briefing.editor import render, validate
 from quant_company.briefing.quality import assurance, reconcile
 from quant_company.briefing.store import BriefStore
 
-from .test_briefing import brief, bundle, definition, proposal, seed  # noqa: F401
+from .test_briefing import brief, bundle, definition, proposal  # noqa: F401
 from .test_briefing_quality import snapshot as lake_snapshot
 
 EDITION = definition()
@@ -280,7 +280,9 @@ def test_real_postgres_polls_persist_and_restart_is_idempotent(polling):
     clock["at"] = CLOSE+timedelta(minutes=4)
     assert BriefDataCollector(store.company, chart=charts).poll_us_close() is None
     clock["at"] = CLOSE+timedelta(minutes=5, seconds=5)
-    assert clock["at"] < EDITION.starts_at  # registered for polling before collection opens
+    # The edition as the switched-on schedule registers it (v7 times; same identity as EDITION).
+    live = next(e for e in schedule.scheduled(store.company.settings, clock["at"]) if e.id == EDITION.id)
+    assert clock["at"] < live.starts_at  # registered for polling before collection opens
     collector = BriefDataCollector(store.company, chart=charts)
     assert collector.poll_us_close() == {"state": "polled", "slot": 0, "quotes": 20}
     assert store.claim_collection() is None and store.claim_data() is None
@@ -299,12 +301,16 @@ def test_real_postgres_polls_persist_and_restart_is_idempotent(polling):
     assert [p["slot"] for p in saved["polls"]] == [0, 1]
     assert set(saved["catalogue"]) >= {"sp500", "SPY", "NVDA", "btc", "ust10y"}
     # A lake result replaces only its own fields; the recorded polls remain.
-    clock["at"] = EDITION.starts_at+timedelta(minutes=1)
+    clock["at"] = live.starts_at+timedelta(minutes=1)
     claim = store.claim_data()
     store.save_data(claim, {"documents": [], "observations": [], "contexts": [], "diagnostics": []})
     assert stored(store)["market_data"]["us_close"] == saved
     # Freeze derives the dataset through the existing locked-observation path; raw polls stay off the prompt.
-    seed((store, clock), EDITION)
+    clock["at"] = live.cutoff-timedelta(minutes=1)
+    collected = bundle(live)
+    collected["documents"][0]["title"] = "Synthetic S&P 500 closing report"  # a close report: no extension
+    store.save_collection(store.claim_collection(), collected)
+    clock["at"] = live.cutoff
     request = store.prepare()["request"]
     payload = json.loads(request["prompt"].split("BRIEF DATA JSON:\n")[1])
     frozen = stored(store)["bundle"]

@@ -77,7 +77,7 @@ def test_continuous_monitor_uses_installed_calendar_and_keeps_missing_expected_e
                         'BRIEFING_CALENDAR_OVERRIDES_FILE=']}}]).encode()
         assert '--network=none' in command and '--read-only' in command
         assert command[command.index('--entrypoint=python')+1] == 'installed-calendar-image'
-        assert set(json.loads(kwargs['input'])) == {'now', 'channel', 'owner', 'overrides'}
+        assert set(json.loads(kwargs['input'])) == {'now', 'channel', 'owner', 'overrides', 'us_close'}
         return json.dumps([earlier, d]).encode()
     monkeypatch.setattr(monitor.subprocess, 'check_output', docker)
     expected = monitor.definitions(policy, now)

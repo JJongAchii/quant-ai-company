@@ -10,9 +10,17 @@ from .contracts import BriefEdition, CalendarOverride
 
 KST = ZoneInfo("Asia/Seoul")
 NY = ZoneInfo("America/New_York")
+# v6 stays the schedule while BRIEFING_US_CLOSE_ENABLED is false, so the default keeps the existing
+# editions and policy digest. v7 applies only with the switch on.
 SCHEDULE_VERSION = 6
+US_CLOSE_SCHEDULE_VERSION = 7
 PREPARATION_MINUTES = 75
 COLLECTION_MINUTES = 20
+# v7: a morning edition with a new US session follows that session's actual
+# XNYS close C (DST and early closes): collect from C+20, freeze at C+40, due C+115.
+US_CLOSE_DUE_MINUTES = 115
+# Once per edition, when no US close report exists at the cutoff.
+CUTOFF_EXTENSION_MINUTES = 30
 
 
 def utcnow():
@@ -51,7 +59,11 @@ def previous(market, day, changes=None):
     raise ValueError("previous_session_unavailable")
 
 
-def editions(day, channel, owner, changes=None):
+def version(settings):
+    return US_CLOSE_SCHEDULE_VERSION if settings.briefing_us_close_enabled else SCHEDULE_VERSION
+
+
+def editions(day, channel, owner, changes=None, *, us_close_anchor=False):
     if day.weekday() == 6:
         return []
     morning = datetime.combine(day, time(7, 45), KST)
@@ -65,7 +77,9 @@ def editions(day, channel, owner, changes=None):
     # that arrive later remain dated context, never substitutes for today's close.
     lead = PREPARATION_MINUTES+COLLECTION_MINUTES
     evening = max(datetime.combine(day, time(17, 45), KST), kr_close+timedelta(minutes=lead)) if kr_close else None
-    for kind, due in (("am", morning), ("pm", evening)):
+    # Without a new US result (Monday outlook, US holiday) the fixed 07:45 anchor remains.
+    dawn = (us_close+timedelta(minutes=US_CLOSE_DUE_MINUTES)).astimezone(KST) if us_session and us_close_anchor else morning
+    for kind, due in (("am", dawn), ("pm", evening)):
         if due is None or (kind == "am" and not (us_session or kr_close or day.weekday() == 0)):
             continue
         result.append(BriefEdition(
@@ -85,4 +99,18 @@ def scheduled(settings, at=None):
     changes = overrides(settings)
     return [edition for offset in (-1, 0, 1)
             for edition in editions(local.date()+timedelta(days=offset), settings.briefing_channel_id,
-                                    settings.briefing_owner_user, changes)]
+                                    settings.briefing_owner_user, changes,
+                                    us_close_anchor=settings.briefing_us_close_enabled)]
+
+
+def extend_cutoff(definition, reason):
+    """One deterministic 30-minute postponement; an extended edition never moves again."""
+    edition = BriefEdition.model_validate(definition)
+    if edition.cutoff_extended:
+        raise ValueError("cutoff_already_extended")
+    shift = timedelta(minutes=CUTOFF_EXTENSION_MINUTES)
+    return edition.model_copy(update={
+        "cutoff": edition.cutoff+shift, "due_at": edition.due_at+shift, "expires_at": edition.expires_at+shift,
+        "cutoff_extended": True, "cutoff_extension": {
+            "reason": reason, "minutes": CUTOFF_EXTENSION_MINUTES, "original_cutoff": edition.cutoff.isoformat(),
+            "original_due_at": edition.due_at.isoformat()}})

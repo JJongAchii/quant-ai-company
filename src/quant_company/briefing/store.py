@@ -103,7 +103,7 @@ class BriefStore:
                             "compose_seconds": COMPOSE_SECONDS,
                             "fragment_inventory_seconds": FRAGMENT_INVENTORY_SECONDS,
                             "selection_version": COVERAGE_VERSION,
-                            "schedule_version": schedule.SCHEDULE_VERSION,
+                            "schedule_version": schedule.version(s),
                             "editorial_contract": fingerprint([PLAN, INVENTORY, WRITE, REVIEW, PATCH, FACT_PATCH, EDITORIAL_PATCH, SOURCE_NOTES_PATCH]),
                             "enabled": s.briefing_enabled, "publish": s.briefing_publish_enabled,
                             "analyst_procedure": pack(BRIEFER)["digest"],
@@ -319,6 +319,8 @@ class BriefStore:
             if active:
                 return ({"state": "defer"} if active["next_at"] > at
                         else {"state": "ready", "request": active["request"]})
+            if self._extend_cutoff(conn, row, at):
+                return {"state": "idle", "reason": "cutoff_extended"}
             if row["state"] == "collecting" and at < row["cutoff"]:
                 s = self.company.settings
                 if s.briefing_evaluation_ids:
@@ -423,6 +425,26 @@ class BriefStore:
                          ({"search": "collecting", "plan": "planning", "inventory": "inventorying", "write": "writing", "review": "reviewing",
                            "revise": "revising", "final_review": "final_reviewing"}[phase], Jsonb(bundle), row["id"]))
             return {"state": "ready", "request": request.model_dump()}
+
+    def _extend_cutoff(self, conn, row, at):
+        """At the first AM cutoff with no US close report, postpone inputs, due and expiry once."""
+        definition = row["definition"]
+        if (not self.company.settings.briefing_us_close_enabled
+                or row["state"] != "collecting" or row["kind"] != "am" or not definition.get("us_session")
+                or definition.get("cutoff_extended") or at < row["cutoff"]
+                or at >= row["cutoff"]+timedelta(minutes=schedule.CUTOFF_EXTENSION_MINUTES)
+                or self.company.settings.briefing_evaluation_ids):
+            return False
+        bundle = row["bundle"] or {}
+        if any(market_report(d, "am") for d in [*bundle.get("documents", []), *bundle.get("candidate_documents", [])]):
+            return False
+        extended = schedule.extend_cutoff(definition, "no_us_close_report_at_cutoff")
+        conn.execute("""UPDATE brief_editions SET definition=%s,cutoff=%s,due_at=%s,expires_at=%s,
+            next_collection=%s,next_data=%s WHERE id=%s AND state='collecting'""",
+                     (Jsonb(extended.model_dump(mode="json")), extended.cutoff, extended.due_at, extended.expires_at,
+                      at, at, row["id"]))
+        self.company._event(conn, "briefing_cutoff_extended", {"edition_id": str(row["id"]), **extended.cutoff_extension})
+        return True
 
     def commit(self, response):
         at = schedule.utcnow()
@@ -578,10 +600,18 @@ class BriefStore:
             conn.execute("""UPDATE brief_calls c SET state='unresolved',error=COALESCE(c.error,'edition_window_closed')
                 FROM brief_editions e WHERE e.id=c.edition_id AND c.state='running'
                 AND (e.state IN ('missed','stale') OR e.due_at+interval '10 minutes'<=%s)""", (at,))
-            rows = conn.execute("""SELECT * FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
-                AND state NOT IN ('missed','stale') AND due_at<=%s AND expires_at>%s
-                AND (state='ready' OR due_at+interval '10 minutes'<=%s) ORDER BY due_at FOR UPDATE""",
-                                (policy, at, at, at)).fetchall()
+            if self.company.settings.briefing_us_close_enabled:
+                # v7: a ready AM edition is posted once its cutoff has passed, without waiting for due.
+                rows = conn.execute("""SELECT * FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
+                    AND state NOT IN ('missed','stale') AND expires_at>%s
+                    AND ((state='ready' AND (due_at<=%s OR (kind='am' AND cutoff<=%s)))
+                         OR due_at+interval '10 minutes'<=%s) ORDER BY due_at FOR UPDATE""",
+                                    (policy, at, at, at, at)).fetchall()
+            else:
+                rows = conn.execute("""SELECT * FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
+                    AND state NOT IN ('missed','stale') AND due_at<=%s AND expires_at>%s
+                    AND (state='ready' OR due_at+interval '10 minutes'<=%s) ORDER BY due_at FOR UPDATE""",
+                                    (policy, at, at, at)).fetchall()
             for row in rows:
                 if row["state"] != "ready":
                     bundle = self._freeze(conn, row)
