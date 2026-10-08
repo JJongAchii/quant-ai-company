@@ -1,13 +1,13 @@
 {
-  "constraints": [],
+  "constraints": ["회사 저장소에만 변경·증거 기록", "기존 봇·연구·구독·발송 영수증 보존", "실제 PostgreSQL·Temporal 및 모의 Slack 검사 구분", "Tech 게시 72시간·KST 06–24시·60초 간격 유지", "비밀 출력·Git 저장 금지"],
   "createdAt": "2026-10-08T00:02:11.730542+00:00",
-  "decisionGates": [],
-  "deliverables": [],
-  "nonGoals": [],
+  "decisionGates": ["관련 권한 철회·불명/이미 전송된 메시지는 복구하지 않음", "독립 서비스 변경 또는 진행 중인 공유 worker 호출이 있으면 교체 보류"],
+  "deliverables": [{"id":"POLICY","description":"Tech 범위 정책 지문과 안전 복구 구현","acceptance":["다른 채널/사용자 추가·제거·순서 변경이 Tech 전송을 막지 않음", "Tech 채널·소유자 권한 철회·소스 변경·만료는 계속 차단", "불명·기전송·변경된 원문·만료 게시 재전송 금지"]},{"id":"VALIDATION","description":"실제 DB·Temporal 회귀 검증","acceptance":["기존 결함을 재현한 테스트와 보안·복구 테스트 통과", "슬랙 모의 검사와 운영 전달 영수증 분리"]},{"id":"RECOVERY","description":"Tech 운영 복구와 실제 게시 확인","acceptance":["원본 공유 worker와 dispatch의 다른 코드·환경 및 독립 컨테이너 보존", "실제 정상 수집과 Tech Scout 전송 영수증 확인", "변경 소스와 운영 증거 Git 반영"]}],
+  "nonGoals": ["다른 피드·봇의 정책 변경", "새 모델·API 비용·서버 증설", "오래된 글·불명 발송 재생", "기존 quant/scoter 승인 계약 변경"],
   "outcome": "tech-feeds 미게시 원인 확인 후 수집·발송 설정 불일치 복구, 다른 채널 추가에 영향받지 않는 재발 방지 수정, 실제 Slack 게시 검증. 사용자가 응으로 승인함. 기존 봇·연구·구독·불명 영수증 보존; 오래된 글과 불명 발송 자동 재전송 금지.",
   "revision": 1,
   "schemaVersion": 1,
   "slug": "tech-feed-recovery-20261008",
   "sourceRequest": "tech-feeds 미게시 원인 확인 후 수집·발송 설정 불일치 복구, 다른 채널 추가에 영향받지 않는 재발 방지 수정, 실제 Slack 게시 검증. 사용자가 응으로 승인함. 기존 봇·연구·구독·불명 영수증 보존; 오래된 글과 불명 발송 자동 재전송 금지.",
-  "stopConditions": []
+  "stopConditions": ["불명 외부 효과는 자동 반복하지 않고 영수증을 대조", "배포 잠금 충돌 시 독립 배포 보존"]
 }

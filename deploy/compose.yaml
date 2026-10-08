@@ -65,6 +65,7 @@ x-db-env: &db-env
   NEWS_INITIAL_LOOKBACK_MINUTES: ${NEWS_INITIAL_LOOKBACK_MINUTES:-120}
   TECH_FEED_ENABLED: ${TECH_FEED_ENABLED:-false}
   TECH_FEED_PUBLISH_ENABLED: ${TECH_FEED_PUBLISH_ENABLED:-false}
+  TECH_FEED_DEDICATED_WORKER: ${TECH_FEED_DEDICATED_WORKER:-false}
   TECH_FEED_CHANNEL_ID: ${TECH_FEED_CHANNEL_ID:-}
   TECH_FEED_OWNER_USER: ${TECH_FEED_OWNER_USER:-}
   TREND_FEED_ENABLED: ${TREND_FEED_ENABLED:-false}
@@ -240,6 +241,21 @@ services:
     depends_on:
       postgres: {condition: service_healthy}
       codex-runtime: {condition: service_healthy}
+
+  tech-feed-worker:
+    <<: *app
+    profiles: [tech-feed]
+    command: [python, -m, quant_company.tech_feed.worker]
+    environment:
+      <<: [*db-env, *temporal-env]
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+    secrets: [database_password, temporal_api_key]
+    networks: [core, service_egress]
+    mem_limit: 256m
+    cpus: 0.25
+    depends_on:
+      postgres: {condition: service_healthy}
 
   data-watch-worker:
     <<: *app
