@@ -86,18 +86,38 @@ def freeze_inventory(value, bundle):
     docs = {d["id"]: d for d in bundle["documents"] if d["kind"] not in {"calendar", "dataset"}}
     if len(value.sources) != len(docs) or {s.source_id for s in value.sources} != docs.keys():
         raise ValueError("inventory_source_accounting")
-    for source in value.sources:
+    data = value.model_dump(mode="json")
+    dropped = []
+    for source, row in zip(value.sources, data["sources"], strict=True):
         if (source.treatment == "covered") != bool(source.material_facts):
             raise ValueError("inventory_materiality_shape")
         original = " ".join(docs[source.source_id]["content"].split())
-        for fact in source.material_facts:
+        kept = []
+        for fact, fact_row in zip(source.material_facts, row["material_facts"], strict=True):
             quotes = quote_parts(fact.quote)
-            if any(" ".join(q.split()) not in original for q in quotes) or not prose_numbers_supported(fact.fact, quotes):
-                raise ValueError("inventory_fact_not_supported")
+            # One unsupported fact must not block the edition: it is withheld and recorded,
+            # never repaired or kept. The final critic still reads every full original.
+            if any(" ".join(q.split()) not in original for q in quotes):
+                dropped.append({"source_id": source.source_id, "fact": fact.fact, "reason": "quote_not_in_original"})
+                continue
+            if not prose_numbers_supported(fact.fact, quotes):
+                dropped.append({"source_id": source.source_id, "fact": fact.fact, "reason": "numbers_not_supported"})
+                continue
             if any(normalized(qualifier_text(q)) not in normalized(fact.fact) for q in fact.qualifiers):
                 raise ValueError("inventory_qualifier_not_in_fact")
-    data = value.model_dump(mode="json")
-    return {**bundle, "fact_inventory": data, "fact_inventory_digest": fingerprint(data)}
+            kept.append(fact_row)
+        row["material_facts"] = kept
+        if source.treatment == "covered" and not kept:
+            # Keep covered <-> material_facts: a source left without supported facts becomes background.
+            row["treatment"] = "background"
+            row["reason"] = ("원문 대조를 통과한 사실이 없어 배경으로 둔다: " + row["reason"])[:300]
+    if dropped and not any(row["material_facts"] for row in data["sources"]):
+        raise ValueError("inventory_fact_not_supported")
+    data = type(value).model_validate(data).model_dump(mode="json")
+    result = {**bundle, "fact_inventory": data, "fact_inventory_digest": fingerprint(data)}
+    if dropped:
+        result["fact_inventory_dropped"] = dropped
+    return result
 
 
 def facts(bundle):

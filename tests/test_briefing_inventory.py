@@ -271,3 +271,39 @@ def test_real_postgres_new_inventory_path_allows_one_semantic_patch_and_final_re
     assert count == 6 and row['quality']['revision_used'] and not row['quality']['reduced']
     assert row['proposal']['source_notes'][0]['material_facts'][0]['fact'] == inventory().sources[0].material_facts[0].fact
     assert replay(row)['ok']
+
+
+def two_fact_inventory(second_quote, second_fact='3월 비상계획에서 약 3억2500만 배럴이 공급됐다.'):
+    value = inventory().model_dump(mode='json')
+    value['sources'][0]['material_facts'].append({'fact': second_fact, 'quote': second_quote, 'qualifiers': []})
+    return FactInventory.model_validate(value)
+
+
+def test_unsupported_fact_is_withheld_and_recorded_without_blocking_the_inventory():
+    b = bundle() | {'source_notes_required': True, 'quote_reference_version': 1}
+    result = freeze_inventory(two_fact_inventory('An invented original statement about barrels.'), b)
+    kept = result['fact_inventory']['sources'][0]['material_facts']
+    assert [f['fact'] for f in kept] == [inventory().sources[0].material_facts[0].fact]
+    assert result['fact_inventory_dropped'] == [{'source_id': 'source-1', 'reason': 'quote_not_in_original',
+                                                 'fact': '3월 비상계획에서 약 3억2500만 배럴이 공급됐다.'}]
+    # The committed digest covers only the kept facts; nothing is repaired or invented.
+    assert facts(result)[1].keys() == {'f1'}
+
+
+def test_source_left_without_supported_facts_becomes_background_and_all_unsupported_still_blocks():
+    b = bundle() | {'source_notes_required': True, 'quote_reference_version': 1}
+    v = inventory()
+    v.sources[0].material_facts[0].quote = 'An invented original statement.'
+    with pytest.raises(ValueError, match='inventory_fact_not_supported'):
+        freeze_inventory(v, b)
+    value = inventory().model_dump(mode='json')
+    extra = deepcopy(value['sources'][0])
+    extra['source_id'] = 'source-2'
+    extra['material_facts'][0]['quote'] = 'An invented original statement.'
+    docs = deepcopy(b['documents'])
+    docs.append(deepcopy([d for d in docs if d['id'] == 'source-1'][0]) | {'id': 'source-2'})
+    result = freeze_inventory(FactInventory.model_validate({'sources': value['sources'] + [extra]}), b | {'documents': docs})
+    second = result['fact_inventory']['sources'][1]
+    assert second['treatment'] == 'background' and second['material_facts'] == []
+    assert second['reason'].startswith('원문 대조를 통과한 사실이 없어 배경으로 둔다')
+    assert [d['source_id'] for d in result['fact_inventory_dropped']] == ['source-2']
