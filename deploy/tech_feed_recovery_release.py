@@ -75,9 +75,11 @@ print(json.dumps({'channels':s.slack_allowed_channels,'users':s.slack_allowed_us
 """)
     images = {}
     for service, row in (("tech-feed-worker", dispatch), ("dispatch", dispatch)):
+        base_tag = "quant-company-tech-recovery-base:" + row["Image"].removeprefix("sha256:")[:12]
+        execute(["docker", "tag", row["Image"], base_tag])
         tag = "quant-company-tech-recovery:" + commit[:12] + "-" + service
         execute(["docker", "build", "--network", "none", "--pull=false", "-f",
-                 str(source / "deploy/Dockerfile.tech-feed-update"), "--build-arg", "BASE_IMAGE=" + row["Image"],
+                 str(source / "deploy/Dockerfile.tech-feed-update"), "--build-arg", "BASE_IMAGE=" + base_tag,
                  "--build-arg", "BASE_STORE_SHA256=" + BASE_STORE, "--build-arg", "RELEASE_COMMIT=" + commit,
                  "-t", tag, str(source)])
         images[service] = json.loads(execute(["docker", "image", "inspect", tag]))[0]["Id"]
