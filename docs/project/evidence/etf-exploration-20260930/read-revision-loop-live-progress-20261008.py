@@ -79,7 +79,7 @@ def main():
         request = row.pop("request")
         prompt = request.get("prompt", "")
         row.update({key: request.get(key) for key in ("request_id", "model", "reasoning_effort")})
-        row["created_after_cutover"] = (
+        row["turn_created_after_cutover"] = (
             datetime.fromisoformat(row["created_at"]) >= datetime.fromisoformat(cutover)
             if cutover else None
         )
@@ -105,6 +105,11 @@ def main():
                 runtime = json.loads(receipt.read_bytes())
                 row["runtime"] = {key: runtime.get(key) for key in ("state", "started_at", "completed_at", "cli_version")}
                 row["runtime"]["fault_code"] = runtime.get("fault", {}).get("code")
+                started = runtime.get("started_at")
+                row["runtime"]["started_after_cutover"] = (
+                    datetime.fromtimestamp(started, UTC) >= datetime.fromisoformat(cutover)
+                    if cutover and isinstance(started, (int, float)) else None
+                )
     for row in raw["attempts"]:
         response = row.pop("response") or {}
         artifacts = response.get("decision", {}).get("artifacts", [])

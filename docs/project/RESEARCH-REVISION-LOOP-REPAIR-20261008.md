@@ -39,8 +39,16 @@
 mode 0600 overlay로 고정하고, compose 해석 전후와 활성화 후 key/value 전체를 직접 대조한다.
 순서 변경은 허용하지만 값 변경은 계속 실패시킨다. 롤백도 같은 actual 환경을 고정·검증한다.
 
-현재는 개선된 도구와 정확한 새 manifest의 준비·적용 검토 단계다.
-운영 활성화와 두 번째 실제 시행의 실행을 이 문서의 검사 통과만으로 주장하지 않는다.
+개선된 `3c7cc91` 적용은 **10월 8일 10:50:29 KST 완료**했다. API·worker의 모든 active 환경 값,
+보호 설정, 실제 모델 정책과 나머지 서비스 identity를 대조했다. 과학 worker release는 그대로다.
+
+정상 서비스가 재개한 실제 director/Astra max 요청에는 새 capabilities와 현재 반론 UUID 한 건이
+들어 있다. 실제 출력 스키마의 UUID enum·최소/최대 응답 한 건이 DB의 현재 반론과 일치했다.
+후속 응답들이 정상 접수되며 읽기 5→21건으로 진행했다. 11:00 KST 관측은 selection/running이며
+추가 stage 오류가 없다. 둘째 과학 시행은 아직 없고 이 기술 복구를 실험 완료로 세지 않는다.
+
+45초 간격·최대 4시간의 읽기 전용 관측기가 활성 상태다. 둘째 보고 완료 시 종료하며 자동
+Slack 알림·수리·모델 호출·과학 재실행은 하지 않는다. 승인된 정상 직원 workflow가 연구를 진행한다.
 
 ## 근거
 
@@ -49,6 +57,10 @@ mode 0600 overlay로 고정하고, compose 해석 전후와 활성화 후 key/va
 - [전체 회귀검사](evidence/etf-exploration-20260930/revision-loop-regression-20261008.json)
 - [정확한 준비·적용 도구](evidence/etf-exploration-20260930/apply-revision-loop-patch-20261008.py)
 - [읽기 전용 운영 프롬프트 검사](evidence/etf-exploration-20260930/probe-revision-loop-runtime-20261008.py)
+- [실제 운영 적용](evidence/etf-exploration-20260930/revision-loop-runtime-applied-20261008.json)
+- [실제 선정 요청](evidence/etf-exploration-20260930/revision-loop-actual-selection-request-20261008.json)
+- [후속 응답 접수 진행](evidence/etf-exploration-20260930/revision-loop-actual-progress-20261008.json)
+- [한정된 관측기](evidence/etf-exploration-20260930/revision-loop-bounded-observer-20261008.json)
 
 서명된 프로그램 `f7deaf96-e677-5afe-93d4-18ac387043bb`의 범위·예산·과거 결과는 유지한다.
 운영 복구는 새 과학 승인이나 실운용 승인으로 해석하지 않는다.

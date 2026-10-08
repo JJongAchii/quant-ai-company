@@ -1,0 +1,19 @@
+{
+  "state": "active",
+  "verified_at": "2026-10-08T01:52:53.584903+00:00",
+  "unit": "quant-company-revision-loop-monitor-20261008.service",
+  "invocation_id": "43c158054faf4048a98d0856f79984a9",
+  "active_enter_timestamp": "2026-10-08T01:52:07Z",
+  "source_commit": "3c7cc9130fe5196027b2314aeb788a81a2d66179",
+  "script_sha256": "333358889e58ffd9cf07673afb49e8e380bd3f792e02c45784bd6cd83d307d92",
+  "helper_sha256": "da250594cf569c1e6a86a70f0df74a938ffea5bebff93ac77c5d53db7b7503b9",
+  "interval_seconds": 45,
+  "maximum_hours": 4,
+  "systemd_runtime_max_seconds": 14520,
+  "stops_when": "second reported trial observed or four hour observation budget exhausted",
+  "read_only": true,
+  "automatic_alerts": false,
+  "automatic_repairs": false,
+  "log_path": "/var/lib/quant-company/releases/revision-loop-monitor-20261008/observations.jsonl",
+  "latest_observation": "2026-10-08T02:00:27.182514+00:00"
+}
