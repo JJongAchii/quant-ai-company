@@ -1,0 +1,49 @@
+{
+  "captured_at": "2026-10-07T04:08:57.425310+00:00",
+  "patch_commit": "main-role-compat-20261007",
+  "scope": "Main role compatibility guard on exact installed pinned worker; real PostgreSQL rollback; zero model calls",
+  "source_main_commit": "b981ad7e282fb1ead9d6663172f83883478aa225",
+  "previous_container_id": "10c0dddd3876fa6a3d00fd7cc96c63a89444cfacc1c6c0e3e43aa6f3536f4fcd",
+  "base_image_id": "sha256:b2ff111d761da5d0fd4bd3903522d3b23a6ab75396787e8ab2dcb5603c924a4f",
+  "target_image": "quant-company-worker-role-compat:7f03288f548f68d8",
+  "target_image_id": "sha256:cab5db642ea0be53e9a3dc71e42f7498459eae65d7329a753162cdcf3b16e92c",
+  "base_company_sha256": "57b2ce59bd146c60ad4bc6ff33d0e91672bc7593a71d24c232f7ddec3ede9899",
+  "candidate_company_sha256": "7f03288f548f68d8cf8162bcf9fed5ccb5ef181dbc50a61b478bd93704a3d8ca",
+  "baseline": {
+    "sql_writes": "rolled_back",
+    "model_calls": 0,
+    "turn_id": "e2988906-53c9-532b-acad-4afa31c0ca98",
+    "instruction_sha256": "eb147b6742db5b5450cdec2b116c204ec2310c9a2b6721662080fc66b0c8d648",
+    "agent": "maintainer",
+    "state": "preparation_error",
+    "error_type": "ValueError",
+    "error": "Unknown specialist"
+  },
+  "candidate": {
+    "sql_writes": "rolled_back",
+    "model_calls": 0,
+    "turn_id": "e2988906-53c9-532b-acad-4afa31c0ca98",
+    "instruction_sha256": "eb147b6742db5b5450cdec2b116c204ec2310c9a2b6721662080fc66b0c8d648",
+    "agent": "maintainer",
+    "state": "ready",
+    "prompt_characters": 35779,
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh"
+  },
+  "compose_files": [
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml",
+    "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json",
+    "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json",
+    "/var/lib/quant-company/config/native-output-5c44ad07273adc780a56a47d7d35114fd0dc32c8-02.compose.json",
+    "/var/lib/quant-company/config/data-watch-readable-v6-8508954320877144e8f24cb52c8353c0e18f514a-api.compose.json",
+    "/var/lib/quant-company/config/scoped-data-86aea8cdf03b5543666813c97689acb1e8158a6d.compose.json",
+    "/var/lib/quant-company/config/held-audit-ec1fbeb29a49420a367f06af596283e6ead4ab72.compose.json",
+    "/var/lib/quant-company/config/director-context-87e774fbb5caafb6cf56bc14af678699ccacea10.compose.json",
+    "/var/lib/quant-company/config/model-assignments-20261006-worker.compose.json"
+  ],
+  "project": "quant-company"
+}

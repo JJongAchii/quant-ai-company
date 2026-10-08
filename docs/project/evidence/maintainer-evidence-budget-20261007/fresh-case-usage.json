@@ -1,0 +1,41 @@
+{
+  "captured_at": "2026-10-07T04:55:44.653565+00:00",
+  "scope": "One real signed Slack request; conversation intake and maintenance diagnosis counted separately",
+  "model": "gpt-6.1-sol",
+  "intake": {
+    "calls": 2,
+    "totals": {
+      "input_tokens": 41124,
+      "cached_input_tokens": 0,
+      "output_tokens": 2754,
+      "reasoning_output_tokens": 2383
+    }
+  },
+  "diagnosis": {
+    "calls": 5,
+    "totals": {
+      "input_tokens": 183508,
+      "cached_input_tokens": 0,
+      "output_tokens": 16739,
+      "reasoning_output_tokens": 13259
+    }
+  },
+  "combined": {
+    "calls": 7,
+    "totals": {
+      "input_tokens": 224632,
+      "cached_input_tokens": 0,
+      "output_tokens": 19493,
+      "reasoning_output_tokens": 15642
+    }
+  },
+  "final_state": "done",
+  "diagnostic_revision": 0,
+  "source": "Recorded ProviderResponse.usage from official Codex CLI events",
+  "limits": [
+    "Cached input is included in input; reasoning output is included in output.",
+    "This request does not supply a matched before/after causal savings rate.",
+    "The seven recorded successful calls do not measure subscription allowance percentages.",
+    "Past uncertain calls were preserved; no retries of those historical requests were made."
+  ]
+}

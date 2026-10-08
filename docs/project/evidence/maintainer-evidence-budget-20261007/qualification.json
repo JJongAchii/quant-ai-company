@@ -1,0 +1,282 @@
+{
+  "captured_at": "2026-10-07T01:33:11.713682+00:00",
+  "scope": "Actual production configuration and PostgreSQL; rolled-back preparation; zero model calls",
+  "patch_commit": "db94a2d026aeb10d26e68570089d495de50c3dcc",
+  "base_image_id": "sha256:0b80b476471ba92bb1eb21f82704e26ba28fd88826add4110facc61158c25b9e",
+  "previous_container_id": "501a599be10e74a4153cce17fa83109883f413bc2a7fd983f09319f25488b64c",
+  "target_image": "quant-company-maintainer-evidence:db94a2d026aeb10d26e68570089d495de50c3dcc",
+  "target_image_id": "sha256:888c5bddf3b7ab537d176f259cb6607368d6cfd367514c36344c38dd42f57ed3",
+  "baseline": {
+    "repository_commit": "b981ad7e282fb1ead9d6663172f83883478aa225",
+    "coverage": {
+      "read_files": 299,
+      "read_bytes": 1999949,
+      "reused_files": 299,
+      "fetched_files": 1,
+      "boundary": "allowlisted text blobs only; no credentials, binaries, links or arbitrary repository"
+    },
+    "omitted_paths": 256,
+    "required_review_code_available": false,
+    "cases": [
+      {
+        "job_id": "19aa1178-bca7-469f-b209-eca081a1be36",
+        "state": "done",
+        "prompt_characters": 86023,
+        "source_characters": 12711,
+        "source_paths": [
+          "src/quant_company/company.py",
+          "docs/adr/0018-current-system-evidence-and-owner-controls.md",
+          "docs/project/NEXT-STEPS.md",
+          "AGENTS.md",
+          "README.md",
+          "deploy/autonomous-research.compose.yaml",
+          "deploy/compose.yaml",
+          "deploy/data-watch.compose.yaml",
+          "deploy/entrypoint.py",
+          "deploy/housing_feed_release.py",
+          "deploy/housing_panel_preview.py",
+          "deploy/housing_panel_release.py",
+          "deploy/maintenance_release.py"
+        ],
+        "history_evidence_count": 30,
+        "bounded_system_characters": 12518,
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "source_observation_keys": [
+          "staff-review:review-298e6ad6-8128-488e-977b-fb50182d3608"
+        ],
+        "request_preparation_only": true
+      },
+      {
+        "job_id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+        "state": "blocked",
+        "prompt_characters": 86844,
+        "source_characters": 12711,
+        "source_paths": [
+          "src/quant_company/company.py",
+          "docs/adr/0018-current-system-evidence-and-owner-controls.md",
+          "docs/project/NEXT-STEPS.md",
+          "AGENTS.md",
+          "README.md",
+          "deploy/autonomous-research.compose.yaml",
+          "deploy/compose.yaml",
+          "deploy/data-watch.compose.yaml",
+          "deploy/entrypoint.py",
+          "deploy/housing_feed_release.py",
+          "deploy/housing_panel_preview.py",
+          "deploy/housing_panel_release.py",
+          "deploy/maintenance_release.py"
+        ],
+        "history_evidence_count": 30,
+        "bounded_system_characters": 12518,
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "source_observation_keys": [
+          "staff-review:review-cdbbed6d-acc5-40ee-9793-4d86905a4db5",
+          "staff-review:review-63abd47f-89e7-44c5-b17a-f3e024a8de6e"
+        ],
+        "request_preparation_only": true
+      },
+      {
+        "job_id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+        "state": "blocked",
+        "prompt_characters": 87149,
+        "source_characters": 12711,
+        "source_paths": [
+          "src/quant_company/company.py",
+          "docs/adr/0018-current-system-evidence-and-owner-controls.md",
+          "docs/project/NEXT-STEPS.md",
+          "AGENTS.md",
+          "README.md",
+          "deploy/autonomous-research.compose.yaml",
+          "deploy/compose.yaml",
+          "deploy/data-watch.compose.yaml",
+          "deploy/entrypoint.py",
+          "deploy/housing_feed_release.py",
+          "deploy/housing_panel_preview.py",
+          "deploy/housing_panel_release.py",
+          "deploy/maintenance_release.py"
+        ],
+        "history_evidence_count": 30,
+        "bounded_system_characters": 12518,
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "source_observation_keys": [
+          "message:38481d2f-b970-4da4-9287-0192afd2d41f"
+        ],
+        "request_preparation_only": true
+      },
+      {
+        "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+        "state": "blocked",
+        "prompt_characters": 87987,
+        "source_characters": 12711,
+        "source_paths": [
+          "src/quant_company/company.py",
+          "docs/adr/0018-current-system-evidence-and-owner-controls.md",
+          "docs/project/NEXT-STEPS.md",
+          "AGENTS.md",
+          "README.md",
+          "deploy/autonomous-research.compose.yaml",
+          "deploy/compose.yaml",
+          "deploy/data-watch.compose.yaml",
+          "deploy/entrypoint.py",
+          "deploy/housing_feed_release.py",
+          "deploy/housing_panel_preview.py",
+          "deploy/housing_panel_release.py",
+          "deploy/maintenance_release.py"
+        ],
+        "history_evidence_count": 30,
+        "bounded_system_characters": 12518,
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "source_observation_keys": [
+          "research-contract:1f47440b9db542cc8feb467b3e8e0548",
+          "staff-review:review-61b91f4c-e518-4c6e-b968-98f7acd080c3",
+          "staff-review:review-cbcd0453-4c6e-45d4-89e9-9cdb23a8ac84",
+          "staff-review:review-2ba7a04c-9e2a-4273-b757-99892b040b88",
+          "staff-review:review-08a21b09-58c2-4dc9-816b-aceeb301b6c9"
+        ],
+        "request_preparation_only": true
+      }
+    ],
+    "model_calls": 0,
+    "database_writes": "rolled_back",
+    "original_uncertain_reviews_unchanged": true
+  },
+  "candidate": {
+    "repository_commit": "b981ad7e282fb1ead9d6663172f83883478aa225",
+    "coverage": {
+      "read_order_version": 2,
+      "read_files": 227,
+      "read_bytes": 1999895,
+      "reused_files": 48,
+      "fetched_files": 179,
+      "boundary": "allowlisted text blobs only; no credentials, binaries, links or arbitrary repository"
+    },
+    "omitted_paths": 328,
+    "required_review_code_available": true,
+    "cases": [
+      {
+        "job_id": "19aa1178-bca7-469f-b209-eca081a1be36",
+        "state": "done",
+        "prompt_characters": 77555,
+        "source_characters": 24000,
+        "source_paths": [
+          "src/quant_company/staff/independent_review.py",
+          "src/quant_company/staff/review_contract.py",
+          "src/quant_company/providers/claude_runner.py",
+          "src/quant_company/providers/client.py",
+          "tests/test_staff_independent_review.py",
+          "src/quant_company/maintenance/store.py",
+          "src/quant_company/company.py"
+        ],
+        "history_evidence_count": 0,
+        "bounded_system_characters": 17160,
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "source_observation_keys": [
+          "staff-review:review-298e6ad6-8128-488e-977b-fb50182d3608"
+        ],
+        "request_preparation_only": true
+      },
+      {
+        "job_id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+        "state": "blocked",
+        "prompt_characters": 83761,
+        "source_characters": 24000,
+        "source_paths": [
+          "src/quant_company/staff/independent_review.py",
+          "src/quant_company/staff/review_contract.py",
+          "src/quant_company/providers/claude_runner.py",
+          "src/quant_company/providers/client.py",
+          "tests/test_staff_independent_review.py",
+          "src/quant_company/maintenance/store.py",
+          "src/quant_company/company.py"
+        ],
+        "history_evidence_count": 0,
+        "bounded_system_characters": 17160,
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "source_observation_keys": [
+          "staff-review:review-cdbbed6d-acc5-40ee-9793-4d86905a4db5",
+          "staff-review:review-63abd47f-89e7-44c5-b17a-f3e024a8de6e"
+        ],
+        "request_preparation_only": true
+      },
+      {
+        "job_id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+        "state": "blocked",
+        "prompt_characters": 85592,
+        "source_characters": 6344,
+        "source_paths": [
+          "src/quant_company/maintenance/store.py",
+          "src/quant_company/company.py",
+          "src/quant_company/maintenance/runner.py",
+          "src/quant_company/maintenance/requests.py",
+          "src/quant_company/system_state.py",
+          "src/quant_company/owner_controls.py",
+          "src/quant_company/__init__.py",
+          "src/quant_company/account_gateway.py"
+        ],
+        "history_evidence_count": 30,
+        "bounded_system_characters": 12518,
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "source_observation_keys": [
+          "message:38481d2f-b970-4da4-9287-0192afd2d41f"
+        ],
+        "request_preparation_only": true
+      },
+      {
+        "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+        "state": "blocked",
+        "prompt_characters": 87717,
+        "source_characters": 24000,
+        "source_paths": [
+          "src/quant_company/staff/independent_review.py",
+          "src/quant_company/staff/review_contract.py",
+          "src/quant_company/providers/claude_runner.py",
+          "src/quant_company/providers/client.py",
+          "tests/test_staff_independent_review.py",
+          "src/quant_company/maintenance/store.py",
+          "src/quant_company/company.py"
+        ],
+        "history_evidence_count": 11,
+        "bounded_system_characters": 17160,
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "source_observation_keys": [
+          "research-contract:1f47440b9db542cc8feb467b3e8e0548",
+          "staff-review:review-61b91f4c-e518-4c6e-b968-98f7acd080c3",
+          "staff-review:review-cbcd0453-4c6e-45d4-89e9-9cdb23a8ac84",
+          "staff-review:review-2ba7a04c-9e2a-4273-b757-99892b040b88",
+          "staff-review:review-08a21b09-58c2-4dc9-816b-aceeb301b6c9"
+        ],
+        "request_preparation_only": true
+      }
+    ],
+    "model_calls": 0,
+    "database_writes": "rolled_back",
+    "original_uncertain_reviews_unchanged": true
+  },
+  "candidate_module_sha256": {
+    "system_state.py": "7b50be5c845bd4dbaccc7a2bcd9ff3caeff180ef6367697afd435247b8fcb1bc",
+    "runner.py": "61e96f7c406e1176713e581bd85fa676cb084a26c080f948dc6c7b291eae75f5",
+    "store.py": "3a74e7a32c848e55fdddd7ad9fc463d35f8eb2185aad42e24113df86639133ce",
+    "github.py": "4f38d954139cd767f31b506dc7722c9d38cfb32a93a0eb9f51064c0ee2fed6e0"
+  },
+  "compose_files": [
+    "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml",
+    "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml",
+    "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml",
+    "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml",
+    "/var/lib/quant-company/config/maintainer-recovery-fadc0e54be0c470068bb18011cc6a1a9ec8ee971.compose.json",
+    "/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8.compose.json",
+    "/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8-memory.compose.json",
+    "/var/lib/quant-company/config/model-assignments-20261006-maintenance.compose.json"
+  ],
+  "project": "quant-company",
+  "working_dir": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy",
+  "interpretation": "Characters measure prepared input size, not actual token savings. Old cases remain terminal; no request replay."
+}

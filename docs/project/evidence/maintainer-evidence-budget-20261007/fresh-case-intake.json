@@ -1,0 +1,46 @@
+{
+  "scope": "Actual accepted Slack ingress and PostgreSQL; read only",
+  "turns": [
+    {
+      "id": "e2988906-53c9-532b-acad-4afa31c0ca98",
+      "agent": null,
+      "error": null,
+      "model": null,
+      "usage": null,
+      "due_at": "2026-10-07T02:28:52.534087+00:00",
+      "status": "queued",
+      "task_id": "90e7a620-8873-5b80-a28d-75904b274d82",
+      "attempts": 0,
+      "created_at": "2026-10-07T02:28:52.520043+00:00",
+      "updated_at": "2026-10-07T02:28:52.520043+00:00",
+      "workflow_started": true
+    }
+  ],
+  "outbox": [],
+  "control": {
+    "id": 1,
+    "reason": null,
+    "paused_until": null
+  },
+  "inbound": [
+    {
+      "agent": "maintainer",
+      "error": null,
+      "status": "pending",
+      "channel": "C0C3Q7BFQCE",
+      "task_id": "90e7a620-8873-5b80-a28d-75904b274d82",
+      "revision": 1,
+      "event_key": "slack:T0C1YRDRPNF:C0C3Q7BFQCE:1791340131.991029:maintainer",
+      "thread_ts": "1791269678.293859",
+      "created_at": "2026-10-07T02:28:52.520043+00:00",
+      "project_id": "eca1443a-98dd-5cb9-a24e-74cdaf1b07ab",
+      "instruction": "최적화된 현재 운영 코드와 원 영수증 대사 결과로 새 진단을 진행해. 과거 불확실 호출은 재실행하지 마",
+      "payload_digest": "e4e82a20f55d0da9c5a38b98fd13d6536328541b38c52928ca9dd7bd573eaf60"
+    }
+  ],
+  "captured_at": "2026-10-07T02:33:06.9814+00:00",
+  "maintenance_jobs": [],
+  "slack_url": "https://achiisquantresearch.slack.com/archives/C0C3Q7BFQCE/p1791340131991029?thread_ts=1791269678.293859&cid=C0C3Q7BFQCE",
+  "model_calls_by_probe": 0,
+  "database_writes": 0
+}
