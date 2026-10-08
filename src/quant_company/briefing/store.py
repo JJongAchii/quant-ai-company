@@ -52,8 +52,9 @@ from .execution import (
     EXECUTION_VERSION,
     FRAGMENT_INVENTORY_SECONDS,
     PHASE_SECONDS,
+    has_runway,
     output_contract,
-    remaining_seconds,
+    phase_deadline,
 )
 from .inputs import market_report, registrations, source_policy
 from .inventory import INVENTORY, compose, freeze_inventory, inventory_model, inventory_prompt
@@ -164,6 +165,7 @@ class BriefStore:
             bundle["fact_inventory_version"] = 2
             bundle["combined_editorial_repair"] = True
             bundle["editorial_patch_version"] = 2
+            bundle['deadline_budget_version'] = 1
         role = self._execution_role(conn)
         bundle["execution_model"] = {"model": role.model, "reasoning_effort": role.reasoning_effort}
         bundle["professional_feedback"] = as_json(coaching(conn, row["owner_user"], BRIEFER,
@@ -319,7 +321,7 @@ class BriefStore:
                         conn.execute("UPDATE brief_editions SET state='blocked',error=%s,bundle=%s WHERE id=%s",
                                      (reason, Jsonb(bundle), row['id']))
                         return {'state': 'blocked', 'reason': reason}
-                if at+timedelta(seconds=remaining_seconds(phase, bundle)+60) >= row['due_at']+timedelta(minutes=10):
+                if not has_runway(phase, bundle, at, row['due_at']):
                     reason = "insufficient_review_time"
                     conn.execute("UPDATE brief_editions SET state='blocked',error=%s,bundle=%s WHERE id=%s",
                                  (reason, Jsonb(bundle), row['id']))
@@ -345,6 +347,8 @@ class BriefStore:
             request = ProviderRequest(request_id=identity, model=role.model, reasoning_effort=role.reasoning_effort,
                                       prompt=model_prompt, web_search=phase == "search",
                                       output_contract=output_contract(phase, bundle))
+            if deadline := phase_deadline(phase, bundle, row['due_at']):
+                request.brief_deadline_unix = int(deadline.timestamp())
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             conn.execute("INSERT INTO brief_calls(id,edition_id,phase,request,next_at,requested_at) VALUES(%s,%s,%s,%s,%s,%s)",
                          (identity, row["id"], phase, Jsonb(request.model_dump()), at, at))
@@ -452,7 +456,7 @@ class BriefStore:
                 # One confirmed repair, with both correction and final-review time reserved.
                 repair = (self.company.settings.briefing_max_revisions > 0 and call["phase"] == "review"
                           and (quality["reduced"] or rejected or review.verdict != "publish")
-                          and at+timedelta(seconds=remaining_seconds('revise', row['bundle'])+60) < row["due_at"]+timedelta(minutes=10)
+                          and has_runway('revise', row['bundle'], at, row['due_at'])
                           and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
                                                (row["id"],)).fetchone())
                 if repair:

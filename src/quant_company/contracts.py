@@ -106,6 +106,8 @@ class ProviderRequest(StrictModel):
     model: str = Field(min_length=1, max_length=80)
     # None preserves already-frozen requests from before explicit effort support.
     reasoning_effort: ReasoningEffort | None = None
+    # Service-owned absolute deadline; absent on legacy and non-Analyst requests.
+    brief_deadline_unix: int | None = Field(default=None, gt=0, strict=True)
     prompt: str = Field(min_length=1, max_length=90000)
     web_search: bool = False
     # Service-owned continuation, resolved against durable runtime receipts.
@@ -119,6 +121,8 @@ class ProviderRequest(StrictModel):
 
     @model_validator(mode="after")
     def scoped_output(self):
+        if self.brief_deadline_unix is not None and not self.output_contract.startswith('brief_'):
+            raise ValueError('A briefing deadline requires a scoped Analyst request')
         if self.output_contract.startswith("brief_"):
             from .briefing.execution import valid_request
 

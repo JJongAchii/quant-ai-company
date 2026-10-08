@@ -1,6 +1,8 @@
 """Service-owned output shapes and time budgets for the Analyst lane only."""
 
 import re
+from datetime import timedelta
+from time import time as wall_time
 
 from .contracts import (
     BriefComposition,
@@ -15,7 +17,7 @@ from .contracts import (
     SourcePlan,
 )
 
-EXECUTION_VERSION = 6
+EXECUTION_VERSION = 7
 OUTPUT_MODELS = {
     "brief_plan_v1": SourcePlan,
     "brief_inventory_v1": FactInventory,
@@ -78,6 +80,13 @@ def valid_request(identity, contract):
 def timeout_seconds(request):
     # Legacy requests keep their original generic timeout and digest.
     if valid_request(request.request_id, request.output_contract):
+        if deadline := getattr(request, 'brief_deadline_unix', None):
+            remaining = deadline-wall_time()
+            if remaining <= 0:
+                from ..contracts import ProviderFault
+
+                raise ProviderFault('timeout', 'The frozen briefing deadline has passed; do not replay it.')
+            return remaining
         if request.output_contract == "brief_review_v2":
             return PHASE_SECONDS['review']
         if request.output_contract == "brief_editorial_v2":
@@ -108,6 +117,26 @@ def remaining_seconds(phase, bundle):
     if phase == "write" and bundle.get("fact_inventory_required"):
         return COMPOSE_SECONDS + PHASE_SECONDS["review"]
     return REMAINING_SECONDS[phase]
+
+
+def phase_deadline(phase, bundle, due_at):
+    """Share the edition window, reserving downstream review and delivery time.
+
+    The former phase seconds are planning reserves, not per-call kill timers.
+    A fast phase gives the next phase its unused time. The absolute deadline is
+    frozen with the request so queueing or recovery cannot restart its clock.
+    """
+    if bundle.get('deadline_budget_version') != 1 or phase == 'search':
+        return None
+    next_phase = {'plan':'inventory', 'inventory':'write', 'write':'review',
+                  'review':'revise', 'revise':'final_review', 'final_review':None}[phase]
+    downstream = remaining_seconds(next_phase, bundle) if next_phase else 0
+    return due_at+timedelta(minutes=10)-timedelta(seconds=downstream+60)
+
+
+def has_runway(phase, bundle, at, due_at):
+    deadline = phase_deadline(phase, bundle, due_at)
+    return at < deadline if deadline else at+timedelta(seconds=remaining_seconds(phase, bundle)+60) < due_at+timedelta(minutes=10)
 
 
 def direct_instruction(text):

@@ -55,6 +55,9 @@ async def test_real_temporal_postgres_brief_write_review_and_replay(brief, tempo
             store.flush()
             assert store.status()["deliveries"][0]["status"] == "pending"
             history = await handle.fetch_history()
+            scheduled = [event.activity_task_scheduled_event_attributes for event in history.events
+                         if event.HasField('activity_task_scheduled_event_attributes')]
+            assert scheduled and all(event.start_to_close_timeout.seconds == 87*60 for event in scheduled)
             before = len(called)
             await Replayer(workflows=[BriefEditorialWorkflow]).replay_workflow(history)
             assert len(called) == before

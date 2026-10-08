@@ -172,6 +172,8 @@ def request_digest(request: ProviderRequest) -> str:
         material.pop("output_contract", None)
     if request.session is None:
         material.pop("session", None)
+    if request.brief_deadline_unix is None:
+        material.pop('brief_deadline_unix', None)
     canonical = json.dumps(material, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(canonical.encode()).hexdigest()
 

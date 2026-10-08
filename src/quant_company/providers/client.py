@@ -82,6 +82,8 @@ class RuntimeClient:
         # schema. Ordinary requests retain their original wire shape.
         if request.session is None:
             payload.pop("session", None)
+        if request.brief_deadline_unix is None:
+            payload.pop('brief_deadline_unix', None)
         if account is not None:
             headers.update({"X-Company-Account": account["profile"], "X-Company-Account-Revision": str(account["revision"])})
         from quant_company.briefing.execution import timeout_seconds
