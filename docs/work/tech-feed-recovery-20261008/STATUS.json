@@ -1,0 +1,10 @@
+{
+  "approval": null,
+  "currentIntent": "INTENT-v1.json",
+  "deliverables": {},
+  "intentDigest": null,
+  "schemaVersion": 1,
+  "slug": "tech-feed-recovery-20261008",
+  "state": "draft",
+  "updatedAt": "2026-10-08T00:02:11.730797+00:00"
+}

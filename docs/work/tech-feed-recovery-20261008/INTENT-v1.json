@@ -1,0 +1,13 @@
+{
+  "constraints": [],
+  "createdAt": "2026-10-08T00:02:11.730542+00:00",
+  "decisionGates": [],
+  "deliverables": [],
+  "nonGoals": [],
+  "outcome": "tech-feeds 미게시 원인 확인 후 수집·발송 설정 불일치 복구, 다른 채널 추가에 영향받지 않는 재발 방지 수정, 실제 Slack 게시 검증. 사용자가 응으로 승인함. 기존 봇·연구·구독·불명 영수증 보존; 오래된 글과 불명 발송 자동 재전송 금지.",
+  "revision": 1,
+  "schemaVersion": 1,
+  "slug": "tech-feed-recovery-20261008",
+  "sourceRequest": "tech-feeds 미게시 원인 확인 후 수집·발송 설정 불일치 복구, 다른 채널 추가에 영향받지 않는 재발 방지 수정, 실제 Slack 게시 검증. 사용자가 응으로 승인함. 기존 봇·연구·구독·불명 영수증 보존; 오래된 글과 불명 발송 자동 재전송 금지.",
+  "stopConditions": []
+}
