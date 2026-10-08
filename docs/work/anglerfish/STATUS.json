@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v18.json",
-  "state": "post_report_revision_loop_repair_tested_pending_runtime",
+  "state": "post_report_revision_loop_repair_reviewed_pending_runtime",
   "previousIntent": "INTENT-v17.json",
   "deliverables": {
     "POLICY": {
@@ -20,10 +20,10 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Repeated post-report review loop diagnosed: current responses include historical challenge UUIDs, and design reviews require implementation receipts before engineer selection. Scoped navigation/schema repair is under real PostgreSQL regression; production patch is not yet applied. Independent decisions and scientific limits remain unchanged.",
+  "operationalStatus": "Scoped current-challenge schema and workflow navigation repair passed 1834 real PostgreSQL/pinned qlab tests (14 skips), 41 targeted tests and lint. Actual parent/new-image challenge prompt probe preserved Astra/xhigh and rolled back. Exact cf497665 two-service activation reviewed; prepared images remain inactive.",
   "evidence": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json",
   "nextStage": {
-    "stage": "independent_audit_meaning_report",
+    "stage": "scoped_runtime_activation_then_successor_stage_readback",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false,
@@ -153,12 +153,9 @@
     "auditActualCallReceipt": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json"
   },
   "currentIntentCompletion": {
-    "intent": "INTENT-v17.json",
-    "status": "completed",
-    "evidence": "../../project/evidence/etf-exploration-20260930/first-trial-report-actual-slack-delivery-20261007.json",
+    "intent": "INTENT-v18.json",
+    "status": "in_progress",
     "programmeStillActive": true,
-    "researchReportCompleted": true,
-    "actualSlackDeliveryVerified": true,
     "strategyOrLiveApprovalClaimed": false
   },
   "previousAuditResumeDeliverables": {
@@ -176,20 +173,16 @@
       "actualProviderState": "running"
     }
   },
-  "phase": "first_trial_report_and_slack_delivery_verified",
+  "phase": "post_report_revision_loop_repair_reviewed_pending_runtime",
   "currentDeliverables": {
-    "AUDIT_NOTE_BOUND": {
-      "status": "completed",
-      "responseReconciliationEvent": 781
+    "LOOP_DIAGNOSIS": {
+      "status": "completed"
     },
-    "CONTINUOUS_PROGRESS": {
-      "status": "completed",
-      "citationCorrectionEvent": 783
+    "DURABLE_REPAIR": {
+      "status": "tested_reviewed_pending_runtime"
     },
-    "VERIFIED_REPORT": {
-      "status": "completed",
-      "independentAuditVerified": true,
-      "actualSlackDelivery": true
+    "OPERATIONAL_READBACK": {
+      "status": "actual_inactive_prompt_probe_passed_activation_pending"
     }
   },
   "currentMonitoring": {
@@ -247,7 +240,7 @@
     "productionApplied": false,
     "ownerScientificApprovalRepeated": false,
     "completedScientificTrials": 1,
-    "actualCurrentStage": "selection",
+    "actualCurrentStage": "challenge",
     "scientificDecisionSupplied": false,
     "fullRegression": {
       "passed": 1834,
@@ -256,6 +249,36 @@
       "realPostgresql": true,
       "realPinnedQlab": true
     },
-    "compiledModelPolicyRetained": true
+    "compiledModelPolicyRetained": true,
+    "sourceCommit": "cf497665ee478e75d306519cf772318094f868cb",
+    "manifest": "../../project/evidence/etf-exploration-20260930/revision-loop-runtime-manifest-20261008.json",
+    "applyReview": "../../project/evidence/etf-exploration-20260930/revision-loop-apply-review-20261008.json",
+    "actualPromptProbe": "../../project/evidence/etf-exploration-20260930/revision-loop-actual-prompt-probe-20261008.json",
+    "reviewState": "root_reviewed_exact_inactive_package",
+    "exactShaHumanApprovalClaimed": false
+  },
+  "previousIntentCompletion": {
+    "intent": "INTENT-v17.json",
+    "status": "completed",
+    "evidence": "../../project/evidence/etf-exploration-20260930/first-trial-report-actual-slack-delivery-20261007.json",
+    "programmeStillActive": true,
+    "researchReportCompleted": true,
+    "actualSlackDeliveryVerified": true,
+    "strategyOrLiveApprovalClaimed": false
+  },
+  "previousIntentDeliverables": {
+    "AUDIT_NOTE_BOUND": {
+      "status": "completed",
+      "responseReconciliationEvent": 781
+    },
+    "CONTINUOUS_PROGRESS": {
+      "status": "completed",
+      "citationCorrectionEvent": 783
+    },
+    "VERIFIED_REPORT": {
+      "status": "completed",
+      "independentAuditVerified": true,
+      "actualSlackDelivery": true
+    }
   }
 }
