@@ -138,13 +138,6 @@ def proposal_material(payload, schema):
                 row["content"] = row["content"][:1000]
                 row["excerpted"] = True
                 material["prompt_excerpted"] = True
-        for row in material.get("investigated_code", []):
-            if len(row.get("content", "")) > 2500:
-                row["content"] = row["content"][:2500]
-                row["excerpted"] = True
-                material["prompt_excerpted"] = True
-            if row.get("content"):
-                row["shown_line_count"] = len(row["content"].splitlines())
         # Catalogs repeat on every diagnostic round; exact inspection remains available.
         while compact_path_catalog(material):
             pass
@@ -155,14 +148,35 @@ def proposal_material(payload, schema):
     material = {**{key: material[key] for key in order if key in material},
                 **{key: material[key] for key in sorted(material) if key not in order}}
     while True:
+        for row in material.get("investigated_code", []):
+            row["shown_line_count"] = len(row.get("content", "").splitlines())
+        for row in material.get("inspection_catalog", []):
+            row["shown"] = any(body.get("key") == row.get("key") and body.get("path") == row.get("path")
+                               and body.get("start_line", 1) <= row.get("start_line", 1)
+                               and body.get("start_line", 1) + body["shown_line_count"] >=
+                               row.get("start_line", 1) + row.get("line_count", 0)
+                               for body in material.get("investigated_code", []))
         prompt = header + json.dumps(material, ensure_ascii=False, separators=(",", ":"))
         if len(prompt) <= 88000:
             return material, prompt
+        # Keep requested code first; compact repeated system descriptions before losing inspected lines.
+        if schema is Triage and material.get("prompt_system_compaction", 0) < 3:
+            diagnostic = material.get("current_implementation", {})
+            stage = material.get("prompt_system_compaction", 0)
+            string_chars, list_items = [(1000, 4), (400, 2), (160, 1)][stage]
+            diagnostic["system"] = compact_prompt_value(
+                diagnostic.get("system", {}), string_chars=string_chars, list_items=list_items)
+            material["prompt_system_compaction"] = stage + 1
+            material["prompt_excerpted"] = True
+            continue
         excerpts = [item for key in ("investigated_code", "inspected_excerpts", "external_research")
                     for item in material.get(key, [])]
         longest_excerpt = max(excerpts, key=lambda item: len(item.get("content", "")), default={})
         if len(longest_excerpt.get("content", "")) > 4000:
-            longest_excerpt["content"] = longest_excerpt["content"][:len(longest_excerpt["content"]) // 2]
+            content = longest_excerpt["content"]
+            limit = len(content) // 2
+            boundary = content.rfind("\n", 0, limit)
+            longest_excerpt["content"] = content[:boundary if boundary > 0 else limit]
             longest_excerpt["excerpted"] = True
             material["prompt_excerpted"] = True
             continue
@@ -181,13 +195,6 @@ def proposal_material(payload, schema):
         if len(longest.get("content", "")) > 1000:
             longest["content"] = longest["content"][:max(1000, len(longest["content"]) // 2)]
             longest["excerpted"] = True
-        elif material.get("prompt_system_compaction", 0) < 3:
-            stage = material.get("prompt_system_compaction", 0)
-            string_chars, list_items = [(1000, 4), (400, 2), (160, 1)][stage]
-            diagnostic["system"] = compact_prompt_value(
-                diagnostic.get("system", {}), string_chars=string_chars, list_items=list_items)
-            material["prompt_system_compaction"] = stage + 1
-            material["prompt_excerpted"] = True
         else:
             if compact_path_catalog(material):
                 material["prompt_excerpted"] = True
@@ -279,6 +286,8 @@ class Maintainer:
 
     async def step(self, job):
         self.store.check_authorization(job)
+        if self.store.hold_for_reconciliation(job):
+            return
         payload, receipt, job_id = job["payload"], job["receipt"], str(job["id"])
         if job["state"] in {"triage", "patch", "design", "evaluate", "publish"}:
             from ..system_state import diagnosis_context

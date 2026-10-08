@@ -4,7 +4,7 @@ from uuid import NAMESPACE_URL, uuid4, uuid5
 
 from psycopg.types.json import Jsonb
 
-from ..company import as_json
+from ..company import as_json, fingerprint
 from ..contracts import ProviderRequest
 from .evaluation import validate_replay_plan
 from .observation import review_snapshot, safe_rows
@@ -186,6 +186,44 @@ class Store:
                          (state, Jsonb(payload) if payload is not None else None,
                           Jsonb(receipt) if receipt is not None else None, error, job_id))
 
+    def hold_for_reconciliation(self, job):
+        """Route unconfirmed review outcomes to operator evidence; never replay or change grades."""
+        observations = job["payload"].get("observations", [])
+        if (not self.company.settings.company_improvements_enabled or job["kind"] != "triage"
+                or job["state"] != "triage" or job["payload"].get("request_project_id") or not observations
+                or any(row.get("kind") != "staff_independent_review_failure"
+                       or row.get("detail", {}).get("error") != "uncertain"
+                       or row.get("detail", {}).get("operator_reconciliation_required") is not True
+                       for row in observations)):
+            return False
+        owners = set(job["payload"].get("owners", []))
+        reviews = []
+        with self.db.transaction() as conn:
+            if conn.execute("SELECT 1 FROM maintenance_calls WHERE job_id=%s LIMIT 1", (job["id"],)).fetchone():
+                return False
+            for row in observations:
+                review = conn.execute("""SELECT v.id,v.state,v.error,v.request,v.input_digest,v.response,
+                    r.id AS run_id,r.state AS source_state,r.owner_user,r.employee
+                    FROM staff_independent_reviews v JOIN staff_runs r ON r.id=v.run_id WHERE v.id=%s""",
+                    (row["detail"].get("review_id"),)).fetchone()
+                if (not review or review["state"] != "blocked" or review["error"] != "uncertain"
+                        or review["response"] is not None or review["source_state"] != "completed"
+                        or review["owner_user"] not in owners or review["employee"] != row.get("author")
+                        or str(review["run_id"]) != row["detail"].get("run_id")
+                        or fingerprint(review["request"]) != review["input_digest"]):
+                    return False
+                reviews.append(review)
+            receipt = {**job["receipt"], "outcome": "operator_action_required",
+                       "review_ids": sorted({review["id"] for review in reviews}),
+                       "input_digests": {review["id"]: review["input_digest"] for review in reviews},
+                       "required_evidence": ["Original provider receipt and retained CLI output, if available",
+                                             "Reconcile completion under the original request ID without replay"],
+                       "reason": "Original review outcomes are unknown. Code reading alone cannot establish "
+                                 "a reproducible defect; preserve the original receipts and objective grades."}
+            conn.execute("""UPDATE maintenance_jobs SET state='blocked',error='review_reconciliation_required',
+                receipt=%s,updated_at=now() WHERE id=%s""", (Jsonb(receipt), job["id"]))
+        return True
+
     def bind_diagnosis(self, job, snapshot, diagnosis):
         """Freeze each diagnostic revision; never overwrite a reserved request or replay input."""
         payload = job["payload"]
@@ -324,7 +362,7 @@ class Store:
                 receipt = {"case_id": case_id, "reason": result.reason,
                            "evidence_keys": finding.evidence_keys}
             else:
-                receipt = {"reason": result.reason}
+                receipt = {"reason": result.reason, "outcome": "no_candidate"}
             conn.execute("UPDATE maintenance_jobs SET state='done',error=NULL,receipt=%s,updated_at=now() WHERE id=%s",
                          (Jsonb(receipt), job["id"]))
 
