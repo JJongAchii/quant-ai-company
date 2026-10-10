@@ -173,7 +173,7 @@ docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml exec video-wo
 | `VIDEO_VOICE` | Vincent | Runway preset voice; 첫 실제 샘플에서 한국어 발음 확인 |
 | `VIDEO_ALIGNMENT_MODEL` | small | 실제 음성 검증·자막 시점용 로컬 모델/경로 |
 | `VIDEO_TEMPLATE` | motion-v2 | 카드·모션 고정 틀. text-v1은 이전 글 화면 |
-| `VIDEO_RENDER_WORKERS` | 1 | 프레임 캡처 프로세스 수. 2GB 서버 실측 전에는 1 |
+| `VIDEO_RENDER_WORKERS` | 2 | 프레임 캡처 프로세스 수. 8GB 서버 2(아침 06:50 목표), 작은 서버 1 |
 | `VIDEO_AM_PUBLISH_DST` / `VIDEO_AM_PUBLISH_STD` / `VIDEO_PM_PUBLISH` | 07:00 / 07:50 / 18:00 | 유튜브 공개 목표(KST). 아침은 뉴욕 서머타임 여부로 고른다 |
 | `VIDEO_PUBLISH_LEAD_MINUTES` | 10 | 공개 몇 분 전까지 파일을 스레드에 올릴지. 작업은 본문 발송 즉시 시작하고, 늦어도 완성되면 바로 올리며 늦은 시간을 한 줄 적는다. 아침은 09:00에 새 생성 중단 |
 | `VIDEO_PLAYLIST_URL` | 증시story 재생목록 | 설명란 "증시story 모아보기" 주소 |
@@ -208,8 +208,8 @@ dispatcher가 업로드 중 죽어 outbox가 `uncertain`이 되면 다음 worker
 아래는 절차이며 운영 서버에서 실행한 증거가 아니다. 비밀 값은 runtime.env·secret 파일이 참조하며 Git·로그에 복사하지 않는다.
 
 **1. 사전 준비(한 번)**
-- 8GB 호스트 한도: [lightsail-8gb.env.example](../deploy/lightsail-8gb.env.example)의 `VIDEO_MEMORY_LIMIT=2048m`, `VIDEO_CPUS=1.5`,
-  `VIDEO_RENDER_WORKERS=1`. 다른 서비스 한도 합계는 그 파일의 6,592MiB 계산을 그대로 따른다.
+- 8GB 호스트 한도: [lightsail-8gb.env.example](../deploy/lightsail-8gb.env.example)의 `VIDEO_MEMORY_LIMIT=2048m`, `VIDEO_CPUS=2`,
+  `VIDEO_RENDER_WORKERS=2`. 다른 서비스 한도 합계는 그 파일의 6,592MiB 계산을 그대로 따른다.
 - 호스트 디렉터리(uid/gid 10001): `${STATE_DIR}/video`, `media-auth`(0700), `video-models`, `video-assets`(검수 라이브러리 복사).
 - Slack: Analyst 앱 설정에서 bot scope `files:write`를 추가하고 워크스페이스에 **재설치**한다(소유자만 가능). Analyst 봇이 brief 채널에
   들어 있어야 한다(`not_in_channel` 방지). 새 bot token이 발급되면 slack credentials secret 파일만 갱신한다.
