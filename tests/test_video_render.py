@@ -8,8 +8,7 @@ import pytest
 from quant_company.config import Settings
 from quant_company.video.render import Renderer, probe, quality_probe, run, spoken, verify_artifacts
 
-from .test_briefing import bundle, proposal
-from .test_video import video_plan
+from .test_video import body_source, video_plan
 
 
 def ffmpeg_binary():
@@ -39,8 +38,7 @@ def test_text_render_decode_actual_duration_and_mutation_detection(tmp_path):
         run([settings.video_ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i',
              f'sine=frequency={440+index*110}:sample_rate=48000:duration=2', str(path)])
         paths.append(path)
-    job = {'source': {'proposal': proposal().model_dump(mode='json'), 'bundle': bundle(),
-                      'cutoff': '합성 자료 · 화면 검증용', 'day': '합성 자료'}}
+    job = {'source': body_source(cutoff='합성 자료 · 화면 검증용', day='합성 자료')}
     renderer = Renderer(settings, FixtureAligner())
     directory = tmp_path/'rendered'
     artifacts = renderer.render(job, video_plan(), directory, paths)

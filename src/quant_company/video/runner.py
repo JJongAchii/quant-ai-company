@@ -11,13 +11,22 @@ from temporalio import activity
 from ..company import PolicyError
 from ..contracts import ProviderFault, ProviderRequest
 from ..providers.client import RuntimeClient
+from . import store as store_module
 from .contracts import VideoReview, digest, production_prompt, review_prompt
-from .episode import check_plan, episode_prompt, plan_class, template
+from .episode import check_plan, episode_prompt, fresh_library, plan_class, template
 from .motion import MotionRenderer
 from .render import Renderer, spoken, verify_artifacts
 from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
 from .store import UncertainEffect, VideoStore
 from .youtube import YouTube
+
+
+class VideoFailure(ValueError):
+    """A stage failure with an operator-facing reason code (store.REASONS); never carries URLs or secrets."""
+
+    def __init__(self, code):
+        super().__init__(code)
+        self.code = code
 
 
 def free_gb(path):
@@ -85,6 +94,8 @@ class VideoRunner:
     async def tick(self):
         await asyncio.to_thread(self.store.prune)
         if self.store.enabled():
+            await asyncio.to_thread(self.store.skip_notices)
+            await asyncio.to_thread(self.store.sync_deliveries)
             await asyncio.to_thread(self.store.late_notices)
             free = free_gb(self.settings.video_artifact_dir)
             if free < self.settings.video_min_free_gb:
@@ -104,26 +115,36 @@ class VideoRunner:
             await self.step(job)
         except UncertainEffect:
             await asyncio.to_thread(self.store.save, job, "uncertain", error="external_effect_requires_reconciliation")
+            await asyncio.to_thread(self.store.alert, job)
         except ProviderFault as error:
             if error.code in {'busy', 'quota'}:
                 await asyncio.to_thread(self.store.defer, job, error.retry_after_seconds, error.code)
             else:
                 uncertain = await asyncio.to_thread(self.store.has_uncertain_effect, job)
                 await asyncio.to_thread(self.store.save, job, 'uncertain' if uncertain else "blocked", error="model_" + error.code)
-        except (ValueError, OSError, TimeoutError, httpx.HTTPError, PolicyError):
+                await asyncio.to_thread(self.store.alert, job)
+        except (ValueError, OSError, TimeoutError, httpx.HTTPError, PolicyError) as error:
             # Record a bounded diagnostic code. Exception strings may contain signed media URLs or credentials.
             uncertain = await asyncio.to_thread(self.store.has_uncertain_effect, job)
-            await asyncio.to_thread(self.store.save, job, 'uncertain' if uncertain else "blocked", error="video_stage_failed:" + job["state"])
+            code = error.code if isinstance(error, VideoFailure) else "video_stage_failed:" + job["state"]
+            await asyncio.to_thread(self.store.save, job, 'uncertain' if uncertain else "blocked",
+                                    error="external_effect_requires_reconciliation" if uncertain else code)
+            await asyncio.to_thread(self.store.alert, job)
         return {"state": (await asyncio.to_thread(self.store.get, job["id"]))["state"], "job_id": str(job["id"])}
 
     async def step(self, job):
         state = job["state"]
         if state == "queued":
             if template(job) == 'motion-v2':
-                library = MotionRenderer(self.settings).library
+                # Images shown (thumbnail or scene) in the last 7 days are not offered again.
+                usage = await asyncio.to_thread(self.store.asset_usage)
+                library = fresh_library(MotionRenderer(self.settings).library, usage, store_module.utcnow())
                 plan = await self.model(job, "plan", episode_prompt(job["source"], job["feedback"], library),
                                         plan_class(job), "video_episode_v1")
-                check_plan(job, plan, library)
+                try:
+                    check_plan(job, plan, library)
+                except ValueError:
+                    raise VideoFailure('plan_check_failed') from None
             else:
                 plan = await self.model(job, "plan", production_prompt(job["source"], job["feedback"]), plan_class(job))
                 check_plan(job, plan)
@@ -136,14 +157,22 @@ class VideoRunner:
         elif state == "synthesizing":
             plan = plan_class(job).model_validate(job["plan"])
             # Account lookup does not spend credits. Check the entire expected episode before submission.
-            account = await self.speech.account(job["policy"]["workspace_id"])
+            # Runway unavailable or logged out stops here with an alert; there is no paid API fallback.
+            try:
+                account = await self.speech.account(job["policy"]["workspace_id"])
+            except ValueError:
+                raise VideoFailure('runway_account') from None
+            except Exception:  # noqa: BLE001 - MCP/OAuth/transport errors all mean "no speech service"
+                raise VideoFailure('runway_unavailable') from None
             with self.store.db.transaction() as conn:
                 finished = {int(str(r['id']).rsplit('-', 1)[-1]) for r in conn.execute(
                     "SELECT id FROM video_effects WHERE job_id=%s AND kind='speech' AND state='completed'", (job['id'],)).fetchall()}
             pending = [speech_credits(spoken(s.narration)) for i, s in enumerate(plan.scenes) if i not in finished]
             expected = sum(pending) + math.ceil(len(pending) * RETAKE_RESERVE)
-            if expected > account["credits"]["total"] or not await asyncio.to_thread(self.store.budget_available, job, expected):
-                raise ValueError("Insufficient narration budget")
+            if expected > account["credits"]["total"]:
+                raise VideoFailure('runway_balance')
+            if not await asyncio.to_thread(self.store.budget_available, job, expected):
+                raise VideoFailure('credit_cap')
             # One scene per tick, retaining its task ID before polling or downloading.
             for index, scene in enumerate(plan.scenes):
                 request = {"text": spoken(scene.narration), "voice": job["policy"]["voice"],
@@ -175,8 +204,15 @@ class VideoRunner:
                 path = directory / f"speech-{index:02}.mp3"
                 await asyncio.to_thread(download_audio, url, path)
                 paths.append(path)
-            artifacts = await asyncio.to_thread(self.renderer_for(job).render, job, plan, directory, paths)
-            await asyncio.to_thread(self.store.save, job, "uploading", artifacts=artifacts, artifact_digest=artifacts["digest"])
+            renderer = self.renderer_for(job)
+            artifacts = await asyncio.to_thread(renderer.render, job, plan, directory, paths)
+            await asyncio.to_thread(self.store.record_assets, job, plan, getattr(renderer, 'library', None) or {})
+            if job['policy'].get('delivery', 'youtube') == 'slack':
+                # Default: the owner receives the files in the brief's thread and uploads them himself.
+                await asyncio.to_thread(self.store.deliver, job, artifacts)
+            else:
+                await asyncio.to_thread(self.store.save, job, "uploading", artifacts=artifacts,
+                                        artifact_digest=artifacts["digest"])
         elif state == "uploading":
             verify_artifacts(job["artifacts"], self.settings.video_artifact_dir)
             if not job["upload_session"]:

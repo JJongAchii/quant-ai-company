@@ -2,6 +2,7 @@
 # No flags or paid account purchases are enabled by this overlay.
 x-video-env: &video-env
   VIDEO_ENABLED: ${VIDEO_ENABLED:-false}
+  # false (default): files go to the owner in the brief's Slack thread. true: YouTube private upload + Slack approval.
   VIDEO_UPLOAD_ENABLED: ${VIDEO_UPLOAD_ENABLED:-false}
   VIDEO_PUBLISH_ENABLED: ${VIDEO_PUBLISH_ENABLED:-false}
   VIDEO_YOUTUBE_CHANNEL_ID: ${VIDEO_YOUTUBE_CHANNEL_ID:-}
@@ -30,7 +31,17 @@ services:
   news-worker:
     environment: *video-env
   dispatch:
-    environment: *video-env
+    # The dispatcher alone holds the Slack bot token. It delivers the finished episode files into the brief's thread
+    # (VIDEO_UPLOAD_ENABLED=false), so it reads the video volume; it never mounts media-auth.
+    environment:
+      <<: *video-env
+      VIDEO_ARTIFACT_DIR: /state/video
+    volumes:
+      - type: bind
+        source: ${STATE_DIR:-/var/lib/quant-company}/video
+        target: /state/video
+        read_only: true
+        bind: {create_host_path: false}
   video-worker:
     profiles: [video]
     image: quant-company-video:${RELEASE_COMMIT:-unqualified}

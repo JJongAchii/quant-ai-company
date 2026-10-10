@@ -14,10 +14,10 @@ from html import escape
 from importlib.resources import files
 from pathlib import Path
 
-from .contracts import claim_catalog, digest
+from .body import references as body_references
+from .contracts import digest
 from .render import Aligner, checksum, probe, quality_probe, run, spoken
 from .upload import compose as compose_upload
-from .upload import references
 
 FPS = 30
 LEAD, TAIL = 0.5, 0.8
@@ -214,7 +214,10 @@ class MotionRenderer:
         total = round(t, 3)
         if not 3 <= total <= 600:
             raise ValueError('Video duration outside production limit')
-        sample = '' if self.settings.video_publish_enabled else '검토용 샘플'
+        # Files delivered to the owner in Slack are the final upload copy and carry no review mark. A private YouTube
+        # copy awaiting the in-Slack public approval keeps it.
+        review_copy = job.get('policy', {}).get('delivery') == 'youtube' and not self.settings.video_publish_enabled
+        sample = '검토용 샘플' if review_copy else ''
         # No collection or article clock time on screen (spec §14); the description keeps the data basis.
         ep = {'date_label': f"{day:%m.%d} {WEEKDAYS[day.weekday()]}", 'asof': '',
               'sample_mark': sample, 'brand_label': EDITIONS.get(job['source'].get('edition_kind', 'am'), EDITIONS['am']), 'chapter_names': [c for c in CHAPTER_TITLES if c],
@@ -323,10 +326,9 @@ class MotionRenderer:
         (directory / 'script.txt').write_text('\n\n'.join(s.narration for s in plan.scenes))
         (directory / 'plan.json').write_text(plan.model_dump_json(indent=2))
         (directory / 'alignment.json').write_text(json.dumps(alignment, ensure_ascii=False, indent=2, default=str))
-        catalog = claim_catalog(job['source']['proposal'])
-        ids = {e['source_id'] for s in plan.scenes for c in s.claim_ids for e in catalog[c]['evidence']}
-        sources = [{k: doc[k] for k in ('id', 'title', 'publisher', 'url', 'sha256')}
-                   for doc in job['source']['bundle']['documents'] if doc['id'] in ids]
+        cited = [c for s in plan.scenes for c in s.claim_ids]
+        refs, _ = body_references(job['source'], cited)
+        sources = [{'publisher': refs[i][2:].split(' / ')[0], 'url': refs[i + 1]} for i in range(0, len(refs), 2)]
         chapters, seen = [], set()
         for s in scenes:
             if s['chapter'] not in seen:
@@ -335,7 +337,7 @@ class MotionRenderer:
         copy = compose_upload(plan.upload, day_of(job['source']['day']), cutoff_of(job['source']['cutoff']),
                               job['source'].get('edition_kind', 'am'),
                               [(c['start'], plan.thumbnail if i == 0 else c['title']) for i, c in enumerate(chapters)],
-                              references(job['source'], ids), self.settings.video_playlist_url)
+                              refs, self.settings.video_playlist_url)
         description = copy['description']
         photos = [a for a in used.values() if a['kind'] == '자료사진']
         credits = ''.join(f"\n- {a['subject']} · {a['author']} · {a['license']}"

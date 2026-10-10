@@ -17,20 +17,28 @@ from quant_company.video.render import checksum
 from quant_company.video.runner import VideoRunner
 from quant_company.video.store import UncertainEffect, VideoStore
 
-from .test_briefing import brief, complete, proposal  # noqa: F401
+from .test_briefing import brief, bundle, complete, proposal  # noqa: F401
 from .test_slack import signed
+
+
+def body_source(**extra):
+    """The delivered brief body of the fixture edition: the only source a video may use."""
+    from quant_company.briefing.editor import render
+
+    parts, _ = render(proposal(), bundle())
+    return {'body': parts, 'day': '2026-09-22', 'cutoff': '2026-09-22T07:30:00+09:00', 'edition_kind': 'am', **extra}
 
 
 def video_plan():
     return VideoPlan(title='반도체 강세, 시장 전체로 이어질까', thumbnail='상승의 확산을 확인할 때',
         introduction='반도체 강세와 국채 수익률 하락의 관계, 아직 남아 있는 확인 조건을 살펴봅니다.',
         scenes=[{'heading': '오늘의 핵심', 'lines': ['반도체 주도 상승', '기술주 밖의 흐름은 혼조'],
-                 'narration': '미국 증시는 반도체가 주도했지만 업종별 흐름은 엇갈렸습니다.', 'claim_ids': ['summary']},
+                 'narration': '미국 증시는 반도체가 주도했지만 업종별 흐름은 엇갈렸습니다.', 'claim_ids': ['b001']},
                 {'heading': '가능한 연결과 다른 설명', 'lines': ['금리 하락은 할인 부담을 낮출 수 있음', '반도체 자체 재료도 확인'],
                  'narration': '금리 하락은 성장주의 할인 부담을 낮출 수 있습니다. 반도체 자체 재료의 영향도 가능합니다.',
-                 'claim_ids': ['mechanism', 'alternative']},
+                 'claim_ids': ['b009', 'b010']},
                 {'heading': '다음 확인 조건', 'lines': ['비기술 업종으로 강세가 이어지는지 확인'],
-                 'narration': '시장의 강세가 비기술 업종으로 확산되는지 추가로 확인합니다.', 'claim_ids': ['condition']}],
+                 'narration': '시장의 강세가 비기술 업종으로 확산되는지 추가로 확인합니다.', 'claim_ids': ['b011']}],
         pinned_comment='어떤 업종에서 강세의 확산을 확인하고 계신가요?')
 
 
@@ -53,12 +61,23 @@ def video(brief, tmp_path, monkeypatch):  # noqa: F811
     return VideoStore(upstream.company), clock
 
 
-def new_job(upstream, video):
+def deliver_brief_root(store, edition_id, ts='100.000'):
+    """Simulated Slack receipt of the brief's root post (the outbox records it as delivered)."""
+    with store.db.transaction() as conn:
+        root = conn.execute('SELECT id FROM brief_messages WHERE edition_id=%s AND part=0', (edition_id,)).fetchone()
+        conn.execute("UPDATE outbox SET status='delivered',sent_ts=%s WHERE id=%s", (ts, root['id']))
+        conn.execute('UPDATE projects SET thread_ts=%s WHERE id=(SELECT project_id FROM brief_editions WHERE id=%s)',
+                     (ts, edition_id))
+
+
+def new_job(upstream, video, deliver=True):
     complete(upstream)
     store, _ = video
     with store.db.transaction() as conn:
         job = conn.execute('SELECT * FROM video_jobs').fetchone()
-        assert job, 'Reviewed full AM edition must enqueue in the same flush transaction'
+        assert job, 'Delivered AM body must enqueue in the same flush transaction'
+    if deliver:
+        deliver_brief_root(store, job['edition_id'])
     return job
 
 
@@ -105,12 +124,12 @@ def interaction(job, credential, selected='approve'):
 
 def test_source_plan_numeric_binding_and_typed_scope():
     plan = video_plan()
-    source = {'proposal': proposal().model_dump(mode='json'), 'day': '2026-09-22'}
+    source = body_source()
     validate_plan(plan, source)
     computed = plan.model_copy(deep=True)
     computed.scenes[0].lines = ['S&P500 +1.92%']
     computed.scenes[0].narration = 'S&P500 지수는 전 거래일보다 +1.92% 상승했습니다.'
-    computed.scenes[0].claim_ids = ['sp500']
+    computed.scenes[0].claim_ids = ['b003']
     validate_plan(computed, source)
     changed = plan.model_copy(deep=True)
     changed.scenes[0].narration += ' 수익은 999퍼센트 증가했습니다.'
@@ -147,7 +166,7 @@ def test_flush_transaction_freezes_source_and_enqueues_once(brief, video):  # no
     assert clock['at'] < job['publish_deadline']
 
 
-@pytest.mark.parametrize('change', ['preview', 'unknown_kind', 'unreviewed', 'unknown_quality', 'reduced', 'rejected', 'failed_review', 'late', 'disabled'])
+@pytest.mark.parametrize('change', ['preview', 'unknown_kind', 'unreviewed', 'unknown_quality', 'fallback', 'draft', 'late', 'disabled'])
 def test_ineligible_briefs_never_enqueue(brief, video, change):  # noqa: F811
     store, clock = video
     job = new_job(brief, video)
@@ -164,10 +183,10 @@ def test_ineligible_briefs_never_enqueue(brief, video, change):  # noqa: F811
             edition['quality'] = {}
         elif change == 'unknown_quality':
             edition['quality'] = {}
-        elif change in {'reduced', 'rejected'}:
-            edition['quality'][change] = True
-        elif change == 'failed_review':
-            edition['review']['verdict'] = 'revise'
+        elif change == 'fallback':
+            edition['quality'] = {**edition['quality'], 'fallback': 'deadline', 'substantive': False}
+        elif change == 'draft':
+            edition['quality']['unreviewed_draft_preserved'] = True
         elif change == 'late':
             clock['at'] = job['publish_deadline']
         elif change == 'disabled':

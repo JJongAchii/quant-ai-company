@@ -33,5 +33,10 @@ def test_video_profile_defaults_off_and_isolates_media_credentials():
     assert media['environment']['VIDEO_MODEL_RUNTIME_URL'] == 'http://claude-runtime:8080'
     assert set(media['depends_on']) == {'postgres', 'claude-runtime'}
     assert not any(k.startswith('MODEL_PROVIDER') for k in media['environment'])
+    # The Slack dispatcher delivers the owner's files: it reads the video volume and nothing else of the media worker.
+    dispatch = services['dispatch']
+    video = next(m for m in dispatch['volumes'] if m['target'] == '/state/video')
+    assert video['read_only'] and dispatch['environment']['VIDEO_ARTIFACT_DIR'] == '/state/video'
+    assert 'media-auth' not in str(dispatch['volumes']) and 'model_runtime_token' not in str(dispatch.get('secrets'))
     for name in ('codex-runtime', 'claude-runtime'):
         assert not any(key.startswith('VIDEO_') for key in services[name]['environment'])

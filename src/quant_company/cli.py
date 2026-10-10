@@ -40,6 +40,8 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
         if role.id == "market_brief":
             value["display_information"]["name"] = "Analyst"
             value["features"]["bot_user"]["display_name"] = "analyst"
+            # Daily video files are delivered into the brief's thread (files.getUploadURLExternal/completeUploadExternal).
+            value["oauth_config"]["scopes"]["bot"].append("files:write")
         if role.id == TECH_FEED_AGENT:
             value = {
                 "display_information": {"name": "Tech Scout", "description": role.mission[:140]},

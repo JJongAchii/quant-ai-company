@@ -26,3 +26,25 @@ CREATE TABLE IF NOT EXISTS video_reconciliations (
  job_id uuid NOT NULL REFERENCES video_jobs(id), effect_key text,
  note text NOT NULL, receipt jsonb, created_at timestamptz NOT NULL DEFAULT now()
 );
+-- v2: owner file delivery in the brief's Slack thread (VIDEO_UPLOAD_ENABLED=false). One row per delivery attempt;
+-- receipts record each Slack file ID before its bytes are sent. A lost completion stays uncertain, never replayed.
+ALTER TABLE video_jobs ADD COLUMN IF NOT EXISTS delivery_message_id uuid REFERENCES messages(id);
+CREATE TABLE IF NOT EXISTS video_deliveries (
+ id uuid PRIMARY KEY REFERENCES messages(id), job_id uuid NOT NULL REFERENCES video_jobs(id),
+ attempt integer NOT NULL CHECK(attempt>0), state text NOT NULL DEFAULT 'pending',
+ receipt jsonb NOT NULL DEFAULT '{}'::jsonb, error text,
+ created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(job_id,attempt)
+);
+-- Editions delivered without a substantive body (fallback notice): no video, one thread alert.
+CREATE TABLE IF NOT EXISTS video_skips (
+ edition_id uuid PRIMARY KEY REFERENCES brief_editions(id), reason text NOT NULL,
+ alert_message_id uuid REFERENCES messages(id), created_at timestamptz NOT NULL DEFAULT now()
+);
+-- Reviewed-library images shown per episode; images used in the last 7 days are not offered again.
+CREATE TABLE IF NOT EXISTS video_asset_usage (
+ job_id uuid NOT NULL REFERENCES video_jobs(id), asset_id text NOT NULL, file text NOT NULL,
+ slot text NOT NULL CHECK(slot IN ('thumbnail','scene')), used_at timestamptz NOT NULL DEFAULT now(),
+ PRIMARY KEY(job_id,asset_id,slot)
+);
+CREATE INDEX IF NOT EXISTS video_asset_usage_recent ON video_asset_usage(used_at);

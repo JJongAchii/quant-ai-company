@@ -311,6 +311,10 @@ class SlackOutbox:
                 from .video.store import VideoStore
 
                 return VideoStore(self.company).gate(conn, row)
+            if row['message_kind'] == 'video_files':
+                from .video.store import VideoStore
+
+                return VideoStore(self.company).delivery_gate(conn, row)
             if row["message_kind"] == "housing_feed":
                 from .housing_feed.store import HousingFeedStore
 
@@ -345,6 +349,11 @@ class SlackOutbox:
                 from .video.store import VideoStore
 
                 if not VideoStore(self.company).gate(conn, row):
+                    return None
+            if row['message_kind'] == 'video_files':
+                from .video.store import VideoStore
+
+                if not VideoStore(self.company).delivery_gate(conn, row):
                     return None
             if row["message_kind"] == "briefing":
                 from .briefing.store import BriefStore
@@ -430,6 +439,11 @@ class SlackOutbox:
         if not row:
             return False
         token = self.credentials[row["agent"]]["bot_token"]
+        if row.get("message_kind") == "video_files":
+            # Episode files go through Slack's external upload API into the brief's thread (video/slack_files.py).
+            from .video.slack_files import deliver
+
+            return await deliver(self, row, token)
         # The stable client_msg_id helps correlation; it is not an exactly-once guarantee.
         body = {"channel": row["channel"], "thread_ts": row["thread_ts"],
                 "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, QUANT_FEED_AGENT, BRIEFER, "maintainer"}

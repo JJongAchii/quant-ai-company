@@ -8,6 +8,7 @@ from ..company import PolicyError
 from . import store as video_store
 from .contracts import VideoReview
 from .episode import check_plan, plan_class
+from .render import verify_artifacts
 from .store import LOCK
 from .youtube import session_url
 
@@ -68,17 +69,32 @@ def reconcile(store, identity, key, receipt, note):
         return {'state': state, 'reconciled_effect': key}
 
 
+RETRYABLE = {'video_stage_failed:rendering': 'rendering', 'video_stage_failed:uploading': 'uploading',
+             # Runway was unreachable at the free account check: no speech request was sent.
+             'runway_unavailable': 'synthesizing', 'runway_account': 'synthesizing'}
+
+
 def retry(store, identity, note):
     if not 20 <= len(note.strip()) <= 2000:
         raise ValueError('Safe retry requires a meaningful audit note')
+    job = store.get(identity)
+    if job and job['state'] == 'delivery_failed':
+        # Slack definitively rejected the previous attempt before sharing; a new attempt has its own receipts.
+        if not store.allowed(job):
+            raise PolicyError('Video production account or source policy changed')
+        verify_artifacts(job['artifacts'], store.settings.video_artifact_dir)
+        with store.db.transaction() as conn:
+            conn.execute('INSERT INTO video_reconciliations(job_id,note) VALUES(%s,%s)', (identity, note))
+        store.deliver(job, job['artifacts'])
+        return {'state': 'delivering'}
     with store.db.transaction() as conn:
         conn.execute('SELECT pg_advisory_xact_lock(%s)', (LOCK,))
         job = conn.execute('SELECT * FROM video_jobs WHERE id=%s FOR UPDATE', (identity,)).fetchone()
         if (not job or job['state'] != 'blocked' or not store.allowed(job) or video_store.utcnow() >= job['publish_deadline']
-                or job['error'] not in {'video_stage_failed:rendering', 'video_stage_failed:uploading'}
+                or job['error'] not in RETRYABLE
                 or conn.execute("SELECT 1 FROM video_effects WHERE job_id=%s AND state='running'", (identity,)).fetchone()):
             raise PolicyError('Only known tasks, local rendering or the same upload session may be retried')
-        stage = job['error'].rsplit(':',1)[-1]
+        stage = RETRYABLE[job['error']]
         if stage == 'uploading' and not job['upload_session']:
             raise PolicyError('A new upload session requires separate reconciliation')
         conn.execute('INSERT INTO video_reconciliations(job_id,note) VALUES(%s,%s)', (identity, note))

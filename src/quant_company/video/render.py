@@ -8,7 +8,7 @@ from difflib import SequenceMatcher
 from html import escape
 from pathlib import Path
 
-from .contracts import claim_catalog, digest
+from .contracts import digest
 
 PRONUNCIATIONS = {"S&P": "에스앤피", "NASDAQ": "나스닥", "KOSPI": "코스피", "KOSDAQ": "코스닥",
                   "FOMC": "에프오엠씨", "PMI": "피엠아이", "CPI": "씨피아이", "WTI": "더블유티아이",
@@ -240,10 +240,10 @@ class Renderer:
         (directory / "script.txt").write_text("\n\n".join(s.narration for s in plan.scenes))
         (directory / "plan.json").write_text(plan.model_dump_json(indent=2))
         (directory / "alignment.json").write_text(json.dumps(alignment, ensure_ascii=False, indent=2))
-        used = {e["source_id"] for scene in plan.scenes for identity in scene.claim_ids
-                for e in claim_catalog(job["source"]["proposal"])[identity]["evidence"]}
-        sources = [{k: doc[k] for k in ("id", "title", "publisher", "url", "sha256")}
-                   for doc in job["source"]["bundle"]["documents"] if doc["id"] in used]
+        from .body import references
+
+        refs, _ = references(job["source"], [c for scene in plan.scenes for c in scene.claim_ids])
+        sources = [{"publisher": refs[i][2:].split(" / ")[0], "url": refs[i+1]} for i in range(0, len(refs), 2)]
         description = (plan.introduction + f"\n\n자료 기준: {job['source']['cutoff']}\n\n"
                        + "\n".join(f"{chapter(c['start'])} {c['title']}" for c in chapters)
                        + "\n\n주요 출처\n" + "\n".join(d["publisher"] + ": " + d["url"] for d in sources))
