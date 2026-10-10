@@ -1491,7 +1491,7 @@ def kr_close_rows(doc, observations, cited):
     return rows
 
 
-def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=False):
+def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=False, facts=None):
     edition = BriefEdition.model_validate(bundle["edition"])
     docs = {d["id"]: SourceDocument.model_validate(d) for d in bundle.get("documents", [])}
     # Empty unless BRIEFING_KR_CLOSE_ENABLED froze a valid regular-session snapshot into this PM edition.
@@ -1546,7 +1546,8 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
         lines.append(block)
 
     if proposal:
-        add("*오늘의 핵심* · 30초 요약\n")
+        if proposal.summary or not facts:  # A deadline numbers-only body has no summary to head.
+            add("*오늘의 핵심* · 30초 요약\n")
         for claim in proposal.summary:
             add("• " + supported(claim, claim.text)+"\n")
         close_rows = []
@@ -1622,13 +1623,23 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                                     +": "+item.explanation) if item else "판단 불가 — 확인 자료 부족")+"\n")
         if next_section:
             lines.append(next_section)
+    if facts:
+        # A deadline body with no draft: original-bound lines, each linked to its own source.
+        heading, rows = facts
+        add(f"\n*{heading}*\n")
+        for text, identity in rows:
+            used.add(identity)
+            add("• "+escape(text, quote=False)+f" <{escape(docs[identity].url, quote=False)}|[{reference[identity]}]>\n")
     if missing:
         lines.append("확인 부족: " + ", ".join(INSTRUMENTS[k][0] for k in missing))
-    if fallback:
+    if fallback and facts:
+        lines.append("분석 작성이 마감 전에 끝나지 않아 원문에서 확인한 내용과 수집 숫자만 싣습니다. "
+                     "이전 가격을 오늘 값으로 대체하지 않습니다.")
+    elif fallback:
         lines.append("자료 수집·작성·검토가 완료되지 않아 확인 지연을 알립니다. 이전 가격을 오늘 값으로 대체하지 않습니다.")
     elif proposal and proposal.limitations:
         details.append("*확인 한계*\n작성 과정에서 확인이 부족한 자료는 제외했습니다. 확인되지 않은 예상값·수급은 제공하지 않습니다.")
-    if proposal and not substantive:
+    if proposal and not substantive and not facts:
         lines.append("내용 확인 중 · 시장 전체 흐름이나 핵심 이슈 분석이 아직 충분하지 않습니다.")
     if rejected:
         details.append(f"검증에서 근거·시점 확인이 부족한 항목 {len(rejected)}개를 제외했습니다.")
@@ -1686,13 +1697,21 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
     if first_bp and not unit_explained:
         main = main[:first_bp.end()]+'(1bp=0.01%포인트)'+main[first_bp.end():]
     parts = [main]
+    truncated = False
     for block in details:
         block = first_links(block)
         if len(parts) == 1 or len(parts[-1])+len(block)+2 > 3500:
             if len(parts) == 5:
-                raise ValueError("brief_detail_size_limit")
+                # Thread detail is bounded; the overflow stays in the edition record and never blocks the body.
+                truncated = True
+                continue
             parts.append("*상세 근거·추가 지표*" if len(parts) == 1 else "*상세 계속*")
         parts[-1] += "\n"+block
+    if truncated:
+        note = "\n일부 상세 항목은 길이 제한으로 생략했습니다. 발간 기록에 보존합니다."
+        while len(parts[-1])+len(note) > 3500 and "\n" in parts[-1]:
+            parts[-1] = parts[-1].rsplit("\n", 1)[0]
+        parts[-1] += note
     # URL characters are transport overhead, not reading length. The old9500
     # wire cap stopped otherwise renderable multi-topic drafts before review.
     # Keep a conservative transport bound and validate the actual Slack blocks;
@@ -1709,4 +1728,44 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                    "source_count": len(used), "fallback": fallback, "assurance": certainty,
                    "quote_conflicts": bundle.get("quote_conflicts", []),
                    "data_diagnostics": bundle.get("data_diagnostics", []),
-                   "calendar_items": len(proposal.calendar) if proposal else 0}
+                   "calendar_items": len(proposal.calendar) if proposal else 0,
+                   **({"details_truncated": True} if truncated else {}),
+                   **({"original_facts": len(facts[1])} if facts else {})}
+
+
+SIZE_ERRORS = {"brief_message_size_limit", "brief_slack_section_too_long", "brief_slack_blocks_invalid"}
+
+
+def publishable(proposal, bundle, *, rejected=None, review_reduced=False):
+    """Render a reader body for a draft. A size breach drops the last issues instead of failing the
+    edition (owner rule, 2026-10-10: every edition carries a brief body). Returns the shipped proposal."""
+    dropped = []
+    while True:
+        try:
+            parts, quality = render(proposal, bundle, rejected=rejected, review_reduced=review_reduced or bool(dropped))
+        except ValueError as exc:
+            if str(exc) not in SIZE_ERRORS or not proposal or not proposal.issues:
+                raise
+            dropped.append(proposal.issues[-1].fact.id)
+            proposal = prune(proposal, {dropped[-1]})
+            continue
+        if dropped:
+            quality["size_dropped_issues"] = dropped
+        return parts, quality, proposal
+
+
+def original_facts(bundle, limit=12):
+    """Lines for an edition that has no draft at its deadline: the frozen inventory's facts, which passed
+    the server's quote and number checks, else the selected originals' own headlines."""
+    from .inventory import facts
+
+    documents = {d["id"]: d for d in bundle.get("documents", []) if d["kind"] not in {"calendar", "dataset"}}
+    try:
+        _, indexed = facts(bundle)
+    except ValueError:
+        indexed = {}
+    rows = [(fact.fact, source.source_id) for source, _, fact in indexed.values() if source.source_id in documents]
+    if rows:
+        return "원문에서 확인한 사실", rows[:limit]
+    rows = [(d["title"], d["id"]) for d in documents.values() if d.get("title")]
+    return ("오늘 확인한 원문", rows[:limit]) if rows else None
