@@ -53,7 +53,9 @@ def freeze(company, job):
             validate_record(existing, payload)
             return
         original = payload["originals"][PREFIX + employee + ".md"]
-        role = company.roles["engineer" if employee == "maintainer" else employee]
+        from ..model_policy import effective_role
+
+        role = effective_role(company, conn, employee)
         if (pack_content(employee, original)["digest"] != run["pack_snapshot"]["digest"]
                 or role.model != run["model"]
                 or role.reasoning_effort != run["role_snapshot"].get("reasoning_effort")):

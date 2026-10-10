@@ -90,7 +90,19 @@ def create_app(settings: Settings | None = None, company: Company | None = None,
 
     @app.get("/v1/agents", dependencies=[Depends(operator)])
     def agents():
+        if company.settings.model_assignments_enabled:
+            from .model_policy import effective_role
+
+            with company.db.transaction() as conn:
+                return [effective_role(company, conn, name).model_dump() for name in company.roles]
         return [role.model_dump() for role in company.roles.values()]
+
+    @app.get("/v1/model-assignments", dependencies=[Depends(operator)])
+    def model_assignments():
+        from .model_policy import status
+
+        with company.db.transaction() as conn:
+            return status(company, conn)
 
     @app.post("/v1/research/jobs/{job_id}/revalidate", dependencies=[Depends(operator)])
     def research_revalidate(job_id: str, value: ResearchRevalidation):

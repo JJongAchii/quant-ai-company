@@ -427,6 +427,9 @@ class BriefStore:
                                       output_contract=output_contract(phase, bundle))
             if deadline := phase_deadline(phase, bundle, row['due_at']):
                 request.brief_deadline_unix = int(deadline.timestamp())
+            from ..model_policy import bind
+
+            request = bind(self.company, conn, request, BRIEFER)
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             conn.execute("INSERT INTO brief_calls(id,edition_id,phase,request,next_at,requested_at) VALUES(%s,%s,%s,%s,%s,%s)",
                          (identity, row["id"], phase, Jsonb(request.model_dump()), at, at))

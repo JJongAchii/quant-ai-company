@@ -141,6 +141,21 @@ def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
         except ProviderFault as fault:
             return fault_response(fault)
 
+    @app.get("/v1/models/{profile}")
+    async def models(profile: str, request: Request) -> JSONResponse:
+        from .model_catalog import read_catalog
+
+        try:
+            authorize(request)
+            runtime = get_runner()
+            if not isinstance(runtime, CodexRunner) or profile not in {"primary", "backup"}:
+                raise ProviderFault("unavailable", "Unknown model catalog profile.")
+            return JSONResponse({"profile": profile, "models": await read_catalog(runtime, profile)})
+        except ProviderFault as fault:
+            return fault_response(fault)
+        except OSError:
+            return fault_response(ProviderFault("unavailable", "The model catalog is unavailable."))
+
     return app
 
 

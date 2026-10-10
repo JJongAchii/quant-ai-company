@@ -130,7 +130,7 @@ def resume_quota_waits(conn, command_id, revision):
     for row in rows:
         conn.execute("""INSERT INTO model_account_wakes(command_id,turn_id,revision) VALUES (%s,%s,%s)
             ON CONFLICT DO NOTHING""", (command_id, row["id"], revision))
-    for table in ("news_triages", "news_reviews", "news_searches", "staff_runs", "quant_feed_calls"):
+    for table in ("news_triages", "news_reviews", "news_searches", "staff_runs", "quant_feed_calls", "trend_feed_calls"):
         if not conn.execute("SELECT to_regclass(%s) AS name", ("public." + table,)).fetchone()["name"]:
             continue
         conn.execute(sql.SQL("UPDATE {} SET next_at=now() WHERE error='quota' AND state IN ('running','queued')")
@@ -231,7 +231,11 @@ class AccountControl:
                          (row["command_id"], row["turn_id"]))
 
     async def tick(self):
-        pending = await asyncio.to_thread(self.pending)
+        from .model_control import ModelControl
+
+        # Existing activity/queue keeps Temporal histories unchanged and works during inference quota waits.
+        processed = await ModelControl(self.company, self.client).tick()
+        pending = None if processed else await asyncio.to_thread(self.pending)
         if pending:
             if self.client is None:
                 self.client = RuntimeClient(self.company.settings.model_runtime_url,

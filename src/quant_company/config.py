@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     model_runtime_url: str = "http://codex:8081"
     model_runtime_token: SecretStr = SecretStr("")
     model_accounts_enabled: bool = False
+    model_assignments_enabled: bool = False
     model_accounts_owner_user: str = ""
     model_accounts_channel_id: str = ""
     company_lake_uri: str = Field(default="", pattern=r"^(|s3://[a-z0-9][a-z0-9.-]+/[A-Za-z0-9_/-]+)$")
@@ -90,6 +91,15 @@ class Settings(BaseSettings):
     tech_feed_channel_id: str = ""
     tech_feed_owner_user: str = ""
     tech_feed_sources_file: Path | None = None
+    trend_feed_enabled: bool = False
+    trend_feed_publish_enabled: bool = False
+    trend_feed_channel_id: str = ""
+    trend_feed_owner_user: str = ""
+    trend_feed_naver_enabled: bool = False
+    trend_feed_naver_credentials_file: Path | None = None
+    trend_feed_publication_hours: list[int] = Field(default_factory=lambda: [8], min_length=1, max_length=24)
+    trend_feed_on_demand_enabled: bool = False
+    trend_feed_model_daily_limit: int = Field(default=2, ge=1, le=48)
     housing_feed_enabled: bool = False
     housing_feed_publish_enabled: bool = False
     housing_feed_channel_id: str = ""
@@ -159,8 +169,17 @@ class Settings(BaseSettings):
         return ([self.briefing_evaluation_edition_id] if self.briefing_evaluation_edition_id
                 else self.briefing_evaluation_edition_ids)
 
+    @field_validator("trend_feed_publication_hours")
+    @classmethod
+    def trend_publication_hours(cls, hours):
+        if any(hour < 0 or hour > 23 for hour in hours) or len(set(hours)) != len(hours):
+            raise ValueError("Trend publication hours must be distinct hours from0 to23")
+        return sorted(hours)
+
     @model_validator(mode="after")
     def explicit_simulation(self) -> "Settings":
+        if self.model_assignments_enabled and not self.model_accounts_enabled:
+            raise ValueError("Model assignments require owner-selected account control")
         if self.model_accounts_enabled and self.model_accounts_owner_user not in self.slack_allowed_users:
             raise ValueError("Model account control requires an explicitly allowed owner")
         if self.model_accounts_enabled and (

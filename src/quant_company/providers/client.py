@@ -72,6 +72,28 @@ class RuntimeClient:
         except (httpx.HTTPError, ValueError, KeyError, TypeError):
             raise ProviderFault("unavailable", "Account authentication could not be checked.") from None
 
+    async def models(self, profile: str) -> list[dict]:
+        from .model_catalog import validate_models
+
+        if profile not in {"primary", "backup"}:
+            raise ValueError("Unknown account profile")
+        try:
+            async with httpx.AsyncClient(timeout=45, transport=self.transport,
+                                         follow_redirects=False, trust_env=False) as client:
+                async with client.stream("GET", f"{self.base_url}/v1/models/{profile}",
+                                         headers={"Authorization": f"Bearer {self.token}"}) as response:
+                    body = bytearray()
+                    async for part in response.aiter_bytes():
+                        body.extend(part)
+                        if len(body) > 512 * 1024:
+                            raise ValueError("Catalog response too large")
+                    data = strict_json(body)
+                    if response.status_code != 200 or data["profile"] != profile:
+                        raise ValueError("Invalid catalog response")
+                    return validate_models(data["models"])
+        except (httpx.HTTPError, ValueError, KeyError, TypeError):
+            raise ProviderFault("unavailable", "Model availability could not be checked.") from None
+
     async def run(self, request: ProviderRequest, *, account: dict | None = None) -> ProviderResponse:
         headers = {"Authorization": f"Bearer {self.token}"}
         payload = request.model_dump(mode="json")
