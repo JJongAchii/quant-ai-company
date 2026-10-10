@@ -379,6 +379,12 @@ async def test_script_writer_is_not_offered_images_used_in_the_last_week(brief, 
     ({'fallback': 'deadline', 'original_facts': [{'id': 'f1'}], 'issue_count': 2}, 'full'),  # reduced, facts kept
     ({'fallback': 'editorial_review_withheld', 'original_facts': [{'id': 'f1'}], 'issue_count': 0}, 'facts'),
     ({'fallback': 'deadline', 'issue_count': 0}, None),                               # notice only: skip + alert
+    # PR #132 salvage shapes (briefing/store.py _salvage): the deadline draft ships with review_incomplete,
+    ({'fallback': None, 'review_incomplete': True, 'salvage_reason': 'timeout', 'issue_count': 2}, 'full'),
+    # the fact-list body carries the original-fact count from render(facts=...),
+    ({'fallback': 'timeout', 'original_facts': 7, 'review_incomplete': True, 'issue_count': 0}, 'facts'),
+    # and an edition where nothing was collected stays a notice.
+    ({'fallback': 'timeout', 'review_incomplete': True, 'issue_count': 0}, None),
 ])
 def test_trigger_rule_for_always_body_editions(brief, slack_video, quality, expected):  # noqa: F811
     store, clock = slack_video
@@ -390,6 +396,6 @@ def test_trigger_rule_for_always_body_editions(brief, slack_video, quality, expe
         identity = store.enqueue(conn, edition, clock['at'])
         skipped = conn.execute('SELECT reason FROM video_skips WHERE edition_id=%s', (edition['id'],)).fetchone()
     if expected is None:
-        assert identity is None and skipped['reason'] == 'deadline'
+        assert identity is None and skipped['reason'] == quality['fallback']
     else:
         assert identity and not skipped and store.get(identity)['source']['format'] == expected
