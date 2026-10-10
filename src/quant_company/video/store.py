@@ -1,3 +1,4 @@
+import logging
 import shutil
 from datetime import UTC, datetime, time, timedelta
 from pathlib import Path
@@ -13,6 +14,8 @@ KST = ZoneInfo("Asia/Seoul")
 NY = ZoneInfo("America/New_York")
 # Brief kind -> video edition. Both follow the briefing schedule, so market holidays skip both the same way.
 EDITIONS = {"am": "am", "pm": "close"}
+LOG = logging.getLogger(__name__)
+ENQUEUE_FAILED = "video_enqueue_failed"
 
 
 def _clock(value, default):
@@ -116,6 +119,22 @@ class VideoStore:
     def episode_format(quality):
         """Fact-list edition without issue analysis gets the short episode (store → episode.check_structure)."""
         return "facts" if quality.get("original_facts") and not quality.get("issue_count") else "full"
+
+    def enqueue_isolated(self, conn, edition, at):
+        """The brief's own commit calls this: a video failure must never hold back the brief body. The job is written
+        in a savepoint; on any error it is rolled back alone and the thread gets one 'no video' alert instead."""
+        try:
+            with conn.transaction():
+                return self.enqueue(conn, edition, at)
+        except Exception:
+            LOG.exception("video enqueue failed for edition %s; the brief is committed without a video job", edition["id"])
+        try:
+            with conn.transaction():
+                conn.execute("INSERT INTO video_skips(edition_id,reason) VALUES(%s,%s) ON CONFLICT DO NOTHING",
+                             (edition["id"], ENQUEUE_FAILED))
+        except Exception:
+            LOG.exception("video skip record failed for edition %s", edition["id"])
+        return None
 
     def enqueue(self, conn, edition, at):
         if not self.enabled() or not edition["publish"] or edition["kind"] not in EDITIONS:
@@ -544,9 +563,12 @@ class VideoStore:
                 if not project or not project['thread_ts'] or project['status'] != 'active':
                     continue
                 mid = stable('video-skip:'+str(row['edition_id']))
+                why = ("영상 작업을 만드는 중 서버 오류가 나서 영상을 만들지 않았습니다. 브리핑 본문은 그대로 발송됐습니다."
+                       if row['reason'] == ENQUEUE_FAILED else
+                       f"이번 발송본은 본문이 없는 대체 공지(사유: {row['reason']})여서 영상을 만들지 않았습니다.")
                 self.company._message(conn, project, None, 'market_brief', 'video_status',
                     f"영상 제작 안 함 · {row['day']:%m/%d} {EDITION_NAMES[EDITIONS[row['kind']]]}\n"
-                    f"이번 발송본은 본문이 없는 대체 공지(사유: {row['reason']})여서 영상을 만들지 않았습니다. 크레딧은 쓰지 않았습니다.",
+                    f"{why} 크레딧은 쓰지 않았습니다.",
                     message_id=mid)
                 conn.execute('UPDATE video_skips SET alert_message_id=%s WHERE edition_id=%s', (mid, row['edition_id']))
                 sent += 1

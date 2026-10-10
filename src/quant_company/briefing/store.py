@@ -691,7 +691,7 @@ class BriefStore:
                 if self.company.settings.video_enabled:
                     from ..video.store import VideoStore
 
-                    VideoStore(self.company).enqueue(conn, row, at)
+                    VideoStore(self.company).enqueue_isolated(conn, row, at)
             parents = conn.execute("""SELECT e.*,o.sent_ts FROM brief_editions e JOIN brief_messages m ON m.edition_id=e.id
                 JOIN outbox o ON o.id=m.id WHERE m.part=0 AND o.status='delivered' AND o.sent_ts IS NOT NULL
                 AND e.expires_at>%s AND e.policy_digest=%s AND e.state='committed'""", (at, policy)).fetchall()

@@ -138,9 +138,12 @@ async def dispatch_once(client, company):
             await client.start_workflow(VideoWorkflow.run, id="company-video-v1",
                 task_queue=company.settings.temporal_task_queue+"-video",
                 id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+            company._video_started = True
         except WorkflowAlreadyStartedError:
-            pass
-        company._video_started = True
+            company._video_started = True
+        except Exception as exc:
+            # Retried next loop; the brief below must still be flushed and sent.
+            logging.getLogger(__name__).error("Video workflow start failed: %s", type(exc).__name__)
     if getattr(company.settings, "briefing_enabled", False):
         from .briefing.store import BriefStore
 

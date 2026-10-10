@@ -166,6 +166,27 @@ def test_flush_transaction_freezes_source_and_enqueues_once(brief, video):  # no
     assert clock['at'] < job['publish_deadline']
 
 
+def test_video_enqueue_failure_never_holds_back_the_brief(brief, video, monkeypatch):  # noqa: F811
+    store, _ = video
+
+    def broken(self, conn, edition, at):
+        conn.execute('SELECT 1 FROM no_such_video_table')
+
+    monkeypatch.setattr(VideoStore, 'enqueue', broken)
+    edition, _, _ = complete(brief[0])
+    with store.db.transaction() as conn:
+        row = conn.execute('SELECT state FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()
+        assert row['state'] == 'committed'
+        assert conn.execute('SELECT count(*) AS n FROM video_jobs').fetchone()['n'] == 0
+        skip = conn.execute('SELECT reason FROM video_skips WHERE edition_id=%s', (edition.id,)).fetchone()
+    assert skip['reason'] == 'video_enqueue_failed'
+    deliver_brief_root(store, edition.id)
+    assert store.skip_notices() == 1
+    with store.db.transaction() as conn:
+        text = conn.execute("SELECT text FROM messages WHERE kind='video_status'").fetchone()['text']
+    assert '서버 오류' in text and '본문은 그대로 발송' in text and '대체 공지' not in text
+
+
 @pytest.mark.parametrize('change', ['preview', 'unknown_kind', 'unreviewed', 'unknown_quality', 'fallback', 'draft', 'late', 'disabled'])
 def test_ineligible_briefs_never_enqueue(brief, video, change):  # noqa: F811
     store, clock = video
