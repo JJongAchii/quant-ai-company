@@ -368,8 +368,11 @@ async def test_quiet_news_does_not_block_user_reply(efficient):
     store.company.ingest(event_key="night-user", text="상태", owner="UHUMAN", agent="director", channel="CQUANT", thread_ts="77.1", status_only=True)
     sender = SlackOutbox(store.company, {"reporter": {"bot_token": "fake"}, "director": {"bot_token": "fake"}},
                          httpx.MockTransport(lambda _: httpx.Response(200, json={"ok": True, "ts": "77.2"})))
-    assert not await sender.send_one()
+    # The bounded claim loop skips the deferred quiet-hours news row and sends the user reply in the same tick.
     assert await sender.send_one()
+    with store.company.db.transaction() as conn:
+        assert conn.execute("SELECT status FROM outbox o JOIN messages m ON m.id=o.id WHERE o.thread_ts='77.1' "
+                            "ORDER BY o.created_at DESC LIMIT 1").fetchone()['status'] == 'delivered'
 
 
 def test_related_new_duplicate_remains_available_as_evidence(efficient):
