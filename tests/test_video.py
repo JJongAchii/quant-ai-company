@@ -173,7 +173,7 @@ def test_video_enqueue_failure_never_holds_back_the_brief(brief, video, monkeypa
         conn.execute('SELECT 1 FROM no_such_video_table')
 
     monkeypatch.setattr(VideoStore, 'enqueue', broken)
-    edition, _, _ = complete(brief[0])
+    edition, _, _ = complete(brief)
     with store.db.transaction() as conn:
         row = conn.execute('SELECT state FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()
         assert row['state'] == 'committed'
