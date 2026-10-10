@@ -106,8 +106,13 @@ def test_real_postgres_preflight_repair_runs_once_and_review_requires_valid_proo
         phases = [r['phase'] for r in conn.execute(
             'SELECT phase FROM brief_calls WHERE edition_id=%s ORDER BY phase', (edition.id,)).fetchall()]
     if not fixed:
-        assert final['state'] == 'blocked' and store.prepare() == {'state': 'idle'}
-        assert phases == ['revise', 'write']
+        # The independent review still judges the body of an unrepaired mapping (owner rule, 2026-10-10).
+        assert final['request']['request_id'].endswith('-review')
+        assert phases == ['review', 'revise', 'write']
+        store.commit(response(final['request'], review()))
+        with store.db.transaction() as conn:
+            row = conn.execute('SELECT * FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()
+        assert row['state'] == 'ready' and row['quality']['reduced'] and row['quality']['source_notes_unresolved']
         return
     assert final['request']['request_id'].endswith('-review')
     assert phases == ['review', 'revise', 'write']
@@ -161,7 +166,7 @@ def test_real_postgres_deadline_preserves_frozen_data_once_and_does_not_refresh_
             (Jsonb(b), Jsonb({'documents': [dataset], 'observations': [], 'contexts': [], 'diagnostics': []}), edition.id))
     first = store.prepare()
     store.commit(response(first['request'], p))
-    assert store.prepare()['state'] == 'blocked'
+    assert store.prepare()['state'] == 'ready'  # The review is reserved; it never returns before the deadline.
     with store.db.transaction() as conn:
         frozen = conn.execute('SELECT bundle FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()['bundle']
     assert frozen['inputs_frozen'] and len(frozen['documents']) == 2
@@ -265,26 +270,26 @@ def test_combined_mapping_and_content_repair_uses_one_correction_after_review(br
         source_notes=correct_notes if missing_coverage and fixed else None)
     store.commit(response(correction['request'], patch))
     final = store.prepare()
-    if not fixed:
-        assert final['state'] == 'blocked'
-    else:
-        assert final['request']['request_id'].endswith('-final_review')
-        store.commit(response(final['request'], review()))
-        clock['at'] = edition.due_at
-        store.flush()
-        with store.db.transaction() as conn:
-            row = conn.execute('SELECT * FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()
-            assert row['state'] == 'previewed' and not row['quality']['reduced']
-            assert row['quality']['revision_used']
-            assert not row['quality']['source_notes_violations']
+    # An unrepaired mapping no longer blocks: the final critic still judges the body (owner rule, 2026-10-10).
+    assert final['request']['request_id'].endswith('-final_review')
+    store.commit(response(final['request'], review()))
+    clock['at'] = edition.due_at
+    store.flush()
+    with store.db.transaction() as conn:
+        row = conn.execute('SELECT * FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()
+        assert row['state'] == 'previewed' and row['quality']['revision_used']
+        if fixed:
+            assert not row['quality']['reduced'] and not row['quality']['source_notes_violations']
+        else:
+            assert row['quality']['reduced'] and row['quality']['source_notes_unresolved']
     with store.db.transaction() as conn:
         phases = [r['phase'] for r in conn.execute(
             'SELECT phase FROM brief_calls WHERE edition_id=%s ORDER BY requested_at', (edition.id,))]
         assert phases.count('revise') == 1
-        assert set(phases) == {'write','review','revise'} | ({'final_review'} if fixed else set())
+        assert set(phases) == {'write', 'review', 'revise', 'final_review'}
 
 
-def test_unresolved_mapping_cannot_publish_full_when_no_repair_time_remains(brief):  # noqa: F811
+def test_unresolved_mapping_ships_a_reduced_body_when_no_repair_time_remains(brief):  # noqa: F811
     store, clock = brief
     store.company.settings.briefing_source_notes_enabled = True
     edition = seed(brief)
@@ -298,6 +303,6 @@ def test_unresolved_mapping_cannot_publish_full_when_no_repair_time_remains(brie
     store.commit(response(critic['request'], review()))
     with store.db.transaction() as conn:
         row = conn.execute('SELECT * FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()
-        assert row['quality']['reduced'] and not row['quality']['substantive']
+        assert row['quality']['reduced'] and row['quality']['source_notes_unresolved']
         assert row['quality']['source_notes_violations']
-        assert p.issues[0].fact.text not in row['rendered'][0]
+        assert p.issues[0].fact.text in row['rendered'][0]

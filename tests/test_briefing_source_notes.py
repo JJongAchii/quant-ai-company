@@ -290,37 +290,25 @@ def test_pruning_never_hides_invented_references_or_missing_material_numbers():
 
 
 @pytest.mark.parametrize('publication', [False, True])
-def test_real_postgres_missing_inventory_blocks_without_reserving_review(brief, publication):  # noqa: F811
+def test_real_postgres_missing_inventory_still_reaches_review_and_ships_reduced(brief, publication):  # noqa: F811
     store, clock = brief
     store.company.settings.briefing_source_notes_enabled = True
     store.company.settings.briefing_max_revisions = 0
     store.company.settings.briefing_publish_enabled = publication
     edition = seed(brief)
-    first = store.prepare()
-    store.commit(response(first['request']))
-    with store.db.transaction() as conn:
-        before = conn.execute('SELECT count(*) AS n FROM brief_calls WHERE edition_id=%s', (edition.id,)).fetchone()['n']
-    assert store.prepare() == {'state': 'blocked', 'reason': 'source_notes_incomplete_or_duplicate'}
-    assert store.prepare() == {'state': 'idle'}
-    with store.db.transaction() as conn:
-        assert conn.execute('SELECT count(*) AS n FROM brief_calls WHERE edition_id=%s', (edition.id,)).fetchone()['n'] == before == 1
-        saved = conn.execute('SELECT state,error,proposal FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()
-        assert saved['state'] == 'blocked' and saved['error'] == 'source_notes_incomplete_or_duplicate'
-        assert saved['proposal']
-    clock['at'] = edition.due_at+timedelta(minutes=10)
+    store.commit(response(store.prepare()['request']))
+    critic = store.prepare()
+    assert critic['state'] == 'ready' and critic['request']['request_id'].endswith('-review')
+    store.commit(response(critic['request'], review()))
+    clock['at'] = edition.due_at
     store.flush()
     with store.db.transaction() as conn:
         saved = conn.execute('SELECT state,proposal,rendered,quality FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()
-        assert saved['state'] == ('committed' if publication else 'previewed') and saved['proposal'] is None
-        assert saved['quality']['reduced']
-        if publication:
-            assert not saved['quality'].get('unreviewed_draft_preserved')
-            assert '미국 증시는 반도체가 주도했으며' not in saved['rendered'][0]
-        else:
-            assert saved['quality']['unreviewed_draft_preserved']
-            assert '품질 검사 미통과 초안' in saved['rendered'][0]
-            assert '미국 증시는 반도체가 주도했으며' in saved['rendered'][0]
-            assert conn.execute('SELECT count(*) AS n FROM brief_messages').fetchone()['n'] == 0
+        assert saved['state'] == ('committed' if publication else 'previewed') and saved['proposal']
+        assert saved['quality']['reduced'] and saved['quality']['source_notes_unresolved']
+        assert saved['quality']['source_notes_violations']
+        assert '미국 증시는 반도체가 주도했으며' in saved['rendered'][0]
+        assert conn.execute('SELECT count(*) AS n FROM brief_messages').fetchone()['n'] == (1 if publication else 0)
 
 
 def test_real_postgres_valid_inventory_reaches_independent_review(brief):  # noqa: F811
