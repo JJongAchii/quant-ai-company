@@ -777,9 +777,9 @@ Explain unfamiliar acronyms; compress duplicated interpretation and repeated cav
             payload['document_columns'] = columns
             payload['documents'] = [[d[k] for k in columns] for d in payload['documents']]
         result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    if len(result) > 88000 and composition and bundle.get('revision_feedback'):
-        # Only a full-proposal revision repeats the previous draft beside every original; it is the
-        # one measured path that can still exceed the provider limit after table transport.
+    if len(result) > 88000 and composition:
+        # Composition and full-proposal revision are the measured paths that can still exceed the
+        # provider limit after table transport; a prompt that already fits is never changed.
         result, _ = fit_original_rows(header.removesuffix('BRIEF DATA JSON:\n') + TRIMMED_NOTE, payload,
                                       committed_quotes(bundle))
     if len(result) > 88000:

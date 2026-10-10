@@ -307,3 +307,37 @@ def test_source_left_without_supported_facts_becomes_background_and_all_unsuppor
     assert second['treatment'] == 'background' and second['material_facts'] == []
     assert second['reason'].startswith('원문 대조를 통과한 사실이 없어 배경으로 둔다')
     assert [d['source_id'] for d in result['fact_inventory_dropped']] == ['source-2']
+
+
+def long_inventory_bundle(paragraphs):
+    from .test_briefing import CONTENT
+
+    b = frozen()
+    filler = ' Additional background paragraph about regional market conditions.' * paragraphs
+    b['documents'] = [{**b['documents'][0], 'id': f'source-{i:040x}',
+        'title': 'Synthetic market baseline and follow-through report. ' * 7,
+        'content': CONTENT+filler} for i in range(20)]
+    sources = []
+    for document in b['documents']:
+        source = deepcopy(inventory().sources[0])
+        source.source_id = document['id']
+        sources.append(source)
+    return freeze_inventory(FactInventory(sources=sources), b)
+
+
+def test_composition_over_the_input_limit_keeps_committed_quote_rows_and_records_trimmed_originals():
+    from quant_company.briefing.quotations import resolve_quotations
+
+    fits = prompt(long_inventory_bundle(40), 'write', direct_output=True)
+    assert len(fits) <= 88000 and 'trimmed_originals' not in fits and 'Input limit:' not in fits
+    b = long_inventory_bundle(64)
+    original = deepcopy(b)
+    text = prompt(b, 'write', direct_output=True)
+    data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
+    assert len(text) <= 88000 and 'Input limit: original_quotes keeps every row' in text
+    assert data['trimmed_originals'] and all(row[1] > 0 and row[2] > 0 for row in data['trimmed_originals'])
+    quote = inventory().sources[0].material_facts[0].quote
+    kept = [row[1] for group in data['original_quotes'] for row in group]
+    # Every document keeps the row holding its committed fact quote; the frozen bundle is unchanged.
+    assert sum(quote in row for row in kept) == 20
+    assert b == original and resolve_quotations(data['committed_inventory'], b)
