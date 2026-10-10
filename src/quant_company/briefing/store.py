@@ -688,6 +688,10 @@ class BriefStore:
                     rendered=%s,quality=%s,proposal=%s WHERE id=%s""",
                              ("committed" if row["publish"] else "previewed", at, row["project_id"], Jsonb(row["bundle"]),
                               Jsonb(row["rendered"]), Jsonb(row["quality"]), Jsonb(row["proposal"]) if row["proposal"] else None, row["id"]))
+                if self.company.settings.video_enabled:
+                    from ..video.store import VideoStore
+
+                    VideoStore(self.company).enqueue_isolated(conn, row, at)
             parents = conn.execute("""SELECT e.*,o.sent_ts FROM brief_editions e JOIN brief_messages m ON m.edition_id=e.id
                 JOIN outbox o ON o.id=m.id WHERE m.part=0 AND o.status='delivered' AND o.sent_ts IS NOT NULL
                 AND e.expires_at>%s AND e.policy_digest=%s AND e.state='committed'""", (at, policy)).fetchall()

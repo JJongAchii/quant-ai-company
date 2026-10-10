@@ -1,0 +1,119 @@
+# Explicit optional profile; run with --profile video --profile claude.
+# No flags or paid account purchases are enabled by this overlay.
+x-video-env: &video-env
+  VIDEO_ENABLED: ${VIDEO_ENABLED:-false}
+  # false (default): files go to the owner in the brief's Slack thread. true: YouTube private upload + Slack approval.
+  VIDEO_UPLOAD_ENABLED: ${VIDEO_UPLOAD_ENABLED:-false}
+  VIDEO_PUBLISH_ENABLED: ${VIDEO_PUBLISH_ENABLED:-false}
+  VIDEO_YOUTUBE_CHANNEL_ID: ${VIDEO_YOUTUBE_CHANNEL_ID:-}
+  VIDEO_RUNWAY_WORKSPACE_ID: ${VIDEO_RUNWAY_WORKSPACE_ID:-0}
+  VIDEO_MONTHLY_CREDIT_LIMIT: ${VIDEO_MONTHLY_CREDIT_LIMIT:-1500}
+  VIDEO_EPISODE_CREDIT_LIMIT: ${VIDEO_EPISODE_CREDIT_LIMIT:-100}
+  VIDEO_VOICE: ${VIDEO_VOICE:-Vincent}
+  VIDEO_MODEL: ${VIDEO_MODEL:-claude-opus-5}
+  VIDEO_ARTIFACT_DIR: /state/video
+  VIDEO_CREDENTIALS_DIR: /state/media-auth
+  VIDEO_ALIGNMENT_MODEL: ${VIDEO_ALIGNMENT_MODEL:-small}
+  VIDEO_TEMPLATE: ${VIDEO_TEMPLATE:-motion-v2}
+  VIDEO_ASSET_DIR: /state/video-assets
+  VIDEO_RENDER_WORKERS: ${VIDEO_RENDER_WORKERS:-1}
+  VIDEO_AM_PUBLISH_DST: ${VIDEO_AM_PUBLISH_DST:-07:00}
+  VIDEO_AM_PUBLISH_STD: ${VIDEO_AM_PUBLISH_STD:-07:50}
+  VIDEO_PM_PUBLISH: ${VIDEO_PM_PUBLISH:-18:00}
+  VIDEO_PUBLISH_LEAD_MINUTES: ${VIDEO_PUBLISH_LEAD_MINUTES:-10}
+  VIDEO_RETENTION_DAYS: ${VIDEO_RETENTION_DAYS:-14}
+  VIDEO_MIN_FREE_GB: ${VIDEO_MIN_FREE_GB:-10}
+
+services:
+  api:
+    environment: *video-env
+  slack-socket:
+    environment: *video-env
+  worker:
+    environment: *video-env
+  news-worker:
+    environment: *video-env
+  dispatch:
+    # The dispatcher alone holds the Slack bot token. It delivers the finished episode files into the brief's thread
+    # (VIDEO_UPLOAD_ENABLED=false), so it reads the video volume; it never mounts media-auth.
+    environment:
+      <<: *video-env
+      VIDEO_ARTIFACT_DIR: /state/video
+    volumes:
+      - type: bind
+        source: ${STATE_DIR:-/var/lib/quant-company}/video
+        target: /state/video
+        read_only: true
+        bind: {create_host_path: false}
+  video-worker:
+    profiles: [video]
+    image: quant-company-video:${RELEASE_COMMIT:-unqualified}
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.video
+      args:
+        COMPANY_APP_IMAGE: quant-company:${RELEASE_COMMIT:-unqualified}
+    command: [quant-company, video-worker]
+    restart: unless-stopped
+    init: true
+    user: '10001:10001'
+    read_only: true
+    tmpfs: [/tmp:size=256m,mode=1777]
+    shm_size: 128m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 256
+    stop_grace_period: 120s
+    mem_limit: ${VIDEO_MEMORY_LIMIT:-1536m}
+    cpus: ${VIDEO_CPUS:-1.5}
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: '3'}
+    environment:
+      <<: *video-env
+      DATABASE_PASSWORD_FILE: /run/secrets/database_password
+      DATABASE_USER: company
+      DATABASE_NAME: ${DATABASE_NAME:-quant_company}
+      TEMPORAL_ADDRESS: ${TEMPORAL_ADDRESS:-configure.tmprl.cloud:7233}
+      TEMPORAL_NAMESPACE: ${TEMPORAL_NAMESPACE:-configure.namespace}
+      TEMPORAL_TLS: 'true'
+      TEMPORAL_API_KEY_FILE: /run/secrets/temporal_api_key
+      TEMPORAL_TASK_QUEUE: ${TEMPORAL_TASK_QUEUE:-quant-company}
+      # Script/review calls go only to the isolated Claude subscription runtime (--profile claude).
+      VIDEO_MODEL_RUNTIME_URL: http://claude-runtime:8080
+      MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
+      COMPANY_MAX_DAILY_TURNS: ${COMPANY_MAX_DAILY_TURNS:-0}
+      COMPANY_MODEL_TIMEOUT_SECONDS: ${COMPANY_MODEL_TIMEOUT_SECONDS:-960}
+      ROLES_FILE: /etc/quant-company/roles.json
+      SLACK_TEAM_ID: ${SLACK_TEAM_ID:-CONFIGURE}
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+      BRIEFING_ENABLED: ${BRIEFING_ENABLED:-false}
+      BRIEFING_PUBLISH_ENABLED: ${BRIEFING_PUBLISH_ENABLED:-false}
+      BRIEFING_OWNER_USER: ${BRIEFING_OWNER_USER:-}
+      BRIEFING_CHANNEL_ID: ${BRIEFING_CHANNEL_ID:-}
+    secrets: [database_password, temporal_api_key, model_runtime_token]
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/config/roles.json:/etc/quant-company/roles.json:ro
+      - type: bind
+        source: ${STATE_DIR:-/var/lib/quant-company}/video
+        target: /state/video
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${STATE_DIR:-/var/lib/quant-company}/media-auth
+        target: /state/media-auth
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${STATE_DIR:-/var/lib/quant-company}/video-assets
+        target: /state/video-assets
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${STATE_DIR:-/var/lib/quant-company}/video-models
+        target: /state/models
+        bind: {create_host_path: false}
+    ports: ['127.0.0.1:8766:8766', '127.0.0.1:8767:8767']
+    networks: [core, model, service_egress]
+    depends_on:
+      postgres: {condition: service_healthy}
+      claude-runtime: {condition: service_healthy}

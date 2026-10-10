@@ -29,10 +29,10 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
                          "interactivity": {"is_enabled": False}, "org_deploy_enabled": False,
                          "socket_mode_enabled": transport == "socket", "token_rotation_enabled": False},
         }
-        if role.id == "director":
+        if role.id == "director" or (role.id == "market_brief" and company.settings.video_enabled):
             value["settings"]["interactivity"] = {"is_enabled": True}
             if transport == "http":
-                value["settings"]["interactivity"]["request_url"] = base_url.rstrip("/") + "/slack/events/director"
+                value["settings"]["interactivity"]["request_url"] = base_url.rstrip("/") + "/slack/events/" + role.id
         if role.id == "reporter":
             value["display_information"]["name"] = "Reporter"
             value["features"]["bot_user"]["display_name"] = "reporter"
@@ -40,6 +40,8 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
         if role.id == "market_brief":
             value["display_information"]["name"] = "Analyst"
             value["features"]["bot_user"]["display_name"] = "analyst"
+            # Daily video files are delivered into the brief's thread (files.getUploadURLExternal/completeUploadExternal).
+            value["oauth_config"]["scopes"]["bot"].append("files:write")
         if role.id == TECH_FEED_AGENT:
             value = {
                 "display_information": {"name": "Tech Scout", "description": role.mission[:140]},
@@ -89,6 +91,18 @@ def main():
     sub.add_parser("worker")
     sub.add_parser("data-watch-worker")
     sub.add_parser("briefing-data-worker")
+    sub.add_parser("video-worker")
+    video = sub.add_parser("video")
+    video.add_argument("action", choices=["status", "tick", 'reconcile', 'retry', 'bench'])
+    video.add_argument('--page', type=Path, help='bench: rendered episode page (index.html with episode.js)')
+    video.add_argument('--seconds', type=int, default=60, help='bench: seconds of video to render')
+    video.add_argument('--job-id')
+    video.add_argument('--effect-key')
+    video.add_argument('--receipt-file', type=Path)
+    video.add_argument('--note')
+    video_auth = sub.add_parser("video-auth")
+    video_auth.add_argument("service", choices=["runway", "youtube"])
+    video_auth.add_argument('--listen-host', choices=['127.0.0.1', '0.0.0.0'], default='127.0.0.1')
     sub.add_parser("housing-feed-worker")
     sub.add_parser("news-worker")
     sub.add_parser("quant-feed-worker")
@@ -152,6 +166,55 @@ def main():
         from .runtime import brief_data_worker_main
 
         asyncio.run(brief_data_worker_main(settings))
+    elif args.command == "video-worker":
+        from .runtime import video_worker_main
+
+        asyncio.run(video_worker_main(settings))
+    elif args.command == "video-auth":
+        from .video.auth import login_runway, login_youtube
+
+        if args.service == "runway":
+            asyncio.run(login_runway(settings.video_credentials_dir, args.listen_host))
+        else:
+            login_youtube(settings.video_credentials_dir, args.listen_host)
+    elif args.command == "video":
+        from .video.runner import VideoRunner
+        from .video.store import VideoStore
+
+        if args.action == 'bench':
+            # Frame capture + encode only: no model, speech, upload or database access.
+            import time
+
+            from .video.motion import FPS, render_range
+
+            if not args.page or not args.page.is_file():
+                parser.error('bench requires --page pointing at an episode index.html')
+            frames, start = args.seconds * FPS, time.monotonic()
+            out = settings.video_artifact_dir / 'bench.mp4'
+            render_range(str(args.page.resolve()), 0, frames, str(out), settings.video_ffmpeg)
+            seconds = time.monotonic() - start
+            out.unlink(missing_ok=True)
+            print(json.dumps({'frames': frames, 'seconds': round(seconds, 1), 'fps': round(frames / seconds, 2),
+                              'estimate_5min_episode_minutes': round(9000 / (frames / seconds) / 60, 1)}))
+            return
+        company = Company(settings)
+        store = VideoStore(company)
+        if args.action in {'reconcile', 'retry'}:
+            if not args.job_id or not args.note:
+                parser.error('Video recovery requires --job-id and --note')
+            if args.action == 'reconcile':
+                if not args.effect_key or not args.receipt_file:
+                    parser.error('Reconciliation requires --effect-key and --receipt-file')
+                from .video.recovery import reconcile
+
+                result = reconcile(store, args.job_id, args.effect_key, json.loads(args.receipt_file.read_text()), args.note)
+            else:
+                from .video.recovery import retry
+
+                result = retry(store, args.job_id, args.note)
+        else:
+            result = store.status() if args.action == 'status' else asyncio.run(VideoRunner(company).tick())
+        print(json.dumps(result, ensure_ascii=False, indent=2))
     elif args.command == "housing-feed-worker":
         from .runtime import housing_feed_worker_main
 

@@ -206,6 +206,10 @@ class SlackIngress:
         return {"ok": True, **result}
 
     def accept_interaction(self, role, payload, credential):
+        if role == BRIEFER:
+            from .video.slack_ui import accept
+
+            return accept(self, role, payload, credential)
         from .research.approvals import ACTIONS, ApprovalEvent
 
         try:
@@ -303,6 +307,14 @@ class SlackOutbox:
                 from .briefing.store import BriefStore
 
                 return BriefStore(self.company).gate(conn, row, claimed=True)
+            if row['message_kind'] == 'video_review':
+                from .video.store import VideoStore
+
+                return VideoStore(self.company).gate(conn, row)
+            if row['message_kind'] == 'video_files':
+                from .video.store import VideoStore
+
+                return VideoStore(self.company).delivery_gate(conn, row)
             if row["message_kind"] == "housing_feed":
                 from .housing_feed.store import HousingFeedStore
 
@@ -333,6 +345,16 @@ class SlackOutbox:
                 return None
             if self.defer_news(conn, row):
                 return None
+            if row['message_kind'] == 'video_review':
+                from .video.store import VideoStore
+
+                if not VideoStore(self.company).gate(conn, row):
+                    return None
+            if row['message_kind'] == 'video_files':
+                from .video.store import VideoStore
+
+                if not VideoStore(self.company).delivery_gate(conn, row):
+                    return None
             if row["message_kind"] == "briefing":
                 from .briefing.store import BriefStore
 
@@ -417,6 +439,11 @@ class SlackOutbox:
         if not row:
             return False
         token = self.credentials[row["agent"]]["bot_token"]
+        if row.get("message_kind") == "video_files":
+            # Episode files go through Slack's external upload API into the brief's thread (video/slack_files.py).
+            from .video.slack_files import deliver
+
+            return await deliver(self, row, token)
         # The stable client_msg_id helps correlation; it is not an exactly-once guarantee.
         body = {"channel": row["channel"], "thread_ts": row["thread_ts"],
                 "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, QUANT_FEED_AGENT, BRIEFER, "maintainer"}
@@ -430,6 +457,12 @@ class SlackOutbox:
         blocks = await asyncio.to_thread(blocks_for_outbox, self.company, row, self.credentials[row["agent"]])
         if blocks:
             body["blocks"] = blocks
+        if row.get("message_kind") == "video_review":
+            from .video.slack_ui import blocks as video_blocks
+
+            blocks = await asyncio.to_thread(video_blocks, self.company, row)
+            if blocks:
+                body['blocks'] = blocks
         if row.get("message_kind") == "briefing":
             from .briefing.slack_blocks import blocks as briefing_blocks
 
@@ -475,13 +508,13 @@ class SlackOutbox:
                 return True
             result = response.json()
             requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed",
-                                                            "data_watch", "briefing", "housing_feed"}
+                                                            "data_watch", "briefing", "housing_feed", "video_review"}
                                 or row["agent"] == "maintainer")
             if row.get("update_ts") and result.get("ts") != row["update_ts"] and result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_update_receipt_mismatch")
-            elif row.get("message_kind") in {"data_watch", "housing_feed"} and result.get("ok") and (
+            elif row.get("message_kind") in {"data_watch", "housing_feed", 'video_review'} and result.get("ok") and (
                 not isinstance(result.get("ts"), str) or not re.fullmatch(r"\d+\.\d+", result["ts"])
-                or result.get("channel", None if row["message_kind"] == "housing_feed" else row["channel"]) != row["channel"]
+                or result.get("channel", None if row["message_kind"] in {'housing_feed', 'video_review'} else row["channel"]) != row["channel"]
             ):
                 await asyncio.to_thread(self.settle, row, "uncertain", error=f"{row['message_kind']}_delivery_receipt_mismatch")
             elif result.get("ok") and (not requires_receipt or result.get("ts")):
