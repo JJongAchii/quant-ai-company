@@ -44,16 +44,16 @@ CLOSE = datetime.combine(DAY, time(15, 30), KST)
 PINNED_CATALOG = Path(__file__).parent/"fixtures/qdata/catalog_d6d7d0e.py.txt"
 # `git rev-parse d6d7d0e:src/qdata/catalog.py` in quant-data (deploy/qdata-source.json pins d6d7d0e).
 PINNED_CATALOG_BLOB = "9ee4f0ea7a78019a457516fc5de567316d8dccf4"
-# Computed on cdc0e35 (feat/am-schedule-v7) with the switch absent; scratch reproduction is the body of
+# Computed on feat/am-schedule-v7 synced to production a14f664 (483cf05) with the switch absent; scratch reproduction is the body of
 # test_switch_off_is_byte_identical_to_the_v7_base. An unrelated contract change must recompute them there.
 BASE = {
     "editions": "e0137f6acff073ddf7b2497c11ed93a000d2ab4311b8446837efa5bda98a9860",
     "summaries": "9e896b9237bb74c950e4a5e9cce1a80baf1ef53672732b2492be6c4b2ffe5b9a",
-    "write_prompt": "6baa75f1c5bb07c5fdb6df38ab6304606018399b5b6b285d9a3546f2323d4752",
-    "early_write_prompt": "bb94adf2dc8dcfb7abd08f86365fe3364699885cdf5bf0db37ffbe2672634f8d",
+    "write_prompt": "362122b5d1467de44de5108fd271ad37d0503d007e15f64e52908a922ca69830",
+    "early_write_prompt": "7477551908c6c7c7834b3a425e66d5fad5fc6cb4d169dd699926bc7c9fc133f3",
     "review_prompt": "23e5f15ea565fa7f31f59e189533f35a5cdd9d86e5283e4a5eda2f2402684dbd",
-    "render": "dfdbf8655c164fcf34bdac3c314551a8d0c959d19944625c26ecec92dd7992a3",
-    "policy": "7acbb3d6d8b0732e6ad3ef46f11fbdb850874ea172b0e432b13d5833b8fb1b13",
+    "render": "f5aa26e983100360bfc0e69044a627331d2eb6d93c538ad03920c594b70f4fbc",
+    "policy": "ea1b5b3ddc990738896d629aaff87fdc7b9c248e666d5f0ff8229bae405ae9f6",
 }
 
 
