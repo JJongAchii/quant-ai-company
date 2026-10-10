@@ -1,12 +1,12 @@
 {
-  "recorded_at": "2026-10-08T00:00:05.867069+00:00",
+  "recorded_at": "2026-10-10T09:50:27.906943+00:00",
   "accepted_intent": "INTENT-v16.json",
   "accepted_intent_digest": "74760db38665",
-  "latest_request": "진행해줘 — 수동 문단 구조·누락 보완을 정기 발송 로직에 반영",
-  "source_commit": "8fde2509d4dd2191147fbcee5eaa952191d7c048",
-  "format_version": 21,
-  "validation_version": 69,
-  "schedule_version": 6,
+  "latest_request": "Deploy shared deadlines plus PR122/124/125/129; enable only KR close after idle cutover; verify Oct12 schedule and early publication.",
+  "source_commit": "51ce4f91f141e65f909ac783e590ee0585dea3fa",
+  "format_version": 22,
+  "validation_version": 70,
+  "schedule_version": "6+8:20/40/115",
   "goal_complete": false,
   "implemented": [
     "Readable summary, price table, leading issues, other issues and next conditions",
@@ -29,14 +29,21 @@
     "Codex CLI, authentication and unrelated runtime behavior"
   ],
   "last_fresh_edition": {
-    "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
-    "day": "2026-10-07",
-    "kind": "pm",
-    "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
+    "id": "4d933b4e-3814-54bf-943a-48029aa76124",
+    "kind": "am",
+    "day": "2026-10-10",
+    "due_at": "2026-10-09T22:45:00+00:00",
     "state": "committed",
-    "result": "Inventory hit480second timeout. Limited status briefing and thread delivered at17:55 KST; no writer or independent review was reached. Full content did not qualify.",
-    "monitor_recorded_at": "2026-10-07T08:58:06.886494+00:00",
-    "record": "docs/project/evidence/briefing-analyst-quality-20261001/requested-pm-20261007-inventory60-outcome.json"
+    "content_passed": false,
+    "delivery": "confirmed",
+    "delivered_at": "2026-10-09T22:45:04.016419+00:00",
+    "problems": [
+      "content_review_failed",
+      "mechanical_rejections",
+      "full_content_not_qualified"
+    ],
+    "source_commit": "5e885d0a92bb8db89514ce54a5c25322e3e4f82a",
+    "record": "docs/project/evidence/briefing-analyst-quality-20261001/combined72-installation.json"
   },
   "development_diagnostic": {
     "checks_passed": 6,
@@ -60,17 +67,17 @@
   },
   "schedule_kst": {
     "am": "07:45",
-    "pm": "17:45",
-    "special_pm": "No earlier than special closing time plus95minutes",
+    "pm": "17:25",
+    "special_pm": "KRX regular-session close plus20/40/115 minutes; ready editions publish early after cutoff",
     "am_collection": "06:10",
     "am_cutoff": "06:30",
-    "pm_collection": "16:10",
-    "pm_cutoff": "16:30"
+    "pm_collection": "15:50",
+    "pm_cutoff": "16:10"
   },
-  "next": "Stage and install editorial70 after any active scheduled edition completes, preserving automatic publication. Observe the next newly frozen edition.",
+  "next": "Observe automatic full content and Oct12 PM delivery. Requested timer integration, KR-close activation and cold-start repair are deployed and verified.",
   "remaining": [
-    "Automatic-path layout and visible-fact mapping robustness: this reissue needed operator repair",
-    "Independent qualification of fully automatic content and next scheduled full delivery; no manual reissue is counted as such"
+    "The Oct10 scheduled AM edition still failed content review and mechanical validation; automatic full-content quality is not certified.",
+    "Observe actual Oct12 PM registration and delivery under the verified new timetable."
   ],
   "evidence": [
     "docs/project/evidence/briefing-analyst-quality-20261001/execution59-installation.json",
@@ -112,24 +119,29 @@
     "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-readback.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/execution-editorial67-monitor-installation.json",
     "docs/project/evidence/briefing-analyst-quality-20261001/requested-am-20261008-reissue69-delivery.json",
-    "docs/project/evidence/briefing-analyst-quality-20261001/editorial70-readiness.json"
+    "docs/project/evidence/briefing-analyst-quality-20261001/editorial70-readiness.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/combined71-readiness.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/combined71-installation.json",
+    "docs/project/evidence/briefing-analyst-quality-20261001/combined72-installation.json"
   ],
   "latest_execution": {
+    "id": "4d933b4e-3814-54bf-943a-48029aa76124",
     "kind": "scheduled_am",
-    "day": "2026-10-08",
-    "edition_id": "f8004fe8-789b-5df2-8dfa-a06f11903d91",
-    "production_version": 67,
-    "plan": "completed",
-    "inventory": "runtime completed; service validation rejected",
-    "write": "not reached",
-    "review": "not reached",
-    "committed_at": "2026-10-07T22:55:00.406885+00:00",
+    "day": "2026-10-10",
+    "due_at": "2026-10-09T22:45:00+00:00",
+    "state": "committed",
+    "content_passed": false,
+    "delivery": "confirmed",
+    "delivered_at": "2026-10-09T22:45:04.016419+00:00",
+    "problems": [
+      "content_review_failed",
+      "mechanical_rejections",
+      "full_content_not_qualified"
+    ],
+    "production_source_commit": "5e885d0a92bb8db89514ce54a5c25322e3e4f82a",
     "content_qualified": false,
     "failure_preserved": true,
-    "original_response_reused_for_validator_and_transport_test": true,
-    "slack_delivery": "confirmed_fallback_not_full_market_brief",
-    "delivered_at": "2026-10-07T22:55:02.743289+00:00",
-    "delivery_delay_seconds": 602.743
+    "note": "Existing scheduled edition before the calendar follow-up; no new model execution was started by deployment."
   },
   "candidate_execution_fix": {
     "source_commit": "15215a4e7c7d3188551278c1ec36fed85d428436",
@@ -216,7 +228,7 @@
     "source_profile_preservation_verified": true,
     "installation": "docs/project/evidence/briefing-analyst-quality-20261001/execution59-final-installation-20261007.json"
   },
-  "updated_at": "2026-10-08T07:38:15.142777+00:00",
+  "updated_at": "2026-10-08T08:38:19.257794+00:00",
   "manual_preview": {
     "operation": "analyst-saved-input-quality-preview-20261007-schema59-once",
     "channel": "C0C2E59B1AA",
@@ -258,7 +270,7 @@
     "operating_issue": "Regular inventory timeout at480seconds; isolated900second execution completed in884.394seconds but combined citation references failed decoding.",
     "fresh_twelve_check_pass": false
   },
-  "execution_version": 6,
+  "execution_version": 7,
   "retired_observation_validation58": {
     "policy": "docs/project/evidence/briefing-analyst-quality-20261001/prospective-operating-20261007-20261014-validation58-dbcheck-policy.json",
     "kr_trading_days": [
@@ -528,7 +540,7 @@
     "writer_usage_known": false
   },
   "requested_am_reissue69": {
-    "state": "writing",
+    "state": "delivered_after_operator_repair",
     "case": "analyst-am-20261008-reissue69",
     "edition_id": "e19cbbae-6bad-5dd6-96f9-a8442fae760d",
     "original_edition_id": "f8004fe8-789b-5df2-8dfa-a06f11903d91",
@@ -538,7 +550,7 @@
     "original_failure_preserved": true,
     "slack_authorized": true,
     "channel_id": "C0C2E59B1AA",
-    "slack_sent": false,
+    "slack_sent": true,
     "quality_certified": false
   },
   "latest_requested_reissue": {
@@ -559,10 +571,151 @@
     "final_body_source_note_material_facts": 64
   },
   "editorial70": {
-    "state": "tested_pending_installation",
+    "state": "superseded_by_combined71_before_cutover",
     "format_version": 22,
     "validation_version": 70,
     "readiness": "docs/project/evidence/briefing-analyst-quality-20261001/editorial70-readiness.json",
     "scope": "Align producer/consumer paragraph capacity, retain all watchpoints in main, reserve 6000 source characters for corrections, combine mapping/content fixes and strengthen comparison/realization guidance."
+  },
+  "combined71": {
+    "state": "installed_kr_close_enabled_verified",
+    "source_commit": "5e885d0a92bb8db89514ce54a5c25322e3e4f82a",
+    "timer_commit": "b6d0a10",
+    "integration_branch": "JJongAchii/analyst-timer-kr-close",
+    "pull_requests": [
+      122,
+      124,
+      125,
+      129
+    ],
+    "full_tests": {
+      "passed": 2042,
+      "skipped": 49
+    },
+    "additional_oct12_monitor_tests": 9,
+    "actual_merged_profile_tests": 12,
+    "current_source_before": "8fde2509d4dd2191147fbcee5eaa952191d7c048",
+    "active_edition": null,
+    "planned_kr_close_enabled": true,
+    "planned_us_close_enabled": false,
+    "planned_schedule": "6+8:20/40/115",
+    "readiness": "docs/project/evidence/briefing-analyst-quality-20261001/combined71-readiness.json",
+    "installed_at": "2026-10-08T08:55:38.927945+00:00",
+    "activated_at": "2026-10-08T08:56:01.031625+00:00",
+    "publication_enabled": true,
+    "kr_close_enabled": true,
+    "us_close_enabled": false,
+    "installation": "docs/project/evidence/briefing-analyst-quality-20261001/combined71-installation.json",
+    "deployment_complete": true,
+    "quality_certified": false
+  },
+  "combined72": {
+    "state": "installed_verified",
+    "source_commit": "51ce4f91f141e65f909ac783e590ee0585dea3fa",
+    "installed_at": "2026-10-10T09:49:09.538641+00:00",
+    "installation": "docs/project/evidence/briefing-analyst-quality-20261001/combined72-installation.json",
+    "tests": {
+      "passed": 2044,
+      "skipped": 49,
+      "failed": 0,
+      "junit_sha256": "1c47fb189a2c7c7d5358fc26c8b75f74ba3bf69de936a2bd064854319ced9fe2",
+      "real_postgresql": true,
+      "real_temporal": true,
+      "model_and_slack": "simulated",
+      "additional_cold_start_and_kr_close_targeted_tests": 42
+    },
+    "publication_enabled": true,
+    "kr_close_enabled": true,
+    "us_close_enabled": false,
+    "schedule_version": "6+8:20/40/115",
+    "cold_start_reproduced_before_and_fixed_after": true,
+    "deployment_complete": true,
+    "quality_certified": false
+  },
+  "latest_operational_monitor": {
+    "recorded_at": "2026-10-10T09:50:17.913482+00:00",
+    "publication_enabled": true,
+    "timer": "NextElapseUSecRealtime=Sat 2026-10-10 09:58:00 UTC\nActiveState=active",
+    "editions": [
+      {
+        "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
+        "kind": "pm",
+        "day": "2026-10-07",
+        "due_at": "2026-10-07T08:45:00+00:00",
+        "state": "committed",
+        "content_passed": false,
+        "delivery": "confirmed",
+        "delivered_at": "2026-10-07T08:55:03.230199+00:00",
+        "problems": [
+          "execution_failed",
+          "late_brief",
+          "full_content_not_qualified",
+          "late_slack_delivery"
+        ]
+      },
+      {
+        "id": "f8004fe8-789b-5df2-8dfa-a06f11903d91",
+        "kind": "am",
+        "day": "2026-10-08",
+        "due_at": "2026-10-07T22:45:00+00:00",
+        "state": "committed",
+        "content_passed": false,
+        "delivery": "confirmed",
+        "delivered_at": "2026-10-07T22:55:02.743289+00:00",
+        "problems": [
+          "execution_failed",
+          "late_brief",
+          "full_content_not_qualified",
+          "late_slack_delivery"
+        ]
+      },
+      {
+        "id": "91dd3647-e807-5370-8a2c-14226429dd3f",
+        "kind": "pm",
+        "day": "2026-10-08",
+        "due_at": "2026-10-08T08:45:00+00:00",
+        "state": "committed",
+        "content_passed": false,
+        "delivery": "confirmed",
+        "delivered_at": "2026-10-08T08:55:02.805719+00:00",
+        "problems": [
+          "execution_failed",
+          "late_brief",
+          "full_content_not_qualified",
+          "late_slack_delivery"
+        ]
+      },
+      {
+        "id": "b463d3df-94d9-5a93-be1d-4454dadbf098",
+        "kind": "am",
+        "day": "2026-10-09",
+        "due_at": "2026-10-08T22:45:00+00:00",
+        "state": "committed",
+        "content_passed": false,
+        "delivery": "confirmed",
+        "delivered_at": "2026-10-08T22:55:03.785909+00:00",
+        "problems": [
+          "execution_failed",
+          "late_brief",
+          "full_content_not_qualified",
+          "late_slack_delivery"
+        ]
+      },
+      {
+        "id": "4d933b4e-3814-54bf-943a-48029aa76124",
+        "kind": "am",
+        "day": "2026-10-10",
+        "due_at": "2026-10-09T22:45:00+00:00",
+        "state": "committed",
+        "content_passed": false,
+        "delivery": "confirmed",
+        "delivered_at": "2026-10-09T22:45:04.016419+00:00",
+        "problems": [
+          "content_review_failed",
+          "mechanical_rejections",
+          "full_content_not_qualified"
+        ]
+      }
+    ]
   }
 }

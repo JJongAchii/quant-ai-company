@@ -265,7 +265,7 @@ def test_observation_timer_adds_new_york_entries_and_keeps_utc_entries():
     timer = (Path(__file__).parents[1]/"deploy/quant-company-analyst-monitor.timer").read_text()
     entries = [line.split("=", 1)[1] for line in timer.splitlines() if line.startswith("OnCalendar=")]
     assert entries == ["Mon..Fri 18:08:00 America/New_York", "Mon..Fri 18:38:00 America/New_York",
-                       "*-*-* 22:58:00 UTC", "*-*-* 08:58:00 UTC", "*-*-* 09:58:00 UTC"]
+                       "*-*-* 22:58:00 UTC", "*-*-* 08:38:00 UTC", "*-*-* 08:58:00 UTC", "*-*-* 09:58:00 UTC"]
     # 18:08 ET is 13 minutes after the switched-on 17:55 ET due; 22:58 UTC follows 07:45 KST.
     due = am(date(2026, 9, 22)).due_at.astimezone(schedule.NY)
     observed = datetime.combine(due.date(), datetime.min.time().replace(hour=18, minute=8), schedule.NY)

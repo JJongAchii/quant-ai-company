@@ -15,7 +15,9 @@ from quant_company.briefing.contracts import (
 )
 from quant_company.briefing.editor import (
     SourceNotesValidationError,
+    original_facts,
     prompt,
+    render,
     revision_bundle,
     validate_source_notes,
 )
@@ -341,3 +343,15 @@ def test_composition_over_the_input_limit_keeps_committed_quote_rows_and_records
     # Every document keeps the row holding its committed fact quote; the frozen bundle is unchanged.
     assert sum(quote in row for row in kept) == 20
     assert b == original and resolve_quotations(data['committed_inventory'], b)
+
+
+def test_deadline_body_without_a_draft_lists_the_frozen_inventory_facts_with_their_sources():
+    b = frozen()
+    heading, rows = original_facts(b)
+    assert heading == '원문에서 확인한 사실'
+    assert rows == [('반도체가 상승을 주도했지만 기술주 밖의 참여는 혼조입니다.', 'source-1')]
+    parts, quality = render(None, b, fallback='deadline', review_reduced=True, facts=(heading, rows))
+    assert '반도체가 상승을 주도했지만 기술주 밖의 참여는 혼조입니다.' in parts[0] and 'fixture-market-report' in parts[0]
+    assert quality['original_facts'] == 1 and quality['reduced'] and '확인 지연' not in parts[0]
+    # Without an inventory, the selected originals' own headlines are the lines.
+    assert original_facts(bundle()) == ('오늘 확인한 원문', [('Synthetic closing report', 'source-1')])

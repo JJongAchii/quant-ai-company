@@ -50,6 +50,20 @@ def environment(config, source):
     return result
 
 
+def output_schema(request):
+    """The only structured outputs this tool-free runtime may produce, keyed by the frozen request contract."""
+    if request.output_contract in {"video_plan_v1", "video_review_v1", "video_episode_v1"}:
+        from ..video.contracts import VideoPlan, VideoReview
+        from ..video.episode import EpisodePlan
+
+        return {"video_plan_v1": (VideoPlan, "Video plan", "영상 대본 작성 완료"),
+                "video_episode_v1": (EpisodePlan, "Video episode", "영상 장면 구성 완료"),
+                "video_review_v1": (VideoReview, "Video adaptation review", "영상 각색 검토 완료")}[request.output_contract]
+    if request.output_contract == "agent_decision":
+        return IndependentReview, "Independent explanation review", "독립 설명 검토 완료"
+    raise ProviderFault("invalid_output", "This runtime does not produce the requested output contract.")
+
+
 def command(config, request):
     # Requests frozen before explicit effort support used high; never reinterpret their identity.
     effort = request.reasoning_effort or "high"
@@ -59,7 +73,7 @@ def command(config, request):
             "--permission-prompts", "none", "--no-session-persistence", "--max-turns", "2",
             "--settings", '{"fastMode":false,"forceLoginMethod":"claudeai"}',
             "--output-format", "stream-json", "--verbose", "--json-schema",
-            json.dumps(IndependentReview.model_json_schema(), separators=(",", ":"))]
+            json.dumps(output_schema(request)[0].model_json_schema(), separators=(",", ":"))]
 
 
 def parse_result(request, output):
@@ -93,7 +107,8 @@ def parse_result(request, output):
         models = result.get("modelUsage")
         if not isinstance(models, dict) or set(models) != {REVIEW_MODEL}:
             raise ProviderFault("uncertain", "The actual review model could not be verified.")
-        review = IndependentReview.model_validate(result["structured_output"])
+        schema, title, say = output_schema(request)
+        review = schema.model_validate(result["structured_output"])
         usage = result.get("usage", {})
         if not isinstance(usage, dict):
             raise ValueError("Invalid usage")
@@ -108,9 +123,8 @@ def parse_result(request, output):
                       effort_evidence="requested_cli_argument_not_provider_attested",
                       billing_mode="subscription", account_usage_credits_disabled_owner_confirmed=True)
         return ProviderResponse(request_id=request.request_id, provider="claude", usage=counts,
-                                decision=AgentDecision(status="complete", say="독립 설명 검토 완료",
-                                    artifacts=[ArtifactDraft(title="Independent explanation review",
-                                                             content=review.model_dump_json())]))
+                                decision=AgentDecision(status="complete", say=say,
+                                    artifacts=[ArtifactDraft(title=title, content=review.model_dump_json())]))
     except (ValueError, TypeError, KeyError, AttributeError):
         raise ProviderFault("invalid_output", "Claude output did not satisfy the independent review contract.") from None
 
@@ -165,7 +179,8 @@ class ClaudeRunner:
 
     async def run(self, request: ProviderRequest):
         if request.model != REVIEW_MODEL or request.web_search:
-            raise ProviderFault("invalid_output", "This runtime accepts only offline Opus 5 explanation reviews.")
+            raise ProviderFault("invalid_output", "This runtime accepts only offline Opus 5 structured requests.")
+        output_schema(request)
         directory = self.config.jobs_dir.resolve()
         directory.mkdir(parents=True, exist_ok=True, mode=0o700)
         path = directory / f"{request.request_id}.json"

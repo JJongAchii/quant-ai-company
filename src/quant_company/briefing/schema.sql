@@ -34,3 +34,7 @@ DO $$ BEGIN
    CHECK(phase IN ('search','plan','inventory','write','review','revise','final_review'));
  END IF;
 END $$;
+-- One retry per phase: an invalid or lost model response no longer ends the edition. Existing rows are attempt 0.
+ALTER TABLE brief_calls ADD COLUMN IF NOT EXISTS attempt integer NOT NULL DEFAULT 0;
+ALTER TABLE brief_calls DROP CONSTRAINT IF EXISTS brief_calls_edition_id_phase_key;
+CREATE UNIQUE INDEX IF NOT EXISTS brief_calls_phase_attempt ON brief_calls(edition_id,phase,attempt);

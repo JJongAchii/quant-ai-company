@@ -303,7 +303,10 @@ def test_deadline_fallback_is_committed_without_replaying_ambiguous_model(brief)
     with store.db.transaction() as conn:
         row = conn.execute("SELECT * FROM brief_editions WHERE id=%s", (e.id,)).fetchone()
         assert row["quality"]["fallback"] == "outcome_unknown" and row["proposal"] is None
-        assert "확인 지연" in row["rendered"][0]
+        # Owner rule (2026-10-10): no notice-only edition. With no draft, the originals' own lines ship
+        # and the ambiguous call is still not replayed.
+        assert row["quality"]["review_incomplete"] and "Synthetic closing report" in row["rendered"][0]
+        assert "확인 지연" not in row["rendered"][0]
         assert conn.execute("SELECT count(*) n FROM brief_calls").fetchone()["n"] == 1
     assert store.commit(response(request))["state"] == "stale"
     assert store.prepare()["state"] == "idle"
@@ -319,7 +322,7 @@ def test_long_outage_marks_missed_without_backlog_post(brief):
         assert conn.execute("SELECT count(*) n FROM outbox").fetchone()["n"] == 0
 
 
-def test_review_after_deadline_cannot_publish_when_dispatcher_is_delayed(brief):
+def test_late_review_is_stale_and_the_validated_draft_ships_reduced(brief):
     store, clock = brief
     e = seed(brief)
     store.commit(response(store.prepare()["request"]))
@@ -327,8 +330,55 @@ def test_review_after_deadline_cannot_publish_when_dispatcher_is_delayed(brief):
     clock["at"] = e.due_at+timedelta(minutes=10)
     assert store.commit(response(review))["state"] == "stale"
     store.flush()
-    row = next(r for r in store.status()["editions"] if r["id"] == e.id)
-    assert row["quality"]["fallback"] == "deadline"
+    row = next(r for r in store.status(include_rendered=True)["editions"] if r["id"] == e.id)
+    assert row["state"] == "committed" and row["quality"]["fallback"] is None and row["quality"]["reduced"]
+    assert row["quality"]["review_incomplete"] and row["quality"]["salvaged_from"] == "reviewing"
+    assert "미국 증시는 반도체가 주도했으며" in row["rendered"][0] and "일부 확인 중" in row["rendered"][0]
+
+
+def test_invalid_review_response_gets_one_retry_and_the_edition_ships_its_body(brief):
+    """2026-10-09 AM: one invalid review response ended the edition with a deadline notice."""
+    store, clock = brief
+    e = seed(brief)
+    store.commit(response(store.prepare()["request"]))
+    first = store.prepare()["request"]
+    store.fault(first["request_id"], "invalid_brief_response")
+    retry = store.prepare()["request"]
+    assert retry["request_id"] == first["request_id"]+"-r1" and retry["prompt"] == first["prompt"]
+    assert store.commit(response(retry, review()))["state"] == "completed"
+    clock["at"] = e.due_at
+    store.flush()
+    row = next(r for r in store.status(include_rendered=True)["editions"] if r["id"] == e.id)
+    assert row["state"] == "committed" and not row["quality"]["reduced"] and row["quality"]["fallback"] is None
+    assert "미국 증시는 반도체가 주도했으며" in row["rendered"][0]
+    calls = [(c["phase"], c["state"]) for c in store.status()["calls"]]
+    assert sorted(calls) == [("review", "completed"), ("review", "retry"), ("write", "completed")]
+
+
+def test_second_invalid_response_is_final_and_the_draft_ships_at_due(brief):
+    store, clock = brief
+    e = seed(brief)
+    store.commit(response(store.prepare()["request"]))
+    for _ in range(2):
+        store.fault(store.prepare()["request"]["request_id"], "invalid_brief_response")
+    assert store.prepare()["state"] == "idle"
+    clock["at"] = e.due_at
+    store.flush()
+    row = next(r for r in store.status(include_rendered=True)["editions"] if r["id"] == e.id)
+    assert row["state"] == "committed" and row["quality"]["salvaged_from"] == "blocked"
+    assert "미국 증시는 반도체가 주도했으며" in row["rendered"][0]
+    assert len(store.status()["calls"]) == 3
+
+
+def test_retry_needs_the_shared_deadline_runway(brief):
+    store, clock = brief
+    e = seed(brief)
+    store.commit(response(store.prepare()["request"]))
+    request = store.prepare()["request"]
+    clock["at"] = e.due_at
+    store.fault(request["request_id"], "invalid_brief_response")
+    with store.db.transaction() as conn:
+        assert conn.execute("SELECT state FROM brief_editions WHERE id=%s", (e.id,)).fetchone()["state"] == "blocked"
 
 
 def test_missing_model_receipt_remains_unresolved_after_fallback(brief):

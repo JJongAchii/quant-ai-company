@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -73,6 +74,40 @@ class Settings(BaseSettings):
     briefing_search_enabled: bool = True
     briefing_channel_id: str = ""
     briefing_owner_user: str = ""
+    video_enabled: bool = False
+    video_upload_enabled: bool = False
+    video_publish_enabled: bool = False
+    video_artifact_dir: Path = Path("/var/lib/quant-company/video")
+    video_credentials_dir: Path = Path("/run/secrets/video")
+    video_youtube_channel_id: str = ""
+    video_runway_workspace_id: int = Field(default=0, ge=0)
+    video_monthly_credit_limit: int = Field(default=1500, ge=0, le=100000)
+    video_episode_credit_limit: int = Field(default=100, ge=0, le=500)
+    video_voice: str = "Vincent"
+    # Script and review run on the isolated Claude subscription runtime, never the Codex lane.
+    video_model: str = "claude-opus-5"
+    video_model_runtime_url: str = "http://claude-runtime:8080"
+    video_ffmpeg: str = "ffmpeg"
+    video_ffprobe: str = "ffprobe"
+    video_alignment_model: str = "small"
+    # motion-v2: fixed card/motion template (docs/DAILY_BRIEF_DESIGN_SPEC.md); text-v1: the earlier text slides.
+    video_template: Literal["motion-v2", "text-v1"] = "motion-v2"
+    video_asset_dir: Path = Path("/var/lib/quant-company/video-assets")
+    video_render_workers: int = Field(default=1, ge=1, le=8)
+    # 증시story playlist; when empty the description omits the "▶ 증시story 모아보기" lines.
+    video_playlist_url: str = "https://www.youtube.com/playlist?list=PLbCkACCer37U"
+    # Morning review-ready target (HH:MM KST); public approval still expires at 09:00 KST.
+    # YouTube publish times the owner targets (KST). Work starts the moment the brief body is delivered; the files
+    # must be in the brief thread VIDEO_PUBLISH_LEAD_MINUTES earlier. Morning: 07:00 while New York is on daylight
+    # time (US close 05:00 KST), 07:50 otherwise. Close: 18:00.
+    video_am_publish_dst: str = Field(default="07:00", pattern=r"^0[6-8]:[0-5]\d$")
+    video_am_publish_std: str = Field(default="07:50", pattern=r"^0[6-8]:[0-5]\d$")
+    video_pm_publish: str = Field(default="18:00", pattern=r"^(1[6-9]|2[0-1]):[0-5]\d$")
+    video_publish_lead_minutes: int = Field(default=10, ge=0, le=60)
+    # Final files are kept this many days after a job ends; intermediates are removed right after packaging.
+    video_retention_days: int = Field(default=14, ge=1, le=90)
+    # New episodes do not start below this free space on the artifact volume.
+    video_min_free_gb: float = Field(default=10, ge=1, le=500)
     briefing_calendar_overrides_file: Path | None = None
     # Public chart reads after the US close; off until the briefing data worker is qualified for it.
     briefing_us_close_enabled: bool = False
@@ -180,6 +215,16 @@ class Settings(BaseSettings):
     def explicit_simulation(self) -> "Settings":
         if self.model_assignments_enabled and not self.model_accounts_enabled:
             raise ValueError("Model assignments require owner-selected account control")
+        if self.video_enabled and not (self.briefing_enabled and self.briefing_publish_enabled):
+            raise ValueError("Video requires an enabled publishing briefing source")
+        if self.video_enabled and self.video_model != "claude-opus-5":
+            raise ValueError("Video scripts require the qualified Claude subscription model")
+        if self.video_enabled and not self.video_runway_workspace_id:
+            raise ValueError('Video production requires an explicit Runway workspace')
+        if self.video_upload_enabled and not (self.video_enabled and self.video_youtube_channel_id):
+            raise ValueError("Video uploads require production and an explicit YouTube channel")
+        if self.video_publish_enabled and not self.video_upload_enabled:
+            raise ValueError("Video public release requires private upload support")
         if self.model_accounts_enabled and self.model_accounts_owner_user not in self.slack_allowed_users:
             raise ValueError("Model account control requires an explicitly allowed owner")
         if self.model_accounts_enabled and (

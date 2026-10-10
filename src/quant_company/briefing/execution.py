@@ -44,8 +44,9 @@ COMPOSE_SECONDS = 960
 FRAGMENT_INVENTORY_SECONDS = 1080
 REMAINING_SECONDS = {"plan": 2520, "write": 2160, "review": 720,
                      "inventory": 2160, "revise": 720, "final_review": 360}
+# A retried phase (one per phase, see store.MAX_PHASE_ATTEMPTS) carries a -r<attempt> suffix.
 IDENTITY = re.compile(r"^news-brief-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})-"
-                      r"(plan|inventory|write|review|revise|final_review)$")
+                      r"(plan|inventory|write|review|revise|final_review)(?:-r[1-9])?$")
 
 
 def output_contract(phase, bundle):
