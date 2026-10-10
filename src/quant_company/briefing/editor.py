@@ -31,6 +31,7 @@ from .quality import assurance
 from .quotations import (
     QUOTE_REFERENCE_VERSION,
     compact_reference_payload,
+    fit_original_rows,
     ordered_reference_payload,
     quote_parts,
     reference_payload,
@@ -40,7 +41,7 @@ from .quotations import (
 from .schedule import KST, close
 
 FORMAT_VERSION = 22
-VALIDATION_VERSION = 70
+VALIDATION_VERSION = 71
 
 WRITE = """You are Analyst writing a substantive, readable Korean daily market briefing.
 Return AgentDecision(status=complete,say='') with exactly one complete BriefProposal JSON artifact,
@@ -776,9 +777,38 @@ Explain unfamiliar acronyms; compress duplicated interpretation and repeated cav
             payload['document_columns'] = columns
             payload['documents'] = [[d[k] for k in columns] for d in payload['documents']]
         result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    if len(result) > 88000 and composition and bundle.get('revision_feedback'):
+        # Only a full-proposal revision repeats the previous draft beside every original; it is the
+        # one measured path that can still exceed the provider limit after table transport.
+        result, _ = fit_original_rows(header.removesuffix('BRIEF DATA JSON:\n') + TRIMMED_NOTE, payload,
+                                      committed_quotes(bundle))
     if len(result) > 88000:
         raise ValueError("brief_context_limit")
     return result
+
+
+TRIMMED_NOTE = ('Input limit: original_quotes keeps every row holding a cited or committed quote, then the rest '
+                'in source order. trimmed_originals rows are [document_index, omitted_rows, omitted_chars]; '
+                'do not infer omitted text or cite rows that are not shown.\nBRIEF DATA JSON:\n')
+
+
+def committed_quotes(bundle):
+    """Exact spans the service already holds as evidence: committed facts, then any repair claims."""
+    quotes = []
+    for source in (bundle.get('fact_inventory') or {}).get('sources', []):
+        for fact in source.get('material_facts', []):
+            quotes.extend(quote_parts(fact['quote']))
+    def walk(value):
+        if isinstance(value, dict):
+            if isinstance(value.get('quote'), (str, list)):
+                quotes.extend(quote_parts(value['quote']))
+            for item in value.values():
+                walk(item)
+        elif isinstance(value, list):
+            for item in value:
+                walk(item)
+    walk(bundle.get('revision_feedback', {}))
+    return quotes
 
 
 def revision_bundle(bundle, proposal, review, rejected):
