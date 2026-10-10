@@ -19,8 +19,10 @@ async def command(settings, action):
         changes = schedule.overrides(settings)
         edition = next(e for offset in range(9) for e in schedule.editions(
             at.astimezone(schedule.KST).date()+timedelta(days=offset), settings.briefing_channel_id,
-            settings.briefing_owner_user, changes, us_close_anchor=settings.briefing_us_close_enabled) if e.cutoff > at)
-        snapshot = await asyncio.to_thread(query, settings.company_lake_uri, edition)
+            settings.briefing_owner_user, changes, us_close_anchor=settings.briefing_us_close_enabled,
+            kr_close_anchor=schedule.kr_close_minutes(settings)) if e.cutoff > at)
+        krx_close = {"krx_close": True} if settings.briefing_kr_close_enabled and edition.kind == "pm" else {}
+        snapshot = await asyncio.to_thread(query, settings.company_lake_uri, edition, **krx_close)
         result = await asyncio.to_thread(summarize, snapshot, edition, changes)
         return {"mode": "actual_qdata_api_read", "edition": edition.model_dump(mode="json"),
                 "snapshot": snapshot, "derived": result, "model": "not_called", "slack": "not_connected"}

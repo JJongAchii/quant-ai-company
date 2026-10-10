@@ -77,6 +77,14 @@ class Settings(BaseSettings):
     briefing_us_close_enabled: bool = False
     briefing_us_close_stocks: list[str] = Field(default_factory=lambda: ["NVDA", "MU", "AAPL", "MSFT"],
                                                 max_length=8)
+    # PM edition from the qdata regular-session KRX close snapshot (krx_close_*); off until qualified.
+    # Minutes are measured from the actual KRX close C of the session (calendar overrides included).
+    briefing_kr_close_enabled: bool = False
+    briefing_kr_close_start_minutes: int = Field(default=20, ge=0, le=240)
+    briefing_kr_close_cutoff_minutes: int = Field(default=40, ge=1, le=300)
+    briefing_kr_close_due_minutes: int = Field(default=115, ge=2, le=360)
+    # Only the 15:30 regular-session close is supported; the after-market (16:00~20:00) basis is not.
+    briefing_kr_close_basis: str = "regular"
     tech_feed_enabled: bool = False
     tech_feed_publish_enabled: bool = False
     tech_feed_channel_id: str = ""
@@ -129,6 +137,22 @@ class Settings(BaseSettings):
         if len(set(values)) != len(values) or any(not re.fullmatch(r'[A-Z][A-Z0-9.-]{0,9}', v) for v in values):
             raise ValueError('US close stocks must be unique plain ticker symbols')
         return values
+
+    @field_validator('briefing_kr_close_basis')
+    @classmethod
+    def regular_session_close_basis(cls, value):
+        if value != 'regular':
+            raise ValueError("BRIEFING_KR_CLOSE_BASIS must be 'regular' (the 15:30 KRX regular-session close); "
+                             f"{value!r} is not supported, including the after-market (16:00~20:00) basis")
+        return value
+
+    @model_validator(mode="after")
+    def ordered_kr_close_window(self) -> "Settings":
+        if not (self.briefing_kr_close_start_minutes < self.briefing_kr_close_cutoff_minutes
+                < self.briefing_kr_close_due_minutes):
+            raise ValueError("BRIEFING_KR_CLOSE_START_MINUTES < BRIEFING_KR_CLOSE_CUTOFF_MINUTES < "
+                             "BRIEFING_KR_CLOSE_DUE_MINUTES is required (minutes after the KRX close)")
+        return self
 
     @property
     def briefing_evaluation_ids(self):
