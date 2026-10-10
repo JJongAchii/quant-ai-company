@@ -19,7 +19,7 @@ async def command(settings, action):
         changes = schedule.overrides(settings)
         edition = next(e for offset in range(9) for e in schedule.editions(
             at.astimezone(schedule.KST).date()+timedelta(days=offset), settings.briefing_channel_id,
-            settings.briefing_owner_user, changes) if e.cutoff > at)
+            settings.briefing_owner_user, changes, us_close_anchor=settings.briefing_us_close_enabled) if e.cutoff > at)
         snapshot = await asyncio.to_thread(query, settings.company_lake_uri, edition)
         result = await asyncio.to_thread(summarize, snapshot, edition, changes)
         return {"mode": "actual_qdata_api_read", "edition": edition.model_dump(mode="json"),

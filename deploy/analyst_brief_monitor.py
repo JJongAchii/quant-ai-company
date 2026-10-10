@@ -25,9 +25,13 @@ def assess(definition, row, now, *, maximum_requests=6):
         if any(frozen[key] != definition[key] for key in ('id', 'day', 'kind')):
             raise ValueError('recorded_edition_identity_mismatch')
         definition = frozen
-    due = stamp(definition['due_at'])
+    # The stored due_at column is authoritative: a one-time cutoff extension moves it by 30 minutes.
+    due = stamp(row['due_at']) if row and row.get('due_at') else stamp(definition['due_at'])
     deadline = due+timedelta(minutes=10)
-    base = {k: definition[k] for k in ('id', 'day', 'kind', 'due_at', 'starts_at', 'cutoff')}
+    base = {**{k: definition[k] for k in ('id', 'day', 'kind', 'due_at', 'starts_at', 'cutoff')},
+            'cutoff_extended': bool(definition.get('cutoff_extended'))}
+    if row and row.get('due_at'):
+        base['due_at'] = row['due_at']
     if row is None:
         return {**base, 'state': 'waiting' if now < stamp(definition['starts_at']) else 'missing',
                 'content_passed': False, 'problems': ['edition_not_registered'] if now >= deadline else [],
@@ -73,7 +77,9 @@ def assess(definition, row, now, *, maximum_requests=6):
         start, end = stamp(c.get('requested_at')), stamp(c.get('completed_at'))
         phases.append({'phase': c['phase'], 'state': c['state'], 'error': c.get('error'),
                        'elapsed_from_request_seconds': round((end-start).total_seconds(), 3) if start and end else None})
-    return {**base, 'state': row['state'], 'content_passed': content_passed,
+    # Before its own due + 10 minutes an uncommitted edition is still in progress, never missed.
+    observation = 'final' if row.get('committed_at') or now >= deadline else 'in_progress'
+    return {**base, 'state': row['state'], 'observation': observation, 'content_passed': content_passed,
             'checks_passed': sum(v is True for v in checks.values()), 'checks_required': 12,
             'failed_checks': failed_checks, 'problems': problems, 'model_requests': len(calls),
             'phases': phases, 'inventory_digest': row.get('inventory_digest'),
@@ -90,6 +96,7 @@ def query(ids):
     literal = ','.join("'"+str(UUID(value))+"'" for value in ids)
     return """SELECT COALESCE(json_agg(json_build_object(
       'id',e.id,'state',e.state,'publish',e.publish,'policy_digest',e.policy_digest,'definition',e.definition,
+      'due_at',e.due_at,
       'committed_at',e.committed_at,'error',e.error,
       'checks',e.review->'checks','verdict',e.review->'verdict',
       'substantive',e.quality->'substantive','reduced',e.quality->'reduced',
@@ -140,15 +147,17 @@ from quant_company.briefing.schedule import KST,editions
 p=json.load(sys.stdin);now=datetime.fromisoformat(p['now']).astimezone(KST)
 changes=[CalendarOverride.model_validate(v) for v in p['overrides']]
 changes={(v.market,v.day):v for v in changes}
+anchor={'us_close_anchor':True} if p.get('us_close') else {}
 out=[d.model_dump(mode='json') for offset in range(-7,2)
- for d in editions(now.date()+timedelta(days=offset),p['channel'],p['owner'],changes)]
+ for d in editions(now.date()+timedelta(days=offset),p['channel'],p['owner'],changes,**anchor)]
 print(json.dumps(out))
 '''
     values = json.loads(subprocess.check_output([
         'docker', 'run', '--rm', '-i', '--network=none', '--memory=384m', '--pids-limit=64',
         '--read-only', '--entrypoint=python', worker['Config']['Image'], '-c', code],
-        input=json.dumps({'now': now.isoformat(), 'channel': policy['channel'],
-                          'owner': policy['owner'], 'overrides': overrides}).encode(), timeout=35))
+        input=json.dumps({'now': now.isoformat(), 'channel': policy['channel'], 'owner': policy['owner'],
+                          'overrides': overrides, 'us_close': env.get('BRIEFING_US_CLOSE_ENABLED') == 'true'}).encode(),
+        timeout=35))
     starts = stamp(policy['starts_at'])
     return [d for d in values if stamp(d['due_at']) >= starts]
 

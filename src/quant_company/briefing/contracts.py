@@ -2,7 +2,7 @@ from datetime import date
 from decimal import Decimal
 from typing import Annotated, Literal
 
-from pydantic import AwareDatetime, Field, field_validator, model_validator
+from pydantic import AwareDatetime, Field, field_validator, model_serializer, model_validator
 from typing_extensions import TypedDict
 
 from ..contracts import StrictModel
@@ -337,6 +337,18 @@ class BriefEdition(StrictModel):
     previous_us_session: date | None
     previous_kr_session: date | None
     weekly: Literal["outlook", "review"] | None = None
+    # Set once by the service when no US close report existed at the first cutoff.
+    cutoff_extended: bool = False
+    cutoff_extension: dict | None = None
+
+    @model_serializer(mode="wrap")
+    def omit_unused_extension(self, handler):
+        # An unextended edition keeps its previous stored shape and prompt size.
+        data = handler(self)
+        if not self.cutoff_extended and self.cutoff_extension is None:
+            data.pop("cutoff_extended", None)
+            data.pop("cutoff_extension", None)
+        return data
 
 
 class CalendarOverride(StrictModel):
