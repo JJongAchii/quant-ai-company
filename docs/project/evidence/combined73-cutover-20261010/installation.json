@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "deployed_runway_owner_approval_pending",
+  "status": "deployed_runway_verified_first_round_pending",
   "branch": "release/combined73-video",
   "branch_commit": "b238c978e2968247280967fb8fcbc17024436df6",
   "runtime_commit": "7b37ac48824598a0c3c89b0bfd898574456bccf7",
@@ -515,8 +515,13 @@
     }
   },
   "runway": {
-    "status": "waiting_owner_allowance",
-    "url_and_tokens_not_persisted": true,
+    "status": "verified_cloud",
+    "authenticated": true,
+    "workspace_id": 68440252,
+    "checked_at": "2026-10-10T14:32:43.658141+00:00",
+    "credit_balance_confirmed": true,
+    "numeric_balance_retained_in_private_host_receipt": true,
+    "url_and_tokens_not_persisted_in_git": true,
     "media_generated_for_deployment": false
   },
   "first_round": {

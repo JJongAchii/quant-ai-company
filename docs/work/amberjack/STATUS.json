@@ -3,8 +3,8 @@
   "slug": "amberjack",
   "currentIntent": "INTENT-v20.json",
   "intentDigest": "b2ce559bd382",
-  "state": "deployed_waiting_owner_auth",
-  "updatedAt": "2026-10-10T14:25:22.858650+00:00",
+  "state": "deployed_monitoring",
+  "updatedAt": "2026-10-10T14:32:43.658141+00:00",
   "approval": {
     "id": "chat-combined73-deployment-20261010",
     "scope": "User explicitly authorized deployment, cleanup and owner-mediated Runway login."
@@ -17,14 +17,20 @@
         "docs/project/evidence/combined73-cutover-20261010/installation.json"
       ],
       "evidenceSha256": {
-        "docs/project/evidence/combined73-cutover-20261010/installation.json": "b06c67980cce0b87127778811b0e3a170fe57786524bfd1f68e45bcc86ba2ece"
+        "docs/project/evidence/combined73-cutover-20261010/installation.json": "1603d2ef43511f43f64b5a19af899e1f42ebcc80af23f1c8488de19a26d5ddaf"
       },
       "note": "Three briefing services replaced; video worker added. Other services/env/current preserved. One tmpfs YAML quoting fix applied; runtime source unchanged."
     },
     "RUNWAY_AUTH": {
-      "status": "waiting_owner_allowance",
-      "updatedAt": "2026-10-10T14:25:22.858650+00:00",
-      "note": "OAuth URL issued and local callback tunnel open; no credential values in company evidence."
+      "status": "verified_cloud",
+      "updatedAt": "2026-10-10T14:32:43.658141+00:00",
+      "evidence": [
+        "docs/project/evidence/combined73-cutover-20261010/installation.json"
+      ],
+      "evidenceSha256": {
+        "docs/project/evidence/combined73-cutover-20261010/installation.json": "1603d2ef43511f43f64b5a19af899e1f42ebcc80af23f1c8488de19a26d5ddaf"
+      },
+      "note": "Owner OAuth completed. Configured workspace and finite balance verified with a read-only Runway account request; no media generated."
     },
     "FIRST_ROUND_OBSERVATION": {
       "status": "monitoring_started_future_round_pending",
