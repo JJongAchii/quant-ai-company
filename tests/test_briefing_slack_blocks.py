@@ -2,7 +2,8 @@ from copy import deepcopy
 
 import pytest
 
-from quant_company.briefing.editor import render
+from quant_company.briefing.contracts import CalendarEvent
+from quant_company.briefing.editor import main_post_item_ids, render
 from quant_company.briefing.slack_blocks import blocks
 
 from .test_briefing import bundle, proposal
@@ -64,4 +65,30 @@ def test_existing_basis_point_explanation_is_not_inserted_twice_or_moved_to_next
     main = render(p, b)[0][0]
     assert '6bp(1bp=0.01%포인트) 상승' in main and '2bp 상승' in main
     assert main.count('1bp=0.01%포인트') == 1
+    assert p.model_dump_json() == original
+
+
+def test_natural_language_basis_point_explanation_is_not_duplicated():
+    b, p = bundle(), proposal()
+    p.issues[0].fact.text = '국채금리는 2.8bp 상승했다. bp는 0.01%포인트다.'
+    original = p.model_dump_json()
+    main = render(p, b)[0][0]
+    assert '2.8bp 상승' in main and main.count('0.01%포인트') == 1
+    assert p.model_dump_json() == original
+
+
+def test_factual_watchpoints_stay_in_main_internals_and_conditions_in_next_checks():
+    b, p = bundle(), proposal()
+    p.calendar = [CalendarEvent(id='calendar', title='지표 발표', at=None,
+        source_timezone='America/New_York', status='time_unconfirmed', evidence=p.summary[0].evidence)]
+    p.watchpoints += [p.summary[0].model_copy(update={'id': f'fact-watch-{n}', 'text': f'확인된 시장 사실 {n}'})
+                      for n in range(2)]
+    original = p.model_dump_json()
+    parts, _ = render(p, b)
+    internals, next_checks = parts[0].split('*업종·수급에서 볼 점*')[1].split('*다음 확인할 것*')
+    for watch in p.watchpoints[1:]:
+        assert watch.text in internals and watch.text not in next_checks
+        assert watch.id in main_post_item_ids(p, b)
+    assert p.watchpoints[0].text in next_checks
+    assert ''.join(section['text']['text'] for section in blocks(parts[0])) == parts[0]
     assert p.model_dump_json() == original

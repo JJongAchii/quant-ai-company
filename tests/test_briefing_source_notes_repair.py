@@ -172,7 +172,7 @@ def test_real_postgres_deadline_preserves_frozen_data_once_and_does_not_refresh_
     assert final == frozen
 
 
-def test_six_issue_mapping_repair_reserves_real_context_capacity():
+def test_six_issue_context_capacity_matches_producer_schema_and_per_issue_limit():
     b, p, failures = failed_case()
     original = deepcopy(p.issues[0])
     p.issues = []
@@ -183,7 +183,8 @@ def test_six_issue_mapping_repair_reserves_real_context_capacity():
             if claim:
                 claim.id += f'-{index}'
         issue.fact.id = f'issue-{index}'
-        issue.context = [original.fact.model_copy(update={'id': f'context-{index}'})] if index < 4 else []
+        issue.context = [original.fact.model_copy(update={'id': f'context-{index}-{n}'})
+                         for n in range(2 if index < 4 else 1)]
         p.issues.append(issue)
     p = type(p).model_validate(p.model_dump())
     feedback = source_notes_revision_bundle(b, p.model_dump(mode='json'), failures)['revision_feedback']
@@ -192,7 +193,10 @@ def test_six_issue_mapping_repair_reserves_real_context_capacity():
         update={'id': f'repair-context-{index}'}).model_dump()} for index in (4, 5)]
     result = apply_source_notes_patch(p, SourceNotesPatch(source_notes=p.source_notes,
         context_additions=changes), feedback)
-    assert sum(len(issue.context) for issue in result.issues) == 6
+    assert sum(len(issue.context) for issue in result.issues) == 12
+    assert all(len(issue.context) == 2 for issue in result.issues)
+    assert type(result).model_validate_json(result.model_dump_json()) == result
+    assert type(result).model_json_schema()['$defs']['Issue']['properties']['context']['maxItems'] == 2
     assert result.context_slots() == 0
     assert p.context_slots() == 2
     next_feedback = source_notes_revision_bundle(b, result.model_dump(mode='json'), failures)['revision_feedback']
@@ -201,8 +205,8 @@ def test_six_issue_mapping_repair_reserves_real_context_capacity():
     with pytest.raises(ValueError, match='context_budget_rejected'):
         apply_source_notes_patch(result, SourceNotesPatch(source_notes=p.source_notes,
             context_additions=[changes[0]]), next_feedback)
-    result.issues[0].context.append(original.fact.model_copy(update={'id': 'seventh-context'}))
-    with pytest.raises(ValueError, match='brief_story_context_limit'):
+    result.issues[0].context.append(original.fact.model_copy(update={'id': 'third-context'}))
+    with pytest.raises(ValueError, match='at most 2 items'):
         type(result).model_validate(result.model_dump())
 
 
@@ -223,7 +227,8 @@ def test_offline_recomposed_draft_keeps_raw_receipt_and_runs_content_validation(
 
 
 @pytest.mark.parametrize('fixed', [True, False])
-def test_combined_mapping_and_content_repair_uses_one_correction_after_review(brief, fixed):  # noqa: F811
+@pytest.mark.parametrize('missing_coverage', [True, False])
+def test_combined_mapping_and_content_repair_uses_one_correction_after_review(brief, fixed, missing_coverage):  # noqa: F811
     from quant_company.briefing.contracts import EditorialPatch
 
     store, clock = brief
@@ -233,6 +238,10 @@ def test_combined_mapping_and_content_repair_uses_one_correction_after_review(br
     edition = seed(brief)
     b, p, _ = failed_case()
     b.update(combined_editorial_repair=True)
+    correct_notes = deepcopy(p.source_notes)
+    if missing_coverage:
+        p.source_notes[0].item_ids = ['absent-item']
+        p.source_notes[0].material_facts[0].main_item_ids = ['absent-item']
     with store.db.transaction() as conn:
         conn.execute('UPDATE brief_editions SET bundle=%s WHERE id=%s', (Jsonb(b), edition.id))
     first = store.prepare()
@@ -240,11 +249,20 @@ def test_combined_mapping_and_content_repair_uses_one_correction_after_review(br
     critic = store.prepare()
     assert critic['request']['request_id'].endswith('-review')
     assert 'pre_review_source_notes_violations' not in critic['request']['prompt']
-    store.commit(response(critic['request'], review()))
+    verdict = review()
+    if missing_coverage:
+        verdict.verdict = 'reduce'
+        verdict.checks['coverage'] = False
+        verdict.concerns = ['본문에 매출의 이전 수치와 변경된 수치가 빠져 있습니다.']
+        verdict.source_assessments = deepcopy(correct_notes)
+        verdict.source_assessments[0].material_facts[0].main_item_ids = []
+    store.commit(response(critic['request'], verdict))
     correction = store.prepare()
     assert correction['request']['request_id'].endswith('-revise')
+    assert correction['request']['output_contract'] in {'brief_editorial_v1', 'brief_editorial_v2'}
     patch = EditorialPatch(edits=[{'id': 'fact', 'text':
-        '매출은 100억원에서 120억원으로 증가했다.' if fixed else p.issues[0].fact.text}])
+        '매출은 100억원에서 120억원으로 증가했다.' if fixed else p.issues[0].fact.text}],
+        source_notes=correct_notes if missing_coverage and fixed else None)
     store.commit(response(correction['request'], patch))
     final = store.prepare()
     if not fixed:

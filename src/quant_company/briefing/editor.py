@@ -40,8 +40,8 @@ from .quotations import (
 )
 from .schedule import KST, close
 
-FORMAT_VERSION = 21
-VALIDATION_VERSION = 70
+FORMAT_VERSION = 22
+VALIDATION_VERSION = 71
 
 WRITE = """You are Analyst writing a substantive, readable Korean daily market briefing.
 Return AgentDecision(status=complete,say='') with exactly one complete BriefProposal JSON artifact,
@@ -109,11 +109,16 @@ An index and a winning chip stock do not establish participation: retain sourced
 opposing sectors and investor-group flows with venue/provisional status. Simultaneous flows do not prove cause.
 For earnings, retain material segment shares, revenue/margin driver, capex/production timing and competing
 supply. For acquisitions explain target capability and buyer use; distinguish announcement/signing/closing.
+Revised earnings guidance needs its supplied market-consensus comparison, not only the prior company
+forecast. Separate operating improvement from refunds/tax/accounting contributions and retain their
+material magnitude. An ambiguous percent versus percentage-point unit stays explicitly ambiguous.
 For financing, retain seniority, guarantees, committed-versus-still-to-be-raised sums and prerequisites
 such as an IPO BEFORE fundraising. Make that funding gate visible and conditional, never confirmed.
 For investment/fiscal aid, distinguish additional money, an allocation within an old commitment and a
 revised forecast. State that relationship, not two unexplained amounts; announced money is not disbursed
 cash or booked revenue. For trade compare total change/concentration, not only the strongest sector.
+Delivered funding does not establish delivery of the weapons, capacity or services it will buy. Compare
+debt ratios with their denominator and actual repayment ability; preserve unresolved period conflicts.
 For changed rates, restrictions or deadlines retain supported old AND new terms. Meetings, contacts,
 demands and proposals are not agreements or implementation. Include material counterproposal conditions
 and time limits. A dot plot or nonvoting speaker is not a decision; retain competing speakers/data/path.
@@ -186,8 +191,8 @@ Missing conclusion-changing data, conflicts and quantitative context belong visi
 not internal limitations. Use reader language, not field names. The detail thread carries sources/timestamps.
 Map committed facts only to IDs actually returned and visible in the main. Related facts may share
 one paragraph or several visible items; split calendar timing from policy context rather than repeat
-the event. The third watchpoint can be thread-only when a calendar is present and cannot carry a
-required main fact. Put all conclusion-changing qualifiers in the visible paragraphs themselves.
+the event. All returned watchpoints remain in the main; observed facts appear with market internals,
+while conditions appear with the next checks. Put all conclusion-changing qualifiers in visible text.
 
 CALENDAR AND CHECKPOINTS
 Use supplied calendar originals or exact source passages. Preserve original timezones; convert only when
@@ -342,7 +347,7 @@ no rewriting prices, summary or calendar.
 Preserve all unaffected sections and notes. This is one bounded correction, not a review verdict.
 The final full original-to-main comparison and twelve-criterion independent review still decide quality.
 For a missing or invisible item ID, map only to an ID actually present in the returned draft. Put
-material facts in a visible overview/issue/context/internals paragraph; a thread-only watchpoint cannot
+material facts in a visible overview/issue/context/internals paragraph; citations alone cannot
 cover them. When committed_facts is supplied, copy its fact and quote fields EXACTLY unchanged; repair
 main_item_ids and visible prose instead of rewriting that inventory. Preserve every committed qualifier.
 Compress repeated interpretation and caveats
@@ -826,7 +831,7 @@ def revision_bundle(bundle, proposal, review, rejected):
                        if any(not set(f.main_item_ids) & retained for f in a.material_facts)}
     allowed_sources = {}
     draft = BriefProposal.model_validate(proposal)
-    if (review.verdict == "reduce" and not rejected and not review.source_requests and missing_sources
+    if (not mapping_violations and review.verdict == "reduce" and not rejected and not review.source_requests and missing_sources
             and all(value for key, value in review.checks.items()
                     if key not in {"materiality", "counterevidence", "coverage", "depth"})):
         for issue in draft.issues:
@@ -851,7 +856,7 @@ def revision_bundle(bundle, proposal, review, rejected):
                 if key not in {"numbers", "materiality", "counterevidence", "alternatives", "coverage", "depth", "readability"}))
     if editorial_patch:
         fields = [*draft.overview, *draft.internals, *draft.watchpoints]
-        if not review.checks['numbers'] or not review.checks['alternatives']:
+        if mapping_violations or not review.checks['numbers'] or not review.checks['alternatives']:
             fields.extend(draft.summary)
         for issue in draft.issues:
             fields.extend([issue.fact, issue.interpretation, *issue.context,
@@ -1323,7 +1328,7 @@ def main_post_item_ids(proposal, bundle):
             visible.append(issue.counterpoint)
     watches = proposal.watchpoints or [issue.next_check for issue in proposal.issues][:3]
     visible.extend(proposal.calendar)
-    visible.extend(watches[:2 if proposal.calendar else 3])
+    visible.extend(watches)
     morning = {w["id"] for w in bundle.get("morning_watchpoints", [])}
     visible.extend(w for w in proposal.watch_results if w.watch_id in morning)
     return {item.id for item in visible}
@@ -1475,7 +1480,7 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
         links = " ".join(f"<{escape(docs[i].url, quote=False)}|[{reference[i]}]>" for i in urls)
         return escape(text, quote=False) + " " + links
 
-    calendar_checks, market_checks = [], []
+    calendar_checks, market_checks, factual_watches = [], [], []
     if proposal:
         for event in proposal.calendar:
             if event.at:
@@ -1491,11 +1496,10 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                 label += f" · {event.note}"
             calendar_checks.append("• " + supported(event, label))
         watches = proposal.watchpoints or [issue.next_check for issue in proposal.issues][:3]
-        market_checks = ["• " + supported(claim, claim.text) for claim in watches]
-    market_main_count = 2 if calendar_checks else 3
-    visible_global_check_ids = {claim.id for claim in watches[:market_main_count]} if proposal else set()
-    next_main = calendar_checks + market_checks[:market_main_count]
-    next_details = market_checks[market_main_count:]
+        market_checks = ["• " + supported(claim, claim.text) for claim in watches if claim.kind == 'condition']
+        factual_watches = [claim for claim in watches if claim.kind != 'condition']
+    visible_global_check_ids = {claim.id for claim in watches} if proposal else set()
+    next_main = calendar_checks + market_checks
     next_section = "\n*다음 확인할 것*\n\n"+"\n\n".join(next_main) if next_main else ""
 
     def add(block):
@@ -1550,9 +1554,9 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                 +supported(issue.analysis.alternative, issue.analysis.alternative.text)+"\n")
             if issue.next_check.id not in visible_global_check_ids:
                 add("*확인할 신호* · "+supported(issue.next_check, issue.next_check.text)+"\n")
-        if proposal.internals:
+        if proposal.internals or factual_watches:
             add("\n*업종·수급에서 볼 점*\n")
-        for claim in proposal.internals:
+        for claim in [*proposal.internals, *factual_watches]:
             add("• " + supported(claim, claim.text)+"\n")
         results = {x.watch_id: x for x in proposal.watch_results}
         if bundle.get("morning_watchpoints"):
@@ -1564,8 +1568,6 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                                     +": "+item.explanation) if item else "판단 불가 — 확인 자료 부족")+"\n")
         if next_section:
             lines.append(next_section)
-        if next_details:
-            details.append("*추가 확인 사항*\n"+"\n".join(next_details))
     if missing:
         lines.append("확인 부족: " + ", ".join(INSTRUMENTS[k][0] for k in missing))
     if fallback:
@@ -1623,8 +1625,8 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
 
     main = first_links("\n".join(lines))
     first_bp = re.search(r'(?<![A-Za-z])bp(?![A-Za-z])', main)
-    if first_bp and not re.match(r'\s*[（(]\s*1\s*bp\s*=\s*0\.01\s*%\s*포인트\s*[)）]',
-                                 main[first_bp.end():]):
+    unit_explained = re.search(r'(?<![A-Za-z])(?:1\s*)?bp\s*(?:=|는|은)\s*0\.01\s*%\s*포인트', main)
+    if first_bp and not unit_explained:
         main = main[:first_bp.end()]+'(1bp=0.01%포인트)'+main[first_bp.end():]
     parts = [main]
     for block in details:

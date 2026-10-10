@@ -19,7 +19,16 @@ from quant_company.briefing.contracts import (
 )
 from quant_company.briefing.editor import prompt, render, revision_bundle, validate, validate_review
 from quant_company.briefing.inputs import document
-from quant_company.briefing.planning import apply_plan, discovery_spans, plan_prompt, required_sources
+from quant_company.briefing.planning import (
+    INITIAL_SOURCE_CHAR_BUDGET,
+    SOURCE_CHAR_BUDGET,
+    SOURCE_REPAIR_RESERVE,
+    apply_plan,
+    discovery_spans,
+    plan_prompt,
+    required_sources,
+    supplement_sources,
+)
 from quant_company.briefing.qualification import replay
 from quant_company.briefing.runner import BriefEditor
 from quant_company.briefing.store import priority_pending
@@ -106,6 +115,27 @@ def test_plan_context_is_bounded_and_does_not_send_full_candidate_corpus():
     assert len(json.loads(request.split("CANDIDATES:\n")[1])["candidates"]) == 96
 
 
+def test_initial_selection_reserves_whole_originals_for_one_review_correction():
+    data = planning_bundle()
+    data['candidate_documents'] = [doc(f's{i}', f'Policy announcement {i}', content='x'*6000)
+                                   .model_dump(mode='json') for i in range(7)]
+    before = deepcopy(data)
+    selected = apply_plan(data, plan(*(f's{i}' for i in range(6))))
+    assert sum(len(d['content']) for d in selected['documents']) == INITIAL_SOURCE_CHAR_BUDGET
+    assert SOURCE_CHAR_BUDGET-INITIAL_SOURCE_CHAR_BUDGET == SOURCE_REPAIR_RESERVE == 6000
+    assert json.loads(plan_prompt(data).split('CANDIDATES:\n')[1])['source_char_budget'] == INITIAL_SOURCE_CHAR_BUDGET
+    supplemented = supplement_sources(selected, plan('s6').selections)
+    assert sum(len(d['content']) for d in supplemented['documents']) == SOURCE_CHAR_BUDGET
+    assert supplemented['documents'][-1] == data['candidate_documents'][-1]
+    assert data == before and len(selected['documents']) == 6
+    data['candidate_documents'][0]['content'] += 'x'
+    with pytest.raises(ValueError, match='brief_plan_source_budget'):
+        apply_plan(data, plan(*(f's{i}' for i in range(6))))
+    selected['candidate_documents'][-1]['content'] += 'x'
+    with pytest.raises(ValueError, match='brief_review_source_budget'):
+        supplement_sources(selected, plan('s6').selections)
+
+
 def test_source_discovery_exposes_middle_counterevidence_and_body_tail_before_footer():
     opposing = "However, existing inventory can absorb the disruption for two weeks."
     tail = "The policymaker's baseline assumes energy supply improves later, with considerable uncertainty."
@@ -156,15 +186,15 @@ def test_source_discovery_shrinks_only_samples_for_long_metadata_without_losing_
         assert "funding still requires approval" in "\n".join(part[2] for part in row["discovery_spans"])
 
 
-def test_material_fact_must_be_visible_not_only_in_thread_or_a_citation():
+def test_third_watchpoint_is_visible_with_calendar_but_absent_fact_cannot_pass():
     p, data = proposal(), bundle()
     p.calendar = [CalendarEvent(id="release", title="경제지표 발표", at=None,
         source_timezone="미국 현지", status="time_unconfirmed", evidence=p.watchpoints[0].evidence)]
     p.watchpoints += [p.watchpoints[0].model_copy(update={"id": identity}) for identity in ("watch2", "watch3")]
     original = review().model_dump()
     original["source_assessments"][0]["material_facts"][0]["main_item_ids"] = ["watch3"]
-    with pytest.raises(ValueError, match="not_in_main_post"):
-        validate_review(BriefReview.model_validate(original), p, data)
+    validate_review(BriefReview.model_validate(original), p, data)
+    assert p.watchpoints[2].text in render(p, data)[0][0]
     original["source_assessments"][0]["material_facts"][0]["main_item_ids"] = []
     with pytest.raises(ValueError, match="missing_fact_cannot_pass"):
         validate_review(BriefReview.model_validate(original), proposal(), bundle())
