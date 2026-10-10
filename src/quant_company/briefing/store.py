@@ -18,6 +18,7 @@ from .contracts import (
     BriefReview,
     ConditionPatch,
     EditorialPatch,
+    MarketObservation,
     MaterialFactPatch,
     SourceDocument,
     SourceNotesPatch,
@@ -48,8 +49,10 @@ from .editor import (
     apply_material_fact_patch,
     apply_source_notes_patch,
     artifact,
+    original_facts,
     prompt,
     prune,
+    publishable,
     render,
     revision_bundle,
     source_notes_revision_bundle,
@@ -74,6 +77,11 @@ from .quotations import QUOTE_REFERENCE_VERSION
 
 LOCK = 71350241
 TERMINAL = {"committed", "previewed", "missed", "stale"}
+# A completed turn whose output failed the contract or the server checks gets one more attempt of the same
+# phase while the shared deadline has room for it. Uncertain and timed-out turns still require
+# reconciliation before any replacement; their edition ships its salvaged body at due (see flush).
+RETRYABLE_FAULTS = {"invalid_brief_response", "invalid_output"}
+MAX_PHASE_ATTEMPTS = 2
 
 
 class BriefStore:
@@ -215,14 +223,17 @@ class BriefStore:
         if row["kind"] == "am" and definition.get("previous_kr_session"):
             bundle["exchange_closes"]["KR_previous"] = schedule.close(
                 "KR", date.fromisoformat(definition["previous_kr_session"]), changes).isoformat()
+        # A body shipped without a completed or passing review is never the next edition's evidence.
         morning = conn.execute("""SELECT proposal FROM brief_editions a WHERE a.channel=%s AND a.owner_user=%s
             AND a.day=%s AND a.kind='am' AND a.committed_at IS NOT NULL AND a.proposal IS NOT NULL
+            AND NOT COALESCE((a.quality->>'review_incomplete')::boolean OR (a.quality->>'review_withheld')::boolean, false)
             AND (NOT a.publish OR EXISTS(SELECT 1 FROM brief_messages m JOIN outbox o ON o.id=m.id
                 WHERE m.edition_id=a.id AND m.part=0 AND o.status='delivered'))""",
                                (row["channel"], row["owner_user"], row["day"])).fetchone() if row["kind"] == "pm" else None
         bundle["morning_watchpoints"] = morning["proposal"]["watchpoints"] if morning else []
         recent = conn.execute("""SELECT day,kind,proposal->'summary' AS summary FROM brief_editions
             WHERE channel=%s AND owner_user=%s AND due_at<%s AND proposal IS NOT NULL
+            AND NOT COALESCE((quality->>'review_incomplete')::boolean OR (quality->>'review_withheld')::boolean, false)
             AND committed_at IS NOT NULL ORDER BY due_at DESC LIMIT 3""",
                               (row["channel"], row["owner_user"], row["due_at"])).fetchall()
         bundle["previous_briefs_context_only"] = as_json(recent)
@@ -377,11 +388,12 @@ class BriefStore:
                                     prompt(revised_bundle, 'revise')
                                 except ValueError:
                                     repair = False
-                            if not repair:
-                                conn.execute("UPDATE brief_editions SET state='blocked',error=%s WHERE id=%s",
-                                             (str(exc), row['id']))
-                                return {'state': 'blocked', 'reason': str(exc)}
-                            bundle, phase = revised_bundle, 'revise'
+                            if repair:
+                                bundle, phase = revised_bundle, 'revise'
+                            else:
+                                # The independent review still judges the body; the unresolved mapping ships as a
+                                # diagnostic with what the review accepts (owner rule, 2026-10-10).
+                                bundle['pre_review_source_notes_violations'] = exc.violations
                 if row["state"] in {"collecting", "planning"} and bundle.get("candidate_documents"):
                     phase = "plan"
                 if not bundle.get("documents"):
@@ -408,9 +420,12 @@ class BriefStore:
                                 inventory_prompt(bundle) if phase == "inventory" else
                                 prompt(bundle, phase, row["proposal"] if phase in {"review", "final_review"} else None,
                                        direct_output=True))
-            identity = f"news-brief-{row['id']}-{phase}"
-            if conn.execute("SELECT 1 FROM brief_calls WHERE id=%s", (identity,)).fetchone():
+            previous = conn.execute("SELECT state FROM brief_calls WHERE edition_id=%s AND phase=%s ORDER BY attempt",
+                                    (row["id"], phase)).fetchall()
+            if previous and (len(previous) >= MAX_PHASE_ATTEMPTS or previous[-1]["state"] != "retry"):
                 return {"state": "blocked", "reason": "phase_already_attempted"}
+            attempt = len(previous)
+            identity = f"news-brief-{row['id']}-{phase}" + (f"-r{attempt}" if attempt else "")
             conn.execute("INSERT INTO daily_usage(day,reserved) VALUES(CURRENT_DATE,0) ON CONFLICT DO NOTHING")
             used = conn.execute("SELECT reserved FROM daily_usage WHERE day=CURRENT_DATE FOR UPDATE").fetchone()["reserved"]
             cap = effective_limits(conn, self.company)["company"]
@@ -428,8 +443,8 @@ class BriefStore:
             if deadline := phase_deadline(phase, bundle, row['due_at']):
                 request.brief_deadline_unix = int(deadline.timestamp())
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
-            conn.execute("INSERT INTO brief_calls(id,edition_id,phase,request,next_at,requested_at) VALUES(%s,%s,%s,%s,%s,%s)",
-                         (identity, row["id"], phase, Jsonb(request.model_dump()), at, at))
+            conn.execute("""INSERT INTO brief_calls(id,edition_id,phase,request,next_at,requested_at,attempt)
+                VALUES(%s,%s,%s,%s,%s,%s,%s)""", (identity, row["id"], phase, Jsonb(request.model_dump()), at, at, attempt))
             conn.execute("UPDATE brief_editions SET state=%s,bundle=%s WHERE id=%s",
                          ({"search": "collecting", "plan": "planning", "inventory": "inventorying", "write": "writing", "review": "reviewing",
                            "revise": "revising", "final_review": "final_reviewing"}[phase], Jsonb(bundle), row["id"]))
@@ -543,11 +558,13 @@ class BriefStore:
                             **dict.fromkeys(review.rejected_ids, "semantic_review")}
                 proposal = prune(proposal, set(rejected) | validate(proposal, row["bundle"]).keys())
                 validity = {k: v for k, v in review.checks.items() if k not in {"coverage", "depth", "readability", "materiality"}}
-                if review.verdict == "withhold" or (not all(validity.values()) and not review.rejected_ids):
-                    proposal = None
-                parts, quality = render(proposal, row["bundle"], rejected=rejected,
-                    fallback="editorial_review_withheld" if proposal is None else None,
-                    review_reduced=review.verdict == "reduce" or bool(notes_violations))
+                # A withheld verdict no longer replaces the edition with a notice: the findings go to the one
+                # correction below, and whatever remains unresolved ships as a reduced body without the
+                # rejected items (owner rule, 2026-10-10: every edition carries a brief body).
+                withheld = review.verdict == "withhold" or (not all(validity.values()) and not review.rejected_ids)
+                parts, quality, proposal = publishable(proposal, row["bundle"], rejected=rejected,
+                    review_reduced=withheld or review.verdict == "reduce" or bool(notes_violations))
+                quality["review_withheld"] = withheld
                 quality["editorial_review"] = review.model_dump(mode="json")
                 quality["source_notes_violations"] = notes_violations
                 result = review.model_dump(mode="json")
@@ -562,15 +579,17 @@ class BriefStore:
                     # Do not reserve a repair whose full frozen context cannot fit the runtime contract.
                     try:
                         prompt(revised_bundle, "revise")
-                    except ValueError:
+                    except ValueError as exc:
                         repair = False
+                        quality["repair_skipped"] = str(exc)
                 if repair:
                     conn.execute("UPDATE brief_editions SET state='revising',bundle=%s,review=%s,quality=%s WHERE id=%s",
                                  (Jsonb(revised_bundle), Jsonb(result), Jsonb(quality), row["id"]))
                 else:
                     if notes_violations:
-                        parts, reduced_quality = render(None, row['bundle'], fallback='source_notes_unresolved')
-                        quality.update(reduced_quality)
+                        # The body's citations come from each claim's own evidence; only the per-source notes
+                        # are unresolved, so the reduced body ships and the violation stays in diagnostics.
+                        quality["source_notes_unresolved"] = True
                     quality["revision_used"] = call["phase"] == "final_review" or bool(row['bundle'].get('source_notes_repair'))
                     quality['source_notes_repair_used'] = bool(row['bundle'].get('source_notes_repair'))
                     conn.execute("""UPDATE brief_editions SET state='ready',proposal=%s,review=%s,rendered=%s,quality=%s
@@ -583,12 +602,21 @@ class BriefStore:
     def fault(self, identity, code, seconds=0):
         at = schedule.utcnow()
         with self.db.transaction() as conn:
-            row = conn.execute("SELECT edition_id FROM brief_calls WHERE id=%s AND state='running' FOR UPDATE", (identity,)).fetchone()
+            row = conn.execute("SELECT edition_id,phase,attempt FROM brief_calls WHERE id=%s AND state='running' FOR UPDATE",
+                               (identity,)).fetchone()
             if not row:
                 return
+            edition = conn.execute("SELECT * FROM brief_editions WHERE id=%s FOR UPDATE", (row["edition_id"],)).fetchone()
             if code in {"busy", "quota", "unavailable"}:
                 conn.execute("UPDATE brief_calls SET next_at=%s,error=%s WHERE id=%s",
                              (at+timedelta(seconds=max(5, min(seconds or 60, 604800))), code, identity))
+            elif (code in RETRYABLE_FAULTS and row["attempt"]+1 < MAX_PHASE_ATTEMPTS and row["phase"] != "search"
+                  and not edition["committed_at"] and edition["state"] not in TERMINAL | {"blocked", "ready"}
+                  and has_runway(row["phase"], edition["bundle"] or {}, at, edition["due_at"])):
+                # The edition keeps its phase state; the next prepare issues the same phase as attempt+1.
+                conn.execute("UPDATE brief_calls SET state='retry',error=%s,completed_at=%s WHERE id=%s", (code, at, identity))
+                self.company._event(conn, "briefing_phase_retry", {"edition_id": str(row["edition_id"]),
+                                                                   "phase": row["phase"], "error": code})
             else:
                 conn.execute("UPDATE brief_calls SET state='blocked',error=%s WHERE id=%s", (code, identity))
                 conn.execute("UPDATE brief_editions SET state='blocked',error=%s WHERE id=%s AND committed_at IS NULL",
@@ -616,15 +644,20 @@ class BriefStore:
                 rows = conn.execute("""SELECT * FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
                     AND state NOT IN ('missed','stale') AND expires_at>%s
                     AND ((state='ready' AND (due_at<=%s OR (kind=ANY(%s) AND cutoff<=%s)))
-                         OR due_at+interval '10 minutes'<=%s) ORDER BY due_at FOR UPDATE""",
-                                    (policy, at, at, early, at, at)).fetchall()
+                         OR (state='blocked' AND due_at<=%s) OR due_at+interval '10 minutes'<=%s)
+                    ORDER BY due_at FOR UPDATE""", (policy, at, at, early, at, at, at)).fetchall()
             else:
+                # A blocked edition has nothing left to wait for, so it ships at due like a ready one.
                 rows = conn.execute("""SELECT * FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
                     AND state NOT IN ('missed','stale') AND due_at<=%s AND expires_at>%s
-                    AND (state='ready' OR due_at+interval '10 minutes'<=%s) ORDER BY due_at FOR UPDATE""",
+                    AND (state IN ('ready','blocked') OR due_at+interval '10 minutes'<=%s) ORDER BY due_at FOR UPDATE""",
                                     (policy, at, at, at)).fetchall()
             for row in rows:
-                if row["state"] != "ready":
+                if row["state"] != "ready" and row["publish"]:
+                    bundle = self._freeze(conn, row)
+                    parts, quality, proposal = self._salvage(row, bundle)
+                    row.update(bundle=bundle, rendered=parts, quality=quality, proposal=proposal)
+                elif row["state"] != "ready":
                     bundle = self._freeze(conn, row)
                     preview = (BriefProposal.model_validate(row['proposal'])
                                if not row['publish'] and row['proposal'] else None)
@@ -669,6 +702,36 @@ class BriefStore:
             result = {"state": "flushed", "committed": len(rows)}
         self.record_observation(at)
         return result
+
+    def _salvage(self, row, bundle):
+        """Owner rule (2026-10-10): an edition never ends as a notice. At its deadline the latest draft ships
+        without every item the server checks or a completed review rejected; with no draft, the frozen
+        inventory's original-bound facts (else the originals' headlines) ship with the collected numbers."""
+        reason, failures = row["error"] or "deadline", []
+        marks = {"review_incomplete": True, "salvaged_from": row["state"], "salvage_reason": reason}
+        if row["proposal"]:
+            try:
+                proposal = BriefProposal.model_validate(row["proposal"])
+                rejected = {**(row["quality"] or {}).get("rejected", {}),
+                            **dict.fromkeys((row["review"] or {}).get("rejected_ids", []), "semantic_review")}
+                rejected.update(validate(proposal, bundle))
+                proposal = prune(proposal, set(rejected))
+                parts, quality, proposal = publishable(proposal, bundle, rejected=rejected, review_reduced=True)
+                # Kept for the record and the video script, never as the next edition's evidence (see _freeze).
+                return parts, {**quality, **marks}, proposal.model_dump(mode="json")
+            except (ValueError, KeyError, TypeError) as exc:
+                failures.append(f"draft:{exc}"[:200])
+        try:
+            locked = {o["instrument"]: o for o in bundle.get("locked_observations", [])}
+            numbers = (BriefProposal(summary=[], observations=[MarketObservation.model_validate(o) for o in locked.values()][:18],
+                                     issues=[], internals=[], watchpoints=[], watch_results=[], calendar=[])
+                       if locked else None)
+            parts, quality = render(numbers, bundle, fallback=reason, review_reduced=True, facts=original_facts(bundle))
+        except (ValueError, KeyError, TypeError) as exc:
+            # Last resort only: nothing collected renders, so the deadline notice is the honest output.
+            failures.append(f"facts:{exc}"[:200])
+            parts, quality = render(None, bundle, fallback=reason)
+        return parts, {**quality, **marks, **({"salvage_failures": failures} if failures else {})}, None
 
     def record_observation(self, at):
         ids = self.company.settings.briefing_evaluation_edition_ids
