@@ -1,0 +1,558 @@
+{
+  "schema_version": 1,
+  "status": "deployed_runway_owner_approval_pending",
+  "branch": "release/combined73-video",
+  "branch_commit": "b238c978e2968247280967fb8fcbc17024436df6",
+  "runtime_commit": "7b37ac48824598a0c3c89b0bfd898574456bccf7",
+  "installed_at": "2026-10-10T14:21:04.793158+00:00",
+  "verified_at": "2026-10-10T14:21:51.383649+00:00",
+  "runbook": "docs/deploy/combined73-cutover.md",
+  "current_symlink_commit": "51ce4f91f141e65f909ac783e590ee0585dea3fa",
+  "runtime_env_unchanged": true,
+  "scope": {
+    "replaced": [
+      "news-worker",
+      "dispatch",
+      "briefing-data-worker"
+    ],
+    "added": [
+      "video-worker"
+    ],
+    "other_services_unchanged": true
+  },
+  "idle_before_cutover": {
+    "checked_at": "2026-10-10T14:19:50.225015+00:00",
+    "kst": "2026-10-10T23:19:50.069903+09:00",
+    "active_editions": 0,
+    "pending_brief_deliveries": 0,
+    "sending": 0
+  },
+  "staging_checks": {
+    "at": "2026-10-10T14:06:52.410319+00:00",
+    "overlay_sha256": {
+      "candidate.compose.yaml": "3708a7fa06f5c5130055b468886e8d42ac4b7390dfed9d9ea58d873e2cb04e0a",
+      "video-worker.compose.yaml": "5636b69add22461cfad38a8a0652d67f4ef1e282b03974600bf257a8a81d5313"
+    },
+    "changes": [
+      {
+        "service": "news-worker",
+        "environment_changed_keys": [
+          "BRIEFING_US_CLOSE_ENABLED",
+          "COMPANY_CODE_COMMIT",
+          "VIDEO_ALIGNMENT_MODEL",
+          "VIDEO_AM_PUBLISH_DST",
+          "VIDEO_AM_PUBLISH_STD",
+          "VIDEO_ARTIFACT_DIR",
+          "VIDEO_ASSET_DIR",
+          "VIDEO_CREDENTIALS_DIR",
+          "VIDEO_ENABLED",
+          "VIDEO_EPISODE_CREDIT_LIMIT",
+          "VIDEO_MIN_FREE_GB",
+          "VIDEO_MODEL",
+          "VIDEO_MONTHLY_CREDIT_LIMIT",
+          "VIDEO_PM_PUBLISH",
+          "VIDEO_PUBLISH_ENABLED",
+          "VIDEO_PUBLISH_LEAD_MINUTES",
+          "VIDEO_RENDER_WORKERS",
+          "VIDEO_RETENTION_DAYS",
+          "VIDEO_RUNWAY_WORKSPACE_ID",
+          "VIDEO_TEMPLATE",
+          "VIDEO_UPLOAD_ENABLED",
+          "VIDEO_VOICE"
+        ],
+        "added_video_mount": false
+      },
+      {
+        "service": "dispatch",
+        "environment_changed_keys": [
+          "BRIEFING_US_CLOSE_ENABLED",
+          "COMPANY_CODE_COMMIT",
+          "VIDEO_ALIGNMENT_MODEL",
+          "VIDEO_AM_PUBLISH_DST",
+          "VIDEO_AM_PUBLISH_STD",
+          "VIDEO_ARTIFACT_DIR",
+          "VIDEO_ASSET_DIR",
+          "VIDEO_CREDENTIALS_DIR",
+          "VIDEO_ENABLED",
+          "VIDEO_EPISODE_CREDIT_LIMIT",
+          "VIDEO_MIN_FREE_GB",
+          "VIDEO_MODEL",
+          "VIDEO_MONTHLY_CREDIT_LIMIT",
+          "VIDEO_PM_PUBLISH",
+          "VIDEO_PUBLISH_ENABLED",
+          "VIDEO_PUBLISH_LEAD_MINUTES",
+          "VIDEO_RENDER_WORKERS",
+          "VIDEO_RETENTION_DAYS",
+          "VIDEO_RUNWAY_WORKSPACE_ID",
+          "VIDEO_TEMPLATE",
+          "VIDEO_UPLOAD_ENABLED",
+          "VIDEO_VOICE"
+        ],
+        "added_video_mount": true
+      },
+      {
+        "service": "briefing-data-worker",
+        "environment_changed_keys": [
+          "BRIEFING_US_CLOSE_ENABLED",
+          "COMPANY_CODE_COMMIT"
+        ],
+        "added_video_mount": false
+      }
+    ]
+  },
+  "builds": [
+    {
+      "name": "app",
+      "completed_at": "2026-10-10T14:09:42.386741+00:00",
+      "seconds": 159.082688
+    },
+    {
+      "name": "video",
+      "completed_at": "2026-10-10T14:15:20.129134+00:00",
+      "seconds": 337.738377
+    },
+    {
+      "name": "briefing-0",
+      "completed_at": "2026-10-10T14:15:28.493734+00:00",
+      "seconds": 8.355598
+    },
+    {
+      "name": "briefing-1",
+      "completed_at": "2026-10-10T14:15:31.714522+00:00",
+      "seconds": 3.209082
+    },
+    {
+      "name": "briefing-2",
+      "completed_at": "2026-10-10T14:15:33.752042+00:00",
+      "seconds": 2.035745
+    }
+  ],
+  "source_checks": [
+    {
+      "image": "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7-combined73-0",
+      "full_source_inventory_sha256": "05b09f94f0f6eab9ee8f01e3615f7e31e919e7a3141009311655eb04651dab5d",
+      "files": 255
+    },
+    {
+      "image": "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7-combined73-1",
+      "full_source_inventory_sha256": "05b09f94f0f6eab9ee8f01e3615f7e31e919e7a3141009311655eb04651dab5d",
+      "files": 255
+    },
+    {
+      "image": "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7-combined73-2",
+      "full_source_inventory_sha256": "05b09f94f0f6eab9ee8f01e3615f7e31e919e7a3141009311655eb04651dab5d",
+      "files": 255
+    }
+  ],
+  "video_source_check": {
+    "installed_package_sha256": "f9ec68c7ca843f2020db1b5f21314400d48e8ad66e9d08d64c5bf87e5f149db6",
+    "files": 255,
+    "archive_sha256": "c0914ea9c41b687e675f267f38aaeb12f5641d94b9b0f217e91e37e18c4738af"
+  },
+  "built_image_ids": {
+    "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7-combined73-0": "sha256:4332081f7b9749d171d4264cf9af98d15e81a100ae0b4685a4d26926deb86e1c",
+    "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7-combined73-1": "sha256:2f4300372cade7e4fa3e1a77e37de7ecbd6f6f7ac43e0b2dc6a4a4f1791e2295",
+    "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7-combined73-2": "sha256:56cbd55985f8d65eb8afb596d17da8208cf1d6f936b7e734d4ac6c3c9c6d0eb8",
+    "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7": "sha256:88d5f1b416239c97a972a060f5c63fec8345120c0176469db97d308dfd66220e",
+    "quant-company-video:7b37ac48824598a0c3c89b0bfd898574456bccf7": "sha256:3390160c952bc6eeb963ddb66f4b000932684bbe2d123186914714e2dbd81ad0"
+  },
+  "backup": {
+    "path": "/var/lib/quant-company/backups/pre-combined73-20261010T141555Z",
+    "at": "2026-10-10T14:19:37.474170+00:00",
+    "idle": {
+      "checked_at": "2026-10-10T14:15:55.666904+00:00",
+      "kst": "2026-10-10T23:15:55.542376+09:00",
+      "active_editions": 0,
+      "pending_brief_deliveries": 0,
+      "sending": 0
+    },
+    "dump_bytes": 610949406,
+    "dump_sha256": "038ab4d5525c85d975bc389f80329102e980fb58c0b9f69ddb7aa6c4d97d05f8",
+    "toc_sha256": "b21fb3e0e0f4f6ea702d2016a019738664bb60c23a492af4127a591e83a0f322",
+    "dump_seconds": 223.953383,
+    "postgres_oom": false
+  },
+  "operational_fix": {
+    "file": "deploy/combined73/video-worker.compose.yaml",
+    "reason": "YAML flow comma split tmpfs into an invalid relative mount",
+    "change": "quote the intended single tmpfs option",
+    "original_sha256": "5636b69add22461cfad38a8a0652d67f4ef1e282b03974600bf257a8a81d5313",
+    "applied_sha256": "2023dc4e3372621b69b723b193ea22e2046981e86c65262b72842052c5cdbac8",
+    "runtime_source_changed": false,
+    "at": "2026-10-10T14:21:02.113637+00:00"
+  },
+  "readback": {
+    "services": {
+      "news-worker": {
+        "container": {
+          "image": "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7-combined73-0",
+          "started_at": "2026-10-10T14:20:09.055134691Z",
+          "running": true,
+          "oom": false,
+          "restarts": 0,
+          "memory_limit": 335544320,
+          "cpu_nanos": 500000000
+        },
+        "log_error_counts": {
+          "traceback": 0,
+          "nondeterminism": 0,
+          "out of memory": 0
+        }
+      },
+      "dispatch": {
+        "container": {
+          "image": "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7-combined73-1",
+          "started_at": "2026-10-10T14:20:08.61183291Z",
+          "running": true,
+          "oom": false,
+          "restarts": 0,
+          "memory_limit": 201326592,
+          "cpu_nanos": 500000000
+        },
+        "log_error_counts": {
+          "traceback": 0,
+          "nondeterminism": 0,
+          "out of memory": 0
+        }
+      },
+      "briefing-data-worker": {
+        "container": {
+          "image": "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7-combined73-2",
+          "started_at": "2026-10-10T14:20:08.358876788Z",
+          "running": true,
+          "oom": false,
+          "restarts": 0,
+          "memory_limit": 402653184,
+          "cpu_nanos": 250000000
+        },
+        "log_error_counts": {
+          "traceback": 0,
+          "nondeterminism": 0,
+          "out of memory": 0
+        }
+      },
+      "video-worker": {
+        "container": {
+          "image": "quant-company-video:7b37ac48824598a0c3c89b0bfd898574456bccf7",
+          "started_at": "2026-10-10T14:21:04.384311621Z",
+          "running": true,
+          "oom": false,
+          "restarts": 0,
+          "memory_limit": 2147483648,
+          "cpu_nanos": 2000000000
+        },
+        "log_error_counts": {
+          "traceback": 0,
+          "nondeterminism": 0,
+          "out of memory": 0
+        }
+      }
+    },
+    "schedules": {
+      "settings": {
+        "briefing_publish_enabled": true,
+        "briefing_kr_close_enabled": true,
+        "briefing_us_close_enabled": true,
+        "video_enabled": true,
+        "video_upload_enabled": false,
+        "video_publish_enabled": false,
+        "video_runway_workspace_id": 68440252,
+        "video_render_workers": 2
+      },
+      "schedule_version": "7+8:20/40/115",
+      "editions": [
+        {
+          "id": "02cfddb9-e401-5634-af9c-b124a6f54cf8",
+          "day": "2026-10-12",
+          "kind": "am",
+          "due_at": "2026-10-12T07:45:00+09:00",
+          "starts_at": "2026-10-12T06:10:00+09:00",
+          "cutoff": "2026-10-12T06:30:00+09:00",
+          "expires_at": "2026-10-12T08:45:00+09:00",
+          "us_session": null,
+          "kr_session": "2026-10-12",
+          "previous_us_session": null,
+          "previous_kr_session": "2026-10-08",
+          "weekly": "outlook",
+          "video_file_target": "2026-10-12T06:50:00+09:00",
+          "video_deadline": "2026-10-12T09:00:00+09:00"
+        },
+        {
+          "id": "9473536f-12b8-552b-ba48-6beb1d198577",
+          "day": "2026-10-12",
+          "kind": "pm",
+          "due_at": "2026-10-12T17:25:00+09:00",
+          "starts_at": "2026-10-12T15:50:00+09:00",
+          "cutoff": "2026-10-12T16:10:00+09:00",
+          "expires_at": "2026-10-12T18:25:00+09:00",
+          "us_session": null,
+          "kr_session": "2026-10-12",
+          "previous_us_session": null,
+          "previous_kr_session": "2026-10-08",
+          "weekly": null,
+          "video_file_target": "2026-10-12T17:50:00+09:00",
+          "video_deadline": "2026-10-12T20:20:00+09:00"
+        },
+        {
+          "id": "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb",
+          "day": "2026-10-13",
+          "kind": "am",
+          "due_at": "2026-10-13T06:55:00+09:00",
+          "starts_at": "2026-10-13T05:20:00+09:00",
+          "cutoff": "2026-10-13T05:40:00+09:00",
+          "expires_at": "2026-10-13T07:55:00+09:00",
+          "us_session": "2026-10-12",
+          "kr_session": "2026-10-13",
+          "previous_us_session": "2026-10-09",
+          "previous_kr_session": "2026-10-12",
+          "weekly": null,
+          "video_file_target": "2026-10-13T06:50:00+09:00",
+          "video_deadline": "2026-10-13T09:00:00+09:00"
+        },
+        {
+          "id": "cfc0bd9a-c815-5ce0-a29f-4f411c5f9383",
+          "day": "2026-10-13",
+          "kind": "pm",
+          "due_at": "2026-10-13T17:25:00+09:00",
+          "starts_at": "2026-10-13T15:50:00+09:00",
+          "cutoff": "2026-10-13T16:10:00+09:00",
+          "expires_at": "2026-10-13T18:25:00+09:00",
+          "us_session": null,
+          "kr_session": "2026-10-13",
+          "previous_us_session": null,
+          "previous_kr_session": "2026-10-12",
+          "weekly": null,
+          "video_file_target": "2026-10-13T17:50:00+09:00",
+          "video_deadline": "2026-10-13T20:20:00+09:00"
+        }
+      ]
+    },
+    "schema": {
+      "video_tables": 7,
+      "brief_calls_attempt": 1,
+      "video_jobs": 0
+    },
+    "video_smoke": {
+      "imports": true,
+      "assets": 14,
+      "ffmpeg": true,
+      "auth_directory_private": true
+    },
+    "other_services_unchanged": true,
+    "runtime_env_unchanged": true,
+    "current_unchanged": true
+  },
+  "render_readiness": {
+    "assets": 14,
+    "manifest_sha256": "cdfef443f6edf22689d6a31244cf641ec96644ae5c015a9629678291c6c11e35",
+    "chromium_screenshot": true,
+    "alignment_model_cached_and_loaded": "small",
+    "device": "cpu",
+    "training": false,
+    "paid_generation": false,
+    "at": "2026-10-10T14:22:19.188802+00:00"
+  },
+  "observation": {
+    "unit": "quant-company-combined73-observe",
+    "script_sha256": "3274eb5b83913d762e50b972d72c09ff1cbb801fa7181d42c0c95d2a567d9c6e",
+    "resource_interval_seconds": 15,
+    "record_interval_seconds": 30,
+    "end_utc": "2026-10-14T00:00:00Z",
+    "no_external_writes": true,
+    "started_at": "2026-10-10T14:22:28.029265+00:00"
+  },
+  "resource_readback": {
+    "at": "2026-10-10T14:23:11.934167+00:00",
+    "disk_available_bytes": 90803183616,
+    "all_company_containers_running_no_oom": true,
+    "tmpfs_verified": true,
+    "resources": {
+      "quant-company-news-worker-1": {
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "memory.current": 148197376,
+        "memory.peak": 224321536,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0",
+          "sock_throttled": "0"
+        },
+        "cpu.stat": {
+          "usage_usec": "24404661",
+          "user_usec": "23173243",
+          "system_usec": "1231418",
+          "nice_usec": "0",
+          "core_sched.force_idle_usec": "0",
+          "nr_periods": "595",
+          "nr_throttled": "412",
+          "throttled_usec": "21452489",
+          "nr_bursts": "0",
+          "burst_usec": "0"
+        },
+        "cpu_percent": 0.65
+      },
+      "quant-company-dispatch-1": {
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "memory.current": 75292672,
+        "memory.peak": 75980800,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0",
+          "sock_throttled": "0"
+        },
+        "cpu.stat": {
+          "usage_usec": "13648061",
+          "user_usec": "12782301",
+          "system_usec": "865760",
+          "nice_usec": "0",
+          "core_sched.force_idle_usec": "0",
+          "nr_periods": "579",
+          "nr_throttled": "73",
+          "throttled_usec": "1960190",
+          "nr_bursts": "0",
+          "burst_usec": "0"
+        },
+        "cpu_percent": 5.46
+      },
+      "quant-company-briefing-data-worker-1": {
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "memory.current": 119070720,
+        "memory.peak": 119513088,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0",
+          "sock_throttled": "0"
+        },
+        "cpu.stat": {
+          "usage_usec": "11984326",
+          "user_usec": "11591469",
+          "system_usec": "392856",
+          "nice_usec": "0",
+          "core_sched.force_idle_usec": "0",
+          "nr_periods": "508",
+          "nr_throttled": "462",
+          "throttled_usec": "29412345",
+          "nr_bursts": "0",
+          "burst_usec": "0"
+        },
+        "cpu_percent": 0.77
+      },
+      "quant-company-video-worker-1": {
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "memory.current": 894013440,
+        "memory.peak": 1667477504,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0",
+          "sock_throttled": "0"
+        },
+        "cpu.stat": {
+          "usage_usec": "18798094",
+          "user_usec": "14740045",
+          "system_usec": "4058049",
+          "nice_usec": "0",
+          "core_sched.force_idle_usec": "0",
+          "nr_periods": "311",
+          "nr_throttled": "0",
+          "throttled_usec": "0",
+          "nr_bursts": "0",
+          "burst_usec": "0"
+        },
+        "cpu_percent": 0.01
+      },
+      "quant-company-postgres-1": {
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "memory.current": 261652480,
+        "memory.peak": 268619776,
+        "memory.events": {
+          "low": "0",
+          "high": "0",
+          "max": "152191",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0",
+          "sock_throttled": "5"
+        },
+        "cpu.stat": {
+          "usage_usec": "30033895157",
+          "user_usec": "14699614227",
+          "system_usec": "15334280930",
+          "nice_usec": "0",
+          "core_sched.force_idle_usec": "0",
+          "nr_periods": "1430434",
+          "nr_throttled": "44580",
+          "throttled_usec": "1499096127",
+          "nr_bursts": "0",
+          "burst_usec": "0"
+        },
+        "cpu_percent": 12.52
+      }
+    }
+  },
+  "runway": {
+    "status": "waiting_owner_allowance",
+    "url_and_tokens_not_persisted": true,
+    "media_generated_for_deployment": false
+  },
+  "first_round": {
+    "status": "future_not_observed",
+    "days": [
+      "2026-10-12",
+      "2026-10-13"
+    ],
+    "monitoring_started": true,
+    "body_delivery": "confirmed Slack sent_ts, part and status",
+    "video_delivery": "outbox/video_deliveries receipts",
+    "stage_duration": "plan/review/speech effect timestamps plus state samples; render duration bounded by 30-second sample interval",
+    "resource": "15-second CPU/memory samples, cgroup memory peak/oom counters",
+    "credits": "reserved estimates and read-only before/after Runway workspace balance; unrelated workspace activity may affect balance delta"
+  },
+  "temp_cleanup": {
+    "path": "/tmp/c73src.5p3e",
+    "removed": true,
+    "allocated_before": "2.1G"
+  },
+  "validation": {
+    "selected_local_tests": {
+      "passed": 104,
+      "seconds": 26.38,
+      "real_postgresql": true,
+      "slack_and_model": "simulated",
+      "live_slack_post_not_performed": true
+    },
+    "full_suite": "Owner supplied full2200/video117/ruff results; not rerun during this operational cutover"
+  },
+  "rollback": {
+    "R1": "stop/remove video-worker",
+    "before_R2": "stale pending/sending video_files/video_review outbox rows",
+    "R2": "restore combined72 briefing overlay",
+    "R3": "verify prior images/env/mounts",
+    "db_restore": "requires separate owner decision",
+    "not_executed": true
+  }
+}

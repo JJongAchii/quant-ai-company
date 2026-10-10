@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "slug": "amberjack",
+  "revision": 20,
+  "createdAt": "2026-10-10T14:00:33.427977+00:00",
+  "sourceRequest": "운영 서버에 GitHub 브랜치 release/combined73-video(b238c97)를 배포해 주세요.",
+  "supersedes": {
+    "intentFile": "INTENT-v19.json",
+    "intentDigest": "a95cfd21928b"
+  },
+  "outcome": "Deploy the approved combined73 briefing/video release through runbook0-4, provision Runway through owner OAuth, preserve unrelated services, and observe first-round delivery/resources/credits.",
+  "constraints": [
+    "Deploy branch b238c978e2968247280967fb8fcbc17024436df6; runtime source7b37ac48824598a0c3c89b0bfd898574456bccf7 is identical.",
+    "Replace only news-worker, dispatch, briefing-data-worker; add video-worker. Keep Slack publication enabled.",
+    "No active edition/pending delivery; avoid05:30-08:00 and15:50-18:25 KST. Complete deployment before2026-10-12T05:00:00+09:00.",
+    "Use committed candidate/video overlays, migrate after pg_dump, preserve runtime.env and every unrelated container.",
+    "VIDEO_ENABLED=true; upload/publication=false; workspace68440252; existing credit limits; owner clicks OAuth allowance.",
+    "Rollback R1, invalidate pending video outbox, R2, R3; no DB restore without separate owner decision."
+  ],
+  "deliverables": [
+    {
+      "id": "COMBINED73_DEPLOY",
+      "acceptance": [
+        "Image complete source inventories and runtime settings verified",
+        "Database backup/migration receipts preserved",
+        "Unrelated services untouched"
+      ]
+    },
+    {
+      "id": "RUNWAY_AUTH",
+      "acceptance": [
+        "Owner OAuth allowance",
+        "Configured workspace/credit balance read-only verification"
+      ]
+    },
+    {
+      "id": "FIRST_ROUND_OBSERVATION",
+      "acceptance": [
+        "Actual brief/file delivery times, stage durations, memory/CPU/OOM and credits recorded"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "YouTube upload/publication",
+    "Paid API fallback",
+    "Research/backtests",
+    "Unrelated service changes"
+  ]
+}
