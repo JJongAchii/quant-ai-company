@@ -152,6 +152,8 @@ def large_review_case():
 
 def original_body(data, index):
     quotes = data['original_quotes']
+    if data.get('original_quote_layout') == 'implicit_grouped_documents':
+        return ''.join(quotes[index])
     if isinstance(quotes, dict):
         return ''.join(text for position, text in quotes.values() if position == index)
     if data.get('original_quote_layout') == 'grouped_documents':
@@ -168,11 +170,47 @@ def input_proposal(data):
     return expand(data['proposal'])
 
 
+def test_indexed_review_preserves_full_originals_visible_text_and_output_item_identities():
+    import re
+
+    from quant_company.briefing.editor import main_post_item_ids, render
+
+    b, p = large_review_case()
+    for document in b['documents']:
+        document['content'] = CONTENT * 8
+    for document in b['candidate_documents'][20:]:
+        document['title'] = document['title'][:140]
+    b['documents'] += [{**b['documents'][0], 'id': f'data-{i}', 'kind': 'dataset', 'content': CONTENT * 3}
+                       for i in range(3)]
+    for i, issue in enumerate(p['issues']):
+        for key in ('fact', 'interpretation'):
+            issue[key]['text'] = (f'관찰 {i} '+issue[key]['text']*4)[:350]
+    frozen = deepcopy(b)
+    text = prompt(b, 'final_review', p, direct_output=True)
+    data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
+    assert len(text) <= 88000 and data['original_quote_layout'] == 'implicit_grouped_documents'
+    for index, original in enumerate(b['documents']):
+        assert original_body(data, index) == original['content']
+        for offset, exact in enumerate(data['original_quotes'][index]):
+            alias = '@q:'+str(data['original_quote_starts'][index]+offset)
+            assert resolve_quotations({'source_id': original['id'], 'quote': alias}, b)['quote'] == exact
+    rendered = render(BriefProposal.model_validate(p), b)[0][0]
+    expected = re.sub(r'<[^<>|\n]+\|\[(\d+)\]>', r'[\1]', rendered)
+    assert ''.join(row[1] if isinstance(row, list) else row for row in data['main_post_preview']) == expected
+    assert {data['review_item_ids'][i] for i in data['main_post_item_ids']} == main_post_item_ids(BriefProposal.model_validate(p), b)
+    assert len(data['unselected_source_index']) == 76
+    assert b == frozen
+
+
 def test_large_final_review_retains_complete_originals_and_entire_unselected_catalog():
     b, p = large_review_case()
+    b['source_notes_repair'] = {'before_independent_review': True,
+                              'violations': ['WRITER_MAPPING_DIAGNOSIS_MUST_NOT_BIAS_REVIEW']}
     text = prompt(b, 'final_review', p)
     data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
     assert len(text) <= 88000
+    assert 'source_notes_repair' not in data
+    assert 'WRITER_MAPPING_DIAGNOSIS_MUST_NOT_BIAS_REVIEW' not in text
     for index, source in enumerate(b['documents']):
         assert original_body(data, index) == source['content']
     assert len(data['unselected_source_index']) == 76
@@ -265,3 +303,39 @@ def test_real_postgresql_producer_consumer_preserves_exact_quotes_and_raw_receip
     r.source_assessments[0].material_facts[0].quote = reference
     assert store.commit(response(critic_request, r))["state"] == "completed"
     assert store.commit(written)["duplicate"]
+
+
+def test_fit_original_rows_keeps_quoted_and_cited_rows_then_fills_in_source_order():
+    import json
+
+    import pytest
+
+    from quant_company.briefing.quotations import fit_original_rows
+
+    rows = [[f'@q:{i+1}', i // 3, ' '.join(f'w{i}-{j}' for j in range(40))] for i in range(9)]
+    payload = {'evidence': {'quote': '@q:8'}, 'original_quotes': rows, 'original_quote_layout': 'compact_ordered_rows'}
+    header = 'H\n'
+    full = header + json.dumps(payload, ensure_ascii=False, separators=(',', ':'))
+    same, trimmed = fit_original_rows(header, payload, limit=len(full))
+    assert same == full and trimmed == []
+    limit = len(full) - 3*len(json.dumps(rows[0], separators=(',', ':')))
+    result, trimmed = fit_original_rows(header, payload, quotes=[rows[5][2][10:120]], limit=limit)
+    kept = [row[0] for row in json.loads(result[len(header):])['original_quotes']]
+    assert len(result) <= limit and '@q:8' in kept and '@q:6' in kept       # cited reference and committed quote
+    assert kept == sorted(kept, key=lambda r: int(r[3:])) and kept[:3] == ['@q:1', '@q:2', '@q:3']
+    assert sum(r[1] for r in trimmed) == 9 - len(kept) and all(r[2] > 0 for r in trimmed)
+    with pytest.raises(ValueError, match='brief_context_limit'):
+        fit_original_rows(header, payload, quotes=[r[2] for r in rows], limit=limit)
+
+
+def test_fit_original_rows_grouped_layout_keeps_reference_numbers():
+    import json
+
+    from quant_company.briefing.quotations import fit_original_rows
+
+    groups = [[[1, 'a'*300], [2, 'b'*300]], [[3, 'c'*300], [4, 'd'*300]]]
+    payload = {'claim': {'quote': '@q:4'}, 'original_quotes': groups, 'original_quote_layout': 'grouped_documents'}
+    full = json.dumps(payload, separators=(',', ':'))
+    result, trimmed = fit_original_rows('', payload, limit=len(full) - 250)
+    kept = json.loads(result)['original_quotes']
+    assert [row[0] for group in kept for row in group] == [1, 2, 4] and trimmed == [[1, 1, 300]]

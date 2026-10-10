@@ -77,7 +77,7 @@ def test_continuous_monitor_uses_installed_calendar_and_keeps_missing_expected_e
                         'BRIEFING_CALENDAR_OVERRIDES_FILE=']}}]).encode()
         assert '--network=none' in command and '--read-only' in command
         assert command[command.index('--entrypoint=python')+1] == 'installed-calendar-image'
-        assert set(json.loads(kwargs['input'])) == {'now', 'channel', 'owner', 'overrides'}
+        assert set(json.loads(kwargs['input'])) == {'now', 'channel', 'owner', 'overrides', 'us_close'}
         return json.dumps([earlier, d]).encode()
     monkeypatch.setattr(monitor.subprocess, 'check_output', docker)
     expected = monitor.definitions(policy, now)
@@ -95,3 +95,37 @@ def test_continuous_monitor_accounts_for_optional_discovery_without_certifying_b
     assert not result['content_passed'] and result['failed_checks'] == ['coverage']
     row['calls'].append({'phase': 'search', 'state': 'completed', 'provider': 'codex'})
     assert 'model_request_budget_exceeded' in monitor.assess(d, row, now, maximum_requests=7)['problems']
+
+
+def test_first_full_review_after_mapping_repair_is_required_and_legacy_receipts_still_work():
+    d, row, now = completed()
+    row.update(source_notes_repair=True, source_notes_review_phase='review')
+    row['calls'].append({'phase': 'revise', 'state': 'completed', 'provider': 'codex'})
+    assert monitor.assess(d, row, now)['content_passed']
+    row['calls'] = [c for c in row['calls'] if c['phase'] != 'review']
+    assert not monitor.assess(d, row, now)['content_passed']
+    row.pop('source_notes_review_phase')
+    row['calls'].append({'phase': 'final_review', 'state': 'completed', 'provider': 'codex'})
+    assert monitor.assess(d, row, now)['content_passed']
+
+
+def test_schedule_changes_do_not_rewrite_recorded_edition_times():
+    d, row, now = completed()
+    row['definition'] = dict(d)
+    current = {**d, 'cutoff': (definition().cutoff-timedelta(minutes=30)).isoformat(),
+               'due_at': (definition().due_at+timedelta(hours=1)).isoformat()}
+    result = monitor.assess(current, row, now)
+    assert result['cutoff'] == d['cutoff'] and result['due_at'] == d['due_at']
+    assert result['delay_seconds'] == 0
+    row['definition']['kind'] = 'pm' if d['kind'] == 'am' else 'am'
+    with pytest.raises(ValueError, match='recorded_edition_identity_mismatch'):
+        monitor.assess(current, row, now)
+
+
+def test_completed_on_time_but_late_slack_delivery_remains_late():
+    d, row, now = completed()
+    row.update(publish=True, expected_messages=2, delivered_messages=2, delivered_at=now.isoformat())
+    result = monitor.assess(d, row, now)
+    assert result['content_passed'] and result['delay_seconds'] == 0
+    assert result['delivery'] == 'confirmed' and result['delivery_delay_seconds'] == 13*60
+    assert 'late_slack_delivery' in result['problems'] and 'late_brief' not in result['problems']

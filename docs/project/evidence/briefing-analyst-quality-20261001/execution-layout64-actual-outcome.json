@@ -1,0 +1,31 @@
+{
+  "recorded_at": "2026-10-07T12:58:46.268974+00:00",
+  "case": "analyst-fragments62-layout64-continuation-20261007",
+  "state": "closed_failed",
+  "source_commit": "996bc8604664bee3cd9840318f9605057978386d",
+  "actual_completed_correction": {
+    "phase": "revise",
+    "request_id": "news-brief-87825174-4e3d-5dc3-b58a-a85b15d2ad15-revise",
+    "state": "completed",
+    "request_sha256": "5909607a83d55527d2d3d1ecfd88556e0f47ca1da73b5e4df7fca4c9055d1c6a",
+    "started_at": "2026-10-07T12:36:09.296897+00:00",
+    "timeout_seconds": 360,
+    "prompt_chars": 35538,
+    "usage": {
+      "input_tokens": 22779,
+      "cached_input_tokens": 0,
+      "output_tokens": 9157,
+      "reasoning_output_tokens": 5178
+    },
+    "seconds": 305.736
+  },
+  "failure": "brief_story_context_limit",
+  "cause": "The six-issue writer used four supporting paragraphs; the allowed two-paragraph correction exceeded the old whole-brief limit of four.",
+  "follow_up": "Validation65 reserves actual remaining context capacity and preserves the completed correction response. No completed phase replay.",
+  "slack_calls": 0,
+  "company_database_mutations": 0,
+  "content_passed": false,
+  "review_attempted": false,
+  "receipt_sha256": "3aaf2cb9cae2fac4f98fe798e4f7d0c98da5912168a5f6a34cfff96d11136192",
+  "response_sha256": "218fec72edb14f747a4288c4aba8c8df65209abd524c6a8cce8c0afbe60725f7"
+}

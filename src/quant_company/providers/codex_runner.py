@@ -85,6 +85,16 @@ def output_schema(request):
                     else quant_output_model(request.output_contract))
     schema = output_model.model_json_schema()
 
+    def allow_quote_references(node):
+        if isinstance(node, dict):
+            if node.get("type") == "string":
+                node["minLength"] = 1
+            for child in node.values():
+                allow_quote_references(child)
+        elif isinstance(node, list):
+            for child in node:
+                allow_quote_references(child)
+
     def strict(node):
         if isinstance(node, dict):
             node.pop("default", None)
@@ -100,7 +110,7 @@ def output_schema(request):
                 # Exact, source-bound references are resolved by BriefStore before
                 # domain validation. Short @q references are valid on the wire.
                 if request.output_contract.startswith("brief_") and "quote" in node["properties"]:
-                    node["properties"]["quote"]["minLength"] = 1
+                    allow_quote_references(node["properties"]["quote"])
             for child in node.values():
                 strict(child)
         elif isinstance(node, list):
@@ -162,6 +172,8 @@ def request_digest(request: ProviderRequest) -> str:
         material.pop("output_contract", None)
     if request.session is None:
         material.pop("session", None)
+    if request.brief_deadline_unix is None:
+        material.pop('brief_deadline_unix', None)
     canonical = json.dumps(material, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(canonical.encode()).hexdigest()
 

@@ -1,0 +1,28 @@
+{
+  "recorded_at": "2026-10-07T23:02:53.366156+00:00",
+  "edition_id": "f8004fe8-789b-5df2-8dfa-a06f11903d91",
+  "original_production_validation_version": 67,
+  "original_inventory_runtime_state": "complete",
+  "original_inventory_response_sha256": "0df4d18429019141c1b1de5b25fafb17eac1454b6c7da2f1c98a40d9f4d71afc",
+  "original_schedule_result": "Committed at07:55KST with invalid_brief_response; no completed market briefing or content qualification.",
+  "false_positives": [
+    "Explicit downward magnitude against signed negative earnings revisions",
+    "Named English-month emergency action plan translated to Korean month"
+  ],
+  "subsequent_transport_failure": "Writer input89,774characters exceeded88,000; fixed by grouping exact quote rows and tabular metadata.",
+  "replay": {
+    "scope": "Oct8 AM completed inventory replay without model calls",
+    "edition_id": "f8004fe8-789b-5df2-8dfa-a06f11903d91",
+    "writer_input_chars": 86795,
+    "sources": 27,
+    "original_chars": 49756,
+    "facts": 61,
+    "all_originals_and_facts_and_qualifiers_exact": true,
+    "new_model_calls": 0,
+    "database_mutations": 0,
+    "slack_calls": 0,
+    "writer_input_sha256": "1ceea65749acda4ff7e49e46e5ecae834a5eef61fad02827ee6f7a7229cef920"
+  },
+  "original_failure_preserved": true,
+  "quality_certified": false
+}

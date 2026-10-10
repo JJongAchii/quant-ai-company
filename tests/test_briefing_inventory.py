@@ -1,11 +1,18 @@
 """Frozen fact conservation; real PostgreSQL lifecycle with simulated model output."""
 
+import json
 from copy import deepcopy
 
 import pytest
 from psycopg.types.json import Jsonb
 
-from quant_company.briefing.contracts import BriefComposition, EditorialPatch, FactInventory, SourcePlan
+from quant_company.briefing.contracts import (
+    BriefComposition,
+    EditorialPatch,
+    FactInventory,
+    FragmentFactInventory,
+    SourcePlan,
+)
 from quant_company.briefing.editor import (
     SourceNotesValidationError,
     prompt,
@@ -34,6 +41,15 @@ def composition():
     p = proposal().model_dump(mode='json')
     p['issues'][0]['fact']['text'] = inventory().sources[0].material_facts[0].fact
     return BriefComposition(**p, fact_placements=[{'fact_id': 'f1', 'main_item_ids': ['fact']}])
+
+
+def fragment_inventory():
+    value = inventory().model_dump(mode='json')
+    for source in value['sources']:
+        for fact in source['material_facts']:
+            fact['quote'] = [fact['quote']]
+            fact['qualifiers'] = [q['text'] for q in fact['qualifiers']]
+    return FragmentFactInventory.model_validate(value)
 
 
 def frozen():
@@ -104,6 +120,42 @@ def test_independent_critic_gets_originals_and_main_without_inventory_or_selecto
     assert 'Semiconductor shares led' in critic and p.issues[0].fact.text in critic
 
 
+def test_large_writer_input_preserves_all_originals_facts_qualifiers_and_attribution():
+    from quant_company.briefing.inventory import composition_inventory
+    from quant_company.briefing.quotations import resolve_quotations
+
+    from .test_briefing import CONTENT
+    from .test_briefing_quotations import original_body
+
+    b = frozen()
+    b['documents'] = [{**b['documents'][0], 'id': f'source-{i:040x}',
+        'title': 'Synthetic market baseline and follow-through report. ' * 7,
+        'content': CONTENT * 8} for i in range(20)]
+    sources = []
+    for document in b['documents']:
+        source = deepcopy(inventory().sources[0])
+        source.source_id = document['id']
+        source.material_facts = [deepcopy(source.material_facts[0]) for _ in range(3)]
+        for fact in source.material_facts:
+            fact.fact *= 4
+        sources.append(source)
+    b = freeze_inventory(FactInventory(sources=sources), b)
+    original = deepcopy(b)
+    text = prompt(b, 'write', direct_output=True)
+    data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
+    assert len(text) <= 88000 and data['original_quote_layout'] == 'grouped_documents'
+    documents = [dict(zip(data['document_columns'], row, strict=True)) for row in data['documents']]
+    for index, document in enumerate(b['documents']):
+        assert original_body(data, index) == document['content']
+        assert documents[index]['id'] == document['id'] and documents[index]['title'] == document['title']
+    committed = data['committed_inventory']
+    for expected, row in zip(composition_inventory(b)['facts'], committed['facts'], strict=True):
+        actual = dict(zip(committed['fact_columns'], row, strict=True))
+        actual['source_id'] = documents[actual.pop('source_document_index')]['id']
+        assert resolve_quotations(actual, b) == expected
+    assert b == original
+
+
 def test_new_original_notes_cannot_replace_previously_committed_source():
     b = frozen()
     b['documents'].append({**deepcopy(b['documents'][0]), 'id': 'supplement'})
@@ -136,6 +188,7 @@ def test_supported_but_incomplete_mechanism_can_receive_targeted_semantic_repair
 
 @pytest.mark.parametrize('phase,contract,seconds', [
     ('inventory', 'brief_inventory_v1', 480), ('write', 'brief_compose_v1', 960),
+    ('inventory', 'brief_inventory_v2', 1080),
     ('write', 'brief_write_v1', 1440), ('revise', 'brief_compose_v1', 360),
 ])
 def test_phase_contracts_have_bounded_budgets_and_official_structured_shapes(phase, contract, seconds):
@@ -159,17 +212,18 @@ def test_real_postgres_inventory_is_committed_before_write_and_reused_after_rest
     store.commit(response(planned, SourcePlan(selections=[{'source_id': 'source-1',
         'reason': '시장의 종가와 업종 참여를 함께 설명하는 원문이다.'}], priorities=['시장 참여의 폭을 확인한다.'])))
     reading = store.prepare()['request']
-    assert reading['output_contract'] == 'brief_inventory_v1'
+    assert reading['output_contract'] == 'brief_inventory_v2'
     assert store.prepare()['request'] == reading
-    store.commit(response(reading, inventory()))
+    store.commit(response(reading, fragment_inventory()))
     writer = store.prepare()['request']
     assert writer['output_contract'] == 'brief_compose_v1'
     with store.db.transaction() as conn:
         saved = conn.execute('SELECT bundle FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()['bundle']
-    assert saved['fact_inventory_digest'] == frozen()['fact_inventory_digest']
+    assert saved['fact_inventory_version'] == 2
+    assert saved['fact_inventory_digest'] == freeze_inventory(fragment_inventory(), bundle())['fact_inventory_digest']
     store.commit(response(writer, composition()))
     critic = store.prepare()['request']
-    assert critic['output_contract'] == 'brief_review_v1'
+    assert critic['output_contract'] == 'brief_review_v2'
     assert 'INVENTORY_PRIVATE_SENTINEL' not in critic['prompt']
     store.commit(response(critic, review()))
     clock['at'] = edition.due_at
@@ -193,7 +247,7 @@ def test_real_postgres_new_inventory_path_allows_one_semantic_patch_and_final_re
         conn.execute('UPDATE brief_editions SET bundle=%s WHERE id=%s', (Jsonb(b), edition.id))
     plan = SourcePlan(selections=[{'source_id': 'source-1', 'reason': '종가와 업종 참여를 확인할 핵심 자료'}],
                       priorities=['업종 참여를 확인한다.'])
-    for value in (plan, inventory(), composition()):
+    for value in (plan, fragment_inventory(), composition()):
         store.commit(response(store.prepare()['request'], value))
     critic = review()
     critic.verdict = 'reduce'
@@ -202,7 +256,7 @@ def test_real_postgres_new_inventory_path_allows_one_semantic_patch_and_final_re
     critic.concerns = ['대안 설명을 더 명확하게 써야 한다.']
     store.commit(response(store.prepare()['request'], critic))
     request = store.prepare()['request']
-    assert request['output_contract'] == 'brief_editorial_v1'
+    assert request['output_contract'] == 'brief_editorial_v2'
     edit = EditorialPatch(edits=[{'id': 'alternative',
         'text': '반도체 자체의 재료가 더 크게 작용했을 가능성도 있어 금리만으로 상승을 설명할 수 없습니다.'}])
     store.commit(response(request, edit))
@@ -217,3 +271,73 @@ def test_real_postgres_new_inventory_path_allows_one_semantic_patch_and_final_re
     assert count == 6 and row['quality']['revision_used'] and not row['quality']['reduced']
     assert row['proposal']['source_notes'][0]['material_facts'][0]['fact'] == inventory().sources[0].material_facts[0].fact
     assert replay(row)['ok']
+
+
+def two_fact_inventory(second_quote, second_fact='3월 비상계획에서 약 3억2500만 배럴이 공급됐다.'):
+    value = inventory().model_dump(mode='json')
+    value['sources'][0]['material_facts'].append({'fact': second_fact, 'quote': second_quote, 'qualifiers': []})
+    return FactInventory.model_validate(value)
+
+
+def test_unsupported_fact_is_withheld_and_recorded_without_blocking_the_inventory():
+    b = bundle() | {'source_notes_required': True, 'quote_reference_version': 1}
+    result = freeze_inventory(two_fact_inventory('An invented original statement about barrels.'), b)
+    kept = result['fact_inventory']['sources'][0]['material_facts']
+    assert [f['fact'] for f in kept] == [inventory().sources[0].material_facts[0].fact]
+    assert result['fact_inventory_dropped'] == [{'source_id': 'source-1', 'reason': 'quote_not_in_original',
+                                                 'fact': '3월 비상계획에서 약 3억2500만 배럴이 공급됐다.'}]
+    # The committed digest covers only the kept facts; nothing is repaired or invented.
+    assert facts(result)[1].keys() == {'f1'}
+
+
+def test_source_left_without_supported_facts_becomes_background_and_all_unsupported_still_blocks():
+    b = bundle() | {'source_notes_required': True, 'quote_reference_version': 1}
+    v = inventory()
+    v.sources[0].material_facts[0].quote = 'An invented original statement.'
+    with pytest.raises(ValueError, match='inventory_fact_not_supported'):
+        freeze_inventory(v, b)
+    value = inventory().model_dump(mode='json')
+    extra = deepcopy(value['sources'][0])
+    extra['source_id'] = 'source-2'
+    extra['material_facts'][0]['quote'] = 'An invented original statement.'
+    docs = deepcopy(b['documents'])
+    docs.append(deepcopy([d for d in docs if d['id'] == 'source-1'][0]) | {'id': 'source-2'})
+    result = freeze_inventory(FactInventory.model_validate({'sources': value['sources'] + [extra]}), b | {'documents': docs})
+    second = result['fact_inventory']['sources'][1]
+    assert second['treatment'] == 'background' and second['material_facts'] == []
+    assert second['reason'].startswith('원문 대조를 통과한 사실이 없어 배경으로 둔다')
+    assert [d['source_id'] for d in result['fact_inventory_dropped']] == ['source-2']
+
+
+def long_inventory_bundle(paragraphs):
+    from .test_briefing import CONTENT
+
+    b = frozen()
+    filler = ' Additional background paragraph about regional market conditions.' * paragraphs
+    b['documents'] = [{**b['documents'][0], 'id': f'source-{i:040x}',
+        'title': 'Synthetic market baseline and follow-through report. ' * 7,
+        'content': CONTENT+filler} for i in range(20)]
+    sources = []
+    for document in b['documents']:
+        source = deepcopy(inventory().sources[0])
+        source.source_id = document['id']
+        sources.append(source)
+    return freeze_inventory(FactInventory(sources=sources), b)
+
+
+def test_composition_over_the_input_limit_keeps_committed_quote_rows_and_records_trimmed_originals():
+    from quant_company.briefing.quotations import resolve_quotations
+
+    fits = prompt(long_inventory_bundle(40), 'write', direct_output=True)
+    assert len(fits) <= 88000 and 'trimmed_originals' not in fits and 'Input limit:' not in fits
+    b = long_inventory_bundle(64)
+    original = deepcopy(b)
+    text = prompt(b, 'write', direct_output=True)
+    data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
+    assert len(text) <= 88000 and 'Input limit: original_quotes keeps every row' in text
+    assert data['trimmed_originals'] and all(row[1] > 0 and row[2] > 0 for row in data['trimmed_originals'])
+    quote = inventory().sources[0].material_facts[0].quote
+    kept = [row[1] for group in data['original_quotes'] for row in group]
+    # Every document keeps the row holding its committed fact quote; the frozen bundle is unchanged.
+    assert sum(quote in row for row in kept) == 20
+    assert b == original and resolve_quotations(data['committed_inventory'], b)

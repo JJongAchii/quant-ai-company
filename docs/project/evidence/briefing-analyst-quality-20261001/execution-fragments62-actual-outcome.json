@@ -1,0 +1,77 @@
+{
+  "recorded_at": "2026-10-07T11:54:56.437970+00:00",
+  "case": "analyst-current-pm-20261007-fragments62",
+  "source_commit": "485d637a0a1866730924aac888711d96f876f2f9",
+  "outcome": "closed_failed_at_inventory_numeric_validation",
+  "prior_raw_receipts_unchanged": true,
+  "model_attempts": [
+    {
+      "phase": "plan",
+      "request_id": "news-brief-87825174-4e3d-5dc3-b58a-a85b15d2ad15-plan",
+      "state": "completed",
+      "request_sha256": "8cec9ca583b3427f1f997f574b1d89e644e7399a05df42968da3f5efd052afc0",
+      "started_at": "2026-10-07T11:31:43.891931+00:00",
+      "timeout_seconds": 360,
+      "prompt_chars": 76178,
+      "usage": {
+        "input_tokens": 40118,
+        "cached_input_tokens": 0,
+        "output_tokens": 7926,
+        "reasoning_output_tokens": 6133
+      },
+      "seconds": 324.833
+    },
+    {
+      "phase": "inventory",
+      "request_id": "news-brief-87825174-4e3d-5dc3-b58a-a85b15d2ad15-inventory",
+      "state": "completed",
+      "request_sha256": "53d3a0676da34bc25f00c0df8af9d0059fe7306e7f545d571cf7aed1f3332bad",
+      "started_at": "2026-10-07T11:37:11.111399+00:00",
+      "timeout_seconds": 1080,
+      "prompt_chars": 66888,
+      "usage": {
+        "input_tokens": 34049,
+        "cached_input_tokens": 0,
+        "output_tokens": 20938,
+        "reasoning_output_tokens": 11955
+      },
+      "seconds": 722.678
+    }
+  ],
+  "source_manifest": {
+    "collected_at": "2026-10-07T11:31:19.783150+00:00",
+    "sealed_at": "2026-10-07T11:31:39.313689+00:00",
+    "candidate_count": 96,
+    "origin_groups": 7,
+    "independent_close_reports": 3,
+    "input_ready": true,
+    "candidate_chars": 196563,
+    "locked_observations": 2,
+    "collection_error_count": 3,
+    "model_selection": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "source": "pinned",
+      "revision": 2
+    },
+    "database_read_only_verified": true
+  },
+  "slack_calls": 0,
+  "database_mutations": 0,
+  "facts": 56,
+  "qualifiers": 118,
+  "false_positive_facts": 4,
+  "confirmed_causes": [
+    "Korean rank followed by a parenthesized amount",
+    "English named-month quarter",
+    "English first N quarters as cumulative Q1-QN",
+    "Explicit Korean decline-width label preceding the percentage"
+  ],
+  "raw_inventory_sha256": "ada598dc3f0079740db829ba5234e5d1e86c0325ba625d1f45eca8856ee50c08",
+  "proposed_validator63_diagnostic": {
+    "scope": "Same actual response with new numeric rules, not a new model run or reclassification of the failed edition",
+    "all_56_facts_original_number_qualifier_validation": "passed",
+    "content_pass": false
+  },
+  "next": "Preserve completed plan/inventory and continue only the never-attempted write/review phases under a separate version63 diagnostic receipt."
+}

@@ -24,6 +24,7 @@ from .contracts import (
     WatchResult,
     item_map,
 )
+from .data_reader import CLOSE_LABEL, KRX_CLOSE_REGISTRATION, KRX_FLOW_INSTRUMENTS, KRX_MARKETS, SESSION_LABEL
 from .market_rules import expired_wti_contract
 from .numeric import numbers, prose_numbers_supported, reported_change_supported
 from .planning import SOURCE_CHAR_BUDGET, supplement_sources
@@ -31,15 +32,17 @@ from .quality import assurance
 from .quotations import (
     QUOTE_REFERENCE_VERSION,
     compact_reference_payload,
+    fit_original_rows,
     ordered_reference_payload,
+    quote_parts,
     reference_payload,
     resolve_candidate_requests,
     resolve_quotations,
 )
 from .schedule import KST, close
 
-FORMAT_VERSION = 17
-VALIDATION_VERSION = 60
+FORMAT_VERSION = 22
+VALIDATION_VERSION = 70
 
 WRITE = """You are Analyst writing a substantive, readable Korean daily market briefing.
 Return AgentDecision(status=complete,say='') with exactly one complete BriefProposal JSON artifact,
@@ -93,27 +96,46 @@ session close. Preserve the source's timestamp precision.
 
 EDITORIAL SELECTION AND DEPTH
 source_plan gives questions, not facts. Rank by newness, economic magnitude/persistence, affected markets
-and proximity of the next event. Put the ONE OR TWO most consequential session/next-decision issues first,
-then distinct corporate/world context. On quiet days use fewer issues. Do not fill geographic/topic quotas.
+and proximity of the next event. This is a whole-market briefing: survey equity participation/sectors/flows,
+rates/FX/commodities, economic releases/central banks, policy/trade/geopolitics, and corporate/industry changes.
+Explain every material development found across those areas; a three-line summary is not a two-story limit.
+Use normally 4-6 distinct issues when supported developments warrant it, fewer on quiet days. Do not fill
+geographic/topic quotas or claim an unchecked area had no news. Several companies, prices or financing
+angles driven by the same event are not several independent stories. Group them by their economic link;
+give a separate heading only when the new development changes a different market question or decision.
+Do not demote a material rate/FX move, economic release, policy decision or non-tech sector development
+to a passing mention because a chip/AI/oil story came first. Cut repeated detail before cutting breadth.
 Use the preceding US catalyst when it explains Korea's opening; generic 'AI optimism' is not a mechanism.
 An index and a winning chip stock do not establish participation: retain sourced breadth, concentration,
 opposing sectors and investor-group flows with venue/provisional status. Simultaneous flows do not prove cause.
 For earnings, retain material segment shares, revenue/margin driver, capex/production timing and competing
 supply. For acquisitions explain target capability and buyer use; distinguish announcement/signing/closing.
+Revised earnings guidance needs its supplied market-consensus comparison, not only the prior company
+forecast. Separate operating improvement from refunds/tax/accounting contributions and retain their
+material magnitude. An ambiguous percent versus percentage-point unit stays explicitly ambiguous.
 For financing, retain seniority, guarantees, committed-versus-still-to-be-raised sums and prerequisites
 such as an IPO BEFORE fundraising. Make that funding gate visible and conditional, never confirmed.
 For investment/fiscal aid, distinguish additional money, an allocation within an old commitment and a
 revised forecast. State that relationship, not two unexplained amounts; announced money is not disbursed
 cash or booked revenue. For trade compare total change/concentration, not only the strongest sector.
+Delivered funding does not establish delivery of the weapons, capacity or services it will buy. Compare
+debt ratios with their denominator and actual repayment ability; preserve unresolved period conflicts.
 For changed rates, restrictions or deadlines retain supported old AND new terms. Meetings, contacts,
 demands and proposals are not agreements or implementation. Include material counterproposal conditions
 and time limits. A dot plot or nonvoting speaker is not a decision; retain competing speakers/data/path.
 For macro surprises preserve prior/revised growth alongside inflation and explain their different risks.
+For trade-driven growth claims distinguish nominal balances from inflation-adjusted goods balances and
+retain the actual growth contribution and its persistence when reported. A growth forecast alone cannot
+replace observed evidence. Preserve named companies' existing investment exposure beside new policy
+allocations, with the original speaker attribution; a separate proposed project is not a substitute.
 For oil/FX/yields retain sourced levels/moves with their distinct timestamps, probabilities or competing
 bond-supply/fiscal driver when material. Give the Korean transmission or its supported limitation.
 For disruptions retain already-observed retail/refined costs, processing constraints, restriction expiry,
 buffers/substitution/repair timing and conflicting flow estimates; distinguish them from prospective risks.
 Keep actual mediation/contact, denials and implemented mitigation alongside sanctions or rejected proposals.
+Parallel administrative and criminal proceedings are distinct developments; retain both when they
+change exposure or the next decision. A regional rates story must retain material co-reported central-bank
+actions in other markets, not only the headline country's rate decision.
 A warning's conditional easing baseline must remain conditional. Name material second actors and opposing
 facts even when in an otherwise duplicate article. Never hide a conclusion-changing offset in a quote/thread.
 
@@ -153,15 +175,25 @@ carry exact market levels. Use up to six material issues, normally 4-6 on busy d
 Use concrete short headlines. Facts give the development, scale and necessary background in 2-3 sentences.
 Each analytical paragraph normally has 1-2 short sentences and one idea; no mechanical five-part headings,
 repeated caveats, generic 'monitor developments' or a retelling of whole issues in summary/overview.
+Put an event's timing conflict in its calendar entry once; use watchpoints for the policy/economic
+implication. Put a volume-estimate discrepancy beside the figures once, not again in the FX overview.
 Explain unfamiliar technical names/acronyms at first use with a short SOURCE-SUPPORTED category/function.
 If the original does not establish the function, use its plain category rather than inventing an explanation.
+For example, introduce HBM or foundry by its supported memory/product or manufacturing role; do not
+assume every reader knows semiconductor terminology. State a payment/implementation condition beside
+its amount once; the later checkpoint should specify what would change, not copy the same condition.
 Keep numbers that change magnitude, surprise, exposure or timing; never sacrifice a material comparison/date.
-Use up to four short supporting context paragraphs, at most two per issue and 300 characters each, beside
+Use short supporting context paragraphs, normally at most one per issue, at most two per issue and
+500 characters each (prefer 300 or fewer), beside
 the relevant issue. Do not hide policy/investment facts in unrelated internals. Internals adds distinct
 sourced breadth/flow facts or stays empty. Guidance: 1800-3500 Korean prose characters excluding links,
 not a quota; preserve material completeness. Group by an economic link, not a shared keyword.
 Missing conclusion-changing data, conflicts and quantitative context belong visibly in overview/issues,
 not internal limitations. Use reader language, not field names. The detail thread carries sources/timestamps.
+Map committed facts only to IDs actually returned and visible in the main. Related facts may share
+one paragraph or several visible items; split calendar timing from policy context rather than repeat
+the event. All returned watchpoints remain in the main; observed facts appear with market internals,
+while conditions appear with the next checks. Put all conclusion-changing qualifiers in visible text.
 
 CALENDAR AND CHECKPOINTS
 Use supplied calendar originals or exact source passages. Preserve original timezones; convert only when
@@ -205,8 +237,9 @@ distinguish earnings/valuation, nominal/real rates and currency translation/oper
 alternatives: supported or conditional competing drivers, including policy/fiscal/bond supply when material;
 already-observed offsets cannot become only future possibilities.
 falsifiability: observable event/metric AND direction/change that weakens the view, with supported time/gates.
-coverage: distinct material facts visible in standalone main, including direction/participation/checkpoints;
-related claims, evidence quotes, internal limitations or a thread do not cover a missing fact.
+coverage: main covers material equity/sectors/flows, rates/FX/commodities, macro/policy/world and corporate
+developments in originals. Fail if one theme crowds out another. Related words, quotes or threads do not
+cover missing facts. Count distinct events, not headings/tickers; no topic or issue-count quota.
 depth: actual drivers, magnitude, mechanisms and Korea/global effects, not headlines or generic demand.
 readability: short natural Korean, clear hierarchy, explained jargon/acronyms, distinct sections;
 reject repetition, generic monitoring, irrelevant internals and obscuring repeated caveats. No length quota.
@@ -285,8 +318,9 @@ The reason a supplement was requested is only a discovery question: read its COM
 other conclusion-changing fact too. Include material product mix, capex/production timelines, competing
 supply and target capabilities; do not repair only the examples named by the first critic.
 When the old claim's character/quote limit prevents coherent coverage, use context_additions with a supplied
-allowed_context_issue_id as issue_fact_id and a new unique claim ID. Add at most four300-character paragraphs
-across the brief, two per issue, with exact own evidence from allowed_source_ids. Preserve existing context.
+allowed_context_issue_id as issue_fact_id and a new unique claim ID. Add no more than
+revision_feedback.context_addition_limit paragraphs of up to 500 characters (prefer 300 or fewer), two per issue including existing
+context, with exact own evidence from allowed_source_ids. Preserve existing context.
 Keep each addition beside the relevant issue, not in unrelated overview/internals. Do not duplicate existing
 prose or imply planned new supply is already operational or certainly surplus. The independent review still
 checks the complete resulting main post and every original, including facts not flagged by the first critic.
@@ -309,9 +343,16 @@ covered facts; do not drop a distinct material development, baseline, effective 
 Edit only revision_feedback.allowed_ids. Supply the complete new text and only additional exact
 quotes from allowed_sources. Keep every old numeric/date value, its meaning, and existing quotes.
 When a quote limit prevents editing, use a short context_addition beside an allowed_context_issue_id,
-with its own exact evidence. No more than two additions; no rewriting prices, summary or calendar.
+with its own exact evidence. Respect revision_feedback.context_addition_limit (at most two additions);
+no rewriting prices, summary or calendar.
 Preserve all unaffected sections and notes. This is one bounded correction, not a review verdict.
 The final full original-to-main comparison and twelve-criterion independent review still decide quality.
+For a missing or invisible item ID, map only to an ID actually present in the returned draft. Put
+material facts in a visible overview/issue/context/internals paragraph; citations alone cannot
+cover them. When committed_facts is supplied, copy its fact and quote fields EXACTLY unchanged; repair
+main_item_ids and visible prose instead of rewriting that inventory. Preserve every committed qualifier.
+Compress repeated interpretation and caveats
+within editable claims before adding prose; source coverage is not permission for repetitive writing.
 """
 
 
@@ -326,6 +367,12 @@ def prompt(bundle, phase, proposal=None, *, direct_output=False):
     schema = (SourceNotesPatch if notes_patch else ConditionPatch if patch else MaterialFactPatch if fact_patch else EditorialPatch if editorial_patch
               else BriefComposition if composition else BriefProposal if phase == "write" else BriefReview)
     payload = {**bundle, "proposal": proposal} if proposal else dict(bundle)
+    snapshot_docs = {d["id"] for d in bundle.get("documents", []) if d.get("registration") == KRX_CLOSE_REGISTRATION}
+    if snapshot_docs and phase != "review":
+        # BRIEFING_KR_CLOSE_ENABLED only: the 15:40 KRX index quote can lag the official close, so the writer takes
+        # index closes from closing reports and the service confirms them against the snapshot (reconcile).
+        payload["locked_observations"] = [o for o in bundle.get("locked_observations", []) if not (
+            o["unit"] == "pt" and any(e["source_id"] in snapshot_docs for e in o["evidence"]))]
     # The final critic must discover omissions from originals independently.
     payload.pop("fact_inventory", None)
     payload.pop("fact_inventory_digest", None)
@@ -334,10 +381,10 @@ def prompt(bundle, phase, proposal=None, *, direct_output=False):
 
         payload["committed_inventory"] = composition_inventory(bundle)
     elif phase == "write" and bundle.get("fact_inventory_required"):
-        from .inventory import facts
+        from .inventory import facts, qualifier_text
 
         _, indexed = facts(bundle)
-        payload['required_qualifiers'] = [[s.source_id, i, [q.text for q in f.qualifiers]]
+        payload['required_qualifiers'] = [[s.source_id, i, [qualifier_text(q) for q in f.qualifiers]]
                                           for s, i, f in indexed.values() if f.qualifiers]
     if notes_patch:
         feedback = bundle['revision_feedback']
@@ -346,6 +393,8 @@ def prompt(bundle, phase, proposal=None, *, direct_output=False):
         payload.update(documents=[d for d in bundle['documents'] if d['id'] in feedback['source_ids']],
                        revision_feedback=feedback)
     if editorial_patch:
+        payload.pop('source_notes_repair', None)
+        payload.pop('pre_review_source_notes_violations', None)
         feedback = payload["revision_feedback"]
         previous = feedback["previous_draft"]
         payload = {**payload, "revision_feedback": {
@@ -379,6 +428,12 @@ def prompt(bundle, phase, proposal=None, *, direct_output=False):
                 for source, material in feedback['protected_material_facts']]
             feedback['protected_fact_layout'] = ('[source_document_index, [[fact_text, mapped_claims]]]; '
                 'integer mapped_claims index protected_claims; strings are unchanged item IDs.')
+            if bundle.get('combined_editorial_repair'):
+                # Existing prose, committed qualifiers and every original already
+                # carry these covered facts. Keep the critic's duplicate inventory
+                # in the receipt; the correction needs its unresolved findings.
+                feedback.pop('protected_material_facts', None)
+                feedback.pop('protected_fact_layout', None)
             feedback.pop('allowed_ids', None)  # Exactly the IDs already present in protected_claims.
             if set(feedback['allowed_source_ids']) == set(positions):
                 feedback['allowed_source_ids'] = 'All supplied document IDs'
@@ -389,6 +444,10 @@ def prompt(bundle, phase, proposal=None, *, direct_output=False):
                 'headline': i['headline'], 'fact_id': i['fact']['id'],
                 'next_check': i['next_check']['text']} for i in previous['issues']]
     if phase == "review" and proposal:
+        # Pre-review mapping diagnostics belong to execution receipts, not the
+        # independent critic's evidence or judgement of the corrected draft.
+        payload.pop('source_notes_repair', None)
+        payload.pop('pre_review_source_notes_violations', None)
         draft = BriefProposal.model_validate(proposal)
         parts = [render(draft, bundle)[0][0]]
         texts = [(identity, item.text) for identity, item in item_map(draft).items() if hasattr(item, "text")]
@@ -503,11 +562,10 @@ def prompt(bundle, phase, proposal=None, *, direct_output=False):
         instruments = {key: INSTRUMENTS[key] for key in INSTRUMENTS
                        if key in {o.instrument for o in draft.observations}}
     reference_instruction = (
-        "\nOriginal quotes are an ID map to[document_index,text] or ordered [ID,document_index,text] rows. "
-        "Join a document's rows in order to read its COMPLETE unchanged body; map form uses original_quote_refs. "
-        "Use supplied @original or @q IDs in evidence/material_facts quote fields, never reader prose. "
-        "The server restores exact spans and checks source_id; do not invent/cross-assign references. "
-        "evidence_quotes may likewise refer to those IDs. All other checks apply.\n"
+        "\noriginal_quotes holds COMPLETE unchanged originals: ID->[document_index,text] or ordered "
+        "[ID,document_index,text] rows. Read every document's rows in order (map: original_quote_refs). "
+        "Use own-source @original/@q IDs in quote/evidence_quotes, never reader text. Fact quotes may be "
+        "arrays of separate spans. The server restores text and checks source_id; never invent/cross-assign IDs.\n"
         if references else "")
     from .execution import direct_instruction
 
@@ -519,10 +577,14 @@ def prompt(bundle, phase, proposal=None, *, direct_output=False):
         instruction = instruction[:start] + instruction[end:]
         instruction += """\nCommitted-inventory repair: protected_claim_columns describes rows of immutable existing
 claim text and source-document indices. Edit only the IDs in those rows. Original quotes and source
-notes are preserved by the service. protected_fact_layout decodes protected_material_facts.
+notes are preserved by the service. If supplied, protected_fact_layout decodes protected_material_facts.
 required_qualifiers rows are [source_document_index, committed_fact_index, exact_Korean_phrases].
 Return source_notes=null when existing mappings remain valid; otherwise supply ONLY changed/new-source
 notes, which the service merges. Preserve every committed fact and the supplied required_qualifiers.
+When mapping_violations is nonempty, correct those mappings and visible omissions together with the
+critic's content findings in this single patch. For committed_mapping_facts copy fact and quote fields
+EXACTLY; change only main_item_ids. Retain every supplied qualifier. Do not invent IDs or map to hidden
+watchpoints. New originals need their own material source notes; no notes may replace committed facts.
 All complete originals remain available. Never remove a fact to make the prose shorter.
 """
     if composition:
@@ -537,14 +599,15 @@ essay. supplemental_source_notes=[] unless the critic added previously unread or
 for those new sources there. Never use supplemental notes to replace a committed source's facts.
 Use full originals for context and additional material facts. An extracted fact remains subject
 to independent original review; do not hide a contradiction or treat the inventory as proof of truth.
-Write the leading two issues first, with short separate context for lesser developments. Explain each
-unfamiliar acronym at first use. Compress duplicated interpretation and repeated caveats before facts.
+Cover the market as a whole, normally with 4-6 distinct issues on busy days, fewer when warranted.
+Do not demote later material developments to name-checks or count several angles of one event as breadth.
+Explain unfamiliar acronyms; compress duplicated interpretation and repeated caveats before facts.
 """ + instruction[end:]
         instruction = instruction.replace(MATERIALITY_GUIDANCE,
-            "Use the committed priorities and required facts to explain the leading one or two changes. "
-            "Keep dated context, competing explanations and economic qualifiers visible. "
-            "The inventory stage has already inspected the originals for materiality; "
-            "compress repeated analysis rather than these facts.\n")
+            "Survey equities/sectors/flows, rates/FX/commodities, macro/central banks, policy/trade/world "
+            "and corporate developments in the originals. Preserve material independent events and the "
+            "committed facts, dated context, competing explanations and qualifiers. Group a shared "
+            "catalyst; no topic quota. Compress repetition before narrowing the market picture.\n")
         if payload.get('source_plan'):
             payload['source_plan'] = {'priorities': payload['source_plan']['priorities']}
     if direct_output:
@@ -611,7 +674,7 @@ unfamiliar acronym at first use. Compress duplicated interpretation and repeated
             "market_context.original_text_range=[start,end] selects the unchanged source substring.\n")
         header = header.removesuffix('BRIEF DATA JSON:\n')+instructions+'BRIEF DATA JSON:\n'
         result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    if references and phase == 'review' and len(result) > 88000:
+    if references and (phase == 'review' or editorial_patch or composition) and len(result) > 88000:
         groups = [[] for _ in payload['documents']]
         for reference, position, exact_text in payload['original_quotes']:
             groups[position].append([int(reference.removeprefix('@q:')), exact_text])
@@ -622,6 +685,10 @@ unfamiliar acronym at first use. Compress duplicated interpretation and repeated
             [int(row[0].removeprefix('@candidate:')), *row[1:]]
             for row in payload.get('unselected_source_index', [])]
         payload['unselected_source_prefix'] = '@candidate:'
+        if editorial_patch or composition:
+            header = header.removesuffix('BRIEF DATA JSON:\n') + (
+                'Grouped originals: original_quotes[document_index] holds ordered [quote_number,exact_text] '
+                'rows; cite @q:quote_number. Read every row without omission.\nBRIEF DATA JSON:\n')
         result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     if references and phase == 'review' and len(result) > 88000:
         # Independently audit the actual main text once, rather than send the
@@ -665,6 +732,44 @@ unfamiliar acronym at first use. Compress duplicated interpretation and repeated
                   'unannotated rows. Exact quote containment is separately validated by the service. '
                   'Only main_post_item_ids count as visible coverage.\nBRIEF DATA JSON:\n')
         result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    if references and phase == 'review' and len(result) > 88000 and 'review_items' in payload:
+        # A supplemented final review keeps every original and visible sentence.
+        # Intern repeated item IDs and encode contiguous quote IDs implicitly.
+        identities = [row[0] for row in payload['review_items']]
+        for key in ('source_notes_required', 'fact_inventory_required', 'fact_inventory_version',
+                    'quote_reference_version', 'execution_model', 'combined_editorial_repair', 'editorial_patch_version'):
+            payload.pop(key, None)  # Execution bookkeeping, not original evidence.
+        positions = {identity: i for i, identity in enumerate(identities)}
+        payload['review_item_ids'] = identities
+        for key in ('review_items', 'review_item_locators'):
+            payload[key] = [[positions[row[0]], *row[1:]] for row in payload[key]]
+        payload['main_post_item_ids'] = [positions[identity] for identity in payload['main_post_item_ids']]
+        payload['main_post_preview'] = [[positions[row[0]], row[1]] if isinstance(row, list) else row
+                                        for row in payload['main_post_preview']]
+        payload['issue_structure'] = [[positions[v] for v in row[:5]]+row[5:]
+                                      for row in payload['issue_structure']]
+        groups = payload['original_quotes']
+        if all(not group or [row[0] for row in group] == list(range(group[0][0], group[0][0]+len(group)))
+               for group in groups):
+            payload['original_quote_starts'] = [group[0][0] if group else None for group in groups]
+            payload['original_quotes'] = [[text for _, text in group] for group in groups]
+            payload['original_quote_layout'] = 'implicit_grouped_documents'
+        contexts = payload.get('market_context', [])
+        sources = {d['id']: i for i, d in enumerate(bundle['documents'])}
+        if contexts and all(set(c) == {'source_id', 'original_text_range'} for c in contexts):
+            payload['market_context'] = [[sources[c['source_id']], *c['original_text_range']] for c in contexts]
+            payload['market_context_columns'] = ['source_document_index', 'start', 'end']
+        observations = payload.get('locked_observations', [])
+        if observations and all(set(o) == set(observations[0]) for o in observations):
+            columns = list(observations[0])
+            payload['locked_observation_columns'] = columns
+            payload['locked_observations'] = [[o[k] for k in columns] for o in observations]
+        header = header.removesuffix('BRIEF DATA JSON:\n')+(
+            'Numeric item IDs index review_item_ids; OUTPUT uses full IDs. implicit_grouped_documents '
+            'holds text spans; span j cites @q:(original_quote_starts[document_index]+j). '
+            'Column lists decode observation/context rows.\n'
+            'BRIEF DATA JSON:\n')
+        result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     if composition and len(result) > 88000:
         positions = {d['id']: i for i, d in enumerate(bundle['documents'])}
         inventory = payload['committed_inventory']
@@ -673,15 +778,44 @@ unfamiliar acronym at first use. Compress duplicated interpretation and repeated
             'facts': [[f['id'], positions[f['source_id']], f['fact'], f['qualifiers'], f['quote']]
                       for f in inventory['facts']]}
         result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    if editorial_patch and bundle.get('fact_inventory_required') and len(result) > 88000:
+    if (editorial_patch or composition) and bundle.get('fact_inventory_required') and len(result) > 88000:
         columns = list(payload['documents'][0])
         if all(set(d) == set(columns) for d in payload['documents']):
             payload['document_columns'] = columns
             payload['documents'] = [[d[k] for k in columns] for d in payload['documents']]
         result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    if len(result) > 88000 and composition:
+        # Composition and full-proposal revision are the measured paths that can still exceed the
+        # provider limit after table transport; a prompt that already fits is never changed.
+        result, _ = fit_original_rows(header.removesuffix('BRIEF DATA JSON:\n') + TRIMMED_NOTE, payload,
+                                      committed_quotes(bundle))
     if len(result) > 88000:
         raise ValueError("brief_context_limit")
     return result
+
+
+TRIMMED_NOTE = ('Input limit: original_quotes keeps every row holding a cited or committed quote, then the rest '
+                'in source order. trimmed_originals rows are [document_index, omitted_rows, omitted_chars]; '
+                'do not infer omitted text or cite rows that are not shown.\nBRIEF DATA JSON:\n')
+
+
+def committed_quotes(bundle):
+    """Exact spans the service already holds as evidence: committed facts, then any repair claims."""
+    quotes = []
+    for source in (bundle.get('fact_inventory') or {}).get('sources', []):
+        for fact in source.get('material_facts', []):
+            quotes.extend(quote_parts(fact['quote']))
+    def walk(value):
+        if isinstance(value, dict):
+            if isinstance(value.get('quote'), (str, list)):
+                quotes.extend(quote_parts(value['quote']))
+            for item in value.values():
+                walk(item)
+        elif isinstance(value, list):
+            for item in value:
+                walk(item)
+    walk(bundle.get('revision_feedback', {}))
+    return quotes
 
 
 def revision_bundle(bundle, proposal, review, rejected):
@@ -692,8 +826,10 @@ def revision_bundle(bundle, proposal, review, rejected):
             return [compact(item) for item in value]
         return value
 
+    mapping_violations = (bundle.get('pre_review_source_notes_violations', [])
+                          if bundle.get('combined_editorial_repair') else [])
     items = item_map(BriefProposal.model_validate(proposal))
-    conditions_only = (review.verdict == "reduce" and bool(rejected) and len(rejected) <= 6
+    conditions_only = (not mapping_violations and review.verdict == "reduce" and bool(rejected) and len(rejected) <= 6
         and all(value for key, value in review.checks.items() if key != "falsifiability")
         and all(isinstance(items.get(identity), Claim) and items[identity].kind == "condition" for identity in rejected))
     bundle = supplement_sources(bundle, review.source_requests)
@@ -702,7 +838,7 @@ def revision_bundle(bundle, proposal, review, rejected):
                        if any(not set(f.main_item_ids) & retained for f in a.material_facts)}
     allowed_sources = {}
     draft = BriefProposal.model_validate(proposal)
-    if (review.verdict == "reduce" and not rejected and not review.source_requests and missing_sources
+    if (not mapping_violations and review.verdict == "reduce" and not rejected and not review.source_requests and missing_sources
             and all(value for key, value in review.checks.items()
                     if key not in {"materiality", "counterevidence", "coverage", "depth"})):
         for issue in draft.issues:
@@ -721,13 +857,13 @@ def revision_bundle(bundle, proposal, review, rejected):
                 allowed_sources[claim.id] = sorted(related)
         if not missing_sources <= {source for sources in allowed_sources.values() for source in sources}:
             allowed_sources = {}
-    editorial_patch = (not conditions_only and not allowed_sources and review.verdict == "reduce" and not rejected
-        and (missing_sources or review.source_requests or not review.checks["readability"])
+    editorial_patch = (not conditions_only and not allowed_sources and review.verdict in {"reduce", "publish"} and not rejected
+        and (mapping_violations or missing_sources or review.source_requests or not review.checks["readability"])
         and all(value for key, value in review.checks.items()
                 if key not in {"numbers", "materiality", "counterevidence", "alternatives", "coverage", "depth", "readability"}))
     if editorial_patch:
-        fields = [*draft.overview, *draft.internals]
-        if not review.checks['numbers'] or not review.checks['alternatives']:
+        fields = [*draft.overview, *draft.internals, *draft.watchpoints]
+        if mapping_violations or not review.checks['numbers'] or not review.checks['alternatives']:
             fields.extend(draft.summary)
         for issue in draft.issues:
             fields.extend([issue.fact, issue.interpretation, *issue.context,
@@ -736,6 +872,12 @@ def revision_bundle(bundle, proposal, review, rejected):
                 fields.append(issue.counterpoint)
         sources = sorted(d["id"] for d in bundle["documents"])
         allowed_sources = {c.id: sources for c in fields if c.kind in {"fact", "interpretation"}}
+    mapping_facts = []
+    if mapping_violations and bundle.get('fact_inventory_required'):
+        from .inventory import composition_inventory
+
+        affected = {v.get('source_id') for v in mapping_violations}
+        mapping_facts = [f for f in composition_inventory(bundle)['facts'] if f['source_id'] in affected]
     return {**bundle, "revision_feedback": {
         # Full originals and raw responses remain frozen. Repeated quote text in
         # the prior draft adds no evidence and can crowd out the repair request.
@@ -743,8 +885,12 @@ def revision_bundle(bundle, proposal, review, rejected):
         "repair_mode": "conditions_only" if conditions_only else "editorial_patch" if editorial_patch else "material_append" if allowed_sources else "full_proposal",
         "allowed_ids": sorted(rejected) if conditions_only else sorted(allowed_sources),
         "allowed_sources": allowed_sources,
+        "mapping_violations": mapping_violations,
+        "committed_mapping_facts": mapping_facts,
+        "context_addition_limit": min(4, max(0, draft.context_slots())),
         "allowed_context_issue_ids": [issue.fact.id for issue in draft.issues
-                                      if editorial_patch and issue.fact.id in allowed_sources],
+                                      if editorial_patch and draft.context_slots() > 0
+                                      and len(issue.context) < 2 and issue.fact.id in allowed_sources],
         "protected_claims": [items[identity].model_dump(mode="json") for identity in sorted(allowed_sources)],
         "protected_material_facts": [[a.source_id, [[f.fact, f.main_item_ids] for f in a.material_facts
             if set(f.main_item_ids) & set(allowed_sources) & retained]] for a in review.source_assessments
@@ -781,7 +927,7 @@ def source_notes_revision_bundle(bundle, proposal, violations):
         related = any(e.source_id in affected for c in claims for e in c.evidence)
         related |= bool({c.id for c in [*claims, issue.next_check,
                                         issue.analysis.mechanism, issue.analysis.alternative]} & mapped_ids)
-        if len(issue.context) < 2 and related:
+        if draft.context_slots() > 0 and len(issue.context) < 2 and related:
             anchors.append(issue.fact.id)
     allowed = {c.id: sorted(affected) for c in fields
                if c.kind in {'fact', 'interpretation'}
@@ -791,6 +937,7 @@ def source_notes_revision_bundle(bundle, proposal, violations):
     feedback = {'repair_mode': 'source_notes_patch', 'source_ids': sorted(affected),
                 'replace_all_notes': replace_all,
                 'violations': violations, 'allowed_ids': sorted(allowed), 'allowed_sources': allowed,
+                'context_addition_limit': min(2, max(0, draft.context_slots())),
                 'allowed_context_issue_ids': anchors,
                 'protected_claims': [c.model_dump(mode='json') for c in fields if c.id in allowed],
                 'source_notes': notes}
@@ -799,20 +946,22 @@ def source_notes_revision_bundle(bundle, proposal, violations):
 
         feedback['committed_facts'] = [f for f in composition_inventory(bundle)['facts'] if f['source_id'] in affected]
     return {**bundle, 'revision_feedback': feedback,
-            'source_notes_repair': {'before_independent_review': True, 'violations': violations,
+            'source_notes_repair': {'before_independent_review': True, 'review_phase': 'review', 'violations': violations,
                                     'affected_source_ids': sorted(affected)}}
 
 
-def apply_source_notes_patch(proposal, patch, feedback):
+def apply_source_notes_patch(proposal, patch, feedback, *, bundle=None):
     notes = {n.source_id: n for n in patch.source_notes}
     if len(notes) != len(patch.source_notes) or set(notes) != set(feedback['source_ids']):
         raise ValueError('source_notes_patch_scope_rejected')
+    if len(patch.context_additions) > feedback.get('context_addition_limit', 2):
+        raise ValueError('source_notes_patch_context_budget_rejected')
     if any(a.issue_fact_id not in feedback['allowed_context_issue_ids'] for a in patch.context_additions):
         raise ValueError('source_notes_patch_context_scope_rejected')
     revised = proposal
     if patch.edits or patch.context_additions:
         revised = apply_editorial_patch(proposal, EditorialPatch(edits=patch.edits,
-            context_additions=patch.context_additions), feedback['allowed_sources'])
+            context_additions=patch.context_additions), feedback['allowed_sources'], bundle=bundle)
     value = revised.model_dump(mode='json')
     value['source_notes'] = ([n.model_dump(mode='json') for n in proposal.source_notes
                               if n.source_id not in notes] if not feedback['replace_all_notes'] else [])
@@ -862,7 +1011,33 @@ def apply_material_fact_patch(proposal, patch, allowed_sources):
     return BriefProposal.model_validate(replace(proposal.model_dump(mode="json")))
 
 
-def apply_editorial_patch(proposal, patch, allowed_sources, *, preserve_notes=False):
+def _merge_evidence(existing, added, bundle):
+    proof = list({(e.source_id, e.quote): e for e in [*existing, *added]}.values())
+    originals = {d['id']: d['content'] for d in (bundle or {}).get('documents', [])}
+    while len(proof) > 4:
+        choices = []
+        for i, first in enumerate(proof):
+            original = originals.get(first.source_id, '')
+            start = original.find(first.quote)
+            if start < 0:
+                continue
+            for j in range(i+1, len(proof)):
+                second = proof[j]
+                other = original.find(second.quote) if second.source_id == first.source_id else -1
+                if other < 0:
+                    continue
+                low, high = min(start, other), max(start+len(first.quote), other+len(second.quote))
+                if high-low <= 650:
+                    choices.append((high-low, i, j, original[low:high]))
+        if not choices:
+            break  # The unchanged evidence cap rejects a genuinely oversized patch.
+        _, i, j, quote = min(choices)
+        proof[i] = proof[i].model_copy(update={'quote': quote})
+        proof.pop(j)
+    return proof
+
+
+def apply_editorial_patch(proposal, patch, allowed_sources, *, preserve_notes=False, bundle=None):
     items = item_map(proposal)
     replacements = {}
     for edit in patch.edits:
@@ -873,9 +1048,9 @@ def apply_editorial_patch(proposal, patch, allowed_sources, *, preserve_notes=Fa
             raise ValueError("editorial_patch_scope_rejected")
         if not numbers(target.text) <= numbers(edit.text):
             raise ValueError("editorial_patch_loses_verified_numbers")
-        proof = {(e.source_id, e.quote): e for e in [*target.evidence, *edit.evidence]}
+        proof = _merge_evidence(target.evidence, edit.evidence, bundle)
         replacements[edit.id] = Claim.model_validate({**target.model_dump(mode="json"), "text": edit.text,
-            "evidence": [e.model_dump(mode="json") for e in proof.values()]})
+            "evidence": [e.model_dump(mode="json") for e in proof]})
 
     def replace(value):
         if isinstance(value, dict):
@@ -1160,7 +1335,7 @@ def main_post_item_ids(proposal, bundle):
             visible.append(issue.counterpoint)
     watches = proposal.watchpoints or [issue.next_check for issue in proposal.issues][:3]
     visible.extend(proposal.calendar)
-    visible.extend(watches[:2 if proposal.calendar else 3])
+    visible.extend(watches)
     morning = {w["id"] for w in bundle.get("morning_watchpoints", [])}
     visible.extend(w for w in proposal.watch_results if w.watch_id in morning)
     return {item.id for item in visible}
@@ -1198,8 +1373,8 @@ def validate_source_notes(proposal, bundle):
                 violations.append({'reason': reason, **detail})
 
             original = docs[note.source_id]['content']
-            quote = canonical_source_quote(fact.quote, (" ".join(original.split()),))
-            if not quote or not prose_numbers_supported(fact.fact, [quote]):
+            quotes = [canonical_source_quote(q, (" ".join(original.split()),)) for q in quote_parts(fact.quote)]
+            if not all(quotes) or not prose_numbers_supported(fact.fact, quotes):
                 reject('source_notes_fact_not_supported')
                 continue
             if not fact.main_item_ids or not set(fact.main_item_ids) <= visible:
@@ -1257,8 +1432,8 @@ def validate_review(review, proposal, bundle):
             raise ValueError("review_material_facts_required")
         for fact in assessment.material_facts:
             original = docs[assessment.source_id]
-            if not any(" ".join(fact.quote.split()) in " ".join(original[key].split())
-                       for key in ("title", "content")):
+            if not all(any(" ".join(q.split()) in " ".join(original[key].split())
+                           for key in ("title", "content")) for q in quote_parts(fact.quote)):
                 raise ValueError("review_fact_not_in_original")
             if (not set(fact.main_item_ids) <= visible or not all(
                     any(e.source_id == assessment.source_id for e in items[i].evidence)
@@ -1286,9 +1461,41 @@ def observation_text(item):
             f" · {labels[item.basis]} {item.as_of.astimezone(KST):%m/%d %H:%M} KST · {item.venue}")
 
 
+def kr_close_text(item):
+    """A regular-session snapshot value as collected; the index change is the snapshot's own chg_pct."""
+    when = f"{item.as_of.astimezone(KST):%m/%d %H:%M} KST"
+    name = INSTRUMENTS[item.instrument][0]
+    if item.unit == "pt":
+        change = f" · {item.reported_change:+.2f}%" if item.reported_change is not None else ""
+        return f"{name} {number(item.value)} pt{change} · {CLOSE_LABEL} {when} · {item.venue}"
+    return f"{name} {number(item.value)} {item.unit} · {SESSION_LABEL} · {when} · {item.venue}"
+
+
+def kr_close_rows(doc, observations, cited):
+    """Service-owned rows of a regular-session KRX close snapshot. Index volume/value come from the same lagging
+    index quote as the level, so they appear only where a closing report confirmed that level; a KOSPI
+    foreign/institution figure appears only while its locked value survived reconciliation."""
+    display = doc.receipt.get("display") or {}
+    present = {o.instrument for o in observations.values() if any(e.source_id == doc.id for e in o.evidence)}
+    rows = [cited(f"{item['label']} 거래", f"{item['text']} · {SESSION_LABEL}") for item in display.get("index", [])
+            if KRX_MARKETS[item["market"]][0] in present]
+    for item in display.get("flows", []):
+        shown = [f"{name} {value}" for investor, name, value in item["figures"]
+                 if not (item["market"] == "KOSPI" and investor in KRX_FLOW_INSTRUMENTS
+                         and KRX_FLOW_INSTRUMENTS[investor] not in present)]
+        if shown:
+            rows.append(cited(f"{item['label']} 수급", " · ".join(shown)+f" · {SESSION_LABEL}"))
+    if display.get("top"):
+        rows.append("*거래대금 상위 종목*")
+        rows.extend(cited(None, item["text"]) for item in display["top"])
+    return rows
+
+
 def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=False):
     edition = BriefEdition.model_validate(bundle["edition"])
     docs = {d["id"]: SourceDocument.model_validate(d) for d in bundle.get("documents", [])}
+    # Empty unless BRIEFING_KR_CLOSE_ENABLED froze a valid regular-session snapshot into this PM edition.
+    snapshot_ids = [identity for identity, d in docs.items() if d.registration == KRX_CLOSE_REGISTRATION]
     observations = {x.instrument: x for x in proposal.observations} if proposal else {}
     core = (set(("sp500", "nasdaq")) if edition.us_session else set()) if edition.kind == "am" else {"kospi", "kosdaq"}
     missing = sorted(core - {k for k, v in observations.items() if v.basis == "close"})
@@ -1312,7 +1519,7 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
         links = " ".join(f"<{escape(docs[i].url, quote=False)}|[{reference[i]}]>" for i in urls)
         return escape(text, quote=False) + " " + links
 
-    calendar_checks, market_checks = [], []
+    calendar_checks, market_checks, factual_watches = [], [], []
     if proposal:
         for event in proposal.calendar:
             if event.at:
@@ -1328,11 +1535,10 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                 label += f" · {event.note}"
             calendar_checks.append("• " + supported(event, label))
         watches = proposal.watchpoints or [issue.next_check for issue in proposal.issues][:3]
-        market_checks = ["• " + supported(claim, claim.text) for claim in watches]
-    market_main_count = 2 if calendar_checks else 3
-    visible_global_check_ids = {claim.id for claim in watches[:market_main_count]} if proposal else set()
-    next_main = calendar_checks + market_checks[:market_main_count]
-    next_details = market_checks[market_main_count:]
+        market_checks = ["• " + supported(claim, claim.text) for claim in watches if claim.kind == 'condition']
+        factual_watches = [claim for claim in watches if claim.kind != 'condition']
+    visible_global_check_ids = {claim.id for claim in watches} if proposal else set()
+    next_main = calendar_checks + market_checks
     next_section = "\n*다음 확인할 것*\n\n"+"\n\n".join(next_main) if next_main else ""
 
     def add(block):
@@ -1343,7 +1549,15 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
         add("*오늘의 핵심* · 30초 요약\n")
         for claim in proposal.summary:
             add("• " + supported(claim, claim.text)+"\n")
-        if observations:
+        close_rows = []
+        for identity in snapshot_ids:
+            def cited(label, text, identity=identity):
+                used.add(identity)
+                return ("• "+(f"*{label}* " if label else "")+escape(text, quote=False)
+                        +f" <{escape(docs[identity].url, quote=False)}|[{reference[identity]}]>")
+
+            close_rows += kr_close_rows(docs[identity], observations, cited)
+        if observations or close_rows:
             session = edition.us_session if edition.kind == "am" else edition.kr_session
             market_name = "미국" if edition.kind == "am" else "한국"
             add("\n*주요 숫자*" + (f" · {market_name} 지수 {session} 종가" if session else ""))
@@ -1353,10 +1567,15 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                 "wti", "gold", "ust10y", "vix", "btc", "eth"]
             ordered = sorted(observations.values(), key=lambda x: preferred.index(x.instrument) if x.instrument in preferred else 99)
             for obs in ordered:
-                full = observation_text(obs)
+                collected_close = any(e.source_id in snapshot_ids for e in obs.evidence)
+                full = kr_close_text(obs) if collected_close else observation_text(obs)
                 details.append("• " + supported(obs, full))
+                if collected_close and obs.instrument in KRX_FLOW_INSTRUMENTS.values():
+                    continue  # Shown on its market's flow row with the other investors.
                 equity_close = obs.basis == "close" and obs.instrument in {"sp500", "nasdaq", "dow", "sox", "kospi", "kosdaq"}
                 compact = full.split(" · 정규장 종가", 1)[0] if equity_close else full
+                if equity_close and collected_close:
+                    compact += f" · {CLOSE_LABEL}"
                 if (edition.kind == "am" and equity_close and obs.instrument in {"kospi", "kosdaq"}
                         and obs.session_date == edition.previous_kr_session):
                     compact = f"한국 전일장 {obs.session_date:%m/%d} · "+compact
@@ -1366,15 +1585,15 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                 name = INSTRUMENTS[obs.instrument][0]
                 market_label = compact.split(name, 1)[0]+name
                 add("• " + supported(obs, compact.replace(market_label, f"*{market_label}*", 1)))
+            for row in close_rows:
+                add(row)
         if proposal.overview:
             add("\n*시장 전체 흐름*\n")
             for claim in proposal.overview:
                 add(supported(claim, claim.text)+"\n")
         if proposal.issues:
-            add("\n*핵심 이슈*")
+            add("\n*주요 이슈*")
         for index, issue in enumerate(proposal.issues, 1):
-            if index == 3:
-                add("\n*함께 볼 이슈*")
             basis = {"reported_explanation": "보도 해석", "conditional_hypothesis": "Analyst 해석",
                      "unresolved": "원인 판단 유보"}[issue.analysis.causal_basis]
             horizon = {"session": "당일", "days_weeks": "수일~수주", "months": "수개월"}[issue.analysis.horizon]
@@ -1389,9 +1608,9 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                 +supported(issue.analysis.alternative, issue.analysis.alternative.text)+"\n")
             if issue.next_check.id not in visible_global_check_ids:
                 add("*확인할 신호* · "+supported(issue.next_check, issue.next_check.text)+"\n")
-        if proposal.internals:
+        if proposal.internals or factual_watches:
             add("\n*업종·수급에서 볼 점*\n")
-        for claim in proposal.internals:
+        for claim in [*proposal.internals, *factual_watches]:
             add("• " + supported(claim, claim.text)+"\n")
         results = {x.watch_id: x for x in proposal.watch_results}
         if bundle.get("morning_watchpoints"):
@@ -1403,8 +1622,6 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                                     +": "+item.explanation) if item else "판단 불가 — 확인 자료 부족")+"\n")
         if next_section:
             lines.append(next_section)
-        if next_details:
-            details.append("*추가 확인 사항*\n"+"\n".join(next_details))
     if missing:
         lines.append("확인 부족: " + ", ".join(INSTRUMENTS[k][0] for k in missing))
     if fallback:
@@ -1421,9 +1638,12 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
     single = [INSTRUMENTS[k][0] for k in sorted(core) if certainty.get(k) == "single_source"]
     if single:
         lines.append("지수별 숫자 출처 · "+", ".join(single)+": 표시값은 매체 1곳 인용")
-    if bundle.get("quote_conflicts"):
+    # A KRX close snapshot set aside for the closing reports' value is a recorded diagnostic, not a reader notice:
+    # the reports' number is shown through the existing rule.
+    shown_conflicts = [c for c in bundle.get("quote_conflicts", []) if c["resolution"] != "article_values_used"]
+    if shown_conflicts:
         lines.append("출처 간 수치 차이가 있어 일부 값을 제외하거나 수집 데이터로 표시했습니다. 상세는 스레드에 있습니다.")
-        for conflict in bundle["quote_conflicts"]:
+        for conflict in shown_conflicts:
             resolution = "수집 데이터 값 사용" if conflict["resolution"] == "collected_data_retained" else "수치 제외"
             details.append(f"수치 대조 · {INSTRUMENTS[conflict['instrument']][0]} {conflict['session']} · "
                            +" / ".join(v["value"] for v in conflict["values"])+" · "+resolution)
@@ -1460,7 +1680,12 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
             return match[0]
         return re.sub(r"<([^<>|\n]+)\|\[(\d+)\]>", replace, text)
 
-    parts = [first_links("\n".join(lines))]
+    main = first_links("\n".join(lines))
+    first_bp = re.search(r'(?<![A-Za-z])bp(?![A-Za-z])', main)
+    unit_explained = re.search(r'(?<![A-Za-z])(?:1\s*)?bp\s*(?:=|는|은)\s*0\.01\s*%\s*포인트', main)
+    if first_bp and not unit_explained:
+        main = main[:first_bp.end()]+'(1bp=0.01%포인트)'+main[first_bp.end():]
+    parts = [main]
     for block in details:
         block = first_links(block)
         if len(parts) == 1 or len(parts[-1])+len(block)+2 > 3500:
@@ -1468,8 +1693,16 @@ def render(proposal, bundle, *, fallback=None, rejected=None, review_reduced=Fal
                 raise ValueError("brief_detail_size_limit")
             parts.append("*상세 근거·추가 지표*" if len(parts) == 1 else "*상세 계속*")
         parts[-1] += "\n"+block
-    if len(parts[0]) > 9500 or any(len(part) > 3500 for part in parts[1:]):
+    # URL characters are transport overhead, not reading length. The old9500
+    # wire cap stopped otherwise renderable multi-topic drafts before review.
+    # Keep a conservative transport bound and validate the actual Slack blocks;
+    # the independent readability check still judges the complete visible text.
+    if len(parts[0]) > 30000 or any(len(part) > 3500 for part in parts[1:]):
         raise ValueError("brief_message_size_limit")
+    from .slack_blocks import blocks
+
+    for part in parts:
+        blocks(part)
     return parts, {"format_version": FORMAT_VERSION, "reduced": reduced, "substantive": substantive,
                    "issue_count": len(proposal.issues) if proposal else 0,
                    "missing_core": missing, "rejected": rejected or {},

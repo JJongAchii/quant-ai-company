@@ -1,6 +1,6 @@
 """Frozen requests and one committed edition; external delivery remains receipt-based."""
 
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 
 from psycopg.types.json import Jsonb
 
@@ -13,17 +13,26 @@ from . import schedule
 from .contracts import (
     BRIEFER,
     BriefComposition,
+    BriefEdition,
     BriefProposal,
     BriefReview,
     ConditionPatch,
     EditorialPatch,
-    FactInventory,
     MaterialFactPatch,
     SourceDocument,
     SourceNotesPatch,
     SourcePlan,
 )
 from .coverage import COVERAGE_VERSION, inventory
+from .data_reader import (
+    CHART_PROVIDER,
+    FIRST_POLL_MINUTES,
+    US_CLOSE,
+    chart_catalogue,
+    close_slot,
+    summarize,
+    us_close_snapshot,
+)
 from .editor import (
     EDITORIAL_PATCH,
     FACT_PATCH,
@@ -51,13 +60,14 @@ from .editor import (
 from .execution import (
     COMPOSE_SECONDS,
     EXECUTION_VERSION,
+    FRAGMENT_INVENTORY_SECONDS,
     PHASE_SECONDS,
-    REMAINING_SECONDS,
+    has_runway,
     output_contract,
-    remaining_seconds,
+    phase_deadline,
 )
 from .inputs import market_report, registrations, source_policy
-from .inventory import INVENTORY, compose, freeze_inventory, inventory_prompt
+from .inventory import INVENTORY, compose, freeze_inventory, inventory_model, inventory_prompt
 from .planning import PLAN, apply_plan, plan_prompt
 from .quality import reconcile
 from .quotations import QUOTE_REFERENCE_VERSION
@@ -92,12 +102,20 @@ class BriefStore:
         return fingerprint({"version": FORMAT_VERSION, "validation_version": VALIDATION_VERSION,
                             "execution_version": EXECUTION_VERSION, "phase_seconds": PHASE_SECONDS,
                             "compose_seconds": COMPOSE_SECONDS,
+                            "fragment_inventory_seconds": FRAGMENT_INVENTORY_SECONDS,
                             "selection_version": COVERAGE_VERSION,
-                            "schedule_version": schedule.SCHEDULE_VERSION,
+                            "schedule_version": schedule.version(s),
                             "editorial_contract": fingerprint([PLAN, INVENTORY, WRITE, REVIEW, PATCH, FACT_PATCH, EDITORIAL_PATCH, SOURCE_NOTES_PATCH]),
                             "enabled": s.briefing_enabled, "publish": s.briefing_publish_enabled,
                             "analyst_procedure": pack(BRIEFER)["digest"],
                             "lake": s.company_lake_uri,
+                            # Absent while disabled, so the default keeps the existing digest.
+                            **({"us_close": s.briefing_us_close_stocks} if s.briefing_us_close_enabled else {}),
+                            **({"kr_close": {"start": s.briefing_kr_close_start_minutes,
+                                             "cutoff": s.briefing_kr_close_cutoff_minutes,
+                                             "due": s.briefing_kr_close_due_minutes,
+                                             "basis": s.briefing_kr_close_basis}}
+                               if s.briefing_kr_close_enabled else {}),
                             "search": s.briefing_search_enabled, "web": s.company_web_enabled,
                             "source_notes": s.briefing_source_notes_enabled,
                             "max_revisions": s.briefing_max_revisions,
@@ -113,7 +131,12 @@ class BriefStore:
         at = at or schedule.utcnow()
         if not self.authorized():
             return []
-        definitions = [e for e in schedule.scheduled(self.company.settings, at) if e.starts_at <= at]
+        s = self.company.settings
+        changes = schedule.overrides(s) if s.briefing_us_close_enabled else {}
+        # Close polls begin at C+5, possibly before collection opens; claims still wait for starts_at.
+        definitions = [e for e in schedule.scheduled(s, at) if e.starts_at <= at or (
+            s.briefing_us_close_enabled and e.kind == "am" and e.us_session
+            and schedule.close("US", e.us_session, changes)+timedelta(minutes=FIRST_POLL_MINUTES) <= at)]
         policy = self.policy()
         with self.db.transaction() as conn:
             for definition in definitions:
@@ -135,7 +158,8 @@ class BriefStore:
         with self.db.transaction() as conn:
             row = conn.execute("""SELECT * FROM brief_editions WHERE state='collecting' AND cutoff>%s
                 AND policy_digest=%s AND next_collection<=%s AND (collection_lease IS NULL OR collection_lease<%s)
-                ORDER BY due_at FOR UPDATE SKIP LOCKED LIMIT 1""", (at, policy, at, at)).fetchone()
+                AND (definition->>'starts_at')::timestamptz<=%s
+                ORDER BY due_at FOR UPDATE SKIP LOCKED LIMIT 1""", (at, policy, at, at, at)).fetchone()
             if not row:
                 return None
             row["lease"] = at+timedelta(minutes=6)
@@ -160,19 +184,29 @@ class BriefStore:
         bundle["quote_reference_version"] = QUOTE_REFERENCE_VERSION
         bundle["source_notes_required"] = self.company.settings.briefing_source_notes_enabled
         bundle["fact_inventory_required"] = bool(bundle["source_notes_required"] and bundle.get("candidate_documents"))
+        if bundle["fact_inventory_required"]:
+            bundle["fact_inventory_version"] = 2
+            bundle["combined_editorial_repair"] = True
+            bundle["editorial_patch_version"] = 2
+            bundle['deadline_budget_version'] = 1
         role = self._execution_role(conn)
         bundle["execution_model"] = {"model": role.model, "reasoning_effort": role.reasoning_effort}
         bundle["professional_feedback"] = as_json(coaching(conn, row["owner_user"], BRIEFER,
                                                           role.model, role.reasoning_effort))
-        data = row["market_data"] or {"documents": [], "observations": [], "contexts": [],
-                                      "diagnostics": [{"dataset": "lake", "error": "data_not_collected"}]}
+        data = row["market_data"] or {}
+        polls = data.get(US_CLOSE)
+        if "documents" not in data:
+            data = {"documents": [], "observations": [], "contexts": [],
+                    "diagnostics": [{"dataset": "lake", "error": "data_not_collected"}]}
+        if polls:
+            # Recorded close polls are derived like a lake dataset; reconcile decides whether they lock.
+            derived = summarize(us_close_snapshot(polls), BriefEdition.model_validate(row["definition"]))
+            data = {key: data[key]+derived[key] for key in ("documents", "observations", "contexts", "diagnostics")}
         bundle["documents"] = bundle.get("documents", []) + data["documents"]
         bundle["locked_observations"] = data["observations"]
         bundle["market_context"] = data["contexts"]
         bundle["data_diagnostics"] = data["diagnostics"]
         definition = row["definition"]
-        from datetime import date
-
         changes = schedule.overrides(self.company.settings)
         bundle["exchange_closes"] = {
             market: schedule.close(market, date.fromisoformat(definition[key]), changes).isoformat()
@@ -203,7 +237,8 @@ class BriefStore:
         with self.db.transaction() as conn:
             row = conn.execute("""SELECT * FROM brief_editions WHERE state='collecting' AND cutoff>%s
                 AND next_data<=%s AND policy_digest=%s AND (data_lease IS NULL OR data_lease<%s)
-                ORDER BY due_at FOR UPDATE SKIP LOCKED LIMIT 1""", (at, at, self.policy(), at)).fetchone()
+                AND (definition->>'starts_at')::timestamptz<=%s
+                ORDER BY due_at FOR UPDATE SKIP LOCKED LIMIT 1""", (at, at, self.policy(), at, at)).fetchone()
             if row:
                 row["lease"] = at+timedelta(minutes=2)
                 conn.execute("UPDATE brief_editions SET data_lease=%s WHERE id=%s", (row["lease"], row["id"]))
@@ -212,9 +247,56 @@ class BriefStore:
     def save_data(self, claimed, result):
         at = schedule.utcnow()
         with self.db.transaction() as conn:
-            conn.execute("""UPDATE brief_editions SET market_data=%s,data_lease=NULL,next_data=%s
+            # The lake result replaces its own fields; recorded close polls are kept.
+            conn.execute("""UPDATE brief_editions SET market_data=%s::jsonb||CASE WHEN market_data ? 'us_close'
+                THEN jsonb_build_object('us_close',market_data->'us_close') ELSE '{}'::jsonb END,data_lease=NULL,next_data=%s
                 WHERE id=%s AND data_lease=%s AND state='collecting' AND cutoff>%s AND policy_digest=%s""",
                          (Jsonb(result), at+timedelta(minutes=5), claimed["id"], claimed["lease"], at, self.policy()))
+
+    def us_close_target(self, at=None):
+        """The AM edition whose current close-poll slot is open and not yet recorded."""
+        at = at or schedule.utcnow()
+        if not self.company.settings.briefing_us_close_enabled or not self.authorized():
+            return None
+        self.register(at)
+        changes = schedule.overrides(self.company.settings)
+        with self.db.transaction() as conn:
+            rows = conn.execute("""SELECT id,definition,market_data->'us_close' AS polls FROM brief_editions
+                WHERE state='collecting' AND kind='am' AND cutoff>%s AND policy_digest=%s
+                AND definition->>'us_session' IS NOT NULL ORDER BY due_at""", (at, self.policy())).fetchall()
+        for row in rows:
+            close_at = schedule.close("US", date.fromisoformat(row["definition"]["us_session"]), changes)
+            index = close_slot(close_at, at) if close_at else None
+            recorded = (row["polls"] or {}).get("polls", [])
+            if index is not None and all(p["slot"] != index for p in recorded):
+                # The first recorded poll fixes the symbol list for this edition.
+                items = (row["polls"] or {}).get("catalogue") or chart_catalogue(
+                    self.company.settings.briefing_us_close_stocks)
+                return {"id": row["id"], "definition": row["definition"], "close_at": close_at, "slot": index,
+                        "catalogue": items}
+        return None
+
+    def save_us_close(self, target, poll):
+        """Append one slot; a recorded slot is never replaced and nothing observed at or after the cutoff is kept."""
+        if not poll.get("ok"):
+            return {"state": "discarded", "reason": poll.get("error", "poll_failed")}
+        observed = datetime.fromisoformat(poll["observed_at"])
+        with self.db.transaction() as conn:
+            row = conn.execute("""SELECT market_data,cutoff,state,policy_digest FROM brief_editions
+                WHERE id=%s FOR UPDATE""", (target["id"],)).fetchone()
+            if (not row or row["state"] != "collecting" or row["cutoff"] <= observed
+                    or row["policy_digest"] != self.policy()):
+                return {"state": "discarded", "reason": "edition_closed_or_cutoff_passed"}
+            state = (row["market_data"] or {}).get(US_CLOSE) or {
+                "provider": CHART_PROVIDER, "session": target["definition"]["us_session"],
+                "close_at": target["close_at"].isoformat(), "catalogue": target["catalogue"], "polls": []}
+            if any(p["slot"] == poll["slot"] for p in state["polls"]):
+                return {"state": "duplicate", "slot": poll["slot"]}
+            entry = {k: poll[k] for k in ("slot", "started_at", "observed_at", "quotes", "errors")}
+            state = {**state, "polls": [*state["polls"], entry]}
+            conn.execute("""UPDATE brief_editions SET market_data=COALESCE(market_data,'{}'::jsonb)
+                ||jsonb_build_object('us_close',%s::jsonb) WHERE id=%s""", (Jsonb(state), target["id"]))
+            return {"state": "polled", "slot": poll["slot"], "quotes": len(poll["quotes"])}
 
     def prepare(self, at=None):
         at = at or schedule.utcnow()
@@ -244,6 +326,8 @@ class BriefStore:
             if active:
                 return ({"state": "defer"} if active["next_at"] > at
                         else {"state": "ready", "request": active["request"]})
+            if self._extend_cutoff(conn, row, at):
+                return {"state": "idle", "reason": "cutoff_extended"}
             if row["state"] == "collecting" and at < row["cutoff"]:
                 s = self.company.settings
                 if s.briefing_evaluation_ids:
@@ -278,21 +362,26 @@ class BriefStore:
                     try:
                         validate_source_notes(BriefProposal.model_validate(row['proposal']), bundle)
                     except SourceNotesValidationError as exc:
-                        repair = (self.company.settings.briefing_max_revisions > 0 and phase == 'review'
-                                  and at+timedelta(seconds=REMAINING_SECONDS['revise']+60) < row['due_at']+timedelta(minutes=10)
-                                  and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
-                                                       (row['id'],)).fetchone())
-                        if repair:
-                            revised_bundle = source_notes_revision_bundle(bundle, row['proposal'], exc.violations)
-                            try:
-                                prompt(revised_bundle, 'revise')
-                            except ValueError:
-                                repair = False
-                        if not repair:
-                            conn.execute("UPDATE brief_editions SET state='blocked',error=%s WHERE id=%s",
-                                         (str(exc), row['id']))
-                            return {'state': 'blocked', 'reason': str(exc)}
-                        bundle, phase = revised_bundle, 'revise'
+                        if phase == 'review' and bundle.get('combined_editorial_repair'):
+                            # Let the independent critic find semantic gaps before
+                            # spending the single correction on all known gaps.
+                            bundle['pre_review_source_notes_violations'] = exc.violations
+                        else:
+                            repair = (self.company.settings.briefing_max_revisions > 0 and phase == 'review'
+                                      and at+timedelta(seconds=PHASE_SECONDS['revise']+PHASE_SECONDS['review']+60) < row['due_at']+timedelta(minutes=10)
+                                      and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
+                                                           (row['id'],)).fetchone())
+                            if repair:
+                                revised_bundle = source_notes_revision_bundle(bundle, row['proposal'], exc.violations)
+                                try:
+                                    prompt(revised_bundle, 'revise')
+                                except ValueError:
+                                    repair = False
+                            if not repair:
+                                conn.execute("UPDATE brief_editions SET state='blocked',error=%s WHERE id=%s",
+                                             (str(exc), row['id']))
+                                return {'state': 'blocked', 'reason': str(exc)}
+                            bundle, phase = revised_bundle, 'revise'
                 if row["state"] in {"collecting", "planning"} and bundle.get("candidate_documents"):
                     phase = "plan"
                 if not bundle.get("documents"):
@@ -310,7 +399,7 @@ class BriefStore:
                         conn.execute("UPDATE brief_editions SET state='blocked',error=%s,bundle=%s WHERE id=%s",
                                      (reason, Jsonb(bundle), row['id']))
                         return {'state': 'blocked', 'reason': reason}
-                if at+timedelta(seconds=remaining_seconds(phase, bundle)+60) >= row['due_at']+timedelta(minutes=10):
+                if not has_runway(phase, bundle, at, row['due_at']):
                     reason = "insufficient_review_time"
                     conn.execute("UPDATE brief_editions SET state='blocked',error=%s,bundle=%s WHERE id=%s",
                                  (reason, Jsonb(bundle), row['id']))
@@ -336,6 +425,8 @@ class BriefStore:
             request = ProviderRequest(request_id=identity, model=role.model, reasoning_effort=role.reasoning_effort,
                                       prompt=model_prompt, web_search=phase == "search",
                                       output_contract=output_contract(phase, bundle))
+            if deadline := phase_deadline(phase, bundle, row['due_at']):
+                request.brief_deadline_unix = int(deadline.timestamp())
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             conn.execute("INSERT INTO brief_calls(id,edition_id,phase,request,next_at,requested_at) VALUES(%s,%s,%s,%s,%s,%s)",
                          (identity, row["id"], phase, Jsonb(request.model_dump()), at, at))
@@ -343,6 +434,26 @@ class BriefStore:
                          ({"search": "collecting", "plan": "planning", "inventory": "inventorying", "write": "writing", "review": "reviewing",
                            "revise": "revising", "final_review": "final_reviewing"}[phase], Jsonb(bundle), row["id"]))
             return {"state": "ready", "request": request.model_dump()}
+
+    def _extend_cutoff(self, conn, row, at):
+        """At the first AM cutoff with no US close report, postpone inputs, due and expiry once."""
+        definition = row["definition"]
+        if (not self.company.settings.briefing_us_close_enabled
+                or row["state"] != "collecting" or row["kind"] != "am" or not definition.get("us_session")
+                or definition.get("cutoff_extended") or at < row["cutoff"]
+                or at >= row["cutoff"]+timedelta(minutes=schedule.CUTOFF_EXTENSION_MINUTES)
+                or self.company.settings.briefing_evaluation_ids):
+            return False
+        bundle = row["bundle"] or {}
+        if any(market_report(d, "am") for d in [*bundle.get("documents", []), *bundle.get("candidate_documents", [])]):
+            return False
+        extended = schedule.extend_cutoff(definition, "no_us_close_report_at_cutoff")
+        conn.execute("""UPDATE brief_editions SET definition=%s,cutoff=%s,due_at=%s,expires_at=%s,
+            next_collection=%s,next_data=%s WHERE id=%s AND state='collecting'""",
+                     (Jsonb(extended.model_dump(mode="json")), extended.cutoff, extended.due_at, extended.expires_at,
+                      at, at, row["id"]))
+        self.company._event(conn, "briefing_cutoff_extended", {"edition_id": str(row["id"]), **extended.cutoff_extension})
+        return True
 
     def commit(self, response):
         at = schedule.utcnow()
@@ -380,7 +491,7 @@ class BriefStore:
                 conn.execute("UPDATE brief_editions SET state=%s,bundle=%s WHERE id=%s",
                              ("inventorying" if selected.get("fact_inventory_required") else "writing", Jsonb(selected), row["id"]))
             elif call["phase"] == "inventory":
-                inventory = artifact(response, FactInventory, row["bundle"])
+                inventory = artifact(response, inventory_model(row["bundle"]), row["bundle"])
                 selected = freeze_inventory(inventory, row["bundle"])
                 prompt(selected, "write", direct_output=True)
                 result = {"inventory_digest": selected["fact_inventory_digest"], "sources": len(inventory.sources)}
@@ -389,7 +500,7 @@ class BriefStore:
                 feedback = row["bundle"].get("revision_feedback", {})
                 if call['phase'] == 'revise' and feedback.get('repair_mode') == 'source_notes_patch':
                     proposed = apply_source_notes_patch(BriefProposal.model_validate(row['proposal']),
-                        artifact(response, SourceNotesPatch, row['bundle']), feedback)
+                        artifact(response, SourceNotesPatch, row['bundle']), feedback, bundle=row['bundle'])
                 elif call["phase"] == "revise" and feedback.get("repair_mode") == "conditions_only":
                     proposed = apply_condition_patch(BriefProposal.model_validate(row["proposal"]),
                         artifact(response, ConditionPatch, row["bundle"]), feedback["allowed_ids"])
@@ -399,7 +510,7 @@ class BriefStore:
                 elif call["phase"] == "revise" and feedback.get("repair_mode") == "editorial_patch":
                     proposed = apply_editorial_patch(BriefProposal.model_validate(row["proposal"]),
                         artifact(response, EditorialPatch, row["bundle"]), feedback["allowed_sources"],
-                        preserve_notes=bool(row['bundle'].get('fact_inventory_required')))
+                        preserve_notes=bool(row['bundle'].get('fact_inventory_required')), bundle=row['bundle'])
                 else:
                     proposed = (compose(artifact(response, BriefComposition, row["bundle"]), row["bundle"])
                                 if row["bundle"].get("fact_inventory_required") else
@@ -413,12 +524,21 @@ class BriefStore:
                 result = {"rejected": rejected}
                 row["bundle"].pop("revision_feedback", None)
                 next_state = "final_reviewing" if call["phase"] == "revise" else "reviewing"
+                if (call['phase'] == 'revise' and feedback.get('repair_mode') == 'source_notes_patch'
+                        and row['bundle'].get('source_notes_repair', {}).get('review_phase') == 'review'):
+                    next_state = 'reviewing'
                 conn.execute("UPDATE brief_editions SET state=%s,proposal=%s,quality=%s,bundle=%s WHERE id=%s",
                              (next_state, Jsonb(proposal.model_dump(mode="json")), Jsonb(result), Jsonb(row["bundle"]), row["id"]))
             else:
                 review = artifact(response, BriefReview, row["bundle"])
                 proposal = BriefProposal.model_validate(row["proposal"])
                 validate_review(review, proposal, row["bundle"])
+                notes_violations = []
+                try:
+                    validate_source_notes(proposal, row['bundle'])
+                except SourceNotesValidationError as exc:
+                    notes_violations = exc.violations
+                    row['bundle']['pre_review_source_notes_violations'] = notes_violations
                 rejected = {**(row["quality"] or {}).get("rejected", {}),
                             **dict.fromkeys(review.rejected_ids, "semantic_review")}
                 proposal = prune(proposal, set(rejected) | validate(proposal, row["bundle"]).keys())
@@ -427,13 +547,14 @@ class BriefStore:
                     proposal = None
                 parts, quality = render(proposal, row["bundle"], rejected=rejected,
                     fallback="editorial_review_withheld" if proposal is None else None,
-                    review_reduced=review.verdict == "reduce")
+                    review_reduced=review.verdict == "reduce" or bool(notes_violations))
                 quality["editorial_review"] = review.model_dump(mode="json")
+                quality["source_notes_violations"] = notes_violations
                 result = review.model_dump(mode="json")
                 # One confirmed repair, with both correction and final-review time reserved.
                 repair = (self.company.settings.briefing_max_revisions > 0 and call["phase"] == "review"
                           and (quality["reduced"] or rejected or review.verdict != "publish")
-                          and at+timedelta(seconds=REMAINING_SECONDS['revise']+60) < row["due_at"]+timedelta(minutes=10)
+                          and has_runway('revise', row['bundle'], at, row['due_at'])
                           and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
                                                (row["id"],)).fetchone())
                 if repair:
@@ -447,7 +568,10 @@ class BriefStore:
                     conn.execute("UPDATE brief_editions SET state='revising',bundle=%s,review=%s,quality=%s WHERE id=%s",
                                  (Jsonb(revised_bundle), Jsonb(result), Jsonb(quality), row["id"]))
                 else:
-                    quality["revision_used"] = call["phase"] == "final_review"
+                    if notes_violations:
+                        parts, reduced_quality = render(None, row['bundle'], fallback='source_notes_unresolved')
+                        quality.update(reduced_quality)
+                    quality["revision_used"] = call["phase"] == "final_review" or bool(row['bundle'].get('source_notes_repair'))
                     quality['source_notes_repair_used'] = bool(row['bundle'].get('source_notes_repair'))
                     conn.execute("""UPDATE brief_editions SET state='ready',proposal=%s,review=%s,rendered=%s,quality=%s
                     WHERE id=%s""", (Jsonb(proposal.model_dump(mode="json")) if proposal else None,
@@ -485,10 +609,20 @@ class BriefStore:
             conn.execute("""UPDATE brief_calls c SET state='unresolved',error=COALESCE(c.error,'edition_window_closed')
                 FROM brief_editions e WHERE e.id=c.edition_id AND c.state='running'
                 AND (e.state IN ('missed','stale') OR e.due_at+interval '10 minutes'<=%s)""", (at,))
-            rows = conn.execute("""SELECT * FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
-                AND state NOT IN ('missed','stale') AND due_at<=%s AND expires_at>%s
-                AND (state='ready' OR due_at+interval '10 minutes'<=%s) ORDER BY due_at FOR UPDATE""",
-                                (policy, at, at, at)).fetchall()
+            # v7 (AM) and v8 (PM): a ready edition is posted once its cutoff has passed, without waiting for due.
+            early = [*(["am"] if self.company.settings.briefing_us_close_enabled else []),
+                     *(["pm"] if self.company.settings.briefing_kr_close_enabled else [])]
+            if early:
+                rows = conn.execute("""SELECT * FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
+                    AND state NOT IN ('missed','stale') AND expires_at>%s
+                    AND ((state='ready' AND (due_at<=%s OR (kind=ANY(%s) AND cutoff<=%s)))
+                         OR due_at+interval '10 minutes'<=%s) ORDER BY due_at FOR UPDATE""",
+                                    (policy, at, at, early, at, at)).fetchall()
+            else:
+                rows = conn.execute("""SELECT * FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
+                    AND state NOT IN ('missed','stale') AND due_at<=%s AND expires_at>%s
+                    AND (state='ready' OR due_at+interval '10 minutes'<=%s) ORDER BY due_at FOR UPDATE""",
+                                    (policy, at, at, at)).fetchall()
             for row in rows:
                 if row["state"] != "ready":
                     bundle = self._freeze(conn, row)
@@ -631,8 +765,12 @@ def priority_pending(company):
     except (ValueError, OSError):
         # A broken optional calendar file must not stop existing news service.
         return False
+    lead = schedule.PREPARATION_MINUTES+schedule.COLLECTION_MINUTES
+    anchor = schedule.kr_close_minutes(company.settings)
+    if anchor:
+        # v8: a PM edition anchored to the KRX close may start earlier than the fixed lead before its due.
+        lead = max(lead, anchor[2]-anchor[0])
     with company.db.transaction() as conn:
         return bool(conn.execute("""SELECT 1 FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
             AND state IN ('collecting','planning','inventorying','writing','reviewing','revising','final_reviewing') AND due_at>=%s AND due_at<=%s LIMIT 1""",
-                                 (policy, at-timedelta(minutes=10),
-                                  at+timedelta(minutes=schedule.PREPARATION_MINUTES+schedule.COLLECTION_MINUTES))).fetchone())
+                                 (policy, at-timedelta(minutes=10), at+timedelta(minutes=lead))).fetchone())

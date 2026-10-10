@@ -1,0 +1,207 @@
+{
+  "recorded_at": "2026-10-07T10:04:01.891830+00:00",
+  "user_request": "그럼 지금 기준으로 다시 발송해볼래",
+  "case": "analyst-current-pm-20261007-inventory60",
+  "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
+  "automatic_generation": {
+    "state": "closed_failed",
+    "policy_sha256": "3b10514ac0919a8bba44b6740c58e40967c7e08479e1bb5b8b692606db14e5d3",
+    "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
+    "model_attempts": [
+      {
+        "phase": "plan",
+        "request_id": "news-brief-396aeecc-9ce6-5093-9c3b-3bb5e93e3962-plan",
+        "state": "completed",
+        "request_sha256": "8f3daf39cf229fd81eb6d6e0776351832ba41cb4fd47b303ec29824150561253",
+        "started_at": "2026-10-07T08:24:56.282252+00:00",
+        "timeout_seconds": 360,
+        "prompt_chars": 75208,
+        "usage": {
+          "input_tokens": 40186,
+          "cached_input_tokens": 0,
+          "output_tokens": 6903,
+          "reasoning_output_tokens": 5178
+        },
+        "seconds": 280.592
+      },
+      {
+        "phase": "inventory",
+        "request_id": "news-brief-396aeecc-9ce6-5093-9c3b-3bb5e93e3962-inventory",
+        "state": "completed",
+        "request_sha256": "c5e371cb14daf9e1636663499bb7211df0ae822956d81e8d2ce2fe787b26314a",
+        "started_at": "2026-10-07T08:29:39.781980+00:00",
+        "timeout_seconds": 900,
+        "prompt_chars": 65581,
+        "usage": {
+          "input_tokens": 34456,
+          "cached_input_tokens": 0,
+          "output_tokens": 26806,
+          "reasoning_output_tokens": 12107
+        },
+        "seconds": 884.394
+      }
+    ],
+    "completed_model_calls": 2,
+    "slack_calls": 0,
+    "database_mutations": 0,
+    "scope": "One current on-demand Korean close briefing requested by the owner. Scheduled generation failed at inventory480seconds; its record is preserved. Fresh inputs and new request IDs; not recovery or certification of that failed case.",
+    "automatic_retry": false,
+    "started_at": "2026-10-07T08:24:33.108580+00:00",
+    "technical_pre_input_resume": false,
+    "controller_sha256": "91e3720fa5e01f2f70c0221403d86f0181c955ded7eb0ac739da2be367567136",
+    "frozen_controller_sha256": "91e3720fa5e01f2f70c0221403d86f0181c955ded7eb0ac739da2be367567136",
+    "source_manifest": {
+      "collected_at": "2026-10-07T08:24:35.802851+00:00",
+      "sealed_at": "2026-10-07T08:24:53.109911+00:00",
+      "candidate_count": 96,
+      "origin_groups": 7,
+      "independent_close_reports": 3,
+      "input_ready": true,
+      "candidate_chars": 189197,
+      "locked_observations": 0,
+      "collection_error_count": 3,
+      "model_selection": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "xhigh",
+        "source": "pinned",
+        "revision": 2
+      },
+      "database_read_only_verified": true
+    },
+    "error_type": "RuntimeError",
+    "error": "Private operation error: operation-error-1791362666421374486.txt",
+    "passed": false,
+    "closed_at": "2026-10-07T08:44:26.428072+00:00"
+  },
+  "execution_note": "The regular edition timed out in inventory at480seconds. This isolated request completed inventory in884.394seconds with a900second cap, then quote-reference decoding rejected combined reference strings. No writer or independent review was reached.",
+  "citation_diagnostic": {
+    "material_facts": 65,
+    "combined_reference_fields": 37,
+    "combined_reference_fields_not_contiguous_or_over650characters": 15
+  },
+  "publication": {
+    "workspace": "Achii's Quant Research",
+    "team_id": "T0C1YRDRPNF",
+    "channel_id": "C0C2E59B1AA",
+    "channel_name": "daily-brief",
+    "bot_user_id": "U0C4PJDR8G3",
+    "channel_name_verified_live": false,
+    "publish_enabled": true,
+    "prior_events": 4,
+    "parts": [
+      4697,
+      2024
+    ],
+    "permalink": "https://achiisquantresearch.slack.com/archives/C0C2E59B1AA/p1791367207207759?thread_ts=1791367207.207759&cid=C0C2E59B1AA",
+    "root_ts": "1791367207.207759",
+    "deliveries": [
+      {
+        "ts": "1791367207.207759",
+        "index": 0,
+        "channel": "C0C2E59B1AA",
+        "operation": "analyst-current-pm-20261007-inventory60-once",
+        "thread_ts": null,
+        "text_sha256": "3f5e206c3fb1fa1fa86bd71671be99066b087279dfb24a843c85a7975ff581e7",
+        "authorization": "그럼 지금 기준으로 다시 발송해볼래",
+        "client_msg_id": "e744ef93-f322-5914-97d0-f3057e01c1b6",
+        "content_qualified": false,
+        "automatic_publication": false,
+        "returned_blocks_match": false
+      },
+      {
+        "ts": "1791367208.623489",
+        "index": 1,
+        "channel": "C0C2E59B1AA",
+        "operation": "analyst-current-pm-20261007-inventory60-once",
+        "thread_ts": "1791367207.207759",
+        "text_sha256": "c9ac815d2e7cb57da0c3af4ddf81ffc6f71d5f7443670fb5bdfdc0a417a0557e",
+        "authorization": "그럼 지금 기준으로 다시 발송해볼래",
+        "client_msg_id": "83854f01-0dfc-5ba0-bce8-2db7bd64d7b4",
+        "content_qualified": false,
+        "automatic_publication": false,
+        "returned_blocks_match": false
+      }
+    ],
+    "readback_confirmed": true,
+    "readback_scope": "all_thread_messages",
+    "complete_body_matches_after_html_entity_decoding": true,
+    "post_calls_this_execution": 0,
+    "model_calls": 0,
+    "scheduled_policy_changed": false,
+    "content_qualified": false
+  },
+  "editorial_manifest": {
+    "operation": "analyst-current-pm-20261007-inventory60-once",
+    "authorization": "그럼 지금 기준으로 다시 발송해볼래",
+    "content_qualified": false,
+    "editorial_mode": "Assistant edited from the frozen originals after automatic quote-reference transport failed; not an automatically completed Analyst draft.",
+    "source_collected_at": "2026-10-07T08:24:35.802851+00:00",
+    "source_sealed_at": "2026-10-07T08:24:53.109911+00:00",
+    "core_price_crosscheck": "Yonhap and KBS exact reported levels, rates of change and FX timestamp",
+    "literal_numeric_checks": 31,
+    "derived_number_checks": 1,
+    "parts_chars": [
+      4697,
+      2024
+    ],
+    "payload_sha256": [
+      "3f5e206c3fb1fa1fa86bd71671be99066b087279dfb24a843c85a7975ff581e7",
+      "c9ac815d2e7cb57da0c3af4ddf81ffc6f71d5f7443670fb5bdfdc0a417a0557e"
+    ],
+    "raw_selected_inputs_sha256": "f0b1629098d13fd5cd471a543be5d7d2be47b8baf6094743f22b64447222609b",
+    "automated_twelve_check_pass": false,
+    "model_calls_for_manual_composition": 0
+  },
+  "scheduled_publication_enabled": true,
+  "scheduled_policy_changed": false,
+  "additional_model_attempts_after_closed_failure": 0,
+  "latest_continuous_monitor": {
+    "recorded_at": "2026-10-07T08:58:06.886494+00:00",
+    "publication_enabled": true,
+    "today_pm": [
+      {
+        "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
+        "day": "2026-10-07",
+        "kind": "pm",
+        "due_at": "2026-10-07T17:45:00+09:00",
+        "starts_at": "2026-10-07T16:40:00+09:00",
+        "cutoff": "2026-10-07T17:00:00+09:00",
+        "state": "committed",
+        "content_passed": false,
+        "checks_passed": 0,
+        "checks_required": 12,
+        "failed_checks": [],
+        "problems": [
+          "execution_failed",
+          "late_brief",
+          "full_content_not_qualified"
+        ],
+        "model_requests": 2,
+        "phases": [
+          {
+            "phase": "plan",
+            "state": "completed",
+            "error": null,
+            "elapsed_from_request_seconds": 348.267
+          },
+          {
+            "phase": "inventory",
+            "state": "blocked",
+            "error": "timeout",
+            "elapsed_from_request_seconds": null
+          }
+        ],
+        "inventory_digest": null,
+        "policy_digest": "1c38d940badcbb9d5e078233842178ce3cfa5dafa774dfa8dfcd5531922264b0",
+        "committed_at": "2026-10-07T08:55:00.35999+00:00",
+        "delay_seconds": 600.36,
+        "delivery": "confirmed",
+        "delivered_messages": 2,
+        "expected_messages": 2,
+        "source_count": 27,
+        "collection_error_count": 3
+      }
+    ]
+  },
+  "protected_evidence": "Originals, all prompts/responses and editorial payload remain private. Public evidence contains metadata and hashes only."
+}

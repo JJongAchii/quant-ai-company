@@ -1,0 +1,50 @@
+{
+  "recorded_at": "2026-10-07T13:54:15.638671+00:00",
+  "source_commit": "25b91bbdbe341bc1699c355b6255b09596bbdbf8",
+  "format_version": 20,
+  "validation_version": 67,
+  "execution_version": 6,
+  "schedule_version": 6,
+  "tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "363",
+    "time": "28.782",
+    "timestamp": "2026-10-07T22:49:40.919764+09:00",
+    "hostname": "MacBook-Pro.local"
+  },
+  "junit_sha256": "1b112ce86a93b91bea1b0d9c4e6b8eccf867f8a28ae39aa63cd096ecbd3a9d10",
+  "ruff": "passed",
+  "validation_scope": "Real PostgreSQL for database integration; Slack and model calls in regression tests are simulated. Actual model and installation receipts are separate.",
+  "fixes": [
+    "Lossless quote references and numeric false-positive correction.",
+    "Validate rendered Slack blocks instead of rejecting valid main text by hidden URL length.",
+    "Context capacity aligns with up to six distinct issues.",
+    "Merge source-note mapping and semantic findings into one correction after independent review.",
+    "Independent first and final full-original review each has 720 seconds.",
+    "Versioned full editorial correction uses the 960-second composition budget after a reconciled 360-second timeout.",
+    "Freeze execution version in new input bundles; keep old request budgets."
+  ],
+  "regular_schedule_kst": {
+    "am": {
+      "collection": "06:10",
+      "cutoff": "06:30",
+      "due": "07:45"
+    },
+    "pm": {
+      "collection": "16:10",
+      "cutoff": "16:30",
+      "due": "17:45"
+    }
+  },
+  "special_close_rule": "PM no earlier than close plus95minutes",
+  "first_pass_plus_repair_reservation_seconds": 4800,
+  "start_guard_seconds": 60,
+  "cutoff_to_deadline_seconds": 5100,
+  "publication_enabled": true,
+  "new_api_credentials": false,
+  "actual_content_pass": false,
+  "actual_scheduled_delivery_certified": false
+}

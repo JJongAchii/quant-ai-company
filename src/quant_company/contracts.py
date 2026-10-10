@@ -106,6 +106,8 @@ class ProviderRequest(StrictModel):
     model: str = Field(min_length=1, max_length=80)
     # None preserves already-frozen requests from before explicit effort support.
     reasoning_effort: ReasoningEffort | None = None
+    # Service-owned absolute deadline; absent on legacy and non-Analyst requests.
+    brief_deadline_unix: int | None = Field(default=None, gt=0, strict=True)
     prompt: str = Field(min_length=1, max_length=90000)
     web_search: bool = False
     # Service-owned continuation, resolved against durable runtime receipts.
@@ -113,12 +115,14 @@ class ProviderRequest(StrictModel):
     output_contract: Literal["agent_decision", "quant_brief_v1", "quant_brief_v2", "quant_brief_v3", "quant_brief_v4",
                              "quant_critique_v1", "quant_critique_v2", "quant_search_v1",
                              "research_stage_v1", "video_plan_v1", "video_review_v1", "video_episode_v1",
-                             "brief_plan_v1", "brief_inventory_v1", "brief_compose_v1",
-                             "brief_write_v1", "brief_review_v1", "brief_conditions_v1",
-                             "brief_facts_v1", "brief_editorial_v1", "brief_source_notes_v1"] = "agent_decision"
+                             "brief_plan_v1", "brief_inventory_v1", "brief_inventory_v2", "brief_compose_v1",
+                             "brief_write_v1", "brief_review_v1", "brief_review_v2", "brief_conditions_v1",
+                             "brief_facts_v1", "brief_editorial_v1", "brief_editorial_v2", "brief_source_notes_v1"] = "agent_decision"
 
     @model_validator(mode="after")
     def scoped_output(self):
+        if self.brief_deadline_unix is not None and not self.output_contract.startswith('brief_'):
+            raise ValueError('A briefing deadline requires a scoped Analyst request')
         if self.output_contract.startswith("brief_"):
             from .briefing.execution import valid_request
 

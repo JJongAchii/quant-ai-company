@@ -134,7 +134,7 @@ async def test_scoped_native_search_preserves_observed_events(fake_codex, reques
 def test_search_disabled_keeps_legacy_request_identity(request_model):
     import hashlib
 
-    old = request_model.model_dump(exclude={"web_search", "reasoning_effort", "output_contract", "session"})
+    old = request_model.model_dump(exclude={"web_search", "reasoning_effort", "output_contract", "session", "brief_deadline_unix"})
     legacy = hashlib.sha256(json.dumps(old, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
     assert request_digest(request_model) == legacy
     assert request_digest(request_model.model_copy(update={"web_search": True})) != legacy

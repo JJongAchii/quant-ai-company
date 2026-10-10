@@ -1,0 +1,161 @@
+{
+  "state": "closed",
+  "source_commit": "b66f59a1d93dacf770da41f411d21305d4f2701e",
+  "scope": "Technical continuation from preserved completed plan/inventory/write after fixing Slack block validation and first-review dispatch. The completed mapping correction is reapplied unchanged after aligning structural capacity and removing review diagnostic leakage. Only the never-attempted first independent review is called; no completed phase replay, source change, fresh collection or scheduled-timing certification. Evaluator keeps the raw model receipt distinct from the expanded server-owned typed draft; no provider artifact limit is relaxed. Installed official model settings only.",
+  "model_attempts": [
+    {
+      "phase": "review",
+      "request_id": "news-brief-87825174-4e3d-5dc3-b58a-a85b15d2ad15-review",
+      "state": "completed",
+      "request_sha256": "138b268db41cb3f99f3e41c96a7ccf0a5a90f0bac54f8252150c0b2844ad35fe",
+      "started_at": "2026-10-07T12:55:54.669605+00:00",
+      "timeout_seconds": 720,
+      "prompt_chars": 86308,
+      "usage": {
+        "input_tokens": 52356,
+        "cached_input_tokens": 43904,
+        "output_tokens": 8375,
+        "reasoning_output_tokens": 0
+      },
+      "seconds": 631.581
+    }
+  ],
+  "completed_model_calls": 1,
+  "inherited_model_attempts": [
+    {
+      "phase": "plan",
+      "request_id": "news-brief-87825174-4e3d-5dc3-b58a-a85b15d2ad15-plan",
+      "state": "completed",
+      "request_sha256": "8cec9ca583b3427f1f997f574b1d89e644e7399a05df42968da3f5efd052afc0",
+      "started_at": "2026-10-07T11:31:43.891931+00:00",
+      "timeout_seconds": 360,
+      "prompt_chars": 76178,
+      "usage": {
+        "input_tokens": 40118,
+        "cached_input_tokens": 0,
+        "output_tokens": 7926,
+        "reasoning_output_tokens": 6133
+      },
+      "seconds": 324.833
+    },
+    {
+      "phase": "inventory",
+      "request_id": "news-brief-87825174-4e3d-5dc3-b58a-a85b15d2ad15-inventory",
+      "state": "completed",
+      "request_sha256": "53d3a0676da34bc25f00c0df8af9d0059fe7306e7f545d571cf7aed1f3332bad",
+      "started_at": "2026-10-07T11:37:11.111399+00:00",
+      "timeout_seconds": 1080,
+      "prompt_chars": 66888,
+      "usage": {
+        "input_tokens": 34049,
+        "cached_input_tokens": 0,
+        "output_tokens": 20938,
+        "reasoning_output_tokens": 11955
+      },
+      "seconds": 722.678
+    },
+    {
+      "phase": "write",
+      "request_id": "news-brief-87825174-4e3d-5dc3-b58a-a85b15d2ad15-write",
+      "state": "completed",
+      "request_sha256": "406fbdfe47d654797588c6fc21a6bc6db56a341455a41a06a7c24bbceb0dd56d",
+      "started_at": "2026-10-07T11:59:30.479428+00:00",
+      "timeout_seconds": 960,
+      "prompt_chars": 83578,
+      "usage": {
+        "input_tokens": 43557,
+        "cached_input_tokens": 0,
+        "output_tokens": 25929,
+        "reasoning_output_tokens": 10358
+      },
+      "seconds": 777.284
+    },
+    {
+      "phase": "revise",
+      "request_id": "news-brief-87825174-4e3d-5dc3-b58a-a85b15d2ad15-revise",
+      "state": "completed",
+      "request_sha256": "5909607a83d55527d2d3d1ecfd88556e0f47ca1da73b5e4df7fca4c9055d1c6a",
+      "started_at": "2026-10-07T12:36:09.296897+00:00",
+      "timeout_seconds": 360,
+      "prompt_chars": 35538,
+      "usage": {
+        "input_tokens": 22779,
+        "cached_input_tokens": 0,
+        "output_tokens": 9157,
+        "reasoning_output_tokens": 5178
+      },
+      "seconds": 305.736
+    }
+  ],
+  "slack_calls": 0,
+  "database_mutations": 0,
+  "automatic_retry": false,
+  "started_at": "2026-10-07T12:55:36.170225+00:00",
+  "closed_at": "2026-10-07T13:06:31.987118+00:00",
+  "source_manifest": {
+    "collected_at": "2026-10-07T11:31:19.783150+00:00",
+    "sealed_at": "2026-10-07T11:31:39.313689+00:00",
+    "candidate_count": 96,
+    "origin_groups": 7,
+    "independent_close_reports": 3,
+    "input_ready": true,
+    "candidate_chars": 196563,
+    "locked_observations": 2,
+    "collection_error_count": 3,
+    "model_selection": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "source": "pinned",
+      "revision": 2
+    },
+    "database_read_only_verified": true
+  },
+  "fresh_collection": false,
+  "scheduled_timing_certification": false,
+  "previous_failed_record_preserved": true,
+  "completed_model_calls_replayed": false,
+  "passed": false,
+  "checks": {
+    "numbers": true,
+    "sources": true,
+    "timing": true,
+    "causality": true,
+    "materiality": false,
+    "counterevidence": true,
+    "transmission": true,
+    "alternatives": true,
+    "falsifiability": true,
+    "coverage": false,
+    "depth": true,
+    "readability": false
+  },
+  "verdict": "reduce",
+  "rejected": {},
+  "source_notes_violations": [],
+  "main_chars": 11480,
+  "parts_chars": [
+    11480,
+    3390,
+    531
+  ],
+  "candidate_sources": 96,
+  "selected_sources": 27,
+  "assessment_sha256": "7c5c23a34a5db3c87ad02444b499aa774b1b07bbf4f9d970f709c013206a56d0",
+  "checks_passed": 9,
+  "checks_required": 12,
+  "independent_original_to_visible_main_audit": "completed",
+  "human_expert_certification": false,
+  "quality_certified": false,
+  "remaining_content_findings": [
+    "Separate material legal proceedings omitted from the same original.",
+    "Co-reported central-bank developments omitted.",
+    "Three requested related originals were not selected.",
+    "Repeated calendar and turnover caveats; unexplained basis-point unit."
+  ],
+  "private_file_sha256": {
+    "review-request.json": "138b268db41cb3f99f3e41c96a7ccf0a5a90f0bac54f8252150c0b2844ad35fe",
+    "review-response.json": "2af3cfcb34e0d6d8c7c1d49e368cb57017a30b1ece34394251a875a4baac8f5b",
+    "assessment.json": "7c5c23a34a5db3c87ad02444b499aa774b1b07bbf4f9d970f709c013206a56d0",
+    "receipt.json": "3cba09c53ca6bcd3492ea56424d7c8d01d4b2ff92c9594696c7afecfc435dd8d"
+  }
+}

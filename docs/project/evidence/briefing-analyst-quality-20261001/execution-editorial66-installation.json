@@ -1,0 +1,100 @@
+{
+  "started_at": "2026-10-07T13:34:40.392159+00:00",
+  "source_commit": "b1f5b8393b67678da912a257a0e9cadc3aacc617",
+  "previous_source_root": "b66f59a1d93dacf770da41f411d21305d4f2701e",
+  "authorization": "음 잔여해있는 오류도 해결하고 확실하게 해줬으면 좋을거 같은데",
+  "phase": "installed",
+  "publication_enabled": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "actual_model_quality_evaluated": false,
+  "profiles": [
+    {
+      "base_image": "sha256:00e22d8f408bb4ab1d0428c2f0cf458bf1faad033d250f241f2f2629fe949c1e",
+      "image": "quant-company:b1f5b8393b67678da912a257a0e9cadc3aacc617-error0",
+      "services": [
+        "news-worker",
+        "dispatch"
+      ],
+      "changed": [
+        "quant_company/briefing/editor.py",
+        "quant_company/briefing/execution.py",
+        "quant_company/briefing/schedule.py",
+        "quant_company/briefing/store.py",
+        "quant_company/contracts.py"
+      ],
+      "complete_source_inventory_verified": true,
+      "source_inventory_sha256": "ef271b6f3e091bd8f5378eb78b6bd09f262d545334c5b7a7ae95e2a5f8e265b7"
+    },
+    {
+      "base_image": "sha256:165836752e1ae89007006450fd40b1ea4f1abfcf93cffdfc45af272f6de6bad3",
+      "image": "quant-company:b1f5b8393b67678da912a257a0e9cadc3aacc617-error1",
+      "services": [
+        "briefing-data-worker"
+      ],
+      "changed": [
+        "quant_company/briefing/editor.py",
+        "quant_company/briefing/execution.py",
+        "quant_company/briefing/schedule.py",
+        "quant_company/briefing/store.py",
+        "quant_company/contracts.py"
+      ],
+      "complete_source_inventory_verified": true,
+      "source_inventory_sha256": "6adbc1bbc9699eb0e2e5de18dd136f612dbe839cf1e339aaeb879036185e9e79"
+    },
+    {
+      "base_image": "sha256:a11b57f3e64c9fae2ac99d89a21596b46b41084ec5de69409bae8d742fc1baa2",
+      "image": "quant-company-codex:b1f5b8393b67678da912a257a0e9cadc3aacc617-error2",
+      "services": [
+        "codex-runtime"
+      ],
+      "changed": [
+        "quant_company/briefing/execution.py",
+        "quant_company/contracts.py"
+      ],
+      "complete_source_inventory_verified": true,
+      "source_inventory_sha256": "80acdac584e0e6704d76ded6a3b299c2ec1bf1a03957858571754845077e4446"
+    }
+  ],
+  "files": {
+    "quant_company/contracts.py": {
+      "before": "cdff8afbcccec79e819985733618585e93cb8885f1657fe19dc8159d08c54ed8",
+      "after": "652230f3d1a16cd537ef1ffa04203fc84b4f482d00ccab18e89adeb887f0120f"
+    },
+    "quant_company/briefing/execution.py": {
+      "before": "76ae3f776d5e3776f9c186f7e8ea6606ba01cd952f140522686db2fa013ad570",
+      "after": "82fad9bb07535722a51dc4207e157591547a90d7210080e90e259acd920c366f"
+    },
+    "quant_company/briefing/editor.py": {
+      "before": "61710c40d7841f758c2bfea2ce9f94c539fb305400c2e9555647c699cd88d509",
+      "after": "2234e673c9fab5c919cd18aaa69c072130c051b465d4b053f04c0bc2268951d2"
+    },
+    "quant_company/briefing/store.py": {
+      "before": "0ece4f5516d78b8008da1dc9f9cb0ac95c1d9d18df5c82f5cba69e81600ddb6e",
+      "after": "a49d31af626d2419042d8a4b5ad1c4aec2d1fec4b6a329aa51184567a5b6da5e"
+    },
+    "quant_company/briefing/schedule.py": {
+      "before": "e967aee8dc9e3c046cd0cb14c1ac2efdaa62609f724546586c5a579f43761675",
+      "after": "367771b8c661c735beda3fe81e8fb3a7889be0508eb0873634e6b8648c2ad2eb"
+    }
+  },
+  "completed_at": "2026-10-07T13:34:57.373294+00:00",
+  "cutover_started_at": "2026-10-07T13:37:35.456699+00:00",
+  "installed_at": "2026-10-07T13:37:48.299205+00:00",
+  "runtime_bindings_preserved": true,
+  "unrelated_services_preserved": true,
+  "environment_changed_keys": [
+    "RELEASE_COMMIT"
+  ],
+  "database_mutations": 0,
+  "model_auth_unchanged": true,
+  "regular_delivery_times_unchanged": true,
+  "schedule_version": 5,
+  "execution_version": 5,
+  "inventory_contract_version": 2,
+  "source_root": "b1f5b8393b67678da912a257a0e9cadc3aacc617",
+  "environment_after_sha256": "71101ef61e06c33b4ddab55dba95e6d64f9643db085f9d576dba896dbf567835",
+  "format_version": 20,
+  "validation_version": 66,
+  "quality_certified": false
+}

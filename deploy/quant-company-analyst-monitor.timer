@@ -1,0 +1,24 @@
+[Unit]
+Description=Continuous Analyst delivery and quality observations
+
+[Timer]
+# Schedule v7: an AM edition with a US session is due 115 minutes after the actual
+# NYSE close (17:55 ET normally); observe 13 minutes later in New York time.
+OnCalendar=Mon..Fri 18:08:00 America/New_York
+# An edition extended once by 30 minutes is in progress at 18:08 and is judged again at 18:38
+# (its stored due + 10 minutes is 18:35 ET).
+OnCalendar=Mon..Fri 18:38:00 America/New_York
+# AM editions without a new US session (Monday outlook, US holidays) keep 07:45 KST.
+OnCalendar=*-*-* 22:58:00 UTC
+# Schedule v8 PM is due 17:25 KST; observe after its 10-minute finalization window.
+OnCalendar=*-*-* 08:38:00 UTC
+OnCalendar=*-*-* 08:58:00 UTC
+# Follow delayed Korean closes through the documented 17:00 close case.
+OnCalendar=*-*-* 09:58:00 UTC
+AccuracySec=10s
+RandomizedDelaySec=0
+Persistent=true
+Unit=quant-company-analyst-monitor.service
+
+[Install]
+WantedBy=timers.target

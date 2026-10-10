@@ -1,0 +1,44 @@
+{
+  "recorded_at": "2026-10-08T07:38:15.140943+00:00",
+  "format_version": 22,
+  "validation_version": 70,
+  "test_suite": {
+    "passed": 388,
+    "failed": 0,
+    "skipped": 0,
+    "real_temporal_cases": 7,
+    "real_postgresql": true,
+    "slack_and_model_simulated": true,
+    "junit_sha256": "99b0934cbb5562a70a0392f37d561bf973ea8268ed428b1062ede89b1738a1f5"
+  },
+  "saved_actual_output": {
+    "writer_receipt_sha256": "55eaa820b4f89b02aa421432364bb1faceaadab8e08e7ee04328ad0542060659",
+    "paragraphs_accepted_without_operator_merge": 12,
+    "mechanical_rejections": 0,
+    "unresolved_source_mapping_and_qualifier_violations": 7,
+    "third_factual_watchpoint_visible": true,
+    "writer_prompt_chars": 86804,
+    "review_prompt_chars": 86275,
+    "main_chars": 12294,
+    "independent_content_pass": false
+  },
+  "operator_corrected_saved_draft": {
+    "mechanical_rejections": 0,
+    "source_note_violations": 0,
+    "new_independent_review": false,
+    "main_chars": 13588
+  },
+  "new_source_selection": {
+    "initial_chars": 36000,
+    "repair_reserve_chars": 6000,
+    "total_chars": 42000,
+    "prior_case_initial_chars": 40992,
+    "prior_case_needed_supplement_chars": 5036,
+    "reserve_applies_to_new_selections_only": true,
+    "full_originals_preserved": true
+  },
+  "model_calls": 0,
+  "slack_calls": 0,
+  "fresh_automatic_quality_certified": false,
+  "scope": "Actual saved writer schema/render replay plus synthetic model decisions on real PostgreSQL and Temporal. No new model content evaluation or scheduled-delivery qualification. All twelve independent content checks remain required."
+}

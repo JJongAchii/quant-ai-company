@@ -1,0 +1,11 @@
+{
+  "installed_at": "2026-10-07T12:39:53.074646+00:00",
+  "monitor_sha256": "6ace478a3a8005a9cf86457e707400d4a906c68c75e9f93ca52467a3a6b9da01",
+  "policy_unchanged": true,
+  "timer_active": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "publication_changed": false,
+  "source_commit": "996bc8604664bee3cd9840318f9605057978386d",
+  "technical_resume": "Monitor installed; source archive lacked optional deployment helper. Added canonical helper without repeating a model call."
+}

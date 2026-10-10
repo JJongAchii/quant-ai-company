@@ -209,6 +209,28 @@ def test_bank_name_does_not_masquerade_as_central_bank_and_small_ipo_is_demoted(
     assert selected == [central_bank]
 
 
+@pytest.mark.parametrize("title,topic", [
+    ("미국 무역적자 확대…수입 증가", "macro_policy"),
+    ("미국 소매판매 예상 하회", "macro_policy"),
+    ("중국 산업생산 둔화", "macro_policy"),
+    ("GDP revised lower", "macro_policy"),
+    ("Trade deficit widens", "macro_policy"),
+    ("Retail sales contract", "macro_policy"),
+    ("자동차 판매 감소…해외 수요 약화", "corporate"),
+    ("금융주, 대출 손실 부담 확대", "corporate"),
+    ("제약 신약 승인…출시 준비", "corporate"),
+    ("Utilities lead the session", "corporate"),
+    ("Airlines cut capacity", "corporate"),
+])
+def test_material_macro_and_non_chip_sector_candidates_are_not_dropped_by_topic_filter(title, topic):
+    # These are synthetic collection candidates, not claims about an actual session.
+    candidate = doc("distinct-development", title)
+    docs = [doc("close-a", "Nasdaq market close"), doc("close-b", "S&P market close"),
+            doc("chips", "Nvidia earnings guidance changes"), doc("oil", "Oil supply falls"), candidate]
+    assert topic in topics(candidate)
+    assert candidate.id in {d.id for d in select_documents(docs, "am", limit=6)}
+
+
 def test_english_kospi_close_can_be_second_report_before_older_korean_recap():
     end = definition().cutoff
     full = doc("full", "코스피 마감·코스닥 종가와 투자자별 수급", content="코스피와 코스닥이 마감했다.",
@@ -319,7 +341,7 @@ def test_issue_specific_next_check_is_in_main_when_separate_watchpoint_exists():
     assert p.issues[0].next_check.text in parts[0]
     assert p.issues[0].next_check.id in main_post_item_ids(p, data)
     assert p.issues[0].next_check.text not in "\n".join(parts[1:])
-    assert quality["format_version"] == 17
+    assert quality["format_version"] == 22
 
 
 def test_supported_rate_baseline_in_issue_assessment_survives_to_reviewed_main():
@@ -702,9 +724,9 @@ def test_selected_calendar_events_remain_visible_and_unknown_time_is_labelled_on
     assert "행사 1" in main and "행사 2" in main
     assert "시장 조건 1" in main and "시장 조건 2" in main
     assert all(f"행사 {n}" in main for n in range(1, 5))
-    assert "시장 조건 3" not in main and "시장 조건 3" in detail
+    assert "시장 조건 3" in main and "시장 조건 3" not in detail
     assert "시각 미확인 · 행사" not in main and "[미확인]" not in main
-    assert "추가 확인 사항" in detail and "추가 확인 일정" not in detail
+    assert "추가 확인 사항" not in detail and "추가 확인 일정" not in detail
 
 
 def test_source_coverage_cannot_be_empty_duplicated_or_claim_uncited_items():
@@ -897,6 +919,36 @@ def test_editorial_patch_preserves_prices_quotes_kind_and_all_unedited_fields():
         apply_editorial_patch(p, EditorialPatch.model_validate({"edits": [{"id": "fact", "text": "단순한 시장 요약입니다."}]}), {"fact": ["source-1"]})
     with pytest.raises(ValueError, match="editorial_patch_scope_rejected"):
         apply_editorial_patch(p, EditorialPatch.model_validate({"edits": [{"id": "condition", "text": "새 조건"}]}), {"condition": ["source-1"]})
+
+
+def test_editorial_evidence_merge_keeps_every_old_and_new_quote_in_exact_original_spans():
+    from quant_company.briefing.contracts import Evidence
+    from quant_company.briefing.editor import _merge_evidence
+
+    parts = [str(i)+' reported '+('market evidence '+str(i)+' ') * 10 for i in range(5)]
+    original = '\n'.join(parts)
+    proof = [Evidence(source_id='same-original', quote=p) for p in parts]
+    merged = _merge_evidence(proof[:4], proof[4:], {'documents': [{'id': 'same-original', 'content': original}]})
+    assert len(merged) == 4
+    assert all(e.quote in original and len(e.quote) <= 650 for e in merged)
+    assert all(any(e.source_id == old.source_id and old.quote in e.quote for e in merged) for old in proof)
+    separate = [e.model_copy(update={'source_id': str(i)}) for i, e in enumerate(proof)]
+    assert len(_merge_evidence(separate[:4], separate[4:], {'documents': []})) == 5
+
+
+def test_story_context_accepts_the_same_bounded_paragraph_as_editorial_patch():
+    from quant_company.briefing.contracts import StoryContext
+
+    p = proposal()
+    source = p.issues[0].fact.model_dump()
+    p.issues[0].context = [StoryContext.model_validate({**source, 'id': 'supporting'})]
+    text = source['text'] + ' 추가로 확인된 절차와 영향 범위를 함께 설명합니다.' * 10
+    assert 300 < len(text) <= 500
+    patch = EditorialPatch.model_validate({'edits': [{'id': 'supporting', 'text': text}]})
+    updated = apply_editorial_patch(p, patch, {'supporting': ['source-1']})
+    assert updated.issues[0].context[0].text == text
+    with pytest.raises(ValueError):
+        StoryContext.model_validate({**source, 'id': 'supporting', 'text': '가'*501})
 
 
 def test_readability_editorial_patch_round_trip_is_reviewed_in_postgres(brief):  # noqa: F811

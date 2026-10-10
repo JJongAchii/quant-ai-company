@@ -1,0 +1,108 @@
+{
+  "started_at": "2026-10-07T12:34:17.228684+00:00",
+  "source_commit": "996bc8604664bee3cd9840318f9605057978386d",
+  "previous_source_root": "d2e849e18fc8f1860a98e550bf5dc0b3c89343f9",
+  "authorization": "음 잔여해있는 오류도 해결하고 확실하게 해줬으면 좋을거 같은데",
+  "phase": "installed",
+  "publication_enabled": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "actual_model_quality_evaluated": false,
+  "profiles": [
+    {
+      "base_image": "sha256:3893207f94685f6954feb5eeb88886a5395ae710f12f2d2104c76c922e65abc8",
+      "image": "quant-company:996bc8604664bee3cd9840318f9605057978386d-error0",
+      "services": [
+        "news-worker",
+        "dispatch"
+      ],
+      "changed": [
+        "quant_company/briefing/editor.py",
+        "quant_company/briefing/execution.py",
+        "quant_company/briefing/qualification.py",
+        "quant_company/briefing/store.py"
+      ],
+      "complete_source_inventory_verified": true,
+      "source_inventory_sha256": "a8fb6161a696fea56b80ddc0d63b09fd1e5509356356af440a32d76c2094927f"
+    },
+    {
+      "base_image": "sha256:69adc7728f8dfe692e1fa252f52f73f6bd88a747ed79a9a4de983d994e0bba46",
+      "image": "quant-company:996bc8604664bee3cd9840318f9605057978386d-error1",
+      "services": [
+        "briefing-data-worker"
+      ],
+      "changed": [
+        "quant_company/briefing/editor.py",
+        "quant_company/briefing/execution.py",
+        "quant_company/briefing/qualification.py",
+        "quant_company/briefing/store.py"
+      ],
+      "complete_source_inventory_verified": true,
+      "source_inventory_sha256": "80542894517d87b241738135cb5fd8b2fd3ac7cd5224dcd0087060fa710946a1"
+    }
+  ],
+  "files": {
+    "quant_company/briefing/editor.py": {
+      "before": "d3064c1087ae635a55578e9fdc47ffac36bdc84fdfb061d6e922474158785f6a",
+      "after": "1b9cc330bbc3fe38a40d190f921c6ba2969fd0b46949fcc1181d73d64c259ead"
+    },
+    "quant_company/briefing/execution.py": {
+      "before": "5667e69dae117c8bdee3aa85d76dec261c3f6c195cba03fe9b0d43dd2b31a028",
+      "after": "76ae3f776d5e3776f9c186f7e8ea6606ba01cd952f140522686db2fa013ad570"
+    },
+    "quant_company/briefing/qualification.py": {
+      "before": "252612cc0d69c57b66d370d99aef3b04140e7784649a37c7f404469e3cf988e4",
+      "after": "1b0a85f3c0b02f6e258c51c32de44ed41964ba8d83b7e9d9b60dbe18d1b5a004"
+    },
+    "quant_company/briefing/store.py": {
+      "before": "1fd82c5220dbc43f723e428fd301b27125d7caa78a35b1fbc924d3c3c812204c",
+      "after": "0ece4f5516d78b8008da1dc9f9cb0ac95c1d9d18df5c82f5cba69e81600ddb6e"
+    }
+  },
+  "completed_at": "2026-10-07T12:34:30.016903+00:00",
+  "cutover_started_at": "2026-10-07T12:35:27.374553+00:00",
+  "installed_at": "2026-10-07T12:35:32.427180+00:00",
+  "runtime_bindings_preserved": true,
+  "unrelated_services_preserved": true,
+  "environment_changed_keys": [
+    "RELEASE_COMMIT"
+  ],
+  "database_mutations": 0,
+  "model_auth_schedule_unchanged": true,
+  "execution_version": 4,
+  "inventory_contract_version": 2,
+  "source_root": "996bc8604664bee3cd9840318f9605057978386d",
+  "environment_after_sha256": "f52b1e1c1bbebee32bfce8de64b9b530df69bb48fb10c6b02ea5c3b936ddd1ef",
+  "recorded_at": "2026-10-07T12:39:46.270065+00:00",
+  "validation_version": 64,
+  "format_version": 19,
+  "slack_limits_reference": [
+    "https://docs.slack.dev/reference/methods/chat.postmessage",
+    "https://docs.slack.dev/reference/block-kit/blocks/"
+  ],
+  "quality_certified": false,
+  "tests": {
+    "regression": {
+      "total": 362,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "473cda01c4fe0dd75f34a0cd5b7cdd3c4750bcf923c4243eb11ef6b219626299"
+    },
+    "updated_format_assertions": {
+      "total": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "cb46ca1abdafc1ecb8e45eaa5b1c1b4e975741a580b82c9bb9bbaecf670471fc"
+    },
+    "final_focused": {
+      "total": 54,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "43dc22766febd87dde71b8571bc6a1cff6312a2e98ce735b0c75a9e7ec7ef5a1"
+    },
+    "interpretation": "359 initial passes; 3 failures were stale expected format_version=18 assertions, corrected to19 and all3 rerun passed. All54 final affected-path tests passed after the final prompt edit. PostgreSQL real; model and Slack in these tests simulated. Actual model correction/review still pending."
+  }
+}

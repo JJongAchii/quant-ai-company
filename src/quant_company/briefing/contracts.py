@@ -1,8 +1,8 @@
 from datetime import date
 from decimal import Decimal
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import AwareDatetime, Field, field_validator, model_validator
+from pydantic import AwareDatetime, Field, field_validator, model_serializer, model_validator
 from typing_extensions import TypedDict
 
 from ..contracts import StrictModel
@@ -94,7 +94,9 @@ class ClaimEdit(StrictModel):
 
 
 class StoryContext(Claim):
-    text: str = Field(min_length=1, max_length=300)
+    # The same paragraph may be replaced by ClaimEdit. Keep producer/consumer
+    # limits aligned; the independent readability check judges actual verbosity.
+    text: str = Field(min_length=1, max_length=500)
     kind: Literal["fact", "interpretation"] = "fact"
 
 
@@ -207,11 +209,11 @@ class BriefProposal(StrictModel):
     calendar: list[CalendarEvent] = Field(max_length=6)
     limitations: list[str] = Field(default_factory=list, max_length=8)
 
-    @model_validator(mode="after")
-    def bounded_story_context(self):
-        if sum(len(issue.context) for issue in self.issues) > 4:
-            raise ValueError("brief_story_context_limit")
-        return self
+    def context_slots(self):
+        # Match the producer's JSON schema: two bounded paragraphs per issue.
+        # A hidden cross-issue cap rejected schema-valid completed responses.
+        # Readability remains an independent content check, not a paragraph count.
+        return sum(2-len(issue.context) for issue in self.issues)
 
 
 REVIEW_CHECKS = {"numbers", "sources", "timing", "causality", "materiality", "counterevidence",
@@ -233,9 +235,13 @@ class ReviewChecks(TypedDict):
     readability: bool
 
 
+FactQuote = Annotated[str, Field(min_length=10, max_length=400)]
+FactQuotes = Annotated[list[FactQuote], Field(min_length=1, max_length=4)]
+
+
 class FactAssessment(StrictModel):
     fact: str = Field(min_length=5, max_length=240)
-    quote: str = Field(min_length=10, max_length=400)
+    quote: FactQuote | FactQuotes
     main_item_ids: list[str] = Field(max_length=6)
 
 
@@ -268,6 +274,21 @@ class InventorySource(StrictModel):
 
 class FactInventory(StrictModel):
     sources: list[InventorySource] = Field(min_length=1, max_length=24)
+
+
+class FragmentInventoryFact(StrictModel):
+    fact: str = Field(min_length=5, max_length=240)
+    # Keep disjoint evidence as separate spans, never manufacture a merged quote.
+    quote: FactQuotes
+    qualifiers: list[Annotated[str, Field(min_length=2, max_length=80)]] = Field(default_factory=list, max_length=6)
+
+
+class FragmentInventorySource(InventorySource):
+    material_facts: list[FragmentInventoryFact] = Field(max_length=6)
+
+
+class FragmentFactInventory(StrictModel):
+    sources: list[FragmentInventorySource] = Field(min_length=1, max_length=24)
 
 
 class FactPlacement(StrictModel):
@@ -316,6 +337,18 @@ class BriefEdition(StrictModel):
     previous_us_session: date | None
     previous_kr_session: date | None
     weekly: Literal["outlook", "review"] | None = None
+    # Set once by the service when no US close report existed at the first cutoff.
+    cutoff_extended: bool = False
+    cutoff_extension: dict | None = None
+
+    @model_serializer(mode="wrap")
+    def omit_unused_extension(self, handler):
+        # An unextended edition keeps its previous stored shape and prompt size.
+        data = handler(self)
+        if not self.cutoff_extended and self.cutoff_extension is None:
+            data.pop("cutoff_extended", None)
+            data.pop("cutoff_extension", None)
+        return data
 
 
 class CalendarOverride(StrictModel):

@@ -2,23 +2,28 @@
 
 import json
 import re
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 
 import httpx
 import pytest
 
 from quant_company.briefing.editor import artifact, prompt
-from quant_company.briefing.execution import PHASE_SECONDS, timeout_seconds
+from quant_company.briefing.execution import PHASE_SECONDS, has_runway, phase_deadline, timeout_seconds
 from quant_company.briefing.planning import plan_prompt
 from quant_company.briefing.quotations import source_spans
 from quant_company.contracts import ProviderFault, ProviderRequest, ProviderResponse
 from quant_company.providers.client import RuntimeClient
-from quant_company.providers.codex_runner import output_schema
+from quant_company.providers.codex_runner import output_schema, request_digest
 
 from .test_briefing import brief, bundle, proposal, response, seed  # noqa: F401
 from .test_codex_runtime import fake_codex, runner_for  # noqa: F401
 
 IDENTITY = "news-brief-00000000-0000-0000-0000-000000000001-"
+
+
+def deadline_bundle():
+    return dict(deadline_budget_version=1, fact_inventory_required=True, fact_inventory_version=2,
+                combined_editorial_repair=True, editorial_patch_version=2)
 
 
 def request(phase="write", contract="brief_write_v1"):
@@ -30,6 +35,8 @@ def request(phase="write", contract="brief_write_v1"):
     ("plan", "brief_plan_v1", 360), ("write", "brief_write_v1", 1440),
     ("review", "brief_review_v1", 720), ("revise", "brief_source_notes_v1", 360),
     ("final_review", "brief_review_v1", 360),
+    ("review", "brief_review_v2", 720), ("final_review", "brief_review_v2", 720),
+    ("revise", "brief_editorial_v1", 360), ("revise", "brief_editorial_v2", 960),
 ])
 def test_scoped_budget_preserves_other_and_legacy_turns(fake_codex, phase, contract, seconds):  # noqa: F811
     config, _, _ = fake_codex
@@ -39,6 +46,79 @@ def test_scoped_budget_preserves_other_and_legacy_turns(fake_codex, phase, contr
     assert runner._timeout_seconds(current) == seconds
     legacy = current.model_copy(update={"output_contract": "agent_decision"})
     assert timeout_seconds(legacy) is None and runner._timeout_seconds(legacy) == config.timeout_seconds
+
+
+def test_shared_deadline_lends_unused_time_and_reserves_full_review(monkeypatch):
+    at = datetime(2026, 10, 9, 6, 30, tzinfo=UTC)
+    due = at+timedelta(minutes=75)
+    data = deadline_bundle()
+    plan_end = phase_deadline('plan', data, due)
+    assert (plan_end-at).total_seconds() == 600  # 85-minute window minus downstream work and send margin.
+    current = request('plan', 'brief_plan_v1').model_copy(update={'brief_deadline_unix':int(plan_end.timestamp())})
+    monkeypatch.setattr('quant_company.briefing.execution.wall_time', lambda: at.timestamp())
+    assert timeout_seconds(current) == 600  # The former 360-second kill timer is not used.
+    after_fast_plan = at+timedelta(minutes=3)
+    after_slow_plan = at+timedelta(minutes=8)
+    inventory_end = phase_deadline('inventory', data, due)
+    assert (inventory_end-after_fast_plan).total_seconds() == 25*60
+    assert (inventory_end-after_slow_plan).total_seconds() == 20*60
+    assert has_runway('inventory', data, after_slow_plan, due)
+    assert phase_deadline('final_review', data, due) == due+timedelta(minutes=9)
+    assert phase_deadline('revise', data, due) == due-timedelta(minutes=3)
+    assert phase_deadline('plan', {}, due) is None
+
+
+def test_frozen_deadline_cannot_be_extended_by_queueing_or_replay(monkeypatch):
+    current = request('plan', 'brief_plan_v1').model_copy(update={'brief_deadline_unix':2000000600})
+    original_digest = request_digest(current)
+    for now, expected in ((2000000000,600),(2000000480,120)):
+        monkeypatch.setattr('quant_company.briefing.execution.wall_time', lambda now=now: now)
+        assert timeout_seconds(current) == expected
+        assert request_digest(current) == original_digest
+    monkeypatch.setattr('quant_company.briefing.execution.wall_time', lambda: 2000000600)
+    with pytest.raises(ProviderFault, match='deadline has passed'):
+        timeout_seconds(current)
+    assert request_digest(current.model_copy(update={'brief_deadline_unix':2000000900})) != original_digest
+
+
+def test_absent_deadline_preserves_legacy_digest_and_rejects_other_lanes():
+    import hashlib
+
+    legacy = request()
+    material = legacy.model_dump(exclude={'brief_deadline_unix','session','web_search'})
+    expected = hashlib.sha256(json.dumps(material,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+    assert request_digest(legacy) == expected
+    with pytest.raises(ValueError, match='scoped Analyst'):
+        ProviderRequest.model_validate(legacy.model_dump() | {'output_contract':'agent_decision','brief_deadline_unix':2000000000})
+
+
+def test_real_postgres_plan_freezes_absolute_deadline_and_does_not_restart_it(brief):  # noqa: F811
+    from psycopg.types.json import Jsonb
+
+    from .test_briefing_planning import planning_bundle
+
+    store, clock = brief
+    store.company.settings.briefing_source_notes_enabled = True
+    edition = seed(brief)
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE brief_editions SET bundle=%s WHERE id=%s', (Jsonb(planning_bundle()),edition.id))
+    first = store.prepare()['request']
+    assert first['brief_deadline_unix'] == int((edition.cutoff+timedelta(minutes=10)).timestamp())
+    clock['at'] += timedelta(minutes=7)
+    assert store.prepare()['request'] == first
+
+
+async def test_expired_absolute_deadline_starts_no_http_call(monkeypatch):
+    called = []
+    async def handle(req):
+        called.append(req)
+        raise AssertionError('Expired request must not invoke a model')
+    client = RuntimeClient('http://runtime.private','synthetic-token',960,transport=httpx.MockTransport(handle))
+    monkeypatch.setattr('quant_company.briefing.execution.wall_time',lambda:2000000001)
+    current = request('plan','brief_plan_v1').model_copy(update={'brief_deadline_unix':2000000000})
+    with pytest.raises(ProviderFault,match='deadline has passed'):
+        await client.run(current)
+    assert not called
 
 
 @pytest.mark.parametrize("updates", [
@@ -185,3 +265,28 @@ def test_direct_prompt_keeps_full_originals_and_removes_obsolete_envelope():
     assert "BriefProposal JSON object directly" in direct
     plan = plan_prompt(b | {"candidate_documents": b["documents"]}, direct_output=True)
     assert "SourcePlan JSON object directly" in plan and "AgentDecision(" not in plan
+
+
+def test_new_editions_reserve_one_correction_and_two_full_reviews_before_deadline():
+    from quant_company.briefing.execution import output_contract, remaining_seconds
+    from quant_company.briefing.schedule import PREPARATION_MINUTES
+
+    b = {'combined_editorial_repair': True, 'fact_inventory_required': True, 'fact_inventory_version': 2}
+    assert remaining_seconds('plan', b) == 70*60
+    assert remaining_seconds('review', b) == 30*60
+    assert remaining_seconds('revise', b) == 18*60
+    assert remaining_seconds('final_review', b) == 12*60
+    assert remaining_seconds('plan', b)+60 < (PREPARATION_MINUTES+10)*60
+    assert output_contract('final_review', b) == 'brief_review_v2'
+    assert output_contract('final_review', {}) == 'brief_review_v1'
+
+    # Full editorial correction reads the same originals as composition; the
+    # old six-minute budget remains frozen only for prior v1 requests.
+    b['editorial_patch_version'] = 2
+    assert remaining_seconds('plan', b) == 80*60
+    assert remaining_seconds('revise', b) == 28*60
+    assert remaining_seconds('plan', b)+60 < (PREPARATION_MINUTES+10)*60
+    b['revision_feedback'] = {'repair_mode': 'editorial_patch'}
+    assert output_contract('revise', b) == 'brief_editorial_v2'
+    del b['editorial_patch_version']
+    assert output_contract('revise', b) == 'brief_editorial_v1'

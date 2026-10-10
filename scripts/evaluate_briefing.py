@@ -14,6 +14,7 @@ from html import unescape
 from pathlib import Path
 
 from quant_company.briefing.contracts import (
+    BriefComposition,
     BriefProposal,
     BriefReview,
     ConditionPatch,
@@ -36,6 +37,7 @@ from quant_company.briefing.editor import (
     validate_review,
     validate_source_notes,
 )
+from quant_company.briefing.inventory import compose
 from quant_company.briefing.planning import apply_plan, plan_prompt
 from quant_company.briefing.quality import reconcile
 from quant_company.company import fingerprint
@@ -80,9 +82,17 @@ def prepare_revision(bundle, written, reviewed):
     return revision_bundle(initial["bundle"], initial["proposal"], critique, rejected)
 
 
-def assess(bundle, written, reviewed=None, *, previous=None, correction_review=None):
+def assess(bundle, written, reviewed=None, *, previous=None, correction_review=None, derived_proposal=None):
     correction = None
-    if previous or correction_review:
+    if derived_proposal is not None:
+        if previous or correction_review:
+            raise ValueError("Derived proposal and patch application are mutually exclusive")
+        # The service owns this expanded draft, including restored exact quotes.
+        # It is not a provider artifact and must not replace a raw model receipt.
+        proposed = BriefProposal.model_validate(derived_proposal)
+        correction = {"mode": "server_recomposed_proposal", "writer_request_id": written.request_id,
+                      "provider_receipt": False}
+    elif previous or correction_review:
         if not previous or not correction_review:
             raise ValueError("Isolated repair requires both the previous writer and correction review")
         initial = assess(bundle, previous)
@@ -96,13 +106,17 @@ def assess(bundle, written, reviewed=None, *, previous=None, correction_review=N
         elif feedback["repair_mode"] == "material_append":
             proposed = apply_material_fact_patch(prior, artifact(written, MaterialFactPatch, bundle), feedback["allowed_sources"])
         elif feedback["repair_mode"] == "editorial_patch":
-            proposed = apply_editorial_patch(prior, artifact(written, EditorialPatch, bundle), feedback["allowed_sources"])
+            proposed = apply_editorial_patch(prior, artifact(written, EditorialPatch, bundle), feedback["allowed_sources"],
+                                            preserve_notes=bool(bundle.get('fact_inventory_required')), bundle=bundle)
         else:
             raise ValueError("Review does not authorize an isolated repair")
         correction = {"mode": feedback["repair_mode"], "previous_request_id": previous.request_id,
                       "patch_request_id": written.request_id, "allowed_ids": feedback["allowed_ids"]}
     else:
-        proposed = artifact(written, BriefProposal, bundle)
+        if bundle.get('fact_inventory_required') and 'fact_placements' in json.loads(written.decision.artifacts[0].content):
+            proposed = compose(artifact(written, BriefComposition, bundle), bundle)
+        else:
+            proposed = artifact(written, BriefProposal, bundle)
     rejected = validate(proposed, bundle)
     accepted = prune(proposed, rejected)
     accepted, conflicts = reconcile(accepted, bundle)

@@ -1,0 +1,27 @@
+{
+  "recorded_at": "2026-10-07T23:04:58.326491+00:00",
+  "source_commit": "8fde2509d4dd2191147fbcee5eaa952191d7c048",
+  "format_version": 21,
+  "validation_version": 69,
+  "execution_version": 6,
+  "schedule_version": 6,
+  "regression": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "374",
+    "time": "27.207"
+  },
+  "junit_sha256": "e18a5b8b351403c3854c9aa3e8cb1caf46209a3357bb1ef56b8f7c0fdd153e6a",
+  "ruff": "passed",
+  "validation_scope": "Database tests use real local PostgreSQL. Model and Slack calls in regression are simulated. Actual saved runtime outputs are replayed separately without regenerating their completed requests. Prior execution67 Temporal+PostgreSQL integration7passes remain valid; no Temporal workflow change in69.",
+  "original_source_preservation_proof": "fresh-am-20261008-validation67-failure-and69-replay.json",
+  "production_model_policy_unchanged": true,
+  "automatic_publication_preserved": true,
+  "actual_content_pass": false,
+  "latest_actual_review_checks_passed": 9,
+  "latest_actual_review_checks_total": 12,
+  "quality_certified": false,
+  "remaining_confirmation": "First actual outputs under69 must confirm the editorial changes and scheduled delivery; static tests and saved-output replay do not certify content."
+}

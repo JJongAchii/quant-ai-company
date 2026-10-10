@@ -1,0 +1,69 @@
+{
+  "started_at": "2026-10-07T12:50:25.767277+00:00",
+  "source_commit": "b66f59a1d93dacf770da41f411d21305d4f2701e",
+  "previous_source_root": "996bc8604664bee3cd9840318f9605057978386d",
+  "authorization": "음 잔여해있는 오류도 해결하고 확실하게 해줬으면 좋을거 같은데",
+  "phase": "installed",
+  "publication_enabled": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "actual_model_quality_evaluated": false,
+  "profiles": [
+    {
+      "base_image": "sha256:f7907263c3166f1aa2cba368cb913f8435836ea623a2b5286d1c4bc5dacdc5e8",
+      "image": "quant-company:b66f59a1d93dacf770da41f411d21305d4f2701e-error0",
+      "services": [
+        "news-worker",
+        "dispatch"
+      ],
+      "changed": [
+        "quant_company/briefing/contracts.py",
+        "quant_company/briefing/editor.py"
+      ],
+      "complete_source_inventory_verified": true,
+      "source_inventory_sha256": "f0e136aefa94de62582b01015af1da4ce70a97d0177e4503661a2ced5cb2ee2b"
+    },
+    {
+      "base_image": "sha256:bfd54c2b2a8b3bae019157fd0e336bf249a09587a42793bce9043119303c16ac",
+      "image": "quant-company:b66f59a1d93dacf770da41f411d21305d4f2701e-error1",
+      "services": [
+        "briefing-data-worker"
+      ],
+      "changed": [
+        "quant_company/briefing/contracts.py",
+        "quant_company/briefing/editor.py"
+      ],
+      "complete_source_inventory_verified": true,
+      "source_inventory_sha256": "8994e69260495ece71e76a44c827d00a1060751f3e210b361eaa676db6023bc9"
+    }
+  ],
+  "files": {
+    "quant_company/briefing/editor.py": {
+      "before": "1b9cc330bbc3fe38a40d190f921c6ba2969fd0b46949fcc1181d73d64c259ead",
+      "after": "61710c40d7841f758c2bfea2ce9f94c539fb305400c2e9555647c699cd88d509"
+    },
+    "quant_company/briefing/contracts.py": {
+      "before": "971c9d0b604e1965227e4ed9fd4e62bf8db4bec668e46980338795dfb5bf341c",
+      "after": "ff1ffd31bdc4c9010ac0fcd63a6fada3aacaa79067bd19671c7ed63b5ad4d863"
+    }
+  },
+  "completed_at": "2026-10-07T12:50:39.683892+00:00",
+  "cutover_started_at": "2026-10-07T12:51:01.024521+00:00",
+  "installed_at": "2026-10-07T12:51:07.661919+00:00",
+  "runtime_bindings_preserved": true,
+  "unrelated_services_preserved": true,
+  "environment_changed_keys": [
+    "RELEASE_COMMIT"
+  ],
+  "database_mutations": 0,
+  "model_auth_schedule_unchanged": true,
+  "execution_version": 4,
+  "inventory_contract_version": 2,
+  "source_root": "b66f59a1d93dacf770da41f411d21305d4f2701e",
+  "environment_after_sha256": "cb6181263cb7a93f1b63c0eadcda2542373f8838fa59c4942cc456579ecb5abd",
+  "format_version": 19,
+  "validation_version": 65,
+  "provider_output_schemas_unchanged": true,
+  "sdk_preserved": true,
+  "quality_certified": false
+}

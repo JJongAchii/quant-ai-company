@@ -1,6 +1,12 @@
+from copy import deepcopy
+
 import pytest
 
+from quant_company.briefing.contracts import CalendarEvent
+from quant_company.briefing.editor import main_post_item_ids, render
 from quant_company.briefing.slack_blocks import blocks
+
+from .test_briefing import bundle, proposal
 
 
 def test_long_main_keeps_every_paragraph_and_citation_in_one_slack_message():
@@ -19,3 +25,70 @@ def test_long_main_keeps_every_paragraph_and_citation_in_one_slack_message():
 def test_unrenderable_brief_fails_before_external_delivery(text):
     with pytest.raises(ValueError):
         blocks(text)
+
+
+def test_full_multi_topic_body_is_checked_against_actual_blocks_before_delivery():
+    b, p = bundle(), proposal()
+    first = p.issues[0]
+    p.issues = []
+    for i in range(6):
+        issue = deepcopy(first)
+        for c in [issue.fact, issue.interpretation, issue.analysis.mechanism,
+                  issue.analysis.alternative, issue.next_check]:
+            c.id += str(i)
+            c.text = ('시장 변화와 경제적 의미를 설명하는 합성 검증 문장입니다. ' * 10)[:380]
+        p.issues.append(issue)
+    parts, _ = render(p, b)
+    assert 9500 < len(parts[0]) < 30000
+    sections = blocks(parts[0])
+    assert ''.join(s['text']['text'] for s in sections) == parts[0]
+    assert len(sections) <= 50
+    assert all(len(s['text']['text']) <= 3000 for s in sections)
+    # A wire-valid body is not itself a readability or content-quality pass.
+    assert len(p.issues) == 6
+
+
+def test_first_basis_point_unit_is_explained_without_rewriting_stored_facts():
+    b, p = bundle(), proposal()
+    p.issues[0].fact.text = '국채금리는 6bp 상승했고 단기물은 2bp 상승했다.'
+    original = p.model_dump_json()
+    main = render(p, b)[0][0]
+    assert '6bp(1bp=0.01%포인트)' in main and '2bp 상승' in main
+    assert main.count('1bp=0.01%포인트') == 1
+    assert p.model_dump_json() == original
+
+
+def test_existing_basis_point_explanation_is_not_inserted_twice_or_moved_to_next_rate():
+    b, p = bundle(), proposal()
+    p.issues[0].fact.text = '국채금리는 6bp(1bp=0.01%포인트) 상승했고 단기물은 2bp 상승했다.'
+    original = p.model_dump_json()
+    main = render(p, b)[0][0]
+    assert '6bp(1bp=0.01%포인트) 상승' in main and '2bp 상승' in main
+    assert main.count('1bp=0.01%포인트') == 1
+    assert p.model_dump_json() == original
+
+
+def test_natural_language_basis_point_explanation_is_not_duplicated():
+    b, p = bundle(), proposal()
+    p.issues[0].fact.text = '국채금리는 2.8bp 상승했다. bp는 0.01%포인트다.'
+    original = p.model_dump_json()
+    main = render(p, b)[0][0]
+    assert '2.8bp 상승' in main and main.count('0.01%포인트') == 1
+    assert p.model_dump_json() == original
+
+
+def test_factual_watchpoints_stay_in_main_internals_and_conditions_in_next_checks():
+    b, p = bundle(), proposal()
+    p.calendar = [CalendarEvent(id='calendar', title='지표 발표', at=None,
+        source_timezone='America/New_York', status='time_unconfirmed', evidence=p.summary[0].evidence)]
+    p.watchpoints += [p.summary[0].model_copy(update={'id': f'fact-watch-{n}', 'text': f'확인된 시장 사실 {n}'})
+                      for n in range(2)]
+    original = p.model_dump_json()
+    parts, _ = render(p, b)
+    internals, next_checks = parts[0].split('*업종·수급에서 볼 점*')[1].split('*다음 확인할 것*')
+    for watch in p.watchpoints[1:]:
+        assert watch.text in internals and watch.text not in next_checks
+        assert watch.id in main_post_item_ids(p, b)
+    assert p.watchpoints[0].text in next_checks
+    assert ''.join(section['text']['text'] for section in blocks(parts[0])) == parts[0]
+    assert p.model_dump_json() == original
