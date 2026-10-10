@@ -113,8 +113,8 @@ sudo docker compose --env-file deploy/.env -f deploy/compose.yaml -f deploy/vide
 ```
 
 결과의 `fps`와 `estimate_5min_episode_minutes`(5분 영상 렌더 예상 분)를 기록한다. 기준:
-- 10 fps 이상(5분 영상 15분 이내): 아침 08:30 목표 유지 가능.
-- 6~10 fps: 아침 목표를 08:45로 늦춘다(`VIDEO_AM_REVIEW_TARGET=08:45`). 공개 승인은 09:00에 그대로 만료된다.
+- 10 fps 이상(5분 영상 15분 이내): 공개 10분 전 파일 목표(아침 06:50·마감 17:50) 유지 가능.
+- 6~10 fps: 공개 시각을 늦추거나(`VIDEO_AM_PUBLISH_DST` 등) 렌더 workers를 늘린다. 아침 새 생성은 09:00에 그대로 멈춘다.
 - 6 fps 미만 또는 메모리 부족(OOM): 영상 기능을 켜지 말고 결과를 공유한다.
 
 측정 뒤 `sudo rm -rf /var/lib/quant-company/video/bench`.

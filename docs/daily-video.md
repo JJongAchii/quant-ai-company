@@ -47,8 +47,8 @@ flowchart LR
 
 | 회차 | 원문 발송 | 영상 준비 목표 | 제작 중단(만료) |
 | --- | --- | --- | --- |
-| 아침 | 07:45 KST(미국 마감 조기 발송 시 더 이르게) | 08:30 KST | 09:00 KST |
-| 마감 | KRX 거래일 15:50 수집 시작 · 16:10 기준 · 17:25 마감(`BRIEFING_KR_CLOSE_ENABLED`, 준비되면 조기 발송) | max(19:30, 마감+1시간 45분) | 목표+2시간 30분 (기본 22:00 KST) |
+| 아침 | 07:45 KST(미국 마감 조기 발송 시 더 이르게) | 공개 07:00 KST(미국 서머타임) / 07:50 KST(11/1부터) · 파일은 10분 전(06:50 / 07:40) | 09:00 KST(못 끝내면 중단·알림) |
+| 마감 | KRX 거래일 15:50 수집 시작 · 16:10 기준 · 17:25 마감(`BRIEFING_KR_CLOSE_ENABLED`, 준비되면 조기 발송) | 공개 18:00 KST · 파일은 17:50 | 목표+2시간 30분 (기본 20:20 KST) |
 
 목표 시각까지 영상이 없으면 한 번 상태를 알리고, 만료 뒤에는 새 생성(모델·음성 비용)을 중단한다. 이미 렌더한 파일의
 Slack 전달은 만료와 관계없이 진행한다.
@@ -174,7 +174,8 @@ docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml exec video-wo
 | `VIDEO_ALIGNMENT_MODEL` | small | 실제 음성 검증·자막 시점용 로컬 모델/경로 |
 | `VIDEO_TEMPLATE` | motion-v2 | 카드·모션 고정 틀. text-v1은 이전 글 화면 |
 | `VIDEO_RENDER_WORKERS` | 1 | 프레임 캡처 프로세스 수. 2GB 서버 실측 전에는 1 |
-| `VIDEO_AM_REVIEW_TARGET` | 08:30 | 아침 영상 목표(06:00~08:59). 09:00에 새 생성 중단 |
+| `VIDEO_AM_PUBLISH_DST` / `VIDEO_AM_PUBLISH_STD` / `VIDEO_PM_PUBLISH` | 07:00 / 07:50 / 18:00 | 유튜브 공개 목표(KST). 아침은 뉴욕 서머타임 여부로 고른다 |
+| `VIDEO_PUBLISH_LEAD_MINUTES` | 10 | 공개 몇 분 전까지 파일을 스레드에 올릴지. 작업은 본문 발송 즉시 시작하고, 늦어도 완성되면 바로 올리며 늦은 시간을 한 줄 적는다. 아침은 09:00에 새 생성 중단 |
 | `VIDEO_PLAYLIST_URL` | 증시story 재생목록 | 설명란 "증시story 모아보기" 주소 |
 | `VIDEO_RETENTION_DAYS` | 14 | 작업 종료 뒤 최종 파일 보관 일수 |
 | `VIDEO_MIN_FREE_GB` | 10 | 이보다 여유가 적으면 새 회차를 시작하지 않음 |

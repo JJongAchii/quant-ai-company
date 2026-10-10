@@ -96,7 +96,13 @@ class Settings(BaseSettings):
     # 증시story playlist; when empty the description omits the "▶ 증시story 모아보기" lines.
     video_playlist_url: str = "https://www.youtube.com/playlist?list=PLbCkACCer37U"
     # Morning review-ready target (HH:MM KST); public approval still expires at 09:00 KST.
-    video_am_review_target: str = Field(default="08:30", pattern=r"^(0[6-8]):[0-5]\d$")
+    # YouTube publish times the owner targets (KST). Work starts the moment the brief body is delivered; the files
+    # must be in the brief thread VIDEO_PUBLISH_LEAD_MINUTES earlier. Morning: 07:00 while New York is on daylight
+    # time (US close 05:00 KST), 07:50 otherwise. Close: 18:00.
+    video_am_publish_dst: str = Field(default="07:00", pattern=r"^0[6-8]:[0-5]\d$")
+    video_am_publish_std: str = Field(default="07:50", pattern=r"^0[6-8]:[0-5]\d$")
+    video_pm_publish: str = Field(default="18:00", pattern=r"^(1[6-9]|2[0-1]):[0-5]\d$")
+    video_publish_lead_minutes: int = Field(default=10, ge=0, le=60)
     # Final files are kept this many days after a job ends; intermediates are removed right after packaging.
     video_retention_days: int = Field(default=14, ge=1, le=90)
     # New episodes do not start below this free space on the artifact volume.

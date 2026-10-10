@@ -13,11 +13,14 @@ from difflib import SequenceMatcher
 from html import escape
 from importlib.resources import files
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from .body import references as body_references
 from .contracts import digest
 from .render import Aligner, checksum, probe, quality_probe, run, spoken
 from .upload import compose as compose_upload
+
+KST = ZoneInfo('Asia/Seoul')
 
 FPS = 30
 LEAD, TAIL = 0.5, 0.8
@@ -344,7 +347,9 @@ class MotionRenderer:
                           + (f" ({a['license_url']})" if a.get('license_url') else '')
                           + f"\n  원본: {a['source']}" + (f"\n  변경: {a['changes']}" if a.get('changes') else '')
                           for a in photos)
-        (directory / 'upload.txt').write_text(f"[제목]\n{copy['title']}\n\n[설명]\n{description}\n\n[태그]\n{', '.join(copy['tags'])}\n\n"
+        publish = job['policy'].get('publish_at')
+        when = f"[공개 시각]\n{datetime.fromisoformat(publish).astimezone(KST):%Y-%m-%d %H:%M} KST\n\n" if publish else ''
+        (directory / 'upload.txt').write_text(when + f"[제목]\n{copy['title']}\n\n[설명]\n{description}\n\n[태그]\n{', '.join(copy['tags'])}\n\n"
                                               f"[고정 댓글]\n{plan.pinned_comment}\n" + (f"\n[자료사진 출처]{credits}\n" if photos else ''))
         (directory / 'sources.json').write_text(json.dumps(sources, ensure_ascii=False, indent=2))
         (directory / 'assets.json').write_text(json.dumps(used, ensure_ascii=False, indent=2))

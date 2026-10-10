@@ -153,7 +153,7 @@ async def test_fallback_notice_makes_no_video_and_one_thread_alert(brief, slack_
     await VideoRunner(store.company, provider=provider).tick()
     await VideoRunner(store.company, provider=provider).tick()
     with store.db.transaction() as conn:
-        alerts = conn.execute("SELECT text,project_id FROM messages WHERE kind='video_status'").fetchall()
+        alerts = conn.execute("SELECT text,project_id FROM messages WHERE kind='video_status' AND text NOT LIKE '영상 제작 현황%' ORDER BY created_at DESC").fetchall()
         outbox = conn.execute("SELECT thread_ts FROM outbox o JOIN messages m ON m.id=o.id WHERE m.kind='video_status'").fetchone()
         assert conn.execute('SELECT count(*) AS n FROM video_jobs').fetchone()['n'] == 0
     assert len(alerts) == 1 and '영상 제작 안 함' in alerts[0]['text'] and 'deadline' in alerts[0]['text']
@@ -212,7 +212,7 @@ async def test_rejected_upload_posts_the_server_path_and_can_be_redelivered(brie
     assert failed['state'] == 'delivery_failed' and failed['error'] == 'not_in_channel'
     with store.db.transaction() as conn:
         notice = conn.execute("SELECT o.text,o.thread_ts FROM outbox o JOIN messages m ON m.id=o.id "
-                              "WHERE m.kind='video_status'").fetchone()
+                              "WHERE m.kind='video_status' AND o.text NOT LIKE '영상 제작 현황%'").fetchone()
     assert '영상 파일 전달 실패' in notice['text'] and failed['artifacts']['directory'] in notice['text']
     assert notice['thread_ts'] == '100.000'
     assert retry(store, str(job['id']), '채널 초대 후 같은 파일을 새 시도로 다시 전달함')['state'] == 'delivering'
@@ -235,7 +235,7 @@ async def test_lost_completion_is_uncertain_and_never_replayed(brief, slack_vide
     assert store.get(job['id'])['state'] == 'delivery_uncertain'
     with store.db.transaction() as conn:
         status = conn.execute('SELECT status FROM outbox WHERE id=%s', (current['delivery_message_id'],)).fetchone()['status']
-        notice = conn.execute("SELECT text FROM messages WHERE kind='video_status'").fetchone()['text']
+        notice = conn.execute("SELECT text FROM messages WHERE kind='video_status' AND text NOT LIKE '영상 제작 현황%' ORDER BY created_at DESC").fetchone()['text']
     assert status == 'uncertain' and '자동으로 다시 올리지 않습니다' in notice
     calls = slack.calls.count('/api/files.completeUploadExternal')
     await send(store, slack)
@@ -276,7 +276,7 @@ async def test_runway_unavailable_alerts_without_any_charge_or_fallback(brief, s
     current = store.get(job['id'])
     assert current['error'] == 'runway_unavailable' and not speech.calls
     with store.db.transaction() as conn:
-        alert = conn.execute("SELECT text FROM messages WHERE kind='video_status'").fetchone()['text']
+        alert = conn.execute("SELECT text FROM messages WHERE kind='video_status' AND text NOT LIKE '영상 제작 현황%' ORDER BY created_at DESC").fetchone()['text']
         assert conn.execute("SELECT count(*) AS n FROM video_effects WHERE kind='speech'").fetchone()['n'] == 0
     assert 'Runway' in alert and '유료 API로 전환하지 않았습니다' in alert and 'video-auth runway' in alert
     with store.db.transaction() as conn:
@@ -300,7 +300,7 @@ async def test_credit_checks_run_before_the_first_take(brief, slack_video, limit
     assert (await VideoRunner(store.company, speech=speech).tick())['state'] == 'blocked'
     assert store.get(job['id'])['error'] == code and not speech.calls
     with store.db.transaction() as conn:
-        assert '크레딧' in conn.execute("SELECT text FROM messages WHERE kind='video_status'").fetchone()['text']
+        assert '크레딧' in conn.execute("SELECT text FROM messages WHERE kind='video_status' AND text NOT LIKE '영상 제작 현황%' ORDER BY created_at DESC").fetchone()['text']
 
 
 def test_image_rotation_skips_last_seven_days_and_falls_back_to_oldest():
@@ -351,7 +351,7 @@ async def test_dispatcher_crash_mid_upload_becomes_uncertain_with_notice(brief, 
     assert store.sync_deliveries() == 1 and store.sync_deliveries() == 0
     assert store.get(job['id'])['state'] == 'delivery_uncertain'
     with store.db.transaction() as conn:
-        assert conn.execute("SELECT count(*) AS n FROM messages WHERE kind='video_status'").fetchone()['n'] == 1
+        assert conn.execute("SELECT count(*) AS n FROM messages WHERE kind='video_status' AND text NOT LIKE '영상 제작 현황%'").fetchone()['n'] == 1
 
 
 async def test_script_writer_is_not_offered_images_used_in_the_last_week(brief, slack_video, tmp_path):  # noqa: F811

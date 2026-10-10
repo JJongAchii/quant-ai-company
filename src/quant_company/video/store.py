@@ -10,20 +10,37 @@ from ..company import PolicyError, as_json, stable
 from .contracts import POLICY_VERSION, VideoAction, VideoReview, digest
 
 KST = ZoneInfo("Asia/Seoul")
+NY = ZoneInfo("America/New_York")
 # Brief kind -> video edition. Both follow the briefing schedule, so market holidays skip both the same way.
 EDITIONS = {"am": "am", "pm": "close"}
 
 
-def edition_times(edition, settings=None):
-    """Review-ready target and public-approval deadline. AM: before the KR open. PM: the evening after the close brief
-    (due 17:45 KST or later); production gets about 1h45m, approval closes before the US session."""
+def _clock(value, default):
+    hour, minute = map(int, (value or default).split(":"))
+    return time(hour, minute)
+
+
+def publish_time(edition, settings=None):
+    """Owner's YouTube publish time for the edition (KST). Morning follows New York daylight time: 07:00 KST while
+    the US close is 05:00 KST, 07:50 KST in winter (from 2026-11-01). Close edition: 18:00 KST."""
     day = edition["day"]
     if edition["kind"] == "pm":
-        due = edition["due_at"].astimezone(KST)
-        target = max(datetime.combine(day, time(19, 30), KST), due + timedelta(minutes=105))
-        return target, max(datetime.combine(day, time(22), KST), target + timedelta(minutes=150))
-    hour, minute = map(int, (getattr(settings, "video_am_review_target", None) or "08:30").split(":"))
-    return datetime.combine(day, time(hour, minute), KST), datetime.combine(day, time(9), KST)
+        return datetime.combine(day, _clock(getattr(settings, "video_pm_publish", None), "18:00"), KST)
+    summer = bool(datetime.combine(day, time(6), NY).dst())
+    value = getattr(settings, "video_am_publish_dst" if summer else "video_am_publish_std", None)
+    return datetime.combine(day, _clock(value, "07:00" if summer else "07:50"), KST)
+
+
+def edition_times(edition, settings=None):
+    """Files-ready target and generation deadline. Work starts as soon as the brief body is delivered (no waiting for
+    due or a fixed time); the files should be in the brief thread VIDEO_PUBLISH_LEAD_MINUTES before the publish time
+    (AM 06:50 / winter 07:40, PM 17:50). A late episode is still delivered with a one-line delay note. New generation
+    stops at 09:00 KST for the morning edition and 2h30m after the target for the close edition."""
+    lead = getattr(settings, "video_publish_lead_minutes", None)
+    target = publish_time(edition, settings) - timedelta(minutes=10 if lead is None else lead)
+    if edition["kind"] == "pm":
+        return target, target + timedelta(minutes=150)
+    return target, datetime.combine(edition["day"], time(9), KST)
 EDITION_NAMES = {"am": "아침 브리핑", "close": "마감 브리핑"}
 REASONS = {
     "runway_unavailable": "Runway 음성 연결 실패(로그인 만료 또는 서비스 응답 없음). 유료 API로 전환하지 않았습니다. "
@@ -45,10 +62,19 @@ def reason(code):
     return REASONS.get(code, "제작 단계 실패(" + code + ").")
 
 
-def delivery_text(job, artifacts):
+def delivery_text(job, artifacts, at=None):
     minutes, seconds = divmod(round(artifacts.get("duration", 0)), 60)
+    publish = job["policy"].get("publish_at")
+    target = job["policy"].get("review_target")
+    timing = ""
+    if publish:
+        timing = f"공개 목표 {datetime.fromisoformat(publish).astimezone(KST):%H:%M} KST"
+        if target and at and at > datetime.fromisoformat(target):
+            late = round((at - datetime.fromisoformat(target)).total_seconds() / 60)
+            timing += f" · 파일 준비 목표보다 {late}분 늦게 완성됐습니다"
+        timing += "\n"
     return (f"영상 준비 완료 · {EDITION_NAMES.get(job['source'].get('edition_kind'), '브리핑')}\n"
-            f"{artifacts.get('title', '')}\n길이 {minutes}분 {seconds:02}초 · 자동 기술 검사 통과\n"
+            f"{artifacts.get('title', '')}\n길이 {minutes}분 {seconds:02}초 · 자동 기술 검사 통과\n" + timing +
             "첨부: 영상(MP4) · 썸네일(PNG) · 자막(SRT) · 업로드 문안(upload.txt: 제목·설명·챕터·태그·고정 댓글)\n"
             "전체 시청 후 직접 업로드해 주세요.")
 
@@ -119,6 +145,7 @@ class VideoStore:
                   "workspace_id": self.settings.video_runway_workspace_id,
                   "youtube_channel": self.settings.video_youtube_channel_id, "template": self.settings.video_template,
                   "edition": source["edition_kind"], "review_target": target.isoformat(),
+                  "publish_at": publish_time(edition, self.settings).isoformat(),
                   # YouTube private upload + Slack approval only when explicitly enabled; otherwise the owner gets the
                   # files in the brief thread and uploads them himself.
                   "delivery": "youtube" if self.settings.video_upload_enabled else "slack"}
@@ -330,7 +357,7 @@ class VideoStore:
                         '원문 브리핑은 그대로 확인할 수 있습니다. 공간을 확보한 뒤 운영자가 다시 시도합니다.', message_id=mid)
 
     def late_notices(self):
-        """One durable status notice at the edition's review target (AM 08:30, PM 19:30); no new model call."""
+        """One durable status notice at the files-ready target (publish time - lead); no new model call."""
         with self.db.transaction() as conn:
             conn.execute('SELECT pg_advisory_xact_lock(%s)', (LOCK,))
             jobs = conn.execute("""SELECT * FROM video_jobs
@@ -418,7 +445,7 @@ class VideoStore:
             attempt = conn.execute('SELECT COALESCE(max(attempt),0)+1 AS n FROM video_deliveries WHERE job_id=%s',
                                    (current['id'],)).fetchone()['n']
             mid = stable(f"video-files:{current['id']}:{attempt}")
-            self.company._message(conn, project, None, 'market_brief', 'video_files', delivery_text(current, artifacts),
+            self.company._message(conn, project, None, 'market_brief', 'video_files', delivery_text(current, artifacts, utcnow()),
                                   message_id=mid)
             conn.execute('INSERT INTO video_deliveries(id,job_id,attempt) VALUES(%s,%s,%s)', (mid, current['id'], attempt))
             conn.execute("""UPDATE video_jobs SET state='delivering',artifacts=%s,artifact_digest=%s,delivery_message_id=%s,

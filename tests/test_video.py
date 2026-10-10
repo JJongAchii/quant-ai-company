@@ -590,12 +590,13 @@ def test_edition_times_follow_the_brief_schedule():
     from quant_company.video.store import KST, edition_times
 
     day = date(2026, 10, 7)
-    am = edition_times({'kind': 'am', 'day': day})
-    assert [t.strftime('%H:%M') for t in am] == ['08:30', '09:00']
-    pm = edition_times({'kind': 'pm', 'day': day, 'due_at': datetime(2026, 10, 7, 17, 45, tzinfo=KST)})
-    assert [t.strftime('%H:%M') for t in pm] == ['19:30', '22:00']
-    late = edition_times({'kind': 'pm', 'day': day, 'due_at': datetime(2026, 10, 7, 18, 30, tzinfo=KST)})
-    assert late[0] - late[1] == timedelta(minutes=-150) and late[0].strftime('%H:%M') == '20:15'
+    am = edition_times({'kind': 'am', 'day': day, 'due_at': datetime(2026, 10, 7, 7, 45, tzinfo=KST)})
+    assert [t.strftime('%H:%M') for t in am] == ['06:50', '09:00']            # NY daylight time: publish 07:00
+    winter = edition_times({'kind': 'am', 'day': date(2026, 11, 2), 'due_at': datetime(2026, 11, 2, 7, 55, tzinfo=KST)})
+    assert [t.strftime('%H:%M') for t in winter] == ['07:40', '09:00']        # from 11/1: publish 07:50
+    pm = edition_times({'kind': 'pm', 'day': day, 'due_at': datetime(2026, 10, 7, 17, 25, tzinfo=KST)})
+    assert [t.strftime('%H:%M') for t in pm] == ['17:50', '20:20']            # publish 18:00
+    assert pm[0] - pm[1] == timedelta(minutes=-150)
 
 
 def test_close_edition_gets_its_own_job_label_times_and_shared_monthly_budget(brief, video):  # noqa: F811
@@ -619,8 +620,9 @@ def test_close_edition_gets_its_own_job_label_times_and_shared_monthly_budget(br
     job = store.get(identity)
     assert job['source']['edition_kind'] == 'close' and morning['source'].get('edition_kind', 'am') == 'am'
     assert job['policy']['edition'] == 'close'
-    assert job['publish_deadline'].astimezone(KST).strftime('%H:%M') == '22:00'
-    assert datetime.fromisoformat(job['policy']['review_target']).astimezone(KST).strftime('%H:%M') == '19:30'
+    assert job['publish_deadline'].astimezone(KST).strftime('%H:%M') == '20:20'
+    assert datetime.fromisoformat(job['policy']['review_target']).astimezone(KST).strftime('%H:%M') == '17:50'
+    assert datetime.fromisoformat(job['policy']['publish_at']).astimezone(KST).strftime('%H:%M') == '18:00'
     store.settings.video_monthly_credit_limit, store.settings.video_episode_credit_limit = 100, 100
     store.begin_effect(morning, 'speech-0', {'scene': 0}, 'speech', 60)
     assert store.budget_available(job, 40) and not store.budget_available(job, 41)
@@ -634,15 +636,17 @@ def test_speech_credit_estimate_matches_observed_takes():
     assert [speech_credits('가' * n) for n in (55, 210, 500, 501, 600)] == [1, 1, 1, 2, 2]
 
 
-def test_morning_target_is_configurable_but_approval_still_ends_at_nine():
-    from datetime import date
+def test_publish_times_are_configurable_but_morning_generation_still_ends_at_nine():
+    from datetime import date, datetime
 
-    from quant_company.video.store import edition_times
+    from quant_company.video.store import KST, edition_times, publish_time
 
-    target, deadline = edition_times({'kind': 'am', 'day': date(2026, 10, 7)}, Settings(video_am_review_target='08:45'))
-    assert (target.strftime('%H:%M'), deadline.strftime('%H:%M')) == ('08:45', '09:00')
+    am = {'kind': 'am', 'day': date(2026, 10, 7), 'due_at': datetime(2026, 10, 7, 7, 45, tzinfo=KST)}
+    settings = Settings(video_am_publish_dst='07:20', video_publish_lead_minutes=15)
+    target, deadline = edition_times(am, settings)
+    assert (publish_time(am, settings).strftime('%H:%M'), target.strftime('%H:%M'), deadline.strftime('%H:%M')) == ('07:20', '07:05', '09:00')
     with pytest.raises(ValueError):
-        Settings(video_am_review_target='10:15')
+        Settings(video_am_publish_dst='10:15')
 
 
 def test_retention_prunes_only_ended_jobs_after_the_period(brief, video):  # noqa: F811
@@ -666,3 +670,17 @@ async def test_low_disk_blocks_new_episodes_without_charges(brief, video, monkey
     assert store.get(job['id'])['state'] == 'blocked' and store.get(job['id'])['error'] == 'insufficient_disk'
     with store.db.transaction() as conn:
         assert conn.execute('SELECT count(*) AS n FROM video_effects').fetchone()['n'] == 0
+
+
+def test_delivery_text_states_publish_time_and_a_late_finish():
+    from datetime import datetime, timedelta
+
+    from quant_company.video.store import KST, delivery_text
+
+    target = datetime(2026, 10, 12, 17, 50, tzinfo=KST)
+    job = {'source': {'edition_kind': 'close'},
+           'policy': {'review_target': target.isoformat(), 'publish_at': (target + timedelta(minutes=10)).isoformat()}}
+    on_time = delivery_text(job, {'duration': 283, 'title': 't'}, target - timedelta(minutes=5))
+    assert '공개 목표 18:00 KST' in on_time and '늦게' not in on_time
+    late = delivery_text(job, {'duration': 283, 'title': 't'}, target + timedelta(minutes=12))
+    assert '파일 준비 목표보다 12분 늦게 완성됐습니다' in late
