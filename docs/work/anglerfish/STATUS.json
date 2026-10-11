@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v18.json",
-  "state": "second_trial_technical_failure_repair_waiting",
-  "previousIntent": "INTENT-v17.json",
+  "currentIntent": "INTENT-v19.json",
+  "state": "research_repair_implementation_verified_preparing_exact_runtime",
+  "previousIntent": "INTENT-v18.json",
   "deliverables": {
     "POLICY": {
       "status": "completed",
@@ -20,7 +20,7 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "Live read on 2026-10-12 08:16 KST: first trial reported; second implementation completed but its actual 3070 warmup qualification failed at 2026-10-08 13:10:56 KST. No second evaluation or economic execution receipt exists. Repair stage is waiting after attempt78; latest engineer artifact is blocked and requests failed code, while its prompt exposes only baseline code and no exact output schema. Prior INTENT-v18 repair remains historically verified; overall research is not currently advancing. This read-only check applied no recovery. Additional owner scientific approval is not required for repair within the signed scope.",
+  "operationalStatus": "INTENT-v19: verified failed-job identity and missing evidence; exact repair/hold contract and failed-code mapping implemented. Real PG/Git targeted regressions17passed. Preparing the exact current production parents; no repair deployment claimed yet.",
   "evidence": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json",
   "nextStage": {
     "stage": "provide_failed_build_and_diagnostics_then_repair_response_contract",
@@ -84,7 +84,7 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/97",
       "mergedCommit": "d2010230eda9b6cf1128b0fc650bdcbc8c8309b3",
       "candidateCommit": "0286ba3e7426ff6546b90e6926124ae65e71ba79",
-      "ownerApproval": "승인할게"
+      "ownerApproval": "\uc2b9\uc778\ud560\uac8c"
     },
     "LIVE_CHECK": {
       "status": "completed",
@@ -97,7 +97,7 @@
     }
   },
   "activation": {
-    "ownerAuthorization": "응 진행해",
+    "ownerAuthorization": "\uc751 \uc9c4\ud589\ud574",
     "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99",
     "qualification": "completed",
     "productionActivated": true,
@@ -155,13 +155,10 @@
     "previousPhase": "first_trial_report_and_slack_delivery_verified"
   },
   "currentIntentCompletion": {
-    "intent": "INTENT-v18.json",
-    "status": "completed",
-    "evidence": "../../project/evidence/etf-exploration-20260930/revision-loop-selection-accepted-implementation-running-20261008.json",
+    "intent": "INTENT-v19.json",
+    "status": "in_progress",
     "programmeStillActive": true,
-    "independentSelectionVerified": true,
-    "secondScientificExecutionClaimed": false,
-    "strategyOrLiveApprovalClaimed": false
+    "scientificDecisionsSupplied": false
   },
   "previousAuditResumeDeliverables": {
     "AUDIT_DIAGNOSIS": {
@@ -178,20 +175,16 @@
       "actualProviderState": "running"
     }
   },
-  "phase": "second_trial_technical_failure_repair_waiting",
+  "phase": "research_repair_implementation_verified_preparing_exact_runtime",
   "currentDeliverables": {
-    "LOOP_DIAGNOSIS": {
-      "status": "completed"
+    "FAILED_BUILD_EVIDENCE": {
+      "status": "in_progress"
     },
-    "DURABLE_REPAIR": {
-      "status": "completed",
-      "runtimeApplied": true
+    "REPAIR_CONTRACT": {
+      "status": "implemented_targeted_verified"
     },
-    "OPERATIONAL_READBACK": {
-      "status": "completed",
-      "actualSelectionAccepted": true,
-      "actualSuccessorStage": "implementation",
-      "secondPhysicalExecutionClaimed": false
+    "LIVE_RECOVERY": {
+      "status": "preparing"
     }
   },
   "currentMonitoring": {
@@ -358,5 +351,14 @@
     "intent": "INTENT-v17.json",
     "currentIntentComplete": true,
     "actualIntegrationEvidence": "../../project/evidence/etf-exploration-20260930/first-trial-report-actual-slack-delivery-20261007.json"
+  },
+  "previousScopedRepairCompletion": {
+    "intent": "INTENT-v18.json",
+    "status": "completed",
+    "evidence": "../../project/evidence/etf-exploration-20260930/revision-loop-selection-accepted-implementation-running-20261008.json",
+    "programmeStillActive": true,
+    "independentSelectionVerified": true,
+    "secondScientificExecutionClaimed": false,
+    "strategyOrLiveApprovalClaimed": false
   }
 }
