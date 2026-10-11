@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 19,
+  "previousIntent": "INTENT-v18.json",
+  "sourceRequest": "그럼 뭐 어떻게 해야하는데",
+  "outcome": "Repair the approved second trial's technical recovery path by providing verified failed-build and sanitized qualification evidence, an exact engineer response contract, and an honest evidence hold instead of repeating unchanged blocked responses. Verify normal independent staff continuation or an explicit evidence-based hold.",
+  "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "deliverables": [
+    {"id": "FAILED_BUILD_EVIDENCE", "description": "Bind the failed build, worker qualification diagnostic and existing terminal receipt to current trial identities without exposing credentials or performance"},
+    {"id": "REPAIR_CONTRACT", "description": "Specify exact patch and evidence-hold schemas and test the lifecycle against actual PostgreSQL and trusted Git files"},
+    {"id": "LIVE_RECOVERY", "description": "Review and apply the exact scoped patch on actual current production parents, preserving concurrent changes; verify independent staff progress or an honest hold"}
+  ],
+  "constraints": [
+    "Preserve signed scientific scope, budgets, reservations, prior outcomes and independent actor decisions",
+    "Do not edit candidate strategy, remove scientific readiness checks, invent a patch or force a scientific decision",
+    "Keep immutable completed provider responses and original failed worker files",
+    "No direct heavy backtest, live order, paid API or 5090 fallback",
+    "Pin actual environment, current production parents, backup and rollback before operational effects",
+    "Report confirmed physical evaluation separately from model reads and technical retries"
+  ]
+}

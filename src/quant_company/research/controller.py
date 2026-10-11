@@ -272,8 +272,15 @@ def stage_prompt(company, conn, task, turn=None):
         "implementation": 'Return {"patches":[{"path":str,"expected_text":str|null,"replacement_text":str}],'
                           '"rationale":str}. expected_text is the exact ENTIRE file. Only approved paths. '
                           "Do not change evaluator, data, criteria, costs, risk or sealed scope.",
-        "repair": 'Return the same patch schema plus "repair_source_ids":[str]. Fix the recorded technical '
-                  "failure using new evidence or changed code. An unchanged failing plan will not rerun.",
+        "repair": 'Return exactly {"patches":[{"path":str,"expected_text":str|null,"replacement_text":str}],'
+                  '"rationale":str,"repair_source_ids":[str]}. expected_text is the ENTIRE immutable base '
+                  "file at code/<path>; failed-code files show the failed implementation, not patch preimages. "
+                  "Inspect failed_build and its registered failure sources. repair_source_ids are actual "
+                  "evidence_sources.source_id values, never evidence file paths. Fix the recorded technical "
+                  "failure using new evidence or changed code. An unchanged failing plan will not rerun. "
+                  'If a justified repair cannot be supplied, return exactly {"blocked":true,"rationale":str,'
+                  '"required_evidence":[str],"repair_source_ids":[str]}. This holds the stage without '
+                  "another automatic attempt; do not invent a patch, certify readiness or waive scientific gates.",
         "interpretation": "Return Interpretation with the exact outcome_digest and current trial_id. "
                           "Explain what changed, what the measured outcome falsifies, and the next hypothesis. "
                           "These development metrics are internal and have not passed independent audit.",
@@ -434,6 +441,13 @@ def stage_prompt(company, conn, task, turn=None):
             schema["$defs"]["ChallengeResponse"]["properties"]["challenge_id"]["enum"] = current_ids
         if row["stage"] == "program_data":
             context["output_schema"] = data_assessment_output_schema(context)
+    if row["stage"] in {"implementation", "repair"}:
+        from pydantic import TypeAdapter
+
+        from .builds import ImplementationArtifact, RepairArtifact, RepairHold
+
+        context["output_schema"] = (ImplementationArtifact.model_json_schema()
+            if row["stage"] == "implementation" else TypeAdapter(RepairArtifact | RepairHold).json_schema())
     # A new attempt owns a new provider thread. Prior read receipts remain useful
     # operator evidence, but their bytes are not present in that new thread and
     # therefore cannot be advertised as inspected or completed model evidence.
@@ -469,6 +483,8 @@ def stage_prompt(company, conn, task, turn=None):
         important_paths.update(paths)
     audit = context.get("audit", {})
     resident_paths = set()
+    if row["stage"] == "repair":
+        resident_paths.update(context.get("failed_build", {}).get("resident_evidence_paths", []))
     if row["stage"] == "program_data":
         for packet in context.get("data_evidence_packets", []):
             resident_paths.update((packet["engine_file"], packet["identity_file"]))
@@ -654,6 +670,8 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         # Each cited original must actually have reached this provider attempt. An index,
         # previous employee's summary or old attempt's receipt is not a read receipt.
         cited = value.get("source_ids", [])
+        if row["stage"] == "repair":
+            cited = value.get("repair_source_ids", [])
         if row["stage"] == "selection":
             cited = sorted({source for response in value.get("responses", []) for source in response.get("source_ids", [])})
         if row["stage"] == "program_selection":
@@ -758,7 +776,8 @@ class MissionController:
         key = self._key(snapshot)
         identity = stable(f"mission-stage:{snapshot['id']}:{key}")
         row = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s FOR UPDATE", (identity,)).fetchone()
-        if row and (row["state"] in {"running", "received", "completed"} or row["context"].get("_audit_hold")):
+        if row and (row["state"] in {"running", "received", "completed"}
+                    or row["context"].get("_audit_hold") or row["context"].get("_repair_hold")):
             return row
         if row and row["retry_at"] and row["retry_at"] > now():
             return row
@@ -919,6 +938,7 @@ class MissionController:
             conn.execute("UPDATE research_missions SET updated_at=now() WHERE id=%s", (candidate["id"],))
         stage = snapshot["stage"]["stage"]
         if row and (row["state"] == "completed" or row["state"] == "running" or row["context"].get("_audit_hold")
+                    or row["context"].get("_repair_hold")
                     or (row["state"] == "waiting" and row["retry_at"] and row["retry_at"] > now())):
             return {"state": "waiting", "stage": stage}
         if row and row["state"] == "received":

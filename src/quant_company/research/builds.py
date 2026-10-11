@@ -3,6 +3,7 @@
 import hashlib
 import json
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field
 
@@ -31,6 +32,28 @@ class ServerResearchProfile(StrictModel):
     config_path: str
     config_files: list[str] = Field(min_length=1)
     allowed_write_paths: list[str] = Field(min_length=1)
+
+
+class EngineerPatch(StrictModel):
+    path: str
+    expected_text: str | None
+    replacement_text: str
+
+
+class ImplementationArtifact(StrictModel):
+    patches: list[EngineerPatch] = Field(min_length=1, max_length=20)
+    rationale: str = Field(min_length=1, max_length=6000)
+
+
+class RepairArtifact(ImplementationArtifact):
+    repair_source_ids: list[str] = Field(min_length=1, max_length=50)
+
+
+class RepairHold(StrictModel):
+    blocked: Literal[True]
+    rationale: str = Field(min_length=1, max_length=6000)
+    required_evidence: list[str] = Field(min_length=1, max_length=20)
+    repair_source_ids: list[str] = Field(min_length=1, max_length=50)
 
 
 def profile_for(company, spec: MissionSpec) -> ServerResearchProfile:
