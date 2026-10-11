@@ -20,7 +20,7 @@
     20
   ],
   "uncertain_or_delivered_auto_replayed": false,
-  "main_merged": false,
+  "main_merged": true,
   "remote_ci": {
     "headSha": "7039e772581c66aa24b38d175536cfc81b737341",
     "status": "completed",
@@ -33,5 +33,17 @@
     "lint": "passed",
     "postgresql_and_temporal": "real",
     "external_data_and_slack": "fixtures; separate live.json uses actual services"
+  },
+  "merge_commit": "18c2fad95f296cff199365add91adab4678e5980",
+  "premerge_ci": {
+    "headSha": "d58955652b54ae32c9a24700fd0d401614c3a652",
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37721076566",
+    "service_passed": 1642,
+    "service_skipped": 47,
+    "service_deselected": 1,
+    "codex_protocol_passed": 9,
+    "lint": "passed"
   }
 }

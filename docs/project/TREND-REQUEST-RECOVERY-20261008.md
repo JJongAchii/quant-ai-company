@@ -24,7 +24,11 @@
 최종 소스 `7039e77`의 [전체 원격 CI](https://github.com/JJongAchii/quant-ai-company/actions/runs/37720210265)는
 실제 PostgreSQL·Temporal 서비스 회귀 **1,642 통과·47 skip·1 deselect**, 무인증 Codex
 프로토콜 **9 통과**, lint 통과다. 이후 커밋은 운영 증거·문서·qws 상태만 추가한다.
-이번 수정은 원격 PR126에 게시하며 main 병합은 아직 수행하지 않았다.
+2026-10-08 **12:57 KST PR126을 main에 병합했다.** 최신 head `d589556`의
+[병합 전 CI](https://github.com/JJongAchii/quant-ai-company/actions/runs/37721076566)도
+서비스 1,642개·프로토콜 9개·lint가 통과했다. 병합 커밋은
+`18c2fad95f296cff199365add91adab4678e5980`이며, 원격 main의 ancestry와 구현·테스트·
+배포 파일이 검사한 head와 일치함을 확인했다. 운영 전환은 앞서 완료됐고 이번에는 Git 병합을 마쳤다.
 
 11:54:28 KST dispatcher 한 개만 전환했다. 실제 parent의 226개 소스 파일 중 `slack.py`만
 변경하고 나머지 225개와 기존 브리핑 구현을 보존했다. 환경·마운트·비밀 접근자·네트워크·
@@ -43,6 +47,7 @@
 - [회귀](evidence/trend-outbox-20261008/pytest.txt), [실제 parent 회귀](evidence/trend-outbox-20261008/native-pytest.txt), [실패 재현](evidence/trend-outbox-20261008/baseline-pytest.txt), [lint](evidence/trend-outbox-20261008/ruff.txt)
 - [이미지](evidence/trend-outbox-20261008/image.json), [전환](evidence/trend-outbox-20261008/activation.json), [실제 Slack 발송](evidence/trend-outbox-20261008/live.json)
 - [최종 운영 상태](evidence/trend-outbox-20261008/active-probe.json), [전체 CI](evidence/trend-outbox-20261008/ci.json), [CI 요약](evidence/trend-outbox-20261008/ci.txt)
+- [병합·원격 대조](evidence/trend-outbox-20261008/merge.json), [최신 head CI](evidence/trend-outbox-20261008/premerge-ci.json), [검사 요약](evidence/trend-outbox-20261008/premerge-ci.txt)
 - [수정 PR126](https://github.com/JJongAchii/quant-ai-company/pull/126)
 
 원래 기능과 PR119 병합 기록은 [정기·수시 발송 보고서](TREND-FEED-RECURRING.md)에 보존한다.

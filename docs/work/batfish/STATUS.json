@@ -1,85 +1,69 @@
 {
   "approval": {
-    "approvedAt": "2026-10-07T01:37:56.755956+00:00",
-    "id": "chat-user-three-daily-and-slack-trends-20261007"
+    "approvedAt": "2026-10-08T05:23:49.465384+00:00",
+    "id": "chat-user-optimal-trend-ranking-20261008"
   },
-  "currentIntent": "INTENT-v8.json",
+  "currentIntent": "INTENT-v9.json",
   "deliverables": {
     "ACTIVATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-outbox-20261008/activation.json",
-          "sha256": "12c6333667ae"
+          "path": "docs/project/evidence/trend-window-20261008/live-delivery.json",
+          "sha256": "f1dc00a3cc79"
         }
       ],
-      "note": "11:54 KST actual parent-qualified dispatcher 한 개만 활성화. 나머지225파일/브리핑/환경/secret접근자/네트워크/다른프로세스/기존영수증/owner pause 보존.",
+      "note": "Actual 4 parents received only3 trend modules, config/other containers/receipts preserved; v4 digest agreement, authenticated SDK, 3 running Temporal workflows and normal delivered receipt1791438666.509699 verified.",
       "status": "verified",
-      "updatedAt": "2026-10-08T02:57:08.099398+00:00"
+      "updatedAt": "2026-10-08T05:56:21.553743+00:00"
     },
     "IMPLEMENTATION": {
       "evidence": [
         {
-          "path": "docs/project/TREND-REQUEST-RECOVERY-20261008.md",
-          "sha256": "5dbd8f10364a"
-        },
-        {
-          "path": "docs/project/evidence/trend-outbox-20261008/native-dispatch.patch",
-          "sha256": "b396f27a2976"
+          "path": "docs/project/TREND-WINDOW-RANKING-20261008.md",
+          "sha256": "7cb7b78dbadf"
         }
       ],
-      "note": "7039e77: paced outbox 최대32건 보류건너뛰기·on-demand 우선. 실제parent225파일과briefing gate 보존. 진단/실패재현/전체CI/실제자동발송을 최종보고서에 기록.",
+      "note": "Final report includes deterministic6h/1h implementation, actual activation and normal10-item Slack receipt; source feature unchanged after qualified a55478f.",
       "status": "verified",
-      "updatedAt": "2026-10-08T03:05:20.206554+00:00"
+      "updatedAt": "2026-10-08T05:57:08.323725+00:00"
     },
     "PUBLICATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-outbox-20261008/publication.json",
-          "sha256": "57c14eb505a9"
-        },
-        {
-          "path": "docs/project/evidence/trend-outbox-20261008/ci.json",
-          "sha256": "3d488edd8284"
+          "path": "docs/project/evidence/trend-window-20261008/ci-source.json",
+          "sha256": "27665c99fcf2"
         }
       ],
-      "note": "원격fix/trend-request-delivery 7039e77·PR126 OPEN 게시, source전체CI1642/9/lint통과. 최종운영증거는 회사저장소closure문서커밋으로동일브랜치게시. main병합은하지않음.",
+      "note": "Feature source and qualified evidence pushed to PR127; a55478f source-head CI passed. Final live evidence is integrated in this closure commit; merge follows latest-head CI.",
       "status": "verified",
-      "updatedAt": "2026-10-08T03:05:40.918716+00:00"
+      "updatedAt": "2026-10-08T05:56:21.855444+00:00"
     },
     "SECURITY": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-outbox-20261008/active-probe.json",
-          "sha256": "de1e00808199"
-        },
-        {
-          "path": "docs/project/evidence/trend-outbox-20261008/live.json",
-          "sha256": "a34d816cf58c"
+          "path": "docs/project/evidence/trend-window-20261008/security.json",
+          "sha256": "785eedce9504"
         }
       ],
-      "note": "기존SDK workspace/bot auth 및3scopes 실제확인. 기존owner/channel/policy/expiry/revision/비밀파일접근자 유지. Env·secret값 출력/커밋없음. HTTP합성검사와실제SDK수신·Slack발송구분.",
+      "note": "Final evidence adds authenticated SDK probe and verified unchanged role settings/mounts; no new secrets, API keys, provider or Slack scopes.",
       "status": "verified",
-      "updatedAt": "2026-10-08T03:05:20.425924+00:00"
+      "updatedAt": "2026-10-08T05:57:08.524526+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
-          "path": "docs/project/evidence/trend-outbox-20261008/live.json",
-          "sha256": "a34d816cf58c"
-        },
-        {
-          "path": "docs/project/evidence/trend-outbox-20261008/ci.json",
-          "sha256": "3d488edd8284"
+          "path": "docs/project/evidence/trend-window-20261008/qualification.json",
+          "sha256": "ce81e90d1e90"
         }
       ],
-      "note": "원격 source7039e77 real PG/Temporal1642통과·47skip·1deselect/프로토콜9/lint통과. local391/1skip·native135. 실제복구10개, normal dispatcher 자동10개·attempt1·편집완료12초. operator qualification과 실제 원소유자SDK입력 구분, 완료invalid 거절 후 허용1회 재편집.",
+      "note": "Actual PG/Temporal native role tests, source-head CI1686+protocol9, real Codex 1 call and normal Slack delivery of10 items passed; simulated ingress vs actual authenticated SDK and operator input distinguished.",
       "status": "verified",
-      "updatedAt": "2026-10-08T03:05:19.996471+00:00"
+      "updatedAt": "2026-10-08T05:56:21.291575+00:00"
     }
   },
-  "intentDigest": "e858dfa5954e",
+  "intentDigest": "b443ce80fbf2",
   "schemaVersion": 1,
   "slug": "batfish",
   "state": "approved",
-  "updatedAt": "2026-10-08T03:05:40.918716+00:00"
+  "updatedAt": "2026-10-08T05:57:08.524526+00:00"
 }
