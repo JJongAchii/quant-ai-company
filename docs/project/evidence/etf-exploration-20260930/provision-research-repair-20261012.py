@@ -33,6 +33,13 @@ identity='research-failure:'+data['job_id']
 content=json.dumps(data,sort_keys=True,ensure_ascii=False,allow_nan=False)
 content_hash=hashlib.sha256(content.encode()).hexdigest()
 mode=os.environ['REPAIR_PROVISION_MODE']
+extra=None
+if mode!='source':
+    with company.db.transaction() as conn:
+        prepared_snapshot=MissionStore(company).snapshot(conn,manifest['mission_id'],public=False)
+    # File/profile preparation may open its own authorization transactions.
+    # Run it outside project/job locks, then recheck the exact stage below.
+    extra=MissionBackend(company).context(prepared_snapshot,None)
 with company.db.transaction() as conn:
     project=company._project(conn,manifest['project_id'])
     snapshot=MissionStore(company).snapshot(conn,manifest['mission_id'],public=False)
@@ -72,10 +79,10 @@ with company.db.transaction() as conn:
         assert row['stage']=='repair' and str(row['mission_id'])==snapshot['id']
         task=conn.execute('SELECT * FROM tasks WHERE id=%s',(row['task_id'],)).fetchone()
         previous_job_hash=fingerprint(job)
-        backend=MissionBackend(company)
-        # Public source registration committed earlier. Context materialization creates
-        # only immutable evidence files; the probe's database transition rolls back.
-        extra=backend.context(snapshot,None)
+        assert prepared_snapshot['stage']==snapshot['stage']
+        assert prepared_snapshot['manifest_digest']==snapshot['manifest_digest']
+        # Context preparation above creates only immutable evidence files;
+        # the probe's database transition rolls back.
         failed=extra['failed_build']
         assert failed['job_id']==data['job_id'] and failed['failure_source_ids']==[identity]
         required=set(failed['code_paths']+[failed['manifest_file']])
