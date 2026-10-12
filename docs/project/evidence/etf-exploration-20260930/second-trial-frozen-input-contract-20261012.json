@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "kind": "verified_frozen_callback_contract",
+  "observed_at": "2026-10-12T01:41:52.540827+00:00",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "project_revision": 5,
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "mission_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
+  "trial_id": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+  "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+  "code_commit": "cdcfe52bb5641c1826af1c9c085bd6a708434b34",
+  "code_files": {
+    "labs/company-domestic-research/candidate.py": "817b1176a847441c0620b84ce2d2ab372920d7395094d11caf0ce66f306a8bf5",
+    "labs/company-domestic-research/config.json": "08d25d9aed1a57c661a2f276702dcb02aa80cc5e73ec02ff87564962c4013717",
+    "labs/company-domestic-research/domestic_statistics.py": "8ea1021082bc8b4656e3df9dafe24dec655f861692240a5542e587fe0b7628ff",
+    "labs/company-domestic-research/engine.py": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+  },
+  "failure_source_id": "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746",
+  "selected_proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+  "selected_proposal_digest": "9ee3bf472a326434f172f2c3da6b5e74c1da62cc6b05ad144153a5a0cc99124b",
+  "selected_challenge_ids": [
+    "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+  ],
+  "selected_challenge_digests": [
+    "79007e2a21b37fa8c7a75661a299fc16f9c3161c79bd83405df71fa18d2d9d3c"
+  ],
+  "facts": [
+    {
+      "location": "labs/company-domestic-research/engine.py:83",
+      "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+      "observation": "The protected evaluator invokes method(history, JSON-roundtripped static config). It does not transmit decision_at or prior callback histories."
+    },
+    {
+      "location": "labs/company-domestic-research/engine.py:64",
+      "observation": "history_at filters date<trade_day and available_at<09:00 KST, copies rows and rebases adjusted closes using the latest known raw close. Callback receives the current rebased history."
+    },
+    {
+      "location": "labs/company-domestic-research/engine.py:192",
+      "observation": "Qualification mounts only warmup, derives a probe date as the latest warmup date plus one calendar day and repeats the two-argument callback. This is a qualification probe, not an authenticated development decision event."
+    },
+    {
+      "location": "labs/company-domestic-research/candidate.py:241",
+      "sha256": "817b1176a847441c0620b84ce2d2ab372920d7395094d11caf0ce66f306a8bf5",
+      "observation": "_public_kernel requires decision_at and prior_events. weights(history,config) calls it without both arguments, so this selected implementation raises ReadinessError before evaluation."
+    },
+    {
+      "location": "selected challenge b94521c8-2e7c-4a2c-90f4-672378aacf29 and resolved test plan",
+      "observation": "The registered obligations require actual prior event-input provenance and complete predecessor path equivalence. They forbid filling missing metadata with latest-date+1, call counts, global caches, future calendars or precomputed targets; evaluator/statistics are protected."
+    },
+    {
+      "location": "first actual archive 9c5c2a8eb504556ce3c2d42996cd6e0cb4ba005af0d76ed0b33761ee537b28cb",
+      "observation": "Original code, config, manifest, result, receipt and two cost output hashes were verified against the archive and job files. The declared outputs are base.csv and stress.csv; no separately archived per-call event/target trace is present. Existing first code uses float/Decimal replay; equivalence to the new exact-state implementation has not been certified."
+    }
+  ],
+  "first_trial_artifact_verification": {
+    "job_id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+    "code_commit": "6cdc6e7efb51eeeba272558cdabc1a5ba5ac559b",
+    "tracked_checkout_clean": true,
+    "manifest_sha256": "2eaf21334fd976d1838fd27793297465fb7377bf9b810c831a2d2fb33359da37",
+    "code_files": {
+      "labs/company-domestic-research/candidate.py": {
+        "sha256": "ce0641c361990b0f0105dd09351913e5a774c226f3a4ea87ada4293b5dcf26cc",
+        "verified": true
+      },
+      "labs/company-domestic-research/config.json": {
+        "sha256": "427abe350351dee238aba63980a49168bf100cdfcd32512903b769e638f9a73f",
+        "verified": true
+      },
+      "labs/company-domestic-research/domestic_statistics.py": {
+        "sha256": "8ea1021082bc8b4656e3df9dafe24dec655f861692240a5542e587fe0b7628ff",
+        "verified": true
+      },
+      "labs/company-domestic-research/engine.py": {
+        "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+        "verified": true
+      }
+    },
+    "archive_sha256": "9c5c2a8eb504556ce3c2d42996cd6e0cb4ba005af0d76ed0b33761ee537b28cb",
+    "archive_members": [
+      "code/labs/company-domestic-research/candidate.py",
+      "code/labs/company-domestic-research/config.json",
+      "code/labs/company-domestic-research/domestic_statistics.py",
+      "code/labs/company-domestic-research/engine.py",
+      "manifest.json",
+      "outputs/base.csv",
+      "outputs/stress.csv",
+      "producer-qualification.json",
+      "producer-result.json",
+      "profile.json",
+      "qualification.json",
+      "receipt.json",
+      "result.json",
+      "runtime.json",
+      "sandbox-evaluation.json",
+      "sandbox-qualification.json"
+    ],
+    "receipt_sha256": "8b6f2e59f76eea56b67043723aa343d4449c3244a9eec943ca89aedf20b410d1",
+    "result_sha256": "f21ee5a763b94f40e950cf06dcf4c3caf4ffe7a12d5a94c253b38ec657a388be",
+    "output_files": {
+      "base.csv": {
+        "sha256": "7808459c8f764c14a5a10cd92f8652cac103eea75f89fa066b93d2bc51e97bb9",
+        "bytes": 24004,
+        "verified": true
+      },
+      "stress.csv": {
+        "sha256": "59d128dc8c8b159f2a2c68fd2aba67278c49ebb7df289f59ac9822136d913882",
+        "bytes": 23978,
+        "verified": true
+      }
+    },
+    "archive_contains_event_or_target_trace": false,
+    "receipt": {
+      "qualification_passed": true,
+      "execution_count": 1,
+      "sealed_read": false,
+      "research_scope": {
+        "acknowledged_gap_codes": [
+          "historical_publication_unverified",
+          "historical_revision_vintage_unverified",
+          "original_preparation_bytes_unavailable"
+        ],
+        "data_mode": "frozen_vintage_retrospective",
+        "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+        "result_scope": "conditional_retrospective_development",
+        "scientific_lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3"
+      }
+    }
+  },
+  "failed_qualification_verification": {
+    "action": "qualify",
+    "exit_code": 1,
+    "timed_out": false,
+    "fixture_only": false
+  },
+  "economic_evaluation_started": false,
+  "new_scientific_execution_created": false,
+  "scope": {
+    "data_mode": "frozen_vintage_retrospective",
+    "result_scope": "conditional_retrospective_development",
+    "historical_publication_verified": false,
+    "historical_revision_vintage_verified": false
+  },
+  "disposition_rule": "This evidence does not select a strategy or certify a general impossibility theorem for all two-argument callbacks. The independent director may decide whether to retire this incompatible, unmeasured selected candidate or wait. A distinct next hypothesis must use the same signed scope, budget, frozen evaluator and independent challenge/selection pipeline.",
+  "performance_used_to_tune": false,
+  "predecessor_paired_reuse_approved": false,
+  "protected_profile_or_evaluator_changed": false
+}

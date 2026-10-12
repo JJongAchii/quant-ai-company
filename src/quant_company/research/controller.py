@@ -22,6 +22,7 @@ ACTORS = {
     "implementation": "engineer", "repair": "engineer", "interpretation": "researcher_kr",
     "audit": "validator", "cycle_review": "director",
     "meaning": "financial_strategist",
+    "technical_review": "director",
 }
 STAGE_TEXT = {
     "proposal": "연구 담당자가 근거와 반증 조건을 갖춘 다음 가설을 준비합니다.",
@@ -33,6 +34,7 @@ STAGE_TEXT = {
     "audit": "독립 검증 담당자가 코드·입력·결과의 고정된 감사 묶음을 검토합니다.",
     "cycle_review": "총괄이 이번 연구 주기의 증거와 남은 가설을 검토합니다.",
     "meaning": "유효성 검증 후 과적합·비용·대안 설명과 미해결 반론을 검토합니다.",
+    "technical_review": "총괄이 검증된 기술 실패와 수정 보류 근거를 검토해 이 후보의 종료 또는 대기를 결정합니다.",
 }
 
 AUDIT_RECONCILED_ERROR = "audit_runtime_failure_reconciled"
@@ -281,6 +283,16 @@ def stage_prompt(company, conn, task, turn=None):
                   'If a justified repair cannot be supplied, return exactly {"blocked":true,"rationale":str,'
                   '"required_evidence":[str],"repair_source_ids":[str]}. This holds the stage without '
                   "another automatic attempt; do not invent a patch, certify readiness or waive scientific gates.",
+        "technical_review": 'Return exactly {"trial_id":uuid,"failed_job_id":uuid,'
+                            '"decision":"retire_candidate"|"wait","rationale":str,"source_ids":[str]}. '
+                            "Independently review the engineer hold and new operator evidence. Retire only a "
+                            "verified pre-evaluation technical failure that cannot be justified within the current "
+                            "approved callback, write paths and test obligations. This closes an unmeasured candidate; "
+                            "it does not count as an economic failure, waive tests, certify predecessor equivalence "
+                            "or approve a changed evaluator. Wait when evidence is insufficient. Cite both the "
+                            "original failure source and review_evidence.source_ids. Any next hypothesis must be "
+                            "distinct, address this failure history, fit the frozen interface and remaining signed "
+                            "budget, and pass the existing independent challenge and selection stages.",
         "interpretation": "Return Interpretation with the exact outcome_digest and current trial_id. "
                           "Explain what changed, what the measured outcome falsifies, and the next hypothesis. "
                           "These development metrics are internal and have not passed independent audit.",
@@ -370,6 +382,10 @@ def stage_prompt(company, conn, task, turn=None):
         conn, project["owner_user"], role.id, role.model, role.reasoning_effort))
     output_type = {"proposal": HypothesisProposal, "challenge": Challenge,
                    "interpretation": Interpretation}.get(row["stage"])
+    if row["stage"] == "technical_review":
+        from .technical_review import TechnicalDisposition
+
+        output_type = TechnicalDisposition
     if row["stage"] in PROGRAM_STAGES:
         output_type = PROGRAM_STAGES[row["stage"]][1]
     if row["stage"] == "meaning":
@@ -666,6 +682,10 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         if not conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
             AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
             raise PolicyError("Independent meaning review requires the actual validated artifacts")
+    for path in row["context"].get("required_technical_reads", []):
+        if not conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
+            AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
+            raise PolicyError("Independent technical review requires the actual bound artifacts")
     if row.get("program_id") or row["context"].get("mission", {}).get("program_id"):
         # Each cited original must actually have reached this provider attempt. An index,
         # previous employee's summary or old attempt's receipt is not a read receipt.
@@ -869,6 +889,25 @@ class MissionController:
                 raise PolicyError("Invalid selection decision")
         elif stage == "interpretation":
             self.store.interpret(conn, mission_id, current["trial_id"], Interpretation.model_validate(data), actor=actor)
+        elif stage == "technical_review":
+            from .technical_review import TechnicalDisposition, retire_candidate
+
+            value = TechnicalDisposition.model_validate(data)
+            if (str(value.trial_id) != current["trial_id"]
+                    or str(value.failed_job_id) != current["failed_job_id"] or not value.rationale.strip()):
+                raise PolicyError("technical_review_requires_current_trial_and_failure")
+            self.store._sources(conn, snapshot["project_id"], value.source_ids)
+            required = set(current["review_evidence"]["source_ids"])
+            required.add("research-failure:" + current["failed_job_id"])
+            if not required <= set(value.source_ids):
+                raise PolicyError("technical_review_must_address_failure_and_new_evidence")
+            if value.decision == "retire_candidate":
+                retire_candidate(self.store, conn, mission_id, value.model_dump(mode="json"), actor=actor)
+            project = self.company._project(conn, snapshot["project_id"])
+            text = ("[기술 실패 후보 종료 · 성과 미측정]" if value.decision == "retire_candidate"
+                    else "[기술 실패 검토 · 근거 대기]")
+            self.company._message(conn, project, row["task_id"], actor, "status",
+                                  text + "\n" + value.rationale)
         elif stage == "cycle_review":
             if set(data) != {"decision", "rationale", "source_ids", "predecessor_trial_ids"}:
                 raise PolicyError("Invalid cycle decision fields")

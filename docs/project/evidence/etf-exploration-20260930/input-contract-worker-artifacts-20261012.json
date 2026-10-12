@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-12T01:41:52.540827+00:00",
+  "read_only": true,
+  "economic_evaluation_executed": false,
+  "performance_metrics_read_or_reported": false,
+  "records": {
+    "first": {
+      "job_id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+      "code_commit": "6cdc6e7efb51eeeba272558cdabc1a5ba5ac559b",
+      "tracked_checkout_clean": true,
+      "manifest_sha256": "2eaf21334fd976d1838fd27793297465fb7377bf9b810c831a2d2fb33359da37",
+      "code_files": {
+        "labs/company-domestic-research/candidate.py": {
+          "sha256": "ce0641c361990b0f0105dd09351913e5a774c226f3a4ea87ada4293b5dcf26cc",
+          "verified": true
+        },
+        "labs/company-domestic-research/config.json": {
+          "sha256": "427abe350351dee238aba63980a49168bf100cdfcd32512903b769e638f9a73f",
+          "verified": true
+        },
+        "labs/company-domestic-research/domestic_statistics.py": {
+          "sha256": "8ea1021082bc8b4656e3df9dafe24dec655f861692240a5542e587fe0b7628ff",
+          "verified": true
+        },
+        "labs/company-domestic-research/engine.py": {
+          "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+          "verified": true
+        }
+      },
+      "archive_sha256": "9c5c2a8eb504556ce3c2d42996cd6e0cb4ba005af0d76ed0b33761ee537b28cb",
+      "archive_members": [
+        "code/labs/company-domestic-research/candidate.py",
+        "code/labs/company-domestic-research/config.json",
+        "code/labs/company-domestic-research/domestic_statistics.py",
+        "code/labs/company-domestic-research/engine.py",
+        "manifest.json",
+        "outputs/base.csv",
+        "outputs/stress.csv",
+        "producer-qualification.json",
+        "producer-result.json",
+        "profile.json",
+        "qualification.json",
+        "receipt.json",
+        "result.json",
+        "runtime.json",
+        "sandbox-evaluation.json",
+        "sandbox-qualification.json"
+      ],
+      "receipt_sha256": "8b6f2e59f76eea56b67043723aa343d4449c3244a9eec943ca89aedf20b410d1",
+      "result_sha256": "f21ee5a763b94f40e950cf06dcf4c3caf4ffe7a12d5a94c253b38ec657a388be",
+      "output_files": {
+        "base.csv": {
+          "sha256": "7808459c8f764c14a5a10cd92f8652cac103eea75f89fa066b93d2bc51e97bb9",
+          "bytes": 24004,
+          "verified": true
+        },
+        "stress.csv": {
+          "sha256": "59d128dc8c8b159f2a2c68fd2aba67278c49ebb7df289f59ac9822136d913882",
+          "bytes": 23978,
+          "verified": true
+        }
+      },
+      "archive_contains_event_or_target_trace": false,
+      "receipt": {
+        "qualification_passed": true,
+        "execution_count": 1,
+        "sealed_read": false,
+        "research_scope": {
+          "acknowledged_gap_codes": [
+            "historical_publication_unverified",
+            "historical_revision_vintage_unverified",
+            "original_preparation_bytes_unavailable"
+          ],
+          "data_mode": "frozen_vintage_retrospective",
+          "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+          "result_scope": "conditional_retrospective_development",
+          "scientific_lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3"
+        }
+      }
+    },
+    "failed": {
+      "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+      "code_commit": "cdcfe52bb5641c1826af1c9c085bd6a708434b34",
+      "tracked_checkout_clean": true,
+      "manifest_sha256": "438dd8f6d858ecc2ae16c6906c0d6df25fbd72163a6b2804ff5dcb773a0c5982",
+      "code_files": {
+        "labs/company-domestic-research/candidate.py": {
+          "sha256": "817b1176a847441c0620b84ce2d2ab372920d7395094d11caf0ce66f306a8bf5",
+          "verified": true
+        },
+        "labs/company-domestic-research/config.json": {
+          "sha256": "08d25d9aed1a57c661a2f276702dcb02aa80cc5e73ec02ff87564962c4013717",
+          "verified": true
+        },
+        "labs/company-domestic-research/domestic_statistics.py": {
+          "sha256": "8ea1021082bc8b4656e3df9dafe24dec655f861692240a5542e587fe0b7628ff",
+          "verified": true
+        },
+        "labs/company-domestic-research/engine.py": {
+          "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+          "verified": true
+        }
+      },
+      "sandbox_qualification_sha256": "df31c94ba28b1a39ac1e28e1077030a7b2bcd34bdbf6e548857ef37c3ce89249",
+      "qualification": {
+        "action": "qualify",
+        "exit_code": 1,
+        "timed_out": false,
+        "fixture_only": false
+      },
+      "economic_evaluation_receipt_present": false
+    }
+  }
+}

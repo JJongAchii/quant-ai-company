@@ -85,17 +85,19 @@ class MissionBackend:
 
     def _sources(self, snapshot):
         identities = set(snapshot["spec"]["baseline_source_ids"])
-        for group in ("proposals", "challenges", "challenge_responses", "interpretations"):
+        for group in ("proposals", "challenges", "challenge_responses", "interpretations", "technical_dispositions"):
             for row in snapshot.get(group, []):
                 identities.update(row["payload"].get("source_ids", ()))
         identities.update(row["payload"]["source_id"] for row in snapshot["publications"])
         with self.company.db.transaction() as conn:
-            if snapshot["stage"]["stage"] == "repair":
+            if snapshot["stage"]["stage"] in {"repair", "technical_review"}:
                 failure_id = "research-failure:" + str(_trial(snapshot)["job_id"])
                 source = conn.execute("""SELECT id FROM sources WHERE id=%s AND approved AND available_at<=now()
                     AND project_id=%s""", (failure_id, snapshot["project_id"])).fetchone()
                 if source:
                     identities.add(source["id"])
+            if snapshot["stage"]["stage"] == "technical_review":
+                identities.update(snapshot["stage"]["review_evidence"]["source_ids"])
             self.company._check_sources(conn, snapshot["project_id"], sorted(identities))
             return conn.execute("""SELECT id,title,uri,content,available_at,synthetic FROM sources
                 WHERE id=ANY(%s) ORDER BY id""", (sorted(identities),)).fetchall()
@@ -199,7 +201,8 @@ class MissionBackend:
         # the entire append-only history. Full history remains available for older evidence.
         relevant = {}
         proposal_id = snapshot["stage"].get("proposal_id")
-        for group in ("proposals", "challenges", "challenge_responses", "rejections", "interpretations", "outcomes"):
+        for group in ("proposals", "challenges", "challenge_responses", "rejections", "interpretations", "outcomes",
+                      "technical_dispositions"):
             rows = snapshot.get(group, [])
             if proposal_id and group in {"proposals", "challenges"}:
                 rows = [item for item in rows if str(item.get("proposal_id", item.get("id"))) == proposal_id]
@@ -209,7 +212,7 @@ class MissionBackend:
                 mappings[name] = self._entry(self._blob(directory, group, item))
                 relevant.setdefault(group, []).append(name)
         extra["relevant_evidence"] = relevant
-        if stage in {"proposal", "challenge", "selection", "cycle_review", "implementation", "repair"}:
+        if stage in {"proposal", "challenge", "selection", "cycle_review", "implementation", "repair", "technical_review"}:
             prepared = base_workspace(self.company, profile)
             for name in profile.public_profile.code_paths:
                 mappings["code/" + name] = self._entry(prepared.worktree / name)
@@ -230,6 +233,15 @@ class MissionBackend:
             extra["patch_rule"] = "Patch paths omit the code/ prefix; expected_text is the entire base file."
             if stage == "repair":
                 extra["failed_build"] = self._repair_context(snapshot, profile, directory, mappings, sources)
+        elif stage == "technical_review":
+            extra["failed_build"] = self._repair_context(snapshot, profile, directory, mappings, sources)
+            extra["review_evidence"] = snapshot["stage"]["review_evidence"]
+            with self.company.db.transaction() as conn:
+                held = conn.execute("SELECT context,result FROM research_mission_stages WHERE id=%s",
+                                    (snapshot["stage"]["held_stage_id"],)).fetchone()
+            mappings["repair/independent-hold.json"] = self._entry(self._blob(directory, "independent-hold", held["result"]))
+            extra["independent_hold_file"] = "repair/independent-hold.json"
+            extra["required_technical_reads"] = [extra["independent_hold_file"], extra["failed_build"]["manifest_file"]]
         elif stage == "audit":
             extra.update(self._audit_context(snapshot, row, profile, mappings))
         extra["_private_files"] = mappings

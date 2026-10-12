@@ -345,7 +345,8 @@ class MissionStore:
             raise PolicyError("Approved scientific scope is exhausted; a new mission approval is required")
         if self._cycle_ended(row, spec):
             raise PolicyError("Cycle requires a report checkpoint and evidence-based renewal")
-        pending = conn.execute("SELECT id FROM research_mission_trials WHERE mission_id=%s AND state<>'reported'",
+        pending = conn.execute("""SELECT id FROM research_mission_trials WHERE mission_id=%s
+            AND state<>'reported' AND technical_closed_at IS NULL""",
                                (mission_id,)).fetchone()
         if pending:
             raise PolicyError("Previous trial must finish interpretation and publication before selection")
@@ -381,6 +382,8 @@ class MissionStore:
         plan = typed(TrialPlan, plan)
         project, row, spec = self._locked(conn, mission_id, active=True)
         trial = self._trial(conn, mission_id, trial_id)
+        if trial.get("technical_closed_at") is not None:
+            raise PolicyError("An independently retired technical candidate cannot be repaired or requeued")
         self._actor(actor, "engineer")
         try:
             require_scope(spec, plan)
@@ -638,7 +641,8 @@ class MissionStore:
                 from .scientific_lineages import usage as lineage_usage
 
                 program_exhausted |= lineage_usage(conn, spec.scientific_lineage.id) >= spec.scientific_lineage.max_total_trials
-        trial = conn.execute("""SELECT * FROM research_mission_trials WHERE mission_id=%s AND state<>'reported'
+        trial = conn.execute("""SELECT * FROM research_mission_trials WHERE mission_id=%s
+            AND state<>'reported' AND technical_closed_at IS NULL
             ORDER BY created_at,id LIMIT 1""", (mission_id,)).fetchone()
         if trial:
             if program_exhausted and trial["state"] in {"selected", "prepared", "technical_waiting"}:
@@ -646,6 +650,17 @@ class MissionStore:
             stage = {"selected": "implementation", "prepared": "execution", "queued": "execution",
                      "running": "execution", "technical_waiting": "repair", "received": "interpretation",
                      "interpreted": "audit"}[trial["state"]]
+            if stage == "repair":
+                held = conn.execute("""SELECT id,context FROM research_mission_stages WHERE mission_id=%s
+                    AND stage='repair' AND state='waiting' AND context ? '_repair_hold'
+                    AND context ? '_technical_review_evidence'
+                    AND context->'mission'->'stage'->>'trial_id'=%s
+                    ORDER BY created_at DESC,id DESC LIMIT 1""", (mission_id, str(trial["id"]))).fetchone()
+                if held:
+                    return {**result, "stage": "technical_review", "trial_id": str(trial["id"]),
+                            "proposal_id": str(trial["proposal_id"]), "failed_job_id": str(trial["job_id"]),
+                            "held_stage_id": str(held["id"]),
+                            "review_evidence": held["context"]["_technical_review_evidence"]}
             return {**result, "stage": stage, "trial_id": str(trial["id"]), "proposal_id": str(trial["proposal_id"])}
         if program_exhausted or self._scope_exhausted(row, spec):
             return {**result, "stage": "owner_review", "reason": "scientific_scope_exhausted"}
@@ -682,7 +697,9 @@ class MissionStore:
                    if spec.research_scope is not None else {}),
                 "stage": self.next_stage(conn, mission_id)["stage"],
                 "incumbent_trial_id": incumbent if incumbent in published else None,
-                "trials": [{"id": str(trial["id"]), "state": trial["state"], "cycle": trial["cycle"],
+                "trials": [{"id": str(trial["id"]),
+                            "state": "technical_closed" if trial.get("technical_closed_at") else trial["state"],
+                            "cycle": trial["cycle"],
                             "ordinal": trial["ordinal"], "performance_visible": str(trial["id"]) in published,
                             **({"source_id": published[str(trial["id"])]["source_id"]}
                                if str(trial["id"]) in published else {})} for trial in trials]})
@@ -695,6 +712,8 @@ class MissionStore:
         result["trials"] = as_json(trials)
         result["challenge_responses"] = as_json(conn.execute("""SELECT * FROM research_challenge_responses
             WHERE mission_id=%s ORDER BY created_at""", (mission_id,)).fetchall())
+        result["technical_dispositions"] = as_json(conn.execute("""SELECT * FROM research_technical_dispositions
+            WHERE mission_id=%s ORDER BY created_at,trial_id""", (mission_id,)).fetchall())
         for name in ("proposals", "challenges", "rejections", "cycles"):
             result[name] = as_json(conn.execute(f"SELECT * FROM research_mission_{name} WHERE mission_id=%s ORDER BY created_at",
                                                (mission_id,)).fetchall())
