@@ -1,0 +1,58 @@
+{
+  "observed_at": "2026-10-12T02:52:57.581775+00:00",
+  "paused": false,
+  "program_and_mission": {
+    "program_state": "active",
+    "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "mission_state": "active",
+    "mission_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
+    "cycle": 1,
+    "cycle_trials": 1,
+    "cumulative_trials": 1
+  },
+  "actual_current_stage": {
+    "id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+    "stage": "proposal",
+    "actor": "researcher_kr",
+    "state": "running",
+    "attempt": 1,
+    "task_id": "dd8b6874-4a94-5c3f-908f-0f892ce96062",
+    "error": null,
+    "retry_at": null,
+    "created_at": "2026-10-12T02:46:59.462943+00:00",
+    "updated_at": "2026-10-12T02:51:20.058916+00:00",
+    "decision": null,
+    "proposal_id": null,
+    "review_evidence": null,
+    "attached_review_evidence": null,
+    "required_technical_reads": null,
+    "independent_repair_held": false,
+    "task_priority": 100,
+    "task_status": "running",
+    "read_chunks": 26,
+    "current_challenge_ids": []
+  },
+  "latest_request": {
+    "id": "233caf89-5a47-59c2-8c49-3cdc95f17aea",
+    "status": "running",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "runtime": {
+      "state": "running",
+      "started_at": 1791773481.666491,
+      "completed_at": null,
+      "cli_version": "0.160.1",
+      "fault_code": null,
+      "started_after_cutover": true
+    }
+  },
+  "technical_disposition_digest": "c8f87cc946eb5c924daaf54c1f846d7869003d5311caeb49dbe83ead740c89d8",
+  "failed_trial_closed_at": "2026-10-12T02:46:55.392922+00:00",
+  "economic_results_completed": 1,
+  "new_economic_execution_started": false,
+  "bounded_observer_unit": "quant-company-technical-review-observer-v2-20261012.service",
+  "bounded_observer_maximum_hours": 24,
+  "automatic_alerts": false,
+  "automatic_repairs": false,
+  "read_only": true
+}
