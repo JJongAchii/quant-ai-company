@@ -69,6 +69,14 @@
         "all_slack_client_msg_id_match": true,
         "all_have_rental_heading_official_link_and_application_dates": true
       },
+      "periodic_readback": {
+        "lh_rental_last_success_utc": "2026-10-12T09:25:59Z",
+        "sh_rental_last_success_utc": "2026-10-12T09:26:02Z",
+        "source_errors": 0,
+        "delivered_publications_after_refresh": 4,
+        "pending": 0,
+        "uncertain": 0
+      },
       "temporal": {"workflow": "company-housing-feed-v1", "status": "RUNNING", "task_queue": "quant-company-housing-feed"},
       "server_journal": "/var/lib/quant-company/releases/housing-rental-737b3dd66b82a348d22eaa9e26bfa8d3149ab548.json"
     }
