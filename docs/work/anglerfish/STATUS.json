@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v19.json",
-  "state": "research_repair_runtime_applied_existing_turn_timer_wake_verified",
+  "state": "scoped_research_repair_complete_independent_input_evidence_hold",
   "previousIntent": "INTENT-v18.json",
   "deliverables": {
     "POLICY": {
@@ -20,20 +20,22 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
     }
   },
-  "operationalStatus": "INTENT-v19: scoped API/worker cutover3171e59 applied and owned pause cleared; four failed-code files and registered diagnostic appended to existing attempt79, exact repair/hold schemas verified, signed scope and scientific release preserved. Existing queued unfrozen turn38 is sleeping on the deployment timer; existing selected-account revision2 wake preflight passed. Actual employee continuation pending; second economic evaluation not yet rerun.",
-  "evidence": "../../project/evidence/etf-exploration-20260930/first-mission-audit-actual-call-resumed-20261007.json",
+  "operationalStatus": "INTENT-v19 complete: exact API/worker recovery applied09:46:47KST, owned pause cleared, existing selected-account revision2 woke the same queued turn. Actual Sol xhigh completed new requests with exact repair/hold schema and read the real failed-build manifest, diagnostic and failed code. Independent engineer returned a valid evidence hold09:54:10KST; unchanged auto retries stopped. The research programme remains active but second trial is technical_waiting; no second economic evaluation or new scientific job. Next input-contract review packet is prepared, not activated.",
+  "evidence": "../../project/evidence/etf-exploration-20260930/research-repair-actual-staff-evidence-hold-20261012.json",
   "nextStage": {
-    "stage": "wake_existing_unfrozen_turn_with_current_selected_account_revision_then_verify_actual_staff_read",
+    "stage": "verify_frozen_callback_contract_and_first_run_artifacts_then_prepare_compatible_repair_spec",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false,
-    "missionId": "2ce40574-6368-5cef-b706-b4e67441b3de"
+    "missionId": "2ce40574-6368-5cef-b706-b4e67441b3de",
+    "preparationEvidence": "../../project/evidence/etf-exploration-20260930/research-repair-next-input-contract-review-20261012.json",
+    "additionalOwnerApprovalRequiredForPreparation": false
   },
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
   "finalIntegration": {
     "intent": "INTENT-v19.json",
-    "status": "scoped_runtime_applied_independent_continuation_pending",
-    "currentIntentComplete": false,
+    "status": "scoped_runtime_applied_independent_staff_evidence_hold_verified",
+    "currentIntentComplete": true,
     "canonicalMergeClaimed": false,
     "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
     "sourceCommit": "d0386ef",
@@ -46,7 +48,10 @@
       "lint": "passed",
       "staffSlackMarketFixtures": "synthetic"
     },
-    "secondScientificEvaluationClaimed": false
+    "secondScientificEvaluationClaimed": false,
+    "actualSuccessorEvidence": "../../project/evidence/etf-exploration-20260930/research-repair-actual-staff-evidence-hold-20261012.json",
+    "scientificProgrammeComplete": false,
+    "liveOrPaperApprovalClaimed": false
   },
   "exploratoryPreparation": {
     "policy": "completed",
@@ -84,7 +89,7 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/97",
       "mergedCommit": "d2010230eda9b6cf1128b0fc650bdcbc8c8309b3",
       "candidateCommit": "0286ba3e7426ff6546b90e6926124ae65e71ba79",
-      "ownerApproval": "\uc2b9\uc778\ud560\uac8c"
+      "ownerApproval": "승인할게"
     },
     "LIVE_CHECK": {
       "status": "completed",
@@ -97,7 +102,7 @@
     }
   },
   "activation": {
-    "ownerAuthorization": "\uc751 \uc9c4\ud589\ud574",
+    "ownerAuthorization": "응 진행해",
     "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99",
     "qualification": "completed",
     "productionActivated": true,
@@ -117,7 +122,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "second_trial_repair_runtime_applied_existing_turn_timer_wait",
+    "phase": "second_trial_independent_engineer_input_evidence_hold",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
@@ -156,13 +161,19 @@
     "technicalRecoveryPackageCommit": "3171e59a5c7f6a2332c33b3bc1249abddccba6ef",
     "technicalRecoveryReview": "../../project/evidence/etf-exploration-20260930/research-repair-apply-review-20261012.json",
     "technicalRecoveryPriorFailure": "../../project/evidence/etf-exploration-20260930/research-repair-apply-failed-v2-20261012.json",
-    "technicalRecoveryReceipt": "../../project/evidence/etf-exploration-20260930/research-repair-runtime-applied-20261012.json"
+    "technicalRecoveryReceipt": "../../project/evidence/etf-exploration-20260930/research-repair-runtime-applied-20261012.json",
+    "currentRepairStage": "2d0ec857-8601-5cca-927d-f7f51877696d",
+    "currentRepairAttempt": 79,
+    "currentRepairError": "repair_requires_evidence",
+    "automaticUnchangedRetryStopped": true
   },
   "currentIntentCompletion": {
     "intent": "INTENT-v19.json",
-    "status": "in_progress",
+    "status": "completed",
     "programmeStillActive": true,
-    "scientificDecisionsSupplied": false
+    "scientificDecisionsSupplied": false,
+    "evidence": "../../project/evidence/etf-exploration-20260930/research-repair-actual-staff-evidence-hold-20261012.json",
+    "scientificProgrammeComplete": false
   },
   "previousAuditResumeDeliverables": {
     "AUDIT_DIAGNOSIS": {
@@ -179,7 +190,7 @@
       "actualProviderState": "running"
     }
   },
-  "phase": "research_repair_implementation_verified_preparing_exact_runtime",
+  "phase": "scoped_research_repair_complete_independent_input_evidence_hold",
   "currentDeliverables": {
     "FAILED_BUILD_EVIDENCE": {
       "status": "completed_actual_context_refreshed",
@@ -191,16 +202,16 @@
       "probe": "../../project/evidence/etf-exploration-20260930/research-repair-actual-context-probe-20261012.json"
     },
     "LIVE_RECOVERY": {
-      "status": "runtime_applied_actual_staff_continuation_pending",
+      "status": "completed_actual_staff_progress_and_independent_hold_verified",
       "packageCommit": "3171e59a5c7f6a2332c33b3bc1249abddccba6ef",
-      "evidence": "../../project/evidence/etf-exploration-20260930/research-repair-runtime-applied-20261012.json"
+      "evidence": "../../project/evidence/etf-exploration-20260930/research-repair-actual-staff-evidence-hold-20261012.json"
     }
   },
   "currentMonitoring": {
     "intent": 19,
     "unit": "quant-company-research-repair-monitor-20261012.service",
     "invocationId": "677f68031dc6458eb35fa6da47956c19",
-    "state": "running",
+    "state": "independent_engineer_evidence_hold_observed",
     "startedAt": "2026-10-12T00:45:26+00:00",
     "intervalSeconds": 45,
     "maximumHours": 24,
@@ -208,22 +219,29 @@
     "automaticAlerts": false,
     "automaticRepairs": false,
     "evidence": "../../project/evidence/etf-exploration-20260930/research-repair-bounded-observer-20261012.json",
-    "unboundedMonitoringClaimed": false
+    "unboundedMonitoringClaimed": false,
+    "completedAt": "2026-10-12T00:54:47.940104+00:00",
+    "observations": 13,
+    "readErrors": 0,
+    "completionEvidence": "../../project/evidence/etf-exploration-20260930/research-repair-observer-completed-20261012.json",
+    "currentlyRunning": false
   },
   "currentStatusCheck": {
-    "observedAt": "2026-10-11T23:16:22.754733+00:00",
-    "evidence": "../../project/evidence/etf-exploration-20260930/second-trial-current-status-20261012.json",
-    "summary": "../../project/RESEARCH-PROGRESS-20261012.md",
+    "observedAt": "2026-10-12T01:30:20.138749+00:00",
+    "evidence": "../../project/evidence/etf-exploration-20260930/research-repair-final-live-state-20261012.json",
+    "summary": "../../project/RESEARCH-REPAIR-RECOVERY-20261012.md",
     "readOnly": true,
     "secondTrialId": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
     "secondJobId": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
     "secondJobState": "failed",
     "secondEvaluationStarted": false,
     "repairStageId": "2d0ec857-8601-5cca-927d-f7f51877696d",
-    "repairAttempt": 78,
+    "repairAttempt": 79,
     "repairState": "waiting",
-    "productionRepairAppliedThisTurn": false,
-    "additionalOwnerApprovalRequired": false
+    "repairError": "repair_requires_evidence",
+    "repairRetryAt": null,
+    "productionRepairAppliedThisTurn": true,
+    "additionalOwnerApprovalRequiredForPreparation": false
   },
   "revisionLoopRepair": {
     "intent": "INTENT-v18.json",
@@ -401,5 +419,20 @@
     "observations": 318,
     "readErrors": 0,
     "continuousMonitoringClaimed": false
+  },
+  "previousStatusCheck": {
+    "observedAt": "2026-10-11T23:16:22.754733+00:00",
+    "evidence": "../../project/evidence/etf-exploration-20260930/second-trial-current-status-20261012.json",
+    "summary": "../../project/RESEARCH-PROGRESS-20261012.md",
+    "readOnly": true,
+    "secondTrialId": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+    "secondJobId": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+    "secondJobState": "failed",
+    "secondEvaluationStarted": false,
+    "repairStageId": "2d0ec857-8601-5cca-927d-f7f51877696d",
+    "repairAttempt": 78,
+    "repairState": "waiting",
+    "productionRepairAppliedThisTurn": false,
+    "additionalOwnerApprovalRequired": false
   }
 }
