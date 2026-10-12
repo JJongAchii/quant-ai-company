@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-12 02:33:00 UTC",
+  "unit": "quant-company-technical-review-observer-20261012.service",
+  "invocation_id": "4eb617c205d9492b9220b36770b72840",
+  "started_at": "2026-10-12T02:27:50+00:00",
+  "observed_active_state": "active",
+  "observed_sub_state": "running",
+  "commit": "68a53f1c699837256db5e8a4a6479bbd0fc82876",
+  "helper_sha256": "8f1967ceb0df899b0b04ba2a85dba25385c6c0db261324793187bdd77c5bb0ec",
+  "maximum_hours": 24,
+  "interval_seconds": 45,
+  "read_only": true,
+  "automatic_alerts": false,
+  "automatic_repairs": false,
+  "stop_after": [
+    "second reported trial",
+    "independent director wait",
+    "successor engineer evidence hold",
+    "uncertain job",
+    "24-hour bound"
+  ],
+  "existing_old_repair_hold_preserved_and_not_a_new_terminal": true,
+  "observations_directory": "/var/lib/quant-company/releases/technical-review-monitor-20261012"
+}

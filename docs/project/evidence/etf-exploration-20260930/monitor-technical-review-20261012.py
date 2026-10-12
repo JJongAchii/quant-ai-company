@@ -42,7 +42,9 @@ def main():
         os.replace(temporary, output / "latest.json")
         cutover = value.get("cutover_completed_at")
         current = [stage for stage in value.get("stages", [])
-                   if cutover and datetime.fromisoformat(stage["created_at"]) >= datetime.fromisoformat(cutover)]
+                   if (stage.get("stage") == "technical_review"
+                       and (stage.get("review_evidence") or {}).get("operation_commit") == args.commit)
+                   or (cutover and datetime.fromisoformat(stage["created_at"]) >= datetime.fromisoformat(cutover))]
         if any(stage.get("stage") == "technical_review" and stage.get("state") == "completed"
                and stage.get("decision") == "wait" for stage in current):
             state = "independent_director_wait_observed"

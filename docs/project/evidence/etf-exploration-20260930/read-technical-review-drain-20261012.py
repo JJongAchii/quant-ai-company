@@ -2,6 +2,7 @@
 
 import json
 import os
+import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -32,7 +33,18 @@ for path in (STATE / "claude/jobs").glob("*.json"):
     value = json.loads(path.read_bytes())
     if value.get("state") == "running":
         running.append({key: value.get(key) for key in ("request_id", "state", "started_at", "cli_version")})
+dump_files = [{"staging": path.parent.name, "bytes": path.stat().st_size,
+               "modified_at": datetime.fromtimestamp(path.stat().st_mtime, UTC).isoformat()}
+              for path in (STATE / "backups").glob("staging-*/database.dump")]
+dump_state = json.loads(subprocess.check_output([
+    "docker", "exec", "quant-company-postgres-1", "psql", "-U", "postgres", "-d", "quant_company",
+    "-qAt", "-v", "ON_ERROR_STOP=1", "-c", "BEGIN READ ONLY; SELECT coalesce(json_agg(x),'[]'::json) FROM "
+    "(SELECT pid,state,wait_event_type,wait_event,pg_blocking_pids(pid) AS blockers "
+    "FROM pg_stat_activity WHERE application_name='pg_dump')x; COMMIT;",
+], text=True, timeout=15))
 print(json.dumps({"observed_at": datetime.now(UTC).isoformat(), "state": receipt["state"],
                   "started_at": receipt["started_at"], "native_locks": locks,
                   "running_claude_receipts": running,
+                  "incomplete_database_dump_metadata": dump_files,
+                  "database_dump_activity": dump_state,
                   "database_or_runtime_mutated": False}, indent=2))
