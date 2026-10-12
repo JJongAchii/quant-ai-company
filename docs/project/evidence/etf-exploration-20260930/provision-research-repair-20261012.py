@@ -148,26 +148,28 @@ def main():
     root = Path(__file__).resolve().parent
     manifest = json.loads((root / "manifest.json").read_bytes())
     assert hashlib.sha256(Path(__file__).read_bytes()).hexdigest() == manifest["payload_files"][Path(__file__).name]
-    rows = json.loads(subprocess.check_output(["docker", "inspect", "quant-company-api-1", "quant-company-postgres-1"]))
-    api, postgres = rows
-    network = sorted(set(api["NetworkSettings"]["Networks"]) & set(postgres["NetworkSettings"]["Networks"]))[0]
-    image = api["Image"]
+    rows = json.loads(subprocess.check_output([
+        "docker", "inspect", "quant-company-api-1", "quant-company-worker-1", "quant-company-postgres-1"]))
+    api, worker, postgres = rows
+    owner = api if args.mode == "source" else worker
+    network = sorted(set(owner["NetworkSettings"]["Networks"]) & set(postgres["NetworkSettings"]["Networks"]))[0]
+    image = owner["Image"]
     if args.mode == "probe":
         prepared = json.loads((Path("/var/lib/quant-company/releases")
                                / ("research-repair-" + manifest["commit"] + "-prepared.json")).read_bytes())
-        image = prepared["images"]["api"]["image_id"]
+        image = prepared["images"]["worker"]["image_id"]
     descriptor, name = tempfile.mkstemp(prefix="research-repair-env-", dir="/var/lib/quant-company/releases")
     env_path = Path(name)
     try:
         os.fchmod(descriptor, 0o600)
         with os.fdopen(descriptor, "w") as stream:
-            for value in api["Config"]["Env"]:
+            for value in owner["Config"]["Env"]:
                 assert "\n" not in value
                 stream.write(value + "\n")
             stream.write("REPAIR_PROVISION_MODE=" + args.mode + "\n")
         result = subprocess.run([
             "docker", "run", "--rm", "-i", "--memory", "256m", "--network", network,
-            "--volumes-from", api["Id"], "--env-file", str(env_path),
+            "--volumes-from", owner["Id"], "--env-file", str(env_path),
             "--mount", "type=bind,src=" + str(root) + ",dst=/operator,readonly",
             "--entrypoint", "python", image, "/app/entrypoint.py", "python", "-",
         ], input=CODE, capture_output=True, text=True, timeout=90)

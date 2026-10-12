@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_exact_research_recovery",
+  "commit": "53e0f134d3cb425c11b1d4ac263c747b081960e9",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+  "manifest_sha256": "3e13f11ca4f787011c961240bb4b1c3d45a71a5a528f45049f3502e8bab0d1c8",
+  "operator_sha256": "8fefd91b34d80abdbeb7ad304e05f30cbb342948da85d3073fa9286bd8dbd6e5",
+  "authority": "Existing owner deploy/continue approvals and current technical recovery request",
+  "new_exact_sha_human_approval_claimed": false,
+  "scientific_approval_repeated": false,
+  "phases": [
+    "Register only the bound project-scoped technical failure receipt, then verify the actual patched-stage prompt in a rolled-back DB transaction",
+    "Apply exact reviewed API/worker images after the successful production-data probe, existing drain/backup/locks, and append verified evidence at a safe stage boundary"
+  ],
+  "scope": {
+    "modules": [
+      "research/controller.py",
+      "research/builds.py",
+      "research/mission_backend.py"
+    ],
+    "candidate_code_or_readiness_guard_changed": false,
+    "signed_scope_budget_and_worker_pin_changed": false,
+    "prior_provider_responses_or_failed_jobs_changed": false,
+    "model_policy_and_concurrent_parent_modules_preserved": true
+  },
+  "prepared_images": {
+    "api": {
+      "image_id": "sha256:1d110b7b0d18ecf9de662e054048dae97ffb54d02494c74bf2b367b7c8d2a11f",
+      "parent_image_id": "sha256:9445114a6e094bca9df2cd7e6bfe1475f8dc8103fb081b32511257d10586bc08"
+    },
+    "worker": {
+      "image_id": "sha256:6f9962b8f4f1c1f255bec28cbed21f51bfd2cbd5b37624e960c45094a873e1be",
+      "parent_image_id": "sha256:9f03342cdaf2b4b536e43d29a807c6522b03878f58dc4707231b3a1b107472a2"
+    }
+  },
+  "failure_evidence_sha256": "4d017e2171c420435111392bbb66a9f828252a5ea8422348d96a31f14f9e3201",
+  "regression": {
+    "passed": 1838,
+    "skipped": 14,
+    "targeted_passed": 17,
+    "lint": "passed",
+    "staff_slack_market_fixtures": "synthetic"
+  },
+  "operational_probe_and_independent_progress_pending": true,
+  "rollback": "Exact current parent images and every actual environment value; preserve source/receipts and release only the owned pause",
+  "model_or_worker_execution_supplied": false
+}
+
