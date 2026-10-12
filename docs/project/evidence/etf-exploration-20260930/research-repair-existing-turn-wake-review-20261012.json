@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_existing_turn_wake",
+  "operation_commit": "3171e59a5c7f6a2332c33b3bc1249abddccba6ef",
+  "operator_sha256": "d266ca85f918ddb63fa76775d3ea35ec755fe989721b6f1fae3fccc57e9cf1f1",
+  "authority": "Existing owner continuation and technical recovery request",
+  "precondition": "Actual scoped cutover verified; API/worker exact image IDs active; owned pause cleared; programme/mission/revision and technical recovery binding intact; existing queued unfrozen due turn has pending timer and has not received current selected account revision",
+  "signal": "model_account_changed",
+  "signal_revision": "Current committed owner-selected account revision only; never increment or switch",
+  "database_mutated": false,
+  "new_turn_or_request_supplied": false,
+  "scientific_decision_or_execution_supplied": false,
+  "uncertain_signal_handling": "Persist wake intent before effect; retain unconfirmed receipt and inspect workflow history before any retry",
+  "actual_signal_sent": false
+}
