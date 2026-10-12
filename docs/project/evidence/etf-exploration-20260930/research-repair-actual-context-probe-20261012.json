@@ -10,8 +10,8 @@
   "exact_patch_and_hold_schemas_verified": true,
   "model": "gpt-6.1-sol",
   "reasoning_effort": "xhigh",
-  "prompt_characters": 85120,
-  "prompt_sha256": "0e936b9d14683500c6b139ce0f07cfea6d1f98c622a438954ff6f0434b63f000",
+  "prompt_characters": 85292,
+  "prompt_sha256": "d940a2b9b5c3354974002a4d039efda7db842ffbd15e7b82e51e7e6d71ca2f8a",
   "failed_job_unchanged": true,
   "prior_context_files_and_raw_responses_preserved": true,
   "model_call_created": false,
@@ -20,4 +20,3 @@
   "database_mutated": false,
   "transaction_rolled_back": true
 }
-

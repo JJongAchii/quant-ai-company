@@ -1,12 +1,12 @@
 {
   "state": "inactive_research_repair_images_prepared",
-  "observed_at": "2026-10-11T23:59:46.521217+00:00",
-  "commit": "53e0f134d3cb425c11b1d4ac263c747b081960e9",
-  "manifest_sha256": "3e13f11ca4f787011c961240bb4b1c3d45a71a5a528f45049f3502e8bab0d1c8",
+  "observed_at": "2026-10-12T00:15:43.556075+00:00",
+  "commit": "939a71d4cf2bfd1891d250a9fa991aff6829266a",
+  "manifest_sha256": "df1d25b5cc7731a2042f48e62e55dbd3f8b073217fadc37e927ea079cd8076eb",
   "images": {
     "api": {
-      "tag": "quant-company-research-repair-api:53e0f134d3cb425c11b1d4ac263c747b081960e9",
-      "image_id": "sha256:1d110b7b0d18ecf9de662e054048dae97ffb54d02494c74bf2b367b7c8d2a11f",
+      "tag": "quant-company-research-repair-api:939a71d4cf2bfd1891d250a9fa991aff6829266a",
+      "image_id": "sha256:07161aa6429108bfb49af4c115c72b88f4d6805a7af2a9325adf55e82ed614b4",
       "baseline_image_id": "sha256:9445114a6e094bca9df2cd7e6bfe1475f8dc8103fb081b32511257d10586bc08",
       "source": {
         "root": "/app/src",
@@ -30,8 +30,8 @@
       }
     },
     "worker": {
-      "tag": "quant-company-research-repair-worker:53e0f134d3cb425c11b1d4ac263c747b081960e9",
-      "image_id": "sha256:6f9962b8f4f1c1f255bec28cbed21f51bfd2cbd5b37624e960c45094a873e1be",
+      "tag": "quant-company-research-repair-worker:939a71d4cf2bfd1891d250a9fa991aff6829266a",
+      "image_id": "sha256:81d82fac3fc159858b7735e6d28873b866e0af901913267d0381d6b366046e62",
       "baseline_image_id": "sha256:9f03342cdaf2b4b536e43d29a807c6522b03878f58dc4707231b3a1b107472a2",
       "source": {
         "root": "/app/src",
@@ -205,4 +205,3 @@
   },
   "production_changed": false
 }
-
