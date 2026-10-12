@@ -213,6 +213,13 @@ def main():
                             assert time.monotonic() < lane_deadline, "native_lane_drain_timeout"
                             time.sleep(0.2)
             assert activity() == {"running_turns": 0, "sending_outbox": 0, "active_jobs": 0}
+            renewed = sql(
+                "WITH c AS (UPDATE runtime_control SET paused_until=now()+interval '15 minutes'"
+                " WHERE id=1 AND reason=" + literal(prefix) + " AND paused_until="
+                + literal(until) + "::timestamptz AND paused_until>now() RETURNING paused_until)"
+                " SELECT json_build_object('until',(SELECT paused_until FROM c))")["until"]
+            assert renewed, "owned_pause_expired_before_cutover"
+            until = renewed
             stopped = [row["Id"] for name, row in before.items()
                        if name != "quant-company-postgres-1" and row["State"]["Running"]]
             run(["docker", "stop", "--time", "60", *stopped])
