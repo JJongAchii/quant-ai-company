@@ -15,6 +15,8 @@ def speech_credits(text):
     return max(1, -(-len(text) // 500))
 
 
+# Per-call character limits from the Runway MCP generate_speech schema (tools/list, 2026-10-12).
+SPEECH_LIMITS = {"eleven_v4": 2500, "eleven_multilingual_v2": 5000}
 RETAKE_RESERVE = 0.2  # budget head-room for pronunciation retakes, checked before the first charge
 
 
@@ -57,7 +59,7 @@ class RunwaySpeech:
         return data
 
     async def submit(self, text, voice, model):
-        if model != "eleven_multilingual_v2" or not 1 <= len(text) <= 5000:
+        if model not in SPEECH_LIMITS or not 1 <= len(text) <= SPEECH_LIMITS[model]:
             raise ValueError("Unsupported narration")
         result = await self.call("generate_speech", {"text": text, "voice": voice, "model": model,
                                 "languageCode": "ko", "name": "daily-brief narration"})
@@ -71,7 +73,8 @@ class RunwaySpeech:
             result = await self.call("get_task", {"id": task_id})
             if result.get("status") in {"FAILED", "CANCELED", "failed", "cancelled"}:
                 raise ValueError("Runway speech task failed; receipts retained")
-            if result.get("status") == "SUCCEEDED" and isinstance(result.get("url"), str):
+            # eleven_v4 speech tasks answer with the finished audio and no status field (observed 2026-10-12).
+            if result.get("status") in {"SUCCEEDED", None} and isinstance(result.get("url"), str):
                 return result["url"]
             urls = result.get("output") or result.get("outputUrls")
             if result.get("status") in {"SUCCEEDED", "completed", "succeeded"} and isinstance(urls, list) and urls:

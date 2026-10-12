@@ -18,6 +18,7 @@ FAULT_MESSAGES = {
     "timeout": "The model turn timed out and requires operator review.",
     "invalid_output": "The model output did not satisfy the company decision contract.",
     "unavailable": "The model runtime is unavailable.",
+    "pending": "The model turn is still running; ask again with the same request ID.",
 }
 
 
@@ -104,6 +105,8 @@ class RuntimeClient:
         # schema. Ordinary requests retain their original wire shape.
         if request.session is None:
             payload.pop("session", None)
+        if not request.attachments:
+            payload.pop("attachments", None)
         if request.brief_deadline_unix is None:
             payload.pop('brief_deadline_unix', None)
         if account is not None:
@@ -131,14 +134,24 @@ class RuntimeClient:
                         retry = data.get("retry_after_seconds", 0) if isinstance(data, dict) else 0
                         if type(retry) is not int or retry < 0 or retry > 604800:
                             retry = 0
-                        raise ProviderFault(code, FAULT_MESSAGES[code], retry)
+                        message = FAULT_MESSAGES[code]
+                        if (self.expected_provider == "claude" and code in {"invalid_output", "timeout"}
+                                and isinstance(data.get("message"), str)):
+                            # claude-runtime reports contract rules and locations only, never the rejected text.
+                            message = data["message"][:2000]
+                        raise ProviderFault(code, message, retry)
                     result = ProviderResponse.model_validate(data)
                     if result.request_id != request.request_id or result.provider != self.expected_provider:
                         raise ValueError("Mismatched provider result")
                     json.dumps(result.model_dump(mode="json"), allow_nan=False)
                     return result
-        except httpx.ConnectError:
+        except (httpx.ConnectError, httpx.ConnectTimeout):
             raise ProviderFault("unavailable", FAULT_MESSAGES["unavailable"]) from None
+        except httpx.TimeoutException:
+            if self.expected_provider != "claude":
+                raise ProviderFault("uncertain", FAULT_MESSAGES["uncertain"]) from None
+            # claude-runtime keeps running the turn under its request ID and answers the same ID from its receipt.
+            raise ProviderFault("pending", FAULT_MESSAGES["pending"], 30) from None
         except (httpx.HTTPError, ValueError, TypeError, ValidationError):
             # A timeout/lost response may hide a completed inference. The caller
             # can safely recover by querying the same ID, never by inventing one.

@@ -33,6 +33,7 @@ from quant_company.briefing.editor import (
     validate,
     validate_review,
 )
+from quant_company.briefing.execution import final_at
 from quant_company.briefing.inputs import document, market_report
 from quant_company.briefing.market_rules import expired_wti_contract
 from quant_company.briefing.numeric import numbers, prose_numbers_supported, reported_change_supported
@@ -750,7 +751,7 @@ def test_missing_major_issue_preserves_useful_partial_but_cannot_pass(brief):  #
     edition = seed(brief)
     store.commit(response(store.prepare()["request"], analytical_proposal()))
     critic = store.prepare()["request"]
-    clock["at"] = edition.due_at
+    clock["at"] = final_at(edition.due_at)-timedelta(minutes=5)  # no time left for a repair and a second review
     verdict = review().model_dump()
     verdict.update(verdict="reduce", concerns=["원문에 있는 중요한 정책 변화의 설명이 빠졌습니다."])
     verdict["checks"]["coverage"] = False
@@ -1027,7 +1028,9 @@ def test_editorial_story_context_is_anchored_bounded_and_has_its_own_numeric_pro
                               {"fact": ["source-2"]})
 
 
-def test_uncertain_revision_is_not_replaced_with_another_model_call(brief):  # noqa: F811
+def test_an_uncertain_revision_keeps_its_receipt_and_is_retried_as_a_new_request(brief):  # noqa: F811
+    """Owner rule (2026-10-12) replaced 'an uncertain revision ends the edition': that turn keeps its receipt and is
+    never replayed, the next attempt is a new request, and the reviewed body still ships at the final time."""
     store, clock = brief
     edition = seed(brief)
     store.commit(response(store.prepare()["request"]))
@@ -1037,13 +1040,17 @@ def test_uncertain_revision_is_not_replaced_with_another_model_call(brief):  # n
     store.commit(response(store.prepare()["request"], BriefReview.model_validate(v)))
     request = store.prepare()["request"]
     store.fault(request["request_id"], "uncertain")
-    assert store.prepare()["state"] == "idle"
-    clock["at"] = edition.due_at+timedelta(minutes=11)
+    retry = store.prepare()["request"]
+    assert retry["request_id"] == request["request_id"]+"-r1"
+    clock["at"] = final_at(edition.due_at)
     store.flush()
     with store.db.transaction() as conn:
-        calls = conn.execute("SELECT phase,state FROM brief_calls WHERE edition_id=%s", (edition.id,)).fetchall()
-    assert len(calls) == 3
-    assert next(c for c in calls if c["phase"] == "revise")["state"] == "blocked"
+        calls = {c["id"]: c for c in conn.execute("SELECT id,state,error FROM brief_calls WHERE edition_id=%s",
+                                                  (edition.id,)).fetchall()}
+        state = conn.execute("SELECT state FROM brief_editions WHERE id=%s", (edition.id,)).fetchone()["state"]
+    assert len(calls) == 4 and calls[request["request_id"]]["state"] == "retry"
+    assert calls[request["request_id"]]["error"] == "uncertain"
+    assert calls[retry["request_id"]]["state"] == "unresolved" and state == "committed"
 
 
 def test_isolated_condition_repair_preserves_facts_and_still_requires_full_review(brief):  # noqa: F811

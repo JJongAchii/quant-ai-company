@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 from html import escape
 from pathlib import Path
 
@@ -6,6 +7,7 @@ import pytest
 
 from quant_company.briefing.contracts import BRIEFER, REVIEW_CHECKS, BriefProposal, BriefReview, item_map
 from quant_company.briefing.editor import prompt, prune, render, validate
+from quant_company.briefing.execution import final_at
 from quant_company.company import load_roles
 from quant_company.config import Settings
 from quant_company.staff.cases import FAMILIES, grade, make_case
@@ -145,7 +147,7 @@ def test_reviewer_can_remove_unsupported_analysis_without_leaking_it_to_slack(br
     edition = seed(brief)
     store.commit(response(store.prepare()["request"], analytical_proposal()))
     critic = store.prepare()["request"]
-    clock["at"] = edition.due_at
+    clock["at"] = final_at(edition.due_at)-timedelta(minutes=5)  # no time left for a repair
     verdict = review().model_dump()
     verdict.update(verdict="reduce", rejected_ids=["driver-alternative"], concerns=["대안 설명의 근거가 부족함"])
     verdict["checks"]["alternatives"] = False

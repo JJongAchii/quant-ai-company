@@ -37,8 +37,9 @@ def publish_time(edition, settings=None):
 def edition_times(edition, settings=None):
     """Files-ready target and generation deadline. Work starts as soon as the brief body is delivered (no waiting for
     due or a fixed time); the files should be in the brief thread VIDEO_PUBLISH_LEAD_MINUTES before the publish time
-    (AM 06:50 / winter 07:40, PM 17:50). A late episode is still delivered with a one-line delay note. New generation
-    stops at 09:00 KST for the morning edition and 2h30m after the target for the close edition."""
+    (AM 06:50 / winter 07:40, PM 17:50). A late episode is still produced and delivered with a one-line delay note.
+    The deadline (09:00 KST for the morning edition, 2h30m after the target for the close edition) only expires
+    YouTube public-release approval; it never stops production."""
     lead = getattr(settings, "video_publish_lead_minutes", None)
     target = publish_time(edition, settings) - timedelta(minutes=10 if lead is None else lead)
     if edition["kind"] == "pm":
@@ -76,14 +77,27 @@ def delivery_text(job, artifacts, at=None):
             late = round((at - datetime.fromisoformat(target)).total_seconds() / 60)
             timing += f" · 파일 준비 목표보다 {late}분 늦게 완성됐습니다"
         timing += "\n"
+    qa = job.get("qa") or {}
+    findings = ([f"대본: {f}" for f in qa.get("plan_findings", [])] + [f"검토: {f}" for f in qa.get("review_findings", [])]
+                + [f"화면 검수: {f}" for f in qa.get("inspection_findings", [])]
+                + [f"화면·음성: {f}" for f in artifacts.get("findings", [])])
+    attempts = len(qa.get("plan_attempts", [])) or 1
+    check = "자동 검사 통과" if not findings else f"자동 검사 지적 {len(findings)}건(아래, 제작은 계속함)"
+    notes = "".join(f"• {f[:180]}\n" for f in findings[:8]) + (f"• 외 {len(findings) - 8}건\n" if len(findings) > 8 else "")
+    generated = artifacts.get("generated_images") or []
+    # Realistic generated pictures: YouTube asks creators to mark altered or synthetic content at upload.
+    images = (f"AI 생성 이미지 {len(generated)}장 포함(화면에 'AI 생성 이미지' 표시) · 업로드 때 YouTube의 "
+              "'변경되었거나 합성된 콘텐츠' 항목을 '예'로 선택해 주세요\n") if generated else ""
     return (f"영상 준비 완료 · {EDITION_NAMES.get(job['source'].get('edition_kind'), '브리핑')}\n"
-            f"{artifacts.get('title', '')}\n길이 {minutes}분 {seconds:02}초 · 자동 기술 검사 통과\n" + timing +
+            f"{artifacts.get('title', '')}\n길이 {minutes}분 {seconds:02}초 · 대본 {attempts}회 작성 · {check}\n" + notes + images + timing +
             "첨부: 영상(MP4) · 썸네일(PNG) · 자막(SRT) · 업로드 문안(upload.txt: 제목·설명·챕터·태그·고정 댓글)\n"
             "전체 시청 후 직접 업로드해 주세요.")
 
 
 LOCK = 71350301
-ACTIVE = ("queued", "reviewing", "synthesizing", "rendering", "uploading", "approved")
+ACTIVE = ("queued", "reviewing", "synthesizing", "rendering", "inspecting", "uploading", "approved")
+# Only these states expire at publish_deadline; production states continue however late they run.
+APPROVAL = ("awaiting_approval", "approved")
 
 
 def utcnow():
@@ -157,10 +171,9 @@ class VideoStore:
         # Edition IDs differ per kind, so the morning and closing videos of one day never share a job.
         identity = stable("video:" + str(edition["id"]) + ":1")
         target, deadline = edition_times(edition, self.settings)
-        if at >= deadline:
-            return None
         policy = {"version": POLICY_VERSION, "voice": self.settings.video_voice,
-                  "speech_model": "eleven_multilingual_v2", "model": self.settings.video_model,
+                  "speech_model": self.settings.video_speech_model, "model": self.settings.video_model,
+                  "effort": self.settings.video_reasoning_effort, "review_effort": self.settings.video_review_effort,
                   "workspace_id": self.settings.video_runway_workspace_id,
                   "youtube_channel": self.settings.video_youtube_channel_id, "template": self.settings.video_template,
                   "edition": source["edition_kind"], "review_target": target.isoformat(),
@@ -186,7 +199,7 @@ class VideoStore:
                 (SELECT 1 FROM video_effects e WHERE e.job_id=j.id AND e.state='running')
                 THEN 'uncertain' ELSE 'expired' END,lease_until=NULL,updated_at=now()
                 WHERE state=ANY(%s) AND publish_deadline<=%s
-                AND (lease_until IS NULL OR lease_until<now())""", (list(ACTIVE)+['awaiting_approval'], utcnow()))
+                AND (lease_until IS NULL OR lease_until<now())""", (list(APPROVAL), utcnow()))
             # A new episode starts only after the brief itself reached Slack (root message receipt).
             row = conn.execute("""SELECT * FROM video_jobs j WHERE state=ANY(%s)
                 AND (lease_until IS NULL OR lease_until<now())
@@ -197,7 +210,8 @@ class VideoStore:
                                (list(ACTIVE), self.settings.video_upload_enabled,
                                 self.settings.video_publish_enabled)).fetchone()
             if row:
-                conn.execute("UPDATE video_jobs SET lease_until=now()+interval '20 minutes' WHERE id=%s", (row["id"],))
+                # Outlasts one tick (workflow: 3 hours for a long render) so the job is never claimed twice.
+                conn.execute("UPDATE video_jobs SET lease_until=now()+interval '200 minutes' WHERE id=%s", (row["id"],))
             return row
 
     def allowed(self, job):
@@ -223,8 +237,8 @@ class VideoStore:
 
     def has_uncertain_effect(self, job):
         with self.db.transaction() as conn:
-            return bool(conn.execute("SELECT 1 FROM video_effects WHERE job_id=%s AND state='running' LIMIT 1",
-                                     (job['id'],)).fetchone())
+            return bool(conn.execute("""SELECT 1 FROM video_effects WHERE job_id=%s AND state='running'
+                AND kind<>'model' LIMIT 1""", (job['id'],)).fetchone())
 
     def budget_available(self, job, cost):
         with self.db.transaction() as conn:
@@ -238,18 +252,32 @@ class VideoStore:
                     and episode+cost <= self.settings.video_episode_credit_limit)
 
     def save(self, job, state, **values):
-        allowed = {"plan", "review", "artifacts", "artifact_digest", "youtube_id", "upload_session", "error"}
+        allowed = {"plan", "review", "artifacts", "artifact_digest", "youtube_id", "upload_session", "error", "qa"}
         if not values.keys() <= allowed:
             raise ValueError("Unknown video update")
         assignments = ["state=%s", "lease_until=NULL", "updated_at=now()"]
         parameters = [state]
         for key, value in values.items():
             assignments.append(key + "=%s")
-            parameters.append(Jsonb(value) if key in {"plan", "review", "artifacts"} else value)
+            parameters.append(Jsonb(value) if key in {"plan", "review", "artifacts", "qa"} else value)
         with self.db.transaction() as conn:
             result = conn.execute("UPDATE video_jobs SET " + ",".join(assignments) + " WHERE id=%s AND state=%s",
                                   (*parameters, job["id"], job["state"]))
             if not result.rowcount:
+                raise PolicyError("Video changed while processing")
+
+    def take_key(self, job, index, request):
+        """The first take keeps 'speech-N'; a changed text (rewrite or retake) gets its own key, never a reused one."""
+        base = f'speech-{index}'
+        with self.db.transaction() as conn:
+            row = conn.execute('SELECT request_digest FROM video_effects WHERE id=%s', (f"{job['id']}:{base}",)).fetchone()
+        return base if not row or row['request_digest'] == digest(request) else f'{base}-{digest(request)[:12]}'
+
+    def update_qa(self, job, qa):
+        """Record attempt bookkeeping mid-tick without releasing the lease or changing the state."""
+        with self.db.transaction() as conn:
+            if not conn.execute('UPDATE video_jobs SET qa=%s,updated_at=now() WHERE id=%s AND state=%s',
+                                (Jsonb(qa), job['id'], job['state'])).rowcount:
                 raise PolicyError("Video changed while processing")
 
     def checkpoint(self, job, **values):
@@ -269,10 +297,14 @@ class VideoStore:
                     raise PolicyError("Effect input changed")
                 if old["state"] == "completed":
                     return old["receipt"]
+                if old['state'] == 'running' and old['kind'] == 'model':
+                    # claude-runtime keys each turn by request ID: it returns the finished result, reports the turn as
+                    # still running, or refuses an orphaned one. Asking again can never start a second inference.
+                    return None
                 if old['state'] != 'rejected':
                     raise UncertainEffect(identity)
-            if utcnow() >= job['publish_deadline']:
-                raise PolicyError('Video effect deadline expired')
+            if key == 'publish' and utcnow() >= job['publish_deadline']:
+                raise PolicyError('Public release approval expired')
             if cost:
                 spent = conn.execute("""SELECT COALESCE(sum(credits),0) AS n FROM video_effects
                     WHERE created_at >= date_trunc('month',now() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul'
@@ -307,9 +339,29 @@ class VideoStore:
                 conn.execute('UPDATE daily_usage SET reserved=GREATEST(0,reserved-1) WHERE day=%s::date',
                              (row['created_at'],))
 
+    def fail_effect(self, job, key, receipt):
+        """The runtime finished the turn without a usable output (contract failure or process limit): a definitive,
+        executed attempt. The next attempt uses a new key, so this one is never sent again."""
+        with self.db.transaction() as conn:
+            conn.execute("""UPDATE video_effects SET state='failed',receipt=%s,completed_at=now()
+                WHERE id=%s AND kind='model' AND state='running'""", (Jsonb(receipt), str(job['id']) + ':' + key))
+
+    def effect_receipt(self, job, key, state):
+        with self.db.transaction() as conn:
+            row = conn.execute('SELECT receipt FROM video_effects WHERE id=%s AND state=%s',
+                               (str(job['id']) + ':' + key, state)).fetchone()
+        return row['receipt'] if row else None
+
+    def wait(self, job, seconds, reason):
+        """Check back later without changing the stage (e.g. a render still running in this worker)."""
+        self.save(job, job['state'], error=reason)
+        with self.db.transaction() as conn:
+            conn.execute('UPDATE video_jobs SET lease_until=%s WHERE id=%s AND state=%s',
+                         (datetime.now(UTC) + timedelta(seconds=seconds), job['id'], job['state']))
+
     def defer(self, job, seconds, code='busy'):
-        # A subscription window may reopen later; the publish deadline still expires the job.
-        ceiling = 900 if code == 'quota' else 60
+        # A subscription window may reopen later; production waits for it however late it gets.
+        ceiling = 900 if code in {'quota', 'unavailable'} else 60
         self.save(job, job['state'], error='model_'+code)
         with self.db.transaction() as conn:
             conn.execute('UPDATE video_jobs SET lease_until=%s WHERE id=%s AND state=%s',
@@ -381,9 +433,9 @@ class VideoStore:
             conn.execute('SELECT pg_advisory_xact_lock(%s)', (LOCK,))
             jobs = conn.execute("""SELECT * FROM video_jobs
                 WHERE COALESCE((policy->>'review_target')::timestamptz, publish_deadline-interval '30 minutes')<=%s
-                AND publish_deadline>%s AND state NOT IN ('published','awaiting_approval','held','superseded','expired',
+                AND state NOT IN ('published','awaiting_approval','held','superseded','expired',
                 'delivering','delivered','delivery_failed','delivery_uncertain')""",
-                                (utcnow(), utcnow())).fetchall()
+                                (utcnow(),)).fetchall()
             for job in jobs:
                 mid = stable('video-late:'+str(job['edition_id']))
                 if not self.allowed(job) or conn.execute('SELECT 1 FROM messages WHERE id=%s', (mid,)).fetchone():
@@ -392,7 +444,7 @@ class VideoStore:
                 if project['thread_ts'] and project['status'] == 'active':
                     target = datetime.fromisoformat(job['policy'].get('review_target') or
                                                     (job['publish_deadline'] - timedelta(minutes=30)).isoformat()).astimezone(KST)
-                    ending = (f"{job['publish_deadline'].astimezone(KST):%H:%M} KST까지 완성되지 않으면 이 회차 제작을 멈춥니다."
+                    ending = ('늦어지더라도 제작을 계속하며, 완성되면 이 스레드에 영상 파일을 올립니다.'
                               if job['policy'].get('delivery', 'youtube') == 'slack' else
                               '준비되면 비공개 영상 링크를 전달합니다. '
                               f"{job['publish_deadline'].astimezone(KST):%H:%M} KST 이후에는 일반 공개 승인이 만료됩니다.")
@@ -456,7 +508,7 @@ class VideoStore:
         with self.db.transaction() as conn:
             conn.execute('SELECT pg_advisory_xact_lock(%s)', (LOCK,))
             current = conn.execute('SELECT * FROM video_jobs WHERE id=%s FOR UPDATE', (job['id'],)).fetchone()
-            if current['state'] not in {'rendering', 'delivery_failed'}:
+            if current['state'] not in {'rendering', 'inspecting', 'delivery_failed'}:
                 raise PolicyError('Video changed while processing')
             project = self.company._project(conn, current['source']['project_id'])
             if not project['thread_ts'] or project['status'] != 'active':

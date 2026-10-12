@@ -63,8 +63,10 @@ from .editor import (
 from .execution import (
     COMPOSE_SECONDS,
     EXECUTION_VERSION,
+    FINAL_MINUTES,
     FRAGMENT_INVENTORY_SECONDS,
     PHASE_SECONDS,
+    final_at,
     has_runway,
     output_contract,
     phase_deadline,
@@ -74,14 +76,16 @@ from .inventory import INVENTORY, compose, freeze_inventory, inventory_model, in
 from .planning import PLAN, apply_plan, plan_prompt
 from .quality import reconcile
 from .quotations import QUOTE_REFERENCE_VERSION
+from .repair import repair_prompt, retry_note
 
 LOCK = 71350241
 TERMINAL = {"committed", "previewed", "missed", "stale"}
-# A completed turn whose output failed the contract or the server checks gets one more attempt of the same
-# phase while the shared deadline has room for it. Uncertain and timed-out turns still require
-# reconciliation before any replacement; their edition ships its salvaged body at due (see flush).
-RETRYABLE_FAULTS = {"invalid_brief_response", "invalid_output"}
-MAX_PHASE_ATTEMPTS = 2
+# Owner rule (2026-10-12, repair.py): a phase whose turn produced no accepted draft is asked again, under a new
+# attempt ID, while the edition's final time (execution.final_at) leaves room. A rejected draft is repaired: the retry
+# carries it with the rule it broke. An uncertain or timed-out turn keeps its receipt and is never replayed; the next
+# attempt is a new request. The runtime accepts -r1..-r9, so a phase has at most ten attempts.
+RETRYABLE_FAULTS = {"invalid_brief_response", "invalid_output", "uncertain", "timeout"}
+MAX_PHASE_ATTEMPTS = 10
 
 
 class BriefStore:
@@ -321,9 +325,9 @@ class BriefStore:
             if conn.execute("SELECT 1 FROM runtime_control WHERE paused_until>%s", (at,)).fetchone():
                 return {"state": "defer"}
             query = """SELECT * FROM brief_editions WHERE state IN ('collecting','planning','inventorying','writing','reviewing','revising','final_reviewing')
-                AND committed_at IS NULL AND policy_digest=%s AND due_at+interval '10 minutes'>%s
+                AND committed_at IS NULL AND policy_digest=%s AND due_at+make_interval(mins => %s)>%s
                 """
-            parameters = (policy, at)
+            parameters = (policy, FINAL_MINUTES, at)
             if selected := self.company.settings.briefing_evaluation_ids:
                 query += ' AND id=ANY(%s::uuid[])'
                 parameters += (selected,)
@@ -379,7 +383,7 @@ class BriefStore:
                             bundle['pre_review_source_notes_violations'] = exc.violations
                         else:
                             repair = (self.company.settings.briefing_max_revisions > 0 and phase == 'review'
-                                      and at+timedelta(seconds=PHASE_SECONDS['revise']+PHASE_SECONDS['review']+60) < row['due_at']+timedelta(minutes=10)
+                                      and at+timedelta(seconds=PHASE_SECONDS['revise']+PHASE_SECONDS['review']+60) < final_at(row['due_at'])
                                       and not conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='revise'",
                                                            (row['id'],)).fetchone())
                             if repair:
@@ -420,10 +424,17 @@ class BriefStore:
                                 inventory_prompt(bundle) if phase == "inventory" else
                                 prompt(bundle, phase, row["proposal"] if phase in {"review", "final_review"} else None,
                                        direct_output=True))
-            previous = conn.execute("SELECT state FROM brief_calls WHERE edition_id=%s AND phase=%s ORDER BY attempt",
+            previous = conn.execute("SELECT state,result FROM brief_calls WHERE edition_id=%s AND phase=%s ORDER BY attempt",
                                     (row["id"], phase)).fetchall()
             if previous and (len(previous) >= MAX_PHASE_ATTEMPTS or previous[-1]["state"] != "retry"):
                 return {"state": "blocked", "reason": "phase_already_attempted"}
+            last = (previous[-1]["result"] or {}) if previous else {}
+            rejected = last.get("rejected")
+            repair = repair_prompt(bundle, phase, last.get("draft"), rejected, last.get("detail")) if rejected else None
+            if repair:
+                model_prompt = repair
+            elif rejected and len(model_prompt) + len(retry_note(rejected)) <= 90000:  # ProviderRequest prompt limit
+                model_prompt += retry_note(rejected)
             attempt = len(previous)
             identity = f"news-brief-{row['id']}-{phase}" + (f"-r{attempt}" if attempt else "")
             conn.execute("INSERT INTO daily_usage(day,reserved) VALUES(CURRENT_DATE,0) ON CONFLICT DO NOTHING")
@@ -487,7 +498,7 @@ class BriefStore:
                 return {"state": call["state"], "duplicate": True}
             row = conn.execute("SELECT * FROM brief_editions WHERE id=%s FOR UPDATE", (call["edition_id"],)).fetchone()
             if (not self.authorized() or row["policy_digest"] != self.policy() or row["committed_at"]
-                    or row["due_at"]+timedelta(minutes=10) <= at
+                    or final_at(row["due_at"]) <= at
                     or call["state"] != "running" or row["state"] in TERMINAL):
                 conn.execute("UPDATE brief_calls SET state='stale',response=%s,completed_at=%s WHERE id=%s",
                              (Jsonb(body), at, call["id"]))
@@ -583,8 +594,19 @@ class BriefStore:
                     try:
                         prompt(revised_bundle, "revise")
                     except ValueError as exc:
-                        repair = False
-                        quality["repair_skipped"] = str(exc)
+                        # A full revision over the input limit becomes a patch of the reviewed problems (owner rule
+                        # 2026-10-12: fix only what is wrong); server-rejected items stay out of the draft.
+                        patched = revision_bundle(row["bundle"], row["proposal"], review, rejected, patch_rejected=True)
+                        try:
+                            if (patched["revision_feedback"]["repair_mode"]
+                                    == revised_bundle["revision_feedback"]["repair_mode"]):
+                                raise exc
+                            prompt(patched, "revise")
+                            revised_bundle = patched
+                            quality["repair_patch_fallback"] = str(exc)
+                        except ValueError as again:
+                            repair = False
+                            quality["repair_skipped"] = str(again)
                 if repair:
                     conn.execute("UPDATE brief_editions SET state='revising',bundle=%s,review=%s,quality=%s WHERE id=%s",
                                  (Jsonb(revised_bundle), Jsonb(result), Jsonb(quality), row["id"]))
@@ -602,7 +624,7 @@ class BriefStore:
                          (Jsonb(body), Jsonb(result), at, call["id"]))
             return {"state": "completed", "phase": call["phase"]}
 
-    def fault(self, identity, code, seconds=0):
+    def fault(self, identity, code, seconds=0, rejected=None, draft=None, detail=None):
         at = schedule.utcnow()
         with self.db.transaction() as conn:
             row = conn.execute("SELECT edition_id,phase,attempt FROM brief_calls WHERE id=%s AND state='running' FOR UPDATE",
@@ -616,8 +638,12 @@ class BriefStore:
             elif (code in RETRYABLE_FAULTS and row["attempt"]+1 < MAX_PHASE_ATTEMPTS and row["phase"] != "search"
                   and not edition["committed_at"] and edition["state"] not in TERMINAL | {"blocked", "ready"}
                   and has_runway(row["phase"], edition["bundle"] or {}, at, edition["due_at"])):
-                # The edition keeps its phase state; the next prepare issues the same phase as attempt+1.
-                conn.execute("UPDATE brief_calls SET state='retry',error=%s,completed_at=%s WHERE id=%s", (code, at, identity))
+                # The edition keeps its phase state; the next prepare issues the same phase as attempt+1. The fixed
+                # server-check label and the rejected draft are kept so the retry repairs only what was wrong.
+                result = ({"rejected": rejected, **({"draft": draft} if draft else {}),
+                           **({"detail": detail} if detail else {})} if rejected else None)
+                conn.execute("UPDATE brief_calls SET state='retry',error=%s,completed_at=%s,result=%s WHERE id=%s",
+                             (code, at, Jsonb(result) if result else None, identity))
                 self.company._event(conn, "briefing_phase_retry", {"edition_id": str(row["edition_id"]),
                                                                    "phase": row["phase"], "error": code})
             else:
@@ -639,7 +665,7 @@ class BriefStore:
                 WHERE committed_at IS NULL AND state NOT IN ('missed','stale') AND expires_at<=%s""", (at,))
             conn.execute("""UPDATE brief_calls c SET state='unresolved',error=COALESCE(c.error,'edition_window_closed')
                 FROM brief_editions e WHERE e.id=c.edition_id AND c.state='running'
-                AND (e.state IN ('missed','stale') OR e.due_at+interval '10 minutes'<=%s)""", (at,))
+                AND (e.state IN ('missed','stale') OR e.due_at+make_interval(mins => %s)<=%s)""", (FINAL_MINUTES, at))
             # v7 (AM) and v8 (PM): a ready edition is posted once its cutoff has passed, without waiting for due.
             early = [*(["am"] if self.company.settings.briefing_us_close_enabled else []),
                      *(["pm"] if self.company.settings.briefing_kr_close_enabled else [])]
@@ -647,14 +673,14 @@ class BriefStore:
                 rows = conn.execute("""SELECT * FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
                     AND state NOT IN ('missed','stale') AND expires_at>%s
                     AND ((state='ready' AND (due_at<=%s OR (kind=ANY(%s) AND cutoff<=%s)))
-                         OR (state='blocked' AND due_at<=%s) OR due_at+interval '10 minutes'<=%s)
-                    ORDER BY due_at FOR UPDATE""", (policy, at, at, early, at, at, at)).fetchall()
+                         OR (state='blocked' AND due_at<=%s) OR due_at+make_interval(mins => %s)<=%s)
+                    ORDER BY due_at FOR UPDATE""", (policy, at, at, early, at, at, FINAL_MINUTES, at)).fetchall()
             else:
                 # A blocked edition has nothing left to wait for, so it ships at due like a ready one.
                 rows = conn.execute("""SELECT * FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
                     AND state NOT IN ('missed','stale') AND due_at<=%s AND expires_at>%s
-                    AND (state IN ('ready','blocked') OR due_at+interval '10 minutes'<=%s) ORDER BY due_at FOR UPDATE""",
-                                    (policy, at, at, at)).fetchall()
+                    AND (state IN ('ready','blocked') OR due_at+make_interval(mins => %s)<=%s) ORDER BY due_at FOR UPDATE""",
+                                    (policy, at, at, FINAL_MINUTES, at)).fetchall()
             for row in rows:
                 if row["state"] != "ready" and row["publish"]:
                     bundle = self._freeze(conn, row)
@@ -753,7 +779,7 @@ class BriefStore:
                                 "WHERE id=ANY(%s::uuid[])", (ids,)).fetchall()
         if (len(rows) != len(ids) or any(row['policy_digest'] != policy for row in rows)
                 or any(not row['committed_at'] and row['state'] not in {'missed', 'stale'} for row in rows)
-                or max(row['due_at'] for row in rows)+timedelta(minutes=10) > at):
+                or final_at(max(row['due_at'] for row in rows)) > at):
             return
         from .qualification import qualify
 
@@ -839,4 +865,6 @@ def priority_pending(company):
     with company.db.transaction() as conn:
         return bool(conn.execute("""SELECT 1 FROM brief_editions WHERE policy_digest=%s AND committed_at IS NULL
             AND state IN ('collecting','planning','inventorying','writing','reviewing','revising','final_reviewing') AND due_at>=%s AND due_at<=%s LIMIT 1""",
+                                 # News yields the shared model lane only until due+10: a repair that runs on toward the
+                                 # final time (execution.final_at) does not hold news back for that long.
                                  (policy, at-timedelta(minutes=10), at+timedelta(minutes=lead))).fetchone())

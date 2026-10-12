@@ -22,6 +22,35 @@ def spoken(text):
     return text
 
 
+SINO_WORDS = '영일이삼사오육칠팔구'
+
+
+def sino_integer(number):
+    """Sino-Korean reading: 2500 -> 이천오백, 10000 -> 만, 64692 -> 육만사천육백구십이."""
+    if number == 0:
+        return '영'
+    parts, group_index = [], 0
+    while number:
+        group = number % 10000
+        if group:
+            words = ''.join(('' if digit == 1 and name else SINO_WORDS[digit]) + name
+                            for value, name in ((1000, '천'), (100, '백'), (10, '십'), (1, ''))
+                            if (digit := group // value % 10))
+            parts.append(('' if group == 1 and group_index == 1 else words) + ('', '만', '억', '조', '경')[group_index])
+        number, group_index = number // 10000, group_index + 1
+    return ''.join(reversed(parts))
+
+
+def korean_numbers(text):
+    """Retake wording: every Arabic number read out in Korean words (5.24% -> 오 점 이사 퍼센트, 6월 -> 유월)."""
+    text = re.sub(r'(?<![\d.])(6|10)\s*월', lambda m: ('유' if m.group(1) == '6' else '시') + '월', text)
+
+    def number(match):
+        words = sino_integer(int(match.group(1).replace(',', '')))
+        return words + (' 점 ' + ''.join(SINO_WORDS[int(d)] for d in match.group(2)) if match.group(2) else '')
+    return spoken(re.sub(r'(?<![\d.])(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d+))?', number, text))
+
+
 def normalized(text):
     return re.sub(r"[^가-힣a-z0-9]", "", spoken(text).lower())
 
@@ -67,7 +96,7 @@ def probe(path, settings):
              "height": getattr(s.codec_context, "height", None)} for s in media.streams]}
 
 
-def quality_probe(path, settings):
+def quality_probe(path, settings, strict=True):
     result = subprocess.run([settings.video_ffmpeg, '-hide_banner', '-nostats', '-i', str(path),
         '-vf', 'blackdetect=d=0.3:pic_th=0.98:pix_th=0.10',
         '-af', 'silencedetect=n=-40dB:d=2.5,loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json',
@@ -77,11 +106,16 @@ def quality_probe(path, settings):
     if result.returncode or not matches:
         raise ValueError('Final audio quality measurement failed')
     levels = json.loads(matches[-1])
-    if (not -22 <= float(levels['input_i']) <= -10 or float(levels['input_tp']) > -.5
-            or 'black_start:' in report or 'silence_start:' in report):
+    findings = [name for name, failed in (
+        (f"Integrated loudness {float(levels['input_i']):.1f} LUFS outside -22..-10", not -22 <= float(levels['input_i']) <= -10),
+        (f"True peak {float(levels['input_tp']):.1f} dBTP above -0.5", float(levels['input_tp']) > -.5),
+        ('Black frames detected', 'black_start:' in report), ('Silence of 2.5 s or longer detected', 'silence_start:' in report))
+        if failed]
+    if findings and strict:
         raise ValueError('Black frame, long silence or loudness check failed')
-    return {'integrated_lufs': float(levels['input_i']), 'true_peak_dbfs': float(levels['input_tp']),
-            'black_frames': False, 'long_silence': False}
+    result = {'integrated_lufs': float(levels['input_i']), 'true_peak_dbfs': float(levels['input_tp']),
+              'black_frames': 'black_start:' in report, 'long_silence': 'silence_start:' in report}
+    return result if strict else {**result, 'findings': findings}
 
 
 def document(heading, lines, cutoff, *, thumbnail=False):
@@ -127,24 +161,31 @@ def spoken_numbers_heard(expected, transcript):
     return all(any(g == w for g in got) for w in want)
 
 
+class RenderInProgress(RuntimeError):
+    """Another render (a thread left by an interrupted tick) still holds this attempt directory."""
+
+
 class Aligner:
-    def __init__(self, model):
-        self.model_name, self.model = model, None
+    def __init__(self, model, threads=2):
+        self.model_name, self.threads, self.model = model, threads, None
 
     def align(self, audio, expected):
         from faster_whisper import WhisperModel
 
         if self.model is None:
-            self.model = WhisperModel(self.model_name, device="cpu", compute_type="int8", cpu_threads=2)
+            self.model = WhisperModel(self.model_name, device="cpu", compute_type="int8", cpu_threads=self.threads)
         segments, _ = self.model.transcribe(str(audio), language="ko", word_timestamps=True,
                                            initial_prompt='한국어 브리핑. '+' '.join(PRONUNCIATIONS.values()),
                                            beam_size=5, vad_filter=True)
         segments = list(segments)
         transcript = " ".join(s.text for s in segments)
-        if SequenceMatcher(None, normalized(expected), normalized(transcript)).ratio() < .82:
-            raise ValueError("Narration transcription differs from script; hold for listening review")
+        # Findings for the listening review and retakes; the episode is still produced (owner decision 2026-10-12).
+        findings = []
+        similarity = SequenceMatcher(None, normalized(korean_numbers(expected)), normalized(korean_numbers(transcript))).ratio()
+        if similarity < .82:
+            findings.append(f"Narration transcription differs from script (similarity {similarity:.2f})")
         if not spoken_numbers_heard(expected, transcript):
-            raise ValueError("Spoken numbers could not be verified; hold for listening review")
+            findings.append("Spoken numbers could not be verified in the transcription")
         cues = []
         for segment in segments:
             words = segment.words or []
@@ -158,13 +199,14 @@ class Aligner:
         if not cues:
             raise ValueError("No real speech timestamps")
         words = [{"word": w.word, "start": w.start, "end": w.end} for s in segments for w in (s.words or [])]
-        return {"transcript": transcript, "cues": cues, "words": words, "method": "faster-whisper-word-timestamps"}
+        return {"transcript": transcript, "cues": cues, "words": words, "method": "faster-whisper-word-timestamps",
+                "findings": findings}
 
 
 class Renderer:
     def __init__(self, settings, aligner=None):
         self.settings = settings
-        self.aligner = aligner or Aligner(settings.video_alignment_model)
+        self.aligner = aligner or Aligner(settings.video_alignment_model, settings.video_alignment_threads)
 
     def render(self, job, plan, directory, audio_paths):
         from playwright.sync_api import sync_playwright

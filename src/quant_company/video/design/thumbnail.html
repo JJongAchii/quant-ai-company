@@ -9,6 +9,10 @@ background:radial-gradient(ellipse 80% 70% at 35% 45%,#0A2A63 0%,#011A43 55%,#00
 .q b{color:#FDC749}.n{position:absolute;left:60px;top:440px;font-size:40px;font-weight:700;color:#FCF1DB}.n.up{color:#FF5C6C}.n.dn{color:#5EA0FF}
 .bar{position:absolute;left:0;right:0;bottom:0;height:100px;background:#00112E;border-top:3px solid #FDC749;display:flex;align-items:center;padding:0 56px;gap:16px;font-size:34px;font-weight:800}
 .bar img{height:58px}.bar span{color:#FDC749;font-weight:700;font-size:30px}.s{margin-left:auto;font-size:22px;color:#FF9FB0;font-weight:700}
+/* Watched-progress strip along the bottom edge, styled like YouTube's resume bar (owner request 2026-10-12). */
+.resume{position:absolute;left:0;right:0;bottom:0;height:12px;background:rgba(255,255,255,.45);z-index:5}
+.resume i{display:block;height:100%;width:50%;background:#FF0000}
 </style><div class="img"></div><div class="badge">{{date}}</div>
 <div class="q">{{question}}</div><div class="n {{stat_dir}}">{{stat}}</div>
-<div class="bar"><img src="logo_mark.png">뭐든story<span>아침 시장 브리핑</span><div class="s">{{mark}}</div></div></html>
+<div class="bar"><img src="logo_mark.png">뭐든story<span>{{brand}}</span><div class="s">{{mark}}</div></div>
+<div class="resume"><i></i></div></html>

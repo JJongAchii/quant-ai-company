@@ -13,6 +13,7 @@ from quant_company.briefing.editor import (
     source_notes_revision_bundle,
     validate_source_notes,
 )
+from quant_company.briefing.execution import final_at
 from quant_company.briefing.qualification import qualify, replay
 
 from .test_briefing import brief, definition, response, review, seed  # noqa: F401
@@ -146,7 +147,7 @@ def test_real_postgres_no_patch_without_time_or_authorized_budget(brief):  # noq
         conn.execute('UPDATE brief_editions SET bundle=%s WHERE id=%s', (Jsonb(b), edition.id))
     first = store.prepare()
     store.commit(response(first['request'], p))
-    clock['at'] = edition.due_at
+    clock['at'] = final_at(edition.due_at)-timedelta(minutes=5)
     assert store.prepare()['state'] == 'blocked'
     with store.db.transaction() as conn:
         assert conn.execute('SELECT count(*) AS n FROM brief_calls WHERE edition_id=%s',
@@ -299,7 +300,7 @@ def test_unresolved_mapping_ships_a_reduced_body_when_no_repair_time_remains(bri
         conn.execute('UPDATE brief_editions SET bundle=%s WHERE id=%s', (Jsonb(b), edition.id))
     store.commit(response(store.prepare()['request'], p))
     critic = store.prepare()
-    clock['at'] = edition.due_at
+    clock['at'] = final_at(edition.due_at)-timedelta(minutes=5)
     store.commit(response(critic['request'], review()))
     with store.db.transaction() as conn:
         row = conn.execute('SELECT * FROM brief_editions WHERE id=%s', (edition.id,)).fetchone()

@@ -21,11 +21,13 @@ dependencies = [
 lake = ["qdata[s3]"]
 video = [
     "av>=12,<19",
+    "boto3>=1.35,<2",
     "cryptography>=44,<47 ; platform_machine == 'x86_64' and sys_platform == 'darwin'",
     "faster-whisper>=1.2,<2",
     "google-auth-oauthlib>=1.2,<2",
     "mcp>=1.20,<2",
     "onnxruntime>=1.18,<1.20 ; platform_machine == 'x86_64' and sys_platform == 'darwin'",
+    "pillow>=11,<13",  # story photos are framed 16:9 (video/photos.py)
     "playwright>=1.55,<2",
 ]
 

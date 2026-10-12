@@ -249,13 +249,16 @@ def test_real_postgres_switch_on_ready_pm_still_waits_for_due(switched):
     assert store.flush()["committed"] == 1
 
 
-def test_real_postgres_switch_on_deadline_fallback_stays_at_due_plus_ten_minutes(switched):
+def test_real_postgres_switch_on_deadline_fallback_waits_for_the_final_time(switched):
+    """The work window ends at final_at(due) = 10 minutes before expiry (owner, 2026-10-12); before: due+10."""
+    from quant_company.briefing.execution import final_at
+
     store, clock = switched
     edition = seeded(switched, v7(), close_report(v7()))
-    clock["at"] = edition.due_at+timedelta(minutes=9)
+    clock["at"] = final_at(edition.due_at)-timedelta(minutes=1)
     store.flush()
     assert stored(store, edition.id)["committed_at"] is None
-    clock["at"] = edition.due_at+timedelta(minutes=10)
+    clock["at"] = final_at(edition.due_at)
     assert store.flush()["committed"] == 1
 
 

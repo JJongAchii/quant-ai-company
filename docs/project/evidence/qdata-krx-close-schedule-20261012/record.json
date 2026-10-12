@@ -1,0 +1,46 @@
+{
+  "record": "qdata-krx-close-schedule-20261012",
+  "owner_request": "qdata 에서 가격 데이터 등 필요한 데이터 소스들은 장 마감 직후로 수집하는 걸로 시간 변경한걸로 했는데 적용이 안됐구나? 수집 시간을 앞당기는 걸로 해줘. / 응 권한줄게",
+  "finding": {
+    "pm_editions": "10-07, 10-08 and 10-12 PM editions all shipped reduced with missing_core [kosdaq, kospi]: PM core numbers come only from the krx_close_* snapshot, which never existed in the lake",
+    "why": "the regular-session close snapshot (qdata krx close, 15:31-15:59 KST) was built on 2026-10-08 as qdata PR #48 but stayed unmerged, and its EventBridge start rule was never created; the regular KRX collection runs at 19:00 KST and refuses same-day data before 18:00",
+    "local_only": "branch feat/krx-after-market (ADR-0027 after-market settlement at 20:00 and Yahoo close repair) exists only on the owner's Mac, not pushed"
+  },
+  "actions": {
+    "pr_48": {
+      "merged_at": "2026-10-12T10:16:53Z",
+      "merge_commit": "0d7e41234610cdb229d1c4002ade257f629670ab",
+      "checks": "lint-test SUCCESS, mergeable",
+      "approval": "owner granted permission after the first merge attempt was blocked by the session's permission classifier"
+    },
+    "schedules_created_disabled": [
+      {
+        "name": "qdata-collector-krx-close-start",
+        "expression": "cron(40 15 ? * MON-FRI *)",
+        "timezone": "Asia/Seoul",
+        "target": "ec2:startInstances i-09340ef564f41eb42",
+        "role": "qdata-scheduler",
+        "state": "DISABLED"
+      },
+      {
+        "name": "qdata-collector-krx-close-failsafe-stop",
+        "expression": "cron(20 16 ? * MON-FRI *)",
+        "timezone": "Asia/Seoul",
+        "target": "ec2:stopInstances i-09340ef564f41eb42",
+        "role": "qdata-scheduler",
+        "state": "DISABLED"
+      }
+    ],
+    "existing_rules_untouched": [
+      "qdata-collector-start 19:00",
+      "qdata-collector-start-morning 09:00",
+      "qdata-collector-failsafe-stop 20:40",
+      "qdata-collector-failsafe-stop-morning 10:40"
+    ],
+    "why_disabled": "docs/requests/2026-10-08-krx-close-schedule.md: enable only after a regular run pulled the new run_pipeline.sh; with the old script a 15:40 boot would run the full pipeline. The 19:00 run on 2026-10-12 had pulled 050433a before the merge (verified read-only over SSM).",
+    "next": "2026-10-13 09:12 KST: verify over SSM that /opt/qdata/quant-data contains 0d7e412, then enable both rules; 16:08 KST: verify the first krx_close run (mode=krx_close OK=1, five raw files, three clean datasets) and the PM edition's KOSPI/KOSDAQ close (session reminders scheduled in the operator session)"
+  },
+  "briefing_read_timing": "the briefing data worker re-reads market data every 5 minutes until the PM cutoff (16:10), so a snapshot published around 15:57 is read at 16:00 or 16:05",
+  "today": "the 2026-10-12 regular-session snapshot cannot be taken after 16:00 (after-hours trades overwrite the close fields), so today's PM edition is not reissued with stock-level regular closes",
+  "side_note": "the 2026-10-12 09:00 qdata run ended OK=0: 'KRX 수집 실패 (재시도 소진): stock_master/KOSPI/20261012' (qdata data step, after the repository update)"
+}

@@ -159,6 +159,9 @@ def test_flush_transaction_freezes_source_and_enqueues_once(brief, video):  # no
     assert job['source_digest'] == digest(job['source'])
     assert job['state'] == 'queued'
     assert job['policy']['workspace_id'] == 123
+    assert job['policy']['model'] == 'claude-opus-5-5' and job['policy']['effort'] == 'xhigh'
+    assert job['policy']['review_effort'] == 'max'
+    assert job['policy']['speech_model'] == 'eleven_v4'
     brief[0].flush()
     with store.db.transaction() as conn:
         assert conn.execute('SELECT count(*) AS n FROM video_jobs').fetchone()['n'] == 1
@@ -187,7 +190,7 @@ def test_video_enqueue_failure_never_holds_back_the_brief(brief, video, monkeypa
     assert '서버 오류' in text and '본문은 그대로 발송' in text and '대체 공지' not in text
 
 
-@pytest.mark.parametrize('change', ['preview', 'unknown_kind', 'unreviewed', 'unknown_quality', 'fallback', 'draft', 'late', 'disabled'])
+@pytest.mark.parametrize('change', ['preview', 'unknown_kind', 'unreviewed', 'unknown_quality', 'fallback', 'draft', 'disabled'])
 def test_ineligible_briefs_never_enqueue(brief, video, change):  # noqa: F811
     store, clock = video
     job = new_job(brief, video)
@@ -208,11 +211,21 @@ def test_ineligible_briefs_never_enqueue(brief, video, change):  # noqa: F811
             edition['quality'] = {**edition['quality'], 'fallback': 'deadline', 'substantive': False}
         elif change == 'draft':
             edition['quality']['unreviewed_draft_preserved'] = True
-        elif change == 'late':
-            clock['at'] = job['publish_deadline']
         elif change == 'disabled':
             store.settings.video_enabled = False
         assert store.enqueue(conn, edition, clock['at']) is None
+
+
+def test_late_brief_still_enqueues_a_video(brief, video):  # noqa: F811
+    from datetime import timedelta
+
+    store, _ = video
+    job = new_job(brief, video)
+    with store.db.transaction() as conn:
+        conn.execute('DELETE FROM video_jobs')
+        edition = conn.execute('SELECT * FROM brief_editions WHERE id=%s', (job['edition_id'],)).fetchone()
+        edition['state'] = 'ready'
+        assert store.enqueue(conn, edition, job['publish_deadline'] + timedelta(hours=3)) == str(job['id'])
 
 
 def test_receipts_concurrency_cost_reservation_and_no_uncertain_replay(brief, video):  # noqa: F811
@@ -351,13 +364,29 @@ async def test_slack_review_receipt_and_expiry_gate(brief, video):  # noqa: F811
     assert len(sent) == 1
 
 
-def test_deadline_stops_spending_and_preserves_unknown_charge(brief, video):  # noqa: F811
+def test_deadline_never_stops_production_or_replays_unknown_charge(brief, video):  # noqa: F811
+    from datetime import timedelta
+
     store, clock = video
     job = new_job(brief, video)
     store.begin_effect(job, 'speech-0', {}, 'speech', 1)
+    clock['at'] = job['publish_deadline'] + timedelta(hours=2)
+    claimed = store.claim()
+    assert claimed and claimed['id'] == job['id'] and claimed['state'] == 'queued'
+    with pytest.raises(UncertainEffect):
+        store.begin_effect(claimed, 'speech-0', {}, 'speech', 1)
+    assert store.begin_effect(claimed, 'speech-1', {}, 'speech', 1) is None
+
+
+def test_deadline_still_expires_public_release_approval(brief, video):  # noqa: F811
+    store, clock = video
+    job = new_job(brief, video)
+    store.save(job, 'awaiting_approval')
     clock['at'] = job['publish_deadline']
     assert store.claim() is None
-    assert store.get(job['id'])['state'] == 'uncertain'
+    assert store.get(job['id'])['state'] == 'expired'
+    with pytest.raises(PolicyError, match='expired'):
+        store.begin_effect(job, 'publish', {}, 'youtube-write')
 
 
 class SimulatedProvider:
@@ -502,7 +531,7 @@ async def test_busy_before_execution_refunds_allowance_and_defers_same_request(b
     provider = SimulatedProvider()
     assert (await VideoRunner(store.company, provider=provider).tick())['state'] == 'reviewing'
     assert provider.calls[0].request_id == f"video-{job['id']}-plan"
-    assert provider.calls[0].model == 'claude-opus-5' and provider.calls[0].output_contract == 'video_plan_v1'
+    assert provider.calls[0].model == 'claude-opus-5-5' and provider.calls[0].output_contract == 'video_plan_v1'
 
 
 async def test_claude_quota_before_execution_defers_without_spending_allowance(brief, video):  # noqa: F811
@@ -573,7 +602,7 @@ def test_reconcile_public_receipt_requires_prior_human_approval(brief, video):  
     assert store.get(job['id'])['approved_by'] == 'UHUMAN'
 
 
-def test_safe_retry_cannot_repeat_uncertain_charge_or_expired_work(brief, video):  # noqa: F811
+def test_safe_retry_cannot_repeat_uncertain_charge_and_continues_after_deadline(brief, video):  # noqa: F811
     from quant_company.video.recovery import retry
 
     store, clock = video
@@ -587,8 +616,7 @@ def test_safe_retry_cannot_repeat_uncertain_charge_or_expired_work(brief, video)
     job = store.get(job['id'])
     store.save(job, 'blocked', error='video_stage_failed:rendering')
     clock['at'] = job['publish_deadline']
-    with pytest.raises(PolicyError):
-        retry(store, str(job['id']), '기존 음성 생성 task와 로컬 렌더 환경을 확인한 복구 기록')
+    assert retry(store, str(job['id']), '기존 음성 생성 task와 로컬 렌더 환경을 확인한 복구 기록')['state'] == 'rendering'
 
 
 def test_0830_delay_status_is_once_per_edition(brief, video):  # noqa: F811
@@ -603,6 +631,21 @@ def test_0830_delay_status_is_once_per_edition(brief, video):  # noqa: F811
     store.late_notices()
     with store.db.transaction() as conn:
         assert conn.execute("SELECT count(*) AS n FROM messages WHERE kind='video_status'").fetchone()['n'] == 1
+
+
+def test_late_status_promises_delivery_instead_of_a_stop(brief, video):  # noqa: F811
+    from datetime import timedelta
+
+    store, clock = video
+    store.settings.video_upload_enabled = False
+    job = new_job(brief, video)
+    assert job['policy']['delivery'] == 'slack'
+    clock['at'] = job['publish_deadline'] + timedelta(hours=1)
+    store.late_notices()
+    store.late_notices()
+    with store.db.transaction() as conn:
+        texts = [r['text'] for r in conn.execute("SELECT text FROM messages WHERE kind='video_status'").fetchall()]
+    assert len(texts) == 1 and '멈춥니다' not in texts[0] and '계속' in texts[0]
 
 
 def test_edition_times_follow_the_brief_schedule():
@@ -705,3 +748,147 @@ def test_delivery_text_states_publish_time_and_a_late_finish():
     assert '공개 목표 18:00 KST' in on_time and '늦게' not in on_time
     late = delivery_text(job, {'duration': 283, 'title': 't'}, target + timedelta(minutes=12))
     assert '파일 준비 목표보다 12분 늦게 완성됐습니다' in late
+
+
+def test_episode_prompt_states_the_hard_checks():
+    from quant_company.video.episode import CARD_GUIDE, CHAPTERS, CLOSE_LABEL, FLOW_LABEL
+
+    assert CLOSE_LABEL in CARD_GUIDE and FLOW_LABEL in CARD_GUIDE and 'summary3 included' in CARD_GUIDE
+    assert ' → '.join(f"'{c}'" if not c else c for c in CHAPTERS) in CARD_GUIDE.replace('\n', ' ')
+    assert 'under 1,800 characters' in CARD_GUIDE and 'appears in a line that scene cites' in CARD_GUIDE
+
+
+def test_hard_checks_cover_the_upload_rules():
+    from quant_company.video.episode import CARD_GUIDE
+    from quant_company.video.upload import BASE_TAGS, UploadCopy
+
+    flat = CARD_GUIDE.replace('\n', ' ')
+    assert all(tag in flat for tag in BASE_TAGS) and 'no spaces or symbols' in flat
+    hashtags, tags = UploadCopy.model_fields['hashtags'], UploadCopy.model_fields['tags']
+    assert 'one or two #word' in flat and (hashtags.metadata[0].min_length, hashtags.metadata[1].max_length) == (1, 2)
+    assert 'tags are 13-23 plain keywords' in flat
+    assert tags.metadata[0].min_length == 13 and tags.metadata[1].max_length == 23
+
+
+class ScriptedProvider:
+    """Answers each turn from a queue: a plan/review to return, or a ProviderFault to raise."""
+
+    def __init__(self, outcomes):
+        self.outcomes, self.calls = list(outcomes), []
+
+    async def run(self, request):
+        self.calls.append(request)
+        value = self.outcomes.pop(0)
+        if isinstance(value, Exception):
+            raise value
+        return ProviderResponse(request_id=request.request_id, provider='claude', usage={'actual_model': request.model},
+            decision=AgentDecision(status='complete', say='', artifacts=[{'title': 'Scripted', 'content': value.model_dump_json()}]))
+
+
+def unbound_plan():
+    raw = video_plan().model_dump(mode='json')
+    raw['scenes'][0]['narration'] += ' 지수는 987.6포인트였습니다.'
+    return VideoPlan.model_validate(raw)
+
+
+def release(store, job):
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE video_jobs SET lease_until=NULL WHERE id=%s', (job['id'],))
+
+
+async def test_failed_checks_are_fixed_by_a_new_version_with_every_finding(brief, video):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    provider = ScriptedProvider([unbound_plan(), video_plan()])
+    await VideoRunner(store.company, provider=provider).tick()
+    current = store.get(job['id'])
+    assert current['state'] == 'queued' and current['qa']['plan_attempts'][0]['outcome'] == 'check_failed'
+    await VideoRunner(store.company, provider=provider).tick()
+    current = store.get(job['id'])
+    assert current['state'] == 'reviewing' and current['qa']['plan_findings'] == []
+    assert [c.request_id for c in provider.calls] == [f"video-{job['id']}-plan", f"video-{job['id']}-plan-2"]
+    assert 'Unbound number in video scene' in provider.calls[1].prompt
+
+
+async def test_contract_failure_detail_becomes_the_next_versions_feedback(brief, video):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    rejected = ProviderFault('invalid_output', 'Video output failed its contract: scenes.0.narration: String should have at most 600 characters')
+    provider = ScriptedProvider([rejected, video_plan()])
+    await VideoRunner(store.company, provider=provider).tick()
+    with store.db.transaction() as conn:
+        effect = conn.execute("SELECT state, receipt FROM video_effects WHERE id=%s", (f"{job['id']}:plan",)).fetchone()
+    assert effect['state'] == 'failed' and 'scenes.0.narration' in effect['receipt']['detail']
+    await VideoRunner(store.company, provider=provider).tick()
+    assert store.get(job['id'])['state'] == 'reviewing'
+    assert 'scenes.0.narration' in provider.calls[1].prompt and len(provider.calls) == 2
+
+
+async def test_findings_never_stop_production(brief, video):  # noqa: F811
+    from quant_company.video.runner import PLAN_ATTEMPTS
+    from quant_company.video.store import delivery_text
+
+    store, _ = video
+    job = new_job(brief, video)
+    provider = ScriptedProvider([unbound_plan() for _ in range(PLAN_ATTEMPTS)] + [good_review()])
+    for _ in range(PLAN_ATTEMPTS + 1):
+        await VideoRunner(store.company, provider=provider).tick()
+    current = store.get(job['id'])
+    assert current['state'] == 'synthesizing', current['error']
+    assert len(current['qa']['plan_attempts']) == PLAN_ATTEMPTS and current['qa']['plan_findings']
+    text = delivery_text(current, {'duration': 75, 'title': 'fixture', 'findings': ['Text exceeds safe screen area in scenes s03']})
+    assert '자동 검사 지적 2건' in text and 'Unbound number' in text and 's03' in text
+
+
+async def test_review_concerns_are_fixed_then_production_continues(brief, video):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    concern = VideoReview(facts=True, numbers=False, conditions=True, coverage=True, readability=True, concerns=['숫자 맥락이 바뀜'])
+    provider = ScriptedProvider([video_plan(), concern, video_plan(), concern])
+    for _ in range(4):
+        await VideoRunner(store.company, provider=provider).tick()
+    current = store.get(job['id'])
+    assert current['state'] == 'synthesizing', current['error']
+    assert [c.request_id.rsplit('-', 2)[-2:] for c in provider.calls][-1] == ['review', '2']
+    assert '숫자 맥락이 바뀜' in provider.calls[2].prompt and '숫자 맥락이 바뀜' in current['qa']['review_findings']
+
+
+async def test_still_running_turn_is_asked_again_by_the_same_id(brief, video):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    provider = ScriptedProvider([ProviderFault('pending', 'still running', 20), video_plan()])
+    await VideoRunner(store.company, provider=provider).tick()
+    current = store.get(job['id'])
+    assert current['state'] == 'queued' and current['error'] == 'model_pending'
+    with store.db.transaction() as conn:
+        assert conn.execute("SELECT state FROM video_effects WHERE id=%s", (f"{job['id']}:plan",)).fetchone()['state'] == 'running'
+        reserved = conn.execute('SELECT reserved FROM daily_usage WHERE day=CURRENT_DATE').fetchone()['reserved']
+    release(store, job)
+    await VideoRunner(store.company, provider=provider).tick()
+    assert store.get(job['id'])['state'] == 'reviewing'
+    assert provider.calls[0].request_id == provider.calls[1].request_id == f"video-{job['id']}-plan"
+    with store.db.transaction() as conn:
+        assert conn.execute('SELECT reserved FROM daily_usage WHERE day=CURRENT_DATE').fetchone()['reserved'] == reserved
+
+
+async def test_script_and_review_efforts_are_frozen_separately(brief, video):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    provider = ScriptedProvider([video_plan(), good_review()])
+    await VideoRunner(store.company, provider=provider).tick()
+    await VideoRunner(store.company, provider=provider).tick()
+    assert [(c.output_contract, c.reasoning_effort, c.model) for c in provider.calls] == [
+        ('video_plan_v1', 'xhigh', 'claude-opus-5-5'), ('video_review_v1', 'max', 'claude-opus-5-5')]
+    legacy = {**store.get(job['id']), 'policy': {**job['policy'], 'effort': 'max'}}
+    legacy['policy'].pop('review_effort')
+    request_effort = legacy['policy'].get('review_effort', legacy['policy'].get('effort'))
+    assert request_effort == 'max'  # jobs frozen before the split keep one effort for both
+
+
+
+def test_reviewers_write_their_notes_in_korean():
+    from quant_company.video.contracts import review_prompt, visual_review_prompt
+
+    source = body_source()
+    assert 'Write every concern in Korean' in review_prompt(source, video_plan())
+    assert 'Write detail and fix in Korean' in visual_review_prompt(source, video_plan(), [], {})

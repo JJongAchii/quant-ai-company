@@ -98,7 +98,8 @@ def main():
     sub.add_parser("briefing-data-worker")
     sub.add_parser("video-worker")
     video = sub.add_parser("video")
-    video.add_argument("action", choices=["status", "tick", 'reconcile', 'retry', 'bench'])
+    video.add_argument("action", choices=["status", "tick", 'reconcile', 'retry', 'bench', 'render-task'])
+    video.add_argument('--prefix', help='render-task: s3://bucket/render/<job>/<render key> (inside the Fargate task)')
     video.add_argument('--page', type=Path, help='bench: rendered episode page (index.html with episode.js)')
     video.add_argument('--seconds', type=int, default=60, help='bench: seconds of video to render')
     video.add_argument('--job-id')
@@ -190,6 +191,14 @@ def main():
         from .video.runner import VideoRunner
         from .video.store import VideoStore
 
+        if args.action == 'render-task':
+            # Inside the render task: S3 in/out only, no database, Slack or model credentials.
+            from .video.remote import render_task
+
+            if not args.prefix:
+                parser.error('render-task requires --prefix s3://...')
+            print(json.dumps(render_task(settings, args.prefix), ensure_ascii=False))
+            return
         if args.action == 'bench':
             # Frame capture + encode only: no model, speech, upload or database access.
             import time

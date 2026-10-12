@@ -885,7 +885,8 @@ def test_oct12_registration_and_shared_deadline_use_the_new_pm_window(brief):  #
     clock['at'] = edition.cutoff
     ready = store.prepare()['request']
     assert ready['request_id'].endswith('-plan')
-    assert hm(datetime.fromtimestamp(ready['brief_deadline_unix'], KST)) == '16:20'
+    # The shared window ends 10 minutes before expiry (final_at = due+50, owner 2026-10-12): 16:20 before.
+    assert hm(datetime.fromtimestamp(ready['brief_deadline_unix'], KST)) == '17:00'
     assert schedule.version(store.company.settings) == '6+8:20/40/115'
 
 

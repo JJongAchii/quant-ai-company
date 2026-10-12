@@ -72,6 +72,10 @@ async def test_runway_web_workspace_credit_and_task_contract():
     assert calls[-2][1]['languageCode'] == 'ko'
     with pytest.raises(ValueError):
         await runway.submit('fixture', 'Vincent', 'paid-dev-model')
+    assert (await runway.submit('합성 음성 테스트', 'Vincent', 'eleven_v4'))['taskId'] == 'known-task'
+    assert calls[-1][1]['model'] == 'eleven_v4'
+    with pytest.raises(ValueError):
+        await runway.submit('가' * 2501, 'Vincent', 'eleven_v4')  # MCP schema: eleven_v4 takes at most 2500 characters
 
 
 @pytest.mark.parametrize('url', ['http://www.googleapis.com/upload/youtube/v3/videos',
@@ -178,9 +182,29 @@ async def test_claude_subscription_runtime_returns_only_the_frozen_video_schema(
 
 
 def test_video_requires_claude_script_model():
-    with pytest.raises(ValueError, match='Claude subscription model'):
+    with pytest.raises(ValueError, match='claude-opus-5'):
         Settings(_env_file=None, database_url='postgresql://unused', briefing_enabled=True, briefing_publish_enabled=True,
                  briefing_channel_id='C1', briefing_owner_user='U1', slack_allowed_users=['U1'],
                  video_enabled=True, video_runway_workspace_id=1, video_model='gpt-6-astra')
     assert Settings(_env_file=None).video_voice == 'Vincent'
+    assert Settings(_env_file=None).video_model == 'claude-opus-5-5'
+    assert Settings(_env_file=None).video_reasoning_effort == 'xhigh'
+    assert Settings(_env_file=None).video_review_effort == 'max'
+    assert Settings(_env_file=None).video_speech_model == 'eleven_v4'
     assert Settings(_env_file=None).video_template == 'motion-v2'
+
+
+async def test_runway_speech_task_without_status_is_complete_when_audio_url_is_present():
+    runway = RunwaySpeech('unused-private-directory')
+
+    async def fake(name, args):
+        return {'kind': 'audio', 'url': 'https://example.com/v4.mp3', 'taskId': args['id'],
+                'meta': {'modelId': 'eleven_v4', 'durationSeconds': 14.16}}
+    runway.call = fake
+    assert await runway.completed('known-task') == 'https://example.com/v4.mp3'
+
+    async def failed(name, args):
+        return {'status': 'FAILED', 'url': 'https://example.com/partial.mp3'}
+    runway.call = failed
+    with pytest.raises(ValueError):
+        await runway.completed('known-task')

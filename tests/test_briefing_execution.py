@@ -8,7 +8,13 @@ import httpx
 import pytest
 
 from quant_company.briefing.editor import artifact, prompt
-from quant_company.briefing.execution import PHASE_SECONDS, has_runway, phase_deadline, timeout_seconds
+from quant_company.briefing.execution import (
+    PHASE_SECONDS,
+    final_at,
+    has_runway,
+    phase_deadline,
+    timeout_seconds,
+)
 from quant_company.briefing.planning import plan_prompt
 from quant_company.briefing.quotations import source_spans
 from quant_company.contracts import ProviderFault, ProviderRequest, ProviderResponse
@@ -50,7 +56,7 @@ def test_scoped_budget_preserves_other_and_legacy_turns(fake_codex, phase, contr
 
 def test_shared_deadline_lends_unused_time_and_reserves_full_review(monkeypatch):
     at = datetime(2026, 10, 9, 6, 30, tzinfo=UTC)
-    due = at+timedelta(minutes=75)
+    due = at+timedelta(minutes=35)  # the window ends at final_at(due) = due+50 (owner, 2026-10-12)
     data = deadline_bundle()
     plan_end = phase_deadline('plan', data, due)
     assert (plan_end-at).total_seconds() == 600  # 85-minute window minus downstream work and send margin.
@@ -63,8 +69,8 @@ def test_shared_deadline_lends_unused_time_and_reserves_full_review(monkeypatch)
     assert (inventory_end-after_fast_plan).total_seconds() == 25*60
     assert (inventory_end-after_slow_plan).total_seconds() == 20*60
     assert has_runway('inventory', data, after_slow_plan, due)
-    assert phase_deadline('final_review', data, due) == due+timedelta(minutes=9)
-    assert phase_deadline('revise', data, due) == due-timedelta(minutes=3)
+    assert phase_deadline('final_review', data, due) == final_at(due)-timedelta(minutes=1)
+    assert phase_deadline('revise', data, due) == final_at(due)-timedelta(minutes=13)
     assert phase_deadline('plan', {}, due) is None
 
 
@@ -85,7 +91,7 @@ def test_absent_deadline_preserves_legacy_digest_and_rejects_other_lanes():
     import hashlib
 
     legacy = request()
-    material = legacy.model_dump(exclude={'brief_deadline_unix','session','web_search'})
+    material = legacy.model_dump(exclude={'brief_deadline_unix','session','web_search','attachments'})
     expected = hashlib.sha256(json.dumps(material,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
     assert request_digest(legacy) == expected
     with pytest.raises(ValueError, match='scoped Analyst'):
@@ -103,7 +109,7 @@ def test_real_postgres_plan_freezes_absolute_deadline_and_does_not_restart_it(br
     with store.db.transaction() as conn:
         conn.execute('UPDATE brief_editions SET bundle=%s WHERE id=%s', (Jsonb(planning_bundle()),edition.id))
     first = store.prepare()['request']
-    assert first['brief_deadline_unix'] == int((edition.cutoff+timedelta(minutes=10)).timestamp())
+    assert first['brief_deadline_unix'] == int((edition.cutoff+timedelta(minutes=50)).timestamp())
     clock['at'] += timedelta(minutes=7)
     assert store.prepare()['request'] == first
 
@@ -224,7 +230,7 @@ def test_calendar_wire_and_domain_agree_on_unknown_time(status, at, accepted):
 def test_write_refused_if_independent_review_cannot_finish(brief):  # noqa: F811
     store, clock = brief
     edition = seed(brief)
-    clock["at"] = edition.due_at-timedelta(minutes=10)
+    clock["at"] = final_at(edition.due_at)-timedelta(minutes=10)
     result = store.prepare()
     assert result == {"state": "blocked", "reason": "insufficient_review_time"}
     with store.db.transaction() as conn:

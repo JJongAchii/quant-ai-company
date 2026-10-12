@@ -200,7 +200,7 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
         verify_artifacts(manifest, tmp_path)
 
 
-def test_overflowing_text_is_rejected_before_any_frame(tmp_path):
+def test_overflowing_text_is_reported_and_the_episode_still_renders(tmp_path):
     if not importlib.util.find_spec('playwright'):
         pytest.skip('Install optional video dependencies and Chromium')
     ffmpeg = ffmpeg_binary()
@@ -214,9 +214,16 @@ def test_overflowing_text_is_rejected_before_any_frame(tmp_path):
         path = tmp_path / f'a{i}.wav'
         run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=48000:duration=2', str(path)])
         paths.append(path)
-    with pytest.raises(ValueError, match='safe screen area'):
-        MotionRenderer(settings, WordAligner()).render({'id': 'x', 'source': source(), 'policy': {}}, plan, tmp_path / 'out', paths)
-    assert not list((tmp_path / 'out').glob('part-*.mp4'))
+    class MisheardAligner(WordAligner):
+        def align(self, audio, expected):
+            return {**super().align(audio, expected), 'findings': ['Spoken numbers could not be verified in the transcription']}
+
+    manifest = MotionRenderer(settings, MisheardAligner()).render({'id': 'x', 'source': source(), 'policy': {}}, plan,
+                                                                 tmp_path / 'out', paths)
+    assert any('safe screen area' in finding for finding in manifest['findings'])
+    assert any(f.startswith(f"Scene {plan.scenes[0].id}: Spoken numbers") for f in manifest['findings'])
+    assert (tmp_path / 'out' / 'layout-qa.json').exists()
+    verify_artifacts(manifest, tmp_path)
 
 
 class EpisodeProvider:
@@ -372,3 +379,317 @@ def test_fact_list_edition_uses_the_short_episode():
         validate_episode(EpisodePlan.model_validate(raw), source(), shelf)  # too short for a full edition
     with pytest.raises(ValueError, match='Fact-list'):
         validate_episode(episode(), source() | {'format': 'facts'}, shelf)  # full episode for a fact list
+
+
+
+async def test_a_still_running_episode_turn_is_resent_identically_after_jsonb_round_trip(brief, video, tmp_path):  # noqa: F811
+    from quant_company.contracts import ProviderFault
+
+    from .test_video import new_job
+
+    store, _ = video
+    store.settings.video_template = 'motion-v2'
+    store.settings.video_asset_dir = tmp_path / 'assets'
+    (tmp_path / 'assets').mkdir()
+    # JSONB stores shorter keys first: this insertion order does not survive a round trip.
+    (tmp_path / 'assets' / 'manifest.json').write_text(json.dumps({
+        'fixture-photo-long-name': {'tags': [], 'kind': '자료사진'}, 'fixture-photo': {'tags': [], 'kind': '자료사진'},
+        'fixture-illustration': {'tags': [], 'kind': '일러스트'}}))
+    job = new_job(brief, video)
+    provider = EpisodeProvider()
+    pending = ProviderFault('pending', 'still running', 20)
+    original = provider.run
+
+    async def first_pending(request):
+        if not provider.calls:
+            provider.calls.append(request)
+            raise pending
+        return await original(request)
+
+    provider.run = first_pending
+    await VideoRunner(store.company, provider=provider).tick()
+    assert store.get(job['id'])['error'] == 'model_pending'
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE video_jobs SET lease_until=NULL WHERE id=%s', (job['id'],))
+    await VideoRunner(store.company, provider=provider).tick()
+    current = store.get(job['id'])
+    assert current['state'] != 'blocked', current['error']
+    assert provider.calls[0].prompt == provider.calls[1].prompt
+
+
+class InspectingProvider:
+    """Answers by contract from per-contract queues (plan, review, visual review, screen fix)."""
+
+    def __init__(self, visual, fixes=()):
+        from .test_video import good_review
+
+        self.queues = {'video_episode_v1': [episode()], 'video_review_v1': [good_review()],
+                       'video_visual_review_v1': list(visual), 'video_screen_fix_v1': list(fixes)}
+        self.calls = []
+
+    async def run(self, request):
+        self.calls.append(request)
+        queue = self.queues[request.output_contract]
+        value = queue.pop(0) if len(queue) > 1 else queue[0]
+        if isinstance(value, Exception):
+            raise value
+        return ProviderResponse(request_id=request.request_id, provider='claude', usage={'actual_model': request.model},
+                                decision=AgentDecision(status='complete', say='', artifacts=[{'title': 'Simulated', 'content': value.model_dump_json()}]))
+
+
+class InspectedRenderer:
+    """Writes review frames like MotionRenderer; the first render can report a misheard scene."""
+
+    def __init__(self, misheard=None):
+        self.renders, self.misheard, self.texts = 0, misheard or {}, []
+
+    def render(self, job, plan, directory, paths, texts=None):
+        from quant_company.video.contracts import digest
+        from quant_company.video.render import checksum
+
+        self.renders += 1
+        self.texts.append(texts)
+        directory.mkdir(parents=True, exist_ok=True)
+        (directory / 'review').mkdir(exist_ok=True)
+        files = {'video.mp4': b'simulated-video', 'thumbnail.png': b'simulated-thumbnail', 'plan.json': plan.model_dump_json().encode()}
+        for name, content in files.items():
+            (directory / name).write_bytes(content)
+        frames = []
+        for n, scene in enumerate(plan.scenes):
+            (directory / f'review/{n:02}-{scene.id}.jpg').write_bytes(b'\xff\xd8simulated-frame')
+            frames.append({'scene': scene.id, 'file': f'review/{n:02}-{scene.id}.jpg'})
+        manifest = {'directory': str(directory), 'qa_passed': True, 'human_watched': False, 'duration': 60., 'findings': [],
+                    'review': {'frames': frames + [{'scene': 'thumbnail', 'file': 'thumbnail.png'}],
+                               'audio': self.misheard if self.renders == 1 else {}},
+                    'files': {n: checksum(directory / n) for n in files}}
+        manifest['digest'] = digest(manifest)
+        return manifest
+
+
+async def produce_inspected(store, tmp_path, monkeypatch, provider, renderer, brief):  # noqa: F811
+    from .test_video import SimulatedSpeech, new_job
+
+    store.settings.video_template = 'motion-v2'
+    store.settings.video_asset_dir = tmp_path / 'assets'
+    (tmp_path / 'assets').mkdir()
+    (tmp_path / 'assets' / 'manifest.json').write_text(json.dumps({'fixture-photo': {'tags': [], 'kind': '자료사진'},
+                                                                   'fixture-illustration': {'tags': [], 'kind': '일러스트'}}))
+    monkeypatch.setattr('quant_company.video.runner.download_audio', lambda url, path: path.write_bytes(b'simulated-speech'))
+    job = new_job(brief, (store, None))
+    speech = SimulatedSpeech()
+    for _ in range(60):
+        await VideoRunner(store.company, provider, speech, renderer).tick()
+        if store.get(job['id'])['state'] not in {'queued', 'reviewing', 'synthesizing', 'rendering', 'inspecting'}:
+            break
+    return store.get(job['id']), speech
+
+
+async def test_final_visual_review_fixes_cards_rerenders_and_delivers(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video.contracts import VisualReview
+    from quant_company.video.episode import ScreenFix
+
+    store, _ = video
+    shorter = {**episode().scenes[3].data, 'title': '반도체 주도'}
+    provider = InspectingProvider(
+        visual=[VisualReview(passed=False, issues=[{'scene': 'head', 'kind': 'clipped_text', 'detail': 'title clipped',
+                                                    'fix': 'shorten the title'}]), VisualReview(passed=True, issues=[])],
+        fixes=[ScreenFix(scenes=[{'id': 'head', 'data': shorter}])])
+    renderer = InspectedRenderer()
+    job, speech = await produce_inspected(store, tmp_path, monkeypatch, provider, renderer, brief)
+    assert job['state'] == 'uploading', job['error']
+    contracts = [c.output_contract for c in provider.calls]
+    assert contracts.count('video_visual_review_v1') == 2 and contracts.count('video_screen_fix_v1') == 1
+    visual = next(c for c in provider.calls if c.output_contract == 'video_visual_review_v1')
+    assert len(visual.attachments) == len(episode().scenes) + 1 and visual.attachments[0].media_type == 'image/jpeg'
+    assert renderer.renders == 2 and len(speech.calls) == len(episode().scenes)  # narration unchanged: no new takes
+    assert next(s for s in job['plan']['scenes'] if s['id'] == 'head')['data']['title'] == '반도체 주도'
+    assert len(job['qa']['inspections']) == 2 and job['qa']['inspection_findings'] == []
+
+
+async def test_misread_scene_is_rerecorded_in_number_words(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video.contracts import VisualReview
+    from quant_company.video.render import korean_numbers
+
+    store, _ = video
+    provider = InspectingProvider(visual=[
+        VisualReview(passed=False, issues=[{'scene': 'board', 'kind': 'audio_text', 'detail': '500 misread',
+                                            'fix': 're-record'}]), VisualReview(passed=True, issues=[])])
+    renderer = InspectedRenderer(misheard={'board': ['Spoken numbers could not be verified in the transcription']})
+    job, speech = await produce_inspected(store, tmp_path, monkeypatch, provider, renderer, brief)
+    assert job['state'] == 'uploading', job['error']
+    board = next(s for s in episode().scenes if s.id == 'board')
+    assert len(speech.calls) == len(episode().scenes) + 1 and speech.calls[-1]['text'] == korean_numbers(board.narration)
+    assert '오백' in speech.calls[-1]['text'] and renderer.renders == 2
+    assert renderer.texts[1][[s.id for s in episode().scenes].index('board')] == korean_numbers(board.narration)
+    with store.db.transaction() as conn:
+        keys = {r['id'].split(':')[1] for r in conn.execute("SELECT id FROM video_effects WHERE kind='speech'").fetchall()}
+    index = [s.id for s in episode().scenes].index('board')
+    assert f'speech-{index}' in keys and any(k.startswith(f'speech-{index}-') for k in keys)
+
+
+async def test_unfixable_visual_findings_never_block_delivery(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.contracts import ProviderFault
+    from quant_company.video.contracts import VisualReview
+
+    store, _ = video
+    stuck = VisualReview(passed=False, issues=[{'scene': 'flow', 'kind': 'overlap', 'detail': 'arrow overlaps text',
+                                                'fix': 'move the arrow'}])
+    provider = InspectingProvider(visual=[stuck], fixes=[ProviderFault('invalid_output', 'Video output failed its contract: scenes.0.data')])
+    job, _ = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
+    assert job['state'] == 'uploading', job['error']
+    assert job['qa']['inspection_findings'] == ['flow: arrow overlaps text']
+
+
+def test_interrupted_render_resumes_scene_by_scene_without_realigning(tmp_path, monkeypatch):
+    if not importlib.util.find_spec('playwright'):
+        pytest.skip('Install optional video dependencies and Chromium')
+    from quant_company.video import motion
+
+    ffmpeg = ffmpeg_binary()
+    settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_ffprobe='', video_asset_dir=tmp_path / 'assets')
+    library(tmp_path / 'assets', ffmpeg)
+    plan = episode()
+    paths = []
+    for i in range(len(plan.scenes)):
+        path = tmp_path / f'a{i}.wav'
+        run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=48000:duration=2', str(path)])
+        paths.append(path)
+
+    class CountingAligner(WordAligner):
+        calls = 0
+
+        def align(self, audio, expected):
+            CountingAligner.calls += 1
+            return super().align(audio, expected)
+
+    rendered, original = [], motion.render_segments
+    monkeypatch.setattr(motion, 'render_segments', lambda page, items, ffmpeg, digest: (
+        rendered.append([n for n, *_ in items]), original(page, items, ffmpeg, digest))[1])
+    job, out = {'id': 'x', 'source': source(), 'policy': {}}, tmp_path / 'out'
+    first = MotionRenderer(settings, CountingAligner()).render(job, plan, out, paths)
+    assert CountingAligner.calls == len(plan.scenes) and sorted(sum(rendered, [])) == [f'{n:02}-00' for n in range(len(plan.scenes))]
+    # An interruption after scene 3 was encoded but before scene 4 finished: only scene 4 is rendered again.
+    (out / 'seg-04-00.mp4').unlink()
+    (out / 'manifest.json').unlink()
+    rendered.clear()
+    second = MotionRenderer(settings, CountingAligner()).render(job, plan, out, paths)
+    assert CountingAligner.calls == len(plan.scenes)  # alignment reused from the attempt directory
+    assert rendered == [['04-00']] and second['frames'] == first['frames']
+    verify_artifacts(second, tmp_path)
+
+
+def test_a_render_still_running_in_the_directory_is_not_started_twice(tmp_path):
+    import fcntl
+    import os
+
+    from quant_company.video.render import RenderInProgress
+
+    out = tmp_path / 'out'
+    out.mkdir()
+    held = os.open(out / '.render.lock', os.O_CREAT | os.O_RDWR, 0o600)
+    fcntl.flock(held, fcntl.LOCK_EX)
+    try:
+        with pytest.raises(RenderInProgress):
+            MotionRenderer(Settings(video_artifact_dir=tmp_path), WordAligner()).render(
+                {'id': 'x', 'source': source(), 'policy': {}}, episode(), out, [])
+    finally:
+        os.close(held)
+
+
+
+def test_episodes_are_capped_near_five_minutes():
+    from quant_company.video.episode import NARRATION_LIMIT
+
+    raw = episode().model_dump(mode='json')
+    raw['scenes'][2]['narration'] = '가' * 600
+    while sum(len(s['narration']) for s in raw['scenes']) <= NARRATION_LIMIT:
+        raw['scenes'].insert(3, {**raw['scenes'][2], 'id': f"pad{len(raw['scenes'])}"})
+    with pytest.raises(ValueError, match='daily production limit'):
+        EpisodePlan.model_validate(raw)
+
+
+def test_the_screen_shows_one_arrow_where_the_template_draws_it_from_the_direction():
+    from quant_company.video.motion import single_arrows
+
+    # Values written as the 2026-10-12 morning script did ("▲0.59%" next to dir='up').
+    cold = {'stats': [{'label': 'S&P500', 'value': '▲0.59%', 'big_dir': 'up', 'sub': '▼2.62% · 종가', 'sub_dir': 'dn'},
+                      {'label': '코스피', 'value': '6,625.93', 'big_dir': 'dn', 'sub': '종가'}]}
+    board = {'tiles': [{'name': '코스피', 'value': '6,625.93', 'change': '▼ 2.62%', 'dir': 'dn'},
+                       {'name': 'WTI', 'value': '91.85달러', 'change': '0.39%', 'dir': 'up'}]}
+    flow = {'nodes': [{'rows': [['외국인', '▼6조4692억원', 'dn'], ['개인', '6조3596억원', 'up']]}]}
+    bars = {'image': {'asset': 'x', 'labels': [{'text': '유가 ▲', 'dir': 'up'}]}}
+    summary = {'cards': [{'stats': [['코스피', '▼2.62%', 'dn']]}]}  # the template adds no arrow here: kept
+    calendar = {'side': [{'label': '환율', 'value': '▲1,420원', 'dir': 'up'}]}  # colour only: kept
+    ticker = {'items': [{'name': '나스닥', 'value': '27,366.17', 'change': '▲0.64%', 'dir': 'up'}]}
+    assert single_arrows('cold_open', cold) == [] and single_arrows('market_board', board) == []
+    assert [s['value'] for s in cold['stats']] == ['0.59%', '6,625.93'] and cold['stats'][0]['sub'] == '▼2.62% · 종가'
+    assert [t['change'] for t in board['tiles']] == ['2.62%', '0.39%']
+    assert single_arrows('flow', flow) == [] and flow['nodes'][0]['rows'][0][1] == '6조4692억원'
+    assert single_arrows('bars', bars) == [] and bars['image']['labels'][0]['text'] == '유가'
+    assert single_arrows('summary3', summary) == [] and summary['cards'][0]['stats'][0][1] == '▼2.62%'
+    assert single_arrows('calendar', calendar) == [] and calendar['side'][0]['value'] == '▲1,420원'
+    assert single_arrows('', {}, ticker) == [] and ticker['items'][0]['change'] == '0.64%'
+    # A written sign that contradicts the direction is reported; the screen follows the direction field.
+    wrong = {'stats': [{'label': '미 10년물', 'value': '2bp', 'change': '▼2bp', 'dir': 'up'}]}
+    assert single_arrows('headline', wrong) == ['headline ▼2bp'] and wrong['stats'][0]['change'] == '2bp'
+
+
+def test_the_thumbnail_names_its_edition_and_carries_the_watched_progress_strip():
+    from importlib.resources import files
+
+    html = files('quant_company.video').joinpath('design', 'thumbnail.html').read_text()
+    assert '아침 시장 브리핑' not in html and '{{brand}}' in html  # the close edition reads 마감 브리핑
+    # Every thumbnail carries the red strip at half width along its bottom edge (owner request 2026-10-12).
+    assert '<div class="resume"><i></i></div>' in html and 'width:50%;background:#FF0000' in html
+
+
+async def test_an_uncertain_model_turn_is_a_failed_attempt_and_the_episode_is_still_delivered(brief, video, tmp_path,  # noqa: F811
+                                                                                                monkeypatch):
+    """2026-10-12 PM: a plan turn ended uncertain and the whole episode stopped for an operator."""
+    from quant_company.contracts import ProviderFault
+    from quant_company.video.contracts import VisualReview
+
+    store, _ = video
+    provider = InspectingProvider(visual=[VisualReview(passed=True, issues=[])])
+    provider.queues['video_episode_v1'] = [ProviderFault('uncertain', 'Claude did not confirm a complete review.'), episode()]
+    job, _ = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
+    assert job['state'] == 'uploading', job['error']
+    attempts = job['qa']['plan_attempts']
+    assert [a['key'] for a in attempts] == ['plan', 'plan-2'] and attempts[0]['outcome'] == 'uncertain'
+
+
+def test_a_screen_fix_naming_an_image_outside_the_library_keeps_that_scene():
+    """2026-10-12 PM: a screen fix invented the image 'bank-of-korea'; every render then stopped on the missing file."""
+    from quant_company.video.episode import ScreenFix, apply_screen_fix
+
+    plan = episode()
+    photo = next(s for s in plan.scenes if s.id == 'photo')
+    head = next(s for s in plan.scenes if s.id == 'head')
+    invented = {**photo.data, 'image': {'asset': 'bank-of-korea'}}
+    shorter = {**head.data, 'title': '반도체 주도'}
+    fix = ScreenFix(scenes=[{'id': 'photo', 'data': invented}, {'id': 'head', 'data': shorter}])
+    reverted = []
+    fixed = apply_screen_fix(plan, fix, {'fixture-photo': {}, 'fixture-illustration': {}}, reverted)
+    assert reverted == ['photo'] and next(s for s in fixed.scenes if s.id == 'photo').data == photo.data
+    assert next(s for s in fixed.scenes if s.id == 'head').data['title'] == '반도체 주도'
+    assert next(s for s in apply_screen_fix(plan, fix).scenes if s.id == 'photo').data['image'] == {'asset': 'bank-of-korea'}
+
+
+def test_an_issue_first_episode_needs_no_market_board_but_opens_with_the_question():
+    """Owner decision 2026-10-12: the issues and their analysis are the core; index levels and flows are optional."""
+    from quant_company.video.episode import EpisodePlan, check_structure, episode_prompt
+
+    raw = episode().model_dump(mode='json')
+    extra = [{**s, 'id': s['id'] + '-2'} for s in raw['scenes'] if s['type'] in {'flow', 'photo'}]
+    raw['scenes'] = [s for s in raw['scenes'] if s['type'] not in {'market_board', 'summary3'}]
+    raw['scenes'][2:2] = extra
+    check_structure(EpisodePlan.model_validate(raw))  # no summary3, no market_board: fine
+    swapped = {**raw, 'scenes': raw['scenes'][1:] + raw['scenes'][:1]}
+    with pytest.raises(ValueError, match='open with cold_open'):
+        check_structure(EpisodePlan.model_validate(swapped))
+    keep = [s for s in raw['scenes'] if s['type'] not in {'flow', 'photo', 'counter', 'compare', 'bars', 'map'}]
+    thin = {**raw, 'scenes': keep[:-1] + [{**keep[-2], 'id': f'cal-{n}'} for n in range(9 - len(keep))] + keep[-1:]}
+    with pytest.raises(ValueError, match='four issue scenes'):
+        check_structure(EpisodePlan.model_validate(thin))
+    text = episode_prompt(source(), '', {})
+    assert "브리핑은 이렇게 봅니다" in text and 'never as a routine opening' in text and 'thumbnail_image' in text

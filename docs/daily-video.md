@@ -45,19 +45,19 @@ flowchart LR
 일정은 브리핑 일정(`briefing/schedule.py`)을 그대로 따르므로 휴장일 처리도 같다. 브리핑이 만들어지지 않는 날은
 영상도 만들지 않는다.
 
-| 회차 | 원문 발송 | 영상 준비 목표 | 제작 중단(만료) |
+| 회차 | 원문 발송 | 영상 준비 목표 | 공개 승인 만료 |
 | --- | --- | --- | --- |
-| 아침 | 07:45 KST(미국 마감 조기 발송 시 더 이르게) | 공개 07:00 KST(미국 서머타임) / 07:50 KST(11/1부터) · 파일은 10분 전(06:50 / 07:40) | 09:00 KST(못 끝내면 중단·알림) |
+| 아침 | 07:45 KST(미국 마감 조기 발송 시 더 이르게) | 공개 07:00 KST(미국 서머타임) / 07:50 KST(11/1부터) · 파일은 10분 전(06:50 / 07:40) | 09:00 KST |
 | 마감 | KRX 거래일 15:50 수집 시작 · 16:10 기준 · 17:25 마감(`BRIEFING_KR_CLOSE_ENABLED`, 준비되면 조기 발송) | 공개 18:00 KST · 파일은 17:50 | 목표+2시간 30분 (기본 20:20 KST) |
 
-목표 시각까지 영상이 없으면 한 번 상태를 알리고, 만료 뒤에는 새 생성(모델·음성 비용)을 중단한다. 이미 렌더한 파일의
-Slack 전달은 만료와 관계없이 진행한다.
+목표 시각까지 영상이 없으면 한 번 상태를 알린다. 늦어지더라도 제작(대본·검토·음성·렌더링)은 중단하지 않고,
+완성되면 늦은 시간을 한 줄 적어 Slack 스레드에 전달한다. 만료 시각은 YouTube 공개 승인에만 적용된다.
 공개 요청 직전에도 마감과 계정·파일을 확인한다. 목표 시간의 실제 달성은 서버 사양과 실제 음성으로 관찰해야 한다.
 
 ## 비용과 계정
 
 대본 작성(`video_plan_v1`)과 별도 검토(`video_review_v1`)는 서버의 기존 Claude 구독 실행기
-([Claude runtime](claude-runtime.md), Pro/Max 공식 로그인, `claude-opus-5`)에서 실행한다. Codex runtime으로
+([Claude runtime](claude-runtime.md), Pro/Max 공식 로그인, `claude-opus-5-5`, 대본 xhigh·검토 max, Claude Code 2.1.280)에서 실행한다. Codex runtime으로
 자동 전환하지 않으며 Codex는 영상 계약을 받지 않는다. 실행기는 요청 계약에 맞는 JSON schema만
 `--json-schema`로 전달하고 도구·MCP·세션 저장 없이 한 번 실행한다. 직원 독립 검토와 같은 단일 실행 lane과
 구독 한도를 공유한다. lane 사용 중(`busy`)이나 구독 한도 소진(`quota`)은 실행 전 거절이므로 호출 예약을
@@ -69,9 +69,9 @@ Runway 음성은 OAuth로 `https://mcp.runwayml.com/mcp`에 연결한다.
 따르면 이 MCP는 웹 계정 크레딧을 사용한다. `dev.runwayml.com/mcp`와 직접 유료 API로 전환하지 않는다.
 기존 ChatGPT 앱 연결 토큰이 서버로 자동 이관되지는 않으므로 서버에서 처음 한 번 로그인한다.
 
-음성 모델은 `eleven_multilingual_v2`, 기본 voice는 Runway preset `Vincent`다. 이번 주 손 제작본은 Runway 웹에서 ElevenLabs
-Eleven v4를 골랐지만, 이 코드가 쓰는 MCP `generate_speech`에서 v4 모델 ID를 고를 수 있는지는 확인하지 못했다. 그래서
-모델 값은 바꾸지 않았다(첫 서버 샘플에서 `tools/list` 스키마로 확인 후 별도 변경). 현재 확인한 MCP 조건인
+음성 모델은 `eleven_v4`(`VIDEO_SPEECH_MODEL`), 기본 voice는 Runway preset `Vincent`로, 손 제작본과 같다.
+2026-10-12 서버에서 MCP `generate_speech`의 `tools/list` 스키마를 조회해 `eleven_v3`·`eleven_multilingual_v2`·`eleven_v4`
+선택지를 확인했다. `eleven_v4`는 유료 플랜이 필요하고 호출당 최대 2,500자다(장면 내레이션은 최대 600자). 현재 확인한 MCP 조건인
 문자 50개당 1 credit을 **장면별 올림**으로 예약한다. 실제 한국어 발음·서비스 조건은 첫 비공개
 샘플에서 다시 확인한다. 예를 들어 한 회 3,000자는 최소 약 60 credits이고,
 26회면 약 1,560 credits라서 기본 월 제한 1,500을 넘길 수 있다. 수정본도 같은 회차 한도에 합산한다.
@@ -107,6 +107,39 @@ DB와 media-auth는 기존 복구 정책에 포함하고, 업로드 영상·mani
 DB의 계획·영수증·파일 해시는 남는다. 영상 볼륨 여유가 `VIDEO_MIN_FREE_GB`(기본 10GB)보다 적으면 대기 중인 회차를
 시작하지 않고 `blocked`(insufficient_disk)로 두며 brief 스레드에 한 번 알린다. 크레딧은 쓰지 않는다.
 고정 댓글 문안은 업로드 패키지에 제공하며 댓글 자동 게시·고정은 이 버전에 포함하지 않았다.
+
+## 렌더링 위치: ECS Fargate (소유자 결정 2026-10-12)
+
+2 vCPU 서버에서 8.7분 영상 렌더에 60~70분이 걸려, 상시 서비스(DB·Slack·worker·Claude 실행기)는 서버에 두고
+렌더링만 렌더할 때만 존재하는 ECS Fargate 태스크(16 vCPU/32GB, Spot 우선)로 보낸다(`VIDEO_RENDER_BACKEND=remote`).
+리소스는 [deploy/render.json](../deploy/render.json) CloudFormation 스택 `quant-company-render`(ap-northeast-2), 이미지는
+[deploy/Dockerfile.render](../deploy/Dockerfile.render)다.
+
+1. worker는 렌더 디렉터리 키(계획·음성 take·템플릿·fps의 digest)마다 입력(job·plan·음성·이미지 라이브러리)을
+   `s3://<bucket>/render/<job>/<key>/in/`에 올리고 `ready.json`을 마지막에 쓴다. 같은 키는 다시 올리지 않는다.
+2. 시도 기록(`video_jobs.qa.render`)을 먼저 저장한 뒤 `RunTask`를 부른다. client token은 job·키·시도 번호다. 응답을
+   못 받은 호출(연결 끊김·시간 초과)은 같은 token으로 다시 물어 태스크가 두 개 뜨지 않는다. AWS가 거절하면(용량 부족·권한)
+   그 시도는 실패다. 1·2번째 시도는 FARGATE_SPOT, 마지막 시도는 FARGATE다.
+3. 태스크(`quant-company video render-task --prefix s3://…`)는 서버와 같은 `MotionRenderer`로 렌더한다. Whisper 모델은
+   `models/small/`에서 받는다. 끝난 장면 조각·정렬·배치·검수 프레임은 15초마다, Spot 회수·StopTask(SIGTERM) 때는 즉시
+   `out/`에 올린다. 다음 태스크는 그 조각부터 이어서 렌더한다. `manifest.json`을 마지막에 올리는 것이 완료 표시다.
+4. worker는 tick마다 상태만 묻는다(60초 간격). 끝나면 manifest의 파일과 검수 프레임만 받아 체크섬을 검증하고 화면 검수로
+   넘긴다. 상태 조회 실패는 기다리고(10회 연속이면 그 시도를 포기), 태스크는 90분(`VIDEO_RENDER_TIMEOUT_MINUTES`)이 지나면
+   스스로 끝난다. worker도 100분이 지나면 StopTask한다.
+5. 3번 실패하면 그 회차는 서버에서 렌더한다(`qa.render_local`). 영상은 항상 만들어진다.
+
+권한: 태스크 역할은 `render/*` 읽기·쓰기와 `models/*` 읽기만 있다. DB·Slack·Runway·Claude 인증은 없다.
+worker 사용자(`quant-company-render-worker`)는 이 태스크 정의의 RunTask·DescribeTasks·StopTask, 두 역할의 PassRole,
+`render/*`만 쓸 수 있다. 접근 키는 서버 secret `render_aws_credentials`(root:10001, 0440)로 video-worker에만 mount한다.
+보안 그룹은 inbound가 없고 HTTPS outbound만 연다. 기본 VPC의 public subnet과 public IP를 써서 NAT 비용이 없다.
+
+비용(서울, 16 vCPU/32GB 온디맨드 $0.908/시간): 2026-10-12 검증에서 4분 52초 영상 렌더 태스크가 약 280초 과금됐다
+(온디맨드 기준 약 $0.07, Spot은 그보다 낮다). 하루 2회면 월 약 $5 이하다. `render/`는 3일 뒤 자동 삭제, 로그는 7일,
+ECR은 최근 5개 이미지만 남긴다. AWS Budgets `quant-company-render-monthly`가 ECS+ECR 비용 $20/월 기준으로 알린다.
+
+이미지 갱신: `docker build --provenance=false -f deploy/Dockerfile.render .`(linux/amd64) → ECR에 새 태그로 push →
+digest로 스택의 `ImageUri`를 바꾸면 새 태스크 정의 revision이 생긴다(이전 revision은 남는다) → worker의
+`VIDEO_RENDER_TASK_DEFINITION`을 그 revision으로 바꾼다. worker와 렌더 이미지는 같은 소스 버전으로 만든다.
 
 ## 서버 준비
 
@@ -168,14 +201,16 @@ docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml exec video-wo
 | `VIDEO_YOUTUBE_CHANNEL_ID` | 빈 값 | 명시적 해당 채널 ID |
 | `VIDEO_MONTHLY_CREDIT_LIMIT` | 1500 | 예약/불확실 요청을 포함한 KST 월 한도 |
 | `VIDEO_EPISODE_CREDIT_LIMIT` | 100 | 수정본을 포함한 회차 한도 |
-| `VIDEO_MODEL` | claude-opus-5 | Claude 구독 대본·검토 모델; 다른 값이면 영상 활성화를 거부 |
+| `VIDEO_MODEL` | claude-opus-5-5 | Claude 구독 대본·검토 모델(`claude-opus-5` 또는 `claude-opus-5-5`만 허용). 새 작업의 policy에 고정 |
+| `VIDEO_REASONING_EFFORT` | xhigh | 대본 작성·화면 카드 수정의 추론 강도(high/xhigh/max). 새 작업의 policy에 고정 |
+| `VIDEO_REVIEW_EFFORT` | max | 대본 검토·최종 화면 검수의 추론 강도. 새 작업의 policy에 고정(이전 작업은 단일 강도 유지) |
 | `VIDEO_MODEL_RUNTIME_URL` | http://claude-runtime:8080 | 기존 Claude 실행기 내부 주소 |
 | `VIDEO_VOICE` | Vincent | Runway preset voice; 첫 실제 샘플에서 한국어 발음 확인 |
 | `VIDEO_ALIGNMENT_MODEL` | small | 실제 음성 검증·자막 시점용 로컬 모델/경로 |
 | `VIDEO_TEMPLATE` | motion-v2 | 카드·모션 고정 틀. text-v1은 이전 글 화면 |
 | `VIDEO_RENDER_WORKERS` | 2 | 프레임 캡처 프로세스 수. 8GB 서버 2(아침 06:50 목표), 작은 서버 1 |
 | `VIDEO_AM_PUBLISH_DST` / `VIDEO_AM_PUBLISH_STD` / `VIDEO_PM_PUBLISH` | 07:00 / 07:50 / 18:00 | 유튜브 공개 목표(KST). 아침은 뉴욕 서머타임 여부로 고른다 |
-| `VIDEO_PUBLISH_LEAD_MINUTES` | 10 | 공개 몇 분 전까지 파일을 스레드에 올릴지. 작업은 본문 발송 즉시 시작하고, 늦어도 완성되면 바로 올리며 늦은 시간을 한 줄 적는다. 아침은 09:00에 새 생성 중단 |
+| `VIDEO_PUBLISH_LEAD_MINUTES` | 10 | 공개 몇 분 전까지 파일을 스레드에 올릴지. 작업은 본문 발송 즉시 시작하고, 늦어도 완성되면 바로 올리며 늦은 시간을 한 줄 적는다. 지연돼도 제작은 계속한다 |
 | `VIDEO_PLAYLIST_URL` | 증시story 재생목록 | 설명란 "증시story 모아보기" 주소 |
 | `VIDEO_RETENTION_DAYS` | 14 | 작업 종료 뒤 최종 파일 보관 일수 |
 | `VIDEO_MIN_FREE_GB` | 10 | 이보다 여유가 적으면 새 회차를 시작하지 않음 |
@@ -296,10 +331,26 @@ quant-company video retry --job-id JOB_UUID --note '기존 음성 task와 로컬
 `retry`는 미확인 요청이 없는 로컬 렌더링 또는 기존 upload session만 재개한다.
 크레딧 요청이나 새 업로드를 자동 재전송하는 복구 명령은 없다. Claude 실행기의 `busy`와 `quota`는 실행 전에
 반환되는 명시적 거절이므로 모델 호출 예약을 반환하고 같은 요청 ID로 재시도한다(`busy` 최대 60초,
-`quota` 최대 15분 뒤). 09:00 마감은 그대로 적용된다. 모델 timeout이나 응답 유실은 재시도하지 않는다.
+`quota` 최대 15분 뒤). 대기 중에도 마감으로 제작을 끝내지 않는다. 응답 대기 시간이 지나면 같은 요청 ID로 다시 묻는다.
+영상 대본·검토 요청의 실행기 프로세스 한도는 2시간, 출력 스트림 한도는 32MiB다(직원 검토는 300초·1MiB). worker는 한 번에 120초까지 기다린다. 서버 렌더링(fallback)을 위해 한 번의 tick은 3시간, 작업 lease는 200분이다. Fargate 렌더는 tick마다 상태만 묻는다. 직원 검토는 계속 `claude-opus-5`를 쓴다.
 실행기의 `claude/jobs/video-<job>-<phase>.json` receipt와 DB 효과 행을 먼저 대사한다.
 
-검토 불합격이나 기술 검사 실패는 `blocked`, 보류는 `held`, 새 수정본은 이전 버전을
+### 검사와 수정 (소유자 결정 2026-10-12: 검사 결과로 제작을 멈추지 않는다)
+
+Claude 세션에서 편집자가 하듯 서버도 쓰고 → 검사하고 → 고치고 → 다시 검토한 뒤 반드시 완성본을 전달한다.
+
+1. 대본은 시도마다 새 요청 ID(`plan`, `plan-2`…)로 작성한다. 출력 계약 위반(실행기가 규칙·위치만 기록)이나 코드 검사
+   지적(`episode_violations`가 모든 지적을 한 번에 수집)은 다음 시도의 수정 지시가 된다. 최대 6회 뒤에는 지적이 가장
+   적은 버전으로 계속 제작하고 남은 지적을 전달문에 적는다.
+2. Claude 검토(`review`, `review-2`)의 지적은 대본 수정 지시로 돌아가 한 번 더 고친 뒤 다시 검토한다. 검토가 끝까지
+   통과하지 못해도 음성·렌더링으로 진행하고 지적을 전달문에 적는다.
+3. 렌더링의 글자 넘침·자막 3줄·썸네일 넘침·음량/무음/검은 화면, 업로드 문안 규칙은 지적으로 기록하고 파일은 만든다.
+   파일 손상(디코딩 실패·길이/해상도 불일치)과 템플릿 오류만 실제 실패다.
+4. 모델 호출은 비동기다. worker는 최대 120초 기다린 뒤 같은 요청 ID로 다시 묻는다. 실행기는 끝난 결과를 영수증에서
+   돌려주거나(`complete`), 아직 실행 중이면 `pending`, 확정 실패면 같은 코드와 규칙을 다시 돌려준다. 같은 요청 ID로
+   추론이 두 번 실행되지 않는다. 시도·지적·검토 기록은 `video_jobs.qa`에 남는다.
+
+보류는 `held`, 새 수정본은 이전 버전을
 `superseded`로 만든다. 이전 버전의 버튼은 새 버전을 승인하지 못한다. 09:00 이후에는
 최신성 재검토를 거친 별도 발간으로 다뤄야 하며 일반 승인 버튼으로 연장하지 않는다.
 자동 기술 QA는 수치 의미와 전체 청취를 보증하지 않는다. 소유자의 전체 시청이 최종 조건이다.

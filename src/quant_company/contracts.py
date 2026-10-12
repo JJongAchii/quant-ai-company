@@ -101,6 +101,13 @@ class ResearchStageOutput(StrictModel):
         return self
 
 
+class ProviderAttachment(StrictModel):
+    """An image the model must look at (rendered video frames); base64 without a data: prefix."""
+    name: str = Field(pattern=r"^[a-zA-Z0-9_.-]{1,80}$")
+    media_type: Literal["image/jpeg", "image/png"]
+    data: str = Field(min_length=4, max_length=1_500_000, pattern=r"^[A-Za-z0-9+/=]+$")
+
+
 class ProviderRequest(StrictModel):
     request_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,80}$")
     model: str = Field(min_length=1, max_length=80)
@@ -112,15 +119,20 @@ class ProviderRequest(StrictModel):
     web_search: bool = False
     # Service-owned continuation, resolved against durable runtime receipts.
     session: ProviderSession | None = None
+    # Frames for the visual review; empty keeps every other request's wire shape and digest unchanged.
+    attachments: list[ProviderAttachment] = Field(default_factory=list, max_length=24)
     output_contract: Literal["agent_decision", "quant_brief_v1", "quant_brief_v2", "quant_brief_v3", "quant_brief_v4",
                              "quant_critique_v1", "quant_critique_v2", "quant_search_v1",
                              "research_stage_v1", "video_plan_v1", "video_review_v1", "video_episode_v1",
+                             "video_visual_review_v1", "video_screen_fix_v1",
                              "brief_plan_v1", "brief_inventory_v1", "brief_inventory_v2", "brief_compose_v1",
                              "brief_write_v1", "brief_review_v1", "brief_review_v2", "brief_conditions_v1",
                              "brief_facts_v1", "brief_editorial_v1", "brief_editorial_v2", "brief_source_notes_v1"] = "agent_decision"
 
     @model_validator(mode="after")
     def scoped_output(self):
+        if self.attachments and self.output_contract != "video_visual_review_v1":
+            raise ValueError("Only the visual video review receives images")
         if self.brief_deadline_unix is not None and not self.output_contract.startswith('brief_'):
             raise ValueError('A briefing deadline requires a scoped Analyst request')
         if self.output_contract.startswith("brief_"):
@@ -128,7 +140,8 @@ class ProviderRequest(StrictModel):
 
             if not valid_request(self.request_id, self.output_contract) or self.web_search or self.session is not None:
                 raise ValueError("Brief output requires a matching tool-free Analyst phase")
-        elif self.output_contract in {"video_plan_v1", "video_review_v1", "video_episode_v1"}:
+        elif self.output_contract in {"video_plan_v1", "video_review_v1", "video_episode_v1", "video_visual_review_v1",
+                                      "video_screen_fix_v1"}:
             if not self.request_id.startswith("video-") or self.web_search or self.session is not None:
                 raise ValueError("Video output requires a tool-free video request")
         elif self.output_contract == "research_stage_v1":

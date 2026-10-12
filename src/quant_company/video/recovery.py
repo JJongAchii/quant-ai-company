@@ -62,7 +62,7 @@ def reconcile(store, identity, key, receipt, note):
         unresolved = conn.execute("SELECT 1 FROM video_effects WHERE job_id=%s AND state='running' LIMIT 1",
                                   (job['id'],)).fetchone()
         state = 'uncertain' if unresolved else stage
-        if video_store.utcnow() >= job['publish_deadline'] and state not in {'uncertain', 'published'}:
+        if video_store.utcnow() >= job['publish_deadline'] and state in video_store.APPROVAL:
             state = 'expired'
         conn.execute('UPDATE video_jobs SET state=%s,error=NULL,lease_until=NULL,updated_at=now() WHERE id=%s',
                      (state, job['id']))
@@ -90,7 +90,7 @@ def retry(store, identity, note):
     with store.db.transaction() as conn:
         conn.execute('SELECT pg_advisory_xact_lock(%s)', (LOCK,))
         job = conn.execute('SELECT * FROM video_jobs WHERE id=%s FOR UPDATE', (identity,)).fetchone()
-        if (not job or job['state'] != 'blocked' or not store.allowed(job) or video_store.utcnow() >= job['publish_deadline']
+        if (not job or job['state'] != 'blocked' or not store.allowed(job)
                 or job['error'] not in RETRYABLE
                 or conn.execute("SELECT 1 FROM video_effects WHERE job_id=%s AND state='running'", (identity,)).fetchone()):
             raise PolicyError('Only known tasks, local rendering or the same upload session may be retried')

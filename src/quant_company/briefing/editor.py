@@ -784,11 +784,15 @@ Explain unfamiliar acronyms; compress duplicated interpretation and repeated cav
             payload['document_columns'] = columns
             payload['documents'] = [[d[k] for k in columns] for d in payload['documents']]
         result = header+json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    if len(result) > 88000 and composition:
-        # Composition and full-proposal revision are the measured paths that can still exceed the
-        # provider limit after table transport; a prompt that already fits is never changed.
-        result, _ = fit_original_rows(header.removesuffix('BRIEF DATA JSON:\n') + TRIMMED_NOTE, payload,
-                                      committed_quotes(bundle))
+    if len(result) > 88000 and (composition or editorial_patch):
+        # Composition, full-proposal revision and (2026-10-12) the editorial patch can still exceed the provider
+        # limit after table transport; a prompt that already fits is never changed. A patch keeps the rows its
+        # editable claims quote and every row the review cites.
+        quotes = list(committed_quotes(bundle))
+        if editorial_patch:
+            quotes += [e.get('quote') for c in bundle['revision_feedback'].get('protected_claims', [])
+                       if isinstance(c, dict) for e in c.get('evidence', [])]
+        result, _ = fit_original_rows(header.removesuffix('BRIEF DATA JSON:\n') + TRIMMED_NOTE, payload, quotes)
     if len(result) > 88000:
         raise ValueError("brief_context_limit")
     return result
@@ -818,7 +822,9 @@ def committed_quotes(bundle):
     return quotes
 
 
-def revision_bundle(bundle, proposal, review, rejected):
+def revision_bundle(bundle, proposal, review, rejected, *, patch_rejected=False):
+    """patch_rejected: the full revision did not fit the input limit, so the reviewed problems are patched into the
+    draft even though the server rejected some items (they stay out); owner rule 2026-10-12: fix only what is wrong."""
     def compact(value):
         if isinstance(value, dict):
             return {key: compact(item) for key, item in value.items() if key != "quote"}
@@ -857,7 +863,8 @@ def revision_bundle(bundle, proposal, review, rejected):
                 allowed_sources[claim.id] = sorted(related)
         if not missing_sources <= {source for sources in allowed_sources.values() for source in sources}:
             allowed_sources = {}
-    editorial_patch = (not conditions_only and not allowed_sources and review.verdict in {"reduce", "publish"} and not rejected
+    editorial_patch = (not conditions_only and not allowed_sources and review.verdict in {"reduce", "publish"}
+        and (not rejected or patch_rejected)
         and (mapping_violations or missing_sources or review.source_requests or not review.checks["readability"])
         and all(value for key, value in review.checks.items()
                 if key not in {"numbers", "materiality", "counterevidence", "alternatives", "coverage", "depth", "readability"}))
@@ -878,10 +885,20 @@ def revision_bundle(bundle, proposal, review, rejected):
 
         affected = {v.get('source_id') for v in mapping_violations}
         mapping_facts = [f for f in composition_inventory(bundle)['facts'] if f['source_id'] in affected]
+    previous = compact(proposal)
+    composed = bool(bundle.get('fact_inventory_required'))
+    if composed:
+        # The service restores every source note from the committed inventory; the writer owns only the fact
+        # placements. Resending the notes (twice, about 40K characters on 2026-10-12 PM) pushed every full
+        # revision over the input limit, so the repair step was skipped.
+        from .inventory import draft_placements
+
+        previous.pop('source_notes', None)
+        previous['fact_placements'] = draft_placements(draft, bundle)
     return {**bundle, "revision_feedback": {
         # Full originals and raw responses remain frozen. Repeated quote text in
         # the prior draft adds no evidence and can crowd out the repair request.
-        "previous_draft": compact(proposal), "rejected": rejected,
+        "previous_draft": previous, "rejected": rejected,
         "repair_mode": "conditions_only" if conditions_only else "editorial_patch" if editorial_patch else "material_append" if allowed_sources else "full_proposal",
         "allowed_ids": sorted(rejected) if conditions_only else sorted(allowed_sources),
         "allowed_sources": allowed_sources,
@@ -895,7 +912,7 @@ def revision_bundle(bundle, proposal, review, rejected):
         "protected_material_facts": [[a.source_id, [[f.fact, f.main_item_ids] for f in a.material_facts
             if set(f.main_item_ids) & set(allowed_sources) & retained]] for a in review.source_assessments
             if any(set(f.main_item_ids) & set(allowed_sources) & retained for f in a.material_facts)] if editorial_patch else [],
-        "source_notes": [note.model_dump(mode='json') for note in draft.source_notes],
+        "source_notes": [] if composed else [note.model_dump(mode='json') for note in draft.source_notes],
         "checks": review.checks, "concerns": review.concerns,
         "source_assessments": [{"source_id": a.source_id, "material_facts": [f.model_dump(mode="json")
                                 for f in a.material_facts if not set(f.main_item_ids) & retained]}

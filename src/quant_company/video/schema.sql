@@ -48,3 +48,5 @@ CREATE TABLE IF NOT EXISTS video_asset_usage (
  PRIMARY KEY(job_id,asset_id,slot)
 );
 CREATE INDEX IF NOT EXISTS video_asset_usage_recent ON video_asset_usage(used_at);
+-- v3: findings never stop production. Attempts, fixes and remaining findings travel with the job to the owner.
+ALTER TABLE video_jobs ADD COLUMN IF NOT EXISTS qa jsonb NOT NULL DEFAULT '{}'::jsonb;

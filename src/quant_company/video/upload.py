@@ -76,7 +76,7 @@ def references(source, used_ids):
     return body_references(source, used_ids)[0]
 
 
-def compose(copy, day, asof, edition, chapters, refs, playlist_url=''):
+def compose(copy, day, asof, edition, chapters, refs, playlist_url='', strict=True):
     """Fill the owner's template exactly; only the {…} slots vary."""
     lines = [copy.lead, copy.intro, '', f'📅 {day:%Y.%m.%d} | {copy.market} 증시',
              f'자료 기준: {asof:%Y.%m.%d %H:%M} (한국시간) · {TIMING[edition]}', '', '📌 오늘 짚어볼 이야기']
@@ -91,7 +91,13 @@ def compose(copy, day, asof, edition, chapters, refs, playlist_url=''):
     title = f'{copy.title} | {day.month}월 {day.day}일 {EDITION_WORD.get(edition, "아침")} · {SERIES}'
     tags = list(dict.fromkeys(copy.tags)) + list(FIXED_TAGS)
     result = {'title': title, 'description': '\n'.join(lines), 'tags': tags}
-    check(result, refs_allowed={r for r in refs if r.startswith('http')}, playlist_url=playlist_url)
+    try:
+        check(result, refs_allowed={r for r in refs if r.startswith('http')}, playlist_url=playlist_url)
+    except ValueError as error:
+        if strict:
+            raise
+        # The owner uploads by hand: the copy is still written and the broken rule is reported with it.
+        result['findings'] = [f'Upload copy: {error}']
     return result
 
 

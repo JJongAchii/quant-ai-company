@@ -142,6 +142,19 @@ def composition_inventory(bundle):
                            for s in inventory.sources if s.treatment != "covered"]}
 
 
+def draft_placements(proposal, bundle):
+    """The committed facts' placements as restored into a composed draft's source notes (compose's inverse)."""
+    _, indexed = facts(bundle)
+    notes = {n.source_id: n for n in proposal.source_notes}
+    placements = []
+    for key, (source, _, fact) in indexed.items():
+        note = notes.get(source.source_id)
+        mapped = next((f for f in note.material_facts if f.fact == fact.fact and f.quote == fact.quote), None) if note else None
+        if mapped is not None:
+            placements.append({"fact_id": key, "main_item_ids": list(mapped.main_item_ids)})
+    return placements
+
+
 def compose(value, bundle):
     inventory, indexed = facts(bundle)
     placements = {p.fact_id: p.main_item_ids for p in value.fact_placements}

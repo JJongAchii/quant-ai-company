@@ -172,6 +172,8 @@ def request_digest(request: ProviderRequest) -> str:
         material.pop("output_contract", None)
     if request.session is None:
         material.pop("session", None)
+    if not request.attachments:
+        material.pop("attachments", None)
     if request.brief_deadline_unix is None:
         material.pop('brief_deadline_unix', None)
     canonical = json.dumps(material, sort_keys=True, separators=(",", ":"), ensure_ascii=False)

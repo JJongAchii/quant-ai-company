@@ -44,7 +44,7 @@ COMPOSE_SECONDS = 960
 FRAGMENT_INVENTORY_SECONDS = 1080
 REMAINING_SECONDS = {"plan": 2520, "write": 2160, "review": 720,
                      "inventory": 2160, "revise": 720, "final_review": 360}
-# A retried phase (one per phase, see store.MAX_PHASE_ATTEMPTS) carries a -r<attempt> suffix.
+# A retried phase carries a -r<attempt> suffix (-r1..-r9, see store.MAX_PHASE_ATTEMPTS).
 IDENTITY = re.compile(r"^news-brief-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})-"
                       r"(plan|inventory|write|review|revise|final_review)(?:-r[1-9])?$")
 
@@ -120,6 +120,16 @@ def remaining_seconds(phase, bundle):
     return REMAINING_SECONDS[phase]
 
 
+# Owner rule (2026-10-12): a rejected draft is repaired until the edition's expiry and the text as of then ships, so
+# the work window ends 10 minutes before expiry (expires_at = due_at + 1 hour, schedule.editions), leaving that margin
+# for delivery. It used to end 10 minutes after due.
+FINAL_MINUTES = 50
+
+
+def final_at(due_at):
+    return due_at+timedelta(minutes=FINAL_MINUTES)
+
+
 def phase_deadline(phase, bundle, due_at):
     """Share the edition window, reserving downstream review and delivery time.
 
@@ -132,12 +142,12 @@ def phase_deadline(phase, bundle, due_at):
     next_phase = {'plan':'inventory', 'inventory':'write', 'write':'review',
                   'review':'revise', 'revise':'final_review', 'final_review':None}[phase]
     downstream = remaining_seconds(next_phase, bundle) if next_phase else 0
-    return due_at+timedelta(minutes=10)-timedelta(seconds=downstream+60)
+    return final_at(due_at)-timedelta(seconds=downstream+60)
 
 
 def has_runway(phase, bundle, at, due_at):
     deadline = phase_deadline(phase, bundle, due_at)
-    return at < deadline if deadline else at+timedelta(seconds=remaining_seconds(phase, bundle)+60) < due_at+timedelta(minutes=10)
+    return at < deadline if deadline else at+timedelta(seconds=remaining_seconds(phase, bundle)+60) < final_at(due_at)
 
 
 def direct_instruction(text):

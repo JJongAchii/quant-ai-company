@@ -3,7 +3,9 @@
 The fixed template in ./design draws every frame from an EpisodePlan via a deterministic seek(t); frames are
 captured at 30 fps and encoded with the real narration. Layout, caption and audio checks gate the output."""
 
+import fcntl
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -17,12 +19,15 @@ from zoneinfo import ZoneInfo
 
 from .body import references as body_references
 from .contracts import digest
-from .render import Aligner, checksum, probe, quality_probe, run, spoken
+from .illustrations import GENERATED, library_entries
+from .render import Aligner, RenderInProgress, checksum, probe, quality_probe, run, spoken
 from .upload import compose as compose_upload
 
 KST = ZoneInfo('Asia/Seoul')
 
 FPS = 30
+# Extra Chromium flags: the Fargate render image sets --disable-dev-shm-usage (its /dev/shm cannot be resized).
+CHROMIUM_ARGS = os.environ.get('VIDEO_CHROMIUM_ARGS', '').split()
 LEAD, TAIL = 0.5, 0.8
 MIN_SCENE = {'map': 11.0, 'flow': 5.5, 'cold_open': 6.0, 'summary3': 6.0, 'counter': 6.0, 'signals': 5.0}
 CHAPTER_TITLES = {'': '오프닝', '요약': '오늘 꼭 알아야 할 세 가지', '시장': '시장 한눈에', '핵심 이슈': '핵심 이슈',
@@ -30,6 +35,46 @@ CHAPTER_TITLES = {'': '오프닝', '요약': '오늘 꼭 알아야 할 세 가�
 WEEKDAYS = '월화수목금토일'
 # Edition label in the fixed top bar (spec §14): the source edition decides it, never the model.
 EDITIONS = {'am': '아침 시장 브리핑', 'close': '마감 브리핑'}
+
+# The template draws ▲/▼ from a direction field in front of these values (and after image labels). A sign the script
+# also wrote is dropped so the screen shows exactly one arrow (2026-10-12 morning: "▲ ▲0.59%" on 18 values).
+ARROWED = {'cold_open': ('stats', 'value', 'big_dir'), 'market_board': ('tiles', 'change', 'dir'),
+           'headline': ('stats', 'change', 'dir'), 'compare': ('tiles', 'value', 'dir')}
+SIGNS = {'up': '▲', 'dn': '▼'}
+LEAD_SIGN, TRAIL_SIGN = re.compile(r'^\s*([▲▼])\s*'), re.compile(r'\s*([▲▼])\s*$')
+
+
+def single_arrows(kind, data, ticker=None):
+    """Strips script-written signs where the template adds one; returns where a written sign contradicted the direction
+    field (a finding: the screen follows the direction field)."""
+    conflicts = []
+
+    def bare(text, direction, where, pattern=LEAD_SIGN):
+        found = pattern.search(text) if isinstance(text, str) and direction in SIGNS else None
+        if not found:
+            return text
+        if found.group(1) != SIGNS[direction]:
+            conflicts.append(where)
+        return text[:found.start()] + text[found.end():]
+
+    if kind in ARROWED:
+        key, field, direction = ARROWED[kind]
+        for item in data.get(key) or []:
+            if isinstance(item, dict) and field in item:
+                item[field] = bare(item[field], item.get(direction), f'{kind} {item.get(field)}')
+    if kind == 'flow':
+        for node in data.get('nodes') or []:
+            for row in (node.get('rows') or []) if isinstance(node, dict) else []:
+                if isinstance(row, list) and len(row) > 2:
+                    row[1] = bare(row[1], row[2], f'flow {row[1]}')
+    for holder in (data, data.get('image') if isinstance(data.get('image'), dict) else {}):
+        for label in holder.get('labels') or []:
+            if isinstance(label, dict) and 'text' in label:
+                label['text'] = bare(label['text'], label.get('dir'), f"label {label['text']}", TRAIL_SIGN)
+    for item in (ticker or {}).get('items') or []:
+        item['change'] = bare(item.get('change'), item.get('dir'), f"ticker {item.get('name')}")
+    return conflicts
+
 
 QA_JS = r"""() => {
  const out=[]; const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
@@ -122,11 +167,58 @@ def captions(words, offset, scene_end):
     return cues
 
 
+# Long scenes are split so 16 vCPU stay busy and an interruption loses at most ten seconds of one scene.
+SEGMENT_FRAMES = 300
+
+
+def segment_done(directory, name, start, end, page_digest):
+    record, video = directory / f'seg-{name}.json', directory / f'seg-{name}.mp4'
+    try:
+        done = json.loads(record.read_text())
+    except (OSError, ValueError):
+        return False
+    return (done.get('start'), done.get('end'), done.get('page')) == (start, end, page_digest) and video.is_file() \
+        and checksum(video) == done.get('sha256')
+
+
+def render_segments(page, items, ffmpeg, page_digest):
+    """items: [(segment name, first frame, end frame, segment path)]. A finished segment is renamed into place and
+    recorded with its frame range, page digest and checksum, so an interrupted render resumes at the next scene."""
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(args=CHROMIUM_ARGS)
+        try:
+            tab = browser.new_page(viewport={'width': 1920, 'height': 1080}, device_scale_factor=1)
+            tab.route('http*://**/*', lambda route: route.abort())
+            tab.goto(Path(page).as_uri())
+            tab.evaluate('document.fonts.ready')
+            tab.wait_for_timeout(300)
+            for _name, start, end, out in items:
+                out, partial = Path(out), Path(out).with_suffix('.partial.mp4')
+                encoder = subprocess.Popen([ffmpeg, '-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', str(FPS),
+                                            '-c:v', 'mjpeg', '-i', '-', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18',
+                                            '-pix_fmt', 'yuv420p', '-threads', '2', str(partial)], stdin=subprocess.PIPE)
+                for i in range(start, end):
+                    tab.evaluate(f'seek({i / FPS})')
+                    # Intermediate frames only (the delivered video is x264 CRF 18): q80 halves capture and decode work.
+                    encoder.stdin.write(tab.screenshot(type='jpeg', quality=80))
+                encoder.stdin.close()
+                if encoder.wait():
+                    raise ValueError('Frame encoding failed')
+                os.replace(partial, out)
+                (out.with_suffix('.json')).write_text(json.dumps({'start': start, 'end': end, 'page': page_digest,
+                                                                  'sha256': checksum(out)}))
+        finally:
+            browser.close()
+    return len(items)
+
+
 def render_range(page, start, end, out, ffmpeg):
     from playwright.sync_api import sync_playwright
 
     with sync_playwright() as pw:
-        browser = pw.chromium.launch()
+        browser = pw.chromium.launch(args=CHROMIUM_ARGS)
         try:
             tab = browser.new_page(viewport={'width': 1920, 'height': 1080}, device_scale_factor=1)
             tab.route('http*://**/*', lambda route: route.abort())
@@ -134,11 +226,11 @@ def render_range(page, start, end, out, ffmpeg):
             tab.evaluate('document.fonts.ready')
             tab.wait_for_timeout(300)
             encoder = subprocess.Popen([ffmpeg, '-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', str(FPS), '-c:v', 'mjpeg',
-                                        '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p',
+                                        '-i', '-', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p',
                                         '-threads', '2', str(out)], stdin=subprocess.PIPE)
             for i in range(start, end):
                 tab.evaluate(f'seek({i / FPS})')
-                encoder.stdin.write(tab.screenshot(type='jpeg', quality=92))
+                encoder.stdin.write(tab.screenshot(type='jpeg', quality=80))
             encoder.stdin.close()
             if encoder.wait():
                 raise ValueError('Frame encoding failed')
@@ -150,8 +242,9 @@ def render_range(page, start, end, out, ffmpeg):
 class MotionRenderer:
     def __init__(self, settings, aligner=None, library=None):
         self.settings = settings
-        self.aligner = aligner or Aligner(settings.video_alignment_model)
+        self.aligner = aligner or Aligner(settings.video_alignment_model, settings.video_alignment_threads)
         self._library = library
+        self.episode_assets, self.generated_used, self.sign_conflicts = {}, set(), []
 
     @property
     def library(self):
@@ -169,14 +262,16 @@ class MotionRenderer:
         for scene in plan.scenes:
             data = json.loads(json.dumps(scene.data))
             for holder in self._images(data):
-                asset = self.library[holder.pop('asset')]
+                asset = self._asset(holder.pop('asset'))
                 name = Path(asset['file']).name
                 shutil.copy2(Path(self.settings.video_asset_dir) / asset['file'], page / 'img' / name)
                 holder['file'] = 'img/' + name
-                # Real photos keep their credit chip; illustrations carry no caption chip (spec §14).
-                holder['credit'] = f"자료사진 · {asset['author']} · {asset['license']}" if asset['kind'] == '자료사진' else ''
+                # Real photos keep their credit chip, generated pictures say so; illustrations carry no chip (spec §14).
+                holder['credit'] = (f"자료사진 · {asset['author']} · {asset['license']}" if asset['kind'] == '자료사진'
+                                    else GENERATED if asset['kind'] == GENERATED else '')
                 used[name] = asset
             data['id'] = scene.id
+            self.sign_conflicts += single_arrows(scene.type, data)
             scenes.append({'id': scene.id, 'chapter': scene.chapter, 'type': scene.type, 'narration': scene.narration, 'data': data})
         return page, scenes, used
 
@@ -190,21 +285,54 @@ class MotionRenderer:
             for v in value:
                 yield from self._images(v)
 
-    def render(self, job, plan, directory, audio_paths):
-        from playwright.sync_api import sync_playwright
-
+    def render(self, job, plan, directory, audio_paths, texts=None):
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
+        # One render per directory: a thread left behind by an interrupted tick keeps the lock until it finishes.
+        lock = os.open(directory / '.render.lock', os.O_CREAT | os.O_RDWR, 0o600)
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            os.close(lock)
+            raise RenderInProgress(str(directory)) from None
+        try:
+            return self._render(job, plan, directory, audio_paths, texts)
+        finally:
+            os.close(lock)
+
+    def _asset(self, asset_id):
+        # gen-* IDs: this episode's checked picture or its library fallback (video/illustrations.py).
+        asset = self.episode_assets.get(asset_id) or self.library[asset_id]
+        if asset.get('kind') == GENERATED:
+            self.generated_used.add(asset_id)
+        return asset
+
+    def _render(self, job, plan, directory, audio_paths, texts):
+        self.sign_conflicts, self.generated_used = [], set()
+        self.episode_assets = library_entries(job, plan, self.settings, self.library)
         page, scenes, used = self._page(job, plan, directory)
         day = job['source']['day']
         day = day_of(day)
-        t, changes, prev, alignment, all_captions = 0.0, [], None, [], []
-        for scene, audio in zip(scenes, audio_paths, strict=True):
+        t, changes, prev, alignment, all_captions, heard, misheard = 0.0, [], None, [], [], [], {}
+        texts = texts or [spoken(scene['narration']) for scene in scenes]
+        for number, (scene, audio, said) in enumerate(zip(scenes, audio_paths, texts, strict=True)):
             duration = float(probe(audio, self.settings)['format']['duration'])
             if not 1 <= duration <= 150:
                 raise ValueError('Narration scene duration outside limits')
-            aligned = self.aligner.align(audio, spoken(scene['narration']))
+            # Speech-to-text is the slowest preparation step; a resumed render reuses it for the same take.
+            cache, key = directory / f'align-{number:02}.json', checksum(audio) + ':' + digest(said)
+            try:
+                kept = json.loads(cache.read_text())
+                aligned = kept['aligned'] if kept.get('key') == key else None
+            except (OSError, ValueError, KeyError):
+                aligned = None
+            if aligned is None:
+                aligned = self.aligner.align(audio, said)
+                cache.write_text(json.dumps({'key': key, 'aligned': aligned}, ensure_ascii=False))
             alignment.append(aligned)
+            heard += [f"Scene {scene['id']}: {finding}" for finding in aligned.get('findings', [])]
+            if aligned.get('findings'):
+                misheard[scene['id']] = list(aligned['findings'])
             length = max(LEAD + duration + TAIL, MIN_SCENE.get(scene['type'], 4.5))
             scene.update(t0=round(t, 3), t1=round(t + length, 3), audio=str(audio), duration=duration)
             words = aligned.get('words') or [{'word': c['text'], 'start': c['start'], 'end': c['end']} for c in aligned['cues']]
@@ -222,50 +350,58 @@ class MotionRenderer:
         review_copy = job.get('policy', {}).get('delivery') == 'youtube' and not self.settings.video_publish_enabled
         sample = '검토용 샘플' if review_copy else ''
         # No collection or article clock time on screen (spec §14); the description keeps the data basis.
+        ticker = plan.ticker.model_dump(mode='json')
+        self.sign_conflicts += single_arrows('', {}, ticker)
         ep = {'date_label': f"{day:%m.%d} {WEEKDAYS[day.weekday()]}", 'asof': '',
               'sample_mark': sample, 'brand_label': EDITIONS.get(job['source'].get('edition_kind', 'am'), EDITIONS['am']), 'chapter_names': [c for c in CHAPTER_TITLES if c],
-              'ticker': plan.ticker.model_dump(mode='json'), 'scenes': scenes, 'total': total, 'changes': changes,
+              'ticker': ticker, 'scenes': scenes, 'total': total, 'changes': changes,
               'captions': all_captions}
         (page / 'episode.js').write_text('window.EP=' + json.dumps(ep, ensure_ascii=False) + ';')
         index = page / 'index.html'
-        issues = {}
-        with sync_playwright() as pw:
-            browser = pw.chromium.launch()
-            try:
-                tab = browser.new_page(viewport={'width': 1920, 'height': 1080})
-                tab.route('http*://**/*', lambda route: route.abort())
-                errors = []
-                tab.on('pageerror', lambda e: errors.append(str(e)))
-                tab.goto(index.as_uri())
-                tab.evaluate('document.fonts.ready')
-                if errors:
-                    raise ValueError('Template failed to build the episode')
-                for scene in scenes:
-                    tab.evaluate(f"seek({scene['t1'] - 0.6})")
-                    found = tab.evaluate(QA_JS)
-                    for a, b, _ in (c for c in all_captions if scene['t0'] <= c[0] < scene['t1']):
-                        tab.evaluate(f'seek({(a + b) / 2})')
-                        if tab.evaluate("document.querySelector('#capbox').getBoundingClientRect().height") > 2 * 40 * 1.35 + 30:
-                            found.append(['caption-3-lines', ''])
-                    if found:
-                        issues[scene['id']] = found
-                self._thumbnail(browser, plan, page, ep, directory)
-            finally:
-                browser.close()
-        if issues:
-            (directory / 'layout-qa.json').write_text(json.dumps(issues, ensure_ascii=False, indent=1))
-            raise ValueError('Text exceeds safe screen area')
-        frames = int(total * FPS)
-        workers = max(1, self.settings.video_render_workers)
-        chunk = -(-frames // workers)
-        jobs = [(str(index), k * chunk, min(frames, (k + 1) * chunk), str(directory / f'part-{k}.mp4'), self.settings.video_ffmpeg)
-                for k in range(workers)]
-        if workers == 1:
-            render_range(*jobs[0])
+        page_digest = digest({'episode': ep, 'plan': plan.model_dump(mode='json'), 'fps': FPS})
+        issues, findings, stills = {}, list(heard), []
+        if self.sign_conflicts:
+            findings.append('Written arrow contradicts the direction field (screen follows the field): '
+                            + ', '.join(self.sign_conflicts)[:300])
+        (directory / 'review').mkdir(exist_ok=True)
+        try:
+            layout = json.loads((directory / 'layout.json').read_text())
+            layout = layout if layout.get('page') == page_digest and (directory / 'thumbnail.png').is_file() else None
+        except (OSError, ValueError):
+            layout = None
+        if layout:
+            issues, stills = layout['issues'], layout['stills']
+            findings += layout['thumbnail']
         else:
-            with ProcessPoolExecutor(workers) as pool:
-                list(pool.map(render_range, *zip(*jobs, strict=True)))
-        (directory / 'parts.txt').write_text(''.join(f"file '{Path(j[3]).name}'\n" for j in jobs))
+            issues, stills, thumbnail = self._layout(plan, page, index, ep, scenes, all_captions, directory)
+            findings += thumbnail
+            (directory / 'layout.json').write_text(json.dumps({'page': page_digest, 'issues': issues, 'stills': stills,
+                                                               'thumbnail': thumbnail}, ensure_ascii=False))
+        if issues:
+            # A finding, not a stop: the episode is still produced and the owner sees exactly which scenes overflow.
+            (directory / 'layout-qa.json').write_text(json.dumps(issues, ensure_ascii=False, indent=1))
+            findings.append('Text exceeds safe screen area in scenes ' + ', '.join(issues))
+        frames = int(total * FPS)
+        # One segment per scene: a resumed render skips every finished scene. Workers take scenes by frame count.
+        bounds = [round(scene['t0'] * FPS) for scene in scenes] + [frames]
+        segments = [(f'{n:02}-{part:02}', first, min(first + SEGMENT_FRAMES, bounds[n + 1]),
+                     str(directory / f'seg-{n:02}-{part:02}.mp4'))
+                    for n in range(len(scenes))
+                    for part, first in enumerate(range(bounds[n], bounds[n + 1], SEGMENT_FRAMES))]
+        todo = [s for s in segments if not segment_done(directory, s[0], s[1], s[2], page_digest)]
+        workers = max(1, min(self.settings.video_render_workers, len(todo) or 1))
+        loads, plans = [0] * workers, [[] for _ in range(workers)]
+        for segment in sorted(todo, key=lambda s: s[1] - s[2]):
+            k = loads.index(min(loads))
+            plans[k].append(segment)
+            loads[k] += segment[2] - segment[1]
+        work = [(str(index), sorted(items), self.settings.video_ffmpeg, page_digest) for items in plans if items]
+        if len(work) == 1:
+            render_segments(*work[0])
+        elif work:
+            with ProcessPoolExecutor(len(work)) as pool:
+                list(pool.map(render_segments, *zip(*work, strict=True)))
+        (directory / 'parts.txt').write_text(''.join(f"file '{Path(s[3]).name}'\n" for s in segments))
         silent = directory / 'silent.mp4'
         run([self.settings.video_ffmpeg, '-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', str(directory / 'parts.txt'), '-c', 'copy', str(silent)])
         pieces = []
@@ -287,10 +423,13 @@ class MotionRenderer:
         if (video.get('width'), video.get('height')) != (1920, 1080) or abs(duration - total) > 0.5:
             raise ValueError('Final video dimensions or audio duration mismatch')
         run([self.settings.video_ffmpeg, '-v', 'error', '-i', str(output), '-f', 'null', '-'], timeout=300)
-        measured = quality_probe(output, self.settings)
+        measured = quality_probe(output, self.settings, strict=False)
+        findings += measured.pop('findings')
         if measured['true_peak_dbfs'] > -1.5:
-            raise ValueError('True peak above -1.5 dBTP')
-        manifest = self._package(job, plan, directory, scenes, all_captions, alignment, used, duration, measured, frames)
+            findings.append(f"True peak {measured['true_peak_dbfs']:.1f} dBTP above -1.5")
+        manifest = self._package(job, plan, directory, scenes, all_captions, alignment, used, duration, measured, frames,
+                                 findings, review={'frames': stills + [{'scene': 'thumbnail', 'file': 'thumbnail.png'}],
+                                                   'audio': misheard})
         # Intermediates are not part of the reviewed artifact set (about 0.2 GB per episode).
         for path in [*directory.glob('part-*.mp4'), *directory.glob('aud-*.wav'), directory / 'silent.mp4',
                      directory / 'narration.wav', directory / 'parts.txt', directory / 'aud.txt']:
@@ -298,28 +437,63 @@ class MotionRenderer:
         shutil.rmtree(directory / 'page', ignore_errors=True)
         return manifest
 
+    def _layout(self, plan, page, index, ep, scenes, all_captions, directory):
+        from playwright.sync_api import sync_playwright
+
+        issues, stills = {}, []
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(args=CHROMIUM_ARGS)
+            try:
+                tab = browser.new_page(viewport={'width': 1920, 'height': 1080})
+                tab.route('http*://**/*', lambda route: route.abort())
+                errors = []
+                tab.on('pageerror', lambda e: errors.append(str(e)))
+                tab.goto(index.as_uri())
+                tab.evaluate('document.fonts.ready')
+                if errors:
+                    raise ValueError('Template failed to build the episode')
+                for number, scene in enumerate(scenes):
+                    tab.evaluate(f"seek({scene['t1'] - 0.6})")
+                    found = tab.evaluate(QA_JS)
+                    # The settled frame an editor would look at; reviewed by Claude before delivery.
+                    name = f"review/{number:02}-{scene['id']}.jpg"
+                    tab.screenshot(path=str(directory / name), type='jpeg', quality=60)
+                    stills.append({'scene': scene['id'], 'file': name})
+                    for a, b, _ in (c for c in all_captions if scene['t0'] <= c[0] < scene['t1']):
+                        tab.evaluate(f'seek({(a + b) / 2})')
+                        if tab.evaluate("document.querySelector('#capbox').getBoundingClientRect().height") > 2 * 40 * 1.35 + 30:
+                            found.append(['caption-3-lines', ''])
+                    if found:
+                        issues[scene['id']] = found
+                thumbnail = self._thumbnail(browser, plan, page, ep, directory)
+            finally:
+                browser.close()
+        return issues, stills, thumbnail
+
     def _thumbnail(self, browser, plan, page, ep, directory):
         image = ''
-        if plan.thumbnail_image and plan.thumbnail_image in self.library:
-            asset = self.library[plan.thumbnail_image]
+        if plan.thumbnail_image and (plan.thumbnail_image in self.library or plan.thumbnail_image in self.episode_assets):
+            asset = self._asset(plan.thumbnail_image)
             image = 'img/' + Path(asset['file']).name
             shutil.copy2(Path(self.settings.video_asset_dir) / asset['file'], page / image)
         stat_dir = 'up' if '▲' in plan.thumbnail_stat else 'dn' if '▼' in plan.thumbnail_stat else ''
         html = (page / 'thumbnail.html').read_text()
         for k, v in {'date': ep['date_label'], 'question': escape(plan.thumbnail), 'stat': escape(plan.thumbnail_stat),
-                     'stat_dir': stat_dir, 'image': image, 'mark': ep['sample_mark']}.items():
+                     'stat_dir': stat_dir, 'image': image, 'mark': ep['sample_mark'], 'brand': ep['brand_label']}.items():
             html = html.replace('{{' + k + '}}', v)
         (page / 'thumbnail.render.html').write_text(html)
         tab = browser.new_page(viewport={'width': 1280, 'height': 720})
         tab.route('http*://**/*', lambda route: route.abort())
         tab.goto((page / 'thumbnail.render.html').as_uri())
         tab.evaluate('document.fonts.ready')
-        if not tab.evaluate("document.querySelector('.q').getBoundingClientRect().bottom < document.querySelector('.bar').getBoundingClientRect().top"):
-            raise ValueError('Thumbnail text exceeds safe screen area')
+        found = [] if tab.evaluate("document.querySelector('.q').getBoundingClientRect().bottom < document.querySelector('.bar').getBoundingClientRect().top") \
+            else ['Thumbnail text exceeds safe screen area']
         tab.screenshot(path=str(directory / 'thumbnail.png'))
         tab.close()
+        return found
 
-    def _package(self, job, plan, directory, scenes, all_captions, alignment, used, duration, measured, frames):
+    def _package(self, job, plan, directory, scenes, all_captions, alignment, used, duration, measured, frames, findings=(),
+                 review=None):
         def stamp(x):
             ms = round(x * 1000)
             return f'{ms // 3600000:02}:{ms // 60000 % 60:02}:{ms // 1000 % 60:02},{ms % 1000:03}'
@@ -340,7 +514,8 @@ class MotionRenderer:
         copy = compose_upload(plan.upload, day_of(job['source']['day']), cutoff_of(job['source']['cutoff']),
                               job['source'].get('edition_kind', 'am'),
                               [(c['start'], plan.thumbnail if i == 0 else c['title']) for i, c in enumerate(chapters)],
-                              refs, self.settings.video_playlist_url)
+                              refs, self.settings.video_playlist_url, strict=False)
+        findings = [*findings, *copy.pop('findings', [])]
         description = copy['description']
         photos = [a for a in used.values() if a['kind'] == '자료사진']
         credits = ''.join(f"\n- {a['subject']} · {a['author']} · {a['license']}"
@@ -358,7 +533,9 @@ class MotionRenderer:
         manifest = {'title': copy['title'], 'tags': copy['tags'], 'duration': duration, 'qa_passed': True, 'human_watched': False, 'template': 'motion-v2', 'fps': FPS, 'frames': frames,
                     'checks': ['source_numbers', 'layout_dom', 'caption_lines', 'real_speech_timestamps', 'transcription', 'dimensions',
                                'av_duration', 'full_decode', 'black_frames', 'silence', 'loudness', 'true_peak'],
-                    'audio_quality': measured, 'files': {n: checksum(directory / n) for n in names},
+                    'audio_quality': measured, 'findings': list(findings), 'review': review or {'frames': [], 'audio': {}},
+                    'files': {n: checksum(directory / n) for n in names},
+                    'generated_images': sorted(self.generated_used),
                     'chapters': chapters, 'description': description, 'directory': str(directory)}
         manifest['digest'] = digest(manifest)
         (directory / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))

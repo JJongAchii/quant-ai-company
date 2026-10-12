@@ -85,15 +85,40 @@ class Settings(BaseSettings):
     video_episode_credit_limit: int = Field(default=100, ge=0, le=500)
     video_voice: str = "Vincent"
     # Script and review run on the isolated Claude subscription runtime, never the Codex lane.
-    video_model: str = "claude-opus-5"
+    video_model: Literal["claude-opus-5", "claude-opus-5-5"] = "claude-opus-5-5"
+    # Frozen into each new job's policy; jobs created before keep the effort they were requested with.
+    # Script writing and card fixes use video_reasoning_effort; the script review and final screen review use
+    # video_review_effort (owner decision 2026-10-12: script xhigh, reviews max, both on Opus 5.5).
+    video_reasoning_effort: Literal["high", "xhigh", "max"] = "xhigh"
+    video_review_effort: Literal["high", "xhigh", "max"] = "max"
+    # Runway MCP generate_speech models confirmed in its tools/list schema (2026-10-12); frozen into each new job.
+    video_speech_model: Literal["eleven_v4", "eleven_multilingual_v2"] = "eleven_v4"
     video_model_runtime_url: str = "http://claude-runtime:8080"
     video_ffmpeg: str = "ffmpeg"
     video_ffprobe: str = "ffprobe"
     video_alignment_model: str = "small"
+    # Speech-to-text threads for subtitle alignment: 2 on the shared host, more on the 16-vCPU render task.
+    video_alignment_threads: int = Field(default=2, ge=1, le=16)
     # motion-v2: fixed card/motion template (docs/DAILY_BRIEF_DESIGN_SPEC.md); text-v1: the earlier text slides.
     video_template: Literal["motion-v2", "text-v1"] = "motion-v2"
     video_asset_dir: Path = Path("/var/lib/quant-company/video-assets")
-    video_render_workers: int = Field(default=1, ge=1, le=8)
+    video_render_workers: int = Field(default=1, ge=1, le=16)
+    # Story-specific pictures from the separate Codex image runtime (subscription; empty URL = library images only).
+    video_image_runtime_url: str = ""
+    video_image_model: str = "gpt-6-astra"
+    video_image_effort: Literal["low", "medium", "high"] = "low"
+    # Rendering runs on this host ('local') or on an ECS Fargate task that exists only while it renders ('remote').
+    # Remote renders resume scene by scene from S3 and fall back to a local render after video_render_attempts.
+    video_render_backend: Literal["local", "remote"] = "local"
+    video_render_region: str = "ap-northeast-2"
+    video_render_bucket: str = ""
+    video_render_cluster: str = ""
+    video_render_task_definition: str = ""
+    video_render_subnets: list[str] = []
+    video_render_security_group: str = ""
+    video_render_attempts: int = Field(default=3, ge=1, le=6)
+    # Hard limit per render task (the task exits itself; the worker stops it 10 minutes later at the latest).
+    video_render_timeout_minutes: int = Field(default=90, ge=10, le=360)
     # 증시story playlist; when empty the description omits the "▶ 증시story 모아보기" lines.
     video_playlist_url: str = "https://www.youtube.com/playlist?list=PLbCkACCer37U"
     # Morning review-ready target (HH:MM KST); public approval still expires at 09:00 KST.
@@ -217,8 +242,10 @@ class Settings(BaseSettings):
             raise ValueError("Model assignments require owner-selected account control")
         if self.video_enabled and not (self.briefing_enabled and self.briefing_publish_enabled):
             raise ValueError("Video requires an enabled publishing briefing source")
-        if self.video_enabled and self.video_model != "claude-opus-5":
-            raise ValueError("Video scripts require the qualified Claude subscription model")
+        if self.video_render_backend == "remote" and not (
+                self.video_render_bucket and self.video_render_cluster and self.video_render_task_definition
+                and self.video_render_subnets and self.video_render_security_group):
+            raise ValueError("Remote rendering requires its bucket, cluster, task definition, subnets and security group")
         if self.video_enabled and not self.video_runway_workspace_id:
             raise ValueError('Video production requires an explicit Runway workspace')
         if self.video_upload_enabled and not (self.video_enabled and self.video_youtube_channel_id):

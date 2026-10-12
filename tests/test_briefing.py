@@ -17,6 +17,7 @@ from quant_company.briefing.contracts import (
     SourceDocument,
 )
 from quant_company.briefing.editor import artifact, observation_text, render, validate
+from quant_company.briefing.execution import final_at
 from quant_company.briefing.runner import BriefEditor
 from quant_company.briefing.store import BriefStore, priority_pending
 from quant_company.cli import manifests
@@ -283,9 +284,8 @@ def test_reviewer_rejection_reduces_coverage(brief):
     e = seed(brief)
     store.commit(response(store.prepare()["request"]))
     critic = store.prepare()["request"]
-    clock["at"] = e.due_at  # Too little time remains for repair plus a second review.
+    clock["at"] = final_at(e.due_at)-timedelta(minutes=5)  # Too little time remains for repair plus a second review.
     store.commit(response(critic, review(rejected_ids=["sp500"])))
-    clock["at"] = e.due_at
     store.flush()
     current = next(row for row in store.status()["editions"] if row["id"] == e.id)
     assert current["quality"]["reduced"] and current["quality"]["missing_core"] == ["sp500"]
@@ -327,7 +327,7 @@ def test_late_review_is_stale_and_the_validated_draft_ships_reduced(brief):
     e = seed(brief)
     store.commit(response(store.prepare()["request"]))
     review = store.prepare()["request"]
-    clock["at"] = e.due_at+timedelta(minutes=10)
+    clock["at"] = final_at(e.due_at)
     assert store.commit(response(review))["state"] == "stale"
     store.flush()
     row = next(r for r in store.status(include_rendered=True)["editions"] if r["id"] == e.id)
@@ -355,19 +355,79 @@ def test_invalid_review_response_gets_one_retry_and_the_edition_ships_its_body(b
     assert sorted(calls) == [("review", "completed"), ("review", "retry"), ("write", "completed")]
 
 
-def test_second_invalid_response_is_final_and_the_draft_ships_at_due(brief):
+def test_a_retry_is_told_which_server_check_rejected_the_draft(brief):
+    """2026-10-12 PM: the write draft had no fact placements; the identical retry would likely repeat it."""
+    from quant_company.briefing.store import retry_note
+
+    store, clock = brief
+    seed(brief)
+    store.commit(response(store.prepare()["request"]))
+    first = store.prepare()["request"]
+    store.fault(first["request_id"], "invalid_brief_response", 0, "inventory_placement_accounting")
+    retry = store.prepare()["request"]
+    assert retry["request_id"] == first["request_id"] + "-r1"
+    assert retry["prompt"] == first["prompt"] + retry_note("inventory_placement_accounting")
+    assert "exactly one entry for every committed fact ID" in retry["prompt"]
+    calls = {c["phase"]: c for c in store.status()["calls"] if c["state"] == "retry"}
+    assert calls and all(c["state"] == "retry" for c in calls.values())
+
+
+def test_the_tenth_invalid_response_is_final_and_the_draft_ships_at_due(brief):
+    from quant_company.briefing.store import MAX_PHASE_ATTEMPTS
+
     store, clock = brief
     e = seed(brief)
     store.commit(response(store.prepare()["request"]))
-    for _ in range(2):
-        store.fault(store.prepare()["request"]["request_id"], "invalid_brief_response")
+    ids = []
+    for _ in range(MAX_PHASE_ATTEMPTS):
+        ids.append(store.prepare()["request"]["request_id"])
+        store.fault(ids[-1], "invalid_brief_response")
+    assert ids[1:] == [f"{ids[0]}-r{n}" for n in range(1, MAX_PHASE_ATTEMPTS)]  # the runtime accepts -r1..-r9
     assert store.prepare()["state"] == "idle"
     clock["at"] = e.due_at
     store.flush()
     row = next(r for r in store.status(include_rendered=True)["editions"] if r["id"] == e.id)
     assert row["state"] == "committed" and row["quality"]["salvaged_from"] == "blocked"
     assert "미국 증시는 반도체가 주도했으며" in row["rendered"][0]
-    assert len(store.status()["calls"]) == 3
+    assert len(store.status()["calls"]) == 1+MAX_PHASE_ATTEMPTS
+
+
+def test_a_rejected_draft_is_repaired_and_attempts_continue_after_due_until_the_final_time(brief):
+    """Owner (2026-10-12): "재시도 시 잘못된 부분만 올바르게 잘 쓰면 되는거 아니야. 그럼 만료시각까지 쓰다가 그때까지의
+    글 기준으로 그냥 하는걸로 해." The retry carries the draft and the failed locations, not the whole phase again."""
+    store, clock = brief
+    e = seed(brief)
+    store.commit(response(store.prepare()["request"]))
+    first = store.prepare()["request"]
+    clock["at"] = e.due_at+timedelta(minutes=20)  # past due: the old window closed at due+10
+    draft = json.dumps({"verdict": "publish", "checks": {}})
+    store.fault(first["request_id"], "invalid_brief_response", 0, "brief_output_schema", draft,
+                [{"loc": "checks.numbers", "type": "missing"}])
+    store.flush()
+    assert next(r for r in store.status()["editions"] if r["id"] == e.id)["state"] == "reviewing"
+    retry = store.prepare()["request"]
+    assert retry["request_id"] == first["request_id"]+"-r1" and retry["output_contract"] == first["output_contract"]
+    assert "Change only what the check requires" in retry["prompt"] and "checks.numbers" in retry["prompt"]
+    assert retry["prompt"].endswith("PREVIOUS_DRAFT:\n"+draft) and len(retry["prompt"]) < len(first["prompt"])
+    clock["at"] = final_at(e.due_at)  # the final time: what exists ships, the running call is left unresolved
+    store.flush()
+    row = next(r for r in store.status(include_rendered=True)["editions"] if r["id"] == e.id)
+    assert row["state"] == "committed" and row["quality"]["salvaged_from"] == "reviewing"
+    assert "미국 증시는 반도체가 주도했으며" in row["rendered"][0]
+
+
+def test_an_uncertain_turn_keeps_its_receipt_and_the_next_attempt_is_a_new_request(brief):
+    """2026-10-12 PM: the write retry ended uncertain and the edition stopped; the owner wants it written properly."""
+    store, clock = brief
+    seed(brief)
+    store.commit(response(store.prepare()["request"]))
+    first = store.prepare()["request"]
+    store.fault(first["request_id"], "uncertain")
+    retry = store.prepare()["request"]
+    assert retry["request_id"] == first["request_id"]+"-r1" and retry["prompt"] == first["prompt"]
+    calls = {c["id"]: c for c in store.status()["calls"]}
+    assert calls[first["request_id"]]["state"] == "retry" and calls[first["request_id"]]["error"] == "uncertain"
+    assert store.commit(response(first, review()))["state"] == "stale"  # a late answer to it is never used
 
 
 def test_retry_needs_the_shared_deadline_runway(brief):
@@ -375,7 +435,7 @@ def test_retry_needs_the_shared_deadline_runway(brief):
     e = seed(brief)
     store.commit(response(store.prepare()["request"]))
     request = store.prepare()["request"]
-    clock["at"] = e.due_at
+    clock["at"] = final_at(e.due_at)-timedelta(minutes=1)
     store.fault(request["request_id"], "invalid_brief_response")
     with store.db.transaction() as conn:
         assert conn.execute("SELECT state FROM brief_editions WHERE id=%s", (e.id,)).fetchone()["state"] == "blocked"
@@ -385,7 +445,7 @@ def test_missing_model_receipt_remains_unresolved_after_fallback(brief):
     store, clock = brief
     e = seed(brief)
     request = store.prepare()["request"]
-    clock["at"] = e.due_at+timedelta(minutes=10)
+    clock["at"] = final_at(e.due_at)
     store.flush()
     assert store.status()["calls"][0]["state"] == "unresolved"
     assert store.commit(response(request))["state"] == "stale"

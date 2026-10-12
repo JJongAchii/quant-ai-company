@@ -43,7 +43,7 @@ from pathlib import Path
 root = Path(__file__).parent
 control = json.loads((root/'control.json').read_text())
 if sys.argv[1:] == ['--version']:
-    print(control.get('version', '2.1.275') + ' (Claude Code)')
+    print(control.get('version', '2.1.280') + ' (Claude Code)')
     sys.exit(0)
 if sys.argv[1:] == ['auth', 'status']:
     print(json.dumps(control.get('auth', {'loggedIn': True, 'authMethod': 'claude.ai', 'subscriptionType': 'pro'})))
@@ -181,7 +181,8 @@ async def test_bad_results_never_repeat_inference(fake_claude, change, code):
     assert fault.value.code == code
     with pytest.raises(ProviderFault) as cached:
         await runner(config).run(request())
-    assert cached.value.code == "uncertain" and len(calls()) == 1
+    # A definitive failure is reported again with its own code; anything ambiguous stays uncertain. No second run.
+    assert cached.value.code == (code if code in {"invalid_output", "timeout"} else "uncertain") and len(calls()) == 1
     assert "SECRET" not in (config.jobs_dir / "review-001.json").read_text()
 
 
@@ -227,8 +228,11 @@ async def test_single_flight_and_cancellation_preserve_ambiguous_receipt(fake_cl
             break
         await asyncio.sleep(0.01)
     assert calls()
-    with pytest.raises(ProviderFault) as busy:
+    with pytest.raises(ProviderFault) as pending:
         await runner(config).run(request())
+    assert pending.value.code == "pending"  # the same request is still running: ask again by its ID
+    with pytest.raises(ProviderFault) as busy:
+        await runner(config).run(request().model_copy(update={"request_id": "review-002"}))
     assert busy.value.code == "busy"
     assert await active.cancel("review-001") == "uncertain"
     assert task.cancelled()
@@ -236,3 +240,96 @@ async def test_single_flight_and_cancellation_preserve_ambiguous_receipt(fake_cl
         await runner(config).run(request())
     assert orphan.value.code == "uncertain" and len(calls()) == 1
     assert not list(Path(config.jobs_dir).glob(".review-*"))
+
+
+async def test_video_contracts_get_a_longer_process_limit_than_reviews(fake_claude):
+    config, configure, _ = fake_claude
+    config = replace(config, timeout_seconds=1, video_timeout_seconds=10)
+    configure(delay=2)
+    with pytest.raises(ProviderFault) as fault:
+        await runner(config).run(request())
+    assert fault.value.code == "timeout"
+    configure(review={"facts": True, "numbers": True, "conditions": True, "coverage": True, "readability": True,
+                      "concerns": []})
+    video = ProviderRequest(request_id="video-001-review", model=REVIEW_MODEL, reasoning_effort="high",
+                            prompt="Plan: fixture", output_contract="video_review_v1")
+    result = await runner(config).run(video)
+    assert result.decision.artifacts[0].title == "Video adaptation review"
+    with pytest.raises(ValueError):
+        replace(config, video_timeout_seconds=10801)
+
+
+async def test_rejected_video_output_records_rule_not_text(fake_claude):
+    config, configure, calls = fake_claude
+    configure(review={"facts": True, "numbers": "SECRET-TEXT", "conditions": True, "coverage": True,
+                      "readability": True, "concerns": []})
+    video = ProviderRequest(request_id="video-002-review", model=REVIEW_MODEL, reasoning_effort="high",
+                            prompt="Plan: fixture", output_contract="video_review_v1")
+    with pytest.raises(ProviderFault) as fault:
+        await runner(config).run(video)
+    assert fault.value.code == "invalid_output"
+    receipt = json.loads((config.jobs_dir / "video-002-review.json").read_text())
+    assert receipt["state"] == "failed" and receipt["execution_evidence"]["returncode"] == 0
+    assert "numbers" in receipt["fault_detail"] and "SECRET-TEXT" not in receipt["fault_detail"]
+    with pytest.raises(ProviderFault):
+        await runner(config).run(video)
+    assert len(calls()) == 1
+
+
+async def test_video_contracts_may_use_opus_5_5_but_reviews_may_not(fake_claude):
+    config, configure, calls = fake_claude
+    configure(model="claude-opus-5-5", used_model="claude-opus-5-5",
+              review={"facts": True, "numbers": True, "conditions": True, "coverage": True, "readability": True,
+                      "concerns": []})
+    video = ProviderRequest(request_id="video-003-review", model="claude-opus-5-5", reasoning_effort="max",
+                            prompt="Plan: fixture", output_contract="video_review_v1")
+    result = await runner(config).run(video)
+    args = calls()[0]["args"]
+    assert args[args.index("--model") + 1] == "claude-opus-5-5" and args[args.index("--effort") + 1] == "max"
+    assert result.usage["actual_model"] == "claude-opus-5-5"
+    with pytest.raises(ProviderFault) as fault:
+        await runner(config).run(request().model_copy(update={"model": "claude-opus-5-5"}))
+    assert fault.value.code == "invalid_output" and len(calls()) == 1
+
+
+async def test_claude_client_reports_a_slow_turn_as_pending_and_keeps_contract_detail():
+    def slow(request):
+        raise httpx.ReadTimeout("still running", request=request)
+
+    video = ProviderRequest(request_id="video-004-plan", model="claude-opus-5-5", prompt="p", output_contract="video_plan_v1")
+    client = RuntimeClient("http://claude-runtime:8080", "token", transport=httpx.MockTransport(slow), expected_provider="claude")
+    with pytest.raises(ProviderFault) as pending:
+        await client.run(video)
+    assert pending.value.code == "pending"
+    codex = RuntimeClient("http://codex-runtime:8080", "token", transport=httpx.MockTransport(slow))
+    with pytest.raises(ProviderFault) as lost:
+        await codex.run(request())
+    assert lost.value.code == "uncertain"
+
+    def rejected(request):
+        return httpx.Response(422, json={"code": "invalid_output", "retry_after_seconds": 0,
+                                         "message": "Video output failed its contract: upload.hashtags: Value error"})
+    client = RuntimeClient("http://claude-runtime:8080", "token", transport=httpx.MockTransport(rejected),
+                           expected_provider="claude")
+    with pytest.raises(ProviderFault) as fault:
+        await client.run(video)
+    assert fault.value.code == "invalid_output" and "upload.hashtags" in fault.value.message
+
+
+async def test_video_turns_may_stream_more_than_a_review(fake_claude):
+    from quant_company.providers import claude_runner
+
+    config, configure, calls = fake_claude
+    configure(review={"facts": True, "numbers": True, "conditions": True, "coverage": True, "readability": True,
+                      "concerns": ["x" * 200] * 12})
+    video = ProviderRequest(request_id="video-005-review", model=REVIEW_MODEL, reasoning_effort="max",
+                            prompt="Plan: fixture", output_contract="video_review_v1")
+    original = claude_runner.MAX_OUTPUT
+    claude_runner.MAX_OUTPUT = 512  # far below this stream: only staff reviews keep the small cap
+    try:
+        result = await runner(config).run(video)
+        assert result.decision.artifacts[0].title == "Video adaptation review"
+        with pytest.raises(ProviderFault):
+            await runner(config).run(request())
+    finally:
+        claude_runner.MAX_OUTPUT = original
