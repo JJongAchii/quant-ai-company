@@ -36,6 +36,12 @@
       "stage": "passed: both images matched package source; official LH 2 and SH 2; other services preserved",
       "activation": "rolled_back after the one-off collector bypassed /app/entrypoint.py and lacked the DATABASE_URL generated from its mounted password file",
       "readback": "original housing worker and dispatcher image IDs restored and running; 0 housing pending, sending, uncertain; no new rental source rows"
+    },
+    "second_activation_attempt": {
+      "package_commit": "c732ffab04f2cc4744e2941da380c0c336378139",
+      "stage": "passed: both images matched package source; official LH 2 and SH 2",
+      "activation": "aborted before service replacement because an unrelated Codex runtime container changed during the CI wait",
+      "readback": "housing worker and dispatcher remained on original images; 0 housing pending, sending, active leases, source errors"
     }
   }
 }

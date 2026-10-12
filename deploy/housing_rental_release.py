@@ -201,8 +201,9 @@ def activate(args, journal):
         raise ValueError("housing_stage_receipt_mismatch")
     if receipt["current_release"] != str(Path("/opt/quant-company/current").resolve()):
         raise ValueError("housing_current_release_changed")
-    if inventory() != receipt["before"] or pending() != [0, 0, 0, 0]:
-        raise ValueError("housing_pending_or_service_drift")
+    before = inventory()
+    if pending() != [0, 0, 0, 0]:
+        raise ValueError("housing_pending_or_source_busy")
     for name in SERVICES:
         current = service(name)
         if current != receipt["bases"][name]:
@@ -210,6 +211,7 @@ def activate(args, journal):
         if image_package(receipt["images"][name]["tag"]) != receipt["package"]:
             raise ValueError("housing_staged_image_changed")
     receipt["phase"] = "cutover_started"
+    receipt["activation_before"] = before
     receipt["cutover_epoch"] = int(time.time())
     atomic(journal, receipt)
     try:
@@ -219,7 +221,7 @@ def activate(args, journal):
             compose(receipt["bases"][name], "up", "-d", "--no-deps", "--no-build", "--force-recreate",
                     name, override=receipt["overrides"][name])
         after = inventory()
-        for name, previous in receipt["before"].items():
+        for name, previous in before.items():
             if name not in {"quant-company-" + value + "-1" for value in SERVICES} and after.get(name) != previous:
                 raise ValueError("housing_unrelated_service_changed")
         for name in SERVICES:
