@@ -28,5 +28,14 @@
     "ruff": "passed",
     "full_suite": "1656 passed, 49 skipped, 2 third-party deprecation warnings in 572.08 seconds; real disposable PostgreSQL"
   },
-  "production": {"status": "not_deployed", "slack_readback": "not_checked"}
+  "production": {
+    "status": "not_deployed",
+    "slack_readback": "not_checked",
+    "first_activation_attempt": {
+      "package_commit": "c87a8602b62d5c964e04dd5e7e745b33c6478134",
+      "stage": "passed: both images matched package source; official LH 2 and SH 2; other services preserved",
+      "activation": "rolled_back after the one-off collector bypassed /app/entrypoint.py and lacked the DATABASE_URL generated from its mounted password file",
+      "readback": "original housing worker and dispatcher image IDs restored and running; 0 housing pending, sending, uncertain; no new rental source rows"
+    }
+  }
 }

@@ -227,7 +227,7 @@ def activate(args, journal):
             if not row["running"] or row["oom"] or row["image_id"] != receipt["images"][name]["id"]:
                 raise ValueError("housing_updated_service_unhealthy")
         result = json.loads(run(["docker", "exec", "quant-company-housing-feed-worker-1",
-                                 "quant-company", "housing-feed", "collect"]))
+                                 "python", "/app/entrypoint.py", "quant-company", "housing-feed", "collect"]))
         for _ in range(24):
             if rental_sources_ready(receipt["cutover_epoch"]):
                 break
