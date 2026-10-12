@@ -198,13 +198,21 @@ def main():
                     break
                 assert time.monotonic() < deadline, "external_effect_not_drained"
                 time.sleep(1)
+            lane_deadline = time.monotonic() + 600
             for relative in ("codex/jobs/.runtime.lock", "codex/jobs/.runtime-news.lock",
                              "codex/jobs/.runtime-brief.lock", "codex/jobs/.runtime-quant.lock", "claude/jobs/.runtime.lock"):
                 path = STATE / relative
                 if path.exists():
                     fd = os.open(path, os.O_RDWR | os.O_NOFOLLOW)
                     runtime_fds.append(fd)
-                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    while True:
+                        try:
+                            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                            break
+                        except BlockingIOError:
+                            assert time.monotonic() < lane_deadline, "native_lane_drain_timeout"
+                            time.sleep(0.2)
+            assert activity() == {"running_turns": 0, "sending_outbox": 0, "active_jobs": 0}
             stopped = [row["Id"] for name, row in before.items()
                        if name != "quant-company-postgres-1" and row["State"]["Running"]]
             run(["docker", "stop", "--time", "60", *stopped])
