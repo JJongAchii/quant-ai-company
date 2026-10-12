@@ -24,13 +24,19 @@
   },
   "local_validation": {
     "housing_tests": "38 passed, real disposable PostgreSQL and local Temporal; HTML and Slack responses simulated",
-    "release_bundle_tests": "2 passed",
+    "release_bundle_tests": "3 passed; archive boundary and simulated cutover snapshot checks",
     "ruff": "passed",
-    "full_suite": "1656 passed, 49 skipped, 2 third-party deprecation warnings in 572.08 seconds; real disposable PostgreSQL"
+    "full_suite": "1656 passed, 49 skipped, 2 third-party deprecation warnings in 572.08 seconds; real disposable PostgreSQL",
+    "ci": {
+      "tested_commit": "737b3dd66b82a348d22eaa9e26bfa8d3149ab548",
+      "service": "pass",
+      "codex_protocol": "pass",
+      "run": "https://github.com/JJongAchii/quant-ai-company/actions/runs/38223112155"
+    }
   },
   "production": {
-    "status": "not_deployed",
-    "slack_readback": "not_checked",
+    "status": "active",
+    "slack_readback": "4 of 4 delivered and matched to Slack channel history",
     "first_activation_attempt": {
       "package_commit": "c87a8602b62d5c964e04dd5e7e745b33c6478134",
       "stage": "passed: both images matched package source; official LH 2 and SH 2; other services preserved",
@@ -42,6 +48,29 @@
       "stage": "passed: both images matched package source; official LH 2 and SH 2",
       "activation": "aborted before service replacement because an unrelated Codex runtime container changed during the CI wait",
       "readback": "housing worker and dispatcher remained on original images; 0 housing pending, sending, active leases, source errors"
+    },
+    "final_activation": {
+      "package_commit": "737b3dd66b82a348d22eaa9e26bfa8d3149ab548",
+      "stage": "passed: both images matched committed package; real official LH 2 and SH 2; other services preserved",
+      "activation": "activated; only housing-feed-worker and dispatch images changed; all other container IDs, images, running state, and restart counts preserved at cutover",
+      "housing_worker_image": "sha256:c7f587c23613f6fb0a9232e303282957ab88dec9b6c98f0ba6f36b5e2440e45b",
+      "dispatcher_image": "sha256:90eced101c6daee4fb4cb00d265edde909dd6ffdd173c3f79785836185f08ff4",
+      "source_readback": {
+        "lh_rental": {"last_success_utc": "2026-10-12T08:24:48Z", "active_notices": 2, "error": null},
+        "sh_rental": {"last_success_utc": "2026-10-12T08:24:53Z", "active_notices": 2, "error": null},
+        "existing_sale_sources": "all 4 have last_success and no error"
+      },
+      "publication_readback": {
+        "channel": "C0C4UV5C14J",
+        "delivered": 4,
+        "pending": 0,
+        "uncertain": 0,
+        "all_slack_ts_match": true,
+        "all_slack_client_msg_id_match": true,
+        "all_have_rental_heading_official_link_and_application_dates": true
+      },
+      "temporal": {"workflow": "company-housing-feed-v1", "status": "RUNNING", "task_queue": "quant-company-housing-feed"},
+      "server_journal": "/var/lib/quant-company/releases/housing-rental-737b3dd66b82a348d22eaa9e26bfa8d3149ab548.json"
     }
   }
 }
