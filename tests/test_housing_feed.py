@@ -20,7 +20,9 @@ from quant_company.housing_feed.sources import (
     collect_source,
     lh_detail,
     lh_list,
+    lh_rental_detail,
     sh_list,
+    sh_rental_detail,
 )
 from quant_company.housing_feed.store import HousingFeedStore
 from quant_company.slack import SlackIngress, SlackOutbox
@@ -80,7 +82,37 @@ def test_sh_registration_notices_are_not_new_housing_recruitment():
     assert all("이전등기" not in n.title for n in sh_list(fixture("sh-list")))
 
 
-@pytest.mark.parametrize("parser,args", [(applyhome_list, ("applyhome-apt",)), (lh_list, ()), (sh_list, ())])
+def test_lh_newlywed_rental_uses_application_period_and_selected_region():
+    rows, _ = lh_list(fixture("lh-rental"), "lh-rental")
+    assert {n.region for n in rows} == {"서울", "경기"}
+    assert len(rows) == 2
+    assert all("신혼" in n.title for n in rows)
+    notice = next(n for n in rows if n.region == "경기")
+    detail = lh_rental_detail(fixture("lh-rental-detail"), notice)
+    assert [(w.start, w.end) for w in detail.windows] == [(date(2026, 10, 13), date(2026, 10, 15))]
+    assert detail.result_date == date(2027, 2, 3)
+    assert detail.active(date(2026, 10, 15)) and not detail.active(date(2026, 10, 16))
+    assert "임대 공고" in render(detail, datetime(2026, 10, 12, tzinfo=UTC))
+    assert "임대보증금" in render(detail, datetime(2026, 10, 12, tzinfo=UTC))
+
+
+def test_sh_newlywed_rental_excludes_followups_and_document_dates():
+    rows = sh_list(fixture("sh-rental"), "sh-rental")
+    assert len(rows) == 3
+    assert {n.id for n in rows} == {"sh-rental:310653", "sh-rental:310650", "sh-rental:310600"}
+    notice = next(n for n in rows if n.id == "sh-rental:310650")
+    detail = sh_rental_detail(fixture("sh-rental-detail"), notice)
+    assert [(w.start, w.end) for w in detail.windows] == [(date(2026, 10, 13), date(2026, 10, 15))]
+    assert "10:00" in detail.schedule_note and "17:00" in detail.schedule_note
+    assert detail.active(date(2026, 10, 15)) and not detail.active(date(2026, 10, 16))
+    assert date(2026, 10, 20) not in [w.start for w in detail.windows]
+    with pytest.raises(ValueError, match="identity_mismatch"):
+        sh_rental_detail(fixture("sh-rental-detail"), rows[0])
+
+
+@pytest.mark.parametrize("parser,args", [(applyhome_list, ("applyhome-apt",)), (lh_list, ()),
+                                          (lh_list, ("lh-rental",)), (sh_list, ()),
+                                          (sh_list, ("sh-rental",))])
 def test_maintenance_or_login_page_is_source_error_not_no_notices(parser, args):
     with pytest.raises(ValueError):
         parser("<html><p>점검 중입니다. 로그인하세요.</p></html>", *args)
@@ -189,6 +221,24 @@ def test_snapshot_commit_retry_and_preview_activation(housing):
         assert conn.execute("SELECT count(*) AS n FROM turns").fetchone()["n"] == 0
 
 
+def test_newlywed_rental_notice_and_reminder_are_durable(housing):
+    housing.clock[0] = datetime(2026, 10, 12, 10, tzinfo=schedule.KST)
+    rows, _ = lh_list(fixture("lh-rental"), "lh-rental")
+    notice = lh_rental_detail(fixture("lh-rental-detail"), rows[0])
+    collect(housing, notice)
+    collect(housing, notice)
+    assert len(outgoing(housing)) == 1
+    assert "임대 공고 · 경기" in outgoing(housing)[0]["text"]
+    with housing.db.transaction() as conn:
+        conn.execute("UPDATE housing_feed_notices SET first_seen=%s WHERE id=%s", (housing.clock[0], notice.id))
+    housing.clock[0] += timedelta(days=1)
+    collect(housing, notice)
+    assert housing.reminders() == 1
+    assert HousingFeedStore(housing.company).reminders() == 0
+    assert len(outgoing(housing)) == 2
+    assert "임대 접수 일정 알림" in outgoing(housing)[1]["text"]
+
+
 def test_disabled_map_panel_keeps_existing_publication_policy(housing):
     settings = housing.company.settings
     assert housing.policy() == fingerprint({
@@ -196,7 +246,7 @@ def test_disabled_map_panel_keeps_existing_publication_policy(housing):
         "publish": settings.housing_feed_publish_enabled, "channel": settings.housing_feed_channel_id,
         "owner": settings.housing_feed_owner_user, "users": settings.slack_allowed_users,
         "channels": settings.housing_feed_allowed_channels,
-        "sources": ["applyhome-apt", "applyhome-remndr", "lh-sale", "sh-sale"]})
+        "sources": ["applyhome-apt", "applyhome-remndr", "lh-sale", "lh-rental", "sh-sale", "sh-rental"]})
 
 
 def test_reminders_are_durable_and_initial_connection_does_not_double_post(housing):

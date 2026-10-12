@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-12",
+  "scope": "서울·경기 LH·SH의 신혼·신생아·미리내집 대상 명시 임대 모집 공고",
+  "official_source_probe": {
+    "method": "public HTML, no API key, no Slack/database writes",
+    "lh_rental": {
+      "ok": true,
+      "requests": 4,
+      "notices": [
+        {"id": "lh-rental:2015122300020859", "region": "경기", "application": "2026-10-12/2026-10-14"},
+        {"id": "lh-rental:2015122300020803", "region": "경기", "application": "2026-10-13/2026-10-15"}
+      ],
+      "source_url": "https://apply.lh.or.kr/lhapply/apply/wt/wrtanc/selectWrtancList.do"
+    },
+    "sh_rental": {
+      "ok": true,
+      "requests": 5,
+      "notices": [
+        {"id": "sh-rental:310653", "region": "서울", "application": "2026-10-13/2026-10-15"},
+        {"id": "sh-rental:310650", "region": "서울", "application": "2026-10-13/2026-10-15"}
+      ],
+      "source_url": "https://www.i-sh.co.kr/app/lay2/program/S48T1581C563/www/brd/m_247/list.do?multi_itm_seq=2"
+    }
+  },
+  "local_validation": {
+    "housing_tests": "38 passed, real disposable PostgreSQL and local Temporal; HTML and Slack responses simulated",
+    "release_bundle_tests": "2 passed",
+    "ruff": "passed",
+    "full_suite": "1656 passed, 49 skipped, 2 third-party deprecation warnings in 572.08 seconds; real disposable PostgreSQL"
+  },
+  "production": {"status": "not_deployed", "slack_readback": "not_checked"}
+}

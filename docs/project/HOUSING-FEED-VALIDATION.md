@@ -81,7 +81,8 @@ Slack 발송 재생은 하지 않았다. 서버 journal의 `updates`는 **previe
 [Slack UI 확인 기록](evidence/housing-feed/panel-ui-validation.json),
 [오른쪽 패널 화면](evidence/housing-feed/panel-sideview.png)에 결과를 남겼다.
 
-청약 자동 접수, 개인 자격 판정, GH 별도 공고, 임대·오피스텔, SH PDF-only 일정 추출은 포함하지 않는다.
+이 지도 패널 릴리스 당시에는 청약 자동 접수, 개인 자격 판정, GH 별도 공고, 임대·오피스텔,
+SH PDF-only 일정 추출을 포함하지 않았다.
 
 ## 2026-09-28 운영 디스크 정리
 
@@ -92,3 +93,14 @@ Slack 발송 재생은 하지 않았다. 서버 journal의 `updates`는 **previe
 지도 패널 응답 7건의 영수증을 확인했다.
 
 [디스크 정리 전후 수치와 대상](evidence/housing-feed/disk-cleanup-20260928.json)을 기록했다.
+
+## 2026-10-12 신혼부부 임대 공고 확장
+
+사용자가 신혼부부 임대를 요청하고 대상이 명시된 공고부터 포함하도록 범위를 정했다.
+LH 임대주택과 SH 주택임대 공식 게시판에서 서울·경기 지역과 신혼·신생아·미리내집
+모집 공고를 읽는다. 일반 임대, 서류심사 발표, 다른 지역, 청약 대행은 포함하지 않는다.
+
+공식 공개 페이지 실조회에서는 LH 경기 2건, SH 서울 2건의 접수 기간이 추출됐다.
+SH 공고 본문의 인터넷 접수 시간과 LH 상세의 접수기간을 사용하며, 서류제출 날짜와
+게시판 마감일을 신청 마감으로 취급하지 않는다. HTML fixture와 실제 PostgreSQL·Temporal
+검사, 운영 반영 영수증은 [확장 증거](evidence/housing-feed/newlywed-rental-20261012.json)에 기록한다.
