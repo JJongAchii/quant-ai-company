@@ -67,4 +67,3 @@ for label,identity in EXPECTED.items():
 print(json.dumps({"schema_version":1,"observed_at":datetime.now(UTC).isoformat(),
                   "read_only":True,"economic_evaluation_executed":False,
                   "performance_metrics_read_or_reported":False,"records":records},indent=2))
-
