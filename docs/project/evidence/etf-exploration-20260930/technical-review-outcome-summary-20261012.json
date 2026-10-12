@@ -1,0 +1,39 @@
+{
+  "observed_at": "2026-10-12T02:48:26.746244+00:00",
+  "operation_commit": "68a53f1c699837256db5e8a4a6479bbd0fc82876",
+  "actual_director_disposition": "retire_candidate",
+  "disposition_digest": "c8f87cc946eb5c924daaf54c1f846d7869003d5311caeb49dbe83ead740c89d8",
+  "disposed_at": "2026-10-12T02:46:55.392922+00:00",
+  "trial_id": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+  "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+  "original_failed_job_preserved": true,
+  "original_hold_attempt": 79,
+  "original_hold_retry_at": null,
+  "failed_candidate_measured_result_created": false,
+  "science_counters_unchanged": true,
+  "science_results_completed": 1,
+  "new_economic_execution_started": false,
+  "actual_successor": {
+    "stage": "proposal",
+    "actor": "researcher_kr",
+    "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+    "task_id": "dd8b6874-4a94-5c3f-908f-0f892ce96062",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "actual_native_requests_completed": true,
+    "read_chunks": 9
+  },
+  "slack_message": {
+    "channel": "C0C2B9EUEGM",
+    "thread_ts": "1789633942.673909",
+    "sent_ts": "1791773216.343489",
+    "rendered_body_and_author_verified": true
+  },
+  "scope_budget_profile_evaluator_2026_seal_and_worker_release_changed": false,
+  "scoped_operational_intent_completed": true,
+  "scientific_programme_completed": false,
+  "bounded_observer_active": true,
+  "maximum_observer_hours": 24,
+  "automatic_alerts": false,
+  "automatic_repairs": false
+}

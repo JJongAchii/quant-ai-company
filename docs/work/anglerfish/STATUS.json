@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v20.json",
-  "state": "actual_technical_review_staff_running_after_verified_cutover",
+  "state": "scoped_technical_disposition_complete_actual_successor_research_active",
   "previousIntent": "INTENT-v19.json",
   "deliverables": {
     "POLICY": {
@@ -26,34 +26,35 @@
       "status": "completed"
     },
     "INDEPENDENT_REPAIR": {
-      "status": "applied_verified_actual_director_reads_running"
+      "status": "completed_actual_director_retired_unmeasured_candidate"
     },
     "ACTUAL_PROGRESS": {
-      "status": "actual_director_started_disposition_pending"
+      "status": "completed_actual_normal_successor_staff_calls_and_reads_verified"
     }
   },
-  "operationalStatus": "INTENT-v20: actual reviewed API/worker patch applied11:34:31 KST with encrypted backup and owned pause cleared. Original job/code/hold/counters/scope preserved. Existing director turn woke11:39:25 using unchanged primary account revision2; actual Astra max request and read receipts verified. Director disposition pending; economic evaluations completed remain1.",
-  "evidence": "../../project/evidence/etf-exploration-20260930/technical-review-actual-staff-started-20261012.json",
+  "operationalStatus": "INTENT-v20 completed: exact runtime applied11:34:31 KST; actual director retired only the incompatible unmeasured candidate11:46:55 and Slack body/author verified. Normal successor researcher proposal stage created11:46:59; actual Astra high completed calls/read receipts verified11:48. Original hold/job/science scope/counters preserved. Economic results remain1; second economic execution not yet started. Read-only24h observerV2 active; no automatic alerts/repairs.",
+  "evidence": "../../project/evidence/etf-exploration-20260930/technical-review-outcome-summary-20261012.json",
   "nextStage": {
-    "stage": "verify_actual_director_disposition_then_normal_successor_research_pipeline",
+    "stage": "normal_successor_proposal_challenge_selection_implementation_3070_execution_and_audits",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false,
     "missionId": "2ce40574-6368-5cef-b706-b4e67441b3de",
     "preparationEvidence": "../../project/evidence/etf-exploration-20260930/technical-review-runtime-prepared-20261012.json",
-    "additionalOwnerApprovalRequiredForPreparation": false
+    "additionalOwnerApprovalRequiredForPreparation": false,
+    "scientificProgrammeComplete": false
   },
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
   "finalIntegration": {
     "intent": "INTENT-v20.json",
-    "status": "scoped_runtime_applied_actual_director_reads_running",
-    "currentIntentComplete": false,
+    "status": "scoped_runtime_applied_actual_director_disposition_and_successor_verified",
+    "currentIntentComplete": true,
     "canonicalMergeClaimed": false,
     "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
     "sourceCommit": "8eca1d6",
     "operationCommit": "68a53f1c699837256db5e8a4a6479bbd0fc82876",
     "actualIntegrationEvidence": "../../project/evidence/etf-exploration-20260930/technical-review-runtime-applied-20261012.json",
-    "actualSuccessorEvidence": "../../project/evidence/etf-exploration-20260930/technical-review-actual-staff-started-20261012.json",
+    "actualSuccessorEvidence": "../../project/evidence/etf-exploration-20260930/technical-review-actual-disposition-successor-20261012.json",
     "regression": {
       "passed": 1853,
       "skipped": 14,
@@ -63,7 +64,8 @@
     },
     "scientificProgrammeComplete": false,
     "secondEconomicEvaluationClaimed": false,
-    "liveOrPaperApprovalClaimed": false
+    "liveOrPaperApprovalClaimed": false,
+    "actualSlackReadbackEvidence": "../../project/evidence/etf-exploration-20260930/technical-review-initial-slack-readback-20261012.json"
   },
   "exploratoryPreparation": {
     "policy": "completed",
@@ -134,7 +136,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "actual_director_technical_review_running",
+    "phase": "actual_successor_proposal_running",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
@@ -184,7 +186,11 @@
     "secondEconomicExperimentStarted": false,
     "technicalReviewApplied": true,
     "technicalReviewStageId": "a711339e-12ab-5aab-b91a-41cba6575beb",
-    "technicalReviewTaskId": "4a081c41-b43b-5a8c-9172-03901c49c303"
+    "technicalReviewTaskId": "4a081c41-b43b-5a8c-9172-03901c49c303",
+    "technicalReviewDisposition": "retire_candidate",
+    "technicalCandidateClosedAt": "2026-10-12T02:46:55.392922+00:00",
+    "successorStageId": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+    "successorTaskId": "dd8b6874-4a94-5c3f-908f-0f892ce96062"
   },
   "currentIntentCompletion": {
     "intent": "INTENT-v20.json",

@@ -49,3 +49,15 @@
 근거: [실제 적용](evidence/etf-exploration-20260930/technical-review-runtime-applied-20261012.json), [타이머 깨움](evidence/etf-exploration-20260930/technical-review-existing-turn-wake-applied-20261012.json), [실제 직원 시작](evidence/etf-exploration-20260930/technical-review-actual-staff-started-20261012.json), [관찰기 V2](evidence/etf-exploration-20260930/technical-review-bounded-observer-v2-active-20261012.json).
 
 근거: [회귀](evidence/etf-exploration-20260930/technical-review-regression-20261012.json), [실제 부모](evidence/etf-exploration-20260930/technical-review-runtime-baseline-20261012.json), [비활성 준비](evidence/etf-exploration-20260930/technical-review-runtime-prepared-20261012.json), [적용 검토](evidence/etf-exploration-20260930/technical-review-apply-review-20261012.json).
+
+## 실제 총괄 결정과 후속 연구
+
+**11:46:55 KST** 실제 총괄이 `retire_candidate`를 제출했다. 원래 실패와 새 계약 source를 모두 인용했고 필요한 보류·manifest 및 source를 이번 attempt에서 끝까지 읽은 영수증이 있다. 불변 disposition digest는 `c8f87cc9…`다. 실패 trial에는 `technical_closed_at`만 기록됐다. failed job·plan·원래 hold attempt79와 null retry·첫 result를 보존했고, 새 measured result·ordinal·feasible 값을 만들지 않았다. 누적/회차 과학 result 수는 1로 그대로다.
+
+실제 research-center Slack 답변의 본문·스레드·bot author를 다시 읽어 대조했다: [실제 총괄 결정](https://achiisquantresearch.slack.com/archives/C0C2B9EUEGM/p1791773216343489?thread_ts=1789633942.673909&cid=C0C2B9EUEGM).
+
+**11:46:59 KST** 정상 controller가 새 researcher proposal stage `378b5f19…`와 task `dd8b6874…`를 생성했다. 11:48 KST 실제 Astra high 완료 요청과 새 이력 read receipt 9개를 확인했다. 운영자가 가설이나 후속 후보를 선택하지 않았다. 새 가설 → 독립 반론 → 선정 → 구현 → 실제 3070 자격/경제평가 → 감사/보고가 기존 승인 범위와 예산 안에서 이어진다.
+
+INTENT-v20의 운영 변경과 실제 독립 후속 진행 확인을 완료했다. 과학 프로그램 전체 완료·두 번째 경제평가·새 수익 수치·paper/live 사용 준비는 완료하지 않았다. 24시간 상한 관찰기 V2는 11:48 KST active/running이며, terminal 도달이나 시간 상한에서 끝난다. 자동 경보·수리는 없다. 새 signed Slack 수신→응답 round trip은 이번 적용 뒤 별도로 시험하지 않았다.
+
+근거: [실제 결정·후속 요청](evidence/etf-exploration-20260930/technical-review-actual-disposition-successor-20261012.json), [Slack 본문 대조](evidence/etf-exploration-20260930/technical-review-initial-slack-readback-20261012.json), [완료 범위 요약](evidence/etf-exploration-20260930/technical-review-outcome-summary-20261012.json).
