@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-12 02:18:37 UTC",
+  "commit": "68a53f1c699837256db5e8a4a6479bbd0fc82876",
+  "implementation_commit": "8eca1d6",
+  "manifest_sha256": "b8e691efe8b22353e15b6a4f7046127300b8fa8682528710652a1f6fdc036362",
+  "prepared_image_ids": {
+    "api": "sha256:4e2f5303b3a68ca23156912e5f8326a09a6f08b44e3fb8a3b0522e022b118afa",
+    "worker": "sha256:f9cd50c0ded80b4e69584d4a906a28f72f4fdf64bc05b688eab32cf37d6dc254"
+  },
+  "reviewer": "operator:root",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+  "approved_to_apply": true,
+  "authorization": {
+    "basis": "Existing owner deploy/continue approvals and latest explicit continuation",
+    "latest_request": "응 제대로 진행해줘 ,,,",
+    "new_scientific_authority": false
+  },
+  "checks": {
+    "full_regression_passed": 1853,
+    "full_regression_skipped": 14,
+    "scoped_regression_passed": 142,
+    "lint_passed": true,
+    "actual_parent_sources_verified": true,
+    "actual_installed_model_policy_lines_preserved": 9,
+    "all_other_source_runtime_digests_preserved": true,
+    "actual_current_independent_hold_verified": true,
+    "actual_original_failure_content_verified": true,
+    "prepared_image_schema_import_verified": true,
+    "production_not_changed_during_preparation": true
+  },
+  "apply": {
+    "selected_services": [
+      "api",
+      "worker"
+    ],
+    "additive_mission_schema_only": true,
+    "owned_pause_and_drained_effects_required": true,
+    "current_native_lanes_preserved": true,
+    "encrypted_consistent_backup_required": true,
+    "current_container_ids_rechecked_after_drain": true,
+    "actual_environment_and_memory_preserved": true,
+    "original_failure_hold_job_plan_and_counters_preserved": true,
+    "operator_only_attaches_verified_evidence": true,
+    "only_actual_director_decides_disposition": true,
+    "actual_stage_prompt_projection_rolls_back": true,
+    "other_service_identities_preserved": true,
+    "rollback_images_and_environment_required": true
+  },
+  "science": {
+    "worker_release": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+    "signed_scope_budget_inputs_profiles_evaluator_and_audits_changed": false,
+    "performance_numbers_produced": false,
+    "closure_labels_failed_candidate_as_reported": false
+  }
+}
