@@ -178,7 +178,7 @@ def main():
                                  ("roles.json", "research-profiles.json", "research-qlab.json")]]
         protected = {str(path): sha(path.read_bytes()) for path in protected_paths}
         assert sql("SELECT json_build_object('pause',paused_until) FROM runtime_control WHERE id=1")["pause"] is None
-        until = sql("WITH c AS (UPDATE runtime_control SET paused_until=now()+interval '15 minutes',reason="
+        until = sql("WITH c AS (UPDATE runtime_control SET paused_until=now()+interval '45 minutes',reason="
                     + literal(prefix) + " WHERE id=1 AND paused_until IS NULL RETURNING paused_until)"
                     " SELECT json_build_object('until',(SELECT paused_until FROM c))")["until"]
         assert until
@@ -198,7 +198,7 @@ def main():
                     break
                 assert time.monotonic() < deadline, "external_effect_not_drained"
                 time.sleep(1)
-            lane_deadline = time.monotonic() + 600
+            lane_deadline = time.monotonic() + 1800
             for relative in ("codex/jobs/.runtime.lock", "codex/jobs/.runtime-news.lock",
                              "codex/jobs/.runtime-brief.lock", "codex/jobs/.runtime-quant.lock", "claude/jobs/.runtime.lock"):
                 path = STATE / relative
