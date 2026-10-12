@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "state": "root_reviewed_exact_research_recovery",
-  "commit": "53e0f134d3cb425c11b1d4ac263c747b081960e9",
+  "commit": "8e2d358000cb5c41fefe9386973fbd2c1eddc5d3",
   "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
-  "manifest_sha256": "3e13f11ca4f787011c961240bb4b1c3d45a71a5a528f45049f3502e8bab0d1c8",
+  "manifest_sha256": "74b955a662bb63c208d39c0f1a6396c17e515ec5511485f589183f36bb102644",
   "operator_sha256": "8fefd91b34d80abdbeb7ad304e05f30cbb342948da85d3073fa9286bd8dbd6e5",
   "authority": "Existing owner deploy/continue approvals and current technical recovery request",
   "new_exact_sha_human_approval_claimed": false,
@@ -25,11 +25,11 @@
   },
   "prepared_images": {
     "api": {
-      "image_id": "sha256:1d110b7b0d18ecf9de662e054048dae97ffb54d02494c74bf2b367b7c8d2a11f",
+      "image_id": "sha256:9a9b4c236ca76e965c332b80cbca209dfff9fcb50a1239f0c4c3bd647665db90",
       "parent_image_id": "sha256:9445114a6e094bca9df2cd7e6bfe1475f8dc8103fb081b32511257d10586bc08"
     },
     "worker": {
-      "image_id": "sha256:6f9962b8f4f1c1f255bec28cbed21f51bfd2cbd5b37624e960c45094a873e1be",
+      "image_id": "sha256:733035c48e64e3b582da4b08fb3a347143fd9510f17219fbb24181db46fed8cb",
       "parent_image_id": "sha256:9f03342cdaf2b4b536e43d29a807c6522b03878f58dc4707231b3a1b107472a2"
     }
   },
@@ -41,8 +41,11 @@
     "lint": "passed",
     "staff_slack_market_fixtures": "synthetic"
   },
-  "operational_probe_and_independent_progress_pending": true,
+  "operational_probe_and_independent_progress_pending": false,
   "rollback": "Exact current parent images and every actual environment value; preserve source/receipts and release only the owned pause",
-  "model_or_worker_execution_supplied": false
+  "model_or_worker_execution_supplied": false,
+  "operational_probe_passed": true,
+  "independent_progress_pending": true,
+  "runtime_probe_owner": "Actual Git-enabled worker image",
+  "probe_evidence": "research-repair-actual-context-probe-20261012.json"
 }
-
