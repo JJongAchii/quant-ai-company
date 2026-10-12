@@ -10,7 +10,13 @@ def safe(value):
 
 
 def render(notice, at, *, changed=False, reminders=()):
-    heading = "청약 일정 알림" if reminders else "분양 공고 변경" if changed else "분양 공고"
+    rental = notice.source.endswith("-rental")
+    if reminders:
+        heading = "임대 접수 일정 알림" if rental else "청약 일정 알림"
+    elif changed:
+        heading = "임대 공고 변경" if rental else "분양 공고 변경"
+    else:
+        heading = "임대 공고" if rental else "분양 공고"
     lines = [f"*{heading} · {notice.region}*", f"*{safe(notice.title)}*",
              f"{safe(SOURCES[notice.source])} · {safe(notice.category)} · 공고 {notice.published:%Y.%m.%d}"]
     if reminders:
@@ -20,7 +26,7 @@ def render(notice, at, *, changed=False, reminders=()):
         lines.append(f"<https://map.kakao.com/link/search/{quote(notice.address, safe='')}|카카오맵에서 주소 검색>")
     if notice.map_location:
         lines.append("Slack 지도 패널: " + safe(notice.map_location.label)
-                     + " 중심 참고 지도 · 실제 분양 대지의 정확한 위치는 공고문을 확인하세요.")
+            + " 중심 참고 지도 · 실제 주택의 정확한 위치는 공고문을 확인하세요.")
         lines.append("지도 데이터: <https://www.openstreetmap.org/copyright|© OpenStreetMap contributors>")
     if notice.supply:
         lines.append("공급: " + safe(notice.supply))

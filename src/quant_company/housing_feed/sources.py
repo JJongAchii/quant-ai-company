@@ -13,8 +13,10 @@ from .html import parse
 APPLYHOME = "https://www.applyhome.co.kr/ai/aia/"
 LH = "https://apply.lh.or.kr/lhapply/apply/wt/wrtanc/"
 SH = "https://www.i-sh.co.kr/app/lay2/program/S48T1581C1617/www/brd/m_244/"
+SH_RENTAL = "https://www.i-sh.co.kr/app/lay2/program/S48T1581C563/www/brd/m_247/"
 MAX_BYTES = 2_000_000
 DATE = re.compile(r"(?<!\d)(20\d{2})[.\-/](\d{2})[.\-/](\d{2})(?!\d)")
+KOREAN_DATE = re.compile(r"(?<!\d)(20\d{2})\s*[.년]\s*(\d{1,2})\s*[.월]\s*(\d{1,2})(?:[.일])?(?!\d)")
 
 
 def dates(text):
@@ -111,7 +113,7 @@ def applyhome_detail(body, notice):
                                         if prices else "분양가: 모집공고문 확인"})
 
 
-def lh_list(body):
+def lh_list(body, source="lh-sale"):
     root = parse(body)
     if not any("공고명" in t.text() and "마감일" in t.text() for t in root.find("thead")):
         raise ValueError("lh_list_structure_changed")
@@ -133,15 +135,21 @@ def lh_list(body):
         params = dict(mi="1027", panId=identity, ccrCnntSysDsCd=a.attrs["data-id2"],
                       uppAisTpCd=a.attrs["data-id3"], aisTpCd=a.attrs["data-id4"])
         title = re.sub(r"\s+(?:\d+일전|NEW)$", "", a.text()).strip()
+        if source == "lh-rental":
+            if not re.search(r"신혼|신생아|미리내집", title + " " + values[1]):
+                continue
+            params["mi"] = "1026"
         published, close = dates(values[5]), dates(values[6])
         if len(published) != 1:
             raise ValueError("lh_missing_publication_date")
-        result.append(HousingNotice(id="lh-sale:" + identity, source="lh-sale", title=title, region=region,
+        result.append(HousingNotice(id=source + ":" + identity, source=source, title=title, region=region,
                                     category=values[1], published=published[0],
                                     board_close=close[0] if close else None,
                                     url=LH + "selectWrtancInfo.do?" + urlencode(params)))
     pages = [int(n) for n in re.findall(r"goPaging\((\d+)\)", body)]
-    return result, max(pages, default=1)
+    row_count = sum(any("wrtancInfoBtn" in a.attrs.get("class", "") for a in row.find("a"))
+                    for row in root.find("tr"))
+    return result, max([*pages, 21 if row_count == 50 else 1])
 
 
 def lh_detail(body, notice):
@@ -172,7 +180,26 @@ def lh_detail(body, notice):
                                         else "접수 일정·시간·자격은 모집공고문 확인"})
 
 
-def sh_list(body):
+def lh_rental_detail(body, notice):
+    root = parse(body)
+    if notice.title not in root.text():
+        raise ValueError("lh_rental_detail_identity_mismatch")
+    labels = {label.attrs.get("id"): label.text() for label in root.find("label")}
+    if "sta_acpDt" not in labels:
+        raise ValueError("lh_rental_schedule_structure_changed")
+    period = window("청약접수", labels["sta_acpDt"])
+    result = dates(labels.get("sta_pzwrDt", ""))
+    if len(result) > 1:
+        raise ValueError("lh_rental_result_date_ambiguous")
+    return HousingNotice.model_validate({**notice.model_dump(),
+                                        "windows": [period] if period else [],
+                                        "result_date": result[0] if result else None,
+                                        "price_summary": "임대보증금·월임대료: 모집공고문 확인",
+                                        "schedule_note": "단지별 접수 시간·자격은 모집공고문 확인" if period
+                                        else "접수 일정·시간·자격은 모집공고문 확인"})
+
+
+def sh_list(body, source="sh-sale"):
     root = parse(body)
     if not any("등록일" in t.text() for t in root.find("thead")):
         raise ValueError("sh_list_structure_changed")
@@ -186,18 +213,50 @@ def sh_list(body):
         if not match:
             raise ValueError("sh_invalid_identifier")
         title = a.text()
-        if not re.search(r"입주자.*모집|잔여세대|무순위|분양.*공고|공급.*공고", title):
+        if source == "sh-rental":
+            title = re.sub(r"^NEW\s+", "", title)
+            if (not re.search(r"신혼|신생아|미리내집", title)
+                    or not re.search(r"모집\s*공고(?:\s*\([^)]*\))?\s*$", title)):
+                continue
+        elif not re.search(r"입주자.*모집|잔여세대|무순위|분양.*공고|공급.*공고", title):
             continue
-        found = dates(row.text())
+        values = cells(row)
+        found = dates(values[3] if source == "sh-rental" and len(values) >= 4 else row.text())
         if len(found) != 1:
             raise ValueError("sh_missing_publication_date")
         identity = match[1]
-        result.append(HousingNotice(id="sh-sale:" + identity, source="sh-sale", title=title,
-                                    region="서울", category="주택분양 공고", published=found[0],
-                                    url=SH + "view.do?" + urlencode({"seq": identity, "multi_itm_seq": "1"}),
-                                    price_summary="분양가: 모집공고문 확인",
+        rental = source == "sh-rental"
+        result.append(HousingNotice(id=source + ":" + identity, source=source, title=title,
+                                    region="서울", category="주택임대 공고" if rental else "주택분양 공고",
+                                    published=found[0],
+                                    url=(SH_RENTAL if rental else SH) + "view.do?" + urlencode({
+                                        "seq": identity, "multi_itm_seq": "2" if rental else "1"}),
+                                    price_summary=("임대보증금·임대료" if rental else "분양가")
+                                    + ": 모집공고문 확인",
                                     schedule_note="접수 일정·시간·자격은 첨부 모집공고문 확인"))
     return result
+
+
+def sh_rental_detail(body, notice):
+    root = parse(body)
+    text = root.text()
+    if not any(th.text() == notice.title and th.attrs.get("colspan") == "2" for th in root.find("th")):
+        raise ValueError("sh_rental_detail_identity_mismatch")
+    section = re.search(r"■\s*접수일\s*○\s*인터넷접수\s*:\s*(.*?)(?=\s*[※■○]|$)", text)
+    period, note = None, "접수 일정·시간·자격은 첨부 모집공고문 확인"
+    if section:
+        dated = [date(int(y), int(m), int(d)) for y, m, d in KOREAN_DATE.findall(section[1])]
+        if not dated:
+            dated = dates(section[1])
+        if len(dated) > 2:
+            raise ValueError("sh_rental_application_dates_ambiguous")
+        if dated:
+            period = ApplicationWindow(label="인터넷접수", start=dated[0], end=dated[-1])
+            times = re.findall(r"(?<!\d)\d{1,2}:\d{2}", section[1])
+            note = (f"온라인 접수 시작 {times[0]}, 마감 {times[-1]} · 자격은 공고문 확인"
+                    if len(times) == 2 else "접수 시간·자격은 공고문 확인")
+    return HousingNotice.model_validate({**notice.model_dump(), "windows": [period] if period else [],
+                                        "schedule_note": note})
 
 
 class Reader:
@@ -248,27 +307,41 @@ def collect_source(source, today, *, transport=None):
                         page += 1
                         if page > 50:
                             raise ValueError("applyhome_pagination_limit")
-            elif source == "lh-sale":
-                page = 1
+            elif source in {"lh-sale", "lh-rental"}:
+                page, seen = 1, set()
                 while True:
+                    rental = source == "lh-rental"
                     body = reader.get(LH + "selectWrtancList.do", {
-                        "mi": "1027", "uppAisTpCd": "053954", "srchUppAisTpCd": "053954", "listCo": "50",
+                        "mi": "1026" if rental else "1027",
+                        "uppAisTpCd": "061339" if rental else "053954",
+                        "srchUppAisTpCd": "061339" if rental else "053954", "listCo": "50",
                         "currPage": page, "panStDt": (today - timedelta(days=365)).strftime("%Y%m%d"),
                         "panEdDt": today.strftime("%Y%m%d"), "panSs": "공고중"})
-                    rows, last = lh_list(body)
+                    rows, last = lh_list(body, source)
+                    raw_ids = set(re.findall(r'data-id1="(\d+)"', body))
+                    if page > 1 and raw_ids and raw_ids <= seen:
+                        raise ValueError("lh_repeated_page")
+                    seen.update(raw_ids)
                     for notice in rows:
                         if notice.active(today):
-                            notices.append(lh_detail(reader.get(notice.url), notice))
+                            detail = reader.get(notice.url)
+                            notices.append(lh_rental_detail(detail, notice) if rental else lh_detail(detail, notice))
                     if page >= last:
                         break
                     page += 1
                     if page > 20:
                         raise ValueError("lh_pagination_limit")
-            elif source == "sh-sale":
+            elif source in {"sh-sale", "sh-rental"}:
                 # Low-volume recruitment board. Record a bounded coverage window, not a full-history claim.
+                rental = source == "sh-rental"
                 for page in range(1, 4):
-                    body = reader.get(SH + "list.do", {"multi_itm_seq": "1", "page": page})
-                    notices.extend(n for n in sh_list(body) if n.active(today))
+                    body = reader.get((SH_RENTAL if rental else SH) + "list.do", {
+                        "multi_itm_seq": "2" if rental else "1", "page": page})
+                    for notice in sh_list(body, source):
+                        if rental:
+                            notice = sh_rental_detail(reader.get(notice.url), notice)
+                        if notice.active(today):
+                            notices.append(notice)
             else:
                 raise ValueError("unknown_housing_source")
             unique = {n.id: n for n in notices if n.active(today)}
