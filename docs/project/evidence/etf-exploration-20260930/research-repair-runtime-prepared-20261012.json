@@ -1,12 +1,12 @@
 {
   "state": "inactive_research_repair_images_prepared",
-  "observed_at": "2026-10-12T00:15:43.556075+00:00",
-  "commit": "939a71d4cf2bfd1891d250a9fa991aff6829266a",
-  "manifest_sha256": "df1d25b5cc7731a2042f48e62e55dbd3f8b073217fadc37e927ea079cd8076eb",
+  "observed_at": "2026-10-12T00:29:42.492709+00:00",
+  "commit": "3171e59a5c7f6a2332c33b3bc1249abddccba6ef",
+  "manifest_sha256": "cfb13ae0a2b6d4f26477ccb9865987951840c4a63ee36b5438dfc68d6c542c32",
   "images": {
     "api": {
-      "tag": "quant-company-research-repair-api:939a71d4cf2bfd1891d250a9fa991aff6829266a",
-      "image_id": "sha256:07161aa6429108bfb49af4c115c72b88f4d6805a7af2a9325adf55e82ed614b4",
+      "tag": "quant-company-research-repair-api:3171e59a5c7f6a2332c33b3bc1249abddccba6ef",
+      "image_id": "sha256:53f74d7354cda2ee4b04583e68cba8c68203f34f221e7e5e5da19b123c6882b8",
       "baseline_image_id": "sha256:9445114a6e094bca9df2cd7e6bfe1475f8dc8103fb081b32511257d10586bc08",
       "source": {
         "root": "/app/src",
@@ -30,8 +30,8 @@
       }
     },
     "worker": {
-      "tag": "quant-company-research-repair-worker:939a71d4cf2bfd1891d250a9fa991aff6829266a",
-      "image_id": "sha256:81d82fac3fc159858b7735e6d28873b866e0af901913267d0381d6b366046e62",
+      "tag": "quant-company-research-repair-worker:3171e59a5c7f6a2332c33b3bc1249abddccba6ef",
+      "image_id": "sha256:1b21cb87ad8c3ac133e60cb737a18f7ec0258b8d3cefa9642ce168a49a35e025",
       "baseline_image_id": "sha256:9f03342cdaf2b4b536e43d29a807c6522b03878f58dc4707231b3a1b107472a2",
       "source": {
         "root": "/app/src",
@@ -57,12 +57,12 @@
   },
   "before": {
     "quant-company-video-worker-1": {
-      "id": "825a05fc337f0f84534e3c488c3a3e2c7c05e648b061a25bc585be86460e5d2d",
-      "image_id": "sha256:7831840101b687054763cbef9aa3d4569aa1efcde450a0fbbc6b3077b06c3244",
-      "image": "quant-company-video:7b37ac4-late1",
+      "id": "809e995a02a732a7723acff183b15bf44d36f6c172b2a90f97ae497a51a42378",
+      "image_id": "sha256:b953a381517e4bcb9a54096f2d8c50fdfb92ee75fa28ad404a4c6468a7540c81",
+      "image": "quant-company-video:7b37ac4-late2",
       "running": true,
       "memory_limit": 2147483648,
-      "environment_sha256": "81835a2c68fdbae7a46bbff53d0f76b13c7c8c50b17eee306a16b9972342ff67"
+      "environment_sha256": "f92248987ad0ef140f1f5af1ac056aa31cf59137fe58075acaf3a9f2f3307200"
     },
     "quant-company-claude-runtime-1": {
       "id": "02beef596740a0ffcc9aa97998480dae31e9b042c7f079ca781c9e66eaef355c",

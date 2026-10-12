@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
   "state": "root_reviewed_exact_research_recovery",
-  "commit": "939a71d4cf2bfd1891d250a9fa991aff6829266a",
+  "commit": "3171e59a5c7f6a2332c33b3bc1249abddccba6ef",
   "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
-  "manifest_sha256": "df1d25b5cc7731a2042f48e62e55dbd3f8b073217fadc37e927ea079cd8076eb",
-  "operator_sha256": "0ac8b92ec54a9e686ca4551316073275a1461a297b9664f31f8443cb455b7ef0",
+  "manifest_sha256": "cfb13ae0a2b6d4f26477ccb9865987951840c4a63ee36b5438dfc68d6c542c32",
+  "operator_sha256": "8878608c79ed506fbc7707809207100868aec111d18c6a72ef24926211134307",
   "authority": "Existing owner deploy/continue approvals and current technical recovery request",
   "new_exact_sha_human_approval_claimed": false,
   "scientific_approval_repeated": false,
   "phases": [
-    "Verify existing registered failure source and actual worker-image stage prompt in a rolled-back DB transaction",
-    "Under the owned pause wait up to600s for existing native calls, verify database activity drained, renew only unexpired owned pause, back up consistently, replace only API/worker and append immutable evidence at the drained repair boundary"
+    "Exact V5 inactive API/worker inventories equal all bytes and parents of the actually probed V4 images; no new module or scientific policy changes",
+    "Under owned pause drain calls, revalidate every container identity immediately before stopping services, then make consistent backup and apply API/worker only; current-stage prompt is revalidated during evidence refresh"
   ],
   "scope": {
     "modules": [
@@ -25,20 +25,20 @@
   },
   "prepared_images": {
     "api": {
-      "image_id": "sha256:07161aa6429108bfb49af4c115c72b88f4d6805a7af2a9325adf55e82ed614b4",
+      "image_id": "sha256:53f74d7354cda2ee4b04583e68cba8c68203f34f221e7e5e5da19b123c6882b8",
       "parent_image_id": "sha256:9445114a6e094bca9df2cd7e6bfe1475f8dc8103fb081b32511257d10586bc08"
     },
     "worker": {
-      "image_id": "sha256:81d82fac3fc159858b7735e6d28873b866e0af901913267d0381d6b366046e62",
+      "image_id": "sha256:1b21cb87ad8c3ac133e60cb737a18f7ec0258b8d3cefa9642ce168a49a35e025",
       "parent_image_id": "sha256:9f03342cdaf2b4b536e43d29a807c6522b03878f58dc4707231b3a1b107472a2"
     }
   },
   "previous_activation": {
-    "commit": "8e2d358000cb5c41fefe9386973fbd2c1eddc5d3",
-    "state": "native_lock_busy_before_service_stop",
-    "original_images_and_environment_preserved": true,
+    "commit": "939a71d4cf2bfd1891d250a9fa991aff6829266a",
+    "state": "partial_stop_reconciled_without_applying_patch",
     "pause_restored": true,
-    "receipt": "research-repair-apply-failed-v2-20261012.json"
+    "api_worker_parents_and_environment_verified": true,
+    "reconciliation_evidence": "research-repair-v3-failure-reconciled-20261012.json"
   },
   "regression": {
     "passed": 1838,
@@ -50,7 +50,13 @@
   },
   "operational_probe_passed": true,
   "independent_progress_pending": true,
-  "probe_evidence": "research-repair-actual-context-probe-20261012.json",
+  "probe_evidence": "research-repair-actual-context-probe-v4-20261012.json",
   "rollback": "Exact actual parent images and full active environment, preserve all previous receipts and release only owned pause",
-  "model_or_worker_execution_supplied": false
+  "model_or_worker_execution_supplied": false,
+  "activation_precondition": "V3 exited; original API/worker IDs/images/full-environment hashes and source inventories verified; all services running and owned pause clear. Concurrent video deployment is preserved.",
+  "native_video_timeout_seconds": 2700,
+  "another_model_call_cancelled": false,
+  "production_module_bytes_unchanged_from_verified_v3": true,
+  "operational_probe_operation_commit": "fd6446f89de0245117a3c4f952c88bf82068864e",
+  "operational_probe_reused_for_verified_identical_source_and_parent_inventories": true
 }
