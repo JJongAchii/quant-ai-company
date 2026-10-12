@@ -220,6 +220,7 @@ def main():
                 " SELECT json_build_object('until',(SELECT paused_until FROM c))")["until"]
             assert renewed, "owned_pause_expired_before_cutover"
             until = renewed
+            assert public(inspect()) == public(before), "concurrent_deployment_during_drain"
             stopped = [row["Id"] for name, row in before.items()
                        if name != "quant-company-postgres-1" and row["State"]["Running"]]
             run(["docker", "stop", "--time", "60", *stopped])
@@ -284,7 +285,12 @@ def main():
                 if row["Id"] in stopped:
                     stopped.remove(row["Id"])
             if stopped:
-                run(["docker", "start", *reversed(stopped)])
+                current_ids = {row["Id"] for row in inspect().values()}
+                resumable = [identity for identity in reversed(stopped) if identity in current_ids]
+                result["removed_original_container_ids"] = [identity for identity in stopped
+                                                             if identity not in current_ids]
+                if resumable:
+                    run(["docker", "start", *resumable])
             restored = inspect()
             for service in changed:
                 name = "quant-company-" + service + "-1"
