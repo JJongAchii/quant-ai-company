@@ -38,6 +38,14 @@
 
 실제 부모 API/worker의 source와 설치 패키지에 커밋 차분을 fuzz 없이 적용했다. 별도 설치 모델 정책 9줄과 나머지 Python/SQL digest를 모두 보존했다. 운영 묶음 `68a53f1c699837256db5e8a4a6479bbd0fc82876`의 비활성 이미지는 준비됐으며 실제 보류·원래 실패 내용·응답 schema를 검증했다. 정확한 manifest·이미지 적용 검토는 PR #105에 기록했다.
 
-11:19 KST 적용을 시작했다. 소유한 pause 아래 회사 turn/outbox와 연구 job은 drain됐고, 기존 video 모델 호출이 끝나기를 기다린다. 아직 이미지 교체나 실제 총괄 판단·후속 경제 실험이 완료됐다고 주장하지 않는다.
+11:19 KST 적용을 시작해 기존 video 호출이 종료된 뒤 회사 turn/outbox와 연구 job을 drain하고 일관된 암호화 S3 백업을 검증했다. **11:34:31 KST** API/worker 교체·원래 설정/다른 서비스 보존·새 근거 연결·실제 이미지의 총괄 prompt 검증이 끝났다. 소유한 pause도 해제됐다. 실제 prompt projection의 task/turn/outbox 쓰기는 rollback했고 과학 결정을 주입하지 않았다.
+
+정상 연구 controller가 pause 아래 생성한 실제 총괄 검토의 turn에는 잔여 배포 타이머가 있었다. 실제 Temporal 이력의 timer와 미수신 계정 revision을 확인·검토한 뒤 **11:39:25 KST** 현재 primary revision2로 기존 turn만 깨웠다. 계정 선택·request·turn ID·과학 권한을 바꾸지 않았다.
+
+11:40 KST 실제 Astra max 요청과 명세/이력 read receipt를 확인했다. 원래 engineer attempt79와 보류는 보존됐다. 아직 총괄의 후보 종료 결정이나 후속 경제 실험을 완료했다고 주장하지 않는다. 실제 서비스 건강 상태와 3070 user-scope worker의 기존 release 동작도 확인했다.
+
+24시간 상한·45초 주기의 읽기 전용 관찰기를 실행했다. 실제 검토 stage가 완료 timestamp보다 5초 먼저 pause 아래 생성되어, terminal 검사는 같은 operation commit의 검토도 포함하도록 V2를 시작했다. 이전 관찰기는 중지했다. 자동 경보·수리 기능은 없다.
+
+근거: [실제 적용](evidence/etf-exploration-20260930/technical-review-runtime-applied-20261012.json), [타이머 깨움](evidence/etf-exploration-20260930/technical-review-existing-turn-wake-applied-20261012.json), [실제 직원 시작](evidence/etf-exploration-20260930/technical-review-actual-staff-started-20261012.json), [관찰기 V2](evidence/etf-exploration-20260930/technical-review-bounded-observer-v2-active-20261012.json).
 
 근거: [회귀](evidence/etf-exploration-20260930/technical-review-regression-20261012.json), [실제 부모](evidence/etf-exploration-20260930/technical-review-runtime-baseline-20261012.json), [비활성 준비](evidence/etf-exploration-20260930/technical-review-runtime-prepared-20261012.json), [적용 검토](evidence/etf-exploration-20260930/technical-review-apply-review-20261012.json).
