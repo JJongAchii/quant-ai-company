@@ -169,6 +169,22 @@ def proposal_material(payload, schema):
             material["prompt_system_compaction"] = stage + 1
             material["prompt_excerpted"] = True
             continue
+        if schema is Triage and material.get("prompt_history_compaction", 0) < 3:
+            # Historical detail must yield before the exact code requested for this case.
+            # Keep every evidence identity; full history and replay inputs remain bound in PostgreSQL.
+            stage = material.get("prompt_history_compaction", 0)
+            string_chars, list_items = [(1000, 8), (400, 4), (160, 2)][stage]
+            history = material.get("history", {})
+            material["history"] = {
+                key: [{**compact_prompt_value(row, string_chars=string_chars, list_items=list_items),
+                       **{field: row[field] for field in ("key", "id") if field in row}}
+                      for row in value] if key in {"evidence", "roster"} else
+                compact_prompt_value(value, string_chars=string_chars, list_items=list_items)
+                for key, value in history.items()
+            }
+            material["prompt_history_compaction"] = stage + 1
+            material["prompt_excerpted"] = True
+            continue
         excerpts = [item for key in ("investigated_code", "inspected_excerpts", "external_research")
                     for item in material.get(key, [])]
         longest_excerpt = max(excerpts, key=lambda item: len(item.get("content", "")), default={})
