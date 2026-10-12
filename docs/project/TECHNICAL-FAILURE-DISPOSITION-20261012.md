@@ -34,4 +34,10 @@
 
 새 물리적 state enum을 추가하지 않는다. 기존 reader는 같은 행을 기술 실패로 읽고 보류하므로 이전 코드가 알 수 없는 상태를 보고 예외를 내지 않는다. additive column/table과 같은 이름의 pending 인덱스를 idempotent migration으로 준비한다.
 
-현재 변경은 구현·검증 단계이며 운영에 적용하지 않았다. 실제 직원 판단이나 후속 경제 실험이 실행됐다고 주장하지 않는다. 새 검증·정확한 이미지 검토·적용 결과를 후속 evidence로 기록한다.
+구현 `8eca1d6`의 실제 PostgreSQL·Git·고정 qlab 전체 회귀는 1,853개 통과·14개 제외, 범위 회귀는 142개 통과했다. 직원·Slack·시장 응답은 합성이다. 저장소 lint도 통과했다.
+
+실제 부모 API/worker의 source와 설치 패키지에 커밋 차분을 fuzz 없이 적용했다. 별도 설치 모델 정책 9줄과 나머지 Python/SQL digest를 모두 보존했다. 운영 묶음 `68a53f1c699837256db5e8a4a6479bbd0fc82876`의 비활성 이미지는 준비됐으며 실제 보류·원래 실패 내용·응답 schema를 검증했다. 정확한 manifest·이미지 적용 검토는 PR #105에 기록했다.
+
+11:19 KST 적용을 시작했다. 소유한 pause 아래 회사 turn/outbox와 연구 job은 drain됐고, 기존 video 모델 호출이 끝나기를 기다린다. 아직 이미지 교체나 실제 총괄 판단·후속 경제 실험이 완료됐다고 주장하지 않는다.
+
+근거: [회귀](evidence/etf-exploration-20260930/technical-review-regression-20261012.json), [실제 부모](evidence/etf-exploration-20260930/technical-review-runtime-baseline-20261012.json), [비활성 준비](evidence/etf-exploration-20260930/technical-review-runtime-prepared-20261012.json), [적용 검토](evidence/etf-exploration-20260930/technical-review-apply-review-20261012.json).

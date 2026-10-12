@@ -1,0 +1,18 @@
+{
+  "state": "prepared_not_started",
+  "maximum_hours": 24,
+  "interval_seconds": 45,
+  "read_only": true,
+  "helper_sha256": "8f1967ceb0df899b0b04ba2a85dba25385c6c0db261324793187bdd77c5bb0ec",
+  "observer_sha256": "98f187db0d50d198a9a78f730f6d68a83c52ff01b8175cec1795e367a5c13fb0",
+  "terminal_conditions": [
+    "second reported trial",
+    "independent director wait",
+    "new successor engineer evidence hold",
+    "uncertain job",
+    "24 hour bound"
+  ],
+  "preserved_old_engineer_hold_terminal_for_new_operation": false,
+  "automatic_alerts": false,
+  "automatic_repairs": false
+}

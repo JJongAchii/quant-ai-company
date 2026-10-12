@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v20.json",
-  "state": "second_trial_input_contract_verification_in_progress",
+  "state": "reviewed_technical_disposition_cutover_waiting_for_existing_native_call",
   "previousIntent": "INTENT-v19.json",
   "deliverables": {
     "POLICY": {
@@ -18,24 +18,36 @@
       "spec": "../../project/evidence/etf-exploration-20260930/candidate-program.json",
       "programDigest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99"
+    },
+    "INPUT_CONTRACT": {
+      "status": "completed"
+    },
+    "FIRST_RUN_ARTIFACTS": {
+      "status": "completed"
+    },
+    "INDEPENDENT_REPAIR": {
+      "status": "implemented_tested_exact_images_reviewed_waiting_cutover"
+    },
+    "ACTUAL_PROGRESS": {
+      "status": "pending_independent_director"
     }
   },
-  "operationalStatus": "INTENT-v20: owner authorized continued input-contract and archived first-run verification. Existing held repair and science scope preserved. No new scientific execution supplied.",
-  "evidence": "../../project/evidence/etf-exploration-20260930/research-repair-actual-staff-evidence-hold-20261012.json",
+  "operationalStatus": "INTENT-v20: exact frozen callback and first archive verified; independent director disposition implemented. Full regression1853 passed/14 skipped, scoped142 passed, lint passed. Actual inactive images and original hold/schema preflight passed; owned-pause cutover waits for existing native video review, without cancellation. No second economic experiment yet.",
+  "evidence": "../../project/evidence/etf-exploration-20260930/technical-review-apply-review-20261012.json",
   "nextStage": {
-    "stage": "verify_frozen_callback_contract_and_first_run_artifacts_then_prepare_compatible_repair_spec",
+    "stage": "apply_reviewed_images_then_verify_independent_director_disposition_and_normal_successor",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false,
     "missionId": "2ce40574-6368-5cef-b706-b4e67441b3de",
-    "preparationEvidence": "../../project/evidence/etf-exploration-20260930/research-repair-next-input-contract-review-20261012.json",
+    "preparationEvidence": "../../project/evidence/etf-exploration-20260930/technical-review-runtime-prepared-20261012.json",
     "additionalOwnerApprovalRequiredForPreparation": false
   },
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
   "finalIntegration": {
     "intent": "INTENT-v19.json",
     "status": "scoped_runtime_applied_independent_staff_evidence_hold_verified",
-    "currentIntentComplete": true,
+    "currentIntentComplete": false,
     "canonicalMergeClaimed": false,
     "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
     "sourceCommit": "d0386ef",
@@ -89,7 +101,7 @@
       "pr": "https://github.com/JJongAchii/quant-ai-company/pull/97",
       "mergedCommit": "d2010230eda9b6cf1128b0fc650bdcbc8c8309b3",
       "candidateCommit": "0286ba3e7426ff6546b90e6926124ae65e71ba79",
-      "ownerApproval": "승인할게"
+      "ownerApproval": "\uc2b9\uc778\ud560\uac8c"
     },
     "LIVE_CHECK": {
       "status": "completed",
@@ -102,7 +114,7 @@
     }
   },
   "activation": {
-    "ownerAuthorization": "응 진행해",
+    "ownerAuthorization": "\uc751 \uc9c4\ud589\ud574",
     "pr": "https://github.com/JJongAchii/quant-ai-company/pull/99",
     "qualification": "completed",
     "productionActivated": true,
@@ -122,7 +134,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "second_trial_independent_engineer_input_evidence_hold",
+    "phase": "technical_review_cutover_waiting_for_native_drain",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
@@ -165,7 +177,11 @@
     "currentRepairStage": "2d0ec857-8601-5cca-927d-f7f51877696d",
     "currentRepairAttempt": 79,
     "currentRepairError": "repair_requires_evidence",
-    "automaticUnchangedRetryStopped": true
+    "automaticUnchangedRetryStopped": true,
+    "technicalReviewSourceCommit": "8eca1d6",
+    "technicalReviewOperationCommit": "68a53f1c699837256db5e8a4a6479bbd0fc82876",
+    "technicalReviewApplyReview": "../../project/evidence/etf-exploration-20260930/technical-review-apply-review-20261012.json",
+    "secondEconomicExperimentStarted": false
   },
   "currentIntentCompletion": {
     "intent": "INTENT-v20.json",
