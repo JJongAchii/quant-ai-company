@@ -127,7 +127,8 @@ def diagnostic_history(payload):
 
 def prioritize_inspections(material):
     """Keep all explicit ranges across stateless rounds before incidental search context."""
-    requested = [row for row in material.get("saved_inspection_requests", []) +
+    requested = [row for row in material.get("saved_inspection_ranges", []) +
+                 material.get("saved_inspection_requests", []) +
                  material.get("recent_inspection", {}).get("requests", [])
                  if row.get("path") and not row.get("query")]
     if not requested:

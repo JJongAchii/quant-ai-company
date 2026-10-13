@@ -1,6 +1,8 @@
 """Regression for case2: earlier exact callers must survive later test inspection."""
 import copy
 
+import pytest
+
 from quant_company.maintenance.investigation import inspection_context
 from quant_company.maintenance.policy import Triage, digest
 from quant_company.maintenance.runner import proposal_material
@@ -36,3 +38,39 @@ def test_old_explicit_producer_consumer_and_new_test_survive_static_context():
     assert shown["observations"] == before["observations"]
     assert {row["key"] for row in shown["history"]["evidence"]} == {row["key"] for row in history["evidence"]}
     assert len(prompt) <= 88000 and digest(material) == digest(before)
+
+
+@pytest.mark.integration
+def test_file_function_queries_keep_resolved_ranges_before_broad_search(company):
+    from quant_company.maintenance.investigation import append_inspections, inspect_code
+    from quant_company.system_state import record_repository
+
+    from .test_maintenance_inspection_reuse import snapshot
+
+    files = {f"src/exact{i}.py": "\n".join(
+        f"needle{i}_{n} = '" + "x"*65 + "'" for n in range(160)) for i in range(3)}
+    files.update({f"src/incidental{i}.py": "\n".join(
+        f"incidental_{n} = '" + "y"*95 + "'" for n in range(120)) for i in range(4)})
+    snap = snapshot(files)
+    precise = [{"path": f"src/exact{i}.py", "query": f"needle{i}", "line_count": 160}
+               for i in range(3)]
+    broad = [{"query": "incidental_", "line_count": 120}]
+    payload = {"investigation_requests": []}
+    with company.db.transaction() as conn:
+        record_repository(conn, snap, files, {})
+        first = inspect_code(conn, snap, precise)
+        later = inspect_code(conn, snap, broad)
+    for queries, rows in [(precise, first), (broad, later)]:
+        append_inspections(payload, rows)
+        payload["investigation_requests"].append({"requests": queries, "evidence": rows})
+    material = {"requested_diagnosis": "Keep producer and consumer code after function-name lookup",
+                "observations": [{"key": "message:owner", "text": "unchanged owner request"}],
+                "current_implementation": {"source_files": [
+                    {"path": f"src/preview{n}.py", "content": "preview " * 125} for n in range(50)]},
+                **inspection_context(payload)}
+    before = copy.deepcopy(material)
+    shown, prompt = proposal_material(material, Triage)
+    visible = {(row["path"],line) for row in shown["investigated_code"] for line in row["content"].splitlines()}
+    for row in first:
+        assert {(row["path"],line) for line in row["content"].splitlines()} <= visible
+    assert digest(material) == digest(before) and len(prompt) <= 88000

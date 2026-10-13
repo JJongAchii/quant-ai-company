@@ -157,8 +157,18 @@ def inspection_context(payload):
                 "content_digest": digest(row.get("content", "")), "shown": bool(row.get("content"))}
                for row in unique.values()]
     saved_requests = {digest(query): query for receipt in rounds for query in receipt.get("requests", [])}
+    resolved = {}
+    for receipt in rounds:
+        paths = {query["path"] for query in receipt.get("requests", [])
+                 if query.get("path") and query.get("query")}
+        for row in receipt.get("evidence", []):
+            if row.get("path") in paths and row.get("content") and row.get("key", "").startswith("code:"):
+                range_ = {"path": row["path"], "start_line": row.get("start_line", 1),
+                          "line_count": len(row["content"].splitlines())}
+                resolved[digest(range_)] = range_
     return {"investigated_code": shown, "inspection_catalog": catalog,
             "saved_inspection_requests": list(saved_requests.values()),
+            "saved_inspection_ranges": list(resolved.values()),
             "inspection_lookup": "This is an index of stored exact-commit ranges, not model memory. "
                                  "Previously read code is carried into this request; overlapping ranges are joined. "
                                  "Unread gaps remain separate. Only shown code is known; request indexed ranges "
