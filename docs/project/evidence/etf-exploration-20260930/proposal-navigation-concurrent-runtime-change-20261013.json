@@ -1,0 +1,27 @@
+{
+  "differences": {
+    "quant-company-maintenance-1": {
+      "prepared": {
+        "environment_sha256": "5cd55168ec95f15fd91b491e67ea42781e9aed053089d64a44a630742fdb2770",
+        "id": "e0dda82109b10a2af595f647dacb3c6645cab2ac967cdd7d9045f29d5c6120ac",
+        "image": "quant-company-repair-maintenance:68ffc8d1",
+        "image_id": "sha256:3105d87449f83bd7dbc39df09f8996f66dd8fe596362380dc9141ad708374b0e",
+        "memory_limit": 268435456,
+        "running": true
+      },
+      "current": {
+        "id": "2b9975f7b24bbe4c43384f07339da1ad6bfde829ace3c6431567c64e823d2611",
+        "image_id": "sha256:b645d6e7a629c25911f7193753f99a431f9d7906811d1e9825fe3b46e91e4627",
+        "image": "quant-company-maintainer-history:2427a48",
+        "running": true,
+        "memory_limit": 268435456,
+        "environment_sha256": "5cd55168ec95f15fd91b491e67ea42781e9aed053089d64a44a630742fdb2770"
+      }
+    }
+  },
+  "activity": {
+    "running_turns": 1,
+    "sending_outbox": 0,
+    "active_jobs": 0
+  }
+}

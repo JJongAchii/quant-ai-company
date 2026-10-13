@@ -10,7 +10,7 @@
   "owner_authority": "Existing user deploy/continue authorization and ongoing recovery request; exact-SHA human approval not claimed.",
   "exact_sha_human_approval_claimed": false,
   "reviewer": "operator:root",
-  "reviewed_at": "2026-10-13T00:17:00+00:00",
+  "reviewed_at": "2026-10-13T00:17:51+00:00",
   "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
   "scope": "47 controller lines projecting unchanged consumer eligibility and retaining previous proposal rejection; no scientific scope or actor decisions changed.",
   "full_regression": {
