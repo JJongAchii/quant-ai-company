@@ -261,6 +261,40 @@ def test_commons_results_keep_only_free_large_photos_that_name_the_subject():
     assert rows[0]['author'] == 'Jane Doe' and rows[0]['license'] == 'CC BY-SA 4.0'
 
 
+def test_a_long_photo_request_is_shortened_until_commons_finds_it_and_the_closest_match_leads():
+    # 2026-10-13: 'crude oil tanker Strait of Hormuz' and two other long requests found nothing (Commons ANDs words).
+    import httpx
+
+    from quant_company.video import photos
+
+    def page(index, title):
+        return {'index': index, 'title': title, 'imageinfo': [{
+            'width': 2400, 'height': 1600, 'mime': 'image/jpeg', 'thumburl': f'https://upload/{index}.jpg',
+            'descriptionurl': f'https://commons/{index}', 'extmetadata': {
+                'LicenseShortName': {'value': 'CC BY 4.0'}, 'Artist': {'value': 'Jane Doe'},
+                'ImageDescription': {'value': ''}, 'LicenseUrl': {'value': 'https://cc/'}}}]}
+
+    asked = []
+
+    def answer(request):
+        query = request.url.params['gsrsearch'].removesuffix(' filetype:bitmap')
+        asked.append(query)
+        pages = ({'1': page(1, 'File:Crude oil tanker in Port Arthur.jpg'),
+                  '2': page(2, 'File:Crude oil tanker in the Strait of Hormuz.jpg')}
+                 if len(query.split()) <= 3 else {})
+        return httpx.Response(200, json={'query': {'pages': pages}})
+
+    rows = photos.search('crude oil tanker Strait of Hormuz', transport=httpx.MockTransport(answer))
+    assert asked == ['crude oil tanker Strait of Hormuz', 'crude oil tanker Strait of', 'crude oil tanker Strait',
+                     'crude oil tanker']
+    assert [r['title'] for r in rows] == ['File:Crude oil tanker in the Strait of Hormuz.jpg',
+                                          'File:Crude oil tanker in Port Arthur.jpg']
+    assert 'tokens' not in rows[0]
+    asked.clear()
+    single = photos.search('Hormuz', transport=httpx.MockTransport(answer))
+    assert asked == ['Hormuz'] and [r['title'] for r in single] == ['File:Crude oil tanker in the Strait of Hormuz.jpg']
+
+
 def test_frame_keeps_a_portrait_whole_and_fills_16_by_9():
     import io
 

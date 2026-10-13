@@ -45,7 +45,19 @@ def tokens(text):
 
 
 def search(term, *, transport=None, limit=20):
-    """Free-licensed, large photos for the search words, in Commons relevance order; each names the subject."""
+    """Free-licensed, large photos for the search words; each names the subject. Commons matches every word, so a long
+    request finds nothing (all three on 2026-10-13, e.g. 'Samsung Electronics Seocho building Seoul'): it is asked
+    again with trailing words dropped, down to two. Results are ordered by how many words of the full request they
+    name, then by Commons relevance."""
+    words, full = term.split(), tokens(term)
+    for size in range(len(words), 1 if len(words) > 1 else 0, -1):
+        rows = _search(" ".join(words[:size]), transport, limit)
+        if rows:
+            return sorted(rows, key=lambda row: -len(full & row.pop("tokens")))
+    return []
+
+
+def _search(term, transport, limit):
     params = {"action": "query", "format": "json", "generator": "search", "gsrnamespace": 6,
               "gsrsearch": f"{term} filetype:bitmap", "gsrlimit": limit, "prop": "imageinfo",
               "iiprop": "url|size|mime|extmetadata", "iiurlwidth": 2560}
@@ -65,7 +77,7 @@ def search(term, *, transport=None, limit=20):
         rows.append({"title": page["title"], "page": info.get("descriptionurl"), "url": info.get("thumburl") or info.get("url"),
                      "license": licence, "license_url": _clean(meta.get("LicenseUrl", {}).get("value")),
                      "author": _short(meta.get("Artist", {}).get("value")) or _short(meta.get("Credit", {}).get("value"))
-                     or "Wikimedia Commons", "width": info["width"], "height": info["height"]})
+                     or "Wikimedia Commons", "width": info["width"], "height": info["height"], "tokens": tokens(text)})
     return rows
 
 

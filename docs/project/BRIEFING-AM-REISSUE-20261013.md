@@ -82,3 +82,16 @@
   실행 중 실행기에서도 확인. v2의 세 번째 대본 시도가 09:44:03 새 실행기에서 시작됐다(앞 시도는 교체 전에 완료).
 - 재발 방지 점검 항목: 영상 계약 모델을 바꿀 때는 워커와 실행기 두 이미지의 `EpisodePlan.model_json_schema()`가
   같은지 함께 확인한다.
+
+## 7. 회차 사진 검색이 0건이던 문제 (video-worker `fargate11`, 11:00) · v2 사진 단계 재실행
+
+- v2 대본(4번째 시도 통과, 10:0x)은 회차 사진 3장을 요청했다: 삼성전자(`Samsung Electronics Seocho building Seoul`),
+  호르무즈 유조선(`crude oil tanker Strait of Hormuz`), 데이터센터 전력(`Microsoft datacenter server racks`). 그러나
+  위키미디어 공용 검색이 세 건 모두 0건이라(공용 검색은 모든 단어가 맞아야 함) 생성 그림으로 렌더링에 들어갔다.
+- 수정(`photos.search`): 결과가 없으면 뒤 단어를 하나씩 빼 두 단어까지 다시 찾고, 원래 요청의 단어를 더 많이 담은
+  사진을 앞에 둔다. 새 테스트 1개, 영상 테스트 164개 통과. 서버 실측: 삼성전자 19건·유조선 3건·데이터센터 1건.
+- 배포: `quant-company-video:7b37ac4-fargate11` = fargate10 + `photos.py`(11:00:04).
+- v2 재실행: 워커를 멈춘 상태에서 v2를 `synthesizing`으로 되돌리고 사진 기록(photo_round·후보·확인 여부·그림 목록)을
+  비웠다(이전 값은 `releases/video-fargate11-20261013/v2-before-photo-rerun.json`에 백업). 대본·검토·녹음은 그대로
+  쓰고(음성 영수증 재사용), 바뀐 그림으로 새 렌더 키에서 다시 렌더링한다. 11:00:55 후보: 삼성전자 2장, 유조선 2장,
+  데이터센터 1장 → Claude 확인.
