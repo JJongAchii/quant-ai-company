@@ -133,6 +133,12 @@ class Settings(BaseSettings):
     video_retention_days: int = Field(default=14, ge=1, le=90)
     # New episodes do not start below this free space on the artifact volume.
     video_min_free_gb: float = Field(default=10, ge=1, le=500)
+    # Performance of the owner's public uploads (docs/daily-video.md "성과 분석"): YouTube Analytics/Reporting reads,
+    # a Claude diagnosis per episode three days after upload and a Monday review in a dedicated Slack channel. A
+    # proposed lesson reaches the episode prompt only after the owner adopts it there.
+    video_analytics_enabled: bool = False
+    video_analytics_channel_id: str = ""
+    video_analytics_max_lessons: int = Field(default=8, ge=1, le=12)
     briefing_calendar_overrides_file: Path | None = None
     # Public chart reads after the US close; off until the briefing data worker is qualified for it.
     briefing_us_close_enabled: bool = False
@@ -253,6 +259,15 @@ class Settings(BaseSettings):
             raise ValueError("Video uploads require production and an explicit YouTube channel")
         if self.video_publish_enabled and not self.video_upload_enabled:
             raise ValueError("Video public release requires private upload support")
+        if self.video_analytics_enabled and (
+                not self.video_youtube_channel_id or self.briefing_owner_user not in self.slack_allowed_users
+                or not self.video_analytics_channel_id.startswith("C")
+                or self.video_analytics_channel_id not in self.slack_allowed_channels
+                or self.video_analytics_channel_id in {self.briefing_channel_id, self.improvements_channel_id,
+                                                       self.data_watch_channel_id, self.news_channel_id,
+                                                       self.model_accounts_channel_id}):
+            raise ValueError("Video analytics requires the YouTube channel, the brief owner and a dedicated allowed "
+                             "Slack channel")
         if self.model_accounts_enabled and self.model_accounts_owner_user not in self.slack_allowed_users:
             raise ValueError("Model account control requires an explicitly allowed owner")
         if self.model_accounts_enabled and (

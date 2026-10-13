@@ -193,6 +193,8 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
     assert not (tmp_path / 'out' / 'page').exists() and not list((tmp_path / 'out').glob('part-*.mp4'))
     assert not (tmp_path / 'out' / 'narration.wav').exists() and (tmp_path / 'out' / 'video.mp4').exists()
     assert [c['title'] for c in manifest['chapters']][:3] == ['오프닝', '오늘 꼭 알아야 할 세 가지', '시장 한눈에']
+    assert [s['id'] for s in manifest['scenes']] == [s.id for s in plan.scenes]
+    assert manifest['scenes'][0]['t0'] == 0 and manifest['scenes'][-1]['t1'] == pytest.approx(manifest['duration'], abs=.5)
     assert '• Synthetic fixture / 2026.09.22' in upload
     verify_artifacts(manifest, tmp_path)
     (tmp_path / 'out' / 'subtitles.srt').write_text('changed')

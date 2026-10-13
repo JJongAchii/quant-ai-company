@@ -183,6 +183,13 @@ class VideoStore:
                   # YouTube private upload + Slack approval only when explicitly enabled; otherwise the owner gets the
                   # files in the brief thread and uploads them himself.
                   "delivery": "youtube" if self.settings.video_upload_enabled else "slack"}
+        if self.settings.video_analytics_enabled:
+            from .analytics_store import AnalyticsStore
+
+            # Owner-adopted lessons are frozen here: later adoptions never change this job's prompts.
+            lessons = AnalyticsStore(self.company).active_lessons(conn)
+            if lessons:
+                policy["lessons"] = lessons
         conn.execute("""INSERT INTO video_jobs(id,edition_id,version,source_digest,source,policy,publish_deadline)
             VALUES(%s,%s,1,%s,%s,%s,%s) ON CONFLICT(edition_id,version) DO NOTHING""",
                      (identity, edition["id"], digest(source), Jsonb(source), Jsonb(policy), deadline))

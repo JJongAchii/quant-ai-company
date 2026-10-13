@@ -222,6 +222,11 @@ class SlackIngress:
 
     def accept_interaction(self, role, payload, credential):
         if role == BRIEFER:
+            actions = payload.get("actions") if isinstance(payload.get("actions"), list) else []
+            if actions and isinstance(actions[0], dict) and str(actions[0].get("action_id", "")).startswith("video_lesson_"):
+                from .video.analytics_slack import accept as accept_lesson
+
+                return accept_lesson(self, role, payload, credential)
             from .video.slack_ui import accept
 
             return accept(self, role, payload, credential)
@@ -334,6 +339,10 @@ class SlackOutbox:
                 from .video.store import VideoStore
 
                 return VideoStore(self.company).delivery_gate(conn, row)
+            if row['message_kind'] == 'video_analytics':
+                from .video.analytics_store import AnalyticsStore
+
+                return AnalyticsStore(self.company).gate(conn, row)
             if row["message_kind"] == "housing_feed":
                 from .housing_feed.store import HousingFeedStore
 
@@ -383,6 +392,11 @@ class SlackOutbox:
                 from .video.store import VideoStore
 
                 if not VideoStore(self.company).delivery_gate(conn, row):
+                    return False
+            if row['message_kind'] == 'video_analytics':
+                from .video.analytics_store import AnalyticsStore
+
+                if not AnalyticsStore(self.company).gate(conn, row):
                     return False
             if row["message_kind"] == "briefing":
                 from .briefing.store import BriefStore
@@ -495,6 +509,12 @@ class SlackOutbox:
             from .video.slack_ui import blocks as video_blocks
 
             blocks = await asyncio.to_thread(video_blocks, self.company, row)
+            if blocks:
+                body['blocks'] = blocks
+        if row.get("message_kind") == "video_analytics":
+            from .video.analytics_slack import blocks as analytics_blocks
+
+            blocks = await asyncio.to_thread(analytics_blocks, self.company, row)
             if blocks:
                 body['blocks'] = blocks
         if row.get("message_kind") == "briefing":

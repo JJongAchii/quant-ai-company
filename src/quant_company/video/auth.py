@@ -112,7 +112,9 @@ async def login_runway(directory, host='127.0.0.1'):
 def login_youtube(directory, host='127.0.0.1'):
     from google_auth_oauthlib.flow import InstalledAppFlow
 
-    scopes = ["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.force-ssl"]
+    # yt-analytics.readonly: Analytics and Reporting API reads for the performance analysis (video/analytics.py).
+    scopes = ["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.force-ssl",
+              "https://www.googleapis.com/auth/yt-analytics.readonly"]
     flow = InstalledAppFlow.from_client_secrets_file(str(Path(directory) / "youtube-client.json"), scopes)
     value = flow.run_local_server(host="127.0.0.1", port=8767, open_browser=False,
                                  bind_addr=host, access_type="offline", prompt="consent")
