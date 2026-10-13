@@ -378,7 +378,7 @@ def episode_violations(plan, source, library=None, *, structure=True, photos=Fal
 
 CARD_GUIDE = """Card catalog (use only these types; fields in parentheses):
 cold_open(kicker, question=[[[word,isGold],...] per line], stats=[{label,value,sub,big_dir?,sub_dir?}] x3) — first 8-10 s, the day's tension.
-summary3(title, cards=[{n,items=[[icon,size,color,caption,badge('up'|'dn'|''),symbol]] x2,title,stats=[[label,value,dir]] x2}] x3).
+summary3(title, cards=[{n,items=[[icon,size('sm'|'md'|'lg'),color('gold'|'sky'|'red'|'green'|'purple'|'cream'),caption,badge('up'|'dn'|''),symbol]] x2,title,stats=[[label,value,dir]] x2}] x3).
 market_board(title, tag, tiles=[{name,value,dir,change,sub,badge}] 4-8).
 headline(chips=[issue label, horizon], title, image={asset}, panel_title, source, stats=[{label,value,dir,change,sub}] 2-3).
 flow(chips, title, nodes=[{chips,source?,icon,head,big?|text?|rows?,dir?,sub?,badge?}] x3, foot?={chip,text}).
@@ -387,7 +387,9 @@ bars(chips?, title, unit_note, source?, rows=[{name,n,label,tag?}] 2-8, image?={
 map(chips, title, region='hormuz', panel_title, bars=[{name,w,label,gold?}], delta, delta_source, alt, cost_head, cost).
 calendar(title, rows=[[date,weekday,badge,icon,event,time chip]]) or mode='day' (date,dow,badge,rows=[[icon,title,sub]],side_title,side=[{label,source?,value,dir?,sub}]).
 photo(chips, title, image={asset}, rows=[{chip,kind?('counter'|'signal'|'interp'),big?,text?,sub,source?}] 3).
-counter(chips, title, icon, topic, source?, blocks=[{x,label,value,sub?,dir?,gold?}] 2-3, rows=[{icon,text,source?}] 0-2).
+counter(chips, title, icon, topic, kicker?, source?, blocks=[{label,value,sub?,dir?,gold?}] 2-3, rows=[{icon,text,source?}] 0-2) — kicker heads
+the panel (default '다르게 볼 점': the brief's counter-view); name what the panel shows otherwise (e.g. '보도 해석', '근거').
+The template places the blocks side by side; keep each value short (a number with its unit).
 signals(chips?, title, tag?, rows=[{icon,topic,conds=[2],then}], note?, disclaimer?) — the last scene uses signals with a disclaimer.
 Icons: """ + ', '.join(sorted(ICONS)) + """.
 Order (owner decision 2026-10-12, issue first): cold_open (the day's sharpest question) → summary3 (optional roadmap) →
@@ -398,7 +400,8 @@ move, a record, flows that explain an issue), placed where it serves the story, 
 9-13 scenes (at most 14), about 4-5 minutes in total; one narration take per scene, under 220 characters each.
 Signs on screen use ▲/▼ with unsigned numbers; narration reads signs as words. Never compute differences, ratios or conversions.
 Where a field has a direction (dir/big_dir: market_board change, headline change, compare value, cold_open value, flow
-rows, image labels, ticker change) write the bare number (0.59%, 2bp): the screen draws ▲/▼ from the direction itself.
+rows, summary3 stats, counter blocks, image labels, ticker change) write the bare number (0.59%, 2bp): the screen draws
+▲/▼ from the direction itself.
 No clock times on screen (no collection or article times); label non-closing values with the single word 장중. Dates and 종가 stay.
 Hard checks (an episode failing one is discarded, so follow them exactly): chapters never go backwards in the order
 '' → 요약 → 시장 → 핵심 이슈 → 함께 볼 이슈 → 일정, so the calendar and the closing signals both use 일정; all narration

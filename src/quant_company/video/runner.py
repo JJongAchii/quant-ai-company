@@ -34,7 +34,7 @@ from .episode import (
     template,
 )
 from .motion import FPS as MOTION_FPS
-from .motion import MotionRenderer
+from .motion import RENDERER_DIGEST, MotionRenderer
 from .render import Renderer, RenderInProgress, korean_numbers, spoken, verify_artifacts
 from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
 from .store import UncertainEffect, VideoStore
@@ -45,6 +45,13 @@ VIDEO_MODEL_WAIT_SECONDS = 120
 # Like an editor in a Claude session: rewrite until the checks pass, then keep the best version and report the rest.
 PLAN_ATTEMPTS = 6
 REVIEW_ROUNDS = 2
+# A turn the runtime lost (uncertain: the CLI exited or its result went missing; timeout: the process limit) says nothing
+# about the script. It is asked again as a new request after a pause and uses none of the attempts or rounds above, up to
+# these limits (2026-10-13 PM: five CLI exits in a row used five of six attempts, so fifteen review concerns never got a
+# new version).
+RUNTIME_OUTCOMES = frozenset({'uncertain', 'timeout'})
+PLAN_RUNTIME_RETRIES = 8
+REVIEW_RUNTIME_RETRIES = 4
 REVIEW_CHECKS = ('facts', 'numbers', 'conditions', 'coverage', 'readability')
 INSPECT_ROUNDS = 3
 REVIEW_PHASES = frozenset({'review', 'visual'})
@@ -57,6 +64,17 @@ class ModelRejected(ValueError):
         super().__init__(code)
         self.code, self.detail = code, detail
 
+
+def written_attempts(qa):
+    """Script attempts the model actually answered (a lost runtime turn is not one)."""
+    return sum(a['outcome'] not in RUNTIME_OUTCOMES for a in qa.get('plan_attempts', []))
+
+
+def render_key(job, takes, images):
+    """Render directories are named by what they render, so an interrupted render resumes scene by scene and a changed
+    plan, take, picture or renderer code gets a new directory (a committed attempt is never overwritten)."""
+    return 'render-' + digest({'plan': job['plan'], 'takes': list(takes), 'template': template(job), 'fps': MOTION_FPS,
+                               'renderer': RENDERER_DIGEST, **({'images': images} if images else {})})[:20]
 
 def attempt_key(phase, number):
     return phase if number == 1 else f'{phase}-{number}'
@@ -356,7 +374,13 @@ class VideoRunner:
             qa['plan_findings'] = []
             await asyncio.to_thread(self.store.save, job, 'reviewing', plan=plan.model_dump(mode='json'), qa=qa)
             return
-        if number < PLAN_ATTEMPTS:
+        lost = sum(a['outcome'] in RUNTIME_OUTCOMES for a in attempts)
+        if written_attempts(qa) < PLAN_ATTEMPTS and lost < PLAN_RUNTIME_RETRIES:
+            if attempts[-1]['outcome'] in RUNTIME_OUTCOMES:
+                # Same feedback as the lost turn; only the request is new.
+                await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
+                await asyncio.to_thread(self.store.wait, job, min(180, 30 * lost), 'model_retry')
+                return
             qa['feedback'] = repair_feedback(job['feedback'], findings)
             await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
             return
@@ -379,10 +403,19 @@ class VideoRunner:
             review = await self.model(job, key, review_prompt(job['source'], plan), VideoReview)
             concerns = list(review.concerns) + [f'{name} check failed' for name in REVIEW_CHECKS if not getattr(review, name)]
         except ModelRejected as rejected:
+            lost = sum(r.get('outcome') in RUNTIME_OUTCOMES for r in rounds)
+            if rejected.code in RUNTIME_OUTCOMES and lost < REVIEW_RUNTIME_RETRIES:
+                # The runtime lost the review turn: the same script is reviewed again, nothing is rewritten.
+                rounds.append({'key': key, 'passed': False, 'outcome': rejected.code, 'concerns': []})
+                qa['review_rounds'] = rounds
+                await asyncio.to_thread(self.store.save, job, 'reviewing', qa=qa)
+                await asyncio.to_thread(self.store.wait, job, min(180, 30 * (lost + 1)), 'model_retry')
+                return
             review, concerns = None, [f'Review output contract: {rejected.detail or rejected.code}']
         rounds.append({'key': key, 'passed': not concerns, 'concerns': concerns[:20]})
         qa['review_rounds'] = rounds
-        if concerns and len(rounds) < REVIEW_ROUNDS and len(qa.get('plan_attempts', [])) < PLAN_ATTEMPTS:
+        reviewed = sum(r.get('outcome') not in RUNTIME_OUTCOMES for r in rounds)
+        if concerns and reviewed < REVIEW_ROUNDS and written_attempts(qa) < PLAN_ATTEMPTS:
             qa['feedback'] = repair_feedback(job['feedback'], qa.get('plan_findings', []) + concerns)
             await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
             return
@@ -470,6 +503,9 @@ class VideoRunner:
                     current.update(outcome='failed', reason=f'collect: {type(error).__name__}: {error}'[:300])
                 else:
                     current.update(outcome='completed', finished_at=datetime.now(UTC).isoformat())
+                    code = str(artifacts.get('renderer') or 'unknown')
+                    qa['render_findings'] = [] if code == RENDERER_DIGEST else [
+                        f"Render image code {code[:12]} differs from the worker's {RENDERER_DIGEST[:12]}: rebuild the render image"]
                     return artifacts
             else:
                 current.update(outcome='failed', stop_code=status.get('stop_code'), reason=status.get('reason'))
@@ -600,14 +636,10 @@ class VideoRunner:
         elif state == "rendering":
             plan = plan_class(job).model_validate(job["plan"])
             takes = await self.takes(job, plan)
-            # The attempt directory is named by what it renders, so an interrupted render resumes scene by scene and a
-            # changed plan or take gets a new directory (a committed attempt is never overwritten).
             # Made pictures are part of what is rendered: a remade or fallen-back picture renders afresh.
             images = {k: v.get('sha256') or v.get('failed') for k, v in
                       ((job.get('qa') or {}).get('illustrations') or {}).items()}
-            directory = self.settings.video_artifact_dir / str(job["id"]) / ('render-' + digest(
-                {'plan': job['plan'], 'takes': [k for k, _ in takes], 'template': template(job), 'fps': MOTION_FPS,
-                 **({'images': images} if images else {})})[:20])
+            directory = self.settings.video_artifact_dir / str(job["id"]) / render_key(job, [k for k, _ in takes], images)
             directory.mkdir(parents=True, exist_ok=True)
             qa = dict(job.get('qa') or {})
             texts = [r['text'] for _, r in takes] if qa.get('retake') else None

@@ -37,12 +37,27 @@ function icon(name,size=64,color='#FDC749',ds=null,dd=0.8,sw=3.6){
  return `<svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${prims}</svg>`;
 }
 function injectIcons(root=document){
- for(const e of $$('[data-icon]',root)){const [n,s,c,ds,dd]=e.dataset.icon.split(',');e.innerHTML=icon(n,+s,c,ds!==undefined?+ds:null,dd!==undefined?+dd:0.8);e.classList.add('ico');e.removeAttribute('data-icon');}
+ for(const e of $$('[data-icon]',root)){const [n,s,c,ds,dd]=e.dataset.icon.split(',');e.innerHTML=icon(n,Number.isFinite(+s)&&+s>0?+s:64,c,ds!==undefined?+ds:null,dd!==undefined?+dd:0.8);e.classList.add('ico');e.removeAttribute('data-icon');}
+}
+
+/* ---------- fit: [data-fit] text shrinks until it fits its box (2026-10-13 PM: '배럴당 1~2달러', '19.6%' ran off screen).
+   Measured once, at the first seek (the renderer awaits document.fonts.ready first), with count-ups at their targets. */
+let fitted=false;
+function fitText(){
+ for(const scn of $$('.scene')){const shown=scn.style.display;scn.style.display='block';
+  for(const e of $$('[data-fit]',scn)){const counters=$$('[data-count]',e),kept=counters.map(c=>c.textContent);
+   counters.forEach(c=>{c.textContent=c.dataset.target;});
+   let size=parseFloat(getComputedStyle(e).fontSize);const floor=size*0.45;
+   while(e.scrollWidth>e.clientWidth+1&&size>floor){size*=0.94;e.style.fontSize=size.toFixed(1)+'px';}
+   counters.forEach((c,i)=>{c.textContent=kept[i];});}
+  scn.style.display=shown;}
 }
 
 /* ---------- boot: fixed frame + scenes from EP ---------- */
 const PARTS=[];
 function boot(){
+ // Load every weight now so document.fonts.ready (awaited before the first seek) covers text in hidden scenes too.
+ for(const w of [500,600,700,800]) document.fonts.load(`${w} 40px Pretendard`);
  for(let i=0;i<28;i++){const d=document.createElement('i');const s=2+(i%3);d.style.width=d.style.height=s+'px';$('#parts').appendChild(d);
   PARTS.push({e:d,x0:(i*733)%1960,y0:110+((i*397)%780),v:6+((i*37)%12),a:8+((i*53)%26),ph:i*0.7,o:0.10+((i*13)%10)/50});}
  $('#dd').textContent=EP.date_label; $('#da').textContent=EP.asof?'자료 기준 '+EP.asof:''; $('#ds').textContent=EP.sample_mark||''; if(EP.brand_label) $('#bl').textContent=EP.brand_label;
@@ -57,10 +72,16 @@ function boot(){
  for(const f of POST) f();
 }
 
+// Balanced caption lines are shorter than the 1500px box; the box shrinks to its widest line (plus padding).
+function hug(box){box.style.width='';const rg=document.createRange();rg.selectNodeContents(box);let l=Infinity,r=-Infinity;
+ for(const q of rg.getClientRects()){if(q.width<1)continue;l=Math.min(l,q.left);r=Math.max(r,q.right);}
+ if(r>l){const cs=getComputedStyle(box);box.style.width=Math.ceil(r-l+parseFloat(cs.paddingLeft)+parseFloat(cs.paddingRight)+2)+'px';}}
+
 let tkW=0;
 function count(e,p){const tg=e.dataset.target;const dec=(tg.split('.')[1]||'').length;const v=parseFloat(tg.replace(/,/g,''))*eo(p);
  let s=v.toFixed(dec); if(tg.includes(',')){const [a,b]=s.split('.');s=a.replace(/\B(?=(\d{3})+(?!\d))/g,',')+(b!==undefined?'.'+b:'');} e.textContent=s;}
 function seek(t){
+ if(!fitted){fitted=true;fitText();}
  // background
  $('#glow').style.transform=`translate(${360+220*Math.sin(t*2*Math.PI/60)}px,${40+60*Math.cos(t*2*Math.PI/60)}px)`;
  for(const q of PARTS){const x=((q.x0+t*q.v)%1960)-20, y=q.y0+q.a*Math.sin(t*0.35+q.ph);q.e.style.transform=`translate(${x}px,${y}px)`;q.e.style.opacity=q.o*(0.6+0.4*Math.sin(t*0.8+q.ph));}
@@ -94,7 +115,7 @@ function seek(t){
  $('#wipe').style.opacity=w*0.55;$('#wipe').style.transform=`translateX(${wx}px)`;
  // captions
  const cb=$('#capbox'); const c=EP.captions.find(c=>t>=c[0]&&t<c[1]);
- if(c){if(cb.dataset.k!==String(c[0])){cb.innerHTML=c[2];cb.dataset.k=String(c[0]);}cb.style.opacity=Math.min(1,(t-c[0])/0.18,(c[1]-t)/0.18);}else cb.style.opacity=0;
+ if(c){if(cb.dataset.k!==String(c[0])){cb.innerHTML=c[2];cb.dataset.k=String(c[0]);hug(cb);}cb.style.opacity=Math.min(1,(t-c[0])/0.18,(c[1]-t)/0.18);}else cb.style.opacity=0;
  // ticker
  if(!tkW)tkW=$('#track').scrollWidth/2;
  $('#track').style.transform=`translateX(${300-((t*80)%tkW)}px)`;

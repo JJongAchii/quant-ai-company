@@ -10,6 +10,14 @@ function header(d) {
   return `<div class="hdr" data-in="0.2,0.5">${chips}<div class="h1" style="margin-left:${chips ? 6 : 0}px">${d.title}</div>${d.tag ? `<span class="chip tag-line" style="margin-left:8px">${d.tag}</span>` : ''}</div>`;
 }
 const src = s => s ? `<span class="chip src">${s}</span>` : '';
+// Scripts name icon sizes and colours in words (2026-10-13 PM: size 'sm' reached the icon as NaN and every summary icon
+// filled its whole band); both are mapped onto the template's sizes and palette.
+const ISZ = { xs: 64, sm: 84, md: 100, lg: 112, xl: 120 };
+const isz = v => { const n = ISZ[v] ?? parseFloat(v); return Number.isFinite(n) ? Math.max(40, Math.min(120, n)) : ISZ.md; };
+const PAL = { gold: '#FDC749', yellow: '#FDC749', cream: '#FCF1DB', white: '#FCF1DB', sky: '#5EA0FF', blue: '#5EA0FF',
+  red: '#FF5C6C', green: '#3CCFB4', teal: '#3CCFB4', mint: '#3CCFB4', purple: '#B28DFF', violet: '#B28DFF' };
+const col = c => PAL[String(c).toLowerCase()] || (/^#[0-9a-f]{3,8}$/i.test(c) ? c : PAL.gold);
+const dirArrow = d => d && arrow(d) ? `<span class="${C(d, 1)}">${arrow(d)}</span> ` : '';
 const cnt = (v, s, dur = 0.9) => {
   const m = String(v).match(/^([^\d]*)([\d,]+(?:\.\d+)?)(.*)$/);
   return m ? `${m[1]}<span data-count="${s},${dur}" data-target="${m[2]}">0</span>${m[3]}` : v;
@@ -34,11 +42,11 @@ const CARDS = {
       const x = i * 600, b = 0.6 + i * 0.15;
       return `<div class="paper" style="left:${x}px;top:100px;width:560px;height:600px;overflow:hidden" data-in="${b},0.55">
        <div class="spot"><div class="num" data-pop="${b + 0.3},0.5">${c.n}</div>
-        ${c.items.map((it, k) => `<div class="spot-item"><div style="height:132px;display:flex;align-items:center"><span data-icon="${it[0]},${it[1]},${it[2]},${b + 0.4 + k * 0.25},0.9"></span></div>${it[4] ? `<div class="badge ${it[4]}" data-pop="${b + 1.1 + k * 0.2},0.45">${it[5]}</div>` : ''}<div class="cap">${it[3]}</div></div>`).join('')}
+        ${c.items.map((it, k) => `<div class="spot-item"><div style="height:132px;display:flex;align-items:center"><span data-icon="${it[0]},${isz(it[1])},${col(it[2])},${b + 0.4 + k * 0.25},0.9"></span></div>${it[4] ? `<div class="badge ${it[4]}" data-pop="${b + 1.1 + k * 0.2},0.45">${it[5]}</div>` : ''}<div class="cap">${it[3]}</div></div>`).join('')}
        </div>
        <div style="position:relative;height:350px;padding:28px 36px 0"><div class="h2">${c.title}</div>
         <div style="position:absolute;left:36px;right:36px;bottom:34px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
-         ${c.stats.map((s, k) => `<div class="stat" data-in="${b + 1.3 + k * 0.15},0.45" style="padding:14px 18px;border-radius:16px;background:rgba(11,21,48,.05);border:1px solid rgba(11,21,48,.08)"><div class="k">${s[0]}</div><div class="v tnum ${s[2] ? C(s[2]) : ''}" style="${s[2] ? '' : 'color:var(--ink)'};font-size:${s[1].length > 8 ? 30 : 36}px">${s[1]}</div></div>`).join('')}
+         ${c.stats.map((s, k) => `<div class="stat" data-in="${b + 1.3 + k * 0.15},0.45" style="padding:14px 18px;border-radius:16px;background:rgba(11,21,48,.05);border:1px solid rgba(11,21,48,.08);min-width:0"><div class="k">${s[0]}</div><div class="v tnum ${s[2] ? C(s[2]) : ''}" style="${s[2] ? '' : 'color:var(--ink)'};font-size:${s[1].length > 8 ? 30 : 36}px;white-space:nowrap" data-fit>${s[2] && arrow(s[2]) ? arrow(s[2]) + ' ' : ''}${s[1]}</div></div>`).join('')}
         </div></div></div>`;
     }).join('');
     return `<div class="h1" style="position:absolute;top:0;left:0" data-in="0.15,0.5">${d.title}</div>${cards}`;
@@ -88,18 +96,21 @@ const CARDS = {
   },
 
   counter(d) {
+    // Blocks share the 1210px area right of the divider in equal columns. A script's x is ignored: on 2026-10-13 PM
+    // x=590/1150 (screen guesses) were added to the area's own offset and pushed '19.6%' and '14%' off screen.
+    const span = Math.floor(1210 / d.blocks.length);
     const blocks = d.blocks.map((b, i) => {
       const t = 1.0 + i * 0.6;
-      return `<div style="position:absolute;left:${b.x}px;top:40px" data-in="${t},0.45">
-        <div class="lab muted">${b.label}</div>
-        <div class="tnum" style="font-size:76px;font-weight:800;line-height:1;margin-top:14px;${b.gold ? 'color:var(--gold)' : ''}">${cnt(b.value, t + 0.2)}</div>
-        ${b.sub ? `<div class="${b.dir ? C(b.dir, 1) : 'muted'}" style="font-size:25px;font-weight:800;margin-top:4px"${b.dir ? ` data-pop="${t + 0.9},0.5"` : ''}>${b.sub}</div>` : ''}</div>`;
+      return `<div style="position:absolute;left:${i * span}px;top:40px;width:${span - 40}px" data-block data-in="${t},0.45">
+        <div class="lab muted" style="text-wrap:balance">${b.label}</div>
+        <div class="tnum" style="font-size:76px;font-weight:800;line-height:1;margin-top:14px;white-space:nowrap;${b.gold ? 'color:var(--gold)' : ''}" data-fit>${dirArrow(b.dir)}${cnt(b.value, t + 0.2)}</div>
+        ${b.sub ? `<div class="${b.dir ? C(b.dir, 1) : 'muted'}" style="font-size:25px;font-weight:800;margin-top:4px;text-wrap:balance"${b.dir ? ` data-pop="${t + 0.9},0.5"` : ''}>${b.sub}</div>` : ''}</div>`;
     }).join('');
     const rows = (d.rows || []).map((r, i) => `<div class="row" data-in="${2.6 + i * 0.5},0.45" style="margin-top:${i ? 18 : 0}px"><span class="tile deep" style="width:64px;height:64px"><span data-icon="${r.icon},42,#B28DFF,${2.8 + i * 0.5},0.7"></span></span><div class="body" style="font-weight:600;font-size:30px">${r.text}</div>${src(r.source)}</div>`).join('');
     const ch = 360 + (d.rows || []).length * 82;
     return header({ ...d, chips: d.chips }) + `<div class="glass" style="left:0;top:${110 + Math.round((590 - ch) / 2)}px;width:1760px;height:${ch}px;border-color:rgba(178,141,255,.6)" data-in="0.5,0.5">
-      <div style="position:absolute;left:40px;top:34px;width:420px"><div class="lab" style="color:var(--counter);font-size:28px">◆ 다르게 볼 점</div>
-       <div style="display:flex;align-items:center;gap:14px;margin-top:22px"><span class="tile deep" style="width:64px;height:64px"><span data-icon="${d.icon},42,#B28DFF,0.9,0.8"></span></span><span style="font-size:28px;font-weight:800">${d.topic}</span></div>
+      <div style="position:absolute;left:40px;top:34px;width:420px"><div class="lab" style="color:var(--counter);font-size:28px" data-kicker>◆ ${d.kicker || '다르게 볼 점'}</div>
+       <div style="display:flex;align-items:center;gap:14px;margin-top:22px"><span class="tile deep" style="width:64px;height:64px"><span data-icon="${d.icon},42,#B28DFF,0.9,0.8"></span></span><span style="font-size:28px;font-weight:800;text-wrap:balance">${d.topic}</span></div>
        ${d.source ? `<div style="margin-top:18px">${src(d.source)}</div>` : ''}</div>
       <div style="position:absolute;left:470px;top:30px;width:1px;height:240px;background:rgba(252,241,219,.16)"></div>
       <div style="position:absolute;left:510px;top:0;width:1210px;height:280px">${blocks}</div>
@@ -108,19 +119,22 @@ const CARDS = {
   },
 
   signals(d) {
-    const used = d.rows.length * 182 + (d.note ? 130 : 0) + (d.disclaimer ? 50 : 0);
-    d.top = d.top || 106 + Math.max(0, Math.floor((610 - used) / 2));
+    // Rows share the stage height below the header (730px stage, captions start below it); up to three rows keep the
+    // 182px pitch, four rows shrink (2026-10-13 PM: the fourth row and the disclaimer ran under the captions).
+    const extras = (d.note ? 130 : 0) + (d.disclaimer ? 50 : 0), room = 730 - 106 - extras;
+    const pitch = Math.min(182, Math.floor(room / d.rows.length)), height = pitch - 22;
+    d.top = d.top || 106 + Math.max(0, Math.floor((room - d.rows.length * pitch) / 2));
     const rows = d.rows.map((r, i) => {
-      const y = d.top + i * 182, b = 0.5 + i * 0.3;
-      return `<div class="glass" style="left:0;top:${y}px;width:1760px;height:160px;padding:0 36px;display:flex;align-items:center;gap:24px" data-in="${b},0.5">
+      const y = d.top + i * pitch, b = 0.5 + i * 0.3;
+      return `<div class="glass" style="left:0;top:${y}px;width:1760px;height:${height}px;padding:0 36px;display:flex;align-items:center;gap:24px" data-in="${b},0.5">
        <span class="tile" style="width:84px;height:84px;background:rgba(60,207,180,.14);border:1px solid rgba(60,207,180,.4)"><span data-icon="${r.icon},52,#3CCFB4,${b + 0.3},0.7"></span></span>
        <div style="width:150px;font-size:32px;font-weight:800;color:var(--signal)">${r.topic}</div>
        <div style="flex:1;display:flex;align-items:center">${r.conds.map((c, j) => `${j ? `<span class="plus" data-pop="${b + 0.5 + j * 0.2},0.45">+</span>` : ''}<span class="pillc" data-pop="${b + 0.5 + j * 0.2},0.45">${c}</span>`).join('')}<span style="flex:1;height:0;border-top:2px dashed rgba(253,199,73,.35);margin:0 4px 0 22px" data-in="${b + 0.9},0.5,0"></span></div>
        <svg width="70" height="30" viewBox="0 0 70 30"><path d="M4 15H60M48 4L62 15L48 26" fill="none" stroke="#FDC749" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" data-draw="${b + 1.0},0.4"/></svg>
        <div style="width:470px;font-size:32px;font-weight:800;color:var(--gold)" data-in="${b + 1.2},0.45,10">${r.then}</div></div>`;
     }).join('');
-    const note = d.note ? `<div class="glass" style="left:0;top:${(d.top || 106) + d.rows.length * 182 + 10}px;width:1760px;height:120px;padding:0 36px;display:flex;align-items:center" data-in="2.2,0.5"><div class="body" style="font-weight:600">${d.note}</div></div>` : '';
-    const disc = d.disclaimer ? `<div class="muted" style="position:absolute;left:0;top:${d.top + d.rows.length * 182 + 6}px;font-size:22px;font-weight:600" data-in="2.6,0.5">${d.disclaimer}</div>` : '';
+    const note = d.note ? `<div class="glass" style="left:0;top:${d.top + d.rows.length * pitch + 10}px;width:1760px;height:120px;padding:0 36px;display:flex;align-items:center" data-in="2.2,0.5"><div class="body" style="font-weight:600">${d.note}</div></div>` : '';
+    const disc = d.disclaimer ? `<div class="muted" style="position:absolute;left:0;top:${d.top + d.rows.length * pitch + (d.note ? 130 : 0) + 6}px;font-size:22px;font-weight:600" data-disclaimer data-in="2.6,0.5">${d.disclaimer}</div>` : '';
     return header(d) + rows + note + disc;
   },
 
@@ -161,10 +175,10 @@ const CARDS = {
        <div style="display:flex;align-items:center;gap:12px"><span class="ink6" style="font-size:22px;font-weight:700">${t.label}</span>${src(t.source)}</div>
        <div class="tnum ${t.dir ? C(t.dir) : ''}" style="font-size:48px;font-weight:800;margin-top:6px">${t.dir ? arrow(t.dir) + ' ' : ''}${cnt(t.value, 1.2 + i * 0.4)}</div>
        <div class="ink6" style="font-size:21px;font-weight:600;margin-top:4px">${t.sub}</div></div>`).join('');
-    return header(d) + `<div class="paper" style="left:0;top:110px;width:820px;height:590px;padding:30px 36px" data-in="0.6,0.55">${tiles}</div>
+    return header(d) + `<div class="paper" style="left:0;top:110px;width:820px;height:590px;padding:30px 36px;display:flex;flex-direction:column;justify-content:center" data-in="0.6,0.55">${tiles}</div>
      <div class="glass" style="left:860px;top:110px;width:900px;height:590px;padding:30px 44px" data-in="0.9,0.55">
       <div style="display:flex;align-items:center;gap:12px"><span class="lab">${d.chart_title}</span>${src(d.chart_source)}</div>
-      <svg width="812" height="330" style="margin-top:56px;overflow:visible">
+      <svg width="812" height="320" style="margin-top:40px;overflow:visible">
        <defs><marker id="ahc_${d.id}" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1,1 L10,6 L1,11" fill="none" stroke="#5EA0FF" stroke-width="2.5"/></marker></defs>
        <line x1="60" y1="282" x2="752" y2="282" stroke="rgba(252,241,219,.25)" stroke-width="2"/>
        <rect x="151" y="${282 - ha}" width="190" height="${ha}" rx="10" fill="#AEB7D4" data-vbar="1.6,0.8"/>
@@ -173,9 +187,9 @@ const CARDS = {
        <text x="566" y="${282 - hb - 16}" text-anchor="middle" font-size="40" font-weight="800" fill="#FDC749" data-in="2.7,0.4,10">${b.label}</text>
        <text x="246" y="320" text-anchor="middle" font-size="25" font-weight="700" fill="#AEB7D4">${a.name}</text>
        <text x="566" y="320" text-anchor="middle" font-size="25" font-weight="700" fill="#AEB7D4">${b.name}</text>
-       <path d="M352,${282 - ha - 52} C392,${282 - ha - 82} 432,${282 - ha - 78} 462,${282 - hb - 50}" fill="none" stroke="#5EA0FF" stroke-width="3.5" marker-end="url(#ahc_${d.id})" data-draw="3.0,0.6"/>
-       <text x="407" y="${Math.max(-30, 282 - ha - 100)}" text-anchor="middle" font-size="24" font-weight="800" fill="#5EA0FF" data-in="3.3,0.4,8">${d.arrow_text}</text></svg>
-      <div style="display:flex;gap:18px;margin-top:22px" data-in="3.6,0.45">${d.extra.map(e => `<div style="flex:1;padding:16px 22px;border-radius:16px;background:rgba(0,17,46,.45);border:1px solid rgba(252,241,219,.14)"><div class="muted" style="font-size:20px;font-weight:700">${e[0]}</div><div class="tnum" style="font-size:40px;font-weight:800;margin-top:2px">${e[1]}</div></div>`).join('')}</div></div>`;
+       <path d="M352,${282 - ha - 52} C392,${282 - ha - 82} 432,${282 - ha - 78} 462,${282 - hb - 50}" fill="none" stroke="#5EA0FF" stroke-width="3.5" marker-end="url(#ahc_${d.id})" data-role="arrow" data-draw="3.0,0.6"/>
+       <text x="407" y="${Math.min(282 - ha, 282 - hb) - 100}" text-anchor="middle" font-size="24" font-weight="800" fill="#5EA0FF" data-role="arrow-text" data-in="3.3,0.4,8">${d.arrow_text}</text></svg>
+      <div style="display:flex;gap:18px;margin-top:22px" data-in="3.6,0.45">${d.extra.map(e => `<div data-extra style="flex:1;min-width:0;padding:16px 22px;border-radius:16px;background:rgba(0,17,46,.45);border:1px solid rgba(252,241,219,.14)"><div class="muted" style="font-size:20px;font-weight:700">${e[0]}</div><div class="tnum" style="font-size:40px;font-weight:800;margin-top:2px">${e[1]}</div></div>`).join('')}</div></div>`;
   },
 
   bars(d) {
