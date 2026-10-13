@@ -41,7 +41,8 @@
 - 통신사·언론사 기사 사진은 저작권 때문에 쓰지 않는다.
 - 정정(10/13 아침): 대본 지시문이 등록 사진을 먼저 쓰게 되어 있어 첫 아침 영상은 회차별 검색 없이 예비 사진만 썼다.
   fargate10에서 회차별 PHOTO 요청을 먼저, 썸네일도 그 사진으로 바꿨다 —
-  [BRIEFING-AM-REISSUE-20261013.md](BRIEFING-AM-REISSUE-20261013.md) §4.
+  [BRIEFING-AM-REISSUE-20261013.md](BRIEFING-AM-REISSUE-20261013.md) §4. 또 Claude 실행기의 대본 형식에 사진 목록 항목이
+  없어 회차 사진 자체를 정의할 수 없었다 — 09:43 claude-runtime video10으로 해결(같은 문서 §6).
 
 ## 4. qdata 정규장 확정치 (quant-data PR #49 — 병합 대기)
 

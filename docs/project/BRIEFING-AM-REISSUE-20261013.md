@@ -67,3 +67,18 @@
   브리핑 테스트 510개 통과.
 - 배포: `quant-company:7b37ac4-briefing-final-4`(news-worker 09:04:48)·`…-dispatch-briefing-final-4`(dispatch
   09:04:59) = briefing-final-3(§2의 검색 수정) + `editor.py`. 최종 검토 호출이 09:06:02에 나갔다(마감 09:44).
+
+## 6. Claude 실행기의 대본 형식에 사진 목록이 없던 문제 (claude-runtime `video10`, 09:43)
+
+- 재발행 기준 영상 v2의 첫 대본 두 개(09:18~09:39)는 장면과 썸네일에 회차 사진 ID(gen-1~3)를 쓰면서 사진 목록
+  (`illustrations`)은 비어 있어 대본 검사에서 걸렸다(§4의 새 검사가 잡음).
+- 원인: Claude 실행기는 대본 출력 형식(JSON 스키마)을 자기 이미지 안의 `quant_company.video.episode.EpisodePlan`에서
+  만든다. 실행기 이미지(`68ffc8d1-video9`)의 `episode.py`는 그림 기능 이전 버전이라 `illustrations` 항목이 없었고, 그래서
+  10월 12일부터 대본이 그림·회차 사진을 정의할 수 없었다(v1에서 그림 요청이 0개였던 것도 같은 원인). 워커 쪽 검색·
+  내려받기·화면 처리는 서버에서 확인했지만 실행기의 스키마는 확인하지 않았다.
+- 수정: `quant-company-repair-claude-runtime:68ffc8d1-video10` = video9 + 배포된 워커(fargate10)의
+  `video/contracts.py`·`video/episode.py`·`video/photos.py`(해시 확인). 임시 컨테이너에서 스키마에 `illustrations`가
+  들어간 것을 확인한 뒤 교체(overlay `releases/claude-runtime-video10-20261013/claude-runtime.compose.json`).
+  실행 중 실행기에서도 확인. v2의 세 번째 대본 시도가 09:44:03 새 실행기에서 시작됐다(앞 시도는 교체 전에 완료).
+- 재발 방지 점검 항목: 영상 계약 모델을 바꿀 때는 워커와 실행기 두 이미지의 `EpisodePlan.model_json_schema()`가
+  같은지 함께 확인한다.
