@@ -84,9 +84,11 @@ class Company:
         self.db = Database(settings.database_url)
         self.roles = roles if roles is not None else load_roles(settings)
         from .research.controller import MissionApprovalAdapter
+        from .research.planning_store import QuestionApprovalAdapter
         from .research.program_controller import ProgramApprovalAdapter
 
-        self.research_approval_adapters = (MissionApprovalAdapter(self), ProgramApprovalAdapter(self))
+        self.research_approval_adapters = (MissionApprovalAdapter(self), ProgramApprovalAdapter(self),
+                                           QuestionApprovalAdapter(self))
 
     def role(self, name: str) -> Role:
         role = self.roles.get(name)
@@ -173,6 +175,14 @@ class Company:
                         for name in ("engineer", "validator") if name in roles
                     ],
                 },
+                **({"research_planning": {
+                    "enabled": True,
+                    "usage": 'Director research_control: {action:"planning_question_draft",spec:<QuestionSpec>'
+                             '[,program_id:<uuid>]} proposes a research question for owner approval; '
+                             '{action:"planning_status"} reads questions, evidence sets and open gaps. '
+                             'A question carries no experiment or program authority. Leave undetermined mandates, '
+                             'budgets and data availability as unknown; never invent them.'}}
+                   if self.settings.research_planning_enabled else {}),
                 "news_reporting": {"enabled": self.settings.company_news_enabled,
                                    "publish_enabled": self.settings.news_publish_enabled},
                 "market_briefing": {"enabled": self.settings.briefing_enabled,
@@ -892,6 +902,10 @@ class Company:
                 from .research.controller import mission_tool
 
                 return mission_tool(self, conn, self._project(conn, project_id, lock=False), task, arguments)
+            if arguments.get("action", "").startswith("planning_"):
+                from .research.planning_store import planning_tool
+
+                return planning_tool(self, conn, self._project(conn, project_id, lock=False), task, arguments)
             return ResearchStore(self).tool(conn, self._project(conn, project_id, lock=False), task, arguments)
         if request.name == "briefing_status":
             from .briefing.store import BriefStore
