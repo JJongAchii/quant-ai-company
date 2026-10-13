@@ -5,7 +5,9 @@
 실제 로그인 소유자가 보낸 Slack 요청 세 건을 접수해 추적했다. 첫 요청의 실제 구독 모델 응답 8개는
 조사 한도 소진으로 종료됐다. 이를 재현하면서 입력 보존·DB 조회·실행 순서를 수리해 설치했다.
 두 번째 요청은 실제 개선 모델 응답 5개를 만들었으나 읽은 코드 누락과 시험 파일 표본 누락으로
-조사 4회 한도를 소진했다. 후속 수리는 소스 시험을 통과했으며 실제 이미지 검증과 설치를 진행한다.
+조사 4회 한도를 소진했다. 세 번째 요청도 원본 응답 8개를 보존하고 조사 한도로 종료됐다.
+후속 문맥 수리는 소스 시험·전체 CI·실제 이미지 재현을 통과해 06:21 UTC에 설치했다.
+네 번째 실제 Slack 요청을 접수했으며 실제 봇 코드 후보와 PR 생성 여부를 추적한다.
 아직 봇의 코드 후보·실제 회귀 CI·수리 PR 완료 실적으로 집계하지 않는다.
 
 운영자 서비스 수정은 [PR #134](https://github.com/JJongAchii/quant-ai-company/pull/134)다.
@@ -113,11 +115,12 @@ news·quant 등 별도 lane은 따로 있다. 서버 전체를 한 세션으로 
 ## 세 번째 실제 요청
 
 [실제 Slack 요청](https://achiisquantresearch.slack.com/archives/C0C3Q7BFQCE/p1791866371596809)은 한 번 전송했고
-실제 owner·channel·서명 수신 기록·전체 요청 일치를 확인했다. 접수 응답 4회 후 job 297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b가 조사 중이다.
+실제 owner·channel·서명 수신 기록·전체 요청 일치를 확인했다. 접수 응답 4회 후 job 297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b를 조사했다.
 필요한 기존 시험은 실제 live 소비 경로에서 자동으로 캐시에 읽혔다. 실제 입력은 첫 호출 38,339tokens, 다음 28,686tokens였다.
-함수 이름을 포함한 명시적 파일 조회가 우선 범위로 연결되지 않아 producer와 current/card를 다시 요청했다. 이 경로는 별도 소스 회귀를 보완했고 57개 관련 시험이 통과했으며 아직 설치 전이다.
+함수 이름을 포함한 명시적 파일 조회가 우선 범위로 연결되지 않아 producer와 current/card를 다시 요청했다. 또한 마지막 입력에서 기존 시험 본문 101~201행이 잘렸다.
 조사 중 main의 별도 #136 병합으로 기준이 77975ac으로 바뀌어 diagnostic revision1에서 다시 진단했다. 원본 revision과 응답은 보존했다.
-현재 실제 코드 후보·회귀 CI·봇 PR은 아직 없다.
+05:40:22 UTC에 investigation_budget_exhausted로 종료됐다. 실제 개선 모델 응답 8개는 보존했다.
+마지막 응답은 누락된 시험 본문 재제공을 요청했으며 코드 후보·회귀 CI·봇 PR은 만들지 못했다.
 
 [후속 설치](evidence/maintainer-live-acceptance-20261008/continuity-cutover.json),
 [실제 이미지 검증](evidence/maintainer-live-acceptance-20261008/continuity-qualification-v2.json),
@@ -127,8 +130,29 @@ news·quant 등 별도 lane은 따로 있다. 서버 전체를 한 세션으로 
 
 ## 남은 인수
 
-함수 조회 범위 보존의 후속 CI와 실제 이미지 검증을 마친 뒤 기존 호출 완료 경계에서 설치한다.
-첫 두 요청과 실제 응답 13개는 보존한다. 조사 한도를 올리거나 종료 요청을 초기화하지 않는다.
-수리 후 새 실제 Slack 요청에서 구독 모델 진단 → 실행 코드 수정 → 기준 실패/후보 성공 → 실제 CI → PR을 검토한다. 정확한 봇 후보를 검증한 뒤 기존 사람 승인 경계에 따라 병합·운영 반영을 진행한다.
-무후보나 운영자의 서비스 수리를 봇의 자동 코드 수리 완료로 표시하지 않는다.
+함수 조회의 실제 반환 구간을 우선 범위로 연결했다. 입력이 넘칠 때 중복 소스 미리보기·도구 설명·저장용 캐시 서명과 JSON Schema 표시 제목을 먼저 줄인다. 검증 규칙·title 필드·권한과 숫자 한도는 보존한다.
+첫 추가 후보 84a0b2f는 전체 CI를 통과했지만 실제 이미지에서 시험 코드 일부를 잘라 설치하지 않았다.
+보완한 3ed0bd9는 관련 실제 PostgreSQL 시험 57개와 lint, 전체 service·codex-protocol CI를 통과했다.
+실제 저장 요청의 이미지 재현에서 producer 213·case consumer 162·company consumer 160·시험 201줄,
+합계 736줄이 87,013자 안에 모두 들어갔다. 같은 기준 이미지는 시험 96줄을 누락했다.
+모델 호출과 운영 DB 쓰기는 재현에서 0회다. 88,000자·14,000자 excerpt·2MB 읽기·조사 4회·모델·effort·동시 세션 수·공식 인증을 유지했다.
 
+06:21:00 UTC에 maintenance만 교체했다. 기존 호출 완료 경계에서 임시 회사 접수 임대를 걸고 원상 복구했다.
+일반 worker 및 다른 컨테이너·전체 release·환경·권한·자원 설정과 세 요청의 응답 21개는 보존했다.
+종료된 요청을 초기화하거나 불확실 외부 효과를 재실행하지 않았다.
+
+[실제 세 번째 종료](evidence/maintainer-live-acceptance-20261008/case3-exhausted.json),
+[미설치 후보 실패](evidence/maintainer-live-acceptance-20261008/function-query-qualification-v1-failed.json),
+[보완 이미지 통과](evidence/maintainer-live-acceptance-20261008/function-query-qualification-v2.json),
+[관련 시험](evidence/maintainer-live-acceptance-20261008/function-query-source-validation-v2.json),
+[전체 CI](evidence/maintainer-live-acceptance-20261008/function-query-source-ci-v2.json),
+[설치 영수증](evidence/maintainer-live-acceptance-20261008/function-query-cutover.json).
+
+[네 번째 실제 Slack 요청](https://achiisquantresearch.slack.com/archives/C0C3Q7BFQCE/p1791872527497039)을 한 번 전송했다.
+실제 owner·channel·서명 수신을 확인했고 Slack의 HTML 문자 인코딩을 풀면 원문 전체가 일치한다.
+기존 범위와 다섯 기능 기준을 유지하면서 필요한 source·consumer·기존 시험 구간을 좁혀 지정했다.
+[실제 접수](evidence/maintainer-live-acceptance-20261008/case4-ingress.json).
+
+구독 모델 진단 → 실행 코드 수정 → 기준 실패/후보 성공 → 실제 CI → PR을 추적한다.
+정확한 봇 후보를 검증한 뒤 기존 사람 승인 경계에 따라 병합·운영 반영을 진행한다.
+무후보나 운영자의 서비스 수리를 봇의 자동 코드 수리 완료로 표시하지 않는다.

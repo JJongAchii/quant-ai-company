@@ -1,0 +1,26 @@
+{
+  "headRefOid": "3ed0bd95455068f44bee2b59c900c23e0e926b20",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-13T06:17:27Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/JJongAchii/quant-ai-company/actions/runs/38354511386/job/115154145480",
+      "name": "service",
+      "startedAt": "2026-10-13T06:02:15Z",
+      "status": "COMPLETED",
+      "workflowName": "Quant Company CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-13T06:02:44Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/JJongAchii/quant-ai-company/actions/runs/38354511386/job/115154145264",
+      "name": "codex-protocol",
+      "startedAt": "2026-10-13T06:02:15Z",
+      "status": "COMPLETED",
+      "workflowName": "Quant Company CI"
+    }
+  ]
+}
+
