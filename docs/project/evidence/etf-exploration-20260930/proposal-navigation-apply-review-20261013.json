@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "commit": "0127153093c303d85afa031a6830ae91161b7bb3",
+  "manifest_sha256": "2716007a9c826ff5831e0394461ed055209cc1b333e2d17e553d2f1559db17be",
+  "prepared_image_ids": {
+    "api": "sha256:f203f357d0fe6366d8ee43826cfbd454c1cea55cc66bdb36453e548880de9a30",
+    "worker": "sha256:b14dfa5b8125ef96612fc803673d64b0874dd4700b82ce00b7ee97410876049f"
+  },
+  "approved_to_apply": true,
+  "owner_authority": "Existing user deploy/continue authorization and ongoing recovery request; exact-SHA human approval not claimed.",
+  "exact_sha_human_approval_claimed": false,
+  "reviewer": "operator:root",
+  "reviewed_at": "2026-10-13T00:17:00+00:00",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+  "scope": "47 controller lines projecting unchanged consumer eligibility and retaining previous proposal rejection; no scientific scope or actor decisions changed.",
+  "full_regression": {
+    "passed": 1856,
+    "skipped": 14,
+    "targeted_passed": 18,
+    "lint": "passed",
+    "model_slack_market_fixtures": "synthetic"
+  },
+  "actual_preflight": {
+    "state": "actual_image_proposal_contract_verified",
+    "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+    "task_id": "6d7a6bd3-32c0-5153-9148-1a69758569c4",
+    "stage_state": "waiting",
+    "projected_attempt": 26,
+    "synthetic_task_projection": true,
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "proposal_contract": {
+      "allowed_predecessor_trial_ids": [
+        "de3597b0-e358-5a58-af5e-9f3c79df53e9"
+      ],
+      "required_latest_predecessor_trial_id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+      "allowed_supersedes_proposal_ids": [
+        "6d9a3c7b-52e4-4f81-b267-85d094eb6a30",
+        "a3e207ea-d615-4b40-96c0-1b92d1ae5124",
+        "c5db5803-e746-4c78-80c8-3f85fc94d37a",
+        "4a360f85-90f8-4e73-954a-87abbd711e21",
+        "a179bc31-60f5-4e94-866d-7e778c250df3",
+        "acbb6f09-e6db-4c46-9e69-f207c131ea57",
+        "42848f4e-1796-4d67-8b64-951c2f70da8e",
+        "9470c595-bad4-4b62-a84d-45fba2a124b0",
+        "649b387a-51ab-4b31-b6e8-fd47ca3aec27",
+        "9126cf21-ccf7-466c-9d93-60d2856e086d",
+        "90877c7a-f50e-4fcb-a74d-e13a3e9d8343",
+        "61dbb64f-85aa-4f12-9dd2-29d4c442e8a1",
+        "64d2e88f-1fab-43a8-b1d2-4db7c6273d8d",
+        "2cdd6023-1b40-4eb1-9a1b-0f45fa6c30f8",
+        "30a8b71e-378b-43e0-aad8-e6f899aaef18",
+        "d7b87629-4caf-48ae-a28e-7698f039edb1",
+        "59880c71-2c77-4a66-85e7-9840dbb07930",
+        "c84b1906-047f-48f9-a684-e81c7ffb8af2",
+        "861797aa-8f0e-41e0-a995-423712fe37cc",
+        "e286d244-56e1-49e6-a28b-f9f5f082b47d",
+        "36902772-eefa-4f18-9168-93cf58b4a746"
+      ],
+      "identity_rule": "predecessor_trial_ids contains only interpreted measured trials from the allowed list, including the required latest ID when present. supersedes_proposal_id is null unless revising a director-rejected proposal from the current-cycle allowed list. Technical retirement alone is neither a measured predecessor nor a proposal rejection. Address technical failures and their dispositions in hypothesis, falsification and source_ids without inserting their IDs into either relationship field."
+    },
+    "previous_contract_error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+    "last_error": null,
+    "prompt_characters": 28026,
+    "prompt_sha256": "3a8afd2a2124b50a47fea6c07ac1550b3944bf855d9ccc3052caeb98331d8ff1",
+    "technical_disposition_preserved": true,
+    "scope_and_counters": {
+      "cycle": 1,
+      "cycle_trials": 1,
+      "cumulative_trials": 1,
+      "manifest_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737"
+    },
+    "consumer_guard_changed": false,
+    "transaction_rolled_back": true,
+    "database_mutated": false,
+    "model_call_created": false,
+    "scientific_execution_created": false
+  },
+  "other_source_runtime_and_model_policy_preserved": true,
+  "scientific_release_unchanged": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "prior_inactive_preparation_failures": [
+    {
+      "commit": "17a550a45504df51a8fbb4417f128e812cb8f828",
+      "reason": "operator target filename mismatch",
+      "production_changed": false
+    },
+    {
+      "commit": "a821ad71e7ea98bd4819851535b14c57a1d7f438",
+      "reason": "waiting task is not a running prompt",
+      "production_changed": false
+    },
+    {
+      "commit": "d4a18466d31eb8a4825f3e11111ba6d52249268e",
+      "reason": "complete snapshot exceeded bounded prompt projection",
+      "production_changed": false
+    }
+  ]
+}
