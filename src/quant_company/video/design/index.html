@@ -43,7 +43,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:var(--navy-800);
 
 /* captions */
 #cap{position:absolute;left:0;right:0;top:868px;height:110px;display:flex;align-items:center;justify-content:center}
-#cap .box{max-width:1500px;padding:12px 28px;border-radius:18px;background:rgba(0,12,34,.72);font-size:40px;font-weight:600;line-height:1.35;text-align:center;opacity:0}
+#cap .box{max-width:1500px;padding:12px 28px;border-radius:18px;background:rgba(0,12,34,.72);font-size:40px;font-weight:600;line-height:1.35;text-align:center;opacity:0;text-wrap:balance}
 #cap em{font-style:normal;color:var(--gold)}
 
 /* ticker */
@@ -81,7 +81,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:var(--navy-800);
 /* summary spot illustrations */
 .spot{position:relative;height:250px;display:flex;align-items:center;justify-content:center;gap:70px;
   background:radial-gradient(circle at 30% 38%, rgba(253,199,73,.20), transparent 55%),radial-gradient(rgba(252,241,219,.11) 1.3px, transparent 1.6px) 0 0/22px 22px,linear-gradient(160deg,#143A80,#011A43)}
-.spot .num{position:absolute;left:22px;top:20px;width:54px;height:54px;border-radius:50%;background:var(--gold);color:var(--navy-800);font-size:23px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.spot .num{position:absolute;z-index:3;left:22px;top:20px;width:54px;height:54px;border-radius:50%;background:var(--gold);color:var(--navy-800);font-size:23px;font-weight:800;display:flex;align-items:center;justify-content:center}
 .spot-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px}
 .spot-item .cap{font-size:20px;font-weight:700;color:var(--cream);opacity:.9}
 .badge{position:absolute;right:-14px;top:-8px;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;color:#fff;font-weight:800;box-shadow:0 6px 14px rgba(0,0,0,.35)}

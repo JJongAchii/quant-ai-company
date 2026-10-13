@@ -80,6 +80,7 @@ def delivery_text(job, artifacts, at=None):
     qa = job.get("qa") or {}
     findings = ([f"대본: {f}" for f in qa.get("plan_findings", [])] + [f"검토: {f}" for f in qa.get("review_findings", [])]
                 + [f"화면 검수: {f}" for f in qa.get("inspection_findings", [])]
+                + [f"렌더: {f}" for f in qa.get("render_findings", [])]
                 + [f"화면·음성: {f}" for f in artifacts.get("findings", [])])
     attempts = len(qa.get("plan_attempts", [])) or 1
     check = "자동 검사 통과" if not findings else f"자동 검사 지적 {len(findings)}건(아래, 제작은 계속함)"
