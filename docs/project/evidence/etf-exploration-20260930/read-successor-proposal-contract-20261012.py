@@ -62,7 +62,9 @@ def main():
     if latest:
         request = latest.pop("request") or {}
         prompt = request.get("prompt", "")
-        context = json.loads(prompt.split("\nMISSION DATA JSON:\n", 1)[1])
+        context = (json.loads(prompt.split("\nMISSION DATA JSON:\n", 1)[1])
+                   if "\nMISSION DATA JSON:\n" in prompt else {})
+        latest["request_frozen"] = bool(prompt)
         latest["prompt_sha256"] = hashlib.sha256(prompt.encode()).hexdigest()
         latest["last_error"] = context.get("last_error")
         latest["proposal_contract"] = context.get("proposal_contract")
