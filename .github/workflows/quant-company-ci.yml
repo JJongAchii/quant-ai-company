@@ -16,7 +16,8 @@ concurrency:
 jobs:
   service:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # The suite grew to ~2,500 tests with the briefing and video source (about 13 minutes on a laptop).
+    timeout-minutes: 35
     services:
       postgres:
         image: postgres:16
