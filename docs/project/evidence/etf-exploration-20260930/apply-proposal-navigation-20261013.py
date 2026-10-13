@@ -23,7 +23,7 @@ STATE = Path("/var/lib/quant-company")
 ENV = STATE / "config/runtime.env"
 TARGETS = {name: "quant_company/research/" + name
            for name in ("controller.py", "mission_backend.py", "missions.py",
-                        "scientific_lineages.py", "proposal_navigation.py", "mission_schema.sql")}
+                        "scientific_lineages.py", "technical_review.py", "mission_schema.sql")}
 os.umask(0o077)
 
 
