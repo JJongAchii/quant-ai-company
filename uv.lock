@@ -3176,6 +3176,7 @@ video = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "jsonschema" },
     { name = "pyarrow" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -3210,6 +3211,7 @@ provides-extras = ["lake", "video"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "jsonschema", specifier = ">=4.23,<5" },
     { name = "pyarrow", specifier = ">=20,<26" },
     { name = "pytest", specifier = ">=8.3,<10" },
     { name = "pytest-asyncio", specifier = ">=0.25,<2" },
