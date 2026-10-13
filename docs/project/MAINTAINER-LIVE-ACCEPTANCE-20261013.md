@@ -90,10 +90,14 @@ evidence·roster·digest가 완전히 같은 것을 확인했다.
 요청한 안전한 파일은 같은 동결 커밋에서 기존 읽기 한도 안에 먼저 가져온다. 파일명 조회도 같은 본문 소비 경로로 이어진다.
 이전 diagnostic revision의 미완료 호출이 배경 예약을 붙들지 않도록 현재 revision만 확인한다.
 수리 전 실제 PostgreSQL 회귀는 관련 assertion에서 실패했고 수리 후 관련 시험 56개와 lint가 통과했다.
-이 소스 시험의 GitHub·모델은 모의이다. 후속 이미지의 실제 저장 요청 검증·설치는 아직 남아 있다.
+이 소스 시험의 GitHub·모델은 모의이다. 첫 후속 후보는 전체 CI가 통과했지만 실제 이미지의
+고정 입력에서 필요한 범위를 유지하지 못해 설치하지 않았다. 이를 보완한 후보는 같은 실제 입력과
+검증한 시험 blob을 로컬에서 재현하여 665줄을 모두 87,527자 안에 유지했다. 전체 CI·최종 이미지 자격검증과 설치는 아직 남아 있다.
 
 [실제 실패 응답](evidence/maintainer-live-acceptance-20261008/case2-exhausted.json),
-[후속 소스 검증](evidence/maintainer-live-acceptance-20261008/continuity-source-validation.json).
+[첫 후속 소스 검증](evidence/maintainer-live-acceptance-20261008/continuity-source-validation.json),
+[미설치 후보의 실제 실패](evidence/maintainer-live-acceptance-20261008/continuity-qualification-v1-failed.json),
+[보완 소스 검증](evidence/maintainer-live-acceptance-20261008/continuity-source-validation-v2.json).
 
 ## 세션 수
 

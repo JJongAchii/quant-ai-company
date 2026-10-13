@@ -16,11 +16,12 @@ def test_old_explicit_producer_consumer_and_new_test_survive_static_context():
                  "evidence": [row]} for row in rows]
     context = inspection_context({"investigation_evidence": rows, "investigation_requests": requests})
     history = {"evidence": [{"key": f"message:{n}", "created_at": str(n),
-                            "text": "unrelated history " * 400,
+                            "text": "unrelated history " * 400, "project_id": "same_project",
                             "detail": {str(i): "long static context " * 300 for i in range(10)}}
                            for n in range(30)], "roster": [{"id": "maintainer", "mission": "review service"}]}
     material = {"requested_diagnosis": "Implement the unchanged explicit feature criteria",
-                "observations": [{"key": "message:original", "text": "original functional requirement"}],
+                "observations": [{"key": "message:original", "text": "original functional requirement", "project_id": "same_project",
+                                  "original_marker": {"_prompt_omitted_items": 1, "reason": "shared_provider_context_budget"}}],
                 "history": history, "current_implementation": {
                     "source_files": [{"key": f"code:preview:{n}", "path": f"src/preview{n}.py",
                                      "content": "preview " * 125} for n in range(50)]},

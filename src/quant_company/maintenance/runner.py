@@ -159,25 +159,49 @@ def prioritize_inspections(material):
     return True
 
 
-def summarize_unrelated_history(material, original):
-    """Keep identities and related records; index other history before discarding exact code."""
+def compact_prompt_markers(value):
+    """Omission counts share the context-level explanation instead of repeating it."""
+    if isinstance(value, dict):
+        if set(value) == {"_prompt_omitted_items", "reason"} and value["reason"] == "shared_provider_context_budget":
+            value.pop("reason")
+        else:
+            for child in value.values():
+                compact_prompt_markers(child)
+    elif isinstance(value, list):
+        for child in value:
+            compact_prompt_markers(child)
+
+
+def compact_triage_context(material, original):
+    """Index repeated diagnostic detail before discarding previously requested code."""
+    history = material.get("history", {})
     keys = {row.get("key") for row in material.get("observations", [])}
-    projects = {row.get("project_id") for row in material.get("observations", []) if row.get("project_id")}
-    tasks = {row.get("task_id") for row in material.get("observations", []) if row.get("task_id")}
-    originals = {row.get("key"): row for row in original.get("evidence", [])}
-    fields = ("key", "id", "kind", "created_at", "author", "agent", "project_id", "task_id", "turn_id")
-    evidence = material.get("history", {}).get("evidence", [])
-    for index, row in enumerate(evidence):
-        if row.get("key") in keys or row.get("project_id") in projects or row.get("task_id") in tasks:
-            continue
-        evidence[index] = {
-            **{field: row[field] for field in fields if field in row},
-            **({"text": row["text"][:160]} if isinstance(row.get("text"), str) else {}),
-            "original_digest": digest(originals.get(row.get("key"), row)),
-            "omitted_fields": sorted(set(row) - set(fields) - {"text"}),
-            "prompt_excerpted": True,
-            "lookup": "Unrelated historical detail is omitted; the complete original remains in PostgreSQL.",
-        }
+    rows = history.get("evidence", [])
+    history["evidence"] = [
+        {**{key: row[key] for key in ("key", "id") if key in row},
+         **({"represented_in": "observations"} if row.get("key") in keys else {})} for row in rows]
+    history["prompt_index"] = {
+        "original_digest": digest(original), "indexed_evidence": len(rows),
+        "omitted_periods": len(history.get("periods", [])),
+        "lookup": "Historical bodies/statistics are unknown here. Complete originals remain bound in PostgreSQL.",
+    }
+    history["periods"] = []
+    history["roster"] = [{key: row[key] for key in ("id", "active", "version") if key in row}
+                         for row in history.get("roster", [])]
+    for row in material.get("inspection_catalog", []):
+        row.pop("content_digest", None)
+        row.pop("total_lines", None)
+    material["evidence_references"] = list(dict.fromkeys(material.get("evidence_references", [])))
+    system = material.get("current_implementation", {}).get("system", {})
+    for check in system.get("verifications", []):
+        if isinstance(check, dict) and "evidence" in check:
+            check["evidence"] = {"details_omitted": True, "excerpt_digest": digest(check["evidence"])}
+    configuration = system.get("runtime", {}).get("configuration", {})
+    if isinstance(configuration.get("capabilities"), dict):
+        configuration["capabilities"] = compact_prompt_value(
+            configuration["capabilities"], string_chars=48, list_items=1)
+    compact_prompt_markers(history)
+    compact_prompt_markers(system)
 
 
 def proposal_material(payload, schema):
@@ -240,9 +264,9 @@ def proposal_material(payload, schema):
             material["prompt_history_compaction"] = stage + 1
             material["prompt_excerpted"] = True
             continue
-        if schema is Triage and not material.get("prompt_history_indexed"):
-            summarize_unrelated_history(material, payload.get("history", {}))
-            material["prompt_history_indexed"] = True
+        if schema is Triage and not material.get("prompt_context_indexed"):
+            compact_triage_context(material, payload.get("history", {}))
+            material["prompt_context_indexed"] = True
             material["prompt_excerpted"] = True
             continue
         if schema is Triage and material.get("prompt_source_compaction", 0) < 2:
