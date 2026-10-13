@@ -264,6 +264,61 @@ async def test_motion_jobs_request_the_episode_contract_with_the_reviewed_librar
     assert EpisodePlan.model_validate(store.get(job['id'])['plan']).ticker.label == '정규장 종가'
 
 
+def motion_job(brief, video, tmp_path):  # noqa: F811
+    store, _ = video
+    store.settings.video_template = 'motion-v2'
+    store.settings.video_asset_dir = tmp_path / 'assets'
+    (tmp_path / 'assets').mkdir()
+    (tmp_path / 'assets' / 'manifest.json').write_text(json.dumps({'fixture-photo': {'tags': [], 'kind': '자료사진'},
+                                                                   'fixture-illustration': {'tags': [], 'kind': '일러스트'}}))
+    return store, new_job(brief, video)
+
+
+def sent_episodes(provider):
+    # The episode prompt ends with its data as one JSON line.
+    return [json.loads(c.prompt.rsplit('\n', 1)[1]) for c in provider.calls if c.output_contract == 'video_episode_v1']
+
+
+async def test_a_rejected_script_is_revised_from_its_last_version_with_the_review_concerns(brief, video, tmp_path):  # noqa: F811
+    """10/14 AM: every retry rewrote the episode from scratch (scene IDs changed each time), so a finding fixed in one
+    scene came back in another, and a failed check dropped the reviewer's eleven concerns from the next request."""
+    from quant_company.video.contracts import VideoReview
+
+    from .test_video import ScriptedProvider, good_review, release
+
+    store, job = motion_job(brief, video, tmp_path)
+    concern = VideoReview(facts=True, numbers=True, conditions=True, coverage=True, readability=False, concerns=['결론이 늦게 나옴'])
+    unbound = episode().model_dump(mode='json')
+    unbound['scenes'][2]['data']['tiles'][0]['change'] = '2.5%'
+    provider = ScriptedProvider([episode(), concern, EpisodePlan.model_validate(unbound), episode(), good_review()])
+    for _ in range(5):
+        release(store, job)
+        await VideoRunner(store.company, provider=provider).tick()
+    assert store.get(job['id'])['state'] == 'synthesizing'
+    first, revised, again = sent_episodes(provider)
+    assert 'previous_version' not in first
+    assert revised['previous_version'] == episode().model_dump(mode='json') and '결론이 늦게 나옴' in revised['revision_feedback']
+    assert again['previous_version']['scenes'][2]['data']['tiles'][0]['change'] == '2.5%'
+    assert 'Unbound number' in again['revision_feedback'] and '결론이 늦게 나옴' in again['revision_feedback']
+
+
+async def test_a_previous_version_that_does_not_fit_the_prompt_is_left_out(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video import runner as runner_module
+
+    from .test_video import ScriptedProvider, release
+
+    store, job = motion_job(brief, video, tmp_path)
+    unbound = episode().model_dump(mode='json')
+    unbound['scenes'][2]['data']['tiles'][0]['change'] = '2.5%'
+    provider = ScriptedProvider([EpisodePlan.model_validate(unbound), episode()])
+    await VideoRunner(store.company, provider=provider).tick()
+    monkeypatch.setattr(runner_module, 'PROMPT_LIMIT', len(provider.calls[0].prompt) + 2000)
+    release(store, job)
+    await VideoRunner(store.company, provider=provider).tick()
+    assert store.get(job['id'])['state'] == 'reviewing'
+    assert 'previous_version' not in sent_episodes(provider)[1] and 'Unbound number' in provider.calls[1].prompt
+
+
 def test_upload_copy_template_and_checks():
     from datetime import date, datetime
 
@@ -340,6 +395,63 @@ def test_drop_thresholds_and_intraday_label():
         check_title(ok, lines)
     ok.upload.title = 'SK하이닉스 장중 2.09% 상승 뒤 하락 전환'
     check_title(ok, lines)
+
+
+def test_a_close_sharing_a_line_with_an_intraday_low_needs_no_intraday_label():
+    """2026-10-14 AM: five script versions were discarded because the close (5.46%) shared its body line with the
+    intraday low; '장중' belongs only to the sentence that states the intraday value."""
+    from quant_company.video.episode import check_title
+
+    lines = {'b1': {'text': '13일 코스피는 전날보다 5.46% 내린 6,035.35에 마감했다. 장중 5,911.11(-7.41%)까지 밀리며 '
+                            '매도 사이드카가 발동됐지만 장 후반 6천선을 회복했다.'}}
+    ok = episode().model_copy(deep=True)
+    ok.upload.title, ok.thumbnail, ok.thumbnail_stat = '코스피 5.46% 급락, 성장률 상향과 왜 엇갈렸나', '코스피 ▼5.46% 왜', '코스피 ▼5.46% · 정규장 종가 기준'
+    check_title(ok, lines)
+    ok.upload.title = '코스피 7.41% 밀린 뒤 6천선 회복'
+    with pytest.raises(ValueError, match='장중'):
+        check_title(ok, lines)
+    ok.upload.title = '코스피 장중 7.41% 밀린 뒤 6천선 회복'
+    check_title(ok, lines)
+
+
+@pytest.mark.parametrize('line,shown,error', [
+    # Yields share the line with a futures flow (10/14 AM, four versions discarded): only the flow amount needs the label.
+    ('국고채 10년물 금리는 연 4.306%에서 4.229%로 내렸다. 외국인은 10년 국채선물 2,996계약을 순매수했다.', '국고채 10년물 4.229%', None),
+    ('국고채 10년물 금리는 연 4.306%에서 4.229%로 내렸다. 외국인은 10년 국채선물 2,996계약을 순매수했다.', '외국인 국채선물 2,996계약', '장 마감 기준'),
+    # The line says the close was not provided (10/14 AM, UnitedHealth): the pre-market move is not a close value.
+    ('주가는 장전 약 3% 상승했으며 정규장 종가 반응은 제공되지 않았다.', '장전 약 3% 상승', None),
+    ('주가는 정규장 종가 기준 3% 상승했다.', '주가 3% 상승', '정규장 종가 기준'),
+])
+def test_labels_follow_the_sentence_that_states_the_value(line, shown, error):
+    from quant_company.video.episode import episode_violations
+
+    src = source()
+    src['body'] = [src['body'][0].replace('• 한국 반도체 업종으로 강세가 이어지는지 확인합니다.', f'• {line}')] + src['body'][1:]
+    raw = episode().model_dump(mode='json')
+    raw['scenes'][7]['data']['rows'][0][4] = shown
+    raw['scenes'][7]['narration'] = '다음에는 이 숫자가 이어지는지 확인합니다.'
+    found = [f for f in episode_violations(EpisodePlan.model_validate(raw), src, {'fixture-photo': {}, 'fixture-illustration': {}})
+             if 'scene calendar' in f]
+    assert found == ([] if error is None else [f'{"Investor flows" if error == "장 마감 기준" else "Regular-session close values"} '
+                                                f'need {error} in scene calendar'])
+
+
+def test_tags_ignore_spaces_and_an_unlisted_tag_is_dropped_not_fatal():
+    """10/14 AM: '미국증시' failed where '미국 증시' passes, and one tag discarded a whole script."""
+    from quant_company.video.episode import CARD_GUIDE, GENERAL_TAGS, episode_violations, tidy_tags
+
+    shelf = {'fixture-photo': {}, 'fixture-illustration': {}}
+    raw = episode().model_dump(mode='json')
+    raw['upload']['tags'][-4:] = ['미국증시', '경제뉴스', '주식시장', '주식뉴스']
+    assert not [f for f in episode_violations(EpisodePlan.model_validate(raw), source(), shelf) if f.startswith('Tag')]
+    raw['upload']['tags'] = ['반도체', 'S&P 500', '아침 브리핑', '외국인 순매도'] + raw['upload']['tags'][4:]
+    raw['upload']['hashtags'] = ['#순매도']
+    tidy = tidy_tags(EpisodePlan.model_validate(raw))
+    assert '아침 브리핑' not in tidy.upload.tags and '외국인 순매도' not in tidy.upload.tags and len(tidy.upload.tags) >= 13
+    assert tidy.upload.tags[:2] == ['반도체', 'S&P 500'] and tidy.upload.hashtags == ['#증시']
+    assert not [f for f in episode_violations(tidy, source(), shelf) if f.startswith('Tag')]
+    assert tidy_tags(episode()) == episode()  # a clean plan is left as it is
+    assert all(tag in CARD_GUIDE for tag in GENERAL_TAGS)
 
 
 @pytest.mark.parametrize('mutation,error', [
