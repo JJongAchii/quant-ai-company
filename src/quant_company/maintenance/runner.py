@@ -293,6 +293,21 @@ def proposal_material(payload, schema):
             material["investigated_code"].remove(oldest)
             material["prompt_excerpted"] = True
             continue
+        if schema is Triage and not material.get("prompt_final_compaction"):
+            # Exact queried code takes precedence over duplicated previews and tool descriptions.
+            diagnostic = material.get("current_implementation", {})
+            for row in diagnostic.get("source_files", []):
+                row["content"] = ""
+                row["excerpted"] = True
+            configuration = diagnostic.get("system", {}).get("runtime", {}).get("configuration", {})
+            if isinstance(configuration.get("capabilities"), dict):
+                configuration["capabilities"] = compact_prompt_value(
+                    configuration["capabilities"], string_chars=16, list_items=1)
+            material["prompt_final_compaction"] = (
+                "Source previews and capability descriptions are excerpted; unread detail is unknown. "
+                "Original source, configuration and permissions remain stored and enforced by the service.")
+            material["prompt_excerpted"] = True
+            continue
         excerpts = [item for key in ("investigated_code", "inspected_excerpts", "external_research")
                     for item in material.get(key, [])]
         longest_excerpt = max(excerpts, key=lambda item: len(item.get("content", "")), default={})
