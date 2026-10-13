@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-12",
+  "scope": "서울·경기 LH·SH의 신혼·신생아·미리내집 대상 명시 임대 모집 공고",
+  "official_source_probe": {
+    "method": "public HTML, no API key, no Slack/database writes",
+    "lh_rental": {
+      "ok": true,
+      "requests": 4,
+      "notices": [
+        {"id": "lh-rental:2015122300020859", "region": "경기", "application": "2026-10-12/2026-10-14"},
+        {"id": "lh-rental:2015122300020803", "region": "경기", "application": "2026-10-13/2026-10-15"}
+      ],
+      "source_url": "https://apply.lh.or.kr/lhapply/apply/wt/wrtanc/selectWrtancList.do"
+    },
+    "sh_rental": {
+      "ok": true,
+      "requests": 5,
+      "notices": [
+        {"id": "sh-rental:310653", "region": "서울", "application": "2026-10-13/2026-10-15"},
+        {"id": "sh-rental:310650", "region": "서울", "application": "2026-10-13/2026-10-15"}
+      ],
+      "source_url": "https://www.i-sh.co.kr/app/lay2/program/S48T1581C563/www/brd/m_247/list.do?multi_itm_seq=2"
+    }
+  },
+  "local_validation": {
+    "housing_tests": "38 passed, real disposable PostgreSQL and local Temporal; HTML and Slack responses simulated",
+    "release_bundle_tests": "3 passed; archive boundary and simulated cutover snapshot checks",
+    "ruff": "passed",
+    "full_suite": "1656 passed, 49 skipped, 2 third-party deprecation warnings in 572.08 seconds; real disposable PostgreSQL",
+    "ci": {
+      "tested_commit": "737b3dd66b82a348d22eaa9e26bfa8d3149ab548",
+      "service": "pass",
+      "codex_protocol": "pass",
+      "run": "https://github.com/JJongAchii/quant-ai-company/actions/runs/38223112155"
+    }
+  },
+  "production": {
+    "status": "active",
+    "slack_readback": "4 of 4 delivered and matched to Slack channel history",
+    "first_activation_attempt": {
+      "package_commit": "c87a8602b62d5c964e04dd5e7e745b33c6478134",
+      "stage": "passed: both images matched package source; official LH 2 and SH 2; other services preserved",
+      "activation": "rolled_back after the one-off collector bypassed /app/entrypoint.py and lacked the DATABASE_URL generated from its mounted password file",
+      "readback": "original housing worker and dispatcher image IDs restored and running; 0 housing pending, sending, uncertain; no new rental source rows"
+    },
+    "second_activation_attempt": {
+      "package_commit": "c732ffab04f2cc4744e2941da380c0c336378139",
+      "stage": "passed: both images matched package source; official LH 2 and SH 2",
+      "activation": "aborted before service replacement because an unrelated Codex runtime container changed during the CI wait",
+      "readback": "housing worker and dispatcher remained on original images; 0 housing pending, sending, active leases, source errors"
+    },
+    "final_activation": {
+      "package_commit": "737b3dd66b82a348d22eaa9e26bfa8d3149ab548",
+      "stage": "passed: both images matched committed package; real official LH 2 and SH 2; other services preserved",
+      "activation": "activated; only housing-feed-worker and dispatch images changed; all other container IDs, images, running state, and restart counts preserved at cutover",
+      "housing_worker_image": "sha256:c7f587c23613f6fb0a9232e303282957ab88dec9b6c98f0ba6f36b5e2440e45b",
+      "dispatcher_image": "sha256:90eced101c6daee4fb4cb00d265edde909dd6ffdd173c3f79785836185f08ff4",
+      "source_readback": {
+        "lh_rental": {"last_success_utc": "2026-10-12T08:24:48Z", "active_notices": 2, "error": null},
+        "sh_rental": {"last_success_utc": "2026-10-12T08:24:53Z", "active_notices": 2, "error": null},
+        "existing_sale_sources": "all 4 have last_success and no error"
+      },
+      "publication_readback": {
+        "channel": "C0C4UV5C14J",
+        "delivered": 4,
+        "pending": 0,
+        "uncertain": 0,
+        "all_slack_ts_match": true,
+        "all_slack_client_msg_id_match": true,
+        "all_have_rental_heading_official_link_and_application_dates": true
+      },
+      "periodic_readback": {
+        "lh_rental_last_success_utc": "2026-10-12T09:25:59Z",
+        "sh_rental_last_success_utc": "2026-10-12T09:26:02Z",
+        "source_errors": 0,
+        "delivered_publications_after_refresh": 4,
+        "pending": 0,
+        "uncertain": 0
+      },
+      "temporal": {"workflow": "company-housing-feed-v1", "status": "RUNNING", "task_queue": "quant-company-housing-feed"},
+      "server_journal": "/var/lib/quant-company/releases/housing-rental-737b3dd66b82a348d22eaa9e26bfa8d3149ab548.json"
+    }
+  }
+}
