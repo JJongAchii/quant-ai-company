@@ -1,0 +1,20 @@
+{
+  "schema_version": 2,
+  "observed_at": "2026-10-12 02:41:22 UTC",
+  "unit": "quant-company-technical-review-observer-v2-20261012.service",
+  "invocation_id": "94d62d99681e4fc8ad02efb338a6f5db",
+  "started_at": "2026-10-12T02:39:06+00:00",
+  "observed_active_state": "active",
+  "observed_sub_state": "running",
+  "previous_unit": "quant-company-technical-review-observer-20261012.service",
+  "previous_unit_stopped": true,
+  "revision_reason": "A normal director stage was queued under the owned pause five seconds before cutover completion. Terminal detection now also binds its exact review operation commit; later successor stages still use the cutover time.",
+  "helper_sha256": "8f1967ceb0df899b0b04ba2a85dba25385c6c0db261324793187bdd77c5bb0ec",
+  "maximum_hours": 24,
+  "interval_seconds": 45,
+  "read_only": true,
+  "automatic_alerts": false,
+  "automatic_repairs": false,
+  "science_or_company_state_mutated": false,
+  "observer_sha256": "7f54144c4b6b02d6f8a223abce7038767e15f8db8085d42b1f707ac7a055901e"
+}

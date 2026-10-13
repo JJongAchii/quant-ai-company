@@ -1,0 +1,22 @@
+{
+  "state": "actual_repair_context_verified",
+  "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+  "task_id": "663aacf2-97da-5079-a9f7-2fdd7e723007",
+  "attempt": 79,
+  "previous_state": "running",
+  "failed_code_files": 4,
+  "failure_source_id": "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746",
+  "failed_code_hashes_verified": true,
+  "exact_patch_and_hold_schemas_verified": true,
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "xhigh",
+  "prompt_characters": 85292,
+  "prompt_sha256": "d940a2b9b5c3354974002a4d039efda7db842ffbd15e7b82e51e7e6d71ca2f8a",
+  "failed_job_unchanged": true,
+  "prior_context_files_and_raw_responses_preserved": true,
+  "model_call_created": false,
+  "worker_execution_created": false,
+  "immutable_context_files_prepared": true,
+  "database_mutated": false,
+  "transaction_rolled_back": true
+}

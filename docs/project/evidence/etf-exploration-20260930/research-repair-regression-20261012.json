@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "implementation_commit": "d0386ef",
+  "package_commit": "53e0f134d3cb425c11b1d4ac263c747b081960e9",
+  "full_suite_passed": true,
+  "lint_passed": true,
+  "passed": 1838,
+  "skipped": 14,
+  "targeted_passed": 17,
+  "seconds": 661.207,
+  "junit_sha256": "4f32396e6e2780432de9f6d217f435a0084c36404f8ddfefc39d72055a5c60f2",
+  "real_postgresql": true,
+  "real_pinned_qlab": true,
+  "employee_slack_and_market_fixtures": "synthetic",
+  "initial_full_run": "Interrupted due to sandbox TCP denial; identical command rerun with approved network access.",
+  "scientific_performance_claimed": false
+}

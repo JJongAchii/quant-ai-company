@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "qualification_code_commit": "494ee13b031e2a96f7eb780a1d547c969ba1624d",
+  "attempt": 1,
+  "files": {
+    "worker-profile.json": "5721f7b2c9844c9e8976b5767079e5df0bae2f2d4fbf2e8b47cc12defaedd89e",
+    "candidate-program.json": "401a20cf4df8b26b6884facb0a4a431f2311c0832a863b907fb70510e3a44072",
+    "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+    "company.bundle": "bd60cb1bc1d3650b6dfb1a9a3bb24a3115c992963ca4e41c5acca9f2e7e946ca",
+    "qualify-worker-inputs.py": "befed714e144d8615017434e0f6592da2efb6349c8bb1a09a449152f45f882b5",
+    "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882",
+    "qualification.bundle": "ddd22fcc6acaa9064528768af3b4e6c88f15b3f1a8111cd1c26e185b0904cc51",
+    "receipt.json": "99404f6ce4f715308cb88317eac5aed38e89d0ddf623dc1606c0d6b922f8e808"
+  },
+  "protected_files": {
+    "labs/company-domestic-research/domestic_statistics.py": "8ea1021082bc8b4656e3df9dafe24dec655f861692240a5542e587fe0b7628ff",
+    "labs/company-domestic-research/engine.py": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+  },
+  "inherited_numeric_files": [
+    "warmup.json",
+    "development.json",
+    "receipt.json",
+    "worker-profile.json",
+    "qualification.bundle"
+  ],
+  "original_worker_package_sha256": "744cfbb35dbfe36dff33aeedf237fd006f92e93a0b586961d4c238d03b710847",
+  "qualification_market_mounts": [
+    "warmup.json"
+  ],
+  "performance_computed": false,
+  "scientific_trials_added": 0,
+  "poller_activated": false
+}

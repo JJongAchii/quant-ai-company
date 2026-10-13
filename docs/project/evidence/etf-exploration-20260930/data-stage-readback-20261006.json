@@ -1,0 +1,621 @@
+{
+  "observed_at": "2026-10-05T23:34:14.479710+00:00",
+  "disks": {
+    "/": {
+      "total": 82086711296,
+      "used": 46775353344,
+      "free": 35294580736
+    },
+    "/var/lib/quant-company": {
+      "total": 82086711296,
+      "used": 46775353344,
+      "free": 35294580736
+    },
+    "/var/lib/docker": {
+      "total": 82086711296,
+      "used": 46775353344,
+      "free": 35294580736
+    }
+  },
+  "inodes": "Filesystem       Inodes  IUsed   IFree IUse% Mounted on\n/dev/root      10354688 844961 9509727    9% /\n/dev/root      10354688 844961 9509727    9% /\n",
+  "docker_usage": [
+    {
+      "Active": "13",
+      "Reclaimable": "10.06GB (36%)",
+      "Size": "27.45GB",
+      "TotalCount": "64",
+      "Type": "Images"
+    },
+    {
+      "Active": "16",
+      "Reclaimable": "0B (0%)",
+      "Size": "569.3kB",
+      "TotalCount": "16",
+      "Type": "Containers"
+    },
+    {
+      "Active": "1",
+      "Reclaimable": "0B (0%)",
+      "Size": "16.24MB",
+      "TotalCount": "1",
+      "Type": "Local Volumes"
+    },
+    {
+      "Active": "0",
+      "Reclaimable": "1.886GB",
+      "Size": "4.578GB",
+      "TotalCount": "56",
+      "Type": "Build Cache"
+    }
+  ],
+  "state_top_level_bytes": "4385386496\t/var/lib/quant-company/backups\n225280\t/var/lib/quant-company/qualification\n61440\t/var/lib/quant-company/secrets\n126443520\t/var/lib/quant-company/release-prep\n17002496\t/var/lib/quant-company/research-audit\n331776\t/var/lib/quant-company/claude\n32768\t/var/lib/quant-company/ssh\n333238272\t/var/lib/quant-company/research\n913408\t/var/lib/quant-company/config\n734691328\t/var/lib/quant-company/operations\n682643456\t/var/lib/quant-company/postgres\n54513664\t/var/lib/quant-company/codex\n12288\t/var/lib/quant-company/caddy\n8192\t/var/lib/quant-company/commissioning\n524984320\t/var/lib/quant-company/releases\n6860492800\t/var/lib/quant-company\n",
+  "state_apparent_bytes": "4375076084\t/var/lib/quant-company/backups\n200855\t/var/lib/quant-company/qualification\n8709\t/var/lib/quant-company/secrets\n126209515\t/var/lib/quant-company/release-prep\n14156595\t/var/lib/quant-company/research-audit\n176198\t/var/lib/quant-company/claude\n4960\t/var/lib/quant-company/ssh\n311448656\t/var/lib/quant-company/research\n753822\t/var/lib/quant-company/config\n702852091\t/var/lib/quant-company/operations\n681712573\t/var/lib/quant-company/postgres\n28326612\t/var/lib/quant-company/codex\n0\t/var/lib/quant-company/caddy\n264\t/var/lib/quant-company/commissioning\n524178653\t/var/lib/quant-company/releases\n6765105587\t/var/lib/quant-company\n",
+  "backups": [
+    {
+      "name": "company-20260928T233509Z-49bec673.tar.gz",
+      "bytes": 292882930
+    },
+    {
+      "name": "company-20260928T233509Z-49bec673.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20260929T040850Z-3e2c397b.tar.gz",
+      "bytes": 305023230
+    },
+    {
+      "name": "company-20260929T040850Z-3e2c397b.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20260929T055051Z-e9afd518.tar.gz",
+      "bytes": 308933207
+    },
+    {
+      "name": "company-20260929T055051Z-e9afd518.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20260929T181236Z-c3a7f483.tar.gz",
+      "bytes": 318143523
+    },
+    {
+      "name": "company-20260929T181236Z-c3a7f483.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20260930T073752Z-220a8bf1.tar.gz",
+      "bytes": 326723227
+    },
+    {
+      "name": "company-20260930T073752Z-220a8bf1.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20260930T181216Z-76b4ba1b.tar.gz",
+      "bytes": 339168554
+    },
+    {
+      "name": "company-20260930T181216Z-76b4ba1b.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20261001T035906Z-e06f37e1.tar.gz",
+      "bytes": 345669218
+    },
+    {
+      "name": "company-20261001T035906Z-e06f37e1.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20261001T075934Z-8f17fddb.tar.gz",
+      "bytes": 347563622
+    },
+    {
+      "name": "company-20261001T075934Z-8f17fddb.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20261002T041704Z-f548c5c8.tar.gz",
+      "bytes": 355686174
+    },
+    {
+      "name": "company-20261002T041704Z-f548c5c8.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20261002T055421Z-b447b3e5.tar.gz",
+      "bytes": 356171053
+    },
+    {
+      "name": "company-20261002T055421Z-b447b3e5.tar.gz.sha256",
+      "bytes": 107
+    },
+    {
+      "name": "company-20261002T061641Z-d6404b48.tar.gz",
+      "bytes": 360385596
+    },
+    {
+      "name": "company-20261002T061641Z-d6404b48.tar.gz.sha256",
+      "bytes": 107
+    }
+  ],
+  "backup_failure_trace": [
+    {
+      "file": "state_backup.py",
+      "line": 169,
+      "function": "backup"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 92,
+      "function": "copy_research_state"
+    },
+    {
+      "file": "shutil.py",
+      "line": 600,
+      "function": "copytree"
+    },
+    {
+      "file": "shutil.py",
+      "line": 554,
+      "function": "_copytree"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 256,
+      "function": "main"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 172,
+      "function": "backup"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 69,
+      "function": "run"
+    },
+    {
+      "file": "subprocess.py",
+      "line": 571,
+      "function": "run"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 169,
+      "function": "backup"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 92,
+      "function": "copy_research_state"
+    },
+    {
+      "file": "shutil.py",
+      "line": 600,
+      "function": "copytree"
+    },
+    {
+      "file": "shutil.py",
+      "line": 554,
+      "function": "_copytree"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 256,
+      "function": "main"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 172,
+      "function": "backup"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 69,
+      "function": "run"
+    },
+    {
+      "file": "subprocess.py",
+      "line": 571,
+      "function": "run"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 256,
+      "function": "main"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 169,
+      "function": "backup"
+    },
+    {
+      "file": "state_backup.py",
+      "line": 92,
+      "function": "copy_research_state"
+    },
+    {
+      "file": "shutil.py",
+      "line": 600,
+      "function": "copytree"
+    },
+    {
+      "file": "shutil.py",
+      "line": 554,
+      "function": "_copytree"
+    }
+  ],
+  "copy_error_prefixes": {
+    "research/missions/4462aff3-c7fe-5e66-a003-4aca2e8f3330": 221
+  },
+  "error_counts": {
+    "No space left on device": 7724,
+    "failed to start": 0,
+    "CalledProcessError": 4,
+    "ValueError": 0,
+    "Timed out": 0
+  },
+  "failed_compose_operations": [
+    [
+      "start",
+      "1"
+    ],
+    [
+      "start",
+      "1"
+    ]
+  ],
+  "database": {
+    "tasks": [
+      {
+        "id": "7163f55e-3e00-5435-9caa-dd6e51149895",
+        "parent_id": null,
+        "agent": "data",
+        "kind": "research_stage",
+        "status": "blocked",
+        "error": "stage_response_rejected",
+        "turn_count": 1,
+        "created_at": "2026-10-05T23:32:44.051008+00:00",
+        "instruction": "program_data",
+        "result": null
+      },
+      {
+        "id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "parent_id": null,
+        "agent": "researcher_kr",
+        "kind": "research_stage",
+        "status": "completed",
+        "error": null,
+        "turn_count": 42,
+        "created_at": "2026-10-05T23:14:20.894205+00:00",
+        "instruction": "program_proposal",
+        "result": "private research artifact"
+      },
+      {
+        "id": "acd43aae-238e-5498-aeff-ba7f613c9cf1",
+        "parent_id": null,
+        "agent": "director",
+        "kind": "control",
+        "status": "completed",
+        "error": null,
+        "turn_count": 0,
+        "created_at": "2026-10-05T23:13:50.984607+00:00",
+        "instruction": "승인",
+        "result": "조건부 사후 연구 프로그램을 승인했습니다. 독립 데이터 판정과 누적 계보 예산 확인 후 가설을 탐색합니다. 당시 공개 시각·수정 이력은 미확인이고, 역사적 알파·실제 체결·배치 승인은 포함하지 않습니다."
+      },
+      {
+        "id": "7a1c2d6a-8a6c-560a-9272-0be8ab1e94c9",
+        "parent_id": null,
+        "agent": "director",
+        "kind": "operator_program_draft",
+        "status": "completed",
+        "error": null,
+        "turn_count": 0,
+        "created_at": "2026-10-05T23:04:59.797396+00:00",
+        "instruction": "User 2026-10-06 requested sending and proceeding. Publish this exact bounded canonical draft; a fresh actual Slack owner event grants authority.",
+        "result": "Exact current canonical draft queued for a fresh actual Slack owner decision."
+      },
+      {
+        "id": "493a8dc5-3aa6-5833-9c0b-02f6804b951d",
+        "parent_id": null,
+        "agent": "director",
+        "kind": "control",
+        "status": "completed",
+        "error": null,
+        "turn_count": 0,
+        "created_at": "2026-10-05T22:55:03.91123+00:00",
+        "instruction": "연구 프로그램 취소 e06537d3-fac3-5c8c-bf25-ddabb3c7e282 53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+        "result": "프로그램의 새 연구를 중단하고 진행 중 실행의 취소와 대사를 요청했습니다."
+      },
+      {
+        "id": "0f31c8d7-6b56-5da3-9c6b-989d0e0d4cff",
+        "parent_id": null,
+        "agent": "data",
+        "kind": "research_stage",
+        "status": "blocked",
+        "error": "stage_response_rejected",
+        "turn_count": 4,
+        "created_at": "2026-10-03T18:11:25.370022+00:00",
+        "instruction": "program_data",
+        "result": null
+      },
+      {
+        "id": "f4e83504-ba3d-5fbe-9cd6-163019b770c7",
+        "parent_id": null,
+        "agent": "data",
+        "kind": "research_stage",
+        "status": "blocked",
+        "error": "stage_response_rejected",
+        "turn_count": 8,
+        "created_at": "2026-10-03T18:05:18.920501+00:00",
+        "instruction": "program_data",
+        "result": null
+      },
+      {
+        "id": "deda3c34-5559-5f70-aef8-2cf3b043213f",
+        "parent_id": null,
+        "agent": "data",
+        "kind": "research_stage",
+        "status": "blocked",
+        "error": "stage_response_rejected",
+        "turn_count": 6,
+        "created_at": "2026-10-03T17:59:10.560896+00:00",
+        "instruction": "program_data",
+        "result": null
+      },
+      {
+        "id": "2b3b51ee-6739-537d-905a-7e5f7ab0d200",
+        "parent_id": null,
+        "agent": "data",
+        "kind": "research_stage",
+        "status": "blocked",
+        "error": "stage_response_rejected",
+        "turn_count": 14,
+        "created_at": "2026-10-03T17:50:59.451283+00:00",
+        "instruction": "program_data",
+        "result": null
+      },
+      {
+        "id": "0fe17b25-0bc1-5a65-80fc-7370412dd26e",
+        "parent_id": null,
+        "agent": "data",
+        "kind": "research_stage",
+        "status": "completed",
+        "error": null,
+        "turn_count": 11,
+        "created_at": "2026-10-03T17:43:50.315712+00:00",
+        "instruction": "program_data",
+        "result": "private research artifact"
+      }
+    ],
+    "turns": [
+      {
+        "id": "dff80fd7-40c6-5ee2-96a8-1ac8e3913c38",
+        "task_id": "7163f55e-3e00-5435-9caa-dd6e51149895",
+        "status": "blocked",
+        "attempts": 1,
+        "error": "stage_response_rejected",
+        "due_at": "2026-10-05T23:32:44.381692+00:00",
+        "updated_at": "2026-10-05T23:32:53.708831+00:00"
+      },
+      {
+        "id": "517fc93c-8207-5861-86cc-c8965c8a6c26",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:29:12.444041+00:00",
+        "updated_at": "2026-10-05T23:32:40.200995+00:00"
+      },
+      {
+        "id": "002aa268-292e-5b12-ad8e-066d49a85daa",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:28:52.303046+00:00",
+        "updated_at": "2026-10-05T23:29:12.429133+00:00"
+      },
+      {
+        "id": "3407a4fa-0862-5233-bdef-c595ad0e2a23",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:28:31.599617+00:00",
+        "updated_at": "2026-10-05T23:28:52.287476+00:00"
+      },
+      {
+        "id": "a81a075c-3ee8-5f60-b8c6-3801bd8bc960",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:27:48.587056+00:00",
+        "updated_at": "2026-10-05T23:28:31.585816+00:00"
+      },
+      {
+        "id": "d85eb0d3-ce73-5fff-a796-67108af84409",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:27:03.35957+00:00",
+        "updated_at": "2026-10-05T23:27:48.571598+00:00"
+      },
+      {
+        "id": "cd7d3e81-9f9a-581e-8242-7a0ca455ffd6",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:26:22.276112+00:00",
+        "updated_at": "2026-10-05T23:27:03.344265+00:00"
+      },
+      {
+        "id": "d6807abf-99ca-5703-ba1e-322e1b6e61c3",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:25:59.141749+00:00",
+        "updated_at": "2026-10-05T23:26:22.262651+00:00"
+      },
+      {
+        "id": "92edad21-ce37-54e4-8dd6-4326837eda11",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:25:34.257204+00:00",
+        "updated_at": "2026-10-05T23:25:59.103987+00:00"
+      },
+      {
+        "id": "a34bf987-76f2-5eb0-8f2e-480be235e65c",
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "status": "completed",
+        "attempts": 1,
+        "error": null,
+        "due_at": "2026-10-05T23:25:12.116148+00:00",
+        "updated_at": "2026-10-05T23:25:34.242062+00:00"
+      }
+    ],
+    "review_correction": [
+      {
+        "id": "5280eb92-d91d-5d2a-b463-c8401865dc5e",
+        "status": "delivered",
+        "update_ts": "1791241541.860959",
+        "sent_ts": "1791241541.860959",
+        "attempts": 1,
+        "error": null
+      }
+    ],
+    "proposal_trace": [
+      {
+        "id": "517fc93c-8207-5861-86cc-c8965c8a6c26",
+        "sequence": 42,
+        "status": "completed",
+        "decision_status": "complete",
+        "tools": [],
+        "say": "",
+        "artifact_count": 1
+      },
+      {
+        "id": "002aa268-292e-5b12-ad8e-066d49a85daa",
+        "sequence": 41,
+        "status": "completed",
+        "decision_status": "continue",
+        "tools": [
+          {
+            "name": "research_control",
+            "arguments": {
+              "path": "sources/e00e5ef866100148024ccd64816fc403845476c581d610e4892bde02727ad3a2.json",
+              "action": "read_stage_file",
+              "offset": 24000
+            }
+          }
+        ],
+        "say": "",
+        "artifact_count": 0
+      },
+      {
+        "id": "3407a4fa-0862-5233-bdef-c595ad0e2a23",
+        "sequence": 40,
+        "status": "completed",
+        "decision_status": "continue",
+        "tools": [
+          {
+            "name": "research_control",
+            "arguments": {
+              "path": "sources/e00e5ef866100148024ccd64816fc403845476c581d610e4892bde02727ad3a2.json",
+              "action": "read_stage_file",
+              "offset": 12000
+            }
+          }
+        ],
+        "say": "",
+        "artifact_count": 0
+      },
+      {
+        "id": "a81a075c-3ee8-5f60-b8c6-3801bd8bc960",
+        "sequence": 39,
+        "status": "completed",
+        "decision_status": "continue",
+        "tools": [
+          {
+            "name": "research_control",
+            "arguments": {
+              "path": "sources/e00e5ef866100148024ccd64816fc403845476c581d610e4892bde02727ad3a2.json",
+              "action": "read_stage_file",
+              "offset": 0
+            }
+          }
+        ],
+        "say": "",
+        "artifact_count": 0
+      },
+      {
+        "id": "d85eb0d3-ce73-5fff-a796-67108af84409",
+        "sequence": 38,
+        "status": "completed",
+        "decision_status": "continue",
+        "tools": [
+          {
+            "name": "research_control",
+            "arguments": {
+              "path": "data/etf_strategy/inputs/warmup.json",
+              "action": "read_stage_file",
+              "offset": 0
+            }
+          }
+        ],
+        "say": "",
+        "artifact_count": 0
+      }
+    ],
+    "current_program_stages": [
+      {
+        "id": "ce867fc3-a194-5327-b312-864b93538d34",
+        "stage": "program_data",
+        "actor": "data",
+        "state": "waiting",
+        "attempt": 1,
+        "error": "invalid_output",
+        "retry_at": "2026-10-05T23:37:53.708831+00:00",
+        "task_id": "7163f55e-3e00-5435-9caa-dd6e51149895",
+        "result": null
+      },
+      {
+        "id": "9f964e2c-75f5-5a51-8c53-429e2970e5cd",
+        "stage": "program_proposal",
+        "actor": "researcher_kr",
+        "state": "completed",
+        "attempt": 1,
+        "error": null,
+        "retry_at": null,
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "result": "{\"mode\": \"novel_hypothesis\", \"title\": \"분산예측 수준 보정이 ETF의 스트레스 비용 후 절대수익을 개선하는가\", \"method\": \"제안 단계의 설계이며 실행·승인·예약 사실을 보고하는 것이 아니다. 시장은 kr_etf, 대상은 고정 입력에 포함된 069500과 무이자 현금, 주기는 일별 결정 및 월별 보정상수 갱신이다. 개발 구간은 2023-01-02~2025-12-30으로 유지한다. warmup.json은 신호 초기화와 과거 보정쌍 구성에만 사용하고 개발 수익 집계에서 제외한다. 입력은 승인된 warmup.json SHA256 d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882 및 development.json SHA256 7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b에 한정한다. date·ticker·adj_close·available_at·tradable을 시간 정렬에 사용하며 value는 원시 거래대금 진단으로만 취급한다. adj_close 수익은 현재 빈티지 기준가격 연쇄의 대용치로 해석한다. r_t=adj_close_t/adj_close_(t-1)-1, q_t=exp(mean(log(max(r_s^2,1e-8))))로 정의하고 평균에는 t까지 최근 20개 거래일 수익만 넣는다. 비교안 A는 c=1, 비교안 B는 각 월 시작 전에 종료·가용된 최근 60개 예측·라벨 쌍으로 c=mean(r_(s+1)^2/q_s)를 구해 그 달 동안 고정한다. 평가 월과 라벨 종료가 겹치는 쌍은 제거하며, 보정에는 해당 월 이후 자료를 사용하지 않는다. 별도 적합 모델이나 정규화, 손실함수 탐색은 없다. 두 안 모두 목표비중 w_t=min(1,0.10/sqrt(252*c*q_t))를 사용하고 잔여분은 현금으로 둔다. 20일·60쌍·연 10% 목표·분산 하한은 결과를 보기 전에 고정하는 설계값이며 경험적 최적값이라는 주장은 하지 않는다. 초기 자료 부족 시 현금으로 대기하고, 중복·비양수 가격·필수행 결손은 계약 위반으로 기록한다. 거래일 t 자료는 가정된 t일 23:59 KST 이후에만 신호에 사용할 수 있으며 당일 장 마감 전 의사결정으로 소급하지 않는다. 비중의 적용 경계, 보유수익 귀속, 가격대용 및 비용 발생 방식은 동결된 kr-etf-retrospective-v1 계약 대조가 선행조건이다. 이 제안에서는 다음 날 시가·종가·VWAP 중 하나를 체결 방식으로 임의 지정하지 않는다. 엔진을 수정하거나 별도 체결 시뮬레이터로 대체하지 않는다. 기본 10bps·스트레스 30bps와 엔진의 회전율 산식을 유지하고 이를 공식 세율이나 실제 충격비용의 추정값으로 해석하지 않는다. 공매도·대차·레버리지는 사용하지 않으며 gross_exposure 상한 1.0을 유지한다. 주목적은 stress-net-absolute-cagr의 최대화이고 승인 baseline_source_ids와 평가 계약을 교체하지 않는다. 비교안 A·B를 첫 회차의 두 결과로 각각 계상한다. 최대 1미션, 계보 전체 최대 4시행, 회차 최대 2시행, 총 7200초, patience=2, min_improvement=0.001, continuous=false를 유지하며 잔여 예산을 자동 소진하지 않는다. 구현 범위는 quant-lab의 승인 base_commit 422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11 위 candidate.py와 config.json의 승인 경로뿐이다. 향후 실행은 worker_id=worker에 대응하는 승인 3070 범위에서만 가능하다. 출력 계약은 두 안의 목표비중, 예측값·보정상수와 사용 라벨 종료일, 엔진 수익·비용·회전율, 월별 개발 결과, 입력·코드 digest, 환경·호스트·실행 receipt이다. 해당 원시 산출물과 독립 감사 전에는 성과를 확정하지 않는다.\", \"envelope\": \"etf_strategy\", \"question\": \"현재 고정 빈티지의 069500 기준가격 연쇄와 거래일 23:59 KST 가용 가정 아래, 동일한 분산 신호에 과거 자료만으로 추정한 수준 보정상수를 적용하면 보정하지 않은 노출 규칙보다 2023~2025년 스트레스 비용 후 절대 CAGR이 개선되는가? 이는 예측 동학의 개선이 아니라 위험노출 수준 변경의 경제적 효과를 검토하는 조건부 개발 질문이다.\", \"citations\": [{\"quote\": \"To isolate forecast level, we estimate one validation constantcper loss-model\", \"location\": \"PDF p.4\", \"source_id\": \"literature:a9b009dea31a7956b6a8cac671d986f9fe3ad7666dacca0829d43151c1146e56\"}, {\"quote\": \"Alignment reduces cross-loss variation by 59%-88% across models and 77%\", \"location\": \"PDF p.6\", \"source_id\": \"literature:a9b009dea31a7956b6a8cac671d986f9fe3ad7666dacca0829d43151c1146e56\"}, {\"quote\": \"shared predictors, the estimate is 0.81 (CI [0.66, 1.22])\", \"location\": \"PDF p.6\", \"source_id\": \"literature:a9b009dea31a7956b6a8cac671d986f9fe3ad7666dacca0829d43151c1146e56\"}, {\"quote\": \"so convergence across losses does not imply correct VaR calibration.\", \"location\": \"PDF p.7\", \"source_id\": \"literature:a9b009dea31a7956b6a8cac671d986f9fe3ad7666dacca0829d43151c1146"
+      }
+    ],
+    "current_stage_attempts": [
+      {
+        "stage_id": "ce867fc3-a194-5327-b312-864b93538d34",
+        "attempt": 1,
+        "task_id": "7163f55e-3e00-5435-9caa-dd6e51149895",
+        "error": "stage_response_rejected",
+        "completed_at": null,
+        "response": null
+      },
+      {
+        "stage_id": "9f964e2c-75f5-5a51-8c53-429e2970e5cd",
+        "attempt": 1,
+        "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+        "error": null,
+        "completed_at": "2026-10-05T23:32:40.200995+00:00",
+        "response": "{\"usage\": {\"input_tokens\": 37435, \"output_tokens\": 10129, \"cached_input_tokens\": 0, \"reasoning_output_tokens\": 7250}, \"decision\": {\"say\": \"\", \"tools\": [], \"status\": \"complete\", \"memories\": [], \"messages\": [], \"artifacts\": [{\"title\": \"ETF 분산예측 수준 보정의 절대수익 효과: 조건부 개발 설계\", \"content\": \"{\\\"title\\\":\\\"분산예측 수준 보정이 ETF의 스트레스 비용 후 절대수익을 개선하는가\\\",\\\"envelope\\\":\\\"etf_strategy\\\",\\\"question\\\":\\\"현재 고정 빈티지의 069500 기준가격 연쇄와 거래일 23:59 KST 가용 가정 아래, 동일한 분산 신호에 과거 자료만으로 추정한 수준 보정상수를 적용하면 보정하지 않은 노출 규칙보다 2023~2025년 스트레스 비용 후 절대 CAGR이 개선되는가? 이는 예측 동학의 개선이 아니라 위험노출 수준 변경의 경제적 효과를 검토하는 조건부 개발 질문이다.\\\",\\\"mode\\\":\\\"novel_hypothesis\\\",\\\"original_claim\\\":\\\"Tokajuk·Chudziak은 Binance의 BTC·ETH·BNB·XRP·ADA 일별 자료에서 7개 손실함수와 5개 모델을 비교했다. 목표는 다음 날 Garman–Klass 분산이며, 시간순 확장 학습·검증·평가 구간을 사용했다. 검증 구간에서 c=mean(h/f)를 추정하여 예측에 곱하면 상대적 움직임은 유지하면서 수준을 조정할 수 있다. 저자는 이 조정이 손실함수 간 점수 차이를 전체적으로 77% 줄였다고 보고한다. 그러나 공유 입력 비교의 효과비 신뢰구간은 1을 포함하고, 조정 후 VaR 위반율의 수렴도 올바른 위험 보정을 뜻하지 않았다. 원문은 거래비용 후 ETF 수익 개선을 주장하거나 입증하지 않는다.\\\",\\\"method\\\":\\\"제안 단계의 설계이며 실행·승인·예약 사실을 보고하는 것이 아니다. 시장은 kr_etf, 대상은 고정 입력에 포함된 069500과 무이자 현금, 주기는 일별 결정 및 월별 보정상수 갱신이다. 개발 구간은 2023-01-02~2025-12-30으로 유지한다. warmup.json은 신호 초기화와 과거 보정쌍 구성에만 사용하고 개발 수익 집계에서 제외한다. 입력은 승인된 warmup.json SHA256 d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882 및 development.json SHA256 7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b에 한정한다. date·ticker·adj_close·available_at·tradable을 시간 정렬에 사용하며 value는 원시 거래대금 진단으로만 취급한다. adj_close 수익은 현재 빈티지 기준가격 연쇄의 대용치로 해석한다. r_t=adj_close_t/adj_close_(t-1)-1, q_t=exp(mean(log(max(r_s^2,1e-8))))로 정의하고 평균에는 t까지 최근 20개 거래일 수익만 넣는다. 비교안 A는 c=1, 비교안 B는 각 월 시작 전에 종료·가용된 최근 60개 예측·라벨 쌍으로 c=mean(r_(s+1)^2/q_s)를 구해 그 달 동안 고정한다. 평가 월과 라벨 종료가 겹치는 쌍은 제거하며, 보정에는 해당 월 이후 자료를 사용하지 않는다. 별도 적합 모델이나 정규화, 손실함수 탐색은 없다. 두 안 모두 목표비중 w_t=min(1,0.10/sqrt(252*c*q_t))를 사용하고 잔여분은 현금으로 둔다. 20일·60쌍·연 10% 목표·분산 하한은 결과를 보기 전에 고정하는 설계값이며 경험적 최적값이라는 주장은 하지 않는다. 초기 자료 부족 시 현금으로 대기하고, 중복·비양수 가격·필수행 결손은 계약 위반으로 기록한다. 거래일 t 자료는 가정된 t일 23:59 KST 이후에만 신호에 사용할 수 있으며 당일 장 마감 전 의사결정으로 소급하지 않는다. 비중의 적용 경계, 보유수익 귀속, 가격대용 및 비용 발생 방식은 동결된 kr-etf-retrospective-v1 계약 대조가 선행조건이다. 이 제안에서는 다음 날 시가·종가·VWAP 중 하나를 체결 방식으로 임의 지정하지 않는다. 엔진을 수정하거나 별도 체결 시뮬레이터로 대체하지 않는다. 기본 10bps·스트레스 30bps와 엔진의 회전율 산식을 유지하고 이를 공식 세율이나 실제 충격비용의 추정값으로 해석하지 않는다. 공매도·대차·레버리지는 사용하지 않으며 gross_exposure 상한 1.0을 유지한다. 주목적은 stress-net-absolute-cagr의 최대화이고 승인 baseline_source_ids와 평가 계약을 교체하지 않는다. 비교안 A·B를 첫 회차의 두 결과로 각각 계상한다. 최대 1미션, 계보 전체 최대 4시행, 회차 최대 2시행, 총 7200초, patience=2, min_improvement=0.001, continuous=false를 유지하며 잔여 예산을 자동 소진하지 않는다. 구현 범위는 quant-lab의 승인 base_commit 422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11 위 candidate.py와 config.json의 승인 경로뿐이다. 향후 실행은 worker_id=worker에 대응하는 승인 3070 범위에서만 가능하다. 출력 계약은 두 안의 목표비중, 예측값·보정상수와 사용 라벨 종료일, 엔진 수익·비용·회전율, 월별 개발 결과, 입력·코드 digest, 환경·호스트·실행 receipt이다. 해당 원시 산출물과 독립 감사 전에는 성과를 확정하지 않는다.\\\",\\\"departures\\\":\\\"원문의 암호자산 OHLC 기반 분산 예측과 7손실×5모델 비교를 재현하지 않는다. 고저가가 필요한 Garman–Klass 대신 기준가격 수익 제곱을 사용하고, 학습 모델 대신 고정된 로그분산 평활 신호의 수준 보정만 개입한다. 원문의 검증 구간 상수 추정은 매월 이전 60개 완료 라벨을 사용하는 방식으로 바뀐다. 평가지표도 QLIKE·VaR에서 승인된 스트레스 비용 후 절대 CAGR으로 다르므로 exact_replication이나 동일 방법의 market_transfer로 분류하지 않는다. 대안 설명은 낮아진 평균 노출, 변동성 손실 감소, 상승 구간의 기회비용 및 회전율 변화다. 수익 개선이 관찰되더라도 더 나은 일별 예측력이나 인과적 시장 예측을 입증하지 않는다. 계보 b6a31ea2-8da9-5f67-97dd-2e304cde30c3, 승인 history_digest 0d5b9d64115576998997ade21baf2fe13a73d2d9467f6762d81bc314ca502c58 및 canonical scientific_lineage의 originating_task_refs 12개 전체를 상속한다. 프로그램에 명시된 기존 GMM 노출조절 후보의 중복 제안·차단은 부정 이력으로 유지한다."
+      }
+    ]
+  }
+}

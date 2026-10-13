@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "source_commit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+  "parent_source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "command": "uv run pytest tests/test_research_data_output.py tests/test_research_policy_compatibility.py tests/test_research_programs.py tests/test_research_conditional.py -q",
+  "passed": 78,
+  "warnings": 2,
+  "elapsed_seconds": 28.35,
+  "actual_postgresql": true,
+  "codex_events_simulated": true,
+  "slack_events_simulated": true,
+  "market_performance_computed": false,
+  "lint_command": "uv run ruff check .",
+  "lint_result": "All checks passed!",
+  "business_admission_contract_changed": false,
+  "deployed": false
+}

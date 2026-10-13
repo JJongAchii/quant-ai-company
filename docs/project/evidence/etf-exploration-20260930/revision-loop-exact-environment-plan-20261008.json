@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-10-08T01:44:26.261783+00:00",
+  "state": "exact_active_environment_plan_verified",
+  "source_commit": "3c7cc9130fe5196027b2314aeb788a81a2d66179",
+  "services": [
+    {
+      "service": "api",
+      "environment_values_match": true,
+      "environment_keys": 92,
+      "environment_sha256": "5d792368dcd8773eae1a8ce3947e867811b89deae2581ec7d6c6eb61128214d0"
+    },
+    {
+      "service": "worker",
+      "environment_values_match": true,
+      "environment_keys": 93,
+      "environment_sha256": "27c6d2d880f3deb664603bc9a2065d6e622202bef550b896ce3fde55a5f38369"
+    }
+  ],
+  "production_changed": false,
+  "private_previews_removed": true
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_current_selection_preparation",
+  "reviewed_at": "2026-10-06 07:06:36 UTC",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "before": {
+    "observed_at": "2026-10-06T07:06:36.625692+00:00",
+    "stage": {
+      "id": "0236729d-3188-5802-8a60-d48e96bd119e",
+      "stage": "selection",
+      "actor": "director",
+      "state": "running",
+      "attempt": 1,
+      "error": null,
+      "retry_at": null,
+      "task_id": "1f1d6e80-5567-5568-8552-a3f29d26a79f",
+      "created_at": "2026-10-06T07:05:19.248822+00:00",
+      "updated_at": "2026-10-06T07:05:19.248822+00:00"
+    },
+    "task": {
+      "id": "1f1d6e80-5567-5568-8552-a3f29d26a79f",
+      "agent": "director",
+      "status": "pending",
+      "priority": 100,
+      "revision": 5
+    },
+    "last_turn": {
+      "id": "36394979-1c36-5dc1-814c-ff04495b307b",
+      "status": "queued",
+      "created_at": "2026-10-06T07:05:19.248822+00:00",
+      "updated_at": "2026-10-06T07:05:19.248822+00:00",
+      "request_id": null
+    }
+  },
+  "operator": "prepare-current-first-mission-stage.py",
+  "arguments": [
+    "0236729d-3188-5802-8a60-d48e96bd119e",
+    "1f1d6e80-5567-5568-8552-a3f29d26a79f",
+    "selection"
+  ],
+  "planned_change": "Only current task priority100 to0 and factual source_completion_navigation explaining existing complete source/lineage gates. The director decides execute or revise.",
+  "observed_request_frozen": false,
+  "authority": "Existing urgent first-experiment and continue instructions; root review of concrete current stage in PR105",
+  "signed_resource_priority_or_scientific_scope_changed": false,
+  "scientific_judgment_applied": false,
+  "new_call_or_job_enqueued_by_operator": false,
+  "exact_sha_human_approval_claimed": false
+}

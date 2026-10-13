@@ -1,0 +1,15 @@
+{
+  "apply": "Existing pause/native locks/consistent backup/two selected services/rollback; other container identities and configs preserved",
+  "apply_operator_sha256": "4284883c6b54ed82c6bdc3bfe63f57c8467830c485860d55fa587af2d736d025",
+  "authority": "Existing owner deployment/continuation/monitoring requests and reviewed PR105; no new exact SHA human approval claimed",
+  "decision": "root_reviewed_runtime_import_patch_ready",
+  "gate": "Prepared API and worker import MAX_NOTES8000 and exact two module SHAs; every other installed module retained separately for each service",
+  "new_scientific_job": false,
+  "operator_commit": "d530e7e",
+  "operator_scientific_verdict": false,
+  "prepared_receipt_sha256": "9265db08d861c7b09e8b9e4a9f2acfa771b843afc46b7a30539288e4ca1b1e42",
+  "previous_effect": "Source copied but imported packages unchanged; response probe failed MAX_NOTES before DB mutation",
+  "provider_replay": false,
+  "service_source_commit": "53ed9e33175d6056d72417c081d574a740587695",
+  "tests": "audit-note-patch-apply-review-20261007.json:1831passed14skipped; tested service sources unchanged"
+}

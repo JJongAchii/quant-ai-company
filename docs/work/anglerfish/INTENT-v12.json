@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 12,
+  "sourceRequest": "응 진행해; integrate concurrent canonical data output repair before preparing one release",
+  "outcome": "Qualify one research_stage_v1 implementation with bounded format retries and exact coordinated release identifiers.",
+  "previousIntent": "INTENT-v11.json",
+  "integratedSource": "bb1e42e8a33899f7a290e96bd71d3540a23eeb37",
+  "canonicalRepair": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "deliverables": [
+    {
+      "id": "CONTRACT",
+      "description": "Use canonical research_stage_v1, preserve frozen legacy requests, retain the protected engine context and hold after three technical failures"
+    },
+    {
+      "id": "QUALIFICATION",
+      "description": "Final real PostgreSQL and pinned qlab regressions, bound native ChatGPT checks and actual3070 synthetic sandbox qualification"
+    },
+    {
+      "id": "REVIEW",
+      "description": "One PR with inactive immutable images, prepared worker config and exact apply/recovery specification"
+    }
+  ],
+  "constraints": [
+    "Canonical c3ba5268 signed scientific authority unchanged",
+    "No deployment before review required by docs/runbooks/autonomous-research.md",
+    "Preserve other service pins, model/auth/roles and data/profile/runtime/input bytes",
+    "No applied native qualification proposals, scientific trials or sealed data reads",
+    "Superseded5f prototype checks remain historical evidence, not final acceptance"
+  ],
+  "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db"
+}

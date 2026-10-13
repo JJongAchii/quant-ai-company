@@ -30,7 +30,8 @@ def _origins(conn, project_id, authority):
                 WHERE t.mission_id=%s AND (EXISTS(SELECT 1 FROM research_program_reservations r
                     WHERE r.trial_id=t.id AND r.settled_at IS NULL)
                     OR j.state IN ('queued','claimed','running','uncertain','cancel_requested')
-                    OR (t.state<>'reported' AND NOT(t.state='technical_waiting' AND j.state IN ('failed','cancelled')
+                    OR (t.state<>'reported' AND t.technical_closed_at IS NULL
+                        AND NOT(t.state='technical_waiting' AND j.state IN ('failed','cancelled')
                         AND EXISTS(SELECT 1 FROM research_mission_outcomes o WHERE o.trial_id=t.id
                             AND o.kind='technical_failure'))))""", (mission["id"],)).fetchone()
             if pending or (mission["state"] != "cancelled" and not ended):

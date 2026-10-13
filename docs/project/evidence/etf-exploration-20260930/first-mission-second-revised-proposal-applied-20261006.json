@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "operation_id": "first-mission-preparation-navigation:a7d0d2f6-e39a-502c-b5e3-6d1b472df996:20261006",
+  "state": "current_stage_preparation_reconciled",
+  "observed_at": "2026-10-06T08:20:05.849624+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "stage_id": "a7d0d2f6-e39a-502c-b5e3-6d1b472df996",
+  "task_id": "e659a17e-fc4a-5f77-b749-b83264290f61",
+  "stage": "proposal",
+  "actor": "researcher_kr",
+  "attempt": 1,
+  "previous_priority": 100,
+  "priority": 0,
+  "navigation": {
+    "operation_id": "first-mission-preparation-navigation:a7d0d2f6-e39a-502c-b5e3-6d1b472df996:20261006",
+    "existing_service_sequence": "Proposal, challenge and selection can read immutable evidence; they have no code execution tool. An execute selection enables engineer implementation, not immediate development evaluation. The trusted backend builds that implementation and the worker must pass profile qualification before evaluating development inputs. ReviewDecision responses with disposition test carry prospective executable test_plan obligations; these are not completed test evidence and are not automatically discharged. A required revise disposition prevents implementation. Distinguish actual static source evidence from planned implementation checks and never claim unperformed checks passed. This describes existing capabilities and supplies no disposition or execute/revise recommendation; scientific judgment remains yours.",
+    "existing_service_requirement": "Every source_id referenced in a final artifact, including selection.responses source_ids, requires a complete read of its corresponding evidence_sources file in this attempt. In file_progress, absent means unread; non-null next_offset means incomplete; null means complete. Also complete each required_lineage_reads file.",
+    "preparation_navigation": "Choose sources using your own scientific judgment within the approved library. Read each intended cited original to its end using the exact next_offset before drafting the final artifact. A single successful chunk does not finish a longer source. Do not regenerate a complete artifact between remaining source chunks. Read only the evidence needed and the explicitly required files. This explains existing service gates and supplies no hypothesis, objection, selection, patch or scientific judgment. For a revised proposal, read relevant_evidence.rejections and the actual independent criticism before drafting; respond to that recorded decision within the selected study."
+  },
+  "source_bytes_or_read_receipts_changed": false,
+  "frozen_model_requests_changed": false,
+  "scientific_judgment_applied": false,
+  "scientific_authority_or_budget_changed": false,
+  "signed_resource_priority_changed": false,
+  "new_model_call_or_scientific_job_enqueued": false,
+  "authority": "Existing owner urgent first-experiment and continuation requests; root-reviewed concrete current-stage operation in PR105",
+  "event_id": 719,
+  "already_committed": false
+}

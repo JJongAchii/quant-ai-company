@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "state": "first_actual_scientific_evaluation_verified",
+  "verified_at": "2026-10-06T10:33:16.115566+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "project_revision": 5,
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "job_id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+  "trial_id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+  "approved_at": "2026-10-05T23:13:50.984607+00:00",
+  "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1791242030.830452:director:action:dd69d4b8-78c0-4c78-b7ee-41c7cf7d5972:approve",
+  "physical_execution": {
+    "schema_version": 1,
+    "observed_at": "2026-10-06T10:33:16.115566+00:00",
+    "job_id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+    "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+    "trial_id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+    "hostname": "DESKTOP-5T00NAF",
+    "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+    "execution_profile": "kr-etf-retrospective-v1",
+    "records": {
+      "process.json": {
+        "exists": true,
+        "sha256": "2e0f4a8b4d0f46ec72a3ba489966f7cd00a691931d0fd293fdea88eb1d61190a",
+        "mtime_utc": "2026-10-06T10:32:00.300095+00:00",
+        "metadata": {
+          "launch_id": "fb258d7fc161433997a7b31db073adc7",
+          "started_at": "2026-10-06T10:32:00.300007+00:00"
+        }
+      },
+      "launch-intent.json": {
+        "exists": true,
+        "sha256": "c39bca886624ccda77ad7156799bd30a034985940008b8d5a090018588aaeefd",
+        "mtime_utc": "2026-10-06T10:32:00.140079+00:00",
+        "metadata": {
+          "launch_id": "fb258d7fc161433997a7b31db073adc7",
+          "phase": "spawning"
+        }
+      },
+      "runtime.json": {
+        "exists": true,
+        "sha256": "2a48ea20f5656fd60bfe7e2250b0ed7e4d89b3d745cee504c338037ca2da7f36",
+        "mtime_utc": "2026-10-06T10:32:01.251265+00:00",
+        "metadata": {
+          "schema_version": 1,
+          "worker_id": "worker",
+          "hostname": "DESKTOP-5T00NAF",
+          "gpu": "NVIDIA GeForce RTX 3070",
+          "code_commit": "6cdc6e7efb51eeeba272558cdabc1a5ba5ac559b",
+          "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+        }
+      },
+      "sandbox-qualification.json": {
+        "exists": true,
+        "sha256": "c9feedc06a6986a65e08dea28db75a2844a657caa8daa64644b01b5012a4d3b3",
+        "mtime_utc": "2026-10-06T10:32:02.862475+00:00",
+        "metadata": {
+          "action": "qualify",
+          "exit_code": 0,
+          "timed_out": false,
+          "fixture_only": false
+        }
+      },
+      "sandbox-evaluation.json": {
+        "exists": true,
+        "sha256": "3ef990897377c1774d4189c9da1c2e27a63dcc7c3de62973ca2c08130c8ced44",
+        "mtime_utc": "2026-10-06T10:32:09.911995+00:00",
+        "metadata": {
+          "action": "evaluate",
+          "exit_code": 0,
+          "timed_out": false,
+          "fixture_only": false
+        }
+      },
+      "receipt.json": {
+        "exists": true,
+        "sha256": "8b6f2e59f76eea56b67043723aa343d4449c3244a9eec943ca89aedf20b410d1",
+        "mtime_utc": "2026-10-06T10:32:10.075427+00:00",
+        "metadata": {
+          "worker_id": "worker",
+          "hostname": "DESKTOP-5T00NAF",
+          "gpu": "NVIDIA GeForce RTX 3070",
+          "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+          "code_commit": "6cdc6e7efb51eeeba272558cdabc1a5ba5ac559b",
+          "started_at": "2026-10-06T10:32:00.300007Z",
+          "completed_at": "2026-10-06T10:32:10.074705Z",
+          "execution_count": 1,
+          "qualification_passed": true,
+          "sealed_read": false
+        }
+      },
+      "result.json": {
+        "exists": true,
+        "sha256": "10899011aa4ffcb48133d44801bbf715b79ff1ab5b76dad653a256c729fcfdf2",
+        "mtime_utc": "2026-10-06T10:32:10.099547+00:00",
+        "metadata": {
+          "state": "ready",
+          "artifact_sha256": "9c5c2a8eb504556ce3c2d42996cd6e0cb4ba005af0d76ed0b33761ee537b28cb"
+        }
+      }
+    },
+    "uploaded": true,
+    "uncertain_reason": null,
+    "performance_metrics_read_or_returned": false
+  },
+  "company_receipt": {
+    "observed_at": "2026-10-06T10:33:11.056920+00:00",
+    "usage": {
+      "reservations": 1,
+      "scientific_trials": 1,
+      "compute_seconds": 10
+    },
+    "trial": {
+      "id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+      "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+      "cycle": 1,
+      "state": "received",
+      "job_id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+      "created_at": "2026-10-06T10:19:29.882762+00:00",
+      "updated_at": "2026-10-06T10:32:27.239307+00:00"
+    },
+    "job": {
+      "id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+      "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+      "task_id": "6966bd41-07ab-5ccf-95da-2fea194e7450",
+      "recipe_id": "kr-research-python-v2",
+      "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+      "state": "received",
+      "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1791242030.830452:director:action:dd69d4b8-78c0-4c78-b7ee-41c7cf7d5972:approve",
+      "approved_at": "2026-10-05T23:13:50.984607+00:00",
+      "worker_id": "worker",
+      "claimed_at": "2026-10-06T10:31:58.059235+00:00",
+      "heartbeat_at": "2026-10-06T10:32:11.456793+00:00",
+      "sequence": 2,
+      "update_digest": "00542d3f14205c379d4a340b267854ea08be1a8dcad05dd5eec2e9d42f236f5f",
+      "artifact_sha256": "9c5c2a8eb504556ce3c2d42996cd6e0cb4ba005af0d76ed0b33761ee537b28cb",
+      "error": null,
+      "created_at": "2026-10-06T10:31:56.478807+00:00",
+      "updated_at": "2026-10-06T10:32:11.456793+00:00"
+    },
+    "latest_stage": {
+      "id": "a92587ac-50d3-5786-9211-28fa84bf32e5",
+      "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+      "stage": "interpretation",
+      "state": "running",
+      "attempt": 1,
+      "error": null,
+      "retry_at": null,
+      "task_id": "b7bf9464-b82d-5335-ad20-347926c0e1be",
+      "updated_at": "2026-10-06T10:33:10.794625+00:00"
+    }
+  },
+  "physical_and_server_artifact_sha256_match": true,
+  "development_input_scope": "approved frozen-vintage 2023-2025 development; historical publication/revision/preparation gaps remain acknowledged",
+  "sealed_2026_read": false,
+  "performance_metrics_read_or_reported": false,
+  "practical_use": {
+    "research_status": "actual result received; interpretation and independent audits/report pending",
+    "live_allocation_ready": false,
+    "date_committed": false,
+    "result_scope": "conditional_retrospective_development"
+  }
+}

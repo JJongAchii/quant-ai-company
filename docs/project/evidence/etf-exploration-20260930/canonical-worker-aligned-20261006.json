@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "phase": "active_worker_aligned",
+  "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "previous_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+  "prior_alignment_sha256": "8d20b4147dec33531f0d1577e9366c4b4f7e37eb3415c4d16555753ec9f78c1f",
+  "registered_config": "/home/achii/quant-company-qualification/conditional-program-20261006/native-output-5c44ad0-02/qualification-01/release-candidates/5c44ad07273adc780a56a47d7d35114fd0dc32c8/worker-config.json",
+  "profile_relocation": {
+    "old_sha256": "835f24e1360421653801c61bbd7b9e3b4885b2c6d758f1f6d43434296b936f1e",
+    "new_sha256": "e17bd51ef171b82d520cd27bdb14fe4033f99cdc6771c37d82b6b509da235110",
+    "public_runtime_bundle_and_all_other_fields_equal": true,
+    "input_sha256": {
+      "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882",
+      "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b"
+    }
+  },
+  "qualification_sha256": "55a746cd5163b584e7b612ffb8d1f97231db84f1b29b3017d44130be2a0477e1",
+  "previous_config_sha256": "4d0b0c82e567c6a269b17610abaa282a01b1f18b261272600c076e28ee496c57",
+  "previous_dropin_sha256": "30da5ea715f02678b80a379334b912f2917e049d1bd808befe30e2003a0db286",
+  "prior_registry_sha256": "5bfa37d55a44650ea160c21ec44cb65d5ec522fd12eeb766177c78ad1b263715",
+  "authority": "Owner requested continuation; complete the existing source5c cutover with matching3070 only",
+  "detached_execution_killed": false,
+  "scientific_trials_added": 0,
+  "started_at": "2026-10-06T01:26:30.499306+00:00",
+  "active_config_sha256": "3b7b27cd7715826a5cfeada8ff95594e8db9b55da3b1ed24c0a38914dedaa344",
+  "active_dropin_sha256": "bd44674d7ccd9f0449bdedf62eb851fdb440b472cc7ae327433292c5393f44f3",
+  "registry_sha256": "5bfa37d55a44650ea160c21ec44cb65d5ec522fd12eeb766177c78ad1b263715",
+  "previous_release_retained": true,
+  "company_repo": "/home/achii/quant-company-qualification/conditional-program-20261006/native-output-5c44ad0-02/qualification-01/release-candidates/5c44ad07273adc780a56a47d7d35114fd0dc32c8/code",
+  "completed_at": "2026-10-06T01:26:33.507074+00:00"
+}

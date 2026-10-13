@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 21,
+  "previousIntent": "INTENT-v20.json",
+  "sourceRequest": "지금 진행상황은 ?; ongoing authorization: 응 제대로 진행해줘 ,,,",
+  "outcome": "Correct successor proposal relationship navigation using the unchanged consumer's actual eligible IDs, retain the previous rejection on a new attempt, deploy a reviewed exact operational patch, and verify a real independent successor proposal or explicit scientific hold. Preserve all signed scope, evaluator, budgets and histories.",
+  "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "deliverables": [
+    {"id": "CURRENT_STATUS", "description": "Record actual proposal attempt 9 waiting, zero active jobs, one reported result and exact rejected relationship fields."},
+    {"id": "PROPOSAL_NAVIGATION", "description": "Show only interpreted measured predecessor IDs and current-cycle rejected supersedes IDs, project corresponding schema, and preserve rejection feedback across retries."},
+    {"id": "QUALIFIED_APPLY", "description": "Verify unchanged consumer guards against real PostgreSQL, review actual parent runtime and exact prepared images, then apply preserving active model policy, credentials, scientific releases and stable histories."},
+    {"id": "ACTUAL_PROGRESS", "description": "Verify an actual staff-authored successor proposal passes the unchanged consumer or record a distinct independent hold; do not infer a second economic run from a running model call."}
+  ],
+  "constraints": [
+    "No scientific strategy choices or rewriting of staff artifacts by the operator.",
+    "No weakened lineage, supersedes, evidence-read, challenge, selection, audit or execution guards.",
+    "No scope, evaluator, data, cost, risk, signed budget or 3070 scientific release changes.",
+    "Preserve all failed and closed candidates, original responses and attempts, results and counters.",
+    "No paid API, heavy root backtest, live order, unsandboxed model execution or 5090 fallback.",
+    "Persist exact review and ambiguous-effect receipts; no blind replay."
+  ]
+}

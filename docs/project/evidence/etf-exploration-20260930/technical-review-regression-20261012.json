@@ -1,0 +1,40 @@
+{
+  "implementation_commit": "8eca1d61ad40ba908295e9471eca71f722680734",
+  "result": "passed",
+  "test_receipts": [
+    {
+      "name": "technical-review-regression.xml",
+      "sha256": "0f4d54688b17fd4df0aaa959d706382c6ce72a0bfad61554de224099a30589f4",
+      "tests": 142,
+      "passed": 142,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 123.87
+    },
+    {
+      "name": "technical-review-full.xml",
+      "sha256": "b1e385ad3132dca9b4aeee824695ccc94728d10349d77758a5f8bde6b12b3324",
+      "tests": 1867,
+      "passed": 1853,
+      "skipped": 14,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 622.074
+    }
+  ],
+  "real_integrations": [
+    "PostgreSQL",
+    "Git",
+    "pinned qlab"
+  ],
+  "synthetic_integrations": [
+    "model staff responses",
+    "Slack responses",
+    "market fixtures"
+  ],
+  "production_deployed": false,
+  "actual_second_economic_result": false,
+  "scope_and_budgets_preserved": true,
+  "prior_reader_and_pending_index_compatibility_verified": true
+}

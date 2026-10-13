@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_current_challenge_preparation",
+  "reviewed_at": "2026-10-06 06:53:07 UTC",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "stage": {
+    "id": "22a36fab-5daa-594a-a964-c5df15cbe611",
+    "stage": "challenge",
+    "actor": "financial_strategist",
+    "state": "running",
+    "attempt": 1,
+    "error": null,
+    "retry_at": null,
+    "task_id": "1c4ed96a-9961-585c-b832-46590b949545",
+    "created_at": "2026-10-06T06:50:58.341972+00:00",
+    "updated_at": "2026-10-06T06:50:58.341972+00:00"
+  },
+  "task": {
+    "id": "1c4ed96a-9961-585c-b832-46590b949545",
+    "agent": "financial_strategist",
+    "status": "pending",
+    "priority": 100,
+    "revision": 5
+  },
+  "pending_turn": {
+    "id": "1c95eb5d-a2ad-55bf-9e8d-b9187c71498e",
+    "status": "queued",
+    "created_at": "2026-10-06T06:50:58.341972+00:00",
+    "updated_at": "2026-10-06T06:50:58.341972+00:00",
+    "request_id": null
+  },
+  "temporal": {
+    "workflow_id": "company-turn-1c95eb5d-a2ad-55bf-9e8d-b9187c71498e",
+    "run_id": "01a10ffa-d367-7ccc-8cfa-6c712e5eaa28",
+    "status": "RUNNING",
+    "recent_activity_results": [
+      {
+        "state": "defer",
+        "reason": "higher_priority_request",
+        "seconds": 2
+      },
+      {
+        "state": "defer",
+        "reason": "higher_priority_request",
+        "seconds": 2
+      },
+      {
+        "state": "defer",
+        "reason": "higher_priority_request",
+        "seconds": 2
+      },
+      {
+        "state": "defer",
+        "reason": "higher_priority_request",
+        "seconds": 2
+      },
+      {
+        "state": "defer",
+        "reason": "higher_priority_request",
+        "seconds": 2
+      }
+    ],
+    "recent_failures": [],
+    "pending_activities": []
+  },
+  "previous_proposal_status": {
+    "id": "c3050fd0-0139-53ec-8669-56dff53ab630",
+    "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+    "stage": "proposal",
+    "state": "completed",
+    "attempt": 1,
+    "error": null,
+    "retry_at": null,
+    "task_id": "d7df0261-af8f-5c89-b8ef-a59e3bb9b6f1",
+    "updated_at": "2026-10-06T06:50:54.607394+00:00"
+  },
+  "scientific_usage": {
+    "reservations": 0,
+    "scientific_trials": 0,
+    "compute_seconds": 0
+  },
+  "operator": "prepare-current-first-mission-stage.py",
+  "arguments": [
+    "22a36fab-5daa-594a-a964-c5df15cbe611",
+    "1c4ed96a-9961-585c-b832-46590b949545",
+    "challenge"
+  ],
+  "planned_change": "Only current task priority100 to0 and factual source_completion_navigation explaining existing complete source/lineage gates.",
+  "authority": "Existing urgent first-experiment and continue instructions; root review of concrete current stage in PR105",
+  "signed_resource_priority_or_scientific_scope_changed": false,
+  "scientific_judgment_applied": false,
+  "new_call_or_job_enqueued_by_operator": false,
+  "exact_sha_human_approval_claimed": false
+}

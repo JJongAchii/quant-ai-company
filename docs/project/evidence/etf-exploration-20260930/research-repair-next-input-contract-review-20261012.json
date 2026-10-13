@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "state": "next_input_contract_review_prepared_not_activated",
+  "source_request": "그럼 뭐 어떻게 해야하는데",
+  "approved_program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "approved_program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "approved_mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "approved_mission_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
+  "finding_source": "Actual independent engineer hold, final response b17d6956-d67f-5735-915a-cbd46b77316a",
+  "finding": "Selected implementation requires decision_at and prior_events; engineer did not establish that the frozen weights(history,config) contract can supply or reconstruct those inputs through the two approved write paths.",
+  "next_required_work": [
+    "Verify exact protected qualifier/evaluator invocation contract and permitted history/config metadata; distinguish qualification from the first development decision. Do not infer readiness or historical publication proof.",
+    "Bind original6cdc6e7 code/config/manifest/full-path artifacts and existing first-run receipts by their actual SHA values. Verify which requested prior-group reuse authority is already in the signed lineage; do not manufacture an approval.",
+    "Prepare a concrete compatibility repair within candidate.py/config.json when justified. Any required protected evaluator/profile change must remain an inactive separately reviewed specification with a new exact identity before scientific use.",
+    "Preserve current held response, failed worker files, prior reported result, reservations and charged history. Do not mark the failed trial reported or override pending-trial selection guards to start another candidate."
+  ],
+  "current_owner_reapproval_or_slack_retransmission_required": false,
+  "new_scope_or_budget_authorized_by_this_brief": false,
+  "new_profile_or_scientific_execution_created": false,
+  "implementation_or_deployment_of_followup_claimed": false
+}

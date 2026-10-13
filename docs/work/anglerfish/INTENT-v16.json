@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 16,
+  "previousIntent": "INTENT-v15.json",
+  "sourceRequest": "다 된거야?; existing requests to deploy and continue the approved exploratory programme",
+  "outcome": "Report actual completion status and reconcile the fixed first scientific trial's blocked audit using its complete, exact-request provider receipt and immutable lineage evidence.",
+  "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "deliverables": [
+    {"id": "AUDIT_DIAGNOSIS", "description": "Identify the actual audit hold, provider receipt, packet binding and redundant lineage read route"},
+    {"id": "SCOPED_RECONCILIATION", "description": "Dry-run and review a fixed-task repair before committing the already-complete first packet response without calling the model or repeating science"},
+    {"id": "LIVE_PROGRESS", "description": "Verify normal service continuation and report completion and remaining work truthfully"}
+  ],
+  "constraints": [
+    "Keep the signed programme, mission, scientific budget, inputs, scope and outcome unchanged",
+    "Keep every frozen provider request, native response, packet chunk and digest unchanged",
+    "Require the exact canonical lineage bytes inside the already-frozen full-read audit history",
+    "Retain the final all-byte delivery, provider-session, qlab and publication gates",
+    "Preserve previous failures in a durable reconciliation event; no inferred audit pass",
+    "No model-call replay, scientific rerun, manual publication, orders or new deployment",
+    "No performance reporting before independent audits"
+  ]
+}

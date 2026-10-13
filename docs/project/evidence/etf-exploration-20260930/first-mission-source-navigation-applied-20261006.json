@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "operation_id": "first-mission-source-completion-navigation:c3050fd0:20261006",
+  "state": "source_completion_navigation_visible",
+  "observed_at": "2026-10-06T06:40:28.085164+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "stage_id": "c3050fd0-0139-53ec-8669-56dff53ab630",
+  "task_id": "d7df0261-af8f-5c89-b8ef-a59e3bb9b6f1",
+  "attempt": 1,
+  "navigation": {
+    "operation_id": "first-mission-source-completion-navigation:c3050fd0:20261006",
+    "existing_service_requirement": "Every source_id cited by a final artifact requires a complete read of its corresponding evidence_sources file in this attempt. In file_progress, absent means unread; non-null next_offset means incomplete; null means complete.",
+    "current_recovery": "The preceding complete artifacts were not accepted because a cited original was incomplete. Read each intended cited original to its end using the exact next_offset before drafting another complete artifact. A single successful chunk does not finish a longer source. Do not regenerate the full artifact between remaining chunks. This requirement changes no scientific scope and supplies no hypothesis or decision.",
+    "incomplete_previously_cited_sources": [
+      {
+        "source_id": "literature:f3b6c6a24911aaf858e536f03753a6bceaff95e072f3720855a609f4eb23eec6",
+        "file": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json"
+      }
+    ]
+  },
+  "only_current_stage_navigation_changed": true,
+  "source_bytes_or_read_receipts_changed": false,
+  "frozen_model_requests_changed": false,
+  "proposal_selection_or_completion_applied": false,
+  "scientific_authority_or_budget_changed": false,
+  "new_model_call_or_scientific_job_enqueued": false,
+  "authority": "Existing owner urgent first-experiment and continuation instructions; root-reviewed PR105 metadata repair",
+  "event_id": 694,
+  "already_committed": false
+}

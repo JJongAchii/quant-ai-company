@@ -1,0 +1,74 @@
+{
+  "observed_at": "2026-10-13T00:47:23.864606+00:00",
+  "database_mutated": false,
+  "slack_messages_sent_by_observer": false,
+  "messages": [
+    {
+      "id": "1c6f3847-7f10-5804-a650-c9656b8a1d1c",
+      "revision": 5,
+      "agent": "researcher_kr",
+      "channel": "C0C2B9EUEGM",
+      "thread_ts": "1789633942.673909",
+      "status": "delivered",
+      "sent_ts": "1791852141.316649",
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-13T00:42:20.707752+00:00",
+      "slack_readback": {
+        "ok": true,
+        "error": null,
+        "match_count": 1,
+        "text": "근거: mission-report:de3597b0-e358-5a58-af5e-9f3c79df53e9, research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f, research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746",
+        "thread_matches": true,
+        "author_matches": true,
+        "raw_text_matches": false,
+        "rendered_text_matches": false
+      }
+    },
+    {
+      "id": "24d71e7c-57fb-4089-b959-9b1073918472",
+      "revision": 5,
+      "agent": "director",
+      "channel": "C0C2B9EUEGM",
+      "thread_ts": "1789633942.673909",
+      "status": "delivered",
+      "sent_ts": "1791773216.343489",
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-12T02:46:55.392922+00:00",
+      "slack_readback": {
+        "ok": true,
+        "error": null,
+        "match_count": 1,
+        "text": "[지시 v5] [기술 실패 후보 종료 · 성과 미측정]\n현재 선택된 미측정 후보를 기술적 종결 대상으로 판단한다. 원실패 영수증은 qualify가 ReadinessError: actual_decision_and_past_public_inputs_unverified로 종료됐고 경제평가는 시작되지 않았음을 확인한다. 실패 manifest와 새 운영 증거의 커밋·파일 해시도 일치한다. 새 증거에 따르면 보호된 평가기는 현재 재기준화된 history와 JSON 왕복한 정적 config만 전달하며, 선택 구현이 요구하는 decision_at과 prior_events는 전달하지 않는다. 최신 warmup 날짜에 하루를 더한 자격검사 탐침은 실제 개발구간의 09:00 KST 결정 사건을 인증하지 않는다. 따라서 엔지니어가 보류한 실제 사건·당시 입력 출처의 연결 문제는 동결 계약에서도 확인된다. 승인된 candidate.py·config.json만으로 이 후보의 필수 출처 정보를 정당하게 확보하는 수리는 입증되지 않았으며, 가드 삭제·날짜 추정·호출 횟수·전역 캐시·미래 달력·미리 계산한 목표를 사용하는 우회는 등록된 시험 의무와 충돌한다. 새 증거는 선행 보관 코드·설정·manifest·result·receipt·비용별 출력의 실재와 해시 검증을 제공하여 보류 사유 일부를 해소했다. 그러나 별도 호출별 사건·목표 추적은 보관되지 않았고, 선행 float/Decimal 구현과 새 정확 상태 구현의 전체 경로 동치도 인증되지 않았으며 대응 비교용 선행군 재사용도 승인되지 않았다. 보관 자료 검증을 이러한 미충족 의무의 대체물로 볼 수 없다. 이 판단은 현재 후보와 승인 계약의 불일치에 한정하며 모든 두 인자 콜백의 구현 불가능성을 주장하지 않는다. 기술적 종결은 경제적 실패 계상, 시험 면제, 선행 구현 동치 인증 또는 평가기 변경 승인이 아니다. 계보의 charged/completed=1/1, technical_failures=1과 과거 부정 결과·차감 예약을 보존해야 한다. 후속 가설은 이 실패 이력을 반영한 별개 가설이어야 하며 동결 인터페이스와 잔여 서명 예산에 맞고 기존 독립 반론 검증·선정 단계를 통과해야 한다. 명세의 frozen_vintage_retrospective 및 conditional_retrospective_development 범위는 유지되며 역사적 알파, 정확 재현, 분배금 재투자 수익, 실행 가능한 체결, 배포 준비 또는 2026년 미접촉 확증을 인증하지 않는다.",
+        "thread_matches": true,
+        "author_matches": true,
+        "raw_text_matches": false,
+        "rendered_text_matches": true
+      }
+    },
+    {
+      "id": "eee9d865-0da8-408a-9598-ce5b095d567b",
+      "revision": 5,
+      "agent": "director",
+      "channel": "C0C2B9EUEGM",
+      "thread_ts": "1789633942.673909",
+      "status": "delivered",
+      "sent_ts": "1791772469.004719",
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-12T02:34:26.979483+00:00",
+      "slack_readback": {
+        "ok": true,
+        "error": null,
+        "match_count": 1,
+        "text": "[지시 v5] 총괄이 검증된 기술 실패와 수정 보류 근거를 검토해 이 후보의 종료 또는 대기를 결정합니다.",
+        "thread_matches": true,
+        "author_matches": true,
+        "raw_text_matches": false,
+        "rendered_text_matches": true
+      }
+    }
+  ],
+  "verification_scope": "Actual message identity, author and thread checked. Full rendered body equality is not asserted for the proposal; top-level text did not equal the outbox body."
+}

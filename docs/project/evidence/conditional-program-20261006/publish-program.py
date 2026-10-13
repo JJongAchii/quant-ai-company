@@ -1,0 +1,68 @@
+"""Publish the exact current canonical draft; only a genuine fresh Slack event can approve it."""
+
+import json
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+
+from quant_company.company import Company, fingerprint, stable
+from quant_company.config import Settings
+from quant_company.research.data_evidence import load_packets
+from quant_company.research.program_contracts import ResearchProgram
+from quant_company.research.program_controller import program_tool
+from quant_company.research.programs import ProgramStore
+from quant_company.research.scientific_lineages import history
+
+company = Company(Settings(research_data_evidence_file=Path('/state/research/provisioned/data-evidence/registry.json')))
+assert company.settings.company_code_commit == '231d6ba0755f658f167636a8ea2c3ef65b6af562'
+spec = ResearchProgram.model_validate_json(sys.argv[1])
+digest = fingerprint(spec.model_dump(mode='json'))
+assert digest == 'c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db'
+packets = load_packets(company, {'manifest_digest': digest}, {e.name: e for e in spec.envelopes})
+assert set(packets) == {'etf_strategy'}
+project_id = '9aac0de4-2b97-5195-a720-287d324234f3'
+prior_id = 'e06537d3-fac3-5c8c-bf25-ddabb3c7e282'
+task_id = stable('operator-program-approval-request:' + project_id + ':' + digest)
+instruction = 'User 2026-10-06 requested sending and proceeding. Publish this exact bounded canonical draft; a fresh actual Slack owner event grants authority.'
+with company.db.transaction() as conn:
+    project = company._project(conn, project_id)
+    assert project['revision'] == 5 and project['status'] == 'active'
+    assert project['owner_user'] == 'U0C250E23NW' and project['channel'] == 'C0C2B9EUEGM'
+    assert project['thread_ts'] == '1789633942.673909'
+    assert ProgramStore(company).snapshot(conn, prior_id)['state'] == 'cancelled'
+    cancellation = conn.execute("""SELECT e.detail->>'owner_event_id' AS event_key FROM events e
+        JOIN inbound i ON i.event_key=e.detail->>'owner_event_id' AND i.project_id=e.project_id
+        WHERE e.project_id=%s AND e.kind='research_program_cancel' AND e.detail->>'program_id'=%s
+        ORDER BY e.created_at DESC LIMIT 1""", (project_id, prior_id)).fetchone()
+    assert cancellation and cancellation['event_key'] == 'slack:T0C1YRDRPNF:C0C2B9EUEGM:1791240902.789269:director'
+    assert not conn.execute("SELECT 1 FROM research_programs WHERE project_id=%s AND state='active'", (project_id,)).fetchone()
+    for envelope in spec.envelopes:
+        preimage, preimage_digest = history(conn, project['id'], envelope.template.scientific_lineage)
+        assert preimage_digest == envelope.template.scientific_lineage.history_digest
+        assert len(preimage['origins']) == 12 and preimage['trials'] == []
+    conn.execute("""INSERT INTO tasks(id,project_id,agent,instruction,revision,kind,status)
+        VALUES(%s,%s,'director',%s,5,'operator_program_draft','pending') ON CONFLICT DO NOTHING""",
+        (task_id, project_id, instruction))
+    task = conn.execute('SELECT * FROM tasks WHERE id=%s FOR UPDATE', (task_id,)).fetchone()
+    assert task['agent'] == 'director' and task['kind'] == 'operator_program_draft'
+    assert task['instruction'] == instruction and task['revision'] == project['revision']
+    snapshot = program_tool(company, conn, project, task, {'action': 'program_draft', 'spec': spec.model_dump(mode='json')})
+    assert snapshot['manifest_digest'] == digest and snapshot['state'] == 'draft'
+    row = conn.execute('SELECT approval_event_id FROM research_programs WHERE id=%s', (snapshot['id'],)).fetchone()
+    assert row['approval_event_id'] is None
+    conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s",
+        ('Exact current canonical draft queued for a fresh actual Slack owner decision.', task_id))
+    company._event(conn, 'operator_conditional_program_draft_requested', {
+        'program_id': snapshot['id'], 'program_digest': digest,
+        'prior_signed_cancellation': cancellation['event_key'], 'origin_count': 12,
+        'owner_approval_required': True, 'authorization': 'conversation:user:2026-10-06:send-and-proceed'}, project_id)
+    binding = conn.execute("""SELECT b.id,b.message_id,o.status,o.sent_ts FROM research_approval_bindings b
+        JOIN outbox o ON o.id=b.message_id WHERE b.target_kind='program' AND b.target_id=%s
+        AND b.manifest_digest=%s ORDER BY b.created_at DESC LIMIT 1""", (snapshot['id'], digest)).fetchone()
+    assert binding
+print(json.dumps({'schema_version': 1, 'observed_at': datetime.now(UTC).isoformat(),
+    'program_id': snapshot['id'], 'program_digest': digest, 'program_state': 'draft',
+    'binding_id': str(binding['id']), 'message_id': str(binding['message_id']),
+    'outbox_status': binding['status'], 'sent_ts': binding['sent_ts'],
+    'actual_packet_bytes_and_scope_verified': True, 'owner_program_approved': False,
+    'actual_staff_decisions_observed': False, 'scientific_trials_started': 0}))

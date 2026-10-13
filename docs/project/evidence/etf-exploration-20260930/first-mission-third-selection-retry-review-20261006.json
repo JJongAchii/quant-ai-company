@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_current_third_selection_attempt4_repair",
+  "reviewed_at": "2026-10-06T10:04:00.476333+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "before": {
+    "observed_at": "2026-10-06T10:04:00.476333+00:00",
+    "stage": {
+      "id": "268a529c-2a94-56ca-ad48-cee385471829",
+      "stage": "selection",
+      "actor": "director",
+      "state": "running",
+      "attempt": 4,
+      "error": null,
+      "retry_at": null,
+      "task_id": "8ef7a7e7-7bc2-5817-a3c7-5958d1a878e2"
+    },
+    "attempts": [
+      {
+        "attempt": 4,
+        "task_id": "8ef7a7e7-7bc2-5817-a3c7-5958d1a878e2",
+        "error": null,
+        "completed_at": null,
+        "task_status": "running",
+        "priority": 100
+      },
+      {
+        "attempt": 3,
+        "task_id": "b42c03fb-0e82-5b1b-a297-556dbf53c232",
+        "error": "stage_contract_rejected: Every independent challenge needs exactly one disposition",
+        "completed_at": "2026-10-06T09:55:09.045545+00:00",
+        "task_status": "completed",
+        "priority": 100
+      },
+      {
+        "attempt": 2,
+        "task_id": "ad986d50-8b6b-5d21-a313-a5e98d93a186",
+        "error": "stage_contract_rejected: Every independent challenge needs exactly one disposition",
+        "completed_at": "2026-10-06T09:33:42.161907+00:00",
+        "task_status": "completed",
+        "priority": 100
+      }
+    ],
+    "context_navigation_present": false,
+    "source_contract_hint": null,
+    "challenges": [
+      {
+        "id": "a9d38fd5-6c52-4e1d-a326-b78dd4b4c903",
+        "proposal_id": "bed77124-564d-4ba9-a625-777308b11cdb",
+        "reviewer": "financial_strategist",
+        "created_at": "2026-10-06T08:55:48.964334+00:00"
+      },
+      {
+        "id": "581631b4-9d2d-4fe9-864a-75a9a27eec10",
+        "proposal_id": "a3e207ea-d615-4b40-96c0-1b92d1ae5124",
+        "reviewer": "financial_strategist",
+        "created_at": "2026-10-06T07:50:51.281021+00:00"
+      },
+      {
+        "id": "a6184d23-7f6e-4b59-8ad2-530c984bf127",
+        "proposal_id": "6d9a3c7b-52e4-4f81-b267-85d094eb6a30",
+        "reviewer": "financial_strategist",
+        "created_at": "2026-10-06T07:05:14.907769+00:00"
+      }
+    ],
+    "decision_shapes": [
+      {
+        "attempt": 4,
+        "decision": null,
+        "response_challenge_ids": []
+      },
+      {
+        "attempt": 3,
+        "decision": null,
+        "response_challenge_ids": []
+      },
+      {
+        "attempt": 2,
+        "decision": null,
+        "response_challenge_ids": []
+      }
+    ]
+  },
+  "operator": "repair-current-third-selection-retry.py",
+  "planned_change": "Only observed attempt4 current task urgency and exact current proposal/challenge identity, complete-source and existing implementation capability navigation. Preserve actual independent choices and all three rejected attempts.",
+  "authority": "Existing owner urgent first experiment and repeated continuation requests; root review of actual bounded operation in PR105",
+  "scientific_judgment_or_approval_or_budget_changed": false,
+  "source_bytes_or_read_receipts_or_frozen_requests_changed": false,
+  "new_model_call_or_scientific_job_enqueued_by_operator": false,
+  "exact_sha_human_approval_claimed": false
+}

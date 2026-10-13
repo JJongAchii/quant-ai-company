@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "operation_id": "first-mission-preparation-navigation:2e334964-f7db-5f00-9044-d3d86c44a24e:20261006",
+  "state": "current_stage_preparation_reconciled",
+  "observed_at": "2026-10-06T07:20:57.978057+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "stage_id": "2e334964-f7db-5f00-9044-d3d86c44a24e",
+  "task_id": "3173feae-397b-563d-8a30-57f5746ff79c",
+  "stage": "proposal",
+  "actor": "researcher_kr",
+  "attempt": 1,
+  "previous_priority": 100,
+  "priority": 0,
+  "navigation": {
+    "operation_id": "first-mission-preparation-navigation:2e334964-f7db-5f00-9044-d3d86c44a24e:20261006",
+    "existing_service_requirement": "Every source_id referenced in a final artifact, including selection.responses source_ids, requires a complete read of its corresponding evidence_sources file in this attempt. In file_progress, absent means unread; non-null next_offset means incomplete; null means complete. Also complete each required_lineage_reads file.",
+    "preparation_navigation": "Choose sources using your own scientific judgment within the approved library. Read each intended cited original to its end using the exact next_offset before drafting the final artifact. A single successful chunk does not finish a longer source. Do not regenerate a complete artifact between remaining source chunks. Read only the evidence needed and the explicitly required files. This explains existing service gates and supplies no hypothesis, objection, selection, patch or scientific judgment. For a revised proposal, read relevant_evidence.rejections and the actual independent criticism before drafting; respond to that recorded decision within the selected study."
+  },
+  "source_bytes_or_read_receipts_changed": false,
+  "frozen_model_requests_changed": false,
+  "scientific_judgment_applied": false,
+  "scientific_authority_or_budget_changed": false,
+  "signed_resource_priority_changed": false,
+  "new_model_call_or_scientific_job_enqueued": false,
+  "authority": "Existing owner urgent first-experiment and continuation requests; root-reviewed concrete current-stage operation in PR105",
+  "event_id": 711,
+  "already_committed": false
+}

@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "state": "scoped_recovery_verified_independent_engineer_evidence_hold",
+  "observed_at": "2026-10-12T00:56:08.622335+00:00",
+  "operation_commit": "3171e59a5c7f6a2332c33b3bc1249abddccba6ef",
+  "runtime_applied": true,
+  "pause_cleared": true,
+  "existing_selected_account_wake": {
+    "commit": "3171e59a5c7f6a2332c33b3bc1249abddccba6ef",
+    "operator_sha256": "d266ca85f918ddb63fa76775d3ea35ec755fe989721b6f1fae3fccc57e9cf1f1",
+    "recorded_at": "2026-10-12T00:50:56.937782+00:00",
+    "database_mutated": false,
+    "scientific_decision_or_execution_supplied": false,
+    "turn_id": "669d1bdf-9995-5c49-8336-fe541202db71",
+    "selected_profile": "primary",
+    "selected_account_revision": 2,
+    "account_selection_changed": false,
+    "request_changed": false,
+    "new_turn_created": false,
+    "scientific_execution_supplied": false,
+    "temporal_signal_sent": true,
+    "state": "existing_selected_revision_wake_sent",
+    "workflow_id": "company-turn-669d1bdf-9995-5c49-8336-fe541202db71",
+    "prior_signal_revisions": [],
+    "pending_timer_count": 1
+  },
+  "actual_native_staff_progress": {
+    "task_id": "663aacf2-97da-5079-a9f7-2fdd7e723007",
+    "attempt": 79,
+    "first_post_cutover_turn_id": "669d1bdf-9995-5c49-8336-fe541202db71",
+    "final_response_turn_id": "b17d6956-d67f-5735-915a-cbd46b77316a",
+    "final_response_state": "completed",
+    "final_response_received_at": "2026-10-12T00:54:06.264853+00:00",
+    "actual_model": "gpt-6.1-sol",
+    "actual_reasoning_effort": "xhigh",
+    "exact_repair_contract_in_actual_requests": true,
+    "failed_build_in_actual_requests": {
+      "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+      "code_commit": "cdcfe52bb5641c1826af1c9c085bd6a708434b34",
+      "failure_source_ids": [
+        "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+      ]
+    },
+    "registered_failure_source_read_to_eof": true,
+    "failed_build_manifest_read_to_eof": true,
+    "failed_candidate_read_characters": 24000,
+    "failed_candidate_full_read_claimed": false,
+    "failed_config_read_to_eof": true,
+    "read_receipts": [
+      {
+        "attempt": 79,
+        "path": "repair/failed-build.json",
+        "character_offset": 0,
+        "characters": 8414,
+        "next_offset": null,
+        "sha256": "d3d3ed1f5d0a99b99a09616851356097f82623c10e4fe7314f16c003ae6593ea",
+        "created_at": "2026-10-12T00:51:14.953702+00:00"
+      },
+      {
+        "attempt": 79,
+        "path": "sources/0cddd704514ba7a59b848e79c834729e014a231c6fd723510c964aa8397f9cda.json",
+        "character_offset": 0,
+        "characters": 2508,
+        "next_offset": null,
+        "sha256": "962e2c7c4301af57fd415412be47a9a65f5ddb250167f6df2394ef55d0060019",
+        "created_at": "2026-10-12T00:51:26.838393+00:00"
+      },
+      {
+        "attempt": 79,
+        "path": "failed-code/labs/company-domestic-research/candidate.py",
+        "character_offset": 0,
+        "characters": 12000,
+        "next_offset": 12000,
+        "sha256": "817b1176a847441c0620b84ce2d2ab372920d7395094d11caf0ce66f306a8bf5",
+        "created_at": "2026-10-12T00:51:40.389795+00:00"
+      },
+      {
+        "attempt": 79,
+        "path": "failed-code/labs/company-domestic-research/candidate.py",
+        "character_offset": 12000,
+        "characters": 12000,
+        "next_offset": 24000,
+        "sha256": "817b1176a847441c0620b84ce2d2ab372920d7395094d11caf0ce66f306a8bf5",
+        "created_at": "2026-10-12T00:52:01.905679+00:00"
+      },
+      {
+        "attempt": 79,
+        "path": "failed-code/labs/company-domestic-research/config.json",
+        "character_offset": 0,
+        "characters": 3263,
+        "next_offset": null,
+        "sha256": "08d25d9aed1a57c661a2f276702dcb02aa80cc5e73ec02ff87564962c4013717",
+        "created_at": "2026-10-12T00:53:02.267616+00:00"
+      }
+    ]
+  },
+  "independent_actor_hold": {
+    "blocked": true,
+    "rationale": "등록된 실패 영수증은 qualify가 ReadinessError: actual_decision_and_past_public_inputs_unverified로 종료됐으며 경제평가는 시작되지 않았음을 확인한다. failed-code의 weights(history, config)는 decision_at과 prior_events 없이 _public_kernel을 호출하므로 해당 예외가 발생한다. 현재 증거로는 승인된 candidate.py·config.json만 변경하여 실제 결정 사건과 당시 공개 입력을 연결하고 정확 상태를 복원하는 수리를 정당화할 수 없다. 가드 삭제, 최신 날짜+1일 추정, 호출 횟수나 전역 캐시 사용, 미검증 준비성의 통과 처리는 승인된 시험 의무를 충족하지 않는다. 같은 실패 계획을 재제출하지 않고 수리를 보류한다. canonical spec 및 필수 계보의 완독 기록을 승계하고 charged/completed=1/1, technical_failures=1과 과거 부정 결과·차감 예약을 유지한다. 결과 범위는 conditional_retrospective_development로 유지하며, 코드 수정·시험 실행·커밋·워커 제출을 수행했다는 주장은 하지 않는다.",
+    "repair_source_ids": [
+      "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+    ],
+    "required_evidence": [
+      "동결 weights(history, config) 호출의 실제 입력 계약과 추적 자료: 자격검사 호출·첫 개발 결정 사건의 구분, 실제 09:00 KST 결정시각, 당시 공개 이력·도착시각·재기준화 자료, 승인된 두 파일만으로 연결·복원할 수 있는 근거.",
+      "선행 커밋 6cdc6e7efb51eeeba272558cdabc1a5ba5ac559b의 보관 코드·설정·manifest·전체 목표 경로·비용별 출력·result·receipt 및 현재 정확 규칙과의 전경로 동치 검증 자료.",
+      "대응 경제평가에 필요한 선행군 재사용 승인과 실제 예약 전 검증·차단 연결을 확인하는 서비스 receipt. 산술 잔량이나 후보 내부 예외는 이를 대신할 수 없다."
+    ]
+  },
+  "hold_recorded_at": "2026-10-12T00:54:10.948739+00:00",
+  "automatic_unchanged_retry_stopped": true,
+  "second_trial_state": "technical_waiting",
+  "first_report_and_failed_job_preserved": true,
+  "new_scientific_job_created": false,
+  "second_economic_evaluation_executed": false,
+  "scientific_decision_or_candidate_patch_supplied_by_operator": false,
+  "market_strategy_performance_reported": false,
+  "canonical_merge_claimed": false
+}

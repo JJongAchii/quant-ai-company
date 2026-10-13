@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 20,
+  "previousIntent": "INTENT-v19.json",
+  "sourceRequest": "응 제대로 진행해줘 ,,,",
+  "outcome": "Verify the frozen callback and first-run artifacts, then add a reviewed independent director disposition for a verified pre-evaluation failure. Preserve the held implementation, signed scope and budgets. The director may retire an unmeasured incompatible candidate or wait; only the normal proposal/challenge/selection pipeline can choose a distinct next experiment.",
+  "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "deliverables": [
+    {
+      "id": "INPUT_CONTRACT",
+      "description": "Verify exact original and failed code, qualifier/evaluator call sites, permitted callback metadata and selected challenge obligations; distinguish warmup qualification from development decisions."
+    },
+    {
+      "id": "FIRST_RUN_ARTIFACTS",
+      "description": "Bind first trial archived code/config/manifest/output hashes/receipts and existing signed lineage authority without using performance to tune."
+    },
+    {
+      "id": "INDEPENDENT_REPAIR",
+      "description": "Provide new immutable contract evidence and a strict independent director review. Permit technical closure only for a registered, hash-bound pre-evaluation failure with no archive or measured outcome; never label it reported or reset counters."
+    },
+    {
+      "id": "ACTUAL_PROGRESS",
+      "description": "Verify actual director disposition and normal successor staff/worker progress, or an explicit evidence hold. Preserve scientific audits before reporting performance."
+    }
+  ],
+  "constraints": [
+    "Preserve approved scientific scope, budgets, reservations, outcomes and independent actor decisions.",
+    "Keep frozen protected evaluator/profile and signed obligations; a necessary protected change remains inactive until separately specified and reviewed.",
+    "Do not invent event timestamps, historical publication proof, prior-group reuse approval or scientific performance.",
+    "No direct heavy backtest/training, live orders, paid API, unsandboxed execution or 5090 fallback.",
+    "Preserve failed job/files, existing hold/raw responses, stable identities and ambiguous-effect receipts; no blind replay or guard override.",
+    "New company operational evidence belongs only in this repository."
+  ]
+}

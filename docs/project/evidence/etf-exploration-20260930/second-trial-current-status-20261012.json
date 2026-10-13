@@ -1,0 +1,656 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T23:16:22.754733+00:00",
+  "programme_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "current_state": "second_trial_technical_failure_repair_waiting",
+  "additional_owner_approval_required": false,
+  "first_trial": {
+    "id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+    "state": "reported",
+    "job_id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8"
+  },
+  "second_trial": {
+    "id": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+    "state": "technical_waiting",
+    "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+    "job_state": "failed",
+    "qualification_exit_code": 1,
+    "qualification_failed_at": "2026-10-08T04:10:56.807839+00:00",
+    "evaluation_started": false
+  },
+  "repair": {
+    "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+    "state": "waiting",
+    "attempt": 78,
+    "error": "stage_contract_rejected: Engineer must provide exact patches and a reason",
+    "retry_at": "2026-10-11T23:59:36.699284+00:00",
+    "latest_employee_disposition": "blocked",
+    "latest_employee_patch_count": 0,
+    "failed_code_requested": true
+  },
+  "monitoring": {
+    "state": "runtime_limit_reached",
+    "completed_at": "2026-10-08T05:52:07.935677+00:00",
+    "observations": 318,
+    "read_errors": 0,
+    "read_only": true,
+    "automatic_alerts": false,
+    "automatic_repairs": false
+  },
+  "findings": [
+    {
+      "kind": "observed",
+      "claim": "The second physical worker failed warmup qualification; no evaluation sandbox or economic execution receipt exists."
+    },
+    {
+      "kind": "observed",
+      "claim": "Its current repair available_files expose immutable baseline candidate/config hashes, not the actual failed candidate/config hashes or worker failure diagnostics."
+    },
+    {
+      "kind": "observed",
+      "claim": "The actual repair instruction says 'same patch schema' without providing that schema; output_schema is null."
+    },
+    {
+      "kind": "observed",
+      "claim": "The latest independent engineer artifact explicitly says blocked, requests failed code, and has zero patches. The service rejects this as an invalid patch contract and schedules another technical attempt."
+    },
+    {
+      "kind": "limit",
+      "claim": "The candidate's ReadinessError is a recorded technical failure. Its scientific readiness requirements have not been adjudicated or bypassed by this status inspection."
+    },
+    {
+      "kind": "limit",
+      "claim": "The Oct8 observer stopped after four hours and did not provide automatic alerts or repairs. This status check is a new live read, not evidence of continuous monitoring."
+    }
+  ],
+  "live_health": {
+    "observed_at": "2026-10-11T23:15:38.872689+00:00",
+    "services": [
+      {
+        "name": "quant-company-api-1",
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restart_count": 0
+      },
+      {
+        "name": "quant-company-worker-1",
+        "running": true,
+        "health": null,
+        "oom_killed": false,
+        "restart_count": 0
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "running": true,
+        "health": null,
+        "oom_killed": false,
+        "restart_count": 0
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restart_count": 0
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restart_count": 0
+      },
+      {
+        "name": "quant-company-quant-codex-runtime-1",
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restart_count": 0
+      }
+    ],
+    "socket_namespace_established_tcp443_connections": 8,
+    "native_astra_exec_process_count": 0,
+    "native_company_lane_flock_held": false,
+    "signed_slack_round_trip_claimed": false,
+    "database_mutated": false,
+    "credentials_or_logs_exported": false
+  },
+  "physical_worker": {
+    "schema_version": 1,
+    "observed_at": "2026-10-11T23:15:37.050205+00:00",
+    "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+    "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+    "trial_id": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+    "hostname": "DESKTOP-5T00NAF",
+    "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+    "execution_profile": "kr-etf-retrospective-v1",
+    "records": {
+      "process.json": {
+        "exists": true,
+        "sha256": "619877bf28d6a119741573d7d37d98a3924525d0dc8a80ee090714653906fbbe",
+        "mtime_utc": "2026-10-08T04:10:54.144123+00:00",
+        "metadata": {
+          "launch_id": "da927a19552a4a2a9083df6a17818d12",
+          "started_at": "2026-10-08T04:10:54.143851+00:00"
+        }
+      },
+      "launch-intent.json": {
+        "exists": true,
+        "sha256": "d937822ba073d41d5cee5be7784d0e6c09959157db62754c95ee16f1abdfe364",
+        "mtime_utc": "2026-10-08T04:10:53.902971+00:00",
+        "metadata": {
+          "launch_id": "da927a19552a4a2a9083df6a17818d12",
+          "phase": "spawning"
+        }
+      },
+      "runtime.json": {
+        "exists": true,
+        "sha256": "c0d43d82850fc384e2c4850a5c1a61bbb5e5772286f4e3c57979440eba8dc9a4",
+        "mtime_utc": "2026-10-08T04:10:55.128978+00:00",
+        "metadata": {
+          "schema_version": 1,
+          "worker_id": "worker",
+          "hostname": "DESKTOP-5T00NAF",
+          "gpu": "NVIDIA GeForce RTX 3070",
+          "code_commit": "cdcfe52bb5641c1826af1c9c085bd6a708434b34",
+          "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+        }
+      },
+      "sandbox-qualification.json": {
+        "exists": true,
+        "sha256": "df31c94ba28b1a39ac1e28e1077030a7b2bcd34bdbf6e548857ef37c3ce89249",
+        "mtime_utc": "2026-10-08T04:10:56.807839+00:00",
+        "metadata": {
+          "action": "qualify",
+          "exit_code": 1,
+          "timed_out": false,
+          "fixture_only": false
+        }
+      },
+      "sandbox-evaluation.json": {
+        "exists": false
+      },
+      "receipt.json": {
+        "exists": false
+      },
+      "result.json": {
+        "exists": true,
+        "sha256": "f6542fff73a28588908beac112a0b24cb52081580011eecc53ac93c982754bf0",
+        "mtime_utc": "2026-10-08T04:10:56.816127+00:00",
+        "metadata": {
+          "state": "failed",
+          "reason": "executor-operation-failed"
+        }
+      }
+    },
+    "uploaded": false,
+    "uncertain_reason": null,
+    "performance_metrics_read_or_returned": false
+  },
+  "qualification_diagnostics": {
+    "observed_at": "2026-10-11T23:16:21.628225+00:00",
+    "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+    "code_commit": "cdcfe52bb5641c1826af1c9c085bd6a708434b34",
+    "code_files": {
+      "labs/company-domestic-research/candidate.py": "817b1176a847441c0620b84ce2d2ab372920d7395094d11caf0ce66f306a8bf5",
+      "labs/company-domestic-research/config.json": "08d25d9aed1a57c661a2f276702dcb02aa80cc5e73ec02ff87564962c4013717",
+      "labs/company-domestic-research/domestic_statistics.py": "8ea1021082bc8b4656e3df9dafe24dec655f861692240a5542e587fe0b7628ff",
+      "labs/company-domestic-research/engine.py": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+    },
+    "records": [
+      {
+        "name": "qualify/stderr.log",
+        "exists": true,
+        "sha256": "25ce57b00eb795398728407c94d3f0e9aee6abc36593ceb5d2b6b862f4c00458",
+        "bytes": 1069,
+        "exception_classes": [
+          "research_candidate.ReadinessError"
+        ],
+        "bounded_ascii_diagnostic": "research_candidate.ReadinessError: actual_decision_and_past_public_inputs_unverified",
+        "code_frames": [
+          {
+            "path": "/code/labs/company-domestic-research/engine.py",
+            "line": 249,
+            "function": "<module>"
+          },
+          {
+            "path": "/code/labs/company-domestic-research/engine.py",
+            "line": 193,
+            "function": "run"
+          },
+          {
+            "path": "/code/labs/company-domestic-research/engine.py",
+            "line": 83,
+            "function": "prediction"
+          },
+          {
+            "path": "/code/labs/company-domestic-research/candidate.py",
+            "line": 252,
+            "function": "weights"
+          },
+          {
+            "path": "/code/labs/company-domestic-research/candidate.py",
+            "line": 244,
+            "function": "_public_kernel"
+          }
+        ],
+        "missing_identifiers": [],
+        "syntax_error": false,
+        "sandbox_mount_error": false
+      },
+      {
+        "name": "qualify/stdout.log",
+        "exists": true,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "exception_classes": [],
+        "bounded_ascii_diagnostic": null,
+        "code_frames": [],
+        "missing_identifiers": [],
+        "syntax_error": false,
+        "sandbox_mount_error": false
+      },
+      {
+        "name": "executor.log",
+        "exists": true,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "exception_classes": [],
+        "bounded_ascii_diagnostic": null,
+        "code_frames": [],
+        "missing_identifiers": [],
+        "syntax_error": false,
+        "sandbox_mount_error": false
+      }
+    ],
+    "worker_state_mutated": false,
+    "raw_logs_returned": false,
+    "performance_metrics_read_or_returned": false
+  },
+  "diagnosis": {
+    "observed_at": "2026-10-11T23:16:22.754733+00:00",
+    "database_mutated": false,
+    "performance_metrics_read_or_returned": false,
+    "stage": {
+      "id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "stage": "repair",
+      "actor": "engineer",
+      "state": "waiting",
+      "attempt": 78,
+      "error": "stage_contract_rejected: Engineer must provide exact patches and a reason",
+      "retry_at": "2026-10-11T23:59:36.699284+00:00",
+      "task_id": "368cc08b-8836-55cc-ba68-d230908f990f",
+      "updated_at": "2026-10-11T22:59:36.692475+00:00",
+      "result_shape": {
+        "keys": [
+          "base_commit",
+          "failure",
+          "lineage",
+          "patches",
+          "ready_for_retry",
+          "repair_disposition",
+          "repair_source_ids",
+          "required_evidence",
+          "research_scope",
+          "summary",
+          "validation"
+        ],
+        "dispositions": {
+          "repair_disposition": "blocked",
+          "ready_for_retry": false
+        },
+        "requests_failed_code": true,
+        "requests_failure_logs": false,
+        "rationale_nonempty": false,
+        "patches_type": "list",
+        "patch_count": 0,
+        "patches": [],
+        "repair_source_ids": [
+          "evidence/outcomes/6533abf6-caf8-537a-95ad-9b6f17ad166a.json",
+          "evidence/challenge_responses/fa1c5f89-7341-47a6-905d-9ae1853c4397.json"
+        ],
+        "sha256": "ae6c3992df05c81a80a6a942db3894273f6346b8fd1e874cf04c3b121fec2d81"
+      },
+      "context_keys": [
+        "_private_files",
+        "available_files",
+        "evidence_sources",
+        "frozen_experiment_code",
+        "mission",
+        "patch_base_commit",
+        "patch_rule",
+        "relevant_evidence",
+        "required_lineage_reads"
+      ],
+      "available_files": [
+        {
+          "name": "code/labs/company-domestic-research/candidate.py",
+          "sha256": "78ed35e6a6d59df39e2c51d5fcfb24baeaa266667ccc651b3e305d4065a25aa5"
+        },
+        {
+          "name": "code/labs/company-domestic-research/config.json",
+          "sha256": "85870a2d2e4a444369cee6ce1e8f0c027208746df337abdfcda9b2d0fd6aecad"
+        },
+        {
+          "name": "code/labs/company-domestic-research/domestic_statistics.py",
+          "sha256": "8ea1021082bc8b4656e3df9dafe24dec655f861692240a5542e587fe0b7628ff"
+        },
+        {
+          "name": "code/labs/company-domestic-research/engine.py",
+          "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+        },
+        {
+          "name": "evidence/challenge_responses/36902772-eefa-4f18-9168-93cf58b4a746.json",
+          "sha256": "24af27f3b60d845f0b6eacb301622367c5be303b57bbcfd8afdb26b88d17be5d"
+        },
+        {
+          "name": "evidence/challenge_responses/fa1c5f89-7341-47a6-905d-9ae1853c4397.json",
+          "sha256": "1d284d3b31c27f45a67ff44594fdcabc09baf22dce3b0d0de82f996de763cbf9"
+        },
+        {
+          "name": "evidence/challenges/b94521c8-2e7c-4a2c-90f4-672378aacf29.json",
+          "sha256": "cc24034acf61459d21dff4bae6439763e0f6cb90dd9332b79a1317774b796ba5"
+        },
+        {
+          "name": "evidence/interpretations/de3597b0-e358-5a58-af5e-9f3c79df53e9.json",
+          "sha256": "3b0325f73611a1c19d3d4200cb6b9dd17a2c34e7c2d943312f9e144ec81e4125"
+        },
+        {
+          "name": "evidence/outcomes/6533abf6-caf8-537a-95ad-9b6f17ad166a.json",
+          "sha256": "dcf0b74d70844ed4877405a5d3e088acecb469018410af892975caf891a09d45"
+        },
+        {
+          "name": "evidence/outcomes/71453df0-cbe0-552f-8f89-73ef69473aa1.json",
+          "sha256": "691f3f29f926cda9d5c6711971554077ba8226dd158de5d2f60639901a5a2d6d"
+        },
+        {
+          "name": "evidence/proposals/fa1c5f89-7341-47a6-905d-9ae1853c4397.json",
+          "sha256": "0a80a023902128abfca20e3ede3ffa4a9a0b103c7ca8a2e60fe11be945966a9f"
+        },
+        {
+          "name": "evidence/rejections/36902772-eefa-4f18-9168-93cf58b4a746.json",
+          "sha256": "cfbc1cb8e28ce0bd5b4e753aa820a9bef6c2bab304ce968f0ddef5f08f84d466"
+        },
+        {
+          "name": "evidence/rejections/e286d244-56e1-49e6-a28b-f9f5f082b47d.json",
+          "sha256": "e7e6fadccff2562c614ce2fded44a5bbe530fb2dab7180299ebaf99f3128a53f"
+        },
+        {
+          "name": "mission/history.json",
+          "sha256": "ea8d1d4324bdff4c78df937aa373537bdb696acf9dfe0ed6295ca8f14d9aaf56"
+        },
+        {
+          "name": "mission/scientific-lineage.json",
+          "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4"
+        },
+        {
+          "name": "mission/spec.json",
+          "sha256": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737"
+        },
+        {
+          "name": "sources/04b7ba71ef858022281d8c56bdfdf5ae4d090022b73fd160278acfa8d2c1ea38.json",
+          "sha256": "07be13b0532753853d5d38b4b9c6b59e0099032669f711b7ae9f46bd25457c76"
+        },
+        {
+          "name": "sources/87acd6dc4443b8d54326eec678eac33bdf56c1a6c1fe451f476f7cb698af8620.json",
+          "sha256": "b870ef35fa7c0591e1dbfcc4466f679168ad2428573b210e320b77b506838ede"
+        },
+        {
+          "name": "sources/a92aa4eac500d55b1e4b8879d57d7bd33fb476b0488b493e8de52ffd6c8c0b89.json",
+          "sha256": "0e650cb37fdd1b95600b513a21cf9c5e474a11755614abbe9d7df6a500ee3f60"
+        }
+      ]
+    },
+    "attempts": [
+      {
+        "attempt": 78,
+        "error": "stage_contract_rejected: Engineer must provide exact patches and a reason",
+        "created_at": "2026-10-11T22:31:17.216621+00:00",
+        "completed_at": "2026-10-11T22:59:17.191291+00:00",
+        "decision_status": "complete",
+        "artifact_shapes": [
+          {
+            "keys": [
+              "base_commit",
+              "failure",
+              "lineage",
+              "patches",
+              "ready_for_retry",
+              "repair_disposition",
+              "repair_source_ids",
+              "required_evidence",
+              "research_scope",
+              "summary",
+              "validation"
+            ],
+            "dispositions": {
+              "repair_disposition": "blocked",
+              "ready_for_retry": false
+            },
+            "requests_failed_code": true,
+            "requests_failure_logs": false,
+            "rationale_nonempty": false,
+            "patches_type": "list",
+            "patch_count": 0,
+            "patches": [],
+            "repair_source_ids": [
+              "evidence/outcomes/6533abf6-caf8-537a-95ad-9b6f17ad166a.json",
+              "evidence/challenge_responses/fa1c5f89-7341-47a6-905d-9ae1853c4397.json"
+            ],
+            "sha256": "ae6c3992df05c81a80a6a942db3894273f6346b8fd1e874cf04c3b121fec2d81"
+          }
+        ]
+      },
+      {
+        "attempt": 77,
+        "error": "stage_contract_rejected: Engineer must provide exact patches and a reason",
+        "created_at": "2026-10-11T21:05:59.943209+00:00",
+        "completed_at": "2026-10-11T21:31:09.247418+00:00",
+        "decision_status": "complete",
+        "artifact_shapes": [
+          {
+            "keys": [
+              "base_commit",
+              "missing_evidence",
+              "patches",
+              "read_constraints",
+              "reason",
+              "repair_source_ids",
+              "repair_status",
+              "research_scope",
+              "resume_requirements",
+              "schema_version",
+              "scientific_lineage",
+              "validation"
+            ],
+            "dispositions": {
+              "repair_status": "blocked"
+            },
+            "requests_failed_code": true,
+            "requests_failure_logs": true,
+            "rationale_nonempty": false,
+            "patches_type": "list",
+            "patch_count": 0,
+            "patches": [],
+            "repair_source_ids": [
+              "evidence/outcomes/6533abf6-caf8-537a-95ad-9b6f17ad166a.json"
+            ],
+            "sha256": "c9e9f450c0ae8f189e5f0b6fe0e04956b635af6227a1fd60d19831ff63ed471a"
+          }
+        ]
+      },
+      {
+        "attempt": 76,
+        "error": "stage_contract_rejected: Engineer must provide exact patches and a reason",
+        "created_at": "2026-10-11T19:35:03.640676+00:00",
+        "completed_at": "2026-10-11T20:05:37.488578+00:00",
+        "decision_status": "complete",
+        "artifact_shapes": [
+          {
+            "keys": [
+              "base_commit",
+              "lineage",
+              "patches",
+              "remaining_limitations",
+              "repair_source_ids",
+              "repair_status",
+              "required_evidence",
+              "research_scope",
+              "schema_version",
+              "summary",
+              "verification"
+            ],
+            "dispositions": {
+              "repair_status": "blocked_missing_failure_evidence"
+            },
+            "requests_failed_code": false,
+            "requests_failure_logs": false,
+            "rationale_nonempty": false,
+            "patches_type": "list",
+            "patch_count": 0,
+            "patches": [],
+            "repair_source_ids": [
+              "evidence/outcomes/6533abf6-caf8-537a-95ad-9b6f17ad166a.json",
+              "evidence/challenge_responses/fa1c5f89-7341-47a6-905d-9ae1853c4397.json"
+            ],
+            "sha256": "a67d1d5e82cd262298a7b65af8dfcb11dbaab3e374ecae20f6175611037b01dc"
+          }
+        ]
+      },
+      {
+        "attempt": 75,
+        "error": "stage_contract_rejected: Engineer must provide exact patches and a reason",
+        "created_at": "2026-10-11T18:02:25.584768+00:00",
+        "completed_at": "2026-10-11T18:34:45.256642+00:00",
+        "decision_status": "complete",
+        "artifact_shapes": [
+          {
+            "keys": [
+              "base_commit",
+              "blocking_evidence_gaps",
+              "lineage_state",
+              "patches",
+              "recorded_failure",
+              "repair_source_ids",
+              "repair_status",
+              "required_evidence",
+              "research_scope",
+              "summary",
+              "validation"
+            ],
+            "dispositions": {
+              "repair_status": "blocked_missing_evidence"
+            },
+            "requests_failed_code": false,
+            "requests_failure_logs": false,
+            "rationale_nonempty": false,
+            "patches_type": "list",
+            "patch_count": 0,
+            "patches": [],
+            "repair_source_ids": [
+              "evidence/outcomes/6533abf6-caf8-537a-95ad-9b6f17ad166a.json"
+            ],
+            "sha256": "356fdef347d226cc51988c2da37e1f10998b723db12cf6308d193f147d3a8a6d"
+          }
+        ]
+      },
+      {
+        "attempt": 74,
+        "error": "stage_response_rejected",
+        "created_at": "2026-10-11T17:49:00.842961+00:00",
+        "completed_at": null,
+        "decision_status": null,
+        "artifact_shapes": []
+      }
+    ],
+    "request": {
+      "id": "9cd4bf4f-af8f-5e9e-8e4f-4f4f14ec6cc6",
+      "stage_instruction": "Return the same patch schema plus \"repair_source_ids\":[str]. Fix the recorded technical failure using new evidence or changed code. An unchanged failing plan will not rerun. For MissionSpec v3, read the canonical data_policy and scientific_lineage in the approved spec. Read every required_lineage_reads file completely; prior negative results and charged reservations persist. Interpretation and MeaningReview must use schema_version=2 and copy the exact canonical research_scope. A conditional_retrospective_development result remains conditional even when supported or incumbent: it cannot establish historical alpha, exact replication, distribution-reinvested returns, executable fills, deployment readiness or untouched 2026 confirmation. Never promote its scope in prose.",
+      "output_schema": null,
+      "last_error": null,
+      "file_progress": {
+        "code/labs/company-domestic-research/candidate.py": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "code/labs/company-domestic-research/config.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "code/labs/company-domestic-research/domestic_statistics.py": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "code/labs/company-domestic-research/engine.py": {
+          "next_offset": null,
+          "chunks_read": 2
+        },
+        "evidence/challenge_responses/36902772-eefa-4f18-9168-93cf58b4a746.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "evidence/challenge_responses/fa1c5f89-7341-47a6-905d-9ae1853c4397.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "evidence/challenges/b94521c8-2e7c-4a2c-90f4-672378aacf29.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "evidence/interpretations/de3597b0-e358-5a58-af5e-9f3c79df53e9.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "evidence/outcomes/6533abf6-caf8-537a-95ad-9b6f17ad166a.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "evidence/outcomes/71453df0-cbe0-552f-8f89-73ef69473aa1.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "evidence/proposals/fa1c5f89-7341-47a6-905d-9ae1853c4397.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "evidence/rejections/36902772-eefa-4f18-9168-93cf58b4a746.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "evidence/rejections/e286d244-56e1-49e6-a28b-f9f5f082b47d.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "mission/history.json": {
+          "next_offset": null,
+          "chunks_read": 51
+        },
+        "mission/scientific-lineage.json": {
+          "next_offset": null,
+          "chunks_read": 13
+        },
+        "mission/spec.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "sources/04b7ba71ef858022281d8c56bdfdf5ae4d090022b73fd160278acfa8d2c1ea38.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        },
+        "sources/a92aa4eac500d55b1e4b8879d57d7bd33fb476b0488b493e8de52ffd6c8c0b89.json": {
+          "next_offset": null,
+          "chunks_read": 1
+        }
+      }
+    }
+  },
+  "database_mutated": false,
+  "worker_state_mutated": false,
+  "production_patch_applied_in_this_check": false,
+  "scientific_decisions_supplied": false,
+  "performance_metrics_read_or_returned": false,
+  "next_action": "Provide hash-bound failed-build and sanitized failure evidence to the existing engineer stage, specify its exact response contract, and preserve independent decisions and all scientific gates before any resumed execution."
+}
+

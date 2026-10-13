@@ -1,0 +1,161 @@
+{
+  "apply_operator_sha256": "8fefd91b34d80abdbeb7ad304e05f30cbb342948da85d3073fa9286bd8dbd6e5",
+  "authority": "Existing owner deploy/continue and current recovery request; reviewed exact PR105 operation",
+  "before": {
+    "quant-company-account-gateway-1": {
+      "environment_sha256": "d4cde2c8314844c1955a0217c1daa59804d0c8a666a607c63d821b65c0b899bd",
+      "id": "605ba7e80268de106868da025737696f0cf5797f1ff5f89e7e0cdee2aa2c5dda",
+      "image": "quant-company-command-help:04a465865cf18dbc3cf2fb1aaa4191f6ca7e55ac",
+      "image_id": "sha256:d6b04a5bfc004bc1a24869ef61a0ec829895e823528b7fd9f24b786face0f650",
+      "memory_limit": 134217728,
+      "running": true
+    },
+    "quant-company-api-1": {
+      "environment_sha256": "5d792368dcd8773eae1a8ce3947e867811b89deae2581ec7d6c6eb61128214d0",
+      "id": "5fc30c8a5cd10409a797ae169ca7da8720ee3807dd04a37298305a88b273ba82",
+      "image": "quant-company:trend-window-20261008-2",
+      "image_id": "sha256:9445114a6e094bca9df2cd7e6bfe1475f8dc8103fb081b32511257d10586bc08",
+      "memory_limit": 134217728,
+      "running": true
+    },
+    "quant-company-briefing-data-worker-1": {
+      "environment_sha256": "5555feaeadc840b3b787911b4a5330e2c0c2834975631c3a6c34bec22eb5e5fb",
+      "id": "a0cfd935cf36a10c307d9f115442e3a14bf6f00b0a744c8bed62b0bee69506fe",
+      "image": "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7-combined73-2",
+      "image_id": "sha256:56cbd55985f8d65eb8afb596d17da8208cf1d6f936b7e734d4ac6c3c9c6d0eb8",
+      "memory_limit": 402653184,
+      "running": true
+    },
+    "quant-company-claude-runtime-1": {
+      "environment_sha256": "2a6eb4a7623bacebd41acfdc302ae6e0a9ea93e76776308779c4ff63f4528fcc",
+      "id": "02beef596740a0ffcc9aa97998480dae31e9b042c7f079ca781c9e66eaef355c",
+      "image": "quant-company-repair-claude-runtime:68ffc8d1-video4",
+      "image_id": "sha256:d69267285cd53445e34d682791b50ceaa81e89a8fc69c08bc7a99d5fad92cc63",
+      "memory_limit": 536870912,
+      "running": true
+    },
+    "quant-company-codex-runtime-1": {
+      "environment_sha256": "b1cc163f85296329fa4eda900137d8000c72cd6737f372b42c72fbe20fe9474b",
+      "id": "675733ec02563dbb9e88c9a069d92fffbb507bb5e4346b68c4fbf4d348c3af77",
+      "image": "quant-company-codex:5e885d0a92bb8db89514ce54a5c25322e3e4f82a-combined71-3",
+      "image_id": "sha256:953a95ffb7061bfeb15f79f4b7c7ace6ecc245752ec3c929e41f040cca1d2674",
+      "memory_limit": 536870912,
+      "running": true
+    },
+    "quant-company-data-watch-worker-1": {
+      "environment_sha256": "177306936ce6b95956f88304d96577e6cb44f81216410a20cd099b7bb8762c52",
+      "id": "0035b399d40a6c0032e2f9d4bb5e15e180672676a08719af22265a50c00c9615",
+      "image": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-2a2aff76ac41",
+      "image_id": "sha256:9b2f758c58445594badac690c24de418282bfdbc8523c3c1e06b1613ba5440fc",
+      "memory_limit": 268435456,
+      "running": true
+    },
+    "quant-company-dispatch-1": {
+      "environment_sha256": "9e75d4cb4798810667ad15976a367d57dbbffa1873da9d29e9b4247aa9c77824",
+      "id": "8a4919f022a2bee082204164fdf463db701c3f85b9c2640272fd66c0bd9f7041",
+      "image": "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7-combined73-1",
+      "image_id": "sha256:2f4300372cade7e4fa3e1a77e37de7ecbd6f6f7ac43e0b2dc6a4a4f1791e2295",
+      "memory_limit": 201326592,
+      "running": true
+    },
+    "quant-company-housing-feed-worker-1": {
+      "environment_sha256": "1d898f15595cdbf981884b873d627837613aca6d4e3aa0ae5213538557c81f4e",
+      "id": "ea689da5606e2dff95314e59fe8eabbebdd5e0d01c075b66f7675bce58907f27",
+      "image": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-db3c79878edf",
+      "image_id": "sha256:0aa5d5887d8f1f24b29c6ab8d5bf52c8798987532528f60020f9c41e25c47f9c",
+      "memory_limit": 201326592,
+      "running": true
+    },
+    "quant-company-maintenance-1": {
+      "environment_sha256": "5cd55168ec95f15fd91b491e67ea42781e9aed053089d64a44a630742fdb2770",
+      "id": "e0dda82109b10a2af595f647dacb3c6645cab2ac967cdd7d9045f29d5c6120ac",
+      "image": "quant-company-repair-maintenance:68ffc8d1",
+      "image_id": "sha256:3105d87449f83bd7dbc39df09f8996f66dd8fe596362380dc9141ad708374b0e",
+      "memory_limit": 268435456,
+      "running": true
+    },
+    "quant-company-news-worker-1": {
+      "environment_sha256": "2f7354729489750cc219e3510dd92935198a0f8b543fe14a49bd9d718e000233",
+      "id": "b2d9bd3bbbc12de1a35b1aca157e1fdee7e4b3210159cdbf387e685fb2c65a2f",
+      "image": "quant-company:7b37ac48824598a0c3c89b0bfd898574456bccf7-combined73-0",
+      "image_id": "sha256:4332081f7b9749d171d4264cf9af98d15e81a100ae0b4685a4d26926deb86e1c",
+      "memory_limit": 335544320,
+      "running": true
+    },
+    "quant-company-postgres-1": {
+      "environment_sha256": "77ae5beb7cab37b8fecb571e6d2383350a66b3ba22cb042ce7c6672e5c0f86ff",
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "image_id": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "memory_limit": 268435456,
+      "running": true
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "environment_sha256": "e0c70fcd03efffedd68d474fcd22293aa02700804005484639204eec4e25479d",
+      "id": "7cf1bc8f1ca30533a46d10e11454ecf1fe47bfe95d2e963302f4664c1aed9887",
+      "image": "quant-company-codex-upgrade:b77dc9511fb6aae2beff68df1c0ba7852bac6bd4-9d215e4309ac",
+      "image_id": "sha256:94d32ec482ea0ba9cfd7890ef9f13113403beec858380ab8e3205d7b400e8fa1",
+      "memory_limit": 1073741824,
+      "running": true
+    },
+    "quant-company-quant-feed-worker-1": {
+      "environment_sha256": "868a8f5d4d12a2f8d61a92ba871200ba92bfaa65d42df1932cfeb0b31e86c7dd",
+      "id": "383235319c4c89abff43184354eda9348f9144eb1c1b9ac709bae9ea33406177",
+      "image": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-2110d56b77c3",
+      "image_id": "sha256:05a3dab71ce4a0177342c0ec82a10f6b20c25aa9429217085e040207ecc516a9",
+      "memory_limit": 268435456,
+      "running": true
+    },
+    "quant-company-slack-socket-1": {
+      "environment_sha256": "afa7d87dd10e78a310eed65f4291146a0b7b428f7fbf343ab8fad2831424753f",
+      "id": "c525852039debaceea4c952d8fb33ec22396c9f00b24b3034e0468decd0ed041",
+      "image": "quant-company:trend-window-20261008-3",
+      "image_id": "sha256:98f271ded39ab7b24ec1b301555d6e181e14ac2cb44ca41c66976f7a3abd3ada",
+      "memory_limit": 201326592,
+      "running": true
+    },
+    "quant-company-tech-feed-worker-1": {
+      "environment_sha256": "d2ac0ce51655f4e767b6bb365d23339fd32cf75c05d045c3514a483951b9b4ee",
+      "id": "098acc4256c15df7de223f79a016d02a21cf79cc6655b73b29beae22c2c17770",
+      "image": "sha256:b0127f74ec7c5414e8c200eac32518cc38880911c8a9e8291aaca82d8603b813",
+      "image_id": "sha256:b0127f74ec7c5414e8c200eac32518cc38880911c8a9e8291aaca82d8603b813",
+      "memory_limit": 268435456,
+      "running": true
+    },
+    "quant-company-video-worker-1": {
+      "environment_sha256": "81835a2c68fdbae7a46bbff53d0f76b13c7c8c50b17eee306a16b9972342ff67",
+      "id": "825a05fc337f0f84534e3c488c3a3e2c7c05e648b061a25bc585be86460e5d2d",
+      "image": "quant-company-video:7b37ac4-late1",
+      "image_id": "sha256:7831840101b687054763cbef9aa3d4569aa1efcde450a0fbbc6b3077b06c3244",
+      "memory_limit": 2147483648,
+      "running": true
+    },
+    "quant-company-worker-1": {
+      "environment_sha256": "27c6d2d880f3deb664603bc9a2065d6e622202bef550b896ce3fde55a5f38369",
+      "id": "08cdfbd7a8f716cc86bdc0a2a3bac387057f4663f6fc505bb083e92c61a72834",
+      "image": "quant-company-repair-worker:68ffc8d1",
+      "image_id": "sha256:9f03342cdaf2b4b536e43d29a807c6522b03878f58dc4707231b3a1b107472a2",
+      "memory_limit": 402653184,
+      "running": true
+    }
+  },
+  "commit": "8e2d358000cb5c41fefe9386973fbd2c1eddc5d3",
+  "failed_at": "2026-10-12T00:09:38.834309+00:00",
+  "failure_type": "BlockingIOError",
+  "pause_restored": true,
+  "prepared_sha256": "8d2c9e6ec114ca006a6a454bd377270e8637a002fde8895b854ffc9ec7ebac86",
+  "protected_config": {
+    "/var/lib/quant-company/config/research-profiles.json": "22fc61df00eafc9e0cb6885b86814821b26aa0e296e5c166fbdc6b34c974c78c",
+    "/var/lib/quant-company/config/research-qlab.json": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
+    "/var/lib/quant-company/config/roles.json": "31e9c2219cfebd43395641b3b5b7ca6c7c7e9c8967e0441cc5918f5767621e05",
+    "/var/lib/quant-company/config/runtime.env": "7feb6d1c7a20b1e1a2d60e2aa8f86d657515842d2688b3765ea13ff097c6a50a"
+  },
+  "rollback_images_and_environment_verified": true,
+  "scientific_release_or_scope_changed": false,
+  "selected_services": [
+    "api",
+    "worker"
+  ],
+  "started_at": "2026-10-12T00:09:27.822664+00:00",
+  "state": "revision_loop_patch_failed_original_images_restored"
+}

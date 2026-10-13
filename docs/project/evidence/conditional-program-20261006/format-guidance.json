@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-05 23:55:23.439848+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "stage_id": "ce867fc3-a194-5327-b312-864b93538d34",
+  "attempt": 4,
+  "guidance": {
+    "artifact_content_type": "string",
+    "artifact_content_encoding": "Serialize the output_schema JSON object into a string. Do not put an object in artifact.content.",
+    "agent_decision_examples": {
+      "read": {
+        "say": "",
+        "status": "continue",
+        "tools": [
+          {
+            "name": "research_control",
+            "arguments": {
+              "action": "read_stage_file",
+              "path": "<exact available path>",
+              "offset": 0
+            }
+          }
+        ]
+      },
+      "complete": {
+        "say": "",
+        "status": "complete",
+        "artifacts": [
+          {
+            "title": "program_data",
+            "content": "<JSON string encoding the independent DataAssessment object>"
+          }
+        ]
+      }
+    },
+    "decision_scope": "Serialization only. Independently choose the data decision using the unchanged evidence and canonical scope."
+  },
+  "guidance_digest": "9e50a57f2c4dac34fe17662bbca24c6e6126e9fd978e77744f70d02f47fca11b",
+  "frozen_requests_preserved": true,
+  "employee_decision_applied": false,
+  "program_inputs_policy_and_budget_preserved": true,
+  "model_calls_replayed": 0
+}

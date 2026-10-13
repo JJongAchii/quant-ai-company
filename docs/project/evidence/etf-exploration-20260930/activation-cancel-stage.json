@@ -1,0 +1,22 @@
+{
+  "phase": "exact_images_qualified_not_active",
+  "commit": "79586479aeef07554be311951e40bbe00c33cafe",
+  "archive_sha256": "5876890334d77b38b5376d2339dcd37825c663260ecfc44b9b54dda196cc5ae8",
+  "previous": "/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "qdata_tree_sha256": "528251801f09b120d9c33baeb6956a6a84e49b2c09aeb15420e5994fa170e396",
+  "started_at": "2026-10-02T02:18:38.875146+00:00",
+  "images": [
+    {
+      "target": "app",
+      "image": "quant-company:79586479aeef07554be311951e40bbe00c33cafe",
+      "id": "sha256:9c6be6fdc4d385c44b1ebbfafdb5c2d11f16a28d84f31014acfd462abeed1005",
+      "source_files_sha256": "c20a402717cfbe7fdbd685a77a60338f4c3c41e59d9768f10318e369e65bb224",
+      "source_matches_archive": true,
+      "uid": "10001:10001",
+      "build_log_sha256": "df4b5981f506aa1968485365e162883ba32c77e86c50fa9ea5d51d620cb326a4"
+    }
+  ],
+  "active_changed": false,
+  "completed_at": "2026-10-02T02:21:37.710977+00:00"
+}

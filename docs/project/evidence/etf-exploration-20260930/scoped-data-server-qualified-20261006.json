@@ -1,0 +1,47 @@
+{
+  "archive_sha256": "ea3ceb7604daf728ae73bbc7c98320f8c7f72251fee0b85d10d770121e170516",
+  "completed_at": "2026-10-06T02:50:03.248272+00:00",
+  "config_sha256": {
+    "research-profiles.json": "22fc61df00eafc9e0cb6885b86814821b26aa0e296e5c166fbdc6b34c974c78c",
+    "research-qlab.json": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
+    "roles.json": "5774cb63232a47c40645f1985561fe7be93d59bfff115103efb4cb3bda033670",
+    "runtime.env": "741d7bf033fc8092533a9153b3a1d31cacb659610d866cebb727caea2fc17e40"
+  },
+  "first_preparation_failure": "current_release_qdata_build_context_absent",
+  "images": [
+    {
+      "build_log_sha256": "9f8885e335838d293d8581556fbdfba114250cd7be3e5c161ca9ffa19e12a7b5",
+      "image": "quant-company:86aea8cdf03b5543666813c97689acb1e8158a6d-scoped-data",
+      "image_id": "sha256:3dba6e04b36a4642e31895c5865953776d5f1418d68511e547b585bd007d74cd",
+      "source_bytes_verified": true,
+      "target": "app",
+      "uid": "10001:10001"
+    },
+    {
+      "build_log_sha256": "07a04e1ea55f01b79ef973ba65dab31af28f9361ab781930883e95545629f88b",
+      "image": "quant-company-autonomous:86aea8cdf03b5543666813c97689acb1e8158a6d-scoped-data",
+      "image_id": "sha256:976510f91c375293b5ff10bfbdb979f545fe40571efb9e5899cbfb95d3f75fc6",
+      "source_bytes_verified": true,
+      "target": "autonomous-research",
+      "uid": "10001:10001"
+    },
+    {
+      "build_log_sha256": "33a26fae67d17a7809ea81b309dadd65d139c246247c614f4994d90bd99788a0",
+      "image": "quant-company-codex:86aea8cdf03b5543666813c97689acb1e8158a6d-scoped-data",
+      "image_id": "sha256:ccd86b83934dca4de12c2c2c8c5a631b2e62f39524b910f5b9dc5b6a1598e786",
+      "source_bytes_verified": true,
+      "target": "codex",
+      "uid": "10001:10001"
+    }
+  ],
+  "previous": "/opt/quant-company/releases/5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "qdata_tree_sha256": "528251801f09b120d9c33baeb6956a6a84e49b2c09aeb15420e5994fa170e396",
+  "resumed_verified_archive": true,
+  "scientific_trials_added": 0,
+  "services_replaced": 0,
+  "source_commit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+  "source_files": 205,
+  "started_at": "2026-10-06T02:45:19.514911+00:00",
+  "state": "exact_images_qualified_inactive"
+}

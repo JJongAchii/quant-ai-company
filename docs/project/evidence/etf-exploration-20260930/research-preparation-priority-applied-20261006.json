@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "operation_id": "research-current-preparation-urgency:e56626e8:20261006",
+  "state": "current_preparation_priority_reconciled",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "stage_id": "e56626e8-f0c3-5a00-b5ee-659daf43e53e",
+  "task_id": "af28f020-3c61-57dd-9c9b-3148c02d4653",
+  "previous_priority": 100,
+  "priority": 0,
+  "signed_programme_resource_priority_changed": false,
+  "scientific_authority_changed": false,
+  "source_completion_or_selection_bypassed": false,
+  "new_model_call_or_scientific_job_enqueued": false,
+  "authority": "Existing owner continuation requests and urgent first-experiment instruction; root-reviewed PR105 operation",
+  "event_id": 680,
+  "already_committed": false
+}

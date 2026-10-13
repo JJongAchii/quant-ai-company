@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06T05:33:36.825637+00:00",
+  "state": "review_stopped_before_cutover",
+  "qualified_source": "defd4833adea6a0191412121a5a5c6e8265c58ba",
+  "concurrent_actual_source": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
+  "delta_from_previous_production": {
+    "paths": [
+      "src/quant_company/briefing/data.py",
+      "tests/test_briefing_quality.py"
+    ],
+    "insertions": 23,
+    "deletions": 1
+  },
+  "source_def_qualification": {
+    "passed": 1825,
+    "skipped": 14,
+    "errors": 0,
+    "failures": 0,
+    "actual3070_synthetic": "passed",
+    "server_images": "passed",
+    "runtime_activated": false
+  },
+  "cutover_journal_exists": false,
+  "release_timer": {
+    "active_before": true,
+    "temporarily_stopped_for_integration": true,
+    "restore_required_after_operation": true
+  },
+  "backup_timer_paused_by_this_preparation": false,
+  "mission_or_budget_changed": false,
+  "scientific_trials_added": 0,
+  "action": "Integrate actual e1e source and qualify exact integrated release; retain previous successful evidence"
+}

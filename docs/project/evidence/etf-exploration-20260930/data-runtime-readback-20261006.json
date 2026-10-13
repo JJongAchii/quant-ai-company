@@ -1,0 +1,60 @@
+{
+  "observed_at": "2026-10-05T23:38:30.155235+00:00",
+  "requests": [
+    {
+      "id": "cf31e5d9-9a1c-546e-9cca-28842966f33f",
+      "task_id": "ba505560-94e4-51c2-8d94-3f08c6492f2c",
+      "status": "running",
+      "error": null,
+      "created_at": "2026-10-05T23:38:20.04421+00:00",
+      "updated_at": "2026-10-05T23:38:21.407642+00:00",
+      "request_id": "cf31e5d9-9a1c-546e-9cca-28842966f33f",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "prompt_characters": 38973,
+      "runtime_receipt_present": true,
+      "runtime": {
+        "state": "running",
+        "started_at": 1791243501.8118222,
+        "completed_at": null,
+        "cli_version": "0.154.0",
+        "requested_execution": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high"
+        },
+        "fault_code": null,
+        "parse_phase": []
+      }
+    },
+    {
+      "id": "dff80fd7-40c6-5ee2-96a8-1ac8e3913c38",
+      "task_id": "7163f55e-3e00-5435-9caa-dd6e51149895",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "created_at": "2026-10-05T23:32:44.051008+00:00",
+      "updated_at": "2026-10-05T23:32:53.708831+00:00",
+      "request_id": "dff80fd7-40c6-5ee2-96a8-1ac8e3913c38",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "high",
+      "prompt_characters": 38961,
+      "runtime_receipt_present": true,
+      "runtime": {
+        "state": "failed",
+        "started_at": 1791243165.5697157,
+        "completed_at": null,
+        "cli_version": "0.154.0",
+        "requested_execution": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high"
+        },
+        "fault_code": "invalid_output",
+        "parse_phase": [
+          [
+            "decision_contract",
+            "invalid_shape"
+          ]
+        ]
+      }
+    }
+  ]
+}

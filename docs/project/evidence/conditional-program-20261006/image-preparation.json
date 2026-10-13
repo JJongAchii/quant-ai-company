@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06T00:31:06.981532+00:00",
+  "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "archive_sha256": "5ccb7f94b49aae602f1aede7ef97d9261418101f29a372e9eeb3980451d2e377",
+  "images": {
+    "app": {
+      "base_container_id": "29f630ba7faa0a6c1cbc96676407ffce2688a0e4d583c658a665e21fbdc5ccda",
+      "base_image_id": "sha256:7f305b5f8b235d065aa2b4d45106436f31355ec4b66fd78445453148472767ff",
+      "tag": "quant-company-native-app:5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+      "image_id": "sha256:5d4da72ef6d01e32096c4fb32d7832bf362e5f1b588f4ef072aa2a94dbe15836",
+      "import_qualification": {
+        "actual_import_root": "/opt/quant-code/src/quant_company",
+        "company_files": 205,
+        "native_schema_verified": true,
+        "effective_uid": 10001,
+        "model_called": false,
+        "slack_or_database_credentials_loaded": false
+      }
+    },
+    "worker": {
+      "base_container_id": "74196593a74154e2a3d1b90da13fecfb6496f05698fba0f5664f8d5beb2be342",
+      "base_image_id": "sha256:c55cde4b44b83df0b0e9c2b59682404fbb2544bea87dcd211f478296c44eb7d0",
+      "tag": "quant-company-native-worker:5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+      "image_id": "sha256:3b1f39fd2aa96787966ec78a93cad76496d47af661ad9f80507509a1f9a13a85",
+      "import_qualification": {
+        "actual_import_root": "/opt/quant-code/src/quant_company",
+        "company_files": 205,
+        "native_schema_verified": true,
+        "effective_uid": 10001,
+        "model_called": false,
+        "slack_or_database_credentials_loaded": false
+      }
+    },
+    "gateway": {
+      "base_container_id": "54b595660ad3366baf3bec5133bd6383c9fa757c20bd77ec9eda93c133fb9e4b",
+      "base_image_id": "sha256:942a896a92f6a2c6e3d5b4743ad670808da62be448136d77f2e75455f7668b24",
+      "tag": "quant-company-native-gateway:5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+      "image_id": "sha256:929477fd6007cc2149c47f39c49c209172670c69c82536b18b8d6cfa5ec8e9a7",
+      "import_qualification": {
+        "actual_import_root": "/opt/quant-code/src/quant_company",
+        "company_files": 205,
+        "native_schema_verified": true,
+        "effective_uid": 10001,
+        "model_called": false,
+        "slack_or_database_credentials_loaded": false
+      }
+    },
+    "codex": {
+      "base_container_id": "b21bd3d172db586c9b3666f920622c27a99ce439dc3d531bfec84176f89a9797",
+      "base_image_id": "sha256:c1d123ee1c525a7d02375fb1172e1d955fec8c555e0285255c5da4b80b834ea4",
+      "tag": "quant-company-native-codex:5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+      "image_id": "sha256:e8158c5a11da77e71ea38d997ca108b9c964e9d0b7ae0fc659a54a529cbd7876",
+      "import_qualification": {
+        "actual_import_root": "/opt/quant-code/src/quant_company",
+        "company_files": 205,
+        "native_schema_verified": true,
+        "effective_uid": 10001,
+        "model_called": false,
+        "slack_or_database_credentials_loaded": false
+      }
+    }
+  },
+  "services_replaced": false,
+  "model_calls": 0,
+  "credential_files_read": false,
+  "scientific_trials_added": 0
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-05T23:04:47.513173+00:00",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "packet_count": 5,
+  "registry_before_sha256": "13810e6a6f613d84ed67f2941617471a79e48887bba88b9cb06996364ce31860",
+  "registry_after_sha256": "fbcab0710784cc4ddc5ae21501a160ae522ab660ed8044e00f60c45d7661045f",
+  "all_prior_packets_preserved": true,
+  "only_program_binding_added": true,
+  "inputs_engine_reports_profiles_policy_preserved": true,
+  "owner_program_approved": false
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "run_id": 37393064952,
+  "job_id": 112042457168,
+  "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37393064952",
+  "status": "completed",
+  "conclusion": "success",
+  "completed_at": "2026-10-06T00:24:44Z",
+  "lint": "passed",
+  "passed": 1752,
+  "skipped": 47,
+  "deselected": 1,
+  "warnings": 12,
+  "seconds": 505.65,
+  "regression_postgresql_and_temporal_real": true,
+  "codex_process_in_protocol_tests": "simulated",
+  "actual_slack_integration_claimed_by_ci": false,
+  "actual_native_model_output_qualified_by_ci": false
+}

@@ -1,0 +1,663 @@
+{
+  "observed_at": "2026-10-12T01:30:20.138749+00:00",
+  "database_mutated": false,
+  "cutover_state": "research_repair_patch_applied",
+  "cutover_completed_at": "2026-10-12T00:46:47.322948+00:00",
+  "paused": false,
+  "activity": {
+    "running_turns": 0,
+    "sending_outbox": 0,
+    "active_jobs": 0
+  },
+  "authority": {
+    "program_state": "active",
+    "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "mission_state": "active",
+    "mission_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
+    "cycle": 1,
+    "cycle_trials": 1,
+    "cumulative_trials": 1
+  },
+  "stages": [
+    {
+      "id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "stage": "repair",
+      "actor": "engineer",
+      "state": "waiting",
+      "attempt": 79,
+      "task_id": "663aacf2-97da-5079-a9f7-2fdd7e723007",
+      "error": "repair_requires_evidence",
+      "retry_at": null,
+      "created_at": "2026-10-08T04:11:51.490062+00:00",
+      "updated_at": "2026-10-12T00:54:10.948739+00:00",
+      "decision": null,
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 42,
+      "current_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "id": "6fc83fad-30b2-5ece-8663-d90e31734a1c",
+      "stage": "implementation",
+      "actor": "engineer",
+      "state": "completed",
+      "attempt": 3,
+      "task_id": "2471982e-bcc5-580a-9500-d69cb71d550f",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T02:11:49.083564+00:00",
+      "updated_at": "2026-10-08T04:10:46.254556+00:00",
+      "decision": null,
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 59,
+      "current_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "id": "1a4a3e7d-60c0-5957-bbfb-d8c93bb396a8",
+      "stage": "selection",
+      "actor": "director",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "68343ee0-eda9-54cd-8f3d-7b454079dcd7",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T01:32:02.945655+00:00",
+      "updated_at": "2026-10-08T02:11:45.451655+00:00",
+      "decision": "execute",
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 23,
+      "current_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "id": "a7cc6fc4-968d-524d-9b51-25a53d6af1ff",
+      "stage": "challenge",
+      "actor": "financial_strategist",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "d983241b-cc9f-5d9c-9360-68d5da8b1040",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T01:14:05.795935+00:00",
+      "updated_at": "2026-10-08T01:31:59.69526+00:00",
+      "decision": null,
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 56,
+      "current_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "id": "e31af7a5-8bcc-545b-864b-37e948c3d1dc",
+      "stage": "proposal",
+      "actor": "researcher_kr",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "52cff5ea-bb40-51c4-ba9e-065efb12b93b",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T01:06:23.299133+00:00",
+      "updated_at": "2026-10-08T01:14:02.510326+00:00",
+      "decision": null,
+      "proposal_id": null,
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 26,
+      "current_challenge_ids": []
+    },
+    {
+      "id": "418ea58b-387b-5e74-ba5b-f96762bf9fc6",
+      "stage": "selection",
+      "actor": "director",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "0ccc769b-d0fa-58ab-a6e5-0b334cf09ae5",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T00:47:25.412631+00:00",
+      "updated_at": "2026-10-08T01:06:19.787762+00:00",
+      "decision": "revise",
+      "proposal_id": "36902772-eefa-4f18-9168-93cf58b4a746",
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 17,
+      "current_challenge_ids": [
+        "d81d7cf3-0730-40a4-b8dc-398d5696a084"
+      ]
+    },
+    {
+      "id": "5ca386f3-f370-55c8-8cd5-dae248d242cc",
+      "stage": "challenge",
+      "actor": "financial_strategist",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "34476da2-c53d-5f93-9775-1b366bd32935",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T00:39:11.183742+00:00",
+      "updated_at": "2026-10-08T00:47:21.885857+00:00",
+      "decision": null,
+      "proposal_id": "36902772-eefa-4f18-9168-93cf58b4a746",
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 22,
+      "current_challenge_ids": [
+        "d81d7cf3-0730-40a4-b8dc-398d5696a084"
+      ]
+    },
+    {
+      "id": "9fc59fd9-0caf-5ec4-b10e-f5a10291f932",
+      "stage": "proposal",
+      "actor": "researcher_kr",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "743a2f51-369e-53e1-af78-9bfedb0af122",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T00:32:26.729804+00:00",
+      "updated_at": "2026-10-08T00:39:07.81699+00:00",
+      "decision": null,
+      "proposal_id": null,
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 23,
+      "current_challenge_ids": []
+    }
+  ],
+  "requests": [
+    {
+      "id": "b17d6956-d67f-5735-915a-cbd46b77316a",
+      "task_id": "663aacf2-97da-5079-a9f7-2fdd7e723007",
+      "sequence": 43,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T00:53:02.267616+00:00",
+      "updated_at": "2026-10-12T00:54:06.264853+00:00",
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "stage": "repair",
+      "request_id": "b17d6956-d67f-5735-915a-cbd46b77316a",
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 77314,
+      "stage_capabilities_present": false,
+      "repair_contract_present": true,
+      "failed_build": {
+        "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+        "code_commit": "cdcfe52bb5641c1826af1c9c085bd6a708434b34",
+        "failure_source_ids": [
+          "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+        ]
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791766383.8259258,
+        "completed_at": 1791766446.202971,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "92f2212c-f060-50d5-922f-c5e47a9c67d2",
+      "task_id": "663aacf2-97da-5079-a9f7-2fdd7e723007",
+      "sequence": 42,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T00:52:01.905679+00:00",
+      "updated_at": "2026-10-12T00:53:02.267616+00:00",
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "stage": "repair",
+      "request_id": "92f2212c-f060-50d5-922f-c5e47a9c67d2",
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 85819,
+      "stage_capabilities_present": false,
+      "repair_contract_present": true,
+      "failed_build": {
+        "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+        "code_commit": "cdcfe52bb5641c1826af1c9c085bd6a708434b34",
+        "failure_source_ids": [
+          "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+        ]
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791766323.8285823,
+        "completed_at": 1791766382.201304,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "dc75eb0d-3eb9-5ec1-8952-ecdb726001ca",
+      "task_id": "663aacf2-97da-5079-a9f7-2fdd7e723007",
+      "sequence": 41,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T00:51:40.389795+00:00",
+      "updated_at": "2026-10-12T00:52:01.905679+00:00",
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "stage": "repair",
+      "request_id": "dc75eb0d-3eb9-5ec1-8952-ecdb726001ca",
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 85605,
+      "stage_capabilities_present": false,
+      "repair_contract_present": true,
+      "failed_build": {
+        "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+        "code_commit": "cdcfe52bb5641c1826af1c9c085bd6a708434b34",
+        "failure_source_ids": [
+          "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+        ]
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791766302.3385942,
+        "completed_at": 1791766321.805529,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "bb0f928f-4923-5ca4-b070-79f914fc1c11",
+      "task_id": "663aacf2-97da-5079-a9f7-2fdd7e723007",
+      "sequence": 40,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T00:51:26.838393+00:00",
+      "updated_at": "2026-10-12T00:51:40.389795+00:00",
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "stage": "repair",
+      "request_id": "bb0f928f-4923-5ca4-b070-79f914fc1c11",
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 85326,
+      "stage_capabilities_present": false,
+      "repair_contract_present": true,
+      "failed_build": {
+        "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+        "code_commit": "cdcfe52bb5641c1826af1c9c085bd6a708434b34",
+        "failure_source_ids": [
+          "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+        ]
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791766288.192387,
+        "completed_at": 1791766300.3222876,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "4f6b493c-8885-511a-a733-6194a8b62179",
+      "task_id": "663aacf2-97da-5079-a9f7-2fdd7e723007",
+      "sequence": 39,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T00:51:14.953702+00:00",
+      "updated_at": "2026-10-12T00:51:26.838393+00:00",
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "stage": "repair",
+      "request_id": "4f6b493c-8885-511a-a733-6194a8b62179",
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 82234,
+      "stage_capabilities_present": false,
+      "repair_contract_present": true,
+      "failed_build": {
+        "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+        "code_commit": "cdcfe52bb5641c1826af1c9c085bd6a708434b34",
+        "failure_source_ids": [
+          "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+        ]
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791766275.8377295,
+        "completed_at": 1791766286.7603948,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "669d1bdf-9995-5c49-8336-fe541202db71",
+      "task_id": "663aacf2-97da-5079-a9f7-2fdd7e723007",
+      "sequence": 38,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T00:09:38.17158+00:00",
+      "updated_at": "2026-10-12T00:51:14.953702+00:00",
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "stage": "repair",
+      "request_id": "669d1bdf-9995-5c49-8336-fe541202db71",
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "turn_created_after_cutover": false,
+      "prompt_characters": 85292,
+      "stage_capabilities_present": false,
+      "repair_contract_present": true,
+      "failed_build": {
+        "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+        "code_commit": "cdcfe52bb5641c1826af1c9c085bd6a708434b34",
+        "failure_source_ids": [
+          "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+        ]
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791766262.4449868,
+        "completed_at": 1791766274.892971,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "d60a0f8f-cd8e-578a-84d9-abcb92d54d8d",
+      "task_id": "663aacf2-97da-5079-a9f7-2fdd7e723007",
+      "sequence": 37,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T00:09:20.765878+00:00",
+      "updated_at": "2026-10-12T00:09:38.17158+00:00",
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "stage": "repair",
+      "request_id": "d60a0f8f-cd8e-578a-84d9-abcb92d54d8d",
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "turn_created_after_cutover": false,
+      "prompt_characters": 80954,
+      "stage_capabilities_present": false,
+      "repair_contract_present": false,
+      "failed_build": {
+        "job_id": null,
+        "code_commit": null,
+        "failure_source_ids": null
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791763761.7727714,
+        "completed_at": 1791763778.1136801,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": false
+      }
+    },
+    {
+      "id": "0a799be1-34a0-563e-9cc9-3d65dd986c1f",
+      "task_id": "663aacf2-97da-5079-a9f7-2fdd7e723007",
+      "sequence": 36,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T00:09:03.370369+00:00",
+      "updated_at": "2026-10-12T00:09:20.765878+00:00",
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "stage": "repair",
+      "request_id": "0a799be1-34a0-563e-9cc9-3d65dd986c1f",
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "turn_created_after_cutover": false,
+      "prompt_characters": 80992,
+      "stage_capabilities_present": false,
+      "repair_contract_present": false,
+      "failed_build": {
+        "job_id": null,
+        "code_commit": null,
+        "failure_source_ids": null
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791763744.166436,
+        "completed_at": 1791763760.7051177,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": false
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "attempt": 79,
+      "error": "repair_requires_evidence",
+      "created_at": "2026-10-11T23:59:45.635914+00:00",
+      "completed_at": "2026-10-12T00:54:06.264853+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "attempt": 78,
+      "error": "stage_contract_rejected: Engineer must provide exact patches and a reason",
+      "created_at": "2026-10-11T22:31:17.216621+00:00",
+      "completed_at": "2026-10-11T22:59:17.191291+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "attempt": 77,
+      "error": "stage_contract_rejected: Engineer must provide exact patches and a reason",
+      "created_at": "2026-10-11T21:05:59.943209+00:00",
+      "completed_at": "2026-10-11T21:31:09.247418+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "attempt": 76,
+      "error": "stage_contract_rejected: Engineer must provide exact patches and a reason",
+      "created_at": "2026-10-11T19:35:03.640676+00:00",
+      "completed_at": "2026-10-11T20:05:37.488578+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "attempt": 75,
+      "error": "stage_contract_rejected: Engineer must provide exact patches and a reason",
+      "created_at": "2026-10-11T18:02:25.584768+00:00",
+      "completed_at": "2026-10-11T18:34:45.256642+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "attempt": 74,
+      "error": "stage_response_rejected",
+      "created_at": "2026-10-11T17:49:00.842961+00:00",
+      "completed_at": null,
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "attempt": 73,
+      "error": "stage_response_rejected",
+      "created_at": "2026-10-11T17:26:52.653367+00:00",
+      "completed_at": null,
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "attempt": 72,
+      "error": "stage_contract_rejected: Engineer must provide exact patches and a reason",
+      "created_at": "2026-10-11T15:55:29.638658+00:00",
+      "completed_at": "2026-10-11T16:26:31.530523+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    }
+  ],
+  "trials": [
+    {
+      "id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+      "proposal_id": "bed77124-564d-4ba9-a625-777308b11cdb",
+      "state": "reported",
+      "job_id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+      "created_at": "2026-10-06T10:19:29.882762+00:00",
+      "updated_at": "2026-10-07T06:54:42.637438+00:00"
+    },
+    {
+      "id": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "state": "technical_waiting",
+      "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+      "created_at": "2026-10-08T02:11:45.451655+00:00",
+      "updated_at": "2026-10-08T04:11:20.191155+00:00"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+      "trial_id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+      "state": "completed",
+      "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+      "claimed_at": "2026-10-06T10:31:58.059235+00:00",
+      "heartbeat_at": "2026-10-06T10:32:11.456793+00:00",
+      "error": null,
+      "created_at": "2026-10-06T10:31:56.478807+00:00",
+      "updated_at": "2026-10-07T06:54:42.637438+00:00",
+      "artifact_sha256": "9c5c2a8eb504556ce3c2d42996cd6e0cb4ba005af0d76ed0b33761ee537b28cb"
+    },
+    {
+      "id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+      "trial_id": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+      "state": "failed",
+      "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+      "claimed_at": "2026-10-08T04:10:51.238196+00:00",
+      "heartbeat_at": "2026-10-08T04:10:59.672796+00:00",
+      "error": "worker_error",
+      "created_at": "2026-10-08T04:10:49.233871+00:00",
+      "updated_at": "2026-10-08T04:10:59.672796+00:00",
+      "artifact_sha256": null
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "observed_at": "2026-10-06T04:36:39.418572+00:00",
+  "program": {
+    "id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+    "state": "active",
+    "revision": 5,
+    "manifest_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1791242030.830452:director:action:dd69d4b8-78c0-4c78-b7ee-41c7cf7d5972:approve",
+    "approved_at": "2026-10-05T23:13:50.984607+00:00"
+  },
+  "tasks": [
+    {
+      "id": "bc915792-d608-5710-a271-f4aa592e9ee1",
+      "state": "rejected",
+      "title": "분산예측 수준 보정이 ETF의 스트레스 비용 후 절대수익을 개선하는가",
+      "data_assessment": {
+        "coverage": true,
+        "decision": "conditional_ready",
+        "rationale": "동결 패킷 c35803d79a7607adcc14a853b334ed3a96ad008afbaf6b44b0525aa1494684cd의 identity, 엔진 및 필수 보고서·계보 파일을 대조했다. 069500 단일 종목의 warmup·개발 입력 해시와 범위가 승인 계약에 결속되어 있으며, 엔진은 신호 이력을 거래일 09:00 KST 이전 available_at으로 제한하고, 평가 시 adjusted-open 가격·tradable·보유 종목의 다음 관측 가격을 검증한다. 결측 보유가격, 상장폐지 정산 부재, 비거래 가격은 삭제·대체하지 않고 거부하므로 조건부 회고 개발 범위에서 커버리지와 이론적 평가가격 계약은 확인된다. 다만 역사적 공표·수집시각, 당시 수정 빈티지, 원래 준비 바이트가 없어 PIT·원조건 재현은 확인되지 않고, 평가는 실제 체결가격을 입증하지 않는다. 남은 공백은 canonical research_scope의 소유·허용 코드 세 개뿐이며, 결과는 conditional_retrospective_development에 한정된다.",
+        "source_ids": [
+          "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+        ],
+        "packet_digest": "c35803d79a7607adcc14a853b334ed3a96ad008afbaf6b44b0525aa1494684cd",
+        "point_in_time": false,
+        "research_scope": {
+          "data_mode": "frozen_vintage_retrospective",
+          "result_scope": "conditional_retrospective_development",
+          "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+          "scientific_lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+          "acknowledged_gap_codes": [
+            "historical_publication_unverified",
+            "historical_revision_vintage_unverified",
+            "original_preparation_bytes_unavailable"
+          ]
+        },
+        "schema_version": 2,
+        "executable_prices": false,
+        "original_conditions": false,
+        "evaluation_price_contract_verified": true
+      },
+      "decision": {
+        "decision": "revise",
+        "rationale": "승인된 조건부 회고 개발 범위와 예산에는 부합하지만, 선행 과제와의 구별 및 동결 엔진과의 연결을 수정해야 한다. 원문 PDF p.4의 c=mean(h/f)는 검증자료에서 QLIKE를 최소화하는 수준 보정이다. p.6의 점수 차이 감소와 p.7의 VaR 결과는 ETF 비용 후 수익 개선을 입증하지 않는다. 따라서 novel_hypothesis 분류와 무개선 반증 조건은 적절하다. 다만 매월 보정상수를 갱신하므로 상대적 예측 움직임의 보존은 각 월 내부에 한정된다. 계보 원문의 ‘069500 변동성 예측 수준 보정: 스트레스 비용 후 절대수익 개발제안’에는 이미 같은 문헌, 종목, 개발기간, 20일 분산 신호, 과거 60개 완료 쌍의 월별 수준 보정, 연 10% 목표와 미보정 대조군이 존재한다. 현 제안의 기하평균 신호는 선행의 0.94 가중 제곱수익 평균과 다르고, 종가 수익제곱 라벨도 선행의 조정시가 간 라벨과 다르다. 이 차이는 인정하지만 GMM과의 차이만으로 신규성을 확정할 수 없다. 수정본은 해당 선행안과 직접 비교하여 신호·라벨 변경의 경제적 이유, 달라진 검증 대상과 중복 범위를 명시하고 같은 과학 계보의 변형으로 추적해야 한다. 계보에 보존된 현재 엔진과 동일한 해시의 계약은 거래일 d의 09:00 KST 이전에 가용한 date<d 이력으로 목표비중을 만들고, A_d=open_d*adj_close_d/close_d 및 R_d=A_next/A_d-1로 평가한다. 회전율은 수익 반영 후 기존 비중과 새 목표비중의 절대 차이 합이며, 비용률 k에서 순수익은 (1-k*T)*(1+sum(w_new*R))-1이다. 현재 독립 자료평가도 09:00 정보 경계와 adjusted-open 평가가격 계약을 보고한다. 제안의 23:59 가용 가정은 이 경계와 양립하지만 비중 적용·보유수익 귀속·비용 방식을 아직 선행조건으로 남겼다. 수정본에는 최신 가용 관측 t와 결정일 d의 연결, 월별 완료 라벨의 포함 경계, 기본 10bps·스트레스 30bps, 마지막 평가가격 및 종료 처리를 승인 kr-etf-retrospective-v1에 맞춰 고정해야 한다. 종가 제곱수익 라벨을 유지한다면 조정시가 간 보유수익 분산과 다른 대상임을 명시한다. 이 비교는 보존된 계약과 독립 평가에 근거하며 이번 문맥에서 엔진 바이트를 직접 재검증했다는 뜻은 아니다. 독립 자료평가의 conditional_ready는 승인 data_policy가 허용한 historical_publication_unverified, historical_revision_vintage_unverified, original_preparation_bytes_unavailable 세 공백 안에서의 판단이다. 이를 새로운 PIT 차단 사유로 재사용하거나 실제 체결 준비성으로 확대하지 않는다. 현재 장부상 시행·미결예약·계산사용량은 0이고 미션은 없으므로 A·B 각각 한 시행인 첫 회차 두 결과는 최대 1미션·계보 4시행·7200초 한도에 들어간다. continuous=false와 중단 규칙을 유지하며 잔여 예산을 자동 소진하지 않는다. charged_trials=0은 승인 계보의 12개 선행 과제와 부정 판단·예약 이력을 초기화하는 근거가 아니다. 선행의 대기·자료 차단은 관측된 전략 손실과 구별하고 향후 과학적 무개선도 유효한 결과로 보존한다. 수정 후에도 결과 범위는 frozen_vintage_retrospective의 conditional_retrospective_development이며, 역사적 알파·정확 재현·분배금 재투자 수익·실행 가능한 체결·배치 준비성·미접촉 2026 확증으로 승격할 수 없다. 후속 Interpretation과 MeaningReview에는 schema_version=2와 정확한 canonical research_scope를 유지해야 한다."
+      },
+      "mission_id": null,
+      "created_at": "2026-10-05T23:32:41.495034+00:00"
+    },
+    {
+      "id": "6c54b553-c382-5a90-96d9-20d765552343",
+      "state": "accepted",
+      "title": "목표비중 10%p 갱신 유예가 ETF의 스트레스 비용 후 절대수익을 개선하는가",
+      "data_assessment": {
+        "coverage": true,
+        "decision": "conditional_ready",
+        "rationale": "동결 패킷은 069500의 warmup·개발 입력 해시와 엔진 해시를 식별하며, 엔진은 09:00 KST 이전에 이용 가능한 date<d 이력만 후보에 노출하고, 보유 종목의 누락·상장폐지 정산 부재 또는 비거래 가격을 평가 중단으로 처리한다. 개발 구간의 양 끝 거래일과 연속 보유 가격도 엔진 계약에서 요구된다. 평가 수익률은 open×adj_close/close의 조정 시가 간 가격수익률이며 현금분배 재투자 수익률이나 실제 체결가는 아니다. 패킷의 blocking_gaps는 비어 있고 보고된 세 역사적 결함만 승인 범위의 예외로 남는다. 다만 실제 당시 공개·수집시각과 수정 빈티지, 원 준비 바이트는 검증되지 않았으므로 PIT·원 조건·실행가능 가격은 거짓이다. 따라서 결과는 고정 빈티지 및 T일 23:59 KST 가정에 조건부인 회고 개발에만 사용 가능하며, 역사적 알파·정확 재현·실제 체결 또는 운영 준비를 뒷받침하지 않는다.",
+        "source_ids": [
+          "literature:f3b6c6a24911aaf858e536f03753a6bceaff95e072f3720855a609f4eb23eec6"
+        ],
+        "packet_digest": "c35803d79a7607adcc14a853b334ed3a96ad008afbaf6b44b0525aa1494684cd",
+        "point_in_time": false,
+        "research_scope": {
+          "data_mode": "frozen_vintage_retrospective",
+          "result_scope": "conditional_retrospective_development",
+          "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+          "scientific_lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+          "acknowledged_gap_codes": [
+            "historical_publication_unverified",
+            "historical_revision_vintage_unverified",
+            "original_preparation_bytes_unavailable"
+          ]
+        },
+        "schema_version": 2,
+        "executable_prices": false,
+        "original_conditions": false,
+        "evaluation_price_contract_verified": true
+      },
+      "decision": {
+        "decision": "accept",
+        "rationale": "승인된 etf_strategy 범위에서 실행 전 개발 과제로 선정할 수 있다. 원문 PDF p.52·57은 시장충격 모형과 timing risk에 따른 집행경로 선택을 다루고, p.59는 포트폴리오 최적화와의 통합을 향후 연구로 제시한다. p.55에는 Gaussian과 t-Student의 경로가 거의 같은 반례도 있다. 따라서 원문은 경제적 동기를 제공하지만 10%p 규칙이나 국내 ETF 수익 개선을 입증하지 않는다. novel_hypothesis 분류가 적절하다. 선행 수준보정안과 종목·20일 분산 신호·연 10% 목표·개발기간은 겹치지만, 이번에는 월별 수준 보정을 제거하고 동일 신호에서 목표비중 갱신 유예만 비교한다. 검증 대상이 비용 절약과 노출 추종 지연의 균형으로 구별되며, 독립적인 새 계보로 취급하지 않는다. 기존 GMM 중복·차단 및 부정적 판단과 과금·예약 이력은 scientific_lineage_id=b6a31ea2-8da9-5f67-97dd-2e304cde30c3 아래 유지한다. 제안의 의사결정시각 09:00 KST, date<d 입력, open*adj_close/close 평가 참조가격은 독립 데이터 평가에 기재된 동결 엔진 계약과 일치한다. 신호의 조정종가 수익률과 평가의 조정시가 간 수익률을 구별하고, 보유구간·비중 정렬·현금·turnover·10/30bp 비용은 엔진 정의를 유지한다. 목표비중 유지가 실제 보유수량 동결이나 무거래를 뜻하지 않는다는 설명도 적절하다. 초기 21개 과거 가격과 이후 순차 이력으로 두 경로를 결정할 수 있으며, 부족한 이력·비유한 값은 보간 없이 중단하도록 정했다. 데이터 판단의 근거는 conditional_ready 평가, 고정 입력 해시 및 패킷 c35803d79a7607adcc14a853b334ed3a96ad008afbaf6b44b0525aa1494684cd의 blocking_gaps=[]이다. 실제 과거 공개시각·수정 빈티지·원 준비 바이트는 검증되지 않았다. 허용 범위는 data_mode=frozen_vintage_retrospective, result_scope=conditional_retrospective_development, data_policy_digest=3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0이며, historical_publication_unverified, historical_revision_vintage_unverified, original_preparation_bytes_unavailable를 그대로 인정한다. trade_day_T23:59:00+09:00은 가용성 가정이다. 069500과 잔여 현금, 다른 ETF 목표비중 0, 총노출 1 이하 및 허용된 candidate.py·config.json 변경은 승인 범위에 들어간다. 현재 보고된 미션 사용 0, 시행 0, outstanding 0, 계산시간 0에 비추어 첫 회차 1미션·A/B 두 결과는 한도 1미션·4시행·7200초 안에서 계획할 수 있다. 두 결과 모두 시행으로 계상하고, 기존 계보 이력을 초기화하거나 잔여 시행을 임계값 탐색에 자동 사용하지 않는다. max_trials_per_cycle=2, patience=2, min_improvement=0.001, continuous=false를 유지한다. 개발기간은 2023-01-02~2025-12-30으로 한정하고 2026-01-02~2026-09-23 봉인 구간은 후보 선택·튜닝·진단에서 제외한다. 주목적 stress-net-absolute-cagr와 기존 엔진 기준선, calendar-month 블록·95% 신뢰수준·최소 30블록·minimum_effect=0.0을 유지한다. B-A의 스트레스 비용 후 CAGR 차이가 0 이하이거나 두 경로가 같으면 유효한 부정적 결과로 보존한다. 양의 점추정만으로 지지를 선언하지 않으며, turnover 감소나 보조 진단으로 주목적 실패를 구제하지 않는다. supported 또는 incumbent여도 결과는 위 조건부 회고 개발 범위에 머물며 역사적 알파, 정확한 재현, 분배금 재투자 수익, 실제 체결 가능성, 운영 배치 준비 또는 미접근 2026 확증을 입증하지 않는다. 이번 산출물은 선정 판단이며 서비스 승인·실행·Git 변경이나 성과 발생을 의미하지 않는다."
+      },
+      "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+      "created_at": "2026-10-06T02:13:43.332991+00:00"
+    }
+  ],
+  "stages": [
+    {
+      "id": "9f964e2c-75f5-5a51-8c53-429e2970e5cd",
+      "stage": "program_proposal",
+      "state": "completed",
+      "attempt": 1,
+      "error": null,
+      "retry_at": null,
+      "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+      "data_output_failures": null
+    },
+    {
+      "id": "ce867fc3-a194-5327-b312-864b93538d34",
+      "stage": "program_data",
+      "state": "completed",
+      "attempt": 6,
+      "error": null,
+      "retry_at": null,
+      "task_id": "a6c52e6a-91bc-5d55-980a-141cdfb15477",
+      "data_output_failures": 2
+    },
+    {
+      "id": "6ed0070b-9796-51a3-86e8-4c17c92063fd",
+      "stage": "program_selection",
+      "state": "completed",
+      "attempt": 1,
+      "error": null,
+      "retry_at": null,
+      "task_id": "a72ccef6-4137-53b4-b12f-9eff1473c1bb",
+      "data_output_failures": null
+    },
+    {
+      "id": "1db7ae7f-5c75-52ea-9cd7-170d6703e66e",
+      "stage": "program_proposal",
+      "state": "completed",
+      "attempt": 1,
+      "error": "proposal_contract_rejected: Each task source requires an exact original citation",
+      "retry_at": null,
+      "task_id": "9c93b08e-ce76-5c8b-8156-9476e32da430",
+      "data_output_failures": null
+    },
+    {
+      "id": "0b9b6ce9-6c3d-5dee-a9c5-0bbc18089ac5",
+      "stage": "program_data",
+      "state": "waiting",
+      "attempt": 3,
+      "error": "1 validation error for DataAssessment\n  Value error, Scoped assessments cannot carry a legacy exploratory decision or policy fields [type=value_error, input_value={'coverage': True, 'decis...ontract_verified': True}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
+      "retry_at": "2026-10-06T04:00:58.765914+00:00",
+      "task_id": "83b60177-5b5a-5b36-a8d1-10bfa5b3a245",
+      "data_output_failures": 0
+    },
+    {
+      "id": "e68ac24e-2f55-5812-bf45-cdedd1a985b4",
+      "stage": "program_data",
+      "state": "completed",
+      "attempt": 1,
+      "error": null,
+      "retry_at": null,
+      "task_id": "a58f0f96-d450-5707-844e-ff45e16e76cf",
+      "data_output_failures": null
+    },
+    {
+      "id": "e56626e8-f0c3-5a00-b5ee-659daf43e53e",
+      "stage": "program_selection",
+      "state": "completed",
+      "attempt": 1,
+      "error": null,
+      "retry_at": null,
+      "task_id": "af28f020-3c61-57dd-9c9b-3148c02d4653",
+      "data_output_failures": null
+    }
+  ],
+  "usage": {
+    "reservations": 0,
+    "scientific_trials": 0,
+    "compute_seconds": 0
+  },
+  "mission_count": 1,
+  "missions": [
+    {
+      "id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+      "state": "active",
+      "cycle": 1,
+      "cycle_trials": 0,
+      "cumulative_trials": 0,
+      "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1791242030.830452:director:action:dd69d4b8-78c0-4c78-b7ee-41c7cf7d5972:approve",
+      "approved_at": "2026-10-05T23:13:50.984607+00:00",
+      "created_at": "2026-10-06T04:35:32.670455+00:00",
+      "updated_at": "2026-10-06T04:35:32.670455+00:00"
+    }
+  ],
+  "mission_stages": [],
+  "trials": [],
+  "jobs": []
+}

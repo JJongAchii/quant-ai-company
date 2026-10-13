@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_prepared_narrow_format_repair",
+  "reviewed_at": "2026-10-06T03:10:00Z",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+  "source_commit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+  "previous_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "review_sha256": "55c934b701469b3352baa1cffc5bbc468deca492c4a66e546a453a5bfe6d2f7c",
+  "authority": "Existing owner deploy/continue requests. Root reviewed this prepared compatible formatting repair; no new exact-SHA human approval is claimed.",
+  "code_change": {
+    "files": [
+      "src/quant_company/research/controller.py",
+      "src/quant_company/research/program_controller.py"
+    ],
+    "insertions": 24,
+    "deletions": 1,
+    "description": "Expose only the DataAssessment version and fields authorized for the current programme task; retain existing business validation."
+  },
+  "apply_order": [
+    "drain current turns/outbox/model calls",
+    "backup existing state using trusted deployed backup implementation",
+    "activate five server services, keep company-worker stopped",
+    "align qualified 3070 release config and systemd unit; preserve old registry and detached executions",
+    "resume company-worker after aligned public receipt",
+    "reconcile only the formatting hold with durable technical remediation history; run a new normal data attempt"
+  ],
+  "unchanged": {
+    "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+    "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "scientific_trials_max": 4,
+    "compute_seconds_max": 7200,
+    "missions_max": 1,
+    "concurrency": 1,
+    "roles_auth_inputs_economic_policy": true
+  },
+  "gates": {
+    "exact_inactive_images": true,
+    "exact_3070_fixture_qualification": true,
+    "actual_subscription_scoped_schema_validation": true,
+    "full_regression_evidence": "data-response-scoped-integrated-full-tests-20261006.xml"
+  },
+  "failure_policy": "Preserve journal, original requests, invalid replies, charge and launch receipts. Reconcile a partial cutover; do not rerun an uncertain operation blindly.",
+  "scientific_trials": 0,
+  "actual_worker_jobs": 0,
+  "production_changed_by_this_review": false
+}

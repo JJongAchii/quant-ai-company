@@ -1,0 +1,282 @@
+{
+  "observed_at": "2026-10-07T04:01:21.941950+00:00",
+  "mission": {
+    "id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+    "state": "active",
+    "cycle": 1,
+    "updated_at": "2026-10-07T02:44:32.773405+00:00"
+  },
+  "stage": {
+    "id": "5e5e2013-373c-5868-9fc9-242985e085b3",
+    "stage": "audit",
+    "actor": "validator",
+    "state": "waiting",
+    "attempt": 1,
+    "error": "audit_runtime_requires_reconciliation",
+    "retry_at": null,
+    "task_id": "a88948c2-58fc-5aa6-897a-76a691dd51dc",
+    "hold": {
+      "reason": "audit_runtime_requires_reconciliation",
+      "diagnostic": "proposal_rejected:audit_packet_review_invalid"
+    },
+    "delivery_version": "2",
+    "required_reads": {
+      "audit/scope/binding.json": {
+        "sha256": "b9d26045085cd9a1f253a7fdd52f16d1612fd97deb5babdbb8cbbde44efa170d",
+        "characters": 1079
+      },
+      "audit/scope/history.json": {
+        "sha256": "8f1f1dcba66d5f17c34746894006f426281efe0a0f43dc163ec9d8fdaa2e4224",
+        "characters": 145076
+      },
+      "audit/scope/mission.json": {
+        "sha256": "f2161725b89403ad6f01f830e6404ae243be4bad84777483a52feba4d58c2b0b",
+        "characters": 5352
+      },
+      "audit/scope/objective.json": {
+        "sha256": "87815ff1c5da053d6b4907d166a516577a61696d6c01734513235bab322b7ada",
+        "characters": 87
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/result.json": {
+        "sha256": "f21ee5a763b94f40e950cf06dcf4c3caf4ffe7a12d5a94c253b38ec657a388be",
+        "characters": 1618
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/profile.json": {
+        "sha256": "95ade1727404317052231aad85c7b4da7a63b6cc534e5677c901d49dbe4b0868",
+        "characters": 1533
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/receipt.json": {
+        "sha256": "8b6f2e59f76eea56b67043723aa343d4449c3244a9eec943ca89aedf20b410d1",
+        "characters": 2614
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/runtime.json": {
+        "sha256": "2a48ea20f5656fd60bfe7e2250b0ed7e4d89b3d745cee504c338037ca2da7f36",
+        "characters": 1296
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/manifest.json": {
+        "sha256": "2eaf21334fd976d1838fd27793297465fb7377bf9b810c831a2d2fb33359da37",
+        "characters": 8073
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/outputs/base.csv": {
+        "sha256": "7808459c8f764c14a5a10cd92f8652cac103eea75f89fa066b93d2bc51e97bb9",
+        "characters": 24004
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/outputs/stress.csv": {
+        "sha256": "59d128dc8c8b159f2a2c68fd2aba67278c49ebb7df289f59ac9822136d913882",
+        "characters": 23978
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/qualification.json": {
+        "sha256": "8c580185876f649852f0fcb60ea8ece836ebb1220f964b172c6d8f0360a477dc",
+        "characters": 5800
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/producer-result.json": {
+        "sha256": "39bfc137029165fc0b0cdf21a47cdb347fe67eaa416547ced503e10fa690befd",
+        "characters": 1104
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/sandbox-evaluation.json": {
+        "sha256": "3ef990897377c1774d4189c9da1c2e27a63dcc7c3de62973ca2c08130c8ced44",
+        "characters": 1520
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/sandbox-qualification.json": {
+        "sha256": "c9feedc06a6986a65e08dea28db75a2844a657caa8daa64644b01b5012a4d3b3",
+        "characters": 1428
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/producer-qualification.json": {
+        "sha256": "490f632108a3df9e74f00f9fbfda2165cdd7eb5357a5eb6c4421f1dcb5c421e8",
+        "characters": 5286
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/code/labs/company-domestic-research/engine.py": {
+        "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+        "characters": 12554
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/code/labs/company-domestic-research/config.json": {
+        "sha256": "427abe350351dee238aba63980a49168bf100cdfcd32512903b769e638f9a73f",
+        "characters": 282
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/code/labs/company-domestic-research/candidate.py": {
+        "sha256": "ce0641c361990b0f0105dd09351913e5a774c226f3a4ea87ada4293b5dcf26cc",
+        "characters": 5400
+      },
+      "audit/scope/trials/de3597b0-e358-5a58-af5e-9f3c79df53e9/code/labs/company-domestic-research/domestic_statistics.py": {
+        "sha256": "8ea1021082bc8b4656e3df9dafe24dec655f861692240a5542e587fe0b7628ff",
+        "characters": 2574
+      }
+    },
+    "created_at": "2026-10-06T10:43:42.790571+00:00",
+    "updated_at": "2026-10-07T02:45:02.739325+00:00"
+  },
+  "turns": [
+    {
+      "id": "f405eb0f-5168-5309-b875-8e15eed1bb53",
+      "sequence": 1,
+      "status": "completed",
+      "error": null,
+      "request_id": "f405eb0f-5168-5309-b875-8e15eed1bb53",
+      "session": {
+        "id": "a88948c2-58fc-5aa6-897a-76a691dd51dc",
+        "previous_request_id": null
+      },
+      "output_contract": "agent_decision",
+      "response_present": true,
+      "created_at": "2026-10-06T10:43:42.790571+00:00",
+      "updated_at": "2026-10-07T02:34:53.118822+00:00",
+      "runtime_receipt_sha256": "aa622ed49c89c2ce7cfadf3d8a94343e44f24fc1c6aac076329d0a60eff95bc6",
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791283424.369897,
+        "completed_at": 1791283735.1509714,
+        "cli_version": "0.154.0",
+        "fault_code": null
+      },
+      "runtime_keys": [
+        "account",
+        "cli_version",
+        "completed_at",
+        "execution_lane",
+        "input_digest",
+        "request_id",
+        "requested_execution",
+        "result",
+        "session",
+        "session_usage",
+        "started_at",
+        "state",
+        "version"
+      ],
+      "runtime_response": {
+        "provider": "codex",
+        "thread_id": "01a110cf-ed29-7e13-a3e6-08156edc29df",
+        "request_id": "f405eb0f-5168-5309-b875-8e15eed1bb53",
+        "artifact_count": 1,
+        "input_digest": "764ce7c9a8dad5e59f54ebc1f90f204f48a6b74b451f117792a7fe611406c694",
+        "artifact_shapes": [
+          {
+            "json_valid": true,
+            "body_type": "dict",
+            "keys": [
+              "notes",
+              "packet_digest"
+            ],
+            "packet_digest": "2791ebd0f7aa7d85391f7d92aeb7ddb6dc31ba564a9f2a43d1769c5f45627f3a",
+            "notes_characters": 5584,
+            "notes_stripped_characters": 5584
+          }
+        ]
+      }
+    },
+    {
+      "id": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
+      "sequence": 2,
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "request_id": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
+      "session": {
+        "id": "a88948c2-58fc-5aa6-897a-76a691dd51dc",
+        "previous_request_id": "f405eb0f-5168-5309-b875-8e15eed1bb53"
+      },
+      "output_contract": "agent_decision",
+      "response_present": false,
+      "created_at": "2026-10-07T02:34:53.118822+00:00",
+      "updated_at": "2026-10-07T02:45:02.739325+00:00",
+      "runtime_receipt_sha256": "fac5a0b9fd97acfac637054202a9290e22934b776b74c7681b8f6a2fefcc16b7",
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791340891.9623451,
+        "completed_at": 1791341102.6137557,
+        "cli_version": "0.160.1",
+        "fault_code": null
+      },
+      "runtime_keys": [
+        "account",
+        "cli_version",
+        "completed_at",
+        "execution_lane",
+        "input_digest",
+        "request_id",
+        "requested_execution",
+        "result",
+        "session",
+        "session_usage",
+        "started_at",
+        "state",
+        "version"
+      ],
+      "runtime_response": {
+        "provider": "codex",
+        "thread_id": "01a110cf-ed29-7e13-a3e6-08156edc29df",
+        "request_id": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
+        "artifact_count": 1,
+        "input_digest": "41424821353ce42a4cfe53aa543776c306ea97e0835b8f8c477b4e89b75533d6",
+        "artifact_shapes": [
+          {
+            "json_valid": true,
+            "body_type": "dict",
+            "keys": [
+              "notes",
+              "packet_digest"
+            ],
+            "packet_digest": "15c62df6ed11ae8e159cb943dd9130423dd996cc5c95e1631ebf28fd1c632441",
+            "notes_characters": 6171,
+            "notes_stripped_characters": 6171
+          }
+        ]
+      }
+    }
+  ],
+  "packets": [
+    {
+      "turn_id": "f405eb0f-5168-5309-b875-8e15eed1bb53",
+      "attempt": 1,
+      "digest": "2791ebd0f7aa7d85391f7d92aeb7ddb6dc31ba564a9f2a43d1769c5f45627f3a",
+      "chunk_count": 5,
+      "notes_present": true,
+      "reviewed_at": "2026-10-07T02:34:53.118822+00:00"
+    },
+    {
+      "turn_id": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
+      "attempt": 1,
+      "digest": "15c62df6ed11ae8e159cb943dd9130423dd996cc5c95e1631ebf28fd1c632441",
+      "chunk_count": 3,
+      "notes_present": false,
+      "reviewed_at": null
+    }
+  ],
+  "stages": [
+    {
+      "id": "5e5e2013-373c-5868-9fc9-242985e085b3",
+      "stage": "audit",
+      "actor": "validator",
+      "state": "waiting",
+      "error": "audit_runtime_requires_reconciliation",
+      "created_at": "2026-10-06T10:43:42.790571+00:00",
+      "updated_at": "2026-10-07T02:45:02.739325+00:00"
+    },
+    {
+      "id": "a92587ac-50d3-5786-9211-28fa84bf32e5",
+      "stage": "interpretation",
+      "actor": "researcher_kr",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-10-06T10:32:57.912464+00:00",
+      "updated_at": "2026-10-06T10:43:38.71163+00:00"
+    },
+    {
+      "id": "98ca776d-4ef6-5862-9283-53bbecfbcc39",
+      "stage": "implementation",
+      "actor": "engineer",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-10-06T10:19:36.397853+00:00",
+      "updated_at": "2026-10-06T10:31:53.585814+00:00"
+    },
+    {
+      "id": "268a529c-2a94-56ca-ad48-cee385471829",
+      "stage": "selection",
+      "actor": "director",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-10-06T08:55:52.069418+00:00",
+      "updated_at": "2026-10-06T10:19:29.882762+00:00"
+    }
+  ]
+}

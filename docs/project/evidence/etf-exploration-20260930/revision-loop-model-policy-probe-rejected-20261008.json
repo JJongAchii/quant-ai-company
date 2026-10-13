@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "state": "probe_sql_readonly_rejected_shared_policy_lock",
+  "prepared_service_commit": "f6cafc4f113ce0a3effc0d178cd3ceb04073b526",
+  "cause": "The unchanged installed model policy reads its policy row with SELECT FOR SHARE. PostgreSQL disallows that shared lock in a transaction marked READ ONLY.",
+  "correction": "Use the unchanged policy reader and explicitly roll back the probe transaction. No stage, policy, model request or outcome is written by the read projection.",
+  "production_changed": false,
+  "database_mutated": false,
+  "model_call_created": false,
+  "private_host_failure_log_preserved": "/tmp/revision-loop-runtime-patch-20261008-v2/parent-probe.private-error.log"
+}

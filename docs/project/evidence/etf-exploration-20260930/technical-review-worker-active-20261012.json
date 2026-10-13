@@ -1,0 +1,14 @@
+{
+  "observed_at": "2026-10-12 02:33:00 UTC",
+  "read_only": true,
+  "unit_scope": "user",
+  "unit": "research-worker.service",
+  "load_state": "loaded",
+  "active_state": "active",
+  "sub_state": "running",
+  "working_directory": "/home/achii/quant-company-qualification/held-audit-20261006/release-candidates/ec1fbeb29a49420a367f06af596283e6ead4ab72/code",
+  "registered_scientific_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "worker_modified": false,
+  "full_config_or_process_executable_hash_verification_claimed": false,
+  "note": "Initial system-scope query had no loaded unit; actual registered worker runs in the user scope."
+}

@@ -1,0 +1,656 @@
+{
+  "observed_at": "2026-10-08T02:00:27.182514+00:00",
+  "database_mutated": false,
+  "cutover_state": "revision_loop_navigation_patch_applied",
+  "cutover_completed_at": "2026-10-08T01:50:29.947968+00:00",
+  "paused": false,
+  "activity": {
+    "running_turns": 1,
+    "sending_outbox": 0,
+    "active_jobs": 0
+  },
+  "authority": {
+    "program_state": "active",
+    "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "mission_state": "active",
+    "mission_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
+    "cycle": 1,
+    "cycle_trials": 1,
+    "cumulative_trials": 1
+  },
+  "stages": [
+    {
+      "id": "1a4a3e7d-60c0-5957-bbfb-d8c93bb396a8",
+      "stage": "selection",
+      "actor": "director",
+      "state": "running",
+      "attempt": 1,
+      "task_id": "68343ee0-eda9-54cd-8f3d-7b454079dcd7",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T01:32:02.945655+00:00",
+      "updated_at": "2026-10-08T02:00:00.766257+00:00",
+      "decision": null,
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "task_priority": 100,
+      "task_status": "running",
+      "read_chunks": 21,
+      "current_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "id": "a7cc6fc4-968d-524d-9b51-25a53d6af1ff",
+      "stage": "challenge",
+      "actor": "financial_strategist",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "d983241b-cc9f-5d9c-9360-68d5da8b1040",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T01:14:05.795935+00:00",
+      "updated_at": "2026-10-08T01:31:59.69526+00:00",
+      "decision": null,
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 56,
+      "current_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "id": "e31af7a5-8bcc-545b-864b-37e948c3d1dc",
+      "stage": "proposal",
+      "actor": "researcher_kr",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "52cff5ea-bb40-51c4-ba9e-065efb12b93b",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T01:06:23.299133+00:00",
+      "updated_at": "2026-10-08T01:14:02.510326+00:00",
+      "decision": null,
+      "proposal_id": null,
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 26,
+      "current_challenge_ids": []
+    },
+    {
+      "id": "418ea58b-387b-5e74-ba5b-f96762bf9fc6",
+      "stage": "selection",
+      "actor": "director",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "0ccc769b-d0fa-58ab-a6e5-0b334cf09ae5",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T00:47:25.412631+00:00",
+      "updated_at": "2026-10-08T01:06:19.787762+00:00",
+      "decision": "revise",
+      "proposal_id": "36902772-eefa-4f18-9168-93cf58b4a746",
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 17,
+      "current_challenge_ids": [
+        "d81d7cf3-0730-40a4-b8dc-398d5696a084"
+      ]
+    },
+    {
+      "id": "5ca386f3-f370-55c8-8cd5-dae248d242cc",
+      "stage": "challenge",
+      "actor": "financial_strategist",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "34476da2-c53d-5f93-9775-1b366bd32935",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T00:39:11.183742+00:00",
+      "updated_at": "2026-10-08T00:47:21.885857+00:00",
+      "decision": null,
+      "proposal_id": "36902772-eefa-4f18-9168-93cf58b4a746",
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 22,
+      "current_challenge_ids": [
+        "d81d7cf3-0730-40a4-b8dc-398d5696a084"
+      ]
+    },
+    {
+      "id": "9fc59fd9-0caf-5ec4-b10e-f5a10291f932",
+      "stage": "proposal",
+      "actor": "researcher_kr",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "743a2f51-369e-53e1-af78-9bfedb0af122",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T00:32:26.729804+00:00",
+      "updated_at": "2026-10-08T00:39:07.81699+00:00",
+      "decision": null,
+      "proposal_id": null,
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 23,
+      "current_challenge_ids": []
+    },
+    {
+      "id": "e6101386-fe8c-556e-ac64-494090f73f59",
+      "stage": "selection",
+      "actor": "director",
+      "state": "completed",
+      "attempt": 2,
+      "task_id": "67a091ed-67d0-5219-9426-896f5c80d233",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T00:02:44.678732+00:00",
+      "updated_at": "2026-10-08T00:32:23.18598+00:00",
+      "decision": "revise",
+      "proposal_id": "e286d244-56e1-49e6-a28b-f9f5f082b47d",
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 16,
+      "current_challenge_ids": [
+        "4b772f81-9b66-4e2d-9ca1-7ee239466184"
+      ]
+    },
+    {
+      "id": "8a2bff59-4077-58ea-9f97-5406a145e6f4",
+      "stage": "challenge",
+      "actor": "financial_strategist",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "dffdfb56-4fe4-5dd3-9f71-0e70d8408d02",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-07T23:54:30.986138+00:00",
+      "updated_at": "2026-10-08T00:02:41.361772+00:00",
+      "decision": null,
+      "proposal_id": "e286d244-56e1-49e6-a28b-f9f5f082b47d",
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 22,
+      "current_challenge_ids": [
+        "4b772f81-9b66-4e2d-9ca1-7ee239466184"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "id": "f8b1b516-dce5-5631-925d-4b620e7e5208",
+      "task_id": "68343ee0-eda9-54cd-8f3d-7b454079dcd7",
+      "sequence": 22,
+      "status": "running",
+      "error": null,
+      "created_at": "2026-10-08T02:00:00.766257+00:00",
+      "updated_at": "2026-10-08T02:00:01.965314+00:00",
+      "stage_id": "1a4a3e7d-60c0-5957-bbfb-d8c93bb396a8",
+      "stage": "selection",
+      "request_id": "f8b1b516-dce5-5631-925d-4b620e7e5208",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 65339,
+      "stage_capabilities_present": true,
+      "selection_contract": {
+        "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+        "current_challenge_ids": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ],
+        "response_rule": "Return exactly one response for each current_challenge_ids UUID, with no duplicates or historical challenge IDs. Earlier objections and dispositions remain immutable evidence; discuss inherited obligations in rationale/test_plan without resubmitting their historical IDs as current responses."
+      },
+      "selection_schema": {
+        "minItems": 1,
+        "maxItems": 1,
+        "enum": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ]
+      },
+      "selection_scope_matches_db": true,
+      "runtime": {
+        "state": "running",
+        "started_at": 1791424802.3717468,
+        "completed_at": null,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "28ab76a7-03ef-5c55-a180-70a9ed90bd84",
+      "task_id": "68343ee0-eda9-54cd-8f3d-7b454079dcd7",
+      "sequence": 21,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-08T01:58:24.947856+00:00",
+      "updated_at": "2026-10-08T02:00:00.766257+00:00",
+      "stage_id": "1a4a3e7d-60c0-5957-bbfb-d8c93bb396a8",
+      "stage": "selection",
+      "request_id": "28ab76a7-03ef-5c55-a180-70a9ed90bd84",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 65995,
+      "stage_capabilities_present": true,
+      "selection_contract": {
+        "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+        "current_challenge_ids": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ],
+        "response_rule": "Return exactly one response for each current_challenge_ids UUID, with no duplicates or historical challenge IDs. Earlier objections and dispositions remain immutable evidence; discuss inherited obligations in rationale/test_plan without resubmitting their historical IDs as current responses."
+      },
+      "selection_schema": {
+        "minItems": 1,
+        "maxItems": 1,
+        "enum": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ]
+      },
+      "selection_scope_matches_db": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791424706.5048006,
+        "completed_at": 1791424800.7046475,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "557dc650-a13b-5e72-8132-fa5a2d7bbed3",
+      "task_id": "68343ee0-eda9-54cd-8f3d-7b454079dcd7",
+      "sequence": 20,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-08T01:57:09.906903+00:00",
+      "updated_at": "2026-10-08T01:58:24.947856+00:00",
+      "stage_id": "1a4a3e7d-60c0-5957-bbfb-d8c93bb396a8",
+      "stage": "selection",
+      "request_id": "557dc650-a13b-5e72-8132-fa5a2d7bbed3",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 69643,
+      "stage_capabilities_present": true,
+      "selection_contract": {
+        "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+        "current_challenge_ids": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ],
+        "response_rule": "Return exactly one response for each current_challenge_ids UUID, with no duplicates or historical challenge IDs. Earlier objections and dispositions remain immutable evidence; discuss inherited obligations in rationale/test_plan without resubmitting their historical IDs as current responses."
+      },
+      "selection_schema": {
+        "minItems": 1,
+        "maxItems": 1,
+        "enum": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ]
+      },
+      "selection_scope_matches_db": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791424631.1097953,
+        "completed_at": 1791424704.8909137,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "b70b5207-3671-5249-bf4f-971d50ea4383",
+      "task_id": "68343ee0-eda9-54cd-8f3d-7b454079dcd7",
+      "sequence": 19,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-08T01:55:13.850462+00:00",
+      "updated_at": "2026-10-08T01:57:09.906903+00:00",
+      "stage_id": "1a4a3e7d-60c0-5957-bbfb-d8c93bb396a8",
+      "stage": "selection",
+      "request_id": "b70b5207-3671-5249-bf4f-971d50ea4383",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 69220,
+      "stage_capabilities_present": true,
+      "selection_contract": {
+        "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+        "current_challenge_ids": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ],
+        "response_rule": "Return exactly one response for each current_challenge_ids UUID, with no duplicates or historical challenge IDs. Earlier objections and dispositions remain immutable evidence; discuss inherited obligations in rationale/test_plan without resubmitting their historical IDs as current responses."
+      },
+      "selection_schema": {
+        "minItems": 1,
+        "maxItems": 1,
+        "enum": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ]
+      },
+      "selection_scope_matches_db": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791424515.040981,
+        "completed_at": 1791424629.84373,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "e100f137-d2fc-51a9-bbfe-b01d9975d309",
+      "task_id": "68343ee0-eda9-54cd-8f3d-7b454079dcd7",
+      "sequence": 18,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-08T01:54:27.890347+00:00",
+      "updated_at": "2026-10-08T01:55:13.850462+00:00",
+      "stage_id": "1a4a3e7d-60c0-5957-bbfb-d8c93bb396a8",
+      "stage": "selection",
+      "request_id": "e100f137-d2fc-51a9-bbfe-b01d9975d309",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 68962,
+      "stage_capabilities_present": true,
+      "selection_contract": {
+        "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+        "current_challenge_ids": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ],
+        "response_rule": "Return exactly one response for each current_challenge_ids UUID, with no duplicates or historical challenge IDs. Earlier objections and dispositions remain immutable evidence; discuss inherited obligations in rationale/test_plan without resubmitting their historical IDs as current responses."
+      },
+      "selection_schema": {
+        "minItems": 1,
+        "maxItems": 1,
+        "enum": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ]
+      },
+      "selection_scope_matches_db": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791424469.1317255,
+        "completed_at": 1791424513.797753,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "f63365d5-a941-52d2-b539-4b6a36d3bbe1",
+      "task_id": "68343ee0-eda9-54cd-8f3d-7b454079dcd7",
+      "sequence": 17,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-08T01:53:54.872137+00:00",
+      "updated_at": "2026-10-08T01:54:27.890347+00:00",
+      "stage_id": "1a4a3e7d-60c0-5957-bbfb-d8c93bb396a8",
+      "stage": "selection",
+      "request_id": "f63365d5-a941-52d2-b539-4b6a36d3bbe1",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 75973,
+      "stage_capabilities_present": true,
+      "selection_contract": {
+        "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+        "current_challenge_ids": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ],
+        "response_rule": "Return exactly one response for each current_challenge_ids UUID, with no duplicates or historical challenge IDs. Earlier objections and dispositions remain immutable evidence; discuss inherited obligations in rationale/test_plan without resubmitting their historical IDs as current responses."
+      },
+      "selection_schema": {
+        "minItems": 1,
+        "maxItems": 1,
+        "enum": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ]
+      },
+      "selection_scope_matches_db": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791424435.917683,
+        "completed_at": 1791424467.8321345,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "0285481c-cf40-5b48-b0a0-ef1990f01576",
+      "task_id": "68343ee0-eda9-54cd-8f3d-7b454079dcd7",
+      "sequence": 16,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-08T01:53:33.326851+00:00",
+      "updated_at": "2026-10-08T01:53:54.872137+00:00",
+      "stage_id": "1a4a3e7d-60c0-5957-bbfb-d8c93bb396a8",
+      "stage": "selection",
+      "request_id": "0285481c-cf40-5b48-b0a0-ef1990f01576",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 82130,
+      "stage_capabilities_present": true,
+      "selection_contract": {
+        "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+        "current_challenge_ids": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ],
+        "response_rule": "Return exactly one response for each current_challenge_ids UUID, with no duplicates or historical challenge IDs. Earlier objections and dispositions remain immutable evidence; discuss inherited obligations in rationale/test_plan without resubmitting their historical IDs as current responses."
+      },
+      "selection_schema": {
+        "minItems": 1,
+        "maxItems": 1,
+        "enum": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ]
+      },
+      "selection_scope_matches_db": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791424414.503863,
+        "completed_at": 1791424434.8099747,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "50d2c3b2-7a28-569e-88e1-89475eba81f1",
+      "task_id": "68343ee0-eda9-54cd-8f3d-7b454079dcd7",
+      "sequence": 15,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-08T01:53:18.098482+00:00",
+      "updated_at": "2026-10-08T01:53:33.326851+00:00",
+      "stage_id": "1a4a3e7d-60c0-5957-bbfb-d8c93bb396a8",
+      "stage": "selection",
+      "request_id": "50d2c3b2-7a28-569e-88e1-89475eba81f1",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 77781,
+      "stage_capabilities_present": true,
+      "selection_contract": {
+        "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+        "current_challenge_ids": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ],
+        "response_rule": "Return exactly one response for each current_challenge_ids UUID, with no duplicates or historical challenge IDs. Earlier objections and dispositions remain immutable evidence; discuss inherited obligations in rationale/test_plan without resubmitting their historical IDs as current responses."
+      },
+      "selection_schema": {
+        "minItems": 1,
+        "maxItems": 1,
+        "enum": [
+          "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+        ]
+      },
+      "selection_scope_matches_db": true,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791424399.724148,
+        "completed_at": 1791424413.251011,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "stage_id": "1a4a3e7d-60c0-5957-bbfb-d8c93bb396a8",
+      "attempt": 1,
+      "error": null,
+      "created_at": "2026-10-08T01:32:02.945655+00:00",
+      "completed_at": null,
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "stage_id": "a7cc6fc4-968d-524d-9b51-25a53d6af1ff",
+      "attempt": 1,
+      "error": null,
+      "created_at": "2026-10-08T01:14:05.795935+00:00",
+      "completed_at": "2026-10-08T01:31:34.718183+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "stage_id": "e31af7a5-8bcc-545b-864b-37e948c3d1dc",
+      "attempt": 1,
+      "error": null,
+      "created_at": "2026-10-08T01:06:23.299133+00:00",
+      "completed_at": "2026-10-08T01:13:50.712889+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": []
+    },
+    {
+      "stage_id": "418ea58b-387b-5e74-ba5b-f96762bf9fc6",
+      "attempt": 1,
+      "error": null,
+      "created_at": "2026-10-08T00:47:25.412631+00:00",
+      "completed_at": "2026-10-08T01:06:00.449555+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [
+        "revise"
+      ],
+      "submitted_challenge_ids": [
+        "d81d7cf3-0730-40a4-b8dc-398d5696a084"
+      ],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": []
+    },
+    {
+      "stage_id": "5ca386f3-f370-55c8-8cd5-dae248d242cc",
+      "attempt": 1,
+      "error": null,
+      "created_at": "2026-10-08T00:39:11.183742+00:00",
+      "completed_at": "2026-10-08T00:46:51.2657+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": [
+        "d81d7cf3-0730-40a4-b8dc-398d5696a084"
+      ]
+    },
+    {
+      "stage_id": "9fc59fd9-0caf-5ec4-b10e-f5a10291f932",
+      "attempt": 1,
+      "error": null,
+      "created_at": "2026-10-08T00:32:26.729804+00:00",
+      "completed_at": "2026-10-08T00:38:46.95141+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": []
+    },
+    {
+      "stage_id": "e6101386-fe8c-556e-ac64-494090f73f59",
+      "attempt": 2,
+      "error": null,
+      "created_at": "2026-10-08T00:20:39.399085+00:00",
+      "completed_at": "2026-10-08T00:31:53.964797+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [
+        "revise"
+      ],
+      "submitted_challenge_ids": [
+        "4b772f81-9b66-4e2d-9ca1-7ee239466184"
+      ],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": []
+    },
+    {
+      "stage_id": "e6101386-fe8c-556e-ac64-494090f73f59",
+      "attempt": 1,
+      "error": "stage_contract_rejected: Every independent challenge needs exactly one disposition",
+      "created_at": "2026-10-08T00:02:44.678732+00:00",
+      "completed_at": "2026-10-08T00:18:16.613044+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [
+        "revise"
+      ],
+      "submitted_challenge_ids": [
+        "db874b8e-a723-432a-921a-a643dbfbbe03",
+        "1699b2bc-7f83-4588-a2fc-e3cc0057eb7c",
+        "f3c17ac4-2d9b-4e26-b179-521ad094278d",
+        "4b772f81-9b66-4e2d-9ca1-7ee239466184"
+      ],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [
+        "1699b2bc-7f83-4588-a2fc-e3cc0057eb7c",
+        "db874b8e-a723-432a-921a-a643dbfbbe03",
+        "f3c17ac4-2d9b-4e26-b179-521ad094278d"
+      ],
+      "missing_challenge_ids": []
+    }
+  ],
+  "trials": [
+    {
+      "id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+      "proposal_id": "bed77124-564d-4ba9-a625-777308b11cdb",
+      "state": "reported",
+      "job_id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+      "created_at": "2026-10-06T10:19:29.882762+00:00",
+      "updated_at": "2026-10-07T06:54:42.637438+00:00"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+      "trial_id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+      "state": "completed",
+      "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+      "claimed_at": "2026-10-06T10:31:58.059235+00:00",
+      "heartbeat_at": "2026-10-06T10:32:11.456793+00:00",
+      "error": null,
+      "created_at": "2026-10-06T10:31:56.478807+00:00",
+      "updated_at": "2026-10-07T06:54:42.637438+00:00",
+      "artifact_sha256": "9c5c2a8eb504556ce3c2d42996cd6e0cb4ba005af0d76ed0b33761ee537b28cb"
+    }
+  ]
+}

@@ -1,0 +1,172 @@
+{
+  "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "phase": "active_data_review_resumed",
+  "completed_at": "2026-10-06T01:05:42.973387+00:00",
+  "gates": {
+    "ci": {
+      "actual_native_model_output_qualified_by_ci": false,
+      "actual_slack_integration_claimed_by_ci": false,
+      "codex_process_in_protocol_tests": "simulated",
+      "completed_at": "2026-10-06T00:24:44Z",
+      "conclusion": "success",
+      "deselected": 1,
+      "job_id": 112042457168,
+      "lint": "passed",
+      "passed": 1752,
+      "regression_postgresql_and_temporal_real": true,
+      "run_id": 37393064952,
+      "schema_version": 1,
+      "seconds": 505.65,
+      "skipped": 47,
+      "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+      "status": "completed",
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37393064952",
+      "warnings": 12
+    },
+    "runtime_lane_locks_held": [
+      ".runtime.lock",
+      ".runtime-news.lock",
+      ".runtime-quant.lock",
+      ".runtime-brief.lock"
+    ],
+    "worker_transport_qualified": true
+  },
+  "imports": {
+    "account-gateway": {
+      "additional_model_process_started": false,
+      "files": 205,
+      "import_root": "/opt/quant-code/src/quant_company",
+      "probe_imports": "standard_library_only",
+      "source_origin_and_tree_verified": true
+    },
+    "api": {
+      "additional_model_process_started": false,
+      "files": 205,
+      "import_root": "/opt/quant-code/src/quant_company",
+      "probe_imports": "standard_library_only",
+      "source_origin_and_tree_verified": true
+    },
+    "codex-runtime": {
+      "additional_model_process_started": false,
+      "files": 205,
+      "import_root": "/opt/quant-code/src/quant_company",
+      "probe_imports": "standard_library_only",
+      "source_origin_and_tree_verified": true
+    },
+    "dispatch": {
+      "additional_model_process_started": false,
+      "files": 205,
+      "import_root": "/opt/quant-code/src/quant_company",
+      "probe_imports": "standard_library_only",
+      "source_origin_and_tree_verified": true
+    },
+    "slack-socket": {
+      "additional_model_process_started": false,
+      "files": 205,
+      "import_root": "/opt/quant-code/src/quant_company",
+      "probe_imports": "standard_library_only",
+      "source_origin_and_tree_verified": true
+    },
+    "worker": {
+      "additional_model_process_started": false,
+      "files": 205,
+      "import_root": "/opt/quant-code/src/quant_company",
+      "probe_imports": "standard_library_only",
+      "source_origin_and_tree_verified": true
+    }
+  },
+  "authority": true,
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20261006T005804Z-16dc9f8d.tar.gz",
+    "release_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20261006T005804Z-16dc9f8d.tar.gz",
+    "secrets_included": false,
+    "sha256": "8331d198bba7996201ce79614138eea862bb86e167d9454ec4994d6dd4c12212"
+  },
+  "probe_repair": {
+    "cause_claimed": "not_proven",
+    "container_lifecycle": {
+      "quant-company-account-gateway-1": {
+        "memory_limit_bytes": 134217728,
+        "oom_killed_current_state": false,
+        "restart_count": 1
+      },
+      "quant-company-api-1": {
+        "memory_limit_bytes": 134217728,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-briefing-data-worker-1": {
+        "memory_limit_bytes": 402653184,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-claude-runtime-1": {
+        "memory_limit_bytes": 536870912,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-codex-runtime-1": {
+        "memory_limit_bytes": 536870912,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-data-watch-worker-1": {
+        "memory_limit_bytes": 268435456,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-dispatch-1": {
+        "memory_limit_bytes": 201326592,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-housing-feed-worker-1": {
+        "memory_limit_bytes": 201326592,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-maintenance-1": {
+        "memory_limit_bytes": 134217728,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-news-worker-1": {
+        "memory_limit_bytes": 201326592,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-postgres-1": {
+        "memory_limit_bytes": 268435456,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-quant-codex-runtime-1": {
+        "memory_limit_bytes": 1073741824,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-quant-feed-worker-1": {
+        "memory_limit_bytes": 268435456,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-slack-socket-1": {
+        "memory_limit_bytes": 201326592,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      },
+      "quant-company-worker-1": {
+        "memory_limit_bytes": 402653184,
+        "oom_killed_current_state": false,
+        "restart_count": 0
+      }
+    },
+    "memory_limits_changed": false,
+    "operator_helper_sha256": "e97d12bbffbfe4705951950f05658c0ef6bca2929ade731c48ba389b2aef599d",
+    "previous_exit_code": 137,
+    "previous_probe_started_no_model": true,
+    "repair": "Use stdlib-only source origin and exact tree checks inside live containers; native schema remains qualified in the exact prepared images.",
+    "services_replaced_by_repair": false
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "kind": "actual-restoration-and-canonical-followup-review",
+  "prepared_at": "2026-10-06T01:54:00Z",
+  "active_container_snapshot_observed_at": "2026-10-06T01:39:49.998884+00:00",
+  "active_company_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "canonical_followup_commit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+  "integrated_code_commit": "c2a5fe1385d634db95207e230d2f0090f4386d74",
+  "source_tree_matches_canonical_followup": true,
+  "diff_from_canonical_followup": "Only extra tests, company documentation and operational evidence; no src/deploy/dependency changes",
+  "restoration_receipts": {
+    "initial_restore": "resume-reconciled-20261006.json",
+    "actual_server_cutover": "canonical-cutover-public-receipt-20261006.json",
+    "root_worker_alignment": "canonical-worker-aligned-20261006.json",
+    "preserved_first_alignment_failure": "canonical-worker-alignment-first-failure-20261006.json",
+    "signed_program": "approved-canonical-program-20261006.json",
+    "superseded_notice_correction": "owner-review-correction-readback-20261006.json",
+    "current_research_revision": "canonical-program-revision-requested-20261006.json"
+  },
+  "actual_services": {
+    "quant-company-slack-socket-1": {
+      "image": "quant-company-data-watch:8508954320877144e8f24cb52c8353c0e18f514a-5d4da72ef6d0",
+      "image_id": "sha256:a7613a647406fc6f9ca81a8ddaff32a69b46f37e0cea4b0429ce52cf4f364e7d",
+      "state": "running",
+      "health": null
+    },
+    "quant-company-api-1": {
+      "image": "quant-company-data-watch:8508954320877144e8f24cb52c8353c0e18f514a-5d4da72ef6d0",
+      "image_id": "sha256:a7613a647406fc6f9ca81a8ddaff32a69b46f37e0cea4b0429ce52cf4f364e7d",
+      "state": "running",
+      "health": "healthy"
+    },
+    "quant-company-worker-1": {
+      "image": "quant-company-native-worker:5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+      "image_id": "sha256:3b1f39fd2aa96787966ec78a93cad76496d47af661ad9f80507509a1f9a13a85",
+      "state": "running",
+      "health": null
+    },
+    "quant-company-dispatch-1": {
+      "image": "quant-company-native-app:5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+      "image_id": "sha256:5d4da72ef6d01e32096c4fb32d7832bf362e5f1b588f4ef072aa2a94dbe15836",
+      "state": "running",
+      "health": null
+    },
+    "quant-company-account-gateway-1": {
+      "image": "quant-company-native-gateway:5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+      "image_id": "sha256:929477fd6007cc2149c47f39c49c209172670c69c82536b18b8d6cfa5ec8e9a7",
+      "state": "running",
+      "health": "healthy"
+    },
+    "quant-company-codex-runtime-1": {
+      "image": "quant-company-native-codex:5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+      "image_id": "sha256:e8158c5a11da77e71ea38d997ca108b9c964e9d0b7ae0fc659a54a529cbd7876",
+      "state": "running",
+      "health": "healthy"
+    }
+  },
+  "active_config_sha256": {
+    "roles.json": "5774cb63232a47c40645f1985561fe7be93d59bfff115103efb4cb3bda033670",
+    "research-profiles.json": "22fc61df00eafc9e0cb6885b86814821b26aa0e296e5c166fbdc6b34c974c78c",
+    "research-qlab.json": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
+    "runtime.env": "741d7bf033fc8092533a9153b3a1d31cacb659610d866cebb727caea2fc17e40"
+  },
+  "scientific_authority": {
+    "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+    "manifest_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "max_trials": 4,
+    "max_compute_seconds": 7200,
+    "max_missions": 1,
+    "max_parallel_missions": 1,
+    "additional_scientific_approval_required": false
+  },
+  "operating_profile": {
+    "id": "kr-etf-retrospective-v1",
+    "public_digest": "71ee4ce63770fb20205675d42cae4db2719394c0d4e31218484a5d4348f06dd1",
+    "quant_lab_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+    "input_sha256": {
+      "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882",
+      "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b"
+    }
+  },
+  "unchanged": {
+    "scientific_scope": true,
+    "scientific_budget": true,
+    "inputs": true,
+    "protected_engine": true,
+    "model_selection": true,
+    "subscription_account": true,
+    "credentials": true
+  },
+  "effects": {
+    "root_deployed_prototype_5f_or_bb": false,
+    "root_deployed_followup_86": false,
+    "root_added_scientific_trials": 0,
+    "root_edited_model_assessments": false,
+    "root_replayed_uncertain_effects": false,
+    "root_killed_detached_executors": false
+  },
+  "rollback": "Preserve actual prior release registry/config/unit and all launch/delivery receipts. Any later code cutover must recheck current source and use the autonomous-research runbook with a reviewed exact apply specification."
+}

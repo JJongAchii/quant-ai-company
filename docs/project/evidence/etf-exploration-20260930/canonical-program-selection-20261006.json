@@ -1,0 +1,84 @@
+{
+  "observed_at": "2026-10-06T01:45:29.306901+00:00",
+  "program": {
+    "id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+    "state": "active",
+    "revision": 5,
+    "manifest_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1791242030.830452:director:action:dd69d4b8-78c0-4c78-b7ee-41c7cf7d5972:approve",
+    "approved_at": "2026-10-05T23:13:50.984607+00:00"
+  },
+  "tasks": [
+    {
+      "id": "bc915792-d608-5710-a271-f4aa592e9ee1",
+      "state": "assessed",
+      "title": "분산예측 수준 보정이 ETF의 스트레스 비용 후 절대수익을 개선하는가",
+      "data_assessment": {
+        "coverage": true,
+        "decision": "conditional_ready",
+        "rationale": "동결 패킷 c35803d79a7607adcc14a853b334ed3a96ad008afbaf6b44b0525aa1494684cd의 identity, 엔진 및 필수 보고서·계보 파일을 대조했다. 069500 단일 종목의 warmup·개발 입력 해시와 범위가 승인 계약에 결속되어 있으며, 엔진은 신호 이력을 거래일 09:00 KST 이전 available_at으로 제한하고, 평가 시 adjusted-open 가격·tradable·보유 종목의 다음 관측 가격을 검증한다. 결측 보유가격, 상장폐지 정산 부재, 비거래 가격은 삭제·대체하지 않고 거부하므로 조건부 회고 개발 범위에서 커버리지와 이론적 평가가격 계약은 확인된다. 다만 역사적 공표·수집시각, 당시 수정 빈티지, 원래 준비 바이트가 없어 PIT·원조건 재현은 확인되지 않고, 평가는 실제 체결가격을 입증하지 않는다. 남은 공백은 canonical research_scope의 소유·허용 코드 세 개뿐이며, 결과는 conditional_retrospective_development에 한정된다.",
+        "source_ids": [
+          "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+        ],
+        "packet_digest": "c35803d79a7607adcc14a853b334ed3a96ad008afbaf6b44b0525aa1494684cd",
+        "point_in_time": false,
+        "research_scope": {
+          "data_mode": "frozen_vintage_retrospective",
+          "result_scope": "conditional_retrospective_development",
+          "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+          "scientific_lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+          "acknowledged_gap_codes": [
+            "historical_publication_unverified",
+            "historical_revision_vintage_unverified",
+            "original_preparation_bytes_unavailable"
+          ]
+        },
+        "schema_version": 2,
+        "executable_prices": false,
+        "original_conditions": false,
+        "evaluation_price_contract_verified": true
+      },
+      "decision": null,
+      "mission_id": null,
+      "created_at": "2026-10-05T23:32:41.495034+00:00"
+    }
+  ],
+  "stages": [
+    {
+      "id": "9f964e2c-75f5-5a51-8c53-429e2970e5cd",
+      "stage": "program_proposal",
+      "state": "completed",
+      "attempt": 1,
+      "error": null,
+      "retry_at": null,
+      "task_id": "658d0f0c-ff15-569d-ae1d-96fadb575972",
+      "data_output_failures": null
+    },
+    {
+      "id": "ce867fc3-a194-5327-b312-864b93538d34",
+      "stage": "program_data",
+      "state": "completed",
+      "attempt": 6,
+      "error": null,
+      "retry_at": null,
+      "task_id": "a6c52e6a-91bc-5d55-980a-141cdfb15477",
+      "data_output_failures": 2
+    },
+    {
+      "id": "6ed0070b-9796-51a3-86e8-4c17c92063fd",
+      "stage": "program_selection",
+      "state": "received",
+      "attempt": 1,
+      "error": null,
+      "retry_at": null,
+      "task_id": "a72ccef6-4137-53b4-b12f-9eff1473c1bb",
+      "data_output_failures": null
+    }
+  ],
+  "usage": {
+    "reservations": 0,
+    "scientific_trials": 0,
+    "compute_seconds": 0
+  },
+  "mission_count": 0
+}

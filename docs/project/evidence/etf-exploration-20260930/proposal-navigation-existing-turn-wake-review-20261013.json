@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-10-13T00:37:02.656992+00:00",
+  "operation_commit": "5ec088b2854a2a94c6b514a25e2ae64e1a3dc6b0",
+  "turn_id": "bd144bfd-07ed-5931-89c2-414c57c76df1",
+  "workflow_id": "company-turn-bd144bfd-07ed-5931-89c2-414c57c76df1",
+  "approved_to_wake_existing_turn": true,
+  "owner_authority": "Existing deployment/continue authorization; routine recovery from this owned cutover pause.",
+  "pause_completed_at": "2026-10-13T00:34:15.615272+00:00",
+  "pause_cleared": true,
+  "timer_before_wake": {
+    "workflow_id": "company-turn-bd144bfd-07ed-5931-89c2-414c57c76df1",
+    "workflow_state": "RUNNING",
+    "turn_id": "bd144bfd-07ed-5931-89c2-414c57c76df1",
+    "turn_state": "queued",
+    "turn_sequence": 20,
+    "request_frozen": false,
+    "selected_profile": "primary",
+    "selected_account_revision": 2,
+    "received_account_signal_revisions": [],
+    "pending_timers": [
+      {
+        "timer_id": "1",
+        "started_at": "2026-10-13T00:24:01.884422571Z",
+        "seconds": 2695,
+        "nanos": 210000000
+      }
+    ],
+    "recent_activity_results": [
+      {
+        "state": "defer",
+        "seconds": 2695.209723
+      }
+    ],
+    "database_mutated": false,
+    "temporal_mutated": false,
+    "observed_at": "2026-10-13T00:36:18.365661+00:00"
+  },
+  "preflight": {
+    "commit": "5ec088b2854a2a94c6b514a25e2ae64e1a3dc6b0",
+    "operator_sha256": "cfc24abc2d134bcdd9d396ecd5e7f2534b71908f7741430d492733bf2acc70c8",
+    "recorded_at": "2026-10-13T00:37:02.656992+00:00",
+    "database_mutated": false,
+    "scientific_decision_or_execution_supplied": false,
+    "turn_id": "bd144bfd-07ed-5931-89c2-414c57c76df1",
+    "selected_profile": "primary",
+    "selected_account_revision": 2,
+    "account_selection_changed": false,
+    "request_changed": false,
+    "new_turn_created": false,
+    "scientific_execution_supplied": false,
+    "temporal_signal_sent": false,
+    "state": "existing_turn_wake_verified",
+    "workflow_id": "company-turn-bd144bfd-07ed-5931-89c2-414c57c76df1",
+    "prior_signal_revisions": [],
+    "pending_timer_count": 1
+  },
+  "reason": "Turn was created during the owned deployment pause and inherited its original 45-minute expiry; actual pause is now cleared. Wake only the existing unfrozen due turn using the already-selected revision2.",
+  "new_turn_or_replay_or_account_selection_change_allowed": false,
+  "scientific_decision_supplied": false
+}

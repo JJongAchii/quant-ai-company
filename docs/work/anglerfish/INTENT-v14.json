@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 14,
+  "previousIntent": "INTENT-v13.json",
+  "sourceRequest": "응 진행해; restore approved exploratory research and report actual progress",
+  "outcome": "Prepare a scoped data-assessment prompt repair for the observed mixed legacy/v2 artifact, with existing validators and frozen requests preserved.",
+  "activeSource": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "deliverables": [
+    {"id": "SCOPED_DATA_PROMPT", "description": "Expose only the selected canonical scope's DataAssessment version and fields to new requests"},
+    {"id": "REGRESSION", "description": "Verify scoped/legacy prompts, immutable cached requests, and unchanged independent evidence admission"},
+    {"id": "FINAL_INTEGRATION", "description": "Publish company PR, concrete apply specification and current operational receipts"}
+  ],
+  "constraints": [
+    "No changes to DataAssessment validation or scientific admission criteria",
+    "No mutation or replay of frozen provider requests or failed artifacts",
+    "Keep signed scope, budget, models, credentials and scientific inputs unchanged",
+    "Worker source5c is already aligned; review prepared code before any new operating cutover",
+    "No operator data-readiness verdict, scientific execution, performance claims or research-repository writes"
+  ]
+}

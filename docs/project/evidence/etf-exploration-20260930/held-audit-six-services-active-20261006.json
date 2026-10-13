@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06T05:53:12.696998+00:00",
+  "source_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "state": "six_active_services_source_verified",
+  "services": {
+    "quant-company-api-1": {
+      "image": "quant-company:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "health": "healthy",
+      "source_files_verified": 205
+    },
+    "quant-company-dispatch-1": {
+      "image": "quant-company:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "health": null,
+      "source_files_verified": 205
+    },
+    "quant-company-slack-socket-1": {
+      "image": "quant-company:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "health": null,
+      "source_files_verified": 205
+    },
+    "quant-company-worker-1": {
+      "image": "quant-company-autonomous:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:6edd5c056625e66cd6a26da6b33a5451372b301f2c9a71894e5d20506de8aba5",
+      "health": null,
+      "source_files_verified": 205
+    },
+    "quant-company-account-gateway-1": {
+      "image": "quant-company:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "health": "healthy",
+      "source_files_verified": 205
+    },
+    "quant-company-codex-runtime-1": {
+      "image": "quant-company-codex:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:a4bc2f4e24fb143db994b8b201a538dc3acce4e651e9bfbdc46550ea6be5f239",
+      "health": "healthy",
+      "source_files_verified": 205
+    }
+  },
+  "running_service_count": 15,
+  "socket_established_tcp_443": 7,
+  "config_sha256": {
+    "roles.json": "1430005122f7129cf51a745f5850ab9344c87285bf59bf9a38aa02d171bdc3e8",
+    "research-profiles.json": "22fc61df00eafc9e0cb6885b86814821b26aa0e296e5c166fbdc6b34c974c78c",
+    "research-qlab.json": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd",
+    "runtime.env": "ac52941197e324032bfca6d63217e73a0aed416d26e231405ab6b7cf3348002b"
+  },
+  "scientific_trials_added_by_operator": 0
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_conditional_research_recovery",
+  "commit": "fd6446f89de0245117a3c4f952c88bf82068864e",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+  "manifest_sha256": "3a5fc33a3a6dacd270b558ed81ea33e906dae94e7a0cfa65236b8126776728d2",
+  "operator_sha256": "9d816e48504ef2d7b278c2a865052e132368fad201d4b5f66e8be4acb0fb3ff8",
+  "authority": "Existing owner deploy/continue approvals and current technical recovery request",
+  "new_exact_sha_human_approval_claimed": false,
+  "scientific_approval_repeated": false,
+  "phases": [
+    "Exact inactive API/worker inventory and actual worker-image stage projection verified; prior failure source retained",
+    "Apply only after V3 exits without applying, owned pause is clear and all actual active parents still match. Under owned45-minute pause wait at most1800s for existing calls; reverify inactivity and renew only own unexpired pause to15minutes before consistent backup and scoped API/worker cutover"
+  ],
+  "scope": {
+    "modules": [
+      "research/controller.py",
+      "research/builds.py",
+      "research/mission_backend.py"
+    ],
+    "candidate_code_or_readiness_guard_changed": false,
+    "signed_scope_budget_and_worker_pin_changed": false,
+    "prior_provider_responses_or_failed_jobs_changed": false,
+    "model_policy_and_concurrent_parent_modules_preserved": true
+  },
+  "prepared_images": {
+    "api": {
+      "image_id": "sha256:c1137091ae4e31ac3d1faeaddb5ac42dc11c353ffc4918db9894952aa771ab43",
+      "parent_image_id": "sha256:9445114a6e094bca9df2cd7e6bfe1475f8dc8103fb081b32511257d10586bc08"
+    },
+    "worker": {
+      "image_id": "sha256:79b2a539971685d8304f0662bc569411a599ff5016f76c8770eb42b4d5cd6276",
+      "parent_image_id": "sha256:9f03342cdaf2b4b536e43d29a807c6522b03878f58dc4707231b3a1b107472a2"
+    }
+  },
+  "previous_activation": {
+    "commit": "8e2d358000cb5c41fefe9386973fbd2c1eddc5d3",
+    "state": "native_lock_busy_before_service_stop",
+    "original_images_and_environment_preserved": true,
+    "pause_restored": true,
+    "receipt": "research-repair-apply-failed-v2-20261012.json"
+  },
+  "regression": {
+    "passed": 1838,
+    "skipped": 14,
+    "targeted_passed": 17,
+    "lint": "passed",
+    "staff_slack_market_fixtures": "synthetic",
+    "operator_lint_and_compile": "passed"
+  },
+  "operational_probe_passed": true,
+  "independent_progress_pending": true,
+  "probe_evidence": "research-repair-actual-context-probe-v4-20261012.json",
+  "rollback": "Exact actual parent images and full active environment, preserve all previous receipts and release only owned pause",
+  "model_or_worker_execution_supplied": false,
+  "activation_precondition": "V3 application exits with originals preserved and owned pause restored; never activate concurrently or after a successful V3 cutover",
+  "native_video_timeout_seconds": 2700,
+  "another_model_call_cancelled": false,
+  "production_module_bytes_unchanged_from_verified_v3": true
+}

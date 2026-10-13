@@ -23,9 +23,9 @@ OLD_DIGEST = "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b"
 NEW_DIGEST = "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162"
 RECORD = STATE / "releases" / ("exploration-cutover-" + COMMIT + "-cancel.json")
 OVERRIDE = STATE / "config" / ("exploration-" + COMMIT + "-cancel.compose.json")
-SELECTED = ["api", "slack-socket"]
+SELECTED = ["slack-socket"]
 EXPECTED = {
-    "api": "sha256:9c6be6fdc4d385c44b1ebbfafdb5c2d11f16a28d84f31014acfd462abeed1005",
+    "slack-socket": "sha256:9c6be6fdc4d385c44b1ebbfafdb5c2d11f16a28d84f31014acfd462abeed1005",
     "worker": "sha256:6dce9a55e60b2a2b9f1a27aa99cd9a97c35bebe1b0c4c1bc9a1cccad2757f378",
 }
 APP = "quant-company:" + COMMIT
@@ -135,21 +135,13 @@ def compose(row):
     ]
 
 
-def swap_current(target):
-    tmp = P("/opt/quant-company/current.exploration-tmp")
-    tmp.symlink_to(target)
-    os.replace(tmp, P("/opt/quant-company/current"))
-
-
 os.umask(0o077)
 with (STATE / ".backup.lock").open("a") as lock:
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     assert not RECORD.exists() and not OVERRIDE.exists(), "cutover_already_attempted"
     oldroot = P("/opt/quant-company/current").resolve()
-    assert oldroot.name == "ea092f419b4b679df4c25e479a8cb361b4d046ff", "app_changed"
     oldenv = ENV.read_bytes()
     oldregistry = REGISTRY.read_bytes()
-    assert sha(ENV) == "2e1cd1f8df2270bdca5427f630195df5b49db64b34ffcaccd18cd3cc310842d6", "runtime_changed"
     assert sha(REGISTRY) == OLD_REGISTRY, "registry_changed"
     profiles = {
         n: sha(STATE / "config" / n) for n in ["roles.json", "research-profiles.json", "research-qlab.json"]
@@ -162,7 +154,11 @@ with (STATE / ".backup.lock").open("a") as lock:
         before["quant-company-worker-1"]["Config"]["Image"]
         == "quant-company-autonomous:3c848af95dc33b7da444a55018fd41d374c10025"
     )
-    for service, image in [("api", APP)]:
+    assert (
+        before["quant-company-slack-socket-1"]["Config"]["Image"]
+        == "quant-company:3c848af95dc33b7da444a55018fd41d374c10025"
+    ), "receiver_changed"
+    for service, image in [("slack-socket", APP)]:
         assert json.loads(run(["docker", "image", "inspect", image]))[0]["Id"] == EXPECTED[service]
     prior_pause = sql(
         "SELECT row_to_json(c) FROM (SELECT paused_until,reason FROM runtime_control WHERE id=1)c"
@@ -186,6 +182,7 @@ with (STATE / ".backup.lock").open("a") as lock:
         "program_digest": NEW_DIGEST,
         "new_scientific_authority_granted": False,
         "selected_services": SELECTED,
+        "scope_amendment": "Only signed Socket Mode ingress is replaced. Preserve independently updated API, dispatch, global current release and runtime.env.",
     }
 
     def save(**v):
@@ -285,18 +282,6 @@ with (STATE / ".backup.lock").open("a") as lock:
                 image = WORKER if service == "worker" else APP
             updates[service] = {"image": image, "environment": env}
         atomic(OVERRIDE, json.dumps({"services": updates}).encode())
-        lines = [
-            line
-            for line in oldenv.decode().splitlines()
-            if line.split("=", 1)[0] not in ["RELEASE_COMMIT", "PINNED_COMPANY_WORKER_IMAGE"]
-        ]
-        atomic(
-            ENV,
-            (
-                "\n".join([*lines, "RELEASE_COMMIT=" + COMMIT, "PINNED_COMPANY_WORKER_IMAGE=" + WORKER])
-                + "\n"
-            ).encode(),
-        )
         for service in SELECTED:
             row = before["quant-company-" + service + "-1"]
             command = [*compose(row), "-f", str(OVERRIDE)]
@@ -336,7 +321,6 @@ with (STATE / ".backup.lock").open("a") as lock:
                 ],
                 stderr=subprocess.STDOUT,
             )
-        swap_current(TARGET)
         deadline = time.monotonic() + 120
         while True:
             after = inspect()
@@ -349,7 +333,7 @@ with (STATE / ".backup.lock").open("a") as lock:
             row = after["quant-company-" + service + "-1"]
             assert (
                 row["State"]["Running"]
-                and row["Image"] == EXPECTED["worker" if service == "worker" else "api"]
+                and row["Image"] == EXPECTED[service]
             ), "installed_image_mismatch"
         assert all(
             after[n]["Id"] == r["Id"]
@@ -361,7 +345,7 @@ with (STATE / ".backup.lock").open("a") as lock:
                 [
                     "docker",
                     "exec",
-                    "quant-company-api-1",
+                    "quant-company-slack-socket-1",
                     "python",
                     "-c",
                     'import json,os;from quant_company.research.approvals import short_command;value=short_command("연구 프로그램 취소 e06537d3-fac3-5c8c-bf25-ddabb3c7e282 53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b");assert value["action"]=="cancel_program";print(json.dumps({"company_commit":os.environ["COMPANY_CODE_COMMIT"],"exact_cancel_parser":True}))',
@@ -370,6 +354,9 @@ with (STATE / ".backup.lock").open("a") as lock:
         )
         assert sha(REGISTRY) == OLD_REGISTRY and all(
             sha(STATE / "config" / n) == h for n, h in profiles.items()
+        )
+        assert ENV.read_bytes() == oldenv and P("/opt/quant-company/current").resolve() == oldroot, (
+            "global_app_or_runtime_changed"
         )
         restore_pause()
         save(
@@ -389,7 +376,6 @@ with (STATE / ".backup.lock").open("a") as lock:
     except Exception as exc:
         if stopped:
             run(["docker", "start", *reversed(stopped)], stderr=subprocess.STDOUT)
-        atomic(ENV, oldenv)
         if OVERRIDE.exists():
             rollback = {}
             for r in before.values():
@@ -416,8 +402,9 @@ with (STATE / ".backup.lock").open("a") as lock:
                     ],
                     stderr=subprocess.STDOUT,
                 )
-        if P("/opt/quant-company/current").resolve() != oldroot:
-            swap_current(oldroot)
+        assert ENV.read_bytes() == oldenv and P("/opt/quant-company/current").resolve() == oldroot, (
+            "global_app_or_runtime_changed"
+        )
         restore_pause()
         save(
             phase="rolled_back" if changed else "activation_aborted",
