@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v21.json",
-  "state": "successor_proposal_contract_rejected_navigation_repair_in_validation",
+  "state": "navigation_patch_applied_actual_staff_resumed_acceptance_pending",
   "previousIntent": "INTENT-v20.json",
   "deliverables": {
     "POLICY": {
@@ -32,8 +32,8 @@
       "status": "completed_actual_normal_successor_staff_calls_and_reads_verified"
     }
   },
-  "operationalStatus": "2026-10-13 08:58 KST actual successor attempt25 waiting after supersedes validation. Programme active,1 reported trial,0 active jobs. Eligible-ID/schema and previous-error navigation implemented;18 real-PG targeted tests pass. Full runbook regression executing. Production patch not yet applied; scientific guards/scope/evaluator unchanged.",
-  "evidence": "../../project/evidence/etf-exploration-20260930/successor-blocked-progress-20261013.json",
+  "operationalStatus": "2026-10-13 09:34:15 KST actual navigation API/worker patch applied, exact env/memory/other service IDs and concurrent maintenance2427a48 preserved; consistent backup saved. Owned pause cleared. Existing unfrozen turn timer recovered09:38 with unchanged primary revision2. Actual attempt26 request contains the new eligible-ID contract; completed staff reads and further actual Astra high running request verified09:38:31. Proposal acceptance remains pending. Reported economic trials1, active science jobs0.",
+  "evidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-staff-resumed-20261013.json",
   "nextStage": {
     "stage": "qualified_proposal_navigation_repair_then_actual_independent_successor",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
@@ -47,12 +47,22 @@
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
   "finalIntegration": {
     "intent": "INTENT-v21.json",
-    "status": "proposal_navigation_qualified_preparation",
+    "status": "runtime_applied_actual_staff_resumed_acceptance_pending",
     "currentIntentComplete": false,
     "canonicalMergeClaimed": false,
     "scientificProgrammeComplete": false,
     "secondEconomicEvaluationClaimed": false,
-    "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105"
+    "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+    "sourceCommit": "be0ae26",
+    "operationCommit": "5ec088b2854a2a94c6b514a25e2ae64e1a3dc6b0",
+    "actualIntegrationEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-runtime-applied-20261013.json",
+    "regression": {
+      "passed": 1856,
+      "skipped": 14,
+      "targetedPassed": 18,
+      "lint": "passed",
+      "modelSlackMarketFixtures": "synthetic"
+    }
   },
   "exploratoryPreparation": {
     "policy": "completed",
@@ -123,7 +133,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "actual_successor_proposal_waiting_contract_rejected",
+    "phase": "actual_successor_proposal_running_after_navigation_patch",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
