@@ -342,6 +342,47 @@ async def test_a_checked_real_photo_is_used_and_credited_instead_of_a_generated_
     assert entries['gen-1']['kind'] == '자료사진' and entries['gen-1']['license'] == 'CC BY-SA 4.0'
 
 
+async def test_photos_are_looked_up_and_checked_once_per_plan_even_when_one_is_generated(brief, video, tmp_path,  # noqa: F811
+                                                                                         monkeypatch):
+    # 2026-10-13 v2: every generated picture changed the set of missing photos, so Commons and Claude were asked again.
+    from quant_company.video import photos
+    from quant_company.video.contracts import VisualIssue, VisualReview
+    from quant_company.video.runner import VideoRunner
+
+    store, _ = video
+    store.settings.video_image_runtime_url = 'http://video-image-runtime:8080'
+    raw = illustrated(brief='PHOTO: SK hynix Icheon || SCENE: ' + BRIEF).model_dump(mode='json')
+    raw['illustrations'].append({'id': 'gen-2', 'subject': '유조선', 'brief': 'PHOTO: crude oil tanker || SCENE: ' + BRIEF,
+                                 'fallback': 'fixture-illustration'})
+    raw['thumbnail_image'] = 'gen-2'
+    wrong_place = VisualIssue(scene='gen-2-c1', kind='image', detail='다른 해협에서 찍은 사진', fix='다른 사진')
+    provider = InspectingProvider(visual=[VisualReview(passed=False, issues=[wrong_place]),
+                                          VisualReview(passed=True, issues=[]), VisualReview(passed=True, issues=[])])
+    provider.queues['video_episode_v1'] = [EpisodePlan.model_validate(raw)]
+    searched = []
+
+    def search(term, **kw):
+        searched.append(term)
+        return [{'title': f'File:{term}.jpg', 'page': 'https://commons/1', 'url': 'https://upload/1.jpg',
+                 'license': 'CC BY 4.0', 'license_url': 'https://cc/', 'author': 'Jane Doe', 'width': 2400, 'height': 1600}]
+
+    monkeypatch.setattr(photos, 'search', search)
+    monkeypatch.setattr(photos, 'download', lambda r, **kw: png())
+    images = FakeImages()
+    original = VideoRunner.__init__
+
+    def with_images(self, company, provider=None, speech=None, renderer=None, youtube=None, images_client=images):
+        original(self, company, provider, speech, renderer, youtube, images=images_client)
+
+    monkeypatch.setattr(VideoRunner, '__init__', with_images)
+    job, _ = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
+    assert job['state'] == 'uploading', job['error']
+    assert searched == ['SK hynix Icheon', 'crude oil tanker']
+    assert sum('visual-photos' in c.request_id for c in provider.calls) == 1
+    made = job['qa']['illustrations']
+    assert made['gen-1']['kind'] == '자료사진' and 'kind' not in made['gen-2'] and len(images.calls) == 1
+
+
 def test_an_episode_photo_reaches_fargate_as_a_credited_library_photo_not_a_generated_file(tmp_path):
     """The render image predates the photo lookup and labels every episode file as generated: the photo travels as
     a library asset of the upload and becomes its picture's fallback."""

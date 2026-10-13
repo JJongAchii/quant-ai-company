@@ -182,7 +182,9 @@ class VideoRunner:
             return False
         folder = self.settings.video_artifact_dir / str(job['id']) / 'illustrations'
         asked = [item for item in missing(job, plan) if photos.query(item)]
-        round_key = digest([[i.id, i.subject, i.brief] for i in asked]) if asked else None
+        # One lookup and one check per plan: keyed by every photo request, not by those still missing, so a picture
+        # generated after a rejected photo does not start another round (2026-10-13 v2 ran three checks).
+        round_key = digest([[i.id, i.subject, i.brief] for i in plan.illustrations if photos.query(i)]) if asked else None
         qa = dict(job.get('qa') or {})
         if asked and qa.get('photo_round') != round_key:
             found = await asyncio.to_thread(self.find_photos, job, asked, folder)
