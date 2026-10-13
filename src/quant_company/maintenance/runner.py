@@ -125,6 +125,39 @@ def diagnostic_history(payload):
                                       "Full owner history and replay inputs remain stored; omitted evidence is unknown."}}
 
 
+def prioritize_inspections(material):
+    """Split joined bodies so recent exact ranges survive before older surrounding code."""
+    requested = [row for row in material.get("recent_inspection", {}).get("requests", [])
+                 if row.get("path") and not row.get("query")]
+    if not requested:
+        return False
+    prioritized, surrounding = [], []
+    for row in material.get("investigated_code", []):
+        chunks = []
+        for line in row.get("content", "").splitlines():
+            number, separator, _ = line.partition(": ")
+            if not separator or not number.isdecimal():
+                chunks = []
+                break
+            number = int(number)
+            needed = any(q["path"] == row.get("path") and q.get("start_line", 1) <= number <
+                         q.get("start_line", 1) + q.get("line_count", 120) for q in requested)
+            if not chunks or chunks[-1][0] != needed or chunks[-1][1][-1][0] + 1 != number:
+                chunks.append((needed, []))
+            chunks[-1][1].append((number, line))
+        if not chunks:
+            surrounding.append({**row, "recent_range": False})
+            continue
+        for needed, lines in chunks:
+            (prioritized if needed else surrounding).append({
+                **row, "start_line": lines[0][0], "content": "\n".join(line for _, line in lines),
+                "excerpted": True, "recent_range": needed})
+    if not prioritized:
+        return False
+    material["investigated_code"] = prioritized + surrounding
+    return True
+
+
 def proposal_material(payload, schema):
     """Share a finite provider context budget; retain full evidence and reserved prompts in the DB."""
     material = copy.deepcopy(payload)
@@ -183,6 +216,19 @@ def proposal_material(payload, schema):
                 for key, value in history.items()
             }
             material["prompt_history_compaction"] = stage + 1
+            material["prompt_excerpted"] = True
+            continue
+        if schema is Triage and not material.get("prompt_inspection_priority"):
+            material["prompt_inspection_priority"] = True
+            if prioritize_inspections(material):
+                continue
+        older = [row for row in material.get("investigated_code", [])
+                 if row.get("recent_range") is False]
+        if older:
+            # The complete receipts and catalog remain available. Marking visibility happens
+            # above; omitted surrounding code cannot establish that a capability is absent.
+            oldest = max(older, key=lambda row: len(row.get("content", "")))
+            material["investigated_code"].remove(oldest)
             material["prompt_excerpted"] = True
             continue
         excerpts = [item for key in ("investigated_code", "inspected_excerpts", "external_research")

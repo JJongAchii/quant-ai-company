@@ -50,3 +50,30 @@ def test_small_history_and_original_required_request_are_not_compacted():
     assert shown["history"] == before["history"]
     assert shown["requested_diagnosis"] == before["requested_diagnosis"]
     assert digest(material) == digest(before)
+
+
+
+def test_recent_status_tail_survives_a_large_joined_body():
+    path = "src/quant_company/maintenance/requests.py"
+    content = "\n".join(f"{n}: saved_code_{n} = 'full producer and consumer evidence'" for n in range(1, 254))
+    row = {"key": "code:" + "a" * 40 + ":" + path, "path": path,
+           "start_line": 1, "total_lines": 253, "content": content}
+    material = {
+        "requested_diagnosis": "Keep original status implementation criteria",
+        "observations": [{"key": "message:original", "text": "exact owner request"}],
+        "current_implementation": {"source_files": [{"path": f"src/source_{n}.py", "content": "x" * 1000}
+                                                   for n in range(60)]},
+        "history": {"evidence": [{"key": f"message:{n}", "text": "old detail " * 600} for n in range(14)]},
+        "investigated_code": [row],
+        "recent_inspection": {"requests": [{"path": path, "start_line": 219, "line_count": 34}]},
+        "inspection_catalog": [{"key": row["key"], "path": path, "start_line": 219, "line_count": 34}],
+    }
+    before = copy.deepcopy(material)
+    shown, prompt = proposal_material(material, Triage)
+    visible = "\n".join(body["content"] for body in shown["investigated_code"])
+    for line in content.splitlines()[218:252]:
+        assert line in visible, "The real repeated status-tail request must be retained completely"
+    assert shown["inspection_catalog"][0]["shown"] is True
+    assert shown["requested_diagnosis"] == before["requested_diagnosis"]
+    assert shown["observations"] == before["observations"]
+    assert digest(material) == digest(before) and len(prompt) <= 88000
