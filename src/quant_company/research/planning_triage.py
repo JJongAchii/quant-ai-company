@@ -1,9 +1,16 @@
 """Deterministic candidate pre-checks (T1-T9). Shares ProgramStore rules; no model calls, no writes."""
 
+from collections import Counter
+from typing import Literal
+from uuid import UUID
+
 from ..company import PolicyError, fingerprint
 from .data_evidence import require_admissible_gaps
 from .library import require_current, verify_citations
+from .mission_contracts import MissionModel
 from .planning_contracts import (
+    Estimand,
+    ExecutionTiming,
     GapRequest,
     PlanningCandidate,
     TriageCheck,
@@ -13,6 +20,7 @@ from .planning_contracts import (
     summarize,
     task_proposal,
 )
+from .program_contracts import ResearchProgram
 from .programs import CONDITIONAL_SOURCE, DUPLICATE_TASK, MISSING_PACKET, ProgramStore, proposal_mode_error
 from .scientific_lineages import LINEAGE_EXHAUSTED, exhausted, require_authority, usage
 
@@ -139,3 +147,99 @@ def triage(company, conn, value, *, admission, program_id=None, evidence_set_dig
     checks["T9"] = failed("T9", "needs_program", error, gap("program_budget", f"program:{program_id}/capacity", "owner",
         "Program budget or concurrency capacity", "A finished mission or an approved budget")) if error else passed("T9")
     return result(checks, basis, bound=True)
+
+
+class ReplayPacket(MissionModel):
+    envelope: str
+    packet_present: bool | None = None
+    blocking_gaps: list[str] | None = None
+    provenance: str
+
+
+class ReplayTask(MissionModel):
+    id: UUID
+    state: str
+    proposal: dict
+    data_decision: str | None = None
+    selection_decision: str | None = None
+    created_at: str
+    declared_estimand: Estimand | None = None
+    declared_execution_timing: ExecutionTiming | None = None
+    declaration_provenance: str = ""
+
+
+class ReplayBundle(MissionModel):
+    schema_version: Literal[1] = 1
+    program_id: UUID
+    program_manifest_digest: str
+    program: dict
+    packets: list[ReplayPacket]
+    tasks: list[ReplayTask]
+    provenance: list[str]
+
+
+def replay(value):
+    """Re-judge recorded legacy tasks from recorded facts only. Unrecorded facts stay not_declared."""
+    bundle = ReplayBundle.model_validate(value)
+    spec = ResearchProgram.model_validate(bundle.program)
+    if fingerprint(spec.model_dump(mode="json")) != bundle.program_manifest_digest:
+        raise PolicyError("Replay program differs from its manifest digest")
+    envelopes, packets = {e.name: e for e in spec.envelopes}, {p.envelope: p for p in bundle.packets}
+    rows = []
+    for task in sorted(bundle.tasks, key=lambda item: (item.created_at, str(item.id))):
+        proposal, checks = task.proposal, {}
+        checks["T1"] = passed("T1", "Source currency was enforced when the task was registered")
+        checks["T2"] = passed("T2", "Citations were verified when the task was registered")
+        envelope = envelopes.get(proposal.get("envelope"))
+        if envelope is None:
+            checks["T3"] = failed("T3", "needs_program", "Task selects an unapproved envelope")
+            for code in ("T4", "T5", "T6", "T7", "T8", "T9"):
+                checks[code] = skipped(code, "Program authority unavailable")
+        else:
+            template = envelope.template
+            checks["T3"] = passed("T3", "Program was active when the task was registered")
+            error = proposal_mode_error(envelope, proposal["mode"])
+            checks["T4"] = failed("T4", "out_of_scope", error) if error else passed("T4")
+            if task.declared_estimand is None:
+                checks["T5"] = skipped("T5", "Legacy proposals do not declare an estimand", "not_declared")
+            elif task.declared_estimand == template.objective.metric:
+                checks["T5"] = passed("T5", task.declaration_provenance)
+            else:
+                checks["T5"] = failed("T5", "needs_evaluator", f"Declared estimand {task.declared_estimand} differs "
+                                      f"from {template.objective.metric} ({task.declaration_provenance})")
+            card = engine_card(template)
+            if template.kind != "strategy":
+                checks["T6"] = skipped("T6", "Non-strategy evaluations have no fill rule")
+            elif task.declared_execution_timing is None:
+                checks["T6"] = skipped("T6", "Legacy proposals do not declare execution timing", "not_declared")
+            elif card is None or task.declared_execution_timing not in card.supported_execution_timings:
+                checks["T6"] = failed("T6", "needs_evaluator", f"Declared {task.declared_execution_timing} is not "
+                                      f"supported by {engine_card_key(template)} ({task.declaration_provenance})")
+            else:
+                checks["T6"] = passed("T6", task.declaration_provenance)
+            fact = packets.get(envelope.name)
+            if fact is None or fact.packet_present is None:
+                checks["T7"] = skipped("T7", "Packet state at proposal time is not recorded", "not_declared")
+            elif not fact.packet_present:
+                checks["T7"] = failed("T7", "needs_data", f"{MISSING_PACKET} ({fact.provenance})")
+            elif fact.blocking_gaps:
+                checks["T7"] = failed("T7", "needs_data", "Data evidence packet still records blocking gaps: "
+                                      + "; ".join(fact.blocking_gaps) + f" ({fact.provenance})")
+            else:
+                checks["T7"] = passed("T7", fact.provenance)
+            checks["T8"] = skipped("T8", "Registration rejected duplicates; lineage usage then is not reconstructed",
+                                   "not_declared")
+            checks["T9"] = skipped("T9", "Program capacity at proposal time is not reconstructed", "not_declared")
+        judged = result(checks, {"replay": 1}, bound=True)
+        rows.append({"task_id": str(task.id), "title": str(proposal.get("title", ""))[:200], "actual_state": task.state,
+                     "data_decision": task.data_decision, "selection_decision": task.selection_decision,
+                     "replay_outcome": judged.outcome, "stopped_before_data_stage": judged.outcome != "eligible",
+                     "checks": [check.model_dump(mode="json") for check in judged.checks]})
+    stopped = [row for row in rows if row["stopped_before_data_stage"]]
+    return {"schema_version": 1, "program_id": str(bundle.program_id), "manifest_digest": bundle.program_manifest_digest,
+            "summary": {"tasks": len(rows), "stopped_before_data_stage": len(stopped),
+                        "actual_data_blocked": sum(row["data_decision"] == "blocked" for row in rows),
+                        "blocked_and_stopped": sum(row["data_decision"] == "blocked" for row in stopped),
+                        "by_outcome": dict(sorted(Counter(row["replay_outcome"] for row in rows).items()))},
+            "tasks": rows, "provenance": bundle.provenance,
+            "scope": "Deterministic replay of recorded facts. Undeclared or unrecorded facts are not inferred."}

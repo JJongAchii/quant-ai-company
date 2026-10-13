@@ -5,8 +5,9 @@ import json
 import pytest
 
 from quant_company.company import PolicyError, fingerprint
+from quant_company.company import fingerprint as digest_of
 from quant_company.research.data_evidence import DataEvidencePacket
-from quant_company.research.planning_triage import triage
+from quant_company.research.planning_triage import replay, triage
 from quant_company.research.programs import (
     BUDGET_EXHAUSTED,
     CONDITIONAL_SOURCE,
@@ -147,3 +148,58 @@ def test_stale_source_after_correction(conditional):  # noqa: F811
             VALUES('fixture:baseline',%s,'d','w','y','superseded')""", (conditional.project["project_id"],))
     check = failed(run(conditional))["T1"]
     assert check.outcome == "stale" and check.gap.resolver == "employee"
+
+
+def bundle_for(h, *, blocking=("Unverified source timing",), declared=None):
+    spec = h.program_spec.model_dump(mode="json")
+    proposal = {key: value for key, value in candidate().items()
+                if key in {"title", "envelope", "question", "mode", "original_claim", "method", "departures",
+                           "falsification", "source_ids", "citations", "predecessor_mission_ids"}}
+    return {"program_id": h.program_id, "program_manifest_digest": digest_of(spec), "program": spec,
+            "packets": [{"envelope": "etf", "packet_present": True, "blocking_gaps": list(blocking),
+                         "provenance": "fixture packet"}],
+            "tasks": [{"id": "00000000-0000-0000-0000-000000000001", "state": "waiting", "proposal": proposal,
+                       "data_decision": "blocked", "selection_decision": "wait", "created_at": "2026-09-29T00:00:00Z",
+                       **(declared or {})}],
+            "provenance": ["synthetic fixture"]}
+
+
+def test_replay_is_deterministic_and_marks_unknowns(conditional):  # noqa: F811
+    first, second = replay(bundle_for(conditional)), replay(bundle_for(conditional))
+    assert first == second
+    task = first["tasks"][0]
+    assert task["replay_outcome"] == "needs_data" and task["stopped_before_data_stage"]
+    statuses = {c["code"]: c["status"] for c in task["checks"]}
+    assert statuses["T5"] == "not_declared" and statuses["T9"] == "not_declared"
+    assert first["summary"] == {"tasks": 1, "stopped_before_data_stage": 1, "actual_data_blocked": 1,
+                                "blocked_and_stopped": 1, "by_outcome": {"needs_data": 1}}
+
+
+def test_replay_uses_only_recorded_declarations(conditional):  # noqa: F811
+    declared = {"declared_execution_timing": "same_day_close_fill", "declaration_provenance": "fixture note"}
+    task = replay(bundle_for(conditional, blocking=(), declared=declared))["tasks"][0]
+    t6 = next(c for c in task["checks"] if c["code"] == "T6")
+    assert t6["status"] == "fail" and task["replay_outcome"] == "needs_evaluator"
+
+
+def test_replay_rejects_a_changed_program(conditional):  # noqa: F811
+    value = bundle_for(conditional)
+    value["program_manifest_digest"] = "0" * 64
+    with pytest.raises(PolicyError, match="manifest digest"):
+        replay(value)
+
+
+def test_commands_are_read_only(tmp_path, conditional):  # noqa: F811
+    from quant_company.research.planning_commands import command
+
+    path = tmp_path / "bundle.json"
+    path.write_text(json.dumps(bundle_for(conditional)))
+    settings, company = conditional.company.settings, conditional.company
+    assert command(settings, "replay-triage", bundle=path)["summary"]["tasks"] == 1
+    assert command(settings, "status", company=company) == {"projects": []}
+    with company.db.transaction() as conn:
+        before = conn.execute("SELECT count(*) AS n FROM research_literature").fetchone()["n"]
+    with pytest.raises(PolicyError, match="Unknown research question"):
+        command(settings, "preview", question="00000000-0000-0000-0000-000000000000", company=company)
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM research_literature").fetchone()["n"] == before

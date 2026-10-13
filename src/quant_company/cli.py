@@ -133,6 +133,11 @@ def main():
     quant_feed.add_argument("action", choices=["status", "probe", "preview"])
     quant_feed.add_argument("--live", action="store_true")
     quant_feed.add_argument("--output", type=Path)
+    planning = sub.add_parser("research-planning")
+    planning.add_argument("action", choices=["status", "preview", "replay-triage"])
+    planning.add_argument("--question")
+    planning.add_argument("--bundle", type=Path)
+    planning.add_argument("--output", type=Path)
     sub.add_parser("demo")
     maintenance = sub.add_parser("maintenance")
     maintenance.add_argument("--config", type=Path, required=True)
@@ -269,6 +274,20 @@ def main():
             from .quant_feed.commands import command
 
         result = asyncio.run(command(settings, args.action, **({"live": args.live} if args.command == "quant-feed" else {})))
+        rendered = json.dumps(result, default=str, ensure_ascii=False, indent=2) + "\n"
+        if args.output:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(rendered)
+        else:
+            print(rendered)
+    elif args.command == "research-planning":
+        from .research.planning_commands import command
+
+        if args.action == "preview" and not args.question:
+            parser.error("preview requires --question")
+        if args.action == "replay-triage" and not args.bundle:
+            parser.error("replay-triage requires --bundle")
+        result = command(settings, args.action, question=args.question, bundle=args.bundle)
         rendered = json.dumps(result, default=str, ensure_ascii=False, indent=2) + "\n"
         if args.output:
             args.output.parent.mkdir(parents=True, exist_ok=True)
