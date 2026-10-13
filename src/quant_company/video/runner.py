@@ -2,6 +2,7 @@ import asyncio
 import base64
 import contextlib
 import io
+import json
 import math
 import shutil
 from datetime import UTC, datetime
@@ -32,6 +33,7 @@ from .episode import (
     plan_findings,
     screen_fix_prompt,
     template,
+    tidy_tags,
 )
 from .motion import FPS as MOTION_FPS
 from .motion import RENDERER_DIGEST, MotionRenderer
@@ -55,6 +57,8 @@ REVIEW_RUNTIME_RETRIES = 4
 REVIEW_CHECKS = ('facts', 'numbers', 'conditions', 'coverage', 'readability')
 INSPECT_ROUNDS = 3
 REVIEW_PHASES = frozenset({'review', 'visual'})
+# ProviderRequest's prompt limit: a previous script version that would not fit is left out of the revision request.
+PROMPT_LIMIT = next(m.max_length for m in ProviderRequest.model_fields['prompt'].metadata if hasattr(m, 'max_length'))
 
 
 class ModelRejected(ValueError):
@@ -82,8 +86,20 @@ def attempt_key(phase, number):
 
 def repair_feedback(base, findings):
     note = ('The previous version was rejected. Fix every item below and keep what already followed the rules:\n'
-            + '\n'.join(f'- {f}' for f in findings[:25]))
+            + '\n'.join(f'- {f}' for f in findings[:50]))
     return f'{base}\n\n{note}' if base else note
+
+
+def open_concerns(qa):
+    """The reviewer's concerns on the last reviewed version; they travel with every later version until the next review
+    (10/14 AM: a failed check replaced them in the feedback, so later versions never saw eleven concerns)."""
+    rounds = [r for r in qa.get('review_rounds', []) if r.get('outcome') not in RUNTIME_OUTCOMES]
+    return list(rounds[-1].get('concerns', [])) if rounds else []
+
+
+def proposal(job, plan):
+    # A motion script loses the tags its text does not carry instead of being rejected for them (episode.tidy_tags).
+    return tidy_tags(plan) if template(job) == 'motion-v2' else plan
 
 
 def contract_detail(error):
@@ -336,9 +352,20 @@ class VideoRunner:
             await asyncio.to_thread(self.store.alert, job)
         return {"state": (await asyncio.to_thread(self.store.get, job["id"]))["state"], "job_id": str(job["id"])}
 
+    def last_version(self, job, attempts):
+        """The last version the model wrote (a lost runtime turn wrote none), as it was checked, with sorted keys so a
+        re-asked turn sends the identical request; None before the first."""
+        written = [a for a in attempts if a['outcome'] in {'passed', 'check_failed'}]
+        if not written:
+            return None
+        output = self.store.effect_receipt(job, written[-1]['key'], 'completed')['output']
+        plan = proposal(job, plan_class(job).model_validate(output))
+        return json.loads(json.dumps(plan.model_dump(mode='json'), sort_keys=True))
+
     async def write_plan(self, job):
-        """One attempt per tick. Findings go back as revision feedback; after the last attempt the version with the
-        fewest findings is produced anyway and its remaining findings travel with the files."""
+        """One attempt per tick. A motion script that failed a check or a review is revised from its last version with
+        the findings and the open review concerns; after the last attempt the version with the fewest findings is
+        produced anyway and its remaining findings travel with the files."""
         qa = dict(job.get('qa') or {})
         attempts = list(qa.get('plan_attempts', []))
         number = len(attempts) + 1
@@ -357,12 +384,16 @@ class VideoRunner:
                 # Story pictures are offered only while the image runtime is configured; frozen with the shelf.
                 qa['illustrations_offered'] = bool(self.settings.video_image_runtime_url)
                 await asyncio.to_thread(self.store.update_qa, job, qa)
-            prompt, contract = episode_prompt(job['source'], feedback, library,
-                                              illustrations=qa.get('illustrations_offered', False)), 'video_episode_v1'
+            illustrations = qa.get('illustrations_offered', False)
+            previous = await asyncio.to_thread(self.last_version, job, attempts)
+            prompt = episode_prompt(job['source'], feedback, library, illustrations=illustrations, previous=previous)
+            if len(prompt) > PROMPT_LIMIT:
+                prompt = episode_prompt(job['source'], feedback, library, illustrations=illustrations)
+            contract = 'video_episode_v1'
         else:
             prompt, contract = production_prompt(job['source'], feedback), None
         try:
-            plan = await self.model(job, key, prompt, plan_class(job), contract)
+            plan = proposal(job, await self.model(job, key, prompt, plan_class(job), contract))
             findings = plan_findings(job, plan, library, photos=qa.get('illustrations_offered', False))
             attempts.append({'key': key, 'outcome': 'check_failed' if findings else 'passed', 'findings': findings[:30]})
         except ModelRejected as rejected:
@@ -380,15 +411,15 @@ class VideoRunner:
                 await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
                 await asyncio.to_thread(self.store.wait, job, min(180, 30 * lost), 'model_retry')
                 return
-            qa['feedback'] = repair_feedback(job['feedback'], findings)
+            qa['feedback'] = repair_feedback(job['feedback'], findings + open_concerns(qa))
             await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
             return
         usable = [a for a in attempts if a['outcome'] in {'passed', 'check_failed'}]
         if not usable:
             raise VideoFailure('plan_contract_failed')
         best = min(usable, key=lambda a: len(a['findings']))
-        plan = plan_class(job).model_validate((await asyncio.to_thread(self.store.effect_receipt, job, best['key'],
-                                                                       'completed'))['output'])
+        plan = proposal(job, plan_class(job).model_validate((await asyncio.to_thread(self.store.effect_receipt, job,
+                                                                                     best['key'], 'completed'))['output']))
         qa['plan_findings'] = best['findings']
         await asyncio.to_thread(self.store.save, job, 'reviewing', plan=plan.model_dump(mode='json'), qa=qa)
 
