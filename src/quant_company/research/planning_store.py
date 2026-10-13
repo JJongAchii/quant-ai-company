@@ -1,7 +1,7 @@
 """Owner-activated research questions and service-recorded gaps. No model calls."""
 
 import json
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from psycopg.types.json import Jsonb
 
@@ -30,6 +30,10 @@ class QuestionStore:
             raise PolicyError("Research questions require an active project")
         self.company._check_sources(conn, project["id"], spec.source_refs)
         if program_id is not None:
+            try:
+                program_id = str(UUID(str(program_id)))
+            except ValueError as exc:
+                raise PolicyError("Question program ID is invalid") from exc
             found = conn.execute("SELECT project_id FROM research_programs WHERE id=%s", (program_id,)).fetchone()
             if not found or found["project_id"] != project["id"]:
                 raise PolicyError("Question program is outside this project")

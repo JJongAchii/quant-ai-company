@@ -143,3 +143,12 @@ def test_pending_questions_are_separate_targets(planning):
         pending = [t for t in targets(planning.company, conn, project) if t.state == "pending_approval"]
     # apply_owner_command explains instead of choosing when more than one target is pending.
     assert {str(t.target_id) for t in pending} == {first["id"], second["id"]}
+
+
+def test_malformed_program_id_is_rejected_as_policy(planning):
+    # Model input must end in a proposal rejection, never a database error that retries the activity.
+    with planning.company.db.transaction() as conn:
+        project = planning.company._project(conn, planning.project["project_id"])
+        with pytest.raises(PolicyError, match="program ID"):
+            planning_tool(planning.company, conn, project, director_task(planning, conn),
+                          {"action": "planning_question_draft", "spec": spec(), "program_id": "not-a-uuid"})

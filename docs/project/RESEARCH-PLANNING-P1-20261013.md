@@ -34,9 +34,9 @@ flag가 꺼져 있으면 다음이 모두 지켜진다. 테스트로 확인했�
 
 ## 검증
 
-- **새 테스트 48개**: 계약 7, 질문 12, 근거 선택 11, triage·replay 18. 실제 PostgreSQL(로컬 14)에서 돌렸고 모델 호출은 0회다.
+- **새 테스트 49개**: 계약 7, 질문 13, 근거 선택 11, triage·replay 18. 실제 PostgreSQL(로컬 14)에서 돌렸고 모델 호출은 0회다.
 - **리팩터링 회귀**: 연구 프로그램·조건부·데이터 관련 테스트가 리팩터링 전후 모두 92개 통과, 3개 건너뜀으로 같았다.
-- **전체 테스트**: CI와 같은 명령(`pytest -m 'not live' tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py`)으로 2,611개 통과, 78개 건너뜀, 실패 0. 로컬 PostgreSQL 14에서 돌렸고, CI는 16을 쓴다.
+- **전체 테스트**: CI와 같은 명령(`pytest -m 'not live' tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py`)으로 2,612개 통과, 78개 건너뜀, 실패 0. 로컬 PostgreSQL 14에서 돌렸고, CI는 16을 쓴다.
 - **lint**: ruff 통과.
 
 ## 과거 과제 replay (프로그램 `e06537d3`, 과제 12건)
