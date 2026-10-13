@@ -1,0 +1,140 @@
+{
+  "installation": {
+    "started_at": "2026-10-07T10:44:51.088284+00:00",
+    "source_commit": "7b45a912982b87bdfa8dc419aa4665089cfd0581",
+    "previous_source_root": "bfa923b392cc880e54978cc28041970d6cc06dd6",
+    "authorization": "응 보완해줘 ㅎㅎ",
+    "phase": "installed",
+    "publication_enabled": true,
+    "model_calls": 0,
+    "slack_calls": 0,
+    "actual_model_quality_evaluated": false,
+    "profiles": [
+      {
+        "base_image": "sha256:4585b41b81a2f39b0e53a1263a743dfeadbb2180012ed4c2fc292c3637641216",
+        "image": "quant-company:7b45a912982b87bdfa8dc419aa4665089cfd0581-editorial0",
+        "services": [
+          "news-worker",
+          "dispatch"
+        ],
+        "changed": [
+          "quant_company/briefing/coverage.py",
+          "quant_company/briefing/editor.py",
+          "quant_company/briefing/inventory.py",
+          "quant_company/briefing/planning.py",
+          "quant_company/staff/playbooks/market_brief.md"
+        ],
+        "complete_source_inventory_verified": true,
+        "source_inventory_sha256": "0653c97ff281d5632e93e46ea1f5f0cb3e73ba35d86d615e04809fba3e707daa"
+      },
+      {
+        "base_image": "sha256:9284fcc3eaf66bb21b0e635fe5cefaea4cebc1b0c78b2e3e88d5c4d70f59a0e3",
+        "image": "quant-company:7b45a912982b87bdfa8dc419aa4665089cfd0581-editorial1",
+        "services": [
+          "briefing-data-worker"
+        ],
+        "changed": [
+          "quant_company/briefing/coverage.py",
+          "quant_company/briefing/editor.py",
+          "quant_company/briefing/inventory.py",
+          "quant_company/briefing/planning.py",
+          "quant_company/staff/playbooks/market_brief.md"
+        ],
+        "complete_source_inventory_verified": true,
+        "source_inventory_sha256": "2fbffa2edacce38953f3e3adf0d45938b5c4265a60fcfb844be0be6e894d5533"
+      }
+    ],
+    "files": {
+      "quant_company/briefing/editor.py": {
+        "before": "78a5360bdbf132b8a2707d38df194948bee39d82ae56d8c1329a864fd040bbd7",
+        "after": "d01557fefa50011795de5d71b4d693cb3ff025a10a7f52c353ee1c5d04f3ce70"
+      },
+      "quant_company/briefing/planning.py": {
+        "before": "076bb1a1b84410f45e0cc55d0dfecc19d08876534ebb8da91ed71415788ae57c",
+        "after": "8260634de586a17bbcad17c47b5b59e9126d491beace3d4c8468c07d98904688"
+      },
+      "quant_company/briefing/inventory.py": {
+        "before": "169c4aea993a613eb9a2794788d4d542d76ed42ba83f36a8d628d86de6aa364b",
+        "after": "25b195cb894b7e49399758f1fd020818849deb79a2c4c3c05086c0b939ee98cd"
+      },
+      "quant_company/briefing/coverage.py": {
+        "before": "3e2f7b7300f224650eacf315890c18f39558cb0ad7d73b5f23719870f65f6e44",
+        "after": "974f93ba1841a50836a53190ef8c0d630af761567773f6e0a1c2685868d34753"
+      },
+      "quant_company/staff/playbooks/market_brief.md": {
+        "before": "a718301296872cd0dd2dab402a88cd917b4f93ab08c6645f8da1bfdf244707c1",
+        "after": "22830e4230c0121c4e8588b090572adcfc50146bd99323981464b516d331b80e"
+      }
+    },
+    "initial_staging_failure": "Missing docs directory in preserved source root; no running service was changed.",
+    "completed_at": "2026-10-07T10:45:04.668996+00:00",
+    "cutover_started_at": "2026-10-07T10:45:48.832209+00:00",
+    "installed_at": "2026-10-07T10:45:55.152212+00:00",
+    "runtime_bindings_preserved": true,
+    "unrelated_services_preserved": true,
+    "environment_changed_keys": [
+      "RELEASE_COMMIT"
+    ],
+    "database_mutations": 0,
+    "schema_model_schedule_limits_changed": false,
+    "source_root": "7b45a912982b87bdfa8dc419aa4665089cfd0581",
+    "environment_after_sha256": "877e1f44a2dbddff9d43553066c336e1aab5fd771b886b4bc1990efe3b78fb6f"
+  },
+  "postinstall": {
+    "recorded_at": "2026-10-07T10:48:14.921105+00:00",
+    "source_root": "7b45a912982b87bdfa8dc419aa4665089cfd0581",
+    "publication_enabled": true,
+    "active_editions": 0,
+    "runtime_env_sha256": "877e1f44a2dbddff9d43553066c336e1aab5fd771b886b4bc1990efe3b78fb6f",
+    "services": [
+      {
+        "name": "/quant-company-news-worker-1",
+        "container_id": "06d8313c84c30775dce26776ae18e1c60b50f661c1a19727f4a047b8c5a3eb06",
+        "image": "quant-company:7b45a912982b87bdfa8dc419aa4665089cfd0581-editorial0",
+        "image_id": "sha256:ed68f0ad877b3b11d5da06f9f7a877bde5d5611b648971862c93dbea2ea37937",
+        "running": true,
+        "oom": false,
+        "source_hashes": {
+          "quant_company/briefing/editor.py": "d01557fefa50011795de5d71b4d693cb3ff025a10a7f52c353ee1c5d04f3ce70",
+          "quant_company/briefing/planning.py": "8260634de586a17bbcad17c47b5b59e9126d491beace3d4c8468c07d98904688",
+          "quant_company/briefing/inventory.py": "25b195cb894b7e49399758f1fd020818849deb79a2c4c3c05086c0b939ee98cd",
+          "quant_company/briefing/coverage.py": "974f93ba1841a50836a53190ef8c0d630af761567773f6e0a1c2685868d34753",
+          "quant_company/staff/playbooks/market_brief.md": "22830e4230c0121c4e8588b090572adcfc50146bd99323981464b516d331b80e"
+        }
+      },
+      {
+        "name": "/quant-company-dispatch-1",
+        "container_id": "c0171a48f601d067e4a7ddcc0593ebbf5bc445465b3f64c98bfab16a3fa12139",
+        "image": "quant-company:7b45a912982b87bdfa8dc419aa4665089cfd0581-editorial0",
+        "image_id": "sha256:ed68f0ad877b3b11d5da06f9f7a877bde5d5611b648971862c93dbea2ea37937",
+        "running": true,
+        "oom": false,
+        "source_hashes": {
+          "quant_company/briefing/editor.py": "d01557fefa50011795de5d71b4d693cb3ff025a10a7f52c353ee1c5d04f3ce70",
+          "quant_company/briefing/planning.py": "8260634de586a17bbcad17c47b5b59e9126d491beace3d4c8468c07d98904688",
+          "quant_company/briefing/inventory.py": "25b195cb894b7e49399758f1fd020818849deb79a2c4c3c05086c0b939ee98cd",
+          "quant_company/briefing/coverage.py": "974f93ba1841a50836a53190ef8c0d630af761567773f6e0a1c2685868d34753",
+          "quant_company/staff/playbooks/market_brief.md": "22830e4230c0121c4e8588b090572adcfc50146bd99323981464b516d331b80e"
+        }
+      },
+      {
+        "name": "/quant-company-briefing-data-worker-1",
+        "container_id": "598c2293d93c37d049605d4dfd7b1bc2a9634bb1fd6b9a2a9c70afc4f6f8d8e9",
+        "image": "quant-company:7b45a912982b87bdfa8dc419aa4665089cfd0581-editorial1",
+        "image_id": "sha256:d3dccd26e0438ab324d06ea59df105ba5bbd00e49e5b0389919ec903fe52d99e",
+        "running": true,
+        "oom": false,
+        "source_hashes": {
+          "quant_company/briefing/editor.py": "d01557fefa50011795de5d71b4d693cb3ff025a10a7f52c353ee1c5d04f3ce70",
+          "quant_company/briefing/planning.py": "8260634de586a17bbcad17c47b5b59e9126d491beace3d4c8468c07d98904688",
+          "quant_company/briefing/inventory.py": "25b195cb894b7e49399758f1fd020818849deb79a2c4c3c05086c0b939ee98cd",
+          "quant_company/briefing/coverage.py": "974f93ba1841a50836a53190ef8c0d630af761567773f6e0a1c2685868d34753",
+          "quant_company/staff/playbooks/market_brief.md": "22830e4230c0121c4e8588b090572adcfc50146bd99323981464b516d331b80e"
+        }
+      }
+    ],
+    "model_calls": 0,
+    "slack_calls": 0
+  },
+  "quality_certified": false
+}

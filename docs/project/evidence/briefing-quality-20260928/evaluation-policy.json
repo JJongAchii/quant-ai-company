@@ -1,0 +1,49 @@
+{
+  "frozen_at": "2026-09-27T22:51:19.968900+00:00",
+  "format_version": 7,
+  "validation_version": 4,
+  "selection_version": 3,
+  "editorial_digest": "4229ffa0d9b988eb0b2b07c335b9762ccb9783693716a75513715febfdcf73cb",
+  "procedure_digest": "ffe675f1a5df9f052688fc48f5a6f054f365185bd2ffa7aba328fe3848d9b417",
+  "files_sha256": {
+    "src/quant_company/briefing/editor.py": "0a122558aadf41537f516ad57cf49fb10fb9615edcb5b4ba496e2fdeef819c6b",
+    "src/quant_company/briefing/coverage.py": "f7736f6f848531c35c115656585bc7a8b4a8e06c9617fba07ff651ec4d412496",
+    "src/quant_company/briefing/numeric.py": "3d0146632f7dbf5937a61d0a0b17444cbea5df7968ae07e8d2591865852c5990",
+    "src/quant_company/briefing/inputs.py": "955c814c29c4bc1e723ea4b59f790c1b6e9449643570ca304b648d331cc8286a",
+    "src/quant_company/briefing/store.py": "aa2cbbe158b430ec78efc7a2e3527519dcae61f9ff3231e9dad6c75932ab11eb",
+    "src/quant_company/briefing/qualification.py": "95615bb26a45e191011a4af22d5c4a2a08911633e1006aa46c7e7dac69334b93",
+    "src/quant_company/staff/playbooks/market_brief.md": "ffe675f1a5df9f052688fc48f5a6f054f365185bd2ffa7aba328fe3848d9b417",
+    "scripts/evaluate_briefing.py": "27e89836b776fda68e1c13035f3f12fe3afa6ed2d46e92898e807cd60d3b65c1",
+    ".local/briefing-quality-read-20260928.py": "a5cfa96e1d2681fb77effcd97206225263fe93dd6df2ee05259c29d02b7f73be",
+    ".local/fetch-briefing-quality-20260928.py": "e27794bb94b6f895fee55f9c7053c46b1d239660abb65d104416153096c2037a",
+    ".local/prepare-briefing-quality-20260928.py": "d6e679cbc91e18b87329bfeffe53623e88cbdd07b0f9c1565425cdf73f19af6b"
+  },
+  "cases": [
+    "am-20260924",
+    "pm-20260923"
+  ],
+  "case_selection": "First unused completed AM and PM editions following the prior 2026-09-23 AM evaluation. Fixed before reading source titles or bodies. These are unseen editions; overlapping originals are counted separately.",
+  "source_selection": "Same bounded cached-original SQL selection as inputs.collect: 30 hours, at most 48 articles per origin, 600 total, then unchanged selection v3. No retrospective current lake values, search or calendar fetch.",
+  "checks": [
+    "alternatives",
+    "causality",
+    "counterevidence",
+    "coverage",
+    "depth",
+    "falsifiability",
+    "materiality",
+    "numbers",
+    "readability",
+    "sources",
+    "timing",
+    "transmission"
+  ],
+  "pass": "All twelve semantic checks true, verdict publish, no mechanical rejection, complete core observations, no unresolved quote conflict. All first attempts and one possible repair retained.",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_writer_reviewer_calls_per_case": 4,
+  "repair": "Only one after a confirmed failure, using the service mechanically accepted draft and combined rejections. Offline replay does not qualify live timing. No uncertain replay.",
+  "latency": "Record actual writer, review, repair and final-review seconds. Compare their sum with 20-minute nominal and 30-minute final window; excludes queue and collection.",
+  "slack": "not_called",
+  "production_settings": "unchanged"
+}

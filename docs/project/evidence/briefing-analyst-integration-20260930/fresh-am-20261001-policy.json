@@ -1,0 +1,39 @@
+{
+  "case": "am-20261001-v38",
+  "frozen_at": "2026-09-30T12:29:07.881010+00:00",
+  "scope": "Prospective new trading day, frozen before future cutoff or any future originals; no model call or scheduling/Slack effect yet",
+  "edition": {
+    "id": "29ce50b2-377e-587c-bd27-8038c9f1b649",
+    "day": "2026-10-01",
+    "kind": "am",
+    "due_at": "2026-10-01T07:45:00+09:00",
+    "starts_at": "2026-10-01T06:40:00+09:00",
+    "cutoff": "2026-10-01T07:00:00+09:00",
+    "expires_at": "2026-10-01T08:45:00+09:00",
+    "us_session": "2026-09-30",
+    "kr_session": "2026-10-01",
+    "previous_us_session": "2026-09-29",
+    "previous_kr_session": "2026-09-30",
+    "weekly": null
+  },
+  "schedule_version": 2,
+  "format_version": 15,
+  "validation_version": 38,
+  "writer_sha256": "097f2c2392184dde6eaab8f511abe1273d30f6f31455d8e4b687b352423236ad",
+  "reviewer_sha256": "e926199a58784ab7df8b6d553d8a3542bf0390e6e73a07b344be868fea6e722d",
+  "editorial_patch_sha256": "8467811bacceb8cee83ef25c9e484070870add96fdf534dd669faea327a11ba2",
+  "analyst_pack_sha256": "a718301296872cd0dd2dab402a88cd917b4f93ab08c6645f8da1bfdf244707c1",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_completed_calls": 5,
+  "repair": "At most one confirmed repair: planner, writer, reviewer, repair, final review. Never replay uncertain effect with newID. Only confirmed unexecuted busy may retry exactsameID.",
+  "source_rule": "Registered enabled digest-matching company originals, published and stored before exact cutoff within30hours; freeze candidate identities/content and existing pre-cutoff market snapshot. No current search/lake historical backfill. Max96candidates,16selected,42000source chars. Requested frozen supplements remain within same budget.",
+  "acceptance": [
+    "All12 checks and publish verdict; zero mechanical or semantic rejects, quote conflicts",
+    "Independent original-to-visible-main audit before critique; all actual response receipts",
+    "No same-source development score counted as fresh qualification"
+  ],
+  "slack": "not_called",
+  "deployment": "not_performed",
+  "status": "awaiting_future_cutoff"
+}

@@ -1,0 +1,33 @@
+{
+  "case": "pm-20260928-fresh-format9-validation11",
+  "frozen_at": "2026-09-28T22:43:43+00:00",
+  "selection_reason": "The completed Monday PM edition has not been used for a model briefing evaluation. Selected after preserving the 2026-09-28 AM independent-content failure, before fetching or reading this edition's original titles or contents.",
+  "day": "2026-09-28",
+  "edition_kind": "pm",
+  "us_session": null,
+  "kr_session": "2026-09-28",
+  "cutoff": "2026-09-28T19:40:00+09:00",
+  "due_at": "2026-09-28T20:00:00+09:00",
+  "format_version": 9,
+  "validation_version": 11,
+  "selection_version": 3,
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_writer_reviewer_calls": 4,
+  "repair": "At most one full-proposal or condition repair after a valid proposal and confirmed valid review failure. Invalid typed writer or reviewer output fails this case. Preserve uncertain calls without a new request ID.",
+  "source_selection": "Use only historical originals both retrieved and published by the exact cutoff, published within 30 hours, from registered enabled use_for_summary sources with matching digest. Read at most 48 per origin and 600 total, then apply unchanged selection version 3 to at most 16 excerpts. Historical qdata rows may be included only with a frozen object identity and independent evidence they were available by cutoff. No retrospective current lake or web search.",
+  "independent_check": "Write source-by-source substantive notes after selecting originals but before viewing the writer response. Compare the final main post with those notes; model self-review alone is insufficient. Verify Korean-session market numbers, venue, source date, and contradiction by original.",
+  "pass": "Typed proposal and review valid, all twelve semantic checks true, reviewer verdict publish, no mechanical rejections, Korean close accurately distinguished from provisional/intraday reports, every quoted market number and date actually supported at its true timestamp, no quote conflicts, and independent original-to-main-post check finds no material omission or error. Report actual elapsed model time separately from historical scheduled timing. This one offline date cannot qualify five-day live publication.",
+  "files_sha256": {
+    "src/quant_company/briefing/editor.py": "a26cf8a2c6753007c8d789d9f1631d6be54e9ad24fa2d93f686ec4b7aaba47d8",
+    "src/quant_company/briefing/numeric.py": "27d7d76ce40b420df8790906852c29aaca7865e54fa17324ab2464dadd78dcbc",
+    "src/quant_company/briefing/contracts.py": "9e91ac2adcda91fb2fedfa2e238b5e1b1a756ad0dcbf195a55f536599d79c930",
+    "src/quant_company/briefing/coverage.py": "f7736f6f848531c35c115656585bc7a8b4a8e06c9617fba07ff651ec4d412496",
+    "src/quant_company/briefing/inputs.py": "955c814c29c4bc1e723ea4b59f790c1b6e9449643570ca304b648d331cc8286a",
+    "src/quant_company/briefing/schedule.py": "06b93dfd30cda89388b7b475d554058a9330f1b09dd4c175059b0426e4911ff0",
+    "src/quant_company/roles.json": "ae7ba58e4bc018cc34707d137c7bf4a9ffe32b2002f8bd2e95fa94e765c90318",
+    "src/quant_company/staff/packs.py": "f8318bd6d32acfe7315b7328186b745f86f95eeaa65b4839b9c0a5809dbe108d",
+    "scripts/evaluate_briefing.py": "27e89836b776fda68e1c13035f3f12fe3afa6ed2d46e92898e807cd60d3b65c1"
+  },
+  "offline_scope": "Actual cached originals and existing subscription writer/reviewer; no Slack post, no database mutation, no paid API key fallback."
+}

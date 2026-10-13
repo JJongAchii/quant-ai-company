@@ -1,0 +1,9 @@
+{
+  "case": "pm-20260924-fresh-analyst-quality",
+  "source_snapshot_count": 155,
+  "scheduled_pm_edition": false,
+  "reason": "The exchange calendar has no Korean session on 2026-09-24, so the service schedules no PM edition. The prior frozen policy incorrectly assumed an edition.",
+  "outcome": "unavailable_calendar_closed",
+  "model_calls": 0,
+  "slack": "not_called"
+}

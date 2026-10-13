@@ -1,0 +1,32 @@
+{
+  "source_commit": "6408543abc36a2fa3a6922e398c6cc6b90f52f68",
+  "owner_approval": "chat-analyst-execution-approved-20261007",
+  "staged_at": "2026-10-07T00:48:35.427914+00:00",
+  "cutover_result_at": "2026-10-07T00:51:28.020012+00:00",
+  "result": "rolled_back",
+  "error": "preview_existing_runtime_binding_changed",
+  "diagnosed_cause": "The source-profile overlay omitted an existing extra news-worker secret mount named trend_naver_credentials. The canonical Compose file did not declare that later-added mount.",
+  "rollback_limitation": "Rollback restored the original images and configuration but reused the same incomplete mount overlay. A separate verified restoration was necessary.",
+  "restoration": {
+    "recorded_at": "2026-10-07T01:00:35.109902+00:00",
+    "state": "restored",
+    "service": "news-worker",
+    "image_unchanged": true,
+    "original_mount_inventory_restored": true,
+    "configuration_preserved": true,
+    "secret_values_read_or_changed": false,
+    "company_source_unchanged": true
+  },
+  "restoration_readback": "All four selected services matched their original mount inventory. No added, missing or changed environment keys; commands, entrypoints, users and working directories matched. All services running, zero restarts and no OOM.",
+  "correction": "Preserve every existing read-only service secret by its exact absolute destination and original file reference in both cutover and rollback. Actual host Compose rendering and a news-worker recreation verified the correction before another Analyst cutover.",
+  "corrected_installer_commit": "15215a4e7c7d3188551278c1ec36fed85d428436",
+  "verification": {"installer_tests_passed": 27, "lint": "passed"},
+  "analyst_model_source_or_quality_criteria_changed": false,
+  "publication_enabled": false,
+  "content_quality_certified": false,
+  "database_backup": {
+    "bytes": 372911025,
+    "sha256": "f5030f3fa3354fad553e94d70c2747e1af74f4da5358d0303b481aed2e754180",
+    "restored": false
+  }
+}

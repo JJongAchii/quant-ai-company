@@ -1,0 +1,230 @@
+{
+  "scope": "Historical original-source offline development evaluation; no five-day scheduled preview, human certification or Slack delivery.",
+  "snapshot": {
+    "path": "source-snapshots.json",
+    "sha256": "a1a88625be32c7d500bdb71fcd8993210b9324ee96deeb0325437dc582cec360"
+  },
+  "selection_note": "PM v3 was changed after its source titles were inspected; final-policy unseen-date performance is unmeasured.",
+  "repair_note": "PM offline repair feedback included the raw first proposal; production feedback uses the mechanically accepted proposal. Do not count the repair as an exact live workflow replay.",
+  "assessments": {
+    "am_initial": {
+      "path": "am-20260923-reviewed/assessment.json",
+      "passed": false,
+      "quality": {
+        "substantive": false,
+        "reduced": true,
+        "issue_count": 0,
+        "missing_core": [
+          "nasdaq",
+          "sp500"
+        ],
+        "fallback": "editorial_review_withheld",
+        "assurance": {}
+      },
+      "rejected": {},
+      "review_verdict": "reduce",
+      "failed_checks": [
+        "counterevidence",
+        "coverage",
+        "depth"
+      ],
+      "source_assessment_count": 16
+    },
+    "am_revised": {
+      "path": "am-20260923-final-review-replay-v6/assessment.json",
+      "passed": false,
+      "quality": {
+        "substantive": true,
+        "reduced": true,
+        "issue_count": 5,
+        "missing_core": [],
+        "fallback": null,
+        "assurance": {
+          "dow": "single_source",
+          "nasdaq": "single_source",
+          "sp500": "single_source"
+        }
+      },
+      "rejected": {
+        "oil_counterproposal": "semantic_review"
+      },
+      "review_verdict": "reduce",
+      "failed_checks": [
+        "counterevidence",
+        "coverage",
+        "depth",
+        "readability"
+      ],
+      "source_assessment_count": 16
+    },
+    "pm_initial": {
+      "path": "pm-20260921-reviewed/assessment.json",
+      "passed": false,
+      "quality": {
+        "substantive": false,
+        "reduced": true,
+        "issue_count": 0,
+        "missing_core": [
+          "kosdaq",
+          "kospi"
+        ],
+        "fallback": "editorial_review_withheld",
+        "assurance": {}
+      },
+      "rejected": {
+        "trade_fact": "unsupported_prose_number",
+        "rates_fact": "unsupported_prose_number"
+      },
+      "review_verdict": "reduce",
+      "failed_checks": [
+        "materiality",
+        "counterevidence",
+        "coverage",
+        "depth"
+      ],
+      "source_assessment_count": 16
+    },
+    "pm_revised": {
+      "path": "pm-20260921-revised-final/assessment.json",
+      "passed": true,
+      "quality": {
+        "substantive": true,
+        "reduced": false,
+        "issue_count": 6,
+        "missing_core": [],
+        "fallback": null,
+        "assurance": {
+          "kosdaq": "single_source",
+          "kospi": "single_source",
+          "usdkrw": "single_source"
+        }
+      },
+      "rejected": {},
+      "review_verdict": "publish",
+      "failed_checks": [],
+      "source_assessment_count": 16
+    }
+  },
+  "receipts": [
+    {
+      "path": "am-20260923/write-receipt.json",
+      "sha256": "18e6bde606d244e79d5f689136b6e24ec71fd72956a28c906e9ae0f4eee0d663",
+      "request_id": "news-brief-eval-1a6505a3296ebf3d6afe2e5a21901cf9",
+      "request_sha256": "ce90bee8c9601c0884be1ad4996a0c5675c6ceb4754fe8b32d8aad939904743b",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923/review-corrected-receipt.json",
+      "sha256": "5658a5827e01025d2df3c9b868296373660a26676ecb1328ca1b5c1238fc6190",
+      "request_id": "news-brief-eval-b4adf9a96e9d1108e1b9500eb323cb77",
+      "request_sha256": "b7db80f0350e423a2027b686f32c79ff7bb5636a8980d9fe8bfe7f302ea0220b",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923/revise-receipt.json",
+      "sha256": "c23be37141ec379ae9c1d0eb3ad17b5634477f1258d8c76835bf2ca6af9a74d1",
+      "request_id": "news-brief-eval-ac9fc906eac551ab05d22b10644fc38c",
+      "request_sha256": "8150c16adbf164e885a66f04e2923fc64e3e076c68ce526e330a64c9666be501",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923-revised/review-receipt-replay-1790142663.json",
+      "sha256": "e8e4d19acc009ce68578d1db583f5d8ce5362dde6d6bc96bf67306b0b1a90a81",
+      "request_id": "news-brief-eval-f70d32ce1ea1aa0b7b303016120a0ecf",
+      "request_sha256": "48f4e53d82780dada44d045f8ca5b4f63daa1dea687e3ee137796e49511d9184",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923/independent-receipt.json",
+      "sha256": "fa26103f5eba8a0c92d5280c9b56b43e54b901a760f37afb2313089348de9f28",
+      "request_id": "brief-heldout-independent-78f8b8b1ecfe95aadd48e50b",
+      "request_sha256": "ef3edfd22657acd9e850a937d583660630b13f4fbf4f88d7f25fab3dada58743",
+      "provider": "claude",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "am-20260923-revised/independent-receipt.json",
+      "sha256": "a6433b60de9da91207da86c857283eb9f7951d6085970303c8a66abde7c5ccb4",
+      "request_id": "brief-heldout-independent-b44d24b7867b03112ba95756",
+      "request_sha256": "44584426a337c2dccbad60a56cc14aab8c6d4dec3b9f16586cb9c87dba72062b",
+      "provider": "claude",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "pm-20260921-final-v6/write-receipt.json",
+      "sha256": "a4a2f97b31cafecef204267bd94a2bcf95b4475cc952c3716c0293d760195c74",
+      "request_id": "news-brief-eval-55671064f63a31ad64b6be7c5ee5e351",
+      "request_sha256": "72ab619eb5fd11548d16f5875a174c0297071aca2f9a40cd73f8c8fec4c7888e",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "pm-20260921-rechecked/review-receipt.json",
+      "sha256": "884961226191e09cf92cf0b754102b5482987fca8c50728c4dac95f226f11833",
+      "request_id": "news-brief-eval-55325893eb1259d161bdf507d6ee38e5",
+      "request_sha256": "09deea5bb8bdc21674b40a889aa34a9e8911d913dc9060a86041ecf58c656673",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "pm-20260921-rechecked/independent-receipt.json",
+      "sha256": "fc000f73caa476d677af4116484a795f1c1f26fcb7197ca51f33c19f2b71ffef",
+      "request_id": "brief-heldout-independent-a8a888d7120a770e0ef3039f",
+      "request_sha256": "be7fc61c2bb8449a5802180f19e03dd53e3605e2cc0052867b296bbbfaf8547d",
+      "provider": null,
+      "fault": "uncertain",
+      "transport": null
+    },
+    {
+      "path": "pm-20260921-revised/revise-receipt.json",
+      "sha256": "5777d9660a019ba77ed23c55ff6848f4a0df7e639b6c1d4115937a7311b3b42a",
+      "request_id": "news-brief-eval-9d69a9abc22e491d853c9c2df0735bc0",
+      "request_sha256": "ddc572d2db6e70f0b365e2c27fe0b00e35c02faf7488c004cae50255432b1697",
+      "provider": null,
+      "fault": null,
+      "transport": "uncertain"
+    },
+    {
+      "path": "pm-20260921-revised/revise-receipt-replay-1790144367.json",
+      "sha256": "b19ceb14a77d12f96e5436d95426bba804333c64d9e602709fdce996575c9744",
+      "request_id": "news-brief-eval-9d69a9abc22e491d853c9c2df0735bc0",
+      "request_sha256": "ddc572d2db6e70f0b365e2c27fe0b00e35c02faf7488c004cae50255432b1697",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    },
+    {
+      "path": "pm-20260921-revised-rechecked/review-receipt.json",
+      "sha256": "06be1b5c56835fdda2512f196b0cc3a7605cdf5daaf980cae4879b5bd6f09c09",
+      "request_id": "news-brief-eval-a8f86d85bad6a16abc5a1a90b36d7d91",
+      "request_sha256": "754588c5ddf92316d0a023e5242544bdb1f09ab576589fe934961f3ab6c6fd57",
+      "provider": "codex",
+      "fault": null,
+      "transport": null
+    }
+  ],
+  "validation": {
+    "command": "UV_CACHE_DIR=/private/tmp/uv-cache uv run pytest -q --junitxml=docs/project/evidence/briefing-heldout-20260923/regression-validation-v3.xml",
+    "tests": 1111,
+    "passed": 1075,
+    "skipped": 36,
+    "failures": 0,
+    "errors": 0,
+    "briefing_temporal_tests": 3,
+    "briefing_temporal_skipped": 0,
+    "junit_sha256": "7adcdd1fb1b9171987f20e657f223507381dfe5928aed7bbf45780de31b863c1"
+  },
+  "publication": "disabled"
+}

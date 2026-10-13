@@ -1,0 +1,23 @@
+{
+  "checked_at": "2026-09-29T06:18:57+00:00",
+  "case": "pm-20260922-fresh-analyst-quality",
+  "before_reviewer_response": true,
+  "draft_assessment": "draft/assessment.json",
+  "mechanical_rejections": {
+    "iran_fact": "A purported verbatim CNBC quote ends with a comma, but the stored original ends with a period before the closing quotation mark.",
+    "iran_interpretation": "The same nonverbatim quote is reused. The validator removes these two items and the Iran issue cannot appear in the main post."
+  },
+  "supported_main_findings": [
+    "KOSPI +0.15% / KOSDAQ -0.23%, opening fade, Samsung-Hynix split, KRX investor flows and sector divergence are visible and dated.",
+    "USD/KRW 15:30 level and 22.8-won drop, Korean 3y/10y yield divergence and US early-ET yield observation are distinguished by time.",
+    "BOK nominal-GDP denominator versus repayment capacity, marginal-company rate stress and the prospective bank-capital offset are visible.",
+    "Uber/Delivery Hero pre-review, business mechanism and conditional completion; LG product qualification versus revenue and Hynix lawsuit versus halt are distinguished."
+  ],
+  "material_main_gaps": [
+    "The central US-Iran and energy-supply development is reduced to summary/checkpoint mentions after the quoted Iran issue is rejected. The conditional seven-day proposal, threatened aviation sanctions, prior Brent drop and subsequent intraday rebound are not explained together in the reader's main story.",
+    "A long Paramount/WBD US media merger issue displaces more immediate energy and Korean-market context. The merger may be material globally, but its connection to this completed Korean session or the next decision is not established in the main post.",
+    "The next Korean trading session after the holiday is not stated. The selected articles mention a holiday but do not supply an exact restart date, so an unsupported date should not be invented."
+  ],
+  "independent_disposition": "not_publishable_before_review_due_to_two_mechanical_rejections_and_missing_central_energy_story",
+  "slack": "not_called"
+}

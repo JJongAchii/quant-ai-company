@@ -1,0 +1,31 @@
+{
+  "frozen_at": "2026-10-06T08:33:52.834894+00:00",
+  "scope": "Development diagnostic only; not fresh acceptance, not a regrade or reopening of the failed cloud edition.",
+  "closed_edition": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+  "cloud_state": "blocked",
+  "source_snapshot_sha256": "10c64d8f1034b234b14112f2dbd6bcab4ccd01d7fd945e8645fe2215585fcc85",
+  "manual_inventory_corrections": [
+    {
+      "kind": "remove_redundant_inventory_mapping",
+      "source_id": "9a300b84fbef57b21a43ae74a34c6959aba95ba4",
+      "duplicate_main_ids": [
+        "fx_overview",
+        "fx_reference"
+      ]
+    }
+  ],
+  "reader_prose_changed": false,
+  "raw_model_calendar_restored_by_fixed_month_validator": true,
+  "request_id": "news-brief-development-diagnostic-54829133e8cf26eb2f4e1c83",
+  "request_sha256": "c9aded2293147e26778f7c7cc8a70e2fc3ff3ed2e3d852bebda3d231d170674d",
+  "prompt_chars": 87395,
+  "new_write_calls": 0,
+  "new_repair_calls": 0,
+  "maximum_new_review_calls": 1,
+  "total_completed_plan_write_diagnostic_review_budget": 3,
+  "all_twelve_checks_and_full_originals_required": true,
+  "native_search_calls": 0,
+  "automatic_slack_publication": false,
+  "promotes_failed_cloud_case": false,
+  "main_chars": 7431
+}

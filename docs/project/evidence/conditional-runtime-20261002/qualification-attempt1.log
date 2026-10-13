@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "<string>", line 37, in <module>
+  File "/home/achii/quant-company-qualification/conditional-intake-20261002-231d6ba/qualification-01/release-candidates/231d6ba0755f658f167636a8ea2c3ef65b6af562/code/src/quant_company/research/sandbox.py", line 290, in run_sandbox
+    mounts, identity = _validate(spec)
+                       ^^^^^^^^^^^^^^^
+  File "/home/achii/quant-company-qualification/conditional-intake-20261002-231d6ba/qualification-01/release-candidates/231d6ba0755f658f167636a8ea2c3ef65b6af562/code/src/quant_company/research/sandbox.py", line 187, in _validate
+    code = _approved(spec.code_root, (job_root,))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/achii/quant-company-qualification/conditional-intake-20261002-231d6ba/qualification-01/release-candidates/231d6ba0755f658f167636a8ea2c3ef65b6af562/code/src/quant_company/research/sandbox.py", line 126, in _approved
+    _require(any(source.is_relative_to(root) for root in roots), "mount-outside-approved-root")
+  File "/home/achii/quant-company-qualification/conditional-intake-20261002-231d6ba/qualification-01/release-candidates/231d6ba0755f658f167636a8ea2c3ef65b6af562/code/src/quant_company/research/sandbox.py", line 100, in _require
+    raise SandboxError(code)
+quant_company.research.sandbox.SandboxError: mount-outside-approved-root

@@ -1,0 +1,42 @@
+{
+  "checked_at": "2026-09-30T06:34:02.772919+00:00",
+  "scope": "Independent original-source comparison before semantic review; not a pass or new model evidence",
+  "main_characters": 6293,
+  "issue_count": 6,
+  "mechanical_rejections": {
+    "overview_korea_start": "unsupported_prose_number",
+    "kospi_previous_close": "wrong_close_session",
+    "kosdaq_previous_close": "wrong_close_session",
+    "usdkrw_previous_reference": "stale_intraday_observation",
+    "consumer_counterpoint": "unsupported_prose_number"
+  },
+  "findings": [
+    {
+      "item": "overview_korea_start",
+      "classification": "deterministic_false_positive",
+      "cause": "2026.9.29 in exact source quote parsed as decimal 2026.9 rather than year/month/day; month and day in faithful Korean conversion rejected. No calendar inference is needed."
+    },
+    {
+      "item": "consumer_counterpoint",
+      "classification": "deterministic_false_positive",
+      "cause": "two or three tenths of a percentage point converts only final three tenths to 0.3; coordinated two endpoint is left as 2, causing faithful 0.2 endpoint to be rejected."
+    },
+    {
+      "items": [
+        "kospi_previous_close",
+        "kosdaq_previous_close",
+        "usdkrw_previous_reference"
+      ],
+      "classification": "correct_rejection",
+      "cause": "Prior Korea session belongs in explicitly dated prose, not the current-session/fresh market table."
+    }
+  ],
+  "content_findings": [
+    "Essential analytical interpretation now appears in main post, with separate source detail thread.",
+    "Six issues retain explicit effects, competing explanations, and observable next conditions.",
+    "Oil supply restart is separated from unconfirmed peace; patents/general/Korea/special-class exemptions are distinguished from future generic policy.",
+    "Forecast PCE is not stated as a released statistic.",
+    "Card-spending counterevidence and Korea prior-session overview are lost after false-positive pruning; original accepted output should be reviewed and repaired under frozen budget."
+  ],
+  "decision": "Review current pruned proposal without changing validation, preserve initial failure and all receipts; treat subsequent validator fixes and same-source replay as development."
+}

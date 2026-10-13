@@ -1,0 +1,374 @@
+{
+  "actual_production_staff_assessment": false,
+  "artifact_inspection_correction": {
+    "correction": "Read the actual manifest/receipt/runtime structures and use company_commit from each top level. Corrected full evidence check passes. This was a reviewer inspection error, not a product finding.",
+    "initial_error": "Reviewer inspection used manifest.plan.company_commit; actual protocol places company_commit at the manifest top level.",
+    "initial_exit_code": 1
+  },
+  "blocking_findings": [],
+  "causality_guard_limits": [
+    "Read backtest-hygiene SKILL.md and references/guards.md. A green synthetic fixture or single cutoff is not a complete causal verdict.",
+    "No qlab truncation/perturbation/asof guard was run against a real candidate or market panel. Existing synthetic history/rank checks are engineering regressions only.",
+    "Row-correspondence and date-boundary requirements, early-warmup cuts and rank/sign/argmax blind spots remain requirements for future candidate audits. This review does not convert manual long-panel comparisons into a qlab guard pass.",
+    "Reference-adjusted open valuation remains a retrospective theoretical estimand from same-session close/FLUC_RT adjustment values; unchanged source hashes do not make historical fills or cash total return verified."
+  ],
+  "clearance": {
+    "local_engineering_scope": true,
+    "scope": "The frozen integrated policy boundaries, data evidence binding, producer/consumer validation, metadata/report/audit preservation and repaired hypothesis-only source admission only."
+  },
+  "clearances": [
+    {
+      "evidence": "MissionSpec v1/v2 retain optional data.policy retrospective_exploration and exploratory_only assessments. MissionSpec v3 uses signed full data_policy plus scientific_lineage and canonical research_scope. v3 mission, scoped assessment and scoped evidence packet reject legacy policy/decision fields. Omitted legacy optional fields preserve frozen historical encodings and exploratory candidate digest 04cee0f9… matches the separate release plan.",
+      "locations": [
+        "src/quant_company/research/mission_contracts.py:92",
+        "src/quant_company/research/mission_contracts.py:189",
+        "src/quant_company/research/program_contracts.py:101",
+        "src/quant_company/research/data_evidence.py:47"
+      ],
+      "topic": "Separately versioned policy contracts"
+    },
+    {
+      "evidence": "Admission branches are explicit: strict ready, owner-bound legacy exploratory_only or v3 conditional_ready. Unknown historical facts stay false. Exact policy/input/profile/report SHA is rechecked on assessment and selection; extra blocking gaps still reject. v3 packet digest and scope are required. Direct mission approval cannot bypass either program/data review. New policies need their own owner-bound digest; old signatures do not activate them.",
+      "locations": [
+        "src/quant_company/research/programs.py:207",
+        "src/quant_company/research/programs.py:217",
+        "src/quant_company/research/programs.py:230",
+        "src/quant_company/research/data_evidence.py:107",
+        "src/quant_company/research/data_evidence.py:120",
+        "src/quant_company/research/missions.py:160"
+      ],
+      "topic": "Independent data admission and evidence identity"
+    },
+    {
+      "evidence": "Both preserved source metadata formats now reject exact_replication/market_transfer in a strict program and allow novel_hypothesis. Six independent disposable-PG negative/positive controls pass. The original defect and root red receipt remain historically bound to source 4f3bdb7.",
+      "locations": [
+        "src/quant_company/research/programs.py:170",
+        "tests/test_research_source_scope.py:13"
+      ],
+      "topic": "Hypothesis-only source reuse"
+    },
+    {
+      "evidence": "Protected numerical engine bytes and wrapper implementation remain unchanged. Canonical manifest supplies scope, policy and lineage; candidate producer originals remain schema 1 without self-declared scope. Consumer rechecks original SHA/typed content, all receipt/runtime/sandbox scope identities and qualification sample/schema/warmup/sealed restrictions. Actual synthetic final ZIP independently matches producer originals and company commit, with zero scientific trials.",
+      "locations": [
+        "src/quant_company/research/adaptive_executor.py:169",
+        "src/quant_company/research/adaptive_report.py:228",
+        "src/quant_company/research/adaptive_report.py:265",
+        "src/quant_company/research/adaptive_report.py:270"
+      ],
+      "topic": "Producer originals and consumer time/scope checks"
+    },
+    {
+      "evidence": "Reports reject mixed legacy policies and mixed canonical scopes. v3 conditional scope keeps PIT/original/executable/deployment facts false; legacy exploration keeps historical PIT and confirmation/deployment eligibility false. Policy reports are copied into immutable mission/audit supplements. Publication metadata and library copies retain the same restrictions. Legacy supported meaning claims reject at stage commit, backend reload and library publication. Verified audit binding remains required before revealing synthetic metrics.",
+      "locations": [
+        "src/quant_company/research/adaptive_report.py:406",
+        "src/quant_company/research/adaptive_report.py:439",
+        "src/quant_company/research/mission_backend.py:97",
+        "src/quant_company/research/mission_backend.py:774",
+        "src/quant_company/research/controller.py:563",
+        "src/quant_company/research/library.py:115"
+      ],
+      "topic": "Report, metadata, library and meaning limits"
+    },
+    {
+      "evidence": "Prior final semantic clearances are inherited after hash identity checks: canonical scope in staff context, signed history and lineage cap, uncertain reservations, negative outcomes, terminal technical-failure history, strict date/availability filtering and latest-visible rebasing. No new source revision changes these mechanisms. Hypothetical adjusted-open valuation remains retrospective and does not establish actual execution or cash total return.",
+      "locations": [
+        "src/quant_company/research/scientific_lineages.py:29",
+        "src/quant_company/research/program_controller.py:299",
+        "src/quant_company/research/reference/domestic_engine.py:57"
+      ],
+      "topic": "Preserved lineage and causal interpretation"
+    }
+  ],
+  "closed_findings": [
+    {
+      "confirmed_market_data_leak": false,
+      "evidence": "The independently executed synchronized producer/envelope/receipt-hash sealed-date mutation rejected in the pre-integration final audit. Integrated changes do not alter those consumer checks; final 108-test root receipt includes the same four warmup/count/schema mutations.",
+      "final_file_sha256": "aa76abd5489da737bb57a2a4946459da551ef7b01ac2d1f4886a6ad5ec773d20",
+      "final_location": "src/quant_company/research/adaptive_report.py:265",
+      "id": "F1",
+      "initial_file_sha256": "e8d3250e6efdfc6ad3e16c8449dca55a103b0d6276252abf75fdff4bfac3ce8a",
+      "initial_location": "src/quant_company/research/adaptive_report.py:261",
+      "severity": "major",
+      "status": "closed_for_final_package"
+    },
+    {
+      "confirmed_market_data_leak": false,
+      "discovery": "Independent static review; reviewer stdin PG probe was blocked by sandbox and subsequent escalation aborted. Root reproduced the admission defect on disposable actual PG, with two failures and four positive/control passes.",
+      "final_evidence": "Final SQL includes the OR legacy result_use predicate. The reviewer independently reran all six source-policy rejection/positive controls and six dual-policy compatibility tests: 12 passed in 3.54s. Root final 108-test and actual-3070 receipts bind to the same frozen input/source.",
+      "final_file_sha256": "575042ea0b2a470148cfbca71e3eab9af78bd6c8b759e3f237090827ed35637f",
+      "final_location": "src/quant_company/research/programs.py:170",
+      "finding": "legacy_hypothesis_only_source_reuse",
+      "id": "F2",
+      "initial_file_sha256": "5864af50e145801e6e5b90f944739a23cf672c3b12d3db09cb97419799ccfe6c",
+      "initial_input_sha256": "40fe642804055e0bd8e50586cfe04ab9581eb4aaa9feaf13fda45410b1f70f0c",
+      "initial_location": "src/quant_company/research/programs.py:170",
+      "initial_mechanism": "The strict-program source guard matched only v3 research_scope metadata. A source carrying legacy data_policy.result_use=hypothesis_generation_only could pass exact_replication and market_transfer proposal admission.",
+      "initial_source_commit": "4f3bdb762d371455ea0883a73643ddfaf36b921a",
+      "reproduction_receipt": {
+        "path": "docs/project/evidence/conditional-research-20261001/source-scope-defect-reproduction.json",
+        "sha256": "1e0a5c829fc97f5e28c5355efe0c338151840aed8caa4a38738833c0406b6d6f"
+      },
+      "required_change": "Include both limited-source metadata formats in the admission guard and retain novel_hypothesis as the only permitted task mode for either source scope.",
+      "severity": "major",
+      "status": "closed_for_final_package"
+    }
+  ],
+  "commands_and_results": [
+    {
+      "command": ".venv/bin/pytest -q --tb=short tests/test_research_source_scope.py tests/test_research_policy_compatibility.py",
+      "executed_by": "reviewer",
+      "exit_code": 0,
+      "output": "12 passed in 3.54s",
+      "scope": "Disposable actual local PostgreSQL; synthetic approved-source metadata and authenticated fixture ingress. No production staff, real Slack, market input or research run."
+    },
+    {
+      "command": ".venv/bin/python inline pytest plugin probe on tests/test_research_exploration.py::test_strict_program_cannot_use_an_exploratory_decision",
+      "executed_by": "reviewer_prior_interrupted_turn",
+      "exit_code": 1,
+      "output": "Fixture setup failed: local PostgreSQL TCP connection Operation not permitted.",
+      "scope": "No completed defect reproduction. Subsequent escalation was aborted on interruption; it supplies no successful PG evidence."
+    },
+    {
+      "command": "Read the three root JUnit XMLs with ElementTree; recompute receipt/JUnit/ZIP SHA256; compare ZIP company commits and typed producer original/envelope content.",
+      "executed_by": "reviewer",
+      "exit_code": 0,
+      "output": {
+        "archive_sha256": "0fcff77ba83fad0dc0b32b3eb0b123acd3b3906eb1c534252be1748473acc8dc",
+        "company_commit": "492788077481f34c315ce99eec0e39d0bcde9588",
+        "fixture_only": true,
+        "junit_counts_and_hashes_matched": true,
+        "producer_original_bytes_verified": [
+          {
+            "path": "producer-qualification.json",
+            "producer_has_research_scope": false,
+            "schema_version": 1,
+            "sha256": "b2650a3389e88a8b73c7752b88e10eabbd4ed5c88c615e827b3df85f90c6b7eb",
+            "typed_content_equality": true
+          },
+          {
+            "path": "producer-result.json",
+            "producer_has_research_scope": false,
+            "schema_version": 1,
+            "sha256": "e493cb32c8d2e6de0c2d78dbf08b3b5c24e0035306a5e91d4b8263fd62bb3269",
+            "typed_content_equality": true
+          }
+        ],
+        "qualification_sealed_read": false,
+        "scientific_trials_added": 0,
+        "worker_receipt_sha256": "bffa59363dc35ca06a14587cb7c0b7e121f3b63e774bbd0f263bb86c45d18e93"
+      },
+      "scope": "Read-only independent artifact checks; generated synthetic ZIP only. No new remote worker execution."
+    },
+    {
+      "command": "SHA256 all 27 bound files plus protected engine at start/end/before-write and compare their Git bytes at source commit 4927880.",
+      "executed_by": "reviewer",
+      "exit_code": 0,
+      "output": {
+        "bound_files": 27,
+        "input_sha256": "dd5bdd3b3d798e4861d1e3f95fb36579a77c279945bae31f99fa63b7b00c4a26",
+        "source_commit_mismatches": [],
+        "worktree_mismatches": []
+      }
+    }
+  ],
+  "current_runtime_admissible": false,
+  "deployment_approval": false,
+  "engineering_qualification_observed": true,
+  "engineering_qualification_scope": "Exact 4927880 runtime/wrapper producer-to-consumer path using controlled generated synthetic input and unsigned-for-research fixture assignment; not actual market research or runtime activation.",
+  "final_package_recheck_required": false,
+  "financial_performance_approval": false,
+  "historical_point_in_time_verified": false,
+  "input_path": "docs/project/evidence/conditional-research-20261001/implementation-review-input-integrated-final.json",
+  "input_sha256": "dd5bdd3b3d798e4861d1e3f95fb36579a77c279945bae31f99fa63b7b00c4a26",
+  "kind": "local-implementation-audit-integrated-final",
+  "limitations": [
+    "Local implementation verdict only. The engineering pass does not confer actual research staff assessment, historical PIT, readiness, production/deployment/operations approval or new Slack research authority.",
+    "Root actual-PG/Temporal and actual-3070 run receipts were independently checked against raw local artifacts and source hashes; the reviewer did not rerun their full 108-test suite or execute a remote sandbox. Only 12 focused tests were independently rerun.",
+    "The reviewer stdin PG defect probe was blocked by sandbox and escalation was interrupted. Original defect reproduction is attributed to root, with its exact red JUnit retained.",
+    "The raw 3070 ZIP is generated synthetic engineering evidence. Its assignment was reconstructed locally from the receipt and is not real owner authority or market performance.",
+    "No actual market/lake/sealed price input was read, no heavy research/backtest/live order/Slack effect/production mutation occurred, and no scientific trial was added.",
+    "Unchanged code clearances are inherited from preserved prior audits after actual byte checks. program_schema.sql has identity verification only; this review is not an exhaustive database/sandbox/operational audit. Root owns final integration and qws."
+  ],
+  "manifest_identity_verification": {
+    "files_checked": 27,
+    "identity_only_source_files": [
+      "src/quant_company/research/program_schema.sql"
+    ],
+    "immediately_before_json_write_all_matched": true,
+    "protected_engine_matched": true,
+    "review_end_all_matched": true,
+    "review_start_all_matched": true,
+    "source_changes_during_final_review": [],
+    "source_commit_bytes_all_matched": true
+  },
+  "market_price_rows_read": false,
+  "new_slack_research_approval": false,
+  "observed_at": "2026-10-01T05:37:35.162199+00:00",
+  "operational_approval": false,
+  "previous_integrated_review_file": {
+    "exists": false,
+    "path": "docs/project/evidence/conditional-research-20261001/data-implementation-review-integrated.json",
+    "status": "No file was written by this reviewer before the interrupted prior turn. Original integrated input and root reproduction receipt preserve the finding; this task writes only the assigned final file."
+  },
+  "previous_reviews_preserved": [
+    {
+      "path": "docs/project/evidence/conditional-research-20261001/data-implementation-review-initial.json",
+      "sha256": "a56cd7370a95e950e3a5b029b2197968ddf34d3eb23fd23c95e3932730f6ce5d"
+    },
+    {
+      "path": "docs/project/evidence/conditional-research-20261001/data-implementation-review-final.json",
+      "sha256": "203d6b7ed512c2e3f8b4255fcc14b1b906bbd79220257a8cc3115b56fbaafafd"
+    }
+  ],
+  "production_assessment": false,
+  "production_mutated": false,
+  "readiness_granted": false,
+  "remaining_required_gates": [
+    "Actual independent production data/director assessment and a fresh signed canonical program approval before any research activation.",
+    "Runtime/profile and any real data must be authorized for the concrete signed research contract; this synthetic engineering qualification does not activate a profile or establish historical publication/revision/PIT facts.",
+    "Candidate-specific causality guards and independent result audits before financial performance claims; no candidate or market experiment was evaluated here.",
+    "Separate paper/live deployment and operations assessment if requested in a future authorized task."
+  ],
+  "repository_code_modified_by_reviewer": false,
+  "research_activation_approved": false,
+  "reviewed_file_sha256": {
+    ".local/conditional-integrated-final-contracts.xml": "086c86a3e34995051c0658fb009232314764873aa70000fed74be230d7876c9a",
+    ".local/conditional-linux-junit-final.xml": "063a09631c48c53b2784026cc2a6eae1025184602731f8da61a7bdaa39a5d3d3",
+    ".local/conditional-source-scope-before.xml": "3673343a680f477526a3156f46179a1cb5c46ce3ac462795bdba98bb3c99c32a",
+    "docs/project/evidence/conditional-research-20261001/data-implementation-review-final.json": "203d6b7ed512c2e3f8b4255fcc14b1b906bbd79220257a8cc3115b56fbaafafd",
+    "docs/project/evidence/conditional-research-20261001/data-implementation-review-initial.json": "a56cd7370a95e950e3a5b029b2197968ddf34d3eb23fd23c95e3932730f6ce5d",
+    "docs/project/evidence/conditional-research-20261001/implementation-review-input-final.json": "3da7ce39ff289e883236fc017eec23e2d11ade3f84e920233c56edd4dc82d6fb",
+    "docs/project/evidence/conditional-research-20261001/implementation-review-input-integrated-final.json": "dd5bdd3b3d798e4861d1e3f95fb36579a77c279945bae31f99fa63b7b00c4a26",
+    "docs/project/evidence/conditional-research-20261001/implementation-review-input-integrated.json": "40fe642804055e0bd8e50586cfe04ab9581eb4aaa9feaf13fda45410b1f70f0c",
+    "docs/project/evidence/conditional-research-20261001/integrated-final-contract-validation.json": "0ea643e65798a0425404321f6e689c6c055ed237d9238afac7c0775d761768d0",
+    "docs/project/evidence/conditional-research-20261001/source-scope-defect-reproduction.json": "1e0a5c829fc97f5e28c5355efe0c338151840aed8caa4a38738833c0406b6d6f",
+    "docs/project/evidence/conditional-research-20261001/worker-3070-final.json": "bffa59363dc35ca06a14587cb7c0b7e121f3b63e774bbd0f263bb86c45d18e93",
+    "docs/project/evidence/conditional-research-20261001/worker-3070-final.zip": "0fcff77ba83fad0dc0b32b3eb0b123acd3b3906eb1c534252be1748473acc8dc",
+    "docs/project/evidence/conditional-research-20261001/worker-final-qualification.json": "9f055b455e23bdd453ee8f912d5da3daff0bb9b3a74e508a4e7e33fc9d90fd17",
+    "docs/project/evidence/etf-execution-contract-20260930/implementation-spec.md": "be306232e85f6fae4107c3fc78283e41a6520b9b330ec4f724ed39f32ed49d6d",
+    "docs/project/evidence/etf-exploration-20260930/candidate-program.json": "d8da112ab939dbaca20df26bc19bd5e06b144a27da2d96b2406bfb36245d51fd",
+    "docs/project/evidence/etf-exploration-20260930/release-plan.json": "31963e8225251d50c20486c5cc6d90b741c7359250ac9c6c99bc1de61f52ce7f",
+    "src/quant_company/company.py": "b44afd4ab31eddeca30cd6277568a0701be364cec1d04a497993d180a16308b3",
+    "src/quant_company/research/adaptive_contracts.py": "686eb806008d01e82750913354864208e3942fd34fbaee761eea15febcb5e8e3",
+    "src/quant_company/research/adaptive_executor.py": "965956c2ebfba2a668011baecf5f57bd188b4dff8f6f6b376a0f45a2f3fb3385",
+    "src/quant_company/research/adaptive_report.py": "aa76abd5489da737bb57a2a4946459da551ef7b01ac2d1f4886a6ad5ec773d20",
+    "src/quant_company/research/audit.py": "544837f262f54f6321fedad319aa5a8385be6c8b96bf4073296951b83e531889",
+    "src/quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+    "src/quant_company/research/controller.py": "c59d573de8d2e7ec713e32ffb37cefae2aeb65bdafc758798b1c4d5316bbe885",
+    "src/quant_company/research/data_evidence.py": "22310df3dfbb65faaa4ae8bd8b98c5c3b895b9135feb8881b2038e02bf254401",
+    "src/quant_company/research/domestic_profile.py": "ed4eb85cdcd722fd466a7bf77f25119d8cab8be96869ce85c4c06da291bc56bf",
+    "src/quant_company/research/library.py": "d01959a6c2f55c21c715b9554be67eff32f4cca74fceccd718a273cd4a8fe64b",
+    "src/quant_company/research/mission_backend.py": "21e5f7734e4699e909a0f4fa314c18792c1b0278e12034633bc0f0be06e6fa8c",
+    "src/quant_company/research/mission_contracts.py": "2c2ec1aa27c9de196cab109413eb8a6f14071327c59e2912ab80a3a27bcf31c2",
+    "src/quant_company/research/missions.py": "008ba22fa498ed5ddcb8fd1239f27021c63e2067472d7d336dd785dc5b9d912a",
+    "src/quant_company/research/policy_contracts.py": "2c3a46581218ee968ad453c20a08eb78fa5145d0f52f12034c9f8dc07c1c1df0",
+    "src/quant_company/research/program_contracts.py": "415a4bd091059cc925db0e51976c4a0a426ab8764dd2e635b17a272446868fc0",
+    "src/quant_company/research/program_controller.py": "e081fc0cfc764737efa9104ce66000b0740b964ae857eab39c0c99671750e381",
+    "src/quant_company/research/program_schema.sql": "302f91cffabe929ae3ccda05056f92add9e309a32a400105d15f15b9800960d3",
+    "src/quant_company/research/programs.py": "575042ea0b2a470148cfbca71e3eab9af78bd6c8b759e3f237090827ed35637f",
+    "src/quant_company/research/reference/domestic_engine.py": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+    "src/quant_company/research/scientific_lineages.py": "301c64e2404435929c25bd973c72da59b4ca8d8ae1dafbea2a16846217dd941c",
+    "tests/conftest.py": "ef0a8b80d08128e2ac48de1dfc5c34ebb2d82244f7e5866ab7f9f79ecbcfe616",
+    "tests/test_research_adaptive_report.py": "888451be6c8f968cba2cb93918c3f6238b40a069727eacab99041363a8bca554",
+    "tests/test_research_conditional.py": "68c5272b6bbb02bf0ae8d5b3ff354e332e42a84ade08cb03345748116a67d6ad",
+    "tests/test_research_conditional_temporal.py": "7c98e02f427184e633ac819dbe2e9f5efdcac05bd04fa7cea5ab8aaf01789984",
+    "tests/test_research_domestic_linux.py": "dbe39c5cfe91368ad362fef5eddb98ce608b14777d91cd4f9d1a5849af2cee33",
+    "tests/test_research_exploration.py": "97dd9e8f88529e7614ab0ab1e220325fabd32cf8331da2a37e45318cf069d6b4",
+    "tests/test_research_policy_compatibility.py": "b9d1de03c05392f952ed232a99dc794c829c7ca12bef5f9ebcd7c970b6460c61",
+    "tests/test_research_program_e2e.py": "0324b12a9ab5d12c299231fc730afad7fc70e83abaf447c4b532a503f8c7309a",
+    "tests/test_research_source_scope.py": "b6de79b782cb77677d1c3f1e21c4bb53ed7ea3303b136e2eb6ef813f34e686d5"
+  },
+  "reviewer": "local_independent_data_implementation_integrated_final",
+  "root_run_evidence_reviewed": {
+    "actual_3070_engineering": {
+      "archive_sha256": "0fcff77ba83fad0dc0b32b3eb0b123acd3b3906eb1c534252be1748473acc8dc",
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 1
+      },
+      "fixture_only": true,
+      "host_check_mocked_in_receipt": false,
+      "path": "docs/project/evidence/conditional-research-20261001/worker-final-qualification.json",
+      "research_program_authorization": false,
+      "sandbox_mocked_in_receipt": false,
+      "sha256": "9f055b455e23bdd453ee8f912d5da3daff0bb9b3a74e508a4e7e33fc9d90fd17",
+      "source_company_commit": "492788077481f34c315ce99eec0e39d0bcde9588",
+      "strict_local_consumer_passed_in_root_receipt": true,
+      "worker_receipt_sha256": "bffa59363dc35ca06a14587cb7c0b7e121f3b63e774bbd0f263bb86c45d18e93"
+    },
+    "defect_reproduction": {
+      "counts": {
+        "errors": 0,
+        "failures": 2,
+        "skipped": 0,
+        "tests": 6
+      },
+      "path": "docs/project/evidence/conditional-research-20261001/source-scope-defect-reproduction.json",
+      "sha256": "1e0a5c829fc97f5e28c5355efe0c338151840aed8caa4a38738833c0406b6d6f",
+      "source_commit": "4f3bdb762d371455ea0883a73643ddfaf36b921a"
+    },
+    "final_contracts": {
+      "command": ".venv/bin/pytest -q tests/test_research_source_scope.py tests/test_research_policy_compatibility.py tests/test_research_exploration.py tests/test_research_conditional.py tests/test_research_conditional_temporal.py tests/test_research_programs.py tests/test_research_program_e2e.py --junitxml=.local/conditional-integrated-final-contracts.xml --maxfail=2",
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 108
+      },
+      "employees": "scripted fixture",
+      "input_sha256": "dd5bdd3b3d798e4861d1e3f95fb36579a77c279945bae31f99fa63b7b00c4a26",
+      "path": "docs/project/evidence/conditional-research-20261001/integrated-final-contract-validation.json",
+      "postgres": "actual disposable PG",
+      "sha256": "0ea643e65798a0425404321f6e689c6c055ed237d9238afac7c0775d761768d0",
+      "source_file_sha256_matches_all_27": true,
+      "temporal": "actual local test server, restart and replay"
+    },
+    "independently_executed_by_this_reviewer": false,
+    "junit_checks": [
+      {
+        "counts": {
+          "errors": 0,
+          "failures": 2,
+          "skipped": 0,
+          "tests": 6
+        },
+        "failed_test_names": [
+          "test_hypothesis_only_source_retains_scope_in_a_strict_program[exact_replication-legacy_exploratory]",
+          "test_hypothesis_only_source_retains_scope_in_a_strict_program[market_transfer-legacy_exploratory]"
+        ],
+        "path": ".local/conditional-source-scope-before.xml",
+        "sha256": "3673343a680f477526a3156f46179a1cb5c46ce3ac462795bdba98bb3c99c32a"
+      },
+      {
+        "counts": {
+          "errors": 0,
+          "failures": 0,
+          "skipped": 0,
+          "tests": 108
+        },
+        "failed_test_names": [],
+        "path": ".local/conditional-integrated-final-contracts.xml",
+        "sha256": "086c86a3e34995051c0658fb009232314764873aa70000fed74be230d7876c9a"
+      },
+      {
+        "counts": {
+          "errors": 0,
+          "failures": 0,
+          "skipped": 0,
+          "tests": 1
+        },
+        "failed_test_names": [],
+        "path": ".local/conditional-linux-junit-final.xml",
+        "sha256": "063a09631c48c53b2784026cc2a6eae1025184602731f8da61a7bdaa39a5d3d3"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "sealed_price_rows_read": false,
+  "source_commit": "492788077481f34c315ce99eec0e39d0bcde9588",
+  "strategy_performance_reported": false,
+  "verdict": "pass_for_local_implementation_scope"
+}

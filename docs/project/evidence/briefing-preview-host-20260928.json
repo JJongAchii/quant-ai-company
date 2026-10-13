@@ -1,0 +1,52 @@
+{
+  "observed_at": "2026-09-28T05:11:28.478611+00:00",
+  "host": "quant-company-host-4gb-20260928",
+  "installed_release_commit": "ccdcc43c2a0985dcc035262f33d19e0ae979f0a1",
+  "slack": {
+    "workspace": "Achii's Quant Research",
+    "team_id": "T0C1YRDRPNF",
+    "channel": "daily-brief",
+    "channel_id": "C0C2E59B1AA",
+    "owner_user_id": "U0C250E23NW",
+    "analyst_app_id": "A0C4NUZKQBV",
+    "analyst_bot_user_id": "U0C4PJDR8G3",
+    "analyst_installed_and_added_to_channel": true,
+    "credential_role_present_on_host": true,
+    "credential_fields_present": ["app_id", "app_token", "bot_token", "bot_user_id", "signing_secret"],
+    "accidental_test_demo_app": {
+      "app_id": "A0C4DPW75T9",
+      "installed": false,
+      "oauth_scopes": []
+    }
+  },
+  "host_config": {
+    "market_brief_role_present": false,
+    "briefing_enabled": false,
+    "briefing_publish_enabled": false,
+    "briefing_channel_id_configured": false,
+    "briefing_owner_user_configured": false,
+    "daily_brief_allowed": false,
+    "owner_allowed": true
+  },
+  "lake_probe": {
+    "path": "existing credential-isolated worker via qdata.api",
+    "dataset": "krx_index",
+    "query_start": "2026-09-18",
+    "query_end": "2026-09-28",
+    "lake_configured": true,
+    "qdata_imported": true,
+    "source_stable_during_read": true,
+    "source_digest": "2a1de7e52fda18a0dfb30ac13b0304c4a2aa4d1b0ea6f36eb9defb17846dfbf6",
+    "size_bytes": 250055,
+    "row_count": 5260,
+    "bounded_rows": 8,
+    "latest_kospi_session": "2026-09-23",
+    "latest_kosdaq_session": "2026-09-23",
+    "previous_kr_session_for_2026_09_28": "2026-09-23",
+    "note": "Probe ran before the 2026-09-28 KRX close and did not certify same-day data publication or a live briefing."
+  },
+  "real_slack_briefing_delivery_tested": false,
+  "scheduled_preview_started": false,
+  "publication_started": false,
+  "secrets_recorded": false
+}

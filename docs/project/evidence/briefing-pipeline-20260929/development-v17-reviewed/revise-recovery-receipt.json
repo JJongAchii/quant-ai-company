@@ -1,0 +1,15 @@
+{
+  "request_id": "news-brief-eval-d5c3305d627900fc6af354dc297bb82e",
+  "request_sha256": "ac2c2a0c9c6055c786016e4773632ad16305549c291d6c4059ca714a75c83213",
+  "recovery": "same_id",
+  "elapsed_seconds": 1.517,
+  "transport": "confirmed",
+  "response": {
+    "http_status": 409,
+    "fault": {
+      "code": "busy",
+      "message": "The subscription runtime lane is executing another turn.",
+      "retry_after_seconds": 5
+    }
+  }
+}

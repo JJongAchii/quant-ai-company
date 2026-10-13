@@ -1,0 +1,12 @@
+{
+  "scope": "Signed simulated Slack/real PostgreSQL lifecycle regression; no live Slack/science",
+  "passed": 89,
+  "skipped": 0,
+  "seconds": 21.81,
+  "lint": "passed",
+  "sourceChanges": [
+    "src/quant_company/research/approvals.py"
+  ],
+  "noModelCancellationAuthority": true,
+  "exactProgramIdFullDigestOwnerThreadRevisionAndEventFreshnessRequired": true
+}

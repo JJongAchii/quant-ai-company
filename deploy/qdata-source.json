@@ -6,7 +6,11 @@
   "archiveSha256": "8bb50549a923f3ec39bb1e6ffce2ac182ed41d368275614e55f60686707a138c",
   "publicFunctions": [
     "qdata.api.dataset_catalog",
-    "qdata.api.inspect_dataset"
+    "qdata.api.inspect_dataset",
+    "qdata.api.load_krx_index",
+    "qdata.api.load_prices",
+    "qdata.api.load_fred",
+    "qdata.api.load_ecos"
   ],
   "buildContext": "QDATA_BUILD_CONTEXT (exact committed archive)",
   "mutatesCollectorOrLake": false

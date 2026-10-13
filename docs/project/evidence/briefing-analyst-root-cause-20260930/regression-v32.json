@@ -1,0 +1,15 @@
+{
+  "scope": "Actual local full suite after format13/validation32 and original-body fix; not deployed Slack/cloud qualification",
+  "command": ".venv/bin/pytest -q -x --tb=short --junitxml=docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v32.xml",
+  "passed": 1379,
+  "skipped": 38,
+  "failed": 0,
+  "warnings": 12,
+  "elapsed_seconds": 381.14,
+  "targeted_briefing_passed": 122,
+  "news_passed": 51,
+  "lint": "All checks passed!",
+  "format_version": 13,
+  "validation_version": 32,
+  "note": "Skipped integrations do not count as successful real cloud, official model or Slack delivery tests."
+}

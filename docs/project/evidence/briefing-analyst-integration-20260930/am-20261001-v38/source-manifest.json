@@ -1,0 +1,29 @@
+{
+  "case": "am-20261001-v38",
+  "cutoff": "2026-10-01T07:00:00+09:00",
+  "raw_sha256": "4a9d0042344fe0cb9c43c7421325fe35dc1448520cbc174433b38ecd97a39070",
+  "policy_sha256": "5c7b70b002501bdfb4f4159aac87435ddf18fa17e35df116d9d7291a66a311a0",
+  "raw_articles": 171,
+  "eligible": 168,
+  "candidate_count": 96,
+  "market_close_reports": 7,
+  "excluded": [
+    {
+      "id": "fe19821774c17fc952656ff13c3bbe56af9a443f1e0aa717c8266f03b54d0a4c",
+      "reason": "body_or_time_contract"
+    },
+    {
+      "id": "c25abb1530143183a5f2971e207e0b9f3edc74860923084bf84fad21679fbba7",
+      "reason": "body_or_time_contract"
+    },
+    {
+      "id": "d2c971284dbaf761ddf9614b9d39dcb48dcdaf2051d7f61873f2a7ee9298c7c4",
+      "reason": "body_or_time_contract"
+    }
+  ],
+  "overlap_with_prior_candidate_ids": 43,
+  "new_candidate_ids": 53,
+  "model_calls": 0,
+  "slack": "not_called",
+  "note": "New trading day and source cutoff; prior-day context overlaps counted, no historical market-data reconstruction"
+}

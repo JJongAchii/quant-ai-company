@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "state": "aborted_before_mutation",
+  "reason": "attachment_precondition_drift",
+  "expected_registry_sha256": "d3822b1df7d1e03824ed4d39cf10883d85764d2115b0f8cd4473f0194b09fc33",
+  "observed_registry_sha256": "bdef77801a3b65f7588bf00a3916a1a67f7b7e59657db0f1587c8999842646a3",
+  "concurrent_report_preserved": "raw-lineage-f8a0595989be.json",
+  "journal_created": false,
+  "production_mutated": false,
+  "new_path": "history proof included in separately reviewed exploratory proposal",
+  "stale_attachment_will_not_be_replayed": true
+}

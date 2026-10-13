@@ -61,10 +61,10 @@ CMD ["uvicorn", "quant_company.providers.codex_runtime:app", "--host", "0.0.0.0"
 
 # This qualified native distribution targets the existing Linux x86_64 office host.
 FROM node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5 AS claude-dist
-RUN npm install --global --omit=dev @anthropic-ai/claude-code@2.1.275 \
+RUN npm install --global --omit=dev @anthropic-ai/claude-code@2.1.280 \
     && install -m 0755 "$(readlink -f /usr/local/bin/claude)" /claude \
-    && echo '13586f3150a7ca1655f36e1dba759fb404e0f7cf7021d4a3dcd5e6f604e56156  /claude' | sha256sum -c - \
-    && /claude --version | grep -Fx '2.1.275 (Claude Code)'
+    && echo '1e08503dbdf3c2cb0d706d32f3408277388d1c76ef108673e8fe42c1b322925b  /claude' | sha256sum -c - \
+    && /claude --version | grep -Fx '2.1.280 (Claude Code)'
 
 FROM app AS claude
 COPY --from=claude-dist /claude /usr/local/bin/claude

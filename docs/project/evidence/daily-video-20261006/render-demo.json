@@ -1,0 +1,44 @@
+{
+  "type": "local_design_demo",
+  "synthetic_content": true,
+  "voice": "local macOS Yuna; not Runway",
+  "paid_provider_called": false,
+  "youtube_uploaded": false,
+  "width": 1920,
+  "height": 1080,
+  "duration_seconds": 27.421016,
+  "audio_quality": {
+    "integrated_lufs": -16.01,
+    "true_peak_dbfs": -4.49,
+    "black_frames": false,
+    "long_silence": false
+  },
+  "checks": [
+    "layout",
+    "real_speech_timestamps",
+    "transcription",
+    "dimensions",
+    "av_duration",
+    "full_decode",
+    "black_frames",
+    "silence",
+    "loudness"
+  ],
+  "real_asr_engine": "faster-whisper small CPU int8",
+  "scene_count": 3,
+  "caption_count": 9,
+  "files": {
+    "video.mp4": "7b69136f1207c597d38d2d822e2d10eb8e9752b54c5fc7372fddfcbdcefe2dc4",
+    "thumbnail.png": "6a9138f091312f2cdc97f81a0d7ab5fda981f82f3f514826146bfd97d6039666",
+    "subtitles.srt": "cc8dff518036457413bd5c14580c26cd2311770e0cea4aaafb6c6863c5ae331c",
+    "script.txt": "19b0e22ca59db31433e7e87387b5798f213038d367447f063f907afcefa1a644",
+    "plan.json": "5f841377c9d1f981841415ddb9fd216149f8ee6e6c8976a4e0f8929c74f240ac",
+    "alignment.json": "b19b0678b4b403ac1f913bce4424f0d2caa63d83eedebc3d24d25e06170fd7c7",
+    "upload.txt": "8e20ed01e753a6720a144d2c1b98be84f1d8bcb325bc767e8ce12432c8e4ae7b",
+    "sources.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "manifest_digest": "4d0569fc3b4b5b6eabe14d6987196bb2bb8f8d2283cc1694b72b1df580436998",
+  "human_listening_acceptance": false,
+  "preview_path": ".local/daily-video-demo/video.mp4",
+  "still_path": ".local/daily-video-demo/scene-00.png"
+}

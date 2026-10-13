@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-09-30T08:08:48.663748+00:00",
+  "scope": "Independent source-to-main audit before semantic review; same-source development only",
+  "mechanical_rejections": {},
+  "quote_conflicts": [],
+  "prior_audit": "../../development-v32/v33/independent-main-audit.json",
+  "new_findings": [
+    "Korea rising-sector breadth is visible instead of named-stock winners alone.",
+    "Observed US retail diesel price is distinguished from crude decline and prospective export-ban risk.",
+    "Actual separately mediated US/Iran contact is visible and is not called an agreement.",
+    "Energy-sector exposure is explained as an offset to the index concentration interpretation.",
+    "Dated prior Korea FX reference is visibly labelled historical and keeps15:30 timestamp; exact frozen-reference guard is required and no new market price is added."
+  ],
+  "decision": "Wait for actual12-criterion independent semantic verdict; no manual pass or publication."
+}

@@ -1,0 +1,17 @@
+{
+  "frozen_at": "2026-09-30T11:27:52.762652+00:00",
+  "scope": "Post-hoc development using same frozen PM originals plus3 reviewer-requested frozen candidates; NOT fresh qualification",
+  "format_version": 15,
+  "validation_version": 37,
+  "max_completed_calls": 2,
+  "phases": [
+    "One scoped EditorialPatch",
+    "One independent whole-brief review"
+  ],
+  "reason": "Source additions/readability previously forced whole rewrite; preserve prior verified numbers and source material facts, edit only prose fields",
+  "prior_outcome_sha256": "0def99d07d4c57709019c23c50980c20dbb080c09ae3decfd6bb2ea4ba02b9dc",
+  "editorial_patch_sha256": "95d36c55c64239a20672c369728a0aa2d37029e5d53a8595d716a0851a1d7437",
+  "source_char_budget": 42000,
+  "slack": "not_called",
+  "deployment": "not_performed"
+}

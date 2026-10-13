@@ -1,0 +1,19 @@
+{
+  "stage": "read_only_local_public_collector_probe",
+  "day": "2026-09-29",
+  "function": "quant_company.news.originals.fetch_original over quant_company.briefing.inputs.calendars",
+  "results": [
+    {"source": "fed", "ok": true, "extracted_chars": 6000},
+    {"source": "bls", "ok": false, "error": "http_status", "http_status": 403},
+    {"source": "bea", "ok": true, "extracted_chars": 1595},
+    {"source": "bok", "ok": true, "extracted_chars": 4493}
+  ],
+  "remote_worker_probe": {
+    "method": "read-only HTTP status probe from the installed worker host with the collector's User-Agent",
+    "source": "bls",
+    "http_status": 403,
+    "code_or_credentials_changed": false
+  },
+  "interpretation": "The BLS monthly calendar returned HTTP 403 both through the local production-style collector and from the installed worker host with the collector's User-Agent. It must not be represented as a successfully collected source. The September BLS page visibly contains the October 2 employment entry in an independent web view; this date's omission cannot be attributed solely to the current-month URL choice.",
+  "effects": "No source content was written into a saved historical edition. No Slack or operating database action occurred."
+}

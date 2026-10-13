@@ -1,0 +1,14 @@
+{
+  "case": "pm-20260923-fresh-analyst-quality",
+  "phase": "writer",
+  "request_id": "news-brief-eval-1f0c48f09fb528b207037c819a916032",
+  "request_sha256": "40fa84602db0c4a98e0c7a0853a165eef97049106a8feb6a6356d7a94bce4180",
+  "first_two_attempts": "Confirmed busy faults, same request ID, no writer response",
+  "third_attempt": "SSH subprocess ended with transport uncertain and no response; the model effect cannot be presumed absent or complete",
+  "recovery_attempt": "Same request ID and SHA: first worker container was stopped, second returned confirmed busy, third returned confirmed uncertain saying a prior process started the request and operator reconciliation is required. No writer response was recovered.",
+  "host_observation": "Multiple company service containers, including api, dispatch, worker and news-worker, exited with code 143 at approximately 2026-09-29T05:50:53Z; none inspected were OOM-killed and PostgreSQL remained healthy. A concurrent /opt/quant-company/current/deploy/state_backup.py backup --apply process and docker compose stop --timeout 360 command were still running when checked. This is maintenance interference, not evidence of an Analyst code crash.",
+  "outcome": "unresolved_model_effect_no_fresh_quality_verdict",
+  "next_action": "Preserve the orphaned runtime receipt for operator reconciliation; do not issue a new writer ID or claim a fresh pass. Evaluate a separately frozen, previously unused edition without reclassifying this attempt.",
+  "model_completed_calls_confirmed": 1,
+  "slack": "not_called"
+}

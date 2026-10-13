@@ -2,9 +2,9 @@
 
 ## 현재 제공하는 구조
 
-- 11개 직무의 버전/digest가 있는 전문 업무 절차를 실제 모델 요청에 전달한다.
+- 12개 직무의 버전/digest가 있는 전문 업무 절차를 실제 모델 요청에 전달한다.
 - 금융전략/연구/개발/검증/리스크에 금융 계산, 데이터/개발/검증에 표본 품질 검사를 연결한다.
-- 기존 활성 직원 4명과 개선 서비스의 운영 상태는 유지한다. 비활성 6명도 격리 교육 평가에 참여하지만
+- 기존 활성 직원 4명과 개선 서비스의 운영 상태는 유지한다. 비활성 7명도 격리 교육 평가에 참여하지만
   그 결과로 Slack 직원·실행 권한이 켜지지는 않는다.
 - PostgreSQL이 문제·요청·응답·도구·점수·피드백을 보관하고 Temporal이 예약과 재시도를 담당한다.
 - 피드백은 다음 업무와 개선 BOT 관찰에 연결한다. 일반 사실 기억의 자동 승인은 없다.
@@ -14,12 +14,12 @@
 `COMPANY_STAFF_DEVELOPMENT_ENABLED=true`일 때 KST 03시 이후 하루 `STAFF_DAILY_EXERCISES=2`개를
 가장 적게 연습한 직원부터 배정한다. `STAFF_MAX_CALLS_PER_EXERCISE=3`이므로 예약 교육은 하루
 최대 6개 신규 모델 요청이다. 같은 요청의 busy/quota 대기는 새로운 요청을 만들지 않는다.
-11명을 약 6일에 걸쳐 순환한다. 직원 안에서는 현재 모델·절차 버전의 미평가 유형, 재검증이 필요한
+12명을 약 6일에 걸쳐 순환한다. 직원 안에서는 현재 모델·절차 버전의 미평가 유형, 재검증이 필요한
 유형, 증거가 부족한 유형을 우선한다. 같은 유형은 최대 두 과제 연속 배정해 다른 유형도 점검한다.
 각 과제의 `curriculum`에 배정 이유를 보존한다.
 baseline/manual 평가는 명시적으로 등록된 일회성 업무이며 이 일일 자동 예약 수에 포함되지 않는다.
 
-일반 업무와 구독 backoff가 있으면 교육을 연기한다. 실행 중 모델 호출은 중단하지 않는다.
+일반 업무와 구독 backoff가 있으면 교육을 연기한다. 정기 브리핑 준비 중에도 새 연습·설명 검토 호출을 미룬다. 실행 중 모델 호출은 중단하지 않는다.
 quota/auth/불확실한 호출은 실력 부족으로 점수화하지 않는다. blocked는 operator 대사가 필요하고
 정기 다음 문제는 기록을 덮어쓰지 않는다. feature flag를 끄면 기존 교육 workflow도 새 호출을 멈춘다.
 새 서버나 API 요금제는 추가하지 않지만 Codex 구독 사용량과 저장 공간은 사용한다.
@@ -40,6 +40,7 @@ Slack 총괄에게 “직원별 최근 평가와 부족한 부분을 알려줘�
 ```bash
 quant-company staff status
 quant-company staff status --employee financial_strategist
+quant-company staff status --employee market_brief
 quant-company staff enqueue --employee data --id <UUID>
 quant-company staff tick
 quant-company staff review --id <평가 UUID> --disposition disputed --note '가정 또는 채점 기준의 구체적인 문제'
@@ -55,6 +56,7 @@ operator API는 `GET /v1/staff`, `POST /v1/staff/runs/{id}/review`다. 인증은
 |---|---|
 | 총괄 | 변경된 지시/산출물 완결성, 실행 권한 |
 | 금융전략 | 현금흐름 할인/듀레이션, 옵션 무차익 관계 |
+| 애널리스트 (`market_brief`) | 거시 서프라이즈·인과 구분, 실적·환율·시장 폭 해석 |
 | 데이터 | 가용시각/중복, 누락 키/입력 결함 |
 | 국내연구 | 발표 지연, label/적합 구간 겹침 |
 | 글로벌연구 | 시장 간 가용시각, 통화 방향/환산 |

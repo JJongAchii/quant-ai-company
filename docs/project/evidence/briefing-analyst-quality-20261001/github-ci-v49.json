@@ -1,0 +1,14 @@
+{
+  "recorded_at": "2026-10-02T02:42:23.982648+00:00",
+  "source_commit": "d78f16f65f33ea883a6db22f6c605936d2e2656d",
+  "validation_version": 49,
+  "run_id": 36950538308,
+  "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36950538308",
+  "conclusion": "success",
+  "passed": 1672,
+  "skipped": 45,
+  "deselected": 1,
+  "seconds": 835.78,
+  "log_sha256": "4fc79c3024ef005cc992718adf67b390c8dce034ea65c325eaf037cd6f5d9228",
+  "scope": "Real PostgreSQL/Temporal regression; model/Slack fixtures, not live content or real Slack delivery"
+}

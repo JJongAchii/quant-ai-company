@@ -1,0 +1,23 @@
+{
+  "checked_at": "2026-09-30T07:26:08.716262+00:00",
+  "scope": "Independent original-to-visible-main audit before actual semantic review; not a fresh case or human expert certification",
+  "mechanical_rejections": {},
+  "quote_conflicts": [],
+  "visible_findings": [
+    "Prior Korea close, direction and opening decline have exact own-item quotes; main labels both index table values 한국 전일장 09/29. Current Korea close is not invented.",
+    "Historical 30y Treasury high and source-specific 10y observations are visible; differing observations are not averaged or called same-time closes. The 2y decline is a distinct offset.",
+    "Consumer confidence baseline/consensus is separated from unreleased PCE/spending forecasts; actual gasoline-excluded card spending and forecast methodology revision are visible.",
+    "Supply restart, pre-war Hormuz baseline, sanctions, rejected conditions, and merely considered diesel export ban are separated.",
+    "Samsung investment is announced, not executed revenue; Hugging Face deal date/status/target capability and OpenAI failed talks are distinguished.",
+    "Pharma actual tariffs, eligible special exemptions, current generic exclusions and future generic policy are distinguished; ADC benefit is not assumed already realized.",
+    "Actual exporter dollar sales and Korea bond rebound appear as observed offsets, not only hypothetical checks.",
+    "AMD visit/date/meetings are under consideration; next-check wording does not present a booked contract.",
+    "LNG headline-only source adds no verified commitment/terms and is not expanded into main facts; frozen noisy original is retained for review and collector correction affects future collection only.",
+    "Index/sector divergence is supported; negative beta period is not called day breadth or crash prediction."
+  ],
+  "remaining_caveats": [
+    "Historical lake rows unavailable at cutoff are not reconstructed; actual production data/clock/Slack qualification remains separate.",
+    "Source-level exhaustiveness is not the target; independent model must judge materiality/depth/readability and omitted-source questions."
+  ],
+  "decision": "Ready for the independently typed12-criterion semantic review; no manual pass or Slack delivery claim."
+}

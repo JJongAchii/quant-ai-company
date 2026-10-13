@@ -1,0 +1,201 @@
+{
+  "recorded_at": "2026-10-08T00:00:05.867069+00:00",
+  "scope": "Actual owner-requested Oct8 morning Slack reissue, with disclosed operator editorial repair. Not scheduled autonomous quality/timing qualification.",
+  "authorization": "오늘 아침꺼 제대로 다시 보내야 하지 않겠어?",
+  "source_commit": "8fde2509d4dd2191147fbcee5eaa952191d7c048",
+  "format_version": 21,
+  "validation_version": 69,
+  "case": "analyst-am-20261008-reissue69",
+  "edition_id": "e19cbbae-6bad-5dd6-96f9-a8442fae760d",
+  "original_scheduled_failure_preserved": true,
+  "cutoff_kst": "2026-10-08 06:30",
+  "latest_intraday_refresh": false,
+  "source_documents": 27,
+  "material_facts": 61,
+  "issues": 6,
+  "model": {
+    "writer_actual_completed_seconds": 596.32,
+    "writer_replayed": false,
+    "subscription_profile": "primary",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "xhigh",
+    "paid_api_fallback": false
+  },
+  "operator_repair": {
+    "used": true,
+    "cause": [
+      "Writer returned twelve context paragraphs despite the consumer six-paragraph global limit.",
+      "Writer mapped some required facts to absent or thread-only IDs.",
+      "Source-backed trade magnitude/persistence and existing shipyard investment needed explicit inclusion."
+    ],
+    "paragraph_reallocation_preserved_verbatim_text_and_all_quotes": true,
+    "context_paragraphs_before": 12,
+    "context_paragraphs_after": 6,
+    "subsequent_source_bound_editorial_additions_recorded_privately": true,
+    "original_sources_and_raw_provider_receipts_unchanged": true
+  },
+  "checks_before_delivery": {
+    "mechanical_rejections": {},
+    "source_notes_violations": [],
+    "all_sixty_one_material_facts_visible": true,
+    "reader_reviewed": true,
+    "independent_review": "in_progress at delivery; no pass claimed"
+  },
+  "content_qualified_at_delivery": false,
+  "automatic_publication_enabled": true,
+  "automatic_policy_changed": false,
+  "scheduled_qualification": false,
+  "delivery": {
+    "workspace": "Achii's Quant Research",
+    "team_id": "T0C1YRDRPNF",
+    "channel_id": "C0C2E59B1AA",
+    "channel_name": "daily-brief",
+    "bot_user_id": "U0C4PJDR8G3",
+    "channel_name_verified_live": false,
+    "publish_enabled": true,
+    "prior_events": 0,
+    "parts": [
+      12915,
+      3391,
+      950
+    ],
+    "permalink": "https://achiisquantresearch.slack.com/archives/C0C2E59B1AA/p1791416945932479?thread_ts=1791416945.932479&cid=C0C2E59B1AA",
+    "root_ts": "1791416945.932479",
+    "deliveries": [
+      {
+        "index": 0,
+        "client_msg_id": "f0177677-1278-5919-9c70-55b60c7abb22",
+        "text_sha256": "f4a5c5073aa25bb0c09912b34e1f7e6a5a63d74f5cda1f64fa27591b4683f8ea",
+        "channel": "C0C2E59B1AA",
+        "ts": "1791416945.932479",
+        "thread_ts": null,
+        "returned_blocks_match": true
+      },
+      {
+        "index": 1,
+        "client_msg_id": "c6cda654-204d-5486-80c9-bd3326af13b0",
+        "text_sha256": "1dc242d42b3e2b07d41e0b1dea011615092c4647ea268ec2ea1b6ef1de98b53d",
+        "channel": "C0C2E59B1AA",
+        "ts": "1791416947.427809",
+        "thread_ts": "1791416945.932479",
+        "returned_blocks_match": true
+      },
+      {
+        "index": 2,
+        "client_msg_id": "4ebcf086-1124-5723-af72-646c5f9d36c7",
+        "text_sha256": "b588b9f840661707756b8f895081768fbc2ebbd5d1992087bde172b1d5e7c016",
+        "channel": "C0C2E59B1AA",
+        "ts": "1791416948.859619",
+        "thread_ts": "1791416945.932479",
+        "returned_blocks_match": true
+      }
+    ],
+    "readback_confirmed": true,
+    "readback_scope": "all_thread_messages",
+    "complete_body_matches_after_html_entity_decoding": true,
+    "post_calls_this_execution": 3,
+    "model_calls": 0,
+    "scheduled_policy_changed": false,
+    "content_qualified": false
+  },
+  "private_artifact_sha256": {
+    "write-response.json": "55eaa820b4f89b02aa421432364bb1faceaadab8e08e7ee04328ad0542060659",
+    "write-bundle.json": "09301e3afda751ba726acfb3c5fdb3a78043e24a67652c9366e0bcb537322e4b",
+    "derived-proposal.json": "2f714f139b72e0b1f9bf2dc1edbb556fa7509b300737a90081842eeedae019d8",
+    "reader2-derived-proposal.json": "9256061f8853059d5839a3981b7db7780bc4be64ba8f05dade1b935bbba9885b",
+    "reader2-assessment.json": "ea3616aab254ff4fbc88d33c42a2542a2fd0811635cc80d2df247d96c11e6827",
+    "layout-manifest.json": "50c2c08b9fb64fc6ed9424f661aebf25ade3e1c3d7d333e3235b64e8ba0de93e",
+    "reader2-repair-manifest.json": "b44e95473847c09db75714e04ef74bf5703970b31aca40a446675b5e70effd7a"
+  },
+  "payload_sha256": [
+    "f4a5c5073aa25bb0c09912b34e1f7e6a5a63d74f5cda1f64fa27591b4683f8ea",
+    "1dc242d42b3e2b07d41e0b1dea011615092c4647ea268ec2ea1b6ef1de98b53d",
+    "b588b9f840661707756b8f895081768fbc2ebbd5d1992087bde172b1d5e7c016"
+  ],
+  "public_content_policy": "Metadata/digests only. Original text, source-bound prompts, raw model output and complete briefing remain private.",
+  "independent_review": {
+    "state": "completed_before_postreview_operator_correction",
+    "checks": {
+      "numbers": true,
+      "sources": true,
+      "timing": true,
+      "causality": true,
+      "materiality": false,
+      "counterevidence": true,
+      "transmission": true,
+      "alternatives": true,
+      "falsifiability": true,
+      "coverage": false,
+      "depth": true,
+      "readability": true
+    },
+    "checks_passed": 10,
+    "checks_required": 12,
+    "verdict": "reduce",
+    "rejected_ids": [],
+    "seconds": 402.56,
+    "response_sha256": "45c6b176265e009b556d85242fa3cd80b427e7cffeddf91fd24138186da9165e",
+    "remaining_at_review": [
+      "Levi annual EPS consensus comparison and reported refund margin magnitude",
+      "Read the already-collected EU support original before assessing defense-resource constraints",
+      "Other discovered domestic refinery and household-debt issues were not covered within the model review source budget"
+    ]
+  },
+  "postreview_operator_correction": {
+    "source_documents": 30,
+    "new_already_collected_originals": 3,
+    "all_before_original_cutoff": true,
+    "market_snapshot_refreshed": false,
+    "added_context": [
+      "Levi forecast versus consensus and ambiguous percent versus percentage-point source notation",
+      "EU funds delivered versus weapons arrival unconfirmed",
+      "Domestic refinery allegations, company denial and related revenue versus unsettled penalties",
+      "Household-debt denominator effect, repayment capacity and article-quarter inconsistency"
+    ],
+    "mechanical_rejections": {},
+    "source_notes_violations": [],
+    "source_note_material_facts": 64,
+    "writer_replayed": false,
+    "additional_model_calls": 0,
+    "independent_final_pass_claimed": false,
+    "delivery_update": {
+      "operation": "analyst-am-20261008-reissue69-postreview-once",
+      "changed": [
+        {
+          "index": 0,
+          "ts": "1791416945.932479",
+          "before_sha256": "f4a5c5073aa25bb0c09912b34e1f7e6a5a63d74f5cda1f64fa27591b4683f8ea",
+          "after_sha256": "801e3cf4c516a7c1d2c7bddb20f3169b54ac2f872913ccc12c0b3946da539571"
+        },
+        {
+          "index": 2,
+          "ts": "1791416948.859619",
+          "before_sha256": "b588b9f840661707756b8f895081768fbc2ebbd5d1992087bde172b1d5e7c016",
+          "after_sha256": "601aba5fa2b662f2983fbe773f59a692ba0bb09c92cd2de28a36731913aa80fd"
+        }
+      ],
+      "channel_id": "C0C2E59B1AA",
+      "bot_user_id": "U0C4PJDR8G3",
+      "root_ts": "1791416945.932479",
+      "permalink": "https://achiisquantresearch.slack.com/archives/C0C2E59B1AA/p1791416945932479?thread_ts=1791416945.932479&cid=C0C2E59B1AA",
+      "all_three_bodies_readback_match": true,
+      "new_messages_posted": 0,
+      "update_calls": 2,
+      "model_calls": 0,
+      "content_qualified": false,
+      "source_cutoff_kst": "2026-10-08 06:30",
+      "mechanical_rejections": 0,
+      "source_notes_violations": 0,
+      "automatic_publication_enabled": true,
+      "scheduled_policy_changed": false
+    },
+    "private_artifact_sha256": {
+      "postreview-derived-proposal.json": "9c1ef8402598701dd578b4690bea7022c30b5f5ba8fbed286df32cf29ceefe0d",
+      "postreview-assessment.json": "803625ce6dada157f2a95763db6c7008ae19426a8e1815116091d71712c9970f",
+      "postreview-repair-manifest.json": "83940d157bbaba48a19f1a22a28805922c0583ca01fcfa3ba82e2b10622cacfc",
+      "update-receipt.json": "c717786ae3788942b776386ccef64da43df759dd9e16e0306deb44f70cd06395"
+    }
+  },
+  "content_qualified_after_correction": false,
+  "qualification_limit": "Operator checked full new originals and all post-correction mechanical/source-note checks pass. Prior independent review was10/12; the corrected final body has not received a new independent12/12 review. This delivery proves neither automatic writing quality nor scheduled timeliness."
+}

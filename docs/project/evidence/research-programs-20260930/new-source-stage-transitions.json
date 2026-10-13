@@ -1,0 +1,38 @@
+{
+  "observed_at": "2026-09-30T06:01:41.223672+00:00",
+  "transitions": [
+    {
+      "previous_stage_id": "2c3d8f40-eb8a-52e4-8c90-677d9de0094c",
+      "new_proposal_stage_id": "fce5936d-7251-5f7c-8f70-3b4c2c9a0336",
+      "previous_evidence_version": "a6ab4de5602a4b24d1e79a52c8d436dfbd65dec8c5687d0258cd08f8be9494b5",
+      "new_evidence_version": "ff538f890d3d75111aaf5aa4b0d4e0474a712c82dcd58c3401289995fe02432f",
+      "source_count_before": 11,
+      "source_count_after": 12,
+      "unchanged_common_source_hashes": true,
+      "added_sources": [
+        {
+          "file": "sources/7cd5cc4470713d4e6e47319db79e138bf94bb68dc06bed4f6dea09065252a353.json",
+          "source_id": "literature:ef7e2a2d481ebd0f6abcb86828f41ecdedd97b35368d54ea97ce927a47275d78",
+          "title": "Gold: Bugs, Bears and Myths"
+        }
+      ]
+    },
+    {
+      "previous_stage_id": "9163a37d-b002-573a-8c54-a4e4221a5813",
+      "new_proposal_stage_id": "e2b78eb8-6d5e-592f-ad67-bd7baa45f207",
+      "previous_evidence_version": "ff538f890d3d75111aaf5aa4b0d4e0474a712c82dcd58c3401289995fe02432f",
+      "new_evidence_version": "f5258ca34969faa7fb75350272ef87b0c41e922e09d3d1cd9e29be3d5cc2646c",
+      "source_count_before": 12,
+      "source_count_after": 13,
+      "unchanged_common_source_hashes": true,
+      "added_sources": [
+        {
+          "file": "sources/78af97f17d7756c01b9f6c71003f9fe84bd9728fe53e33f50092369da4f05afa.json",
+          "source_id": "literature:683c82e48c60d52c6ded70d8f6c1b1a16d81a996890acca7060c757dcd80c210",
+          "title": "How Much Will a Babysitter Cost?"
+        }
+      ]
+    }
+  ],
+  "scientific_trials": 0
+}

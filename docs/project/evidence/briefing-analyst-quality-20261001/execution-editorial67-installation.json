@@ -1,0 +1,97 @@
+{
+  "started_at": "2026-10-07T13:51:03.679388+00:00",
+  "source_commit": "25b91bbdbe341bc1699c355b6255b09596bbdbf8",
+  "previous_source_root": "b1f5b8393b67678da912a257a0e9cadc3aacc617",
+  "authorization": "음 잔여해있는 오류도 해결하고 확실하게 해줬으면 좋을거 같은데",
+  "phase": "installed",
+  "publication_enabled": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "actual_model_quality_evaluated": false,
+  "profiles": [
+    {
+      "base_image": "sha256:b0550e2d68b24662f33dd7da76a5d0a5aa038ae7c56682e2746837673069d0fb",
+      "image": "quant-company:25b91bbdbe341bc1699c355b6255b09596bbdbf8-error0",
+      "services": [
+        "news-worker",
+        "dispatch"
+      ],
+      "changed": [
+        "quant_company/briefing/editor.py",
+        "quant_company/briefing/execution.py",
+        "quant_company/briefing/schedule.py",
+        "quant_company/briefing/store.py",
+        "quant_company/contracts.py"
+      ],
+      "complete_source_inventory_verified": true,
+      "source_inventory_sha256": "ff067e9e7b97dd60fa45bbc38f29933e29dff885e29dbdf7ad24d4218ae48cdd"
+    },
+    {
+      "base_image": "sha256:88587018b8fccdb96c4a829dfada30056b89e1700d1f19f1b8a594e8ab4b180a",
+      "image": "quant-company:25b91bbdbe341bc1699c355b6255b09596bbdbf8-error1",
+      "services": [
+        "briefing-data-worker"
+      ],
+      "changed": [
+        "quant_company/briefing/editor.py",
+        "quant_company/briefing/execution.py",
+        "quant_company/briefing/schedule.py",
+        "quant_company/briefing/store.py",
+        "quant_company/contracts.py"
+      ],
+      "complete_source_inventory_verified": true,
+      "source_inventory_sha256": "09dafce316cef2deb29f2fa0f0b2eab087c64c8cb01d622ea31a5b1012570389"
+    },
+    {
+      "base_image": "sha256:60cb9d8f08600fb34338c4f7a2cdd630adf70319ef7ceaad30e563cb9426e49f",
+      "image": "quant-company-codex:25b91bbdbe341bc1699c355b6255b09596bbdbf8-error2",
+      "services": [
+        "codex-runtime"
+      ],
+      "changed": [
+        "quant_company/briefing/execution.py",
+        "quant_company/contracts.py"
+      ],
+      "complete_source_inventory_verified": true,
+      "source_inventory_sha256": "04032c07484780272700e11bd007fc635ea70aafec73ff4a57025763d1bae8e1"
+    }
+  ],
+  "files": {
+    "quant_company/contracts.py": {
+      "before": "652230f3d1a16cd537ef1ffa04203fc84b4f482d00ccab18e89adeb887f0120f",
+      "after": "96f79878503876d4e659d6e1f9ac3bcf8e1a13c797735f5f7142121384f5e6a5"
+    },
+    "quant_company/briefing/editor.py": {
+      "before": "2234e673c9fab5c919cd18aaa69c072130c051b465d4b053f04c0bc2268951d2",
+      "after": "26425f5a2cbc68546e805dbbd74992ee69147d2998d72b8155afaaeb5eb2be08"
+    },
+    "quant_company/briefing/execution.py": {
+      "before": "82fad9bb07535722a51dc4207e157591547a90d7210080e90e259acd920c366f",
+      "after": "ad915a60c7a82f4949501e9941747d0daa190b5f4dbcf1382fa791ac38c69585"
+    },
+    "quant_company/briefing/store.py": {
+      "before": "a49d31af626d2419042d8a4b5ad1c4aec2d1fec4b6a329aa51184567a5b6da5e",
+      "after": "bf0ee485e0c62919e8a0ce86c33b544314c75ff0e2f83b2d12cbe6d2a245f504"
+    },
+    "quant_company/briefing/schedule.py": {
+      "before": "367771b8c661c735beda3fe81e8fb3a7889be0508eb0873634e6b8648c2ad2eb",
+      "after": "1888cbd8878d1a9aded9f9993f8ca5f2b52bd8cddba45ef17bdc53c994453668"
+    }
+  },
+  "completed_at": "2026-10-07T13:51:22.701035+00:00",
+  "cutover_started_at": "2026-10-07T13:56:07.545030+00:00",
+  "installed_at": "2026-10-07T13:56:19.727496+00:00",
+  "runtime_bindings_preserved": true,
+  "unrelated_services_preserved": true,
+  "environment_changed_keys": [
+    "RELEASE_COMMIT"
+  ],
+  "database_mutations": 0,
+  "model_auth_unchanged": true,
+  "regular_delivery_times_unchanged": true,
+  "schedule_version": 6,
+  "execution_version": 6,
+  "inventory_contract_version": 2,
+  "source_root": "25b91bbdbe341bc1699c355b6255b09596bbdbf8",
+  "environment_after_sha256": "15ec622eea93affebb332325336bb4b9d171fad5084b320289b1338037f70002"
+}

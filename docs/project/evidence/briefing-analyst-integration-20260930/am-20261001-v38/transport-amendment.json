@@ -1,0 +1,12 @@
+{
+  "at": "2026-09-30T22:52:43.047822+00:00",
+  "scope": "Pre-inference evaluation-helper wire serialization repair; production RuntimeClient already handles same defaults",
+  "original_fault": "invalid_request: strict pinned runtime does not accept newly serialized default output_contract or null session",
+  "original_request_sha256": "d62193ece53b2895f9d561f108d18737534d99e1bdb6b1d764d37b119fbaed49",
+  "wire_sha256": "9e934745d6774b5ec4a74273ecb1397aeae43ea0fed4ff739d8b68c4681eb602",
+  "request_id": "news-brief-eval-9c6c6320ed4da5d29611da4b4a6d635f",
+  "change": "Omit default agent_decision output_contract and null session, exactly as production RuntimeClient; all prompt/model/effort/web permissions/identity unchanged",
+  "executed_inference_before_amendment": false,
+  "fresh_policy_changed": false,
+  "paid_api_fallback": false
+}

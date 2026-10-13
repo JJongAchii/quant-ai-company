@@ -1,0 +1,13 @@
+{
+  "scope": "Frozen format13/validation31 previously unused AM case; first result retained, no post-result tuning counted as fresh qualification",
+  "completed_calls": 4,
+  "first_review_passed_checks": 8,
+  "first_review_total_checks": 12,
+  "repaired_mechanical_rejections": {
+    "overview_korea_start": "unsupported_prose_number",
+    "consumer_alternative": "unsupported_prose_number"
+  },
+  "passed": false,
+  "reason": "Repair still failed: consumer_alternative repeats the independently identified exact coordinated-fraction normalization false positive. Korea overview adds a 0.66% opening decline without that number in its own quotes; although another frozen paragraph supports the figure, this is a genuine missing-evidence error. First dotted-date false positive was bypassed by repair wording.",
+  "next_step": "Fix exact normalization with positive/negative tests and evaluate same repaired writer as an explicitly labelled development replay; preserve this failed frozen case."
+}

@@ -26,8 +26,10 @@ from .test_slack import event, signed
 def test_runtime_evidence_accepts_delivery_roles_without_fabricating_specialist_packs(company):
     from quant_company.staff.packs import pack
 
+    # Analyst (market_brief) carries its reviewed playbook since the briefing source joined main; a delivery identity
+    # without a playbook still reports none.
     delivery = company.roles['director'].model_copy(update={
-        'id': 'market_brief', 'active': False, 'tools': [], 'can_delegate_to': [],
+        'id': 'delivery_fixture', 'active': False, 'tools': [], 'can_delegate_to': [],
     })
     company.roles[delivery.id] = delivery
     with company.db.transaction() as conn:

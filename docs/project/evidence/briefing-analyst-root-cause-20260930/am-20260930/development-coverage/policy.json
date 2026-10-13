@@ -1,0 +1,27 @@
+{
+  "frozen_at": "2026-09-30T07:40:04.451967+00:00",
+  "scope": "One additional same-source development iteration after confirmed9/12 failure; not fresh qualification",
+  "format_version": 14,
+  "validation_version": 33,
+  "max_completed_calls": 2,
+  "repair": "One full typed repair and one independent review; no extra sources or title-only facts",
+  "source_rule": "Same18 frozen originals and frozen previous KRX calendar close",
+  "reason": "Generalize observed omissions into writer preflight for market participation, current refined-fuel costs and actual mediation; keep independent12-criterion review unchanged",
+  "prior_review_checks": {
+    "numbers": true,
+    "sources": true,
+    "timing": true,
+    "causality": true,
+    "materiality": false,
+    "counterevidence": false,
+    "transmission": true,
+    "alternatives": true,
+    "falsifiability": true,
+    "coverage": false,
+    "depth": true,
+    "readability": true
+  },
+  "writer_request_sha256": "6373ef1ec763dc1bafd0a18753cdb3d93f9230f19156d6a13c7f20798b2721f8",
+  "slack": "not_called",
+  "deployment": "not_performed"
+}

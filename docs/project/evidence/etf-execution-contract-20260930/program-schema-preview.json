@@ -1,0 +1,98 @@
+{
+  "envelopes": [
+    {
+      "market": "kr_etf",
+      "name": "etf_retrospective_strategy",
+      "template": {
+        "allowed_changes": [
+          "features",
+          "model",
+          "implementation",
+          "portfolio"
+        ],
+        "base_cost_bps": 10.0,
+        "baseline_source_ids": [
+          "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+        ],
+        "code": {
+          "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+          "repository": "quant-lab",
+          "write_paths": [
+            "labs/company-domestic-research/candidate.py",
+            "labs/company-domestic-research/config.json"
+          ]
+        },
+        "data": {
+          "input_files": {
+            "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+            "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+          },
+          "lake_id": "krx-etf-frozen-vintage-20260930"
+        },
+        "development": {
+          "end": "2025-12-30",
+          "start": "2023-01-02"
+        },
+        "evaluation": {
+          "block": "calendar-month",
+          "confidence": 0.95,
+          "kind": "strategy",
+          "metric": "stress-net-absolute-cagr",
+          "minimum_blocks": 30,
+          "minimum_effect": 0.0,
+          "schema_version": 1,
+          "scope": "development",
+          "target": null,
+          "tolerance": null
+        },
+        "execution_profile": "kr-etf-retrospective-v1",
+        "execution_profile_digest": "946bd511d131777f3366ebea4eb91d3738ae53ae32ad22bb8cd31d8e4b79d5df",
+        "kind": "strategy",
+        "market": "kr_etf",
+        "objective": {
+          "direction": "maximize",
+          "metric": "stress-net-absolute-cagr",
+          "unit": "fraction-per-year"
+        },
+        "resources": {
+          "priority": "autonomous",
+          "worker_id": "worker"
+        },
+        "risk_constraints": [
+          {
+            "maximum": 1.0,
+            "metric": "gross_exposure",
+            "unit": "multiple"
+          }
+        ],
+        "schema_version": 2,
+        "sealed": [
+          {
+            "end": "2026-09-23",
+            "start": "2026-01-02"
+          }
+        ],
+        "search": {
+          "continuous": false,
+          "max_total_trials": 4,
+          "max_trials_per_cycle": 2,
+          "min_improvement": 0.001,
+          "patience": 2
+        },
+        "stress_cost_bps": 30.0,
+        "title": "고정 빈티지 ETF의 조건부 개발 연구"
+      }
+    }
+  ],
+  "include_quant_feed": false,
+  "max_compute_seconds": 7200,
+  "max_missions": 1,
+  "max_parallel_missions": 1,
+  "max_total_trials": 4,
+  "objective": "조건부 개발 연구. data-policy-draft.json SHA256=66a888ac98ba420685b41b7bc45d011b59eef857c1f057e2239d34cef86c463f. 현행 schema 1은 정책을 강제하지 않으므로 이 초안의 제출·승인·실행은 금지된다.",
+  "schema_version": 1,
+  "source_ids": [
+    "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+  ],
+  "title": "ETF 고정 빈티지 조건부 연구 — 구조 검토용 초안"
+}

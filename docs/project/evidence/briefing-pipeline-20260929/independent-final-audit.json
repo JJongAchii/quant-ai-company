@@ -1,0 +1,154 @@
+{
+  "recorded_at": "2026-09-29T02:45:50.497872+00:00",
+  "final_semantic_checks_passed": 6,
+  "final_semantic_checks_total": 12,
+  "final_verdict": "reduce",
+  "frozen_case_passed": false,
+  "development_passed": false,
+  "mechanical_rejections_before_final_review": {},
+  "semantic_rejections": {
+    "lng_fact": "semantic_review"
+  },
+  "checks": [
+    {
+      "id": "source_roles",
+      "result": "confirmed",
+      "finding": "Quant Scout is research curation; this briefing reads Reporter/registered originals and market-data inputs."
+    },
+    {
+      "id": "core_session_and_policy",
+      "result": "improved",
+      "finding": "US closes, dated prior Korean session/FX, current Fed range/decision, Collins/Musalem and opposing Bessent view are visible. Core index observations still cite one media original."
+    },
+    {
+      "id": "missing_large_transactions",
+      "result": "improved",
+      "finding": "AMD all-stock agreement and later closing, plus old Nvidia/Hugging Face agreement versus newly disclosed bidding background, are now visible; no false completed acquisition or claimed same-session AMD price cause."
+    },
+    {
+      "id": "supply_counterevidence",
+      "result": "improved",
+      "finding": "Saudi pipeline and Hormuz recovery estimates are visible and not added together; negotiation denial and mediator contacts remain distinct."
+    },
+    {
+      "id": "policy_baselines",
+      "result": "improved",
+      "finding": "Tariff scope, legal procedure, old/new truce expiry, soy exclusion, OCTG prior0 versus new rates and local production mitigation are visible."
+    },
+    {
+      "id": "lng_temporal_claim",
+      "result": "fail",
+      "finding": "Original reports LNG prices already higher but future winter bill burden as a concern. Writer says winter cost burden has materialized; semantic rejection of lng_fact is justified."
+    },
+    {
+      "id": "calendar_visibility",
+      "result": "fail_then_display_fix",
+      "finding": "PCE was present in the typed draft but was third in the calendar and hidden by the renderer. Format11 now keeps all selected calendar entries visible; replay is not another semantic pass."
+    },
+    {
+      "id": "company_mechanism",
+      "result": "fail",
+      "finding": "Samsung component supply, actual utilization/price/mix improvement and quarter-specific FX drag are more concrete than the draft's generic conditional server-demand link. World-model physical/robotics purpose also merits clearer context."
+    },
+    {
+      "id": "materiality_judgment",
+      "result": "not_certified",
+      "finding": "Reviewer found further details and candidate events. Not every job title or historical bidding detail is automatically essential; do not optimize the check count by copying all facts. The definite temporal error and important mechanism omissions independently suffice for failure."
+    },
+    {
+      "id": "readability",
+      "result": "model_pass_only",
+      "finding": "Final reviewer accepts readability; repaired main is about6305 characters including Slack links. This is not a measured human comprehension or reading-time test."
+    },
+    {
+      "id": "freshness_and_runtime",
+      "result": "not_qualified",
+      "finding": "This edition became a development case after source-plan failure; prompts/validators/rendering changed. No fresh frozen-policy content pass, real market-data cross-check, on-time five-day operation or Slack acceptance."
+    }
+  ],
+  "calls": [
+    {
+      "receipt": "plan/plan-attempt2-receipt.json",
+      "request_id": "news-brief-eval-2fc86fa3e2ed43d3f41e14cb1a92b0ac",
+      "elapsed_seconds": 82.206,
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 38140,
+        "cached_input_tokens": 0,
+        "output_tokens": 2477,
+        "reasoning_output_tokens": 863
+      }
+    },
+    {
+      "receipt": "development-v14-initial/write-receipt.json",
+      "request_id": "news-brief-eval-79964fc07c7afaac2b4a2d8e03f78b07",
+      "elapsed_seconds": 694.269,
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 34836,
+        "cached_input_tokens": 0,
+        "output_tokens": 22933,
+        "reasoning_output_tokens": 5178
+      }
+    },
+    {
+      "receipt": "development-v15-draft/review-receipt.json",
+      "request_id": "news-brief-eval-831fd2a549ba7afc83c27dba2384f7c7",
+      "elapsed_seconds": 394.918,
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 46057,
+        "cached_input_tokens": 0,
+        "output_tokens": 12907,
+        "reasoning_output_tokens": 2926
+      }
+    },
+    {
+      "receipt": "development-v17-reviewed/revise-attempt2-receipt.json",
+      "request_id": "news-brief-eval-d5c3305d627900fc6af354dc297bb82e",
+      "elapsed_seconds": 740.801,
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 41731,
+        "cached_input_tokens": 0,
+        "output_tokens": 24469,
+        "reasoning_output_tokens": 5696
+      }
+    },
+    {
+      "receipt": "development-v19-repaired/review-receipt.json",
+      "request_id": "news-brief-eval-c8c5c4b8e139308d9a850f5f50fc1fc9",
+      "elapsed_seconds": 433.004,
+      "provider": "codex",
+      "usage": {
+        "input_tokens": 45770,
+        "cached_input_tokens": 0,
+        "output_tokens": 14186,
+        "reasoning_output_tokens": 2588
+      }
+    }
+  ],
+  "confirmed_call_elapsed_sum_seconds": 2345.198,
+  "latency_scope": "Sum of completed request wall times only; excludes collection, busy/connection errors, human coding/audit gaps, queue wait and Slack delivery. Not an end-to-end timing qualification.",
+  "new_schedule": {
+    "am": "07:45 KST",
+    "pm": "20:15 KST",
+    "cutoffs": [
+      "07:00 KST",
+      "19:30 KST"
+    ],
+    "preparation_minutes": 45,
+    "delivery_window_qualified": false
+  },
+  "local_display_replay": {
+    "format_version": 11,
+    "validation_version": 20,
+    "pce_visible": true,
+    "reduced": true,
+    "all_calendar_titles_visible": true,
+    "current_full_review_prompt_chars": 87954,
+    "additional_model_calls": 0
+  },
+  "final_assessment_sha256": "4b325bce11219215ebadc257de41d7f476decd25861dbca957b87ecf1620501e",
+  "slack": "not_called"
+}

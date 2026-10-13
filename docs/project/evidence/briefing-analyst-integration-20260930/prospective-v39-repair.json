@@ -1,0 +1,46 @@
+{
+  "at": "2026-09-30T23:22:59.438211+00:00",
+  "validation_version": 39,
+  "format_version": 15,
+  "scope": "Prospective technical repair. Does not rerun or reclassify the frozen version38 AM case, certify expert quality, deploy or send Slack.",
+  "changes": [
+    "Original fetch, PostgreSQL cache and Analyst document preserve bounded full article bodies up to12000characters instead of6000; larger/known partial originals are excluded from Analyst input and diagnosed.",
+    "Reporter model excerpts remain6000characters and retain explicit truncation flag; its context budget is unchanged.",
+    "Spoken decimal changes are normalized exactly; equivalent points-or-percent wording shares only its own adjacent direction. Wrong sign/unit/value or another index clause still fail.",
+    "Explicit from June admits only the written month; no day/year/time is invented.",
+    "Writer/reviewer require announcement amount versus existing commitment relationship in main prose, and group issues by economic link."
+  ],
+  "regression_records": [
+    {
+      "file": "docs/project/evidence/briefing-analyst-integration-20260930/source-completeness-regression-repaired.xml",
+      "sha256": "1ff78373f9676081bae7af9fc90eb6bfe27ffffea1cd0855c200f4621329a736",
+      "tests": 164,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 14.135
+    },
+    {
+      "file": "docs/project/evidence/briefing-analyst-integration-20260930/source-completeness-numeric-v39.xml",
+      "sha256": "37388cfe84ece16bc66810ab4b25847b663f623e5fe64a4b4d6334c149955ca4",
+      "tests": 169,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 14.776
+    },
+    {
+      "file": "docs/project/evidence/briefing-analyst-integration-20260930/numeric-month-v39.xml",
+      "sha256": "49c54bdd94079c7f6f49a212b1e5a197438d86257be7cdb65c36c95276ae5a37",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.318
+    }
+  ],
+  "full_suite": "running; any later month-only followup is recorded separately",
+  "source_completeness_requires_new_case": true,
+  "deployment": "not_performed",
+  "slack": "not_called"
+}

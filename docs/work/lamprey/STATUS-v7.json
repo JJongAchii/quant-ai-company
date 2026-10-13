@@ -1,0 +1,75 @@
+{
+  "approval": {
+    "approvedAt": "2026-10-01T03:46:23.508659+00:00",
+    "id": "conversation:user:2026-10-01:conditional-research-implementation"
+  },
+  "currentIntent": "INTENT-v7.json",
+  "deliverables": {
+    "QUALIFICATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/conditional-research-20261001/implementation-acceptance.json",
+          "sha256": "22d21e9b9411"
+        },
+        {
+          "path": "docs/project/evidence/conditional-research-20261001/ci-source-validation.json",
+          "sha256": "e407cbe07f4c"
+        },
+        {
+          "path": "docs/project/evidence/conditional-research-20261001/worker-final-qualification.json",
+          "sha256": "9f055b455e23"
+        },
+        {
+          "path": "docs/project/evidence/conditional-research-20261001/integration-regression-4f3bdb7.json",
+          "sha256": "9cce95d17791"
+        }
+      ],
+      "note": "Qualified source4927880; code/software scope only. Production and signed v3 research activation remain false.",
+      "status": "verified",
+      "updatedAt": "2026-10-01T07:38:50.199866+00:00"
+    },
+    "SCOPE_PROPAGATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/conditional-research-20261001/data-implementation-review-integrated-final.json",
+          "sha256": "fbeb2c5d3952"
+        },
+        {
+          "path": "docs/project/evidence/conditional-research-20261001/source-scope-defect-reproduction.json",
+          "sha256": "1e0a5c829fc9"
+        },
+        {
+          "path": "docs/project/evidence/conditional-research-20261001/worker-final-qualification.json",
+          "sha256": "9f055b455e23"
+        }
+      ],
+      "note": "Qualified source4927880; code/software scope only. Production and signed v3 research activation remain false.",
+      "status": "verified",
+      "updatedAt": "2026-10-01T07:38:50.199866+00:00"
+    },
+    "VERSIONED_CONTRACTS": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/conditional-research-20261001/implementation-review-input-integrated-final.json",
+          "sha256": "dd5bdd3b3d79"
+        },
+        {
+          "path": "docs/project/evidence/conditional-research-20261001/integrated-final-contract-validation.json",
+          "sha256": "0ea643e65798"
+        },
+        {
+          "path": "docs/project/evidence/conditional-research-20261001/admission-implementation-review-integrated-final.json",
+          "sha256": "decd7f5edc2f"
+        }
+      ],
+      "note": "Qualified source4927880; code/software scope only. Production and signed v3 research activation remain false.",
+      "status": "verified",
+      "updatedAt": "2026-10-01T07:38:50.199866+00:00"
+    }
+  },
+  "intentDigest": "8e90e63b8149",
+  "schemaVersion": 1,
+  "slug": "lamprey",
+  "state": "approved",
+  "updatedAt": "2026-10-01T07:38:50.199866+00:00"
+}

@@ -1,0 +1,16 @@
+{
+  "request_id": "news-brief-eval-7676cb10d29f42e68b6c17ff4ccb7751",
+  "request_sha256": "11d4f08c9cc8703946e5badea8de06c53ac16529c33c0d3e7dd009c873db48f4",
+  "elapsed_seconds": 2.126,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "wire_sha256": "4b1bb5635e0af8c41687d1a789533faf33ac64a365049df2efe35b21e4f8bfca",
+  "response": {
+    "http_status": 409,
+    "fault": {
+      "code": "busy",
+      "message": "The subscription runtime lane is executing another turn.",
+      "retry_after_seconds": 5
+    }
+  }
+}

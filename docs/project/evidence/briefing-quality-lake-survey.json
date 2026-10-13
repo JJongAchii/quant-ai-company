@@ -1,0 +1,727 @@
+{
+  "observed_at": "2026-09-22T06:38:05.550901+00:00",
+  "mode": "real_read_only_api_metadata",
+  "datasets": {
+    "ecos": {
+      "dataset": "ecos",
+      "source": {
+        "uri": "s3://insight-invest-datalake/qdata/clean/ecos.parquet",
+        "size_bytes": 187656,
+        "last_modified": "2026-09-21T10:01:48+00:00",
+        "etag": "\"4caf9ca20e1474178611c31b4e840a82\"",
+        "version_id": null
+      },
+      "observed_at": "2026-09-22T06:38:06.313360+00:00",
+      "row_count": 29993,
+      "columns": [
+        {
+          "name": "series",
+          "type": "string"
+        },
+        {
+          "name": "date",
+          "type": "timestamp[ns]"
+        },
+        {
+          "name": "value",
+          "type": "double"
+        },
+        {
+          "name": "asof",
+          "type": "string"
+        }
+      ],
+      "date_bounds": {
+        "date": {
+          "statistics_complete": true,
+          "min": "2000-01-01T00:00:00",
+          "max": "2026-09-21T00:00:00",
+          "null_count": 0
+        }
+      },
+      "sample": null,
+      "method": "parquet_footer_statistics",
+      "limitations": [
+        "Bounds are dataset-wide, not per instrument or trading-calendar coverage.",
+        "Observation/trade dates are not publication-availability timestamps.",
+        "ETag is object identity metadata, not a computed content hash."
+      ],
+      "reader_bytes": 65544
+    },
+    "fred": {
+      "dataset": "fred",
+      "source": {
+        "uri": "s3://insight-invest-datalake/qdata/clean/fred.parquet",
+        "size_bytes": 337990,
+        "last_modified": "2026-09-21T10:03:19+00:00",
+        "etag": "\"4138a9b3819a0be673f0ba26bfcd1951\"",
+        "version_id": null
+      },
+      "observed_at": "2026-09-22T06:38:06.563978+00:00",
+      "row_count": 52156,
+      "columns": [
+        {
+          "name": "date",
+          "type": "timestamp[ns]"
+        },
+        {
+          "name": "series",
+          "type": "string"
+        },
+        {
+          "name": "value",
+          "type": "double"
+        }
+      ],
+      "date_bounds": {
+        "date": {
+          "statistics_complete": true,
+          "min": "1980-01-01T00:00:00",
+          "max": "2026-09-18T00:00:00",
+          "null_count": 0
+        }
+      },
+      "sample": null,
+      "method": "parquet_footer_statistics",
+      "limitations": [
+        "Bounds are dataset-wide, not per instrument or trading-calendar coverage.",
+        "Observation/trade dates are not publication-availability timestamps.",
+        "ETag is object identity metadata, not a computed content hash."
+      ],
+      "reader_bytes": 65544
+    },
+    "krx_flows": {
+      "dataset": "krx_flows",
+      "source": {
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_flows.parquet",
+        "size_bytes": 646130840,
+        "last_modified": "2026-09-21T10:24:33+00:00",
+        "etag": "\"fa1b27f06f74d76e603cca6ce112cb47-13\"",
+        "version_id": null
+      },
+      "observed_at": "2026-09-22T06:38:06.953685+00:00",
+      "row_count": 27585386,
+      "columns": [
+        {
+          "name": "date",
+          "type": "timestamp[ms]"
+        },
+        {
+          "name": "ticker",
+          "type": "string"
+        },
+        {
+          "name": "market",
+          "type": "string"
+        },
+        {
+          "name": "investor",
+          "type": "string"
+        },
+        {
+          "name": "buy_value",
+          "type": "int64"
+        },
+        {
+          "name": "sell_value",
+          "type": "int64"
+        },
+        {
+          "name": "net_value",
+          "type": "int64"
+        },
+        {
+          "name": "net_volume",
+          "type": "int64"
+        }
+      ],
+      "date_bounds": {
+        "date": {
+          "statistics_complete": true,
+          "min": "2006-01-02T00:00:00",
+          "max": "2026-09-21T00:00:00",
+          "null_count": 0
+        }
+      },
+      "sample": null,
+      "method": "parquet_footer_statistics",
+      "limitations": [
+        "Bounds are dataset-wide, not per instrument or trading-calendar coverage.",
+        "Observation/trade dates are not publication-availability timestamps.",
+        "ETag is object identity metadata, not a computed content hash."
+      ],
+      "reader_bytes": 65544
+    },
+    "krx_index": {
+      "dataset": "krx_index",
+      "source": {
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_index.parquet",
+        "size_bytes": 249719,
+        "last_modified": "2026-09-21T10:24:36+00:00",
+        "etag": "\"92919fb6ec4614c71927618455b9f6dc\"",
+        "version_id": null
+      },
+      "observed_at": "2026-09-22T06:38:07.174708+00:00",
+      "row_count": 5256,
+      "columns": [
+        {
+          "name": "date",
+          "type": "timestamp[ns]"
+        },
+        {
+          "name": "index",
+          "type": "string"
+        },
+        {
+          "name": "open",
+          "type": "double"
+        },
+        {
+          "name": "high",
+          "type": "double"
+        },
+        {
+          "name": "low",
+          "type": "double"
+        },
+        {
+          "name": "close",
+          "type": "double"
+        },
+        {
+          "name": "volume",
+          "type": "int64"
+        },
+        {
+          "name": "value",
+          "type": "int64"
+        }
+      ],
+      "date_bounds": {
+        "date": {
+          "statistics_complete": true,
+          "min": "2016-01-04T00:00:00",
+          "max": "2026-09-21T00:00:00",
+          "null_count": 0
+        }
+      },
+      "sample": null,
+      "method": "parquet_footer_statistics",
+      "limitations": [
+        "Bounds are dataset-wide, not per instrument or trading-calendar coverage.",
+        "Observation/trade dates are not publication-availability timestamps.",
+        "ETag is object identity metadata, not a computed content hash."
+      ],
+      "reader_bytes": 65544
+    },
+    "krx_index_prices": {
+      "dataset": "krx_index_prices",
+      "source": {
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_index_prices.parquet",
+        "size_bytes": 28261069,
+        "last_modified": "2026-09-21T10:24:37+00:00",
+        "etag": "\"99e9b4e52e92ede97e3831c5d441563d\"",
+        "version_id": null
+      },
+      "observed_at": "2026-09-22T06:38:07.545219+00:00",
+      "row_count": 809435,
+      "columns": [
+        {
+          "name": "date",
+          "type": "timestamp[ns]"
+        },
+        {
+          "name": "index_code",
+          "type": "string"
+        },
+        {
+          "name": "open",
+          "type": "double"
+        },
+        {
+          "name": "high",
+          "type": "double"
+        },
+        {
+          "name": "low",
+          "type": "double"
+        },
+        {
+          "name": "close",
+          "type": "double"
+        },
+        {
+          "name": "volume",
+          "type": "int64"
+        },
+        {
+          "name": "value",
+          "type": "int64"
+        },
+        {
+          "name": "market_cap",
+          "type": "int64"
+        }
+      ],
+      "date_bounds": {
+        "date": {
+          "statistics_complete": true,
+          "min": "1990-01-03T00:00:00",
+          "max": "2026-09-21T00:00:00",
+          "null_count": 0
+        }
+      },
+      "sample": null,
+      "method": "parquet_footer_statistics",
+      "limitations": [
+        "Bounds are dataset-wide, not per instrument or trading-calendar coverage.",
+        "Observation/trade dates are not publication-availability timestamps.",
+        "ETag is object identity metadata, not a computed content hash."
+      ],
+      "reader_bytes": 65544
+    },
+    "krx_prices": {
+      "dataset": "krx_prices",
+      "source": {
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_prices.parquet",
+        "size_bytes": 323265752,
+        "last_modified": "2026-09-21T10:24:37+00:00",
+        "etag": "\"44a613b7651061a95576dfa904ca3e34-7\"",
+        "version_id": null
+      },
+      "observed_at": "2026-09-22T06:38:07.886655+00:00",
+      "row_count": 11159420,
+      "columns": [
+        {
+          "name": "date",
+          "type": "timestamp[ms]"
+        },
+        {
+          "name": "ticker",
+          "type": "string"
+        },
+        {
+          "name": "market",
+          "type": "string"
+        },
+        {
+          "name": "open",
+          "type": "int32"
+        },
+        {
+          "name": "high",
+          "type": "int32"
+        },
+        {
+          "name": "low",
+          "type": "int32"
+        },
+        {
+          "name": "close",
+          "type": "int32"
+        },
+        {
+          "name": "volume",
+          "type": "int32"
+        },
+        {
+          "name": "value",
+          "type": "int64"
+        },
+        {
+          "name": "chg_pct",
+          "type": "float"
+        },
+        {
+          "name": "mktcap",
+          "type": "int64"
+        },
+        {
+          "name": "shares",
+          "type": "int64"
+        },
+        {
+          "name": "adj_factor",
+          "type": "double"
+        },
+        {
+          "name": "adj_close",
+          "type": "double"
+        }
+      ],
+      "date_bounds": {
+        "date": {
+          "statistics_complete": true,
+          "min": "2006-01-02T00:00:00",
+          "max": "2026-09-21T00:00:00",
+          "null_count": 0
+        }
+      },
+      "sample": null,
+      "method": "parquet_footer_statistics",
+      "limitations": [
+        "Bounds are dataset-wide, not per instrument or trading-calendar coverage.",
+        "Observation/trade dates are not publication-availability timestamps.",
+        "ETag is object identity metadata, not a computed content hash."
+      ],
+      "reader_bytes": 65544
+    },
+    "prices": {
+      "dataset": "prices",
+      "source": {
+        "uri": "s3://insight-invest-datalake/qdata/clean/prices.parquet",
+        "size_bytes": 1230780,
+        "last_modified": "2026-09-18T11:09:11+00:00",
+        "etag": "\"a5d7fe910217feddb767c8fd3e98e99c\"",
+        "version_id": null
+      },
+      "observed_at": "2026-09-22T06:38:08.228389+00:00",
+      "row_count": 81698,
+      "columns": [
+        {
+          "name": "date",
+          "type": "timestamp[ns]"
+        },
+        {
+          "name": "ticker",
+          "type": "string"
+        },
+        {
+          "name": "adj_close",
+          "type": "double"
+        },
+        {
+          "name": "volume",
+          "type": "int64"
+        }
+      ],
+      "date_bounds": {
+        "date": {
+          "statistics_complete": true,
+          "min": "2006-01-03T00:00:00",
+          "max": "2026-09-17T00:00:00",
+          "null_count": 0
+        }
+      },
+      "sample": null,
+      "method": "parquet_footer_statistics",
+      "limitations": [
+        "Bounds are dataset-wide, not per instrument or trading-calendar coverage.",
+        "Observation/trade dates are not publication-availability timestamps.",
+        "ETag is object identity metadata, not a computed content hash."
+      ],
+      "reader_bytes": 65544
+    }
+  },
+  "catalog": {
+    "observed_at": "2026-09-22T06:38:06.084928+00:00",
+    "method": "object_metadata_only",
+    "datasets": [
+      {
+        "dataset": "binance_usdtm_klines",
+        "uri": "s3://insight-invest-datalake/qdata/clean/binance_usdtm_klines.parquet",
+        "size_bytes": 9256917,
+        "last_modified": "2026-09-18T11:09:00+00:00",
+        "etag": "\"42c73ed6f129bffd4a84b2530f815103\"",
+        "version_id": null
+      },
+      {
+        "dataset": "cusip_map",
+        "uri": "s3://insight-invest-datalake/qdata/clean/cusip_map.parquet",
+        "size_bytes": 2587178,
+        "last_modified": "2026-09-18T11:09:00+00:00",
+        "etag": "\"b9043821f532a9d553022ada1420cbab\"",
+        "version_id": null
+      },
+      {
+        "dataset": "dart_fundamental",
+        "uri": "s3://insight-invest-datalake/qdata/clean/dart_fundamental.parquet",
+        "size_bytes": 28656961,
+        "last_modified": "2026-08-03T06:38:17+00:00",
+        "etag": "\"461695896618c31e9f20aa0e70b25169\"",
+        "version_id": null
+      },
+      {
+        "dataset": "ecos",
+        "uri": "s3://insight-invest-datalake/qdata/clean/ecos.parquet",
+        "size_bytes": 187656,
+        "last_modified": "2026-09-21T10:01:48+00:00",
+        "etag": "\"4caf9ca20e1474178611c31b4e840a82\"",
+        "version_id": null
+      },
+      {
+        "dataset": "fred",
+        "uri": "s3://insight-invest-datalake/qdata/clean/fred.parquet",
+        "size_bytes": 337990,
+        "last_modified": "2026-09-21T10:03:19+00:00",
+        "etag": "\"4138a9b3819a0be673f0ba26bfcd1951\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_etf",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf.parquet",
+        "size_bytes": 78551796,
+        "last_modified": "2026-09-21T10:24:32+00:00",
+        "etag": "\"a0bcfcfe50bfe8eb5026e5677003f843\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_etf_meta",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf_meta.parquet",
+        "size_bytes": 24433678,
+        "last_modified": "2026-09-21T10:24:33+00:00",
+        "etag": "\"2c75884ecd80f564cf04d174b0e1b93a\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_etf_profile",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf_profile.parquet",
+        "size_bytes": 475115,
+        "last_modified": "2026-09-21T10:24:33+00:00",
+        "etag": "\"7483106596001cee212efb4270a6ecbe\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_flows",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_flows.parquet",
+        "size_bytes": 646130840,
+        "last_modified": "2026-09-21T10:24:33+00:00",
+        "etag": "\"fa1b27f06f74d76e603cca6ce112cb47-13\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_fundamental",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_fundamental.parquet",
+        "size_bytes": 78401177,
+        "last_modified": "2026-09-21T10:24:36+00:00",
+        "etag": "\"043e52e7a7429563d6bcccd23b151859\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_index",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_index.parquet",
+        "size_bytes": 249719,
+        "last_modified": "2026-09-21T10:24:36+00:00",
+        "etag": "\"92919fb6ec4614c71927618455b9f6dc\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_index_fundamental",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_index_fundamental.parquet",
+        "size_bytes": 7546129,
+        "last_modified": "2026-09-21T10:24:36+00:00",
+        "etag": "\"3088992bc9919b52436ff4cac5ab36ef\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_index_master",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_index_master.parquet",
+        "size_bytes": 17000,
+        "last_modified": "2026-09-21T10:24:37+00:00",
+        "etag": "\"2bfcda2f7c07f51975bfd4e6b9b735a1\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_index_prices",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_index_prices.parquet",
+        "size_bytes": 28261069,
+        "last_modified": "2026-09-21T10:24:37+00:00",
+        "etag": "\"99e9b4e52e92ede97e3831c5d441563d\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_prices",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_prices.parquet",
+        "size_bytes": 323265752,
+        "last_modified": "2026-09-21T10:24:37+00:00",
+        "etag": "\"44a613b7651061a95576dfa904ca3e34-7\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_sector",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_sector.parquet",
+        "size_bytes": 1991698,
+        "last_modified": "2026-09-21T10:24:40+00:00",
+        "etag": "\"16865d66b5208b805e0051549ff08ba2\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_security_continuity_coverage",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_security_continuity_coverage.parquet",
+        "size_bytes": 12122,
+        "last_modified": "2026-09-18T11:09:11+00:00",
+        "etag": "\"176ddce4ec32c624ac52359f03386a52\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_security_continuity_events",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_security_continuity_events.parquet",
+        "size_bytes": 316656,
+        "last_modified": "2026-09-18T11:09:11+00:00",
+        "etag": "\"0299feb4de43dae855fe09af1c4b8172\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_security_continuity_legs",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_security_continuity_legs.parquet",
+        "size_bytes": 106744,
+        "last_modified": "2026-09-18T11:09:11+00:00",
+        "etag": "\"f2eba7b9b54738733a671a0772acd51e\"",
+        "version_id": null
+      },
+      {
+        "dataset": "krx_stock_master",
+        "uri": "s3://insight-invest-datalake/qdata/clean/krx_stock_master.parquet",
+        "size_bytes": 685683,
+        "last_modified": "2026-09-21T10:24:40+00:00",
+        "etag": "\"fd8a4d982004f742f98a293360fdf70f\"",
+        "version_id": null
+      },
+      {
+        "dataset": "oecd_cli",
+        "uri": "s3://insight-invest-datalake/qdata/clean/oecd_cli.parquet",
+        "size_bytes": 15454,
+        "last_modified": "2026-09-18T11:09:11+00:00",
+        "etag": "\"1a91ffb774a4cbba65a1b1db5689a971\"",
+        "version_id": null
+      },
+      {
+        "dataset": "prices",
+        "uri": "s3://insight-invest-datalake/qdata/clean/prices.parquet",
+        "size_bytes": 1230780,
+        "last_modified": "2026-09-18T11:09:11+00:00",
+        "etag": "\"a5d7fe910217feddb767c8fd3e98e99c\"",
+        "version_id": null
+      },
+      {
+        "dataset": "sec_13f",
+        "uri": "s3://insight-invest-datalake/qdata/clean/sec_13f.parquet",
+        "size_bytes": 2467003728,
+        "last_modified": "2026-08-26T04:56:13+00:00",
+        "etag": "\"79cce0ea72b15dfba90cb5c4eb1a0002-48\"",
+        "version_id": null
+      },
+      {
+        "dataset": "sec_filings",
+        "uri": "s3://insight-invest-datalake/qdata/clean/sec_filings.parquet",
+        "size_bytes": 9391396,
+        "last_modified": "2026-08-03T06:38:20+00:00",
+        "etag": "\"69a3a9409660c3a412b1350b243166bb\"",
+        "version_id": null
+      },
+      {
+        "dataset": "sec_fundamental",
+        "uri": "s3://insight-invest-datalake/qdata/clean/sec_fundamental.parquet",
+        "size_bytes": 145012830,
+        "last_modified": "2026-08-03T06:38:21+00:00",
+        "etag": "\"1b3841f9c38fd8545643b56e4e8c5383-3\"",
+        "version_id": null
+      },
+      {
+        "dataset": "sec_insider",
+        "uri": "s3://insight-invest-datalake/qdata/clean/sec_insider.parquet",
+        "size_bytes": 208195794,
+        "last_modified": "2026-08-20T02:18:59+00:00",
+        "etag": "\"c9dc24253095e29af8928a401f4ef8ea-4\"",
+        "version_id": null
+      },
+      {
+        "dataset": "sec_nport",
+        "uri": "s3://insight-invest-datalake/qdata/clean/sec_nport.parquet",
+        "size_bytes": 6584209821,
+        "last_modified": "2026-08-26T06:45:55+00:00",
+        "etag": "\"5c10eff5832d3e021e3a5e592163fd5e-126\"",
+        "version_id": null
+      },
+      {
+        "dataset": "sec_nport_fund",
+        "uri": "s3://insight-invest-datalake/qdata/clean/sec_nport_fund.parquet",
+        "size_bytes": 26918537,
+        "last_modified": "2026-08-26T06:55:26+00:00",
+        "etag": "\"f04af55edfd1a2b79354a1c4ce7dacea\"",
+        "version_id": null
+      },
+      {
+        "dataset": "sec_tickers",
+        "uri": "s3://insight-invest-datalake/qdata/clean/sec_tickers.parquet",
+        "size_bytes": 271529,
+        "last_modified": "2026-08-03T06:38:34+00:00",
+        "etag": "\"e852d649d013ca832e4fc5c5ce4afbda\"",
+        "version_id": null
+      },
+      {
+        "dataset": "us_dividends",
+        "uri": "s3://insight-invest-datalake/qdata/clean/us_dividends.parquet",
+        "size_bytes": 19580178,
+        "last_modified": "2026-09-21T00:15:10+00:00",
+        "etag": "\"41369e9df03497db80727273b6322954\"",
+        "version_id": null
+      },
+      {
+        "dataset": "us_prices",
+        "uri": "s3://insight-invest-datalake/qdata/clean/us_prices.parquet",
+        "size_bytes": 2801167828,
+        "last_modified": "2026-09-21T00:15:10+00:00",
+        "etag": "\"5b76d7cd6771037d63a96c012f791e1a-54\"",
+        "version_id": null
+      },
+      {
+        "dataset": "us_shortvol",
+        "uri": "s3://insight-invest-datalake/qdata/clean/us_shortvol.parquet",
+        "size_bytes": 261485729,
+        "last_modified": "2026-09-18T11:09:35+00:00",
+        "etag": "\"525874398528a7c8d9d79ae3277b5cfe-5\"",
+        "version_id": null
+      },
+      {
+        "dataset": "us_splits",
+        "uri": "s3://insight-invest-datalake/qdata/clean/us_splits.parquet",
+        "size_bytes": 2244624,
+        "last_modified": "2026-09-21T00:15:19+00:00",
+        "etag": "\"53ea8f937a902045bec9ca9e9e24c808\"",
+        "version_id": null
+      },
+      {
+        "dataset": "us_symbols",
+        "uri": "s3://insight-invest-datalake/qdata/clean/us_symbols.parquet",
+        "size_bytes": 2108661,
+        "last_modified": "2026-09-18T11:09:37+00:00",
+        "etag": "\"69eaeb034572570ae34576d8458e15ea\"",
+        "version_id": null
+      },
+      {
+        "dataset": "us_ticker_details",
+        "uri": "s3://insight-invest-datalake/qdata/clean/us_ticker_details.parquet",
+        "size_bytes": 787763,
+        "last_modified": "2026-09-18T11:09:37+00:00",
+        "etag": "\"ce93bf8fb6356dbd9a9ed9c39f187ea1\"",
+        "version_id": null
+      },
+      {
+        "dataset": "us_ticker_events",
+        "uri": "s3://insight-invest-datalake/qdata/clean/us_ticker_events.parquet",
+        "size_bytes": 690763,
+        "last_modified": "2026-08-05T02:06:55+00:00",
+        "etag": "\"40b8231f2ed63fd1a57b7d210681d3d8\"",
+        "version_id": null
+      },
+      {
+        "dataset": "us_ticker_history",
+        "uri": "s3://insight-invest-datalake/qdata/clean/us_ticker_history.parquet",
+        "size_bytes": 2741166,
+        "last_modified": "2026-09-18T11:09:37+00:00",
+        "etag": "\"7e18e5596347248763dad86d13ed882f\"",
+        "version_id": null
+      },
+      {
+        "dataset": "us_tickers",
+        "uri": "s3://insight-invest-datalake/qdata/clean/us_tickers.parquet",
+        "size_bytes": 26179168,
+        "last_modified": "2026-09-18T11:09:37+00:00",
+        "etag": "\"e7c3a960a21168153aeb5927a8c159e9\"",
+        "version_id": null
+      }
+    ],
+    "note": "Object upload time is not the latest trading, observation or publication date."
+  }
+}

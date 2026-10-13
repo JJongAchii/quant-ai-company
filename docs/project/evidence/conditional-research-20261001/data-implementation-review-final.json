@@ -1,0 +1,283 @@
+{
+  "actual_production_staff_assessment": false,
+  "base_commit": "71a9e1d84d76d9fbd467ce08f1d4171f1f116609",
+  "blocking_findings": [],
+  "causality_guard_limits": [
+    "Read backtest-hygiene SKILL.md and references/guards.md. A green synthetic fixture or single cutoff is not a complete causal verdict.",
+    "No qlab truncation/perturbation/asof guard was run against a real candidate or market panel. Existing synthetic history/rank checks are engineering regressions only.",
+    "Row-correspondence and date-boundary requirements, early-warmup cuts and rank/sign/argmax blind spots remain requirements for future candidate audits. This review does not convert manual long-panel comparisons into a qlab guard pass.",
+    "Reference-adjusted open valuation remains a retrospective theoretical estimand from same-session close/FLUC_RT adjustment values; unchanged source hashes do not make historical fills or cash total return verified."
+  ],
+  "clearance": {
+    "local_engineering_scope": true,
+    "scope": "Policy/data-evidence/profile, canonical scope propagation, protected producer bytes, consumer validation and stated final deltas only; no activation or scientific judgment."
+  },
+  "clearances": [
+    {
+      "evidence": "Final consumer independently enforces date and datetime sample counts, required date/datetime typed schema, pre-development cutoff and sealed-window exclusion. Four synchronized producer/envelope tamper regressions pass. The exact initial F1 sealed-date probe now rejects at both worker and consumer after a valid warmup baseline is accepted.",
+      "locations": [
+        "src/quant_company/research/adaptive_report.py:265",
+        "src/quant_company/research/adaptive_report.py:270",
+        "src/quant_company/research/adaptive_executor.py:134",
+        "src/quant_company/research/adaptive_executor.py:139"
+      ],
+      "topic": "Independent consumer warmup validation"
+    },
+    {
+      "evidence": "Program context derives research_scopes from selected canonical MissionSpec templates, and compact mission context independently derives research_scope from the validated immutable spec. The top-level scope survives large-spec truncation. These values are service-derived; employee or candidate text cannot assign scope. Typed admission still rechecks submitted records against that canonical spec.",
+      "locations": [
+        "src/quant_company/research/program_controller.py:282",
+        "src/quant_company/research/mission_backend.py:105",
+        "src/quant_company/research/mission_backend.py:132"
+      ],
+      "topic": "Canonical scope in employee context"
+    },
+    {
+      "evidence": "Origin inheritance admits a technical_waiting trial only after a failed/cancelled terminal job and persisted technical_failure outcome; every unsettled reservation and queued/claimed/running/uncertain/cancel_requested job still blocks. The prior mission must also be cancelled or end under its original trial/cycle rules. Trial/outcome digest and technical-failure history remain in signed-history preimages; prior configuration signatures remain registered. Synthetic cancelled-terminal-failure inheritance passes without charging a science result or resetting lineage evidence.",
+      "locations": [
+        "src/quant_company/research/scientific_lineages.py:6",
+        "src/quant_company/research/scientific_lineages.py:29",
+        "src/quant_company/research/scientific_lineages.py:42",
+        "src/quant_company/research/scientific_lineages.py:130",
+        "tests/test_research_conditional.py:551"
+      ],
+      "topic": "Terminal technical failure history inheritance"
+    },
+    {
+      "evidence": "Retrospective program proposals require novel_hypothesis. Independently, source metadata carrying conditional_retrospective_development rejects exact_replication and market_transfer even in a historical program. MissionSpec v3 rejects a conditional replication evaluator hidden inside a novel task. The conditional mode and evaluator regression tests pass; the historical-program conditional-source branch was reviewed statically.",
+      "locations": [
+        "src/quant_company/research/programs.py:155",
+        "src/quant_company/research/programs.py:161",
+        "src/quant_company/research/mission_contracts.py:169",
+        "tests/test_research_conditional.py:365",
+        "tests/test_research_conditional.py:417"
+      ],
+      "topic": "Conditional sources cannot support original replication or transfer"
+    },
+    {
+      "evidence": "Unchanged implementations preserve the initial review clearances: strict typed modes and three-code gap allowlist, real evidence/input hashes, old-profile rejection for a new policy, producer schema-1 originals without self-declared scope, trusted canonical wrapper scope, original-byte SHA/content equality and exact scope across receipt/qualification/result/runtime/sandbox records. Final 44-test suite confirms mismatches, false fact upgrades, hard/unknown gaps, stale packets and candidate-assigned scope reject.",
+      "locations": [
+        "src/quant_company/research/policy_contracts.py:62",
+        "src/quant_company/research/data_evidence.py:106",
+        "src/quant_company/research/domestic_profile.py:55",
+        "src/quant_company/research/adaptive_executor.py:169",
+        "src/quant_company/research/adaptive_report.py:228"
+      ],
+      "topic": "Inherited typed policy, input, profile and scope binding"
+    },
+    {
+      "evidence": "Initial semantic clearances remain bound to unchanged source hashes. Archives retain the producer originals and manifest lineage; verified audit binding, report summary and publication carry exact scope and prior negative history. Report/library conditional labels and false PIT/original/executable/deployment facts persist. The final audit/report/publication fixture passes using the actual pinned local qlab file/receipt API and synthetic audit artifacts, not a scientific or production verdict.",
+      "locations": [
+        "src/quant_company/research/audit.py:230",
+        "src/quant_company/research/audit.py:316",
+        "src/quant_company/research/library.py:115",
+        "src/quant_company/research/adaptive_report.py:389",
+        "tests/test_research_conditional.py:652"
+      ],
+      "topic": "Archive, audit, report and library propagation"
+    },
+    {
+      "evidence": "Protected engine remains byte-identical at the pinned hash. Existing date < trade day and available_at < 09:00 filters, latest-visible rebasing and pre-import sealed exclusion are inherited from the initial semantic review. Final protected-engine synthetic qualification/evaluation protocol and wrapper-byte checks pass. This proves local engineered behavior under the declared synthetic availability assumption, not historical PIT, actual executable opens, cash total return or arbitrary-candidate causality.",
+      "locations": [
+        "src/quant_company/research/reference/domestic_engine.py:57",
+        "src/quant_company/research/reference/domestic_engine.py:175",
+        "src/quant_company/research/adaptive_executor.py:231",
+        "tests/test_research_conditional.py:598"
+      ],
+      "topic": "Protected engine and causal interpretation"
+    }
+  ],
+  "closed_findings": [
+    {
+      "confirmed_market_data_leak": false,
+      "evidence": "Final synchronized-hash sealed-date tamper is rejected by worker and consumer; four date/count/schema regression mutations pass. Initial evidence remains preserved without rewriting.",
+      "final_file_sha256": "de7464befe747942b19baf96f8f2f4ad09fd93399b65b84807a3124dbc1f45c3",
+      "final_location": "src/quant_company/research/adaptive_report.py:265",
+      "id": "F1",
+      "initial_file_sha256": "e8d3250e6efdfc6ad3e16c8449dca55a103b0d6276252abf75fdff4bfac3ce8a",
+      "initial_location": "src/quant_company/research/adaptive_report.py:261",
+      "severity": "major",
+      "status": "closed_for_final_frozen_package"
+    }
+  ],
+  "commands_and_results": [
+    {
+      "command": ".venv/bin/pytest -q --tb=short tests/test_research_conditional.py",
+      "exit_code": 0,
+      "output": "44 passed in 15.97s",
+      "scope": "Disposable real local PostgreSQL, generated synthetic inputs, scripted employees/owner ingress and actual pinned local qlab file/receipt API. No real Linux bwrap worker, real Slack or production employee assessment.",
+      "test_file_sha256": "68c5272b6bbb02bf0ae8d5b3ff354e332e42a84ade08cb03345748116a67d6ad"
+    },
+    {
+      "command": ".venv/bin/python - <<'PYPROBE'\nimport json,tempfile\nfrom pathlib import Path\nfrom tests.test_research_conditional import conditional_producer\nfrom tests.test_research_adaptive_report import encoded,mutate,sha,validate\nfrom quant_company.research.adaptive_executor import qualification_from_file,ExecutionBlocked\nfrom quant_company.research.adaptive_report import ValidationError\nwith tempfile.TemporaryDirectory(prefix='conditional-review-qualification-final-') as directory:\n    fixture=conditional_producer(Path(directory))\n    path,assignment,manifest,profile,contents=fixture\n    validate(fixture)\n    baseline_accepted=True\n    sealed_date=manifest.spec.sealed[0].start.isoformat()\n    replacements={'json_dates':[sealed_date],'json_datetimes':[sealed_date+'T18:00:00+09:00'],'sample_count':1}\n    contents['producer-qualification.json']=encoded(json.loads(contents['producer-qualification.json'])|replacements)\n    mutate(fixture,'qualification.json',lambda payload:payload.update(**replacements,producer_sha256=sha(contents['producer-qualification.json'])))\n    source=Path(directory)/'check-producer-qualification.json'\n    source.write_bytes(contents['producer-qualification.json'])\n    try:\n        qualification_from_file(source,manifest,profile,producer=True)\n    except ExecutionBlocked as exc:worker={'accepted':False,'reason':str(exc)}\n    else:worker={'accepted':True}\n    try:\n        validate(fixture)\n    except ValidationError as exc:consumer={'accepted':False,'reason':str(exc)}\n    else:consumer={'accepted':True}\n    assert not worker['accepted'] and not consumer['accepted']\n    print(json.dumps({'baseline_accepted':baseline_accepted,'worker':worker,'consumer':consumer,'market_price_rows_read':False,'scientific_trials_added':0}))\nPYPROBE",
+      "exit_code": 0,
+      "output": {
+        "baseline_accepted": true,
+        "consumer": {
+          "accepted": false,
+          "reason": "Replay validation failed: qualification_outside_warmup"
+        },
+        "market_price_rows_read": false,
+        "scientific_trials_added": 0,
+        "worker": {
+          "accepted": false,
+          "reason": "qualification-outside-warmup"
+        }
+      },
+      "scope": "Synthetic timestamp marker 2025-01-02 inside fixture sealed dates only; no market/sealed price row is read."
+    },
+    {
+      "command": ".venv/bin/python - <<'PYHASH'\nimport hashlib,json\nfrom pathlib import Path\nroot=Path('.')\np=Path('docs/project/evidence/conditional-research-20261001/implementation-review-input-final.json')\nexpected='3da7ce39ff289e883236fc017eec23e2d11ade3f84e920233c56edd4dc82d6fb'\nsha=lambda path:hashlib.sha256(path.read_bytes()).hexdigest()\nassert sha(p)==expected\nv=json.loads(p.read_text())\nbound=dict(v['files'])|{v['protected_engine']['path']:v['protected_engine']['sha256']}\nmismatch=[{'path':path,'expected':wanted,'actual':sha(Path(path))} for path,wanted in bound.items() if sha(Path(path))!=wanted]\naux=['docs/project/evidence/conditional-research-20261001/data-implementation-review-initial.json','docs/project/evidence/conditional-research-20261001/implementation-review-input-initial.json','docs/project/evidence/etf-execution-contract-20260930/implementation-spec.md','tests/conftest.py','tests/test_research_domestic_engine.py']\nprint(json.dumps({'input_sha256':sha(p),'bound_file_count':len(v['files']),'protected_engine_sha256':sha(Path(v['protected_engine']['path'])),'mismatches':mismatch,'auxiliary_sha256':{path:sha(Path(path)) for path in aux}},indent=2))\nassert not mismatch\nPYHASH",
+      "exit_code": 0,
+      "output": {
+        "bound_file_count": 23,
+        "input_sha256": "3da7ce39ff289e883236fc017eec23e2d11ade3f84e920233c56edd4dc82d6fb",
+        "mismatches": [],
+        "protected_engine_sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+      },
+      "scope": "Exact on-disk SHA256 after targeted tests; every file and frozen specification rechecked again before writing this receipt."
+    }
+  ],
+  "current_runtime_admissible": false,
+  "delta_semantic_reviewed_files": [
+    "src/quant_company/company.py",
+    "src/quant_company/research/adaptive_report.py",
+    "src/quant_company/research/mission_backend.py",
+    "src/quant_company/research/mission_contracts.py",
+    "src/quant_company/research/program_controller.py",
+    "src/quant_company/research/programs.py",
+    "src/quant_company/research/scientific_lineages.py"
+  ],
+  "final_package_recheck_required": false,
+  "financial_performance_approval": false,
+  "historical_point_in_time_verified": false,
+  "initial_review_preserved": {
+    "path": "docs/project/evidence/conditional-research-20261001/data-implementation-review-initial.json",
+    "sha256": "a56cd7370a95e950e3a5b029b2197968ddf34d3eb23fd23c95e3932730f6ce5d",
+    "verdict": "revision_required_for_initial_snapshot"
+  },
+  "input_path": "docs/project/evidence/conditional-research-20261001/implementation-review-input-final.json",
+  "input_sha256": "3da7ce39ff289e883236fc017eec23e2d11ade3f84e920233c56edd4dc82d6fb",
+  "kind": "local-implementation-audit-final",
+  "limitations": [
+    "This is an independent local implementation audit. Its pass is limited to the reviewed code and synthetic engineering evidence and is not an actual production staff assessment, PIT verification, runtime readiness, deployment, financial performance or scientific promotion.",
+    "Unchanged source clearances are inherited from the preserved initial audit after exact SHA matching. Only final source deltas were independently reopened. program_schema.sql received byte identity verification, not a fresh semantic database migration audit.",
+    "The source-metadata rejection branch for a conditional source used by a historical program was inspected statically; the 44-test module exercises conditional program mode and evaluator rejection rather than that separate historical-program source path.",
+    "The Temporal integration and opt-in Linux bwrap tests were read but not run by this reviewer. No remote 3070, production PostgreSQL/Temporal or actual Slack interaction is claimed.",
+    "Qualification fixture and receipt tests exercise generated synthetic values. qlab audit fixtures are engineered file/API evidence, not independent scientist approval.",
+    "No market snapshot/lake price, sealed price row, heavy research run, live/paper order, external message, credential file or production mutation occurred. Final integration and qws remain owned by root."
+  ],
+  "manifest_identity_verification": {
+    "after_targeted_tests_all_matched": true,
+    "before_receipt_write_all_matched": true,
+    "before_targeted_tests_all_matched": true,
+    "bound_files_checked": 23,
+    "identity_only_source_files": [
+      "src/quant_company/research/program_schema.sql"
+    ],
+    "initial_to_final_source_changes": [
+      {
+        "final_sha256": "de7464befe747942b19baf96f8f2f4ad09fd93399b65b84807a3124dbc1f45c3",
+        "initial_sha256": "e8d3250e6efdfc6ad3e16c8449dca55a103b0d6276252abf75fdff4bfac3ce8a",
+        "path": "src/quant_company/research/adaptive_report.py"
+      },
+      {
+        "final_sha256": "3caf55ecd6cfc8e74df8fb56d7f96d6e8a2a5d35f23ba39d5741c9c711c186ee",
+        "initial_sha256": "b28833f525600fb729bc5549ddc8ee52d086ac5b9b9de25ead98da5c8da86989",
+        "path": "src/quant_company/research/mission_backend.py"
+      },
+      {
+        "final_sha256": "a10c581f0472da0dcadb3e4318a0764d5bf4a5f133c0e88eb48f6a1f595b7202",
+        "initial_sha256": "97e85461656f8b662ead0b7624aeafacc6073733552cf64144ae7a264c60fd27",
+        "path": "src/quant_company/research/mission_contracts.py"
+      },
+      {
+        "final_sha256": "87cf9e9466b9018663519392f9514aa5f4fcd1d5cfb401822f61500a337a1bee",
+        "initial_sha256": "af391aa67c084bebb49c8a5da71574b06791527d8a911af2c535d97143794538",
+        "path": "src/quant_company/research/program_controller.py"
+      },
+      {
+        "final_sha256": "1b5fb05689e8cb03523a803e9b6a950083be1dc693ad64cb1a4d8414b0ebc9d8",
+        "initial_sha256": "1eb5cb424aa4ffef1dd6cf4f088610e19cdb249cb8426373a8cca1d6fcf93824",
+        "path": "src/quant_company/research/programs.py"
+      },
+      {
+        "final_sha256": "301c64e2404435929c25bd973c72da59b4ca8d8ae1dafbea2a16846217dd941c",
+        "initial_sha256": "e7c0d7bf109434f9302043f96a6acb9d418d50f04e04b11b19d733dfe6d26c66",
+        "path": "src/quant_company/research/scientific_lineages.py"
+      }
+    ],
+    "protected_engine_matched": true,
+    "source_changes_during_final_review": [],
+    "unchanged_from_initial_manifest": [
+      "src/quant_company/research/adaptive_contracts.py",
+      "src/quant_company/research/adaptive_executor.py",
+      "src/quant_company/research/audit.py",
+      "src/quant_company/research/builds.py",
+      "src/quant_company/research/controller.py",
+      "src/quant_company/research/data_evidence.py",
+      "src/quant_company/research/domestic_profile.py",
+      "src/quant_company/research/library.py",
+      "src/quant_company/research/missions.py",
+      "src/quant_company/research/policy_contracts.py",
+      "src/quant_company/research/program_contracts.py",
+      "src/quant_company/research/program_schema.sql"
+    ]
+  },
+  "market_price_rows_read": false,
+  "observed_at": "2026-10-01T04:50:52.988942+00:00",
+  "production_assessment": false,
+  "production_mutated": false,
+  "readiness_granted": false,
+  "remaining_required_gates": [
+    "Actual isolated Linux/3070 synthetic producer-to-consumer E2E under the exact committed wrapper/profile/runtime, with evidence of mounts, confinement, hashes and unchanged producer bytes. Its test source was inspected but execution was not performed by this reviewer.",
+    "Root final integration must verify real PostgreSQL/Temporal restart/replay evidence and the whole regression suite against the final code package. The reviewer inspected the new Temporal test source but did not execute or claim that gate.",
+    "Actual independent production data/director assessment, qualified runtime/profile and fresh signed canonical program approval before any authorized conditional research execution.",
+    "Candidate-specific causal guards and independent scientific audits for any future research result; no actual candidate performance or causal verdict is granted by synthetic engineering fixtures."
+  ],
+  "repository_code_modified_by_reviewer": false,
+  "reviewed_file_sha256": {
+    "docs/project/evidence/conditional-research-20261001/data-implementation-review-initial.json": "a56cd7370a95e950e3a5b029b2197968ddf34d3eb23fd23c95e3932730f6ce5d",
+    "docs/project/evidence/conditional-research-20261001/implementation-review-input-final.json": "3da7ce39ff289e883236fc017eec23e2d11ade3f84e920233c56edd4dc82d6fb",
+    "docs/project/evidence/conditional-research-20261001/implementation-review-input-initial.json": "cc2e41bd29f93f57aa44211959dd96061413a6159e80e6b38b328fbe4078fa5e",
+    "docs/project/evidence/etf-execution-contract-20260930/implementation-spec.md": "be306232e85f6fae4107c3fc78283e41a6520b9b330ec4f724ed39f32ed49d6d",
+    "src/quant_company/company.py": "b44afd4ab31eddeca30cd6277568a0701be364cec1d04a497993d180a16308b3",
+    "src/quant_company/research/adaptive_contracts.py": "686eb806008d01e82750913354864208e3942fd34fbaee761eea15febcb5e8e3",
+    "src/quant_company/research/adaptive_executor.py": "965956c2ebfba2a668011baecf5f57bd188b4dff8f6f6b376a0f45a2f3fb3385",
+    "src/quant_company/research/adaptive_report.py": "de7464befe747942b19baf96f8f2f4ad09fd93399b65b84807a3124dbc1f45c3",
+    "src/quant_company/research/audit.py": "544837f262f54f6321fedad319aa5a8385be6c8b96bf4073296951b83e531889",
+    "src/quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+    "src/quant_company/research/controller.py": "75e82f5b3fa8d3afa0cba30256a026586e730d9c9bd9d06d22490644f1cb1019",
+    "src/quant_company/research/data_evidence.py": "ad0f319239f88f21be33ff29ca974bde12096c23b47a451eaa7b0c7af7c7ef0f",
+    "src/quant_company/research/domestic_profile.py": "ed4eb85cdcd722fd466a7bf77f25119d8cab8be96869ce85c4c06da291bc56bf",
+    "src/quant_company/research/library.py": "d5b9b783b65150bd858fcd1215f421b4030518f33fc02df9d22ec89004053649",
+    "src/quant_company/research/mission_backend.py": "3caf55ecd6cfc8e74df8fb56d7f96d6e8a2a5d35f23ba39d5741c9c711c186ee",
+    "src/quant_company/research/mission_contracts.py": "a10c581f0472da0dcadb3e4318a0764d5bf4a5f133c0e88eb48f6a1f595b7202",
+    "src/quant_company/research/missions.py": "a2a35a20b381214027f53cb228d809ce20fbf939099667bea2c18daa93883eac",
+    "src/quant_company/research/policy_contracts.py": "2c3a46581218ee968ad453c20a08eb78fa5145d0f52f12034c9f8dc07c1c1df0",
+    "src/quant_company/research/program_contracts.py": "1ea6c131332aea90c996e2365acfe6edb1975ea454085cf58c436cba79d15892",
+    "src/quant_company/research/program_controller.py": "87cf9e9466b9018663519392f9514aa5f4fcd1d5cfb401822f61500a337a1bee",
+    "src/quant_company/research/program_schema.sql": "302f91cffabe929ae3ccda05056f92add9e309a32a400105d15f15b9800960d3",
+    "src/quant_company/research/programs.py": "1b5fb05689e8cb03523a803e9b6a950083be1dc693ad64cb1a4d8414b0ebc9d8",
+    "src/quant_company/research/reference/domestic_engine.py": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+    "src/quant_company/research/scientific_lineages.py": "301c64e2404435929c25bd973c72da59b4ca8d8ae1dafbea2a16846217dd941c",
+    "tests/conftest.py": "ef0a8b80d08128e2ac48de1dfc5c34ebb2d82244f7e5866ab7f9f79ecbcfe616",
+    "tests/test_research_adaptive_report.py": "888451be6c8f968cba2cb93918c3f6238b40a069727eacab99041363a8bca554",
+    "tests/test_research_conditional.py": "68c5272b6bbb02bf0ae8d5b3ff354e332e42a84ade08cb03345748116a67d6ad",
+    "tests/test_research_conditional_temporal.py": "7c98e02f427184e633ac819dbe2e9f5efdcac05bd04fa7cea5ab8aaf01789984",
+    "tests/test_research_domestic_engine.py": "2d200e3d1d07f810c18ca74fb18fc68d5224ea91e6f0cafe02670a02e5461b6e",
+    "tests/test_research_domestic_linux.py": "dbe39c5cfe91368ad362fef5eddb98ce608b14777d91cd4f9d1a5849af2cee33"
+  },
+  "reviewer": "local_independent_data_implementation_final",
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "sealed_price_rows_read": false,
+  "strategy_performance_reported": false,
+  "test_source_reviewed_files": [
+    "tests/test_research_conditional.py",
+    "tests/test_research_conditional_temporal.py",
+    "tests/test_research_domestic_linux.py",
+    "tests/test_research_adaptive_report.py"
+  ],
+  "verdict": "pass_for_local_implementation_scope"
+}

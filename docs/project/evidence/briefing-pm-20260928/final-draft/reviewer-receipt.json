@@ -1,0 +1,35 @@
+{
+  "request_id": "news-brief-eval-5ceaf967e8a7ea288595b5e8dcfaf583",
+  "request_sha256": "4d43a5ad86f38be55e76168b726f7f2580171ff5c24969907580d302499918a0",
+  "elapsed_seconds": 154.365,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "request_id": "news-brief-eval-5ceaf967e8a7ea288595b5e8dcfaf583",
+    "decision": {
+      "say": "",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [
+        {
+          "title": "BriefReview",
+          "content": "{\"verdict\":\"reduce\",\"checks\":{\"numbers\":true,\"sources\":true,\"timing\":true,\"causality\":true,\"materiality\":false,\"counterevidence\":true,\"transmission\":true,\"alternatives\":true,\"falsifiability\":true,\"coverage\":false,\"depth\":false,\"readability\":true},\"rejected_ids\":[],\"concerns\":[\"국내 지수·반도체 ETF 유출과 미국 지수 ETF 유입이 빠졌습니다. KODEX 200의 2,199억원 유출 등 규모와 차익실현·연휴 전 포지션 정리라는 보도상 설명이 없어 자금 이동의 배경을 충분히 전달하지 못합니다.\",\"금·은 급락과 미국 광산주 개장 전 약세를 통째로 누락했습니다. 금리 부담의 주요 교차자산 증거이며, 원문의 중앙은행 금 매입이라는 상쇄 근거도 함께 검토할 필요가 있습니다.\",\"핵심 요약은 금리 부담을 강조하지만 본문에는 23~25일 미 국채 10년물 20bp·2년물 10bp 상승과 연준 인상 기대 강화가 없습니다. 인용문만으로는 핵심 충격의 규모와 배경을 전달할 수 없어 중요도 선정·포괄성·깊이가 부족합니다.\",\"BBC가 전한 무역 휴전의 약 두 달 연장과 중국이 더 긴 연장을 원했다는 제한적 성과의 맥락이 빠졌습니다. 기존 정확한 만료일이 없다는 설명은 원문에 있는 연장 규모를 대신하지 못합니다.\"],\"source_assessments\":[{\"source_id\":\"a8bb2955dacb6326497ce375c6936d62d28f2b83\",\"treatment\":\"background\",\"reason\":\"지수 종가와 반도체 대형주 하락만 반영했습니다. 기사의 핵심인 국내 ETF 유출과 미국 지수 ETF 유입 규모는 본문에 없어 충분히 다뤘다고 볼 수 없습니다.\",\"item_ids\":[\"summary_market\",\"overview_kr\",\"kosdaq_close\",\"kospi_close\"]},{\"source_id\":\"4e6c898ea8e794e90a0f50a3b058df8ff36a9e4b\",\"treatment\":\"background\",\"reason\":\"SBS와 ETF 집계가 겹쳐 독립 확인으로 셀 수 없습니다. 다만 차익실현·연휴 전 포지션 정리라는 별도 설명을 제공하며, 자금 이동 자체와 이 설명 모두 본문에서 빠졌습니다.\",\"item_ids\":[]},{\"source_id\":\"c8b3788f5c3d3999e611642334653056e09eeca1\",\"treatment\":\"covered\",\"reason\":\"10월 최대 7조원 발행, 전월과 동일한 규모, 2조원 환매와 계획 변경 가능성을 반영했습니다. 첫 91일물 입찰 예정일과 수요 확인 조건도 제시했습니다.\",\"item_ids\":[\"bok_fact\",\"bok_interpretation\",\"bok_check\",\"bok_mechanism\",\"bok_alternative\",\"bok_bill_auction\"]},{\"source_id\":\"db3f6973cdcad0e4174b2f46e6bde9a3809d2a1c\",\"treatment\":\"covered\",\"reason\":\"각국 300억달러 대상 관세 인하 계획, 주요 품목, 시행일·인하 폭의 불확실성과 분기별 무역 협의체를 본문에 반영했습니다. 실제 이익 효과도 조건부로 설명했습니다.\",\"item_ids\":[\"summary_balance\",\"trade_fact\",\"trade_interpretation\",\"trade_check\",\"trade_mechanism\",\"trade_alternative\",\"trade_implementation\"]},{\"source_id\":\"65d5c4cde943a2b3a14a7023d6f3b04262be9ab7\",\"treatment\":\"covered\",\"reason\":\"중재국의 핵 양보 압박, 이란의 조건부 재개방 제안과 트럼프의 거절을 반영했습니다. 이란 외무장관의 공식 답변 대기와 외교 의사도 함께 제시했습니다.\",\"item_ids\":[\"energy_fact\",\"energy_counterpoint\"]},{\"source_id\":\"e1f902b7a4d3db2cf42f16c46609a4142d778fae\",\"treatment\":\"covered\",\"reason\":\"불가항력 한 달 연장과 고객별 새 공급 중단 기한, 호르무즈의 LNG 공급 비중을 반영했습니다. 일부 선적이 이미 늘었다는 완화 사실도 본문에 명시했습니다.\",\"item_ids\":[\"summary_balance\",\"energy_fact\",\"energy_check\",\"energy_mechanism\",\"energy_alternative\",\"energy_counterpoint\"]},{\"source_id\":\"001fb4a35b80e29633aa66d2259720598a7cded2\",\"treatment\":\"background\",\"reason\":\"금·은 급락과 광산주 개장 전 하락은 금리 부담을 보여주는 중요한 당일 교차자산 변화이나 전혀 반영되지 않았습니다. 중앙은행 금 매입이라는 다른 수요 경로도 원문에 있습니다.\",\"item_ids\":[]},{\"source_id\":\"05ec0a430c63cb6d848f6a952e583e0fe6664596\",\"treatment\":\"covered\",\"reason\":\"이익 추정치의 이전 대비 상승, 기판 조달 기간 확대, 공시된 장기계약과 확보 목표를 구별했습니다. AI 수요의 이익 전달 경로와 분기 환율 부담도 반영했습니다.\",\"item_ids\":[\"summary_balance\",\"components_fact\",\"components_interpretation\",\"components_check\",\"components_mechanism\",\"components_alternative\",\"components_counterpoint\"]},{\"source_id\":\"7a4dd7675e8440fc3e82132147a6e35c849deeb6\",\"treatment\":\"background\",\"reason\":\"연휴 전후 주가·달러·역외 원화와 CDS 안정은 반영했지만, 핵심인 미 국채 만기별 금리 상승폭과 연준 인상 기대 강화는 본문에서 빠졌습니다. 금리 충격 설명이 불완전합니다.\",\"item_ids\":[\"summary_balance\",\"overview_fx_background\"]},{\"source_id\":\"bad5dd772395c3c99c41a2e81b397c55cd363a46\",\"treatment\":\"covered\",\"reason\":\"28일 15시 30분 달러/원 기준가와 수입비용 경로를 반영했습니다. 휴일과 충돌하는 과거 거래일 서술의 전일 수치·등락액은 채택하지 않았으며, 연합뉴스 기사와 독립 확인으로 보지 않습니다.\",\"item_ids\":[\"overview_fx_background\",\"usdkrw_reference\"]},{\"source_id\":\"d0f578f4b32f057c1a38b308e3e972727c3d0dde\",\"treatment\":\"covered\",\"reason\":\"유가증권시장 외국인 3조2천295억원 순매도를 본문에 반영하고 거래소 포함 범위의 한계를 밝혔습니다. 중복 환율 보도는 별도 독립 확인으로 세지 않았습니다.\",\"item_ids\":[\"overview_kr\"]},{\"source_id\":\"e9f5464d8ac6f9bc6078f00882303e95442806fd\",\"treatment\":\"covered\",\"reason\":\"아시아 거래시간의 원유 상승과 조건부 호르무즈 재개방 제안 거절이라는 중심 사건을 반영했습니다. 원유 관측을 미국 정규장 종가로 바꾸지 않았습니다.\",\"item_ids\":[\"energy_fact\",\"energy_interpretation\"]},{\"source_id\":\"aa7381758cb1ef1c17031e94e5e2e8e88878b795\",\"treatment\":\"not_material\",\"reason\":\"개별 항재밍 기업의 신규 상장 승인과 거래 개시 안내입니다. 제공 원문에 시장 전체나 주요 업종 흐름을 바꾸는 연결 근거가 없어 선별적 생략이 가능합니다.\",\"item_ids\":[]},{\"source_id\":\"534a6eeeb57ab843f1715dd0ad7fcb99edd1c719\",\"treatment\":\"not_material\",\"reason\":\"북아일랜드 가계·보육업자의 난방유 부담 사례입니다. 에너지 비용 전가의 배경은 되지만 한국·미국 시장에 별도 중요한 당일 변화를 추가하지 않습니다.\",\"item_ids\":[]},{\"source_id\":\"ca4018ae5261ba2a446838a22e48d64161719e69\",\"treatment\":\"covered\",\"reason\":\"트럼프의 이번 주 추가 대화 예상과 핵·봉쇄 의제 차이를 본문 및 확인 조건에 반영했습니다. 대화 예상을 확정된 개최 일정으로 표현하지 않았습니다.\",\"item_ids\":[\"energy_check\",\"energy_alternative\",\"energy_counterpoint\"]},{\"source_id\":\"717958b329bc0f09e8d09e9895772e0f48ef4325\",\"treatment\":\"background\",\"reason\":\"새 휴전 기한, 석탄 구매 발표의 주체, AI 대화·사고 소통 채널은 반영했습니다. 그러나 약 두 달의 짧은 연장과 중국이 더 긴 연장을 원했다는 고유 맥락이 빠져 성과의 크기를 충분히 설명하지 못합니다.\",\"item_ids\":[\"trade_fact\",\"trade_check\",\"trade_implementation\"]}]}",
+          "source_ids": []
+        }
+      ],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0ea56-35b9-7040-af20-7baa4e6e6c5d",
+    "usage": {
+      "input_tokens": 36970,
+      "cached_input_tokens": 0,
+      "output_tokens": 4916,
+      "reasoning_output_tokens": 2272
+    },
+    "provider": "codex",
+    "web_searches": []
+  }
+}

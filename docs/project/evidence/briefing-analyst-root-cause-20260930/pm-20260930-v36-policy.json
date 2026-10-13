@@ -1,0 +1,39 @@
+{
+  "frozen_at": "2026-09-30T10:28:46.438960+00:00",
+  "case": "pm-20260930-v36",
+  "edition": {
+    "id": "b5d86403-8c5d-505d-9c95-8e1b54edc1d0",
+    "day": "2026-09-30",
+    "kind": "pm",
+    "due_at": "2026-09-30T20:15:00+09:00",
+    "starts_at": "2026-09-30T19:10:00+09:00",
+    "cutoff": "2026-09-30T19:30:00+09:00",
+    "expires_at": "2026-09-30T21:15:00+09:00",
+    "us_session": null,
+    "kr_session": "2026-09-30",
+    "previous_us_session": null,
+    "previous_kr_session": "2026-09-29",
+    "weekly": null
+  },
+  "edition_identity": "Offline evaluation record only, not a Slack workspace/channel or DB edition",
+  "format_version": 15,
+  "validation_version": 36,
+  "scope": "Prospective previously unused PM cutoff snapshot; may overlap AM stories, NOT independent market days",
+  "max_completed_calls": 5,
+  "phases": [
+    "plan",
+    "write",
+    "review",
+    "at most one confirmed repair",
+    "final_review only if repaired proposal mechanically valid"
+  ],
+  "acceptance": "All12 semantic checks, zero mechanical rejection/quote conflict, original-to-visible-main audit before review; failure preserved",
+  "sources": "Enabled registered original receipts published and collected before cutoff; reject truncation/invalid article extraction; no future or current-search backfill",
+  "slack": "not_called",
+  "publication": "disabled",
+  "writer_contract_sha256": "097f2c2392184dde6eaab8f511abe1273d30f6f31455d8e4b687b352423236ad",
+  "review_contract_sha256": "e926199a58784ab7df8b6d553d8a3542bf0390e6e73a07b344be868fea6e722d",
+  "fact_patch_sha256": "8b9fa94b35939c388dcb91a80940d8a38f3a49761833d6fb24bcbd9a0842977a",
+  "analyst_pack": "a718301296872cd0dd2dab402a88cd917b4f93ab08c6645f8da1bfdf244707c1",
+  "deployment": "not_performed"
+}

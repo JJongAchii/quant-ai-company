@@ -1,0 +1,10 @@
+{
+  "case": "am-20260928-fresh-format9-validation10",
+  "performed_after_initial_draft": true,
+  "separate_from_pre_output_source_reading_notes": true,
+  "source_id": "e09e615b222049450980166cf9b0b3c88603f8c7",
+  "finding": "The selected SBS source dates the reported KODEX200 unit price and 80.76% year-to-date return to September 20, 2026 and explicitly says the comparison ran through September 20. The KRX calendar has no session on that Sunday. The draft repeats the figure as a September 20 period return without highlighting that the price date cannot be a KRX trading close.",
+  "krx_session_on_2026_09_20": false,
+  "potential_resolution": "Obtain a separate point-in-time fund price and calculation date; otherwise omit the precise return or explicitly warn that the source's date cannot be verified as a trading-session price.",
+  "quality_implication": "A source-backed quote is not enough to certify a market number when the source's claimed trading date conflicts with the exchange calendar. Model reviewer marked numbers and timing true; the independent audit must overrule that false positive if the final post retains the unqualified figure."
+}

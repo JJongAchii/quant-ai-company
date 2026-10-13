@@ -1,0 +1,14 @@
+{
+  "at": "2026-09-30T23:03:46.390820+00:00",
+  "scope": "Correction to independent reader notes before any model critique; originals/model inputs unchanged",
+  "items": [
+    {
+      "source_id": "61ff9d649b88c461eafad2053fd5a7a037cae6aa",
+      "corrected_units": "2,000억달러=200billionUSD, 기존3,500억=350billion, 조선1,500억=150billion, 원전1,200억=120billion, 가스220억=22billion/223억=22.3billion, 미국LNG500억초과=50billion초과; not2000billion. Retain original Korean units in audit."
+    },
+    {
+      "source_id": "bd7c488baf6c6caed15d30d90e424c2aaa2f84d3",
+      "corrected_units": "주식순매도2조536억원=2.0536trillionKRW; not20,536billionKRW. Retain2조536억원 exactly."
+    }
+  ]
+}

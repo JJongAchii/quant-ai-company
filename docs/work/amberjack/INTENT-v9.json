@@ -1,0 +1,70 @@
+{
+  "constraints": [
+    "Company repository only; preserve frozen research provenance",
+    "Existing official subscription authentication; no paid resources",
+    "PostgreSQL records and Temporal execution; preserve ambiguous receipts",
+    "Keep 07:30/20:00 KST scheduling; Analyst display identity retains stable market_brief technical ID and existing receipt routing",
+    "Publication disabled until real-data and Slack qualification",
+    "Read qdata only through its public API in the existing credential-isolated worker; bounded small datasets, no full large-table scans",
+    "Use previously captured historical originals without backfilling today's source or lake state into an old edition; keep Slack publication disabled"
+  ],
+  "createdAt": "2026-09-28T06:55:25.925878+00:00",
+  "decisionGates": [
+    "Real Slack activation requires the configured dedicated app and successful source and five-trading-day qualification.",
+    "A publication-disabled preview release must pass the existing company release contract; do not bypass its protected-file or approval rules.",
+    "Content quality requires valid typed writer/reviewer artifacts, all twelve semantic checks, no mechanical rejections, an independent original-to-main-post audit and a fresh edition under a frozen policy; a same-source replay alone is not qualification."
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "Preserve the actual 2026-09-25 model publish verdict and the independent finding that it missed a separate Fed speaker",
+        "Preserve the 2026-09-26 invalid writer, the original 2026-09-22 numeric false rejection, and the invalid 2026-09-22 reviewer without relabeling any as a pass"
+      ],
+      "description": "Diagnose the false passes and invalid outputs",
+      "id": "FAILURE-DIAGNOSIS"
+    },
+    {
+      "acceptance": [
+        "Require material old/new baselines and distinct policy speakers, and state the one-to-four evidence-item limit explicitly",
+        "Normalize attached US-dollar m as millions without broadening unrelated units; make all twelve review checks required in the exposed JSON schema; run meaningful focused tests and lint"
+      ],
+      "description": "Repair editorial and typed output contracts",
+      "id": "CONTRACT-REPAIR"
+    },
+    {
+      "acceptance": [
+        "Use the 2026-09-23 completed US-session morning edition, with cutoff, code hashes and pass policy frozen before opening its original titles or contents",
+        "Run actual existing subscription writer/reviewer with at most one valid-proposal repair, preserve every receipt, compare all twelve checks with the independent pre-output source notes, and report pass or failure candidly"
+      ],
+      "description": "Fresh format-9 morning evaluation",
+      "id": "FRESH-EVAL"
+    },
+    {
+      "acceptance": [
+        "Run appropriate full and focused tests and lint, record model latency and visible brief or exact failure with source and provider receipts",
+        "Update the Company quality report and PR, keep production publication disabled, and leave the release/Slack/five-trading-day gates intact"
+      ],
+      "description": "Validation and quality decision",
+      "id": "QUALITY-DECISION"
+    }
+  ],
+  "nonGoals": [
+    "Trading, training, backtests, portfolio access",
+    "Automatic strategist work",
+    "Pretending fixtures or five future observation days have been verified"
+  ],
+  "outcome": "Repair real Analyst briefing quality failures and test the resulting typed editorial contract on another frozen completed US morning edition; preserve honest failure, report the content and timing evidence, and keep publication disabled.",
+  "revision": 9,
+  "revisionReason": "Treat reviewer false pass and invalid typed writer/review output as quality failures; tighten the schema and numeric contract, then evaluate a newly frozen morning edition.",
+  "schemaVersion": 1,
+  "slug": "amberjack",
+  "sourceRequest": "그럼 제대로 내용을 작성하고 통과되기 위해서는 어떻게 해야하는데",
+  "stopConditions": [
+    "Preserve an uncertain model or Slack result without automatic new-ID replay.",
+    "Record unavailable real integration conditions; keep publishing disabled until qualification."
+  ],
+  "supersedes": {
+    "intentDigest": "e126848b835c",
+    "intentFile": "INTENT-v8.json"
+  }
+}

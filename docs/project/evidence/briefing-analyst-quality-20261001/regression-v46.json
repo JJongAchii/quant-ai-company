@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-01T13:26:14.232944+00:00",
+  "source_commit": "209eaf54373e9ad8a94f26412a395cf08273b3ae",
+  "validation_version": 46,
+  "format_version": 15,
+  "quote_reference_version": 1,
+  "checks": {
+    "regression-v46.xml": {
+      "tests": 185,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 15.522,
+      "sha256": "7169ff11432876c3763ac5535eb8aad89f23d2b61de07ced8e88d210c018c55d"
+    },
+    "full-regression-v46.xml": {
+      "tests": 1642,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 47,
+      "seconds": 421.009,
+      "sha256": "e026c40019bf38e07bfe415d6b444253ca72c0a266f4c9ff80d3655a66560d64"
+    }
+  },
+  "lint": "passed .venv/bin/ruff check .",
+  "source_integration": "Installed3c848integrated; no research/Quant/housing/datawatch/maintenance sourcechange relativetoinstalled",
+  "PostgreSQL": "real",
+  "Temporal": "real localprocess andworkflowreplay in fullregression",
+  "model": "fixtures inregression; officialsubscription actualreceipts separatelyrecorded, newquote-mode writer interrupteduncertain",
+  "Slack": "simulated/not_connected; no realposting",
+  "qualification": "technicalonly, notcontent/operationalacceptance"
+}

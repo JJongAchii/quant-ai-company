@@ -1,0 +1,15 @@
+{
+  "request_id": "news-brief-eval-f2dc186f72551f8348784a935418f7e1",
+  "request_sha256": "099998753abe4394899aba29ae9dc48344948d4ed3cac300b5726820f6d160de",
+  "elapsed_seconds": 2.055,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "http_status": 409,
+    "fault": {
+      "code": "busy",
+      "message": "The model runtime is executing another turn.",
+      "retry_after_seconds": 5
+    }
+  }
+}

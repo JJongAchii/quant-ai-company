@@ -1,0 +1,31 @@
+{
+  "prompt_chars": 101228,
+  "payload_chars": {
+    "edition": 367,
+    "documents": 37201,
+    "collection_errors": 2,
+    "morning_watchpoints": 2,
+    "locked_observations": 2,
+    "market_context": 2,
+    "data_diagnostics": 52,
+    "exchange_closes": 67,
+    "quote_conflicts": 2,
+    "source_supplements": 613,
+    "proposal": 12616,
+    "main_post_preview": 6254,
+    "main_post_item_ids": 698,
+    "evidence_quotes": 17123,
+    "unselected_source_index": 9153,
+    "source_chars_remaining": 4
+  },
+  "mechanical_rejections": {
+    "jolts": "'No time zone found with key 미국 현지·세부 시간대 미명시'",
+    "pce": "'No time zone found with key 미국 현지·세부 시간대 미명시'"
+  },
+  "main_chars": 6190,
+  "parts": [
+    6190,
+    3399,
+    873
+  ]
+}

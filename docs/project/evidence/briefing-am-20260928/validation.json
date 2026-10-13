@@ -1,0 +1,30 @@
+{
+  "case": "am-20260928-fresh-format9-validation10",
+  "final_code_validation_version": 11,
+  "full_regression": {
+    "command": "UV_CACHE_DIR=/private/tmp/uv-cache uv run pytest -q",
+    "passed": 1334,
+    "skipped": 38,
+    "warnings": 12,
+    "elapsed_seconds": 354.42,
+    "actual_local_postgresql": true,
+    "exit_code": 0
+  },
+  "focused_calendar_test": "tests/test_briefing_content.py::test_quoted_etf_price_on_non_trading_day_cannot_support_a_return",
+  "checks": {
+    "uv_run_ruff_check_dot": "passed",
+    "uv_lock_check": "passed",
+    "git_diff_check": "passed",
+    "final_saved_writer_replay": "source_price_date_non_session for overview_korea"
+  },
+  "actual_model_elapsed_seconds": {
+    "writer": 347.999,
+    "review": 113.236,
+    "revision": 373.024,
+    "final_review": 87.908,
+    "total": 922.167
+  },
+  "content_qualification": "failed_independent_calendar_audit",
+  "slack_post": "not_called",
+  "release": "not_deployed"
+}

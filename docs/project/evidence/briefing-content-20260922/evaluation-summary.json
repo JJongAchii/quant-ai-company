@@ -1,0 +1,796 @@
+{
+  "evaluation_dates": "2026-09-22/23",
+  "source_day": "2026-09-22",
+  "qws_intent_digest": "c94b06032fa9",
+  "scope": "Development on two fixed company-original snapshots; no held-out claim, human expert certification, scheduled full-lake integration, five-day acceptance or Slack delivery.",
+  "final_cases": [
+    {
+      "kind": "am",
+      "assessment": "am-final/assessment.json",
+      "assessment_sha256": "572d5aa5da87a992514d1ca0410ea3976743b43a08608b1a970b36458f641bd6",
+      "automated_checks_passed": true,
+      "review_verdict": "publish",
+      "checks": {
+        "numbers": true,
+        "sources": true,
+        "timing": true,
+        "causality": true,
+        "materiality": true,
+        "counterevidence": true,
+        "transmission": true,
+        "alternatives": true,
+        "falsifiability": true,
+        "coverage": true,
+        "depth": true,
+        "readability": true
+      },
+      "source_assessments": 16,
+      "rejected": {},
+      "main_characters_with_links": 4810,
+      "issues": 6,
+      "core_quote_assurance": {
+        "btc": "single_source",
+        "dow": "single_source",
+        "eth": "single_source",
+        "nasdaq": "single_source",
+        "sp500": "single_source"
+      },
+      "correction": null,
+      "independent_review": "am-release-independent-response.json",
+      "independent_assessments": {
+        "grounding": "supported",
+        "reasoning": "supported",
+        "assumptions": "supported",
+        "limitations": "concern"
+      },
+      "independent_remaining_concerns": "본문 단독 가독성과 구성은 양호하고 군더더기·반복은 적지만, 자료에 있는 주요 사안 일부가 본문에서 사실로 서술되지 않았다. 첫째, [5]와 [16]이 공통 보도한 '미중 AI 위험 통제 공식 협의체 신설 합의', 국가안보 관련 AI 사고 통보 메커니즘 논의, 11월 선전 APEC 후속 회담이 본문에는 사건으로 등장하지 않고 '미중 사고 통보·위험 대응 협의'라는 반대 경로 언급으로만 스친다. 본문에 AI 안전 섹션과 미중 섹션이 따로 있는데도 두 섹션을 잇는 핵심 정책 사건이 빠진 것은 본문만 읽는 독자에게 실질적 결손이다. 둘째, 한미일 공동성명은 경제적 강압 문구만 인용됐고 성명 맨 앞에 배치된 북한 대화 재개 촉구와 완전한 비핵화 문구가 누락됐다. 한국 독자용 브리핑에서 비중이 큰 정세 항목이다. 셋째, 이란 항공사 운영 중단이 '이틀 뒤부터'라는 임박한 시행 시점이 빠져 달러 결제망 경고가 경고로만 읽힌다. 유가 4거래일 연속 하락, AMD 시총 1조 달러 돌파, 트럼프의 'hoax' 발언 누락은 경미하다.",
+      "independent_main_text_matches_final_ignoring_citation_markup_and_draft_label": true
+    },
+    {
+      "kind": "pm",
+      "assessment": "pm-final/assessment.json",
+      "assessment_sha256": "84d422526575661d321e1aff697861dae13a7926a0fd1893fa26f7309048f6fe",
+      "automated_checks_passed": true,
+      "review_verdict": "publish",
+      "checks": {
+        "numbers": true,
+        "sources": true,
+        "timing": true,
+        "causality": true,
+        "materiality": true,
+        "counterevidence": true,
+        "transmission": true,
+        "alternatives": true,
+        "falsifiability": true,
+        "coverage": true,
+        "depth": true,
+        "readability": true
+      },
+      "source_assessments": 16,
+      "rejected": {},
+      "main_characters_with_links": 4887,
+      "issues": 6,
+      "core_quote_assurance": {
+        "kosdaq": "single_source",
+        "kospi": "single_source",
+        "usdkrw": "single_source"
+      },
+      "correction": {
+        "mode": "conditions_only",
+        "previous_request_id": "news-brief-eval-pm-release-4f8ac4a2a842cde0906df791",
+        "patch_request_id": "news-brief-eval-pm-condition-769a380d68852f2ef38b8979",
+        "allowed_ids": [
+          "us_policy_check"
+        ]
+      },
+      "independent_review": "pm-release-independent-response.json",
+      "independent_assessments": {
+        "grounding": "supported",
+        "reasoning": "supported",
+        "assumptions": "supported",
+        "limitations": "concern"
+      },
+      "independent_remaining_concerns": "본문만 읽어도 흐름 파악은 가능하나 출처가 제공한 중요 정보 두 건이 빠졌다. 첫째, 수급 문단에서 외국인 850억 순매수·기관 1,190억 매도 우위만 적고 같은 기사가 '지수 상단을 제한했다'고 지목한 개인 1조6,089억원 순매도(코스닥 개인 1,563억 순매수)를 누락했다. 본문 자체가 '전강후약'의 원인을 묻는 구조여서, 가장 큰 단일 수급 수치의 부재는 설명력을 직접 깎는다. 외국인 코스피200 선물 2,227억 순매수도 빠졌다. 둘째, 본문의 '연준 추가 긴축' 서사에 직결되는 굴스비 총재의 '한 차례 추가 인상만으로는 부족할 수 있다'는 발언(및 카시카리 매파 진단)이 빠져 긴축 리스크의 상단이 제시되지 않았다. 그 밖에 업종 최대 하락인 오락·문화(-2.08%) 누락, 삼성전자 약 30조원 배당 계획 규모 미기재는 경미하다. 구성 측면에서는 '다음 확인할 것' 6개 중 4개가 '시각 미확인/[미확인]' 반복 문구로 정보량이 낮고, 스레드의 '판단을 다시 볼 조건' 문장이 본문에 그대로 중복된다. 수급·부총리·인도 IPO를 모두 '시장 내부'로 묶은 라벨도 부정확하다.",
+      "independent_main_text_matches_final_ignoring_citation_markup_and_draft_label": true
+    }
+  ],
+  "condition_patch_changed_ids": [
+    "us_policy_check"
+  ],
+  "adversarial_result": {
+    "case": "Three unsupported causal/implemented-policy claims with matching numeric evidence",
+    "expected_rejected_ids": [
+      "china_fact",
+      "oil_fact",
+      "summary_equities"
+    ],
+    "rejected_ids": [
+      "summary_equities",
+      "oil_fact",
+      "china_fact"
+    ],
+    "checks": {
+      "numbers": true,
+      "sources": false,
+      "timing": true,
+      "causality": false,
+      "materiality": false,
+      "counterevidence": false,
+      "transmission": true,
+      "alternatives": false,
+      "falsifiability": true,
+      "coverage": false,
+      "depth": true,
+      "readability": false
+    },
+    "verdict": "withhold",
+    "concerns": [
+      "summary_equities의 연준 금리 인하 확정은 원문에 없다. AI 강세와 유가·금리 하락이라는 설명까지 배제해 핵심 결론을 신뢰할 수 없다.",
+      "oil_fact의 종전 협정 체결·시설 전면 정상화는 근거가 없고, 시설 피해와 재건 참여·시점의 불확실성을 전한 원문에 배치된다.",
+      "china_fact의 수출통제 전면 해제·모든 관세 철폐 시행은 인용문이 뒷받침하지 않는다. 협의와 시행을 혼동하고 지속되는 통상 갈등을 뒤집었다.",
+      "주요 사실 문장이 왜곡되면서 유가 급락과 재건 추진, AI 협의 진전과 공급망 압박의 실제 내용이 충분히 전달되지 않는다. 인용문에만 있는 사실로 누락을 보완할 수 없다.",
+      "첫 요약이 당일 상승의 주요 동인을 잘못 설명하고, 유가·미중 사실 문장이 뒤의 신중한 해석과 충돌한다. 독자가 핵심 흐름을 일관되게 이해하기 어렵다."
+    ],
+    "passed": true,
+    "model_identity": "codex",
+    "scope": "One designed negative case, not general error-detection recall."
+  },
+  "request_inventory": [
+    {
+      "request_id": "brief-content-independent-870f1b35a9262c18850913b2",
+      "state": "uncertain",
+      "requests": [
+        {
+          "path": "baseline-independent-request.json",
+          "sha256": "ca66153e31a1b5c146b8ab69cacfc9b1a9496df0ca8ad66388cda3608122d594",
+          "model": "claude-opus-5",
+          "reasoning_effort": "max",
+          "prompt_characters": 55085
+        }
+      ],
+      "responses": [
+        {
+          "path": "baseline-independent-response.json",
+          "sha256": "22110c3b775a0d6663588da49656a31c1df291365b05baa6be0f218f549d82cb",
+          "request_sha256": "ca66153e31a1b5c146b8ab69cacfc9b1a9496df0ca8ad66388cda3608122d594",
+          "state": "uncertain",
+          "provider": null,
+          "elapsed_seconds": 11.097
+        }
+      ]
+    },
+    {
+      "request_id": "brief-content-independent-9f03553458e3bddcc6408ec8",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "pm-release-independent-request.json",
+          "sha256": "d1db02cb8df6d193b5717decf8137cc78f02f6b20bcef7ae208b9e383b2dcbba",
+          "model": "claude-opus-5",
+          "reasoning_effort": "max",
+          "prompt_characters": 49833
+        }
+      ],
+      "responses": [
+        {
+          "path": "pm-release-independent-response.json",
+          "sha256": "beac23783bc4e8e21944de31d91fda2786c1001274438727b82cc9234376ad1c",
+          "request_sha256": "d1db02cb8df6d193b5717decf8137cc78f02f6b20bcef7ae208b9e383b2dcbba",
+          "state": "completed",
+          "provider": "claude",
+          "elapsed_seconds": 158.477
+        }
+      ]
+    },
+    {
+      "request_id": "brief-content-independent-a805762737fc35a334d0117b",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "am-release-independent-request.json",
+          "sha256": "40e4d3ebfa3fd2e0603f140f85e11572dad4c97009158a750e8561ba705c4e05",
+          "model": "claude-opus-5",
+          "reasoning_effort": "max",
+          "prompt_characters": 46418
+        }
+      ],
+      "responses": [
+        {
+          "path": "am-release-independent-response.json",
+          "sha256": "c5b793ea38f88d4ecfe7a6483ff1287c5391ccdaae836a17b21ad863c4bdfa60",
+          "request_sha256": "40e4d3ebfa3fd2e0603f140f85e11572dad4c97009158a750e8561ba705c4e05",
+          "state": "completed",
+          "provider": "claude",
+          "elapsed_seconds": 146.341
+        }
+      ]
+    },
+    {
+      "request_id": "brief-content-independent-c19c383ad5849b317a774ab1",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "am-final-independent-request.json",
+          "sha256": "280789e2b851510178af64e3d1e82fd5b6ee49e2caf0c9ffd1c99e851076d360",
+          "model": "claude-opus-5",
+          "reasoning_effort": "max",
+          "prompt_characters": 45576
+        }
+      ],
+      "responses": [
+        {
+          "path": "am-final-independent-response.json",
+          "sha256": "4208d6160bfc7ac5f6251b983aead5ef187432b1f387e5af2c4f02187f1f5acf",
+          "request_sha256": "280789e2b851510178af64e3d1e82fd5b6ee49e2caf0c9ffd1c99e851076d360",
+          "state": "completed",
+          "provider": "claude",
+          "elapsed_seconds": 183.164
+        }
+      ]
+    },
+    {
+      "request_id": "brief-content-independent-c1a4bb52f30c2729336fd8ad",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "am-independent-request.json",
+          "sha256": "b47318ce7128c186e83d8b5efece84abeab158dd4516f22cbb01f1694d156d39",
+          "model": "claude-opus-5",
+          "reasoning_effort": "max",
+          "prompt_characters": 44837
+        }
+      ],
+      "responses": [
+        {
+          "path": "am-independent-response.json",
+          "sha256": "57f56a34ca92506923f980b547e6f05a781c0be21ba976baefd5c7b7af4221c2",
+          "request_sha256": "b47318ce7128c186e83d8b5efece84abeab158dd4516f22cbb01f1694d156d39",
+          "state": "completed",
+          "provider": "claude",
+          "elapsed_seconds": 127.594
+        }
+      ]
+    },
+    {
+      "request_id": "brief-content-independent-c958bb1da080ce5f28482704",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "pm-independent-request.json",
+          "sha256": "a43a77dc7c738eacb5915bdf6c597d9356f44e04e13edb9df0d92d3ef1ab7368",
+          "model": "claude-opus-5",
+          "reasoning_effort": "max",
+          "prompt_characters": 49982
+        }
+      ],
+      "responses": [
+        {
+          "path": "pm-independent-response.json",
+          "sha256": "39ea335f66f06bd76303c3d6c99ec5972fdfd37c9d18c8a734bf978d4cc3a6af",
+          "request_sha256": "a43a77dc7c738eacb5915bdf6c597d9356f44e04e13edb9df0d92d3ef1ab7368",
+          "state": "completed",
+          "provider": "claude",
+          "elapsed_seconds": 195.631
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-08bcec6600ff4e3ddfbb167db425d021",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "am-release-ready/review-request.json",
+          "sha256": "58fde7627c1de4a70ff3ba87f8f175d2be7ea5db4a23e12e423f4ee0921fa799",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 78623
+        }
+      ],
+      "responses": [
+        {
+          "path": "am-release-review-response.json",
+          "sha256": "7f069bdf8dc3e748f6e5d092c6c22b15e1d5576aaf6327ab5ad3e8adb79c2b0b",
+          "request_sha256": "58fde7627c1de4a70ff3ba87f8f175d2be7ea5db4a23e12e423f4ee0921fa799",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 77.802
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-168187cd22d8e4f2bc2dbb7fac2e187f",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "pm-normalized-draft/review-request.json",
+          "sha256": "9cb2423e5e02ab38da1ed0bccdf96e18d2986525fe77e881e50a41969d9e0045",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 75115
+        }
+      ],
+      "responses": [
+        {
+          "path": "pm-review-response.json",
+          "sha256": "01a2eb734ad159953ad79553bc57a7ec13a9dcfb1206d10a9ebcb15374a7904c",
+          "request_sha256": "9cb2423e5e02ab38da1ed0bccdf96e18d2986525fe77e881e50a41969d9e0045",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 102.646
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-3887cff249f286150b8cf9810d5b9f6b",
+      "state": "prepared_only",
+      "requests": [
+        {
+          "path": "pm-release-draft/review-request.json",
+          "sha256": "67b6be44425256a29504fc46f1b048445b5a8f5e2ec2c9860d392525fdaaed9f",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 78837
+        }
+      ],
+      "responses": []
+    },
+    {
+      "request_id": "news-brief-eval-590ca6f27ebac10588a9393c4a7782cf",
+      "state": "prepared_only",
+      "requests": [
+        {
+          "path": "pm-normalized-release-draft/review-request.json",
+          "sha256": "dc96a533b78cf81b2e8e6004430cf719fdcc12d2d7b4e5a3e5fdc1081f8e3eb8",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 82236
+        }
+      ],
+      "responses": []
+    },
+    {
+      "request_id": "news-brief-eval-83120dfecc2db30a127fe4291d2200ee",
+      "state": "prepared_only",
+      "requests": [
+        {
+          "path": "pm-draft/review-request.json",
+          "sha256": "f6108fb4447d80a211b73fbab7a4c4bf2dae237ca83564a6aee1fe7fd4c1df43",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 74544
+        }
+      ],
+      "responses": []
+    },
+    {
+      "request_id": "news-brief-eval-9d8aecec9b106530fb113d7462995896",
+      "state": "prepared_only",
+      "requests": [
+        {
+          "path": "baseline-draft/review-request.json",
+          "sha256": "12de29c3b76a294545df022a9a1279bbebb4a16e175f8641ce9d1a7c2b9a0440",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 59777
+        }
+      ],
+      "responses": []
+    },
+    {
+      "request_id": "news-brief-eval-a915b6645ad886c548eba8b7fe0e55f2",
+      "state": "prepared_only",
+      "requests": [
+        {
+          "path": "pm-final-draft/review-request.json",
+          "sha256": "e36779240d8d8b98d437e289908f8e46241f32439e89aa7d2d804a47394f4638",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 73442
+        }
+      ],
+      "responses": []
+    },
+    {
+      "request_id": "news-brief-eval-am-release-3c0142a9e2462c881ab1821e",
+      "state": "prepared_only",
+      "requests": [
+        {
+          "path": "am-release-write-request.json",
+          "sha256": "b38a04d9b20cca7b83608242279fd6f0ebc7e3a3de259816b3bc8fa0926d5d54",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 73295
+        }
+      ],
+      "responses": []
+    },
+    {
+      "request_id": "news-brief-eval-am-repair-cf35a076ad6494b50ff9e544",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "am-release-repair-request.json",
+          "sha256": "7b906a6b4928c63ebbc8e9c403799e867b2489c8863205c2789984a66a4da964",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 73613
+        }
+      ],
+      "responses": [
+        {
+          "path": "am-release-repair-response.json",
+          "sha256": "cd97995adc6dbb0cabba2c2b1a5c17cf49b613b6350e92120e2be355f1579c7e",
+          "request_sha256": "7b906a6b4928c63ebbc8e9c403799e867b2489c8863205c2789984a66a4da964",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 473.766
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-be50e39e468031c4ee0a5d145fc5f009",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "pm-corrected-ready/review-request.json",
+          "sha256": "7a5bcca2bdbea4a74f088c762cde84b6441b4dbe05a6ff124807a15454c0a41e",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 83561
+        }
+      ],
+      "responses": [
+        {
+          "path": "pm-corrected-review-response.json",
+          "sha256": "bf8ece48d900893bdc57935da5231df47868214803a4f876ba3559f83fa8719a",
+          "request_sha256": "7a5bcca2bdbea4a74f088c762cde84b6441b4dbe05a6ff124807a15454c0a41e",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 102.872
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-c0609a2c634844a618dd6bf0d080ab77",
+      "state": "prepared_only",
+      "requests": [
+        {
+          "path": "am-draft/review-request.json",
+          "sha256": "f3723e317693f820e6ff2efb273bbead6b76396be2d413c2ad8d29beba470222",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 69270
+        }
+      ],
+      "responses": []
+    },
+    {
+      "request_id": "news-brief-eval-c7c486a83fe17ffa2929212cfe69d8a1",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "am-release-draft/review-request.json",
+          "sha256": "1dddfff36641f47ecb04a67ac97e9ddcc76442625847fc555e284388108389a5",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 74485
+        }
+      ],
+      "responses": [
+        {
+          "path": "am-final-review-response.json",
+          "sha256": "2b1188bef3a3e006b9821d2bcb17fdc08c7d01950e00e269771a49c9b80818ed",
+          "request_sha256": "1dddfff36641f47ecb04a67ac97e9ddcc76442625847fc555e284388108389a5",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 116.512
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-ce41f1efe5fc29c01977970d25dce19a",
+      "state": "prepared_only",
+      "requests": [
+        {
+          "path": "am-normalized-final-draft/review-request.json",
+          "sha256": "08057c7794b951e324ec84a52319cd2747b686de887d4d17ac20a0cb280e1f57",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 74480
+        }
+      ],
+      "responses": []
+    },
+    {
+      "request_id": "news-brief-eval-challenge-d46ef85b9c2121b22d161a91",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "adversarial-review-request.json",
+          "sha256": "b3805a3809d7347665f3fe8cf7b03807b83c8ad5252ffcaefb8cf38b00c7416e",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 69023
+        }
+      ],
+      "responses": [
+        {
+          "path": "adversarial-review-response.json",
+          "sha256": "26c894586c9e554a0e8818c71bc1a2e283dc7cf00704cf00a04aedc4e2280be2",
+          "request_sha256": "b3805a3809d7347665f3fe8cf7b03807b83c8ad5252ffcaefb8cf38b00c7416e",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 103.683
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-d1f27d9987ba3a9982b7a20c3eae4e3e",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "pm-release-ready/review-request.json",
+          "sha256": "8e67a185ee583bb42de247933263afacdf7a23c9f1ca395cca70888e08a76f14",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 83397
+        }
+      ],
+      "responses": [
+        {
+          "path": "pm-release-review-recovered-response.json",
+          "sha256": "545c11670593b0a80b4c6cffb090b1bd95721832d690a3b196d918ce4402072a",
+          "request_sha256": "8e67a185ee583bb42de247933263afacdf7a23c9f1ca395cca70888e08a76f14",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 113.201
+        },
+        {
+          "path": "pm-release-review-response.json",
+          "sha256": "4e3b09b23df0938f616328052053936ba350b4a835808b2af6317146505f6f4d",
+          "request_sha256": "8e67a185ee583bb42de247933263afacdf7a23c9f1ca395cca70888e08a76f14",
+          "state": "uncertain",
+          "provider": null,
+          "elapsed_seconds": null
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-fde6e205d8308ff5b32f1dc821671fbe",
+      "state": "prepared_only",
+      "requests": [
+        {
+          "path": "am-final-draft/review-request.json",
+          "sha256": "3e64018ae2b628ddb30f13383027bc785da703692cf93f303db954a6c15e58c4",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 69821
+        }
+      ],
+      "responses": []
+    },
+    {
+      "request_id": "news-brief-eval-pm-condition-769a380d68852f2ef38b8979",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "pm-condition-request.json",
+          "sha256": "d847aef9ea912afe5c115701ae79242e9ae1fa098af8cda0fed2dc9800f54135",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 64634
+        }
+      ],
+      "responses": [
+        {
+          "path": "pm-condition-response.json",
+          "sha256": "1b8f48a48048487184401762ae7e091c43dc73baa8100c37202bd735dabd457f",
+          "request_sha256": "d847aef9ea912afe5c115701ae79242e9ae1fa098af8cda0fed2dc9800f54135",
+          "state": "busy",
+          "provider": null,
+          "elapsed_seconds": 1.29
+        },
+        {
+          "path": "pm-condition-retry-response.json",
+          "sha256": "0f1b795ac6e9f789339fd435b03e9ba6211c4c63cf473f6c94cd8a4cd5fb9a78",
+          "request_sha256": "d847aef9ea912afe5c115701ae79242e9ae1fa098af8cda0fed2dc9800f54135",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 26.873
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-pm-release-4f8ac4a2a842cde0906df791",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "pm-release-write-request.json",
+          "sha256": "72bb5508169e8176cc11f574b85e170b66376c37b11126071840a71b0b96008d",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 79789
+        }
+      ],
+      "responses": [
+        {
+          "path": "pm-release-write-response.json",
+          "sha256": "4454545a704b20a78636ac35729e60e9a6e3011030f06fa143bf768d97a2b3f6",
+          "request_sha256": "72bb5508169e8176cc11f574b85e170b66376c37b11126071840a71b0b96008d",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 562.251
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-pm-revise-3c64aa5848909a136202b747",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "pm-revise-request.json",
+          "sha256": "567b63845185f74eee83d365ee0b6ae6e80ef46affa3106b7b1bc2c1c41fd8bb",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 87180
+        }
+      ],
+      "responses": [
+        {
+          "path": "pm-revise-response.json",
+          "sha256": "5eb8819ada5b2580df742b5fcc66f6addca840d803bc69326bd75e64d8ca0de3",
+          "request_sha256": "567b63845185f74eee83d365ee0b6ae6e80ef46affa3106b7b1bc2c1c41fd8bb",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 470.914
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-v3-am-b74b22cc58c6973e",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "am-baseline-write-request.json",
+          "sha256": "095e6d1ac956be40a221eabb02b13591047404b467117c7ecd0fd0e4b41d6005",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 64758
+        }
+      ],
+      "responses": [
+        {
+          "path": "am-baseline-write-response.json",
+          "sha256": "19a4d305d7496327e1f4998eb37135cf7d3aa08bb7de903962a9788f183be160",
+          "request_sha256": "095e6d1ac956be40a221eabb02b13591047404b467117c7ecd0fd0e4b41d6005",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 270.117
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-v4-am-e12f25a580753f4b",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "am-write-request.json",
+          "sha256": "cd1595e23347d10ac01d939d56c520266ab3d740ceff5ac98a21f7d7a6a775fb",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 54664
+        }
+      ],
+      "responses": [
+        {
+          "path": "am-write-response.json",
+          "sha256": "83907b0e02963532d9aa3644c286a5f7c2886e85fce5858fa774517b9ae43552",
+          "request_sha256": "cd1595e23347d10ac01d939d56c520266ab3d740ceff5ac98a21f7d7a6a775fb",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 401.028
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-v4-am-final-3d0c8326a05dca3b",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "am-final-write-request.json",
+          "sha256": "a667e9d8806651764394b736a6392f1f7ce58a2e6b9c02a8825e5af3117c70e5",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 56299
+        }
+      ],
+      "responses": [
+        {
+          "path": "am-final-write-response.json",
+          "sha256": "6f68a968f3baf3b8bf2313aff110da437de6f566de5fa3ffb6b70570a40f02a6",
+          "request_sha256": "a667e9d8806651764394b736a6392f1f7ce58a2e6b9c02a8825e5af3117c70e5",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 397.09
+        }
+      ]
+    },
+    {
+      "request_id": "news-brief-eval-v4-am-r2-11a7c25af82a0fa0",
+      "state": "prepared_only",
+      "requests": [
+        {
+          "path": "am-r2-write-request.json",
+          "sha256": "7d753dbcf5c05500045dbd929ee10ea2aecccc8db007a2de6d36f754231edd1c",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 55358
+        }
+      ],
+      "responses": []
+    },
+    {
+      "request_id": "news-brief-eval-v4-am-r3-f821ebc137d0c117",
+      "state": "prepared_only",
+      "requests": [
+        {
+          "path": "am-r3-write-request.json",
+          "sha256": "4a6d803b58c3ff06b019e3b35710b9c2aabd4a214d50acf09cb893850f60ec34",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 56092
+        }
+      ],
+      "responses": []
+    },
+    {
+      "request_id": "news-brief-eval-v4-pm-c8e26f97e25e35a8",
+      "state": "completed",
+      "requests": [
+        {
+          "path": "pm-write-request.json",
+          "sha256": "89ae57a7811b14ef7decda0bef764357e5df3d5f8ac6564e5aaf7291af0f642e",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "prompt_characters": 57958
+        }
+      ],
+      "responses": [
+        {
+          "path": "pm-write-response.json",
+          "sha256": "692c2b4c455b17a1a2c8970ab8b184492a35a69d1dc8b7653136a3b166313366",
+          "request_sha256": "89ae57a7811b14ef7decda0bef764357e5df3d5f8ac6564e5aaf7291af0f642e",
+          "state": "completed",
+          "provider": "codex",
+          "elapsed_seconds": 436.387
+        }
+      ]
+    }
+  ],
+  "completed_unique_requests": 19,
+  "uncertain_unique_requests": 1,
+  "prepared_only_unique_requests": 11,
+  "expert_level_certified": false,
+  "five_day_qualified": false,
+  "slack_sent": false,
+  "production_configuration_changed": false,
+  "independent_evaluation_note": "Author, version and earlier grades hidden. Reviewers saw draft labels. Final main prose matches the reviewed prose; source-link display improved, and one PM thread condition was corrected by a subsequent actual model call and full re-review.",
+  "code_sha256": {
+    "src/quant_company/briefing/__init__.py": "5b1c5470916d1d6682bea5680c78255d7ee3e2043011043ee728383a23541abf",
+    "src/quant_company/briefing/commands.py": "695070e4bce8749597720286543cd8c9faff938d7f7fb9724dd08bf301846886",
+    "src/quant_company/briefing/contracts.py": "e1d44020431c772c6106a844363088de03e1372f63d2f8d474d0a70387766d64",
+    "src/quant_company/briefing/coverage.py": "42a45331ce81bdb3cf79caf279141f4b716ce48a48503e3045cd29b9ab53eb80",
+    "src/quant_company/briefing/data.py": "8b03e898503e77a76b964bfa07255607fa0049c8da693b8a2ea8d90ab570d095",
+    "src/quant_company/briefing/data_reader.py": "d0c9e41719db033e1c9f7c77656d6a35bc07133ec644c121c2953428f4bccd69",
+    "src/quant_company/briefing/editor.py": "d25a6d10716aba63caa6bd9c9844a7dce6223802c44eefa011391cc99a39ed81",
+    "src/quant_company/briefing/inputs.py": "955c814c29c4bc1e723ea4b59f790c1b6e9449643570ca304b648d331cc8286a",
+    "src/quant_company/briefing/numeric.py": "9943413d726451e96175fd9e2499e2917421b1a1be03722d1a0ee79179a79257",
+    "src/quant_company/briefing/qualification.py": "7707a744864ba0bb4eb24e8a4278317a90c7fd995f21f1e920f031f22c16f7a5",
+    "src/quant_company/briefing/quality.py": "20cbdc194007ebf73fd690264f81270116138d2db393ef211e6fad14f9878960",
+    "src/quant_company/briefing/runner.py": "40c7c2671cc2223e0f3ca546655a6b117a244362ca58308007ddde7f8c4b169e",
+    "src/quant_company/briefing/schedule.py": "06b93dfd30cda89388b7b475d554058a9330f1b09dd4c175059b0426e4911ff0",
+    "src/quant_company/briefing/schema.sql": "a1e01cba1f41366ab7ce54ece8880529a2cb5c147c2aacc2cffadc6c35d44757",
+    "src/quant_company/briefing/store.py": "4de90fc8af717653005913edf0853a30a52e0970210787271db1229927b006cd",
+    "src/quant_company/briefing/workflow.py": "76713c503ed4c414b330f539002cc7384981f485d7fab0a9ae22b577a37fff9b"
+  }
+}

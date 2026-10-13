@@ -1,0 +1,58 @@
+{
+  "eligible": 151,
+  "frozen_selection_version": 3,
+  "development_selection_version": 4,
+  "selected_count": 16,
+  "removed": [
+    {
+      "id": "4e6c898ea8e794e90a0f50a3b058df8ff36a9e4b",
+      "title": "'하락 예감?' 코스피·반도체 추종 ETF서 한주간 뭉칫돈 이탈"
+    },
+    {
+      "id": "d0f578f4b32f057c1a38b308e3e972727c3d0dde",
+      "title": "추석 연휴 美국채 금리 급등에…환율 1,360원대 중반으로"
+    },
+    {
+      "id": "aa7381758cb1ef1c17031e94e5e2e8e88878b795",
+      "title": "항재밍 솔루션기업 덕산넵코어스, 30일 코스닥 신규 상장"
+    },
+    {
+      "id": "717958b329bc0f09e8d09e9895772e0f48ef4325",
+      "title": "Trump-Xi summit: What wasn't said might matter the most"
+    }
+  ],
+  "added": [
+    {
+      "id": "de67b9eedd5c6322d8ac4c0eee2394c160dacadf",
+      "title": "연휴서 돌아온 코스피, 美금리 악재에 2.7%↓…다시 '7천피' 밑으로(종합)"
+    },
+    {
+      "id": "4ca2c256c7d6f1dd7a221f9952721ebefe2c3259",
+      "title": "코스피, 2.7% 하락 마감…4거래일 만에 '7천피' 밑으로"
+    },
+    {
+      "id": "e9292962699f9adff06503670e25cbb5f4b53d74",
+      "title": "\"중재국, 美·이란 전면전 우려해 이란에 '핵 양보' 촉구\""
+    },
+    {
+      "id": "117f39475838d4ef7059c1086423529c1faa2e2d",
+      "title": "한은, 10월 최대 7조원 규모 통화안정증권 발행"
+    }
+  ],
+  "new_closing_reports": [
+    {
+      "id": "de67b9eedd5c6322d8ac4c0eee2394c160dacadf",
+      "title": "연휴서 돌아온 코스피, 美금리 악재에 2.7%↓…다시 '7천피' 밑으로(종합)"
+    },
+    {
+      "id": "4ca2c256c7d6f1dd7a221f9952721ebefe2c3259",
+      "title": "코스피, 2.7% 하락 마감…4거래일 만에 '7천피' 밑으로"
+    }
+  ],
+  "fund_flow_articles": [
+    {
+      "id": "a8bb2955dacb6326497ce375c6936d62d28f2b83",
+      "title": "'하락 예감?' 코스피·반도체 추종 ETF서 한 주간 뭉칫돈 이탈"
+    }
+  ]
+}

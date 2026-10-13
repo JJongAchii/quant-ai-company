@@ -1,0 +1,38 @@
+{
+  "frozen_at": "2026-10-02T01:50:41.207456+00:00",
+  "source_commit": "4242f36ed5c16cec08814d76cc81608c6479fa5c",
+  "validation_version": 50,
+  "format_version": 15,
+  "edition": {
+    "id": "7678a84f-35d0-56f0-8912-563aec4ddf6b",
+    "day": "2026-10-02",
+    "kind": "pm",
+    "due_at": "2026-10-02T20:15:00+09:00",
+    "starts_at": "2026-10-02T19:10:00+09:00",
+    "cutoff": "2026-10-02T19:30:00+09:00",
+    "expires_at": "2026-10-02T21:15:00+09:00",
+    "us_session": null,
+    "kr_session": "2026-10-02",
+    "previous_us_session": null,
+    "previous_kr_session": "2026-10-01",
+    "weekly": null
+  },
+  "scope": "Prospective scheduled preview policy before its cutoff; registration/collection/model execution must be verified separately. Not acceptance evidence yet.",
+  "full_main_required": true,
+  "all_twelve_independent_checks_required": true,
+  "original_body_main_fact_comparison_required": true,
+  "max_completed_model_calls": 5,
+  "max_repairs": 1,
+  "sources": "Actual pre-cutoff registered originals plus actual frozen lake observations; no future or current backfill for past editions.",
+  "prior_am_source_overlap": "Expected reuse disclosed; count candidate and selected ID overlap from actual stored bundle before claiming fresh/novel input.",
+  "new_story_context": "At most4 own-evidenced300-character paragraphs, at most2 per story; numeric/source/timing/review/main-size guards retained.",
+  "implementation_hashes": {
+    "src/quant_company/briefing/editor.py": "265a2ce7536496da31c44c8aedd92aa7704fc5f3881573d1a76b77f5fafb013a",
+    "src/quant_company/briefing/contracts.py": "5811b3493bbe3a548ffe4178b242c900ca2f115994efb728c970190dd28f84c9",
+    "src/quant_company/briefing/planning.py": "d5707b2e2949d0128dab9c62eb60ab099866b633fe79dc4a7e28f417cbfb97af",
+    "src/quant_company/briefing/quotations.py": "063014accee7c3fbe5529f511761a8d6fe6ff1282bdfba1004351530ea8e89b6"
+  },
+  "slack_publication": false,
+  "no_uncertain_replay": true,
+  "paid_api_fallback": false
+}

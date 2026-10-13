@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-09-30T08:05:34.939926+00:00",
+  "scope": "Same-source development, not fresh qualification",
+  "format_version": 15,
+  "validation_version": 34,
+  "reason": "Dated prior USD/KRW reference is permitted only at exact frozen KR_previous time, within existing30-hour bound, and always labelled historical reference with timestamp. No live FX or FX close is inferred. Review retains all12 checks; redundant schema default annotations and writer-pack meaning removed without deleting sources/claims/constraints.",
+  "mechanical_rejections": {},
+  "review_prompt_characters": 87874,
+  "market_data_added": false,
+  "review_prompt_sha256": "947ef016de3eb7a8ec760747ab887c5336fbc72a9c5d7ff62a95cbac8d119ce5",
+  "slack": "not_called"
+}

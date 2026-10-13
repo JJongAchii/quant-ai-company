@@ -1,0 +1,23 @@
+{
+  "frozen_before_replay": "2026-09-29T04:45:57.364541+00:00",
+  "mode": "technical_validator_repair_same_source_development",
+  "validation_version_before": 20,
+  "validation_version_after": 21,
+  "mechanism": "Exact source says 2.70% down; draft says -2.70%. prose number validator rejected the signed equivalent and removed the entire valid dated Korean previous-session claim. Added signed-down translation only when same magnitude and downward predicate are in an exact quote.",
+  "original_rejected": {
+    "ust10y_afternoon": "stale_intraday_observation",
+    "usdkrw_previous_afternoon": "stale_intraday_observation",
+    "korea_previous_session": "unsupported_prose_number",
+    "us_employment": "event_outside_window"
+  },
+  "remaining_confirmed_model_calls": 3,
+  "same_writer_receipt_sha256": "88a6445e4636076806233609dc1964e97dcd95bb9604cd29d934f1bb1f55dc88",
+  "original_assessment_sha256": "1668f818624902b2121a43ee9134f2f9be10b49e867a69e382214513da146283",
+  "files_sha256": {
+    "src/quant_company/briefing/numeric.py": "3b17342f275423dd7a87ef2adc742ae2d8952d498c0caa32f819f07b4fd75f95",
+    "src/quant_company/briefing/editor.py": "dbb666ce4876e4a2fac512987e82bfc7d31a077099bb45639a5ae045631971e3",
+    "tests/test_briefing_content.py": "8462a33fb33fa9293afa6d5256c057e5e4faba5964db77a0bec7d2b4db293f5b"
+  },
+  "qualification": "development_only",
+  "slack": "not_called"
+}

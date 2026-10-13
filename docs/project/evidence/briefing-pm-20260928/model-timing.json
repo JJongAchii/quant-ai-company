@@ -1,0 +1,19 @@
+{
+  "case": "pm-20260928-fresh-format9-validation11",
+  "mode": "offline_wall_clock_utc_not_scheduled_execution",
+  "first_request_started_at": "2026-09-28T23:04:37.846403+00:00",
+  "first_transport_uncertain_at": "2026-09-28T23:10:46.425399+00:00",
+  "same_id_cached_result_confirmed_at": "2026-09-28T23:13:33.964147+00:00",
+  "first_model_elapsed_seconds": null,
+  "first_model_elapsed_reason": "Transport lost before timing receipt; same byte-identical ID returned a cached result. Duration of the underlying model computation is not measured.",
+  "confirmed_following_calls_seconds": {
+    "first_review": 122.016,
+    "one_revision": 460.108,
+    "final_review": 154.365,
+    "subtotal": 736.489
+  },
+  "final_review_confirmed_at": "2026-09-28T23:27:45.160044+00:00",
+  "first_start_to_final_result_seconds": 1387.314,
+  "scheduled_cutoff_to_due_seconds": 1200,
+  "interpretation": "The offline four-call path took 23 minutes 7 seconds wall time from first request to final receipt, including transport recovery and inter-call gaps; source collection, queue and Slack were outside this interval. It does not demonstrate on-time 20-minute publication."
+}

@@ -14,7 +14,6 @@ def test_briefing_producer_uses_assignment_and_preserves_frozen_retry(company, m
     from quant_company.briefing import schedule
     from quant_company.briefing.contracts import BRIEFER, BriefEdition, SourceDocument
     from quant_company.briefing.store import BriefStore
-
     from quant_company.company import load_roles, stable
 
     settings = company.settings
@@ -36,6 +35,14 @@ def test_briefing_producer_uses_assignment_and_preserves_frozen_retry(company, m
     monkeypatch.setattr(schedule, "close", lambda market, day, changes=None: cutoff-timedelta(hours=2))
     clock = {"at": edition.cutoff - timedelta(minutes=1)}
     monkeypatch.setattr(schedule, "utcnow", lambda: clock["at"])
+
+    def assign(model):
+        with company.db.transaction() as conn:
+            conn.execute("UPDATE model_assignment_policy SET revision=revision+1,bindings=%s WHERE id=1",
+                         (Jsonb({BRIEFER: {"model": model, "reasoning_effort": "high", "command_id": "fixture"}}),))
+
+    # The in-tree producer freezes its policy, including the effective Analyst role, when the edition registers.
+    assign("brief-candidate-a")
     store = BriefStore(company)
     store.register()
     claimed = store.claim_collection()
@@ -50,13 +57,6 @@ def test_briefing_producer_uses_assignment_and_preserves_frozen_retry(company, m
                                    "documents": [doc.model_dump(mode="json")],
                                    "collection_errors": [], "morning_watchpoints": []})
     clock["at"] = edition.cutoff
-
-    def assign(model):
-        with company.db.transaction() as conn:
-            conn.execute("UPDATE model_assignment_policy SET revision=revision+1,bindings=%s WHERE id=1",
-                         (Jsonb({BRIEFER: {"model": model, "reasoning_effort": "high", "command_id": "fixture"}}),))
-
-    assign("brief-candidate-a")
     ready = store.prepare()
     assert ready["state"] == "ready"
     assert ready["request"]["model"] == "brief-candidate-a"
@@ -65,5 +65,12 @@ def test_briefing_producer_uses_assignment_and_preserves_frozen_retry(company, m
         row = conn.execute("SELECT target,selection FROM model_execution_bindings WHERE request_id=%s",
                            (ready["request"]["request_id"],)).fetchone()
         assert row["target"] == BRIEFER and row["selection"]["source"] == "pinned"
+    assert store.prepare()["request"] == ready["request"]  # the running call is asked again unchanged
+    # A later assignment never reissues the frozen request under another model: the unfinished edition goes stale.
     assign("brief-candidate-b")
-    assert store.prepare()["request"] == ready["request"]
+    assert store.prepare()["state"] == "idle"
+    with company.db.transaction() as conn:
+        stale = conn.execute("SELECT state,error FROM brief_editions WHERE id=%s", (edition.id,)).fetchone()
+        assert (stale["state"], stale["error"]) == ("stale", "brief_policy_changed")
+        assert conn.execute("SELECT count(*) n FROM brief_calls WHERE request->>'model'='brief-candidate-b'"
+                            ).fetchone()["n"] == 0

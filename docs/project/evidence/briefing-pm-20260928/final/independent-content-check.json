@@ -1,0 +1,53 @@
+{
+  "case": "pm-20260928-fresh-format9-validation11",
+  "decision": "fail",
+  "publication_eligible": false,
+  "checked_against": [
+    "../source-reading-notes.json",
+    "../source-snapshots.json",
+    "../independent-market-audit.json",
+    "assessment.json",
+    "brief.md"
+  ],
+  "frozen_policy_result": {
+    "writer_typed": true,
+    "reviewer_typed": true,
+    "one_repair_used": true,
+    "reviewer_verdict": "reduce",
+    "semantic_checks_true": 9,
+    "semantic_checks_total": 12,
+    "mechanical_rejections": {
+      "etf_fact": "unsupported_prose_number",
+      "rates_fact": "unsupported_prose_number",
+      "rates_counterpoint": "unsupported_prose_number"
+    }
+  },
+  "findings": [
+    {
+      "severity": "material",
+      "kind": "source_selection",
+      "detail": "The two reserved close slots were taken by duplicated prior-week ETF-flow stories. The eligible comprehensive September 28 KRX close story with investor-group flows and broader session context was absent from the writer input. The visible post consequently says institution and retail flows were not provided, although an eligible pre-cutoff original contained them."
+    },
+    {
+      "severity": "material",
+      "kind": "numeric_false_rejection",
+      "detail": "The revised ETF flow paragraph expressed the magnitude of a negative source figure as a positive amount followed by '순유출'. Current numeric matching rejected it by sign even though that wording describes the same outflow. The accepted final post therefore omits the September 18-23 fund-flow rotation."
+    },
+    {
+      "severity": "material",
+      "kind": "numeric_false_rejection",
+      "detail": "The revised rates/metals paragraph gave the sourced US ten-year +20bp and two-year +10bp September 23-25 moves, the 05:40 ET gold spot decline and separately timed silver spot decline. The current direction checker does not recognize 'off by' and 'shed'; it rejected the paragraph. The 'second quarter' to Korean '2분기' mapping also failed, removing the central-bank gold-purchase counterpoint. The visible main post stresses rates without quantifying the move."
+    },
+    {
+      "severity": "positive",
+      "kind": "market_number_corroboration",
+      "detail": "KOSPI 6,889.74 (-2.70%) and KOSDAQ 846.58 (+0.25%) agree with the qdata public-API readback of a stable object whose last_modified predates cutoff. The object was read the next morning, so it was not a frozen live edition observation."
+    },
+    {
+      "severity": "positive",
+      "kind": "editorial_distinctions",
+      "detail": "The visible post distinguishes the 15:30 dollar/won reference, prior-period US market background, premarket oil quotes, planned versus implemented tariff cuts, and a customer-reported Qatar LNG extension. It does not present the cited holiday-conflicting older FX trading dates as verified sessions."
+    }
+  ],
+  "overall": "The main post is readable and factually restrained in many places, but the missing full close/flow context and rejected rates, metals, and ETF rotation are material. The model review also returned reduce. This is a genuine frozen-case failure, not a publication pass or a five-day live qualification."
+}

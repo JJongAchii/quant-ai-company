@@ -1,0 +1,116 @@
+{
+  "recorded_at": "2026-10-07T04:11:29.652427+00:00",
+  "case": "analyst-saved-input-schema-repair-20261007",
+  "source_commit": "9eacd7076d773e60c2b80b35fd9bfa0788a3dd4b",
+  "scope": "Real official-CLI writing and independent full-original review on a saved-input development case; not fresh/on-time/five-day acceptance.",
+  "writer": {
+    "request_id": "news-brief-bb1277ee-79d6-5154-af9e-0924b02ad067-write",
+    "state": "completed",
+    "elapsed_seconds": 873.215,
+    "usage": {
+      "input_tokens": 43274,
+      "cached_input_tokens": 0,
+      "output_tokens": 37460,
+      "reasoning_output_tokens": 10876
+    },
+    "raw_response_sha256": "b2e9df190c8687a53729e4a07da46ef3cefc0474aed54904f3acf9cd7ab03670"
+  },
+  "review": {
+    "request_id": "news-brief-bb1277ee-79d6-5154-af9e-0924b02ad067-review",
+    "state": "completed",
+    "elapsed_seconds": 700.235,
+    "usage": {
+      "input_tokens": 44520,
+      "cached_input_tokens": 0,
+      "output_tokens": 25449,
+      "reasoning_output_tokens": 15856
+    },
+    "verdict": "reduce",
+    "checks": {
+      "numbers": false,
+      "sources": true,
+      "timing": true,
+      "causality": true,
+      "materiality": false,
+      "counterevidence": false,
+      "transmission": true,
+      "alternatives": false,
+      "falsifiability": true,
+      "coverage": false,
+      "depth": true,
+      "readability": false
+    },
+    "checks_passed": 6,
+    "checks_required": 12,
+    "original_assessments": 20,
+    "rejected_ids": [],
+    "response_sha256": "22074161642bc4324285e2026eb5acad3338727db0f60b03a1f8111daa62c013"
+  },
+  "mechanical_preflight": {
+    "rejected": {},
+    "source_notes_violations": [],
+    "source_conflicts": [],
+    "main_chars": 9498,
+    "detail_chars": [
+      3413,
+      712
+    ],
+    "review_prompt_chars": 87129
+  },
+  "content_passed": false,
+  "fresh_qualification": false,
+  "human_expert_certification": false,
+  "confirmed_corrections": 1,
+  "correction_kind": "Source-preserving manual editorial compaction, conservative date-only calendar nulls and removed observation mapping; independent critic did not receive writer inventory.",
+  "confirmed_semantic_failures": [
+    "Missing regional participation and observed Japanese bond-demand offset",
+    "Missing short-term memory earnings mechanisms and supplier transaction scope/pricing-capacity exposure",
+    "Missing consequential growth revisions and comparison/market-share bases",
+    "Co-reported trade-policy alternative omitted",
+    "Unexplained acronyms and an unrelated transaction grouped as a counterpoint"
+  ],
+  "repairs_implemented": [
+    "Equivalent decimal wire schema without unsupported lookaround",
+    "Time/status calendar branches preserving date-only uncertainty",
+    "Exact shared-scale ranges and Korean compound approximations",
+    "Explicit decline magnitude/direction handling",
+    "Remove only obsolete observation IDs from source-note mappings",
+    "Independent full-original/actual-main-only audit within existing 88000-character bound",
+    "Writing readback instructions for comparison period, exposure, growth revisions, Asian participation and story grouping"
+  ],
+  "regression": {
+    "tests": 214,
+    "failures": 0,
+    "environment": "Isolated committed Analyst sources with real local PostgreSQL; synthetic Slack fixtures labelled separately from real manual preview",
+    "lint": "passed"
+  },
+  "manual_slack_preview": {
+    "operation": "analyst-saved-input-quality-preview-20261007-schema59-once",
+    "channel": "C0C2E59B1AA",
+    "bot": "U0C4PJDR8G3",
+    "team": "T0C1YRDRPNF",
+    "content_qualified": false,
+    "permalink": "https://achiisquantresearch.slack.com/archives/C0C2E59B1AA/p1791345972111889",
+    "messages": 4,
+    "readback_scope": "Exact primary block text and all3 thread messages; original automatic3-way split discovered and repaired",
+    "automatic_publication": false,
+    "postmessage_requests": 4,
+    "initial_actual_messages": 6,
+    "canonical_root_uses_existing_production_section_blocks": true,
+    "transport_repair": "confirmed; unchanged full9634-character main in4 bounded section blocks",
+    "complete_main_block_text_matches": true,
+    "readback_confirmed": true,
+    "final_visible_messages": 4,
+    "deleted_only_own_automatic_duplicate_chunks": [
+      "1791345972.068929",
+      "1791345972.092589"
+    ]
+  },
+  "deployment": {
+    "installed": false,
+    "first_stage_cutover_failed": "runtime.env changed; preserved before mutation",
+    "second_stage_failed": "news/dispatch source image changed by authorized trend-recurring work; no cutover",
+    "preservation_action": "Read-only capture of current image/source inventories; prepare a fresh immutable release preserving the recurring trend code"
+  },
+  "next": "Install the approved source-preserving repair on current actual images, then run the prospectively frozen PM case. Do not replay or relabel the closed saved-input case."
+}

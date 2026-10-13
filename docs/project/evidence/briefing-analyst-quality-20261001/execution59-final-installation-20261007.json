@@ -1,0 +1,195 @@
+{
+  "recorded_at": "2026-10-07T04:34:36.482091+00:00",
+  "scope": "Approved source-preserving preview installation; publication remains disabled.",
+  "accepted_intent": "INTENT-v16.json",
+  "source_commit": "2a8df31ec8d77ae111437bad9d42221e6cf29374",
+  "stage_receipt": {
+    "action": "stage",
+    "recorded_at": "2026-10-07T04:19:02.719215+00:00",
+    "exit_code": 0,
+    "phase": "staged",
+    "base": "15215a4e7c7d3188551278c1ec36fed85d428436",
+    "commit": "2a8df31ec8d77ae111437bad9d42221e6cf29374",
+    "owner_approval": "chat-analyst-execution-approved-20261007",
+    "previous_owner_approval_id": "chat-analyst-execution-approved-20261007",
+    "publication_enabled": false,
+    "running_services_unchanged": true,
+    "evaluation_editions": [
+      "3042a447-de8b-55fe-9a56-72014df5c2b9"
+    ],
+    "images": [
+      {
+        "target": "app",
+        "id": "sha256:890b3f67dfbf5898a63adc1a44e159e49bc2a6b67b4dc79ca555024538b3a6a4",
+        "tag": "quant-company:2a8df31ec8d77ae111437bad9d42221e6cf29374-profile0",
+        "source_verified": true,
+        "services": [
+          "news-worker",
+          "dispatch"
+        ]
+      },
+      {
+        "target": "app",
+        "id": "sha256:9f3e5c691dd2c3bcbb8149ba912b27c985933a6157607a4352ad9c68a13c14ac",
+        "tag": "quant-company:2a8df31ec8d77ae111437bad9d42221e6cf29374-profile1",
+        "source_verified": true,
+        "services": [
+          "briefing-data-worker"
+        ]
+      },
+      {
+        "target": "codex",
+        "id": "sha256:f228ca696fd124d4e1432aa7be60d6bf72783bce2d2fe041672a97bf76c769b4",
+        "tag": "quant-company-codex:2a8df31ec8d77ae111437bad9d42221e6cf29374-profile2",
+        "source_verified": true,
+        "services": [
+          "codex-runtime"
+        ]
+      }
+    ]
+  },
+  "cutover_receipt": {
+    "action": "cutover",
+    "recorded_at": "2026-10-07T04:21:59.642650+00:00",
+    "exit_code": 0,
+    "phase": "preview_active",
+    "base": "15215a4e7c7d3188551278c1ec36fed85d428436",
+    "commit": "2a8df31ec8d77ae111437bad9d42221e6cf29374",
+    "owner_approval": "chat-analyst-execution-approved-20261007",
+    "previous_owner_approval_id": "chat-analyst-execution-approved-20261007",
+    "publication_enabled": false,
+    "database_backup": {
+      "file": "analyst-preview-2a8df31ec8d77ae111437bad9d42221e6cf29374.postgres.dump",
+      "bytes": 377886388,
+      "sha256": "50f9d62699394ade1f569f61cffcedc486c8413f1f47c4551a043b38d36f6bde"
+    },
+    "running_services_unchanged": true,
+    "existing_feature_environment_and_runtime_preserved": true,
+    "unrelated_services_preserved": true,
+    "evaluation_editions": [
+      "3042a447-de8b-55fe-9a56-72014df5c2b9"
+    ],
+    "quality_and_slack_acceptance": "separate; not certified by installation",
+    "images": [
+      {
+        "target": "app",
+        "id": "sha256:890b3f67dfbf5898a63adc1a44e159e49bc2a6b67b4dc79ca555024538b3a6a4",
+        "tag": "quant-company:2a8df31ec8d77ae111437bad9d42221e6cf29374-profile0",
+        "source_verified": true,
+        "services": [
+          "news-worker",
+          "dispatch"
+        ]
+      },
+      {
+        "target": "app",
+        "id": "sha256:9f3e5c691dd2c3bcbb8149ba912b27c985933a6157607a4352ad9c68a13c14ac",
+        "tag": "quant-company:2a8df31ec8d77ae111437bad9d42221e6cf29374-profile1",
+        "source_verified": true,
+        "services": [
+          "briefing-data-worker"
+        ]
+      },
+      {
+        "target": "codex",
+        "id": "sha256:f228ca696fd124d4e1432aa7be60d6bf72783bce2d2fe041672a97bf76c769b4",
+        "tag": "quant-company-codex:2a8df31ec8d77ae111437bad9d42221e6cf29374-profile2",
+        "source_verified": true,
+        "services": [
+          "codex-runtime"
+        ]
+      }
+    ]
+  },
+  "helper_field_clarification": "Cutover running_services_unchanged is a retained helper field, not a claim of zero restarts. News, dispatch, data and SDK were recreated; API and unrelated services were preserved.",
+  "installed_source_readback": {
+    "recorded_at": "2026-10-07T04:26:35.228778+00:00",
+    "source_commit": "2a8df31ec8d77ae111437bad9d42221e6cf29374",
+    "source_root": "2a8df31ec8d77ae111437bad9d42221e6cf29374",
+    "production_source_verification": [
+      {
+        "service": "news-worker",
+        "changed_source_hashes_verified": true,
+        "actual": {
+          "quant_company/briefing/editor.py": "21721a9f97870f242c259771638d9cc737f8402dbd2e69f8e1d019a69d550e4d",
+          "quant_company/briefing/numeric.py": "44e015acc0421ba1e76af9b344b80b1692b7f10efcf15f7b112cbc2dc24df2fa",
+          "quant_company/briefing/quality.py": "f32e7dffc94a1c781f6904853867bcfec56c45c8ac7e27171db4d423bc573475",
+          "quant_company/providers/codex_runner.py": "b7c0567450cc22bc7242ffdc2dfdfea92e2593a8637f218f064aa8b14727decc"
+        }
+      },
+      {
+        "service": "dispatch",
+        "changed_source_hashes_verified": true,
+        "actual": {
+          "quant_company/briefing/editor.py": "21721a9f97870f242c259771638d9cc737f8402dbd2e69f8e1d019a69d550e4d",
+          "quant_company/briefing/numeric.py": "44e015acc0421ba1e76af9b344b80b1692b7f10efcf15f7b112cbc2dc24df2fa",
+          "quant_company/briefing/quality.py": "f32e7dffc94a1c781f6904853867bcfec56c45c8ac7e27171db4d423bc573475",
+          "quant_company/providers/codex_runner.py": "b7c0567450cc22bc7242ffdc2dfdfea92e2593a8637f218f064aa8b14727decc"
+        }
+      },
+      {
+        "service": "briefing-data-worker",
+        "changed_source_hashes_verified": true,
+        "actual": {
+          "quant_company/briefing/editor.py": "21721a9f97870f242c259771638d9cc737f8402dbd2e69f8e1d019a69d550e4d",
+          "quant_company/briefing/numeric.py": "44e015acc0421ba1e76af9b344b80b1692b7f10efcf15f7b112cbc2dc24df2fa",
+          "quant_company/briefing/quality.py": "f32e7dffc94a1c781f6904853867bcfec56c45c8ac7e27171db4d423bc573475",
+          "quant_company/providers/codex_runner.py": "b7c0567450cc22bc7242ffdc2dfdfea92e2593a8637f218f064aa8b14727decc"
+        }
+      },
+      {
+        "service": "codex-runtime",
+        "changed_source_hashes_verified": true,
+        "actual": {
+          "quant_company/providers/codex_runner.py": "0142c3048673835c682ad3825c6bb9bf89ee559ea2c8732b5d86b038169168e4"
+        }
+      }
+    ],
+    "sdk_schema": {
+      "decimal_schema_compatible": true,
+      "calendar_time_status_branches": 2,
+      "phase_seconds": {
+        "plan": 360,
+        "write": 1440,
+        "review": 720,
+        "revise": 360,
+        "final_review": 360
+      },
+      "model_calls": 0
+    },
+    "cli_version": "codex-cli 0.160.1",
+    "publication_enabled": false,
+    "evaluation_editions": [
+      "3042a447-de8b-55fe-9a56-72014df5c2b9"
+    ],
+    "model_calls": 0,
+    "slack_calls": 0,
+    "quality_qualification": false
+  },
+  "archive_sha256": "6fafbefbf0e220dc81c5432718805f6485aee030bae924b883b182b82db4b6bc",
+  "manifest_sha256": "fff42b5cc5aad118acb80803e95744bafb96d8caba6ec1af7647e2c619710612",
+  "preserved_independent_runtime": "Current trend-recurring news/dispatch profiles retained; API kept on its current trend-recurring image.",
+  "prior_guard_failures_preserved": [
+    {
+      "candidate": "58866c588e4d513a3dbd532279f3ebae9e118227",
+      "guard": "preview_staged_configuration_changed",
+      "before_runtime_mutation": true
+    },
+    {
+      "candidate": "9eacd7076d773e60c2b80b35fd9bfa0788a3dd4b",
+      "guard": "preview_source_profile_base_changed",
+      "before_runtime_mutation": true
+    }
+  ],
+  "tests": {
+    "passed": 214,
+    "failed": 0,
+    "skipped": 0,
+    "postgresql": "real local PostgreSQL",
+    "lint": "passed",
+    "model_checks": "Separate real official-auth writer and independent review, not mocked cloud."
+  },
+  "fresh_content_qualified": false,
+  "automatic_publication": false,
+  "private_evidence": "Original source bodies, model prompts/responses, SDK traces, backups, environment and authentication remain private; only metadata and digests are recorded here."
+}

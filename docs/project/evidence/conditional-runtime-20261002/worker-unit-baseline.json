@@ -1,0 +1,41 @@
+{
+  "adaptive_profiles": {
+    "kr-etf-monthly-python-v1": "/home/achii/quant-company-qualification/autonomous-20260921/etf-worker-profile.json",
+    "kr-etf-research-v2": "/home/achii/quant-company-qualification/programs-20260928/real-data-b4b9304/profiles/kr_etf/worker-profile.json",
+    "kr-stock-research-v2": "/home/achii/quant-company-qualification/programs-20260928/real-data-b4b9304/profiles/kr_stock/worker-profile.json"
+  },
+  "bubblewrap": "bubblewrap 0.11.1",
+  "checkout_changes": "",
+  "checkout_commit": "3c848af95dc33b7da444a55018fd41d374c10025",
+  "company_commit": "3c848af95dc33b7da444a55018fd41d374c10025",
+  "company_repo": "/home/achii/quant-company-qualification/exploration-20261001/release-candidates/3c848af95dc33b7da444a55018fd41d374c10025/code",
+  "config_sha256": "67659f99fa6ce5400410c54c597fd9e2c906d54d7ec222ad064264004a9289c9",
+  "configuration_mutated": false,
+  "gpu": "NVIDIA GeForce RTX 3070",
+  "hostname": "DESKTOP-5T00NAF",
+  "model_or_performance_execution": false,
+  "observed_at": "2026-10-02T05:47:24.387060+00:00",
+  "python": "Python 3.11.15",
+  "release_registry_file": "/home/achii/quant-company-qualification/autonomous-20260921/release-candidates/registry.json",
+  "schema_version": 1,
+  "state_dir": "/home/achii/quant-company-research/worker-state",
+  "units": {
+    "research-worker-tunnel.service": {
+      "ActiveState": "active",
+      "ExecMainStartTimestamp": "Fri 2026-10-02 12:59:13 KST",
+      "MainPID": "356",
+      "SubState": "running",
+      "WorkingDirectory": "!/home/achii"
+    },
+    "research-worker.service": {
+      "ActiveState": "active",
+      "ExecMainStartTimestamp": "Fri 2026-10-02 14:40:09 KST",
+      "MainPID": "7167",
+      "SubState": "running",
+      "WorkingDirectory": "/home/achii/quant-company-qualification/exploration-20261001/release-candidates/3c848af95dc33b7da444a55018fd41d374c10025/code",
+      "exec_command_sha256": "541730fd7dd8edbd33e7f5d0041a21e235e8b505e16409e43f38d20cdd4e950c",
+      "exec_path": "/home/achii/quant-company-research/company/.venv/bin/python",
+      "exec_python_version": "Python 3.11.15"
+    }
+  }
+}

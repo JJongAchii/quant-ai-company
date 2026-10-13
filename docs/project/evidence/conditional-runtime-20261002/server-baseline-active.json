@@ -1,0 +1,1267 @@
+{
+  "observed_at": "2026-10-02T06:29:07.889183+00:00",
+  "app_release": "/opt/quant-company/releases/231d6ba0755f658f167636a8ea2c3ef65b6af562",
+  "containers": {
+    "quant-company-worker-1": {
+      "id": "74196593a74154e2a3d1b90da13fecfb6496f05698fba0f5664f8d5beb2be342",
+      "image": "quant-company-autonomous:231d6ba0755f658f167636a8ea2c3ef65b6af562-conditional",
+      "image_id": "sha256:c55cde4b44b83df0b0e9c2b59682404fbb2544bea87dcd211f478296c44eb7d0",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/compose.yaml,/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/research.compose.yaml,/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/model-accounts.compose.yaml,/var/lib/quant-company/config/private-output-0286ba3e7426ff6546b90e6926124ae65e71ba79.compose.json,/var/lib/quant-company/config/exploration-3c848af95dc33b7da444a55018fd41d374c10025.compose.json,/var/lib/quant-company/config/exploration-3c848af95dc33b7da444a55018fd41d374c10025-attempt2.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "COMPANY_AUTONOMOUS_RESEARCH_ENABLED": "true"
+      }
+    },
+    "quant-company-slack-socket-1": {
+      "id": "e8aeb5e3cdac27000ca3dfcccfd7fb8663a9b6d27e1f0e0c426536448aa4be06",
+      "image": "quant-company:231d6ba0755f658f167636a8ea2c3ef65b6af562-conditional",
+      "image_id": "sha256:7f305b5f8b235d065aa2b4d45106436f31355ec4b66fd78445453148472767ff",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/compose.yaml,/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/research.compose.yaml,/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/model-accounts.compose.yaml,/var/lib/quant-company/config/exploration-3c848af95dc33b7da444a55018fd41d374c10025.compose.json,/var/lib/quant-company/config/exploration-3c848af95dc33b7da444a55018fd41d374c10025-attempt2.compose.json,/var/lib/quant-company/config/exploration-79586479aeef07554be311951e40bbe00c33cafe-cancel.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "COMPANY_AUTONOMOUS_RESEARCH_ENABLED": "true"
+      }
+    },
+    "quant-company-dispatch-1": {
+      "id": "e9e1395b4194a4383699f5e5f1f0c11fbb9df169497c88e7e17ea727a8e720a8",
+      "image": "quant-company:231d6ba0755f658f167636a8ea2c3ef65b6af562-conditional",
+      "image_id": "sha256:7f305b5f8b235d065aa2b4d45106436f31355ec4b66fd78445453148472767ff",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "COMPANY_AUTONOMOUS_RESEARCH_ENABLED": "true"
+      }
+    },
+    "quant-company-api-1": {
+      "id": "29f630ba7faa0a6c1cbc96676407ffce2688a0e4d583c658a665e21fbdc5ccda",
+      "image": "quant-company:231d6ba0755f658f167636a8ea2c3ef65b6af562-conditional",
+      "image_id": "sha256:7f305b5f8b235d065aa2b4d45106436f31355ec4b66fd78445453148472767ff",
+      "state": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "COMPANY_AUTONOMOUS_RESEARCH_ENABLED": "true"
+      }
+    },
+    "quant-company-news-worker-1": {
+      "id": "b6c2cd6c24747d4b86127fb6c8cbfa5dcdca21e71fb89b07cac4c87b225115bc",
+      "image": "quant-company:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "image_id": "sha256:5d0d7c42de26e9b89e8909001a4376577b91acb4d996342018486713cc837e53",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "289dc70c6858ea229476216d7ea4c1c10ece68ff",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "b21bd3d172db586c9b3666f920622c27a99ce439dc3d531bfec84176f89a9797",
+      "image": "quant-company-codex:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "image_id": "sha256:c1d123ee1c525a7d02375fb1172e1d955fec8c555e0285255c5da4b80b834ea4",
+      "state": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "289dc70c6858ea229476216d7ea4c1c10ece68ff",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-briefing-data-worker-1": {
+      "id": "786a9542133e480cf4b30e4939c3ad7310bab014c4ad6794f098ef45c968d529",
+      "image": "quant-company:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "image_id": "sha256:5d0d7c42de26e9b89e8909001a4376577b91acb4d996342018486713cc837e53",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "289dc70c6858ea229476216d7ea4c1c10ece68ff",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-quant-feed-worker-1": {
+      "id": "cf361400513b2df61ea985bdf081cf57079a9fee09e76f7db8adfe8cf7407bed",
+      "image": "quant-company:ea092f419b4b679df4c25e479a8cb361b4d046ff",
+      "image_id": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/research.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/data-watch.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "ea092f419b4b679df4c25e479a8cb361b4d046ff",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_RUNTIME_URL": "http://quant-codex-runtime:8080",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "ce8b1dfdab1bd595aeb7e7446e0d1e1a38f5f8457b14969620d93edb11841190",
+      "image": "quant-company-codex:ea092f419b4b679df4c25e479a8cb361b4d046ff",
+      "image_id": "sha256:c983c63235365a43ae1afa8eaba37bd7708e49b43afc2089aa824bad242f02e7",
+      "state": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/research.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/data-watch.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "ea092f419b4b679df4c25e479a8cb361b4d046ff",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "b900ca1d55f31c7c29f5eef62e5f5587ccb6c137019104e362cd14da92af274b",
+      "image": "quant-company:0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+      "image_id": "sha256:7c834100fdefc0ecd09c2c8810c2b9630c93976ffa3fa739c78a87e71d752309",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/model-accounts.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "7df307ee748d54371c6c9bb2fee6a5ac17e7f5b341d1f137db7af89eb69e74ab",
+      "image": "quant-company:c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+      "image_id": "sha256:db3c79878edf68a0115c8f0b893d41a92fa78e91f1a59bf76f92b60c8a69a589",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/model-accounts.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-maintenance-1": {
+      "id": "7266163c1e8120facda28c18764423801d68c11e60d43eb388356a700ea25f5d",
+      "image": "quant-company-maintenance:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "image_id": "sha256:50124cabdc3db809bfc799e14aa9af1c155d86b6a577f910d18b49d6e5f226f5",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-account-gateway-1": {
+      "id": "54b595660ad3366baf3bec5133bd6383c9fa757c20bd77ec9eda93c133fb9e4b",
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "image_id": "sha256:942a896a92f6a2c6e3d5b4743ad670808da62be448136d77f2e75455f7668b24",
+      "state": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-claude-runtime-1": {
+      "id": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+      "image": "quant-company-claude:fde7681e0286501d8713e08e30a96991a88b9151",
+      "image_id": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+      "state": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/research.compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/model-accounts.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "fde7681e0286501d8713e08e30a96991a88b9151",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "image_id": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "state": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/8883e32812c027a6da6eaf31a6b31fa8ce5ecdc4/deploy/compose.yaml,/opt/quant-company/releases/8883e32812c027a6da6eaf31a6b31fa8ce5ecdc4/deploy/research.compose.yaml",
+      "pins": {}
+    }
+  },
+  "database": {
+    "project": {
+      "id": "9aac0de4-2b97-5195-a720-287d324234f3",
+      "revision": 5,
+      "status": "active"
+    },
+    "programs": [
+      {
+        "id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+        "revision": 5,
+        "state": "active",
+        "spec": {
+          "title": "국내 ETF·주식 자료 기반 가설 연구",
+          "envelopes": [
+            {
+              "name": "etf_strategy",
+              "market": "kr_etf",
+              "template": {
+                "code": {
+                  "repository": "quant-lab",
+                  "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+                  "write_paths": [
+                    "labs/company-domestic-research/candidate.py",
+                    "labs/company-domestic-research/config.json"
+                  ]
+                },
+                "data": {
+                  "lake_id": "krx-s3-kr_etf-30784209bf06e53313b8",
+                  "input_files": {
+                    "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81",
+                    "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+                  }
+                },
+                "kind": "strategy",
+                "title": "kr_etf literature-grounded strategy development",
+                "market": "kr_etf",
+                "sealed": [
+                  {
+                    "end": "2026-09-23",
+                    "start": "2026-01-02"
+                  }
+                ],
+                "search": {
+                  "patience": 2,
+                  "continuous": true,
+                  "min_improvement": 0.001,
+                  "max_total_trials": 4,
+                  "max_trials_per_cycle": 2
+                },
+                "objective": {
+                  "unit": "fraction-per-year",
+                  "metric": "stress-net-absolute-cagr",
+                  "direction": "maximize"
+                },
+                "resources": {
+                  "priority": "autonomous",
+                  "worker_id": "worker"
+                },
+                "evaluation": {
+                  "kind": "strategy",
+                  "block": "calendar-month",
+                  "scope": "development",
+                  "metric": "stress-net-absolute-cagr",
+                  "target": null,
+                  "tolerance": null,
+                  "confidence": 0.95,
+                  "minimum_blocks": 30,
+                  "minimum_effect": 0.0,
+                  "schema_version": 1
+                },
+                "development": {
+                  "end": "2025-12-30",
+                  "start": "2023-01-02"
+                },
+                "base_cost_bps": 10.0,
+                "schema_version": 2,
+                "allowed_changes": [
+                  "features",
+                  "model",
+                  "implementation",
+                  "portfolio"
+                ],
+                "stress_cost_bps": 30.0,
+                "risk_constraints": [
+                  {
+                    "unit": "multiple",
+                    "metric": "gross_exposure",
+                    "maximum": 1.0
+                  }
+                ],
+                "execution_profile": "kr-etf-research-v2",
+                "baseline_source_ids": [
+                  "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+                ],
+                "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf"
+              }
+            },
+            {
+              "name": "etf_claim",
+              "market": "kr_etf",
+              "template": {
+                "code": {
+                  "repository": "quant-lab",
+                  "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+                  "write_paths": [
+                    "labs/company-domestic-research/candidate.py",
+                    "labs/company-domestic-research/config.json"
+                  ]
+                },
+                "data": {
+                  "lake_id": "krx-s3-kr_etf-30784209bf06e53313b8",
+                  "input_files": {
+                    "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81",
+                    "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+                  }
+                },
+                "kind": "claim",
+                "title": "kr_etf literature-grounded claim development",
+                "market": "kr_etf",
+                "sealed": [
+                  {
+                    "end": "2026-09-23",
+                    "start": "2026-01-02"
+                  }
+                ],
+                "search": {
+                  "patience": 2,
+                  "continuous": true,
+                  "min_improvement": 0.001,
+                  "max_total_trials": 4,
+                  "max_trials_per_cycle": 2
+                },
+                "objective": {
+                  "unit": "fraction",
+                  "metric": "mean-effect",
+                  "direction": "maximize"
+                },
+                "resources": {
+                  "priority": "autonomous",
+                  "worker_id": "worker"
+                },
+                "evaluation": {
+                  "kind": "claim",
+                  "block": "calendar-month",
+                  "scope": "development",
+                  "metric": "mean-effect",
+                  "target": null,
+                  "tolerance": null,
+                  "confidence": 0.95,
+                  "minimum_blocks": 30,
+                  "minimum_effect": 0.0,
+                  "schema_version": 1
+                },
+                "development": {
+                  "end": "2025-12-30",
+                  "start": "2023-01-02"
+                },
+                "base_cost_bps": 0.0,
+                "schema_version": 2,
+                "allowed_changes": [
+                  "features",
+                  "model",
+                  "implementation"
+                ],
+                "stress_cost_bps": 0.0,
+                "risk_constraints": [],
+                "execution_profile": "kr-etf-research-v2",
+                "baseline_source_ids": [
+                  "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+                ],
+                "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf"
+              }
+            },
+            {
+              "name": "stock_strategy",
+              "market": "kr_stock",
+              "template": {
+                "code": {
+                  "repository": "quant-lab",
+                  "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+                  "write_paths": [
+                    "labs/company-domestic-research/candidate.py",
+                    "labs/company-domestic-research/config.json"
+                  ]
+                },
+                "data": {
+                  "lake_id": "krx-s3-kr_stock-cf689d34e7776edc1b97",
+                  "input_files": {
+                    "warmup.json": "9ee0e7cf017ef4b81b2028d8d9b09616d8ade89fd9706374b4ed6d053fd7d442",
+                    "development.json": "1a0802b498d29e0a4557e0e1ac1c2c205dc33ad2e013bab70b65b0d54484fd85"
+                  }
+                },
+                "kind": "strategy",
+                "title": "kr_stock literature-grounded strategy development",
+                "market": "kr_stock",
+                "sealed": [
+                  {
+                    "end": "2026-09-23",
+                    "start": "2026-01-02"
+                  }
+                ],
+                "search": {
+                  "patience": 2,
+                  "continuous": true,
+                  "min_improvement": 0.001,
+                  "max_total_trials": 4,
+                  "max_trials_per_cycle": 2
+                },
+                "objective": {
+                  "unit": "fraction-per-year",
+                  "metric": "stress-net-absolute-cagr",
+                  "direction": "maximize"
+                },
+                "resources": {
+                  "priority": "autonomous",
+                  "worker_id": "worker"
+                },
+                "evaluation": {
+                  "kind": "strategy",
+                  "block": "calendar-month",
+                  "scope": "development",
+                  "metric": "stress-net-absolute-cagr",
+                  "target": null,
+                  "tolerance": null,
+                  "confidence": 0.95,
+                  "minimum_blocks": 30,
+                  "minimum_effect": 0.0,
+                  "schema_version": 1
+                },
+                "development": {
+                  "end": "2025-12-30",
+                  "start": "2023-01-02"
+                },
+                "base_cost_bps": 10.0,
+                "schema_version": 2,
+                "allowed_changes": [
+                  "features",
+                  "model",
+                  "implementation",
+                  "portfolio"
+                ],
+                "stress_cost_bps": 30.0,
+                "risk_constraints": [
+                  {
+                    "unit": "multiple",
+                    "metric": "gross_exposure",
+                    "maximum": 1.0
+                  }
+                ],
+                "execution_profile": "kr-stock-research-v2",
+                "baseline_source_ids": [
+                  "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+                ],
+                "execution_profile_digest": "07056f8607ea990c09de6ade29a6230f60c3c0055c980728d95705e538dd21a3"
+              }
+            },
+            {
+              "name": "stock_claim",
+              "market": "kr_stock",
+              "template": {
+                "code": {
+                  "repository": "quant-lab",
+                  "base_commit": "422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11",
+                  "write_paths": [
+                    "labs/company-domestic-research/candidate.py",
+                    "labs/company-domestic-research/config.json"
+                  ]
+                },
+                "data": {
+                  "lake_id": "krx-s3-kr_stock-cf689d34e7776edc1b97",
+                  "input_files": {
+                    "warmup.json": "9ee0e7cf017ef4b81b2028d8d9b09616d8ade89fd9706374b4ed6d053fd7d442",
+                    "development.json": "1a0802b498d29e0a4557e0e1ac1c2c205dc33ad2e013bab70b65b0d54484fd85"
+                  }
+                },
+                "kind": "claim",
+                "title": "kr_stock literature-grounded claim development",
+                "market": "kr_stock",
+                "sealed": [
+                  {
+                    "end": "2026-09-23",
+                    "start": "2026-01-02"
+                  }
+                ],
+                "search": {
+                  "patience": 2,
+                  "continuous": true,
+                  "min_improvement": 0.001,
+                  "max_total_trials": 4,
+                  "max_trials_per_cycle": 2
+                },
+                "objective": {
+                  "unit": "fraction",
+                  "metric": "mean-effect",
+                  "direction": "maximize"
+                },
+                "resources": {
+                  "priority": "autonomous",
+                  "worker_id": "worker"
+                },
+                "evaluation": {
+                  "kind": "claim",
+                  "block": "calendar-month",
+                  "scope": "development",
+                  "metric": "mean-effect",
+                  "target": null,
+                  "tolerance": null,
+                  "confidence": 0.95,
+                  "minimum_blocks": 30,
+                  "minimum_effect": 0.0,
+                  "schema_version": 1
+                },
+                "development": {
+                  "end": "2025-12-30",
+                  "start": "2023-01-02"
+                },
+                "base_cost_bps": 0.0,
+                "schema_version": 2,
+                "allowed_changes": [
+                  "features",
+                  "model",
+                  "implementation"
+                ],
+                "stress_cost_bps": 0.0,
+                "risk_constraints": [],
+                "execution_profile": "kr-stock-research-v2",
+                "baseline_source_ids": [
+                  "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+                ],
+                "execution_profile_digest": "07056f8607ea990c09de6ade29a6230f60c3c0055c980728d95705e538dd21a3"
+              }
+            }
+          ],
+          "objective": "원문과 이전 감사 결과를 읽고, ETF·주식의 실행 가능한 전략 또는 예측 주장을 검증해 다음 과제를 선택한다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "max_missions": 6,
+          "schema_version": 1,
+          "max_total_trials": 24,
+          "include_quant_feed": true,
+          "max_compute_seconds": 36000,
+          "max_parallel_missions": 1
+        },
+        "manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+        "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1790641272.310813:director:action:21f480c4-d59f-45e7-ac2e-2cf91aa109e8:approve",
+        "approved_at": "2026-09-29T00:21:12.470514+00:00"
+      }
+    ],
+    "tasks": [
+      {
+        "id": "dae4bd01-7477-55c7-810e-9e4fbec59dfb",
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "digest": "bfb21536d7efc746123951d3413fd7993fd3b1499f463769620b1e77aa4d0542",
+        "state": "waiting",
+        "proposal": {
+          "mode": "novel_hypothesis",
+          "title": "국내 KOSPI200 ETF의 GMM 위험확률 노출조절: 비용 후 절대수익 개발검증",
+          "method": "단일 etf_strategy 템플릿의 코드·입력 digest·실행 프로필·목적함수·검색·평가·자원 제한을 그대로 상속한다. 저장소는 quant-lab, base_commit은 422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11이며 변경 범위는 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json뿐이다. 데이터는 krx-s3-kr_etf-30784209bf06e53313b8의 지정 warmup.json과 development.json으로 한정한다. 실행 프로필은 kr-etf-research-v2이고 해당 템플릿 digest를 유지한다. 개발은 2023-01-02~2025-12-30, 봉인은 2026-01-02~2026-09-23이며 봉인 자료를 읽거나 튜닝에 사용하지 않는다. 상품은 개발 시작 직전 마지막 거래일에 상장되어 있던 비레버리지·비인버스 KOSPI200 현물추종 ETF 중 직전 60거래일 원시 거래대금 평균이 가장 큰 하나를 선택한다. 동률은 종목코드 오름차순으로 해결하고 개발기간에는 교체하지 않는다. 현재 생존 종목 목록으로 과거 모집단을 대체하지 않는다. 입력 계약으로 당시 상품분류·상장 및 상폐 이력, 거래달력, 원시 종가와 거래대금, 기준가격 조정 수익률, 기업행사·분배금 처리, 실제 공개시각 또는 검증 가능한 공표지연 규칙을 확인해야 한다. 원시 거래대금을 수정주가와 거래량의 곱으로 재구성하지 않는다. 입력 스키마와 이 계약은 아직 확인되지 않았으므로 충족 여부가 실행 전 블로커다. 매월 마지막 거래일 t에 대한 특징은 해당 ETF의 실행 프로필상 일별 조정 수익률 r_t와 log(max(직전 20거래일 수익률 표준편차, 1e-8)) 두 개다. t 이전의 최근 252개 완성 특징만으로 평균·표준편차를 적합하여 정규화하고, 2성분 full-covariance GMM을 적합한다. reg_covar=1e-6, random_state=0, n_init=1, max_iter=200, tol=1e-3을 고정한다. 최초 학습에 필요한 관측과 특징 산출 이력은 개발 시작 전 warmup에 있어야 한다. 원단위 일별 수익률 분산이 큰 성분을 고위험 상태로 정하고, 동률이면 평균 수익률이 낮은 성분, 다시 동률이면 성분 인덱스로 결정한다. 학습 후 x_t의 고위험 확률 q_t를 계산하여 다음 목표 ETF 비중을 1-0.5*q_t로 정한다. 나머지는 무이자 현금이며 차입·공매도는 사용하지 않는다. 의사결정은 다음 거래일 08:30 Asia/Seoul에 t 자료가 실제 이용 가능함을 확인한 뒤 내리고, 그날 종가 체결을 제안한다. 이 체결 방식이 고정 실행 프로필에서 지원되는지 먼저 확인하며, 불일치하면 프로필을 변경하지 않고 중단한다. 월중에는 추가 신호 거래 없이 보유하여 비중이 자연 변동하게 한다. 확인된 자료 지연이나 거래정지로 주문할 수 없으면 기존 포지션을 유지하고 해당 기간 성과를 제거하지 않는다. 상폐·최종 평가·기업행사는 프로필의 검증된 규칙을 따른다. 필요한 규칙이 없으면 임의 가격이나 회수액을 넣지 않는다. 이후 매월 같은 시간순 학습을 반복한다. 전방 보유수익 라벨은 평가에만 사용하고 학습집합에서 전부 제외하여 라벨 종료가 평가구간과 겹치는 학습 표본을 만들지 않는다. 전기간 정규화, 사후 상태 재분류, 미래수익으로 상태 이름을 정하는 방식은 금지한다. 고정 대조군은 같은 ETF의 목표 비중 100%, 목표 비중 75%, 그리고 목표 비중 clip(0.10/(sqrt(252)*20일 수익률 표준편차),0.5,1)인 변동성 조절이다. 대조군도 같은 월별 의사결정·체결·비용 규칙을 사용한다. 기본 10bp와 스트레스 30bp는 프로필의 거래대금·회전율 정의에 따라 각각 적용하며 편도·왕복 정의를 임의로 바꾸지 않는다. 분배금·세금·시장충격이 모두 반영된 총수익이라고 가정하지 않고 실제 수익률 기준과 비용 포함 범위를 출력한다. GMM 후보와 대조군을 보수적으로 각각 한 시행으로 계상하여 최대 4회만 계획한다. 첫 주기는 GMM과 100% 대조군, 두 번째는 나머지 대조군이며 서비스의 중단 규칙이 우선한다. continuous=true, max_total_trials=4, max_trials_per_cycle=2, patience=2, min_improvement=0.001을 유지하고 프로그램 전체 24회·6개 미션·36,000초 한도를 넘지 않는다. 누락된 대조군을 실행한 것으로 보고하지 않는다. 출력 계약은 시점별 모집단과 선택 근거, 공개·의사결정·체결 시각, 학습기간과 정규화·GMM 파라미터, 상태확률, 목표·실제 비중, 주문·체결·비용, 일별 손익, calendar-month 수익, 입력·출력 digest와 중단 사유다. 실행 범위는 지정 worker의 RTX 3070이며 실제 실행 인정에는 코드 커밋, 입력 digest, 호스트·환경, 서비스 receipt와 원시 산출물이 필요하다. 이번 산출물은 그 실행을 수행했다는 보고가 아니다.",
+          "envelope": "etf_strategy",
+          "question": "과거 자료만으로 추정한 GMM 고위험 상태 확률에 따라 국내 KOSPI200 ETF의 월별 목표 비중을 50~100%로 조절하면, 2023-01-02~2025-12-30 개발구간에서 30bp 스트레스 비용 후 절대 CAGR이 양수인 후보를 얻을 수 있는가? 경제적 가설은 위험의 지속성 때문에 노출 축소가 손실과 변동성에 따른 복리 손실을 줄인다는 것이다. 단순한 현금 보유, 변동성 조절, 상승장 참여 감소도 같은 결과를 설명할 수 있으므로 고정 대조군으로 구분한다.",
+          "citations": [
+            {
+              "quote": "the joint distribution of all 17 factors in the lens.",
+              "location": "PDF p.2",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "The number of clusters is the only hyper-parameter in this model, and we used a cross-validation method to select the best number of clusters.",
+              "location": "PDF p.3",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "Factor means, volatilities, and correlations were fit using data for the period starting on the dates in Appendix 1 and ending in late 2020.",
+              "location": "PDF p.3",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "Additionally, this model is not predictive, so",
+              "location": "PDF p.6",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "in abrupt market condition switches at times.",
+              "location": "PDF p.6",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "conditions to stress test their portfolios.",
+              "location": "PDF p.7",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "고정 P11 결과와 일치하는 개발구간 재현. 원래 감사의 현재 파일 일치를 확인했으며 새 연구·확증 판정이 아니다. 기준선·초과성과는 미측정이다.",
+              "location": "char:0",
+              "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            }
+          ],
+          "departures": "정확 재현이 아니다. 원문의 독점적 17요인과 장기 표본을 사용하지 않고, 한국 ETF 한 종목의 수익률·변동성 특징과 고정 2성분으로 바꾼다. 또한 원문의 동시점 상태 기술에 익월 투자비중과 비용 후 수익이라는 새로운 검증 대상을 추가하므로 단순 시장 전이보다 novel_hypothesis로 분류한다. 원문과 상충하는 중요한 근거는 비예측성 명시 및 급격한 상태 전환 관찰이다. 동시점 위험 확률이 다음 보유기간에도 유용하다는 연결고리는 별도 가정이며 원문에서 입증되지 않았다. 단순 변동성 조절이나 현금 감산이 결과를 설명할 가능성도 남는다. 이전 부정적·제한적 발견은 재현보고서의 기준선·초과성과 미측정과 확증 부재다. 이를 국내 GMM 전략의 실패 실험으로 꾸미지 않는다. 관찰→변경→결과 이력으로 확인되는 것은 고정 결과 확인→동등 재현→새 과학 시행 없이 기존 결과 일치뿐이며, 후보별 설계 변경 이력과 감사 원문 전체는 제공되지 않았다. 당 프로그램의 prior_tasks와 missions는 비어 있어 프로그램 내 선행 실패나 공통 기각 사유가 확인되지 않았지만 연구 전체가 처음이라고 단정하지 않는다. 허용 선행 미션 목록이 비어 있으므로 predecessor_mission_ids는 빈 배열이다. 참고 재현보고서의 집계기간은 2014-01-02~2026-08-31로 현재 봉인기간과 겹친다. 이미 노출된 집계의 존재를 기록하고 그 성과 수치로 후보·계수·임계값을 선택하거나 현 개발점수를 대체하지 않는다. 해당 봉인을 완전히 미노출된 독립 확증 표본이라고 주장하지 않는다.",
+          "source_ids": [
+            "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e",
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "falsification": "최종 평가는 etf_strategy의 기존 평가기를 그대로 사용한다. 목적은 stress-net-absolute-cagr 최대화이며 단위는 fraction-per-year다. evaluation은 kind=strategy, scope=development, block=calendar-month, confidence=0.95, minimum_blocks=30, minimum_effect=0.0, target=null, tolerance=null을 유지한다. gross_exposure 최대 1.0도 유지한다. GMM 후보의 스트레스 비용 후 절대 CAGR이 0 이하이면 양의 절대수익 가설은 해당 개발구간에서 반증된다. 양수여도 95% 불확실성 범위가 0을 포함하면 양의 효과가 입증됐다고 말하지 않으며 최종 판정은 고정 평가기에 맡긴다. 30개 미만의 유효 월, 입력 계약 미충족, 비수렴, 시점 누출, 체결 규칙 불일치는 과학적 반증과 구분하여 평가 불가 또는 기술 중단으로 기록한다. 대조군과의 동일 월 성과 차이, 회전율, 현금 비중, 낙폭은 원인 설명에만 사용하며 목적함수를 초과수익·Sharpe·낙폭으로 바꾸지 않는다. GMM이 대조군보다 나을 근거가 없으면 절대수익이 양수여도 상태 식별의 추가 가치를 주장하지 않는다. 성공·무후보·중단과 모든 계획 시행을 남기며, 성과 보고에는 원시 산출물과 독립 감사가 필요하다. 개발 통과만으로 확증이나 자본 배치를 제안하지 않는다.",
+          "original_claim": "Two Sigma의 2021년 원문은 미국 Factor Lens 17개 요인의 공동분포에 GMM을 적용했다. 군집 수는 교차검증의 로그우도로 선택했고, 요인별 시작일부터 2020년 후반까지 적합한 결과 네 상태를 Crisis, Steady State, Inflation, Walking on Ice로 해석했다. 제안한 활용처는 상태별 분포를 이용한 위험관리·스트레스 테스트와 자산배분 검토다. 원문은 모형이 예측적이지 않다고 명시하며, 국내 ETF의 미래 수익이나 거래비용 차감 후 전략 성과를 입증하지 않는다. 제공된 국내 ETF 재현보고서는 고정 P11 결과의 equivalent_replay와 기존 감사 재사용을 기록한다. 과학탐색은 3회 소진되었지만 해당 재현에서 추가된 과학 시행은 0회이며, 기준선·초과성과는 미측정이고 새 확증 판정도 아니다. 이 보고서는 참고 근거로만 사용한다.",
+          "predecessor_mission_ids": []
+        },
+        "data_assessment": {
+          "coverage": false,
+          "decision": "blocked",
+          "rationale": "지정 레이크 krx-s3-kr_etf-30784209bf06e53313b8의 warmup.json·development.json과 실행 프로필 kr-etf-research-v2의 실제 스키마·객체 digest·수집/이용가능시각·체결 규칙에 대한 조회 근거가 없다. 읽힌 재현 보고서는 별도 P11 스냅샷 및 2014-01-02~2026-08-31 집계 결과이며, 현재 지정 입력의 당시 ETF 모집단(상장·상폐 포함), KOSPI200 현물추종/비레버리지·비인버스 분류, 60거래일 원시 거래대금, 거래달력, 기업행사·분배금, 조정수익률, 거래정지 및 종가 체결 가능성을 검증하지 않는다. 또한 그 집계는 봉인 구간과 겹쳐 현 개발 입력의 독립적 시점증거로 사용할 수 없다. 미확인 항목은 false로 처리한다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "point_in_time": false,
+          "executable_prices": false,
+          "original_conditions": false
+        },
+        "decision": {
+          "decision": "wait",
+          "rationale": "지정 입력과 실행 프로필의 검증 근거가 확보될 때까지 과제 선택을 보류한다. 독립 데이터 평가는 blocked이며 coverage, point_in_time, executable_prices, original_conditions가 모두 미확인으로 false 처리되어 있다. 이는 데이터 부재나 전략 실패가 입증되었다는 뜻이 아니라, 실제 입력과 체결 조건을 확인한 근거가 없다는 뜻이다. 명세에 기록된 digest와 담당자의 동의만으로 실행 가능성을 인정할 수 없다. 재검토에는 지정 warmup.json·development.json의 실제 digest와 스키마, 개발 시작 직전의 상장·상폐 및 상품분류 이력, 60거래일 원시 거래대금, 최초 학습용 252개 완성 특징과 그 산출 이력, 거래달력·조정수익률·기업행사·분배금 처리의 증거가 필요하다. 또한 다음 거래일 08:30 Asia/Seoul의 정보 이용 가능성과 그날 종가 체결, 거래정지·상폐·최종 평가 및 비용 계산을 고정 kr-etf-research-v2 프로필이 지원하는지 독립적으로 확인해야 한다. 원문 PDF p.3과 p.5~7은 17요인의 GMM 상태 분석, 군집 수 선택, 상태의 급격한 전환과 비예측성을 설명한다. 이를 단일 국내 ETF의 두 특징·고정 2성분·월별 노출조절로 바꾸는 과제는 novel_hypothesis로 적절하며, 미래 비용 후 수익성은 별도 검증 대상이다. 원문의 비예측성은 중요한 반대 근거지만 이 후보의 실패 실험을 대신하지 않는다. P11 보고서는 scientific_trials_added=0인 equivalent_replay와 기존 감사 재사용을 기록하며 기준선·초과성과를 측정하지 않았다. 별도 스냅샷의 이 결과로 현재 입력 준비나 새 과제 성과를 인증할 수 없다. 집계기간 2014-01-02~2026-08-31은 현재 봉인기간과 겹치므로 해당 집계로 후보를 조정하거나 봉인을 완전히 미노출된 독립 확증 자료라고 주장해서도 안 된다. 명세상 과제는 etf_strategy의 코드 변경 경로·입력·프로필, 2023-01-02~2025-12-30 개발구간, 10bp·30bp 비용, stress-net-absolute-cagr 목적, 고정 평가와 총노출 1.0 제한을 유지한다. 제공 기록상 현재 사용량은 시행 0회·미션 0개·계산 0초이고 미결 시행도 0회여서 잔여 한도는 24회·6개·36,000초다. 후보와 대조군을 포함한 최대 4회·1미션 계획은 횟수 한도 안이지만 계산시간 내 실행 가능성까지 확인된 것은 아니다. prior_tasks의 유일한 항목은 현재 과제 자신이므로 별도 선행 실패나 중복 실행으로 세지 않는다. 과거 P11 연구의 탐색 3회도 현재 프로그램 사용량과 혼합하지 않는다. 재검토 조건은 승인된 입력·프로필을 유지한 채 위 증거와 자원 한도 충족 근거를 확보하고 독립 데이터 평가의 차단 사유를 해소하는 것이다. 현재 보류는 과학적 반증과 구분한다. 이후 검증된 음의 절대수익이나 GMM 추가가치 부재는 유효한 연구 결과로 보존하며, 누락된 대조군을 실행한 것으로 처리하지 않는다."
+        },
+        "mission_id": null,
+        "created_at": "2026-09-29T03:45:07.005808+00:00"
+      },
+      {
+        "id": "dc0e9eac-040d-5eac-9a6d-69fd2c32a0f6",
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "digest": "762e00528f391a5288e364f430ea496a091be1108ac30501a27b2d2e9054ad4c",
+        "state": "waiting",
+        "proposal": {
+          "mode": "novel_hypothesis",
+          "title": "국내 KOSPI200 ETF의 GMM 위험확률 노출조절: 비용 후 절대수익 개발검증",
+          "method": "(1) etf_strategy 템플릿 전체를 상속한다. schema_version=2, kind=strategy, market=kr_etf이며 allowed_changes는 features/model/implementation/portfolio다. 저장소는 quant-lab, base_commit은 422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11이고 수정 경로는 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json뿐이다. lake_id는 krx-s3-kr_etf-30784209bf06e53313b8이다. warmup.json digest=e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81, development.json digest=6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574를 유지한다. 실행 프로필은 kr-etf-research-v2, digest=942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf다. 개발구간은 2023-01-02~2025-12-30, 봉인구간은 2026-01-02~2026-09-23이며 봉인 자료를 후보 선택·튜닝에 사용하지 않는다. baseline_source_ids도 템플릿 그대로 유지한다. (2) 기존 독립 데이터 평가의 decision=blocked와 coverage/point_in_time/executable_prices/original_conditions=false를 현재 상태로 기록한다. 실제 입력 digest·스키마, 당시 상장·상폐 및 상품분류, 원시 종가·거래대금, 거래달력, 시점별 조정수익률·기업행사·분배금, 이용가능시각 또는 검증된 공표지연 규칙, 거래정지·상폐 회수·최종 평가 및 체결 규칙이 실행 전 확인 대상이다. 파일 날짜나 최근 수집시각을 과거 이용가능시각으로 대체하지 않는다. 원시 거래대금을 수정주가와 거래량의 곱으로 재구성하지 않는다. 지정 입력·프로필이 계약을 충족하지 못하면 임의 자료로 우회하지 않고 중단한다. (3) t0는 개발 시작 직전 마지막 거래일이다. t0 당시 상장된 비레버리지·비인버스 KOSPI200 현물추종 ETF 중 t0까지 직전 60거래일의 유효한 원시 거래대금 관측을 모두 갖춘 종목을 대상으로 평균 거래대금이 가장 큰 하나를 선택한다. 동률은 종목코드 오름차순이다. 당시 모집단을 현재 생존 종목 목록으로 대체하지 않고 개발 중 종목을 교체하지 않는다. 선택 종목의 최초 학습 이력이 부족하면 다른 종목으로 바꾸지 않고 중단한다. (4) r_t는 고정 실행 프로필이 정의한 일별 조정수익률, s20_t는 t를 포함한 직전 20거래일 r의 표본 표준편차(ddof=1)다. 특징은 x_t=(r_t, log(max(s20_t,1e-8)))다. 최초 t0와 이후 각 월말 t마다 t 이전 최근 252개 완성 특징만으로 평균·표준편차(ddof=1)를 적합하여 정규화하고 2성분 full-covariance GMM을 적합한다. reg_covar=1e-6, random_state=0, n_init=1, max_iter=200, tol=1e-3을 고정한다. 최초 252개 특징 및 각 특징의 20거래일 산출 이력은 warmup에서 확보해야 한다. 정규화 분산 0, 비유한 수치 또는 비수렴은 기술 중단으로 기록한다. 원단위 일수익률 분산이 큰 성분을 고위험으로 정하고, 동률이면 원단위 평균 수익률이 낮은 성분, 다시 동률이면 성분 인덱스로 결정한다. 학습에 포함하지 않은 x_t의 고위험 확률 q_t로 목표 비중 w_t=1-0.5*q_t를 계산한다. 상태 이름에 미래 수익을 사용하지 않는다. 전방 보유수익 라벨은 평가에만 사용하며 학습에서 전부 제외한다. 따라서 평가구간과 종료가 겹치는 전방 라벨을 가진 학습 표본을 만들지 않는다. 정규화·적합은 매월 시간순으로 반복하고 전기간 적합이나 무작위 분할을 하지 않는다. (5) 최초 포트폴리오는 현금 100%다. 의사결정은 t의 다음 거래일 d의 08:30 Asia/Seoul이며, 필요한 자료가 그 시각에 실제 이용 가능해야 한다. 목표 비중을 프로필의 인과적인 주문수량·현금 제약 규칙으로 변환하여 d 종가 체결을 제안한다. d 종가를 미리 사용해 08:30 주문수량을 계산하지 않는다. 해당 시간표와 수량 규칙을 고정 프로필이 지원하지 않으면 중단한다. d 종가 체결까지의 손익은 기존 보유분에, 체결 이후 손익은 새 보유분에 귀속한다. 월중 추가 신호 거래 없이 다음 예정 체결까지 보유하며 비중은 자연 변동한다. 나머지는 무이자 현금이고 차입·공매도를 사용하지 않는다. 검증된 자료 지연이나 거래정지로 주문이 불가능한 월은 신규 주문을 건너뛰고 기존 포지션을 유지하며 성과를 삭제하지 않는다. 상폐·기업행사·최종 평가는 프로필의 확인된 규칙을 따른다. 개발구간 안에 체결일이 있는 신호만 거래하며 마지막 평가는 2025-12-30까지의 정보로 수행한다. (6) 고정 대조군은 같은 ETF의 목표 비중 100%, 75%, 그리고 clip(0.10/(sqrt(252)*max(s20_t,1e-8)),0.5,1)인 변동성 조절이다. 모두 동일한 정보·월별 체결·현금·종료 규칙을 적용한다. 기본 10bp와 스트레스 30bp는 프로필의 거래대금·회전율 정의에 따라 적용하고 편도·왕복 의미를 임의로 바꾸지 않는다. 조정수익률과 분배금을 이중 계상하지 않으며 세금·시장충격을 포함한 비용 범위와 실제 수익률 기준을 출력한다. 현행 세율을 임의로 가정하지 않는다. 후보와 대조군을 각각 한 구성으로 계획하여 최대 4회이며 첫 주기는 GMM과 100% 대조군, 두 번째는 나머지 두 대조군이다. search의 continuous=true, max_total_trials=4, max_trials_per_cycle=2, patience=2, min_improvement=0.001을 유지하고 서비스의 계수·중단 규칙을 우선한다. 미실행 대조군은 미측정으로 남긴다. 현재 프로그램 사용량은 시행 0회·미션 0개·계산 0초·미결 시행 0회다. 본 계획은 최대 1미션·4회로 전체 24회·6미션·36,000초 및 동시 미션 1개 한도 안에서만 실행 대상으로 검토한다. 계산 소요와 자원 배정은 아직 확인되지 않았다. (7) resources는 priority=autonomous, worker_id=worker를 유지하고 승인된 RTX 3070 범위에서만 계획한다. 출력 계약은 시점별 모집단·선택 근거, 데이터 이용가능·의사결정·체결 시각, 학습창·정규화·GMM 파라미터, 상태확률, 목표·실제 비중, 주문·체결·비용, 일별 손익, calendar-month 수익, 입력·출력 digest와 중단 사유다. 실제 실행의 인정에는 코드 커밋, 입력 digest, 호스트·환경, 서비스 receipt 및 원시 산출물이 필요하다. 본 산출물의 범위는 연구 설계이며 승인·Git 변경·실행·게시는 수행했다고 주장하지 않는다.",
+          "envelope": "etf_strategy",
+          "question": "국내 KOSPI200 현물추종 ETF 하나에서 과거 정보로 추정한 GMM 고위험 상태확률에 따라 월별 목표 비중을 50~100%로 조절하면, 2023-01-02~2025-12-30 개발구간의 30bp 스트레스 비용 후 절대 CAGR이 양수인가? 경제적 가설은 위험의 지속성 때문에 노출 축소가 손실과 변동성에 따른 복리 손실을 줄인다는 것이다. 반등 참여 감소, 단순 현금 보유, 일반적인 변동성 조절도 결과를 설명할 수 있으므로 고정 대조군으로 구분한다.",
+          "citations": [
+            {
+              "quote": "the joint distribution of all 17 factors in the lens.",
+              "location": "PDF p.2",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "The number of clusters is the only hyper-parameter in this model, and we used a cross-validation method to select the best number of clusters.",
+              "location": "PDF p.3",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "Factor means, volatilities, and correlations were fit using data for the period starting on the dates in Appendix 1 and ending in late 2020.",
+              "location": "PDF p.3",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "period completely independently, without awareness of what",
+              "location": "PDF p.5",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "Additionally, this model is not predictive, so",
+              "location": "PDF p.6",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "in abrupt market condition switches at times.",
+              "location": "PDF p.6",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "conditions to stress test their portfolios.",
+              "location": "PDF p.7",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "고정 P11 결과와 일치하는 개발구간 재현. 원래 감사의 현재 파일 일치를 확인했으며 새 연구·확증 판정이 아니다. 기준선·초과성과는 미측정이다.",
+              "location": "char:0",
+              "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            }
+          ],
+          "departures": "정확 재현은 원문의 자료·17요인·적합 조건과 결과를 재현하는 것이고, 시장 전이는 핵심 방법과 검증 대상을 유지한 국내 적용이다. 본안은 단일 ETF의 두 특징·고정 2성분·252개 특징의 순차 학습으로 바꾸고 미래 보유성과와 거래비용이라는 새 검증 대상을 추가하므로 novel_hypothesis다. 원문의 비예측성과 급격한 상태전환은 중요한 반대 근거이며, 동시점 위험확률의 다음 보유기간 유효성은 별도 가정이다. 프로그램 내 이전 과제 dae4bd01-7477-55c7-810e-9e4fbec59dfb는 waiting이고 mission_id=null이다. 관찰→변경→결과는 입력·가용시각·체결 근거 미확인→동일 후보의 최초 신호, 수량 산출, 체결 전후 손익 귀속 및 중단 기준 구체화→새 입력 검증이나 성과 결과 없음이다. 기존 데이터 차단은 여전히 유효하다. 본안은 이 대기 후보의 조건부 재검토안으로 취급하고 중복 시행을 배정하지 않는다. 미확인 항목의 false 처리는 데이터 부재나 전략 손실이 입증됐다는 뜻이 아니다. P11 참고보고서에서 확인되는 이력은 고정 결과 확인→동등 재현→추가 과학 시행 0회와 기존 감사 재사용 보고다. 기준선·초과성과 미측정 및 확증 부재를 기록하되 현재 GMM 후보의 실패 실험으로 해석하지 않는다. 감사 원문과 원시 성과 파일까지 확인한 것은 아니다. P11 집계기간 2014-01-02~2026-08-31은 현 봉인구간과 겹친다. 해당 집계로 후보·계수·임계값을 조정하거나 현 개발점수를 대체하지 않고, 봉인이 완전히 미노출된 독립 확증 자료라고 주장하지 않는다. 보고서의 sealed_read=false는 당시 재현에 관한 기록이다. 과거 탐색 3회는 현재 프로그램 사용량에 합산하지 않는다. 현재 기록만으로 여러 시행에 공통된 기각 사유나 연구 전체의 최초 여부를 단정할 수 없다. allowed_predecessor_mission_ids가 비어 있으므로 predecessor_mission_ids는 []이며 과제 ID나 참고 보고서 ID를 선행 미션으로 변환하지 않는다.",
+          "source_ids": [
+            "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e",
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "falsification": "목적은 stress-net-absolute-cagr 최대화, 단위는 fraction-per-year다. 고정 evaluation의 schema_version=1, kind=strategy, scope=development, block=calendar-month, metric=stress-net-absolute-cagr, confidence=0.95, minimum_blocks=30, minimum_effect=0.0, target=null, tolerance=null을 유지한다. gross_exposure 최대 1.0도 유지한다. 입력·체결 계약을 충족하고 유효 월이 30개 이상인 평가에서 GMM 후보의 스트레스 비용 후 절대 CAGR이 0 이하이면 양의 절대수익 가설은 해당 개발구간에서 반증된다. 양수라도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과가 입증됐다고 말하지 않는다. 최종 판정은 기존 평가기를 따르며 임의 검정법이나 기준을 추가하지 않는다. 입력 계약 미충족, 시점 누출, 비수렴, 체결 규칙 불일치, 위험 제약 위반 또는 유효 월 부족은 기술 중단·평가 불가로 구분하고 음의 수익 결과와 혼동하지 않는다. 거래하지 않은 월도 검증 가능한 손익이 있으면 유지하며 불리한 월을 삭제하지 않는다. 대조군과의 동일 월 성과 차이, 회전율, 현금 비중, 낙폭은 원인 설명에만 쓰고 목적을 초과수익·Sharpe·낙폭으로 바꾸지 않는다. GMM의 추가 가치가 대조군으로 뒷받침되지 않으면 절대수익이 양수여도 상태 식별의 효용을 주장하지 않는다. 성공·무후보·중단과 모든 계획·실제 시행을 구분해 기록한다. 성과 보고에는 원시 산출물과 독립 감사가 필요하며 개발 통과는 확증이나 자본 배치 근거로 확대하지 않는다. 확증은 별도 사전등록 대상이다.",
+          "original_claim": "Two Sigma의 2021년 원문은 미국 Factor Lens의 17개 요인 공동분포에 GMM을 적용했다. 군집 수는 교차검증의 로그우도로 선택했고, 요인별 시작일부터 2020년 후반까지 적합한 결과를 Crisis, Steady State, Inflation, Walking on Ice 네 상태로 해석했다. 역사적 상태 판정은 각 기간을 독립적으로 평가하며, 제안한 활용처는 상태분포를 이용한 위험관리·스트레스 테스트와 자산배분 검토다. 원문은 모형의 비예측성과 급격한 상태전환을 명시한다. 따라서 국내 ETF의 미래 수익이나 비용 후 전략 성과를 입증한 연구가 아니다. 제공된 국내 ETF P11 보고서는 equivalent_replay, scientific_trials_added=0, 기존 독립 감사 재사용을 기록한다. 기준선·초과성과는 미측정이고 새 확증 판정도 없다. 이 기록은 현재 지정 입력과 제안 전략의 실행 증거를 제공하지 않는다.",
+          "predecessor_mission_ids": []
+        },
+        "data_assessment": {
+          "coverage": false,
+          "decision": "blocked",
+          "rationale": "현재 지정 입력 warmup.json·development.json 및 kr-etf-research-v2의 실제 스키마, 객체 digest, 수집·이용가능시각, 08:30 의사결정과 종가 체결 규칙을 확인한 조회 근거가 없다. 읽힌 P11 재현 보고서는 별도 스냅샷(2014-01-02~2026-08-31)의 equivalent_replay이며, 현 과제의 당시 ETF 모집단(상장·상폐 포함), KOSPI200 현물추종·비레버리지·비인버스 분류, 60거래일 원시 거래대금, 거래달력, 조정수익률·기업행사·분배금, 거래정지·상폐 회수 및 실행 가능 가격을 입증하지 않는다. 또한 그 집계는 현 봉인구간과 겹치므로 현 개발 입력의 독립적인 시점증거로 사용할 수 없다. 미확인 검사는 false이며 데이터 부재 또는 전략 성과의 부정을 뜻하지 않는다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "point_in_time": false,
+          "executable_prices": false,
+          "original_conditions": false
+        },
+        "decision": {
+          "decision": "wait",
+          "rationale": "지정 입력과 실행 프로필의 검증 근거가 확보될 때까지 선택을 보류한다. 독립 데이터 평가는 blocked이며 coverage·point_in_time·executable_prices·original_conditions가 모두 false다. 이는 필요한 검증 근거가 미확보되었다는 뜻이며 데이터 부재, 접근 불가 또는 전략 손실을 입증하지 않는다. 명세에 적힌 digest와 담당자의 동의, 계약 불충족 시 중단한다는 약속만으로 실행 가능성을 인정할 수 없다. 본안은 이전 대기 과제 dae4bd01-7477-55c7-810e-9e4fbec59dfb의 설계 보완안이다. 최초 신호, 미래 종가를 사용하지 않는 주문수량 산출, 체결 전후 손익 귀속을 구체화했지만 새 입력 검증이나 성과 결과는 추가되지 않았다. 따라서 독립적인 신규 과제로 중복 시행을 배정할 근거가 없다. prior_tasks에 다시 등장하는 현재 과제도 별도 선행 연구로 세지 않으며, 허용 선행 미션이 없으므로 predecessor_mission_ids는 빈 배열을 유지한다. 원문 PDF p.3·5~7은 GMM 군집 수의 교차검증 선택, 기간별 독립 상태 판정, 비예측성과 급격한 상태 전환을 설명한다. 기간별 독립 판정은 시간순 외표본 예측 검증을 뜻하지 않는다. 원문의 17요인 분석을 단일 국내 ETF의 두 특징·고정 2성분·순차 학습·월별 거래성과 검증으로 바꾼 본안은 novel_hypothesis로 분류하는 것이 적절하다. 위험 상태의 지속성이 다음 보유기간의 비용 후 수익에 도움이 된다는 연결은 별도 검증 대상이며, 원문의 한계 자체가 이 후보의 실패 실험은 아니다. P11 보고서는 별도 입력의 equivalent_replay, scientific_trials_added=0, 기존 독립 감사 재사용을 기록한다. 기준선·초과성과는 미측정이고 새 확증 판정도 없다. 감사 원문과 원시 성과 파일을 새로 검증한 근거는 없으며, 이 보고서로 현재 지정 입력이나 GMM 전략의 준비 상태를 인증할 수 없다. 집계기간 2014-01-02~2026-08-31은 현재 봉인기간 2026-01-02~2026-09-23과 겹친다. 이 집계로 후보·계수·임계값을 조정하거나 현재 개발점수를 대체해서는 안 되며, 봉인을 완전히 미노출된 독립 확증 자료로 취급할 수 없다. sealed_read=false는 당시 재현 범위의 기록이다. 설계상 etf_strategy의 지정 코드 변경 범위·입력·실행 프로필, 개발기간 2023-01-02~2025-12-30, 기본 10bp·스트레스 30bp, stress-net-absolute-cagr 목적, 고정 평가와 총노출 1.0 제한은 유지된다. 제공된 현재 사용 기록은 시행 0회·미결 시행 0회·미션 0개·계산 0초로, 잔여 한도는 24회·6미션·36,000초이며 동시 미션 한도는 1개다. 후보와 세 대조군의 최대 4회·1미션 계획은 횟수 한도 안이지만 현재 후보의 계산 소요와 worker 자원 배정은 미확인이다. 과거 P11 탐색 3회를 현재 프로그램 사용량에 합산하지 않는다. 재검토에는 지정 warmup.json·development.json의 실제 digest·스키마, t0 당시 상장·상폐 및 상품분류 이력, 60거래일 원시 거래대금, 최초 학습용 252개 완성 특징과 각 특징의 20거래일 산출 이력에 대한 증거가 필요하다. 거래달력, 원시 가격, 시점별 조정수익률·기업행사·분배금 처리도 확인해야 한다. 고정 kr-etf-research-v2 프로필이 다음 거래일 08:30 Asia/Seoul의 정보 이용 가능성, 인과적 주문수량·현금 제약, 당일 종가 체결과 손익 귀속, 거래정지·상폐 회수·최종 평가 및 비용 계산을 지원하는지 독립적으로 검증해야 한다. 최근 수집시각을 과거 이용가능시각으로 대신하거나 원시 거래대금을 수정주가와 거래량의 곱으로 재구성해서는 안 된다. 지정 계약을 유지한 채 이러한 차단 사유와 자원 한도 충족 여부가 해소되면 같은 후보의 재검토가 가능하다. 현재 보류는 과학적 반증이 아니다. 이후 계약을 충족하고 유효 월이 30개 이상인 평가에서 스트레스 비용 후 절대 CAGR이 0 이하라면 유효한 부정적 연구 결과로 보존한다. 양수라도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과가 입증됐다고 말하지 않는다. 기술 중단·평가 불가는 수익성 반증과 구분하고, 미실행 대조군은 미측정으로 남기며, 절대수익이 양수라는 사실만으로 GMM의 추가 가치나 확증 통과를 주장하지 않는다."
+        },
+        "mission_id": null,
+        "created_at": "2026-09-29T04:06:59.38012+00:00"
+      },
+      {
+        "id": "875a7d41-e6e5-5a67-94cf-8b7d9d8c2d00",
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "digest": "d410c8987e3c31879850a8cd746bb31ddf24634ec534a9de825d70eb28a3168b",
+        "state": "waiting",
+        "proposal": {
+          "mode": "novel_hypothesis",
+          "title": "고정 ETF 069500의 일별 GMM 노출조절: 스트레스 비용 후 절대수익 개발검증",
+          "method": "(1) etf_strategy 템플릿 전체를 변경 없이 상속한다. schema_version=2, kind=strategy, market=kr_etf, allowed_changes=features/model/implementation/portfolio다. 저장소 quant-lab의 base_commit=422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11을 기준으로 수정 가능 경로는 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json뿐이다. lake_id=krx-s3-kr_etf-30784209bf06e53313b8, warmup.json SHA-256=e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81, development.json SHA-256=6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574를 유지한다. execution_profile=kr-etf-research-v2, digest=942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf다. 개발은 2023-01-02~2025-12-30, 봉인은 2026-01-02~2026-09-23이며 봉인 입력을 선택·튜닝에 사용하지 않는다. baseline_source_ids도 그대로 상속한다.\n(2) 제공된 etf_strategy 자료 패킷과 SHA-256=1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc인 보호 엔진을 근거로 시간표와 계산 방식을 정한다. identity.json은 지정 입력과 승인 계약의 결속을 보고한다. 입력 행의 계약은 date/ticker/market/open/close/adj_close/value/available_at/tradable다. 확인된 개발 입력에 069500이 있으므로 이 종목을 이번 설계에서 고정하며 성과 비교로 교체하지 않는다. 과거 전체 ETF 모집단에서 거래대금 1위를 선정했다는 주장은 폐기한다. 이 고정 종목 연구는 당시 모집단·상품분류·상폐 이력이 검증된 유니버스 연구를 대신하지 않는다. value는 원시 거래대금 필드로 취급하고 수정주가와 거래량으로 재구성하지 않는다.\n(3) 거래일 d의 후보 입력은 엔진 history_at이 제공하는 date<d이고 available_at<d의 09:00 Asia/Seoul인 행뿐이다. 당일 종가를 신호에 사용하지 않는다. 엔진은 종목별 최신 알려진 원시 종가를 기준으로 adj_close를 재기준화한다. 이 변환은 일정 배율을 제거하지만 원천 발표시각이나 과거 조정계수의 시점성을 입증하지 않는다. 후보는 weights(history, config)에서 069500의 비음수 목표 비중 하나를 반환한다. 엔진의 이론적 시가 재조정 시점에 이용 가능한 과거 입력으로 목표를 정하는 계약이며 별도 08:30 의사결정이나 종가 체결을 가정하지 않는다.\n(4) t는 제공된 069500 이력의 최신 날짜다. r_t=adj_close_t/adj_close_(t-1)-1, s20_t는 t까지 최근 20개 일수익률의 표본 표준편차(ddof=1), x_t=(r_t, log(max(s20_t,1e-8)))로 정의한다. t보다 앞선 최근 60개 완성 특징에만 평균·표준편차(ddof=1)를 적합하고 정규화하여 2성분 full-covariance GMM을 매 거래일 새로 적합한다. reg_covar=1e-6, random_state=0, n_init=1, max_iter=200, tol=1e-3을 고정한다. 학습 특징 60개와 평가 특징 1개를 위해 최초 신호까지 최소 81개의 연속된 유효 가격 관측이 필요하다. 최초 warmup에서 이 요건을 확인하지 못하면 현금 수익으로 학습 부족을 숨기지 않고 기술 중단한다. 최초 이력 충족은 현재 확보된 입력 일부만으로 인증하지 않는다. 정규화 분산 0, 비유한 수치, 비수렴 또는 필요한 관측 누락도 기술 중단이다. 원단위 일수익률 분산이 큰 성분을 고위험으로 정하고 동률이면 평균 수익률이 낮은 성분, 다시 동률이면 성분 인덱스를 사용한다. 학습에서 제외한 x_t의 고위험 확률 q_t로 w=1-0.5*q_t를 계산한다. 미래 보유수익은 상태 이름·정규화·학습에 쓰지 않는다. 전방 라벨을 학습집합에 넣지 않으므로 평가 구간과 종료가 겹치는 학습 라벨도 만들지 않는다. 매일 과거 자료만으로 순차 적합하며 전기간 적합이나 무작위 분할은 하지 않는다.\n(5) 체결과 손익은 보호 엔진 그대로다. A_d=open_d*adj_close_d/close_d, R_d=A_next/A_d-1을 사용하여 d 시가부터 입력의 다음 관측 거래일 시가까지 평가한다. 후보는 해당 시가나 다음 시가를 주문 결정 입력으로 받지 않는다. 엔진은 주식 수 주문이나 호가 체결 대신 목표 비중을 직접 적용한다. 따라서 이 결과를 실제 시가 체결 보장으로 표현하지 않는다. 매 거래일 목표로 재조정하며 월중 자연 보유를 구현했다고 주장하지 않는다. 현금 부분의 수익은 0이고 차입·공매도는 사용하지 않는다. 최초 positions는 비어 있다. 거래량 대신 비중 회전율 T=sum(abs(w_new-w_old))를 사용하고 gross=1+sum(w_new*R), 순수익=(1-c*T)*gross-1이다. c는 기본 0.001, 스트레스 0.003이며 w_old는 엔진이 직전 수익으로 갱신한 비중이다. 비용의 편도·왕복 의미를 별도로 바꾸지 않는다. 마지막 손익은 2025-12-30 시가까지이며 엔진에 없는 종가 청산이나 추가 청산비용을 넣지 않는다. 엔진이 요구하는 현재·다음 가격 누락, 보유 종목의 거래 불가 또는 상폐 정산 부재는 평가 거부다. 임의 가격 대입, 해당 날짜 삭제, 기존 포지션 유지로 우회하지 않는다. 결과는 조정 시가 비율을 사용하는 엔진의 가격수익으로 보고하며 배당 재투자 총수익이나 실제 세금·시장충격을 모두 반영한 수익이라고 부르지 않는다.\n(6) 고정 대조군은 같은 종목의 일별 목표 비중 100%, 75%, 그리고 clip(0.10/(sqrt(252)*max(s20_t,1e-8)),0.5,1)인 변동성 조절이다. 모두 같은 시점·시가 간 손익·비중 회전율·비용·종료 규칙을 따른다. 후보와 세 대조군은 최대 네 과학 구성으로 계획한다. 첫 주기는 GMM과 100% 대조군, 다음 주기는 나머지 두 대조군이다. search의 continuous=true, max_total_trials=4, max_trials_per_cycle=2, patience=2, min_improvement=0.001을 유지하고 서비스의 계수·중단 규칙을 우선한다. 실행되지 않은 대조군은 미측정으로 남긴다. 프로그램 기록은 현재 시행 0회·미결 0회·미션 0개·계산 0초이며 본 계획은 최대 1미션·4회다. 프로그램 전체 24회·6미션·36,000초, 동시 미션 1개 한도를 유지한다. resources는 priority=autonomous, worker_id=worker이며 승인된 RTX 3070 범위다. 계산시간과 환경 의존성은 아직 검증되지 않았다.\n(7) 출력 계약은 설정별 엔진의 base.csv·stress.csv, 일별 순수익, 기본·스트레스 성과, 회전율·총노출·낙폭, 원시 출력의 digest와 실행 식별 정보다. calendar-month 평가는 기존 평가기로 수행한다. 학습창·정규화·GMM 파라미터·상태확률·목표 비중의 재구성 가능성을 독립 감사에서 확인하며 엔진에 없는 상세 체결 로그를 생성했다고 가정하지 않는다. 실제 실행 인정에는 코드 커밋, 입력 digest, 호스트·환경, 서비스 receipt 및 원시 산출물이 필요하다. 본 산출물은 제안이며 승인·Git 변경·실행·게시가 이루어졌다는 보고가 아니다.",
+          "envelope": "etf_strategy",
+          "question": "지정 스냅샷의 ETF 069500에서 과거 수익률·변동성으로 추정한 GMM 고위험 확률에 따라 일별 목표 비중을 50~100%로 조절하면, 승인된 시가 간 평가 방식에서 2023-01-02~2025-12-30의 30bp 스트레스 비용 후 절대 CAGR이 양수인가? 경제적 경로는 위험 지속성에 따른 노출 축소가 손실과 복리 손실을 줄인다는 것이다. 현금 보유 효과, 일반적인 변동성 조절, 상승장 노출과 반등 참여 감소를 대안 설명으로 검토한다. 검증 대상은 고정 입력과 평가기 아래의 개발 성과이며 실제 주문 체결이나 국내 ETF 전체의 투자성과가 아니다.",
+          "citations": [
+            {
+              "quote": "the joint distribution of all 17 factors in the lens.",
+              "location": "PDF p.2",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "The number of clusters is the only hyper-parameter in this model, and we used a cross-validation method to select the best number of clusters.",
+              "location": "PDF p.3",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "Factor means, volatilities, and correlations were fit using data for the period starting on the dates in Appendix 1 and ending in late 2020.",
+              "location": "PDF p.3",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "Additionally, this model is not predictive, so",
+              "location": "PDF p.6",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "in abrupt market condition switches at times.",
+              "location": "PDF p.6",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "conditions to stress test their portfolios.",
+              "location": "PDF p.7",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "기준선·초과성과는 미측정이다.",
+              "location": "char:0",
+              "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            }
+          ],
+          "departures": "정확 재현은 원문의 17요인·표본·추정 조건과 결과를 재현하는 것이고, 시장 전이는 핵심 방법과 검증 대상을 유지한 국내 적용이다. 본안은 단일 ETF의 두 특징, 고정 2성분, 60개 특징의 순차 학습, 일별 투자비중과 미래 비용 후 성과를 추가하므로 novel_hypothesis다. 원문의 비예측성 및 급격한 상태 전환은 반대 근거다. 과거의 고위험 확률이 다음 시가 간 보유기간에도 유용하다는 연결은 검증되지 않은 추가 가정이다.\n프로그램 내 과제 dae4bd01-7477-55c7-810e-9e4fbec59dfb와 dc0e9eac-040d-5eac-9a6d-69fd2c32a0f6은 모두 waiting이고 mission_id=null이다. 공통 보류 사유는 입력 정체성·시점성·체결 계약에 관한 검증 부족이며 전략 손실을 관측한 결과가 아니다. 관찰→변경→결과 이력은 기존 두 설계의 검증 부족→자료 패킷과 고정 엔진에서 실제 계약 확인→종가 체결안과 시가 간 평가기의 불일치 확인이다. 본안은 그 후보군을 고정 종목·60개 학습 특징·일별 목표 비중·승인 시가 간 평가로 수정한다. 기존 252개 특징·거래대금 순위 선정·월별 자연 보유 설계를 그대로 구현한 것으로 취급하지 않는다. 매개변수 변경은 현재 후보 성과나 봉인 성과를 비교해 고른 결과가 아니다. 새로운 성과 결과는 없으며 기존 대기 과제에 실행이 있었다고 계상하거나 중복 시행을 배정하지 않는다.\n새 패킷은 파일 결속 근거를 제공하지만 원본 S3 VersionId가 고정되지 않았고 현재 객체 정체성이 준비 receipt와 다르다. 원천 발표시각은 독립 검증되지 않았으며 available_at만으로 공표시각을 입증할 수 없다. adj_close 차이 6,680건이 종목별 일정 배율과 부합해도 원본 바이트 복구나 전체 시점성 검증을 대신하지 않는다. 실제 호가 체결·거래정지·상폐 정산·현금 분배금 처리의 증거도 부족하다. 따라서 기존 독립 데이터 평가의 blocked를 해소한 새 판정이 있다고 주장하지 않는다. 현 제안은 고정 입력의 조건부 연구 설계이며 원천 정합성·시점성 및 최초 학습 이력에 관한 차단을 해소하기 전 실행 준비 완료로 판정하지 않는다. 실제 체결·배당 총수익 검증에는 현재 보호 엔진을 넘는 별도 계약이 필요하며 본 과제로 권한을 확대하지 않는다.\nP11의 관찰→변경→결과는 고정 결과 확인→동등 재현→추가 과학 시행 없이 기존 결과 일치 보고다. 기준선·초과성과 미측정, 확증 부재와 감사 원문·원시 성과를 새로 검증하지 않았다는 한계를 기록한다. 이를 GMM 후보의 실패 실험으로 바꾸지 않는다. 과거 탐색 3회는 현 프로그램 사용량에 합산하지 않는다. P11 집계기간 2014-01-02~2026-08-31은 현 봉인기간과 겹치므로 그 집계로 후보나 계수를 선택하지 않고 봉인을 완전히 미노출된 확증 표본이라고 주장하지 않는다. 연구 전체가 처음이라고 단정하지 않는다. allowed_predecessor_mission_ids가 비어 있으므로 predecessor_mission_ids=[]이며 과제 ID나 참고보고서를 선행 미션 ID로 대체하지 않는다.",
+          "source_ids": [
+            "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e",
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "falsification": "목적은 stress-net-absolute-cagr 최대화, 단위는 fraction-per-year다. 평가 계약의 schema_version=1, kind=strategy, scope=development, metric=stress-net-absolute-cagr, block=calendar-month, confidence=0.95, minimum_blocks=30, minimum_effect=0.0, target=null, tolerance=null을 유지한다. 총노출 최대 1.0도 유지한다. 입력 정합성·시점성 계약과 기술 검증을 충족한 뒤 유효 월이 30개 이상인 평가에서 GMM의 스트레스 비용 후 절대 CAGR이 0 이하이면 양의 절대수익 가설을 이 개발구간에서 기각한다. 양수라도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과가 입증됐다고 하지 않는다. 보호 평가기에 다른 검정이나 통과 기준을 덧붙이지 않는다. 최초 학습 이력 부족, 비수렴, 데이터 누출, 가격·거래가능성 검사 실패, 위험 제약 위반, 원천 계약 미검증 또는 유효 월 부족은 기술 중단·평가 불가로 구분한다. 이러한 중단을 손실 반증이나 수익률 0으로 계상하지 않는다. 불리한 날짜·월도 임의 삭제하지 않는다. 대조군과의 동일 월 성과 차이, 회전율, 현금 노출과 낙폭은 원인 설명용이며 목적을 초과수익·Sharpe·낙폭으로 바꾸지 않는다. 대조군이 GMM의 추가 가치를 뒷받침하지 못하면 절대 CAGR이 양수여도 상태 식별의 효용을 주장하지 않는다. 성공·음의 결과·무후보·기술 중단과 계획 대비 실제 시행을 모두 보존한다. 성과 보고는 원시 산출물과 독립 감사에 근거해야 하며 개발 통과만으로 확증이나 자본 배치를 제안하지 않는다. 확증은 별도 사전등록 대상이다.",
+          "original_claim": "Two Sigma 원문은 미국 Factor Lens의 17개 요인 공동분포를 GMM으로 모형화하고 로그우도 기준 교차검증으로 군집 수를 선택했다. 요인별 시작일부터 2020년 후반까지 적합한 상태를 Crisis, Steady State, Inflation, Walking on Ice로 해석하며 위험관리와 스트레스 테스트 활용을 제안한다. 원문은 모형이 예측적이지 않다고 명시하고 급격한 상태 전환을 설명한다. 따라서 한국 ETF의 다음 기간 수익이나 비용 후 수익성을 입증한 연구가 아니다. P11 참고보고서는 고정 결과의 equivalent_replay, 추가 과학 시행 0회와 기존 감사 재사용을 기록하며 기준선·초과성과는 미측정이다. 해당 보고서는 현재 후보의 성과나 실행 준비 상태를 인증하지 않는다.",
+          "predecessor_mission_ids": []
+        },
+        "data_assessment": {
+          "coverage": true,
+          "decision": "blocked",
+          "rationale": "고정 입력의 범위는 일부 확인되었다. input-check는 warmup 104세션·1,040행, development 731세션·7,310행(각 10종목), 중복 키·cohort 누락 0을 기록하고, qdata readback은 동결 cohort에 069500이 포함되며 동결 패널 8,350행의 open·close·value·tradable 행이 현재 읽기와 일치한다고 기록한다. 따라서 동결 파일 내 고정 069500의 학습·개발 관측 범위는 확인되었다. 그러나 원천 공표시각은 독립 검증되지 않았고, 마지막 세션 10행의 다음 세션 08:30 이용가능성도 미검증이므로 point-in-time은 false다. 또한 원본 S3 VersionId가 없고 현재 객체 식별자가 준비 시점과 다르며 adj_close 6,680행이 불일치해 원본 조건의 정확 재현은 입증되지 않았다. 동결 평가기는 이용가능 이력과 시가-다음 시가 가격을 사용하지만 실제 호가 체결, 거래정지, 상장폐지 정산, 현금배당 처리를 확립하지 않아 실행 가능 가격도 false다. 해시 일치는 파일 정체성만 보장하며 원천 시점성·원본 조건의 준비성을 보장하지 않는다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "point_in_time": false,
+          "executable_prices": false,
+          "original_conditions": false
+        },
+        "decision": {
+          "decision": "wait",
+          "rationale": "과제 선택을 보류한다. 이번 설계는 기존 체결 방식의 불일치를 보완했고 데이터 범위도 일부 확인됐지만, 독립 데이터 평가는 여전히 blocked다. coverage=true와 point_in_time·executable_prices·original_conditions=false를 구분해야 한다. 이는 데이터 부재나 접근 불가, 전략 손실을 뜻하지 않으며, 과거 정보만으로 수행 가능한 연구라는 근거가 아직 충분하지 않다는 뜻이다. 제안 자체도 원천 정합성·시점성 차단 해소를 실행 전제로 삼고 있다. 동결 엔진과 비교하면 이번 제안의 일별 목표 비중, date<d 및 available_at<d의 09:00 Asia/Seoul 이력 제한, 조정시가 A_d=open_d*adj_close_d/close_d에 따른 다음 관측 거래일 시가까지의 손익은 패킷의 평가 계약에 맞춰져 있다. 비중 회전율 T에 대해 순수익을 (1-c*T)*(1+sum(w_new*R))-1로 계산하고 기본 10bp·스트레스 30bp를 적용하며, 마지막 평가는 2025-12-30 시가까지로 제한한다. 기존 대기안의 08:30 의사결정 후 당일 종가 체결·월중 자연 보유는 현 설계의 체결 가정이 아니다. 이 과거 불일치를 현재안에 그대로 적용해 보류하는 것은 적절하지 않다. 다만 목표 비중을 직접 적용하는 이론적 평가와 실제 주문 체결 가능성은 별도이며, 엔진 일치만으로 독립 데이터 차단이 해소되지는 않는다. 독립 평가가 인용한 input-check와 qdata-readback은 warmup 104세션·1,040행, development 731세션·7,310행, 각 10종목과 069500 포함, 중복 키·cohort 누락 0을 보고한다. 동결 패널 8,350행의 open·close·value·tradable도 현재 읽기와 일치한다고 기록한다. 따라서 이전의 coverage=false를 반복하지 않는다. 그러나 원본 S3 VersionId가 고정되지 않았고 현재 객체 정체성이 준비 receipt와 다르며, adj_close 6,680행이 불일치한다. 종목별 일정 배율 및 엔진 재기준화와 부합한다는 설명은 원본 생성·변환 이력이나 원천 공표시각을 인증하지 않는다. 파일 해시와 available_at 필드도 과거 실제 이용가능시각의 독립 증거를 대신하지 못한다. 평가에 남아 있는 마지막 세션의 다음 날 08:30 미검증 항목은 현재의 09:00 계약과 구별하고, 실제 신호에 사용되는 행을 기준으로 다시 판단해야 한다. 104세션이라는 범위는 필요한 최소 81개 가격 관측보다 길지만, 최초 의사결정 시점에 이용 가능한 연속 유효 가격과 완성 특징 60개·평가 특징 1개, 수치 유효성과 적합 가능성까지 인증하지는 않는다. 재검토에는 승인된 입력·프로필을 유지한 원천 및 변환 이력, 실제 사용 이력의 09:00 이전 이용가능성, 최초 특징 구성, 해당 종목의 현재·다음 가격과 거래가능성 검사, 환경 의존성과 계산시간 근거가 필요하다. 실제 호가 체결과 현금배당 총수익은 현재 연구가 입증할 범위 밖이다. 이를 구현하려고 보호 엔진을 변경하거나 실거래 보장을 추가 요구하지 않되, 이론적 조정시가 평가에 필요한 원천·시점성 검증은 생략하지 않는다. 고정 069500 설계에는 폐기된 거래대금 순위 선정이나 전체 과거 ETF 모집단 검증, 252개 학습 특징 요건을 다시 요구하지 않는다. 원문 PDF p.2~3·6~7의 17요인 공동분포 분석, 교차검증 군집 선택, 비예측성과 급격한 상태 전환에 비춰 본안의 단일 ETF·두 특징·고정 2성분·60개 특징 순차 학습·미래 비용 후 성과는 novel_hypothesis로 분류하는 것이 적절하다. 위험 상태의 지속성이 다음 보유기간에 유용하다는 연결은 새 검증 대상이며 원문이 수익성을 보증하지 않는다. 기존 두 대기 과제와는 명세가 달라졌지만 같은 후보군의 보완안이고 세 과제 모두 실행 미션이 없다. 별도의 성공·실패 실험으로 세거나 중복 시행을 배정하지 않는다. 허용 선행 미션이 없으므로 predecessor_mission_ids=[]를 유지한다. 명세상 etf_strategy의 지정 입력·코드 변경 범위·실행 프로필, 2023-01-02~2025-12-30 개발기간, stress-net-absolute-cagr 목적, 고정 월 단위 평가와 총노출 1.0 제한은 유지된다. 현재 기록은 시행·미결 시행·미션·계산시간 모두 0이므로 잔여 한도는 24회·6미션·36,000초이며 동시 미션은 1개다. 후보와 세 대조군의 최대 4회·1미션 계획은 횟수 한도 안이지만 환경과 시간 내 실행 가능성은 미검증이다. 서비스의 주기별 한도와 중단 규칙을 우선하고 미실행 대조군은 미측정으로 남겨야 한다. P11 보고서는 추가 과학 시행 0회의 equivalent_replay와 기존 감사 재사용을 기록하며 기준선·초과성과는 미측정이다. 이를 현재 후보의 실행·실패·준비성 증거로 전용하지 않고 과거 탐색 3회를 현 프로그램 사용량에 합산하지 않는다. 감사 원문과 원시 성과의 새 검증도 주장하지 않는다. P11 집계기간은 현 봉인기간과 겹치므로 그 집계로 후보를 선택하거나 봉인을 완전히 미노출된 확증 표본이라고 부를 수 없다. 차단 사유에 대한 독립 재평가와 기술·자원 근거가 확보되면 현재안을 재검토할 수 있다. 이번 보류는 과학적 반증이 아니다. 이후 계약을 충족하고 유효 월이 30개 이상인 평가에서 스트레스 순 CAGR이 0 이하라면 유용한 음의 연구 결과로 보존한다. 양수여도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과 입증을 주장하지 않으며, 대조군 근거 없이 GMM의 추가 가치를 주장하지 않는다. 기술 중단을 수익률 0이나 손실 반증으로 계상하지 않는다. 이 산출물은 선택 검토의 완료이며 승인·Git 변경·연구 실행·게시의 완료 보고가 아니다."
+        },
+        "mission_id": null,
+        "created_at": "2026-09-29T05:43:47.806023+00:00"
+      },
+      {
+        "id": "fc6f31a6-b04e-5878-ada1-a113ccb5bd8d",
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "digest": "a4c59ff5e91a5718e4e7234becab12b091dcf6bc14844519c6588ab71ad60c26",
+        "state": "waiting",
+        "proposal": {
+          "mode": "novel_hypothesis",
+          "title": "고정 ETF 069500의 일별 GMM 노출조절: 스트레스 비용 후 절대수익 개발검증",
+          "method": "(1) 프로그램의 etf_strategy 템플릿 전체를 상속한다. schema_version=2, kind=strategy, market=kr_etf이며 allowed_changes는 features/model/implementation/portfolio다. 저장소 quant-lab, base_commit=422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11을 유지하고 변경 경로는 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json뿐이다. lake_id=krx-s3-kr_etf-30784209bf06e53313b8, warmup.json SHA-256=e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81, development.json SHA-256=6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574를 유지한다. execution_profile=kr-etf-research-v2, digest=942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf다. 개발은 2023-01-02~2025-12-30, 봉인은 2026-01-02~2026-09-23이며 봉인 입력을 후보 선택·튜닝에 사용하지 않는다. baseline_source_ids도 템플릿 그대로다. (2) 제공된 etf_strategy 패킷, 보호 엔진의 완독 이력 및 최신 선택 검토에서 대조한 엔진 계약에 맞춘 조건부 설계다. 보호 엔진 SHA-256은 1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc다. 입력 필드는 date/ticker/market/open/close/adj_close/value/available_at/tradable다. input-check는 warmup 104세션·1,040행, development 731세션·7,310행, 각 10종목과 중복 키·cohort 누락 0을 보고한다. qdata-readback의 동결 cohort에 포함된 069500을 고정하고 성과에 따라 교체하지 않는다. 전체 ETF 모집단에서 거래대금 순위로 선정하는 설계는 사용하지 않는다. value는 원시 거래대금이며 수정주가와 거래량의 곱으로 재구성하지 않는다. (3) 거래일 d의 신호에는 엔진 history_at이 제공하는 date<d 및 available_at<d의 09:00 Asia/Seoul인 행만 사용한다. 당일 종가는 신호에 포함하지 않는다. 엔진의 종목별 adj_close 재기준화는 일정 배율을 제거하지만 원천 공표시각과 과거 조정계수의 시점성을 인증하지 않는다. t는 제공된 069500 이력의 최신 날짜다. r_t=adj_close_t/adj_close_(t-1)-1, s20_t는 t까지 최근 20개 일수익률의 표본 표준편차(ddof=1), x_t=(r_t,log(max(s20_t,1e-8)))로 정의한다. t 이전 최근 60개 완성 특징에만 평균·표준편차(ddof=1)를 적합하여 정규화하고, 매 거래일 2성분 full-covariance GMM을 적합한다. reg_covar=1e-6, random_state=0, n_init=1, max_iter=200, tol=1e-3을 고정한다. 최초 학습 특징 60개와 평가 특징 1개에는 최소 81개 연속 유효 가격 관측이 필요하다. 104세션이라는 범위만으로 최초 시점의 가용성·수치 유효성·적합 가능성을 인증하지 않는다. 이력 부족, 정규화 분산 0, 비유한 값, 비수렴은 기술 중단이다. 원단위 일수익률 분산이 큰 성분을 고위험으로 정하고 동률이면 평균 수익률이 낮은 성분, 다시 동률이면 성분 인덱스를 사용한다. 학습에서 제외한 x_t의 고위험 확률 q_t로 w=1-0.5*q_t를 반환한다. 전방 보유수익 라벨은 학습·정규화·상태 명명에서 모두 제외하므로 평가구간과 종료가 겹치는 학습 라벨도 만들지 않는다. 전기간 적합이나 무작위 분할 없이 순차 학습한다. (4) 후보의 weights(history,config)는 해당 종목의 비음수 목표 비중만 반환한다. 체결·손익은 보호 엔진의 이론적 시가 비중 평가를 따른다. A_d=open_d*adj_close_d/close_d, R_d=A_next/A_d-1로 d 시가부터 다음 관측 거래일 시가까지 계산한다. 이 가격과 당일 조정계수는 평가용이며 후보의 주문 결정 입력이 아니다. 엔진은 주식 수 주문·호가 체결 대신 매일 목표 비중을 직접 적용한다. 최초 positions는 비어 있고 현금 수익은 0이며 차입·공매도를 사용하지 않는다. T=sum(abs(w_new-w_old)), gross=1+sum(w_new*R), 순수익=(1-c*T)*gross-1이다. w_old는 엔진이 직전 수익으로 갱신한 비중이며 c는 기본 0.001, 스트레스 0.003이다. 마지막 평가는 2025-12-30 시가까지로 제한하고 엔진에 없는 종가 청산·추가 청산비용을 넣지 않는다. 엔진이 요구하는 현재·다음 가격과 거래가능성 검사가 실패하면 평가를 중단하며 임의 가격 대입이나 날짜 삭제로 우회하지 않는다. 결과는 조정시가 비율과 고정 비중 비용을 사용한 개발 성과로 보고한다. 실제 시가 체결, 현금배당 재투자 총수익, 세금·시장충격의 완전한 반영을 주장하지 않는다. (5) 고정 대조군은 같은 종목의 일별 목표 비중 100%, 75%, clip(0.10/(sqrt(252)*max(s20_t,1e-8)),0.5,1)인 변동성 조절이다. 모두 동일한 정보시점·시가 간 수익·회전율·비용·종료 규칙을 사용한다. 후보와 세 대조군을 각각 한 과학 구성으로 계획하여 최대 4회다. 첫 주기는 GMM과 100% 대조군, 다음 주기는 나머지 두 대조군으로 하되 서비스의 계수·중단 규칙을 우선한다. search는 continuous=true, max_total_trials=4, max_trials_per_cycle=2, patience=2, min_improvement=0.001을 유지한다. 미실행 대조군은 미측정으로 남긴다. (6) 제공 사용량은 시행·미결 시행·미션·계산시간 모두 0이다. 계획 상한은 1미션·4회이며 프로그램의 24회·6미션·36,000초 및 동시 미션 1개 제한을 유지한다. resources는 priority=autonomous, worker_id=worker이며 RTX 3070 범위로 계획한다. 환경 의존성과 계산시간 내 실행 가능성은 미검증이다. (7) 실행 전제는 독립 데이터 평가의 차단 해소다. 실제 신호에 쓰이는 행의 09:00 이전 이용가능성, 원천·변환 이력, 최초 특징 구성, 현재·다음 가격과 거래가능성을 검증해야 한다. 파일 날짜·수집시각·available_at 필드만으로 원천 공표시각을 대신하지 않는다. 출력 계약은 구성별 엔진 base.csv·stress.csv, 일별 순수익, 월 단위 평가, 비용·회전율·노출·낙폭 및 입력·출력 digest다. 학습창·정규화·GMM 파라미터·확률·비중의 재구성 가능성을 독립 감사 대상으로 둔다. 엔진에 없는 상세 체결 로그를 가정하지 않는다. 실제 실행 인정에는 코드 커밋, 입력 digest, 호스트·환경, 서비스 receipt와 원시 산출물이 필요하다. 현재 산출물은 제안이다.",
+          "envelope": "etf_strategy",
+          "question": "고정 ETF 069500의 과거 수익률·변동성으로 추정한 GMM 고위험 확률에 따라 일별 목표 비중을 50~100%로 조절하면, 동결 평가기의 시가 간 평가에서 2023-01-02~2025-12-30의 30bp 스트레스 비용 후 절대 CAGR이 양수인가? 경제적 경로는 위험의 지속성에 따른 노출 축소가 손실과 복리 손실을 줄인다는 것이다. 단순 현금 보유, 일반적인 변동성 조절, 시장 상승 및 반등 참여 감소를 대안 설명으로 둔다.",
+          "citations": [
+            {
+              "quote": "any use by Venn of the Two Sigma Factor Lens may differ",
+              "location": "PDF p.9",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "고정 P11 결과와 일치하는 개발구간 재현. 원래 감사의 현재 파일 일치를 확인했으며 새 연구·확증 판정이 아니다. 기준선·초과성과는 미측정이다.",
+              "location": "char:0",
+              "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            }
+          ],
+          "departures": "정확 재현은 원문의 자료·17요인·추정 조건과 결과를 재현하는 것이고, 시장 전이는 핵심 방법과 검증 대상을 유지한 국내 적용이다. 본안은 단일 ETF·두 특징·고정 2성분·60개 특징 순차 학습·미래 비용 후 성과라는 새 검증 대상을 사용하므로 novel_hypothesis다. 원문의 군집 수 교차검증과 기간별 독립 상태 판정은 시간순 외표본 거래 예측 검증을 뜻하지 않는다. 비예측성과 급격한 상태 전환은 반대 근거이며, 과거 위험확률의 다음 시가 간 유용성은 추가 가정이다. 원문 p.9의 실제 Factor Lens 활용 차이 경고도 보고서만으로 구현의 동등성을 인정할 수 없음을 뒷받침한다. 프로그램 내 dae4bd01-7477-55c7-810e-9e4fbec59dfb, dc0e9eac-040d-5eac-9a6d-69fd2c32a0f6, 875a7d41-e6e5-5a67-94cf-8b7d9d8c2d00은 모두 waiting이고 mission_id=null이다. 관찰→변경→결과는 입력·체결 검증 부족 및 종가 체결안과 엔진의 불일치 관찰→고정 069500·60개 학습 특징·일별 목표 비중·시가 간 평가로 변경→체결 명세 정합성과 일부 coverage 확인, 독립 데이터 차단 지속이다. 본안은 최신 대기 후보의 조건부 재검토이며 별도 신규 성공·실패 실험으로 세거나 중복 시행을 배정하지 않는다. 최신 평가는 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false, decision=blocked다. 기존 coverage=false나 폐기된 252개 특징·거래대금 순위 요건을 재적용하지 않는다. 원본 S3 VersionId 미고정, 준비 시점과 현재 객체 정체성 차이, adj_close 6,680행 불일치 및 원천 공표시각 미검증은 남아 있다. 종목별 일정 배율과의 부합은 원본 바이트·변환 이력 복구를 대신하지 않는다. 마지막 세션의 다음 날 08:30 미검증 표시는 실제 사용 행과 현재 09:00 계약에 맞춰 판단해야 한다. 실제 호가 체결·현금배당 총수익의 미확인은 이론적 평가 범위와 구분하되 원천·시점성 검증은 유지한다. 보호 엔진 변경이나 실거래 보장을 추가 요구하지 않는다. 현재 보류는 전략 손실의 관측이 아니다. P11의 제한적 발견은 추가 과학 시행 0회의 동등 재현, 기준선·초과성과 미측정 및 새 확증 부재다. 감사 원문·원시 성과를 새로 검증한 것으로 표현하지 않는다. 과거 탐색 3회는 현 프로그램 사용량과 합산하지 않는다. P11 집계기간 2014-01-02~2026-08-31은 현 봉인기간과 겹치므로 그 집계로 후보·계수·임계값을 선택하거나 봉인을 완전히 미노출된 확증 표본이라고 주장하지 않는다. allowed_predecessor_mission_ids가 비어 있으므로 predecessor_mission_ids=[]다. 과제 ID나 참고보고서 ID를 선행 미션으로 변환하지 않는다.",
+          "source_ids": [
+            "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e",
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "falsification": "목적은 stress-net-absolute-cagr 최대화이며 단위는 fraction-per-year다. evaluation은 schema_version=1, kind=strategy, scope=development, block=calendar-month, metric=stress-net-absolute-cagr, confidence=0.95, minimum_blocks=30, minimum_effect=0.0, target=null, tolerance=null을 그대로 유지한다. gross_exposure 최대 1.0도 유지한다. 입력·시점성·기술 계약을 충족하고 유효 월이 30개 이상인 평가에서 GMM의 스트레스 순 CAGR이 0 이하이면 양의 절대수익 가설을 해당 개발구간에서 기각한다. 양수라도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과 입증을 주장하지 않는다. 별도 검정이나 통과 기준을 덧붙이지 않는다. 원천 계약 미검증, 최초 학습 이력 부족, 누출, 비수렴, 가격·거래가능성 검사 실패, 위험 제약 위반 또는 유효 월 부족은 기술 중단·평가 불가로 기록하고 손실 반증이나 수익률 0으로 계상하지 않는다. 불리한 날짜·월을 임의 삭제하지 않는다. 대조군과의 동일 월 성과 차이, 회전율, 현금 비중과 낙폭은 원인 설명용이며 목적을 초과수익·Sharpe·낙폭으로 변경하지 않는다. 절대수익이 양수여도 대조군 근거 없이 GMM의 추가 가치를 주장하지 않는다. 성공·음의 결과·무후보·중단과 계획 대비 실제 시행을 보존한다. 성과 보고에는 원시 산출물과 독립 감사가 필요하며 확증은 별도 사전등록 대상이다. 개발 통과를 자본 배치 근거로 확대하지 않는다.",
+          "original_claim": "Two Sigma 문헌과 같은 프로그램의 기존 원문 검토 기록은 미국 Factor Lens 17요인의 공동분포에 GMM을 적용하고 로그우도 기준 교차검증으로 군집 수를 선택했다고 보고한다. 요인별 시작일부터 2020년 후반까지의 자료로 추정한 상태를 Crisis, Steady State, Inflation, Walking on Ice로 해석하며 위험관리·스트레스 테스트 활용을 제안한다. 모형의 비예측성과 급격한 상태 전환도 명시한다. 이는 국내 ETF의 미래 거래성과나 비용 후 수익성에 관한 검증이 아니다. 원문 PDF p.9는 Venn에서 실제 사용하는 Factor Lens 방법이 보고서와 달라질 수 있다는 제한도 밝힌다. P11 참고보고서는 equivalent_replay, scientific_trials_added=0 및 기존 독립 감사 재사용을 기록한다. 기준선·초과성과는 미측정이고 새 확증 판정도 아니다. 이 보고서의 실행 기록을 현재 후보의 실행 증거로 전용하지 않는다.",
+          "predecessor_mission_ids": []
+        },
+        "data_assessment": {
+          "coverage": true,
+          "decision": "blocked",
+          "rationale": "필수 패킷 파일을 모두 확인했다. 동결 입력은 warmup 1,040행·104세션 및 development 7,310행·731세션(각 10종목)이며 중복 date/ticker 키와 cohort 누락은 0이다. qdata readback도 동결 cohort에 069500이 포함되고 open·close·value·tradable 8,350행의 현재 읽기 일치를 기록하므로, 고정 069500의 제공 입력 범위는 확인된다. 그러나 원천 공표시각은 독립 검증되지 않았고 available_at만으로 당시 이용가능성을 증명할 수 없으며, development 마지막 세션 10행은 다음 신호 시점 검증도 없다. 원본 S3 VersionId가 없고 현재 객체 식별자는 준비 시점과 다르며 adj_close 6,680행 불일치는 종목별 일정 비율이라는 설명만 있을 뿐 원본 바이트·변환 이력이 복구되지 않았다. 또한 동결 평가기는 이용가능 이력과 시가-다음 시가 가격을 사용하지만 실제 호가 체결, 거래정지, 상장폐지 정산 및 현금배당 처리를 확립하지 않는다. 따라서 coverage만 true이고 point_in_time, executable_prices, original_conditions는 미확인 항목을 false로 처리하여 차단한다. 이는 데이터 부재나 전략 성과 부정을 뜻하지 않는다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "point_in_time": false,
+          "executable_prices": false,
+          "original_conditions": false
+        },
+        "decision": {
+          "decision": "wait",
+          "rationale": "과제 선택을 보류한다. 검증 대상은 고정 ETF 069500의 일별 GMM 노출조절이 2023-01-02~2025-12-30 개발구간에서 30bp 스트레스 비용 후 양의 절대 CAGR을 내는지다. 최신 독립 데이터 평가는 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false인 blocked다. 이번 제안은 그 차단 해소를 실행 전제로 유지하며, 이를 해소한 새 근거는 제시되지 않았다. 미확인은 데이터 부재·접근 불가·전략 손실과 구별한다.\n\n제공된 동결 엔진 완독 기록과 패킷의 평가 계약에 비추면 현재 체결 명세는 정합적이다. 후보는 date<d이고 available_at<d의 09:00 Asia/Seoul인 이력으로 매일 목표 비중을 반환한다. 엔진은 A_d=open_d*adj_close_d/close_d, R_d=A_next/A_d-1의 시가 간 수익에 목표 비중을 직접 적용한다. 직전 수익으로 갱신된 기존 비중 대비 회전율 T를 사용한 순수익 (1-c*T)*(1+sum(w_new*R))-1, 기본 c=0.001·스트레스 c=0.003, 초기 빈 포지션·현금수익 0 및 2025-12-30 시가까지의 종료 규칙도 제안과 맞는다. 과거안의 08:30 결정·종가 체결·월중 자연 보유 불일치를 현재안의 결함으로 재적용하지 않는다. 이는 이론적 비중 평가의 정합성에 관한 판단이다.\n\n독립 평가가 인용한 input-check와 qdata-readback은 warmup 104세션·1,040행, development 731세션·7,310행, 각 10종목과 069500 포함, 중복 키·cohort 누락 0을 보고한다. 따라서 이전 coverage=false는 현 상태를 설명하지 않는다. 다만 원본 S3 VersionId가 고정되지 않았고 현재 객체 정체성이 준비 receipt와 다르며, adj_close 6,680행의 차이에 관한 원본 바이트·변환 계보가 복구되지 않았다. 종목별 일정 배율과의 부합 및 엔진 재기준화는 차이의 가능한 설명이지만 원천 공표시각과 과거 조정정보의 시점성을 인증하지 않는다. 해시와 available_at 필드만으로 당시 이용가능성을 인정할 수도 없다.\n\n보류의 직접 근거는 실제 사용 입력의 원천·변환 이력과 시점성 미검증이다. 실제 호가 체결이나 현금배당 재투자 총수익은 이번 이론적 평가의 입증 범위 밖이며, 이를 보장하도록 보호 엔진을 바꿀 필요는 없다. 최종 세션 10행의 다음 신호 시점 미검증도 현재 09:00 계약과 실제 신호 사용 여부에 맞춰 판단해야 한다. 마지막 평가가격으로만 쓰이는 행에 이후 신호의 가용성 요건을 기계적으로 적용해서는 안 된다. 재검토에는 승인된 입력·프로필을 유지한 원천 및 변환 추적 근거, 실제 신호 사용 행의 09:00 이전 이용가능성, 최초 81개 연속 유효 가격으로 학습 특징 60개와 평가 특징 1개를 구성할 수 있다는 근거, 현재·다음 평가가격과 거래가능성 검사가 필요하다. 104세션이라는 범위만으로 수치 유효성이나 GMM 적합 가능성까지 확인되지는 않는다. 폐기된 252개 학습 특징이나 거래대금 순위에 따른 전체 ETF 모집단 선정 요건은 재검토 조건이 아니다.\n\n원문은 17개 요인의 공동분포를 GMM으로 설명하고 로그우도 교차검증으로 군집 수를 선택한 위험관리 연구다. 비예측성과 급격한 상태 전환을 명시하며, 기간별 상태 판정은 시간순 외표본 거래 검증을 뜻하지 않는다. PDF p.9의 실제 Factor Lens 활용 차이 경고도 구현 동등성의 한계를 뒷받침한다. 단일 ETF·두 특징·고정 2성분·60개 특징의 순차 학습으로 미래 비용 후 성과를 묻는 현재안은 novel_hypothesis로 적절하다. 위험 지속성이 다음 시가 간 성과에 유용하다는 연결은 별도 검증 대상이다.\n\n현재안은 최근 대기 과제 875a7d41-e6e5-5a67-94cf-8b7d9d8c2d00의 조건부 재검토이며, 앞선 두 대기안과 함께 실행 미션이 없다. 새 과학적 성공·실패나 독립 과제로 중복 계상하지 않는다. 허용 선행 미션이 없으므로 predecessor_mission_ids=[]를 유지한다. etf_strategy의 지정 입력·코드 변경 범위·실행 프로필·개발기간·봉인기간·목적·평가·총노출 1.0 제한은 명세상 유지된다. 현재 시행·미결 시행·미션·계산시간 사용량은 모두 0이고 잔여 한도는 24회·6미션·36,000초, 동시 미션은 1개다. 후보와 세 대조군의 최대 4회·1미션 계획은 횟수 한도 안이지만 환경 의존성과 시간 내 실행 가능성은 미검증이다. 주기당 2회와 서비스 중단 규칙을 따르며 미실행 대조군은 미측정으로 남겨야 한다.\n\nP11 보고서는 추가 과학 시행 0회의 equivalent_replay와 기존 감사 재사용을 기록하며 기준선·초과성과 및 새 확증은 없다. 해당 실행 기록이나 과거 탐색 3회를 현재 후보의 실행·준비성 또는 프로그램 사용량으로 전용하지 않는다. 감사 원문과 원시 성과를 새로 검증했다는 주장도 하지 않는다. P11 집계기간은 현재 봉인기간과 겹치므로 그 집계로 후보·계수를 선택하거나 봉인을 완전히 미노출된 독립 확증 표본으로 취급할 수 없다.\n\n차단 사유에 대한 독립 재평가와 기술·자원 근거가 확보되면 같은 후보를 재검토한다. 현재 보류는 수익성 반증이 아니다. 이후 계약을 충족하고 유효 월이 30개 이상인 평가에서 스트레스 순 CAGR이 0 이하라면 유용한 음의 연구 결과로 보존한다. 양수여도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과 입증을 주장하지 않으며, 대조군 근거 없이 GMM의 추가 가치를 인정하지 않는다. 기술 중단·평가 불가를 수익률 0이나 손실로 계상하지 않는다. 완료 범위는 이번 선택 검토다."
+        },
+        "mission_id": null,
+        "created_at": "2026-09-29T07:02:25.025921+00:00"
+      },
+      {
+        "id": "3bf21cca-034b-5927-992a-6a62c7d72972",
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "digest": "2899505bb0a801dbadcccb1a1191bb6aecbad55d8b86b9fb46e225b701c96e21",
+        "state": "waiting",
+        "proposal": {
+          "mode": "novel_hypothesis",
+          "title": "고정 ETF 069500의 일별 GMM 노출조절: 스트레스 비용 후 절대수익 개발검증",
+          "method": "(1) etf_strategy 템플릿 전체를 상속한다. schema_version=2, kind=strategy, market=kr_etf, allowed_changes=features/model/implementation/portfolio를 유지한다. 저장소 quant-lab의 base_commit=422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11이며 변경 가능 경로는 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json뿐이다. lake_id=krx-s3-kr_etf-30784209bf06e53313b8, warmup.json SHA-256=e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81, development.json SHA-256=6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574를 유지한다. execution_profile=kr-etf-research-v2, digest=942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf다. 개발은 2023-01-02~2025-12-30, 봉인은 2026-01-02~2026-09-23이며 봉인 입력은 후보 선택·튜닝에 사용하지 않는다. baseline_source_ids도 템플릿 그대로 유지한다. (2) 제공된 etf_strategy 패킷, 동결 엔진 완독 기록과 기존 독립 검토의 평가 계약에 맞춘 조건부 설계다. 엔진 SHA-256은 1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc다. 입력 계약은 date/ticker/market/open/close/adj_close/value/available_at/tradable다. 기존 독립 평가는 warmup 104세션·1,040행, development 731세션·7,310행, 각 10종목과 중복 키·cohort 누락 0을 보고한다. qdata-readback의 동결 cohort에 있는 069500을 고정하며 성과에 따라 교체하지 않는다. 전체 ETF 모집단이나 거래대금 순위로 선정했다는 주장은 하지 않는다. value는 원시 거래대금 필드로 취급하며 수정주가와 거래량의 곱으로 재구성하지 않는다. (3) 거래일 d의 신호에는 엔진 history_at이 제공하는 date<d이고 available_at<d의 09:00 Asia/Seoul인 행만 사용한다. 당일 종가는 신호에 포함하지 않는다. 엔진의 adj_close 재기준화가 원천 공표시각이나 과거 조정정보의 시점성을 인증하는 것은 아니다. t는 제공된 069500 이력의 최신 날짜다. r_t=adj_close_t/adj_close_(t-1)-1, s20_t는 t까지 최근 20개 일수익률의 표본 표준편차(ddof=1), x_t=(r_t,log(max(s20_t,1e-8)))로 정의한다. t 이전 최근 60개 완성 특징에만 평균·표준편차(ddof=1)를 적합하여 정규화하고 매 거래일 2성분 full-covariance GMM을 적합한다. reg_covar=1e-6, random_state=0, n_init=1, max_iter=200, tol=1e-3을 고정한다. 최초 학습 특징 60개와 평가 특징 1개에는 최소 81개 연속 유효 가격 관측이 필요하다. 104세션이라는 범위만으로 최초 시점의 가용성·수치 유효성·적합 가능성을 인증하지 않는다. 이력 부족, 필요한 관측 누락, 정규화 분산 0, 비유한 값 또는 비수렴은 기술 중단이다. 원단위 일수익률 분산이 큰 성분을 고위험으로 정하고 동률이면 평균 수익률이 낮은 성분, 다시 동률이면 성분 인덱스를 사용한다. 학습에서 제외한 x_t의 고위험 확률 q_t로 w=1-0.5*q_t를 반환한다. 전방 보유수익 라벨은 학습·정규화·상태 명명에서 모두 제외한다. 따라서 평가구간과 종료가 겹치는 전방 라벨을 가진 학습 표본을 만들지 않는다. 전기간 적합이나 무작위 분할 없이 과거 자료만으로 순차 학습한다. (4) weights(history,config)는 069500의 비음수 목표 비중을 반환한다. 체결·손익은 동결 엔진의 이론적 시가 비중 평가를 따른다. A_d=open_d*adj_close_d/close_d, R_d=A_next/A_d-1로 d 시가부터 다음 관측 거래일 시가까지 계산한다. 당일·다음 시가와 당일 조정계수는 평가용이며 후보의 결정 입력이 아니다. 엔진은 주식 수 주문이나 호가 체결 대신 매일 목표 비중을 직접 적용한다. 최초 positions는 비어 있고 현금 수익은 0이며 차입·공매도를 사용하지 않는다. T=sum(abs(w_new-w_old)), gross=1+sum(w_new*R), 순수익=(1-c*T)*gross-1이다. w_old는 엔진이 직전 수익으로 갱신한 비중이고 c는 기본 0.001, 스트레스 0.003이다. 마지막 수익구간은 2025-12-30 시가에서 끝나며 엔진에 없는 종가 청산·추가 청산비용을 넣지 않는다. 현재·다음 가격과 거래가능성 검사가 실패하면 평가를 중단하고 임의 가격 대입, 날짜 삭제 또는 포지션 유지로 우회하지 않는다. 결과는 조정시가 비율과 고정 비중 비용을 사용한 개발 성과로 보고한다. 실제 시가 체결, 현금배당 재투자 총수익이나 세금·시장충격의 완전한 반영을 주장하지 않는다. (5) 고정 대조군은 같은 종목의 일별 목표 비중 100%, 75%, clip(0.10/(sqrt(252)*max(s20_t,1e-8)),0.5,1)인 변동성 조절이다. 동일한 정보시점·시가 간 수익·회전율·비용·종료 규칙을 적용한다. 후보와 세 대조군을 각각 한 과학 구성으로 계획하여 최대 4회다. 첫 주기는 GMM과 100% 대조군, 다음 주기는 나머지 두 대조군으로 하되 서비스의 계수·중단 규칙을 우선한다. search는 continuous=true, max_total_trials=4, max_trials_per_cycle=2, patience=2, min_improvement=0.001을 유지한다. 미실행 대조군은 미측정으로 남긴다. 제공 사용량은 시행·미결 시행·미션·계산시간 모두 0이다. 본 계획은 최대 1미션·4회이며 프로그램 전체 24회·6미션·36,000초 및 동시 미션 1개 제한을 유지한다. resources는 priority=autonomous, worker_id=worker이며 RTX 3070 범위로 계획한다. 환경 의존성과 시간 내 실행 가능성은 미검증이다. (6) 실행 전제는 원천·변환 이력, 실제 신호 사용 행의 09:00 이전 이용가능성, 최초 특징 구성, 현재·다음 평가가격과 거래가능성에 관한 독립 데이터 차단 해소다. 파일 날짜·최근 수집시각·available_at 필드만으로 원천 공표시각을 대신하지 않는다. 출력 계약은 구성별 엔진 base.csv·stress.csv, 일별 순수익, 기존 평가기의 calendar-month 평가, 비용·회전율·노출·낙폭과 입력·출력 digest다. 학습창·정규화·GMM 파라미터·확률·비중의 재구성 가능성을 독립 감사 대상으로 둔다. 엔진에 없는 상세 체결 로그를 가정하지 않는다. 실제 실행 인정에는 코드 커밋, 입력 digest, 호스트·환경, 서비스 receipt와 원시 산출물이 필요하다. 이번 산출물은 제안서이며 승인·Git 변경·실행·게시의 완료 보고가 아니다.",
+          "envelope": "etf_strategy",
+          "question": "고정 ETF 069500의 과거 수익률·변동성으로 추정한 GMM 고위험 확률에 따라 일별 목표 비중을 50~100%로 조절하면, 동결 엔진의 시가 간 평가에서 2023-01-02~2025-12-30의 30bp 스트레스 비용 후 절대 CAGR이 양수인가? 경제적 경로는 위험의 지속성에 따른 노출 축소가 손실과 복리 손실을 줄인다는 것이다. 단순 현금 보유, 일반적인 변동성 조절, 시장 상승과 반등 참여 감소를 대안 설명으로 둔다. 검증 대상은 지정 입력과 평가기 아래의 개발 성과다.",
+          "citations": [
+            {
+              "quote": "17 factors",
+              "location": "PDF p.2",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "not predictive",
+              "location": "PDF p.6",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "materially from any content, research or methodologies discussed herein.",
+              "location": "PDF p.9",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "equivalent_replay",
+              "location": "char:0",
+              "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            }
+          ],
+          "departures": "정확 재현은 원문의 자료·17요인·추정 조건과 결과를 재현하는 것이고, 시장 전이는 핵심 방법과 검증 대상을 유지한 국내 적용이다. 본안은 단일 ETF·두 특징·고정 2성분·60개 특징 순차 학습·일별 투자비중과 미래 비용 후 성과를 도입하므로 novel_hypothesis다. 원문의 비예측성과 급격한 상태 전환은 반대 근거이며, 위험확률의 다음 시가 간 유용성은 별도 검증할 가정이다. 원문이 비용 후 수익성을 보증하지 않는다. 프로그램 내 과제 dae4bd01-7477-55c7-810e-9e4fbec59dfb, dc0e9eac-040d-5eac-9a6d-69fd2c32a0f6, 875a7d41-e6e5-5a67-94cf-8b7d9d8c2d00, fc6f31a6-b04e-5878-ada1-a113ccb5bd8d는 모두 waiting이고 mission_id=null이다. 관찰→변경→결과는 입력·체결 근거 부족 및 초기 종가 체결안과 엔진 불일치→고정 069500·60개 학습 특징·일별 목표 비중·시가 간 평가로 변경→체결 명세 정합성과 coverage 일부 확인, 원천·시점성 차단 지속이다. 이번 수정은 최신 대기 후보의 원문 인용과 제안서 계약을 보완하는 것이며 신규 과학적 성공·실패로 세거나 중복 시행을 배정하지 않는다. 최신 독립 평가는 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false, decision=blocked다. 원본 S3 VersionId 미고정, 준비 시점과 현재 객체 정체성 차이, adj_close 6,680행 불일치와 원천 공표시각 미검증이 남아 있다. 종목별 일정 배율과 엔진 재기준화에 부합한다는 설명은 원본 바이트·변환 이력과 당시 이용가능성을 인증하지 않는다. 현재 보류는 데이터 부재·접근 불가·전략 손실의 입증이 아니다. 최종 세션 10행의 다음 세션 08:30 미검증 표시는 현재 09:00 계약과 실제 신호 사용 여부에 맞춰 판단해야 한다. 마지막 평가가격으로만 쓰이는 행에 이후 신호 가용성 요건을 기계적으로 적용하지 않는다. 실제 호가 체결과 현금배당 총수익은 이번 이론적 평가의 입증 범위 밖이며, 이를 구현하려고 보호 엔진을 바꾸지 않는다. 원천·시점성 검증은 유지한다. 폐기된 252개 특징·거래대금 순위 선정·월별 자연 보유 요건을 현재 설계에 재적용하지 않는다. 참고 P11 보고서의 제한적 발견은 고정 결과의 동등 재현, 추가 과학 시행 0회, 기준선·초과성과 미측정과 새 확증 부재다. 감사 원문·원시 성과를 새로 검증했다는 주장은 하지 않는다. 과거 탐색 3회를 현 프로그램 사용량에 합산하지 않는다. 해당 집계기간 2014-01-02~2026-08-31은 현 봉인기간과 겹치므로 집계 성과로 후보·계수·임계값을 선택하거나 봉인을 완전히 미노출된 독립 확증 표본이라고 주장하지 않는다. 연구 전체가 처음이라고 단정하지 않는다. allowed_predecessor_mission_ids가 비어 있으므로 predecessor_mission_ids=[]이며 과제 ID나 참고보고서를 선행 미션 ID로 변환하지 않는다.",
+          "source_ids": [
+            "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e",
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "falsification": "목적은 stress-net-absolute-cagr 최대화이며 단위는 fraction-per-year다. evaluation은 schema_version=1, kind=strategy, scope=development, block=calendar-month, metric=stress-net-absolute-cagr, confidence=0.95, minimum_blocks=30, minimum_effect=0.0, target=null, tolerance=null을 유지한다. gross_exposure 최대 1.0도 유지한다. 입력·시점성·기술 계약을 충족하고 유효 월이 30개 이상인 평가에서 GMM의 스트레스 순 CAGR이 0 이하이면 양의 절대수익 가설을 해당 개발구간에서 기각한다. 양수라도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과 입증을 주장하지 않는다. 별도 검정이나 통과 기준을 덧붙이지 않는다. 원천 계약 미검증, 최초 학습 이력 부족, 누출, 비수렴, 가격·거래가능성 검사 실패, 위험 제약 위반 또는 유효 월 부족은 기술 중단·평가 불가로 기록하며 손실 반증이나 수익률 0으로 계상하지 않는다. 불리한 날짜·월을 임의 삭제하지 않는다. 대조군과의 동일 월 성과 차이, 회전율, 현금 비중과 낙폭은 원인 설명용이며 목적을 초과수익·Sharpe·낙폭으로 변경하지 않는다. 절대수익이 양수여도 대조군 근거 없이 GMM 상태 식별의 추가 가치를 주장하지 않는다. 성공·음의 결과·무후보·중단과 계획 대비 실제 시행을 보존한다. 성과 보고에는 원시 산출물과 독립 감사가 필요하다. 확증은 별도 사전등록 대상이며 개발 통과를 자본 배치 근거로 확대하지 않는다. 현재 완료 범위는 조건부 연구 제안서 작성이다.",
+          "original_claim": "Two Sigma의 2021년 원문은 미국 Factor Lens 17개 요인의 공동분포를 GMM으로 모형화하고 로그우도 기준 교차검증으로 군집 수를 선택했다. 요인별 시작일부터 2020년 후반까지 적합한 상태를 Crisis, Steady State, Inflation, Walking on Ice로 해석하며 위험관리와 스트레스 테스트 활용을 제안한다. 기간별 독립 상태 판정은 시간순 외표본 거래 예측 검증을 뜻하지 않는다. 원문은 비예측성과 급격한 상태 전환을 명시하므로 국내 ETF의 다음 기간 수익이나 비용 후 수익성을 입증한 연구가 아니다. PDF p.9는 Venn에서 실제 사용하는 Factor Lens 방법이 보고서와 달라질 수 있다는 제한도 밝힌다. 프로그램에 지정된 국내 ETF 참고보고서는 equivalent_replay, 추가 과학 시행 0회와 기존 독립 감사 재사용을 기록한다. 기준선·초과성과는 미측정이고 새 확증 판정도 아니다. 이 기록을 현재 후보의 실행·성과·준비성 증거로 전용하지 않는다.",
+          "predecessor_mission_ids": []
+        },
+        "data_assessment": {
+          "coverage": true,
+          "decision": "blocked",
+          "rationale": "필수 파일(identity, engine, input-check, limitations, qdata-readback)을 완독한 기록을 기준으로 고정 입력 범위는 확인했다. warmup은 104세션·1,040행, development는 731세션·7,310행이며 각 10종목, 중복 date/ticker 키와 cohort 누락은 0으로 보고되었다. 069500은 동결 cohort에 포함되고 open·close·value·tradable 8,350행의 읽기 일치도 보고되어 coverage=true다. 그러나 원본 S3 VersionId가 고정되지 않았고 준비 시점과 현재 객체 정체성이 다르며, adj_close 6,680행 차이의 원본 바이트·변환 계보가 복구되지 않았다. available_at 및 파일 해시는 원천 발표시각이나 당시 이용가능성을 독립 입증하지 못한다. 또한 평가기는 이론적 시가-다음 시가 비중 평가일 뿐 실제 호가 체결, 거래정지, 상장폐지 정산, 현금배당 처리를 확립하지 않는다. 따라서 미확인 검사는 false로 처리하여 실행 전 데이터 적격성은 blocked다. 이는 데이터 부재나 전략 성과 부정을 뜻하지 않는다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "point_in_time": false,
+          "executable_prices": false,
+          "original_conditions": false
+        },
+        "decision": {
+          "decision": "wait",
+          "rationale": "과제 선택을 보류한다. 검증 대상은 고정 ETF 069500의 일별 GMM 노출조절이 2023-01-02~2025-12-30 개발구간에서 30bp 스트레스 비용 후 양의 절대 CAGR을 내는지다. 최신 독립 데이터 평가는 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false인 blocked이며, 원천·변환 이력과 실제 이용가능시각의 차단을 해소한 새 근거가 없다. 제안서 보완이나 담당자 간 합의만으로 실행 준비성을 인정할 수 없다. 현재 상태는 검증 근거 미확보이며 데이터 부재·접근 불가·전략 손실의 입증과 구별한다. 제공된 동결 엔진 완독 기록과 평가 계약을 기준으로 현재 체결 명세는 정합적이다. 거래일 d의 신호는 date<d이고 available_at<d의 09:00 Asia/Seoul인 이력만 사용하며, 매일 목표 비중을 반환한다. 엔진은 A_d=open_d*adj_close_d/close_d, R_d=A_next/A_d-1로 다음 관측 거래일 시가까지 평가한다. 직전 수익으로 갱신된 비중 대비 회전율 T=sum(abs(w_new-w_old)), 순수익 (1-c*T)*(1+sum(w_new*R))-1, 기본 c=0.001·스트레스 c=0.003도 제안과 맞는다. 초기 빈 포지션·현금수익 0, 2025-12-30 시가까지의 마지막 수익구간과 추가 종가 청산비용을 넣지 않는 규칙도 일치한다. 현재·다음 평가가격과 거래가능성 검사 실패는 평가 중단으로 처리한다. 과거안의 08:30 결정·종가 체결·월중 자연 보유 불일치를 현재안의 결함으로 재적용하지 않는다. 이는 이론적 목표 비중 평가의 정합성이며 실제 주문 체결의 인증은 아니다. 독립 평가는 warmup 104세션·1,040행, development 731세션·7,310행, 각 10종목과 069500 포함, 중복 키·cohort 누락 0을 보고한다. open·close·value·tradable 8,350행의 읽기 일치도 보고되어 이전 coverage=false를 반복할 이유가 없다. 다만 원본 S3 VersionId가 고정되지 않았고 준비 시점과 현재 객체 정체성이 다르며, adj_close 6,680행 차이의 원본 바이트·변환 계보가 복구되지 않았다. 종목별 일정 배율과 엔진 재기준화에 부합한다는 설명은 수익률 왜곡이나 누출의 입증도, 원천 정합성·시점성의 인증도 아니다. 파일 해시와 available_at만으로 당시 원천 공표시각을 확인할 수 없다. 재검토에는 승인된 입력·프로필을 유지한 원천 및 변환 추적 근거, 실제 신호 사용 행의 09:00 이전 이용가능성, 최초 81개 연속 유효 가격으로 학습 특징 60개와 평가 특징 1개를 구성할 수 있다는 근거, 현재·다음 평가가격과 거래가능성 검사가 필요하다. 104세션이라는 범위만으로 수치 유효성·정규화·GMM 적합 가능성을 인증하지 않는다. 마지막 세션 행이 최종 평가가격으로만 사용된다면 이후 신호시각의 가용성 요건을 기계적으로 적용하지 않는다. 실제 호가 체결과 현금배당 재투자 총수익은 이번 이론적 평가의 입증 범위 밖이므로 이를 보장하도록 보호 엔진을 변경할 필요는 없다. 독립 재평가도 이 범위에 맞춰야 하며 원천·시점성 검증은 유지한다. 폐기된 252개 학습 특징, 거래대금 순위 선정이나 전체 과거 ETF 모집단 요건은 재검토 조건이 아니다. 원문은 17요인의 공동분포를 GMM으로 분석하고 로그우도 교차검증으로 군집 수를 선택한 위험관리 연구이며 비예측성과 급격한 상태 전환을 명시한다. 기간별 상태 판정은 시간순 외표본 거래 검증을 뜻하지 않는다. 단일 ETF·두 특징·고정 2성분·60개 특징 순차 학습과 미래 비용 후 성과를 도입한 현재안은 novel_hypothesis로 적절하다. 위험 지속성이 다음 시가 간 성과에 도움이 된다는 연결은 별도 검증 대상이며, 원문의 한계 자체를 현재 후보의 실패 실험으로 취급하지 않는다. 이번 수정은 최신 대기 과제 fc6f31a6-b04e-5878-ada1-a113ccb5bd8d의 인용·계약 보완이며 새로운 데이터 적격성이나 성과 결과를 추가하지 않았다. 앞선 네 대기 과제는 모두 mission_id=null이다. 같은 후보군의 보완을 독립적인 신규 과제나 성공·실패 시행으로 중복 계상할 근거가 없고 predecessor_mission_ids=[]를 유지한다. 명세상 etf_strategy의 지정 입력·코드 변경 경로·실행 프로필·개발기간·봉인기간·목적·평가·총노출 1.0 제한은 유지된다. 제공 기록의 시행·미결 시행·미션·계산시간 사용량은 모두 0이므로 잔여 한도는 24회·6미션·36,000초이며 동시 미션은 1개다. 후보와 세 대조군의 최대 4회·1미션 계획은 횟수 한도 안이지만 환경 의존성과 시간 내 실행 가능성은 미검증이다. 주기당 최대 2회와 서비스의 계수·중단 규칙을 우선하며 미실행 대조군은 미측정으로 남겨야 한다. P11 원본 보고서가 기록한 것은 추가 과학 시행 0회의 equivalent_replay와 기존 독립 감사 재사용이며 기준선·초과성과는 미측정이고 새 확증 판정도 없다. 이를 현재 후보의 실행·준비성 증거로 전용하거나 과거 탐색 3회를 현 프로그램 사용량에 합산하지 않는다. 감사 원문과 원시 성과를 새로 검증했다는 주장도 하지 않는다. P11 집계기간 2014-01-02~2026-08-31은 현 봉인기간과 겹치므로 그 집계로 후보·계수·임계값을 선택하거나 봉인을 완전히 미노출된 독립 확증 표본으로 취급할 수 없다. 재검토 조건은 같은 후보에 대한 원천·시점성 차단의 독립 재평가와 기술·자원 근거 확보다. 현재 보류는 수익성 반증이 아니다. 이후 계약을 충족하고 유효 월이 30개 이상인 평가에서 스트레스 순 CAGR이 0 이하라면 유용한 음의 연구 결과로 보존한다. 양수여도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과 입증을 주장하지 않으며, 대조군 근거 없이 GMM의 추가 가치를 인정하지 않는다. 기술 중단·평가 불가를 수익률 0이나 손실로 계상하지 않는다. 완료 범위는 이번 선택 검토이며 승인·Git 변경·연구 실행·게시 완료를 뜻하지 않는다."
+        },
+        "mission_id": null,
+        "created_at": "2026-09-29T15:14:46.23588+00:00"
+      },
+      {
+        "id": "b5ce3cb7-d71b-5720-9f2d-72c9b1df7d18",
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "digest": "63f7c4a377d08dad692566b285d993c04c20f8925ef0b0cf1e015e2f49754418",
+        "state": "waiting",
+        "proposal": {
+          "mode": "novel_hypothesis",
+          "title": "고정 ETF 069500의 GMM 노출조절: 데이터 차단 해소 후 조건부 개발검증",
+          "method": "1. etf_strategy 템플릿 전체를 변경 없이 상속한다. schema_version=2, kind=strategy, market=kr_etf이며 allowed_changes는 features/model/implementation/portfolio다. 저장소 quant-lab, base_commit=422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11, 변경 가능 경로는 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json으로 한정한다. lake_id=krx-s3-kr_etf-30784209bf06e53313b8, warmup.json SHA-256=e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81, development.json SHA-256=6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574를 유지한다. execution_profile=kr-etf-research-v2, digest=942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf다. 개발기간은 2023-01-02~2025-12-30, 봉인기간은 2026-01-02~2026-09-23이며 봉인 입력을 선택·튜닝에 사용하지 않는다. baseline_source_ids도 템플릿 그대로 유지한다. 2. 제공된 etf_strategy 데이터 패킷, 동결 엔진 완독 기록 및 최신 선행 과제의 전체 평가 근거에 맞춘다. 엔진 SHA-256은 1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc다. input-check는 warmup 104세션·1,040행, development 731세션·7,310행, 각각 10종목과 중복 키·cohort 누락 0을 보고한다. 입력 필드는 date/ticker/market/open/close/adj_close/value/available_at/tradable다. 최신 독립 평가가 동결 cohort 포함을 확인한 069500을 고정하며 성과에 따라 종목을 교체하지 않는다. 전체 ETF 모집단이나 거래대금 순위로 선정했다고 주장하지 않는다. value는 원시 거래대금으로 취급하며 수정주가와 거래량의 곱으로 재구성하지 않는다. 3. 거래일 d의 결정 입력은 history_at이 제공하는 date<d이고 available_at<d의 09:00 Asia/Seoul인 행으로 한정한다. 당일 종가·시가·조정계수는 신호에 넣지 않는다. t는 사용 가능한 069500 이력의 최신 날짜다. r_t=adj_close_t/adj_close_(t-1)-1, s20_t는 t까지 최근 20개 일수익률의 표본 표준편차(ddof=1), x_t=(r_t,log(max(s20_t,1e-8)))다. t 이전 최근 60개 완성 특징에만 평균·표준편차(ddof=1)를 적합하여 정규화하고 매일 2성분 full-covariance GMM을 적합한다. reg_covar=1e-6, random_state=0, n_init=1, max_iter=200, tol=1e-3을 고정한다. 최초 학습 특징 60개와 평가 특징 1개에는 최소 81개 연속 유효 가격이 필요하다. 104세션이라는 범위만으로 수치 유효성이나 적합 가능성을 인정하지 않는다. 이력 부족, 필요한 관측 누락, 정규화 분산 0, 비유한 값 또는 비수렴은 기술 중단이다. 원단위 일수익률 분산이 큰 성분을 고위험으로 정하고, 동률이면 평균 수익률이 낮은 성분, 다시 동률이면 성분 인덱스로 결정한다. 학습에서 제외한 x_t의 고위험 확률 q_t로 목표 비중 w=1-0.5*q_t를 반환한다. 전방 보유수익 라벨을 학습·정규화·상태 명명에 사용하지 않으므로 평가기간과 label 종료가 겹치는 학습 표본을 만들지 않는다. 전기간 적합이나 무작위 분할 없이 과거 자료로만 순차 학습한다. 4. weights(history,config)는 069500의 비음수 목표 비중을 반환한다. 체결 가정은 동결 엔진의 이론적 시가 비중 평가다. A_d=open_d*adj_close_d/close_d, R_d=A_next/A_d-1로 d 시가부터 다음 관측 거래일 시가까지 평가한다. 이 가격들은 평가용이며 후보의 결정 입력이 아니다. 주식 수 주문이나 호가 체결 대신 매일 목표 비중을 직접 적용한다. 최초 positions는 비어 있고 현금 수익은 0이며 차입·공매도를 사용하지 않는다. T=sum(abs(w_new-w_old)), gross=1+sum(w_new*R), 순수익=(1-c*T)*gross-1이며 w_old는 엔진이 직전 수익으로 갱신한 비중이다. c는 기본 0.001, 스트레스 0.003이다. 마지막 수익구간은 2025-12-30 시가에서 끝나며 별도 종가 청산이나 추가 청산비용을 만들지 않는다. 현재·다음 평가가격과 거래가능성 검사 실패는 중단으로 처리하고 날짜 삭제나 대체 가격으로 우회하지 않는다. 결과는 조정시가 비율과 고정 비중 비용을 사용한 개발 성과로 한정한다. 실제 호가 체결, 현금배당 재투자 총수익, 현행 세금이나 시장충격의 완전한 반영을 주장하지 않는다. 5. 고정 대조군은 같은 종목의 일별 목표 비중 100%, 75%, clip(0.10/(sqrt(252)*max(s20_t,1e-8)),0.5,1)인 변동성 조절이다. 동일한 정보시점·평가가격·회전율·비용·종료 규칙을 적용한다. 후보와 세 대조군을 각각 한 과학 구성으로 계획하여 최대 4회다. 첫 주기는 GMM과 100% 대조군, 다음 주기는 나머지 두 대조군으로 계획하되 서비스의 계수·중단 규칙을 따른다. search의 continuous=true, max_total_trials=4, max_trials_per_cycle=2, patience=2, min_improvement=0.001을 유지하며 미실행 대조군은 미측정으로 남긴다. 프로그램 사용량은 시행·미결 시행·미션·계산시간 모두 0으로 제공되었다. 계획은 최대 1미션·4회이며 프로그램 전체 24회·6미션·36,000초 및 동시 미션 1개 제한을 유지한다. resources는 priority=autonomous, worker_id=worker이며 RTX 3070 범위다. 환경 의존성과 시간 내 실행 가능성은 미검증이다. 6. 실제 시행 전 원천·변환 계보, 신호 사용 행의 실제 09:00 이전 이용가능성, 최초 유효 특징 구성 및 현재·다음 평가가격과 거래가능성에 관한 독립 재평가가 필요하다. 파일 날짜나 available_at만으로 원천 발표시각을 대신하지 않는다. 차단 해소 전에는 이 후보에 신규 실행 예산을 중복 배정하지 않는다. 출력 계약은 구성별 엔진 base.csv·stress.csv·result.json과 입력·출력 digest다. 일별 순수익 및 기존 calendar-month 평가를 보존하고 학습창·정규화·파라미터·확률·비중의 재구성 가능성을 독립 감사 대상으로 둔다. 엔진에 없는 상세 체결 로그를 가정하지 않는다. 실제 실행 인정에는 코드 커밋, 입력 digest, 호스트·환경, 서비스 receipt와 원시 산출물이 필요하다. 현재 산출물은 조건부 제안서이며 승인·Git 변경·실행·게시 완료 보고가 아니다.",
+          "envelope": "etf_strategy",
+          "question": "고정 ETF 069500의 과거 수익률·변동성으로 추정한 GMM 고위험 확률에 따라 일별 목표 비중을 50~100%로 조절하면, 지정 평가기의 시가 간 평가에서 2023-01-02~2025-12-30의 30bp 스트레스 비용 후 절대 CAGR이 양수인가? 경제적 경로는 위험의 지속성에 따른 노출 축소가 손실과 복리 손실을 줄인다는 것이다. 시장 상승, 단순 현금 보유, 일반적인 변동성 조절을 대안 설명으로 두고, 급격한 상태 전환과 반등 참여 감소를 반대 경로로 둔다. 기존 대기 후보의 조건부 연구 설계이며 데이터 적격성이 확보되었다는 주장은 아니다.",
+          "citations": [
+            {
+              "quote": "all 17 factors",
+              "location": "PDF p.2",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "this model is not predictive",
+              "location": "PDF p.6",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "any use by Venn of the Two Sigma Factor Lens may differ",
+              "location": "PDF p.9",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "고정 P11 결과와 일치하는 개발구간 재현. 원래 감사의 현재 파일 일치를 확인했으며 새 연구·확증 판정이 아니다. 기준선·초과성과는 미측정이다.",
+              "location": "char:0",
+              "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            }
+          ],
+          "departures": "정확 재현은 원문의 자료·17요인·추정 조건과 결과를 재현하는 것이며, 시장 전이는 핵심 방법과 검증 대상을 유지한 국내 적용이다. 본안은 단일 ETF·두 특징·고정 2성분·60개 특징 순차 학습·일별 투자비중 및 미래 비용 후 절대수익을 새로 도입하므로 novel_hypothesis다. 원문의 비예측성과 급격한 상태 전환은 위험 지속성 가정에 대한 반대 근거다. 원문의 한계를 현재 후보가 이미 실패했다는 실험 결과로 취급하지 않는다. 최신 대기 과제 3bf21cca-034b-5927-992a-6a62c7d72972의 evidence_file 전체에 기록된 관찰→변경→결과는 입력·체결 근거 부족과 초기 종가 체결안의 엔진 불일치→고정 069500·60개 학습 특징·일별 목표 비중·시가 간 평가로 보완→평가계약 정합성과 coverage 확인, 원천·시점성 차단 지속이다. 이번 제안은 같은 후보의 조건부 설계를 유지하며 새로운 과학 시행이나 차단 해소 증거를 추가하지 않는다. 최신 독립 판단은 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false, decision=blocked다. 원본 S3 VersionId 미고정, 준비 시점과 현재 객체 정체성 차이, adj_close 6,680행 차이의 원본 바이트·변환 계보 미복구, 원천 발표시각 미검증이 남아 있다. 종목별 일정 배율이 재기준화에 부합한다는 설명은 누출·수익률 왜곡의 입증도, 원천 정합성 인증도 아니다. 보류는 데이터 부재·접근 불가·전략 손실과 구별한다. 이전 08:30 결정·종가 체결·월중 자연 보유, 252개 학습 특징 및 거래대금 순위 선정은 현재 설계의 요건이 아니다. 마지막 세션 행을 최종 평가가격으로만 사용한다면 이후 신호시각의 가용성 요건을 기계적으로 적용하지 않는다. 실제 호가 체결과 현금배당 총수익은 이번 이론적 평가의 입증 범위 밖이며 이를 구현하려고 보호 엔진을 변경하지 않는다. 기존 blocked 판단의 해소는 독립 재평가 전까지 인정하지 않는다. 프로그램의 다섯 대기 과제는 모두 mission_id=null이며 성공·실패 시행으로 중복 계상하지 않는다. 지정 P11 참고보고서의 과거 탐색 3회를 현 프로그램 사용량에 합산하지 않는다. 그 집계기간 2014-01-02~2026-08-31은 현 봉인기간과 겹치므로 집계 성과로 후보·계수·임계값을 선택하거나 봉인을 완전히 미노출된 독립 확증 표본이라고 주장하지 않는다. 감사 원문과 원시 성과를 새로 검증했다는 주장도 하지 않는다. allowed_predecessor_mission_ids가 비어 있으므로 predecessor_mission_ids=[]이며 과제 ID나 참고보고서 ID를 선행 미션으로 전환하지 않는다.",
+          "source_ids": [
+            "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e",
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "falsification": "목적은 stress-net-absolute-cagr 최대화이며 단위는 fraction-per-year다. evaluation은 schema_version=1, kind=strategy, scope=development, block=calendar-month, metric=stress-net-absolute-cagr, confidence=0.95, minimum_blocks=30, minimum_effect=0.0, target=null, tolerance=null을 유지한다. gross_exposure 최대 1.0도 유지한다. 입력·시점성·기술 계약을 충족하고 유효 월이 30개 이상인 평가에서 GMM의 스트레스 순 CAGR이 0 이하이면 해당 개발구간의 양의 절대수익 가설을 기각한다. 양수라도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과 입증을 주장하지 않는다. 별도 검정이나 통과 기준을 덧붙이지 않는다. 원천 계약 미검증, 최초 학습 이력 부족, 누출, 비수렴, 가격·거래가능성 검사 실패, 위험 제약 위반 또는 유효 월 부족은 기술 중단·평가 불가로 기록하며 손실이나 수익률 0으로 계상하지 않는다. 불리한 날짜·월을 임의 삭제하지 않는다. 대조군과의 동일 월 성과 차이, 회전율, 현금 비중과 낙폭은 원인 설명용이며 목적을 초과수익·Sharpe·낙폭으로 바꾸지 않는다. 절대수익이 양수여도 대조군 근거 없이 GMM의 추가 가치를 주장하지 않으며, 대조군의 승리를 GMM 가설의 성공으로 바꾸지 않는다. 성공·음의 결과·무후보·중단 및 계획 대비 실제 시행을 모두 보존한다. 성과 보고에는 원시 산출물과 독립 감사가 필요하고 확증은 별도 사전등록 대상이다. 개발 통과를 자본 배치 근거로 확대하지 않는다. 현재 완료 범위는 조건부 연구 제안서 작성이다.",
+          "original_claim": "Two Sigma의 2021년 원문은 미국 Factor Lens 17개 요인의 공동분포를 GMM으로 분석하고 로그우도 기준 교차검증으로 군집 수를 선택했다. 요인별 시작일부터 2020년 후반까지 적합한 상태를 Crisis, Steady State, Inflation, Walking on Ice로 해석하며 위험관리와 스트레스 테스트 활용을 제시한다. 기간별 독립 상태 판정은 시간순 외표본 거래 예측 검증을 뜻하지 않는다. 원문은 비예측성과 급격한 상태 전환을 설명하므로 국내 ETF의 미래 비용 후 수익성을 입증하지 않는다. PDF p.9는 Venn의 실제 Factor Lens 활용이 보고서의 방법과 달라질 수 있다고 밝힌다. 지정 국내 ETF 참고보고서는 equivalent_replay, 추가 과학 시행 0회와 기존 독립 감사 재사용을 기록한다. 기준선·초과성과는 미측정이며 새 확증 판정도 아니다. 이 기록은 현재 GMM 후보의 실행이나 준비성을 입증하지 않는다.",
+          "predecessor_mission_ids": []
+        },
+        "data_assessment": {
+          "coverage": true,
+          "decision": "blocked",
+          "rationale": "고정 입력의 범위·무결성은 제한적으로 확인되었다. warmup은 104세션·1,040행, development는 731세션·7,310행이며 각 10종목, 중복 date/ticker와 cohort 누락은 0이다. 현재 qdata 대조에서도 동결 cohort 8,350행의 open·close·value·tradable 누락은 없고 069500을 포함한다. 그러나 당시 이용가능성은 충족으로 판정할 수 없다. available_at 기록은 원천 발표시각을 입증하지 않으며, 마지막 개발 세션 10행의 다음 신호시각은 미검증이다. 준비 당시와 현재 레이크 객체의 ETag·크기가 다르고 S3 VersionId가 없어 원본 vintage를 고정할 수 없다. 특히 adj_close 6,680행이 다르며 종목별 일정 비율은 as-of 재기준화와 양립할 뿐 원본 바이트·변환 계보 또는 수익률 무왜곡을 증명하지 않는다. 동결 평가기는 이용가능 이력으로 신호를 만들고 open-to-next-open 가격과 비용을 계산하지만, 실제 주문장 체결, 거래정지·상폐 결제 및 현금배당 처리를 입증하지 않는다. 따라서 지정 개발기간의 완전한 cohort coverage는 true이나, point-in-time·실행가능 가격·원조건 재현은 모두 미확인으로 false이며 실행 전 차단한다. 해소에는 VersionId 또는 동등한 불변 원본 식별자, 원천 발표/수집·이용가능 시각 및 변환 계보, adj_close 차이의 원본 검증, 그리고 평가 가격·tradable·기업행사/상폐 처리의 독립 근거가 필요하다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "point_in_time": false,
+          "executable_prices": false,
+          "original_conditions": false
+        },
+        "decision": {
+          "decision": "wait",
+          "rationale": "과제 선택을 보류한다. 검증 대상은 고정 ETF 069500의 GMM 비중조절이 2023-01-02~2025-12-30 개발구간에서 30bp 스트레스 비용 후 양의 절대 CAGR을 내는지다. 최신 독립 데이터 평가는 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false인 blocked다. 이번 조건부 제안은 원천·시점성 차단을 해소한 새 증거를 제시하지 않는다. 이는 검증 근거 미확보이며 데이터 부재·접근 불가·전략 손실과 구별한다. 담당자 간 동의나 중단 약속으로 준비성을 인정할 수 없다. warmup 104세션·1,040행과 development 731세션·7,310행, 고정 10종목의 coverage는 확인 범위의 근거다. 그러나 최초 학습·평가에 필요한 81개 연속 유효 가격, 특징의 수치 유효성과 GMM 수렴을 보장하지 않는다. 원본 S3 VersionId 미고정, 준비 당시와 현재 객체 정체성 차이, adj_close 6,680행 차이의 원본 바이트·변환 계보 미복구, 원천 발표시각 미검증이 남아 있다. 종목별 일정 배율은 재기준화와 양립하지만 원천 정합성이나 누출·수익률 왜곡 여부를 확정하지 못한다. 동결 엔진의 제공된 완독 기록과 평가 계약에 비추어 현재 제안의 체결 명세는 정합적이다. 신호는 date<d이고 available_at이 d의 09:00 Asia/Seoul보다 이른 이력만 사용한다. 평가용 조정시가 A_d=open_d*adj_close_d/close_d, 다음 관측 거래일 시가까지의 수익 R_d=A_next/A_d-1, 일별 목표 비중 적용, 수익으로 갱신된 직전 비중 대비 회전율 T 및 순수익 (1-c*T)*(1+sum(w_new*R))-1은 제안과 맞는다. 기본 c=0.001·스트레스 c=0.003, 초기 빈 포지션·현금수익 0, 마지막 구간의 2025-12-30 시가 종료와 추가 청산비용 없음도 같은 계약이다. 패킷이 지적한 과거 08:30 결정·당일 종가 체결 불일치를 현재안에 적용하지 않는다. 실제 호가 체결과 현금배당 재투자 총수익은 이론적 평가의 입증 범위 밖이며 이를 구현하려고 보호 엔진을 변경할 필요는 없다. 이 범위 제한만으로 현재의 원천·시점성 차단이 해소되지는 않는다. 마지막 세션 행을 최종 평가가격으로만 사용한다면 이후 신호시각의 이용가능성을 기계적으로 요구하지 않는다. 원문 PDF p.3·5~7의 교차검증 군집 선택, 기간별 독립 상태 판정, 비예측성과 급격한 상태 전환은 국내 ETF의 미래 거래수익 증거가 아니다. 17요인 공동분포 분석을 단일 ETF·두 특징·고정 2성분·60개 특징 순차 학습과 일별 투자비중으로 바꾼 본안의 novel_hypothesis 분류는 적절하다. 위험 지속성은 검증할 가정이고 급전환·반등 참여 감소는 반대 경로다. 문헌의 한계를 현재 후보의 실험 실패로 취급하지 않는다. 이번 제안은 최신 대기 과제 3bf21cca-034b-5927-992a-6a62c7d72972와 같은 조건부 후보이며 새 과학 시행이나 차단 해소 증거가 없다고 명시한다. 따라서 별개의 신규 과제로 중복 예산을 배정할 근거가 없다. 대기 과제들은 mission_id=null이며 성공·실패 시행으로 세지 않는다. allowed_predecessor_mission_ids가 비어 있으므로 predecessor_mission_ids=[]를 유지한다. 지정 P11 보고서는 equivalent_replay, 추가 과학 시행 0회, 기존 독립 감사 재사용을 기록하며 기준선·초과성과와 새 확증은 제공하지 않는다. 그 과거 탐색 3회를 현 프로그램 사용량에 합산하지 않는다. 보고서의 2014-01-02~2026-08-31 집계기간은 현 봉인기간과 겹치므로 집계 성과를 후보·계수 선택에 쓰거나 봉인을 완전히 미노출된 확증 표본이라고 주장하지 않는다. 명세상 etf_strategy의 고정 입력·프로필·허용 경로, 개발·봉인기간, 절대 CAGR 목적, 월별 평가·95% 신뢰수준·최소 30개 블록과 총노출 1.0 제한을 유지한다. 현재 프로그램 사용량은 시행 0·미결 시행 0·미션 0·계산시간 0초로 잔여 한도는 24회·6미션·36,000초다. 후보와 세 대조군의 최대 1미션·4회 계획은 건수 한도 안이지만 환경 의존성과 시간 내 실행 가능성은 미검증이다. 동시 미션 1개, 주기당 최대 2회와 기존 중단 규칙을 유지하고 미실행 대조군은 미측정으로 남겨야 한다. 재검토에는 불변 원본 식별자 또는 동등한 증거, 신호 사용 행의 실제 발표·수집·이용가능시각, 변환 계보와 조정주가 차이 검증, 최초 유효 특징 및 현재·다음 평가가격과 tradable 처리에 대한 독립 근거가 필요하다. 차단 해소 전에는 이 후보에 신규 실행 예산을 중복 배정하지 않는다. 적격 평가에서 GMM의 스트레스 순 CAGR이 0 이하이면 양의 절대수익 가설을 기각하고 그 음의 결과를 보존한다. 양수라도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과 입증을 주장하지 않는다. 기술 중단이나 유효 월 부족은 손실·수익률 0으로 계상하지 않으며, 대조군의 성과를 GMM의 성공으로 바꾸지 않는다. 현재 후보의 성과는 미측정이다."
+        },
+        "mission_id": null,
+        "created_at": "2026-09-30T06:44:37.598865+00:00"
+      },
+      {
+        "id": "2733156b-0a7e-50dc-995c-93cf58bf114b",
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "digest": "2578d2b90a11b52ea5853628c5121785a5a5f2a7fa2364997799d2016ce9159c",
+        "state": "waiting",
+        "proposal": {
+          "mode": "novel_hypothesis",
+          "title": "고정 ETF 069500의 GMM 노출조절: 원천·시점성 차단 해소 후 조건부 개발검증",
+          "method": "1. 프로그램 e06537d3-fac3-5c8c-bf25-ddabb3c7e282 revision 5의 etf_strategy 템플릿 전체를 변경 없이 상속한다. schema_version=2, kind=strategy, market=kr_etf, allowed_changes=features/model/implementation/portfolio다. 저장소 quant-lab, base_commit=422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11이며 변경 가능 경로는 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json뿐이다. lake_id=krx-s3-kr_etf-30784209bf06e53313b8, warmup.json SHA-256=e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81, development.json SHA-256=6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574를 유지한다. execution_profile=kr-etf-research-v2, execution_profile_digest=942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf와 baseline_source_ids를 그대로 유지한다. 개발기간은 2023-01-02~2025-12-30이고 봉인기간 2026-01-02~2026-09-23의 입력은 후보 선택·튜닝에 사용하지 않는다. 2. 제공된 etf_strategy 패킷과 동결 엔진 완독 기록, 최신 대기 과제의 전체 근거에 맞춘 평가 계약이다. 엔진 SHA-256은 1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc다. input-check는 warmup 104세션·1,040행, development 731세션·7,310행, 각각 10종목, 중복 date/ticker와 cohort 누락 0을 기록한다. 입력 필드는 date/ticker/market/open/close/adj_close/value/available_at/tradable다. 069500을 고정하며 성과에 따라 교체하지 않는다. 전체 ETF 모집단이나 거래대금 순위로 선정했다는 주장은 하지 않는다. value는 원시 거래대금이며 수정주가와 거래량의 곱으로 재구성하지 않는다. 이 범위 확인만으로 최초 학습의 수치 유효성이나 당시 이용가능성을 인정하지 않는다. 3. 거래일 d의 의사결정에는 history_at이 제공하는 date<d이고 available_at<d의 09:00 Asia/Seoul인 행만 사용한다. 당일 시가·종가·조정계수는 신호 입력에서 제외한다. t는 이용 가능한 069500 이력의 최신 날짜다. r_t=adj_close_t/adj_close_(t-1)-1, s20_t는 최근 20개 일수익률의 표본 표준편차(ddof=1), x_t=(r_t,log(max(s20_t,1e-8)))로 고정한다. x_t를 제외한 직전 60개 완성 특징으로만 평균·표준편차(ddof=1)를 적합하여 정규화하고 매일 2성분 full-covariance GMM을 적합한다. reg_covar=1e-6, random_state=0, n_init=1, max_iter=200, tol=1e-3이다. 최초 학습 특징 60개와 평가 특징 1개에는 최소 81개 연속 유효 가격이 필요하다. 이력 부족, 필요한 관측 누락, 정규화 분산 0, 비유한 값 또는 비수렴은 기술 중단이다. 원단위 수익률 분산이 큰 성분을 고위험으로 정하고, 동률이면 평균 수익률이 낮은 성분, 다시 동률이면 성분 인덱스로 결정한다. 학습에서 제외한 x_t의 고위험 확률 q_t로 목표 비중 w=1-0.5*q_t를 반환한다. 미래 보유수익 라벨을 적합·정규화·상태 명명에 사용하지 않는 순차 설계다. 평가기간과 종료가 겹치는 미래 라벨을 학습 표본으로 만들지 않으며 전기간 적합이나 무작위 시계열 분할을 하지 않는다. 4. weights(history,config)는 069500의 비음수 목표 비중을 매일 반환한다. 평가 가격은 A_d=open_d*adj_close_d/close_d, 수익률은 R_d=A_next/A_d-1이며 d 시가부터 다음 관측 거래일 시가까지 보유한다. 이 가격은 평가용이고 후보의 결정 입력이 아니다. 엔진은 주식 수 주문 대신 목표 비중을 직접 적용한다. 초기 positions는 비어 있고 현금 수익은 0이며 차입·공매도는 사용하지 않는다. 직전 수익으로 갱신된 기존 비중 w_old에 대해 T=sum(abs(w_new-w_old)), gross=1+sum(w_new*R), 순수익=(1-c*T)*gross-1이다. 기본 c=0.001, 스트레스 c=0.003을 유지한다. 마지막 수익구간은 2025-12-30 시가에서 끝나며 별도 종가 청산이나 추가 청산비용을 만들지 않는다. 필요한 현재·다음 평가가격과 거래가능성 검증 실패는 중단으로 기록하고 날짜 삭제나 대체 가격으로 우회하지 않는다. 실제 주문장 체결, 현금배당 재투자 총수익 또는 현행 세금·시장충격의 완전한 반영을 주장하지 않는다. 5. 같은 종목의 일별 목표 비중 100%, 75%, clip(0.10/(sqrt(252)*max(s20_t,1e-8)),0.5,1)을 고정 대조군으로 둔다. 정보시점·평가가격·회전율·비용·종료 규칙을 동일하게 적용한다. 후보와 대조군 세 개는 최대 네 과학 구성이다. 첫 주기는 GMM과 100% 대조군, 다음 주기는 나머지 두 대조군으로 계획하되 서비스의 계수·중단 규칙에 따른다. search의 continuous=true, max_total_trials=4, max_trials_per_cycle=2, patience=2, min_improvement=0.001을 유지한다. 미실행 대조군은 미측정으로 남긴다. 현재 프로그램 사용량은 시행 0·미결 시행 0·미션 0·계산시간 0초다. 차단 해소 후의 계획 상한은 1미션·4회이며 프로그램 전체 24회·6미션·36,000초와 동시 미션 1개 제한을 유지한다. resources는 priority=autonomous, worker_id=worker이며 승인된 RTX 3070 범위다. 환경 의존성과 시간 내 실행 가능성은 아직 검증되지 않았다. 6. 실행 전에는 불변 원본 식별 또는 동등한 증거, 원본과 변환 계보, 신호 사용 행의 실제 발표·수집·이용가능시각, 최초 유효 특징, 평가가격·tradable 및 기업행사 처리 근거에 대한 독립 재평가가 필요하다. 마지막 세션을 최종 평가가격으로만 사용한다면 이후 신호시각의 가용성을 기계적으로 요구하지 않는다. 출력 계약은 구성별 엔진 base.csv·stress.csv·result.json과 입력·출력 digest다. 학습창·정규화·설정·확률·비중의 재구성 가능성을 감사 대상으로 삼되 엔진에 없는 상세 주문 로그를 가정하지 않는다. 기술 수리와 과학 시행을 구분하여 기록한다. 실제 실행 인정에는 코드 커밋, 입력 digest, 호스트·환경, 서비스 receipt와 원시 산출물이 필요하다. 이 산출물은 연구 제안서이며 승인·Git 변경·실행·게시 완료를 보고하지 않는다.",
+          "envelope": "etf_strategy",
+          "question": "고정 국내 ETF 069500의 과거 수익률·변동성으로 추정한 GMM 고위험 확률에 따라 일별 목표 비중을 50~100%로 조절하면, 지정 개발기간 2023-01-02~2025-12-30에 동결 평가기의 30bp 스트레스 비용 후 절대 CAGR이 양수인가? 경제적 가설은 위험 지속성을 이용한 노출 축소가 손실과 복리 손실을 줄인다는 것이다. 시장 상승, 단순 현금 보유와 일반적인 변동성 조절을 대안 설명으로 두고, 급격한 상태 전환과 반등 참여 감소를 반대 경로로 둔다. 기존 대기 후보의 조건부 설계이며 현재 성과는 미측정이다.",
+          "citations": [
+            {
+              "quote": "고정 P11 결과와 일치하는 개발구간 재현. 원래 감사의 현재 파일 일치를 확인했으며 새 연구·확증 판정이 아니다. 기준선·초과성과는 미측정이다.",
+              "location": "char:0",
+              "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            }
+          ],
+          "departures": "정확 재현은 원래 P11의 자료·방법·조건을 재현하는 것이고, 시장 전이는 핵심 방법과 검증 대상을 유지하여 다른 시장에 적용하는 것이다. 본안은 단일 ETF의 두 특징·고정 2성분 GMM·60개 특징 순차 학습·일별 노출공식으로 미래 비용 후 절대수익을 검증하므로 novel_hypothesis다. 이 분류는 원문 주장에 대한 차이를 뜻하며, 이미 대기 중인 동일 후보를 새로운 과학 시행으로 계상할 근거가 아니다. 같은 프로그램의 prior-tasks/b5ce3cb7-d71b-5720-9f2d-72c9b1df7d18.json 전체 기록에 따르면 관찰→변경→결과는 입력·체결 근거 부족과 초기 종가 체결안의 엔진 불일치→고정 종목·60개 학습 특징·일별 목표 비중·시가 간 평가로 보완→평가계약 정합성과 coverage 확인, 원천·시점성 차단 지속이다. 과거 08:30 결정·당일 종가 체결의 불일치는 현재 설계의 체결 가정이 아니다. 최신 독립 판단은 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false, decision=blocked다. 이는 검증 근거 미확보이며 데이터 부재·접근 불가·전략 손실의 입증과 구별한다. 이번 provenance-recovery-c813a2e9c4e7.json은 이전 평가의 adj_close 차이 6,680행과 별도로 현재 대조에서 7,515행 차이를 기록한다. 서로 다른 대조의 수치를 혼합하지 않는다. 현재 보고서는 종목별 일정 조정비율과 8,350행 곡선 형태 검사 불일치 0, 최대 상대오차 약 3.66e-15를 기록하지만 원래 절대 조정기준과 준비 당시 원본 바이트는 복구되지 않았다. available_at의 근거는 스냅샷 생성기의 23:59 KST 가정이며 수집기의 18:00 이전 당일 건너뛰기 정책은 과거 발표 receipt가 아니다. 835세션의 raw 객체 목록은 확인되었지만 업로드일은 2026-07-29이고 raw 가격 본문은 읽지 않았으며 과거 발표·수정 vintage도 미검증이다. 이 보고서의 data_readiness_decision은 not_made이고 추가 과학 시행과 성과 계산도 없다. 따라서 곡선 비례성 확인을 독립 적격 판정이나 미래정보 누출 부재의 증명으로 확대하지 않는다. 새로운 복구 증거는 기록하되 기존 blocked 판단의 해소는 독립 재평가 전까지 인정하지 않는다. 위험 지속성은 검증할 가정이며 급전환·반등 참여 감소·회전율 비용은 그 가정을 깨뜨릴 수 있다. 관련 GMM 문헌에 대한 선행 과제의 해석을 원문 직접 인용이나 현재 후보의 실험 실패로 대체하지 않는다. 지정 P11 보고서에는 기준선·초과성과가 없어 양의 절대수익과 GMM의 추가 가치도 구분해야 한다. 보고서 집계기간 2014-01-02~2026-08-31은 현 봉인기간과 겹치므로 그 집계 성과로 후보·계수·임계값을 선택하지 않으며 봉인을 완전히 미노출된 확증 표본이라고 주장하지 않는다. 참고보고서의 과거 탐색 3회는 현 프로그램 사용량에 합산하지 않는다. 프로그램의 여섯 대기 과제는 mission_id=null이고 성공·실패 시행이 아니다. 본안은 최신 대기 후보의 근거와 인용을 정리한 조건부 제안이며 차단 해소 전에 중복 실행 예산을 배정할 근거가 없다. allowed_predecessor_mission_ids가 비어 있으므로 predecessor_mission_ids=[]를 유지하고 과제 ID나 참고보고서의 작업 ID를 선행 미션으로 전환하지 않는다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "falsification": "목적은 stress-net-absolute-cagr 최대화이고 단위는 fraction-per-year다. evaluation은 schema_version=1, kind=strategy, scope=development, block=calendar-month, metric=stress-net-absolute-cagr, confidence=0.95, minimum_blocks=30, minimum_effect=0.0, target=null, tolerance=null을 그대로 유지한다. gross_exposure 최대 1.0도 유지한다. 입력·시점성·기술 계약을 충족하고 유효 월이 30개 이상인 평가에서 GMM의 스트레스 순 CAGR이 0 이하이면 해당 개발구간의 양의 절대수익 가설을 기각한다. 양수여도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과가 입증되었다고 주장하지 않는다. 별도 검정이나 통과 기준을 추가하지 않는다. 원천 계약 미검증, 최초 유효 이력 부족, 누출, 비수렴, 평가가격·거래가능성 검증 실패, 위험 제약 위반 또는 유효 월 부족은 기술 중단·평가 불가로 남기고 손실이나 수익률 0으로 계상하지 않는다. 불리한 날짜·월을 삭제하지 않는다. 대조군과의 동일 월 성과 차이, 회전율, 현금 비중과 낙폭은 원인 설명용이며 목적을 초과수익·Sharpe·낙폭으로 바꾸지 않는다. 양의 절대수익만으로 GMM의 추가 가치를 주장하지 않고 대조군의 성과를 GMM 성공으로 바꾸지 않는다. 성공·음의 결과·무후보·중단과 실제 시행 수를 모두 보존한다. 성과 보고는 원시 산출물과 독립 감사가 필요하고 확증은 별도 사전등록 대상이다. 현재 완료 범위는 조건부 제안서 작성이며 개발 성과나 자본 배치에 관한 결론은 없다.",
+          "original_claim": "직접 인용하는 원문은 지정 국내 ETF 재현보고서다. 보고서는 고정 P11 결과와 일치하는 equivalent_replay, 추가 과학 시행 0회, 기존 독립 감사 재사용을 기록한다. 기준선·초과성과는 미측정이고 새 연구·확증 판정이 아니라는 것이 원문의 명시적 해석이다. 따라서 보고된 개발 성과는 GMM의 예측력이나 기존 전략 대비 추가 가치를 입증하지 않는다. 보고서에 없는 P11 세부 알고리즘을 추정하거나 GMM을 P11의 원래 방법으로 취급하지 않는다. 본안의 GMM 규칙은 같은 프로그램의 대기 과제에서 이어받는 별도 가설이다.",
+          "predecessor_mission_ids": []
+        },
+        "data_assessment": {
+          "coverage": true,
+          "decision": "blocked",
+          "rationale": "고정 입력의 식별성과 범위는 확인되었다. warmup은 104세션·1,040행, development는 731세션·7,310행이며 각 10종목, 중복 date/ticker 및 cohort 누락은 0이다. 현재 대조에서도 8,350행과 cohort 누락 0은 확인되어 coverage는 제한된 입력 범위에서 충족한다. 그러나 원본 clean 객체의 S3 VersionId가 없고 준비 시점 객체와 현재 객체 정체성이 다르며, adj_close 불일치(현재 대조 7,515행; 이전 readback 6,680행)의 원본 바이트 및 raw-to-clean 계보가 복구되지 않았다. available_at은 생성기의 다음날 23:59 KST 가정일 뿐 원천 발표·수집 receipt가 아니고, historical publication receipt와 revision vintage도 미검증이다. 따라서 date<d 및 available_at<09:00 KST 필터가 당시 실제 이용가능성을 증명하지 못한다. 또한 동결 평가기는 open-to-next-open 계산 규칙은 제공하지만 실제 주문장 체결, 거래정지·상폐 정산, 현금배당 처리를 입증하지 않는다. 해시 검증은 동결 파일의 동일성만 증명하므로 원래 조건 또는 실행가능 가격의 증거를 대체하지 못한다. 원천 버전 고정·원본/변환 계보·과거 발표시각 및 평가가격/거래가능성·기업행사 처리가 독립적으로 입증되기 전에는 과학 시행과 성과 계산을 차단한다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "point_in_time": false,
+          "executable_prices": false,
+          "original_conditions": false
+        },
+        "decision": {
+          "decision": "wait",
+          "rationale": "과제 선택을 보류한다. 검증 대상은 고정 ETF 069500의 일별 GMM 노출조절이 2023-01-02~2025-12-30 개발기간에 30bp 스트레스 비용 후 양의 절대 CAGR을 내는지다. 현재 독립 데이터 평가는 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false인 blocked다. 조건부 설계의 정합성만으로 실행 준비성을 인정할 수 없다. 이는 검증 근거 미확보이며 데이터 부재·접근 불가·전략 손실의 입증과 구별한다.\n\n새로운 복구 증거는 반영한다. data/etf_strategy/reports/provenance-recovery-c813a2e9c4e7.json은 8,350행의 cohort 누락 0, 종목별 일정 조정비율, 조정곡선 형태 불일치 0과 최대 상대오차 약 3.66e-15를 기록한다. 이는 해당 대조 범위의 곡선 비례성을 뒷받침한다. 현재 adj_close 차이 7,515행과 이전 대조의 6,680행은 서로 다른 비교이므로 합치지 않는다. 그러나 준비 당시 원본 바이트와 raw-to-clean 계보, 원래 절대 조정기준은 복구되지 않았다. 원본 clean 객체의 S3 VersionId도 없으며 현재 객체 정체성은 준비 당시와 다르다. 835세션의 raw 객체 목록은 확인됐지만 업로드일은 2026-07-29이고 가격 본문은 읽지 않았으며 과거 발표·수정 vintage도 미검증이다. available_at은 생성기의 23:59 KST 가정이고 수집기의 18:00 이전 당일 건너뛰기 정책은 역사적 발표 receipt가 아니다. 복구 보고서의 data_readiness_decision은 not_made이며 최신 독립 평가도 blocked다. 곡선 비례성 확인을 당시 이용가능성이나 전체 원천 정합성 인증으로 확대하지 않는다.\n\n제공된 동결 엔진 완독 기록과 평가 계약에 비추어 현재 체결안은 정합적이다. 신호는 date<d이고 available_at<d의 09:00 Asia/Seoul인 이력만 사용하며 당일 가격·조정계수는 결정 입력에서 제외한다. 엔진은 일별 목표 비중을 평가용 조정시가 A_d=open_d*adj_close_d/close_d와 R_d=A_next/A_d-1에 적용한다. 직전 수익으로 갱신된 비중 대비 T=sum(abs(w_new-w_old)), 순수익 (1-c*T)*(1+sum(w_new*R))-1, 기본 c=0.001·스트레스 c=0.003, 초기 빈 포지션·현금수익 0과 마지막 구간의 2025-12-30 시가 종료 및 추가 청산비용 없음도 제안과 맞는다. 패킷에 남은 과거 08:30 결정·당일 종가 체결의 불일치는 현재안의 결함이 아니다. 실제 호가 체결과 현금배당 재투자 총수익은 이론적 평가의 입증 범위 밖이며 이를 구현하기 위한 보호 엔진 변경을 요구하지 않는다. 다만 평가가격·tradable·기업행사 처리에 관한 독립 근거는 여전히 필요하다.\n\nwarmup 104세션·1,040행과 development 731세션·7,310행, 각 10종목의 coverage는 최초 학습·평가에 필요한 81개 연속 유효 가격, 특징의 수치 유효성이나 GMM 수렴을 보장하지 않는다. 재검토에는 불변 원본 식별 또는 동등한 증거, 원본과 변환 계보, 실제 신호 사용 행의 발표·수집·이용가능시각과 수정 이력, 최초 유효 특징 및 현재·다음 평가가격과 거래가능성 검증이 필요하다. 마지막 세션을 최종 평가가격으로만 사용한다면 이후 신호시각의 가용성을 기계적으로 요구하지 않는다.\n\n지정 원문 research:6a64df0e-9c60-555f-aa3a-a80a70e7f985는 equivalent_replay, 추가 과학 시행 0회, 기존 독립 감사 재사용을 기록하며 기준선·초과성과와 새 확증을 제공하지 않는다. P11의 미제공 알고리즘을 GMM으로 추정할 근거가 없다. 본안의 novel_hypothesis 분류는 현재 GMM 규칙으로 미래 비용 후 수익을 검증한다는 구분으로 이해한다. 그러나 완독된 prior-tasks/b5ce3cb7-d71b-5720-9f2d-72c9b1df7d18.json과 비교하면 같은 고정 종목·특징·60개 학습창·노출공식·대조군을 유지한 조건부 후보다. 새 복구 근거와 인용 정리는 별개의 과학 과제로 중복 예산을 배정할 이유가 아니다. 위험 지속성은 검증할 가정이며 급전환·반등 참여 감소·비용은 반대 경로다. 현재 후보의 성과는 미측정이다.\n\n명세상 etf_strategy의 고정 입력·프로필·허용 변경 경로, 개발·봉인기간, stress-net-absolute-cagr 목적, 월별 평가·95% 신뢰수준·최소 30개 블록 및 총노출 1.0 제한을 유지한다. 현재 프로그램 사용량은 시행 0·미결 시행 0·미션 0·계산시간 0초이며 잔여 한도는 24회·6미션·36,000초다. GMM과 100%·75%·변동성 조절 대조군의 최대 1미션·4회 계획은 건수 한도 안이지만 환경 의존성과 시간 내 실행 가능성은 미검증이다. 동시 미션 1개, 주기당 최대 2회와 patience=2·min_improvement=0.001을 유지하고 미실행 대조군은 미측정으로 남긴다. 기존 대기 과제는 mission_id=null이며 참고보고서의 과거 탐색 3회도 현 사용량에 합산하지 않는다. 허용 선행 미션이 없으므로 predecessor_mission_ids=[]를 유지한다.\n\n적격 평가에서 GMM의 스트레스 순 CAGR이 0 이하이면 양의 절대수익 가설을 기각하고 음의 결과를 보존한다. 양수라도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과 입증을 주장하지 않는다. 기술 중단·유효 월 부족은 손실이나 수익률 0으로 계상하지 않는다. 동일 조건 대조군 없이 GMM의 추가 가치를 주장하거나 대조군의 성과를 GMM 성공으로 바꾸지 않는다. P11 보고서의 2014-01-02~2026-08-31 집계기간은 현 봉인기간과 겹치므로 그 성과를 후보·계수 선택에 쓰거나 봉인을 완전히 미노출된 확증 표본으로 취급하지 않는다. 독립 근거로 차단이 해소된 뒤 동일 후보의 실행 가능성을 재검토할 수 있다. 현재 완료 범위는 이 선택 판단이다."
+        },
+        "mission_id": null,
+        "created_at": "2026-09-30T07:52:55.542758+00:00"
+      },
+      {
+        "id": "3487f863-0d39-50a0-8fd5-15b67332a7a9",
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "digest": "cadda7b237424d43b85ada213eb24ac46c95fad9944571af3ac81d2eacf87896",
+        "state": "waiting",
+        "proposal": {
+          "mode": "novel_hypothesis",
+          "title": "고정 ETF 069500 GMM 노출조절: 원시자료 계보 복구를 반영한 조건부 개발검증",
+          "method": "1. 프로그램 e06537d3-fac3-5c8c-bf25-ddabb3c7e282 revision 5의 etf_strategy 템플릿 전체를 변경 없이 상속한다. schema_version=2, kind=strategy, market=kr_etf이며 allowed_changes는 features/model/implementation/portfolio다. 저장소 quant-lab, base_commit=422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11, 변경 가능 경로는 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json이다. lake_id=krx-s3-kr_etf-30784209bf06e53313b8, warmup.json SHA-256=e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81, development.json SHA-256=6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574를 유지한다. execution_profile=kr-etf-research-v2, execution_profile_digest=942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf와 baseline_source_ids를 유지한다. 개발기간은 2023-01-02~2025-12-30이다. 봉인기간 2026-01-02~2026-09-23의 입력을 후보 선택·튜닝에 사용하지 않는다. 2. 제공된 etf_strategy 데이터 패킷, 동결 엔진 완독 기록과 최신 대기 과제의 전체 근거를 기준으로 평가 방식을 고정한다. 엔진 SHA-256은 1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc다. 입력 필드는 date/ticker/market/open/close/adj_close/value/available_at/tradable다. 069500을 고정하고 성과에 따라 교체하지 않는다. value는 원시 거래대금으로 취급하며 수정주가와 거래량의 곱으로 재구성하지 않는다. 보고된 warmup 104세션·1,040행과 development 731세션·7,310행, 각 10종목의 범위 확인은 최초 특징의 유효성이나 당시 이용가능성을 보장하지 않는다. 3. 거래일 d의 결정 입력은 history_at이 제공하는 date<d이고 available_at<d의 09:00 Asia/Seoul인 행으로 제한한다. 당일 시가·종가·조정계수는 신호에 사용하지 않는다. t를 이용 가능한 069500 이력의 최신 날짜로 두고 r_t=adj_close_t/adj_close_(t-1)-1, s20_t=최근 20개 일수익률의 표본 표준편차(ddof=1), x_t=(r_t,log(max(s20_t,1e-8)))로 고정한다. x_t를 제외한 직전 60개 완성 특징으로만 평균·표준편차(ddof=1)를 적합하여 정규화하고 매일 2성분 full-covariance GMM을 적합한다. reg_covar=1e-6, random_state=0, n_init=1, max_iter=200, tol=1e-3이다. 최초 학습 특징 60개와 평가 특징 1개에는 최소 81개 연속 유효 가격이 필요하다. 필요한 관측 누락, 정규화 분산 0, 비유한 값 또는 비수렴은 기술 중단으로 기록한다. 원단위 수익률 분산이 큰 성분을 고위험으로 정하고, 동률이면 평균 수익률이 낮은 성분, 다시 동률이면 성분 인덱스로 결정한다. 학습에서 제외한 x_t의 고위험 확률 q_t로 목표 비중 w=1-0.5*q_t를 반환한다. 미래 보유수익은 평가 전용이며 적합·정규화·상태 명명에 사용하지 않는다. 평가기간과 종료가 겹치는 미래 라벨을 학습 표본으로 만들지 않고 전기간 적합이나 무작위 시계열 분할을 하지 않는다. 4. weights(history,config)는 매일 069500의 비음수 목표 비중을 반환한다. 동결 평가가격은 A_d=open_d*adj_close_d/close_d, 보유수익은 R_d=A_next/A_d-1이다. d 시가부터 다음 관측 거래일 시가까지 평가하며 주식 수 주문 대신 목표 비중을 직접 적용한다. 초기 포지션은 비어 있고 현금수익은 0이며 차입·공매도는 없다. 직전 수익으로 갱신된 기존 비중 w_old에 대해 T=sum(abs(w_new-w_old)), gross=1+sum(w_new*R), 순수익=(1-c*T)*gross-1이다. 기본 c=0.001, 스트레스 c=0.003을 유지한다. 마지막 수익구간은 2025-12-30 시가에서 끝나며 별도 종가 청산이나 추가 청산비용을 만들지 않는다. 필요한 현재·다음 평가가격과 거래가능성의 검증 실패를 날짜 삭제나 대체 가격으로 우회하지 않는다. 이 계약은 실제 주문장 체결, 현금배당 재투자 총수익 또는 현행 세금·시장충격의 완전한 반영을 입증하지 않는다. 5. 동일 종목의 일별 목표 비중 100%, 75%, clip(0.10/(sqrt(252)*max(s20_t,1e-8)),0.5,1)을 고정 대조군으로 둔다. 정보시점·평가가격·회전율·비용·종료 규칙을 동일하게 적용한다. GMM과 세 대조군은 최대 네 과학 구성이다. 첫 주기는 GMM과 100% 대조군, 다음 주기는 나머지 두 대조군으로 계획하되 서비스의 시행 집계와 중단 규칙을 따른다. search의 continuous=true, max_total_trials=4, max_trials_per_cycle=2, patience=2, min_improvement=0.001을 유지한다. 미실행 대조군은 미측정으로 남긴다. 현재 프로그램 사용량은 시행 0·미결 시행 0·미션 0·계산시간 0초다. 차단 해소 후의 계획 상한은 1미션·4회이며 프로그램 전체 24회·6미션·36,000초와 동시 미션 1개 제한 안에서만 검토한다. resources는 priority=autonomous, worker_id=worker이며 RTX 3070 범위다. 환경 의존성과 시간 내 실행 가능성은 미검증이다. 6. 실행 전 독립 재평가에서 준비 당시 입력의 불변 식별 또는 동등한 증거, 원본·변환 계보, 신호 사용 행의 실제 발표·수집·이용가능시각과 수정 이력, 최초 유효 특징, 평가가격·tradable·기업행사 처리의 적격성을 확인해야 한다. 마지막 세션을 최종 평가가격으로만 사용한다면 이후 신호시각의 가용성을 기계적으로 요구하지 않는다. 감사용 재구성 입력으로 승인된 입력을 교체하거나 보호 엔진을 변경하지 않는다. 출력 계약은 구성별 base.csv·stress.csv·result.json과 입력·출력 digest다. 학습창·정규화·설정·확률·비중의 재구성 가능성을 감사하되 엔진에 없는 상세 주문 로그를 가정하지 않는다. 기술 수리와 과학 시행을 구분한다. 실제 실행 인정에는 코드 커밋, 입력 digest, 호스트·환경, 서비스 receipt와 원시 산출물이 필요하다. 현재 산출물은 제안서이며 승인·Git 변경·실행·게시를 보고하지 않는다.",
+          "envelope": "etf_strategy",
+          "question": "고정 국내 ETF 069500의 과거 수익률·변동성으로 추정한 GMM 고위험 확률에 따라 일별 목표 비중을 50~100%로 조절하면, 2023-01-02~2025-12-30 개발기간에 동결 평가기의 30bp 스트레스 비용 후 절대 CAGR이 양수인가? 경제적 경로는 위험의 지속성을 이용한 노출 축소가 손실과 복리 손실을 줄인다는 가정이다. 시장 상승, 단순 현금 보유와 일반적인 변동성 조절을 대안 설명으로 두며, 급격한 상태 전환·반등 참여 감소·회전율 비용을 반대 경로로 둔다. 기존 대기 후보의 근거 갱신이며 성과는 미측정이다.",
+          "citations": [
+            {
+              "quote": "all 17 factors in the lens.",
+              "location": "PDF p.2",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "log-likelihood",
+              "location": "PDF p.3",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "this model is not predictive",
+              "location": "PDF p.6",
+              "source_id": "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e"
+            },
+            {
+              "quote": "고정 P11 결과와 일치하는 개발구간 재현. 원래 감사의 현재 파일 일치를 확인했으며 새 연구·확증 판정이 아니다. 기준선·초과성과는 미측정이다.",
+              "location": "char:0",
+              "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            }
+          ],
+          "departures": "정확 재현은 원문의 자료·방법·조건을 재현하는 것이고, 시장 전이는 핵심 방법과 검증 대상을 유지하여 시장을 바꾸는 것이다. 본안은 17요인의 상태 분석을 단일 국내 ETF의 두 특징·고정 2성분·60개 특징 순차 학습·일별 노출공식에 의한 미래 비용 후 수익 검증으로 바꾸므로 novel_hypothesis다. 원문의 비예측적 성격은 이 확대 해석에 대한 직접적인 반대 근거다. 이 분류가 기존 대기 후보에 신규 과학 시행 예산을 중복 배정할 이유는 아니다. 완독된 prior-tasks/2733156b-0a7e-50dc-995c-93cf58bf114b.json의 관찰→변경→결과는 초기 입력·체결 근거 부족과 종가 체결안의 불일치→고정 종목·60개 특징·일별 목표 비중·시가 간 평가로 보완→coverage와 평가계약 정합성 확인, 원천·시점성 차단 지속이다. 과거 08:30 결정·당일 종가 체결은 현재 설계의 가정이 아니다. 해당 기록의 최신 독립 판단은 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false, decision=blocked다. 이는 검증 근거 미확보이며 데이터 부재·접근 불가·전략 손실을 입증하지 않는다. 이번 raw-lineage-f8a0595989be.json은 그 이후의 실질적인 복구 증거다. 보고서는 원시 가격 본문을 읽었다고 기록하며, 835개 객체·698,359행, 중복 date/ticker 0과 빈 스냅샷 0을 제시한다. 고정 builder·normalizer를 통한 현재 raw-to-clean-to-input 계보와 승인 패널 8,350행의 누락 0이 확인 범위다. 따라서 원시 본문을 읽지 않았고 변환 계보가 전혀 없다는 이전 설명을 현재 상태로 반복하지 않는다. 이번 대조의 adj_close 차이는 8,350행이며 이전 provenance 대조의 7,515행, 이전 readback의 6,680행과 다른 비교다. 서로 합산하지 않는다. 종목별 조정비율은 일정하며 조정곡선 형태 불일치 0, 최대 상대오차 약 3.66e-15, 비조정 필드의 불일치 0을 보고한다. 종목별 상수배가 정확하다면 수익률과 조정시가 비율은 대수적으로 불변이지만, 이 관찰이 과거 발표시각·수정 이력이나 수치 계산의 비트 단위 동일성을 증명하지는 않는다. 선정 prefix는 개발 전 104세션만 사용했고 이후 원시 객체 사용은 0이며 승인 cohort와 일치한다. 이는 선정 재구성의 근거이고 전체 모집단의 과거 상장·상폐 및 발표 이력 인증은 아니다. 남은 한계도 유지한다. 준비 당시 clean 원본 바이트와 절대 조정기준은 복구되지 않았고, 원본 clean 객체의 VersionId 미고정과 역사적 발표·수정 vintage 미검증이 남아 있다. 최신 보고서의 available_at 근거는 trade_day_T23:59:00+09:00_assumption이며 실제 발표 receipt가 아니다. data_readiness_decision=not_made, reconstructed_inputs_activated=false, scientific_trials_added=0, strategy_performance_computed=false다. 새로운 현재 계보를 준비 당시 계보와 동일시하거나 독립 blocked 판단이 이미 해소되었다고 선언하지 않는다. 이 제안은 같은 대기 후보의 근거 갱신이며 성과 결과를 추가하지 않는다. P11 집계기간 2014-01-02~2026-08-31은 현 봉인기간과 겹친다. 그 집계 성과로 후보·계수·임계값을 선택하지 않고 봉인을 완전히 미노출된 확증 표본이라고 주장하지 않는다. 참고보고서의 과거 탐색 3회는 현 프로그램 사용량에 합산하지 않는다. 프로그램 내 대기 과제의 mission_id는 null이고 allowed_predecessor_mission_ids가 비어 있으므로 predecessor_mission_ids=[]다. 과제 ID나 참고보고서 작업 ID를 선행 미션으로 전환하지 않는다.",
+          "source_ids": [
+            "literature:ee7d8b48faf7f98fe96cd1e7be67c55531bd19ff6da5ce1c4f90f0b4a059601e",
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "falsification": "목적은 stress-net-absolute-cagr 최대화이며 단위는 fraction-per-year다. evaluation은 schema_version=1, kind=strategy, scope=development, block=calendar-month, metric=stress-net-absolute-cagr, confidence=0.95, minimum_blocks=30, minimum_effect=0.0, target=null, tolerance=null을 그대로 유지한다. gross_exposure 최대 1.0도 유지한다. 데이터·시점성·기술 계약을 충족하고 유효 월이 30개 이상인 평가에서 GMM의 스트레스 순 CAGR이 0 이하이면 해당 개발기간의 양의 절대수익 가설을 기각한다. 양수라도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과가 입증되었다고 주장하지 않는다. 별도 검정이나 통과 기준을 추가하지 않는다. 원천 계약 미검증, 이력 부족, 누출, 비수렴, 평가가격·거래가능성 검증 실패, 위험 제약 위반 또는 유효 월 부족은 기술 중단·평가 불가로 남기며 손실이나 수익률 0으로 계상하지 않는다. 불리한 날짜·월을 삭제하지 않는다. 동일 월 대조군과의 성과 차이, 회전율, 현금 비중과 낙폭은 원인 설명용이며 목적을 초과수익·Sharpe·낙폭으로 바꾸지 않는다. 양의 절대수익만으로 GMM의 추가 가치를 주장하지 않고 대조군의 성과를 GMM 성공으로 바꾸지 않는다. 성공·음의 결과·무후보·중단과 실제 시행 수를 모두 보존한다. 성과 보고에는 원시 산출물과 독립 감사가 필요하고 확증은 별도 사전등록 대상이다. 현재 완료 범위는 조건부 제안서이며 실행 준비성 충족이나 자본 배치에 관한 결론은 없다.",
+          "original_claim": "A Machine Learning Approach to Regime Modeling은 Two Sigma Factor Lens의 17개 요인 공동분포에 GMM을 적용하고, 로그우도 기준 교차검증으로 군집 수를 선택하여 상태별 평균·변동성·상관관계를 위험관리와 스트레스 시나리오에 활용한다. 요인별 시작일부터 2020년 후반까지의 적합과 네 상태를 보고하지만, 모형은 비예측적이라고 명시한다. 기간별 상태 판정을 시간순 외표본 수익 예측의 검증으로 해석하지 않는다. 지정 국내 ETF 재현보고서는 고정 P11 결과의 equivalent_replay, 추가 과학 시행 0회와 기존 독립 감사 재사용을 기록한다. 기준선·초과성과는 미측정이며 새 연구·확증 판정이 아니다. 보고서에 없는 P11 알고리즘을 GMM으로 추정하지 않는다. 두 원문 모두 본 후보의 미래 비용 후 수익이나 GMM의 추가 가치를 입증하지 않는다.",
+          "predecessor_mission_ids": []
+        },
+        "data_assessment": {
+          "coverage": true,
+          "decision": "blocked",
+          "rationale": "승인 입력의 해시·범위와 현행 원시→정규화→입력 계보는 일부 확인되었으나, 실행 준비성은 충족되지 않았다. coverage는 069500을 포함한 승인 cohort 10종목의 warmup 104세션·development 731세션(총 8,350행) 누락 0 및 선택 prefix 일치 근거로 확인된다. 그러나 historical publication receipt가 복구되지 않았고 available_at은 거래일 당일 23:59 KST 가정이므로 실제 의사결정시점 이용가능성·수정 vintage가 증명되지 않아 point_in_time=false다. 준비 당시 clean 객체 바이트와 raw-to-clean manifest가 없고 S3 VersionId도 고정되지 않았으며, 현행 객체는 준비 receipt와 정체성이 다르고 adj_close 차이가 존재한다(종목별 상수비율 관찰은 절대 조정기준·원본 동등성을 증명하지 않음). 따라서 original_conditions=false다. 또한 동결 평가는 open*adj_close/close의 다음 관측일 시가 수익을 정의할 뿐 실주문장 체결, 거래정지·상폐 정산, 현금배당 처리를 입증하지 않아 executable_prices=false다. 원본 발표·수집·이용가능 시각과 revision 이력, 준비 당시 원시/clean 바이트 및 변환 manifest, 실행가격·기업행사 처리의 독립 근거가 확보되기 전에는 과학 시행을 진행하면 안 된다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "point_in_time": false,
+          "executable_prices": false,
+          "original_conditions": false
+        },
+        "decision": {
+          "decision": "wait",
+          "rationale": "과제 선택을 보류한다. 검증 대상은 고정 ETF 069500의 GMM 노출조절이 2023-01-02~2025-12-30 개발기간에 30bp 비용 후 양의 절대 CAGR을 내는지다. 현재 독립 데이터 평가는 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false인 blocked다. 이는 실행에 필요한 검증 근거가 미확보된 상태이며 데이터 부재·접근 불가·전략 손실을 입증하지 않는다.\n\ndata/etf_strategy/reports/raw-lineage-f8a0595989be.json의 새로운 복구 증거는 인정한다. 보고서는 원시 본문 835객체·698,359행을 읽고 고정 builder·normalizer를 통해 현재 원시→clean→재구성 입력의 계보를 대조했다고 기록한다. 승인 패널 8,350행의 누락 0, 개발 전 104세션만 사용한 선정 prefix의 cohort 일치도 확인 범위다. 이번 adj_close 차이 8,350행과 이전 대조의 7,515행·6,680행은 서로 다른 비교이므로 합산하지 않는다. 종목별 상수배와 조정곡선 형태 불일치 0, 최대 상대오차 약 3.66e-15는 곡선 비례성을 뒷받침한다. 상수배가 정확하다면 수익률과 조정시가 비율은 대수적으로 불변이지만, 준비 당시 원본 동일성·역사적 수정 이력·수치 계산의 비트 단위 동일성까지 증명하지는 않는다.\n\n남은 차단은 구체적이다. 준비 당시 clean 원본 바이트와 절대 조정기준, 당시 변환 계보의 불변 증거가 복구되지 않았고 원본 clean 객체의 S3 VersionId도 고정되지 않았다. available_at의 근거는 거래일 당일 23:59 KST라는 가정이며 실제 발표·수집·이용가능시각과 revision 이력의 receipt가 아니다. 현재 계보 복구만으로 과거 의사결정시점의 이용가능성을 인정할 수 없다. 복구 보고서도 data_readiness_decision=not_made, reconstructed_inputs_activated=false, scientific_trials_added=0, strategy_performance_computed=false를 기록한다. warmup 104세션과 development 731세션의 coverage는 최초 학습·평가에 필요한 81개 연속 유효 가격, 특징의 수치 유효성 또는 GMM 수렴을 보장하지 않는다.\n\n제공된 동결 엔진 완독 기록과 평가계약을 기준으로 현재 제안의 평가 방식은 정합적이다. date<d 및 available_at<d의 09:00 Asia/Seoul 이력으로 매일 목표 비중을 결정하고, A_d=open_d*adj_close_d/close_d와 R_d=A_next/A_d-1로 다음 관측 거래일 시가까지 평가한다. 수익으로 갱신된 기존 비중 대비 T=sum(abs(w_new-w_old)), 순수익 (1-c*T)*(1+sum(w_new*R))-1, 기본 c=0.001·스트레스 c=0.003, 초기 빈 포지션·현금수익 0, 마지막 수익구간의 2025-12-30 시가 종료도 일치한다. 패킷에 남은 과거 08:30 결정·당일 종가 체결 문제를 현재안의 불일치로 적용하지 않는다. 다만 평가가격·tradable·기업행사 처리의 적격성은 독립 근거가 필요하며 이 평가계약을 실주문장 체결이나 현금배당 재투자 총수익의 인증으로 확대할 수 없다. 마지막 세션을 최종 평가가격으로만 쓰는 경우 이후 신호시각의 가용성을 기계적으로 요구하지 않는다.\n\n원문은 17요인의 공동분포에 GMM을 적용하고 군집 수를 로그우도 교차검증으로 선택하며 비예측적 성격을 명시한다. 이를 단일 ETF의 두 특징·고정 2성분·직전 60개 특징 학습·미래 비용 후 수익 검증으로 바꾸는 본안은 novel_hypothesis다. 위험 지속성에 따른 손실 축소는 검증할 경제적 가설이며 급격한 상태 전환·반등 참여 감소·회전율 비용이 반대 경로다. P11 보고서는 기존 감사 범위의 equivalent_replay이고 추가 과학 시행은 0회이며 기준선·초과성과는 미측정이다. 그 성과를 본 후보의 근거로 이전하지 않는다. P11 집계기간은 현 봉인기간과 겹치므로 후보·계수 선택에 사용하거나 봉인기간을 완전히 미노출된 확증 표본이라고 주장할 수 없다.\n\n본안은 기존 대기 후보의 근거 갱신으로 명시되어 있으며 별도 독립 과제로 중복 시행 예산을 배정할 근거가 없다. 현재 프로그램 사용량은 시행 0·미결 시행 0·미션 0·계산시간 0초다. 차단 해소 후 검토할 1미션·최대 4구성은 전체 24시행·6미션·36,000초와 동시 미션 1개 제한의 수량 범위 안에 있으나, 환경 의존성과 시간 내 실행 가능성은 미검증이다. GMM과 100%·75%·변동성 조절 대조군은 서비스 시행 집계와 주기당 2회·총 4회 및 기존 중단 규칙을 따라야 한다. 미실행 대조군은 미측정으로 남긴다. allowed_predecessor_mission_ids가 비어 있으므로 predecessor_mission_ids=[]를 유지한다. 참고 P11의 과거 탐색 3회는 현 프로그램 사용량에 합산하지 않는다.\n\n재검토 조건은 준비 당시 입력의 불변 식별 또는 동등성 증거, 원본·변환 계보와 실제 이용가능시각·수정 이력, 최초 유효 특징 및 평가가격·거래가능성·기업행사 처리에 대한 독립 재평가다. 감사용 재구성 입력으로 승인 입력을 대체하거나 보호 엔진을 바꾸지 않는다. 승인된 etf_strategy의 데이터 digest·목적·비용·위험·개발 및 봉인 구간·검색 설정을 유지한다. 적격 평가에서 유효 월이 30개 이상이고 스트레스 순 CAGR이 0 이하이면 양의 절대수익 가설을 기각하는 유용한 음의 결과로 보존한다. 양수라도 95% 불확실성 범위가 0을 포함하면 양의 효과를 입증했다고 할 수 없으며, 절대수익만으로 GMM의 추가 가치를 주장하지 않는다. 기술 중단은 손실이나 수익률 0으로 계상하지 않는다. 향후 성과 인정에는 구성별 base.csv·stress.csv·result.json, 입력·출력 digest, 코드 커밋·환경·서비스 receipt와 독립 감사가 필요하다. 이번 완료 범위는 선택 판단이며 실행 준비성 충족이나 연구 성과를 선언하지 않는다."
+        },
+        "mission_id": null,
+        "created_at": "2026-09-30T11:04:23.688268+00:00"
+      },
+      {
+        "id": "a226d13d-cd5e-5324-a202-71791215d3bd",
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "digest": "c22f3950d00e397f8c0aa79b1accd590d9a21d6fe1b1cc6cf9f48cc3ecd64369",
+        "state": "waiting",
+        "proposal": {
+          "mode": "novel_hypothesis",
+          "title": "고정 ETF 069500의 GMM 노출조절: 원천 검증을 전제로 한 절대수익 개발설계",
+          "method": "1. 프로그램 e06537d3-fac3-5c8c-bf25-ddabb3c7e282 revision 5의 etf_strategy 템플릿 전체를 상속한다. schema_version=2, kind=strategy, market=kr_etf이며 허용 변경은 features/model/implementation/portfolio다. quant-lab의 base_commit=422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11을 유지하고 변경 가능 경로는 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json뿐이다. lake_id=krx-s3-kr_etf-30784209bf06e53313b8, warmup.json SHA-256=e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81, development.json SHA-256=6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574를 유지한다. execution_profile=kr-etf-research-v2, execution_profile_digest=942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf와 baseline_source_ids=[research:6a64df0e-9c60-555f-aa3a-a80a70e7f985]를 변경하지 않는다. 개발기간은 2023-01-02~2025-12-30이다. 봉인기간 2026-01-02~2026-09-23의 입력은 후보 선택·튜닝에 사용하지 않는다. 2. 제공된 etf_strategy 패킷, 동결 엔진의 완독 기록, identity.json과 선행 과제의 전체 평가계약을 기준으로 한다. 엔진 SHA-256은 1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc다. 확인된 범위는 warmup 104세션·1,040행, development 731세션·7,310행, 각 10종목이며 중복 date/ticker와 cohort 누락은 0이다. 입력 필드는 date/ticker/market/open/close/adj_close/value/available_at/tradable다. 종목은 069500으로 고정하고 성과에 따라 교체하지 않는다. 이를 전체 ETF 모집단이나 유동성 순위 최상위 표본으로 일반화하지 않는다. value는 원시 거래대금이며 수정주가와 거래량의 곱으로 대체하지 않는다. 입력 범위 확인은 최초 학습의 수치 유효성이나 당시 이용가능성을 보장하지 않는다. 3. 거래일 d의 신호에는 history_at의 date<d 및 available_at<d의 09:00 Asia/Seoul 조건을 모두 만족하는 이력만 사용한다. 당일 시가·종가·조정계수는 결정 입력에서 제외한다. t는 이용 가능한 069500 이력의 최신 날짜다. r_t=adj_close_t/adj_close_(t-1)-1, s20_t는 최근 20개 일수익률의 표본 표준편차(ddof=1), x_t=(r_t,log(max(s20_t,1e-8)))로 고정한다. x_t를 제외한 직전 60개 완성 특징으로만 평균과 표준편차(ddof=1)를 적합해 정규화하고 매일 2성분 full-covariance GMM을 적합한다. reg_covar=1e-6, random_state=0, n_init=1, max_iter=200, tol=1e-3이다. 최초 학습 특징 60개와 평가 특징 1개에는 최소 81개 연속 유효 가격이 필요하다. 필요한 관측 누락, 이력 부족, 정규화 분산 0, 비유한 값 또는 비수렴은 기술 중단으로 기록한다. 원단위 수익률 분산이 큰 성분을 고위험으로 정하고, 동률이면 평균 수익률이 낮은 성분, 다시 동률이면 성분 인덱스로 결정한다. 학습에서 제외한 x_t의 고위험 확률 q_t로 목표 비중 w=1-0.5*q_t를 반환한다. 미래 보유수익 라벨을 적합·정규화·상태 명명에 사용하지 않는다. 평가구간과 종료가 겹치는 미래 라벨 학습 표본을 만들지 않으며 전기간 적합이나 무작위 시계열 분할을 하지 않는다. 4. weights(history,config)는 매일 069500의 비음수 목표 비중을 반환한다. 평가용 조정시가는 A_d=open_d*adj_close_d/close_d, 보유수익은 R_d=A_next/A_d-1이며 d 시가부터 다음 관측 거래일 시가까지 평가한다. A_d는 후보가 관측하는 주문가격이 아니다. 엔진은 주식 수 주문 대신 목표 비중을 직접 적용한다. 초기 positions는 비어 있고 현금수익은 0이며 차입·공매도는 사용하지 않는다. 직전 수익으로 갱신된 기존 비중 w_old에 대해 T=sum(abs(w_new-w_old)), gross=1+sum(w_new*R), 순수익=(1-c*T)*gross-1이다. 기본 c=0.001, 스트레스 c=0.003을 유지한다. 마지막 수익구간은 2025-12-30 시가에서 끝나며 별도 종가 청산이나 추가 청산비용을 만들지 않는다. 필요한 현재·다음 평가가격과 거래가능성 검증 실패는 중단 사유이며 날짜 삭제나 대체 가격으로 우회하지 않는다. 이 평가를 실제 호가 체결, 현금배당 재투자 총수익 또는 현행 세금·시장충격의 완전한 반영으로 설명하지 않는다. 5. 같은 종목의 일별 목표 비중 100%, 75%, clip(0.10/(sqrt(252)*max(s20_t,1e-8)),0.5,1)을 고정 대조군으로 둔다. 정보시점·평가가격·회전율·비용·종료 규칙을 동일하게 적용한다. 후보와 대조군 세 개는 최대 네 과학 구성이다. 첫 주기는 GMM과 100% 대조군, 다음 주기는 나머지 두 대조군으로 계획하되 서비스의 시행 계수와 중단 규칙에 따른다. search는 continuous=true, max_total_trials=4, max_trials_per_cycle=2, patience=2, min_improvement=0.001을 그대로 유지한다. 미실행 대조군은 미측정으로 남긴다. 제공된 사용량은 시행 0·미결 0·미션 0·계산시간 0초다. 계획 상한은 차단 해소 후 1미션·4회이며 프로그램 전체 24회·6미션·36,000초, 동시 미션 1개 제한을 유지한다. resources는 priority=autonomous, worker_id=worker이며 승인 범위의 RTX 3070을 전제로 한다. 환경 의존성과 시간 내 실행 가능성은 미검증이다. 6. 실행 전에는 불변 원본 식별 또는 동등한 증거, 준비 당시 입력과 변환 계보, 실제 신호 사용 행의 발표·수집·이용가능시각과 수정 이력, 최초 유효 특징, 평가가격·tradable 및 기업행사 처리에 대한 독립 재평가가 필요하다. 마지막 세션을 최종 평가가격으로만 쓰면 이후 신호시각의 가용성을 기계적으로 요구하지 않는다. 출력 계약은 구성별 엔진 base.csv·stress.csv·result.json과 입력·출력 digest다. 학습창·설정·확률·비중의 재구성 가능성을 감사하되 엔진에 없는 상세 주문 로그를 가정하지 않는다. 기술 수리와 과학 시행을 구분한다. 실제 실행의 인정에는 코드 커밋, 입력 digest, 호스트·환경, 서비스 receipt와 원시 산출물이 필요하다. 현재 산출물은 제안서이며 승인·Git 변경·실행·게시를 보고하지 않는다.",
+          "envelope": "etf_strategy",
+          "question": "원천·시점성 차단이 독립적으로 해소된 경우, 고정 ETF 069500의 과거 수익률·변동성에 적합한 GMM의 고위험 확률로 일별 목표 비중을 50~100%로 조절하면 2023-01-02~2025-12-30 개발기간에 30bp 스트레스 비용 후 절대 CAGR이 양수인가? 경제적 가설은 위험의 지속성을 이용한 노출 축소가 손실과 복리 손실을 줄인다는 것이다. 시장 상승, 단순 현금 보유와 일반적인 변동성 조절을 대안 설명으로 둔다. 급격한 상태 전환, 반등 참여 감소와 회전율 비용은 반대 경로다. 기존 대기 후보의 조건부 설계이며 현재 성과는 미측정이다.",
+          "citations": [
+            {
+              "quote": "equivalent_replay",
+              "location": "char:0",
+              "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            },
+            {
+              "quote": "we have used 15000 price paths to calculate each of 100",
+              "location": "PDF p.53",
+              "source_id": "literature:f3b6c6a24911aaf858e536f03753a6bceaff95e072f3720855a609f4eb23eec6"
+            },
+            {
+              "quote": "our formalism captures features of the TC distribution",
+              "location": "PDF p.57",
+              "source_id": "literature:f3b6c6a24911aaf858e536f03753a6bceaff95e072f3720855a609f4eb23eec6"
+            },
+            {
+              "quote": "v) Generalising the formalism to treat market-on-close orders and limit orders.",
+              "location": "PDF p.58",
+              "source_id": "literature:f3b6c6a24911aaf858e536f03753a6bceaff95e072f3720855a609f4eb23eec6"
+            },
+            {
+              "quote": "MO only acts as a benchmark",
+              "location": "PDF p.62",
+              "source_id": "literature:f3b6c6a24911aaf858e536f03753a6bceaff95e072f3720855a609f4eb23eec6"
+            }
+          ],
+          "departures": "정확 재현은 원문의 동일 자료·방법·조건을 재현하는 것이고, 시장 전이는 핵심 방법과 검증 대상을 유지해 다른 시장에 적용하는 것이다. 본안은 비용 논문의 모형 내 최적 집행경로를 재현하거나 국내 시장에 그대로 옮기지 않는다. 단일 ETF의 두 특징·고정 2성분 GMM·60개 특징 순차 학습·일별 노출공식으로 미래 비용 후 절대수익을 검증하므로 novel_hypothesis다. 이 분류는 원문과의 차이를 뜻하며 이미 대기 중인 동일 후보를 새 과학 과제로 중복 계상할 이유가 아니다. 기존 후보의 원문 인용과 실행 전제를 정리한 제안이다. prior-tasks/2733156b-0a7e-50dc-995c-93cf58bf114b.json의 전체 기록에 따른 관찰→변경→결과는 입력·체결 근거 부족과 초기 종가 체결안의 엔진 불일치→고정 종목·60개 학습 특징·일별 목표 비중·시가 간 평가로 보완→평가계약 정합성과 coverage 확인, 원천·시점성 차단 지속이다. 과거 08:30 결정·당일 종가 체결은 현재안의 가정이 아니다. 최신 대기 과제 3487f863-0d39-50a0-8fd5-15b67332a7a9의 판단 역시 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false인 blocked다. 이는 검증 근거 미확보이며 데이터 부재·접근 불가·전략 손실의 입증과 구별한다. 최신 raw-lineage-f8a0595989be.json에 기록된 원시 본문 835객체·698,359행, 고정 builder·normalizer를 통한 현재 원시→clean→재구성 계보 대조, 승인 패널 8,350행의 누락 0, 개발 전 104세션 선정 prefix의 cohort 일치는 복구 진전으로 반영한다. 이번 adj_close 차이 8,350행, 이전 복구 대조 7,515행과 최초 readback 6,680행은 서로 다른 비교이므로 합산하지 않는다. 종목별 상수배, 조정곡선 형태 불일치 0과 최대 상대오차 약 3.66e-15는 비교한 곡선의 비례성을 뒷받침한다. 정확한 상수배라면 수익률과 조정시가 비율은 불변일 수 있지만, 이것만으로 준비 당시 원본 정체성·수정 vintage·역사적 발표시각이 입증되지는 않는다. 원본 S3 VersionId 미고정, 준비 당시와 현재 객체 정체성 차이, source publication receipt 미검증은 별도 문제다. available_at은 생성기의 다음날 23:59 KST 가정이며 수집기의 18:00 이전 당일 건너뛰기 정책도 역사적 발표 receipt가 아니다. 동결 엔진은 평가 산식을 제공하지만 실제 주문장 체결·거래정지·상폐 정산·현금배당 처리를 인증하지 않는다. 현재 복구 증거를 과거 원시 본문 미열람 상태와 혼동하지 않되, 독립적인 차단 해소 판정으로 확대하지 않는다. 관련 대기 과제들의 mission_id는 null이고 관측된 전략 손실이나 성공 시행이 아니다. 기준보고서 집계기간 2014-01-02~2026-08-31은 현 봉인기간과 겹치므로 그 집계성과를 후보·계수 선택에 사용하지 않고 봉인을 완전히 미노출된 확증 표본이라고 부르지 않는다. 참고보고서의 과거 탐색을 현 프로그램 시행 수에 합산하지 않는다. allowed_predecessor_mission_ids가 비어 있으므로 predecessor_mission_ids=[]이며 과제 ID를 선행 미션 ID로 변환하지 않는다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985",
+            "literature:f3b6c6a24911aaf858e536f03753a6bceaff95e072f3720855a609f4eb23eec6"
+          ],
+          "falsification": "목적은 stress-net-absolute-cagr 최대화이며 단위는 fraction-per-year다. evaluation은 schema_version=1, kind=strategy, scope=development, block=calendar-month, metric=stress-net-absolute-cagr, confidence=0.95, minimum_blocks=30, minimum_effect=0.0, target=null, tolerance=null을 유지한다. gross_exposure 최대 1.0도 유지한다. 입력·시점성·기술 계약을 충족하고 유효 월이 30개 이상인 평가에서 GMM의 스트레스 순 CAGR이 0 이하이면 해당 개발구간의 양의 절대수익 가설을 기각한다. 양수여도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과가 입증되었다고 주장하지 않는다. 별도 검정이나 통과 기준을 추가하지 않는다. 원천 계약 미검증, 최초 유효 이력 부족, 누출, 비수렴, 평가가격·거래가능성 검증 실패, 위험 제약 위반 또는 유효 월 부족은 기술 중단·평가 불가로 기록하며 손실이나 수익률 0으로 계상하지 않는다. 불리한 날짜·월을 삭제하지 않는다. 대조군과의 동일 월 성과 차이, 회전율, 현금 비중과 낙폭은 원인 설명용이다. 목적을 초과수익·Sharpe·낙폭으로 바꾸지 않으며 양의 절대수익만으로 GMM의 추가 가치를 주장하지 않는다. 대조군의 성과도 GMM의 성공으로 바꾸지 않는다. 성공·음의 결과·무후보·중단과 실제 시행 수를 모두 보존한다. 성과 보고에는 원시 산출물과 독립 감사가 필요하고 확증에는 별도 사전등록이 필요하다. 현재 완료 범위는 조건부 연구설계이며 차단 해소·성과·자본 배치를 결론 내리지 않는다.",
+          "original_claim": "지정 국내 ETF 재현보고서의 equivalent_replay는 고정 결과의 재현 분류다. 이를 새로운 확증이나 GMM의 예측력·추가수익 증거로 확대하지 않으며, 보고서에 없는 P11 알고리즘을 GMM으로 추정하지 않는다. 직접 인용하는 비용 원문 Transaction Costs in Execution Trading은 거래비용 분포의 임계값 이하 질량을 timing risk로 반영하는 효용함수를 제시한다. 평균·분산을 넘어 분포의 꼬리와 비대칭성이 모형 내 최적 집행경로에 영향을 줄 수 있다는 주장이다. PDF p.53의 예시는 두 집행 구간, Gaussian 및 t-Student 수익률, LINEXP·LINPOW·SQRT 충격모형을 비교하고 전략 100개에 각각 가격경로 15,000개를 사용한다. 이는 모형 내 수치실험이며 국내 ETF 실거래 검증이 아니다. 원문은 시장종가 주문과 지정가 주문으로의 확장을 향후 과제로 남기고, 시장시가는 벤치마크로 설명한다. 따라서 시가 평가를 실제 체결 보장으로 해석할 근거도, 이 논문이 GMM 수익 신호를 제시했다고 볼 근거도 없다. 비용 원문은 평가의 한계를 뒷받침하며 GMM 규칙은 같은 프로그램의 기존 대기안에서 계승한다.",
+          "predecessor_mission_ids": []
+        },
+        "data_assessment": {
+          "coverage": true,
+          "decision": "blocked",
+          "rationale": "고정 ETF 069500의 개발 입력 범위와 cohort 복구 근거는 확인되었으나, 실행 전제인 원천·시점성·체결가능성은 독립적으로 충족되지 않았다. 현재/준비 시점 clean 객체는 VersionId가 없고 식별자가 서로 달라 준비 당시 원본 바이트 및 raw-to-clean 실행 계보를 동일시할 수 없다. historical publication receipt와 revision vintage도 복구되지 않았으며 available_at은 생성기의 다음날 23:59 KST 가정일 뿐 원천 발표시각 증거가 아니다. 동결 평가기는 open-to-next-open 산식을 제공하지만 실제 호가 체결, 거래정지·상폐 정산, 현금배당 처리를 인증하지 않는다. 반면 승인 패널은 835세션·8,350행, cohort 누락 0이고 069500을 포함한 고정 10종목의 입력 coverage 복구 범위는 확인되었다. 따라서 이는 데이터 부재나 전략 성과의 판정이 아니라, 조건부 설계를 과학 시행에 투입할 수 없게 하는 검증 근거 부족이다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "point_in_time": false,
+          "executable_prices": false,
+          "original_conditions": false
+        },
+        "decision": {
+          "decision": "wait",
+          "rationale": "과제 선택을 보류한다. 검증 질문은 고정 ETF 069500의 GMM 노출조절이 2023-01-02~2025-12-30 개발기간에 30bp 스트레스 비용 후 양의 절대 CAGR을 내는지다. 독립 데이터 평가는 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false인 blocked다. 입력 범위의 확인과 조건부 설계의 정합성만으로 실행 가능성을 인정할 수 없다. 이는 검증 근거 부족이며 데이터 부재·접근 불가·전략 손실의 판정과 구별한다. 현재 성과는 미측정이다.\n\n제공된 동결 엔진 완독 기록과 평가계약에 비추면 현재 제안의 평가 방식은 정합적이다. 신호는 date<d 및 available_at<d의 09:00 Asia/Seoul인 이력만 사용하고, 엔진은 일별 목표 비중에 조정시가 A_d=open_d*adj_close_d/close_d와 R_d=A_next/A_d-1을 적용한다. 직전 수익으로 갱신된 기존 비중 대비 회전율 T, 순수익 (1-c*T)*(1+sum(w_new*R))-1, 기본 c=0.001·스트레스 c=0.003, 초기 빈 포지션·현금수익 0 및 마지막 2025-12-30 시가까지의 평가도 일치한다. 과거 08:30 결정·당일 종가 체결안의 불일치는 현재안의 보류 사유로 재사용하지 않는다. 조정시가는 평가가격이며 후보가 당일 관측하는 주문가격이나 실제 호가 체결의 증거가 아니다.\n\nraw-lineage-f8a0595989be.json의 복구 진전은 반영한다. 현재 원시 본문 835객체·698,359행과 고정 builder·normalizer를 통한 계보 대조, 승인 패널 835세션·8,350행의 cohort 누락 0 및 개발 전 104세션 선정 prefix의 일치는 입력 범위와 현재 재구성의 근거다. 이번 adj_close 차이 8,350행과 이전 비교의 7,515행·6,680행은 합산하지 않는다. 종목별 상수배와 조정곡선 형태 불일치 0은 비교 곡선의 비례성을 뒷받침하며, 정확한 상수배라면 수익률과 조정시가 비율은 불변일 수 있다. 그러나 VersionId 미고정, 준비 당시와 현재 객체 식별자 차이, 준비 당시 원본·변환 계보와 수정 vintage 및 역사적 발표 receipt의 공백은 남는다. available_at의 다음날 23:59 KST 가정과 수집기의 당일 건너뛰기 정책은 원천 발표시각을 입증하지 않는다. 현재 원시자료를 읽은 복구 결과를 과거 미열람 상태와 혼동해서도, 역사적 시점성의 인증으로 확대해서도 안 된다.\n\n원문 Transaction Costs in Execution Trading의 PDF p.53·57~58·62는 거래비용 분포를 반영한 모형 내 최적집행, 전략 100개별 가격경로 15,000개의 수치실험, 종가·지정가 주문 확장의 한계와 시가 벤치마크를 설명한다. 이는 국내 ETF GMM 신호의 예측력이나 실거래 체결을 입증하지 않는다. 따라서 novel_hypothesis 분류는 타당하지만, 완독 기록이 있는 prior-tasks/3487f863-0d39-50a0-8fd5-15b67332a7a9.json의 동일 대기 후보와 구별되는 새 과학 과제로 중복 배정할 근거는 없다. 기준보고서의 equivalent_replay도 고정 결과 재현이며 새 확증이 아니다. 원문 인용 보완은 데이터 차단 해소를 대신하지 못한다.\n\n제안은 revision 5의 etf_strategy 개발기간·목적함수·10/30bp 비용·총노출 1.0·동결 입력과 실행 프로필·허용 코드 경로를 유지한다. 제공된 사용량은 시행 0·미결 0·미션 0·계산 0초이므로 잔여 상한은 24회·6미션·36,000초다. 후보와 대조군 세 개의 계획 상한 1미션·4회는 건수 예산 안에 있지만, 환경 의존성과 계산시간 내 실행 가능성은 미검증이다. 회당 주기 2회, patience=2와 동시 미션 1개 제한을 유지하며 네 구성이 모두 측정될 것으로 단정하지 않는다. 선행 미션 허용 목록이 비어 있으므로 predecessor_mission_ids=[]를 유지한다. 봉인기간 입력을 선택·튜닝에 사용하지 않고, 기준보고서의 집계기간이 봉인기간과 겹친다는 노출 한계도 보존한다.\n\n재검토에는 준비 당시 원본 정체성 또는 동등한 증거와 변환 계보, 실제 신호 사용 행의 발표·수집·이용가능시각 및 수정 이력, 최초 81개 연속 유효 가격과 특징의 수치 유효성, 평가가격·tradable·기업행사 처리에 대한 독립 검증이 필요하다. 마지막 세션이 최종 평가가격으로만 쓰이면 이후 신호시각의 가용성은 기계적으로 요구하지 않는다. 기술 차단은 손실이나 수익률 0으로 계상하지 않는다. 계약을 충족한 유효 월 30개 이상의 평가에서 스트레스 순 CAGR이 0 이하이면 유용한 음의 과학 결과로 보존하고, 양수라도 고정 평가기의 95% 불확실성 범위가 0을 포함하면 양의 효과가 입증되었다고 주장하지 않는다. 양의 절대수익만으로 GMM의 추가 가치를 결론 내리지 않는다. 이번 완료 범위는 선택 판단이며 실행 결과는 서비스 receipt와 원시 산출물 및 독립 감사로 별도 확인해야 한다."
+        },
+        "mission_id": null,
+        "created_at": "2026-09-30T13:11:06.214852+00:00"
+      },
+      {
+        "id": "1a9683ac-5e26-57ad-acba-6d9dc05da416",
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "digest": "f087051936d6f6e43bf0a72e137b5a31ba3452e8ce75ee149038da5e6b363e76",
+        "state": "waiting",
+        "proposal": {
+          "mode": "novel_hypothesis",
+          "title": "고정 ETF 069500의 GMM 노출조절: 원천·시점성 검증을 전제로 한 절대수익 개발설계",
+          "method": "1. 프로그램 e06537d3-fac3-5c8c-bf25-ddabb3c7e282 revision 5의 etf_strategy 템플릿 전체를 유지한다. schema_version=2, kind=strategy, market=kr_etf이며 허용 변경은 features/model/implementation/portfolio다. 저장소 quant-lab의 base_commit=422e5da2fbaf3682cfc04a5d8334dcc2f34d8a11, 변경 가능 경로 labs/company-domestic-research/candidate.py와 labs/company-domestic-research/config.json을 유지한다. lake_id=krx-s3-kr_etf-30784209bf06e53313b8, warmup.json SHA-256=e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81, development.json SHA-256=6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574다. execution_profile=kr-etf-research-v2, execution_profile_digest=942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf, baseline_source_ids=[research:6a64df0e-9c60-555f-aa3a-a80a70e7f985]를 변경하지 않는다. 개발기간은 2023-01-02~2025-12-30, 봉인기간은 2026-01-02~2026-09-23이다. 봉인 입력은 선택·튜닝에 사용하지 않는다. 2. 제공된 etf_strategy 데이터 패킷, 동결 엔진 완독 기록과 최신 선행 과제 전체 기록의 평가계약을 따른다. 엔진 SHA-256은 1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc다. 확인된 범위는 warmup 104세션·1,040행, development 731세션·7,310행과 고정 10종목이다. 입력 계약은 date/ticker/market/open/close/adj_close/value/available_at/tradable다. 연구 종목은 069500 하나로 고정하며 성과에 따라 교체하지 않는다. 고정 표본을 전체 ETF 모집단으로 일반화하지 않는다. value는 원시 거래대금이며 수정주가와 거래량의 곱으로 대체하지 않는다. 범위 확인과 수치 유효성·당시 이용가능성 검증은 구별한다. 3. 거래일 d의 결정시점은 엔진의 09:00 Asia/Seoul이다. 신호에는 date<d이고 available_at<d의 09:00인 이력만 사용한다. 당일 시가·종가·조정계수는 결정 입력에서 제외한다. t는 두 조건을 만족하는 최신 069500 관측일이며 무조건 직전 거래일로 가정하지 않는다. r_t=adj_close_t/adj_close_(t-1)-1, s20_t는 최근 20개 일수익률의 표본 표준편차(ddof=1), x_t=(r_t,log(max(s20_t,1e-8)))로 고정한다. 평가할 x_t를 제외한 직전 60개 완성 특징으로만 평균과 표준편차(ddof=1)를 적합해 정규화하고 매일 2성분 full-covariance GMM을 적합한다. reg_covar=1e-6, random_state=0, n_init=1, max_iter=200, tol=1e-3으로 고정한다. 최초 60개 학습 특징과 1개 평가 특징에는 최소 81개 연속 유효 가격이 필요하다. 필요한 관측 누락, 이력 부족, 정규화 분산 0, 비유한 값이나 비수렴은 기술 중단 사유다. 원단위 수익률 분산이 큰 성분을 고위험으로 정하고 동률이면 평균 수익률이 낮은 성분, 다시 동률이면 성분 인덱스로 결정한다. 학습에서 제외한 x_t의 고위험 확률 q_t로 w=1-0.5*q_t를 산출한다. 미래 보유수익 라벨을 학습·정규화·상태 명명에 사용하지 않는다. 따라서 평가구간과 종료가 겹치는 미래 라벨 학습 표본을 만들지 않는다. 순차 재적합만 허용하며 전기간 적합과 무작위 시계열 분할은 사용하지 않는다. 4. weights(history,config)는 매일 069500의 비음수 목표 비중을 반환한다. 동결 엔진의 평가가격은 A_d=open_d*adj_close_d/close_d, 보유수익은 R_d=A_next/A_d-1이다. 보유기간은 d 시가부터 다음 관측 거래일 시가까지다. 이는 목표 비중에 적용되는 평가 산식이며 실제 주문가격이나 호가 체결의 인증이 아니다. 초기 positions는 비어 있고 현금수익은 0이다. 차입·공매도는 사용하지 않는다. 직전 수익으로 갱신된 기존 비중 w_old에 대해 T=sum(abs(w_new-w_old)), gross=1+sum(w_new*R), 순수익=(1-c*T)*gross-1을 따른다. 기본 c=0.001, 스트레스 c=0.003이다. 마지막 수익구간은 2025-12-30 시가에서 끝나며 별도 종가 청산이나 추가 청산비용을 만들지 않는다. 필요한 현재·다음 평가가격 또는 거래가능성 검증 실패를 날짜 삭제나 대체 가격으로 우회하지 않는다. 비용은 비중 회전율에 연결된 고정 계약이며 상품·시점별 실제 세금, 유동성 충격, 현금배당 재투자를 모두 반영한다고 해석하지 않는다. 5. 같은 종목의 일별 목표 비중 100%, 75%, clip(0.10/(sqrt(252)*max(s20_t,1e-8)),0.5,1)을 대조군으로 고정한다. 정보시점·가격·비용·종료 규칙은 동일하다. 후보와 세 대조군은 최대 네 과학 구성이다. 첫 주기는 GMM과 100% 대조군, 다음 주기는 나머지 두 대조군으로 계획하되 서비스의 시행 계수와 중단 규칙을 따른다. search의 continuous=true, max_total_trials=4, max_trials_per_cycle=2, patience=2, min_improvement=0.001을 유지한다. 미실행 대조군은 미측정으로 남기며 대조군 성과를 GMM 성공으로 바꾸지 않는다. 차단 해소 후 계획 상한은 1미션·4회이며 현재 프로그램 사용량은 시행 0·미결 0·미션 0·계산 0초다. 전체 24회·6미션·36,000초, 동시 미션 1개 제한을 유지한다. resources는 priority=autonomous, worker_id=worker이고 승인된 RTX 3070 범위를 따른다. 환경 의존성과 시간 내 실행 가능성은 미검증이다. 6. 실행 전에는 준비 당시 원본 정체성 또는 동등한 증거와 변환 계보, 실제 신호 사용 행의 발표·수집·이용가능시각 및 수정 이력, 최초 유효 특징, 평가가격·tradable·상폐·기업행사·분배금 처리를 독립적으로 검증해야 한다. 최종 세션이 평가가격으로만 사용되면 그 이후 신호시각의 가용성을 기계적으로 요구하지 않는다. 출력 계약은 구성별 base.csv·stress.csv·result.json과 입력·출력 digest다. 학습창·설정·확률·비중의 재구성 가능성을 감사하되 엔진에 없는 상세 주문 로그를 가정하지 않는다. 기술 수리와 과학 시행을 구분한다. 실행 인정에는 코드 커밋, 입력 digest, 호스트·환경, 서비스 receipt와 원시 산출물이 필요하다. 현재 산출물은 조건부 연구설계이며 승인·Git 변경·실행·게시의 발생을 보고하지 않는다.",
+          "envelope": "etf_strategy",
+          "question": "원천·시점성·평가가격의 차단이 독립적으로 해소된 경우, 고정 ETF 069500의 과거 수익률과 변동성에 적합한 GMM으로 일별 목표 비중을 50~100%로 조절하면 2023-01-02~2025-12-30 개발기간에 30bp 스트레스 비용 후 절대 CAGR이 양수인가? 경제적 경로는 위험의 지속성을 이용한 노출 축소가 손실과 복리 손실을 줄인다는 것이다. 시장 상승, 평균 현금 비중, 일반적인 변동성 조절을 대안 설명으로 둔다. 갑작스러운 상태 전환, 반등 참여 감소와 거래비용은 반대 경로다. 기존 대기 후보의 조건부 설계이며 현재 성과는 미측정이다.",
+          "citations": [
+            {
+              "quote": "고정 P11 결과와 일치하는 개발구간 재현. 원래 감사의 현재 파일 일치를 확인했으며 새 연구·확증 판정이 아니다. 기준선·초과성과는 미측정이다.",
+              "location": "char:0",
+              "source_id": "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+            }
+          ],
+          "departures": "정확 재현은 원문의 동일 자료·알고리즘·조건을 재현하는 것이고 시장 전이는 핵심 방법과 검증 대상을 유지하면서 시장을 바꾸는 것이다. 본안은 P11의 알고리즘 재현도, 다른 시장으로의 단순 이전도 아니다. 단일 ETF의 두 특징, 2성분 GMM, 60개 특징 순차 학습과 별도 노출공식을 검증하므로 novel_hypothesis다. 이 분류는 이미 대기 중인 동일 후보에 새 과학 시행을 중복 배정할 이유가 아니다. 최신 과제 a226d13d-cd5e-5324-a202-71791215d3bd의 evidence_file 전체 기록을 근거로 기존 설계를 보완한다. 관찰→변경→결과는 초기 체결 방식과 엔진의 불일치 및 입력 검증 부족→고정 종목·일별 목표 비중·시가 간 평가로 보완→평가계약 정합성과 coverage 확인, 원천·시점성 차단 지속이다. 과거 08:30 결정·당일 종가 체결은 현재 가정이 아니며 그 불일치를 현재안의 보류 사유로 재사용하지 않는다. 최신 독립 평가는 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false인 blocked다. 이는 공통적인 부정적 준비성 판단이며 데이터 부재·접근 불가나 전략 손실의 관측과 다르다. 자료 복구 보고서와 최신 과제 기록은 현재 원시 본문 835객체·698,359행, 고정 builder·normalizer를 통한 현재 계보 대조, 승인 패널 8,350행의 cohort 누락 0을 기록한다. 보고서 마지막 청크는 개발 전 104세션 선정 prefix의 cohort 일치와 post_selection_raw_objects_used=0도 기록한다. 현재 원시자료 복구 진전은 인정하되 역사적 시점성 인증으로 확대하지 않는다. 서로 다른 대조의 adj_close 차이 8,350행·7,515행·6,680행을 합산하지 않는다. 종목별 상수배와 곡선 형태 일치는 비례성을 뒷받침하며 정확한 상수배라면 수익률과 조정시가 비율은 불변일 수 있다. 그러나 원본 S3 VersionId 미고정, 준비 당시와 현재 객체 정체성 차이, 준비 당시 원본·변환 실행기록과 역사적 발표시각·수정 vintage의 공백은 남는다. available_at은 생성기의 다음날 23:59 KST 가정이며 원천 발표 receipt가 아니다. 현재 재구성 입력도 활성화되지 않았다고 보고되어 있다. 동결 엔진은 실제 호가 체결·거래정지·상폐 정산·현금배당 처리를 인증하지 않는다. 이 차단을 해소한 새 근거는 본 제안에 추가되지 않았다. 기준보고서의 집계기간 2014-01-02~2026-08-31은 현재 봉인기간과 겹친다. 그 집계성과를 후보·계수 선택에 사용하지 않으며 봉인을 완전히 미노출된 확증 표본이라고 표현하지 않는다. 보고서의 과거 탐색 횟수를 현 프로그램 사용량에 합산하지 않는다. 관련 대기 과제의 mission_id는 null이고 허용 선행 미션 목록은 비어 있으므로 predecessor_mission_ids=[]다. 과제 ID나 외부 재현보고서의 job_id를 선행 미션으로 변환하지 않는다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "falsification": "목적은 stress-net-absolute-cagr 최대화, 단위는 fraction-per-year다. evaluation은 schema_version=1, kind=strategy, scope=development, block=calendar-month, metric=stress-net-absolute-cagr, target=null, tolerance=null, confidence=0.95, minimum_blocks=30, minimum_effect=0.0을 그대로 유지한다. gross_exposure 최대 1.0도 유지한다. 입력·시점성·기술 계약을 충족하고 유효 월이 30개 이상인 평가에서 GMM의 스트레스 순 CAGR이 0 이하이면 해당 개발구간의 양의 절대수익 가설을 기각한다. 양수라는 점추정치만으로 양의 효과가 입증되었다고 주장하지 않으며 고정 평가계약의 95% 불확실성 판단을 함께 보고한다. 별도 검정이나 통과 기준을 추가하지 않는다. 원천 계약 미검증, 최초 이력 부족, 누출, 비수렴, 평가가격·거래가능성 검증 실패, 위험 제약 위반 또는 유효 월 부족은 기술 중단·평가 불가로 기록하며 손실이나 수익률 0으로 계상하지 않는다. 불리한 날짜와 월을 삭제하지 않는다. 동일 월의 대조군 대비 성과, 회전율, 현금 비중과 낙폭은 원인 설명용이며 목적함수를 초과수익·Sharpe·낙폭으로 변경하지 않는다. 양의 절대수익만으로 GMM의 추가 가치를 결론 내리지 않는다. 성공·음의 결과·무후보·중단과 실제 시행 수를 모두 보존한다. 현재는 준비성 차단이 유지되어 실행 가능한 성과 검증으로 진행할 근거가 없다. 성과 보고에는 서비스 receipt, 원시 산출물과 독립 감사가 필요하며 확증은 별도 사전등록 대상이다.",
+          "original_claim": "직접 인용하는 원문은 지정된 고정 국내 ETF 연구 재현 보고서다. 보고서는 equivalent_replay로 분류되며 고정 P11 결과의 개발구간 재현, 기존 감사의 현재 파일 일치, 새 과학 시행 추가 0건을 기록한다. 수익 기준은 krx_reference_price_adjusted_return이고 기본·스트레스 비용은 각각 10bp·30bp다. 기준선과 초과성과는 미측정이며 새 연구·확증·실거래 성과를 주장하지 않는다. 이 보고서의 재현 결과는 아래 GMM 후보의 성과 증거가 아니다. 보고서에 없는 P11 알고리즘을 GMM으로 추정하지 않는다. GMM 규칙은 같은 프로그램의 대기 과제 a226d13d-cd5e-5324-a202-71791215d3bd의 전체 제안에서 계승한 독립적인 검증 가설이다.",
+          "predecessor_mission_ids": []
+        },
+        "data_assessment": {
+          "coverage": true,
+          "decision": "blocked",
+          "rationale": "입력 해시·범위·선정 cohort의 현재 재현 근거는 있으나, 역사적 원천 발표/이용가능시각과 revision vintage가 독립 검증되지 않았고 available_at은 생성기 가정이다. 준비 당시 clean 객체와 현재 객체의 정체성이 다르며 S3 VersionId와 원본 바이트·raw-to-clean 실행 계보가 복구되지 않았다. 또한 동결 평가기는 실제 주문 체결, 거래정지·상폐 정산 및 현금배당 처리를 인증하지 않는다. 따라서 coverage만 확인되며 시점성, 실행가격, 원조건 재현은 미확인으로 차단한다.",
+          "source_ids": [
+            "research:6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+          ],
+          "point_in_time": false,
+          "executable_prices": false,
+          "original_conditions": false
+        },
+        "decision": {
+          "decision": "wait",
+          "rationale": "과제 선택을 보류한다. 검증 질문은 고정 ETF 069500의 GMM 노출조절이 2023-01-02~2025-12-30 개발기간에 30bp 스트레스 비용 후 양의 절대 CAGR을 내는지다. 현재 독립 데이터 평가는 coverage=true, point_in_time=false, executable_prices=false, original_conditions=false인 blocked다. 이번 제안에는 차단을 해소한 새 검증 근거가 없다. 이는 검증 근거 부족이며 데이터 부재·접근 불가·전략 손실의 판정과 구별한다. 성과는 미측정이다.\n\n제공된 data/etf_strategy/engine 전체 본문과 비교하면 현재 평가 방식은 정합적이다. history_at은 date<d 및 available_at<d의 09:00 Asia/Seoul 조건으로 이력을 제한하고 종목별 최신 이용가능 종가 기준으로 adj_close를 재조정한다. 후보는 일별 목표 비중을 반환하며, 엔진은 A_d=open_d*adj_close_d/close_d와 R_d=A_next/A_d-1을 적용한다. 직전 수익으로 갱신된 기존 비중 대비 회전율 T, 순수익 (1-c*T)*(1+sum(w_new*R))-1, 기본 c=0.001·스트레스 c=0.003, 초기 빈 포지션·현금수익 0, 마지막 2025-12-30 시가까지의 평가와 추가 청산비용 없음도 일치한다. 과거 08:30 결정·당일 종가 체결의 불일치는 현재안의 보류 사유가 아니다. 조정시가는 평가가격이며 실제 주문 체결의 인증은 아니다.\n\n완독 자료인 prior-tasks/a226d13d-cd5e-5324-a202-71791215d3bd.json은 현재 원시자료 계보 대조, 승인 패널의 cohort 누락 0, 개발 전 선정 prefix 일치 등 복구 진전을 기록한다. 이를 역사적 시점성 인증으로 확대할 수는 없다. 준비 당시와 현재 객체의 정체성이 다르고 S3 VersionId가 고정되지 않았으며, 준비 당시 원본·변환 실행기록과 역사적 발표시각·수정 vintage의 공백이 남는다. available_at의 다음날 23:59 KST 값은 생성기 가정이다. 종목별 정확한 상수배라면 수익률과 조정시가 비율은 불변일 수 있으므로 조정주가 차이만으로 손익 왜곡을 단정하지 않는다. 그러나 비례성과 엔진의 재조정만으로 당시 이용가능성을 입증할 수 없다. 평가가격·tradable 및 관련 기업행사 처리도 독립 검증이 필요하다.\n\n원문 재현보고서는 equivalent_replay로서 고정 P11 결과의 재현과 신규 과학 시행 추가 0건을 기록한다. 기준선·초과성과는 미측정이며 이 결과는 GMM의 성과 증거가 아니다. 현재 규칙의 novel_hypothesis 분류는 타당하지만, 최신 선행 과제 전체 방법과 비교하면 동일 종목·특징·GMM·노출공식·대조군을 유지한 조건부 설계 보완이다. 원문 인용을 정리한 것만으로 구별되는 신규 과학 과제에 중복 시행을 배정할 근거는 없다.\n\n제안은 revision 5의 etf_strategy 개발기간, 목적함수, 10/30bp 비용, 총노출 상한 1.0, 동결 입력·실행 프로필과 허용 코드 경로를 유지한다. 제공된 사용량 기준 잔여 예산은 24회·6미션·36,000초다. 후보와 세 대조군의 계획 상한 1미션·4회는 건수 예산 안에 있으나 환경 의존성과 계산시간 내 실행 가능성은 미검증이다. 주기당 최대 2회, patience=2, min_improvement=0.001과 동시 미션 1개 제한을 유지하며 네 구성 모두의 측정을 보장하지 않는다. 허용 선행 미션이 없으므로 predecessor_mission_ids=[]가 맞다.\n\n재검토에는 준비 당시 원본 정체성 또는 동등한 증거와 변환 계보, 실제 신호 사용 행의 발표·수집·이용가능시각 및 수정 이력, 최초 81개 연속 유효 가격과 특징의 수치 유효성, 평가가격·거래가능성·기업행사 처리에 대한 독립 검증이 필요하다. 최종 세션이 평가가격으로만 쓰이면 이후 신호시각의 가용성을 요구하지 않는다. 동결 엔진의 strategy 분기는 일별 순수익과 CAGR을 산출하지만 월별 블록의 95% 불확실성 판단을 직접 산출하지 않으므로, 재개 시 고정 evaluation 계약의 최소 30개 유효 월과 불확실성 판단을 충족하는 서비스 검증 근거도 확인해야 한다.\n\n유효한 평가에서 GMM의 스트레스 순 CAGR이 0 이하라면 유용한 음의 과학 결과로 보존한다. 기술 차단은 손실이나 수익률 0으로 계상하지 않는다. 양의 점추정치만으로 양의 효과나 GMM의 추가 가치를 결론 내리지 않으며 미실행 대조군은 미측정으로 남긴다. 기준보고서의 집계기간 2014-01-02~2026-08-31은 현 봉인기간과 겹치므로 그 집계성과를 선택·튜닝에 사용하지 않고 봉인을 완전히 미노출된 확증 표본으로 표현하지 않는다. 이번 완료 범위는 선택 판단이며, 연구 실행과 성과는 서비스 receipt·원시 산출물·독립 감사로 별도 확인할 대상이다."
+        },
+        "mission_id": null,
+        "created_at": "2026-09-30T15:45:42.142062+00:00"
+      }
+    ],
+    "missions": [],
+    "usage": [],
+    "activity": {
+      "running_turns": 0,
+      "active_jobs": 0,
+      "sending_outbox": 0,
+      "runtime_pause": {
+        "paused_until": null,
+        "reason": null
+      }
+    },
+    "lineage_tables_present": true
+  },
+  "config_hashes": {
+    "runtime.env": "40fc9520c032da740c587057e43e3fb5d5995dcfff7d55502ba63e3c95f81033",
+    "roles.json": "5774cb63232a47c40645f1985561fe7be93d59bfff115103efb4cb3bda033670",
+    "research-profiles.json": "22fc61df00eafc9e0cb6885b86814821b26aa0e296e5c166fbdc6b34c974c78c",
+    "research-qlab.json": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd"
+  },
+  "registry_sha256": "13810e6a6f613d84ed67f2941617471a79e48887bba88b9cb06996364ce31860",
+  "registry_packets": [
+    {
+      "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+      "envelope": "etf_strategy",
+      "data_policy_digest": null,
+      "research_scope": null,
+      "input_files": {
+        "development.json": {
+          "path": "/state/research/provisioned/data-evidence/development.json",
+          "sha256": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+        },
+        "warmup.json": {
+          "path": "/state/research/provisioned/data-evidence/warmup.json",
+          "sha256": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81"
+        }
+      }
+    },
+    {
+      "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+      "envelope": "etf_claim",
+      "data_policy_digest": null,
+      "research_scope": null,
+      "input_files": {
+        "development.json": {
+          "path": "/state/research/provisioned/data-evidence/development.json",
+          "sha256": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+        },
+        "warmup.json": {
+          "path": "/state/research/provisioned/data-evidence/warmup.json",
+          "sha256": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81"
+        }
+      }
+    },
+    {
+      "program_digest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
+      "envelope": "etf_strategy",
+      "data_policy_digest": null,
+      "research_scope": null,
+      "input_files": {
+        "development.json": {
+          "path": "/state/research/provisioned/data-evidence/development.json",
+          "sha256": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+        },
+        "warmup.json": {
+          "path": "/state/research/provisioned/data-evidence/warmup.json",
+          "sha256": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81"
+        }
+      }
+    },
+    {
+      "program_digest": "be0d940bf5904c417d213898617b3f6c0fed19d2bfddd78460ec315e92b216af",
+      "envelope": "etf_strategy",
+      "data_policy_digest": null,
+      "research_scope": {
+        "acknowledged_gap_codes": [
+          "historical_publication_unverified",
+          "historical_revision_vintage_unverified",
+          "original_preparation_bytes_unavailable"
+        ],
+        "data_mode": "frozen_vintage_retrospective",
+        "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+        "result_scope": "conditional_retrospective_development",
+        "scientific_lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3"
+      },
+      "input_files": {
+        "development.json": {
+          "path": "/state/research/provisioned/data-evidence/conditional-20261001/development.json",
+          "sha256": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b"
+        },
+        "warmup.json": {
+          "path": "/state/research/provisioned/data-evidence/conditional-20261001/warmup.json",
+          "sha256": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+        }
+      }
+    }
+  ],
+  "production_mutated": false,
+  "sealed_prices_read": false,
+  "performance_computed": false
+}

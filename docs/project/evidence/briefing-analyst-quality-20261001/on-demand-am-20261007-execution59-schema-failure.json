@@ -1,0 +1,101 @@
+{
+  "state": "closed_failed",
+  "policy_sha256": "ec36a117ee2c74f62efc382ff8f3861b471bb41d4fa68759f34cc6cfbb6b7cb0",
+  "source_commit": "15215a4e7c7d3188551278c1ec36fed85d428436",
+  "model_attempts": [
+    {
+      "phase": "plan",
+      "request_id": "news-brief-cab5830d-f781-5f66-b035-6ab27650879c-plan",
+      "state": "completed",
+      "request_sha256": "c0405a950fb3039c2d941124c5f72802ca7689ba97905aca679e2f1c0e399f07",
+      "started_at": "2026-10-07T01:25:23.886969+00:00",
+      "timeout_seconds": 360,
+      "prompt_chars": 73782,
+      "usage": {
+        "input_tokens": 39681,
+        "cached_input_tokens": 0,
+        "output_tokens": 6463,
+        "reasoning_output_tokens": 4647
+      },
+      "seconds": 190.656
+    },
+    {
+      "phase": "write",
+      "request_id": "news-brief-cab5830d-f781-5f66-b035-6ab27650879c-write",
+      "state": "fault",
+      "request_sha256": "2c4b0e30ad82cc7ca72708912bf7e208c11e5c9b15ba6f4c4388b978024533d9",
+      "started_at": "2026-10-07T01:28:36.995287+00:00",
+      "timeout_seconds": 1440,
+      "prompt_chars": 87100,
+      "fault": {
+        "code": "uncertain",
+        "message": "Codex did not confirm a complete turn; reconcile this request.",
+        "retry_after_seconds": 0
+      }
+    }
+  ],
+  "completed_model_calls": 1,
+  "slack_calls": 0,
+  "database_mutations": 0,
+  "scope": "Actual on-demand frozen-input execution; failure retained, no complete writing/review/content qualification or Slack delivery.",
+  "automatic_retry": false,
+  "started_at": "2026-10-07T01:24:55.250560+00:00",
+  "technical_pre_input_resume": true,
+  "controller_sha256": "c4bc18d12b3bd5414ec38b90109821ad9b2587fad32c8093250e7f0aa15d5d62",
+  "frozen_controller_sha256": "f92889e1721f5e9cc85193e5f1756ea482761fa4f441c771e2562b03907c4c60",
+  "source_manifest": {
+    "collected_at": "2026-10-07T01:24:57.603360+00:00",
+    "sealed_at": "2026-10-07T01:25:17.906900+00:00",
+    "candidate_count": 96,
+    "origin_groups": 6,
+    "independent_close_reports": 3,
+    "input_ready": true,
+    "candidate_chars": 175976,
+    "locked_observations": 2,
+    "collection_error_count": 3,
+    "model_selection": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "source": "pinned",
+      "revision": 2
+    },
+    "database_read_only_verified": true
+  },
+  "error_type": "ValueError",
+  "error": "model_fault_no_retry",
+  "passed": false,
+  "closed_at": "2026-10-07T01:28:41.817946+00:00",
+  "source_overlap": {
+    "case": "analyst-on-demand-am-20261007-execution59",
+    "compared_closed_edition": "b72483f9-d52b-51d6-92ba-25625a9cb50e",
+    "old_candidate_count": 96,
+    "new_candidate_count": 96,
+    "identical_body_hashes": 43,
+    "new_body_hashes": 53,
+    "note": "A later independently frozen on-demand snapshot may overlap earlier market coverage; this is not a scheduled/on-time or five-day result."
+  },
+  "schema_rejection_diagnostic": {
+    "returncode": 1,
+    "seconds": 2.8031877340981737,
+    "terminal_errors": [
+      {
+        "type": "error",
+        "message": "{\n  \"type\": \"error\",\n  \"error\": {\n    \"type\": \"invalid_request_error\",\n    \"code\": \"invalid_json_schema\",\n    \"message\": \"Invalid JSON schema: regex lookaround is not supported. Found at $['$defs'].MarketObservation.properties.previous_value.anyOf[1].pattern.\",\n    \"param\": \"text.format.schema\"\n  },\n  \"status\": 400\n}"
+      },
+      {
+        "type": "turn.failed",
+        "error": {
+          "message": "{\n  \"type\": \"error\",\n  \"error\": {\n    \"type\": \"invalid_request_error\",\n    \"code\": \"invalid_json_schema\",\n    \"message\": \"Invalid JSON schema: regex lookaround is not supported. Found at $['$defs'].MarketObservation.properties.previous_value.anyOf[1].pattern.\",\n    \"param\": \"text.format.schema\"\n  },\n  \"status\": 400\n}"
+        }
+      }
+    ],
+    "stderr": "",
+    "private_raw_sha256": "0ef183cf4478c09edadcba67d727b44a165f35b2f0b020405757c8d390243a1d",
+    "technical_model_invocations": 1,
+    "licensed_source_bytes": 0,
+    "slack_calls": 0
+  },
+  "original_uncertain_receipt_preserved": true,
+  "original_failure_not_replayed_or_regraded": true,
+  "fix_source_commit": "58866c588e4d513a3dbd532279f3ebae9e118227"
+}

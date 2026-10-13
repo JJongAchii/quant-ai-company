@@ -1,0 +1,90 @@
+{
+  "availability_is_generated_assumption": true,
+  "candidate_called": false,
+  "evaluation_prices": {
+    "cash_distribution_reinvestment_verified": false,
+    "executable_fill_verified": false,
+    "formula": "open * adj_close / close",
+    "positive_finite_adjusted_open_rows": 8350
+  },
+  "historical_point_in_time_verified": false,
+  "independent_api_row_comparison": {
+    "duplicate_keys": 0,
+    "extra_keys": 0,
+    "matched_rows": 8350,
+    "mismatches": 0,
+    "missing_keys": 0
+  },
+  "input_files": {
+    "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+    "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+  },
+  "market": "kr_etf",
+  "observed_at": "2026-10-01T08:17:59.847696+00:00",
+  "original_conditions_verified": false,
+  "performance_computed": false,
+  "previous_draft_receipt_preserved": true,
+  "previous_draft_receipt_sha256": "b69a41de9d20f2d134d3cce9df2cb7111c66a3cc36e4d79234fc91f88bc63fc4",
+  "production_mutated": false,
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "qualified_worker": false,
+  "quality": {
+    "bad_rows": [],
+    "development_months": 36,
+    "development_rows": 7310,
+    "missing_rows": [],
+    "nontrading_rows": [],
+    "observed_sessions": 835,
+    "warmup_rows": 1040
+  },
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "scope": "numeric_quality_only_for_frozen_vintage_retrospective_policy",
+  "script_sha256": "c1a1f199ce8f8fc5fe581e1c2a9238ea67b48978fcdd0ae1ab9c957b90303d14",
+  "sealed_price_rows_read": false,
+  "selection": {
+    "cohort": [
+      "069500",
+      "229200",
+      "153130",
+      "214980",
+      "196230",
+      "157450",
+      "371460",
+      "102110",
+      "357870",
+      "305720"
+    ],
+    "input_value_is_raw_trading_value": true,
+    "post_selection_rows_used": 0,
+    "reproduced": true,
+    "sessions": [
+      "2022-12-02",
+      "2022-12-05",
+      "2022-12-06",
+      "2022-12-07",
+      "2022-12-08",
+      "2022-12-09",
+      "2022-12-12",
+      "2022-12-13",
+      "2022-12-14",
+      "2022-12-15",
+      "2022-12-16",
+      "2022-12-19",
+      "2022-12-20",
+      "2022-12-21",
+      "2022-12-22",
+      "2022-12-23",
+      "2022-12-26",
+      "2022-12-27",
+      "2022-12-28",
+      "2022-12-29"
+    ]
+  },
+  "source_reports": {
+    "docs/project/evidence/etf-raw-lineage-20260930/raw-body-manifest.json": "d1d0b0f87230f075582324ac3882fe5ee041bb3d0d978fda4707f58aa634ff31",
+    "docs/project/evidence/etf-raw-lineage-20260930/raw-lineage-receipt.json": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a"
+  },
+  "staff_data_decision": "not_made",
+  "state": "ready"
+}

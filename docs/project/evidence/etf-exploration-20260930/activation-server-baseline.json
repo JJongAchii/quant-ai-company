@@ -1,0 +1,681 @@
+{
+  "observed_at": "2026-10-01T03:40:09.490996+00:00",
+  "app_release": "/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30",
+  "containers": {
+    "quant-company-quant-feed-worker-1": {
+      "id": "6ea69ece5fb2e3ca744e36df55ddf30328cd6114a5c5d42a8144ce8df167817e",
+      "image": "quant-company:5defb8cb9dd7c655214663b05670cd2896006b30",
+      "image_id": "sha256:e423f8fa284f7da085c0f1c64e29d6598b713494967d6fb4b53ad2a2d47570f6",
+      "status": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/research.compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/data-watch.compose.yaml",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/config/roles.json",
+          "target": "/etc/quant-company/roles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "target": "/run/secrets/database_password",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/model_runtime_token",
+          "target": "/run/secrets/model_runtime_token",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/temporal_api_key",
+          "target": "/run/secrets/temporal_api_key",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "5defb8cb9dd7c655214663b05670cd2896006b30",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_RUNTIME_URL": "http://quant-codex-runtime:8080",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-api-1": {
+      "id": "04bf679177689dc7df8ce6e3b1a4b0bf43b0d508d4b3e969b60ce46f77ece325",
+      "image": "quant-company:5defb8cb9dd7c655214663b05670cd2896006b30",
+      "image_id": "sha256:e423f8fa284f7da085c0f1c64e29d6598b713494967d6fb4b53ad2a2d47570f6",
+      "status": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/research.compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/data-watch.compose.yaml",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/research",
+          "target": "/state/research",
+          "rw": true,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/config/data-watch-contracts.json",
+          "target": "/etc/quant-company/data-watch-contracts.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/config/research-profiles.json",
+          "target": "/etc/quant-company/research-profiles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/config/roles.json",
+          "target": "/etc/quant-company/roles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "target": "/run/secrets/database_password",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/operator_token",
+          "target": "/run/secrets/operator_token",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/research-worker-token",
+          "target": "/run/secrets/research_worker_token",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/slack-credentials.json",
+          "target": "/run/secrets/slack_credentials",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "5defb8cb9dd7c655214663b05670cd2896006b30",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "RESEARCH_PROFILES_FILE": "/etc/quant-company/research-profiles.json"
+      }
+    },
+    "quant-company-dispatch-1": {
+      "id": "b49e248c61ceb5b2ce118dfa159f9c93612b43afc0bacfb10e696dafec6594c3",
+      "image": "quant-company:5defb8cb9dd7c655214663b05670cd2896006b30",
+      "image_id": "sha256:e423f8fa284f7da085c0f1c64e29d6598b713494967d6fb4b53ad2a2d47570f6",
+      "status": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/research.compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/data-watch.compose.yaml",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/config/data-watch-contracts.json",
+          "target": "/etc/quant-company/data-watch-contracts.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/config/roles.json",
+          "target": "/etc/quant-company/roles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "target": "/run/secrets/database_password",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/slack-credentials.json",
+          "target": "/run/secrets/slack_credentials",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/temporal_api_key",
+          "target": "/run/secrets/temporal_api_key",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "5defb8cb9dd7c655214663b05670cd2896006b30",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-worker-1": {
+      "id": "308eee976969d61f9db75455bdf8da9a94666007fb736747173e2a3484110e9f",
+      "image": "quant-company-autonomous:0286ba3e7426ff6546b90e6926124ae65e71ba79",
+      "image_id": "sha256:95562e94f6967a484a32647af00695375b22682e8ed413359c651430f0e8ff6b",
+      "status": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/compose.yaml,/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/research.compose.yaml,/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/model-accounts.compose.yaml,/var/lib/quant-company/config/private-output-0286ba3e7426ff6546b90e6926124ae65e71ba79.compose.json",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/research",
+          "target": "/state/research",
+          "rw": true,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/config/research-profiles.json",
+          "target": "/etc/quant-company/research-profiles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/config/research-qlab.json",
+          "target": "/etc/quant-company/research-qlab.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/config/roles.json",
+          "target": "/etc/quant-company/roles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/research-audit/qlab",
+          "target": "/opt/research-audit/qlab",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "target": "/run/secrets/database_password",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/lake_read_credentials",
+          "target": "/run/secrets/lake_read_credentials",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/model_runtime_token",
+          "target": "/run/secrets/model_runtime_token",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/research-backup-aws.json",
+          "target": "/run/secrets/research_backup_aws",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/temporal_api_key",
+          "target": "/run/secrets/temporal_api_key",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "0286ba3e7426ff6546b90e6926124ae65e71ba79",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "RESEARCH_DATA_EVIDENCE_FILE": "/state/research/provisioned/data-evidence/registry.json",
+        "RESEARCH_PROFILES_FILE": "/etc/quant-company/research-profiles.json"
+      }
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "b3fb07a97b269728543d01937090bd3437704febce0422bace87ccf0ecd238c2",
+      "image": "quant-company-codex:5defb8cb9dd7c655214663b05670cd2896006b30",
+      "image_id": "sha256:fd446c1b4201b6b81a53461668d0c3b8ce57388564dd68d412408abd1b7b9a7c",
+      "status": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/research.compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/5defb8cb9dd7c655214663b05670cd2896006b30/deploy/data-watch.compose.yaml",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/codex/auth",
+          "target": "/state/auth",
+          "rw": true,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/codex/backup-auth",
+          "target": "/state/backup-auth",
+          "rw": true,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/codex/jobs",
+          "target": "/state/jobs",
+          "rw": true,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/model_runtime_token",
+          "target": "/run/secrets/model_runtime_token",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "5defb8cb9dd7c655214663b05670cd2896006b30",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-slack-socket-1": {
+      "id": "3b9ad1e60c01b212a22ce8f0b53b03c26746d9b6be1457895494c32f01ad2c57",
+      "image": "quant-company:eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+      "image_id": "sha256:8c7d429f187c1d749d8afdef7c55286c5421b9b54b89545877f317bfe66f2658",
+      "status": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/compose.yaml,/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/research.compose.yaml,/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/model-accounts.compose.yaml",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/research",
+          "target": "/state/research",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/config/research-profiles.json",
+          "target": "/etc/quant-company/research-profiles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/config/roles.json",
+          "target": "/etc/quant-company/roles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "target": "/run/secrets/database_password",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/slack-credentials.json",
+          "target": "/run/secrets/slack_credentials",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_ACCOUNTS_ENABLED": "true",
+        "RESEARCH_PROFILES_FILE": "/etc/quant-company/research-profiles.json"
+      }
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "cbf51d0f25f732b2a3660cff19a19240594931cb85a886acf0674a3bc14daeef",
+      "image": "quant-company-codex:d790b2ecf203b63a76425b8b2703c9d10250ff44",
+      "image_id": "sha256:877ac62283dcaabe221c3b738e904ab38a8311461f3e851b593e6441e703b0dd",
+      "status": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/fac61efe624f843c2edc5aec51b8d1e0c7c989cb/deploy/compose.yaml,/opt/quant-company/releases/fac61efe624f843c2edc5aec51b8d1e0c7c989cb/deploy/research.compose.yaml,/opt/quant-company/releases/fac61efe624f843c2edc5aec51b8d1e0c7c989cb/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/fac61efe624f843c2edc5aec51b8d1e0c7c989cb/deploy/model-accounts.compose.yaml",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/codex/auth",
+          "target": "/state/auth",
+          "rw": true,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/codex/backup-auth",
+          "target": "/state/backup-auth",
+          "rw": true,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/codex/jobs",
+          "target": "/state/jobs",
+          "rw": true,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/model_runtime_token",
+          "target": "/run/secrets/model_runtime_token",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "d790b2ecf203b63a76425b8b2703c9d10250ff44",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "b900ca1d55f31c7c29f5eef62e5f5587ccb6c137019104e362cd14da92af274b",
+      "image": "quant-company:0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+      "image_id": "sha256:7c834100fdefc0ecd09c2c8810c2b9630c93976ffa3fa739c78a87e71d752309",
+      "status": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/model-accounts.compose.yaml",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/config/roles.json",
+          "target": "/etc/quant-company/roles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "target": "/run/secrets/database_password",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/lake_read_credentials",
+          "target": "/run/secrets/lake_read_credentials",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/temporal_api_key",
+          "target": "/run/secrets/temporal_api_key",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "7df307ee748d54371c6c9bb2fee6a5ac17e7f5b341d1f137db7af89eb69e74ab",
+      "image": "quant-company:c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+      "image_id": "sha256:db3c79878edf68a0115c8f0b893d41a92fa78e91f1a59bf76f92b60c8a69a589",
+      "status": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/model-accounts.compose.yaml",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/config/roles.json",
+          "target": "/etc/quant-company/roles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "target": "/run/secrets/database_password",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/temporal_api_key",
+          "target": "/run/secrets/temporal_api_key",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-maintenance-1": {
+      "id": "7266163c1e8120facda28c18764423801d68c11e60d43eb388356a700ea25f5d",
+      "image": "quant-company-maintenance:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "image_id": "sha256:50124cabdc3db809bfc799e14aa9af1c155d86b6a577f910d18b49d6e5f226f5",
+      "status": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/config/maintenance.json",
+          "target": "/etc/quant-company/maintenance.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/config/roles.json",
+          "target": "/etc/quant-company/roles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "target": "/run/secrets/database_password",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/maintenance_github_key",
+          "target": "/run/secrets/maintenance_github_key",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/model_runtime_token",
+          "target": "/run/secrets/model_runtime_token",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/temporal_api_key",
+          "target": "/run/secrets/temporal_api_key",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-account-gateway-1": {
+      "id": "54b595660ad3366baf3bec5133bd6383c9fa757c20bd77ec9eda93c133fb9e4b",
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "image_id": "sha256:942a896a92f6a2c6e3d5b4743ad670808da62be448136d77f2e75455f7668b24",
+      "status": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/config/roles.json",
+          "target": "/etc/quant-company/roles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "target": "/run/secrets/database_password",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/model_runtime_token",
+          "target": "/run/secrets/model_runtime_token",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/temporal_api_key",
+          "target": "/run/secrets/temporal_api_key",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-news-worker-1": {
+      "id": "879e0263e71a29109ee3ecca0e8d99e82cc262fbab24924ebcb388cb7b9aef44",
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "image_id": "sha256:942a896a92f6a2c6e3d5b4743ad670808da62be448136d77f2e75455f7668b24",
+      "status": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/config/roles.json",
+          "target": "/etc/quant-company/roles.json",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "target": "/run/secrets/database_password",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/model_runtime_token",
+          "target": "/run/secrets/model_runtime_token",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/temporal_api_key",
+          "target": "/run/secrets/temporal_api_key",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+        "MODEL_RUNTIME_URL": "http://codex-runtime:8080",
+        "MODEL_ACCOUNTS_ENABLED": "true"
+      }
+    },
+    "quant-company-claude-runtime-1": {
+      "id": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+      "image": "quant-company-claude:fde7681e0286501d8713e08e30a96991a88b9151",
+      "image_id": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+      "status": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/research.compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/model-accounts.compose.yaml",
+      "working_dir": "/opt/company",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/claude/auth",
+          "target": "/state/auth",
+          "rw": true,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/claude/jobs",
+          "target": "/state/jobs",
+          "rw": true,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/model_runtime_token",
+          "target": "/run/secrets/model_runtime_token",
+          "rw": false,
+          "type": "bind"
+        }
+      ],
+      "env": {
+        "COMPANY_CODE_COMMIT": "fde7681e0286501d8713e08e30a96991a88b9151",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "image_id": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "status": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/8883e32812c027a6da6eaf31a6b31fa8ce5ecdc4/deploy/compose.yaml,/opt/quant-company/releases/8883e32812c027a6da6eaf31a6b31fa8ce5ecdc4/deploy/research.compose.yaml",
+      "working_dir": "",
+      "mounts": [
+        {
+          "source": "/opt/quant-company/releases/8883e32812c027a6da6eaf31a6b31fa8ce5ecdc4/deploy/init-database.sh",
+          "target": "/docker-entrypoint-initdb.d/10-company.sh",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_admin_password",
+          "target": "/run/secrets/database_admin_password",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "target": "/run/secrets/database_password",
+          "rw": false,
+          "type": "bind"
+        },
+        {
+          "source": "/var/lib/quant-company/postgres",
+          "target": "/var/lib/postgresql/data",
+          "rw": true,
+          "type": "bind"
+        }
+      ],
+      "env": {}
+    }
+  },
+  "database": {
+    "running_turns": 0,
+    "active_jobs": 0,
+    "sending_outbox": 0,
+    "runtime_pause": {
+      "paused_until": null,
+      "reason": null
+    },
+    "program": {
+      "id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+      "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+      "revision": 5,
+      "state": "active",
+      "manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b"
+    },
+    "project_revision": 5,
+    "missions": 0,
+    "usage": {
+      "reservations": 0,
+      "scientific_trials": 0,
+      "outstanding": 0,
+      "compute_seconds": 0
+    }
+  },
+  "config_hashes": {
+    "runtime.env": "ab086c6612eb404bcccc3610606f2e4c14bc80fa1d596fcfd0b7319039df8b4b",
+    "roles.json": "95fdee86cc0e59fdf4f68abb4200a582520cfc3cdb801c5c5f44c1a8af544a3c",
+    "research-profiles.json": "22a5fd7aa0fcd440730258f3a828720c04bf496ac28846354c84ee81e92d0779",
+    "research-qlab.json": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd"
+  },
+  "registry_sha256": "bdef77801a3b65f7588bf00a3916a1a67f7b7e59657db0f1587c8999842646a3",
+  "registry_packets": [
+    {
+      "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+      "envelope": "etf_strategy"
+    },
+    {
+      "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+      "envelope": "etf_claim"
+    }
+  ]
+}

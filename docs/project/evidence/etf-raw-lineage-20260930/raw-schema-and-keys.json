@@ -1,0 +1,4212 @@
+{
+  "duplicate_date_ticker_rows": 0,
+  "empty_snapshots": 0,
+  "objects": 835,
+  "rows": 698359,
+  "schemas": {
+    "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb": {
+      "columns": [
+        "ISU_SRT_CD",
+        "ISU_CD",
+        "SECUGRP_ID",
+        "ISU_ABBRV",
+        "TDD_CLSPRC",
+        "CMPPREVDD_PRC",
+        "FLUC_TP_CD",
+        "FLUC_RT",
+        "NAV",
+        "TDD_OPNPRC",
+        "TDD_HGPRC",
+        "TDD_LWPRC",
+        "ACC_TRDVOL",
+        "ACC_TRDVAL",
+        "MKTCAP",
+        "INVSTASST_NETASST_TOTAMT",
+        "LIST_SHRS",
+        "IDX_IND_NM",
+        "OBJ_STKPRC_IDX",
+        "CMPPREVDD_IDX",
+        "FLUC_TP_CD1",
+        "FLUC_RT1"
+      ],
+      "session_count": 835
+    }
+  },
+  "sessions": [
+    {
+      "rows": 595,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-01"
+    },
+    {
+      "rows": 595,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-02"
+    },
+    {
+      "rows": 595,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-03"
+    },
+    {
+      "rows": 595,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-04"
+    },
+    {
+      "rows": 595,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-05"
+    },
+    {
+      "rows": 595,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-08"
+    },
+    {
+      "rows": 598,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-09"
+    },
+    {
+      "rows": 598,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-10"
+    },
+    {
+      "rows": 598,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-11"
+    },
+    {
+      "rows": 598,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-12"
+    },
+    {
+      "rows": 598,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-16"
+    },
+    {
+      "rows": 601,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-17"
+    },
+    {
+      "rows": 601,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-18"
+    },
+    {
+      "rows": 601,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-19"
+    },
+    {
+      "rows": 601,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-22"
+    },
+    {
+      "rows": 607,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-23"
+    },
+    {
+      "rows": 607,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-24"
+    },
+    {
+      "rows": 607,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-25"
+    },
+    {
+      "rows": 610,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-26"
+    },
+    {
+      "rows": 610,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-29"
+    },
+    {
+      "rows": 611,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-30"
+    },
+    {
+      "rows": 611,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-08-31"
+    },
+    {
+      "rows": 611,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-01"
+    },
+    {
+      "rows": 611,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-02"
+    },
+    {
+      "rows": 611,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-05"
+    },
+    {
+      "rows": 613,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-06"
+    },
+    {
+      "rows": 613,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-07"
+    },
+    {
+      "rows": 613,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-08"
+    },
+    {
+      "rows": 613,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-13"
+    },
+    {
+      "rows": 613,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-14"
+    },
+    {
+      "rows": 614,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-15"
+    },
+    {
+      "rows": 613,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-16"
+    },
+    {
+      "rows": 613,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-19"
+    },
+    {
+      "rows": 615,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-20"
+    },
+    {
+      "rows": 615,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-21"
+    },
+    {
+      "rows": 620,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-22"
+    },
+    {
+      "rows": 620,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-23"
+    },
+    {
+      "rows": 620,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-26"
+    },
+    {
+      "rows": 622,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-27"
+    },
+    {
+      "rows": 622,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-28"
+    },
+    {
+      "rows": 622,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-29"
+    },
+    {
+      "rows": 622,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-09-30"
+    },
+    {
+      "rows": 622,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-04"
+    },
+    {
+      "rows": 622,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-05"
+    },
+    {
+      "rows": 623,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-06"
+    },
+    {
+      "rows": 623,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-07"
+    },
+    {
+      "rows": 623,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-11"
+    },
+    {
+      "rows": 623,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-12"
+    },
+    {
+      "rows": 624,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-13"
+    },
+    {
+      "rows": 624,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-14"
+    },
+    {
+      "rows": 624,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-17"
+    },
+    {
+      "rows": 626,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-18"
+    },
+    {
+      "rows": 626,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-19"
+    },
+    {
+      "rows": 626,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-20"
+    },
+    {
+      "rows": 626,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-21"
+    },
+    {
+      "rows": 626,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-24"
+    },
+    {
+      "rows": 629,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-25"
+    },
+    {
+      "rows": 629,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-26"
+    },
+    {
+      "rows": 630,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-27"
+    },
+    {
+      "rows": 630,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-28"
+    },
+    {
+      "rows": 630,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-10-31"
+    },
+    {
+      "rows": 631,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-01"
+    },
+    {
+      "rows": 631,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-02"
+    },
+    {
+      "rows": 631,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-03"
+    },
+    {
+      "rows": 631,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-04"
+    },
+    {
+      "rows": 631,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-07"
+    },
+    {
+      "rows": 631,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-08"
+    },
+    {
+      "rows": 631,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-09"
+    },
+    {
+      "rows": 631,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-10"
+    },
+    {
+      "rows": 631,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-11"
+    },
+    {
+      "rows": 631,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-14"
+    },
+    {
+      "rows": 637,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-15"
+    },
+    {
+      "rows": 637,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-16"
+    },
+    {
+      "rows": 637,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-17"
+    },
+    {
+      "rows": 637,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-18"
+    },
+    {
+      "rows": 637,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-21"
+    },
+    {
+      "rows": 645,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-22"
+    },
+    {
+      "rows": 645,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-23"
+    },
+    {
+      "rows": 645,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-24"
+    },
+    {
+      "rows": 647,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-25"
+    },
+    {
+      "rows": 647,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-28"
+    },
+    {
+      "rows": 653,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-29"
+    },
+    {
+      "rows": 655,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-11-30"
+    },
+    {
+      "rows": 655,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-01"
+    },
+    {
+      "rows": 657,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-02"
+    },
+    {
+      "rows": 657,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-05"
+    },
+    {
+      "rows": 657,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-06"
+    },
+    {
+      "rows": 657,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-07"
+    },
+    {
+      "rows": 657,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-08"
+    },
+    {
+      "rows": 658,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-09"
+    },
+    {
+      "rows": 658,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-12"
+    },
+    {
+      "rows": 658,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-13"
+    },
+    {
+      "rows": 658,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-14"
+    },
+    {
+      "rows": 658,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-15"
+    },
+    {
+      "rows": 660,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-16"
+    },
+    {
+      "rows": 660,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-19"
+    },
+    {
+      "rows": 663,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-20"
+    },
+    {
+      "rows": 661,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-21"
+    },
+    {
+      "rows": 665,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-22"
+    },
+    {
+      "rows": 666,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-23"
+    },
+    {
+      "rows": 666,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-26"
+    },
+    {
+      "rows": 666,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-27"
+    },
+    {
+      "rows": 666,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-28"
+    },
+    {
+      "rows": 666,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2022-12-29"
+    },
+    {
+      "rows": 666,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-02"
+    },
+    {
+      "rows": 666,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-03"
+    },
+    {
+      "rows": 666,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-04"
+    },
+    {
+      "rows": 667,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-05"
+    },
+    {
+      "rows": 667,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-06"
+    },
+    {
+      "rows": 667,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-09"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-10"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-11"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-12"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-13"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-16"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-17"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-18"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-19"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-20"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-25"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-26"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-27"
+    },
+    {
+      "rows": 668,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-30"
+    },
+    {
+      "rows": 671,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-01-31"
+    },
+    {
+      "rows": 674,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-01"
+    },
+    {
+      "rows": 674,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-02"
+    },
+    {
+      "rows": 674,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-03"
+    },
+    {
+      "rows": 674,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-06"
+    },
+    {
+      "rows": 676,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-07"
+    },
+    {
+      "rows": 676,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-08"
+    },
+    {
+      "rows": 676,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-09"
+    },
+    {
+      "rows": 676,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-10"
+    },
+    {
+      "rows": 676,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-13"
+    },
+    {
+      "rows": 677,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-14"
+    },
+    {
+      "rows": 677,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-15"
+    },
+    {
+      "rows": 677,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-16"
+    },
+    {
+      "rows": 677,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-17"
+    },
+    {
+      "rows": 677,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-20"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-21"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-22"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-23"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-24"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-27"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-02-28"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-02"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-03"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-06"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-07"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-08"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-09"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-10"
+    },
+    {
+      "rows": 678,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-13"
+    },
+    {
+      "rows": 682,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-14"
+    },
+    {
+      "rows": 682,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-15"
+    },
+    {
+      "rows": 682,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-16"
+    },
+    {
+      "rows": 682,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-17"
+    },
+    {
+      "rows": 682,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-20"
+    },
+    {
+      "rows": 688,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-21"
+    },
+    {
+      "rows": 688,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-22"
+    },
+    {
+      "rows": 690,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-23"
+    },
+    {
+      "rows": 690,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-24"
+    },
+    {
+      "rows": 690,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-27"
+    },
+    {
+      "rows": 690,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-28"
+    },
+    {
+      "rows": 690,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-29"
+    },
+    {
+      "rows": 690,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-30"
+    },
+    {
+      "rows": 690,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-03-31"
+    },
+    {
+      "rows": 690,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-03"
+    },
+    {
+      "rows": 693,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-04"
+    },
+    {
+      "rows": 693,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-05"
+    },
+    {
+      "rows": 693,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-06"
+    },
+    {
+      "rows": 693,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-07"
+    },
+    {
+      "rows": 693,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-10"
+    },
+    {
+      "rows": 694,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-11"
+    },
+    {
+      "rows": 694,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-12"
+    },
+    {
+      "rows": 694,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-13"
+    },
+    {
+      "rows": 695,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-14"
+    },
+    {
+      "rows": 695,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-17"
+    },
+    {
+      "rows": 697,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-18"
+    },
+    {
+      "rows": 697,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-19"
+    },
+    {
+      "rows": 697,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-20"
+    },
+    {
+      "rows": 699,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-21"
+    },
+    {
+      "rows": 699,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-24"
+    },
+    {
+      "rows": 703,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-25"
+    },
+    {
+      "rows": 703,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-26"
+    },
+    {
+      "rows": 703,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-27"
+    },
+    {
+      "rows": 703,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-04-28"
+    },
+    {
+      "rows": 703,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-02"
+    },
+    {
+      "rows": 703,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-03"
+    },
+    {
+      "rows": 703,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-04"
+    },
+    {
+      "rows": 703,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-08"
+    },
+    {
+      "rows": 707,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-09"
+    },
+    {
+      "rows": 707,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-10"
+    },
+    {
+      "rows": 707,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-11"
+    },
+    {
+      "rows": 707,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-12"
+    },
+    {
+      "rows": 707,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-15"
+    },
+    {
+      "rows": 711,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-16"
+    },
+    {
+      "rows": 711,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-17"
+    },
+    {
+      "rows": 711,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-18"
+    },
+    {
+      "rows": 711,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-19"
+    },
+    {
+      "rows": 711,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-22"
+    },
+    {
+      "rows": 712,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-23"
+    },
+    {
+      "rows": 712,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-24"
+    },
+    {
+      "rows": 712,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-25"
+    },
+    {
+      "rows": 712,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-26"
+    },
+    {
+      "rows": 712,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-30"
+    },
+    {
+      "rows": 717,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-05-31"
+    },
+    {
+      "rows": 717,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-01"
+    },
+    {
+      "rows": 717,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-02"
+    },
+    {
+      "rows": 717,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-05"
+    },
+    {
+      "rows": 717,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-07"
+    },
+    {
+      "rows": 719,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-08"
+    },
+    {
+      "rows": 719,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-09"
+    },
+    {
+      "rows": 719,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-12"
+    },
+    {
+      "rows": 719,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-13"
+    },
+    {
+      "rows": 719,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-14"
+    },
+    {
+      "rows": 719,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-15"
+    },
+    {
+      "rows": 719,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-16"
+    },
+    {
+      "rows": 719,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-19"
+    },
+    {
+      "rows": 728,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-20"
+    },
+    {
+      "rows": 728,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-21"
+    },
+    {
+      "rows": 728,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-22"
+    },
+    {
+      "rows": 728,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-23"
+    },
+    {
+      "rows": 726,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-26"
+    },
+    {
+      "rows": 731,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-27"
+    },
+    {
+      "rows": 731,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-28"
+    },
+    {
+      "rows": 733,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-29"
+    },
+    {
+      "rows": 733,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-06-30"
+    },
+    {
+      "rows": 733,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-03"
+    },
+    {
+      "rows": 735,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-04"
+    },
+    {
+      "rows": 735,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-05"
+    },
+    {
+      "rows": 735,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-06"
+    },
+    {
+      "rows": 735,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-07"
+    },
+    {
+      "rows": 735,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-10"
+    },
+    {
+      "rows": 738,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-11"
+    },
+    {
+      "rows": 738,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-12"
+    },
+    {
+      "rows": 739,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-13"
+    },
+    {
+      "rows": 739,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-14"
+    },
+    {
+      "rows": 739,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-17"
+    },
+    {
+      "rows": 742,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-18"
+    },
+    {
+      "rows": 742,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-19"
+    },
+    {
+      "rows": 742,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-20"
+    },
+    {
+      "rows": 742,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-21"
+    },
+    {
+      "rows": 742,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-24"
+    },
+    {
+      "rows": 744,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-25"
+    },
+    {
+      "rows": 744,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-26"
+    },
+    {
+      "rows": 744,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-27"
+    },
+    {
+      "rows": 744,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-28"
+    },
+    {
+      "rows": 744,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-07-31"
+    },
+    {
+      "rows": 748,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-01"
+    },
+    {
+      "rows": 748,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-02"
+    },
+    {
+      "rows": 750,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-03"
+    },
+    {
+      "rows": 750,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-04"
+    },
+    {
+      "rows": 750,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-07"
+    },
+    {
+      "rows": 752,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-08"
+    },
+    {
+      "rows": 752,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-09"
+    },
+    {
+      "rows": 752,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-10"
+    },
+    {
+      "rows": 752,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-11"
+    },
+    {
+      "rows": 752,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-14"
+    },
+    {
+      "rows": 752,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-16"
+    },
+    {
+      "rows": 757,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-17"
+    },
+    {
+      "rows": 757,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-18"
+    },
+    {
+      "rows": 757,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-21"
+    },
+    {
+      "rows": 760,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-22"
+    },
+    {
+      "rows": 760,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-23"
+    },
+    {
+      "rows": 760,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-24"
+    },
+    {
+      "rows": 758,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-25"
+    },
+    {
+      "rows": 758,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-28"
+    },
+    {
+      "rows": 759,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-29"
+    },
+    {
+      "rows": 759,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-30"
+    },
+    {
+      "rows": 760,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-08-31"
+    },
+    {
+      "rows": 760,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-01"
+    },
+    {
+      "rows": 760,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-04"
+    },
+    {
+      "rows": 760,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-05"
+    },
+    {
+      "rows": 760,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-06"
+    },
+    {
+      "rows": 760,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-07"
+    },
+    {
+      "rows": 760,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-08"
+    },
+    {
+      "rows": 760,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-11"
+    },
+    {
+      "rows": 766,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-12"
+    },
+    {
+      "rows": 766,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-13"
+    },
+    {
+      "rows": 766,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-14"
+    },
+    {
+      "rows": 766,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-15"
+    },
+    {
+      "rows": 766,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-18"
+    },
+    {
+      "rows": 769,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-19"
+    },
+    {
+      "rows": 769,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-20"
+    },
+    {
+      "rows": 770,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-21"
+    },
+    {
+      "rows": 770,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-22"
+    },
+    {
+      "rows": 770,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-25"
+    },
+    {
+      "rows": 770,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-26"
+    },
+    {
+      "rows": 770,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-09-27"
+    },
+    {
+      "rows": 770,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-04"
+    },
+    {
+      "rows": 772,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-05"
+    },
+    {
+      "rows": 772,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-06"
+    },
+    {
+      "rows": 772,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-10"
+    },
+    {
+      "rows": 774,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-11"
+    },
+    {
+      "rows": 774,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-12"
+    },
+    {
+      "rows": 774,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-13"
+    },
+    {
+      "rows": 774,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-16"
+    },
+    {
+      "rows": 779,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-17"
+    },
+    {
+      "rows": 779,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-18"
+    },
+    {
+      "rows": 784,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-19"
+    },
+    {
+      "rows": 784,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-20"
+    },
+    {
+      "rows": 784,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-23"
+    },
+    {
+      "rows": 788,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-24"
+    },
+    {
+      "rows": 788,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-25"
+    },
+    {
+      "rows": 789,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-26"
+    },
+    {
+      "rows": 787,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-27"
+    },
+    {
+      "rows": 787,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-30"
+    },
+    {
+      "rows": 788,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-10-31"
+    },
+    {
+      "rows": 788,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-01"
+    },
+    {
+      "rows": 788,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-02"
+    },
+    {
+      "rows": 788,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-03"
+    },
+    {
+      "rows": 788,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-06"
+    },
+    {
+      "rows": 791,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-07"
+    },
+    {
+      "rows": 791,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-08"
+    },
+    {
+      "rows": 793,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-09"
+    },
+    {
+      "rows": 793,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-10"
+    },
+    {
+      "rows": 793,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-13"
+    },
+    {
+      "rows": 796,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-14"
+    },
+    {
+      "rows": 796,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-15"
+    },
+    {
+      "rows": 796,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-16"
+    },
+    {
+      "rows": 796,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-17"
+    },
+    {
+      "rows": 796,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-20"
+    },
+    {
+      "rows": 800,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-21"
+    },
+    {
+      "rows": 800,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-22"
+    },
+    {
+      "rows": 800,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-23"
+    },
+    {
+      "rows": 800,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-24"
+    },
+    {
+      "rows": 800,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-27"
+    },
+    {
+      "rows": 803,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-28"
+    },
+    {
+      "rows": 803,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-29"
+    },
+    {
+      "rows": 803,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-11-30"
+    },
+    {
+      "rows": 803,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-01"
+    },
+    {
+      "rows": 803,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-04"
+    },
+    {
+      "rows": 805,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-05"
+    },
+    {
+      "rows": 805,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-06"
+    },
+    {
+      "rows": 803,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-07"
+    },
+    {
+      "rows": 803,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-08"
+    },
+    {
+      "rows": 803,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-11"
+    },
+    {
+      "rows": 806,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-12"
+    },
+    {
+      "rows": 805,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-13"
+    },
+    {
+      "rows": 807,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-14"
+    },
+    {
+      "rows": 805,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-15"
+    },
+    {
+      "rows": 804,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-18"
+    },
+    {
+      "rows": 805,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-19"
+    },
+    {
+      "rows": 805,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-20"
+    },
+    {
+      "rows": 809,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-21"
+    },
+    {
+      "rows": 809,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-22"
+    },
+    {
+      "rows": 809,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-26"
+    },
+    {
+      "rows": 812,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-27"
+    },
+    {
+      "rows": 812,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2023-12-28"
+    },
+    {
+      "rows": 812,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-02"
+    },
+    {
+      "rows": 812,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-03"
+    },
+    {
+      "rows": 812,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-04"
+    },
+    {
+      "rows": 812,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-05"
+    },
+    {
+      "rows": 812,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-08"
+    },
+    {
+      "rows": 812,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-09"
+    },
+    {
+      "rows": 812,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-10"
+    },
+    {
+      "rows": 812,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-11"
+    },
+    {
+      "rows": 812,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-12"
+    },
+    {
+      "rows": 812,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-15"
+    },
+    {
+      "rows": 817,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-16"
+    },
+    {
+      "rows": 817,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-17"
+    },
+    {
+      "rows": 819,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-18"
+    },
+    {
+      "rows": 819,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-19"
+    },
+    {
+      "rows": 819,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-22"
+    },
+    {
+      "rows": 823,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-23"
+    },
+    {
+      "rows": 823,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-24"
+    },
+    {
+      "rows": 823,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-25"
+    },
+    {
+      "rows": 823,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-26"
+    },
+    {
+      "rows": 823,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-29"
+    },
+    {
+      "rows": 824,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-30"
+    },
+    {
+      "rows": 824,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-01-31"
+    },
+    {
+      "rows": 824,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-01"
+    },
+    {
+      "rows": 824,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-02"
+    },
+    {
+      "rows": 824,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-05"
+    },
+    {
+      "rows": 825,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-06"
+    },
+    {
+      "rows": 825,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-07"
+    },
+    {
+      "rows": 825,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-08"
+    },
+    {
+      "rows": 825,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-13"
+    },
+    {
+      "rows": 828,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-14"
+    },
+    {
+      "rows": 828,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-15"
+    },
+    {
+      "rows": 828,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-16"
+    },
+    {
+      "rows": 828,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-19"
+    },
+    {
+      "rows": 829,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-20"
+    },
+    {
+      "rows": 829,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-21"
+    },
+    {
+      "rows": 829,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-22"
+    },
+    {
+      "rows": 829,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-23"
+    },
+    {
+      "rows": 829,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-26"
+    },
+    {
+      "rows": 835,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-27"
+    },
+    {
+      "rows": 835,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-28"
+    },
+    {
+      "rows": 837,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-02-29"
+    },
+    {
+      "rows": 837,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-04"
+    },
+    {
+      "rows": 840,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-05"
+    },
+    {
+      "rows": 840,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-06"
+    },
+    {
+      "rows": 840,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-07"
+    },
+    {
+      "rows": 840,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-08"
+    },
+    {
+      "rows": 840,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-11"
+    },
+    {
+      "rows": 843,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-12"
+    },
+    {
+      "rows": 843,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-13"
+    },
+    {
+      "rows": 843,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-14"
+    },
+    {
+      "rows": 843,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-15"
+    },
+    {
+      "rows": 843,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-18"
+    },
+    {
+      "rows": 844,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-19"
+    },
+    {
+      "rows": 844,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-20"
+    },
+    {
+      "rows": 844,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-21"
+    },
+    {
+      "rows": 844,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-22"
+    },
+    {
+      "rows": 844,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-25"
+    },
+    {
+      "rows": 846,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-26"
+    },
+    {
+      "rows": 846,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-27"
+    },
+    {
+      "rows": 846,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-28"
+    },
+    {
+      "rows": 846,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-03-29"
+    },
+    {
+      "rows": 846,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-01"
+    },
+    {
+      "rows": 847,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-02"
+    },
+    {
+      "rows": 847,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-03"
+    },
+    {
+      "rows": 847,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-04"
+    },
+    {
+      "rows": 847,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-05"
+    },
+    {
+      "rows": 847,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-08"
+    },
+    {
+      "rows": 846,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-09"
+    },
+    {
+      "rows": 846,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-11"
+    },
+    {
+      "rows": 846,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-12"
+    },
+    {
+      "rows": 846,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-15"
+    },
+    {
+      "rows": 849,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-16"
+    },
+    {
+      "rows": 849,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-17"
+    },
+    {
+      "rows": 849,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-18"
+    },
+    {
+      "rows": 849,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-19"
+    },
+    {
+      "rows": 849,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-22"
+    },
+    {
+      "rows": 855,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-23"
+    },
+    {
+      "rows": 855,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-24"
+    },
+    {
+      "rows": 855,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-25"
+    },
+    {
+      "rows": 853,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-26"
+    },
+    {
+      "rows": 853,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-29"
+    },
+    {
+      "rows": 856,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-04-30"
+    },
+    {
+      "rows": 856,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-02"
+    },
+    {
+      "rows": 856,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-03"
+    },
+    {
+      "rows": 856,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-07"
+    },
+    {
+      "rows": 857,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-08"
+    },
+    {
+      "rows": 857,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-09"
+    },
+    {
+      "rows": 857,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-10"
+    },
+    {
+      "rows": 857,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-13"
+    },
+    {
+      "rows": 860,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-14"
+    },
+    {
+      "rows": 860,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-16"
+    },
+    {
+      "rows": 860,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-17"
+    },
+    {
+      "rows": 860,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-20"
+    },
+    {
+      "rows": 864,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-21"
+    },
+    {
+      "rows": 864,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-22"
+    },
+    {
+      "rows": 864,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-23"
+    },
+    {
+      "rows": 864,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-24"
+    },
+    {
+      "rows": 862,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-27"
+    },
+    {
+      "rows": 868,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-28"
+    },
+    {
+      "rows": 868,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-29"
+    },
+    {
+      "rows": 868,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-30"
+    },
+    {
+      "rows": 868,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-05-31"
+    },
+    {
+      "rows": 868,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-03"
+    },
+    {
+      "rows": 868,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-04"
+    },
+    {
+      "rows": 868,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-05"
+    },
+    {
+      "rows": 867,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-07"
+    },
+    {
+      "rows": 867,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-10"
+    },
+    {
+      "rows": 872,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-11"
+    },
+    {
+      "rows": 872,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-12"
+    },
+    {
+      "rows": 872,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-13"
+    },
+    {
+      "rows": 872,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-14"
+    },
+    {
+      "rows": 872,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-17"
+    },
+    {
+      "rows": 875,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-18"
+    },
+    {
+      "rows": 875,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-19"
+    },
+    {
+      "rows": 875,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-20"
+    },
+    {
+      "rows": 875,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-21"
+    },
+    {
+      "rows": 875,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-24"
+    },
+    {
+      "rows": 879,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-25"
+    },
+    {
+      "rows": 863,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-26"
+    },
+    {
+      "rows": 863,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-27"
+    },
+    {
+      "rows": 863,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-06-28"
+    },
+    {
+      "rows": 863,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-01"
+    },
+    {
+      "rows": 864,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-02"
+    },
+    {
+      "rows": 864,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-03"
+    },
+    {
+      "rows": 864,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-04"
+    },
+    {
+      "rows": 864,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-05"
+    },
+    {
+      "rows": 864,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-08"
+    },
+    {
+      "rows": 870,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-09"
+    },
+    {
+      "rows": 870,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-10"
+    },
+    {
+      "rows": 870,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-11"
+    },
+    {
+      "rows": 870,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-12"
+    },
+    {
+      "rows": 870,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-15"
+    },
+    {
+      "rows": 872,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-16"
+    },
+    {
+      "rows": 872,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-17"
+    },
+    {
+      "rows": 872,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-18"
+    },
+    {
+      "rows": 872,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-19"
+    },
+    {
+      "rows": 872,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-22"
+    },
+    {
+      "rows": 879,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-23"
+    },
+    {
+      "rows": 873,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-24"
+    },
+    {
+      "rows": 873,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-25"
+    },
+    {
+      "rows": 873,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-26"
+    },
+    {
+      "rows": 873,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-29"
+    },
+    {
+      "rows": 873,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-30"
+    },
+    {
+      "rows": 873,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-07-31"
+    },
+    {
+      "rows": 873,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-01"
+    },
+    {
+      "rows": 873,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-02"
+    },
+    {
+      "rows": 873,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-05"
+    },
+    {
+      "rows": 876,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-06"
+    },
+    {
+      "rows": 876,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-07"
+    },
+    {
+      "rows": 876,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-08"
+    },
+    {
+      "rows": 876,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-09"
+    },
+    {
+      "rows": 876,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-12"
+    },
+    {
+      "rows": 880,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-13"
+    },
+    {
+      "rows": 880,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-14"
+    },
+    {
+      "rows": 880,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-16"
+    },
+    {
+      "rows": 880,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-19"
+    },
+    {
+      "rows": 881,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-20"
+    },
+    {
+      "rows": 881,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-21"
+    },
+    {
+      "rows": 881,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-22"
+    },
+    {
+      "rows": 881,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-23"
+    },
+    {
+      "rows": 881,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-26"
+    },
+    {
+      "rows": 881,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-27"
+    },
+    {
+      "rows": 881,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-28"
+    },
+    {
+      "rows": 881,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-29"
+    },
+    {
+      "rows": 881,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-08-30"
+    },
+    {
+      "rows": 881,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-02"
+    },
+    {
+      "rows": 883,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-03"
+    },
+    {
+      "rows": 882,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-04"
+    },
+    {
+      "rows": 882,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-05"
+    },
+    {
+      "rows": 882,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-06"
+    },
+    {
+      "rows": 882,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-09"
+    },
+    {
+      "rows": 890,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-10"
+    },
+    {
+      "rows": 889,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-11"
+    },
+    {
+      "rows": 889,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-12"
+    },
+    {
+      "rows": 889,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-13"
+    },
+    {
+      "rows": 889,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-19"
+    },
+    {
+      "rows": 889,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-20"
+    },
+    {
+      "rows": 889,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-23"
+    },
+    {
+      "rows": 896,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-24"
+    },
+    {
+      "rows": 896,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-25"
+    },
+    {
+      "rows": 896,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-26"
+    },
+    {
+      "rows": 893,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-27"
+    },
+    {
+      "rows": 893,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-09-30"
+    },
+    {
+      "rows": 897,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-02"
+    },
+    {
+      "rows": 897,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-04"
+    },
+    {
+      "rows": 897,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-07"
+    },
+    {
+      "rows": 898,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-08"
+    },
+    {
+      "rows": 898,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-10"
+    },
+    {
+      "rows": 898,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-11"
+    },
+    {
+      "rows": 898,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-14"
+    },
+    {
+      "rows": 902,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-15"
+    },
+    {
+      "rows": 902,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-16"
+    },
+    {
+      "rows": 902,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-17"
+    },
+    {
+      "rows": 902,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-18"
+    },
+    {
+      "rows": 902,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-21"
+    },
+    {
+      "rows": 909,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-22"
+    },
+    {
+      "rows": 909,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-23"
+    },
+    {
+      "rows": 907,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-24"
+    },
+    {
+      "rows": 907,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-25"
+    },
+    {
+      "rows": 907,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-28"
+    },
+    {
+      "rows": 911,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-29"
+    },
+    {
+      "rows": 911,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-30"
+    },
+    {
+      "rows": 911,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-10-31"
+    },
+    {
+      "rows": 911,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-01"
+    },
+    {
+      "rows": 923,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-04"
+    },
+    {
+      "rows": 923,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-05"
+    },
+    {
+      "rows": 919,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-06"
+    },
+    {
+      "rows": 920,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-07"
+    },
+    {
+      "rows": 920,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-08"
+    },
+    {
+      "rows": 920,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-11"
+    },
+    {
+      "rows": 921,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-12"
+    },
+    {
+      "rows": 921,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-13"
+    },
+    {
+      "rows": 921,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-14"
+    },
+    {
+      "rows": 921,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-15"
+    },
+    {
+      "rows": 921,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-18"
+    },
+    {
+      "rows": 925,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-19"
+    },
+    {
+      "rows": 925,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-20"
+    },
+    {
+      "rows": 925,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-21"
+    },
+    {
+      "rows": 925,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-22"
+    },
+    {
+      "rows": 925,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-25"
+    },
+    {
+      "rows": 930,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-26"
+    },
+    {
+      "rows": 929,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-27"
+    },
+    {
+      "rows": 929,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-28"
+    },
+    {
+      "rows": 929,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-11-29"
+    },
+    {
+      "rows": 929,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-02"
+    },
+    {
+      "rows": 932,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-03"
+    },
+    {
+      "rows": 932,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-04"
+    },
+    {
+      "rows": 932,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-05"
+    },
+    {
+      "rows": 931,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-06"
+    },
+    {
+      "rows": 930,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-09"
+    },
+    {
+      "rows": 931,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-10"
+    },
+    {
+      "rows": 931,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-11"
+    },
+    {
+      "rows": 931,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-12"
+    },
+    {
+      "rows": 930,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-13"
+    },
+    {
+      "rows": 930,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-16"
+    },
+    {
+      "rows": 934,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-17"
+    },
+    {
+      "rows": 930,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-18"
+    },
+    {
+      "rows": 930,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-19"
+    },
+    {
+      "rows": 930,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-20"
+    },
+    {
+      "rows": 930,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-23"
+    },
+    {
+      "rows": 935,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-24"
+    },
+    {
+      "rows": 935,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-26"
+    },
+    {
+      "rows": 935,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-27"
+    },
+    {
+      "rows": 935,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2024-12-30"
+    },
+    {
+      "rows": 935,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-02"
+    },
+    {
+      "rows": 935,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-03"
+    },
+    {
+      "rows": 935,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-06"
+    },
+    {
+      "rows": 937,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-07"
+    },
+    {
+      "rows": 937,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-08"
+    },
+    {
+      "rows": 937,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-09"
+    },
+    {
+      "rows": 937,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-10"
+    },
+    {
+      "rows": 937,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-13"
+    },
+    {
+      "rows": 940,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-14"
+    },
+    {
+      "rows": 940,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-15"
+    },
+    {
+      "rows": 940,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-16"
+    },
+    {
+      "rows": 939,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-17"
+    },
+    {
+      "rows": 939,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-20"
+    },
+    {
+      "rows": 944,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-21"
+    },
+    {
+      "rows": 941,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-22"
+    },
+    {
+      "rows": 941,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-23"
+    },
+    {
+      "rows": 941,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-24"
+    },
+    {
+      "rows": 941,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-01-31"
+    },
+    {
+      "rows": 941,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-03"
+    },
+    {
+      "rows": 941,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-04"
+    },
+    {
+      "rows": 941,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-05"
+    },
+    {
+      "rows": 941,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-06"
+    },
+    {
+      "rows": 941,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-07"
+    },
+    {
+      "rows": 941,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-10"
+    },
+    {
+      "rows": 944,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-11"
+    },
+    {
+      "rows": 944,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-12"
+    },
+    {
+      "rows": 944,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-13"
+    },
+    {
+      "rows": 944,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-14"
+    },
+    {
+      "rows": 944,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-17"
+    },
+    {
+      "rows": 949,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-18"
+    },
+    {
+      "rows": 949,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-19"
+    },
+    {
+      "rows": 948,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-20"
+    },
+    {
+      "rows": 948,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-21"
+    },
+    {
+      "rows": 948,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-24"
+    },
+    {
+      "rows": 951,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-25"
+    },
+    {
+      "rows": 951,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-26"
+    },
+    {
+      "rows": 951,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-27"
+    },
+    {
+      "rows": 951,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-02-28"
+    },
+    {
+      "rows": 951,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-04"
+    },
+    {
+      "rows": 952,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-05"
+    },
+    {
+      "rows": 952,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-06"
+    },
+    {
+      "rows": 952,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-07"
+    },
+    {
+      "rows": 952,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-10"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-11"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-12"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-13"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-14"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-17"
+    },
+    {
+      "rows": 961,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-18"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-19"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-20"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-21"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-24"
+    },
+    {
+      "rows": 963,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-25"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-26"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-27"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-28"
+    },
+    {
+      "rows": 960,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-03-31"
+    },
+    {
+      "rows": 961,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-01"
+    },
+    {
+      "rows": 961,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-02"
+    },
+    {
+      "rows": 961,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-03"
+    },
+    {
+      "rows": 961,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-04"
+    },
+    {
+      "rows": 961,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-07"
+    },
+    {
+      "rows": 962,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-08"
+    },
+    {
+      "rows": 962,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-09"
+    },
+    {
+      "rows": 962,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-10"
+    },
+    {
+      "rows": 962,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-11"
+    },
+    {
+      "rows": 962,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-14"
+    },
+    {
+      "rows": 965,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-15"
+    },
+    {
+      "rows": 965,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-16"
+    },
+    {
+      "rows": 965,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-17"
+    },
+    {
+      "rows": 965,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-18"
+    },
+    {
+      "rows": 965,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-21"
+    },
+    {
+      "rows": 972,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-22"
+    },
+    {
+      "rows": 972,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-23"
+    },
+    {
+      "rows": 971,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-24"
+    },
+    {
+      "rows": 971,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-25"
+    },
+    {
+      "rows": 971,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-28"
+    },
+    {
+      "rows": 973,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-29"
+    },
+    {
+      "rows": 973,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-04-30"
+    },
+    {
+      "rows": 973,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-02"
+    },
+    {
+      "rows": 973,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-07"
+    },
+    {
+      "rows": 973,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-08"
+    },
+    {
+      "rows": 973,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-09"
+    },
+    {
+      "rows": 973,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-12"
+    },
+    {
+      "rows": 983,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-13"
+    },
+    {
+      "rows": 983,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-14"
+    },
+    {
+      "rows": 983,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-15"
+    },
+    {
+      "rows": 983,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-16"
+    },
+    {
+      "rows": 983,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-19"
+    },
+    {
+      "rows": 987,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-20"
+    },
+    {
+      "rows": 987,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-21"
+    },
+    {
+      "rows": 986,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-22"
+    },
+    {
+      "rows": 986,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-23"
+    },
+    {
+      "rows": 986,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-26"
+    },
+    {
+      "rows": 989,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-27"
+    },
+    {
+      "rows": 989,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-28"
+    },
+    {
+      "rows": 989,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-29"
+    },
+    {
+      "rows": 989,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-05-30"
+    },
+    {
+      "rows": 989,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-02"
+    },
+    {
+      "rows": 984,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-04"
+    },
+    {
+      "rows": 984,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-05"
+    },
+    {
+      "rows": 984,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-09"
+    },
+    {
+      "rows": 986,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-10"
+    },
+    {
+      "rows": 986,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-11"
+    },
+    {
+      "rows": 986,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-12"
+    },
+    {
+      "rows": 986,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-13"
+    },
+    {
+      "rows": 986,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-16"
+    },
+    {
+      "rows": 991,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-17"
+    },
+    {
+      "rows": 991,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-18"
+    },
+    {
+      "rows": 991,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-19"
+    },
+    {
+      "rows": 991,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-20"
+    },
+    {
+      "rows": 991,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-23"
+    },
+    {
+      "rows": 992,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-24"
+    },
+    {
+      "rows": 990,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-25"
+    },
+    {
+      "rows": 990,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-26"
+    },
+    {
+      "rows": 990,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-27"
+    },
+    {
+      "rows": 990,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-06-30"
+    },
+    {
+      "rows": 991,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-01"
+    },
+    {
+      "rows": 991,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-02"
+    },
+    {
+      "rows": 991,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-03"
+    },
+    {
+      "rows": 991,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-04"
+    },
+    {
+      "rows": 991,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-07"
+    },
+    {
+      "rows": 992,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-08"
+    },
+    {
+      "rows": 992,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-09"
+    },
+    {
+      "rows": 992,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-10"
+    },
+    {
+      "rows": 992,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-11"
+    },
+    {
+      "rows": 992,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-14"
+    },
+    {
+      "rows": 996,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-15"
+    },
+    {
+      "rows": 995,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-16"
+    },
+    {
+      "rows": 995,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-17"
+    },
+    {
+      "rows": 995,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-18"
+    },
+    {
+      "rows": 995,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-21"
+    },
+    {
+      "rows": 1002,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-22"
+    },
+    {
+      "rows": 1002,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-23"
+    },
+    {
+      "rows": 1002,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-24"
+    },
+    {
+      "rows": 1002,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-25"
+    },
+    {
+      "rows": 1002,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-28"
+    },
+    {
+      "rows": 1006,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-29"
+    },
+    {
+      "rows": 1006,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-30"
+    },
+    {
+      "rows": 1006,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-07-31"
+    },
+    {
+      "rows": 1006,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-01"
+    },
+    {
+      "rows": 1005,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-04"
+    },
+    {
+      "rows": 1005,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-05"
+    },
+    {
+      "rows": 1005,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-06"
+    },
+    {
+      "rows": 1005,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-07"
+    },
+    {
+      "rows": 1005,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-08"
+    },
+    {
+      "rows": 1005,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-11"
+    },
+    {
+      "rows": 1008,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-12"
+    },
+    {
+      "rows": 1008,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-13"
+    },
+    {
+      "rows": 1008,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-14"
+    },
+    {
+      "rows": 1007,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-18"
+    },
+    {
+      "rows": 1012,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-19"
+    },
+    {
+      "rows": 1012,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-20"
+    },
+    {
+      "rows": 1011,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-21"
+    },
+    {
+      "rows": 1011,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-22"
+    },
+    {
+      "rows": 1011,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-25"
+    },
+    {
+      "rows": 1017,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-26"
+    },
+    {
+      "rows": 1016,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-27"
+    },
+    {
+      "rows": 1016,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-28"
+    },
+    {
+      "rows": 1016,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-08-29"
+    },
+    {
+      "rows": 1016,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-01"
+    },
+    {
+      "rows": 1020,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-02"
+    },
+    {
+      "rows": 1020,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-03"
+    },
+    {
+      "rows": 1020,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-04"
+    },
+    {
+      "rows": 1020,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-05"
+    },
+    {
+      "rows": 1020,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-08"
+    },
+    {
+      "rows": 1021,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-09"
+    },
+    {
+      "rows": 1021,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-10"
+    },
+    {
+      "rows": 1021,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-11"
+    },
+    {
+      "rows": 1021,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-12"
+    },
+    {
+      "rows": 1021,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-15"
+    },
+    {
+      "rows": 1022,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-16"
+    },
+    {
+      "rows": 1022,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-17"
+    },
+    {
+      "rows": 1019,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-18"
+    },
+    {
+      "rows": 1019,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-19"
+    },
+    {
+      "rows": 1019,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-22"
+    },
+    {
+      "rows": 1027,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-23"
+    },
+    {
+      "rows": 1027,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-24"
+    },
+    {
+      "rows": 1027,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-25"
+    },
+    {
+      "rows": 1024,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-26"
+    },
+    {
+      "rows": 1024,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-29"
+    },
+    {
+      "rows": 1029,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-09-30"
+    },
+    {
+      "rows": 1029,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-01"
+    },
+    {
+      "rows": 1029,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-02"
+    },
+    {
+      "rows": 1029,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-10"
+    },
+    {
+      "rows": 1029,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-13"
+    },
+    {
+      "rows": 1029,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-14"
+    },
+    {
+      "rows": 1028,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-15"
+    },
+    {
+      "rows": 1028,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-16"
+    },
+    {
+      "rows": 1028,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-17"
+    },
+    {
+      "rows": 1028,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-20"
+    },
+    {
+      "rows": 1033,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-21"
+    },
+    {
+      "rows": 1033,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-22"
+    },
+    {
+      "rows": 1033,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-23"
+    },
+    {
+      "rows": 1033,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-24"
+    },
+    {
+      "rows": 1033,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-27"
+    },
+    {
+      "rows": 1040,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-28"
+    },
+    {
+      "rows": 1039,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-29"
+    },
+    {
+      "rows": 1039,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-30"
+    },
+    {
+      "rows": 1039,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-10-31"
+    },
+    {
+      "rows": 1039,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-03"
+    },
+    {
+      "rows": 1041,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-04"
+    },
+    {
+      "rows": 1039,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-05"
+    },
+    {
+      "rows": 1039,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-06"
+    },
+    {
+      "rows": 1039,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-07"
+    },
+    {
+      "rows": 1039,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-10"
+    },
+    {
+      "rows": 1044,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-11"
+    },
+    {
+      "rows": 1044,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-12"
+    },
+    {
+      "rows": 1044,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-13"
+    },
+    {
+      "rows": 1043,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-14"
+    },
+    {
+      "rows": 1043,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-17"
+    },
+    {
+      "rows": 1045,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-18"
+    },
+    {
+      "rows": 1044,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-19"
+    },
+    {
+      "rows": 1044,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-20"
+    },
+    {
+      "rows": 1043,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-21"
+    },
+    {
+      "rows": 1043,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-24"
+    },
+    {
+      "rows": 1049,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-25"
+    },
+    {
+      "rows": 1048,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-26"
+    },
+    {
+      "rows": 1048,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-27"
+    },
+    {
+      "rows": 1048,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-11-28"
+    },
+    {
+      "rows": 1048,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-01"
+    },
+    {
+      "rows": 1049,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-02"
+    },
+    {
+      "rows": 1049,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-03"
+    },
+    {
+      "rows": 1048,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-04"
+    },
+    {
+      "rows": 1048,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-05"
+    },
+    {
+      "rows": 1046,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-08"
+    },
+    {
+      "rows": 1051,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-09"
+    },
+    {
+      "rows": 1051,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-10"
+    },
+    {
+      "rows": 1051,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-11"
+    },
+    {
+      "rows": 1051,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-12"
+    },
+    {
+      "rows": 1051,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-15"
+    },
+    {
+      "rows": 1058,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-16"
+    },
+    {
+      "rows": 1057,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-17"
+    },
+    {
+      "rows": 1057,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-18"
+    },
+    {
+      "rows": 1055,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-19"
+    },
+    {
+      "rows": 1055,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-22"
+    },
+    {
+      "rows": 1058,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-23"
+    },
+    {
+      "rows": 1058,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-24"
+    },
+    {
+      "rows": 1058,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-26"
+    },
+    {
+      "rows": 1058,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-29"
+    },
+    {
+      "rows": 1058,
+      "schema_sha256": "bb97c7458cff65a1ab890559f4f3414107b61177ad4fbb43c95c67638f5009bb",
+      "trade_date": "2025-12-30"
+    }
+  ]
+}

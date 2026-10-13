@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-01T06:12:34.783104+00:00",
+  "validation_version": 42,
+  "format_version": 15,
+  "command": ".venv/bin/pytest tests/test_briefing.py tests/test_briefing_content.py tests/test_briefing_analyst.py tests/test_briefing_planning.py tests/test_briefing_quality.py --junitxml=docs/project/evidence/briefing-analyst-quality-20261001/regression-v42.xml -q",
+  "counts": {
+    "tests": 176,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsed_seconds_reported": 13.9,
+  "xml_sha256": "4530e2882e1f09a2db5f49a8fd199673d779695a974a6ec41f5ee91a8f3ec527",
+  "targeted_reproduction_before_fix": {
+    "command": ".venv/bin/pytest tests/test_briefing_content.py -k \"adjacent_english_comparative or vw_margin_range\" -q",
+    "failed": 3,
+    "deselected": 101
+  },
+  "targeted_after_fix": {
+    "passed": 3,
+    "deselected": 101
+  },
+  "scope": "Real local PostgreSQL contract tests, fixture originals/model responses. Semantic prompt changes require separate actual-model evaluation. No Slack send or deployment.",
+  "lint": "All checks passed for changed files",
+  "source_hashes": {
+    "src/quant_company/briefing/numeric.py": "019b11e44d2e5bc917dd1658c03faebdeb6a5f2181a87276975acfe08ad40da1",
+    "src/quant_company/briefing/editor.py": "bec08b7856cb604f2d0f5afdf4505a930667437a633dec90007c786dc2b26e06",
+    "tests/test_briefing_content.py": "31f15c36cc6ca709fac03bcbe7bc01adf7c6715c5fe1bfd5da8ddf5137036801"
+  }
+}

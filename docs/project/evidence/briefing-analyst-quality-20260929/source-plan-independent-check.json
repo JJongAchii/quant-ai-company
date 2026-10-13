@@ -1,0 +1,18 @@
+{
+  "recorded_before_writer_response": "2026-09-29T04:30:10.749204+00:00",
+  "selection_result": "improved_but_requires_review",
+  "selected_count": 16,
+  "selected_media_chars": 29067,
+  "restored_major_transaction": "AMD World Labs all-stock agreement is selected; closing is future and after US regular close",
+  "core_closes": "Two separately published US market close articles selected with matching S&P 500 and Nasdaq Composite values; dated previous Korean close/FX is available in a selected article, but no independent US exchange feed is frozen here.",
+  "omitted_originals_for_reviewer": [
+    "Samsung earnings operating-driver story 05ec0a43",
+    "Nvidia/Hugging Face competitive bidding disclosure 22704ca4",
+    "Hormuz ship transit recovery 21ef907b",
+    "Iowa steel investment announcement e35e6800",
+    "Prior KR close recap 4ca2c256 is a short duplicate of a selected dated photo caption, so do not request it merely for a title."
+  ],
+  "qualification": false,
+  "note": "Candidate index is metadata; no omitted-title fact is credited without reading its original. Same-source development only.",
+  "selected_bundle_sha256": "1e91d1ee3a43cce73262e7d064d240cb336bb174778d0c68848eb9c6d552e6ca"
+}

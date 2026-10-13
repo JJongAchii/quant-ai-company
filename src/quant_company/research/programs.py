@@ -5,12 +5,22 @@ import math
 from psycopg.types.json import Jsonb
 
 from ..company import PolicyError, as_json, fingerprint, stable
+from .adaptive_contracts import digest_model
 from .builds import profile_for
-from .data_evidence import load_packets
+from .data_evidence import load_packets, require_admissible_gaps
 from .library import available_sources, require_current, verify_citations
 from .mission_contracts import MissionSpec
 from .missions import MissionStore, typed
+from .policy_contracts import require_scope
 from .program_contracts import DataAssessment, ResearchProgram, ResearchTaskProposal, TaskDecision
+from .scientific_lineages import (
+    attach_task,
+    authorize,
+    overview,
+    require_authority,
+    summary,
+    validate_preimage,
+)
 
 
 def _task_details(conn, program_id, *, limit=10):
@@ -70,11 +80,18 @@ class ProgramStore:
                 or not project["channel"] or not project["thread_ts"]):
             raise PolicyError("Program requires an authorized active research thread")
         self.company._check_sources(conn, project["id"], spec.source_ids)
+        digest = fingerprint(spec.model_dump(mode="json"))
+        identity = stable(f"program:{project['id']}:{project['revision']}:{digest}")
+        old = conn.execute("SELECT manifest_digest FROM research_programs WHERE id=%s", (identity,)).fetchone()
+        if old:
+            if old["manifest_digest"] != digest:
+                raise PolicyError("Program identity changed")
+            return self.snapshot(conn, identity)
         for envelope in spec.envelopes:
             profile_for(self.company, envelope.template)
             self.company._check_sources(conn, project["id"], envelope.template.baseline_source_ids)
-        digest = fingerprint(spec.model_dump(mode="json"))
-        identity = stable(f"program:{project['id']}:{project['revision']}:{digest}")
+            if envelope.template.scientific_lineage is not None:
+                validate_preimage(conn, project["id"], envelope.template.scientific_lineage)
         conn.execute("""INSERT INTO research_programs(id,project_id,owner_user,revision,spec,manifest_digest)
             VALUES(%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING""", (identity, project["id"], project["owner_user"],
                 project["revision"], Jsonb(spec.model_dump(mode="json")), digest))
@@ -89,8 +106,14 @@ class ProgramStore:
                 return self.snapshot(conn, program_id)
             if row["state"] != "draft":
                 raise PolicyError("Program approval requires a draft")
+            if any(e.template.data.policy is not None for e in spec.envelopes) and conn.execute(
+                "SELECT 1 FROM research_programs WHERE project_id=%s AND revision=%s AND state='active' AND id<>%s",
+                (project["id"], row["revision"], program_id),
+            ).fetchone():
+                raise PolicyError("Exploratory replacement requires cancellation of the prior active program")
             for envelope in spec.envelopes:
                 profile_for(self.company, envelope.template)
+                authorize(conn, project["id"], program_id, envelope)
             conn.execute("""UPDATE research_programs SET state='active',approval_event_id=%s,approved_at=now(),
                 updated_at=now() WHERE id=%s""", (event_key, program_id))
         elif action == "cancel":
@@ -117,7 +140,10 @@ class ProgramStore:
         _, row, spec = self.locked(conn, program_id)
         missions = conn.execute("SELECT id FROM research_missions WHERE program_id=%s ORDER BY created_at,id",
                                (program_id,)).fetchall()
+        lineages = {e.name: summary(overview(conn, row["project_id"], e.template.scientific_lineage.id))
+                    for e in spec.envelopes if e.template.scientific_lineage is not None}
         return as_json({key: row[key] for key in ("id", "project_id", "revision", "manifest_digest", "state")} | {
+            **({"scientific_lineages": lineages} if lineages else {}),
             "title": spec.title, "usage": self.usage(conn, program_id),
             "limits": {"trials": spec.max_total_trials, "compute_seconds": spec.max_compute_seconds,
                        "missions": spec.max_missions},
@@ -128,12 +154,24 @@ class ProgramStore:
         project, row, spec = self.locked(conn, program_id, active=True)
         MissionStore(self.company)._actor(actor, "researcher_kr")
         proposal = typed(ResearchTaskProposal, value)
-        if proposal.envelope not in {e.name for e in spec.envelopes}:
+        envelope = next((e for e in spec.envelopes if e.name == proposal.envelope), None)
+        if envelope is None:
             raise PolicyError("Task selects an unapproved envelope")
+        policy = envelope.template.data_policy
+        if policy is not None and policy.mode == "frozen_vintage_retrospective" and proposal.mode != "novel_hypothesis":
+            raise PolicyError("Conditional retrospective research admits novel hypotheses only")
+        if envelope.template.data.policy is not None and proposal.mode == "exact_replication":
+            raise PolicyError("Retrospective exploration cannot claim exact replication")
         allowed = {s["id"] for s in available_sources(self.company, conn, project, spec, program_id)}
         if not set(proposal.source_ids) <= allowed:
             raise PolicyError("Task cites sources outside the program library")
         require_current(conn, proposal.source_ids)
+        conditional_source = conn.execute("""SELECT 1 FROM sources WHERE id=ANY(%s)
+            AND (metadata->'research_scope'->>'result_scope'='conditional_retrospective_development'
+                 OR metadata->'data_policy'->>'result_use'='hypothesis_generation_only')""",
+            (proposal.source_ids,)).fetchone()
+        if conditional_source and proposal.mode != "novel_hypothesis":
+            raise PolicyError("Conditional source evidence cannot establish original replication or transfer conditions")
         verify_citations(conn, proposal)
         for prior in proposal.predecessor_mission_ids:
             if not conn.execute("SELECT 1 FROM research_missions WHERE id=%s AND program_id=%s",
@@ -162,19 +200,43 @@ class ProgramStore:
         if not task or task["state"] != "proposed":
             raise PolicyError("Data assessment requires an unassessed proposal")
         envelope = next(e for e in spec.envelopes if e.name == task["proposal"]["envelope"])
-        if value.decision == "ready":
-            profile = profile_for(self.company, envelope.template)
-            if not profile.public_profile.fixture_only:
-                packet = load_packets(self.company, program, {envelope.name: envelope}).get(envelope.name)
-                if packet is None:
-                    raise PolicyError("Real data readiness requires a verified input evidence packet")
-                if packet[0].blocking_gaps:
-                    raise PolicyError("Data evidence packet still records blocking gaps")
-        if (task["proposal"]["mode"] == "exact_replication" and value.decision == "ready"
-                and not value.original_conditions):
-            raise PolicyError("Exact replication requires the original conditions; register a transfer instead")
+        self._assessment(conn, program, envelope, task, value, allow_blocked=True)
         conn.execute("UPDATE research_program_tasks SET data_assessment=%s,state='assessed' WHERE id=%s",
                      (Jsonb(value.model_dump(mode="json")), task_id))
+
+    def _assessment(self, conn, program, envelope, task, value, *, allow_blocked=False):
+        spec = envelope.template
+        try:
+            require_scope(spec, value)
+        except ValueError as exc:
+            raise PolicyError(str(exc)) from exc
+        if value.decision == "blocked":
+            if allow_blocked:
+                return
+            raise PolicyError("Data prerequisites are unresolved")
+        if value.decision == "exploratory_only" and (
+                spec.data.policy is None or value.data_policy_digest != digest_model(spec.data.policy)):
+            raise PolicyError("Exploration requires the exact owner-approved data policy")
+        if spec.data.policy is not None and value.decision != "exploratory_only":
+            raise PolicyError("Exploratory data policy cannot establish strict data readiness")
+        expected = "exploratory_only" if spec.data.policy is not None else (
+            "conditional_ready" if (spec.data_policy is not None
+            and spec.data_policy.mode == "frozen_vintage_retrospective") else "ready")
+        if value.decision != expected:
+            raise PolicyError("Data readiness does not match the signed research policy")
+        if value.decision == "conditional_ready" and task["proposal"]["mode"] != "novel_hypothesis":
+            raise PolicyError("Conditional evidence cannot authorize replication or transfer")
+        profile = profile_for(self.company, spec)
+        if spec.schema_version == 3 or value.decision == "exploratory_only" or not profile.public_profile.fixture_only:
+            found = load_packets(self.company, program, {envelope.name: envelope}).get(envelope.name)
+            if found is None:
+                raise PolicyError("Real data readiness requires a verified input evidence packet")
+            packet = found[0]
+            if spec.schema_version == 3 and value.packet_digest != fingerprint(packet.model_dump(mode="json")):
+                raise PolicyError("Independent data assessment cites a different evidence packet")
+            require_admissible_gaps(packet, spec)
+        if task["proposal"]["mode"] == "exact_replication" and not value.original_conditions:
+            raise PolicyError("Exact replication requires the original conditions; register a transfer instead")
 
     def decide(self, conn, program_id, task_id, payload, *, actor):
         project, row, spec = self.locked(conn, program_id, active=True)
@@ -188,8 +250,10 @@ class ProgramStore:
             conn.execute("UPDATE research_program_tasks SET state=%s,decision=%s WHERE id=%s",
                 ("waiting" if decision.decision == "wait" else "rejected", Jsonb(decision.model_dump()), task_id))
             return
-        if task["data_assessment"]["decision"] != "ready":
-            raise PolicyError("Data prerequisites are unresolved")
+        envelope = next(e for e in spec.envelopes if e.name == task["proposal"]["envelope"])
+        self._assessment(conn, row, envelope, task, typed(DataAssessment, task["data_assessment"]))
+        require_authority(conn, project["id"], program_id, envelope)
+        proposal = typed(ResearchTaskProposal, task["proposal"])
         used = self.usage(conn, program_id)
         count = conn.execute("SELECT count(*) AS n FROM research_missions WHERE program_id=%s", (program_id,)).fetchone()["n"]
         if count >= spec.max_missions or used["trials"] >= spec.max_total_trials or used["compute_seconds"] >= spec.max_compute_seconds:
@@ -198,8 +262,6 @@ class ProgramStore:
                   if m["stage"] not in {"owner_review", "cancelled"}]
         if len(active) >= spec.max_parallel_missions:
             raise PolicyError("Program parallel mission limit reached")
-        proposal = typed(ResearchTaskProposal, task["proposal"])
-        envelope = next(e for e in spec.envelopes if e.name == proposal.envelope)
         require_current(conn, proposal.source_ids)
         mission_spec = envelope.template.model_dump(mode="json")
         mission_spec.update(title=proposal.title, baseline_source_ids=sorted(set(
@@ -215,6 +277,7 @@ class ProgramStore:
             approved_at=%s WHERE id=%s AND state='draft'""", (program_id, row["approval_event_id"], row["approved_at"], mission["id"]))
         conn.execute("UPDATE research_program_tasks SET state='accepted',mission_id=%s,decision=%s WHERE id=%s",
                      (mission["id"], Jsonb(decision.model_dump()), task_id))
+        attach_task(conn, task, mission_spec)
         self.company._event(conn, "research_program_task_authorized", {"program_id": str(program_id),
             "program_digest": row["manifest_digest"], "task_id": str(task_id), "mission_id": mission["id"],
             "mission_digest": mission["manifest_digest"], "approval_event_id": row["approval_event_id"]}, project["id"])
@@ -222,7 +285,7 @@ class ProgramStore:
     def require_authorized(self, conn, mission):
         if not mission.get("program_id"):
             return
-        _, program, spec = self.locked(conn, mission["program_id"], active=True)
+        project, program, spec = self.locked(conn, mission["program_id"], active=True)
         task = conn.execute("SELECT * FROM research_program_tasks WHERE mission_id=%s AND state='accepted'",
                             (mission["id"],)).fetchone()
         if (not task or task["program_id"] != program["id"]
@@ -232,6 +295,10 @@ class ProgramStore:
         envelope = next((e for e in spec.envelopes if e.name == task["proposal"]["envelope"]), None)
         if envelope is None:
             raise PolicyError("Program envelope is missing")
+        if fingerprint(task["proposal"]) != task["digest"]:
+            raise PolicyError("Program task proposal changed")
+        self._assessment(conn, program, envelope, task, typed(DataAssessment, task["data_assessment"]))
+        require_authority(conn, project["id"], program["id"], envelope)
         expected = envelope.template.model_dump(mode="json")
         expected.update(title=task["proposal"]["title"], baseline_source_ids=sorted(set(
             envelope.template.baseline_source_ids + task["proposal"]["source_ids"] + task["data_assessment"]["source_ids"])))
@@ -252,6 +319,9 @@ class ProgramStore:
         usage = self.usage(conn, mission["program_id"])
         if usage["trials"] + 1 > spec.max_total_trials or usage["compute_seconds"] + seconds > spec.max_compute_seconds:
             raise PolicyError("Program resource budget exhausted; reservation denied")
+        from .scientific_lineages import reserve
+
+        reserve(conn, typed(MissionSpec, mission["spec"]), trial_id)
         conn.execute("""INSERT INTO research_program_reservations(job_id,program_id,trial_id,reserved_seconds)
             VALUES(%s,%s,%s,%s)""", (job_id, mission["program_id"], trial_id, seconds))
 

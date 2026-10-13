@@ -1,0 +1,249 @@
+{
+  "at": "2026-10-06T05:33:52.099678+00:00",
+  "installed_commit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
+  "validation_version": 56,
+  "format_version": 15,
+  "automatic_publication": false,
+  "deployment": "preview_active_actual_cloud",
+  "source_ci_run": null,
+  "verification": "Local same-command CI equivalent:1819passed,48explicit skips; GitHub checks absent for latest PR updates; previous integrated source CI37411764420success",
+  "latest_completed_content_case": {
+    "case": "on-demand-am-20261006-v51",
+    "outcome": "closed_writer_preflight_failed",
+    "quality_passed": false,
+    "independent_check_score": null,
+    "completed_calls": 2,
+    "critic_calls": 0,
+    "repairs": 0,
+    "remaining_same_case_calls": 0,
+    "main_characters": 7632,
+    "issues": 6,
+    "material_facts": 62,
+    "selected_news_body_characters": 29687,
+    "selected_all_body_characters": 38634,
+    "mechanical_rejected_ids": {
+      "obs_kospi": "collected_observation_modified",
+      "obs_kosdaq": "collected_observation_modified"
+    },
+    "source_notes_violations": [
+      {
+        "reason": "source_notes_material_numbers_missing_from_main",
+        "source_id": "61ecfa057519ba7b3923b463ac65e786b6bd5b0c",
+        "fact_index": 0,
+        "main_item_ids": [
+          "rates_interpretation"
+        ]
+      }
+    ],
+    "tokens": {
+      "input": 87681,
+      "output": 29808,
+      "total": 117489
+    },
+    "token_scope": "Only completed real plan/write calls; excludes editing-thread Codex usage.",
+    "readable_preview": "Private .local/analyst-on-demand-am-20261006-v51/draft-v55/brief.md; failed and never Slack-published."
+  },
+  "next_frozen_policy": "prospective-pm-20261006-v56-reader-policy.json",
+  "next_content_status": "pending_not_yet_collected_or_evaluated",
+  "next_schedule_kst": {
+    "collection": "2026-10-06 19:10",
+    "cutoff": "2026-10-06 19:30",
+    "due": "2026-10-06 20:15"
+  },
+  "next_edition_id": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+  "bounded_execution": {
+    "max_distinct_requests": 3,
+    "max_completed_model_calls": 3,
+    "max_repairs": 0,
+    "native_model_search_calls": 0,
+    "model_calls_for_other_editions": 0,
+    "input_coverage_gate_before_planning": true,
+    "current_policy_model_call_count_at_probe": 0
+  },
+  "operating": {
+    "api_and_codex_preserved": {
+      "api": true,
+      "codex-runtime": true
+    },
+    "non_analyst_roles_preserved": true,
+    "non_preview_env_preserved": true,
+    "actual_lake_previous_krx_observations": [
+      {
+        "instrument": "kospi",
+        "session_date": "2026-10-02",
+        "previous_session_date": "2026-10-01",
+        "as_of": "2026-10-02T06:30:00+00:00"
+      },
+      {
+        "instrument": "kosdaq",
+        "session_date": "2026-10-02",
+        "previous_session_date": "2026-10-01",
+        "as_of": "2026-10-02T06:30:00+00:00"
+      }
+    ],
+    "actual_lake_rejected": {},
+    "lake_diagnostics": [
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "DBC",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "EEM",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "EFA",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "GLD",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "HYG",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "IWM",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "QQQ",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "SPY",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      },
+      {
+        "dataset": "prices",
+        "error": "stale_context",
+        "series": "TLT",
+        "latest": "2026-10-01",
+        "expected": "2026-10-05"
+      }
+    ],
+    "temporal": [
+      {
+        "id": "company-brief-collection-v1",
+        "status": "RUNNING"
+      },
+      {
+        "id": "company-brief-editorial-v1",
+        "status": "RUNNING"
+      },
+      {
+        "id": "company-brief-data-v1",
+        "status": "RUNNING"
+      }
+    ],
+    "verification_receipt": "preview-installation-v56-reader-live-probe.json",
+    "reader_execution": {
+      "import_root": "/opt/company/src",
+      "company_credentials_excluded": true
+    }
+  },
+  "technical": {
+    "regression_receipt": "regression-v56.json",
+    "PostgreSQL": "real",
+    "Temporal_local_tests": "real",
+    "tests_model_and_slack": "simulated",
+    "cloud": "Actual installed workers, source verification, lake API read and Temporal workflow inspection",
+    "final_same_command_verification": "regression-v56-final-ci-equivalent.json"
+  },
+  "remaining": [
+    "Fresh PM original-to-visible-main review and all12 criteria with zero mechanical rejection.",
+    "On-time preview and five trading days operating qualification.",
+    "Real channel delivery/followup receipts and owner content acceptance before authorized publication."
+  ],
+  "historical_cases": [
+    {
+      "case": "heldout-pm-20260921-v41",
+      "scope": "historical frozen41",
+      "outcome": "failed_invalid_review_quote_exceeds400",
+      "completed_calls": 3,
+      "fresh_quality_pass": false
+    },
+    {
+      "case": "heldout-am-20260924-v42",
+      "scope": "historical frozen42",
+      "outcome": "closed_failed",
+      "original_completed_calls": 4,
+      "development45_last_review_checks": 9,
+      "development45_failed_checks": [
+        "materiality",
+        "counterevidence",
+        "coverage"
+      ],
+      "combined_completed_calls": 5,
+      "fresh_quality_pass": false
+    },
+    {
+      "case": "heldout-am-20260921-v45",
+      "outcome": "source_unavailable_0articles",
+      "model_calls": 0,
+      "fresh_quality_pass": false
+    },
+    {
+      "case": "development-am-20260926-v45",
+      "scope": "historically evaluatedday, newfirst45writer on complete frozenoriginals",
+      "outcome": "containerrestart interruptedwriter, boundreceipt runninguncertain",
+      "completed_new_calls_confirmed": 1,
+      "uncertain_new_effects": 1,
+      "repair_or_replay": false,
+      "fresh_quality_pass": false
+    },
+    {
+      "case": "pm-20261001-v46",
+      "scope": "prospectivepolicy frozen beforetitles/content/cutoff",
+      "cutoff": "2026-10-01T19:30:00+09:00",
+      "outcome": "notqueued_or_executed",
+      "model_calls": 0,
+      "fresh_quality_pass": false
+    },
+    {
+      "case": "late-am-20261002-v47",
+      "outcome": "closed_failed_semantic_omissions",
+      "initial_passed_checks": 8,
+      "final_passed_checks": 8,
+      "failed_checks": [
+        "materiality",
+        "counterevidence",
+        "coverage",
+        "depth"
+      ],
+      "completed_calls": 5,
+      "remaining_same_cohort_calls": 0,
+      "mechanical_rejected_ids": {},
+      "original_body_chars": 36435,
+      "candidate_chars_before_final_review": 7532,
+      "qualification": "Development48 repair with lossless49 final-review transport; not a fresh50writer, on-time run, five-day acceptance, expert certification or Slack delivery."
+    }
+  ],
+  "historical_summary_sha256": "498bba4e12b48efbba55bca0158fdad7f5883c764ef06d8e76fa66a4f124ceb4",
+  "new_raw_evidence": "Private Gitignored originals, requests, responses and readable draft; public metadata only."
+}

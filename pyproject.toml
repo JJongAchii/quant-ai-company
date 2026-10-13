@@ -13,17 +13,30 @@ dependencies = [
   "temporalio>=1.9,<2",
   "slack-sdk>=3.38,<4",
   "aiohttp>=3.12,<4",
+  "exchange-calendars>=4.11,<5",
   "pypdf==6.18.0",
 ]
 
 [project.optional-dependencies]
 lake = ["qdata[s3]"]
+video = [
+    "av>=12,<19",
+    "boto3>=1.35,<2",
+    "cryptography>=44,<47 ; platform_machine == 'x86_64' and sys_platform == 'darwin'",
+    "faster-whisper>=1.2,<2",
+    "google-auth-oauthlib>=1.2,<2",
+    "mcp>=1.20,<2",
+    "onnxruntime>=1.18,<1.20 ; platform_machine == 'x86_64' and sys_platform == 'darwin'",
+    "pillow>=11,<13",  # story photos are framed 16:9 (video/photos.py)
+    "playwright>=1.55,<2",
+]
 
 [tool.uv.sources]
 qdata = { path = "../quant-data" }
 
 [dependency-groups]
 dev = [
+    "jsonschema>=4.23,<5",
     "pyarrow>=20,<26",
     "pytest>=8.3,<10",
     "pytest-asyncio>=0.25,<2",

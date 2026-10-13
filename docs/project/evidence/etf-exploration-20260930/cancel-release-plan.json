@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "candidate_app_commit": "79586479aeef07554be311951e40bbe00c33cafe",
+  "operating_app_preserved": "ea092f419b4b679df4c25e479a8cb361b4d046ff",
+  "source_delta_from_actual_app": [
+    "src/quant_company/research/approvals.py"
+  ],
+  "full_validation": {
+    "passed": 1471,
+    "skipped": 13,
+    "seconds": 462.24,
+    "postgres": "real",
+    "qlab_commit": "37abfceb07f5b684d7c3210548fecef156e3f9fc",
+    "slack": "signed_simulated",
+    "scientific_trials": 0
+  },
+  "integration_validation": {
+    "passed": 89,
+    "seconds": 20.77,
+    "scope": "signed cancel, fresh replacement approval and legacy authorization guards"
+  },
+  "archive_sha256": "5876890334d77b38b5376d2339dcd37825c663260ecfc44b9b54dda196cc5ae8",
+  "expected_image_id": "sha256:9c6be6fdc4d385c44b1ebbfafdb5c2d11f16a28d84f31014acfd462abeed1005",
+  "research_worker_company_commit": "3c848af95dc33b7da444a55018fd41d374c10025",
+  "worker_3070_company_commit": "3c848af95dc33b7da444a55018fd41d374c10025",
+  "selected_services": [
+    "api",
+    "slack-socket"
+  ],
+  "new_program_digest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
+  "scientific_approval": "requires fresh signed Slack owner action after exact prior cancellation"
+}

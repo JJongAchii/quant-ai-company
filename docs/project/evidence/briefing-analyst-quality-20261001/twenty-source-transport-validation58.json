@@ -1,0 +1,29 @@
+{
+  "recorded_at": "2026-10-06T11:48:10.877180+00:00",
+  "scope": "Local real-source transport probe; no new model content verdict.",
+  "validation_version": 58,
+  "news_originals": 20,
+  "calendar_and_dataset_documents": 7,
+  "news_body_chars": 37422,
+  "all_body_chars": 46369,
+  "request_limit_chars": 88000,
+  "prompts": {
+    "write": {
+      "chars": 83151,
+      "sha256": "d78c6e57093ea8880092d18008443f11c1bc651ad13f4a5def3f4f712c724bdd",
+      "layout": "compact_ordered_rows",
+      "all_original_bodies_exact": true
+    },
+    "review": {
+      "chars": 86317,
+      "sha256": "4d1bb02e94c73e0e69c08e7c513cf3aef84e2099735ff714ca75d29bc495f373",
+      "layout": "grouped_documents",
+      "all_original_bodies_exact": true
+    }
+  },
+  "bundle_unchanged": true,
+  "proposal_unchanged": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "raw_originals_or_prompt_in_this_receipt": false
+}

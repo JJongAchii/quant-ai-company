@@ -1,0 +1,17 @@
+{
+  "attempt1_exit_code": 1,
+  "candidate_process_started": false,
+  "failure": "mount-outside-approved-root",
+  "new_remote_destination": "qualification-02",
+  "operating_config_changed": false,
+  "original_log_sha256": "bb020477112d1adf9a95f17be0ee85e5180fe704e341700caee8f3c0bb04bcd5",
+  "original_worker_package_sha256": "744cfbb35dbfe36dff33aeedf237fd006f92e93a0b586961d4c238d03b710847",
+  "recorded_at": "2026-10-02T04:28:57.809019+00:00",
+  "repair": "qualification_code_workspace_is_now_inside_the_allowed_job_root",
+  "repair_package_sha256": "520326e0f193ef8bb14e50aadc1e2501f12be171b82f9fdcfdc8a2709b4dddea",
+  "repaired_script_sha256": "9341804569194a95578a35d535d62be557dc86435bd30427ac0e599d654f8a14",
+  "sandbox_policy_changed": false,
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "source_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562"
+}

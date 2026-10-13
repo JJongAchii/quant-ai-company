@@ -1,0 +1,62 @@
+{
+  "at": "2026-09-30T10:45:35.382546+00:00",
+  "scope": "Independent original-to-visible-main audit before semantic review; not model grading or human certification",
+  "documents_read": 16,
+  "rejected": {},
+  "quote_conflicts": [],
+  "main_chars": 5741,
+  "review_prompt_chars": 64641,
+  "core_prices": {
+    "kosdaq": "corroborated",
+    "kospi": "corroborated",
+    "usdkrw": "corroborated"
+  },
+  "findings": [
+    {
+      "state": "covered",
+      "topic": "KRX close corroborated; intraday reversal, flow discrepancy and narrow participation shown"
+    },
+    {
+      "state": "covered",
+      "topic": "Memory product/quarter baselines, server contracts and consumer SSD offsets shown; post-close forecast not session cause"
+    },
+    {
+      "state": "covered",
+      "topic": "Latest US Treasury retracement and rate probability differ from earlier reports without claimed causal proof"
+    },
+    {
+      "state": "covered",
+      "topic": "Latest Brent intraday rebound distinguished from prior contract close; actual diesel divergence and proposed regulatory alternative shown"
+    },
+    {
+      "state": "covered",
+      "topic": "Iran response/cabinet report, Trump denial and implementation-order disagreement; no ceasefire inference"
+    },
+    {
+      "state": "covered",
+      "topic": "Ukraine actual power loss with conditional economic effects; no invented global price reaction"
+    },
+    {
+      "state": "potential_missing",
+      "topic": "Domestic3year yield direction has level but no6.5bp scale;10year4.407/-6.9bp absent; issue needs enough magnitude for policy judgment"
+    },
+    {
+      "state": "potential_missing",
+      "topic": "Fiscal source63.2trillion additional revenue estimate/10trillion reduction conjecture not shown; do not treat either as confirmed execution"
+    },
+    {
+      "state": "potential_missing",
+      "topic": "Semiconductor equipment source core Jusung4.73% rise and third-place rank, forthcoming Samsung preliminary earnings not shown"
+    },
+    {
+      "state": "potential_missing",
+      "topic": "Japan industrial production-1.7% versus+1.7%expected absent, despite Asia overview noting equity divergence"
+    },
+    {
+      "state": "potential_missing",
+      "topic": "Current labor-market survey perception still positive, expectations63.6 omitted; distinguish survey from actual spending"
+    }
+  ],
+  "review_result_known": false,
+  "slack": "not_called"
+}

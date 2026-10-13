@@ -1,0 +1,13 @@
+# Build only for the optional media worker; model runtimes retain their existing image.
+ARG COMPANY_APP_IMAGE=quant-company:unqualified
+FROM ${COMPANY_APP_IMAGE}
+USER root
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright HF_HOME=/state/models \
+    OMP_NUM_THREADS=2 TOKENIZERS_PARALLELISM=false
+RUN apt-get update && apt-get install --yes --no-install-recommends ffmpeg fonts-noto-cjk \
+    && /usr/local/bin/uv sync --frozen --no-dev --no-editable --extra lake --extra video \
+    && /app/.venv/bin/playwright install --with-deps chromium \
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod -R a+rX /opt/playwright
+USER 10001:10001
+CMD ["quant-company", "video-worker"]

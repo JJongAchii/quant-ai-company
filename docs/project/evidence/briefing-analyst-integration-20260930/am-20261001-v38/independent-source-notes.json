@@ -1,0 +1,88 @@
+{
+  "at": "2026-09-30T23:03:11.115251+00:00",
+  "scope": "Root independent reading of all16supplied source bodies before first model review; 1knownbodypartial noted, not claimedfulloriginal",
+  "writer_result_inspected": false,
+  "source_chars": 30149,
+  "sources": [
+    {
+      "id": "636879208222d96d1286d1e6460970acbff00a3f",
+      "notes": "MixedUSclose: Dow/S&Pdecline versusNasdaqgain; sector weakness cyclical/healthcare. PCEbelowforecast supports tech but10y yields remainhigh. Intraday5.30/5.298 not universalclose. DXYdeclines0.23 to101.17 andDecembergoldfutures4186.7 differs fromspot. Originalcaption29Sept notsessiondate30Sept.",
+      "full_original_available": true
+    },
+    {
+      "id": "bea58a54bf1f224abf9591c9a3bb3c952b1519fc",
+      "notes": "Independent YonhapUSclose same3values; earlygainsfade asgrowth/ratesfirm. PhotoReuters credit not textualwirelicense proof. Publish05:30KSTsupportsregularUS30Sept.",
+      "full_original_available": true
+    },
+    {
+      "id": "61ff9d649b88c461eafad2053fd5a7a037cae6aa",
+      "notes": "2000billion-dollar strategicallocation ispartofexisting3500commitment excluding1500shipbuilding; notnewadditional2000. US1200reactors8 and220gas versusKorea223gas6.472GW/AP1000six+APR1400twoframework; LNGONLYbusinessreview, actualfundingnotsettled. US500+claimnotKoreacommitment; economics/time/approval pending.",
+      "full_original_available": true
+    },
+    {
+      "id": "cbd6c8b53eff84124133d9c13cc9864b81a39edf",
+      "notes": "MicronactualadjustedEPS33.42vs31.61/revenue54.23vs51.07billion. Guidance61.5vs57billion/EPS38.15vs35.40 expectations. DRAM343%to39.8billion73% sales; HBM/GPUworkloads demand supplyshortage; datacenter11fold isheadline only inthisboundedoriginal. Consumerdevicecost offset, 250billioncapex/newfabnextyear notcapacityonline today. Afterhoursslight rise notcashreturn.",
+      "full_original_available": true
+    },
+    {
+      "id": "4cce1a28b455487ca85ab6709622c49a1da928ff",
+      "notes": "ActualAugPCE3.4yoyvs3.7expectations/0.3mommatching. Core3.0yoyvs3.3/0.2momvs0.3. AboveFed2target; gas4.4 andenergy2.3 increases. Post-release2y4.84down4bp notlaterclose; October37%isprobabilitylevel no unsupported prior comparison. Augdata notlaterdieselsurge.",
+      "full_original_available": true
+    },
+    {
+      "id": "0c04cb8f83df554bd0f280fa5762eb16b96ef7a7",
+      "notes": "10yINTRADAY5.304high; GDP2.2SAAR revisedfrom1.5+0.7pp; consumer3.4to3.8 revision; AIinvestment. Fiscalissuance/supplyprivateinvestment structuraloffset versusPCErelief; no singlecause proved. Recordyear sourcesdiffer, retainvalue notglobalrecord guarantee.",
+      "full_original_available": true
+    },
+    {
+      "id": "067ced3b9daa00fbb71ec88b4548ba4ea11ae956",
+      "notes": "Tariffcap15asreportedUSposition, NOTwrittenprojectagreement. Existing25to15 and3500investment. Gasfirstprojectconfirmed butnuclear/LNGdecisiondeferred. MOUexitmaytriggerretaliatorytariffs thereforeeconomicsnotsoleexitoption; importedKoreanmachinerytariffbenefitpartyclaim, noadditionalchipinvestmentdiscussion. Existing301tariff12.5 distinctfromtotalcap.",
+      "full_original_available": true
+    },
+    {
+      "id": "3e4667ea6d1ffd0dac7c50f78e017d7c3949ecd1",
+      "notes": "OilUS30SeptWTI11month90.42+1.16/Brent11month103.53+0.92; UKMTOreportonattack29Sept readon30th. SaudiEastWestcapacitymostlyrestored actualoffset. Rejectedconditional7dayIranoffer/USformalreply notdeal. Productinventoriesdown butmarketreactionlimited.",
+      "full_original_available": true
+    },
+    {
+      "id": "03fb0a6c60383d67627fafdcc7ffe1f763f4ebf1",
+      "notes": "IMPORTANT source9only6000of6235chars, receipt.excerpt_truncated=true: bounded suppliedbody notcompleteoriginal; tailunavailableprecutoff andno webbackfill. Withinboundedtext: Hormuzcrude7dayavg13.5millionmatchesprewar; region19.5vs17million distinctscope; products677000vs3.6million; combined14.2about80%of17million. Militaryshuttle>70%Aug/transferscost/pipelines40vs17% offset, fragileprotection. Iranexportsblockaded butpressureefficacyunproved/failedJuneMOU/after-electionrenewedfighting speculation, notscheduledact.",
+      "full_original_available": false
+    },
+    {
+      "id": "af78c0128146d97807b93c32eb7d78b65065cf69",
+      "notes": "QatarmediationandactualUSproposalpresentedtoIrancabinet coexistwithTrumpdenialofsanctionsrelief. Reporterclaim frozenfund/nuclearconcessions notagreed. Oilprice5:34ET103.78/90.39 intradaynotclose.",
+      "full_original_available": true
+    },
+    {
+      "id": "bd7c488baf6c6caed15d30d90e424c2aaa2f84d3",
+      "notes": "KRprior30SeptFX1352.8at15:30down3.9from1356.7; exporterend-monthdollarsales andJapaninterventionconcern versusUSyields/foreignstocks20536billionwonnet-sell. DonotmixUSDamountswithKRstocks; actualstockflownotinferencefromFX. PriorKOSPIcaption6838.04/-0.48.",
+      "full_original_available": true
+    },
+    {
+      "id": "c82a257ca2ffb8ba21aeaa36c2f06378b8e7a205",
+      "notes": "KRprior30Sept3y4.011/-6.5bp10y4.407/-6.9; supplyreduction/buybackproposedusingSOMEextratax, Oct1issuanceplanpending/~10Tmarketestimate notconfirmed; foreign3y4054buy/10y2096sell. ExpertpartlyreversespriorovershootandUStighteningrisk notbroadratepivot.",
+      "full_original_available": true
+    },
+    {
+      "id": "dc02ea298fbb302e7fa7ec931bbe3f6e36861803",
+      "notes": "Extratax63.2TforecastversusMarchbudget notrealizedfunding; issuancecutandpossiblebuyback notimplemented. Otherhousing/jobs/microfinanceallocation competinguses; noentireextraallcommittedtodemand. Oct1issuanceactualplannextcondition.",
+      "full_original_available": true
+    },
+    {
+      "id": "c0f667835e5011d769c4ae6b32f3684a149ff584",
+      "notes": "PriorAsiaJapanTaiwantechdrive versusChinapropertydisappointment; JapIP-1.7vs+1.7forecast andChinaPMIexpansion opposingrealactivity; notallAsiaimprovesorallsectorbreadth. Mainlandcloses/16:30HKhistoricalobservations notcurrentAM.",
+      "full_original_available": true
+    },
+    {
+      "id": "d1cd43696fc8fa245fb2ebc0d8c9c99749cdf0a7",
+      "notes": "PriorKRWednesdayKOSPI6838.04/-0.48 KOSDAQ855.91/+0.72 FX1352.8at15:30; Englishspokenunits conversion; exactfrozenpreviousKRsession required, notrecastOct1prices.",
+      "full_original_available": true
+    },
+    {
+      "id": "4542bca6ea7d061eaea5b2bb33bb41d4504d0816",
+      "notes": "FTCopenedproductriskprobeconfirmedagency; nofindings/penalties/otherunnamedfirms known. VoluntaryaccordpriorTuesdayrequirescompaniesresponsible vsAmodeisafetyoversight/META-Nvidiaselfcontrol divide. Investigatoryrisk notobservedcapexdecline orknownmarketreaction; oldJulylabbreakout notnewSep30event.",
+      "full_original_available": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "image": "quant-company:19807db8d1817a3a495ac10eee34b1bac2d287fe",
+  "image_id": "sha256:84d790966e66eee752c1f4b58f812faf3bb3d504e3c099a8f5de2b532165554e",
+  "pythonpath": "/opt/quant-code/src",
+  "working_directory": "/opt/company",
+  "probe": {
+    "import_root": "/opt/quant-code/src/quant_company",
+    "program_contract_files": {
+      "/opt/quant-code/src/quant_company/research/program_contracts.py": "03e76bd1e05d822c7d507b2cf7aeec8409a3f47f3337dd7eae39a13091830a88",
+      "/opt/company/src/quant_company/research/program_contracts.py": "415a4bd091059cc925db0e51976c4a0a426ab8764dd2e635b17a272446868fc0"
+    },
+    "sys_path": [
+      "",
+      "/opt/quant-code/src",
+      "/usr/local/lib/python312.zip",
+      "/usr/local/lib/python3.12",
+      "/usr/local/lib/python3.12/lib-dynload",
+      "/app/.venv/lib/python3.12/site-packages"
+    ]
+  },
+  "operating_services_changed": false
+}

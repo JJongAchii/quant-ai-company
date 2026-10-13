@@ -1,0 +1,27 @@
+{
+  "recorded_at": "2026-10-07T23:02:53.361353+00:00",
+  "source_commit": "ca5ebb3eafd217e801f1e39bcf990bd5dc2abc4c",
+  "tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "368",
+    "time": "27.475"
+  },
+  "proof": {
+    "input_chars": 87708,
+    "full_originals": 30,
+    "full_original_chars": 50588,
+    "visible_main_chars": 11349,
+    "originals_unchanged": true,
+    "visible_main_unchanged": true,
+    "all_item_ids_preserved": true,
+    "unselected_catalog_preserved": 73,
+    "prompt_sha256": "303954ce62de2e2d4ca2883f5a74a5f47c5d4383d0ca6750adccd13e4c0b67f7",
+    "mechanical_rejections": 0,
+    "source_notes_violations": 0
+  },
+  "deployment": "Staged only; cutover failed before mutation while the server restarted. Superseded by69; production remained25b91bb.",
+  "actual_model_quality_pass": false
+}

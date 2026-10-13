@@ -1,0 +1,145 @@
+{
+  "mode": "historical_originals_before_exact_scheduled_cutoff",
+  "raw_originals_sha256": "66800d641d01c1bb9e754463def67b70448defa923512a9f0691b58def17d04b",
+  "model": "not_yet_called",
+  "slack": "not_connected",
+  "snapshots": {
+    "am-20260923": {
+      "cutoff": "2026-09-22T22:10:00+00:00",
+      "raw_article_count": 180,
+      "eligible_count": 180,
+      "selected_count": 16,
+      "bundle_sha256": "ba8fb1aacfb027d304187ff01946e79933058134e78871a5d6fec6037f005c69",
+      "selected": [
+        {
+          "id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+          "title": "美-이란 관계 주시하며 숨죽인 뉴욕증시…기술주 약진 속 혼조세(종합)",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-22T21:44:03+00:00",
+          "retrieved_at": "2026-09-22T21:50:08.335144+00:00",
+          "sha256": "bef316935fc541283a6919599489a41fe5e73d553e949dcf3658f292ba72f270"
+        },
+        {
+          "id": "3612d9b830a1a9ea1a2b716a1384d53844ff43d8",
+          "title": "Nasdaq's new record, Paramount settles lawsuit, press pool suspends coverage and more in Morning Squawk",
+          "publisher": "CNBC",
+          "published_at": "2026-09-22T12:25:55+00:00",
+          "retrieved_at": "2026-09-22T12:34:41.927207+00:00",
+          "sha256": "462a8ec814581a0a0ca6669129e142d2a80f675ea27507c692e34cd7d271b6fb"
+        },
+        {
+          "id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+          "title": "美연준 인사 '인플레 경고' 잇따라…\"더 긴축적 금리가 도움\"",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-22T17:25:01+00:00",
+          "retrieved_at": "2026-09-22T21:08:12.447912+00:00",
+          "sha256": "74538de268d7afca14cf497338a1deb0658b96c1c299cb5faba4d2480a0ee0bf"
+        },
+        {
+          "id": "5da1a91c21adedc0d7f10392e9ab16d284480b1d",
+          "title": "유럽은행 분석가 \"에너지 가격 2차 파동…물가 안정 내년에나\"",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-22T14:17:00+00:00",
+          "retrieved_at": "2026-09-22T14:25:19.232756+00:00",
+          "sha256": "56918308d96593c513bdddcf708f85c8d69b2d70fe1b0c94b4d2ffe907b12a71"
+        },
+        {
+          "id": "f4387486e1fa6d90c353e52e06b53cb2778929fb",
+          "title": "뉴욕증시, 미ㆍ이란 ‘3시간 협상’에도 혼조…나스닥 0.45%↑[상보]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-22T21:51:00+00:00",
+          "retrieved_at": "2026-09-22T22:00:04.513283+00:00",
+          "sha256": "8953b47836114d5fc7c1a042e8972ed24483faf1bbb2e1c88230d2cb10304504"
+        },
+        {
+          "id": "76c87a7da794dadc1beffc3c11122d11392e15fc",
+          "title": "美ㆍ이란, 유엔서 3시간 회담⋯트럼프 “곧 추가 협상”",
+          "publisher": "이투데이",
+          "published_at": "2026-09-22T21:50:00+00:00",
+          "retrieved_at": "2026-09-22T22:00:07.029197+00:00",
+          "sha256": "c2eceeeff6d69e09e22343283058866634130cb3841493fb64237777419fea7e"
+        },
+        {
+          "id": "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+          "title": "[뉴욕증시] AI·반도체 랠리…국제유가 대폭 하락",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-21T22:48:00+00:00",
+          "retrieved_at": "2026-09-21T22:53:49.739167+00:00",
+          "sha256": "02e2131d3d65f8ce52588523950cc708c97b272055d63bf55dabbd8101b8a375"
+        },
+        {
+          "id": "692a6aedcb9ac858e8b9f4d58259c32fa6653eda",
+          "title": "[AI프리즘] \"한국, 아태 AI 수도로\"…블랙록 20조 투자 1년째 '답보'",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-22T21:33:01+00:00",
+          "retrieved_at": "2026-09-22T21:39:56.319305+00:00",
+          "sha256": "523f1aaab70a1d19ef892c474a44601f7ec34824dc25077455a4827fa44c467f"
+        },
+        {
+          "id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+          "title": "국제유가, 사우디 원유수출 회복 기대에 하락⋯미ㆍ이란 협상도 영향 [상보]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-22T21:50:00+00:00",
+          "retrieved_at": "2026-09-22T22:00:01.916771+00:00",
+          "sha256": "25d9f47f307bda856fc66514df97d17bb5a3369ee166cac09d42e47e9045031b"
+        },
+        {
+          "id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+          "title": "Oil prices reverse gains as United Nations General Assembly meeting lifts hopes for Iran war diplomacy",
+          "publisher": "CNBC",
+          "published_at": "2026-09-22T09:30:24+00:00",
+          "retrieved_at": "2026-09-22T09:30:42.364090+00:00",
+          "sha256": "9564061afae093c88d2f1288a8a4842c6576fe0dcd875db1fcdf76e30d927f0e"
+        },
+        {
+          "id": "6dbf4493e26ac8a2f17dff96e4039bc24ef10966",
+          "title": "'합의' '전멸' 양자택일 압박…미-이란 3시간 회담",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-22T21:18:00+00:00",
+          "retrieved_at": "2026-09-22T21:29:44.404353+00:00",
+          "sha256": "c62c017ae7f87dc44e727010c112b2940227488226567eeb6318f1fc0a25a51e"
+        },
+        {
+          "id": "d28b9c42f8e81f1f69abcafd2dbff333da1d9e44",
+          "title": "Trump tells UN he has 'big decision' on whether to 'annihilate' Iran or make peace deal",
+          "publisher": "BBC News",
+          "published_at": "2026-09-22T20:19:08+00:00",
+          "retrieved_at": "2026-09-22T21:50:11.031756+00:00",
+          "sha256": "bc2e622d41cf293862c05c287ed7d4b065cffa78f60e6a83e39ebe19dc3c1188"
+        },
+        {
+          "id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+          "title": "Trump administration is examining whether a diesel export ban is feasible, Treasury Secretary says",
+          "publisher": "CNBC",
+          "published_at": "2026-09-22T19:40:11+00:00",
+          "retrieved_at": "2026-09-22T19:46:35.393994+00:00",
+          "sha256": "8da35484e0bb42262281f3e3c89d9fb6ceaac3d9fb78320409bf145d9a2840b9"
+        },
+        {
+          "id": "fd9fea4d91f006ff807a5234d4e563808c26e2bd",
+          "title": "Ukraine anger as EU removes Russian oligarchs from sanctions list",
+          "publisher": "BBC News",
+          "published_at": "2026-09-22T19:06:06+00:00",
+          "retrieved_at": "2026-09-22T19:28:39.820119+00:00",
+          "sha256": "dbd86a177af530c7b7961af7879f1b2e9a07d6aff72a186fde77131f5bc9d0ad"
+        },
+        {
+          "id": "38d50b2f2dc68f56597da11f5a17da41902a4bf3",
+          "title": "Businesses struggle to profit as fuel prices soar",
+          "publisher": "BBC News",
+          "published_at": "2026-09-22T08:33:49+00:00",
+          "retrieved_at": "2026-09-22T08:41:24.150491+00:00",
+          "sha256": "b1e0c45740a8100cadbbd4a6e141f572fa8078fe01eb08aeb72b9eb2578c729a"
+        },
+        {
+          "id": "bbd821f9a5d0dcb025ff3f262b5738fcb11cdc3b",
+          "title": "KOSPI Up 0.15% Tuesday",
+          "publisher": "KBS World",
+          "published_at": "2026-09-22T07:06:32+00:00",
+          "retrieved_at": "2026-09-22T07:07:54.316870+00:00",
+          "sha256": "557154c751367d70e692b4ea16c2bc5020e85779f3a343a90d228e9847a1d074"
+        }
+      ]
+    }
+  }
+}

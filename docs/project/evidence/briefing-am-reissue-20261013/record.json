@@ -1,0 +1,213 @@
+{
+  "recorded_at": "2026-10-13T09:25:00+09:00",
+  "owner_request": "오늘 오전에 발송된 브리핑을 보니까 제대로 안됐는데 원인이 뭐니? → 진행해",
+  "original_edition": {
+    "id": "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb",
+    "schedule_kst": {
+      "starts": "05:20",
+      "cutoff": "05:40",
+      "due": "06:55",
+      "expires": "07:55"
+    },
+    "committed_kst": "06:55:00",
+    "quality": {
+      "fallback": "invalid_output",
+      "salvaged_from": "blocked",
+      "issue_count": 0,
+      "reduced": true,
+      "substantive": false,
+      "original_facts": 12
+    },
+    "blocking_call": {
+      "id": "news-brief-7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb-search",
+      "phase": "search",
+      "attempt": 0,
+      "requested_kst": "05:20:35",
+      "state": "blocked",
+      "error": "invalid_output",
+      "codex_job": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "xhigh",
+        "execution_lane": "brief",
+        "fault": "Codex output did not satisfy the company decision contract (decision_json:invalid_shape)."
+      }
+    },
+    "search_calls_last_45_days": {
+      "editions": 18,
+      "with_search": 1
+    }
+  },
+  "reissue_copy": {
+    "id": "f21fda71-e80f-5cb0-b63a-e56417d58560",
+    "channel_marker": "C0C2E59B1AA:reissue-1",
+    "publish": false,
+    "inputs": "original frozen bundle (05:40)",
+    "due_kst": "08:55",
+    "expires_kst": "09:55",
+    "calls_kst": [
+      {
+        "phase": "plan",
+        "requested": "07:45:01",
+        "completed": "07:47:52"
+      },
+      {
+        "phase": "inventory",
+        "requested": "07:47:53",
+        "completed": "07:56:23"
+      },
+      {
+        "phase": "write",
+        "requested": "07:56:26",
+        "completed": "08:05:04"
+      },
+      {
+        "phase": "review",
+        "requested": "08:05:08",
+        "completed": "08:12:30"
+      },
+      {
+        "phase": "revise",
+        "requested": "08:12:37",
+        "completed": "08:19:23"
+      },
+      {
+        "phase": "final_review",
+        "requested": "09:06:02",
+        "completed": "09:13:24",
+        "note": "not issued 08:19-09:04: prompt 92,188 chars > 88,000 (brief_context_limit) until briefing-final-4"
+      }
+    ],
+    "previewed_kst": "09:13:25",
+    "quality": {
+      "reduced": true,
+      "issue_count": 4,
+      "missing_core": [
+        "nasdaq",
+        "sp500"
+      ]
+    }
+  },
+  "slack_delivery": {
+    "root_ts": "1791850488.800539",
+    "permalink": "https://achiisquantresearch.slack.com/archives/C0C2E59B1AA/p1791850488800539",
+    "parts_chars": [
+      10483,
+      3496,
+      408
+    ],
+    "presentation_changes": [
+      "reissue label line on part 0"
+    ],
+    "readback": "all three parts match after unescaping both sides (the poster's own check unescaped only the Slack side; body contains &amp;)"
+  },
+  "registration": {
+    "project_id": "03065d00-2d89-58eb-a4f7-1a3c399ce7b1",
+    "sources_linked": 24,
+    "video_job_v2": "f6ebae4a-c681-54ab-a7c5-d2e79821d03a",
+    "format": "full"
+  },
+  "video_v1": {
+    "job": "48511837-1216-5e62-83ef-d94da1e85a2a",
+    "format": "facts",
+    "delivered_kst": "08:23:12",
+    "fargate_render_kst": "07:47-07:51",
+    "story_photo_requests": 0,
+    "images": [
+      "korea-exchange (thumbnail)",
+      "korea-exchange",
+      "silicon-wafer",
+      "bank-of-korea",
+      "fed-eccles"
+    ],
+    "note": "all reserve library photos; per-episode search not requested (prompt preferred listed photos)"
+  },
+  "deployments": {
+    "video-worker": {
+      "image": "quant-company-video:7b37ac4-fargate10",
+      "at_kst": "08:07:05",
+      "files": {
+        "episode.py": "872dcde121e12ffa548558f1e4d005acd8e3ea2c753c23a06693aa477566f2e6",
+        "runner.py": "e12152ce18a40f3810f3fbfe635a8c8f75180172dadfaf340cd5ab335cdeec69"
+      },
+      "unchanged": "render image and task definition quant-company-render:6"
+    },
+    "news-worker": {
+      "image": "quant-company:7b37ac4-briefing-final-4",
+      "at_kst": "09:04:48"
+    },
+    "dispatch": {
+      "image": "quant-company-housing-rental:737b3dd66b82a348d22eaa9e26bfa8d3149ab548-dispatch-briefing-final-4",
+      "at_kst": "09:04:59"
+    },
+    "briefing_files": {
+      "store.py": "9241cf8fc882dd7918628942ce5de55867a2c752bd1816fca6715547637f8ce5",
+      "editor.py": "308e3c92f6b399fbf0ed31af22acffffda7c6c973701d326a7d419c7dc5f6d86"
+    },
+    "claude-runtime": {
+      "image": "quant-company-repair-claude-runtime:68ffc8d1-video10",
+      "at_kst": "09:43",
+      "base": "68ffc8d1-video9",
+      "overlay": "releases/claude-runtime-video10-20261013/claude-runtime.compose.json",
+      "files_from_worker_fargate10": {
+        "video/contracts.py": "b677b79908d9f0990ca794ed20700ddb6b29077e4d592634246576f5494c22b7",
+        "video/episode.py": "872dcde121e12ffa548558f1e4d005acd8e3ea2c753c23a06693aa477566f2e6",
+        "video/photos.py": "8a736281e6809e0600f3f179c1d97f7c80446a08eb34594033266bcf397fa7f6"
+      },
+      "reason": "video9 EpisodePlan had no 'illustrations', so the episode JSON schema given to Claude could not define story pictures",
+      "checked": "schema has illustrations in a throwaway container and in the live runtime"
+    },
+    "video-worker-fargate11": {
+      "image": "quant-company-video:7b37ac4-fargate11",
+      "at_kst": "11:00:04",
+      "files": {
+        "photos.py": "bdc9069d02dc53bbeba9e1d36100c0b04d0bc5103e2ec7cfa5df9d7ebac13205"
+      }
+    },
+    "video-worker-fargate12": {
+      "image": "quant-company-video:7b37ac4-fargate12",
+      "at_kst": "11:55:34",
+      "files": {
+        "runner.py": "65dad598dbcc8e0017d3edd3970cbf4d0cc55265be7d4170eb3cdee00e387f44"
+      }
+    }
+  },
+  "tests": {
+    "briefing": "510 passed",
+    "video": "163 passed, 5 skipped",
+    "ruff": "clean",
+    "new_tests_fail_on_previous_code": true
+  },
+  "video_v2": {
+    "job": "f6ebae4a-c681-54ab-a7c5-d2e79821d03a",
+    "plan_attempts_before_runtime_fix": [
+      {
+        "key": "plan",
+        "outcome": "check_failed",
+        "note": "gen-1..3 used, illustrations empty"
+      },
+      {
+        "key": "plan-2",
+        "outcome": "check_failed",
+        "note": "Story photo missing"
+      }
+    ],
+    "plan_3_started_kst": "09:44:03 (runtime video10)",
+    "plan_passed": "plan-4 (10:0x), review rounds 2",
+    "story_photo_requests": [
+      "Samsung Electronics Seocho building Seoul",
+      "crude oil tanker Strait of Hormuz",
+      "Microsoft datacenter server racks"
+    ],
+    "first_lookup": "0 results for all three (Commons ANDs words) -> generated pictures; fixed in fargate11",
+    "photo_rerun_kst": "11:00 (state back to synthesizing, photo keys cleared, backup v2-before-photo-rerun.json)",
+    "chosen": {
+      "gen-1": "File:Samsung Electronics 2023-08 1693138160.jpg (Artyom Svetlov, CC BY 4.0)",
+      "gen-2": "generated (both Bosphorus tanker photos rejected: wrong place, ship name visible)",
+      "gen-3": "generated (candidate was a Windows RAM chart)"
+    },
+    "photo_checks": 3,
+    "inspections": 3,
+    "delivered_kst": "11:54:51",
+    "delivery_message_id": "a6c59474-98e6-5d5c-8fc3-34dd25a06b55"
+  }
+}

@@ -1,0 +1,12 @@
+# The operating app supplies the exact frozen dependencies, including calendars.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+ARG RELEASE_COMMIT
+USER root
+RUN apt-get update && apt-get install --yes --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+COPY src /opt/quant-code/src
+USER 10001:10001
+ENV PYTHONPATH=/opt/quant-code/src COMPANY_CODE_COMMIT=$RELEASE_COMMIT
+LABEL org.opencontainers.image.revision=$RELEASE_COMMIT
+CMD ["quant-company", "worker"]

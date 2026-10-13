@@ -526,6 +526,65 @@ def test_article_extraction_skips_long_navigation_before_excerpting(monkeypatch)
     assert page.article() == ("", "missing")
 
 
+def test_short_declared_body_does_not_fall_back_to_unrelated_news(monkeypatch):
+    from quant_company.news import originals
+
+    raw = ("<article><h1>Investment may be announced</h1>"
+           "<div itemprop='articleBody'>Investment may be announced</div>"
+           "<div class='relation_newslist'>" + CONTENT*3 + "</div></article>").encode()
+    monkeypatch.setattr(originals, "fetch", lambda url: (
+        {"ok": True, "content": "Unrelated news "*100, "content_type": "text/html; charset=utf-8",
+         "original_sha256": "b"*64}, raw))
+    receipt, original = fetch_original("https://official.example.org/flash")
+    assert not receipt["ok"] and receipt["error"] == "article_body_not_found"
+    assert receipt["content"] == "" and original == raw
+
+
+def test_original_body_retains_material_tail_after_6000_chars(monkeypatch):
+    from quant_company.news import originals
+
+    body = CONTENT*30+" The proposed restriction was withdrawn, not enacted."
+    assert 6000 < len(body) < 12000
+    raw = ("<div itemprop='articleBody'>"+body+"</div>").encode()
+    monkeypatch.setattr(originals, "fetch", lambda url: (
+        {"ok": True, "content": "fallback", "content_type": "text/html; charset=utf-8",
+         "original_sha256": "a"*64}, raw))
+    receipt, _ = fetch_original("https://official.example.org/article")
+    assert receipt["content"] == " ".join(body.split())
+    assert not receipt["excerpt_truncated"]
+
+
+def test_full_body_survives_postgres_for_analyst_without_enlarging_reporter(news):
+    from quant_company.briefing.inputs import document
+
+    add_article(news)
+    claimed = news.claim_article()
+    content = CONTENT*30+" The proposed restriction was withdrawn, not enacted."
+    receipt = {"ok": True, "content": content, "publisher_host": "official.example.org",
+               "original_sha256": "a"*64, "retrieved_at": datetime.now(UTC).isoformat(),
+               "excerpt_truncated": False, "article_chars": len(content)}
+    news.save_original(claimed, receipt)
+    with news.db.transaction() as conn:
+        stored = conn.execute("SELECT * FROM news_articles WHERE id=%s", (claimed["id"],)).fetchone()
+    assert stored["content"] == content
+    source_doc = document({**stored["retrieval"], "content": stored["content"], "url": stored["url"]},
+                          "official", "Fixture", "official", published=stored["published_at"])
+    assert source_doc.content.endswith("withdrawn, not enacted.")
+    request = news.prepare_review()["request"]
+    bundle = json.loads(request["prompt"].split("NEWS DATA JSON:\n", 1)[1])
+    assert len(bundle["articles"][0]["content"]) == 6000
+    assert bundle["articles"][0]["excerpt_truncated"]
+
+
+def test_declared_body_without_enough_text_cannot_use_outer_main():
+    page = ArticlePage()
+    page.feed("<main>" + CONTENT + "<div itemprop='articleBody'></div></main>")
+    assert page.article() == ("", "missing")
+    page = ArticlePage()
+    page.feed("<article>" + CONTENT + "</article>")
+    assert page.article()[0] == CONTENT.strip()
+
+
 def test_large_editorial_batch_preserves_primary_ids_with_bounded_excerpts():
     from quant_company.news.editor import bounded_prompt
 

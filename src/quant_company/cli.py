@@ -10,11 +10,12 @@ from .tech_feed.contracts import TECH_FEED_AGENT
 
 
 def manifests(company, base_url, output, transport="socket", include_reporter=False, include_tech_scout=False,
-              include_trend_scout=False):
+              include_market_brief=False, include_trend_scout=False):
     output.mkdir(parents=True, exist_ok=True)
     for role in company.roles.values():
         optional = ((include_reporter and role.id == "reporter")
                     or (include_tech_scout and role.id == TECH_FEED_AGENT)
+                    or (include_market_brief and role.id == "market_brief")
                     or (include_trend_scout and role.id == "trend_scout"))
         if not role.active and not optional:
             continue
@@ -29,14 +30,19 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
                          "interactivity": {"is_enabled": False}, "org_deploy_enabled": False,
                          "socket_mode_enabled": transport == "socket", "token_rotation_enabled": False},
         }
-        if role.id == "director":
+        if role.id == "director" or (role.id == "market_brief" and company.settings.video_enabled):
             value["settings"]["interactivity"] = {"is_enabled": True}
             if transport == "http":
-                value["settings"]["interactivity"]["request_url"] = base_url.rstrip("/") + "/slack/events/director"
+                value["settings"]["interactivity"]["request_url"] = base_url.rstrip("/") + "/slack/events/" + role.id
         if role.id == "reporter":
             value["display_information"]["name"] = "Reporter"
             value["features"]["bot_user"]["display_name"] = "reporter"
             value["settings"]["event_subscriptions"]["bot_events"].append("entity_details_requested")
+        if role.id == "market_brief":
+            value["display_information"]["name"] = "Analyst"
+            value["features"]["bot_user"]["display_name"] = "analyst"
+            # Daily video files are delivered into the brief's thread (files.getUploadURLExternal/completeUploadExternal).
+            value["oauth_config"]["scopes"]["bot"].append("files:write")
         if role.id in {TECH_FEED_AGENT, "trend_scout"}:
             value = {
                 "display_information": {"name": role.name, "description": role.mission[:140]},
@@ -89,6 +95,20 @@ def main():
     serve.add_argument("--port", type=int, default=8000)
     sub.add_parser("worker")
     sub.add_parser("data-watch-worker")
+    sub.add_parser("briefing-data-worker")
+    sub.add_parser("video-worker")
+    video = sub.add_parser("video")
+    video.add_argument("action", choices=["status", "tick", 'reconcile', 'retry', 'bench', 'render-task'])
+    video.add_argument('--prefix', help='render-task: s3://bucket/render/<job>/<render key> (inside the Fargate task)')
+    video.add_argument('--page', type=Path, help='bench: rendered episode page (index.html with episode.js)')
+    video.add_argument('--seconds', type=int, default=60, help='bench: seconds of video to render')
+    video.add_argument('--job-id')
+    video.add_argument('--effect-key')
+    video.add_argument('--receipt-file', type=Path)
+    video.add_argument('--note')
+    video_auth = sub.add_parser("video-auth")
+    video_auth.add_argument("service", choices=["runway", "youtube"])
+    video_auth.add_argument('--listen-host', choices=['127.0.0.1', '0.0.0.0'], default='127.0.0.1')
     sub.add_parser("housing-feed-worker")
     sub.add_parser("news-worker")
     sub.add_parser("quant-feed-worker")
@@ -97,6 +117,9 @@ def main():
     news = sub.add_parser("news")
     news.add_argument("action", choices=["status", "collect", "review", "probe"])
     news.add_argument("--output", type=Path)
+    briefing = sub.add_parser("briefing")
+    briefing.add_argument("action", choices=["status", "preview", "collect", "data", "review", "probe", "data-probe", "qualify"])
+    briefing.add_argument("--output", type=Path)
     tech_feed = sub.add_parser("tech-feed")
     tech_feed.add_argument("action", choices=["status", "collect", "probe"])
     tech_feed.add_argument("--output", type=Path)
@@ -131,6 +154,7 @@ def main():
     slack.add_argument("--output", type=Path, default=Path(".local/slack-manifests"))
     slack.add_argument("--include-reporter", action="store_true")
     slack.add_argument("--include-tech-scout", action="store_true")
+    slack.add_argument("--include-market-brief", action="store_true")
     slack.add_argument("--include-trend-scout", action="store_true")
     args = parser.parse_args()
     settings = Settings()
@@ -148,6 +172,67 @@ def main():
         from .runtime import data_watch_worker_main
 
         asyncio.run(data_watch_worker_main(settings))
+    elif args.command == "briefing-data-worker":
+        from .runtime import brief_data_worker_main
+
+        asyncio.run(brief_data_worker_main(settings))
+    elif args.command == "video-worker":
+        from .runtime import video_worker_main
+
+        asyncio.run(video_worker_main(settings))
+    elif args.command == "video-auth":
+        from .video.auth import login_runway, login_youtube
+
+        if args.service == "runway":
+            asyncio.run(login_runway(settings.video_credentials_dir, args.listen_host))
+        else:
+            login_youtube(settings.video_credentials_dir, args.listen_host)
+    elif args.command == "video":
+        from .video.runner import VideoRunner
+        from .video.store import VideoStore
+
+        if args.action == 'render-task':
+            # Inside the render task: S3 in/out only, no database, Slack or model credentials.
+            from .video.remote import render_task
+
+            if not args.prefix:
+                parser.error('render-task requires --prefix s3://...')
+            print(json.dumps(render_task(settings, args.prefix), ensure_ascii=False))
+            return
+        if args.action == 'bench':
+            # Frame capture + encode only: no model, speech, upload or database access.
+            import time
+
+            from .video.motion import FPS, render_range
+
+            if not args.page or not args.page.is_file():
+                parser.error('bench requires --page pointing at an episode index.html')
+            frames, start = args.seconds * FPS, time.monotonic()
+            out = settings.video_artifact_dir / 'bench.mp4'
+            render_range(str(args.page.resolve()), 0, frames, str(out), settings.video_ffmpeg)
+            seconds = time.monotonic() - start
+            out.unlink(missing_ok=True)
+            print(json.dumps({'frames': frames, 'seconds': round(seconds, 1), 'fps': round(frames / seconds, 2),
+                              'estimate_5min_episode_minutes': round(9000 / (frames / seconds) / 60, 1)}))
+            return
+        company = Company(settings)
+        store = VideoStore(company)
+        if args.action in {'reconcile', 'retry'}:
+            if not args.job_id or not args.note:
+                parser.error('Video recovery requires --job-id and --note')
+            if args.action == 'reconcile':
+                if not args.effect_key or not args.receipt_file:
+                    parser.error('Reconciliation requires --effect-key and --receipt-file')
+                from .video.recovery import reconcile
+
+                result = reconcile(store, args.job_id, args.effect_key, json.loads(args.receipt_file.read_text()), args.note)
+            else:
+                from .video.recovery import retry
+
+                result = retry(store, args.job_id, args.note)
+        else:
+            result = store.status() if args.action == 'status' else asyncio.run(VideoRunner(company).tick())
+        print(json.dumps(result, ensure_ascii=False, indent=2))
     elif args.command == "housing-feed-worker":
         from .runtime import housing_feed_worker_main
 
@@ -168,10 +253,12 @@ def main():
         if args.transport == "http" and not (args.base_url or "").startswith("https://"):
             parser.error("Slack public callback URL must use HTTPS")
         manifests(Company(settings), args.base_url, args.output, args.transport,
-                  args.include_reporter, args.include_tech_scout, args.include_trend_scout)
-    elif args.command in {"news", "tech-feed", "quant-feed", "housing-feed", "trend-feed"}:
+                  args.include_reporter, args.include_tech_scout, args.include_market_brief, args.include_trend_scout)
+    elif args.command in {"news", "tech-feed", "briefing", "quant-feed", "housing-feed", "trend-feed"}:
         if args.command == "news":
             from .news.commands import command
+        elif args.command == "briefing":
+            from .briefing.commands import command
         elif args.command == "tech-feed":
             from .tech_feed.commands import command
         elif args.command == "housing-feed":

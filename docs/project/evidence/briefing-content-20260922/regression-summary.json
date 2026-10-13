@@ -1,0 +1,63 @@
+{
+  "runs": [
+    {
+      "path": "docs/project/evidence/briefing-content-20260922/release-regression.xml",
+      "sha256": "63281c7e32b6203800a1db180caf0e6808876162666d691000e2588135767b8d",
+      "tests": 1102,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 36,
+      "passed": 1066
+    },
+    {
+      "path": "docs/project/evidence/briefing-content-20260922/release-targeted.xml",
+      "sha256": "c2cf4a2831e6341ee710263d08297c1a10602ec37a445f2e8c5a0024fbc20e79",
+      "tests": 65,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 65
+    },
+    {
+      "path": "docs/project/evidence/briefing-content-20260922/evaluation-receipt-tests.xml",
+      "sha256": "8c36d2b332ca8639d713cbb47c21c3d8d2f5263fcf778074b1caa7a56821225f",
+      "tests": 20,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 20
+    },
+    {
+      "path": "docs/project/evidence/briefing-content-20260922/complete-briefing-tests.xml",
+      "sha256": "a9897e3eeab604a59b6a6796d87a642b36eb2f0840d9d65f7d3ade95312b9ef3",
+      "tests": 81,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 81
+    },
+    {
+      "path": "docs/project/evidence/briefing-content-20260922/integrated-final-briefing-tests.xml",
+      "sha256": "e56256f93f3fd8c102920b7e608a936713743b4ca4e18e96724a4e15a1d13333",
+      "tests": 83,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 83
+    },
+    {
+      "path": "docs/project/evidence/briefing-content-20260922/acceptance-regression.xml",
+      "sha256": "b6e159218dbf86d36eb8ac38e55de54a749e2fa4c96589ee645638b49782e7a5",
+      "tests": 1106,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 36,
+      "passed": 1070
+    }
+  ],
+  "database": "real disposable local PostgreSQL 14",
+  "temporal": "real local test server",
+  "slack": "simulated only; no message sent",
+  "models_in_pytest": "fixtures; actual subscription inference recorded separately",
+  "note": "Final complete-suite run includes all implementation changes, including typed condition repair and complete source references."
+}

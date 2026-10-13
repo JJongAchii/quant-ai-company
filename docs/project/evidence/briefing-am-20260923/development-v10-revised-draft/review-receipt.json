@@ -1,0 +1,35 @@
+{
+  "request_id": "news-brief-eval-39207c64e01887d6c16a5ccad797a30c",
+  "request_sha256": "ec82d925ec08bdf4c7e847005b5342ee7d914b10b9bc0b3b2ab145aa8e19c231",
+  "elapsed_seconds": 149.94,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "request_id": "news-brief-eval-39207c64e01887d6c16a5ccad797a30c",
+    "decision": {
+      "say": "",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [
+        {
+          "title": "BriefReview",
+          "content": "{\"verdict\":\"publish\",\"checks\":{\"numbers\":true,\"sources\":true,\"timing\":true,\"causality\":true,\"materiality\":true,\"counterevidence\":true,\"transmission\":true,\"alternatives\":true,\"falsifiability\":true,\"coverage\":true,\"depth\":true,\"readability\":true},\"source_assessments\":[{\"source_id\":\"7b2633bde4fa7b1522f48fb74eeee469b0c0a755\",\"treatment\":\"covered\",\"reason\":\"미국장 혼조와 AI 관련 종목의 차별화, 조건부 호르무즈 재개방 제안을 본문에 반영했다. 지수 종가와 불일치하는 하락 포인트를 구분했다.\",\"item_ids\":[\"summary_equities\",\"ai_fact\",\"oil_diplomacy_limits\",\"overview_quote_difference\",\"dow_close\",\"nasdaq_close\",\"sp500_close\"]},{\"source_id\":\"3612d9b830a1a9ea1a2b716a1384d53844ff43d8\",\"treatment\":\"covered\",\"reason\":\"합병 규모·기존 지연 위험·종결 목표·제작 및 편집 독립성 약속을 반영했다. 비트코인과 법안 처리 차질은 이전 세션 배경으로 명시했다.\",\"item_ids\":[\"paramount_fact\",\"paramount_mechanism\",\"paramount_alternative\",\"overview_fx_crypto\"]},{\"source_id\":\"f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf\",\"treatment\":\"covered\",\"reason\":\"콜린스와 바킨의 물가 경고, 견조한 성장과 추가 인상 유보를 함께 반영했다. 윌리엄스·제퍼슨의 집행체계 설명은 금리 방향을 뒤집는 발언이 아니며 유동성 위기를 주장하지도 않았다.\",\"item_ids\":[\"fed_fact\",\"fed_mechanism\",\"fed_alternative\",\"fed_no_commitment\"]},{\"source_id\":\"5da1a91c21adedc0d7f10392e9ab16d284480b1d\",\"treatment\":\"covered\",\"reason\":\"유로존 물가와 ECB 인상 폭, 레인의 충격 지속 전망을 반영했다. 독일 감세의 규모·기간과 체코의 중단 후 재시행을 실제 결정된 완충책으로 제시했다.\",\"item_ids\":[\"diesel_fact\",\"europe_duration_relief\",\"diesel_alternative\"]},{\"source_id\":\"f4387486e1fa6d90c353e52e06b53cb2778929fb\",\"treatment\":\"background\",\"reason\":\"당일 혼조와 협상 내용은 다른 원문과 중복된다. 서로 다른 하락 포인트는 본문에서 공개했으며, 전략가의 차익실현·업종 간 자금 이동 설명을 확정 원인으로 채택하지 않았다.\",\"item_ids\":[\"overview_quote_difference\"]},{\"source_id\":\"76c87a7da794dadc1beffc3c11122d11392e15fc\",\"treatment\":\"covered\",\"reason\":\"직접 회담과 합의 지연 시 미국의 군사 대응 경고를 본문에 함께 반영했다. 트럼프의 협상 평가나 이란에 대한 주장을 합의 성립의 증거로 사용하지 않았다.\",\"item_ids\":[\"oil_diplomacy_limits\",\"oil_alternative\"]},{\"source_id\":\"3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6\",\"treatment\":\"background\",\"reason\":\"직전 미국장 보도이므로 상승률과 업종 흐름을 새 세션에 옮기지 않았다. 10년물 금리의 이전 기준과 AI 수요 경로, 근접한 미·중 회담의 배경으로 활용했다.\",\"item_ids\":[\"overview_session\",\"ai_mechanism\",\"watch_us_china\"]},{\"source_id\":\"692a6aedcb9ac858e8b9f4d58259c32fa6653eda\",\"treatment\":\"covered\",\"reason\":\"20조원 투자 의향의 구속력과 실행 부진, TF 공식회의 부재를 반영했다. 500MW 해상풍력 협약도 이미 발생한 진전으로 제시해 전면 정체로 일반화하지 않았다.\",\"item_ids\":[\"ai_domestic_execution\",\"ai_mechanism\"]},{\"source_id\":\"f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0\",\"treatment\":\"covered\",\"reason\":\"원유 계약별 종가와 사우디 송유관 소량 재가동·26일까지 회복 목표를 반영했다. 장기금리 상승과 금선물 하락도 제시해 전일 금리 하락을 연장하지 않았다.\",\"item_ids\":[\"oil_fact\",\"oil_mechanism\",\"overview_session\",\"fed_fact\"]},{\"source_id\":\"e4f6973d27e0f37d0797fc75204ec5eb8b1e842d\",\"treatment\":\"covered\",\"reason\":\"이란 항공사 제한의 시행 예고와 급유·착륙·발권 서비스 및 달러 시스템 배제 경고를 반영했다. 기사 속 장중 유가를 종가로 쓰거나 실제 운항 중단을 확정하지 않았다.\",\"item_ids\":[\"oil_fact\",\"iran_airline_restrictions\"]},{\"source_id\":\"6dbf4493e26ac8a2f17dff96e4039bc24ef10966\",\"treatment\":\"covered\",\"reason\":\"직접 회담과 이란 군부의 보복 예고를 함께 제시했다. 미·중 정상회담도 본문 확인 일정에 포함하고 원문의 상대 날짜를 보존했다.\",\"item_ids\":[\"oil_diplomacy_limits\",\"us_china_summit\"]},{\"source_id\":\"d28b9c42f8e81f1f69abcafd2dbff333da1d9e44\",\"treatment\":\"background\",\"reason\":\"군사 위협과 협상 병행, 이란 방송의 접촉 확인은 포함된 다른 원문과 중복된다. 추가 인용을 독립적인 시장 인과 확인으로 요구할 필요는 없다.\",\"item_ids\":[]},{\"source_id\":\"54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb\",\"treatment\":\"covered\",\"reason\":\"수출금지 검토 단계, 경유 가격의 전년 비교와 원유 대비 차이, 정제능력 감소와 운송·농업 비용 경로를 반영했다. 결정 범위와 제품 가격 차이를 확인 조건으로 제시했다.\",\"item_ids\":[\"diesel_fact\",\"diesel_mechanism\",\"diesel_alternative\",\"watch_energy_costs\"]},{\"source_id\":\"fd9fea4d91f006ff807a5234d4e563808c26e2bd\",\"treatment\":\"covered\",\"reason\":\"두 인물의 제재 해제와 나머지 대상의 6개월 갱신에서 3년 연장으로의 변경을 함께 설명했다. 라트비아의 별도 제재도 반영해 전반적 제재 완화로 해석하지 않았다.\",\"item_ids\":[\"eu_sanctions_fact\",\"eu_sanctions_mechanism\",\"eu_sanctions_alternative\"]},{\"source_id\":\"38d50b2f2dc68f56597da11f5a17da41902a4bf3\",\"treatment\":\"background\",\"reason\":\"영국 지역 사업자의 연료비·마진 사례로, 미국·한국 시장 전체의 새 가격 관측은 아니다. 비용 전가 경로의 보조 근거이며 지역별 주유소 가격을 본문에 나열할 필요는 없다.\",\"item_ids\":[\"diesel_application\"]},{\"source_id\":\"bbd821f9a5d0dcb025ff3f262b5738fcb11cdc3b\",\"treatment\":\"covered\",\"reason\":\"직전 한국장 오후 3시30분 원화 강세와 수입비용·환산매출 경로를 본문에 반영했다. 소폭 지수 등락보다 환율 변화를 선별했으며 이번 미국장 이후 환율로 제시하지 않았다.\",\"item_ids\":[\"overview_fx_crypto\",\"watch_korea_response\"]}],\"rejected_ids\":[],\"concerns\":[]}",
+          "source_ids": []
+        }
+      ],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0e6e3-efcb-7b92-9200-78cd8121701b",
+    "usage": {
+      "input_tokens": 42674,
+      "cached_input_tokens": 0,
+      "output_tokens": 4759,
+      "reasoning_output_tokens": 2355
+    },
+    "provider": "codex",
+    "web_searches": []
+  }
+}

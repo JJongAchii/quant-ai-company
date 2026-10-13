@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-09-28T05:08:02.395853+00:00",
+  "previous_commit": "ccdcc43c2a0985dcc035262f33d19e0ae979f0a1",
+  "candidate_commit": "2647c7e67561aa9b4ed8fde2427e538100ff79a9",
+  "policy_sha256": "dd893b880cb17bcd47a566b4f9f36e4e4f948b44735aad0b61f4ad3a55f0db85",
+  "validator": "installed deploy/maintenance_release.py:validate_tree",
+  "accepted": false,
+  "error": "release_protected_file_changed",
+  "changed_file_count": 467,
+  "critical_changed_paths": [
+    "deploy/.env.example",
+    "deploy/compose.yaml",
+    "deploy/qdata-source.json",
+    "pyproject.toml",
+    "src/quant_company/cli.py",
+    "src/quant_company/config.py",
+    "src/quant_company/db.py",
+    "src/quant_company/roles.json",
+    "uv.lock"
+  ],
+  "roles_added": [
+    "market_brief"
+  ],
+  "roles_removed": [],
+  "host_modified": false
+}

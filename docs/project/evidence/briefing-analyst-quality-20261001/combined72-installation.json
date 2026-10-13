@@ -1,0 +1,482 @@
+{
+  "recorded_at": "2026-10-10T09:50:27.906943+00:00",
+  "source_commit": "51ce4f91f141e65f909ac783e590ee0585dea3fa",
+  "release": {
+    "started_at": "2026-10-08T18:54:00.540017+00:00",
+    "source_commit": "51ce4f91f141e65f909ac783e590ee0585dea3fa",
+    "previous_source_root": "5e885d0a92bb8db89514ce54a5c25322e3e4f82a",
+    "authorization": "Owner requested shared deadlines plus PR122,124,125,129, idle deployment then KR-close on and US-close off.",
+    "phase": "installed",
+    "publication_enabled": true,
+    "model_calls": 0,
+    "slack_calls": 0,
+    "actual_model_quality_evaluated": false,
+    "profiles": [
+      {
+        "base_image": "sha256:4f320d1ea4b7ad98a79b54cf94b407cb5ca3f05d593b3ca3f4756b4a256198aa",
+        "image": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-0",
+        "services": [
+          "news-worker"
+        ],
+        "changed": [
+          "quant_company/briefing/schedule.py"
+        ],
+        "complete_source_inventory_verified": true,
+        "source_inventory_sha256": "aca1ab00620640e3eead7a6921149f023f878e7f14a387e035c98cfbade27882"
+      },
+      {
+        "base_image": "sha256:7a1bcbf694cfe0f274cd6ac02755240414db3f68c9622928584d006535cb340b",
+        "image": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-1",
+        "services": [
+          "dispatch"
+        ],
+        "changed": [
+          "quant_company/briefing/schedule.py"
+        ],
+        "complete_source_inventory_verified": true,
+        "source_inventory_sha256": "690f33b0a11b835c187593b5ea73d0c09ca94d18fd15438c526cd0da8f098457"
+      },
+      {
+        "base_image": "sha256:7a171aa32d08c48718e20841be4397f9771446a64c1bab73903c050bad9ca6c0",
+        "image": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-2",
+        "services": [
+          "briefing-data-worker"
+        ],
+        "changed": [
+          "quant_company/briefing/schedule.py"
+        ],
+        "complete_source_inventory_verified": true,
+        "source_inventory_sha256": "b10ff0f3c220c66c20d61af6fbcf7863bb48766ff2fe7a40121e84b05125f599"
+      },
+      {
+        "base_image": "sha256:953a95ffb7061bfeb15f79f4b7c7ace6ecc245752ec3c929e41f040cca1d2674",
+        "image": "quant-company-codex:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-3",
+        "services": [
+          "codex-runtime"
+        ],
+        "changed": [],
+        "complete_source_inventory_verified": true,
+        "source_inventory_sha256": "203d2888afcaad80dafbf6a2c3f503cacaf1e696fefb7af0ae75bef4860bbd75"
+      }
+    ],
+    "files": {
+      "quant_company/briefing/schedule.py": {
+        "before": "c742422b322abc1ade7c6626b9dbf278106cd3db63465041bd5512d8244c197e",
+        "after": "fcf0f8d9afd71240a90863e9b5f23a15c8ccec65bd26efc881fc2b7aa6a7a64d"
+      }
+    },
+    "completed_at": "2026-10-08T18:54:24.410476+00:00",
+    "cutover_started_at": "2026-10-10T09:49:03.377744+00:00",
+    "installed_at": "2026-10-10T09:49:09.538641+00:00",
+    "active_service_images": {
+      "news-worker": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-0",
+      "dispatch": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-1",
+      "briefing-data-worker": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-2"
+    },
+    "unchanged_runtime_not_recreated": "codex-runtime: identical source inventory; ongoing company-lane request preserved",
+    "runtime_bindings_preserved": true,
+    "unrelated_services_preserved": true,
+    "environment_changed_keys": [
+      "RELEASE_COMMIT"
+    ],
+    "database_mutations": 0,
+    "model_auth_unchanged": true,
+    "regular_delivery_times_unchanged": true,
+    "schedule_version": "6+8:20/40/115",
+    "execution_version": 7,
+    "inventory_contract_version": 2,
+    "source_root": "51ce4f91f141e65f909ac783e590ee0585dea3fa",
+    "environment_after_sha256": "7feb6d1c7a20b1e1a2d60e2aa8f86d657515842d2688b3765ea13ff097c6a50a"
+  },
+  "readback": {
+    "recorded_at": "2026-10-10T09:50:00.767689+00:00",
+    "source_commit": "51ce4f91f141e65f909ac783e590ee0585dea3fa",
+    "services": [
+      {
+        "service": "news-worker",
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "image": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-0"
+      },
+      {
+        "service": "dispatch",
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "image": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-1"
+      },
+      {
+        "service": "briefing-data-worker",
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "image": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-2"
+      },
+      {
+        "service": "codex-runtime",
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "image": "quant-company-codex:5e885d0a92bb8db89514ce54a5c25322e3e4f82a-combined71-3"
+      }
+    ],
+    "runtime_settings": [
+      {
+        "service": "news-worker",
+        "image": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-0",
+        "publication_enabled": true,
+        "kr_close_enabled": true,
+        "us_close_enabled": false,
+        "schedule_version": "6+8:20/40/115",
+        "format_version": 22,
+        "validation_version": 70,
+        "execution_version": 7,
+        "oct12_pm": {
+          "id": "9473536f-12b8-552b-ba48-6beb1d198577",
+          "day": "2026-10-12",
+          "kind": "pm",
+          "due_at": "2026-10-12T17:25:00+09:00",
+          "starts_at": "2026-10-12T15:50:00+09:00",
+          "cutoff": "2026-10-12T16:10:00+09:00",
+          "expires_at": "2026-10-12T18:25:00+09:00",
+          "us_session": null,
+          "kr_session": "2026-10-12",
+          "previous_us_session": null,
+          "previous_kr_session": "2026-10-08",
+          "weekly": null
+        },
+        "phase_deadlines": {
+          "plan": "2026-10-12T16:20:00+09:00",
+          "inventory": "2026-10-12T16:38:00+09:00",
+          "write": "2026-10-12T16:54:00+09:00",
+          "review": "2026-10-12T17:06:00+09:00",
+          "revise": "2026-10-12T17:22:00+09:00",
+          "final_review": "2026-10-12T17:34:00+09:00"
+        },
+        "source_budget": {
+          "initial": 36000,
+          "repair_reserve": 6000,
+          "total": 42000
+        }
+      },
+      {
+        "service": "dispatch",
+        "image": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-1",
+        "publication_enabled": true,
+        "kr_close_enabled": true,
+        "us_close_enabled": false,
+        "schedule_version": "6+8:20/40/115",
+        "format_version": 22,
+        "validation_version": 70,
+        "execution_version": 7,
+        "oct12_pm": {
+          "id": "9473536f-12b8-552b-ba48-6beb1d198577",
+          "day": "2026-10-12",
+          "kind": "pm",
+          "due_at": "2026-10-12T17:25:00+09:00",
+          "starts_at": "2026-10-12T15:50:00+09:00",
+          "cutoff": "2026-10-12T16:10:00+09:00",
+          "expires_at": "2026-10-12T18:25:00+09:00",
+          "us_session": null,
+          "kr_session": "2026-10-12",
+          "previous_us_session": null,
+          "previous_kr_session": "2026-10-08",
+          "weekly": null
+        },
+        "phase_deadlines": {
+          "plan": "2026-10-12T16:20:00+09:00",
+          "inventory": "2026-10-12T16:38:00+09:00",
+          "write": "2026-10-12T16:54:00+09:00",
+          "review": "2026-10-12T17:06:00+09:00",
+          "revise": "2026-10-12T17:22:00+09:00",
+          "final_review": "2026-10-12T17:34:00+09:00"
+        },
+        "source_budget": {
+          "initial": 36000,
+          "repair_reserve": 6000,
+          "total": 42000
+        }
+      },
+      {
+        "service": "briefing-data-worker",
+        "image": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-2",
+        "publication_enabled": true,
+        "kr_close_enabled": true,
+        "us_close_enabled": false,
+        "schedule_version": "6+8:20/40/115",
+        "format_version": 22,
+        "validation_version": 70,
+        "execution_version": 7,
+        "oct12_pm": {
+          "id": "9473536f-12b8-552b-ba48-6beb1d198577",
+          "day": "2026-10-12",
+          "kind": "pm",
+          "due_at": "2026-10-12T17:25:00+09:00",
+          "starts_at": "2026-10-12T15:50:00+09:00",
+          "cutoff": "2026-10-12T16:10:00+09:00",
+          "expires_at": "2026-10-12T18:25:00+09:00",
+          "us_session": null,
+          "kr_session": "2026-10-12",
+          "previous_us_session": null,
+          "previous_kr_session": "2026-10-08",
+          "weekly": null
+        },
+        "phase_deadlines": {
+          "plan": "2026-10-12T16:20:00+09:00",
+          "inventory": "2026-10-12T16:38:00+09:00",
+          "write": "2026-10-12T16:54:00+09:00",
+          "review": "2026-10-12T17:06:00+09:00",
+          "revise": "2026-10-12T17:22:00+09:00",
+          "final_review": "2026-10-12T17:34:00+09:00"
+        },
+        "source_budget": {
+          "initial": 36000,
+          "repair_reserve": 6000,
+          "total": 42000
+        }
+      }
+    ],
+    "model_calls": 0,
+    "slack_calls": 0,
+    "database_mutations": 0,
+    "oct12_registration": "Verified schedule definitions in actual images; actual registration occurs at 15:50 KST. The real PostgreSQL clock-controlled regression also passed.",
+    "early_delivery": "Real PostgreSQL test passed; no synthetic Slack message sent to production.",
+    "fresh_content_quality_certified": false
+  },
+  "cold_start_reproduction": {
+    "recorded_at": "2026-10-10T09:33:33.354760+00:00",
+    "checks": [
+      {
+        "image": "sha256:4f320d1ea4b7ad98a79b54cf94b407cb5ca3f05d593b3ca3f4756b4a256198aa",
+        "profile": "before",
+        "exit_code": 1,
+        "expected_failure": true
+      },
+      {
+        "image": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-0",
+        "profile": "news-worker",
+        "exit_code": 0,
+        "expected_failure": false
+      },
+      {
+        "image": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-1",
+        "profile": "dispatch",
+        "exit_code": 0,
+        "expected_failure": false
+      },
+      {
+        "image": "quant-company:51ce4f91f141e65f909ac783e590ee0585dea3fa-combined72-2",
+        "profile": "briefing-data-worker",
+        "exit_code": 0,
+        "expected_failure": false
+      }
+    ],
+    "actual_production_dependencies": true,
+    "concurrent_registrations_per_image": 8,
+    "model_calls": 0,
+    "slack_calls": 0,
+    "database_mutations": 0
+  },
+  "post_install_log_markers": [
+    {
+      "service": "news-worker",
+      "markers": {
+        "nondeterminism": 0,
+        "traceback (most recent call last)": 0,
+        "out of memory": 0
+      }
+    },
+    {
+      "service": "dispatch",
+      "markers": {
+        "nondeterminism": 0,
+        "traceback (most recent call last)": 0,
+        "out of memory": 0
+      }
+    },
+    {
+      "service": "briefing-data-worker",
+      "markers": {
+        "nondeterminism": 0,
+        "traceback (most recent call last)": 0,
+        "out of memory": 0
+      }
+    },
+    {
+      "service": "codex-runtime",
+      "markers": {
+        "nondeterminism": 0,
+        "traceback (most recent call last)": 0,
+        "out of memory": 0
+      }
+    }
+  ],
+  "state": {
+    "active_editions": 0,
+    "pending_brief_deliveries": 0,
+    "pm": {
+      "id": "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "state": "committed",
+      "error": "timeout",
+      "due_at": "2026-10-08T08:45:00+00:00",
+      "committed_at": "2026-10-08T08:55:00.392751+00:00",
+      "inputs_frozen": true,
+      "candidate_count": 96,
+      "document_count": 23
+    },
+    "at": "2026-10-10T09:50:17.557506+00:00",
+    "current": "51ce4f91f141e65f909ac783e590ee0585dea3fa",
+    "model_calls": 0,
+    "slack_calls": 0,
+    "database_mutations": 0
+  },
+  "monitor": {
+    "recorded_at": "2026-10-10T09:50:17.913482+00:00",
+    "publication_enabled": true,
+    "timer": "NextElapseUSecRealtime=Sat 2026-10-10 09:58:00 UTC\nActiveState=active",
+    "editions": [
+      {
+        "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
+        "kind": "pm",
+        "day": "2026-10-07",
+        "due_at": "2026-10-07T08:45:00+00:00",
+        "state": "committed",
+        "content_passed": false,
+        "delivery": "confirmed",
+        "delivered_at": "2026-10-07T08:55:03.230199+00:00",
+        "problems": [
+          "execution_failed",
+          "late_brief",
+          "full_content_not_qualified",
+          "late_slack_delivery"
+        ]
+      },
+      {
+        "id": "f8004fe8-789b-5df2-8dfa-a06f11903d91",
+        "kind": "am",
+        "day": "2026-10-08",
+        "due_at": "2026-10-07T22:45:00+00:00",
+        "state": "committed",
+        "content_passed": false,
+        "delivery": "confirmed",
+        "delivered_at": "2026-10-07T22:55:02.743289+00:00",
+        "problems": [
+          "execution_failed",
+          "late_brief",
+          "full_content_not_qualified",
+          "late_slack_delivery"
+        ]
+      },
+      {
+        "id": "91dd3647-e807-5370-8a2c-14226429dd3f",
+        "kind": "pm",
+        "day": "2026-10-08",
+        "due_at": "2026-10-08T08:45:00+00:00",
+        "state": "committed",
+        "content_passed": false,
+        "delivery": "confirmed",
+        "delivered_at": "2026-10-08T08:55:02.805719+00:00",
+        "problems": [
+          "execution_failed",
+          "late_brief",
+          "full_content_not_qualified",
+          "late_slack_delivery"
+        ]
+      },
+      {
+        "id": "b463d3df-94d9-5a93-be1d-4454dadbf098",
+        "kind": "am",
+        "day": "2026-10-09",
+        "due_at": "2026-10-08T22:45:00+00:00",
+        "state": "committed",
+        "content_passed": false,
+        "delivery": "confirmed",
+        "delivered_at": "2026-10-08T22:55:03.785909+00:00",
+        "problems": [
+          "execution_failed",
+          "late_brief",
+          "full_content_not_qualified",
+          "late_slack_delivery"
+        ]
+      },
+      {
+        "id": "4d933b4e-3814-54bf-943a-48029aa76124",
+        "kind": "am",
+        "day": "2026-10-10",
+        "due_at": "2026-10-09T22:45:00+00:00",
+        "state": "committed",
+        "content_passed": false,
+        "delivery": "confirmed",
+        "delivered_at": "2026-10-09T22:45:04.016419+00:00",
+        "problems": [
+          "content_review_failed",
+          "mechanical_rejections",
+          "full_content_not_qualified"
+        ]
+      }
+    ]
+  },
+  "model_calls_by_deployment": 0,
+  "slack_calls_by_deployment": 0,
+  "database_mutations_by_deployment": 0,
+  "fresh_automatic_content_quality_certified": false,
+  "full_tests": {
+    "passed": 2044,
+    "skipped": 49,
+    "failed": 0,
+    "junit_sha256": "1c47fb189a2c7c7d5358fc26c8b75f74ba3bf69de936a2bd064854319ced9fe2",
+    "real_postgresql": true,
+    "real_temporal": true,
+    "model_and_slack": "simulated",
+    "additional_cold_start_and_kr_close_targeted_tests": 42
+  },
+  "integration": {
+    "timer_commit": "b6d0a10",
+    "base_combined_commit": "5e885d0a92bb8db89514ce54a5c25322e3e4f82a",
+    "pull_requests": [
+      122,
+      124,
+      125,
+      129
+    ],
+    "calendar_followup": "Serialize cold cache misses before invoking the shared exchange-calendar factory.",
+    "schedule_version": "6+8:20/40/115",
+    "kr_close_enabled": true,
+    "us_close_enabled": false,
+    "publication_enabled": true,
+    "oct12_pm_kst": {
+      "collection": "15:50",
+      "cutoff": "16:10",
+      "due": "17:25"
+    },
+    "existing_failure_finalization_grace_minutes": 10,
+    "missing_regular_session_snapshot": "Keep the two-corroborating-closing-articles rule."
+  },
+  "rollback": {
+    "setting": "BRIEFING_KR_CLOSE_ENABLED=false",
+    "helper": "/var/lib/quant-company/releases/analyst-combined72-51ce4f91f141/disable-kr-close.py",
+    "execute_with": "sudo python3",
+    "requires_idle": true,
+    "preserves_timer_editorial_fixes_and_automatic_publication": true,
+    "pm_kst_after": {
+      "collection": "16:10",
+      "cutoff": "16:30",
+      "due": "17:45"
+    },
+    "running_editions_would_be_stale_if_policy_were_changed_mid_run": true
+  },
+  "previous_verification_attempts": [
+    "Initial integration suite2042passed49skipped; later monitor expectation needed the added08:38UTC entry.",
+    "Follow-up run interrupted after a long stall:685passed2skipped, stale timer expectation and one3second mocked-runtime startup timeout. Timer expectation corrected; full run repeated with idle-sleep inhibition.",
+    "One repeat was stopped at setup by sandbox denial of local PostgreSQL; same suite rerun with approved local-network access."
+  ],
+  "oct8_pm_recreation": {
+    "original_edition": "91dd3647-e807-5370-8a2c-14226429dd3f",
+    "frozen_candidates": 96,
+    "frozen_documents": 23,
+    "possible_from_historical_frozen_inputs": true,
+    "started": false,
+    "original_failed_request_replayed": false
+  }
+}

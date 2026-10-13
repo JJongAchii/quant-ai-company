@@ -1,0 +1,73 @@
+{
+  "frozen_at": "2026-10-05T23:48:35.907067+00:00",
+  "source_commit": "10b788d0a43c6cb7af1dd75e1a7eeabac567c97b",
+  "validation_version": 51,
+  "format_version": 15,
+  "case": "on-demand-am-20261006-v51",
+  "scope": "One fresh, late, on-demand AM content preview. Not the expired scheduled AM edition, not an on-time or deployed acceptance result.",
+  "edition_template": {
+    "id": "c6e91fb0-984b-51bb-ab5c-24a9efb2c3a0",
+    "day": "2026-10-06",
+    "kind": "am",
+    "due_at": "2026-10-06T07:45:00+09:00",
+    "starts_at": "2026-10-06T06:40:00+09:00",
+    "cutoff": "2026-10-06T07:00:00+09:00",
+    "expires_at": "2026-10-06T08:45:00+09:00",
+    "us_session": "2026-10-05",
+    "kr_session": "2026-10-06",
+    "previous_us_session": "2026-10-02",
+    "previous_kr_session": "2026-10-02",
+    "weekly": null
+  },
+  "timing": {
+    "day_must_match_execution_kst": true,
+    "cutoff": "actual collection start UTC plus10minutes; inputs sealed once before planning",
+    "due_at": "cutoff plus45minutes, metadata for this late evaluation only",
+    "expires_at": "due_at plus1hour",
+    "collection_at": "actual execution start; no past-scheduled-cutoff backfill"
+  },
+  "max_completed_model_calls": 3,
+  "max_attempted_model_calls": 3,
+  "phases": [
+    "plan",
+    "write",
+    "review"
+  ],
+  "max_repairs": 0,
+  "model_search_calls": 0,
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "provider": "codex",
+  "source_notes_required": true,
+  "full_main_required": true,
+  "all_twelve_independent_checks_required": true,
+  "original_body_main_fact_comparison_required": true,
+  "input_gate": {
+    "minimum_full_originals": 8,
+    "minimum_origin_groups": 2,
+    "minimum_independent_close_reports": 2
+  },
+  "sources": "Actual existing registered originals plus bounded direct public collection and actual current lake read. Never search snippets, manual summaries, historical backfill or invented observations.",
+  "prior_evaluated_source_overlap": "Measure hashes/IDs against the closed AM20261002 bundle; disclose overlap before novelty claims.",
+  "implementation_hashes": {
+    "src/quant_company/briefing/editor.py": "05c1a26995350a50dbaf6680437cefe246285d6e867ec4cce03dbfeaa6ccb8a4",
+    "src/quant_company/briefing/contracts.py": "b679d9b3c64a0ac6ccc66b9f21445485d9c7a935bb4bb990e9cd5c9ac09d749f",
+    "src/quant_company/briefing/store.py": "74ff8f015a32eadfc1fdc7421022a023f9474c50036e4a36da6b3d400147fb0b",
+    "src/quant_company/briefing/planning.py": "d5707b2e2949d0128dab9c62eb60ab099866b633fe79dc4a7e28f417cbfb97af",
+    "src/quant_company/briefing/inputs.py": "ae863c274588e03152cfd3cf67cc9fea8058228d1b6b13f6f6ab3928cb871b14",
+    "src/quant_company/briefing/data.py": "9b9e2e272fb5136bfd7931783ca071876e41f5488f7fbc5d64dfa82661eb6241",
+    "src/quant_company/briefing/data_reader.py": "d0c9e41719db033e1c9f7c77656d6a35bc07133ec644c121c2953428f4bccd69",
+    "src/quant_company/briefing/quotations.py": "063014accee7c3fbe5529f511761a8d6fe6ff1282bdfba1004351530ea8e89b6",
+    "src/quant_company/config.py": "8c9d779390d392d66db0f90cc676158370315a4b4f9b56da3ffb46157e70e062",
+    "scripts/evaluate_briefing.py": "b76baba631e0722817466dae487a8b7c55a52cbc63c3ae3e1d2cee5a0edaa3ba"
+  },
+  "runtime_archive_sha256": "6bfddcd29998a5239e069d019258dc88217c4ddffe0a63c790f788c0a7c81c7e",
+  "slack_publication": false,
+  "company_database_mutations": false,
+  "owner_approval": "chat-analyst-preview-approved-20261002",
+  "automatic_retry": false,
+  "no_uncertain_replay": true,
+  "paid_api_fallback": false,
+  "failure_action": "Preserve the input, request, receipt and failure. Stop this case immediately; no repair, replacement request or second critic.",
+  "mechanical_guard_limit": "Checks the writer-declared facts, not semantic completeness. Independent full-original review remains mandatory."
+}

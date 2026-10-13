@@ -1,0 +1,89 @@
+{
+  "recorded_at": "2026-10-08T08:25:47.242984+00:00",
+  "source_commit": "5e885d0a92bb8db89514ce54a5c25322e3e4f82a",
+  "timer_commit": "b6d0a10",
+  "prior_editorial_commit": "a14f664",
+  "pull_requests": [
+    122,
+    124,
+    125,
+    129
+  ],
+  "original_commits_in_order": [
+    "cebb074",
+    "b85e0a4",
+    "26b9c49",
+    "f7072a8",
+    "9bd6037",
+    "cdc0e35",
+    "8e6e10e"
+  ],
+  "tests": {
+    "full_suite": {
+      "passed": 2042,
+      "skipped": 49,
+      "failed": 0,
+      "junit_sha256": "bc8298bcd7d02d1de04f9021dc9e12b82c437e4d9bd288ddf98d8018771150f1"
+    },
+    "added_oct12_and_monitor_cases": 9,
+    "actual_preserved_app_profiles": {
+      "news-worker": 4,
+      "dispatch": 4,
+      "briefing-data-worker": 4
+    },
+    "ruff": "passed",
+    "real_postgresql": true,
+    "real_temporal": true,
+    "model_and_slack": "simulated; no live call"
+  },
+  "switch_off_baseline": {
+    "commit": "1628c16",
+    "all_seven_fingerprints_match": true,
+    "values": {
+      "early_write_prompt": "7477551908c6c7c7834b3a425e66d5fad5fc6cb4d169dd699926bc7c9fc133f3",
+      "editions": "e0137f6acff073ddf7b2497c11ed93a000d2ab4311b8446837efa5bda98a9860",
+      "policy": "15290d86bd86553bfb5ee2d6f8fefa0c438b259dd8ad8be9392fa86fe0367bdb",
+      "render": "f5aa26e983100360bfc0e69044a627331d2eb6d93c538ad03920c594b70f4fbc",
+      "review_prompt": "23e5f15ea565fa7f31f59e189533f35a5cdd9d86e5283e4a5eda2f2402684dbd",
+      "summaries": "9e896b9237bb74c950e4a5e9cce1a80baf1ef53672732b2492be6c4b2ffe5b9a",
+      "write_prompt": "362122b5d1467de44de5108fd271ad37d0503d007e15f64e52908a922ca69830"
+    }
+  },
+  "execution": {
+    "version": 7,
+    "new_requests": "Absolute deadlines within the edition window; unused time carries to the next phase; downstream reviews and one-minute send margin reserved. Queueing/recovery never restarts time. Legacy requests and digests preserved.",
+    "legacy_plan_timeout_seconds": 360,
+    "new_example_plan_seconds": 600,
+    "new_example_inventory_after_three_minute_plan_seconds": 1500,
+    "model_assignments_and_auth_unchanged": true
+  },
+  "scheduled_change": {
+    "kr_enabled_after_idle_deployment": true,
+    "us_enabled": false,
+    "publication_enabled": true,
+    "schedule_version": "6+8:20/40/115",
+    "oct12_pm_kst": {
+      "collection": "15:50",
+      "cutoff": "16:10",
+      "due": "17:25"
+    },
+    "early_send_after_cutoff_when_ready": "real PostgreSQL test passed",
+    "snapshot_unavailable": "two corroborating closing articles remain required; no new snapshot availability claimed"
+  },
+  "production_before": {
+    "current": "8fde2509d4dd2191147fbcee5eaa952191d7c048",
+    "checked_at": "2026-10-08T08:24:05.349561+00:00",
+    "active_editions": 1,
+    "state": "Oct8 PM blocked on plan timeout; wait for deadline finalization and delivery before changing policy"
+  },
+  "oct8_pm_recreation": {
+    "frozen_candidates": 96,
+    "frozen_documents": 23,
+    "same_failed_request_automatically_replayed": false,
+    "separate_video_source_brief_possible": true,
+    "generation_started": false
+  },
+  "model_calls": 0,
+  "slack_calls": 0,
+  "fresh_automatic_content_quality_certified": false
+}

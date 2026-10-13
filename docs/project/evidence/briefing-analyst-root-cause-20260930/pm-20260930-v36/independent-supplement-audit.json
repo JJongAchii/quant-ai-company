@@ -1,0 +1,30 @@
+{
+  "at": "2026-09-30T10:55:38.462799+00:00",
+  "scope": "Independent newly supplied frozen originals read before repair result; not extra evidence fed to writer",
+  "budget": {
+    "original": 23804,
+    "added": 11114,
+    "total": 34918,
+    "limit": 42000
+  },
+  "findings": [
+    {
+      "source": "cdbbb226efb1f5c03b4aeba5daa86d86535c2c51",
+      "requirements": "Q2 official net dollar sales96.12억 vsQ1 136.28억,7quarters549.64억; historical disclosure not today intervention. Stability/volatility explanation, not proving strong inflows."
+    },
+    {
+      "source": "c9808b69f70229592ba24769e56811b62d226a92",
+      "requirements": "January first shipment and February arrival actual;130만톤/year about3%nationalimport,20year2600만톤 estimate. Non-Hormuz route reduces disruption exposure, not international price exposure. Separate headline2000만t from body2600만t and year130만t."
+    },
+    {
+      "source": "b8be3ab67f13ce8d9167443b7f6a601231ac7254",
+      "requirements": "Forecast all/core monthly0.3%,annual3.7/3.3 vs unchangedJuly. July0.2~0.3pp revisions forecast may3%; spendingAug0.8 vsJuly0.2 forecast and gasoline excluded observed5.7%. Williams observed housing/labor/tariff offsets. Old policy target range not explicitly provided; critique cannot authorize inventing it."
+    },
+    {
+      "source": "fab30e3db3b0576bf943a3c9ef8a2a4d520aa4cd",
+      "requirements": "Attributed minister estimate45millionUSD/hour interruption,10hoursmax daily alerts,annualfixedasset10billion; revised two-stage warning operationaloffset with residual realfatal risk. Budgetgap27billion and donor90billioneuro package are distinct, claims of causation/corruption not proven."
+    }
+  ],
+  "slack": "not_called",
+  "repair_result_known": false
+}

@@ -1,0 +1,26 @@
+{
+  "at": "2026-09-30T23:27:46.397543+00:00",
+  "scope": "Root reading of all3 frozen requested supplemental originals before the one correction call",
+  "source_chars": 9793,
+  "total_repair_source_chars": 39942,
+  "external_backfill": false,
+  "sources": [
+    {
+      "id": "81dd7b82492a464339510789035d0fb7ef088833",
+      "complete": true,
+      "notes": "EarlyWednesday2y4.827downmore6bp,10y5.268up1bp,30y5.623upalmost3bp differ from laterclose/intraday articles. FuturesOctoberhikeprobability fellfromearlier-month>80toaround37 afterrelease; do not invent immediately-previous probability. SeptemberjobsreportFriday8:30a.m.ET;84kconsensusforecastnotactualrelease."
+    },
+    {
+      "id": "64aeee9afc4f4c89266f36d142ad103b25729d07",
+      "complete": true,
+      "notes": "Section301current10/12.5dutiesunderWednesdaycourtargument, not overturnednow. EarlierIEEPASupremeCourtreversalFebruary andSection122expiredJuly are distinctlaw/sequence. Plaintiffsclaimedpretext/requiredcountryfindingsvsDOJdefenseandjudgepushback; no finaldecision/date relief or automaticKoreatariffrollback."
+    },
+    {
+      "id": "771719ab0a9a206616ebb70a03b63fba1a8071e5",
+      "complete": true,
+      "notes": "TrendForce4QFORECASTqoqconventionalDRAM10-15/NAND15-20/allDRAMincludingHBM15-20;3Qrespectively13-18,18-23,8-13. DeviceconsumerSSDcuts/capacityreallocation/LTAmeanprofitnotuniform. OldJan25captionnotnewSep30realizedpriceincrease; serverpricegrowthcouldbelowaverageLTA."
+    }
+  ],
+  "whole_case_full_original_qualified": false,
+  "reason": "InitialHormuzsource remains6000of6235; no retrospective source replacement."
+}

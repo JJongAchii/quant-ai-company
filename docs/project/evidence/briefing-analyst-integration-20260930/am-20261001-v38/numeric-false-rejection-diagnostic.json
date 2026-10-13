@@ -1,0 +1,24 @@
+{
+  "at": "2026-09-30T23:23:44.070075+00:00",
+  "validation_version": 39,
+  "source_code_sha256": "b28756de0d0a14b8441dc55d215241f925e0f17acbec37a95acb318ecbd4bbd2",
+  "diagnostic_items": [
+    {
+      "item_id": "kosdaq_previous",
+      "frozen_v38_rejection": true,
+      "prospective_v39_exact_normalization_supported": true,
+      "fact_rewrite": false,
+      "scope": "Technical diagnosis of a previously evaluated item, not a new model run or fresh qualification"
+    },
+    {
+      "item_id": "diplomacy_interpretation",
+      "frozen_v38_rejection": true,
+      "prospective_v39_exact_normalization_supported": true,
+      "fact_rewrite": false,
+      "scope": "Technical diagnosis of a previously evaluated item, not a new model run or fresh qualification"
+    }
+  ],
+  "source_id_typo": "Remains rejected; no fuzzy ID/quote repair or acceptance-policy weakening",
+  "v38_case_reclassified": false,
+  "slack": "not_called"
+}

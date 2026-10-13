@@ -1,0 +1,22 @@
+{
+  "recorded_at": "2026-10-06T08:40:34.125634+00:00",
+  "scope": "Validation57 and one bounded preflight patch; regression only, not cloud content qualification.",
+  "tests": 238,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "receipt_sha256": "5e538bf8bff7f878f47f532e5f0b433b51e51e6856512c817f1c679b51f88754",
+  "postgresql": "real database",
+  "temporal": "actual test environment with workflow histories",
+  "models_and_slack": "fixtures / simulated transports",
+  "verified": [
+    "Negative/positive sign and English meeting-month/date/quantity boundaries",
+    "Proof uses the reader-visible quote row, not hidden comparison inputs",
+    "Only affected original bodies enter the patch request; all originals remain frozen for the critic",
+    "Unchanged notes, prices, summary, calendar and verified numeric values preserved",
+    "Exactly one patch, with no review request after another mapping failure or insufficient time",
+    "Saved replay checks source notes; all twelve editorial checks remain necessary",
+    "Bounded edition whitelist and preview never enable publication"
+  ],
+  "remaining": "Actual new-source scheduled content and five-trading-day qualification; real Slack readback."
+}

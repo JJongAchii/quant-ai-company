@@ -1,0 +1,50 @@
+{
+  "code_paths": [
+    "labs/company-domestic-research/candidate.py",
+    "labs/company-domestic-research/config.json",
+    "labs/company-domestic-research/domestic_statistics.py",
+    "labs/company-domestic-research/engine.py"
+  ],
+  "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+  "entrypoint": "labs/company-domestic-research/engine.py",
+  "entrypoint_sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+  "evaluation_input_names": [
+    "development.json",
+    "warmup.json"
+  ],
+  "evaluation_timeout_seconds": 900.0,
+  "fixture_only": false,
+  "id": "kr-etf-retrospective-v1",
+  "protected_paths": [
+    "labs/company-domestic-research/engine.py",
+    "labs/company-domestic-research/domestic_statistics.py"
+  ],
+  "protocol": "quant-company-adaptive-v1",
+  "python_executable": "/runtime/python",
+  "python_sha256": "c0b74b270ea823c760917e64fbde1945e67ba739d97fa716a48a5b69e6505d62",
+  "qualification_input_names": [
+    "warmup.json"
+  ],
+  "qualification_timeout_seconds": 120.0,
+  "result_scope": "conditional_retrospective_development",
+  "return_series_contract": "initial-zero-calendar-cagr-v1",
+  "runtime_mounts": [
+    {
+      "sha256": "dba78604745923a15f663d5c3578aafacd03c3863f0fc123b95597cce5bd3b8e",
+      "target": "/runtime"
+    },
+    {
+      "sha256": "8c98527ea8e0eb702c5222555b8559b6cad364a22d18666a772a7fc112b89570",
+      "target": "/lib"
+    },
+    {
+      "sha256": "aa59e9bd06b0b9e05f0ef0e43b6a79e32bf3131ee49948146a414e727c6958aa",
+      "target": "/lib64"
+    },
+    {
+      "sha256": "382d4e9859f721832cf5cc5efe33f6d84a80a6111c76f8847ba4244280fa4522",
+      "target": "/usr"
+    }
+  ],
+  "schema_version": 2
+}

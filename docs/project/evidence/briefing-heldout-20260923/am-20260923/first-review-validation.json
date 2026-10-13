@@ -1,0 +1,11 @@
+{
+  "status": "rejected",
+  "reason": "review_coverage_not_cited",
+  "response": "review-receipt.json",
+  "reviewer_verdict": "reduce",
+  "failed_checks": ["coverage", "depth"],
+  "unsupported_source_item_association_count": 6,
+  "substantive_concern": "The main post omitted the current federal funds range, the latest increase and the published year-end rate path, although the frozen morning-source bundle contained them.",
+  "automatic_publication": false,
+  "replayed_request_id": false
+}

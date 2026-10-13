@@ -1,0 +1,109 @@
+{
+  "observed_at": "2026-10-01T03:40:06.638013+00:00",
+  "hostname": "DESKTOP-5T00NAF",
+  "config_sha256": "23920eaaaa415ac1e2c2ddbe918f908955de20a54223b9b04a1a76644da5deef",
+  "config": {
+    "company_commit": "eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+    "company_repo": "/home/achii/quant-company-qualification/programs-20260929/release-candidates/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/code",
+    "api_url": "http://127.0.0.1:18764",
+    "worker_id": "worker",
+    "token_file": "/home/achii/.config/quant-company/research-worker.token",
+    "state_dir": "/home/achii/quant-company-research/worker-state",
+    "repo_source": "/home/achii/quant-company-research/pilot/quant-lab",
+    "input_source": "/home/achii/quant-company-research/pilot/quant-lab",
+    "evidence_repo": "/home/achii/quant-company-research/acceptance-20260921/evidence",
+    "research_python": "/home/achii/quant-company-research/pilot/quant-lab/.venv/bin/python",
+    "release_registry_file": "/home/achii/quant-company-qualification/autonomous-20260921/release-candidates/registry.json",
+    "adaptive_profiles": {
+      "kr-etf-monthly-python-v1": "/home/achii/quant-company-qualification/autonomous-20260921/etf-worker-profile.json",
+      "kr-etf-research-v2": "/home/achii/quant-company-qualification/programs-20260928/real-data-b4b9304/profiles/kr_etf/worker-profile.json",
+      "kr-stock-research-v2": "/home/achii/quant-company-qualification/programs-20260928/real-data-b4b9304/profiles/kr_stock/worker-profile.json"
+    }
+  },
+  "unit": "ActiveState=active\nDropInPaths=/home/achii/.config/systemd/user/research-worker.service.d/20-autonomous-release.conf /home/achii/.config/systemd/user/research-worker.service.d/30-tech-feed-release.conf /home/achii/.config/systemd/user/research-worker.service.d/40-menu-evidence-release.conf /home/achii/.config/systemd/user/research-worker.service.d/50-evidence-retention-release.conf /home/achii/.config/systemd/user/research-worker.service.d/60-tech-scout-release.conf /home/achii/.config/systemd/user/research-worker.service.d/70-audit-evidence-release.conf /home/achii/.config/systemd/user/research-worker.service.d/80-audit-read-recovery.conf /home/achii/.config/systemd/user/research-worker.service.d/90-audit-read-progress.conf /home/achii/.config/systemd/user/research-worker.service.d/95-news-lane-release.conf /home/achii/.config/systemd/user/research-worker.service.d/99-active-release.conf\nMainPID=505305\nExecStart={ path=/home/achii/quant-company-research/company/.venv/bin/python ; argv[]=/home/achii/quant-company-research/company/.venv/bin/python -m quant_company.research.worker --config /home/achii/.config/quant-company/research-worker.json ; ignore_errors=no ; start_time=[Tue 2026-09-29 13:12:45 KST] ; stop_time=[n/a] ; pid=505305 ; code=(null) ; status=0/0 }\nWorkingDirectory=/home/achii/quant-company-qualification/programs-20260929/release-candidates/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/code\nKillMode=process",
+  "cwd": "/home/achii/quant-company-qualification/programs-20260929/release-candidates/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/code",
+  "profile_hashes": {
+    "kr-etf-monthly-python-v1": "0c65eef6214b835fe07b13fc165e2915baa9cdbf113a595c46561e5f14dd3b80",
+    "kr-etf-research-v2": "5d780fe9ea6777319319c00f15778585b5a600e6ced532a51d835f59099c9afe",
+    "kr-stock-research-v2": "7871b7f3b4e05e7e98562ac0c173e1edbe5234f1303eb291565c59691d74339f"
+  },
+  "state_file_count": 228,
+  "state_jobs": [
+    {
+      "file": "preparation-recoveries/5fe6b24e-daf8-4c97-b6ff-22fef105091f/journal.json",
+      "job_id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+    },
+    {
+      "file": "preparation-recoveries/5fe6b24e-daf8-4c97-b6ff-22fef105091f/original/result.json",
+      "state": "failed"
+    },
+    {
+      "file": "prelaunch-recoveries/ce2a5999-535d-41d6-a571-213a52db3f39/proof.json",
+      "job_id": "7dabcdfe-7826-5eee-8976-462675f3290c"
+    },
+    {
+      "file": "jobs/7dabcdfe-7826-5eee-8976-462675f3290c/result.json",
+      "state": "ready"
+    },
+    {
+      "file": "jobs/7dabcdfe-7826-5eee-8976-462675f3290c/sandbox-evaluation.json",
+      "pid": 378733
+    },
+    {
+      "file": "jobs/7dabcdfe-7826-5eee-8976-462675f3290c/receipt.json",
+      "job_id": "7dabcdfe-7826-5eee-8976-462675f3290c"
+    },
+    {
+      "file": "jobs/7dabcdfe-7826-5eee-8976-462675f3290c/sandbox-qualification.json",
+      "pid": 378706
+    },
+    {
+      "file": "jobs/6a64df0e-9c60-555f-aa3a-a80a70e7f985/result.json",
+      "state": "ready"
+    },
+    {
+      "file": "jobs/6a64df0e-9c60-555f-aa3a-a80a70e7f985/receipt.json",
+      "job_id": "6a64df0e-9c60-555f-aa3a-a80a70e7f985"
+    },
+    {
+      "file": "jobs/6a64df0e-9c60-555f-aa3a-a80a70e7f985/checkout/docs/research/company-kr-etf-pilot/P07-MANIFEST.json",
+      "status": "source-facts-collected-availability-unresolved"
+    },
+    {
+      "file": "jobs/6a64df0e-9c60-555f-aa3a-a80a70e7f985/checkout/docs/research/company-kr-etf-pilot/P08-MANIFEST.json",
+      "status": "blocked-dated-valuation-and-actual-redemption-evidence"
+    },
+    {
+      "file": "jobs/6a64df0e-9c60-555f-aa3a-a80a70e7f985/checkout/docs/research/company-kr-etf-pilot/P10-EVALUATION.json",
+      "status": "blocked"
+    },
+    {
+      "file": "jobs/6a64df0e-9c60-555f-aa3a-a80a70e7f985/checkout/docs/research/company-kr-etf-pilot/Q01-qualification.json",
+      "status": "passed"
+    },
+    {
+      "file": "jobs/6a64df0e-9c60-555f-aa3a-a80a70e7f985/checkout/docs/research/company-kr-etf-pilot/Q02-qualification.json",
+      "status": "passed"
+    },
+    {
+      "file": "jobs/6a64df0e-9c60-555f-aa3a-a80a70e7f985/checkout/docs/research/company-kr-etf-pilot/P10-MANIFEST.json",
+      "status": "blocked"
+    },
+    {
+      "file": "jobs/6a64df0e-9c60-555f-aa3a-a80a70e7f985/checkout/docs/research/company-kr-etf-pilot/BASELINE-BLOCKER.json",
+      "status": "blocked"
+    },
+    {
+      "file": "jobs/6a64df0e-9c60-555f-aa3a-a80a70e7f985/checkout/docs/research/company-kr-etf-pilot/P09-MANIFEST.json",
+      "status": "blocked-dated-valuation-and-actual-redemption-evidence"
+    },
+    {
+      "file": "jobs/6a64df0e-9c60-555f-aa3a-a80a70e7f985/checkout/docs/research/company-kr-etf-pilot/P06-MANIFEST.json",
+      "status": "source-facts-collected-availability-unresolved"
+    },
+    {
+      "file": "failure-history/6a64df0e-9c60-555f-aa3a-a80a70e7f985-5fe6b24e-daf8-4c97-b6ff-22fef105091f/result.json",
+      "state": "failed"
+    }
+  ]
+}
