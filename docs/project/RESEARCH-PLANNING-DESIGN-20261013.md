@@ -21,7 +21,7 @@
 5. shadow가 먼저다. 운영 중인 프로그램에는 비교만 한다.
 
 **사용자 결정 (2026-10-13)**
-- 코드 구현은 PR #105가 main에 반영된 뒤 시작한다(#105는 PR #87 위에 쌓여 있어 #87도 함께 병합돼야 한다).
+- 코드 구현은 PR #105가 main에 반영된 뒤 시작한다. 10-13 PR #138(#87·#105 포함)로 반영됐다.
 - 운영 중인 프로그램 `f7deaf96`에는 shadow 비교만 하고, 전환은 따로 결정한다.
 - 목적 검색 문서는 내부 연구용으로만 쓴다.
 - 후속 질문은 소유자가 활성화한다.
@@ -59,13 +59,14 @@
 
 ### 2.1 코드 기준
 
-- 이 문서의 코드 사실은 운영 연구 코드인 PR #105 `ops/research-resume-20261006@3158640`에서 확인했다. `main@8497a4e`와 다른 부분은 그때마다 표시했다.
-  - main에 없는 운영 계약: 조건부 데이터 정책(`conditional_ready`, `exploratory_only`), 과학 계보(lineage), DataAssessment v2, 데이터 단계 네이티브 응답 `research_stage_v1`(ADR 0038).
+- 이 문서의 코드 사실은 운영 연구 코드인 PR #105 `ops/research-resume-20261006@3158640`에서 처음 확인했다.
+  - 당시 main(`8497a4e`)에 없던 운영 계약: 조건부 데이터 정책(`conditional_ready`, `exploratory_only`), 과학 계보(lineage), DataAssessment v2, 데이터 단계 네이티브 응답 `research_stage_v1`(ADR 0038).
   - 이후 ops 브랜치는 `1883622`(10-13 11:30 KST)까지 진행했다. 추가된 것은 문서·증거 커밋 2개뿐이고 코드는 같다.
-- main에만 있는 관련 코드도 있다: 유지보수 장애 수집 `maintenance/problems.py`(ADR 0040).
-- **구현 시작 조건**: PR #105의 코드가 main에 반영돼야 한다.
-  - #105의 대상 브랜치는 main이 아니라 PR #87 브랜치(`JJongAchii/ai-research-collab-workflow`)다. 그래서 #87도 함께 main에 병합돼야 한다.
-  - 그 뒤 병합 커밋에서 부록 B의 참조를 다시 확인한다(P0). 줄 번호는 바뀔 수 있으니 함수 이름으로 찾는다.
+- 10-13 PR #138이 `1883622`를 main에 병합했다(#87·#105 포함, merge commit `70c5884`). 이제 구현 기준은 main이다.
+- **P0 재확인 (10-13, main `70c5884`)**: 부록 B의 참조가 모두 그대로 있다. 설계에 반영한 차이는 둘이다.
+  - main에서 들어온 직원별 모델 지정(`model_assignments_enabled`, `effective_role`)이 `stage_prompt`에 적용된다. 계획 단계도 이를 따른다(9.1).
+  - 장애 수집 `failure_observations`(ADR 0040)는 단계를 미션·프로그램을 거쳐 프로젝트에 연결한다. `planning_run_id` 단계는 run을 거쳐 연결해야 한다(17장).
+- 운영 corpus 규모·문서 크기의 읽기 전용 측정(P0 후반)은 운영 DB를 조회하므로 소유자 확인 후 한다. 그 전까지 정책값은 2.3의 실측을 쓴다.
 
 ### 2.2 운영 상태 (2026-10-13 기록 기준, 현재 상태로 단정하지 않음)
 
@@ -190,7 +191,7 @@ flowchart TD
 
 | 단계 | 구현 | 모델 호출 | 인수 기준 |
 | --- | --- | --- | --- |
-| P0 기준 재확인 | 병합된 main에서 부록 B 참조를 재확인. 운영 corpus 규모·문서 크기를 읽기 전용으로 측정 | 0 | 차이 보고, 정책값 보정 |
+| P0 기준 재확인 | 병합된 main에서 부록 B 참조를 재확인. 운영 corpus 규모·문서 크기를 읽기 전용으로 측정 | 0 | 차이 보고, 정책값 보정. 코드 재확인은 10-13 완료(2.1) |
 | P1 결정적 기반 | 스키마, 질문과 승인 어댑터, 검색·evidence set·카드, triage(ProgramStore 공통 검증 추출), status·CLI | 0 | 실제 PostgreSQL 테스트. **legacy triage replay 보고서**(16.3) |
 | P2 직원 단계(shadow) | slate·critique·decision 단계, 네이티브 응답, 예산 hook, 재시작·replay | shadow만 | 운영 프로그램 질문으로 실제 모델 shadow run 1회. 부수효과 0건을 DB로 확인. 비용 보고 |
 | P3 프로그램 연결 | 프로토콜 테이블, 소유자 전환 명령, ProgramController 게이트, admission을 고정한 handoff, legacy 목록 고정 수정 | fixture | 실제 PostgreSQL·Temporal fixture E2E. 운영 전환은 소유자 결정 후 |
@@ -343,6 +344,7 @@ stateDiagram-v2
 ### 9.1 공통 규칙
 
 - task kind는 `research_stage`이고, 단계 행에 `planning_run_id`가 있다. 응답 계약은 네이티브 `research_stage_v1`이다. 지금 `program_data`만 쓰는 선택 조건을 계획 단계로 넓힌다.
+- 모델은 `stage_prompt`의 직원별 모델 지정(`effective_role`)을 그대로 따른다. 계획 전용 모델 설정은 두지 않는다.
 - **컨텍스트**
   - 질문 파일, `planning/cards.json`, 전문 파일 목록(글자 수·청크 수 포함)
   - 허용 ID 목록: `allowed_source_ids`, `allowed_predecessor_mission_ids`, `allowed_envelopes`(엔진 규칙 카드 포함)
@@ -755,7 +757,7 @@ slate를 받은 직후 서비스가 후보마다 실행한다. 모델 호출은 
 | `company.py` | 계획 단계 네이티브 응답, 예산 hook, `planning_` 도구 분기, 승인 어댑터 등록 | 일반 대화와 `research_stage` 한도 |
 | `research/runner.py` | 계획 tick, flag별 조기 반환 | 과학 비활성일 때 차단 유지 |
 | `research/library.py` | 제한 없는 corpus 함수 | 불변 원문, 소유자 범위 |
-| `maintenance/problems.py` (main) | 계획 단계 실패 포함 | 기존 장애 수집 |
+| `maintenance/problems.py` | 계획 단계 실패 포함. 지금 join은 미션·프로그램을 거쳐서만 프로젝트를 찾으므로 `planning_run_id` → run → 프로젝트 경로를 더함 | 기존 장애 수집 |
 | `config.py`, `db.py`, `cli.py` | flag·정책, 스키마 등록, 명령 | 기본값 off |
 | `staff/playbooks/*.md` | 9.5 | 기존 책임 |
 | P4 `quant_feed/store.py` | `-08` 슬롯 요청, 대기열 우선, `internal` 상태, TOPICS 계산 | 피드 발행·슬롯 |
@@ -779,7 +781,7 @@ RESEARCH_PLANNING_DISCOVERY_ENABLED=false # P4 목적 검색
 ## 18 배포·롤백·운영 주의
 
 **준비**
-- #87·#105의 main 병합과 P0 재확인을 마친다.
+- #87·#105의 main 병합(10-13 #138)과 P0 재확인을 마친다.
 - 다른 운영 세션의 배포 잠금과 apply 스크립트를 먼저 확인한다(`docs/runbooks/research-programs.md`).
 
 **순서**
@@ -822,7 +824,7 @@ RESEARCH_PLANNING_DISCOVERY_ENABLED=false # P4 목적 검색
 | 직원 출력 계약 실패 | 네이티브 응답, 정확한 schema, 허용 ID 목록, 같은 시도 오류 반환 |
 | 실측 비용이 상한을 넘음 | 보류와 gap. 상한을 늘리려면 측정 근거가 있는 정책 revision이 필요 |
 | 운영 세션과 충돌 | 운영 프로그램은 shadow만, 배포 전 잠금 확인 |
-| #87·#105 병합 지연 | 문서만 먼저 준비. 코드는 main 반영 후 시작(사용자 결정) |
+| #87·#105 병합 지연 | 해소: 10-13 PR #138로 main에 반영 |
 
 ## 20 구현 중 금지할 실수
 
@@ -858,25 +860,28 @@ RESEARCH_PLANNING_DISCOVERY_ENABLED=false # P4 목적 검색
 | 선정 내용 소실 방지(10.4) 신규 구현 | 계보 v2 미션에서 이미 해결, v1은 범위 밖 | 운영 코드 확인 |
 | Codex CLI 착수 지시문 | 폐기. 이 저장소에서 단계별 PR | 구현 주체 변경 |
 
-## 부록 B 코드 참조 (PR #105 `3158640` 기준)
+## 부록 B 코드 참조 (main `70c5884`에서 P0 재확인)
 
-| 경로 | 참조 | main과의 차이 |
+처음에는 ops `3158640`에서 확인했고, 10-13 병합 뒤 main에서 다시 확인했다. 줄 번호는 바뀔 수 있으니 이름으로 찾는다.
+
+| 경로 | 참조 | P0 확인 |
 | --- | --- | --- |
-| `research/library.py` | `sync_library`, `available_sources`(literature·프로그램 결과 `LIMIT 20`, 계보 결과 전체), `require_current`, `verify_citations` | main에는 계보 결과 포함이 없음 |
-| `research/programs.py` | `ProgramStore.locked`, `validate_proposal`, `propose`, `assess`, `_assessment`, `decide`, `require_authorized`, `reserve` | main에는 `_assessment`, 계보, 조건부 규칙이 없음 |
-| `research/program_controller.py` | `PROGRAM_STAGES`, `ProgramController.tick`, `data_assessment_output_schema`, 계보 파일의 필수 읽기 | main에는 v2 schema, 계보가 없음 |
-| `research/controller.py` | `_stage`, `stage_prompt`(90k 상한), `commit_stage`(`required_*_reads`, 완독 게이트, 3회 보류) | main에는 lineage·technical reads가 없음 |
-| `research/builds.py` | `read_stage_file`(12,000자) | 같음 |
-| `research/data_evidence.py` | `load_packets`, `require_admissible_gaps` | main에는 `require_admissible_gaps`가 없음 |
-| `research/scientific_lineages.py` | `require_authority`, `usage`, `bind_experiment`, `overview` | main에 없음 |
-| `research/policy_contracts.py` | `ResearchDataPolicy`, `DataMode`, `SCOPE_GAPS` | main에 없음 |
-| `research/approvals.py` | `ApprovalTarget`, `adapters`, `publish_approval`, `short_command`, `apply_owner_command` | 거의 같음 |
-| `research/runner.py` | `ResearchRunner.tick` 조기 반환 | 같음 |
-| `company.py` | `_new_turn`(`research_stage` 한도 예외), 감사 예산 hook, `program_data`의 `research_stage_v1`, `_tool`의 `research_control` 분기, `research_approval_adapters` | main에는 네이티브 응답이 없음 |
-| `quant_feed/store.py` | `search_bundle`, `prepare`, `add_candidate`, `commit_document`, `enqueue` | 같음 |
-| `quant_feed/schedule.py`, `quant_feed/schema.sql` | `discovery_slot`(`-08`/`-20`), `weekly_slot`, `UNIQUE(stage,slot)` | 같음 |
-| `maintenance/problems.py` | `failure_observations`(program·mission join) | **main에만 있음** |
-| `config.py` | `company_max_task_turns=8`, `company_max_daily_turns` | 같음 |
+| `research/library.py` | `sync_library`, `available_sources`(literature·프로그램 결과 `LIMIT 20`, 계보 결과 전체), `require_current`, `verify_citations` | 있음 |
+| `research/programs.py` | `ProgramStore.locked`, `validate_proposal`, `propose`, `assess`, `_assessment`, `decide`, `require_authorized`, `reserve` | 있음 |
+| `research/program_controller.py` | `PROGRAM_STAGES`, `ProgramController.tick`, `data_assessment_output_schema`, 계보 파일 `scientific-lineages/<id>.json` | 있음 |
+| `research/controller.py` | `_stage`, `stage_prompt`(90k 상한, 88k부터 오래된 청크 제거), `commit_stage`(`required_*_reads`, 완독 게이트), `MAX_PROGRAM_PROPOSAL_REJECTIONS = 3` | 있음. main의 직원별 모델 지정(`effective_role`)이 더해짐 |
+| `research/controller_schema.sql`, `research/program_schema.sql` | `research_mission_stages`(`UNIQUE(mission_id,stage_key)`, `mission_id` NULL 허용, `program_id`), `research_stage_attempts`, `research_stage_reads` | 있음 |
+| `research/builds.py` | `read_stage_file`(12,000자) | 있음 |
+| `research/data_evidence.py` | `load_packets`, `require_admissible_gaps` | 있음 |
+| `research/scientific_lineages.py` | `require_authority`, `usage`, `bind_experiment`, `overview` | 있음 |
+| `research/policy_contracts.py` | `ResearchDataPolicy`, `DataMode`, `SCOPE_GAPS` | 있음 |
+| `research/approvals.py` | `ApprovalTarget`, `adapters`, `publish_approval`, `short_command`, `apply_owner_command` | 있음 |
+| `research/runner.py` | `ResearchRunner.tick` 조기 반환 | 있음 |
+| `company.py` | `_new_turn`(`research_stage` 한도 예외), 감사 예산 hook(`audit_delivery.budget_reason`), `program_data`의 `research_stage_v1`, `_tool`의 `research_control` 분기, `research_approval_adapters` | 있음 |
+| `quant_feed/store.py` | `search_bundle`, `prepare`, `add_candidate`, `commit_document`, `enqueue` | 있음 |
+| `quant_feed/schedule.py`, `quant_feed/schema.sql` | `discovery_slot`(`-08`/`-20`), `weekly_slot`, `UNIQUE(stage,slot)` | 있음 |
+| `maintenance/problems.py` | `failure_observations`(단계 → 미션·프로그램 → 프로젝트 join) | 있음. 계획 단계는 run을 거치는 연결이 필요(17장) |
+| `config.py` | `company_max_task_turns=8`, `company_max_daily_turns`, `model_assignments_enabled` | 있음 |
 
 ## 부록 C 근거
 
