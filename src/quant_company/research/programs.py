@@ -22,6 +22,22 @@ from .scientific_lineages import (
     validate_preimage,
 )
 
+MISSING_PACKET = "Real data readiness requires a verified input evidence packet"
+CONDITIONAL_SOURCE = "Conditional source evidence cannot establish original replication or transfer conditions"
+DUPLICATE_TASK = "Task already considered; use prior evidence to change the question"
+BUDGET_EXHAUSTED = "Program budget exhausted"
+PARALLEL_LIMIT = "Program parallel mission limit reached"
+
+
+def proposal_mode_error(envelope, mode):
+    """Signed data-policy limits on the task mode; shared with planning triage (T4)."""
+    policy = envelope.template.data_policy
+    if policy is not None and policy.mode == "frozen_vintage_retrospective" and mode != "novel_hypothesis":
+        return "Conditional retrospective research admits novel hypotheses only"
+    if envelope.template.data.policy is not None and mode == "exact_replication":
+        return "Retrospective exploration cannot claim exact replication"
+    return None
+
 
 def _task_details(conn, program_id, *, limit=10):
     rows = conn.execute("""SELECT id,LEFT(proposal->>'title',200) AS title,state,mission_id,
@@ -150,6 +166,40 @@ class ProgramStore:
             **_task_details(conn, program_id),
             "missions": [MissionStore(self.company).snapshot(conn, m["id"]) for m in missions]})
 
+    def conditional_source(self, conn, source_ids):
+        return conn.execute("""SELECT 1 FROM sources WHERE id=ANY(%s)
+            AND (metadata->'research_scope'->>'result_scope'='conditional_retrospective_development'
+                 OR metadata->'data_policy'->>'result_use'='hypothesis_generation_only')""",
+            (list(source_ids),)).fetchone() is not None
+
+    @staticmethod
+    def task_identity(program_id, payload):
+        digest = fingerprint(payload)
+        return stable(f"program-task:{program_id}:{digest}"), digest
+
+    def packet_required(self, envelope, *, exploratory):
+        spec = envelope.template
+        profile = profile_for(self.company, spec)
+        return spec.schema_version == 3 or exploratory or not profile.public_profile.fixture_only
+
+    def envelope_packet(self, program, envelope):
+        found = load_packets(self.company, program, {envelope.name: envelope}).get(envelope.name)
+        return None if found is None else found[0]
+
+    def capacity_error(self, conn, program_id, spec):
+        """Program budget and concurrency; shared by decide and planning triage (T9)."""
+        used = self.usage(conn, program_id)
+        count = conn.execute("SELECT count(*) AS n FROM research_missions WHERE program_id=%s",
+                             (program_id,)).fetchone()["n"]
+        if (count >= spec.max_missions or used["trials"] >= spec.max_total_trials
+                or used["compute_seconds"] >= spec.max_compute_seconds):
+            return BUDGET_EXHAUSTED
+        active = [m for m in self.snapshot(conn, program_id)["missions"]
+                  if m["stage"] not in {"owner_review", "cancelled"}]
+        if len(active) >= spec.max_parallel_missions:
+            return PARALLEL_LIMIT
+        return None
+
     def validate_proposal(self, conn, program_id, value, *, actor):
         project, row, spec = self.locked(conn, program_id, active=True)
         MissionStore(self.company)._actor(actor, "researcher_kr")
@@ -157,31 +207,23 @@ class ProgramStore:
         envelope = next((e for e in spec.envelopes if e.name == proposal.envelope), None)
         if envelope is None:
             raise PolicyError("Task selects an unapproved envelope")
-        policy = envelope.template.data_policy
-        if policy is not None and policy.mode == "frozen_vintage_retrospective" and proposal.mode != "novel_hypothesis":
-            raise PolicyError("Conditional retrospective research admits novel hypotheses only")
-        if envelope.template.data.policy is not None and proposal.mode == "exact_replication":
-            raise PolicyError("Retrospective exploration cannot claim exact replication")
+        if (error := proposal_mode_error(envelope, proposal.mode)) is not None:
+            raise PolicyError(error)
         allowed = {s["id"] for s in available_sources(self.company, conn, project, spec, program_id)}
         if not set(proposal.source_ids) <= allowed:
             raise PolicyError("Task cites sources outside the program library")
         require_current(conn, proposal.source_ids)
-        conditional_source = conn.execute("""SELECT 1 FROM sources WHERE id=ANY(%s)
-            AND (metadata->'research_scope'->>'result_scope'='conditional_retrospective_development'
-                 OR metadata->'data_policy'->>'result_use'='hypothesis_generation_only')""",
-            (proposal.source_ids,)).fetchone()
-        if conditional_source and proposal.mode != "novel_hypothesis":
-            raise PolicyError("Conditional source evidence cannot establish original replication or transfer conditions")
+        if self.conditional_source(conn, proposal.source_ids) and proposal.mode != "novel_hypothesis":
+            raise PolicyError(CONDITIONAL_SOURCE)
         verify_citations(conn, proposal)
         for prior in proposal.predecessor_mission_ids:
             if not conn.execute("SELECT 1 FROM research_missions WHERE id=%s AND program_id=%s",
                                 (prior, program_id)).fetchone():
                 raise PolicyError("Predecessor is outside this program")
         payload = proposal.model_dump(mode="json")
-        digest = fingerprint(payload)
-        identity = stable(f"program-task:{program_id}:{digest}")
+        identity, digest = self.task_identity(program_id, payload)
         if conn.execute("SELECT 1 FROM research_program_tasks WHERE id=%s", (identity,)).fetchone():
-            raise PolicyError("Task already considered; use prior evidence to change the question")
+            raise PolicyError(DUPLICATE_TASK)
         return identity, payload, digest
 
     def propose(self, conn, program_id, value, *, actor):
@@ -226,12 +268,10 @@ class ProgramStore:
             raise PolicyError("Data readiness does not match the signed research policy")
         if value.decision == "conditional_ready" and task["proposal"]["mode"] != "novel_hypothesis":
             raise PolicyError("Conditional evidence cannot authorize replication or transfer")
-        profile = profile_for(self.company, spec)
-        if spec.schema_version == 3 or value.decision == "exploratory_only" or not profile.public_profile.fixture_only:
-            found = load_packets(self.company, program, {envelope.name: envelope}).get(envelope.name)
-            if found is None:
-                raise PolicyError("Real data readiness requires a verified input evidence packet")
-            packet = found[0]
+        if self.packet_required(envelope, exploratory=value.decision == "exploratory_only"):
+            packet = self.envelope_packet(program, envelope)
+            if packet is None:
+                raise PolicyError(MISSING_PACKET)
             if spec.schema_version == 3 and value.packet_digest != fingerprint(packet.model_dump(mode="json")):
                 raise PolicyError("Independent data assessment cites a different evidence packet")
             require_admissible_gaps(packet, spec)
@@ -254,14 +294,8 @@ class ProgramStore:
         self._assessment(conn, row, envelope, task, typed(DataAssessment, task["data_assessment"]))
         require_authority(conn, project["id"], program_id, envelope)
         proposal = typed(ResearchTaskProposal, task["proposal"])
-        used = self.usage(conn, program_id)
-        count = conn.execute("SELECT count(*) AS n FROM research_missions WHERE program_id=%s", (program_id,)).fetchone()["n"]
-        if count >= spec.max_missions or used["trials"] >= spec.max_total_trials or used["compute_seconds"] >= spec.max_compute_seconds:
-            raise PolicyError("Program budget exhausted")
-        active = [m for m in self.snapshot(conn, program_id)["missions"]
-                  if m["stage"] not in {"owner_review", "cancelled"}]
-        if len(active) >= spec.max_parallel_missions:
-            raise PolicyError("Program parallel mission limit reached")
+        if (error := self.capacity_error(conn, program_id, spec)) is not None:
+            raise PolicyError(error)
         require_current(conn, proposal.source_ids)
         mission_spec = envelope.template.model_dump(mode="json")
         mission_spec.update(title=proposal.title, baseline_source_ids=sorted(set(
