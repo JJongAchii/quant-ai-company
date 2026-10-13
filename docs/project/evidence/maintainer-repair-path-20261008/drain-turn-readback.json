@@ -1,0 +1,41 @@
+{
+  "scope": "Actual PostgreSQL no-send readback after restoring the original containers",
+  "before_apply_race_turn": {
+    "id": "6c98817e-517b-518c-8e70-b4e0aea10216",
+    "agent": "engineer",
+    "error": null,
+    "model": "gpt-6.1-sol",
+    "status": "completed",
+    "created_at": "2026-10-08T02:18:11.089927+00:00",
+    "request_id": "6c98817e-517b-518c-8e70-b4e0aea10216",
+    "updated_at": "2026-10-08T02:19:13.499845+00:00",
+    "has_response": true
+  },
+  "earlier_observed_turns": [
+    {
+      "id": "5baa37a4-7c52-5949-a0a4-41539aa36dff",
+      "agent": "engineer",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "status": "completed",
+      "created_at": "2026-10-08T02:12:20.949903+00:00",
+      "request_id": "5baa37a4-7c52-5949-a0a4-41539aa36dff",
+      "updated_at": "2026-10-08T02:12:32.230995+00:00",
+      "has_response": true
+    },
+    {
+      "id": "3bfb3fd1-0d86-5f84-8cf0-3f8bdaa51f86",
+      "agent": "engineer",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "status": "completed",
+      "created_at": "2026-10-08T02:15:49.468931+00:00",
+      "request_id": "3bfb3fd1-0d86-5f84-8cf0-3f8bdaa51f86",
+      "updated_at": "2026-10-08T02:16:06.048752+00:00",
+      "has_response": true
+    }
+  ],
+  "completed_with_same_request_id": true,
+  "model_calls_by_operator": 0,
+  "database_writes": 0
+}

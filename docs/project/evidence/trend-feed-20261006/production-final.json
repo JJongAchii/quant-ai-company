@@ -1,0 +1,94 @@
+{
+  "checked_at": "2026-10-06T11:50:50.740682+00:00",
+  "cutover": {
+    "state": "preview_active",
+    "commit": "bfb64afd81549634979a4af45ee07fabd3e3dae1",
+    "current": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264",
+    "started_at": "2026-10-06T11:28:01.477054+00:00",
+    "replaced": [
+      "news-worker",
+      "dispatch"
+    ],
+    "authorized_scope": "preview, one connection message, conditional daily publication after three real preview days",
+    "publish_enabled": false,
+    "messages_sent": 1,
+    "old_pause": {
+      "paused_until": null,
+      "reason": null
+    },
+    "backup": {
+      "backup": "/var/lib/quant-company/backups/company-20261006T112818Z-dbb2d6bd.tar.gz",
+      "sha256": "75474e6abf6745b8bd0c3c0afc7024179a7e4518e49303839313ceaa09d0f915",
+      "s3_uri": "s3://quant-company-061039802347-backups/company/company-20261006T112818Z-dbb2d6bd.tar.gz",
+      "release_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+      "secrets_included": false
+    },
+    "credentials_installed": true,
+    "existing_slack_roles_preserved": true,
+    "naver_secret_readers": [
+      "news-worker"
+    ],
+    "credentials_in_git": false,
+    "completed_at": "2026-10-06T11:32:30.536811+00:00",
+    "frozen_requests_preserved": true,
+    "unrelated_containers_preserved": true,
+    "existing_roles_preserved": true,
+    "runtime_env_sha256": "f61b8a1260a5a6febc78a47603bf80268d535aedbe58a2558a1d1e0d822ca3c7",
+    "target_ids": {
+      "news-worker": "46d91a07bdf4c2f99273889c2f5bcffbf7e587703edc84818fa4b7e7d8c08286",
+      "dispatch": "7472dbb5a55f7b0bd72d11088734996a15bfafa840846c55d66b718da01cf50a"
+    },
+    "timers_restored": [
+      "quant-company-release.timer",
+      "quant-company-backup.timer"
+    ],
+    "resource_repair": "/var/lib/quant-company/releases/trend-feed-20261006-repair.json",
+    "connection_test": {
+      "id": "c68f0f89-ba27-52e6-a541-d30b9e4e636a",
+      "status": "delivered",
+      "channel": "C0C6WTA9ECV",
+      "sent_ts": "1791287349.325639",
+      "error": null,
+      "attempts": 1
+    }
+  },
+  "repair": {
+    "state": "repaired",
+    "started_at": "2026-10-06T11:43:40.244019+00:00",
+    "commit": "bfb64afd81549634979a4af45ee07fabd3e3dae1",
+    "base_image": "sha256:0dc4f13cb968e2706a105e2d52a054a736003f6aaa361e4278b58ccf9cf5307e",
+    "image_id": "sha256:1287734fa77f8d6bd9a3076e1de632a007a8574fbb01fb4acccf0dca0aa63a36",
+    "tag": "quant-company-trend:bfb64afd81549634979a4af45ee07fabd3e3dae1-repair",
+    "changed_files": [
+      "slack.py"
+    ],
+    "inventory_verified": true,
+    "news_worker_pids_limit": {
+      "before": 128,
+      "after": 256
+    },
+    "publish_enabled": false,
+    "completed_at": "2026-10-06T11:45:03.886554+00:00",
+    "frozen_requests_preserved": true,
+    "unrelated_containers_preserved": true
+  },
+  "fleet": {
+    "count": 15,
+    "all_running": true,
+    "unrelated_ids_preserved": false,
+    "unrelated_configs_preserved": true,
+    "naver_secret_readers": [
+      "news-worker"
+    ],
+    "model_runtimes_new_credentials_mounted": false
+  },
+  "source": {
+    "last_success": "2026-10-06T11:43:47.442086+00:00",
+    "failures": 0,
+    "error": null
+  },
+  "news_worker_pids_limit": 256,
+  "news_worker_errors_since_repair": 0,
+  "preview_timer_active": true,
+  "release_guard_preserved": true
+}

@@ -1,0 +1,356 @@
+{
+  "scope": "Actual PostgreSQL diagnosis and Slack delivery receipts; read only",
+  "case": {
+    "id": "80b8f971-78db-5d6e-b938-7ded89dc5aca",
+    "channel": "C0C3Q7BFQCE",
+    "thread_ts": "1791346259.340899",
+    "checked_at": "2026-10-07T04:55:29.942869+00:00",
+    "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9",
+    "root_message_id": "cacf976f-44a5-58df-9cde-96191b890086"
+  },
+  "calls": [
+    {
+      "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 36471,
+        "output_tokens": 3307,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2588
+      },
+      "due_at": "2026-10-07T04:17:58.66079+00:00",
+      "job_id": "49144860-7e42-5a72-8311-d47871ccf315",
+      "provider": "codex",
+      "created_at": "2026-10-07T04:17:58.66079+00:00",
+      "completed_at": null,
+      "has_response": true,
+      "reasoning_effort": "xhigh",
+      "prompt_characters": 87156,
+      "frozen_request_md5": "8e3c748641d7ed0c376e9f9c2054ec26"
+    },
+    {
+      "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage-i1",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 36745,
+        "output_tokens": 3273,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2588
+      },
+      "due_at": "2026-10-07T04:24:29.843291+00:00",
+      "job_id": "49144860-7e42-5a72-8311-d47871ccf315",
+      "provider": "codex",
+      "created_at": "2026-10-07T04:24:29.843291+00:00",
+      "completed_at": null,
+      "has_response": true,
+      "reasoning_effort": "xhigh",
+      "prompt_characters": 87402,
+      "frozen_request_md5": "f62a6beb975ad5d9b3650ba185afd779"
+    },
+    {
+      "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage-i2",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 36750,
+        "output_tokens": 3346,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2588
+      },
+      "due_at": "2026-10-07T04:30:56.061437+00:00",
+      "job_id": "49144860-7e42-5a72-8311-d47871ccf315",
+      "provider": "codex",
+      "created_at": "2026-10-07T04:30:56.061437+00:00",
+      "completed_at": null,
+      "has_response": true,
+      "reasoning_effort": "xhigh",
+      "prompt_characters": 87472,
+      "frozen_request_md5": "a790f2603afa5a20fff322a9849e1c32"
+    },
+    {
+      "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage-i3",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 36867,
+        "output_tokens": 4375,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 3571
+      },
+      "due_at": "2026-10-07T04:37:24.364279+00:00",
+      "job_id": "49144860-7e42-5a72-8311-d47871ccf315",
+      "provider": "codex",
+      "created_at": "2026-10-07T04:37:24.364279+00:00",
+      "completed_at": null,
+      "has_response": true,
+      "reasoning_effort": "xhigh",
+      "prompt_characters": 87746,
+      "frozen_request_md5": "deacd0dcd45896493fdc2d57170d6847"
+    },
+    {
+      "id": "maint-49144860-7e42-5a72-8311-d47871ccf315-triage-i4",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 36675,
+        "output_tokens": 2438,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1924
+      },
+      "due_at": "2026-10-07T04:44:13.464607+00:00",
+      "job_id": "49144860-7e42-5a72-8311-d47871ccf315",
+      "provider": "codex",
+      "created_at": "2026-10-07T04:44:13.464607+00:00",
+      "completed_at": null,
+      "has_response": true,
+      "reasoning_effort": "xhigh",
+      "prompt_characters": 87145,
+      "frozen_request_md5": "ac5b1cc5cc235aa63f1e8d79df33a2d0"
+    }
+  ],
+  "intake": {
+    "task_id": "90e7a620-8873-5b80-a28d-75904b274d82",
+    "event_key": "slack:T0C1YRDRPNF:C0C3Q7BFQCE:1791340131.991029:maintainer",
+    "created_at": "2026-10-07T02:28:52.520043+00:00",
+    "project_id": "eca1443a-98dd-5cb9-a24e-74cdaf1b07ab",
+    "payload_digest": "e4e82a20f55d0da9c5a38b98fd13d6536328541b38c52928ca9dd7bd573eaf60"
+  },
+  "request": {
+    "id": "49144860-7e42-5a72-8311-d47871ccf315",
+    "kind": "review",
+    "error": null,
+    "state": "done",
+    "receipt": {
+      "reason": "운영 커밋은 46d853cbefd4ce808fc247a0ebba1f5df33f0cd8이며 저장소 최신 커밋 388f44d5897129314232d86ba9230a863bf658a4와 구분해야 한다. 운영 버전과 일치하는 원 영수증 대사에서는 과거 불확실 검토 11건 모두 동결 요청과 일치했지만 결과·원 CLI 출력이 없어 모델 완료 여부는 indeterminate_model_completion이다. 이는 메타데이터 검증이며 직원 실패나 현재 코드 결함의 재현 증거가 아니다. 접수 당시 queued 영수증과 달리 최신 요청 상태는 triage이고 이번 호출이 재개된 진단이므로 자동 재개 부재도 주장할 수 없다. 관련 직원 입력은 발췌에서 생략되어 자료 무시를 판단할 수 없다. 제공된 부분 코드만으로 원인을 특정할 수 없어 수정안을 확정하지 않는다. 추가 판단에는 불확실 호출 재실행 없이 확보한 동일 운영 버전의 실패 입력·원 출력과 관련 호출자·소비자·회귀검사 코드가 필요하다."
+    },
+    "created_at": "2026-10-07T04:10:56.607026+00:00",
+    "updated_at": "2026-10-07T04:45:16.43888+00:00",
+    "has_finding": false,
+    "snapshot_commit": "388f44d5897129314232d86ba9230a863bf658a4",
+    "diagnostic_revision": 0,
+    "investigation_round": 4
+  },
+  "deliveries": [
+    {
+      "id": "cacf976f-44a5-58df-9cde-96191b890086",
+      "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다. 진행 상태와 결과를 이 스레드에 보고합니다.\n단계: review · 최근 진행: 2026-10-07 04:10:56.607026+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346259.340899",
+      "attempts": 1,
+      "update_ts": null,
+      "created_at": "2026-10-07T04:10:56.607026+00:00",
+      "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9"
+    },
+    {
+      "id": "443d8beb-adff-44c0-ab86-5273668e82c9",
+      "text": "기존 차단 건과 별도로 새 진단 접수를 요청합니다. 현재 운영 코드와 원 영수증 대사 결과를 근거로 확인하고, 과거 불확실 호출은 재실행하지 않는 조건입니다. 접수 영수증을 확인한 뒤 새 케이스 ID·실제 상태·결과 보고 위치를 안내하겠습니다.",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346257.478899",
+      "attempts": 1,
+      "update_ts": null,
+      "created_at": "2026-10-07T04:10:56.607026+00:00",
+      "project_id": "eca1443a-98dd-5cb9-a24e-74cdaf1b07ab"
+    },
+    {
+      "id": "3f324a59-1eb2-40e2-9009-29c518b0e81b",
+      "text": "새 진단 요청이 접수되어 queued(대기열) 상태입니다. 기존 차단 건과 별도입니다.\n• 요청 ID: 49144860-7e42-5a72-8311-d47871ccf315\n• 새 케이스 ID: 80b8f971-78db-5d6e-b938-7ded89dc5aca\n\n요청 범위는 최적화된 현재 운영 코드와 원 영수증 대사 결과에 근거한 진단이며, 과거 불확실 호출은 재실행하지 않는 조건입니다.\n\n보고 예정 채널은 C0C3Q7BFQCE입니다. 전달 상태는 pending이고 스레드 URL은 아직 없어, 실제 보고 스레드는 확인되지 않았습니다. 백그라운드 서비스가 진행과 결과를 별도로 보고합니다. 이번 영수증은 접수 확인이며 진단·수정 완료를 뜻하지 않습니다. [company:bae4a6ee482b776b86968d90]",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346281.802999",
+      "attempts": 1,
+      "update_ts": null,
+      "created_at": "2026-10-07T04:11:20.961013+00:00",
+      "project_id": "eca1443a-98dd-5cb9-a24e-74cdaf1b07ab"
+    },
+    {
+      "id": "da418f3f-0c9b-586e-80aa-079e749a945d",
+      "text": "개선 케이스 80b8f971의 진행·질문·승인: https://app.slack.com/archives/C0C3Q7BFQCE/p1791346259340899",
+      "agent": "director",
+      "error": "not_in_channel",
+      "status": "blocked",
+      "sent_ts": null,
+      "attempts": 1,
+      "update_ts": null,
+      "created_at": "2026-10-07T04:11:49.848921+00:00",
+      "project_id": "eca1443a-98dd-5cb9-a24e-74cdaf1b07ab"
+    },
+    {
+      "id": "47d5a8c0-f186-514f-abc8-97b38a8165ae",
+      "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다. 진행 상태와 결과를 이 스레드에 보고합니다.\n단계: triage · 최근 진행: 2026-10-07 04:12:51.250039+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346259.340899",
+      "attempts": 1,
+      "update_ts": "1791346259.340899",
+      "created_at": "2026-10-07T04:13:52.97043+00:00",
+      "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9"
+    },
+    {
+      "id": "132d60ab-526d-5656-bf40-f952ab176ecc",
+      "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다. 진행 상태와 결과를 이 스레드에 보고합니다.\n단계: triage · 최근 진행: 2026-10-07 04:17:57.741928+00:00\n모델 요청: 응답 대기 · 다음 확인 가능 시각: 2026-10-07 04:17:58.660790+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346259.340899",
+      "attempts": 1,
+      "update_ts": "1791346259.340899",
+      "created_at": "2026-10-07T04:18:56.650563+00:00",
+      "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9"
+    },
+    {
+      "id": "b8c88c7a-a0ec-551c-a3a0-363d8a4dc956",
+      "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다. 진행 상태와 결과를 이 스레드에 보고합니다.\n단계: triage · 최근 진행: 2026-10-07 04:19:22.461642+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346259.340899",
+      "attempts": 1,
+      "update_ts": "1791346259.340899",
+      "created_at": "2026-10-07T04:19:57.823556+00:00",
+      "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9"
+    },
+    {
+      "id": "c6ea6ff2-54c2-5de7-84cd-5a97f07b2bd3",
+      "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다. 진행 상태와 결과를 이 스레드에 보고합니다.\n단계: triage · 최근 진행: 2026-10-07 04:19:22.461642+00:00\n모델 요청: 응답 대기 · 다음 확인 가능 시각: 2026-10-07 04:24:29.843291+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346259.340899",
+      "attempts": 1,
+      "update_ts": "1791346259.340899",
+      "created_at": "2026-10-07T04:25:05.251658+00:00",
+      "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9"
+    },
+    {
+      "id": "7e8b0451-e342-53e6-a10a-3507fe4d45e6",
+      "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다. 진행 상태와 결과를 이 스레드에 보고합니다.\n단계: triage · 최근 진행: 2026-10-07 04:25:50.539232+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346259.340899",
+      "attempts": 1,
+      "update_ts": "1791346259.340899",
+      "created_at": "2026-10-07T04:26:06.341248+00:00",
+      "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9"
+    },
+    {
+      "id": "64a9184f-8546-5ddc-a52a-3016d5dfe22c",
+      "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다. 진행 상태와 결과를 이 스레드에 보고합니다.\n단계: triage · 최근 진행: 2026-10-07 04:25:50.539232+00:00\n모델 요청: 응답 대기 · 다음 확인 가능 시각: 2026-10-07 04:30:56.061437+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346259.340899",
+      "attempts": 1,
+      "update_ts": "1791346259.340899",
+      "created_at": "2026-10-07T04:31:10.15565+00:00",
+      "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9"
+    },
+    {
+      "id": "35a0b561-a5b3-5d18-9520-18ff19b67b49",
+      "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다. 진행 상태와 결과를 이 스레드에 보고합니다.\n단계: triage · 최근 진행: 2026-10-07 04:32:19.261220+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346259.340899",
+      "attempts": 1,
+      "update_ts": "1791346259.340899",
+      "created_at": "2026-10-07T04:33:11.639419+00:00",
+      "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9"
+    },
+    {
+      "id": "1b72917f-b5cc-5987-a002-320ed63943ea",
+      "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다. 진행 상태와 결과를 이 스레드에 보고합니다.\n단계: triage · 최근 진행: 2026-10-07 04:32:19.261220+00:00\n모델 요청: 응답 대기 · 다음 확인 가능 시각: 2026-10-07 04:37:24.364279+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346259.340899",
+      "attempts": 1,
+      "update_ts": "1791346259.340899",
+      "created_at": "2026-10-07T04:38:15.973952+00:00",
+      "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9"
+    },
+    {
+      "id": "377ad0aa-9f7c-5403-b0f8-cfbb10561e21",
+      "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다. 진행 상태와 결과를 이 스레드에 보고합니다.\n단계: triage · 최근 진행: 2026-10-07 04:39:07.958374+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346259.340899",
+      "attempts": 1,
+      "update_ts": "1791346259.340899",
+      "created_at": "2026-10-07T04:39:16.839616+00:00",
+      "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9"
+    },
+    {
+      "id": "5eaee4ee-cdf9-5695-9a53-54ff0fcd8cd0",
+      "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다. 진행 상태와 결과를 이 스레드에 보고합니다.\n단계: triage · 최근 진행: 2026-10-07 04:39:07.958374+00:00\n모델 요청: 응답 대기 · 다음 확인 가능 시각: 2026-10-07 04:44:13.464607+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346259.340899",
+      "attempts": 1,
+      "update_ts": "1791346259.340899",
+      "created_at": "2026-10-07T04:44:21.443052+00:00",
+      "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9"
+    },
+    {
+      "id": "069322ff-818b-5617-a856-d4e71df592b8",
+      "text": "*개선 케이스 80b8f971*\n진단 요청 49144860: 점검을 마쳤습니다. 운영 커밋은 46d853cbefd4ce808fc247a0ebba1f5df33f0cd8이며 저장소 최신 커밋 388f44d5897129314232d86ba9230a863bf658a4와 구분해야 한다. 운영 버전과 일치하는 원 영수증 대사에서는 과거 불확실 검토 11건 모두 동결 요청과 일치했지만 결과·원 CLI 출력이 없어 모델 완료 여부는 indeterminate_model_completion이다. 이는 메타데이터 검증이며 직원 실패나 현재 코드 결함의 재현 증거가 아니다. 접수 당시 queued 영수증과 달리 최신 요청 상태는 triage이고 이번 호출이 재개된 진단이므로 자동 재개 부재도 주장할 수 없다. 관련 직원 입력은 발췌에서 생략되어 자료 무시를 판단할 수 없다. 제공된 부분 코드만으로 원인을 특정할 수 없어 수정안을 확정하지 않는다. 추가 판단에는 불확실 호출 재실행 없이 확보한 동일 운영 버전의 실패 입력·원 출력과 관련 호출자·소비자·회귀검사 코드가 필요하다.\n단계: done · 최근 진행: 2026-10-07 04:45:16.438880+00:00\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다.\n원 요청: https://app.slack.com/archives/C0C3Q7BFQCE/p1791269678293859",
+      "agent": "maintainer",
+      "error": null,
+      "status": "delivered",
+      "sent_ts": "1791346259.340899",
+      "attempts": 1,
+      "update_ts": "1791346259.340899",
+      "created_at": "2026-10-07T04:45:22.141861+00:00",
+      "project_id": "e5908556-8b6d-5447-bc1d-72f14e6d2ab9"
+    }
+  ],
+  "captured_at": "2026-10-07T04:55:44.653565+00:00",
+  "intake_turns": [
+    {
+      "id": "e2988906-53c9-532b-acad-4afa31c0ca98",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 20443,
+        "output_tokens": 1753,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1636
+      },
+      "status": "completed",
+      "attempts": 1,
+      "provider": "codex",
+      "created_at": "2026-10-07T02:28:52.520043+00:00",
+      "updated_at": "2026-10-07T04:10:56.607026+00:00"
+    },
+    {
+      "id": "68982ab3-76dc-54bc-a672-d3345798807d",
+      "error": null,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 20681,
+        "output_tokens": 1001,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 747
+      },
+      "status": "completed",
+      "attempts": 1,
+      "provider": "codex",
+      "created_at": "2026-10-07T04:10:56.607026+00:00",
+      "updated_at": "2026-10-07T04:11:20.961013+00:00"
+    }
+  ],
+  "reconciliation": 1,
+  "model_calls_by_probe": 0,
+  "database_writes": 0,
+  "investigation_evidence_receipt": "fresh-case-investigation.json"
+}

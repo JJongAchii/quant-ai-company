@@ -1,0 +1,17 @@
+{
+  "scope": "Restore same original containers after pre-apply execution race; candidate images never applied",
+  "restored": [
+    {
+      "name": "quant-company-worker-1",
+      "id": "78e39dffd52267c5d291cdc240ff88a21d486d5b34264cb2fadda9810937becd",
+      "image": "sha256:7df49e3dd096eda6379beb99cc64f1f40c3a381d2a90a0f4530d0aa450bb1b2b",
+      "running": true
+    },
+    {
+      "name": "quant-company-maintenance-1",
+      "id": "613c988d5e8887ba370671eb375e4b5cd6b757eb0aa1eaa494ca46d8fb692b99",
+      "image": "sha256:cf217bf53ee0f70ec031ddeab3e856e7aa7df2dced51b92af3466fe061726bae",
+      "running": true
+    }
+  ]
+}

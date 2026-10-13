@@ -98,7 +98,7 @@ class Company:
         """Allowlisted configuration facts, never a dump of settings or credentials."""
         from .model_policy import effective_role
         from .owner_controls import effective_limits
-        from .staff.packs import pack
+        from .staff.packs import STAFF, pack
         from .staff.review_contract import REVIEW_EFFORT, REVIEW_MODEL
         from .staff.tools import TOOL_GUIDE
 
@@ -119,8 +119,8 @@ class Company:
             "employees": [
                 {**{key: getattr(role, key) for key in
                     ["id", "name", "active", "model", "reasoning_effort", "version", "tools", "can_delegate_to"]},
-                 "specialist_pack_version": pack(role.id)["version"],
-                 "specialist_pack_digest": pack(role.id)["digest"]}
+                 "specialist_pack_version": pack(role.id)["version"] if role.id in (*STAFF, "reporter") else None,
+                 "specialist_pack_digest": pack(role.id)["digest"] if role.id in (*STAFF, "reporter") else None}
                 for role in roles.values() if role.id not in {TECH_FEED_AGENT, "quant_scout", "trend_scout"}
             ],
             "background_model_requests": {
@@ -487,10 +487,11 @@ class Company:
 
                 enqueue(conn, self, project, task, event_key, account_command)
             elif account_help:
-                from .accounts import HELP_TEXT
+                from .accounts import help_text
 
-                conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (HELP_TEXT, task["id"]))
-                self._message(conn, project, task["id"], agent, "status", HELP_TEXT)
+                guide = help_text(text)
+                conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (guide, task["id"]))
+                self._message(conn, project, task["id"], agent, "status", guide)
             elif research_command:
                 from .research.approvals import apply_owner_command
 
@@ -558,7 +559,7 @@ class Company:
                              (project_id,)).fetchall()]
             return as_json(result)
 
-    def _context(self, conn, task, project):
+    def _context(self, conn, task, project, *, max_characters=68000):
         from .staff.packs import coaching
 
         messages = conn.execute("""SELECT author,recipient,kind,text,revision FROM messages WHERE project_id=%s
@@ -626,7 +627,7 @@ class Company:
                     context["context_truncated"] = True
         # Reduce background state before removing any recent messages: even a short
         # multi-page read can otherwise lose a whole page, not just an excerpt.
-        if "system" in context and len(json.dumps(context, ensure_ascii=False)) > 68000:
+        if "system" in context and len(json.dumps(context, ensure_ascii=False)) > max_characters:
             system = context["system"]
             context["system"] = {
                 "source_id": system["source_id"], "excerpted": True,
@@ -638,7 +639,7 @@ class Company:
                                   "source_id for full evidence. Omitted evidence is unknown, not absent.",
             }
             context["context_truncated"] = True
-        while len(json.dumps(context, ensure_ascii=False)) > 68000:
+        while len(json.dumps(context, ensure_ascii=False)) > max_characters:
             for key, minimum, index in [("messages", 3, 0), ("recent_artifacts", 0, -1),
                                         ("verified_memories", 0, -1), ("approved_sources", 0, -1),
                                         ("child_results", 0, 0)]:
@@ -658,7 +659,7 @@ class Company:
                 for source in context["approved_sources"]:
                     source.pop("metadata", None)
                 context["context_truncated"] = True
-                if len(json.dumps(context, ensure_ascii=False)) > 68000:
+                if len(json.dumps(context, ensure_ascii=False)) > max_characters:
                     raise PolicyError("Required task context exceeds the bounded prompt budget")
                 break
         return context
@@ -732,7 +733,6 @@ class Company:
                     prompt = routing_prompt(conn, task, project)
                 else:
                     role = self.role(task["agent"])
-                    context = self._context(conn, task, project)
                     runtime = self.runtime_context(conn)
                     if self.settings.model_assignments_enabled:
                         from .model_policy import selection
@@ -771,8 +771,15 @@ class Company:
                         + employee_pack(role.id) +
                         f"Remaining task turns: {self.settings.company_max_task_turns - task['turn_count']}\n"
                         "RUNTIME CONFIG JSON:\n" + json.dumps(runtime, ensure_ascii=False) + "\n"
-                        "TASK DATA JSON:\n" + json.dumps(context, ensure_ascii=False)
+                        "TASK DATA JSON:\n"
                     )
+                    # Role instructions and runtime facts consume the same provider budget
+                    # as task evidence. Preserve the existing evidence/read-source rules.
+                    context_budget = min(68000, 90000 - len(prompt))
+                    if context_budget <= 0:
+                        raise PolicyError("Required role instructions exceed the bounded prompt budget")
+                    context = self._context(conn, task, project, max_characters=context_budget)
+                    prompt += json.dumps(context, ensure_ascii=False)
                 request = ProviderRequest(request_id=turn_id, model=role.model,
                                           reasoning_effort=role.reasoning_effort, prompt=prompt, session=session,
                                           output_contract=output_contract)

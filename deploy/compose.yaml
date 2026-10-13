@@ -42,6 +42,7 @@ x-db-env: &db-env
   ROLES_FILE: /etc/quant-company/roles.json
   MODEL_PROVIDER: codex
   MODEL_ACCOUNTS_ENABLED: ${MODEL_ACCOUNTS_ENABLED:-false}
+  MODEL_ASSIGNMENTS_ENABLED: ${MODEL_ASSIGNMENTS_ENABLED:-false}
   MODEL_ACCOUNTS_OWNER_USER: ${MODEL_ACCOUNTS_OWNER_USER:-}
   MODEL_ACCOUNTS_CHANNEL_ID: ${MODEL_ACCOUNTS_CHANNEL_ID:-}
   COMPANY_LAKE_URI: ${COMPANY_LAKE_URI:-}
@@ -80,8 +81,17 @@ x-db-env: &db-env
   BRIEFING_KR_CLOSE_BASIS: ${BRIEFING_KR_CLOSE_BASIS:-regular}
   TECH_FEED_ENABLED: ${TECH_FEED_ENABLED:-false}
   TECH_FEED_PUBLISH_ENABLED: ${TECH_FEED_PUBLISH_ENABLED:-false}
+  TECH_FEED_DEDICATED_WORKER: ${TECH_FEED_DEDICATED_WORKER:-false}
   TECH_FEED_CHANNEL_ID: ${TECH_FEED_CHANNEL_ID:-}
   TECH_FEED_OWNER_USER: ${TECH_FEED_OWNER_USER:-}
+  TREND_FEED_ENABLED: ${TREND_FEED_ENABLED:-false}
+  TREND_FEED_PUBLISH_ENABLED: ${TREND_FEED_PUBLISH_ENABLED:-false}
+  TREND_FEED_CHANNEL_ID: ${TREND_FEED_CHANNEL_ID:-}
+  TREND_FEED_OWNER_USER: ${TREND_FEED_OWNER_USER:-}
+  TREND_FEED_PUBLICATION_HOURS: ${TREND_FEED_PUBLICATION_HOURS:-[8]}
+  TREND_FEED_ON_DEMAND_ENABLED: ${TREND_FEED_ON_DEMAND_ENABLED:-false}
+  TREND_FEED_MODEL_DAILY_LIMIT: ${TREND_FEED_MODEL_DAILY_LIMIT:-2}
+  TREND_FEED_NAVER_ENABLED: ${TREND_FEED_NAVER_ENABLED:-false}
   HOUSING_FEED_ENABLED: ${HOUSING_FEED_ENABLED:-false}
   HOUSING_FEED_PUBLISH_ENABLED: ${HOUSING_FEED_PUBLISH_ENABLED:-false}
   HOUSING_FEED_CHANNEL_ID: ${HOUSING_FEED_CHANNEL_ID:-}
@@ -135,7 +145,7 @@ services:
       - ${STATE_DIR:-/var/lib/quant-company}/config/maintenance.json:/etc/quant-company/maintenance.json:ro
     secrets: [database_password, model_runtime_token, temporal_api_key, maintenance_github_key]
     networks: [core, model, service_egress]
-    mem_limit: ${MAINTENANCE_MEMORY_LIMIT:-128m}
+    mem_limit: ${MAINTENANCE_MEMORY_LIMIT:-256m}
     cpus: 0.25
 
   caddy:
@@ -248,6 +258,21 @@ services:
       postgres: {condition: service_healthy}
       codex-runtime: {condition: service_healthy}
 
+  tech-feed-worker:
+    <<: *app
+    profiles: [tech-feed]
+    command: [python, -m, quant_company.tech_feed.worker]
+    environment:
+      <<: [*db-env, *temporal-env]
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
+    secrets: [database_password, temporal_api_key]
+    networks: [core, service_egress]
+    mem_limit: 256m
+    cpus: 0.25
+    depends_on:
+      postgres: {condition: service_healthy}
+
   data-watch-worker:
     <<: *app
     profiles: [data-watch]
@@ -301,6 +326,7 @@ services:
 
   news-worker:
     <<: *app
+    pids_limit: 256
     command: [quant-company, news-worker]
     environment:
       <<: [*db-env, *temporal-env]

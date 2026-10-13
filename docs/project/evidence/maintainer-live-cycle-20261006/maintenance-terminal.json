@@ -1,0 +1,84 @@
+{
+  "captured_at": "2026-10-06T23:28:49.948996+00:00",
+  "source": "Read-only PostgreSQL maintenance_jobs/cases query; selected fields from actual committed receipts.",
+  "jobs": [
+    {
+      "id": "19aa1178-bca7-469f-b209-eca081a1be36",
+      "kind": "triage",
+      "state": "done",
+      "error": null,
+      "pr": null,
+      "finding_title": null,
+      "diagnostic_revision": 0,
+      "investigation_round": 4,
+      "channel": "C0C3Q7BFQCE",
+      "thread_ts": "1791298887.238179",
+      "updated_at": "2026-10-06T15:29:30.591289+00:00",
+      "reason": "현재 GitHub main은 a9ef0b5fec77e9135c82bc75213226183d57b660이고 운영 code_commit은 46d853cbefd4ce808fc247a0ebba1f5df33f0cd8로 다르다. 독립 설명 검토는 설정상 활성화되어 있으나, 제공된 실패 기록에는 error=uncertain과 operator_reconciliation_required=true가 있다. 원 검토 입력, 전송·응답 영수증, 검증 로그는 제공되지 않았으며 runner.py와 store.py 발췌에는 관련 경계 전체가 없다. 따라서 전송 실패와 응답 검증 실패를 구별하거나 현재 구현의 재현 가능한 결함을 확정할 수 없다. 추가 조사 횟수도 0이므로 finding=null로 종료한다. AGENTS.md의 불확실 외부 효과 처리 원칙에 따라 기존 요청·영수증을 보존하고 운영자가 실제 처리 여부를 대조해야 한다. 해당 검토를 재실행하거나 직원 실패로 채점할 근거가 없으며 객관 직원 등급은 변경 대상이 아니다. 코드 수정·검사·PR 실행 결과는 없다."
+    },
+    {
+      "id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "kind": "review",
+      "state": "blocked",
+      "error": "evidence_churn_requires_review",
+      "pr": null,
+      "finding_title": null,
+      "diagnostic_revision": 3,
+      "investigation_round": 2,
+      "channel": "C0C3Q7BFQCE",
+      "thread_ts": "1791269678.293859",
+      "updated_at": "2026-10-06T11:02:42.431312+00:00"
+    },
+    {
+      "id": "454ef5b7-da87-4ad4-8d92-f57036304e03",
+      "kind": "triage",
+      "state": "blocked",
+      "error": "evidence_churn_requires_review",
+      "pr": null,
+      "finding_title": null,
+      "diagnostic_revision": 3,
+      "investigation_round": 1,
+      "channel": "C0C3Q7BFQCE",
+      "thread_ts": "1791270401.038799",
+      "updated_at": "2026-10-06T12:44:08.085281+00:00"
+    },
+    {
+      "id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "kind": "triage",
+      "state": "blocked",
+      "error": "investigation_budget_exhausted",
+      "pr": null,
+      "finding_title": null,
+      "diagnostic_revision": 3,
+      "investigation_round": 4,
+      "channel": "C0C3Q7BFQCE",
+      "thread_ts": "1791269171.128969",
+      "updated_at": "2026-10-06T12:26:39.579342+00:00"
+    }
+  ],
+  "protected_explicit_review": {
+    "blocked_notice_delivered": true,
+    "blocked_notice_message_id": "e3bf2bcb-fba9-51fb-9f3a-3e81ecc684eb",
+    "blocked_notice_sent_ts": "1791284565.364009",
+    "notice_readback_at": "2026-10-06T22:39:51.470065+00:00",
+    "pending_calls_at_notice_readback": null,
+    "archived_revisions": [
+      {
+        "revision": 0,
+        "commit": "afe3e88b5b055b60e364715835a43d3a751e2de7",
+        "scope_digest": "4d30184c1a16d2b30abe76d1e95e92e6c2687fd13dfbf31dad3762c9fd241777"
+      },
+      {
+        "revision": 1,
+        "commit": "746ece02bf75b119d6e7fc0e7aa7891212a29ae3",
+        "scope_digest": "93aaf3ffd8ecb32425ecee2a73474cac2f22b85442cc98c0d8e6751823b2b984"
+      },
+      {
+        "revision": 2,
+        "commit": "746ece02bf75b119d6e7fc0e7aa7891212a29ae3",
+        "scope_digest": "02e1c05446c77c1d08c4a61b0f8b1530fff69da6ed9d42e9a8b3f1c8ab56de44"
+      }
+    ]
+  },
+  "interpretation": "The done receipt is the Maintainer's recorded diagnosis, not independent proof that no current defect exists. No automatic repair/test/PR was produced."
+}

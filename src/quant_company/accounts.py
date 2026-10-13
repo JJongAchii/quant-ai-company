@@ -10,6 +10,8 @@ from psycopg.types.json import Jsonb
 from temporalio import activity
 from temporalio.service import RPCError, RPCStatusCode
 
+from .command_help import HELP_COMMANDS
+from .command_help import HELP_TEXT as COMMAND_HELP
 from .contracts import ProviderFault
 from .providers.client import RuntimeClient
 from .providers.codex_runner import request_digest
@@ -21,9 +23,11 @@ COMMANDS = {
     "모델 계정 예비로 전환": {"action": "switch", "target": "backup"},
 }
 HELP_TEXT = ("계정 명령을 인식하지 못했습니다. 아래 문장을 그대로 보내 주세요. 계정은 변경되지 않았습니다.\n"
-             "• `모델 계정 상태`\n"
-             "• `모델 계정 예비로 전환`\n"
-             "• `모델 계정 기본으로 전환`")
+             + COMMAND_HELP)
+
+
+def help_text(text):
+    return COMMAND_HELP if text.strip().casefold() in HELP_COMMANDS else HELP_TEXT
 
 
 def parse_command(text):

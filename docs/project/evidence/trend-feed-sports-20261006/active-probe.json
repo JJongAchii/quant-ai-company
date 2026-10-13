@@ -1,0 +1,141 @@
+{
+  "checked_at": "2026-10-06 13:38:49.306870+00:00",
+  "publish_enabled": true,
+  "next_publication": "2026-10-07 08:00:00+09:00",
+  "renderer_sha256": "62738b83711e9485852644984b0376dcfdb821b51dfbeb40f89b9277b73ad137",
+  "workflows": [
+    {
+      "id": "company-trend-feed-collection-v1",
+      "status": "RUNNING",
+      "pending_timer_fire_at": [
+        "2026-10-06T13:39:08.945164+00:00"
+      ]
+    },
+    {
+      "id": "company-trend-feed-digest-v1",
+      "status": "RUNNING",
+      "pending_timer_fire_at": [
+        "2026-10-06T23:00:00.351035+00:00"
+      ]
+    },
+    {
+      "id": "company-trend-feed-editorial-v1",
+      "status": "RUNNING",
+      "pending_timer_fire_at": [
+        "2026-10-06T13:39:16.063176+00:00"
+      ]
+    }
+  ],
+  "status": {
+    "enabled": true,
+    "authorized": true,
+    "publish_enabled": true,
+    "schedule": "daily 08:00 Asia/Seoul; cutoff 07:30; expiry 09:00",
+    "last_24h": {
+      "attempts": 13,
+      "successes": 13
+    },
+    "source": {
+      "id": 1,
+      "next_at": "2026-10-06 13:47:38.488892+00:00",
+      "started_at": "2026-10-06 11:31:53.912888+00:00",
+      "last_success": "2026-10-06 13:37:38.488892+00:00",
+      "last_attempt": "2026-10-06 13:37:37.684922+00:00",
+      "etag": "",
+      "modified": "",
+      "failures": 0,
+      "error": null,
+      "lease_token": null,
+      "lease_until": null
+    },
+    "naver_usage": [
+      {
+        "day": "2026-10-06",
+        "calls": 19
+      }
+    ],
+    "model_calls": [
+      {
+        "id": "news-trends-b74bfa6e-ed85-4e4c-914a-377f7837ba44",
+        "stage": 0,
+        "state": "completed",
+        "error": null,
+        "created_at": "2026-10-06 12:24:17.880836+00:00",
+        "completed_at": "2026-10-06 12:25:03.272936+00:00"
+      }
+    ],
+    "digests": [
+      {
+        "id": "012716d1-68d5-52fe-839e-047a2c9b99ef",
+        "day": "2026-10-06",
+        "state": "preview",
+        "enriched": true,
+        "send_at": "2026-10-06 12:54:10.854371+00:00",
+        "expires_at": "2026-10-06 13:24:10.854371+00:00",
+        "delivery_status": "delivered",
+        "error": null,
+        "sent_ts": "1791289915.099149",
+        "delivery_delay_seconds": "-1336.284609"
+      },
+      {
+        "id": "15c57ba2-fc2b-53ab-a18c-cbb0d4e8f931",
+        "day": "2026-10-06",
+        "state": "expired",
+        "enriched": false,
+        "send_at": "2026-10-05 23:00:00+00:00",
+        "expires_at": "2026-10-06 00:00:00+00:00",
+        "delivery_status": null,
+        "error": null,
+        "sent_ts": null,
+        "delivery_delay_seconds": null
+      }
+    ]
+  },
+  "manual_receipt": {
+    "id": "012716d1-68d5-52fe-839e-047a2c9b99ef",
+    "status": "delivered",
+    "channel": "C0C6WTA9ECV",
+    "sent_ts": "1791289915.099149",
+    "error": null,
+    "attempts": 1
+  },
+  "runtime_pause": {
+    "paused_until": null,
+    "reason": null
+  },
+  "model_calls_made": 0,
+  "naver_calls_made": 0,
+  "slack_calls_made": 0,
+  "targets": {
+    "news-worker": {
+      "id": "cbf4ad379330249b35be273ed8e190b8f9954d371a079d0148e2f8b66a6a73ab",
+      "image": "sha256:e036d78baa61b0072e8ed0c541ce5900452346e8c72a2d1723419d956d52832f",
+      "running": true,
+      "oom_killed": false,
+      "pids_limit": 256,
+      "trend_flags": {
+        "TREND_FEED_CHANNEL_ID": "C0C6WTA9ECV",
+        "TREND_FEED_ENABLED": "true",
+        "TREND_FEED_OWNER_USER": "U0C250E23NW",
+        "TREND_FEED_NAVER_ENABLED": "true",
+        "TREND_FEED_NAVER_CREDENTIALS_FILE": "/run/secrets/trend_naver_credentials",
+        "TREND_FEED_PUBLISH_ENABLED": "true"
+      }
+    },
+    "dispatch": {
+      "id": "f9798da226d145f2e5c817a16648ce22584ca87fbec33a6a85b78fac07118cf0",
+      "image": "sha256:e036d78baa61b0072e8ed0c541ce5900452346e8c72a2d1723419d956d52832f",
+      "running": true,
+      "oom_killed": false,
+      "pids_limit": 128,
+      "trend_flags": {
+        "TREND_FEED_PUBLISH_ENABLED": "true",
+        "TREND_FEED_CHANNEL_ID": "C0C6WTA9ECV",
+        "TREND_FEED_NAVER_ENABLED": "true",
+        "TREND_FEED_ENABLED": "true",
+        "TREND_FEED_OWNER_USER": "U0C250E23NW"
+      }
+    }
+  },
+  "all_company_containers_running": true
+}

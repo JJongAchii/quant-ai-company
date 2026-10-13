@@ -228,6 +228,41 @@ def test_tech_feed_cannot_replace_hot_news_channel(tech):
     assert not tech.authorized()
 
 
+@pytest.mark.parametrize("mutation", ["channels", "users", "reorder"])
+async def test_unrelated_allowlist_changes_do_not_block_tech_delivery(tech, credentials, mutation):
+    queue(tech)
+    consumer = Company(tech.company.settings.model_copy(deep=True), tech.company.roles)
+    if mutation == "channels":
+        consumer.settings.slack_allowed_channels.append("COTHER")
+    elif mutation == "users":
+        consumer.settings.slack_allowed_users.append("UOTHER")
+    else:
+        consumer.settings.slack_allowed_channels.reverse()
+    assert TechFeedStore(consumer).policy() == tech.policy()
+    due(tech)
+    sent = []
+
+    def deliver(request):
+        sent.append(json.loads(request.content))
+        return httpx.Response(200, json={"ok": True, "ts": "200.123"})
+
+    outbox = SlackOutbox(consumer, tech_scout_credentials(credentials), httpx.MockTransport(deliver))
+    assert await outbox.send_one()
+    assert len(sent) == 1 and outgoing(tech)[0]["status"] == "delivered"
+
+
+def test_unrelated_allowlist_removal_after_claim_preserves_delivery(tech, credentials):
+    tech.company.settings.slack_allowed_channels.append("COTHER")
+    tech.company.settings.slack_allowed_users.append("UOTHER")
+    queue(tech)
+    due(tech)
+    outbox = SlackOutbox(tech.company, tech_scout_credentials(credentials))
+    row = outbox.claim()
+    tech.company.settings.slack_allowed_channels.remove("COTHER")
+    tech.company.settings.slack_allowed_users.remove("UOTHER")
+    assert outbox.before_send(row)
+
+
 async def test_end_to_end_has_zero_model_calls_tasks_turns_and_usage(tech, credentials, monkeypatch):
     def forbidden(*args, **kwargs):
         pytest.fail("The tech feed must never construct or call a model provider")

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+  "source_record": "maintenance_jobs:45dce3da-b3dc-5196-b756-35025c48c2f1",
+  "input_sha256": "b8b9f6c6866a2a2fb2140d43c970ee0e9c19d0cdf80f41b0bf31872ab177a398",
+  "original_material_characters": 195297,
+  "baseline_error": "maintenance_proposal_context_too_large",
+  "candidate_prompt_characters": 87770,
+  "provider_request_validated": true,
+  "saved_evidence_unchanged": true,
+  "observation_keys_preserved": true,
+  "path_catalog": {
+    "editable_paths": {
+      "total": 173,
+      "included": 32,
+      "omitted": 141,
+      "lookup": "Omitted paths remain in the exact repository snapshot. Use inspect(query=...) to find relevant code; an omitted path does not establish absence."
+    },
+    "repository_paths": {
+      "total": 295,
+      "included": 36,
+      "omitted": 259,
+      "lookup": "Omitted paths remain in the exact repository snapshot. Use inspect(query=...) to find relevant code; an omitted path does not establish absence."
+    }
+  },
+  "observation_compaction_rounds": 0,
+  "model_calls": 0,
+  "external_writes": 0,
+  "scope": "Actual recorded PostgreSQL diagnostic input; local baseline/candidate formatting replay only."
+}

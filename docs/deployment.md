@@ -272,8 +272,28 @@ sudo bash deploy/backup.sh --s3-uri s3://example-quant-company-backups/company/ 
 `backup.env.example`을 `/var/lib/quant-company/config/backup.env`로 설정한 뒤 timer를 활성화한다.
 기본 일정은 18:10 UTC(다음 날 03:10 KST), 최대 5분 지연이다. 백업 중 Slack 연결에 짧은
 중단이 생길 수 있다. 재접속 및 누락 가능 구간 확인도 복구 검증에 포함한다. 이 단일 호스트 구성은 무중단 고가용성이 아니다. timer 실패와 디스크
-용량을 운영자가 확인한다. S3 lifecycle은 30일이며 로컬 백업은 자동 삭제하지 않으므로
-외부 복사·복원 확인 후 용량을 관리한다.
+용량을 운영자가 확인한다. S3 lifecycle은 30일이다. 백업 생성기는 로컬 파일을 직접 삭제하지 않는다.
+별도의 [storage_cleanup.py](../deploy/storage_cleanup.py)가 기본 실행에서 정리 계획을 출력하고,
+`--apply`에서 다음 보관 정책을 적용한다.
+
+- 현재 컨테이너가 참조하는 모든 이미지, runtime.env의 고정 이미지와 현재 릴리스, 이미지 종류별 최신
+  3개 버전, `--protect-commit`으로 지정한 복구 릴리스를 보존한다. 회사 이미지 중 7일 이상 지난
+  미사용 버전만 삭제하며, 컨테이너·볼륨·배포 소스 디렉터리는 정리 대상에 포함하지 않는다.
+- 기본 BuildKit의 24시간 이상 지난 미사용 캐시를 정리하고 캐시 목표 크기를 2GB로 제한한다.
+  실행 중인 빌드가 참조하는 캐시는 BuildKit이 보호한다. 공유·보호 중이거나 24시간이 지나지 않은
+  레이어 때문에 전체 표시 크기는 이 목표보다 클 수 있다.
+- 로컬 표준 백업은 최근 7일분과 최소 최신 3개를 보존한다. 오래된 묶음은 로컬 checksum 검증과
+  S3에서 스트리밍으로 읽은 파일의 SHA-256 검증이 모두 성공할 때만 로컬 파일과 checksum을 삭제한다.
+  수동 백업 디렉터리와 S3 원본은 보존하며, 검증 실패는 영수증에 기록한다.
+
+호스트 운영 스크립트를 `/opt/quant-company/operations/storage-cleanup/storage_cleanup.py`에 설치하고
+[정리 service](../deploy/quant-company-storage-cleanup.service)와
+[timer](../deploy/quant-company-storage-cleanup.timer)를 `/etc/systemd/system/`에 설치한다.
+service의 `--protect-commit`은 검증된 복구용 릴리스로 유지한다. timer는 백업 일정 뒤인
+03:40 KST에 실행하며 최대 5분 지연된다. 백업·배포와 같은 `.backup.lock`이 사용 중이면
+다음 실행으로 넘긴다. 이 정리는 서비스 정지 없이 실행하고, 전후 디스크 크기·정리 대상·S3
+검증·컨테이너 상태를 `/var/lib/quant-company/operations/storage-cleanup/`에 기록한다.
+공개 저장소에는 서버·클라우드 식별자를 제거한 검증 요약만 보관한다.
 
 복원할 묶음과 `.sha256` 파일을 S3에서 같은 디렉터리로 내려받은 뒤 다음을 실행한다.
 

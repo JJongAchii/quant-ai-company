@@ -1,0 +1,14 @@
+{
+  "scope": "Read-only production diagnosis boundaries; no model call or Git/Slack write",
+  "current_system": {
+    "valid": true
+  },
+  "diagnosis_context": {
+    "valid": true
+  },
+  "github_snapshot": {
+    "valid": true,
+    "commit": "2dc72afb2e4088112f77a764fdcfeebb8e4919ca",
+    "path_count": 234
+  }
+}

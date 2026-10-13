@@ -1,0 +1,3 @@
+service	Lint	2026-10-08T02:55:30.9597861Z All checks passed!
+service	PostgreSQL, Temporal and service regression tests	2026-10-08T03:03:52.5077776Z 1642 passed, 47 skipped, 1 deselected, 2 warnings in 500.22s (0:08:20)
+codex-protocol	Real CLI config and catalog protocol; empty auth, no inference	2026-10-08T02:55:23.2405392Z 9 passed, 2 warnings in 1.58s

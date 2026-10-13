@@ -1,0 +1,266 @@
+{
+  "captured_at": "2026-10-06T06:03:28.326582+00:00",
+  "scope": "Real production read-only snapshot; no model calls or external writes",
+  "current_release": "/opt/quant-company/releases/ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "containers": {
+    "quant-company-worker-1": {
+      "id": "9318351fe35099796fd0324295b4038f327844cf9b516204d4bee7a79727f75f",
+      "image": "quant-company-autonomous:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:6edd5c056625e66cd6a26da6b33a5451372b301f2c9a71894e5d20506de8aba5",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+    },
+    "quant-company-account-gateway-1": {
+      "id": "95328322c7036fe29d944a833d9e67dbaa4adfcfbf6ab1794b993fe26edc34a6",
+      "image": "quant-company:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+    },
+    "quant-company-api-1": {
+      "id": "933117a07749bb6cb8bc4309b9d068bf5665b5e0eb4e42976af59181aad8e544",
+      "image": "quant-company:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+    },
+    "quant-company-slack-socket-1": {
+      "id": "9ea8cbab7c58ca3a91e5172f57adf9bcd5202607271d45beb5e610a042b41dbd",
+      "image": "quant-company:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+    },
+    "quant-company-dispatch-1": {
+      "id": "ccc680da55212464eb0e5272f85b8bfc225d9fa268e279758fb7adb9698ef992",
+      "image": "quant-company:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "aaefe41a0b06f10d92363fc94b850ad8bc5fb4e2ce259c79ffcd3a89528b76f0",
+      "image": "quant-company-codex:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+      "image_id": "sha256:a4bc2f4e24fb143db994b8b201a538dc3acce4e651e9bfbdc46550ea6be5f239",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+    },
+    "quant-company-news-worker-1": {
+      "id": "86ac4b884e0672051093c9b3dbb3154838793306f6dc831686606e4bc7fd6a8c",
+      "image": "quant-company:e1e74d3cb1a25833c58a13baff3441f1381270ee",
+      "image_id": "sha256:bb44bd14ae75adf6152eab18a1672d1804d81fb895fe54def9610c27749c489a",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "commit": "e1e74d3cb1a25833c58a13baff3441f1381270ee"
+    },
+    "quant-company-briefing-data-worker-1": {
+      "id": "5bd849896fc396e11a6c69898ded1ff9eb26f0dd87cbbeeca6aaf03636cfeba4",
+      "image": "quant-company:e1e74d3cb1a25833c58a13baff3441f1381270ee",
+      "image_id": "sha256:bb44bd14ae75adf6152eab18a1672d1804d81fb895fe54def9610c27749c489a",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "commit": "e1e74d3cb1a25833c58a13baff3441f1381270ee"
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "b8ee09473da6f0343942a4b993d3b9586870faa511d2bb58377e4f77a6cad24a",
+      "image": "quant-company-data-watch:8508954320877144e8f24cb52c8353c0e18f514a-7c834100fdef",
+      "image_id": "sha256:2a2aff76ac41d84fa53f0b323565303f967806e6cb797387f7384f4666ae3e9e",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "commit": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce"
+    },
+    "quant-company-quant-feed-worker-1": {
+      "id": "eeb6a2568820a5c4c10abc8ed668d7e4a14532fa141536f5b686de0c34a6ac6c",
+      "image": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+      "image_id": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "commit": "ea092f419b4b679df4c25e479a8cb361b4d046ff"
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "ce8b1dfdab1bd595aeb7e7446e0d1e1a38f5f8457b14969620d93edb11841190",
+      "image": "quant-company-codex:ea092f419b4b679df4c25e479a8cb361b4d046ff",
+      "image_id": "sha256:c983c63235365a43ae1afa8eaba37bd7708e49b43afc2089aa824bad242f02e7",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "commit": "ea092f419b4b679df4c25e479a8cb361b4d046ff"
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "7df307ee748d54371c6c9bb2fee6a5ac17e7f5b341d1f137db7af89eb69e74ab",
+      "image": "quant-company:c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+      "image_id": "sha256:db3c79878edf68a0115c8f0b893d41a92fa78e91f1a59bf76f92b60c8a69a589",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "commit": "c54667e2827506d50b4cbfaa63d924f2b69f21ab"
+    },
+    "quant-company-maintenance-1": {
+      "id": "7266163c1e8120facda28c18764423801d68c11e60d43eb388356a700ea25f5d",
+      "image": "quant-company-maintenance:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "image_id": "sha256:50124cabdc3db809bfc799e14aa9af1c155d86b6a577f910d18b49d6e5f226f5",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "commit": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03"
+    },
+    "quant-company-claude-runtime-1": {
+      "id": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+      "image": "quant-company-claude:fde7681e0286501d8713e08e30a96991a88b9151",
+      "image_id": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "commit": "fde7681e0286501d8713e08e30a96991a88b9151"
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "image_id": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "running": true,
+      "oom_killed": false,
+      "health": "healthy",
+      "commit": null
+    }
+  },
+  "maintenance_control": {
+    "id": 1,
+    "runtime": {
+      "enabled": true,
+      "heartbeat_at": "2026-10-06 06:00:26.767218+00:00",
+      "poll_seconds": 300,
+      "allowed_owners": [
+        "U0C250E23NW"
+      ],
+      "report_seconds": 60,
+      "max_daily_calls": 0,
+      "reporter_heartbeat_at": "2026-10-06T06:03:07.208755+00:00",
+      "improvements_started_at": "2026-09-23T01:13:29.900538+00:00"
+    },
+    "next_observe_at": "2026-10-06T06:05:21.46741+00:00"
+  },
+  "maintenance_jobs": [
+    {
+      "kind": "repair",
+      "count": 1,
+      "error": null,
+      "state": "applied"
+    },
+    {
+      "kind": "repair",
+      "count": 1,
+      "error": "prompt_replay_cannot_validate_runtime_code_changes",
+      "state": "blocked"
+    },
+    {
+      "kind": "repair",
+      "count": 1,
+      "error": "pr_ref_moved",
+      "state": "blocked"
+    },
+    {
+      "kind": "repair",
+      "count": 1,
+      "error": null,
+      "state": "closed"
+    },
+    {
+      "kind": "repair",
+      "count": 1,
+      "error": "current_evidence_changed",
+      "state": "superseded"
+    },
+    {
+      "kind": "review",
+      "count": 4,
+      "error": null,
+      "state": "done"
+    },
+    {
+      "kind": "triage",
+      "count": 13,
+      "error": "evidence_churn_requires_review",
+      "state": "blocked"
+    },
+    {
+      "kind": "triage",
+      "count": 30,
+      "error": "maintenance_proposal_context_too_large",
+      "state": "blocked"
+    },
+    {
+      "kind": "triage",
+      "count": 1,
+      "error": "model_uncertain",
+      "state": "blocked"
+    },
+    {
+      "kind": "triage",
+      "count": 1,
+      "error": "protected_or_unknown_path",
+      "state": "blocked"
+    },
+    {
+      "kind": "triage",
+      "count": 15,
+      "error": null,
+      "state": "done"
+    }
+  ],
+  "current_repeated_waits": [
+    {
+      "id": "0b9b6ce9-6c3d-5dee-a9c5-0bbc18089ac5",
+      "actor": "data",
+      "error": "1 validation error for DataAssessment\n  Value error, Scoped assessments cannot carry a legacy exploratory decision or policy fields ",
+      "stage": "program_data",
+      "state": "waiting",
+      "attempt": 3,
+      "updated_at": "2026-10-06T04:00:58.765914+00:00"
+    },
+    {
+      "id": "e6d49c02-b55f-57ff-833d-ba5b4fcfecfe",
+      "actor": "validator",
+      "error": "auth",
+      "stage": "audit",
+      "state": "waiting",
+      "attempt": 37,
+      "updated_at": "2026-09-29T00:22:26.547077+00:00"
+    }
+  ],
+  "uncertain_review_row_sha256": {
+    "review-08a21b09-58c2-4dc9-816b-aceeb301b6c9": "8483279ddc1c14f68620e1114dd5dc0ec11b7d72b05384329f2239fc076b65e6",
+    "review-240cb2cc-402a-4c79-9de1-e36d327b3084": "e7ea8b48736618778661d8e633198ed4ea55a6f751cd12076909f50a3a7207bd",
+    "review-2ba7a04c-9e2a-4273-b757-99892b040b88": "578f2aedf1bf4c485fa98c7cdb7d122ebdfd80baf2a643b0814a9b300311c1e3",
+    "review-36ce55f1-d1c2-4c8a-bae7-adc46e1a12b6": "078d0b3b198ac8274f8c42b1f0eec55cf0ced1b73424c3384b556ae4aefc2c27",
+    "review-39395d18-968d-4784-b2b2-a5e15f952510": "21b25e5048791d40a7b6a5f1f1cac1df85e8a154e990410289629bc86b9d2d4b",
+    "review-61b91f4c-e518-4c6e-b968-98f7acd080c3": "d78f24e99265a69fd46395e5fb76a00b9de2ca7fdbfa7c15df897fcf19a08209",
+    "review-63abd47f-89e7-44c5-b17a-f3e024a8de6e": "caef76b06b8461f354ff735e76947cffe74859daf9255938138cd270787410a3",
+    "review-cbcd0453-4c6e-45d4-89e9-9cdb23a8ac84": "e13b5b50a2e1f5f26235f062914673c4dcd6408445361880bf7a13ba736aaa0a",
+    "review-cdbbed6d-acc5-40ee-9793-4d86905a4db5": "7f4df79e6cba8f02e0116e508b926c23335715b14a4ae542cfcbedbfde10843f",
+    "review-eae1a937-fbef-439e-af13-0a7f7409f25d": "c67c84ebe7f1ef3ac0872f6e769df280e983daba8f22fbc4b0a3e9bef20f659f"
+  },
+  "counts": {
+    "company_work_due": 3,
+    "maintenance_calls": 56,
+    "technical_observations": 0,
+    "objective_staff_failures": 0,
+    "maintenance_calls_uncertain": 0,
+    "maintenance_jobs_after_activation": 0
+  }
+}

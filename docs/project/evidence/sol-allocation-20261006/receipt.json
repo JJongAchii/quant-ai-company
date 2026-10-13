@@ -1,0 +1,279 @@
+{
+  "at": "2026-10-06T13:13:29.213999+00:00",
+  "actor": "operator",
+  "after": {
+    "data": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "risk": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "director": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "max"
+    },
+    "engineer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "reporter": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "validator": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "maintainer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "operations": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "news_search": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low"
+    },
+    "quant_scout": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "market_brief": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "researcher_kr": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "news_screening": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low"
+    },
+    "researcher_crypto": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "researcher_global": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "financial_strategist": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    }
+  },
+  "state": "applied",
+  "before": {},
+  "origin": "explicit_owner_request_via_authenticated_operator",
+  "account": {
+    "profile": "primary",
+    "revision": 2
+  },
+  "catalog": {
+    "models": [
+      {
+        "model": "gpt-6.1-sol",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-6-astra",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-6-sol",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-6-luna",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      },
+      {
+        "model": "gpt-5.6-sol",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-5.6-terra",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-5.6-luna",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    ],
+    "account": {
+      "profile": "primary",
+      "revision": 2
+    },
+    "checked_at": "2026-10-06T13:12:43.537109+00:00",
+    "cli_version": "0.160.1"
+  },
+  "revision": 1,
+  "plan_sha256": "474e03701785a9405dc13f5e53dabf38fe1330a945ff9f05c5e97ad6e400ceef",
+  "active_roles": [
+    "data",
+    "director",
+    "financial_strategist",
+    "maintainer",
+    "market_brief",
+    "reporter",
+    "researcher_kr"
+  ],
+  "operation_id": "sol-allocation-20261006-owner-chat-v1",
+  "approved_owner": "U0C250E23NW",
+  "schema_version": 1,
+  "source_request": "아스트라 제외하고 6.1 sol 로 잘 배분해줘. 추론강도로 조절할수도 있을거 같고",
+  "before_revision": 0,
+  "slack_messages_sent": 0,
+  "effective_assignments": {
+    "data": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "high"
+    },
+    "risk": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "xhigh"
+    },
+    "director": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "max"
+    },
+    "engineer": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "xhigh"
+    },
+    "reporter": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "medium"
+    },
+    "validator": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "xhigh"
+    },
+    "maintainer": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "high"
+    },
+    "operations": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "medium"
+    },
+    "news_search": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "low"
+    },
+    "quant_scout": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "medium"
+    },
+    "market_brief": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "high"
+    },
+    "researcher_kr": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "high"
+    },
+    "news_screening": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "low"
+    },
+    "researcher_crypto": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "high"
+    },
+    "researcher_global": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "high"
+    },
+    "financial_strategist": {
+      "model": "gpt-6.1-sol",
+      "source": "pinned",
+      "revision": 1,
+      "reasoning_effort": "xhigh"
+    }
+  },
+  "model_inference_calls": 0,
+  "cached": true
+}

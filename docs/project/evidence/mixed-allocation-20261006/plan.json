@@ -1,0 +1,94 @@
+{
+  "operation_id": "mixed-allocation-20261006-owner-correction-v1",
+  "source_request": "아니 기존에 astra 였던 거는 astra 를 유지하고 , astra 가 아니었던 직원들 한해서 6.1 sol 로 잘 배분해달라는 말이었어. 그러면 전체적으로 너가 잘 배분해서 astra 든 6.1 sol 이든 추론 강도든 너가 전반적으로 다시 잘 배분해줘.",
+  "owner_user": "U0C250E23NW",
+  "expected_revision": 1,
+  "expected_account": {
+    "profile": "primary",
+    "revision": 2
+  },
+  "original_models": {
+    "director": "gpt-6-astra",
+    "validator": "gpt-6-astra",
+    "financial_strategist": "gpt-6-astra",
+    "risk": "gpt-6-astra",
+    "market_brief": "gpt-6-astra",
+    "researcher_kr": "gpt-6-astra",
+    "researcher_global": "gpt-6-astra",
+    "researcher_crypto": "gpt-6-astra",
+    "reporter": "gpt-6-astra",
+    "engineer": "gpt-5.6-sol",
+    "maintainer": "gpt-5.6-sol",
+    "data": "gpt-5.6-terra",
+    "quant_scout": "gpt-5.6-luna",
+    "operations": "gpt-5.6-terra",
+    "news_screening": "gpt-5.6-luna",
+    "news_search": "gpt-5.6-luna"
+  },
+  "assignments": {
+    "director": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max"
+    },
+    "validator": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max"
+    },
+    "financial_strategist": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh"
+    },
+    "risk": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh"
+    },
+    "market_brief": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh"
+    },
+    "researcher_kr": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high"
+    },
+    "researcher_global": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high"
+    },
+    "researcher_crypto": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high"
+    },
+    "reporter": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "medium"
+    },
+    "engineer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "maintainer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "data": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "quant_scout": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "operations": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "news_screening": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low"
+    },
+    "news_search": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low"
+    }
+  }
+}

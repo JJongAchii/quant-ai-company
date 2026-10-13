@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "scope": "Real local PostgreSQL and Temporal test server; synthetic Slack, model, GitHub and research/review records.",
+  "full_suite": {
+    "command": "uv run --frozen pytest -q",
+    "passed": 1404,
+    "skipped": 46,
+    "warnings": 2,
+    "seconds": 375.33
+  },
+  "final_maintenance_suite": {
+    "command": "uv run --frozen pytest -q tests/test_maintenance_problem_intake.py tests/test_system_state.py tests/test_maintenance.py tests/test_maintenance_cases.py tests/test_maintenance_regression_gate.py",
+    "passed": 80,
+    "warnings": 2,
+    "seconds": 21.84,
+    "note": "Includes final paused-child-mission guard added during the full-suite run."
+  },
+  "lint": {
+    "command": "uv run --frozen ruff check .",
+    "result": "passed"
+  },
+  "diff_check": {
+    "command": "git diff --check",
+    "result": "passed"
+  },
+  "verified": [
+    "Current repeated research-contract error intake, deduplication and private-value omission",
+    "Owner, channel, revision and active program/mission eligibility",
+    "Uncertain review request/response row and objective grade preservation; zero original-call replays",
+    "Large path catalog and observation compaction with exact evidence IDs and unchanged originals",
+    "Durable diagnosis, repair, regression validation, fixture PR and Slack outbox; Temporal replay"
+  ],
+  "external_integration": "No real model, Slack or GitHub API call was made by these tests; fixture PR is not a deployed bot PR."
+}

@@ -4,6 +4,7 @@ import asyncio
 import hmac
 import os
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -11,6 +12,7 @@ from pydantic import ValidationError
 from starlette.responses import JSONResponse
 
 from quant_company.contracts import ProviderFault, ProviderRequest
+from quant_company.providers.codex_release import SUPPORTED_CLI_VERSION
 from quant_company.providers.codex_runner import CodexRunner, RunnerConfig, strict_json
 
 MAX_REQUEST_BYTES = 512 * 1024
@@ -150,7 +152,9 @@ def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
             runtime = get_runner()
             if not isinstance(runtime, CodexRunner) or profile not in {"primary", "backup"}:
                 raise ProviderFault("unavailable", "Unknown model catalog profile.")
-            return JSONResponse({"profile": profile, "models": await read_catalog(runtime, profile)})
+            rows = await read_catalog(runtime, profile)
+            return JSONResponse({"profile": profile, "models": rows, "cli_version": SUPPORTED_CLI_VERSION,
+                                 "checked_at": datetime.now(UTC).isoformat()})
         except ProviderFault as fault:
             return fault_response(fault)
         except OSError:

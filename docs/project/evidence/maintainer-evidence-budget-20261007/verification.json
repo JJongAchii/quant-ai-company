@@ -1,0 +1,8 @@
+{
+  "verification_id": "operator-review-reconciliation-e648e8cea1e9706959dd37da14ffa1c7",
+  "feature": "staff_review_receipt_reconciliation",
+  "original_reviews_unchanged": true,
+  "model_calls": 0,
+  "database_writes": "one new scoped operator verification; idempotent identity",
+  "limits": "Original failed uncertain receipts match frozen requests but retain no result or raw CLI output."
+}

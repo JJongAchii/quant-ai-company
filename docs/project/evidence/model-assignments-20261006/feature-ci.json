@@ -1,0 +1,16 @@
+{
+  "head_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+  "conclusion": "success",
+  "run_id": 37447578405,
+  "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37447578405",
+  "pytest": {
+    "passed": 1521,
+    "skipped": 46,
+    "deselected": 1,
+    "warnings": 2,
+    "seconds": 432.17,
+    "scope": "real disposable PostgreSQL and Temporal; synthetic Slack/model fixtures"
+  },
+  "pytest_output": "service\tPostgreSQL, Temporal and service regression tests\t2026-10-06T10:14:16.0983426Z 1521 passed, 46 skipped, 1 deselected, 2 warnings in 432.17s (0:07:12)",
+  "ruff": "passed"
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "source_commit": "46d853cbefd4ce808fc247a0ebba1f5df33f0cd8",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/106",
+  "final_tests": {
+    "command": "uv run --frozen pytest -q",
+    "passed": 1406,
+    "skipped": 46,
+    "warnings": 2,
+    "seconds": 353.8
+  },
+  "catalog_related_tests": {
+    "passed": 62,
+    "seconds": 11.56
+  },
+  "deployment_contract": {
+    "command": "uv run --frozen pytest -q deploy/test_deployment_contract.py",
+    "passed": 31,
+    "seconds": 6.31
+  },
+  "github_ci": {
+    "state": "passed",
+    "source_commit": "46d853cbefd4ce808fc247a0ebba1f5df33f0cd8",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37428482885/job/112153523855"
+  },
+  "stages": {
+    "diagnosis": "Real recorded oversized input reproduced locally; actual live DataAssessment and uncertain-review faults registered. Read-only production catalog defect reproduced and candidate confirmed.",
+    "repair": "Operator-authored code fixes, bounded-context and catalog regression checks; same-host Maintainer memory cap correction.",
+    "validation": "Real local PostgreSQL/Temporal with synthetic model/Slack/GitHub fixture pipeline; real production config/DB/GitHub reads and container/call-hash readback.",
+    "pull_request": "Real operator-authored PR #106. Fixture bot PR is transport qualification, not a live generated bot PR."
+  },
+  "runtime": {
+    "image_id": "sha256:955bcafa236a5baf9631447651c9ceb57f2cbdb2f0b51c43230627dcdf166f82",
+    "memory_bytes": 268435456,
+    "same_host": true,
+    "other_services_preserved": true
+  },
+  "limits": [
+    "Live automated model diagnosis, patch and bot-generated PR remain pending company-work priority; no new maintenance inference was reserved during qualification.",
+    "Compaction measurements are characters, not billed token savings.",
+    "Uncertain independent-review calls remain blocked for operator reconciliation; original receipts and objective grades are unchanged."
+  ]
+}

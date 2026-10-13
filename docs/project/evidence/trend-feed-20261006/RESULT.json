@@ -1,0 +1,489 @@
+{
+  "checked_at": "2026-10-06 12:48:23.571928+00:00",
+  "base_commit": "afe3e88b5b055b60e364715835a43d3a751e2de7",
+  "code_sha256": {
+    "deploy/.env.example": "4ebc38d7ec96f501b5dbbb02d55807da886aa52bacfc3d5a69dcf0c6c14f4d45",
+    "deploy/compose.yaml": "a07f058131405cc70fc60b2af9c1729718af29fbfe9b9be3efec56f8f0b7ca05",
+    "deploy/trend-feed.compose.yaml": "630ee9a57864605fa8036053eedcecc3cd304492628dd7ceb07574530d2172a0",
+    "deploy/trend-naver-credentials.example.json": "e435d8938dab97470afa89584995d2b3de5abaae39bd38d6afddb6c2c304b451",
+    "scripts/qualify_trend_feed.py": "cd6035dc0e9987d298fccdf3cd791dc47d651ee39e96c638439eb86666d9f68a",
+    "slack-apps/trend_scout.json": "2d2bc55ea5eaf9b77d9a4d36daf4cd8a051730623df56e7aca455e1b10add63c",
+    "src/quant_company/accounts.py": "7e7eaf4e86b908fda4aa979abc16b7ee71d047d0b5dde47c54968ec43f0d6fae",
+    "src/quant_company/cli.py": "ac0603b7e01fd40bafc8f1a200c3778559d935dfc2c4e704d18f9c3906072b88",
+    "src/quant_company/company.py": "c96e93f05c4ff251c19a2d1cee1a4fa5fe7853141f65f625f6590d6b57b488e4",
+    "src/quant_company/config.py": "1e5f733ee5e70427e374c4c99f0183da5092251ddfdb2fa6ab4f6ff378283fc0",
+    "src/quant_company/db.py": "1e50290f0ed953bc9996c8b58ad96eb58216653ab7e81ad66dadf6b37f07f4e9",
+    "src/quant_company/roles.json": "4bc38214190f11d1503361102a8f44750b778b8b6f5c202c4658a835f28c7bf3",
+    "src/quant_company/runtime.py": "3964884dfc8b03bfaff3c21824e7049e49edcdea5fc56ada805d7775ecbc3544",
+    "src/quant_company/slack.py": "736b8455f8762855cccfb88412748954fea24f7c57582989ef1df2cf38debb31",
+    "src/quant_company/trend_feed/__init__.py": "c8f2af3cba1b234ba253454f09dd97ae067ecb8c1658da38d7e1dc5125376c2a",
+    "src/quant_company/trend_feed/commands.py": "a67dcbd2dae4262494cbc61868d64c600946fa1677174f7ecf2cbd6a1182e88e",
+    "src/quant_company/trend_feed/contracts.py": "fb4f5fa2862f539d1e72417ca46052cf684d44cf68d6eeed7abaae052359e5d8",
+    "src/quant_company/trend_feed/editor.py": "6906ad67b0558a525e3c54a8ac4300fc781f55d80899cf818ab3f49bc086aed6",
+    "src/quant_company/trend_feed/runner.py": "7dbde67a9eed601e606e8287b78d3efa2854883b605ae7042a5b58260e7a0226",
+    "src/quant_company/trend_feed/schedule.py": "c2348d7452aa974dd90997bba7d9ec5a863af32cd68ee25491b73ebacec7ce8e",
+    "src/quant_company/trend_feed/schema.sql": "b3c4aa1012cf78806b486604711fec8b43b92537c78474d544a89e9bdd005965",
+    "src/quant_company/trend_feed/sources.py": "327affb0259a173cbf9db3cc31692488c278854df883c5b171941d2cb8ea175f",
+    "src/quant_company/trend_feed/store.py": "599f3ceb0abbe64ef48b80d66228fd031b384f1c0870771154cfd46107037ddc",
+    "src/quant_company/trend_feed/workflow.py": "603bcefe9c6ba3e24ba3c340429b07ad7940cf857a2fb7368122a20c5047d023",
+    "tests/test_roles.py": "48d1efd45749c47e8226c32772bd7969f55e2811b4da05aaa39d04b699779c6b",
+    "tests/test_trend_feed.py": "aede55f88be5815c73b17727933aa8e6079a4ff32f45d7d95357ed5003673006",
+    "tests/test_trend_feed_temporal.py": "6523ba94953af982ea19a9848eeae12e1f11dbab5142333181c31de762d7bfe8",
+    "deploy/Dockerfile.trend-feed": "ab0a293832c7b61fe2f42131bfbb0ce37a4f6d9b38942b919b2b6da4c43026fa",
+    "deploy/maintenance_release.py": "ad19f0e70acdd3d0606d5a12c20d4187cae62d89a67828571ab0238ceb239073",
+    "deploy/state_backup.py": "07f677194c2f3eb5f549d7b5e30b2e88819d99b11702634acca84abf8b002544",
+    "src/quant_company/model_policy.py": "ab1a4ba1a0ac67c2b118f50f9b2f839d762da3a6e477c8863b344f66eee75a7a",
+    "tests/test_maintenance_release_host.py": "95eb6b8497bf6b6d6bcf0980172f83ebfc8021a6f4c8431a02c8f764f2e669d2",
+    "docs/project/evidence/trend-feed-20261006/production-overlay.py": "57b1194582895aa3b90aa03b9a4219a9dae2a032f8b0f5b1a2b190f57c31ba4e",
+    "docs/project/evidence/trend-feed-20261006/production-stage.py": "73ab32749cffdbbe7f69e62db45e05a951b55af95ee5547757f41302946fbb0a",
+    "docs/project/evidence/trend-feed-20261006/production-cutover.py": "cd12e39b6ce6549106119b07693b85caabe1b2a1f4180d4f18c42e4126692856",
+    "docs/project/evidence/trend-feed-20261006/production-repair.py": "c7ba7ec679f2710eb9891c6967a2ac2ea207853f232521d17b0f693782dd71f9",
+    "docs/project/evidence/trend-feed-20261006/preview-observer.py": "5a185167490f39bee26f4ab89bd3a9e12712b9e5c54b9dd9e50e29d5dcee1bda",
+    "docs/project/evidence/trend-feed-20261006/preview-validator.py": "5bcbc3089ca6d5b3310640c89e0efcc3c9b8d95bb36517ac7f47082e9069d93c",
+    "deploy/quant-company-trend-preview.service": "a1591c5f54317a4231df299e724e583ad81acf8487bcf1868ba3ca910ec0b0ed",
+    "deploy/quant-company-trend-preview.timer": "d2557487b8ba02bb967aea5069ebc139aac958ad5bbcdd4b4e164fd91339c654",
+    "docs/project/evidence/trend-feed-20261006/immediate-brief.py": "58b46c6fbe366c65d56b1728b3335fdb4339a115e9451f045c55a153915413be",
+    "docs/project/evidence/trend-feed-20261006/run-immediate.py": "77ea7af7bf36bfe4f87449b204945cc4918e3acefa506dea89e494fae7ee9213",
+    "docs/project/evidence/trend-feed-20261006/promote-immediate.py": "e773edb55d0811a848d24bf52a07902012ae9ca647150acc03518b657e4fd6a4",
+    "docs/project/evidence/trend-feed-20261006/build-immediate-image.py": "7400808dbd3ab0a35e58dbd83178fc06fb3fa35493ee42842a1c7bcc9984ead8",
+    "docs/project/evidence/trend-feed-20261006/active-probe.py": "486f49e0a3082a5b80022409a8d6badf6afbfd4a1f3e6016b50d034a1c697978",
+    "docs/project/evidence/trend-feed-20261006/run-active-probe.py": "ad5789a1231428d4ba255a71c0de74cb3491cc5a4db70e70c4bcf92f10b70deb"
+  },
+  "automated": {
+    "targeted": {
+      "passed": 67
+    },
+    "full": {
+      "passed": 1514,
+      "skipped": 47,
+      "deselected": 1,
+      "warnings": 2
+    },
+    "postgresql": "real disposable local PostgreSQL 14",
+    "temporal": "real local server, restart and history replay",
+    "naver_http": "simulated",
+    "model": "simulated except separate Codex qualification",
+    "slack_http": "simulated",
+    "ruff": "passed",
+    "git_diff_check": "passed",
+    "compose": "parsed; default-off flags shared, NAVER secret only news-worker",
+    "initial_full": {
+      "passed": 1448,
+      "skipped": 45,
+      "deselected": 1,
+      "warnings": 2
+    },
+    "integrated_targeted": {
+      "passed": 95,
+      "warnings": 2
+    },
+    "image_derived_candidate": {
+      "passed": 176,
+      "skipped": 1,
+      "warnings": 2,
+      "scope": "Actual image-derived source with reviewed trend delta, real local PostgreSQL and Temporal; HTTP/model/Slack simulated."
+    },
+    "activation_regression": {
+      "passed": 43,
+      "image_derived_passed": 43,
+      "postgresql": "real disposable local PostgreSQL 14",
+      "http_and_model": "simulated",
+      "scope": "raw delivery text, persisted preview receipts/body validation, three consecutive stable day gate; prior broader suites retained as historical checks"
+    },
+    "immediate_regression": {
+      "passed": 28,
+      "postgresql": "real disposable local PostgreSQL 14",
+      "http_model_slack": "simulated",
+      "scope": "Existing trend-flow regression, unverified article link removal, escaped keyword search, verified original card size limit"
+    }
+  },
+  "live_checks": {
+    "google_rss": {
+      "passed": true,
+      "entries": 10
+    },
+    "codex": {
+      "passed": true,
+      "completed_calls": 1,
+      "cli_version": "0.154.0",
+      "receipts": [
+        {
+          "request_id": "news-trends-a9c30037-04ad-44fc-a423-95a6fd5ed92c",
+          "state": "complete",
+          "cli_version": "0.154.0",
+          "execution_lane": "news",
+          "requested_execution": {
+            "model": "gpt-6-astra",
+            "reasoning_effort": "high"
+          },
+          "started_at": 1791275103.461217,
+          "completed_at": 1791275125.0904992
+        }
+      ],
+      "original_articles_available": 0,
+      "scope": "Actual subscription classification on real RSS candidates; no original-backed background in this live sample. Synthetic next-morning clock; not elapsed daily observation."
+    },
+    "naver": {
+      "passed": true,
+      "trend_http_status": 200,
+      "news_http_status": 200,
+      "http_requests": 2,
+      "keywords_checked": 3,
+      "news_items": 5,
+      "evidence": "naver-connection.json",
+      "scope": "Actual authentication and fixed endpoint response matching on current Google candidates; no database, model or Slack connection."
+    },
+    "three_day_preview": {
+      "state": "replaced_by_user_immediate_acceptance",
+      "first_day": "2026-10-07",
+      "completed_days": 0,
+      "earliest_regular_day": "2026-10-07",
+      "conditional_on_pass": false,
+      "timer_enabled": true,
+      "no_fake_elapsed_days": true,
+      "acceptance_passed": true,
+      "three_day_observation_completed": false
+    },
+    "slack_auth": "passed; only chat:write",
+    "initial_preview_production": {
+      "checked_at": "2026-10-06T11:48:06.842153+00:00",
+      "actual_production_reader": true,
+      "model_called": false,
+      "slack_called": false,
+      "naver_probes": [
+        {
+          "kind": "trend",
+          "ok": true,
+          "matched_series": 3
+        },
+        {
+          "kind": "news",
+          "ok": true,
+          "items": 5
+        }
+      ],
+      "status": {
+        "enabled": true,
+        "authorized": true,
+        "publish_enabled": false,
+        "schedule": "daily 08:00 Asia/Seoul; cutoff 07:30; expiry 09:00",
+        "last_24h": {
+          "attempts": 2,
+          "successes": 2
+        },
+        "source": {
+          "id": 1,
+          "next_at": "2026-10-06 11:53:47.442086+00:00",
+          "started_at": "2026-10-06 11:31:53.912888+00:00",
+          "last_success": "2026-10-06 11:43:47.442086+00:00",
+          "last_attempt": "2026-10-06 11:43:45.553778+00:00",
+          "etag": "",
+          "modified": "",
+          "failures": 0,
+          "error": null,
+          "lease_token": null,
+          "lease_until": null
+        },
+        "naver_usage": [
+          {
+            "day": "2026-10-06",
+            "calls": 2
+          }
+        ],
+        "model_calls": [],
+        "digests": [
+          {
+            "id": "15c57ba2-fc2b-53ab-a18c-cbb0d4e8f931",
+            "day": "2026-10-06",
+            "state": "expired",
+            "enriched": false,
+            "send_at": "2026-10-05 23:00:00+00:00",
+            "expires_at": "2026-10-06 00:00:00+00:00",
+            "delivery_status": null,
+            "error": null,
+            "sent_ts": null,
+            "delivery_delay_seconds": null
+          }
+        ]
+      },
+      "workflows": [
+        {
+          "id": "company-trend-feed-collection-v1",
+          "status": "RUNNING"
+        },
+        {
+          "id": "company-trend-feed-digest-v1",
+          "status": "RUNNING"
+        },
+        {
+          "id": "company-trend-feed-editorial-v1",
+          "status": "RUNNING"
+        }
+      ]
+    },
+    "production": {
+      "checked_at": "2026-10-06 12:48:23.571928+00:00",
+      "publish_enabled": true,
+      "next_publication": "2026-10-07 08:00:00+09:00",
+      "renderer_sha256": "6906ad67b0558a525e3c54a8ac4300fc781f55d80899cf818ab3f49bc086aed6",
+      "workflows": [
+        {
+          "id": "company-trend-feed-collection-v1",
+          "status": "RUNNING",
+          "pending_timer_fire_at": [
+            "2026-10-06T12:48:25.149601+00:00"
+          ]
+        },
+        {
+          "id": "company-trend-feed-digest-v1",
+          "status": "RUNNING",
+          "pending_timer_fire_at": [
+            "2026-10-06T23:00:00.351035+00:00"
+          ]
+        },
+        {
+          "id": "company-trend-feed-editorial-v1",
+          "status": "RUNNING",
+          "pending_timer_fire_at": [
+            "2026-10-06T12:48:54.308289+00:00"
+          ]
+        }
+      ],
+      "status": {
+        "enabled": true,
+        "authorized": true,
+        "publish_enabled": true,
+        "schedule": "daily 08:00 Asia/Seoul; cutoff 07:30; expiry 09:00",
+        "last_24h": {
+          "attempts": 8,
+          "successes": 8
+        },
+        "source": {
+          "id": 1,
+          "next_at": "2026-10-06 12:54:53.951666+00:00",
+          "started_at": "2026-10-06 11:31:53.912888+00:00",
+          "last_success": "2026-10-06 12:44:53.951666+00:00",
+          "last_attempt": "2026-10-06 12:44:53.074337+00:00",
+          "etag": "",
+          "modified": "",
+          "failures": 0,
+          "error": null,
+          "lease_token": null,
+          "lease_until": null
+        },
+        "naver_usage": [
+          {
+            "day": "2026-10-06",
+            "calls": 19
+          }
+        ],
+        "model_calls": [
+          {
+            "id": "news-trends-b74bfa6e-ed85-4e4c-914a-377f7837ba44",
+            "stage": 0,
+            "state": "completed",
+            "error": null,
+            "created_at": "2026-10-06 12:24:17.880836+00:00",
+            "completed_at": "2026-10-06 12:25:03.272936+00:00"
+          }
+        ],
+        "digests": [
+          {
+            "id": "012716d1-68d5-52fe-839e-047a2c9b99ef",
+            "day": "2026-10-06",
+            "state": "preview",
+            "enriched": true,
+            "send_at": "2026-10-06 12:54:10.854371+00:00",
+            "expires_at": "2026-10-06 13:24:10.854371+00:00",
+            "delivery_status": "delivered",
+            "error": null,
+            "sent_ts": "1791289915.099149",
+            "delivery_delay_seconds": "-1336.284609",
+            "scope": "KR-manual operator acceptance check; original daily digest unchanged",
+            "send_at_meaning": "manual enrichment deadline; dispatch was explicitly authorized immediately",
+            "delivery_delay_seconds_meaning": "not a scheduled daily-delivery SLA sample"
+          },
+          {
+            "id": "15c57ba2-fc2b-53ab-a18c-cbb0d4e8f931",
+            "day": "2026-10-06",
+            "state": "expired",
+            "enriched": false,
+            "send_at": "2026-10-05 23:00:00+00:00",
+            "expires_at": "2026-10-06 00:00:00+00:00",
+            "delivery_status": null,
+            "error": null,
+            "sent_ts": null,
+            "delivery_delay_seconds": null
+          }
+        ]
+      },
+      "manual_receipt": {
+        "id": "012716d1-68d5-52fe-839e-047a2c9b99ef",
+        "status": "delivered",
+        "channel": "C0C6WTA9ECV",
+        "sent_ts": "1791289915.099149",
+        "error": null,
+        "attempts": 1
+      },
+      "runtime_pause": {
+        "paused_until": null,
+        "reason": null
+      },
+      "model_calls_made": 0,
+      "naver_calls_made": 0,
+      "slack_calls_made": 0,
+      "targets": {
+        "news-worker": {
+          "id": "46538a3189b613a5d3209d4fa39d26332dfb6b47af654cc51a9472e6da5900a8",
+          "image": "sha256:87d3b67552393e3e727f1344edb2b8805fde3c60da5abc3bbbc6d8eaa95f2b98",
+          "running": true,
+          "oom_killed": false,
+          "pids_limit": 256,
+          "trend_flags": {
+            "TREND_FEED_NAVER_CREDENTIALS_FILE": "/run/secrets/trend_naver_credentials",
+            "TREND_FEED_PUBLISH_ENABLED": "true",
+            "TREND_FEED_NAVER_ENABLED": "true",
+            "TREND_FEED_CHANNEL_ID": "C0C6WTA9ECV",
+            "TREND_FEED_OWNER_USER": "U0C250E23NW",
+            "TREND_FEED_ENABLED": "true"
+          }
+        },
+        "dispatch": {
+          "id": "2ac277156cad3e66bbadf7ae2b1e674ac9b41305ce7d3f73e8cb9d4cbebb9925",
+          "image": "sha256:87d3b67552393e3e727f1344edb2b8805fde3c60da5abc3bbbc6d8eaa95f2b98",
+          "running": true,
+          "oom_killed": false,
+          "pids_limit": 128,
+          "trend_flags": {
+            "TREND_FEED_OWNER_USER": "U0C250E23NW",
+            "TREND_FEED_NAVER_ENABLED": "true",
+            "TREND_FEED_PUBLISH_ENABLED": "true",
+            "TREND_FEED_ENABLED": "true",
+            "TREND_FEED_CHANNEL_ID": "C0C6WTA9ECV"
+          }
+        }
+      },
+      "all_company_containers_running": true
+    },
+    "slack_connection_delivery": {
+      "status": "delivered",
+      "messages": 1,
+      "attempts": 1,
+      "channel": "C0C6WTA9ECV",
+      "sent_ts": "1791287349.325639",
+      "ui_verified": true,
+      "evidence": "slack-test-receipt.json"
+    },
+    "slack_delivery": {
+      "id": "012716d1-68d5-52fe-839e-047a2c9b99ef",
+      "status": "delivered",
+      "channel": "C0C6WTA9ECV",
+      "sent_ts": "1791289915.099149",
+      "error": null,
+      "attempts": 1,
+      "messages": 1,
+      "scope": "actual immediate briefing, eight topics; connection test recorded separately",
+      "ui_verified": true,
+      "evidence": "immediate-review.json"
+    },
+    "immediate_editorial": {
+      "passed": true,
+      "model_calls": [
+        {
+          "id": "news-trends-b74bfa6e-ed85-4e4c-914a-377f7837ba44",
+          "state": "completed",
+          "error": null,
+          "created_at": "2026-10-06 12:24:17.880836+00:00",
+          "completed_at": "2026-10-06 12:25:03.272936+00:00",
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "provider": "codex"
+        }
+      ],
+      "model_requests_today": 1,
+      "naver_requests_today": 19,
+      "original_articles_available": 6,
+      "backgrounds_reviewed": 4,
+      "cards": 8,
+      "clock": "real production time; no synthetic dates",
+      "evidence": "immediate-review.json"
+    }
+  },
+  "operational": {
+    "deployed": true,
+    "app_id": "A0C7VRH8JV6",
+    "app_name": "Trend Scout",
+    "workspace_id": "T0C1YRDRPNF",
+    "scopes": [
+      "chat:write"
+    ],
+    "app_creation": "verified in Slack applications list",
+    "app_installation": "verified by installed-app token and successful bot auth.test",
+    "channel": "created C0C6WTA9ECV; Trend Scout membership verified",
+    "publish_enabled": true,
+    "naver_secret": "installed on server; root-only parent, UID10001 mode0400 file, read-only news-worker mount only",
+    "legacy_verification_token_rotation": "activated and verified after reload",
+    "production_stage": {
+      "state": "staged",
+      "image": "sha256:0dc4f13cb968e2706a105e2d52a054a736003f6aaa361e4278b58ccf9cf5307e",
+      "targets": [
+        "news-worker",
+        "dispatch"
+      ],
+      "runtime_config_preserved": true,
+      "source_inventory_verified": true,
+      "native_image_check": "passed",
+      "running_services_changed": false,
+      "credentials_installed": false,
+      "messages_sent": 0,
+      "scope": "Historical build-only stage; actual activation and repaired image recorded separately."
+    },
+    "preview_activation": "Historical initial preview; superseded by immediate inspected real delivery and active regular operation",
+    "production_cutover": "production-cutover.json",
+    "resource_repair": "production-repair.json",
+    "first_collection": "production-live.json",
+    "messages_sent": 2,
+    "preview_timer": "preview-timer.json",
+    "operator_approval": "chat-user-immediate-brief-inspect-activate-20261006",
+    "active_image": "sha256:87d3b67552393e3e727f1344edb2b8805fde3c60da5abc3bbbc6d8eaa95f2b98",
+    "active_application_commit": "34de597143fcd3f80939ae36b529db4db5cd79cf",
+    "operator_source_commit": "34de597 (build/promote) plus final receipted observer/probe correction; exact current sources pinned in code_sha256",
+    "external_model_runtime_change": "Separate model-runtime change preserved. Subsequent actual operating Reporter request completed with codex provider; original/background inspection recorded in immediate-review.json.",
+    "repository_publication": {
+      "remote_visibility": "PUBLIC",
+      "local_committed": true,
+      "remote_push": true,
+      "user_choice_pending": false,
+      "reason": "User explicitly approved upload with current public visibility; repository visibility unchanged",
+      "production_gate_unaffected": true,
+      "user_authorized_public_upload": true,
+      "remote_branch": "search-trends-source-research",
+      "initially_published_commit": "aeb1ff79697532d0b05216f608213060536cf879",
+      "pull_request": "https://github.com/JJongAchii/quant-ai-company/pull/113",
+      "pull_request_draft": false,
+      "remote_publication_verified_at": "2026-10-06T12:11:53.119104+00:00",
+      "ready_for_review_verified_at": "2026-10-06T13:01:54.677204+00:00"
+    },
+    "message_scope": {
+      "connection_test": 1,
+      "immediate_briefing": 1,
+      "regular_delivery": "scheduled, not yet elapsed"
+    },
+    "immediate_activation": "immediate-activation.json",
+    "current_execution": "immediate-active-probe.json",
+    "first_regular_day": "2026-10-07",
+    "first_regular_time": "08:00 Asia/Seoul",
+    "acceptance_mode": "immediate_inspected_real_delivery",
+    "three_day_wait_replaced_by_user": true,
+    "first_regular_delivery_observed": false,
+    "observer_source_sha256": "5a185167490f39bee26f4ab89bd3a9e12712b9e5c54b9dd9e50e29d5dcee1bda"
+  },
+  "integrated_with": "457a9c20f4e1b95a407dca3f1c0b20070142c0ae",
+  "implementation_commit": "b8c3f8867ff7df793f70f70d2f929c9fe84b2332",
+  "current_intent": {
+    "revision": 2,
+    "digest": "5473004989f2",
+    "approval_id": "chat-user-immediate-brief-inspect-activate-20261006",
+    "original_v1_retained": true
+  }
+}

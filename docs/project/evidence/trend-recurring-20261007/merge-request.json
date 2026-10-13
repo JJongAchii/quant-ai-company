@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-10-07T02:23:23.374519+00:00",
+  "user_request": "병합해",
+  "authorization": "User explicitly requested merging PR119 after the previous response identified it as published but not merged.",
+  "repository": "JJongAchii/quant-ai-company",
+  "pull_request": 119,
+  "source_head": "c3d499da10d04590f8385413849b38b52aba66e0",
+  "base_branch": "main",
+  "latest_head_ci_run": 37561511498,
+  "latest_head_ci_state": "in_progress",
+  "action": "merge after both latest-head jobs pass; preserve GitHub and main ancestry receipts"
+}

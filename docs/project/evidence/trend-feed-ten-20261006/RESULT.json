@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "approval_id": "chat-user-ten-topics-20261006",
+  "source_commit": "10daf0e80013b18a33cb4db14db67b50b100c6ba",
+  "target": 10,
+  "candidate_limits": {
+    "rising_search": 30,
+    "major_issue": 20
+  },
+  "editorial_policy_version": 3,
+  "tests": {
+    "passed": 96,
+    "scope": "real PostgreSQL/local Temporal; news producers and trend consumer; HTTP/models/Slack mocked"
+  },
+  "real_subscription_preview": {
+    "valid": true,
+    "cards": 10,
+    "rising_search": 4,
+    "major_issues": 6,
+    "sports": 0,
+    "candidates": 34,
+    "model": "gpt-6-astra",
+    "reasoning_effort": "medium",
+    "provider": "codex",
+    "source_cutoff": "2026-10-06 12:24:10.854371+00:00",
+    "source_is_previously_verified_input": true,
+    "new_preview_sent_to_slack": false,
+    "model_requests_kst_day": 2,
+    "naver_requests_kst_day": 19
+  },
+  "implementation_sha256": {
+    "trend_feed/contracts.py": "f9ef77ec27715da941d0fb8319032c7353fbd99c26b8bdac3e3e044b343b2bec",
+    "trend_feed/editor.py": "58815d07fa1b22f99fc2637f53bedb2ca176b08dcf62183a20b8245162b456f9",
+    "trend_feed/runner.py": "5532aa1d739d294a254616e56c6cf831a2444d6c9f0908c17f1a7e395b323d16",
+    "trend_feed/store.py": "8b12bb1c32834ec416fcfe472239197c473cc7d0a6bcc24edbdadda89a456ed4",
+    "trend_feed/supplement.py": "8dd46501b4e5380f61f4b796f69ffe071405ad0da6c44f2cf561250bd6befabb"
+  },
+  "image_qualified": true,
+  "production_activation": {
+    "state": "publication_enabled",
+    "completed_at": "2026-10-06T14:31:55.830997+00:00",
+    "image": "sha256:1e06a642b8b23fbbb0cc05e916f43c9df52b6285af82f744e4fc5c339ef7d219",
+    "publish_enabled": true,
+    "existing_frozen_requests_preserved": true,
+    "runtime_config_preserved": true,
+    "unrelated_container_ids_preserved": true,
+    "next_publication": "2026-10-07 08:00:00+09:00",
+    "actual_digest_timer_fire_at": "2026-10-06T23:00:00.351035+00:00",
+    "workflows_running": true,
+    "runtime_pause_restored": true
+  }
+}

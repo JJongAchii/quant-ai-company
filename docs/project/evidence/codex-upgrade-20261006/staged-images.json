@@ -1,0 +1,66 @@
+{
+  "state": "staged",
+  "commit": "b77dc9511fb6aae2beff68df1c0ba7852bac6bd4",
+  "images": {
+    "sha256:13caa3f9f7936529335af8b92d9ddbb78f28ef6a45eed0b2e2054b43acb33938": {
+      "id": "sha256:1da677f0627c690e3ecaadba4f368aad9271bfa581d71b20b1f07deb872ec8e6",
+      "tag": "quant-company-codex-upgrade:b77dc9511fb6aae2beff68df1c0ba7852bac6bd4-13caa3f9f793",
+      "services": [
+        "codex-runtime"
+      ],
+      "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+      "changed": [
+        {
+          "file": "providers/codex_release.json",
+          "before": null,
+          "after": "7212dc360e4a26759ab47539dc8fcba478f9dfa57027b98e5a3c8af194fd809d"
+        },
+        {
+          "file": "providers/codex_runner.py",
+          "before": "8ae730a45dfc3c485d22f998861c6996067365a29dcc155f823006fe6ea57222",
+          "after": "b66664bbcfdd5b0476b4d02dbd98b99b039133a545d218338a208b392378f54c"
+        },
+        {
+          "file": "providers/codex_runtime.py",
+          "before": "50a59ca449ee207bc451f0604c3c54b576928289e8773454516b47110e517ccf",
+          "after": "73533e2fb4c33266e8a2511b4778367b662086627fe8e904cba1644b7e44e88f"
+        },
+        {
+          "file": "providers/codex_release.py",
+          "before": null,
+          "after": "94c350445e846b8541adc5bf9ef756db1c0dec8d063478ac16dee82739f79f77"
+        }
+      ]
+    },
+    "sha256:9d215e4309aca0f0e448f6595a9d53af268f80f7e8bc3a7880337f631a777233": {
+      "id": "sha256:94d32ec482ea0ba9cfd7890ef9f13113403beec858380ab8e3205d7b400e8fa1",
+      "tag": "quant-company-codex-upgrade:b77dc9511fb6aae2beff68df1c0ba7852bac6bd4-9d215e4309ac",
+      "services": [
+        "quant-codex-runtime"
+      ],
+      "package_root": "/opt/quant-code/src/quant_company",
+      "changed": [
+        {
+          "file": "providers/codex_release.json",
+          "before": null,
+          "after": "7212dc360e4a26759ab47539dc8fcba478f9dfa57027b98e5a3c8af194fd809d"
+        },
+        {
+          "file": "providers/codex_runner.py",
+          "before": "6cfaa218c94ecd50aa7cb61374217df0473fe2794343c927dd941b1c27a36433",
+          "after": "2a2deefecff320f1184d852749825a442f0beda4b8da6585d4c4b67fd6c5b6f8"
+        },
+        {
+          "file": "providers/codex_runtime.py",
+          "before": "50a59ca449ee207bc451f0604c3c54b576928289e8773454516b47110e517ccf",
+          "after": "73533e2fb4c33266e8a2511b4778367b662086627fe8e904cba1644b7e44e88f"
+        },
+        {
+          "file": "providers/codex_release.py",
+          "before": null,
+          "after": "94c350445e846b8541adc5bf9ef756db1c0dec8d063478ac16dee82739f79f77"
+        }
+      ]
+    }
+  }
+}

@@ -1,7 +1,8 @@
 # Build targets: app and codex. Release builds require the committed uv.lock.
 FROM node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5 AS codex-dist
-RUN npm install --global --omit=dev @openai/codex@0.154.0 \
-    && codex --version | grep -Fx 'codex-cli 0.154.0'
+COPY src/quant_company/providers/codex_release.json /tmp/codex_release.json
+COPY deploy/install-codex.cjs /tmp/install-codex.cjs
+RUN node /tmp/install-codex.cjs /tmp/codex_release.json
 
 FROM ghcr.io/astral-sh/uv:0.11.28@sha256:0f36cb9361a3346885ca3677e3767016687b5a170c1a6b88465ec14aefec90aa AS uv-dist
 FROM python:3.12-slim-bookworm@sha256:782412e85d0f0984994c290652577d4018aff08145c85b262bb63dc0c7522254 AS app
@@ -51,7 +52,7 @@ USER root
 COPY --from=codex-dist /usr/local/bin/node /usr/local/bin/node
 COPY --from=codex-dist /usr/local/lib/node_modules/@openai /usr/local/lib/node_modules/@openai
 RUN ln -s /usr/local/lib/node_modules/@openai/codex/bin/codex.js /usr/local/bin/codex \
-    && codex --version | grep -Fx 'codex-cli 0.154.0' \
+    && python -c 'import subprocess; from quant_company.providers.codex_release import SUPPORTED_CLI_VERSION; assert subprocess.check_output(["codex", "--version"], text=True).strip() == "codex-cli " + SUPPORTED_CLI_VERSION' \
     && mkdir -p /state/auth /state/jobs \
     && chown -R 10001:10001 /state
 USER 10001:10001

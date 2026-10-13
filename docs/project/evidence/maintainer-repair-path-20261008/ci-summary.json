@@ -1,0 +1,22 @@
+{
+  "source_commit": "68ffc8d1c16aaace04b98c259e49055beeb857b9",
+  "run_id": 37714120467,
+  "service": {
+    "passed": 1655,
+    "skipped": 47,
+    "deselected": 1,
+    "warnings": 2,
+    "elapsed_seconds": 383.5,
+    "real_postgresql": true,
+    "real_temporal": true,
+    "lint": "passed"
+  },
+  "codex_protocol": {
+    "passed": 9,
+    "warnings": 2,
+    "real_cli": true,
+    "auth": "empty fixture",
+    "inference": false
+  },
+  "scope": "GitHub Actions exact source head, model/Slack responses simulated except documented no-inference real CLI probes"
+}

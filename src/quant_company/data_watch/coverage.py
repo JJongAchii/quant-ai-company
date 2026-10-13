@@ -73,6 +73,58 @@ SUMMARY_GROUPS = (
     ("미국 기업행사", ("us_dividends", "us_splits")),
 )
 
+# Product labels describe the data; internal lake keys remain in the status API.
+NAMES = {
+    "binance_usdtm_klines": "가상자산 선물 가격 이력",
+    "cusip_map": "미국 증권 식별번호 매핑",
+    "dart_fundamental": "한국 기업 공시(DART)",
+    "ecos": "한국 경제지표(ECOS)",
+    "fred": "미국 경제지표(FRED)",
+    "krx_etf": "한국 ETF 가격",
+    "krx_etf_meta": "한국 ETF 거래 정보",
+    "krx_etf_profile": "한국 ETF 기본 정보",
+    "krx_flows": "한국 투자자별 수급",
+    "krx_fundamental": "한국 주식 투자지표",
+    "krx_index": "한국 지수 정보",
+    "krx_index_fundamental": "한국 지수 투자지표",
+    "krx_index_master": "한국 지수 목록",
+    "krx_index_prices": "한국 지수 가격",
+    "krx_prices": "한국 주식 가격",
+    "krx_sector": "한국 업종 분류",
+    "krx_stock_master": "한국 종목 목록",
+    "krx_security_continuity_coverage": "한국 종목 연결 이력 범위",
+    "krx_security_continuity_events": "한국 종목 변경 사건 이력",
+    "krx_security_continuity_legs": "한국 종목 승계 연결 이력",
+    "oecd_cli": "경기선행지수(OECD)",
+    "prices": "미국 ETF·주가",
+    "sec_13f": "미국 기관 보유내역(13F)",
+    "sec_filings": "미국 재무 공시 제출목록",
+    "sec_fundamental": "미국 재무 공시 재무값",
+    "sec_insider": "미국 내부자 거래",
+    "sec_nport": "미국 펀드 보유내역",
+    "sec_nport_fund": "미국 펀드 기본 정보",
+    "sec_tickers": "SEC 상장사 목록",
+    "us_dividends": "미국 배당 정보",
+    "us_prices": "미국 전종목 가격",
+    "us_shortvol": "미국 공매도 거래량",
+    "us_splits": "미국 주식분할 정보",
+    "us_symbols": "미국 종목 코드 목록",
+    "us_ticker_details": "미국 종목 상세 정보",
+    "us_ticker_events": "미국 종목 변경 정보",
+    "us_ticker_history": "미국 종목 코드 변경 이력",
+    "us_tickers": "미국 상장 종목 목록",
+}
+
+UPDATE_LABELS = {
+    "prices": "9/25 거래분",
+    "us_shortvol": "9/25 거래분",
+    "sec_filings": "2026년 2분기 자료",
+    "sec_fundamental": "2026년 2분기 자료",
+    "sec_insider": "2026년 2분기 자료",
+    "sec_13f": "2026년 6~8월 자료",
+    **dict.fromkeys(("krx_prices", "krx_etf", "krx_flows", "krx_index_prices"), "9/28 거래분"),
+}
+
 # Reviewed source checkpoints are reporting facts, not a rolling publication
 # calendar or a trigger for incident recovery. A later dataset-wide maximum
 # clears a checkpoint but cannot establish per-ticker completeness.

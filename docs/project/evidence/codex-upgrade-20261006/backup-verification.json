@@ -1,0 +1,22 @@
+{
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20261006T113947Z-f0b8974e.tar.gz",
+    "sha256": "a8bea0b5350730c8d54628b995f04d7aaade2072ba9450972dadbf862e3d98e4",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20261006T113947Z-f0b8974e.tar.gz",
+    "release_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+    "secrets_included": false
+  },
+  "head_objects": [
+    {
+      "ContentLength": 516634488,
+      "LastModified": "2026-10-06T11:42:25+00:00",
+      "ServerSideEncryption": "AES256"
+    },
+    {
+      "ContentLength": 107,
+      "LastModified": "2026-10-06T11:42:28+00:00",
+      "ServerSideEncryption": "AES256"
+    }
+  ],
+  "local_archive_sha256_verified": true
+}

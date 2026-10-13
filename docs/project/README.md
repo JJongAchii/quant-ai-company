@@ -13,6 +13,7 @@
 - [10월 13일 아침판 — 보충 검색 실패로 막힌 발간본 · 재발행 · 검토 한도 · 회차 사진 우선 (2026-10-13)](BRIEFING-AM-REISSUE-20261013.md)
 - [Analyst 자료 선정·원문 전달·사실별 검토 경로 진단과 보완](ANALYST-PIPELINE-20260929.md)
 - [Analyst 앱 설치·새 아침판 평가·서버 미리보기 릴리스 차단](ANALYST-PREVIEW-20260928.md)
+- [서버 디스크 정리·S3 백업 검증·매일 보관 정책 적용](SERVER-STORAGE-20261006.json)
 - [data-watch 운영 게시와 메시지 해석](DATA-WATCH-PRODUCTION-20260928.md)
 - [data-watch 운영자 현황 문구 개선](DATA-WATCH-STATUS-CLARITY-20260928.md)
 - [data-watch 소스별 마지막 날짜와 갱신 점검](DATA-WATCH-SOURCE-STATUS-20260928.md)

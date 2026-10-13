@@ -54,6 +54,15 @@ AM 최종 발송본을 글 중심 영상으로 제작하고 YouTube에 비공개
 대화형 직원이나 AI 봇이 아니며 `chat:write`만 갖습니다. 초기 활성화 기본값은 꺼짐입니다.
 [설정·데모·복구](docs/tech-feed.md), [검증 및 운영 상태](docs/project/TECH-FEED-VALIDATION.md)를 참고하세요.
 
+`trend-feed`는 Google 한국 검색 트렌드·네이버 추이·허용 언론 원문을 모아 **08:00·14:00·20:00 KST에 비스포츠 10개 목표**를
+전용 **Trend Scout** 앱으로 전달합니다. 정기는 최근 6시간, 요청은 최근 1시간 관측을 우선하고
+6시간 이력으로 보충합니다. 신규 포착·규모 표시 변화·최근 관측을 반영하며 절대 검색량으로 환산하지 않습니다.
+기존 구독 모델을 운영 설정에서 하루 최대 12회 사용하며, 설치 기본값은 2회입니다.
+급상승 주제가 부족하면 검증된 주요 이슈를 순위 밖에 별도로 보충합니다. 분류가 늦으면
+미분류 주제를 보류합니다. 수집·발송 기본값은 꺼짐입니다.
+`#search-trends`의 `실시간 검색어` 요청에도 스레드로 응답할 수 있습니다.
+[설정·미리보기·복구](docs/trend-feed.md), [검증 및 연결 상태](docs/project/TREND-FEED-VALIDATION.md)를 참고하세요.
+
 `housing-feed`는 서울·경기 청약홈·LH·SH의 공식 분양 공고를 1시간마다 확인하고,
 신규·변경 공고와 접수 전날·당일 알림을 Reporter 앱으로 전달합니다.
 API 키나 모델 호출은 필요하지 않습니다. [범위·일정·운영](docs/housing-feed.md)을 참고하세요.
@@ -64,6 +73,14 @@ API 키나 모델 호출은 필요하지 않습니다. [범위·일정·운영](
 기본값은 비활성화이며 별도 로그인과 운영 활성화가 필요합니다.
 [명령·설정·복구](docs/runbooks/model-accounts.md),
 [검증 및 운영 반영 상태](docs/project/MODEL-ACCOUNTS-VALIDATION.md)를 참고하세요.
+
+직원 모델을 직접 고정하거나 이번 업무에만 지정하는 기능은 2026-10-06 운영에서 활성화했습니다.
+소유자가 #ai-account-switch에서 `모델 목록`, `모델 지정 개발 gpt-6-astra max`,
+`모델 배정 이력`, `모델 배정 복원 2`를 사용합니다.
+업무 메시지는 첫 줄에 `이번 작업 모델 gpt-6-astra high`, 다음 줄에 업무를 적습니다.
+사용 가능 여부를 확인한 뒤 새 요청부터 적용하며 기존 요청·재시도는 원래 설정을 보존합니다.
+새 환경의 기본값은 비활성화입니다. [명령·활성화·제약](docs/runbooks/model-assignments.md),
+[운영 증거와 실제 Slack 확인 범위](docs/project/MODEL-ASSIGNMENTS-PRODUCTION-20261006.md)를 확인하세요.
 
 ```mermaid
 flowchart LR

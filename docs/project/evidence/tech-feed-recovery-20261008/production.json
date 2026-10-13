@@ -1,0 +1,320 @@
+{
+  "checked_at": "2026-10-08 01:04:38.892031+00:00",
+  "enabled": true,
+  "publish_enabled": true,
+  "authorized": true,
+  "policy": "91fc9617dc1dd6b042fafe8b1cbfbac1dd361cd0814449b772a52da6d06ce372",
+  "model_calls_by_this_check": 0,
+  "slack_writes_by_this_check": 0,
+  "sources": [
+    {
+      "id": "cloudflare",
+      "last_success": "2026-10-08 01:04:14.270324+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "deepmind",
+      "last_success": "2026-10-08 01:04:16.951748+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "duckdb",
+      "last_success": "2026-10-08 01:04:15.067585+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "geeknews",
+      "last_success": "2026-10-08 01:04:15.969494+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "github-engineering",
+      "last_success": "2026-10-08 01:04:15.167276+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "hugging-face",
+      "last_success": "2026-10-08 01:04:16.672204+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "kubernetes",
+      "last_success": "2026-10-08 01:04:14.267876+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "naver-d2",
+      "last_success": "2026-10-08 01:04:18.778477+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "openai",
+      "last_success": "2026-10-08 01:04:18.473339+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "postgresql",
+      "last_success": "2026-10-08 01:04:22.129523+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "simon-willison",
+      "last_success": "2026-10-08 01:04:15.771711+00:00",
+      "failures": 0,
+      "error": null
+    },
+    {
+      "id": "toss-tech",
+      "last_success": "2026-10-08 01:04:21.180845+00:00",
+      "failures": 0,
+      "error": null
+    }
+  ],
+  "counts": [
+    {
+      "status": "delivered",
+      "count": 618
+    },
+    {
+      "status": "pending",
+      "count": 194
+    },
+    {
+      "status": "stale",
+      "count": 97
+    }
+  ],
+  "deliveries": [
+    {
+      "id": "df284fd6-b4de-5422-86ad-8f576ebaf0f5",
+      "agent": "tech_scout",
+      "channel": "C0C2KPB76KE",
+      "status": "delivered",
+      "sent_ts": "1791421458.587979",
+      "error": null,
+      "attempts": 1,
+      "title": "ncdu - NCurses 디스크 사용량 분석 도구(업데이트된 포크)",
+      "policy_digest": "91fc9617dc1dd6b042fafe8b1cbfbac1dd361cd0814449b772a52da6d06ce372",
+      "slack_permalink": {
+        "ok": true,
+        "error": null,
+        "permalink": "https://achiisquantresearch.slack.com/archives/C0C2KPB76KE/p1791421458587979"
+      }
+    },
+    {
+      "id": "33ca0636-b2a8-5890-9448-5bf6ebf66fd5",
+      "agent": "tech_scout",
+      "channel": "C0C2KPB76KE",
+      "status": "delivered",
+      "sent_ts": "1791421397.684779",
+      "error": null,
+      "attempts": 1,
+      "title": "스왑으로 발생한 Go 가비지 컬렉터의 40ms 정지",
+      "policy_digest": "91fc9617dc1dd6b042fafe8b1cbfbac1dd361cd0814449b772a52da6d06ce372",
+      "slack_permalink": {
+        "ok": true,
+        "error": null,
+        "permalink": "https://achiisquantresearch.slack.com/archives/C0C2KPB76KE/p1791421397684779"
+      }
+    },
+    {
+      "id": "cf225e1e-5238-54ed-b26c-570c1ef300f9",
+      "agent": "tech_scout",
+      "channel": "C0C2KPB76KE",
+      "status": "delivered",
+      "sent_ts": "1791421337.152209",
+      "error": null,
+      "attempts": 1,
+      "title": "SQLDoom - 오리지널 Doom을 SQL로 포팅하기",
+      "policy_digest": "91fc9617dc1dd6b042fafe8b1cbfbac1dd361cd0814449b772a52da6d06ce372",
+      "slack_permalink": {
+        "ok": true,
+        "error": null,
+        "permalink": "https://achiisquantresearch.slack.com/archives/C0C2KPB76KE/p1791421337152209"
+      }
+    },
+    {
+      "id": "c2b54b34-cafb-56e7-8c55-669bccd00389",
+      "agent": "tech_scout",
+      "channel": "C0C2KPB76KE",
+      "status": "delivered",
+      "sent_ts": "1791421276.305879",
+      "error": null,
+      "attempts": 1,
+      "title": "AI로 의도, 품질, 예술성을 확장하는 법 [영상]",
+      "policy_digest": "91fc9617dc1dd6b042fafe8b1cbfbac1dd361cd0814449b772a52da6d06ce372",
+      "slack_permalink": {
+        "ok": true,
+        "error": null,
+        "permalink": "https://achiisquantresearch.slack.com/archives/C0C2KPB76KE/p1791421276305879"
+      }
+    },
+    {
+      "id": "500df036-02ac-5a19-9825-796f07cef236",
+      "agent": "tech_scout",
+      "channel": "C0C2KPB76KE",
+      "status": "delivered",
+      "sent_ts": "1791421215.405789",
+      "error": null,
+      "attempts": 1,
+      "title": "독립의 미래는 상호의존이다",
+      "policy_digest": "91fc9617dc1dd6b042fafe8b1cbfbac1dd361cd0814449b772a52da6d06ce372",
+      "slack_permalink": {
+        "ok": true,
+        "error": null,
+        "permalink": "https://achiisquantresearch.slack.com/archives/C0C2KPB76KE/p1791421215405789"
+      }
+    }
+  ],
+  "new_policy_items": [
+    {
+      "id": "e239c271-2fe7-5ce2-9181-a2920cfc4d50",
+      "status": "pending",
+      "error": null,
+      "attempts": 0,
+      "sent_ts": null,
+      "created_at": "2026-10-08 00:52:10.814251+00:00"
+    },
+    {
+      "id": "dd817f7a-fcd3-5562-b642-af4c2c95ddc3",
+      "status": "pending",
+      "error": null,
+      "attempts": 0,
+      "sent_ts": null,
+      "created_at": "2026-10-08 00:52:10.814251+00:00"
+    },
+    {
+      "id": "98b80869-d7fc-5b13-a96f-5454e86805f0",
+      "status": "pending",
+      "error": null,
+      "attempts": 0,
+      "sent_ts": null,
+      "created_at": "2026-10-08 00:42:06.206787+00:00"
+    },
+    {
+      "id": "3258bb59-6bc1-5ee0-88ca-8f9471a37119",
+      "status": "pending",
+      "error": null,
+      "attempts": 0,
+      "sent_ts": null,
+      "created_at": "2026-10-08 00:42:06.206787+00:00"
+    },
+    {
+      "id": "7d94bbe7-3009-5c64-8687-cfad1e37e536",
+      "status": "pending",
+      "error": null,
+      "attempts": 0,
+      "sent_ts": null,
+      "created_at": "2026-10-08 00:42:06.206787+00:00"
+    }
+  ],
+  "workflow": {
+    "run_id": "01a11900-eac9-7202-a03d-cc13d3e51049",
+    "status": "RUNNING",
+    "task_queue": "quant-company-tech-feed-dedicated",
+    "pending_activities": 0,
+    "completed_activities": 2,
+    "latest_activity": [
+      {
+        "sources": [
+          {
+            "added": 0,
+            "queued": 0,
+            "source": "cloudflare",
+            "state": "collected"
+          },
+          {
+            "added": 0,
+            "queued": 0,
+            "source": "kubernetes",
+            "state": "collected"
+          },
+          {
+            "added": 0,
+            "queued": 0,
+            "source": "duckdb",
+            "state": "collected"
+          },
+          {
+            "added": 0,
+            "queued": 0,
+            "source": "github-engineering",
+            "state": "collected"
+          },
+          {
+            "added": 0,
+            "queued": 0,
+            "source": "simon-willison",
+            "state": "collected"
+          },
+          {
+            "added": 0,
+            "queued": 0,
+            "source": "geeknews",
+            "state": "collected"
+          },
+          {
+            "added": 0,
+            "queued": 0,
+            "source": "hugging-face",
+            "state": "collected"
+          },
+          {
+            "added": 0,
+            "queued": 0,
+            "source": "deepmind",
+            "state": "collected"
+          },
+          {
+            "added": 0,
+            "queued": 0,
+            "source": "openai",
+            "state": "collected"
+          },
+          {
+            "added": 0,
+            "queued": 0,
+            "source": "naver-d2",
+            "state": "collected"
+          },
+          {
+            "added": 0,
+            "queued": 0,
+            "source": "toss-tech",
+            "state": "collected"
+          },
+          {
+            "added": 0,
+            "queued": 0,
+            "source": "postgresql",
+            "state": "collected"
+          }
+        ],
+        "state": "collected"
+      }
+    ]
+  },
+  "slack_identity": {
+    "ok": true,
+    "error": null,
+    "user": "tech-scout",
+    "user_id": "U0C3JD8E4LR",
+    "team_id": "T0C1YRDRPNF",
+    "matches_configured_bot": true
+  },
+  "patch_sha256": {
+    "store.py": "f7fb255adc6218b7c8c0b9b833898c143065660b0c9eba84b95a49fe0bf39202",
+    "recovery.py": "61eb1e584fcbff7150cfb5189417249521f91a711699b91f22d56fd7b03c519b",
+    "worker.py": "162162eaff23e4340ae0b42180fc6ce704ba85030e252f83ae264a2c7df435ef"
+  }
+}

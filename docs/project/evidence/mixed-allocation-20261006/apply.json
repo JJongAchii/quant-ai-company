@@ -1,0 +1,362 @@
+{
+  "schema_version": 1,
+  "operation_id": "mixed-allocation-20261006-owner-correction-v1",
+  "plan_sha256": "1d7313e0535ce39361a042f569e7509f502ec429b96d9bd1010f8756831992eb",
+  "origin": "explicit_owner_request_via_authenticated_operator",
+  "source_request": "아니 기존에 astra 였던 거는 astra 를 유지하고 , astra 가 아니었던 직원들 한해서 6.1 sol 로 잘 배분해달라는 말이었어. 그러면 전체적으로 너가 잘 배분해서 astra 든 6.1 sol 이든 추론 강도든 너가 전반적으로 다시 잘 배분해줘.",
+  "approved_owner": "U0C250E23NW",
+  "actor": "operator",
+  "account": {
+    "profile": "primary",
+    "revision": 2
+  },
+  "original_models": {
+    "director": "gpt-6-astra",
+    "validator": "gpt-6-astra",
+    "financial_strategist": "gpt-6-astra",
+    "risk": "gpt-6-astra",
+    "market_brief": "gpt-6-astra",
+    "researcher_kr": "gpt-6-astra",
+    "researcher_global": "gpt-6-astra",
+    "researcher_crypto": "gpt-6-astra",
+    "reporter": "gpt-6-astra",
+    "engineer": "gpt-5.6-sol",
+    "maintainer": "gpt-5.6-sol",
+    "data": "gpt-5.6-terra",
+    "quant_scout": "gpt-5.6-luna",
+    "operations": "gpt-5.6-terra",
+    "news_screening": "gpt-5.6-luna",
+    "news_search": "gpt-5.6-luna"
+  },
+  "before_revision": 1,
+  "revision": 2,
+  "before": {
+    "data": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "risk": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "director": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "max"
+    },
+    "engineer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "reporter": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "validator": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "maintainer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "operations": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "news_search": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low"
+    },
+    "quant_scout": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "market_brief": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "researcher_kr": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "news_screening": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low"
+    },
+    "researcher_crypto": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "researcher_global": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "financial_strategist": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    }
+  },
+  "after": {
+    "data": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "risk": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh"
+    },
+    "director": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max"
+    },
+    "engineer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "reporter": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "medium"
+    },
+    "validator": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max"
+    },
+    "maintainer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "operations": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "news_search": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low"
+    },
+    "quant_scout": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "market_brief": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh"
+    },
+    "researcher_kr": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high"
+    },
+    "news_screening": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low"
+    },
+    "researcher_crypto": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high"
+    },
+    "researcher_global": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high"
+    },
+    "financial_strategist": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh"
+    }
+  },
+  "effective_assignments": {
+    "data": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high",
+      "source": "pinned",
+      "revision": 2
+    },
+    "director": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "source": "pinned",
+      "revision": 2
+    },
+    "engineer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "source": "pinned",
+      "revision": 2
+    },
+    "financial_strategist": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "source": "pinned",
+      "revision": 2
+    },
+    "maintainer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "source": "pinned",
+      "revision": 2
+    },
+    "market_brief": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "source": "pinned",
+      "revision": 2
+    },
+    "news_screening": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "source": "pinned",
+      "revision": 2
+    },
+    "news_search": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "source": "pinned",
+      "revision": 2
+    },
+    "operations": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium",
+      "source": "pinned",
+      "revision": 2
+    },
+    "quant_scout": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high",
+      "source": "pinned",
+      "revision": 2
+    },
+    "reporter": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "medium",
+      "source": "pinned",
+      "revision": 2
+    },
+    "researcher_crypto": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "source": "pinned",
+      "revision": 2
+    },
+    "researcher_global": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "source": "pinned",
+      "revision": 2
+    },
+    "researcher_kr": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "source": "pinned",
+      "revision": 2
+    },
+    "risk": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "source": "pinned",
+      "revision": 2
+    },
+    "validator": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max",
+      "source": "pinned",
+      "revision": 2
+    }
+  },
+  "catalog": {
+    "account": {
+      "profile": "primary",
+      "revision": 2
+    },
+    "cli_version": "0.160.1",
+    "checked_at": "2026-10-06T13:44:25.752989+00:00",
+    "models": [
+      {
+        "model": "gpt-6.1-sol",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-6-astra",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-6-sol",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-6-luna",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      },
+      {
+        "model": "gpt-5.6-sol",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-5.6-terra",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-5.6-luna",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    ]
+  },
+  "active_roles": [
+    "data",
+    "director",
+    "financial_strategist",
+    "maintainer",
+    "market_brief",
+    "reporter",
+    "researcher_kr"
+  ],
+  "state": "applied",
+  "at": "2026-10-06T13:45:06.778880+00:00",
+  "slack_messages_sent": 0,
+  "model_inference_calls": 0,
+  "cached": false
+}

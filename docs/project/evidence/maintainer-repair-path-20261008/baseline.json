@@ -1,0 +1,12 @@
+{
+  "source_commit": "4aadf7efcc0cf85ff2787f68567cbd1b0d8762c6",
+  "scope": "Real PostgreSQL producer/consumer test; simulated model/GitHub. No inference or external writes.",
+  "tests": 3,
+  "exit_code": 1,
+  "assertions": [
+    "Previously read callers must remain visible to the next stateless model",
+    "A requested 160-line body must survive when under budget",
+    "Producer evidence was lost before selecting a consumer repair"
+  ],
+  "real_model_calls": 0
+}

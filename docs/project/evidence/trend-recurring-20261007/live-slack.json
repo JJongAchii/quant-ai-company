@@ -1,0 +1,92 @@
+{
+  "checked_at": "2026-10-07 02:13:48.890647+00:00",
+  "source_commit": "dcdc29c6fba7d05a89f027e8f2e760b4311014d5",
+  "transport": "actual Slack SDK authenticated Socket Mode; real owner browser messages; real chat.postMessage receipts",
+  "http_signature": "synthetic-key HTTP tests separately; Socket Mode does not use an HTTP HMAC envelope",
+  "status": {
+    "enabled": true,
+    "authorized": true,
+    "publish_enabled": true,
+    "schedule": "daily 08:00, 14:00, 20:00 Asia/Seoul; cutoff30 minutes before; expiry60 minutes after",
+    "next_publication": "2026-10-07 14:00:00+09:00",
+    "on_demand_enabled": true,
+    "model_daily_limit": 12
+  },
+  "requests": [
+    {
+      "id": "d4db056a-3ef7-5285-92d3-7d4dc93f75e0",
+      "event_key": "slack:T0C1YRDRPNF:C0C6WTA9ECV:1791338806.705989:trend_scout",
+      "thread_ts": "1791338806.705989",
+      "requested_at": "2026-10-07 02:06:47.010512+00:00",
+      "cutoff": "2026-10-07 02:07:07.827157+00:00",
+      "state": "queued",
+      "delivery_status": "delivered",
+      "sent_ts": "1791338950.912329",
+      "delivery_attempts": 1,
+      "reused_digest_id": null,
+      "items": 10,
+      "actual_slack_parent": {
+        "user": "U0C250E23NW",
+        "ts": "1791338806.705989",
+        "text": "실시간 검색어",
+        "reply_count": 3
+      },
+      "permalink": "https://achiisquantresearch.slack.com/archives/C0C6WTA9ECV/p1791338950912329?thread_ts=1791338806.705989&cid=C0C6WTA9ECV",
+      "body_sha256": "3e2b255f92cab792b83102be603923b060deed0f42cb694d4cb167f98ba64068",
+      "heading": "*한국 검색 트렌드 · 10/07 11:06 · 요청 브리핑*",
+      "elapsed_seconds": 144.20634007453918
+    },
+    {
+      "id": "4e1c501e-2281-5e56-9c3a-b6c85063330c",
+      "event_key": "slack:T0C1YRDRPNF:C0C6WTA9ECV:1791339194.390079:trend_scout",
+      "thread_ts": "1791338806.705989",
+      "requested_at": "2026-10-07 02:13:14.671667+00:00",
+      "cutoff": "2026-10-07 02:07:07.827157+00:00",
+      "state": "queued",
+      "delivery_status": "delivered",
+      "sent_ts": "1791339222.322179",
+      "delivery_attempts": 1,
+      "reused_digest_id": "d4db056a-3ef7-5285-92d3-7d4dc93f75e0",
+      "items": 10,
+      "actual_slack_parent": {
+        "user": "U0C250E23NW",
+        "ts": "1791338806.705989",
+        "text": "실시간 검색어",
+        "reply_count": 3
+      },
+      "permalink": "https://achiisquantresearch.slack.com/archives/C0C6WTA9ECV/p1791339222322179?thread_ts=1791338806.705989&cid=C0C6WTA9ECV",
+      "body_sha256": "698c670d408d9f563d5d9b1c5c10ce714d27c33c6b8a82dd9480134663300357",
+      "heading": "*한국 검색 트렌드 · 10/07 11:13 · 요청 브리핑*",
+      "elapsed_seconds": 27.93210005760193
+    }
+  ],
+  "completed_subscription_calls": [
+    {
+      "id": "news-trends-af892a53-837e-4fa6-896a-909d79ee2467",
+      "stage": 0,
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-10-07 02:07:23.827008+00:00",
+      "completed_at": "2026-10-07 02:08:51.528460+00:00"
+    },
+    {
+      "id": "news-trends-de9a61d9-662a-4931-aaff-ee5f0053fea5",
+      "stage": 0,
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-10-07 01:50:48.583223+00:00",
+      "completed_at": "2026-10-07 01:55:59.566351+00:00"
+    }
+  ],
+  "assertions": {
+    "both_owner_requests_committed_and_delivered": true,
+    "both_ten_items": true,
+    "request_thread_preserved": true,
+    "single_delivery_attempt_each": true,
+    "second_reuses_first_verified_digest": true,
+    "second_cutoff_preserved": true,
+    "second_additional_model_calls": 0,
+    "sports_excluded": true
+  },
+  "disclosure": "Ten is a target, not a guarantee; first real request has eight rising topics and two validated major-issue supplements."
+}

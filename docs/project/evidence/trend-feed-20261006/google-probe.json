@@ -1,0 +1,91 @@
+{
+  "checked_at": "2026-10-06 08:18:40.083898+00:00",
+  "network": "real-public-google-rss",
+  "url": "https://trends.google.com/trending/rss?geo=KR",
+  "ok": true,
+  "skipped": 0,
+  "etag": "",
+  "modified": "",
+  "sha256": "3b1af5b1906352aa1e527fd5da8ac9e19799c652f56a72eb8db11adab924297e",
+  "bytes": 20583,
+  "entries": 10,
+  "sample": [
+    {
+      "keyword": "위원장",
+      "title": "위원장",
+      "published_at": "2026-10-06 07:10:00+00:00",
+      "traffic": "1000+",
+      "traffic_floor": 1000,
+      "news": [
+        {
+          "url": "https://imnews.imbc.com/news/2026/society/article/6855993_36918.html",
+          "title": "경찰, 삼성전자 노조위원장 '장인 회사 계약 논란' 수사 착수",
+          "publisher": "MBC 뉴스"
+        },
+        {
+          "url": "https://v.daum.net/v/20261006112343137",
+          "title": "‘장인 회사 조끼 계약’ 삼전 노조위원장…경찰, 수사 착수",
+          "publisher": "Daum"
+        },
+        {
+          "url": "https://news.kbs.co.kr/news/view.do?ncd=8678425",
+          "title": "경찰, 삼성전자 노조 최승호 위원장 ‘장인 회사 계약 논란’ 수사 착수",
+          "publisher": "KBS 뉴스"
+        }
+      ]
+    },
+    {
+      "keyword": "엑스포츠뉴스",
+      "title": "엑스포츠뉴스",
+      "published_at": "2026-10-06 07:00:00+00:00",
+      "traffic": "1000+",
+      "traffic_floor": 1000,
+      "news": [
+        {
+          "url": "https://www.mt.co.kr/world/2026/10/05/2026100510044671636",
+          "title": "8세 日 아이돌 연습생, 무대 선 지 5일 만에…'독감 합병증' 사망 - 머니투데이",
+          "publisher": "머니투데이"
+        },
+        {
+          "url": "https://m.news.nate.com/view/20261004n03337?cate=interest&list=rank&sect=ent",
+          "title": "\"독감 합병증이 이렇게 무섭나\"…日 8세 아이돌, 급성 심근염으로 사망",
+          "publisher": "네이트"
+        },
+        {
+          "url": "https://v.daum.net/v/20261005011658410?f=p",
+          "title": "'8세' 日 연습생, 마지막 무대 닷새 만 사망…\"인생의 3분의 1 바쳤는데\" [엑's 해외이슈]",
+          "publisher": "Daum"
+        }
+      ]
+    },
+    {
+      "keyword": "비상사태",
+      "title": "비상사태",
+      "published_at": "2026-10-06 05:50:00+00:00",
+      "traffic": "2000+",
+      "traffic_floor": 2000,
+      "news": [
+        {
+          "url": "https://v.daum.net/v/20261006093605841",
+          "title": "'백신 거부'가 불러온 보건 재앙…美 뉴욕주, 홍역 비상사태",
+          "publisher": "Daum"
+        },
+        {
+          "url": "https://www.hankyung.com/article/2026100641597",
+          "title": "30년 만에 최악의 유행…美 3900명 확진에 비상사태 선포",
+          "publisher": "한국경제"
+        },
+        {
+          "url": "https://news.kbs.co.kr/news/view.do?ncd=8678206",
+          "title": "미국 홍역 확산 지속…뉴욕주, 지난해 유행 후 첫 비상사태",
+          "publisher": "KBS 뉴스"
+        }
+      ]
+    }
+  ],
+  "naver_configured": false,
+  "naver": "not-called; validated by bounded scheduled enrichment",
+  "database": "not-connected",
+  "model": "not-called",
+  "slack": "not-connected"
+}

@@ -182,12 +182,12 @@ async def dispatch_once(client, company):
         except (ValueError, OSError) as exc:
             logging.getLogger(__name__).error("Briefing configuration unavailable: %s", type(exc).__name__)
     if getattr(company.settings, "trend_feed_enabled", False) and not getattr(company, "_trend_feed_started", False):
+        recurring = (company.settings.trend_feed_publication_hours != [8]
+                     or company.settings.trend_feed_on_demand_enabled)
         for definition, identity, suffix in (
             (TrendFeedCollectionWorkflow, "company-trend-feed-collection-v1", "-trend-collection"),
-            (TrendFeedPublicationWorkflow if company.settings.trend_feed_publication_hours != [8]
-             or company.settings.trend_feed_on_demand_enabled else TrendFeedDigestWorkflow,
-             "company-trend-feed-publication-v2" if company.settings.trend_feed_publication_hours != [8]
-             or company.settings.trend_feed_on_demand_enabled else "company-trend-feed-digest-v1", "-trend-collection"),
+            (TrendFeedPublicationWorkflow if recurring else TrendFeedDigestWorkflow,
+             "company-trend-feed-publication-v2" if recurring else "company-trend-feed-digest-v1", "-trend-collection"),
             (TrendFeedEditorialWorkflow, "company-trend-feed-editorial-v1", "-news-model"),
         ):
             try:
@@ -234,8 +234,9 @@ async def dispatch_once(client, company):
         company._data_watch_started = True
     if company.settings.tech_feed_enabled and not getattr(company, "_tech_feed_started", False):
         try:
+            tech_queue = ("-tech-feed-dedicated" if company.settings.tech_feed_dedicated_worker else "-tech-feed")
             await client.start_workflow(TechFeedCollectionWorkflow.run, id="company-tech-feed-collection-v1",
-                                        task_queue=company.settings.temporal_task_queue + "-tech-feed",
+                                        task_queue=company.settings.temporal_task_queue + tech_queue,
                                         id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
         except WorkflowAlreadyStartedError:
             pass

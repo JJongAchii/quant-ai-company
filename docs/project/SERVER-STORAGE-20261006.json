@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "status": "host_optimization_applied",
+  "observed_date_kst": "2026-10-06",
+  "publication_scope": "Code and sanitized validation summary; host/resource identifiers and detailed receipts excluded.",
+  "disk_result": {
+    "reclaimed_gib": 28.16,
+    "available_gib": 32.87,
+    "utilization_percent": 57
+  },
+  "actual_host_actions": {
+    "old_images_removed": 40,
+    "old_local_archives_removed": 69,
+    "s3_stream_sha256_verifications": 69,
+    "containers_preserved": 16,
+    "live_configuration_and_roles_preserved": true,
+    "services_restarted": false,
+    "s3_objects_deleted": 0
+  },
+  "retention": {
+    "timer": "quant-company-storage-cleanup.timer",
+    "enabled_and_tested": true,
+    "schedule_kst": "03:40 to 03:45 daily",
+    "image_minimum_age_days": 7,
+    "latest_images_per_repository": 3,
+    "local_backup_days": 7,
+    "minimum_local_backups": 3,
+    "cache_minimum_age_hours": 24,
+    "unused_cache_target": "2GB",
+    "backup_release_lock_shared": true
+  },
+  "validation": {
+    "original_attachment_tests_passed": 47,
+    "safety_unit_cases": 16,
+    "deployment_contract_cases": 31,
+    "full_lint_passed": true,
+    "unit_tests_use_simulated_cloud_calls": true,
+    "actual_host_s3_verification_performed_separately": true,
+    "actual_systemd_execution_succeeded": true,
+    "installed_files_match_source_sha256": {
+      "deploy/storage_cleanup.py": "9491b1d9e8bd30fc049a17338f780ece4321745e2f14c330ddd9f85725188d21",
+      "deploy/quant-company-storage-cleanup.service": "216e022ef3fb17c57480fe21be26adf0da082c08f9b56627a63a469c40ab77a3",
+      "deploy/quant-company-storage-cleanup.timer": "6670e5547315461e882467a00bc7353971d4378448dde3b3ccd6462546408f4c"
+    },
+    "main_base_targeted_tests_passed": 47,
+    "main_base_full_lint_passed": true
+  },
+  "limitations": [
+    "Shared/protected/younger cache can exceed the 2GB target.",
+    "Database data, model receipts, credentials, volumes and release source trees are outside cleanup scope.",
+    "Disk capacity alerting is outside this change."
+  ]
+}

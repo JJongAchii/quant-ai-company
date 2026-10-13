@@ -1,0 +1,180 @@
+{
+  "real_linux_cli": true,
+  "real_selected_chatgpt_account": true,
+  "slack_simulated_or_sent": false,
+  "model_turns": 0,
+  "runtimes": [
+    {
+      "runtime": "codex-runtime",
+      "image": "sha256:1da677f0627c690e3ecaadba4f368aad9271bfa581d71b20b1f07deb872ec8e6",
+      "scope": "actual Linux CLI and selected official ChatGPT account",
+      "cli_version": "0.160.1",
+      "profile": "primary",
+      "models": [
+        {
+          "model": "gpt-6.1-sol",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-6-astra",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-6-sol",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-6-luna",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        },
+        {
+          "model": "gpt-5.6-sol",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-5.6-terra",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-5.6-luna",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "configuration_preflight": true,
+      "model_turns": 0
+    },
+    {
+      "runtime": "quant-codex-runtime",
+      "image": "sha256:94d32ec482ea0ba9cfd7890ef9f13113403beec858380ab8e3205d7b400e8fa1",
+      "scope": "actual Linux CLI and selected official ChatGPT account",
+      "cli_version": "0.160.1",
+      "profile": "primary",
+      "models": [
+        {
+          "model": "gpt-6.1-sol",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-6-astra",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-6-sol",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-6-luna",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        },
+        {
+          "model": "gpt-5.6-sol",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-5.6-terra",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-5.6-luna",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ],
+      "configuration_preflight": true,
+      "model_turns": 0
+    }
+  ]
+}

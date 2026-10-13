@@ -1,0 +1,13 @@
+{
+  "first_candidate_base": "sha256:87d3b67552393e3e727f1344edb2b8805fde3c60da5abc3bbbc6d8eaa95f2b98",
+  "first_candidate_commit": "24b87b87b815cb7cf9cb7c53f552cf3d6e6fd907",
+  "first_attempt": "native image qualified, ephemeral read-only preview rejected by older Settings bounded-briefing validation while peer deployment changed shared configuration",
+  "first_attempt_model_calls": 0,
+  "first_attempt_naver_calls": 0,
+  "first_attempt_slack_calls": 0,
+  "first_attempt_resident_services_changed": false,
+  "peer_base_at_requalification": "sha256:8fc94968656bceebe2242dc8ad8d646922be19aa4d5feb4db323201c4474e655",
+  "reviewed_editor_and_store_before_hashes_unchanged": true,
+  "private_active_environment_preserved": true,
+  "requalified": true
+}
