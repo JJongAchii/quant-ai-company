@@ -1,0 +1,68 @@
+{
+  "observed_company_at": "2026-10-13T02:12:36.152206+00:00",
+  "read_only": true,
+  "job_id": "5973e464-d201-5865-8ca0-636d0943e344",
+  "trial_id": "e500a2c4-a091-5808-83c7-b5516a748278",
+  "result_id": "b77874ec-ace7-56f9-823c-bd9195a68a12",
+  "company_job_state": "received",
+  "company_trial_state": "interpreted",
+  "actual_artifact_sha256": "0696bb0f2c246c78ac68cbc5255a31bb3eabb077c147e0f82d4db7ae325d6217",
+  "company_artifact_sha256": "0696bb0f2c246c78ac68cbc5255a31bb3eabb077c147e0f82d4db7ae325d6217",
+  "artifact_hash_matches": true,
+  "execution_receipt": {
+    "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1791242030.830452:director:action:dd69d4b8-78c0-4c78-b7ee-41c7cf7d5972:approve",
+    "code_commit": "a81b1381c5671010fce0db4e8e7a008b031f785c",
+    "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+    "completed_at": "2026-10-13T01:23:33.363698Z",
+    "config_files": {
+      "labs/company-domestic-research/config.json": "5dd527a5b40490e54f9f5dc1a014ea05c6468ac3c3af889a5c68fa356169f128"
+    },
+    "execution_count": 1,
+    "execution_profile_digest": "71ee4ce63770fb20205675d42cae4db2719394c0d4e31218484a5d4348f06dd1",
+    "fixture_only": false,
+    "gpu": "NVIDIA GeForce RTX 3070",
+    "hostname": "DESKTOP-5T00NAF",
+    "input_files": {
+      "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+      "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+    },
+    "job_id": "5973e464-d201-5865-8ca0-636d0943e344",
+    "kind": "adaptive_discovery",
+    "manifest_digest": "b44308134e57575150eae4a5f6dc21c95a9135e3da9a25e1d67f1a141525c81c",
+    "mission_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
+    "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+    "output_files": {
+      "base.csv": "878fdf1272286b57f48fcd4d88525745f380fce811f06bc357c0570c11cd46d9",
+      "stress.csv": "ac96ed9db39ffcf2354b8b74b56c31247d6ead10395a29a472a6268ae8e89ab7"
+    },
+    "plan_digest": "999cd5e1d52337a8bc5ebf644015acafb1acacfdf9d815d954e90856b42d69fe",
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "qualification_passed": true,
+    "qualification_sha256": "455f932cea39ace51a289b89c93e6039c028bb3e78cd8a37f69996547e64e44a",
+    "recipe_id": "kr-research-python-v2",
+    "research_scope": {
+      "acknowledged_gap_codes": [
+        "historical_publication_unverified",
+        "historical_revision_vintage_unverified",
+        "original_preparation_bytes_unavailable"
+      ],
+      "data_mode": "frozen_vintage_retrospective",
+      "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+      "result_scope": "conditional_retrospective_development",
+      "scientific_lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3"
+    },
+    "result_sha256": "6a3ea335698801f9f295863618241af91e754da22b56956b9f508d6ce37a02cc",
+    "revision": 5,
+    "runtime_sha256": "4ba17d798d9afba817307f12e56ebb43dda4c733f64e41c1ae4a7610c15db50a",
+    "sandbox_evaluation_sha256": "14246caf15407599351cbd57ea5c7ce6cd4e0248770fa93e3fca3824aea45e57",
+    "sandbox_qualification_sha256": "796e95c3aa66a7c1edeb1bb0a0916226f81f24c61d990b649dd72d51625490f6",
+    "schema_version": 2,
+    "scientific_trials_added": 1,
+    "sealed_read": false,
+    "started_at": "2026-10-13T01:23:18.348522Z",
+    "trial_id": "e500a2c4-a091-5808-83c7-b5516a748278",
+    "worker_id": "worker"
+  },
+  "performance_verified": false,
+  "independent_audit_state": "running"
+}
