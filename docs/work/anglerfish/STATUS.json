@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "anglerfish",
   "currentIntent": "INTENT-v21.json",
-  "state": "navigation_patch_applied_actual_staff_resumed_acceptance_pending",
+  "state": "navigation_repair_completed_actual_proposal_accepted_director_selection_running",
   "previousIntent": "INTENT-v20.json",
   "deliverables": {
     "POLICY": {
@@ -29,26 +29,34 @@
       "status": "completed_actual_director_retired_unmeasured_candidate"
     },
     "ACTUAL_PROGRESS": {
-      "status": "completed_actual_normal_successor_staff_calls_and_reads_verified"
+      "status": "completed_actual_staff_proposal_accepted_and_independent_challenge_completed",
+      "proposalId": "895fe4bb-dc4c-4fde-9bb3-b3ca089b9766",
+      "evidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-proposal-accepted-20261013.json",
+      "latestProgressEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-director-selection-20261013.json"
     }
   },
-  "operationalStatus": "2026-10-13 09:34:15 KST actual navigation API/worker patch applied, exact env/memory/other service IDs and concurrent maintenance2427a48 preserved; consistent backup saved. Owned pause cleared. Existing unfrozen turn timer recovered09:38 with unchanged primary revision2. Actual attempt26 request contains the new eligible-ID contract; completed staff reads and further actual Astra high running request verified09:38:31. Proposal acceptance remains pending. Reported economic trials1, active science jobs0.",
-  "evidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-staff-resumed-20261013.json",
+  "operationalStatus": "2026-10-13 09:34:15 KST navigation API/worker patch applied preserving exact active configuration, other service identities and concurrent maintenance2427a48. Pause cleared; existing unfrozen timer recovered09:38 with unchanged primary revision2. Actual independent proposal895fe4bb accepted09:42:20 by the unchanged consumer; financial_strategist challenge completed09:49:40. At09:51:01 director selection attempt1 is running with5 completed reads, actual Astra max request6 and matching current challenge schema. No error or current owner approval wait. Reported economic trials1; active science jobs0; second economic experiment not started.",
+  "evidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-director-selection-20261013.json",
   "nextStage": {
-    "stage": "qualified_proposal_navigation_repair_then_actual_independent_successor",
+    "stage": "director_selection_then_implementation_if_accepted",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
     "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
     "additionalOwnerApprovalRequired": false,
     "missionId": "2ce40574-6368-5cef-b706-b4e67441b3de",
     "preparationEvidence": "../../project/evidence/etf-exploration-20260930/technical-review-runtime-prepared-20261012.json",
     "additionalOwnerApprovalRequiredForPreparation": false,
-    "scientificProgrammeComplete": false
+    "scientificProgrammeComplete": false,
+    "currentActor": "director",
+    "currentStageId": "7728b37d-7269-50bc-b9ff-bc863f9ce95c",
+    "currentTaskId": "4af32f8b-46c0-5c03-bd86-edc86eec5e74",
+    "proposalId": "895fe4bb-dc4c-4fde-9bb3-b3ca089b9766",
+    "implementationConditionalOnSelection": true
   },
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
   "finalIntegration": {
     "intent": "INTENT-v21.json",
-    "status": "runtime_applied_actual_staff_resumed_acceptance_pending",
-    "currentIntentComplete": false,
+    "status": "scoped_runtime_applied_actual_proposal_accepted_and_successor_verified",
+    "currentIntentComplete": true,
     "canonicalMergeClaimed": false,
     "scientificProgrammeComplete": false,
     "secondEconomicEvaluationClaimed": false,
@@ -62,7 +70,12 @@
       "targetedPassed": 18,
       "lint": "passed",
       "modelSlackMarketFixtures": "synthetic"
-    }
+    },
+    "actualSuccessorEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-proposal-accepted-20261013.json",
+    "acceptedFieldsEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-accepted-relationship-fields-20261013.json",
+    "actualSlackMessageEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-slack-message-20261013.json",
+    "liveOrPaperApprovalClaimed": false,
+    "actualLatestProgressEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-director-selection-20261013.json"
   },
   "exploratoryPreparation": {
     "policy": "completed",
@@ -133,7 +146,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "actual_successor_proposal_running_after_navigation_patch",
+    "phase": "successor_proposal_and_challenge_completed_director_selection_running",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
@@ -187,13 +200,29 @@
     "technicalReviewDisposition": "retire_candidate",
     "technicalCandidateClosedAt": "2026-10-12T02:46:55.392922+00:00",
     "successorStageId": "378b5f19-1a59-5021-85a9-eb8c131d2242",
-    "successorTaskId": "dd8b6874-4a94-5c3f-908f-0f892ce96062"
+    "successorTaskId": "6d7a6bd3-32c0-5153-9148-1a69758569c4",
+    "successorAttempt": 26,
+    "successorProposalId": "895fe4bb-dc4c-4fde-9bb3-b3ca089b9766",
+    "successorProposalAcceptedAt": "2026-10-13T00:42:20.707752+00:00",
+    "currentChallengeStageId": "1599e78f-1fb3-5484-a9b2-cb7e9d301771",
+    "currentChallengeTaskId": "ac3b8825-ff37-5ac3-932d-e0fbe8914872",
+    "currentChallengeReadChunks": 22,
+    "proposalNavigationSourceCommit": "be0ae26",
+    "proposalNavigationOperationCommit": "5ec088b2854a2a94c6b514a25e2ae64e1a3dc6b0",
+    "proposalNavigationActualAcceptanceEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-proposal-accepted-20261013.json",
+    "currentSelectionStageId": "7728b37d-7269-50bc-b9ff-bc863f9ce95c",
+    "currentSelectionTaskId": "4af32f8b-46c0-5c03-bd86-edc86eec5e74",
+    "currentSelectionReadChunks": 5,
+    "challengeCompletedAt": "2026-10-13T00:49:40.177586+00:00",
+    "actualLatestProgressEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-director-selection-20261013.json"
   },
   "currentIntentCompletion": {
-    "intent": "INTENT-v20.json",
-    "status": "in_progress",
+    "intent": "INTENT-v21.json",
+    "status": "completed",
     "programmeStillActive": true,
-    "scientificDecisionsSupplied": false
+    "scientificProgrammeComplete": false,
+    "scientificDecisionsSupplied": false,
+    "evidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-proposal-accepted-20261013.json"
   },
   "previousAuditResumeDeliverables": {
     "AUDIT_DIAGNOSIS": {
@@ -210,56 +239,68 @@
       "actualProviderState": "running"
     }
   },
-  "phase": "second_trial_input_contract_verification_in_progress",
+  "phase": "successor_proposal_and_challenge_completed_director_selection_running",
   "currentDeliverables": {
-    "INPUT_CONTRACT": {
-      "status": "in_progress"
+    "CURRENT_STATUS": {
+      "status": "completed",
+      "evidence": "../../project/evidence/etf-exploration-20260930/successor-blocked-progress-20261013.json"
     },
-    "FIRST_RUN_ARTIFACTS": {
-      "status": "pending"
+    "PROPOSAL_NAVIGATION": {
+      "status": "completed",
+      "sourceCommit": "be0ae26",
+      "targetedPassed": 18,
+      "consumerChanged": false
     },
-    "INDEPENDENT_REPAIR": {
-      "status": "pending"
+    "QUALIFIED_APPLY": {
+      "status": "completed",
+      "operationCommit": "5ec088b2854a2a94c6b514a25e2ae64e1a3dc6b0",
+      "evidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-runtime-applied-20261013.json"
     },
     "ACTUAL_PROGRESS": {
-      "status": "pending"
+      "status": "completed_actual_staff_proposal_accepted_and_independent_challenge_completed",
+      "proposalId": "895fe4bb-dc4c-4fde-9bb3-b3ca089b9766",
+      "evidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-proposal-accepted-20261013.json",
+      "latestProgressEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-director-selection-20261013.json"
     }
   },
   "currentMonitoring": {
-    "intent": 19,
-    "unit": "quant-company-research-repair-monitor-20261012.service",
-    "invocationId": "677f68031dc6458eb35fa6da47956c19",
-    "state": "independent_engineer_evidence_hold_observed",
-    "startedAt": "2026-10-12T00:45:26+00:00",
+    "intent": 21,
+    "unit": "quant-company-technical-review-observer-v2-20261012.service",
+    "state": "active_running",
     "intervalSeconds": 45,
     "maximumHours": 24,
+    "startedAt": "2026-10-12T02:39:06+00:00",
+    "maximumEndAt": "2026-10-13T02:39:06+00:00",
     "readOnly": true,
     "automaticAlerts": false,
     "automaticRepairs": false,
-    "evidence": "../../project/evidence/etf-exploration-20260930/research-repair-bounded-observer-20261012.json",
+    "currentlyRunning": true,
     "unboundedMonitoringClaimed": false,
-    "completedAt": "2026-10-12T00:54:47.940104+00:00",
-    "observations": 13,
-    "readErrors": 0,
-    "completionEvidence": "../../project/evidence/etf-exploration-20260930/research-repair-observer-completed-20261012.json",
-    "currentlyRunning": false
+    "evidence": "../../project/evidence/etf-exploration-20260930/technical-review-bounded-observer-v2-active-20261012.json"
   },
   "currentStatusCheck": {
-    "observedAt": "2026-10-12T01:30:20.138749+00:00",
-    "evidence": "../../project/evidence/etf-exploration-20260930/research-repair-final-live-state-20261012.json",
-    "summary": "../../project/RESEARCH-REPAIR-RECOVERY-20261012.md",
+    "observedAt": "2026-10-13T00:51:01.040349+00:00",
+    "evidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-director-selection-20261013.json",
+    "summary": "../../project/SUCCESSOR-PROPOSAL-RECOVERY-20261013.md",
     "readOnly": true,
-    "secondTrialId": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
-    "secondJobId": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
-    "secondJobState": "failed",
+    "reportedEconomicTrials": 1,
+    "activeScienceJobs": 0,
     "secondEvaluationStarted": false,
-    "repairStageId": "2d0ec857-8601-5cca-927d-f7f51877696d",
-    "repairAttempt": 79,
-    "repairState": "waiting",
-    "repairError": "repair_requires_evidence",
-    "repairRetryAt": null,
-    "productionRepairAppliedThisTurn": true,
-    "additionalOwnerApprovalRequiredForPreparation": false
+    "proposalId": "895fe4bb-dc4c-4fde-9bb3-b3ca089b9766",
+    "proposalAccepted": true,
+    "currentStage": "selection",
+    "currentActor": "director",
+    "currentStageId": "7728b37d-7269-50bc-b9ff-bc863f9ce95c",
+    "currentTaskId": "4af32f8b-46c0-5c03-bd86-edc86eec5e74",
+    "currentStageState": "running",
+    "currentStageError": null,
+    "readChunks": 5,
+    "actualModel": "gpt-6-astra",
+    "actualReasoningEffort": "max",
+    "productionNavigationAppliedThisTurn": true,
+    "additionalOwnerApprovalRequired": false,
+    "actualSelectionScopeMatchesDb": true,
+    "independentChallengeCompleted": true
   },
   "revisionLoopRepair": {
     "intent": "INTENT-v18.json",
@@ -489,5 +530,55 @@
     "secondEconomicEvaluationClaimed": false,
     "liveOrPaperApprovalClaimed": false,
     "actualSlackReadbackEvidence": "../../project/evidence/etf-exploration-20260930/technical-review-initial-slack-readback-20261012.json"
+  },
+  "priorRepairDeliverables": {
+    "INPUT_CONTRACT": {
+      "status": "in_progress"
+    },
+    "FIRST_RUN_ARTIFACTS": {
+      "status": "pending"
+    },
+    "INDEPENDENT_REPAIR": {
+      "status": "pending"
+    },
+    "ACTUAL_PROGRESS": {
+      "status": "pending"
+    }
+  },
+  "priorRepairStatusCheck": {
+    "observedAt": "2026-10-12T01:30:20.138749+00:00",
+    "evidence": "../../project/evidence/etf-exploration-20260930/research-repair-final-live-state-20261012.json",
+    "summary": "../../project/RESEARCH-REPAIR-RECOVERY-20261012.md",
+    "readOnly": true,
+    "secondTrialId": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+    "secondJobId": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+    "secondJobState": "failed",
+    "secondEvaluationStarted": false,
+    "repairStageId": "2d0ec857-8601-5cca-927d-f7f51877696d",
+    "repairAttempt": 79,
+    "repairState": "waiting",
+    "repairError": "repair_requires_evidence",
+    "repairRetryAt": null,
+    "productionRepairAppliedThisTurn": true,
+    "additionalOwnerApprovalRequiredForPreparation": false
+  },
+  "priorRepairMonitoring": {
+    "intent": 19,
+    "unit": "quant-company-research-repair-monitor-20261012.service",
+    "invocationId": "677f68031dc6458eb35fa6da47956c19",
+    "state": "independent_engineer_evidence_hold_observed",
+    "startedAt": "2026-10-12T00:45:26+00:00",
+    "intervalSeconds": 45,
+    "maximumHours": 24,
+    "readOnly": true,
+    "automaticAlerts": false,
+    "automaticRepairs": false,
+    "evidence": "../../project/evidence/etf-exploration-20260930/research-repair-bounded-observer-20261012.json",
+    "unboundedMonitoringClaimed": false,
+    "completedAt": "2026-10-12T00:54:47.940104+00:00",
+    "observations": 13,
+    "readErrors": 0,
+    "completionEvidence": "../../project/evidence/etf-exploration-20260930/research-repair-observer-completed-20261012.json",
+    "currentlyRunning": false
   }
 }
