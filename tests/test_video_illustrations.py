@@ -310,6 +310,7 @@ def test_a_long_photo_request_is_shortened_until_commons_finds_it_and_the_closes
 
 
 def test_frame_keeps_a_portrait_whole_and_fills_16_by_9():
+    pytest.importorskip('PIL')  # photo framing and checks need the video extra (Pillow)
     import io
 
     from PIL import Image
@@ -325,6 +326,7 @@ def test_frame_keeps_a_portrait_whole_and_fills_16_by_9():
 
 async def test_a_checked_real_photo_is_used_and_credited_instead_of_a_generated_picture(brief, video, tmp_path,  # noqa: F811
                                                                                          monkeypatch):
+    pytest.importorskip('PIL')  # photo framing and checks need the video extra (Pillow)
     from quant_company.video import photos
     from quant_company.video.contracts import VisualReview
     from quant_company.video.runner import VideoRunner
@@ -358,6 +360,7 @@ async def test_a_checked_real_photo_is_used_and_credited_instead_of_a_generated_
 
 async def test_photos_are_looked_up_and_checked_once_per_plan_even_when_one_is_generated(brief, video, tmp_path,  # noqa: F811
                                                                                          monkeypatch):
+    pytest.importorskip('PIL')  # photo framing and checks need the video extra (Pillow)
     # 2026-10-13 v2: every generated picture changed the set of missing photos, so Commons and Claude were asked again.
     from quant_company.video import photos
     from quant_company.video.contracts import VisualIssue, VisualReview
