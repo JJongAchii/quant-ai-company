@@ -13,7 +13,8 @@ import hashlib,json
 from pathlib import Path
 from quant_company.company import Company
 from quant_company.config import Settings
-from quant_company.research.controller import stage_prompt
+from quant_company.research.controller import MissionController,stage_prompt
+from quant_company.research.missions import MissionStore
 import quant_company.research.controller as controller
 company=Company(Settings())
 manifest=json.loads(Path('/operator/manifest.json').read_bytes())
@@ -22,7 +23,7 @@ with company.db.transaction() as conn:
     assert row['stage']=='proposal' and row['actor']=='researcher_kr'
     assert row['state'] in ('waiting','running','received')
     assert str(row['mission_id'])==manifest['mission_id']
-    task=conn.execute('SELECT * FROM tasks WHERE id=%s',(row['task_id'],)).fetchone()
+    observed_state=row['state']
     mission=conn.execute('SELECT * FROM research_missions WHERE id=%s',(manifest['mission_id'],)).fetchone()
     program=conn.execute('SELECT * FROM research_programs WHERE id=%s',(manifest['program_id'],)).fetchone()
     assert mission['state']==program['state']=='active'
@@ -32,6 +33,18 @@ with company.db.transaction() as conn:
     assert trial['technical_closed_at'] is not None and trial['state']=='technical_waiting' and trial['result_id'] is None
     disposition=conn.execute('SELECT digest FROM research_technical_dispositions WHERE trial_id=%s',(trial['id'],)).fetchone()
     assert disposition['digest']==manifest['disposition_digest']
+    projected=observed_state!='running'
+    if projected:
+        # The normal prompt accepts only a running current attempt. Project the
+        # next attempt using its actual scheduler, then roll back every write.
+        snapshot=MissionStore(company).snapshot(conn,manifest['mission_id'],public=False)
+        assert snapshot['stage']['stage']=='proposal'
+        extra={key:value for key,value in row['context'].items() if key!='mission'}
+        project=company._project(conn,manifest['project_id'])
+        conn.execute("UPDATE research_mission_stages SET state='waiting',retry_at=NULL WHERE id=%s",(row['id'],))
+        MissionController(company)._schedule(conn,project,snapshot,extra)
+        row=conn.execute('SELECT * FROM research_mission_stages WHERE id=%s',(row['id'],)).fetchone()
+    task=conn.execute('SELECT * FROM tasks WHERE id=%s',(row['task_id'],)).fetchone()
     role,prompt=stage_prompt(company,conn,task)
     context=json.loads(prompt.split('MISSION DATA JSON:\n',1)[1])
     contract=context['proposal_contract']
@@ -58,7 +71,8 @@ with company.db.transaction() as conn:
     assert scope['cycle']==scope['cycle_trials']==scope['cumulative_trials']==1
     conn.rollback()
     print(json.dumps({'state':'actual_image_proposal_contract_verified','stage_id':str(row['id']),
-        'task_id':str(task['id']),'stage_state':row['state'],'attempt':row['attempt'],
+        'task_id':str(task['id']),'stage_state':observed_state,'projected_attempt':row['attempt'],
+        'synthetic_task_projection':projected,
         'model':role.model,'reasoning_effort':role.reasoning_effort,'proposal_contract':contract,
         'previous_contract_error':context.get('previous_contract_error'),'last_error':context.get('last_error'),
         'prompt_characters':len(prompt),'prompt_sha256':hashlib.sha256(prompt.encode()).hexdigest(),
